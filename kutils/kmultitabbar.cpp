@@ -37,6 +37,7 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <qapplication.h>
+#include <math.h>
 
 class KMultiTabBarTabPrivate {
 public:
@@ -166,6 +167,23 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 	ev->ignore();
 }
 
+
+#define CALCDIFF(m_tabs,diff,i) if (m_lines>lines) {\
+					/*kdDebug()<<"i="<<i<<" tabCount="<<tabCount<<" space="<<space<<endl;*/ \
+					uint ulen=0;\
+					diff=0; \
+					for (uint i2=i;i2<tabCount;i2++) {\
+						uint l1=m_tabs.at(i2)->neededSize();\
+						if ((ulen+l1)>space){\
+							if (ulen==0) diff=0;\
+							else diff=((float)(space-ulen))/(i2-i);\
+							break;\
+						}\
+						ulen+=l1;\
+					}\
+				} else {diff=0; }
+
+
 void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 /*	kdDebug()<<"KMultiTabBarInternal::resizeEvent"<<endl;
 	kdDebug()<<"KMultiTabBarInternal::resizeEvent - box geometry"<<box->geometry()<<endl;
@@ -177,7 +195,7 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 		box->setGeometry(0,0,width(),height());
 		int lines=1;
 		int space;
-		int tmp=0;
+		float tmp=0;
 		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top))
 			space=width();
 		else
@@ -196,34 +214,55 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 			}
 		}
 //SET SIZE & PLACE
+		const uint tabCount=m_tabs.count();
+		float diff=0;
+		cnt=0;
+
 		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top)) {
 
 			setFixedHeight(lines*24);
 			box->setFixedHeight(lines*24);
-			tmp=0;
-			cnt=0;
-			m_lines=lines=height()/24;
-			//kdDebug()<<"m_lines recalculated="<<m_lines<<endl;
+			m_lines=lines=height()/24-1;
 			lines=0;
-		        for (uint i=0;i<m_tabs.count();i++) {
+			CALCDIFF(m_tabs,diff,0)
+			tmp=-diff;
+
+			//kdDebug()<<"m_lines recalculated="<<m_lines<<endl;
+		        for (uint i=0;i<tabCount;i++) {
+				KMultiTabBarTab *tab=m_tabs.at(i);
 				cnt++;
-				tmp+=m_tabs.at(i)->neededSize();
+				tmp+=tab->neededSize()+diff;
 				if (tmp>space) {
 					//kdDebug()<<"about to start new line"<<endl;
-					if (cnt>1) i--;
+					if (cnt>1) {
+						CALCDIFF(m_tabs,diff,i)
+						i--;
+					}
 					else {
 						//kdDebug()<<"placing line on old line"<<endl;
-						m_tabs.at(i)->move(tmp-m_tabs.at(i)->neededSize(),lines*24);
+						kdDebug()<<"diff="<<diff<<endl;
+						tab->removeEventFilter(this);
+						tab->move((int)nearbyintf(tmp-tab->neededSize()),lines*24);
+//						tab->setFixedWidth(tab->neededSize()+diff);
+						tab->setFixedWidth((int)nearbyintf((tmp+diff)-tab->x()));;
+						tab->installEventFilter(this);
+						CALCDIFF(m_tabs,diff,(i+1))
+
 					}
+					tmp=-diff;
 					cnt=0;
-					tmp=0;
 					lines++;
 					//kdDebug()<<"starting new line:"<<lines<<endl;
 
 				} else 	{
 					//kdDebug()<<"Placing line on line:"<<lines<<" pos: (x/y)=("<<tmp-m_tabs.at(i)->neededSize()<<"/"<<lines*24<<")"<<endl;
-					
-					m_tabs.at(i)->move(tmp-m_tabs.at(i)->neededSize(),lines*24);
+					//kdDebug()<<"diff="<<diff<<endl;
+					tab->removeEventFilter(this);
+					tab->move((int)nearbyintf(tmp-tab->neededSize()),lines*24);
+					tab->setFixedWidth((int)nearbyintf((tmp+diff)-tab->x()));;
+
+					//tab->setFixedWidth(tab->neededSize()+diff);
+					tab->installEventFilter(this);
 
 				}
 			}
@@ -231,21 +270,36 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 		else {
 			setFixedWidth(lines*24);
 			box->setFixedWidth(lines*24);
-			tmp=0;
-			cnt=0;
 			m_lines=lines=width()/24;
 			lines=0;
-		        for (uint i=0;i<m_tabs.count();i++) {
+			CALCDIFF(m_tabs,diff,0)
+			tmp=-diff;
+
+		        for (uint i=0;i<tabCount;i++) {
+				KMultiTabBarTab *tab=m_tabs.at(i);
 				cnt++;
-				tmp+=m_tabs.at(i)->neededSize();
+				tmp+=tab->neededSize()+diff;
 				if (tmp>space) {
-					if (cnt>1) i--;
-					else
-						m_tabs.at(i)->move(lines*24,tmp-m_tabs.at(i)->neededSize());
+					if (cnt>1) {
+						CALCDIFF(m_tabs,diff,i);
+						tmp=-diff;
+						i--;
+					}
+					else {
+						tab->removeEventFilter(this);
+						tab->move(lines*24,(int)nearbyintf(tmp-tab->neededSize()));
+                                                tab->setFixedHeight((int)nearbyintf((tmp+diff)-tab->y()));;
+						tab->installEventFilter(this);
+					}
 					cnt=0;
-					tmp=0;
+					tmp=-diff;
 					lines++;
-				} else 	m_tabs.at(i)->move(lines*24,tmp-m_tabs.at(i)->neededSize());
+				} else 	{
+					tab->removeEventFilter(this);
+					tab->move(lines*24,(int)nearbyintf(tmp-tab->neededSize()));
+                                        tab->setFixedHeight((int)nearbyintf((tmp+diff)-tab->y()));;
+					tab->installEventFilter(this);
+				}
 			}
 		}
 
@@ -540,7 +594,6 @@ void KMultiTabBarTab::updateState()
                 else
                         setFixedWidth(m_expandedSize);
 	}
-
 }
 
 int KMultiTabBarTab::neededSize()
@@ -573,8 +626,11 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 	QSize sh;
 	const int width = 36; // rotated
 	const int height = 24;
-	if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isOn()))
-		 sh=KMultiTabBarButton::sizeHint();
+	if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isOn())) {
+		 if ((m_position==KMultiTabBar::Left) || (m_position==KMultiTabBar::Right))
+			sh=QSize(this->height(),this->width());//KMultiTabBarButton::sizeHint();
+			else sh=QSize(this->width(),this->height());
+	}
 	else
 		sh=QSize(width,height);
 
