@@ -447,14 +447,17 @@ void KProcess::slotSendData(int)
 
 void KProcess::processHasExited(int state)
 {
-  runs = false;
-  status = state;
+  if (runs)
+  {
+    runs = false;
+    status = state;
 
-  commClose(); // cleanup communication sockets
+    commClose(); // cleanup communication sockets
 
-  // also emit a signal if the process was run Blocking
-  if (DontCare != run_mode)
-    emit processExited(this);
+    // also emit a signal if the process was run Blocking
+    if (DontCare != run_mode)
+      emit processExited(this);
+  }
 }
 
 
