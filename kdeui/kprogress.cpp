@@ -166,6 +166,11 @@ QSize KProgress::sizeHint() const
 	return s;
 }
 
+QSize KProgress::minimumSizeHint() const
+{
+    return sizeHint();
+}
+
 QSizePolicy KProgress::sizePolicy() const
 {
 	if ( orientation()==KProgress::Vertical )

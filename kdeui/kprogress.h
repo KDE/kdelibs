@@ -170,6 +170,11 @@ public:
   /**
    * @reimplemented
    */
+  virtual QSize minimumSizeHint() const;
+
+  /**
+   * @reimplemented
+   */
   virtual QSizePolicy sizePolicy() const;
 
   /**
