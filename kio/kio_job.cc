@@ -546,6 +546,30 @@ bool KIOJob::getSize( const char *_url )
   return IOJob::getSize( _url );
 }
 
+bool KIOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume,
+                 int _len )
+{
+  ASSERT( !m_pSlave );
+
+  KURL u( _url );
+  if ( u.isMalformed() )
+  {
+    slotError( ERR_MALFORMED_URL, _url );
+    return false;
+  }
+
+  QString error;
+  int errid;
+  if ( !createSlave( u.protocol().ascii(), u.host().ascii(), u.user().ascii(), u.pass().ascii(), errid, error ) )
+  {
+    slotError( errid, error.ascii() );
+    return false;
+  }
+
+  createGUI();
+
+  return IOJob::put( _url, _mode, _overwrite, _resume, _len);
+}
 
 void KIOJob::cont()
 {

@@ -156,6 +156,9 @@ public:
   virtual bool get( const char *_url );
   virtual bool getSize( const char *_url );
 
+  virtual bool put( const char *_url, int _mode, bool _overwrite,
+		            bool _resume, int _len );
+
   virtual bool listDir( const char *_url );
   /**
    * Tests whether _url is a directory.
