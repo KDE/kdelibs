@@ -35,6 +35,8 @@ namespace KJS {
 
     int lineNo() const { return yylineno + 1; }
 
+    bool prevTerminator() const { return terminator; }
+
     enum State { Start,
 		 Identifier,
 		 InIdentifier,
@@ -69,6 +71,7 @@ namespace KJS {
     UnicodeChar *buffer16;
     unsigned int size8, size16;
     unsigned int pos8, pos16;
+    bool terminator;
 
   private:
     State state;

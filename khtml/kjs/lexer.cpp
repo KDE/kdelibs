@@ -85,6 +85,7 @@ int KJSLexer::lex()
   unsigned short stringType = 0; // either single or double quotes
   pos8 = pos16 = 0;
   done = false;
+  terminator = false;
 
   while (!done) {
     switch (state) {
@@ -101,6 +102,7 @@ int KJSLexer::lex()
 	setDone(Eof);
       } else if (isLineTerminator()) {
 	yylineno++;
+	terminator = true;
       } else if (current == '"' || current == '\'') {
 	state = InString;
 	stringType = current;
@@ -257,7 +259,6 @@ int KJSLexer::lex()
     case InExponentIndicator:
       if (current == '+' || current == '-') {
 	record8(current);
-	shift(1);
       } else if (isDecimalDigit(current)) {
 	record8(current);
 	state = InExponent;
