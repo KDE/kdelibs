@@ -1680,6 +1680,7 @@ void KSelectAction::updateComboWidth( int id )
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *cb = static_cast<QComboBox*>( r );
+      cb->setMinimumWidth( d->m_comboWidth );
       cb->setMaximumWidth( d->m_comboWidth );
     }
   }
@@ -1750,7 +1751,10 @@ int KSelectAction::plug( QWidget *widget, int index )
       if (!isEditable()) cb->setFocusPolicy(QWidget::NoFocus);
       cb->setMinimumWidth( cb->sizeHint().width() );
       if ( d->m_comboWidth > 0 )
+      {
+        cb->setMinimumWidth( d->m_comboWidth );
         cb->setMaximumWidth( d->m_comboWidth );
+      }
       cb->setInsertionPolicy( QComboBox::NoInsertion );
     }
 
