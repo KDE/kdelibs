@@ -97,11 +97,10 @@ More Info
 ---------
 
 If you are running a FreeBSD system, you will need to make sure that LIBS
-is set to "-lgcc -Wl,-export-dynamic".  The easiest way to do this is to
-prefix configure with it, i.e.: LIBS="-Wl,-export-dynamic" ./configure
-Thanks to Will Andrews <will@FreeBSD.org> and Arun Sharma
-<adsharma@sharmas.dhs.org> for identifying what needed to be done, and how
-to do it, and such.
+is set to "-Wl,-export-dynamic".  The easiest way to do this is to prefix
+configure with it, i.e.: LIBS="-Wl,-export-dynamic" ./configure.  Thanks to
+Will Andrews <will@FreeBSD.org> and Arun Sharma <adsharma@sharmas.dhs.org>
+for identifying what needed to be done, and how to do it, and such.
 
 If you get odd error such as:
 
