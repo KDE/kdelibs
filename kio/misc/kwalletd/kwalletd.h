@@ -34,6 +34,9 @@
 class KDirWatch;
 class KTimeout;
 
+// @Private
+class KWalletTransaction;
+
 class KWalletD : public KDEDModule {
 	Q_OBJECT
 	K_DCOP
@@ -140,7 +143,7 @@ class KWalletD : public KDEDModule {
 	private:
 		int internalOpen(const QCString& appid, const QString& wallet, bool isPath = false, WId w = 0);
 		// This also validates the handle.  May return NULL.
-		KWallet::Backend* getWallet(int handle);
+		KWallet::Backend* getWallet(const QCString& appid, int handle);
 		// Generate a new unique handle.
 		int generateHandle();
 		// Invalidate a handle (remove it from the QMap)
@@ -154,6 +157,10 @@ class KWalletD : public KDEDModule {
 		bool implicitAllow(const QString& wallet, const QCString& app);
 		QCString friendlyDCOPPeerName();
 
+		void processTransactions();
+		void doTransactionChangePassword(const QCString& appid, const QString& wallet, uint wId);
+		int doTransactionOpen(const QCString& appid, const QString& wallet, uint wId);
+
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
 		QMap<QString,QCString> _passwords;
@@ -164,6 +171,8 @@ class KWalletD : public KDEDModule {
 		int _idleTime;
 		QMap<QString,QStringList> _implicitAllowMap;
 		KTimeout *_timeouts;
+
+		QPtrList<KWalletTransaction> _transactions;
 };
 
 
