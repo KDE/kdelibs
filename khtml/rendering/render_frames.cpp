@@ -22,7 +22,7 @@
  *
  * $Id$
  */
-#define DEBUG_LAYOUT
+//#define DEBUG_LAYOUT
 
 #include "render_frames.h"
 #include "html_baseimpl.h"
