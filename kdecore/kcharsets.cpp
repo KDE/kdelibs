@@ -339,7 +339,7 @@ KCharsets::~KCharsets()
     delete d;
 }
 
-QChar KCharsets::fromEntity(const QString &str) const
+QChar KCharsets::fromEntity(const QString &str) 
 {
     QChar res = QChar::null;
 
@@ -375,7 +375,7 @@ QChar KCharsets::fromEntity(const QString &str) const
     return QChar(e->code);
 }
 
-QChar KCharsets::fromEntity(const QString &str, int &len) const
+QChar KCharsets::fromEntity(const QString &str, int &len) 
 {
     // entities are never longer than 8 chars... we start from
     // that length and work backwards...
@@ -391,7 +391,7 @@ QChar KCharsets::fromEntity(const QString &str, int &len) const
 }
 
 
-QString KCharsets::toEntity(const QChar &ch) const
+QString KCharsets::toEntity(const QChar &ch) 
 {
     QString ent;
     ent.sprintf("&#0x%x;", ch.unicode());

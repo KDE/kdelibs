@@ -73,7 +73,7 @@ public:
      * entity without the trailing ';'.
      *  @returns QChar::null if the entity could not be decoded.
      */
-    QChar fromEntity(const QString &str) const;
+    static QChar fromEntity(const QString &str);
     /**
      * Overloaded member function. Tries to find an entity in the
      * @ref QString str.
@@ -82,13 +82,13 @@ public:
      * @param len is a return value, that gives the length of the decoded
      * entity.
      */
-    QChar fromEntity(const QString &str, int &len) const;
+    static QChar fromEntity(const QString &str, int &len);
 
     /**
      * converts a QChar to an entity. The returned string does already
      * contain the leading '&' and the trailing ';'.
      */
-    QString toEntity(const QChar &ch) const;
+    static QString toEntity(const QChar &ch);
 
     /**
      * Lists all available encodings as names.
