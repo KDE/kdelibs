@@ -26,6 +26,7 @@
 #include <qvbox.h>
 
 #include <kaccelmanager.h>
+#include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
 #include <klocale.h>
@@ -155,14 +156,43 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mNameDict.insert( "phoneNumber", new QString( i18n( "Telephone Number" ) ) );
   mNameDict.insert( "uid", new QString( i18n( "UID" ) ) );
 
+  // overwrite the default values here
+  QMap<QString, QString> kolabMap, netscapeMap, evolutionMap, outlookMap;
+
+  // kolab
+  kolabMap.insert( "formattedName", "display-name" );
+  kolabMap.insert( "mailAlias", "mailalias" );
+
+  // evolution
+  evolutionMap.insert( "formattedName", "fileAs" );
+
+  mMapList.append( attributes );
+  mMapList.append( kolabMap );
+  mMapList.append( netscapeMap );
+  mMapList.append( evolutionMap );
+  mMapList.append( outlookMap );
+
+
   QFrame *page = plainPage();
-  QGridLayout *layout = new QGridLayout( page, 2, attributes.count(),
+  QGridLayout *layout = new QGridLayout( page, 2, attributes.count() + 1,
                                          marginHint(), spacingHint() );
+
+  QLabel *label = new QLabel( i18n( "Templates" ), page );
+  layout->addWidget( label, 0, 0 );
+  mMapCombo = new KComboBox( page );
+  layout->addWidget( mMapCombo, 0, 1 );
+
+  mMapCombo->insertItem( i18n( "User defined" ) );
+  mMapCombo->insertItem( i18n( "Kolab" ) );
+  mMapCombo->insertItem( i18n( "Netscape" ) );
+  mMapCombo->insertItem( i18n( "Evolution" ) );
+  mMapCombo->insertItem( i18n( "Outlook" ) );
+  connect( mMapCombo, SIGNAL( activated( int ) ), SLOT( mapChanged( int ) ) );
 
   QMap<QString, QString>::ConstIterator it;
   int i;
-  for ( i = 0, it = attributes.begin(); it != attributes.end(); ++it, ++i ) {
-    QLabel *label = new QLabel( *mNameDict[ it.key() ] + ":", page );
+  for ( i = 1, it = attributes.begin(); it != attributes.end(); ++it, ++i ) {
+    label = new QLabel( *mNameDict[ it.key() ] + ":", page );
     KLineEdit *lineedit = new KLineEdit( page );
     mLineEditDict.insert( it.key(), lineedit );
     lineedit->setText( it.data() );
@@ -187,6 +217,30 @@ QMap<QString, QString> AttributesDialog::attributes() const
     map.insert( it.currentKey(), it.current()->text() );
 
   return map;
+}
+
+void AttributesDialog::mapChanged( int pos )
+{
+  // default map
+  QMap<QString, QString> defaultMap;
+  defaultMap.insert( "commonName", "cn" );
+  defaultMap.insert( "formattedName", "displayName" );
+  defaultMap.insert( "familyName", "sn" );
+  defaultMap.insert( "givenName", "givenName" );
+  defaultMap.insert( "mail", "mail" );
+  defaultMap.insert( "mailAlias", "" );
+  defaultMap.insert( "phoneNumber", "telephoneNumber" );
+  defaultMap.insert( "uid", "uid" );
+
+  // apply first the default and than the spezific changes
+  QMap<QString, QString>::Iterator it;
+  for ( it = defaultMap.begin(); it != defaultMap.end(); ++it )
+    mLineEditDict[ it.key() ]->setText( it.data() );
+
+  for ( it = mMapList[ pos ].begin(); it != mMapList[ pos ].end(); ++it ) {
+    if ( !it.data().isEmpty() )
+      mLineEditDict[ it.key() ]->setText( it.data() );
+  }
 }
 
 #include "resourceldapconfig.moc"

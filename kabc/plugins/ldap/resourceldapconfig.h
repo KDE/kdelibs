@@ -31,6 +31,7 @@ class QPushButton;
 class QSpinBox;
 class QString;
 
+class KComboBox;
 class KLineEdit;
 
 namespace KABC {
@@ -63,6 +64,8 @@ class ResourceLDAPConfig : public KRES::ResourceConfigWidget
 
 class AttributesDialog : public KDialogBase
 {
+  Q_OBJECT
+
   public:
     AttributesDialog( const QMap<QString, QString> &attributes, QWidget *parent,
                       const char *name = 0 );
@@ -70,7 +73,15 @@ class AttributesDialog : public KDialogBase
 
     QMap<QString, QString> attributes() const;
 
+  private slots:
+    void mapChanged( int pos );
+
   private:
+    enum { UserMap, KolabMap, NetscapeMap, EvolutionMap, OutlookMap };
+
+    KComboBox *mMapCombo;
+    QValueList< QMap<QString, QString> > mMapList;
+
     QDict<KLineEdit> mLineEditDict;
     QDict<QString> mNameDict;
 };

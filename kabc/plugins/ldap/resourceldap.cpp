@@ -66,15 +66,16 @@ ResourceLDAP::ResourceLDAP( const KConfig *config )
     If you want to add new attributes, append them here, add a
     translation string in the ctor of AttributesDialog and
     handel them in the load() method below.
+    These are the default values from
    */
   if ( mAttributes.count() == 0 ) {
     mAttributes.insert( "commonName", "cn" );
-    mAttributes.insert( "formattedName", "display-name" );
+    mAttributes.insert( "formattedName", "displayName" );
     mAttributes.insert( "familyName", "sn" );
-    mAttributes.insert( "givenName", "givenname" );
+    mAttributes.insert( "givenName", "givenName" );
     mAttributes.insert( "mail", "mail" );
-    mAttributes.insert( "mailAlias", "mailalias" );
-    mAttributes.insert( "phoneNumber", "phoneNumber" );
+    mAttributes.insert( "mailAlias", "" );
+    mAttributes.insert( "phoneNumber", "telephoneNumber" );
     mAttributes.insert( "uid", "uid" );
   }
 }
@@ -175,16 +176,19 @@ bool ResourceLDAP::load()
 
   QMap<QString, QString>::Iterator it;
   int i = 0;
-  for ( it = mAttributes.begin(); it != mAttributes.end(); ++it, ++i ) {
-    LdapSearchAttr[ i ] = new char[ it.data().utf8().length() + 1 ];
-    memset( LdapSearchAttr[ i ], 0, it.data().utf8().length() + 1 );
-    memcpy( LdapSearchAttr[ i ], it.data().utf8(), it.data().utf8().length() );
+  for ( it = mAttributes.begin(); it != mAttributes.end(); ++it ) {
+    if ( !it.data().isEmpty() ) {
+      LdapSearchAttr[ i ] = new char[ it.data().utf8().length() + 1 ];
+      memset( LdapSearchAttr[ i ], 0, it.data().utf8().length() + 1 );
+      memcpy( LdapSearchAttr[ i ], it.data().utf8(), it.data().utf8().length() );
+      ++i;
+    }
   }
   LdapSearchAttr[ i ] = 0;
 
   QString filter = mFilter;
   if ( filter.isEmpty() )
-    filter = "objectclass=person";
+    filter = "objectclass=*person";
 
   int result;
   if ( ( result = ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( filter ).local8Bit(),
