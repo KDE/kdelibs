@@ -81,7 +81,7 @@ RGBImage::~RGBImage()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void RGBImage::getRow(uchar *dest)
+bool RGBImage::getRow(uchar *dest)
 {
 	int n, i;
 	if (!m_rle) {
@@ -90,30 +90,31 @@ void RGBImage::getRow(uchar *dest)
 			if (m_bpc == 2)
 				*m_pos++;
 		}
-		return;
+		return true;			// FIXME
 	}
 
-	for (i = 0; i < m_xsize; i++) {
+	for (i = 0; i < m_xsize;) {
 		if (m_bpc == 2)
 			m_pos++;
 		n = *m_pos & 0x7f;
 		if (!n)
-			return;
+			break;
 
 		if (*m_pos++ & 0x80) {
-			while (n--) {
+			for (; i < m_xsize && n--; i++) {
 				*dest++ = *m_pos++;
 				if (m_bpc == 2)
 					m_pos++;
 			}
 		} else {
-			while (n--)
+			for (; i <= m_xsize && n--; i++)
 				*dest++ = *m_pos;
 			m_pos++;
 			if (m_bpc == 2)
 				m_pos++;
 		}
 	}
+	return i == m_xsize;
 }
 
 
@@ -131,7 +132,8 @@ bool RGBImage::readData(QImage& img)
 		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
 		if (m_rle)
 			m_pos = m_data.begin() + *start++;
-		getRow(line);
+		if (!getRow(line))
+			return false;
 		for (x = 0; x < m_xsize; x++) {
 			*c++ = qRgb(line[x], line[x], line[x]);
 		}
@@ -145,7 +147,8 @@ bool RGBImage::readData(QImage& img)
 			c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
 			if (m_rle)
 				m_pos = m_data.begin() + *start++;
-			getRow(line);
+			if (!getRow(line))
+				return false;
 			for (x = 0; x < m_xsize; x++) {
 				old = *c;
 				*c++ = qRgb(qRed(old), line[x], line[x]);
@@ -156,7 +159,8 @@ bool RGBImage::readData(QImage& img)
 			c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
 			if (m_rle)
 				m_pos = m_data.begin() + *start++;
-			getRow(line);
+			if (!getRow(line))
+				return false;
 			for (x = 0; x < m_xsize; x++) {
 				old = *c;
 				*c++ = qRgb(qRed(old), qGreen(old), line[x]);
@@ -171,7 +175,8 @@ bool RGBImage::readData(QImage& img)
 		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
 		if (m_rle)
 			m_pos = m_data.begin() + *start++;
-		getRow(line);
+		if (!getRow(line))
+			return false;
 		for (x = 0; x < m_xsize; x++) {
 			old = *c;
 			*c++ = qRgba(qRed(old), qGreen(old), qBlue(old), line[x]);

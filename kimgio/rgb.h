@@ -62,7 +62,7 @@ public:
 
 protected:
 	bool readData(QImage&);
-	void getRow(uchar *dest);
+	bool getRow(uchar *dest);
 
 	bool writeData(QImage&);
 	uint compact(uchar *, uchar *);
