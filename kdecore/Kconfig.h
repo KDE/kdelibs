@@ -1,6 +1,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.3  1997/04/19 21:39:51  kalle
+// Mentioned in the documentation that KConfig expands environment variables
+// (Thanks, Bernd!)
+//
 // Revision 1.2  1997/04/15 20:01:54  kalle
 // Kalles changes for 0.8
 //
@@ -180,6 +184,12 @@ public:
    */
   QString writeEntry( const QString& rKey, const QString& rValue,
 					  bool bPersistent = true );
+
+  /// for const char*
+  /** Same as above, but for const char* */
+  QString writeEntry( const QString& rKey, const char* pValue,
+					  bool bPersistent = true )
+	{ return writeEntry( rKey, QString( pValue ), bPersistent ); }
 
   /// Write the key value pair
   /** Same as above, but write a numerical value. */
