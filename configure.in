@@ -126,4 +126,6 @@ AC_OUTPUT(Makefile \
 	kfmlib/Makefile \
 	mediatool/Makefile \
 	po/Makefile \
+	toolbar/Makefile \
 	doc/Makefile)
+

@@ -1,0 +1,32 @@
+/* XPM */
+/* Drawn  by Mark Donohoe for the K Desktop Environment */
+/* See http://www.kde.org */
+static char*rectangle_select[]={
+"22 22 4 1",
+"# c #000000",
+"a c #ffffff",
+"b c #dcdcdc",
+". c None",
+"......................",
+"......................",
+"......................",
+"......................",
+"......................",
+"....##aa##aa##aa#.....",
+"....abbbbbbbbbbb#.....",
+"....abbbbbbbbbbba.....",
+"....#bbbbbbbbbbba.....",
+"....#bbbbbbbbbbb#.....",
+"....abbbbbbbbbbb#.....",
+"....abbbbbbbbbbba.....",
+"....#bbbbbbbbbbba.....",
+"....#bbbbbbbbbbb#.....",
+"....abbbbbbbbbbb#.....",
+"....a##aa##aa##aa.....",
+"......................",
+"......................",
+"......................",
+"......................",
+"......................",
+"......................"};
+

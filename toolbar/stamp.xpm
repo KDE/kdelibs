@@ -1,0 +1,33 @@
+/* XPM */
+/* Drawn  by Mark Donohoe for the K Desktop Environment */
+/* See http://www.kde.org */
+static char*stamp[]={
+"22 22 5 1",
+"a c #000000",
+"b c #ffffff",
+"# c #a0a0a4",
+"c c #dcdcdc",
+". c None",
+"......................",
+"......................",
+"......................",
+"........#aaa#.........",
+".......#abbca#........",
+".......ab###ca........",
+".......abcccca........",
+".......accccca........",
+".......#accca#........",
+"........#aaa#.........",
+".........aba..........",
+".....aaaaabaaaaa......",
+"....abbbbaaabbbba.....",
+"...abbbbbbbbbbbbba....",
+"...aaaaaaaaaaaaaaa#...",
+"...accccaaaaacccca#...",
+"...acccccaaaccccca#...",
+"...accccccacccccca#...",
+"....aaaaaaaaaaaaa##...",
+".....#############....",
+"......................",
+"......................"};
+

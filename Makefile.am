@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = kdecore kdeui jscript khtmlw kfmlib kfile mediatool po doc
+SUBDIRS = kdecore kdeui jscript khtmlw kfmlib kfile mediatool po doc toolbar
 
 DISTCLEANFILES = kdedoc/Makefile kdetest/Makefile
 
