@@ -819,12 +819,8 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
   QWidget *page = new QWidget( this ); 
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
-
-  QString text = i18n("Goto Line:");
-  QLabel *label = new QLabel( text, page, "gotoline" );
-  topLayout->addWidget( label );
   
-  lineNum = new KIntNumInput( QString::null, 1, INT_MAX, 1, 1, 
+  lineNum = new KIntNumInput( i18n("Goto Line:"), 1, INT_MAX, 1, 1, 
 			      QString::null, 10, false, page );
   lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget( lineNum );
