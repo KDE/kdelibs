@@ -983,7 +983,7 @@ int main(int argc, char **argv, char **envp)
    {
       if (strcmp(safe_argv[i], "+kdesktop") == 0)
       {
-         pid = launch( 1, "kdesktop", 0 );
+         pid = launch( 2, "kdesktop", "--waitforkded" );
          printf("KDesktop: pid = %d result = %d\n", pid, d.result);
          WaitPid(pid);
          safe_argv[i][0] = '-'; // Make it an option so that it won't be launched a second time!
