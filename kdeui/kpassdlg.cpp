@@ -252,7 +252,7 @@ void KPasswordDialog::init()
 
     m_pMain = new QWidget(this);
     setMainWidget(m_pMain);
-    m_pGrid = new QGridLayout(m_pMain, 10, 3, 10, 0);
+    m_pGrid = new QGridLayout(m_pMain, 10, 3, 0, 0);
     m_pGrid->addColSpacing(1, 10);
 
     // Row 1: pixmap + prompt
