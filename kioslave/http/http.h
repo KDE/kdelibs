@@ -2,7 +2,7 @@
    Copyright (C) 2000,2001 Dawit Alemayehu <adawit@kde.org>
    Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
-   Copyright (C) 2001,2002 Hamish Rodda <meddie@yoyo.cc.monash.edu.au>
+   Copyright (C) 2001,2002 Hamish Rodda <rodda@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
