@@ -210,9 +210,25 @@ bool Observer::authorize( QString& user, QString& pass ,const QString& head, con
 
 int Observer::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
 {
-    int result = m_uiserver->messageBox( type, text, caption, buttonYes, buttonNo );
-    kdDebug(7007) << "Observer::messageBox got result " << result << endl;
-    return result;
+    QByteArray data, replyData;
+    QCString replyType;
+    QDataStream arg( data, IO_WriteOnly );
+    arg << type;
+    arg << text;
+    arg << caption;
+    arg << buttonYes;
+    arg << buttonNo;
+    if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "messageBox(int,QString,QString,QString,QString)", data, replyType, replyData, true )
+        && replyType == "int" )
+    {
+        int result;
+        QDataStream _reply_stream( replyData, IO_ReadOnly );
+        _reply_stream >> result;
+        kdDebug(7007) << "Observer::messageBox got result " << result << endl;
+        return result;
+    }
+    kdDebug(7007) << "Observer::messageBox call failed" << endl;
+    return 0;
 }
 
 RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
