@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-                  2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                  2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
                   2001 Frerich Raabe <raabe@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -72,13 +72,26 @@ struct KFileDialogPrivate;
  *
  * @short A file selection dialog.
  *
- * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>, Frerich Raabe <raabe@kde.org>
+ * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KFileDialog : public KDialogBase
 {
     Q_OBJECT
 
 public:
+    /**
+     * Defines some default behavior of the filedialog.
+     * E.g. in mode @p Opening and @p Saving, the selected files/urls will
+     * be added to the "recent documents" list. The Saving mode also implies
+     * @ref setKeepLocation() being set.
+     *
+     * @p Other means that no default actions are performed.
+     *
+     * @see #setOperationMode
+     * @see #operationMode
+     */
+    enum OperationMode { Other = 0, Opening, Saving };
+
     /**
       * Construct a file dialog.
       *
@@ -153,9 +166,36 @@ public:
     void setSelection(const QString& name);
 
     /**
+     * Sets the operational mode of the filedialog to @p Saving, @p Opening
+     * or @p Other. This will set some flags that are specific to loading
+     * or saving files. E.g. @ref setKeepLocation() makes mostly sense for
+     * a save-as dialog. So setOperationMode( KFileDialog::Saving ); sets
+     * setKeepLocation for example.
+     *
+     * The default mode is @p Other.
+     *
+     * Call this method right after instantiating KFileDialog.
+     *
+     * @see #operationMode
+     * @see KFileDialog::OperationMode
+     */
+    void setOperationMode( KFileDialog::OperationMode );
+
+    /**
+     * @returns the current operation mode, Opening, Saving or Other. Default
+     * is Other.
+     *
+     * @see #operationMode
+     * @see KFileDialog::OperationMode
+     */    
+    OperationMode operationMode() const;
+
+    /**
      * Sets whether the filename/url should be kept when changing directories.
      * This is for example useful when having a predefined filename where
      * the full path for that file is searched.
+     *
+     * This is implicitly set when @ref operationMode() is KFileDialog::Saving
      *
      * getSaveFileName() and getSaveURL() set this to true by default, so that
      * you can type in the filename and change the directory without having
@@ -701,6 +741,7 @@ protected slots:
     void addToBookmarks();
     void bookmarksChanged();
     void fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id );
+    void addToRecentDocuments();
 
 private slots:
     void buildBookmarkPopup();

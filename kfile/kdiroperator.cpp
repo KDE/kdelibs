@@ -700,6 +700,7 @@ void KDirOperator::clearFilter()
 void KDirOperator::setNameFilter(const QString& filter)
 {
     dir->setNameFilter(filter);
+    checkPreviewSupport();
 }
 
 void KDirOperator::setMimeFilter( const QStringList& mimetypes )
@@ -724,17 +725,16 @@ bool KDirOperator::checkPreviewSupport()
 
 bool KDirOperator::checkPreviewInternal() const
 {
-    bool enable = false;
     QStringList supported = KIO::PreviewJob::supportedMimeTypes();
     // no preview support for directories?
     if ( dirOnlyMode() && supported.findIndex( "inode/directory" ) == -1 )
         return false;
-        
+
     QStringList mimeTypes = dir->mimeFilters();
     QStringList nameFilter = QStringList::split( " ", dir->nameFilter() );
 
     if ( mimeTypes.isEmpty() && nameFilter.isEmpty() && !supported.isEmpty() )
-        enable = true;
+        return true;
     else {
         QRegExp r;
         r.setWildcard( true ); // the "mimetype" can be "image/*"
@@ -758,8 +758,7 @@ bool KDirOperator::checkPreviewInternal() const
             QStringList::Iterator it1 = nameFilter.begin();
             for ( ; it1 != nameFilter.end(); ++it1 ) {
                 if ( (*it1) == "*" ) {
-                    enable = true;
-                    break;
+                    return true;
                 }
 
                 KMimeType *mt = fac->findFromPattern( *it1 );
@@ -781,7 +780,7 @@ bool KDirOperator::checkPreviewInternal() const
         }
     }
 
-    return enable;
+    return false;
 }
 
 bool KDirOperator::isRoot() const
@@ -803,8 +802,8 @@ void KDirOperator::setView( KFile::FileView view )
 
         separateDirs = KFile::isSeparateDirs( (KFile::FileView) defaultView );
         preview = ( (defaultView & KFile::PreviewInfo) == KFile::PreviewInfo ||
-                    (defaultView & KFile::PreviewContents) == 
-                    KFile::PreviewContents ) 
+                    (defaultView & KFile::PreviewContents) ==
+                    KFile::PreviewContents )
                   && myActionCollection->action("preview")->isEnabled();
 
         if ( preview ) { // instantiates KImageFilePreview and calls setView()
@@ -997,7 +996,9 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 	    pendingMimeTypes.append(static_cast<KFileViewItem*>(item));
 	++it;
     }
-    QTimer::singleShot(0, this, SLOT(readNextMimeType()));
+
+    if ( !pendingMimeTypes.isEmpty() )
+        QTimer::singleShot(0, this, SLOT(readNextMimeType()));
     QTimer::singleShot(200, this, SLOT(resetCursor()));
 }
 

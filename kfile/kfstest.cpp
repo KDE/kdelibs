@@ -28,7 +28,6 @@
 #include <qstringlist.h>
 #include <qwidget.h>
 
-#include <kdirselectdialog.h>
 #include <kfiledialog.h>
 #include <kfileiconview.h>
 #include <kmessagebox.h>
@@ -83,6 +82,10 @@ int main(int argc, char **argv)
     else if (argv1 == QString::fromLatin1("heap")) {
 	KFileDialog *dlg = new KFileDialog( QString::null, QString::null, 0L,
 					    "file dialog", true );
+    dlg->setOperationMode( KFileDialog::Saving );
+    QStringList filter;
+    filter << "text/plain" << "text/html";
+    dlg->setMimeFilter( filter, "text/plain" );
 
 	if ( dlg->exec() == KDialog::Accepted )
 	    name1 = dlg->selectedURL().url();
@@ -114,13 +117,13 @@ int main(int argc, char **argv)
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
+        dlg.setFilter( "*.kdevelop" );
 	dlg.setMode( (KFile::Mode) (KFile::Files |
                                     KFile::Directory |
                                     KFile::ExistingOnly |
                                     KFile::LocalOnly) );
-        QStringList filter;
-        filter << "text/plain" << "text/html" << "image/png";
-        dlg.setFilter( "*.kdevelop" );
+//         QStringList filter;
+//         filter << "text/plain" << "text/html" << "image/png";
 //        dlg.setMimeFilter( filter );
 //    KMimeType::List types;
 //    types.append( KMimeType::mimeType( "text/plain" ) );

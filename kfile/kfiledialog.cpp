@@ -48,6 +48,7 @@
 #include <kapp.h>
 #include <kaction.h>
 #include <kcmdlineargs.h>
+#include <kcompletionbox.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
@@ -146,7 +147,10 @@ struct KFileDialogPrivate
     // the KDirOperators view is set in KFileDialog::show(), so to avoid
     // setting it again and again, we have this nice little boolean :)
     bool hasView;
-    
+
+    KFileDialog::OperationMode operationMode;
+    bool hasDefaultFilter; // necessary for the operationMode
+
     // The file class used for KRecentDirs
     QString fileClass;
 };
@@ -162,6 +166,8 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d = new KFileDialogPrivate();
     d->boxLayout = 0;
     d->keepLocation = false;
+    d->operationMode = Other;
+    d->hasDefaultFilter = false;
     d->hasView = false;
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
     setMainWidget( d->mainWidget );
@@ -322,11 +328,16 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     locationEdit = new KURLComboBox(KURLComboBox::Files, true,
 				    d->mainWidget, "LocationEdit");
+    // to get the completionbox-signals connected:
+    locationEdit->setHandleSignals( true );
+    (void) locationEdit->completionBox();
+
     locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
     locationEdit->setCompletionObject( ops->completionObject(), false );
 
-    connect( locationEdit, SIGNAL( returnPressed() ), SLOT( slotOk()));
+    connect( locationEdit, SIGNAL( returnPressed() ),
+             this, SLOT( slotOk()));
     connect(locationEdit, SIGNAL( activated( const QString&  )),
             this,  SLOT( locationActivated( const QString& ) ));
     connect( locationEdit, SIGNAL( completion( const QString& )),
@@ -377,7 +388,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->completionLock = false;
     delete kc;
 
-    setSelection(d->url.url());
+    setSelection(d->url.url()); // ### move that into show() as well?
 }
 
 KFileDialog::~KFileDialog()
@@ -406,6 +417,8 @@ void KFileDialog::setFilter(const QString& filter)
     ops->clearFilter();
     filterWidget->setFilter(filter);
     ops->setNameFilter(filterWidget->currentFilter());
+    d->hasDefaultFilter = false;
+    filterWidget->setEditable( true );
 }
 
 QString KFileDialog::currentFilter() const
@@ -415,7 +428,8 @@ QString KFileDialog::currentFilter() const
 
 // deprecated
 void KFileDialog::setFilterMimeType(const QString &label,
-        const KMimeType::List &types, const KMimeType::Ptr &defaultType)
+                                    const KMimeType::List &types,
+                                    const KMimeType::Ptr &defaultType)
 {
     d->mimetypes.clear();
     d->filterLabel->setText(label);
@@ -437,6 +451,9 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
     types.append( QString::fromLatin1( "inode/directory" ));
     ops->clearFilter();
     ops->setMimeFilter( types );
+    d->hasDefaultFilter = !defaultType.isEmpty();
+    filterWidget->setEditable( !d->hasDefaultFilter ||
+                               d->operationMode != Saving );
 }
 
 void KFileDialog::clearFilter()
@@ -444,6 +461,8 @@ void KFileDialog::clearFilter()
     d->mimetypes.clear();
     filterWidget->setFilter( QString::null );
     ops->clearFilter();
+    d->hasDefaultFilter = false;
+    filterWidget->setEditable( true );
 }
 
 QString KFileDialog::currentMimeFilter() const
@@ -719,6 +738,7 @@ void KFileDialog::accept()
     *lastDirectory = ops->url();
     if (!d->fileClass.isEmpty())
        KRecentDirs::add(d->fileClass, ops->url().url());
+
     KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
                                          false);
     saveConfig( c, ConfigGroup );
@@ -726,6 +746,8 @@ void KFileDialog::accept()
     delete c;
 
     KDialogBase::accept();
+
+    addToRecentDocuments();
 
     if ( (mode() & KFile::Files) != KFile::Files ) // single selection
 	emit fileSelected(d->url.url());
@@ -1211,55 +1233,50 @@ void KFileDialog::updateStatusLine(int dirs, int files)
     d->myStatusLine->setText(lStatusText);
 }
 
-QString KFileDialog::getOpenFileName(const QString& startDir, const QString& filter,
+QString KFileDialog::getOpenFileName(const QString& startDir, 
+                                     const QString& filter,
                                      QWidget *parent, const QString& caption)
 {
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
+    dlg.setOperationMode( Opening );
 
+    dlg.setMode( KFile::File | KFile::LocalOnly );
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
 
     dlg.ops->clearHistory();
     dlg.exec();
-
-    QString filename = dlg.selectedFile();
-    if (!filename.isEmpty())
-        KRecentDocument::add(filename);
-
-    return filename;
+    
+    return dlg.selectedFile();
 }
 
-QStringList KFileDialog::getOpenFileNames(const QString& startDir,const QString& filter,
-                                     QWidget *parent, const QString& caption)
+QStringList KFileDialog::getOpenFileNames(const QString& startDir,
+                                          const QString& filter,
+                                          QWidget *parent, 
+                                          const QString& caption)
 {
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
+    dlg.setOperationMode( Opening );
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
-    dlg.setMode(KFile::Files);
+    dlg.setMode(KFile::Files | KFile::LocalOnly);
     dlg.ops->clearHistory();
     dlg.exec();
-
-    QStringList list = dlg.selectedFiles();
-    QStringList::Iterator it = list.begin();
-    for( ; it != list.end(); ++it )
-        KRecentDocument::add( *it );
-
-    return list;
+        
+    return dlg.selectedFiles();
 }
 
 KURL KFileDialog::getOpenURL(const QString& startDir, const QString& filter,
                                 QWidget *parent, const QString& caption)
 {
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
+    dlg.setOperationMode( Opening );
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
+    dlg.setMode( KFile::File );
     dlg.ops->clearHistory();
     dlg.exec();
 
-    const KURL& url = dlg.selectedURL();
-    if (!url.isMalformed())
-        KRecentDocument::add( url );
-
-    return url;
+    return dlg.selectedURL();
 }
 
 KURL::List KFileDialog::getOpenURLs(const QString& startDir,
@@ -1268,22 +1285,14 @@ KURL::List KFileDialog::getOpenURLs(const QString& startDir,
                                           const QString& caption)
 {
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
+    dlg.setOperationMode( Opening );
 
     dlg.setCaption(caption.isNull() ? i18n("Open") : caption);
     dlg.setMode(KFile::Files);
     dlg.ops->clearHistory();
     dlg.exec();
 
-    KURL::List list = dlg.selectedURLs();
-    KURL::List::ConstIterator it = list.begin();
-    KURL u;
-    for( ; it != list.end(); ++it ) {
-        u = *it;
-        if ( !u.isMalformed() )
-            KRecentDocument::add( u );
-    }
-
-    return list;
+    return dlg.selectedURLs();
 }
 
 QString KFileDialog::getExistingDirectory(const QString& startDir,
@@ -1291,21 +1300,23 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           const QString& caption)
 {
     KFileDialog dlg(startDir, QString::null, parent, "filedialog", true);
-    dlg.setMode(KFile::Directory);
+    dlg.setMode(KFile::Directory | KFile::LocalOnly); // local for now
     dlg.ops->clearHistory();
     dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
     dlg.exec();
 
-    return dlg.selectedURL().path();
+    return dlg.selectedFile();
 }
 
 KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
-		      const QString& caption)
+                                   const QString& caption)
 {
     KFileDialog dlg(startDir,
 		    KImageIO::pattern( KImageIO::Reading ),
 		    parent, "filedialog", true);
+    dlg.setOperationMode( Opening );
     dlg.setCaption( caption.isNull() ? i18n("Open") : caption );
+    dlg.setMode( KFile::File );
 
     KImageFilePreview *ip = new KImageFilePreview( &dlg );
     dlg.setPreviewWidget( ip );
@@ -1414,11 +1425,7 @@ QString KFileDialog::selectedFile() const
     if ( result() == QDialog::Accepted )
     {
        if (d->url.isLocalFile())
-       {
-           kdDebug(kfile_area) << "KFileDialog::selectedFile d->url=" << d->url.url() << endl;
-           kdDebug(kfile_area) << "                          d->url.path()=" << d->url.path() << endl;
            return d->url.path();
-       }
     }
     return QString::null;
 }
@@ -1457,8 +1464,8 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
                                      const QString& caption)
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    dlg.setOperationMode( Saving );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
-    dlg.setKeepLocation( true );
 
     dlg.exec();
 
@@ -1474,7 +1481,7 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
 {
     KFileDialog dlg(dir, filter, parent, "filedialog", true);
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
-    dlg.setKeepLocation( true );
+    dlg.setOperationMode( Saving );
 
     dlg.exec();
 
@@ -1632,6 +1639,41 @@ void KFileDialog::setKeepLocation( bool keep )
 bool KFileDialog::keepsLocation() const
 {
     return d->keepLocation;
+}
+
+void KFileDialog::setOperationMode( OperationMode mode )
+{
+    d->operationMode = mode;
+    d->keepLocation = true;
+    filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
+
+}
+
+KFileDialog::OperationMode KFileDialog::operationMode() const
+{
+    return d->operationMode;
+}
+
+// adds the selected files/urls to 'recent documents'
+void KFileDialog::addToRecentDocuments()
+{
+    int m = ops->mode();
+    
+    if ( m & KFile::LocalOnly ) {
+        QStringList files = selectedFiles();
+        QStringList::ConstIterator it = files.begin();
+        for ( ; it != files.end(); ++it )
+            KRecentDocument::add( *it );
+    }
+        
+    else { // urls
+        KURL::List urls = selectedURLs();
+        KURL::List::ConstIterator it = urls.begin();
+        for ( ; it != urls.begin(); ++it ) {
+            if ( (*it).isValid() )
+                KRecentDocument::add( *it );
+        }
+    }
 }
 
 #include "kfiledialog.moc"
