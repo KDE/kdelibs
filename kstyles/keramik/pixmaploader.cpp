@@ -37,17 +37,20 @@ PixmapLoader* PixmapLoader::s_instance = 0;
 
 const QPixmap& PixmapLoader::pixmap( const QString& name )
 {
-	if ( m_cache[name].isNull() );
-		m_cache[name].convertFromImage( qembed_findImage( name ) );
-	return m_cache[name];
+	QPixmap* result = m_cache[ name ];
+	if ( !result ) {
+		result = new QPixmap( qembed_findImage( name ) );
+		m_cache.insert( name, result );
+	}
+	return *result;
 }
 
 
 QPixmap PixmapLoader::scale( const QString& name, int width, int height )
 {
-	const QPixmap& pix = operator[] ( name );
-	return pix.xForm( QWMatrix( width ? static_cast<double>( width ) / pix.width() : 1.0, 0.0, 0.0,
-	                            height ? static_cast<double>( height ) / pix.height() : 1.0, 0.0, 0.0 ) );
+	const QPixmap& pix = pixmap( name );
+	return pix.xForm( QWMatrix( width ? double (width ) / pix.width() : 1.0, 0.0, 0.0,
+	                            height ? double ( height ) / pix.height() : 1.0, 0.0, 0.0 ) );
 }
 
 void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
@@ -62,11 +65,11 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
 		if ( rowMode( row ) == Fixed ) scaleHeight -= tile( 0, row ).height();
 		else scaledRows++;
 
-	int ypos = x;
+	int ypos = y;
 	if ( scaleHeight && !scaledRows ) ypos += scaleHeight / 2;
 	for ( unsigned int row = 0; row < rows(); ++row )
 	{
-		int xpos = y;
+		int xpos = x;
 		if ( scaleWidth && !scaledColumns ) xpos += scaleWidth / 2;
 		int h = rowMode( row ) == Fixed ? 0 : scaleHeight / scaledRows;
 
@@ -74,8 +77,7 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
 		{
 			int w = columnMode( col ) == Fixed ? 0 : scaleWidth / scaledColumns;
 
-			if ( w || h )
-				p->drawPixmap( xpos, ypos, scale( col, row, w, h ) );
+			if ( w || h ) p->drawPixmap( xpos, ypos, scale( col, row, w, h ) );
 			else p->drawPixmap( xpos, ypos, tile( col, row ) );
 			xpos += w ? w : tile( col, row ).width();
 		}

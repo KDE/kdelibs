@@ -22,7 +22,7 @@
 #ifndef __pixmaploader_h__
 #define __pixmaploader_h__
 
-#include <qmap.h>
+#include <qdict.h>
 
 class QPixmap;
 
@@ -31,17 +31,16 @@ namespace Keramik
 	class PixmapLoader
 	{
 	public:
-		PixmapLoader() { s_instance = this; }
+		PixmapLoader():m_cache( 193 ) { s_instance = this; }
 		~PixmapLoader() { s_instance = 0; }
 
 		const QPixmap& pixmap( const QString& name );
-		const QPixmap& operator[] ( const QString& name ) { return pixmap( name ); }
 		QPixmap scale( const QString& name, int width, int height );
 
 		static PixmapLoader& the() { return *s_instance; }
 
 	private:
-		QMap< QString, QPixmap > m_cache;
+		QDict< QPixmap > m_cache;
 
 		static PixmapLoader* s_instance;
 	};
@@ -66,7 +65,7 @@ namespace Keramik
 	private:
 		QString absTileName( unsigned int column, unsigned int row ) const;
 		const QPixmap& tile( unsigned int column, unsigned int row )
-			{ return PixmapLoader::the()[absTileName( column, row )]; }
+			{ return PixmapLoader::the().pixmap( absTileName( column, row ) ); }
 		QPixmap scale( unsigned int column, unsigned int row, int width, int height )
 			{ return PixmapLoader::the().scale( absTileName( column, row ), width, height ); }
 
