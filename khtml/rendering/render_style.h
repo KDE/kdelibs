@@ -436,7 +436,7 @@ enum EEmptyCell {
 
 enum ECaptionSide
 {
-    CAPTOP, CAPBOTTOM, CAPLEFT, CAPRIGHT
+    CAPTOP, CAPBOTTOM
 };
 
 
@@ -513,7 +513,7 @@ protected:
 	}
 
 	EEmptyCell _empty_cells : 1 ;
-	ECaptionSide _caption_side : 2;
+	ECaptionSide _caption_side : 1;
 	EListStyleType _list_style_type : 5 ;
 	EListStylePosition _list_style_position :1;
 	EVisibility _visibility : 2;
@@ -528,7 +528,7 @@ protected:
               // non CSS2 inherited
               bool _visuallyOrdered : 1;
               bool _htmlHacks :1;
-              int _unused : 1;
+              int _unused : 2;
     } inherited_flags;
 
 // don't inherit

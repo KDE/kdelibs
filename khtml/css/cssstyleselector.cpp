@@ -1243,10 +1243,6 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         ECaptionSide c = CAPTOP;
         switch(primitiveValue->getIdent())
         {
-        case CSS_VAL_LEFT:
-            c = CAPLEFT; break;
-        case CSS_VAL_RIGHT:
-            c = CAPRIGHT; break;
         case CSS_VAL_TOP:
             c = CAPTOP; break;
         case CSS_VAL_BOTTOM:
