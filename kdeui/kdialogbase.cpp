@@ -557,14 +557,12 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   }
   if( d->mButton.mask & User3 )
   {
-    KPushButton *pb = d->mButton.append( User3, user3.text() );
-    pb->setIconSet( user3.iconSet() );
+    KPushButton *pb = d->mButton.append( User3, user3 );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotUser3()) );
   }
   if( d->mButton.mask & User2 )
   {
-    KPushButton *pb = d->mButton.append( User2, user2.text() );
-    pb->setIconSet( user2.iconSet() );
+    KPushButton *pb = d->mButton.append( User2, user2 );
     if( mMessageBoxMode == true )
     {
       connect( pb, SIGNAL(clicked()), this, SLOT(slotYes()) );
@@ -576,8 +574,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   }
   if( d->mButton.mask & User1 )
   {
-    KPushButton *pb = d->mButton.append( User1, user1.text() );
-    pb->setIconSet(user1.iconSet() );
+    KPushButton *pb = d->mButton.append( User1, user1 );
     if( mMessageBoxMode == true )
     {
       connect( pb, SIGNAL(clicked()), this, SLOT(slotNo()) );
