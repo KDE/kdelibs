@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -21,11 +21,13 @@
 
 #include "kmjobmanager.h"
 #include "kmjob.h"
+#include "kmthreadjob.h"
 
 KMJobManager::KMJobManager(QObject *parent, const char *name)
 : QObject(parent,name)
 {
 	m_jobs.setAutoDelete(true);
+	m_threadjob = new KMThreadJob(this, "ThreadJob");
 }
 
 KMJobManager::~KMJobManager()
@@ -58,6 +60,27 @@ KMJob* KMJobManager::findJob(int ID)
 	return 0;
 }
 
+void KMJobManager::addJob(KMJob *job)
+{
+	// only keep it if "printer" is not empty, and in printer filter
+	if (job->id() > 0 && !job->printer().isEmpty() && m_printers.contains(job->printer()) > 0)
+	{
+		KMJob	*aJob = findJob(job->id());
+		if (aJob)
+		{
+			aJob->copy(*job);
+			delete job;
+		}
+		else
+		{
+			job->setDiscarded(false);
+			m_jobs.append(job);
+		}
+	}
+	else
+		delete job;
+}
+
 bool KMJobManager::sendCommand(int ID, int action, const QString& arg)
 {
 	KMJob	*job = findJob(ID);
@@ -78,7 +101,8 @@ bool KMJobManager::sendCommand(const QList<KMJob>&, int, const QString&)
 
 bool KMJobManager::listJobs()
 {
-	return false;
+	m_threadjob->updateManager(this);
+	return true;
 }
 
 const QList<KMJob>& KMJobManager::jobList()

@@ -60,26 +60,25 @@ bool KLpdUnixPrinterImpl::printFiles(KPrinter *printer, const QStringList& files
 	QString		exe = executable();
 	if (!exe.isEmpty())
 	{
-		KPrintProcess	proc;
-		proc.setExecutable(exe);
+		KPrintProcess	*proc = new KPrintProcess;
+		proc->setExecutable(exe);
 		if (exe.right(3) == "lpr")
-			initLprPrint(&proc,printer);
+			initLprPrint(proc,printer);
 		else
-			initLpPrint(&proc,printer);
+			initLpPrint(proc,printer);
 		bool 	canPrint(false);
 		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 			if (QFile::exists(*it))
 			{
-				proc << *it;
+				*proc << *it;
 				canPrint = true;
 			}
 			else
 				qDebug("File not found: %s",(*it).latin1());
 		if (canPrint)
-			if (!proc.print())
+			if (!startPrintProcess(proc,printer))
 			{
-				QString	msg = proc.errorMessage();
-				printer->setErrorMessage(i18n("The execution of <b>%1</b> failed with message:<p>%2</p>").arg(exe).arg(proc.errorMessage()));
+				printer->setErrorMessage(i18n("Unable to start child print process."));
 				return false;
 			}
 			else return true;

@@ -43,29 +43,28 @@ QString KLpdPrinterImpl::executable()
 
 bool KLpdPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 {
-	KPrintProcess	proc;
+	KPrintProcess	*proc = new KPrintProcess();
 	QString	exestr = executable();
 	if (exestr.isEmpty())
 	{
 		printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.").arg("lpr"));
 		return false;
 	}
-	proc << exestr;
-	proc << "-P" << printer->printerName() << QString::fromLatin1("-#%1").arg(printer->numCopies());
+	*proc << exestr;
+	*proc << "-P" << printer->printerName() << QString::fromLatin1("-#%1").arg(printer->numCopies());
 	bool 	canPrint(false);
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 		if (QFile::exists(*it))
 		{
-			proc << *it;
+			*proc << *it;
 			canPrint = true;
 		}
 		else
 			qDebug("File not found: %s",(*it).latin1());
 	if (canPrint)
-		if (!proc.print())
+		if (!startPrintProcess(proc,printer))
 		{
-			QString	msg = proc.errorMessage();
-			printer->setErrorMessage(i18n("The execution of <b>%1</b> failed with message:<p>%2</p>").arg("lpr").arg(proc.errorMessage()));
+			printer->setErrorMessage(i18n("Unable to start child print process."));
 			return false;
 		}
 		else return true;

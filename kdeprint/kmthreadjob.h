@@ -17,20 +17,36 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KRLPRPRINTERIMPL_H
-#define KRLPRPRINTERIMPL_H
+#ifndef KMTHREADJOB_H
+#define KMTHREADJOB_H
 
-#include "kprinterimpl.h"
+#include <qintdict.h>
+#include <qobject.h>
 
-class KProcess;
+class KMJob;
+class KMJobManager;
 
-class KRlprPrinterImpl : public KPrinterImpl
+class KMThreadJob : public QObject
 {
 public:
-	KRlprPrinterImpl(QObject *parent = 0, const char *name = 0);
-	~KRlprPrinterImpl();
+	KMThreadJob(QObject *parent = 0, const char *name = 0);
+	~KMThreadJob();
 
-	bool printFiles(KPrinter*, const QStringList&);
+	KMJob* findJob(int ID);
+	void removeJob(int ID);
+	void createJob(KMJob*);
+	void updateManager(KMJobManager*);
+
+	static void createJob(int ID, const QString& printer, const QString& name = QString::null, const QString& owner = QString::null, int size = 0);
+
+protected:
+	QString jobFile();
+	bool loadJobs();
+	bool saveJobs();
+	bool checkJob(int ID);
+
+private:
+	QIntDict<KMJob>	m_jobs;
 };
 
 #endif

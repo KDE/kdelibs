@@ -139,23 +139,7 @@ bool KMCupsJobManager::listJobs()
 
 			if (name.isEmpty() || attr == req.last())
 			{
-				// only keep it if "printer" is not empty, and in printer filter
-				if (job->id() > 0 && !job->printer().isEmpty() && m_printers.contains(job->printer()) > 0)
-				{
-					KMJob	*aJob = findJob(job->id());
-					if (aJob)
-					{
-						aJob->copy(*job);
-						delete job;
-					}
-					else
-					{
-						job->setDiscarded(false);
-						m_jobs.append(job);
-					}
-				}
-				else
-					delete job;
+				addJob(job);	// don't use job after this call !!!
 				job = new KMJob();
 			}
 

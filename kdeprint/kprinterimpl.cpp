@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,7 +23,14 @@
 #include "kprinter.h"
 #include "kmfactory.h"
 #include "kmmanager.h"
+#include "kmthreadjob.h"
 #include "kmprinter.h"
+#include "kprintprocess.h"
+
+#include <knotifyclient.h>
+#include <klocale.h>
+
+#include <stdlib.h>
 
 void initEditPrinter(KMPrinter *p)
 {
@@ -46,11 +53,16 @@ KPrinterImpl::KPrinterImpl(QObject *parent, const char *name)
 	m_fileprinter->setDefaultOption("kde-orientation","Portrait");
 	m_fileprinter->setDefaultOption("kde-colormode","Color");
 	m_fileprinter->setDefaultOption("kde-pagesize",QString::number((int)KPrinter::A4));
+
+	// initialize process pool
+	m_processpool.setAutoDelete(true);
 }
 
 KPrinterImpl::~KPrinterImpl()
 {
 	delete m_fileprinter;
+	if (m_processpool.count() > 0)
+		KNotifyClient::event("printerror",i18n("There were still %1 print process(es) running. Printing aborted.").arg(m_processpool.count()));
 }
 
 void KPrinterImpl::preparePrinting(KPrinter*)
@@ -80,3 +92,37 @@ void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
 	initEditPrinter(m_fileprinter);
 	m_fileprinter->setEditedOption(key,value);
 }
+
+void KPrinterImpl::slotProcessExited(KProcess *proc)
+{
+	KPrintProcess	*pproc = (KPrintProcess*)proc;
+	if (m_processpool.findRef(pproc) == -1)
+		return;
+
+	QString	msg;
+	if (!proc->normalExit())
+		msg = i18n("<nobr>Abnormal process termination (<b>%1</b>).</nobr>").arg(pproc->args()->first());
+	else if (proc->exitStatus() != 0)
+		msg = i18n("The execution of <b>%1</b> failed with message:<p>%2</p>").arg(pproc->args()->first()).arg(pproc->errorMessage());
+
+	m_processpool.removeRef(pproc);
+	if (!msg.isEmpty())
+		KNotifyClient::event("printerror",i18n("<p><nobr>A print error occured. Error message received from system:</nobr></p><br>%1").arg(msg));
+}
+
+bool KPrinterImpl::startPrintProcess(KPrintProcess *proc, KPrinter *printer)
+{
+	connect(proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
+	if (proc->print())
+	{
+		m_processpool.append(proc);
+		if (printer) KMThreadJob::createJob(proc->pid(),printer->printerName(),printer->docName(),getenv("USER"),0);
+		return true;
+	}
+	else
+	{
+		delete proc;
+		return false;
+	}
+}
+#include "kprinterimpl.moc"

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -25,12 +25,16 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qmap.h>
+#include <qlist.h>
 
 class KPrinter;
 class KMPrinter;
+class KProcess;
+class KPrintProcess;
 
 class KPrinterImpl : public QObject
 {
+	Q_OBJECT
 public:
 	KPrinterImpl(QObject *parent = 0, const char *name = 0);
 	virtual ~KPrinterImpl();
@@ -43,9 +47,16 @@ public:
 	void saveOptions(const QMap<QString,QString>& opts)	{ m_options = opts; }
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
 
+protected slots:
+	void slotProcessExited(KProcess*);
+
+protected:
+	bool startPrintProcess(KPrintProcess*, KPrinter*);
+
 protected:
 	KMPrinter		*m_fileprinter;
 	QMap<QString,QString>	m_options;	// use to save current options
+	QList<KPrintProcess>	m_processpool;
 };
 
 #endif

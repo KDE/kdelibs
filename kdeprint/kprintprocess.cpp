@@ -40,10 +40,7 @@ QString KPrintProcess::errorMessage() const
 bool KPrintProcess::print()
 {
 	m_buffer = QString::null;
-	if (start(DontCare,AllOutput))
-		while (isRunning())
-			kapp->processEvents(100);
-	return (normalExit() && (exitStatus() == 0));	// Did everything go right ?
+	return start(NotifyOnExit,AllOutput);
 }
 
 void KPrintProcess::slotReceivedStderr(KProcess *proc, char *buf, int len)

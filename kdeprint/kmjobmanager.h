@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -27,6 +27,7 @@
 #include <qstringlist.h>
 
 class KMJob;
+class KMThreadJob;
 
 class KMJobManager : public QObject
 {
@@ -42,6 +43,8 @@ public:
 	KMJob* findJob(int ID);
 	bool sendCommand(int ID, int action, const QString& arg = QString::null);
 	const QList<KMJob>& jobList();
+	void addJob(KMJob*);
+	KMThreadJob* threadJob();
 
 	virtual int actions();
 	virtual bool sendCommand(const QList<KMJob>& jobs, int action, const QString& arg = QString::null);
@@ -56,6 +59,7 @@ protected:
 protected:
 	QList<KMJob>	m_jobs;
 	QStringList	m_printers;
+	KMThreadJob	*m_threadjob;
 };
 
 inline void KMJobManager::addPrinter(const QString& pr)
@@ -69,5 +73,8 @@ inline const QStringList& KMJobManager::filter() const
 
 inline void KMJobManager::clearFilter()
 { m_printers.clear(); }
+
+inline KMThreadJob* KMJobManager::threadJob()
+{ return m_threadjob; }
 
 #endif

@@ -48,15 +48,16 @@ bool KRlprPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 	QString	host(rpr->option("host")), queue(rpr->option("queue"));
 	if (!host.isEmpty() && !queue.isEmpty())
 	{
-		KPrintProcess	proc;
 		QString		exestr = KStandardDirs::findExe("rlpr");
 		if (exestr.isEmpty())
 		{
 			printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.").arg("rlpr"));
 			return false;
 		}
-		proc << exestr;
-		proc << QString::fromLatin1("-H%1").arg(host) << QString::fromLatin1("-P%1").arg(queue) << QString::fromLatin1("-#%1").arg(printer->numCopies());
+
+		KPrintProcess	*proc = new KPrintProcess;
+		*proc << exestr;
+		*proc << QString::fromLatin1("-H%1").arg(host) << QString::fromLatin1("-P%1").arg(queue) << QString::fromLatin1("-#%1").arg(printer->numCopies());
 
 		// proxy settings
 		KConfig	*conf = KMFactory::self()->printConfig();
@@ -64,24 +65,23 @@ bool KRlprPrinterImpl::printFiles(KPrinter *printer, const QStringList& files)
 		QString	host = conf->readEntry("ProxyHost",QString::null), port = conf->readEntry("ProxyPort",QString::null);
 		if (!host.isEmpty())
 		{
-			proc << QString::fromLatin1("-X%1").arg(host);
-			if (!port.isEmpty()) proc << QString::fromLatin1("--port=%1").arg(port);
+			*proc << QString::fromLatin1("-X%1").arg(host);
+			if (!port.isEmpty()) *proc << QString::fromLatin1("--port=%1").arg(port);
 		}
 
 		bool 	canPrint(false);
 		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 			if (QFile::exists(*it))
 			{
-				proc << *it;
+				*proc << *it;
 				canPrint = true;
 			}
 			else
 				qDebug("File not found: %s",(*it).latin1());
 		if (canPrint)
-			if (!proc.print())
+			if (!startPrintProcess(proc,printer))
 			{
-				QString	msg = proc.errorMessage();
-				printer->setErrorMessage(i18n("The execution of <b>%1</b> failed with message:<p>%2</p>").arg("rlpr").arg(proc.errorMessage()));
+				printer->setErrorMessage(i18n("Unable to start child print process."));
 				return false;
 			}
 			else return true;
