@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Copy this file as kde_env_custom and alter it
+
+
+if [ -z "$MSVC" ] ; then
+
+	# MSVC instalation directory, please change
+	MSVC="c:\\vs7"
+
+	INCLUDE="$MSVC\\include;$INCLUDE"
+fi
+
+# KDElibs/win32 source directory, please change
+KDEWIN="f:\\kdewin32"
+
+export MSVC KDEWIN INCLUDE

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# make relese version of lib/app in the cwd
+
+mkdir -p obj_rel
+
+if [ $# -eq 0 ] ; then
+	qmake KW_CONFIG=release -o Makefile.release || exit 1
+fi
+
+nmake -nologo -f Makefile.release $*

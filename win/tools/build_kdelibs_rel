@@ -1,12 +1,13 @@
 #!/bin/bash
 # compile entire kdelibs/win32 in debug mode
-# (c) 2003-2005, Jaroslaw Staniek
+# (c) 2003-2005, Jaroslaw Staniek, js@iidea.pl
+
+update_kdelibs_pro_files || exit 1
 
 pwd=`pwd`
-make='nmake -nologo'
 
 # special
-cd win/9x && $make || exit 1
+cd win/9x && nmake -nologo -f Makefile.rel $1 || exit 1
 cd $pwd
 
 # all
@@ -17,9 +18,9 @@ dcop \
 dcop/dcopidl \
 dcop/dcopidl2cpp \
 kdefx \
-kstyles/thinkeramik/widget-engine \
 kdecore \
 kdeui \
+kstyles/thinkeramik/widget-engine \
 kio \
 kresources \
 kabc/vcard \
@@ -34,10 +35,10 @@ kate/interfaces \
 kate/part \
  ; do 
 	echo ================== $d =================
-	cd $d && qmake && $make clean && $make || exit 1
+	cd $d && mkrel  || exit 1
 	cd $pwd
 done
 
 cd kded
-./makeall || exit 1
+./makeall_rel || exit 1
 cd $pwd
