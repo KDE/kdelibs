@@ -741,8 +741,8 @@ KJSO VarDeclNode::evaluate()
 {
   KJSO variable = Context::current()->variableObject();
 
-  // TODO: coded with help of 10.1.3. Correct ?
-  if (!variable.hasProperty(ident)) {
+  // TODO: reality doesn't seem to conform with the spec
+  // if (!variable.hasProperty(ident)) {
     KJSO val, tmp;
     if (init) {
       tmp = init->evaluate();
@@ -750,7 +750,7 @@ KJSO VarDeclNode::evaluate()
     } else
       val = Undefined();
     variable.put(ident, val);
-  }
+    //  }
 
   return Undefined();
 }
