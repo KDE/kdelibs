@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 220
-#define KDE_VERSION_STRING "2.1.9 >= 20010223"
+#define KDE_VERSION_STRING "2.1.9 >= 20010310"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 2
 #define KDE_VERSION_RELEASE 0
@@ -795,6 +795,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.213  2001/03/10 15:36:44  faure
+// Removing the code from kdeFonts() and marking it as deprecated
+// (just in case some stupid app is still calling it)
+//
 // Revision 1.212  2001/02/26 13:52:24  dnaber
 // document the fact that invokeHTMLHelp() is deprecated
 //
