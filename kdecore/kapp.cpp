@@ -272,7 +272,7 @@ DCOPClient *KApplication::dcopClient()
     QApplication::flushX();
     if (fork() == 0) {
       execl(srv.latin1(), srv.latin1(), 0);
-      exit(1);
+      _exit(1);
     } else {
       sleep(1); // give server some startup time. Race condition, I know...
     }
@@ -1089,7 +1089,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 
 	 if (file.isNull()) {
 	     warning("no help file %s found\n", filename.ascii());
-	     return;
+	     _exit( 1 );
 	 }
 
 	 if( !topic.isEmpty() ) {
@@ -1108,7 +1108,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 		shell = getenv("SHELL");
          file.prepend("khcclient ");
          execl(shell, shell, "-c", file.ascii(), 0L);
-	  exit( 1 );
+	  _exit( 1 );
     }
 }
 
@@ -1131,7 +1131,7 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
       shell = getenv("SHELL");
     }
     execl( shell, shell, "-c", exec.ascii(), 0L );
-    exit( 1 );
+    _exit( 1 );
   }
 }
 
@@ -1198,7 +1198,7 @@ void KApplication::invokeBrowser( const QString &url )
       shell = getenv("SHELL");
     }
     execl( shell, shell, "-c", exec.ascii(), 0L );
-    exit( 1 );
+    _exit( 1 );
   }
 
 }
