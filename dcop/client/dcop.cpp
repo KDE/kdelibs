@@ -262,9 +262,6 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
         if ( replyType != "void" && replyType != "ASYNC" )
         {
             QCString replyString = demarshal( reply, replyType );
-            if ( replyString.isEmpty() )
-                replyString.sprintf( "<%s>", replyType.data() );
-
             printf( "%s\n", replyString.data() );
         }
     }

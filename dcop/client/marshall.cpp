@@ -233,6 +233,10 @@ QCString demarshal( QDataStream &stream, const QString &type )
                 result += '\n';
         }
     }
+    else
+    {
+       result.sprintf( "<%s>", type.latin1());
+    }
 
     return result;
 
