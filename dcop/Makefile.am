@@ -28,7 +28,7 @@ LDFLAGS = $(all_libraries)
 
 bin_PROGRAMS = dcopserver
 
-lib_LTLIBRARIES  = libDCOP.la
+lib_LTLIBRARIES  = libDCOP.la libdcopserver.la
 libDCOP_la_LIBADD = $(LIBSM) $(ICE_RLIB)  $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries)
 
@@ -38,6 +38,10 @@ noinst_HEADERS = version.h dcopglobal.h dcopserver.h
 METASOURCES = AUTO
 
 libDCOP_la_SOURCES = dcopclient.cpp dcopobject.cpp dcopstub.cpp dcopref.cpp
+
+libdcopserver_la_LDFLAGS = -no-version -module
+libdcopserver_la_SOURCES = dcopserver.cpp
+libdcopserver_la_LIBADD   = libDCOP.la
 
 dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dcopserver.cpp
