@@ -42,8 +42,9 @@ void sigsegv_handler( int );
 int main( int , char ** )
 {
   signal(SIGCHLD, IOProtocol::sigchld_handler);
+#ifdef NDEBUG
   signal(SIGSEGV, IOProtocol::sigsegv_handler);
-
+#endif
   qDebug( "kio_file : Starting");
 
   Connection parent( 0, 1 );
