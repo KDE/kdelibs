@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
    Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
@@ -442,22 +443,26 @@ void HTTPProtocol::post( const KURL& url)
 ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 {
   int bytes_sent = 0;
-  int n;
-keeptrying:
-  if ( (n = Write(buf, nbytes)) != static_cast<int>(nbytes) )
-  {
-    if (n == -1 && ((errno == EINTR) || (errno == EAGAIN)))
-      goto keeptrying;
-    if (n == -1)
+
+  while ( nbytes > 0 ) {
+    int n = Write(buf, nbytes);
+
+    if ( n <= 0 ) {
+      if (n < 0 && ((errno == EINTR) || (errno == EAGAIN)))
+        continue;
+
+      // remote side closed connection?
+      if ( n == 0 )
+        return bytes_sent;
+
+      // some other error occured
       return -1;
+    }
+
     nbytes -= n;
     (const char *) buf += n;
     bytes_sent += n;
-    if (nbytes > 0)
-      goto keeptrying;
   }
-  else
-      bytes_sent += n;
 
   return bytes_sent;
 }
@@ -467,7 +472,7 @@ char *HTTPProtocol::gets (char *s, int size)
   int len=0;
   char *buf=s;
   char mybuf[2]={0,0};
-  while (len < size) 
+  while (len < size)
   {
     read(mybuf, 1);
     if (*mybuf == '\r') // Ignore!
@@ -1098,7 +1103,7 @@ bool HTTPProtocol::readHeader()
       if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
             m_bCanResume = false;
     }
-    
+
     // Cache control
     else if (strncasecmp(buf, "Cache-Control:", 14) == 0) {
       QStringList cacheControls = QStringList::split(',',
@@ -1125,7 +1130,7 @@ bool HTTPProtocol::readHeader()
       }
       hasCacheDirective = true;
     }
-    
+
     // get the size of our data
     else if (strncasecmp(buf, "Content-length:", 15) == 0) {
       m_iSize = atol(trimLead(buffer + 15));
@@ -1231,7 +1236,7 @@ bool HTTPProtocol::readHeader()
       m_responseCode = atoi(buffer+9);
 
       // server side errors
-      if (m_responseCode >= 500 && m_responseCode <= 599) 
+      if (m_responseCode >= 500 && m_responseCode <= 599)
       {
         if (m_request.method == HTTP_HEAD) {
            // Ignore error
@@ -1248,7 +1253,7 @@ bool HTTPProtocol::readHeader()
         mayCache = false;
       }
       // Unauthorized access
-      else if (m_responseCode == 401 || m_responseCode == 407) 
+      else if (m_responseCode == 401 || m_responseCode == 407)
       {
         // Double authorization requests, i.e. a proxy auth
         // request followed immediately by a regular auth request.
@@ -1261,7 +1266,7 @@ bool HTTPProtocol::readHeader()
         mayCache = false;
       }
       // Any other client errors
-      else if (m_responseCode >= 400 && m_responseCode <= 499) 
+      else if (m_responseCode >= 400 && m_responseCode <= 499)
       {
         // Tell that we will only get an error page here.
         if (m_bErrorPage)
@@ -2037,7 +2042,7 @@ size_t HTTPProtocol::sendData( )
   processedSize(sz);
   totalSize(sz);
   QByteArray array;
-  while (sent+bufferSize < sz) 
+  while (sent+bufferSize < sz)
   {
     array.setRawData( big_buffer.data()+sent, bufferSize);
     data( array );
