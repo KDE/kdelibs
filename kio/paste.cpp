@@ -102,9 +102,8 @@ void KIO::pasteData( const KURL& u, const QByteArray& _data )
     myurl.addPath( l.text() );
 
     // We could use KIO::put here, but that would require a class
-    // for the slotData call, and would mean an error if the destination
-    // exists. With NetAcess, we get synchronous call and we get a nice
-    // rename dialog box if the destination exists.
+    // for the slotData call. With NetAcess, we can do a synchronous call.
+    // NOTE: upload() overwrites the destination if it exists. TODO dialog box.
 
     KTempFile tempFile;
     tempFile.setAutoDelete( true );

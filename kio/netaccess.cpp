@@ -32,6 +32,7 @@
 
 #include <kapp.h>
 #include <klocale.h>
+#include <ktempfile.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kio/job.h>
@@ -59,7 +60,8 @@ bool NetAccess::download(const KURL& u, QString & target)
 
   if (target.isEmpty())
   {
-      target = tmpnam(0);  // Generate a temp file name
+      KTempFile tmpFile;
+      target = tmpFile.name();
       if (!tmpfiles)
 	  tmpfiles = new QStringList;
       tmpfiles->append(target);
