@@ -60,7 +60,8 @@ private:
                                                        QString& valClass);
 
 private slots:
-    void slotAdd();
+    // Code disabled until the "Add" button is implemented
+//    void slotAdd();
     
 private:
     

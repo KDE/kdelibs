@@ -94,7 +94,7 @@ public:
     MetaPropsScrollView*      m_view;
     KFileMetaInfo             m_info;
     QPtrList<MetaPropsItem>   m_items;
-    QPushButton*              m_add;
+//    QPushButton*              m_add;
 };
 
 KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
@@ -144,7 +144,8 @@ void KFileMetaPropsPlugin::createLayout()
   
     d->m_frame = d->m_view->frame();
   
-    QGridLayout *toplayout = new QGridLayout(d->m_frame, KDialog::spacingHint());
+    QGridLayout *toplayout = new QGridLayout(d->m_frame);
+    toplayout->setSpacing(KDialog::spacingHint());
   
     QStringList::Iterator it = l.begin();
     int count = 0;
@@ -215,12 +216,12 @@ void KFileMetaPropsPlugin::createLayout()
         }
     }
   
-    // the add key
-    d->m_add = new QPushButton(i18n("&Add"), d->m_topframe);
+    // the add key (disabled until fully implemented)
+/*    d->m_add = new QPushButton(i18n("&Add"), d->m_topframe);
     d->m_add->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
                                         QSizePolicy::Fixed));
     connect(d->m_add, SIGNAL(clicked()), this, SLOT(slotAdd()));
-    tmp->addWidget(d->m_add);
+    tmp->addWidget(d->m_add); 
   
     // if nothing can be added, deactivate it
     if ( !d->m_info.supportsVariableKeys() )
@@ -240,10 +241,10 @@ void KFileMetaPropsPlugin::createLayout()
                 }
                 kdDebug(250) << "**already existing key is " << (*it).latin1() << "**" <<endl;
         }
-    }
+    } */
 }
 
-void KFileMetaPropsPlugin::slotAdd()
+/*void KFileMetaPropsPlugin::slotAdd()
 {
     // add a lineedit for the name
   
@@ -251,7 +252,7 @@ void KFileMetaPropsPlugin::slotAdd()
   
     // insert the item in the list
   
-}
+}*/
 
 QWidget* KFileMetaPropsPlugin::makeBoolWidget(const KFileMetaInfoItem& item,
                                               QWidget* parent)
