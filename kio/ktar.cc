@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <grp.h>
 #include <pwd.h>
+#include <assert.h>
 
 #include <qcstring.h>
 #include <qdir.h>
@@ -277,101 +278,25 @@ void KTar::writeDir( const QString& name, const QString& user, const QString& gr
     dirName += "/";
 
   char buffer[ 0x201 ];
-  for( uint i = 0; i < 0x200; ++i )
-    buffer[i] = 0;
+  memset( buffer, 0, 0x200 );
 
   // If more than 100 chars, we need to use the LongLink trick
   if ( dirName.length() > 99 )
   {
     strcpy( buffer, "././@LongLink" );
-    /*
-    // Not sure they are necessary
-    buffer[ 0x64 ] = 0x20;
-    buffer[ 0x65 ] = 0x34;
-    buffer[ 0x66 ] = 0x30;
-    buffer[ 0x9b ] = 0x20;
-    buffer[ 0x9c ] = 0x35;
-    */
+    fillBuffer( buffer, "     0", dirName.length()+1, 'L', user, group );
     gzwrite( m_f, buffer, 0x200 );
-    for( uint i = 0; i < 20; ++i ) // erase ././@LongLink
-      buffer[i] = 0;
-  }
-
-  // Write name
-  strcpy( buffer, dirName );
-
-  if ( dirName.length() > 99 )
-  {
+    memset( buffer, 0, 0x200 );
+    strcpy( buffer, dirName );
     // write long name
     gzwrite( m_f, buffer, 0x200 );
     // not even needed to reclear the buffer, tar doesn't do it
   }
+  else
+    // Write name
+    strcpy( buffer, dirName );
   
-  // Write type
-  buffer[ 0x64 ] = 0x20;
-  buffer[ 0x65 ] = 0x34;
-  buffer[ 0x66 ] = 0x30;
-
-  // Permissions
-  buffer[ 0x67 ] = 0x37;
-  buffer[ 0x68 ] = 0x35;
-  buffer[ 0x69 ] = 0x35;
-  buffer[ 0x6a ] = 0x20;
-
-  // ??
-  buffer[ 0x6c ] = 0x20;
-  buffer[ 0x6d ] = 0x20;
-  buffer[ 0x6e ] = 0x20;
-  buffer[ 0x6f ] = 0x37;
-  buffer[ 0x70 ] = 0x36;
-  buffer[ 0x71 ] = 0x35;
-  buffer[ 0x72 ] = 0x20;
-
-  buffer[ 0x74 ] = 0x20;
-  buffer[ 0x75 ] = 0x20;
-  buffer[ 0x76 ] = 0x20;
-  buffer[ 0x77 ] = 0x31;
-  buffer[ 0x78 ] = 0x34;
-  buffer[ 0x79 ] = 0x34;
-  buffer[ 0x7a ] = 0x20;
-
-  // Size
-  strcpy( buffer + 0x7c, "          0" );
-
-  buffer[ 0x87 ] = 0x20;
-
-  QString s;
-  s.setNum( time( 0 ), 8 );
-  s = s.rightJustify( 11, ' ' );
-  strcpy( buffer + 0x88, s.latin1() );
-
-  // check sum
-  buffer[ 0x93 ] = 0x20;
-  buffer[ 0x94 ] = 0x20;
-  buffer[ 0x95 ] = 0x20;
-  buffer[ 0x96 ] = 0x20;
-  buffer[ 0x97 ] = 0x20;
-  buffer[ 0x98 ] = 0x20;
-  buffer[ 0x99 ] = 0x20;
-
-  // It is a directory
-  buffer[ 0x9b ] = 0x20;
-  buffer[ 0x9c ] = 0x35;
-
-  strcpy( buffer + 0x101, "ustar  " );
-
-  // user
-  strcpy( buffer + 0x109, user );
-  // group
-  strcpy( buffer + 0x129, group );
-
-  // Header check sum
-  int check = 32;
-  for( uint j = 0; j < 0x200; ++j )
-    check += buffer[j];
-  s.setNum( check, 8 );
-  s = s.rightJustify( 7, ' ' );
-  strcpy( buffer + 0x93, s.latin1() );
+  fillBuffer( buffer, " 40755", 0, 0x35, user, group);
 
   // Write header
   gzwrite( m_f, buffer, 0x200 );
@@ -416,16 +341,16 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
   */
 
   char buffer[ 0x201 ];
-  for( uint i = 0; i < 0x200; ++i )
-    buffer[i] = 0;
+  memset( buffer, 0, 0x200 );
 
   // If more than 100 chars, we need to use the LongLink trick
   if ( fileName.length() > 99 )
   {
     strcpy( buffer, "././@LongLink" );
+    fillBuffer( buffer, "     0", fileName.length()+1, 'L', user, group );
     gzwrite( m_f, buffer, 0x200 );
-    for( uint i = 0; i < 20; ++i ) // erase ././@LongLink
-      buffer[i] = 0;
+
+    memset( buffer, 0, 0x200 );
     strcpy( buffer, fileName );
     // write long name
     gzwrite( m_f, buffer, 0x200 );
@@ -435,73 +360,7 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
     // Write name
     strcpy( buffer, fileName );
 
-  // Write type
-  buffer[ 0x64 ] = 0x31;
-  buffer[ 0x65 ] = 0x30;
-  buffer[ 0x66 ] = 0x30;
-
-  // Permissions
-  buffer[ 0x67 ] = 0x36;
-  buffer[ 0x68 ] = 0x34;
-  buffer[ 0x69 ] = 0x34;
-  buffer[ 0x6a ] = 0x20;
-
-  // check sum
-  buffer[ 0x6c ] = 0x20;
-  buffer[ 0x6d ] = 0x20;
-  buffer[ 0x6e ] = 0x20;
-  buffer[ 0x6f ] = 0x37;
-  buffer[ 0x70 ] = 0x36;
-  buffer[ 0x71 ] = 0x35;
-  buffer[ 0x72 ] = 0x20;
-
-  buffer[ 0x74 ] = 0x20;
-  buffer[ 0x75 ] = 0x20;
-  buffer[ 0x76 ] = 0x20;
-  buffer[ 0x77 ] = 0x31;
-  buffer[ 0x78 ] = 0x34;
-  buffer[ 0x79 ] = 0x34;
-  buffer[ 0x7a ] = 0x20;
-
-  // Size
-  QString s;
-  s.setNum( size, 8 );
-  s = s.rightJustify( 11, ' ' );
-  strcpy( buffer + 0x7c, s.latin1() );
-
-  buffer[ 0x87 ] = 0x20;
-
-  s.setNum( time( 0 ), 8 );
-  s = s.rightJustify( 11, ' ' );
-  strcpy( buffer + 0x88, s.latin1() );
-
-  // ??
-  buffer[ 0x93 ] = 0x20;
-  buffer[ 0x94 ] = 0x20;
-  buffer[ 0x95 ] = 0x20;
-  buffer[ 0x96 ] = 0x20;
-  buffer[ 0x97 ] = 0x20;
-  buffer[ 0x98 ] = 0x20;
-  buffer[ 0x99 ] = 0x20;
-
-  // It is a file
-  buffer[ 0x9b ] = 0x20;
-  buffer[ 0x9c ] = 0x30;
-
-  strcpy( buffer + 0x101, "ustar  " );
-
-  // user
-  strcpy( buffer + 0x109, user );
-  // group
-  strcpy( buffer + 0x129, group );
-
-  // Header check sum
-  int check = 32;
-  for( uint j = 0; j < 0x200; ++j )
-    check += buffer[j];
-  s.setNum( check, 8 );
-  s = s.rightJustify( 7, ' ' );
-  strcpy( buffer + 0x93, s.latin1() );
+  fillBuffer( buffer, "100644", size, 0x30, user, group );
 
   // Write header
   gzwrite( m_f, buffer, 0x200 );
@@ -517,6 +376,105 @@ void KTar::writeFile( const QString& name, const QString& user, const QString& g
       buffer[i] = 0;
     gzwrite( m_f, buffer, 0x200 - rest );
   }
+}
+
+/*** Some help from the tar sources
+struct posix_header
+{                               byte offset
+  char name[100];               *   0 *     0x0
+  char mode[8];                 * 100 *     0x64
+  char uid[8];                  * 108 *     0x6c
+  char gid[8];                  * 116 *     0x74
+  char size[12];                * 124 *     0x7c
+  char mtime[12];               * 136 *     0x88
+  char chksum[8];               * 148 *     0x94
+  char typeflag;                * 156 *     0x9c
+  char linkname[100];           * 157 *     0x9d
+  char magic[6];                * 257 *     0x101
+  char version[2];              * 263 *     0x107
+  char uname[32];               * 265 *     0x109
+  char gname[32];               * 297 *     0x129
+  char devmajor[8];             * 329 *     0x149
+  char devminor[8];             * 337 *     ...
+  char prefix[155];             * 345 *
+                                * 500 *
+};
+*/
+
+void KTar::fillBuffer( char * buffer, 
+    const char * mode, int size, char typeflag, const char * uname, const char * gname )
+{
+  // mode (as in stat())
+  assert( strlen(mode) == 6 );
+  strcpy( buffer+0x64, mode );
+  buffer[ 0x6a ] = 0x20; // space-terminate (then 0 in 0x6b)
+
+  // dummy uid
+  buffer[ 0x6c ] = 0x20;
+  buffer[ 0x6d ] = 0x20;
+  buffer[ 0x6e ] = 0x20;
+  buffer[ 0x6f ] = 0x37;
+  buffer[ 0x70 ] = 0x36;
+  buffer[ 0x71 ] = 0x35;
+  buffer[ 0x72 ] = 0x20;
+
+  // dummy gid
+  buffer[ 0x74 ] = 0x20;
+  buffer[ 0x75 ] = 0x20;
+  buffer[ 0x76 ] = 0x20;
+  buffer[ 0x77 ] = 0x31;
+  buffer[ 0x78 ] = 0x34;
+  buffer[ 0x79 ] = 0x34;
+  buffer[ 0x7a ] = 0x20;
+
+  // size
+  QString s;
+  s.setNum( size, 8 );
+  s = s.rightJustify( 11, ' ' );
+  strcpy( buffer + 0x7c, s.latin1() );
+  buffer[ 0x87 ] = 0x20; // space-terminate (no null after)
+
+  // Dummy time
+  s.setNum( time( 0 ), 8 );
+  s = s.rightJustify( 11, ' ' );
+  strcpy( buffer + 0x88, s.latin1() );
+  buffer[ 0x93 ] = 0x20; // space-terminate (no null after)
+
+  // spaces, replaced by the check sum later
+  buffer[ 0x94 ] = 0x20;
+  buffer[ 0x95 ] = 0x20;
+  buffer[ 0x96 ] = 0x20;
+  buffer[ 0x97 ] = 0x20;
+  buffer[ 0x98 ] = 0x20;
+  buffer[ 0x99 ] = 0x20;
+
+  /* From the tar sources :
+     Fill in the checksum field.  It's formatted differently from the
+     other fields: it has [6] digits, a null, then a space -- rather than
+     digits, a space, then a null. */
+
+  // 0x9a remains null, as expected
+  buffer[ 0x9b ] = 0x20;
+
+  // type flag (dir, file, link)
+  buffer[ 0x9c ] = typeflag;
+
+ // magic + version
+  strcpy( buffer + 0x101, "ustar");
+  strcpy( buffer + 0x107, "00" );
+
+  // user
+  strcpy( buffer + 0x109, uname );
+  // group
+  strcpy( buffer + 0x129, gname );
+
+  // Header check sum
+  int check = 32;
+  for( uint j = 0; j < 0x200; ++j )
+    check += buffer[j];
+  s.setNum( check, 8 );
+  s = s.rightJustify( 7, ' ' );
+  strcpy( buffer + 0x94, s.latin1() );
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -78,6 +78,14 @@ private:
    */
   KTarDirectory * findOrCreate( const QString & path );
   
+  /** @internal
+   * Fills the buffer as required by the tar format
+   * Has to be called LAST, since it does the checksum
+   * (normally, only the name has to be filled in before)
+   * @param mode is expected to be 6 chars long, [uname and gname 31].
+   */
+  void fillBuffer( char * buffer, const char * mode, int size, char typeflag, const char * uname, const char * gname );
+  
   gzFile m_f;
   bool m_open;
   char m_mode;
