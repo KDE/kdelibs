@@ -81,6 +81,8 @@
 #include <kfilebookmark.h>
 #include <kdiroperator.h>
 #include <kstaticdeleter.h>
+#include <kimagefilepreview.h>
+#include <kimageio.h>
 
 enum Buttons { HOTLIST_BUTTON,
                PATH_COMBO, CONFIGURE_BUTTON };
@@ -1286,6 +1288,22 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
     dlg.exec();
 
     return dlg.selectedURL().path();
+}
+
+KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
+		      const QString& caption)
+{
+    KFileDialog dlg(startDir,
+		    KImageIO::pattern( KImageIO::Reading ),
+		    parent, "filedialog", true);
+    dlg.setCaption( caption.isNull() ? i18n("Open") : caption );
+
+    KImageFilePreview ip( &dlg );
+    ip.show();
+    dlg.setPreviewWidget( &ip );
+    dlg.exec();
+
+    return dlg.selectedURL();
 }
 
 KURL KFileDialog::selectedURL() const

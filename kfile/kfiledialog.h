@@ -476,6 +476,27 @@ public:
 					const QString& caption= QString::null);
 
     /**
+     * Create a modal file dialog with an image previewer and returns the
+     * selected url or an empty string if none was chosen.
+     *
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li @ref QString::null to start in the current working
+     *		    directory, or the last directory where a file has been
+     *		    selected.
+     *         @li ':<keyword>' to start in the directory last used
+     *             by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li '::<keyword' to start in the direcotry last used
+     *             by a filedialog in any application that specified the
+     *             same keyword.
+     * @param parent The widget the dialog will be centered on initially.
+     * @param caption The name of the dialog widget.
+     */
+    static KURL getImageOpenURL( const QString& startDir = QString::null,
+				 QWidget *parent = 0,
+				 const QString& caption = QString::null );
+    /**
      * @reimplemented
      **/
     virtual void show();
