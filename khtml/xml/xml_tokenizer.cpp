@@ -164,7 +164,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         NodeImpl* implicitTBody =
             new HTMLTableSectionElementImpl( m_doc, ID_TBODY, true /* implicit */ );
         currentNode()->addChild(implicitTBody);
-        if (m_view && !implicitTBody->attached())
+        if (m_view && !implicitTBody->attached() && !m_doc->document()->hasPendingSheets())
             implicitTBody->attach();
         pushNode( implicitTBody );
     }
@@ -180,7 +180,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
             break;
     }
     if (attached) {
-        if (m_view && !newElement->attached())
+        if (m_view && !newElement->attached() && !m_doc->document()->hasPendingSheets())
             newElement->attach();
         pushNode( newElement );
         return true;
@@ -220,7 +220,7 @@ bool XMLHandler::startCDATA()
 
     NodeImpl *newNode = m_doc->document()->createCDATASection(new DOMStringImpl(""));
     if (currentNode()->addChild(newNode)) {
-        if (m_view && !newNode->attached())
+        if (m_view && !newNode->attached() && !m_doc->document()->hasPendingSheets())
             newNode->attach();
         pushNode( newNode );
         return true;
@@ -316,7 +316,7 @@ bool XMLHandler::enterText()
 
 void XMLHandler::exitText()
 {
-    if ( m_view && !currentNode()->attached() )
+    if ( m_view && !currentNode()->attached() && !m_doc->document()->hasPendingSheets() )
         currentNode()->attach();
     popNode();
 }

@@ -188,6 +188,12 @@ public:
     void addPendingSheet() { m_pendingStylesheets++; }
 
     /**
+     * Returns true if the document has pending stylesheets
+     * loading.
+     */
+    bool hasPendingSheets() const { return m_pendingStylesheets; }
+
+    /**
      * Called when one or more stylesheets in the document may have been added, removed or changed.
      *
      * Creates a new style selector and assign it to this document. This is done by iterating through all nodes in

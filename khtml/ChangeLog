@@ -1,9 +1,12 @@
 2004-06-06  Zack Rusin  <zack@kde.org>
 
+        * xml/dom_docimpl.h (hasPendingSheets): adding function returning true, 
+        if stylesheets are currently loading for document.
+
         * xml/xml_tokenizer.cpp: Merging table hack for XML parsing from
         Safari, merging in character changes, but with a fix which we
         need, delaying attaching of text nodes till parsing finishes (
-        also merged from the Safari team)
+        also merged from the Safari team), adding FOUC prevention code.
 
 2004-06-02  Zack Rusin  <zack@kde.org>
 
