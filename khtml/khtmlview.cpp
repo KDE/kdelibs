@@ -499,6 +499,8 @@ void KHTMLView::clear()
 
     if( d->typeAheadActivated )
         findTimeout();
+    if (d->accessKeysActivated)
+        accessKeysTimeout();
     d->reset();
     killTimers();
     emit cleared();
@@ -683,7 +685,6 @@ void KHTMLView::layout()
         d->layoutSchedulingEnabled=false;
 
         if (document->isHTMLDocument()) {
-	     if (d->accessKeysActivated) accessKeysTimeout();
              NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
              if(body && body->renderer() && body->id() == ID_FRAMESET) {
                  QScrollView::setVScrollBarMode(AlwaysOff);
@@ -724,6 +725,10 @@ void KHTMLView::layout()
         }/*end if*/
 #endif
 	root->repaint();
+        if (d->accessKeysActivated) {
+            emit hideAccessKeys();
+            displayAccessKeys();
+        }
         //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     }
     else
