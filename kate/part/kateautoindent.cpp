@@ -484,7 +484,6 @@ void KateCSmartIndent::processNewline (KateDocCursor &begin, bool needContinue)
     else
     {
       KateAutoIndent::processNewline (begin, needContinue);
-      begin.setCol(begin.col() - 1);
     }
 
     if (begin.col() < 0)
