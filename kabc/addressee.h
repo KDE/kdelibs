@@ -31,10 +31,13 @@
 #include <kurl.h>
 
 #include "address.h"
+#include "agent.h"
 #include "geo.h"
 #include "key.h"
 #include "phonenumber.h"
+#include "picture.h"
 #include "secrecy.h"
+#include "sound.h"
 #include "timezone.h"
 
 namespace KABC {
@@ -248,6 +251,11 @@ class Addressee
     static QString homeAddressCountryLabel();
 
     /**
+      Return translated label for homeAddressLabel field.
+     */
+    static QString homeAddressLabelLabel();
+
+    /**
       Return translated label for businessAddressStreet field.
      */
     static QString businessAddressStreetLabel();
@@ -271,6 +279,11 @@ class Addressee
       Return translated label for businessAddressCountry field.
      */
     static QString businessAddressCountryLabel();
+
+    /**
+      Return translated label for businessAddressLabel field.
+     */
+    static QString businessAddressLabelLabel();
 
     /**
       Return translated label for homePhone field.
@@ -462,6 +475,58 @@ class Addressee
       Return translated label for key field.
      */
     static QString keyLabel();
+
+    /**
+      Set logo.
+     */
+    void setLogo( const Picture &logo );
+    /**
+      Return logo.
+     */
+    Picture logo() const;
+    /**
+      Return translated label for logo field.
+     */
+    static QString logoLabel();
+
+    /**
+      Set photo.
+     */
+    void setPhoto( const Picture &photo );
+    /**
+      Return photo.
+     */
+    Picture photo() const;
+    /**
+      Return translated label for photo field.
+     */
+    static QString photoLabel();
+
+    /**
+      Set sound.
+     */
+    void setSound( const Sound &sound );
+    /**
+      Return sound.
+     */
+    Sound sound() const;
+    /**
+      Return translated label for sound field.
+     */
+    static QString soundLabel();
+
+    /**
+      Set agent.
+     */
+    void setAgent( const Agent &agent );
+    /**
+      Return agent.
+     */
+    Agent agent() const;
+    /**
+      Return translated label for agent field.
+     */
+    static QString agentLabel();
 
     /**
       Set name fields by parsing the given string and trying to associate the
@@ -675,6 +740,11 @@ class Addressee
       Debug output.
      */
     void dump() const;
+
+    /**
+      Returns string representation of the addressee.
+     */
+    QString asString() const;
 
     /**
       Set resource where the addressee is from.

@@ -8,21 +8,21 @@ libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 2:0:1 -module
 libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la
 
 libkabc_la_SOURCES = \
-  address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp \
+  address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp agent.cpp \
   distributionlist.cpp distributionlisteditor.cpp errorhandler.cpp \
-  field.cpp formatfactory.cpp geo.cpp key.cpp phonenumber.cpp plugin.cpp \
-  resource.cpp resourceconfigwidget.cpp resourcefactory.cpp resourcefile.cpp \
-  resourcefileconfig.cpp resourceselectdialog.cpp secrecy.cpp \
-  stdaddressbook.cpp timezone.cpp vcard21parser.cpp vcardconverter.cpp \
-  vcardformat.cpp vcardformatimpl.cpp
+  field.cpp formatfactory.cpp geo.cpp key.cpp phonenumber.cpp picture.cpp \
+  plugin.cpp resource.cpp resourceconfigwidget.cpp resourcefactory.cpp \
+  resourcefile.cpp resourcefileconfig.cpp resourceselectdialog.cpp secrecy.cpp \
+  sound.cpp stdaddressbook.cpp timezone.cpp vcard21parser.cpp \
+  vcardconverter.cpp vcardformat.cpp vcardformatimpl.cpp
 
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
-  distributionlist.h distributionlisteditor.h errorhandler.h field.h \
-  formatfactory.h geo.h kabcformat.h key.h phonenumber.h plugin.h resource.h \
-  resourceconfigwidget.h resourcefactory.h resourcefile.h \
-  resourceselectdialog.h secrecy.h stdaddressbook.h timezone.h \
+  agent.h distributionlist.h distributionlisteditor.h errorhandler.h field.h \
+  formatfactory.h geo.h kabcformat.h key.h phonenumber.h picture.h plugin.h \
+  resource.h resourceconfigwidget.h resourcefactory.h resourcefile.h \
+  resourceselectdialog.h secrecy.h sound.h stdaddressbook.h timezone.h \
   vcard21parser.h vcardconverter.h vcardformat.h vcardformatimpl.h
 
 METASOURCES = AUTO

@@ -53,11 +53,13 @@ class Field::FieldImpl
       HomeAddressRegion,
       HomeAddressPostalCode,
       HomeAddressCountry,
+      HomeAddressLabel,
       BusinessAddressStreet,
       BusinessAddressLocality,
       BusinessAddressRegion,
       BusinessAddressPostalCode,
       BusinessAddressCountry,
+      BusinessAddressLabel,
       HomePhone,
       BusinessPhone,
       MobilePhone,
@@ -133,6 +135,8 @@ QString Field::label()
       return Addressee::homeAddressPostalCodeLabel();
     case FieldImpl::HomeAddressCountry:
       return Addressee::homeAddressCountryLabel();
+    case FieldImpl::HomeAddressLabel:
+      return Addressee::homeAddressLabelLabel();
     case FieldImpl::BusinessAddressStreet:
       return Addressee::businessAddressStreetLabel();
     case FieldImpl::BusinessAddressLocality:
@@ -143,6 +147,8 @@ QString Field::label()
       return Addressee::businessAddressPostalCodeLabel();
     case FieldImpl::BusinessAddressCountry:
       return Addressee::businessAddressCountryLabel();
+    case FieldImpl::BusinessAddressLabel:
+      return Addressee::businessAddressLabelLabel();
     case FieldImpl::HomePhone:
       return Addressee::homePhoneLabel();
     case FieldImpl::BusinessPhone:
@@ -338,11 +344,13 @@ Field::List Field::allFields()
     createField( FieldImpl::HomeAddressRegion, Address|Personal );
     createField( FieldImpl::HomeAddressPostalCode, Address|Personal );
     createField( FieldImpl::HomeAddressCountry, Address|Personal );
+    createField( FieldImpl::HomeAddressLabel, Address|Personal );
     createField( FieldImpl::BusinessAddressStreet, Address|Organization );
     createField( FieldImpl::BusinessAddressLocality, Address|Organization );
     createField( FieldImpl::BusinessAddressRegion, Address|Organization );
     createField( FieldImpl::BusinessAddressPostalCode, Address|Organization );
     createField( FieldImpl::BusinessAddressCountry, Address|Organization );
+    createField( FieldImpl::BusinessAddressLabel, Address|Organization );
     createField( FieldImpl::HomePhone, Personal|Frequent );
     createField( FieldImpl::BusinessPhone, Organization|Frequent );
     createField( FieldImpl::MobilePhone, Frequent );

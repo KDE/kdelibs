@@ -33,14 +33,14 @@ LF,home address locality,QString,homeAddressLocality,Address|Personal
 LF,home address region,QString,homeAddressRegion,Address|Personal
 LF,home address postal code,QString,homeAddressPostalCode,Address|Personal
 LF,home address country,QString,homeAddressCountry,Address|Personal
-#LF,home address label,QString,homeAddressLabel,Address|Personal
+LF,home address label,QString,homeAddressLabel,Address|Personal
 
 LF,business address street,QString,businessAddressStreet,Address|Organization
 LF,business address locality,QString,businessAddressLocality,Address|Organization
 LF,business address region,QString,businessAddressRegion,Address|Organization
 LF,business address postal code,QString,businessAddressPostalCode,Address|Organization
 LF,business address country,QString,businessAddressCountry,Address|Organization
-#LF,business address label,QString,businessAddressLabel,Address|Organization
+LF,business address label,QString,businessAddressLabel,Address|Organization
 
 #phoneNumbers
 LF,home phone,QString,homePhone,Personal|Frequent
@@ -73,8 +73,7 @@ ALF,URL,KURL,url,,.url()
 ALE,security class,Secrecy,secrecy,,.asString()
 LF,encryption key,QString,key,CustomCategory
 
-#QPixmap logo
-#,photo,QPixmap,photo
-#sound
-#Agent agent
-
+ALE,logo,Picture,logo,,.asString()
+ALE,photo,Picture,photo,,.asString()
+ALE,sound,Sound,sound,,.asString()
+ALE,agent,Agent,agent,,.asString()

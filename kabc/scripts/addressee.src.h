@@ -30,10 +30,13 @@
 #include <kurl.h>
 
 #include "address.h"
+#include "agent.h"
 #include "geo.h"
 #include "key.h"
 #include "phonenumber.h"
+#include "picture.h"
 #include "secrecy.h"
+#include "sound.h"
 #include "timezone.h"
 
 namespace KABC {
@@ -304,6 +307,11 @@ class Addressee
       Debug output.
      */
     void dump() const;
+
+    /**
+      Returns string representation of the addressee.
+     */
+    QString asString() const;
 
     /**
       Set resource where the addressee is from.

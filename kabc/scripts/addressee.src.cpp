@@ -385,6 +385,11 @@ Key Addressee::findKey( const QString &id ) const
   return Key();
 }
 
+QString Addressee::asString() const
+{
+  return "Smith, special agent Smith...";
+}
+
 void Addressee::dump() const
 {
   kdDebug(5700) << "Addressee {" << endl;

@@ -52,6 +52,10 @@ struct Addressee::AddresseeData : public KShared
   QString sortString;
   KURL url;
   Secrecy secrecy;
+  Picture logo;
+  Picture photo;
+  Sound sound;
+  Agent agent;
 
   PhoneNumber::List phoneNumbers;
   Address::List addresses;
@@ -126,6 +130,10 @@ bool Addressee::operator==( const Addressee &a ) const
   if ( mData->revision != a.mData->revision ) return false;
   if ( mData->sortString != a.mData->sortString ) return false;
   if ( mData->secrecy != a.mData->secrecy ) return false;
+  if ( mData->logo != a.mData->logo ) return false;
+  if ( mData->photo != a.mData->photo ) return false;
+  if ( mData->sound != a.mData->sound ) return false;
+  if ( mData->agent != a.mData->agent ) return false;
   if ( ( mData->url.isValid() || a.mData->url.isValid() ) &&
        ( mData->url != a.mData->url ) ) return false;
   if ( mData->phoneNumbers != a.mData->phoneNumbers ) return false;
@@ -368,6 +376,12 @@ QString Addressee::homeAddressCountryLabel()
 }
 
 
+QString Addressee::homeAddressLabelLabel()
+{
+  return i18n("Home Address Label");
+}
+
+
 QString Addressee::businessAddressStreetLabel()
 {
   return i18n("Business Address Street");
@@ -395,6 +409,12 @@ QString Addressee::businessAddressPostalCodeLabel()
 QString Addressee::businessAddressCountryLabel()
 {
   return i18n("Business Address Country");
+}
+
+
+QString Addressee::businessAddressLabelLabel()
+{
+  return i18n("Business Address Label");
 }
 
 
@@ -665,6 +685,82 @@ QString Addressee::secrecyLabel()
 QString Addressee::keyLabel()
 {
   return i18n("Encryption Key");
+}
+
+
+void Addressee::setLogo( const Picture &logo )
+{
+  if ( logo == mData->logo ) return;
+  detach();
+  mData->empty = false;
+  mData->logo = logo;
+}
+
+Picture Addressee::logo() const
+{
+  return mData->logo;
+}
+
+QString Addressee::logoLabel()
+{
+  return i18n("Logo");
+}
+
+
+void Addressee::setPhoto( const Picture &photo )
+{
+  if ( photo == mData->photo ) return;
+  detach();
+  mData->empty = false;
+  mData->photo = photo;
+}
+
+Picture Addressee::photo() const
+{
+  return mData->photo;
+}
+
+QString Addressee::photoLabel()
+{
+  return i18n("Photo");
+}
+
+
+void Addressee::setSound( const Sound &sound )
+{
+  if ( sound == mData->sound ) return;
+  detach();
+  mData->empty = false;
+  mData->sound = sound;
+}
+
+Sound Addressee::sound() const
+{
+  return mData->sound;
+}
+
+QString Addressee::soundLabel()
+{
+  return i18n("Sound");
+}
+
+
+void Addressee::setAgent( const Agent &agent )
+{
+  if ( agent == mData->agent ) return;
+  detach();
+  mData->empty = false;
+  mData->agent = agent;
+}
+
+Agent Addressee::agent() const
+{
+  return mData->agent;
+}
+
+QString Addressee::agentLabel()
+{
+  return i18n("Agent");
 }
 
 
@@ -946,6 +1042,11 @@ Key Addressee::findKey( const QString &id ) const
   return Key();
 }
 
+QString Addressee::asString() const
+{
+  return "Smith, special agent Smith...";
+}
+
 void Addressee::dump() const
 {
   kdDebug(5700) << "Addressee {" << endl;
@@ -972,6 +1073,10 @@ void Addressee::dump() const
   kdDebug(5700) << "  SortString: '" << sortString() << "'" << endl;
   kdDebug(5700) << "  Url: '" << url().url() << "'" << endl;
   kdDebug(5700) << "  Secrecy: '" << secrecy().asString() << "'" << endl;
+  kdDebug(5700) << "  Logo: '" << logo().asString() << "'" << endl;
+  kdDebug(5700) << "  Photo: '" << photo().asString() << "'" << endl;
+  kdDebug(5700) << "  Sound: '" << sound().asString() << "'" << endl;
+  kdDebug(5700) << "  Agent: '" << agent().asString() << "'" << endl;
   
   kdDebug(5700) << "  Emails {" << endl;
   QStringList e = emails();
@@ -1284,6 +1389,10 @@ QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
   s << a.mData->sortString;
   s << a.mData->url;
   s << a.mData->secrecy;
+  s << a.mData->logo;
+  s << a.mData->photo;
+  s << a.mData->sound;
+  s << a.mData->agent;
   s << a.mData->phoneNumbers;
   s << a.mData->addresses;
   s << a.mData->emails;
@@ -1319,6 +1428,10 @@ QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
   s >> a.mData->sortString;
   s >> a.mData->url;
   s >> a.mData->secrecy;
+  s >> a.mData->logo;
+  s >> a.mData->photo;
+  s >> a.mData->sound;
+  s >> a.mData->agent;
   s >> a.mData->phoneNumbers;
   s >> a.mData->addresses;
   s >> a.mData->emails;

@@ -30,8 +30,8 @@ namespace KABC {
  */
 class Key
 {
-    friend QDataStream &operator<<( QDataStream &, const Key & );
-    friend QDataStream &operator>>( QDataStream &, Key & );
+  friend QDataStream &operator<<( QDataStream &, const Key & );
+  friend QDataStream &operator>>( QDataStream &, Key & );
 
 public:
   typedef QValueList<Key> List;
@@ -122,6 +122,9 @@ private:
   QString mCustomTypeString;
   int mType;
 };
+
+QDataStream &operator<<( QDataStream &, const Key & );
+QDataStream &operator>>( QDataStream &, Key & );
 
 }
 #endif
