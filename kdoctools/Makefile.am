@@ -40,9 +40,8 @@ messages:
 	$(XGETTEXT) *.cpp -o $(podir)/kdebase/kio_help.pot
 
 install-data-local:
-	@(cd $(srcdir) && \
-	for subdir in customization docbook; do \
-	   for dir in `find $$subdir -type d ! -name CVS `; do \
+	@(for subdir in customization docbook; do \
+	   for dir in `find $(srcdir)/$$subdir -type d ! -name CVS `; do \
 		$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/ksgmltools2/$$dir ;\
 		for file in `ls -1 $$dir/*`; do \
 		    if test -f $$file; then \
