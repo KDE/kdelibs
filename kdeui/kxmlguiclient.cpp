@@ -290,14 +290,14 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
         QString itAppend( newChild.attribute( attrAppend ) );
         QString elemName( currElement.attribute( attrName ) );
 
-        if ( ( itAppend.isNull() && elemName.isNull() ) ||
+        if ( ( itAppend.isNull() && elemName.isEmpty() ) ||
              ( itAppend == elemName ) )
         {
           // first, see if this new element matches a standard one in
           // the global file.  if it does, then we skip it as it will
           // be merged in, later
           QDomElement matchingElement = findMatchingElement( newChild, base );
-          if ( matchingElement.isNull() )
+          if ( matchingElement.isNull() || newChild.tagName() == tagSeparator )
             base.insertBefore( newChild, currElement );
         }
       }
@@ -622,23 +622,23 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
 
 QString KXMLGUIClient::findVersionNumber( const QString &_xml )
 {
-  QString xml = _xml; 
+  QString xml = _xml;
 
   KRegExp expr( ".*<kpartgui.+version=\"([0-9]+)\".*>.*", "i" );
-  
+
   QTextStream stream( xml, IO_ReadOnly );
   QString line = stream.readLine();
   for (; !line.isNull(); line = stream.readLine() )
   {
     if ( line.isEmpty() )
       continue;
-    
+
     if ( expr.match( line.local8Bit() ) )
     {
     //      kdDebug() << "FOUND VERSION!!!!" << expr.group(1) << endl;
       return QString::fromLocal8Bit( expr.group(1) );
     }
   }
-  
+
   return QString::null;
-} 
+}
