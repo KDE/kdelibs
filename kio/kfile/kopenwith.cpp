@@ -177,6 +177,10 @@ void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
       if (p->isType(KST_KService))
       {
          KService *service = static_cast<KService *>(p);
+
+         if (service->noDisplay())
+            continue;
+
          icon = service->icon();
          text = service->name();
          exec = service->exec();
@@ -184,6 +188,10 @@ void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
       else if (p->isType(KST_KServiceGroup))
       {
          KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+
+         if (serviceGroup->noDisplay())
+            continue;
+
          icon = serviceGroup->icon();
          text = serviceGroup->caption();
          relPath = serviceGroup->relPath();
