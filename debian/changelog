@@ -1,4 +1,4 @@
-ikdelibs (4:2.2.1-13) unstable; urgency=low
+kdelibs (4:2.2.1-13) unstable; urgency=low
 
   * Fix overwrite problem (Closes: #116568)
   * Sync with upstream
