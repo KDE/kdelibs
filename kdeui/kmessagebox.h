@@ -23,10 +23,12 @@
 
 #include <kguiitem.h>
 #include <kstdguiitem.h>
+#include <qmessagebox.h>
 
 class QWidget;
 class QStringList;
 class KConfig;
+class KDialogBase;
 
  /**
   * Easy message dialog box.
@@ -1022,6 +1024,27 @@ public:
      * @since 3.2
      */    
     static void setDontShowAskAgainConfig(KConfig* cfg);
+
+    /**
+     * Create content and layout of a standard dialog
+     *
+     * @param dialog  The parent dialog base
+     * @param icon    Which predefined icon the message box shall show.
+     * @param text    Message string.
+     * @param strlist List of strings to be written in the listbox.
+     *                If the list is empty, it doesn't show any listbox
+     * @param ask     The text of the checkbox. If empty none will be shown.
+     * @param checkboxReturn The result of the checkbox. If it's initially
+     *                true then the checkbox will be checked by default.
+     * @param options  see OptionsType
+     * @param details Detailed message string.
+     * @since 3.3
+     */
+    static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
+                             const QString &text, const QStringList &strlist,
+                             const QString &ask, bool *checkboxReturn,
+                             int options, const QString &details=QString::null);
+
 private:
     static KConfig* againConfig;
 };

@@ -137,10 +137,10 @@ static QString qrichtextify( const QString& text )
   return lines.join(QString::null);
 }
 
-static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
+int KMessageBox::createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
-                             int options, const QString &details=QString::null)
+                             int options, const QString &details)
 {
     QVBox *topcontents = new QVBox (dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
@@ -220,6 +220,8 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
     if (!ask.isEmpty())
     {
        checkbox = new QCheckBox(ask, topcontents);
+       if (checkboxReturn)
+         checkbox->setChecked(*checkboxReturn);
     }
 
     if (!details.isEmpty())
