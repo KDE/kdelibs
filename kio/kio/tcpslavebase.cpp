@@ -529,7 +529,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
          break;
         case KSSLCertificateHome::AuthDont:
           send = false; prompt = false;
-          certname = "";
+          certname = QString::null;
          break;
         case KSSLCertificateHome::AuthPrompt:
           send = false; prompt = true;
@@ -540,24 +540,29 @@ KSSLCertificateHome::KSSLAuthAction aa;
   }
 
   QString ourHost;
-  if (!d->realHost.isEmpty())
+  if (!d->realHost.isEmpty()) {
      ourHost = d->realHost;
-  else ourHost = d->host;
+  } else {
+     ourHost = d->host;
+  }
 
   // Look for a certificate on a per-host basis as an override
   QString tmpcn = KSSLCertificateHome::getDefaultCertificateName(ourHost, &aa);
   if (aa != KSSLCertificateHome::AuthNone) {   // we must override
     switch (aa) {
         case KSSLCertificateHome::AuthSend:
-          send = true; prompt = false;
+          send = true;
+          prompt = false;
           certname = tmpcn;
          break;
         case KSSLCertificateHome::AuthDont:
-          send = false; prompt = false;
-          certname = "";
+          send = false;
+          prompt = false;
+          certname = QString::null;
          break;
         case KSSLCertificateHome::AuthPrompt:
-          send = false; prompt = true;
+          send = false;
+          prompt = true;
           certname = tmpcn;
          break;
         default:
@@ -579,30 +584,26 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
   // Ok, we're supposed to prompt the user....
   if (prompt || forcePrompt) {
-     QStringList certs = KSSLCertificateHome::getCertificateList();
+    QStringList certs = KSSLCertificateHome::getCertificateList();
 
-  for (QStringList::Iterator it = certs.begin();
-           it != certs.end();
-           ++it) {
-    KSSLPKCS12 *pkcs =
-      KSSLCertificateHome::getCertificateByName(*it);
-    if (pkcs)
-    if (!pkcs->getCertificate() ||
-        !pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient()) {
-      certs.remove(*it);
+    for (QStringList::Iterator it = certs.begin(); it != certs.end(); ++it) {
+      KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(*it);
+      if (pkcs && (!pkcs->getCertificate() ||
+          !pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient())) {
+        certs.remove(*it);
+      }
     }
-  }
 
-        if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
+    if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
-     if (!d->dcc) {
+    if (!d->dcc) {
         d->dcc = new DCOPClient;
         d->dcc->attach();
         if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
            KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
                                                    QStringList() );
         }
-     }
+    }
 
      QByteArray data, retval;
      QCString rettype;
@@ -625,12 +626,12 @@ KSSLCertificateHome::KSSLAuthAction aa;
      }
   }
 
-    // The user may have said to not send the certificate,
-    // but to save the choice
+  // The user may have said to not send the certificate,
+  // but to save the choice
   if (!send) {
      if (save) {
-            KSSLCertificateHome::setDefaultCertificate(certname, ourHost,
-                                                       false, false);
+       KSSLCertificateHome::setDefaultCertificate(certname, ourHost,
+                                                  false, false);
      }
      return;
   }
@@ -665,15 +666,21 @@ KSSLCertificateHome::KSSLAuthAction aa;
            bool rc = d->dcc->call("kio_uiserver", "UIServer",
                                    "openPassDlg(KIO::AuthInfo)",
                                    authdata, rettype, authval);
-           if (!rc) break;
-           if (rettype != "QByteArray") continue;
+           if (!rc) {
+             break;
+           }
+           if (rettype != "QByteArray") {
+             continue;
+           }
 
            QDataStream qdret(authval, IO_ReadOnly);
            QByteArray authdecode;
            qdret >> authdecode;
            QDataStream qdtoo(authdecode, IO_ReadOnly);
            qdtoo >> ai;
-           if (!ai.isModified()) break;
+           if (!ai.isModified()) {
+             break;
+           }
         }
         pass = ai.password;
         pkcs = KSSLCertificateHome::getCertificateByName(certname, pass);
@@ -683,11 +690,15 @@ KSSLCertificateHome::KSSLAuthAction aa;
                                                      "certificate. Try a "
                                                      "new password?"),
                                                 i18n("SSL"));
-              if (rc == KMessageBox::No) break;
+              if (rc == KMessageBox::No) {
+                break;
+              }
               showprompt = true;
         }
      } while (!pkcs);
-     if (pkcs) cacheAuthentication(ai);
+     if (pkcs) {
+       cacheAuthentication(ai);
+     }
   }
 
    // If we could open the certificate, let's send it
@@ -697,6 +708,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
                                          "client certificate for the session "
                                          "failed."), i18n("SSL"));
          delete pkcs;  // we don't need this anymore
+         pkcs = 0L;
       } else {
          kdDebug(7029) << "Client SSL certificate is being used." << endl;
          setMetaData("ssl_using_client_cert", "TRUE");
@@ -707,9 +719,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
       }
       d->pkcs = pkcs;
    }
-
 }
-
 
 
 
