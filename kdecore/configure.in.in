@@ -1,2 +1,70 @@
+dnl --------
+dnl KSocketAddress/KExtendedSocket extra configuration
+dnl --------
+dnl
+dnl This is to be merged with configure.in.in soon
+
+dnl Don't check for getnameinfo and freeaddrinfo. If getaddrinfo is there,
+dnl so are those two
+AC_CHECK_FUNCS(inet_ntop inet_pton getaddrinfo getpeername getsockname getsockopt gethostbyname2_r gethostbyname_r gethostbyname2)
+
+AC_SUBST(HAVE_SOCKADDR_SA_LEN)
+AC_MSG_CHECKING([if struct sockaddr has member sa_len])
+AC_TRY_COMPILE(
+  [
+    #include <sys/socket.h>
+    struct sockaddr sa;
+  ],
+  [
+    sa.sa_len = sizeof(sa);
+  ],
+  [
+    AC_DEFINE(HAVE_SOCKADDR_SA_LEN,1,[Define if struct sockaddr has member sa_len])
+    AC_MSG_RESULT(yes)
+  ],
+  AC_MSG_RESULT(no)
+)
+
+AC_SUBST(HAVE_SOCKADDR_IN6)
+AC_SUBST(HAVE_SOCKADDR_IN6_SCOPEID)
+AC_CHECK_HEADERS(netinet/in.h,
+  [
+
+    dnl Check for sockaddr_in6. We don't have to check for in6_addr
+    dnl if sockaddr_in6 is there, so is in6_addr
+    AC_MSG_CHECKING([for struct sockaddr_in6])
+    AC_TRY_COMPILE(
+      [
+	#include <netinet/in.h>
+	struct sockaddr_in6 sin6;
+      ],
+      [
+      ],
+      [
+	AC_DEFINE(HAVE_SOCKADDR_IN6,1,[Define if we have struct sockaddr_in6 in netinet/in.h])
+	AC_MSG_RESULT(yes)
+
+	dnl Check if this system's sockaddr_in6 already supports sin6_scopeid
+	dnl All systems should support it, but some still don't
+	AC_MSG_CHECKING([if struct sockaddr_in6 has member sin6_scopeid])
+	AC_TRY_COMPILE(
+	  [
+	    #include <netinet/in.h>
+	    struct sockaddr_in6 sin6;
+	  ],
+	  [
+	    sin6.sin6_scopeid = 0;
+	  ],
+	  [
+	    AC_DEFINE(HAVE_SOCKADDR_IN6_SCOPEID,1,[Define if this system already has sin6_scopeid in sockaddr_in6])
+	    AC_MSG_RESULT(yes)
+	  ],
+	  AC_MSG_RESULT(no)
+	)
+      ],
+      AC_MSG_RESULT(no)
+    )
+  ]
+)
 
 dnl AC_OUTPUT(kdecore/kde-config.cpp)
