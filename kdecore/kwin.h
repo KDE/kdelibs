@@ -349,10 +349,9 @@ public:
     static QString readNameProperty( WId window, unsigned long atom );
 
     /**
-     * @deprecated
-     * Use @see WindowInfo .
+     * @deprecated Use WindowInfo .
      */
-    struct Info
+    struct KDE_DEPRECATED Info
     {
       /// The window's id.
 	WId win;
@@ -382,7 +381,7 @@ public:
 	QRect frameGeometry;
 
 	QString visibleNameWithState() const;
-    } KDE_DEPRECATED;
+    };
 
     /**
      * @deprecated
