@@ -64,7 +64,7 @@ void KIconEffect::init()
     QString _desaturate("desaturate");
     QString _togamma("togamma");
     QString _none("none");
-    
+
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
 	// Default effects
@@ -334,31 +334,42 @@ void KIconEffect::semiTransparent(QImage &img)
     } else
     {
 	// Insert transparent pixel into the clut.
-	int transColor = 256;
-	if (img.numColors() > 255)
-	{
-	    // no space for transparent pixel..
-	    for (x=0; x<img.numColors(); x++)
-	    {
-		// try to find already transparent pixel
-		if (qAlpha(img.color(x)) < 127)
-		{
-		    transColor = x;
-		    break;
-		}
-	    }
-	} else
-	{
-	    transColor = img.numColors()-1;
-	}
-	img.setColor(transColor, 0);
+	int transColor = -1;
 
-	for (y=0; y<img.height(); y++)
-	{
-	    unsigned char *line = img.scanLine(y);
-	    for (x=(y%2); x<img.width(); x+=2)
-		line[x] = transColor;
+        // search for a color that is already transparent
+        for (x=0; x<img.numColors(); x++)
+        {
+            // try to find already transparent pixel
+            if (qAlpha(img.color(x)) < 127)
+            {
+                transColor = x;
+                break;
+            }
+        }
+
+
+        // FIXME: image must have transparency
+        if(transColor < 0 || transColor >= img.numColors())
+            return;
+
+	img.setColor(transColor, 0);
+        if(img.depth() == 8)
+        {
+            for (y=0; y<img.height(); y++)
+            {
+                unsigned char *line = img.scanLine(y);
+                for (x=(y%2); x<img.width(); x+=2)
+                    line[x] = transColor;
+            }
 	}
+        else
+        {
+            // SLOOW, but simple, as we would have to
+            // deal with endianess etc on our own here
+            for (y=0; y<img.height(); y++)
+                for (x=(y%2); x<img.width(); x+=2)
+                    img.setPixel(x, y, transColor);
+        }
     }
 }
 
@@ -515,7 +526,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
     if (src.depth() == 32)
     {
 	QRgb *oline, *sline;
-	int r1, g1, b1, a1; 
+	int r1, g1, b1, a1;
 	int r2, g2, b2, a2;
 
 	for (i=0; i<src.height(); i++)
@@ -530,8 +541,8 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 		b1 = qBlue(oline[j]);
 		a1 = qAlpha(oline[j]);
 
-		r2 = qRed(sline[j]); 
-		g2 = qGreen(sline[j]); 
+		r2 = qRed(sline[j]);
+		g2 = qGreen(sline[j]);
 		b2 = qBlue(sline[j]);
 		a2 = qAlpha(sline[j]);
 
@@ -544,7 +555,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	    }
 	}
     }
-    
+
     return;
 }
 
