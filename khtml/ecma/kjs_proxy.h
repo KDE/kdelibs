@@ -72,7 +72,7 @@ public:
   QVariant executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args);
   DOM::EventListener *createHTMLEventHandler(QString code);
   KHTMLPart *khtmlpart;
-  KJScript *jScript() { return script; }
+  KJScript *jScript();
 private:
   KJSCreateFunc *create;
   KJScript *script;
@@ -123,6 +123,13 @@ inline DOM::EventListener *KJSProxy::createHTMLEventHandler(QString code)
   if (!script)
     script = (*create)(khtmlpart);
   return (*createHTMLEH)(script,code,khtmlpart);
+}
+
+inline KJScript *KJSProxy::jScript()
+{
+  if (!script)
+    script = (*create)(khtmlpart);
+  return script;
 }
 
 #endif

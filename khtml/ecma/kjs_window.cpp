@@ -966,7 +966,6 @@ Completion WindowFunc::tryExecute(const List &args)
         emit part->browserExtension()->createNewWindow("", uargs,winargs,newPart);
         if (newPart && newPart->inherits("KHTMLPart")) {
 	  KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
-	  Window *win = Window::retrieveWindow(khtmlpart);
 	    //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
             khtmlpart->setOpener(part);
 	    khtmlpart->setOpenedByJS(true);
