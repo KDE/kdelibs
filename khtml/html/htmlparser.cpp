@@ -555,7 +555,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 if(node->id() == ID_TR &&
                    ( parent->id() == ID_THEAD ||
                      parent->id() == ID_TBODY ||
-                     parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE )
+                     parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE &&
+                    checkChild( ID__KONQBLOCK, id ))
                 {
                     node = parentparent;
                     NodeImpl *parent = node->parentNode();
