@@ -252,7 +252,7 @@ QString HTMLSelect::encoding()
     return _encoding;
 }
 
-void HTMLSelect::reset()
+void HTMLSelect::resetElement()
 {
 	if ( _size > 1 )
 		((QListBox *)widget)->setCurrentItem( _defSelected );
@@ -310,7 +310,7 @@ QString HTMLTextArea::encoding()
 	return _encoding;
 }
 
-void HTMLTextArea::reset()
+void HTMLTextArea::resetElement()
 {
 	((QMultiLineEdit *)widget)->setText( _defText );
 }
@@ -407,7 +407,7 @@ QString HTMLCheckBox::encoding()
 	return _encoding;
 }
 
-void HTMLCheckBox::reset()
+void HTMLCheckBox::resetElement()
 {
 	((QCheckBox *)widget)->setChecked( _defCheck );
 }
@@ -470,7 +470,7 @@ QString HTMLRadio::encoding()
 	return _encoding;
 }
 
-void HTMLRadio::reset()
+void HTMLRadio::resetElement()
 {
 	((QRadioButton *)widget)->setChecked( _defCheck );
 }
@@ -605,7 +605,7 @@ QString HTMLTextInput::encoding()
 	return _encoding;
 }
 
-void HTMLTextInput::reset()
+void HTMLTextInput::resetElement()
 {
 	((QLineEdit *)widget)->setText( _defText );
 }
@@ -727,7 +727,7 @@ void HTMLForm::slotReset()
 
     for ( e = elements.first(); e != 0; e = elements.next() )
     {
-	e->reset();
+	e->resetElement();
     }
 }
 

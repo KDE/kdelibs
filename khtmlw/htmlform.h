@@ -65,7 +65,7 @@ public:
 
 	virtual void calcAbsolutePos( int , int ) {}
 
-	virtual void reset() { }
+	virtual void resetElement() { }
 
 protected:
 	// encode special characters
@@ -129,7 +129,7 @@ public:
 	void setValue( const char *v, int item );
 
 	virtual QString encoding();
-	virtual void reset();
+	virtual void resetElement();
 
 protected slots:
 	void slotHighlighted( int indx );
@@ -154,7 +154,7 @@ public:
 	void setText( const char *t );
 
 	virtual QString encoding();
-	virtual void reset();
+	virtual void resetElement();
 
 private:
 	QString _defText;
@@ -188,7 +188,7 @@ public:
 	virtual ~HTMLCheckBox() { }
 
 	virtual QString encoding();
-	virtual void reset();
+	virtual void resetElement();
 
 private:
 	bool _defCheck;
@@ -216,7 +216,7 @@ public:
 	virtual ~HTMLRadio() { }
 
 	virtual QString encoding();
-	virtual void reset();
+	virtual void resetElement();
 
 public slots:
 	void slotRadioSelected( const char *n, const char *v );
@@ -279,7 +279,7 @@ public:
 	virtual ~HTMLTextInput() { }
 
 	virtual QString encoding();
-	virtual void reset();
+	virtual void resetElement();
 
 protected slots:
 	void slotTextChanged( const char * );
