@@ -25,6 +25,8 @@
 #include <qdict.h>
 #include <qobject.h>
 
+#include <kdelibs_export.h>
+
 class ScriptInfo;
 //namespace KScriptInterface
 //{
@@ -34,7 +36,7 @@ class ScriptInfo;
 	*	@author Ian Reinhart Geiser <geiseri@kde.org>
 	*
 	**/
-	class KScriptManager : public QObject, public KScriptClientInterface
+	class KDE_EXPORT KScriptManager : public QObject, public KScriptClientInterface
 	{
 	Q_OBJECT
 	friend class KScriptInterface;
