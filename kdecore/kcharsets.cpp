@@ -328,17 +328,14 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     mask.charset = charset;
     getFontList(mask, list);
     if(!list.isEmpty()) {
-	qDebug("do: 1");
         f.setCharSet(charset);
         return;
     }
 
-	qDebug("do: 2");
     // let's try unicode...
     mask.charset = QFont::Unicode;
     getFontList(mask, list);
     if(!list.isEmpty()) {
-	qDebug("do: 3");
         // just setting the charset to unicode should work
         f.setCharSet(QFont::Unicode);
         return;
@@ -347,39 +344,32 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
     // ok... we don't have the charset in the specified family, let's
     // try to find a replacement.
 
-	qDebug("do: 4");
     mask.charset = charset;
     getFontList(mask, list);
     if(!list.isEmpty()) {
-	qDebug("do: 5");
         f.setFamily(list.first()->family);
         f.setCharSet(charset);
         return;
     }
 
-	qDebug("do: 6");
     mask.charset = QFont::Unicode;
     mask.family = QString::null;
     getFontList(mask, list);
     if(!list.isEmpty()) {
-	qDebug("do: 7");
         f.setFamily(list.first()->family);
         f.setCharSet(QFont::Unicode);
         return;
     }
 
-	qDebug("do: 8");
     KFontStruct m;
     m.charset = charset;
     getFontList(m, list);
     if(!list.isEmpty()) {
-	qDebug("do: 9");
         f.setFamily(list.first()->family);
         f.setCharSet(charset);
         return;
     }
 
-	qDebug("do: 10");
     f.setCharSet(QFont::AnyCharSet);
     return;
 }
