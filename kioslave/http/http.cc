@@ -121,6 +121,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   
   m_bBusy = false;
   m_bFirstRequest = false;
+  m_bProxyAuthValid = false;
   
   m_iSize = NO_SIZE;
   m_lineBufUnget = 0;
@@ -204,6 +205,7 @@ void HTTPProtocol::resetSessionSettings()
        (!proxy.user().isNull() && proxy.user() != m_proxyURL.user()) ||
        (!proxy.pass().isNull() && proxy.pass() != m_proxyURL.pass()) )
   {
+    m_bProxyAuthValid = false;
     m_proxyURL = proxy;
     m_bUseProxy = m_proxyURL.isValid();
 
@@ -2480,7 +2482,7 @@ bool HTTPProtocol::readHeader()
       mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
       return true;
     }
-
+    
     kdDebug(7113) << "HTTPProtocol::readHeader: Connection broken !" << endl;
     error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
@@ -4789,6 +4791,16 @@ bool HTTPProtocol::getAuthorization()
     // out if we have a cached version and avoid a re-prompt!
     // We also do not use verify path unlike the pre-emptive
     // requests because we already know the realm value...
+    
+    if (m_bProxyAuthValid)
+    {
+      // Reset cached proxy auth
+      m_bProxyAuthValid = false;
+      KURL proxy = config()->readEntry("UseProxy");
+      m_proxyURL.setUser(proxy.user());
+      m_proxyURL.setPass(proxy.pass());
+    }
+    
     info.verifyPath = false;
     if ( m_responseCode == 407 )
     {
@@ -4892,6 +4904,7 @@ void HTTPProtocol::saveAuthorization()
   AuthInfo info;
   if ( m_prevResponseCode == 407 )
   {
+    m_bProxyAuthValid = true;
     info.url = m_proxyURL;
     info.username = m_proxyURL.user();
     info.password = m_proxyURL.pass();
