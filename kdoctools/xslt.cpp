@@ -280,25 +280,9 @@ void fillInstance(KInstance &ins) {
     xmlLoadCatalogs(catalogs.latin1());
 }
 
-static KFilterBase *filter = 0;
-
-static KFilterBase *findFilterByFileName( const QString &filename )
-{
-    if ( filter )
-        return filter;
-
-    filter = new KBzip2Filter;
-    return filter;
-}
-
 bool saveToCache( const QString &contents, const QString &filename )
 {
-    QFile raw(filename);
-    KFilterBase *f = ::findFilterByFileName(filename);
-    if ( !f )
-         return false;
-
-    QIODevice *fd= KFilterDev::createFilterDevice(f, &raw);
+    QIODevice *fd = KFilterDev::deviceForFile(filename);
 
     if (!fd->open(IO_WriteOnly))
     {
@@ -322,9 +306,7 @@ static bool readCache( const QString &filename,
         return false;
 
     kdDebug( 7119 ) << "create filter" << endl;
-    QFile raw(cache);
-    KFilterBase *f = ::findFilterByFileName(cache);
-    QIODevice *fd= KFilterDev::createFilterDevice(f, &raw);
+    QIODevice *fd = KFilterDev::deviceForFile(cache);
 
     if (!fd->open(IO_ReadOnly))
     {
