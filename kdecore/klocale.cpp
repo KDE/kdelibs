@@ -1094,11 +1094,9 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
   QString buffer;
 
   bool escape = false;
-  int number = 0;
 
   int year = calendar()->year(pDate);
   int month = calendar()->month(pDate);
-  int day = calendar()->day(pDate);
 
   for ( uint format_index = 0; format_index < rst.length(); ++format_index )
     {
