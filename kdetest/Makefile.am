@@ -17,6 +17,8 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
+top_realbuilddir = `cd $(top_builddir) && pwd`
+
 
 INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
           -I$(top_srcdir)/kformula -I$(top_srcdir)/kio\
@@ -25,11 +27,11 @@ INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 LDFLAGS = -L$(top_builddir)/kdecore/.libs -L$(top_builddir)/kdeui/.libs \
           -L$(top_builddir)/kformula/.libs -L$(top_builddir)/kio/.libs\
 	  -L$(top_builddir)/kfile/.libs\
-          -rpath $(top_builddir)/kdecore/.libs \
-	  -rpath $(top_builddir)/kdeui/.libs \
-          -rpath $(top_builddir)/kformula/.libs \
-	  -rpath $(top_builddir)/kio/.libs \
-	  -rpath $(top_builddir)/kfile/.libs \
+          -rpath $(top_realbuilddir)/kdecore/.libs \
+	  -rpath $(top_realbuilddir)/kdeui/.libs \
+          -rpath $(top_realbuilddir)/kformula/.libs \
+	  -rpath $(top_realbuilddir)/kio/.libs \
+	  -rpath $(top_realbuilddir)/kfile/.libs \
           $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 LDADD = $(LIB_KFILE) $(LIB_KIO) $(LIB_KDEUI)
