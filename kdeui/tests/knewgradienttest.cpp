@@ -331,7 +331,7 @@ void KNewPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
 
 
 QImage KNewPixmapEffect::gradient(const QSize &size, const QColor &ca,
-	const QColor &cb, GradientType eff, int ncols)
+	const QColor &cb, GradientType eff, int)
 {
     int rDiff, gDiff, bDiff;
     int rca, gca, bca, rcb, gcb, bcb;

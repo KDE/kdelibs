@@ -37,7 +37,7 @@ KStepStyle::~KStepStyle()
     ;
 }
 
-void KStepStyle::polish(QApplication *app)
+void KStepStyle::polish(QApplication *)
 {
     setScrollBarExtent(18);
 }

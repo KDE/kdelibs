@@ -11,8 +11,6 @@ KBlendWidget::KBlendWidget(QWidget *parent, const char *name)
   :QWidget(parent, name)
 {
 
-    int x = 0, y = 0;
-
     bgnd = qRgb(255, 255, 255);
 
     image = QImage("testimage.png");
@@ -28,8 +26,6 @@ void KBlendWidget::paintEvent(QPaintEvent */*ev*/)
     QString say;
 
     image = QImage("testimage.png");
-
-    int x = 0, y = 0;
 
     QPainter p(this);
     p.setPen(Qt::black);

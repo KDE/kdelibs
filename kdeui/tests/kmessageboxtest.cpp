@@ -32,21 +32,21 @@ int main( int argc, char *argv[] )
     {
        for( int count = 0; count < 3; count++)
        {
-         switch(test) 
+         switch(test)
          {
 case 1:
   i = KMessageBox::questionYesNo(0, "Do you have a printer?");
   break;
 
 case 2:
-  i = KMessageBox::questionYesNo(0, "Do you have a printer?", 
-                "Printer setup");
+  i = KMessageBox::questionYesNo(0, "Do you have a printer?",
+				 QString("Printer setup"), QString::null);
   break;
 
 case 3:
-  i = KMessageBox::questionYesNo(0, 
-                "Does your printer support color or only black and white?", 
-                "Printer setup", "&Color", "&Black & White");
+  i = KMessageBox::questionYesNo(0,
+                "Does your printer support color or only black and white?",
+                "Printer setup", "&Color", "&Black & White", QString::null);
   break;
 
 case 4:
@@ -69,29 +69,29 @@ case 6:
 
 
 case 7:
-  i = KMessageBox::warningContinueCancel(0, 
+  i = KMessageBox::warningContinueCancel(0,
                 "You are about tp Print.\n"
 		"Are you sure?",
                 "Print", "&Print");
   break;
 
 case 8:
-  i = KMessageBox::warningYesNoCancel(0, 
+  i = KMessageBox::warningYesNoCancel(0,
                 "Your document contains unsaved changes.\n"
                 "Do you want to save your changes?\n");
   break;
 
 case 9:
-  i = KMessageBox::warningYesNoCancel(0, 
+  i = KMessageBox::warningYesNoCancel(0,
                 "Your document contains unsaved changes.\n"
                 "Do you want to save your changes?\n",
                 "Close");
   break;
 
 case 10:
-  i = KMessageBox::warningYesNoCancel(0, 
+  i = KMessageBox::warningYesNoCancel(0,
                 "Your document contains unsaved changes.\n"
-                "Do you want to save or discard your changes?\n", 
+                "Do you want to save or discard your changes?\n",
                 "Close", "&Save", "&Discard" );
   break;
 
@@ -141,11 +141,11 @@ case 19:
   i = KMessageBox::Ok;
   KMessageBox::information(0, "Return of the annoying popup message.", QString::null, "Enable_Menubar");
   break;
-  
+
 default:
   return 0;
          } // Switch
-         
+
          showResult(test, i);
       } // Count
     } // Test

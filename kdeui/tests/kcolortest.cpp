@@ -21,7 +21,7 @@ KColorWidget::KColorWidget(QWidget *parent, const char *name)
   resize(original.width(), original.height());
 }
 
-void KColorWidget::paintEvent(QPaintEvent *ev)
+void KColorWidget::paintEvent(QPaintEvent *)
 {
   if(!pixmap.isNull())
     bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
@@ -61,7 +61,7 @@ void KColorWidget::doIntensityLoop()
 	       Qt::CopyROP, true);
       }
       stop = t.elapsed();
-      warning ("Total fullscreen %s dim time for %d steps : %f s", 
+      warning ("Total fullscreen %s dim time for %d steps : %f s",
 	       oldway?"(antonio)":"(intensity)", count, (stop - start)*1e-3);
 
       if (intvsfade) {
@@ -75,9 +75,9 @@ void KColorWidget::doIntensityLoop()
 	}
       }
       stop = t.elapsed();
-      warning ("Total fullscreen (fade) dim time for %d steps : %f s", 
+      warning ("Total fullscreen (fade) dim time for %d steps : %f s",
 	       count, (stop - start)*1e-3);
-      
+
     }
 
     else {
@@ -89,14 +89,14 @@ void KColorWidget::doIntensityLoop()
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
-      
+
       for(count=0; count < max; ++count){
         KImageEffect::intensity(image, -1./max);
         pixmap.convertFromImage(image);
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
-      
+
       image = original; image.detach();
       warning("Red channel intensity test");
       for(count=0; count < max; ++count){
@@ -111,7 +111,7 @@ void KColorWidget::doIntensityLoop()
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
-      
+
       image = original; image.detach();
       warning("Green channel intensity test");
       for(count=0; count < max; ++count){
@@ -126,7 +126,7 @@ void KColorWidget::doIntensityLoop()
         bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
                Qt::CopyROP, true);
       }
-      
+
       image = original; image.detach();
       warning("Blue channel intensity test");
       for(count=0; count < max; ++count){

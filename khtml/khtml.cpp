@@ -526,7 +526,11 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 void KHTMLWidget::slotPost( int id )
 {
     KIOJob* job = KIOJob::find( id );
+#ifdef AFTER_KRASH_API
+    job->data(post_data);
+#else
     job->data((const char *)post_data, post_data.length());
+#endif
 }
 
 void KHTMLWidget::slotFinished( int /*_id*/ )
@@ -972,7 +976,7 @@ void KHTMLWidget::end()
       QTimer::singleShot(1000*m_delayRedirect, this, SLOT(slotRedirect()));
       return;
   }
-  
+
   // Are all children complete now ?
   QListIterator<Child> it2( m_lstChildren );
   for( ; it2.current(); ++it2 )
