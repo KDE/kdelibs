@@ -60,8 +60,23 @@
 
 #include <X11/Xlib.h>
 
-int waitForPid;
-int X11fd = -1;
+#if HAVE_DLFCN_H
+# include <dlfcn.h>
+#endif
+
+#ifdef RTLD_GLOBAL
+# define LTDL_GLOBAL	RTLD_GLOBAL
+#else
+# ifdef DL_GLOBAL
+#  define LTDL_GLOBAL	DL_GLOBAL
+# else
+#  define LTDL_GLOBAL	0
+# endif
+#endif
+
+
+extern int lt_dlopen_flag;
+static int X11fd = -1;
 static Display *X11display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
@@ -86,6 +101,7 @@ struct {
   int (*func)(int, char *[]);
   int (*launcher_func)(int);
   bool debug_wait;
+  int lt_dlopen_flag;
 } d;
 
 extern "C" {
@@ -213,6 +229,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
            }
         }
      }
+     lt_dlopen_flag = d.lt_dlopen_flag;
      if (!d.handle )
      {
         d.result = 2; // Try execing
@@ -989,6 +1006,8 @@ int main(int argc, char **argv, char **envp)
    d.launcher_pid = 0;
    d.wrapper = 0;
    d.debug_wait = false;
+   d.lt_dlopen_flag = lt_dlopen_flag;
+   lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();
 
 
