@@ -202,7 +202,7 @@ QString KKey::modFlagLabel( ModFlag modFlag )
 
 KKeySequence::KKeySequence()                          { clear(); }
 KKeySequence::KKeySequence( const QKeySequence& seq ) { init( seq ); }
-KKeySequence::KKeySequence( const KKey& spec )    { init( spec ); }
+KKeySequence::KKeySequence( const KKey& key )         { init( key ); }
 KKeySequence::KKeySequence( const KKeySequence& seq ) { init( seq ); }
 KKeySequence::KKeySequence( const QString& s )        { init( s ); }
 
@@ -218,12 +218,14 @@ void KKeySequence::clear()
 
 bool KKeySequence::init( const QKeySequence& seq )
 {
+	clear();
 	if( seq ) {
-		m_nKeys = 1;
 		m_rgvar[0].init( seq );
-		m_bTriggerOnRelease = false;
-	} else
-		clear();
+		if( !m_rgvar[0].isNull() ) {
+			m_nKeys = 1;
+			m_bTriggerOnRelease = false;
+		}
+	}
 	return true;
 }
 
