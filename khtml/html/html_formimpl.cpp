@@ -597,7 +597,7 @@ void HTMLFormElementImpl::submit(  )
                                                           KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
                                                           KDialogBase::Yes, KDialogBase::Cancel,
                                                           0, "questionYesNoCancel", true, true,
-                                                          KStdGuiItem::yes(), KGuiItem(i18n("Never for This Site")), KStdGuiItem::no());
+                                                          KStdGuiItem::yes(), KGuiItem(i18n("Ne&ver for This Site")), KStdGuiItem::no());
 
                 bool checkboxResult = false;
                 const int savePassword = KMessageBox::createKMessageBox(dialog, QMessageBox::Information,
