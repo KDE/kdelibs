@@ -76,6 +76,7 @@ class KIconEffect;
  * "User".
  *
  */
+ //KDE 4.0: remove "toolbar" from the searched directories for "User" icons.
 class KIconLoader
 {
 public:
@@ -480,14 +481,14 @@ QIconSet MainBarIconSet(const QString& name, int size=0,
 
 /**
  * \relates KIconLoader
- * Load a user icon.
+ * Load a user icon. User icons are searched in $appdir/pics and $appdir/toolbar.
  */
 QPixmap UserIcon(const QString& name, int state=KIcon::DefaultState,
 	KInstance *instance=KGlobal::instance());
 
 /**
  * \relates KIconLoader
- * Load a user icon.
+ * Load a user icon. User icons are searched in $appdir/pics and $appdir/toolbar.
  */
 QPixmap UserIcon(const QString& name, KInstance *instance);
 
