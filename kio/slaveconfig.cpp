@@ -138,6 +138,7 @@ SlaveConfig *SlaveConfig::self()
 SlaveConfig::SlaveConfig()
 {
   d = new SlaveConfigPrivate;
+  d->protocol.setAutoDelete(true);
   d->readGlobalConfig();
 }
 
