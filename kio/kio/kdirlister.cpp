@@ -1462,12 +1462,12 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
             if ( !treeview )
             {
               emit kdl->clear();
-            }
-            forgetDirs( kdl, deletedUrl, treeview );
-            if ( !treeview )
-            {
               kdl->d->lstDirs.clear();
             }
+            else
+              kdl->d->lstDirs.remove( kdl->d->lstDirs.find( deletedUrl ) );
+
+            forgetDirs( kdl, deletedUrl, treeview );
           }
         }
 
