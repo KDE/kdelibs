@@ -92,8 +92,7 @@
 //#define DEBUG_PIXEL
 
 #include <X11/Xlib.h>
-#undef KeyPress
-#undef KeyRelease
+#include <fixx11h.h>
 
 #define PAINT_BUFFER_HEIGHT 128
 
