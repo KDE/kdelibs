@@ -274,7 +274,7 @@ void KToggleAction::setChecked( bool c )
 	return;
 
     int len = containerCount();
-    
+
     for( int i = 0; i < len; ++i )
     {
 	QWidget *w = container( i );
@@ -317,6 +317,8 @@ void KToggleAction::slotActivated()
 
     locked = TRUE;
     setChecked( !isChecked() );
+    if ( !isChecked() )
+	emit activated();
     locked = FALSE;
 }
 
