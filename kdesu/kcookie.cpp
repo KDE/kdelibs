@@ -94,8 +94,11 @@ void KCookie::getXCookie()
 	return;
     }
 #ifdef Q_WS_X11 // No need to mess with X Auth stuff
-    QCString cmd;
-    cmd.sprintf("xauth list %s", m_Display.data());
+    QCString disp = m_Display;
+    if (disp.left(10) == "localhost:")
+       disp = disp.mid(9);
+
+    QCString cmd = "xauth list "+disp;
     blockSigChild(); // pclose uses waitpid()
     if (!(f = popen(cmd, "r"))) 
     {

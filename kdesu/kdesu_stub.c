@@ -290,6 +290,9 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 	   ** are in deep shit).
            */
 	   int oldumask = umask(077);
+	   const char *disp = params[P_DISPLAY].value;
+	   if (strncmp(disp, "localhost:", 10) == 0)
+	      disp += 9;
 
            strcpy(xauthority, "/tmp/xauth.XXXXXXXXXX");
 	   fd2 = mkstemp(xauthority);
@@ -308,7 +311,7 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 		perror("kdesu_stub: popen(xauth)");
 		exit(1);
 	   }
-	   fprintf(fout, "add %s %s\n", params[P_DISPLAY].value,
+	   fprintf(fout, "add %s %s\n", disp,
 		    params[P_DISPLAY_AUTH].value);
 	   pclose(fout);
 	}
