@@ -22,6 +22,13 @@
 #include <kio_base.h>
 #include <kurl.h>
 
+// Default ports.. you might want to change this if you're trying to dodge
+// a proxy with some creative network address translation..  HTTP_PORT
+// is used for HTTP and WebDAV/WebFolders, HTTPS_PORT is well used for
+// HTTPS. Duh.
+#define DEFAULT_HTTP_PORT	80
+#define DEFAULT_HTTPS_PORT	443
+
 class HTTPProtocol : public IOProtocol
 {
 public:

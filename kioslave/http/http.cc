@@ -51,19 +51,17 @@ int main( int argc, char **argv )
   signal(SIGCHLD, sigchld_handler);
   signal(SIGSEGV, sigsegv_handler);
 
-  debug( "kio_http : Starting");
-
   Connection parent( 0, 1 );
 
   HTTPProtocol http( &parent );
   http.dispatchLoop();
-
-  debug( "kio_http : Done" );
 }
 
 void sigsegv_handler(int signo)
 {
-  debug( "kio_http : ###############SEG FAULT#############" );
+  // Debug and printf should be avoided because they might
+  // call malloc.. and get in a nice recursive malloc loop
+  write(2, "kio_http : ###############SEG FAULT#############\n", 51);
   exit(1);
 }
 
@@ -294,14 +292,20 @@ bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *ho
 }
 
 
+// It's reasonably safe to assume that it's a vaild protocol..
+// altho it might be a good idea to add an assert trap somewhere
 bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
 {
   int do_proxy, port = _url.port(), len=1;
   char c_buffer[64], f_buffer[1024], *ret=0;
   bool unauthorized = false;
 
-  if ( port == -1 )
-    port = 80;
+  if ( port == -1 ) {
+    if ((_url.protocol() == "http") || (_url.protocol() == "httpf"))
+	    port = DEFAULT_HTTP_PORT;
+    else if (_url.protocol() == "https")
+	    port = DEFAULT_HTTPS_PORT;
+  }
 
   m_sock = ::socket(PF_INET,SOCK_STREAM,0);
   if ( m_sock < 0 )  {
