@@ -673,7 +673,7 @@ void KAboutContainerBase::setProduct( const QString &appName,
   QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).
     arg(QString::fromLatin1(KDE_VERSION_STRING));
   QString msg2 = !year.isEmpty() ? i18n("%1 %2, %3").arg('©').arg(year).
-    arg(author) : "";
+    arg(author) : QString::fromLatin1("");
 
   //if (!year.isEmpty())
   //  msg2 = i18n("%1 %2, %3").arg('©').arg(year).arg(author);

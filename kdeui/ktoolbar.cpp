@@ -581,7 +581,7 @@ void KToolBar::layoutHorizontal(int w)
   updateGeometry();
 
   QToolTip::remove(this);
-  QToolTip::add(this, QRect(0, 0, 9, toolbarHeight), text().isNull() ?  name() : text());
+  QToolTip::add(this, QRect(0, 0, 9, toolbarHeight), text().isNull() ?  QString::fromLatin1(name()) : text());
 }
 
 int
@@ -775,7 +775,7 @@ KToolBar::layoutVertical(int h)
   updateGeometry();
 
   QToolTip::remove(this);
-  QToolTip::add(this, QRect(0, 0, toolbarWidth, 9), text().isNull() ?  name() : text());
+  QToolTip::add(this, QRect(0, 0, toolbarWidth, 9), text().isNull() ?  QString::fromLatin1(name()) : text());
 }
 
 int

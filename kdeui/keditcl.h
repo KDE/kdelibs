@@ -55,9 +55,9 @@ private:
 class KEdFind : public KDialogBase
 {
     Q_OBJECT
-    Q_PROPERTY( QString text READ getText WRITE setText );
-    Q_PROPERTY( bool caseSensitivity READ case_sensitive WRITE setCaseSensitive );
-    Q_PROPERTY( bool direction READ get_direction WRITE setDirection );
+    Q_PROPERTY( QString text READ getText WRITE setText )
+    Q_PROPERTY( bool caseSensitivity READ case_sensitive WRITE setCaseSensitive )
+    Q_PROPERTY( bool direction READ get_direction WRITE setDirection )
 public:
 
     KEdFind( QWidget *parent = 0, const char *name=0, bool modal=true);

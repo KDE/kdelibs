@@ -848,7 +848,7 @@ KAction *KStdAction::aboutApp(const QObject *recvr, const char *slot,
 						      QObject *parent, const char *name )
 {
     const KAboutData *aboutData = KGlobal::instance()->aboutData();
-    QString appName = (aboutData)? aboutData->programName() : kapp->name();
+    QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
     return new KAction(i18n("&About %1...").arg(appName),
                        QIconSet(kapp->miniIcon()), 0, recvr,
                        slot, parent, name ? name : stdName(AboutApp));
