@@ -227,7 +227,7 @@ bool KServiceOffer::operator< ( const KServiceOffer& _o ) const
 {
   if ( _o.m_bAllowAsDefault && !m_bAllowAsDefault )
     return true;
-  if ( _o.m_iPreference > m_iPreference )
+  if ( _o.m_iPreference < m_iPreference )
     return true;
   return false;
 }
