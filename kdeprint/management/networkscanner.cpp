@@ -45,7 +45,7 @@ public:
 	QPtrList<NetworkScanner::SocketInfo> printers;
 
 	QProgressBar *bar;
-	QPushButton *scan, *settings;
+	KPushButton *scan, *settings;
 	QTimer *timer;
 	QSocket *socket;
 
@@ -113,7 +113,7 @@ void NetworkScanner::start()
 	d->printers.clear();
 	emit scanStarted();
 	d->settings->setEnabled( false );
-	d->scan->setText( i18n( "&Abort" ) );
+	d->scan->setGuiItem( KGuiItem( i18n( "&Abort" ), "stop" ) );
 	d->currentaddress = -1;
 	d->scanning = true;
 	next();
@@ -136,7 +136,7 @@ void NetworkScanner::finish()
 		return;
 
 	d->settings->setEnabled( true );
-	d->scan->setText( i18n( "Sc&an" ) );
+	d->scan->setGuiItem( KGuiItem( i18n( "Sc&an" ), "viewmag" ) );
 	d->bar->reset();
 	d->scanning = false;
 	emit scanFinished();
@@ -234,6 +234,24 @@ int NetworkScanner::port() const
 void NetworkScanner::setPort( int p )
 {
 	d->port = p;
+}
+
+bool NetworkScanner::checkPrinter( const QString& host, int port )
+{
+	// try first to find it in the SocketInfo list
+	QPtrListIterator<NetworkScanner::SocketInfo> it( d->printers );
+	for ( ; it.current(); ++it )
+	{
+		if ( port == it.current()->Port && ( host == it.current()->IP ||
+					host == it.current()->Name ) )
+			return true;
+	}
+
+	// not found in SocketInfo list, try to establish connection
+	KExtendedSocket extsock( host, port );
+	extsock.setBlockingMode( false );
+	extsock.setTimeout( 0, d->timeout * 1000 );
+	return ( extsock.connect() == 0 );
 }
 
 NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *name)

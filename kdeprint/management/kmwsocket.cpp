@@ -113,11 +113,11 @@ bool KMWSocket::isValid(QString& msg)
 		}
 	}
 
-	/*if (!m_util->checkPrinter(m_printer->text().utf8(),p))
+	if (!m_scanner->checkPrinter(m_printer->text(),p))
 	{
 		msg = i18n("No printer found at this address/port !");
 		return false;
-	}*/
+	}
 	return true;
 }
 

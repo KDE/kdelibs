@@ -37,6 +37,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kguiitem.h>
+#include <kurl.h>
 
 KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -111,11 +112,13 @@ bool KMWIppPrinter::isValid(QString& msg)
 		msg = i18n("You must enter a printer URI !");
 		return false;
 	}
-	/*if (!m_util->checkPrinter(m_printer->text().utf8(),p))
+
+	KURL uri( m_uri->text() );
+	if (!m_scanner->checkPrinter(uri.host(),(uri.port()==0?631:uri.port())))
 	{
 		msg = i18n("No printer found at this address/port !");
 		return false;
-	}*/
+	}
 	return true;
 }
 

@@ -47,6 +47,7 @@ public:
 	void setSubnet( const QString& );
 	int port() const;
 	void setPort( int );
+	bool checkPrinter( const QString&, int );
 
 signals:
 	void scanStarted();
