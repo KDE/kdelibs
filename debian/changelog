@@ -1,3 +1,11 @@
+kdelibs (4:2.2.2-10) unstable; urgency=low
+
+  * Fix Deps (Closes: #126232)
+  * Change nas-dev suggests to depends
+  * A Couple upstream fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 27 Dec 2001 17:26:00 -0700
+
 kdelibs (4:2.2.2-9) unstable; urgency=low
 
   * Move all non-module .la files from /usr/lib into -dev package.  We leave 
@@ -5,7 +13,7 @@ kdelibs (4:2.2.2-9) unstable; urgency=low
     libraries out of /usr/lib
   * Fix spelling error (Closes: #124989)
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 17 Dec 2001 13:52:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 17 Dec 2001 22:00:00 -0700
 
 kdelibs (4:2.2.2-8) unstable; urgency=low
 
