@@ -2,6 +2,10 @@
 
 #ifdef KDE_MALLOC
 
+#ifdef KDE_MALLOC_DEBUG
+#define DEBUG
+#endif
+
 #define USE_MALLOC_LOCK
 #define INLINE __inline__
 /*#define INLINE*/
@@ -5478,7 +5482,7 @@ static void init_malloc_type(void)
     {
     const char* const env = getenv( "KDE_MALLOC" );
     if( env == NULL )
-        malloc_type = 2;
+        malloc_type = 1;
     else if( env[ 0 ] == '0' || env[ 0 ] == 'n' || env[ 0 ] == 'N' )
         malloc_type = 2;
     else
