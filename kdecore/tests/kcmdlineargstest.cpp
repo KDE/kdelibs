@@ -26,7 +26,7 @@ main(int argc, char *argv[])
 
    // MyWidget::addCmdLineOptions();
 
-   KApplication k( true, true );
+   KApplication k( false, false /*true, true*/ );
 
    // Get application specific arguments
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs(); 
@@ -51,6 +51,7 @@ main(int argc, char *argv[])
    for(int i = 0; i < args->count(); i++)
    {
       printf("%d: %s\n", i, args->arg(i));
+      printf("%d: %s\n", i, args->url(i).url().ascii());
    }
 
    args->clear(); // Free up memory.

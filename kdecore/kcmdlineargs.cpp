@@ -33,6 +33,7 @@
 #endif
 
 #include <qlist.h>
+#include <qdir.h>
 #include <qfile.h>
 #include <qasciidict.h>
 #include <qstrlist.h>
@@ -975,26 +976,20 @@ KURL
 KCmdLineArgs::url(int n)
 {
    const char *urlArg = arg(n);
-
-   if (*urlArg == '/')
-   {
-      KURL result;
-      result.setPath(QFile::decodeName( urlArg));
-      return result; // Absolute path.
-   }
+   QString sUrlArg = QString::fromLocal8Bit(urlArg);
 
    const char *a = strchr(urlArg, ':');
    if (a)
    {
       const char *b = strchr(urlArg, '/');
       if (b && b>a)
-         return KURL(QString::fromLatin1(urlArg)); // Argument is a URL
+         return KURL(sUrlArg); // Argument is a URL
    }
    
-   KURL result;
-   result.setPath( cwd()+"/"+QFile::decodeName( urlArg));
-   result.cleanPath();
-   return result;  // Relative path
+   KURL::encode( sUrlArg ); // encode local paths and filenames
+
+   KURL result( QDir::currentDirPath()+"/", sUrlArg );
+   return result;
 }
 
 void
