@@ -150,7 +150,7 @@ void Reference::putValue(ExecState *exec, const Value &w)
   }
 
 #ifdef KJS_VERBOSE
-  printInfo(exec,(UString("setting property ")+getPropertyName(exec)).cstring().c_str(),w);
+  printInfo(exec,(UString("setting property ")+getPropertyName(exec).ustring()).cstring().c_str(),w);
 #endif
   Value o = getBase(exec);
   if (o.type() == NullType)
