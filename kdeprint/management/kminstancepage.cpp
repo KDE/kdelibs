@@ -117,12 +117,8 @@ void KMInstancePage::slotNew()
 	KMTimer::blockTimer();
 
 	bool	ok(false);
-#if QT_VERSION < 300
-	QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),i18n("(Default)"),&ok,this);
-#else
 	QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),
 			                     QLineEdit::Normal,i18n("(Default)"),&ok,this);
-#endif
 	if (ok)
 	{
 		if (name.find(QRegExp("\\s")) != -1)
@@ -166,12 +162,8 @@ void KMInstancePage::slotCopy()
 	if (!src.isEmpty())
 	{
 		bool	ok(false);
-#if QT_VERSION < 300
-		QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),i18n("(Default)"),&ok,this);
-#else
 		QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),
 				                     QLineEdit::Normal,i18n("(Default)"),&ok,this);
-#endif
 		if (ok)
 		{
 			if (name.find(QRegExp("\\s")) != -1)
