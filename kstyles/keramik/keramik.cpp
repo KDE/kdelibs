@@ -358,6 +358,7 @@ void KeramikStyle::unPolish(QWidget* widget)
 	KStyle::unPolish(widget);
 }
 
+
 void KeramikStyle::polish( QPalette& )
 {
 	loader.clear();
@@ -699,6 +700,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		// -------------------------------------------------------------------
 		case PE_Indicator:
 		case PE_IndicatorMask:
+
 			if (flags & Style_On)
 				Keramik::ScaledPainter( keramik_checkbox_on ).draw( p, r, cg.button(), cg.background(), disabled, pmode() );
 			else if (flags & Style_Off)
@@ -2284,6 +2286,16 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 			int size = pixelMetric( PM_SliderControlThickness, widget );
 			int handleSize = pixelMetric( PM_SliderThickness, widget );
 			int len = pixelMetric( PM_SliderLength, widget );
+
+			//Shrink the metrics if the widget is too small
+			//to fit our normal values for them.
+			if (horizontal)
+				handleSize = QMIN(handleSize, sl->height());
+			else
+				handleSize = QMIN(handleSize, sl->width());
+
+			size = QMIN(size, handleSize);
+
 			switch ( subcontrol )
 			{
 				case SC_SliderGroove:
