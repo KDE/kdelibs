@@ -83,9 +83,7 @@ MathObjectImp::MathObjectImp(ExecState * /*exec*/,
 // ECMA 15.8
 Value MathObjectImp::get(ExecState *exec, const Identifier &propertyName) const
 {
-  Value v = lookupGet<MathFuncImp, MathObjectImp, ObjectImp>( exec, propertyName, &mathTable, this );
-  setFunctionName(v,propertyName);
-  return v;
+  return lookupGet<MathFuncImp, MathObjectImp, ObjectImp>( exec, propertyName, &mathTable, this );
 }
 
 Value MathObjectImp::getValueProperty(ExecState *, int token) const

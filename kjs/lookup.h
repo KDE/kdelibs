@@ -138,7 +138,8 @@ namespace KJS {
       if (cachedVal)
         return Value(cachedVal);
 
-      Value val = Value(new FuncImp(exec,token, params));
+      Value val(new FuncImp(exec,token, params));
+      setFunctionName( val, propertyName );
       ObjectImp *thatObj = const_cast<ObjectImp *>(thisObj);
       thatObj->ObjectImp::put(exec, propertyName, val, attr);
       return val;
