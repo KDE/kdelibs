@@ -754,7 +754,9 @@ int KExtendedSocket::connect()
 	    }
 
 	  kdDebug(170) << "Binding on " << pretty_sock(q) << " before connect" << endl;
+	  errno = 0;
 	  sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+	  setError(IO_ConnectError, errno);
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
 	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
@@ -770,7 +772,10 @@ int KExtendedSocket::connect()
 	  // no need to bind, just create
 	  sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 	  if (sockfd == -1)
-	    continue;
+	    {
+	      setError(IO_ConnectError, errno);
+	      continue;
+	    }
 	}
 
       kdDebug(170) << "Socket " << sockfd << " created" << endl;
@@ -790,6 +795,7 @@ int KExtendedSocket::connect()
 	      if (errno != EWOULDBLOCK && errno != EINPROGRESS)
 		{
 		  kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
+		  setError(IO_ConnectError, errno);
 		  ::close(sockfd);
 		  sockfd = -1;
 		  continue;	// nope, another error
@@ -802,7 +808,10 @@ int KExtendedSocket::connect()
 
 	      int retval = KSocks::self()->select(sockfd + 1, &rd, &wr, NULL, &d->timeout);
 	      if (retval == -1)
-		continue;	// system error
+		{
+		  setError(IO_FatalError, errno);
+		  continue;	// system error
+		}
 	      else if (retval == 0)
 		{
 		  ::close(sockfd);
@@ -847,6 +856,7 @@ int KExtendedSocket::connect()
 		      return -3; // time out
 		    }
 
+		  setError(IO_ConnectError, errcode);
 		  continue;
 		}
 	    }
@@ -864,6 +874,7 @@ int KExtendedSocket::connect()
 	  if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	    {
 	      kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
+	      setError(IO_ConnectError, errno);
 	      ::close(sockfd);
 	      sockfd = -1;
 	      continue;
@@ -878,7 +889,6 @@ int KExtendedSocket::connect()
 
   // getting here means no socket connected or stuff like that
   kdDebug(170) << "Failed to connect\n";
-  setError(IO_ConnectError, errno);
   return -1;
 }
 
