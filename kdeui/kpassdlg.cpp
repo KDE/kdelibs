@@ -2,6 +2,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1998 Pietro Iglio <iglio@fub.it>
    Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
+   Copyright (C) 2004,2005 Andrew Coles <andrew_coles@yahoo.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -86,7 +87,8 @@ class KPasswordDialog::KPasswordDialogPrivate
 	KPasswordDialogPrivate()
 	 : m_MatchLabel( 0 ), iconName( 0 ), allowEmptyPasswords( false ),
 	   minimumPasswordLength(0), maximumPasswordLength(KPasswordEdit::PassLen - 1),
-	   passwordStrengthWarningLevel(1), m_strengthBar(0)
+	   passwordStrengthWarningLevel(1), m_strengthBar(0),
+	   reasonablePasswordLength(8)
 	    {}
 	QLabel *m_MatchLabel;
 	QString iconName;
@@ -95,6 +97,7 @@ class KPasswordDialog::KPasswordDialogPrivate
 	int maximumPasswordLength;
 	int passwordStrengthWarningLevel;
 	KProgress* m_strengthBar;
+	int reasonablePasswordLength;
 };
 
 
@@ -618,8 +621,7 @@ void KPasswordDialog::enableOkBtn()
       // Original code triple-licensed under the MPL, GPL, and LGPL
       // so is license-compatible with this file
 
-      const int maxPasswordLength = maximumPasswordLength();
-      const double lengthFactor = (maxPasswordLength == -1 ? 1 : maxPasswordLength / 8.0);
+      const double lengthFactor = d->reasonablePasswordLength / 8.0;
 
       
       int pwlength = (int) (pass.length() / lengthFactor);
@@ -685,6 +687,21 @@ void KPasswordDialog::setMaximumPasswordLength(int maxLength) {
 
 int KPasswordDialog::maximumPasswordLength() const {
     return d->maximumPasswordLength;
+}
+
+// reasonable password length code contributed by Steffen Müthing
+
+void KPasswordDialog::setReasonablePasswordLength(int reasonableLength) {
+
+    if (reasonableLength < 1) reasonableLength = 1;
+    if (reasonableLength >= maximumPasswordLength()) reasonableLength = maximumPasswordLength();
+
+    d->reasonablePasswordLength = reasonableLength;
+
+}
+
+int KPasswordDialog::reasonablePasswordLength() const {
+  return d->reasonablePasswordLength;
 }
 
 

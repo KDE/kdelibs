@@ -2,6 +2,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1998 Pietro Iglio <iglio@fub.it>
    Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
+   Copyright (C) 2004,2005 Andrew Coles <andrew_coles@yahoo.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -292,6 +293,21 @@ public:
      */
     int maximumPasswordLength() const;
 
+    /**
+     * Password length that is expected to be reasonably safe.
+     *
+     * Default: 8 - the standard UNIX password length
+     *
+     * @param reasonableLength: The new reasonable password length.
+     * @since 3.4
+     */
+    void setReasonablePasswordLength(int maxLength);
+
+    /**
+     * Password length that is expected to be reasonably safe.
+     * @since 3.4
+     */
+    int reasonablePasswordLength() const;
 
     /**
      * Set the password strength level below which a warning is given
