@@ -6,6 +6,7 @@ DefaultApp=kmpg
 Icon=sound.xpm
 Type=MimeType
 Patterns=*.mp3;*.MP3;
+Comment[cs]=Zvukový soubor koprimovaný v MPEG Layer3
 Comment[es]=Archivo de sonido MPEG Layer 3
 Comment[de]=MPEG komprimierte Musik Datei
 Comment[no]=MPEG-komprimert lydfil

@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Socket
+Comment[cs]=Socket (komunikaèní kanál)
 Comment[es]=Socket
 Comment[de]=Socket
 Comment[no]=Socket
