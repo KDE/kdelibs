@@ -236,6 +236,9 @@ public:
     virtual int  getRightMargin( int _y );
 
 protected:
+    void removeAlignedByParent( HTMLObject *p );
+
+protected:
     // These are the objects which are left or right aligned within this
     // clue.  Child objects must wrap their contents around these.
     HTMLClueAligned *alignLeftList;

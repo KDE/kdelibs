@@ -251,22 +251,59 @@ void HTMLTokenizer::write( const char *str )
 		// Special character ?
 		else if ( isalpha( *(src + 1) ) )
 		{
+		    int tmpleft=0;
+		    int tmpright=NUM_AMPSEQ;
 		    int tmpcnt;
-		    
-		    for ( tmpcnt = 0; tmpcnt < NUM_AMPSEQ; tmpcnt++ ) 
+		    int tmpcmprslt;
+
+		    // binary search for a matching AmpSequence
+		    do
 		    {
-			if ( strncmp( AmpSequences[ tmpcnt ].tag, src+1,
-			     strlen( AmpSequences[ tmpcnt ].tag ) ) == 0 )
+			tmpcnt = (tmpleft + tmpright) / 2;
+			tmpcmprslt = strncmp( AmpSequences[ tmpcnt ].tag,
+			    src+1, strlen( AmpSequences[ tmpcnt ].tag ) );
+			if ( tmpcmprslt > 0 )
+			    tmpright = tmpcnt - 1;
+			else
+			    tmpleft = tmpcnt + 1;
+		    }
+		    while ( ( tmpcmprslt != 0 ) && ( tmpright >= tmpleft ) );
+
+		    if ( tmpcmprslt == 0 )
+		    {
+			char ampBuffer[80];
+			char ampFontId = AmpSequences[ tmpcnt ].fontid;
+
+			if ( ampFontId > 0 )
 			{
-			    *dest++ = AmpSequences[ tmpcnt ].value;
-			    src += strlen( AmpSequences[ tmpcnt ].tag ) + 1;
-			    if ( *src == ';' )
-				src++;
-			    break;
+			    // add current tag
+			    *dest = 0;
+			    tokenList.append( buffer );
+			    dest = buffer;
+
+			    // set the new font
+			    sprintf( ampBuffer, "%c<FONT FACE=\"%s\">",
+				(char)TAG_ESCAPE, AmpSeqFontFaces[ampFontId] );
+			    tokenList.append( ampBuffer );
+			    debug( "Selected font: %s", ampBuffer+1 );
+			}
+
+			*dest++ = AmpSequences[ tmpcnt ].value;
+			src += strlen( AmpSequences[ tmpcnt ].tag ) + 1;
+			if ( *src == ';' )
+			    src++;
+
+			if ( ampFontId > 0 )
+			{
+			    *dest = 0;
+			    tokenList.append( buffer );
+			    dest = buffer;
+
+			    sprintf( ampBuffer, "%c</FONT>", (char)TAG_ESCAPE );
+			    tokenList.append( ampBuffer );
 			}
 		    }
-
-		    if ( tmpcnt == NUM_AMPSEQ )
+		    else
 			*dest++ = *src++;
 		}
 		else

@@ -144,6 +144,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     pressedTarget = "";
     actualURL= "";
     baseURL = "";
+    target = 0;
+    url = 0;
     bIsSelected = FALSE;
     selectedFrame = 0;
     htmlView = 0L;
@@ -1106,7 +1108,7 @@ void KHTMLWidget::popFont()
 
 void KHTMLWidget::popColor()
 {
-    colorStack.pop();
+    colorStack.remove();
 
     if ( colorStack.isEmpty() )
 	colorStack.push( new QColor( textColor ) );
@@ -1179,6 +1181,9 @@ void KHTMLWidget::parse()
     inTextArea = false;
     inTitle = false;
     bodyParsed = false;
+
+    target = 0;
+    url = 0;
 
     listStack.clear();
     glossaryStack.clear();
@@ -1333,6 +1338,8 @@ void KHTMLWidget::calcSize()
 
     if ( formList.count() > 0 )
 	clue->calcAbsolutePos( 0, 0 );
+
+    emit documentChanged();
 }
 
 bool KHTMLWidget::insertVSpace( HTMLClueV *_clue, bool _vspace_inserted )
@@ -1582,6 +1589,20 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 		    mapList.getLast()->addArea( area );
 	}
     }
+    else if ( strncasecmp( str, "address", 7) == 0 )
+    {
+//	vspace_inserted = insertVSpace( _clue, vspace_inserted );
+	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	flow->setHAlign( divAlign );
+	_clue->append( flow );
+	italic = TRUE;
+	weight = QFont::Normal;
+	selectFont();
+    }
+    else if ( strncasecmp( str, "/address", 8) == 0 )
+    {
+	popFont();
+    }
     else if ( strncasecmp( str, "a ", 2 ) == 0 )
     {
 	char tmpurl[1024];
@@ -1648,20 +1669,6 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
     else if ( strncasecmp( str, "/a", 2 ) == 0 )
     {
 	closeAnchor();
-    }
-    else if ( strncasecmp( str, "address", 7) == 0 )
-    {
-//	vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-	flow->setHAlign( divAlign );
-	_clue->append( flow );
-	italic = TRUE;
-	weight = QFont::Normal;
-	selectFont();
-    }
-    else if ( strncasecmp( str, "/address", 8) == 0 )
-    {
-	popFont();
     }
 }
 
@@ -1875,9 +1882,11 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
     }
     else if ( strncasecmp( str, "/dir", 4 ) == 0 )
     {
-	listStack.pop();
-	indent -= INDENT_SIZE;
-	flow = 0;
+	if ( listStack.remove() )
+	{
+	    indent -= INDENT_SIZE;
+	    flow = 0;
+	}
     }
     else if ( strncasecmp( str, "div", 3 ) == 0 )
     {
@@ -1922,10 +1931,10 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 
 	if ( *glossaryStack.top() == GlossaryDD )
 	{
-	    glossaryStack.pop();
+	    glossaryStack.remove();
 	    indent -= INDENT_SIZE;
 	}
-	glossaryStack.pop();
+	glossaryStack.remove();
 	if ( glossaryStack.top() )
 	    indent -= INDENT_SIZE;
 	vspace_inserted = false;
@@ -1990,6 +1999,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	{
 	    stringTok->tokenize( str + 5, " >" );
 	    int newSize = currentFont()->size() - fontBase;
+	    QString newFace;
 	    QColor *color = new QColor( *(colorStack.top()) );
 	    while ( stringTok->hasMoreTokens() )
 	    {
@@ -2006,9 +2016,32 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 		    {
 			    color->setNamedColor( token+6 );
 		    }
+		    else if ( strncasecmp( token, "face=", 5 ) == 0 )
+		    {
+			// try to find a matching font in the font list.
+			StringTokenizer st;
+			st.tokenize( token+5, " ," );
+			while ( st.hasMoreTokens() )
+			{
+			    const char *fname = st.nextToken();
+			    QFont tryFont( fname );
+			    QFontInfo fi( tryFont );
+			    if ( strcmp( tryFont.family(), fi.family() ) == 0 )
+			    {
+				// we found a matching font
+				newFace = fname;
+				debug( "Setting Font: %s", fname );
+				break;
+			    }
+			}
+		    }
 	    }
 	    colorStack.push( color );
-	    selectFont( newSize );
+	    if ( !newFace.isEmpty() )
+		selectFont( newFace, newSize + fontBase,
+		    currentFont()->weight(), currentFont()->italic() );
+	    else
+		selectFont( newSize );
 	}
 	else if ( strncasecmp( str, "/font", 5 ) == 0 )
 	{
@@ -2409,8 +2442,11 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		// allocate enough mem for any URL which might be in the
 		// image map
 		char *newurl = new char [1024];
-		strcpy( newurl, url );
-		delete [] url;
+		if ( url )
+		{
+		    strcpy( newurl, url );
+		    delete [] url;
+		}
 		url = newurl;
 		parsedURLs.removeLast();
 		parsedURLs.append( url );
@@ -2418,8 +2454,11 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		// allocate enough mem for any target which might be in the
 		// image map
 		char *newtarget = new char [256];
-		strcpy( newtarget, target );
-		delete [] target;
+		if ( target )
+		{
+		    strcpy( newtarget, target );
+		    delete [] target;
+		}
 		target = newtarget;
 		parsedTargets.removeLast();
 		parsedTargets.append( target );
@@ -2592,9 +2631,11 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 	}
 	else if (strncasecmp( str, "/menu", 5 ) == 0)
 	{
-		listStack.pop();
-		indent -= INDENT_SIZE;
-		flow = 0;
+		if ( listStack.remove() )
+		{
+		    indent -= INDENT_SIZE;
+		    flow = 0;
+		}
 	}
 	else if ( strncasecmp( str, "map", 3 ) == 0 )
 	{
@@ -2660,11 +2701,13 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
     }
     else if ( strncasecmp( str, "/ol", 3 ) == 0 )
     {
-	listStack.pop();
-	indent -= INDENT_SIZE;
-	if ( listStack.isEmpty() )
-	    vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	flow = 0;
+	if ( listStack.remove() )
+	{
+	    indent -= INDENT_SIZE;
+	    if ( listStack.isEmpty() )
+		vspace_inserted = insertVSpace( _clue, vspace_inserted );
+	    flow = 0;
+	}
     }
     else if ( strncasecmp( str, "option", 6 ) == 0 )
     {
@@ -2984,11 +3027,13 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
     }
     else if ( strncasecmp( str, "/ul", 3 ) == 0 )
     {
-	    listStack.pop();
+	if ( listStack.remove() )
+	{
 	    indent -= INDENT_SIZE;
 	    if ( listStack.isEmpty() )
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	    flow = 0;
+	}
     }
     else if ( strncasecmp(str, "u", 1 ) == 0 )
     {

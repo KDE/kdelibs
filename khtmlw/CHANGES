@@ -8,6 +8,7 @@ Version 0.11.01 - Martin
 
 More ampseqs including Greek characters, plus binary searching for ampseqs
  from Norman Markgraf <markgraf@hydra2.geol3.ruhr-uni-bochum.de>.
+Implemented <font face=...>.
 Ooops.  Even if you have setAutoDelete(true) for a stack, pop() does not
  delete the item. Must use remove().
 Ignore additional </ul>, </ol>, </dir>, etc.

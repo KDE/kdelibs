@@ -799,10 +799,13 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 
     if ( pixptr == 0 || pixptr->isNull() )
     {
-	QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
-		black, white );
-	qDrawShadePanel( _painter, x + _tx, y - ascent + _ty, width, ascent,
-		colorGrp, true, 1 );
+	if ( !predefinedWidth || !predefinedHeight )
+	{
+	    QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
+		    black, white );
+	    qDrawShadePanel( _painter, x + _tx, y - ascent + _ty, width, ascent,
+		    colorGrp, true, 1 );
+	}
     }
     else if ( (width - border*2 != pixptr->width() ||
 	ascent - border*2 != pixptr->height() ) &&

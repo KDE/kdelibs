@@ -3,6 +3,8 @@
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
               (C) 1997 Torben Weis (weis@kde.org)
 
+    With some minor changes by Norman Markgraf
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -22,13 +24,21 @@
 #ifndef AMPSEQ_H
 #define AMPSEQ_H
 
-#define NUM_AMPSEQ	82
+#define NUM_AMPSEQ      (103+24) // 103 HTMLsym + 24 capital greek letters
 
-struct ampseq_s {
-	char *tag;
-	char value;
+struct ampseq_s
+{
+    char *tag;          // amp-tag
+    char fontid;        // fontid    <--> font             <--> why?
+                        //-----------------------------------------------------
+                        //     0       standardFont       all normal letters
+                        //     1       symbol             for greek letters
+    char value;         // the character
 };
+
+extern char* AmpSeqFontFaces[];
 
 extern ampseq_s AmpSequences[];
 
 #endif
+

@@ -1496,7 +1496,19 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 	// If we have already called calcSize for the children, then just
 	// continue from the last object done in previous call.
 	if ( curr )
-	    ascent -= curr->getHeight();    // Otherwise it will be added twice.
+	{
+	    ascent = 0;
+	    // get the current ascent not including curr
+	    HTMLObject *obj = head;
+	    while ( obj != curr )
+	    {
+		ascent += obj->getHeight();
+		obj = obj->next();
+	    }
+	    // remove any aligned objects previously added by the current
+	    // object.
+	    removeAlignedByParent( curr );
+	}
 	else
 	{
 	    ascent = descent = 0;
@@ -1590,7 +1602,13 @@ void HTMLClueV::appendLeftAligned( HTMLClueAligned *_clue )
     {
 	HTMLClueAligned *obj = alignLeftList;
 	while ( obj->nextClue() )
+	{
+	    if ( obj == _clue )
+		return;
 	    obj = obj->nextClue();
+	}
+	if ( obj == _clue )
+	    return;
 	obj->setNextClue( _clue );
 	_clue->setNextClue( 0 );
     }
@@ -1606,9 +1624,70 @@ void HTMLClueV::appendRightAligned( HTMLClueAligned *_clue )
     {
 	HTMLClueAligned *obj = alignRightList;
 	while ( obj->nextClue() )
+	{
+	    if ( obj == _clue )
+		return;
 	    obj = obj->nextClue();
+	}
+	if ( obj == _clue )
+	    return;
 	obj->setNextClue( _clue );
 	_clue->setNextClue( 0 );
+    }
+}
+
+// This is a horrible hack so that the progressive size calculation is
+// not stuffed up by aligned clues added in a previous pass on the
+// current clue
+//
+void HTMLClueV::removeAlignedByParent( HTMLObject *p )
+{
+    HTMLClueAligned *tmp, *obj;
+
+    tmp = 0;
+    obj = alignLeftList;
+
+    while ( obj )
+    {
+	if ( obj->parent() == p )
+	{
+	    if ( tmp )
+	    {
+		tmp->setNextClue( obj->nextClue() );
+		tmp = obj;
+	    }
+	    else
+	    {
+		alignLeftList = obj->nextClue();
+		tmp = 0;
+	    }
+	}
+	else
+	    tmp = obj;
+	obj = obj->nextClue();
+    }
+
+    tmp = 0;
+    obj = alignRightList;
+
+    while ( obj )
+    {
+	if ( obj->parent() == p )
+	{
+	    if ( tmp )
+	    {
+		tmp->setNextClue( obj->nextClue() );
+		tmp = obj;
+	    }
+	    else
+	    {
+		alignRightList = obj->nextClue();
+		tmp = 0;
+	    }
+	}
+	else
+	    tmp = obj;
+	obj = obj->nextClue();
     }
 }
 
