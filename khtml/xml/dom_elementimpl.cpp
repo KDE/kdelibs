@@ -547,7 +547,7 @@ void ElementImpl::recalcStyle()
     }
 
     m_style->setFlowAroundFloats(faf);
-    m_render->setStyle(activeStyle());
+    if( m_render ) m_render->setStyle(activeStyle());
 
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
