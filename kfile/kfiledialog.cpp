@@ -634,7 +634,7 @@ void KFileDialog::pathComboChanged( const QString& txt )
 
     // when editing somewhere in the middle of the text, don't complete or
     // follow directories
-    if ( combo->cursorPosition() != combo->currentText().length() ) {
+    if ( combo->cursorPosition() != (int) combo->currentText().length() ) {
         d->completionHack = newText;
 	return;
     }
@@ -681,6 +681,7 @@ void KFileDialog::urlEntered(const KURL& url)
        filename = locationEdit->currentText();
 
     d->selection = QString::null;
+
     if ( d->pathCombo->count() != 0 ) { // little hack
 	d->pathCombo->setURL( url );
     }
@@ -839,13 +840,6 @@ void KFileDialog::setSelection(const QString& url)
 	return;
     }
 
-    /** hmm, this would prevent using remote urls, right?
-    if (!u.isLocalFile()) { // no way to detect, if we have a directory!?
-	d->url = u;
-	return;
-    }
-    */
-
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
      */
@@ -862,7 +856,6 @@ void KFileDialog::setSelection(const QString& url)
 	int sep = filename.findRev('/');
 	if (sep >= 0) { // there is a / in it
 	    setURL(filename.left(sep), true);
-	    // filename = filename.mid(sep+1, filename.length() - sep);
 	    // filename must be decoded, or "name with space" would become
 	    // "name%20with%20space", so we use KURL::fileName()
 	    filename = u.fileName();

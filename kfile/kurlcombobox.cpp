@@ -309,7 +309,7 @@ QPixmap KURLComboBox::getPixmap( const KURL& url ) const
 
 // updates "item" with pixmap "pixmap" and sets the URL instead of text
 // works around a Qt bug.
-void KURLComboBox::updateItem( const KURLComboItem *item, 
+void KURLComboBox::updateItem( const KURLComboItem *item,
 			       int index, const QPixmap& pixmap )
 {
     const QString &text = isEditable() ? item->url.url(myMode) : item->text;
