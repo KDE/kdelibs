@@ -22,7 +22,7 @@
  */
 // --------------------------------------------------------------------------
 #include <dcopclient.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 
 #include "html_document.h"
