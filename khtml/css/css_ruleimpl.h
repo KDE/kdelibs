@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * (C) 2002-2003 Dirk Mueller (mueller@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -45,13 +46,12 @@ class MediaListImpl;
 class CSSRuleImpl : public StyleBaseImpl
 {
 public:
-    CSSRuleImpl(StyleBaseImpl *parent);
-
-    virtual ~CSSRuleImpl();
+    CSSRuleImpl(StyleBaseImpl *parent)
+        : StyleBaseImpl(parent), m_type(CSSRule::UNKNOWN_RULE) {}
 
     virtual bool isRule() { return true; }
+    unsigned short type() const { return m_type; }
 
-    unsigned short type() const;
     CSSStyleSheetImpl *parentStyleSheet() const;
     CSSRuleImpl *parentRule() const;
 
@@ -67,9 +67,8 @@ protected:
 class CSSCharsetRuleImpl : public CSSRuleImpl
 {
 public:
-    CSSCharsetRuleImpl(StyleBaseImpl *parent);
-
-    virtual ~CSSCharsetRuleImpl();
+    CSSCharsetRuleImpl(StyleBaseImpl *parent)
+        : CSSRuleImpl(parent) { m_type = CSSRule::CHARSET_RULE; }
 
     virtual bool isCharsetRule() { return true; }
 
@@ -88,7 +87,7 @@ public:
 
     virtual ~CSSFontFaceRuleImpl();
 
-    CSSStyleDeclarationImpl *style() const;
+    CSSStyleDeclarationImpl *style() const { return m_style; }
 
     virtual bool isFontFaceRule() { return true; }
 
@@ -107,9 +106,9 @@ public:
 
     virtual ~CSSImportRuleImpl();
 
-    DOM::DOMString href() const;
-    MediaListImpl *media() const;
-    CSSStyleSheetImpl *styleSheet() const;
+    DOM::DOMString href() const { return m_strHref; }
+    MediaListImpl *media() const { return m_lstMedia; }
+    CSSStyleSheetImpl *styleSheet() const { return m_styleSheet; }
 
     virtual bool isImportRule() { return true; }
 
@@ -129,6 +128,26 @@ protected:
 
 class MediaList;
 
+class CSSRuleListImpl : public khtml::Shared<CSSRuleListImpl>
+{
+public:
+    CSSRuleListImpl() {}
+
+    ~CSSRuleListImpl();
+
+    unsigned long length() const { return m_lstCSSRules.count(); }
+    CSSRuleImpl *item ( unsigned long index ) { return m_lstCSSRules.at( index ); }
+
+
+    /* not part of the DOM */
+    unsigned long insertRule ( CSSRuleImpl *rule, unsigned long index );
+    void deleteRule ( unsigned long index );
+
+    void append( CSSRuleImpl *rule ) { m_lstCSSRules.append( rule ); }
+protected:
+    QPtrList<CSSRuleImpl> m_lstCSSRules;
+};
+
 class CSSMediaRuleImpl : public CSSRuleImpl
 {
 public:
@@ -138,10 +157,11 @@ public:
 
     virtual ~CSSMediaRuleImpl();
 
-    MediaListImpl *media() const;
-    CSSRuleListImpl *cssRules();
+    MediaListImpl *media() const { return m_lstMedia; }
+    CSSRuleListImpl *cssRules() { return m_lstCSSRules; }
+
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index );
-    void deleteRule ( unsigned long index );
+    void deleteRule ( unsigned long index ) { m_lstCSSRules->deleteRule( index ); }
 
     virtual bool isMediaRule() { return true; }
 
@@ -160,7 +180,7 @@ public:
 
     virtual ~CSSPageRuleImpl();
 
-    CSSStyleDeclarationImpl *style() const;
+    CSSStyleDeclarationImpl *style() const { return m_style; }
 
     virtual bool isPageRule() { return true; }
 
@@ -179,7 +199,7 @@ public:
 
     virtual ~CSSStyleRuleImpl();
 
-    CSSStyleDeclarationImpl *style() const;
+    CSSStyleDeclarationImpl *style() const { return m_style; }
 
     virtual bool isStyleRule() { return true; }
 
@@ -188,7 +208,7 @@ public:
 
     virtual bool parseString( const DOMString &string, bool = false );
 
-    void setSelector( QPtrList<CSSSelector> *selector);
+    void setSelector( QPtrList<CSSSelector> *selector) { m_selector = selector; }
     void setDeclaration( CSSStyleDeclarationImpl *style);
 
     QPtrList<CSSSelector> *selector() { return m_selector; }
@@ -202,35 +222,14 @@ protected:
 };
 
 
-
 class CSSUnknownRuleImpl : public CSSRuleImpl
 {
 public:
-    CSSUnknownRuleImpl(StyleBaseImpl *parent);
-
-    ~CSSUnknownRuleImpl();
+    CSSUnknownRuleImpl(StyleBaseImpl *parent) : CSSRuleImpl(parent) {}
 
     virtual bool isUnknownRule() { return true; }
 };
 
-
-class CSSRuleListImpl : public khtml::Shared<CSSRuleListImpl>
-{
-public:
-    CSSRuleListImpl();
-    ~CSSRuleListImpl();
-
-    unsigned long length() const;
-    CSSRuleImpl *item ( unsigned long index );
-
-    /* not part of the DOM */
-    unsigned long insertRule ( CSSRuleImpl *rule, unsigned long index );
-    void deleteRule ( unsigned long index );
-
-    void append( CSSRuleImpl *rule ) { m_lstCSSRules.append( rule ); }
-protected:
-    QPtrList<CSSRuleImpl> m_lstCSSRules;
-};
 
 }; // namespace
 

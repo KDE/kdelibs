@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * (C) 2002-2003 Dirk Mueller (mueller@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -38,21 +39,6 @@ using namespace DOM;
 
 #include <kdebug.h>
 
-CSSRuleImpl::CSSRuleImpl(StyleBaseImpl *parent)
-    : StyleBaseImpl(parent)
-{
-    m_type = CSSRule::UNKNOWN_RULE;
-}
-
-CSSRuleImpl::~CSSRuleImpl()
-{
-}
-
-unsigned short CSSRuleImpl::type() const
-{
-    return m_type;
-}
-
 CSSStyleSheetImpl *CSSRuleImpl::parentStyleSheet() const
 {
     return ( m_parent && m_parent->isCSSStyleSheet() )  ?
@@ -78,18 +64,6 @@ void CSSRuleImpl::setCssText(DOM::DOMString /*str*/)
 
 // ---------------------------------------------------------------------------
 
-CSSCharsetRuleImpl::CSSCharsetRuleImpl(StyleBaseImpl *parent)
-    : CSSRuleImpl(parent), m_encoding()
-{
-    m_type = CSSRule::CHARSET_RULE;
-}
-
-CSSCharsetRuleImpl::~CSSCharsetRuleImpl()
-{
-}
-
-// ---------------------------------------------------------------------------
-
 CSSFontFaceRuleImpl::CSSFontFaceRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
@@ -100,11 +74,6 @@ CSSFontFaceRuleImpl::CSSFontFaceRuleImpl(StyleBaseImpl *parent)
 CSSFontFaceRuleImpl::~CSSFontFaceRuleImpl()
 {
     if(m_style) m_style->deref();
-}
-
-CSSStyleDeclarationImpl *CSSFontFaceRuleImpl::style() const
-{
-    return m_style;
 }
 
 // --------------------------------------------------------------------------
@@ -159,21 +128,6 @@ CSSImportRuleImpl::~CSSImportRuleImpl()
     }
 
     if(m_cachedSheet) m_cachedSheet->deref(this);
-}
-
-DOMString CSSImportRuleImpl::href() const
-{
-    return m_strHref;
-}
-
-MediaListImpl *CSSImportRuleImpl::media() const
-{
-    return m_lstMedia;
-}
-
-CSSStyleSheetImpl *CSSImportRuleImpl::styleSheet() const
-{
-    return m_styleSheet;
 }
 
 void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
@@ -275,16 +229,6 @@ CSSMediaRuleImpl::~CSSMediaRuleImpl()
     m_lstCSSRules->deref();
 }
 
-MediaListImpl *CSSMediaRuleImpl::media() const
-{
-    return m_lstMedia;
-}
-
-CSSRuleListImpl *CSSMediaRuleImpl::cssRules()
-{
-    return m_lstCSSRules;
-}
-
 unsigned long CSSMediaRuleImpl::append( CSSRuleImpl *rule )
 {
     return rule ? m_lstCSSRules->insertRule( rule, m_lstCSSRules->length() ) : 0;
@@ -297,11 +241,6 @@ unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule,
     CSSRuleImpl *newRule = p.parseRule( rule );
 
     return newRule ? m_lstCSSRules->insertRule( newRule, index ) : 0;
-}
-
-void CSSMediaRuleImpl::deleteRule( unsigned long index )
-{
-    m_lstCSSRules->deleteRule( index );
 }
 
 CSSRuleListImpl::~CSSRuleListImpl()
@@ -323,11 +262,6 @@ CSSPageRuleImpl::CSSPageRuleImpl(StyleBaseImpl *parent)
 CSSPageRuleImpl::~CSSPageRuleImpl()
 {
     if(m_style) m_style->deref();
-}
-
-CSSStyleDeclarationImpl *CSSPageRuleImpl::style() const
-{
-    return m_style;
 }
 
 DOM::DOMString CSSPageRuleImpl::selectorText() const
@@ -360,11 +294,6 @@ CSSStyleRuleImpl::~CSSStyleRuleImpl()
     delete m_selector;
 }
 
-CSSStyleDeclarationImpl *CSSStyleRuleImpl::style() const
-{
-    return m_style;
-}
-
 DOM::DOMString CSSStyleRuleImpl::selectorText() const
 {
     if ( m_selector && m_selector->first() ) {
@@ -387,17 +316,12 @@ bool CSSStyleRuleImpl::parseString( const DOMString &/*string*/, bool )
     return false;
 }
 
-void CSSStyleRuleImpl::setSelector( QPtrList<CSSSelector> *selector)
-{
-    m_selector = selector;
-}
-
 void CSSStyleRuleImpl::setDeclaration( CSSStyleDeclarationImpl *style)
 {
     if ( m_style != style ) {
-    if(m_style) m_style->deref();
-    m_style = style;
-    if(m_style) m_style->ref();
+        if(m_style) m_style->deref();
+        m_style = style;
+        if(m_style) m_style->ref();
     }
 }
 
@@ -408,34 +332,6 @@ void CSSStyleRuleImpl::setNonCSSHints()
 	s->nonCSSHint = true;
 	s = m_selector->next();
     }
-}
-
-
-// --------------------------------------------------------------------------
-
-CSSUnknownRuleImpl::CSSUnknownRuleImpl(StyleBaseImpl *parent)
-    : CSSRuleImpl(parent)
-{
-}
-
-CSSUnknownRuleImpl::~CSSUnknownRuleImpl()
-{
-}
-
-// --------------------------------------------------------------------------
-
-CSSRuleListImpl::CSSRuleListImpl()
-{
-}
-
-unsigned long CSSRuleListImpl::length() const
-{
-    return m_lstCSSRules.count();
-}
-
-CSSRuleImpl *CSSRuleListImpl::item ( unsigned long index )
-{
-    return m_lstCSSRules.at( index );
 }
 
 void CSSRuleListImpl::deleteRule ( unsigned long index )
