@@ -8,22 +8,7 @@ as it was before on CORBA.
 One of the last big changes before the API is more or less frozen. This is
 currently mostly done. Remaining issues are:
 
-- much functionality resides under Object_base, which isn't available if
-  you use SmartWrappers now
 - writeObject/readObject need review/rewrite
-- maybe the two objects SmartWrapper and Object should be merged
-- isEqual (and maybe others) would benefit a lot if everything inherited the
-  Object wrapper (so that SmartWrapper would be merged), since for conversion
-  to Object is currently non-const, which is the reason that (see
-  simplesoundserver_impl.cc)
-
-        ByteSoundProducer sender = prod->sender();
-        if(bsp._isEqual(sender))                                                
-
-  must be written instead of
-
-        if(bsp._isEqual(prod->sender()))
-
 - check why
 
      Foo f(SubClass("Bar"))
@@ -34,19 +19,23 @@ currently mostly done. Remaining issues are:
 
   the same is true for Reference()
 
+// This is not equivalent! The first is of type Foo()(SubClass) and the second
+// is the correct syntax for declaring an object of type Foo; (NB)
+
+I am still not quite sure about this. After all, you also write
+
+   string s("Hello World");
+
+to call the constructor at creation, and you may even write
+
+   string s(string("Hello World"));
+
+if you really want to. Why don't my examples work similar? (SW)
+
  => Other rough edges
 
-- casting local or remote objects (if you have manufactured them remotely)
-  really gives ugly code - maybe provide something like
-
-    StereoEffect effect(Factory(server));
-    // which provides typesafe remote manufacturing
-
-  and
-
-    Object o = ...;
-	StereoEffect effect(DynamicCast(o));
-    // which provides typesafe dynamic casting
+- make dynamic casting work properly for remote objects (see
+  examples/dcasttest.cc)
 
 - should asynchronous streams start & initialize in the same way synchronous
   do? (with initialize/start/uninitialize)? probably yes.
