@@ -1,5 +1,22 @@
 2004-10-15  Germain Garand  <germain@ebooksfrance.org>
 
+        bring z-order to QScrollView
+
+        * html/html_formimpl.cpp (defaultEventHandler): propagate events to
+        QScrollView
+
+        * khtmlview.{cpp,h}: QScrollview needs fast repaints. Fix
+        background color of QFrames.
+
+        * rendering/render_form.cpp (createListBox/TextAreaWidget):
+        make those widgets z-ordered as well.
+
+        * rendering/render_replaced.cpp (paintWidget): optimize painting by
+        avoiding unnecessary background repaints and by using a shared
+        paint buffer.
+
+2004-10-15  Germain Garand  <germain@ebooksfrance.org>
+
         display: compact fixes.
 
         * rendering/bidi.cpp: remove checks for display: compact,

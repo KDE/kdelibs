@@ -599,14 +599,12 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-	QScrollView *sv = ::qt_cast<QScrollView *>(w);
-	if (sv || !rw->isFormElement()) {
-// 	    kdDebug(6000) << "    removing scrollview " << sv;
-	    int x, y;
-	    rw->absolutePosition(x, y);
-	    contentsToViewport(x, y, x, y);
-	    cr -= QRect(x, y, rw->width(), rw->height());
-	}
+        if (strcmp(w->name(), "__khtml")) {
+            int x, y;
+            rw->absolutePosition(x, y);
+            contentsToViewport(x, y, x, y);
+            cr -= QRect(x, y, rw->width(), rw->height());
+        }
     }
 
 #if 0
@@ -1557,7 +1555,7 @@ void KHTMLView::doAutoScroll()
 class HackWidget : public QWidget
 {
  public:
-    inline void setNoErase() { setWFlags(getWFlags()|WRepaintNoErase); }
+    inline void setNoErase() { setWFlags(getWFlags()|WRepaintNoErase|WPaintUnclipped); }
 };
 
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
@@ -1601,15 +1599,16 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    if (!strcmp(w->name(), "__khtml")) {
 			w->installEventFilter(this);
 			w->unsetCursor();
-			w->setBackgroundMode( QWidget::NoBackground );
+			if (!::qt_cast<QFrame*>(w))
+			    w->setBackgroundMode( QWidget::NoBackground );
 			static_cast<HackWidget *>(w)->setNoErase();
 			if (w->children()) {
 			    QObjectListIterator it(*w->children());
 			    for (; it.current(); ++it) {
 				QWidget *widget = ::qt_cast<QWidget *>(it.current());
-				if (widget && !widget->isTopLevel()
-				    && !::qt_cast<QScrollView *>(widget)) {
-				    widget->setBackgroundMode( QWidget::NoBackground );
+				if (widget && !widget->isTopLevel()) {
+				    if (!::qt_cast<QFrame*>(w))
+				        widget->setBackgroundMode( QWidget::NoBackground );
 				    static_cast<HackWidget *>(widget)->setNoErase();
 				    widget->installEventFilter(this);
 				}
@@ -1645,8 +1644,17 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    }
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
- 		    scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
- 				    pe->rect().width(), pe->rect().height());
+		    bool sv = ::qt_cast<QScrollView *>(c);
+		    
+		    // QScrollView needs fast repaints
+		    if ( sv && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
+		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
+		        repaintContents(x + pe->rect().x(), y + pe->rect().y(),
+	                                        pe->rect().width(), pe->rect().height(), true);
+                    } else {
+ 		        scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
+ 				    pe->rect().width(), pe->rect().height(), sv);
+                    }
 		}
 		break;
 	    case QEvent::MouseMove:
@@ -2819,14 +2827,14 @@ void KHTMLView::unscheduleRepaint()
     d->repaintTimerId = 0;
 }
 
-void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
+void KHTMLView::scheduleRepaint(int x, int y, int w, int h, bool asap)
 {
     bool parsing = !m_part->xmlDocImpl() || m_part->xmlDocImpl()->parsing();
 
 //     kdDebug() << "parsing " << parsing << endl;
 //     kdDebug() << "complete " << d->complete << endl;
 
-    int time = parsing ? 300 : ( !d->complete ? 100 : 20 );
+    int time = parsing ? 300 : (!asap ? ( !d->complete ? 100 : 20 ) : 0);
 
 #ifdef DEBUG_FLICKER
     QPainter p;
@@ -2839,6 +2847,9 @@ void KHTMLView::scheduleRepaint(int x, int y, int w, int h)
 #endif
 
     d->updateRegion = d->updateRegion.unite(QRect(x,y,w,h));
+    
+    if (asap && !parsing)
+        unscheduleRelayout();
 
     if ( !d->repaintTimerId )
         d->repaintTimerId = startTimer( time );

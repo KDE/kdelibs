@@ -815,8 +815,7 @@ public:
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->target() == this && renderer() && renderer()->isWidget() &&
-        !static_cast<RenderWidget*>(renderer())->widget()->inherits("QScrollView")) {
+    if (evt->target() == this && renderer() && renderer()->isWidget()) {
         switch(evt->id())  {
         case EventImpl::MOUSEDOWN_EVENT:
         case EventImpl::MOUSEUP_EVENT:

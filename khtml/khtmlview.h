@@ -220,7 +220,7 @@ private:
     void scheduleRelayout(khtml::RenderObject* clippedObj=0);
     void unscheduleRelayout();
 
-    void scheduleRepaint(int x, int y, int w, int h);
+    void scheduleRepaint(int x, int y, int w, int h, bool asap=false);
     void unscheduleRepaint();
 
     void closeChildDialogs();

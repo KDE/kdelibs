@@ -1152,7 +1152,7 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 KListBox* RenderSelect::createListBox()
 {
-    KListBox *lb = new KListBox(view()->viewport());
+    KListBox *lb = new KListBox(view()->viewport(), "__khtml");
     lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
     // ### looks broken
     //lb->setAutoMask(true);
@@ -1207,7 +1207,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
+    : KTextEdit(parent, "__khtml"), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
     setCheckSpellingEnabled( true );
     setTabChangesFocus( true );
