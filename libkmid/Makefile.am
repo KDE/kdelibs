@@ -1,5 +1,5 @@
 
-INCLUDES = $(all_includes)
+INCLUDES = $(all_includes) -I$(srcdir)/..
 
 libkmidincludedir = $(includedir)/libkmid
 libkmidinclude_HEADERS = midiout.h player.h track.h midimapper.h \
@@ -12,7 +12,5 @@ libkmid_la_SOURCES  = midiout.cc player.cc track.cc midimapper.cc \
 	 midfile.cc dattypes.cc midistat.cc deviceman.cc synthout.cc \
 	 fmout.cc gusout.cc voiceman.cc mt32togm.cc notearray.cc libkmid.cc
 
-libkmid_la_CXXFLAGS  = -fno-rtti -Os
-libkmid_la_LDFLAGS = -fno-rtti -version-info 0:95 --strip-unneeded
+libkmid_la_LDFLAGS = -version-info 0:95 
 
-DISTCLEANFILES = ./.deps/* ./.deps/.P
