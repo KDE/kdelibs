@@ -601,7 +601,7 @@ void KDirOperator::pathChanged()
 
 void KDirOperator::slotRedirected( const KURL& newURL )
 {
-    qDebug("*** REDIRECTED: %s", newURL.url().latin1());
+    currUrl = newURL;
     pendingMimeTypes.clear();
     myCompletion.clear();
     myDirCompletion.clear();
