@@ -107,6 +107,26 @@ void KTextEdit::contentsWheelEvent( QWheelEvent *e )
         QScrollView::contentsWheelEvent( e );
 }
 
+void KTextEdit::setReadOnly(bool readOnly)
+{
+    QPalette p = palette();
+    if (readOnly)
+    {
+        QColor color = p.color(QPalette::Disabled, QColorGroup::Background);
+        p.setColor(QColorGroup::Base, color);
+        p.setColor(QColorGroup::Background, color);
+    }
+    else
+    {
+        QColor color = p.color(QPalette::Normal, QColorGroup::Base);
+        p.setColor(QColorGroup::Base, color);
+        p.setColor(QColorGroup::Background, color);
+    }
+    setPalette(p);
+
+    QTextEdit::setReadOnly (readOnly);
+}
+
 void KTextEdit::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 

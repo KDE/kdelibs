@@ -32,6 +32,8 @@ public:
                QWidget * parent = 0, const char *name = 0 );
     KTextEdit( QWidget *parent = 0L, const char *name = 0 );
     ~KTextEdit();
+    
+    virtual void setReadOnly (bool readOnly)
 
 protected:
     virtual void keyPressEvent( QKeyEvent * );
