@@ -24,6 +24,10 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif 
+
 #include <qobject.h>
 #ifdef Q_WS_X11 // FIXME(E)
 
@@ -31,6 +35,10 @@ DEALINGS IN THE SOFTWARE.
 
 #include <kdebug.h>
 #include <X11/Xatom.h>
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
 
 KSelectionOwner::KSelectionOwner( Atom selection_P, int screen_P )
     :   selection( selection_P ),
