@@ -18,7 +18,6 @@
 #ifndef _KNOTIFY_CLIENT
 #define _KNOTIFY_CLIENT
 #include <qobject.h>
-#include <qstack.h>
 #include <kapp.h>
 #include <dcopclient.h>
 
@@ -71,6 +70,7 @@
 namespace KNotifyClient
 {
     struct InstancePrivate;
+	class InstanceStack;
 
     /**
      * Makes it possible to use @ref KNotifyClient with a @ref KInstance
@@ -112,9 +112,9 @@ namespace KNotifyClient
 	static Instance *currentInstance();
 	
     private:
+		static InstanceStack *instances();
         InstancePrivate *d;
-        static QStack<Instance> s_instances;
-	static Instance *defaultInstance;
+		static InstanceStack *s_instances;
     };
 
 

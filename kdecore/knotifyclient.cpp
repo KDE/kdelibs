@@ -21,6 +21,7 @@
 #include "knotifyclient.h"
 
 #include <qdatastream.h>
+#include <qstack.h>
 
 #include <kstddirs.h>
 #include <kconfig.h>
@@ -187,9 +188,46 @@ KInstance * KNotifyClient::instance() {
 }
 
 
-QStack<KNotifyClient::Instance> KNotifyClient::Instance::s_instances;
-KNotifyClient::Instance * KNotifyClient::Instance::defaultInstance = 0L;
-static KStaticDeleter<KNotifyClient::Instance> sd;
+class KNotifyClient::InstanceStack
+{
+public:
+	InstanceStack() { m_defaultInstance = 0; }
+	virtual ~InstanceStack() { delete m_defaultInstance; }
+	void push(Instance *instance) { m_instances.push(instance); }
+	
+	void pop(Instance *instance)
+	{
+		if (m_instances.top() == instance)
+			m_instances.pop();
+		else if (!m_instances.isEmpty())
+		{
+			kdWarning(160) << "Tried to remove an Instance that is not the current," << endl;
+			kdWarning(160) << "Resetting to the main KApplication." << endl;
+			m_instances.clear();
+		}
+		else
+			kdWarning(160) << "Tried to remove an Instance, but the stack was empty." << endl;
+    }
+	
+	Instance *currentInstance()
+	{
+		if (m_instances.isEmpty())
+		{
+			if (!m_defaultInstance)
+				m_instances.push(m_defaultInstance = new Instance(kapp));
+			else
+				m_instances.push(m_defaultInstance);
+		}
+		return m_instances.top();
+	}
+	
+private:
+	QStack<Instance> m_instances;
+	Instance *m_defaultInstance;
+};
+
+KNotifyClient::InstanceStack * KNotifyClient::Instance::s_instances = 0L;
+static KStaticDeleter<KNotifyClient::InstanceStack > instancesDeleter;
 
 struct KNotifyClient::InstancePrivate
 {
@@ -201,7 +239,7 @@ KNotifyClient::Instance::Instance(KInstance *instance)
 {
     d = new InstancePrivate;
     d->instance = instance;
-    s_instances.push(this);
+    instances()->push(this);
 
     KConfig *config = instance->config();
     KConfigGroupSaver cs( config, "General" );
@@ -210,22 +248,19 @@ KNotifyClient::Instance::Instance(KInstance *instance)
 
 KNotifyClient::Instance::~Instance()
 {
-    if (s_instances.top() == this)
-        s_instances.pop();
-    else if (!s_instances.isEmpty())
-    {
-        kdWarning(160) << "Tried to remove an Instance that is not the current," << endl;
-        kdWarning(160) << "Resetting to the main KApplication." << endl;
-        kdWarning(160) << "Offending instance is: " << d->instance->instanceName() << ", fix it!" << endl;
-        s_instances.clear();
-    }
-    else {
-        kdWarning(160) << "Tried to remove an Instance, but the stack was empty." << endl;
-        kdWarning(160) << "Offending instance is: " << d->instance->instanceName() << ", fix it!" << endl;
-    }
+	instances()->pop(this);
     delete d;
 }
 
+KNotifyClient::InstanceStack *KNotifyClient::Instance::instances()
+{
+	if (!s_instances)
+	{
+		s_instances = new InstanceStack;
+		instancesDeleter.setObject(s_instances);
+	}
+	return s_instances;
+}
 
 bool KNotifyClient::Instance::useSystemBell() const
 {
@@ -243,14 +278,7 @@ bool KNotifyClient::Instance::useSystemBell() const
 // our default instance is owned by us.
 KNotifyClient::Instance * KNotifyClient::Instance::currentInstance()
 {
-    if ( s_instances.isEmpty() ) {
-	if ( !defaultInstance )
-	    defaultInstance = sd.setObject( new Instance( kapp ));
-	else
-	    s_instances.push( defaultInstance );
-    }
-
-    return s_instances.top();
+	return instances()->currentInstance();
 }
 
 KInstance *KNotifyClient::Instance::current()
