@@ -777,7 +777,7 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
     job->showErrorDialog( properties->dialog() );
   else
   {
-    int totalSize = static_cast<KDirSize*>(job)->totalSize();
+    unsigned long totalSize = static_cast<KDirSize*>(job)->totalSize();
     m_sizeLabel->setText( QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize)).arg(totalSize) );
   }
   m_sizeStopButton->setEnabled(false);

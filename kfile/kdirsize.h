@@ -37,7 +37,7 @@ public:
   /**
    * @return the size we found
    */
-  int totalSize() { return m_totalSize; }
+  unsigned long totalSize() { return m_totalSize; }
 
   /**
    * Asynchronous method. Connect to the result signal.
