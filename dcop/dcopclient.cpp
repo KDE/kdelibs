@@ -58,13 +58,15 @@ public:
   int majorVersion, minorVersion; // protocol versions negotiated w/server
   char *vendor, *release; // information from server
 
-  static QCString serverAddr; // location of server in ICE-friendly format.
+  static const char* serverAddr; // location of server in ICE-friendly format.
   QSocketNotifier *notifier;
   bool registered;
 
   QCString senderId;
 
   QList<DCOPObjectProxy> proxies;
+    
+  QCString defaultObject;
 };
 
 struct ReplyStruct
@@ -74,7 +76,31 @@ struct ReplyStruct
   QByteArray* replyData;
 };
 
-QCString DCOPClientPrivate::serverAddr = 0;
+const char* DCOPClientPrivate::serverAddr = 0;
+
+// SM DUMMY
+#include <X11/SM/SMlib.h>
+static Bool HostBasedAuthProc ( char* /*hostname*/)
+{
+  return false; // no host based authentication
+}
+static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*, char** )
+{
+    return 0;
+};
+
+static void registerXSM()
+{
+    char 	errormsg[256];
+    if (!SmsInitialize ("SAMPLE-SM", "1.0",
+	NewClientProc, NULL,
+	HostBasedAuthProc, 256, errormsg))
+    {
+	qFatal("register xsm failed");
+    }
+}
+
+
 
 /**
  * Callback for ICE.
@@ -105,8 +131,8 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
       *replyWaitRet = True;
       return;
     } else {
-      qDebug("Very strange! got a DCOPReply opcode, but we were not waiting for a reply!");
-      return;
+	qDebug("Very strange! got a DCOPReply opcode, but we were not waiting for a reply!");
+	return;
     }
   } else if (opcode == DCOPCall || opcode == DCOPSend) {
     IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
@@ -133,7 +159,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     replyStream << replyType << replyData.size();
 
     // we are calling, so we need to set up reply data
-    IceGetHeader( iceConn, 1, b ? DCOPReply : DCOPReplyFailed,
+    IceGetHeader( iceConn, d->majorOpcode, b ? DCOPReply : DCOPReplyFailed,
 		  sizeof(DCOPMsg), DCOPMsg, pMsg );
     int datalen = reply.size() + replyData.size();
     pMsg->length += datalen;
@@ -171,7 +197,8 @@ DCOPClient::~DCOPClient()
 
 void DCOPClient::setServerAddress(const QCString &addr)
 {
-  DCOPClientPrivate::serverAddr = addr;
+    delete DCOPClientPrivate::serverAddr;
+    DCOPClientPrivate::serverAddr = qstrdup( addr.data() );
 }
 
 bool DCOPClient::attach()
@@ -186,6 +213,10 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if ( isAttached() )
 	detach();
 
+    extern int _IceLastMajorOpcode; // from libICE
+    if (_IceLastMajorOpcode < 1 )
+	registerXSM();
+    
     if ((d->majorOpcode = IceRegisterForProtocolSetup((char *) "DCOP", (char *) DCOPVendorString,
 						      (char *) DCOPReleaseString, 1, DCOPVersions,
 						      DCOPAuthCount, (char **) DCOPAuthNames,
@@ -193,6 +224,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	emit attachFailed("Communications could not be established.");
 	return false;
     }
+    qDebug("DCOPClient: setup DCOP protocol. Major opcode = %d", d->majorOpcode );
 
     // first, check if serverAddr was ever set.
     if (!d->serverAddr) {
@@ -210,12 +242,12 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	return false;
       }
       QTextStream t(&f);
-      d->serverAddr = t.readLine().latin1();
+      d->serverAddr = qstrdup( t.readLine().latin1() );
       f.close();
     }
 
-    if ((d->iceConn = IceOpenConnection(d->serverAddr.data(),
-					0, False, d->majorOpcode,
+    if ((d->iceConn = IceOpenConnection((char*)d->serverAddr,
+					(IcePointer) this, False, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
 	emit attachFailed(errBuf);
 	d->iceConn = 0;
@@ -230,6 +262,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 				 True, /* must authenticate */
 				 &(d->majorVersion), &(d->minorVersion),
 				 &(d->vendor), &(d->release), 1024, errBuf);
+    
 
     if (setupstat == IceProtocolSetupFailure ||
 	setupstat == IceProtocolSetupIOError) {
@@ -472,6 +505,13 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
       }
       if ( process( fun, data, replyType, replyData ) )
 	  return true;
+      
+      // fall through and send to defaultObject if available
+      if ( !d->defaultObject.isEmpty() && DCOPObject::hasObject( d->defaultObject ) ) {
+	  if (DCOPObject::find( d->defaultObject )->process(fun, data, replyType, replyData)) 
+	      return true;
+      }
+      
       // fall through and send to object proxies
   }
   if (!DCOPObject::hasObject(objId)) {
@@ -519,6 +559,8 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
     return false;
 
+  IceFlush (d->iceConn);
+
   IceReplyWaitInfo waitInfo;
   waitInfo.sequence_of_request = IceLastSentSequenceNumber(d->iceConn);
   waitInfo.major_opcode_of_request = d->majorOpcode;
@@ -534,19 +576,20 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
   do {
     s = IceProcessMessages(d->iceConn, &waitInfo,
 			   &readyRet);
+    if (s == IceProcessMessagesIOError) {
+	IceCloseConnection(d->iceConn);
+	qDebug("received an error processing data from DCOP server!");
+	return false;
+    }
   } while (!readyRet);
-
-  if (s == IceProcessMessagesIOError) {
-    IceCloseConnection(d->iceConn);
-    qDebug("received an error processing data from DCOP server!");
-    return false;
-  }
+  
 
   return tmp.result;
 }
 
 void DCOPClient::processSocketData(int)
 {
+    
   IceProcessMessagesStatus s =  IceProcessMessages(d->iceConn, 0, 0);
 
   if (s == IceProcessMessagesIOError) {
@@ -564,4 +607,15 @@ void DCOPClient::installObjectProxy( DCOPObjectProxy* obj)
 void DCOPClient::removeObjectProxy( DCOPObjectProxy* obj)
 {
     d->proxies.removeRef( obj );
+}
+
+void DCOPClient::setDefaultObject( const QCString& objId )
+{
+    d->defaultObject = objId;
+}
+    
+
+QCString DCOPClient::defaultObject() const
+{
+    return d->defaultObject;
 }

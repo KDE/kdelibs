@@ -235,6 +235,24 @@ class DCOPClient : public QObject
      * Returns the appId of the last application that talked to us.
      */
     QCString senderId() const;
+    
+    
+    /*
+     * Installs object @p objId as application-wide default object. 
+     *
+     * All app-wide messages that have not been processed by the dcopclient
+     * will be send further to @p objId.
+     */
+    void setDefaultObject( const QCString& objId );
+    
+    /*
+     * Returns the current default object or an empty string, if no object is 
+     * installed as default object.
+     *
+     * A default object receives application-wide messages that have not
+     * been processed by the dcopclient itself.
+     */
+    QCString defaultObject() const;
 
 
 signals:

@@ -42,6 +42,31 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qdatastream.h>
 #include <qstack.h>
 
+static Bool HostBasedAuthProc ( char* /*hostname*/)
+{
+  return false; // no host based authentication
+}
+
+// SM DUMMY
+#include <X11/SM/SMlib.h>
+static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*, char** )
+{
+    return 0;
+};
+
+static void registerXSM()
+{
+    char 	errormsg[256];
+    if (!SmsInitialize ("SAMPLE-SM", "1.0",
+	NewClientProc, NULL,
+	HostBasedAuthProc, 256, errormsg))
+    {
+	qFatal("register xsm failed");
+    }
+}
+
+
+
 static DCOPServer* the_server = 0;
 class DCOPListener : public QSocketNotifier
 {
@@ -82,10 +107,6 @@ int numTransports = 0;
 
 static IceIOErrorHandler prev_handler;
 
-static Bool HostBasedAuthProc ( char* /*hostname*/)
-{
-  return false; // no host based authentication
-}
 
 static const char *hex_table[] = {            /* for printing hex digits */
     "00", "01", "02", "03", "04", "05", "06", "07",
@@ -578,6 +599,10 @@ static void sighandler(int sig)
 DCOPServer::DCOPServer()
   : QObject(0,0), appIds(200), clients(200)
 {
+    extern int _IceLastMajorOpcode; // from libICE
+    if (_IceLastMajorOpcode < 1 )
+	registerXSM();
+
   the_server = this;
   if (( majorOpcode = IceRegisterForProtocolReply ((char *) "DCOP",
 						   (char *) DCOPVendorString,
@@ -597,6 +622,7 @@ DCOPServer::DCOPServer()
       qDebug("Could not register DCOP protocol with ICE");
     }
   char errormsg[256];
+  qDebug("DCOPServer, dcop is major opcode %d", majorOpcode );
 
   if (!IceListenForConnections (&numTransports, &listenObjs,
 				256, errormsg))
@@ -832,7 +858,7 @@ int main( int argc, char* argv[] )
 		"and start dcopserver again.\n"
 		"---------------------------------\n",
 		fName.data() );
-      
+
       // lock file present, die silently.
       exit(0);
     } else {
@@ -843,12 +869,12 @@ int main( int argc, char* argv[] )
   }
 
   if (fork() > 0)
-    exit(0); // I am the parent
+      exit(0); // I am the parent
 
   setsid();
 
-  if (fork() > 0)
-    exit(0); // get rid of controlling terminal
+   if (fork() > 0)
+       exit(0); // get rid of controlling terminal
 
   signal(SIGHUP, sighandler);
   signal(SIGTERM, sighandler);
