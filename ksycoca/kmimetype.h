@@ -167,11 +167,6 @@ public:
    */
   static const QDict<KMimeType>& mimeTypes() { return *s_mapMimeTypes; }
 
-  /**
-   * Find where _device is mounted - used by KMimeType and KAutoMount (kio)
-   */
-  static QString findDeviceMountPoint( const char *_device, const char *_file = "/etc/mtab" );
-
 protected:
   /**
    * Signal a missing mime type
@@ -268,13 +263,6 @@ public:
    *
    * @see KRun::runURL */
 
-  /*
-  This should be left in KIO somehow
-  So that ksycoca doesn't require libkio
-  This is a configuration cache
-  The actual running should be in kio
-  (David)
-
   static bool run( const QString& _url, bool _is_local );
 
 protected:
@@ -282,7 +270,6 @@ protected:
   static bool runApplication( const QString& _url, KSimpleConfig &cfg );
   static bool runLink( const QString& _url, KSimpleConfig &cfg );
   static bool runMimeType( const QString& _url, KSimpleConfig &cfg );
-  */
 };
 
 class KExecMimeType : public KMimeType

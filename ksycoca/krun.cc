@@ -57,10 +57,9 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   }
   else if ( strcmp( _mimetype, "application/x-desktop" ) == 0 )
   {
-#warning FIXME  
-//    KURL u( _url );
-//    if ( u.isLocalFile() )
-//      return KDEDesktopMimeType::run( _url, true );
+    KURL u( _url );
+    if ( u.isLocalFile() )
+      return KDEDesktopMimeType::run( _url, true );
   }
 
   QStringList lst;

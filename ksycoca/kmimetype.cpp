@@ -31,12 +31,12 @@
 #include "kmimetype.h"
 #include "kservicetypefactory.h"
 #include "kmimemagic.h"
-// #include "kservice.h"
-//#include "krun.h"
-// #include "kautomount.h"
+#include "kservices.h"
+#include "krun.h"
+#include "kautomount.h"
 
 #include <qstring.h>
-#include <qmessagebox.h>
+#include <kmessagebox.h>
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
@@ -72,8 +72,7 @@ void KMimeType::check()
   // No Mime-Types installed ?
   // Lets do some rescue here.
   if ( s_mapMimeTypes->count() <= 1 )
-    // No KMessageBox here - we don't want kdeui
-    QMessageBox::critical( 0, i18n( "No mime types installed!" ), i18n( "Error" ) );
+    KMessageBox::error( 0, i18n( "No mime types installed!" ) );
 	
   if ( KMimeType::mimeType( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );
@@ -99,8 +98,7 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 {
   QString tmp = i18n( "Could not find mime type\n%1" ).arg( _type );
 
-  // No KMessageBox here - we don't want kdeui
-  QMessageBox::critical( 0, tmp, i18n( "Missing mimetype" ) );
+  KMessageBox::sorry( 0, tmp );
 
   QStringList dummy;
 
@@ -450,7 +448,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
     QString dev = cfg.readEntry( "Dev" );
     if ( !icon.isEmpty() && !unmount_icon.isEmpty() && !dev.isEmpty() )
     {
-      QString mp = findDeviceMountPoint( dev.ascii() );
+      QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
       // Is the device not mounted ?
       if ( mp.isNull() )
 	return unmount_icon;
@@ -486,13 +484,6 @@ QString KDEDesktopMimeType::comment( const KURL& _url, bool _is_local ) const
   return comment;
 }
 
-/*
-  This should be left in KIO somehow
-  So that ksycoca doesn't require libkio
-  This is a configuration cache
-  The actual running should be in kio
-  (David)
-  
 bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
 {
   // It might be a security problem to run external untrusted desktop
@@ -543,7 +534,7 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
     return false;
   }
 
-  QString mp = findDeviceMountPoint( dev.ascii() );
+  QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
   // Is the device already mounted ?
   if ( !mp.isNull() )
   {
@@ -600,7 +591,6 @@ bool KDEDesktopMimeType::runMimeType( const QString& , KSimpleConfig & )
   // HACK: TODO
   return false;
 }
-*/
 
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
 {
@@ -622,12 +612,11 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
     if ( dev.isEmpty() )
     {
       QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
-      // No KMessageBox here - we don't want kdeui
-      QMessageBox::critical( 0, tmp, i18n( "Mimetype Error" ) );
+      KMessageBox::error( 0, tmp);
     }
     else
     {
-      QString mp = findDeviceMountPoint( dev.ascii() );
+      QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
       // not mounted ?
       if ( mp.isEmpty() )
       {
@@ -701,15 +690,13 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
     if ( bInvalidMenu ) 
     {
       QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( *it );
-      // No KMessageBox here - we don't want kdeui
-      QMessageBox::critical( 0, tmp, i18n( "Mimetype Error" ) );
+      KMessageBox::error( 0, tmp );
     }
   }
 
   return result;
 }
 
-/*
 void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType::Service& _service )
 {
   kdebug( KDEBUG_INFO, 7009, "EXECUTING Service %s", _service.m_strName.data() );
@@ -734,11 +721,10 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
     if ( dev.isEmpty() )
     {
       QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( u.path() );
-      // No KMessageBox here - we don't want kdeui
-      QMessageBox::critical( 0, tmp, i18n( "Mimetype Error" ) );
+      KMessageBox::error( 0, tmp );
       return;
     }
-    QString mp = findDeviceMountPoint( dev.ascii() );
+    QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );
 
     if ( _service.m_type == ST_MOUNT )
     {
@@ -769,7 +755,6 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
   else
     assert( 0 );
 }
-*/
 
 /*******************************************************
  *
@@ -781,120 +766,4 @@ KExecMimeType::KExecMimeType( const QString& _type, const QString& _icon, const 
 			      const QStringList& _patterns )
   : KMimeType( _type, _icon, _comment, _patterns )
 {
-}
-
-
-/*******************************************************
- *
- * Utility function, used by KMimeType and KAutoMount (kio)
- *
- ******************************************************/
-
-QString KMimeType::findDeviceMountPoint( const char *_device, const char *_file )
-{
-#ifdef __FreeBSD__
-  if( !strcmp( "/etc/mtab", _file ) )
-  {
-    struct statfs *buf;
-    long fsno;
-    int flags = MNT_WAIT;
-	
-    fsno = getfsstat( NULL, 0, flags );
-    buf = (struct statfs *)malloc(fsno * sizeof( struct statfs ) );
-    if( getfsstat(buf, fsno*sizeof( struct statfs ), flags) == -1 )
-    {
-      free(buf);
-      return QString::null;
-    }
-    else
-    {
-      int i;
-      for( i = 0; i < fsno; i++ )
-	if( !strcmp(buf[i].f_mntfromname, _device ) )
-	{
-	  QString tmpstr((const char *)buf[i].f_mntonname);
-	  free(buf);
-	  return tmpstr;
-	}
-    }
-  }
-    
-#endif /* __FreeBSD__ */             
-
-  // Get the real device name, not some link.
-  char buffer[1024];
-  QString tmp;
-    
-  struct stat lbuff;
-  lstat( _device, &lbuff );
-
-  // Perhaps '_device' is just a link ?
-  const char *device2 = _device;
-    
-  if ( S_ISLNK( lbuff.st_mode ) )
-  {
-    int n = readlink( _device, buffer, 1022 );
-    if ( n > 0 )
-    {
-      buffer[ n ] = 0;
-      if ( buffer[0] == '/' )
-	device2 = buffer;
-      else
-      {
-	tmp = "/dev/";
-	tmp += buffer;
-	device2 = tmp.data();
-      }
-    }
-  }
-    
-  int len = strlen( _device );
-  int len2 = strlen( device2 );
-      
-  FILE *f;
-  f = fopen( _file, "rb" );
-  if ( f != 0L )
-  {
-    char buff[ 1024 ];
-    
-    while ( !feof( f ) )
-    {
-      buff[ 0 ] = 0;
-      // Read a line
-      fgets( buff, 1023, f );
-      // Is it the device we are searching for ?
-      if ( strncmp( buff, _device, len ) == 0 && ( buff[len] == ' ' || buff[len] == '\t' ) )
-      {
-	// Skip all spaces
-	while( buff[ len ] == ' ' || buff[ len ] == '\t' )
-	  len++;
-		    
-	char *p = strchr( buff + len, ' ' );
-	if ( p != 0L )
-	{
-	  *p = 0;
-	  fclose( f );
-	  return QString( buff + len );
-	}
-      }
-      else if ( strncmp( buff, device2, len2 ) == 0 && ( buff[len2] == ' ' || buff[len2] == '\t' ) )
-      {
-	// Skip all spaces
-	while( buff[ len2 ] == ' ' || buff[ len2 ] == '\t' )
-	  len2++;
-	
-	char *p = strchr( buff + len2, ' ' );
-	if ( p != 0L )
-	{
-	  *p = 0;
-	  fclose( f );
-	  return QString( buff + len2 );
-	}	      
-      }
-    }
-    
-    fclose( f );
-  }
-  
-  return QString();
 }
