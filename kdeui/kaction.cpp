@@ -149,8 +149,14 @@ void KAction::unplug( QWidget *w )
     KToolBar *bar = (KToolBar *)w;
 
     int idx = findContainer( bar );
-
-    bar->removeItem( menuId( idx ) );
+    
+    if ( idx != -1 )
+    {
+      bar->removeItem( menuId( idx ) );
+      removeContainer( idx );
+    }
+    
+    return;
   }
   QAction::unplug( w );
 }
@@ -728,7 +734,13 @@ void KActionMenu::unplug( QWidget* widget )
 
     int idx = findContainer( bar );
 
-    bar->removeItem( menuId( idx ) );
+    if ( idx != -1 )
+    {
+      bar->removeItem( menuId( idx ) );
+      removeContainer( idx );
+    }      
+    
+    return;
   }
 
   QActionMenu::unplug( widget );
