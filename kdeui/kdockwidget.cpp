@@ -274,12 +274,11 @@ void KDockWidgetHeader::setTopLevel( bool isTopLevel )
   d->topLevel = isTopLevel;
   if ( isTopLevel ){
     KDockWidget* par = (KDockWidget*)parent();
-    if( par) {
-      if( par->isDockBackPossible())
+    if( par && par->isDockBackPossible() )
         dockbackButton->show();
-      else
+    else
         dockbackButton->hide();
-    }
+
     stayButton->hide();
     closeButton->hide();
     d->toDesktopButton->hide();
@@ -3171,28 +3170,25 @@ KDockContainer::~KDockContainer(){
 void KDockContainer::activateOverlapMode(int nonOverlapSize) {
 	m_nonOverlapSize=nonOverlapSize;
 	m_overlapMode=true;
-	if (parentDockWidget()) {
-		if (parentDockWidget()->parent()) {
-			kdDebug(282)<<"KDockContainer::activateOverlapMode: recalculating sizes"<<endl;
-			KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
-				parent()->qt_cast("KDockSplitter"));
-			if (sp) sp->resizeEvent(0);
-		}
+	if (parentDockWidget() && parentDockWidget()->parent()) {
+		kdDebug(282)<<"KDockContainer::activateOverlapMode: recalculating sizes"<<endl;
+		KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
+			parent()->qt_cast("KDockSplitter"));
+		if (sp)
+			sp->resizeEvent(0);
 	}
 }
 
 void KDockContainer::deactivateOverlapMode() {
 	if (!m_overlapMode) return;
 	m_overlapMode=false;
-	if (parentDockWidget()) {
-		if (parentDockWidget()->parent()) {
-			kdDebug(282)<<"KDockContainer::deactivateOverlapMode: recalculating sizes"<<endl;
-			KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
-				parent()->qt_cast("KDockSplitter"));
-			if (sp) sp->resizeEvent(0);
+	if (parentDockWidget() && parentDockWidget()->parent()) {
+		kdDebug(282)<<"KDockContainer::deactivateOverlapMode: recalculating sizes"<<endl;
+		KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
+			parent()->qt_cast("KDockSplitter"));
+		if (sp)
+			sp->resizeEvent(0);
 		}
-	}
-
 }
 
 bool KDockContainer::isOverlapMode() {
