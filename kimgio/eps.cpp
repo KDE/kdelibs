@@ -139,7 +139,6 @@ void kimgio_eps_read (QImageIO *image)
         // load image
         QImage myimage;
         if( myimage.load (tmpFile.name()) ) {
-                myimage.createHeuristicMask();
                 image->setImage (myimage);
                 image->setStatus (0);
         }
