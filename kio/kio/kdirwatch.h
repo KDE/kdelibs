@@ -18,11 +18,8 @@
 #ifndef _KDIRWATCH_H
 #define _KDIRWATCH_H
 
-#include <sys/stat.h>
-#include <unistd.h>
-#include <time.h>
-
 #include <qtimer.h>
+#include <qdatetime.h>
 #include <qmap.h>
 
 #define kdirwatch KDirWatch::self()
@@ -30,25 +27,35 @@
 class KDirWatchPrivate;
 
  /**
-  * Watch directories for changes.
+  * Watch directories and files for changes.
+  * The watched directories or files doesn't have to exist yet.
   *
-  * It uses stat(2) and
-  * compares stored and actual changed time of directories. If
-  * there is a difference it notifies about the change. Directories can be
-  * added, removed from the list and scanning of particular directories
-  * can be stopped and restarted. The whole class can be stopped and
-  * restarted. Directories can be added/removed from list in
-  * any state.
-  * When a watched directory is changed, KDirWatch will emit
-  * the signal @ref dirty().
+  * When a watched directory is changed, i.e. when files therein are
+  * created or deleted, KDirWatch will emit the signal @ref dirty().
   *
-  * If a watched directory gets deleted, KDirwatch will remove it from
-  * the list, and  emit the signal @ref deleted().
+  * When a watched, but previously not existing directory gets created,
+  * KDirWatch will emit the signal @ref created().
   *
-  * It's possible to watch a directory that doesn't exist yet.
-  * KDirWatch will emit a @ref dirty() signal when it is created.
+  * When a watched directory gets deleted, KDirWatch will emit the
+  * signal @ref deleted(). The directory is still watched for new
+  * creation.
   *
-  * @short Class for watching directory changes.
+  * When a watched file is changed, i.e. attributes changed or written
+  * to, KDirWatch will emit the signal @ref fileDirty().
+  *
+  * Scanning of particular directories or files can be stopped temporarily
+  * and restarted. The whole class can be stopped and restarted.
+  * Directories and files can be added/removed from list in any state.
+  *
+  * The implementation uses the FAM service when available;
+  * the usage of FAM implies the automatic watching of all files in a
+  * watched directory.
+  * If FAM is not available, the DNOTIFY functionality is used on LINUX.
+  * As a last resort, a regular polling for change of modification times
+  * is done; note that this is a bad solution when watching NFS mounted
+  * directories.
+  *
+  * @short Class for watching directory and file changes.
   * @author Sven Radej <sven@lisa.exp.univie.ac.at>
   */
 class KDirWatch : public QObject
@@ -72,15 +79,33 @@ class KDirWatch : public QObject
    ~KDirWatch();
 
    /**
-    * Adds a directory to the list of directories to be watched.
+    * Set the name of this KDirWatch instance
+    * Used in output of @ref statistics()
+    */
+   void setName(const QString& name) { _name = name; }
+
+   /**
+    * Get the name of this KDirWatch instance
+    * Used in output of @ref statistics()
+    */
+   const QString& name() { return _name; }
+
+   /**
+    * Adds a directory to be watched.
     *
     */
    void addDir(const QString& path);
 
    /**
-    * Returns the time the directory was last changed.
+    * Adds a file to be watched.
+    *
     */
-   time_t ctime(const QString& path);
+   void addFile(const QString& file);
+
+   /**
+    * Returns the time the directory/file was last changed.
+    */
+   QDateTime ctime(const QString& path);
 
    /**
     * Removes a directory from the list of scanned directories.
@@ -88,6 +113,13 @@ class KDirWatch : public QObject
     * If specified path is not in the list this does nothing.
     */
    void removeDir(const QString& path);
+
+   /**
+    * Removes a file from the list of watched files.
+    *
+    * If specified path is not in the list this does nothing.
+    */
+   void removeFile(const QString& file);
 
    /**
     * Stops scanning the specified path.
@@ -136,49 +168,98 @@ class KDirWatch : public QObject
     * The timer is stopped, but the list is not cleared.
     */
    void stopScan();
-  
-   bool contains( const QString& path ) const;
-  
-   /** @ref fileDirty() */
-   void setFileDirty( const QString & _file );
 
+   /**
+    * Is scanning stopped?
+    * After creation of KDirWatch, this is true.
+    */
+   bool isStopped() { return _isStopped; }
+
+   /**
+    * Check if a directory is being watched by this KDirWatch instance
+    */
+   bool contains( const QString& path ) const;
+
+   /**
+    * Dump statistic information about all KDirWatch instances.
+    * This checks for consistency, too.
+    */
+   static void statistics();
+
+   /** @ref created() */
+   void setDirCreated( const QString& );
+   /** @ref dirty() */
+   void setDirDirty( const QString& );
+   /** @ref deleted() */
+   void setDirDeleted( const QString& );
+   /** @ref fileCreated() */
+   void setFileCreated( const QString& );
+   /** @ref fileDirty() */
+   void setFileDirty( const QString& );
+   /** @ref fileDeleted() */
+   void setFileDeleted( const QString& );
+
+   /**
+    * The KDirWatch instance usually globally used in an application.
+    * However, you can create an arbitrary number of KDirWatch instances
+    * aside from this one.
+    */
    static KDirWatch* self();
     
  signals:
 
    /**
-    * Emitted when a directory is changed.
+    * Emitted when a watched directory is changed, i.e. files
+    * therein are created, deleted or changed.
     *
     * The new ctime is set
-    * before the signal is emited.
+    * before the signal is emitted.
     */
-   void dirty (const QString& dir);
+   void dirty (const QString&);
+
+   /**
+    * Emitted when a watched directory is created.
+    */
+   void created (const QString&);
+     
+   /**
+    * Emitted when a watched directory is deleted.
+    *
+    * The directory is still watched for new creation.
+    */
+   void deleted (const QString&);
+     
    
    /**
     * Emitted when KDirWatch learns that the file
     * @p _file has changed.
     *
     * This happens for instance when a .desktop file 
-    * gets a new icon - but this isn't automatic, one has to call 
-    * @ref setFileDirty() for this signal to be emitted.
+    * gets a new icon. One has to call 
+    * @ref setFileDirty() or watch the file for changes
+    * for this signal to be emitted.
     *
     * Note that KDirNotify is network transparent and
     * broadcasts to all processes, so it sort of supersedes this.
     */
-   void fileDirty (const QString& _file);
+   void fileDirty (const QString&);
 
    /**
-    * Emitted when directory is deleted.
-    *
-    * When you receive this signal, the directory is not yet
-    * deleted from the list. However, it will be removed from the
-    * notification list afterwards automatically. 
+    * Emitted when a watched file is created.
     */
-   void deleted (const QString& dir);
-     
+   void fileCreated (const QString&);
+
+   /**
+    * Emitted when a watched file is deleted.
+    */
+   void fileDeleted (const QString&);
+
  private:
-  KDirWatchPrivate *d;
-  static KDirWatch* s_pSelf;
+   bool _isStopped;
+   QString _name;
+   
+   KDirWatchPrivate *d;
+   static KDirWatch* s_pSelf;
 };
 
 #endif

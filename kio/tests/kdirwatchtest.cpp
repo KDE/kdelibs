@@ -9,38 +9,71 @@
   LGPL version 2.
  */
 
-#include "kdirwatchtest.h"
+#include <qfile.h>
+
 #include <kdebug.h>
+#include <kcmdlineargs.h>
+
+#include "kdirwatchtest.h"
+
+static const KCmdLineOptions options[] =
+{
+  {"+[directory ...]", "Directory(ies) to watch", 0},
+  {0,0,0}
+};
+
 
 int main (int argc, char **argv)
 {
-  KApplication a(argc, argv, "DirWatchTest");
+  KCmdLineArgs::init(argc, argv, "KDirWatchTest",
+		     "Test for KDirWatch", "1.0");
+  KCmdLineArgs::addCmdLineOptions( options );
+  KApplication::addCmdLineOptions();
+
+  KApplication a;
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
   myTest testObject;
 
-  KDirWatch *dirwatch = KDirWatch::self();
+  KDirWatch *dirwatch1 = KDirWatch::self();
+  KDirWatch *dirwatch2 = new KDirWatch;
+
+  testObject.connect(dirwatch1, SIGNAL( dirty( const QString &)), SLOT( dirty( const QString &)) );
+  testObject.connect(dirwatch1, SIGNAL( fileDirty( const QString &)), SLOT( fileDirty( const QString &)) );
+  testObject.connect(dirwatch1, SIGNAL( deleted( const QString &)), SLOT( deleted( const QString &)) );
+
+  if (args->count() >0) {
+    for(int i = 0; i < args->count(); i++) {
+      kdDebug() << "Watching: " << args->arg(i) << endl;
+      dirwatch2->addDir( QFile::decodeName( args->arg(i)));
+    }
+  }
 
   QString home = QString(getenv ("HOME")) + "/";
   QString desk = home + "Desktop/";
   kdDebug() << "Watching: " << home << endl;
+  dirwatch1->addDir(home);
   kdDebug() << "Watching: " << desk << endl;
-  dirwatch->addDir(home);
-  dirwatch->addDir(desk);
+  dirwatch1->addDir(desk);
   QString test = home + "test/";
-  dirwatch->addDir(test);
   kdDebug() << "Watching: (but skipped) " << test << endl;
+  dirwatch1->addDir(test);
 
-  testObject.connect(dirwatch, SIGNAL( dirty( const QString &)), SLOT( dirty( const QString &)) );
-  testObject.connect(dirwatch, SIGNAL( fileDirty( const QString &)), SLOT( fileDirty( const QString &)) );
-  testObject.connect(dirwatch, SIGNAL( deleted( const QString &)), SLOT( deleted( const QString &)) );
+  dirwatch1->startScan();
+  dirwatch2->startScan();
 
-  dirwatch->startScan();
-  if(!dirwatch->stopDirScan(home))
+  if(!dirwatch1->stopDirScan(home))
       kdDebug() << "stopDirscan: " << home << " error!" << endl;
-  if(!dirwatch->restartDirScan(home))
+  if(!dirwatch1->restartDirScan(home))
       kdDebug() << "restartDirScan: " << home << "error!" << endl;
-  if (!dirwatch->stopDirScan(test))
+  if (!dirwatch1->stopDirScan(test))
      kdDebug() << "stopDirScan: error" << endl;
+
+  KDirWatch::statistics();
+
+  delete dirwatch1;
+
+  KDirWatch::statistics();
 
   return a.exec();
 }

@@ -11,21 +11,42 @@
 #include <fam.h>
 #endif
 
-enum directoryStatus { Normal = 0, NonExistent };
-
+/* KDirWatchPrivate is a singleton and does the watching
+ * for every KDirWatch instance in the application.
+ */
 class KDirWatchPrivate : public QObject
 {
   Q_OBJECT
 
+  enum entryStatus { Normal = 0, NonExistent };
+  enum { NoChange=0, Changed=1, Created=2, Deleted=4 };
+
 public:
+  struct Client {
+    KDirWatch* instance;
+    int count;
+    // did the instance stop watching
+    bool watchingStopped;
+    // events blocked when stopped
+    int pending;
+  };
+
   class Entry
   {
   public:
-    time_t m_ctime;
-    int m_clients;
-    directoryStatus m_status;
+    // the last observed modification time
+    QDateTime m_ctime;
+    entryStatus m_status;
+    bool isDir;
+    // instances interested in events
+    QPtrList<Client> m_clients;
+    // nonexistent entries of this directory
     QPtrList<Entry> m_entries;
     QString path;
+
+    void addClient(KDirWatch*);
+    void removeClient(KDirWatch*);
+    int clients();
 
 #ifdef HAVE_FAM
     FAMRequest fr;
@@ -43,30 +64,29 @@ public:
   KDirWatchPrivate(int);
   ~KDirWatchPrivate();
 
-  void resetList (bool);
-  void addDir(const QString&, Entry*);
-  void removeDir(const QString&, Entry*);
-  bool stopDirScan( const QString& );
-  bool restartDirScan( const QString& );
-  void stopScan();
-  void startScan(bool, bool);
+  void resetList (KDirWatch*,bool);  
+  void addEntry(KDirWatch*,const QString&, Entry*, bool);
+  void removeEntry(KDirWatch*,const QString&, Entry*);
+  bool stopEntryScan(KDirWatch*, Entry*);
+  bool restartEntryScan(KDirWatch*, Entry*, bool );
+  void stopScan(KDirWatch*);
+  void startScan(KDirWatch*, bool, bool);
+
+  void removeEntries(KDirWatch*);
+  void statistics();
 
   Entry* entry(const QString&);
+  int scanEntry(Entry* e);
+  void emitEvent(Entry* e, int event);
 
 public slots:
   void slotRescan();
   void famEventReceived(); // for FAM
   void slotActivated(); // for DNOTIFY
 
-signals:
-  // to be passed to KDirWatch
-  void dirty (const QString& dir);
-  void fileDirty (const QString& _file);
-  void deleted (const QString& dir);
-
 public:
   QTimer *timer;
-  EntryMap m_mapDirs;
+  EntryMap m_mapEntries;
 
 private:
   int freq;
@@ -75,7 +95,7 @@ private:
   QSocketNotifier *sn;
   FAMConnection fc;
   bool use_fam;
-  bool emitEvents;
+  QIntDict<Entry> fr_Entry;
 
   void checkFAMEvent(FAMEvent*);
 #endif
@@ -85,7 +105,7 @@ private:
   int mPipe[2];
   QTimer mTimer;
   QSocketNotifier *mSn;
-  QIntDict<Entry> fd_Entry;  
+  QIntDict<Entry> fd_Entry;
 
   static void dnotify_handler(int, siginfo_t *si, void *);
 #endif

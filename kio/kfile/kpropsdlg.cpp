@@ -44,6 +44,7 @@ extern "C" {
 #include <grp.h>
 #include <time.h>
 }
+#include <unistd.h>
 #include <errno.h>
 #include <assert.h>
 
