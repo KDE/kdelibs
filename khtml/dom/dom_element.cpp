@@ -177,17 +177,11 @@ NodeList Element::getElementsByTagName( const DOMString &name )
   return 0;
 }
 
-NodeList Element::getElementsByNameAttr( const DOMString &name )
-{
-  if (impl) return ((ElementImpl *)impl)->getElementsByNameAttr(name);
-  return 0;
-}
-
 void Element::normalize()
 {
     if (!impl)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
-	
+
     int exceptioncode = 0;
     ((ElementImpl *)impl)->normalize(exceptioncode);
     if (exceptioncode)
