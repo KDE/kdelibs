@@ -1451,6 +1451,14 @@ void KHTMLWidget::blockEndFont( HTMLClueV *_clue, HTMLStackElem *Elem)
     }
 }
 
+void KHTMLWidget::blockEndPre( HTMLClueV *_clue, HTMLStackElem *Elem)
+{
+    popFont();
+    vspace_inserted = insertVSpace( _clue, vspace_inserted );
+    flow = 0;
+    inPre = false;
+}
+
 void KHTMLWidget::blockEndColorFont( HTMLClueV *_clue, HTMLStackElem *Elem)
 {
     popColor();
@@ -1545,7 +1553,7 @@ void KHTMLWidget::parse()
     formSelect = 0;
     inOption = false;
     inTextArea = false;
-
+    inPre = false;
     inTitle = false;
     bodyParsed = false;
 
@@ -1838,15 +1846,28 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 			debugM("OK\n");
 		       
 			debugM("Adding string to flow...");
-			if (*str1 == ' ')
-		   	    flow->append( new HTMLHSpace( fp, painter));
-
-		   	if ( url || target )
-	       		    flow->append( new HTMLLinkText( str1, fp,
-					painter, url, target,TRUE ) );
-		   	else
-		       	    flow->append( new HTMLTextMaster( str1, fp,
-				        painter,TRUE ) );
+			
+			
+		   	if (inPre)
+		   	{
+		   	    if ( url || target )
+	       		        flow->append( new HTMLLinkText( str1, fp,
+				            painter, url, target,TRUE ) );
+		   	    else
+		       	        flow->append( new HTMLText( str1, fp,
+				            painter,TRUE ) );
+			}
+			else
+			{	        
+			    if (*str1 == ' ')
+		   	        flow->append( new HTMLHSpace( fp, painter));
+		   	    if ( url || target )
+	       		        flow->append( new HTMLLinkTextMaster( str1, fp,
+				            painter, url, target,TRUE ) );
+		   	    else
+		       	        flow->append( new HTMLTextMaster( str1, fp,
+				            painter,TRUE ) );
+		        }
 			debugM("OK\n");
 		  }		
 		}
@@ -1895,14 +1916,26 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		  }
 		
 		  debugM("Adding string to flow...");
-                  if (*str == ' ')
-	              flow->append( new HTMLHSpace( fp, painter));
-		  if ( url || target )
-		      flow->append( new HTMLLinkText( str, fp, painter,
-		  	 url, target,autoDelete ) );
-		  else
-		      flow->append( new HTMLTextMaster( str, fp, painter,
-		      	 autoDelete ) );
+		  if (inPre) 
+		  {
+		      if ( url || target )
+		          flow->append( new HTMLLinkText( str, fp, painter,
+		  	       url, target,autoDelete ) );
+		      else
+		          flow->append( new HTMLText( str, fp, painter,
+		      	       autoDelete ) );
+		  }
+		  else 
+		  {
+                      if (*str == ' ')
+	                  flow->append( new HTMLHSpace( fp, painter));
+		      if ( url || target )
+		          flow->append( new HTMLLinkTextMaster( str, fp, painter,
+		  	       url, target,autoDelete ) );
+		      else
+		          flow->append( new HTMLTextMaster( str, fp, painter,
+		      	       autoDelete ) );
+		  }
 	  	  debugM("OK\n");
 		}      
 	    }
@@ -3410,7 +3443,8 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 		_clue->append( flow );
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
-		pushBlock(ID_PRE, 2, &blockEndFont, true);
+		inPre = true;
+		pushBlock(ID_PRE, 2, &blockEndPre);
 	}	
 	else if ( strncmp( str, "/pre", 4 ) == 0 )
 	{

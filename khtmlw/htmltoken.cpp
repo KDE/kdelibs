@@ -133,7 +133,7 @@ void HTMLTokenizer::write( const char *str )
     // If this pointer is not null, one has to free the memory before leaving
     // this function.
     char *srcPtr = 0L;
- 
+
     KCharsets *charsets=KApplication::getKApplication()->getCharsets();
     
     if ( str == 0L || buffer == 0L )
@@ -759,14 +759,14 @@ void HTMLTokenizer::nextTokenBuffer()
 void HTMLTokenizer::first()
 { 
     tokenBufferCurrIndex = 0;
-    HTMLTokenBuffer *tokenBufferCurr = tokenBufferList.at(tokenBufferCurrIndex);
-    if (tokenBufferCurr)
+    curr = 0;
+    if (tokenBufferList.count())
     {
-        curr = tokenBufferCurr->first();
-    }
-    else
-    {
-        curr = 0;
+        HTMLTokenBuffer *tokenBufferCurr = tokenBufferList.at(tokenBufferCurrIndex);
+        if (tokenBufferCurr)
+        {
+            curr = tokenBufferCurr->first();
+        }
     }
 }
 

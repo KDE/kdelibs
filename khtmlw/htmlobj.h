@@ -300,6 +300,38 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
+// There are several text-related objects:
+//
+// HTMLHSpace: A horizontal space
+// HTMLVSpace: A vertical space, e.g. linefeed
+// HTMLText: A non-breakable text object
+// HTMLTextMaster: A breakable text-object
+// HTMLLinkText: A non-breakable hyperlinked text object
+// HTMLLinkTextMaster: A breakable hyperlinked text object
+//
+// Use:
+//    HTMLHSpace is equivalent to HTMLText(" ", ...) but slightly smaller
+//               in memory usage
+//    HTMLVSpace is used for a forced line-break (e.g. linefeed)
+//    HTMLText is used for text which shouldn't be broken. 
+//    HTMLTextMaster is used for text which may be broken on spaces,
+//               it should only be used inside HTMLClueFlow.
+//               For text without spaces HTMLTextMaster is equivalent
+//               to HTMLText. In such cases HTMLText is more efficient.
+//    HTMLLinkText is like HTMLText but can be hyperlinked.
+//    HTMLLinkTextMaster is like HTMLTextMaster but can be hyperlinked.
+//
+// Rationale:
+//    Basically all functionality is provided by HTMLVSpace and HTMLText.
+//    The additional functionality of HTMLLLinkText is not put in HTMLText
+//    to keep the memory usage of the frequently used HTMLText object low.
+//    Since often single spaces are used in HTML, they got their own, even 
+//    smaller object. 
+//    Another often encountered pattern is a paragraph of text. The 
+//    HTMLTextMaster is designed for this purpose. It splits the paraagraph
+//    in lines during layout and allocates a HTMLTextSlave object for each 
+//    line. The actual text itself is maintained by the HTMLTextMaster
+//    object making efficient memory usage possible.
 
 class HTMLHSpace : public HTMLObject
 {
@@ -405,14 +437,36 @@ protected:
 // This object is text which also has an associated link.  This data is
 // not maintained in HTMLText to conserve memory.
 //
-class HTMLLinkText : public HTMLTextMaster
+class HTMLLinkText : public HTMLText
 {
 public:
     HTMLLinkText( const char*_str, const HTMLFont *_font, QPainter *_painter,
 	    char *_url, const char *_target, bool _autoDelete=FALSE )
-	: HTMLTextMaster( _str, _font, _painter,_autoDelete )
+	: HTMLText( _str, _font, _painter,_autoDelete )
 	    { url = _url; target = _target; }
     virtual ~HTMLLinkText() { }
+
+    virtual const char* getURL() const { return url; }
+    virtual const char* getTarget() const { return target; }
+
+protected:
+    char *url;
+    const char *target;
+};
+
+//-----------------------------------------------------------------------------
+//
+// This object is text which also has an associated link.  This data is
+// not maintained in HTMLTextMaster to conserve memory.
+//
+class HTMLLinkTextMaster : public HTMLTextMaster
+{
+public:
+    HTMLLinkTextMaster( const char*_str, const HTMLFont *_font, QPainter *_painter,
+	    char *_url, const char *_target, bool _autoDelete=FALSE )
+	: HTMLTextMaster( _str, _font, _painter,_autoDelete )
+	    { url = _url; target = _target; }
+    virtual ~HTMLLinkTextMaster() { }
 
     virtual const char* getURL() const { return url; }
     virtual const char* getTarget() const { return target; }
