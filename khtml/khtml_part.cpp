@@ -892,6 +892,10 @@ QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QStrin
 #define KJS_VERBOSE
 
 KJSErrorDlg *KHTMLPart::jsErrorExtension() {
+  if (parentPart()) {
+    return parentPart()->jsErrorExtension();
+  }
+
   if (!d->m_statusBarJSErrorLabel) {
     d->m_statusBarJSErrorLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
     d->m_statusBarJSErrorLabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
@@ -911,6 +915,10 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
 }
 
 void KHTMLPart::removeJSErrorExtension() {
+  if (parentPart()) {
+    parentPart()->removeJSErrorExtension();
+    return;
+  }
   delete d->m_statusBarJSErrorLabel;
   d->m_statusBarJSErrorLabel = 0;
   delete d->m_jsedlg;
@@ -931,8 +939,11 @@ void KHTMLPart::jsErrorDialogContextMenu() {
 }
 
 void KHTMLPart::launchJSErrorDialog() {
-  jsErrorExtension()->show();
-  jsErrorExtension()->raise();
+  KJSErrorDlg *dlg = jsErrorExtension();
+  if (dlg) {
+    dlg->show();
+    dlg->raise();
+  }
 }
 
 QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const DOM::Node& n, const QString& script)
@@ -953,8 +964,11 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
    *  Error handling
    */
   if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
-    KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
-    jsErrorExtension()->addError(i18n("<b>Error</b>: %1: %2").arg(filename).arg(msg.qstring()));
+    KJSErrorDlg *dlg = jsErrorExtension();
+    if (dlg) {
+      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
+      dlg->addError(i18n("<b>Error</b>: %1: %2").arg(filename).arg(msg.qstring()));
+    }
   }
   
   return ret;
@@ -983,8 +997,11 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
    *  Error handling
    */
   if (comp.complType() == KJS::Throw && !comp.value().isNull()) {
-    KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
-    jsErrorExtension()->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
+    KJSErrorDlg *dlg = jsErrorExtension();
+    if (dlg) {
+      KJS::UString msg = comp.value().toString(proxy->interpreter()->globalExec());
+      dlg->addError(i18n("<b>Error</b>: node %1: %2").arg(n.nodeName().string()).arg(msg.qstring()));
+    }
   }
   
   if (!d->m_runningScripts && d->m_doc && !d->m_doc->parsing() && d->m_submitForm )
@@ -1580,7 +1597,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   }
 
   // No need to show this for a new page until an error is triggered
-  removeJSErrorExtension();
+  if (!parentPart()) {
+    removeJSErrorExtension();
+  }
 
   // ###
   //stopParser();
