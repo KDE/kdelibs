@@ -154,6 +154,7 @@ protected:
 
     bool inBody;
     bool haveContent;
+    bool haveBody;
     bool haveFrameSet;
     bool m_inline;
     bool end;

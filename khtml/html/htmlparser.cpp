@@ -171,6 +171,7 @@ void KHTMLParser::reset()
     inBody = false;
     haveFrameSet = false;
     haveContent = false;
+    haveBody = false;
     inSelect = false;
     m_inline = false;
 
@@ -738,6 +739,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         if(haveFrameSet) break;
         popBlock(ID_HEAD);
         n = new HTMLBodyElementImpl(document);
+        haveBody =  true;
         startBody();
         break;
 
@@ -764,7 +766,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_FRAMESET:
         popBlock(ID_HEAD);
-        if ( inBody && !haveFrameSet && !haveContent) {
+        if ( inBody && !haveFrameSet && !haveContent && !haveBody) {
             popBlock( ID_BODY );
             // ### actually for IE document.body returns the now hidden "body" element
             // we can't implement that behaviour now because it could cause too many
@@ -775,7 +777,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
                     ->addCSSProperty(CSS_PROP_DISPLAY, "none");
             inBody = false;
         }
-        if ( (haveContent || haveFrameSet) && current->id() == ID_HTML)
+        if ( (haveBody || haveContent || haveFrameSet) && current->id() == ID_HTML)
             break;
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
