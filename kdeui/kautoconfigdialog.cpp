@@ -139,6 +139,8 @@ void KAutoConfigDialog::settingModified(){
 }
 
 void KAutoConfigDialog::settingsChangedSlot(){
+  // Update the buttons
+  settingModified();
   emit (settingsChanged(name()));
 }
 
