@@ -385,7 +385,7 @@ public:
 	view->setFocus();
 	dlg->exec();
     }
-    
+
     bool strictMenuCheck;
 
 private:
@@ -1413,29 +1413,17 @@ QString KApplication::caption() const
 QString KApplication::makeStdCaption( const QString &userCaption,
                                       bool withAppName, bool modified ) const
 {
-  // This string should be collected from a global object.
-  QString mod = i18n("modified");
+  QString s = userCaption.isEmpty() ? caption() : userCaption;
 
-  QString s(userCaption);
-  if (!s.isEmpty())
-  {
-    // If the document is modified, add '[modified]'.
-    if (modified)
-      s += QString::fromUtf8(" [") + mod + QString::fromUtf8("]");
-
-    // Add the application name if:
-    // User asked for it and the app name (caption()) is not empty
-
-    if ((withAppName && !(caption().isNull())));
-      s += QString::fromUtf8(" - ") + caption();
-  }
-  else
-  {
-    // The user-supplied caption is empty.
-    s = caption();
-    // Append [modified] if modified
-    if (modified)
-      s += QString::fromUtf8(" [") + mod + QString::fromUtf8("]");
+  // If the document is modified, add '[modified]'.
+  if (modified)
+      s += QString::fromUtf8(" [") + i18n("modified") + QString::fromUtf8("]");
+  
+  if ( !userCaption.isEmpty() ) {
+      // Add the application name if:
+      // User asked for it, it's not a duplication  and the app name (caption()) is not empty
+      if ( withAppName && !caption().isNull() && userCaption != caption()  )
+	  s += QString::fromUtf8(" - ") + caption();
   }
 
   return s;
