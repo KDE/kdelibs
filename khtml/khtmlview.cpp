@@ -22,6 +22,8 @@
  */
 #include "khtmlview.moc"
 
+#include "khtmlview.h"
+
 #include "khtml_part.h"
 #include "khtml_events.h"
 
@@ -49,6 +51,8 @@
 
 #include <kimageio.h>
 #include <kdebug.h>
+#include <kurldrag.h>
+#include <qobjectlist.h>
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -1364,6 +1368,53 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
     }
 }
 #endif
+
+void KHTMLView::dragEnterEvent( QDragEnterEvent* ev )
+{
+    // Handle drops onto frames (#16820)
+    // Drops on the main html part is handled by Konqueror (and shouldn't do anything
+    // in e.g. kmail, so not handled here).
+    if ( m_part->parentPart() )
+    {
+        // Duplicated from KonqView::eventFilter
+        if ( QUriDrag::canDecode( ev ) )
+        {
+            KURL::List lstDragURLs;
+            bool ok = KURLDrag::decode( ev, lstDragURLs );
+            QObjectList *children = this->queryList( "QWidget" );
+
+            if ( ok &&
+                 !lstDragURLs.first().url().contains( "javascript:", false ) && // ### this looks like a hack to me
+                 ev->source() != this &&
+                 children &&
+                 children->findRef( ev->source() ) == -1 )
+                ev->acceptAction();
+
+            delete children;
+        }
+    }
+    QScrollView::dragEnterEvent( ev );
+}
+
+void KHTMLView::dropEvent( QDropEvent *ev )
+{
+    // Handle drops onto frames (#16820)
+    // Drops on the main html part is handled by Konqueror (and shouldn't do anything
+    // in e.g. kmail, so not handled here).
+    if ( m_part->parentPart() )
+    {
+        KURL::List lstDragURLs;
+        bool ok = KURLDrag::decode( ev, lstDragURLs );
+
+        KHTMLPart* part = m_part->parentPart();
+        while ( part && part->parentPart() )
+            part = part->parentPart();
+        KParts::BrowserExtension *ext = part->browserExtension();
+        if ( ok && ext && lstDragURLs.first().isValid() )
+            emit ext->openURLRequest( lstDragURLs.first() );
+    }
+    QScrollView::dropEvent( ev );
+}
 
 void KHTMLView::focusOutEvent( QFocusEvent *e )
 {

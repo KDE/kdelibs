@@ -163,6 +163,8 @@ protected:
 #ifndef QT_NO_WHEELEVENT
     virtual void viewportWheelEvent(QWheelEvent*);
 #endif
+    virtual void dragEnterEvent( QDragEnterEvent* );
+    virtual void dropEvent( QDropEvent* );
 
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent ( QKeyEvent *_ke );
@@ -180,7 +182,7 @@ private:
     void resetCursor();
 
     void scheduleRelayout();
-    
+
     void scheduleRepaint(int x, int y, int w, int h);
 
     /**
@@ -229,7 +231,7 @@ private:
 
     void setIgnoreEvents(bool ignore);
     bool ignoreEvents();
-    
+
     void complete();
 
     // ------------------------------------- member variables ------------------------------------
