@@ -87,6 +87,11 @@ public:
   virtual bool setValue( KABC::Addressee &, const QString & );
 
   /**
+   * Returns a string, that can be used for sorting.
+   */
+  virtual QString sortKey( const KABC::Addressee & );
+
+  /**
    * Returns, if the field is a user-defined field.
    */
   virtual bool isCustom();

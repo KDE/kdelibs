@@ -181,6 +181,23 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
   }
 }
 
+QString Field::sortKey( const KABC::Addressee &a )
+{
+  switch ( mImpl->fieldId() ) {
+    --CASEVALUE--
+    case FieldImpl::Birthday:
+      if ( a.birthday().isValid() ) {
+        QDate date = a.birthday().date();
+        QString key;
+	key.sprintf( "%02d-%02d", date.month(), date.day() );
+        return key;
+      } else
+        return QString( "00-00" );
+    default:
+      return value( a ).lower();
+  }
+}
+
 bool Field::isCustom()
 {
   return mImpl->fieldId() == FieldImpl::CustomField;
