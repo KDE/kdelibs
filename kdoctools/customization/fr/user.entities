@@ -103,11 +103,11 @@
 <!ENTITY traducteurChristopheRolland  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheRolland   '<othercredit role="relecteur"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurChristopheRolland  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurChristopheRolland   '<othercredit role="relecteur"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
-
 <!ENTITY traducteurPenelopeSorveyron   '<othercredit role="translator"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email></email>goneri@free.fr</address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPenelopeSorveyron    '<othercredit role="reviewer"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email>goneri@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
+<!ENTITY traducteurGillesThioliere  '<othercredit role="translator"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurGillesThioliere   '<othercredit role="relecteur"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 
 <!-- CREDITS FOR TRANSLATORS -->
