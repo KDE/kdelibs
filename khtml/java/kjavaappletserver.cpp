@@ -123,30 +123,22 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     KConfig config ( "konquerorrc", true );
     config.setGroup( "Java/JavaScript Settings" );
 
-    QString jvm_path;
+    QString jvm_path = "java";
 
-    if( config.readBoolEntry( "JavaAutoDetect", true) )
-        jvm_path = "java";
-    else
-    {
-        QString jPath = config.readEntry( "JavaPath", "/usr/lib/jdk" );
-        // Cut off trailing slash if any
-        if( jPath[jPath.length()-1] == '/' )
-            jPath.remove(jPath.length()-1, 1);
+    QString jPath = config.readEntry( "JavaPath", "/usr/lib/jdk" );
+    // Cut off trailing slash if any
+    if( jPath[jPath.length()-1] == '/' )
+        jPath.remove(jPath.length()-1, 1);
 
-        //check here to see if they entered the whole path the java exe
-        //a common mistake I've made myself...
-        QDir dir( jPath );
-        if( dir.exists( "bin/java" ) )
-            jvm_path = jPath + "/bin/java";
-        else
-        {
-            if( dir.exists() )
-            {
-                jvm_path = jPath;
-            }
-        }
-    }
+    //check here to see if they entered the whole path the java exe
+    //a common mistake I've made myself...
+    QDir dir( jPath );
+    if( dir.exists( "bin/java" ) )
+        jvm_path = jPath + "/bin/java";
+    else if( QFile::exists(jPath) )
+        jvm_path = jPath;
+
+kdDebug() << " ************* " << jvm_path << endl;
 
     //check to see if jvm_path is valid and set d->appletLabel accordingly
     p->setJVMPath( jvm_path );
