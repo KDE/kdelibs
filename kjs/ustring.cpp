@@ -476,6 +476,30 @@ bool KJS::operator==(const UString& s1, const UString& s2)
 		 s1.rep->len * sizeof(UChar)) == 0);
 }
 
+bool KJS::operator==(const UString& s1, const char *s2)
+{
+  if (s2 == 0L && s1.isNull())
+    return true;
+
+  if (s1.size() != (int) strlen(s2))
+    return false;
+
+  const UChar *u = s1.data();
+  while (*s2) {
+    if (u->lo != *s2 || u->hi != 0)
+      return false;
+    s2++;
+    u++;
+  }
+
+  return true;
+}
+
+bool KJS::operator==(const char *s1, const UString& s2)
+{
+  return operator==(s2, s1);
+}
+
 UString KJS::operator+(const UString& s1, const UString& s2)
 {
   UString tmp(s1);
