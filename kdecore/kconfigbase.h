@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.13  1998/10/20 18:58:12  ettrich
+// ugly hack to get rid of X11 includes, small fix
+//
 // Revision 1.12  1998/10/07 06:49:23  kalle
 // Correctly read double dollar signs (patch by Harri Porten)
 // Dollar expansion can be turned off with setDollarExpansion( false ).
@@ -387,7 +390,7 @@ public:
   /** Write the key/value pair.
 	*
 	* This is stored to the most specific config file when destroying the
-	* config object or when calling Sync().
+	* config object or when calling sync().
 	*
 	*  @param pKey		The key to write.
 	*  @param pValue	The value to write.
@@ -640,7 +643,7 @@ public:
 
   /** Don't write dirty entries at destruction time. If bDeep is
 	* false, only the global dirty flag of the KConfig object gets
-	* cleared. If you then call WriteEntry again, the global dirty flag
+	* cleared. If you then call writeEntry again, the global dirty flag
 	* is set again and all dirty entries will be written.
 	* @param bDeep if
 	* true, the dirty flags of all entries are cleared, as well as the
