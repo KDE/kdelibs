@@ -58,7 +58,8 @@ QDomDocument KPart::mergedActionDOM()
  if ( pluginDocuments.count() == 0 && instance() )
   {
     qDebug( "no plugins found for %s", instance()->instanceName().data() );
-    m_mergedDOM.setContent( config() );
+    assert( !m_config.isNull() );
+    m_mergedDOM.setContent( m_config );
     m_bPluginActionsMerged = true;
     return m_mergedDOM;
   }
@@ -84,7 +85,8 @@ QDomDocument KPart::mergedActionDOM()
     }
   }
 
-  m_mergedDOM.setContent( config() );
+  assert( !m_config.isNull() );
+  m_mergedDOM.setContent( m_config );
   
   KXMLGUIFactory::mergeXML( m_mergedDOM.documentElement(), pluginDoc.documentElement() );
 
@@ -100,30 +102,9 @@ void KPart::setWidget( QWidget *widget )
 	   this, SLOT( slotWidgetDestroyed() ) );
 }
 
-QString KPart::readConfigFile( const QString& filename ) const
+void KPart::setXMLFile( const QString & file )
 {
-    QFile file( filename );
-    if ( !file.open( IO_ReadOnly ) )
-	return QString::null;
-
-    uint size = file.size();
-    char* buffer = new char[ size + 1 ];
-    file.readBlock( buffer, size );
-    buffer[ size ] = 0;
-    file.close();
-
-    QString text = QString::fromUtf8( buffer, size );
-    delete[] buffer;
-
-    return text;
-}
-
-QString KPart::config()
-{
-    if (  m_config.isEmpty() )
-	m_config = configFile();
-
-    return m_config;
+    m_config = KXMLGUIFactory::readConfigFile( file );
 }
 
 QAction* KPart::action( const char* name )

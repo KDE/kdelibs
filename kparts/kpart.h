@@ -22,8 +22,6 @@ public:
     KPart( const char* name = 0 );
     virtual ~KPart();
 
-    QString config();
-
     QAction* action( const char* name );
     QActionCollection* actionCollection();
 
@@ -57,7 +55,12 @@ protected:
      */
     virtual void setWidget( QWidget * widget );
 
-    virtual QString configFile() const = 0;
+    /**
+     * Call this in the KPart-inherited class constructor
+     * to set the name of the rc file containing the XML for the part
+     */
+    virtual void setXMLFile( const QString & file );
+
     virtual QString readConfigFile( const QString& filename ) const;
 
     KPartHost * m_host; // Couldn't keep the QGuardedPtr here (because KPartHost isn't a QObject anymore) (David)
@@ -67,6 +70,9 @@ private slots:
 
 private:
     QGuardedPtr<QWidget> m_widget;
+    /**
+     * Holds the contents of the config file
+     */
     QString m_config;
     QActionCollection m_collection;
     bool m_bPluginActionsMerged;

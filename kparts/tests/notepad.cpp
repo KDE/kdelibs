@@ -25,6 +25,7 @@ NotepadPart::NotepadPart( QWidget * parentWidget )
   m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
   m_edit->show(); // don't forget this !
   setWidget( m_edit );
+  setXMLFile( "notepadpart.rc" );
   (void)new KAction( i18n( "Search and replace" ), 0, actionCollection(), "searchreplace" );
   // TODO connect m_edit->changed to setModified()
 }
@@ -75,12 +76,6 @@ bool NotepadPart::save()
   } else
     return false;
   return saveToURL();
-}
-
-QString NotepadPart::configFile() const
-{
-  // Hmm...
-  return KXMLGUIFactory::readConfigFile( "notepadpart.rc" );
 }
 
 #include "notepad.moc"

@@ -115,6 +115,7 @@ Part1::Part1( QWidget * parentWidget )
   m_instance = new KInstance( "part1" ); 
   m_edit = new QMultiLineEdit( parentWidget );
   setWidget( m_edit );
+  setXMLFile( "part1.rc" );
 
   (void)new KAction( i18n( "Blah" ), 0, actionCollection(), "p1_blah" );
 }
@@ -155,21 +156,12 @@ bool Part1::openFile()
   return true;
 }
 
-QString Part1::configFile() const
-{
-  // Hmm...  Idea : KPart::setXMLFile(), for consistency with
-  // KTMainWindowGUIBuilder, and called by Part1's constructor
-  // (and every other part's constructor, of course)
-  // + Add a check that it's not null when using it (to prevent programming
-  // errors)
-  return KXMLGUIFactory::readConfigFile( "part1.rc" );
-}
-
 Part2::Part2( QWidget * parentWidget )
  : KPart( "Part2" )
 {
   m_instance = new KInstance( "part2" ); 
   setWidget( new QWidget( parentWidget, "Part2Widget" ) );
+  // setXMLFile( ... ); // no actions currently
 }
 
 Part2::~Part2()
@@ -180,11 +172,6 @@ Part2::~Part2()
 KInstance *Part2::instance()
 {
   return m_instance;
-}
-
-QString Part2::configFile() const
-{
-  return QString::null;
 }
 
 int main( int argc, char **argv )

@@ -53,7 +53,6 @@ protected:
   virtual bool openFile();
 
 protected:
-  virtual QString configFile() const;
   QMultiLineEdit * m_edit;
   KInstance *m_instance;
 };
@@ -68,7 +67,6 @@ public:
   virtual KInstance *instance();
 
 protected:
-  virtual QString configFile() const;
 
   KInstance *m_instance;
 };
