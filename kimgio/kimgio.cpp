@@ -54,7 +54,7 @@ void kimgioRegister(void)
 	lt_dlinit();
 
 	// for the libraries that are installed in $KDEDIR/lib (kdesupport)
-	lt_dladdsearchdir( locate( "exe", "../lib" ).ascii() );
+	lt_dladdsearchdir( locate( "lib", "" ).ascii() );
 /*
   Disabled by David, to fix compilation. No idea where this is defined - Stephan ?
 	int rindex = 0;
@@ -62,7 +62,7 @@ void kimgioRegister(void)
 	    lt_dladdsearchdir(kimgio_rpaths[rindex++]);
 */
 
-	QDir dir( locate( "exe", "/../lib" ), "kimg_*.la" );
+	QDir dir( locate( "lib", "" ), "kimg_*.la" );
 
 	for (uint index = 0; index < dir.count(); index++) {
 	
