@@ -35,9 +35,7 @@
 #include <kurllabel.h>
 
 
-QPixmap *KDialogBase::mTile  = 0;
-KDialogBase *KDialogBase::mRelay = 0;
-
+KDialogBaseTile *KDialogBase::mTile = 0;
 
 
 KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
@@ -90,32 +88,31 @@ KDialogBase::~KDialogBase( void )
 
 void KDialogBase::cleanup( void )
 {
-  delete mRelay; mRelay = 0;
+  //
+  // Should this slot be connected to QApplication::aboutToQuit() so that
+  // we can remove any background pixmaps that is used? This is only
+  // useful for dialogs that have parent == 0 because the others will
+  // be destroyed before aboutToQuit() is activated.
+  //
+
 }
 
 
 void KDialogBase::makeRelay( void )
 {
-  if( mRelay != 0 )
+  if( mTile != 0 )
   {
-    connect( mRelay, SIGNAL(backgroundChanged()), SLOT(updateBackground()) );
+    connect( mTile, SIGNAL(pixmapChanged()), this, SLOT(updateBackground()) );
     return;
   }
 
-  //
-  // We need to protect this code because the allocation of the 
-  // new KDialogBase object will trigger this method once again and the 
-  // 'mRelay' will then still be 0.
-  //
-  static bool busy = false;
-  if( busy == false )
+  mTile = new KDialogBaseTile;
+  if( mTile != 0 )
   {
-    busy = true;
-    mRelay = new KDialogBase;
-    atexit(cleanup);
-    busy = false;
-    connect( mRelay, SIGNAL(backgroundChanged()), SLOT(updateBackground()) );
+    connect( mTile, SIGNAL(pixmapChanged()), this, SLOT(updateBackground()) );
+    connect( kapp, SIGNAL(aboutToQuit()), mTile, SLOT(cleanup()) );
   }
+
 }
 
 
@@ -419,7 +416,7 @@ void KDialogBase::setButtonStyle( int style )
   }
 
   hbox->addSpacing( marginHint() ); // always
-  hbox->activate();
+  //hbox->activate();
   mButton.resize( true, marginHint(), spacingHint() );
 }
 
@@ -1043,64 +1040,43 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
 }
 
 
-
-
-
-
-
-
 bool KDialogBase::haveBackgroundTile( void )
 {
-  return( mTile == 0 ? false : true );
+  return( mTile == 0 || mTile->get() == 0 ? false : true );
 }
 
 
-const QPixmap* KDialogBase::getBackgroundTile( void )
+const QPixmap *KDialogBase::getBackgroundTile( void )
 {
-  return( mTile );
+  return( mTile == 0 ? 0 : mTile->get() );
 }
 
 
-void KDialogBase::setBackgroundTile( const QPixmap* pix )
+void KDialogBase::setBackgroundTile( const QPixmap *pix )
 {
-  if( pix != 0 )
+  if( mTile != 0 )
   {
-    if( mTile == 0 )
-    {
-      mTile = new QPixmap(*pix);
-    }
-    else
-    {
-      *mTile = *pix;
-    }
-  }
-  else
-  {
-    delete mTile; mTile = 0;
-  }
-
-  if( mRelay != 0 )
-  {
-    mRelay->emitBackgroundChanged();
+    mTile->set( pix );
   }
 }
 
 
 void KDialogBase::updateBackground( void )
 {
-  if( mTile != 0 )
-  {
-    setBackgroundPixmap(*mTile);
-    mButton.box->setBackgroundPixmap(*mTile);
-    showTile( mShowTile );
-  }
-  else
+  if( mTile == 0 || mTile->get() == 0 )
   {
     QPixmap nullPixmap;
-    setBackgroundPixmap(nullPixmap );
+    setBackgroundPixmap(nullPixmap);
     mButton.box->setBackgroundPixmap(nullPixmap);      
     setBackgroundMode(PaletteBackground);
     mButton.box->setBackgroundMode(PaletteBackground);
+  }
+  else
+  {
+    const QPixmap *pix = mTile->get();
+    setBackgroundPixmap(*pix);
+    mButton.box->setBackgroundPixmap(*pix);
+    showTile( mShowTile );
   }
 }
 
@@ -1109,26 +1085,85 @@ void KDialogBase::updateBackground( void )
 void KDialogBase::showTile( bool state )
 {
   mShowTile = state;
-  if( mShowTile == true && mTile != 0 )
-  {
-    setBackgroundPixmap(*mTile);
-    mUrlHelp->parentWidget()->setBackgroundPixmap(*mTile);
-    mButton.box->setBackgroundPixmap(*mTile);
-    mUrlHelp->setTransparentMode( true );
-  }
-  else
+  if( mShowTile == false || mTile == 0 || mTile->get() == 0 )
   {
     setBackgroundMode(PaletteBackground);
     mUrlHelp->parentWidget()->setBackgroundMode(PaletteBackground);
     mButton.box->setBackgroundMode(PaletteBackground);
     mUrlHelp->setTransparentMode( false );
   }
+  else
+  {
+    const QPixmap *pix = mTile->get();
+    setBackgroundPixmap(*pix);
+    mUrlHelp->parentWidget()->setBackgroundPixmap(*pix);
+    mButton.box->setBackgroundPixmap(*pix);
+    mUrlHelp->setTransparentMode( true );
+  }
 }
 
 
 void KDialogBase::emitBackgroundChanged( void )
 {
-  emit backgroundChanged() ;
+  emit backgroundChanged();
 }
 
+
+
+
+
+
+KDialogBaseTile::KDialogBaseTile( QObject *parent, const char *name )
+  : QObject( parent, name )
+{
+  mPixmap = 0;
+}
+
+KDialogBaseTile::~KDialogBaseTile( void )
+{
+  cleanup();
+}
+
+void KDialogBaseTile::set( const QPixmap *pix )
+{
+  if( pix == 0 )
+  {
+    cleanup();
+  }
+  else
+  {
+    if( mPixmap == 0 )
+    {
+      mPixmap = new QPixmap(*pix);
+    }
+    else
+    {
+      *mPixmap = *pix;
+    }
+  }
+
+  emit pixmapChanged();
+}
+
+
+const QPixmap *KDialogBaseTile::get( void ) const
+{
+  return( mPixmap );
+}
+
+void KDialogBaseTile::cleanup( void )
+{
+  delete mPixmap; mPixmap = 0;
+}
+
+
+
+
 #include "kdialogbase.moc"
+
+
+
+
+
+
+

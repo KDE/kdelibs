@@ -31,6 +31,7 @@
 #include <kdialog.h>
 #include <kjanuswidget.h>
 
+class KDialogBaseTile;
 class KSeparator;
 class KURLLabel;
 
@@ -789,12 +790,6 @@ class KDialogBase : public KDialog
      */
     void activateCore( void );
 
-    /**
-     * Removes shared resourses when the program terminates. Never use 
-     * this method yourself.
-     */
-    static void cleanup( void ); 
-
   private slots:
     /**
      * Sets the action button order accoring to the 'style'.
@@ -802,6 +797,13 @@ class KDialogBase : public KDialog
      * @param style The style index.
      */
     void setButtonStyle( int style );
+
+
+    void cleanup( void );
+    
+
+
+
 
   private:
     QWidget      *mMainWidget;
@@ -815,13 +817,45 @@ class KDialogBase : public KDialog
     QString mHelpPath;
     QString mHelpTopic;
 
-    static QPixmap *mTile;
-    static KDialogBase *mRelay;
+    static KDialogBaseTile *mTile;
     bool   mShowTile;
 
     int   mResizeMode;
     QSize mInitialSizeStep;
 };
+
+
+
+
+class KDialogBaseTile : public QObject
+{
+  Q_OBJECT
+
+  public:
+    KDialogBaseTile( QObject *parent=0, const char *name=0 );
+    ~KDialogBaseTile( void );
+
+    void set( const QPixmap *pix );
+    const QPixmap *get( void ) const;
+  
+  public slots:
+    void cleanup( void );
+
+  signals:
+    void pixmapChanged( void );
+
+  private:
+    QPixmap *mPixmap;
+};
+
+
+
+
+
+
+
+
+
 
 
 
