@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #include <qwidget.h>
 #include <qcstring.h>
 #include <qmap.h>
+#include <kdelibs_export.h>
 #ifdef Q_WS_X11
 #include <X11/X.h>
 
@@ -46,7 +47,7 @@ class KXMessagesPrivate;
  * @version $Id$
  */
 // KDE4 - make this internal for KStartupInfo only?
-class KXMessages
+class KDECORE_EXPORT KXMessages
     : public QWidget
     {
     Q_OBJECT

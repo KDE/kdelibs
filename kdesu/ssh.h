@@ -17,11 +17,13 @@
 
 #include "stub.h"
 
+#include <kdelibs_export.h>
+
 /**
  * Executes a remote command, using ssh.
  */
 
-class SshProcess: public StubProcess
+class KDESU_EXPORT SshProcess: public StubProcess
 {
 public:
     SshProcess(const QCString &host=0, const QCString &user=0, const QCString &command=0);

@@ -15,13 +15,15 @@
 
 #include <qcstring.h>
 
+#include <kdelibs_export.h>
+
 #include "stub.h"
 
 /**
  * Executes a command under elevated privileges, using su.
  */
 
-class SuProcess: public StubProcess
+class KDESU_EXPORT SuProcess: public StubProcess
 {
 public:
     SuProcess(const QCString &user=0, const QCString &command=0);

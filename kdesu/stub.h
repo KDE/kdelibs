@@ -19,6 +19,8 @@
 #include "process.h"
 #include "kcookie.h"
 
+#include <kdelibs_export.h>
+
 typedef QValueList<QCString> QCStringList;
 
 /**
@@ -27,7 +29,7 @@ typedef QValueList<QCString> QCStringList;
  * StubProcess extends PtyProcess with functionality to chat with kdesu_stub.
  */
 
-class StubProcess: public PtyProcess
+class KDESU_EXPORT StubProcess: public PtyProcess
 {
 public:
     StubProcess();

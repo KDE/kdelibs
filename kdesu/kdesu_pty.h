@@ -20,7 +20,9 @@
 
 #include <qcstring.h>
 
-class PTY {
+#include <kdelibs_export.h>
+
+class KDESU_EXPORT PTY {
 
 public:
     /**
