@@ -1,0 +1,18 @@
+HOWTO Make KDED Modules.
+
+KDED Modules are very similar to modules for the control center. A KDED Module
+is loaded when a call to it is made.
+
+A KDED Module needs to provide a factory method that creates an object that
+is derived from KDEDModule. The name of a factory method always starts with 
+"create_".
+
+It also needs to provide a desktop file that defines the service provided by
+the module. The desktop file needs to be installed under 
+$KDEDIR/share/services/kded/. The name of the desktop file must match with 
+the name of the DCOP object that is implemented by the module.
+
+The desktop file needs to define the library in which the module is 
+implemented. The name of the library always starts with libkded_.
+
+The kdelibs/kio/kded/test/ directory contains a sample implementation.
