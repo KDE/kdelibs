@@ -43,8 +43,8 @@ class KConfig;
  *   if(KAutoConfigDialog::showDialog("settings"))
  *     return;
  *   KAutoConfigDialog *dialog = new KAutoConfigDialog(this, "settings");
- *   dialog->addPage(new General(0, "General"), i18n("General"), "package_settings");
- *   dialog->addPage(new Appearance(0, "Style"), i18n("Appearance"), "style");
+ *   dialog->addPage(new General(0, "General"), i18n("General"), "General", "package_settings");
+ *   dialog->addPage(new Appearance(0, "Style"), i18n("Appearance"), "Appearance", "style");
  *   connect(dialog, SIGNAL(settingsChanged()), mainWidget, SLOT(loadSettings()));
  *   connect(dialog, SIGNAL(settingsChanged()), this, SLOT(loadSettings()));
  *   dialog->show();
