@@ -36,7 +36,7 @@ class CharColumnInterface
     /** encoding used to display the symbols in the text column */
     enum KEncoding
     {
-      /** the coding of your shell */
+      /** the encoding of your shell. If that is a multibyte encoding this will default to Latin1. */
       LocalEncoding=0,
       /** extended ASCII encoding, also known as Latin1 */
       ISO8859_1Encoding=1,
