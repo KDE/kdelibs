@@ -93,6 +93,31 @@ QTime KIO::calculateRemaining( unsigned long totalSize, unsigned long processedS
   return remainingTime;
 }
 
+QString KIO::itemsSummaryString(uint items, uint files, uint dirs, unsigned long size, bool showSize)
+{
+    QString text;
+    if (items == 1)
+        text = i18n("One Item");
+    else
+        text = i18n("%1 Items").arg(items);
+    text += " - ";
+    if (files == 1)
+        text += i18n("One File");
+    else
+        text += i18n("%1 Files").arg(files);
+    if ( files > 0 )
+    {
+        text += " ";
+        text += i18n("(%1 Total)").arg(KIO::convertSize( size ) );
+    }
+    text += " - ";
+    if (dirs == 1)
+        text += i18n("One Directory");
+    else
+        text += i18n("%1 Directories").arg(dirs);
+    return text;
+}
+
 QString KIO::encodeFileName( const QString & _str )
 {
   QString str( _str );

@@ -51,6 +51,14 @@ namespace KIO
   QTime calculateRemaining( unsigned long totalSize, unsigned long processedSize, unsigned long speed );
 
   /**
+   * Helper for showing information about a set of files and directories
+   * @p items = @p files + @p dirs + number of symlinks :)
+   * @param size the sum of the size of the _files_
+   * @param showSize whether to show the size in the result
+   */
+  static QString itemsSummaryString(uint items, uint files, uint dirs, unsigned long size, bool showSize);
+
+  /**
    * Encode (from the text displayed to the real filename)
    * This translates % into %% and / into %2f
    * Used by KIO::link, for instance.
