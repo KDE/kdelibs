@@ -146,7 +146,11 @@ bool Part1::openFile()
 
 QString Part1::configFile() const
 {
-  // Hmm...
+  // Hmm...  Idea : KPart::setXMLFile(), for consistency with
+  // KTMainWindowGUIBuilder, and called by Part1's constructor
+  // (and every other part's constructor, of course)
+  // + Add a check that it's not null when using it (to prevent programming
+  // errors)
   return KXMLGUIFactory::readConfigFile( "part1.rc" );
 }
 
