@@ -8,8 +8,8 @@
 // License, or (at your option) any later version.
 
 
-#ifndef KIMG_RGB_H
-#define KIMG_RGB_H
+#ifndef KIMG_SGI_H
+#define KIMG_SGI_H
 
 #include <qimage.h>
 
@@ -31,7 +31,7 @@ public:
 };
 
 
-class RGBImage {
+class SGIImage {
 	enum { NORMAL, DITHERED, SCREEN, COLORMAP };		// colormap
 	typedef QValueList<RLEPacket> RLEList;
 
@@ -54,8 +54,8 @@ class RGBImage {
 	RLEList			m_rlelist;
 
 public:
-	RGBImage(QImageIO *);
-	~RGBImage();
+	SGIImage(QImageIO *);
+	~SGIImage();
 
 	bool readImage(QImage&);
 	bool writeImage(QImage&);

@@ -14,7 +14,7 @@
  *     mapmode != NORMAL (e.g. dithered); Images with 16 bit
  *     precision or more than 4 layers are stripped down.
  * writing:
- *     Run Length Encoded (RLE) files  (layers don't share patterns yet)
+ *     Run Length Encoded (RLE) files  (no shared patterns yet)
  *
  * Please report if you come across rgb/rgba/sgi/bw files that aren't
  * recognized. Also report applications that can't deal with images
@@ -31,7 +31,7 @@
 
 void kimgio_rgb_read(QImageIO *io)
 {
-	RGBImage rgb(io);
+	SGIImage rgb(io);
 	QImage img;
 
 	if (!rgb.readImage(img)) {
@@ -47,7 +47,7 @@ void kimgio_rgb_read(QImageIO *io)
 
 void kimgio_rgb_write(QImageIO *io)
 {
-	RGBImage rgb(io);
+	SGIImage rgb(io);
 	QImage img = io->image();
 
 	if (!rgb.writeImage(img))
@@ -60,7 +60,7 @@ void kimgio_rgb_write(QImageIO *io)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-RGBImage::RGBImage(QImageIO *io) :
+SGIImage::SGIImage(QImageIO *io) :
 	m_io(io),
 	m_starttab(0),
 	m_lengthtab(0)
@@ -70,7 +70,7 @@ RGBImage::RGBImage(QImageIO *io) :
 }
 
 
-RGBImage::~RGBImage()
+SGIImage::~SGIImage()
 {
 	delete[] m_starttab;
 	delete[] m_lengthtab;
@@ -80,7 +80,7 @@ RGBImage::~RGBImage()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-bool RGBImage::getRow(uchar *dest)
+bool SGIImage::getRow(uchar *dest)
 {
 	int n, i;
 	if (!m_rle) {
@@ -117,7 +117,7 @@ bool RGBImage::getRow(uchar *dest)
 }
 
 
-bool RGBImage::readData(QImage& img)
+bool SGIImage::readData(QImage& img)
 {
 	QRgb *c, old;
 	Q_UINT32 *start = m_starttab;
@@ -186,7 +186,7 @@ bool RGBImage::readData(QImage& img)
 }
 
 
-bool RGBImage::readImage(QImage& img)
+bool SGIImage::readImage(QImage& img)
 {
 	Q_INT8 u8;
 	Q_INT16 u16;
@@ -283,13 +283,13 @@ bool RGBImage::readImage(QImage& img)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void RGBImage::addRlePacket(uchar *s, uint l)
+void SGIImage::addRlePacket(uchar *s, uint l)
 {
 	m_rlelist.append(RLEPacket(s, l));
 }
 
 
-uint RGBImage::compact(uchar *d, uchar *s)
+uint SGIImage::compact(uchar *d, uchar *s)
 {
 	uchar *dest = d, *src = s, patt, *cnt;		// make shortcut for s + m_xsize
 	int n;
@@ -316,7 +316,7 @@ uint RGBImage::compact(uchar *d, uchar *s)
 }
 
 
-bool RGBImage::writeData(QImage& img)
+bool SGIImage::writeData(QImage& img)
 {
 	Q_UINT32 *start = m_starttab;
 	Q_UINT32 *length = m_lengthtab;
@@ -383,7 +383,7 @@ bool RGBImage::writeData(QImage& img)
 }
 
 
-bool RGBImage::writeImage(QImage& img)
+bool SGIImage::writeImage(QImage& img)
 {
 	m_rle = 1;
 	m_bpc = 1;				// one byte per pixel & channel
@@ -397,7 +397,7 @@ bool RGBImage::writeImage(QImage& img)
 
 	m_xsize = img.width();
 	m_ysize = img.height();
-	m_pixmin = 0;
+	m_pixmin = 0;				// FIXME
 	m_pixmax = 255;
 	m_colormap = NORMAL;
 
