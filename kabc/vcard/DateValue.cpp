@@ -76,6 +76,20 @@ DateValue::DateValue(const QDate & d)
 	assembled_ = false;
 }
 
+DateValue::DateValue(const QDateTime & d)
+	:	Value		(),
+		year_		(d.date().year()),
+		month_		(d.date().month()),
+		day_		(d.date().day()),
+		hour_		(d.time().hour()),
+		minute_		(d.time().minute()),
+		second_		(d.time().second()),
+		hasTime_(true)
+{
+	parsed_ = true;
+	assembled_ = false;
+}
+
 DateValue::DateValue(const DateValue & x)
 	:	Value(x)
 {
@@ -227,6 +241,22 @@ DateValue::_assemble()
 	if ( day.length() < 2 ) day.prepend( "0" );
 
 	strRep_ = year + '-' + month + '-' + day;
+
+	if ( hasTime_ ) {
+	    QCString hour;
+	    QCString minute;
+	    QCString second;
+
+	    hour.setNum( hour_ );
+	    minute.setNum( minute_ );
+	    second.setNum( second_ );
+
+	    if ( hour.length() < 2 ) hour.prepend( "0" );
+	    if ( minute.length() < 2 ) minute.prepend( "0" );
+	    if ( second.length() < 2 ) second.prepend( "0" );
+
+	    strRep_ += 'T' + hour + ':' + minute + ':' + second + 'Z';
+	}
 }
 
 	unsigned int
