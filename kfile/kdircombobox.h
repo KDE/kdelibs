@@ -88,7 +88,7 @@ public:
      * Inserts the default directories into the combo. Will be implicitly
      * called upon the first call to @ref setURLs() or @ref setURL().
      */
-    void insertDefaults();
+    virtual void setDefaults();
 
 signals:
     /**

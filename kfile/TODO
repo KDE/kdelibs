@@ -1,7 +1,5 @@
 TODO-List for the KFileDialog and associated classes (in order of importance)
 
-- fix item-limit in KDircomboBox
-- make directory following configurable
 - fix infinite loop in mergeLists
 - compare check for ".." -> always first!
 - signal KFileView::selectionCleared()

@@ -424,6 +424,7 @@ private:
 protected:
     KFileDialogPrivate *d;
     KDirOperator *ops;
+    bool autoDirectoryFollowing;
 
 };
 

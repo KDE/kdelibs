@@ -474,11 +474,11 @@ void KFileDialog::initGUI()
 
 KFileDialog::~KFileDialog()
 {
-	hide();
+    hide();
     delete bookmarks;
     delete visitedDirs;
-	delete d->boxLayout; // we can't delete a widget being managed by a layout,
-	d->boxLayout = 0;    // so we delete the layout before
+    delete d->boxLayout; // we can't delete a widget being managed by a layout,
+    d->boxLayout = 0;    // so we delete the layout before
     delete ops;
     delete d;
 }
@@ -510,8 +510,8 @@ void KFileDialog::locationChanged(const QString& txt)
     }
 
     // the user is backspacing -> don't annoy him with completions
-    if ( d->completionHack.find( newText ) == 0 ) {
-        // but we can follow the directories...
+    if ( autoDirectoryFollowing && d->completionHack.find( newText ) == 0 ) {
+        // but we can follow the directories, if configured so
 
 	// find out the current directory according to locationEdit and cd into
 	int l = text.length() - 1;
@@ -528,7 +528,8 @@ void KFileDialog::locationChanged(const QString& txt)
     }
 
     // typing forward, ending with a / -> cd into the directory
-    else if ( text.at(text.length()-1) == '/' && ops->url() != text ) {
+    else if ( autoDirectoryFollowing &&
+	      text.at(text.length()-1) == '/' && ops->url() != text ) {
 	d->selection = QString::null;
         setURL( text, false );
     }
@@ -1089,6 +1090,8 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 					  DefaultRecentURLsNumber ) );
     combo->setURLs( kc->readListEntry( RecentURLs ) );
     combo->setURL( ops->url() );
+    autoDirectoryFollowing = kc->readBoolEntry( AutoDirectoryFollowing,
+						DefaultDirectoryFollowing );
 
 
     int w, h;

@@ -79,7 +79,7 @@ QStringList KDirComboBox::urls() const
     return list;
 }
 
-void KDirComboBox::insertDefaults()
+void KDirComboBox::setDefaults()
 {
     clear();
     itemMapper.clear();
@@ -99,7 +99,7 @@ void KDirComboBox::insertDefaults()
 void KDirComboBox::setURLs( const QStringList& urls )
 {
     itemList.clear();
-    insertDefaults();
+    setDefaults();
 
     QStringList::ConstIterator it = urls.begin();
     int overload = urls.count() - myMaximum + FIRSTITEM;
@@ -109,6 +109,7 @@ void KDirComboBox::setURLs( const QStringList& urls )
     KDirComboItem *item = 0L;
     QListBox *box = listBox();
     KURL u;
+    int i = 0;
     while ( it != urls.end() ) {
 	u = *it;
 	if ( !box->findItem( u.path( +1 )) ) { // ignore duplicates
@@ -138,7 +139,7 @@ void KDirComboBox::setURL( const KURL& url )
         urlAdded = false;
     }
 
-    insertDefaults();
+    setDefaults();
 
     QListIterator<KDirComboItem> it( itemList );
     for( ; it.current(); ++it )
@@ -194,7 +195,7 @@ void KDirComboBox::setMaxItems( int max )
     myMaximum = max;
 
     if ( count() > myMaximum ) {
-	insertDefaults();
+	setDefaults();
 
 	QListIterator<KDirComboItem> it( itemList );
 	int overload = itemList.count() - myMaximum + FIRSTITEM;
