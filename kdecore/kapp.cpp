@@ -89,6 +89,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+#include <X11/SM/SMlib.h>
 
 // defined by X11 headers
 #ifdef KeyPress
@@ -178,6 +179,9 @@ static QString sessionConfigName()
   return aSessionConfigName;
 }
 
+static SmcConn mySmcConnection = 0;
+static QTime* smModificationTime = 0;
+
 KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
                             bool allowStyles, bool GUIenabled ) :
     QApplication( argc, argv, GUIenabled ), KInstance(rAppName)
@@ -246,7 +250,7 @@ void KApplication::init(bool GUIenabled)
     // set default crash handler / set emergency save function to nothing
     setCrashHandler(KDE_CRASH_DEFAULT);
     setEmergencySaveFunction(KDE_SAVE_NONE);
-    
+
     // this is important since we fork() to launch the help (Matthias)
     fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
@@ -352,6 +356,64 @@ void KApplication::disableSessionManagement() {
   bSessionManagement = false;
 }
 
+
+bool KApplication::requestShutDown()
+{
+    if ( mySmcConnection ) {
+	// we already have a connection to the session manager, use it.
+	SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True, SmInteractStyleAny, False, True );
+	return TRUE;
+    }
+
+    // open a temporary connection, if possible
+
+    propagateSessionManager();
+    if (!::getenv("SESSION_MANAGER") )
+	return FALSE;
+    
+    char cerror[256];
+    char* myId = 0;
+    char* prevId = 0;
+    SmcCallbacks cb;
+    SmcConn smcConnection = SmcOpenConnection( 0, 0, 1, 0, 
+					       0, &cb,
+					       prevId,
+					       &myId,
+					       255,
+					       cerror );
+    ::free( myId ); // it was allocated by C
+    if (!smcConnection ) 
+	return FALSE;
+    
+    SmcRequestSaveYourself( smcConnection, SmSaveBoth, True, SmInteractStyleAny, False, True );
+    SmcCloseConnection( smcConnection, 0, 0 );
+    return TRUE;
+}
+
+void KApplication::propagateSessionManager()
+{
+    QCString fName = ::getenv("HOME");
+    fName += "/.KSMserver";
+    bool check = !::getenv("SESSION_MANAGER");
+    if ( !check && smModificationTime ) {
+	 QFileInfo info( fName );
+	 QTime current = info.lastModified().time();
+	 check = current > *smModificationTime;
+    }
+    if ( check ) {
+	delete smModificationTime;
+	QFile f( fName );
+	if ( !f.open( IO_ReadOnly ) )
+	    return;
+	QFileInfo info ( f );
+	smModificationTime = new QTime( info.lastModified().time() );
+	QTextStream t(&f);
+	QString s = t.readLine();
+	f.close();
+	::setenv( "SESSION_MANAGER", s.latin1(), TRUE  );
+    }
+}
+
 void KApplication::commitData( QSessionManager& sm )
 {
     bool cancelled = false;
@@ -397,6 +459,7 @@ void KApplication::commitData( QSessionManager& sm )
 void KApplication::saveState( QSessionManager& sm )
 {
     static bool firstTime = false;
+    mySmcConnection = (SmcConn) sm.handle();
 
     if ( !bSessionManagement ) {
 	sm.setRestartHint( QSessionManager::RestartNever );
@@ -701,6 +764,10 @@ KApplication::~KApplication()
 
   delete pAppData;
   KApp = 0;
+  
+  mySmcConnection = 0;
+  delete smModificationTime;
+  smModificationTime = 0;
 }
 
 

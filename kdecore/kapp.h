@@ -167,7 +167,29 @@ public:
    */
   void disableSessionManagement();
 
+  /**
+   * Asks the session manager to shut the session down.
+   *
+   * Returns TRUE on sucess, FALSE if the session manager could not be
+   * contacted.
+   */
+  bool requestShutDown();
 
+  /** 
+   * Propagates the network address of the session manager in the
+   * SESSION_MANAGER environment variable so that child processes can
+   * pick it up.
+   *
+   * If SESSION_MANAGER isn't defined yet, the address is searched in
+   * $HOME/.KSMserver.
+   *
+   * This function is called by clients that are started outside the
+   * session ( i.e. before ksmserver is started), but want to launch
+   * other processes that should participate in the session.  Examples
+   * are kdesktop or kicker.
+   */
+    void propagateSessionManager();
+    
     /*
      * Reimplemented for internal purposes, mainly the highlevel
      *  handling of session management with @ref KSessionManaged.
@@ -193,7 +215,7 @@ public:
   QPopupMenu* helpMenu( bool bAboutQtMenu,
 			   const QString& appAboutText );
   */
-							
+
   /**
    * Get the application icon.
    * @return a @ref QPixmap with the icon.
@@ -658,6 +680,12 @@ public:
 #endif
 
 // $Log$
+// Revision 1.139  2000/03/19 19:16:01  faure
+// Let the thing be called SettingsChanged, and defined an enum for each
+// type of settings. Currently only SETTINGS_MOUSE is used, but feel free
+// to add support for SETTINGS_COMPLETION in both kcontrol and the relevant
+// classes. One day SETTINGS_PATHS will be supported too (needs a UI first).
+//
 // Revision 1.138  2000/03/19 13:33:06  jansen
 // * Improved KIPC. There are 2 message types now: system messages and user
 //   messages. There is an event mask related to the system messages so they

@@ -397,11 +397,11 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     s.prepend(QString::fromLatin1("WindowProperties"));
     config->setGroup(s);
 
-    // store the objectName for later restorating
+    // store objectName, className, Width and Height  for later restorating
     config->writeEntry(QString::fromLatin1("ObjectName"), name());
-
-    // store the className for later restorating
     config->writeEntry(QString::fromLatin1("ClassName"), className());
+    config->writeEntry(QString::fromLatin1("Width"), width() );
+    config->writeEntry(QString::fromLatin1("Height"), height() );
 
     entryList.clear();
 
@@ -474,9 +474,15 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
     s.prepend(QString::fromLatin1("WindowProperties"));
     config->setGroup(s);
 
+    // restore the object name (window role )
     if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
 	setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
 
+    // restore the size
+    QSize size( config->readNumEntry( QString::fromLatin1("Width"), sizeHint().width() ),
+		config->readNumEntry( QString::fromLatin1("Height"), sizeHint().height() ) );
+    if ( size.isValid() )
+	resize( size );
 
     if (kstatusbar) {
 	entry = config->readEntry(QString::fromLatin1("StatusBar"));
