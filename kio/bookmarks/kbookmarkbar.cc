@@ -48,8 +48,11 @@ public:
     KBookmarkManager* m_filteredMgr;
 };
 template<> QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
+;
 
-#define dptr() KBookmarkBarPrivate::d(this) // TODO move into the class itself - inline of course
+KBookmarkBarPrivate* KBookmarkBar::dptr() const {
+    return KBookmarkBarPrivate::d( this );
+}
 
 // usage of KXBELBookmarkImporterImpl is just plain evil, but it reduces code dup. so...
 class ToolbarFilter : public KXBELBookmarkImporterImpl {
@@ -498,6 +501,5 @@ void ToolbarFilter::visitLeave( const KBookmarkGroup &grp ) {
         m_visible = false;
 }
 
-#undef dptr
 #undef BEGIN_RMB_ACTION
 #include "kbookmarkbar.moc"

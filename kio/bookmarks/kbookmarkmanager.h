@@ -260,6 +260,9 @@ private:
     bool m_update;
     static QPtrList<KBookmarkManager>* s_pSelf;
     bool m_showNSBookmarks;
+
+private:
+    class KBookmarkManagerPrivate* dptr() const;
 };
 
 /**

@@ -86,6 +86,9 @@ private:
     KActionCollection *m_actionCollection;
     KBookmarkManager *m_pManager;
     QPtrList<KBookmarkMenu> m_lstSubMenus;
+
+private:
+    class KBookmarkBarPrivate* dptr() const;
 };
 
 #endif // KBOOKMARKBAR_H

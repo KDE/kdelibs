@@ -47,7 +47,9 @@ public:
 };
 template<> QPtrDict<KBookmarkManagerPrivate>* dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate>::d_ptr = 0;
 
-#define dptr() KBookmarkManagerPrivate::d(this)
+KBookmarkManagerPrivate* KBookmarkManager::dptr() const {
+    return KBookmarkManagerPrivate::d( this );
+}
 
 // TODO - clean this stuff up by just using the above dptrtemplate?
 QPtrList<KBookmarkManager>* KBookmarkManager::s_pSelf;
@@ -647,7 +649,5 @@ KBookmarkSettings *KBookmarkSettings::self()
    }
    return s_self;
 }
-
-#undef dptr
 
 #include "kbookmarkmanager.moc"
