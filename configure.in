@@ -237,6 +237,7 @@ AC_OUTPUT(Makefile \
 	kparts/Makefile \
 	interfaces/Makefile \
 	pics/Makefile \
+	pics/filesys/Makefile \
 	pics/mimetypes/Makefile \
 	dcop/Makefile \
 	dcop/dcopidl/Makefile \
