@@ -355,6 +355,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
 KHTMLPart::~KHTMLPart()
 {
+  if ( d->m_manager )
+    d->m_manager->setActivePart( 0 );
   d->m_redirectionTimer.stop();
   closeURL();
 
