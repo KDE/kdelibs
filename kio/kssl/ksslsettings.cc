@@ -135,13 +135,6 @@ QString clist = "";
     if (!d->kossl)
 	    d->kossl = KOSSL::self();
 
-    if (m_bUseSSLv2 && m_bUseSSLv3)
-      meth = d->kossl->SSLv23_client_method();
-    else if (m_bUseSSLv3)
-      meth = d->kossl->SSLv3_client_method();
-    else
-      meth = d->kossl->SSLv2_client_method();
- 
     // The user might have v2 and v3 enabled so we start with an
     // empty buffer and add v2 if needed, then v3 if needed.
     // we assume that the config file will have consecutive entries.
@@ -151,10 +144,12 @@ QString clist = "";
         if (!m_bUseSSLv2)
           continue;
         m_cfg->setGroup("SSLv2");
+        meth = d->kossl->SSLv2_client_method();
       } else {
         if (!m_bUseSSLv3)
           continue;
         m_cfg->setGroup("SSLv3");
+        meth = d->kossl->SSLv3_client_method();
       }
  
       // I always thought that OpenSSL negotiated the best possible
