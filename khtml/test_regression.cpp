@@ -379,6 +379,20 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "DefaultEncoding", "" );
     cfg.sync();
 
+    KSimpleConfig dc( "kdebugrc" );
+    static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
+                           6031, 6035, 6036, 6040, 6041, 6045,
+                           6050, 6060, 6061, 7000, 7006, 170,
+                           171, 7101, 7002, 7019, 7027, 7014,
+                           7011, 6070, 6080, 6090, 0};
+    for ( int i = 0; areas[i]; ++i ) {
+        dc.setGroup( QString::number( areas[i] ) );
+        dc.writeEntry( "InfoOutput", 4 );
+    }
+    dc.sync();
+
+    kdClearDebugConfig();
+
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     int rv = 1;
 
@@ -1024,7 +1038,7 @@ void RegressionTest::testStaticFile(const QString & filename)
 
         KJS::Completion comp2 = m_part->jScriptInterpreter()->evaluate("setUpPage(); " + functionname + "();" );
         bool success = ( comp2.complType() == ReturnValue || comp2.complType() == Normal );
-        QString description = filename;
+        QString description = "DOMTS";
         if ( comp2.complType() == Throw ) {
             KJS::Value val = comp2.value();
             KJS::Object obj = Object::dynamicCast(val);
@@ -1080,7 +1094,7 @@ void RegressionTest::testStaticFile(const QString & filename)
 
 void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename, bool report_result )
 {
-    qDebug("eval %s", filename.latin1());
+    // qDebug("eval %s", filename.latin1());
     QString fullSourceName = filename;
     QFile sourceFile(fullSourceName);
 
