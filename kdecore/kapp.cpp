@@ -555,6 +555,7 @@ static QTime* smModificationTime = 0;
 KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
                             bool allowStyles, bool GUIenabled ) :
   QApplication( argc, argv, GUIenabled ), KInstance(rAppName),
+  display(0L),
   d (new KApplicationPrivate())
 {
     read_app_startup_id();
@@ -573,6 +574,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
   KInstance( KCmdLineArgs::about),
+  display(0L),
   d (new KApplicationPrivate)
 {
     read_app_startup_id();
@@ -588,6 +590,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
 KApplication::KApplication(Display *display, int& argc, char** argv, const QCString& rAppName,
                            bool allowStyles, bool GUIenabled ) :
   QApplication( display ), KInstance(rAppName),
+  display(0L),
   d (new KApplicationPrivate())
 {
     read_app_startup_id();
