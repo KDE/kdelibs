@@ -338,12 +338,12 @@ IterationStatement:
   | FOR '(' VAR VariableDeclarationList ';' ExprOpt ';' ExprOpt ')'
             Statement              { $$ = new ForNode($4, $6, $8, $10); }
   | FOR '(' LeftHandSideExpr IN Expr ')'
-            Statement              { $$ = new ForNode($3, $5, $7); }
+            Statement              { $$ = new ForInNode($3, $5, $7); }
   | FOR '(' VAR IDENT IN Expr ')'
-            Statement              { $$ = new ForNode($4, 0L, $6, $8);
+            Statement              { $$ = new ForInNode($4, 0L, $6, $8);
                                      delete $4; }
   | FOR '(' VAR IDENT Initializer IN Expr ')'
-            Statement              { $$ = new ForNode($4, $5, $7, $9);
+            Statement              { $$ = new ForInNode($4, $5, $7, $9);
                                      delete $4; }
 ;
 

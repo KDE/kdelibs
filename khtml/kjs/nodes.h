@@ -421,11 +421,23 @@ class ForNode : public StatementNode {
 public:
   ForNode(Node *e1, Node *e2, Node *e3, StatementNode *s) :
     expr1(e1), expr2(e2), expr3(e3), stat(s) {}
-  ForNode(Node *, Node *, StatementNode *) {}
-  ForNode(const CString &, AssignExprNode*, Node *, StatementNode *) {}
   KJSO *evaluate();
 private:
   Node *expr1, *expr2, *expr3;
+  StatementNode *stat;
+};
+
+class ForInNode : public StatementNode {
+public:
+  ForInNode(Node *l, Node *e, StatementNode *s) :
+    init(0L), lexpr(l), expr(e), stat(s) {}
+  ForInNode(const CString &i, AssignExprNode *in, Node *e, StatementNode *s) :
+    ident(i), init(in), lexpr(0L), expr(e), stat(s) {}
+  KJSO *evaluate();
+private:
+  CString ident;
+  AssignExprNode *init;
+  Node *lexpr, *expr;
   StatementNode *stat;
 };
 

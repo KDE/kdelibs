@@ -631,7 +631,6 @@ KJSO *EmptyStatementNode::evaluate()
 // ECMA 12.6.2
 KJSO *ForNode::evaluate()
 {
-  /* TODO: implement the 2 other for() variants */
   Ptr e, v, b, cval;
   if (expr1) {
     e = expr1->evaluate();
@@ -657,6 +656,13 @@ KJSO *ForNode::evaluate()
       v = e->getValue();
     }
   }
+}
+
+// ECMA 12.6.3
+KJSO *ForInNode::evaluate()
+{
+  /* TODO */
+  return new KJSCompletion(Normal);
 }
 
 // ECMA 12.4

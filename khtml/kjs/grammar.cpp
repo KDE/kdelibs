@@ -1339,16 +1339,16 @@ case 115:
     break;}
 case 116:
 #line 341 "grammar.y"
-{ yyval.stat = new ForNode(yyvsp[-4].node, yyvsp[-2].node, yyvsp[0].stat); ;
+{ yyval.stat = new ForInNode(yyvsp[-4].node, yyvsp[-2].node, yyvsp[0].stat); ;
     break;}
 case 117:
 #line 343 "grammar.y"
-{ yyval.stat = new ForNode(yyvsp[-4].cstr, 0L, yyvsp[-2].node, yyvsp[0].stat);
+{ yyval.stat = new ForInNode(yyvsp[-4].cstr, 0L, yyvsp[-2].node, yyvsp[0].stat);
                                      delete yyvsp[-4].cstr; ;
     break;}
 case 118:
 #line 346 "grammar.y"
-{ yyval.stat = new ForNode(yyvsp[-5].cstr, yyvsp[-4].init, yyvsp[-2].node, yyvsp[0].stat);
+{ yyval.stat = new ForInNode(yyvsp[-5].cstr, yyvsp[-4].init, yyvsp[-2].node, yyvsp[0].stat);
                                      delete yyvsp[-5].cstr; ;
     break;}
 case 119:
