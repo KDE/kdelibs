@@ -27,7 +27,7 @@ KStandardDirs *KGlobal::dirs()
 {
 	if( _dirs == 0 ) {
 		_dirs = new KStandardDirs( kApp()->appName() );
-		_dirs.addKDEDefaults();
+		_dirs->addKDEDefaults();
 	}
 
 	return _dirs;
