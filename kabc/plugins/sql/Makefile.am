@@ -10,7 +10,6 @@ kabc_sql_la_SOURCES = resourcesql.cpp resourcesqlconfig.cpp
 kabc_sql_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN)
 kabc_sql_la_LIBADD	= ../../libkabc.la ../../../kdeui/libkdeui.la
 
-# let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
 messages: rc.cpp

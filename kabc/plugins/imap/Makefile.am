@@ -11,7 +11,6 @@ kabc_imap_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN)
 kabc_imap_la_LIBADD	= ../../../kabc/libkabc.la ../../../kdeui/libkdeui.la
 kabc_imap_la_COMPILE_FIRST = ../../kabc/addressee.h
 
-# let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
 messages: rc.cpp

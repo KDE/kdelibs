@@ -14,7 +14,6 @@ kabc_ldap_la_SOURCES = resourceldapplugin.cpp
 kabc_ldap_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN)
 kabc_ldap_la_LIBADD	= libkabc_ldap.la
 
-# let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
 messages: rc.cpp

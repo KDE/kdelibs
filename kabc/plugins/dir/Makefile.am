@@ -14,7 +14,6 @@ kabc_dir_la_SOURCES = resourcedirplugin.cpp
 kabc_dir_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 kabc_dir_la_LIBADD = libkabc_dir.la
 
-# let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
 messages: rc.cpp
