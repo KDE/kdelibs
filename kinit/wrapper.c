@@ -289,6 +289,7 @@ int main(int argc, char **argv)
    char cwd[8192];
    const char *tty;
    int avoid_loops = 0;
+   const char* startup_id;
 
    long size = 0;
    int sock = openSocket();
@@ -351,6 +352,10 @@ int main(int argc, char **argv)
    {
       size += strlen(argv[i])+1;
    }
+   if( wrapper )
+   {
+      size += sizeof(long); // empty envs
+   }
    if (ext_wrapper || kwrapper)
    {
       if (!getcwd(cwd, 8192))
@@ -376,9 +381,17 @@ int main(int argc, char **argv)
    }
    
    size += sizeof( avoid_loops );
+   
+   if( !wrapper )
+   {
+       startup_id = getenv( "KDE_STARTUP_ENV" );
+       if( startup_id == NULL )
+           startup_id = "";
+       size += strlen( startup_id ) + 1;
+   }
 
    if (wrapper)
-      header.cmd = LAUNCHER_EXEC;
+      header.cmd = LAUNCHER_EXEC_NEW;
    else if (kwrapper)
       header.cmd = LAUNCHER_KWRAPPER;
    else
@@ -401,6 +414,12 @@ int main(int argc, char **argv)
       p += strlen(argv[i])+1;
    }
 
+   if( wrapper )
+   {
+      long dummy = 0;
+      memcpy(p, &dummy, sizeof(dummy)); // empty envc
+      p+= sizeof( dummy );
+   }
    if (ext_wrapper || kwrapper)
    {
       memcpy(p, cwd, strlen(cwd)+1);
@@ -425,6 +444,12 @@ int main(int argc, char **argv)
    
    memcpy( p, &avoid_loops, sizeof( avoid_loops ));
    p += sizeof( avoid_loops );
+
+   if( !wrapper )
+   {
+       memcpy(p, startup_id, strlen(startup_id)+1);
+       p+= strlen(startup_id)+1;
+   }
    
    if( p - buffer != size ) /* should fail only if you change this source and do */
                                  /* a stupid mistake, it should be assert() actually */

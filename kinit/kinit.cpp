@@ -199,12 +199,6 @@ static int get_current_desktop( Display* disp )
     return 0;
 }
 
-static void init_startup_info( KStartupInfoId& id )
-    {
-    id.initId();
-    id.setupStartupEnv();
-    }
-    
 static void send_startup_info( KStartupInfoId& id, pid_t pid, const char* bin )
 {
     Display*  disp = XOpenDisplay( NULL ); // we are a child, so we can't use X11display
@@ -265,7 +259,9 @@ QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs,
 
 static pid_t launch(int argc, const char *_name, const char *args, 
                     const char *cwd=0, int envc=0, const char *envs=0,
-                    const char *tty=0, bool avoid_loops = false, bool startup_info = false )
+                    bool reset_env = false,
+                    const char *tty=0, bool avoid_loops = false,
+                    const char* startup_id_str = "0" )
 {
   int launcher = 0;
   QCString lib;
@@ -273,26 +269,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
   QCString exec;
   
   KStartupInfoId startup_id;
-  if( startup_info )
-  {
-      if( envc > 0 )
-      { // get the KDE_STARTUP_ID var from envs
-          const char* env_l = envs;
-          for (int i = 0;  i < envc; i++)
-          {
-             if( strncmp( env_l, "KDE_STARTUP_ENV=", 16 ) == 0 ) // length 16 must match
-             {  // set it, it will be reset at the end of launch()
-                 putenv( strdup( env_l )); // won't this leak memory ?
-                 break; // -->
-             }    
-             while(*env_l != 0) env_l++;
-                 env_l++;
-          }
-      }
-      init_startup_info( startup_id );
-  }
-  else
-      KStartupInfo::resetStartupEnv();
+  startup_id.initId( startup_id_str );
 
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
@@ -356,6 +333,25 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if (cwd && *cwd)
         chdir(cwd);
 
+     if( reset_env ) // KWRAPPER/SHELL
+     {
+         
+         QStrList unset_envs;
+         for( int tmp_env_count = 0;
+              environ[tmp_env_count];
+              tmp_env_count++)
+             unset_envs.append( environ[ tmp_env_count ] );
+         for( QStrListIterator it( unset_envs );
+              it.current() != NULL ;
+              ++it )
+         {
+             QCString tmp( it.current());
+             int pos = tmp.find( '=' );
+             if( pos >= 0 )
+                 unsetenv( tmp.left( pos ));
+         }
+     }
+     
      for (int i = 0;  i < envc; i++)
      {
         putenv((char *)envs);
@@ -363,6 +359,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
         envs++;
      }
 
+      if( startup_id.none())
+          KStartupInfo::resetStartupEnv();
+      else
+          startup_id.setupStartupEnv();
      {
        QCString procTitle( name );
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
@@ -555,9 +555,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
         d.launcher_pid = d.fork;
      }
   }
-  if( d.fork && startup_info )
+  if( d.fork && !startup_id.none())
       send_startup_info( startup_id, d.fork, name );
-  KStartupInfo::resetStartupEnv();
   return d.fork;
 }
 
@@ -631,7 +630,7 @@ static void init_kdeinit_socket()
   struct sockaddr_un sa;
   socklen_t socklen;
   long options;
-  char *home_dir = getenv("HOME");
+  const char *home_dir = getenv("HOME");
   int max_tries = 10;
   if (!home_dir || !home_dir[0])
   {
@@ -815,36 +814,45 @@ static void handle_launcher_request(int sock = -1)
    if ((request_header.cmd == LAUNCHER_EXEC) ||
        (request_header.cmd == LAUNCHER_EXT_EXEC) ||
        (request_header.cmd == LAUNCHER_SHELL ) ||
-       (request_header.cmd == LAUNCHER_KWRAPPER))
+       (request_header.cmd == LAUNCHER_KWRAPPER) ||
+       (request_header.cmd == LAUNCHER_EXEC_NEW))
    {
       pid_t pid;
       klauncher_header response_header;
       long response_data;
       int argc = *((long *) request_data);
-      char *name = request_data + sizeof(long);
-      char *args = name + strlen(name) + 1;
-      char *cwd = 0;
+      const char *name = request_data + sizeof(long);
+      const char *args = name + strlen(name) + 1;
+      const char *cwd = 0;
       int envc = 0;
-      char *envs = 0;
-      char *tty = 0;
+      const char *envs = 0;
+      const char *tty = 0;
       int avoid_loops = 0;
+      const char *startup_id = "0";
 
 #ifndef NDEBUG
      fprintf(stderr, "kdeinit: Got %s '%s' from %s.\n",
         (request_header.cmd == LAUNCHER_EXEC ? "EXEC" :
         (request_header.cmd == LAUNCHER_EXT_EXEC ? "EXT_EXEC" :
-        (request_header.cmd == LAUNCHER_SHELL ? "SHELL" : "KWRAPPER" ))),
+        (request_header.cmd == LAUNCHER_EXEC_NEW ? "EXEC_NEW" :
+        (request_header.cmd == LAUNCHER_SHELL ? "SHELL" : "KWRAPPER" )))),
          name, launcher ? "launcher" : "socket" );
 #endif
 
-      char *arg_n = args;
+      const char *arg_n = args;
       for(int i = 1; i < argc; i++)
       {
         arg_n = arg_n + strlen(arg_n) + 1;
       }
+
       if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER )
-      {  // Shell or kwrapper
+      {
+         // Shell or kwrapper
          cwd = arg_n; arg_n += strlen(cwd) + 1;
+      }
+      if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER
+          || request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW )
+      {
          envc = *((long *) arg_n); arg_n += sizeof(long);
          envs = arg_n;
          for(int i = 0; i < envc; i++)
@@ -858,10 +866,18 @@ static void handle_launcher_request(int sock = -1)
          }
       }
 
-     if( ( arg_n - request_data ) == ( request_header.arg_length - (int)sizeof( int )))
-     { // keep backward compatibility, read it only if present
+     if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER
+         || request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW )
+     {
          avoid_loops = *((int*)arg_n);
          arg_n += sizeof( int );
+     }
+     
+     if( request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER
+         || request_header.cmd == LAUNCHER_EXT_EXEC )
+     {
+         startup_id = arg_n;
+         arg_n += strlen( startup_id ) + 1;
      }
 
      if ((arg_n - request_data) != request_header.arg_length)
@@ -874,6 +890,7 @@ static void handle_launcher_request(int sock = -1)
        return;
      }
 
+      // support for the old a bit broken way of setting DISPLAY for multihead
       QCString olddisplay = getenv("DISPLAY");
       QCString kdedisplay = getenv("KDE_DISPLAY");
       bool reset_display = (! olddisplay.isEmpty() &&
@@ -883,9 +900,9 @@ static void handle_launcher_request(int sock = -1)
       if (reset_display)
           setenv("DISPLAY", kdedisplay, true);
 
-      pid = launch(argc, name, args, cwd, envc, envs, tty, avoid_loops,
-          request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_SHELL
-          || request_header.cmd == LAUNCHER_KWRAPPER );
+      pid = launch( argc, name, args, cwd, envc, envs,
+          request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
+          tty, avoid_loops, startup_id );
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");
@@ -914,8 +931,8 @@ static void handle_launcher_request(int sock = -1)
    }
    else if (request_header.cmd == LAUNCHER_SETENV)
    {
-      char *env_name;
-      char *env_value;
+      const char *env_name;
+      const char *env_value;
       env_name = request_data;
       env_value = env_name + strlen(env_name) + 1;
 
