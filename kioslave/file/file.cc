@@ -39,6 +39,7 @@
 #include <qstrlist.h>
 #include "file.h"
 #include <limits.h>
+#include <kprocess.h>
 
 #ifdef HAVE_VOLMGT
 	#include <volmgt.h>
@@ -995,16 +996,6 @@ void FileProtocol::slotInfoMessage( const QString & msg )
   infoMessage( msg );
 }
 
-#ifndef HAVE_VOLMGT
-static QString shellQuote( const QString &_str )
-{
-    // Credits to Walter, says Bernd G. :)
-    QString str(_str);
-    str.replace(QRegExp(QString::fromLatin1("'")), QString::fromLatin1("'\"'\"'"));
-    return QString::fromLatin1("'")+str+'\'';
-}
-#endif /* ! HAVE_VOLMGT */
-
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     kdDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
@@ -1041,9 +1032,9 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     KTempFile tmpFile;
     QCString tmpFileC = QFile::encodeName(tmpFile.name());
     const char *tmp = tmpFileC.data();
-    QCString dev = QFile::encodeName( shellQuote(_dev) ); // get those ready to be given to a shell
-    QCString point = QFile::encodeName( shellQuote(_point) );
-    QCString fstype = _fstype;
+    QCString dev = QFile::encodeName( KProcess::quote(_dev) ); // get those ready to be given to a shell
+    QCString point = QFile::encodeName( KProcess::quote(_point) );
+    QCString fstype = KProcess::quote(_fstype).latin1(); // good guess
     QCString readonly = _ro ? "-r" : "";
     QString path = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/sbin");
     QString mountProg = KGlobal::dirs()->findExe("mount", path);
@@ -1194,8 +1185,9 @@ void FileProtocol::unmount( const QString& _point )
 		 */
 		ptr = strrchr( devname, '/' );
 		*ptr = '\0';
-		buffer.sprintf( "/usr/bin/eject %s 2>%s", devname, tmp );
-		kdDebug(7101) << "VOLMGT: eject " << devname << endl;
+                QString qdevname(QFile::encodeName(KProcess::quote(QFile::decodeName(QCString(devname)))).data());
+		buffer.sprintf( "/usr/bin/eject %s 2>%s", qdevname.data(), tmp );
+		kdDebug(7101) << "VOLMGT: eject " << qdevname << endl;
 
 		/*
 		 *  from eject(1): exit status == 0 => need to manually eject
@@ -1231,7 +1223,7 @@ void FileProtocol::unmount( const QString& _point )
     if (umountProg.isEmpty()) {
         umountProg = "umount";
     }
-    buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(_point).data(), tmp );
+    buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(KProcess::quote(_point)).data(), tmp );
     system( buffer.data() );
 #endif /* HAVE_VOLMGT */
 
