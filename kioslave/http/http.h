@@ -433,7 +433,6 @@ protected:
    */
   QString createDigestAuth( bool isForProxy = false );
 
-#ifdef HAVE_LIBGSSAPI
   /**
    * Creates the entity-header for Negotiate authentication.
    */
@@ -443,7 +442,6 @@ protected:
    * create GSS error string
    */
   QCString gssError( int major_status, int minor_status );
-#endif
 
   /**
    * Calcualtes the message digest response based on RFC 2617.

@@ -75,6 +75,12 @@
 #else
 #include <gssapi.h>
 #endif /* GSSAPI_MIT */
+
+// Catch uncompatible crap (BR86019)
+#if defined(GSS_RFC_COMPLIANT_OIDS) && (GSS_RFC_COMPLIANT_OIDS == 0)
+#undef HAVE_LIBGSSAPI
+#endif
+
 #endif /* HAVE_LIBGSSAPI */
 
 using namespace KIO;
@@ -5261,6 +5267,19 @@ QString HTTPProtocol::createNegotiateAuth()
   gss_release_buffer(&minor_status, &output_token);
 
   return auth;
+}
+#else
+
+// Dummy
+QCString HTTPProtocol::gssError( int, int )
+{
+  return "";
+}
+
+// Dummy
+QString HTTPProtocol::createNegotiateAuth()
+{
+  return QString::null;
 }
 #endif
 
