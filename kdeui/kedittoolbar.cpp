@@ -27,6 +27,7 @@
 #include <qtoolbutton.h>
 #include <qlabel.h>
 #include <qvaluelist.h>
+#include <qapplication.h>
 
 #include <kstandarddirs.h>
 #include <klocale.h>
@@ -526,13 +527,13 @@ void KEditToolbarWidget::setupLayout()
   connect(m_upAction, SIGNAL(clicked()), SLOT(slotUpButton()));
 
   m_insertAction = new QToolButton(this);
-  iconSet = SmallIconSet( "forward" );
+  iconSet = QApplication::reverseLayout() ? SmallIconSet( "back" ) : SmallIconSet( "forward" );
   m_insertAction->setIconSet( iconSet );
   m_insertAction->setEnabled(false);
   connect(m_insertAction, SIGNAL(clicked()), SLOT(slotInsertButton()));
 
   m_removeAction = new QToolButton(this);
-  iconSet = SmallIconSet( "back" );
+  iconSet = QApplication::reverseLayout() ? SmallIconSet( "forward" ) : SmallIconSet( "back" );
   m_removeAction->setIconSet( iconSet );
   m_removeAction->setEnabled(false);
   connect(m_removeAction, SIGNAL(clicked()), SLOT(slotRemoveButton()));
@@ -895,7 +896,6 @@ void KEditToolbarWidget::slotRemoveButton()
   emit enableOk(true);
 
   ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
-
   // now iterate through to find the child to nuke
   QDomElement elem = d->m_currentToolbarElem.firstChild().toElement();
   for( ; !elem.isNull(); elem = elem.nextSibling().toElement())
@@ -911,11 +911,9 @@ void KEditToolbarWidget::slotRemoveButton()
 
       // update the local doc
       updateLocal(d->m_currentToolbarElem);
-
       break;
     }
   }
-
   slotToolbarSelected( m_toolbarCombo->currentText() );
 }
 
