@@ -167,16 +167,8 @@ public:
    * @param caption - The new name for the dialog's caption such as: 
    * "Configure Audio Plugin"
    **/
-  virtual void setCaption(const QString &caption);
+  virtual void setCaption( const QString &caption );
  
-  /**
-   * Ignore the specified child widget when performing an action.  Doesn't
-   * effect widgets that were added with addPage() only their children.
-   * @param widget - Pointer to the widget that should be ignored.
-   * Note: Widgets that don't have a name are ignored automatically.
-   **/ 
-  void ignoreSubWidget( QWidget *widget );
-
 protected slots:
   /**
    * Some setting was modified, updates the Apply and Default buttons.
@@ -184,10 +176,17 @@ protected slots:
   virtual void settingModified();
   
   /**
-   * Some setting was changed.
+   * Some setting was changed. Emit the signal with the dialogs name
    */
   virtual void settingsChangedSlot();
 
+  /**
+   * Helper function that connects the three dialog buttons to kautoconfig's
+   * slots and connects both settingsChanged() signals and widgetModified()
+   * signal to the dialog.
+   */ 
+  virtual void connectKAutoConfig( KAutoConfig *kautoconfig );
+  
 protected:
   // Pointer to the KAutoConfig object.
   KAutoConfig *kautoconfig;

@@ -31,19 +31,12 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
   if(!kconfig)
     kconfig = KGlobal::config();
   kautoconfig = new KAutoConfig(kconfig, kdialogbase, "kautoconfig");
-  connect(kautoconfig, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
-  connect(kautoconfig, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
-  connect(kautoconfig, SIGNAL(widgetModified()), this, SLOT(settingModified()));
+  connectKAutoConfig(kautoconfig);
 
   connect(kdialogbase, SIGNAL(destroyed()), this, SLOT(deleteLater()));
-  connect(kdialogbase, SIGNAL(okClicked()), kautoconfig, SLOT(saveSettings()));
-  connect(kdialogbase, SIGNAL(applyClicked()), kautoconfig, SLOT(saveSettings()));
-  connect(kdialogbase, SIGNAL(defaultClicked()), kautoconfig, SLOT(resetSettings()));
-
   connect(kdialogbase, SIGNAL(okClicked()), this, SIGNAL(okClicked()));
   connect(kdialogbase, SIGNAL(applyClicked()), this, SIGNAL(applyClicked()));
   connect(kdialogbase, SIGNAL(defaultClicked()), this, SIGNAL(defaultClicked()));
-
 
   kdialogbase->enableButton(KDialogBase::Apply, false);
 }
@@ -51,6 +44,16 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
 KAutoConfigDialog::~KAutoConfigDialog(){
   openDialogs.remove(name());
   delete d;
+}
+
+void KAutoConfigDialog::connectKAutoConfig( KAutoConfig *kautoconfig ){
+  connect(kautoconfig, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
+  connect(kautoconfig, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
+  connect(kautoconfig, SIGNAL(widgetModified()), this, SLOT(settingModified()));
+
+  connect(kdialogbase, SIGNAL(okClicked()), kautoconfig, SLOT(saveSettings()));
+  connect(kdialogbase, SIGNAL(applyClicked()), kautoconfig, SLOT(saveSettings()));
+  connect(kdialogbase, SIGNAL(defaultClicked()), kautoconfig, SLOT(resetSettings()));
 }
 
 void KAutoConfigDialog::addPage(QWidget *page,
@@ -122,10 +125,6 @@ void KAutoConfigDialog::settingsChangedSlot(){
 
 void KAutoConfigDialog::setCaption(const QString &caption){
   kdialogbase->setCaption(caption);
-}
-
-void KAutoConfigDialog::ignoreSubWidget( QWidget *widget ){
-  kautoconfig->ignoreSubWidget(widget);
 }
 
 void KAutoConfigDialog::show(bool track){
