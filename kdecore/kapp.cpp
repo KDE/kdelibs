@@ -1199,7 +1199,7 @@ void KApplication::resizeAll()
 	}
 }
 
-  return kdedir;
+
 
 
 void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
