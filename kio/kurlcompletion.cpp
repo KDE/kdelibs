@@ -48,7 +48,6 @@ static bool qstrBeginEq( const QString &s1, const QString &s2 );
 KURLCompletion::KURLCompletion() : KCompletion()
 {
 	init();
-        m_current_url = 0L;
 }
 
 
@@ -56,14 +55,12 @@ KURLCompletion::KURLCompletion( Mode mode ) : KCompletion()
 {
 	init();
 	m_mode = mode;
-        m_current_url = 0L;
 }
 
 
 KURLCompletion::~KURLCompletion()
 {
-	if ( m_current_url )
-		delete m_current_url;
+	delete m_current_url;
 }
 
 
@@ -81,6 +78,8 @@ void KURLCompletion::init()
 
 	m_replace_home = true;
 	m_replace_env = true;
+	m_current_url = 0L;
+	m_list_job = 0L;
 }
 
 /*
