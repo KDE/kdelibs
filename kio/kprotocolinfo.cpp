@@ -180,7 +180,7 @@ bool KProtocolInfo::isSourceProtocol( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol ''" << _protocol << "'' not found" << endl;
     return false;
   }
 
@@ -192,7 +192,7 @@ bool KProtocolInfo::isFilterProtocol( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol ''" << _protocol << "'' not found" << endl;
     return false;
   }
 
@@ -204,7 +204,7 @@ bool KProtocolInfo::isHelperProtocol( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -222,7 +222,7 @@ bool KProtocolInfo::supportsListing( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -234,7 +234,7 @@ QStringList KProtocolInfo::listing( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return QStringList();
   }
 
@@ -246,7 +246,7 @@ bool KProtocolInfo::supportsReading( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -258,7 +258,7 @@ bool KProtocolInfo::supportsWriting( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -270,7 +270,7 @@ bool KProtocolInfo::supportsMakeDir( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -282,7 +282,7 @@ bool KProtocolInfo::supportsDeleting( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -294,7 +294,7 @@ bool KProtocolInfo::supportsLinking( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -306,7 +306,7 @@ bool KProtocolInfo::supportsMoving( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -318,7 +318,7 @@ bool KProtocolInfo::canCopyFromFile( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -331,7 +331,7 @@ bool KProtocolInfo::canCopyToFile( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return false;
   }
 
@@ -343,7 +343,7 @@ QString KProtocolInfo::icon( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return QString::fromLatin1("mime_empty");
   }
 
@@ -355,7 +355,7 @@ QString KProtocolInfo::config( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return QString::null;
   }
 
@@ -367,7 +367,7 @@ QString KProtocolInfo::defaultMimetype( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return QString::null;
   }
 
@@ -379,7 +379,7 @@ bool KProtocolInfo::determineMimetypeFromExtension( const QString &_protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _protocol );
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return true;
   }
   return prot->m_determineMimetypeFromExtension;
@@ -390,7 +390,7 @@ QString KProtocolInfo::exec( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return QString::null;
   }
 
@@ -402,7 +402,7 @@ KProtocolInfo::Type KProtocolInfo::inputType( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return T_NONE;
   }
 
@@ -414,7 +414,7 @@ KProtocolInfo::Type KProtocolInfo::outputType( const QString& _protocol )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    kdError(127) << "Protocol '" << _protocol << "' not found" << endl;
     return T_NONE;
   }
 
@@ -427,7 +427,7 @@ KProtocolInfo::Type KProtocolInfo::inputType( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return T_NONE;
   }
 
@@ -439,7 +439,7 @@ KProtocolInfo::Type KProtocolInfo::outputType( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return T_NONE;
   }
 
@@ -452,7 +452,7 @@ bool KProtocolInfo::isSourceProtocol( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -464,7 +464,7 @@ bool KProtocolInfo::isFilterProtocol( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -476,7 +476,7 @@ bool KProtocolInfo::isHelperProtocol( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -494,7 +494,7 @@ bool KProtocolInfo::supportsListing( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -506,7 +506,7 @@ QStringList KProtocolInfo::listing( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return QStringList();
   }
 
@@ -518,7 +518,7 @@ bool KProtocolInfo::supportsReading( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -530,7 +530,7 @@ bool KProtocolInfo::supportsWriting( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -542,7 +542,7 @@ bool KProtocolInfo::supportsMakeDir( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -554,7 +554,7 @@ bool KProtocolInfo::supportsDeleting( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -566,7 +566,7 @@ bool KProtocolInfo::supportsLinking( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -578,7 +578,7 @@ bool KProtocolInfo::supportsMoving( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -590,7 +590,7 @@ bool KProtocolInfo::canCopyFromFile( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -603,7 +603,7 @@ bool KProtocolInfo::canCopyToFile( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return false;
   }
 
@@ -615,7 +615,7 @@ QString KProtocolInfo::defaultMimetype( const KURL &url )
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url);
   if ( !prot )
   {
-    kdError(127) << "Protocol " << url.protocol() << " not found" << endl;
+    kdError(127) << "Protocol '" << url.protocol() << "' not found" << endl;
     return QString::null;
   }
 
