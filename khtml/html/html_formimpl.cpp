@@ -47,6 +47,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <netaccess.h>
+#include <kfileitem.h>
 #include <qfile.h>
 #include <qtextcodec.h>
 
@@ -1036,13 +1037,27 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 return false;
 
             QString local;
+            QCString dummy("");
 
             // if no filename at all is entered, return successful, however empty
             // null would be more logical but netscape posts an empty file. argh.
             if(m_filename.isEmpty()) {
-                QCString dummy("");
-                encoding += dummy; // isEmpty
+                encoding += dummy;
                 return true;
+            }
+
+            KURL fileurl(m_filename.string());
+            KIO::UDSEntry filestat;
+
+            if (!KIO::NetAccess::stat(fileurl, filestat)) {
+                KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
+                return false;
+            }
+
+            KFileItem fileitem(filestat, fileurl, true, false);
+            if(fileitem.isDir()) {
+                encoding += dummy;
+                return false;
             }
 
             if ( KIO::NetAccess::download(KURL(m_filename.string()), local) )
