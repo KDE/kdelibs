@@ -83,10 +83,12 @@ noresize, ATTR_NORESIZE
 noshade, ATTR_NOSHADE
 nowrap, ATTR_NOWRAP
 object, ATTR_OBJECT
+onabort, ATTR_ONABORT
 onblur, ATTR_ONBLUR
 onchange, ATTR_ONCHANGE
 onclick, ATTR_ONCLICK
 ondblclick, ATTR_ONDBLCLICK
+onerror, ATTR_ONERROR
 onfocus, ATTR_ONFOCUS
 onkeydown, ATTR_ONKEYDOWN
 onkeypress, ATTR_ONKEYPRESS

@@ -72,10 +72,12 @@ noresize
 noshade
 nowrap
 object
+onabort
 onblur
 onchange
 onclick
 ondblclick
+onerror
 onfocus
 onkeydown
 onkeypress

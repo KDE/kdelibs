@@ -412,7 +412,7 @@ QString RenderSubmitButton::defaultLabel() {
 // -------------------------------------------------------------------------------
 
 RenderImageButton::RenderImageButton(HTMLInputElementImpl *element)
-    : RenderImage()
+    : RenderImage(element)
 {
     m_element = element;
     // ### support DOMActivate event when clicked

@@ -35,13 +35,15 @@
 
 #include "rendering/render_style.h"
 #include "misc/helper.h"
+#include "html/html_elementimpl.h"
+#include "xml/dom2_eventsimpl.h"
 
 using namespace DOM;
 using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-RenderImage::RenderImage()
+RenderImage::RenderImage(HTMLElementImpl *_element)
     : RenderReplaced(),
       pixSize(0, 0)
 {
@@ -50,6 +52,7 @@ RenderImage::RenderImage()
     setSpecialObjects();
     image = 0;
     berrorPic = false;
+    element = _element;
 }
 
 RenderImage::~RenderImage()
@@ -302,4 +305,9 @@ short RenderImage::intrinsicWidth() const
 int RenderImage::intrinsicHeight() const
 {
     return pixSize.height();
+}
+
+void RenderImage::notifyFinished(CachedObject *finishedObj)
+{
+    element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }

@@ -32,6 +32,10 @@
 
 #include <dom/dom_string.h>
 
+namespace DOM {
+    class HTMLElementImpl;
+}
+
 namespace khtml {
 
 class DocLoader;
@@ -39,7 +43,7 @@ class DocLoader;
 class RenderImage : public RenderReplaced
 {
 public:
-    RenderImage();
+    RenderImage(DOM::HTMLElementImpl *_element);
     virtual ~RenderImage();
 
     virtual const char *renderName() const { return "RenderImage"; }
@@ -63,6 +67,8 @@ public:
     // hook to keep RendeObject::m_inline() up to date
     virtual void setStyle(RenderStyle *style);
 
+    virtual void notifyFinished(CachedObject *finishedObj);
+
 private:
     /*
      * Pointer to the image
@@ -84,6 +90,8 @@ private:
 
     CachedImage *image;
     bool berrorPic : 1;
+
+    DOM::HTMLElementImpl *element;
 };
 
 

@@ -604,6 +604,9 @@ void CachedImage::movieStatus(int status)
             // so there is no need to keep the buffer in memory
             if(imgSource && m->frameNumber() == 1)
                 setShowAnimations( false );
+	    CachedObjectClient *c;
+	    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
+		c->notifyFinished(this);
         }
 
 #ifdef CACHE_DEBUG

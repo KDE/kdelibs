@@ -34,6 +34,7 @@
 #include "css/cssvalues.h"
 #include "css/csshelper.h"
 #include "html_documentimpl.h"
+#include "xml/dom2_eventsimpl.h"
 
 #include <qstring.h>
 #include <qpoint.h>
@@ -162,6 +163,18 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ALT:
         alt = attr->value();
         break;
+    case ATTR_ONABORT: // ### add support for this
+        setHTMLEventListener(EventImpl::ABORT_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        break;
+    case ATTR_ONERROR: // ### add support for this
+        setHTMLEventListener(EventImpl::ERROR_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        break;
+    case ATTR_ONLOAD:
+        setHTMLEventListener(EventImpl::LOAD_EVENT,
+	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -174,7 +187,7 @@ void HTMLImageElementImpl::attach()
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-        RenderImage *renderImage = new RenderImage();
+        RenderImage *renderImage = new RenderImage(this);
         renderImage->setStyle(m_style);
         renderImage->setAlt(alt);
         m_render = renderImage;

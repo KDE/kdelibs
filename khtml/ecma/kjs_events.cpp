@@ -27,7 +27,6 @@
 #include <qlist.h>
 #include "khtml_part.h"
 #include <xml/dom_nodeimpl.h>
-#include <iostream.h>
 
 using namespace KJS;
 
@@ -58,17 +57,9 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     KJSO thisVal = Null();
     QVariant ret = part->executeKJSFunctionCall(thisVal,listener,args); // ### currect this value ?
 
-
-    cerr << "JSEventListener::handleEvent(): ret.type() = " << ret.type() << endl;
-
-//    if (ret.type() == QVariant::Bool && ret.toBool() == false) {
-    if (ret.toBool() == false) {
+//    if (ret.type() == QVariant::Bool && ret.toBool() == false) { // ###
+    if (ret.toBool() == false)
         evt.preventDefault();
-	cerr << "JSEventListener::handleEvent(): ret = false\n";
-    }
-    else {
-	cerr << "JSEventListener::handleEvent(): ret = true\n";
-    }
   }
 }
 
