@@ -767,10 +767,12 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
     // Dissociate ourselves from the current event loop (to prevent crashes
     // due to the message box staying up)
     QTimer::singleShot( 0, this, SLOT( slotPartLoadingErrorNotify() ) );
+#if 0
     Tokenizer *tokenizer = static_cast<DOM::DocumentImpl *>(part->document().handle())->tokenizer();
     if (tokenizer) tokenizer->setOnHold( true );
     slotPartLoadingErrorNotify();
     if (tokenizer) tokenizer->setOnHold( false );
+#endif
     return false;
 }
 
