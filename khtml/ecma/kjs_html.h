@@ -32,12 +32,13 @@ class HTMLCollection;
 
 namespace KJS {
 
-  enum { IDDocWrite };
-
   class HTMLDocFunction : public KJSInternalFunction {
   public:
     HTMLDocFunction(DOM::HTMLDocument d, int i) : doc(d), id(i) { };
+    virtual KJSO *get(const CString &p) const;
     KJSO *execute(KJSContext *);
+    enum { Images, Applets, Links, Forms, Anchors, Open, Close,
+	   Write, Writeln, ElByID, ElByName };
   private:
     DOM::HTMLDocument doc;
     int id;

@@ -80,22 +80,76 @@ QString UString::qstring() const
   return QString((QChar*) s, l);
 }
 
+KJSO *KJS::HTMLDocFunction::get(const CString &p) const
+{
+  Ptr tmp;
+  DOM::HTMLCollection coll;
+
+  switch (id) {
+  case Images:
+    coll = doc.images();
+    break;
+  case Applets:
+    coll = doc.applets();
+    break;
+  case Links:
+    coll = doc.links();
+    break;
+  case Forms:
+    coll = doc.forms();
+    break;
+  case Anchors:
+    coll = doc.anchors();
+    break;
+  default:
+    return new KJSUndefined();
+  }
+
+  tmp = new KJS::HTMLCollection(coll);
+
+  return tmp->get(p);
+}
+
 KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
 {
   KJSO *result;
   Ptr v, n;
   DOM::HTMLElement element;
-  DOM::Node node;
-  
+  DOM::HTMLCollection coll;
+
+  v = context->activation->get("0");
+
   switch (id) {
-  case IDDocWrite:
-    v = context->activation->get("0");
+  case Images:
+    coll = doc.images();
+    break;
+  case Applets:
+    coll = doc.applets();
+    break;
+  case Links:
+    coll = doc.links();
+    break;
+  case Forms:
+    coll = doc.forms();
+    break;
+  case Anchors:
+    coll = doc.anchors();
+    break;
+  case Write:
     n = toString(v);
     doc.write(n->sVal().string());
     result = new KJSUndefined();
     break;
   default:
     assert((result = 0L));
+  }
+
+  // retrieve n'th element of collection
+  if (id == Images || id == Applets || id == Links ||
+      id == Forms || id == Anchors) {
+    n = toNumber(v);
+    element = coll.item((unsigned long)n->dVal());
+    result = new HTMLElement(element);
   }
 
   return new KJSCompletion(Normal, result);
@@ -116,11 +170,17 @@ KJSO *KJS::HTMLDocument::get(const CString &p) const
   else if (p == "body")
     result = new HTMLElement(doc.body());
   else if (p == "images")
-    result = new HTMLCollection(doc.images());
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Images);
+  else if (p == "applets")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Applets);
   else if (p == "links")
-    result = new HTMLCollection(doc.links());
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Links);
+  else if (p == "forms")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Forms);
+  else if (p == "anchors")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
   else if (p == "write")
-    result = new HTMLDocFunction(doc, IDDocWrite);
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Write);
   else if (p == "cookie")
     result = new KJSString(doc.cookie());
   else {
