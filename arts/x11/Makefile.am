@@ -11,5 +11,5 @@ x11globalcomm.h: $(srcdir)/x11globalcomm.idl $(MCOPIDL)
 
 x11globalcomm.cc: x11globalcomm.h
 
-mcopclassdir = $(libdir)/Arts
+mcopclassdir = $(libdir)/mcop/Arts
 mcopclass_DATA = X11GlobalComm.mcopclass
