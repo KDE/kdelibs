@@ -220,24 +220,20 @@ QString KProtocolManager::noProxyFor()
 
 QString KProtocolManager::proxyFor( const QString& protocol )
 {
+  QString scheme = protocol.lower();
+
+  if (scheme == "webdav")
+    scheme = "http";
+  else if (scheme == "webdavs")
+    scheme = "https";
+
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry( protocol.lower() + "Proxy" );
+  return cfg->readEntry( scheme + "Proxy" );
 }
 
 QString KProtocolManager::proxyForURL( const KURL &url )
 {
-  if (url.protocol().find("webdav",0,false) == 0)
-  {
-     KURL u(url);
-     if (url.protocol().lower() == "webdav")
-        u.setProtocol("http");
-     else
-        u.setProtocol("https");
-
-     return proxyForURL(u);
-  }
-
   QString proxy;
   ProxyType pt = proxyType();
 
