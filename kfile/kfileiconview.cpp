@@ -33,7 +33,8 @@
 
 KFileIconViewItem::~KFileIconViewItem()
 {
-    if ( iconView() ) { // FIXME - this always returns 0L since Qt 2.1beta
+    if ( false ) { // FIXME - weird bug here ;( memory corruption!??
+                   // comes since latest QIconView changes
 	const_cast<KFileViewItem*>(fileInfo())->
 	    setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
     }
