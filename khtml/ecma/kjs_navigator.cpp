@@ -27,6 +27,22 @@
 
 using namespace KJS;
 
+namespace KJS {
+  
+  class Plugins : public HostImp {
+  public:
+    Plugins() { }
+    virtual KJSO get(const UString &p) const;
+  };
+
+  class PluginsFunc : public DOMFunction {
+  public:
+    PluginsFunc() { };
+    Completion tryExecute(const List &);
+  };
+
+};
+
 KJSO Navigator::get(const UString &p) const
 {
   if (p == "appCodeName")
@@ -37,6 +53,21 @@ KJSO Navigator::get(const UString &p) const
     return String("5.0 (X11; Konqueror; Unix)");
   else if (p == "userAgent")
     return String("Mozilla/5.0 (X11; Konqueror; Unix)");
+  else if (p == "plugins")
+    return KJSO(new Plugins());
   else
     return Undefined();
+}
+
+KJSO Plugins::get(const UString &p) const
+{
+  if (p == "refresh")
+    return Function(new PluginsFunc());
+  
+  return Undefined();
+}
+
+Completion PluginsFunc::tryExecute(const List &)
+{
+  return Completion(Normal, Undefined());
 }

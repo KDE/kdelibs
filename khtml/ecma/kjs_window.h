@@ -90,8 +90,19 @@ namespace KJS {
     Location(KHTMLPart *p) : part(p) { }
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO &v);
+    enum { Replace };
   private:
     KHTMLPart *part;
+  };
+
+  class LocationFunc : public DOMFunction {
+  public:
+    LocationFunc(KHTMLPart *p, int i) : part(p), id(i) { };
+    Completion tryExecute(const List &);
+    enum { Replace };
+  private:
+    KHTMLPart *part;
+    int id;
   };
 
 }; // namespace
