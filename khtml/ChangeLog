@@ -1,0 +1,13 @@
+2003-10-04  Dirk Mueller  <mueller@kde.org>
+
+	* html/html_elementimpl.cpp (createContextualFragment): Fix memory
+	leaks. Adjust code style. Adjust return to avoid dangling return leaks.
+
+	* xml/dom2_rangeimpl.cpp (createContextualFragment): adjust return type.
+
+	* html/html_elementimpl.h (class HTMLElementImpl): adjust return type.
+
+	* dom/dom2_range.cpp (createContextualFragment): Adjust to DocumentFragment 
+	return type.
+
+	
