@@ -1,0 +1,650 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: kdelibs\n"
+"POT-Creation-Date: 1998-01-25 13:21+0100\n"
+"PO-Revision-Date: 1998-02-21 04:16+0800\n"
+"Last-Translator: Chou Yeh-Jyi <ycchou@ccca.nctu.edu.tw>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+
+#: kdecore/kapp.cpp:419
+msgid "&Help..."
+msgstr "求助[&H]..."
+
+#: kdecore/kapp.cpp:424
+msgid "&About"
+msgstr "關於[&A]"
+
+#: kdecore/kapp.cpp:428
+msgid "About &KDE..."
+msgstr "關於 &KDE..."
+
+#: kdecore/kapp.cpp:449
+msgid "About KDE"
+msgstr "關於 KDE"
+
+#: kdecore/kapp.cpp:451
+msgid ""
+"The KDE Desktop Environment was written by the KDE team.\n"
+"\n"
+"Please report bugs at http://buglist.kde.org.\n"
+"\n"
+"\n"
+"KDE was developed with Qt, a cross-platform GUI library.\n"
+"\n"
+"Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n"
+"Qt may be used freely to develop free software on the X Window System.\n"
+msgstr ""
+
+#: kdeui/kcolordlg.cpp:283
+msgid "Select Color"
+msgstr "選擇顏色"
+
+#: kdeui/kcolordlg.cpp:295
+msgid "System Colors"
+msgstr "系統顏色"
+
+#: kdeui/kcolordlg.cpp:326
+msgid "Custom Colors"
+msgstr "自定顏色"
+
+#: kdeui/kcolordlg.cpp:339
+msgid "Add to Custom Colors"
+msgstr "加入自定顏色"
+
+#: kdeui/kcolordlg.cpp:461 kdeui/kfontdialog.cpp:322
+#: kdeui/kiconloaderdialog.cpp:210 po/texts.cpp:37
+msgid "Ok"
+msgstr "確定"
+
+#: kdeui/kcolordlg.cpp:464 kdeui/kcontrol.cpp:41 kdeui/keditcl1.cpp:397
+#: kdeui/keditcl1.cpp:479 kdeui/keditcl2.cpp:897 kdeui/kfontdialog.cpp:317
+#: kdeui/kiconloaderdialog.cpp:211 kdeui/kmsgbox.cpp:509 po/texts.cpp:40
+msgid "Cancel"
+msgstr "取消"
+
+#: kdeui/kcolordlg.cpp:469 kdeui/kcontrol.cpp:34 po/texts.cpp:45
+msgid "Help"
+msgstr "求助"
+
+#: kdeui/kcolordlg.cpp:786 kdeui/kcolordlg.cpp:838
+msgid "Custom..."
+msgstr "自定..."
+
+#: kdeui/kcontrol.cpp:39 kdeui/keditcl1.cpp:129 kdeui/keditcl1.cpp:143
+#: kdeui/keditcl1.cpp:158 kdeui/keditcl1.cpp:179 kdeui/keditcl1.cpp:192
+#: kdeui/keditcl1.cpp:1473 kdeui/keditcl1.cpp:1630 kdeui/kmsgbox.cpp:477
+#: po/texts.cpp:35
+msgid "OK"
+msgstr "確定"
+
+#: kdeui/kcontrol.cpp:40 po/texts.cpp:42
+msgid "Apply"
+msgstr "套用"
+
+#: kdeui/keditcl1.cpp:127 kdeui/keditcl1.cpp:156 kdeui/keditcl1.cpp:177
+#: kdeui/keditcl1.cpp:190 kdeui/keditcl1.cpp:1471 po/texts.cpp:87
+msgid "Sorry"
+msgstr "抱歉"
+
+#: kdeui/keditcl1.cpp:128
+msgid "The specified File does not exist"
+msgstr "指定的檔案不存在"
+
+#: kdeui/keditcl1.cpp:141 kdeui/keditcl1.cpp:413 kdeui/keditcl1.cpp:494
+#: kdeui/keditcl1.cpp:1627
+msgid "Sorry:"
+msgstr "抱歉:"
+
+#: kdeui/keditcl1.cpp:142
+msgid "You have specificated a directory"
+msgstr "必須指定一個目錄"
+
+#: kdeui/keditcl1.cpp:157 kdeui/keditcl1.cpp:178
+msgid "You do not have read permission to this file."
+msgstr "沒有權限讀取這個檔案"
+
+#: kdeui/keditcl1.cpp:191
+msgid "An Error occured while trying to open this Document"
+msgstr "開啟文件的時候發生錯誤"
+
+#: kdeui/keditcl1.cpp:356
+msgid "Select Document to Insert"
+msgstr "選擇要插入的文件"
+
+#: kdeui/keditcl1.cpp:392 kdeui/keditcl1.cpp:474 kdeui/keditcl1.cpp:1570
+msgid "Warning:"
+msgstr "警告:"
+
+#: kdeui/keditcl1.cpp:393 kdeui/keditcl1.cpp:475
+msgid ""
+"The current Document has been modified.\n"
+"Would you like to save it?"
+msgstr ""
+"目前的文件已經被修改.\n"
+"要儲存嗎?"
+
+#: kdeui/keditcl1.cpp:395 kdeui/keditcl1.cpp:416 kdeui/keditcl1.cpp:477
+#: kdeui/keditcl1.cpp:497 kdeui/keditcl1.cpp:1573 kdeui/keditcl2.cpp:108
+#: kdeui/keditcl2.cpp:125 kdeui/keditcl2.cpp:365 kdeui/keditcl2.cpp:382
+#: kdeui/keditcl2.cpp:428 kdeui/keditcl2.cpp:458 kdeui/keditcl2.cpp:475
+#: kdeui/kmsgbox.cpp:492 kdeui/kmsgbox.cpp:507 po/texts.cpp:27
+msgid "Yes"
+msgstr "是"
+
+#: kdeui/keditcl1.cpp:396 kdeui/keditcl1.cpp:417 kdeui/keditcl1.cpp:478
+#: kdeui/keditcl1.cpp:498 kdeui/keditcl1.cpp:1574 kdeui/keditcl2.cpp:109
+#: kdeui/keditcl2.cpp:126 kdeui/keditcl2.cpp:366 kdeui/keditcl2.cpp:383
+#: kdeui/keditcl2.cpp:429 kdeui/keditcl2.cpp:459 kdeui/keditcl2.cpp:476
+#: kdeui/kmsgbox.cpp:490 kdeui/kmsgbox.cpp:505 po/texts.cpp:28
+msgid "No"
+msgstr "否"
+
+#: kdeui/keditcl1.cpp:414
+msgid ""
+"Could not save the document.\n"
+"Open a new document anyways?"
+msgstr ""
+"不能儲存這份文件.\n"
+"直接開啟一個新文件嗎?"
+
+#: kdeui/keditcl1.cpp:445
+msgid "Select Document to Open"
+msgstr "選擇要開啟的文件"
+
+#: kdeui/keditcl1.cpp:495
+msgid ""
+"Could not save the document.\n"
+"Create a new document anyways?"
+msgstr ""
+"不能儲存這份文件.\n"
+"直接開啟一份新文件嗎?"
+
+#: kdeui/keditcl1.cpp:530 kdeui/kpopmenu.cpp:10 po/texts.cpp:34
+msgid "Untitled"
+msgstr "尚未命名"
+
+#: kdeui/keditcl1.cpp:1472
+msgid "Could not save the document\n"
+msgstr "不能儲存這份文件.\n"
+
+#: kdeui/keditcl1.cpp:1542
+msgid "Save Document As"
+msgstr "另存新檔名"
+
+#: kdeui/keditcl1.cpp:1571
+msgid ""
+"A Document with this Name exists already\n"
+"Do you want to overwrite it ?"
+msgstr ""
+"存在一份相同檔名的文件\n"
+"要覆蓋\過去嗎 ?"
+
+#: kdeui/keditcl1.cpp:1628
+msgid "You do not have write permission to this file.\n"
+msgstr "沒有權限寫入這個檔案\n"
+
+#: kdeui/keditcl2.cpp:105 kdeui/keditcl2.cpp:122 kdeui/keditcl2.cpp:362
+#: kdeui/keditcl2.cpp:379 kdeui/keditcl2.cpp:678 kdeui/keditcl2.cpp:687
+#: kdeui/keditcl2.cpp:788
+msgid "Find"
+msgstr "尋找"
+
+#: kdeui/keditcl2.cpp:106 kdeui/keditcl2.cpp:363 kdeui/keditcl2.cpp:456
+msgid ""
+"End of document reached.\n"
+"Continue from the beginning?"
+msgstr ""
+"至文件結尾.\n"
+"由開頭繼續?"
+
+#: kdeui/keditcl2.cpp:123 kdeui/keditcl2.cpp:380 kdeui/keditcl2.cpp:426
+#: kdeui/keditcl2.cpp:473
+msgid ""
+"Beginning of document reached.\n"
+"Continue from the end?"
+msgstr ""
+"至文件開頭.\n"
+"由結尾繼續?"
+
+#: kdeui/keditcl2.cpp:425 kdeui/keditcl2.cpp:455 kdeui/keditcl2.cpp:472
+#: kdeui/keditcl2.cpp:791
+msgid "Replace"
+msgstr "取代"
+
+#: kdeui/keditcl2.cpp:684 kdeui/keditcl2.cpp:782
+msgid "Case Sensitive"
+msgstr "區分大小寫"
+
+#: kdeui/keditcl2.cpp:685 kdeui/keditcl2.cpp:785
+msgid "Find Backwards"
+msgstr "向後搜尋"
+
+#: kdeui/keditcl2.cpp:690 kdeui/keditcl2.cpp:797 po/texts.cpp:86
+msgid "Done"
+msgstr "完成"
+
+#: kdeui/keditcl2.cpp:770
+msgid "Find:"
+msgstr "尋找:"
+
+#: kdeui/keditcl2.cpp:780
+msgid "Replace with:"
+msgstr "用...取代:"
+
+#: kdeui/keditcl2.cpp:794
+msgid "Replace All"
+msgstr "全部取代"
+
+#: kdeui/keditcl2.cpp:891
+msgid "Goto Line"
+msgstr "跳至行數"
+
+#: kdeui/keditcl2.cpp:896
+msgid "Go"
+msgstr "跳"
+
+#: kdeui/kfontdialog.cpp:132
+msgid "Select Font"
+msgstr "選擇字型"
+
+#: kdeui/kfontdialog.cpp:136
+msgid "Requested Font"
+msgstr "要求的字型"
+
+#: kdeui/kfontdialog.cpp:141
+msgid "Actual Font"
+msgstr "實際的字型"
+
+#: kdeui/kfontdialog.cpp:145 kdeui/kfontdialog.cpp:149
+msgid "Family:"
+msgstr "族類:"
+
+#: kdeui/kfontdialog.cpp:156 kdeui/kfontdialog.cpp:162 po/texts.cpp:26
+msgid "Charset:"
+msgstr "字集:"
+
+#: kdeui/kfontdialog.cpp:169 kdeui/kfontdialog.cpp:174
+msgid "Size:"
+msgstr "大小"
+
+#: kdeui/kfontdialog.cpp:183 kdeui/kfontdialog.cpp:188
+msgid "Weight:"
+msgstr "厚度:"
+
+#: kdeui/kfontdialog.cpp:197 kdeui/kfontdialog.cpp:205
+msgid "Style:"
+msgstr "樣式:"
+
+#: kdeui/kfontdialog.cpp:240
+msgid "Charset"
+msgstr "字集"
+
+#: kdeui/kfontdialog.cpp:255
+msgid "Size"
+msgstr "大小"
+
+#: kdeui/kfontdialog.cpp:294
+msgid "Weight"
+msgstr "厚度"
+
+#: kdeui/kfontdialog.cpp:295 kdeui/kfontdialog.cpp:413
+msgid "normal"
+msgstr "正常"
+
+#: kdeui/kfontdialog.cpp:296 kdeui/kfontdialog.cpp:415
+msgid "bold"
+msgstr "粗體"
+
+#: kdeui/kfontdialog.cpp:305
+msgid "Style"
+msgstr "樣式"
+
+#: kdeui/kfontdialog.cpp:306 kdeui/kfontdialog.cpp:426
+#: kdeui/kfontdialog.cpp:455
+msgid "roman"
+msgstr "正體"
+
+#: kdeui/kfontdialog.cpp:307 kdeui/kfontdialog.cpp:428
+#: kdeui/kfontdialog.cpp:453
+msgid "italic"
+msgstr "斜體"
+
+#: kdeui/kfontdialog.cpp:335
+msgid "Dolor Ipse"
+msgstr ""
+
+#: kdeui/kfontdialog.cpp:448
+msgid "Bold"
+msgstr "粗體"
+
+#: kdeui/kfontdialog.cpp:450
+msgid "Normal"
+msgstr "正常"
+
+#: kdeui/kiconloaderdialog.cpp:193
+msgid "Select Icon"
+msgstr "選擇圖示"
+
+#: kdeui/kiconloaderdialog.cpp:198
+msgid "Filter:"
+msgstr "過濾:"
+
+#: kdeui/kmenubar.cpp:149 kdeui/ktoolbar.cpp:325
+msgid "Top"
+msgstr "頂端"
+
+#: kdeui/kmenubar.cpp:150 kdeui/ktoolbar.cpp:327
+msgid "Bottom"
+msgstr "底端"
+
+#: kdeui/kmenubar.cpp:151 kdeui/ktoolbar.cpp:328
+msgid "Floating"
+msgstr "漂浮"
+
+#: kdeui/kmenubar.cpp:191 kdeui/kmenubar.cpp:330 kdeui/ktoolbar.cpp:734
+#: kdeui/ktoolbar.cpp:1285
+msgid "Float"
+msgstr "漂浮"
+
+#: kdeui/kmenubar.cpp:319 kdeui/ktoolbar.cpp:1267
+msgid "UnFloat"
+msgstr "固定"
+
+#: kdeui/ktoolbar.cpp:120 kdeui/ktoolbar.cpp:185
+msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
+msgstr "KToolBarButton: 空的圖示, 也許\缺少某些檔案"
+
+#: kdeui/ktoolbar.cpp:324
+msgid "Left"
+msgstr "左"
+
+#: kdeui/ktoolbar.cpp:326
+msgid "Right"
+msgstr "右"
+
+#: po/texts.cpp:24
+msgid "Error"
+msgstr "錯誤"
+
+#: po/texts.cpp:25
+msgid "Malformed URL"
+msgstr "不正確的 URL"
+
+#: po/texts.cpp:29
+msgid "Warning"
+msgstr "警告"
+
+#: po/texts.cpp:30
+msgid "Save a file"
+msgstr "存成檔案"
+
+#: po/texts.cpp:31
+msgid "Contents"
+msgstr "主題"
+
+#: po/texts.cpp:32
+msgid "About"
+msgstr "有關"
+
+#: po/texts.cpp:33
+msgid "A&bout..."
+msgstr "有關[&A]..."
+
+#: po/texts.cpp:36
+msgid "&OK"
+msgstr "確定[&O]"
+
+#: po/texts.cpp:38
+msgid "On"
+msgstr ""
+
+#: po/texts.cpp:39
+msgid "Off"
+msgstr ""
+
+#: po/texts.cpp:41
+msgid "&Cancel"
+msgstr "取消[&C]"
+
+#: po/texts.cpp:43
+msgid "File"
+msgstr "檔案"
+
+#: po/texts.cpp:44
+msgid "&File"
+msgstr "檔案[&F]"
+
+#: po/texts.cpp:46
+msgid "&Help"
+msgstr "求助[&H]"
+
+#: po/texts.cpp:47
+msgid "Edit"
+msgstr "編輯"
+
+#: po/texts.cpp:48
+msgid "&Edit"
+msgstr "編輯[&E]"
+
+#: po/texts.cpp:49
+msgid "&Options"
+msgstr "選項[&O]"
+
+#: po/texts.cpp:50
+msgid "View"
+msgstr "檢視"
+
+#: po/texts.cpp:51
+msgid "&View"
+msgstr "檢視[&V]"
+
+#: po/texts.cpp:52
+msgid "E&xit"
+msgstr "結束[&X]"
+
+#: po/texts.cpp:53
+msgid "Quit"
+msgstr "離開"
+
+#: po/texts.cpp:54
+msgid "&Quit"
+msgstr "離開[&Q]"
+
+#: po/texts.cpp:55
+msgid "Reload"
+msgstr "重新載入"
+
+#: po/texts.cpp:56
+msgid "Back"
+msgstr "往回"
+
+#: po/texts.cpp:57
+msgid "Forward"
+msgstr "往前"
+
+#: po/texts.cpp:58
+msgid "Copy"
+msgstr "拷貝"
+
+#: po/texts.cpp:59
+msgid "&Copy"
+msgstr "拷貝[&C]"
+
+#: po/texts.cpp:60
+msgid "Paste"
+msgstr "貼上"
+
+#: po/texts.cpp:61
+msgid "&Paste"
+msgstr "貼上[&P]"
+
+#: po/texts.cpp:62
+msgid "New"
+msgstr "新的"
+
+#: po/texts.cpp:63
+msgid "&New"
+msgstr "新的[&N]"
+
+#: po/texts.cpp:64
+msgid "&New..."
+msgstr "新的[&N]..."
+
+#: po/texts.cpp:65
+msgid "&New Window..."
+msgstr "新的視窗[&N]..."
+
+#: po/texts.cpp:66
+msgid "New &Window..."
+msgstr "新的視窗[&W]..."
+
+#: po/texts.cpp:67
+msgid "New Game"
+msgstr "開始新遊戲"
+
+#: po/texts.cpp:68
+msgid "&New Game"
+msgstr "開始遊戲[&N]"
+
+#: po/texts.cpp:69
+msgid "Open"
+msgstr "開啟"
+
+#: po/texts.cpp:70
+msgid "Open a file"
+msgstr "開啟檔案"
+
+#: po/texts.cpp:71
+msgid "Open..."
+msgstr "開啟..."
+
+#: po/texts.cpp:72
+msgid "&Open..."
+msgstr "開啟[&O]..."
+
+#: po/texts.cpp:73
+msgid "Cut"
+msgstr "剪下"
+
+#: po/texts.cpp:74
+msgid "C&ut"
+msgstr "剪下[&U]"
+
+#: po/texts.cpp:75
+msgid "Font"
+msgstr "字型"
+
+#: po/texts.cpp:76
+msgid "&Foreground Color"
+msgstr "前景顏色[&F]"
+
+#: po/texts.cpp:77
+msgid "&Background Color"
+msgstr "背景顏色[&B]"
+
+#: po/texts.cpp:78
+msgid "Save"
+msgstr "儲存"
+
+#: po/texts.cpp:79
+msgid "&Save"
+msgstr "儲存[&S]"
+
+#: po/texts.cpp:80
+msgid "Save As"
+msgstr "另存新檔"
+
+#: po/texts.cpp:81
+msgid "Save as..."
+msgstr "另存新檔..."
+
+#: po/texts.cpp:82
+msgid "S&ave as..."
+msgstr "另存新檔[&A]..."
+
+#: po/texts.cpp:83
+msgid "Close"
+msgstr "關閉"
+
+#: po/texts.cpp:84
+msgid "&Close"
+msgstr "關閉[&C]"
+
+#: po/texts.cpp:85
+msgid "&Print..."
+msgstr "列印[&P]..."
+
+#: po/texts.cpp:88
+msgid "Options"
+msgstr "選項"
+
+#: po/texts.cpp:89
+msgid "Remove"
+msgstr "移除"
+
+#: po/texts.cpp:90
+msgid "Add"
+msgstr "加入"
+
+#: po/texts.cpp:91
+msgid "Change"
+msgstr "變更"
+
+#: po/texts.cpp:92
+msgid "Delete"
+msgstr "刪除"
+
+#: po/texts.cpp:93
+msgid "&Delete"
+msgstr "刪除[&D]"
+
+#: po/texts.cpp:94
+msgid "Clear"
+msgstr "清除"
+
+#: po/texts.cpp:95
+msgid "Italic"
+msgstr "斜體"
+
+#: po/texts.cpp:96
+msgid "Roman"
+msgstr "正體"
+
+#: po/texts.cpp:97
+msgid "Undo"
+msgstr "還原變更"
+
+#: po/texts.cpp:98
+msgid "&Undo"
+msgstr "還原變更[&U]"
+
+#: po/texts.cpp:99
+msgid "Redo"
+msgstr "恢復變更"
+
+#: po/texts.cpp:100
+msgid "&Redo"
+msgstr "恢復變更[&R]"
+
+#: po/texts.cpp:101
+msgid "&Game"
+msgstr "遊戲[&G]"
+
+#: po/texts.cpp:102
+msgid "Information"
+msgstr "資訊"
+
+#: po/texts.cpp:103
+msgid "Browse..."
+msgstr "瀏覽..."
+
+#: po/texts.cpp:104
+msgid "(none)"
+msgstr "(無)"
