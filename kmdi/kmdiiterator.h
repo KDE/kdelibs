@@ -28,20 +28,24 @@
 #define _KMDIITERATOR_H_
 
 
-template<class Item>
-class KMdiIterator {
+template <class Item>
+class KMdiIterator
+{
 public:
-   virtual ~KMdiIterator() {}
+	virtual ~KMdiIterator() {}
 
-   virtual void first() = 0;
-   virtual void last() = 0;
-   virtual void next() = 0;
-   virtual void prev() = 0;
-   virtual bool isDone() const = 0;
-   virtual Item currentItem() const = 0;
+	virtual void first() = 0;
+	virtual void last() = 0;
+	virtual void next() = 0;
+	virtual void prev() = 0;
+	virtual bool isDone() const = 0;
+	virtual Item currentItem() const = 0;
 
 protected:
-   KMdiIterator() {}
-};
+	KMdiIterator() {}
+}
+;
 
-#endif // _KMDIITERATOR_H_
+#endif // _KMDIITERATOR_H_ 
+// kate: space-indent off; tab-width 4; replace-tabs off; indent-mode csands;
+

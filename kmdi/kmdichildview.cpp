@@ -44,70 +44,66 @@
 
 //============ KMdiChildView ============//
 
-KMdiChildView::KMdiChildView( const QString& caption, QWidget* parentWidget, const char* name, WFlags f)
-: QWidget(parentWidget, name, f)
-  ,m_focusedChildWidget(0L)
-  ,m_firstFocusableChildWidget(0L)
-  ,m_lastFocusableChildWidget(0L)
-  ,m_stateChanged(true)
-  ,m_bToolView(false)
-  ,m_bInterruptActivation(false)
-  ,m_bMainframesActivateViewIsPending(false)
-  ,m_bFocusInEventIsPending(false)
-  ,m_trackChanges(0)
+KMdiChildView::KMdiChildView( const QString& caption, QWidget* parentWidget, const char* name, WFlags f )
+	: QWidget( parentWidget, name, f )
+	, m_focusedChildWidget( 0L )
+	, m_firstFocusableChildWidget( 0L )
+	, m_lastFocusableChildWidget( 0L )
+	, m_stateChanged( true )
+	, m_bToolView( false )
+	, m_bInterruptActivation( false )
+	, m_bMainframesActivateViewIsPending( false )
+	, m_bFocusInEventIsPending( false )
+	, m_trackChanges( 0 )
 {
-   setGeometry( 0, 0, 0, 0);  // reset
-   if(caption != 0L) {
-      m_szCaption = caption;
-   }
-   else {
-      m_szCaption = i18n("Unnamed");
-   }
-   m_sTabCaption = m_szCaption;
-
-   setFocusPolicy(ClickFocus);
-
-   installEventFilter(this);
-
-   // store the current time
-   updateTimeStamp();
+	setGeometry( 0, 0, 0, 0 );  // reset
+	if ( caption != 0L )
+		m_szCaption = caption;
+	else
+		m_szCaption = i18n( "Unnamed" );
+	
+	m_sTabCaption = m_szCaption;
+	setFocusPolicy( ClickFocus );
+	installEventFilter( this );
+	
+	// store the current time
+	updateTimeStamp();
 }
 
 
 //============ KMdiChildView ============//
 
-KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f)
-: QWidget(parentWidget, name, f)
-  ,m_focusedChildWidget(0L)
-  ,m_firstFocusableChildWidget(0L)
-  ,m_lastFocusableChildWidget(0L)
-  ,m_stateChanged(true)
-  ,m_bToolView(false)
-  ,m_bInterruptActivation(false)
-  ,m_bMainframesActivateViewIsPending(false)
-  ,m_bFocusInEventIsPending(false)
+KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f )
+	: QWidget( parentWidget, name, f )
+	, m_focusedChildWidget( 0L )
+	, m_firstFocusableChildWidget( 0L )
+	, m_lastFocusableChildWidget( 0L )
+	, m_stateChanged( true )
+	, m_bToolView( false )
+	, m_bInterruptActivation( false )
+	, m_bMainframesActivateViewIsPending( false )
+	, m_bFocusInEventIsPending( false )
 {
-   setGeometry( 0, 0, 0, 0);  // reset
-   m_szCaption = i18n("Unnamed");
-   m_sTabCaption = m_szCaption;
+	setGeometry( 0, 0, 0, 0 );  // reset
+	m_szCaption = i18n( "Unnamed" );
+	m_sTabCaption = m_szCaption;
+	setFocusPolicy( ClickFocus );
+	installEventFilter( this );
 
-   setFocusPolicy(ClickFocus);
-
-   installEventFilter(this);
-
-   // store the current time
-   updateTimeStamp();
+	// store the current time
+	updateTimeStamp();
 }
 
 //============ ~KMdiChildView ============//
 
 KMdiChildView::~KMdiChildView()
 {
-  kdDebug(760)<<"~KMdiChildView()"<<endl;
+	kdDebug( 760 ) << k_funcinfo << endl;
 }
 
-void KMdiChildView::trackIconAndCaptionChanges(QWidget *view) {
-	m_trackChanges=view;
+void KMdiChildView::trackIconAndCaptionChanges( QWidget *view )
+{
+	m_trackChanges = view;
 }
 
 
@@ -115,578 +111,585 @@ void KMdiChildView::trackIconAndCaptionChanges(QWidget *view) {
 
 QRect KMdiChildView::internalGeometry() const
 {
-   if(mdiParent()) { // is attached
-      // get the client area coordinates inside the MDI child frame
-      QRect    posInFrame = geometry();
-      // map these values to the parent of the MDI child frame
-      // (this usually is the MDI child area) and return
-      QPoint ptTopLeft = mdiParent()->mapToParent(posInFrame.topLeft());
-      QSize sz = size();
-      return QRect(ptTopLeft, sz);
-   }
-   else {
-      QRect    geo = geometry();
-      QRect    frameGeo = externalGeometry();
-      return QRect(frameGeo.x(), frameGeo.y(), geo.width(), geo.height());
-//      return geometry();
-   }
+	if ( mdiParent() )
+	{ // is attached
+		// get the client area coordinates inside the MDI child frame
+		QRect posInFrame = geometry();
+		// map these values to the parent of the MDI child frame
+		// (this usually is the MDI child area) and return
+		QPoint ptTopLeft = mdiParent() ->mapToParent( posInFrame.topLeft() );
+		QSize sz = size();
+		return QRect( ptTopLeft, sz );
+	}
+	else
+	{
+		QRect geo = geometry();
+		QRect frameGeo = externalGeometry();
+		return QRect( frameGeo.x(), frameGeo.y(), geo.width(), geo.height() );
+		//      return geometry();
+	}
 }
 
 //============== set internal geometry ==============//
 
-void KMdiChildView::setInternalGeometry(const QRect& newGeometry)
+void KMdiChildView::setInternalGeometry( const QRect& newGeometry )
 {
-   if(mdiParent()) { // is attached
-      // retrieve the frame size
-      QRect    geo      = internalGeometry();
-      QRect    frameGeo = externalGeometry();
-      int      nFrameSizeTop  = geo.y() - frameGeo.y();
-      int      nFrameSizeLeft = geo.x() - frameGeo.x();
+	if ( mdiParent() )
+	{ // is attached
+		// retrieve the frame size
+		QRect geo = internalGeometry();
+		QRect frameGeo = externalGeometry();
+		int nFrameSizeTop = geo.y() - frameGeo.y();
+		int nFrameSizeLeft = geo.x() - frameGeo.x();
 
-      // create the new geometry that is accepted by the QWidget::setGeometry() method
-      QRect    newGeoQt;
-      newGeoQt.setX(newGeometry.x()-nFrameSizeLeft);
-      newGeoQt.setY(newGeometry.y()-nFrameSizeTop);
+		// create the new geometry that is accepted by the QWidget::setGeometry() method
+		QRect newGeoQt;
+		newGeoQt.setX( newGeometry.x() - nFrameSizeLeft );
+		newGeoQt.setY( newGeometry.y() - nFrameSizeTop );
 
-      newGeoQt.setWidth(newGeometry.width()+nFrameSizeLeft+KMDI_CHILDFRM_DOUBLE_BORDER/2);
-      newGeoQt.setHeight(newGeometry.height()+nFrameSizeTop+KMDI_CHILDFRM_DOUBLE_BORDER/2);
-//      newGeoQt.setWidth(newGeometry.width()+KMDI_MDI_CHILDFRM_DOUBLE_BORDER);
-//      newGeoQt.setHeight(newGeometry.height()+mdiParent()->captionHeight()+KMDI_MDI_CHILDFRM_DOUBLE_BORDER);
+		newGeoQt.setWidth( newGeometry.width() + nFrameSizeLeft + KMDI_CHILDFRM_DOUBLE_BORDER / 2 );
+		newGeoQt.setHeight( newGeometry.height() + nFrameSizeTop + KMDI_CHILDFRM_DOUBLE_BORDER / 2 );
+		//      newGeoQt.setWidth(newGeometry.width()+KMDI_MDI_CHILDFRM_DOUBLE_BORDER);
+		//      newGeoQt.setHeight(newGeometry.height()+mdiParent()->captionHeight()+KMDI_MDI_CHILDFRM_DOUBLE_BORDER);
 
-      // set the geometry
-      mdiParent()->setGeometry(newGeoQt);
-   }
-   else {
-      // retrieve the frame size
-      QRect    geo      = internalGeometry();
-      QRect    frameGeo = externalGeometry();
-      int      nFrameSizeTop  = geo.y() - frameGeo.y();
-      int      nFrameSizeLeft = geo.x() - frameGeo.x();
+		// set the geometry
+		mdiParent()->setGeometry( newGeoQt );
+	}
+	else
+	{
+		// retrieve the frame size
+		QRect geo = internalGeometry();
+		QRect frameGeo = externalGeometry();
+		int nFrameSizeTop = geo.y() - frameGeo.y();
+		int nFrameSizeLeft = geo.x() - frameGeo.x();
 
-      // create the new geometry that is accepted by the QWidget::setGeometry() method
-      QRect    newGeoQt;
+		// create the new geometry that is accepted by the QWidget::setGeometry() method
+		QRect newGeoQt;
 
-      newGeoQt.setX(newGeometry.x()-nFrameSizeLeft);
-      newGeoQt.setY(newGeometry.y()-nFrameSizeTop);
+		newGeoQt.setX( newGeometry.x() - nFrameSizeLeft );
+		newGeoQt.setY( newGeometry.y() - nFrameSizeTop );
 
-      newGeoQt.setWidth(newGeometry.width());
-      newGeoQt.setHeight(newGeometry.height());
+		newGeoQt.setWidth( newGeometry.width() );
+		newGeoQt.setHeight( newGeometry.height() );
 
-      // set the geometry
-      setGeometry(newGeoQt);
-   }
+		// set the geometry
+		setGeometry( newGeoQt );
+	}
 }
 
 //============== external geometry ==============//
 
 QRect KMdiChildView::externalGeometry() const
 {
-   return mdiParent() ? mdiParent()->frameGeometry() : frameGeometry();
+	return mdiParent() ? mdiParent()->frameGeometry() : frameGeometry();
 }
 
 //============== set external geometry ==============//
 
-void KMdiChildView::setExternalGeometry(const QRect& newGeometry)
+void KMdiChildView::setExternalGeometry( const QRect& newGeometry )
 {
-   if(mdiParent()) { // is attached
-       mdiParent()->setGeometry(newGeometry);
-   }
-   else {
-      // retrieve the frame size
-      QRect    geo      = internalGeometry();
-      QRect    frameGeo = externalGeometry();
-      int      nTotalFrameWidth = frameGeo.width() - geo.width();
-      int      nTotalFrameHeight = frameGeo.height() - geo.height();
-      int      nFrameSizeTop  = geo.y() - frameGeo.y();
-      int      nFrameSizeLeft = geo.x() - frameGeo.x();
+	if ( mdiParent() )
+	{ // is attached
+		mdiParent() ->setGeometry( newGeometry );
+	}
+	else
+	{
+		// retrieve the frame size
+		QRect geo = internalGeometry();
+		QRect frameGeo = externalGeometry();
+		int nTotalFrameWidth = frameGeo.width() - geo.width();
+		int nTotalFrameHeight = frameGeo.height() - geo.height();
+		int nFrameSizeTop = geo.y() - frameGeo.y();
+		int nFrameSizeLeft = geo.x() - frameGeo.x();
 
-      // create the new geometry that is accepted by the QWidget::setGeometry() method
-      // not attached => the window system makes the frame
-      QRect    newGeoQt;
-      newGeoQt.setX(newGeometry.x()+nFrameSizeLeft);
-      newGeoQt.setY(newGeometry.y()+nFrameSizeTop);
-      newGeoQt.setWidth(newGeometry.width()-nTotalFrameWidth);
-      newGeoQt.setHeight(newGeometry.height()-nTotalFrameHeight);
+		// create the new geometry that is accepted by the QWidget::setGeometry() method
+		// not attached => the window system makes the frame
+		QRect newGeoQt;
+		newGeoQt.setX( newGeometry.x() + nFrameSizeLeft );
+		newGeoQt.setY( newGeometry.y() + nFrameSizeTop );
+		newGeoQt.setWidth( newGeometry.width() - nTotalFrameWidth );
+		newGeoQt.setHeight( newGeometry.height() - nTotalFrameHeight );
 
-      // set the geometry
-      setGeometry(newGeoQt);
-   }
+		// set the geometry
+		setGeometry( newGeoQt );
+	}
 }
 
 //============== minimize ==============//
 
-void KMdiChildView::minimize(bool bAnimate)
+void KMdiChildView::minimize( bool bAnimate )
 {
-   if(mdiParent()) {
-      if(!isMinimized()) {
-         mdiParent()->setState(KMdiChildFrm::Minimized,bAnimate);
-      }
-   }
-   else {
-      showMinimized();
-   }
+	if ( mdiParent() )
+	{
+		if ( !isMinimized() )
+		{
+			mdiParent() ->setState( KMdiChildFrm::Minimized, bAnimate );
+		}
+	}
+	else
+		showMinimized();
 }
 
 void KMdiChildView::showMinimized()
 {
-   //qDebug("is minimized now");
-   emit isMinimizedNow();
-   QWidget::showMinimized();
+	emit isMinimizedNow();
+	QWidget::showMinimized();
 }
 
 //slot:
-void KMdiChildView::minimize() { minimize(true); }
+void KMdiChildView::minimize()
+{
+	minimize( true );
+}
 
 //============= maximize ==============//
 
-void KMdiChildView::maximize(bool bAnimate)
+void KMdiChildView::maximize( bool bAnimate )
 {
-   if(mdiParent()) {
-      if(!isMaximized()) {
-         mdiParent()->setState(KMdiChildFrm::Maximized,bAnimate);
-         emit mdiParentNowMaximized(true);
-      }
-   }
-   else {
-      showMaximized();
-   }
+	if ( mdiParent() )
+	{
+		if ( !isMaximized() )
+		{
+			mdiParent() ->setState( KMdiChildFrm::Maximized, bAnimate );
+			emit mdiParentNowMaximized( true );
+		}
+	}
+	else
+		showMaximized();
 }
 
 void KMdiChildView::showMaximized()
 {
-   //qDebug("is maximized now");
-   emit isMaximizedNow();
-   QWidget::showMaximized();
+	emit isMaximizedNow();
+	QWidget::showMaximized();
 }
 
 //slot:
-void KMdiChildView::maximize() { maximize(true); }
+void KMdiChildView::maximize()
+{
+	maximize( true );
+}
 
 //============== restoreGeometry ================//
 
 QRect KMdiChildView::restoreGeometry()
 {
-   if(mdiParent()) {
-      return mdiParent()->restoreGeometry();
-   }
-   else {
-      // XXX not really supported, may be we must use Windows or X11 funtions
-      return geometry();
-   }
+	if ( mdiParent() )
+		return mdiParent() ->restoreGeometry();
+	else //FIXME not really supported, may be we must use Windows or X11 funtions
+		return geometry();
 }
 
 //============== setRestoreGeometry ================//
 
-void  KMdiChildView::setRestoreGeometry(const QRect& newRestGeo)
+void KMdiChildView::setRestoreGeometry( const QRect& newRestGeo )
 {
-   if(mdiParent()) {
-      mdiParent()->setRestoreGeometry(newRestGeo);
-   }
-   else {
-      // XXX not supported, may be we must use Windows or X11 funtions
-   }
+	if ( mdiParent() )
+		mdiParent()->setRestoreGeometry( newRestGeo );
 }
 
 //============== attach ================//
 
 void KMdiChildView::attach()
 {
-   emit attachWindow(this,true);
+	emit attachWindow( this, true );
 }
 
 //============== detach =================//
 
 void KMdiChildView::detach()
 {
-   emit detachWindow(this, true);
+	emit detachWindow( this, true );
 }
 
 //=============== isMinimized ? =================//
 
 bool KMdiChildView::isMinimized() const
 {
-   if(mdiParent()) {
-      return (mdiParent()->state() == KMdiChildFrm::Minimized);
-   }
-   else {
-      return QWidget::isMinimized();
-   }
+	if ( mdiParent() )
+		return ( mdiParent()->state() == KMdiChildFrm::Minimized );
+	else
+		return QWidget::isMinimized();
 }
 
 //============== isMaximized ? ==================//
 
 bool KMdiChildView::isMaximized() const
 {
-   if(mdiParent()) {
-      return (mdiParent()->state() == KMdiChildFrm::Maximized);
-   }
-   else {
-      return QWidget::isMaximized();
-   }
+	if ( mdiParent() )
+		return ( mdiParent()->state() == KMdiChildFrm::Maximized );
+	else
+		return QWidget::isMaximized();
 }
 
 //============== restore ================//
 
 void KMdiChildView::restore()
 {
-   if(mdiParent()) {
-      if(isMaximized()) {
-         emit mdiParentNowMaximized(false);
-      }
-      if(isMinimized()||isMaximized()) {
-         mdiParent()->setState(KMdiChildFrm::Normal);
-      }
-   }
-   else {
-      showNormal();
-   }
+	if ( mdiParent() )
+	{
+		if ( isMaximized() )
+			emit mdiParentNowMaximized( false );
+		
+		if ( isMinimized() || isMaximized() )
+			mdiParent()->setState( KMdiChildFrm::Normal );
+	}
+	else
+		showNormal();
 }
 
 void KMdiChildView::showNormal()
 {
-   //qDebug("is restored now");
-   emit isRestoredNow();
-   QWidget::showNormal();
+	emit isRestoredNow();
+	QWidget::showNormal();
 }
 
 //=============== youAreAttached ============//
 
-void KMdiChildView::youAreAttached(KMdiChildFrm *lpC)
+void KMdiChildView::youAreAttached( KMdiChildFrm *lpC )
 {
-   lpC->setCaption(m_szCaption);
-
-   emit isAttachedNow();
+	lpC->setCaption( m_szCaption );
+	emit isAttachedNow();
 }
 
 //================ youAreDetached =============//
 
 void KMdiChildView::youAreDetached()
 {
-   setCaption(m_szCaption);
+	setCaption( m_szCaption );
 
-   setTabCaption(m_sTabCaption);
-   if(myIconPtr())setIcon(*(myIconPtr()));
-   setFocusPolicy(QWidget::StrongFocus);
+	setTabCaption( m_sTabCaption );
+	if ( myIconPtr() )
+		setIcon( *( myIconPtr() ) );
+	
+	setFocusPolicy( QWidget::StrongFocus );
 
-   emit isDetachedNow();
+	emit isDetachedNow();
 }
 
 //================ setCaption ================//
 // this set the caption of only the window
-void KMdiChildView::setCaption(const QString& szCaption)
+void KMdiChildView::setCaption( const QString& szCaption )
 {
-  // this will work only for window
-   m_szCaption=szCaption;
-   if(mdiParent()) {
-     mdiParent()->setCaption(m_szCaption);
-   }
-   else {
-     //  sorry have to call the parent one
-     QWidget::setCaption(m_szCaption);
-   }
-   emit windowCaptionChanged(m_szCaption);
+	// this will work only for window
+	m_szCaption = szCaption;
+	if ( mdiParent() )
+		mdiParent() ->setCaption( m_szCaption );
+	else //have to call the parent one
+		QWidget::setCaption( m_szCaption );
+
+	emit windowCaptionChanged( m_szCaption );
 }
 
 //============== closeEvent ================//
 
-void KMdiChildView::closeEvent(QCloseEvent *e)
+void KMdiChildView::closeEvent( QCloseEvent *e )
 {
-   e->ignore(); //we ignore the event , and then close later if needed.
-   emit childWindowCloseRequest(this);
+	e->ignore(); //we ignore the event , and then close later if needed.
+	emit childWindowCloseRequest( this );
 }
 
 //================ myIconPtr =================//
 
 QPixmap* KMdiChildView::myIconPtr()
 {
-   return 0;
+	return 0;
 }
 
 //============= focusInEvent ===============//
 
-void KMdiChildView::focusInEvent(QFocusEvent *e)
+void KMdiChildView::focusInEvent( QFocusEvent *e )
 {
-   QWidget::focusInEvent(e);
+	QWidget::focusInEvent( e );
 
-   // every widget get a focusInEvent when a popup menu is opened!?! -> maybe bug of QT
-   if(e && ((e->reason())==QFocusEvent::Popup)) {
-      return;
-   }
+	// every widget get a focusInEvent when a popup menu is opened!?! -> maybe bug of QT
+	if ( e && ( ( e->reason() ) == QFocusEvent::Popup ) )
+		return ;
 
-   m_bFocusInEventIsPending = true;
-   activate();
-   m_bFocusInEventIsPending = false;
 
-   emit gotFocus(this);
+	m_bFocusInEventIsPending = true;
+	activate();
+	m_bFocusInEventIsPending = false;
+
+	emit gotFocus( this );
 }
 
 //============= activate ===============//
 
 void KMdiChildView::activate()
 {
-   // avoid circularity
-   static bool s_bActivateIsPending = false;
-   if(s_bActivateIsPending) {
-      return;
-   }
-   s_bActivateIsPending = true;
+	// avoid circularity
+	static bool s_bActivateIsPending = false;
+	if ( s_bActivateIsPending )
+		return ;
+	
+	s_bActivateIsPending = true;
 
-   // raise the view and push the taskbar button
-   if(!m_bMainframesActivateViewIsPending) {
-     emit focusInEventOccurs( this);
-   }
+	// raise the view and push the taskbar button
+	if ( !m_bMainframesActivateViewIsPending )
+		emit focusInEventOccurs( this );
 
-   // if this method was called directly, check if the mainframe wants that we interrupt
-   if(m_bInterruptActivation) {
-      m_bInterruptActivation = false;
-   }
-   else {
-      if(!m_bFocusInEventIsPending) {
-         setFocus();
-      }
-      kdDebug(760) << "KMdiChildView::activate() called!" << endl;
-      emit activated(this);
-   }
+	// if this method was called directly, check if the mainframe wants that we interrupt
+	if ( m_bInterruptActivation )
+		m_bInterruptActivation = false;
+	else
+	{
+		if ( !m_bFocusInEventIsPending )
+			setFocus();
+		
+		kdDebug( 760 ) << k_funcinfo << endl;
+		emit activated( this );
+	}
 
-   if(m_focusedChildWidget != 0L) {
-      m_focusedChildWidget->setFocus();
-   }
-   else {
-      if(m_firstFocusableChildWidget != 0L) {
-         m_firstFocusableChildWidget->setFocus();
-         m_focusedChildWidget = m_firstFocusableChildWidget;
-      }
-   }
-   s_bActivateIsPending = false;
+	if ( m_focusedChildWidget != 0L )
+		m_focusedChildWidget->setFocus();
+	else
+	{
+		if ( m_firstFocusableChildWidget != 0L )
+		{
+			m_firstFocusableChildWidget->setFocus();
+			m_focusedChildWidget = m_firstFocusableChildWidget;
+		}
+	}
+	s_bActivateIsPending = false;
 }
 
 //============= focusOutEvent ===============//
 
-void KMdiChildView::focusOutEvent(QFocusEvent* e)
+void KMdiChildView::focusOutEvent( QFocusEvent* e )
 {
-   QWidget::focusOutEvent(e);
-
-   emit lostFocus( this);
+	QWidget::focusOutEvent( e );
+	emit lostFocus( this );
 }
 
 //============= resizeEvent ===============//
 
-void KMdiChildView::resizeEvent(QResizeEvent* e)
+void KMdiChildView::resizeEvent( QResizeEvent* e )
 {
-   QWidget::resizeEvent( e);
+	QWidget::resizeEvent( e );
 
-   if(m_stateChanged) {
-      m_stateChanged = false;
-      if(isMaximized()) {
-         //qDebug("is maximized now");
-         emit isMaximizedNow();
-      }
-      else if(isMinimized()) {
-         //qDebug("is minimized now");
-         emit isMinimizedNow();
-      }
-      else {   // is restored
-         //qDebug("is restored now");
-         emit isRestoredNow();
-      }
-   }
+	if ( m_stateChanged )
+	{
+		m_stateChanged = false;
+		if ( isMaximized() )
+		{ //maximized
+			emit isMaximizedNow();
+		}
+		else if ( isMinimized() )
+		{ //minimized
+			emit isMinimizedNow();
+		}
+		else
+		{ //is restored
+			emit isRestoredNow();
+		}
+	}
 }
 
 void KMdiChildView::slot_childDestroyed()
 {
-   // do what we do if a child is removed
+	// do what we do if a child is removed
 
-   // if we lost a child we uninstall ourself as event filter for the lost
-   // child and its children
-   const QObject* pLostChild = QObject::sender();
-   if ((pLostChild != 0L) && (pLostChild->isWidgetType())) {
-      QObjectList *list = ((QObject*)(pLostChild))->queryList("QWidget");
-      list->insert(0, pLostChild);        // add the lost child to the list too, just to save code
-      QObjectListIt it( *list );          // iterate over all lost child widgets
-      QObject * obj;
-      while ( (obj=it.current()) != 0 ) { // for each found object...
-         QWidget* widg = (QWidget*)obj;
-         ++it;
-         widg->removeEventFilter(this);
-         if(m_firstFocusableChildWidget == widg) {
-            m_firstFocusableChildWidget = 0L;   // reset first widget
-         }
-         if(m_lastFocusableChildWidget == widg) {
-            m_lastFocusableChildWidget = 0L;    // reset last widget
-         }
-         if(m_focusedChildWidget == widg) {
-            m_focusedChildWidget = 0L;          // reset focused widget
-         }
-      }
-      delete list;                        // delete the list, not the objects
-   }
+	// if we lost a child we uninstall ourself as event filter for the lost
+	// child and its children
+	const QObject * pLostChild = QObject::sender();
+	if ( pLostChild && ( pLostChild->isWidgetType() ) )
+	{
+		QObjectList* list = ( ( QObject* ) ( pLostChild ) ) ->queryList( "QWidget" );
+		list->insert( 0, pLostChild );        // add the lost child to the list too, just to save code
+		QObjectListIt it( *list );          // iterate over all lost child widgets
+		QObject* obj;
+		while ( ( obj = it.current() ) != 0 )
+		{ // for each found object...
+			QWidget * widg = ( QWidget* ) obj;
+			++it;
+			widg->removeEventFilter( this );
+			if ( m_firstFocusableChildWidget == widg )
+				m_firstFocusableChildWidget = 0L;   // reset first widget
+			
+			if ( m_lastFocusableChildWidget == widg )
+				m_lastFocusableChildWidget = 0L;    // reset last widget
+			
+			if ( m_focusedChildWidget == widg )
+				m_focusedChildWidget = 0L;          // reset focused widget
+		}
+		delete list;                        // delete the list, not the objects
+	}
 }
 
 //============= eventFilter ===============//
-bool KMdiChildView::eventFilter(QObject *obj, QEvent *e )
+bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 {
-   if(e->type() == QEvent::KeyPress && isAttached()) {
-      QKeyEvent* ke = (QKeyEvent*) e;
-      if(ke->key() == Qt::Key_Tab) {
-         //qDebug("ChildView %i::eventFilter - TAB from %s (%s)", this, obj->name(), obj->className());
-         QWidget* w = (QWidget*) obj;
-         if((w->focusPolicy() == QWidget::StrongFocus) ||
-            (w->focusPolicy() == QWidget::TabFocus   ) ||
-            (w->focusPolicy() == QWidget::WheelFocus ))
-         {
-            //qDebug("  accept TAB as setFocus change");
-            if(m_lastFocusableChildWidget != 0) {
-               if(w == m_lastFocusableChildWidget) {
-                  if(w != m_firstFocusableChildWidget) {
-                     //qDebug("  TAB: setFocus to first");
-                     m_firstFocusableChildWidget->setFocus();
-                     //qDebug("  TAB: focus is set to first");
-                  }
-               }
-            }
-         }
-      }
-   }
-   else if(e->type() == QEvent::FocusIn) {
-      if(obj->isWidgetType()) {
-         QObjectList *list = queryList( "QWidget" );
-         if(list->find(obj) != -1) {
-            m_focusedChildWidget = (QWidget*)obj;
-         }
-         delete list;   // delete the list, not the objects
-      }
-      if (!isAttached()) {   // is toplevel, for attached views activation is done by main frame event filter
-         static bool m_bActivationIsPending = false;
-         if(!m_bActivationIsPending) {
-            m_bActivationIsPending = true;
-            activate(); // sets the focus
-            m_bActivationIsPending = false;
-         }
-      }
-   }
-   else if (e->type() == QEvent::ChildRemoved) {
-      // if we lost a child we uninstall ourself as event filter for the lost
-      // child and its children
-      QObject* pLostChild = ((QChildEvent*)e)->child();
-      if ((pLostChild != 0L) && (pLostChild->isWidgetType())) {
-         QObjectList *list = pLostChild->queryList( "QWidget" );
-         list->insert(0, pLostChild);        // add the lost child to the list too, just to save code
-         QObjectListIt it( *list );          // iterate over all lost child widgets
-         QObject * o;
-         while ( (o=it.current()) != 0 ) { // for each found object...
-            QWidget* widg = (QWidget*)o;
-            ++it;
-            widg->removeEventFilter(this);
-            if((widg->focusPolicy() == QWidget::StrongFocus) ||
-               (widg->focusPolicy() == QWidget::TabFocus   ) ||
-               (widg->focusPolicy() == QWidget::WheelFocus ))
-            {
-               if(m_firstFocusableChildWidget == widg) {
-                  m_firstFocusableChildWidget = 0L;   // reset first widget
-               }
-               if(m_lastFocusableChildWidget == widg) {
-                  m_lastFocusableChildWidget = 0L;    // reset last widget
-               }
-            }
-         }
-         delete list;                        // delete the list, not the objects
-      }
-   }
-   else if (e->type() == QEvent::ChildInserted) {
-      // if we got a new child and we are attached to the MDI system we
-      // install ourself as event filter for the new child and its children
-      // (as we did when we were added to the MDI system).
-      QObject* pNewChild = ((QChildEvent*)e)->child();
-      if ((pNewChild != 0L) && (pNewChild->isWidgetType()))
-      {
-         QWidget* pNewWidget = (QWidget*)pNewChild;
-         if (pNewWidget->testWFlags(Qt::WType_Dialog | Qt::WShowModal))
-             return false;
-         QObjectList *list = pNewWidget->queryList( "QWidget" );
-         list->insert(0, pNewChild);         // add the new child to the list too, just to save code
-         QObjectListIt it( *list );          // iterate over all new child widgets
-         QObject * o;
-         while ( (o=it.current()) != 0 ) { // for each found object...
-            QWidget* widg = (QWidget*)o;
-            ++it;
-            widg->installEventFilter(this);
-            connect(widg, SIGNAL(destroyed()), this, SLOT(slot_childDestroyed()));
-            if((widg->focusPolicy() == QWidget::StrongFocus) ||
-               (widg->focusPolicy() == QWidget::TabFocus   ) ||
-               (widg->focusPolicy() == QWidget::WheelFocus ))
-            {
-               if(m_firstFocusableChildWidget == 0) {
-                  m_firstFocusableChildWidget = widg;  // first widge
-               }
-               m_lastFocusableChildWidget = widg; // last widget
-               //qDebug("*** %s (%s)",widg->name(),widg->className());
-            }
-         }
-         delete list;                        // delete the list, not the objects
-      }
-   }
-   else
-   {
-       if (e->type()==QEvent::IconChange) {
-//            qDebug("KMDiChildView:: QEvent:IconChange intercepted\n");
-          if  (obj==this)
-             iconUpdated(this,icon()?(*icon()):QPixmap());
-          else if (obj==m_trackChanges)
-             setIcon(m_trackChanges->icon()?(*(m_trackChanges->icon())):QPixmap());
-       }
-       if (e->type()==QEvent::CaptionChange) {
-          if (obj==this)
-             captionUpdated(this,caption());
-       }
-   }
+	if ( e->type() == QEvent::KeyPress && isAttached() )
+	{
+		QKeyEvent* ke = ( QKeyEvent* ) e;
+		if ( ke->key() == Qt::Key_Tab )
+		{
+			QWidget* w = ( QWidget* ) obj;
+			FocusPolicy wfp = widg->focusPolicy();
+			if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || wfp->focusPolicy() == QWidget::WheelFocus )
+			{
+				if ( m_lastFocusableChildWidget != 0 )
+				{
+					if ( w == m_lastFocusableChildWidget )
+					{
+						if ( w != m_firstFocusableChildWidget )
+							m_firstFocusableChildWidget->setFocus();
+					}
+				}
+			}
+		}
+	}
+	else if ( e->type() == QEvent::FocusIn )
+	{
+		if ( obj->isWidgetType() )
+		{
+			QObjectList * list = queryList( "QWidget" );
+			if ( list->find( obj ) != -1 )
+				m_focusedChildWidget = ( QWidget* ) obj;
 
-   return false;                           // standard event processing
+			delete list;   // delete the list, not the objects
+		}
+		if ( !isAttached() )
+		{   // is toplevel, for attached views activation is done by main frame event filter
+			static bool m_bActivationIsPending = false;
+			if ( !m_bActivationIsPending )
+			{
+				m_bActivationIsPending = true;
+				activate(); // sets the focus
+				m_bActivationIsPending = false;
+			}
+		}
+	}
+	else if ( e->type() == QEvent::ChildRemoved )
+	{
+		// if we lost a child we uninstall ourself as event filter for the lost
+		// child and its children
+		QObject * pLostChild = ( ( QChildEvent* ) e ) ->child();
+		if ( ( pLostChild != 0L ) && ( pLostChild->isWidgetType() ) )
+		{
+			QObjectList * list = pLostChild->queryList( "QWidget" );
+			list->insert( 0, pLostChild );        // add the lost child to the list too, just to save code
+			QObjectListIt it( *list );          // iterate over all lost child widgets
+			QObject * o;
+			while ( ( o = it.current() ) != 0 )
+			{ // for each found object...
+				QWidget * widg = ( QWidget* ) o;
+				++it;
+				widg->removeEventFilter( this );
+				FocusPolicy wfp = widg->focusPolicy();
+				if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || wfp->focusPolicy() == QWidget::WheelFocus )
+				{
+					if ( m_firstFocusableChildWidget == widg )
+						m_firstFocusableChildWidget = 0L;   // reset first widget
+					
+					if ( m_lastFocusableChildWidget == widg )
+						m_lastFocusableChildWidget = 0L;    // reset last widget
+				}
+			}
+			delete list;                        // delete the list, not the objects
+		}
+	}
+	else if ( e->type() == QEvent::ChildInserted )
+	{
+		// if we got a new child and we are attached to the MDI system we
+		// install ourself as event filter for the new child and its children
+		// (as we did when we were added to the MDI system).
+		QObject * pNewChild = ( ( QChildEvent* ) e ) ->child();
+		if ( ( pNewChild != 0L ) && ( pNewChild->isWidgetType() ) )
+		{
+			QWidget * pNewWidget = ( QWidget* ) pNewChild;
+			if ( pNewWidget->testWFlags( Qt::WType_Dialog | Qt::WShowModal ) )
+				return false;
+			QObjectList *list = pNewWidget->queryList( "QWidget" );
+			list->insert( 0, pNewChild );         // add the new child to the list too, just to save code
+			QObjectListIt it( *list );          // iterate over all new child widgets
+			QObject * o;
+			while ( ( o = it.current() ) != 0 )
+			{ // for each found object...
+				QWidget * widg = ( QWidget* ) o;
+				++it;
+				widg->installEventFilter( this );
+				connect( widg, SIGNAL( destroyed() ), this, SLOT( slot_childDestroyed() ) );
+				FocusPolicy wfp = widg->focusPolicy();
+				if ( wfp == QWidget::StrongFocus || wfp == QWidget::TabFocus || wfp->focusPolicy() == QWidget::WheelFocus )
+				{
+					if ( m_firstFocusableChildWidget == 0 )
+						m_firstFocusableChildWidget = widg;  // first widge
+					
+					m_lastFocusableChildWidget = widg; // last widget
+				}
+			}
+			delete list;                        // delete the list, not the objects
+		}
+	}
+	else
+	{
+		if ( e->type() == QEvent::IconChange )
+		{
+			//            qDebug("KMDiChildView:: QEvent:IconChange intercepted\n");
+			if ( obj == this )
+				iconUpdated( this, icon() ? ( *icon() ) : QPixmap() );
+			else if ( obj == m_trackChanges )
+				setIcon( m_trackChanges->icon() ? ( *( m_trackChanges->icon() ) ) : QPixmap() );
+		}
+		if ( e->type() == QEvent::CaptionChange )
+		{
+			if ( obj == this )
+				captionUpdated( this, caption() );
+		}
+	}
+
+	return false;                           // standard event processing
 }
 
 /** Switches interposing in event loop of all current child widgets off. */
 void KMdiChildView::removeEventFilterForAllChildren()
 {
-   QObjectList *list = queryList( "QWidget" );
-   QObjectListIt it( *list );          // iterate over all child widgets
-   QObject * obj;
-   while ( (obj=it.current()) != 0 ) { // for each found object...
-      QWidget* widg = (QWidget*)obj;
-      ++it;
-      widg->removeEventFilter(this);
-   }
-   delete list;                        // delete the list, not the objects
+	QObjectList* list = queryList( "QWidget" );
+	QObjectListIt it( *list );          // iterate over all child widgets
+	QObject* obj;
+	while ( ( obj = it.current() ) != 0 )
+	{ // for each found object...
+		QWidget* widg = ( QWidget* ) obj;
+		++it;
+		widg->removeEventFilter( this );
+	}
+	delete list;                        // delete the list, not the objects
 }
 
 QWidget* KMdiChildView::focusedChildWidget()
 {
-   return m_focusedChildWidget;
+	return m_focusedChildWidget;
 }
 
-void KMdiChildView::setFirstFocusableChildWidget(QWidget* firstFocusableChildWidget)
+void KMdiChildView::setFirstFocusableChildWidget( QWidget* firstFocusableChildWidget )
 {
-   m_firstFocusableChildWidget = firstFocusableChildWidget;
+	m_firstFocusableChildWidget = firstFocusableChildWidget;
 }
 
-void KMdiChildView::setLastFocusableChildWidget(QWidget* lastFocusableChildWidget)
+void KMdiChildView::setLastFocusableChildWidget( QWidget* lastFocusableChildWidget )
 {
-   m_lastFocusableChildWidget = lastFocusableChildWidget;
+	m_lastFocusableChildWidget = lastFocusableChildWidget;
 }
+
 /** Set a new value of  the task bar button caption  */
-void KMdiChildView::setTabCaption (const QString& stbCaption) {
-
-  m_sTabCaption = stbCaption;
-  emit tabCaptionChanged(m_sTabCaption);
-
+void KMdiChildView::setTabCaption ( const QString& stbCaption )
+{
+	m_sTabCaption = stbCaption;
+	emit tabCaptionChanged( m_sTabCaption );
 }
-void KMdiChildView::setMDICaption (const QString& caption) {
-  setCaption(caption);
-  setTabCaption(caption);
+
+void KMdiChildView::setMDICaption ( const QString& caption )
+{
+	setCaption( caption );
+	setTabCaption( caption );
 }
 
 /** sets an ID  */
-void KMdiChildView::setWindowMenuID( int id)
+void KMdiChildView::setWindowMenuID( int id )
 {
-   m_windowMenuID = id;
+	m_windowMenuID = id;
 }
 
 //============= slot_clickedInWindowMenu ===============//
@@ -694,8 +697,8 @@ void KMdiChildView::setWindowMenuID( int id)
 /** called if someone click on the "Window" menu item for this child frame window */
 void KMdiChildView::slot_clickedInWindowMenu()
 {
-   updateTimeStamp();
-   emit clickedInWindowMenu( m_windowMenuID);
+	updateTimeStamp();
+	emit clickedInWindowMenu( m_windowMenuID );
 }
 
 //============= slot_clickedInDockMenu ===============//
@@ -703,66 +706,68 @@ void KMdiChildView::slot_clickedInWindowMenu()
 /** called if someone click on the "Dock/Undock..." menu item for this child frame window */
 void KMdiChildView::slot_clickedInDockMenu()
 {
-   emit clickedInDockMenu( m_windowMenuID);
+	emit clickedInDockMenu( m_windowMenuID );
 }
 
 //============= setMinimumSize ===============//
 
-void KMdiChildView::setMinimumSize( int minw, int minh)
+void KMdiChildView::setMinimumSize( int minw, int minh )
 {
-   QWidget::setMinimumSize( minw, minh);
-   if ( (mdiParent() != 0L) && (mdiParent()->state() != KMdiChildFrm::Minimized) ) {
-      mdiParent()->setMinimumSize( minw + KMDI_CHILDFRM_DOUBLE_BORDER,
-                                   minh + KMDI_CHILDFRM_DOUBLE_BORDER
-                                        + KMDI_CHILDFRM_SEPARATOR
-                                        + mdiParent()->captionHeight());
-   }
+	QWidget::setMinimumSize( minw, minh );
+	if ( mdiParent() && mdiParent()->state() != KMdiChildFrm::Minimized )
+	{
+		mdiParent() ->setMinimumSize( minw + KMDI_CHILDFRM_DOUBLE_BORDER,
+		                              minh + KMDI_CHILDFRM_DOUBLE_BORDER + KMDI_CHILDFRM_SEPARATOR + mdiParent() ->captionHeight() );
+	}
 }
 
 //============= setMaximumSize ===============//
 
-void KMdiChildView::setMaximumSize( int maxw, int maxh)
+void KMdiChildView::setMaximumSize( int maxw, int maxh )
 {
-   if ( (mdiParent() != 0L) && (mdiParent()->state() == KMdiChildFrm::Normal) ) {
-      int w = maxw + KMDI_CHILDFRM_DOUBLE_BORDER;
-      if(w > QWIDGETSIZE_MAX) { w = QWIDGETSIZE_MAX; }
-      int h = maxh + KMDI_CHILDFRM_DOUBLE_BORDER + KMDI_CHILDFRM_SEPARATOR + mdiParent()->captionHeight();
-      if(h > QWIDGETSIZE_MAX) { h = QWIDGETSIZE_MAX; }
-      mdiParent()->setMaximumSize( w, h);
-   }
-   QWidget::setMaximumSize( maxw, maxh);
+	if ( mdiParent() && mdiParent()->state() == KMdiChildFrm::Normal )
+	{
+		int w = maxw + KMDI_CHILDFRM_DOUBLE_BORDER;
+		if ( w > QWIDGETSIZE_MAX )
+			w = QWIDGETSIZE_MAX;
+
+		int h = maxh + KMDI_CHILDFRM_DOUBLE_BORDER + KMDI_CHILDFRM_SEPARATOR + mdiParent() ->captionHeight();
+		if ( h > QWIDGETSIZE_MAX )
+			h = QWIDGETSIZE_MAX;
+
+		mdiParent()->setMaximumSize( w, h );
+	}
+	QWidget::setMaximumSize( maxw, maxh );
 }
 
 //============= show ===============//
 
 void KMdiChildView::show()
 {
-   QWidget* pParent = mdiParent();
-   if(pParent != 0L) {
-      pParent->show();
-   }
-   QWidget::show();
+	if ( mdiParent() )
+		mdiParent()->show();
+
+	QWidget::show();
 }
 
 //============= hide ===============//
 
 void KMdiChildView::hide()
 {
-   if(mdiParent() != 0L) {
-      mdiParent()->hide();
-   }
-   QWidget::hide();
+	if ( mdiParent() )
+		mdiParent()->hide();
+	
+	QWidget::hide();
 }
 
 //============= raise ===============//
 
 void KMdiChildView::raise()
 {
-   if(mdiParent() != 0L) {
-      mdiParent()->raise();
-      // XXXCTL what's about Z-order? L.B. 2002/02/10
-   }
-   QWidget::raise();
+	if ( mdiParent() )  //TODO Check Z-order
+		mdiParent()->raise();
+
+	QWidget::raise();
 }
 
-// kate: space-indent on; indent-width 2; replace-tabs on;
+// kate: space-indent off; replace-tabs off; indent-mode csands; tab-width 4;

@@ -29,33 +29,33 @@
 
 #include <kmdiiterator.h>
 
-template<class I> class QPtrList;
-template<class I> class QPtrListIterator;
+template <class I>
+class QPtrList;
+template <class I>
+class QPtrListIterator;
 
 template <class Item>
-class KMdiListIterator : public KMdiIterator<Item*> {
+class KMdiListIterator : public KMdiIterator<Item*>
+{
 public:
-   KMdiListIterator(QPtrList<Item>& list) {
-      m_iterator = new QPtrListIterator<Item>(list);
-   }
+	KMdiListIterator( QPtrList<Item>& list )
+	{
+		m_iterator = new QPtrListIterator<Item>( list );
+	}
 
-   virtual void first() {
-      m_iterator->toFirst();
-   }
-   virtual void last() {
-      m_iterator->toLast();
-   }
-   virtual void next()  { ++(*m_iterator); }
-   virtual void prev()  { --(*m_iterator); }
-   virtual bool isDone() const { return m_iterator->current() == NULL; }
-   virtual Item* currentItem() const { return m_iterator->current(); }
+	virtual void first() { m_iterator->toFirst(); }
+	virtual void last() { m_iterator->toLast(); }
+	virtual void next() { ++( *m_iterator ); }
+	virtual void prev() { --( *m_iterator ); }
+	virtual bool isDone() const { return m_iterator->current() == NULL; }
+	virtual Item* currentItem() const { return m_iterator->current(); }
 
-   virtual ~KMdiListIterator() {
-      delete m_iterator;
-   }
-  
+	virtual ~KMdiListIterator() { delete m_iterator; }
+
 private:
-   QPtrListIterator<Item> *m_iterator;
+	QPtrListIterator<Item> *m_iterator;
 };
 
-#endif // _KMDILISTITERATOR_H_
+#endif // _KMDILISTITERATOR_H_ 
+// kate: space-indent off; tab-width 4; replace-tabs off; indent-mode csands;
+

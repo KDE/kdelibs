@@ -20,11 +20,11 @@ class KPopupMenu;
  * A reimplementation of KTabWidget for KMDI
  */
 class KMDI_EXPORT KMdiDocumentViewTabWidget:
- public KTabWidget
+			public KTabWidget
 {
 	Q_OBJECT
 public:
-	KMdiDocumentViewTabWidget(QWidget* parent, const char* name=0);
+	KMdiDocumentViewTabWidget( QWidget* parent, const char* name = 0 );
 	~KMdiDocumentViewTabWidget();
 
 	/**
@@ -88,15 +88,15 @@ public:
 private slots:
 
 	/** Close the tab specified by w */
-	void closeTab(QWidget* w);
+	void closeTab( QWidget* w );
 
 public slots:
 
 	/** Change the icon for the tab */
-	void updateIconInView(QWidget*,QPixmap);
+	void updateIconInView( QWidget*, QPixmap );
 
 	/** Change the caption for the tab */
-	void updateCaptionInView(QWidget*,const QString&);
+	void updateCaptionInView( QWidget*, const QString& );
 
 private:
 
@@ -106,10 +106,12 @@ private:
 	 * and shown if it's determined that it should be shown
 	 */
 	void maybeShow();
-	
+
 	KMdi::TabWidgetVisibility m_visibility;
 };
 
 
 
-#endif
+#endif 
+// kate: space-indent off; tab-width 4; replace-tabs off; indent-mode csands;
+
