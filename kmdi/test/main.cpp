@@ -26,7 +26,7 @@
 //----------------------------------------------------------------------------
 
 #ifndef NO_KDE
-# include <kapp.h>
+# include <kapplication.h>
  KApplication* theApp;
 #else
 # include <qapplication.h>
