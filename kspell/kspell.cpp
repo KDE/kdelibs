@@ -188,6 +188,13 @@ void KSpell::KSpell2 (KProcIO *)
       emit ready(this);
       return;
     }
+  //We want to recognize linux in any text!
+  if (ignore ("linux")==FALSE)
+    {
+      kdebug(KDEBUG_INFO, 750, "@KDE was FALSE");
+      emit ready(this);
+      return;
+    }
 
 
   NOOUTPUT (KSpell2);
@@ -788,7 +795,7 @@ void KSpell::dialog2 (int result)
       ignorelist.inSort (dlgorigword.lower());
       break;
     case KS_ADD:
-      qs="*";
+      qs="&";
       qs+=dlgorigword;
       proc->fputs (qs.lower());
       personaldict=TRUE;
