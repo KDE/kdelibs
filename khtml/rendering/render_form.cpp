@@ -501,7 +501,9 @@ void RenderLineEdit::layout()
 	s = QSize( w + 4, h + 4 ).expandedTo( QApplication::globalStrut() );
 
     edit->blockSignals(true);
+    int pos = edit->cursorPosition();
     edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string().visual());
+    edit->setCursorPosition(pos);
     edit->blockSignals(false);
 
     // ### what if maxlength goes back to 0? can we unset maxlength in the widget?
@@ -515,7 +517,11 @@ void RenderLineEdit::layout()
 
 void RenderLineEdit::slotTextChanged(const QString &string)
 {
-    static_cast<HTMLInputElementImpl*>(m_element)->setValue(DOMString(string));
+    HTMLInputElementImpl * e = static_cast<HTMLInputElementImpl*>(m_element);
+    // No need to set changed to true, this change comes from the rendering widget
+    bool wasChanged = e->changed();
+    e->setValue(DOMString(string));
+    e->setChanged( wasChanged );
 }
 
 void RenderLineEdit::select()
@@ -1171,7 +1177,10 @@ void RenderTextArea::layout( )
 
     w->setReadOnly(m_element->readOnly());
     w->blockSignals(true);
-    w->setText(static_cast<HTMLTextAreaElementImpl*>(m_element)->value().string().visual());
+    int line, col;
+    w->getCursorPosition( &line, &col );
+    w->setText(f->value().string().visual());
+    w->setCursorPosition( line, col );
     w->blockSignals(false);
 
     QFontMetrics m = fontMetrics(w->font());
@@ -1216,7 +1225,10 @@ void RenderTextArea::slotTextChanged()
     else
         txt = w->text();
 
+    // No need to set changed to true, this change comes from the rendering widget
+    bool wasChanged = e->changed();
     e->setValue(txt);
+    e->setChanged( wasChanged );
 }
 
 void RenderTextArea::select()
