@@ -10,6 +10,7 @@ Name[ga]=KDE Claisaiceach
 Name[is]=Klassískt KDE
 Name[sk]=KDE Štandardný
 Name[sv]=KDE klassisk
+Name[tr]=Klasik KDE
 Comment=Classic KDE style
 Comment[be]=Клясычны стыль KDE
 Comment[cs]=Klasický styl prostředí KDE
@@ -22,6 +23,7 @@ Comment[hu]=A KDE korábbi stílusa
 Comment[is]=Klassíski KDE stíllinn
 Comment[sk]=Štandardný štýl KDE
 Comment[sv]=Klassisk KDE-stil
+Comment[tr]=Klasik KDE stili
 Highcolor=hcstyle.la
 InactiveShading=true
 [KDE]

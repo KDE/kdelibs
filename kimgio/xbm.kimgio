@@ -15,6 +15,7 @@ Name[is]=X BitMap-mynd(ir)
 Name[pt_BR]=Imagem Bitmap X
 Name[sk]=X BitMap obrázok
 Name[sv]=X bitmapp-bild
+Name[tr]=X BitMap Resim Dosyası
 Read=true
 Write=true
 Suffices=xbm,XBM

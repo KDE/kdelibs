@@ -15,6 +15,7 @@ Name[is]=JPEG-mynd(ir)
 Name[pt_BR]=Imagem JPEG
 Name[sk]=JPEG obrázok
 Name[sv]=Jpeg-bild
+Name[tr]=JPEG Resim Dosyası
 Read=true
 Write=true
 Suffices=jpg,JPG,jpeg,JPEG 

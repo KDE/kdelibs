@@ -15,6 +15,7 @@ Name[is]=GIF-mynd(ir)
 Name[pt_BR]=Imagem GIF
 Name[sk]=GIF obrázok
 Name[sv]=Gif-bild
+Name[tr]=GIF Resim Dosyası
 Read=true
 Write=false
 Suffices=gif,GIF

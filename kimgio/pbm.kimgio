@@ -13,6 +13,7 @@ Name[is]=Skráarsnið GIMP forritsins (PBI)
 Name[pt_BR]=Imagem Bitmap Portável
 Name[sk]=Portable Bitmap obrázok
 Name[sv]=Flyttbart bitmappsformat
+Name[tr]=Taşınabilir Bit Eşlem Resim Dosyası
 Read=true
 Write=true
 Suffices=pbm,PBM,pbmraw,PBMRAW

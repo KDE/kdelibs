@@ -15,6 +15,7 @@ Name[is]=PNG-mynd(ir)
 Name[pt_BR]=Imagem PNG
 Name[sk]=PNG obrázok
 Name[sv]=Png-bild
+Name[tr]=PNG Resim Dosyası
 Read=true
 Write=true
 Suffices=png,PNG

@@ -15,6 +15,7 @@ Name[is]=TIFF-mynd(ir)
 Name[pt_BR]=Imagem TIFF
 Name[sk]=TIFF obrázok
 Name[sv]=Tiff-bild
+Name[tr]=TIFF Resim Dosyası
 Read=true
 Write=false
 Suffices=tiff,TIFF,tif,TIF 

@@ -15,6 +15,7 @@ Name[is]=JPEG 2000-mynd(ir)
 Name[pt_BR]=Imagem JPEG 2000
 Name[sk]=JPEG 2000 obrázok
 Name[sv]=Jpeg 2000-bild
+Name[tr]=JPEG 2000 Resim Dosyası
 Read=true
 Write=true
 Suffices=jp2,JP2

@@ -12,6 +12,7 @@ Comment[is]=Sjálfvirkar sel-stillingar
 Comment[pt_BR]=Configuração Automática do Proxy
 Comment[sk]=Automatická konfigurácia proxy
 Comment[sv]=Automatisk proxyinställning
+Comment[tr]=Otomatik Vekil Sunucu Yapılandırması
 
 [script-error]
 Name=Invalid proxy script
@@ -26,6 +27,7 @@ Name[is]=Ógild selskrifta
 Name[pt_BR]=Script de proxy inválido
 Name[sk]=Zlý proxy skript
 Name[sv]=Ogiltigt proxy-skript
+Name[tr]=Geçersiz vekil sunucu betiği
 Comment=The downloaded proxy configuration script is invalid
 Comment[da]=Det downloadede proxy-indstillingsscript er ugyldigt
 Comment[es]=El procedimiento descargado para la configuración del proxy es inválido
@@ -52,6 +54,7 @@ Name[is]=Villa við hleðslu skriftu
 Name[pt_BR]=Erro de download de script
 Name[sk]=Chyba počas sťahovania skriptu
 Name[sv]=Nerladdningsfel för skript
+Name[tr]=Betik indirme hatası
 Comment=The proxy configuration script could not be downloaded
 Comment[da]=Proxy-indstillingsscriptet kunne ikke downloades
 Comment[es]=El procedimiento de configuración del proxy no se pudo descargar

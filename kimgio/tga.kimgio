@@ -11,6 +11,7 @@ Name[fr]=Image Targa Truevision
 Name[ga]=Íomhá Truevision Targa
 Name[is]=Truevision Targa mynd(ir)
 Name[sk]=Truevision Targa obrázok
+Name[tr]=Targa Resim Dosyası
 Read=true
 Write=true
 Suffices=tga,TGA

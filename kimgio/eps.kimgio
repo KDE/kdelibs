@@ -14,6 +14,7 @@ Name[is]=Postscript-myndir (encapsulated)
 Name[pt_BR]=Imagens PostScript Encapsuladas
 Name[sk]=Zapúzdrený PostScript obrázok
 Name[sv]=Inkapslad Postscript-bild
+Name[tr]=Encapsulated PostScript Görüntüsü
 Read=true
 Write=true
 Suffices=eps,EPS

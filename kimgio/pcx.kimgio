@@ -15,6 +15,7 @@ Name[is]=PCX-mynd(ir)
 Name[pt_BR]=Imagem PCX
 Name[sk]=PCX obrázok
 Name[sv]=PCX-bild
+Name[tr]=PCX Resim Dosyası
 Read=true
 Write=true
 Suffices=pcx,PCX
