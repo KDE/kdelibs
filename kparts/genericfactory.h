@@ -146,8 +146,13 @@ namespace KParts
     template <class T>
     KInstance *GenericFactoryBase<T>::instance()
     {
-        if ( !s_instance && s_self )
-            s_instance = s_self->createInstance();
+        if ( !s_instance )
+        {
+            if ( s_self )
+                s_instance = s_self->createInstance();
+            else
+                s_instance = new KInstance( aboutData() );
+        }
         return s_instance;
     }
 
