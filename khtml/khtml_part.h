@@ -276,6 +276,16 @@ public:
   bool jScriptEnabled() const;
 
   /**
+   * Enable/disable statusbar messages
+   */
+  void setStatusMessagesEnabled( bool enable );
+
+  /**
+   * Returns @p true if status messages are enabled.
+   */
+  bool statusMessagesEnabled() const;
+
+  /**
    * Enable/disable automatic forwarding by &lt;meta http-equiv="refresh" ....&gt;
    */
   void setMetaRefreshEnabled( bool enable );

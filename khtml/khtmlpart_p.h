@@ -9,6 +9,7 @@
  *                     2000-2001 Simon Hausmann <hausmann@kde.org>
  *                     2000-2001 Dirk Mueller <mueller@kde.org>
  *                     2000 Stefan Schimanski <1Stein@gmx.de>
+ *                     2001-2003 George Stiakos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -152,6 +153,7 @@ public:
     m_onlyLocalReferences = false;
 
     m_metaRefreshEnabled = true;
+    m_statusMessagesEnabled = true;
 
     m_bFirstData = true;
     m_submitForm = 0;
@@ -233,6 +235,7 @@ public:
   bool m_metaRefreshEnabled :1;
   bool m_bPluginsOverride :1;
   bool m_restored :1;
+  bool m_statusMessagesEnabled :1;
   int m_frameNameId;
   int m_dcop_counter;
   DCOPObject *m_dcopobject;

@@ -590,14 +590,14 @@ bool KHTMLPart::openURL( const KURL &url )
      d->m_job->setWindow(widget()->topLevelWidget());
   d->m_job->addMetaData(args.metaData());
 
-  connect( d->m_job, SIGNAL( result( KIO::Job * ) ),
-           SLOT( slotFinished( KIO::Job * ) ) );
-  connect( d->m_job, SIGNAL( data( KIO::Job*, const QByteArray &)),
-           SLOT( slotData( KIO::Job*, const QByteArray &)));
-  connect ( d->m_job, SIGNAL( infoMessage( KIO::Job*,  const QString& ) ),
-            SLOT( slotInfoMessage(KIO::Job*, const QString& ) ) );
-  connect( d->m_job, SIGNAL(redirection(KIO::Job*, const KURL&) ),
-           SLOT( slotRedirection(KIO::Job*,const KURL&) ) );
+  connect( d->m_job, SIGNAL( result( KIO::Job* ) ),
+           SLOT( slotFinished( KIO::Job* ) ) );
+  connect( d->m_job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
+           SLOT( slotData( KIO::Job*, const QByteArray& ) ) );
+  connect ( d->m_job, SIGNAL( infoMessage( KIO::Job*, const QString& ) ),
+           SLOT( slotInfoMessage(KIO::Job*, const QString& ) ) );
+  connect( d->m_job, SIGNAL(redirection(KIO::Job*, const KURL& ) ),
+           SLOT( slotRedirection(KIO::Job*, const KURL&) ) );
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
@@ -721,6 +721,16 @@ KParts::BrowserExtension *KHTMLPart::browserExtension() const
 KHTMLView *KHTMLPart::view() const
 {
   return d->m_view;
+}
+
+void KHTMLPart::setStatusMessagesEnabled( bool enable )
+{
+  d->m_statusMessagesEnabled = enable;
+}
+
+bool KHTMLPart::statusMessagesEnabled() const
+{
+  return d->m_statusMessagesEnabled;
 }
 
 void KHTMLPart::setJScriptEnabled( bool enable )
@@ -1661,10 +1671,12 @@ void KHTMLPart::slotProgressUpdate()
   if( d->m_bComplete ) // only if it's really complete
     percent = 100;
 
-  if( d->m_bComplete )
-    emit d->m_extension->infoMessage( i18n( "Page loaded." ));
-  else if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
-    emit d->m_extension->infoMessage( i18n( "%n Image of %1 loaded.", "%n Images of %1 loaded.", d->m_loadedObjects).arg(d->m_totalObjectCount) );
+  if (d->m_statusMessagesEnabled) {
+    if( d->m_bComplete )
+      emit d->m_extension->infoMessage( i18n( "Page loaded." ));
+    else if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
+      emit d->m_extension->infoMessage( i18n( "%n Image of %1 loaded.", "%n Images of %1 loaded.", d->m_loadedObjects).arg(d->m_totalObjectCount) );
+  }
 
   emit d->m_extension->loadingProgress( percent );
 }
@@ -4340,6 +4352,9 @@ void KHTMLPart::slotZoomView( int delta )
 
 void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
 {
+  if (!d->m_statusMessagesEnabled)
+    return;
+
   d->m_statusBarText[p] = text;
 
   // shift handling ?
