@@ -1,6 +1,12 @@
 #include "KIDLTest.h"
 
 #include <kapp.h>
+#include <dcopclient.h>
+
+KIDLTest::KIDLTest( const QCString& id )
+    : DCOPObject( id )
+{
+}
 
 QString KIDLTest::hello( const QString& name )
 {
@@ -14,12 +20,14 @@ int main( int argc, char** argv )
 {
     KApplication app( argc, argv, "kidlservertest" );
 
+    app.dcopClient()->attach();
+    app.dcopClient()->registerAs( "kidlservertest" );
+
     qDebug("Server process started...");
 
-    app.dcopClient();
     KIDLTest* t = new KIDLTest( "Hello" );
-    
+
     qDebug("Server listening ...");
-    
+
     return app.exec();
 }
