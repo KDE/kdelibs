@@ -50,6 +50,8 @@
  * setSystemTrayWindowFor() only.
  *
  * @short Class for interaction with the window manager.
+ * @see NET
+ * @see NetWinInfo
  * @author Matthias Ettrich (ettrich@kde.org)
 */
 class KWin
@@ -77,7 +79,8 @@ public:
      * A system tray window serves as an icon replacement. It's
      * displayed inside the panel's system tray.
      * @param trayWin the id of the system tray window
-     * @param trayWin the id of the parent window
+     * @param trayWin the id of the window represented by the system
+     *        tray window
      */
     static void setSystemTrayWindowFor( WId trayWin, WId forWin );
 
