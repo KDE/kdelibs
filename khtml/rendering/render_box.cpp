@@ -189,7 +189,7 @@ void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
 
 void RenderBox::setPixmap(const QPixmap &, const QRect&, CachedImage *image, bool *)
 {
-    if(image && image->pixmap_size() == image->valid_rect().size())
+    if(image && image->pixmap_size() == image->valid_rect().size() && parent())
         repaint();      //repaint bg when it finished loading
 }
 
