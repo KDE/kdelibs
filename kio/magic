@@ -640,11 +640,11 @@
 # applix:  file(1) magic for Applixware
 # From: Peter Soos <sp@osb.hu>
 #
-0       string          *BEGIN          application/x-applix
->7      string          WORDS           application/x-applix
->7      string          GRAPHICS	application/x-applix
+0       string          *BEGIN
+>7      string          WORDS           application/x-applixword
+>7      string          GRAPHICS	application/x-applixgraphics
 >7      string          RASTER          application/x-applix
->7      string          SPREADSHEETS    application/x-applix
+>7      string          SPREADSHEETS    application/x-applixspread
 >7      string          MACRO		application/x-applix
 >7      string          BUILDER		application/x-applix
 
