@@ -21,8 +21,7 @@
 
 #include <kapp.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
+typedef unsigned long Atom;
 
 #include <qmap.h>
 #include <qstringlist.h>

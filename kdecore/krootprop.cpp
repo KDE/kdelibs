@@ -23,6 +23,9 @@
 #include "kcharsets.h"
 #include <qtextstream.h>
 
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+
 KRootProp::KRootProp(const QString& rProp )
 {
   atom = 0;
