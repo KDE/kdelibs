@@ -344,10 +344,8 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
   httpClose();
   // if data is required internally, don't finish,
   // it is processed before we finish()
-  if ( !dataInternal ) {
-    kdDebug(7113) << "Finished." << endl;
+  if ( !dataInternal )
     finished();
-  }
 }
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
@@ -821,9 +819,10 @@ bool HTTPProtocol::davHostOk()
 
     for (QStringList::iterator it = vers.begin(); it != vers.end(); it++) {
       uint verNo = (*it).toUInt();
-      if ( verNo > 0 && verNo < 3 )
+      if ( verNo > 0 && verNo < 3 ) {
         m_davHostOk = true;
-      kdDebug(7113) << "Server supports DAV version " << verNo << "." << endl;
+        kdDebug(7113) << "Server supports DAV version " << verNo << "." << endl;
+      }
     }
 
     if ( m_davHostOk )
@@ -865,6 +864,12 @@ void HTTPProtocol::get( const KURL& url )
   if ( !checkRequestURL( url ) )
     return;
 
+  // HACK
+  // If webDAV, check to make sure this host supports WebDAV
+  if ( m_protocol == "webdav" || m_protocol == "webdavs" )
+    if ( !davHostOk() )
+      return;
+
   m_request.method = HTTP_GET;
   m_request.path = url.path();
   m_request.query = url.query();
@@ -895,7 +900,7 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent();
+  retrieveHeader( true );
 }
 
 void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite )
@@ -1137,6 +1142,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       action = i18n( "query the server's capabilities" );
       break;
     case HTTP_GET:
+      action = i18n( "retrieve the contents of the specified file or directory" );
+      break;
     case HTTP_PUT:
     case HTTP_POST:
     case HTTP_HEAD:
@@ -2233,8 +2240,11 @@ bool HTTPProtocol::readHeader()
       {
         // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
         // Short circuit and do nothing!
-        m_bError = true;
-        return false;
+
+        // The original handling here was wrong, this is not an error: eg. in the
+        // example of a 204 No Content response to a PUT completing.
+        // m_bError = true;
+        // return false;
       }
       else if ( m_responseCode == 206 )
       {
@@ -2854,6 +2864,8 @@ bool HTTPProtocol::sendBody( bool dataInternal /* = false */ )
   int result=-1;
   int length=0;
 
+  infoMessage( i18n( "Requesting data to send" ) );
+
   // Loop until we got 'dataEnd'
   kdDebug(7113) << "(" << m_pid << ") Response code: " << m_responseCode << endl;
   if ( m_responseCode == 401 || m_responseCode == 407 || dataInternal )
@@ -2899,6 +2911,8 @@ bool HTTPProtocol::sendBody( bool dataInternal /* = false */ )
   char c_buffer[64];
   sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
   kdDebug( 7113 ) << "(" << m_pid << ")" << c_buffer << endl;
+
+  infoMessage( i18n( "Sending data to <b>%1</b>" ).arg( m_request.hostname ) );
 
   // Send the content length...
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
@@ -3266,7 +3280,7 @@ int HTTPProtocol::readUnlimited()
  * called by a webDAV function, to recieve stat/list/property/etc.
  * data; in this case the data is stored in m_intData.
  */
-bool HTTPProtocol::readBody( bool dataInternal )
+bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {
   // Note that when dataInternal is true, we are going to:
   // 1) save the body data to a member variable, m_intData
