@@ -62,6 +62,8 @@ debian/tmp/usr/lib/kde3/ktexteditor_kdatatool.la
 debian/tmp/usr/lib/kde3/ktexteditor_kdatatool.so
 debian/tmp/usr/lib/kde3/libkatepart.la
 debian/tmp/usr/lib/kde3/libkatepart.so
+debian/tmp/usr/lib/kde3/libkcertpart.la
+debian/tmp/usr/lib/kde3/libkcertpart.so
 debian/tmp/usr/lib/kde3/libkmultipart.la
 debian/tmp/usr/lib/kde3/libkmultipart.so
 debian/tmp/usr/lib/kde3/libkpac.la
@@ -78,8 +80,6 @@ debian/tmp/usr/lib/kde3/plugins/styles/light.la
 debian/tmp/usr/lib/kde3/plugins/styles/light.so
 debian/tmp/usr/lib/libcupsdconf.la
 debian/tmp/usr/lib/libcupsdconf.so
-debian/tmp/usr/lib/libkcertpart.la
-debian/tmp/usr/lib/libkcertpart.so
 debian/tmp/usr/lib/libDCOP.so.*
 debian/tmp/usr/lib/libartskde.so.*
 debian/tmp/usr/lib/libkabc.so.*
