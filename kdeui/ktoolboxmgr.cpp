@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.2  1998/05/02 18:30:13  radej
+ // Switched to KWM::geometry instead x() and y()
+ //
  // Revision 1.1  1998/04/28 09:16:18  radej
  // Initial checkin
  //
@@ -115,16 +118,16 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
 
   orig_w = w;
   orig_h = h;
-  
+  /*
   XChangeActivePointerGrab( qt_xdisplay(), 
 			    ButtonPressMask | ButtonReleaseMask |
 			    PointerMotionMask ,
                             sizeAllCursor.handle(), 0);
-
+  */
   rx = sx = QCursor::pos().x();
   ry = sy = QCursor::pos().y();
   
-  XGrabServer(qt_xdisplay());
+  //XGrabServer(qt_xdisplay());
 
   xp=sx-offX;
   yp=sy-offY;
@@ -140,6 +143,12 @@ void KToolBoxManager::doMoveInternal()
 {
   bool onspot=false;
   bool changed=false;
+
+  XChangeActivePointerGrab( qt_xdisplay(), 
+			    ButtonPressMask | ButtonReleaseMask |
+			    PointerMotionMask ,
+                            sizeAllCursor.handle(), 0);
+  XGrabServer(qt_xdisplay());
   
   XMaskEvent(qt_xdisplay(),
              ButtonPressMask|ButtonReleaseMask|PointerMotionMask, &ev);
@@ -151,12 +160,20 @@ void KToolBoxManager::doMoveInternal()
     }
     else
     {
+      XUngrabServer(qt_xdisplay());
+      XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
+      XSync(qt_xdisplay(), False);
       stop();
       return;
     }
 
     if (rx == sx && ry == sy)
+    {
+      XUngrabServer(qt_xdisplay());
+      XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
+      XSync(qt_xdisplay(), False);
       return;
+    }
 
     if (geometryChanged)
     {
@@ -197,7 +214,12 @@ void KToolBoxManager::doMoveInternal()
     if (onspot && !changed && hotspot_static)
     {
       geometryChanged = true;
-      return;
+      {
+        XUngrabServer(qt_xdisplay());
+        XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
+        XSync(qt_xdisplay(), False);
+        return;
+      }
     }
 
     deleteLastRectangle();
@@ -205,7 +227,11 @@ void KToolBoxManager::doMoveInternal()
     XFlush(qt_xdisplay());
     if (dynamic)
       emit posChanged(xp, yp);
-    
+
+    XUngrabServer(qt_xdisplay());
+    XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
+    XSync(qt_xdisplay(), False);
+
 }
 
 void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
@@ -303,11 +329,11 @@ void KToolBoxManager::stop ()
   
   deleteLastRectangle();
   XFlush(qt_xdisplay());
-  
+  /*
   XUngrabServer(qt_xdisplay());
   XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
   XSync(qt_xdisplay(), False);
-
+  */
   if (widget->parentWidget() == 0)
     if (!dontmoveres)
       if (mode==Moving)
