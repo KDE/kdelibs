@@ -1920,7 +1920,7 @@ KListAction::KListAction( const QString& text, const KShortcut& cut,
 KListAction::KListAction( const QString& text, const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-  : KSelectAction( text, cut, parent, name )
+  : KSelectAction( text, cut, receiver, slot, parent, name )
 {
   d = new KListActionPrivate;
 }
