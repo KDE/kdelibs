@@ -175,7 +175,26 @@ protected:
     enum ColType { Fixed, Percent, Variable };
 
     void setCells( unsigned int r, unsigned int c, HTMLTableCell *cell );
-    void calcColInfo(int pass);
+
+    // 
+    // A small set of helper functions for spreading width across columns
+    void addColMinWidth(int k, int delta, ColType t);
+    void addColsMinWidthEqual(int kol, int span, int tooAdd, ColType t);
+    void addColsMinWidthVar(int kol, int span, int tooAdd, ColType t, int varCount);
+    void addColsMinWidthNonFix(int kol, int span, int tooAdd, ColType t, int nonFixedCount);
+    int  addColsMinWidthPref(int kol, int span, int tooAdd);
+    void addColsPrefWidthEqual(int kol, int span, int tooAdd);
+    void addColsPrefWidthVar(int kol, int span, int tooAdd, int varCount);
+    void addColsPrefWidthNonFix(int kol, int span, int tooAdd, int nonFixedCount);
+
+    //
+    // This function calculates the minimum and prefered sizes of the table
+    void calcColInfoI(void);
+
+    //
+    // This function calculates the actual widths of the columns
+    void calcColInfoII(void);
+
     int  addColInfo(int _startCol, int _colSpan, int _minSize,
                     int _prefSize, ColType _colType);
     void addRowInfo(int _row, int _colInfoIndex);
@@ -237,8 +256,6 @@ protected:
     {
        int *entry;
        int  nrEntries;
-       int  minSize;
-       int  prefSize;
     } RowInfo_t;
     
     HTMLTableCell ***cells;
