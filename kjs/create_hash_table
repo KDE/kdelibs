@@ -134,9 +134,12 @@ sub output() {
     print "/* Automatically generated from $file using $0. DO NOT EDIT ! */\n";
   }
 
+  my $nameEntries = "${name}Entries";
+  $nameEntries =~ s/:/_/g;
   print "\n#include \"lookup.h\"\n" if ($includelookup);
+  print "\nusing namespace KJS;\n"; # because of DontDelete etc.
   print "\nnamespace KJS {\n";
-  print "\nconst struct HashEntry ${name}Entries[] = {\n";
+  print "\nconst struct HashEntry ".$nameEntries."[] = {\n";
   my $i = 0;
   foreach $entry (@table) {
     if (defined($entry)) {
@@ -147,7 +150,7 @@ sub output() {
       print ", " . $params[$entry];
       print ", ";
       if (defined($links[$i])) {
-	print "&${name}Entries[$links[$i]]" . " \}";
+	print "&".$nameEntries."[$links[$i]]" . " \}";
       } else {
 	print "0 \}"
       }
@@ -160,6 +163,6 @@ sub output() {
   }
   print "};\n";
   print "\nconst struct HashTable $name = ";
-  print "\{ 2, $size, ${name}Entries, $hashsize \};\n\n";
+  print "\{ 2, $size, ".$nameEntries.", $hashsize \};\n\n";
   print "}; // namespace\n";
 }
