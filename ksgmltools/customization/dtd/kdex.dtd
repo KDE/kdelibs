@@ -1,7 +1,7 @@
 <!--
-    Document Type Definition for DocBook as used in the KDE documentation
+    Document Type Definition for DocBook XML as used in the KDE documentation
     
-    Copyright (C) 1999-2001 Frederik Fouvry
+    Copyright (C) 2001 Frederik Fouvry
      
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -24,11 +24,10 @@
     USAGE
 
 TEMPORARY FIX: Do not use a three-place version number in the DOCTYPE
-declarations The docbook tools contain a bug such that it cannot
+declarations.  The docbook tools contain a bug such that it cannot
 handle these.  The fix consists of using the version number V4.1
 instead of 4.1.2.  Reverting to 4.1 seems to introduce a pile of
-catalog errors I'd rather stay away from (they're easy to fix, but try
-telling that to people).
+catalog errors I'd rather stay away from (they're easy to fix though).
 
     Refer to this DTD as
 
@@ -36,9 +35,15 @@ telling that to people).
 
     For instance:
 
-      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN">
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+                     "docbookx.dtd">
 
     and use catalog as the catalogue file.
+
+    The system identifiers should be relative to the directories the parser
+    searches (for nsgmls for instance, this is $SGML_SEARCH_PATH).  If you have
+    permanent internet access, you can use any URLs (and you don't have to
+    install docbook).
 -->
 
 
@@ -54,7 +59,7 @@ telling that to people).
  -->
 <!ENTITY % rdbpool	    PUBLIC
   "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V2.0//EN"	     
-  "kde-x-rdbpool.elements"                                           >
+  "kdex-rdbpool.elements"                                           >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
 
 <!-- Modifications in hierarchy
@@ -63,7 +68,7 @@ telling that to people).
  -->
 <!ENTITY % rdbhier2	    PUBLIC
   "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V2.0//EN"     
-  "kde-x-rdbhier2.elements"                                          >
+  "kdex-rdbhier2.elements"                                          >
 <!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
 <!-- For Java-style refentries	   
@@ -84,7 +89,7 @@ telling that to people).
 
 <!ENTITY % DocBookDTD	    PUBLIC
   "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "docbook/xml-dtd-4.1.2/docbookx.dtd"         >
+  "docbookx.dtd"                                                     >
 %DocBookDTD;
 
 
@@ -96,7 +101,7 @@ telling that to people).
 
 <!ENTITY % kde.modifications PUBLIC
   "-//KDE//ELEMENTS DocBook XML Modifications V2.0//EN"
-  "kde-x-modifications.elements">
+  "kdex-modifications.elements">
 %kde.modifications;
 
 
