@@ -1025,7 +1025,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 		      de.link = "";
 
 		    de.access = 0;
-		    de.type = 0;
+		    de.type = S_IFREG;
 		    if ( p_access[0] == 'd' )
 		      de.type = S_IFDIR;
 		    else if ( p_access[0] == 's' )
