@@ -124,10 +124,10 @@ protected slots:
   void slotAboutToShow();
   void slotAboutToShowContextMenu( KPopupMenu *, int, QPopupMenu * );
   void slotActionHighlighted( KAction * );
-  void slotRMBActionRemove();
-  void slotRMBActionOpen();
-  //void slotRMBActionEdit();
-  void slotRMBActionEditAt();
+  void slotRMBActionRemove( int );
+  void slotRMBActionOpen( int );
+  //void slotRMBActionEdit( int );
+  void slotRMBActionEditAt( int );
   void slotBookmarkSelected();
   void slotAddBookmark();
   void slotNewFolder();
@@ -143,7 +143,8 @@ protected:
   void addEditBookmarks();
   void addNewFolder();
 
-  void fillContextMenu( QPopupMenu * );
+  void fillContextMenu( QPopupMenu *, const QString &, int );
+  bool invalid( int val );
 
   bool m_bIsRoot:1;
   bool m_bAddBookmark:1;

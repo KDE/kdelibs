@@ -168,7 +168,7 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
   if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction")) 
   {
     s_highlightedAddress = action->property("address").toString();
-    kdDebug(7043) << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
+    //kdDebug(7043) << "KBookmarkMenu::slotActionHighlighted" << s_highlightedAddress << endl;
   } 
   else 
   {
@@ -176,59 +176,76 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
   }
 }
 
+bool KBookmarkMenu::invalid( int val )
+{
+  bool valid = true;
+
+  if (val == 1) 
+    s_highlightedAddress = m_parentAddress;
+
+  if (s_highlightedAddress.isNull()) 
+  {
+    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
+    valid = false;
+  }
+
+  return !valid;
+}
+
 void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
 {
-  kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
+  //kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
   if (s_highlightedAddress.isNull()) 
   {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
-  fillContextMenu( contextMenu );
+  contextMenu->clear();
+  fillContextMenu( contextMenu, s_highlightedAddress, 0 );
 }
 
-void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu )
+void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
 {
-  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+  KBookmark bookmark = m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
-  
-  contextMenu->clear();
+
+  int id;
 
   if (bookmark.isGroup()) {
-    contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove()) );
-    contextMenu->insertItem( i18n( "Open Entire Folder" ), this, SLOT(slotRMBActionOpen()) );
- // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionEdit()) );
-    contextMenu->insertItem( i18n( "Open in Bookmark Editor" ), this, SLOT(slotRMBActionEditAt()) );
+    id = contextMenu->insertItem( i18n( "Open in Bookmark Editor" ), this, SLOT(slotRMBActionEditAt(int)) );
+    contextMenu->setItemParameter( id, val );
+    id = contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove(int)) );
+    contextMenu->setItemParameter( id, val );
+    id = contextMenu->insertItem( i18n( "Open Entire Folder" ), this, SLOT(slotRMBActionOpen(int)) );
+    contextMenu->setItemParameter( id, val );
+    // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionProperties(int)) );
   } 
   else
   {
-    contextMenu->insertItem( i18n( "Delete bookmark" ), this, SLOT(slotRMBActionRemove()) );
-    contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen()) );
+    id = contextMenu->insertItem( i18n( "Delete bookmark" ), this, SLOT(slotRMBActionRemove(int)) );
+    contextMenu->setItemParameter( id, val );
+    id = contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen(int)) );
+    contextMenu->setItemParameter( id, val );
   }
 }
 
-void KBookmarkMenu::slotRMBActionEditAt()
+void KBookmarkMenu::slotRMBActionEditAt( int val )
 {
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << s_highlightedAddress << endl;
-  if (s_highlightedAddress.isNull()) 
-  {
-    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
-    return; 
-  }
+  //kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << s_highlightedAddress << endl;
+  if (invalid(val)) return;
+
   KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
 
   emit m_pManager->slotEditBookmarksAtAddress( s_highlightedAddress );
 }
 
-void KBookmarkMenu::slotRMBActionRemove()
+void KBookmarkMenu::slotRMBActionRemove( int val )
 {
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << s_highlightedAddress << endl;
-  if (s_highlightedAddress.isNull()) 
-  {
-    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
-    return; 
-  }
+  //kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << s_highlightedAddress << endl;
+  //TODO - "are you sure?" box, with "don't show again" option
+  if (invalid(val)) return;
+
   KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
 
@@ -239,14 +256,11 @@ void KBookmarkMenu::slotRMBActionRemove()
   m_parentMenu->hide();
 }
 
-void KBookmarkMenu::slotRMBActionOpen()
+void KBookmarkMenu::slotRMBActionOpen( int val )
 {
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
-  if (s_highlightedAddress.isNull()) 
-  {
-    KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
-    return; 
-  }
+  //kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
+  if (invalid(val)) return;
+
   KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
 
@@ -422,7 +436,7 @@ void KBookmarkMenu::fillBookmarkMenu()
       }
       else
       {
-        // kdDebug(7043) << "Creating URL bookmark menu item for " << bm.text() << endl;
+        //kdDebug(7043) << "Creating URL bookmark menu item for " << bm.text() << endl;
         KAction * action = new KBookmarkAction( text, bm.icon(), 0,
                                                 this, SLOT( slotBookmarkSelected() ),
                                                 m_actionCollection, 0 );
@@ -438,7 +452,7 @@ void KBookmarkMenu::fillBookmarkMenu()
     }
     else
     {
-      // kdDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
+      //kdDebug(7043) << "Creating bookmark submenu named " << bm.text() << endl;
       KActionMenu * actionMenu = new KBookmarkActionMenu( text, bm.icon(),
                                                           m_actionCollection, 0L );
       actionMenu->setProperty( "address", bm.address() );
@@ -453,12 +467,19 @@ void KBookmarkMenu::fillBookmarkMenu()
     }
   }
 
-  if ( !m_bIsRoot && m_bAddBookmark && !isAdvanced() )
+  if ( !m_bIsRoot && m_bAddBookmark )
   {
     if ( m_parentMenu->count() > 0 )
       m_parentMenu->insertSeparator();
-    addAddBookmark();
-    addNewFolder();
+    if (isAdvanced())
+    {
+      fillContextMenu( m_parentMenu, m_parentAddress, 1 );
+    }
+    else 
+    {
+      addAddBookmark();
+      addNewFolder();
+    }
   }
 }
 
@@ -675,7 +696,7 @@ void KBookmarkEditDialog::slotInsertFolder()
     KBookmarkGroup parentGroup = group.parentGroup();
     m_mgr->emitChanged( parentGroup );
   }
-  KBookmarkFolderTree::recreateTree( m_folderTree, m_mgr );
+  KBookmarkFolderTree::fillTree( m_folderTree, m_mgr );
 }
 
 // -----------------------------------------------------------------------------
@@ -715,12 +736,12 @@ QListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* pare
   listview->setResizeMode( QListView::AllColumns );
   listview->setMinimumSize( 60, 100 );
 
-  recreateTree( listview, mgr );
+  fillTree( listview, mgr );
 
   return listview;
 }
 
-void KBookmarkFolderTree::recreateTree( QListView *listview, KBookmarkManager* mgr ) 
+void KBookmarkFolderTree::fillTree( QListView *listview, KBookmarkManager* mgr ) 
 {
   listview->clear();
 
