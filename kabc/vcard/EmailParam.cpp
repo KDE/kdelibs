@@ -21,8 +21,6 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream.h>
-
 #include <VCardEmailParam.h>
 #include <VCardParam.h>
 #include <VCardDefines.h>
