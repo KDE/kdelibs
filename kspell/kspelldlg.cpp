@@ -133,6 +133,8 @@ KSpellDlg::KSpellDlg(
     resize(9 * bs.height() / 6, bs.height());
   }
 
+  setHelp("spelldlg", "kspell");
+  
   emit(ready(false));
 }
 
@@ -259,13 +261,6 @@ KSpellDlg::replaceAll()
 {
   newword = editbox->text();
   done (KS_REPLACEALL);
-}
-
-void
-KSpellDlg::help()
-{
-  // give some help
-  kapp->invokeHelp ("spelldlg", "kspell");
 }
 
 #include "kspelldlg.moc"

@@ -96,7 +96,6 @@ protected slots:
   void replace();
   void replaceAll();
   void stop();
-  void help();
 
   void textChanged (const QString &);
 
