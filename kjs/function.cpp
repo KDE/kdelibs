@@ -442,11 +442,11 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
     char* endptr;
     errno = 0;
     //fprintf( stderr, "ParseInt: parsing string %s\n", startptr );
-    int base;
+    int base = 0;
     // Figure out the base
     if ( args.size() > 1 )
       base = args[ 1 ].toInt32( exec );
-    else {
+    if ( base == 0 ) {
       // default base is 10, unless the number starts with 0x or 0X
       if ( *startptr == '0' && toupper( *(startptr+1) ) == 'X' )
         base = 16;
