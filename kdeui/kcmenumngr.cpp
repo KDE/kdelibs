@@ -40,6 +40,15 @@ KContextMenuManager::~KContextMenuManager()
 {
 }
 
+
+bool KContextMenuManager::showOnButtonPress( void )
+{
+  if ( !manager )
+	manager = new KContextMenuManager;
+  return( manager->showOnPress );
+}
+
+
 void KContextMenuManager::insert( QWidget* widget, QPopupMenu* popup )
 {
     if ( !manager )

@@ -31,7 +31,7 @@ class I_really_like_this_class;
 /**
 @short Convenience class to mangage context menus
 @author Matthias Ettrich <ettrich@kde.org>
-@version $Id
+@version $Id$
 
 KContextMenuManager manages configurable context popup menus.  Instead
 of reimplementing QWidget::mousePressEvent() or
@@ -86,7 +86,16 @@ public:
        menu manager.
     */
     static void insert( QWidget* widget, QPopupMenu* popup );
-    
+
+    /**
+     * Use this method to get information about when a popup menu 
+     * should be activated. This can be useful if the popup menu is
+     * to be activated from a listview.
+     *
+     * @return true if the menu should be made visible on a button press
+     *         or false after a button press-release sequence.
+     */
+     static bool showOnButtonPress( void );
     
 private slots:
     void widgetDestroyed();
