@@ -858,7 +858,6 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     case ID_FRAME: {
       DOM::HTMLFrameElement frameElement = element;
 
-      // p == "document" ?
       if (p == "frameBorder")          return getString(frameElement.frameBorder());
       else if (p == "longDesc")        return getString(frameElement.longDesc());
       else if (p == "marginHeight")    return getString(frameElement.marginHeight());
@@ -873,9 +872,11 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_IFRAME: {
       DOM::HTMLIFrameElement iFrame = element;
+      KHTMLPart* part = iFrame.isNull() ? 0 : static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle() )->frameDocument()->view()->part();
       if (p == "align")                return getString(iFrame.align());
-      // ### security check ?
-      else if (p == "document") {
+      else if ((iFrame.src().isEmpty() || !part || originCheck(part->url(), Window::retrieveActive()->part()->url())) 
+
+               && p == "document") {
         if ( !iFrame.isNull() )
           return getDOMNode( static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle() )->frameDocument() );
 
