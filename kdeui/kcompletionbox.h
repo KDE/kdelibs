@@ -196,6 +196,11 @@ protected:
     QRect calculateGeometry() const;
 
     /**
+     * This properly sizes and positions the listbox.
+     */
+    void sizeAndPosition();
+
+    /**
      * Reimplemented from KListBox to get events from the viewport (to hide
      * this widget on mouse-click, Escape-presses, etc.
      */

@@ -40,6 +40,7 @@ public:
     QString cancelText;
     bool tabHandling;
     bool down_workaround;
+    bool upwardBox;
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
@@ -49,6 +50,7 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     d->m_parent        = parent;
     d->tabHandling     = true;
     d->down_workaround = false;
+    d->upwardBox       = false;
 
     setColumnMode( 1 );
     setLineWidth( 1 );
@@ -237,28 +239,47 @@ void KCompletionBox::popup()
         if ( !isVisible() )
             show();
         else if ( size().height() != sizeHint().height() )
-            resize( sizeHint() );
+            sizeAndPosition();
+    }
+}
+
+void KCompletionBox::sizeAndPosition()
+{
+    int currentGeom = height();
+    QPoint currentPos = pos();
+    QRect geom = calculateGeometry();
+    resize( geom.size() );
+
+    int x = currentPos.x(), y = currentPos.y();
+    if ( d->m_parent ) {
+      if ( !isVisible() ) {
+        QRect screenSize = KGlobalSettings::desktopGeometry(d->m_parent);
+
+        QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
+        x = orig.x() + geom.x();
+        y = orig.y() + geom.y();
+
+        if ( x + width() > screenSize.right() )
+            x = screenSize.right() - width();
+        if (y + height() > screenSize.bottom() ) {
+            y = y - height() - d->m_parent->height();
+            d->upwardBox = true;
+        }
+      }
+      else {
+        // Are we above our parent? If so we must keep bottom edge anchored.
+        if (d->upwardBox)
+          y += (currentGeom-height());
+      }
+      move( x, y);
     }
 }
 
 void KCompletionBox::show()
 {
-    QRect geom = calculateGeometry();
-    resize( geom.size() );
-
+    d->upwardBox = false;
     if ( d->m_parent ) {
-        QRect screenSize = KGlobalSettings::desktopGeometry(d->m_parent);
-
-        QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
-        int x = orig.x() + geom.x();
-        int y = orig.y() + geom.y();
-
-        if ( x + width() > screenSize.right() )
-            x = screenSize.right() - width();
-        if (y + height() > screenSize.bottom() )
-            y = y - height() - d->m_parent->height();
-
-        move( x, y);
+        sizeAndPosition();
         qApp->installEventFilter( this );
     }
 
