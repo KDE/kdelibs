@@ -41,7 +41,8 @@ protected:
 };
 
 /**
- * This class is for INTERNAL USE ONLY.
+ * HTML Frame Set
+ * @internal
  */
 class HTMLFrameSet : public QWidget
 {

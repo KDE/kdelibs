@@ -108,7 +108,7 @@ public:
      * ...
      *    virtual KHTMLView* newView( QWidget *_parent, const char *_name, int _flags );
      * };
-     * <PRE>
+     * </PRE>
      * You may now want to reimplement like this
      * <PRE>
      * KHTMLView* myView::newView( QWidget *_parent, const char *_name, int _flags );
