@@ -185,7 +185,7 @@ public:
    * Toolbar will read global-config file for intem Size higlight
    * option and button type.
    */
-  KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = 26);
+  KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1);
 
   /**
    * Destructor. If toolbar is floating it will cleanup itself.
@@ -714,5 +714,6 @@ private:
    int icon_text;  // 1 = icon+text, 0 icon+tooltip
    bool highlight; // yes/no
    QSize szh;      // Size for sizeHint
+   bool fixed_size; // do not change the toolbar size 
 };
 #endif

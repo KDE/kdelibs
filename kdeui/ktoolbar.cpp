@@ -45,6 +45,9 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.57  1998/04/26 13:30:16  kulow
+// fixed typo
+//
 // Revision 1.56  1998/04/23 16:08:56  radej
 // Fixed a bug reported by Thomas Tanghus
 //
@@ -361,6 +364,9 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   : QFrame( parent, name )
 {
   item_size = _item_size;
+  fixed_size =  (item_size > 0);
+  if (!fixed_size)
+    item_size = 26;
   init();
   Parent = parent;        // our father
   max_width=-1;
@@ -442,7 +448,7 @@ void KToolBar::slotReadConfig()
 
   bool doUpdate=false;
  /********************\
-  if (tsize != item_size && tsize>20)
+  if (!fixed_size && tsize != item_size && tsize>20)
   {
     item_size = tsize;
     doUpdate=true;
