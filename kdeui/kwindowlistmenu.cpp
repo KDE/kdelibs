@@ -123,7 +123,7 @@ void KWindowListMenu::init()
             if ( info->windowType == NET::Normal || info->windowType == NET::Unknown ) {
                 QPixmap pm = KWin::icon(info->win, 16, 16, true );
                 items++;
-                if (items == 1)
+                if (items == 1 && nd > 1)
                     insertSeparator();
 		QString itemText =  KStringHandler::csqueeze(title,25);
 		// Avoid creating unwanted accelerators.
