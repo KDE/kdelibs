@@ -129,11 +129,14 @@ void KTMainWindow::deleteAll(){
 }
 
 void KTMainWindow::closeEvent ( QCloseEvent *e){
-  if (memberList->count() > 1 || queryExit()){
-    e->accept();
-    debug ("KTM closeEvent: e->accepted, about to delete this");
-    delete this;
-    debug ("KTM closeEvent: deleted this");
+  if (memberList->count() > 1){
+      e->accept();
+      delete this;
+  }
+  else if (queryExit()) {
+      e->accept();
+      delete this;
+      qApp->quit();
   }
 }
 
@@ -194,7 +197,7 @@ void KTMainWindow::show ()
     QWidget::show();
     updateRects();
 }
- 
+
 
 void KTMainWindow::updateRects()
 {

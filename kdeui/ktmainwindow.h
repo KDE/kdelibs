@@ -56,7 +56,8 @@
  *
  * @see KApplication
  * @short KDE top level main window
- * @author Stephan Kulow (coolo@kde.org) Maintained by Matthias Ettrich (ettrich@kde.org)
+   @author Stephan Kulow (coolo@kde.org), Matthias Ettrich (ettrich@kde.org), Sven Radej (radej@kde.org) .Maintained by Sven Radej (radej@kde.org)
+
  */
 
 class KTMainWindow : public QWidget {
@@ -82,7 +83,7 @@ public:
       * result in double-free'ed memory (=segfault). Since not every
       * program checks for QApplication::closingDown() before deleting
       * a widget, calling KTMainWindow::deleteAll() before is a good
-      * and proper solution.  
+      * and proper solution.
      */
   static void deleteAll();
 
@@ -95,7 +96,7 @@ public:
      * KTMainWindow as its parent.
      *
      * Usually you do not need this function. Just refer to a toolbar
-     * with toolBar(index) instead and the KTMainWindow will 
+     * with toolBar(index) instead and the KTMainWindow will
      * create it for you. Anyway addToolBar() is useful if you want
      * to pass additional arguments to the toolbar's constructor.
      * (Matthias) */
@@ -117,7 +118,7 @@ public:
      */
     void setView( QWidget *view, bool show_frame = TRUE );
 
-    
+
     /**
      *Enable or disable the status bar.
      */
@@ -140,7 +141,7 @@ public:
     void setFrameBorderWidth( int );
 
     /**
-     * Returns a pointer to the toolbar with the specified ID. 
+     * Returns a pointer to the toolbar with the specified ID.
      * If there is no such tool bar yet, it will be generated
      */
     KToolBar *toolBar( int ID = 0 );
@@ -179,7 +180,7 @@ public:
      * which have been written for the former KTopLevelWidet you may
      * find the following three boolean has-functions useful:
      */
-    
+
     /**
      * Returns wether the menubar is existing
      */
@@ -233,7 +234,7 @@ public:
    * Try to restore the toplevel widget as defined number (1..X)
    * If the session did not contain that high number, the configuration
    * is not changed and False returned.
-   * 
+   *
    * That means clients could simply do the following:
    * <pre>
    * if (kapp->isRestored()){
@@ -249,13 +250,13 @@ public:
    * Note that "show()" is called implicit in restore.
    *
    * With this you can easily restore all toplevel windows of your
-   * application.  
+   * application.
    *
    * If your application uses different kinds of toplevel
    * windows, then you can use KTMainWindow::classNameOfToplevel(n)
    * to determine the exact type before calling the childTLW
-   * constructor in the example from above.  
-   * 
+   * constructor in the example from above.
+   *
    * If your client has only one kind of toplevel widgets (which should
    * be pretty usual) then you should use the RESTORE-macro:
    *
@@ -270,14 +271,14 @@ public:
    * The macro expands to the term above but is easier to use and
    * less code to write.
    *
-   *(Matthias) 
+   *(Matthias)
    */
   static bool canBeRestored(int number);
 
 
   /** Returns the className of the numberth toplevel window which
     * should be restored. This is only usefull if you application uses
-    * different kinds of toplevel windows. (Matthias) 
+    * different kinds of toplevel windows. (Matthias)
     */
   static const QString classNameOfToplevel(int number);
 
@@ -302,7 +303,7 @@ public:
 protected:
   /** Default implementation calls @ref #updateRects if main widget
      * is resizable. If mainWidget is not resizable it does
-     * nothing. You shouldn't need to override this function.  
+     * nothing. You shouldn't need to override this function.
      */
     virtual void resizeEvent( QResizeEvent *e);
     /**
@@ -314,7 +315,7 @@ protected:
      */
     virtual void focusOutEvent ( QFocusEvent *);
 
-    /** 
+    /**
       * This is called when the widget is closed.
       * The default implementation will also destroy the
       * widget.(Matthias)
@@ -323,8 +324,8 @@ protected:
 
   /** KTMainWindow has the nice habbit that it will exit the
     * application when the very last KTMainWindow is
-    * destroyed. Some applications may not want this default
-    * behaviour,for example if the application wants to ask the user
+      closed. Some applications may not want this default
+    * behaviour, for example if the application wants to ask the user
     * wether he really wants to quit the application.  This can be
     * achived by overloading the queryExit() method.  The default
     * implementation simply returns TRUE, which means that the
@@ -335,7 +336,7 @@ protected:
   /** Save your instance-specific properties.
    * You MUST NOT change the group of the kconfig object,
    * since KTMW uses one group for each window.
-   * Please overload these function in childclasses. 
+   * Please overload these function in childclasses.
    *
    * Note that any interaction or X calls are forbidden
    * in these functions!
@@ -360,7 +361,7 @@ protected:
    * Default implementation does nothing.
    */
   virtual void saveData(KConfig* sessionConfig);
-    
+
 protected slots:
     /**
      * Updates child widget geometry. This function is now virtual
@@ -377,7 +378,7 @@ protected slots:
   /**
    * React on the request of the session manager (Matthias)
    */
-    void saveYourself(); 
+    void saveYourself();
 
     /**
      * Notices when toolbar is deleted.
@@ -392,11 +393,11 @@ protected slots:
 
 public:
 
-  /** 
+  /**
    * List of members of KTMainWindow class
    */
   static QList<KTMainWindow>* memberList;
-  
+
 private:
     /**
      * List of toolbars.
