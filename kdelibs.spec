@@ -1,16 +1,16 @@
-%define	version Beta3
+%define	version @VERSION@
 %define name kdelibs
 Name: %{name}
 Summary: K Desktop Environment - Libraries
 Version: %{version}
-Release: 1
-Source: ftp.kde.org:/pub/kde/unstable/CVS/snapshots/current/%{name}-%{version}.tar.gz
+Release: 2
+Source: ftp.kde.org:/pub/kde/stable/Beta4/distribution/rpm/source/%{name}-%{version}-1.src.tar.gz
 Group: X11/KDE/Base
 Copyright: GPL/LGPL
 BuildRoot: /tmp/realhot_%{name}
-Requires: qt >= 1.31
+Requires: qt >= 1.33
 Distribution: KDE
-Packager: Magnus Pfeffer <pfeffer@unix-ag.uni-kl.de>
+Packager: Preston Brown <pbrown@kde.org>
 Vendor: The KDE Team
 
 %description
@@ -50,7 +50,7 @@ rm -rf $RPM_BUILD_ROOT
 %post
 
 
-if [ -f /opt/kde/lib/libgdbm.so ]
+if [ -d /opt/kde/lib ]
  then
   grep -q '/opt/kde/lib' /etc/ld.so.conf || echo "/opt/kde/lib" >> /etc/ld.so.conf
   /sbin/ldconfig
