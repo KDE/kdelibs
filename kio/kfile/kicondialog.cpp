@@ -221,11 +221,13 @@ class KIconDialog::KIconDialogPrivate
         m_bStrictIconSize = true;
 	m_bLockUser = false;
 	m_bLockCustomDir = false;
+	searchLine = 0;
     }
     ~KIconDialogPrivate() {}
     bool m_bStrictIconSize, m_bLockUser, m_bLockCustomDir;
     QString custom;
     QString customLocation;
+    KIconViewSearchLine *searchLine;
 };
 
 /*
@@ -292,24 +294,24 @@ void KIconDialog::init()
     QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
     searchLayout->addWidget(searchLabel);
 
-    searchLine = new KIconViewSearchLine(main, "searchLine");
-    searchLayout->addWidget(searchLine);
-    searchLabel->setBuddy(searchLine);
+    d->searchLine = new KIconViewSearchLine(main, "searchLine");
+    searchLayout->addWidget(d->searchLine);
+    searchLabel->setBuddy(d->searchLine);
 
 
     // signals and slots connections
-    connect(clearSearch, SIGNAL(clicked()), searchLine, SLOT(clear()));
+    connect(clearSearch, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
 
     QString wtstr = i18n("Search interactively for icon names (e.g. folder).");
     QWhatsThis::add(searchLabel, wtstr);
-    QWhatsThis::add(searchLine, wtstr);
+    QWhatsThis::add(d->searchLine, wtstr);
 
 
     mpCanvas = new KIconCanvas(main);
     connect(mpCanvas, SIGNAL(executed(QIconViewItem *)), SLOT(slotAcceptIcons()));
     mpCanvas->setMinimumSize(400, 125);
     top->addWidget(mpCanvas);
-    searchLine->setIconView(mpCanvas);
+    d->searchLine->setIconView(mpCanvas);
 
     mpProgress = new KProgress(main);
     top->addWidget(mpProgress);
@@ -371,7 +373,7 @@ void KIconDialog::showIcons()
     for ( IconPath *ip=iconlist.first(); ip != 0; ip=iconlist.next() )
        filelist.append(*ip);
 
-    searchLine->clear();
+    d->searchLine->clear();
     mpCanvas->loadFiles(filelist);
 }
 

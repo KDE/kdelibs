@@ -28,7 +28,6 @@ class QKeyEvent;
 class QRadioButton;
 class KProgress;
 class KIconLoader;
-class KIconViewSearchLine;
 
 
 
@@ -235,7 +234,6 @@ private:
     KProgress *mpProgress;
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
-    KIconViewSearchLine *searchLine;
 
 protected:
     virtual void virtual_hook( int id, void* data );
