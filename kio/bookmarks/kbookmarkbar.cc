@@ -321,23 +321,20 @@ failure_exit:
     return a;
 }
 
-static KAction* handleToolbarMouseButtonRelease(QPoint pos, QPtrList<KAction> actions, KBookmarkManager *mgr) 
+static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions, KBookmarkManager * /*mgr*/, QPoint & pt) 
 {
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
     Q_ASSERT(tb);
-
-    kdDebug(7043) << "1" << endl;
 
     KToolBarButton* b;
     b = dynamic_cast<KToolBarButton*>(tb->childAt(pos)); 
     if (!b)
         return 0;
 
-    kdDebug(7043) << "2" << endl;
-
     KAction *a = 0;
     a = findPluggedAction(actions, tb, b->id());
     Q_ASSERT(a);
+    pt = tb->mapToGlobal(pos);
 
     return a;
 }
@@ -346,8 +343,7 @@ static KAction* handleToolbarMouseButtonRelease(QPoint pos, QPtrList<KAction> ac
 // init    - validDrag == false
 // release - validDrag == false
 // press   - validDrag == true
-//           and set startDragDos = ev->pos
-// move    - when ((startDragPos - ev->pos()).manhattanLength() > QApplication::startDragDistance())
+//           and set startDragDos = ev->pos // move    - when ((startDragPos - ev->pos()).manhattanLength() > QApplication::startDragDistance())
 //           validDrag == false 
 //           and do the funky kbookmarkdrag stuff
 
@@ -360,25 +356,61 @@ static KAction* handleToolbarMouseButtonRelease(QPoint pos, QPtrList<KAction> ac
 // TODO    *** generic rmb improvements ***
 // don't *ever* show the rmb on press, always relase, possible???
 
+class KBookmarkBarRMBAssoc : public dPtrTemplate<KBookmarkBar, RMB> { };
+template<> QPtrDict<RMB>* dPtrTemplate<KBookmarkBar, RMB>::d_ptr = 0;
+
+static RMB* rmbSelf(KBookmarkBar *m) { return KBookmarkBarRMBAssoc::d(m); }
+
+#define INIT                                      \
+  RMB *s = rmbSelf(this);                         \
+  s->recv = this;                                 \
+  s->m_parentAddress = QString::null;             \
+  s->s_highlightedAddress = s_highlightedAddress; \
+  s->m_pManager = m_pManager;                     \
+  s->m_pOwner = m_pOwner;                         \
+  s->m_parentMenu = 0;
+
+void KBookmarkBar::slotMy()
+{
+   kdDebug(7043) << "proof!" << endl;
+}
+
+static QString s_highlightedAddress;
+
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {
     static bool atFirst = false;
     static KAction* a = 0;
     if (dptr()->m_readOnly)
         return false; // todo: make this limit the actions
-    kdDebug(7043) << "got an event (" << e << ") of type" << e->type() << endl;
-    if ( 0 && e->type() == QEvent::MouseButtonRelease || e->type() == QEvent::MouseButtonPress )
+    kdDebug(7043) << "FOOOO>>>> got an event (" << e << ") of type" << e->type() << endl;
+    if ( e->type() == QEvent::MouseButtonRelease || e->type() == QEvent::MouseButtonPress )
     {
-        kdDebug(7043) << "got an mouse button release" << endl;
+        kdDebug(7043) << "FOOOO>>>> got an mouse button release" << endl;
         QMouseEvent *mev = (QMouseEvent*)e;
+
+        QPoint pt;
         KAction *_a; 
-        _a = handleToolbarMouseButtonRelease(mev->pos(), dptr()->m_actions, m_pManager);
-        if (_a || e->type() == QEvent::MouseButtonRelease)
+        _a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt );
+
+        KPopupMenu *pm = new KPopupMenu;
+
+        if (_a)
         {
-            a = _a;
+            s_highlightedAddress = _a->property("address").toString();
+            KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+
+            kdDebug(7043) << "FOOOO>>>> " << bookmark.url().url() << endl;
+
+            INIT; 
+            rmbSelf(this)->fillContextMenu(pm, s_highlightedAddress, 0);
+
+            pm->popup( pt );
+
             mev->accept();
-            return true;
         }
+
+        return !!_a;
     }
     else if ( e->type() == QEvent::DragLeave )
     {

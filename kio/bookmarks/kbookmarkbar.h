@@ -64,6 +64,7 @@ signals:
 public slots:
     void slotBookmarksChanged( const QString & );
     void slotBookmarkSelected();
+    void slotMy();
     void clear();
 
 protected:
