@@ -15,7 +15,7 @@ $(BUILDDIR)/build-stamp:
 	fi
 	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
 	cd $(BUILDDIR) ;\
-	kde_htmldir=/usr/doc/kde/HTML \
+	kde_htmldir=/usr/share/doc/kde/HTML \
 	kde_appsdir=/usr/share/applnk \
 	kde_icondir=/usr/share/icons \
 	kde_sounddir=/usr/share/sounds \
@@ -61,7 +61,7 @@ binary-arch:  build
 	dh_clean -k
 	dh_installdirs
 	make -C $(BUILDDIR) prefix=`pwd`/debian/tmp/usr \
-	   kde_htmldir="`pwd`/debian/tmp/usr/doc/kde/HTML" \
+	   kde_htmldir="`pwd`/debian/tmp/usr/share/doc/kde/HTML" \
 	   kde_appsdir="`pwd`/debian/tmp/usr/share/applnk" \
 	   kde_icondir="`pwd`/debian/tmp/usr/share/icons" \
 	   kde_sounddir="`pwd`/debian/tmp/usr/share/sounds" \
@@ -80,15 +80,15 @@ binary-arch:  build
 
 	perl -w admin/debianrules kdelibs2g
 	if test -f /usr/bin/qt2kdoc; then \
-	mkdir -p debian/tmp/usr/doc/kdelibs-doc/html/kdoc-reference ; \
-	qt2kdoc --url=/usr/doc/qt1g-doc/html \
-	--outdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html/kdoc-reference \
+	mkdir -p debian/tmp/usr/share/doc/kdelibs-doc/html/kdoc-reference ; \
+	qt2kdoc --url=/usr/share/doc/qt1g-doc/html \
+	--outdir=`pwd`/debian/tmp/usr/share/doc/kdelibs-doc/html/kdoc-reference \
 	--compress \
-	/usr/doc/qt1g-doc/html ; \
-	makekdedoc --libdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html/kdoc-reference \
-	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html \
-	--url=/usr/doc/kdelibs-doc/html; \
-	dh_movefiles -pkdelibs-doc usr/doc/kdelibs-doc ; \
+	/usr/share/doc/qt1g-doc/html ; \
+	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/doc/kdelibs-doc/html/kdoc-reference \
+	--outputdir=`pwd`/debian/tmp/usr/share/doc/kdelibs-doc/html \
+	--url=/usr/share/doc/kdelibs-doc/html; \
+	dh_movefiles -pkdelibs-doc usr/share/doc/kdelibs-doc ; \
 	fi
 	dh_movefiles 
 	dh_installdocs 
