@@ -380,6 +380,9 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
       int sid;
       int errLine;
       UString errMsg;
+#ifdef KJS_VERBOSE
+      fprintf(stderr, "eval(): %s\n", s.ascii());
+#endif
       ProgramNode *progNode = Parser::parse(s.data(),s.size(),&sid,&errLine,&errMsg);
 
       // no program node means a syntax occurred
