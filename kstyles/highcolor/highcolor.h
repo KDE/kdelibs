@@ -26,6 +26,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifndef __HIGHCOLOR_H
+#define __HIGHCOLOR_H
+
 #include <qwindowsstyle.h>
 #include <qbitmap.h>
 #include <kdrawutil.h>
@@ -130,3 +133,4 @@ class HighColorStyle : public QWindowsStyle
 
 // vim: set noet ts=4 sw=4:
 
+#endif
