@@ -1,1 +1,1 @@
-SUBDIRS = weaver weaverextensions examples
+SUBDIRS = weaver weaverextensions jobs examples

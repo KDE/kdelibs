@@ -83,8 +83,8 @@ void Main::slotQuit ()
     if (pbFinishAPR->isEnabled())
     {
         slotFinishAPR();
-        close();
     }
+    close();
 }
 
 void Main::aprDone ()

@@ -1,0 +1,4 @@
+This library is still in design. It is supposed to develop into a collection
+of generic Job classes.
+
+For now, it provides a Job class for loading a local file. 
