@@ -41,13 +41,14 @@ public:
    /**
     * Default constructor
     */
-   KSycocaEntry() : mOffset(0) { }
+   KSycocaEntry() : mOffset(0), m_bDeleted(false) { }
 
    /**
     * @internal
     * Restores itself from a stream.
     */
-   KSycocaEntry( QDataStream &/*_str*/, int offset ) : mOffset( offset ) { /* Nothing to do here */ }
+   KSycocaEntry( QDataStream &/*_str*/, int offset ) : 
+              mOffset( offset ), m_bDeleted(false) { /* Nothing to do here */ }
 
    /**
     * @return the name of this entry
@@ -58,6 +59,11 @@ public:
     * @return true if valid
     */
    virtual bool isValid() const = 0;
+  
+   /**
+    * @return true if deleted
+    */
+   virtual bool isDeleted() const { return m_bDeleted; }
 
    /**
     * @internal
@@ -84,6 +90,7 @@ public:
 
 private:
    int mOffset;
+   bool m_bDeleted;
 };
 
 #endif
