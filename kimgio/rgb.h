@@ -81,8 +81,10 @@ private:
 	bool readData(QImage&);
 	bool getRow(uchar *dest);
 
-	bool writeData(QImage&);
+	void writeHeader();
+	bool scanData(QImage&);
 	uint compact(uchar *, uchar *);
+	uchar intensity(uchar);
 };
 
 #endif

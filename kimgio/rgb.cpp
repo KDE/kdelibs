@@ -280,6 +280,16 @@ bool SGIImage::readImage(QImage& img)
 ///////////////////////////////////////////////////////////////////////////////
 
 
+// TODO remove; for debugging purposes only
+void RLEData::print(QString desc) const
+{
+	QString s = desc + ": ";
+	for (uint i = 0; i < size(); i++)
+		s += QString::number(this->at(i)) + ",";
+	kdDebug() << "--- " << s << endl;
+}
+
+
 void RLEData::write(QDataStream& s)
 {
 	for (unsigned i = 0; i < this->size(); i++)
@@ -312,16 +322,6 @@ uint RLEMap::insert(const uchar *d, uint l)
 }
 
 
-// TODO remove; for debugging purposes only
-void RLEData::print(QString desc) const
-{
-	QString s = desc + ": ";
-	for (uint i = 0; i < size(); i++)
-		s += QString::number(this->at(i)) + ",";
-	kdDebug() << "--- " << s << endl;
-}
-
-
 QPtrVector<RLEData> RLEMap::vector()
 {
 	QPtrVector<RLEData> v(size());
@@ -329,6 +329,16 @@ QPtrVector<RLEData> RLEMap::vector()
 		v.insert(it.data(), &it.key());
 
 	return v;
+}
+
+
+uchar SGIImage::intensity(uchar c)
+{
+	if (c < m_pixmin)
+		m_pixmin = c;
+	if (c > m_pixmax)
+		m_pixmax = c;
+	return c;
 }
 
 
@@ -359,7 +369,7 @@ uint SGIImage::compact(uchar *d, uchar *s)
 }
 
 
-bool SGIImage::writeData(QImage& img)
+bool SGIImage::scanData(QImage& img)
 {
 	Q_UINT32 *start = m_starttab;
 	uchar line[m_xsize * 2];
@@ -371,7 +381,7 @@ bool SGIImage::writeData(QImage& img)
 	for (y = 0; y < m_ysize; y++) {
 		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
-			buf[x] = qRed(*c++);
+			buf[x] = intensity(qRed(*c++));
 		len = compact(line, buf);
 		*start++ = m_rlemap.insert(line, len);
 	}
@@ -383,7 +393,7 @@ bool SGIImage::writeData(QImage& img)
 		for (y = 0; y < m_ysize; y++) {
 			c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
-				buf[x] = qGreen(*c++);
+				buf[x] = intensity(qGreen(*c++));
 			len = compact(line, buf);
 			*start++ = m_rlemap.insert(line, len);
 		}
@@ -391,7 +401,7 @@ bool SGIImage::writeData(QImage& img)
 		for (y = 0; y < m_ysize; y++) {
 			c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
-				buf[x] = qBlue(*c++);
+				buf[x] = intensity(qBlue(*c++));
 			len = compact(line, buf);
 			*start++ = m_rlemap.insert(line, len);
 		}
@@ -403,12 +413,28 @@ bool SGIImage::writeData(QImage& img)
 	for (y = 0; y < m_ysize; y++) {
 		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
-			buf[x] = qAlpha(*c++);
+			buf[x] = intensity(qAlpha(*c++));
 		len = compact(line, buf);
 		*start++ = m_rlemap.insert(line, len);
 	}
 
 	return true;
+}
+
+
+void SGIImage::writeHeader()
+{
+	m_stream << Q_UINT16(0x01da);		// magic
+	m_stream << m_rle << m_bpc << m_dim << m_xsize << m_ysize << m_zsize << m_pixmin << m_pixmax;
+	m_stream << Q_UINT32(0);		// dummy
+
+	uint i;
+	for (i = 0; i < 80; i++)		// no name
+		m_stream << Q_UINT8(0);
+
+	m_stream << m_colormap;
+	for (i = 0; i < 404; i++)
+		m_stream << Q_UINT8(0);		// wasting space ...
 }
 
 
@@ -426,21 +452,9 @@ bool SGIImage::writeImage(QImage& img)
 
 	m_xsize = img.width();
 	m_ysize = img.height();
-	m_pixmin = 0;				// FIXME
-	m_pixmax = 255;
+	m_pixmin = ~0;				// FIXME
+	m_pixmax = 0;
 	m_colormap = NORMAL;
-
-	m_stream << Q_UINT16(0x01da);		// magic
-	m_stream << m_rle << m_bpc << m_dim << m_xsize << m_ysize << m_zsize << m_pixmin << m_pixmax;
-	m_stream << Q_UINT32(0);		// dummy
-
-	uint i;
-	for (i = 0; i < 80; i++)		// no name
-		m_stream << Q_UINT8(0);
-
-	m_stream << m_colormap;
-	for (i = 0; i < 404; i++)
-		m_stream << Q_UINT8(0);		// wasting space ...
 
 	if (img.depth() != 32)
 		img.convertDepth(32);
@@ -449,13 +463,17 @@ bool SGIImage::writeImage(QImage& img)
 	m_starttab = new Q_UINT32[m_numrows];
 	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(Q_UINT32));
 
-	if (!writeData(img)) {			// FIXME misleading name
+	if (!scanData(img)) {
 		kdDebug(399) << "this can't happen" << endl;
 		return false;
 	}
 
 	kdDebug(399) << "number of generated scanlines: " << m_rlemap.size() << endl;
+	kdDebug(399) << "minimum intensity: " << m_pixmin << endl;
+	kdDebug(399) << "maximum intensity: " << m_pixmax << endl;
 
+	writeHeader();
+	uint i;
 	QPtrVector<RLEData> v = m_rlemap.vector();
 #if 0
 	//*** lazy RLE (no shared scanlines) ***
