@@ -442,7 +442,7 @@ void HTMLTokenizer::write( const char *str )
 		blocking.removeLast();
 	    }
 	}
-	else if ( *src == '\n' )
+	else if (( *src == '\n' ) || ( *src == '\r' ))
 	{
 	    if ( !discardCR )
 	    {
@@ -486,6 +486,11 @@ void HTMLTokenizer::write( const char *str )
 
 		    space = true;
 		}
+	    }
+	    /* Check for MS-DOS CRLF sequence */
+	    if ((*src == '\r') && (*(src+1) == '\n'))
+	    {
+		src++;
 	    }
 	    src++;
 	}
@@ -554,11 +559,6 @@ void HTMLTokenizer::write( const char *str )
 
 		space = true;
 	    }
-	    src++;
-	}
-	else if ( *src == 13 )
-	{
-	    // discard
 	    src++;
 	}
 	else if ( *src == '\"' || *src == '\'')
