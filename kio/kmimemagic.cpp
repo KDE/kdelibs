@@ -309,16 +309,10 @@ static struct names {
 		"implements", L_JAVA
 	},
 	{
-		"package", L_JAVA
-	},
-	{
 		"super", L_JAVA
 	},
 	{
 		"import", L_JAVA
-	},
-	{
-		"this", L_CPP|L_JAVA
 	},
 	{
 		"class", L_CPP|L_JAVA
@@ -409,7 +403,7 @@ config_rec *conf;
 void  error( const char *msg, ... )
 {
     va_list ap;
-    va_start( ap, msg );  
+    va_start( ap, msg );
     // use variable arg list
     QString tmp = msg;
     tmp += "\n";
@@ -1021,7 +1015,7 @@ mget(union VALUETYPE *p, unsigned char *s, struct magic *m,
 	  int have = nbytes - offset;
 	  memset(p, 0, sizeof(union VALUETYPE));
 	  if (have > 0)
-	    memcpy(p, s + offset, have); 
+	    memcpy(p, s + offset, have);
 	} else
 	  memcpy(p, s + offset, sizeof(union VALUETYPE));
 
@@ -2151,7 +2145,7 @@ KMimeMagic::findBufferFileType( const char * buffer, int nbytes,
 	refineResult(r, fn);
         return r;
 }
- 
+
 /*
  * Find the content-type of the given file.
  */
@@ -2163,7 +2157,7 @@ KMimeMagicResult* KMimeMagic::findFileType(const char *fn)
 	{
 	  magicResult->setMimeType( "" );
 	  magicResult->setEncoding( "" );
-        } 
+        }
 	else
 	  magicResult = new KMimeMagicResult();
 	magicResult->setInvalid();
