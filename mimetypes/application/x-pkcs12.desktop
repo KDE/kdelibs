@@ -2,7 +2,14 @@
 Type=MimeType
 MimeType=application/x-pkcs12
 Icon=lock
-Patterns=*.p12;*.P12
+Patterns=*.p12;*.P12;*.pfx
 Comment=PKCS#12 Certificate Bundle
+Comment[ara]=شهادة اعتمادية PKCS#12
+Comment[az]=PKCS#12 Vəsiqə Dəstəsi
+Comment[da]=PKCS#12 Certifikat Bundt
+Comment[he]=חבילת תעודות PKCS#12
+Comment[hu]=PKCS#12 tanúsítványcsomag
+Comment[nl]=PKCS#12 Certificaatbundel
+Comment[xxx]=xx
 X-KDE-AutoEmbed=true
 

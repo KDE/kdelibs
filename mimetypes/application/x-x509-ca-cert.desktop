@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-x509-ca-cert
+Icon=lock
+Patterns=*.der;*.cer;*.crt;*.cert;*.pem
+Comment=DER, PEM, or Netscape encoded X.509 certificate
+Comment[xxx]=xx
+X-KDE-AutoEmbed=true
+
