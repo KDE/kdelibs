@@ -5,4 +5,7 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
+<!ENTITY RMB "<acronym>LGM</acronym>">
+<!ENTITY MMB "<acronym>SGM</acronym>">
+<!ENTITY LMB "<acronym>LGM</acronym>">
 
