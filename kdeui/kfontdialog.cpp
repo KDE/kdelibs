@@ -666,27 +666,6 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
   list = lstSys;
 }
 
-
-void KFontChooser::getFontList( QStringList &list, const char *pattern )
-{
-#ifdef Q_WS_X11
-  int num;
-  char **xFonts = XListFonts( qt_xdisplay(), pattern, 2000, &num );
-
-  for( int i = 0; i < num; i++ )
-  {
-    addFont( list, xFonts[i] );
-  }
-  XFreeFontNames( xFonts );
-#else
-  // FIXME(E): Does Qt return font names the same way addFont treats them?
-  QFontDatabase d;
-  list+=d.families();
-#endif
-}
-
-
-
 void KFontChooser::addFont( QStringList &list, const char *xfont )
 {
   const char *ptr = strchr( xfont, '-' );
@@ -813,6 +792,20 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.81  2001/12/21 20:08:35  zander
+* For more control over which fonts are shown in the font dialog:
+* -  static void getFontList( QStringList &list, bool fixed );
+* +  static void getFontList( QStringList &list, uint fontListCriteria);
+*
+* The fonts styles are no longer expected to be the set of 4 normal types:
+* generic/bold/italic/bold-italic.
+* Each font is queried which styles are present and those are shown. This
+* means the user will get what the dialog shows; not a surprise what QT will
+* select.
+*
+* If present; a list of fontsizes will be used from the font server; otherwise
+* the default set will be presented.
+*
 * Revision 1.80  2001/12/19 10:33:32  zander
 * fixed warnings
 *

@@ -70,6 +70,16 @@ public:
 
   /**
    * Constructs a font picker widget.
+   * It normally comes up with all font families present on the system; the 
+   * getFont method below does allow some more fine-tuning of the selection of fonts 
+   * that will be displayed in the dialog.
+   * <p>Consider the following code snippet;<pre>
+   *
+   *    QStringList list;
+   *    KFontChooser::getFontList(list,SmoothScalableFonts);
+   *    KFontChooser chooseFont = new KFontChooser(0, "FontList", false, list);
+   * </pre>
+   * <p>The above creates a font chooser dialog with only SmoothScaleble fonts.
    *
    * @param parent The parent widget.
    * @param name The widget name.
@@ -200,15 +210,6 @@ public:
    */
   static QString getXLFD( const QFont &theFont )
     { return theFont.rawName(); }
-
-  /**
-   * Creates a list of font strings that match @p pattern.
-   *
-   * @param list The list is returned here.
-   * @param pattern The font pattern.
-   */
-  static void getFontList( QStringList &list, const char *pattern );
-
 
   /** 
    * The selection criteria for the font families shown in the dialog.
