@@ -39,16 +39,10 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     setVScrollBarMode( Auto );
     setHScrollBarMode( AlwaysOff );
 
-    connect( this, SIGNAL( selected( QListBoxItem * )),
-             SLOT( slotActivated( QListBoxItem * )) );
-    connect( this, SIGNAL( clicked( QListBoxItem * )),
-             SLOT( slotActivated( QListBoxItem * )));
     connect( this, SIGNAL( doubleClicked( QListBoxItem * )),
-             SLOT( slotExecuted( QListBoxItem * )) );
+             SLOT( slotActivated( QListBoxItem * )) );
 
     installEventFilter( this );
-    parent->installEventFilter( this );
-    kdDebug() << "constructor" << endl;
 }
 
 
@@ -71,14 +65,6 @@ void KCompletionBox::slotActivated( QListBoxItem *item )
         return;
 
     emit activated( item->text() );
-}
-
-void KCompletionBox::slotExecuted( QListBoxItem *item )
-{
-    if ( !item )
-        return;
-
-    emit executed( item->text() );
 }
 
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
@@ -122,6 +108,16 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     ev->accept();
                     return true;
 
+		case Key_Home:
+		    home();
+		    ev->accept();
+		    return true;
+		    
+		case Key_End:
+		    end();
+		    ev->accept();
+		    return true;
+
                 case  Key_Escape:
                     hide();
                     ev->accept();
@@ -140,9 +136,11 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         case QEvent::Show:
             move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
             resize( sizeHint() );
+	    m_parent->installEventFilter( this );
             break;
 
         case QEvent::Hide:
+	    m_parent->removeEventFilter( this );
             revertFocus();
             break;
 
@@ -218,10 +216,6 @@ void KCompletionBox::down()
 {
     if ( currentItem() < (int)count() - 1 )
         setCurrentItem( currentItem() + 1 );
-    else
-        setCurrentItem( 0 );
-
-    emit activated( currentText() );
 }
 
 void KCompletionBox::up()
@@ -230,8 +224,6 @@ void KCompletionBox::up()
         setCurrentItem( currentItem() - 1 );
     else
         setCurrentItem( (int)count()-1 );
-
-    emit activated( currentText() );
 }
 
 void KCompletionBox::pageDown()
@@ -239,8 +231,6 @@ void KCompletionBox::pageDown()
     int i = currentItem() + numItemsVisible();
     i = i > (int)count() - 1 ? (int)count() - 1 : i;
     setCurrentItem( i );
-
-    emit activated( currentText() );
 }
 
 void KCompletionBox::pageUp()
@@ -248,8 +238,16 @@ void KCompletionBox::pageUp()
     int i = currentItem() - numItemsVisible();
     i = i < 0 ? 0 : i;
     setCurrentItem( i );
+}
 
-    emit activated( currentText() );
+void KCompletionBox::home()
+{
+    setCurrentItem( 0 );
+}
+
+void KCompletionBox::end()
+{
+    setCurrentItem( count() -1 );
 }
 
 #include "kcompletionbox.moc"

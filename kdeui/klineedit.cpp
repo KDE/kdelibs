@@ -406,7 +406,7 @@ void KLineEdit::makeCompletionBox()
 	return;
 
     d->completionBox = new KCompletionBox( this, "completion box" );
-    connect( d->completionBox, SIGNAL( activated( const QString& )),
+    connect( d->completionBox, SIGNAL( highlighted( const QString& )),
 	     SLOT( setText( const QString& )));
 }
 

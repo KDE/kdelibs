@@ -90,12 +90,6 @@ signals:
      */
     void activated( const QString& );
 
-    /**
-     * Emitted when an item is double clicked, contains the text of the selected
-     * item.
-     */
-    void executed( const QString& );
-
 public slots:
     /**
      * Move the selection one line down or select the first item if nothing is selected yet.
@@ -117,6 +111,16 @@ public slots:
      */
     void pageUp();
 
+    /**
+     * Move the selection up to the first item.
+     */
+    void home();
+
+    /**
+     * Move the selection down to the last item.
+     */
+    void end();
+
 protected:
     /**
      * Reimplemented from KListBox to get events from the viewport (to hide
@@ -130,12 +134,6 @@ protected slots:
      * @ref activated() with the item.
      */
     virtual void slotActivated( QListBoxItem * );
-
-    /**
-     * Called when an item was double clicked. Emits
-     * @ref executed() with the item.
-     */
-    virtual void slotExecuted( QListBoxItem * );
 
 private slots:
     void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr

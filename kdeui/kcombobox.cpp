@@ -486,11 +486,9 @@ void KComboBox::makeCompletionBox()
         return;
 
     d->completionBox = new KCompletionBox( lineEdit(), "completion box" );
+    connect( d->completionBox, SIGNAL( highlighted( const QString& )),
+             SLOT( setEditText( const QString& )));
     connect( d->completionBox, SIGNAL( activated( const QString& )),
-             SLOT( setEditText( const QString& )));
-    connect( d->completionBox, SIGNAL( executed( const QString& )),
-             SLOT( setEditText( const QString& )));
-    connect( d->completionBox, SIGNAL( executed( const QString& )),
              SIGNAL( activated( const QString & )));
 }
 
@@ -536,7 +534,7 @@ KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
 }
 
 // we are always read-write
-KHistoryCombo::KHistoryCombo( bool useCompletion, 
+KHistoryCombo::KHistoryCombo( bool useCompletion,
 			      QWidget *parent, const char *name )
     : KComboBox( true, parent, name )
 {
@@ -607,7 +605,7 @@ void KHistoryCombo::addToHistory( const QString& item )
 
     int last;
     QString rmItem;
-    
+
     bool useComp = useCompletion();
     while ( count() >= maxCount() && count() > 0 ) {
         // remove the last item, as long as we are longer than maxCount()
@@ -633,7 +631,7 @@ void KHistoryCombo::addToHistory( const QString& item )
         insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), item, 0);
     else
         insertItem( item, 0 );
-    
+
     if ( useComp )
 	completionObject()->addItem( item );
 }
