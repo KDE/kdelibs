@@ -3,6 +3,7 @@ Type=EPS
 Header=^\%!PS-Adobe
 Name=Encapsulated PostScript Images
 Name[bs]=Enkapsulirane PostScript slike
+Name[nl]=Encapsulated PostScript-afbeeldingen
 Name[sl]=Slike v enkapsuliranem PostScriptu
 Name[sv]=Inkapslade Postscript-bilder
 Read=true
