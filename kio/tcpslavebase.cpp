@@ -164,6 +164,11 @@ ssize_t TCPSlaveBase::read(void *data, ssize_t len)
 
 ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 {
+// Optimization:
+//           It's small, but it probably results in a gain on very high
+//   speed connections.  I moved 3 if statements out of the while loop
+//   so that the while loop is as small as possible.  (GS)
+
     // let's not segfault!
     if (!data) return -1;
 
@@ -171,20 +176,30 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
     // ugliness alert!!  calling read() so many times can't be good...
     int clen = 0;
     char *buf = data;
-    while (clen < len) {
-        int rc;
-        if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling ) {
+
+if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {
             if ( d->needSSLHandShake )
                 (void) doSSLHandShake( true );
+    while (clen < len) {
+        int rc;
             rc = d->kssl->read(buf, 1);
-        }
-        else
-            rc = KSocks::self()->read(m_iSock, buf, 1);
-            if (rc < 0) return -1;
-                clen++;
+            if (rc < 0) 
+		return -1;
+	    clen++;
             if (*buf++ == '\n')
                 break;
     }
+} else {
+    while (clen < len) {
+        int rc;
+            rc = KSocks::self()->read(m_iSock, buf, 1);
+            if (rc < 0) 
+		return -1;
+            clen++;
+            if (*buf++ == '\n')
+                break;
+    }
+}
     *buf = 0;
     return clen;
 }
