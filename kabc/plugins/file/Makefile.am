@@ -1,7 +1,7 @@
 INCLUDES = -I$(top_srcdir)/kabc $(all_includes)
 
 # these are the headers for your project
-noinst_HEADERS   = resourcefile.h resourcefileconfig.h
+noinst_HEADERS   = resourcefileconfig.h
 
 kde_module_LTLIBRARIES = kabc_file.la
 
@@ -20,3 +20,6 @@ messages: rc.cpp
 linkdir		= $(kde_datadir)/kresources/contact
 link_DATA	= file.desktop
 EXTRA_DIST	= $(link_DATA)
+
+kabcincludedir = $(includedir)/kabc
+kabcinclude_HEADERS = resourcefile.h
