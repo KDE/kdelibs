@@ -844,7 +844,7 @@ void KHTMLWidget::layout()
     NodeImpl *body = document->body();
     if(!body) return;
 
-    int w = width() - SCROLLBARWIDTH - 5;
+    int w = width() - SCROLLBARWIDTH - 10;
     if(w < _width-5 || w > _width + 10)
     {
 	printf("layouting document\n");

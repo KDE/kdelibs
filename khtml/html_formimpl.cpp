@@ -368,14 +368,15 @@ void HTMLGenericFormElementImpl::setYPos( int yPos )
     badPos = true;
 }
 
-void HTMLGenericFormElementImpl::print(QPainter *, int, int, int, int, int, int)
+void HTMLGenericFormElementImpl::print(QPainter *p, int, int,
+				       int, int, int tx, int ty)
 {
     if(badPos && view && w)
     {
-	int absX, absY;
-	getAbsolutePosition(absX, absY);
-	absY -= ascent;
-	view->addChild(w, absX, absY);
+	tx += x;
+	ty += y - ascent;
+	view->addChild(w, tx, ty);
+	// ### we have to set the background somehow...
 	w->show();
 	badPos = false;
     }

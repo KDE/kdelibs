@@ -347,15 +347,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	HTMLElementImpl *e;
 	bool ignore = false;
 
-	if(!inBody && n->id() == ID_TEXT)
-	{
-	    TextImpl *t = static_cast<TextImpl *>(n);
-	    // ignore spaces in head...
-	    if(t->string()->l == 1 && ( *(t->string()->s) == QChar(' ') ||
-					*(t->string()->s) == QChar(0xA0)) )
-		return;
-	}
-
 	switch(current->id())
 	{
 	case ID_HTML:

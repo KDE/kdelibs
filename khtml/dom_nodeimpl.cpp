@@ -419,7 +419,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     // short check for consistency with DTD
     if(!checkChild(id(), newChild->id()))
     {
-	printf("AddChild failed! id=%d, child->id=%d\n", id(), newChild->id());
+        //printf("AddChild failed! id=%d, child->id=%d\n", id(), newChild->id());
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 

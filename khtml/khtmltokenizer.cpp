@@ -1152,15 +1152,19 @@ void HTMLTokenizer::processToken()
     {
 	if(currToken->id)
 	    printf("Error in processToken!!!\n");
+	if(!pre && dest - buffer == 1 && *buffer == QChar(' '))
+	{
+	    dest = buffer;
+	    return;
+	}
         currToken->text = DOMString( buffer, dest-buffer);
 	currToken->id = ID_TEXT;
     }
-    else 
-	if(!currToken->id) 
-	{
-//	    printf("Empty token!\n");
-	    return;
-	}
+    else if(!currToken->id) 
+    {
+//      printf("Empty token!\n");
+	return;
+    }
     dest = buffer;
 
 #ifdef TOKEN_DEBUG
