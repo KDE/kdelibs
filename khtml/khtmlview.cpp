@@ -41,6 +41,7 @@
 #include <kprinter.h>
 
 #include <qpixmap.h>
+#include <qtooltip.h>
 #include <qstring.h>
 #include <qpainter.h>
 #include <qpalette.h>
@@ -61,8 +62,10 @@ QList<KHTMLView> *KHTMLView::lstViews = 0L;
 
 using namespace DOM;
 using namespace khtml;
+class KHTMLToolTip;
 
 class KHTMLViewPrivate {
+    friend class KHTMLToolTip;
 public:
     KHTMLViewPrivate()
     {
@@ -125,6 +128,39 @@ public:
     int prevMouseX, prevMouseY;
 };
 
+class KHTMLToolTip : public QToolTip
+{
+public:
+    KHTMLToolTip(KHTMLView *view,  KHTMLViewPrivate* vp) : QToolTip(view->viewport())
+    {
+        m_view = view;
+        m_viewprivate = vp;
+    };
+
+protected:
+    virtual void maybeTip(const QPoint &);
+
+private:
+    KHTMLView *m_view;
+    KHTMLViewPrivate* m_viewprivate;
+};
+
+void KHTMLToolTip::maybeTip(const QPoint& p)
+{
+    DOM::NodeImpl *node = m_viewprivate->underMouse;
+    while ( node ) {
+        if ( node->hasTooltip() && node->isElementNode() ) {
+            QString s = static_cast<DOM::ElementImpl*>( node )->getAttribute( ATTR_TITLE ).string();
+            if ( !s.isEmpty() ) {
+                QRect r( m_view->contentsToViewport( node->getRect().topLeft() ), node->getRect().size() );
+                tip( r,  s );
+            }
+            break;
+        }
+        node = node->parentNode();
+    }
+}
+
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
@@ -142,6 +178,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     KImageIO::registerFormats();
 
     viewport()->setCursor(arrowCursor);
+    ( void ) new KHTMLToolTip( this, d );
 
     init();
 
@@ -993,14 +1030,14 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     // mouseout/mouseover
     if (setUnder && (d->prevMouseX != clientX || d->prevMouseY != clientY)) {
     	NodeImpl *oldUnder = 0;
-	
+
 	if (d->prevMouseX >= 0 && d->prevMouseY >= 0) {
 	    NodeImpl::MouseEvent mev( _mouse->stateAfter(), static_cast<NodeImpl::MouseEventType>(mouseEventType));
 	    m_part->xmlDocImpl()->prepareMouseEvent( d->prevMouseX, d->prevMouseY, 0, 0, &mev );
 	    oldUnder = mev.innerNode.handle();
 	}
 
-	if (oldUnder != targetNode) {	    	
+	if (oldUnder != targetNode) {
 	    // send mouseout event to the old node
 	    if (oldUnder){
 		oldUnder->ref();
@@ -1012,9 +1049,9 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 		me->ref();
 		oldUnder->dispatchEvent(me,exceptioncode);
 		me->deref();
-	    }	
+	    }
 
-		
+
 	    // send mouseover event to the new node
 	    if (targetNode) {
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
@@ -1022,18 +1059,18 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 							0,screenX,screenY,clientX,clientY,
 							ctrlKey,altKey,shiftKey,metaKey,
 							button,oldUnder);
-	
+
 		me->ref();
 		targetNode->dispatchEvent(me,exceptioncode);
 		me->deref();
 	    }
-	
+
 	}
 	if (oldUnder)
 	    oldUnder->deref();
     }
 
-    if (targetNode) {		
+    if (targetNode) {
 	// send the actual event
 	MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
 						true,cancelable,m_part->xmlDocImpl()->defaultView(),
@@ -1051,11 +1088,11 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 				    detail,screenX,screenY,clientX,clientY,
 				    ctrlKey,altKey,shiftKey,metaKey,
 				    button,0);
-	
-	
+
+
 	    me->ref();
 	    targetNode->dispatchEvent(me,exceptioncode);
-	    me->deref();	
+	    me->deref();
 	}
     }
 
