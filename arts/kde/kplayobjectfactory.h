@@ -34,8 +34,12 @@ public:
 
 	KPlayObject *createPlayObject(KURL url, bool createBUS);
 
+	bool setAllowStreaming(bool s) { m_allowStreaming = s; }
+	bool allowStreaming() { return m_allowStreaming; }
+
 private:
 	Arts::SoundServerV2 m_server;
+	bool m_allowStreaming;
 };
 
 #endif

@@ -29,6 +29,7 @@ using namespace std;
 KPlayObjectFactory::KPlayObjectFactory(Arts::SoundServerV2 server)
 {
 	m_server = server;
+	m_allowStreaming = true;
 }
 
 KPlayObjectFactory::~KPlayObjectFactory()
@@ -40,7 +41,7 @@ KPlayObject *KPlayObjectFactory::createPlayObject(KURL url, bool createBUS)
 	if(!m_server.isNull())
 	{
 		KMimeType::Ptr mimetype = KMimeType::findByURL(url);
-		if(mimetype->name() == "application/octet-stream")
+		if(mimetype->name() == "application/octet-stream" && m_allowStreaming)
 		{
 			Arts::KIOInputStream instream;
 			instream.openURL(url.prettyURL().latin1());
