@@ -1699,8 +1699,6 @@ int main(int argc, char **argv, char **envp)
    // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
    unsetenv("DYLD_BIND_AT_LAUNCH");
-   if (!d.suicide)
-      setenv("KDE_FULL_SESSION", "true", true);
    KApplication::loadedByKdeinit = true;
 
    d.maxname = strlen(argv[0]);
