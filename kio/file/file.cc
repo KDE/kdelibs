@@ -858,7 +858,7 @@ void FileProtocol::special( const QByteArray &data)
 // Connected to KShred
 void FileProtocol::slotProcessedSize( unsigned long bytes )
 {
-  kdDebug(7006) << "FileProtocol::slotProcessedSize (" << bytes << ")" << endl;
+  kdDebug(7006) << "FileProtocol::slotProcessedSize (" << (unsigned int) bytes << ")" << endl;
   processedSize( bytes );
 }
 

@@ -1503,7 +1503,7 @@ void Ftp::put( const QString& dest_orig, int permissions, bool overwrite, bool r
   // set the mode according to offset
   if ( resume ) {
     offset = m_size;
-    kdDebug(7102) << "Offset = " << offset << "d" << endl;
+    kdDebug(7102) << "Offset = " << (unsigned int) offset << "d" << endl;
   }
 
   if (! ftpOpenCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
