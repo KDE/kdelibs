@@ -27,13 +27,13 @@ KPixmap& KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
        (eff == VerticalGradient || eff == HorizontalGradient)) {
 
         int rDiff, gDiff, bDiff;
-        int rca, gca, bca, rcb, gcb, bcb;
+        int rca, gca, bca /*, rcb, gcb, bcb*/;
 
         register int x, y;
 
-        rDiff = (rcb = cb.red())   - (rca = ca.red());
-        gDiff = (gcb = cb.green()) - (gca = ca.green());
-        bDiff = (bcb = cb.blue())  - (bca = ca.blue());
+        rDiff = (/*rcb = */ cb.red())   - (rca = ca.red());
+        gDiff = (/*gcb = */ cb.green()) - (gca = ca.green());
+        bDiff = (/*bcb = */ cb.blue())  - (bca = ca.blue());
 
         register int rl = rca << 16;
         register int gl = gca << 16;
@@ -214,7 +214,7 @@ void KPixmapEffect::pattern(KPixmap &pixmap, const QColor &ca,
 #endif
 
 // -----------------------------------------------------------------------------
-	
+
 KPixmap KPixmapEffect::pattern(const KPixmap& pmtile, QSize size,
                        const QColor &ca, const QColor &cb, int ncols)
 {

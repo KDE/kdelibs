@@ -160,7 +160,6 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 	quote = TRUE;
 	popMsg();
 	return;
-	break;
 
       case Key_Delete:
 	deleteKey = TRUE;

@@ -495,7 +495,6 @@ bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
     case QEvent::Hide:
       on(false);
       return false;
-      break;
   default:
       break;
   }
