@@ -1309,8 +1309,7 @@ void KToolBar::rebuildLayout()
     layoutTimer->stop();
     delete bl;
     bl = new QBoxLayout( this, orientation() == Vertical
-			 ? QBoxLayout::Down : QBoxLayout::LeftToRight,
-			 style() == WindowsStyle ? 2 : 1, 0 );
+			 ? QBoxLayout::Down : QBoxLayout::LeftToRight, 2, 0 );
     bl->addSpacing( 9 );
     bl->setDirection( orientation() ==Horizontal ? QBoxLayout::LeftToRight :
 		      QBoxLayout::TopToBottom );
@@ -1325,7 +1324,7 @@ void KToolBar::rebuildLayout()
     }
 	
     if ( fullSize() ) {
-	if ( !stretchableWidget && widgets.last() && 
+	if ( !stretchableWidget && widgets.last() &&
 	     !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
 	    setStretchableWidget( widgets.last() );
   	if ( !rightAligned )
