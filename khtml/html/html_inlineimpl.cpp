@@ -57,7 +57,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
     // React on clicks and on keypresses.
     // Don't make this KEYUP_EVENT again, it makes khtml follow links
     // it shouldn't, when pressing Enter in the combo.
-    if ( ( (evt->id() == EventImpl::CLICK_EVENT && static_cast<MouseEventImpl*>(evt)->detail() == 1) ||
+    if ( ( (evt->id() == EventImpl::CLICK_EVENT && !static_cast<MouseEventImpl*>(evt)->isDoubleClick()) ||
          ( keydown && m_focused)) && m_hasAnchor) {
 
         MouseEventImpl *e = 0;

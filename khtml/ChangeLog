@@ -1,3 +1,9 @@
+2003-10-31  David Faure  <faure@kde.org>
+
+	* html/html_inlineimpl.cpp (defaultEventHandler): Another wrong use of detail()
+	instead of the new isDoubleClick(), which made it impossible to click on the
+	same link twice without moving the mouse (#58241).
+
 2003-10-30  Dirk Mueller  <mueller@kde.org>
 
 	* xml/dom_docimpl.cpp (open): do a full detach()/attach(),
