@@ -169,6 +169,7 @@ protected slots:
   void slotRMBActionEditAt( int );
 
   void slotBookmarkSelected();
+  void slotAddBookmarkList();
   void slotAddBookmark();
   void slotNewFolder();
 
@@ -178,9 +179,10 @@ protected slots:
   void slotNSLoad();
 
 protected:
-
+  KExtendedBookmarkOwner* extOwner();
   void refill();
   void addAddBookmark();
+  void addAddBookmarksList();
   void addEditBookmarks();
   void addNewFolder();
 

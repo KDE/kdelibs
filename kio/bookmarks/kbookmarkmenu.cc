@@ -126,7 +126,11 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
   if ( m_bIsRoot )
   {
     if ( m_bAddBookmark )
+    {
       addAddBookmark();
+      if ( extOwner() )
+        addAddBookmarksList(); // FIXME
+    }
 
     addEditBookmarks();
   }
@@ -373,6 +377,30 @@ void KBookmarkMenu::refill()
   m_parentMenu->adjustSize();
 }
 
+void KBookmarkMenu::addAddBookmarksList()
+{
+  if (!kapp->authorizeKAction("bookmarks"))
+     return;
+  
+  QString title = i18n( "&Add Bookmarks List" );
+  int p;
+  while ( ( p = title.find( '&' ) ) >= 0 )
+    title.remove( p, 1 );
+
+  KAction * paAddBookmarksList = new KAction( title,
+                                          "bookmarks_list_add",
+                                          0,
+                                          this,
+                                          SLOT( slotAddBookmarkList() ),
+                                          m_actionCollection, m_bIsRoot ? "add_bookmarks_list" : 0 );
+
+  // FIXME
+  paAddBookmarksList->setToolTip( i18n( "Add a bookmark for the current tabset" ) );
+
+  paAddBookmarksList->plug( m_parentMenu );
+  m_actions.append( paAddBookmarksList );
+}
+
 void KBookmarkMenu::addAddBookmark()
 {
   if (!kapp->authorizeKAction("bookmarks"))
@@ -439,7 +467,11 @@ void KBookmarkMenu::fillBookmarkMenu()
   if ( m_bIsRoot )
   {
     if ( m_bAddBookmark )
+    {
       addAddBookmark();
+      if ( extOwner() )
+        addAddBookmarksList(); // FIXME
+    }
 
     addEditBookmarks();
 
@@ -558,9 +590,36 @@ void KBookmarkMenu::fillBookmarkMenu()
     else 
     {
       addAddBookmark();
+      if ( extOwner() )
+        addAddBookmarksList(); // FIXME
       addNewFolder();
     }
   }
+}
+
+void KBookmarkMenu::slotAddBookmarkList()
+{
+    KExtendedBookmarkOwner *extOwner = dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
+    if (!extOwner)
+    {
+        kdWarning() << "erm, sorry ;-)" << endl;
+        return;
+    }
+
+    KExtendedBookmarkOwner::QStringPairList list;
+    extOwner->fillBookmarksList( list );
+
+    KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
+    Q_ASSERT(!parentBookmark.isNull());
+    KBookmarkGroup group = parentBookmark.createNewFolder( m_pManager );
+    if ( group.isNull() )
+        return; // user cancelled i guess
+
+    KExtendedBookmarkOwner::QStringPairList::const_iterator it;
+    for ( it = list.begin(); it != list.end(); ++it ) 
+        group.addBookmark( m_pManager, (*it).first, KURL((*it).second) );
+
+    m_pManager->emitChanged( parentBookmark );
 }
 
 void KBookmarkMenu::slotAddBookmark()
@@ -645,6 +704,11 @@ void KBookmarkMenu::slotBookmarkSelected()
   //kdDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
   m_pOwner->openBookmarkURL( sender()->property("url").toString() );
+}
+
+KExtendedBookmarkOwner* KBookmarkMenu::extOwner()
+{
+    return dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
 }
 
 // -----------------------------------------------------------------------------
