@@ -3520,12 +3520,14 @@ bool HTTPProtocol::readHeader()
      m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
   }
 
-  // Prefer application/x-tgz over application/x-gzip
+  // Prefer application/x-tgz or x-gzpostscript over application/x-gzip.
   else if (m_strMimeType == "application/x-gzip")
   {
      if ((m_request.url.path().right(7) == ".tar.gz") ||
          (m_request.url.path().right(4) == ".tar"))
         m_strMimeType = QString::fromLatin1("application/x-tgz");
+     if ((m_request.url.path().right(6) == ".ps.gz"))
+        m_strMimeType = QString::fromLatin1("application/x-gzpostscript");
   }
 
   // Some webservers say "text/plain" when they mean "application/x-bzip2"
