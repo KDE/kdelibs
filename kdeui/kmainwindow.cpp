@@ -688,9 +688,9 @@ bool KMainWindow::isStandardToolBarMenuEnabled() const
 void KMainWindow::createStandardStatusBarAction(){
   if(!d->showStatusBarAction){
     d->showStatusBarAction = KStdAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
-    connect(d->showStatusBarAction, SIGNAL(toggled(bool)), statusBar(), SLOT(setShown(bool)));
-    if(internalStatusBar())
-      d->showStatusBarAction->setChecked(!internalStatusBar()->isHidden());
+    KStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
+    connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setShown(bool)));
+    d->showStatusBarAction->setChecked(sb->isHidden());
   }
 }
 
