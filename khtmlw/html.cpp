@@ -180,6 +180,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     linkCursor    = arrowCursor;
     bIsTextSelected = false;
     charsetConverter = 0;
+    blockStack = 0;
 
     framesetStack.setAutoDelete( false );
     framesetList.setAutoDelete( false );
