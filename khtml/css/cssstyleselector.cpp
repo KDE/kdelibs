@@ -103,11 +103,11 @@ CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
     HTMLElementImpl *e = doc->body();
     if(e && e->id() == ID_BODY)
     {
-	kdDebug(300) << "found body element" << endl;
+	kdDebug( 6080 ) << "found body element" << endl;
 	HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
 	if(body->sheet())
 	{
-	    kdDebug(300) << "body has style sheet " << body->sheet() << endl;
+	    kdDebug( 6080 ) << "body has style sheet " << body->sheet() << endl;
 	    authorStyle->append(body->sheet());
 	}
     }
@@ -190,7 +190,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 	applyRule(style, propsToApply->at(i)->prop, e);
 	
 	
-//    kdDebug(300) << "STYLE count=" << RenderStyle::counter << ", DATA count=" << SharedData::counter << endl;
+//    kdDebug( 6080 ) << "STYLE count=" << RenderStyle::counter << ", DATA count=" << SharedData::counter << endl;
 
     // experimental -antti
 #if 0
@@ -298,7 +298,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	    break;
 	case CSSSelector::List:
 	{
-	    //kdDebug(300) << "checking for list match" << endl;
+	    //kdDebug( 6080 ) << "checking for list match" << endl;
 	    QString str = value.string();
 	    QString selStr = sel->value.string();
 	    int pos = str.find(selStr);
@@ -311,7 +311,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	case CSSSelector::Hyphen:
 	{
 	    // ### still doesn't work. FIXME
-	    //kdDebug(300) << "checking for hyphen match" << endl;
+	    //kdDebug( 6080 ) << "checking for hyphen match" << endl;
 	    QString str = value.string();
 	    if(str.find(sel->value.string()) != 0) return false;
 	    // ### could be "bla , sdfdsf" too. Parse out spaces
@@ -380,7 +380,7 @@ void CSSStyleSelectorList::append(StyleSheetImpl *sheet)
 	    {
 		CSSOrderedRule *rule = new CSSOrderedRule(r, s->at(j), count());
 		QList<CSSOrderedRule>::append(rule);
-		//kdDebug(300) << "appending StyleRule!" << endl;
+		//kdDebug( 6080 ) << "appending StyleRule!" << endl;
 	    }
 	}
 	else if(item->isImportRule())
@@ -414,7 +414,7 @@ void CSSStyleSelectorList::collect(CSSOrderedPropertyList *propsToApply, DOM::El
     {
 	if(at(i)->checkSelector(e))
 	{
-	    //kdDebug(300) << "found matching rule for element " << e->id() << endl;
+	    //kdDebug( 6080 ) << "found matching rule for element " << e->id() << endl;
 	    CSSStyleDeclarationImpl *decl = at(i)->rule->declaration();
 	    propsToApply->append(decl, offset + at(i)->index, important);
 	}
@@ -475,7 +475,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 {
     CSSValueImpl *value = prop->value();
 
-    //kdDebug(300) << "applying value " << prop->m_id << endl;
+    //kdDebug( 6080 ) << "applying value " << prop->m_id << endl;
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);
@@ -559,7 +559,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BORDER_BOTTOM_STYLE:
     case CSS_PROP_BORDER_LEFT_STYLE:
     {
-	//kdDebug(300) << "applying border style!" << endl;
+	//kdDebug( 6080 ) << "applying border style!" << endl;
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
 	    if(!e->parentNode()) return;
@@ -717,7 +717,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	default:
 	    break;
 	}
-	//kdDebug(300) << "setting display to " << d << endl;
+	//kdDebug( 6080 ) << "setting display to " << d << endl;
 	style->setDisplay(d);
 	break;
     }
@@ -1063,7 +1063,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	if(!primitiveValue) return;
 	CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(primitiveValue);
 	style->setBackgroundImage(image->image());
-	kdDebug(300) << "setting image in style to " << image->image() << endl;
+	kdDebug( 6080 ) << "setting image in style to " << image->image() << endl;
 	break;
     }
     case CSS_PROP_CUE_AFTER:
@@ -1163,7 +1163,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	if(prop->m_id != CSS_PROP_MAX_WIDTH && primitiveValue &&
 	   primitiveValue->getIdent() == CSS_VAL_AUTO)
 	{
-	    //kdDebug(300) << "found value=auto" << endl;
+	    //kdDebug( 6080 ) << "found value=auto" << endl;
 	    apply = true;
 	}
     case CSS_PROP_PADDING_TOP:
@@ -1379,7 +1379,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	// we never want to get smaller than 7 points to keep fonts readable
 	if(size < 7 ) size = 7;
 	
-	//kdDebug(300) << "computed raw font size: " << size << endl;
+	//kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
 	// ok, now some magic to get a nice unscaled font
 	// ### all other font properties should be set before this one!!!!
@@ -1396,7 +1396,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
 	    {
 		float newDiff = ((*it) - size)/size;
-		//kdDebug(300) << "smooth font size: " << *it << " diff=" << newDiff << endl;
+		//kdDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
 		if(newDiff < 0) newDiff = -newDiff;
 		if(newDiff < diff)
 		{
@@ -1404,7 +1404,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		    bestSize = *it;
 		}
 	    }
-	    //kdDebug(300) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
+	    //kdDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
 	    if(diff < .15) // 15% deviation, otherwise we use a scaled font...
 		size = bestSize;
 	}	
@@ -1534,12 +1534,12 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    QFontInfo fi(f);
 	    if(!strcasecmp(fi.family().ascii(), face.ascii()))
 	    {
-		//kdDebug(300) << "=====> setting font family to " << face << endl;
+		//kdDebug( 6080 ) << "=====> setting font family to " << face << endl;
 		//KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
 		style->setFont(f);
 		break;
 	    }
-	    //kdDebug(300) << "no match for font family " << face << ", got " << fi.family() << endl;
+	    //kdDebug( 6080 ) << "no match for font family " << face << ", got " << fi.family() << endl;
 	}
 	break;
     }

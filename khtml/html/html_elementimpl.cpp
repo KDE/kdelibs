@@ -62,7 +62,7 @@ HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
 HTMLElementImpl::~HTMLElementImpl()
 {
     delete m_styleDecls;
-    //kdDebug(300) << "Element destructor: this=" << nodeName().string() << endl;
+    //kdDebug( 6030 ) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
 bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
@@ -70,7 +70,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
                                   NodeImpl *&innerNode, long &offset)
 {
 #ifdef EVENT_DEBUG
-    kdDebug(300) << nodeName().string() << "::mouseEvent" << endl;
+    kdDebug( 6030 ) << nodeName().string() << "::mouseEvent" << endl;
 #endif
     bool inside = false;
 
@@ -78,7 +78,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
     if(m_render->parent() && m_render->parent()->isAnonymousBox())
     {
-	//kdDebug(300) << "parent is anonymous!" << endl;
+	//kdDebug( 6030 ) << "parent is anonymous!" << endl;
 	// we need to add the offset of the anonymous box
 	_tx += m_render->parent()->xPos();
 	_ty += m_render->parent()->yPos();
@@ -95,7 +95,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 	    (_x < _tx ) || (_x > _tx + m_render->width() ) )
         {
             inside = false;
-	    //kdDebug(300) << "not inside the block element!" << endl;
+	    //kdDebug( 6030 ) << "not inside the block element!" << endl;
         }
 
 
@@ -113,7 +113,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
     }
 
 #ifdef EVENT_DEBUG
-    if(inside) kdDebug(300) << "    --> inside" << endl;
+    if(inside) kdDebug( 6030 ) << "    --> inside" << endl;
 #endif
     // dynamic HTML...
     if(inside || mouseInside()) mouseEventHandler(button, type, inside);
@@ -156,7 +156,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
     DOMString script = getAttribute(id);
     if(script.length())
     {
-	kdDebug(300) << "emit executeScript( " << script.string() << " )" << endl;
+	kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
 	view->part()->executeScript( script.string() );
     }
     }
@@ -166,7 +166,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	DOMString script = getAttribute(ATTR_ONCLICK);
 	if(script.length())
 	{
-	    kdDebug(300) << "(click) emit executeScript( " << script.string() << " )" << endl;
+	    kdDebug( 6030 ) << "(click) emit executeScript( " << script.string() << " )" << endl;
 	    view->part()->executeScript( script.string() );
 	}
     }
@@ -180,7 +180,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	DOMString script = getAttribute(id);
 	if(script.length())
 	{
-	    kdDebug(300) << "emit executeScript( " << script.string() << " )" << endl;
+	    kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
 	    view->part()->executeScript( script.string() );
 	}
     }

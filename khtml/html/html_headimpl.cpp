@@ -195,7 +195,7 @@ void HTMLLinkElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
-    kdDebug(300) << "HTMLLinkElement::setStyleSheet()" << endl;
+    kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->parseString(sheet);
@@ -206,7 +206,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
 
 bool HTMLLinkElementImpl::isLoading()
 {
-    kdDebug(300) << "link: checking if loading!" << endl;
+    kdDebug( 6030 ) << "link: checking if loading!" << endl;
     if(m_loading) return true;
     if(!m_sheet) return false;
     //if(!m_sheet->isCSSStyleSheet()) return false;
@@ -257,21 +257,21 @@ void HTMLMetaElementImpl::parseAttribute(Attribute *attr)
 void HTMLMetaElementImpl::attach(KHTMLView *v)
 {
     m_style = document->styleSelector()->styleForElement(this);
-    kdDebug(300) << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
+    kdDebug( 6030 ) << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull())
     {
 	// get delay and url
 	QString str = _content.string();
 	int pos = str.find(QRegExp("[;,]"));
 	int delay = str.left(pos).toInt();
-	kdDebug(300) << "delay = " << delay << ", separator at " << pos << endl;
+	kdDebug( 6030 ) << "delay = " << delay << ", separator at " << pos << endl;
 	pos++;
 	while(pos < (int)str.length() && str[pos].isSpace()) pos++;
 	if(pos < (int)str.length()) str = str.mid(pos);
 	if(strncasecmp(str, "url=", 4) == 0)
 	{
 	    str = str.mid(4);
-	    kdDebug(300) << "====> got redirect to " << str << endl;
+	    kdDebug( 6030 ) << "====> got redirect to " << str << endl;
 	    v->part()->scheduleRedirection(delay, str);
 	}
     }
@@ -359,7 +359,7 @@ NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
 
     DOMString text = static_cast<TextImpl *>(child)->string();
 
-    kdDebug(300) << "style: parsing sheet '" << text.string() << "'" << endl;
+    kdDebug( 6030 ) << "style: parsing sheet '" << text.string() << "'" << endl;
 
     if(m_sheet) m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this);
@@ -403,7 +403,7 @@ ushort HTMLTitleElementImpl::id() const
 
 void HTMLTitleElementImpl::close()
 {
-    kdDebug(300) << "Title:close" << endl;
+    kdDebug( 6030 ) << "Title:close" << endl;
     if(!_first || _first->id() != ID_TEXT) return;
     TextImpl *t = static_cast<TextImpl *>(_first);
     QString s = t->data().string();

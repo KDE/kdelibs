@@ -53,7 +53,7 @@ template class QStack<DOM::NodeImpl>;
 
 HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 {
-    kdDebug(300) << "HTMLDocumentImpl constructor this = " << this << endl;
+    kdDebug( 6030 ) << "HTMLDocumentImpl constructor this = " << this << endl;
     parser = 0;
     tokenizer = 0;
 
@@ -67,7 +67,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     : DocumentImpl(v)
 {
-    kdDebug(300) << "HTMLDocumentImpl constructor2 this = " << this << endl;
+    kdDebug( 6030 ) << "HTMLDocumentImpl constructor2 this = " << this << endl;
     parser = 0;
     tokenizer = 0;
 
@@ -82,7 +82,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
 {
-    kdDebug(300) << "HTMLDocumentImpl destructor this = " << this << endl;
+    kdDebug( 6030 ) << "HTMLDocumentImpl destructor this = " << this << endl;
 }
 
 DOMString HTMLDocumentImpl::referrer() const
@@ -120,7 +120,7 @@ HTMLElementImpl *HTMLDocumentImpl::body()
 
 void HTMLDocumentImpl::open(  )
 {
-    //kdDebug(300) << "HTMLDocumentImpl::open()" << endl;
+    //kdDebug( 6030 ) << "HTMLDocumentImpl::open()" << endl;
     clear();
     parser = new KHTMLParser(m_view, this);
     tokenizer = new HTMLTokenizer(parser, m_view);
@@ -261,19 +261,19 @@ void HTMLDocumentImpl::clear()
 NodeImpl *HTMLDocumentImpl::addChild(NodeImpl *newChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << "Document::addChild( " << newChild->nodeName().string() << " )" << endl;
+    kdDebug( 6030 ) << "Document::addChild( " << newChild->nodeName().string() << " )" << endl;
 #endif
 
     // short check for consistency with DTD
     if(newChild->id() != ID_HTML)
     {
-	kdDebug(300) << "AddChild failed! id=#document, child->id=" << newChild->id() << endl;
+	kdDebug( 6030 ) << "AddChild failed! id=#document, child->id=" << newChild->id() << endl;
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 
     if(_first)
     {
-	kdDebug(300) << "AddChild failed! id=#document, child->id=" << newChild->id() << ". Already have a HTML element!" << endl;
+	kdDebug( 6030 ) << "AddChild failed! id=#document, child->id=" << newChild->id() << ". Already have a HTML element!" << endl;
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 
@@ -370,7 +370,7 @@ void HTMLDocumentImpl::applyChanges()
 
 void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
-    kdDebug(300) << "HTMLDocument::setStyleSheet()" << endl;
+    kdDebug( 6030 ) << "HTMLDocument::setStyleSheet()" << endl;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->parseString(sheet);

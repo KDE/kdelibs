@@ -63,7 +63,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const DOMString &
 
 CachedCSSStyleSheet::~CachedCSSStyleSheet()
 {
-    //kdDebug( 300 ) << "CachedCSSStyleSheet::~CachedCSSStyleSheet() " << url().string() << endl;
+    //kdDebug( 6060 ) << "CachedCSSStyleSheet::~CachedCSSStyleSheet() " << url().string() << endl;
 }
 
 void CachedCSSStyleSheet::ref(CachedObjectClient *c)
@@ -100,7 +100,7 @@ void CachedCSSStyleSheet::checkNotify()
 {
     if(loading) return;
 
-    //kdDebug(300) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
+    //kdDebug( 6060 ) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
 
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
@@ -268,7 +268,7 @@ CachedImage::~CachedImage()
 {
     if( m ) delete m;
     if( p ) delete p;
-    //kdDebug( 300 ) << "CachedImage::~CachedImage() " << url().string() << endl;
+    //kdDebug( 6060 ) << "CachedImage::~CachedImage() " << url().string() << endl;
 }
 
 void CachedImage::ref( CachedObjectClient *c )
@@ -298,7 +298,7 @@ const QPixmap &CachedImage::pixmap() const
 
 void CachedImage::notify( CachedObjectClient *c )
 {
-    //kdDebug(300) << "Cache::notify()" << endl;
+    //kdDebug( 6060 ) << "Cache::notify()" << endl;
 
     if ( m )
     {
@@ -340,7 +340,7 @@ void CachedImage::notify( CachedObjectClient *c )
 
 void CachedImage::movieUpdated( const QRect & )
 {
-    //kdDebug(300) << "Cache::movieUpdated()" << endl;
+    //kdDebug( 6060 ) << "Cache::movieUpdated()" << endl;
     QPixmap pixmap = m->framePixmap();
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
@@ -370,7 +370,7 @@ void CachedImage::clear()
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
-    //kdDebug(300) << "in CachedImage::data()" << endl;
+    //kdDebug( 6060 ) << "in CachedImage::data()" << endl;
     if ( !typeChecked )
     {
 	clear();
@@ -466,7 +466,7 @@ void Loader::servePendingRequests()
   // get the first pending request
   Request *req = m_requestsPending.take(0);
 
-  //kdDebug(300) << "starting Loader url=" << req->object->url().string() << endl;
+  //kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 
   KIO::Job* job = KIO::get( req->object->url().string(), false, false /*no GUI*/);
 
@@ -489,7 +489,7 @@ void Loader::slotFinished( KIO::Job* job )
     Request *r = m_requestsLoading.take( job );
     if(!r) return;
     r->object->data(r->m_buffer, true);
-    //kdDebug(300) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
+    //kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 
     servePendingRequests();
   }
@@ -527,16 +527,16 @@ int Loader::numRequests( const DOMString &baseURL )
 
 void Loader::cancelRequests( const DOMString &baseURL )
 {
-    //kdDebug( 300 ) << "void Loader::cancelRequests( " << baseURL.string() << " )" << endl;
+    //kdDebug( 6060 ) << "void Loader::cancelRequests( " << baseURL.string() << " )" << endl;
 
-    //kdDebug( 300 ) << "got " << m_requestsPending.count() << " pending requests" << endl;
+    //kdDebug( 6060 ) << "got " << m_requestsPending.count() << " pending requests" << endl;
 
   QListIterator<Request> pIt( m_requestsPending );
   while ( pIt.current() )
   {
     if ( pIt.current()->m_baseURL == baseURL )
     {
-	//kdDebug( 300 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
+	//kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
 
       Cache::removeCacheEntry( pIt.current()->object );
 
@@ -546,14 +546,14 @@ void Loader::cancelRequests( const DOMString &baseURL )
       ++pIt;
   }
 
-  //kdDebug( 300 ) << "got " << m_requestsLoading.count() << "loading requests" << endl;
+  //kdDebug( 6060 ) << "got " << m_requestsLoading.count() << "loading requests" << endl;
 
   QPtrDictIterator<Request> lIt( m_requestsLoading );
   while ( lIt.current() )
   {
     if ( lIt.current()->m_baseURL == baseURL )
     {
-	//kdDebug( 300 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
+	//kdDebug( 6060 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
 
       KIO::Job *job = static_cast<KIO::Job *>( lIt.currentKey() );
 
@@ -616,7 +616,7 @@ void Cache::init()
 
 void Cache::clear()
 {
-    //kdDebug( 300 ) << "Cache::clear()" << endl;
+    //kdDebug( 6060 ) << "Cache::clear()" << endl;
     if(cache) delete cache;
     cache = 0;
     if(lru) delete lru;
@@ -638,7 +638,7 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
     KURL kurl = completeURL( url, baseUrl );
     if( kurl.isMalformed() )
     {
-      kdDebug(300) << "Cache: Malformed url: " << kurl.url() << endl;
+      kdDebug( 6060 ) << "Cache: Malformed url: " << kurl.url() << endl;
       return 0;
     }
 
@@ -646,7 +646,7 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
     if(!o)
     {
 #ifdef CACHE_DEBUG
-	kdDebug(300) << "Cache: new: " << kurl.url() << endl;
+	kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
 	CachedImage *im = new CachedImage(kurl.url(), baseUrl);
 	cache->insert( kurl.url(), im );
@@ -656,15 +656,15 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
 
     if(!o->type() == CachedObject::Image)
     {
-	kdDebug(300) << "Cache::Internal Error in requestImage url=" << kurl.url() << "!" << endl;
+	kdDebug( 6060 ) << "Cache::Internal Error in requestImage url=" << kurl.url() << "!" << endl;
 	return 0;
     }
 
 #ifdef CACHE_DEBUG
     if( o->status() == CachedObject::Pending )
-	kdDebug(300) << "Cache: loading in progress: " << kurl.url() << endl;
+	kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
     else
-	kdDebug(300) << "Cache: using cached: " << kurl.url() << endl;
+	kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << endl;
 #endif
 
     lru->touch( kurl.url() );
@@ -677,7 +677,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
     KURL kurl = completeURL( url, baseUrl );
     if( kurl.isMalformed() )
     {
-      kdDebug(300) << "Cache: Malformed url: " << kurl.url() << endl;
+      kdDebug( 6060 ) << "Cache: Malformed url: " << kurl.url() << endl;
       return 0;
     }
 
@@ -685,7 +685,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
     if(!o)
     {
 #ifdef CACHE_DEBUG
-	kdDebug(300) << "Cache: new: " << kurl.url() << endl;
+	kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
 	CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url(), baseUrl);
 	cache->insert( kurl.url(), sheet );
@@ -695,15 +695,15 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
 
     if(!o->type() == CachedObject::CSSStyleSheet)
     {
-	kdDebug(300) << "Cache::Internal Error in requestStyleSheet url=" << kurl.url() << "!" << endl;
+	kdDebug( 6060 ) << "Cache::Internal Error in requestStyleSheet url=" << kurl.url() << "!" << endl;
 	return 0;
     }
 
 #ifdef CACHE_DEBUG
     if( o->status() == CachedObject::Pending )
-	kdDebug(300) << "Cache: loading in progress: " << kurl.url() << endl;
+	kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
     else
-	kdDebug(300) << "Cache: using cached: " << kurl.url() << endl;
+	kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << endl;
 #endif
 
     lru->touch( kurl.url() );
@@ -719,7 +719,7 @@ void Cache::flush()
 
 #ifdef CACHE_DEBUG
     statistics();
-    kdDebug(300) << "Cache: flush()" << endl;
+    kdDebug( 6060 ) << "Cache: flush()" << endl;
 #endif
     if( actSize < maxSize ) return;
 
@@ -730,7 +730,7 @@ void Cache::flush()
 	    continue; // image is still used or cached permanently
 
 #ifdef CACHE_DEBUG
-	kdDebug(300) << "Cache: removing " << url << endl;
+	kdDebug( 6060 ) << "Cache: removing " << url << endl;
 #endif
 	actSize -= o->size();
 	lru->remove( url );
@@ -783,16 +783,16 @@ void Cache::statistics()
     }
     size /= 1024;
 
-    kdDebug(300) << "------------------------- image cache statistics -------------------" << endl;
-    kdDebug(300) << "Number of items in cache: " << cache->count() << endl;
-    kdDebug(300) << "Number of items in lru  : " << lru->count() << endl;
-    kdDebug(300) << "Number of cached images: " << cache->count()-movie << endl;
-    kdDebug(300) << "Number of cached movies: " << movie << endl;
-    kdDebug(300) << "Number of cached stylesheets: " << stylesheets << endl;
-    kdDebug(300) << "calculated allocated space approx. " << actSize/1024 << " kB" << endl;
-    kdDebug(300) << "pixmaps:   allocated space approx. " << size << " kB" << endl;
-    kdDebug(300) << "movies :   allocated space approx. " << msize/1024 << " kB" << endl;
-    kdDebug(300) << "--------------------------------------------------------------------" << endl;
+    kdDebug( 6060 ) << "------------------------- image cache statistics -------------------" << endl;
+    kdDebug( 6060 ) << "Number of items in cache: " << cache->count() << endl;
+    kdDebug( 6060 ) << "Number of items in lru  : " << lru->count() << endl;
+    kdDebug( 6060 ) << "Number of cached images: " << cache->count()-movie << endl;
+    kdDebug( 6060 ) << "Number of cached movies: " << movie << endl;
+    kdDebug( 6060 ) << "Number of cached stylesheets: " << stylesheets << endl;
+    kdDebug( 6060 ) << "calculated allocated space approx. " << actSize/1024 << " kB" << endl;
+    kdDebug( 6060 ) << "pixmaps:   allocated space approx. " << size << " kB" << endl;
+    kdDebug( 6060 ) << "movies :   allocated space approx. " << msize/1024 << " kB" << endl;
+    kdDebug( 6060 ) << "--------------------------------------------------------------------" << endl;
 }
 
 KURL Cache::completeURL( const DOMString &_url, const DOMString &_baseUrl )
@@ -821,12 +821,12 @@ void Cache::removeCacheEntry( CachedObject *object )
   // when its reference counter drops down to zero
   if ( object->count() > 0 )
   {
-    kdDebug( 300 ) << "cache object for " << key << " is still referenced. Killing it softly..." << endl;
+    kdDebug( 6060 ) << "cache object for " << key << " is still referenced. Killing it softly..." << endl;
     cache->setAutoDelete( false );
   }
 
   if ( cache->remove( key ) )
-    kdDebug( 300 ) << "removed cache entry for " << key << " from cache dict" << endl;
+    kdDebug( 6060 ) << "removed cache entry for " << key << " from cache dict" << endl;
 
   cache->setAutoDelete( true );
 
@@ -834,7 +834,7 @@ void Cache::removeCacheEntry( CachedObject *object )
   if ( it != lru->end() )
   {
     lru->remove( it );
-    kdDebug( 300 ) << "removed cache entry for " << key << " from lru" << endl;
+    kdDebug( 6060 ) << "removed cache entry for " << key << " from lru" << endl;
   }
 }
 

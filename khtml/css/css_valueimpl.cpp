@@ -152,7 +152,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 						propertyString.unicode()+propertyString.length());
     if(!props || !props->count())
     {
-	kdDebug(300) << "no properties returned!" << endl;
+	kdDebug( 6080 ) << "no properties returned!" << endl;
 	return;
     }
 
@@ -162,7 +162,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     if(!m_lstValues) m_lstValues = new QList<CSSProperty>;
     while(i < props->count())
     {
-	//kdDebug(300) << "setting property" << endl;
+	//kdDebug( 6080 ) << "setting property" << endl;
 	CSSProperty *prop = props->at(i);
 	removeProperty(prop->m_id);
 	m_lstValues->append(prop);
@@ -184,7 +184,7 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
 				INTEGER | PERCENT | LENGTH);
     if(!v)
     {
-	kdDebug(300) << "invalid length" << endl;
+	kdDebug( 6080 ) << "invalid length" << endl;
 	return;
     }
 

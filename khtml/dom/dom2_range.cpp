@@ -165,7 +165,7 @@ Node Range::getCommonAncestorContainer() /*const*/
         commonAncestorContainer = parentStart;
     else
     {
-        kdDebug(300) << "Error in getCommonAncestorContainer(): No common ancestor container?" << endl;
+        kdDebug( 6010 ) << "Error in getCommonAncestorContainer(): No common ancestor container?" << endl;
         return Node();
     }
     
@@ -629,7 +629,7 @@ short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
                                       sourceRange.getStartContainer(), sourceRange.getStartOffset() );
         break;
     default:
-        kdDebug(300) << "Function compareBoundaryPoints: Invalid CompareHow" << endl;
+        kdDebug( 6010 ) << "Function compareBoundaryPoints: Invalid CompareHow" << endl;
         return 2;     // undocumented - should throw an exception here
     }
 }
@@ -638,7 +638,7 @@ short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containe
 {
     if( offsetA < 0 || offsetB < 0 )
     {
-        kdDebug(300) << "Function compareBoundaryPoints: No negative offsets allowed" << endl;
+        kdDebug( 6010 ) << "Function compareBoundaryPoints: No negative offsets allowed" << endl;
         return 2;     // undocumented - should throw an exception here
     }
 
@@ -681,17 +681,17 @@ void Range::deleteContents(  )
     
     Node cmnRoot = getCommonAncestorContainer();
     /*
-    kdDebug(300) << "CommonAC: " << cmnRoot.nodeName().string() << " " << endl;
-    kdDebug(300) << "end: " << startOffset << ", start: " << endOffset << " " << endl;
-    kdDebug(300) << "startContainer: " << startContainer.nodeName().string() << " " << endl;
-    kdDebug(300) << "endContainer: " << endContainer.nodeName().string() << " " << endl;
+    kdDebug( 6010 ) << "CommonAC: " << cmnRoot.nodeName().string() << " " << endl;
+    kdDebug( 6010 ) << "end: " << startOffset << ", start: " << endOffset << " " << endl;
+    kdDebug( 6010 ) << "startContainer: " << startContainer.nodeName().string() << " " << endl;
+    kdDebug( 6010 ) << "endContainer: " << endContainer.nodeName().string() << " " << endl;
     */
 
-//    kdDebug(300) << "end common case" << endl;
+//    kdDebug( 6010 ) << "end common case" << endl;
     Node _nextCurrent, _tempCurrent;
     bool delStart=false, delEnd=false;
 
-    //  kdDebug(300) << "left side node: " << startContainer.nodeName().string() << " " << endl;
+    //  kdDebug( 6010 ) << "left side node: " << startContainer.nodeName().string() << " " << endl;
     
     // cleanup left side
     Node _leftParent = startContainer;
@@ -861,7 +861,7 @@ DOMString Range::toString(  )
     
     while( !_node.isNull() )
     {
-        kdDebug(300) << "\nNodetype: " << _node.nodeName().string() << endl;
+        kdDebug( 6010 ) << "\nNodetype: " << _node.nodeName().string() << endl;
         if( _node.nodeType() == Node::TEXT_NODE )
         {
             QString str = _node.nodeValue().string();

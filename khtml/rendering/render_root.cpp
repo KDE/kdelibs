@@ -100,7 +100,7 @@ void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 {
     x += m_x;
     y += m_y;
- //   kdDebug(300) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
+ //   kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     if (m_view) m_view->updateContents(x, y, w, h);
 }
 
@@ -127,7 +127,7 @@ void RenderRoot::updateSize()
 
 void RenderRoot::updateHeight()
 {
-//    kdDebug(300) << renderName() << "(RenderRoot)::updateSize()" << endl;
+//    kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
     //int oldMin = m_minWidth;
     setLayouted(false);
 
@@ -146,7 +146,7 @@ void RenderRoot::updateHeight()
     layout(true);	
     if(m_height != oldHeight || m_height == m_view->visibleHeight())
     {
-//    	kdDebug(300) << "resizing " << m_width << "," << m_height << endl;
+//    	kdDebug( 6040 ) << "resizing " << m_width << "," << m_height << endl;
     	m_view->resizeContents(m_width,m_height);
     	m_view->repaintContents(0,0,m_width,m_height);	//sync repaint!
     }
@@ -163,7 +163,7 @@ void RenderRoot::close()
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 {
 
-    //kdDebug(300) << "RenderRoot::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
+    //kdDebug( 6040 ) << "RenderRoot::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
 
     clearSelection();
 
@@ -183,7 +183,7 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     	if (o->selectionState()!=SelectionInside)
 	    o->repaint();
     	o->setSelectionState(SelectionInside);	
-//	kdDebug(300) << "setting selected " << o << ", " << o->isText() << endl;
+//	kdDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
     	RenderObject* no;
     	if ( !(no = o->firstChild()) )
     	    if ( !(no = o->nextSibling()) )

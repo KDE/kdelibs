@@ -313,7 +313,7 @@ bool check_array(ushort child, const ushort *tagList)
 
 bool DOM::checkChild(ushort tagID, ushort childID)
 {
-    //kdDebug(300) << "checkChild: " << tagID << "/" << childID << endl;
+    //kdDebug( 6030 ) << "checkChild: " << tagID << "/" << childID << endl;
 
     switch(tagID)
     {
@@ -497,7 +497,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	    return false;
 	}
     default:
-	kdDebug(300) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!" << endl;
+	kdDebug( 6030 ) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!" << endl;
 	return false;
     }
 }

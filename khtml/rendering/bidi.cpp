@@ -149,7 +149,7 @@ inline bool operator > ( const BiDiIterator &it1, const BiDiIterator &it2 )
     if(it1.obj != it2.obj)
     {
 #if BIDI_DEBUG > 1
-//	kdDebug(300) << "BiDiIterator operator >: objects differ" << endl;
+//	kdDebug( 6040 ) << "BiDiIterator operator >: objects differ" << endl;
 #endif
 	BiDiObject *o = it2.obj;
 	while(o)
@@ -158,7 +158,7 @@ inline bool operator > ( const BiDiIterator &it1, const BiDiIterator &it2 )
 	    o = it2.par->next(o);
 	}
 #if BIDI_DEBUG > 1
-//	kdDebug(300) << "BiDiIterator operator >: false" << endl;
+//	kdDebug( 6040 ) << "BiDiIterator operator >: false" << endl;
 #endif
 	return false;
     }
@@ -201,7 +201,7 @@ static int special(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterat
     	change = par->lineWidth(y) - oldline;
 
 #if BIDI_DEBUG > 1
-    kdDebug(300) << "special(" << it1.obj << ", " << it2.obj << ") = " << change << endl;
+    kdDebug( 6040 ) << "special(" << it1.obj << ", " << it2.obj << ") = " << change << endl;
 #endif
     return change;
 
@@ -240,7 +240,7 @@ static int width(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterator
 	if(len > 0) w += o->width(from, len);
     }
 #if BIDI_DEBUG > 1
-    kdDebug(300) << "width(" << it1.obj << "/" << it1.pos << ", " << it2.obj << "/" << it2.pos << ") = " << w << endl;
+    kdDebug( 6040 ) << "width(" << it1.obj << "/" << it1.pos << ", " << it2.obj << "/" << it2.pos << ") = " << w << endl;
 #endif
     return w;
 }
@@ -399,9 +399,9 @@ int BiDiParagraph::reorder(int xOff, int yOff)
 
 #ifdef BIDI_DEBUG
     if(d->basicDir == QChar::DirL)
-	kdDebug(300) << "basic Dir = Left" << endl;
+	kdDebug( 6040 ) << "basic Dir = Left" << endl;
     else
-	kdDebug(300) << "basic Dir = Right" << endl;
+	kdDebug( 6040 ) << "basic Dir = Right" << endl;
 #endif
 
     d->currentEmbedding = new BiDiControl(0, d->basicDir);
@@ -447,7 +447,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
 	    int aWidth = o->width(pos, o->length() - pos);
 	    assert(o->length() >= pos);
 	    w = new BiDiWord(o, pos, o->length() - pos, level, aWidth);
-	    //kdDebug(300) << "adding Word1: " << w << ", from=" << pos << " to=" << o->length()-1 << endl;
+	    //kdDebug( 6040 ) << "adding Word1: " << w << ", from=" << pos << " to=" << o->length()-1 << endl;
 	    width -= aWidth;
 	    line.append(w);
 	}
@@ -462,7 +462,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
 	if(pos2 >= pos)
 	{
 	    w = new BiDiWord(o, pos, pos2 - pos, level, width);
-	    //kdDebug(300) << "adding Word2: " << w << ", from=" << pos << " to=" << pos2-1 << endl;
+	    //kdDebug( 6040 ) << "adding Word2: " << w << ", from=" << pos << " to=" << pos2-1 << endl;
 	    line.append(w);
 	}
     }
@@ -511,7 +511,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 		}
 		else if(b.type == BiDiIterator::NewLine)
 		{	
-		    //kdDebug(300) << "breakLine 1" << endl;
+		    //kdDebug( 6040 ) << "breakLine 1" << endl;
 		    addWord(this, d->line, pos, b, w, r->level, true);
 		    layoutLine(levelLow, levelHigh, false);
 		    d->line.clear();
@@ -521,7 +521,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 		    pos = b;
 		    continue;
 		}
-		//kdDebug(300) << "breakLine 2" << endl;
+		//kdDebug( 6040 ) << "breakLine 2" << endl;
 		addWord(this, d->line, pos, b, w, r->level, true);
 		availableWidth -= w;
 		pos = b;
@@ -540,7 +540,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 	    levelHigh = r->level;
 	    availableWidth = lineWidth(d->y);
 	}
-	//kdDebug(300) << "breakLine 3" << endl;
+	//kdDebug( 6040 ) << "breakLine 3" << endl;
 	addWord(this, d->line, pos, r->to, w, r->level);
 	availableWidth -= w;
     }
@@ -557,7 +557,7 @@ QChar::Direction BiDiParagraph::basicDirection()
     BiDiIterator it(this);
     while(!it.atEnd())
     {
-	//kdDebug(300) << "calcBasicDir: obj=" << it.obj << ", pos=" << it.pos << endl;
+	//kdDebug( 6040 ) << "calcBasicDir: obj=" << it.obj << ", pos=" << it.pos << endl;
 	switch(it.direction())
 	{
 	case QChar::DirL:
@@ -592,7 +592,7 @@ void BiDiParagraph::setCurrentY(int y)
 void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, bool lastLine)
 {
 #ifdef BIDI_DEBUG
-    kdDebug(300) << "BiDiPargraph::layoutLine()" << endl;
+    kdDebug( 6040 ) << "BiDiPargraph::layoutLine()" << endl;
 #endif
 
     // implements reordering of the line (L2 according to BiDi spec):
@@ -603,13 +603,13 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
     if(!levelLow%2) levelLow++;
 
 #ifdef BIDI_DEBUG
-    kdDebug(300) << "reorderLine: lineLow = " << levelLow << ", lineHigh = " << levelHigh << endl;
-    kdDebug(300) << "logical order is:" << endl;
+    kdDebug( 6040 ) << "reorderLine: lineLow = " << levelLow << ", lineHigh = " << levelHigh << endl;
+    kdDebug( 6040 ) << "logical order is:" << endl;
     QListIterator<BiDiWord> it2(d->line);
     BiDiWord *r2;
     for ( ; (r2 = it2.current()); ++it2 )
     {
-	kdDebug(300) << "    " << r2 << endl;
+	kdDebug( 6040 ) << "    " << r2 << endl;
     }
 #endif
 
@@ -629,7 +629,7 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 
 	    if(start != end)
 	    {
-		//kdDebug(300) << "reversing from " << start << " to " << end << endl;
+		//kdDebug( 6040 ) << "reversing from " << start << " to " << end << endl;
 		for(int j = 0; j < (end-start+1)/2; j++)
 		{
 		    BiDiWord *first = d->line.take(start+j);
@@ -645,18 +645,18 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
     }
     }
 #ifdef BIDI_DEBUG
-    kdDebug(300) << "visual order is:" << endl;
+    kdDebug( 6040 ) << "visual order is:" << endl;
     QListIterator<BiDiWord> it3(d->line);
     BiDiWord *r3;
     for ( ; (r3 = it3.current()); ++it3 )
     {
-	kdDebug(300) << "    " << r3 << endl;
+	kdDebug( 6040 ) << "    " << r3 << endl;
     }
 #endif
 
 
 #ifdef BIDI_DEBUG
-    kdDebug(300) << "adjustYPositions:" << endl;
+    kdDebug( 6040 ) << "adjustYPositions:" << endl;
 #endif
 
     QListIterator<BiDiWord> it(d->line);
@@ -698,7 +698,7 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 
 
 #ifdef BIDI_DEBUG
-    kdDebug(300) << "layoutingLine" << endl;
+    kdDebug( 6040 ) << "layoutingLine" << endl;
 #endif
     it.toFirst();
     BiDiWord *w;
@@ -736,14 +736,14 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 	else
 	    delta = lineWidth(d->y) - width;
 #ifdef BIDI_DEBUG
-	kdDebug(300) << "justify delta = " << delta << endl;
+	kdDebug( 6040 ) << "justify delta = " << delta << endl;
 #endif
     }
 
     for ( ; (w = it.current()); ++it )
     {
 #ifdef BIDI_DEBUG
-	kdDebug(300) << "    " << w << ": positioning slave " << w->object << " (" << xPos << "/" << w->yOffset << ") from=" << w->from << " to=" << w->from + w->len << " width=" << w->width << endl;
+	kdDebug( 6040 ) << "    " << w << ": positioning slave " << w->object << " (" << xPos << "/" << w->yOffset << ") from=" << w->from << " to=" << w->from + w->len << " width=" << w->width << endl;
 #endif
 	int add = 0;
 	if(spaces)
@@ -774,13 +774,13 @@ void BiDiParagraph::appendRun()
     // add level of run (cases I1 & I2)
     if(level % 2)
     {
-	//kdDebug(300) << "adding run in rtl embedding" << endl;
+	//kdDebug( 6040 ) << "adding run in rtl embedding" << endl;
 	if(d->dir == QChar::DirL || d->dir == QChar::DirAN)
 	    level++;
     }
     else
     {
-	//kdDebug(300) << "adding run in ltr embedding" << endl;
+	//kdDebug( 6040 ) << "adding run in ltr embedding" << endl;
 	if(d->dir == QChar::DirR)
 	    level++;
 	else if(d->dir == QChar::DirAN)
@@ -795,7 +795,7 @@ void BiDiParagraph::appendRun()
     d->runs.append(run);
 
 #ifdef BIDI_DEBUG
-    kdDebug(300) << "closeRun " << run << ": from=" << d->sor.obj << "/" << d->sor.pos << ", to=" << d->eor.obj << "/" << d->eor.pos << endl;
+    kdDebug( 6040 ) << "closeRun " << run << ": from=" << d->sor.obj << "/" << d->sor.pos << ", to=" << d->eor.obj << "/" << d->eor.pos << endl;
 #endif
 
 }
@@ -844,7 +844,7 @@ void BiDiParagraph::collectRuns()
 	    dirCurrent = d->current.direction();
 	
 #if BIDI_DEBUG > 1
-	kdDebug(300) << "directions: dir=" << d->dir << " current=" << dirCurrent << " last=" << d->dirLastChar << " d->eor=" << d->dirEor << " lastStrong=" << d->dirLastStrong << " embedding=" << d->dirEmbedding << endl;
+	kdDebug( 6040 ) << "directions: dir=" << d->dir << " current=" << dirCurrent << " last=" << d->dirLastChar << " d->eor=" << d->dirEor << " lastStrong=" << d->dirLastStrong << " embedding=" << d->dirEmbedding << endl;
 #endif
 	
 	switch(dirCurrent)
@@ -854,7 +854,7 @@ void BiDiParagraph::collectRuns()
 // ### fixme: remove code duplication
 	case QChar::DirRLE:
 	{
-	    //		kdDebug(300) << "right to left embedding" << endl;
+	    //		kdDebug( 6040 ) << "right to left embedding" << endl;
 	    unsigned char level = d->currentEmbedding->level;
 	    if(level%2) // we have an odd level
 		level += 2;
@@ -873,7 +873,7 @@ void BiDiParagraph::collectRuns()
 	}
 	case QChar::DirLRE:
 	{
-	    //kdDebug(300) << "left to right embedding" << endl;
+	    //kdDebug( 6040 ) << "left to right embedding" << endl;
 	    unsigned char level = d->currentEmbedding->level;
 	    if(level%2) // we have an odd level
 		level++;
@@ -892,7 +892,7 @@ void BiDiParagraph::collectRuns()
 	}
 	case QChar::DirRLO:
 	{
-	    kdDebug(300) << "right to left override" << endl;
+	    kdDebug( 6040 ) << "right to left override" << endl;
 	    unsigned char level = d->currentEmbedding->level;
 	    if(level%2) // we have an odd level
 		level += 2;
@@ -912,7 +912,7 @@ void BiDiParagraph::collectRuns()
 	}
 	case QChar::DirLRO:
 	{
-	    kdDebug(300) << "left to right override" << endl;
+	    kdDebug( 6040 ) << "left to right override" << endl;
 	    unsigned char level = d->currentEmbedding->level;
 	    if(level%2) // we have an odd level
 		level++;
@@ -932,7 +932,7 @@ void BiDiParagraph::collectRuns()
 	}
 	case QChar::DirPDF:
 	{
-	    kdDebug(300) << "pop directional format" << endl;
+	    kdDebug( 6040 ) << "pop directional format" << endl;
 	    BiDiControl *control = d->stackEmbedding.pop();
 	    if(control)
 	    {
@@ -1197,12 +1197,12 @@ void BiDiParagraph::collectRuns()
 	case QChar::DirB:
 	    if(!m_ignoreNewline && d->current.current() == QChar('\n'))
 	    {
-		//kdDebug(300) << "found a newline char" << endl;
+		//kdDebug( 6040 ) << "found a newline char" << endl;
 		BiDiIterator *newline = new BiDiIterator(d->current);
 		newline->type = BiDiIterator::NewLine;
 		d->breaks->append(newline);
 	    }
-	    //kdDebug(300) << "QBiDiParagraph: got a paragrpah separator!!!!!!" << endl;
+	    //kdDebug( 6040 ) << "QBiDiParagraph: got a paragrpah separator!!!!!!" << endl;
 	    // ###
 	    break;
 	case QChar::DirS:
@@ -1213,7 +1213,7 @@ void BiDiParagraph::collectRuns()
 	    BiDiIterator *space = new BiDiIterator(d->current);
 	    space->type = BiDiIterator::WhiteSpace;
 #ifdef BIDI_DEBUG
-	    kdDebug(300) << "found space at " << space->obj << "/" << space->pos << endl;
+	    kdDebug( 6040 ) << "found space at " << space->obj << "/" << space->pos << endl;
 #endif
 	    d->breaks->append(space);
 	}
@@ -1224,7 +1224,7 @@ void BiDiParagraph::collectRuns()
 	    break;
 	}
 
-	//kdDebug(300) << "     after: dir=" << //        d->dir << " d->current=" << dirCurrent << " last=" << d->dirLastChar << " d->eor=" << d->dirEor << " lastStrong=" << d->dirLastStrong << " embedding=" << d->dirEmbedding << endl;
+	//kdDebug( 6040 ) << "     after: dir=" << //        d->dir << " d->current=" << dirCurrent << " last=" << d->dirLastChar << " d->eor=" << d->dirEor << " lastStrong=" << d->dirLastStrong << " embedding=" << d->dirEmbedding << endl;
 
 	if(d->current.atEnd()) break;
 	
@@ -1263,7 +1263,7 @@ void BiDiParagraph::collectRuns()
     }
 
 #ifdef BIDI_DEBUG
-    kdDebug(300) << "reached end of paragraph current=" << d->current.pos << ", eor=" << d->eor.pos << endl;
+    kdDebug( 6040 ) << "reached end of paragraph current=" << d->current.pos << ", eor=" << d->eor.pos << endl;
 #endif
     d->eor = d->current;
     appendRun();

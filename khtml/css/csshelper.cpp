@@ -45,7 +45,7 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, Me
 	{
 	    QFontInfo fi(style->font());
 	    factor = fi.pointSize();
-	    //kdDebug(300) << "EM = " << factor << endl;
+	    //kdDebug( 6080 ) << "EM = " << factor << endl;
 	}
 	else
 	{

@@ -224,7 +224,7 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string)
     const QChar *curP = string.unicode();
     const QChar *endP = string.unicode()+string.length();
 
-    //kdDebug(300) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
+    //kdDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
 
     // remove leading spaces
     while (curP && (curP < endP))
@@ -271,10 +271,10 @@ bool CSSStyleSheetImpl::isLoading()
 	if(rule->isImportRule())
 	{
 	    CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
-	    kdDebug(300) << "found import" << endl;
+	    kdDebug( 6080 ) << "found import" << endl;
 	    if(import->isLoading())
 	    {
-		kdDebug(300) << "--> not loaded" << endl;
+		kdDebug( 6080 ) << "--> not loaded" << endl;
 		return true;
 	    }
 	}

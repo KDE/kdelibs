@@ -35,7 +35,7 @@ using namespace khtml;
 Decoder::Decoder()
 {
     m_codec = QTextCodec::codecForName("ISO 8859-1");
-kdDebug(300) << "INIT HTML Codec name= " << m_codec->name() << endl;
+kdDebug( 6000 ) << "INIT HTML Codec name= " << m_codec->name() << endl;
     enc = 0;
     body = false;
     beginning = true;
@@ -157,7 +157,7 @@ QString Decoder::decode(const char *data, int len)
 			    endpos++;
 			
 			enc = str.mid(pos, endpos-pos);
-			kdDebug(300) << "Decoder: found charset: " << enc.data() << endl;
+			kdDebug( 6000 ) << "Decoder: found charset: " << enc.data() << endl;
 			setEncoding(enc);
 			goto found;
 		    }

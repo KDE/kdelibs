@@ -141,7 +141,7 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
 			len++;
 		break;
 	    default:
-		kdDebug(300) << "Error in HTMLCollection, wrong tagId!" << endl;
+		kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
 	    }
 	    if(deep && current->firstChild())
 		len += calcLength(current->firstChild());
@@ -233,7 +233,7 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
 			len++;
 		break;
 	    default:
-		kdDebug(300) << "Error in HTMLCollection, wrong tagId!" << endl;
+		kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
 	    }
 	    if(len == (index + 1)) return current;
 	    NodeImpl *retval=0;
@@ -331,11 +331,11 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 			check = true;
 		break;
 	    default:
-		kdDebug(300) << "Error in HTMLCollection, wrong tagId!" << endl;
+		kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
 	    }
 	    if(check && e->getAttribute(attr_id) == name)
 	    {
-		kdDebug(300) << "found node: " << e << " " << current << " " << e->id() << endl;
+		kdDebug( 6030 ) << "found node: " << e << " " << current << " " << e->id() << endl;
 		return current;
 	    }
 	    NodeImpl *retval = 0;
@@ -343,7 +343,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 		retval = getNamedItem(current->firstChild(), attr_id, name);
 	    if(retval) 
 	    {	
-		kdDebug(300) << "got a return value " << retval << endl;
+		kdDebug( 6030 ) << "got a return value " << retval << endl;
 		return retval;
 	    }
 	}

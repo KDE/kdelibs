@@ -143,7 +143,7 @@ QString RenderFormElement::decodeString( QString e )
 
 void RenderFormElement::layout(bool)
 {
-    kdDebug(300) << "inside RenderFormElement::layout()" << endl;
+    kdDebug( 6040 ) << "inside RenderFormElement::layout()" << endl;
 
     // honor style sheet stuff
     int h = 0;
@@ -151,13 +151,13 @@ void RenderFormElement::layout(bool)
 #if 0
     if(parent()) {
         if((h = m_style->width().width(containingBlockWidth())) > 0) {
-            kdDebug(300) << "overwriting width to " << h << endl;
+            kdDebug( 6040 ) << "overwriting width to " << h << endl;
             m_width = h;
         }
 
 
         if((h = m_style->height().width(containingBlockHeight())) > 0) {
-            kdDebug(300) << "overwriting height to " << h << endl;
+            kdDebug( 6040 ) << "overwriting height to " << h << endl;
             m_height = h;
         }
     }
@@ -173,7 +173,7 @@ void RenderFormElement::calcMinMaxWidth()
 {
     layout(false);
 
-    kdDebug(300) << "inside RenderFormElement::calcMinMaxWidth()" << endl;
+    kdDebug( 6040 ) << "inside RenderFormElement::calcMinMaxWidth()" << endl;
 
     m_minWidth = m_width;
     m_maxWidth = m_width;
@@ -702,7 +702,7 @@ void RenderSelect::close()
     QString state = f->ownerDocument()->registerElement(f);
     if ( !state.isEmpty())
     {
-       kdDebug(300) << "Restoring SelectElem name=" << m_name.string() <<
+       kdDebug( 6040 ) << "Restoring SelectElem name=" << m_name.string() <<
                             " state=" << state << endl;
        restoreState( state );
     }
@@ -992,7 +992,7 @@ void RenderTextArea::close( )
     QString state = f->ownerDocument()->registerElement(f);
     if ( !state.isEmpty())
     {
-       kdDebug(300) << "Restoring TextAreaElem name=" << m_name.string() <<
+       kdDebug( 6040 ) << "Restoring TextAreaElem name=" << m_name.string() <<
                             " state=" << state << endl;
        restoreState( state );
     }

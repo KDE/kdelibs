@@ -165,7 +165,7 @@ StyleBaseImpl::parseSpace(const QChar *curP, const QChar *endP)
 const QChar *
 StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool chkws)
 {
-    //kdDebug(300) << "parsetochar: \"" << QString(curP, endP-curP) << "\" searching " << c << " ws=" << chkws << endl;
+    //kdDebug( 6080 ) << "parsetochar: \"" << QString(curP, endP-curP) << "\" searching " << c << " ws=" << chkws << endl;
 
     bool sq = false; /* in single quote? */
     bool dq = false; /* in double quote? */
@@ -224,7 +224,7 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     QString rule(startP, curP-startP);
     rule = rule.lower();
 
-    //kdDebug(300) << "rule = '" << rule << "'" << endl;
+    //kdDebug( 6080 ) << "rule = '" << rule << "'" << endl;
 
     if(rule == "import")
     {
@@ -239,8 +239,8 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 	QString media(startP, curP - startP);
 	// ### check if at the beginning of the stylesheet (no style rule
 	//     before the import rule)
-	//kdDebug(300) << "url = " << url.string() << endl;
-	//kdDebug(300) << "media = " << media << endl;
+	//kdDebug( 6080 ) << "url = " << url.string() << endl;
+	//kdDebug( 6080 ) << "media = " << media << endl;
 	// ### add medialist
 	if(!this->isCSSStyleSheet()) return 0;
 	return new CSSImportRuleImpl(this, url, 0);
@@ -250,25 +250,25 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 	// ### invoke decoder
 	startP = curP++;
 	curP = parseToChar(startP, endP, ';', false);
-	//kdDebug(300) << "charset = " << QString(startP, curP - startP) << endl;
+	//kdDebug( 6080 ) << "charset = " << QString(startP, curP - startP) << endl;
     }
     else if(rule == "font-face")
     {
 	startP = curP++;
 	curP = parseToChar(startP, endP, '}', false);
-	//kdDebug(300) << "font rule = " << QString(startP, curP - startP) << endl;
+	//kdDebug( 6080 ) << "font rule = " << QString(startP, curP - startP) << endl;
     }
     else if(rule == "media")
     {
 	startP = curP++;
 	curP = parseToChar(startP, endP, '}', false);
-	//kdDebug(300) << "media rule = " << QString(startP, curP - startP) << endl;
+	//kdDebug( 6080 ) << "media rule = " << QString(startP, curP - startP) << endl;
     }
     else if(rule == "page")
     {
 	startP = curP++;
 	curP = parseToChar(startP, endP, '}', false);
-	//kdDebug(300) << "page rule = " << QString(startP, curP - startP) << endl;
+	//kdDebug( 6080 ) << "page rule = " << QString(startP, curP - startP) << endl;
     }
 
 	
@@ -281,7 +281,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
     CSSSelector *cs = new CSSSelector();
     QString selecString( curP, endP - curP );
 
-//kdDebug(300) << "selectString = \"" << selecString << "\"" << endl;
+//kdDebug( 6080 ) << "selectString = \"" << selecString << "\"" << endl;
 
     if (*curP == '#')
     {
@@ -337,13 +337,13 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
             {
                 tag = QString( startP, curP - startP );
 		curP++;
-		//kdDebug(300) << "tag = " << tag << endl;
+		//kdDebug( 6080 ) << "tag = " << tag << endl;
 		const QChar *equal = parseToChar(curP, endP, '=', false);
 		QString attr;
 		if(!equal)
 		{
 		    attr = QString( curP, endP - curP - 1 );
-		    //kdDebug(300) << "attr = '" << attr << "'" << endl;
+		    //kdDebug( 6080 ) << "attr = '" << attr << "'" << endl;
 		    cs->match = CSSSelector::Set;
 		}
 		else
@@ -398,7 +398,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
         }
 	if(tag == "*")
 	{
-	    //kdDebug(300) << "found '*' selector" << endl;
+	    //kdDebug( 6080 ) << "found '*' selector" << endl;
 	    cs->tag = -1;
 	}
 	else
@@ -409,14 +409,14 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
        delete cs;
        return(0);
    }
-   //kdDebug(300) << "[Selector: tag=" << cs->tag << " Attribute=" << cs->attr << " relation=" << cs->match << " value=" << cs->value.string() << "]" << endl;
+   //kdDebug( 6080 ) << "[Selector: tag=" << cs->tag << " Attribute=" << cs->attr << " relation=" << cs->match << " value=" << cs->value.string() << "]" << endl;
    return(cs);
 }
 
 CSSSelector *
 StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 {
-    //kdDebug(300) << "selector1 is \'" << QString(curP, endP-curP) << "\'" << endl;
+    //kdDebug( 6080 ) << "selector1 is \'" << QString(curP, endP-curP) << "\'" << endl;
 
     CSSSelector *selecStack=0;
 
@@ -458,7 +458,7 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 	    }
 	    else if(*curP == '>')
 	    {
-		kdDebug(300) << "child selector" << endl;
+		kdDebug( 6080 ) << "child selector" << endl;
 		relation = CSSSelector::Child;
 		curP++;
 		curP = parseSpace(curP, endP);
@@ -478,7 +478,7 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 QList<CSSSelector> *
 StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
 {
-    //kdDebug(300) << "selector is \'" << QString(curP, endP-curP) << "\'" << endl;
+    //kdDebug( 6080 ) << "selector is \'" << QString(curP, endP-curP) << "\'" << endl;
 
     QList<CSSSelector> *slist  = 0;
     const QChar *startP;
@@ -502,7 +502,7 @@ StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
         }
 	else
 	{
-	    kdDebug(300) << "invalid selector" << endl;
+	    kdDebug( 6080 ) << "invalid selector" << endl;
 	    // invalid selector, delete
 	    delete slist;
 	    return 0;
@@ -529,7 +529,7 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
         return;
 
     QString propName( curP, colon - curP );
-//    kdDebug(300) << "Property-name = \"" << propName.data() << "\"" << endl;
+//    kdDebug( 6080 ) << "Property-name = \"" << propName.data() << "\"" << endl;
 
     // May have only reached white space before
     if (*colon != ':')
@@ -555,7 +555,7 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
 	    return;
 	important = true;
 	endP = exclam - 1;
-	//kdDebug(300) << "important property!" << endl;
+	//kdDebug( 6080 ) << "important property!" << endl;
     }
 
     // remove space after the value;
@@ -568,12 +568,12 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
 
 
     //    QString propVal( curP , endP - curP );
-    //kdDebug(300) << "Property-value = \"" << propVal.data() << "\"" << endl;
+    //kdDebug( 6080 ) << "Property-value = \"" << propVal.data() << "\"" << endl;
 
     const struct props *propPtr = findProp(propName.lower().ascii(), propName.length());
     if (!propPtr)
     {
-         kdDebug(300) << "Unknown property" << endl;
+         kdDebug( 6080 ) << "Unknown property" << endl;
          return;
     }
 
@@ -600,7 +600,7 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
     if(!propList->isEmpty())
 	return propList;
 
-    kdDebug(300) << "empty property list" << endl;
+    kdDebug( 6080 ) << "empty property list" << endl;
     delete propList;
     return 0;
 }
@@ -608,7 +608,7 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
 bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId, bool important,
 					QList<CSSProperty> *propList)
 {
-    //kdDebug(300) << "parseValue!" << endl;
+    //kdDebug( 6080 ) << "parseValue!" << endl;
     QString value(curP, endP - curP);
     value = value.lower();
     const char *val = value.ascii();
@@ -696,11 +696,11 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_WORD_SPACING:
     case CSS_PROP_Z_INDEX:
     {
-	//kdDebug(300) << "parseValue: value = " << val << endl;
+	//kdDebug( 6080 ) << "parseValue: value = " << val << endl;
 	const struct css_value *cssval = findValue(val, value.length());
 	if (cssval)
 	{
-	    //kdDebug(300) << "got value " << cssval->id << endl;
+	    //kdDebug( 6080 ) << "got value " << cssval->id << endl;
 	    parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	    goto end;
 	    // ### FIXME: should check if the identifier makes sense with the property
@@ -785,7 +785,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	QColor c;
 	khtml::setNamedColor(c, value);
 	if(!c.isValid()) return false;
-	//kdDebug(300) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
+	//kdDebug( 6080 ) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
 	parsedValue = new CSSPrimitiveValueImpl(c);
 	break;
     }
@@ -798,14 +798,14 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	if (cssval && cssval->id == CSS_VAL_NONE)
 	{
 	    parsedValue = new CSSImageValueImpl();
-	    kdDebug(300) << "empty image " << static_cast<CSSImageValueImpl *>(parsedValue)->image() << endl;
+	    kdDebug( 6080 ) << "empty image " << static_cast<CSSImageValueImpl *>(parsedValue)->image() << endl;
 	    break;
 	}
 	else
 	{
 	    DOMString value(curP, endP - curP);
 	    value = khtml::parseURL(value);
-	    kdDebug(300) << "mage, url=" << value.string() << " base=" << baseUrl().string() << endl;
+	    kdDebug( 6080 ) << "mage, url=" << value.string() << " base=" << baseUrl().string() << endl;
 	    parsedValue = new CSSImageValueImpl(value, baseUrl());
 	    break;
 	}
@@ -910,7 +910,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     {
 	CSSValueListImpl *list = new CSSValueListImpl;
 	QString str(curP, endP-curP);
-	//kdDebug(300) << "faces: '" << str << "'" << endl;
+	//kdDebug( 6080 ) << "faces: '" << str << "'" << endl;
 	int pos=0, pos2;
 	while( 1 )
 	{
@@ -919,12 +919,12 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    face = face.stripWhiteSpace();
 	    if(face[0] == '\"') face.remove(0, 1);
 	    if(face[face.length()-1] == '\"') face = face.left(face.length()-1);
-	    //kdDebug(300) << "found face '" << face << "'" << endl;
+	    //kdDebug( 6080 ) << "found face '" << face << "'" << endl;
 	    list->append(new CSSPrimitiveValueImpl(DOMString(face), CSSPrimitiveValue::CSS_STRING));
 	    pos = pos2 + 1;
 	    if(pos2 == -1) break;
 	}		
-	//kdDebug(300) << "got " << list->length() << " faces" << endl;
+	//kdDebug( 6080 ) << "got " << list->length() << " faces" << endl;
 	if(list->length())
 	    parsedValue = list;
 	else
@@ -942,14 +942,14 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	CSSValueListImpl *list = new CSSValueListImpl;
 	QString str(curP, endP-curP);
 	str.simplifyWhiteSpace();
-	//kdDebug(300) << "text-decoration: '" << str << "'" << endl;
+	//kdDebug( 6080 ) << "text-decoration: '" << str << "'" << endl;
 	int pos=0, pos2;
 	while( 1 )
 	{
 	    pos2 = str.find(' ', pos);
 	    QString decoration = str.mid(pos, pos2-pos);
 	    decoration = decoration.stripWhiteSpace();
-	    //kdDebug(300) << "found decoration '" << decoration << "'" << endl;
+	    //kdDebug( 6080 ) << "found decoration '" << decoration << "'" << endl;
 	    const struct css_value *cssval = findValue(decoration.lower().ascii(),
 						       decoration.length());
 	    if (cssval)
@@ -958,7 +958,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    pos = pos2 + 1;
 	    if(pos2 == -1) break;
 	}		
-	//kdDebug(300) << "got " << list->length() << "d decorations" << endl;
+	//kdDebug( 6080 ) << "got " << list->length() << "d decorations" << endl;
 	if(list->length())
 	    parsedValue = list;
 	else
@@ -974,7 +974,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_BACKGROUND:
     {
 	// add all shorthand properties to the list...
-	//kdDebug(300) << "parsing '" << QString(curP, endP - curP) << "'" << endl;
+	//kdDebug( 6080 ) << "parsing '" << QString(curP, endP - curP) << "'" << endl;
 	bool last = false;
 	while(!last)
 	{
@@ -993,7 +993,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 		nextP++;
 	    }
 	    bool found;
-	    //kdDebug(300) << "parsing '" << QString(curP, nextP - curP) << "'" << endl;
+	    //kdDebug( 6080 ) << "parsing '" << QString(curP, nextP - curP) << "'" << endl;
 	    found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_COLOR, important, propList);
 	    if(!found) found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_IMAGE, important, propList);
 	    if(!found) found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_POSITION, important, propList);
@@ -1124,7 +1124,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_PAUSE:
 	break;
     default:
-	kdDebug(300) << "illegal property!" << endl;
+	kdDebug( 6080 ) << "illegal property!" << endl;
     }
 
  end:
@@ -1137,7 +1137,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     prop->m_bImportant = important;
 
     propList->append(prop);
-    //kdDebug(300) << "added property " << propId << endl;
+    //kdDebug( 6080 ) << "added property " << propId << endl;
 
     return true;
 }	
@@ -1348,7 +1348,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     if(unit & allowedUnits)
     {
-	//kdDebug(300) << "found allowed number " << value << ", unit " << type << endl;
+	//kdDebug( 6080 ) << "found allowed number " << value << ", unit " << type << endl;
 	return new CSSPrimitiveValueImpl(value, type);
     }
 
@@ -1358,7 +1358,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 CSSStyleRuleImpl *
 StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 {
-    //kdDebug(300) << "style rule is \'" << QString(curP, endP-curP) << "\'" << endl;
+    //kdDebug( 6080 ) << "style rule is \'" << QString(curP, endP-curP) << "\'" << endl;
 
     const QChar *startP;
     QList<CSSSelector> *slist;
@@ -1368,7 +1368,7 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
     curP = parseToChar(startP, endP, '{', false);
     if (!curP)
         return(0);
-    //kdDebug(300) << "selector is \'" << QString(startP, curP-startP) << "\'" << endl;
+    //kdDebug( 6080 ) << "selector is \'" << QString(startP, curP-startP) << "\'" << endl;
 
     slist = parseSelector(startP, curP );
 
@@ -1391,7 +1391,7 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
         // Useless rule
         delete slist;
         delete plist;
-	kdDebug(300) << "bad style rule" << endl;
+	kdDebug( 6080 ) << "bad style rule" << endl;
         return 0;
     }
 
@@ -1412,7 +1412,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     CSSRuleImpl *rule = 0;
 
     if(!curP) return 0;
-    //kdDebug(300) << "parse rule: current = " << curP->latin1() << endl;
+    //kdDebug( 6080 ) << "parse rule: current = " << curP->latin1() << endl;
 
     if (*curP == '@')
 	rule = parseAtRule(curP, endP);
@@ -1459,7 +1459,7 @@ CSSSelector::~CSSSelector(void)
 
 void CSSSelector::print(void)
 {
-//    kdDebug(300) << "[Selector: tag = " << //    	tag << ", attr = \"" << attr << "\", value = \"" << value.string().data() << "\" relation = " << (int)relation << endl;
+//    kdDebug( 6080 ) << "[Selector: tag = " << //    	tag << ", attr = \"" << attr << "\", value = \"" << value.string().data() << "\" relation = " << (int)relation << endl;
 }
 
 int CSSSelector::specificity()

@@ -114,7 +114,7 @@ CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString
     m_lstMedia = media;
     m_strHref = href;
     m_styleSheet = 0;
-    kdDebug(300) << "CSSImportRule: requesting sheet " << href.string() << " " << baseUrl().string() << endl;
+    kdDebug( 6080 ) << "CSSImportRule: requesting sheet " << href.string() << " " << baseUrl().string() << endl;
     m_cachedSheet = khtml::Cache::requestStyleSheet(href, baseUrl());
     m_cachedSheet->ref(this);
     m_loading = true;
@@ -144,7 +144,7 @@ CSSStyleSheetImpl *CSSImportRuleImpl::styleSheet() const
 
 void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
-    kdDebug(300) << "CSSImportRule::setStyleSheet()" << endl;
+    kdDebug( 6080 ) << "CSSImportRule::setStyleSheet()" << endl;
 
     m_styleSheet = new CSSStyleSheetImpl(this, url);
     m_styleSheet->ref();

@@ -125,7 +125,7 @@ void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
 			     int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << nodeName().string() << "(LI)::print()" << endl;
+    kdDebug( 6040 ) << nodeName().string() << "(LI)::print()" << endl;
 #endif
     RenderFlow::print(p, _x, _y, _w, _h, _tx, _ty);
 }
@@ -156,7 +156,7 @@ void RenderListMarker::printObject(QPainter *p, int _x, int _y,
 				    int _w, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
+    kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
     int xoff = 0;
     int yoff = 5;

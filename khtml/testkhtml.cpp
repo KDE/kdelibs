@@ -83,13 +83,13 @@ int main(int argc, char *argv[])
 
 /*    Range r( doc->htmlDocument().createRange() );
       r.selectNode( r.getStartContainer().firstChild().lastChild().firstChild() );
-      kdDebug(300) << "\nstartContainer: " << r.getStartContainer().nodeName().string() << "\n" << endl;
+      kdDebug( 6000 ) << "\nstartContainer: " << r.getStartContainer().nodeName().string() << "\n" << endl;
       Node newNode = doc->htmlDocument().firstChild().lastChild().firstChild().firstChild();
       r.insertNode( newNode );*/
 
     //DOMString htmlContent;
     //doc->htmlDocument().toHTML(&htmlContent);
-    //kdDebug(300) << "\n" << htmlContent.string() << endl;
+    //kdDebug( 6000 ) << "\n" << htmlContent.string() << endl;
 
     delete p;
     delete doc;

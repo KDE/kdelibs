@@ -88,7 +88,7 @@ void RenderBox::setStyle(RenderStyle *style)
 
 RenderBox::~RenderBox()
 {
-    //kdDebug(300) << "Element destructor: this=" << nodeName().string() << endl;
+    //kdDebug( 6040 ) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
 QSize RenderBox::contentSize() const
@@ -112,13 +112,13 @@ QSize RenderBox::contentSize() const
 short RenderBox::contentWidth() const
 {
     short w = m_width;
-    //kdDebug(300) << "RenderBox::contentWidth(1) = " << m_width << endl;
+    //kdDebug( 6040 ) << "RenderBox::contentWidth(1) = " << m_width << endl;
     if(m_style->hasBorder())
 	w -= borderLeft() + borderRight();
     if(m_style->hasPadding())
 	w -= paddingLeft() + paddingRight();
 
-    //kdDebug(300) << "RenderBox::contentWidth(2) = " << w << endl;
+    //kdDebug( 6040 ) << "RenderBox::contentWidth(2) = " << w << endl;
     return w;
 }
 
@@ -187,7 +187,7 @@ void RenderBox::setPixmap(const QPixmap &)
 void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
-    //kdDebug(300) << "renderBox::printDecorations()" << endl;
+    //kdDebug( 6040 ) << "renderBox::printDecorations()" << endl;
 
     QColor c = m_style->backgroundColor();
 
@@ -285,7 +285,7 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
 
 void RenderBox::updateSize()
 {
-//    kdDebug(300) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
+//    kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
 
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
@@ -310,7 +310,7 @@ void RenderBox::updateSize()
 
 void RenderBox::updateHeight()
 {
-//    kdDebug(300) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
+//    kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
 
     if (parsing())
     {
@@ -347,7 +347,7 @@ short RenderBox::verticalPositionHint() const
     switch(vAlign())
     {
     case BASELINE:
-	//kdDebug(300) << "aligned to baseline" << endl;
+	//kdDebug( 6040 ) << "aligned to baseline" << endl;
 	return contentHeight();
     case SUB:
 	// ###
@@ -373,7 +373,7 @@ short RenderBox::baselineOffset() const
     switch(vAlign())
     {
     case BASELINE:
-//	kdDebug(300) << "aligned to baseline" << endl;
+//	kdDebug( 6040 ) << "aligned to baseline" << endl;
 	return m_height;
     case SUB:
 	// ###
@@ -401,7 +401,7 @@ int RenderBox::bidiHeight() const
 
 void RenderBox::repaint()
 {
-    //kdDebug(300) << "repaint!" << endl;
+    //kdDebug( 6040 ) << "repaint!" << endl;
     repaintRectangle(0, 0, m_width, m_height);
 }
 
@@ -409,7 +409,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h)
 {
     x += m_x;
     y += m_y;
-    // kdDebug(300) << "RenderBox(" << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
+    // kdDebug( 6040 ) << "RenderBox(" << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     if(m_parent) m_parent->repaintRectangle(x, y, w, h);
 }
 

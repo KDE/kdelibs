@@ -162,7 +162,7 @@ bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
 			   int _tx, int _ty, DOMString &,
                            NodeImpl *&innerNode, long &offset)
 {
-    //kdDebug(300) << "Text::mouseEvent" << endl;
+    //kdDebug( 6020 ) << "Text::mouseEvent" << endl;
 
     if(!m_render) return false;
 

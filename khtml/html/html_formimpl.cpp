@@ -71,7 +71,7 @@ long HTMLFormElementImpl::length() const
 
 QString HTMLFormElementImpl::formData()
 {
-    kdDebug(300) << "form: saveSate()" << endl;
+    kdDebug( 6030 ) << "form: saveSate()" << endl;
 
     QString form_data;
     bool first = true;
@@ -79,7 +79,7 @@ QString HTMLFormElementImpl::formData()
     RenderFormElement *current = formElements.first();
     while(current)
     {
-	kdDebug(300) << "getting data from " << current << endl;
+	kdDebug( 6030 ) << "getting data from " << current << endl;
 
         if(current->type() == RenderFormElement::HiddenButton || current->isEnabled()) {
             QString enc = current->encoding();
@@ -101,12 +101,12 @@ QString HTMLFormElementImpl::formData()
 
 void HTMLFormElementImpl::submit(  )
 {
-    kdDebug(300) << "submit pressed!" << endl;
+    kdDebug( 6030 ) << "submit pressed!" << endl;
     if(!view) return;
 
     QString form_data = formData();
 
-    kdDebug(300) << "formdata = " << form_data << "\npost = " << post << endl;
+    kdDebug( 6030 ) << "formdata = " << form_data << "\npost = " << post << endl;
     if(post)
     {
         view->part()->submitForm( "post", url.string(), form_data.latin1(),
@@ -119,7 +119,7 @@ void HTMLFormElementImpl::submit(  )
 
 void HTMLFormElementImpl::reset(  )
 {
-    kdDebug(300) << "reset pressed!" << endl;
+    kdDebug( 6030 ) << "reset pressed!" << endl;
 
     RenderFormElement *current = formElements.first();
     while(current)
@@ -269,7 +269,7 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
 	    return static_cast<HTMLFormElementImpl *>(p);
 	p = p->parentNode();
     }
-    kdDebug(300) << "couldn't find form!" << endl;
+    kdDebug( 6030 ) << "couldn't find form!" << endl;
     return 0;
 }
 
@@ -466,24 +466,24 @@ QString HTMLInputElementImpl::state( )
 
 void HTMLInputElementImpl::blur(  )
 {
-    kdDebug(300) << "HTMLInputElementImpl::blur(  )" << endl;
+    kdDebug( 6030 ) << "HTMLInputElementImpl::blur(  )" << endl;
 
 }
 
 void HTMLInputElementImpl::focus(  )
 {
-    kdDebug(300) << " HTMLInputElementImpl::focus(  )" << endl;
+    kdDebug( 6030 ) << " HTMLInputElementImpl::focus(  )" << endl;
 
 }
 
 void HTMLInputElementImpl::select(  )
 {
-    kdDebug(300) << " HTMLInputElementImpl::select(  )" << endl;
+    kdDebug( 6030 ) << " HTMLInputElementImpl::select(  )" << endl;
 }
 
 void HTMLInputElementImpl::click(  )
 {
-    kdDebug(300) << " HTMLInputElementImpl::click(  )" << endl;
+    kdDebug( 6030 ) << " HTMLInputElementImpl::click(  )" << endl;
 }
 
 void HTMLInputElementImpl::parseAttribute(Attribute *attr)
@@ -622,11 +622,11 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
     	    m_render = f;
 	    m_render->setStyle(m_style);
 	    m_render->ref();
-            kdDebug(300) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
+            kdDebug( 6030 ) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
             QString state = document->registerElement(this);
             if ( !state.isEmpty())
             {
-               kdDebug(300) << "Restoring InputElem name=" << _name.string() <<
+               kdDebug( 6030 ) << "Restoring InputElem name=" << _name.string() <<
                             " state=" << state << endl;
                f->restoreState( state );
             }
@@ -727,7 +727,7 @@ DOMString HTMLSelectElementImpl::type() const
 
 long HTMLSelectElementImpl::selectedIndex() const
 {
-    kdDebug(300) << " HTMLSelectElementImpl::selectedIndex()" << endl;
+    kdDebug( 6030 ) << " HTMLSelectElementImpl::selectedIndex()" << endl;
 
     // ###
     return 0;

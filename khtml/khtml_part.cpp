@@ -469,11 +469,11 @@ DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 
 void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 {
-  kdDebug(300) << "slotData: " << data.size() << endl;
+  kdDebug( 6050 ) << "slotData: " << data.size() << endl;
   // The first data ?
   if ( !d->m_workingURL.isEmpty() )
   {
-    kdDebug(300) << "begin!" << endl;
+    kdDebug( 6050 ) << "begin!" << endl;
     d->m_bParsing = true;
 
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
@@ -493,7 +493,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
     // TODO: what else ?
     return;
   }
-  kdDebug(300) << "slotFinished" << endl;
+  kdDebug( 6050 ) << "slotFinished" << endl;
 
   d->m_workingURL = KURL();
 
@@ -501,7 +501,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
   if ( d->m_bParsing )
   {
-    kdDebug(300) << "end()" << endl;
+    kdDebug( 6050 ) << "end()" << endl;
     end(); //will emit completed()
   }
 }
@@ -685,7 +685,7 @@ void KHTMLPart::scheduleRedirection( int delay, const KURL &url )
 
 void KHTMLPart::slotRedirect()
 {
-  kdDebug(300) << "KHTMLPart::slotRedirect()" << endl;
+  kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
 
   KURL u = d->m_redirectURL;
   d->m_delayRedirect = 0;
@@ -696,7 +696,7 @@ void KHTMLPart::slotRedirect()
 void KHTMLPart::slotRedirection(const KURL& url)
 {
   // the slave told us that we got redirected
-  kdDebug(300) << "redirection by KIO to " << url.url() << endl;
+  kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
 
   emit d->m_extension->setLocationBarURL( url.url() );
 
@@ -1106,13 +1106,13 @@ void KHTMLPart::updateActions()
 
 void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName )
 {
-  kdDebug(300) << "childRequest( ..., " << debugString( url ) << ", " << debugString( frameName ) << " )" << endl;
+  kdDebug( 6050 ) << "childRequest( ..., " << debugString( url ) << ", " << debugString( frameName ) << " )" << endl;
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( frameName );
 
   if ( it == d->m_frames.end() )
   {
     khtml::ChildFrame child;
-    kdDebug(300) << "inserting new frame into frame map" << endl;
+    kdDebug( 6050 ) << "inserting new frame into frame map" << endl;
     child.m_name = frameName;
     it = d->m_frames.insert( frameName, child );
   }
@@ -1164,7 +1164,7 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
 void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype )
 {
-  kdDebug(300) << "trying to create part for " << debugString( mimetype ) << endl;
+  kdDebug( 6050 ) << "trying to create part for " << debugString( mimetype ) << endl;
 
   if ( !child->m_services.contains( mimetype ) )
   {
@@ -1240,7 +1240,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
 
-  kdDebug(300) << "opening " << debugString( url.url() ) << " in frame" << endl;
+  kdDebug( 6050 ) << "opening " << debugString( url.url() ) << " in frame" << endl;
   child->m_part->openURL( url );
 }
 
@@ -1745,13 +1745,13 @@ int KHTMLPartBrowserExtension::yOffset()
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 {
-  kdDebug(300) << "saveState!" << endl;
+  kdDebug( 6050 ) << "saveState!" << endl;
   m_part->saveState( stream );
 }
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  kdDebug(300) << "restoreState!" << endl;
+  kdDebug( 6050 ) << "restoreState!" << endl;
   m_part->restoreState( stream );
 }
 

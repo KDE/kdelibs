@@ -62,7 +62,7 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
     case TABLE:
     case INLINE_TABLE:
 	// ### set inline/block right
-	//kdDebug(300) << "creating RenderTable" << endl;
+	//kdDebug( 6040 ) << "creating RenderTable" << endl;
 	o = new RenderTable();
 	break;
     case TABLE_ROW_GROUP:
@@ -144,7 +144,7 @@ bool RenderObject::deleteMe()
 void RenderObject::addChild(RenderObject *newChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << " )" << endl;
 #endif
 
     newChild->setParsing();
@@ -190,7 +190,7 @@ void RenderObject::setContainingBlock()
     // the case below should never happen...
     if(!o)
     {
-	kdDebug(300) << renderName() << "(RenderObject)::setContainingBlock() containingBlock == 0, setting to this" << endl;
+	kdDebug( 6040 ) << renderName() << "(RenderObject)::setContainingBlock() containingBlock == 0, setting to this" << endl;
 	m_containingBlock = this;
     }
     else
@@ -308,7 +308,7 @@ void RenderObject::printTree(int indent) const
 {
     QString ind;
     ind.fill(' ', indent);
-    kdDebug(300) << ind << renderName() << ": " << (void*)this << " il=" << isInline()
+    kdDebug( 6040 ) << ind << renderName() << ": " << (void*)this << " il=" << isInline()
                  << " fl=" << isFloating() << " rp=" << isReplaced()
                  << " laytd=" << layouted()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;

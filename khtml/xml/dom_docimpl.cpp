@@ -340,11 +340,11 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name )
 
 // text
     case ID_TEXT:
-        kdDebug(300) << "Use document->createTextNode()" << endl;
+        kdDebug( 6020 ) << "Use document->createTextNode()" << endl;
 	break;
 
     default:
-	kdDebug(300) << "Unknown tag " << id << "!" << endl;
+	kdDebug( 6020 ) << "Unknown tag " << id << "!" << endl;
     }
     return n;
 }

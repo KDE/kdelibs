@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	
     if (fd < 0)
     {
-        kdDebug(300) << "Couldn't open file" << endl;
+        kdDebug( 6000 ) << "Couldn't open file" << endl;
         return 0;
     }
 
@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
     DOM::CSSStyleSheetImpl *sheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
     sheet->parseString( str );
 #if 0
-    kdDebug(300) << "==============> finished parsing <==================" << endl;
+    kdDebug( 6000 ) << "==============> finished parsing <==================" << endl;
 
     CSSStyleSelector *selector = new CSSStyleSelector(sheet);
 
-    kdDebug(300) << "==============> finished creation of Selector <==================" << endl;
+    kdDebug( 6000 ) << "==============> finished creation of Selector <==================" << endl;
 
     HTMLDocumentImpl *doc;
     HTMLElementImpl *e = new HTMLParagraphElementImpl(doc);

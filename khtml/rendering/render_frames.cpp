@@ -73,7 +73,7 @@ void RenderFrameSet::layout( bool deep )
 {
 
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << nodeName().string() << "(FrameSet)::layout(" << deep << ") width=" << width << ", layouted=" << layouted() << endl;
+    kdDebug( 6040 ) << nodeName().string() << "(FrameSet)::layout(" << deep << ") width=" << width << ", layouted=" << layouted() << endl;
 #endif
 
     if ( strcmp( m_parent->renderName(), "RenderFrameSet" ) != 0 )
@@ -105,11 +105,11 @@ void RenderFrameSet::layout( bool deep )
     {
 	for(i = 0; i< m_frameset->totalRows(); i++)
 	{
-	    kdDebug(300) << "setting row " << i << endl;
+	    kdDebug( 6040 ) << "setting row " << i << endl;
 	    if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
 	    {
 		m_rowHeight[i] = m_rows->at(i)->width(heightAvailable);
-		kdDebug(300) << "setting row height to " << m_rowHeight[i] << endl;
+		kdDebug( 6040 ) << "setting row height to " << m_rowHeight[i] << endl;
 		remainingHeight -= m_rowHeight[i];
 	    }
 	    else if(m_rows->at(i)->type == Relative)
@@ -217,7 +217,7 @@ void RenderFrameSet::layout( bool deep )
 
     if(!m_hSplitVar && !m_vSplitVar)
     {
-	kdDebug(300) << "calculationg fixed Splitters" << endl;
+	kdDebug( 6040 ) << "calculationg fixed Splitters" << endl;
 	if(!m_vSplitVar && m_frameset->totalCols() > 1)
 	{
 	    m_vSplitVar = new bool[m_frameset->totalCols()];
@@ -249,7 +249,7 @@ void RenderFrameSet::layout( bool deep )
 
 		if(fixed)
 		{
-		    kdDebug(300) << "found fixed cell " << r << "/" << c << "!" << endl;
+		    kdDebug( 6040 ) << "found fixed cell " << r << "/" << c << "!" << endl;
 		    if( m_frameset->totalCols() > 1)
 		    {
 			if(c>0) m_vSplitVar[c-1] = false;
@@ -264,7 +264,7 @@ void RenderFrameSet::layout( bool deep )
 		    if(!child) goto end2;
 		}		
 		else
-		    kdDebug(300) << "not fixed: " << r << "/" << c << "!" << endl;
+		    kdDebug( 6040 ) << "not fixed: " << r << "/" << c << "!" << endl;
 	    }
 	}
 
@@ -327,7 +327,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
 
   if ( !m_resizing && type == DOM::NodeImpl::MouseMove || type == DOM::NodeImpl::MousePress )
   {
-    kdDebug(300) << "mouseEvent:check" << endl;
+    kdDebug( 6040 ) << "mouseEvent:check" << endl;
 
     m_hSplit = -1;
     m_vSplit = -1;
@@ -340,7 +340,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       if(_x >= pos && _x <= pos+m_frameset->border())
       {
         if(m_vSplitVar && m_vSplitVar[c-1] == true) m_vSplit = c-1;
-        kdDebug(300) << "vsplit!" << endl;
+        kdDebug( 6040 ) << "vsplit!" << endl;
 	res = true;
         break;
       }
@@ -353,14 +353,14 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       if( _y >= pos && _y <= pos+m_frameset->border())
       {
         if(m_hSplitVar && m_hSplitVar[r-1] == true) m_hSplit = r-1;
-        kdDebug(300) << "hsplitvar = " << m_hSplitVar << endl;
-        kdDebug(300) << "hsplit!" << endl;
+        kdDebug( 6040 ) << "hsplitvar = " << m_hSplitVar << endl;
+        kdDebug( 6040 ) << "hsplit!" << endl;
 	res = true;
         break;
       }
       pos += m_rowHeight[r] + m_frameset->border();
     }
-    kdDebug(300) << m_hSplit << "/" << m_vSplit << endl;
+    kdDebug( 6040 ) << m_hSplit << "/" << m_vSplit << endl;
 
     QCursor cursor;
     if(m_hSplit != -1 && m_vSplit != -1)
@@ -397,14 +397,14 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
 
     if(m_vSplit != -1 )
     {
-      kdDebug(300) << "split xpos=" << _x << endl;
+      kdDebug( 6040 ) << "split xpos=" << _x << endl;
       int delta = m_vSplitPos - _x;
       m_colWidth[m_vSplit] -= delta;
       m_colWidth[m_vSplit+1] += delta;
     }	
     if(m_hSplit != -1 )
     {
-      kdDebug(300) << "split ypos=" << _y << endl;
+      kdDebug( 6040 ) << "split ypos=" << _y << endl;
       int delta = m_hSplitPos - _y;
       m_rowHeight[m_hSplit] -= delta;
       m_rowHeight[m_hSplit+1] += delta;

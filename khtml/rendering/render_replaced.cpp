@@ -77,7 +77,7 @@ short RenderWidget::verticalPositionHint() const
     switch(vAlign())
     {
     case BASELINE:
-	//kdDebug(300) << "aligned to baseline" << endl;
+	//kdDebug( 6040 ) << "aligned to baseline" << endl;
 	return (contentHeight() - QFontMetrics(m_style->font()).descent());
     case SUB:
 	// ###

@@ -86,12 +86,12 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
                                        int _tx, int _ty, DOMString &url,
                                        NodeImpl *&innerNode, long &offset)
 {
-    //kdDebug(300) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
+    //kdDebug( 6030 ) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
     if (usemap.length()>0)
     {
 	if(m_render->parent()->isAnonymousBox())
 	{
-	    //kdDebug(300) << "parent is anonymous!" << endl;
+	    //kdDebug( 6030 ) << "parent is anonymous!" << endl;
 	    // we need to add the offset of the anonymous box
 	    _tx += m_render->parent()->xPos();
 	    _ty += m_render->parent()->yPos();
@@ -101,7 +101,7 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
         HTMLMapElementImpl* map;
     	if ( (map = HTMLMapElementImpl::getMap(usemap))!=0)
 	{
-	    //kdDebug(300) << "have map" << endl;
+	    //kdDebug( 6030 ) << "have map" << endl;
             return map->mapMouseEvent(_x-renderer()->xPos()-_tx,
                                       _y-renderer()->yPos()-_ty,
                                       renderer()->width(), renderer()->height(), button, type, url);
@@ -176,7 +176,7 @@ void HTMLImageElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLImageElementImpl::attach(KHTMLView *)
 {
-    kdDebug(300) << "HTMLImageImpl::attach" << endl;
+    //kdDebug( 6030 ) << "HTMLImageImpl::attach" << endl;
     m_style = document->styleSelector()->styleForElement(this);
     khtml::RenderObject *r = _parent->renderer();
     if(r)

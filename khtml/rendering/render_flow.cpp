@@ -141,7 +141,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     // add offset for relative positioning
     if(isRelPositioned())
@@ -197,7 +197,7 @@ void RenderFlow::calcWidth()
 
 
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << "RenderFlow::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
+    kdDebug( 6040 ) << "RenderFlow::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
 #endif
 }
 
@@ -216,7 +216,7 @@ void RenderFlow::setXPos( int xPos )
 
 void RenderFlow::layout( bool deep )
 {
-//    kdDebug(300) << renderName() << " " << this << "::layout() start" << endl;
+//    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
 
     assert(!isInline());
 
@@ -232,9 +232,9 @@ void RenderFlow::layout( bool deep )
 	    nextSibling()->setLayouted(false);
 
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << renderName() << "(RenderFlow) " << this << " ::layout(" << deep << ") width=" << m_width << ", layouted=" << layouted() << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout(" << deep << ") width=" << m_width << ", layouted=" << layouted() << endl;
     if(containingBlock() == static_cast<RenderObject *>(this))
-    	kdDebug(300) << renderName() << ": containingBlock == this" << endl;
+    	kdDebug( 6040 ) << renderName() << ": containingBlock == this" << endl;
 #endif
 
     if(m_width<=0) return;
@@ -245,7 +245,7 @@ void RenderFlow::layout( bool deep )
     m_height = 0;
     m_clearStatus = CNONE;
 
-//    kdDebug(300) << "childrenInline()=" << childrenInline() << endl;
+//    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline())
 	layoutInlineChildren();
     else
@@ -307,7 +307,7 @@ static int getIndent(RenderObject *child)
     {
 	if(marginRight.type == Variable)
 	    diff /= 2;
-	//kdDebug(300) << "indenting margin by " << diff << endl;
+	//kdDebug( 6040 ) << "indenting margin by " << diff << endl;
 	return diff;
     }
     else
@@ -318,7 +318,7 @@ static int getIndent(RenderObject *child)
 void RenderFlow::layoutBlockChildren(bool deep)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << "layoutBlockChildren" << endl;
+    kdDebug( 6040 ) << "layoutBlockChildren" << endl;
 #endif
 
     bool _layouted = true;
@@ -347,7 +347,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	
     while( child != 0 )
     {
-//    	kdDebug(300) << "loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+//    	kdDebug( 6040 ) << "loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 	if(checkClear(child)) prevMargin = 0; // ### should only be 0
 	// if oldHeight+prevMargin < newHeight
 	int margin = child->marginTop();
@@ -379,12 +379,12 @@ void RenderFlow::layoutBlockChildren(bool deep)
 
     setLayouted(_layouted);
 
-    // kdDebug(300) << "layouted = " << layouted_ << endl;
+    // kdDebug( 6040 ) << "layouted = " << layouted_ << endl;
 }
 
 bool RenderFlow::checkClear(RenderObject *child)
 {
-    //kdDebug(300) << "checkClear oldheight=" << m_height << endl;
+    //kdDebug( 6040 ) << "checkClear oldheight=" << m_height << endl;
     RenderObject *o = child->previousSibling();
     while(o && !o->isFlow())
 	o = o->previousSibling();
@@ -418,14 +418,14 @@ bool RenderFlow::checkClear(RenderObject *child)
 	break;
     }
     }
-    //kdDebug(300) << "    newHeight = " << m_height << endl;
+    //kdDebug( 6040 ) << "    newHeight = " << m_height << endl;
     return true;
 }
 
 void RenderFlow::layoutInlineChildren()
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << "layoutInlineChildren" << endl;
+    kdDebug( 6040 ) << "layoutInlineChildren" << endl;
 #endif
     int toAdd = 0;
     m_height = 0;
@@ -481,7 +481,7 @@ RenderFlow::insertFloat(RenderObject *o)
     f->node = o;
 
     specialObjects->append(f);
-//    kdDebug(300) << "inserting node " << o << " number of specialobject = " << //	   specialObjects->count() << endl;
+//    kdDebug( 6040 ) << "inserting node " << o << " number of specialobject = " << //	   specialObjects->count() << endl;
 	
     positionNewFloats();
 
@@ -562,7 +562,7 @@ void RenderFlow::positionNewFloats()
 	    	}
 	    }
 	    f->left = fx;
-//	    kdDebug(300) << "positioning left aligned float at (" << //		   fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
+//	    kdDebug( 6040 ) << "positioning left aligned float at (" << //		   fx + o->marginLeft()  << "/" << y + o->marginTop() << ")" << endl;
 	    o->setXPos(fx + o->marginLeft());			
 	    o->setYPos(y + o->marginTop());
 	}
@@ -578,7 +578,7 @@ void RenderFlow::positionNewFloats()
 	    	}
 	    }
 	    f->left = fx - f->width;
-//	    kdDebug(300) << "positioning right aligned float at (" << //		   fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
+//	    kdDebug( 6040 ) << "positioning right aligned float at (" << //		   fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
 	    o->setXPos(fx - o->marginRight() - o->width());
 	    o->setYPos(y + o->marginTop());
 	}	
@@ -587,7 +587,7 @@ void RenderFlow::positionNewFloats()
 
 
 	
-//	kdDebug(300) << "specialObject y= (" << f->startY << "-" << f->endY << ")" << endl;
+//	kdDebug( 6040 ) << "specialObject y= (" << f->startY << "-" << f->endY << ")" << endl;
 
 	f = specialObjects->next();
     }
@@ -613,7 +613,7 @@ void RenderFlow::newLine()
     }
     if(currentY() < newY)
     {
-//	kdDebug(300) << "adjusting y position" << endl;
+//	kdDebug( 6040 ) << "adjusting y position" << endl;
 	setCurrentY(newY);
     }
     m_clearStatus = CNONE;
@@ -636,13 +636,13 @@ RenderFlow::leftMargin(int y) const
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-//    	kdDebug(300) << "left: sy, ey, x, w " << //	    r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
+//    	kdDebug( 6040 ) << "left: sy, ey, x, w " << //	    r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
 	if (r->startY <= y && r->endY > y &&
 	    r->type == SpecialObject::FloatLeft &&
 	    r->left + r->width > left)
 	    left = r->left + r->width;
     }
-//    kdDebug(300) << "leftMargin(" << y << ") = " << left << endl;
+//    kdDebug( 6040 ) << "leftMargin(" << y << ") = " << left << endl;
     return left;
 }
 
@@ -662,20 +662,20 @@ RenderFlow::rightMargin(int y) const
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-//    	kdDebug(300) << "right: sy, ey, x, w " << //	    r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
+//    	kdDebug( 6040 ) << "right: sy, ey, x, w " << //	    r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
 	if (r->startY <= y && r->endY > y &&
 	    r->type == SpecialObject::FloatRight &&
 	    r->left < right)
 	    right = r->left;
     }
-//    kdDebug(300) << "rightMargin(" << y << ") = " << right << endl;
+//    kdDebug( 6040 ) << "rightMargin(" << y << ") = " << right << endl;
     return right;
 }
 
 unsigned short
 RenderFlow::lineWidth(int y) const
 {
-//    kdDebug(300) << "lineWidth(" << y << ")=" << rightMargin(y) - leftMargin(y) << endl;
+//    kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightMargin(y) - leftMargin(y) << endl;
     return rightMargin(y) - leftMargin(y);
 
 }
@@ -725,7 +725,7 @@ void
 RenderFlow::clearFloats()
 {
 
-//    kdDebug(300) << "clearFloats" << endl;
+//    kdDebug( 6040 ) << "clearFloats" << endl;
     if (specialObjects)
     {
 	specialObjects->clear();
@@ -758,7 +758,7 @@ RenderFlow::clearFloats()
     if(flow->floatBottom() > offset)
     {
 #ifdef DEBUG_LAYOUT
-	kdDebug(300) << this << ": adding overhanging floats" << endl;
+	kdDebug( 6040 ) << this << ": adding overhanging floats" << endl;
 #endif
 	
 	// we have overhanging floats
@@ -785,7 +785,7 @@ RenderFlow::clearFloats()
 		special->noPaint = true; // previous paragraph paints it
 		specialObjects->append(special);
 #ifdef DEBUG_LAYOUT
-		kdDebug(300) << "    y: " << special->startY << "-" << special->endY << " left: " << special->left << " width: " << special->width << endl;
+		kdDebug( 6040 ) << "    y: " << special->startY << "-" << special->endY << " left: " << special->left << " width: " << special->width << endl;
 #endif
 	    }
 	}
@@ -802,7 +802,7 @@ short RenderFlow::baselineOffset() const
 	int r = 0;
 	if (firstChild())
 	    r = firstChild()->yPos() + firstChild()->baselineOffset();
-//kdDebug(300) << "aligned to baseline " << r << endl;
+//kdDebug( 6040 ) << "aligned to baseline " << r << endl;
 	return r;
 	}	
     case SUB:
@@ -827,7 +827,7 @@ short RenderFlow::baselineOffset() const
 void RenderFlow::calcMinMaxWidth()
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
     // non breaking space
@@ -940,11 +940,11 @@ void RenderFlow::calcMinMaxWidth()
 
 void RenderFlow::close()
 {
-    //kdDebug(300) << "renderFlow::close()" << endl;
+    //kdDebug( 6040 ) << "renderFlow::close()" << endl;
     if(haveAnonymousBox())
     {
 	m_last->close();
-	//kdDebug(300) << "RenderFlow::close(): closing anonymous box" << endl;
+	//kdDebug( 6040 ) << "RenderFlow::close(): closing anonymous box" << endl;
 	setHaveAnonymousBox(false);
     }
     if(!isInline() && m_childrenInline)
@@ -963,15 +963,15 @@ void RenderFlow::close()
     setParsing(false);
 
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << renderName() << "(RenderFlow)::close() total height =" << m_height << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderFlow)::close() total height =" << m_height << endl;
 #endif
 }
 
 void RenderFlow::addChild(RenderObject *newChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << renderName() << "(RenderFlow)::addChild( " << newChild->renderName() << " )" << endl;
-    kdDebug(300) << "current height = " << m_height << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderFlow)::addChild( " << newChild->renderName() << " )" << endl;
+    kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
 
     //to prevents non-layouted elements from getting printed
@@ -986,7 +986,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	// put all inline children we have up to now in a anonymous block box
 	if(m_last)
 	{
-//	    kdDebug(300) << "no inline child, moving previous inline children!" << endl;
+//	    kdDebug( 6040 ) << "no inline child, moving previous inline children!" << endl;
 	    RenderStyle *newStyle = new RenderStyle(m_style);
 	    newStyle->setDisplay(BLOCK);
 	    RenderFlow *newBox = new RenderFlow();
@@ -1016,10 +1016,10 @@ void RenderFlow::addChild(RenderObject *newChild)
     {
 	if(newChild->isInline() || newChild->isFloating())
 	{
-//	    kdDebug(300) << "adding inline child to anonymous box" << endl;
+//	    kdDebug( 6040 ) << "adding inline child to anonymous box" << endl;
 	    if(!haveAnonymousBox())
 	    {
-//		kdDebug(300) << "creating anonymous box" << endl;
+//		kdDebug( 6040 ) << "creating anonymous box" << endl;
 		RenderStyle *newStyle = new RenderStyle(m_style);
 		newStyle->setDisplay(BLOCK);
 		RenderFlow *newBox = new RenderFlow();
@@ -1042,7 +1042,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	    m_last->close();
 	    m_last->layout();
 	    setHaveAnonymousBox(false);
-//	    kdDebug(300) << "closing anonymous box" << endl;
+//	    kdDebug( 6040 ) << "closing anonymous box" << endl;
 	}
     }
     else if(!newChild->isInline() && !newChild->isFloating())
@@ -1086,7 +1086,7 @@ BiDiObject *RenderFlow::next(BiDiObject *c)
 
     while(current != 0)
     {
-	//kdDebug(300) << "current = " << current << endl;
+	//kdDebug( 6040 ) << "current = " << current << endl;
 	RenderObject *next = nextObject(current);
 
 	if(!next) return 0;
@@ -1138,7 +1138,7 @@ void RenderFlow::specialHandler(BiDiObject *special)
 	EClear clear = o->style()->clear();
 	if(clear != CNONE)
 	{
-	    //kdDebug(300) << "setting clear to " << clear << endl;
+	    //kdDebug( 6040 ) << "setting clear to " << clear << endl;
 	    m_clearStatus = (EClear) (m_clearStatus | clear);
 	}	
     }
