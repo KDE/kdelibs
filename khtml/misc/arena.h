@@ -54,8 +54,10 @@ struct Arena {
 
 struct ArenaPool {
     Arena first;	// first arena in pool list.
-    Arena* current; // current arena.
+    Arena* current;     // current arena.
     unsigned int arenasize;
+    unsigned int largealloc; // threshold for fractional allocation strategy
+    unsigned int cumul; // total bytes in pool.
     uword mask; 	// Mask (power-of-2 - 1)
 };
 
@@ -64,6 +66,7 @@ void InitArenaPool(ArenaPool *pool, const char *name,
 void FinishArenaPool(ArenaPool *pool);
 void FreeArenaPool(ArenaPool *pool);
 void* ArenaAllocate(ArenaPool *pool, unsigned int nb);
+void ArenaFinish(void);
 
 #define ARENA_ALIGN(pool, n) (((uword)(n) + ARENA_ALIGN_MASK) & ~ARENA_ALIGN_MASK)
 #define INIT_ARENA_POOL(pool, name, size) \
@@ -124,6 +127,6 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb);
          free(a); \
          (a) = 0;
 
-#endif
-
 } // namespace
+
+#endif

@@ -41,20 +41,36 @@
  * "Fast Allocation and Deallocation of Memory Based on Object Lifetimes"
  * David R. Hanson, Software -- Practice and Experience, Vol. 20(1).
  */
-
+ 
+#include <config.h>
 #include <stdlib.h>
 #include <string.h>
+#include <kglobal.h>
 #include "arena.h"
+
+#ifdef HAVE_GETPAGESIZE
+#include <unistd.h>
+#define POOL_SIZE kMax(8192, 2*getpagesize())
+#else
+#define POOL_SIZE 8192
+#endif
+
+//#define DEBUG_ARENA_MALLOC 
+#ifdef DEBUG_ARENA_MALLOC
+#include <assert.h>
+#include <stdio.h>
+#endif
 
 namespace khtml {
 
-//#define DEBUG_ARENA_MALLOC
 #ifdef DEBUG_ARENA_MALLOC
 static int i = 0;
 #endif
 
-#define FREELIST_MAX 30
-static Arena *arena_freelist;
+#define FREELIST_MAX 50
+#define LARGE_ALLOCATION_CEIL(pool) (pool)->arenasize * 256
+#define MAX_DISCRETE_ALLOCATION(pool) (pool)->arenasize * 32
+static Arena *arena_freelist = 0;
 static int freelist_count = 0;
 
 #define ARENA_DEFAULT_ALIGN  sizeof(double)
@@ -83,8 +99,9 @@ int CeilingLog2(unsigned int i) {
 }
 
 void InitArenaPool(ArenaPool *pool, const char* /*name*/,
-                   unsigned int size, unsigned int align)
+                   unsigned int /*size*/, unsigned int align)
 {
+     unsigned int size = POOL_SIZE;
      if (align == 0)
          align = ARENA_DEFAULT_ALIGN;
      pool->mask = BITMASK(CeilingLog2(align));
@@ -93,6 +110,8 @@ void InitArenaPool(ArenaPool *pool, const char* /*name*/,
          (uword)ARENA_ALIGN(pool, &pool->first + 1);
      pool->current = &pool->first;
      pool->arenasize = size;
+     pool->largealloc = LARGE_ALLOCATION_CEIL(pool);
+     pool->cumul = 0;
 }
 
 
@@ -167,8 +186,17 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
 
     /* attempt to allocate from the heap */
     {
-        unsigned int sz = pool->arenasize > nb ? pool->arenasize : nb;
+        unsigned int sz;
+#ifdef HAVE_MMAP
+        if (pool->cumul > pool->largealloc) {
+            // High memory pressure. Switch to a fractional allocation strategy
+            // so that malloc gets a chance to successfully trim us down when it's over.
+            sz = kMin(pool->cumul/25, MAX_DISCRETE_ALLOCATION(pool));
+        } else
+#endif
+           sz = pool->arenasize > nb ? pool->arenasize : nb;
         sz += sizeof *a + pool->mask;  /* header and alignment slop */
+        pool->cumul += sz;
 #ifdef DEBUG_ARENA_MALLOC
         i++;
         printf("Malloc: %d\n", i);
@@ -242,11 +270,25 @@ static void FreeArenaList(ArenaPool *pool, Arena *head, bool reallyFree)
             free(a); a = 0;
         } while ((a = *ap) != 0);
     } else {
-        /* Insert the whole arena chain at the front of the freelist. */
+        /* Insert as much of the arena chain as we can hold at the front of the freelist. */
         do {
             ap = &(*ap)->next;
             freelist_count++;
-        } while (*ap);
+        } while (*ap && freelist_count < FREELIST_MAX);
+        
+        /* Get rid of excess */
+        if (*ap) {
+            Arena *xa, *n;
+            for (xa = *ap; xa; xa = n) {
+                n = xa->next;
+#ifdef DEBUG_ARENA_MALLOC
+                i--;
+                printf("Free: %d\n", i);
+#endif
+                CLEAR_ARENA(xa);
+                free(xa);
+            }
+        }                                    
         *ap = arena_freelist;
         arena_freelist = a;
         head->next = 0;
@@ -277,14 +319,17 @@ void FinishArenaPool(ArenaPool *pool)
     FreeArenaList(pool, &pool->first, true);
 }
 
-void ArenaFinish(void)
+void ArenaFinish()
 {
     Arena *a, *next;
-
+#ifdef DEBUG_ARENA_MALLOC
+    printf("releasing global Arena freelist\n");
+#endif
     for (a = arena_freelist; a; a = next) {
         next = a->next;
         free(a); a = 0;
     }
+    freelist_count = 0;
     arena_freelist = NULL;
 }
 

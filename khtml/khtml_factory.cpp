@@ -27,6 +27,7 @@
 #include "rendering/render_style.h"
 #include "rendering/break_lines.h"
 #include "misc/loader.h"
+#include "misc/arena.h"
 
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -96,6 +97,7 @@ KHTMLFactory::~KHTMLFactory()
         khtml::RenderStyle::cleanup();
         khtml::Cache::clear();
         khtml::cleanup_thaibreaks();
+        khtml::ArenaFinish();
     }
     else
         deref();

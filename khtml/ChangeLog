@@ -1,3 +1,15 @@
+2004-12-29  Germain Garand  <germain@ebooksfrance.org>
+
+        memory allocation fixes
+
+        * khtml_factory.cpp: cleanup the global Arena freelist after the last khtml part gets unloaded
+
+        * misc/arena.{cpp,h} (InitArenaPool): change arenasize from 4096 to kMax(8192, 2*pagesize).
+        (ArenaAllocate): when a single pool grows over a 256*initial size threshold, switch to fractional allocation
+        so that more resources can be returned to the system afterward.
+        (FreeArenaList): don't link more than FREELIST_MAX Arenas to the freelist
+        (ArenaFinish): reset freelist_count
+
 2004-12-24  Stephan Kulow  <coolo@kde.org>
 
         * css/cssparser.cpp: fixing keyword background-positions that have an implicit center for the
