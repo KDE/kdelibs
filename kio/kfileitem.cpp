@@ -255,8 +255,7 @@ time_t KFileItem::time( unsigned int which ) const
     stat( QFile::encodeName(m_url.path( -1 )), &buf );
     return (which == KIO::UDS_MODIFICATION_TIME) ? buf.st_mtime :
            (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
-           (which == KIO::UDS_CREATION_TIME) ? buf.st_ctime :
-           static_cast<time_t>(0);
+        static_cast<time_t>(0); // We can't determine creation time for local files
   }
   return static_cast<time_t>(0);
 }
