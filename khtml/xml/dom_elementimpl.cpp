@@ -432,14 +432,14 @@ NodeListImpl *ElementImpl::getElementsByNameAttr( const DOMString &name )
 khtml::RenderStyle* ElementImpl::activeStyle()
 {
     if (!m_style) return 0;
-    
+
     RenderStyle* dynamicStyle=0;
     if (dynamicStyle=m_style->getPseudoStyle(RenderStyle::HOVER))
     {
         if (mouseInside())
             return dynamicStyle;
-    }   
-    
+    }
+
     return m_style;
 }
 
@@ -475,9 +475,9 @@ AttributeList *ElementImpl::defaultMap() const
 
 void ElementImpl::attach(KHTMLView *w)
 {
-    m_style = document->styleSelector()->styleForElement(this);
     if(_parent && _parent->renderer())
     {
+        m_style = document->styleSelector()->styleForElement(this);
 	m_render = khtml::RenderObject::createObject(this);
 	if(m_render)
 	{
@@ -530,10 +530,10 @@ void ElementImpl::recalcStyle()
     if(!m_render) return;
     bool faf = m_style->flowAroundFloats();
     delete m_style;
-    
-    m_style = document->styleSelector()->styleForElement(this);   
+
+    m_style = document->styleSelector()->styleForElement(this);
     m_style->setFlowAroundFloats(faf);
-    
+
     m_render->setStyle(activeStyle());
 
     NodeImpl *n;
@@ -591,18 +591,18 @@ bool ElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 
 #ifdef EVENT_DEBUG
     if(inside) kdDebug( 6030 ) << "    --> inside" << endl;
-#endif    
-    
-    if(inside || mouseInside()) 
-    {                
+#endif
+
+    if(inside || mouseInside())
+    {
         // dynamic HTML...
         mouseEventHandler(button, type, inside);
     }
-    
+
     bool oldinside=mouseInside();
-    
+
     setMouseInside(inside);
-    
+
     if (oldinside != inside && m_style->getPseudoStyle(RenderStyle::HOVER))
         applyChanges(true,false);
 
@@ -658,7 +658,7 @@ NamedAttrMapImpl &NamedAttrMapImpl::operator =(const NamedAttrMapImpl &other)
     return *this;
 }
 
-unsigned long NamedAttrMapImpl::length() const 
+unsigned long NamedAttrMapImpl::length() const
 {
     return len;
 }
@@ -701,14 +701,14 @@ NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg, int &exceptioncode )
 	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
 	return 0;
     }
-	
+
     AttrImpl *attr = static_cast<AttrImpl*>(arg.handle());
 
     if (attr->_element) {
 	exceptioncode = DOMException::INUSE_ATTRIBUTE_ERR;
 	return 0;
     }
-    
+
     uint i;
     for (i = 0; i < len; i++) {
 	if (!strcasecmp(attrs[i]->name(),attr->name())) {
