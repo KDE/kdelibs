@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=audio/x-scpls
+Comment=MP3 ShoutCast Playlist
+Patterns=*.pls;*.PLS;
+Icon=sound.png
+
