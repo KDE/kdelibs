@@ -520,6 +520,7 @@ void KHTMLSettings::setDefaultCharset( QFont::CharSet c, bool enforce )
 void KHTMLSettings::resetCharset()
 {
     internalSetCharset(m_defaultCharset);
+    setScript( m_defaultCharset );
 }
 
 void KHTMLSettings::setCharset( QFont::CharSet c)
@@ -532,6 +533,12 @@ void KHTMLSettings::internalSetCharset( QFont::CharSet c )
 {
     m_charset = c;
     availFamilies = KGlobal::charsets()->availableFamilies( m_charset ).join(",");
+}
+
+void KHTMLSettings::setScript( QFont::CharSet c )
+{
+    kdDebug() << "KHTMLSettings::setScript to " << c << endl; 
+    m_script = c;
 }
 
 QString KHTMLSettings::userStyleSheet() const

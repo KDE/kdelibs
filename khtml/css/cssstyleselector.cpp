@@ -1872,7 +1872,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	QString available = s->availableFamilies();
 	QFont f = style->font();
 	QString family;
-//	kdDebug(0) << "searching for font... available:" << available << endl;
+	//kdDebug(0) << "searching for font... available:" << available << endl;
         for(int i = 0; i < len; i++)
         {
             CSSValueImpl *item = list->item(i);
@@ -1881,7 +1881,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             if(!val->primitiveType() == CSSPrimitiveValue::CSS_STRING) return;
             DOMStringImpl *str = val->getStringValue();
             QString face = QConstString(str->s, str->l).string().lower();
-//            kdDebug(0) << "searching for face '" << face << "'" << endl;
+	    // a languge tag is often added in braces at the end. Remove it.
+	    face = face.replace(QRegExp(" \\(.*\\)$"), "");
+            //kdDebug(0) << "searching for face '" << face << "'" << endl;
             if(face == "serif")
                 face = s->serifFontName();
             else if(face == "sans-serif")
@@ -1892,6 +1894,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 face = s->fantasyFontName();
             else if( face == "monospace")
                 face = s->fixedFontName();
+            else if( face == "konq_default")
+                face = s->stdFontName();
 
 	    int pos;
 	    if( (pos = available.find( face )) == -1 ) {
@@ -1912,11 +1916,14 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		if ( pos == -1 )
 		    pos = available.length();
 		family = available.mid( pos1, pos - pos1 );
-		//kdDebug() << "=====> setting font family to " << family << endl;
 		f.setFamily( family );
 		KGlobal::charsets()->setQFont(f, s->charset() );
-		style->setFont(f);
-		break;
+		//kdDebug() << "font charset is " << f.charSet() << " script = " << s->script() << endl; 
+		if ( s->charset() == s->script() || KGlobal::charsets()->supportsScript( f, s->script() ) ) {
+		    //kdDebug() << "=====> setting font family to " << family << endl;
+		    style->setFont(f);
+		    return;
+		}
 	    }
 //            kdDebug( 6080 ) << "no match for font family " << face << ", got " << f.family() << endl;
         }

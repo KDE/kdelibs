@@ -86,6 +86,8 @@ public:
     // the charset used to display the current document.
     QFont::CharSet charset() const { return m_charset; }
     void setCharset( QFont::CharSet c );
+    QFont::CharSet script() const { return m_script; }
+    void setScript( QFont::CharSet c );
     void resetCharset( );
 
     void setDefaultCharset( QFont::CharSet c, bool b );
@@ -133,6 +135,7 @@ private:
     int m_minFontSize;
 
     QFont::CharSet m_charset;
+    QFont::CharSet m_script;
     QFont::CharSet m_defaultCharset;
     bool enforceCharset;
     QString m_encoding;

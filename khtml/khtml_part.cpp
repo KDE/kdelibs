@@ -1118,6 +1118,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     {
        d->m_charset = KGlobal::charsets()->charsetForEncoding(qData);
        d->m_settings->setCharset( d->m_charset );
+       d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding(qData, true) );
        d->m_haveCharset = true;
        d->m_encoding = qData;
     }
@@ -1297,6 +1298,7 @@ void KHTMLPart::write( const char *str, int len )
          //kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
          d->m_charset = KGlobal::charsets()->charsetForEncoding(c->name());
          d->m_settings->setCharset( d->m_charset );
+         d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding(c->name(), true ));
          //kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
       }
       d->m_doc->applyChanges(true, true);
@@ -1572,6 +1574,9 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 //    setCharset( name, override );
      d->m_charset = KGlobal::charsets()->charsetForEncoding(name);
      d->m_settings->setCharset( d->m_charset );
+     // the script should not be unicode. We need to know the document is eg. arabic to be
+     // able to choose a unicode font that contains arabic glyphs.
+     d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding( name, true ) );
 
     if( !m_url.isEmpty() ) {
         // reload document
@@ -3052,6 +3057,7 @@ void KHTMLPart::reparseConfiguration()
 
   // Keep original charset setting.
   settings->setCharset(d->m_settings->charset());
+  settings->setScript(d->m_settings->script());
 
   if ( settings->autoLoadImages() != khtml::Cache::autoloadImages() )
     autoloadImages( settings->autoLoadImages() );
