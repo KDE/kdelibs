@@ -2,7 +2,7 @@ libDCOP 1
 libkdecore 3 
 libkdeui 3 
 libkdesu 1 
-libkssl 2 
+libkssl-nossl 2 
 libkio 3 
 libksycoca 3 
 libkfile 3 

@@ -7,6 +7,12 @@ set -e
 case "$1" in
     configure)
       /sbin/ldconfig
+	if [ -x /usr/sbin/update-alternatives ]; then
+		/usr/sbin/update-alternatives --install /usr/lib/kio_https.la kio_https.la /usr/lib/kio_https-nossl.la 40
+		/usr/sbin/update-alternatives --install /usr/lib/kio_https.so kio_https.so /usr/lib/kio_https-nossl.so 40
+		/usr/sbin/update-alternatives --install /usr/lib/libkssl.la libkssl.la /usr/lib/libkssl-nossl.la 40
+		/usr/sbin/update-alternatives --install /usr/lib/libkssl.so.2.0.0 libkssl.so.2.0.0 /usr/lib/libkssl-nossl.so.2.0.0 40
+	fi
       echo -n "Verifying HTML directory is configured properly:  "
       if [ -e /usr/share/doc/kde/HTML/default -a ! -L /usr/share/doc/kde/HTML/default ]; then
         mv /usr/share/doc/kde/HTML/default/* /usr/share/doc/kde/HTML/en >/dev/null 2>&1

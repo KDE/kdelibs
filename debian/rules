@@ -6,39 +6,37 @@ SHELL=/bin/sh
 
 BUILDDIR = ./build
 
-build: $(BUILDDIR)/build-stamp
+build: build-stamp
 
 -include debian/debiandirs
 
 debian/debiandirs: admin/debianrules
 	perl -w admin/debianrules echodirs > debian/debiandirs
 
-$(BUILDDIR)/build-stamp:
+build-stamp:
 	dh_testdir
 	if test ! -f configure; then \
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
-	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
-	cd $(BUILDDIR) ;\
-	$$PWD/../configure $(configkde) --with-distribution="$$version" \
-	--libdir=$(kde_libdir) --includedir=$(kde_includedir) 
+	./configure $(configkde) --with-distribution="$$version" \
+	--libdir=$(kde_libdir) --includedir=$(kde_includedir) --without-ssl
 
-	make -C $(BUILDDIR)
+	make
 
-	touch $(BUILDDIR)/build-stamp
+	touch build-stamp
 
 debian-clean:
 	dh_testdir
-	-rm -f $(BUILDDIR)/build-stamp
+	-rm -f build-stamp
 	dh_clean
 
 clean: debian-clean
-	-rm -rf $(BUILDDIR)
 	-rm -f debian/debiandirs debian/undocumented 
 	if test -d CVS; then \
 	  make -f admin/Makefile.common cvs-clean ;\
 	fi
+	-make distclean
 
 binary-indep:	build
 	dh_testdir
@@ -74,7 +72,7 @@ binary-arch:  build
 	install -d debian/tmp/usr/share/applnk
 	install -d debian/tmp/etc/pam.d
 	install -d debian/tmp/etc/kde2
-	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp/ install
+	make DESTDIR=`pwd`/debian/tmp/ install
 	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
@@ -97,7 +95,13 @@ binary-arch:  build
 	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
 	dh_movefiles -pkdelibs3-dev $$list usr/include/kde usr/lib/lib*.a
 	install -d debian/tmp/usr/share/icons/locolor/16x16/apps/
-	cp debian/package.png debian/tmp/usr/share/icons/locolor/16x16/apps/ 
+	cp debian/package.png debian/tmp/usr/share/icons/locolor/16x16/apps/
+	-rm -rf usr/share/apps/kssl
+	mv debian/tmp/usr/lib/kio_https.so debian/tmp/usr/lib/kio_https-nossl.so
+	mv debian/tmp/usr/lib/kio_https.la debian/tmp/usr/lib/kio_https-nossl.la
+	mv debian/tmp/usr/lib/libkssl.so.2.0.0 debian/tmp/usr/lib/libkssl-nossl.so.2.0.0
+	mv debian/tmp/usr/lib/libkssl.la debian/tmp/usr/lib/libkssl-nossl.la
+
 	dh_installchangelogs
 	dh_undocumented
 	dh_strip
@@ -110,7 +114,7 @@ binary-arch:  build
 	dh_compress 
 	dh_fixperms 
 	dh_suidregister 
-	dh_makeshlibs
+	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps 
 	dh_gencontrol

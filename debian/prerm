@@ -6,9 +6,13 @@
 set -e
 
 case "$1" in
-    remove|upgrade|deconfigure)
-        ;;
-    failed-upgrade)
+    remove|failed-upgrade|upgrade|deconfigure)
+        if [ -x /usr/sbin/update-alternatives ]; then
+                /usr/sbin/update-alternatives --remove kio_https.la /usr/lib/kio_https-nossl.la
+                /usr/sbin/update-alternatives --remove kio_https.so /usr/lib/kio_https-nossl.so
+		/usr/sbin/update-alternatives --remove libkssl.so.2.0.0 /usr/lib/libkssl-nossl.so.2.0.0
+		/usr/sbin/update-alternatives --remove libkssl.la /usr/lib/libkssl-nossl.la
+        fi
         ;;
     *)
         echo "prerm called with unknown argument \`$1'" >&2
