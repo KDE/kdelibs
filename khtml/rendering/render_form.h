@@ -272,6 +272,15 @@ protected:
                                   int h, const RenderStyle *style, int lx, int lw);
     bool findLegend( int &lx, int &ly, int &lw, int &lh);
 };
+// -------------------------------------------------------------------------
+
+class RenderCustomButton : public RenderReplacedFlow
+{
+public:
+    RenderCustomButton(DOM::HTMLGenericFormElementImpl *element);
+
+    virtual const char *renderName() const { return "RenderCustomButton"; }
+};
 
 // -------------------------------------------------------------------------
 
