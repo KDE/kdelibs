@@ -7,7 +7,9 @@ Summary:
 
 This directory contains KDE custom widgets for designer 2 which comes with
 Qt 3. Just make sure your plugin path in qtconfig includes
-$KDEDIR/lib/kde3/plugins
+$KDEDIR/lib/kde3/plugins . With the KDE build system nothing special 
+(i.e. editing the plugin path) is needed, as uic will automatically be
+called with -L <path to the kdewidgets plugin> .
 
 This plugin uses the QWidget plugin API of Qt >= 3.0
 Don't expect it to work with any other versions of Qt.
