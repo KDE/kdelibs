@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: debhelper (>> 3.0.0), automake, flex, bison, gettext, libqt-dev (>= 2:2.3.0-3), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, alsa-headers-0.5 | alsa-headers, docbook-xml, docbook-stylesheets, libbz2-dev, libpcre3-dev, libsasl-dev, libcupsys2-dev | cupsys-dev, postgresql-dev, libmysqlclient10-dev | libmysqlclient-dev
+Build-Depends: debhelper (>> 3.0.0), automake, flex, bison, gettext, libqt-dev (>= 2:2.3.0-3), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook-xml, docbook-stylesheets, libbz2-dev, libpcre3-dev, libsasl-dev, libcupsys2-dev | cupsys-dev, postgresql-dev, libmysqlclient10-dev | libmysqlclient-dev
 Build-Depends-Indep: kdoc, qt-doc
 Section: libs
 Priority: optional
@@ -87,6 +87,7 @@ Section: libs
 Replaces: libkmid, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
 Depends: ${shlibs:Depends}
 Conflicts: libkmid
+Provides: libkmid
 Description: aRts Sound system (midi/kmedia support libraries with alsa)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -104,6 +105,7 @@ Replaces: libarts
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
 Conflicts: suidmanager (<< 0.50), libarts
+Provides: libarts
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
