@@ -1,0 +1,77 @@
+To counter some problems with the current dcop command line utility I would 
+like to propose two new commands and a bit of change in functionality. I 
+would like to hear some feedback on this, especially from people who are 
+actually using the dcop command line tools to automate tasks.
+
+All of the DCOP functionality is there already, its just not very well 
+accesible from the command line.
+
+Proposed new commands:
+
+
+dcopstart <app>
+
+Starts <app> and returns  the <app-id> on stdout that can be used for the 
+other commands. E.g. "dcopstart kedit" might return "kedit-29322". An 
+exit-code of '0' means success. An exit-code of '1' means error, the error 
+msg is printed to stderr and no data is printed to stdout.
+
+
+dcopfind [-l] [-a] <app-id> [<object-id> [<select_func> [args]]]
+
+Finds an existing DCOP application/object. The select_func can be used to 
+select a specific single instance out of many based on some criteria. 
+<app-id> and <object-id> may end with a '*' as wildcard.
+
+The function returns a <app-object-id> to stdout in the form
+
+   "DCOPRef(<app-id>, <object-id>)" 
+
+if an object is found and returns an exit-code of '0'. 
+If no object is found, nothing is written to stdout and the exit-code is '1'.
+
+With the -a option it prints out "<app-id>" instead of a DCOPRef.
+
+With the -l option it calls "dcopstart <app-id>" if no object is found, 
+stripping off any wildcard from the <app-id>. If the dcopstart command is 
+successfull the find command is repeated, if the dcopstart command fails, an 
+error message is printed to stderr and the command exits with exit-code '2'.
+
+The default selection criteria is "any". Applications can declare their own 
+select_func as they see fit, e.g. konqueror could declare 
+"isDoingProtocol(QString protocol)" and then the following command would 
+select a konqueror mainwindow that is currently handling the help-protocol:
+
+   "dcopfind 'konqueror*'  'konqueror-mainwindow*' 'isDoingProtocol(QString 
+protocol)' help"
+
+
+dcop <dcopref> <function> args
+
+In addtion to the current syntax of
+
+   dcop <appid> <object> <function> args
+
+you will now also be able to use <dcopref> to make calls with <dcopref> being 
+"DCOPRef(<appid>, <objectid>)" as returned by dcopfind.
+
+Additional utilities:
+
+	"dcopref <appid> <object>"
+
+Creates a DCOPRef from appid and object.
+
+
+	"dcopclient <dcopref>"
+
+Extracts the appid from dcopref.
+
+
+	"dcopobject <dcopref>"
+
+Extracts the object from dcopref.
+
+As of KDE 3.0: You will NO LONGER be able to use "dcop konqueror" to 
+communicate with e.g. "konqueror-4783". You will have to use "dcop 
+konqueror-4783" for that (or the DCOPRef notation)
+

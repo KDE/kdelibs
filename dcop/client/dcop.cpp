@@ -508,20 +508,55 @@ int main( int argc, char** argv )
     client.attach();
     dcop = &client;
 
+    QCString app;
+    QCString objid;
+    QCString function;
+    char **args = 0;
+    if ((argc > 1) && (strncmp(argv[1], "DCOPRef(", 8)) == 0)
+    {
+       char *delim = strchr(argv[1], ',');
+       if (!delim)
+       {
+          fprintf(stderr, "Error: '%s' is not a valid DCOP reference.\n", argv[1]);
+          return 1;
+       }
+       *delim = 0;
+       app = argv[1] + 8;
+       delim++;
+       delim[strlen(delim)-1] = 0;
+       objid = delim;
+       if (argc > 2)
+          function = argv[2];
+       if (argc > 3)
+          args = &argv[3];
+       argc++;
+    }
+    else
+    {
+       if (argc > 1)
+          app = argv[1];
+       if (argc > 2)
+          objid = argv[2];
+       if (argc > 3)
+          function = argv[3];
+       if (argc > 4)
+          args = &argv[4];
+    }
+
     switch ( argc ) {
     case 0:
     case 1:
 	queryApplications();
 	break;
     case 2:
-	queryObjects( argv[1] );
+	queryObjects( app );
 	break;
     case 3:
-	queryFunctions( argv[1], argv[2] );
+	queryFunctions( app, objid );
 	break;
     case 4:
     default:
-	callFunction( argv[1], argv[2], argv[3], argc - 4, &argv[4] );
+	callFunction( app, objid, function, argc - 4, args );
 	break;
 
     }
