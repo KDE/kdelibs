@@ -93,6 +93,9 @@ void CharacterDataImpl::appendData( const DOMString &arg )
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg )
 {
+    if (offset > str->l)
+	throw DOMException(DOMException::INDEX_SIZE_ERR);
+
     str->insert(arg.impl, offset);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
@@ -101,6 +104,9 @@ void CharacterDataImpl::insertData( const unsigned long offset, const DOMString 
 
 void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count )
 {
+    if (offset > str->l)
+	throw DOMException(DOMException::INDEX_SIZE_ERR);
+
     str->remove(offset,count);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
