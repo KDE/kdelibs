@@ -247,16 +247,14 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
     DocumentFragmentImpl *fragment = new DocumentFragmentImpl( ownerDocument() );
     HTMLTokenizer *tok = new HTMLTokenizer( static_cast<HTMLDocumentImpl *>(ownerDocument()), fragment );
     tok->begin();
-    tok->write( html.string(), false );
+    tok->write( html.string(), true );
     tok->end();
     delete tok;
 
     removeChildren();
     int ec = 0;
     appendChild( fragment, ec );
-    if ( !ec )
-	return true;
-    return false;
+    return !ec;
 }
 
 bool HTMLElementImpl::setInnerText( const DOMString &text )
