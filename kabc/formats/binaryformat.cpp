@@ -32,7 +32,7 @@
 
 #include "binaryformat.h"
 
-#define BINARY_FORMAT_VERSION 2
+#define BINARY_FORMAT_VERSION 1
 
 using namespace KABC;
 
