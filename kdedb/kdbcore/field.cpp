@@ -170,3 +170,10 @@ Field::changed()
 {
     return m_changed;
 }
+
+Field &
+Field::operator =(const Value &v)
+{
+    setValue(v);
+    return *this;
+}

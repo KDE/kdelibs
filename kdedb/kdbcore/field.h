@@ -119,6 +119,8 @@ class Field :public Object {
     Value value();
     void setValue(const Value &v, bool init = false);
 
+    Field &operator = (const Value &v);
+    
     Value *operator ->() { return &m_val; };
 
     bool changed();
@@ -126,6 +128,8 @@ class Field :public Object {
     Field (const QString &name, QObject *parent = 0);
     Field (HandlerPtr h,  const QString &name, QObject *parent = 0);
 
+    Field & operator = (const Field &) { return *this; };
+    
     Value m_val;
     Value m_default;
 
