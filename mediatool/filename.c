@@ -19,7 +19,7 @@
 #include <string.h>
 #include "mediatool.h"
 
-void FileNameSet(MdCh_FNAM *fnChunk, char *filename)
+void FileNameSet(MdCh_FNAM *fnChunk, const char *filename)
 {
   int	len;
 

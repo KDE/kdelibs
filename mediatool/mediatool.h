@@ -256,7 +256,7 @@ MdChunk* WriteChunk (char *adress, const char *ChunkName, char *data, int32 leng
  ***********************************************************************************/
 
 
-void FileNameSet(MdCh_FNAM *fnChunk, char *filename);
+void FileNameSet(MdCh_FNAM *fnChunk, const char *filename);
 int8 FileNameGet(MdCh_FNAM *fnChunk, char *filename);
 
 
