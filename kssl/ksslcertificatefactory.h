@@ -21,10 +21,18 @@
 #ifndef _KSSLCERTIFICATEFACTORY_H
 #define _KSSLCERTIFICATEFACTORY_H
 
+class KSSLCertificate;
+
+typedef enum {KEYTYPE_UNKNOWN, KEYTYPE_RSA, KEYTYPE_DSA} KSSLKeyType;
+
 class KSSLCertificateFactory {
  
 public:
- 
+
+  static KSSLCertificate* generateSelfSigned(KSSLKeyType keytype);
+  //  static KSSLCertificate* generateSigned();
+  //  static bool generateRequest();
+
 private:
  
   class KSSLCertificateFactoryPrivate;

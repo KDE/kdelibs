@@ -25,14 +25,18 @@
 
 KSSLCertificate* 
 KSSLCertificateHome::getCertificateByHost(QString& /*host*/) {
+  #ifdef HAVE_SSL
 
+  #endif
   return NULL;
 }
 
 
 KSSLCertificate* 
 KSSLCertificateHome::getDefaultCertificate() {
+  #ifdef HAVE_SSL
 
+  #endif
   return NULL;
 }
 
