@@ -183,7 +183,6 @@ void HTMLTokenizer::begin()
     pendingSrc = "";
     noMoreData = false;
     brokenComments = false;
-    recursion = 0;
 }
 
 void HTMLTokenizer::addListing(DOMStringIt list)
@@ -300,6 +299,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 if (!scriptSrc.isEmpty()) {
                     // forget what we just got; load from src url instead
                     cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL(), scriptSrcCharset);
+                    scriptSrc="";
                 }
                 else {
 #ifdef TOKEN_DEBUG
@@ -1229,7 +1229,6 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
 {
 #ifdef TOKEN_DEBUG
     kdDebug( 6036 ) << "Tokenizer::write(\"" << str << "\"," << appendData << ")" << endl;
-    kdDebug( 6036 ) << "Recursion is " << recursion << endl;
 #endif
 
     if ( !buffer )
@@ -1249,8 +1248,6 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     }
     else
         _src = str;
-
-    recursion++;
 
     src = DOMStringIt(_src);
 
@@ -1449,9 +1446,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     }
     _src = QString();
 
-    --recursion;
-
-    if (noMoreData && !recursion && !loadingExtScript && !m_executingScript )
+    if (noMoreData && !loadingExtScript && !m_executingScript )
         end(); // this actually causes us to be deleted
 }
 
@@ -1614,9 +1609,12 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 //         pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
         _src = QString::null;
         src = DOMStringIt( _src );
+        bool oldscript = script;
+        script = false;
         m_executingScript++;
         view->part()->executeScript(scriptSource.string());
         m_executingScript--;
+        script = oldscript;
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
         // of 'scriptOutput'.
