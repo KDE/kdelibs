@@ -540,6 +540,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 discard = NoneDiscard;
 		pending = NonePending; // remove space at the end of value
 
+#if 0
 		//WABA: This is unreliable. The parser is a state machine.
 		//      You should always assume that src.length() == 1
 		//      and that the next byte is feeded into the
@@ -550,6 +551,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		while((src.length() > 1) &&
 		      ((src[1] == '\'') || (src[1] == '\"')))
 		    ++src;
+#endif
 	    }
 	    else
 	    {
