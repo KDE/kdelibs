@@ -486,7 +486,7 @@ KAction *KStdAction::close(const QObject *recvr, const char *slot,
 KAction *KStdAction::mail(const QObject *recvr, const char *slot,
                                                   QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Mail..."), "send", 0,
+    return new KAction(i18n("&Mail..."), "mail_send", 0,
                        recvr, slot, parent, name ? name : stdName(Mail));
 }
 
