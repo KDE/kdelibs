@@ -177,7 +177,7 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
     speedLabel->setText( i18n( "Stalled") );
   } else {
     QTime remaining = KIO::calculateRemaining( m_iTotalSize, m_iProcessedSize, bytes_per_second );
-    speedLabel->setText( i18n( "%1/s ( %2 remaining )").arg( KIO::convertSize( bytes_per_second )).arg( KGlobal::locale()->formatTime(remaining, true) ) );
+    speedLabel->setText( i18n( "%1/s ( %2 remaining )").arg( KIO::convertSize( bytes_per_second )).arg( remaining.toString() ) );
   }
 }
 

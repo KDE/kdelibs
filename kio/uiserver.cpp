@@ -158,7 +158,7 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
     tmps2 = tmps;
   } else {
     tmps = i18n( "%1/s").arg( KIO::convertSize( m_iSpeed ));
-    tmps2 = KGlobal::locale()->formatTime(m_remainingTime, true);
+    tmps2 = m_remainingTime.toString();
   }
   setText( listProgress->lv_speed, tmps );
   setText( listProgress->lv_remaining, tmps2 );
@@ -593,7 +593,7 @@ void UIServer::slotUpdate() {
   statusBar()->changeItem( i18n( " Files : %1 ").arg( iTotalFiles ), ID_TOTAL_FILES);
   statusBar()->changeItem( i18n( " Size : %1 ").arg( KIO::convertSize( iTotalSize ) ),
 			   ID_TOTAL_SIZE);
-  statusBar()->changeItem( i18n( " Time : %1 ").arg( KGlobal::locale()->formatTime(totalRemTime, true) ), ID_TOTAL_TIME);
+  statusBar()->changeItem( i18n( " Time : %1 ").arg( totalRemTime.toString() ), ID_TOTAL_TIME);
   statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( iTotalSpeed ) ),
 			   ID_TOTAL_SPEED);
 
