@@ -407,7 +407,8 @@ bool KBuildSycoca::process(const QCString &fun, const QByteArray &data,
     replyType = "void";
     return true;
   } else
-    return KSycoca::process(fun, data, replyType, replyData);
+    return false;
+    // don't call KSycoca::process - this is for other apps, not kded
 }
 
 #include "kbuildsycoca.moc"
