@@ -269,14 +269,14 @@ void fillInstance(KInstance &ins) {
     if ( !getenv( "KDELIBS_UNINSTALLED" ) ) {
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/customization/catalog");
         catalogs += ":";
-        catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.1.2/docbook.cat");
+        catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/docbook.cat");
         ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2");
     } else {
         catalogs += SRCDIR;
         catalogs += "/customization/catalog";
         catalogs += ":";
         catalogs += SRCDIR;
-        catalogs += "/docbook/xml-dtd-4.1.2/docbook.cat";
+        catalogs += "/docbook/xml-dtd-4.2/docbook.cat";
         ins.dirs()->addResourceDir("dtd", SRCDIR);
     }
 
