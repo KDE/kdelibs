@@ -69,6 +69,9 @@ else
   DO_NOT_COMPILE="$DO_NOT_COMPILE kdoctools"
 fi
 
+if test ! "$USE_RPATH" = "yes"; then
+  LIBXLST_RPATH=
+fi
 
 AC_SUBST(LIBXSLT_LIBS)
 AC_SUBST(LIBXSLT_CFLAGS)
