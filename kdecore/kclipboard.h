@@ -45,7 +45,7 @@ class KClipboard : public QObject
     Q_OBJECT
 
 public:
-    friend class Klipper;
+    friend class KlipperWidget;
     friend class KApplication;
 
     enum Mode { Clipboard = 1, Selection = 2 };
