@@ -1018,17 +1018,15 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
   const struct css_value *cssval = findValue(fontParser.m_yyIn.latin1(), fontParser.m_yyIn.length());
   
   if (cssval) {
-    kdDebug( 6080 ) << "System fonts requested: [" << str << "]" << endl;
+    //kdDebug( 6080 ) << "System fonts requested: [" << str << "]" << endl;
     QFont sysFont;
     switch (cssval->id) { 
     case CSS_VAL_MENU: 
       sysFont = KGlobalSettings::menuFont();
       break;
     case CSS_VAL_CAPTION:
-      /* Waiting for the patch to go in 
       sysFont = KGlobalSettings::windowTitleFont();
       break;
-      */
     case CSS_VAL_STATUS_BAR:
     case CSS_VAL_ICON:
     case CSS_VAL_MESSAGE_BOX:
