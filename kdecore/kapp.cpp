@@ -124,10 +124,6 @@
 #endif
 #include <KDE-ICE/ICElib.h>
 
-#if QT_VERSION < 300
-static KDesktopWidget *desktopWidget = 0;
-#endif
-
 #ifdef Q_WS_X11
 // defined by X11 headers
 const int XKeyPress = KeyPress;
@@ -657,18 +653,6 @@ void KApplication::iceIOErrorHandler( _IceConn *conn )
 
     exit( 1 );
 }
-
-#if QT_VERSION < 300
-KDesktopWidget *KApplication::desktop()
-{
-    if (!desktopWidget ||
-	!desktopWidget->isDesktop()) {
-	desktopWidget = new KDesktopWidget();
-    }
-
-    return desktopWidget;
-}
-#endif
 
 class KDETranslator : public QTranslator
 {

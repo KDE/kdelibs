@@ -45,9 +45,6 @@ typedef void Display;
 #include <qpixmap.h>
 #include <kinstance.h>
 #include <kurl.h>
-#if QT_VERSION < 300
-#include <kdesktopwidget.h>
-#endif
 
 struct _IceConn;
 class QPopupMenu;
@@ -550,14 +547,6 @@ public:
    */
   void removeKipcEventMask(int id);
 
-#if QT_VERSION < 300
-  /**
-   * Return a desktop widget that overrides the one in QT.  This is to
-   * provide Xinerama support.
-   */
-  static KDesktopWidget *desktop();
-#endif
-
   /**
    * Returns the app startup notification identifier for this running application.
    */
@@ -845,6 +834,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.234  2001/08/31 07:17:25  mueller
+// increase version number
+//
 // Revision 1.233  2001/08/29 15:25:38  bero
 // _WS_X11_ -> Q_WS_X11
 // _WS_QWS_ -> Q_WS_QWS
