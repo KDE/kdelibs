@@ -777,7 +777,9 @@ public:
    * The parameters are similar to i18n(), but the result
    * value has other semantics (it can be QString::null)
    **/
-  QString translateQt(const char *context, const char *sourceText) const;
+  QString translateQt(const char *context, 
+		      const char *sourceText, 
+		      const char *message) const;
 
   /**
    * Returns the parts of the parameter str understood as language setting

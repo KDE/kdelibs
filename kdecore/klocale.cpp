@@ -537,7 +537,7 @@ QString KLocale::translate_priv(const char *msgid,
 {
   if (!msgid || !msgid[0])
     {
-      kdDebug(173) << "KLocale: trying to look up \"\" in catalogue. "
+      kdWarning() << "KLocale: trying to look up \"\" in catalogue. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -611,7 +611,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 {
   if (!singular || !singular[0] || !plural || !plural[0])
     {
-      kdDebug(173) << "KLocale: trying to look up \"\" in catalogue. "
+      kdWarning() << "KLocale: trying to look up \"\" in catalogue. "
 		   << "Fix the program" << endl;
       return QString::null;
     }
@@ -738,31 +738,48 @@ QString KLocale::translate( const char *singular, const char *plural,
   return QString::null;
 }
 
-QString KLocale::translateQt( const char *index, const char *fallback) const
+QString KLocale::translateQt( const char *context, const char *source,
+			      const char *message) const
 {
-  if (!index || !index[0] || !fallback || !fallback[0])
-    {
-      kdDebug(173) << "KLocale: trying to look up \"\" in catalouge. "
-		   << "Fix the program" << endl;
-      return QString::null;
-    }
+  if (!source || !source[0]) {
+    kdWarning() << "KLocale: trying to look up \"\" in catalouge. "
+		<< "Fix the program" << endl;
+    return QString::null;
+  }
+  
+  if ( useDefaultLanguage() ) {
+    return QString::null;
+  }
+   
+  char *newstring = 0;
+  const char *translation = 0;
+  QString r;
 
-    if ( useDefaultLanguage() )
-      return QString::null;
-
-    char *newstring = new char[strlen(index) + strlen(fallback) + 5];
-    sprintf(newstring, "_: %s\n%s", index, fallback);
+  if ( message && message[0]) {
+    char *newstring = new char[strlen(source) + strlen(message) + 5];
+    sprintf(newstring, "_: %s\n%s", source, message);
     const char *translation = 0;
     // as copying QString is very fast, it looks slower as it is ;/
-    QString r = translate_priv(newstring, fallback, &translation);
+    r = translate_priv(newstring, source, &translation);
     delete [] newstring;
     if (translation)
       return r;
+  }
 
-    r = translate_priv(fallback, fallback, &translation);
+  if ( context && context[0] && message && message[0]) {
+    newstring = new char[strlen(context) + strlen(message) + 5];
+    sprintf(newstring, "_: %s\n%s", context, message);
+    // as copying QString is very fast, it looks slower as it is ;/
+    r = translate_priv(newstring, source, &translation);
+    delete [] newstring;
     if (translation)
       return r;
-    return QString::null;
+  }
+
+  r = translate_priv(source, source, &translation);
+  if (translation)
+    return r;
+  return QString::null;
 }
 
 bool KLocale::weekStartsMonday() const
