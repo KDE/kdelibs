@@ -1107,8 +1107,7 @@ void KToolBar::setXMLGUIClient( KXMLGUIClient *client )
 
 void KToolBar::setText( const QString & txt )
 {
-    QString tmp = txt + QString(" ( %1 )").arg(kapp->caption());
-    setLabel( tmp );
+    setLabel( txt + " ( " + kapp->caption() + " ) " );
 }
 
 
