@@ -2082,6 +2082,7 @@ QRect QCanvasItem::boundingRectAdvanced() const
   Constructs a QCanvasPixmap from an image file by loading it.
 */
 QCanvasPixmap::QCanvasPixmap(const QString& datafilename)
+: collision_mask(0)
 {
     QImage image(datafilename);
     init(image);
@@ -2090,6 +2091,7 @@ QCanvasPixmap::QCanvasPixmap(const QString& datafilename)
   Constructs a QCanvasPixmap from an image.
 */
 QCanvasPixmap::QCanvasPixmap(const QImage& image)
+: collision_mask(0)
 {
     init(image);
 }
@@ -2097,6 +2099,7 @@ QCanvasPixmap::QCanvasPixmap(const QImage& image)
   Constructs a QCanvasPixmap from a pixmap and an offset.
 */
 QCanvasPixmap::QCanvasPixmap(const QPixmap& pm, QPoint offset)
+: collision_mask(0)
 {
     init(pm,offset.x(),offset.y());
 }
