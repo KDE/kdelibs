@@ -23,7 +23,7 @@ Section: libs
 Replaces: kdelibs3 (<= 4:2.1-20001210-0)
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
-Conflicts: kdelibs3 (<= 4:2.1-20001210-0)
+Conflicts: kdelibs3 (<= 4:2.1-20001210-0), suidmanager (<< 0.50)
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
