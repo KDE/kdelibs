@@ -4,5 +4,6 @@ Name[af]=Beos
 Name[id]=Beos
 Name[th]=ระบบปฏิบัติการ BeOS
 Comment=Unthemed BeOS-like style
+Comment[hu]=BeOS-szerű megjelenés, téma nélkül
 [KDE]
 widgetStyle=beosstyle.la
