@@ -143,8 +143,6 @@ void ProgressItem::setTotalDirs( unsigned long dirs ) {
 void ProgressItem::setProcessedSize( KIO::filesize_t size ) {
   m_iProcessedSize = size;
 
-//  if (listProgress->m_lpcc[ListProgress::TB_TOTAL].enabled)
-//     setText( listProgress->m_lpcc[ListProgress::TB_TOTAL].index, KIO::convertSize( size ) );
   setText( ListProgress::TB_TOTAL, KIO::convertSize( size ) );
 
   defaultProgress->slotProcessedSize( 0, size );
@@ -155,8 +153,6 @@ void ProgressItem::setProcessedFiles( unsigned long files ) {
   m_iProcessedFiles = files;
 
   QString tmps = i18n("%1 / %2").arg( m_iProcessedFiles ).arg( m_iTotalFiles );
-//  if (listProgress->m_lpcc[ListProgress::TB_COUNT].enabled)
-//     setText(listProgress->m_lpcc[ListProgress::TB_COUNT].index,tmps);
   setText( ListProgress::TB_COUNT, tmps );
 
   defaultProgress->slotProcessedFiles( 0, m_iProcessedFiles );
@@ -170,8 +166,6 @@ void ProgressItem::setProcessedDirs( unsigned long dirs ) {
 
 void ProgressItem::setPercent( unsigned long percent ) {
   QString tmps = i18n( "%1 % of %2 ").arg( percent ).arg( KIO::convertSize(m_iTotalSize));
-//  if (listProgress->m_lpcc[ListProgress::TB_PROGRESS].enabled)
-//     setText(listProgress->m_lpcc[ListProgress::TB_PROGRESS].index,tmps);
   setText( ListProgress::TB_PROGRESS, tmps );
 
   defaultProgress->slotPercent( 0, percent );
@@ -181,8 +175,6 @@ void ProgressItem::setInfoMessage( const QString & msg ) {
   QString plainTextMsg(msg);
   plainTextMsg.replace( QRegExp( "</?b>" ), QString::null );
   plainTextMsg.replace( QRegExp( "<img.*>" ), QString::null );
-//  if (listProgress->m_lpcc[ListProgress::TB_PROGRESS].enabled)
-//     setText(listProgress->m_lpcc[ListProgress::TB_PROGRESS].index,plainTextMsg);
   setText( ListProgress::TB_PROGRESS, plainTextMsg );
 
   defaultProgress->slotInfoMessage( 0, msg );
@@ -200,11 +192,7 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
     tmps = i18n( "%1/s").arg( KIO::convertSize( m_iSpeed ));
     tmps2 = m_remainingTime.toString();
   }
-//  if (listProgress->m_lpcc[ListProgress::TB_SPEED].enabled)
-//     setText(listProgress->m_lpcc[ListProgress::TB_SPEED].index,tmps);
   setText( ListProgress::TB_SPEED, tmps );
-//  if (listProgress->m_lpcc[ListProgress::TB_REMAINING_TIME].enabled)
-//     setText(listProgress->m_lpcc[ListProgress::TB_REMAINING_TIME].index,tmps2);
   setText( ListProgress::TB_REMAINING_TIME, tmps2 );
 
   defaultProgress->slotSpeed( 0, m_iSpeed );
@@ -212,14 +200,8 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
 
 
 void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
-//  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
-//     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Copying"));
    setText( ListProgress::TB_OPERATION, i18n("Copying") );
-//  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
-//     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,from.url());
    setText( ListProgress::TB_ADDRESS, from.url() );
-//  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
-//     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,to.fileName());
    setText( ListProgress::TB_LOCAL_FILENAME, to.fileName() );
 
   defaultProgress->slotCopying( 0, from, to );
@@ -227,12 +209,6 @@ void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
 
 
 void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
-/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Moving"));
-  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,from.url());
-  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,to.fileName());*/
    setText( ListProgress::TB_OPERATION, i18n("Moving") );
    setText( ListProgress::TB_ADDRESS, from.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, to.fileName() );
@@ -242,13 +218,6 @@ void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
 
 
 void ProgressItem::setCreatingDir( const KURL& dir ) {
-/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Creating"));
-  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,dir.url());
-  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,dir.fileName());*/
-
    setText( ListProgress::TB_OPERATION, i18n("Creating") );
    setText( ListProgress::TB_ADDRESS, dir.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, dir.fileName() );
@@ -258,12 +227,6 @@ void ProgressItem::setCreatingDir( const KURL& dir ) {
 
 
 void ProgressItem::setDeleting( const KURL& url ) {
-/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Deleting"));
-  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,url.url());
-  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,url.fileName());*/
    setText( ListProgress::TB_OPERATION, i18n("Deleting") );
    setText( ListProgress::TB_ADDRESS, url.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
@@ -272,12 +235,6 @@ void ProgressItem::setDeleting( const KURL& url ) {
 }
 
 void ProgressItem::setTransferring( const KURL& url ) {
-/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Loading"));
-  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,url.url());
-  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,url.fileName());*/
    setText( ListProgress::TB_OPERATION, i18n("Loading") );
    setText( ListProgress::TB_ADDRESS, url.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
@@ -303,12 +260,6 @@ void ProgressItem::setText(ListProgress::ListProgressFields field, const QString
 }
 
 void ProgressItem::setStating( const KURL& url ) {
-/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Examining"));
-  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,url.url());
-  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,url.fileName());*/
    setText( ListProgress::TB_OPERATION, i18n("Examining") );
    setText( ListProgress::TB_ADDRESS, url.url() );
    setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
@@ -317,12 +268,6 @@ void ProgressItem::setStating( const KURL& url ) {
 }
 
 void ProgressItem::setMounting( const QString& dev, const QString & point ) {
-/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Mounting"));
-  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,point);
-  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,dev);*/
    setText( ListProgress::TB_OPERATION, i18n("Mounting") );
    setText( ListProgress::TB_ADDRESS, point ); // ?
    setText( ListProgress::TB_LOCAL_FILENAME, dev ); // ?
@@ -331,12 +276,6 @@ void ProgressItem::setMounting( const QString& dev, const QString & point ) {
 }
 
 void ProgressItem::setUnmounting( const QString & point ) {
-/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Unmounting"));
-  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,point);
-  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
-     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,"");*/
    setText( ListProgress::TB_OPERATION, i18n("Unmounting") );
    setText( ListProgress::TB_ADDRESS, point ); // ?
    setText( ListProgress::TB_LOCAL_FILENAME, "" ); // ?
