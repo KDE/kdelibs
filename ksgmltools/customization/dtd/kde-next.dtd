@@ -46,7 +46,7 @@
      NEEDS TO BE CHECKED ON CHANGES
  -->
 <!ENTITY % rdbpool	    PUBLIC
-  "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"	     >
+  "-//KDE//ELEMENTS DocBook Pool Redeclarations V2.0//EN"	     >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
 
 <!-- Modifications in hierarchy
@@ -54,7 +54,7 @@
      NEEDS TO BE CHECKED ON CHANGES
  -->
 <!ENTITY % rdbhier2	    PUBLIC
-  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"     >
+  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"     >
 <!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
 
@@ -83,5 +83,5 @@
 <!-- Is empty, except for what could go in dbgenent.mod            -->
 
 <!ENTITY % kde.general.entities	PUBLIC
-  "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"    >
+  "-//KDE//ENTITIES DocBook General Entity Declarations V2.0//EN"    >
 %kde.general.entities;
