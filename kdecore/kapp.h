@@ -33,7 +33,6 @@
 class KConfig;
 class KCharsets;
 class KStyle;
-class QTDispatcher;
 class DCOPClient;
 class DCOPObject;
 
@@ -77,7 +76,6 @@ class KApplicationPrivate;
 */
 class KApplication : public QApplication, public KInstance
 {
-  friend class QTDispatcher;
 
   Q_OBJECT
 public:
@@ -785,6 +783,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.193  2000/10/22 13:06:55  faure
+// #define KDE_VERSION_STRING "2.0 >= 20001022" to be able to distinguish
+// bug reports (and blame Stephan for "file not found" on manpages :)
+//
 // Revision 1.192  2000/10/16 11:27:20  elter
 // #define KDE_VERSION 200
 // #define KDE_VERSION_STRING "2.0"
