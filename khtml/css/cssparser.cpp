@@ -340,11 +340,13 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
         cs->match = CSSSelector::List;
         cs->value = getValue( curP+1, endP, endVal);
     }
-    else if (*curP == ':')
+    else if (*curP == ':'  && (curP < endP && !((*(curP+1)).isDigit())))
     {
+        // pseudo attributes (:link, :hover, ...), they are case insensitive.
         cs->tag = -1;
-        cs->value = getValue(curP, endP, endVal);
         cs->match = CSSSelector::Pseudo;
+        cs->value = getValue(curP+1, endP, endVal);
+		cs->value = cs->value.implementation()->lower();
     }
     else
     {
@@ -368,12 +370,13 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 cs->value = getValue(curP+1, endP, endVal);
                 break;
             }
-            else if (*curP == ':')
+            else if (*curP == ':'  && (curP < endP && !((*(curP+1)).isDigit())))
             {
-                // pseudo attributes (:link, :hover, ...)
+                // pseudo attributes (:link, :hover, ...), they are case insensitive.
                 tag = QString( startP, curP - startP );
-                cs->value = getValue(curP, endP, endVal);
                 cs->match = CSSSelector::Pseudo;
+                cs->value = getValue(curP+1, endP, endVal);
+				cs->value = cs->value.implementation()->lower();
                 break;
             }
             else if (*curP == '[')

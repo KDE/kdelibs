@@ -508,39 +508,40 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	//kdDebug() << "CSSOrderedRule::pseudo" << endl;
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
-	if(sel->value == ":first-child") {
+	const QString& value = sel->value.string();
+	if(value == "first-child") {
 	    // first-child matches the first child that is an element!
 	    DOM::NodeImpl *n = e->parentNode()->firstChild();
 	    while( n && !n->isElementNode() )
 		n = n->nextSibling();
 	    if( n == e )
 		return true;
-	} else if ( last && sel->value == ":first-line" ) { // first-line and first-letter are only allowed at the end of a selector
+	} else if ( last && value == "first-line" ) { // first-line and first-letter are only allowed at the end of a selector
 	    dynamicPseudo=RenderStyle::FIRST_LINE;
 	    return true;
-	} else if ( last && sel->value == ":first-letter" ) {
+	} else if ( last && value == "first-letter" ) {
 	    dynamicPseudo=RenderStyle::FIRST_LETTER;
 	    return true;
-	} else if( sel->value == ":link") {
+	} else if( value == "link") {
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
 	    if ( pseudoState == PseudoLink ) {
 		return true;
 	    }
-	} else if ( sel->value == ":visited" ) {
+	} else if ( value == "visited" ) {
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
 	    if ( pseudoState == PseudoVisited )
 		return true;
-	} else if ( sel->value == ":hover" ) {
+	} else if ( value == "hover" ) {
 	    selectorDynamicState |= StyleSelector::Hover;
 	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
 	    // to the element.
 	    return true;
-	} else if ( sel->value == ":focus" ) {
+	} else if ( value == "focus" ) {
 	    selectorDynamicState |= StyleSelector::Focus;
 	    return true;
-	} else if ( sel->value == ":active" ) {
+	} else if ( value == "active" ) {
 	    selectorDynamicState |= StyleSelector::Active;
 	    return true;
 	}
