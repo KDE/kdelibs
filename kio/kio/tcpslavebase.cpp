@@ -1081,8 +1081,8 @@ bool TCPSlaveBase::isConnectionValid()
     // retval == -1 ==> Error  
     // retval ==  0 ==> Connection Idle
     // retval >=  1 ==> Connection Active
-    kdDebug(7029) << "TCPSlaveBase::isConnectionValid: select returned: "
-                  << retval << endl;
+    //kdDebug(7029) << "TCPSlaveBase::isConnectionValid: select returned: "
+    //              << retval << endl;
 
     if (retval == -1)
        return false;
@@ -1096,8 +1096,8 @@ bool TCPSlaveBase::isConnectionValid()
        retval = KSocks::self()->recv(m_iSock, buffer, 80, MSG_PEEK);
                      
     } while ((retval == -1) && (errno == EAGAIN));
-   kdDebug(7029) << "TCPSlaveBase::isConnectionValid: recv returned: "
-                     << retval << endl;
+    //kdDebug(7029) << "TCPSlaveBase::isConnectionValid: recv returned: "
+    //                 << retval << endl;
     if (retval <= 0)
        return false; // Error or connection closed.
        
