@@ -86,9 +86,9 @@ public:
 				ret = value / 100.0;
 
 				if(hmode)
-					ret *= m_engine->width();
+					ret *= 500;
 				else
-					ret *= m_engine->height();
+					ret *= 500;
 			}
 			else if(check.compare("em") == 0)
 			{
@@ -300,6 +300,8 @@ public:
 
 	void handleTags(QDomElement element, bool paint)
 	{
+		if(element.attribute("display") == "none")
+			return;
 		if(element.tagName() == "linearGradient")
 		{
 			ArtGradientLinear *gradient = new ArtGradientLinear();
