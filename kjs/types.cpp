@@ -192,22 +192,22 @@ List List::dynamicCast(const Value &v)
 
 void List::append(const Value& val)
 {
-  return static_cast<ListImp*>(rep)->append(val);
+  static_cast<ListImp*>(rep)->append(val);
 }
 
 void List::prepend(const Value& val)
 {
-  return static_cast<ListImp*>(rep)->prepend(val);
+  static_cast<ListImp*>(rep)->prepend(val);
 }
 
 void List::appendList(const List& lst)
 {
-  return static_cast<ListImp*>(rep)->appendList(lst);
+  static_cast<ListImp*>(rep)->appendList(lst);
 }
 
 void List::prependList(const List& lst)
 {
-  return static_cast<ListImp*>(rep)->prependList(lst);
+  static_cast<ListImp*>(rep)->prependList(lst);
 }
 
 void List::removeFirst()

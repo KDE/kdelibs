@@ -539,11 +539,11 @@ public:
   void writeEntry( const QString& pKey, const char *pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
-    { return writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
+    { writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
   void writeEntry( const char *pKey, const char *pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
-    { return writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
+    { writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
 
   /**
    * Write a (key/value) pair.

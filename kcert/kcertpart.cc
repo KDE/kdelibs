@@ -392,7 +392,7 @@ void KCertPart::setReadWrite(bool rw) {
   	_import->setEnabled(false);
   	_save->setEnabled(false);
   }
-  ReadWritePart::setReadWrite(rw);
+  KParts::ReadWritePart::setReadWrite(rw);
 }
 
 

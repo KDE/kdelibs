@@ -329,7 +329,7 @@ Value Value::getValue(ExecState *exec) const
 
 void Value::putValue(ExecState *exec, const Value w)
 {
-  return rep->putValue(exec,w);
+  rep->putValue(exec,w);
 }
 
 // ------------------------------ Undefined ------------------------------------

@@ -345,11 +345,11 @@ public:
   bool onlyLocalReferences() const;
 
 #ifndef KDE_NO_COMPAT
-  void enableJScript(bool e) { return setJScriptEnabled(e); }
-  void enableJava(bool e) { return setJavaEnabled(e); }
-  void enablePlugins(bool e) { return setPluginsEnabled(e); }
-  void autoloadImages(bool e) { return setAutoloadImages(e); }
-  void enableMetaRefresh(bool e) { return setMetaRefreshEnabled(e); }
+  void enableJScript(bool e) { setJScriptEnabled(e); }
+  void enableJava(bool e) { setJavaEnabled(e); }
+  void enablePlugins(bool e) { setPluginsEnabled(e); }
+  void autoloadImages(bool e) { setAutoloadImages(e); }
+  void enableMetaRefresh(bool e) { setMetaRefreshEnabled(e); }
   bool setCharset( const QString &, bool ) { return true; }
 
   KURL baseURL() const;
