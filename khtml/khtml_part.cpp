@@ -361,7 +361,7 @@ KHTMLPart::~KHTMLPart()
   closeURL();
 
   clear();
-  
+
   disconnect( khtml::Cache::loader(), SIGNAL( requestDone( const DOM::DOMString &, khtml::CachedObject * ) ),
 	      this, SLOT( slotLoaderRequestDone( const DOM::DOMString &, khtml::CachedObject * ) ) );
   if ( d->m_view )
@@ -1132,7 +1132,7 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
 		d->m_selectionEnd = d->m_findNode;
 		d->m_endOffset = d->m_findPos + str.length();
 		d->m_startBeforeEnd = true;
-				 
+				
 		d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
 					d->m_selectionEnd.handle(), d->m_endOffset );
 		emitSelectionChanged();
@@ -1384,13 +1384,15 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
 void KHTMLPart::slotViewDocumentSource()
 {
-  emit d->m_extension->openURLRequest( m_url, KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
+  //  emit d->m_extension->openURLRequest( m_url, KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
+  (void) KRun::runURL( m_url, QString::fromLatin1("text/plain") );
 }
 
 void KHTMLPart::slotViewFrameSource()
 {
   // ### frames
-  emit d->m_extension->openURLRequest( ((KParts::ReadOnlyPart *)partManager()->activePart())->url(), KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
+  //emit d->m_extension->openURLRequest( ((KParts::ReadOnlyPart *)partManager()->activePart())->url(), KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
+  (void) KRun::runURL( ((KParts::ReadOnlyPart *)partManager()->activePart())->url(), QString::fromLatin1("text/plain") );
 }
 
 void KHTMLPart::slotSaveBackground()
@@ -2586,7 +2588,7 @@ void KHTMLPart::selectAll()
   d->m_selectionEnd = last;
   d->m_endOffset = static_cast<TextImpl *>( last )->string()->l;
   d->m_startBeforeEnd = true;
-  
+
   d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
 			  d->m_selectionEnd.handle(), d->m_endOffset );
 
