@@ -27,6 +27,7 @@
 #include <kprocess.h>
 #include <kprocio.h>
 #include <klocale.h>
+#include <kglobalsettings.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <stdio.h>
@@ -63,8 +64,12 @@ bool KFileSharePropsPlugin::supports( const KFileItemList& items )
     KFileItemListIterator it( items );
     for ( ; it.current(); ++it )
     {
+        bool isLocal = ( *it )->isLocalFile();
         // We only support local dirs
-        if ( !(*it)->isDir() || !(*it)->isLocalFile() )
+        if ( !(*it)->isDir() || !isLocal )
+            return false;
+        // And sharing the trash doesn't make sense
+        if ( isLocal && (*it)->url().path( 1 ) == KGlobalSettings::trashPath() )
             return false;
     }
     return true;
