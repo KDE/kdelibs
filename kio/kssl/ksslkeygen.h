@@ -31,18 +31,52 @@ class KOpenSSLProxy;
 class KGWizardPage1;
 class KGWizardPage2;
 
+/**
+ * KDE Key Generation dialog
+ *
+ * This is used to display a key generation dialog for cases such as the
+ * html <keygen> tag.  It also does the certificate signing request generation.
+ *
+ * @author George Staikos <staikos@kde.org>
+ * @see KSSL, KSSLCertificate, KSSLPKCS12
+ * @short KDE Key Generation Dialog
+ */
 class KSSLKeyGen : public KWizard {
 	Q_OBJECT
- 
 public:
-	KSSLKeyGen(QWidget *parent=0, const char *name=0, bool modal=false);
+	/**
+	 *  Construct a keygen dialog.
+	 *  @param parent the parent widget
+	 *  @param name the internal name of this instance
+	 *  @param modal true if the dialog should be modal
+	 */
+	KSSLKeyGen(QWidget *parent=0L, const char *name=0L, bool modal=false);
+
+	/**
+	 *  Destroy this dialog.
+	 */
 	virtual ~KSSLKeyGen();
 
-	// Static methods for various tasks
+	/**
+	 *  List the supported key sizes.
+	 *  @return the supported key sizes
+	 */
 	static QStringList supportedKeySizes();
+
+	/**
+	 *  Generate the certificate signing request.
+	 *  @param name the name for the certificate
+	 *  @param pass the password for the request
+	 *  @param bits the bitsize for the key
+	 *  @param e the value of the "e" parameter in RSA
+	 *  @return 0 on success, non-zero on error
+	 */
 	static int generateCSR(QString name, QString pass, int bits, int e = 0x10001);
 
-	// this is an index into supportedKeySizes();
+	/**
+	 *  Set the key size.
+	 *  @param idx an index into @ref supportedKeySizes()
+	 */
 	void setKeySize(int idx) { _idx = idx; }
 
 private slots:
@@ -50,15 +84,11 @@ private slots:
 	void slotGenerate();
 
 private:
- 
 	class KSSLKeyGenPrivate;
 	KSSLKeyGenPrivate *d;
 	int _idx;
 	KGWizardPage1 *page1;
 	KGWizardPage2 *page2;
- 
-protected:
-
 };
 
 #endif

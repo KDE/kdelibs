@@ -1,4 +1,3 @@
-
 - KSSLServer class needs to be written (in a separate lib!!) so that an app
   can act as an SSL server.
 
@@ -6,16 +5,14 @@
   certificates (self signed) for users.
   This should be a separate app I guess, and can include a CA signer even.
 
-- Document libkssl interface
+- Document libkssl interface:
+ksslcertificate.h ksslcertificatecache.h ksslcertificatehome.h
 
 - KDE4 - fix constness and reference arguments
 
 - CRL support (not much left to do?)
 
 - Code checking for OCX.  
-
-- Dialog boxes for personal certificates need to be queued so that a user
-  isn't prompted for a certificate when he already answered for a given site.
 
 - KSSLD should emit dcop signals to tell people when things change
 
