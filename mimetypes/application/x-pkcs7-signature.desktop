@@ -2,6 +2,6 @@
 Type=MimeType
 MimeType=application/x-pkcs7-signature
 Icon=signature
-Patterns=
+Patterns=*.p7s;*.P7S
 Comment=Detached S/MIME signature
 Comment[xx]=xx
