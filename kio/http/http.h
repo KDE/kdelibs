@@ -168,7 +168,8 @@ protected:
   bool http_open();
   void http_close(); // Close transfer
 
-  void http_openConnection(); // Open connection
+  bool http_openConnection(); // Open connection
+  void http_checkConnection(); // Check whether to keep connection.
   void http_closeConnection(); // Close conection
   bool http_isConnected(); // Checks for existing connection.
 

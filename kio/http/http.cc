@@ -78,6 +78,15 @@ using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*32)
 
+// Timeout for connections to remote sites in seconds
+#define REMOTE_CONNECT_TIMEOUT 20
+
+// Timeout for connections to proxy in seconds
+#define PROXY_CONNECT_TIMEOUT 10
+
+// Timeout for receiving an answer from a remote side in seconds.
+#define RESPONSE_TIMEOUT 60
+
 template class QStack<char>;
 
 extern "C" {
@@ -539,7 +548,7 @@ HTTPProtocol::http_isConnected()
    return true;
 }
 
-void HTTPProtocol::http_openConnection()
+void HTTPProtocol::http_checkConnection()
 {
   // do we want to use a proxy?
   // if so, we had first better make sure that our host isn't on the
@@ -599,6 +608,134 @@ void HTTPProtocol::http_openConnection()
   m_state.do_proxy = m_request.do_proxy;
 }
 
+static bool waitForConnect( int sock, int maxTimeout )
+{
+  fd_set rd, wr;
+  struct timeval timeout;
+
+  int n = maxTimeout; // Timeout in seconds
+  while(n--){
+      FD_ZERO(&rd);
+      FD_ZERO(&wr);
+      FD_SET(sock, &rd);
+      FD_SET(sock, &wr);
+
+      timeout.tv_usec = 1000*1000; // 1 sec
+      timeout.tv_sec = 0;
+
+      select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
+
+      if (FD_ISSET(sock, &rd) || FD_ISSET(sock, &wr))
+      {
+         int errcode;
+         ksize_t len = sizeof(errcode);
+         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&errcode, &len);
+         if ((ret == -1) || (errcode != 0))
+         {
+            return false;
+         }
+         return true;
+      }
+  }
+  return false; // Timeout
+}
+
+static bool waitForHeader( int sock, int maxTimeout )
+{
+  fd_set rd, wr;
+  struct timeval timeout;
+
+  int n = maxTimeout; // Timeout in seconds
+  while(n--){
+      FD_ZERO(&rd);
+      FD_ZERO(&wr);
+      FD_SET(sock, &rd);
+
+      timeout.tv_usec = 1000*1000; // 1/10th sec
+      timeout.tv_sec = 0;
+
+      select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
+
+      if (FD_ISSET(sock, &rd))
+      {
+         return true;
+      }
+  }
+  return false; // Timeout
+}
+
+bool
+HTTPProtocol::http_openConnection()
+{
+    kdDebug(7103) << "http_open: making new connection (" << getpid() << ")" << endl;
+    m_bKeepAlive = false;
+    m_sock = ::socket(PF_INET,SOCK_STREAM,0);
+    if (m_sock < 0) {
+      m_sock = 0;
+      error( ERR_COULD_NOT_CREATE_SOCKET, m_state.hostname );
+      return false;
+    }
+
+    // Set socket non-blocking.
+    fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL)|O_NDELAY));
+
+    // do we still want a proxy after all that?
+    if( m_state.do_proxy ) {
+      kdDebug(7103) << "http_open " << m_strProxyHost << " " << m_strProxyPort << endl;
+      // yep... open up a connection to the proxy instead of our host
+      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
+        error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
+        return false;
+      }
+
+      if(::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
+        if((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
+          // Error
+          error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+          return false;
+        }
+        // Wait for connection
+        if (!waitForConnect(m_sock, PROXY_CONNECT_TIMEOUT))
+        {
+          error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+          return false;
+        }
+      }
+    } else {
+      // apparently we don't want a proxy.  let's just connect directly
+      ksockaddr_in server_name;
+
+      if(!KSocket::initSockaddr(&server_name, m_state.hostname, m_state.port)) {
+        error( ERR_UNKNOWN_HOST, m_state.hostname );
+        return false;
+      }
+
+      if(::connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
+        if((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
+          // Error
+          error(ERR_COULD_NOT_CONNECT, m_state.hostname );
+          return false;
+        }
+        // Wait for connection
+        if (!waitForConnect(m_sock, REMOTE_CONNECT_TIMEOUT))
+        {
+          error(ERR_COULD_NOT_CONNECT, m_state.hostname );
+          return false;
+        }
+      }
+    }
+
+    // Set socket blocking.
+    fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL) & ~O_NDELAY));
+
+    // Placeholder
+    if (!openStream())
+    {
+      error( ERR_COULD_NOT_CONNECT, m_state.hostname );
+      return false;
+    }
+    return true;
+}
 
 /**
  * This function is responsible for opening up the connection to the remote
@@ -624,7 +761,7 @@ void HTTPProtocol::http_openConnection()
  */
 bool HTTPProtocol::http_open()
 {
-  http_openConnection();
+  http_checkConnection();
 
   m_fcache = 0;
   m_bCachedRead = false;
@@ -661,49 +798,8 @@ bool HTTPProtocol::http_open()
   // let's try to open up our socket if we don't have one already.
   if (!m_sock)
   {
-    kdDebug(7103) << "http_open: making new connection (" << getpid() << ")" << endl;
-    m_bKeepAlive = false;
-    m_sock = ::socket(PF_INET,SOCK_STREAM,0);
-    if (m_sock < 0) {
-      m_sock = 0;
-      error( ERR_COULD_NOT_CREATE_SOCKET, m_state.hostname );
-      return false;
-    }
-
-    // do we still want a proxy after all that?
-    if( m_state.do_proxy ) {
-      kdDebug(7103) << "http_open " << m_strProxyHost << " " << m_strProxyPort << endl;
-      // yep... open up a connection to the proxy instead of our host
-      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
-        error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
-        return false;
-      }
-
-      if(::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
-        error( ERR_COULD_NOT_CONNECT, m_strProxyHost );
-        return false;
-      }
-    } else {
-      // apparently we don't want a proxy.  let's just connect directly
-      ksockaddr_in server_name;
-
-      if(!KSocket::initSockaddr(&server_name, m_state.hostname, m_state.port)) {
-        error( ERR_UNKNOWN_HOST, m_state.hostname );
-        return false;
-      }
-
-      if(::connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
-        error(ERR_COULD_NOT_CONNECT, m_state.hostname );
-        return false;
-      }
-    }
-
-    // Placeholder
-    if (!openStream())
-    {
-      error( ERR_COULD_NOT_CONNECT, m_state.hostname );
-      return false;
-    }
+    if (!http_openConnection())
+       return false;
   }
 
   // this will be the entire header
@@ -858,7 +954,8 @@ bool HTTPProtocol::http_open()
        // With a Keep-Alive connection this can happen.
        // Just reestablish the connection.
        http_closeConnection();
-       http_openConnection();
+       if (!http_openConnection())
+          return false;
        sendOk = (write(header, header.length()) == (ssize_t) header.length());
     }
     if (!sendOk)
@@ -914,6 +1011,13 @@ bool HTTPProtocol::readHeader()
   bool noRedirect = false; // No automatic redirection
   time_t cacheExpireDate = 0;
 
+  if (!waitForHeader(m_sock, RESPONSE_TIMEOUT))
+  {
+     // No response error
+     error( ERR_SERVER_TIMEOUT , m_state.hostname );
+     return false;
+  }
+
   gets(buffer, sizeof(buffer)-1);
   if (eof())
   {
@@ -923,6 +1027,12 @@ bool HTTPProtocol::readHeader()
         http_closeConnection();
         if ( !http_open() )
 	   return false;
+        if (!waitForHeader(m_sock, RESPONSE_TIMEOUT))
+        {
+           // No response error
+           error( ERR_SERVER_TIMEOUT, m_state.hostname );
+           return false;
+        } 
         gets(buffer, sizeof(buffer)-1);
      }
      if (eof())
