@@ -3,6 +3,7 @@ Type=XV
 Header=^P7 332
 Flags=T
 Name=XView Image
+Name[sv]=Xview-format
 Read=true
 Write=true
 Suffices=
