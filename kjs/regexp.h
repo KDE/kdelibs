@@ -46,7 +46,7 @@ namespace KJS {
     RegExp(const UString &p, int f = None);
     ~RegExp();
     int flags() const { return flgs; }
-    UString match(const UString &s, int i = -1, int *pos = 0L, int **ovector = 0L);
+    UString match(const UString &s, int i, int *pos = 0, int **ovector = 0);
     // test is unused. The JS spec says that RegExp.test should use
     // RegExp.exec, so it has to store $1 etc.
     // bool test(const UString &s, int i = -1);
@@ -54,6 +54,7 @@ namespace KJS {
   private:
     const UString &pattern;
     int flgs;
+    bool m_notEmpty;
 
 #ifndef HAVE_PCREPOSIX
     regex_t preg;

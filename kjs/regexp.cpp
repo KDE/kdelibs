@@ -28,7 +28,7 @@
 using namespace KJS;
 
 RegExp::RegExp(const UString &p, int f)
-  : pattern(p), flgs(f)
+  : pattern(p), flgs(f), m_notEmpty(false)
 {
 #ifdef HAVE_PCREPOSIX
   int pcreflags = 0;
@@ -104,11 +104,32 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 
 #ifdef HAVE_PCREPOSIX
   CString buffer(s.cstring());
+  int bufferSize = buffer.size();
   int ovecsize = (nrSubPatterns+1)*3; // see pcre docu
   if (ovector) *ovector = new int[ovecsize];
-  if (!pcregex || pcre_exec(pcregex, NULL, buffer.c_str(), buffer.size(), i,
-		  0, ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
+  if (!pcregex)
     return UString::null;
+
+  if (pcre_exec(pcregex, NULL, buffer.c_str(), bufferSize, i,
+                m_notEmpty ? (PCRE_NOTEMPTY | PCRE_ANCHORED) : 0, // see man pcretest
+                ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
+  {
+    // Failed to match.
+    if ((flgs & Global) && m_notEmpty && ovector)
+    {
+      // We set m_notEmpty ourselves, to look for a non-empty match
+      // (see man pcretest or pcretest.c for details).
+      // So this is not the end. We want to try again at i+1.
+      // We won't be at the end of the string - that was checked before setting m_notEmpty.
+      fprintf(stderr, "No match after m_notEmpty. +1 and keep going.\n");
+      m_notEmpty = 0;
+      if (pcre_exec(pcregex, NULL, buffer.c_str(), bufferSize, i+1, 0,
+                    ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
+        return UString::null;
+    }
+    else // done
+      return UString::null;
+  }
 
   if (!ovector)
     return UString::null; // don't rely on the return value if you pass ovector==0
@@ -143,6 +164,14 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 #endif
 
   *pos = (*ovector)[0];
+#ifdef HAVE_PCREPOSIX  // TODO check this stuff in non-pcre mode
+  if ( *pos == (*ovector)[1] && (flgs & Global) && *pos != bufferSize )
+  {
+    // empty match, not at end of string.
+    // Next try will be with m_notEmpty=true
+    m_notEmpty=true;
+  }
+#endif
   return s.substr((*ovector)[0], (*ovector)[1] - (*ovector)[0]);
 }
 
