@@ -212,6 +212,15 @@ return d->usingTLS;
 }
 
 
+void TCPSlaveBase::stopTLS()
+{
+        if (d->usingTLS) {
+           delete d->kssl;
+           d->usingTLS = false;
+        }
+}
+
+
 bool TCPSlaveBase::canUseTLS()
 {
         if (m_bIsSSL || !KSSL::doesSSLWork()) return false;

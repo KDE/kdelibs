@@ -93,6 +93,11 @@ protected:
      */
     bool startTLS();
 
+    /**
+     * Stop using TLS on the connection.
+     */
+    void stopTLS();
+
     // The proper way to close up a socket here, as it closes the stdio
     // fstream stuff, as well as sets the socket back to -1
     void CloseDescriptor();
