@@ -1528,6 +1528,7 @@ Value AssignNode::evaluate(ExecState *exec)
     Value v2 = e.getValue(exec);
     int i1 = v1.toInt32(exec);
     int i2 = v2.toInt32(exec);
+    unsigned int ui;
     switch (oper) {
     case OpMultEq:
       v = mult(exec, v1, v2, '*');
@@ -1548,8 +1549,8 @@ Value AssignNode::evaluate(ExecState *exec)
       v = Number(i1 >>= i2);
       break;
     case OpURShift:
-      i1 = v1.toUInt32(exec);
-      v = Number(i1 >>= i2);
+      ui = v1.toUInt32(exec);
+      v = Number(ui >>= i2);
       break;
     case OpAndEq:
       v = Number(i1 &= i2);
