@@ -543,19 +543,18 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     }
 
     d->lastURL = currUrl.url(-1);
-    
+    currUrl = newurl;
+
     pathChanged();
     emit urlEntered(newurl);
-
-kdDebug(250) << k_funcinfo << "OPEN THE URL " << newurl.prettyURL() << endl;
-    dir->openURL( newurl );
-
-    currUrl = newurl;
 
     // enable/disable actions
     forwardAction->setEnabled( !forwardStack.isEmpty() );
     backAction->setEnabled( !backStack.isEmpty() );
     upAction->setEnabled( !isRoot() );
+
+kdDebug(250) << k_funcinfo << "OPEN THE URL " << newurl.prettyURL() << endl;
+    dir->openURL( newurl );
 }
 
 void KDirOperator::updateDir()
