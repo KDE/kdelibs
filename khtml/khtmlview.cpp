@@ -101,8 +101,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 {
     m_part = part;
     d = new KHTMLViewPrivate;
-    setVScrollBarMode(d->vmode);
-    setHScrollBarMode(d->hmode);
+    QScrollView::setVScrollBarMode(d->vmode);
+    QScrollView::setHScrollBarMode(d->hmode);
 
     // initialize QScrollview
     enableClipper(true);
@@ -162,14 +162,14 @@ void KHTMLView::init()
 
 void KHTMLView::clear()
 {
+    if (d->vmode==Auto)
+        QScrollView::setVScrollBarMode(AlwaysOn);
+    else
+        QScrollView::setVScrollBarMode(d->vmode);
+    QScrollView::setHScrollBarMode(d->hmode);    
+    
     resizeContents(visibleWidth(), visibleHeight());
     viewport()->erase();
-
-    if (d->vmode==Auto)
-        setVScrollBarMode(AlwaysOn);
-    else
-        setVScrollBarMode(d->vmode);
-    setHScrollBarMode(d->hmode);
 
     if(d->useSlowRepaints) {
 //         why do we need to delete the paintBuffer here ?
@@ -251,8 +251,8 @@ void KHTMLView::layout(bool)
 
         NodeImpl *body = document->body();
         if(body && body->id() == ID_FRAMESET) {
-            setVScrollBarMode(AlwaysOff);
-            setHScrollBarMode(AlwaysOff);
+            QScrollView::setVScrollBarMode(AlwaysOff);
+            QScrollView::setHScrollBarMode(AlwaysOff);
             _width = visibleWidth();
             body->renderer()->setLayouted(false);
             body->renderer()->layout();
