@@ -47,6 +47,8 @@ const TypeInfo BooleanImp::info = { "Boolean", BooleanType, 0, 0, 0 };
 const TypeInfo CompletionImp::info = { "Completion", CompletionType, 0, 0, 0 };
 const TypeInfo ReferenceImp::info = { "Reference", ReferenceType, 0, 0, 0 };
 
+UndefinedImp *UndefinedImp::staticUndefined = 0;
+
 UndefinedImp::UndefinedImp()
 {
 }
@@ -76,6 +78,8 @@ Object UndefinedImp::toObject() const
   return Error::createObject(TypeError, I18N_NOOP("Undefined value"));
 }
 
+NullImp *NullImp::staticNull = 0;
+
 NullImp::NullImp()
 {
 }
@@ -104,6 +108,9 @@ Object NullImp::toObject() const
 {
   return Error::createObject(TypeError, I18N_NOOP("Null value"));
 }
+
+BooleanImp* BooleanImp::staticTrue = 0;
+BooleanImp* BooleanImp::staticFalse = 0;
 
 KJSO BooleanImp::toPrimitive(Type) const
 {
@@ -432,6 +439,7 @@ ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 
 KJScriptImp* KJScriptImp::curr = 0L;
 KJScriptImp* KJScriptImp::hook = 0L;
+int          KJScriptImp::instances = 0;
 int          KJScriptImp::running = 0;
 
 KJScriptImp::KJScriptImp(KJScript *s)
@@ -443,7 +451,11 @@ KJScriptImp::KJScriptImp(KJScript *s)
 #endif
     retVal(0L)
 {
+  instances++;
   KJScriptImp::curr = this;
+  // are we the first interpreter instance ? Initialize some stuff
+  if (instances == 1)
+    globalInit();
   clearException();
   lex = new Lexer();
 }
@@ -462,6 +474,26 @@ KJScriptImp::~KJScriptImp()
   lex = 0L;
 
   KJScriptImp::curr = 0L;
+  // are we the last of our kind ? Free global stuff.
+  if (instances == 1)
+    globalClear();
+  instances--;
+}
+
+void KJScriptImp::globalInit()
+{
+  UndefinedImp::staticUndefined = new UndefinedImp();
+  NullImp::staticNull = new NullImp();
+  BooleanImp::staticTrue = new BooleanImp(true);
+  BooleanImp::staticFalse = new BooleanImp(false);  
+}
+
+void KJScriptImp::globalClear()
+{
+  UndefinedImp::staticUndefined = 0L;
+  NullImp::staticNull = 0L;
+  BooleanImp::staticTrue = 0L;
+  BooleanImp::staticFalse = 0L;  
 }
 
 void KJScriptImp::mark()
@@ -474,6 +506,10 @@ void KJScriptImp::mark()
     retVal->mark();
   if (con)
     con->mark();
+  UndefinedImp::staticUndefined->mark();
+  NullImp::staticNull->mark();
+  BooleanImp::staticTrue->mark();
+  BooleanImp::staticFalse->mark();
 }
 
 void KJScriptImp::init()
@@ -704,7 +740,7 @@ void KJScriptImp::attachDebugger(Debugger *d)
 bool KJScriptImp::setBreakpoint(int id, int line, bool set)
 {
   init();
-  return Node::setBreakpoint(firstNode, id, line, set);
+  return Node::setBreakpoint(firstNode(), id, line, set);
 }
 
 #endif

@@ -145,26 +145,6 @@ bool StatementNode::setBreakpoint(int id, int line, bool set)
 }
 #endif
 
-KJSO NullNode::evaluate()
-{
-  return Null();
-}
-
-KJSO BooleanNode::evaluate()
-{
-  return Boolean(value);
-}
-
-KJSO NumberNode::evaluate()
-{
-  return Number(value);
-}
-
-KJSO StringNode::evaluate()
-{
-  return String(value);
-}
-
 KJSO RegExpNode::evaluate()
 {
   List list;

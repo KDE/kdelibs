@@ -119,31 +119,31 @@ namespace KJS {
 
   class NullNode : public Node {
   public:
-    KJSO evaluate();
+    KJSO evaluate() { return Null(); }
   };
 
   class BooleanNode : public Node {
   public:
-    BooleanNode(bool v) : value(v) {}
-    KJSO evaluate();
+    BooleanNode(bool v) : value(Boolean(v)) {}
+    KJSO evaluate() { return value; }
   private:
-    bool value;
+    KJSO value;
   };
 
   class NumberNode : public Node {
   public:
-    NumberNode(double v) : value(v) { }
-    KJSO evaluate();
+    NumberNode(double v) : value(Number(v)) { }
+    KJSO evaluate() { return value; }
   private:
-    double value;
+    KJSO value;
   };
 
   class StringNode : public Node {
   public:
-    StringNode(const UString *v) { value = *v; }
-    KJSO evaluate();
+    StringNode(const UString *v) : value(String(*v)) { }
+    KJSO evaluate() { return value; }
   private:
-    UString value;
+    KJSO value;
   };
 
   class RegExpNode : public Node {

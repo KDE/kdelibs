@@ -57,6 +57,8 @@ namespace KJS {
 
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
+      
+    static UndefinedImp *staticUndefined;
   };
 
   class NullImp : public Imp {
@@ -71,6 +73,8 @@ namespace KJS {
 
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
+
+    static NullImp *staticNull;
   };
 
   class BooleanImp : public Imp {
@@ -86,6 +90,8 @@ namespace KJS {
 
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
+
+    static BooleanImp *staticTrue, *staticFalse;
   private:
     bool val;
   };
@@ -299,6 +305,16 @@ namespace KJS {
      */
     void init();
     void clear();
+    /**
+     * Called when the first interpreter is instanciated. Initializes
+     * global pointers.
+     */
+    void globalInit();
+    /**
+     * Called when the last interpreter instance is destroyed. Frees
+     * globally allocated memory.
+     */
+    void globalClear();
     bool evaluate(const UChar *code, unsigned int length, Imp *thisV = 0,
 		  bool onlyCheckSyntax = false);
     bool call(Imp *scope, const UString &func, const List &args);
@@ -315,6 +331,7 @@ namespace KJS {
     Node *firstN;
 
     static KJScriptImp *curr, *hook;
+    static int instances; // total number of instances
     static int running;	// total number running
     bool initialized;
     Lexer *lex;

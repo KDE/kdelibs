@@ -29,15 +29,18 @@
 
 using namespace KJS;
 
-Undefined::Undefined() : KJSO(new UndefinedImp) { }
+Undefined::Undefined() : KJSO(UndefinedImp::staticUndefined) { }
 
 Undefined::~Undefined() { }
 
-Null::Null() : KJSO(new NullImp) { }
+Null::Null() : KJSO(NullImp::staticNull) { }
 
 Null::~Null() { }
 
-Boolean::Boolean(bool b) : KJSO(new BooleanImp(b)) { }
+Boolean::Boolean(bool b)
+  : KJSO(b ? BooleanImp::staticTrue : BooleanImp::staticFalse)
+{
+}
 
 Boolean::Boolean(BooleanImp *i) : KJSO(i) { }
 
