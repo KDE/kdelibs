@@ -555,7 +555,11 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   m_bCachedWrite = false;
   if (m_bUseCache)
   {
+#ifdef DO_SSL
      if (!m_state.reload && !m_bUseSSL && (m_state.postDataSize == 0))
+#else
+     if (!m_state.reload && (m_state.postDataSize == 0))
+#endif
      {
         m_fcache = checkCacheEntry( m_state.cef );
         m_bCachedWrite = true;
