@@ -212,6 +212,7 @@
 7121        kio_nfs
 7122        kio_sieve
 7123        kio_kamera
+7124        kio_cgi
 
 # kdesdk
 8100        kompare
