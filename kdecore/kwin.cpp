@@ -382,18 +382,6 @@ void KWin::setCurrentDesktop( int desktop )
 }
 
 
-QString KWin::desktopName( int desktop )
-{
-    NETRootInfo info( qt_xdisplay(), NET::NumberOfDesktops | NET::DesktopNames );
-    if ( desktop < 1 || desktop > info.numberOfDesktops() )
-	return QString::null;
-    const char* s = info.desktopName( desktop );
-    if ( s )
-	return QString::fromUtf8( s );
-    return i18n("Desktop %1").arg( desktop );
-}
-
-
 void KWin::iconifyWindow( WId win, bool animation)
 {
     if ( !animation )

@@ -185,12 +185,6 @@ public:
 
 
     /**
-     * Returns the name of desktop @p desktop
-     */
-    static QString desktopName( int desktop );
-
-
-    /**
      * Iconifies a window. Compatible to XIconifyWindow but has an
      * additional parameter @p animation.
      *
