@@ -128,8 +128,9 @@ void LDAPUrl::updateQuery()
   q += "?";
   for ( it = m_extensions.begin(); it != m_extensions.end(); it++ ) {
     if ( it.data().critical ) q += "!";
-    q += encode_string( it.key() );
-    if ( !it.data().value.isEmpty() ) q += "=" + encode_string( it.data().value );
+    q += it.key();
+    if ( !it.data().value.isEmpty() ) 
+      q += "=" + it.data().value;
     q += ",";
   }
   while  ( q.endsWith("?") || q.endsWith(",") )
@@ -185,7 +186,7 @@ void LDAPUrl::parseQuery()
       name.remove(0, 1);
     }
     kdDebug(5700) << "LDAPUrl extensions name= " << name << " value: " << value << endl;
-    ext.value = decode_string( value );
+    ext.value = value.replace( "%2", "," );
     setExtension( name, ext );
   }
 }
