@@ -12,7 +12,8 @@ noinst_HEADERS = crypto.h certexport.h kdatetimedlg.h
 
 KDE_ICON = crypto
 
-messages:
+messages: rc.cpp
+	: > rc.cpp
 	$(XGETTEXT) $(libkcm_crypto_la_SOURCES) -o $(podir)/kcmcrypto.pot
 
 data_DATA = crypto.desktop
