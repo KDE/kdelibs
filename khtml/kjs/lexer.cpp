@@ -111,7 +111,7 @@ int KJSLexer::lex()
 	state = InIdentifier;
       } else if (current == '0') {
 	record8(current);
-	state = InHexOrOctal;
+	state = InNum0;
       } else if (isDecimalDigit(current)) {
 	record8(current);
 	state = InNum;
@@ -211,10 +211,16 @@ int KJSLexer::lex()
       }
       setDone(Identifier);
       break;
-    case InHexOrOctal:
+    case InNum0:
       if (current == 'x' || current == 'X') {
 	record8(current);
 	state = InHex;
+      } else if (current == '.') {
+	record8(current);
+	state = InDecimal;
+      } else if (current == 'e' || current == 'E') {
+	record8(current);
+	state = InExponentIndicator;
       } else if (isOctalDigit(current)) {
 	record8(current);
 	state = InOctal;
@@ -280,6 +286,11 @@ int KJSLexer::lex()
       shift(1);
     }
   }
+
+  // no identifiers allowed directly after numeric literal, e.g. "3in" is bad
+  if ((state == Int || state == Decimal || state == Octal || state == Hex)
+      && isIdentLetter())
+    state = Bad;
 
   // terminate string
   buffer8[pos8] = '\0';

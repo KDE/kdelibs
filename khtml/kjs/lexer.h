@@ -43,7 +43,7 @@ namespace KJS {
 		 InSingleLineComment,
 		 InMultiLineComment,
 		 InNum,
-		 InHexOrOctal,
+		 InNum0,
 		 InHex,
 		 InOctal,
 		 InDecimal,

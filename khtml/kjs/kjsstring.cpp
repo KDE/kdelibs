@@ -33,11 +33,7 @@
 #include "global.h"
 #include "kjsstring.h"
 
-#include <string>
-
 using namespace KJS;
-
-std::string s;
 
 CString::CString()
 {
