@@ -83,7 +83,7 @@ void RenderFlow::setStyle(RenderStyle *style)
 //    kdDebug( 6040 ) << (void*)this<< " renderFlow::setstyle()" << endl;
 
     RenderBox::setStyle(style);
-    
+
     if(m_positioned || m_floating || !style->display() == INLINE)
 	m_inline = false;
 	
@@ -204,7 +204,7 @@ void RenderFlow::calcWidth()
     	    m_width = w.width(containingBlockWidth());
 	    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
 	}
-    }       
+    }
 
     if(m_width < m_minWidth) m_width = m_minWidth;
 
@@ -239,7 +239,7 @@ void RenderFlow::layout( bool deep )
     // floats for some reason
 
     if (specialObjects==0)
-    	if (oldWidth == m_width && layouted() 
+    	if (oldWidth == m_width && layouted()
 	    && !containsPositioned() && !isPositioned()) return;
     else
     	if (nextSibling())
@@ -271,15 +271,15 @@ void RenderFlow::layout( bool deep )
     {
 	Length h = style()->height();
 	if (h.isFixed())
-    	    m_height = MAX (h.value + borderTop() + paddingTop() 
+    	    m_height = MAX (h.value + borderTop() + paddingTop()
 		+ borderBottom() + paddingBottom() , m_height);
 	else if (h.isPercent())
 	{
     	    Length ch = containingBlock()->style()->height();
 	    if (ch.isFixed())
-    		m_height = MAX (h.width(ch.value) + borderTop() + paddingTop() 
+    		m_height = MAX (h.width(ch.value) + borderTop() + paddingTop()
 	    	    + borderBottom() + paddingBottom(), m_height);
-	}    
+	}
     }
 
     if(floatBottom() > m_height)	
@@ -294,8 +294,8 @@ void RenderFlow::layout( bool deep )
 	    m_next->setLayouted(false);
 	    m_next->layout();
 	}
-    }     
-    
+    }
+
     if(specialObjects)
     {
 	SpecialObject* r;	
@@ -306,8 +306,8 @@ void RenderFlow::layout( bool deep )
 		r->node->layout(true);			
 	    }
     }
-    
-    
+
+
     setLayouted();
 }
 
@@ -491,7 +491,7 @@ RenderFlow::insertPositioned(RenderObject *o)
 	specialObjects = new QSortedList<SpecialObject>;
 	specialObjects->setAutoDelete(true);	
     }
-    
+
     // don't insert it twice!
     QListIterator<SpecialObject> it(*specialObjects);
     SpecialObject* f;	
@@ -499,13 +499,13 @@ RenderFlow::insertPositioned(RenderObject *o)
 	if (f->node == o) return;
 	++it;
     }
-    
+
     if (!f) f = new SpecialObject;
 
     f->noPaint=false;
     f->type = SpecialObject::Positioned;
     f->node = o;
-    
+
     specialObjects->append(f);
 }
 
@@ -557,7 +557,7 @@ RenderFlow::insertFloat(RenderObject *o)
     	if (obj && obj->isFlow() && f->noPaint == false)
 	{
 	    RenderFlow* par = static_cast<RenderFlow*>(obj);
-	    
+	
 	    if (par->isFloating())
 	    	return;
 
@@ -1042,7 +1042,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     //to prevents non-layouted elements from getting printed
     if (!newChild->isInline() && !newChild->isFloating())
     {
-//    	newChild->setYPos(-100000);
+    	newChild->setYPos(-100000);
     }
 
     switch (newChild->style()->position())
@@ -1054,7 +1054,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	case ABSOLUTE:
 	{
 //	    kdDebug( 6040 ) << "absolute found" << endl;
-	    setContainsPositioned(true);	    
+	    setContainsPositioned(true);	
     	    RenderObject::addChild(newChild,beforeChild);
 	    return;
 	}
@@ -1253,9 +1253,9 @@ void RenderFlow::specialHandler(BiDiObject *special)
     }	
     else if(o->isReplaced())
 	o->layout(true);
-    
+
 	
-    if( !o->isPositioned() && !o->isFloating() && 
+    if( !o->isPositioned() && !o->isFloating() &&
     	(!o->isInline() || o->isBR()) )
     {
 	//check the clear status
