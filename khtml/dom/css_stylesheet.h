@@ -170,7 +170,7 @@ protected:
  * This exception is raised when a specific CSS operation is impossible
  * to perform.
  */
-class CSSException
+class KHTML_EXPORT CSSException
 {
 public:
     CSSException(unsigned short _code) { code = _code; }
@@ -306,7 +306,7 @@ class StyleSheet;
  * abstraction of an ordered collection of style sheets.
  *
  */
-class StyleSheetList
+class KHTML_EXPORT StyleSheetList
 {
 public:
     StyleSheetList();
@@ -360,7 +360,7 @@ class CSSStyleSheet;
  * strings.
  *
  */
-class MediaList
+class KHTML_EXPORT MediaList
 {
 public:
     MediaList();
@@ -444,7 +444,7 @@ protected:
 
 class LinkStyleImpl;
 
-class LinkStyle
+class KHTML_EXPORT LinkStyle
 {
 public:
     LinkStyle();
@@ -466,7 +466,7 @@ protected:
 
 class DocumentStyleImpl;
 
-class DocumentStyle
+class KHTML_EXPORT DocumentStyle
 {
 public:
     DocumentStyle();
