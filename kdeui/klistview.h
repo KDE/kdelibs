@@ -178,19 +178,19 @@ public:
   KLineEdit* renameLineEdit() const;
 
   /**
-   * @returns if it is legal to move items in the list view
+   * @returns if it is legal to move items in the list view.  True by default.
    */
   bool itemsMovable() const;
 
   /**
-   * @return whether inplace-renaming has been enabled.
+   * @return whether inplace-renaming has been enabled.  False by default.
    *
    * @see #setItemsRenameable()
    */
   bool itemsRenameable() const;
 
   /**
-   * @return whether dragging is enabled.
+   * @return whether dragging is enabled.  False by default.
    */
   bool dragEnabled() const;
 
@@ -207,7 +207,7 @@ public:
   bool isRenameable (int column) const;
 
   /**
-   * @return true if drawing of the drop-visualizer has been enabled.
+   * @return true if drawing of the drop-visualizer has been enabled.  True by default.
    */
   bool dropVisualizer() const;
 
@@ -225,7 +225,7 @@ public:
   bool createChildren() const;
 
   /**
-   * @return true if drawing of the drop-highlighter has been enabled.
+   * @return true if drawing of the drop-highlighter has been enabled.  False by default.
    */
   bool dropHighlighter() const;
 
