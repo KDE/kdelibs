@@ -68,16 +68,14 @@ unsigned short CSSRule::type() const
 
 DOMString CSSRule::cssText() const
 {
-    // ###
     if(!impl) return 0;
-    //return static_cast<ElementImpl*>(impl)->getAttribute("cssText");
-    return 0;
+    return impl->cssText();
 }
 
-void CSSRule::setCssText( const DOMString &/*value*/ )
+void CSSRule::setCssText( const DOMString &value )
 {
-    // ###
-    //if(impl) static_cast<ElementImpl*>(impl)->setAttribute("cssText", value);
+    if(!impl) return;
+    impl->setCssText(value);
 }
 
 CSSStyleSheet CSSRule::parentStyleSheet() const
@@ -150,13 +148,12 @@ CSSCharsetRule::~CSSCharsetRule()
 DOMString CSSCharsetRule::encoding() const
 {
     if(!impl) return 0;
-    //return static_cast<ElementImpl*>(impl)->getAttribute("encoding");
-    return 0;
+    return ((CSSCharsetRuleImpl*)impl)->encoding();
 }
 
-void CSSCharsetRule::setEncoding( const DOMString &/*value*/ )
+void CSSCharsetRule::setEncoding( const DOMString &value )
 {
-    //if(impl) static_cast<ElementImpl*>(impl)->setAttribute("encoding", value);
+    ((CSSCharsetRuleImpl*)impl)->setEncoding(value);
 }
 
 
@@ -386,13 +383,12 @@ CSSPageRule::~CSSPageRule()
 DOMString CSSPageRule::selectorText() const
 {
     if(!impl) return 0;
-    //return static_cast<ElementImpl*>(impl)->getAttribute("selectorText");
-    return 0;
+    return ((CSSPageRuleImpl*)impl)->selectorText();
 }
 
-void CSSPageRule::setSelectorText( const DOMString &/*value*/ )
+void CSSPageRule::setSelectorText( const DOMString &value )
 {
-    //if(impl) static_cast<ElementImpl*>(impl)->setAttribute("selectorText", value);
+    ((CSSPageRuleImpl*)impl)->setSelectorText(value);
 }
 
 CSSStyleDeclaration CSSPageRule::style() const
@@ -450,13 +446,12 @@ CSSStyleRule::~CSSStyleRule()
 DOMString CSSStyleRule::selectorText() const
 {
     if(!impl) return 0;
-    //return static_cast<ElementImpl*>(impl)->getAttribute("selectorText");
-    return 0;
+    return ((CSSStyleRuleImpl*)impl)->selectorText();
 }
 
-void CSSStyleRule::setSelectorText( const DOMString &/*value*/ )
+void CSSStyleRule::setSelectorText( const DOMString &value )
 {
-    //if(impl) static_cast<ElementImpl*>(impl)->setAttribute("selectorText", value);
+    ((CSSStyleRuleImpl*)impl)->setSelectorText(value);
 }
 
 CSSStyleDeclaration CSSStyleRule::style() const
@@ -518,51 +513,51 @@ CSSUnknownRule::~CSSUnknownRule()
 
 CSSRuleList::CSSRuleList()
 {
-//    impl = 0;
+    impl = 0;
 }
 
-CSSRuleList::CSSRuleList(const CSSRuleList &/*other*/)
+CSSRuleList::CSSRuleList(const CSSRuleList &other)
 {
-//    impl = other.impl;
-//    if(impl) impl->ref();
+    impl = other.impl;
+    if(impl) impl->ref();
 }
 
-CSSRuleList::CSSRuleList(CSSRuleListImpl */*i*/)
+CSSRuleList::CSSRuleList(CSSRuleListImpl *i)
 {
-//    impl = i;
-//    if(impl) impl->ref();
+    impl = i;
+    if(impl) impl->ref();
 }
 
 CSSRuleList::CSSRuleList(StyleListImpl */*i*/)
 {
+//    ###
 //    impl = ?
 }
 
-CSSRuleList &CSSRuleList::operator = (const CSSRuleList &/*other*/)
+CSSRuleList &CSSRuleList::operator = (const CSSRuleList &other)
 {
-//    if(impl) impl->deref();
-//    impl = other.impl;
-//    if(impl) impl->ref();
+    if(impl) impl->deref();
+    impl = other.impl;
+    if(impl) impl->ref();
     return *this;
 }
 
 CSSRuleList::~CSSRuleList()
 {
-//    if(impl) impl->deref();
+    if(impl) impl->deref();
 }
 
 unsigned long CSSRuleList::length() const
 {
     if(!impl) return 0;
-    //return ((CSSRuleListImpl *)impl)->length();
+    return ((CSSRuleListImpl *)impl)->length();
     return 0;
 }
 
-CSSRule CSSRuleList::item( unsigned long /*index*/ )
+CSSRule CSSRuleList::item( unsigned long index )
 {
     if(!impl) return CSSRule();
-    //return ((CSSRuleListImpl *)impl)->item( index );
-    return CSSRule();
+    return ((CSSRuleListImpl *)impl)->item( index );
 }
 
 CSSRuleListImpl *CSSRuleList::handle() const

@@ -421,7 +421,9 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Counter &c)
 
 CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Rect &r)
 {
-    m_value.rect = new Rect(r);
+    m_value.rect = r.handle();
+    if (m_value.rect)
+	m_value.rect->ref();
     m_type = CSSPrimitiveValue::CSS_RECT;
 }
 
@@ -453,7 +455,7 @@ void CSSPrimitiveValueImpl::cleanup()
     else if(m_type == CSSPrimitiveValue::CSS_COUNTER)
 	m_value.counter->deref();
     else if(m_type == CSSPrimitiveValue::CSS_RECT)
-	delete m_value.rect;
+	m_value.rect->deref();
     m_type = 0;
 }
 
@@ -518,7 +520,7 @@ CounterImpl *CSSPrimitiveValueImpl::getCounterValue(  )
     return m_value.counter;
 }
 
-Rect *CSSPrimitiveValueImpl::getRectValue(  )
+RectImpl *CSSPrimitiveValueImpl::getRectValue(  )
 {
     if(m_type != CSSPrimitiveValue::CSS_RECT) return 0;
     return m_value.rect;
@@ -635,6 +637,24 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    break;
     }
     return text;
+}
+
+// -----------------------------------------------------------------
+
+RectImpl::RectImpl()
+{
+    m_top = 0;
+    m_right = 0;
+    m_bottom = 0;
+    m_left = 0;
+}
+
+RectImpl::~RectImpl()
+{
+    if (m_top) m_top->deref();
+    if (m_right) m_right->deref();
+    if (m_bottom) m_bottom->deref();
+    if (m_left) m_left->deref();
 }
 
 // -----------------------------------------------------------------

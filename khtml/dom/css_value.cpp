@@ -65,7 +65,6 @@ DOMString CSSStyleDeclaration::cssText() const
 
 void CSSStyleDeclaration::setCssText( const DOMString &value )
 {
-    // ###
     if(!impl) return;
     impl->setCssText(value);
 }
@@ -97,7 +96,6 @@ DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyNam
 
 void CSSStyleDeclaration::setProperty( const DOMString &propertyName, const DOMString &value, const DOMString &priority )
 {
-    // ###
     if(!impl) return;
     static_cast<CSSStyleDeclarationImpl *>(impl)->setProperty( propertyName, value, priority );
 }
@@ -317,10 +315,15 @@ unsigned short CSSPrimitiveValue::primitiveType() const
     return ((CSSPrimitiveValueImpl *)impl)->primitiveType();
 }
 
-void CSSPrimitiveValue::setFloatValue( unsigned short /*unitType*/, float /*floatValue*/ )
+void CSSPrimitiveValue::setFloatValue( unsigned short unitType, float floatValue )
 {
-    //if(impl)
-    //    ((CSSPrimitiveValueImpl *)impl)->setFloatValue( unitType, floatValue );
+    if(!impl) return;
+    int exceptioncode;
+    ((CSSPrimitiveValueImpl *)impl)->setFloatValue( unitType, floatValue, exceptioncode );
+    if ( exceptioncode >= CSSException::_EXCEPTION_OFFSET )
+	throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
 }
 
 float CSSPrimitiveValue::getFloatValue( unsigned short unitType )
@@ -346,34 +349,28 @@ void CSSPrimitiveValue::setStringValue( unsigned short stringType, const DOMStri
 
 DOMString CSSPrimitiveValue::getStringValue(  )
 {
-    return 0;
-    //if(!impl) return 0;
-
-    //return ((CSSPrimitiveValueImpl *)impl)->getStringValue(  );
+    if(!impl) return 0;
+    return ((CSSPrimitiveValueImpl *)impl)->getStringValue(  );
 }
 
 Counter CSSPrimitiveValue::getCounterValue(  )
 {
-    //if(!impl) return 0;
-    //return ((CSSPrimitiveValueImpl *)impl)->getCounterValue(  );
-    // ###
-  return Counter();
+    if(!impl) return Counter();
+    return ((CSSPrimitiveValueImpl *)impl)->getCounterValue(  );
 }
 
 Rect CSSPrimitiveValue::getRectValue(  )
 {
-    //if(!impl) return 0;
-    //return ((CSSPrimitiveValueImpl *)impl)->getRectValue(  );
-    // ###
-  return Rect();
+    if(!impl) return Rect();
+    return ((CSSPrimitiveValueImpl *)impl)->getRectValue(  );
 }
 
 RGBColor CSSPrimitiveValue::getRGBColorValue(  )
 {
-    //if(!impl) return RGBColor();
-    //return ((CSSPrimitiveValueImpl *)impl)->getRGBColorValue(  );
     // ###
     return RGBColor();
+    //if(!impl) return RGBColor();
+    //return ((CSSPrimitiveValueImpl *)impl)->getRGBColorValue(  );
 }
 
 // -------------------------------------------------------------------
@@ -384,17 +381,26 @@ Counter::Counter()
 
 Counter::Counter(const Counter &/*other*/)
 {
-    //###
+    impl = 0;
 }
 
-Counter &Counter::operator = (const Counter &/*other*/)
+Counter &Counter::operator = (const Counter &other)
 {
-    //::operator = (other);
+    if (impl) impl->deref();
+    impl = other.impl;
+    if (impl) impl->ref();
     return *this;
+}
+
+Counter::Counter(CounterImpl *i)
+{
+    impl = i;
+    if (impl) impl->ref();
 }
 
 Counter::~Counter()
 {
+    if (impl) impl->deref();
 }
 
 DOMString Counter::identifier() const
@@ -471,40 +477,56 @@ CSSPrimitiveValue RGBColor::blue() const
 
 Rect::Rect()
 {
+    impl = 0;
 }
 
-Rect::Rect(const Rect &/*other*/)
+Rect::Rect(const Rect &other)
 {
+    impl = other.impl;
+    if (impl) impl->ref();
 }
 
-Rect &Rect::operator = (const Rect &/*other*/)
+Rect::Rect(RectImpl *i)
 {
-  // TODO
-  return *this;
+    impl = i;
+    if (impl) impl->ref();
+}
+
+Rect &Rect::operator = (const Rect &other)
+{
+    if (impl) impl->deref();
+    impl = other.impl;
+    if (impl) impl->ref();
+    return *this;
 }
 
 Rect::~Rect()
 {
+    if (impl) impl->deref();
 }
 
 CSSPrimitiveValue Rect::top() const
 {
-  return CSSPrimitiveValue();
+    if (!impl) return 0;
+    return impl->top();
 }
 
 CSSPrimitiveValue Rect::right() const
 {
-  return CSSPrimitiveValue();
+    if (!impl) return 0;
+    return impl->right();
 }
 
 CSSPrimitiveValue Rect::bottom() const
 {
-  return CSSPrimitiveValue();
+    if (!impl) return 0;
+    return impl->bottom();
 }
 
 CSSPrimitiveValue Rect::left() const
 {
-  return CSSPrimitiveValue();
+    if (!impl) return 0;
+    return impl->left();
 }
 
 RectImpl *Rect::handle() const

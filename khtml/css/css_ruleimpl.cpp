@@ -81,6 +81,7 @@ CSSCharsetRuleImpl::CSSCharsetRuleImpl(StyleBaseImpl *parent)
     : CSSRuleImpl(parent)
 {
     m_type = CSSRule::CHARSET_RULE;
+    m_encoding = 0;
 }
 
 CSSCharsetRuleImpl::~CSSCharsetRuleImpl()
@@ -226,6 +227,17 @@ CSSPageRuleImpl::~CSSPageRuleImpl()
 CSSStyleDeclarationImpl *CSSPageRuleImpl::style() const
 {
     return m_style;
+}
+
+DOM::DOMString CSSPageRuleImpl::selectorText() const
+{
+    // ###
+    return 0;
+}
+
+void CSSPageRuleImpl::setSelectorText(DOM::DOMString /*str*/)
+{
+    // ###
 }
 
 // --------------------------------------------------------------------------

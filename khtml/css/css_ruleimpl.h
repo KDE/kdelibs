@@ -72,6 +72,12 @@ public:
     virtual ~CSSCharsetRuleImpl();
 
     virtual bool isCharsetRule() { return true; }
+
+    DOMString encoding() const { return m_encoding; }
+    void setEncoding(DOMString _encoding) { m_encoding = _encoding; }
+
+protected:
+    DOMString m_encoding;
 };
 
 
@@ -148,6 +154,10 @@ public:
     CSSStyleDeclarationImpl *style() const;
 
     virtual bool isPageRule() { return true; }
+
+    DOM::DOMString selectorText() const;
+    void setSelectorText(DOM::DOMString str);
+
 protected:
     CSSStyleDeclarationImpl *m_style;
 };
@@ -194,6 +204,15 @@ public:
      virtual bool isUnknownRule() { return true; }
 };
 
+class CSSRuleListImpl : public DomShared
+{
+    // ### implement this!
+public:
+    CSSRuleListImpl() {}
+
+    unsigned long length() const { return 0; }
+    CSSRuleImpl *item ( unsigned long /*index*/ ) { return 0; }
+};
 
 }; // namespace
 

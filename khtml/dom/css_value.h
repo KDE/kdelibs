@@ -630,6 +630,7 @@ class RectImpl;
  */
 class Rect
 {
+    friend class CSSPrimitiveValue;
 public:
     Rect();
     Rect(const Rect &other);
@@ -671,6 +672,7 @@ public:
 
 protected:
     RectImpl *impl;
+    Rect(RectImpl *i);
 };
 
 class CounterImpl;
@@ -685,6 +687,7 @@ class CounterImpl;
  */
 class Counter
 {
+    friend class CSSPrimitiveValue;
 public:
     Counter();
     Counter(const Counter &other);
@@ -721,6 +724,7 @@ public:
 
 protected:
     CounterImpl *impl;
+    Counter(CounterImpl *i);
 };
 
 

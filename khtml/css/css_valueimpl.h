@@ -166,7 +166,7 @@ public:
     void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue, int &exceptioncode );
     DOM::DOMStringImpl *getStringValue (  );
     CounterImpl *getCounterValue (  );
-    Rect *getRectValue (  );
+    RectImpl *getRectValue (  );
     RGBColor *getRGBColorValue (  );
 
     virtual bool isPrimitiveValue() { return true; }
@@ -184,7 +184,7 @@ protected:
 	float num;
 	DOM::DOMStringImpl *string;
 	CounterImpl *counter;
-	Rect *rect;
+	RectImpl *rect;
 	RGBColor *rgbcolor;
     } m_value;
 };
@@ -199,6 +199,23 @@ public:
     DOMString m_identifier;
     DOMString m_listStyle;
     DOMString m_separator;
+};
+
+class RectImpl : public DomShared {
+public:
+    RectImpl();
+    ~RectImpl();
+
+    CSSPrimitiveValueImpl *top() { return m_top; }
+    CSSPrimitiveValueImpl *right() { return m_right; }
+    CSSPrimitiveValueImpl *bottom() { return m_bottom; }
+    CSSPrimitiveValueImpl *left() { return m_left; }
+
+protected:
+    CSSPrimitiveValueImpl *m_top;
+    CSSPrimitiveValueImpl *m_right;
+    CSSPrimitiveValueImpl *m_bottom;
+    CSSPrimitiveValueImpl *m_left;
 };
 
 class CSSImageValueImpl : public CSSPrimitiveValueImpl, public khtml::CachedObjectClient
