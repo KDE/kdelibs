@@ -59,7 +59,7 @@ Arts::SoundServerV2 KArtsServer::server(void)
 
 	config.setGroup("Arts");
 
-	bool rt = config.readBoolEntry("StartRealTime", false);
+	bool rt = config.readBoolEntry("StartRealtime", false);
 	bool x11Comm = config.readBoolEntry("X11GlobalComm", false);
 
 	// put the value of x11Comm into .mcoprc
@@ -71,6 +71,8 @@ Arts::SoundServerV2 KArtsServer::server(void)
 		X11CommConfig.writeEntry("GlobalComm", "Arts::TmpGlobalComm");
 
 	X11CommConfig.sync();
+	
+	proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("kdeinit_wrapper")));
 
 	if(rt)
 		proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("artswrapper")));
