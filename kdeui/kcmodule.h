@@ -132,7 +132,7 @@ public:
    *
    * NOTE: Please make sure the quick help text gets translated (use i18n()).
    */
-  virtual QString quickHelp() { return QString::null; };
+  virtual QString quickHelp() const { return QString::null; };
 
   /**
    * Returns a the KAboutData for this module
