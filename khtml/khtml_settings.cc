@@ -143,6 +143,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
             fontsForCharset[KGlobal::charsets()->xNameToID(*it)] = fonts;
         }
     }
+#else
+    fonts = config->readListEntry( "Fonts" );
 #endif
 
     if ( reset || config->hasKey( "DefaultEncoding" ) ) {

@@ -169,6 +169,8 @@ private:
     QMap<QString,KJavaScriptAdvice> javaScriptDomainPolicy;
 #if QT_VERSION < 300
     QMap<QFont::CharSet, QStringList> fontsForCharset;
+#else
+    QStringList fonts;
 #endif
     QStringList defaultFonts;
     QString availFamilies;
