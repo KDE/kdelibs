@@ -667,6 +667,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
     QChar *ch;
     bool deleteChar = false;
+#if QT_VERSION < 221
     // Qt still uses the old BiDi code with 8859-6/8...
     if((reverse && (( !m_style->visuallyOrdered() &&
                       font().charSet() != QFont::ISO_8859_8 &&
@@ -701,7 +702,6 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
               (font().charSet() == QFont::ISO_8859_8 || font().charSet() == QFont::ISO_8859_6 ) ) {
         deleteChar = true;
         QString aStr = QConstString(str->s+from, len).string();
-        aStr.compose();
         len = aStr.length();
         ch = QT_ALLOC_QCHAR_VEC(len);
         const QChar *s = aStr.unicode();
@@ -714,7 +714,31 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     }
     else
         ch = str->s+from;
-
+#else
+    if ( reverse && !m_style->visuallyOrdered() ) {
+        deleteChar = true;
+        // reverse String
+        QString aStr = QConstString(str->s+from, len).string();
+#ifdef DEBUG_LAYOUT
+        kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
+#endif
+        len = aStr.length();
+        ch = QT_ALLOC_QCHAR_VEC(len);
+        int half =  len/2;
+        const QChar *s = aStr.unicode();
+        for(int i = 0; i <= half; i++)
+        {
+            ch[len-1-i] = s[i];
+            ch[i] = s[len-1-i];
+            if(ch[i].mirrored() && !m_style->visuallyOrdered())
+                ch[i] = ch[i].mirroredChar();
+            if(ch[len-1-i].mirrored() && !m_style->visuallyOrdered() && i != len-1-i)
+                ch[len-1-i] = ch[len-1-i].mirroredChar();
+        }
+    }
+    else
+        ch = str->s+from;
+#endif
     // ### margins and RTL
     if(from == 0 && m_parent->isInline() && m_parent->firstChild()==this)
     {

@@ -42,9 +42,6 @@ using namespace khtml;
 Decoder::Decoder()
 {
     m_codec = QTextCodec::codecForName("ISO 8859-1");
-#ifdef DECODE_DEBUG
-    kdDebug( 6005 ) << "INIT HTML Codec name= " << m_codec->name() << endl;
-#endif
     enc = 0;
     body = false;
     beginning = true;
@@ -58,7 +55,7 @@ Decoder::~Decoder()
 void Decoder::setEncoding(const char *_encoding, bool force)
 {
 #ifdef DECODE_DEBUG
-    kdDebug(0) << "setEncoding " << force << endl;
+    kdDebug(0) << "setEncoding " << _encoding << " " << force << endl;
 #endif
     enc = _encoding;
     haveEncoding = force;
@@ -75,6 +72,7 @@ void Decoder::setEncoding(const char *_encoding, bool force)
         m_codec = QTextCodec::codecForName("iso8859-8-i");
         visualRTL = true;
     }
+    kdDebug() << "*Decoder::encoding used is" << m_codec->name() << endl; 
 }
 
 const char *Decoder::encoding() const

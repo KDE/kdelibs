@@ -164,10 +164,6 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     defaultStyle->append(sheet);
 }
 
-#if 0
-// WABA: Static objects are evil
-static QList<RenderStyle> lastStyles;
-#endif
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {
@@ -199,19 +195,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
 
 //    kdDebug( 6080 ) << "STYLE count=" << RenderStyle::counter << ", DATA count=" << SharedData::counter << endl;
-
-    // experimental -antti
-#if 0
-    for ( int n=0; n<(int)lastStyles.count(); n++)
-    {
-        style->mergeData(lastStyles.at(n));
-    }
-
-    lastStyles.append(style);
-
-    if (lastStyles.count()>5)
-        lastStyles.removeFirst();
-#endif
 
     delete propsToApply;
 
@@ -308,15 +291,15 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
         switch(sel->match)
         {
         case CSSSelector::Exact:
-            if(sel->value != value) return false;
+            if(strcasecmp(sel->value, value)) return false;
             break;
         case CSSSelector::Set:
             break;
         case CSSSelector::List:
         {
             //kdDebug( 6080 ) << "checking for list match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
+            QString str = value.string().lower();
+            QString selStr = sel->value.string().lower();
             int pos = str.find(selStr);
             if(pos == -1) return false;
             if(pos && str[pos-1] != ' ') return false;
@@ -328,8 +311,8 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
         {
             // ### still doesn't work. FIXME
             //kdDebug( 6080 ) << "checking for hyphen match" << endl;
-            QString str = value.string();
-            if(str.find(sel->value.string()) != 0) return false;
+            QString str = value.string().lower();
+            if(str.find(sel->value.string().lower()) != 0) return false;
             // ### could be "bla , sdfdsf" too. Parse out spaces
             int pos = sel->value.length() + 1;
             while(pos < (int)str.length() && sel->value[pos] == ' ') pos++;

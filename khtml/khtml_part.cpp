@@ -1047,16 +1047,17 @@ void KHTMLPart::write( const char *str, int len )
 
   QString decoded = d->m_decoder->decode( str, len );
 
-  if(decoded.isNull()) return;
+  if(decoded.isEmpty()) return;
 
+  //kdDebug() << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl; 
   if(!d->m_haveEncoding) {
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
       const QTextCodec *c = d->m_decoder->codec();
       if( !d->keepCharset ) {
-          kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
+	  //kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
           d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(c->name()) );
-          kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
+          //kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
       }
       d->m_doc->applyChanges(true, true);
       d->m_haveEncoding = true;
@@ -1277,7 +1278,7 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
   KGlobal::charsets()->setQFont(f, KGlobal::charsets()->charsetForEncoding(name) );
 
   QFontInfo fi(f);
-  kdDebug(6005) << "setting to charset " << (int)f.charSet() << endl;
+  //kdDebug(6005) << "setting to charset " << (int)f.charSet() <<" " << override << " should be " << name << endl;
 
   d->m_settings->setCharset( f.charSet() );
   d->keepCharset = override;
