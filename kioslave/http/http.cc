@@ -199,6 +199,14 @@ void HTTPProtocol::resetSessionSettings()
      m_request.referrer = metaData("referrer");
   else
      m_request.referrer = QString::null;
+     
+  if (!m_request.referrer.startsWith("http"))
+  {
+     if (m_request.referrer.startsWith("webdav"))
+        m_request.referrer.replace(0, 6, "http");
+     else
+        m_request.referrer = QString::null;
+  }
 
   if ( config()->readBoolEntry("SendLanguageSettings", true) )
   {
