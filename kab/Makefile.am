@@ -54,6 +54,7 @@ include_HEADERS = \
 	keyvaluemap.h \
 	sections.h
 
+libkab_la_LDFLAGS = -version-info 2:0
 libkab_la_LIBADD  = -lqt -lXext -lX11 $(LIBSOCKET)
 
 # just to make sure, automake makes them 

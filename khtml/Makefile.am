@@ -31,7 +31,7 @@ khtmlview.cpp: khtmlview.moc
 DISTCLEANFILES = $(SRC_META)
 include_HEADERS = khtml.h khtmlview.h
 noinst_HEADERS = khtmlchain.h khtmlformats.h khtmlparser.h khtmljscript.h khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlcache.h
-libkhtml_la_LDFLAGS = -version-info 1:0
+libkhtml_la_LDFLAGS = -version-info 2:0
 
 data_DATA = khtml_dnd.xpm
 datadir = $(kde_datadir)/khtml/pics
