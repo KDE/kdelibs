@@ -1571,7 +1571,7 @@ void CopyJob::copyNextFile()
         {
             KURL::List srcList;
             // The "source" is in fact what the existing link points to
-            srcList.append( KURL( (*it).linkDest ) );
+            srcList.append( KURL( /*(*it).uDest, */(*it).linkDest ) ); // TODO support for relative links
             if ( KIO::link( srcList, (*it).uDest ) )
             {
                 if (m_move)
@@ -1781,8 +1781,8 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
     connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
+    //connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+    //	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
 	     Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
@@ -1835,6 +1835,7 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
 void DeleteJob::startNextJob()
 {
+    //kdDebug(7007) << "startNextJob" << endl;
     files.clear();
     symlinks.clear();
     dirs.clear();
@@ -1843,7 +1844,7 @@ void DeleteJob::startNextJob()
     {
         // Stat first
         KIO::Job * job = KIO::stat( *it );
-        kdDebug(7007) << "KIO::stat (DeleteJob) " << (*it).url() << endl;
+        //kdDebug(7007) << "KIO::stat (DeleteJob) " << (*it).url() << endl;
         state = STATE_STATING;
         addSubjob(job);
         m_srcList.remove(it);
@@ -1856,6 +1857,7 @@ void DeleteJob::startNextJob()
 
 void DeleteJob::deleteNextFile()
 {
+    //kdDebug(7007) << "deleteNextFile" << endl;
     if ( !files.isEmpty() || !symlinks.isEmpty() )
     {
         // Take first file to delete out of list
@@ -1872,7 +1874,7 @@ void DeleteJob::deleteNextFile()
         {
             // KShred your KTie
             KIO_ARGS << int(3) << (*it).path();
-            job = KIO::special(KURL("file:/"), packedArgs);
+            job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
  	    emit deleting( this, *it );
         } else
         {
@@ -1966,7 +1968,7 @@ void DeleteJob::slotResult( Job *job )
                 kdDebug(7007) << " Target is a directory " << endl;
                 // List it
                 state = STATE_LISTING;
-                ListJob *newjob = listRecursive( url );
+                ListJob *newjob = listRecursive( url, false );
                 connect(newjob, SIGNAL(entries( KIO::Job *,
                                                 const KIO::UDSEntryList& )),
                         SLOT( slotEntries( KIO::Job*,
