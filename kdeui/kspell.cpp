@@ -924,6 +924,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
   return TRUE;
 }
 
+
 void KSpell::check2 (KProcIO *)
   // invoked by KProcIO when read from ispell
 {
@@ -931,8 +932,11 @@ void KSpell::check2 (KProcIO *)
   QString word;
   QString line;
   static bool recursive = false;
-  if (recursive)
+  if (recursive &&
+      (!ksdlg || ksdlg->isHidden()))
+  {
       return;
+  }
   recursive = true;
 
   do
@@ -1037,7 +1041,6 @@ void KSpell::check3 ()
   // evaluates the return value of the dialog
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
-
   kdDebug(750) << "check3 [" << cwword << "] [" << replacement() << "] " << dlgresult << endl;
 
   //others should have been processed by dialog() already
