@@ -235,6 +235,7 @@ KMainWindow::~KMainWindow()
 {
     QMenuBar* mb = internalMenuBar();
     delete mb;
+    delete d->m_interface;
     delete d;
     memberList->remove( this );
 }
