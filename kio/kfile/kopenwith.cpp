@@ -187,6 +187,8 @@ static QPixmap appIcon(const QString &iconName)
 void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem *item)
 {
    KServiceGroup::Ptr root = KServiceGroup::group(relPath);
+   if (!root || !root->isValid()) return;
+
    KServiceGroup::List list = root->entries();
 
    KAppTreeListItem * newItem;
