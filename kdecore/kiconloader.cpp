@@ -86,10 +86,9 @@ KIconLoader::KIconLoader(QString appname)
 
     QStringList groups;
     groups += "Desktop";
-    groups += "Kicker";
     groups += "Toolbar";
-    groups += "Small";
     groups += "MainToolbar";
+    groups += "Small";
 
     int i;
     QStringList::ConstIterator it;
@@ -514,12 +513,6 @@ QPixmap DesktopIcon(QString name, KInstance *instace)
 {
     KIconLoader *loader = instace->iconLoader();
     return loader->loadIcon(name, KIcon::Desktop);
-}
-
-QPixmap KickerIcon(QString name, KInstance *instace)
-{
-    KIconLoader *loader = instace->iconLoader();
-    return loader->loadIcon(name, KIcon::Kicker);
 }
 
 QPixmap BarIcon(QString name, KInstance *instace)

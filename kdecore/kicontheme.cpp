@@ -112,10 +112,9 @@ KIconTheme::KIconTheme(QString name, QString appName)
     int i;
     QStringList groups;
     groups += "Desktop";
-    groups += "Kicker";
     groups += "Toolbar";
-    groups += "Small";
     groups += "MainToolbar";
+    groups += "Small";
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
 	mDefSize[i] = cfg->readNumEntry(*it + "Default", 32);
