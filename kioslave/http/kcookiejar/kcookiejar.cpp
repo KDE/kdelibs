@@ -164,34 +164,7 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     if (mDomain.isEmpty())
     {
        if (fqdn != mHost)
-       {
-          // The following code is added because RFC 2109 is completely
-          // ambigious when it comes what needs to be done when cookies
-          // with empty "domain=" fields are present! The following code
-          // makes such cookies available to all the domains/hosts under
-          // the TLD of the cookie in question!
-          QStringList cookieDomainList;
-          KCookieJar::extractDomains( mHost, cookieDomainList );
-
-          int fqdnCount = domains.count();
-          int cookieDomainCount = cookieDomainList.count();
-             
-          if ((fqdnCount == 1) && (cookieDomainCount == 1))
-          {
-             if (domains[0] != cookieDomainList[0])
-                return false;
-          }
-          else if ((fqdnCount >= 2) && ( cookieDomainCount >= 2))
-          {
-             if ( domains[fqdnCount-2] != cookieDomainList[cookieDomainCount-2] &&
-                  domains[fqdnCount-1] != cookieDomainList[cookieDomainCount-1] )
-                return false;
-          }
-          else
-          {
-             return false;
-          }
-       }
+          return false;
     }
     else if (!domains.contains(mDomain))
     {
