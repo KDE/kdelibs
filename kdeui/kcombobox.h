@@ -202,7 +202,7 @@ public:
     *
     * @return Current cursor position.
     */
-    int cursorPosition() const { return ( m_pEdit ) ? m_pEdit->cursorPosition() : -1; }
+    int cursorPosition() const { return ( lineEdit() ) ? lineEdit()->cursorPosition() : -1; }
 
     /**
     * Re-implemented from @ref QComboBox.
@@ -526,7 +526,7 @@ private:
     bool m_bEnableMenu;
 
     // Pointer to the line editor.
-    QGuardedPtr<QLineEdit> m_pEdit;
+    QGuardedPtr<QLineEdit> m_pEdit; // deprecated, don't use!
 
     // indicating if we should stop return-key events from propagating
     bool m_trapReturnKey;

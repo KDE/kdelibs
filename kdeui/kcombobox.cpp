@@ -45,17 +45,20 @@ class KComboBox::KComboBoxPrivate
 {
 public:
     KComboBoxPrivate() {
-      hasReference= false;
-      handleURLDrops= true;
-      showMultipleMatches = false;
+      hasReference = false;
+      handleURLDrops = true;
       ignoreDoubleKeyEvents = true;
-      completionBox= 0;
-      popupMenu= 0;
-      subMenu= 0;
+      completionBox = 0L;
+      popupMenu = 0L;
+      subMenu = 0L;
     }
+    ~KComboBoxPrivate() {
+        delete popupMenu;
+        delete completionBox;
+    }
+
     bool hasReference;
     bool handleURLDrops;
-    bool showMultipleMatches;
     bool ignoreDoubleKeyEvents;
 
     QString prevText;
@@ -68,7 +71,6 @@ KComboBox::KComboBox( QWidget *parent, const char *name )
           :QComboBox( parent, name )
 {
     m_trapReturnKey = false;
-    m_pEdit = lineEdit();
     init();
 }
 
@@ -76,19 +78,16 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
           :QComboBox( rw, parent, name )
 {
     m_trapReturnKey = false;
-    m_pEdit = lineEdit();
 
     if ( rw ) {
         KCursor::setAutoHideCursor( lineEdit(), true, true );
-        m_pEdit->installEventFilter( this );
+        lineEdit()->installEventFilter( this );
     }
     init();
 }
 
 KComboBox::~KComboBox()
 {
-    delete d->popupMenu;
-    delete d->completionBox;
     delete d;
 }
 
@@ -139,7 +138,7 @@ void KComboBox::setCompletionMode( KGlobalSettings::Completion mode )
 
 void KComboBox::setContextMenuEnabled( bool showMenu )
 {
-    if( m_pEdit )
+    if( lineEdit() )
         m_bEnableMenu = showMenu;
 }
 
@@ -157,13 +156,13 @@ bool KComboBox::isURLDropsEnabled() const
 
 void KComboBox::setCompletedText( const QString& text, bool marked )
 {
-    if ( m_pEdit )
+    if ( lineEdit() )
     {
       QString txt = currentText();
       if ( text != txt )
       {
-        int curpos = marked ? txt.length():text.length();
-        m_pEdit->validateAndSet( text, curpos, curpos, text.length() );
+        int curpos = marked ? txt.length() : text.length();
+        lineEdit()->validateAndSet( text, curpos, curpos, text.length() );
       }
     }
 }
@@ -178,7 +177,7 @@ void KComboBox::setCompletedText( const QString& text )
 
 void KComboBox::makeCompletion( const QString& txt )
 {
-    if( m_pEdit )
+    if( lineEdit() )
     {
         KCompletion *comp = compObj();
         if( !comp )
@@ -193,20 +192,14 @@ void KComboBox::makeCompletion( const QString& txt )
             else
                 setCompletedItems( comp->allMatches() );
         }
-        else if ( mode == KGlobalSettings::CompletionShell &&
-                  d->showMultipleMatches )
-        {
-            setCompletedItems( comp->allMatches() );
-        }
         else
         {
             // all other completion modes
             // If no match or the same text, simply return without completing.
             if( match.isNull() || match == txt )
                 return;
-            bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-                            mode == KGlobalSettings::CompletionMan );
-            setCompletedText( match, marked );
+
+            setCompletedText( match );
         }
     }
     else
@@ -223,7 +216,7 @@ void KComboBox::makeCompletion( const QString& txt )
 
 void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 {
-    if( m_pEdit )
+    if( lineEdit() )
     {
         // Support for rotating through highlighted text!  This means
         // that if there are multiple matches for the portion of text
@@ -241,7 +234,7 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
            if( input.isNull() || input == currentText() )
                return;
 
-            bool marked = m_pEdit->hasMarkedText(); // See if it had marked text
+            bool marked = lineEdit()->hasMarkedText();
             setCompletedText( input, marked );
         }
     }
@@ -249,7 +242,9 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 
 void KComboBox::keyPressEvent( QKeyEvent * e )
 {
-    if ( m_pEdit && m_pEdit->hasFocus() )
+    QLineEdit *edit = lineEdit();
+
+    if ( edit && edit->hasFocus() )
     {
         if ( !d->ignoreDoubleKeyEvents )
         {
@@ -263,10 +258,10 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
                 if ( !keycode.isNull() && keycode.unicode()->isPrint() )
                 {
                     QString txt = currentText();
-                    kdDebug() << "Auto-completion: " << txt << endl;
                     int len = txt.length();
-                    if (!m_pEdit->hasMarkedText() && len && cursorPosition() ==len)
+                    if (!edit->hasMarkedText() && len && cursorPosition() ==len)
                     {
+                        kdDebug() << "Auto completion: " << txt << endl;
                         if ( emitSignals() )
                             emit completion( txt ); // emit when requested...
                         if ( handleSignals() )
@@ -274,18 +269,19 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
                     }
                 }
             }
+
             else if ( mode == KGlobalSettings::CompletionPopup )
             {
-                // HACK: This is workaround for double keypress
+                // HACK: d->prevText is workaround for double keypress
                 // events generated by Qt for every key-pressed.
                 // To be modified when bug is fixed in Qt.
                 int key = e->key();
                 QString keycode = e->text();
                 QString txt = currentText();
 
-                if (((!keycode.isNull() && keycode.unicode()->isPrint())||
-                     (key == Qt::Key_Delete || key == Qt::Key_BackSpace)) &&
-                     txt != d->prevText)
+                if ( (uint) cursorPosition() == txt.length() && txt != d->prevText &&
+                     (!keycode.isNull() && keycode.unicode()->isPrint()) ||
+                      key == Key_BackSpace )
                 {
                     kdDebug() << "Popup completion: " << txt << endl;
                     if ( emitSignals() )
@@ -295,10 +291,10 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
                 }
                 d->prevText = txt;
             }
+
             else if ( mode == KGlobalSettings::CompletionShell )
             {
                 int key = (keys[TextCompletion] == 0) ? KStdAccel::key(KStdAccel::TextCompletion):keys[TextCompletion];
-                d->showMultipleMatches = false;
                 if ( KStdAccel::isEqual( e, key ) )
                 {
                     // Emit completion if there is a completion object present,
@@ -306,9 +302,8 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
                     // cursor is at the end of the string.
                     QString txt = currentText();
                     int len = txt.length();
-                    d->showMultipleMatches = (d->prevText == txt);
                     d->prevText = txt;
-                    if ( m_pEdit->cursorPosition() == len && len !=0 )
+                    if ( cursorPosition() == len && len > 0 )
                     {
                         kdDebug() << "Shell completion: " << txt << endl;
                         if ( emitSignals() )
@@ -348,7 +343,7 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
         d->ignoreDoubleKeyEvents = !d->ignoreDoubleKeyEvents;
     }
     // Read-only combobox
-    else if ( !m_pEdit )
+    else if ( !edit )
     {
         QString keycode = e->text();
         if ( !keycode.isNull() && keycode.unicode()->isPrint() )
@@ -365,9 +360,9 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
 
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
-    if ( o == m_pEdit )
+    if ( o == lineEdit() )
     {
-        KCursor::autoHideEventFilter( m_pEdit, ev );
+        KCursor::autoHideEventFilter( lineEdit(), ev );
 
         int type = ev->type();
         if ( type == QEvent::KeyPress )
@@ -390,6 +385,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             // HACK: Workaround for double key-pressed events
             d->ignoreDoubleKeyEvents = true;
         }
+
         else if ( type == QEvent::MouseButtonPress )
         {
             QMouseEvent* e = static_cast<QMouseEvent*>( ev );
@@ -415,17 +411,17 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 }
 
                 if ( result == Cut )
-                    m_pEdit->cut();
+                    lineEdit()->cut();
                 else if ( result == Copy )
-                    m_pEdit->copy();
+                    lineEdit()->copy();
                 else if ( result == Paste )
-                    m_pEdit->paste();
+                    lineEdit()->paste();
                 else if ( result == Clear )
-                    m_pEdit->clear();
+                    lineEdit()->clear();
                 else if ( result == Unselect )
-                    m_pEdit->deselect();
+                    lineEdit()->deselect();
                 else if ( result == SelectAll )
-                    m_pEdit->selectAll();
+                    lineEdit()->selectAll();
                 else if ( result == Default )
                     setCompletionMode( KGlobalSettings::completionMode() );
                 else if ( result == NoCompletion )
@@ -448,28 +444,24 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 return true;
             }
         }
+
         else if(type == QEvent::Drop)
         {
             QDropEvent *e = static_cast<QDropEvent *>( ev );
             KURL::List urlList;
             if(d->handleURLDrops && KURLDrag::decode( e, urlList ))
             {
-                QString dropText;
+                QString dropText = currentText();
                 KURL::List::ConstIterator it;
                 for( it = urlList.begin() ; it != urlList.end() ; ++it)
                 {
                     if(!dropText.isEmpty())
-                        dropText+=' ';
+                        dropText += ' ';
 
                     dropText += (*it).prettyURL();
                 }
 
-                if(!m_pEdit->text().isEmpty())
-                    dropText=' '+dropText;
-
-                m_pEdit->end(false);
-                m_pEdit->insert(dropText);
-
+                lineEdit()->validateAndSet( dropText, dropText.length(), 0, 0);
                 return true;
             }
         }
@@ -507,15 +499,16 @@ void KComboBox::initPopup()
         }
     }
 
-    bool flag = ( m_pEdit->echoMode() == QLineEdit::Normal &&
-                  !m_pEdit->isReadOnly() );
-    bool allMarked =(m_pEdit->markedText().length() == currentText().length());
-    d->popupMenu->setItemEnabled( Cut, flag && m_pEdit->hasMarkedText() );
-    d->popupMenu->setItemEnabled( Copy, flag && m_pEdit->hasMarkedText() );
-    d->popupMenu->setItemEnabled( Paste, flag && 
+    QLineEdit *edit = lineEdit();
+    bool flag = ( edit->echoMode() == QLineEdit::Normal &&
+                  !edit->isReadOnly() );
+    bool allMarked =(edit->markedText().length() == currentText().length());
+    d->popupMenu->setItemEnabled( Cut, flag && edit->hasMarkedText() );
+    d->popupMenu->setItemEnabled( Copy, flag && edit->hasMarkedText() );
+    d->popupMenu->setItemEnabled( Paste, flag &&
                                  !QApplication::clipboard()->text().isEmpty());
     d->popupMenu->setItemEnabled( Clear, flag && !currentText().isEmpty() );
-    d->popupMenu->setItemEnabled( Unselect, m_pEdit->hasMarkedText() );
+    d->popupMenu->setItemEnabled( Unselect, edit->hasMarkedText() );
     d->popupMenu->setItemEnabled( SelectAll, flag && !allMarked );
 }
 
@@ -532,12 +525,8 @@ bool KComboBox::trapReturnKey() const
 
 void KComboBox::setEditURL( const KURL& url )
 {
-    if ( m_pEdit )
-    {
-        QString text = url.prettyURL();
-        int curpos = text.length();
-        m_pEdit->validateAndSet( text, curpos, curpos, curpos  );
-    }
+    if ( lineEdit() )
+        setEditText( url.prettyURL() );
 }
 
 void KComboBox::insertURL( const KURL& url, int index )
@@ -587,7 +576,7 @@ void KComboBox::setCompletedItems( const QStringList& items )
             if ( !d->completionBox )
                 makeCompletionBox();
 
-            d->completionBox->setCancelledText( currentText() );
+            d->completionBox->setCancelledText( txt );
             d->completionBox->clear();
             d->completionBox->insertStringList( items );
             d->completionBox->popup();
@@ -622,6 +611,16 @@ KCompletionBox * KComboBox::completionBox( bool create )
 
 void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
 {
+    KCompletion *oldComp = completionObject( false, false ); // don't create!
+
+    if ( oldComp && handleSignals() )
+        disconnect( oldComp, SIGNAL( matches( const QStringList& )),
+                    this, SLOT( setCompletedItems( const QStringList& )));
+
+    if ( comp && hsig )
+        connect( comp, SIGNAL( matches( const QStringList& )),
+                 this, SLOT( setCompletedItems( const QStringList& )));
+
     KCompletionBase::setCompletionObject( comp, hsig );
 }
 
@@ -683,14 +682,15 @@ void KComboBox::hideCompletionBox()
 
 // we are always read-write
 KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
-              :KComboBox( true, parent, name )
+    : KComboBox( true, parent, name )
 {
     init( true ); // using completion
 }
 
 // we are always read-write
-KHistoryCombo::KHistoryCombo( bool useCompletion, QWidget *parent, const char *name )
-              :KComboBox( true, parent, name )
+KHistoryCombo::KHistoryCombo( bool useCompletion,
+                              QWidget *parent, const char *name )
+    : KComboBox( true, parent, name )
 {
     init( useCompletion );
 }
@@ -895,6 +895,7 @@ void KHistoryCombo::setPixmapProvider( KPixmapProvider *prov )
     if ( myPixProvider == prov )
         return;
 
+    delete myPixProvider;
     myPixProvider = prov;
 
     // re-insert all the items with/without pixmap

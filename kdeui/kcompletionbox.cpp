@@ -48,9 +48,6 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     setVScrollBarMode( Auto );
     setHScrollBarMode( AlwaysOff );
 
-    connect( this, SIGNAL( doubleClicked( QListBoxItem * ) ),
-                 SLOT( slotActivated( QListBoxItem * ) ) );
-
     installEventFilter( this );
 }
 
