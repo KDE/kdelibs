@@ -24,6 +24,8 @@
 #include <knotifyclient.h>
 #include <kglobal.h>
 
+#include <qptrvector.h>
+
 #include "kcompletion.h"
 #include "kcompletion_private.h"
 
@@ -705,24 +707,37 @@ KCompTreeNode * KCompTreeNode::insert( const QChar& ch, bool sorted )
 }
 
 
-// Recursively removes a string from the tree (untested :-)
-void KCompTreeNode::remove( const QString& string )
+// Iteratively removes a string from the tree. The nicer recursive
+// version apparently was a little memory hungry (see #56757)
+void KCompTreeNode::remove( const QString& str )
 {
-    KCompTreeNode *child = 0L;
+    QString string = str;
+    string += QChar(0x0);
 
-    if ( string.isEmpty() ) {
-        child = find( 0x0 );
-        delete myChildren.remove( child );
-        return;
+    QPtrVector<KCompTreeNode> deletables( string.length() + 1 );
+
+    KCompTreeNode *child = 0L;
+    KCompTreeNode *parent = this;
+    deletables.insert( 0, parent );
+	
+    uint i = 0;
+    for ( ; i < string.length(); i++ )
+    {
+        child = parent->find( string.at( i ) );
+        if ( child )
+            deletables.insert( i + 1, child );
+        else 
+            break;
+
+        parent = child;
     }
 
-    QChar ch = string.at(0);
-    child = find( ch );
-    if ( child ) {
-        child->remove( string.right( string.length() -1 ) );
-        if ( child->myChildren.count() == 0 ) {
-            delete myChildren.remove( child );
-        }
+    for ( ; i >= 1; i-- )
+    {
+        parent = deletables.at( i - 1 );
+        child = deletables.at( i );
+        if ( child->myChildren.count() == 0 )
+            delete parent->myChildren.remove( child );
     }
 }
 
