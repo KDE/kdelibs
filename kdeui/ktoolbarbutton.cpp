@@ -126,7 +126,7 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
 
   d->m_id     = _id;
   d->m_parent = (KToolBar*)_parent;
-  setTextLabel(_txt);
+  QToolButton::setTextLabel(_txt);
   d->m_instance = _instance;
 
   setFocusPolicy( NoFocus );
@@ -158,7 +158,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
 
   d->m_id       = _id;
   d->m_parent   = (KToolBar *) _parent;
-  setTextLabel(txt);
+  QToolButton::setTextLabel(txt);
 
   setFocusPolicy( NoFocus );
 
@@ -262,7 +262,7 @@ void KToolBarButton::setEnabled( bool enabled )
   QButton::setPixmap( (isEnabled() ? defaultPixmap : disabledPixmap) );
 }
 
-void KToolBarButton::setTextLabel( const QString& text)
+void KToolBarButton::setTextLabel( const QString& text, bool tipToo)
 {
   if (text.isNull())
     return;
@@ -271,13 +271,13 @@ void KToolBarButton::setTextLabel( const QString& text)
   if (txt.right(3) == QString::fromLatin1("..."))
     txt.truncate(txt.length() - 3);
 
-  QToolButton::setTextLabel(txt);
+  QToolButton::setTextLabel(txt, tipToo);
   update();
 }
 
 void KToolBarButton::setText( const QString& text)
 {
-  setTextLabel(text);
+  setTextLabel(text, true);
   modeChange();
 }
 
@@ -304,7 +304,7 @@ void KToolBarButton::setIcon( const QString &icon, bool )
   }
 }
 
-void KToolBarButton::setIconSet( const QIconSet &iconset, bool )
+void KToolBarButton::setIconSet( const QIconSet &iconset )
 {
     // TODO. Do the opposite. Port all this code to QIconSet.
     setPixmap( iconset.pixmap( QIconSet::Automatic, QIconSet::Active ), false );
@@ -631,10 +631,10 @@ void KToolBarButton::drawButton( QPainter *_painter )
   if (d->m_popup)
   {
     QStyle::SFlags arrowFlags = QStyle::Style_Default;
-    
+
     if (isDown())	arrowFlags |= QStyle::Style_Down;
     if (isEnabled()) 	arrowFlags |= QStyle::Style_Enabled;
-    
+
       style().drawPrimitive(QStyle::PE_ArrowDown, _painter,
           QRect(width()-7, height()-7, 7, 7), colorGroup(),
 	  arrowFlags, QStyleOption() );
