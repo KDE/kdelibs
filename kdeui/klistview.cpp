@@ -1102,7 +1102,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
    if (e->text()=="MajorHack")
    {
       d->selectedBySimpleMove=true;
-      if (currentItem()!=0)
+      if ((currentItem()!=0) && (hasFocus()))
       {
          currentItem()->setSelected(true);
          currentItem()->repaint();
