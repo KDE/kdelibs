@@ -2936,8 +2936,13 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 					QString::null,
 					"WarnOnUnencryptedForm");
 			// Move this setting into KSSL instead
-			if (!kapp->config()->readBoolEntry("WarnOnUnencryptedForm", true)) {
-				kapp->config()->deleteEntry("WarnOnUnencryptedForm");
+			KConfig *config = kapp->config();
+			QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+			KConfigGroupSaver saver( config, grpNotifMsgs );
+			
+			if (!config->readBoolEntry("WarnOnUnencryptedForm", true)) {
+				config->deleteEntry("WarnOnUnencryptedForm");
+				config->sync();
 				kss.setWarnOnUnencrypted(false);
 				kss.save();
 			}
