@@ -20,4 +20,4 @@ TODO
 HOW TO PROCEED
 ==============
 
-Implement the LAUCNHER_EXT_EXEC command (See klauncher_cmds.h)
+Implement the LAUNCHER_EXT_EXEC command (See klauncher_cmds.h)
