@@ -29,6 +29,15 @@
 #include <qregexp.h>
 #include <cups/cups.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_CUPS_NO_PWD_CACHE
+#include <qcstring.h>
+static QCString cups_authstring = "";
+#endif
+
 void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::null)
 {
 	kdDebug(500) << "==========" << endl;
@@ -300,12 +309,19 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 		return false;
 	}
 
+#ifdef HAVE_CUPS_NO_PWD_CACHE
+	strncpy( HTTP->authstring, cups_authstring.data(), HTTP_MAX_VALUE );
+#endif
+
 	if (dump_ > 0)
 	{
 		dumpRequest(request_, false, "Request to "+myHost+":"+QString::number(myPort));
 	}
 
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
+#ifdef HAVE_CUPS_NO_PWD_CACHE
+	cups_authstring = HTTP->authstring;
+#endif
 	httpClose(HTTP);
 
 	if (dump_ > 1)
