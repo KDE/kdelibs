@@ -1101,7 +1101,7 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
     fmt.replace(QRegExp(QString::fromLatin1(".%S")), QString::null);
 
   int hour = -1, minute = -1, second = seconds ? -1 : 0; // don't require seconds
-  bool _12h = false;
+  bool g_12h = false;
   bool pm = false;
   uint strpos = 0;
   uint fmtpos = 0;
@@ -1149,7 +1149,7 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
 
     case 'k':
     case 'H':
-      _12h = false;
+      g_12h = false;
       hour = readInt(str, strpos);
       if (hour < 0 || hour > 23)
 	goto error;
@@ -1158,7 +1158,7 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
 
     case 'l':
     case 'I':
-      _12h = true;
+      g_12h = true;
       hour = readInt(str, strpos);
       if (hour < 1 || hour > 12)
 	goto error;
@@ -1180,7 +1180,7 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
       break;
     }
   }
-  if (_12h)
+  if (g_12h)
     {
       hour %= 12;
       if (pm) hour += 12;
