@@ -19,7 +19,7 @@
 #ifndef __KOPENSSLPROXY_H 
 #define __KOPENSSLPROXY_H
 
-#define KOSSL KOpenSSLProxy;
+#define KOSSL KOpenSSLProxy
 class KOpenSSLProxyPrivate;
 
 #include <config.h>
@@ -61,6 +61,11 @@ public:
     *   SSL_free - free an allocated SSL structure
     */
    void SSL_free(SSL *ssl);
+
+   /*
+    *   SSL_shutdown - shutdown an allocated SSL connection
+    */
+   int SSL_shutdown(SSL *ssl);
 
    /*
     *   SSL_CTX_new - create a new SSL_CTX object as framework for TLS/SSL enabled functions
@@ -105,14 +110,70 @@ public:
 
    /*
     *   SSL_set_options - manipulate SSL engine options
+    *   Note: These are all mapped to SSL_ctrl so call them as the comment
+    *         specifies but know that the use SSL_ctrl
     */
-   //long SSL_set_options(SSL *ssl, long options);
+   /* long SSL_set_options(SSL *ssl, long options); */
+   long    SSL_ctrl(SSL *ssl,int cmd, long larg, char *parg);
 
    /*
-    *   
+    *   RAND_egd - set the path to the EGD
     */
+   int RAND_egd(const char *path);
 
 
+   /*
+    *   TLSv1_client_method - return a TLSv1 client method object
+    */
+   SSL_METHOD *TLSv1_client_method();
+
+
+   /*
+    *   SSLv2_client_method - return a SSLv2 client method object
+    */
+   SSL_METHOD *SSLv2_client_method();
+
+
+   /*
+    *   SSLv3_client_method - return a SSLv3 client method object
+    */
+   SSL_METHOD *SSLv3_client_method();
+
+
+   /*
+    *   SSLv23_client_method - return a SSLv23 client method object
+    */
+   SSL_METHOD *SSLv23_client_method();
+
+
+   /*
+    *   SSL_get_peer_certificate - return the peer's certificate
+    */
+   X509 *SSL_get_peer_certificate(SSL *s);
+
+
+   /*
+    *   SSL_CIPHER_get_bits - get the number of bits in this cipher
+    */
+   int SSL_CIPHER_get_bits(SSL_CIPHER *c,int *alg_bits);
+
+
+   /*
+    *   SSL_CIPHER_get_version - get the version of this cipher
+    */
+   char *SSL_CIPHER_get_version(SSL_CIPHER *c);
+
+
+   /*
+    *   SSL_CIPHER_get_name - get the name of this cipher
+    */
+   const char *SSL_CIPHER_get_name(SSL_CIPHER *c);
+
+
+   /*
+    *   SSL_CIPHER_description - get the description of this cipher
+    */
+   char *SSL_CIPHER_description(SSL_CIPHER *,char *buf,int size);
 
 #endif
 
@@ -122,6 +183,7 @@ private:
    KOpenSSLProxyPrivate *d;
 
    KLibrary *_sslLib;
+   KLibrary *_cryptoLib;
    static KOpenSSLProxy *_me;
 
    bool _ok;

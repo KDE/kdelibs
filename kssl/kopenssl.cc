@@ -37,6 +37,7 @@ static int (*K_SSL_read)        (SSL *ssl, void *buf, int num) = NULL;
 static int (*K_SSL_write)       (SSL *ssl, const void *buf, int num) = NULL;
 static SSL *(*K_SSL_new)        (SSL_CTX *ctx) = NULL;
 static void (*K_SSL_free)       (SSL *ssl) = NULL;
+static int (*K_SSL_shutdown)    (SSL *ssl) = NULL;
 static SSL_CTX *(*K_SSL_CTX_new)(SSL_METHOD *method) = NULL;
 static void (*K_SSL_CTX_free)   (SSL_CTX *ctx) = NULL;
 static int (*K_SSL_set_fd)      (SSL *ssl, int fd) = NULL;
@@ -46,6 +47,17 @@ static void (*K_SSL_CTX_set_verify)(SSL_CTX *ctx, int mode,
                          int (*verify_callback)(int, X509_STORE_CTX *)) = NULL;
 static int (*K_SSL_CTX_use_certificate)(SSL_CTX *ctx, X509 *x) = NULL;
 static SSL_CIPHER *(*K_SSL_get_current_cipher)(SSL *ssl) = NULL;
+static long (*K_SSL_ctrl)      (SSL *ssl,int cmd, long larg, char *parg) = NULL;
+static int (*K_RAND_egd)        (const char *path) = NULL;
+static SSL_METHOD * (*K_TLSv1_client_method) () = NULL;
+static SSL_METHOD * (*K_SSLv2_client_method) () = NULL;
+static SSL_METHOD * (*K_SSLv3_client_method) () = NULL;
+static SSL_METHOD * (*K_SSLv23_client_method) () = NULL;
+static X509 * (*K_SSL_get_peer_certificate) (SSL *) = NULL;
+static int (*K_SSL_CIPHER_get_bits) (SSL_CIPHER *,int *) = NULL;
+static char * (*K_SSL_CIPHER_get_version) (SSL_CIPHER *) = NULL;
+static const char * (*K_SSL_CIPHER_get_name) (SSL_CIPHER *) = NULL;
+static char * (*K_SSL_CIPHER_description) (SSL_CIPHER *, char *, int) = NULL;
 };
 #endif
 
@@ -54,29 +66,55 @@ KOpenSSLProxy::KOpenSSLProxy() {
 KLibLoader *ll = KLibLoader::self();
 _ok = false;
 
-KLibrary *sslLib;
+   _sslLib = ll->library("/usr/lib/libssl.so");
+   _cryptoLib = ll->library("/usr/lib/libcrypto.so");
 
-   sslLib = ll->library("/usr/lib/libssl.so");
-
-   if (sslLib) {
+   if (_sslLib) {
       // stand back from your monitor and look at this.  it's fun! :)
-      K_SSL_connect = (int (*)(SSL *)) sslLib->symbol("SSL_connect");
-      K_SSL_read = (int (*)(SSL *, void *, int)) sslLib->symbol("SSL_read");
+      K_SSL_connect = (int (*)(SSL *)) _sslLib->symbol("SSL_connect");
+      K_SSL_read = (int (*)(SSL *, void *, int)) _sslLib->symbol("SSL_read");
       K_SSL_write = (int (*)(SSL *, const void *, int)) 
-                            sslLib->symbol("SSL_write");
-      K_SSL_new = (SSL* (*)(SSL_CTX *)) sslLib->symbol("SSL_new");
-      K_SSL_free = (void (*)(SSL *)) sslLib->symbol("SSL_free");
-      K_SSL_CTX_new = (SSL_CTX* (*)(SSL_METHOD*)) sslLib->symbol("SSL_CTX_new");
-      K_SSL_CTX_free = (void (*)(SSL_CTX*)) sslLib->symbol("SSL_CTX_free");
-      K_SSL_set_fd = (int (*)(SSL *, int)) sslLib->symbol("SSL_set_fd");
-      K_SSL_pending = (int (*)(SSL *)) sslLib->symbol("SSL_pending");
+                            _sslLib->symbol("SSL_write");
+      K_SSL_new = (SSL* (*)(SSL_CTX *)) _sslLib->symbol("SSL_new");
+      K_SSL_free = (void (*)(SSL *)) _sslLib->symbol("SSL_free");
+      K_SSL_shutdown = (int (*)(SSL *)) _sslLib->symbol("SSL_shutdown");
+      K_SSL_CTX_new = (SSL_CTX* (*)(SSL_METHOD*)) _sslLib->symbol("SSL_CTX_new");
+      K_SSL_CTX_free = (void (*)(SSL_CTX*)) _sslLib->symbol("SSL_CTX_free");
+      K_SSL_set_fd = (int (*)(SSL *, int)) _sslLib->symbol("SSL_set_fd");
+      K_SSL_pending = (int (*)(SSL *)) _sslLib->symbol("SSL_pending");
       K_SSL_CTX_set_cipher_list = (int (*)(SSL_CTX *, const char *))
-                                  sslLib->symbol("SSL_CTX_set_cipher_list");
-      K_SSL_CTX_set_verify = (void (*)(SSL_CTX*, int, int (*)(int, X509_STORE_CTX*))) sslLib->symbol("SSL_CTX_set_verify");
+                                  _sslLib->symbol("SSL_CTX_set_cipher_list");
+      K_SSL_CTX_set_verify = (void (*)(SSL_CTX*, int, int (*)(int, X509_STORE_CTX*))) _sslLib->symbol("SSL_CTX_set_verify");
       K_SSL_CTX_use_certificate = (int (*)(SSL_CTX*, X509*)) 
-                                  sslLib->symbol("SSL_CTX_use_certificate");
+                                  _sslLib->symbol("SSL_CTX_use_certificate");
       K_SSL_get_current_cipher = (SSL_CIPHER *(*)(SSL *)) 
-                                  sslLib->symbol("SSL_get_current_cipher");
+                                  _sslLib->symbol("SSL_get_current_cipher");
+      K_SSL_ctrl = (long (*)(SSL * ,int, long, char *))
+                                  _sslLib->symbol("SSL_ctrl");
+      K_TLSv1_client_method = (SSL_METHOD *(*)()) _sslLib->symbol("TLSv1_client_method");
+      K_SSLv2_client_method = (SSL_METHOD *(*)()) _sslLib->symbol("SSLv2_client_method");
+      K_SSLv3_client_method = (SSL_METHOD *(*)()) _sslLib->symbol("SSLv3_client_method");
+      K_SSLv23_client_method = (SSL_METHOD *(*)()) _sslLib->symbol("SSLv23_client_method");
+      K_SSL_get_peer_certificate = (X509 *(*)(SSL *)) _sslLib->symbol("SSL_get_peer_certificate");
+      K_SSL_CIPHER_get_bits = (int (*)(SSL_CIPHER *,int *)) _sslLib->symbol("SSL_CIPHER_get_bits");
+      K_SSL_CIPHER_get_version = (char * (*)(SSL_CIPHER *)) _sslLib->symbol("SSL_CIPHER_get_version");
+      K_SSL_CIPHER_get_name = (const char * (*)(SSL_CIPHER *)) _sslLib->symbol("SSL_CIPHER_get_name");
+      K_SSL_CIPHER_description = (char * (*)(SSL_CIPHER *, char *, int)) _sslLib->symbol("SSL_CIPHER_description");
+
+      void *x;
+      x = _sslLib->symbol("SSL_library_init");
+      if (x) ((int (*)())x)();
+      _sslLib->symbol("OpenSSL_add_all_algorithms");
+      if (x) ((void (*)())x)();
+      _sslLib->symbol("OpenSSL_add_all_ciphers");
+      if (x) ((void (*)())x)();
+      _sslLib->symbol("OpenSSL_add_all_digests");
+      if (x) ((void (*)())x)();
+   }
+
+
+   if (_cryptoLib) {
+      K_RAND_egd = (int (*)(const char *)) _cryptoLib->symbol("RAND_egd");
    }
 }
 
@@ -137,6 +175,12 @@ void KOpenSSLProxy::SSL_free(SSL *ssl) {
 }
 
 
+int KOpenSSLProxy::SSL_shutdown(SSL *ssl) {
+   if (K_SSL_shutdown) return (K_SSL_shutdown)(ssl);
+   return -1;
+}
+
+
 SSL_CTX *KOpenSSLProxy::SSL_CTX_new(SSL_METHOD *method) {
    if (K_SSL_CTX_new) return (K_SSL_CTX_new)(method);
    return NULL;
@@ -184,7 +228,70 @@ SSL_CIPHER *KOpenSSLProxy::SSL_get_current_cipher(SSL *ssl) {
 }
 
 
+long KOpenSSLProxy::SSL_ctrl(SSL *ssl,int cmd, long larg, char *parg) {
+   if (K_SSL_ctrl) return (K_SSL_ctrl)(ssl, cmd, larg, parg);
+   return -1;
+}
 
+
+int KOpenSSLProxy::RAND_egd(const char *path) {
+   if (K_RAND_egd) return (K_RAND_egd)(path);
+   return -1;
+}
+
+
+SSL_METHOD *KOpenSSLProxy::TLSv1_client_method() {
+   if (K_TLSv1_client_method) return (K_TLSv1_client_method)();
+   return NULL;
+}
+
+
+SSL_METHOD *KOpenSSLProxy::SSLv2_client_method() {
+   if (K_SSLv2_client_method) return (K_SSLv2_client_method)();
+   return NULL;
+}
+
+
+SSL_METHOD *KOpenSSLProxy::SSLv3_client_method() {
+   if (K_SSLv3_client_method) return (K_SSLv3_client_method)();
+   return NULL;
+}
+
+
+SSL_METHOD *KOpenSSLProxy::SSLv23_client_method() {
+   if (K_SSLv23_client_method) return (K_SSLv23_client_method)();
+   return NULL;
+}
+
+
+X509 *KOpenSSLProxy::SSL_get_peer_certificate(SSL *s) {
+   if (K_SSL_get_peer_certificate) return (K_SSL_get_peer_certificate)(s);
+   return NULL;
+}
+
+
+int KOpenSSLProxy::SSL_CIPHER_get_bits(SSL_CIPHER *c,int *alg_bits) {
+   if (K_SSL_CIPHER_get_bits) return (K_SSL_CIPHER_get_bits)(c, alg_bits);
+   return -1;
+}
+
+
+char * KOpenSSLProxy::SSL_CIPHER_get_version(SSL_CIPHER *c) {
+   if (K_SSL_CIPHER_get_version) return (K_SSL_CIPHER_get_version)(c);
+   return NULL;
+}
+
+
+const char * KOpenSSLProxy::SSL_CIPHER_get_name(SSL_CIPHER *c) {
+   if (K_SSL_CIPHER_get_name) return (K_SSL_CIPHER_get_name)(c);
+   return NULL;
+}
+
+
+char * KOpenSSLProxy::SSL_CIPHER_description(SSL_CIPHER *c,char *buf,int size) {
+   if (K_SSL_CIPHER_description) return (K_SSL_CIPHER_description)(c,buf,size);
+   return NULL;
+}
 
 
 
