@@ -154,7 +154,7 @@ binary-arch:  build install
 	mv debian/kdelibs3/usr/lib/libkssl.so.2.0.0 debian/kdelibs3/usr/lib/libkssl-nossl.so.2.0.0
 	mv debian/kdelibs3/usr/lib/libkssl.la debian/kdelibs3/usr/lib/libkssl-nossl.la
 	dh_installchangelogs -a 
-	#dh_strip -a
+	dh_strip -a
 	for i in `find debian/ -type l -name "common"`; do \
 		rm $$i; \
 		ln -s ../common $$i ;\
