@@ -479,13 +479,15 @@ void RenderPartObject::close()
       }	
       if((url.isEmpty() || url.isNull())) {
 	  // look for a SRC attribute in the params
-          NodeImpl *child = m_obj->firstChild();
+          NodeImpl *child = m_obj->firstChild();	  
 	  while ( child ) {
 	      if ( child->id() == ID_PARAM ) {
 		  HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
-		  if ( p->name().lower() == "src" )
+		  if ( p->name().lower() == "src" || p->name().lower() == "movie" ) {
 		      url = p->value();
+		      break;
+		  }
 	      }
 	      child = child->nextSibling();
 	  }
