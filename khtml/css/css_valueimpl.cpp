@@ -294,7 +294,6 @@ bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
-    removeProperty(id, nonCSSHint );
 
     CSSParser parser( strictParsing );
     bool success = parser.parseValue( this, id, value, important, nonCSSHint );

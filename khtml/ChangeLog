@@ -1,3 +1,9 @@
+2003-11-28  Harri Porten  <porten@kde.org>
+
+	* css/css_valueimpl.cpp (setProperty): remove superfluous
+	removeProperty() call. It will be done later in CSSParser. After
+	after the value has been recognized as valid.
+
 2003-11-28  Germain Garand  <germain@ebooksfrance.org>
 
         * html/html_headimpl.cpp (class HTMLLinkElementImpl): grant to alternate sheets
