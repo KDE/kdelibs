@@ -66,7 +66,7 @@ static void createAtoms() {
 
 	const int max = 20;
 	Atom* atoms[max];
-	char* names[max];
+	const char* names[max];
 	Atom atoms_return[max];
 	int n = 0;
 	
@@ -88,7 +88,8 @@ static void createAtoms() {
 	atoms[n] = &net_kde_docking_window_for;
 	names[n++] = "_NET_KDE_DOCKING_WINDOW_FOR";
 
-	XInternAtoms( qt_xdisplay(), names, n, FALSE, atoms_return );
+	// we need a const_cast for the shitty X API
+	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, FALSE, atoms_return );
 	for (int i = 0; i < n; i++ )
 	    *atoms[i] = atoms_return[i];
 
@@ -282,8 +283,8 @@ public:
 		    None, c.handle(), CurrentTime );
       qApp->enter_loop();
     }
-    
-    
+
+
     bool x11Event( XEvent * ev)
     {
 	if ( ev->type == ButtonPress && ev->xbutton.button == Button1 ) {
@@ -293,7 +294,7 @@ public:
 	    int root_x, root_y, lx, ly;
 	    uint state;
 	    Window w;
-	    do { 
+	    do {
 		w = child;
 		XQueryPointer( qt_xdisplay(), w, &root, &child,
 			       &root_x, &root_y, &lx, &ly, &state );

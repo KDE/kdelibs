@@ -643,7 +643,7 @@ bool KTMainWindow::event(QEvent* ev)
     return QWidget::event(ev);
 }
 
-void KTMainWindow::resizeEvent(QResizeEvent* ev)
+void KTMainWindow::resizeEvent(QResizeEvent* )
 {
 	/* This is an ugly hack to work around a Qt layout management
 	 * problem.  If the minimum or maximum size changes during the
@@ -807,7 +807,7 @@ QPopupMenu* KTMainWindow::helpMenu( const QString &aboutAppText,
   {
     mHelpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
     if( mHelpMenu == 0 ) { return( 0 ); }
-    connect( mHelpMenu, SIGNAL(showAboutApplication()), 
+    connect( mHelpMenu, SIGNAL(showAboutApplication()),
 	     this, SLOT(showAboutApplication()));
   }
 
