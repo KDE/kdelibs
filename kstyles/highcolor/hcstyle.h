@@ -13,7 +13,10 @@
 #include <limits.h>
 
 /*-
- * HCStyle (C)2000 Daniel M. Duley <mosfet@kde.org>
+ * HCStyle (C) 2000 Daniel M. Duley  <mosfet@kde.org>
+ *         (C) 2000 Dirk Mueller     <mueller@kde.org>
+ *         (C) 2001 Martijn Klingens <mklingens@yahoo.com>
+ *
  * Animated menu code based on code by Mario Weilguni <mweilguni@kde.org>
  *
  * All rights reserved.

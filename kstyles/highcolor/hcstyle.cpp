@@ -1,6 +1,8 @@
 /*-
- * HCStyle (C)2000 Daniel M. Duley <mosfet@kde.org>
- *         (C)2000 Dirk Mueller <mueller@kde.org>
+ * HCStyle (C) 2000 Daniel M. Duley  <mosfet@kde.org>
+ *         (C) 2000 Dirk Mueller     <mueller@kde.org>
+ *         (C) 2001 Martijn Klingens <mklingens@yahoo.com>
+ *
  * Animated menu code based on code by Mario Weilguni <mweilguni@kde.org>
  *
  * All rights reserved.
@@ -687,77 +689,112 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     if (sliderStart > sliderMax)
         sliderStart = sliderMax;
 
-    bool horiz = sb->orientation() == QScrollBar::Horizontal;
-    QColorGroup g = sb->colorGroup();
-    QRect addB, subHC, subB;
-    QRect addPageR, subPageR, sliderR;
-    int addX, addY, subX, subY;
-    int len = horiz ? sb->width() : sb->height();
-    int extent = horiz ? sb->height() : sb->width();
+    bool	horiz = sb->orientation() == QScrollBar::Horizontal;
+    
+    QColorGroup	g = sb->colorGroup();
+    QRect	addB, subHC, subB;
+    QRect       addPageR, subPageR, sliderR;
+    int		addX, addY, subX, subY;
+    int		len, extent;
+    uint	numButtons = 3;
 
-    if (horiz) {
+    if ( horiz )
+    {
+	len    = sb->width();
+	extent = sb->height();
+	
         subY = addY = ( extent - buttonDim ) / 2;
         subX = 0;
         addX = len - buttonDim;
     }
-    else {
+    else
+    {
+	len    = sb->height();
+	extent = sb->width();
+	
         subX = addX = ( extent - buttonDim ) / 2;
         subY = 0;
         addY = len - buttonDim;
     }
-    subB.setRect( subX,subY,buttonDim,buttonDim );
-    addB.setRect( addX,addY,buttonDim,buttonDim );
-    if(horiz)
-        subHC.setRect(addX-buttonDim,addY,buttonDim,buttonDim );
+
+    // Calc number of used buttons:
+    if( len < buttonDim * 4 )
+	numButtons = 2;
+
+    subB.setRect( subX, subY, buttonDim, buttonDim );
+    addB.setRect( addX, addY, buttonDim, buttonDim );
+    if( horiz )
+        subHC.setRect( addX - buttonDim, addY, buttonDim, buttonDim );
     else
-        subHC.setRect(addX,addY-buttonDim,buttonDim,buttonDim );
+        subHC.setRect( addX, addY - buttonDim, buttonDim, buttonDim );
 
     int sliderEnd = sliderStart + sliderLength;
     int sliderW = extent;
 
-    if (horiz) {
+    // Calculate sizes of the actual scrollbar parts
+    if ( horiz )
+    {
         subPageR.setRect( subB.right() + 1, 0,
                           sliderStart - subB.right() - 1 , sliderW );
-        addPageR.setRect( sliderEnd, 0, addX - sliderEnd - buttonDim, sliderW );
+        addPageR.setRect( sliderEnd, 0, addX - sliderEnd -
+			  ( ( numButtons == 3 ) ? buttonDim : 0 ), sliderW );
         sliderR .setRect( sliderStart, 0, sliderLength, sliderW );
     }
-    else {
+    else
+    {
         subPageR.setRect( 0, subB.bottom() + 1, sliderW,
                           sliderStart - subB.bottom() - 1 );
-        addPageR.setRect( 0, sliderEnd, sliderW, addY - buttonDim - sliderEnd);
+	addPageR.setRect( 0, sliderEnd, sliderW, addY - sliderEnd -
+			  ( ( numButtons == 3 ) ? buttonDim : 0 ) );
         sliderR .setRect( 0, sliderStart, sliderW, sliderLength );
     }
 
     bool maxed = sb->maxValue() == sb->minValue();
 
-    if ( controls & AddLine ) {
+    if ( controls & AddLine )
+    {
+	// Draw scroll down arrow
         drawSBButton(p, addB, g, activeControl == AddLine);
         drawArrow( p, horiz ? RightArrow : DownArrow,
                    false, addB.x()+4, addB.y()+4,
                    addB.width()-8, addB.height()-8, g, !maxed);
     }
-    if ( controls & SubLine ) {
-        drawSBButton(p, subB, g, activeControl == SubLine);
-        drawArrow( p, horiz ? LeftArrow : UpArrow,
-                   false, subB.x()+4, subB.y()+4,
-                   subB.width()-8, subB.height()-8, g, !maxed);
-        drawSBButton(p, subHC, g, activeControl == SubLine);
-        drawArrow( p, horiz ? LeftArrow : UpArrow,
-                   false, subHC.x()+4, subHC.y()+4,
-                   subHC.width()-8, subHC.height()-8, g, !maxed);
+    
+    if ( controls & SubLine )
+    {
+	// Draw scroll up buttons
+	bool isSubLine = activeControl == SubLine;
+	Qt::ArrowType arrowType = horiz ? LeftArrow : UpArrow;
+	
+        drawSBButton(p, subB, g, isSubLine);
+        drawArrow( p, arrowType,
+                   false, subB.x() + 4, subB.y() + 4,
+                   subB.width() - 8, subB.height() - 8, g, !maxed );
+		   
+	if( numButtons == 3 )
+	{
+            drawSBButton( p, subHC, g, isSubLine );
+	    drawArrow( p, arrowType,
+	               false, subHC.x() + 4, subHC.y() + 4,
+		       subHC.width() - 8, subHC.height() - 8, g, !maxed );
+	}
     }
+
     GradientSet *scrollBarBg = NULL;
-    if(highcolor && (controls & AddPage || controls & SubPage)){
-        scrollBarBg = gDict.find(g.background().rgb());
-        if(!scrollBarBg){
-            scrollBarBg = new GradientSet(g.background());
-            gDict.insert(g.background().rgb(), scrollBarBg);
+    if( highcolor && ( controls & AddPage || controls & SubPage ) )
+    {
+        scrollBarBg = gDict.find( g.background().rgb() );
+        if( !scrollBarBg )
+	{
+            scrollBarBg = new GradientSet( g.background() );
+            gDict.insert( g.background().rgb(), scrollBarBg );
         }
     }
 
     if(controls & AddPage){
         if(addPageR.width()){
             p->setPen(g.dark());
+	    // Draw vertical scrollbar part below the slider
             if(horiz){
                 if(highcolor){
                     KPixmap *vMed = scrollBarBg->gradient(VMed);
@@ -785,7 +822,7 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             }
             else{
                 if(highcolor){
-                    KPixmap *hMed = scrollBarBg->gradient(HMed);
+		    KPixmap *hMed = scrollBarBg->gradient(HMed);
                     p->drawTiledPixmap(addPageR.x()+1, addPageR.y(),
                                        addPageR.width()-2, addPageR.height(),
                                        *hMed, activeControl==AddPage ? 0 :
@@ -814,6 +851,7 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     if(controls & SubPage){
         if(subPageR.height()){
             p->setPen(g.dark());
+	    // Draw vertical scrollbar part above the slider
             if(horiz){
                 if(highcolor){
                     KPixmap *vMed = scrollBarBg->gradient(VMed);
@@ -871,10 +909,16 @@ void HCStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             }
         }
     }
-    if ( controls & Slider ) {
-        drawSBButton(p, sliderR, g, activeControl == Slider, false);
-        g.setColor(QColorGroup::Dark, g.mid());
-        drawSBDeco(p, sliderR, g, horiz);
+    if ( controls & Slider )
+    {
+	// Draw slider, but only if the slider is at least 4 pixels wide
+	// and 4 pixels heigh!
+	if( sliderR.width() > 4 && sliderR.height() > 4 )
+	{
+	    drawSBButton(p, sliderR, g, activeControl == Slider, false);
+	    g.setColor(QColorGroup::Dark, g.mid());
+	    drawSBDeco(p, sliderR, g, horiz);
+	}
     }
 }
 
@@ -955,18 +999,21 @@ void HCStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
 {
 
     int maxLength;
-    int b = 0;
     bool horiz = sb->orientation() == QScrollBar::Horizontal;
     int length = horiz ? sb->width()  : sb->height();
     int extent = horiz ? sb->height() : sb->width();
 
-    if ( length > ( extent - b*2 - 1 )*2 + b*2  )
-	buttonDim = extent - b*2;
+    if( length > ( extent - 1 ) * 2 )
+	buttonDim = extent;
     else
-	buttonDim = ( length - b*2 )/2 - 1;
+	buttonDim = length / 2 - 1;
 
-    sliderMin = b + buttonDim;
-    maxLength  = length - b*2 - buttonDim*3;
+    sliderMin = buttonDim;
+
+    uint numButtons = 3;   // Two scroll up/left buttons when possible...
+    if( length < buttonDim * 4 )	// ... but otherwise only two!
+	numButtons = 2;
+    maxLength = length - buttonDim * numButtons;
 
     if ( sb->maxValue() == sb->minValue() ) {
 	sliderLength = maxLength;
@@ -980,7 +1027,6 @@ void HCStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
 	    sliderLength = maxLength;
     }
     sliderMax = sliderMin + maxLength - sliderLength;
-
 }
 
 QStyle::ScrollControl HCStyle::scrollBarPointOver(const QScrollBar *sb,
@@ -991,6 +1037,18 @@ QStyle::ScrollControl HCStyle::scrollBarPointOver(const QScrollBar *sb,
         return NoScroll;
     int sliderMin, sliderMax, sliderLength, buttonDim, pos;
     scrollBarMetrics( sb, sliderMin, sliderMax, sliderLength, buttonDim );
+
+    // Calc number of used buttons:
+    uint len, numButtons;
+    if( sb->orientation() == QScrollBar::Horizontal )
+	len    = sb->width();
+    else
+	len    = sb->height();
+    if( len < buttonDim * 4 )
+	numButtons = 2;
+    else
+	numButtons = 3;
+
     pos = (sb->orientation() == QScrollBar::Horizontal)? p.x() : p.y();
     if ( pos < sliderMin )
 	return SubLine;
@@ -1000,7 +1058,9 @@ QStyle::ScrollControl HCStyle::scrollBarPointOver(const QScrollBar *sb,
         return Slider;
     if ( pos < sliderMax + sliderLength)
         return AddPage;
-    if(pos > sliderMax + sliderLength + 16)
+    if( pos > sliderMax + sliderLength + 16 )
+        return AddLine;
+    if( numButtons == 2 && pos > sliderMax + sliderLength )
         return AddLine;
 
     return SubLine;
