@@ -129,7 +129,6 @@ void RenderFrameSet::layout( )
                  remainingHeight -= m_rowHeight[i];
 		if( m_rows->at(i)->type == Percent)
 		    rowsPercent++;
-                 remainingHeight -= m_rowHeight[i];
 		if( m_rows->at(i)->type == Percent)
 		    rowsPercent++;
             }
