@@ -389,7 +389,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
     int ret = KMessageBox::questionYesNo( parentWidget(), QString("<qt>")+message+QString("</qt>") );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )
-        const_cast<KFind*>(this)->m_options &= ~KFindDialog::FromCursor; // clear FromCursor option
+        m_options &= ~KFindDialog::FromCursor; // clear FromCursor option
     return yes;
 }
 
