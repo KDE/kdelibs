@@ -308,8 +308,8 @@ KSpell::setUpDialog( bool reallyuseprogressbar )
     return;
 
   //Set up the dialog box
-  ksdlg= new KSpellDlg( parent, "dialog",
-                        progressbar && reallyuseprogressbar, modaldlg );
+  ksdlg = new KSpellDlg( parent, "dialog",
+                         progressbar && reallyuseprogressbar, modaldlg );
   ksdlg->setCaption( caption );
 
   connect( ksdlg, SIGNAL(command(int)),
@@ -421,7 +421,6 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
   if ( _usedialog )
   {
     emitProgress();
-    ksdlg->show();
   }
   else
     ksdlg->hide();
@@ -450,7 +449,6 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
     if ( _usedialog )
     {
       emitProgress();
-      ksdlg->show();
     }
     else
       ksdlg->hide();
@@ -908,7 +906,6 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
   if ( usedialog )
   {
     emitProgress();
-    ksdlg->show();
   }
   else
     ksdlg->hide();
@@ -1169,12 +1166,14 @@ KSpellConfig KSpell::ksConfig() const
   return *ksconfig;
 }
 
-void KSpell::cleanUp ()
+void KSpell::cleanUp()
 {
-  if (m_status == Cleaning) return; // Ignore
-  if (m_status == Running)
+  if ( m_status == Cleaning )
+    return; // Ignore
+
+  if ( m_status == Running )
   {
-    if (personaldict)
+    if ( personaldict )
       writePersonalDictionary();
     m_status = Cleaning;
   }
@@ -1185,24 +1184,24 @@ void KSpell::ispellExit( KProcess* )
 {
   kdDebug() << "KSpell::ispellExit() " << m_status << endl;
 
-  if ((m_status == Starting) && (trystart<maxtrystart))
+  if ( (m_status == Starting) && (trystart < maxtrystart) )
   {
     trystart++;
     startIspell();
     return;
   }
 
-  if (m_status == Starting)
+  if ( m_status == Starting )
      m_status = Error;
   else if (m_status == Cleaning)
      m_status = d->m_bNoMisspellingsEncountered ? FinishedNoMisspellingsEncountered : Finished;
-  else if (m_status == Running)
+  else if ( m_status == Running )
      m_status = Crashed;
   else // Error, Finished, Crashed
      return; // Dead already
 
   kdDebug(750) << "Death" << endl;
-  QTimer::singleShot( 0, this, SLOT(emitDeath()));
+  QTimer::singleShot( 0, this, SLOT(emitDeath()) );
 }
 
 // This is always called from the event loop to make
@@ -1212,7 +1211,7 @@ void KSpell::emitDeath()
 {
   bool deleteMe = autoDelete; // Can't access object after next call!
   emit death();
-  if (deleteMe)
+  if ( deleteMe )
     deleteLater();
 }
 
@@ -1225,18 +1224,18 @@ void KSpell::emitProgress ()
 {
   uint nextprog = (uint) (100.*lastpos/(double)totalpos);
 
-  if (nextprog>=curprog)
+  if ( nextprog >= curprog )
   {
-    curprog=nextprog;
-    emit progress (curprog);
+    curprog = nextprog;
+    emit progress( curprog );
   }
 }
 
-void KSpell::moveDlg (int x, int y)
+void KSpell::moveDlg( int x, int y )
 {
-  QPoint pt (x,y), pt2;
-  pt2=parent->mapToGlobal (pt);
-  ksdlg->move (pt2.x(),pt2.y());
+  QPoint pt( x,y ), pt2;
+  pt2 = parent->mapToGlobal( pt );
+  ksdlg->move( pt2.x(),pt2.y() );
 }
 
 void KSpell::setIgnoreUpperWords(bool _ignore)
