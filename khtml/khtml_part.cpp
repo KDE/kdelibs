@@ -2284,7 +2284,20 @@ QString KHTMLPart::encoding() const
     if(d->m_decoder && d->m_decoder->encoding())
         return QString(d->m_decoder->encoding());
 
-    return(settings()->encoding());
+    return defaultEncoding();
+}
+
+QString KHTMLPart::defaultEncoding() const
+{
+  QString encoding = settings()->encoding();
+  if ( !encoding.isEmpty() )
+    return encoding;
+  // HTTP requires the default encoding to be latin1, when neither
+  // the user nor the page requested a particular encoding.
+  if ( url().protocol().startsWith( "http" ) )
+    return "iso-8859-1";
+  else
+    return KGlobal::locale()->encoding();
 }
 
 void KHTMLPart::setUserStyleSheet(const KURL &url)
@@ -6467,7 +6480,7 @@ khtml::Decoder *KHTMLPart::createDecoder()
   if( !d->m_encoding.isNull() )
     dec->setEncoding( d->m_encoding.latin1(), true );
   else
-    dec->setEncoding( settings()->encoding().latin1(), d->m_haveEncoding );
+    dec->setEncoding( defaultEncoding().latin1(), d->m_haveEncoding );
 
   dec->setAutoDetectLanguage( d->m_autoDetectLanguage );
   return dec;

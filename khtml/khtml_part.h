@@ -225,7 +225,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
   Q_PROPERTY( QCString dcopObjectId READ dcopObjectId )
   Q_PROPERTY( bool modified READ isModified )
-  
+
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 
@@ -867,7 +867,7 @@ public:
   KHTMLPart *findFrame( const QString &f );
 
   /**
-   * Recursively finds the part containing the frame with name @p f 
+   * Recursively finds the part containing the frame with name @p f
    * and checks if it is accessible by @p callingPart
    * Returns 0L if no suitable frame can't be found.
    * Returns parent part if a suitable frame was found and
@@ -988,7 +988,7 @@ public:
   /**
    * Checks whether the page contains unsubmitted form changes.
    *
-   * @return true if form changes exist 
+   * @return true if form changes exist
    * @since 3.3
    */
   bool isModified() const;
@@ -1559,6 +1559,7 @@ private:
    */
   bool isExtendingSelection() const;
   khtml::Decoder *createDecoder();
+  QString defaultEncoding() const;
 
   /** @internal
    * generic zoom in

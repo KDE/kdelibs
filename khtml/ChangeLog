@@ -1,3 +1,8 @@
+2004-09-11  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (defaultEncoding, encoding, createDecoder): 
+        Make default charset latin1 over HTTP, keep default to locale on other protocols.
+
 2004-09-02  Leo Savernik  <l.savernik@aon.at>
 
 	* html_formimpl.{cpp,h} (HTMLTextAreaElementImpl::value):
