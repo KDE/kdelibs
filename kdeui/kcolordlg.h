@@ -4,6 +4,9 @@
 // Copyright (C) Martin R. Jones 1996
 //
 
+// layout managment added Oct 1997 by Mario Weilguni 
+// <mweilguni@sime.com>
+
 #ifndef __KCOLORDLG_H__
 #define __KCOLORDLG_H__
 
@@ -74,15 +77,15 @@ public:
 
   void setColor( int colNum, const QColor &col );
   QColor color( int indx )
-  {	return colors[indx]; }
+	{	return colors[indx]; }
   int numCells()
-  {	return numRows() * numCols(); }
+	{	return numRows() * numCols(); }
 	
   int getSelected()
-  {	return selected; }
+	{	return selected; }
 
   signals:
-  void colorSelected( int col );
+	void colorSelected( int col );
 
 protected:
   virtual void paintCell( QPainter *painter, int row, int col );
@@ -155,10 +158,10 @@ public:
   QColor color()	{	return selColor; }
   
   /**
-	This is probably the function you are looking for.
-	Just call this to pop up dialog get the selected color.
-	returns result().
-	*/
+	 This is probably the function you are looking for.
+	 Just call this to pop up dialog get the selected color.
+	 returns result().
+  */
   static int getColor( QColor &theColor );
 
  public slots:
@@ -167,9 +170,9 @@ public:
   signals:
  /// Notify when a color is selected.
  /**
-   connect to this to monitor the color as it as selected if you are
-   not running modal.
-   */
+	connect to this to monitor the color as it as selected if you are
+	not running modal.
+ */
  void colorSelected( const QColor &col );
 
  private slots:
@@ -180,6 +183,7 @@ public:
   void slotSysColorSelected( int );
   void slotCustColorSelected( int );
   void slotAddToCustom();
+  void getHelp();
 
 private:
   void readSettings();
@@ -206,28 +210,27 @@ private:
 
 class KColorCombo : public QComboBox
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	KColorCombo( QWidget *parent, const char *name = NULL );
+  KColorCombo( QWidget *parent, const char *name = NULL );
 
-	void setColor( const QColor &col );
+  void setColor( const QColor &col );
 
-public slots:
-	void slotActivated( int index );
-	void slotHighlighted( int index );
+ public slots:
+ void slotActivated( int index );
+  void slotHighlighted( int index );
 
-signals:
-	void activated( const QColor &col );
-	void highlighted( const QColor &col );
+  signals:
+  void activated( const QColor &col );
+  void highlighted( const QColor &col );
 
 protected:
-	virtual void resizeEvent( QResizeEvent *re );
+  virtual void resizeEvent( QResizeEvent *re );
 
 private:
-	void addColors();
-	QColor customColor;
-	QColor color;
+  void addColors();
+  QColor customColor;
+  QColor color;
 };
 
 #endif		// __KCOLORDLG_H__
-

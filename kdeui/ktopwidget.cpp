@@ -616,7 +616,7 @@ bool KTopLevelWidget::readProperties (bool global)
     
     if (global == FALSE) // i.e. if first specific ("file:/usr/local.." than global
     {
-        if (caption() == 0)
+	  //        if (caption() == 0)
             //return FALSE;
         config->setGroup(caption());
         if (config->hasKey("KTWGeometry") == FALSE) // no speciffic, try global
