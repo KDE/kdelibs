@@ -568,89 +568,65 @@ void KHTMLParser::insertText(HTMLString str, const HTMLFont * fp)
     uint i = 0;
     HTMLString remainingStr;
     bool insertSpace = false;
-    bool insertNBSP = false;
     bool insertBlock = false;
+    bool insertNBSP = false;
     
     for(;;)
     {
-        if (str[i] == QChar(0xa0))
-        {
-            // Non-breaking space
-            if (textType == variable)
-            {
-                // We have a non-breaking space in a block of variable text
-                // We need to split the text and insert a seperate
-                // non-breaking space object
-                //str[i] = 0x00; // End of string
-                remainingStr = str + (i+1);
-		str.setLength(i); // truncate here...
-                insertBlock = true; 
-                insertNBSP = true;
-            }
-            else
-            {
-                // We have a non-breaking space: this makes the block fixed.
-                str[i] = 0x20; // Normal space
-                textType = fixed;
-            }
-        }
-        else if (str[i] == QChar(0x20))
-        {
-            // Normal space
-            if (textType == fixed)
-            {
-            	// We have a normal space in a block of fixed text.
-            	// We need to split the text and insert a seperate normal
-            	// space.
-            	//str[i] = 0x00; // End of string
-            	remainingStr = str + (i+1);
-		str.setLength(i);
-            	insertBlock = true;
-            	insertSpace = true;
-            }
-            else
-            {
-            	// We have a normal space: if this is the first character
-            	// we insert a normal space and continue
-            	if (i == 0)
-            	{
-            	    if (str.length() == 1)
-            	    {
-            	    	++str;
-            	    	remainingStr = HTMLString();
-            	    }
-            	    else
-            	    {
-            	        remainingStr = str+1;
-			str.setLength(0);
-            	    }
-                    insertBlock = true; // Block is zero-length, no actual insertion
-            	    insertSpace = true;
-            	}
-            	else if (i == str.length())
-            	{
-            	    // Last character is a space: Insert the block and 
-            	    // a normal space
-            	    remainingStr = HTMLString();
-		    str.setLength(i-1);
-            	    insertBlock = true;
-            	    insertSpace = true;
-            	}
-            	else
-            	{
-            	    textType = variable;
-            	}
-            }
-        } 
-        else if (str[i] == QChar(0x00))
+        if (i == str.length())
         {
             // End of string
             insertBlock = true;
             remainingStr = HTMLString();
         }
+        else if (str[i] == QChar(0xA0))
+        {
+            // We have a NBSP
+            if (str.length() == 1)
+            {
+                ++str;
+            	remainingStr = HTMLString();
+                insertBlock = true; // Block is zero-length, no actual insertion
+                insertNBSP = true;
+            }
+        }
+        else if (str[i] == QChar(0x20))
+        {
+            // We have a normal space: if this is the first character
+            // we insert a normal space and continue
+            if (i == 0)
+            {
+                if (str.length() == 1)
+                {
+                    ++str;
+            	    remainingStr = HTMLString();
+            	}
+            	else
+            	{
+            	    remainingStr = str+1;
+		    str.setLength(0);
+            	}
+                insertBlock = true; // Block is zero-length, no actual insertion
+            	insertSpace = true;
+            }
+            else if (i+1 == str.length())
+            {
+                // Last character is a space: Insert the block and 
+                // a normal space
+                remainingStr = HTMLString();
+	        str.setLength(i);
+                insertBlock = true;
+                insertSpace = true;
+            }
+            else
+            {
+                textType = variable;
+            }
+        } 
         
         if (insertBlock)
         {
+            insertBlock = false;
             if (str.length())
             {
                 if (textType == variable)
@@ -672,6 +648,7 @@ void KHTMLParser::insertText(HTMLString str, const HTMLFont * fp)
             }
             if (insertSpace)
             {
+                insertSpace = false;
                 if ( url.length() || target.length())
                 {
 		    HTMLLinkText *sp = NEW HTMLLinkText( space, fp, painter,
@@ -686,28 +663,27 @@ void KHTMLParser::insertText(HTMLString str, const HTMLFont * fp)
             }
             else if (insertNBSP)
             {
+                insertNBSP = false;
                 if ( url.length() || target.length())
                 {
 		    HTMLLinkText *sp = NEW HTMLLinkText( space, fp, painter,
-			url, target );
+							 url, target );
 		    sp->setSeparator( false );
 		    flow->append( sp );
 		}
                 else
                 {
-                    HTMLHSpace *sp = NEW HTMLHSpace( fp, painter);
-                    sp->setSeparator(false);
+   	            HTMLHSpace *sp =  NEW HTMLHSpace( fp, painter);
+		    sp->setSeparator( false );
    	            flow->append( sp );
    	        }
             }
-            str = remainingStr;
-            if (!str.length())
+            
+            if (!remainingStr.length())
                return; // Finished
+            str = remainingStr;
 	    i = 0;
 	    textType = unknown;
-	    insertBlock = false;
-	    insertSpace = false;
-	    insertNBSP = false;
         }
         else
         {
