@@ -9,7 +9,9 @@ Name[es]=Estilo MegaGradient de alta calidad
 Name[fi]=MegaGradient liukuvärityyli
 Name[hu]=Rengeteg színárnyalatot használó stílus
 Name[ja]=MegaGradient ハイカラースタイル
+Name[lt]=MegaGradient daugelio spalvų stilius
 Name[lv]=MegaGradient augstkrāsu stils
+Name[mt]=Stil b'ħafna kuluri MegaGradient
 Name[nl]=MegaGradient hogekleuren stijl
 Name[no_NY]=MegaGradient-stil med mange fargar
 Name[pl]=Styl wielokolorowy MegaGradient
@@ -19,6 +21,7 @@ Name[ro]=Stil MegaGradient cu culori multe
 Name[ru]=Градиентный стиль highcolor
 Name[sk]=Štýl vysokofarebný MegaGradient
 Name[sl]=Mnogobarvni slog MegaGradient
+Name[sv]=MegaToningsstil med starka färger
 Name[uk]=Багатокольоровий стиль Мега-градієнт
 [KDE]
 widgetStyle=mega.la
