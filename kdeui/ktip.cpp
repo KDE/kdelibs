@@ -40,6 +40,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <ktextbrowser.h>
 #include <kiconloader.h>
 #include <kseparator.h>
+#include <kstdguiitem.h>
+#include <kpushbutton.h>
 
 #include "ktip.h"
 
@@ -176,7 +178,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
   QPushButton *next = new QPushButton(i18n("&Next"), this);
   hbox->addWidget(next);
 
-  QPushButton *ok = new QPushButton(i18n("&OK"), this);
+  KPushButton *ok = new KPushButton(KStdGuiItem::close(), this);
   hbox->addWidget(ok);
   ok->setDefault(true);
 
