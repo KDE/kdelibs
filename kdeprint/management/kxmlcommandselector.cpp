@@ -1,0 +1,200 @@
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
+
+#include "kxmlcommandselector.h"
+#include "kxmlcommand.h"
+#include "kxmlcommanddlg.h"
+
+#include <qcombobox.h>
+#include <qpushbutton.h>
+#include <qinputdialog.h>
+#include <qlabel.h>
+#include <qcheckbox.h>
+#include <qlayout.h>
+#include <qtooltip.h>
+#include <qlineedit.h>
+#include <klocale.h>
+#include <kiconloader.h>
+#include <kmessagebox.h>
+#include <kfiledialog.h>
+#include <kseparator.h>
+
+KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const char *name)
+: QWidget(parent, name)
+{
+	m_cmd = new QComboBox(this);
+	QPushButton	*m_add = new QPushButton(this);
+	QPushButton	*m_edit = new QPushButton(this);
+	m_add->setPixmap(SmallIcon("filenew"));
+	m_edit->setPixmap(SmallIcon("configure"));
+	connect(m_add, SIGNAL(clicked()), SLOT(slotAddCommand()));
+	connect(m_edit, SIGNAL(clicked()), SLOT(slotEditCommand()));
+	QToolTip::add(m_add, i18n("New Command"));
+	QToolTip::add(m_edit, i18n("Edit Command"));
+
+	m_line = 0;
+	m_usefilter = 0;
+	QPushButton	*m_browse = 0;
+
+	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
+
+	if (canBeNull)
+	{
+		m_line = new QLineEdit(this);
+		m_browse = new QPushButton(i18n("&Browse..."), this);
+		m_usefilter = new QCheckBox(i18n("Use Co&mmand:"), this);
+		connect(m_browse, SIGNAL(clicked()), SLOT(slotBrowse()));
+		connect(m_usefilter, SIGNAL(toggled(bool)), m_line, SLOT(setDisabled(bool)));
+		connect(m_usefilter, SIGNAL(toggled(bool)), m_browse, SLOT(setDisabled(bool)));
+		connect(m_usefilter, SIGNAL(toggled(bool)), m_cmd, SLOT(setEnabled(bool)));
+		connect(m_usefilter, SIGNAL(toggled(bool)), m_add, SLOT(setEnabled(bool)));
+		connect(m_usefilter, SIGNAL(toggled(bool)), m_edit, SLOT(setEnabled(bool)));
+		m_usefilter->setChecked(true);
+		m_usefilter->setChecked(false);
+		//setFocusProxy(m_line);
+		setTabOrder(m_usefilter, m_cmd);
+		setTabOrder(m_cmd, m_add);
+		setTabOrder(m_add, m_edit);
+
+		QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);
+		l0->addLayout(l1);
+		l1->addWidget(m_line);
+		l1->addWidget(m_browse);
+
+		KSeparator	*sep = new KSeparator(Qt::Horizontal, this);
+		l0->addWidget(sep);
+	}
+	else
+		setFocusProxy(m_cmd);
+
+	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 0);
+	l0->addLayout(l2);
+	if (m_usefilter)
+	{
+		l2->addWidget(m_usefilter);
+		l2->addSpacing(5);
+	}
+	l2->addWidget(m_cmd);
+	l2->addSpacing(10);
+	l2->addWidget(m_add);
+	l2->addWidget(m_edit);
+
+	loadCommands();
+}
+
+void KXmlCommandSelector::loadCommands()
+{
+	QString	thisCmd = (m_cmd->currentItem() != -1 ? m_cmdlist[m_cmd->currentItem()] : QString::null);
+
+	m_cmd->clear();
+	m_cmdlist.clear();
+
+	QStringList	list = KXmlCommandManager::self()->commandListWithDescription();
+	QStringList	desclist;
+	for (QStringList::Iterator it=list.begin(); it!=list.end(); ++it)
+	{
+		m_cmdlist << (*it);
+		++it;
+		desclist << (*it);
+	}
+	m_cmd->insertStringList(desclist);
+
+	int	index = m_cmdlist.findIndex(thisCmd);
+	if (index != -1)
+		m_cmd->setCurrentItem(index);
+}
+
+QString KXmlCommandSelector::command() const
+{
+	QString	cmd;
+	if (m_line && !m_usefilter->isChecked())
+		cmd = m_line->text();
+	else
+		cmd = m_cmdlist[m_cmd->currentItem()];
+	return cmd;
+}
+
+void KXmlCommandSelector::setCommand(const QString& cmd)
+{
+	int	index = m_cmdlist.findIndex(cmd);;
+
+	if (m_usefilter)
+		m_usefilter->setChecked(index != -1);
+	if (m_line)
+		m_line->setText((index == -1 ? cmd : QString::null));
+	if (index != -1)
+		m_cmd->setCurrentItem(index);
+}
+
+void KXmlCommandSelector::slotAddCommand()
+{
+	bool	ok(false);
+	QString	cmdId = QInputDialog::getText(i18n("Command Name"), i18n("Enter an identification name for the new command:"), QLineEdit::Normal, QString::null, &ok, this);
+	if (ok)
+	{
+		bool	added(true);
+
+		if (m_cmdlist.findIndex(cmdId) != -1)
+		{
+			if (KMessageBox::warningContinueCancel(
+				this,
+				i18n("A command named <b>%1</b> already exists. Do you want "
+				     "to continue and edit the existing one?").arg(cmdId),
+				QString::null,
+				i18n("Continue")) == KMessageBox::Cancel)
+			{
+				return;
+			}
+			else
+				added = false;
+	}
+
+		KXmlCommand	*xmlCmd = KXmlCommandManager::self()->loadCommand(cmdId);
+		if (KXmlCommandDlg::editCommand(xmlCmd, this))
+			KXmlCommandManager::self()->saveCommand(xmlCmd);
+
+		if (added)
+			loadCommands();
+	}
+}
+
+void KXmlCommandSelector::slotEditCommand()
+{
+	QString	xmlId = m_cmdlist[m_cmd->currentItem()];
+	KXmlCommand	*xmlCmd = KXmlCommandManager::self()->loadCommand(xmlId);
+	if (xmlCmd)
+	{
+		if (KXmlCommandDlg::editCommand(xmlCmd, this))
+		{
+			KXmlCommandManager::self()->saveCommand(xmlCmd);
+		}
+		delete xmlCmd;
+	}
+	else
+		KMessageBox::error(this, i18n("Internal Error. The XML driver for the command <b>%1</b> could not be found."));
+}
+
+void KXmlCommandSelector::slotBrowse()
+{
+	QString	filename = KFileDialog::getOpenFileName(QString::null, QString::null, this);
+	if (!filename.isEmpty() && m_line)
+		m_line->setText(filename);
+}
+
+#include "kxmlcommandselector.moc"

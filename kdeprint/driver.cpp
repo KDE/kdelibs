@@ -54,9 +54,9 @@ void DrBase::setValueText(const QString&)
 {
 }
 
-DriverItem* DrBase::createItem(DriverItem *parent)
+DriverItem* DrBase::createItem(DriverItem *parent, DriverItem *after)
 {
-	return new DriverItem(parent, this);
+	return new DriverItem(parent, after, this);
 }
 
 void DrBase::setOptions(const QMap<QString,QString>& opts)
@@ -69,6 +69,28 @@ void DrBase::getOptions(QMap<QString,QString>& opts, bool incldef)
 	QString	val = valueText();
 	if (incldef || get("default") != val)
 		opts[name()] = val;
+}
+
+DrBase* DrBase::clone()
+{
+	DrBase	*opt(0);
+	switch (type())
+	{
+		case Main: opt = new DrMain; break;
+		case Group: opt = new DrGroup; break;
+		case String: opt = new DrStringOption; break;
+		case Integer: opt = new DrIntegerOption; break;
+		case Float: opt = new DrFloatOption; break;
+		case List: opt = new DrListOption; break;
+		case Boolean: opt = new DrBooleanOption; break;
+		default: opt = new DrBase; break;
+	}
+	opt->m_map = m_map;
+	opt->m_name = m_name;
+	opt->m_conflict = m_conflict;
+	opt->setValueText(valueText());
+
+	return opt;
 }
 
 /******************
@@ -137,6 +159,29 @@ void DrMain::removeGroupGlobally(DrGroup *grp)
 	}
 }
 
+QMap<QString, DrBase*> DrMain::flatten()
+{
+	QMap<QString, DrBase*>	optmap;
+	int	index(0);
+	flattenGroup(optmap, index);
+	return optmap;
+}
+
+DrMain* DrMain::cloneDriver()
+{
+	DrMain	*driver = static_cast<DrMain*>(clone());
+
+	QPtrListIterator<DrConstraint>	cit(m_constraints);
+	for (; cit.current(); ++cit)
+		driver->addConstraint(new DrConstraint(*(cit.current())));
+
+	QDictIterator<DrPageSize>	pit(m_pagesizes);
+	for (; pit.current(); ++pit)
+		driver->addPageSize(new DrPageSize(*(pit.current())));
+
+	return driver;
+}
+
 /*******************
  * DrGroup members *
  *******************/
@@ -148,28 +193,65 @@ DrGroup::DrGroup()
 
 	m_subgroups.setAutoDelete(true);
 	m_options.setAutoDelete(true);
+	m_listoptions.setAutoDelete(false);
 }
 
 DrGroup::~DrGroup()
 {
 }
 
-DriverItem* DrGroup::createItem(DriverItem *parent)
+void DrGroup::addOption(DrBase *opt)
 {
-	DriverItem	*item = DrBase::createItem(parent);
+	if (!opt->name().isEmpty())
+	{
+		m_options.insert(opt->name(),opt);
+		m_listoptions.append(opt);
+	}
+}
+
+void DrGroup::addGroup(DrGroup *grp)
+{
+	m_subgroups.append(grp);
+}
+
+void DrGroup::removeOption(const QString& name)
+{
+	DrBase	*opt = m_options.find(name);
+	if (opt)
+	{
+		m_listoptions.removeRef(opt);
+		m_options.remove(name);
+	}
+}
+
+void DrGroup::removeGroup(DrGroup *grp)
+{
+	m_subgroups.removeRef(grp);
+}
+
+bool DrGroup::isEmpty()
+{
+	return (m_options.count()+m_subgroups.count() == 0);
+}
+
+DriverItem* DrGroup::createItem(DriverItem *parent, DriverItem *after)
+{
+	DriverItem	*item = DrBase::createItem(parent, after);
 	createTree(item);
 	return item;
 }
 
 void DrGroup::createTree(DriverItem *parent)
 {
-	QPtrListIterator<DrGroup>	lit(m_subgroups);
-	for (lit.toLast();lit.current();--lit)
-		lit.current()->createItem(parent);
+	DriverItem	*item(0);
 
-	QDictIterator<DrBase>	dit(m_options);
+	QPtrListIterator<DrGroup>	lit(m_subgroups);
+	for (;lit.current();++lit)
+		item = lit.current()->createItem(parent, item);
+
+	QPtrListIterator<DrBase>	dit(m_listoptions);
 	for (;dit.current();++dit)
-		dit.current()->createItem(parent);
+		item = dit.current()->createItem(parent, item);
 }
 
 DrBase* DrGroup::findOption(const QString& name, DrGroup **parentGroup)
@@ -231,6 +313,45 @@ void DrGroup::getOptions(QMap<QString,QString>& opts, bool incldef)
 	QPtrListIterator<DrGroup>	lit(m_subgroups);
 	for (;lit.current();++lit)
 		lit.current()->getOptions(opts,incldef);
+}
+
+void DrGroup::flattenGroup(QMap<QString, DrBase*>& optmap, int& index)
+{
+	QPtrListIterator<DrGroup>	git(m_subgroups);
+	for (; git.current(); ++git)
+		git.current()->flattenGroup(optmap, index);
+
+	QDictIterator<DrBase>	oit(m_options);
+	for (; oit.current(); ++oit)
+		optmap[oit.current()->name()] = oit.current();
+
+	if (name().isEmpty())
+		optmap[QString::fromLatin1("group%1").arg(index++)] = this;
+	else
+		optmap[name()] = this;
+
+	m_subgroups.setAutoDelete(false);
+	m_options.setAutoDelete(false);
+	m_subgroups.clear();
+	m_options.clear();
+	m_listoptions.clear();
+	m_subgroups.setAutoDelete(true);
+	m_options.setAutoDelete(true);
+}
+
+DrBase* DrGroup::clone()
+{
+	DrGroup	*grp = static_cast<DrGroup*>(DrBase::clone());
+
+	QPtrListIterator<DrGroup>	git(m_subgroups);
+	for (; git.current(); ++git)
+		grp->addGroup(static_cast<DrGroup*>(git.current()->clone()));
+
+	QPtrListIterator<DrBase>	oit(m_listoptions);
+	for (; oit.current(); ++oit)
+		grp->addOption(oit.current()->clone());
+
+	return static_cast<DrBase*>(grp);
 }
 
 /**************************
@@ -402,12 +523,30 @@ DrBase* DrListOption::findChoice(const QString& txt)
 	return NULL;
 }
 
+DrBase* DrListOption::clone()
+{
+	DrListOption	*opt = static_cast<DrListOption*>(DrBase::clone());
+
+	QPtrListIterator<DrBase>	it(m_choices);
+	for (; it.current(); ++it)
+		opt->addChoice(it.current()->clone());
+
+	opt->setValueText(valueText());
+
+	return static_cast<DrBase*>(opt);
+}
+
 /************************
  * DrConstraint members *
  ************************/
 
 DrConstraint::DrConstraint(const QString& o1, const QString& o2, const QString& c1, const QString& c2)
 : m_opt1(o1), m_opt2(o2), m_choice1(c1), m_choice2(c2), m_option1(0), m_option2(0)
+{
+}
+
+DrConstraint::DrConstraint(const DrConstraint& d)
+: m_opt1(d.m_opt1), m_opt2(d.m_opt2), m_choice1(d.m_choice1), m_choice2(d.m_choice2), m_option1(0), m_option2(0)
 {
 }
 
@@ -444,5 +583,10 @@ bool DrConstraint::check(DrMain *driver)
 
 DrPageSize::DrPageSize(const QString& s,int w, int h, int ml, int mb, int mr, int mt)
 : m_name(s), m_pagesize(w,h), m_pagerect(ml,mb,mr-ml+1,mt-mb+1)
+{
+}
+
+DrPageSize::DrPageSize(const DrPageSize& d)
+: m_name(d.m_name), m_pagesize(d.m_pagesize), m_pagerect(d.m_pagerect)
 {
 }

@@ -29,6 +29,7 @@ class KMTimer : public QTimer
 	Q_OBJECT
 public:
 	void delay(int t);
+	~KMTimer();
 
 public slots:
 	void hold();

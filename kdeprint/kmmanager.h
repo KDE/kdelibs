@@ -105,6 +105,7 @@ public:
 	virtual DrMain* loadPrinterDriver(KMPrinter *p, bool config = false);
 	virtual DrMain* loadDbDriver(KMDBEntry *entry);
 	virtual DrMain* loadFileDriver(const QString& filename);
+	DrMain* loadDriver(KMPrinter *p, bool config = false);
 	virtual bool savePrinterDriver(KMPrinter *p, DrMain *d);
 	virtual bool validateDbDriver(KMDBEntry *entry);
 

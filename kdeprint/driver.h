@@ -68,9 +68,10 @@ public:
 	virtual QString valueText();
 	virtual QString prettyText();
 	virtual void setValueText(const QString&);
-	virtual DriverItem* createItem(DriverItem *parent);
+	virtual DriverItem* createItem(DriverItem *parent, DriverItem *after = 0);
 	virtual void setOptions(const QMap<QString,QString>& opts);
 	virtual void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+	virtual DrBase* clone();
 
 protected:
 	QMap<QString,QString>	m_map;
@@ -89,25 +90,31 @@ public:
 	DrGroup();
 	~DrGroup();
 
-	void addOption(DrBase *opt)	{ if (!opt->name().isEmpty()) m_options.insert(opt->name(),opt); }
-	void addGroup(DrGroup *grp)	{ m_subgroups.append(grp); }
+	void addOption(DrBase *opt);
+	void addGroup(DrGroup *grp);
 	void clearConflict();
-	void removeOption(const QString& name)	{ m_options.remove(name); }
-	void removeGroup(DrGroup *grp)	{ m_subgroups.removeRef(grp); }
-	bool isEmpty()	{ return (m_options.count()+m_subgroups.count() == 0); }
+	void removeOption(const QString& name);
+	void removeGroup(DrGroup *grp);
+	bool isEmpty();
 
-	virtual DriverItem* createItem(DriverItem *parent);
+	virtual DriverItem* createItem(DriverItem *parent, DriverItem *after = 0);
 	DrBase* findOption(const QString& name, DrGroup **parentGroup = 0);
 	DrGroup* findGroup(DrGroup *grp, DrGroup **parentGroup = 0);
 	void setOptions(const QMap<QString,QString>& opts);
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+	DrBase* clone();
+
+	const QPtrList<DrGroup>& groups()	{ return m_subgroups; }
+	const QPtrList<DrBase>& options()	{ return m_listoptions; }
 
 protected:
 	void createTree(DriverItem *parent);
+	void flattenGroup(QMap<QString, DrBase*>&, int&);
 
 protected:
 	QPtrList<DrGroup>	m_subgroups;
 	QDict<DrBase>	m_options;
+	QPtrList<DrBase>	m_listoptions;	// keep track of order of appearance
 };
 
 /*********************
@@ -127,6 +134,8 @@ public:
 	void addPageSize(DrPageSize *sz);
 	void removeOptionGlobally(const QString& name);
 	void removeGroupGlobally(DrGroup *grp);
+	QMap<QString, DrBase*> flatten();
+	DrMain* cloneDriver();
 
 protected:
 	QPtrList<DrConstraint>	m_constraints;
@@ -204,6 +213,7 @@ public:
 	virtual QString valueText();
 	virtual QString prettyText();
 	virtual void setValueText(const QString& s);
+	DrBase* clone();
 
 protected:
 	QPtrList<DrBase>	m_choices;
@@ -226,6 +236,8 @@ class DrConstraint
 {
 public:
 	DrConstraint(const QString& o1, const QString& o2, const QString& c1 = QString::null, const QString& c2 = QString::null);
+	DrConstraint(const DrConstraint&);
+
 	bool check(DrMain*);
 
 protected:
@@ -242,6 +254,8 @@ class DrPageSize
 {
 public:
 	DrPageSize(const QString& s, int w, int h, int ml, int mb, int mr, int mt);
+	DrPageSize(const DrPageSize&);
+
 	QRect pageRect() const 	{ return m_pagerect; }
 	QSize pageSize() const 	{ return m_pagesize; }
 	QSize margins() const 	{ return QSize(m_pagerect.left(),m_pagerect.top()); }

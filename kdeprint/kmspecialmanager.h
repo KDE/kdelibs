@@ -21,9 +21,12 @@
 #define KMSPECIALMANAGER_H
 
 #include <qobject.h>
+#include <qmap.h>
 
 class KMPrinter;
 class KMManager;
+class KXmlCommand;
+class DrMain;
 
 class KMSpecialManager : public QObject
 {
@@ -33,6 +36,13 @@ public:
 	bool loadPrinters();
 	bool savePrinters();
 	void refresh();
+	KXmlCommand* loadCommand(KMPrinter*);
+	KXmlCommand* loadCommand(const QString& cmd);
+	DrMain* loadDriver(KMPrinter*);
+	QString setupCommand(const QString& cmd, const QMap<QString,QString>& opts);
+
+protected:
+	bool loadDesktopFile(const QString&);
 
 private:
 	KMManager	*m_mgr;

@@ -21,8 +21,7 @@
 
 #include "kpqtpage.h"
 #include "kprinter.h"
-#include "kmfactory.h"
-#include "kmfiltermanager.h"
+#include "kxmlcommand.h"
 
 #include <qcombobox.h>
 #include <qbuttongroup.h>
@@ -160,7 +159,7 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	// default page size to locale settings
 	m_pagesize->setCurrentItem(findIndex((KPrinter::PageSize)(KGlobal::locale()->pageSize())));
 
-	if (!KMFactory::self()->filterManager()->checkFilter("psnup"))
+	if (!KXmlCommandManager::self()->checkCommand("psnup"))
 		m_nupbox->setEnabled(false);
 
 	// connections
@@ -241,7 +240,7 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool)
 		if (s.find("psnup") == -1)
 		{
 			QStringList	fl = QStringList::split(',', s, false);
-			KMFactory::self()->filterManager()->insertFilter(fl, "psnup");
+			KXmlCommandManager::self()->insertCommand(fl, "psnup");
 			s = fl.join(",");
 		}
 		opts["_kde-psnup-nup"] = QString::number(nup);

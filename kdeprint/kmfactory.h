@@ -35,7 +35,8 @@ class KMManager;
 class KMJobManager;
 class KMUiManager;
 class KMVirtualManager;
-class KMFilterManager;
+class KXmlCommandManager;
+class KMSpecialManager;
 class KPrinterImpl;
 class KLibFactory;
 class KConfig;
@@ -67,7 +68,8 @@ public:
 	KMJobManager* jobManager();
 	KMUiManager* uiManager();
 	KMVirtualManager* virtualManager();
-	KMFilterManager* filterManager();
+	KMSpecialManager* specialManager();
+	KXmlCommandManager* commandManager();
 	KPrinterImpl* printerImplementation();
 	KConfig* printConfig();
 	QString printSystem();
@@ -106,7 +108,6 @@ private:
 	KMManager		*m_manager;
 	KMJobManager		*m_jobmanager;
 	KMUiManager		*m_uimanager;
-	KMFilterManager		*m_filtermanager;
 	KPrinterImpl		*m_implementation;
 	KLibFactory		*m_factory;
 

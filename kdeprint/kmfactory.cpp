@@ -23,11 +23,11 @@
 #include "kmmanager.h"
 #include "kmjobmanager.h"
 #include "kmuimanager.h"
-#include "kmfiltermanager.h"
 #include "kprinterimpl.h"
 #include "kprinter.h"
 #include "kpreloadobject.h"
 #include "kdeprintcheck.h"
+#include "kxmlcommand.h"
 
 #include <qdir.h>
 #include <klibloader.h>
@@ -82,7 +82,6 @@ KMFactory::KMFactory()
 	m_manager = 0;
 	m_jobmanager = 0;
 	m_uimanager = 0;
-	m_filtermanager = 0;
 	m_implementation = 0;
 	m_factory = 0;
 	m_printconfig = 0;
@@ -106,6 +105,7 @@ KMFactory::~KMFactory()
 	// The only object to be destroyed is m_printconfig. All other objects have been
 	// created with "this" as parent, so we don't need to care about their destruction
 	UNLOAD_OBJECT(m_printconfig);
+	m_self = 0;
 }
 
 KMManager* KMFactory::manager()
@@ -145,12 +145,14 @@ KMVirtualManager* KMFactory::virtualManager()
 	return manager()->m_virtualmgr;
 }
 
-KMFilterManager* KMFactory::filterManager()
+KMSpecialManager* KMFactory::specialManager()
 {
-	if (!m_filtermanager)
-		m_filtermanager = new KMFilterManager(this, "FilterManager");
-	Q_CHECK_PTR(m_filtermanager);
-	return m_filtermanager;
+	return manager()->m_specialmgr;
+}
+
+KXmlCommandManager* KMFactory::commandManager()
+{
+	return KXmlCommandManager::self();
 }
 
 void KMFactory::createManager()

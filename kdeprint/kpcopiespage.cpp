@@ -23,7 +23,7 @@
 #include "kmfactory.h"
 #include "kmuimanager.h"
 #include "kprinter.h"
-#include "kmfiltermanager.h"
+#include "kxmlcommand.h"
 
 #include <qlabel.h>
 #include <qcombobox.h>

@@ -26,7 +26,7 @@
 #include <qstringlist.h>
 
 class KListView;
-class KPrintFilter;
+class KXmlCommand;
 class QListViewItem;
 class QPushButton;
 class QTextView;
@@ -51,7 +51,7 @@ protected slots:
 	void slotItemSelected(QListViewItem*);
 
 protected:
-	KPrintFilter* currentFilter();
+	KXmlCommand* currentFilter();
 	void checkFilterChain();
 	void updateInfo();
 	QStringList activeList();
@@ -59,7 +59,7 @@ protected:
 private:
 	KListView		*m_view;
 	QStringList		m_filters;	// <idname,description> pairs
-	QDict<KPrintFilter>	m_activefilters;
+	QDict<KXmlCommand>	m_activefilters;
 	QPushButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
 	bool			m_valid;
 	QTextView		*m_info;

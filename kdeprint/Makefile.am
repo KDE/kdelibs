@@ -15,11 +15,11 @@ lib_LTLIBRARIES = libkdeprint.la
 libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp kmprinter.cpp \
 		         kmuimanager.cpp kmvirtualmanager.cpp driver.cpp driveritem.cpp droptionview.cpp \
 			 driverview.cpp maticscanner.cpp maticparser.cpp matic.cpp kmdbentry.cpp \
-		         kprintpreview.cpp kmfiltermanager.cpp kprintdialog.cpp kprinter.cpp kprinterimpl.cpp kprintdialogpage.cpp \
+		         kprintpreview.cpp kprintdialog.cpp kprinter.cpp kprinterimpl.cpp kprintdialogpage.cpp \
 			 kpcopiespage.cpp kpdriverpage.cpp kprinterpropertydialog.cpp kpgeneralpage.cpp kpqtpage.cpp \
-			 kmthreadjob.cpp kpipeprocess.cpp kprintfilter.cpp kpfilterpage.cpp \
+			 kmthreadjob.cpp kpipeprocess.cpp kpfilterpage.cpp \
 			 kmspecialmanager.cpp kdeprintcheck.cpp plugincombobox.cpp kpreloadobject.cpp kfilelist.cpp \
-			 kprintaction.cpp kpfileselectpage.cpp treecombobox.cpp kmfactory.skel
+			 kprintaction.cpp kpfileselectpage.cpp treecombobox.cpp kmfactory.skel kxmlcommand.cpp
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ) $(LIB_KFILE)
 libkdeprint_la_METASOURCES = AUTO
@@ -28,9 +28,9 @@ noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h \
 		 kmuimanager.h kmvirtualmanager.h driver.h driveritem.h droptionview.h \
 		 driverview.h matic.h kprintpreview.h kprinterimpl.h kprintdialog.h \
 		 kpcopiespage.h kpdriverpage.h kprinterpropertydialog.h kpgeneralpage.h \
-		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h kdeprintd.h kprintfilter.h \
-		 kmfiltermanager.h kpfilterpage.h kmspecialmanager.h kdeprintcheck.h plugincombobox.h \
-		 kfilelist.h kpfileselectpage.h treecombobox.h
+		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h kdeprintd.h \
+		 kpfilterpage.h kmspecialmanager.h kdeprintcheck.h plugincombobox.h \
+		 kfilelist.h kpfileselectpage.h treecombobox.h kxmlcommand.h
 
 include_HEADERS = kprinter.h kprintaction.h
 

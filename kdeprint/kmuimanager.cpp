@@ -31,8 +31,8 @@
 #include "kpdriverpage.h"
 #include "kpqtpage.h"
 #include "kpfilterpage.h"
-#include "kmfiltermanager.h"
 #include "kpfileselectpage.h"
+#include "kxmlcommand.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -124,6 +124,9 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 {
 	if (dlg->printer())
 	{
+		DrMain	*driver = KMManager::self()->loadDriver(dlg->printer(), false);
+		dlg->setDriver(driver);
+
 		if (dlg->printer()->isSpecial())
 		{ // special case
 			dlg->addPage(new KPQtPage(dlg,"QtPage"));
@@ -131,18 +134,14 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 		}
 		else
 		{
-			// check for a driver
-			DrMain	*driver = KMFactory::self()->manager()->loadPrinterDriver(dlg->printer(), false);
-			dlg->setDriver(driver);
-
 			// add pages specific to print system
 			setupPrinterPropertyDialog(dlg);
-
-			// add driver page
-			if (driver)
-				dlg->addPage(new KPDriverPage(dlg->printer(),driver,dlg,"DriverPage"));
-
 		}
+
+		// add driver page
+		if (driver)
+			dlg->addPage(new KPDriverPage(dlg->printer(),driver,dlg,"DriverPage"));
+
 		dlg->setCaption(i18n("Configuration of %1").arg(dlg->printer()->name()));
 		dlg->addPage(new KPFilterPage(dlg,"FilterPage"));
 		dlg->resize(100,100);
@@ -165,7 +164,7 @@ int KMUiManager::pageCap()
 int KMUiManager::systemPageCap()
 {
 	int	val(0);
-	if (KMFactory::self()->filterManager()->checkFilter("psselect"))
+	if (KXmlCommandManager::self()->checkCommand("psselect"))
 		val |= KMUiManager::PSSelect;
 	return val;
 }

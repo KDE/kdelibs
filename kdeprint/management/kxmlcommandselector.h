@@ -17,37 +17,38 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMSPECIALPRINTERDLG_H
-#define KMSPECIALPRINTERDLG_H
+#ifndef KXMLCOMMANDSELECTOR_H
+#define KXMLCOMMANDSELECTOR_H
 
-#include <kdialog.h>
+#include <qwidget.h>
+#include <qstringlist.h>
 
-class KMPrinter;
+class QComboBox;
 class QLineEdit;
 class QCheckBox;
-class KIconButton;
-class KXmlCommandSelector;
 
-class KMSpecialPrinterDlg : public KDialog
+class KXmlCommandSelector : public QWidget
 {
 	Q_OBJECT
 public:
-	KMSpecialPrinterDlg(QWidget *parent = 0, const char *name = 0);
+	KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, const char *name = 0);
 
-	void setPrinter(KMPrinter*);
-	KMPrinter* printer();
+	void setCommand(const QString&);
+	QString command() const;
 
 protected:
-	bool checkSettings();
+	void loadCommands();
 
 protected slots:
-	virtual void done(int);
+	void slotAddCommand();
+	void slotEditCommand();
+	void slotBrowse();
 
 private:
-	QLineEdit	*m_name, *m_description, *m_location, *m_extension;
-	QCheckBox	*m_usefile;
-	KIconButton	*m_icon;
-	KXmlCommandSelector	*m_command;
+	QComboBox	*m_cmd;
+	QLineEdit	*m_line;
+	QCheckBox	*m_usefilter;
+	QStringList	m_cmdlist;
 };
 
 #endif

@@ -20,6 +20,11 @@
 #include "kmspecialprinterdlg.h"
 #include "kmprinter.h"
 #include "kdeprintcheck.h"
+#include "kmfactory.h"
+#include "kmspecialmanager.h"
+#include "kxmlcommandselector.h"
+#include "kxmlcommand.h"
+#include "driver.h"
 
 #include <qpushbutton.h>
 #include <qlineedit.h>
@@ -27,12 +32,12 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qwhatsthis.h>
+#include <qgroupbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kicondialog.h>
 #include <kfiledialog.h>
 #include <kseparator.h>
-#include <keditlistbox.h>
 
 KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 : KDialog(parent,name,true)
@@ -40,44 +45,53 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	setCaption(i18n("Add special printer"));
 
 	// widget creation
-	QPushButton	*m_ok = new QPushButton(i18n("OK"), this);
-	QPushButton	*m_cancel = new QPushButton(i18n("Cancel"), this);
-	connect(m_ok,SIGNAL(clicked()),SLOT(accept()));
-	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
-	m_ok->setDefault(true);
-	QPushButton	*m_browse = new QPushButton(i18n("Browse"), this);
-	connect(m_browse,SIGNAL(clicked()),SLOT(slotBrowse()));
 	m_name = new QLineEdit(this);
 	m_description = new QLineEdit(this);
 	m_location = new QLineEdit(this);
-	m_command = new QLineEdit(this);
-	m_extension = new QLineEdit(this);
-	QLabel	*m_namelabel = new QLabel(i18n("Name:"), this);
-	QLabel	*m_desclabel = new QLabel(i18n("Description:"), this);
-	QLabel	*m_loclabel = new QLabel(i18n("Location:"), this);
+	QLabel	*m_namelabel = new QLabel(i18n("&Name:"), this);
+	QLabel	*m_desclabel = new QLabel(i18n("&Description:"), this);
+	QLabel	*m_loclabel = new QLabel(i18n("&Location:"), this);
+	m_namelabel->setBuddy(m_name);
+	m_desclabel->setBuddy(m_description);
+	m_loclabel->setBuddy(m_location);
+
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+
 	sep->setFixedHeight(10);
-	QLabel	*m_cmdlabel = new QLabel(i18n("Command:"), this);
-	m_usefile = new QCheckBox(i18n("Use output file with extension:"), this);
+	QGroupBox	*m_gb = new QGroupBox(1, Qt::Horizontal, i18n("Command &Settings"), this);
+	m_command = new KXmlCommandSelector(true, m_gb);
+	QGroupBox	*m_gb2 = new QGroupBox(0, Qt::Horizontal, i18n("Output File Settings"), this);
+	m_usefile = new QCheckBox(i18n("&Use output file with extension:"), m_gb2);
+	m_extension = new QLineEdit(m_gb2);
 	connect(m_usefile, SIGNAL(toggled(bool)), m_extension, SLOT(setEnabled(bool)));
 	m_extension->setEnabled(false);
+
+	QPushButton	*m_ok = new QPushButton(i18n("&OK"), this);
+	QPushButton	*m_cancel = new QPushButton(i18n("&Cancel"), this);
+	connect(m_ok,SIGNAL(clicked()),SLOT(accept()));
+	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
+	m_ok->setDefault(true);
+
 	m_icon = new KIconButton(this);
 	m_icon->setIcon("fileprint");
 	m_icon->setFixedSize(QSize(48,48));
-	m_require = new KEditListBox(i18n("Requirements:"), this, 0, false, KEditListBox::Add|KEditListBox::Remove);
 
-	QWhatsThis::add(m_usefile, i18n("The command will use an output file."));
-	QWhatsThis::add(m_command, i18n("<p>The command to execute when printing on this special printer. "
-					"Recognized tags are:</p>"
-					"<ul><li><b>%in</b>: the input file (required).</li>"
-					"<li><b>%out</b>: the output file (required if using an output file).</li>"
-					"<li><b>%psl</b>: the paper size in lower case.</li></ul>"));
-	QWhatsThis::add(m_extension, i18n("<p>The default extension for the output file (<u>ex</u>: ps, pdf, ps.gz).</p>"));
-	QWhatsThis::add(m_require, i18n("<p>Requirements for that printer to work. Possible entries are:</p><ul>"
-					"<li>exec:/<i>&lt;execname&gt;</i> : executable in your $PATH</li>"
-					"<li>config:/<i>&lt;path&gt;</i> : file/dir in standard config locations</li>"
-					"<li>file:/<i>&lt;file-path&gt;</i> : full file pathname</li>"
-					"<li>dir:/<i>&lt;dir-path&gt;</i> : full directory pathname</li></ul>"));
+	QWhatsThis::add(m_usefile,
+		i18n("<p>The command will use an output file. If checked, make sure the "
+		     "command contain an output tag.</p>"));
+	QWhatsThis::add(m_command,
+		i18n("<p>The command to execute when printing on this special printer. Either enter "
+			 "directly the command to execute, or associate/create a command object with/for "
+			 "this special printer. The command object is the preferred method as it provides "
+			 "support for advanced settings like mime type checking, configurable options and "
+			 "requirement list (the plain command is only provided for backward compatibility). "
+			 "When using a plain command, the following tags are recognized:</p>"
+			 "<ul><li><b>%in</b>: the input file (required).</li>"
+			 "<li><b>%out</b>: the output file (required if using an output file).</li>"
+			 "<li><b>%psl</b>: the paper size in lower case.</li>"
+			 "<li><b>%psu</b>: the paper size with the first letter in upper case.</li></ul>"));
+	QWhatsThis::add(m_extension,
+		i18n("<p>The default extension for the output file (<u>ex</u>: ps, pdf, ps.gz).</p>"));
 
 	// layout creation
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 10);
@@ -93,22 +107,17 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	l1->addWidget(m_description, 1, 2);
 	l1->addWidget(m_location, 2, 2);
 	l0->addWidget(sep);
-	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
-	l0->addLayout(l2);
-	l2->addWidget(m_cmdlabel);
-	l2->addWidget(m_command,1);
-	l2->addWidget(m_browse);
-	QHBoxLayout	*l4 = new QHBoxLayout(0, 0, 10);
-	l0->addLayout(l4);
-	l4->addWidget(m_usefile, 0);
-	l4->addWidget(m_extension, 1);
-	l0->addWidget(m_require);
-	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 10);
-	l0->addSpacing(5);
-	l0->addLayout(l3);
-	l3->addStretch(1);
-	l3->addWidget(m_ok);
-	l3->addWidget(m_cancel);
+	l0->addWidget(m_gb);
+	l0->addWidget(m_gb2);
+	QHBoxLayout	*l6 = new QHBoxLayout(m_gb2->layout(), 10);
+	l6->addWidget(m_usefile, 0);
+	l6->addWidget(m_extension, 1);
+	l0->addSpacing(10);
+	QHBoxLayout	*l5 = new QHBoxLayout(0, 0, 10);
+	l0->addLayout(l5);
+	l5->addStretch(1);
+	l5->addWidget(m_ok);
+	l5->addWidget(m_cancel);
 
 	// resize dialog
 	resize(400,100);
@@ -127,19 +136,17 @@ void KMSpecialPrinterDlg::done(int result)
 bool KMSpecialPrinterDlg::checkSettings()
 {
 	QString	msg;
-	if (m_name->text().isEmpty()) msg = i18n("Empty name.");
-	else if (!m_command->text().isEmpty() && m_command->text().find("%in") == -1) msg = i18n("The command doesn't contain the '%1' tag.").arg("%in");
-	else if (m_usefile->isChecked())
-	{
-		if (!m_command->text().isEmpty() && m_command->text().find("%out") == -1)
-			msg = i18n("The command doesn't contain the '%1' tag.").arg("%out");
-	}
-	else if (m_command->text().isEmpty()) msg = i18n("Empty command.");
-	if (!KdeprintChecker::check(m_require->items()) &&
-		 KMessageBox::warningYesNo(this, i18n("One of the requirements is not met. Continue?")) == KMessageBox::No)
-		return false;
+	if (m_name->text().isEmpty())
+		msg = i18n("You must provide a non empty name.");
+	else
+		KXmlCommandManager::self()->checkCommand(m_command->command(),
+					KXmlCommandManager::Basic,
+					(m_usefile->isChecked() ? KXmlCommandManager::Basic : KXmlCommandManager::None),
+					&msg);
+
 	if (!msg.isEmpty())
-		KMessageBox::error(this,msg);
+		KMessageBox::error(this, i18n("Invalid settings. %1.").arg(msg));
+
 	return (msg.isEmpty());
 }
 
@@ -147,24 +154,16 @@ void KMSpecialPrinterDlg::setPrinter(KMPrinter *printer)
 {
 	if (printer && printer->isSpecial())
 	{
-		m_command->setText(printer->option("kde-special-command"));
+		m_command->setCommand(printer->option("kde-special-command"));
 		m_usefile->setChecked(printer->option("kde-special-file") == "1");
 		m_extension->setText(printer->option("kde-special-extension"));
 		m_name->setText(printer->name());
 		m_description->setText(printer->description());
 		m_location->setText(printer->location());
 		m_icon->setIcon(printer->pixmap());
-		m_require->insertStringList(QStringList::split(',',printer->option("kde-special-require"),false));
 
 		setCaption(i18n("Configuring %1").arg(printer->name()));
 	}
-}
-
-void KMSpecialPrinterDlg::slotBrowse()
-{
-	QString	filename = KFileDialog::getOpenFileName(QString::null,QString::null,this);
-	if (!filename.isEmpty())
-		m_command->setText(filename);
 }
 
 KMPrinter* KMSpecialPrinterDlg::printer()
@@ -175,13 +174,10 @@ KMPrinter* KMSpecialPrinterDlg::printer()
 	printer->setPixmap(m_icon->icon());
 	printer->setDescription(m_description->text());
 	printer->setLocation(m_location->text());
-	printer->setOption("kde-special-command",m_command->text());
+	printer->setOption("kde-special-command",m_command->command());
 	printer->setOption("kde-special-file",(m_usefile->isChecked() ? "1" : "0"));
 	printer->setOption("kde-special-extension",m_extension->text());
-	printer->setOption("kde-special-require",m_require->items().join(","));
 	printer->setType(KMPrinter::Special);
-	if (!KdeprintChecker::check(m_require->items()))
-		printer->addType(KMPrinter::Invalid);
 	printer->setState(KMPrinter::Idle);
 	return printer;
 }

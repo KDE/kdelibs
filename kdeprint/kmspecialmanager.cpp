@@ -21,9 +21,18 @@
 #include "kmmanager.h"
 #include "kmprinter.h"
 #include "kdeprintcheck.h"
+#include "kxmlcommand.h"
+#include "driver.h"
 
+#include <qfile.h>
 #include <kstandarddirs.h>
+#include <kglobal.h>
 #include <ksimpleconfig.h>
+#include <klocale.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 KMSpecialManager::KMSpecialManager(KMManager *parent, const char *name)
 : QObject(parent,name), m_mgr(parent), m_loaded(false)
@@ -32,7 +41,25 @@ KMSpecialManager::KMSpecialManager(KMManager *parent, const char *name)
 
 bool KMSpecialManager::savePrinters()
 {
-	KSimpleConfig	conf(locateLocal("data","kdeprint/specials.desktop"));
+	// for root, use a global location.
+	QString	confname;
+	if (getuid() == 0)
+	{
+		confname = locate("data", "kdeprint/specials.desktop");
+		if (confname.startsWith(KGlobal::dirs()->localkdedir()))
+		{
+			// seems there's a problem here
+			m_mgr->setErrorMsg(i18n("A file <b>share/kdeprint/specials.desktop</b> was found in your "
+						"local KDE directory. This file probably comes from a previous KDE "
+						"release and should be removed in order to manage global pseudo "
+						"printers."));
+			return false;
+		}
+	}
+	else
+		confname = locateLocal("data","kdeprint/specials.desktop");
+
+	KSimpleConfig	conf(confname);
 
 	// first clear existing groups
 	conf.setGroup("General");
@@ -60,6 +87,16 @@ bool KMSpecialManager::savePrinters()
 	conf.setGroup("General");
 	conf.writeEntry("Number",n);
 
+	// set read access for anybody in case of global location
+	if (getuid() == 0)
+	{
+		conf.sync();
+		::chmod(QFile::encodeName(confname), S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+	}
+
+	// force reload on next update
+	m_loaded = false;
+
 	return true;
 }
 
@@ -67,7 +104,22 @@ bool KMSpecialManager::loadPrinters()
 {
 	if (m_loaded) return true;
 
-	KSimpleConfig	conf(locate("data","kdeprint/specials.desktop"));
+	bool	result(true);
+	QString	localDir = KGlobal::dirs()->localkdedir();
+	QStringList	files = KGlobal::dirs()->findAllResources("data", "kdeprint/specials.desktop");
+	for (QStringList::ConstIterator it=files.begin(); it!=files.end() && result; ++it)
+		// skip the local file for root
+		if (getuid() == 0 && (*it).startsWith(localDir))
+			continue;
+		else
+			result = loadDesktopFile(*it);
+
+	return result;
+}
+
+bool KMSpecialManager::loadDesktopFile(const QString& filename)
+{
+	KSimpleConfig	conf(filename);
 	conf.setGroup("General");
 	int	n = conf.readNumEntry("Number",0);
 	for (int i=0;i<n;i++)
@@ -111,4 +163,47 @@ void KMSpecialManager::refresh()
 					it.current()->addType(KMPrinter::Invalid);
 			}
 	}
+}
+
+KXmlCommand* KMSpecialManager::loadCommand(KMPrinter *pr)
+{
+	KXmlCommand	*xmlCmd = loadCommand(pr->option("kde-special-command"));
+	if (xmlCmd && xmlCmd->driver())
+		xmlCmd->driver()->set("text", pr->printerName());
+	return xmlCmd;
+}
+
+KXmlCommand* KMSpecialManager::loadCommand(const QString& xmlId)
+{
+	return KXmlCommandManager::self()->loadCommand(xmlId, true);
+}
+
+DrMain* KMSpecialManager::loadDriver(KMPrinter *pr)
+{
+	KXmlCommand	*xmlCmd;
+	DrMain	*driver(0);
+
+	if ((xmlCmd=loadCommand(pr)) != 0)
+	{
+		driver = xmlCmd->takeDriver();
+		delete xmlCmd;
+	}
+
+	return driver;
+}
+
+QString KMSpecialManager::setupCommand(const QString& cmd, const QMap<QString,QString>& opts)
+{
+	QString	s(cmd);
+	if (!s.isEmpty())
+	{
+		KXmlCommand	*xmlCmd = loadCommand(cmd);
+		if (xmlCmd)
+		{
+			s = xmlCmd->buildCommand(opts, false, false);
+			delete xmlCmd;
+		}
+	}
+
+	return s;
 }

@@ -1,0 +1,8 @@
+[KDE Print Filter Entry]
+Name=ps2pdf
+Name[xxx]=xx
+Require=exec:/ps2pdf
+Comment=PostScript to PDF converter
+Comment[xxx]=xx
+MimeTypeIn=application/postscript
+MimeTypeOut=application/pdf

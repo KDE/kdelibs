@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <kprintfilter name="enscript">
-	<filtercommand data="enscript %filterargs %filteroutput %filterinput" />
+	<filtercommand data="enscript -M %psu %filterargs %filteroutput %filterinput" />
 	<filterargs>
 		<filtergroup name="group1" description="Columns">
 			<filterarg name="columns" description="Number of columns" format="--columns=%value" type="int" min="1" max="10" default="1" />
@@ -9,14 +9,7 @@
 				<value name="false" description="No" />
 			</filterarg>
 		</filtergroup>
-		<filtergroup name="group2" description="Page format">
-			<filterarg name="pagesize" description="Page size" format="-M %value" type="list" default="Letter">
-				<value name="Letter" description="US Letter" />
-				<value name="Legal" description="US Legal" />
-				<value name="A3" description="A3" />
-				<value name="A4" description="A4" />
-				<value name="A5" description="A5" />
-			</filterarg>
+		<filtergroup name="group2" description="Header format">
 			<filterarg name="noheader" description="Disable header" format="-B" type="bool" default="false">
 				<value name="true" description="Yes" />
 				<value name="false" description="No" />

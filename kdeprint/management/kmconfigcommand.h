@@ -17,37 +17,15 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMSPECIALPRINTERDLG_H
-#define KMSPECIALPRINTERDLG_H
+#ifndef KMCONFIGCOMMAND_H
+#define KMCONFIGCOMMAND_H
 
-#include <kdialog.h>
+#include "kmconfigpage.h"
 
-class KMPrinter;
-class QLineEdit;
-class QCheckBox;
-class KIconButton;
-class KXmlCommandSelector;
-
-class KMSpecialPrinterDlg : public KDialog
+class KMConfigCommand : public KMConfigPage
 {
-	Q_OBJECT
 public:
-	KMSpecialPrinterDlg(QWidget *parent = 0, const char *name = 0);
-
-	void setPrinter(KMPrinter*);
-	KMPrinter* printer();
-
-protected:
-	bool checkSettings();
-
-protected slots:
-	virtual void done(int);
-
-private:
-	QLineEdit	*m_name, *m_description, *m_location, *m_extension;
-	QCheckBox	*m_usefile;
-	KIconButton	*m_icon;
-	KXmlCommandSelector	*m_command;
+	KMConfigCommand(QWidget *parent = 0, const char *name = 0);
 };
 
 #endif

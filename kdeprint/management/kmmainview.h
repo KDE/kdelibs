@@ -38,7 +38,7 @@ class KToolBar;
 class KAction;
 class PluginComboBox;
 
-class KMMainView : public KMainWindow, public KPReloadObject
+class KMMainView : public QWidget, public KPReloadObject
 {
 	Q_OBJECT
 public:
@@ -70,6 +70,7 @@ public slots:
 	void slotManagerConfigure();
 	void slotAddSpecial();
 	void slotRefresh();
+	void slotToolSelected(int);
 
 protected slots:
 	void slotPrinterSelected(KMPrinter*);
@@ -98,7 +99,8 @@ private:
 	QSplitter	*m_splitter;
 	KToolBar	*m_toolbar;
 	PluginComboBox	*m_plugin;
-	int			m_pactionsindex;
+	int		m_pactionsindex;
+	QStringList	m_toollist;
 };
 
 #endif

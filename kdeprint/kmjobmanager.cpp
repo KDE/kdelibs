@@ -24,6 +24,7 @@
 #include "kmthreadjob.h"
 
 #include <kaction.h>
+#include <kdebug.h>
 
 KMJobManager::KMJobManager(QObject *parent, const char *name)
 : QObject(parent,name)

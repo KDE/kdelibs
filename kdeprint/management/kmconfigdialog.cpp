@@ -24,6 +24,7 @@
 
 #include "kmconfiggeneral.h"
 #include "kmconfigpreview.h"
+#include "kmconfigcommand.h"
 
 #include <qlayout.h>
 #include <klocale.h>
@@ -36,6 +37,7 @@ KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 	m_pages.setAutoDelete(false);
 	addConfigPage(new KMConfigGeneral(this));
 	addConfigPage(new KMConfigPreview(this));
+	addConfigPage(new KMConfigCommand(this));
 	KMFactory::self()->uiManager()->setupConfigDialog(this);
 
 	// initialize pages

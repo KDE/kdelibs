@@ -156,7 +156,7 @@ KMPrinter* KMManager::findPrinter(const QString& name)
 	QPtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		if (it.current()->name() == name) return it.current();
-	setErrorMsg(i18n("%1: printer not found.").arg(name));
+	//setErrorMsg(i18n("%1: printer not found.").arg(name));
 	return 0;
 }
 
@@ -170,6 +170,8 @@ KMPrinter* KMManager::softDefault() const
 
 QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
+	setErrorMsg(QString::null);
+	
 	if (reload || m_printers.count() == 0)
 	{
 		// first discard all printers
@@ -260,6 +262,14 @@ DrMain* KMManager::loadDbDriver(KMDBEntry *entry)
 DrMain* KMManager::loadFileDriver(const QString&)
 {
 	return NULL;
+}
+
+DrMain* KMManager::loadDriver(KMPrinter *p, bool config)
+{
+	if (p->isSpecial())
+		return m_specialmgr->loadDriver(p);
+	else
+		return loadPrinterDriver(p, config);
 }
 
 bool KMManager::savePrinterDriver(KMPrinter*,DrMain*)

@@ -281,7 +281,7 @@ void BooleanView::slotSelected(int ID)
 DrOptionView::DrOptionView(QWidget *parent, const char *name)
 : QGroupBox(parent,name)
 {
-	setFixedHeight(150);
+	//setFixedHeight(150);
 	m_stack = new QWidgetStack(this);
 
 	BaseView	*w = new ListView(m_stack);
@@ -357,6 +357,6 @@ void DrOptionView::slotValueChanged(const QString& val)
 
 QSize DrOptionView::sizeHint() const
 {
-	return QSize(200,200);
+	return QSize(200,140);
 }
 #include "droptionview.moc"

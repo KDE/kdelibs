@@ -33,8 +33,8 @@ DriverItem::DriverItem(QListView *parent, DrBase *item)
 	updateText();
 }
 
-DriverItem::DriverItem(QListViewItem *parent, DrBase *item)
-: QListViewItem(parent), m_item(item), m_conflict(false)
+DriverItem::DriverItem(QListViewItem *parent, QListViewItem *after, DrBase *item)
+: QListViewItem(parent, after), m_item(item), m_conflict(false)
 {
 	setOpen(true);
 	if (item) setPixmap(0,SmallIcon((item->isOption() ? "document" : "folder")));

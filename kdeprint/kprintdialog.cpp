@@ -265,6 +265,14 @@ void KPrintDialog::initialize(KPrinter *printer)
 
 	// first retrieve printer list and update combo box (get default or last used printer also)
 	QPtrList<KMPrinter>	*plist = KMFactory::self()->manager()->printerList();
+	if (!KMManager::self()->errorMsg().isEmpty())
+	{
+		KMessageBox::error(parentWidget(),
+			"<nobr>"+
+			i18n("An error occured while retrieving the printer list:")
+			+"</nobr><br><br>"+KMManager::self()->errorMsg());
+	}
+
 	if (plist)
 	{
 		m_printers->clear();

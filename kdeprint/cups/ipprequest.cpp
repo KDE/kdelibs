@@ -142,7 +142,7 @@ void IppRequest::setOperation(int op)
 
 int IppRequest::status()
 {
-	return (request_ ? request_->request.status.status_code : IPP_OK);
+	return (request_ ? request_->request.status.status_code : -1);
 }
 
 bool IppRequest::integerValue_p(const QString& name, int& value, int type)
@@ -204,7 +204,11 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 	http_t	*HTTP = httpConnect(myHost.latin1(),myPort);
 
 	if (HTTP == NULL)
+	{
+		ippDelete(request_);
+		request_ = 0;
 		return false;
+	}
 #if 0
 kdDebug() << "---------------------\nRequest\n---------------------" << endl;
 dumpRequest(request_);

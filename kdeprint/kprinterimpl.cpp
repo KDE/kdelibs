@@ -24,7 +24,8 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 #include "kmuimanager.h"
-#include "kmfiltermanager.h"
+#include "kxmlcommand.h"
+#include "kmspecialmanager.h"
 #include "kmthreadjob.h"
 #include "kmprinter.h"
 #include "kprintfilter.h"
@@ -219,8 +220,8 @@ int KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 	{
 		if (flist.findIndex("psselect") == -1)
 		{
-			int	index = KMFactory::self()->filterManager()->insertFilter(flist, "psselect", false);
-			if (index == -1 || !KMFactory::self()->filterManager()->checkFilter("psselect"))
+			int	index = KXmlCommandManager::self()->insertCommand(flist, "psselect", false);
+			if (index == -1 || !KXmlCommandManager::self()->checkCommand("psselect"))
 			{
 				printer->setErrorMessage(i18n("<p>Unable to perform the requested page selection. The filter <b>psselect</b> "
 							      "cannot be inserted in the current filter chain. See <b>Filter</b> tab in the "
@@ -246,11 +247,11 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		return 0;
 
 	QString	filtercmd;
-	KMFilterManager	*fmgr = KMFactory::self()->filterManager();
 	for (uint i=0;i<flist.count();i++)
 	{
-		KPrintFilter	*filter = fmgr->filter(flist[i]);
+		KXmlCommand	*filter = KXmlCommandManager::self()->loadCommand(flist[i]);
 		QString		subcmd = filter->buildCommand(opts,(i>0),(i<(flist.count()-1)));
+		delete filter;
 		if (!subcmd.isEmpty())
 		{
 			filtercmd.append(subcmd);
@@ -259,13 +260,13 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		}
 		else
 		{
-			printer->setErrorMessage(i18n("Error while reading filter description for <b>%1</b>. Empty command line received.").arg(filter->idName()));
+			printer->setErrorMessage(i18n("Error while reading filter description for <b>%1</b>. Empty command line received.").arg(flist[i]));
 			return -1;
 		}
 	}
 	kdDebug() << "kdeprint: filter command: " << filtercmd << endl;
 
-	QRegExp	rin("%in"), rout("%out"), rps("%psl");
+	QRegExp	rin("%in"), rout("%out"), rpsl("%psl"), rpsu("%psu");
 	QString	ps = pageSizeToPageName(printer->pageSize());
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)
 	{
@@ -273,7 +274,8 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		QString	cmd(filtercmd);
 		cmd.replace(rin,quote(*it));
 		cmd.replace(rout,quote(tmpfile));
-		cmd.replace(rps,ps.lower());
+		cmd.replace(rpsl,ps.lower());
+		cmd.replace(rpsu,ps);
 		if (system(cmd.latin1()) != 0)
 		{
 			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.").arg(filtercmd));
@@ -305,7 +307,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 					       QString::fromLatin1("kdeprintAutoConvert"))) == KMessageBox::Yes)
 			{
 				// find the filter chain
-				QStringList	flist = KMFactory::self()->filterManager()->autoFilter(mime, info.primaryMimeType);
+				QStringList	flist = KXmlCommandManager::self()->autoConvert(mime, info.primaryMimeType);
 				if (flist.count() == 0)
 				{
 					if (KMessageBox::warningYesNo(NULL,
@@ -356,8 +358,13 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 		p->setErrorMessage("Empty command.");
 		return false;
 	}
+
+	s = KMFactory::self()->specialManager()->setupCommand(s, p->options());
+
+	QString	ps = pageSizeToPageName(p->pageSize());
 	s.replace(QRegExp("%out"), quote(p->outputFileName()));
-	s.replace(QRegExp("%psl"), QString::fromLatin1(pageSizeToPageName(p->pageSize())).lower());
+	s.replace(QRegExp("%psl"), ps.lower());
+	s.replace(QRegExp("%psu"), ps);
 	cmd = s;
 	return true;
 }

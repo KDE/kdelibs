@@ -20,7 +20,7 @@
 #include "kpfilterpage.h"
 #include "kprintfilter.h"
 #include "kmfactory.h"
-#include "kmfiltermanager.h"
+#include "kxmlcommand.h"
 
 #include <qpushbutton.h>
 #include <qheader.h>
@@ -104,7 +104,7 @@ void KPFilterPage::slotAddClicked()
 {
 	if (m_filters.count() == 0)
 	{
-		m_filters = KMFactory::self()->filterManager()->filterList();
+		m_filters = KXmlCommandManager::self()->commandListWithDescription();
 	}
 	QStringList	l;
 	for (int i=0;i<(int)m_filters.count();i+=2)
@@ -120,9 +120,9 @@ void KPFilterPage::slotAddClicked()
 	if (ok)
 	{
 		int		index = m_filters.findIndex(choice)-1;
-		KPrintFilter	*filter = KMFactory::self()->filterManager()->filter(m_filters[index]);
+		KXmlCommand	*cmd = KXmlCommandManager::self()->loadCommand(m_filters[index]);
 		QStringList	filters = activeList();
-		int		pos = KMFactory::self()->filterManager()->insertFilter(filters, filter->idName());
+		int		pos = KXmlCommandManager::self()->insertCommand(filters, cmd->name());
 		QListViewItem	*prev(0);
 		if (pos > 0)
 		{
@@ -130,8 +130,8 @@ void KPFilterPage::slotAddClicked()
 			for (int i=1;prev && i<pos;i++)
 				prev = prev->nextSibling();
 		}
-		m_activefilters.insert(filter->idName(),filter);
-		QListViewItem	*item = new QListViewItem(m_view, prev, choice, filter->idName());
+		m_activefilters.insert(cmd->name(), cmd);
+		QListViewItem	*item = new QListViewItem(m_view, prev, choice, cmd->name());
 		item->setPixmap(0, SmallIcon("filter"));
 		checkFilterChain();
 	}
@@ -176,8 +176,8 @@ void KPFilterPage::slotDownClicked()
 
 void KPFilterPage::slotConfigureClicked()
 {
-	KPrintFilter	*filter = currentFilter();
-	if (!filter || !filter->configure(this))
+	KXmlCommand	*filter = currentFilter();
+	if (!filter || !KXmlCommandManager::self()->configure(filter, this))
 		KMessageBox::error(this,i18n("Internal error: unable to load filter."));
 }
 
@@ -194,7 +194,7 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 {
 	QStringList	filters = QStringList::split(',',opts["_kde-filters"],false);
 	// remove unneeded filters
-	QDictIterator<KPrintFilter>	dit(m_activefilters);
+	QDictIterator<KXmlCommand>	dit(m_activefilters);
 	for (;dit.current();)
 	{
 		if (filters.find(dit.currentKey()) == filters.end())
@@ -210,10 +210,10 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 	QListViewItem	*item(0);
 	for (QStringList::ConstIterator sit=filters.begin(); sit!=filters.end(); ++sit)
 	{
-		KPrintFilter	*f(0);
+		KXmlCommand	*f(0);
 		if ((f=m_activefilters.find(*sit)) == 0)
 		{
-			f = KMFactory::self()->filterManager()->filter(*sit);
+			f = KXmlCommandManager::self()->loadCommand(*sit);
 			if (f)
 			{
 				m_activefilters.insert(*sit,f);
@@ -221,7 +221,7 @@ void KPFilterPage::setOptions(const QMap<QString,QString>& opts)
 			}
 		}
 		if (f)
-			item = new QListViewItem(m_view,item,f->description(),f->idName());
+			item = new QListViewItem(m_view,item,f->description(),f->name());
 	}
 	checkFilterChain();
 }
@@ -231,7 +231,7 @@ void KPFilterPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	QStringList	filters = activeList();
 	for (QStringList::ConstIterator it=filters.begin(); it!=filters.end(); ++it)
 	{
-		KPrintFilter	*f = m_activefilters.find(*it);
+		KXmlCommand	*f = m_activefilters.find(*it);
 		if (f)
 			f->getOptions(opts, incldef);
 	}
@@ -253,9 +253,9 @@ QStringList KPFilterPage::activeList()
 	return list;
 }
 
-KPrintFilter* KPFilterPage::currentFilter()
+KXmlCommand* KPFilterPage::currentFilter()
 {
-	KPrintFilter	*filter(0);
+	KXmlCommand	*filter(0);
 	if (m_view->currentItem())
 		filter = m_activefilters.find(m_view->currentItem()->text(1));
 	return filter;
@@ -269,10 +269,10 @@ void KPFilterPage::checkFilterChain()
 	while (item)
 	{
 		item->setPixmap(0, (ok ? SmallIcon("filter") : SmallIcon("filterstop")));
-		KPrintFilter	*f1 = m_activefilters.find(item->text(1));
+		KXmlCommand	*f1 = m_activefilters.find(item->text(1));
 		if (f1 && item->nextSibling())
 		{
-			KPrintFilter	*f2 = m_activefilters.find(item->nextSibling()->text(1));
+			KXmlCommand	*f2 = m_activefilters.find(item->nextSibling()->text(1));
 			if (f2)
 			{
 				if (!f2->acceptMimeType(f1->mimeType()))
@@ -301,11 +301,11 @@ bool KPFilterPage::isValid(QString& msg)
 void KPFilterPage::updateInfo()
 {
 	QString	txt;
-	KPrintFilter	*f = currentFilter();
+	KXmlCommand	*f = currentFilter();
 	if (f)
 	{
 		QString	templ("<b>%1:</b> %2<br>");
-		txt.append(templ.arg(i18n("Name")).arg(f->idName()));
+		txt.append(templ.arg(i18n("Name")).arg(f->name()));
 		txt.append(templ.arg(i18n("Requirements")).arg(f->requirements().join(", ")));
 		txt.append(templ.arg(i18n("Input")).arg(f->inputMimeTypes().join(", ")));
 		txt.append(templ.arg(i18n("Output")).arg(f->mimeType()));

@@ -101,8 +101,8 @@ QString KMCupsManager::cupsInstallDir()
 void KMCupsManager::reportIppError(IppRequest *req)
 {
 	int 	status = req->status();
-	if (status == IPP_OK)
-		setErrorMsg(i18n("IPP connection error."));
+	if (status == -1)
+		setErrorMsg(i18n("Connexion to CUPS server failed. Check that the CUPS server is running."));
 	else
 		setErrorMsg(QString::fromLocal8Bit(ippErrorString((ipp_status_t)status)));
 }
@@ -368,26 +368,36 @@ void KMCupsManager::loadServerPrinters()
 	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
 
 	if (req.doRequest("/printers/"))
-		processRequest(&req);
-
-	// get classes
-	req.init();
-	req.setOperation(CUPS_GET_CLASSES);
-	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
-
-	if (req.doRequest("/classes/"))
-		processRequest(&req);
-
-	// load default
-	req.init();
-	req.setOperation(CUPS_GET_DEFAULT);
-	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",QString::fromLatin1("printer-name"));
-	if (req.doRequest("/printers/"))
 	{
-		QString	s = QString::null;
-		req.name("printer-name",s);
-		setHardDefault(findPrinter(s));
+		processRequest(&req);
+
+		// get classes
+		req.init();
+		req.setOperation(CUPS_GET_CLASSES);
+		req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
+
+		if (req.doRequest("/classes/"))
+		{
+			processRequest(&req);
+
+			// load default
+			req.init();
+			req.setOperation(CUPS_GET_DEFAULT);
+			req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",QString::fromLatin1("printer-name"));
+			if (req.doRequest("/printers/"))
+			{
+				QString	s = QString::null;
+				req.name("printer-name",s);
+				setHardDefault(findPrinter(s));
+
+				// everything went OK, just returns
+				return;
+			}
+		}
 	}
+	
+	// something went wrong if we get there, report the error
+	reportIppError(&req);
 }
 
 void KMCupsManager::processRequest(IppRequest* req)

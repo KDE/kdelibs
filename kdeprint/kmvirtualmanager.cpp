@@ -28,8 +28,12 @@
 #include <stdlib.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qdir.h>
 #include <qfileinfo.h>
 #include <klocale.h>
+#include <kstandarddirs.h>
+
+#include <unistd.h>
 
 QString instanceName(const QString& prname, const QString& instname)
 {
@@ -158,15 +162,19 @@ void KMVirtualManager::setAsDefault(KMPrinter *p, const QString& name)
 
 void KMVirtualManager::refresh()
 {
-	QFileInfo	fi(getenv("HOME") + QString::fromLatin1("/.lpoptions"));
-	QFileInfo	fi2(QString::fromLatin1("/etc/cups/lpoptions"));
+	QFileInfo	fi(QDir::homeDirPath() + QFile::decodeName("/.lpoptions"));
+	QFileInfo	fi2(QFile::decodeName("/etc/cups/lpoptions"));
+
+	// if root, then only use global file: trick -> use twice the same file
+	if (getuid() == 0)
+		fi.setFile(fi2.absFilePath());
 
 	if (!m_checktime.isValid() || m_checktime < QMAX(fi.lastModified(),fi2.lastModified()))
 	{
                 m_defaultprinter = QString::null;
 		if (fi2.exists())
 			loadFile(fi2.absFilePath());
-		if (fi.exists())
+		if (fi.exists() && fi.absFilePath() != fi2.absFilePath())
                 	loadFile(fi.absFilePath());
 		m_checktime = QMAX(fi.lastModified(),fi2.lastModified());
 	}
@@ -268,9 +276,19 @@ void KMVirtualManager::loadFile(const QString& filename)
 
 void KMVirtualManager::triggerSave()
 {
-	QString	filename = getenv("HOME") + QString::fromLatin1("/.lpoptions");
-	saveFile(filename);
-	m_checktime = QFileInfo(filename).lastModified();
+	QString	filename;
+	if (getuid() == 0)
+	{
+		if (KStandardDirs::makeDir(QFile::decodeName("/etc/cups")))
+			filename = QFile::decodeName("/etc/cups/lpoptions");
+	}
+	else
+		filename = QDir::homeDirPath() + QFile::decodeName("/.lpoptions");
+	if (!filename.isEmpty())
+	{
+		saveFile(filename);
+		m_checktime = QFileInfo(filename).lastModified();
+	}
 }
 
 void KMVirtualManager::saveFile(const QString& filename)

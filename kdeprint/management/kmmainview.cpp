@@ -48,6 +48,11 @@
 #include <kconfig.h>
 #include <ktoolbar.h>
 #include <kdebug.h>
+#include <kpopupmenu.h>
+#include <klibloader.h>
+#include <kdialogbase.h>
+#include <ksimpleconfig.h>
+#include <kstandarddirs.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->manager()
@@ -74,27 +79,24 @@ extern "C"
 };
 
 KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
-: KMainWindow(parent, name, 0)
+: QWidget(parent, name)
 {
 	m_current = 0;
 
-	QWidget *dummy = new QWidget(this);
-
 	// create widgets
-	m_splitter = new QSplitter(Qt::Vertical,dummy, "Splitter");
+	m_splitter = new QSplitter(Qt::Vertical, this, "Splitter");
 	m_printerview = new KMPrinterView(m_splitter,"PrinterView");
 	m_printerpages = new KMPages(m_splitter,"PrinterPages");
 	m_pop = new QPopupMenu(this);
-	//m_toolbar = new KToolBar(this, "ToolBar");
-	m_toolbar = new KToolBar(this, Qt::DockTop, true, "ToolBar", false, true);
+	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovingEnabled(false);
-	m_plugin = new PluginComboBox(dummy, "Plugin");
-	QLabel	*l1 = new QLabel(i18n("Print system currently used:"), dummy);
+	m_plugin = new PluginComboBox(this, "Plugin");
+	QLabel	*l1 = new QLabel(i18n("Print system currently used:"), this);
 	l1->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
 	// layout
-	QVBoxLayout	*m_layout = new QVBoxLayout(dummy, 0, 0);
-	//m_layout->addWidget(m_toolbar, 0);
+	QVBoxLayout	*m_layout = new QVBoxLayout(this, 0, 0);
+	m_layout->addWidget(m_toolbar, 0);
 	m_layout->addWidget(m_splitter, 1);
 	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 10);
 	m_layout->addSpacing(5);
@@ -113,15 +115,12 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
     if (coll)
 		m_actions = coll;
 	else
-		//m_actions = new KActionCollection(this);
-		m_actions = actionCollection();
+		m_actions = new KActionCollection(this);
 	initActions();
 
 	// first update
 	restoreSettings();
 	loadParameters();
-
-	setCentralWidget(dummy);
 
 	//slotRefresh();
 	KMTimer::self()->release(true);
@@ -130,7 +129,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 KMMainView::~KMMainView()
 {
 	saveSettings();
-	KMFactory::release();
+	//KMFactory::release();
 }
 
 void KMMainView::loadParameters()
@@ -203,6 +202,18 @@ void KMMainView::initActions()
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 
+	KActionMenu	*mact = new KActionMenu(i18n("Printer Tools"), "package_utilities", m_actions, "printer_tool");
+	mact->setDelayed(false);
+	connect(mact->popupMenu(), SIGNAL(activated(int)), SLOT(slotToolSelected(int)));
+	QStringList	files = KGlobal::dirs()->findAllResources("data", "kdeprint/tools/*.desktop");
+	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
+	{
+		KSimpleConfig	conf(*it);
+		conf.setGroup("Desktop Entry");
+		mact->popupMenu()->insertItem(conf.readEntry("Name", "Unnamed"), mact->popupMenu()->count());
+		m_toollist << conf.readEntry("X-KDE-Library");
+	}
+
 	// add actions to the toolbar
 	m_actions->action("printer_add")->plug(m_toolbar);
 	m_actions->action("printer_add_special")->plug(m_toolbar);
@@ -216,6 +227,7 @@ void KMMainView::initActions()
 	m_toolbar->insertSeparator();
 	m_actions->action("printer_configure")->plug(m_toolbar);
 	m_actions->action("printer_test")->plug(m_toolbar);
+	m_actions->action("printer_tool")->plug(m_toolbar);
 	m_pactionsindex = m_toolbar->insertSeparator();
 	m_toolbar->insertLineSeparator();
 	m_actions->action("server_restart")->plug(m_toolbar);
@@ -242,6 +254,8 @@ void KMMainView::slotTimer()
 {
 	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	m_printerview->setPrinterList(printerlist);
+	if (!m_manager->errorMsg().isEmpty())
+		showErrorMsg(i18n("An error occured while retrieving the printer list."));
 }
 
 void KMMainView::slotPrinterSelected(KMPrinter *p)
@@ -272,6 +286,7 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 
 		KMFactory::self()->manager()->validatePluginActions(m_actions, p);
 	//}
+	m_actions->action("printer_tool")->setEnabled(p && !p->isClass(true) && !p->isRemote() && !p->isSpecial());
 }
 
 void KMMainView::setViewType(int ID)
@@ -311,6 +326,7 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 			{
 				m_actions->action("printer_configure")->plug(m_pop);
 				m_actions->action("printer_test")->plug(m_pop);
+				m_actions->action("printer_tool")->plug(m_pop);
 				m_pop->insertSeparator();
 			}
 		}
@@ -506,7 +522,9 @@ void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 		s.append("<br>");
 		s += i18n("Error message received from manager:<br><br>%1").arg(m_manager->errorMsg());
 	}
+	KMTimer::self()->hold();
 	KMessageBox::error(this,s);
+	KMTimer::self()->release();
 }
 
 void KMMainView::slotServerRestart()
@@ -626,6 +644,32 @@ void KMMainView::removePluginActions()
 		(*it)->unplugAll();
 		delete (*it);
 	}
+}
+
+void KMMainView::slotToolSelected(int ID)
+{
+	KMTimer::self()->hold();
+
+	QString	libname = m_toollist[ID];
+	if (m_current && !m_current->device().isEmpty() && !libname.isEmpty())
+	{
+		KLibFactory	*factory = KLibLoader::self()->factory(libname.local8Bit());
+		if (factory)
+		{
+			KDialogBase	*dlg = static_cast<KDialogBase*>(factory->create(this, "Tool", 0, QStringList(m_current->device().url())));
+			if (dlg)
+				dlg->exec();
+			delete dlg;
+		}
+	}
+	else
+		KMessageBox::error(this,
+			i18n("Unable to start printer tool. Possible reasons are: "
+			     "no printer selected, the selected printer doesn't have "
+			     "any local device defined (printer port), or the tool library "
+			     "could not be found."));
+	
+	KMTimer::self()->release();
 }
 
 #include "kmmainview.moc"

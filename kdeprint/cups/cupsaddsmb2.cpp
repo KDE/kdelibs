@@ -49,9 +49,9 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	connect(&m_proc, SIGNAL(processExited(KProcess*)), SLOT(slotProcessExited(KProcess*)));
 
 	m_side = new SidePixmap(this);
-	m_doit = new QPushButton(i18n("Export"), this);
-	m_cancel = new QPushButton(i18n("Cancel"), this);
-	m_passbtn = new QPushButton(i18n("Change Login/Password"), this);
+	m_doit = new QPushButton(i18n("&Export"), this);
+	m_cancel = new QPushButton(i18n("&Cancel"), this);
+	m_passbtn = new QPushButton(i18n("Change &Login/Password"), this);
 	connect(m_cancel, SIGNAL(clicked()), SLOT(reject()));
 	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
 	connect(m_passbtn, SIGNAL(clicked()), SLOT(slotChangePassword()));

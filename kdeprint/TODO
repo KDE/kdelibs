@@ -28,12 +28,7 @@
 
 - support for job priority.
 
-- make the log window of kdeprintfax a real log window (refreshing
-  mechanism) -> has to be made a non temporary dialog as it is the
-  case now.
+- job option edition through graphical dialog (extract print options
+  from request and rebuild a printer properties dialog)
 
-- support for options in pseudo-printers (see bug #35305). This
-  would imply:
-  	. put pseudo-printer into XML file (like filter)
-	. construct command-line from options
-	. add "Options" tab in printer properties
+- support for external printer tool

@@ -1,0 +1,64 @@
+<!DOCTYPE kprintfilter>
+<kprintfilter name="ps2pdf" >
+ <filtercommand data="ps2pdf -sPAPERSIZE=%psl %filterargs %filterinput %filteroutput" />
+ <filterargs name="ps2pdf" description="" >
+  <filtergroup name="general" description="General" >
+   <filterarg format="-r%value" type="list" name="resol" default="300x300" description="Resolution" >
+    <value name="72x72" description="72 dpi" />
+    <value name="144x144" description="144 dpi" />
+    <value name="300x300" description="300 dpi" />
+    <value name="600x600" description="600 dpi" />
+    <value name="1200x1200" description="1200 dpi" />
+    <value name="2400x2400" description="2400 dpi" />
+   </filterarg>
+  </filtergroup>
+  <filtergroup name="image" description="Image Options" >
+   <filtergroup name="colorimage" description="Color Images" >
+    <filterarg format="-dDownsampleColorImages=true" type="bool" name="coldownsampl" default="false" description="Downsample color images" >
+     <value name="true" description="Enabled" />
+     <value name="false" description="Disabled" />
+    </filterarg>
+    <filterarg format="-dColorImageResolution=%value" type="int" min="9" max="2400" name="colimageres" default="72" description="Maximum color image resolution" />
+    <filterarg format="-sColorImageDownsampleType=%value" type="list" name="colsampltype" default="Subsample" description="Color images downsampling method" >
+     <value name="Subsample" description="Sub-sampling" />
+     <value name="Average" description="Averaging" />
+     <value name="Bicubic" description="Bicubic interpolation" />
+    </filterarg>
+    <filterarg format="-dColorImageDepth=%value" type="list" name="coldepth" default="-1" description="Color images depth" >
+     <value name="-1" description="Use the depth of the original" />
+     <value name="1" description="1" />
+     <value name="2" description="2" />
+     <value name="4" description="4" />
+     <value name="8" description="8" />
+    </filterarg>
+   </filtergroup>
+   <filtergroup name="grayimage" description="Grayscale Images" >
+    <filterarg format="-dDownsampleGrayImages=true" type="bool" name="graydownsampl" default="false" description="Down sample grayscale images" >
+     <value name="true" description="Enabled" />
+     <value name="false" description="Disabled" />
+    </filterarg>
+    <filterarg format="-dGrayImageResolution=%value" type="int" min="9" max="2400" name="grayimageres" default="72" description="Maximum grayscale image resolution" />
+    <filterarg format="-sGrayImageDownsampleType=%value" type="list" name="graysampltype" default="Subsample" description="Grayscale images downsampling method" >
+     <value name="Subsample" description="Sub-sampling" />
+     <value name="Average" description="Averaging" />
+     <value name="Bicubic" description="Bicubic interpolation" />
+    </filterarg>
+    <filterarg format="-dGrayImageDepth=%value" type="list" name="graydepth" default="-1" description="Grayscale images depth" >
+     <value name="-1" description="Use the depth of the original" />
+     <value name="1" description="1" />
+     <value name="2" description="2" />
+     <value name="4" description="4" />
+     <value name="8" description="8" />
+    </filterarg>
+   </filtergroup>
+  </filtergroup>
+ </filterargs>
+ <filterinput>
+  <filterarg format="%in" name="file" />
+  <filterarg format="-" name="pipe" />
+ </filterinput>
+ <filteroutput>
+  <filterarg format="%out" name="file" />
+  <filterarg format="-" name="pipe" />
+ </filteroutput>
+</kprintfilter>

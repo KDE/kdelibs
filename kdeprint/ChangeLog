@@ -213,3 +213,50 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     internally to fix problems when dealing with several windows opened.
     This new mechanism should also be applied to print management dynamic
     actions (more consistent).
+
+28/11/2001 Michael Goffioul <goffioul@imec.be>
+  * special printers: added the possibility to have configurable options
+    in pseudo-printers. Options are described in an additional XML file
+    (like filters) and configured through an "Advanced" tab in the property
+    dialog. TODO: graphical configuration widget + apply KXmlCommand to
+    normal filters.
+
+29/11/2001 Michael Goffioul <goffioul@imec.be>
+  * general: fixed sorting of options in driver view. They should be shown
+    in order of appearance now.
+  * general: make use of the new KXmlCommand class for filters too.
+  * filters: removed the "Page Size" from the options of enscript filter,
+    this is taken from the KPrinter object now.
+
+04/12/2001 Michael Goffioul <goffioul@imec.be>
+  * general: finalized the new XML command mechanism:
+  	. graphical command builder
+	. pseudo-printers and filters are completely based on new XML
+	  object, though old style is supported (only requirements from
+	  previous mechanism are not used).
+	. KPrintFilter and KMFilterManager are now obsolete and replaced
+	  by KXmlCommand and KXmlCommandManager respectively.
+  * kdeprintfax: made the log window a "real" log window. It is dynamically
+    refreshed on new debug output arrival (suggested by user).
+
+10/12/2001 Michael Goffioul <goffioul@imec.be>
+  * general: make use of "Detail" mechanism of KDialogBase in XML command
+    editor.
+
+11/12/2001 Michael Goffioul <goffioul@imec.be>
+  * instances: for root, instances are saved in global file 
+    /etc/cups/lpoptions. This allows to easily create global instances
+    (just be root and create the instance).
+  * pseudo-printers: for root, pseudo printers are saved in a global
+    file, such that root is able to manage global pseudo printers. Locale
+    pseudo printers still override global ones if they have the same name.
+
+12/12/2001 Michael Goffioul <goffioul@imec.be>
+  * general: added error messages when the printer list cannot be retrieved
+    in print manager and print dialog. With CUPS, if the server is not
+    running, an error message is shown to the user.
+  * CUPS: disabled all backends if no server is running.
+
+13/12/2001 Michael Goffioul <goffioul@imec.be>
+  * general: preleminary support for external printer tool. Only escputil
+    at this moment.

@@ -42,6 +42,11 @@ KMTimer::KMTimer(QObject *parent, const char *name)
 	connect(this, SIGNAL(timeout()), SLOT(slotTimeout()));
 }
 
+KMTimer::~KMTimer()
+{
+	m_self = 0;
+}
+
 void KMTimer::hold()
 {
 	if ((m_count++) == 0)

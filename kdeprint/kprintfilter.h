@@ -39,10 +39,14 @@ public:
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 	QString idName() const;
 	QString description() const;
+	void setDescription(const QString&);
 	QString mimeType() const;
+	void setMimeType(const QString&);
 	bool acceptMimeType(const QString& mimetype);
 	QStringList inputMimeTypes() const;
+	void setInputMimeTypes(const QStringList&);
 	QStringList requirements() const;
+	void setRequirements(const QStringList&);
 
 private:
 	struct KPrintFilterIO;
