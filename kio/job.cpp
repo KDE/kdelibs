@@ -282,7 +282,6 @@ void TransferJob::slotRedirection( const KURL &url)
 {
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.url() << ")" << endl;
     m_redirectionURL = url;
-    emit redirection( url );
     // We'll remember that when the job finishes
 }
 
@@ -291,6 +290,8 @@ void TransferJob::slotFinished()
     if ( m_redirectionURL.isEmpty() || m_error )
         SimpleJob::slotFinished();
     else {
+        // tell the user that we havn't finished yet
+        emit redirection(m_redirectionURL);
         // Honour the redirection
         // We take the approach of "redirecting this same job"
         // Another solution would be to create a subjob, but the same problem
