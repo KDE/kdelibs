@@ -181,6 +181,8 @@ KInstance *KHTMLFactory::instance()
     s_about->addAuthor( "Lars Knoll", 0, "knoll@kde.org" );
     s_about->addAuthor( "Antti Koivisto", 0, "koivisto@kde.org" );
     s_about->addAuthor( "Waldo Bastian", 0, "bastian@kde.org" );
+    s_about->addAuthor( "Dirk Mueller", 0, "mueller@kde.org" );
+    s_about->addAuthor( "Peter Kelly", 0, "ptrkelly@hotmail.com" );
     s_about->addAuthor( "Torben Weis", 0, "weis@kde.org" );
     s_about->addAuthor( "Martin Jones", 0, "mjones@kde.org" );
     s_about->addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
