@@ -947,9 +947,18 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         // these are the defaults, don't change them
         break;
     case ATTR_MAXLENGTH:
-        m_maxLen = attr->val() ? attr->val()->toInt() : -1;
+    {
+        m_maxLen = -1;
+        if (!attr->val()) break;
+        bool ok;
+        m_maxLen = attr->val()->toInt(&ok);
+        if (!ok)
+            m_maxLen = -1;
+        else if (m_maxLen < 0)
+            m_maxLen = 0;
         setChanged();
-        break;
+    }
+    break;
     case ATTR_SIZE:
         m_size = attr->val() ? attr->val()->toInt() : 20;
         break;
@@ -1261,6 +1270,7 @@ DOMString HTMLInputElementImpl::value() const
     if(m_value.isNull())
         return (m_type == CHECKBOX || m_type ==RADIO) ?
             DOMString("on") : DOMString("");
+
     return m_value;
 }
 
