@@ -89,10 +89,11 @@ public slots:
 
 protected:
     virtual void handleFocusOut() {}
+    bool event( QEvent *e );
 
     bool eventFilter(QObject* /*o*/, QEvent* e);
     void setQWidget(QWidget *widget);
-    void resizeWidget( QWidget *widget, int w, int h );
+    void resizeWidget( int w, int h );
 
     QWidget *m_widget;
     KHTMLView* m_view;

@@ -86,8 +86,7 @@ void RenderFormElement::layout()
     calcHeight();
 
     if ( m_widget )
-        resizeWidget(m_widget,
-                     m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+        resizeWidget(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
 
     if ( !style()->width().isPercent() )
