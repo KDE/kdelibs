@@ -502,6 +502,11 @@ public:
 	{	linkCursor = c; }
 
     /**
+     * Returns the cursor which is used when the cursor is on a link.
+     */
+    const QCursor& getURLCursor() { return linkCursor; }
+
+    /**
      * Cryptic?  This is used to set the number of tokens to parse
      * in one timeslice during background processing.
      *
