@@ -62,6 +62,7 @@ extern "C" { int kdemain(int argc, char **argv); }
 
 int kdemain( int argc, char **argv )
 {
+  KLocale::setMainCatalogue("kdelibs");
   KInstance instance( "kio_ftp" );
 
   kdDebug(7102) << "Starting " << getpid() << endl;
