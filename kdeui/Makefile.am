@@ -45,7 +45,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		klineeditdlg.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h qxembed.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
-		kjanuswidget.h kaboutdialog.h kaboutdialog_private.h kpixmapeffect.h \
+		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
 		kauthicon.h kmessagebox.h ksharedpixmap.h \
 		kdualcolorbtn.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h \
@@ -87,7 +87,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp \
 		kcolorcombo.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h kkeybutton.h \
-		kdialogbase_priv.h
+		kdialogbase_priv.h kaboutdialog_private.h
 
 libkdeui_la_METASOURCES = AUTO
 
