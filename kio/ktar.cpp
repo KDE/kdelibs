@@ -82,7 +82,7 @@ bool KTarBase::open( int mode )
       int n = read( buffer, 0x200 );
       if ( n == 0x200 && buffer[0] != 0 )
       {
-        QString name( buffer );
+        QString name( QString::fromLocal8Bit(buffer) );
 
         // If filename is longer than 100 (0x64) chars, then tar uses ././@LongLink (David)
         if ( name == "././@LongLink" )
@@ -92,7 +92,7 @@ bool KTarBase::open( int mode )
           n = read( buffer, 0x200 );
           if ( n == 0x200 && buffer[0] != 0 )
           {
-            name = buffer;
+            name = QString::fromLocal8Bit(buffer);
             // 2) read yet another 512b buffer, for permissions, time, size ...
             n = read( buffer, 0x200 );
             if (!( n == 0x200 && buffer[0] != 0 ))
