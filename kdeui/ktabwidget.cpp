@@ -18,114 +18,137 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "ktabwidget.h"
-#include "ktabbar.h"
 #include <kiconloader.h>
 
+#include "ktabwidget.h"
+#include "ktabbar.h"
+
 KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
-    : QTabWidget( parent, name, f ), mTabReordering( false )
+    : QTabWidget( parent, name, f )
 {
-  m_pTabBar = new KTabBar(this, "tabbar");
-  setTabBar(m_pTabBar);
-  setAcceptDrops(TRUE);
+    setTabBar( new KTabBar(this, "tabbar") );
+    setAcceptDrops( true );
 
-  connect(m_pTabBar, SIGNAL(contextMenu( QWidget *, const QPoint & )), this, SIGNAL(contextMenu( QWidget *, const QPoint & )));
-  connect(m_pTabBar, SIGNAL(mouseDoubleClick( QWidget * )), this, SIGNAL(mouseDoubleClick( QWidget * )));
-  connect(m_pTabBar, SIGNAL(mouseMiddleClick( QWidget * )), this, SIGNAL(mouseMiddleClick( QWidget * )));
-  connect(m_pTabBar, SIGNAL(dragInitiated( QWidget * )), this, SIGNAL(dragInitiated( QWidget * )));
-  connect(m_pTabBar, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )), this, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )));
-  connect(m_pTabBar, SIGNAL(moveTab( int, int )), this, SLOT(moveTab( int, int )));
-}
-
-bool KTabWidget::isTabReorderingEnabled() const
-{
-  return mTabReordering;
-}
-
-void KTabWidget::setTabReorderingEnabled( bool on)
-{
-  mTabReordering = on;
-}
-
-void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
-{
-  if ( isEmptyTabbarSpace( e->pos() ) ) {
-    e->accept(true);  // How to make it conditional?
-    return;
-  }
-  e->accept(false);
-  QTabWidget::dragMoveEvent( e );
-}
-
-void KTabWidget::dropEvent( QDropEvent *e )
-{
-  if ( isEmptyTabbarSpace( e->pos() ) ) {
-    emit ( receivedDropEvent( e ) );
-    return;
-  }
-  QTabWidget::dropEvent( e );
-}
-
-void KTabWidget::mousePressEvent( QMouseEvent *e )
-{
-  if ( e->button() == RightButton ) {
-    if ( isEmptyTabbarSpace( e->pos() ) ) {
-      emit( tabbarContextMenu( mapToGlobal( e->pos() ) ) );
-      return;
-    }
-  }
-  QTabWidget::mousePressEvent( e );
-}
-
-void KTabWidget::moveTab( int from, int to )
-{
-  QString tablabel = label( from );
-  QWidget* w = page( from );
-  QColor color = tabColor( w );
-  QIconSet tabiconset = tabIconSet( w );
-  QString tabtooltip = tabToolTip( w );
-  bool current = (w == currentPage() );
-  removePage( w );
-
-  insertTab( w, tablabel, to );
-  w = page( to );
-  changeTab( w, tabiconset, tablabel );
-  setTabToolTip( w, tabtooltip );
-  setTabColor( w, color );
-  if ( current )
-    showPage( w );
-
-  emit ( movedTab( from, to ) );
-}
-
-bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
-{
-  QPoint point(p);
-  QSize size( m_pTabBar->sizeHint() );
-  if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
-    if ( cornerWidget( TopLeft ) )
-      point.setX( point.x()-size.height() );
-    if ( tabPosition()==Bottom )
-      point.setY( point.y()-( height()-size.height() ) );
-    QTab *tab = m_pTabBar->selectTab( point);
-    if( tab== 0L )
-      return true;
-  }
-  return false;
+    connect(tabBar(), SIGNAL(contextMenu( const int, const QPoint & )), SLOT(contextMenu( const int, const QPoint & )));
+    connect(tabBar(), SIGNAL(mouseDoubleClick( const int )), SLOT(mouseDoubleClick( const int )));
+    connect(tabBar(), SIGNAL(mouseMiddleClick( const int )), SLOT(mouseMiddleClick( const int )));
+    connect(tabBar(), SIGNAL(dragInitiated( const int )), SLOT(dragInitiated( const int )));
+    connect(tabBar(), SIGNAL(receivedDropEvent( const int, QDropEvent * )), SLOT(receivedDropEvent( const int, QDropEvent * )));
+    connect(tabBar(), SIGNAL(moveTab( const int, const int )), SLOT(moveTab( const int, const int )));
 }
 
 void KTabWidget::setTabColor( QWidget *w, const QColor& color )
 {
-    QTab * t = m_pTabBar->tabAt( indexOf( w ) );
-
-    m_pTabBar->setTabColor( t->identifier(), color );
+    QTab *t = tabBar()->tabAt( indexOf( w ) );
+    ( (KTabBar*)tabBar() )->setTabColor( t->identifier(), color );
 }
 
-QColor KTabWidget::tabColor( QWidget * w ) const
+QColor KTabWidget::tabColor( QWidget *w ) const
 {
-    QTab * t = m_pTabBar->tabAt( indexOf( w ) );
+    QTab *t = tabBar()->tabAt( indexOf( w ) );
+    return ( (KTabBar*)tabBar() )->tabColor( t->identifier() );
+}
 
-    return m_pTabBar->tabColor( t->identifier() );
+void KTabWidget::setTabReorderingEnabled( bool on)
+{
+    ( (KTabBar*)tabBar() )->setTabReorderingEnabled( on );
+}
+
+bool KTabWidget::isTabReorderingEnabled() const
+{
+    return ( (KTabBar*)tabBar() )->isTabReorderingEnabled();
+}
+
+void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
+{
+    if ( isEmptyTabbarSpace( e->pos() ) ) {
+        e->accept( true );  // How to make it conditional?
+        return;
+    }
+    e->accept( false );
+    QTabWidget::dragMoveEvent( e );
+}
+
+void KTabWidget::dropEvent( QDropEvent *e )
+{
+    if ( isEmptyTabbarSpace( e->pos() ) ) {
+        emit ( receivedDropEvent( e ) );
+        return;
+    }
+    QTabWidget::dropEvent( e );
+}
+
+void KTabWidget::mousePressEvent( QMouseEvent *e )
+{
+    if ( e->button() == RightButton ) {
+        if ( isEmptyTabbarSpace( e->pos() ) ) {
+            emit( tabbarContextMenu( mapToGlobal( e->pos() ) ) );
+            return;
+        }
+    }
+    QTabWidget::mousePressEvent( e );
+}
+
+void KTabWidget::receivedDropEvent( const int index, QDropEvent *e )
+{
+    emit( receivedDropEvent( page( index ), e ) );
+}
+
+void KTabWidget::dragInitiated( const int index )
+{
+    emit( dragInitiated( page( index ) ) );
+}
+
+void KTabWidget::contextMenu( const int index, const QPoint &p )
+{
+    emit( contextMenu( page( index ), p ) );
+}
+
+void KTabWidget::mouseDoubleClick( const int index )
+{
+    emit( mouseDoubleClick( page( index ) ) );
+}
+
+void KTabWidget::mouseMiddleClick( const int index )
+{
+    emit( mouseMiddleClick( page( index ) ) );
+}
+
+void KTabWidget::moveTab( const int from, const int to )
+{
+    QString tablabel = label( from );
+    QWidget *w = page( from );
+    QColor color = tabColor( w );
+    QIconSet tabiconset = tabIconSet( w );
+    QString tabtooltip = tabToolTip( w );
+    bool current = ( w == currentPage() );
+    removePage( w );
+
+    insertTab( w, tablabel, to );
+    w = page( to );
+    changeTab( w, tabiconset, tablabel );
+    setTabToolTip( w, tabtooltip );
+    setTabColor( w, color );
+    if ( current )
+        showPage( w );
+
+    emit ( movedTab( from, to ) );
+}
+
+bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
+{
+    QPoint point( p );
+    QSize size( tabBar()->sizeHint() );
+    if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
+        if ( cornerWidget( TopLeft ) )
+            point.setX( point.x()-size.height() );
+        if ( tabPosition()==Bottom )
+            point.setY( point.y()-( height()-size.height() ) );
+        QTab *tab = tabBar()->selectTab( point);
+        if( tab== 0L )
+            return true;
+    }
+    return false;
 }
 
 #include "ktabwidget.moc"

@@ -35,29 +35,33 @@ public:
     QColor tabColor( int ) const;
     void setTabColor( int, const QColor& );
 
+    void setTabReorderingEnabled( bool enable );
+    bool isTabReorderingEnabled() const;
+
 signals:
-    void contextMenu( QWidget *, const QPoint & );
-    void mouseDoubleClick( QWidget * );
-    void mouseMiddleClick( QWidget * );
-    void dragInitiated( QWidget * );
-    void receivedDropEvent( QWidget *, QDropEvent * );
-    void moveTab( int, int );
+    void contextMenu( const int, const QPoint & );
+    void mouseDoubleClick( const int );
+    void mouseMiddleClick( const int );
+    void dragInitiated( const int );
+    void receivedDropEvent( const int, QDropEvent * );
+    void moveTab( const int, const int );
 
 protected:
     virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
 
 protected slots:
-    virtual void mouseDoubleClickEvent(QMouseEvent *e);
-    virtual void mousePressEvent(QMouseEvent *e);
-    virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual void mouseReleaseEvent(QMouseEvent *e);
-    virtual void dragMoveEvent( QDragMoveEvent * );
-    virtual void dropEvent( QDropEvent * );
+    virtual void mouseDoubleClickEvent( QMouseEvent *e );
+    virtual void mousePressEvent( QMouseEvent *e );
+    virtual void mouseMoveEvent( QMouseEvent *e );
+    virtual void mouseReleaseEvent( QMouseEvent *e );
+    virtual void dragMoveEvent( QDragMoveEvent *e );
+    virtual void dropEvent( QDropEvent *e );
 
 private:
     QPoint mDragStart;
-    int    reorderStartTab,previousTabIndex;
+    int    reorderStartTab, previousTabIndex;
     QMap<int, QColor> tabColors;
+    bool mTabReordering;
 
     KTabBarPrivate * d;
 };

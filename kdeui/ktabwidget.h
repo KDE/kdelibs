@@ -22,9 +22,7 @@
 #define KTABWIDGET_H
 
 #include <qtabwidget.h>
-#include "ktabbar.h"
 
-class KTabBar;
 class KTabWidgetPrivate;
 
 class KTabWidget : public QTabWidget
@@ -53,14 +51,20 @@ protected slots:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
-    virtual void moveTab( int, int );
+    virtual void moveTab( const int, const int );
+
+    virtual void receivedDropEvent( const int, QDropEvent * );
+    virtual void dragInitiated( const int );
+    virtual void contextMenu( const int, const QPoint & );
+    virtual void mouseDoubleClick( const int );
+    virtual void mouseMiddleClick( const int );
 
 signals:
     void tabbarContextMenu( const QPoint & );
     void receivedDropEvent( QDropEvent * );
     void receivedDropEvent( QWidget *, QDropEvent * );
     void dragInitiated( QWidget * );
-    void movedTab( int, int );
+    void movedTab( const int, const int );
 
     void contextMenu( QWidget *, const QPoint & );
     void mouseDoubleClick( QWidget * );
@@ -68,9 +72,6 @@ signals:
 
 private:
     bool isEmptyTabbarSpace( const QPoint & );
-
-    bool mTabReordering;
-    KTabBar *m_pTabBar;
 
     KTabWidgetPrivate *d;
 };

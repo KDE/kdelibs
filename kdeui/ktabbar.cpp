@@ -18,140 +18,136 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "ktabbar.h"
-#include "ktabwidget.h"
 #include <qpainter.h>
 #include <qstyle.h>
+
 #include <kglobalsettings.h>
 
-KTabBar::KTabBar( QWidget * parent, const char *name )
+#include "ktabbar.h"
+#include "ktabwidget.h"
+
+KTabBar::KTabBar( QWidget *parent, const char *name )
     : QTabBar( parent, name ), reorderStartTab( -1 ), previousTabIndex( -1 )
 {
-  setAcceptDrops(TRUE);
+    setAcceptDrops(TRUE);
 }
 
-void KTabBar::mouseDoubleClickEvent(QMouseEvent *e)
+void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 {
-  QTab *tab = selectTab( e->pos() );
-  if( tab!= 0L ) {
-    QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
-    emit( mouseDoubleClick( page ) );
-    return;
-  }
-  QTabBar::mouseDoubleClickEvent(e);
-}
-
-void KTabBar::mousePressEvent(QMouseEvent *e)
-{
-  if(e->button() == LeftButton || e->button() == LeftButton) {
-    mDragStart = e->pos();
-  }
-  else if(e->button() == RightButton) {
-    QTab *tab = selectTab(e->pos() );
+    QTab *tab = selectTab( e->pos() );
     if( tab!= 0L ) {
-      QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
-      emit( contextMenu( page, mapToGlobal( e->pos() ) ) );
-      return;
+        emit( mouseDoubleClick( indexOf( tab->identifier() ) ) );
+        return;
     }
-  }
-  QTabBar::mousePressEvent(e);
+    QTabBar::mouseDoubleClickEvent( e );
 }
 
-void KTabBar::mouseMoveEvent(QMouseEvent *e)
+void KTabBar::mousePressEvent( QMouseEvent *e )
 {
-  if (e->state() == LeftButton) {
-    int delay = KGlobalSettings::dndEventDelay();
-    QPoint newPos = e->pos();
-    if(newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
-       newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay)
-    {
-      QTab *tab = selectTab(e->pos() );
-      if( tab!= 0L ) {
-        QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
-        emit( dragInitiated( page ) );
-        return;
-      }
-    }
-  }
-  else if (e->state() == MidButton) {
-    if (reorderStartTab==-1) {
-      int delay = KGlobalSettings::dndEventDelay();
-      QPoint newPos = e->pos();
-      if(newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
-         newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay)
-      {
-        QTab *tab = selectTab(e->pos() );
-        if( tab!= 0L && ((KTabWidget*)parent())->isTabReorderingEnabled() ) {
-          reorderStartTab = indexOf( tab->identifier() );
-          setMouseTracking(true);
-          grabMouse(sizeAllCursor);
-          return;
+    if( e->button() == LeftButton || e->button() == LeftButton )
+        mDragStart = e->pos();
+    else if( e->button() == RightButton ) {
+        QTab *tab = selectTab( e->pos() );
+        if( tab!= 0L ) {
+            emit( contextMenu( indexOf( tab->identifier() ), mapToGlobal( e->pos() ) ) );
+            return;
         }
-      }
     }
-    else {
-      QTab *tab = selectTab(e->pos() );
-      if( tab!= 0L ) {
-        int reorderStopTab = indexOf( tab->identifier() );
-        if (reorderStartTab!=reorderStopTab && previousTabIndex!=reorderStopTab) {
-          emit( moveTab( reorderStartTab, reorderStopTab ) );
-          previousTabIndex=reorderStartTab;
-          reorderStartTab=reorderStopTab;
-          return;
-        }
-      }
-    }
-  }
-  QTabBar::mouseMoveEvent(e);
+    QTabBar::mousePressEvent( e );
 }
 
-void KTabBar::mouseReleaseEvent(QMouseEvent *e)
+void KTabBar::mouseMoveEvent( QMouseEvent *e )
 {
-  if(e->button() == MidButton) {
-    QTab *tab = selectTab(e->pos() );
-    if (reorderStartTab==-1) {
-      if( tab!= 0L ) {
-        QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
-        emit( mouseMiddleClick( page ) );
-        return;
-      }
+    if ( e->state() == LeftButton ) {
+        int delay = KGlobalSettings::dndEventDelay();
+        QPoint newPos = e->pos();
+        if( newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
+            newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
+         {
+            QTab *tab = selectTab( e->pos() );
+            if( tab!= 0L ) {
+                emit( dragInitiated( indexOf( tab->identifier() ) ) );
+                return;
+           }
+       }
     }
-    else {
-      releaseMouse();
-      setCursor(arrowCursor);
-      setMouseTracking(false);
-      reorderStartTab=-1;
-      previousTabIndex=-1;
+    else if ( e->state() == MidButton ) {
+        if (reorderStartTab==-1) {
+            int delay = KGlobalSettings::dndEventDelay();
+            QPoint newPos = e->pos();
+            if( newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
+                newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
+            {
+                QTab *tab = selectTab( e->pos() );
+                if( tab!= 0L && mTabReordering ) {
+                    reorderStartTab = indexOf( tab->identifier() );
+                    setMouseTracking( true );
+                    grabMouse( sizeAllCursor );
+                    return;
+                }
+            }
+        }
+        else {
+            QTab *tab = selectTab( e->pos() );
+            if( tab!= 0L ) {
+                int reorderStopTab = indexOf( tab->identifier() );
+                if ( reorderStartTab!=reorderStopTab && previousTabIndex!=reorderStopTab ) {
+                    emit( moveTab( reorderStartTab, reorderStopTab ) );
+                    previousTabIndex=reorderStartTab;
+                    reorderStartTab=reorderStopTab;
+                    return;
+                }
+            }
+        }
     }
-  }
-  QTabBar::mouseReleaseEvent(e);
+    QTabBar::mouseMoveEvent( e );
+}
+
+void KTabBar::mouseReleaseEvent( QMouseEvent *e )
+{
+    if( e->button() == MidButton ) {
+        QTab *tab = selectTab( e->pos() );
+        if ( reorderStartTab==-1 ) {
+            if( tab!= 0L ) {
+                emit( mouseMiddleClick( indexOf( tab->identifier() ) ) );
+                return;
+            }
+        }
+        else {
+            releaseMouse();
+            setCursor( arrowCursor );
+            setMouseTracking( false );
+            reorderStartTab=-1;
+            previousTabIndex=-1;
+        }
+    }
+    QTabBar::mouseReleaseEvent( e );
 }
 
 void KTabBar::dragMoveEvent( QDragMoveEvent *e )
 {
-  QTab *tab = selectTab(e->pos() );
-  if( tab!= 0L ) {
-    e->accept(true);  // How to make it conditional?
-    return;
-  }
-  e->accept(false);
-  QTabBar::dragMoveEvent( e );
+    QTab *tab = selectTab( e->pos() );
+    if( tab!= 0L ) {
+        e->accept( true );  // How to make it conditional?
+        return;
+    }
+    e->accept( false );
+    QTabBar::dragMoveEvent( e );
 }
 
 void KTabBar::dropEvent( QDropEvent *e )
 {
-  QTab *tab = selectTab(e->pos() );
-  if( tab!= 0L ) {
-    QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
-    emit( receivedDropEvent( page, e ) );
-    return;
-  }
-  QTabBar::dropEvent( e );
+    QTab *tab = selectTab( e->pos() );
+    if( tab!= 0L ) {
+        emit( receivedDropEvent( indexOf( tab->identifier() ) , e ) );
+        return;
+    }
+    QTabBar::dropEvent( e );
 }
 
 void KTabBar::setTabColor( int id, const QColor& color )
 {
-    QTab * t = tab( id );
+    QTab *t = tab( id );
     if ( t ) {
         tabColors.insert( id, color );
         repaint( t->rect() );
@@ -160,48 +156,58 @@ void KTabBar::setTabColor( int id, const QColor& color )
 
 QColor KTabBar::tabColor( int id  ) const
 {
-    if ( tabColors.contains( id ) ) {
+    if ( tabColors.contains( id ) )
         return tabColors[id];
-    }
+
     return colorGroup().foreground();
 }
 
-void KTabBar::paintLabel( QPainter* p, const QRect& br,
-			  QTab* t, bool has_focus ) const
+void KTabBar::paintLabel( QPainter *p, const QRect& br,
+                          QTab *t, bool has_focus ) const
 {
     QRect r = br;
     bool selected = currentTab() == t->identifier();
-    if ( t->iconSet()) {
-	// the tab has an iconset, draw it in the right mode
-	QIconSet::Mode mode = (t->isEnabled() && isEnabled())
-	    ? QIconSet::Normal : QIconSet::Disabled;
-	if ( mode == QIconSet::Normal && has_focus )
-	    mode = QIconSet::Active;
-	QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, mode );
-	int pixw = pixmap.width();
-	int pixh = pixmap.height();
-	r.setLeft( r.left() + pixw + 4 );
-	r.setRight( r.right() + 2 );
-	// ### the pixmap shift should probably not be hardcoded..
-	p->drawPixmap( br.left() + 2 + ((selected == TRUE) ? 0 : 2),
-		       br.center().y()-pixh/2 + ((selected == TRUE) ? 0 : 2),
-		       pixmap );
+    if ( t->iconSet() ) {
+        // the tab has an iconset, draw it in the right mode
+        QIconSet::Mode mode = ( t->isEnabled() && isEnabled() )
+                                 ? QIconSet::Normal : QIconSet::Disabled;
+        if ( mode == QIconSet::Normal && has_focus )
+            mode = QIconSet::Active;
+        QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, mode );
+        int pixw = pixmap.width();
+        int pixh = pixmap.height();
+        r.setLeft( r.left() + pixw + 4 );
+        r.setRight( r.right() + 2 );
+        // ### the pixmap shift should probably not be hardcoded..
+        p->drawPixmap( br.left() + 2 + ((selected == TRUE) ? 0 : 2),
+                         br.center().y()-pixh/2 + ((selected == TRUE) ? 0 : 2),
+                         pixmap );
     }
 
     QStyle::SFlags flags = QStyle::Style_Default;
 
-    if (isEnabled() && t->isEnabled())
-	flags |= QStyle::Style_Enabled;
-    if (has_focus)
-	flags |= QStyle::Style_HasFocus;
+    if ( isEnabled() && t->isEnabled() )
+        flags |= QStyle::Style_Enabled;
+    if ( has_focus )
+        flags |= QStyle::Style_HasFocus;
 
     QColorGroup cg( colorGroup() );
     if ( tabColors.contains( t->identifier() ) )
         cg.setColor( QColorGroup::Foreground, tabColors[t->identifier()] );
 
     style().drawControl( QStyle::CE_TabBarLabel, p, this, r,
-			 t->isEnabled() ? cg : palette().disabled(),
-			 flags, QStyleOption(t) );
+                             t->isEnabled() ? cg : palette().disabled(),
+                             flags, QStyleOption(t) );
+}
+
+bool KTabBar::isTabReorderingEnabled() const
+{
+    return mTabReordering;
+}
+
+void KTabBar::setTabReorderingEnabled( bool on )
+{
+    mTabReordering = on;
 }
 
 #include "ktabbar.moc"

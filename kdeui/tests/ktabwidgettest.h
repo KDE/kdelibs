@@ -38,7 +38,7 @@ private slots:
   void receivedDropEvent( QWidget *, QDropEvent * );
   void mouseDoubleClick(QWidget*);
   void mouseMiddleClick(QWidget*);
-  void movedTab( int, int );
+  void movedTab( const int, const int );
 
   void leftPopupActivated(int);
   void rightPopupActivated(int);

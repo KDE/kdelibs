@@ -19,15 +19,15 @@ Test::Test( QWidget* parent, const char *name )
   mWidget->setTabColor( mWidget->page(0), Qt::red );
   mWidget->setTabColor( mWidget->page(1), Qt::blue );
 
-  connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), this, SLOT( currentChanged( QWidget * ) ) );
-  connect( mWidget, SIGNAL( contextMenu( QWidget *, const QPoint & )), this, SLOT(contextMenu( QWidget *, const QPoint & )));
-  connect( mWidget, SIGNAL( tabbarContextMenu( const QPoint & )), this, SLOT(tabbarContextMenu( const QPoint & )));
-  connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), this, SLOT(mouseDoubleClick( QWidget * )));
-  connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), this, SLOT(mouseMiddleClick( QWidget * )));
-  connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), this, SLOT(receivedDropEvent( QDropEvent * )));
-  connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), this, SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
-  connect( mWidget, SIGNAL( dragInitiated( QWidget * )), this, SLOT(dragInitiated( QWidget * )));
-  connect( mWidget, SIGNAL( movedTab( int, int )), this, SLOT(movedTab( int, int )));
+  connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), SLOT( currentChanged( QWidget * ) ) );
+  connect( mWidget, SIGNAL( contextMenu( QWidget *, const QPoint & )), SLOT(contextMenu( QWidget *, const QPoint & )));
+  connect( mWidget, SIGNAL( tabbarContextMenu( const QPoint & )), SLOT(tabbarContextMenu( const QPoint & )));
+  connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), SLOT(mouseDoubleClick( QWidget * )));
+  connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), SLOT(mouseMiddleClick( QWidget * )));
+  connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), SLOT(receivedDropEvent( QDropEvent * )));
+  connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
+  connect( mWidget, SIGNAL( dragInitiated( QWidget * )), SLOT(dragInitiated( QWidget * )));
+  connect( mWidget, SIGNAL( movedTab( const int, const int )), SLOT(movedTab( const int, const int )));
   mWidget->setTabReorderingEnabled( true );
 
   QWidget * grid = new QWidget(this);
@@ -35,44 +35,44 @@ Test::Test( QWidget* parent, const char *name )
 
   QPushButton * addTab = new QPushButton( "Add Tab", grid );
   gridlayout->addWidget( addTab, 0, 0 );
-  connect( addTab, SIGNAL( clicked() ), this, SLOT( addTab() ) );
+  connect( addTab, SIGNAL( clicked() ), SLOT( addTab() ) );
 
   QPushButton * removeTab = new QPushButton( "Remove Current Tab", grid );
   gridlayout->addWidget( removeTab, 0, 1 );
-  connect( removeTab, SIGNAL( clicked() ), this, SLOT( removeCurrentTab() ) );
+  connect( removeTab, SIGNAL( clicked() ), SLOT( removeCurrentTab() ) );
 
   mLeftButton = new QCheckBox( "Show left button", grid );
   gridlayout->addWidget( mLeftButton, 1, 0 );
-  connect( mLeftButton, SIGNAL( toggled(bool) ), this, SLOT( toggleLeftButton(bool) ) );
+  connect( mLeftButton, SIGNAL( toggled(bool) ), SLOT( toggleLeftButton(bool) ) );
   mLeftButton->setChecked(true);
 
   QCheckBox * leftPopup = new QCheckBox( "Enable left popup", grid );
   gridlayout->addWidget( leftPopup, 2, 0 );
-  connect( leftPopup, SIGNAL( toggled(bool) ), this, SLOT( toggleLeftPopup(bool) ) );
+  connect( leftPopup, SIGNAL( toggled(bool) ), SLOT( toggleLeftPopup(bool) ) );
   leftPopup->setChecked(true);
 
   mRightButton = new QCheckBox( "Show right button", grid );
   gridlayout->addWidget( mRightButton, 1, 1 );
-  connect( mRightButton, SIGNAL( toggled(bool) ), this, SLOT( toggleRightButton(bool) ) );
+  connect( mRightButton, SIGNAL( toggled(bool) ), SLOT( toggleRightButton(bool) ) );
   mRightButton->setChecked(true);
 
   QCheckBox * rightPopup = new QCheckBox( "Enable right popup", grid );
   gridlayout->addWidget( rightPopup, 2, 1 );
-  connect( rightPopup, SIGNAL( toggled(bool) ), this, SLOT( toggleRightPopup(bool) ) );
+  connect( rightPopup, SIGNAL( toggled(bool) ), SLOT( toggleRightPopup(bool) ) );
   rightPopup->setChecked(true);
 
   mTabsBottom = new QCheckBox( "Show tabs at bottom", grid );
   gridlayout->addWidget( mTabsBottom, 3, 0 );
-  connect( mTabsBottom, SIGNAL( toggled(bool) ), this, SLOT( toggleTabPosition(bool) ) );
+  connect( mTabsBottom, SIGNAL( toggled(bool) ), SLOT( toggleTabPosition(bool) ) );
 
   QCheckBox * tabshape = new QCheckBox( "Triangular tab shape", grid );
   gridlayout->addWidget( tabshape, 3, 1 );
-  connect( tabshape, SIGNAL( toggled(bool) ), this, SLOT( toggleTabShape(bool) ) );
+  connect( tabshape, SIGNAL( toggled(bool) ), SLOT( toggleTabShape(bool) ) );
 
   QCheckBox *tabClose = new QCheckBox( "Close buttons on tabs", grid );
   tabClose->setEnabled( false );
   gridlayout->addWidget( tabClose, 4, 0 );
-  connect( tabClose, SIGNAL( toggled(bool) ), this, SLOT( toggleCloseButtons(bool) ) );
+  connect( tabClose, SIGNAL( toggled(bool) ), SLOT( toggleCloseButtons(bool) ) );
 }
 
 void Test::currentChanged(QWidget* w)
@@ -319,7 +319,7 @@ void Test::mouseMiddleClick(QWidget *w)
   mWidget->removePage( w );
 }
 
-void Test::movedTab(int from, int to)
+void Test::movedTab(const int from, const int to)
 {
   kdDebug() << "Moved tab from index " << from << " to " << to << endl;
 }
