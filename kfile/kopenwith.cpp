@@ -344,8 +344,11 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   edit->setURL( _value );
   l->addWidget(edit);
 
-  KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
-  edit->comboBox()->setCompletionObject( comp );
+  if ( edit->comboBox() ) {
+      KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
+      edit->comboBox()->setCompletionObject( comp );
+  }
+
   connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
   connect ( edit, SIGNAL(textChanged(const QString&)), SLOT(slotTextChanged()) );
 
@@ -580,7 +583,7 @@ void KOpenWithDlg::slotOK()
   QStringList args;
   args.append("--incremental");
   KApplication::kdeinitExecWait( "kbuildsycoca", args );
-  
+
   // get the new service pointer
   kdDebug(250) << pathName << endl;
   // We need to read in the new database. It seems the databaseChanged()
@@ -609,14 +612,16 @@ QString KOpenWithDlg::text()
 void KOpenWithDlg::accept()
 {
     KHistoryCombo *combo = static_cast<KHistoryCombo*>( edit->comboBox() );
-    combo->addToHistory( edit->url() );
+    if ( combo ) {
+        combo->addToHistory( edit->url() );
 
-    KConfig *kc = KGlobal::config();
-    KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
-    kc->writeEntry( QString::fromLatin1("History"), combo->historyItems() );
-    // don't store the completion-list, as it contains all of KURLCompletion's
-    // executables
-    kc->sync();
+        KConfig *kc = KGlobal::config();
+        KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
+        kc->writeEntry( QString::fromLatin1("History"), combo->historyItems() );
+        // don't store the completion-list, as it contains all of KURLCompletion's
+        // executables
+        kc->sync();
+    }
 
     QDialog::accept();
 }
