@@ -64,14 +64,38 @@ namespace KIO
    KIO_EXPORT QString convertSizeFromKB( KIO::filesize_t kbSize );
 
   /**
+   * Calculates remaining time in seconds from total size, processed size and speed.
+   *
+   * @param  totalSize      total size in bytes
+   * @param  processedSize  processed size in bytes
+   * @param  speed          speed in bytes per second
+   * @return calculated remaining time in seconds
+   *
+   * @since 3.4
+   */
+  KIO_EXPORT unsigned long long int calculateRemainingSeconds( KIO::filesize_t totalSize,
+                                                               KIO::filesize_t processedSize, KIO::filesize_t speed );
+
+  /**
+   * Convert @p seconds to a string representing number of days, hours, minutes and seconds
+   *
+   * @param  number of seconds to convert
+   * @return string representation in a locale depending format
+   *
+   * @since 3.4
+   */
+  KIO_EXPORT QString convertSeconds( unsigned long long int seconds );
+
+  /**
    * Calculates remaining time from total size, processed size and speed.
+   * Warning: As QTime is limited to 23:59:59, use calculateRemainingSeconds() instead
    *
    * @param  totalSize      total size in bytes
    * @param  processedSize  processed size in bytes
    * @param  speed          speed in bytes per second
    * @return calculated remaining time
    */
-  KIO_EXPORT QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
+  KIO_EXPORT QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed ) KDE_DEPRECATED;
 
   /**
    * Helper for showing information about a set of files and directories

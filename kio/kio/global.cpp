@@ -87,6 +87,30 @@ KIO_EXPORT QString KIO::number( KIO::filesize_t size )
     return QString::fromLatin1(charbuf);
 }
 
+KIO_EXPORT unsigned long long int KIO::calculateRemainingSeconds( KIO::filesize_t totalSize,
+                                                                  KIO::filesize_t processedSize, KIO::filesize_t speed )
+{
+  if ( (speed != 0) && (totalSize != 0) )
+    return ( totalSize - processedSize ) / speed;
+  else
+    return 0;
+}
+
+KIO_EXPORT QString KIO::convertSeconds( unsigned long long int seconds )
+{
+  unsigned int days  = seconds / 86400;
+  unsigned int hours = (seconds - (days * 86400)) / 3600;
+  unsigned int mins  = (seconds - (days * 86400) - (hours * 3600)) / 60;
+  seconds            = (seconds - (days * 86400) - (hours * 3600) - (mins * 60));
+
+  const QTime time(hours, mins, seconds);
+  const QString timeStr( KGlobal::locale()->formatTime(time, true /*with seconds*/, true /*duration*/) );
+  if ( days > 0 )
+    return i18n("1 day %1", "%n days %1", days).arg(timeStr);
+  else
+    return timeStr;
+}
+
 KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed )
 {
   QTime remainingTime;
