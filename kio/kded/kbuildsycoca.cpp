@@ -333,7 +333,12 @@ int main(int argc, char **argv)
 
    DCOPClient *dcopClient = new DCOPClient();
 
-   if (dcopClient->registerAs(appName, false) != appName)
+   QCString registeredName = dcopClient->registerAs(appName, false);
+   if (registeredName.isEmpty())
+   {
+     fprintf(stderr, "Warning: %s is unable to register with DCOP.\n", appName);
+   }
+   else if (registeredName != appName)
    {
      fprintf(stderr, "%s already running!\n", appName);
      exit(0);
