@@ -1104,9 +1104,10 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
 
 
 
-void KDialogBase::hideEvent( QHideEvent * )
+void KDialogBase::hideEvent( QHideEvent *ev )
 {
-  emit hidden();
+  if (!ev->spontaneous())
+     emit hidden();
 }
 
 

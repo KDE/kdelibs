@@ -1094,7 +1094,9 @@ class KDialogBase : public KDialog
      * The dialog is about to be hidden.
      *
      * A dialog is hidden after a user clicks a button that ends
-     * the dialog or when the window manager hides the dialog.
+     * the dialog.
+     * 
+     * This signal is _NOT_ emitted when the window manager hides the dialog.
      * (E.g. switching to another desktop, minimizing dialog)
      *
      * If you have stored a pointer to the 
