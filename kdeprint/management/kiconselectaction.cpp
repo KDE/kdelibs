@@ -107,7 +107,7 @@ void KIconSelectAction::updateCurrentItem(int id)
 	if (w->inherits("KToolBar"))
 		static_cast<KToolBar*>(w)->getButton(itemId(id))->setIcon(d->m_iconlst[currentItem()]);
 	else
-		KSelectAction::setCurrentItem(id);
+		KSelectAction::updateCurrentItem(id);
 }
 
 void KIconSelectAction::setCurrentItem(int index)
