@@ -128,9 +128,9 @@ KTar::~KTar()
 
 void KTar::setOrigFileName( const QCString & fileName )
 {
-    if ( !isOpened() || mode() != IO_WriteOnly )
+    if ( !isOpened() || !(mode() & IO_WriteOnly) )
     {
-        qWarning( "KTar::setOrigFileName: File must be opened for writing first.\n");
+        kdWarning() << "KTar::setOrigFileName: File must be opened for writing first.\n";
         return;
     }
     static_cast<KFilterDev *>(device())->setOrigFileName( fileName );
@@ -139,7 +139,7 @@ void KTar::setOrigFileName( const QCString & fileName )
 
 bool KTar::openArchive( int mode )
 {
-    if ( mode == IO_WriteOnly )
+    if ( !(mode & IO_ReadOnly) )
         return true;
 
     // We'll use the permission and user/group of d->rootDir
@@ -159,6 +159,10 @@ bool KTar::openArchive( int mode )
         int n = dev->readBlock( buffer, 0x200 );
         if ( n == 0x200 && buffer[0] != 0 )
         {
+            // Make sure this is actually a tar header
+            if (strncmp(buffer + 257, "ustar", 5))
+                return false;
+
             QString name( QString::fromLocal8Bit(buffer) );
 
             // If filename is longer than 100 (0x64) chars, then tar uses ././@LongLink (David)
@@ -298,13 +302,13 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
 {
     if ( !isOpened() )
     {
-        qWarning( "KArchive::writeDir: You must open the tar file before writing to it\n");
+        kdWarning() << "KArchive::writeDir: You must open the tar file before writing to it\n";
         return false;
     }
 
-    if ( mode() != IO_WriteOnly )
+    if ( !(mode() & IO_WriteOnly) )
     {
-        qWarning( "KArchive::writeDir: You must open the tar file for writing\n");
+        kdWarning() << "KArchive::writeDir: You must open the tar file for writing\n";
         return false;
     }
 
@@ -350,13 +354,13 @@ bool KTar::prepareWriting( const QString& name, const QString& user, const QStri
 {
     if ( !isOpened() )
     {
-        qWarning( "KArchive::writeFile: You must open the tar file before writing to it\n");
+        kdWarning() << "KArchive::writeFile: You must open the tar file before writing to it\n";
         return false;
     }
 
-    if ( mode() != IO_WriteOnly )
+    if ( !(mode() & IO_WriteOnly) )
     {
-        qWarning( "KArchive::writeFile: You must open the tar file for writing\n");
+        kdWarning() << "KArchive::writeFile: You must open the tar file for writing\n";
         return false;
     }
 
