@@ -609,6 +609,13 @@ public:
    */
   void setDockWindowTransient (QWidget *parent, bool transientEnabled);
 
+  /**
+   * Lookup the nearest dockwidget docked left/right/top/bottom to this one or return 0
+   *
+   * @param pos is the position the wanted widget is docked to this one
+   */
+  KDockWidget *findNearestDockWidget(DockPosition pos);
+  
 public slots:
   /**
    * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps 

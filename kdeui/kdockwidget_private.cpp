@@ -34,7 +34,7 @@ KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orie
   fixedHeight0=-1;
   fixedHeight1=-1;
    
-  orientation = orient;
+  m_orientation = orient;
   mOpaqueResize = false;
   mKeepSize = false;
   mHighResolution = highResolution;
@@ -55,7 +55,7 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
   divider->setLineWidth(1);
   divider->raise();
 
-  if (orientation == Horizontal)
+  if (m_orientation == Horizontal)
     divider->setCursor(QCursor(sizeVerCursor));
   else
     divider->setCursor(QCursor(sizeHorCursor));
@@ -152,7 +152,7 @@ void KDockSplitter::setupMinMaxSize()
 {
   // Set the minimum and maximum sizes
   int minx, maxx, miny, maxy;
-  if (orientation == Horizontal) {
+  if (m_orientation == Horizontal) {
     miny = child0->minimumSize().height() + child1->minimumSize().height()+4;
     maxy = child0->maximumSize().height() + child1->maximumSize().height()+4;
     minx = (child0->minimumSize().width() > child1->minimumSize().width()) ? child0->minimumSize().width() : child1->minimumSize().width();
@@ -204,11 +204,11 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
     int factor = (mHighResolution)? 10000:100;
     // real resize event, recalculate xpos
     if (ev && mKeepSize && isVisible()) {
-	kdDebug()<<"mKeepSize : "<< ((orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+	kdDebug()<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
 
       if (ev->oldSize().width() != ev->size().width())
       {
-          if (orientation == Horizontal) {
+          if (m_orientation == Horizontal) {
           xpos = factor * checkValue( child0->height()+1 ) / height();
           } else {
           xpos = factor * checkValue( child0->width()+1 ) / width();
@@ -218,9 +218,9 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
       }
           else
           {
-	kdDebug()<<"!mKeepSize : "<< ((orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+	kdDebug()<<"!mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
 	if (ev && isVisible()) {
-		if (orientation == Horizontal) {
+		if (m_orientation == Horizontal) {
 			if (ev->oldSize().height() != ev->size().height())
 			{
 			  if (fixedHeight0!=-1)
@@ -245,8 +245,8 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 	else kdDebug()<<"Something else happened"<<endl;
    }
 
-    int position = checkValue( (orientation == Vertical ? width() : height()) * xpos/factor );
-    if (orientation == Horizontal){
+    int position = checkValue( (m_orientation == Vertical ? width() : height()) * xpos/factor );
+    if (m_orientation == Horizontal){
       child0->setGeometry(0, 0, width(), position);
       child1->setGeometry(0, position+4, width(), height()-position-4);
       divider->setGeometry(0, position, width(), 4);
@@ -261,7 +261,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 int KDockSplitter::checkValue( int position ) const
 {
   if (initialised){
-    if (orientation == Vertical){
+    if (m_orientation == Vertical){
       if (position < (child0->minimumSize().width()))
         position = child0->minimumSize().width();
       if ((width()-4-position) < (child1->minimumSize().width()))
@@ -276,9 +276,9 @@ int KDockSplitter::checkValue( int position ) const
 
   if (position < 0) position = 0;
 
-  if ((orientation == Vertical) && (position > width()))
+  if ((m_orientation == Vertical) && (position > width()))
     position = width();
-  if ((orientation == Horizontal) && (position > height()))
+  if ((m_orientation == Horizontal) && (position > height()))
     position = height();
 
   return position;
@@ -295,7 +295,7 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       mev= (QMouseEvent*)e;
       child0->setUpdatesEnabled(mOpaqueResize);
       child1->setUpdatesEnabled(mOpaqueResize);
-      if (orientation == Horizontal) {
+      if (m_orientation == Horizontal) {
         if ((fixedHeight0!=-1) || (fixedHeight1!=-1))
         {
                 handled=true; break;
@@ -329,7 +329,7 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       child0->setUpdatesEnabled(true);
       child1->setUpdatesEnabled(true);
       mev= (QMouseEvent*)e;
-      if (orientation == Horizontal){
+      if (m_orientation == Horizontal){
         if ((fixedHeight0!=-1) || (fixedHeight1!=-1))
         {
                 handled=true; break;
@@ -380,7 +380,7 @@ void KDockSplitter::updateName()
 
   ((KDockWidget*)parentWidget())->firstName = child0->name();
   ((KDockWidget*)parentWidget())->lastName = child1->name();
-  ((KDockWidget*)parentWidget())->splitterOrientation = orientation;
+  ((KDockWidget*)parentWidget())->splitterOrientation = m_orientation;
 
   QWidget* p = parentWidget()->parentWidget();
   if ( p != 0L && p->inherits("KDockSplitter" ) )

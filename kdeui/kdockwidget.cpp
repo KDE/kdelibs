@@ -592,6 +592,29 @@ bool KDockWidget::event( QEvent *event )
   return QWidget::event( event );
 }
 
+KDockWidget *KDockWidget::findNearestDockWidget(DockPosition pos)
+{
+	if (!parent()) return 0;
+	if (!parent()->inherits("KDockSplitter")) return 0;
+	Orientation orientation=((pos==DockLeft) || (pos==DockRight)) ? Vertical:Horizontal;
+		if (((KDockSplitter*)(parent()))->orientation()==orientation)
+		{
+			KDockWidget *neighbour=
+				((pos==DockLeft)||(pos==DockTop))?
+				static_cast<KDockWidget*>(((KDockSplitter*)(parent()))->getFirst()):
+				static_cast<KDockWidget*>(((KDockSplitter*)(parent()))->getLast());
+
+			if (neighbour==this)
+			return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));
+			else return neighbour;
+		}
+		else
+		return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));			
+		
+	return 0;
+}
+
+
 KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos, int spliPos, QPoint pos, bool check, int tabIndex )
 {
   if (this == target)

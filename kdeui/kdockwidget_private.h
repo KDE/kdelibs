@@ -74,6 +74,7 @@ public:
   void setForcedFixedHeight(KDockWidget *dw,int h);
   void restoreFromForcedFixedSize(KDockWidget *dw);
 
+  Orientation orientation(){return m_orientation;}
 
 protected:
   int checkValue( int ) const;
@@ -86,7 +87,7 @@ private:
   void setupMinMaxSize();
 
   QWidget *child0, *child1;
-  Orientation orientation;
+  Orientation m_orientation;
   bool initialised;
   QFrame* divider;
   int xpos, savedXPos;
