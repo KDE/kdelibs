@@ -33,6 +33,7 @@ class KXMLGUIBuilder;
 class KXMLGUIContainerNode;
 class KXMLGUIContainerClient;
 class KInstance;
+struct MergingIndex; // ### find better name to avoid possible name clashes
 
 /**
  * KXMLGUIFactory, together with @ref KXMLGUIClient objects, can be used to create
@@ -147,20 +148,16 @@ class KXMLGUIFactory : public QObject
   void buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode );
   bool removeRecursive( KXMLGUIContainerNode *node );
 
-  bool calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName, QMap<QString,int>::Iterator &it );
-  void adjustMergingIndices( KXMLGUIContainerNode *node, int idx, int val, const QMap<QString,int>::Iterator &it );
+  int calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName, QValueList<MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
+  void adjustMergingIndices( KXMLGUIContainerNode *node, int offset, const QValueList<MergingIndex>::Iterator &it );
 
   KXMLGUIContainerNode *findContainer( KXMLGUIContainerNode *node, const QDomElement &element, const QList<QWidget> *excludeList );
-
-  KXMLGUIContainerNode *findContainerNode( KXMLGUIContainerNode *parentNode, QWidget *container );
-
-  KXMLGUIContainerNode *findContainer( KXMLGUIContainerNode *node, const QString &name, bool tag );
 
   QWidget *findRecursive( KXMLGUIContainerNode *node, bool tag );
 
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id, KXMLGUIBuilder **builder );
 
-  KXMLGUIContainerClient *findClient( KXMLGUIContainerNode *node, const QString &groupName );
+  KXMLGUIContainerClient *findClient( KXMLGUIContainerNode *node, const QString &groupName, const QValueList<MergingIndex>::Iterator &mIt );
 
   void plugActionListRecursive( KXMLGUIContainerNode *node );
   void unplugActionListRecursive( KXMLGUIContainerNode *node );
