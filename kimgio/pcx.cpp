@@ -13,14 +13,14 @@
 
 #include <kdebug.h>
 
-QDataStream &operator>>( QDataStream &s, struct RGB &rgb )
+static QDataStream &operator>>( QDataStream &s, struct RGB &rgb )
 {
   s >> rgb.r >> rgb.g >> rgb.b;
 
   return s;
 }
 
-QDataStream &operator>>( QDataStream &s, Palette &pal )
+static QDataStream &operator>>( QDataStream &s, Palette &pal )
 {
   for ( int i=0; i<16; ++i )
     s >> pal.rgb[ i ];
@@ -28,7 +28,7 @@ QDataStream &operator>>( QDataStream &s, Palette &pal )
   return s;
 }
 
-QDataStream &operator>>( QDataStream &s, PCXHEADER &ph )
+static QDataStream &operator>>( QDataStream &s, PCXHEADER &ph )
 {
   s >> ph.Manufacturer;
   s >> ph.Version;
@@ -47,7 +47,7 @@ QDataStream &operator>>( QDataStream &s, PCXHEADER &ph )
   return s;
 }
 
-QDataStream &operator<<( QDataStream &s, struct RGB &rgb )
+static QDataStream &operator<<( QDataStream &s, struct RGB &rgb )
 {
 
   s << rgb.r << rgb.g << rgb.b;
@@ -55,7 +55,7 @@ QDataStream &operator<<( QDataStream &s, struct RGB &rgb )
   return s;
 }
 
-QDataStream &operator<<( QDataStream &s, Palette &pal )
+static QDataStream &operator<<( QDataStream &s, Palette &pal )
 {
   for ( int i=0; i<16; ++i )
     s << pal.rgb[ i ];
@@ -63,7 +63,7 @@ QDataStream &operator<<( QDataStream &s, Palette &pal )
   return s;
 }
 
-QDataStream &operator<<( QDataStream &s, PCXHEADER &ph )
+static QDataStream &operator<<( QDataStream &s, PCXHEADER &ph )
 {
   s << ph.Manufacturer;
   s << ph.Version;
@@ -88,7 +88,7 @@ QDataStream &operator<<( QDataStream &s, PCXHEADER &ph )
 
 static PCXHEADER header;
 static QImage img;
-Q_UINT16 w, h;
+static Q_UINT16 w, h;
 
 static void readLine( QDataStream &s, QByteArray &buf )
 {
