@@ -105,8 +105,11 @@ bool KProcIO::writeStdin (const QCString &line, bool appendnewline)
   }
     
   int l = qs->length();
-  if (!l)
+  if (!l) 
+  {
+     delete qs;
      return true;
+  }
 
   QByteArray *b = (QByteArray *) qs;
   b->truncate(l); // Strip trailing null
