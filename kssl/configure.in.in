@@ -7,7 +7,6 @@ dnl
 AC_DEFUN(AC_PATH_SSL,
 [
 LIBSSL="-lssl -lcrypto"
-AC_MSG_CHECKING([for OpenSSL])
 
 ac_ssl_includes=NO ac_ssl_libraries=NO
 ssl_libraries=""
@@ -25,9 +24,11 @@ AC_ARG_WITH(ssl,
 
 if test $want_ssl = yes; then
 
+AC_MSG_CHECKING(for OpenSSL)
+
 AC_CACHE_VAL(ac_cv_have_ssl,
 [#try to guess OpenSSL locations
-
+  
   ssl_incdirs="/usr/include /usr/local/include /usr/ssl/include /usr/local/ssl/include $prefix/include $kde_extra_includes"
   ssl_incdirs="$ac_ssl_includes $ssl_incdirs"
   AC_FIND_FILE(openssl/ssl.h, $ssl_incdirs, ssl_incdir)
@@ -79,11 +80,21 @@ AC_CACHE_VAL(ac_cv_have_ssl,
   ])
 
   eval "$ac_cv_have_ssl"
+
+  AC_MSG_RESULT([libraries $ac_ssl_libraries, headers $ac_ssl_includes])
+
+  AC_MSG_CHECKING([whether OpenSSL uses rsaref])
+  AC_MSG_RESULT($ac_ssl_rsaref)
+
+  AC_MSG_CHECKING([for easter eggs])
+  AC_MSG_RESULT([none found])
+
 else
   have_ssl=no
 fi
 
 if test "$have_ssl" = yes; then
+  AC_MSG_CHECKING(for OpenSSL version)
   dnl Check for SSL version
   AC_CACHE_VAL(ac_cv_ssl_version,
   [
@@ -137,29 +148,25 @@ EOF
   ])
 
   eval "$ac_cv_ssl_version"
+  AC_MSG_RESULT($ssl_version)
 fi
 
 if test "$have_ssl" != yes; then
   LIBSSL="";
-  AC_MSG_RESULT([$have_ssl]);
 else
   AC_DEFINE(HAVE_SSL, 1, [If we are going to use OpenSSL])
   ac_cv_have_ssl="have_ssl=yes \
     ac_ssl_includes=$ac_ssl_includes ac_ssl_libraries=$ac_ssl_libraries ac_ssl_rsaref=$ac_ssl_rsaref"
-  AC_MSG_RESULT([libraries $ac_ssl_libraries, headers $ac_ssl_includes])
+  
   
   ssl_libraries="$ac_ssl_libraries"
   ssl_includes="$ac_ssl_includes"
 
-  AC_MSG_CHECKING([whether OpenSSL uses rsaref])
-  AC_MSG_RESULT($ac_ssl_rsaref)
   if test "$ac_ssl_rsaref" = yes; then
     LIBSSL="-lssl -lcrypto -lRSAglue -lrsaref" 
   fi
 
-  AC_MSG_CHECKING([for OpenSSL version])
-  AC_MSG_RESULT($ssl_version)
-  if test $ssl_version = "0.9.5"; then
+  if test $ssl_version = "old"; then
     AC_DEFINE(HAVE_OLD_SSL_API, 1, [Define if you have OpenSSL < 0.9.6])
   fi
 fi
