@@ -180,6 +180,7 @@
 <!ENTITY kcalc  "<application>KCalc</application>">
 <!ENTITY kcharselect	"<application>kcharselect</application>">
 <!ENTITY kchart "<application>KChart</application>">
+<!ENTITY kchat	"<application>KChat</application>">
 <!ENTITY kcontrol "<application>KControl</application>">
 <!ENTITY kcron	"<application>Kcron</application>">
 <!ENTITY kdat	"<application>Kdat</application>">
