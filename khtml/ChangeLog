@@ -1,5 +1,11 @@
 2004-02-29  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_replaced.cpp (calcMinMaxWidth): respect 
+	padding and borders (#65788).
+
+	* rendering/render_form.h (RenderFormElement): make sure we never
+	end up getting a border or padding for form elements.
+
 	* rendering/render_frames.cpp (partLoadingErrorNotify): don't trigger
 	slotPartLoadingErrorNotify twice.
 	

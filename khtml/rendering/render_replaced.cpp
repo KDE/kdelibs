@@ -67,17 +67,15 @@ void RenderReplaced::calcMinMaxWidth()
     kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    int width = calcReplacedWidth();
-
-    if (!isWidget())
-        width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+    m_width = calcReplacedWidth();
+    m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
 
     if ( style()->width().isPercent() || style()->height().isPercent() ) {
         m_minWidth = 0;
-        m_maxWidth = width;
+        m_maxWidth = m_width;
     }
     else
-        m_minWidth = m_maxWidth = width;
+        m_minWidth = m_maxWidth = m_width;
 
     setMinMaxKnown();
 }
@@ -328,7 +326,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         return;
 
     _tx += m_x;
-    _ty += m_y; 
+    _ty += m_y;
 
     if((_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top())) return;
 
