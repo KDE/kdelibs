@@ -65,14 +65,17 @@ public:
     ///////////
 
     /**
-     * Call to send data in the slave (i.e. in get).
+     * Sends data in the slave to the job (i.e. in get).
+     *
+     * To signal end of data, simply send an empty
+     * QByteArray().
+     *
      * @param data the data read by the slave
-     * Send an empty QByteArray() to signal end of data.
      */
     void data( const QByteArray &data );
 
     /**
-     * Call to ask for data (in put)
+     * Asks for data from the job.
      * @see readData
      */
     void dataReq( );
@@ -222,7 +225,7 @@ public:
     void setMetaData(const QString &key, const QString &value);
 
     /**
-     * Queries for the existance of a certain config/meta-data entry 
+     * Queries for the existance of a certain config/meta-data entry
      * send by the application to the slave.
      */
     bool hasMetaData(const QString &key);
@@ -242,7 +245,8 @@ public:
     KConfigBase* config();
 
     ///////////
-    // Commands sent by the job, the slave has to override what it wants to implement
+    // Commands sent by the job, the slave has to
+    // override what it wants to implement
     ///////////
 
     /**
@@ -267,8 +271,8 @@ public:
      * Opens the connection (forced)
      * When this function gets called the slave is operating in
      * connection-oriented mode.
-     * When a connection gets lost while the slave operates in 
-     * connection oriented mode, the slave should report 
+     * When a connection gets lost while the slave operates in
+     * connection oriented mode, the slave should report
      * ERR_CONNECTION_BROKEN instead of reconnecting.
      */
     virtual void openConnection();
@@ -420,13 +424,13 @@ public:
     int proxyConnectTimeout();
 
     /**
-     * @return timeout value for read from first data from 
+     * @return timeout value for read from first data from
      * remote host in seconds.
      */
     int responseTimeout();
 
     /**
-     * @return timeout value for read from subsequent data from 
+     * @return timeout value for read from subsequent data from
      * remote host in secs.
      */
     int readTimeout();
@@ -504,7 +508,7 @@ protected:
      * if ( result )
      * {
      *    printf( "Username: %s", result.username.latin1() );
-     *    printf( "Username: %s", result.username.latin1() );
+     *    printf( "Password: %s", result.password.latin1() );
      * }
      * </pre>
      *
@@ -514,12 +518,12 @@ protected:
      * <pre>
      * authInfo.comment= "Enter username and password to access acmeone";
      * authInfo.caption= "Acme Password Dialog";
-     * authInfo.username= "Wily E. kaiody";
+     * authInfo.username= "Wiley E. Caiody";
      * bool result = openPassDlg( authInfo );
      * if ( result )
      * {
      *    printf( "Username: %s", result.username.latin1() );
-     *    printf( "Username: %s", result.username.latin1() );
+     *    printf( "Password: %s", result.password.latin1() );
      * }
      * </pre>
      *
@@ -564,7 +568,7 @@ protected:
      * if ( !checkCachedAuthentication( info ) )
      * {
      *    if ( !openPassDlg(info) )
-     *     error(
+     *     ....
      * }
      * </pre>
      *
@@ -648,13 +652,12 @@ protected:
      *
      * NOTE: A call to this function can fail and return a negative result if
      * the "kdesud" daemon used to cache the login information is not running
-     * and cannot for whatever reason not be re-started. The same is true if
-     * no or invalid URL is supplied since a storage key cannot be generated
-     * without it!  Additionally, if the application that requested the caching
-     * of the login info terminates abnormally (ex: crashes), then the cached
-     * password will be kept for the entire duration of the current KDE session
-     * or until such time as the end-user manually stops the running "kdesud"
-     * process.
+     * and cannot for whatever reason be re-started. The same is true if
+     * invalid URL is supplied since a storage key cannot be generated without
+     * it!  Additionally, if the application that requested the caching of the
+     * login info terminates abnormally (ex: crashes), then the cached password
+     * will be kept for the entire duration of the current KDE session or until
+     * such time as the end-user manually stops the running "kdesud" process.
      *
      * @param       See @ref AuthInfo.
      * @return      @p TRUE if the authorization info was sucessfully cached.
