@@ -19,6 +19,10 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.27  1999/04/18 09:14:59  kulow
+ * taking out config.h from Header files. I don't know if I haven't noticed
+ * before, but this is even very dangerous
+ *
  * Revision 1.26  1999/04/17 19:15:38  kulow
  * cleaning up kapp.h, so that only needed headers are included. Guess how
  * many files include kapp.h because it includes almost anything they need ;)
@@ -480,7 +484,7 @@ public:
 *		' - pixmap.width() / 2 ' and ' - pixmap.height() / 2 '.
 *		This is just provided for look and feel.
 */
-    virtual void startDrag( KDNDIcon *_icon, char *_data, int _size,
+    virtual void startDrag( KDNDIcon *_icon, const char *_data, int _size,
     			int _type, int _dx, int _dy );
 
 protected:

@@ -20,6 +20,10 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.26  1999/04/18 09:14:57  kulow
+ * taking out config.h from Header files. I don't know if I haven't noticed
+ * before, but this is even very dangerous
+ *
  * Revision 1.25  1999/03/01 23:33:03  kulow
  * CVS_SILENT ported to Qt 2.0
  *
@@ -239,7 +243,7 @@ KDNDDropZone::~KDNDDropZone()
 }
 
 
-void KDNDWidget::startDrag( KDNDIcon *_icon, char *_data, int _size, int _type, int _dx, int _dy )
+void KDNDWidget::startDrag( KDNDIcon *_icon, const char *_data, int _size, int _type, int _dx, int _dy )
 {
   if ( dndData != 0 )
      delete [] dndData ;
