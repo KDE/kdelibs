@@ -28,13 +28,20 @@
   group CDATA #IMPLIED
 >
 
-<!-- A tool bar -->
+<!-- A tool bar
+  -- Attributes: name: a unique name for the toolbar, use mainToolBar for the main one
+  --             fullWidth: if true (default), the toolbar extends to the full width of the window
+  --             position: the position of the toolbar in the window
+  --             group: optional group name, for named merging (?)
+  --             noEdit: if true, the toolbar won't appear in the toolbar editor
+  -->
 <!ELEMENT ToolBar ((Action | Separator | ActionList | Merge | DefineGroup)*)>
 <!ATTLIST ToolBar
   name CDATA #REQUIRED
   fullWidth (true|false) "true"
   position (top|bottom|left|right) "top"
   group CDATA #IMPLIED
+  noEdit (true|false) "false"
 >
 
 <!-- A Menu such as the "File" or "Edit" menu. Can be used to define popup menus as well. -->
