@@ -110,7 +110,7 @@ const unsigned short tagPriority[] = {
     4, // ID_DL
     3, // ID_DT
     1, // ID_EM
-    1, // ID_EMBED
+    0, // ID_EMBED
     3, // ID_FIELDSET
     1, // ID_FONT
     3, // ID_FORM
@@ -380,7 +380,10 @@ void KHTMLParser::insertNode(NodeImpl *n)
             n->attach(HTMLWidget);
 
         if(tagPriority[id] == 0 && n->renderer())
+        {
             n->renderer()->calcMinMaxWidth();
+            if (n->id() == ID_EMBED) n->renderer()->close();
+        }
 
     }
     catch(DOMException exception)
