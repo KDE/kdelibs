@@ -213,7 +213,7 @@ public:
     KBookmarkNotifier& notifier() { return m_notifier; }
 
     KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
-                                      const QString & _parentBookmarkAddress );
+                                      const QString & _parentBookmarkAddress = QString::null );
 
 public slots:
     void slotEditBookmarks();
