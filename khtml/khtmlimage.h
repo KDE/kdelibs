@@ -82,6 +82,9 @@ public:
     virtual int xOffset();
     virtual int yOffset();
 
+protected slots:
+    void print();
+
 private:
     KHTMLImage *m_imgPart;
 };

@@ -20,6 +20,7 @@
 #include "khtmlimage.h"
 #include "khtml_part.h"
 #include "khtmlview.h"
+#include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
 #include "misc/loader.h"
 
@@ -74,8 +75,11 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
 
     m_ext = new KHTMLImageBrowserExtension( this, "be" );
 
-    connect( KParts::BrowserExtension::childObject( m_khtml ), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
+    connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
              this, SLOT( slotPopupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+
+    connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
+             m_ext, SIGNAL( enableAction( const char *, bool ) ) );
 
     m_ext->setURLDropHandlingEnabled( true );
 }
@@ -184,6 +188,11 @@ int KHTMLImageBrowserExtension::xOffset()
 int KHTMLImageBrowserExtension::yOffset()
 {
     return m_imgPart->doc()->view()->contentsY();
+}
+
+void KHTMLImageBrowserExtension::print()
+{
+    static_cast<KHTMLPartBrowserExtension *>( m_imgPart->doc()->browserExtension() )->print();
 }
 
 #include "khtmlimage.moc"
