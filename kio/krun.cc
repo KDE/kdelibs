@@ -49,22 +49,10 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
       return KDEDesktopMimeType::run( _url, true );
   }
 
-  // Get all services for this mime type
-//  KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( _mimetype );
-//
-//  if ( offers.count() == 0 || !(*offers.begin()).allowAsDefault() )
-//  {
-//    kdebug( KDEBUG_INFO, 7010, "No Offers" );
-    // HACK TODO: OpenWith
-//    return false;
-//  }
-//
   QStringList lst;
   lst.append( _url );
-  // Choose the first service from the list and do the job
-//  return KRun::run( (*offers.begin()).service(), lst );
 
-  const KService *offer = KServiceProvider::getServiceProvider()->service( _mimetype );
+  const KSharedPtr<KService> offer = KServiceProvider::getServiceProvider()->service( _mimetype );
   
   if ( !offer )
   {
@@ -72,7 +60,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
     return false;
   }
   
-  return KRun::run( offer, lst );
+  return KRun::run( *offer, lst );
 }
 
 void KRun::shellQuote( QString &_str )
@@ -584,7 +572,7 @@ void KFileManager::openFileManagerWindow( const char *_url )
   system( cmd.ascii() );
 }
 
-const KService *KServiceProvider::service( const char *mime_type )
+const KSharedPtr<KService> KServiceProvider::service( const char *mime_type )
 {
   KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( mime_type );
 
@@ -594,7 +582,11 @@ const KService *KServiceProvider::service( const char *mime_type )
     return 0L;
   }
 
-  return (*offers.begin()).service();
+  // I think this is what Torben meant with "the semantics of KSharedPtr are shit" ;-) (Simon)
+  KService *s = new KService( *((*offers.begin()).service()) );
+  s->deref();
+  KSharedPtr<KService> sp = s;
+  return sp;
 }
 
 #include "krun.moc"

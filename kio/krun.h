@@ -29,6 +29,8 @@ class KService;
 #include <qtimer.h>
 #include <qstring.h>
 
+#include <ksharedptr.h>
+
 /** 
  * Implements a generic runner, i.e. the 'exec' functionality of KDE
  * It can execute any desktop entry, as well as any file, using
@@ -203,7 +205,7 @@ public:
   KServiceProvider() { pServiceProvider = this; }
   virtual ~KServiceProvider() {};
   
-  virtual const KService *service( const char *mime_type );
+  virtual const KSharedPtr<KService> service( const char *mime_type );
   
   static KServiceProvider * getServiceProvider() {
     if (!pServiceProvider)
