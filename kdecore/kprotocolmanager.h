@@ -209,6 +209,12 @@ public:
    *
    */
   static void setRemoteFileProtocol( const QString &remoteFileProtocol );
+  
+  static void setUseCache( bool _mode );
+  
+  static void setMaxCacheSize( int cache_size );
+  
+  static void setMaxCacheAge( int cache_age );
 
   /**
    * Set this flag if you want use proxies.
@@ -217,7 +223,7 @@ public:
    *
    */
   static void setUseProxy( bool _mode );
-
+  
   /**
    * Set the proxy for FTP transfer.
    *

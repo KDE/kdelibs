@@ -430,11 +430,29 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   QString key = protocol.lower();
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Proxy Settings" );
-  if( key =="http" || key == "ftp" &&
+  
+  // The following check is to ensure that we can read the old settings
+  // incorrectly saved without a group and in the old format.  Once
+  // setProxyFor(...) is invoked these settings would be correctly
+  // saved under the appropriate group using the new format and the old
+  // enteries if present will be deleted. This check will be unnecessary
+  // after KDE 2.x is released and can be removed then.
+  if( (key =="http" || key == "ftp") &&
      !config.hasKey( key + "Proxy" ) )
   {
-    return ( key == "http" ) ? config.readEntry( "HttpProxy" ) : config.readEntry( "FtpProxy" );
+    {
+        KConfigGroupSaver saver( &config, QString::null );
+        if( key == "http" && config.hasKey( "HttpProxy" ) )
+            return config.readEntry( "HttpProxy" );
+        else if( key == "ftp" && config.hasKey( "HttpProxy" ) )
+            return config.readEntry( "FtpProxy" );
+    }
+    if( key == "http" && config.hasKey( "HttpProxy" ) )
+        return config.readEntry( "HttpProxy" );
+    else if( key == "ftp" && config.hasKey( "HttpProxy" ) )
+        return config.readEntry( "FtpProxy" );    
   }
+  
   return config.readEntry( key + "Proxy" );
 }
 
@@ -497,6 +515,30 @@ void KProtocolManager::setRemoteFileProtocol(const QString &remoteFileProtocol)
   config.sync();
 }
 
+void KProtocolManager::setUseCache( bool _mode )
+{
+  KConfig config("kioslaverc", true, false);
+  config.setGroup( "Cache Settings" );
+  config.writeEntry( "UseCache", _mode );
+  config.sync();
+}
+  
+void KProtocolManager::setMaxCacheSize( int cache_size )
+{
+  KConfig config("kioslaverc", true, false);
+  config.setGroup( "Cache Settings" );
+  config.writeEntry( "MaxCacheSize", cache_size );
+  config.sync();
+}
+  
+void KProtocolManager::setMaxCacheAge( int cache_age )
+{
+  KConfig config("kioslaverc", true, false);
+  config.setGroup( "Cache Settings" );
+  config.writeEntry( "MaxCacheAge", cache_age );  
+  config.sync();
+}
+
 void KProtocolManager::setUseProxy( bool _mode )
 {
   KSimpleConfig config("kioslaverc", false );
@@ -533,14 +575,28 @@ void KProtocolManager::setProxyFor( const QString& protocol, const QString& _pro
 {
   QString key = protocol.lower();
   KSimpleConfig config( "kioslaverc", false );
-  config.setGroup( "Proxy Settings" );
+  config.setGroup( "Proxy Settings" );  
+  // The following check is to ensure that we properly remove the
+  // the settings that were saved in an incorrect format and group.
+  // This check will be unnecessary after KDE 2.x is released and
+  // can be safely removed then.  
   if( key == "http" || key == "ftp" )
   {
-    KConfigGroupSaver saver( &config, QString::null );
+    {
+        // deletes old enteries saved without group
+        KConfigGroupSaver saver( &config, QString::null );
+        if( config.hasKey( "HttpProxy" ) )
+          config.deleteEntry( "HttpProxy", true );
+        else if( config.hasKey( "FtpProxy" ) )
+          config.deleteEntry( "FtpProxy", true );
+    }
+    // deletes old enteries saved under "Proxy Settings"
+    // but used the old format "HttpProxy" instead of the
+    // new one "httpProxy".
     if( config.hasKey( "HttpProxy" ) )
-      config.deleteEntry( "HttpProxy", true );
+        config.deleteEntry( "HttpProxy", true );
     else if( config.hasKey( "FtpProxy" ) )
-      config.deleteEntry( "FtpProxy", true );
+        config.deleteEntry( "FtpProxy", true );    
   }
   config.writeEntry( key + "Proxy", _proxy );
   config.sync();
