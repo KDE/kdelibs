@@ -39,10 +39,10 @@ using namespace KABC;
 
 static const KCmdLineOptions options[] =
 {
-  {"disable-autostart", I18N_NOOP("Disable automatic startup on login"), 0},
-  {"quiet", "", 0},
-  {"o", 0, 0},
-  {"override", I18N_NOOP("Override existing entries"),"1"},
+  { "disable-autostart", I18N_NOOP( "Disable automatic startup on login" ), 0 },
+  { "quiet", "", 0 },
+  { "o", 0, 0 },
+  { "override", I18N_NOOP( "Override existing entries" ), "1" },
   KCmdLineLastOption
 };
 
@@ -51,19 +51,19 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
   kdDebug() << "KMAILENTRY: " << kmailEntry << endl;
 
   QString entry = kmailEntry.simplifyWhiteSpace();
-  if( entry.isEmpty() ) return;
+  if ( entry.isEmpty() ) return;
 
   QString email;
   QString name;
   QString comment;
 
-  if( entry.at( entry.length() -1 ) == ')' ) {
+  if ( entry.at( entry.length() -1 ) == ')' ) {
     int br = entry.findRev( '(' );
-    if( br >= 0 ) {
+    if ( br >= 0 ) {
       comment = entry.mid( br + 1, entry.length() - br - 2 );
       entry.truncate( br );
-      if( entry.at( entry.length() - 1 ).isSpace() ) {
-	entry.truncate( br - 1 );
+      if ( entry.at( entry.length() - 1 ).isSpace() ) {
+        entry.truncate( br - 1 );
       }
     }
   }
@@ -71,7 +71,7 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
   int posSpace = entry.findRev( ' ' );
   if ( posSpace < 0 ) {
     email = entry;
-    if( !comment.isEmpty() ) {
+    if ( !comment.isEmpty() ) {
       name = comment;
       comment = "";
     }
@@ -90,13 +90,13 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
     name = name.mid( 1, name.length() - 2 );
   }
 
-  if( name.at( name.length() -1 ) == ')' ) {
+  if ( name.at( name.length() -1 ) == ')' ) {
     int br = name.findRev( '(' );
-    if( br >= 0 ) {
+    if ( br >= 0 ) {
       comment = name.mid( br + 1, name.length() - br - 2 ) + " " + comment;
       name.truncate( br );
-      if( name.at( name.length() - 1 ).isSpace() ) {
-	name.truncate( br - 1 );
+      if ( name.at( name.length() - 1 ).isSpace() ) {
+        name.truncate( br - 1 );
       }
     }
   }
@@ -142,35 +142,28 @@ void importKMailAddressBook( KABC::AddressBook *ab )
 
   QTextStream t( &f );
   while ( !t.eof() ) {
-      kmailEntries.append( t.readLine() );
+    kmailEntries.append( t.readLine() );
   }
   f.close();
 
   QStringList::ConstIterator it;
-  for( it = kmailEntries.begin(); it != kmailEntries.end(); ++it ) {
+  for ( it = kmailEntries.begin(); it != kmailEntries.end(); ++it ) {
     if ( (*it).at( 0 ) == '#' ) continue;
     bool insideQuote = false;
     int end = (*it).length() - 1;
-    for(int i = end; i; i--) {
-      if( (*it).at( i ) == '"' ) {
-	if(insideQuote)
-	  insideQuote=false;
-	else
-	  insideQuote=true;
-      } else if( (*it).at( i ) == ',' && !insideQuote ) {
-	readKMailEntry( (*it).mid( i + 1, end - i ), ab );
-	end = i - 1;
+    for ( int i = end; i; i-- ) {
+      if ( (*it).at( i ) == '"' ) {
+        if ( insideQuote )
+          insideQuote = false;
+        else
+          insideQuote = true;
+      } else if ( (*it).at( i ) == ',' && !insideQuote ) {
+        readKMailEntry( (*it).mid( i + 1, end - i ), ab );
+        end = i - 1;
       }
     }
-    readKMailEntry( (*it).mid( 0, end + 1 ), ab );
 
-    /*
-    QStringList addresses = QStringList::split( ",", *it );
-    QStringList::ConstIterator it2;
-    for( it2 = addresses.begin(); it2 != addresses.end(); ++it2 ) {
-      readKMailEntry( *it2, ab );
-    }
-    */
+    readKMailEntry( (*it).mid( 0, end + 1 ), ab );
   }
 }
 
@@ -179,19 +172,17 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
   // Strip "KMail:1.0" prefix and "[EOS]" suffix.
   QString str = dataString.mid( 11, dataString.length() - 24 );
 
-  QStringList entries = QStringList::split("\n[EOR]\n ",str);
+  QStringList entries = QStringList::split( "\n[EOR]\n ", str );
 
   Address homeAddress( Address::Home );
   Address businessAddress( Address::Work );
   Address otherAddress;
 
   QStringList::ConstIterator it;
-  for( it = entries.begin(); it != entries.end(); ++it ) {
-    int pos = (*it).find("\n");
+  for ( it = entries.begin(); it != entries.end(); ++it ) {
+    int pos = (*it).find( "\n" );
     QString fieldName = (*it).left( pos );
     QString fieldValue = (*it).mid( pos + 2 );
-//    kdDebug() << "KABENTRY: " << fieldName << endl;
-//    kdDebug() << "KABENTRY: " << fieldName << ":" << fieldValue << endl;
 
     if ( fieldName == "X-HomeFax" ) {
       a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Home |
@@ -291,7 +282,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
 {
   QString fileName = KGlobal::dirs()->saveLocation( "data", "kab/" );
   fileName += "addressbook.kab";
-  if (!QFile::exists( fileName )) {
+  if ( !QFile::exists( fileName ) ) {
     if ( !quiet ) {
       KMessageBox::error( 0, "<qt>" + i18n( "Address book file <b>%1</b> not found! Make sure the old address book is located there and you have read permission for this file." )
                           .arg( fileName ) + "</qt>" );
@@ -303,10 +294,10 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
   kdDebug(5700) << "Converting old-style kab addressbook to "
                "new-style kabc addressbook." << endl;
 
-  KabAPI kab(0);
-  if (kab.init() != ::AddressBook::NoError) {
+  KabAPI kab( 0 );
+  if ( kab.init() != ::AddressBook::NoError ) {
     kdDebug(5700) << "Error initing kab" << endl;
-    exit(1);
+    exit( 1 );
   }
 
   KabKey key;
@@ -316,13 +307,12 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
 
   kdDebug(5700) << "kab Addressbook has " << num << " entries." << endl;
 
-  for (int i = 0; i < num; ++i) {
-    if (::AddressBook::NoError != kab.addressbook()->getKey(i,key)) {
+  for ( int i = 0; i < num; ++i ) {
+    if ( ::AddressBook::NoError != kab.addressbook()->getKey( i, key ) ) {
       kdDebug(5700) << "Error getting key for index " << i << " from kab." << endl;
       continue;
     }
-    if (::AddressBook::NoError != kab.addressbook()->getEntry(key,entry))
-    {
+    if ( ::AddressBook::NoError != kab.addressbook()->getEntry( key, entry ) ) {
       kdDebug(5700) << "Error getting entry for index " << i << " from kab." << endl;
       continue;
     }
@@ -333,7 +323,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
     int count = 0;
     bool idFound = false;
     QStringList::ConstIterator customIt;
-    for( customIt = entry.custom.begin(); customIt != entry.custom.end(); ++customIt ) {
+    for ( customIt = entry.custom.begin(); customIt != entry.custom.end(); ++customIt ) {
       if ( (*customIt).startsWith( "X-KABC-UID:" ) ) {
         a.setUid( (*customIt).mid( (*customIt).find( ":" ) + 1 ) );
         idFound = true;
@@ -343,12 +333,12 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
         a.insertCustom( "kab2kabc", QString::number( count++ ), *customIt );
       }
     }
-    if( idFound ) {
+    if ( idFound ) {
       if ( !override ) continue;
     } else {
       entry.custom << "X-KABC-UID:" + a.uid();
       ::AddressBook::ErrorCode error = kab.addressbook()->change( key, entry );
-      if (error != ::AddressBook::NoError) {
+      if ( error != ::AddressBook::NoError ) {
         kdDebug(5700) << "kab.change returned with error " << error << endl;
       } else {
         kdDebug(5700) << "Wrote back to kab uid " << a.uid() << endl;
@@ -364,14 +354,13 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
     a.setBirthday( entry.birthday );
 
     QStringList::ConstIterator emailIt;
-    for( emailIt = entry.emails.begin(); emailIt != entry.emails.end(); ++emailIt ) {
+    for ( emailIt = entry.emails.begin(); emailIt != entry.emails.end(); ++emailIt )
       a.insertEmail( *emailIt );
-    }
 
     QStringList::ConstIterator phoneIt;
-    for( phoneIt = entry.telephone.begin(); phoneIt != entry.telephone.end(); ++phoneIt ) {
+    for ( phoneIt = entry.telephone.begin(); phoneIt != entry.telephone.end(); ++phoneIt ) {
       int kabType = (*phoneIt++).toInt();
-      if( phoneIt == entry.telephone.end() ) break;
+      if ( phoneIt == entry.telephone.end() ) break;
       QString number = *phoneIt;
       int type = 0;
       if ( kabType == ::AddressBook::Fixed ) type = PhoneNumber::Voice;
@@ -389,7 +378,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
     }
 
     int noAdr = entry.noOfAddresses();
-    for( int j = 0; j < noAdr; ++j ) {
+    for ( int j = 0; j < noAdr; ++j ) {
       ::AddressBook::Entry::Address kabAddress;
       entry.getAddress( j, kabAddress );
 
@@ -423,7 +412,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
     if ( !entry.keywords.count() == 0 ) note += "\nKeywords: " + entry.keywords.join( ", " );
 
     QStringList::ConstIterator talkIt;
-    for( talkIt = entry.talk.begin(); talkIt != entry.talk.end(); ++talkIt ) {
+    for ( talkIt = entry.talk.begin(); talkIt != entry.talk.end(); ++talkIt ) {
       note += "\nTalk: " + (*talkIt);
     }
 
@@ -441,12 +430,12 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
   kab.save( true );
 }
 
-int main(int argc,char **argv)
+int main( int argc, char **argv )
 {
-  KAboutData aboutData("kab2kabc",I18N_NOOP("Kab to Kabc Converter"),"0.1");
-  aboutData.addAuthor("Cornelius Schumacher", 0, "schumacher@kde.org");
+  KAboutData aboutData( "kab2kabc", I18N_NOOP( "Kab to Kabc Converter" ), "0.1" );
+  aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
 
-  KCmdLineArgs::init(argc,argv,&aboutData);
+  KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 
   KApplication app;
@@ -484,3 +473,4 @@ int main(int argc,char **argv)
 
   kdDebug(5700) << "Saved kabc addressbook to '" << kabcBook->identifier() << "'" << endl;
 }
+
