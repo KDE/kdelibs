@@ -52,6 +52,8 @@ kdeprintdir = $(includedir)/kdeprint
 
 EXTRA_DIST = fooparser.y fooscanner.l kprintpreviewui.rc
 
+KDE_OPTIONS = nofinal
+
 # installation of UI files
 uidata_DATA = kprintpreviewui.rc
 uidatadir = $(kde_confdir)/ui
