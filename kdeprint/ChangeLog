@@ -131,3 +131,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     notified to all other opened apps (via DCOP).
   * kicker extension: made extension aware of plugin change in
     other apps (using new DCOP signal comm).
+
+09/11/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin: added the possibility to list jobs on remote
+    printers. No management is allowed on remote jobs (yet?).

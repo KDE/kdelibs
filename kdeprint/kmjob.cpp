@@ -43,6 +43,7 @@ void KMJob::init()
 	m_size = m_processedsize = 0;
 	m_type = KMJob::System;
 	m_pages = m_processedpages = 0;
+	m_remote = false;
 }
 
 void KMJob::copy(const KMJob& j)
@@ -58,6 +59,7 @@ void KMJob::copy(const KMJob& j)
 	m_pages = j.m_pages;
 	m_processedsize = j.m_processedsize;
 	m_processedpages = j.m_processedpages;
+	m_remote = j.m_remote;
 
 	setDiscarded(false);
 }
@@ -80,6 +82,12 @@ QString KMJob::pixmap()
 			break;
 		case KMJob::Error:
 			str.append("_error");
+			break;
+		case KMJob::Completed:
+			str.append("_completed");
+			break;
+		case KMJob::Cancelled:
+			str.append("_cancelled");
 			break;
 		default:
 			break;

@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <qdatetime.h>
 #include <cups/cups.h>
 
 void dumpRequest(ipp_t *req)
@@ -233,6 +234,7 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 	// print each attribute
 	ipp_uchar_t	*d;
 	QCString	dateStr;
+	QDateTime	dt;
 	while (attr && attr->group_tag == group)
 	{
 		output << "  <tr>\n    <td><b>" << attr->name << "</b></td>\n    <td>" << endl;
@@ -241,7 +243,13 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 			switch (attr->value_tag)
 			{
 				case IPP_TAG_INTEGER:
-					output << attr->values[i].integer;
+					if (attr->name && strstr(attr->name, "time"))
+					{
+						dt.setTime_t((unsigned int)(attr->values[i].integer));
+						output << dt.toString();
+					}
+					else
+						output << attr->values[i].integer;
 					break;
 				case IPP_TAG_ENUM:
 					output << "0x" << hex << attr->values[i].integer << dec;

@@ -26,6 +26,8 @@
 #include "ipprequest.h"
 #include <qstringlist.h>
 
+class KMPrinter;
+
 class KMCupsJobManager : public KMJobManager
 {
 	Q_OBJECT
@@ -44,7 +46,7 @@ protected slots:
 protected:
 	bool listJobs();
 	bool sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
-	void parseListAnswer(IppRequest& req);
+	void parseListAnswer(IppRequest& req, KMPrinter *pr);
 
 private:
 	QStringList	m_currenturis;

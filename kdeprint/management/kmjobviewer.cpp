@@ -247,7 +247,7 @@ void KMJobViewer::updateJobs()
 	for (;it.current();++it)
 	{
 		KMJob	*j(it.current());
-		JobItem	*item = findItem(j->id());
+		JobItem	*item = findItem(j->uri());
 		if (item)
 		{
 			item->setDiscarded(false);
@@ -265,11 +265,11 @@ void KMJobViewer::updateJobs()
 		}
 }
 
-JobItem* KMJobViewer::findItem(int ID)
+JobItem* KMJobViewer::findItem(const QString& uri)
 {
 	QPtrListIterator<JobItem>	it(m_items);
 	for (;it.current();++it)
-		if (it.current()->jobID() == ID) return it.current();
+		if (it.current()->jobUri() == uri) return it.current();
 	return 0;
 }
 
@@ -278,7 +278,7 @@ void KMJobViewer::slotSelectionChanged()
 	int	acts = m_manager->actions();
 	int	state(-1);
 	int	thread(0);
-	bool	completed(true);
+	bool	completed(true), remote(false);
 
 	QPtrListIterator<JobItem>	it(m_items);
 	QPtrList<KMJob>	joblist;
@@ -301,16 +301,18 @@ void KMJobViewer::slotSelectionChanged()
 
 			completed = (completed && it.current()->job()->isCompleted());
 			joblist.append(it.current()->job());
+			if (it.current()->job()->isRemote())
+				remote = true;
 		}
 	}
 	if (thread != 2)
 		joblist.clear();
 
-	actionCollection()->action("job_remove")->setEnabled((thread == 1) || (!completed && (state >= 0) && (acts & KMJob::Remove)));
-	actionCollection()->action("job_hold")->setEnabled(!completed && (thread == 2) && (state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
-	actionCollection()->action("job_resume")->setEnabled(!completed && (thread == 2) && (state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
-	actionCollection()->action("job_move")->setEnabled(!completed && (thread == 2) && (state >= 0) && (acts & KMJob::Move));
-	actionCollection()->action("job_restart")->setEnabled((thread == 2) && (state >= 0) && (completed) && (acts & KMJob::Restart));
+	actionCollection()->action("job_remove")->setEnabled((thread == 1) || (!remote && !completed && (state >= 0) && (acts & KMJob::Remove)));
+	actionCollection()->action("job_hold")->setEnabled(!remote && !completed && (thread == 2) && (state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
+	actionCollection()->action("job_resume")->setEnabled(!remote && !completed && (thread == 2) && (state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
+	actionCollection()->action("job_move")->setEnabled(!remote && !completed && (thread == 2) && (state >= 0) && (acts & KMJob::Move));
+	actionCollection()->action("job_restart")->setEnabled(!remote && (thread == 2) && (state >= 0) && (completed) && (acts & KMJob::Restart));
 
 	m_manager->validatePluginActions(actionCollection(), joblist);
 }

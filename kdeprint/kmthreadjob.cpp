@@ -87,6 +87,7 @@ bool KMThreadJob::loadJobs()
 				job->setSize(ll[4].toInt());
 				job->setState(KMJob::Printing);
 				job->setType(KMJob::Threaded);
+				job->setUri("proc:/"+ll[0]);
 				if (job->id() > 0 && checkJob(job->id()))
 					m_jobs.insert(job->id(),job);
 				else
@@ -106,6 +107,17 @@ bool KMThreadJob::checkJob(int ID)
 KMJob* KMThreadJob::findJob(int ID)
 {
 	return m_jobs.find(ID);
+}
+
+KMJob* KMThreadJob::findJob(const QString& uri)
+{
+	if (uri.startsWith("proc:/"))
+	{
+		int	pid = uri.mid(6).toInt();
+		if (pid > 0)
+			return m_jobs.find(pid);
+	}
+	return NULL;
 }
 
 bool KMThreadJob::removeJob(int ID)

@@ -84,6 +84,8 @@ public:
 	void setProcessedPages(int p)		{ m_processedpages = p; }
 	int processedSize() const		{ return m_processedsize; }
 	void setProcessedSize(int s)		{ m_processedsize = s; }
+	bool isRemote() const		{ return m_remote; }
+	void setRemote(bool on)		{ m_remote = on; }
 
 protected:
 	void init();
@@ -100,6 +102,7 @@ protected:
 	int	m_pages;
 	int	m_processedsize;
 	int	m_processedpages;
+	bool	m_remote;
 
 	// internal members
 	QString	m_uri;

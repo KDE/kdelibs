@@ -52,11 +52,20 @@ void KMJobManager::removeDiscardedJobs()
 		}
 }
 
-KMJob* KMJobManager::findJob(int ID)
+/*KMJob* KMJobManager::findJob(int ID)
 {
 	QPtrListIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 		if (it.current()->id() == ID)
+			return it.current();
+	return 0;
+}*/
+
+KMJob* KMJobManager::findJob(const QString& uri)
+{
+	QPtrListIterator<KMJob>	it(m_jobs);
+	for (;it.current();++it)
+		if (it.current()->uri() == uri)
 			return it.current();
 	return 0;
 }
@@ -64,9 +73,9 @@ KMJob* KMJobManager::findJob(int ID)
 void KMJobManager::addJob(KMJob *job)
 {
 	// only keep it if "printer" is not empty, and in printer filter
-	if (job->id() > 0 && !job->printer().isEmpty() && m_printers.contains(job->printer()) > 0)
+	if (!job->uri().isEmpty() && !job->printer().isEmpty() && m_printers.contains(job->printer()) > 0)
 	{
-		KMJob	*aJob = findJob(job->id());
+		KMJob	*aJob = findJob(job->uri());
 		if (aJob)
 		{
 			aJob->copy(*job);
@@ -82,9 +91,22 @@ void KMJobManager::addJob(KMJob *job)
 		delete job;
 }
 
-bool KMJobManager::sendCommand(int ID, int action, const QString& arg)
+/*bool KMJobManager::sendCommand(int ID, int action, const QString& arg)
 {
 	KMJob	*job = findJob(ID);
+	if (job)
+	{
+		QPtrList<KMJob>	l;
+		l.setAutoDelete(false);
+		l.append(job);
+		return sendCommand(l,action,arg);
+	}
+	return false;
+}*/
+
+bool KMJobManager::sendCommand(const QString& uri, int action, const QString& arg)
+{
+	KMJob	*job = findJob(uri);
 	if (job)
 	{
 		QPtrList<KMJob>	l;

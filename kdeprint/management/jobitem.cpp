@@ -44,6 +44,7 @@ void JobItem::init(KMJob *job)
 		setText(5,QString::number(m_job->size()));
 		setText(6,QString::number(m_job->processedPages()));
 		m_ID = m_job->id();
+		m_uri = m_job->uri();
 	}
 	widthChanged();
 }

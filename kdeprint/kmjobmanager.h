@@ -47,8 +47,10 @@ public:
 	JobType jobType() const;
 	void setJobType(JobType);
 
-	KMJob* findJob(int ID);
-	bool sendCommand(int ID, int action, const QString& arg = QString::null);
+	//KMJob* findJob(int ID);
+	KMJob* findJob(const QString& uri);
+	//bool sendCommand(int ID, int action, const QString& arg = QString::null);
+	bool sendCommand(const QString& uri, int action, const QString& arg = QString::null);
 	bool sendCommand(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
 	const QPtrList<KMJob>& jobList();
 	void addJob(KMJob*);

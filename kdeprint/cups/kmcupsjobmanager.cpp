@@ -51,6 +51,9 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 	QPtrListIterator<KMJob>	it(jobs);
 	for (;it.current() && value;++it)
 	{
+		// hypothesis: job operation are always done on local jobs. The only operation
+		// allowed on remote jobs is listing (done elsewhere).
+
 		req.addURI(IPP_TAG_OPERATION,"job-uri",it.current()->uri());
 		req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->realLogin());
 
@@ -71,8 +74,8 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 			case KMJob::Move:
 				if (argstr.isEmpty()) return false;
 				req.setOperation(CUPS_MOVE_JOB);
-				uri = QString("ipp://%1:%2/printers/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(argstr);
-				req.addURI(IPP_TAG_OPERATION,"job-printer-uri",uri);
+				uri = QString::fromLatin1("ipp://%1:%2/printers/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(argstr);
+				req.addURI(IPP_TAG_OPERATION, "job-printer-uri", uri);
 				break;
 			default:
 				return false;
@@ -87,50 +90,61 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 bool KMCupsJobManager::listJobs()
 {
 	IppRequest	req;
-	QString		uri;
+	QString		uri("ipp://%1:%2/%3/%4");
 	QStringList	keys;
+	CupsInfos	*infos = CupsInfos::self();
 
-	// printers jobs
-	req.setOperation(IPP_GET_JOBS);
-	uri = QString("ipp://%1:%2/printers/").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
-	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+	// wanted attributes
 	keys.append("job-id");
 	keys.append("job-uri");
-	keys.append("job-printer-uri");
 	keys.append("job-name");
 	keys.append("job-state");
+	keys.append("job-printer-uri");
 	keys.append("job-k-octets");
 	keys.append("job-originating-user-name");
 	keys.append("job-k-octets-completed");
 	keys.append("job-media-sheets");
 	keys.append("job-media-sheets-completed");
-	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
-	if (jobType() == KMJobManager::CompletedJobs)
-		req.addKeyword(IPP_TAG_OPERATION,"which-jobs",QString::fromLatin1("completed"));
 
-	if (req.doRequest("/"))
-		parseListAnswer(req);
-	else
-		return false;
+	// for each printer:
+	//	- get object from manager (for URI)
+	//	- fill IPP_GET_JOBS request for that printer
+	//	- send request to printer's host (use remote host if needed)
+	for (QStringList::ConstIterator it=filter().begin(); it!=filter().end(); ++it)
+	{
+		// initialize request
+		req.init();
+		req.setOperation(IPP_GET_JOBS);
 
-	// classes jobs
-	req.init();
-	req.setOperation(IPP_GET_JOBS);
-	uri = QString("ipp://%1:%2/classes/").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
-	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
-	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
-	if (jobType() == KMJobManager::CompletedJobs)
-		req.addKeyword(IPP_TAG_OPERATION,"which-jobs",QString::fromLatin1("completed"));
+		// add printer-uri
+		KMPrinter *mp = KMManager::self()->findPrinter(*it);
+		if (!mp)
+			continue;
+		if (!mp->uri().isEmpty())
+		{
+			req.addURI(IPP_TAG_OPERATION, "printer-uri", mp->uri().prettyURL());
+			req.setHost(mp->uri().host());
+			req.setPort(mp->uri().port());
+		}
+		else
+			req.addURI(IPP_TAG_OPERATION, "printer-uri", uri.arg(infos->host()).arg(infos->port()).arg(((mp&&mp->isClass())?"classes":"printers")).arg(*it));
 
-	if (req.doRequest("/"))
-		parseListAnswer(req);
-	else
-		return false;
+		// other attributes
+		req.addKeyword(IPP_TAG_OPERATION, "requested-attributes", keys);
+		if (jobType() == KMJobManager::CompletedJobs)
+			req.addKeyword(IPP_TAG_OPERATION,"which-jobs",QString::fromLatin1("completed"));
+
+		// send request
+		if (req.doRequest("/"))
+			parseListAnswer(req, mp);
+		else
+			return false;
+	}
 
 	return KMJobManager::listJobs();
 }
 
-void KMCupsJobManager::parseListAnswer(IppRequest& req)
+void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
 {
 	ipp_attribute_t	*attr = req.first();
 	KMJob		*job = new KMJob();
@@ -173,20 +187,23 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req)
 		}
 		else if (name == "job-k-octets") job->setSize(attr->values[0].integer);
 		else if (name == "job-originating-user-name") job->setOwner(QString::fromLocal8Bit(attr->values[0].string.text));
-		else if (name == "job-printer-uri")
-		{
-			uri = QString::fromLocal8Bit(attr->values[0].string.text);
-			int	p = uri.findRev('/');
-			if (p != -1)
-				job->setPrinter(uri.right(uri.length()-p-1));
-		}
 		else if (name == "job-k-octets-completed") job->setProcessedSize(attr->values[0].integer);
 		else if (name == "job-media-sheets") job->setPages(attr->values[0].integer);
 		else if (name == "job-media-sheets-completed") job->setProcessedPages(attr->values[0].integer);
+		else if (name == "job-printer-uri" && !pr->isRemote())
+		{
+			QString	str(attr->values[0].string.text);
+			int	p = str.findRev('/');
+			if (p != -1)
+				job->setPrinter(str.mid(p+1));
+		}
 
 		if (name.isEmpty() || attr == req.last())
 		{
-		addJob(job);	// don't use job after this call !!!
+			if (job->printer().isEmpty())
+				job->setPrinter(pr->printerName());
+			job->setRemote(pr->isRemote());
+			addJob(job);	// don't use job after this call !!!
 			job = new KMJob();
 		}
 

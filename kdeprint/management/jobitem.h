@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -34,11 +34,13 @@ public:
 	void init(KMJob *job);
 
 	int jobID() const;
+	QString jobUri() const;
 	KMJob* job() const;
 
 private:
 	KMJob	*m_job;
 	int	m_ID;
+	QString	m_uri;
 };
 
 inline int JobItem::jobID() const
@@ -46,5 +48,8 @@ inline int JobItem::jobID() const
 
 inline KMJob* JobItem::job() const
 { return m_job; }
+
+inline QString JobItem::jobUri() const
+{ return m_uri; }
 
 #endif

@@ -33,6 +33,7 @@ public:
 	~KMThreadJob();
 
 	KMJob* findJob(int ID);
+	KMJob* findJob(const QString& uri);
 	bool removeJob(int ID);
 	void createJob(KMJob*);
 	void updateManager(KMJobManager*);

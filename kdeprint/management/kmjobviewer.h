@@ -72,7 +72,7 @@ protected:
 	void updateJobs();
 	void initActions();
 	void initPrinterActions();
-	JobItem* findItem(int ID);
+	JobItem* findItem(const QString& uri);
 	void jobSelection(QPtrList<KMJob>& l);
 	void send(int cmd, const QString& name, const QString& arg = QString::null);
 	void loadPrinters();
