@@ -207,7 +207,7 @@ void SlaveBase::dispatchLoop()
     FD_SET(appconn->fd_from(), &rfds);
 
     retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, 0);
-    kdDebug(7019) << "dispatchLoop(): select returned " << retval << endl;
+    //kdDebug(7019) << "dispatchLoop(): select returned " << retval << endl;
     if (retval && FD_ISSET(appconn->fd_from(), &rfds))
     { // dispatch application messages
         int cmd;
