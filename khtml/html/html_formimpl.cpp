@@ -601,13 +601,24 @@ void HTMLGenericFormElementImpl::recalcStyle( StyleChange ch )
 
 bool HTMLGenericFormElementImpl::isSelectable() const
 {
-    return  !m_disabled && HTMLElementImpl::isSelectable();
+    return  m_render && m_render->isWidget() &&
+        static_cast<RenderWidget*>(m_render)->widget() &&
+        static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= QWidget::TabFocus;
 }
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (evt->target()==this)
     {
+        // Report focus in/out changes to the browser extension (editable widgets only)
+        KHTMLView *view = getDocument()->view();
+        if (evt->id()==EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render->isWidget()) {
+            KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
+            QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
+            widget->setFocus();
+            if (ext)
+                ext->editableWidgetFocused(widget);
+        }
         if (evt->id()==EventImpl::MOUSEDOWN_EVENT || evt->id()==EventImpl::KHTML_KEYDOWN_EVENT)
         {
             setActive();
@@ -619,8 +630,9 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 		setActive(false);
 		setFocus();
 	    }
-	    else
-	      setActive(false);
+	    else {
+                setActive(false);
+            }
         }
 
 	if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT ||
@@ -631,14 +643,6 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 		QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->widget(), k->qKeyEvent);
 	}
 
-	// Report focus in/out changes to the browser extension (editable widgets only)
-	KHTMLView *view = getDocument()->view();
-	if (evt->id()==EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render->isWidget()) {
-	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
-	    QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
-	    if (ext)
-		ext->editableWidgetFocused(widget);
-	}
 	if (evt->id()==EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render->isWidget()) {
 	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
 	    QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
