@@ -497,14 +497,14 @@ static pid_t launch(int argc, const char *_name, const char *args,
           if (execpath.isEmpty())
           {
              // Error
-             QString errorMsg = i18n("Could not dlopen library '%1'.\n%2").arg(QFile::decodeName(libpath))
+             QString errorMsg = i18n("Could not open library '%1'.\n%2").arg(QFile::decodeName(libpath))
 		.arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
              exitWithErrorMsg(errorMsg);
           }
           else
           {
              // Print warning
-             fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), ltdlError != 0 ? ltdlError : "(null)" );
+             fprintf(stderr, "Could not open library %s: %s\n", lib.data(), ltdlError != 0 ? ltdlError : "(null)" );
           }
        }
      }
