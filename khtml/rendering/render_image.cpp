@@ -49,20 +49,12 @@ RenderImage::RenderImage()
     setParsing(false);
     image = 0;
     berrorPic = false;
-    is_stopped = false;
 }
 
 RenderImage::~RenderImage()
 {
     if(image) image->deref(this);
 }
-
-
-void RenderImage::stopAnimations()
-{
-    is_stopped = true;
-}
-
 
 void RenderImage::setStyle(RenderStyle* _style)
 {
@@ -73,11 +65,6 @@ void RenderImage::setStyle(RenderStyle* _style)
 
 void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
 {
-    if( is_stopped ) {
-    	// TODO: call QMovie->stop()
-        return;
-    }
-
     if(o != image) {
         RenderReplaced::setPixmap(p, r, o, manualUpdate);
         return;
@@ -101,8 +88,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     // Image dimensions have been changed, see what needs to be done
     if(o->pixmap_size() !=  pixSize)
     {
-//         qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
-//              o->pixmap_size().width(), o->pixmap_size().height());
+//          qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
+//               o->pixmap_size().width(), o->pixmap_size().height());
 
         if(!o->isErrorImage())
             pixSize = o->pixmap_size();
@@ -126,6 +113,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     {
         setLayouted(false);
         setMinMaxKnown(false);
+
 //         kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
 //         kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
         // the updateSize() call should trigger a repaint too
@@ -175,7 +163,7 @@ void RenderImage::printObject(QPainter *p, int /*x*/, int /*y*/, int /*w*/, int 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
     if ( pix.isNull() || berrorPic)
     {
-        if(cWidth > 0 && cHeight > 0)
+        if(cWidth > 2 && cHeight > 2)
         {
             //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
             qDrawShadePanel( p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
