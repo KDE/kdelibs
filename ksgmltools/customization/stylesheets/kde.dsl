@@ -119,46 +119,13 @@
 (define %section-autolabel% #t)
 ;(define (toc-depth nd) 3)
 
-
-;; I have the feeling the next two should be removed (or
-;; an error message should be issued).
-;;-- Anyway: the next three functions are not needed when the possible
-;;-- languages are defined in the DTD, as is the case now
-;; Origin: print/dbprint.dsl
-;; How:    replace "_" by "-"
-;; Why:    "-" complies with RFC1766, "_" doesn't
-;; Watch out: - if dsssl-language-code is redefined in the source
-(define (dsssl-language-code #!optional (node (current-node)))
-  (let* ((lang     ($lang$))
-	 (langcode (if (> (string-index lang "-") 0)
-		       (substring lang 0 (string-index lang "-"))
-		       lang)))
-    (string->symbol (case-fold-up langcode))))
-
-;; Origin: print/dbprint.dsl
-;; How:    replace "_" by "-"
-;; Why:    "-" complies with RFC1766, "_" doesn't
-;; Watch out: - if dsssl-country-code is redefined in the source
-;; Note:   There are still problems with this: it seems to assume
-;;         that there is only one "[-_]" in the code
-(define (dsssl-country-code #!optional (node (current-node)))
-  (let* ((lang     ($lang$))
-	 (ctrycode (if (> (string-index lang "-") 0)
-		       (substring lang
-				  (+ (string-index lang "-") 1)
-				  (string-length lang))
-		       #f)))
-    (if ctrycode
-	(string->symbol (case-fold-up ctrycode))
-	#f)))
-
 ;; Origin: common/dbl10n.dsl
-;; How: replace "_" by "-"
+;; How: replace "_" by "-" (undoes effect of lang-fix function)
 ;; Why: "-" complies with RFC1766, "_" doesn't
 ;; Watch out: - if lang-fix is redefined in the source
 ;; Note:   There are still problems with this: it seems to assume
 ;;         that there is only one "[-_]" in the code
-(define (lang-fix language)
+(define (lang-unfix language)
   (let ((fixed-lang (if (> (string-index language "_") 0)
 			(let ((pos (string-index language "_")))
 			  (string-append
@@ -330,23 +297,6 @@
 	    (make empty-element gi: (car (car tl))
 		attributes: (cdr (car tl)))
 	    (loop (cdr tl)))))
-    ; == a hack, but keeps localisation code cleaner
-    ; == tests for RFC1766 compliance of language code
-    ; == http://www.rfc-editor.org/rfc/rfc1766.txt
-    ; == could go in the language-fix function
-    (case ($lang$)
-      (("no_ny") (error "L10N ERROR: use no-ny instead of no_ny")) ; ny is not a country but a language variant
-      (("pt_br") (error "L10N ERROR: use pt-BR instead of pt_BR"))
-      ; the versions with the encodings are possible, but should be written like
-      ; this zh-CN-gb2312 and zh-TW-big5 (language info is lower case, country is upper case - none of this case sensitivity is compulsory: it's just convention
-      ; unregistered languages must be written as x-LL
-      (("zh_cn") (error "L10N ERROR: use zh-CN instead of zh_CN"))
-      (("zh_cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh_CN.GB2312"))
-      (("zh-cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh-CN.GB2312"))
-      (("zh_tw") (error "L10N ERROR: use zh-TW instead of zh_TW"))
-      (("zh_tw.big5") (error "L10N ERROR: use zh-TW instead of zh_TW.BIG5"))
-      (("zh-tw.big5") (error "L10N ERROR: use zh-TW instead of zh-TW.BIG5"))
-      (else (empty-sosofo)))
     ; == derived from dbhtml.dsl $standard-html-headers$
     (let ((nl (select-elements (descendants (info-element))
 			       (normalize "keyword"))))
