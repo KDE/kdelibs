@@ -150,7 +150,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
 
   setMultipleAuthCaching( true );
   reparseConfiguration();
-  initCookieJar();
 }
 
 HTTPProtocol::~HTTPProtocol()
@@ -1423,7 +1422,45 @@ bool HTTPProtocol::readHeader()
       addEncoding(trimLead(buf + 17), m_qContentEncodings);
     }
 
-    // continue only if we know that we're HTTP/1.1
+    // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
+    else if(strncasecmp(buf, "Content-Disposition:", 20) == 0)
+    {
+      char* dispositionBuf = trimLead(buffer + 20);
+      while ( dispositionBuf )
+      {
+        if ( strncasecmp( dispositionBuf, "filename", 8 ) == 0 )
+        {
+          dispositionBuf += 8;
+          while ( dispositionBuf && (dispositionBuf[0] == ' ' ||
+                      dispositionBuf[0] == '=') ) dispositionBuf++;
+          char* bufStart = dispositionBuf;
+          while ( dispositionBuf && dispositionBuf[0] != ';' ) dispositionBuf++;
+          if ( dispositionBuf > bufStart )
+          {
+            disposition = QString::fromLatin1( trimLead(bufStart), dispositionBuf - bufStart );
+            break;
+          }
+        }
+        else
+        {
+          while ( dispositionBuf && dispositionBuf[0] != ';' ) dispositionBuf++;
+          while ( dispositionBuf && (dispositionBuf[0] == ';' ||
+                      dispositionBuf[0] == ' ') ) dispositionBuf++;
+        }
+      }
+
+      // Content-Dispostion is not allowed to dictate directory
+      // path, thus we extract the filename only.
+      if ( !disposition.isEmpty() )
+      {
+        int pos = disposition.findRev( '/' );
+        if( pos > -1 )
+          disposition = disposition.mid(pos+1);
+        kdDebug(7113) << "(" << getpid() << ") Content-Disposition: " << disposition << endl;
+      }
+    }
+
+    // Continue only if we know that we're HTTP/1.1
     else if (m_HTTPrev == HTTP_11) {
       // let them tell us if we should stay alive or not
       if (strncasecmp(buf, "Connection:", 11) == 0) {
@@ -1448,40 +1485,6 @@ bool HTTPProtocol::readHeader()
       // MD5 signature
       else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
         m_sContentMD5 = trimLead(buffer + 12);
-      }
-      // Refer to RFC 2616 sec 15.5/19.5.1 and RFC 2183
-      else if(strncasecmp(buf, "Content-Disposition:", 20) == 0) {
-        char* dispositionBuf = trimLead(buffer + 20);
-        while ( dispositionBuf )
-        {
-          if ( strncasecmp( dispositionBuf, "filename", 8 ) == 0 ) {
-            dispositionBuf += 8;
-            while ( dispositionBuf && (dispositionBuf[0] == ' ' ||
-                        dispositionBuf[0] == '=') ) dispositionBuf++;
-            char* bufStart = dispositionBuf;
-            while ( dispositionBuf && dispositionBuf[0] != ';' ) dispositionBuf++;
-            if ( dispositionBuf > bufStart )
-            {
-              disposition = QString::fromLatin1( trimLead(bufStart), dispositionBuf - bufStart );
-              break;
-            }
-          }
-          else
-          {
-            while ( dispositionBuf && dispositionBuf[0] != ';' ) dispositionBuf++;
-            while ( dispositionBuf && (dispositionBuf[0] == ';' ||
-                        dispositionBuf[0] == ' ') ) dispositionBuf++;
-          }
-        }
-
-        // Content-Dispostion is not allowed to dictate directory
-        // path, thus we extract the filename only.
-        if ( !disposition.isEmpty() )  {
-          int pos = disposition.findRev( '/' );
-          if( pos > -1 )
-            disposition = disposition.mid(pos+1);
-          kdDebug(7113) << "(" << getpid() << ") Content-Disposition: " << disposition << endl;
-        }
       }
     }
     else if ( buf[0] =='<' )
