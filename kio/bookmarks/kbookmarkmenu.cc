@@ -195,17 +195,6 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
   }
 }
 
-static struct {
-  QObject *recv;
-  KBookmarkManager *m_pManager;
-  QString s_highlightedAddress;
-  QString m_parentAddress;
-  KBookmarkOwner *m_pOwner;
-  QWidget *m_parentMenu;
-} s_rmb_state;
-
-#define HIDE KPopupMenu::contextMenuFocus()->hideContextMenu();
-
 class RMB
 {
 public:
@@ -218,7 +207,24 @@ public:
   static void slotRMBActionRemove( int val );
   static void slotRMBActionCopyLocation( int val );
   static void slotRMBActionOpen( int val );
+  static void hidePopup() { KPopupMenu::contextMenuFocus()->hideContextMenu(); }
+public:
+  QObject *recv;
+  KBookmarkManager *m_pManager;
+  QString s_highlightedAddress;
+  QString m_parentAddress;
+  KBookmarkOwner *m_pOwner;
+  QWidget *m_parentMenu;
+  static RMB s_rmb_state;
 };
+
+#define INIT \
+  RMB::s_rmb_state.recv = this;                                 \
+  RMB::s_rmb_state.m_parentAddress = m_parentAddress;           \
+  RMB::s_rmb_state.s_highlightedAddress = s_highlightedAddress; \
+  RMB::s_rmb_state.m_pManager = m_pManager;                     \
+  RMB::s_rmb_state.m_pOwner = m_pOwner;                         \
+  RMB::s_rmb_state.m_parentMenu = m_parentMenu;
 
 bool RMB::invalid( int val )
 {
@@ -231,34 +237,6 @@ bool RMB::invalid( int val )
     valid = false;
 
   return !valid;
-}
-
-#define INIT \
-  s_rmb_state.recv = this;                                 \
-  s_rmb_state.m_parentAddress = m_parentAddress;           \
-  s_rmb_state.s_highlightedAddress = s_highlightedAddress; \
-  s_rmb_state.m_pManager = m_pManager;                     \
-  s_rmb_state.m_pOwner = m_pOwner;                         \
-  s_rmb_state.m_parentMenu = m_parentMenu;
-
-bool KBookmarkMenu::invalid( int val )
-{
-  INIT;
-  bool ret = RMB::invalid( val );
-  s_highlightedAddress = s_rmb_state.s_highlightedAddress;
-  return ret;
-}
-
-void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* contextMenu )
-{
-  //kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
-  if (s_highlightedAddress.isNull()) 
-  {
-    KPopupMenu::contextMenuFocus()->hideContextMenu();
-    return; 
-  }
-  contextMenu->clear();
-  fillContextMenu( contextMenu, s_highlightedAddress, 0 );
 }
 
 KBookmark RMB::atAddress(const QString & address)
@@ -296,34 +274,20 @@ void RMB::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int
   id = contextMenu->insertItem( i18n( "Properties" ), s_rmb_state.recv, SLOT(slotRMBActionProperties(int)) );
   contextMenu->setItemParameter( id, val );
 }
-
-void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
-{ 
-  INIT;
-  RMB::fillContextMenu(contextMenu, address, val);
-  emit aboutToShowContextMenu( RMB::atAddress(address), contextMenu );
-}
-
 void RMB::slotRMBActionEditAt( int val )
 {
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << s_rmb_state.s_highlightedAddress << endl;
-  if (RMB::invalid(val)) { HIDE; return; }
+  if (RMB::invalid(val)) { hidePopup(); return; }
 
   KBookmark bookmark = RMB::atAddress(s_rmb_state.s_highlightedAddress);
 
   s_rmb_state.m_pManager->slotEditBookmarksAtAddress( s_rmb_state.s_highlightedAddress );
 }
 
-void KBookmarkMenu::slotRMBActionEditAt( int val )
-{
-  INIT;
-  RMB::slotRMBActionEditAt( val );
-}
-
 void RMB::slotRMBActionProperties( int val )
 {
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionProperties" << s_rmb_state.s_highlightedAddress << endl;
-  if (RMB::invalid(val)) { HIDE; return; }
+  if (RMB::invalid(val)) { hidePopup(); return; }
 
   KBookmark bookmark = RMB::atAddress(s_rmb_state.s_highlightedAddress);
 
@@ -342,16 +306,10 @@ void RMB::slotRMBActionProperties( int val )
   s_rmb_state.m_pManager->emitChanged( parentBookmark );
 }
 
-void KBookmarkMenu::slotRMBActionProperties( int val )
-{
-  INIT;
-  RMB::slotRMBActionProperties( val );
-}
-
 void RMB::slotRMBActionInsert( int val )
 {
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionInsert" << s_rmb_state.s_highlightedAddress << endl;
-  if (RMB::invalid(val)) { HIDE; return; }
+  if (RMB::invalid(val)) { hidePopup(); return; }
 
   QString url = s_rmb_state.m_pOwner->currentURL();
   if (url.isEmpty())
@@ -384,16 +342,10 @@ void RMB::slotRMBActionInsert( int val )
   }
 }
 
-void KBookmarkMenu::slotRMBActionInsert( int val )
-{
-  INIT;
-  RMB::slotRMBActionInsert( val );
-}
-
 void RMB::slotRMBActionRemove( int val )
 {
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << s_highlightedAddress << endl;
-  if (RMB::invalid(val)) { HIDE; return; }
+  if (RMB::invalid(val)) { hidePopup(); return; }
 
   if (KMessageBox::warningYesNo(
           s_rmb_state.m_parentMenu, "Are you sure you wish to remove this bookmark?", 
@@ -410,16 +362,10 @@ void RMB::slotRMBActionRemove( int val )
   s_rmb_state.m_parentMenu->hide();
 }
 
-void KBookmarkMenu::slotRMBActionRemove( int val )
-{
-  INIT;
-  RMB::slotRMBActionRemove( val );
-}
-
 void RMB::slotRMBActionCopyLocation( int val )
 {
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
-  if (RMB::invalid(val)) { HIDE; return; }
+  if (RMB::invalid(val)) { hidePopup(); return; }
 
   KBookmark bookmark = RMB::atAddress( s_rmb_state.s_highlightedAddress );
 
@@ -430,21 +376,45 @@ void RMB::slotRMBActionCopyLocation( int val )
   }
 }
 
-void KBookmarkMenu::slotRMBActionCopyLocation( int val )
-{
-  INIT;
-  RMB::slotRMBActionCopyLocation( val );
-}
-
 void RMB::slotRMBActionOpen( int val )
 {
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
-  if (RMB::invalid(val)) { HIDE; return; }
+  if (RMB::invalid(val)) { hidePopup(); return; }
 
   KBookmark bookmark = RMB::atAddress( s_rmb_state.s_highlightedAddress );
   Q_ASSERT(!bookmark.isGroup());
 
   s_rmb_state.m_pOwner->openBookmarkURL( bookmark.url().url() );
+}
+
+void KBookmarkMenu::slotRMBActionEditAt( int val )
+{
+  INIT;
+  RMB::slotRMBActionEditAt( val );
+}
+
+void KBookmarkMenu::slotRMBActionProperties( int val )
+{
+  INIT;
+  RMB::slotRMBActionProperties( val );
+}
+
+void KBookmarkMenu::slotRMBActionInsert( int val )
+{
+  INIT;
+  RMB::slotRMBActionInsert( val );
+}
+
+void KBookmarkMenu::slotRMBActionRemove( int val )
+{
+  INIT;
+  RMB::slotRMBActionRemove( val );
+}
+
+void KBookmarkMenu::slotRMBActionCopyLocation( int val )
+{
+  INIT;
+  RMB::slotRMBActionCopyLocation( val );
 }
 
 void KBookmarkMenu::slotRMBActionOpen( int val )
@@ -1135,5 +1105,3 @@ void KBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &ne
 
 #include "kbookmarkmenu.moc"
 #include "kbookmarkmenu_p.moc"
-
-#undef HIDE
