@@ -103,8 +103,8 @@ class KDirOperator : public QWidget
     /**
      * The various action types. These values can be or'd together
      */
-    enum ActionTypes { SortActions = 1, 
-                       ViewActions = 2, 
+    enum ActionTypes { SortActions = 1,
+                       ViewActions = 2,
                        NavActions = 4,
                        FileActions = 8,
                        AllActions = 15 };
@@ -440,6 +440,16 @@ class KDirOperator : public QWidget
                           bool ask = true, bool showProgress = true );
 
     /**
+     * Starts and returns a @ref KIO::DeleteJob to delete the given @p items.
+     *
+     * @param ask specifies whether a confirmation dialog should be shown
+     * @param showProgress passed to the DeleteJob to show a progress dialog
+     * @param parent the parent widget used for the confirmation dialog
+     */
+    KIO::DeleteJob * del( const KFileItemList& items, QWidget *parent,
+                          bool ask = true, bool showProgress = true );
+
+    /**
      * Clears the forward and backward history.
      */
     void clearHistory();
@@ -475,11 +485,11 @@ class KDirOperator : public QWidget
     }
 
     /**
-     * Sets up the action menu. 
+     * Sets up the action menu.
      * @param actionTypes is an value of OR'd @ref ActionTypes that controls which actions to show in the action menu
      */
     void setupMenu(int whichActions);
-     
+
 protected:
     /**
      * A view factory for creating predefined fileviews. Called internally by @ref #setView

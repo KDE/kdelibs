@@ -356,10 +356,17 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
                                     bool ask, bool showProgress )
 {
+    return del( items, this, ask, showProgress );
+}
+
+KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
+                                    QWidget *parent, 
+                                    bool ask, bool showProgress )
+{
     if ( items.isEmpty() ) {
-        KMessageBox::information( this,
-                                  i18n("You didn't select a file to delete."),
-                                  i18n("Nothing to delete") );
+        KMessageBox::information( parent,
+                                i18n("You didn't select a file to delete."),
+                                i18n("Nothing to delete") );
         return 0L;
     }
 
@@ -380,14 +387,14 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
     if ( ask ) {
         int ret;
         if ( items.count() == 1 ) {
-            ret = KMessageBox::warningContinueCancel( viewWidget(),
+            ret = KMessageBox::warningContinueCancel( parent,
                 i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" )
                 .arg( files.first() ),
                                                       i18n("Delete File"),
                                                       i18n("Delete") );
         }
         else
-            ret = KMessageBox::warningContinueCancelList( viewWidget(),
+            ret = KMessageBox::warningContinueCancelList( parent,
                 i18n("Do you really want to delete this item?", "Do you really want to delete these %n items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
@@ -714,7 +721,7 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
     KFileView* new_view = 0L;
     bool separateDirs = KFile::isSeparateDirs( view );
     bool preview = ( KFile::isPreviewInfo(view) || KFile::isPreviewContents( view ) );
-    
+
     if ( separateDirs || preview ) {
         KCombiView *combi = 0L;
         if (separateDirs)
@@ -722,16 +729,16 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
             combi = new KCombiView( parent, "combi view" );
             combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
         }
-        
+
         KFileView* v = 0L;
         if ( KFile::isSimpleView( view ) )
             v = createView( combi, KFile::Simple );
         else
             v = createView( combi, KFile::Detail );
-        
+
         if (combi)
             combi->setRight( v );
-        
+
         if (preview)
         {
             KFilePreview* pView = new KFilePreview( combi ? combi : v, parent, "preview" );
@@ -779,7 +786,7 @@ void KDirOperator::setView( KFile::FileView view )
     }
 
     // if we don't have any files, we can't separate dirs from files :)
-    if ( (mode() & KFile::File) == 0 && 
+    if ( (mode() & KFile::File) == 0 &&
          (mode() & KFile::Files) == 0 ) {
         separateDirs = false;
         separateDirsAction->setEnabled( false );
@@ -1096,18 +1103,18 @@ void KDirOperator::setupActions()
     // the view menu actions
     viewActionMenu = new KActionMenu( i18n("View"), myActionCollection, "view menu" );
     shortAction = new KRadioAction( i18n("Short View"), "view_multicolumn",
-                                    0, myActionCollection, "short view" );
+                                    KShortcut(), myActionCollection, "short view" );
     detailedAction = new KRadioAction( i18n("Detailed View"), "view_detailed",
-                                       0, myActionCollection, "detailed view" );
+                                       KShortcut(), myActionCollection, "detailed view" );
 
-    showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), 0,
+    showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), KShortcut(),
                                           myActionCollection, "show hidden" );
-    separateDirsAction = new KToggleAction( i18n("Separate Directories"), 0,
+    separateDirsAction = new KToggleAction( i18n("Separate Directories"), KShortcut(),
                                             this,
                                             SLOT(slotSeparateDirs()),
                                             myActionCollection, "separate dirs" );
     KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"),
-                                                     "thumbnail", 0,
+                                                     "thumbnail", KShortcut(),
                                                      myActionCollection,
                                                      "preview" );
     connect( previewAction, SIGNAL( toggled( bool )),
@@ -1125,7 +1132,7 @@ void KDirOperator::setupActions()
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
 
-    new KAction( i18n("Properties..."), ALT+Key_Return, this,
+    new KAction( i18n("Properties..."), KShortcut(ALT+Key_Return), this,
                  SLOT(slotProperties()), myActionCollection, "properties" );
 }
 
@@ -1159,7 +1166,7 @@ void KDirOperator::setupMenu(int whichActions)
     // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
     // when you add/remove actions here!
 
-    // now plug everything into the popupmenua
+    // now plug everything into the popupmenu
     actionMenu->popupMenu()->clear();
     if (whichActions & NavActions)
     {
