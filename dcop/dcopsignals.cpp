@@ -22,6 +22,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopserver.h>
 #include <dcopsignals.h>
 
+template class QList<DCOPSignalConnection>;
+
 DCOPSignals::DCOPSignals()
 {
    connections.setAutoDelete(true);
