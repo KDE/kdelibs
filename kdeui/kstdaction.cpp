@@ -471,7 +471,7 @@ KAction *KStdAction::printPreview(const QObject *recvr, const char *slot,
                                   QObject *parent, const char *name )
 {
     return new KAction(i18n("Print Previe&w..."),
-                       "print_preview", 0, recvr, slot,
+                       "filequickprint", 0, recvr, slot,
                        parent, name ? name : stdName(PrintPreview));
 }
 
