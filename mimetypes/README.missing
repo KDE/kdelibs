@@ -1,0 +1,15 @@
+# as for KDE 3.0 these are the mimetypes that our magic code 
+# detects, but we don't have a mimetype for. Waiting for users
+# to complain, so we can ask them to provide one :)
+application/x-arc
+application/x-dbm
+application/x-debian-package
+application/x-elc
+application/x-frame
+application/x-gdbm
+application/x-lharc
+application/x-pn-realaudio
+application/x-sc
+application/x-tex-tfm
+image/x-djvu
+image/x-niff
