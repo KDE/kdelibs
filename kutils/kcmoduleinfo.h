@@ -25,7 +25,6 @@
 #define KCMODULEINFO_H
 
 #include <kservice.h>
-#include <kdemacros.h>
 
 class QPixmap;
 class QString;
@@ -46,7 +45,7 @@ class QStringList;
  * @since 3.2
  *
  */
-class KCModuleInfo
+class KUTILS_EXPORT KCModuleInfo
 {
 
 public:

@@ -92,7 +92,7 @@ class KReplaceNextDialog;
  *  unless you gave it a parent widget on construction.
  *
  */
-class KReplace :
+class KUTILS_EXPORT KReplace :
     public KFind
 {
     Q_OBJECT

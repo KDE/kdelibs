@@ -23,6 +23,8 @@
 #include <qwidget.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 class KInstance;
 class KPluginInfo;
 class QWidgetStack;
@@ -52,7 +54,7 @@ class KConfig;
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class KPluginSelector : public QWidget
+class KUTILS_EXPORT KPluginSelector : public QWidget
 {
     friend class KPluginSelectionWidget;
 

@@ -26,6 +26,8 @@
 
 #include <qpixmap.h>
 
+#include <kdelibs_export.h>
+
 const int KColorMode_Mask	= 0x00000300;
 const int WebOnly 	= 0x00000200;
 const int LowOnly	= 0x00000300;
@@ -52,7 +54,7 @@ class KPixmapPrivate;
  * @author Mark Donohoe (donohoe@kde.org)
  * @version $Id$
  */
-class KPixmap : public QPixmap
+class KDEFX_EXPORT KPixmap : public QPixmap
 {
 public:
 	/**

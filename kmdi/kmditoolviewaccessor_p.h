@@ -29,7 +29,7 @@
 #include <qguardedptr.h>
 #include <kaction.h>
 
-class KMdiToolViewAccessorPrivate {
+class KMDI_EXPORT KMdiToolViewAccessorPrivate {
 public:
 	KMdiToolViewAccessorPrivate() {
 		widgetContainer=0;

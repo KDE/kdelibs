@@ -52,7 +52,7 @@ class KStylePrivate;
  * @author Karol Szwed (gallium@kde.org)
  * @version $Id$
  */
-class KStyle: public QCommonStyle
+class KDEFX_EXPORT KStyle: public QCommonStyle
 {
 	Q_OBJECT
 

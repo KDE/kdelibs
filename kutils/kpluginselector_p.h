@@ -22,6 +22,8 @@
 
 #include <qwidget.h>
 
+#include <kdelibs_export.h>
+
 class KConfigGroup;
 class QListViewItem;
 class KPluginInfo;
@@ -37,7 +39,7 @@ class KCModuleInfo;
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class KPluginSelectionWidget : public QWidget
+class KUTILS_EXPORT KPluginSelectionWidget : public QWidget
 {
     Q_OBJECT
     public:

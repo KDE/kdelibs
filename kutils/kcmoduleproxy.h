@@ -23,12 +23,14 @@
 #include <qwidget.h>
 #include <qstringlist.h>
 
+#include <kdelibs_export.h>
+
 class KCModuleInfo;
 class KAboutData;
 class KInstance;
 class KCModule;
 
-class KCModuleProxy : public QWidget
+class KUTILS_EXPORT KCModuleProxy : public QWidget
 {
 	Q_OBJECT
 	public:

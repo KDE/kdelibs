@@ -18,7 +18,7 @@
 #include "kdrawutil.h"
 #include <qdrawutil.h>
 
-void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
+KDEFX_EXPORT void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
                      const QColorGroup &g, bool sunken,
                      const QBrush *fill)
 {
@@ -40,13 +40,13 @@ void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
 }
 
 
-void kDrawNextButton(QPainter *p, const QRect &r, const QColorGroup &g,
+KDEFX_EXPORT void kDrawNextButton(QPainter *p, const QRect &r, const QColorGroup &g,
                      bool sunken, const QBrush *fill)
 {
     kDrawNextButton(p, r.x(), r.y(), r.width(), r.height(), g, sunken, fill);
 }
 
-void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
+KDEFX_EXPORT void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
                    const QColorGroup &g, bool sunken, const QBrush *fill)
 {
     QPen oldPen = p->pen();
@@ -90,13 +90,13 @@ void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
     p->setPen(oldPen);
 }
 
-void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g, bool sunken,
+KDEFX_EXPORT void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g, bool sunken,
                    const QBrush *fill)
 {
     kDrawBeButton(p, r.x(), r.y(), r.width(), r.height(), g, sunken, fill);
 }
 
-void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGroup &g,
+KDEFX_EXPORT void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGroup &g,
                       bool sunken)
 {
     int x, y, x2, y2;
@@ -136,7 +136,7 @@ void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGroup &g,
         qDrawWinPanel(p, x, y, r.width(), r.height(), g, sunken);
 }
 
-void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
+KDEFX_EXPORT void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, bool sunken)
 {
     QRect r(x, y, w, h);
@@ -145,7 +145,7 @@ void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
-void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear)
+KDEFX_EXPORT void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear)
 {
     // round edge fills
     static const QCOORD btm_left_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,1,
@@ -194,7 +194,7 @@ void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear)
         p->fillRect(x, y, w, h, fillBrush);
 }
 
-void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h)
+KDEFX_EXPORT void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h)
 {
     // using a bunch of QRect lines seems much more efficient than bitmaps or
     // point arrays, even tho it uses more statements
@@ -214,7 +214,7 @@ void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h)
     r += QRect(x2, y+6, 1, h-12);
 }
 
-void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
+KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
                    QBitmap *lightColor, QBitmap *midColor,
                    QBitmap *midlightColor, QBitmap *darkColor,
                    QBitmap *blackColor, QBitmap *whiteColor)
@@ -236,7 +236,7 @@ void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
     }
 }
 
-void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y, int w,
+KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y, int w,
                    int h, bool isXBitmaps, const uchar *lightColor,
                    const uchar *midColor, const uchar *midlightColor,
                    const uchar *darkColor, const uchar *blackColor,

@@ -31,6 +31,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __KIMAGE_EFFECT_H
 #define __KIMAGE_EFFECT_H
 
+#include <kdelibs_export.h>
+
 class QImage;
 class QSize;
 class QColor;
@@ -45,7 +47,7 @@ class QRect;
  * just call the static methods. They are encapsulated here merely to provide
  * a common namespace.
  */
-class KImageEffect
+class KDEFX_EXPORT KImageEffect
 {
 public:
     /**

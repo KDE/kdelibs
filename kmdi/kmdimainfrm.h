@@ -51,7 +51,7 @@
 class QTimer;
 class QPopupMenu;
 class QMenuBar;
-#include "kmditoolviewaccessor.h"
+#include <kmditoolviewaccessor.h>
 
 class QToolButton;
 
@@ -67,7 +67,7 @@ class KMdiMainFrmPrivate;
  *
  * This special event is needed because the view has to inform the main frame that it`s being closed.
  */
-class KMdiViewCloseEvent : public QCustomEvent
+class KMDI_EXPORT KMdiViewCloseEvent : public QCustomEvent
 {
 public:
    KMdiViewCloseEvent( KMdiChildView* pWnd) : QCustomEvent(QEvent::User,pWnd) {}
@@ -201,7 +201,7 @@ public:
   * deletes the view object. So if your application wants to control that by itself, call removeWindowFromMdi()
   * and call delete by yourself. See also KMdiChildView::closeEvent() for tat issue.
   */
-class KMdiMainFrm : public KParts::DockMainWindow
+class KMDI_EXPORT KMdiMainFrm : public KParts::DockMainWindow
 {
    friend class KMdiChildView;
    friend class KMdiTaskBar;

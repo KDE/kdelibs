@@ -170,13 +170,13 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 }
 
 
-#define CALCDIFF(m_tabs,diff,i) if (m_lines>lines) {\
+#define CALCDIFF(m_tabs,diff,i) if (m_lines>(int)lines) {\
 					/*kdDebug()<<"i="<<i<<" tabCount="<<tabCount<<" space="<<space<<endl;*/ \
 					uint ulen=0;\
 					diff=0; \
 					for (uint i2=i;i2<tabCount;i2++) {\
 						uint l1=m_tabs.at(i2)->neededSize();\
-						if ((ulen+l1)>space){\
+						if (int(ulen+l1)>space){\
 							if (ulen==0) diff=0;\
 							else diff=((float)(space-ulen))/(i2-i);\
 							break;\
@@ -309,7 +309,7 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 		//kdDebug()<<"needed lines:"<<m_lines<<endl;
 	} else {
 		int size=0; /*move the calculation into another function and call it only on add tab and tab click events*/
-		for (int i=0;i<m_tabs.count();i++)
+		for (int i=0;i<(int)m_tabs.count();i++)
 			size+=(m_barMode==KMultiTabBar::Vertical?m_tabs.at(i)->height():m_tabs.at(i)->width());
 		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top))
 			box->setGeometry(0,0,size,height());
@@ -333,7 +333,7 @@ KMultiTabBarTab* KMultiTabBarInternal::tab(int id) const
         return 0;
 }
 
-bool KMultiTabBarInternal::eventFilter(QObject *obj, QEvent *e) {
+bool KMultiTabBarInternal::eventFilter(QObject *, QEvent *e) {
 	if (e->type()==QEvent::Resize) resizeEvent(0);
 	return false;
 }

@@ -39,7 +39,7 @@ class KCModuleInfo;
  * @author Matthias Elter <elter@kde.org>, Daniel Molkentin <molkentin@kde.org>
  * @since 3.2
  */
-class KCMultiDialog : public KDialogBase
+class KUTILS_EXPORT KCMultiDialog : public KDialogBase
 {
     Q_OBJECT
 

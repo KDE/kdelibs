@@ -11,12 +11,12 @@
 #define _KMDI_DOCUMENT_VIEW_TAB_WIDGET_H_
 
 #include <ktabwidget.h>
-#include "kmdidefines.h"
+#include <kmdidefines.h>
 
 class KPopupMenu;
 
 //KDE4: Add a d pointer
-class KMdiDocumentViewTabWidget:
+class KMDI_EXPORT KMdiDocumentViewTabWidget:
  public KTabWidget
 {
 	Q_OBJECT

@@ -33,6 +33,8 @@
 #include <qptrlist.h>
 #include <qpushbutton.h>
 
+#include <kdelibs_export.h>
+
 class QPixmap;
 class QPainter;
 class QFrame;
@@ -49,7 +51,7 @@ class KMultiTabBarInternal;
  * should be raisable is left to the "user".
  *@author Joseph Wenninger
  */
-class KMultiTabBar: public QWidget
+class KUTILS_EXPORT KMultiTabBar: public QWidget
 {
 	Q_OBJECT
 public:
@@ -149,7 +151,7 @@ private:
 /**
  * This class should never be created except with the appendButton call of KMultiTabBar
  */
-class KMultiTabBarButton: public QPushButton
+class KUTILS_EXPORT KMultiTabBarButton: public QPushButton
 {
 	Q_OBJECT
 public:
@@ -201,7 +203,7 @@ protected slots:
 /**
  * This class should never be created except with the appendTab call of KMultiTabBar
  */
-class KMultiTabBarTab: public KMultiTabBarButton
+class KUTILS_EXPORT KMultiTabBarTab: public KMultiTabBarButton
 {
 	Q_OBJECT
 public:

@@ -22,7 +22,7 @@
 #include <qmap.h>
 #include <qwidget.h>
 
-class KMdiFocusList: public QObject {
+class KMDI_EXPORT KMdiFocusList: public QObject {
 	Q_OBJECT
 public:
 	KMdiFocusList(QObject *parent);

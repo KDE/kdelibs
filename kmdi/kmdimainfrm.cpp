@@ -49,12 +49,9 @@
 #include <kdeversion.h>
 #include <qtabwidget.h>
 #include <klocale.h>
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> // schroder remove this in x11 too, not needed any more...
-#endif
 
 #include <kiconloader.h>
-#include "kmdidockcontainer.h"
+#include <kmdidockcontainer.h>
 
 
 #include <qtoolbutton.h>
@@ -94,7 +91,7 @@
 #include "kde2laptop_closebutton.xpm"
 #include "kde2laptop_closebutton_menu.xpm"
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 #ifndef NO_KDE
 #include <X11/X.h> // schroder
 #include <X11/Xlib.h> // schroder
@@ -669,7 +666,7 @@ void KMdiMainFrm::detachWindow(KMdiChildView *pWnd, bool bShow)
         pWnd->setGeometry( QRect( m_pMdi->getCascadePoint(m_pDocumentViews->count()-1), defaultChildFrmSize()));
       }
     }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     if (mdiMode() == KMdi::ToplevelMode) {
       XSetTransientForHint(qt_xdisplay(),pWnd->winId(),topLevelWidget()->winId());
     }
@@ -678,7 +675,7 @@ void KMdiMainFrm::detachWindow(KMdiChildView *pWnd, bool bShow)
     return;
   }
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
   if (mdiMode() == KMdi::ToplevelMode) {
     XSetTransientForHint(qt_xdisplay(),pWnd->winId(),topLevelWidget()->winId());
   }
@@ -1302,7 +1299,7 @@ void KMdiMainFrm::switchToToplevelMode()
   QPtrListIterator<KMdiChildView> it( *m_pDocumentViews);
   for( it.toFirst(); it.current(); ++it) {
     KMdiChildView* pView = it.current();
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     XSetTransientForHint(qt_xdisplay(),pView->winId(),winId());
 #endif
     //      if( !pView->isToolView())

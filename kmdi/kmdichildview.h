@@ -105,7 +105,7 @@ class KMdiChildViewPrivate;
   *
   */
 
-class KMdiChildView : public QWidget
+class KMDI_EXPORT KMdiChildView : public QWidget
 {
    friend class KMdiMainFrm;
    friend class KMdiChildFrm;

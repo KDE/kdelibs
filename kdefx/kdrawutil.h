@@ -23,6 +23,8 @@
 #include <qbitmap.h>
 #include <qpalette.h>
 
+#include <kdelibs_export.h>
+
 /*
  * Various drawing routines. Also see Qt's qdrawutil.h for some more routines
  * contained in Qt.
@@ -43,14 +45,14 @@
  * @param fill    The brush to use for filling the interior of the button.
  *                Pass @a null to prevent the button from being filled.
  */
-void kDrawNextButton(QPainter *p, const QRect &r, const QColorGroup &g,
+KDEFX_EXPORT void kDrawNextButton(QPainter *p, const QRect &r, const QColorGroup &g,
                      bool sunken=false, const QBrush *fill=0);
 
 /**
  * @relates KStyle
  * @overload
  */
-void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
+KDEFX_EXPORT void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
                      const QColorGroup &g, bool sunken=false, 
                      const QBrush *fill=0);
 
@@ -67,7 +69,7 @@ void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
  * @param fill    The brush to use for filling the interior of the button.
  *                Pass @a null to prevent the button from being filled.
  */
-void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g,
+KDEFX_EXPORT void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g,
                    bool sunken=false, const QBrush *fill=0);
 
 /**
@@ -75,7 +77,7 @@ void kDrawBeButton(QPainter *p, QRect &r, const QColorGroup &g,
  * @c \#include @c <kdrawutil.h>
  * @overload
  */
-void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
+KDEFX_EXPORT void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
                    const QColorGroup &g, bool sunken=false, 
                    const QBrush *fill=0);
 
@@ -91,14 +93,14 @@ void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
  * @param g       Specifies the shading colors.
  * @param sunken  Whether to draw the button as sunken (pressed) or not.
  */
-void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGroup &g,
+KDEFX_EXPORT void kDrawRoundButton(QPainter *p, const QRect &r, const QColorGroup &g,
                       bool sunken=false);
 
 /**
  * @relates KStyle
  * @overload
  */
-void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
+KDEFX_EXPORT void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, bool sunken=false);
 
 /**
@@ -116,7 +118,7 @@ void kDrawRoundButton(QPainter *p, int x, int y, int w, int h,
  *
  * @see kDrawRoundButton() and kDrawRoundMask()
  */
-void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h);
+KDEFX_EXPORT void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h);
 
 /**
  * @relates KStyle
@@ -133,7 +135,7 @@ void kRoundMaskRegion(QRegion &r, int x, int y, int w, int h);
  * @param clear  Whether to clear the rectangle specified by @p (x, y, w, h) to
  *               Qt::color0 before drawing the mask.
  */
-void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear=false);
+KDEFX_EXPORT void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear=false);
 
 /**
  * @relates KStyle
@@ -159,7 +161,7 @@ void kDrawRoundMask(QPainter *p, int x, int y, int w, int h, bool clear=false);
  *
  * @see QColorGroup
  */
-void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
+KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
                    QBitmap *lightColor=0, QBitmap *midColor=0,
                    QBitmap *midlightColor=0, QBitmap *darkColor=0,
                    QBitmap *blackColor=0, QBitmap *whiteColor=0);
@@ -169,7 +171,7 @@ void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y,
  * @c \#include @c <kdrawutil.h>
  * @overload
  */
- void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y, int w,
+ KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QColorGroup &g, int x, int y, int w,
                    int h, bool isXBitmaps=true, const uchar *lightColor = 0,
                    const uchar *midColor=0, const uchar *midlightColor=0,
                    const uchar *darkColor=0, const uchar *blackColor=0,

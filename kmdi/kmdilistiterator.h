@@ -27,13 +27,13 @@
 #ifndef _KMDILISTITERATOR_H_
 #define _KMDILISTITERATOR_H_
 
-#include "kmdiiterator.h"
+#include <kmdiiterator.h>
 
 template<class I> class QPtrList;
 template<class I> class QPtrListIterator;
 
 template <class Item>
-class KMdiListIterator : public KMdiIterator<Item*> {
+class KMDI_EXPORT KMdiListIterator : public KMdiIterator<Item*> {
 public:
    KMdiListIterator(QPtrList<Item>& list) {
       m_iterator = new QPtrListIterator<Item>(list);

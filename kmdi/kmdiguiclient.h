@@ -33,7 +33,7 @@ class KDockWidget;
 
 namespace KMDIPrivate {
 
-class KMDIGUIClient : public QObject,
+class KMDI_EXPORT KMDIGUIClient : public QObject,
                        public KXMLGUIClient
 {
     Q_OBJECT
@@ -72,7 +72,7 @@ private:
 };
 
 
-class ToggleToolViewAction:public KToggleAction
+class KMDI_EXPORT ToggleToolViewAction:public KToggleAction
 {
 Q_OBJECT
 public:

@@ -30,7 +30,7 @@
 #include "kmdiiterator.h"
 
 template <class Item>
-class KMdiNullIterator : public KMdiIterator<Item> {
+class KMDI_EXPORT KMdiNullIterator : public KMdiIterator<Item> {
 public:
    KMdiNullIterator() {};
    virtual void first() {}

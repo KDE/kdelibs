@@ -40,7 +40,7 @@ class KLibLoader;
  * @since 3.2
  * @internal
 **/
-class KCModuleLoader
+class KUTILS_EXPORT KCModuleLoader
 {
   public:
 

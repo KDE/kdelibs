@@ -25,6 +25,8 @@
 #include <qsize.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 class KPixmapSplitterPrivate;
 /**
  * @short A class to split a pixmap into several items.
@@ -48,7 +50,7 @@ class KPixmapSplitterPrivate;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KPixmapSplitter
+class KDEFX_EXPORT KPixmapSplitter
 {
 public:
     /**

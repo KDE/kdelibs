@@ -50,13 +50,12 @@
 #include <kimageeffect.h>
 #include "kstyle.h"
 
-//#if defined Q_WS_X11
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h>
-#  ifdef HAVE_XRENDER
+#ifdef Q_WS_X11
+# include <X11/Xlib.h>
+# ifdef HAVE_XRENDER
 #  include <X11/extensions/Xrender.h> // schroder
-extern bool qt_use_xrender;
-#  endif
+   extern bool qt_use_xrender;
+# endif
 #else
 #undef HAVE_XRENDER
 #endif
@@ -1935,7 +1934,7 @@ void TransparencyHandler::bottomShadow(QImage& dst)
 // Create a shadow of thickness 4.
 void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 	int x2 = p->x()+p->width();
 	int y2 = p->y()+p->height();
 	QRect shadow1(x2, p->y() + 4, 4, p->height());
@@ -1982,7 +1981,7 @@ void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
 
 void TransparencyHandler::removeShadowWindows(const QPopupMenu* p)
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 	ShadowMap::iterator it = shadowMap().find(p);
 	if (it != shadowMap().end())
 	{
@@ -2001,7 +2000,7 @@ void TransparencyHandler::removeShadowWindows(const QPopupMenu* p)
 
 bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 {
-#ifndef Q_WS_MAC
+#if !defined Q_WS_MAC && !defined Q_WS_WIN
 	// Transparency idea was borrowed from KDE2's "MegaGradient" Style,
 	// Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
 

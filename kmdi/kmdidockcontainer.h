@@ -34,7 +34,7 @@ class QWidgetStack;
 class KMultiTabBar;
 class KDockButton_Private;
 
-class KMdiDockContainer: public QWidget, public KDockContainer
+class KMDI_EXPORT KMdiDockContainer: public QWidget, public KDockContainer
 {
   Q_OBJECT
 

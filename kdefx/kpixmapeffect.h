@@ -10,6 +10,7 @@
 #ifndef __KPIXMAP_EFFECT_H
 #define __KPIXMAP_EFFECT_H
 
+#include <kdelibs_export.h>
 
 #include <qsize.h>
 class KPixmap;
@@ -23,7 +24,7 @@ class QColor;
  * just call the static methods. They are encapsulated here merely to provide
  * a common namespace.
  */
-class KPixmapEffect
+class KDEFX_EXPORT KPixmapEffect
 {
 public:
     enum GradientType { VerticalGradient, HorizontalGradient,
