@@ -33,6 +33,17 @@
 #include <time.h>
 #include <assert.h>
 
+// XXX: FreeBSD 4.x has a buggy time.h and doesn't like the _POSIX_C_SOURCE hacks above.
+#if defined(__FreeBSD__)
+#include <osreldate.h>
+#if __FreeBSD_version < 500042
+#warning FreeBSD 4.x compatibility shims in effect
+#include <sys/time.h>
+// nanosleep is the protoype crunched by the _POSIX_C_SOURCE hack above
+int nanosleep(const struct timespec *, struct timespec *);
+#endif
+#endif
+
 KDETrayProxy::KDETrayProxy()
     :   selection( makeSelectionAtom())
     {
