@@ -205,7 +205,7 @@ KJSO* KJSO::defaultValue(Hint hint)
 
   if (o->implementsCall()) { // spec says "not primitive type" but ...
     s = o->executeCall(this, 0L);
-    if (!s->isA(Object))
+    if (!s->isObject())
       return s->ref();
   }
 
@@ -216,7 +216,7 @@ KJSO* KJSO::defaultValue(Hint hint)
 
   if (o->implementsCall()) {
     s = o->executeCall(this, 0L);
-    if (!s->isA(Object))
+    if (!s->isObject())
       return s->ref();
   }
 
