@@ -98,7 +98,7 @@ QByteArray HTMLFormElementImpl::formData()
 
         if( current->type() == RenderFormElement::HiddenButton || current->isEnabled() ) {
             QCString enc(current->encoding());
-            kdDebug( 6030 ) << "current encoding = " << current->encoding().data() << endl;
+            kdDebug( 6030 ) << "current encoding = " << enc.data() << endl;
 
             if (!multipart)
             {
@@ -158,8 +158,9 @@ QByteArray HTMLFormElementImpl::formData()
         enc_string = "--" + _boundary.string() + "--\r\n";
 
     int old_size = form_data.size();
-    form_data.resize( form_data.size() + enc_string.length() );
-    memcpy(form_data.data() + old_size, enc_string.data(), enc_string.length());
+    // WABA: Don't forget to copy the trailing 0 of enc_string.
+    form_data.resize( form_data.size() + enc_string.length() + 1 );
+    memcpy(form_data.data() + old_size, enc_string.data(), enc_string.length() + 1);
 
     kdDebug( 6030 ) << "End encoding size = " << form_data.size() << endl;
 
