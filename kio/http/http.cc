@@ -1358,13 +1358,25 @@ bool HTTPProtocol::readHeader()
       {
          m_HTTPrev = HTTP_11;
          Authentication = AUTH_None;
+         // Connections with proxies are closed by default because
+         // some proxies like junkbuster can't handle persistent
+         // connections but don't tell us.
+         // We will still use persistent connections if the proxy
+         // sends us a "Connection: Keep-Alive" header.
+         if (m_state.do_proxy)
+         {
+            m_bKeepAlive = false;
+         }
+         else
+         {
 #ifdef DO_SSL
-        // Don't do persistant connections with SSL.
-        if (!m_bUseSSL)
-           m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
+            // Don't do persistant connections with SSL.
+            if (!m_bUseSSL)
+               m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
 #else
-           m_bKeepAlive = true; // HTTP 1.1 has persistant connections by default.
+               m_bKeepAlive = true; // HTTP 1.1 has persistant connections by default.
 #endif
+         }
       }
 
       if ( m_responseCode )
