@@ -470,6 +470,7 @@ KLauncher::slotKDEInitData(int)
                             sizeof( request_header));
    if (result == -1)
    {
+      kdDebug() << "Exiting on read_socket errno: " << errno << endl;
       ::signal( SIGHUP, SIG_IGN);
       ::signal( SIGPIPE, SIG_IGN);
       ::signal( SIGTERM, SIG_IGN);
