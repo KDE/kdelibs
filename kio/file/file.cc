@@ -98,7 +98,7 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
     QCString _path( QFile::encodeName(url.path()));
     struct stat buff;
     if ( ::stat( _path.data(), &buff ) == -1 ) {
-	if ( ::mkdir( _path.data(), S_IRWXU ) != 0 ) {
+	if ( ::mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
 	    if ( errno == EACCES ) {
 		error( KIO::ERR_ACCESS_DENIED, url.path() );
 		return;
