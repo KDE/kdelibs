@@ -94,7 +94,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -128,7 +128,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -167,7 +167,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -204,7 +204,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed.
@@ -236,7 +236,7 @@ public:
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * The second button always has the text "Cancel".
   *
@@ -275,7 +275,7 @@ public:
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
   *                   
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * The second button always has the text "Cancel".
   *
@@ -315,7 +315,7 @@ public:
   *                last answer (either Yes or No).
   *                The string is used to lookup and store the setting
   *                in the applications config file.
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed. @p Cancel is retunred if the Cancel-
@@ -346,7 +346,7 @@ public:
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -375,7 +375,7 @@ public:
   * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
@@ -421,7 +421,7 @@ public:
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * Either your program messed up and asks for understanding
   * or your user did something stupid.
@@ -449,7 +449,7 @@ public:
   * @param details Detailed message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   * Either your program messed up and asks for understanding
   * or your user did something stupid.
@@ -487,7 +487,7 @@ public:
   *                The string is used to lookup and store the setting
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
-  * @param options  @see OptionsType
+  * @param options  see @ref OptionsType
   *
   *
   * Your program wants to tell the user something.
@@ -520,7 +520,7 @@ public:
    * @param text    Message string.
    * @param caption Message box title. The application name is added to
    *                the title. The default title is i18n("About <appname>").
-   * @param options  @see OptionsType
+   * @param options  see @ref OptionsType
    *
    *
    * Your program wants to show some general information about the application
@@ -548,7 +548,7 @@ public:
      *                  The default is i18n("&Yes").
      * @param buttonNo  The text for the second button.
      *                  The default is i18n("&No").
-     * @param options  @see OptionsType
+     * @param options  see @ref OptionsType
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
      * @return a button code, as defined in KMessageBox, or 0 on communication error.
