@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -128,7 +129,10 @@ CSSImportRuleImpl::CSSImportRuleImpl( StyleBaseImpl *parent,
 
 CSSImportRuleImpl::~CSSImportRuleImpl()
 {
-    if(m_lstMedia) m_lstMedia->deref();
+    if( m_lstMedia ) {
+ 	m_lstMedia->setParent( 0 );
+	m_lstMedia->deref();
+    }
     if(m_styleSheet) {
         m_styleSheet->setParent(0);
         m_styleSheet->deref();
@@ -202,8 +206,78 @@ void CSSImportRuleImpl::init()
     if (m_cachedSheet)
     {
       m_cachedSheet->ref(this);
+
+      // If the imported sheet is in the cache, then setStyleSheet gets called,
+      // and the sheet even gets parsed (via parseString).  In this case we have
+      // loaded (even if our subresources haven't), so if we have stylesheet after
+      // checking the cache, then we've clearly loaded. -dwh
+      if (!m_styleSheet)
       m_loading = true;
     }
+}
+
+// --------------------------------------------------------------------------
+
+
+CSSQuirksRuleImpl::CSSQuirksRuleImpl(StyleBaseImpl *parent)
+    :   CSSRuleImpl( parent )
+{
+    m_type = CSSRule::QUIRKS_RULE;
+    m_lstCSSRules = new CSSRuleListImpl();
+    m_lstCSSRules->ref();
+}
+
+CSSQuirksRuleImpl::CSSQuirksRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
+                                      const QChar *endP )
+:   CSSRuleImpl( parent )
+{
+    m_type = CSSRule::QUIRKS_RULE;
+    m_lstCSSRules = new CSSRuleListImpl();
+    m_lstCSSRules->ref();
+
+    // Parse CSS data
+    while( curP < endP )
+    {
+//         kdDebug( 6080 ) << "Style rule: '" << QString( curP, endP - curP )
+//                         << "'" << endl;
+        CSSRuleImpl *rule = parseStyleRule( curP, endP );
+        if ( rule ) {
+            rule->ref();
+            appendRule( rule );
+        }
+        if (!curP) break;
+        while( curP < endP && *curP == QChar( ' ' ) )
+            curP++;
+    }
+}
+
+CSSQuirksRuleImpl::~CSSQuirksRuleImpl()
+{
+    m_lstCSSRules->deref();
+}
+
+CSSRuleListImpl *CSSQuirksRuleImpl::cssRules()
+{
+    return m_lstCSSRules;
+}
+
+unsigned long CSSQuirksRuleImpl::appendRule( CSSRuleImpl *rule )
+{
+    return rule ? m_lstCSSRules->insertRule( rule, m_lstCSSRules->length() ) : 0;
+}
+
+unsigned long CSSQuirksRuleImpl::insertRule( const DOMString &rule,
+                                            unsigned long index )
+{
+    const QChar *curP = rule.unicode();
+    CSSRuleImpl *newRule = parseRule( curP, curP + rule.length() );
+
+    return newRule ? m_lstCSSRules->insertRule( newRule, index ) : 0;
+}
+
+void CSSQuirksRuleImpl::deleteRule( unsigned long index )
+{
+    m_lstCSSRules->deleteRule( index );
 }
 
 // --------------------------------------------------------------------------

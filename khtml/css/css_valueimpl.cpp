@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,6 +36,7 @@
 
 #include "misc/loader.h"
 
+#include "rendering/font.h"
 #include "rendering/render_style.h"
 
 #include <kdebug.h>
@@ -44,6 +46,8 @@
 
 // Hack for debugging purposes
 extern DOM::DOMString getPropertyName(unsigned short id);
+
+using khtml::FontDef;
 
 using namespace DOM;
 
@@ -782,13 +786,16 @@ CSSImageValueImpl::~CSSImageValueImpl()
 FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     : CSSPrimitiveValueImpl( DOMString(string), CSSPrimitiveValue::CSS_STRING)
 {
+    static const QRegExp parenReg(" \\(.*\\)$");
+    static const QRegExp braceReg(" \\[.*\\]$");
+
     const QString &available = KHTMLSettings::availableFamilies();
 
     QString face = string.lower();
     // a languge tag is often added in braces at the end. Remove it.
-    face = face.replace(QRegExp(" \\(.*\\)$"), "");
+    face = face.replace(parenReg, "");
     // remove [Xft] qualifiers
-    face = face.replace(QRegExp(" \\[.*\\]$"), "");
+    face = face.replace(braceReg, "");
     //kdDebug(0) << "searching for face '" << face << "'" << endl;
     if(face == "serif" ||
        face == "sans-serif" ||
@@ -797,6 +804,8 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
        face == "monospace" ||
        face == "konq_default") {
 	parsedFontName = face;
+    } else if (parsedFontName == "konq_body") {
+	_isKonqBody = true;
     } else {
 	int pos = available.find( face, 0, false );
 	if( pos == -1 ) {

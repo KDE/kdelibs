@@ -5,6 +5,7 @@
  *               1999 Waldo Bastian (bastian@kde.org)
  *               2001 Andreas Schlapbach (schlpbch@iam.unibe.ch)
  *               2001 Dirk Mueller (mueller@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * $Id$
  *
@@ -274,6 +275,17 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "font rule = " << QString(startP, curP - startP) << endl;
 #endif
+    }
+    else if (rule == "konq-quirks") {
+        startP = curP++;
+        curP = parseToChar(startP, endP, '{', false);
+        curP++;
+        startP = curP;
+        if (curP >= endP) return 0;
+        curP = parseToChar(curP, endP, '}', false);
+        if (!curP || startP >= curP)
+            return 0;
+        return new CSSQuirksRuleImpl(this, startP, curP);
     }
     else if(rule == "media")
     {
@@ -1154,8 +1166,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 {
   if (curP==endP) {return 0; /* e.g.: width="" */}
 
-  QString value(curP, endP - curP);
-  value = value.lower().stripWhiteSpace();
+  QString value = QConstString(curP, endP - curP).string().lower().stripWhiteSpace();
 #ifdef CSS_DEBUG
   kdDebug( 6080 ) << "id [" << getPropertyName(propId).string() << "] parseValue [" << value << "]" << endl;
 #endif
@@ -1215,7 +1226,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	      parsedValue = new CSSPrimitiveValueImpl( cssval->id );
 	  else {
 	      // only shape in CSS2 is rect( top right bottom left )
-	      QString str = QConstString( const_cast<QChar*>( curP ), endP - curP ).string();
+	      QString str(curP, endP - curP);
 	      // the CSS specs are not really clear if there should be commas in here or not. We accept both spaces and commas.
 	      QChar *uc = (QChar *)str.unicode();
 	      int len = str.length();
@@ -1772,7 +1783,14 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  if (cssval && cssval->id == CSS_VAL_AUTO) {
             parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	  } else {
-            parsedValue = parseUnit(curP, endP, LENGTH | PERCENT );
+            // Deal with a quirk case.  We allow a special quirk unit, _qem, to
+            // denote a margin that is allowed to collapse away in quirks mode
+            // when at the top/bottom of a reflow root like a body, td, or th.
+            // This is a WinIE quirk. -dwh
+            if (propId == CSS_PROP_MARGIN_TOP || propId == CSS_PROP_MARGIN_BOTTOM)
+                parsedValue = parseUnit(curP, endP, LENGTH | PERCENT | COLLAPSIBLE);
+            else
+                parsedValue = parseUnit(curP, endP, LENGTH | PERCENT);
 	  }
 	  break;
 	}
@@ -2320,6 +2338,13 @@ bool StyleBaseImpl::parseBackgroundPosition(const QChar *curP, const QChar *&nex
     return found;
 }
 
+static bool isHexadecimal( QChar &c )
+{
+    return  ( c >= '0' && c <= '9' ) ||
+            ( c >= 'a' && c <= 'f' ) ||
+            ( c >= 'A' && c <= 'F' ) ;
+}
+
 
 CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
 {
@@ -2348,7 +2373,8 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
                 break;
             nextP++;
         }
-        QString str = QConstString(curP, nextP-curP).string();
+        QConstString cstr(curP, nextP-curP);
+        QString str = cstr.string();
         CSSValueImpl* parsedValue=0;
         if (str.startsWith("url("))
         {
@@ -2433,13 +2459,6 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
             ;
     }
     return values;
-}
-
-bool StyleBaseImpl::isHexadecimal( QChar &c )
-{
-    return  ( c >= '0' && c <= '9' ) ||
-            ( c >= 'a' && c <= 'f' ) ||
-            ( c >= 'A' && c <= 'F' ) ;
 }
 
 QPtrList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const QChar *endP)
@@ -2576,12 +2595,30 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     CSSPrimitiveValue::UnitTypes type = CSSPrimitiveValue::CSS_UNKNOWN;
     StyleBaseImpl::Units unit = StyleBaseImpl::UNKNOWN;
 
+    bool collapsible = false;
+
     switch(split->latin1())
     {
     case '%':
         type = CSSPrimitiveValue::CSS_PERCENTAGE;
         unit = StyleBaseImpl::PERCENT;
         break;
+    case '_':
+	if (!(allowedUnits & COLLAPSIBLE))
+	    break;
+	split++;
+	if ( split > endP || split->unicode() != 'q' )
+	    break;
+	split++;
+	if ( split > endP || split->unicode() != 'e' )
+	    break;
+	split++;
+	if ( split > endP || split->unicode() != 'm' )
+	    break;
+	type = CSSPrimitiveValue::CSS_EMS;
+	unit = StyleBaseImpl::LENGTH;
+	collapsible = true;
+	break;
     case '*':
 	type = CSSPrimitiveValue::CSS_HTML_RELATIVE;
 	unit = StyleBaseImpl::RELATIVE;
@@ -2678,11 +2715,18 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
         break;
     }
 
+    // Error handling. e.g., don't treat 10pts as a valid unit.
+    split++;
+    if (split <= endP && split->latin1() != ';' && split->isLetterOrNumber())
+        return 0;
+
     if(unit & allowedUnits)
     {
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "found allowed number " << value << ", unit " << type << endl;
 #endif
+        if (collapsible)
+            return new CSSQuirkPrimitiveValueImpl(value, type);
         return new CSSPrimitiveValueImpl(value, type);
     }
 
@@ -2803,7 +2847,13 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 {
   // ### use DOMString here to avoid coversions
-  QString processed;
+
+  char fixedSizeBuffer[8192];
+  uint size = str.length() * 2 * sizeof(QChar);
+  char *buffer = fixedSizeBuffer;
+  if (size > sizeof(fixedSizeBuffer))
+    buffer = new char [size];
+  QChar *p = (QChar *)buffer;
 
   bool sq = false;	// Within single quote
   bool dq = false;	// Within double quote
@@ -2830,33 +2880,33 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 //              QConstString(ch, kMin(last-ch, 10)).string().latin1(), sq, dq, bracket, comment, firstChar, space, curlyBracket, skipgarbage);
     if( !comment && !sq && *ch == '"' ) {
       dq = !dq;
-      processed += *ch;
+      *p++ = *ch;
       space = skipgarbage = false;
     } else if ( !comment && !dq && *ch == '\'') {
       skipgarbage = sq;
       sq = !sq;
-      processed += *ch;
+      *p++ = *ch;
       space = false;
     } else if ( !comment && !dq && !sq && *ch == '(') {
       bracket = true;
-      processed += *ch;
+      *p++ = *ch;
       space = true;  // Explictly true
       skipgarbage = false;
     } else if ( !comment && !dq && !sq && *ch == ')') {
       bracket = false;
-      processed += *ch;
-      processed += QChar(' '); // Adding a space after this token
+      *p++ = *ch;
+      *p++ = QChar(' '); // Adding a space after this token
       space = true;
       skipgarbage = false;
     } else if ( !comment && !dq && !sq && *ch == '{') {
       ++curlyBracket;
-      processed += *ch;
+      *p++ = *ch;
       space = true;  // Explictly true
       skipgarbage = true;
     } else if ( !comment && !dq && !sq && *ch == '}') {
       --curlyBracket;
-      processed += *ch;
-      processed += QChar(' '); // Adding a space after this token
+      *p++ = *ch;
+      *p++ = QChar(' '); // Adding a space after this token
       space = true;
       skipgarbage = true;
     } else if ( !comment && skipgarbage && !dq && !sq && (*ch == '-') && ((ch+2) < last)  /* SGML Comment */
@@ -2879,16 +2929,16 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 	if ( *ch == '*' ) {
 	  comment = true;
 	} else {
-	  processed += '/';
-	  processed += *ch;
+	  *p++ = '/';
+	  *p++ = *ch;
 	  space = ch->isSpace();
 	}
 	firstChar = false;
       } else if ( *ch == '/' ) {
 	firstChar = true; // Slash added only if next is not '*'
       } else if ( *ch == ',' || *ch == ';') {
-	processed += *ch;
-	processed += QChar(' '); // Adding a space after these tokens
+	*p++ = *ch;
+	*p++ = QChar(' '); // Adding a space after these tokens
 	space = true;
              skipgarbage = true;
       } else {
@@ -2904,29 +2954,35 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
     ++ch;
   }
 
+  {
+      QString processed((QChar *)buffer, p - (QChar *)buffer);
+      if (buffer != fixedSizeBuffer)
+	  delete [] buffer;
+
 #ifdef CSS_DEBUG
-  kdDebug(6080) << "---After ---" << endl;
-  kdDebug(6080) << "[" << processed << "]" << endl;
-  kdDebug(6080) << "------------" << endl;
-  kdDebug(6080) << "Length: " << processed.length() << ", reduced size by: "
-		<< 100.0 - (100.0 * (processed.length()/orgLength)) << "%" << endl;
-  kdDebug(6080) << "------------" << endl;
+      kdDebug(6080) << "---After ---" << endl;
+      kdDebug(6080) << "[" << processed << "]" << endl;
+      kdDebug(6080) << "------------" << endl;
+      kdDebug(6080) << "Length: " << processed.length() << ", reduced size by: "
+		    << 100.0 - (100.0 * (processed.length()/orgLength)) << "%" << endl;
+      kdDebug(6080) << "------------" << endl;
 #endif
 
-  return processed;
+      return processed;
+  }
 
  addChar:
   if ( !sq && !dq && !bracket ) {
-    if (!(space && ch->isSpace())) { // Don't add more than one space
-      if (ch->isSpace()) {
-	processed += QChar(' '); // Normalize whitespace
-      } else {
-	  processed += *ch;
+      if (!(space && ch->isSpace())) { // Don't add more than one space
+	  if (ch->isSpace()) {
+	      *p++ = QChar(' '); // Normalize whitespace
+	  } else {
+	      *p++ = *ch;
+	  }
       }
-    }
-    space = ch->isSpace();
+      space = ch->isSpace();
   } else {
-    processed += *ch; // We're within quotes or brackets, leave untouched
+      *p++ = *ch; // We're within quotes or brackets, leave untouched
   }
   goto end;
 }
@@ -2987,6 +3043,56 @@ unsigned int CSSSelector::specificity()
     return s & 0xffffff;
 }
 
+void CSSSelector::extractPseudoType() const
+{
+    if (match != Pseudo)
+        return;
+    _pseudoType = PseudoOther;
+    if (!value.isEmpty()) {
+        switch (value[0]) {
+            case 'a':
+                if (value == "active")
+                    _pseudoType = PseudoActive;
+                else if (value == "after")
+                    _pseudoType = PseudoAfter;
+                break;
+            case 'b':
+                if (value == "before")
+                    _pseudoType = PseudoBefore;
+                break;
+            case 'e':
+                if (value == "empty")
+                    _pseudoType = PseudoEmpty;
+                break;
+            case 'f':
+                if (value == "first-child")
+                    _pseudoType = PseudoFirstChild;
+                else if (value == "first-letter")
+                    _pseudoType = PseudoFirstLetter;
+                else if (value == "first-line")
+                    _pseudoType = PseudoFirstLine;
+                else if (value == "focus")
+                    _pseudoType = PseudoFocus;
+                break;
+            case 'h':
+                if (value == "hover")
+                    _pseudoType = PseudoHover;
+                break;
+            case 'l':
+                if (value == "link")
+                    _pseudoType = PseudoLink;
+                break;
+            case 'v':
+                if (value == "visited")
+                    _pseudoType = PseudoVisited;
+                break;
+        }
+    }
+
+    value = QString::null;
+}
+
+
 bool CSSSelector::operator == ( const CSSSelector &other )
 {
     const CSSSelector *sel1 = this;
@@ -2996,7 +3102,8 @@ bool CSSSelector::operator == ( const CSSSelector &other )
 	if ( sel1->tag != sel2->tag || sel1->attr != sel2->attr ||
 	     sel1->relation != sel2->relation || sel1->match != sel2->match ||
 	     sel1->nonCSSHint != sel2->nonCSSHint ||
-	     sel1->value != sel2->value )
+	     sel1->value != sel2->value ||
+             sel1->pseudoType() != sel2->pseudoType())
 	    return false;
 	sel1 = sel1->tagHistory;
 	sel2 = sel2->tagHistory;

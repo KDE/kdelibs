@@ -2,6 +2,7 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,6 +28,7 @@
 #include "css/csshelper.h"
 #include "rendering/render_object.h"
 #include "html/html_documentimpl.h"
+#include "html/html_elementimpl.h"
 #include "xml/dom_elementimpl.h"
 #include "dom/css_rule.h"
 #include "dom/css_value.h"
@@ -65,12 +67,16 @@ using namespace DOM;
 #include <qintcache.h>
 #include <stdlib.h>
 
+namespace khtml {
+
 CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
+CSSStyleSelectorList *CSSStyleSelector::defaultQuirksStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::defaultPrintStyle = 0;
 CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
 
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
+
 
 CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, StyleSheetListImpl *styleSheets,
                                     const KURL &url, bool _strictParsing )
@@ -79,9 +85,10 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
     KHTMLView* view = doc->view();
     strictParsing = _strictParsing;
+    kdDebug() << "CSSStyleSelector::CSSStyleSelector: strict parsing = " << strictParsing << endl;
     settings = view ? view->part()->settings() : 0;
     if(!defaultStyle) loadDefaultStyle(settings);
-    m_medium = view ? view->mediaType() : "all";
+    m_medium = view ? view->mediaType() : QString("all");
 
     selectors = 0;
     selectorCache = 0;
@@ -98,7 +105,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
         userSheet->parseString( DOMString( userStyleSheet ) );
 
         userStyle = new CSSStyleSelectorList();
-        userStyle->append( userSheet, m_medium );
+        userStyle->append( userSheet, m_medium, strictParsing ? 1 : 0 );
     }
 
     // add stylesheets from document
@@ -109,7 +116,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     for ( ; it.current(); ++it ) {
         if ( it.current()->isCSSStyleSheet() ) {
             authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ),
-                                 m_medium );
+                                 m_medium, strictParsing ? 1 : 0 );
         }
     }
 
@@ -143,7 +150,7 @@ CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
     m_medium = sheet->doc()->view()->mediaType();
 
     authorStyle = new CSSStyleSelectorList();
-    authorStyle->append( sheet, m_medium );
+    authorStyle->append( sheet, m_medium, strictParsing ? 1 : 0 );
 }
 
 void CSSStyleSelector::init()
@@ -170,7 +177,7 @@ CSSStyleSelector::~CSSStyleSelector()
 void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 {
     m_medium = sheet->doc()->view()->mediaType();
-    authorStyle->append( sheet, m_medium );
+    authorStyle->append( sheet, m_medium, strictParsing ? 1 : 0 );
 }
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
@@ -194,8 +201,14 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
     defaultSheet->parseString( str );
 
+    // Collect only strict-mode rules.
     defaultStyle = new CSSStyleSelectorList();
-    defaultStyle->append( defaultSheet );
+    defaultStyle->append( defaultSheet, "screen", 1 );
+
+    // Collect only quirks-mode rules.
+    defaultQuirksStyle = new CSSStyleSelectorList();
+    defaultQuirksStyle->append( defaultSheet, "screen", 2 );
+    kdDebug() << "CSSStyleSelector: quirks style has " << defaultQuirksStyle->count() << " elements"<< endl;
 
     defaultPrintStyle = new CSSStyleSelectorList();
     defaultPrintStyle->append( defaultSheet, "print" );
@@ -205,9 +218,11 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 void CSSStyleSelector::clear()
 {
     delete defaultStyle;
+    delete defaultQuirksStyle;
     delete defaultPrintStyle;
     delete defaultSheet;
     defaultStyle = 0;
+    defaultQuirksStyle = 0;
     defaultPrintStyle = 0;
     defaultSheet = 0;
 }
@@ -216,18 +231,29 @@ void CSSStyleSelector::clear()
 
 void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,  int zoomFactor)
 {
+    computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fontSizes, false);
+    computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fixedFontSizes, true);
+}
+
+void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueList<int>& fontSizes, bool /* isFixed */)
+{
     // ### get rid of float / double
     float toPix = paintDeviceMetrics->logicalDpiY()/72.;
     if (toPix  < 96./72.) toPix = 96./72.;
 
-    m_fontSizes.clear();
+    fontSizes.clear();
     const float factor = 1.2;
     float scale = 1.0 / (factor*factor*factor);
     float mediumFontSize;
     float minFontSize;
     if (!khtml::printpainter) {
         scale *= zoomFactor / 100.0;
-        mediumFontSize = settings->mediumFontSize() * toPix;
+#if 0
+	if (isFixed)
+	    mediumFontSize = settings->mediumFixedFontSize() * toPix;
+	else
+#endif
+	    mediumFontSize = settings->mediumFontSize() * toPix;
         minFontSize = settings->minFontSize() * toPix;
     }
     else {
@@ -237,7 +263,7 @@ void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,
     }
 
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
-        m_fontSizes << int(KMAX( mediumFontSize * scale + 0.5f, minFontSize));
+        fontSizes << int(KMAX( mediumFontSize * scale + 0.5f, minFontSize));
         scale *= factor;
     }
 }
@@ -342,6 +368,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
         style->inheritFrom( parentStyle );
     else
 	parentStyle = style;
+
 
 //    qDebug("applying properties, count=%d", numPropsToApply );
 
@@ -581,7 +608,18 @@ static void cleanpath(QString &path)
             path.remove( prev, pos- prev + 3 );
     }
     pos = 0;
+
+    // Don't remove "//" from an anchor identifier. -rjw
+    // Set refPos to -2 to mean "I haven't looked for the anchor yet".
+    // We don't want to waste a function call on the search for the the anchor
+    // in the vast majority of cases where there is no "//" in the path.
+    int refPos = -2;
     while ( (pos = path.find( "//", pos )) != -1) {
+        if (refPos == -2)
+            refPos = path.find("#", 0);
+        if (refPos > 0 && pos >= refPos)
+            break;
+
 	if ( pos == 0 || path[pos-1] != ':' )
 	    path.remove( pos, 1 );
 	else
@@ -594,12 +632,17 @@ static void cleanpath(QString &path)
 
 static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
 {
-    DOMString attr;
-    if( e->id() != ID_A || (attr = e->getAttribute(ATTR_HREF)).isNull() ) {
+    if( e->id() != ID_A ) {
 	pseudoState = PseudoNone;
 	return;
     }
-    QString u = attr.string();
+    DOMString attr = e->getAttribute(ATTR_HREF);
+    if( attr.isNull() ) {
+ 	pseudoState = PseudoNone;
+ 	return;
+    }
+    QConstString cu(attr.unicode(), attr.length());
+    QString u = cu.string();
     if ( u.find("://") == -1 ) {
 	if ( u[0] == '/' )
 	    u = encodedurl.host + u;
@@ -640,6 +683,16 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         case CSSSelector::List:
         {
+	    int spacePos = value.find(' ', 0);
+	    if (spacePos == -1) {
+		// There is no list, just a single item.  We can avoid
+		// allocing QStrings and just treat this as an exact
+		// match check.
+		if( (strictParsing && strcmp(sel->value, value) ) ||
+		    (!strictParsing && strcasecmp(sel->value, value)))
+		    return false;
+		break;
+	    }
 	    int l = value.implementation()->l;
 	    int sl = sel->value.implementation()->l;
             QConstString str( value.implementation()->s, l );
@@ -712,75 +765,71 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
     {
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
-	QConstString cstr( sel->value.implementation()->s, sel->value.implementation()->l );
-	const QString& value = cstr.string();
 // 	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
-	switch( *( value.unicode() ) ) {
-	case 'f':
-	    if(value == "first-child") {
+	switch( sel->pseudoType() ) {
+	case CSSSelector::PseudoEmpty:
+	    if (!e->firstChild())
+		return true;
+	    break;
+	case CSSSelector::PseudoFirstChild: {
 		// first-child matches the first child that is an element!
 		DOM::NodeImpl *n = e->parentNode()->firstChild();
 		while( n && !n->isElementNode() )
 		    n = n->nextSibling();
 		if( n == e )
 		    return true;
-	    } else if ( value == "first-line" && subject) {
-                dynamicPseudo=RenderStyle::FIRST_LINE;
-                return true;
-	    } else if ( value == "first-letter" && subject ) {
+	}
+	case CSSSelector::PseudoFirstLine:
+	    if ( subject ) {
+		dynamicPseudo=RenderStyle::FIRST_LINE;
+		return true;
+	    }
+	    break;
+	case CSSSelector::PseudoFirstLetter:
+	    if ( subject ) {
 		dynamicPseudo=RenderStyle::FIRST_LETTER;
 		return true;
-	    } else if ( value == "focus" ) {
-		selectorDynamicState |= StyleSelector::Focus;
-		return true;
 	    }
-	    break;
-	case 'l':
-	    if( value == "link") {
+
+	case CSSSelector::PseudoLink:
 		if ( pseudoState == PseudoUnknown )
 		    checkPseudoState( encodedurl, e );
-		if ( pseudoState == PseudoLink ) {
+		if ( pseudoState == PseudoLink )
 		    return true;
-		}
-	    }
-	    break;
-	case 'v':
-	    if ( value == "visited" ) {
+		break;
+	case CSSSelector::PseudoVisited:
 		if ( pseudoState == PseudoUnknown )
 		    checkPseudoState( encodedurl, e );
 		if ( pseudoState == PseudoVisited )
 		    return true;
-	    }
-	    break;
-	case 'h':
-	    if ( value == "hover" ) {
-		selectorDynamicState |= StyleSelector::Hover;
-		// dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
-		// to the element.
-		return true;
-	    } break;
-	case 'a':
-	    if ( value == "active" ) {
+		break;
+	case CSSSelector::PseudoHover:
+	    selectorDynamicState |= StyleSelector::Hover;
+	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
+	    // to the element.
+	    return true;
+	case CSSSelector::PseudoFocus:
+	    selectorDynamicState |= StyleSelector::Focus;
+	    return true;
+	case CSSSelector::PseudoActive:
 		if ( pseudoState == PseudoUnknown )
 		    checkPseudoState( encodedurl, e );
 		if ( pseudoState != PseudoNone ) {
 		    selectorDynamicState |= StyleSelector::Active;
 		    return true;
 		}
-	    } else if ( value == "after" ) {
-		dynamicPseudo = RenderStyle::AFTER;
-		return true;
-	    }
-
-	    break;
-	case 'b':
-	    if ( value == "before" ) {
+		break;
+	case CSSSelector::PseudoBefore:
 		dynamicPseudo = RenderStyle::BEFORE;
 		return true;
-	    }
+	case CSSSelector::PseudoAfter:
+		dynamicPseudo = RenderStyle::AFTER;
+		return true;
+	case CSSSelector::PseudoNotParsed:
+	    assert(false);
 	    break;
-	default:
-	    return false;
+	case CSSSelector::PseudoOther:
+	    break;
 	}
 	return false;
     }
@@ -825,6 +874,12 @@ void CSSStyleSelector::buildLists()
         Default );
     else if(defaultStyle) defaultStyle->collect( &selectorList, &propertyList,
       Default, Default );
+
+    if (!strictParsing && defaultQuirksStyle) {
+	qDebug("getting properties from quirks style!");
+        defaultQuirksStyle->collect( &selectorList, &propertyList, Default, Default );
+    }
+
     if(userStyle) userStyle->collect(&selectorList, &propertyList, User, UserImportant );
     if(authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
 
@@ -944,7 +999,8 @@ CSSStyleSelectorList::~CSSStyleSelectorList()
 }
 
 void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
-                                   const DOMString &medium )
+                                   const DOMString &medium,
+                                   int quirksMode )
 {
     if(!sheet || !sheet->isCSSStyleSheet()) return;
 
@@ -958,7 +1014,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
     for(int i = 0; i< len; i++)
     {
         StyleBaseImpl *item = sheet->item(i);
-        if(item->isStyleRule())
+        if(item->isStyleRule() && quirksMode != 2)
         {
             CSSStyleRuleImpl *r = static_cast<CSSStyleRuleImpl *>(item);
             QPtrList<CSSSelector> *s = r->selector();
@@ -981,6 +1037,31 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                 CSSStyleSheetImpl *importedSheet = import->styleSheet();
                 append( importedSheet, medium );
             }
+        }
+        else if (item->isQuirksRule() && quirksMode != 1) {
+            CSSQuirksRuleImpl *r = static_cast<CSSQuirksRuleImpl *>( item );
+            CSSRuleListImpl *rules = r->cssRules();
+
+            for( unsigned j = 0; j < rules->length(); j++ )
+            {
+                //kdDebug( 6080 ) << "*** Rule #" << j << endl;
+
+                CSSRuleImpl *childItem = rules->item( j );
+                if( childItem->isStyleRule() )
+                {
+                    // It is a StyleRule, so append it to our list
+                    CSSStyleRuleImpl *styleRule =
+                            static_cast<CSSStyleRuleImpl *>( childItem );
+
+                    QPtrList<CSSSelector> *s = styleRule->selector();
+                    for( int j = 0; j < ( int ) s->count(); j++ )
+                    {
+                        CSSOrderedRule *orderedRule = new CSSOrderedRule(
+                                        styleRule, s->at( j ), count() );
+                        QPtrList<CSSOrderedRule>::append( orderedRule );
+                    }
+                }
+            }   // for rules
         }
         else if( item->isMediaRule() )
         {
@@ -1518,11 +1599,12 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         case CSS_VAL_VISIBLE:
             o = OVISIBLE; break;
         case CSS_VAL_HIDDEN:
-            o = OHIDDEN; break;
         case CSS_VAL_SCROLL:
-            o = SCROLL; break;
         case CSS_VAL_AUTO:
-            o = AUTO; break;
+            // For now we map overflow:auto and overflow:scroll to overflow:hidden.
+            // This at least keeps the layout of the surrounding page correct until
+            // we provide support for auto and scroll values. -dwh
+            o = OHIDDEN; break;
         default:
             return;
         }
@@ -1944,6 +2026,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     case CSS_PROP_WORD_SPACING:
     {
 	int width = 0;
+
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
             if(!parentNode) return;
@@ -1959,6 +2042,8 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             default:
                 return;
             }
+        } else if(primitiveValue && primitiveValue->getIdent() == CSS_VAL_NORMAL){
+            width = 0;
         } else {
 	    if(!primitiveValue) return;
 	    width = primitiveValue->computeLength(style, paintDeviceMetrics);
@@ -2059,7 +2144,9 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         } else if(primitiveValue && !apply) {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
+                // Handle our quirky margin units if we have them.
+                l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed,
+                           primitiveValue->isQuirkValue());
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
 	    else if (type == CSSPrimitiveValue::CSS_HTML_RELATIVE)
@@ -2220,8 +2307,8 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         int oldSize;
         float size = 0;
 
-        float toPix = paintDeviceMetrics->logicalDpiY()/72.;
-        if (toPix  < 96./72.) toPix = 96./72.;
+	float toPix = paintDeviceMetrics->logicalDpiY()/72.;
+	if (toPix  < 96./72.) toPix = 96./72.;
 
         int minFontSize = int(settings->minFontSize() * toPix);
 
@@ -2233,16 +2320,24 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             size = oldSize;
         } else if(primitiveValue->getIdent()) {
+	    // keywords are being used.  Pick the correct default
+	    // based off the font family.
+#if 0
+	    QValueList<int>& fontSizes = (fontDef.genericFamily == FontDef::eMonospace) ?
+					 m_fixedFontSizes : m_fontSizes;
+#else
+	    QValueList<int>& fontSizes = m_fontSizes;
+#endif
             switch(primitiveValue->getIdent())
             {
-            case CSS_VAL_XX_SMALL: size = m_fontSizes[0]; break;
-            case CSS_VAL_X_SMALL:  size = m_fontSizes[1]; break;
-            case CSS_VAL_SMALL:    size = m_fontSizes[2]; break;
-            case CSS_VAL_MEDIUM:   size = m_fontSizes[3]; break;
-            case CSS_VAL_LARGE:    size = m_fontSizes[4]; break;
-            case CSS_VAL_X_LARGE:  size = m_fontSizes[5]; break;
-            case CSS_VAL_XX_LARGE: size = m_fontSizes[6]; break;
-            case CSS_VAL__KONQ_XXX_LARGE:  size = ( m_fontSizes[6]*5 )/3; break;
+            case CSS_VAL_XX_SMALL: size = fontSizes[0]; break;
+            case CSS_VAL_X_SMALL:  size = fontSizes[1]; break;
+            case CSS_VAL_SMALL:    size = fontSizes[2]; break;
+            case CSS_VAL_MEDIUM:   size = fontSizes[3]; break;
+            case CSS_VAL_LARGE:    size = fontSizes[4]; break;
+            case CSS_VAL_X_LARGE:  size = fontSizes[5]; break;
+            case CSS_VAL_XX_LARGE: size = fontSizes[6]; break;
+            case CSS_VAL__KONQ_XXX_LARGE:  size = ( fontSizes[6]*5 )/3; break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
                 size = oldSize * 1.2;
@@ -2256,16 +2351,16 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
         } else {
             int type = primitiveValue->primitiveType();
-            if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
+            if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
                 size = primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics);
+                if (!khtml::printpainter && element && element->getDocument()->view())
+                    size *= element->getDocument()->view()->part()->zoomFactor() / 100.0;
+            }
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 size = (primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
                         * parentStyle->font().pixelSize()) / 100;
             else
                 return;
-
-            if (!khtml::printpainter && element && element->getDocument()->view())
-                size *= element->getDocument()->view()->part()->zoomFactor() / 100.0;
         }
 
         if(size <= 0) return;
@@ -2296,17 +2391,27 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     case CSS_PROP_Z_INDEX:
     {
 	int z_index = 0;
-        if(value->cssValueType() == CSSValue::CSS_INHERIT)
-       {
+        if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!parentNode) return;
             z_index = parentStyle->zIndex();
         } else {
-            if(!primitiveValue ||
-               primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
+            if (!primitiveValue)
                 return;
+
+#if 0
+            if (primitiveValue->getIdent() == CSS_VAL_AUTO) {
+                style->setHasAutoZIndex();
+                return;
+            }
+#endif
+
+            if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
+                return; // Error case.
+
 	    z_index = (int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER);
 	}
-        style->setZIndex( z_index );
+
+        style->setZIndex(z_index);
         return;
     }
 
@@ -2437,39 +2542,40 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
 	QString family;
+
         for(int i = 0; i < len; i++) {
             CSSValueImpl *item = list->item(i);
             if(!item->isPrimitiveValue()) continue;
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
-            if(!val->primitiveType() == CSSPrimitiveValue::CSS_STRING) return;
-            QString face = static_cast<FontFamilyValueImpl *>(val)->fontName();
-	    if ( !face.isNull() || face.isEmpty() ) {
-		if(face == "serif") {
-		    face = settings->serifFontName();
-		}
-		else if(face == "sans-serif") {
-		    face = settings->sansSerifFontName();
-		}
-		else if( face == "cursive") {
-		    face = settings->cursiveFontName();
-		}
-		else if( face == "fantasy") {
-		    face = settings->fantasyFontName();
-		}
-		else if( face == "monospace") {
-		    face = settings->fixedFontName();
-		}
-		else if( face == "konq_default") {
-		    face = settings->stdFontName();
-		}
-		if ( !face.isEmpty() ) {
-		    fontDef.family = face;
-		    if (style->setFontDef( fontDef ))
-			fontDirty = true;
-		}
-                return;
-	    }
-        }
+	    if(!(val->primitiveType() == CSSPrimitiveValue::CSS_STRING)) return;
+	    QString face = static_cast<FontFamilyValueImpl *>(val)->fontName();
+ 	    if ( !face.isNull() || face.isEmpty() ) {
+ 		if(face == "serif") {
+ 		    face = settings->serifFontName();
+ 		}
+ 		else if(face == "sans-serif") {
+ 		    face = settings->sansSerifFontName();
+ 		}
+ 		else if( face == "cursive") {
+ 		    face = settings->cursiveFontName();
+ 		}
+ 		else if( face == "fantasy") {
+ 		    face = settings->fantasyFontName();
+ 		}
+ 		else if( face == "monospace") {
+  		    face = settings->fixedFontName();
+ 		}
+ 		else if( face == "konq_default") {
+  		    face = settings->stdFontName();
+  		}
+  		if ( !face.isEmpty() ) {
+ 		    fontDef.family = face;
+ 		    if (style->setFontDef( fontDef ))
+  			fontDirty = true;
+  		}
+		return;
+  	    }
+	}
         break;
     }
     case CSS_PROP_QUOTES:
@@ -2633,5 +2739,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     default:
         return;
     }
+}
+
 }
 

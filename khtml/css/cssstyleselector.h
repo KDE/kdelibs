@@ -2,6 +2,7 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -127,6 +128,7 @@ namespace khtml
 	RenderStyle *styleForElement(DOM::ElementImpl *e, int state = None );
 
         QValueList<int> fontSizes() const { return m_fontSizes; }
+	QValueList<int> fixedFontSizes() const { return m_fixedFontSizes; }
 
 	bool strictParsing;
 	struct Encodedurl {
@@ -136,6 +138,8 @@ namespace khtml
 	} encodedurl;
 
         void computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor);
+	void computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueList<int>& fontSizes, bool isFixed);
+
     protected:
 
 	/* checks if the complete selector (which can be build up from a few CSSSelector's
@@ -153,11 +157,13 @@ namespace khtml
 
 	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static CSSStyleSelectorList *defaultStyle;
+    static CSSStyleSelectorList *defaultQuirksStyle;
 	static CSSStyleSelectorList *defaultPrintStyle;
 	CSSStyleSelectorList *authorStyle;
         CSSStyleSelectorList *userStyle;
         DOM::CSSStyleSheetImpl *userSheet;
 
+public:
     private:
         void init();
 
@@ -215,6 +221,7 @@ namespace khtml
 	const KHTMLSettings *settings;
 	QPaintDeviceMetrics *paintDeviceMetrics;
         QValueList<int>     m_fontSizes;
+	QValueList<int>     m_fixedFontSizes;
 
 	bool fontDirty;
 
@@ -286,7 +293,8 @@ namespace khtml
 	virtual ~CSSStyleSelectorList();
 
 	void append( DOM::CSSStyleSheetImpl *sheet,
-                 const DOM::DOMString &medium = "screen" );
+                 const DOM::DOMString &medium = "screen",
+                 int quirksMode = 0 );
 
 	void collect( QPtrList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
 		      Source regular, Source important );

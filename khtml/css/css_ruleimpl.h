@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -124,9 +125,31 @@ protected:
     bool m_loading;
 };
 
+class CSSRuleList;
+
+class CSSQuirksRuleImpl : public CSSRuleImpl
+{
+public:
+    CSSQuirksRuleImpl( StyleBaseImpl *parent );
+    CSSQuirksRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
+                      const QChar * endP );
+
+    virtual ~CSSQuirksRuleImpl();
+
+    CSSRuleListImpl *cssRules();
+    unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index );
+    void deleteRule ( unsigned long index );
+
+    virtual bool isQuirksRule() { return true; }
+    
+protected:
+    CSSRuleListImpl *m_lstCSSRules;
+
+    /* Not part of the DOM */
+    unsigned long appendRule( CSSRuleImpl *rule );
+};
 
 class MediaList;
-class CSSRuleList;
 
 class CSSMediaRuleImpl : public CSSRuleImpl
 {

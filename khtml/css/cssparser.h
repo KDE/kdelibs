@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *               1999 Waldo Bastian (bastian@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -51,19 +52,18 @@ namespace DOM {
 class CSSSelector
 {
 public:
-    CSSSelector(void)
+    CSSSelector()
 	: tagHistory(0), attr(0), tag(0), relation( Descendant ),
-    match( None ), nonCSSHint( false ), pseudoId( 0 ) {}
+    match( None ), nonCSSHint( false ), pseudoId( 0 ), _pseudoType(PseudoNotParsed) {}
 
-    ~CSSSelector(void) {
-	if (tagHistory)
+    ~CSSSelector() {
 	    delete tagHistory;
     }
 
     /**
      * Print debug output for this selector
      */
-    void print(void);
+    void print();
 
     /**
      * Re-create selector text from selector's data
@@ -99,7 +99,31 @@ public:
 	SubSelector
     };
 
-    DOM::DOMString value;
+    enum PseudoType
+    {
+        PseudoNotParsed = 0,
+        PseudoOther,
+	PseudoEmpty,
+        PseudoFirstChild,
+        PseudoFirstLine,
+        PseudoFirstLetter,
+        PseudoLink,
+        PseudoVisited,
+        PseudoHover,
+        PseudoFocus,
+        PseudoActive,
+        PseudoBefore,
+        PseudoAfter
+    };
+
+    inline PseudoType pseudoType() const
+    {
+        if (_pseudoType == PseudoNotParsed)
+            extractPseudoType();
+        return _pseudoType;
+    }
+
+    mutable DOM::DOMString value;
     CSSSelector *tagHistory;
     int          attr;
     int          tag;
@@ -109,7 +133,10 @@ public:
     bool	nonCSSHint : 1;
     unsigned int pseudoId : 3;
 
+    mutable PseudoType _pseudoType;
 
+private:
+    void extractPseudoType() const;
 };
 
     // a style class which has a parent (almost all have)
@@ -117,7 +144,11 @@ public:
     {
     public:
 	StyleBaseImpl()  { m_parent = 0; hasInlinedDecl = false; strictParsing = true; multiLength = false; }
-	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; strictParsing = true; multiLength = false; }
+	StyleBaseImpl(StyleBaseImpl *p) {
+	    m_parent = p; hasInlinedDecl = false;
+	    strictParsing = (m_parent ? m_parent->useStrictParsing() : true);
+	    multiLength = false;
+	}
 
 	virtual ~StyleBaseImpl() {}
 
@@ -134,6 +165,7 @@ public:
 	virtual bool isCharetRule() { return false; }
 	virtual bool isImportRule() { return false; }
 	virtual bool isMediaRule() { return false; }
+	virtual bool isQuirksRule() { return false; }
 	virtual bool isFontFaceRule() { return false; }
 	virtual bool isPageRule() { return false; }
 	virtual bool isUnknownRule() { return false; }
@@ -188,7 +220,8 @@ public:
 	    TIME      = 0x0020,
 	    FREQUENCY = 0x0040,
 	    NONNEGATIVE = 0x0080,
-	    RELATIVE  = 0x0100
+	    RELATIVE  = 0x0100,
+	    COLLAPSIBLE = 0x0200
 	};
 
 	/* called by parseValue, parses numbers+units */
@@ -211,8 +244,6 @@ public:
 	bool hasInlinedDecl : 1;
 	bool strictParsing : 1;
 	bool multiLength : 1;
-    private:
-	bool isHexadecimal( QChar &c );
     };
 
     // a style class which has a list of children (StyleSheets for example)

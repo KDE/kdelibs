@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -179,7 +180,6 @@ public:
 
     float computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics );
 
-
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }
     void setFloatValue ( unsigned short unitType, float floatValue, int &exceptioncode );
@@ -214,6 +214,8 @@ public:
     virtual bool parseString( const DOMString &string, bool = false);
     virtual DOM::DOMString cssText() const;
 
+    virtual bool isQuirkValue() { return false; }
+
 protected:
     int m_type;
     union {
@@ -224,6 +226,21 @@ protected:
 	RectImpl *rect;
         QRgb rgbcolor;
     } m_value;
+};
+
+// This value is used to handle quirky margins in reflow roots (body, td, and th) like WinIE.
+// The basic idea is that a stylesheet can use the value _qem (for quirky em) instead of em
+// in a stylesheet.  When the quirky value is used, if you're in quirks mode, the margin will
+// collapse away inside a table cell.
+class CSSQuirkPrimitiveValueImpl : public CSSPrimitiveValueImpl
+{
+public:
+    CSSQuirkPrimitiveValueImpl(float num, CSSPrimitiveValue::UnitTypes type)
+      :CSSPrimitiveValueImpl(num, type) {}
+
+    virtual ~CSSQuirkPrimitiveValueImpl() {}
+
+    virtual bool isQuirkValue() { return true; }
 };
 
 class CounterImpl : public khtml::Shared<CounterImpl> {
@@ -276,8 +293,13 @@ class FontFamilyValueImpl : public CSSPrimitiveValueImpl
 public:
     FontFamilyValueImpl( const QString &string);
     const QString &fontName() const { return parsedFontName; }
+    int genericFamilyType() const { return _genericFamilyType; }
+    bool isKonqBody() const { return _isKonqBody; }
 protected:
     QString parsedFontName;
+private:
+    int _genericFamilyType;
+    bool _isKonqBody;
 };
 
 // ------------------------------------------------------------------------------
