@@ -29,7 +29,7 @@ KMConfigCommand::KMConfigCommand(QWidget *parent, const char *name)
 : KMConfigPage(parent, name)
 {
 	setPageName(i18n("Commands"));
-	setPageHeader(i18n("Commands Settings"));
+	setPageHeader(i18n("Command Settings"));
 	setPagePixmap("exec");
 
 	QGroupBox	*gb = new QGroupBox(0, Qt::Horizontal, i18n("Edit/Create Commands"), this);
