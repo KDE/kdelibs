@@ -62,6 +62,19 @@ extern "C" {
 extern int lt_dlopen_flag;
 }
 
+class KLibLoaderPrivate
+{
+public:
+    QPtrList<KLibWrapPrivate> loaded_stack;
+    QPtrList<KLibWrapPrivate> pending_close;
+    enum {UNKNOWN, UNLOAD, DONT_UNLOAD} unload_mode;
+
+    QString errorMessage;
+};
+
+KLibLoader* KLibLoader::s_self = 0;
+
+// -------------------------------------------------------------------------
 
 KLibFactory::KLibFactory( QObject* parent, const char* name )
     : QObject( parent, name )
@@ -149,7 +162,8 @@ KLibFactory* KLibrary::factory()
     void* sym = symbol( symname );
         if ( !sym )
         {
-            kdWarning(150) << "KLibrary: The library " << name() << " does not offer an init_" << name() << " function" << endl;
+            KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function." ).arg( name() ).arg( "init_" + name() );
+            kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
             return 0;
     }
 
@@ -159,7 +173,8 @@ KLibFactory* KLibrary::factory()
 
     if( !m_factory )
     {
-        kdWarning(150) << "KLibrary: The library " << name() << " does not offer a KDE compatible factory" << endl;
+        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer a KDE compatible factory." ).arg( name() );
+        kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
 
@@ -174,7 +189,8 @@ void* KLibrary::symbol( const char* symname ) const
     void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
     if ( !sym )
     {
-        kdWarning(150) << "KLibrary: " << lt_dlerror() << endl;
+        KLibLoader::self()->d->errorMessage = "KLibrary: " + QString::fromLatin1( lt_dlerror() );
+        kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
 
@@ -274,18 +290,6 @@ KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, lt_dlhandle h)
         unload_mode = UNLOAD;
     }
 }
-
-class KLibLoaderPrivate
-{
-public:
-    QPtrList<KLibWrapPrivate> loaded_stack;
-    QPtrList<KLibWrapPrivate> pending_close;
-    enum {UNKNOWN, UNLOAD, DONT_UNLOAD} unload_mode;
-
-    QString errorMessage;
-};
-
-KLibLoader* KLibLoader::s_self = 0;
 
 KLibLoader* KLibLoader::self()
 {
@@ -435,7 +439,6 @@ KLibrary* KLibLoader::library( const char *name )
             d->errorMessage = QString::fromLatin1(errmsg);
         else
             d->errorMessage = QString::null;
-        kdWarning(150) << "library=" << name << ": file=" << libfile << ": " << d->errorMessage << endl;
         return 0;
       }
       else
