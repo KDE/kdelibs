@@ -851,19 +851,15 @@ void HTMLInputElementImpl::restoreState(const QString &state)
     switch (m_type) {
     case TEXT:
     case PASSWORD:
-        m_value = DOMString(state.left(state.length()-1));
+    case FILE:
+        setValue(DOMString(state.left(state.length()-1)));
         break;
     case CHECKBOX:
     case RADIO:
-        m_checked = state == QString::fromLatin1("on");
-        break;
-    case FILE:
-        m_value = m_filename = DOMString(state.left(state.length()-1));
-        break;
+        setChecked((state == QString::fromLatin1("on")));
     default:
         break;
     }
-    setChanged(true);
 }
 
 void HTMLInputElementImpl::select(  )
@@ -1510,7 +1506,6 @@ void HTMLSelectElementImpl::restoreState(const QString &_state)
             oe->setSelected(state[i] == 'X');
         }
     }
-
     setChanged(true);
 }
 
