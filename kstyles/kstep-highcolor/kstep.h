@@ -36,10 +36,13 @@ public:
     void drawIndicator(QPainter* p, int x, int y, int w, int h,
                        const QColorGroup &g, int state, bool down = FALSE,
                        bool enabled = TRUE );
+    void drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int);
     QSize exclusiveIndicatorSize() const;
     void drawExclusiveIndicator(QPainter* p,  int x, int y, int w, int h,
                                 const QColorGroup &g, bool on,
                                 bool down = FALSE, bool enabled =  TRUE );
+    void drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
+                                    int h, bool);
     void drawComboButton(QPainter *p, int x, int y, int w, int h,
                          const QColorGroup &g, bool sunken = FALSE,
                          bool editable = FALSE, bool enabled = TRUE,
@@ -91,6 +94,8 @@ public:
     // for repainting toolbuttons when the toolbar is resized
     bool eventFilter(QObject *obj, QEvent *ev);
 protected:
+    void drawLightRect(QPainter *p, int x, int y, int w, int h,
+                       const QColorGroup &g, bool down);
     void drawSBSlider(QPainter *p, int x, int y, int w, int h,
                       const QColorGroup &g, bool sunken, Orientation orient);
     void drawStepBarCircle(QPainter *p, int x, int y, int w, int h,
@@ -107,7 +112,7 @@ protected:
 private:
     QColorGroup nextGrp;
     QPalette oldPopupPal;
-    KPixmap *vSmall, *vMed, *vLarge, *hSmall, *hMed, *hLarge;
+    KPixmap *vSmall, *vMed, *vLarge, *hMed, *hLarge;
 };
 
 #endif

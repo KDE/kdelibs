@@ -57,16 +57,14 @@ KStepStyle::KStepStyle()
         vMed->resize(20, 34);
         vLarge = new KPixmap;
         vLarge->resize(20, 64);
-        hSmall = new KPixmap;
-        hSmall->resize(24, 20);
         hMed = new KPixmap;
         hMed->resize(34, 20);
         hLarge = new KPixmap;
-        hLarge->resize(64, 20);
+        hLarge->resize(52, 20);
     }
     else{
         vSmall = vMed = vLarge = NULL;
-        hSmall = hMed = hLarge = NULL;
+        hMed = hLarge = NULL;
     }
 }
 
@@ -76,7 +74,6 @@ KStepStyle::~KStepStyle()
         delete vSmall;
         delete vMed;
         delete vLarge;
-        delete hSmall;
         delete hMed;
         delete hLarge;
     }
@@ -84,7 +81,7 @@ KStepStyle::~KStepStyle()
 
 void KStepStyle::polish(QApplication *)
 {
-    setScrollBarExtent(18);
+    setScrollBarExtent(17, 17);
 }
 
 void KStepStyle::polish(QPalette &pal)
@@ -104,9 +101,6 @@ void KStepStyle::polish(QPalette &pal)
         KPixmapEffect::gradient(*vLarge, nextGrp.midlight(),
                                 nextGrp.mid(),
                                 KPixmapEffect::VerticalGradient);
-        KPixmapEffect::gradient(*hSmall, nextGrp.midlight(),
-                                nextGrp.mid(),
-                                KPixmapEffect::HorizontalGradient);
         KPixmapEffect::gradient(*hMed, nextGrp.midlight(),
                                 nextGrp.mid(),
                                 KPixmapEffect::HorizontalGradient);
@@ -123,7 +117,7 @@ void KStepStyle::polish(QPalette &pal)
                  QBrush(pal.color(QPalette::Active, QColorGroup::Background),
                         wallPaper));
         else
-            warning("Highcolor PillBox: Unable to load wallpaper %s",
+            warning("Highcolor KStep: Unable to load wallpaper %s",
                     tmpStr.latin1());
     }
     else if(config->readBoolEntry("UseWallpaper", true)){
@@ -139,35 +133,57 @@ void KStepStyle::polish(QPalette &pal)
 
 void KStepStyle::unPolish(QApplication *)
 {
-    setScrollBarExtent(16);
+    setScrollBarExtent(16, 16);
 }
 
 void KStepStyle::polish(QWidget *w)
 {
-    if(w->inherits("QPopupMenu")){ // force to our colorgroup
-        oldPopupPal = w->palette();
-        w->setPalette(QPalette(nextGrp, nextGrp, nextGrp));
-    }
-    if(QPixmap::defaultDepth() > 8){
-        if(w->inherits("KToolBar"))
-            w->installEventFilter(this);
-        if(w->inherits("KToolBarButton"))
-            w->setBackgroundMode(QWidget::NoBackground);
-    }
+    if(w->isTopLevel())
+        return;
 
+    if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
+        w->setBackgroundMode(QWidget::NoBackground);
+        return;
+    }
+    if(w->inherits("QLabel") || w->inherits("QButton") ||
+       w->inherits("QComboBox")){
+        if(w->parent() && !w->parent()->inherits("KToolBar") &&
+           !w->parent()->inherits("KHTMLView"))
+            w->setBackgroundOrigin(QWidget::ParentOrigin);
+        else
+            w->setAutoMask(true);
+        return;
+    }
+    if(w->inherits("KToolBar")){
+        w->installEventFilter(this);
+        w->setBackgroundMode(QWidget::NoBackground);
+    }
 }
-
+    
 void KStepStyle::unPolish(QWidget *w)
 {
-    if(w->inherits("QPopupMenu"))
-        w->setPalette(oldPopupPal);
+    if (w->isTopLevel())
+        return;
 
-    if(QPixmap::defaultDepth() > 8){
-        if(w->inherits("KToolBar"))
-            w->removeEventFilter(this);
-        if(w->inherits("KToolBarButton"))
-            w->setBackgroundMode(QWidget::PaletteBackground);
+    if(w->inherits("QMenuBar") || w->inherits("KToolBarButton")){
+        w->setBackgroundMode(QWidget::PaletteBackground);
+        return;
     }
+    if(w->inherits("QLabel") || w->inherits("QButton") ||
+       w->inherits("QComboBox")){
+        if(w->parent() && !w->parent()->inherits("KToolBar") &&
+           !w->parent()->inherits("KHTMLView"))
+            w->setBackgroundOrigin(QWidget::WidgetOrigin);
+        else
+            w->setAutoMask(false);
+        return;
+    }
+    if(w->inherits("KToolBar")){
+        w->removeEventFilter(this);
+        w->setBackgroundMode(QWidget::PaletteBackground);
+        return;
+    }
+
 }
 
 bool KStepStyle::eventFilter(QObject *obj, QEvent *ev)
@@ -185,6 +201,7 @@ bool KStepStyle::eventFilter(QObject *obj, QEvent *ev)
         }
     }
     return(false);
+
 }
 
 
@@ -335,6 +352,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         slider.setRect(sliderStart, 0, sliderLength, extent);
     }
     else{
+        /*
         subX = addX = (extent - buttonDim)/2;
         subY = len - (buttonDim*2);
         addY = len - buttonDim-1;
@@ -342,31 +360,41 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         add.setRect(addX, addY, buttonDim, buttonDim);
         subPage.setRect(0, 1, extent, sliderStart-1);
         addPage.setRect(0, sliderEnd, extent, subY-sliderEnd);
+        slider.setRect(0, sliderStart, extent, sliderLength);*/
+
+        subX = addX = 0;
+        subY = len - (buttonDim*2);
+        addY = len - buttonDim;
+        sub.setRect(subX, subY, buttonDim, buttonDim);
+        add.setRect(addX, addY, buttonDim, buttonDim);
+        subPage.setRect(0, 1, extent, sliderStart-1);
+        addPage.setRect(0, sliderEnd, extent, subY-sliderEnd);
         slider.setRect(0, sliderStart, extent, sliderLength);
+        
     }
 
     if(controls & AddLine){
         if(add.isValid()){
-            p->setPen(g.mid());
+            p->setPen(g.dark());
             p->drawRect(add);
-            qDrawShadePanel(p, add.x()+1, add.y()+1, add.width()-2,
-                            add.height()-2, nextGrp, activeControl == AddLine, 1);
+            drawLightRect(p, add.x()+1, add.y()+1, add.width()-2,
+                          add.height()-2, g, activeControl == AddLine);
             drawVGradient(p, g.brush(QColorGroup::Mid), add.x()+2, add.y()+2,
                           add.width()-4, add.height()-4);
             drawStepBarArrow(p, (horizontal) ? RightArrow : DownArrow,
-                             add.x()+3, add.y()+3, nextGrp);
+                             add.x()+4, add.y()+4, nextGrp);
         }
     }
     if(controls & SubLine){
         if(sub.isValid()){
-            p->setPen(g.mid());
+            p->setPen(g.dark());
             p->drawRect(sub);
-            qDrawShadePanel(p, sub.x()+1, sub.y()+1, sub.width()-2,
-                            sub.height()-2, nextGrp, activeControl == SubLine, 1);
+            drawLightRect(p, sub.x()+1, sub.y()+1, sub.width()-2,
+                          sub.height()-2, g, activeControl == AddLine);
             drawVGradient(p, g.brush(QColorGroup::Mid), sub.x()+2, sub.y()+2,
                           sub.width()-4, sub.height()-4);
-            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+3,
-                             sub.y()+3, nextGrp);
+            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+4,
+                             sub.y()+4, nextGrp);
         }
     }
     if((controls & SubPage)){
@@ -377,26 +405,16 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
     if(controls & Slider){
         if(slider.isValid() && slider.width() > 1 && slider.height() > 1){
+            p->setPen(g.dark());
+            p->drawRect(slider);
             if(horizontal){
-                p->setPen(Qt::black);
-                p->drawLine(slider.x(), slider.y(), slider.right(), slider.y());
-                p->drawLine(slider.x(), slider.bottom(), slider.right(), slider.bottom());
-                p->setPen(g.mid());
-                p->drawLine(slider.x(), slider.y()+1, slider.right(), slider.y()+1);
-                p->drawLine(slider.x(), slider.bottom()-1, slider.right(), slider.bottom()-1);
-                drawSBSlider(p, slider.x(), slider.y()+2, slider.width(),
-                              slider.height()-4, nextGrp, activeControl==Slider,
+                drawSBSlider(p, slider.x()+1, slider.y()+1, slider.width()-2,
+                              slider.height()-2, g, activeControl==Slider,
                               Qt::Horizontal);
             }
             else{
-                p->setPen(Qt::black);
-                p->drawLine(slider.x(), slider.y(), slider.x(), slider.bottom());
-                p->drawLine(slider.right(), slider.y(), slider.right(), slider.bottom());
-                p->setPen(g.mid());
-                p->drawLine(slider.x()+1, slider.y(), slider.x()+1, slider.bottom());
-                p->drawLine(slider.right()-1, slider.y(), slider.right()-1, slider.bottom());
-                drawSBSlider(p, slider.x()+2, slider.y(), slider.width()-4,
-                             slider.height(), nextGrp, activeControl==Slider,
+                drawSBSlider(p, slider.x()+1, slider.y()+1, slider.width()-2,
+                             slider.height()-2, g, activeControl==Slider,
                              Qt::Vertical);
             }
             if(slider.width() > 8 && slider.height() > 8)
@@ -406,22 +424,24 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
 }
 
-void KStepStyle::drawSBSlider(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, bool sunken, Orientation o)
+void KStepStyle::drawLightRect(QPainter *p, int x, int y, int w, int h,
+                               const QColorGroup &g, bool down)
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
-        
-    p->setPen(sunken ? Qt::black : g.light());
-    p->drawLine(x, y, x2-1, y);
-    p->drawLine(x, y, x, y2-1);
-    p->setPen(sunken ? g.midlight() : g.mid());
-    p->drawLine(x+1, y2-1, x2-1, y2-1);
-    p->drawLine(x2-1, y+1, x2-1, y2-1);
-    p->setPen(sunken ? g.light() : Qt::black);
-    p->drawLine(x, y2, x2, y2);
+    p->setPen(down ? g.mid() : g.light());
+    p->drawLine(x, y, x2, y);
+    p->drawLine(x, y, x, y2);
+    p->setPen(down ? g.light() : g.mid());
     p->drawLine(x2, y, x2, y2);
+    p->drawLine(x, y2, x2, y2);
+}
 
+
+void KStepStyle::drawSBSlider(QPainter *p, int x, int y, int w, int h,
+                              const QColorGroup &g, bool sunken, Orientation o)
+{
+    drawLightRect(p, x, y, w, h, g, sunken);
     if(o == Horizontal)
         drawVGradient(p, g.brush(QColorGroup::Mid), x+1, y+1, w-2, h-2);
     else
@@ -440,14 +460,13 @@ void KStepStyle::drawStepBarGroove(QPainter *p, QRect r, const QWidget *w,
         r.setRight(w->width()-2);
     if(r.bottom() == w->height()-1)
         r.setBottom(w->height()-2);
-    //p->fillRect(r, g.brush(QColorGroup::Mid));
     if(horiz)
-        drawVGradient(p, g.brush(QColorGroup::Mid), r.x(), r.y(), r.width(),
-                      r.height());
+        p->drawTiledPixmap(r.x(), r.y(), r.width(), r.height(),
+                           *vMed, 0, vMed->height()-(r.height()));
     else
-        drawHGradient(p, g.brush(QColorGroup::Mid), r.x(), r.y(), r.width(),
-                      r.height());
-    p->setPen(Qt::black);
+        p->drawTiledPixmap(r.x(), r.y(), r.width(), r.height(),
+                           *hMed, hMed->width()-(r.width()), 0);
+    p->setPen(g.dark());
     p->drawRect(0, 0, w->width(), w->height());
 }
 
@@ -461,7 +480,7 @@ void KStepStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
     int extent = (horizontal) ? sb->height() : sb->width();
 
     if(len > (extent - 1)*2)
-        buttonDim = extent-2;
+        buttonDim = extent;
     else
         buttonDim = len/2 - 1;
 
@@ -479,6 +498,7 @@ void KStepStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
     if(sliderLength > maxlen)
         sliderLength = maxlen;
     sliderMax = sliderMin + maxlen - sliderLength;
+
 }
 
 QStyle::ScrollControl KStepStyle::scrollBarPointOver(const QScrollBar *sb,
@@ -646,18 +666,35 @@ void KStepStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
 {
     drawButton(p, x, y, w, h, nextGrp, down);
     if(state != QButton::Off){
-        QPen oldPen = p->pen();
-        p->setPen(nextGrp.light());
-        p->drawLine(x+5, y+6, x+5, y+10);
-        p->drawLine(x+5, y+10, x+w-4, y+3);
-        p->setPen(nextGrp.dark());
-        p->drawLine(x+5, y+11, x+w-4, y+4);
-        p->drawLine(x+6, y+6, x+6, y+7);
-        p->setPen(nextGrp.mid());
-        p->drawLine(x+6, y+11, x+w-4, y+5);
-        p->drawLine(x+6, y+8, x+7, y+7);
-        p->setPen(oldPen);
+        if(state == QButton::On){
+            QPen oldPen = p->pen();
+            p->setPen(nextGrp.light());
+            p->drawLine(x+5, y+6, x+5, y+10);
+            p->drawLine(x+5, y+10, x+w-4, y+3);
+            p->setPen(nextGrp.dark());
+            p->drawLine(x+5, y+11, x+w-4, y+4);
+            p->drawLine(x+6, y+6, x+6, y+7);
+            p->setPen(nextGrp.mid());
+            p->drawLine(x+6, y+11, x+w-4, y+5);
+            p->drawLine(x+6, y+8, x+7, y+7);
+            p->setPen(oldPen);
+        }
+        else{
+            drawStepBarCircle(p, x, y, w, h, nextGrp);
+        }
     }
+}
+
+void KStepStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
+                                   int)
+{
+    p->fillRect(x, y, w, h, Qt::color1);
+}
+
+void KStepStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
+                                            int h, bool)
+{
+    p->fillRect(x, y, w, h, Qt::color1);
 }
 
 void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
@@ -811,17 +848,15 @@ void KStepStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             // vertical toolbar
             else{
                 if(btn->x() <= 3){
-                    if(toolbar->width() <= 24)
-                        p->drawTiledPixmap(x, y, w, h, *hSmall);
-                    else if(toolbar->width() <= 34)
+                    if(toolbar->width() <= 34)
                         p->drawTiledPixmap(x, y, w, h, *hMed);
                     else
                         p->drawTiledPixmap(x, y, w, h, *hLarge);
 
                 }
-                else if(btn->x() <= 64){
+                else if(btn->x() <= 52){
                     p->fillRect(x, y, w, h, g.mid());
-                    p->drawTiledPixmap(x, y, 64-btn->x(), h,
+                    p->drawTiledPixmap(x, y, 52-btn->x(), h,
                                        *hLarge, btn->x(), 0);
                 }
                 else
@@ -1081,13 +1116,10 @@ void KStepStyle::drawVGradient(QPainter *p, const QBrush &fill, int x, int y,
 void KStepStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
                                int w, int h)
 {
-    if(w <= 24){
-        p->drawTiledPixmap(x, y, w, h, *hSmall);
-    }
-    else if(w <= 34){
+    if(w <= 34){
         p->drawTiledPixmap(x, y, w, h, *hMed);
     }
-    else if(w <= 64){
+    else if(w <= 52){
         p->drawTiledPixmap(x, y, w, h, *hLarge);
     }
     else{
