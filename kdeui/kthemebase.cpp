@@ -16,6 +16,7 @@
 #include <qbitmap.h>
 #include <stdlib.h>
 #include <krootprop.h>
+template QIntCache<KThemePixmap>;
 
 static const char *widgetEntries[] = { // unsunken widgets (see header)
 "PushButton", "ComboBox", "HSBarSlider", "VSBarSlider", "Bevel", "ToolButton",

@@ -15,6 +15,8 @@
 
 #include "kaccelmenu.h"
 
+template QIntDict<char>;
+
 //////////////////////////////////////////////////////////////////////////////
 KAccelMenu::KAccelMenu(KAccel *k, QWidget * parent, const char * name ):
   QPopupMenu(parent,name)

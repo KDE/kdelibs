@@ -38,6 +38,7 @@
 #include <ktextbrowser.h>
 #include <kurllabel.h>
 
+template QArray<QWidget*>;
 
 #define WORKTEXT_IDENTATION 16
 #define Grid 3

@@ -34,6 +34,7 @@
 #include <kseparator.h>
 #include <kurllabel.h>
 
+template QList<QPushButton>;
 
 KDialogBaseTile *KDialogBase::mTile = 0;
 

@@ -43,6 +43,8 @@
 
 #include "kbuttonbox.h"
 
+template QList<KButtonBox::KButtonBoxItem>;
+
 // taken from Qt source
 // Reggie: In Qt 1.4x we don't have additional width/height!
 const int extraMotifWidth = 0;

@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.1  1999/09/21 11:03:53  waba
+// WABA: Clean up interface
+//
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -39,6 +42,8 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <kstyle.h>
+
+template QIntDict<KToolBarButton>;
 
 // Delay in ms before delayed popup pops up
 #define POPUP_DELAY 500

@@ -19,6 +19,7 @@
 
 #include "kcontainer.h"
 
+
 KContainerLayout::KContainerLayout(QWidget * parent, const char * name, 
 			int orientation, bool homogeneos,
 			int spacing, WFlags f, bool allowLines)
@@ -449,3 +450,4 @@ QSize KContainerLayout::sizeHint() const
 
 #include "kcontainer.moc"
 
+template QList<KContainerLayout::KContainerLayoutItem>;

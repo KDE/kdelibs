@@ -31,6 +31,8 @@ struct string_entry {
   uint hash;
 };
 
+template QList<string_entry>;
+
 class KSycocaDictStringList : public QList<string_entry>
 {
 public:

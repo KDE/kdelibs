@@ -38,6 +38,8 @@
 
 #include "kprocctrl.h"
 
+template QList<KProcess>;
+
 KProcessController *theKProcessController = 0;
 
 KProcessController::KProcessController()

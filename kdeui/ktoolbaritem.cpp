@@ -23,12 +23,17 @@
 
 // $Id$
 // $Log$
+// Revision 1.1  1999/09/21 11:03:53  waba
+// WABA: Clean up interface
+//
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include "ktoolbaritem.h"
+
+template QList<KToolBarItem>;
 
 KToolBarItem::KToolBarItem (Item *_item, itemType _type, int _id,
                             bool _myItem)

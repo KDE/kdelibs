@@ -11,6 +11,8 @@
 
 #include "ktar.h"
 
+template QDict<KTarEntry>;
+
 KTar::KTar( const QString& filename )
 {
   m_filename = filename;

@@ -23,8 +23,13 @@
 #include <ktmainwindow.h>
 #include <kstatusbar.h>
 
+template QList<KStatusBarItem>;
+
 // $Id$
 // $Log$
+// Revision 1.24  1999/10/08 23:13:42  bero
+// ktopwidget.h no longer included
+//
 // Revision 1.23  1999/08/05 22:22:25  shausman
 // - implemented KStatusBarItem *KStatusBar::item( int id );
 //

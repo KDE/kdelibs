@@ -42,6 +42,9 @@
 #include <config.h>
 #endif
 
+class KDebugEntry;
+template QList<KDebugEntry>;
+
 #ifdef kdebug
 #undef kdebug
 #endif

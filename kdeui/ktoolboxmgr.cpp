@@ -30,8 +30,14 @@
 #include <ktoolboxmgr.h>
 #include <kwm.h>
 
+template QList<QRect>;
+
  // $Id$
  // $Log$
+ // Revision 1.16  1999/03/06 18:03:38  ettrich
+ // the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
+ // It has its own menu entry and reacts on simple LMP clicks.
+ //
  // Revision 1.15  1999/01/18 10:57:12  kulow
  // .moc files are back in kdelibs. Built fine here using automake 1.3
  //
