@@ -185,17 +185,17 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
         d->urlBar->insertItem( u, i18n("Desktop"), false );
 
         u.setPath( KGlobalSettings::documentPath() );
-        d->urlBar->insertItem( u, i18n("Documents"), false );
+        d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
         u.setPath( QDir::homeDirPath() );
-        d->urlBar->insertItem( u, i18n("Home Directory"), false );
+        d->urlBar->insertItem( u, i18n("Home Directory"), false, "folder_home" );
         u.setPath( "/" );
-        d->urlBar->insertItem( u, i18n("Root Directory"), false );
+        d->urlBar->insertItem( u, i18n("Root Directory"), false, "folder_grey" );
         QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
         u.setPath( tmpDirs.isEmpty() ? "/tmp" : tmpDirs.first() );
-        d->urlBar->insertItem( u, i18n("Temporary Files"), false );
+        d->urlBar->insertItem( u, i18n("Temporary Files"), false, "file_temporary" );
         u = "lan:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Network"), false );
+            d->urlBar->insertItem( u, i18n("Network"), false, "network_local" );
     }
 
     d->urlBar->readConfig( config, "KFileDialog Speedbar" );
