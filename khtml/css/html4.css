@@ -260,21 +260,24 @@ TD[align="left"] > HR { margin-left: 0px; margin-right: auto; }
  * Lists
  */
 
-OL {
-	display: block;
-	margin-left: 40px;
-	margin-top: 1em;
-	margin-bottom: 1em;
-	list-style-type: decimal;
+UL, MENU, DIR {
+        display: block;
+        list-style-type: disc;
+        margin: 1em 0;
+        padding-left: 40px;
 }
-      
-UL {
-	display: block;
-	margin-left: 40px;
-	margin-top: 1em;
-	margin-bottom: 1em;
-	list-style-type: disc;
-} 
+
+OL {
+        display: block;
+        list-style-type: decimal;
+        margin: 1em 0;
+        padding-left: 40px;
+}
+
+LI {
+        display: list-item;
+}
+
 
 UL UL { 
 	list-style-type: circle;
@@ -299,17 +302,7 @@ DL {
 DT {
 	display: block;
 }
-
-DIR  { 
-	display: block;
-	margin-left: 40px;
-} 
-
-MENU { 
-	display: block;
-	margin-left: 40px;
-}
-  
+ 
 /* for right to left */
       
 *[dir="rtl"] UL, 
