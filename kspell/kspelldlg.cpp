@@ -60,6 +60,7 @@ KSpellDlg::KSpellDlg(
   
   QLabel * l_suggestions =
     new QLabel(i18n("Suggestions:"), w, "l_suggestions");
+  l_suggestions->setAlignment(Qt::AlignLeft | Qt::AlignTop );
  
   KButtonBox * buttonBox = new KButtonBox(w, Vertical);
 
@@ -84,6 +85,8 @@ KSpellDlg::KSpellDlg(
 
   b = buttonBox->addButton(i18n("&Stop"), this, SLOT(stop()));
   connect(this, SIGNAL(ready(bool)), b, SLOT(setEnabled(bool)));
+
+  buttonBox->layout();
 
   QHBoxLayout * layout = 0L;
 
@@ -122,6 +125,11 @@ KSpellDlg::KSpellDlg(
   connect(editbox, SIGNAL(returnPressed()),   SLOT(replace()));
   connect(listbox, SIGNAL(selected(int)),     SLOT(selected(int)));
   connect(listbox, SIGNAL(highlighted(int)),  SLOT(highlighted (int)));
+
+  QSize bs = sizeHint();
+  if (bs.width() < bs.height()) {
+    resize(9 * bs.height() / 6, bs.height());
+  }
 
   emit(ready(false));
 }
