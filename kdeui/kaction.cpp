@@ -2013,7 +2013,7 @@ public:
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const KShortcut& cut,
                                         QObject* parent, const char* name,
-                                        unsigned int maxItems )
+                                        uint maxItems )
   : KListAction( text, cut, parent, name)
 {
   d = new KRecentFilesActionPrivate;
