@@ -605,12 +605,14 @@ bool KHTMLPart::openURL( const KURL &url )
 
   KParts::URLArgs args( d->m_extension->urlArgs() );
 
-  // in case we have a) no frameset (don't test m_frames.count(), iframes get in there)
-  // b) the url is identical with the currently
-  // displayed one (except for the htmlref!) , c) the url request is not a POST
-  // operation and d) the caller did not request to reload the page we try to
-  // be smart and instead of reloading the whole document we just jump to the
-  // request html anchor
+  // in case
+  // a) we have no frameset (don't test m_frames.count(), iframes get in there)
+  // b) the url is identical with the currently displayed one (except for the htmlref!)
+  // c) the url request is not a POST operation and
+  // d) the caller did not request to reload the page
+  // e) there was no HTTP redirection meanwhile (testcase: webmin's software/tree.cgi)
+  // => we don't reload the whole document and
+  // we just jump to the requested html anchor
   bool isFrameSet = false;
   if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
       HTMLDocumentImpl* htmlDoc = static_cast<HTMLDocumentImpl*>(d->m_doc);
@@ -619,11 +621,8 @@ bool KHTMLPart::openURL( const KURL &url )
 
   if ( url.hasRef() && !isFrameSet )
   {
-
-    //if new url == old url, jump to anchor straight away
-    //no need to reload unless explicitly asked
     bool noReloadForced = !args.reload && !args.redirectedRequest() && !args.doPost();
-    if (urlcmp( url.url(), m_url.url(), true, true ) && noReloadForced)
+    if (noReloadForced && urlcmp( url.url(), m_url.url(), true, true ))
     {
         kdDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
         m_url = url;
@@ -2307,6 +2306,8 @@ KURL KHTMLPart::completeURL( const QString &url )
   return KURL( d->m_doc->completeURL( url ) );
 }
 
+// Called by ecma/kjs_window in case of redirections from Javascript,
+// and by xml/dom_docimpl.cpp in case of http-equiv meta refresh.
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
   kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
@@ -2345,8 +2346,6 @@ void KHTMLPart::slotRedirect()
     return;
   }
   KParts::URLArgs args;
-  // Redirecting to the current URL leads to a reload.
-  // But jumping to an anchor never leads to a reload.
   KURL cUrl( m_url );
   KURL url( u );
 
@@ -2356,7 +2355,7 @@ void KHTMLPart::slotRedirect()
 
   if (!kapp || !kapp->authorizeURLAction("redirect", cUrl, url))
   {
-    kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+    kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl << " to " << url << " REJECTED!" << endl;
     return;
   }
 
@@ -2365,8 +2364,13 @@ void KHTMLPart::slotRedirect()
     args.metaData().insert("referrer", d->m_pageReferrer);
   }
 
-  // Indicate that this request is due to a redirection.
-  args.setRedirectedRequest(true);
+  // For javascript and META-tag based redirections:
+  //   - We don't take cross-domain-ness in consideration if we are the
+  //   toplevel frame because the new URL may be in a different domain as the current URL
+  //   but that's ok.
+  //   - If we are not the toplevel frame then we check against the toplevelURL()
+  if (parentPart())
+      args.metaData().insert("cross-domain", toplevelURL().url());
 
   args.setLockHistory( d->m_redirectLockHistory );
   // _self: make sure we don't use any <base target=>'s
@@ -3744,16 +3748,6 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
-  // WABA: When we select the link explicitly we should treat this new URL as the
-  // toplevel url and it should never be considered cross-domain.
-  // However this function is also called for javascript and META-tag based
-  // redirections:
-  //   - In such case, we don't take cross-domain-ness in consideration if we are the
-  //   toplevel frame because the new URL may be in a different domain as the current URL
-  //   but that's ok.
-  //   - If we are not the toplevel frame then we check against the toplevelURL()
-  if (args.redirectedRequest() && parentPart())
-      args.metaData().insert("cross-domain", toplevelURL().url());
 
   if ( hasTarget && target != "_self" && target != "_top" && target != "_blank" && target != "_parent" )
   {

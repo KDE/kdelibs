@@ -1,3 +1,12 @@
+2005-02-12  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (slotRedirect): No reload should happen when redirecting
+        to sameurl#anchor via Javascript or META refresh. This happened due to the
+        setRedirectedRequest(true), which wasn't necessary for the webmin tree.cgi
+        fix - setRedirectedRequest is called by KonqRun for that one.
+        The other redirectedRequest check was used for adding cross-domain, I simply
+        moved that code from urlSelected to slotRedirect.
+
 2005-02-12  Germain Garand  <germain@ebooksfrance.org>
 
         fix inline formatting model
