@@ -1112,6 +1112,8 @@ bool KURL::hasSubURL() const
      return true;
   if (m_strRef_encoded.startsWith("tar:"))
      return true;
+  if ( m_strProtocol == "error" ) // anything that starts with error: has suburls
+     return true;
   return false;
 }
 

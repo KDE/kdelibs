@@ -101,6 +101,15 @@ int main(int argc, char *argv[])
   //check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
+  u1 = "error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::isLocalFile()", url1.isLocalFile() ? "yes" : "no", "no");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "no");
+  //check("KURL::htmlRef()", url1.htmlRef(), "myref");
+
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
