@@ -789,12 +789,6 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     return QTextCodec::codecForName("iso8859-1");
 }
 
-
-QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
-{
-    return charsetForEncoding( e, false );
-}
-
 QFont::CharSet KCharsets::charsetForEncoding(const QString &e, bool noUnicode) const
 {
     QCString encoding = e.lower().latin1();

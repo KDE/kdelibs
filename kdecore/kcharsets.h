@@ -67,18 +67,12 @@ public:
      * ok will be set to false.
      */
     QTextCodec *codecForName(const QString &n, bool &ok) const;
-    /**
-     * @returns the charset that fits a given encoding best (that can display a
-     * file in the given encoding)
-     */
-    QFont::CharSet charsetForEncoding(const QString &encoding) const;
 
-    // ### BCI merge with above in 3.0
     /**
      * overloaded member function. Usually you don't mind getting unicode charsets, so
      * this method should rarely be needed.
      */
-    QFont::CharSet charsetForEncoding(const QString &e, bool noUnicode) const;
+    QFont::CharSet charsetForEncoding(const QString &encoding, bool noUnicode = false ) const;
 
     /**
      * converts an entity to a character. The string must contain only the
