@@ -1118,6 +1118,8 @@ void HTMLTable::calcColInfoI( void )
     unsigned int r, c;
     int borderExtra = ( border == 0 ) ? 0 : 1;
 
+printf("START calcColInfoI() this = %p\n", this);
+
     // Allocate some memory for column info
     colInfo.resize( totalCols*2 );
     rowInfo = (RowInfo_t *) malloc( totalRows * sizeof(RowInfo_t) );
@@ -1137,7 +1139,12 @@ void HTMLTable::calcColInfoI( void )
 	    ColType        col_type;
 
 	    if ( cell == 0 )
+	    {
+	        // Add dummy info
+	        colInfoIndex = addColInfo(c, 1, 1, 1, Variable);
+                addRowInfo(r, colInfoIndex);
 		continue; 
+            }
 	    if ( (c > 0) && (cells[r][c-1] == cell) )
 		continue;
 	    if ( (r > 0) && (cells[r-1][c] == cell) )
@@ -1362,7 +1369,7 @@ void HTMLTable::calcColInfoII(void)
     unsigned int r, c;
     int borderExtra = ( border == 0 ) ? 0 : 1;
 
-printf("START calcColInfoII()\n");
+printf("START calcColInfoII() this = %p\n", this);
     // Allocate some memory for column info
     colInfo.resize( totalCols*2 );
     rowInfo = (RowInfo_t *) malloc( totalRows * sizeof(RowInfo_t) );
@@ -1382,7 +1389,12 @@ printf("START calcColInfoII()\n");
 	    ColType        col_type;
 
 	    if ( cell == 0 )
+	    {
+	        // Add dummy info
+	        colInfoIndex = addColInfo(c, 1, 1, 1, Variable);
+                addRowInfo(r, colInfoIndex);
 		continue; 
+            }
 	    if ( (c > 0) && (cells[r][c-1] == cell) )
 		continue;
 	    if ( (r > 0) && (cells[r-1][c] == cell) )
@@ -1476,7 +1488,30 @@ printf("START calcColInfoII()\n");
 	        maxColSpan = colInfo[index].colSpan;
 	}
     }
-
+#if 1
+    printf("--PASS II --\n");
+    printf("---- %d ----\n", totalColInfos);
+    for(i = 0; i < totalColInfos; i++)
+    {
+        printf("col #%d: %d - %d, min: %3d pref: %3d type: %d\n",
+                 i,
+                 colInfo[i].startCol, colInfo[i].colSpan,
+                 colInfo[i].minSize, colInfo[i].prefSize,
+                 (int) colInfo[i].colType);
+    }
+    for(i = 0; i < totalRowInfos; i++)
+    {
+        printf("row #%d: ", i);
+        for(unsigned int j = 0; j < (unsigned int) rowInfo[i].nrEntries; j++)
+        {
+           if (j == 0)
+              printf("%d", rowInfo[i].entry[j]);
+           else
+              printf("- %d", rowInfo[i].entry[j]);
+        } 
+        printf("\n");
+    }
+#endif
     printf("maxColSpan = %d\n", maxColSpan);
 
     columnPos.resize( totalCols + 1 );
@@ -1648,27 +1683,6 @@ printf("Actual width col %d: %d\n", i, columnPos[i]);
 
     // DEBUG: Show the results :)
 #if 1
-    printf("--PASS II --\n");
-    printf("---- %d ----\n", totalColInfos);
-    for(i = 0; i < totalColInfos; i++)
-    {
-        printf("col #%d: %d - %d, min: %3d pref: %3d type: %d\n",
-                 i,
-                 colInfo[i].startCol, colInfo[i].colSpan,
-                 colInfo[i].minSize, colInfo[i].prefSize,
-                 (int) colInfo[i].colType);
-    }
-    for(i = 0; i < totalRowInfos; i++)
-    {
-        printf("row #%d: ", i);
-        for(unsigned int j = 0; j < (unsigned int) rowInfo[i].nrEntries; j++)
-        {
-           if (j == 0)
-              printf("%d", rowInfo[i].entry[j]);
-           else
-              printf("- %d", rowInfo[i].entry[j]);
-        } 
-    }
     printf("min = %d, pref = %d\n", min_width, pref_width);
 #endif
 }
