@@ -306,14 +306,14 @@ void kimgio_png_write( QImageIO *iio )
 	png_byte **row_pointers = image.jumpTable();
 	png_write_image(png_ptr, row_pointers);
 
-#else no_entire // write out the image data by one or more scanlines
+#else // (no_entire) write out the image data by one or more scanlines
 	// If you are only writing one row at a time, this works
 
 	for (int y = 0; y < h; y++) {
 		png_bytep row_pointer = image.scanLine(y);
 		png_write_rows(png_ptr, row_pointer, 1);
 	}
-#endif no_entire // use only one output method
+#endif // (no_entire) use only one output method
 
 	// You can write optional chunks like tEXt, zTXt, and tIME at the end as well.
 

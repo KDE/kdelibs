@@ -1,0 +1,5 @@
+1998-12-08  Alex Zepeda  <garbanzo@hooked.net>
+
+	* pngr.cpp (kimgio_png_write): Removed text after #else and #endif.  The
+	text should either be commented or made part of an #elif.
+
