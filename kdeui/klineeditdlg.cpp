@@ -71,14 +71,8 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 
   if ( _file_mode ) {
     completion = new KURLCompletion();
-    connect(edit, SIGNAL (completion()),
-	     completion, SLOT (make_completion()));
-    connect(edit, SIGNAL (rotation()),
-	     completion, SLOT (make_rotation()));
-    connect(edit, SIGNAL (textChanged(const QString&)),
-	     completion, SLOT (edited(const QString&)));
-    connect(completion, SIGNAL (setText (const QString&)),
-	     edit, SLOT (setText (const QString&)));
+  	edit->setCompletionObject( completion );
+	edit->setAutoDeleteCompletionObject( true );
   } else
     completion = 0L;
 
