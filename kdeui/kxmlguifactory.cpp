@@ -307,7 +307,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     kdDebug(129) << "KXMLGUIFactory::removeClient( " << client << " )" << endl; // ellis
 
     // don't try to remove the client's GUI if we didn't build it
-    if ( client->factory() != this )
+    if ( !client || client->factory() != this )
         return;
 
     // remove this client from our client list
