@@ -6,19 +6,21 @@ namespace KJS {
 
 const struct HashEntry DOMCSSStyleDeclarationProtoTableEntries[] = {
    { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "getAttribute", DOMCSSStyleDeclaration::GetPropertyValue, DontDelete|Function, 1, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "getPropertyValue", DOMCSSStyleDeclaration::GetPropertyValue, DontDelete|Function, 1, &DOMCSSStyleDeclarationProtoTableEntries[7] },
    { 0, 0, 0, 0, 0 },
-   { "getPropertyCSSValue", DOMCSSStyleDeclaration::GetPropertyCSSValue, DontDelete|Function, 1, 0 },
+   { "getPropertyCSSValue", DOMCSSStyleDeclaration::GetPropertyCSSValue, DontDelete|Function, 1, &DOMCSSStyleDeclarationProtoTableEntries[11] },
    { "removeProperty", DOMCSSStyleDeclaration::RemoveProperty, DontDelete|Function, 1, &DOMCSSStyleDeclarationProtoTableEntries[8] },
    { "getPropertyPriority", DOMCSSStyleDeclaration::GetPropertyPriority, DontDelete|Function, 1, &DOMCSSStyleDeclarationProtoTableEntries[9] },
    { "setProperty", DOMCSSStyleDeclaration::SetProperty, DontDelete|Function, 3, &DOMCSSStyleDeclarationProtoTableEntries[10] },
-   { "item", DOMCSSStyleDeclaration::Item, DontDelete|Function, 1, 0 }
+   { "item", DOMCSSStyleDeclaration::Item, DontDelete|Function, 1, 0 },
+   { "removeAttribute", DOMCSSStyleDeclaration::RemoveProperty, DontDelete|Function, 1, &DOMCSSStyleDeclarationProtoTableEntries[12] },
+   { "setAttribute", DOMCSSStyleDeclaration::SetProperty, DontDelete|Function, 3, 0 }
 };
 
-const struct HashTable DOMCSSStyleDeclarationProtoTable = { 2, 11, DOMCSSStyleDeclarationProtoTableEntries, 7 };
+const struct HashTable DOMCSSStyleDeclarationProtoTable = { 2, 13, DOMCSSStyleDeclarationProtoTableEntries, 7 };
 
 }; // namespace
 

@@ -52,6 +52,10 @@ static QString jsNameToProp( const UString &p )
   getPropertyPriority	DOMCSSStyleDeclaration::GetPropertyPriority	DontDelete|Function 1
   setProperty		DOMCSSStyleDeclaration::SetProperty		DontDelete|Function 3
   item			DOMCSSStyleDeclaration::Item			DontDelete|Function 1
+# IE names for it (#36063)
+  getAttribute          DOMCSSStyleDeclaration::GetPropertyValue	DontDelete|Function 1
+  removeAttribute       DOMCSSStyleDeclaration::RemoveProperty		DontDelete|Function 1
+  setAttribute		DOMCSSStyleDeclaration::SetProperty		DontDelete|Function 3
 @end
 @begin DOMCSSStyleDeclarationTable 3
   cssText		DOMCSSStyleDeclaration::CssText		DontDelete
