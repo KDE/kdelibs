@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,7 +24,6 @@
 
 #include "html/html_headimpl.h"
 #include "html/html_documentimpl.h"
-
 #include "xml/dom_textimpl.h"
 
 #include "khtmlview.h"
@@ -56,9 +56,9 @@ NodeImpl::Id HTMLBaseElementImpl::id() const
     return ID_BASE;
 }
 
-void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLBaseElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_HREF:
 	m_href = khtml::parseURL(attr->value());
@@ -124,9 +124,9 @@ NodeImpl::Id HTMLLinkElementImpl::id() const
     return ID_LINK;
 }
 
-void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch (attr->attrId)
+    switch (attr->id())
     {
     case ATTR_REL:
         m_rel = attr->value();
@@ -234,13 +234,6 @@ void HTMLLinkElementImpl::sheetLoaded()
     getDocument()->updateStyleSelector();
 }
 
-StyleSheetImpl *HTMLLinkElementImpl::sheet() const
-{
-    //kdDebug( 6030 ) << "**** HTMLLinkElementImpl::sheet()" << endl;
-
-    return m_sheet;
-}
-
 // -------------------------------------------------------------------------
 
 HTMLMetaElementImpl::HTMLMetaElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
@@ -256,9 +249,9 @@ NodeImpl::Id HTMLMetaElementImpl::id() const
     return ID_META;
 }
 
-void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLMetaElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_HTTP_EQUIV:
 	m_equiv = attr->value();
@@ -322,9 +315,9 @@ NodeImpl::Id HTMLStyleElementImpl::id() const
 }
 
 // other stuff...
-void HTMLStyleElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLStyleElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch (attr->attrId)
+    switch (attr->id())
     {
     case ATTR_TYPE:
         m_type = attr->value();

@@ -58,8 +58,7 @@ public:
 
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+    virtual NodeImpl *cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
 
@@ -84,8 +83,7 @@ public:
 
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+    virtual NodeImpl *cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
 
@@ -111,8 +109,7 @@ public:
 
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+    virtual NodeImpl *cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
 
@@ -141,10 +138,9 @@ public:
 
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &_nodeValue, int &exceptioncode );
-    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+    virtual NodeImpl *cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
 

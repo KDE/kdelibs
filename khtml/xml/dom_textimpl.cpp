@@ -35,13 +35,14 @@ using namespace DOM;
 using namespace khtml;
 
 
-CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc) : NodeWParentImpl(doc)
+CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc)
+    : NodeImpl(doc)
 {
     str = 0;
 }
 
 CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, const DOMString &_text)
-    : NodeWParentImpl(doc)
+    : NodeImpl(doc)
 {
     str = _text.impl;
     str->ref();
@@ -191,10 +192,10 @@ void CharacterDataImpl::setNodeValue( const DOMString &_nodeValue, int &exceptio
 
 void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 {
-    if (_parent)
-        _parent->childrenChanged();
+    if (parentNode())
+        parentNode()->childrenChanged();
     if (!getDocument()->hasListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER))
-	return;
+        return;
 
     DOMStringImpl *newValue = str->copy();
     newValue->ref();
@@ -227,7 +228,7 @@ void CharacterDataImpl::dump(QTextStream *stream, QString ind) const
 {
     *stream << " str=\"" << DOMString(str).string().ascii() << "\"";
 
-    NodeWParentImpl::dump(stream,ind);
+    NodeImpl::dump(stream,ind);
 }
 
 // ---------------------------------------------------------------------------
@@ -256,14 +257,7 @@ unsigned short CommentImpl::nodeType() const
     return Node::COMMENT_NODE;
 }
 
-DOMString CommentImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
-NodeImpl *CommentImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
+NodeImpl *CommentImpl::cloneNode(bool /*deep*/)
 {
     return getDocument()->createComment( str );
 }
@@ -327,8 +321,8 @@ TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
     dispatchModifiedEvent(oldStr);
     oldStr->deref();
 
-    if (_parent)
-        _parent->insertBefore(newText,_next, exceptioncode );
+    if (parentNode())
+        parentNode()->insertBefore(newText,nextSibling(), exceptioncode );
     if ( exceptioncode )
         return 0;
 
@@ -348,14 +342,7 @@ unsigned short TextImpl::nodeType() const
     return Node::TEXT_NODE;
 }
 
-DOMString TextImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
-NodeImpl *TextImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
+NodeImpl *TextImpl::cloneNode(bool /*deep*/)
 {
     return getDocument()->createTextNode(str);
 }
@@ -363,7 +350,7 @@ NodeImpl *TextImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 void TextImpl::attach()
 {
     if (!m_render) {
-        RenderObject *r = _parent->renderer();
+        RenderObject *r = parentNode()->renderer();
         if( r && style() ) {
 	    m_render = new RenderText(str);
 	    m_render->setStyle( style() );
@@ -386,7 +373,7 @@ void TextImpl::detach()
 
 khtml::RenderStyle *TextImpl::style() const
 {
-    return _parent ? _parent->style() : 0;
+    return parentNode() ? parentNode()->style() : 0;
 }
 
 khtml::FindSelectionResult TextImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
@@ -460,14 +447,7 @@ unsigned short CDATASectionImpl::nodeType() const
     return Node::CDATA_SECTION_NODE;
 }
 
-DOMString CDATASectionImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
-NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
+NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/)
 {
     return getDocument()->createCDATASection(str);
 }

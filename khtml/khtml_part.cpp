@@ -23,7 +23,8 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-//#define SPEED_DEBUG
+
+#define SPEED_DEBUG
 #include "khtml_part.h"
 
 #include "khtml_factory.h"
@@ -604,10 +605,6 @@ bool KHTMLPart::openURL( const KURL &url )
   kdDebug( 6050 ) << "KHTMLPart(" << this << ")::openURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
-#ifdef SPEED_DEBUG
-  d->m_parsetime.start();
-#endif
-
   KParts::URLArgs args( d->m_extension->urlArgs() );
   // in case we have a) no frameset (don't test m_frames.count(), iframes get in there)
   // b) the url is identical with the currently
@@ -1155,6 +1152,9 @@ void KHTMLPart::clear()
 
   if ( !d->m_haveEncoding )
     d->m_encoding = QString::null;
+#ifdef SPEED_DEBUG
+  d->m_parsetime.restart();
+#endif
 }
 
 bool KHTMLPart::openFile()
@@ -1599,8 +1599,8 @@ void KHTMLPart::slotJobPercent( KIO::Job* /*job*/, unsigned long percent )
 
 void KHTMLPart::checkCompleted()
 {
-  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_bParsing << endl;
-  //kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
+//   kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_doc->parsing() << endl;
+//   kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
 
   // restore the cursor position
   if (d->m_doc && !d->m_doc->parsing() && !d->m_focusNodeRestored)

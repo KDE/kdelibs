@@ -97,13 +97,13 @@ DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qu
     }
 
     // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
-    if (!NodeImpl::vaildQualifiedName(qualifiedName)) {
+    if (!Element::khtmlValidQualifiedName(qualifiedName)) {
         exceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return 0;
     }
 
     // NAMESPACE_ERR: Raised if the qualifiedName is malformed.
-    if (NodeImpl::malformedQualifiedName(qualifiedName)) {
+    if (Element::khtmlMalformedQualifiedName(qualifiedName)) {
         exceptioncode = DOMException::NAMESPACE_ERR;
         return 0;
     }
@@ -111,7 +111,7 @@ DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qu
     return new DocumentTypeImpl(this,0,qualifiedName,publicId,systemId);
 }
 
-DOMImplementationImpl* DOMImplementationImpl::getInterface(const DOMString& feature) const
+DOMImplementationImpl* DOMImplementationImpl::getInterface(const DOMString& /*feature*/) const
 {
     // ###
     return 0;
@@ -129,7 +129,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     }
 
     // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
-    if (!NodeImpl::vaildQualifiedName(qualifiedName)) {
+    if (!Element::khtmlValidQualifiedName(qualifiedName)) {
         exceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return 0;
     }
@@ -147,7 +147,7 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
             colonpos = i;
     }
 
-    if (NodeImpl::malformedQualifiedName(qualifiedName) ||
+    if (Element::khtmlMalformedQualifiedName(qualifiedName) ||
         (colonpos >= 0 && namespaceURI.isNull()) ||
         (colonpos == 3 && qualifiedName[0] == 'x' && qualifiedName[1] == 'm' && qualifiedName[2] == 'l' &&
          namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
@@ -159,13 +159,18 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     DocumentTypeImpl *dtype = static_cast<DocumentTypeImpl*>(doctype.handle());
     // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
     // created from a different implementation.
-    if (dtype && (dtype->ownerDocument() || dtype->implementation() != this)) {
+    if (dtype && (dtype->getDocument() || dtype->implementation() != this)) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
 
     // ### this is completely broken.. without a view it will not work (Dirk)
-    DocumentImpl *doc = new DocumentImpl(this, dtype, 0);
+    DocumentImpl *doc = new DocumentImpl(this, 0);
+
+    // now get the interesting parts of the doctype
+    // ### create new one if not there (currently always there)
+    if (doc->doctype() && dtype)
+        doc->doctype()->copyFrom(*dtype);
 
     ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
     doc->appendChild(element,exceptioncode);
@@ -174,10 +179,6 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
         delete doc;
         return 0;
     }
-
-    // When doctype is not null, its Node.ownerDocument attribute is set to the document being created.
-    if (!doctype.isNull())
-        static_cast<DocumentTypeImpl*>(doctype.handle())->setOwnerDocument(doc->docPtr());
 
     return doc;
 }
@@ -191,18 +192,12 @@ CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*t
 
 DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
 {
-    return new DocumentImpl(this, 0, v);
+    return new DocumentImpl(this, v);
 }
 
 HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 {
-    DOMString nullstr;
-    int exceptioncode = 0;
-    DocumentTypeImpl *doctype = createDocumentType("",nullstr,nullstr,exceptioncode);
-    if (exceptioncode)
-        return 0; // should never happen
-
-    return new HTMLDocumentImpl(this, doctype, v);
+    return new HTMLDocumentImpl(this, v);
 }
 
 DOMImplementationImpl *DOMImplementationImpl::instance()
@@ -221,7 +216,7 @@ KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
 QPtrList<DocumentImpl> * DocumentImpl::changedDocuments = 0;
 
 // KHTMLView might be 0
-DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v)
+DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     : NodeBaseImpl( new DocumentPtr() )
 {
     document->doc = this;
@@ -244,9 +239,15 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
     m_sheet = 0;
     m_elemSheet = 0;
     m_tokenizer = 0;
-    m_doctype = _doctype;
-    if (m_doctype)
-        m_doctype->ref();
+
+    // ### this should be created during parsing a <!DOCTYPE>
+    // not during construction. Not sure who added that and why (Dirk)
+    m_doctype = new DocumentTypeImpl(_implementation, document,
+                                     DOMString() /* qualifiedName */,
+                                     DOMString() /* publicId */,
+                                     DOMString() /* systemId */);
+    m_doctype->ref();
+
     m_implementation = _implementation;
     m_implementation->ref();
     pMode = Strict;
@@ -255,6 +256,9 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
     m_elementNames = 0;
     m_elementNameAlloc = 0;
     m_elementNameCount = 0;
+    m_attrNames = 0;
+    m_attrNameAlloc = 0;
+    m_attrNameCount = 0;
     m_namespaceURIAlloc = 4;
     m_namespaceURICount = 1;
     QString xhtml(XHTML_NAMESPACE);
@@ -293,6 +297,11 @@ DocumentImpl::~DocumentImpl()
         for (unsigned short id = 0; id < m_elementNameCount; id++)
             m_elementNames[id]->deref();
         delete [] m_elementNames;
+    }
+    if (m_attrNames) {
+        for (unsigned short id = 0; id < m_attrNameCount; id++)
+            m_attrNames[id]->deref();
+        delete [] m_attrNames;
     }
     for (unsigned short id = 0; id < m_namespaceURICount; ++id)
         m_namespaceURIs[id]->deref();
@@ -352,12 +361,18 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
     return new ProcessingInstructionImpl( docPtr(),target,data);
 }
 
-AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
+Attr DocumentImpl::createAttribute( NodeImpl::Id id )
 {
+    return Attr();
+#warning FIXME
+#if 0
+    return createAttributeNS(DOMString(), 0);
+
     AttrImpl *attr = new AttrImpl( docPtr(), name );
     int exceptioncode = 0; // ### propagate
     attr->setValue("", exceptioncode);
     return attr;
+#endif
 }
 
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
@@ -389,14 +404,6 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
         e = new XMLElementImpl( document, _qualifiedName.implementation(), _namespaceURI.implementation() );
 
     return e;
-}
-
-AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
-{
-    AttrImpl *attr = new AttrImpl( docPtr(), _namespaceURI, _qualifiedName );
-    int exceptioncode = 0; // ### propagate
-    attr->setValue("", exceptioncode);
-    return attr;
 }
 
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
@@ -465,13 +472,6 @@ DOMString DocumentImpl::nodeName() const
 unsigned short DocumentImpl::nodeType() const
 {
     return Node::DOCUMENT_NODE;
-}
-
-DOMString DocumentImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
 }
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
@@ -895,7 +895,7 @@ void DocumentImpl::attach(KHTMLView *w)
         setPaintDevice( m_view );
     }
 
-#if 1 // Nonsense! (Dirk)
+#if 0 // Nonsense! (Dirk)
     // Create a style selector based on all of the stylesheets in the document
     updateStyleSelector();
 #endif
@@ -1420,12 +1420,107 @@ bool DocumentImpl::childTypeAllowed( unsigned short type )
     }
 }
 
-NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
 {
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
-    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
     return 0;
+}
+
+NodeImpl::Id DocumentImpl::attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
+{
+    // Each document maintains a mapping of attrname -> id for every attr name
+    // encountered in the document.
+    // For attrnames without a prefix (no qualified element name) and without matching
+    // namespace, the value defined in misc/htmlattrs.h is used.
+    NodeImpl::Id id = 0;
+
+    // First see if it's a HTML attribute name
+    QConstString n(_name->s, _name->l);
+    if (!_namespaceURI || !strcasecmp(_namespaceURI, XHTML_NAMESPACE)) {
+        // we're in HTML namespace if we know the tag.
+        // xhtml is lower case - case sensitive, easy to implement
+        if ( htmlMode() == XHtml && (id = khtml::getAttrID(n.string().ascii(), _name->l)) )
+            return id;
+        // compatibility: upper case - case insensitive
+        if ( htmlMode() != XHtml && (id = khtml::getAttrID(n.string().lower().ascii(), _name->l )) )
+            return id;
+
+        // ok, the fast path didn't work out, we need the full check
+    }
+
+    // now lets find out the namespace
+    if (_namespaceURI) {
+        DOMString nsU(_namespaceURI);
+        bool found = false;
+        // ### yeah, this is lame. use a dictionary / map instead
+        for (unsigned short ns = 0; ns < m_namespaceURICount; ++ns)
+            if (nsU == DOMString(m_namespaceURIs[ns])) {
+                id |= ns << 16;
+                found = true;
+                break;
+            }
+
+        if (!found && !readonly) {
+            // something new, add it
+            if (m_namespaceURICount >= m_namespaceURIAlloc) {
+                m_namespaceURIAlloc += 32;
+                DOMStringImpl **newURIs = new DOMStringImpl* [m_namespaceURIAlloc];
+                for (unsigned short i = 0; i < m_namespaceURICount; i++)
+                    newURIs[i] = m_namespaceURIs[i];
+                delete [] m_namespaceURIs;
+                m_namespaceURIs = newURIs;
+            }
+            m_namespaceURIs[m_namespaceURICount++] = _namespaceURI;
+            _namespaceURI->ref();
+            id |= m_namespaceURICount << 16;
+        }
+    }
+
+    // Look in the m_attrNames array for the name
+    // ### yeah, this is lame. use a dictionary / map instead
+    DOMString nme(n.string());
+    // compatibility mode has to store upper case
+    if (htmlMode() != XHtml) nme = nme.upper();
+    for (id = 0; id < m_attrNameCount; id++)
+        if (DOMString(m_attrNames[id]) == nme)
+            return ATTR_LAST_ATTR+id;
+
+    if (readonly)
+        return NodeImpl::IdIllegal; // invalid / unknown
+
+    // Name not found in m_attrNames, so let's add it
+    // ### yeah, this is lame. use a dictionary / map instead
+    if (m_attrNameCount+1 > m_attrNameAlloc) {
+        m_attrNameAlloc += 100;
+        DOMStringImpl **newNames = new DOMStringImpl* [m_attrNameAlloc];
+        if (m_attrNames) {
+            unsigned short i;
+            for (i = 0; i < m_attrNameCount; i++)
+                newNames[i] = m_attrNames[i];
+            delete [] m_attrNames;
+        }
+        m_attrNames = newNames;
+    }
+
+    id = m_attrNameCount++;
+    m_attrNames[id] = nme.implementation();
+    m_attrNames[id]->ref();
+
+    return ATTR_LAST_ATTR+id;
+}
+
+DOMString DocumentImpl::attrName(NodeImpl::Id _id) const
+{
+    if (_id >= ATTR_LAST_ATTR)
+        return m_attrNames[_id-ATTR_LAST_ATTR];
+    else {
+        // ### put them in a cache
+        if (getDocument()->htmlMode() == DocumentImpl::XHtml)
+            return getAttrName(_id).lower();
+        else
+            return getAttrName(_id);
+    }
 }
 
 NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
@@ -1493,6 +1588,7 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
     if (m_elementNameCount+1 > m_elementNameAlloc) {
         m_elementNameAlloc += 100;
         DOMStringImpl **newNames = new DOMStringImpl* [m_elementNameAlloc];
+        // ### yeah, this is lame. use a dictionary / map instead
         if (m_elementNames) {
             unsigned short i;
             for (i = 0; i < m_elementNameCount; i++)
@@ -1513,10 +1609,15 @@ DOMString DocumentImpl::tagName(NodeImpl::Id _id) const
 {
     if (_id >= ID_LAST_TAG)
         return m_elementNames[_id-ID_LAST_TAG];
-    else
+    else {
         // ### put them in a cache
-        return getTagName(_id);
+        if (getDocument()->htmlMode() == DocumentImpl::XHtml)
+            return getTagName(_id).lower();
+        else
+            return getTagName(_id);
+    }
 }
+
 
 DOMStringImpl* DocumentImpl::namespaceURI(NodeImpl::Id _id) const
 {
@@ -1765,13 +1866,6 @@ unsigned short DocumentFragmentImpl::nodeType() const
     return Node::DOCUMENT_FRAGMENT_NODE;
 }
 
-DOMString DocumentFragmentImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
 // DOM Section 1.1.1
 bool DocumentFragmentImpl::childTypeAllowed( unsigned short type )
 {
@@ -1789,84 +1883,47 @@ bool DocumentFragmentImpl::childTypeAllowed( unsigned short type )
     }
 }
 
-NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep, int &exceptioncode )
+NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep )
 {
     DocumentFragmentImpl *clone = new DocumentFragmentImpl( docPtr() );
     if (deep)
-        cloneChildNodes(clone,exceptioncode);
+        cloneChildNodes(clone);
     return clone;
 }
 
 
 // ----------------------------------------------------------------------------
 
-DocumentTypeImpl::DocumentTypeImpl(DOMImplementationImpl *_implementation, DocumentPtr *doc,
+DocumentTypeImpl::DocumentTypeImpl(DOMImplementationImpl *implementation, DocumentPtr *doc,
                                    const DOMString &qualifiedName, const DOMString &publicId,
                                    const DOMString &systemId)
-    : NodeImpl(doc)
+    : NodeImpl(doc), m_implementation(implementation),
+      m_qualifiedName(qualifiedName), m_publicId(publicId), m_systemId(systemId)
 {
-    m_implementation = _implementation;
     m_implementation->ref();
 
-    m_qualifiedName = qualifiedName.implementation();
-    if (m_qualifiedName)
-        m_qualifiedName->ref();
-    m_publicId = publicId.implementation();
-    if (m_publicId)
-        m_publicId->ref();
-    m_systemId = systemId.implementation();
-    if (m_systemId)
-        m_systemId->ref();
+    m_entities = 0;
+    m_notations = 0;
 
-    m_entities = new GenericRONamedNodeMapImpl();
-    m_entities->ref();
-    m_notations = new GenericRONamedNodeMapImpl();
-    m_notations->ref();
+    // if doc is 0, it is not attached to a document and / or
+    // therefore does not provide entities or notations. (DOM Level 3)
 }
 
 DocumentTypeImpl::~DocumentTypeImpl()
 {
     m_implementation->deref();
-    m_entities->deref();
-    m_notations->deref();
-
-    if (m_qualifiedName)
-        m_qualifiedName->deref();
-    if (m_publicId)
-        m_publicId->deref();
-    if (m_systemId)
-        m_systemId->deref();
+    if (m_entities)
+        m_entities->deref();
+    if (m_notations)
+        m_notations->deref();
 }
 
-const DOMString DocumentTypeImpl::name() const
+void DocumentTypeImpl::copyFrom(const DocumentTypeImpl& other)
 {
-    return m_qualifiedName;
-}
-
-NamedNodeMapImpl *DocumentTypeImpl::entities() const
-{
-    return m_entities;
-}
-
-NamedNodeMapImpl *DocumentTypeImpl::notations() const
-{
-    return m_notations;
-}
-
-DOMString DocumentTypeImpl::publicId() const
-{
-    return m_publicId;
-}
-
-DOMString DocumentTypeImpl::systemId() const
-{
-    return m_systemId;
-}
-
-DOMString DocumentTypeImpl::internalSubset() const
-{
-    // ### implement
-    return DOMString();
+    m_qualifiedName = other.m_qualifiedName;
+    m_publicId = other.m_publicId;
+    m_systemId = other.m_systemId;
+    m_subset = other.m_subset;
 }
 
 DOMString DocumentTypeImpl::nodeName() const
@@ -1879,48 +1936,18 @@ unsigned short DocumentTypeImpl::nodeType() const
     return Node::DOCUMENT_TYPE_NODE;
 }
 
-DOMString DocumentTypeImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
-void DocumentTypeImpl::setName(const QString& name)
-{
-    if (m_qualifiedName)
-        m_qualifiedName->deref();
-    DOMString n(name);
-    m_qualifiedName = n.implementation();
-    if (m_qualifiedName)
-        m_qualifiedName->ref();
-}
-
-void DocumentTypeImpl::setOwnerDocument(DocumentPtr *doc)
-{
-    document = doc;
-}
-
-DOMImplementationImpl *DocumentTypeImpl::implementation() const
-{
-    return m_implementation;
-}
-
 // DOM Section 1.1.1
 bool DocumentTypeImpl::childTypeAllowed( unsigned short /*type*/ )
 {
     return false;
 }
 
-NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/ )
 {
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
-    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
     return 0;
 }
 
 
 #include "dom_docimpl.moc"
-
-

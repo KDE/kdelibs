@@ -27,6 +27,7 @@
 #include "html/html_headimpl.h"
 #include "rendering/render_object.h"
 #include "misc/htmltags.h"
+#include "misc/htmlattrs.h"
 #include "misc/loader.h"
 
 #include "khtmlview.h"
@@ -80,7 +81,13 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
     int i;
     for (i = 0; i < atts.length(); i++) {
         int exceptioncode = 0;
-        newElement->setAttribute(atts.localName(i),atts.value(i),exceptioncode);
+        DOMString uri(atts.uri(i));
+        DOMString ln(atts.localName(i));
+        DOMString val(atts.value(i));
+        NodeImpl::Id id = m_doc->document()->attrId(uri.implementation(),
+                                                    ln.implementation(),
+                                                    false /* allocate */);
+        newElement->setAttribute(id, val.implementation(), exceptioncode);
         if (exceptioncode) // exception setting attributes
             return false;
     }
@@ -254,17 +261,19 @@ bool XMLHandler::internalEntityDecl(const QString &name, const QString &value)
     EntityImpl *e = new EntityImpl(m_doc,name);
     // ### further parse entities inside the value and add them as separate nodes (or entityreferences)?
     e->addChild(m_doc->document()->createTextNode(value));
-    if (m_doc->document()->doctype())
-        static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->entities())->addNode(e);
+// ### FIXME
+//     if (m_doc->document()->doctype())
+//         static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->entities())->addNode(e);
     return true;
 }
 
 bool XMLHandler::notationDecl(const QString &name, const QString &publicId, const QString &systemId)
 {
-    if (m_doc->document()->doctype()) {
-        NotationImpl *n = new NotationImpl(m_doc,name,publicId,systemId);
-        static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->notations())->addNode(n);
-    }
+// ### FIXME
+//     if (m_doc->document()->doctype()) {
+//         NotationImpl *n = new NotationImpl(m_doc,name,publicId,systemId);
+//         static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->notations())->addNode(n);
+//     }
     return true;
 }
 
@@ -416,8 +425,8 @@ void XMLTokenizer::executeScripts()
     // and continue where it left off). For scripts that don't have a src attribute, execute the code
     // inside the tag
     while (m_scriptsIt->current()) {
-        DOMString scriptSrc = m_scriptsIt->current()->getAttribute("src");
-        QString charset = m_scriptsIt->current()->getAttribute( "charset" ).string();
+        DOMString scriptSrc = m_scriptsIt->current()->getAttribute(ATTR_SRC);
+        QString charset = m_scriptsIt->current()->getAttribute(ATTR_CHARSET).string();
 
         if (scriptSrc != "") {
             // we have a src attribute

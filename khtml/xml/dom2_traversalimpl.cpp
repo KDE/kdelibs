@@ -37,10 +37,7 @@ NodeIteratorImpl::NodeIteratorImpl(NodeImpl *_root, unsigned long _whatToShow,
     m_referenceNode = _root;
     m_inFront = false;
 
-    if (_root->nodeType() == Node::DOCUMENT_NODE)
-	m_doc = static_cast<DocumentImpl*>(m_root);
-    else
-	m_doc = m_root->ownerDocument();
+    m_doc = m_root->getDocument();
     m_doc->attachNodeIterator(this);
     m_doc->ref();
 

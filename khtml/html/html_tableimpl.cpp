@@ -293,10 +293,10 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     return 0;
 }
 
-void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
 {
     // ### to CSS!!
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_WIDTH:
         if (!attr->value().isEmpty())
@@ -463,9 +463,9 @@ void HTMLTableElementImpl::init()
 
 // --------------------------------------------------------------------------
 
-void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_BGCOLOR:
         if (attr->val())
@@ -670,9 +670,9 @@ HTMLTableCellElementImpl::~HTMLTableCellElementImpl()
 {
 }
 
-void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_BORDER:
         // euhm? not supported by other browsers as far as I can see (Dirk)
@@ -716,7 +716,7 @@ void HTMLTableCellElementImpl::init()
 {
     HTMLTablePartElementImpl::init();
 
-    HTMLElementImpl* p = static_cast<HTMLElementImpl*>(_parent);
+    HTMLElementImpl* p = static_cast<HTMLElementImpl*>(parentNode());
     while(p && p->id() != ID_TABLE)
         p = static_cast<HTMLElementImpl*>(p->parentNode());
 
@@ -743,12 +743,11 @@ RenderObject *HTMLTableCellElementImpl::createRenderer()
 {
     RenderObject *render = RenderObject::createObject(this);
 
-    if(render && render->style()->display() == TABLE_CELL)
-    {
-	RenderTableCell *cell = static_cast<RenderTableCell *>(render);
-	cell->setRowSpan(rSpan);
-	cell->setColSpan(cSpan);
-	cell->setNoWrap(m_nowrap);
+    if(render && render->style()->display() == TABLE_CELL) {
+        RenderTableCell *cell = static_cast<RenderTableCell *>(render);
+        cell->setRowSpan(rSpan);
+        cell->setColSpan(cSpan);
+        cell->setNoWrap(m_nowrap);
     }
 
     return render;
@@ -796,9 +795,9 @@ NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
 
 }
 
-void HTMLTableColElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_SPAN:
         _span = attr->val() ? attr->val()->toInt() : 1;
@@ -838,9 +837,9 @@ NodeImpl::Id HTMLTableCaptionElementImpl::id() const
 }
 
 
-void HTMLTableCaptionElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLTableCaptionElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_ALIGN:
         if (!attr->value().isEmpty())

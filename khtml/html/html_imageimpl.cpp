@@ -103,9 +103,9 @@ bool HTMLImageElementImpl::prepareMouseEvent( int _x, int _y,
     return inside;
 }
 
-void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch (attr->attrId)
+    switch (attr->id())
     {
     case ATTR_SRC:
         m_imageURL = khtml::parseURL(attr->value());
@@ -290,9 +290,9 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     return false;
 }
 
-void HTMLMapElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch (attr->attrId)
+    switch (attr->id())
     {
     case ATTR_ID:
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
@@ -335,9 +335,9 @@ NodeImpl::Id HTMLAreaElementImpl::id() const
     return ID_AREA;
 }
 
-void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLAreaElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch (attr->attrId)
+    switch (attr->id())
     {
     case ATTR_SHAPE:
         if ( strcasecmp( attr->value(), "default" ) == 0 )

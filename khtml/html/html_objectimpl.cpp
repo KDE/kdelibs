@@ -58,9 +58,9 @@ NodeImpl::Id HTMLAppletElementImpl::id() const
     return ID_APPLET;
 }
 
-void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch( attr->attrId )
+    switch( attr->id() )
     {
     case ATTR_CODEBASE:
     case ATTR_ARCHIVE:
@@ -135,16 +135,13 @@ NodeImpl::Id HTMLEmbedElementImpl::id() const
     return ID_EMBED;
 }
 
-void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
 
-  // export parameter
-  QString attrStr = attr->name().string() + "=\"" + val + "\"";
-  param.append( attrStr );
   int pos;
-  switch ( attr->attrId )
+  switch ( attr->id() )
   {
      case ATTR_TYPE:
         serviceType = val.lower();
@@ -203,12 +200,12 @@ RenderObject *HTMLEmbedElementImpl::createRenderer()
     KHTMLView* w = getDocument()->view();
     if (w->part()->pluginsEnabled())
     {
-	if ( _parent->id()!=ID_OBJECT )
+	if ( parentNode()->id()!=ID_OBJECT )
 	{
 	    return new RenderPartObject( w, this );
 	}
 	else
-	    _parent->renderer()->setStyle(m_style);
+	    parentNode()->renderer()->setStyle(m_style);
     }
     return 0;
 }
@@ -242,12 +239,12 @@ HTMLFormElementImpl *HTMLObjectElementImpl::form() const
   return 0;
 }
 
-void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
   int pos;
-  switch ( attr->attrId )
+  switch ( attr->id() )
   {
     case ATTR_TYPE:
       serviceType = val.lower();
@@ -347,9 +344,9 @@ NodeImpl::Id HTMLParamElementImpl::id() const
     return ID_PARAM;
 }
 
-void HTMLParamElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLParamElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch( attr->attrId )
+    switch( attr->id() )
     {
     case ATTR_ID:
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;

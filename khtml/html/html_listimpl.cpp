@@ -38,9 +38,9 @@ NodeImpl::Id HTMLUListElementImpl::id() const
     return ID_UL;
 }
 
-void HTMLUListElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLUListElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_TYPE:
         addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value());
@@ -71,9 +71,9 @@ NodeImpl::Id HTMLOListElementImpl::id() const
     return ID_OL;
 }
 
-void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLOListElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_TYPE:
         if ( strcmp( attr->value(), "a" ) == 0 )
@@ -102,9 +102,9 @@ NodeImpl::Id HTMLLIElementImpl::id() const
 }
 
 
-void HTMLLIElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLLIElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_VALUE:
         isValued = true;

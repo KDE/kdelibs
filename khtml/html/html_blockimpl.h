@@ -33,11 +33,12 @@ namespace DOM {
 
 class DOMString;
 
+// -------------------------------------------------------------------------
+
 class HTMLBlockquoteElementImpl : public HTMLElementImpl
 {
 public:
     HTMLBlockquoteElementImpl(DocumentPtr *doc);
-
     ~HTMLBlockquoteElementImpl();
 
     virtual NodeImpl::Id id() const;
@@ -51,12 +52,10 @@ class HTMLDivElementImpl : public HTMLElementImpl
 {
 public:
     HTMLDivElementImpl(DocumentPtr *doc);
-
     ~HTMLDivElementImpl();
 
     virtual NodeImpl::Id id() const;
-
-    void parseAttribute(AttrImpl *token);
+    virtual void parseAttribute(AttributeImpl *token);
 };
 
 // -------------------------------------------------------------------------
@@ -65,12 +64,11 @@ class HTMLHRElementImpl : public HTMLElementImpl
 {
 public:
     HTMLHRElementImpl(DocumentPtr *doc);
-
     ~HTMLHRElementImpl();
 
     virtual NodeImpl::Id id() const;
+    virtual void parseAttribute(AttributeImpl *);
 
-    virtual void parseAttribute(AttrImpl *);
 protected:
     bool noShade : 1;
 };
@@ -120,7 +118,7 @@ public:
 
     virtual NodeImpl::Id id() const;
 
-    virtual void parseAttribute(AttrImpl *);
+    virtual void parseAttribute(AttributeImpl *);
 
     bool fixed;
 };

@@ -91,9 +91,9 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         if ( evt->id() == EventImpl::KHTML_CLICK_EVENT )
             e = static_cast<MouseEventImpl*>( evt );
 
-	KeyEventImpl *k = 0;
-	if (evt->id() == EventImpl::KHTML_KEYUP_EVENT)
-	    k = static_cast<KeyEventImpl *>( evt );
+        KeyEventImpl *k = 0;
+        if (evt->id() == EventImpl::KHTML_KEYUP_EVENT)
+            k = static_cast<KeyEventImpl *>( evt );
 
         QString utarget;
         QString url;
@@ -103,15 +103,13 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 	    return;
         }
 
-
-	if ( k )
-	{
-	    if (k->virtKeyVal() != KeyEventImpl::DOM_VK_ENTER) {
-		HTMLElementImpl::defaultEventHandler(evt);
-		return;
+        if ( k ) {
+            if (k->virtKeyVal() != KeyEventImpl::DOM_VK_ENTER) {
+                HTMLElementImpl::defaultEventHandler(evt);
+                return;
             }
-	    if (k->qKeyEvent) k->qKeyEvent->accept();
-	}
+            if (k->qKeyEvent) k->qKeyEvent->accept();
+        }
 
         url = QConstString( href->s, href->l ).string();
 
@@ -178,9 +176,9 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 }
 
 
-void HTMLAnchorElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_HREF:
     {
@@ -217,9 +215,9 @@ NodeImpl::Id HTMLBRElementImpl::id() const
     return ID_BR;
 }
 
-void HTMLBRElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLBRElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_CLEAR:
     {
@@ -254,9 +252,9 @@ NodeImpl::Id HTMLFontElementImpl::id() const
     return ID_FONT;
 }
 
-void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_SIZE:
     {

@@ -931,18 +931,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         attrName = QString::null;
                     }
                     else {
-                        AttrImpl* a = 0;
-                        if(buffer->unicode())
-                            a = new AttrImpl(parser->docPtr(), buffer->unicode());
-                        else if ( !attrName.isEmpty() && attrName != "/" )
-                            a = new AttrImpl(parser->docPtr(), attrName);
-
-                        if ( a ) {
-                            int exceptioncode = 0;
-                            a->setValue("",exceptioncode);
-                            currToken.insertAttr(a);
-                        }
-
+                        DOMString v("");
+                        currToken.addAttribute(parser->docPtr()->document(), buffer, attrName, v);
                         dest = buffer;
                         tag = SearchAttribute;
                     }
@@ -993,28 +983,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     else if ( (tquote == SingleQuote && curchar == '\'') ||
                               (tquote == DoubleQuote && curchar == '\"') )
                     {
-                        // end of attribute
-                        AttrImpl* a;
-
-                        if(buffer->unicode())
-                            a = new AttrImpl(parser->docPtr(), buffer->unicode());
-                        else
-                            a = new AttrImpl(parser->docPtr(), DOMString(attrName));
-
-                        if(a->attrId || !attrName.isNull())
-                        {
-                            // some <input type=hidden> rely on trailing spaces. argh
-                            while(dest > buffer+1 && (*(dest-1) == '\n' || *(dest-1) == '\r'))
-                                dest--; // remove trailing newlines
-                            int exceptioncode;
-                            a->setValue(DOMString(buffer+1, dest-buffer-1),exceptioncode);
-                            currToken.insertAttr(a);
-                        }
-                        else {
-                            // hmm, suboptimal, but happens seldom
-                            delete a;
-                            a = 0;
-                        }
+                        // some <input type=hidden> rely on trailing spaces. argh
+                        while(dest > buffer+1 && (*(dest-1) == '\n' || *(dest-1) == '\r'))
+                            dest--; // remove trailing newlines
+                        DOMString v(buffer+1, dest-buffer-1);
+                        currToken.addAttribute(parser->docPtr()->document(), buffer, attrName, v);
 
                         dest = buffer;
                         tag = SearchAttribute;
@@ -1045,20 +1018,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         parseEntity(src, dest, true);
                         break;
                     }
+                    // no quotes. Every space means end of value
                     // '/' does not delimit in IE!
                     if ( curchar <= ' ' || curchar == '>' )
                     {
-                        // no quotes. Every space means end of value
-                        AttrImpl* a;
-                        if(buffer->unicode())
-                            a = new AttrImpl(parser->docPtr(), buffer->unicode());
-                        else
-                            a = new AttrImpl(parser->docPtr(), DOMString(attrName));
-
-                        int exceptioncode;
-                        a->setValue(DOMString(buffer+1, dest-buffer-1),exceptioncode);
-                        currToken.insertAttr(a);
-
+                        DOMString v(buffer+1, dest-buffer-1);
+                        currToken.addAttribute(parser->docPtr()->document(), buffer, attrName, v);
                         dest = buffer;
                         tag = SearchAttribute;
                         break;
@@ -1100,16 +1065,17 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             if(!beginTag)
                 tagID -= ID_CLOSE_TAG;
             else if ( beginTag && tagID == ID_SCRIPT ) {
-                AttrImpl* a = 0;
+                AttributeImpl* a = 0;
                 scriptSrc = scriptSrcCharset = "";
                 if ( currToken.attrs && !parser->doc()->view()->part()->onlyLocalReferences()) {
-                    if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
+                    if ( ( a = currToken.attrs->getAttributeItem( ATTR_SRC ) ) )
                         scriptSrc = parser->doc()->completeURL(khtml::parseURL( a->value() ).string() );
-                    if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
+                    if ( ( a = currToken.attrs->getAttributeItem( ATTR_CHARSET ) ) )
                         scriptSrcCharset = a->value().string().stripWhiteSpace();
                     if ( scriptSrcCharset.isEmpty() )
                         scriptSrcCharset = parser->doc()->view()->part()->encoding();
-                    a = currToken.attrs->getIdItem( ATTR_LANGUAGE );
+                    if (!(a = currToken.attrs->getAttributeItem( ATTR_LANGUAGE )))
+                        a = currToken.attrs->getAttributeItem(ATTR_TYPE);
                 }
                 javascript = true;
                 if( a ) {
@@ -1120,18 +1086,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         !lang.contains("livescript") &&
                         !lang.contains("jscript") )
                         javascript = false;
-                } else {
-                    if( currToken.attrs )
-                        a = currToken.attrs->getIdItem(ATTR_TYPE);
-                    if( a ) {
-                        QString lang = a->value().string();
-                        lang = lang.lower();
-                        if( !lang.contains("javascript") &&
-                            !lang.contains("ecmascript") &&
-                            !lang.contains("livescript") &&
-                            !lang.contains("jscript") )
-                            javascript = false;
-                    }
                 }
             }
 
@@ -1458,8 +1412,8 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             {
                 prePos++;
             }
+#if QT_VERSION < 300
             unsigned char row = src->row();
-#if QT_VERSION < 300	    
             if ( row > 0x05 && row < 0x10 || row > 0xfd )
                     currToken.complexText = true;
 #endif
@@ -1560,7 +1514,7 @@ void HTMLTokenizer::processToken()
             s.compose();
             currToken.text = new DOMStringImpl( s.unicode(), s.length() );
             currToken.text->ref();
-        } else 
+        } else
 #endif
 	{
             currToken.text = new DOMStringImpl( buffer, dest - buffer );

@@ -150,15 +150,15 @@ public:
     Node item ( unsigned long index ) const;
 
     /**
-     * Introduced in DOM Level 2 
-     * 
+     * Introduced in DOM Level 2
+     *
      * Retrieves a node specified by local name and namespace URI. HTML-only
      * DOM implementations do not need to implement this method.
-     * 
+     *
      * @param namespaceURI The namespace URI of the node to retrieve.
-     * 
+     *
      * @param localName The local name of the node to retrieve.
-     * 
+     *
      * @return A Node (of any type) with the specified local name and namespace
      * URI, or null if they do not identify any node in this map.
      */
@@ -166,25 +166,25 @@ public:
                          const DOMString &localName ) const;
 
     /**
-     * Introduced in DOM Level 2 
-     * 
+     * Introduced in DOM Level 2
+     *
      * Adds a node using its namespaceURI and localName. If a node with that
      * namespace URI and that local name is already present in this map, it is
      * replaced by the new one.
-     * HTML-only DOM implementations do not need to implement this method. 
-     * 
+     * HTML-only DOM implementations do not need to implement this method.
+     *
      * @param arg A node to store in this map. The node will later be
      * accessible using the value of its namespaceURI and localName attributes.
-     * 
+     *
      * @return If the new Node replaces an existing node the replaced Node is
      * returned, otherwise null is returned.
-     * 
+     *
      * @exception DOMException
      * WRONG_DOCUMENT_ERR: Raised if arg was created from a different document
      * than the one that created this map.
-     * 
+     *
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly.
-     * 
+     *
      * INUSE_ATTRIBUTE_ERR: Raised if arg is an Attr that is already an
      * attribute of another Element object. The DOM user must explicitly clone
      * Attr nodes to re-use them in other elements.
@@ -192,27 +192,27 @@ public:
     Node setNamedItemNS( const Node &arg );
 
     /**
-     * Introduced in DOM Level 2 
-     * 
+     * Introduced in DOM Level 2
+     *
      * Removes a node specified by local name and namespace URI. A removed
      * attribute may be known to have a default value when this map contains
      * the attributes attached to an element, as returned by the attributes
      * attribute of the Node interface. If so, an attribute immediately appears
      * containing the default value as well as the corresponding namespace URI,
      * local name, and prefix when applicable.
-     * HTML-only DOM implementations do not need to implement this method. 
-     * 
+     * HTML-only DOM implementations do not need to implement this method.
+     *
      * @param namespaceURI The namespace URI of the node to remove.
-     * 
+     *
      * @param localName The local name of the node to remove.
-     * 
+     *
      * @return The node removed from this map if a node with such a local name
      * and namespace URI exists.
-     * 
+     *
      * @exception DOMException
      * NOT_FOUND_ERR: Raised if there is no node with the specified
      * namespaceURI and localName in this map.
-     * 
+     *
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly.
      */
     Node removeNamedItemNS( const DOMString &namespaceURI,
@@ -231,6 +231,7 @@ protected:
 
     friend class Node;
     friend class DocumentType;
+    friend class NodeImpl;
 };
 
 class NamedNodeMap;
@@ -606,13 +607,6 @@ public:
     Node appendChild ( const Node &newChild );
 
     /**
-     * Returns whether this node (if it is an element) has any attributes.
-     * @return a boolean. True if this node has any attributes, false otherwise.
-     *  Introduced in DOM Level 2
-     */
-    bool hasAttributes (  );
-
-    /**
      * This is a convenience method to allow easy determination of
      * whether a node has any children.
      *
@@ -645,8 +639,8 @@ public:
     Node cloneNode ( bool deep );
 
     /**
-     * Modified in DOM Level 2 
-     * 
+     * Modified in DOM Level 2
+     *
      * Puts all Text nodes in the full depth of the sub-tree underneath this
      * Node, including attribute nodes, into a "normal" form where only
      * structure (e.g., elements, comments, processing instructions, CDATA
@@ -655,8 +649,8 @@ public:
      * ensure that the DOM view of a document is the same as if it were saved
      * and re-loaded, and is useful when operations (such as XPointer
      * [XPointer] lookups) that depend on a particular document tree structure
-     * are to be used. 
-     * 
+     * are to be used.
+     *
      * Note: In cases where the document contains CDATASections, the normalize
      * operation alone may not be sufficient, since XPointers do not
      * differentiate between Text nodes and CDATASection nodes.
@@ -664,19 +658,19 @@ public:
     void normalize (  );
 
     /**
-     * Introduced in DOM Level 2 
-     * 
+     * Introduced in DOM Level 2
+     *
      * Tests whether the DOM implementation implements a specific feature and
-     * that feature is supported by this node. 
-     * 
+     * that feature is supported by this node.
+     *
      * @param feature The name of the feature to test. This is the same name
      * which can be passed to the method hasFeature on DOMImplementation.
-     * 
+     *
      * @param version This is the version number of the feature to test. In
      * Level 2, version 1, this is the string "2.0". If the version is not
      * specified, supporting any version of the feature will cause the method
      * to return true.
-     * 
+     *
      * @return Returns true if the specified feature is supported on this node,
      * false otherwise.
      */
@@ -684,16 +678,16 @@ public:
                       const DOMString &version ) const;
 
     /**
-     * Introduced in DOM Level 2 
-     * 
+     * Introduced in DOM Level 2
+     *
      * The namespace URI of this node, or null if it is unspecified.
      * This is not a computed value that is the result of a namespace lookup
      * based on an examination of the namespace declarations in scope. It is
      * merely the namespace URI given at creation time. For nodes of any type
      * other than ELEMENT_NODE and ATTRIBUTE_NODE and nodes created with a DOM
      * Level 1 method, such as createElement from the Document interface, this
-     * is always null. 
-     * 
+     * is always null.
+     *
      * Note: Per the Namespaces in XML Specification [Namespaces] an attribute
      * does not inherit its namespace from the element it is attached to. If an
      * attribute is not explicitly given a namespace, it simply has no
@@ -702,8 +696,8 @@ public:
     DOMString namespaceURI(  ) const;
 
     /**
-     * Introduced in DOM Level 2 
-     * 
+     * Introduced in DOM Level 2
+     *
      * The namespace prefix of this node, or null if it is unspecified.
      * Note that setting this attribute, when permitted, changes the nodeName
      * attribute, which holds the qualified name, as well as the tagName and
@@ -720,13 +714,13 @@ public:
 
     /**
      * see @ref prefix
-     * 
+     *
      * @exception DOMException
      * INVALID_CHARACTER_ERR: Raised if the specified prefix contains an
      * illegal character.
-     * 
+     *
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
-     * 
+     *
      * NAMESPACE_ERR: Raised if the specified prefix is malformed, if the
      * namespaceURI of this node is null, if the specified prefix is "xml" and
      * the namespaceURI of this node is different from
@@ -738,14 +732,21 @@ public:
     void setPrefix(const DOMString &prefix );
 
     /**
-     * Introduced in DOM Level 2 
-     * 
+     * Introduced in DOM Level 2
+     *
      * Returns the local part of the qualified name of this node.
      * For nodes of any type other than ELEMENT_NODE and ATTRIBUTE_NODE and
      * nodes created with a DOM Level 1 method, such as createElement from the
      * Document interface, this is always null.
      */
     DOMString localName(  ) const;
+
+    /**
+     * Returns whether this node (if it is an element) has any attributes.
+     * @return a boolean. True if this node has any attributes, false otherwise.
+     *  Introduced in DOM Level 2
+     */
+    bool hasAttributes (  );
 
     /**
      * Introduced in DOM Level 2
@@ -838,7 +839,7 @@ public:
      * not part of the DOM.
      * @returns the element id, in case this is an element, 0 otherwise
      */
-    unsigned short elementId() const;
+    Q_UINT32 elementId() const;
 
     /**
      * tests if this Node is 0. Useful especially, if casting to a derived

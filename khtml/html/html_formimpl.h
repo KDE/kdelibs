@@ -53,6 +53,8 @@ class DOMString;
 class HTMLGenericFormElementImpl;
 class HTMLOptionElementImpl;
 
+// -------------------------------------------------------------------------
+
 class HTMLFormElementImpl : public HTMLElementImpl
 {
 public:
@@ -73,7 +75,7 @@ public:
 
     bool autoComplete() const { return m_autocomplete; }
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     void radioClicked( HTMLGenericFormElementImpl *caller );
 
@@ -120,7 +122,7 @@ public:
 
     HTMLFormElementImpl *form() { return m_form; }
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     virtual void reset() {}
 
@@ -144,7 +146,7 @@ public:
     /*
      * override in derived classes to get the encoded name=value pair
      * for submitting
-     * return true for a successful control (see 17.13.2)
+     * return true for a successful control (see HTML4-17.13.2)
      */
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool) { return false; }
 
@@ -180,10 +182,8 @@ public:
 
     DOMString type() const;
 
-    void parseAttribute(AttrImpl *attr);
-
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void defaultEventHandler(EventImpl *evt);
-
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
 protected:
@@ -260,7 +260,7 @@ public:
     void select();
     void click();
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     virtual void init();
     virtual khtml::RenderObject *createRenderer();
@@ -310,7 +310,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     /**
      * the form element this label is associated to.
@@ -373,7 +373,7 @@ public:
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     virtual void init();
     virtual khtml::RenderObject *createRenderer();
@@ -412,7 +412,7 @@ public:
     // ### this is just a rough guess
     virtual bool isEnumeratable() const { return false; }
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
 };
@@ -431,7 +431,7 @@ public:
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
     void recalcSelectOptions();
     virtual void setChanged(bool);
 
@@ -454,7 +454,7 @@ public:
 
     long index() const;
     void setIndex( long );
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
     DOMString value() const;
     void setValue(DOMStringImpl* value);
 
@@ -504,7 +504,7 @@ public:
 
     void select (  );
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void init();
     virtual khtml::RenderObject *createRenderer();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
@@ -532,12 +532,13 @@ class HTMLIsIndexElementImpl : public HTMLInputElementImpl
 {
 public:
     HTMLIsIndexElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
-
     ~HTMLIsIndexElementImpl();
 
     virtual Id id() const;
+    virtual void parseAttribute(AttributeImpl *attr);
 
-    virtual void parseAttribute(AttrImpl *attr);
+protected:
+    DOMString m_prompt;
 };
 
 

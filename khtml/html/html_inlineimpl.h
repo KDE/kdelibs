@@ -35,17 +35,14 @@ class HTMLAnchorElementImpl : public HTMLElementImpl
 {
 public:
     HTMLAnchorElementImpl(DocumentPtr *doc);
-
-    virtual ~HTMLAnchorElementImpl();
-
-    virtual Id id() const;
+    ~HTMLAnchorElementImpl();
 
     DOMString areaHref() const { return href; }
     DOMString targetRef() const { return target; }
 
     virtual bool isSelectable() const { return href!=0; }
-
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual Id id() const;
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual bool prepareMouseEvent( int x, int y,
                                     int _tx, int _ty,
                                     MouseEvent *ev);
@@ -62,15 +59,11 @@ typedef enum { BRNone=0, BRLeft, BRRight, BRAll} BRClear;
 class HTMLBRElementImpl : public HTMLElementImpl
 {
 public:
-
     HTMLBRElementImpl(DocumentPtr *doc);
-
     ~HTMLBRElementImpl();
 
     virtual Id id() const;
-
-    virtual void parseAttribute(AttrImpl *attr);
-
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual khtml::RenderObject *createRenderer();
 };
 
@@ -80,12 +73,10 @@ class HTMLFontElementImpl : public HTMLElementImpl
 {
 public:
     HTMLFontElementImpl(DocumentPtr *doc);
-
     ~HTMLFontElementImpl();
 
     virtual Id id() const;
-
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 };
 
 // -------------------------------------------------------------------------
@@ -94,7 +85,6 @@ class HTMLModElementImpl : public HTMLElementImpl
 {
 public:
     HTMLModElementImpl(DocumentPtr *doc, ushort tagid);
-
     ~HTMLModElementImpl();
 
     virtual Id id() const;
@@ -109,7 +99,6 @@ class HTMLQuoteElementImpl : public HTMLElementImpl
 {
 public:
     HTMLQuoteElementImpl(DocumentPtr *doc);
-
     ~HTMLQuoteElementImpl();
 
     virtual Id id() const;

@@ -29,6 +29,7 @@
 #include "html/html_objectimpl.h"
 #include "misc/htmlattrs.h"
 #include "xml/dom2_eventsimpl.h"
+#include "xml/dom_docimpl.h"
 #include "misc/htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -649,7 +650,7 @@ void RenderFrame::slotViewCleared()
         kdDebug(6031) << "frame is a scrollview!" << endl;
 #endif
         QScrollView *view = static_cast<QScrollView *>(m_widget);
-        if(!m_element->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(m_element->_parent))->frameBorder()))
+        if(!m_element->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(m_element->parentNode()))->frameBorder()))
             view->setFrameStyle(QFrame::NoFrame);
         view->setVScrollBarMode(m_element->scrolling);
         view->setHScrollBarMode(m_element->scrolling);
@@ -679,70 +680,14 @@ void RenderPartObject::updateWidget()
 {
   QString url;
   QString serviceType;
+  QStringList params;
+  KHTMLPart *part = m_view->part();
 
-  if(m_element->id() == ID_OBJECT) {
+  // ### this should be constant true - move iframe to somewhere else
+  if (m_element->id() == ID_OBJECT || m_element->id() == ID_EMBED) {
 
-      // check for embed child object
-     HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_element);
-     HTMLEmbedElementImpl *embed = 0;
-     NodeImpl *child = o->firstChild();
-     while ( child ) {
-        if ( child->id() == ID_EMBED )
-           embed = static_cast<HTMLEmbedElementImpl *>( child );
-
-        child = child->nextSibling();
-     }
-
-     if ( !embed )
-     {
-        url = o->url;
-        serviceType = o->serviceType;
-    	if(serviceType.isEmpty() || serviceType.isNull()) {
-           if(!o->classId.isEmpty()) {
-              // We have a clsid, means this is activex (Niko)
-              serviceType = "application/x-activex-handler";
-              url = "dummy"; // Not needed, but KHTMLPart aborts the request if empty
-           }
-
-           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
-              // It is ActiveX, but the nsplugin system handling
-              // should also work, that's why we don't override the
-              // serviceType with application/x-activex-handler
-              // but let the KTrader in khtmlpart::createPart() detect
-              // the user's preference: launch with activex viewer or
-              // with nspluginviewer (Niko)
-              serviceType = "application/x-shockwave-flash";
-           }
-           else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
-              serviceType = "audio/x-pn-realaudio-plugin";
-
-           // TODO: add more plugins here
-        }
-
-        if((url.isEmpty() || url.isNull())) {
-           // look for a SRC attribute in the params
-           NodeImpl *child = o->firstChild();
-           while ( child ) {
-              if ( child->id() == ID_PARAM ) {
-                 HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
-
-                 if ( p->name().lower()==QString::fromLatin1("src") ||
-                      p->name().lower()==QString::fromLatin1("movie") ||
-                      p->name().lower()==QString::fromLatin1("code") )
-                 {
-                    url = p->value();
-                    break;
-                 }
-              }
-              child = child->nextSibling();
-           }
-        }
-
-        // add all <param>'s to the QStringList argument of the part
-        QStringList params;
-        NodeImpl *child = o->firstChild();
-        while ( child ) {
-           if ( child->id() == ID_PARAM ) {
+      for (NodeImpl* child = m_element->firstChild(); child; child=child->nextSibling()) {
+          if ( child->id() == ID_PARAM ) {
               HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
 
               QString aStr = p->name();
@@ -750,69 +695,115 @@ void RenderPartObject::updateWidget()
               aStr += p->value();
               aStr += QString::fromLatin1("\"");
               params.append(aStr);
-           }
+          }
+      }
+      params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
+      params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+  }
 
-           child = child->nextSibling();
-        }
+  if(m_element->id() == ID_OBJECT) {
 
-        if ( url.isEmpty() && serviceType.isEmpty() ) {
+      // check for embed child object
+      HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_element);
+      HTMLEmbedElementImpl *embed = 0;
+      for (NodeImpl *child = o->firstChild(); child; child = child->nextSibling())
+          if ( child->id() == ID_EMBED ) {
+              embed = static_cast<HTMLEmbedElementImpl *>( child );
+              break;
+          }
+
+      params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
+      params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( o->getAttribute(ATTR_CODEBASE).string() ) );
+
+      if ( !embed )
+      {
+          url = o->url;
+          serviceType = o->serviceType;
+          if(serviceType.isEmpty() || serviceType.isNull()) {
+              if(!o->classId.isEmpty()) {
+                  // We have a clsid, means this is activex (Niko)
+                  serviceType = "application/x-activex-handler";
+                  url = "dummy"; // Not needed, but KHTMLPart aborts the request if empty
+              }
+
+              if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+                  // It is ActiveX, but the nsplugin system handling
+                  // should also work, that's why we don't override the
+                  // serviceType with application/x-activex-handler
+                  // but let the KTrader in khtmlpart::createPart() detect
+                  // the user's preference: launch with activex viewer or
+                  // with nspluginviewer (Niko)
+                  serviceType = "application/x-shockwave-flash";
+              }
+              else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
+                  serviceType = "audio/x-pn-realaudio-plugin";
+
+              // TODO: add more plugins here
+          }
+
+          if((url.isEmpty() || url.isNull())) {
+              // look for a SRC attribute in the params
+              NodeImpl *child = o->firstChild();
+              while ( child ) {
+                  if ( child->id() == ID_PARAM ) {
+                      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
+
+                      if ( p->name().lower()==QString::fromLatin1("src") ||
+                           p->name().lower()==QString::fromLatin1("movie") ||
+                           p->name().lower()==QString::fromLatin1("code") )
+                      {
+                          url = p->value();
+                          break;
+                      }
+                  }
+                  child = child->nextSibling();
+              }
+          }
+
+
+          if ( url.isEmpty() && serviceType.isEmpty() ) {
 #ifdef DEBUG_LAYOUT
-            kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+              kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
 #endif
-            return;
-        }
+              return;
+          }
+          part->requestObject( this, url, serviceType, params );
+      }
+      else {
+          // render embed object
+          url = embed->url;
+          serviceType = embed->serviceType;
 
-        KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-
-        params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
-        params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-        params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
-        params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) );
-
-        part->requestObject( this, url, serviceType, params );
-     }
-     else {
-        // render embed object
-        url = embed->url;
-        serviceType = embed->serviceType;
-
-        if ( url.isEmpty() && serviceType.isEmpty() ) {
+          if ( url.isEmpty() && serviceType.isEmpty() ) {
 #ifdef DEBUG_LAYOUT
-            kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+              kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
 #endif
-            return;
-        }
-
-        KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-
-        embed->param.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
-        embed->param.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-        embed->param.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
-        embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) );
-
-        part->requestObject( this, url, serviceType, embed->param );
-     }
+              return;
+          }
+          part->requestObject( this, url, serviceType, params );
+      }
   }
   else if ( m_element->id() == ID_EMBED ) {
 
-     HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(m_element);
-     url = o->url;
-     serviceType = o->serviceType;
+      HTMLEmbedElementImpl *o = static_cast<HTMLEmbedElementImpl *>(m_element);
+      url = o->url;
+      serviceType = o->serviceType;
 
-     if ( url.isEmpty() && serviceType.isEmpty() ) {
+      if ( url.isEmpty() && serviceType.isEmpty() ) {
 #ifdef DEBUG_LAYOUT
-         kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+          kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
 #endif
-         return;
-     }
-
-     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-
-     o->param.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
-     o->param.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-
-     part->requestObject( this, url, serviceType, o->param );
-
+          return;
+      }
+      // add all attributes set on the embed object
+      NamedAttrMapImpl* a = o->attributes();
+      if (a) {
+          for (unsigned long i = 0; i < a->length(); ++i) {
+              AttributeImpl* it = a->attributeItem(i);
+              params.append(o->getDocument()->attrName(it->id()).string() + "=\"" + it->value().string() + "\"");
+          }
+      }
+      part->requestObject( this, url, serviceType, params );
   } else {
       assert(m_element->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_element);

@@ -24,11 +24,12 @@
 #ifndef HTML_HEADIMPL_H
 #define HTML_HEADIMPL_H
 
-#include "html_elementimpl.h"
+#include "html/html_elementimpl.h"
+#include "misc/loader_client.h"
+#include "css/css_stylesheetimpl.h"
 
 class KHTMLView;
 
-#include "misc/loader_client.h"
 namespace khtml {
     class CachedCSSStyleSheet;
 };
@@ -45,16 +46,13 @@ class HTMLBaseElementImpl : public HTMLElementImpl
 {
 public:
     HTMLBaseElementImpl(DocumentPtr *doc);
-
     ~HTMLBaseElementImpl();
-
-    virtual Id id() const;
-
-    virtual void parseAttribute(AttrImpl *attr);
 
     DOMString href() const { return m_href; }
     DOMString target() const { return m_target; }
 
+    virtual Id id() const;
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
 
@@ -73,15 +71,14 @@ class HTMLLinkElementImpl : public khtml::CachedObjectClient, public HTMLElement
 {
 public:
     HTMLLinkElementImpl(DocumentPtr *doc);
-
     ~HTMLLinkElementImpl();
 
     virtual Id id() const;
 
-    StyleSheetImpl *sheet() const;
+    StyleSheetImpl* sheet() const { return m_sheet; }
 
     // overload from HTMLElementImpl
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     void process();
 
@@ -115,8 +112,7 @@ public:
     ~HTMLMetaElementImpl();
 
     virtual Id id() const;
-
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void insertedIntoDocument();
 
     void process();
@@ -152,7 +148,7 @@ public:
     StyleSheetImpl *sheet() const { return m_sheet; }
 
     // overload from HTMLElementImpl
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
     virtual void childrenChanged();

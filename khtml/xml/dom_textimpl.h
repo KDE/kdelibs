@@ -35,7 +35,7 @@ namespace DOM {
 
     class DocumentImpl;
 
-class CharacterDataImpl : public NodeWParentImpl
+class CharacterDataImpl : public NodeImpl
 {
 public:
     CharacterDataImpl(DocumentPtr *doc, const DOMString &_text);
@@ -84,8 +84,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-    virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
+    virtual NodeImpl *cloneNode(bool deep);
 
     // Other methods (not part of DOM)
 
@@ -109,8 +108,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-    virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
+    virtual NodeImpl *cloneNode(bool deep);
 
     // Other methods (not part of DOM)
 
@@ -141,8 +139,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-    virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
+    virtual NodeImpl *cloneNode(bool deep);
 
     // Other methods (not part of DOM)
 

@@ -20,14 +20,16 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "xml/dom_nodeimpl.h"
 
+#include "xml/dom_nodeimpl.h"
 #include "dom/dom_exception.h"
 #include "misc/htmlattrs.h"
+#include "misc/htmltags.h"
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
+#include "xml/dom_nodeimpl.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -44,6 +46,9 @@ using namespace khtml;
 
 NodeImpl::NodeImpl(DocumentPtr *doc)
     : document(doc),
+      m_parent(0),
+      m_previous(0),
+      m_next(0),
       m_render(0),
       m_regdListeners( 0 ),
       m_tabIndex( 0 ),
@@ -72,6 +77,10 @@ NodeImpl::~NodeImpl()
         delete m_regdListeners;
     if (document)
         document->deref();
+    if (m_previous)
+        m_previous->setNextSibling(0);
+    if (m_next)
+        m_next->setPreviousSibling(0);
 }
 
 DOMString NodeImpl::nodeValue() const
@@ -100,11 +109,6 @@ unsigned short NodeImpl::nodeType() const
   return 0;
 }
 
-NodeImpl *NodeImpl::parentNode() const
-{
-  return 0;
-}
-
 NodeListImpl *NodeImpl::childNodes()
 {
   return new ChildNodeListImpl(this);
@@ -118,29 +122,6 @@ NodeImpl *NodeImpl::firstChild() const
 NodeImpl *NodeImpl::lastChild() const
 {
   return 0;
-}
-
-NodeImpl *NodeImpl::previousSibling() const
-{
-  return 0;
-}
-
-NodeImpl *NodeImpl::nextSibling() const
-{
-  return 0;
-}
-
-NamedNodeMapImpl *NodeImpl::attributes() const
-{
-  return 0;
-}
-
-void NodeImpl::setPreviousSibling(NodeImpl *)
-{
-}
-
-void NodeImpl::setNextSibling(NodeImpl *)
-{
 }
 
 NodeImpl *NodeImpl::insertBefore( NodeImpl *, NodeImpl *, int &exceptioncode )
@@ -172,15 +153,17 @@ bool NodeImpl::hasChildNodes(  ) const
   return false;
 }
 
+#if 0
 bool NodeImpl::hasAttributes(  ) const
 {
   return false;
 }
+#endif
 
-void NodeImpl::normalize ( int &exceptioncode )
+void NodeImpl::normalize ()
 {
     // ### normalize attributes? (when we store attributes using child nodes)
-    exceptioncode = 0;
+    int exceptioncode = 0;
     NodeImpl *child = firstChild();
 
     // Recursively go through the subtree beneath us, normalizing all nodes. In the case
@@ -202,18 +185,10 @@ void NodeImpl::normalize ( int &exceptioncode )
                 return;
         }
         else {
-            child->normalize(exceptioncode);
-            if (exceptioncode)
-                return;
+            child->normalize();
             child = nextChild;
         }
     }
-}
-
-bool NodeImpl::isSupported( const DOMString &/*feature*/, const DOMString &/*version*/, int &/*exceptioncode*/ ) const
-{
-    // ### implement
-    return false;
 }
 
 DOMString NodeImpl::prefix() const
@@ -233,11 +208,6 @@ void NodeImpl::setPrefix(const DOMString &/*_prefix*/, int &exceptioncode )
 DOMString NodeImpl::localName() const
 {
     return DOMString();
-}
-
-// helper functions not being part of the DOM
-void NodeImpl::setParent(NodeImpl *)
-{
 }
 
 void NodeImpl::setFirstChild(NodeImpl *)
@@ -315,7 +285,7 @@ QString NodeImpl::recursive_toHTML(bool start) const
             for( unsigned int j=0; j<lmap; j++ )
             {
                 attr = static_cast<AttrImpl*>(attrs->item(j));
-                me += " " + attr->name().string() + "=\"" + escapeHTML( attr->value().string() ) + "\"";
+                me += " " + attr->nodeName().string() + "=\"" + escapeHTML( attr->nodeValue().string() ) + "\"";
                 }
             }
         }
@@ -390,6 +360,13 @@ void NodeImpl::setChanged(bool b)
     }
 }
 
+bool NodeImpl::isInline() const
+{
+    khtml::RenderStyle* s = style();
+    if (s) return s->display() == khtml::INLINE;
+    return !isElementNode();
+}
+
 void NodeImpl::printTree(int indent)
 {
     QString ind;
@@ -397,17 +374,13 @@ void NodeImpl::printTree(int indent)
     ind.fill(' ', indent);
 
     if(isElementNode()) {
-        s = ind + "<" + nodeName().string() + "[" + QString::number(id()) + "]";
+        s = ind + "<" + nodeName().string();
 
         const ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
-        AttrImpl *attr;
-        NamedNodeMapImpl *attrs = el->attributes();
-        unsigned long lmap = attrs->length();
+        NamedNodeMap attrs = el->attributes();
+        unsigned long lmap = attrs.length();
         for( unsigned int j=0; j<lmap; j++ )
-        {
-            attr = static_cast<AttrImpl*>(attrs->item(j));
-            s += " " + attr->name().string() + "=\"" + attr->value().string() + "\"";
-        }
+            s += " " + attrs.item(j).nodeName().string() + "=\"" + attrs.item(j).nodeValue().string() + "\"";
         if(!firstChild())
             s += " />";
         else
@@ -432,7 +405,11 @@ void NodeImpl::printTree(int indent)
 
 unsigned long NodeImpl::nodeIndex() const
 {
-    return 0;
+    NodeImpl *_tempNode = previousSibling();
+    unsigned long count=0;
+    for( count=0; _tempNode; count++ )
+        _tempNode = _tempNode->previousSibling();
+    return count;
 }
 
 void NodeImpl::addEventListener(int id, EventListener *listener, const bool useCapture)
@@ -475,12 +452,6 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
     m_regdListeners->append(rl);
 }
 
-void NodeImpl::addEventListener(const DOMString &type, EventListener *listener,
-                                  const bool useCapture, int &/*exceptioncode*/)
-{
-    addEventListener(EventImpl::typeToId(type),listener,useCapture);
-}
-
 void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapture)
 {
     if (!m_regdListeners) // nothing to remove
@@ -494,13 +465,6 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
             m_regdListeners->removeRef(it.current());
             return;
         }
-}
-
-
-void NodeImpl::removeEventListener(const DOMString &type, EventListener *listener,
-                                   bool useCapture,int &/*exceptioncode*/)
-{
-    removeEventListener(EventImpl::typeToId(type),listener,useCapture);
 }
 
 void NodeImpl::removeHTMLEventListener(int id)
@@ -851,18 +815,13 @@ NodeImpl *NodeImpl::traversePreviousNode() const
     }
 }
 
-RenderObject *NodeImpl::nextRenderer()
-{
-    return 0;
-}
-
 void NodeImpl::checkSetPrefix(const DOMString &_prefix, int &exceptioncode)
 {
     // Perform error checking as required by spec for setting Node.prefix. Used by
     // ElementImpl::setPrefix() and AttrImpl::setPrefix()
 
     // INVALID_CHARACTER_ERR: Raised if the specified prefix contains an illegal character.
-    if (!validPrefix(_prefix)) {
+    if (!Element::khtmlValidPrefix(_prefix)) {
         exceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return;
     }
@@ -880,9 +839,8 @@ void NodeImpl::checkSetPrefix(const DOMString &_prefix, int &exceptioncode)
     // - if this node is an attribute and the specified prefix is "xmlns" and
     //   the namespaceURI of this node is different from "http://www.w3.org/2000/xmlns/",
     // - or if this node is an attribute and the qualifiedName of this node is "xmlns" [Namespaces].
-    if (malformedPrefix(_prefix) ||
-        namespaceURI().isNull() ||
-        (_prefix == "xml" && namespaceURI() != "http://www.w3.org/XML/1998/namespace")) {
+    if (Element::khtmlMalformedPrefix(_prefix) || (!(id() & IdNSMask) && id() > ID_LAST_TAG) ||
+        (_prefix == "xml" && DOMString(getDocument()->namespaceURI(id())) != "http://www.w3.org/XML/1998/namespace")) {
         exceptioncode = DOMException::NAMESPACE_ERR;
         return;
     }
@@ -962,7 +920,7 @@ bool NodeImpl::childAllowed( NodeImpl *newChild )
 NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 ) const
 {
     StyleChange ch = NoInherit;
-    if ( !s1 || !s2 ) 
+    if ( !s1 || !s2 )
 	ch = Inherit;
     else if ( *s1 == *s2 )
 	ch = NoChange;
@@ -999,6 +957,11 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
     }
 }
 
+bool NodeImpl::deleteMe()
+{
+    return !m_parent  && !_ref;
+}
+
 void NodeImpl::init()
 {
 }
@@ -1011,13 +974,13 @@ RenderObject *NodeImpl::createRenderer()
 void NodeImpl::attach()
 {
     // ### assert(!attached());
-    setAttached(true);
+    m_attached = true;
 }
 
 void NodeImpl::detach()
 {
     // ### assert(attached());
-    setAttached(false);
+    m_attached = false;
 }
 
 bool NodeImpl::maintainsState()
@@ -1048,76 +1011,7 @@ void NodeImpl::childrenChanged()
 {
 }
 
-//--------------------------------------------------------------------
-
-NodeWParentImpl::NodeWParentImpl(DocumentPtr *doc) : NodeImpl(doc)
-{
-    _parent = 0;
-    _previous = 0;
-    _next = 0;
-}
-
-NodeWParentImpl::~NodeWParentImpl()
-{
-    // previous and next node may still reference this!!!
-    // hope this fix is fine...
-    if(_previous) _previous->setNextSibling(0);
-    if(_next) _next->setPreviousSibling(0);
-}
-
-NodeImpl *NodeWParentImpl::parentNode() const
-{
-    return _parent;
-}
-
-NodeImpl *NodeWParentImpl::previousSibling() const
-{
-    return _previous;
-}
-
-NodeImpl *NodeWParentImpl::nextSibling() const
-{
-    return _next;
-}
-
-// not part of the DOM
-void NodeWParentImpl::setParent(NodeImpl *n)
-{
-    _parent = n;
-}
-
-bool NodeWParentImpl::deleteMe()
-{
-    if(!_parent && _ref <= 0) return true;
-    return false;
-}
-
-void NodeWParentImpl::setPreviousSibling(NodeImpl *n)
-{
-    _previous = n;
-}
-
-void NodeWParentImpl::setNextSibling(NodeImpl *n)
-{
-    _next = n;
-}
-
-bool NodeWParentImpl::checkReadOnly() const
-{
-    // ####
-    return false;
-}
-
-unsigned long NodeWParentImpl::nodeIndex() const
-{
-    NodeImpl *_tempNode = _previous;
-    unsigned long count=0;
-    for( count=0; _tempNode; count++ )
-        _tempNode = _tempNode->previousSibling();
-    return count;
-}
-
-bool NodeWParentImpl::isReadOnly()
+bool NodeImpl::isReadOnly()
 {
     // Entity & Entity Reference nodes and their descendants are read-only
     NodeImpl *n = this;
@@ -1127,20 +1021,19 @@ bool NodeWParentImpl::isReadOnly()
 	    return true;
 	n = n->parentNode();
     }
-    return NodeImpl::isReadOnly();
+    return false;
 }
 
-RenderObject * NodeWParentImpl::nextRenderer()
+RenderObject * NodeImpl::nextRenderer()
 {
-    NodeImpl *n = _next;
-    for (; n; n = n->nextSibling()) {
-	if (n->renderer())
-	    return n->renderer();
+    for (NodeImpl *n = nextSibling(); n; n = n->nextSibling()) {
+        if (n->renderer())
+            return n->renderer();
     }
     return 0;
 }
 
-bool NodeWParentImpl::prepareMouseEvent( int _x, int _y,
+bool NodeImpl::prepareMouseEvent( int _x, int _y,
                                      int _tx, int _ty,
                                      MouseEvent *ev)
 {
@@ -1211,7 +1104,7 @@ bool NodeWParentImpl::prepareMouseEvent( int _x, int _y,
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::NodeBaseImpl(DocumentPtr *doc)
-    : NodeWParentImpl(doc)
+    : NodeImpl(doc)
 {
     _first = _last = 0;
     m_style = 0;
@@ -1400,9 +1293,18 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
         return 0;
     }
 
+    // Dispatch pre-removal mutation events
+    getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
+    if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
+	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
+			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+	if (exceptioncode)
+	    return 0;
+    }
+
     dispatchChildRemovalEvents(oldChild,exceptioncode);
     if (exceptioncode)
-	return 0;
+        return 0;
 
     // Remove the child
     NodeImpl *prev, *next;
@@ -1664,7 +1566,7 @@ bool NodeBaseImpl::prepareMouseEvent( int _x, int _y,
                                      MouseEvent *ev)
 {
     bool oldinside=mouseInside();
-    bool inside = NodeWParentImpl::prepareMouseEvent( _x, _y, _tx, _ty, ev );
+    bool inside = NodeImpl::prepareMouseEvent( _x, _y, _tx, _ty, ev );
 
     setMouseInside(inside);
 
@@ -1693,7 +1595,7 @@ void NodeBaseImpl::attach()
         child->attach();
         child = child->nextSibling();
     }
-    NodeWParentImpl::attach();
+    NodeImpl::attach();
 }
 
 void NodeBaseImpl::detach()
@@ -1705,16 +1607,16 @@ void NodeBaseImpl::detach()
         child = child->nextSibling();
         prev->detach();
     }
-    NodeWParentImpl::detach();
+    NodeImpl::detach();
 }
 
-void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)
+void NodeBaseImpl::cloneChildNodes(NodeImpl *clone)
 {
-    exceptioncode = 0;
+    int exceptioncode = 0;
     NodeImpl *n;
     for(n = firstChild(); n && !exceptioncode; n = n->nextSibling())
     {
-        clone->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+        clone->appendChild(n->cloneNode(true),exceptioncode);
     }
 }
 
@@ -1890,28 +1792,28 @@ NodeImpl *NodeBaseImpl::childNode(unsigned long index)
 void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode )
 {
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
-	child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,
-			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-	if (exceptioncode)
-	    return;
+        child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,
+                                                   true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+        if (exceptioncode)
+            return;
     }
 
     // dispatch the DOMNOdeInsertedInfoDocument event to all descendants
     bool hasInsertedListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
     NodeImpl *p = this;
     while (p->parentNode())
-	p = p->parentNode();
+        p = p->parentNode();
     if (p->nodeType() == Node::DOCUMENT_NODE) {
-	for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
-	    c->insertedIntoDocument();
+        for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
+            c->insertedIntoDocument();
 
-	    if (hasInsertedListeners) {
-		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
-				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-		if (exceptioncode)
-		    return;
-	    }
-	}
+            if (hasInsertedListeners) {
+                c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
+                                                       false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+                if (exceptioncode)
+                    return;
+            }
+        }
     }
 }
 
@@ -2023,7 +1925,7 @@ NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
     return n;
 }
 
-bool ChildNodeListImpl::nodeMatches( NodeImpl *testNode ) const
+bool ChildNodeListImpl::nodeMatches( NodeImpl */*testNode*/ ) const
 {
     return true;
 }
@@ -2094,9 +1996,12 @@ NamedNodeMapImpl::~NamedNodeMapImpl()
 
 // ----------------------------------------------------------------------------
 
-GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl() : NamedNodeMapImpl()
+// ### unused
+#if 0
+GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentPtr* doc)
+    : NamedNodeMapImpl()
 {
-    // not sure why this doesn't work as a normal object
+    m_doc = doc->document();
     m_contents = new QPtrList<NodeImpl>;
 }
 
@@ -2152,11 +2057,14 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceU
                                                      const DOMString &localName,
                                                      int &/*exceptioncode*/ ) const
 {
+    NodeImpl::Id searchId = m_doc->tagId(namespaceURI.implementation(),
+                                                   localName.implementation(), true);
+
     QPtrListIterator<NodeImpl> it(*m_contents);
     for (; it.current(); ++it)
-        if (it.current()->nodeName() == localName &&
-            it.current()->namespaceURI() == namespaceURI)
+        if (it.current()->id() == searchId)
             return it.current();
+
     return 0;
 }
 
@@ -2188,3 +2096,4 @@ void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)
     m_contents->append(n);
 }
 
+#endif

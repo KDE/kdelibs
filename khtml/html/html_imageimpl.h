@@ -43,7 +43,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *);
+    virtual void parseAttribute(AttributeImpl *);
 
     virtual bool prepareMouseEvent( int _x, int _y,
                                     int _tx, int _ty,
@@ -81,7 +81,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     bool isDefault() const { return shape==Default; }
     bool isNoref() const { return nohref && !href; }
@@ -114,7 +114,7 @@ public:
 
     virtual DOMString getName() const { return name; }
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        MouseEvent *ev );

@@ -251,14 +251,33 @@ ProcessingInstruction Document::createProcessingInstruction( const DOMString &ta
 
 Attr Document::createAttribute( const DOMString &name )
 {
-    if (impl) return ((DocumentImpl *)impl)->createAttribute( name );
-    return 0;
+    return createAttributeNS(DOMString(), name);
 }
 
 Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName )
 {
-    if (impl) return ((DocumentImpl *)impl)->createAttributeNS( namespaceURI, qualifiedName );
-    return 0;
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    if (qualifiedName.isNull()) throw DOMException(DOMException::NAMESPACE_ERR);
+
+    DOMString localName(qualifiedName.copy());
+    DOMString prefix;
+    int colonpos;
+    if ((colonpos = qualifiedName.find(':')) >= 0) {
+        prefix = qualifiedName.copy();
+        prefix.truncate(colonpos);
+        localName.remove(0, colonpos+1);
+    }
+
+    // ### check correctness of parameters
+
+    NodeImpl::Id id = static_cast<DocumentImpl*>(impl)->attrId(namespaceURI.implementation(), localName.implementation(), false /* allocate */);
+    Attr r = static_cast<DocumentImpl*>(impl)->createAttribute(id);
+    int exceptioncode = 0;
+    if (r.handle() && prefix.implementation())
+        r.handle()->setPrefix(prefix.implementation(), exceptioncode);
+    if (exceptioncode)
+        throw DOMException(exceptioncode);
+    return r;
 }
 
 EntityReference Document::createEntityReference( const DOMString &name )
@@ -421,11 +440,17 @@ DocumentFragment::DocumentFragment(DocumentFragmentImpl *i) : Node(i)
 
 // ----------------------------------------------------------------------------
 
-DocumentType::DocumentType() : Node()
+DocumentType::DocumentType()
+    : Node()
 {
 }
 
-DocumentType::DocumentType(const DocumentType &other) : Node(other)
+DocumentType::DocumentType(const DocumentType &other)
+    : Node(other)
+{
+}
+
+DocumentType::DocumentType(DocumentTypeImpl *impl) : Node(impl)
 {
 }
 
@@ -498,9 +523,4 @@ DOMString DocumentType::internalSubset() const
 
     return static_cast<DocumentTypeImpl*>(impl)->internalSubset();
 }
-
-DocumentType::DocumentType(DocumentTypeImpl *impl) : Node(impl)
-{
-}
-
 

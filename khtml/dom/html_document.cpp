@@ -200,12 +200,6 @@ void HTMLDocument::write( const DOMString &text )
         ((HTMLDocumentImpl *)impl)->write( text );
 }
 
-void HTMLDocument::write( const QString &text )
-{
-    if(impl)
-        ((HTMLDocumentImpl *)impl)->write( text );
-}
-
 void HTMLDocument::writeln( const DOMString &text )
 {
     if(impl)
@@ -215,6 +209,6 @@ void HTMLDocument::writeln( const DOMString &text )
 NodeList HTMLDocument::getElementsByName( const DOMString &elementName )
 {
     if(!impl) return 0;
-    return ((HTMLDocumentImpl *)impl)->getElementsByName( elementName );
+    return new NameNodeListImpl(impl, elementName);
 }
 

@@ -66,9 +66,9 @@ NodeImpl::Id HTMLBodyElementImpl::id() const
     return ID_BODY;
 }
 
-void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
 
     case ATTR_BACKGROUND:
@@ -112,11 +112,11 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
             m_styleSheet->ref();
         }
         QString aStr;
-	if ( attr->attrId == ATTR_LINK )
+	if ( attr->id() == ATTR_LINK )
 	    aStr = "a:link";
-	else if ( attr->attrId == ATTR_VLINK )
+	else if ( attr->id() == ATTR_VLINK )
 	    aStr = "a:visited";
-	else if ( attr->attrId == ATTR_ALINK )
+	else if ( attr->id() == ATTR_ALINK )
 	    aStr = "a:active";
 	aStr += " { color: " + attr->value().string() + "; }";
         m_styleSheet->parseString(aStr);
@@ -151,7 +151,6 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         HTMLElementImpl::parseAttribute(attr);
     }
 }
-
 
 void HTMLBodyElementImpl::init()
 {
@@ -216,9 +215,9 @@ NodeImpl::Id HTMLFrameElementImpl::id() const
     return ID_FRAME;
 }
 
-void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_SRC:
         url = khtml::parseURL(attr->val());
@@ -305,10 +304,7 @@ void HTMLFrameElementImpl::attach()
     // we need a unique name for every frame in the frameset. Hope that's unique enough.
     KHTMLView* w = getDocument()->view();
     if(name.isEmpty() || w->part()->frameExists( name.string() ) )
-    {
       name = DOMString(w->part()->requestFrameName());
-      kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
-    }
 
     // load the frame contents
     if (!url.isNull())
@@ -390,9 +386,9 @@ NodeImpl::Id HTMLFrameSetElementImpl::id() const
     return ID_FRAMESET;
 }
 
-void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_ROWS:
         delete m_rows;
@@ -590,9 +586,9 @@ NodeImpl::Id HTMLIFrameElementImpl::id() const
     return ID_IFRAME;
 }
 
-void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
+void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
 {
-  switch (  attr->attrId )
+  switch (  attr->id() )
   {
     case ATTR_WIDTH:
       addCSSLength( CSS_PROP_WIDTH, attr->value());
@@ -629,15 +625,13 @@ void HTMLIFrameElementImpl::attach()
     HTMLElementImpl::attach();
 
     if (m_render) {
-	// we need a unique name for every frame in the frameset. Hope that's unique enough.
-	if(name.isEmpty())
-	{
-	    name = DOMString(getDocument()->view()->part()->requestFrameName());
-	    kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
-	}
+        // we need a unique name for every frame in the frameset. Hope that's unique enough.
+        KHTMLView* w = getDocument()->view();
+        if(name.isEmpty() || w->part()->frameExists( name.string() ))
+            name = DOMString(w->part()->requestFrameName());
 
-	static_cast<RenderPartObject*>(m_render)->updateWidget();
-	needWidgetUpdate = false;
+        static_cast<RenderPartObject*>(m_render)->updateWidget();
+        needWidgetUpdate = false;
     }
 }
 

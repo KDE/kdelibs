@@ -99,18 +99,10 @@ unsigned short EntityImpl::nodeType() const
     return Node::ENTITY_NODE;
 }
 
-DOMString EntityImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
-NodeImpl *EntityImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+NodeImpl *EntityImpl::cloneNode ( bool /*deep*/)
 {
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
-    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
     return 0;
 }
 
@@ -161,20 +153,13 @@ unsigned short EntityReferenceImpl::nodeType() const
     return Node::ENTITY_REFERENCE_NODE;
 }
 
-DOMString EntityReferenceImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
-NodeImpl *EntityReferenceImpl::cloneNode ( bool deep, int &exceptioncode )
+NodeImpl *EntityReferenceImpl::cloneNode ( bool deep )
 {
     EntityReferenceImpl *clone = new EntityReferenceImpl(docPtr(),m_entityName);
     // ### make sure children are readonly
     // ### since we are a reference, should we clone children anyway (even if not deep?)
     if (deep)
-        cloneChildNodes(clone,exceptioncode);
+        cloneChildNodes(clone);
     return clone;
 }
 
@@ -247,18 +232,10 @@ unsigned short NotationImpl::nodeType() const
     return Node::NOTATION_NODE;
 }
 
-DOMString NotationImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
-NodeImpl *NotationImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+NodeImpl *NotationImpl::cloneNode ( bool /*deep*/)
 {
     // Spec says cloning Document nodes is "implementation dependent"
     // so we do not support it...
-    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
     return 0;
 }
 
@@ -342,13 +319,6 @@ unsigned short ProcessingInstructionImpl::nodeType() const
     return Node::PROCESSING_INSTRUCTION_NODE;
 }
 
-DOMString ProcessingInstructionImpl::namespaceURI() const
-{
-    // ###
-    // ### when implementing this, make sure it is copied properly during a clone
-    return DOMString();
-}
-
 DOMString ProcessingInstructionImpl::nodeValue() const
 {
     return m_data;
@@ -360,7 +330,7 @@ void ProcessingInstructionImpl::setNodeValue( const DOMString &_nodeValue, int &
     setData(_nodeValue, exceptioncode);
 }
 
-NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exceptioncode*/ )
+NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/)
 {
     // ### copy m_localHref
     return new ProcessingInstructionImpl(docPtr(),m_target,m_data);

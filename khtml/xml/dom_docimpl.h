@@ -26,6 +26,7 @@
 #define _DOM_DocumentImpl_h_
 
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_elementimpl.h"
 #include "xml/dom2_traversalimpl.h"
 
 #include <qstringlist.h>
@@ -117,12 +118,13 @@ class DocumentImpl : public QObject, public NodeBaseImpl
 {
     Q_OBJECT
 public:
-    DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v);
+    DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v);
     ~DocumentImpl();
 
     // DOM methods & attributes for Document
 
     DocumentTypeImpl *doctype() const;
+
     DOMImplementationImpl *implementation() const;
     ElementImpl *documentElement() const;
     virtual ElementImpl *createElement ( const DOMString &tagName );
@@ -131,11 +133,10 @@ public:
     CommentImpl *createComment ( const DOMString &data );
     CDATASectionImpl *createCDATASection ( const DOMString &data );
     ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, const DOMString &data );
-    AttrImpl *createAttribute ( const DOMString &name );
+    Attr createAttribute(NodeImpl::Id id);
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
     NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );
     virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
-    AttrImpl *createAttributeNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
     ElementImpl *getElementById ( const DOMString &elementId ) const;
 
     // Actually part of HTMLDocument, but used for giving XML documents a window title as well
@@ -146,22 +147,18 @@ public:
 
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-
 
     // Other methods (not part of DOM)
     virtual bool isDocumentNode() const { return true; }
-
     virtual bool isHTMLDocument() const { return false; }
 
     virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
-
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
 
     /**
      * Called when one or more stylesheets in the document may have been added, removed or changed.
-     * 
+     *
      * Creates a new style selector and assign it to this document. This is done by iterating through all nodes in
      * document (or those before <BODY> in a HTML document), searching for stylesheets. Stylesheets can be contained in
      * <LINK>, <STYLE> or <BODY> elements, as well as processing instructions (XML documents only). A list is
@@ -270,11 +267,19 @@ public:
 
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short nodeType );
-    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+    virtual NodeImpl *cloneNode ( bool deep );
 
+    // ### think about implementing ref'counting for the id's
+    // in order to be able to reassign those that are no longer in use
+    // (could make problems when it is still kept somewhere around, i.e. styleselector)
     NodeImpl::Id tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly);
     DOMString tagName(NodeImpl::Id _id) const;
 
+    NodeImpl::Id attrId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly);
+    DOMString attrName(NodeImpl::Id _id) const;
+
+    // the namespace uri is mapped to the same id for both
+    // tagnames as well as attributes.
     DOMStringImpl* namespaceURI(NodeImpl::Id _id) const;
 
     StyleSheetListImpl* styleSheets();
@@ -282,9 +287,7 @@ public:
     NodeImpl *focusNode() const { return m_focusNode; }
     void setFocusNode(NodeImpl *newFocusNode);
 
-    virtual DocumentImpl *ownerDocument() const { return 0; }
-    bool isDocumentChanged()
-	{ return m_docChanged; }
+    bool isDocumentChanged()	{ return m_docChanged; }
     virtual void setDocumentChanged(bool);
     void attachNodeIterator(NodeIteratorImpl *ni);
     void detachNodeIterator(NodeIteratorImpl *ni);
@@ -322,11 +325,11 @@ public:
      * Searches through the document, starting from fromNode, for the next selectable element that comes after fromNode.
      * The order followed is as specified in section 17.11.1 of the HTML4 spec, which is elements with tab indexes
      * first (from lowest to highest), and then elements without tab indexes (in document order).
-     * 
+     *
      * @param fromNode The node from which to start searching. The node after this will be focused. May be null.
-     * 
+     *
      * @return The focus node that comes after fromNode
-     * 
+     *
      * See http://www.w3.org/TR/html4/interact/forms.html#h-17.11.1
      */
     NodeImpl *nextFocusNode(NodeImpl *fromNode);
@@ -337,9 +340,9 @@ public:
      * indexes first (from lowest to highest), and then elements without tab indexes (in document order).
      *
      * @param fromNode The node from which to start searching. The node before this will be focused. May be null.
-     * 
+     *
      * @return The focus node that comes before fromNode
-     * 
+     *
      * See http://www.w3.org/TR/html4/interact/forms.html#h-17.11.1
      */
     NodeImpl *previousFocusNode(NodeImpl *fromNode);
@@ -352,7 +355,7 @@ public:
      * when a meta tag is encountered during document parsing, and also when a script dynamically changes or adds a meta
      * tag. This enables scripts to use meta tags to perform refreshes and set expiry dates in addition to them being
      * specified in a HTML file.
-     * 
+     *
      * @param equiv The http header name (value of the meta tag's "equiv" attribute)
      * @param content The header value (value of the meta tag's "content" attribute)
      */
@@ -386,12 +389,17 @@ protected:
     HTMLMode hMode;
 
     DOMString m_textColor;
+    NodeImpl *m_focusNode;
 
+    // ### replace me with something more efficient
+    // in lookup and insertion.
     DOMStringImpl **m_elementNames;
     unsigned short m_elementNameAlloc;
     unsigned short m_elementNameCount;
 
-    NodeImpl *m_focusNode;
+    DOMStringImpl **m_attrNames;
+    unsigned short m_attrNameAlloc;
+    unsigned short m_attrNameCount;
 
     DOMStringImpl** m_namespaceURIs;
     unsigned short m_namespaceURIAlloc;
@@ -422,8 +430,7 @@ public:
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+    virtual NodeImpl *cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
     virtual bool childTypeAllowed( unsigned short type );
@@ -439,33 +446,34 @@ public:
     ~DocumentTypeImpl();
 
     // DOM methods & attributes for DocumentType
-    virtual const DOMString name() const;
-    virtual NamedNodeMapImpl *entities() const;
-    virtual NamedNodeMapImpl *notations() const;
-    virtual DOMString publicId() const;
-    virtual DOMString systemId() const;
-    virtual DOMString internalSubset() const;
+    NamedNodeMapImpl *entities() const { return m_entities; }
+    NamedNodeMapImpl *notations() const { return m_notations; }
+
+    DOMString name() const { return m_qualifiedName; }
+    DOMString publicId() const { return m_publicId; }
+    DOMString systemId() const { return m_systemId; }
+    DOMString internalSubset() const { return m_subset; }
 
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
+    virtual bool childTypeAllowed( unsigned short type );
+    virtual NodeImpl *cloneNode ( bool deep );
 
     // Other methods (not part of DOM)
-    void setName(const QString& name);
-    virtual void setOwnerDocument(DocumentPtr *doc);
-    DOMImplementationImpl *implementation() const;
+    void setName(const DOMString& n) { m_qualifiedName = n; }
+    DOMImplementationImpl *implementation() const { return m_implementation; }
+    void copyFrom(const DocumentTypeImpl&);
 
-    GenericRONamedNodeMapImpl *m_entities;
-    GenericRONamedNodeMapImpl *m_notations;
-    virtual bool childTypeAllowed( unsigned short type );
-    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 protected:
     DOMImplementationImpl *m_implementation;
+    NamedNodeMapImpl* m_entities;
+    NamedNodeMapImpl* m_notations;
 
-    DOMStringImpl *m_qualifiedName;
-    DOMStringImpl *m_publicId;
-    DOMStringImpl *m_systemId;
+    DOMString m_qualifiedName;
+    DOMString m_publicId;
+    DOMString m_systemId;
+    DOMString m_subset;
 };
 
 }; //namespace

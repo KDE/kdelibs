@@ -406,9 +406,9 @@ void HTMLFormElementImpl::reset(  )
     m_inreset = false;
 }
 
-void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_ACTION:
         m_url = khtml::parseURL(attr->value());
@@ -495,9 +495,9 @@ HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
         m_form->removeFormElement(this);
 }
 
-void HTMLGenericFormElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLGenericFormElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_NAME:
         break;
@@ -571,7 +571,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 
 void HTMLGenericFormElementImpl::setParent(NodeImpl *parent)
 {
-    if (_parent) { // false on initial insert, we use the form given by the parser
+    if (parentNode()) { // false on initial insert, we use the form given by the parser
 	if (m_form)
 	    m_form->removeFormElement(this);
 	m_form = 0;
@@ -671,9 +671,9 @@ DOMString HTMLButtonElementImpl::type() const
     return getAttribute(ATTR_TYPE);
 }
 
-void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_TYPE:
         if ( strcasecmp( attr->value(), "submit" ) == 0 )
@@ -858,13 +858,13 @@ void HTMLInputElementImpl::click(  )
 #endif
 }
 
-void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
 {
     // ### IMPORTANT: check that the type can't be changed after the first time
     // otherwise a javascript programmer may be able to set a text field's value
     // to something like /etc/passwd and then change it to a file field
     // ### also check that input defaults to something - text perhaps?
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_AUTOCOMPLETE:
         m_autocomplete = strcasecmp( attr->value(), "off" );
@@ -1345,9 +1345,9 @@ NodeImpl::Id HTMLLabelElementImpl::id() const
     return ID_LABEL;
 }
 
-void HTMLLabelElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLLabelElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
@@ -1572,9 +1572,9 @@ NodeImpl *HTMLSelectElementImpl::appendChild ( NodeImpl *newChild, int &exceptio
     return result;
 }
 
-void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_SIZE:
         m_size = QMAX( attr->val()->toInt(), 1 );
@@ -1772,9 +1772,9 @@ NodeImpl::Id HTMLKeygenElementImpl::id() const
     return ID_KEYGEN;
 }
 
-void HTMLKeygenElementImpl::parseAttribute(AttrImpl* attr)
+void HTMLKeygenElementImpl::parseAttribute(AttributeImpl* attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_CHALLENGE:
         break;
@@ -1852,7 +1852,7 @@ NodeImpl *HTMLOptGroupElementImpl::appendChild ( NodeImpl *newChild, int &except
     return result;
 }
 
-void HTMLOptGroupElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLOptGroupElementImpl::parseAttribute(AttributeImpl *attr)
 {
     HTMLGenericFormElementImpl::parseAttribute(attr);
     recalcSelectOptions();
@@ -1933,9 +1933,9 @@ void HTMLOptionElementImpl::setIndex( long  )
     // ###
 }
 
-void HTMLOptionElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLOptionElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_SELECTED:
         m_selected = (attr->val() != 0);
@@ -2029,9 +2029,9 @@ void HTMLTextAreaElementImpl::select(  )
     onSelect();
 }
 
-void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_ROWS:
         m_rows = attr->val() ? attr->val()->toInt() : 3;
@@ -2193,9 +2193,9 @@ NodeImpl::Id HTMLIsIndexElementImpl::id() const
     return ID_ISINDEX;
 }
 
-void HTMLIsIndexElementImpl::parseAttribute(AttrImpl* attr)
+void HTMLIsIndexElementImpl::parseAttribute(AttributeImpl* attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_PROMPT:
 	setValue(attr->value());

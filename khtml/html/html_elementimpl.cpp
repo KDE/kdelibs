@@ -61,10 +61,10 @@ HTMLElementImpl::~HTMLElementImpl()
 {
 }
 
-void HTMLElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 {
     DOMString indexstring;
-    switch( attr->attrId )
+    switch( attr->id() )
     {
     case ATTR_ALIGN:
         if (attr->val()) {

@@ -29,19 +29,7 @@
 #ifndef HTMLTOKENIZER_H
 #define HTMLTOKENIZER_H
 
-
-//
-// External Classes
-//
-///////////////////
-
 class KCharsets;
-
-//
-// Internal Classes
-//
-///////////////////
-
 class StringTokenizer;
 class HTMLTokenizer;
 
@@ -55,6 +43,7 @@ class HTMLTokenizer;
 #include "xml/dom_stringimpl.h"
 #include "xml/xml_tokenizer.h"
 #include "xml/dom_elementimpl.h"
+#include "xml/dom_docimpl.h"
 
 class KHTMLParser;
 class KHTMLView;
@@ -79,9 +68,6 @@ namespace khtml {
     public:
         Token() {
             id = 0;
-#if QT_VERSION < 300
-            complexText = false;
-#endif	    
             attrs = 0;
             text = 0;
             //qDebug("new token, creating %08lx", attrs);
@@ -90,13 +76,22 @@ namespace khtml {
             if(attrs) attrs->deref();
             if(text) text->deref();
         }
-        void insertAttr(AttrImpl* a)
+        void addAttribute(DocumentImpl* doc, QChar* buffer, const QString& attrName, const DOMString& v)
         {
-            if(!attrs) {
-                attrs = new DOM::NamedAttrMapImpl(0);
-                attrs->ref();
+            AttributeImpl* a = 0;
+            if(buffer->unicode())
+                a = new AttributeImpl(buffer->unicode(), v.implementation());
+            else if ( !attrName.isEmpty() && attrName != "/" )
+                a = new AttributeImpl(doc->attrId(0, DOMString(attrName).implementation(), false),
+                                      v.implementation());
+
+            if (a) {
+                if(!attrs) {
+                    attrs = new DOM::NamedAttrMapImpl(0);
+                    attrs->ref();
+                }
+                attrs->insertAttribute(a);
             }
-            attrs->insertAttr(a);
         }
         void reset()
         {
@@ -105,9 +100,6 @@ namespace khtml {
                 attrs = 0;
             }
             id = 0;
-#if QT_VERSION < 300
-            complexText = false;
-#endif	    
             if(text) {
                 text->deref();
                 text = 0;
@@ -116,9 +108,6 @@ namespace khtml {
         DOM::NamedAttrMapImpl* attrs;
         ushort id;
         DOMStringImpl* text;
-#if QT_VERSION < 300
-        bool complexText;
-#endif	
     };
 };
 
@@ -126,12 +115,6 @@ namespace khtml {
 #define TAB_SIZE 8
 
 //-----------------------------------------------------------------------------
-
-/**
- * @internal
- * This class takes QStrings as input, and splits up the input streams into
- * tokens, which are passed on to the @ref KHTMLParser.
- */
 
 class HTMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {

@@ -42,7 +42,7 @@ public:
 
     virtual Id id() const = 0;
 
-    virtual void parseAttribute(AttrImpl *token);
+    virtual void parseAttribute(AttributeImpl *token);
 
     void addCSSProperty( const DOMString &property, const DOMString &value, bool nonCSSHint = true);
     void addCSSLength(int id, const DOMString &value);

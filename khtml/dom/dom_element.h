@@ -205,7 +205,8 @@ class Element : public Node
 {
     friend class Document;
     friend class HTMLDocument;
-    friend class AttrImpl;
+//    friend class AttrImpl;
+    friend class Attr;
 
 public:
     Element();
@@ -343,8 +344,6 @@ public:
     Attr removeAttributeNode ( const Attr &oldAttr );
 
     /**
-     * No exceptions.
-     *
      * Returns a <code> NodeList </code> of all descendant elements
      * with a given tag name, in the order in which they would be
      * encountered in a preorder traversal of the <code> Element
@@ -360,8 +359,6 @@ public:
 
     /**
      * Introduced in DOM Level 2
-     * No exceptions.
-     *
      * Returns a NodeList of all the descendant Elements with a given local
      * name and namespace URI in the order in which they are encountered in a
      * preorder traversal of this Element tree.
@@ -378,7 +375,9 @@ public:
                                       const DOMString &localName );
 
     /**
-     * Introduced in DOM Level 2
+     * Introduced in DOM Level 2.
+     *
+     * No Exceptions.
      *
      * Retrieves an attribute value by local name and namespace URI. HTML-only
      * DOM implementations do not need to implement this method.
@@ -528,23 +527,6 @@ public:
                           const DOMString &localName );
 
     /**
-     * Puts all <code> Text </code> nodes in the full depth of the
-     * sub-tree underneath this <code> Element </code> into a "normal"
-     * form where only markup (e.g., tags, comments, processing
-     * instructions, CDATA sections, and entity references) separates
-     * <code> Text </code> nodes, i.e., there are no adjacent <code>
-     * Text </code> nodes. This can be used to ensure that the DOM
-     * view of a document is the same as if it were saved and
-     * re-loaded, and is useful when operations (such as XPointer
-     * lookups) that depend on a particular document tree structure
-     * are to be used.
-     *
-     * @return
-     *
-     */
-    void normalize (  );
-
-    /**
      * Introduced in DOM Level 2
      * This method is from the CSSStyleDeclaration interface
      *
@@ -558,8 +540,13 @@ public:
      */
     bool isHTMLElement() const;
 
-protected:
+    static bool khtmlValidAttrName(const DOMString &name);
+    static bool khtmlValidPrefix(const DOMString &name);
+    static bool khtmlValidQualifiedName(const DOMString &name);
 
+    static bool khtmlMalformedQualifiedName(const DOMString &name);
+    static bool khtmlMalformedPrefix(const DOMString &name);
+protected:
     Element(ElementImpl *_impl);
 };
 

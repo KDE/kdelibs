@@ -396,16 +396,15 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 // we have another <BODY> element.... apply attributes to existing one
                 // make sure we don't overwrite already existing attributes
                 // some sites use <body bgcolor=rightcolor>...<body bgcolor=wrongcolor>
-                NamedAttrMapImpl *map = static_cast<NamedAttrMapImpl*>(n->attributes());
-                NamedAttrMapImpl *bodymap = static_cast<NamedAttrMapImpl*>(doc()->body()->attributes());
-                unsigned long attrNo;
+                NamedAttrMapImpl *map = static_cast<ElementImpl*>(n)->attributes(true);
+                NamedAttrMapImpl *bmap = doc()->body()->attributes(false);
                 int exceptioncode = 0;
                 bool changed = false;
-                for (attrNo = 0; map && attrNo < map->length(); attrNo++)
-                    if(!bodymap->getNamedItem(static_cast<AttrImpl*>(map->item(attrNo))->name(),exceptioncode)) {
-                        doc()->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false,exceptioncode)), exceptioncode);
-                        changed = true;
-                    }
+                for (unsigned long l = 0; map && l < map->length(); ++l) {
+                    AttributeImpl* it = map->attributeItem(l);
+                    changed = !bmap->getAttributeItem(it->id());
+                    bmap->insertAttribute(new AttributeImpl(it->id(), it->val()));
+                }
                 if ( changed )
                     doc()->recalcStyle( NodeImpl::Inherit );
                 noRealBody = false;
@@ -1211,15 +1210,10 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
         n = new HTMLDivElementImpl( document );
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
-    AttrImpl* a = 0;
-    DOMString text;
-
-    if(t->attrs)
-        a = t->attrs->getIdItem(ATTR_PROMPT);
-    if(a)
+    AttributeImpl* a = t->attrs ? t->attrs->getAttributeItem(ATTR_PROMPT) : 0;
+    DOMString text = i18n("This is a searchable index. Enter search keywords: ");
+    if (a)
         text = a->value() + " ";
-    else
-        text =  i18n("This is a searchable index. Enter search keywords: ");
     child = new TextImpl(document, text);
     n->addChild( child );
     child = new HTMLIsIndexElementImpl(document, myform);

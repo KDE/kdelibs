@@ -59,8 +59,8 @@ using namespace DOM;
 using namespace khtml;
 
 
-HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v)
-  : DocumentImpl(_implementation, _doctype, v)
+HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
+  : DocumentImpl(_implementation, v)
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
     bodyElement = 0;
@@ -201,11 +201,6 @@ Tokenizer *HTMLDocumentImpl::createTokenizer()
     return new HTMLTokenizer(docPtr(),m_view);
 }
 
-NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
-{
-    return new NameNodeListImpl( documentElement(), elementName );
-}
-
 // --------------------------------------------------------------------------
 // not part of the DOM
 // --------------------------------------------------------------------------
@@ -327,10 +322,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
                 if ( pos != -1 ) {
                     if( val.find( "xhtml", pos+6, false ) != -1 ) {
                         hMode = XHtml;
-                        if( isTransitional( val, pos ) )
-                            publicId = Transitional;
-                        else
-                            publicId = Strict;
+                        publicId = isTransitional(val, pos) ? Transitional : Strict;
                     } else if ( val.find( "15445:1999", pos+6 ) != -1 ) {
                         hMode = Html4;
                         publicId = Strict;
@@ -365,7 +357,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
         if ( hMode == XHtml )
             pMode = Strict;
     }
-    //kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
+    kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
     kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
     if( pMode == Strict )
         kdDebug(6020) << " using strict parseMode" << endl;

@@ -48,8 +48,7 @@ class HTMLDocumentImpl : public DOM::DocumentImpl, public khtml::CachedObjectCli
 {
     Q_OBJECT
 public:
-    HTMLDocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v = 0);
-
+    HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v = 0);
     ~HTMLDocumentImpl();
 
     virtual bool isHTMLDocument() const { return true; }
@@ -65,19 +64,15 @@ public:
     void setBody(HTMLElementImpl *_body);
 
     virtual Tokenizer *createTokenizer();
-    NodeListImpl *getElementsByName ( const DOMString &elementName );
 
     virtual bool childAllowed( NodeImpl *newChild );
 
-    void setOnload( const QString &script ) { onloadScript = script; }
-    void setOnunload( const QString &script ) { onUnloadScript = script; }
     virtual ElementImpl *createElement ( const DOMString &tagName );
 
     HTMLMapElementImpl* getMap(const DOMString& url_);
+
     virtual void determineParseMode( const QString &str );
-
     virtual void close();
-
 
 protected:
     HTMLElementImpl *bodyElement;
@@ -85,9 +80,6 @@ protected:
     friend class HTMLMapElementImpl;
     friend class HTMLImageElementImpl;
     QMap<QString,HTMLMapElementImpl*> mapMap;
-
-    QString onloadScript;
-    QString onUnloadScript;
 
 protected slots:
     /**

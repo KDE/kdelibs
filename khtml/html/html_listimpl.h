@@ -43,7 +43,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *);
+    virtual void parseAttribute(AttributeImpl *);
 
     virtual int start() const { return 1; }
 };
@@ -80,8 +80,7 @@ public:
     virtual ~HTMLOListElementImpl() {}
 
     virtual Id id() const;
-
-    virtual void parseAttribute(AttrImpl *);
+    virtual void parseAttribute(AttributeImpl *);
 
     int start() const { return _start; }
 private:
@@ -99,7 +98,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     virtual void attach();
 

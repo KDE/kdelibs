@@ -46,6 +46,8 @@ class DOMString;
 class CSSStyleSheetImpl;
 class HTMLFrameElement;
 
+// -------------------------------------------------------------------------
+
 class HTMLBodyElementImpl : public HTMLElementImpl
 {
 public:
@@ -54,7 +56,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *);
+    virtual void parseAttribute(AttributeImpl *);
     virtual void init();
     virtual khtml::RenderObject *createRenderer();
 
@@ -84,7 +86,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *);
+    virtual void parseAttribute(AttributeImpl *);
     virtual void init();
     virtual khtml::RenderObject *createRenderer();
     virtual void attach();
@@ -125,7 +127,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *);
+    virtual void parseAttribute(AttributeImpl *);
     virtual void init();
     virtual khtml::RenderObject *createRenderer();
 
@@ -199,7 +201,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual khtml::RenderObject *createRenderer();
     virtual void attach();
     virtual void recalcStyle( StyleChange ch );

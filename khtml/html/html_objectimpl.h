@@ -46,7 +46,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *token);
+    virtual void parseAttribute(AttributeImpl *token);
 
     virtual khtml::RenderObject *createRenderer();
 
@@ -65,7 +65,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     virtual khtml::RenderObject *createRenderer();
     virtual void attach();
@@ -74,7 +74,6 @@ public:
     QString pluginPage;
     QString serviceType;
     bool hidden;
-    QStringList param;
 };
 
 // -------------------------------------------------------------------------
@@ -90,7 +89,7 @@ public:
 
     HTMLFormElementImpl *form() const;
 
-    virtual void parseAttribute(AttrImpl *token);
+    virtual void parseAttribute(AttributeImpl *token);
 
     virtual khtml::RenderObject *createRenderer();
     virtual void attach();
@@ -118,7 +117,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *token);
+    virtual void parseAttribute(AttributeImpl *token);
 
     QString name() const { if(!m_name) return QString::null; return QConstString(m_name->s, m_name->l).string(); }
     QString value() const { if(!m_value) return QString::null; return QConstString(m_value->s, m_value->l).string(); }

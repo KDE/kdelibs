@@ -66,9 +66,9 @@ NodeImpl::Id HTMLDivElementImpl::id() const
     return ID_DIV;
 }
 
-void HTMLDivElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(attr->attrId)
+    switch(attr->id())
     {
     case ATTR_ALIGN:
     {
@@ -99,9 +99,9 @@ NodeImpl::Id HTMLHRElementImpl::id() const
     return ID_HR;
 }
 
-void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLHRElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch( attr->attrId )
+    switch( attr->id() )
     {
     case ATTR_ALIGN:
         if ( strcasecmp( attr->value(), "left") != 0) // _not_ equal
@@ -216,14 +216,14 @@ NodeImpl::Id HTMLLayerElementImpl::id() const
 }
 
 
-void HTMLLayerElementImpl::parseAttribute(AttrImpl *attr)
+void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
 {
     HTMLElementImpl::parseAttribute(attr);
 
     // layers are evil
 /*    int cssprop;
     bool page = false;
-    switch(attr->attrId) {
+    switch(attr->id()) {
         case ATTR_PAGEX:
             page = true;
         case ATTR_LEFT:

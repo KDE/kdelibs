@@ -96,7 +96,7 @@ public:
 
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     virtual void init();
 
@@ -125,7 +125,7 @@ public:
         : HTMLElementImpl(doc), m_solid(false)
         { }
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
 protected:
     bool m_solid : 1;
@@ -179,10 +179,7 @@ class HTMLTableCellElementImpl : public HTMLTablePartElementImpl
 {
 public:
     HTMLTableCellElementImpl(DocumentPtr *doc, int tagId);
-
     ~HTMLTableCellElementImpl();
-
-    virtual Id id() const { return _id; }
 
     // ### FIX these two...
     long cellIndex() const { return 0; }
@@ -192,8 +189,8 @@ public:
     int row() const { return _row; }
     void setRow(int r) { _row = r; }
 
-    // overrides
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual Id id() const { return _id; }
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void init();
     virtual khtml::RenderObject *createRenderer();
 
@@ -224,7 +221,7 @@ public:
     virtual NodeImpl *addChild(NodeImpl *child);
 
     // overrides
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 
 protected:
     // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
@@ -246,7 +243,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(AttrImpl *attr);
+    virtual void parseAttribute(AttributeImpl *attr);
 };
 
 }; //namespace
