@@ -73,7 +73,8 @@ public:
     ERR_SERVER_TIMEOUT = 49,
     ERR_SERVICE_NOT_AVAILABLE = 50,
     ERR_UNKNOWN = 51,
-    ERR_CHECKSUM_MISMATCH = 52
+    ERR_CHECKSUM_MISMATCH = 52,
+    ERR_UNKNOWN_INTERRUPT = 53
   };
 
   /**
@@ -416,7 +417,7 @@ typedef class KIOJobBase IOJob;
 typedef class KIOSlave Slave;
 typedef class KIOFilter Filter;
 
-#warning "KIO Compability is enabled, define NO_KIO_COMPATABILTY to test your code"
+#warning "KIO Compatability is enabled, define NO_KIO_COMPATABILTY to test your code"
 
 #endif // NO_KIO_COMPATABILITY
 
