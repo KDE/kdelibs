@@ -314,6 +314,11 @@ public:
    */
   void installX11EventFilter( QWidget* filter );
 
+  /**
+   * @return a truly unpredictable number in the range [0, MAX_RAND>
+   */
+  static int random();
+
 protected:
   /**
    * Used to catch X11 events
@@ -542,6 +547,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.125  1999/12/05 13:48:17  coolo
+// removing useless ::config()
+//
 // Revision 1.124  1999/11/26 17:08:10  waba
 // WABA: KUniqueApp always forks, added static KUniqueApp::start()
 //

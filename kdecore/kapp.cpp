@@ -65,9 +65,10 @@
 #include "kwm.h"
 
 #include <fcntl.h>
-#include <stdlib.h> // getenv()
+#include <stdlib.h> // getenv(), srand(), rand()
 #include <signal.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "kprocctrl.h"
 
@@ -1373,6 +1374,30 @@ QColor KApplication::activeTextColor() const
 int KApplication::contrast() const
 {
     return contrast_;
+}
+
+int KApplication::random()
+{
+   static int init = false;
+   if (!init)
+   {
+      unsigned int seed;
+      init = true;
+      int fd = open("/dev/urandom", O_RDONLY);
+      if (fd >=0)
+      {
+         if (::read(fd, &seed, sizeof(seed)) != sizeof(seed))
+         {
+            // No /dev/urandom... try something else.
+            printf("Reading from /dev/urandom failed\n");
+            srand(getpid());
+            seed = rand()+time(0);
+         }
+         close(fd);
+      }
+      srand(seed);
+   }
+   return rand();
 }
 
 
