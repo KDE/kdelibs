@@ -34,6 +34,7 @@
 
 class KSeparator;
 class KURLLabel;
+class QVBoxLayout;
 
 
 /**
@@ -311,7 +312,7 @@ class KDialogBase : public KDialog
      * Constructor for a message box mode where the buttonMask can only 
      * contain Yes No and Cancel. If you need other names you can rename
      * the buttons with @ref setButtonText The dialog box is not resizeable 
-     * by default but thi can be changed bu @ref setResizeMode If you select 
+     * by default but this can be changed by @ref setResizeMode If you select 
      * 'modal' to be true, the dialog will return Yes, No or Cancel when 
      * closed otherwise you can use the signals @ref yesClicked 
      * @ref noClicked or @ref cancelClicked to determine the state.
@@ -347,40 +348,12 @@ class KDialogBase : public KDialog
     ~KDialogBase( void );
 
     /**
-     * Use this method to make a modeless (modal = false in constructor)
-     * visible. If you reimplement this method make sure you run it 
-     * in the new method (i.e., KDialogBase::show()). Reimplemented 
-     * from @ref QWidget.
+     * Adjusts the size of the dialog to fit the contents just before
+     * QDialog::exec() or QDialog::show() is called. This method will not 
+     * be called if the dialog has been explicitly resized before 
+     * showing it.
      */
-    virtual void show( void );
-
-    /**
-     * Use this method to make a modless (modal = false in constructor)
-     * visible. If you reimplmement this method make sure you run it 
-     * in the new method (i.e., KDialogBase::show( widget )).
-     *
-     * @param centerParent Center the dialog with respect to this widget.
-     */
-    virtual void show( QWidget *centerParent );
-
-    /**
-     * Use this method to make a modless (modal = false in constructor)
-     * visible. If you reimplmement this method make sure you run it 
-     * in the new method (i.e., KDialogBase::show( widget )).
-     *
-     * Shows the dialog after setting the size. If the 'startupSize' is 
-     * smaller than the minimum size of the dialog then 'startupSize' will 
-     * be ignored. A value defined by @ref setInitialSizeStep will be 
-     * overridden by 'startupSize'. If the dialog is already visible when 
-     * you use this method then 'startupSize' will be ignored.
-     * 
-     * NOTE: Normally you should not need to set the size of the dialog. It
-     * is automatically adjusted to the minimum size. This method is intended
-     * for the rare case when this strategy is wrong.
-     *
-     * @param startupSize The initial size of the dialog.
-     */
-    virtual void show( const QSize &startupSize );
+    virtual void adjustSize( void );
 
     /**
      * Hides or displays the a separator line drawn between the action
@@ -453,7 +426,7 @@ class KDialogBase : public KDialog
 
     /**
      * Sets the page with 'index' to be displayed. This method will only 
-     * work when the dialog is using the prefefined shape of TreeList or
+     * work when the dialog is using the predefined shape of TreeList or
      * Tabbed.
      *
      * @param index Index of the page to be shown.
@@ -463,7 +436,7 @@ class KDialogBase : public KDialog
 
     /**
      * Returns the index of the active page. This method will only 
-     * work when the dialog is using the prefefined shape of TreeList or
+     * work when the dialog is using the predefined shape of TreeList or
      * Tabbed.
      *
      * @return The page index or -1 if there is no active page.
@@ -476,7 +449,7 @@ class KDialogBase : public KDialog
      * swallow control widget. If the dialog is being used in the standard
      * mode then the 'widget' must have the dialog as parent.
      *
-     * @param *widget The widget to be displayed as main widget. If it
+     * @param widget The widget to be displayed as main widget. If it
      * is 0, then the dialog will show an empty space of 100x100 pixels
      * instead.
      */
@@ -490,39 +463,38 @@ class KDialogBase : public KDialog
     QWidget *getMainWidget( void ); 
 
     /**
-     * Sets the resize mode.
-     *
-     * @param mode The resize mode. It can be ResizeFixed (no resize
-     * possible), ResizeMinimum (resize is allowed, but limited by the 
-     * minimum size) or ResizeFree (the main widget can be resized to zero
-     * size )
+     * Convenience method. Freezes the dialog size using the minimum size 
+     * of the dialog. This method should only be called right before 
+     * show() or exec().
      */
-    void setResizeMode( int mode );
+    void disableResize( void );
 
     /**
-     * Sets a size that is added to the dialog minimum size the first
-     * time it is displayed. The dialog can still be resized to its minimum
-     * size. Note: The size value will be ignored if the resize mode is
-     * ResizeFixed.
-     * 
-     * @param initialSizeStep - Value added to minimum size.
+     * Convenience method. Sets the initial dialog size. This method should 
+     * only be called right before show() or exec(). The initial size will be 
+     * ignored if smaller than the dialog's minimum size.
      *
+     * @param s Startup size.
+     * @param noResize If true the dialog can not be resized.
      */
-    void setInitialSizeStep( const QSize &initialSizeStep );
+    void setInitialSize( const QSize &s, bool noResize=false );
 
     /**
-     * Updates the size of the dialog and the resize constraints depending
-     * on the current resize mode. THis method is executed from 
-     * @ref setResizeMode so you should not need to use this method.
+     * Convenience method. Adds a size to the default minimum size of a 
+     * dialog. This method should only be called right before show() or 
+     * exec().
+     *
+     * @param s - Size added to minimum size.
+     * @param noResize If true the dialog can not be resized.
      */
-    void updateSize( void );
+    void incInitialSize( const QSize &s, bool noResize=false );
 
     /** 
      * Sets the text of the OK button. If the default parameters are used 
      * (that is, if no parameters are given) the standard texts are set:
      * The button shows "OK", the tooltip contains "Accept settings." 
      * (internationalized) and the quickhelp text explains the standard 
-     * behaviour of the OK button in dialogs. 
+     * behavior of the OK button in dialogs. 
      *
      * @param text Button text
      * @param tooltip Tooltip text
@@ -537,7 +509,7 @@ class KDialogBase : public KDialog
      * used (that is, if no parameters are given) the standard texts are set:
      * The button shows "Apply", the tooltip contains "Apply settings." 
      * (internationalized) and the quickhelp text explains the standard 
-     * behaviour of the apply button in dialogs. 
+     * behavior of the apply button in dialogs. 
      *
      * @param text Button text
      * @param tooltip Tooltip text
@@ -565,7 +537,7 @@ class KDialogBase : public KDialog
     /**
      * Sets the text of any button.
      * 
-     * @param id The button idetifier
+     * @param id The button identifier
      * @param text Button text
      */
     void setButtonText( ButtonCode id, const QString &text );
@@ -573,7 +545,7 @@ class KDialogBase : public KDialog
     /**
      * Sets the tooltip text of any button.
      * 
-     * @param id The button idetifier
+     * @param id The button identifier
      * @param text Button text
      */
     void setButtonTip( ButtonCode id, const QString &text );
@@ -581,7 +553,7 @@ class KDialogBase : public KDialog
     /**
      * Sets the "whatsthis" text of any button.
      * 
-     * @param id The button idetifier
+     * @param id The button identifier
      * @param text Button text
      */
     void setButtonWhatsThis( ButtonCode id, const QString &text );
@@ -591,15 +563,15 @@ class KDialogBase : public KDialog
      *
      * @return true if there is defined a background tile.
      */
-    static bool  haveBackgroundTile( void );
+    static bool haveBackgroundTile( void );
     
     /** 
-     * Returns a const pointer to the background tile if there is one. 
+     * Returns a  pointer to the background tile if there is one. 
      *
      * @return The tile pointer or 0 if no tile is defined.
      *
      **/
-    static const QPixmap* getBackgroundTile( void );
+    static const QPixmap *getBackgroundTile( void );
     
     /** 
      * Sets the background tile. If it is Null (0), the background
@@ -607,7 +579,7 @@ class KDialogBase : public KDialog
      *
      * @param pix The background tile
      */
-    static void  setBackgroundTile( const QPixmap *pix );
+    static void setBackgroundTile( const QPixmap *pix );
 
     /**
      * Enables of hides the background tile (if any)
@@ -632,10 +604,10 @@ class KDialogBase : public KDialog
      *
      * This method returns the contents rectangle of the work area. Place 
      * your widgets inside this rectangle, and use it to set up 
-     * their geometry. Be carefull: The rectangle is only valid after 
+     * their geometry. Be careful: The rectangle is only valid after 
      * resizing the dialog, as it is a result of the resizing process. 
      * If you need the "overhead" the dialog needs for its elements, 
-     * use getBorderWidth. 
+     * use @ref getBorderWidths. 
      */
     QRect getContentsRect( void );
 
@@ -647,7 +619,7 @@ class KDialogBase : public KDialog
      * set it as a minimum size for the resulting dialog. 
      *
      * You should not need to use this method and never if you use one of
-     * the prefined shapes.
+     * the predefined shapes.
      *
      * @param w The width of you special widget.
      * @param h The height of you special widget.
@@ -655,45 +627,46 @@ class KDialogBase : public KDialog
      * as the size of the main widget.
      */
     QSize calculateSize( int w, int h );
-    
+
     /**
-     * Emits the signal ::backgroundChanged. You never need to thouch this 
-     * method yourself. It is executred automatically.
+     * Returns the help link text. If no text has been defined, 
+     * "Get help..." (internationalized) is returned.
+     *
+     * @return The help link text.
      */
-    void  emitBackgroundChanged( void );
-  
+    QString helpLinkText( void );
+
   public slots:
     /**
      * Displays or hides the help link area on the top of the dialog.
      *
-     * @param state true will displa the area.
+     * @param state true will display the area.
      */
     void enableLinkedHelp( bool state );
 
+    /**
+     * Sets the text that is shown as the linked text. If text is empty, 
+     * the text "Get help..." (internationalized) is used instead.
+     *
+     * @param text The link text.
+     */
+    void setHelpLinkText( const QString &text );
+    
     /** 
-     * Sets the help topic, and the text that is shown as the linked text.
-     * If text is empty, the text is "Get help..."  (internationalized) 
-     * is used insread
+     * Sets the help path and topic
      *
      * @param path Path to help text
      * @param topic Topic in help text.
-     * @param text Link text.
      */
-    void setHelp( const QString &path, const QString& topic,
-		  const QString& text );
+    void setHelp( const QString &path, const QString &topic );
+
     /** 
      * Connected to help link label. 
      */
     void helpClickedSlot( const QString & );
 
     /** 
-     * Initializes the minimum size of the dialog. You do not need to
-     * use this method. It is used automatically in @ref show.
-     */
-    void initializeGeometry( void );
-
-    /** 
-     * This methos is called automatically whenever the background has 
+     * This method is called automatically whenever the background has 
      * changed. You do not need to use this method.
      */
     void updateBackground( void );
@@ -797,7 +770,7 @@ class KDialogBase : public KDialog
      * code.
      *
      * @return The widget or 0 if the predefined layout mode is not Plain
-     * or if you don't use any predefined layout
+     *         or if you don't use any predefined layout
      */
     QFrame *plainPage( void );
 
@@ -807,24 +780,16 @@ class KDialogBase : public KDialog
      * this particular page.
      *
      * @param item Name used in the list (TreeList mode) or Tab name 
-     * (Tabbed mode).
+     *        (Tabbed mode).
      * @param header Header text use in TreeList mode. Ignored in Tabbed 
-     * mode. If empty, the item text is used instead.
+     *        mode. If empty, the item text is used instead.
      *
      * @return The page widget which must be used as the toplevel widget for
-     * the page.
+     *         the page.
      */
     QFrame  *addPage( const QString &item, 
                       const QString &header=QString::null );
 
-    /**
-     * The resize event handler. Takes care of position the components of
-     * the dialog. If you subclass KDialogBase and need to define you own
-     * resizeEvent, then make sure you the original resizeEvent it executed as
-     * well: From your resizeEvent do KDialogBase::resizeEvent().
-     */
-    virtual void resizeEvent( QResizeEvent * );
-    
     /**
      * Maps some keys to the actions buttons. F1 is mapped to the Help
      * button if present and Escape to the Cancel or Close if present. The
@@ -921,28 +886,22 @@ class KDialogBase : public KDialog
     virtual void applyPressed( void );
 
     /**
-     * Initializes geometry and resizes to the minimum size. 
+     * Updates the margins and spacings. 
      */
     void updateGeometry( void );
 
   private:
+    /**
+     * Prepares the layout that manages the widgets of the dialog
+     */
+    void setupLayout( void );
+
     /**
      * Prepares a relay that is used to send signals between
      * all KDialogBase instances of a program. Should only be used in the 
      * constructor.
      */
     void makeRelay( void );
-
-    /**
-     * Makes the help link area. Should only be used in the 
-     * constructor.
-     */
-    void makeUrlBox( void );
-    
-    /**
-     * Updates the geometry of the help link area box.
-     */
-    void setUrlBoxGeometry( void );
 
     /**
      * Makes the button box and all the buttons in it. This method must 
@@ -964,29 +923,23 @@ class KDialogBase : public KDialog
      * Returns the action button that corresponds to the id.
      *
      * @param id Integer identifier of the button.
-     * @return The action button or 0 if the button does not exists
+     * @return The action button or 0 if the button does not exists.
      * 
      */
-    QPushButton *getButton( ButtonCode id );
- 
+    QPushButton *actionButton( ButtonCode id );
+
     /**
      * Sets the action button that is marked as default and has focus.
      *
-     * @param p The action button
+     * @param p The action button.
      * @param isDefault If true, make the button default 
      * @param isFocus If true, give the button focus.
      */
     void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
 
-    /**
-     * This method is ran once in the for a KDialogBase object. It is done
-     * automatically in @ref show Never use this method yourself.
-     */
-    void activateCore( void );
-
   private slots:
     /**
-     * Sets the action button order accoring to the 'style'.
+     * Sets the action button order according to the 'style'.
      *
      * @param style The style index.
      */
@@ -994,6 +947,7 @@ class KDialogBase : public KDialog
 
     
   private:
+    QVBoxLayout  *mTopLayout;
     QWidget      *mMainWidget;
     KURLLabel    *mUrlHelp;
     KJanusWidget *mJanus;
@@ -1004,15 +958,13 @@ class KDialogBase : public KDialog
 
     QString mHelpPath;
     QString mHelpTopic;
+    QString mHelpLinkText;
 
     static KDialogBaseTile *mTile;
     bool   mShowTile;
 
     bool mMessageBoxMode;
     ButtonCode mEscapeButton;
-
-    int   mResizeMode;
-    QSize mInitialSizeStep;
 };
 
 

@@ -23,18 +23,18 @@
 #include <iostream.h>
 #include <stdlib.h>
 
+#include <qlayout.h> 
 #include <qlist.h> 
 #include <qtooltip.h>
 #include <qwhatsthis.h>
 
-#include <kdialogbase.h>
 #include <kapp.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kseparator.h>
 #include <kurllabel.h>
 
-template QList<QPushButton>;
+#include "kdialogbase.h"
 
 KDialogBaseTile *KDialogBase::mTile = 0;
 
@@ -45,17 +45,19 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  const QString &user1, const QString &user2,
 			  const QString &user3 )
   :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder),
-   mMainWidget(0), mJanus(0), mActionSep(0), mIsActivated(false),
-   mShowTile(false), mMessageBoxMode(false), mResizeMode(ResizeMinimum)
+   mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(false)
 {
   setCaption( caption );
 
   makeRelay();
-  makeUrlBox();
   connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
 
   enableButtonSeparator( separator );
   makeButtonBox( buttonMask, defaultButton, user1, user2, user3 );
+  
+  mIsActivated = true;
+  setupLayout();
 }
 
 
@@ -65,20 +67,22 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 			  bool separator, const QString &user1, 
 			  const QString &user2, const QString &user3 )
   :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder ),
-   mMainWidget(0), mJanus(0), mActionSep(0), mIsActivated(false),
-   mShowTile(false), mMessageBoxMode(false), mResizeMode(ResizeMinimum)
+   mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(false)
 {
   setCaption( caption );
 
   makeRelay();
-  makeUrlBox();
   connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
-
+  
   mJanus = new KJanusWidget( this, "janus", dialogFace );
   if( mJanus == 0 || mJanus->isValid() == false ) { return; }
 
   enableButtonSeparator( separator );
   makeButtonBox( buttonMask, defaultButton, user1, user2, user3 );
+
+  mIsActivated = true;
+  setupLayout();
 }
 
 
@@ -88,14 +92,13 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 			  bool separator, const QString &yes,
 			  const QString &no, const QString &cancel )
   :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder ),
-   mMainWidget(0), mJanus(0), mActionSep(0), mIsActivated(false),
-   mShowTile(false), mMessageBoxMode(true), mEscapeButton(escapeButton),
-   mResizeMode(ResizeFixed)
+   mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
+   mEscapeButton(escapeButton)
 {
   setCaption( caption );
 
   makeRelay();
-  makeUrlBox();
   connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
 
   enableButtonSeparator( separator );
@@ -104,12 +107,49 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 
   makeButtonBox( buttonMask, defaultButton, no, yes, QString::null );
   setButtonCancelText( cancel );
+
+  mIsActivated = true;
+  setupLayout();
 }
 
 
 
 KDialogBase::~KDialogBase( void )
 {
+}
+
+
+void KDialogBase::setupLayout( void )
+{
+  if( mTopLayout != 0 ) 
+  {
+    delete mTopLayout;
+  }
+  mTopLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
+
+  if( mUrlHelp != 0 )
+  {
+    mTopLayout->addWidget( mUrlHelp, 0, AlignRight );
+  }
+
+  if( mJanus != 0 )
+  {
+    mTopLayout->addWidget( mJanus, 10 );
+  }
+  else if( mMainWidget != 0 )
+  {
+    mTopLayout->addWidget( mMainWidget, 10 );
+  }
+
+  if( mActionSep != 0 )
+  {
+    mTopLayout->addWidget( mActionSep );
+  }
+
+  if( mButton.box != 0 )
+  {
+    mTopLayout->addWidget( mButton.box );
+  }
 }
 
 
@@ -128,7 +168,6 @@ void KDialogBase::makeRelay( void )
     connect( mTile, SIGNAL(pixmapChanged()), this, SLOT(updateBackground()) );
     connect( kapp, SIGNAL(aboutToQuit()), mTile, SLOT(cleanup()) );
   }
-
 }
 
 
@@ -142,6 +181,7 @@ void KDialogBase::enableButtonSeparator( bool state )
     }
     mActionSep = new KSeparator( this );
     mActionSep->setFocusPolicy(QWidget::NoFocus);
+    mActionSep->show();
   }
   else
   {
@@ -151,13 +191,11 @@ void KDialogBase::enableButtonSeparator( bool state )
     }
     delete mActionSep; mActionSep = 0;
   }
-
-  if( isVisible() == false )
+ 
+  if( mIsActivated == true )
   {
-    return;
+    setupLayout();
   }
-
-  updateGeometry();
 }
 
 
@@ -168,122 +206,107 @@ QFrame *KDialogBase::plainPage( void )
 }
 
 
-void KDialogBase::show( void )
+
+void KDialogBase::adjustSize( void )
 {
-  activateCore();
+  int m = marginHint();
+  int s = spacingHint();
 
-  if( isVisible() == true )
+  QSize s1(0,0);
+  QSize s2(0,0);
+
+  //
+  // Url help area
+  //
+  if( mUrlHelp != 0 )
   {
-    raise();
+    s2 = mUrlHelp->minimumSize() + QSize( 0, s );
   }
-  else
-  {
-    QDialog::show();
+  s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
+  s1.rheight() += s2.rheight();
 
-    //
-    // 1999-09-09-ES
-    // Sometimes it seems that the dialog needs to be kicked into orbit. 
-    // This is either a Qt error or something I don't understand because 
-    // the dialog is not redrawn until an event occurs (mouse movement, 
-    // timer etc).
-    //
-    kapp->processOneEvent();
-  }
-}
-
-
-void KDialogBase::show( QWidget *centerParent )
-{
-  activateCore();
-
-  if( centerParent != 0 )
-  {
-    QPoint point = centerParent->mapToGlobal( QPoint(0,0) );
-    QRect pos    = centerParent->geometry();
-    setGeometry( point.x() + pos.width()/2  - width()/2,
-		 point.y() + pos.height()/2 - height()/2, 
-		 width(), height() );
-  }
-  
-  if( isVisible() == true )
-  {
-    raise();
-  }
-  else
-  {
-    QDialog::show();
-    kapp->processOneEvent(); // See explanation above
-  }
-}
-
-
-void KDialogBase::show( const QSize &startupSize )
-{
-  activateCore();
-
-  if( isVisible() == true )
-  {
-    raise();
-  }
-  else
-  {
-    resize( startupSize.expandedTo(minimumSize()) );
-    QDialog::show();
-    kapp->processOneEvent(); // See explanation above
-  }
-}
-
-
-
-void KDialogBase::activateCore( void )
-{
-  if( mIsActivated == true )
-  {
-    return;
-  }
-
-  mIsActivated = true;
-  initializeGeometry();
-
-  if( mResizeMode != ResizeFixed )
-  {
-    resize( minimumSize() + mInitialSizeStep.expandedTo( QSize(0,0) ) );
-  }
-
+  //
+  // User widget
+  //
   if( mJanus != 0 )
   {
-    mJanus->showPage(0);
-    mJanus->setFocus();
+    s2 = mJanus->minimumSizeHint() + QSize( 0, s );
   }
   else if( mMainWidget != 0 )
   {
-    // To be decided
+    s2 = mMainWidget->sizeHint() + QSize( 0, s );
+    s2 = s2.expandedTo( mMainWidget->minimumSize() );
+    s2 = s2.expandedTo( mMainWidget->minimumSizeHint() );
+    if( s2.isEmpty() == true )
+    {
+      s2 = QSize( 100, 100+s );
+    }
+  }
+  else
+  {
+    s2 = QSize( 100, 100+s );
+  }
+  s1.rwidth()  = QMAX( s1.rwidth(), s2.rwidth() );
+  s1.rheight() += s2.rheight();
+
+  //
+  // Button separator
+  //
+  if( mActionSep != 0 ) 
+  { 
+    s1.rheight() += mActionSep->minimumSize().height() + s;
+  }
+
+  //
+  // The button box
+  //
+  s2 = mButton.box->minimumSize();
+  s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
+  s1.rheight() += s2.rheight();
+
+  //
+  // Outer margings
+  //
+  s1.rheight() += 2*m;
+  s1.rwidth()  += 2*m;
+
+  resize( s1 );
+}
+
+
+void KDialogBase::disableResize( void )
+{
+  adjustSize();
+  setFixedSize( sizeHint() );
+}
+
+
+void KDialogBase::setInitialSize( const QSize &s, bool noResize )
+{
+  adjustSize();
+  if( noResize == true )
+  {
+    setFixedSize( s.expandedTo( sizeHint() ) );
+  }
+  else
+  {
+    resize( s.expandedTo( sizeHint() ) );
   }
 }
 
-void KDialogBase::makeUrlBox( void )
+
+void KDialogBase::incInitialSize( const QSize &s, bool noResize )
 {
-  QWidget *box = new QWidget( this );
-  QHBoxLayout *hbox = new QHBoxLayout( box );
-  hbox->addSpacing( marginHint() );
-  mUrlHelp = new KURLLabel( box, "url" );
-  mUrlHelp->setText(i18n("Get help..."));
-  connect(mUrlHelp,SIGNAL(leftClickedURL(const QString &)),
-	  SLOT(helpClickedSlot(const QString &)));
-  hbox->addWidget( mUrlHelp, 10, AlignRight );
-  hbox->addSpacing( marginHint() );
-  box->hide();
+  adjustSize();
+  if( noResize == true )
+  {
+    setFixedSize( s.expandedTo(QSize(0,0))+sizeHint() );
+  }
+  else
+  {
+    resize( s.expandedTo(QSize(0,0))+sizeHint() );
+  }
 }
-
-
-void KDialogBase::setUrlBoxGeometry( void )
-{
-  QWidget *box = mUrlHelp->parentWidget();
-  box->setMinimumHeight( fontMetrics().height() + marginHint() );
-  mUrlHelp->setMinimumHeight( fontMetrics().height() + marginHint() );
-  mUrlHelp->setAlignment( AlignBottom );
-}
-
 
 
 void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
@@ -367,7 +390,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
     connect( pb, SIGNAL(clicked()), this, SLOT(slotClose()) );
   }
   
-  QPushButton *pb = getButton( defaultButton );
+  QPushButton *pb = actionButton( defaultButton );
   if( pb != 0 )
   {
     setButtonFocus( pb, true, true );
@@ -401,8 +424,6 @@ void KDialogBase::setButtonStyle( int style )
     delete mButton.box->layout();
   }
   QHBoxLayout *hbox = new QHBoxLayout( mButton.box, 0, spacingHint() );
-  hbox->addSpacing( marginHint() ); // always
-
 
   if( mMessageBoxMode == true )
   {
@@ -419,43 +440,43 @@ void KDialogBase::setButtonStyle( int style )
 
     if( mButton.mask & Help & layout[i] )
     {
-      hbox->addWidget( getButton( Help ) ); numButton++;
+      hbox->addWidget( actionButton( Help ) ); numButton++;
     }
     else if( mButton.mask & Default & layout[i] )
     {
-      hbox->addWidget( getButton( Default ) ); numButton++;
+      hbox->addWidget( actionButton( Default ) ); numButton++;
     }
     else if( mButton.mask & User3 & layout[i] )
     {
-      hbox->addWidget( getButton( User3 ) ); numButton++;
+      hbox->addWidget( actionButton( User3 ) ); numButton++;
     }
     else if( mButton.mask & User2 & layout[i] )
     {
-      hbox->addWidget( getButton( User2 ) ); numButton++;
+      hbox->addWidget( actionButton( User2 ) ); numButton++;
     }
     else if( mButton.mask & User1 & layout[i] )
     {
-      hbox->addWidget( getButton( User1 ) ); numButton++;
+      hbox->addWidget( actionButton( User1 ) ); numButton++;
     }
     else if( mButton.mask & Ok & layout[i] )
     {
-      hbox->addWidget( getButton( Ok ) ); numButton++;
+      hbox->addWidget( actionButton( Ok ) ); numButton++;
     }
     else if( mButton.mask & Apply & layout[i] )
     {
-      hbox->addWidget( getButton( Apply ) ); numButton++;
+      hbox->addWidget( actionButton( Apply ) ); numButton++;
     }
     else if( mButton.mask & Try & layout[i] )
     {
-      hbox->addWidget( getButton( Try ) ); numButton++;
+      hbox->addWidget( actionButton( Try ) ); numButton++;
     } 
     else if( mButton.mask & Cancel & layout[i] )
     {
-      hbox->addWidget( getButton( Cancel ) ); numButton++;
+      hbox->addWidget( actionButton( Cancel ) ); numButton++;
     }
     else if( mButton.mask & Close & layout[i] )
     {
-      hbox->addWidget( getButton( Close ) ); numButton++;
+      hbox->addWidget( actionButton( Close ) ); numButton++;
     }
     else
     {
@@ -469,12 +490,11 @@ void KDialogBase::setButtonStyle( int style )
 
   }
 
-  hbox->addSpacing( marginHint() ); // always
-  mButton.resize( true, marginHint(), spacingHint() );
+  mButton.resize( true, 0, spacingHint() );
 }
 
 
-QPushButton *KDialogBase::getButton( ButtonCode id )
+QPushButton *KDialogBase::actionButton( ButtonCode id )
 {
   return( mButton.button(id) );
 }
@@ -482,7 +502,7 @@ QPushButton *KDialogBase::getButton( ButtonCode id )
 
 void KDialogBase::enableButton( ButtonCode id, bool state )
 {
-  QPushButton *pb = getButton( id );
+  QPushButton *pb = actionButton( id );
   if( pb != 0 )
   {
     pb->setEnabled( state );
@@ -510,7 +530,7 @@ void KDialogBase::enableButtonCancel( bool state )
 
 void KDialogBase::showButton( ButtonCode id, bool state )
 {
-  QPushButton *pb = getButton( id );
+  QPushButton *pb = actionButton( id );
   if( pb != 0 )
   {
     state ? pb->show() : pb->hide();
@@ -540,7 +560,7 @@ void KDialogBase::setButtonOKText( const QString &text,
 				   const QString &tooltip,
 				   const QString &quickhelp )
 {
-  QPushButton *pb = getButton( Ok );
+  QPushButton *pb = actionButton( Ok );
   if( pb == 0 )
   {
     return;
@@ -561,7 +581,7 @@ void KDialogBase::setButtonApplyText( const QString &text,
 				      const QString &tooltip,
 				      const QString &quickhelp )
 {
-  QPushButton *pb = getButton( Apply );
+  QPushButton *pb = actionButton( Apply );
   if( pb == 0 )
   {
     return;
@@ -583,7 +603,7 @@ void KDialogBase::setButtonCancelText( const QString& text,
 				       const QString& tooltip, 
 				       const QString& quickhelp )
 {
-  QPushButton *pb = getButton( Cancel );
+  QPushButton *pb = actionButton( Cancel );
   if( pb == 0 )
   {
     return;
@@ -604,7 +624,7 @@ void KDialogBase::setButtonCancelText( const QString& text,
 
 void KDialogBase::setButtonText( ButtonCode id, const QString &text )
 {
-  QPushButton *pb = getButton( id );
+  QPushButton *pb = actionButton( id );
   if( pb != 0 )
   {
     pb->setText( text );
@@ -614,7 +634,7 @@ void KDialogBase::setButtonText( ButtonCode id, const QString &text )
 
 void KDialogBase::setButtonTip( ButtonCode id, const QString &text )
 {
-  QPushButton *pb = getButton( id );
+  QPushButton *pb = actionButton( id );
   if( pb != 0 )
   {
     QToolTip::add( pb, text );
@@ -624,7 +644,7 @@ void KDialogBase::setButtonTip( ButtonCode id, const QString &text )
 
 void KDialogBase::setButtonWhatsThis( ButtonCode id, const QString &text )
 {
-  QPushButton *pb = getButton( id );
+  QPushButton *pb = actionButton( id );
   if( pb != 0 )
   {
     QWhatsThis::add( pb, text );
@@ -738,48 +758,56 @@ void KDialogBase::applyPressed( void )
 
 void KDialogBase::enableLinkedHelp( bool state )
 {
-  /*
-  if( mButton.mask & Help )
+  if( state == true )
   {
-    state = false; // Do not show Help button and link at the same time.
-  }
-  */
-
-  QWidget *box = mUrlHelp->parentWidget();
-  if( box->isVisible() == state )
-  {
-    return;
-  }
-
-  QSize s;
-  if( state == false )
-  {
-    box->hide();
-    s = size() - QSize(0,box->minimumSize().height());
-    setMinimumSize( minimumSize() - QSize(0,box->minimumSize().height()) );
+    if( mUrlHelp != 0 )
+    {
+      return;
+    }
+  
+    mUrlHelp = new KURLLabel( this, "url" );
+    mUrlHelp->setText( helpLinkText() );
+    mUrlHelp->setFloat(true);
+    mUrlHelp->setUnderline(true);
+    if( mShowTile == true && mTile->get() != 0 )
+    { 
+      mUrlHelp->setBackgroundPixmap(*mTile->get());
+    }
+    mUrlHelp->setMinimumHeight( fontMetrics().height() + marginHint() );
+    connect(mUrlHelp,SIGNAL(leftClickedURL(const QString &)),
+	    SLOT(helpClickedSlot(const QString &)));
+    mUrlHelp->show();
   }
   else
   {
-    setUrlBoxGeometry();
-    box->show();
-    s = size() + QSize(0,box->minimumSize().height());
-    setMinimumSize( minimumSize() + QSize(0,box->minimumSize().height()) );
+    if( mUrlHelp == 0 )
+    {
+      return;
+    }
+    delete mUrlHelp; mUrlHelp = 0;
   }
-
+ 
   if( mIsActivated == true )
   {
-    resize(s);
+    setupLayout();
   }
 }
 
 
-void KDialogBase::setHelp( const QString &path, const QString &topic,
-			   const QString &text )
+void KDialogBase::setHelp( const QString &path, const QString &topic )
 {
   mHelpPath  = path;
   mHelpTopic = topic;
-  mUrlHelp->setText( text=="" ? i18n("Get help...") : text );
-  //enableLinkedHelp( path.isEmpty() == true ? false : true );
+}
+
+
+void KDialogBase::setHelpLinkText( const QString &text )
+{
+  mHelpLinkText = text;
+  if( mUrlHelp != 0 )
+  {
+    mUrlHelp->setText( helpLinkText() );
+  }
 }
 
 
@@ -801,7 +829,11 @@ void KDialogBase::setMainWidget( QWidget *widget )
   else
   {
     mMainWidget = widget;
-    initializeGeometry();
+    if( mIsActivated == true )
+    {
+      setupLayout();
+    }
+
   }
 }
 
@@ -828,7 +860,7 @@ QRect KDialogBase::getContentsRect( void )
 {
   QRect r;
   r.setLeft( marginHint() );
-  r.setTop( marginHint() + mUrlHelp->isVisible() ? mUrlHelp->height() : 0 );
+  r.setTop( marginHint() + (mUrlHelp != 0 ? mUrlHelp->height() : 0) );
   r.setRight( width() - marginHint() );
   int h = (mActionSep==0?0:mActionSep->minimumSize().height()+marginHint());
   r.setBottom( height() - mButton.box->minimumSize().height() - h );
@@ -841,9 +873,9 @@ void KDialogBase::getBorderWidths(int& ulx, int& uly, int& lrx, int& lry) const
 {
   ulx = marginHint();
   uly = marginHint();
-  if( mUrlHelp->isVisible() == true )
+  if( mUrlHelp != 0  )
   {
-    uly += mUrlHelp->parentWidget()->minimumSize().height();
+    uly += mUrlHelp->minimumSize().height();
   }
 
   lrx = marginHint();
@@ -863,146 +895,18 @@ QSize KDialogBase::calculateSize(int w, int h)
 }
 
 
-void KDialogBase::setResizeMode( int mode )
+QString KDialogBase::helpLinkText( void )
 {
-  mResizeMode = mode;
-  initializeGeometry();
-}
-
-
-void KDialogBase::setInitialSizeStep( const QSize &initialSizeStep )
-{
-  mInitialSizeStep = initialSizeStep;
-}
-
-
-void KDialogBase::updateSize( void )
-{
-  if( mResizeMode == ResizeFree )
-  {
-    cout << "KDialogBase: FreeResize not yet implemented" << endl;
-    resize( minimumSize() );
-  }
-  else if( mResizeMode == ResizeFixed )
-  {
-    setFixedSize( minimumSize() );
-    resize( minimumSize() );
-  }
-  else
-  {
-    resize( minimumSize() );
-  }
+  return( mHelpLinkText==QString::null ? i18n("Get help...") : mHelpLinkText );
 }
 
 
 void KDialogBase::updateGeometry( void )
 {
-  setUrlBoxGeometry();
-  setButtonStyle( mButton.style );
-  initializeGeometry();
-}
-
-
-void KDialogBase::initializeGeometry( void )
-{
-  int m = marginHint();
- 
-  QWidget *box = mUrlHelp->parentWidget();
-  QSize s1 = box->isVisible() == true ? box->minimumSize() : QSize(0,0);
-
-  //
-  // Get the minimum size of the janus widget or the custom main widget
-  //
-  QSize s2;
-  if( mJanus != 0 )
+  if( mTopLayout != 0 )
   {
-    s2 = mJanus->minimumSizeHint();
-  }
-  else if( mMainWidget != 0 )
-  {
-    s2 = mMainWidget->minimumSize() + QSize(0,1); // Required for QTextView
-    if( s2.isEmpty() == true )
-    {
-      s2 = mMainWidget->minimumSizeHint();
-      if( s2.isEmpty() == true )
-      {
-	s2 = mMainWidget->sizeHint();
-	if( s2.isEmpty() == true )
-	{
-	  s2 = QSize( 100, 100 ); // Default size
-	}
-      }
-    }
-  }
-  else
-  {
-    s2 = QSize( 100, 100 ); // Default size
-  }
-
-  QSize s3 = mButton.box->minimumSize();
-  if( mActionSep != 0 ) 
-  { 
-    s3.rheight() += mActionSep->minimumSize().height() + m;
-  }
-
-  //
-  // Add the margin size. Note that the empty area above the 
-  // buttons inside the button box is used as the margin below the mJanus
-  // widget. If there is a separator above the box, then there is already
-  // added a margin size unit above the separator (see above)
-  //
-  QSize s4( 2*m, m );
-
-  int w = QMAX( s1.width(), s2.width() );
-  w = QMAX( w, s3.width() ) + s4.width();
-  int h = s1.height() + s2.height() + s3.height() + s4.height();
-
-  setMinimumSize( w, h );
-
-  if( mIsActivated == true )
-  {
-    updateSize();
-  }
-}
-
-
-void KDialogBase::resizeEvent( QResizeEvent * )
-{
-  int m = marginHint();
-
-  //
-  // The url link box
-  //
-  QWidget *box = mUrlHelp->parentWidget();
-  QSize s1 = (box->isVisible() == false ? QSize(0,0) : box->minimumSize() );
-  box->setGeometry( 0, 0, width(), s1.height() );
-
-  //
-  // Action button box and (optional) separator. Note that there is an extra
-  // marginHint() above the separator.
-  //
-  QSize s2 = mButton.box->minimumSize();
-  mButton.box->setGeometry( 0, height()-s2.height(), width(), s2.height() );
-  if( mActionSep != 0 )
-  {
-    int h = mActionSep->minimumSize().height();
-    mActionSep->setGeometry( m, height() - s2.height() - h, width()-2*m, h );
-    s2.rheight() += h + m;
-  }
-  
-  //
-  // Finally the janus widget or the custom main widget that takes up 
-  // the rest of the space
-  //
-  if( mJanus != 0 )
-  {
-    mJanus->setGeometry( m, s1.height()+m, width()-2*m,
-			 height()-s1.height()-s2.height()-m );
-  }
-  else if( mMainWidget != 0 )
-  {
-    mMainWidget->setGeometry( m, s1.height()+m, width()-2*m,
-			      height()-s1.height()-s2.height()-m );
+    mTopLayout->setMargin( marginHint() );
+    mTopLayout->setSpacing(spacingHint() );
   }
 }
 
@@ -1018,7 +922,7 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
   {
     if( e->key() == Key_F1 )
     {
-      QPushButton *pb = getButton( Help );
+      QPushButton *pb = actionButton( Help );
       if( pb != 0 )
       {
 	pb->animateClick();
@@ -1028,7 +932,7 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
     }
     if( e->key() == Key_Escape )
     {
-      QPushButton *pb = getButton( mEscapeButton );
+      QPushButton *pb = actionButton( mEscapeButton );
       if( pb != 0 )
       {
 	pb->animateClick();
@@ -1056,7 +960,7 @@ void KDialogBase::hideEvent( QHideEvent * )
 
 void KDialogBase::closeEvent( QCloseEvent *e )
 {
-  QPushButton *pb = getButton( mEscapeButton );
+  QPushButton *pb = actionButton( mEscapeButton );
   if( pb != 0 )
   {
     pb->animateClick();
@@ -1115,27 +1019,23 @@ void KDialogBase::showTile( bool state )
   if( mShowTile == false || mTile == 0 || mTile->get() == 0 )
   {
     setBackgroundMode(PaletteBackground);
-    mUrlHelp->parentWidget()->setBackgroundMode(PaletteBackground);
     mButton.box->setBackgroundMode(PaletteBackground);
-    mUrlHelp->setTransparentMode( false );
+    if( mUrlHelp != 0 )
+    {
+      mUrlHelp->setBackgroundMode(PaletteBackground);
+    }
   }
   else
   {
     const QPixmap *pix = mTile->get();
     setBackgroundPixmap(*pix);
-    mUrlHelp->parentWidget()->setBackgroundPixmap(*pix);
     mButton.box->setBackgroundPixmap(*pix);
-    mUrlHelp->setTransparentMode( true );
+    if( mUrlHelp != 0 )
+    {
+      mUrlHelp->setBackgroundPixmap(*pix);
+    }
   }
 }
-
-
-void KDialogBase::emitBackgroundChanged( void )
-{
-  emit backgroundChanged();
-}
-
-
 
 
 
