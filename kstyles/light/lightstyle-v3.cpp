@@ -24,6 +24,7 @@
 
 #include "qmenubar.h"
 #include "qapplication.h"
+#include "qcheckbox.h"
 #include "qpainter.h"
 #include "qpalette.h"
 #include "qframe.h"
@@ -1094,6 +1095,23 @@ QRect LightStyleV3::subRect(SubRect subrect, const QWidget *widget) const
 	    rect.addCoords( -1, -1, 1, 1 );
 	    break;
 	}
+
+	case SR_CheckBoxFocusRect:
+	{
+		const QCheckBox* cb = static_cast<const QCheckBox*>(widget);
+
+		//Only checkbox, no label
+		if (cb->text().isEmpty() && (cb->pixmap() == 0) )
+		{
+			QRect bounding = cb->rect();
+			QRect checkbox(bounding.x(), bounding.y() + (bounding.height() - 13)/2,
+							13, 13);
+
+			return checkbox;
+		}
+		//Fallthrough intentional
+	}
+
 
     default:
 	rect = QCommonStyle::subRect(subrect, widget);
