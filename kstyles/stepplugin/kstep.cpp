@@ -191,7 +191,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         subPageX = addX + buttonDim + 1;
         sub.setRect(2, offsetY, buttonDim, buttonDim);
         add.setRect(addX, offsetY, buttonDim, buttonDim);
-        subPage.setRect(subPageX, offsetY, sliderStart-1, extent-4);
+        subPage.setRect(subPageX, offsetY, sliderStart-subPageX, extent-4);
         addPage.setRect(sliderEnd, offsetY, len-sliderEnd-2, extent-4);
         slider.setRect(sliderStart, offsetY, sliderLength, extent-4);
     }
