@@ -54,6 +54,14 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
+<!ENTITY % Bulgarian "IGNORE">
+<![%Afrikaans;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Bulgarian Documentation V1.0//BG"
+           "../bg/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
 <!ENTITY % Catalan "IGNORE">
 <![%Catalan;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Catalan Documentation V1.0//CA"
@@ -134,6 +142,14 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
+<!ENTITY % Faroese "IGNORE">
+<![%Finnish;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Faroese Documentation V1.0//FO"
+           "../fo/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
 <!ENTITY % French "IGNORE">
 <![%French;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES French Documentation V1.0//FR"
@@ -186,6 +202,14 @@
 <![%Korean;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Korean Documentation V1.0//KO"
            "../ko/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Lituanian "IGNORE">
+<![%Korean;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Lituanian Documentation V1.0//LT"
+           "../lt/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
@@ -308,6 +332,22 @@
 <![%Ukrainian;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Ukrainian Documentation V1.0//UK"
            "../uk/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Walloon "IGNORE">
+<![%Ukrainian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Walloon Documentation V1.0//WA"
+           "../wa/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Xhosa "IGNORE">
+<![%Ukrainian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Xhosa Documentation V1.0//XH"
+           "../xh/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
