@@ -37,12 +37,24 @@
 
 using namespace Arts;
 
+class Arts::ResamplerPrivate {
+public:
+	bool underrun;	
+};
+
 Resampler::Resampler(Refiller *refiller) :
 	dropBytes(0), refiller(refiller), pos(0.0), step(1.0), channels(2),
 	bits(16),
 	block(0), haveBlock(-1)
 {
+	d = new ResamplerPrivate();
+	d->underrun = false;
 	updateSampleSize();
+}
+
+Resampler::~Resampler()
+{
+	delete d;
 }
 
 void Resampler::updateSampleSize()
@@ -68,6 +80,11 @@ void Resampler::setBits(int newBits)
 	updateSampleSize();
 }
 
+bool Resampler::underrun()
+{
+	return d->underrun;
+}
+
 void Resampler::ensureRefill()
 {
 	if(haveBlock == block) return;
@@ -77,6 +94,8 @@ void Resampler::ensureRefill()
 	{
 		missing = bufferSize+sampleSize
 				- refiller->read(buffer,bufferSize+sampleSize);
+
+		d->underrun = (missing == bufferSize+sampleSize);
 	}
 	else
 	{
@@ -93,8 +112,14 @@ void Resampler::ensureRefill()
 		{
 			missing = bufferSize
 					- refiller->read(&buffer[sampleSize], bufferSize);
+
+			d->underrun = (missing == bufferSize);
 		}
-		else missing = bufferSize;
+		else
+		{
+			missing = bufferSize;
+			d->underrun = true;
+		}
 	}
 	haveBlock++;
 	assert(haveBlock == block);

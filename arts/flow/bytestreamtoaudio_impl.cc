@@ -30,10 +30,11 @@ using namespace Arts;
 
 
 class PacketRefiller : public Refiller {
-public:
+protected:
 	queue< DataPacket<mcopbyte>* > inqueue;
 	int pos;
 
+public:
 	PacketRefiller() : pos(0)
 	{
 	}
@@ -73,10 +74,9 @@ class ByteStreamToAudio_impl : public ByteStreamToAudio_skel,
 	PacketRefiller refiller;
 	Resampler resampler;
 	long _samplingRate, _channels, _bits;
-	bool _running;
 public:
 	ByteStreamToAudio_impl() :resampler(&refiller),
-			_samplingRate(44100), _channels(2), _bits(16), _running(false)
+			_samplingRate(44100), _channels(2), _bits(16)
 	{
 		//
 	}
@@ -99,7 +99,7 @@ public:
 		resampler.setBits(_bits);
 	}
 
-	bool running() { return _running; }
+	bool running() { return !resampler.underrun(); }
 
 	void process_indata(DataPacket<mcopbyte> *packet)
 	{

@@ -267,3 +267,17 @@ unsigned long uni_convert_stereo_2float(
 	}
 	return doSamples;
 }
+
+// undefine all that stuff (due to --enable-final)
+#undef compose_16le
+#undef conv_16le_float
+#undef convert_16le_float
+#undef conv_8_float
+#undef convert_8_float
+#undef datatype_16le
+#undef datasize_16le
+#undef datatype_8
+#undef datasize_8
+#undef datatype_float
+#undef datasize_float
+#undef mk_converter

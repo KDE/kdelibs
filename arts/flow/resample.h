@@ -32,6 +32,8 @@ public:
 	virtual ~Refiller();
 };
 
+class ResamplerPrivate;
+
 class Resampler {
 protected:
 	static const unsigned int bufferSize = 256;		//  64 samples in buffer
@@ -55,10 +57,14 @@ protected:
 	void ensureRefill();
 public:
 	Resampler(Refiller *refiller);
+	~Resampler();
+
 	void setStep(double step);
 	void setChannels(int channels);
 	void setBits(int bits);
 	void run(float *left, float *right, unsigned long samples);
+
+	bool underrun();
 };
 
 };
