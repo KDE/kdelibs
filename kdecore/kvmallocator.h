@@ -26,6 +26,7 @@
 #define KVMALLOCATOR_H
 
 #include <sys/types.h>
+#include "kdemacros.h"
 
 class KVMAllocatorPrivate;
 
@@ -80,7 +81,7 @@ public:
      * @deprecated
      * @see copyBlock
      */
-    void copy(void *dest, Block *src, int _offset = 0, size_t length = 0);
+    void copy(void *dest, Block *src, int _offset = 0, size_t length = 0) KDE_DEPRECATED;
      
     /**
      * Copy @p length bytes from normal memory at address @p src to 
@@ -98,7 +99,7 @@ public:
      * @deprecated
      * @see copyBlock
      */
-    void copy(Block *dest, void *src, int _offset = 0, size_t length = 0);  
+    void copy(Block *dest, void *src, int _offset = 0, size_t length = 0) KDE_DEPRECATED;  
 
     /**
      * Map a virtual memory block in memory

@@ -27,6 +27,7 @@
 #ifndef   __net_wm_h
 #define   __net_wm_h
 
+#include "kdemacros.h"
 #include <qwidget.h>
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -106,7 +107,7 @@ public:
         to the first element of the properties array in the above constructor.
     **/
     NETRootInfo(Display *display, Window supportWindow, const char *wmName,
-		unsigned long properties, int screen = -1, bool doActivate = true);
+		unsigned long properties, int screen = -1, bool doActivate = true) KDE_DEPRECATED;
 
     /**
        Clients should use this constructor to create a NETRootInfo object, which
@@ -140,7 +141,7 @@ public:
         to the first element of the properties array in the above constructor.
     **/
     NETRootInfo(Display *display, unsigned long properties, int screen = -1,
-		bool doActivate = true);
+		bool doActivate = true) KDE_DEPRECATED;
 
     /**
        Creates a shared copy of the specified NETRootInfo object.
@@ -255,7 +256,7 @@ public:
 
        @see NET::Property
     **/
-    unsigned long supported() const;
+    unsigned long supported() const KDE_DEPRECATED;
 
     /**
        Returns an array of Window id's, which contain all managed windows.
@@ -571,7 +572,7 @@ public:
 
        @return the properties
     **/
-    unsigned long event(XEvent *event);
+    unsigned long event(XEvent *event) KDE_DEPRECATED;
 
 
 protected:
@@ -667,7 +668,7 @@ protected:
        @param window the id of the window to activate
     **/
     // virtual void changeActiveWindow(Window window) { }
-    virtual void changeActiveWindow(Window) { }
+    virtual KDE_DEPRECATED void changeActiveWindow(Window) { }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -793,7 +794,7 @@ public:
     **/
     NETWinInfo(Display *display, Window window,
 	       Window rootWindow, unsigned long properties,
-	       Role role = Client);
+	       Role role = Client) KDE_DEPRECATED;
 
     /**
        Creates a shared copy of the specified NETWinInfo object.
@@ -831,7 +832,7 @@ public:
 
        @see NET::Property
     **/
-    unsigned long properties() const;
+    unsigned long properties() const KDE_DEPRECATED;
 
     /**
        Returns the icon geometry.
@@ -877,7 +878,7 @@ public:
 
        @return the type of the window
     **/
-    WindowType windowType() const;
+    WindowType windowType() const KDE_DEPRECATED;
 
     /**
        Returns the name of the window in UTF-8 format.
@@ -1161,7 +1162,7 @@ public:
 
        @return the properties
     **/
-    unsigned long event(XEvent *event);
+    unsigned long event(XEvent *event) KDE_DEPRECATED;
 
     /**
        Sentinel value to indicate that the client wishes to be visible on

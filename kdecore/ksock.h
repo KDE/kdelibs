@@ -20,6 +20,7 @@
 #ifndef KSOCK_H
 #define KSOCK_H
 
+#include "kdemacros.h"
 #include <qobject.h>
 #include <sys/types.h>
 // we define STRICT_ANSI to get rid of some warnings in glibc
@@ -147,7 +148,7 @@ public:
      * instead
      * @deprecated
      */
-    unsigned long ipv4_addr();
+    unsigned long ipv4_addr() KDE_DEPRECATED;
 
     // BCI: remove in libkdecore.so.4
     /**
@@ -155,7 +156,7 @@ public:
       *  Don't use this in new programs. Use KExtendedSocket::lookup
       *  @deprecated
       */
-    static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
+    static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET) KDE_DEPRECATED;
 #endif
 
 signals:

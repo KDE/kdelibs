@@ -18,6 +18,7 @@
 #ifndef _KNOTIFY_CLIENT
 #define _KNOTIFY_CLIENT
 #include <qstring.h>
+#include "kdemacros.h"
 
 class KInstance;
 #undef None // X11 headers...
@@ -182,7 +183,7 @@ namespace KNotifyClient
 	 *             the user connected the event to sound, only. Can be QString::null.
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	int event(const QString &message, const QString &text=QString::null);
+	int event(const QString &message, const QString &text=QString::null) KDE_DEPRECATED;
 
 	/**
 	 * @deprecated
@@ -191,7 +192,7 @@ namespace KNotifyClient
 	 * @param text The text explaining the event you raise. Can be QString::null.
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	int event( StandardEvent event, const QString& text=QString::null );
+	int event( StandardEvent event, const QString& text=QString::null ) KDE_DEPRECATED;
 
 	/**
 	 * @deprecated
@@ -204,7 +205,7 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
 	int userEvent(const QString &text=QString::null, int present=Default, int level=Default,
-	                      const QString &sound=QString::null, const QString &file=QString::null);
+	                      const QString &sound=QString::null, const QString &file=QString::null) KDE_DEPRECATED;
 	
 //#endif
 

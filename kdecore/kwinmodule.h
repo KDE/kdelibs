@@ -25,6 +25,7 @@
 
 #include <qobject.h>
 #include <qvaluelist.h>
+#include "kdemacros.h"
 
 class KWinModulePrivate;
 
@@ -262,7 +263,7 @@ signals:
      * @param id the id of the window
      * @param properties the properties that were modified
      */
-    void windowChanged(WId id, unsigned int properties);
+    void windowChanged(WId id, unsigned int properties) KDE_DEPRECATED;
 
     /**
      * The window changed somehow.

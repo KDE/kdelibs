@@ -23,6 +23,7 @@
 #include <qaccel.h>
 #include <kshortcut.h>
 #include <kstdaccel.h>
+#include "kdemacros.h"
 
 class QPopupMenu; // for obsolete insertItem() methods below
 class QWidget;
@@ -330,47 +331,47 @@ class KAccel : public QAccel
 	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 const char* psKey,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
+	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
 	/** 
 	 * @deprecated use insert
 	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 int key,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
+	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
 	/** 
 	 * @deprecated use insert
 	 */
-	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null );
+	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null ) KDE_DEPRECATED;
 	/** 
 	 * @deprecated use insert
 	 */
-	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true );
+	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true ) KDE_DEPRECATED;
 	/** 
 	 * @deprecated use insert( accel, pObjSlot, psMethodSlot );
 	 * 
 	 */
-	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
+	KDE_DEPRECATED bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
 		{ return insert( accel, pObjSlot, psMethodSlot ); }
 	/** 
 	 * @deprecated use remove
 	 */
-	bool removeItem( const QString& sAction );
+	bool removeItem( const QString& sAction ) KDE_DEPRECATED;
 	/** 
 	 * @deprecated
 	 */
-	bool setItemEnabled( const QString& sAction, bool bEnable );
+	bool setItemEnabled( const QString& sAction, bool bEnable ) KDE_DEPRECATED;
 	/** 
 	 * @deprecated
 	 */
-	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action );
+	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action ) KDE_DEPRECATED;
 	/** 
 	 * @deprecated
 	 */
-	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel );
+	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel ) KDE_DEPRECATED;
 	/** 
 	 * @deprecated
 	 */
-	static int stringToKey( const QString& );
+	static int stringToKey( const QString& ) KDE_DEPRECATED;
 
 	/**
 	 * @deprecated  Use shortcut().
@@ -379,7 +380,7 @@ class KAccel : public QAccel
 	 * @p action, or zero if either the action name cannot be
 	 * found or the current key is set to no key.
 	 */
-	int currentKey( const QString& action ) const;
+	int currentKey( const QString& action ) const KDE_DEPRECATED;
 
 	/**
 	 * @deprecated  Use actions().actionPtr().
@@ -387,7 +388,7 @@ class KAccel : public QAccel
 	 * Return the name of the accelerator item with the keycode @p key,
 	 * or QString::null if the item cannot be found.
 	 */
-	QString findKey( int key ) const;
+	QString findKey( int key ) const KDE_DEPRECATED;
 #endif // !KDE_NO_COMPAT
 
  protected:

@@ -24,6 +24,7 @@
 #include <qstringlist.h>
 #include <qregexp.h>            // for the word ranges
 #include <qfontmetrics.h>
+#include "kdemacros.h"
 
 /**
  * This class contains utility functions for handling strings.
@@ -408,7 +409,7 @@ private:
     /**
      * @deprecated Use @see matchFileName () instead.
      */
-    static bool matchFilename( const QString& filename, const QString& pattern )
+    static KDE_DEPRECATED bool matchFilename( const QString& filename, const QString& pattern )
     {
         return matchFileName (filename, pattern);
     };

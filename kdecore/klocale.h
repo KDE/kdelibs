@@ -23,6 +23,7 @@
 #define _KLOCALE_H
 
 #include <qstring.h>
+#include "kdemacros.h"
 
 class QStringList;
 class QTextCodec;
@@ -450,7 +451,7 @@ public:
    *
    * @return true if the week starts on Monday
    */
-  bool weekStartsMonday() const; //### remove for KDE 4.0
+  bool weekStartsMonday() const KDE_DEPRECATED; //### remove for KDE 4.0
 
   /**
    * Use this to determine which day is the first day of the week.
@@ -470,7 +471,7 @@ public:
    *
    * @return The name of the month
    */
-  QString monthName(int i, bool shortName = false) const;
+  QString monthName(int i, bool shortName = false) const KDE_DEPRECATED;
 
   /**
    * @deprecated
@@ -485,7 +486,7 @@ public:
    * @return The possessive form of the name of the month
    * @since 3.1
   */
-  QString monthNamePossessive(int i, bool shortName = false) const;
+  QString monthNamePossessive(int i, bool shortName = false) const KDE_DEPRECATED;
 
   /**
    * @deprecated
@@ -497,7 +498,7 @@ public:
    *
    * @return The name of the day
    */
-  QString weekDayName(int i, bool shortName = false) const;
+  QString weekDayName(int i, bool shortName = false) const KDE_DEPRECATED;
 
   /**
    * Returns a pointer to the calendar system object.
@@ -792,7 +793,7 @@ public:
    *
    * @param start True if Monday is the first day in the week
    */
-  void setWeekStartsMonday(bool start); //### remove for KDE 4.0
+  void setWeekStartsMonday(bool start) KDE_DEPRECATED; //### remove for KDE 4.0
 
   /**
    * Changes how KLocale defines the first day in week.
@@ -1061,13 +1062,13 @@ private:
    * @deprecated
    * use formatMoney(double)
    */
-  QString formatMoney(const QString &numStr) const;
+  QString formatMoney(const QString &numStr) const KDE_DEPRECATED;
 
   /**
    * @deprecated
    * use formatNumber(double)
    */
-  QString formatNumber(const QString &numStr) const;
+  QString formatNumber(const QString &numStr) const KDE_DEPRECATED;
 
   /**
    * @deprecated
@@ -1075,19 +1076,19 @@ private:
    *
    * @return String containing language codes separated by colons
    */
-  QString languages() const;
+  QString languages() const KDE_DEPRECATED;
 
   /**
    * @deprecated
    * @return True
    */
-  bool setCharset(const QString & charset);
+  bool setCharset(const QString & charset) KDE_DEPRECATED;
 
   /**
    * @deprecated
    * @see encoding
    */
-  QString charset() const;
+  QString charset() const KDE_DEPRECATED;
 
 protected:
   /**

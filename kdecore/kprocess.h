@@ -27,6 +27,7 @@
 #include <qvaluelist.h>
 #include <qcstring.h>
 #include <qobject.h>
+#include "kdemacros.h"
 
 class QSocketNotifier;
 class KProcessPrivate;
@@ -201,7 +202,7 @@ public:
 	 @see operator<<
 
   */
-  bool setExecutable(const QString& proc);
+  bool setExecutable(const QString& proc) KDE_DEPRECATED;
 
 
   /**
@@ -302,7 +303,7 @@ public:
    * @deprecated
    * Use pid() instead.
    */
-  pid_t getPid() const { return pid(); }
+  KDE_DEPRECATED pid_t getPid() const { return pid(); }
 
   /**
    * Suspend processing of data from stdout of the child process.

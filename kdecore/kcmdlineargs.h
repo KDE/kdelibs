@@ -19,6 +19,7 @@
 #ifndef _KCMDLINEARGS_H_
 #define _KCMDLINEARGS_H_
 
+#include "kdemacros.h"
 #include <kurl.h>
 
 #include <qptrlist.h>
@@ -241,7 +242,7 @@ public:
     */
   static void init(int _argc, char **_argv,
                    const char *_appname, const char *_description,
-                   const char *_version, bool noKApp = false);
+                   const char *_version, bool noKApp = false) KDE_DEPRECATED;
 
   /**
    * Initialize class.

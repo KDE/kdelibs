@@ -72,7 +72,7 @@ public:
      * @param isArray tells the destructor to delete an array instead of an object
      * @deprecated See the other setObject variant.
      **/
-    type *setObject( type *obj, bool isArray = false) {
+    KDE_DEPRECATED type *setObject( type *obj, bool isArray = false) {
         deleteit = obj;
         globalReference = 0;
 	array = isArray;

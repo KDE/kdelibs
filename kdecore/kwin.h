@@ -23,6 +23,7 @@
 #include <qwindowdefs.h>
 #include <qstring.h>
 #include <qpixmap.h>
+#include "kdemacros.h"
 
 #include <netwm_def.h>
 class NETWinInfo;
@@ -381,13 +382,13 @@ public:
 	QRect frameGeometry;
 
 	QString visibleNameWithState() const;
-    };
+    } KDE_DEPRECATED;
 
     /**
      * @deprecated
      * Use @see windowInfo() .
      */
-    static Info info( WId win );
+    static Info info( WId win ) KDE_DEPRECATED;
 
 #ifdef KDE_NO_COMPAT
 private:
@@ -396,7 +397,7 @@ private:
      * @deprecated
      * Use KStartupInfo::appStarted
      */
-    static void appStarted();
+    static void appStarted() KDE_DEPRECATED;
 };
 
 

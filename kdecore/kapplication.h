@@ -25,6 +25,7 @@
 
 // Version macros. Never put this further down.
 #include "kdeversion.h"
+#include "kdemacros.h"
 
 class KConfig;
 class KCharsets;
@@ -167,8 +168,8 @@ public:
    */
   // REMOVE FOR KDE 4.0 - using it only gives crashing applications because
   // KCmdLineArgs::init isn't called
-  KApplication(int& argc, char** argv,
-              const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
+ KApplication(int& argc, char** argv,
+              const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true) KDE_DEPRECATED;
 
   /**
     * Add Qt and KDE command line options to KCmdLineArgs.
@@ -427,7 +428,7 @@ public:
    *                   value will be appended to the filename,
    *                   prefixed with a "#" (hash) character.
    */
-  void invokeHTMLHelp( const QString& aFilename, const QString& aTopic = QString::null ) const;
+  void invokeHTMLHelp( const QString& aFilename, const QString& aTopic = QString::null ) const KDE_DEPRECATED;
 
   /**
    * Convenience method; invokes the standard email application.
@@ -732,7 +733,7 @@ public:
   /**
    * @deprecated
    */
-  KStyle* kstyle() const { return 0; }
+  KDE_DEPRECATED KStyle* kstyle() const { return 0; }
 
   /**
    * Builds a caption that contains the application name along with the

@@ -22,6 +22,7 @@
 #define _KDESKTOPFILE_H
 
 #include "kconfig.h"
+#include "kdemacros.h"
 
 class KDesktopFilePrivate;
 
@@ -124,7 +125,7 @@ public:
    * @return the path or QString::null if not specified
    * @deprecated
    */
-  QString readPath() const;
+  QString readPath() const KDE_DEPRECATED;
 
   /**
    * Returns the value of the "Dev=" entry.
@@ -222,7 +223,7 @@ private:
   /**
    * @deprecated Use @see fileName() instead.
    */
-    QString filename() const { return fileName(); };
+    KDE_DEPRECATED QString filename() const { return fileName(); };
 
 private:
 

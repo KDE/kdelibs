@@ -22,6 +22,7 @@
 
 #include <qstring.h>
 #include <kshortcut.h>
+#include "kdemacros.h"
 
 class QKeyEvent;
 class KAccelActions;
@@ -406,22 +407,22 @@ namespace KStdAccel
    * @deprecated
    * Obsolete.  Use name().  Returns a string representation for @p accel.
    */
-  QString action(StdAccel id);
+  QString action(StdAccel id) KDE_DEPRECATED;
   /**
    * @deprecated
    * Obsolete.  Use desc().  Returns a localized description of @p accel.
    */
-  QString description(StdAccel id);
+  QString description(StdAccel id) KDE_DEPRECATED;
   /**
    * @deprecated
    * Obsolete.  Use shortcut().  Returns the keybinding for @p accel.
    */
-  int key(StdAccel);
+  int key(StdAccel) KDE_DEPRECATED;
   /**
    * @deprecated
    * Obsolete.  Use shortcutDefault().
    */
-  int defaultKey(StdAccel accel);
+  int defaultKey(StdAccel accel) KDE_DEPRECATED;
 
   /**
    * @deprecated.  Use KKey(const QKeyEvent*) == KKey(int).
@@ -438,7 +439,7 @@ namespace KStdAccel
    *
    * @return true if the int value matches the integer representation of the QKeyEvent
    */
-  bool isEqual(const QKeyEvent* pEvent, int keyQt);
+  bool isEqual(const QKeyEvent* pEvent, int keyQt) KDE_DEPRECATED;
 #endif // !KDE_NO_COMPAT
 
 }

@@ -23,6 +23,7 @@
 #include <qstringlist.h>
 #include <qdragobject.h>
 #include <kurl.h>
+#include "kdemacros.h"
 class QMimeSource;
 
 class KURLDragPrivate;
@@ -70,13 +71,13 @@ public:
   /**
    * @deprecated Is equivalent with "new KURLDrag(urls, dragSource, name)".
    */
-  static KURLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 );
+  static KURLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 ) KDE_DEPRECATED;
 
   /**
    * @deprecated Is equivalent with "new KURLDrag(urls, metaData, dragSource, name)".
    */
   static KURLDrag * newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
-                             QWidget* dragSource = 0, const char * name = 0 );
+                             QWidget* dragSource = 0, const char * name = 0 ) KDE_DEPRECATED;
 
   /**
    * Meta-data to associate with those URLs (to be used after newDrag).

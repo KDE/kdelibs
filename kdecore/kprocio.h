@@ -21,6 +21,7 @@
 #include <qstring.h>
 #include <kprocess.h>
 #include <qstrlist.h>
+#include "kdemacros.h"
 
 class KProcIOPrivate;
 class QTextCodec;
@@ -120,7 +121,7 @@ public:
    * @return true if successful, false otherwise
    * @deprecated
    **/
-  bool fputs (const QString &line, bool AppendNewLine=true)
+  KDE_DEPRECATED bool fputs (const QString &line, bool AppendNewLine=true)
     { return writeStdin(line, AppendNewLine); }
 
   /**
@@ -158,7 +159,7 @@ public:
    * @return the number of characters read, or -1 if no data is available.
    * @deprecated use readln
    **/
-  int fgets (QString &line, bool autoAck=false)
+  KDE_DEPRECATED int fgets (QString &line, bool autoAck=false)
     { return readln (line, autoAck); }
 
   /**

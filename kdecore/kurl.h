@@ -22,6 +22,7 @@
 
 #include <qstring.h>
 #include <qvaluelist.h>
+#include "kdemacros.h"
 
 class QUrl;
 class QStringList;
@@ -486,7 +487,7 @@ public:
   /**
    * @deprecated
    */
-  bool isMalformed() const { return !isValid(); }
+  KDE_DEPRECATED bool isMalformed() const { return !isValid(); }
 
   /**
    * Checks whether the file is local.
@@ -749,7 +750,7 @@ public:
    * ignore trailing '/' characters.
    * @deprecated
    */
-  bool cmp( const KURL &u, bool ignore_trailing = false ) const;
+  bool cmp( const KURL &u, bool ignore_trailing = false ) const KDE_DEPRECATED;
 
   /**
    * Compares this url with @p u.

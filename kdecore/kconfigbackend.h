@@ -24,6 +24,7 @@
 
 #include "kconfigdata.h"
 #include <kconfigbase.h>
+#include "kdemacros.h"
 
 class QFile;
 class KConfigBackEndPrivate;
@@ -148,7 +149,7 @@ private:
   /**
    * @deprecated Use @see fileName() instead
    */
-  QString filename() const { return mfileName; }
+  KDE_DEPRECATED QString filename() const { return mfileName; }
 
 
 protected:
