@@ -3,54 +3,65 @@ as it was before on CORBA.
 
 1. To get some kind of an audio server running
 
-- TCP disconnection handling should work *done*
+It does run. See kdelibs/arts/examples/artsd. However, there are a few
+minor corrections missing to start to make it really useful for kde2.
+
+These are:
+
+- move required stuff
+   => perhaps make an extra directory for artsd
+   => knotify should probably be in kdebase
+- make installation more accessible (e.g. idl libs) 
+- network transparency: ensure that clients do get object references and
+  secret-cookie over the X11 server instead of files
+
+2. To get everything up again
+
+- do reference counting
 - passing MCOP object references might be useful (including specification
-  in the IDL, e.g.
+  in the IDL), e.g.
 
 interface Foo {
   Bar giveMeABar(); // should return a Bar object reference
 }
 
-- streaming stuff should work again (scheduling) *somewhat done*
-- C++ language binding should be a bit more complete
-  => attributes are missing *mostly done*
-
-  interface Foo {
-    attribute long height,width;
-  }
-
-- port audio playing stuff (SynthPlay, etc.) *done*
-- port wav loading objects *done*
-- port caching *done*
-- port flow graph descriptions (Structure, etc.) (might be ok in 2. as well)
-- work on dynamic N:M connectivity (SynthBus*) *somewhat done*
-- authentication
-
-2. To get everything up again
-
-- do reference counting (might be required for 1.)
-- implement inheritance (might be required for 1.) *done*
 - namespaces (mapped to modules in the IDL) - currently MCOP puts every
   interface in the standard namespace
-- integrate with the Qt message loop
+- add automatic "cleanup" inside the flow system - for instance, if you delete
+  an object, remove all connections
 - do dynamic loading of plugins
 - port visual objects
 - do streaming between servers again
+- more work on flow graph descriptions (Structure, etc.) -- external interfaces
+- more work on dynamic N:M connectivity (SynthBus*)
 - port artsbuilder
 - port every object
 - asynchronous streams (as opposed to synchronous) w/ language binding
 - asynchronous invocations
 - notifications when attributes change
-- recursive scheduling again (with loops & cycles)
+- more work on streaming, for instance:
+  - recursive scheduling again (with loops & cycles)
 - reading/writing IEEE Floats needs proper documentation, testing on
   different architectures and probably different code for some machines
+- more work on audio playing stuff (different sampling rates, different
+  hardware, mono, tunable buffer sizes)
 
 3. To have more fun
 
 - tune the transfer protocol (although MCOP theoretically could do 30000+
-  synchronous invocations per second, it can only do 4000+ since the TCP
-  protocol is so sloow - perhaps something sharedmem/semaphore based would
-  solve the problem)
+  synchronous invocations per second, it can only do 8000+)
+
+  possible tuning operations are
+    * rewrite Buffer not to use vector<char> to store data, but malloc'd
+	  blocks
+    * try to write "zero allocation" invocations, that means, try not to
+	  allocate memory on performing an invocation. For instance Buffers
+	  could be kept in pools, and be reused for further invocations, without
+	  the need to realloc another memory block
+    * try to minimize the amount of copies of data, possibly even using
+	  something like sharedmem to share data between the sending and
+	  receiving buffer
+
 - implement plugins that transfer non-standard datatypes such as midi events,
   video frames, fft packets, oscilloscope views, ... (which was impossible
   with aRts on CORBA)
@@ -59,4 +70,5 @@ interface Foo {
   for instance)
 - convince other people to use aRts, so that the usefulness of universal
   plugins written for the API increases
-
+- when being crazy, implement gatewaying from MCOP to DCOP, CORBA, XMLRPC
+  or whatever else might be useful
