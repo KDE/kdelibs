@@ -38,9 +38,10 @@ namespace KSpell2
     public slots:
         void save();
         void setBackgroundCheckingButtonShown( bool );
-
+        void slotDefault();
     protected slots:
         void slotChanged();
+
     private:
         void init( Broker *broker );
         void setFromGUI();

@@ -118,4 +118,12 @@ bool ConfigWidget::backgroundCheckingButtonShown() const
     return d->ui->m_bgSpellCB->isShown();
 }
 
+void ConfigWidget::slotDefault()
+{
+    d->ui->m_skipUpperCB->setChecked( false );
+    d->ui->m_skipRunTogetherCB->setChecked( false );
+    d->ui->m_bgSpellCB->setChecked( true );
+    d->ui->m_ignoreListBox->clear();
+}
+
 #include "configwidget.moc"
