@@ -1,10 +1,14 @@
 #%PAM-1.0
 
-auth       required     pam_unix.so shadow nullok
 auth       required     pam_nologin.so
+auth       required     pam_unix.so shadow nullok
 auth       required     pam_env.so
 account    required     pam_unix.so
 session    required     pam_unix.so
+session    required     pam_limits.so
+
+# (Remove `md5' after the module name to disable MD5 passwords
+
 password   required     pam_unix.so nullok obscure min=4 max=8 md5
  
 # Alternate strength checking for password. Note that this

@@ -1,8 +1,15 @@
+kdelibs (4:2.1.1-3) unstable; urgency=low
+ 
+  * Sync with upstream.  Includes several khtml fixes
+  * Update pam file for kde, add more documentation in it and modify defaults
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 01 Apr 2001 06:00:00 -0700
+
 kdelibs (4:2.1.1-2) unstable; urgency=low
  
   * 2 birds with 1 debuild.  
     Rebuild against older libc6
-    Couple upstream fixes
+    Couple upstream fixes in kjs
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 19 Mar 2001 13:39:00 -0700
 
