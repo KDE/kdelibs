@@ -420,7 +420,6 @@ public:
     Length line_height;
 
     CachedImage *style_image;
-    CachedImage *cursor_image;
 
     khtml::Font font;
     QColor color;
@@ -453,7 +452,7 @@ enum EListStylePosition { OUTSIDE, INSIDE };
 enum EVisibility { VISIBLE, HIDDEN, COLLAPSE };
 
 enum ECursor {
-    CURSOR_AUTO, CURSOR_CROSS, CURSOR_DEFAULT, CURSOR_POINTER, CURSOR_MOVE,
+    CURSOR_AUTO, CURSOR_CROSS, CURSOR_DEFAULT, CURSOR_POINTER, CURSOR_PROGRESS,  CURSOR_MOVE,
     CURSOR_E_RESIZE, CURSOR_NE_RESIZE, CURSOR_NW_RESIZE, CURSOR_N_RESIZE, CURSOR_SE_RESIZE, CURSOR_SW_RESIZE,
     CURSOR_S_RESIZE, CURSOR_W_RESIZE, CURSOR_TEXT, CURSOR_WAIT, CURSOR_HELP
 };
@@ -516,19 +515,21 @@ protected:
 	ECaptionSide _caption_side : 1;
 	EListStyleType _list_style_type : 5 ;
 	EListStylePosition _list_style_position :1;
+
 	EVisibility _visibility : 2;
 	ETextAlign _text_align : 3;
 	ETextTransform _text_transform : 2;
 	int _text_decoration : 4;
-	ECursor _cursor_style : 4;
+	ECursor _cursor_style : 5;
+
 	EDirection _direction : 1;
 	bool _border_collapse : 1 ;
 	EWhiteSpace _white_space : 2;
 	EFontVariant _font_variant : 1;
-              // non CSS2 inherited
-              bool _visuallyOrdered : 1;
-              bool _htmlHacks :1;
-              int _unused : 2;
+        // non CSS2 inherited
+        bool _visuallyOrdered : 1;
+        bool _htmlHacks :1;
+        int _unused : 1;
     } inherited_flags;
 
 // don't inherit
@@ -765,9 +766,6 @@ public:
     ECursor cursor() const { return inherited_flags._cursor_style; }
     EFontVariant fontVariant() { return inherited_flags._font_variant; }
 
-    CachedImage *cursorImage() const { return inherited->cursor_image; }
-
-
 // attribute setter methods
 
     void setDisplay(EDisplay v) {  noninherited_flags._display = v; }
@@ -876,7 +874,6 @@ public:
 
     void setCursor( ECursor c ) { inherited_flags._cursor_style = c; }
     void setFontVariant( EFontVariant f ) { inherited_flags._font_variant = f; }
-    void setCursorImage( CachedImage *v ) { SET_VAR(inherited,cursor_image,v) }
 
     bool htmlHacks() const { return inherited_flags._htmlHacks; }
     void setHtmlHacks(bool b=true) { inherited_flags._htmlHacks = b; }

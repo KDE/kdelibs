@@ -119,7 +119,7 @@ bool StyleBackgroundData::operator==(const StyleBackgroundData& o) const
 
 StyleInheritedData::StyleInheritedData()
     : indent( Fixed ), line_height( -100, Percent ), style_image( 0 ),
-      cursor_image( 0 ), font(), color( Qt::black ), decoration_color( Qt::black ), border_spacing( 0 )
+      font(), color( Qt::black ), decoration_color( Qt::black ), border_spacing( 0 )
 {
 }
 
@@ -130,8 +130,7 @@ StyleInheritedData::~StyleInheritedData()
 StyleInheritedData::StyleInheritedData(const StyleInheritedData& o )
     : Shared<StyleInheritedData>(),
       indent( o.indent ), line_height( o.line_height ), style_image( o.style_image ),
-      cursor_image( o.cursor_image ), font( o.font ),
-      color( o.color ), decoration_color( o.decoration_color ),
+      font( o.font ), color( o.color ), decoration_color( o.decoration_color ),
       border_spacing( o.border_spacing )
 {
 }
@@ -143,7 +142,6 @@ bool StyleInheritedData::operator==(const StyleInheritedData& o) const
 	line_height == o.line_height &&
 	border_spacing == o.border_spacing &&
 	style_image == o.style_image &&
-	cursor_image == o.cursor_image &&
 	font == o.font &&
 	color == o.color &&
 	decoration_color == o.decoration_color;

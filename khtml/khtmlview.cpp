@@ -152,16 +152,16 @@ public:
     }
     void newScrollTimer(QWidget *view, int tid)
     {
-        kdDebug() << "newScrollTimer timer" << tid << endl; 
+        kdDebug() << "newScrollTimer timer" << tid << endl;
         view->killTimer(scrollTimerId);
-        scrollTimerId = tid; 
+        scrollTimerId = tid;
     }
     enum ScrollDirection { ScrollLeft, ScrollRight, ScrollUp, ScrollDown };
 
     void adjustScroller(QWidget *view, ScrollDirection direction, ScrollDirection oppositedir)
     {
-        static const struct { int msec, pixels; } timings [] = { 
-            {100,1}, {50,1}, {30,1}, {20,1}, {20,2}, {20,4}, {20,6}, {0,0} 
+        static const struct { int msec, pixels; } timings [] = {
+            {100,1}, {50,1}, {30,1}, {20,1}, {20,2}, {20,4}, {20,6}, {0,0}
         };
         if (!scrollTimerId ||
             (scrollDirection != direction &&
@@ -288,7 +288,7 @@ KHTMLView::~KHTMLView()
 void KHTMLView::init()
 {
     if(!d->paintBuffer) d->paintBuffer = new QPixmap(PAINT_BUFFER_HEIGHT, PAINT_BUFFER_HEIGHT);
-    if(!d->vertPaintBuffer) 
+    if(!d->vertPaintBuffer)
         d->vertPaintBuffer = new QPixmap(10, PAINT_BUFFER_HEIGHT);
     if(!d->tp) d->tp = new QPainter();
 
@@ -568,18 +568,6 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     khtml::RenderStyle* style = (mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
                                  mev.innerNode.handle()->renderer()->style()) ? mev.innerNode.handle()->renderer()->style() : 0;
     QCursor c;
-    if (style && style->cursor() == CURSOR_AUTO && style->cursorImage()
-        && !(style->cursorImage()->pixmap().isNull())) {
-        /* First of all it works: Check out http://www.iam.unibe.ch/~schlpbch/cursor.html
-         *
-         * But, I don't know what exactly we have to do here: rescale to 32*32, change to monochrome..
-         */
-        //kdDebug( 6000 ) << "using custom cursor" << endl;
-        const QPixmap p = style->cursorImage()->pixmap();
-        // ### fix
-        c = QCursor(p);
-    }
-
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
         if ( mev.url.length() && m_part->settings()->changeCursor() )
@@ -590,6 +578,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         break;
     case CURSOR_POINTER:
         c = m_part->urlCursor();
+        break;
+    case CURSOR_PROGRESS:
+        c = KCursor::workingCursor();
         break;
     case CURSOR_MOVE:
         c = KCursor::sizeAllCursor();
@@ -725,7 +716,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             else {
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else 
+                else
                     scrollBy( 0, 10 );
             }
             break;
@@ -745,7 +736,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             else {
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else 
+                else
                     scrollBy( 0, -10 );
             }
             break;
@@ -763,7 +754,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             else {
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else 
+                else
                     scrollBy( 10, 0 );
             }
             break;
@@ -774,7 +765,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             else {
                 if (d->scrollTimerId)
                     d->newScrollTimer(this, 0);
-                else 
+                else
                     scrollBy( -10, 0 );
             }
             break;
@@ -1503,7 +1494,7 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         emit zoomView( e->delta() );
         e->accept();
     }
-    else if ( d->ignoreWheelEvents && !verticalScrollBar()->isVisible() 
+    else if ( d->ignoreWheelEvents && !verticalScrollBar()->isVisible()
                 && m_part->parentPart() ) {
         if ( m_part->parentPart()->view() )
             m_part->parentPart()->view()->wheelEvent( e );
