@@ -1180,3 +1180,23 @@ QImage& KImageEffect::toGray(QImage &img, bool fast)
     }
     return img;
 }
+
+// CT 29Jan2000 - desaturation algorithms
+QImage& KImageEffect::desaturate(QImage &img, float desat)
+{
+    
+    if (desat < 0) desat = 0.;
+    if (desat > 1) desat = 1.;
+    int pixels = img.depth() > 8 ? img.width()*img.height() :
+		 img.numColors();
+    unsigned int *data = img.depth() > 8 ? (unsigned int *)img.bits() :
+		 (unsigned int *)img.colorTable();
+    int h, s, v, i;
+    for(i=0; i < pixels; ++i){
+	QColor clr(data[i]);
+	clr.hsv(&h, &s, &v);
+	clr.setHsv(h, (int)(s * (1. - desat)), v);
+	data[i] = clr.rgb();
+    }
+    return img;
+}

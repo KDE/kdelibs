@@ -27,7 +27,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest kcomboboxtest \
 	kcontainertest kdatepicktest kdialogbasetest \
 	kdualcolortest kfontdialogtest \
-	knewgradienttest kgradienttest khashtest \
+	knewgradienttest kgradienttest khashtest kdesattest\
 	kiconloadertest kledtest klineedittest klineeditdlgtest \
 	kmessageboxtest knuminputtest \
 	kpalettetest \
@@ -50,6 +50,7 @@ LDADD = ../libkdeui.la
 # Please keep sorted
 kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
 kblendtest_SOURCES = kblendtest.cpp
+kdesattest_SOURCES = kdesattest.cpp
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
 kcharselecttest_SOURCES = kcharselecttest.cpp
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
