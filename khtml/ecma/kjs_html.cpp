@@ -34,6 +34,7 @@
 #include <html/html_documentimpl.h>
 #include <xml/dom2_eventsimpl.h>
 #include <khtmlview.h>
+//#include <kjs/internal.h> // for printInfo
 
 #include "kjs_css.h"
 #include "kjs_html.h"
@@ -151,8 +152,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   DOM::HTMLBodyElement body = doc.body();
 
-  KHTMLPart *part = static_cast<DOM::DocumentImpl*>(doc.handle())->
-		      view()->part();
+  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
 
   // image and form elements with the name p will be looked up first
   DOM::HTMLCollection coll = doc.all();
@@ -175,7 +175,12 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Body:
       return getDOMNode(exec,doc.body());
     case Location:
-      return Window::retrieveWindow(part)->location();
+      Q_ASSERT(view);
+      Q_ASSERT(view->part());
+      if ( view && view->part() )
+        return Window::retrieveWindow( view->part() )->location();
+      else
+        return Undefined();
     case Cookie:
       return String(doc.cookie());
     case Images:
@@ -221,9 +226,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case LastModified:
       return String(doc.lastModified());
     case Height:
-      return Number(part->view() ? part->view()->visibleWidth() : 0);
+      return Number(view ? view->visibleWidth() : 0);
     case Width:
-      return Number(part->view() ? part->view()->visibleWidth() : 0);
+      return Number(view ? view->visibleWidth() : 0);
     case Dir:
       return String(body.dir());
     }
@@ -267,9 +272,14 @@ void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value,
     doc.setCookie(value.toString(exec).string());
     break;
   case Location: {
-    KHTMLPart *part = static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part();
-    QString str = value.toString(exec).qstring();
-    part->scheduleRedirection(0, str);
+    KHTMLView *view = static_cast<DOM::DocumentImpl *>( doc.handle() )->view();
+    Q_ASSERT(view);
+    if (view)
+    {
+      KHTMLPart *part = view->part();
+      QString str = value.toString(exec).qstring();
+      part->scheduleRedirection(0, str);
+    }
     break;
   }
   case BgColor:
@@ -2627,9 +2637,15 @@ Value KJS::HTMLCollection::call(ExecState *exec, Object &thisObj, const List &ar
   return val;
 }
 
-Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value KJS::HTMLCollection::tryCall(ExecState *exec, Object &, const List &args)
 {
-  Q_ASSERT( thisObj.imp() == this ); // tell me if this is triggered (David)
+  // Do not use thisObj here. It can be the HTMLDocument, in the document.forms(i) case.
+  /*if( thisObj.imp() != this )
+  {
+    kdWarning() << "thisObj.imp() != this in HTMLCollection::tryCall" << endl;
+    KJS::printInfo(exec,"KJS::HTMLCollection::tryCall thisObj",thisObj,-1);
+    KJS::printInfo(exec,"KJS::HTMLCollection::tryCall this",Value(this),-1);
+  }*/
   // Also, do we need the TypeError test here ?
 
   if (args.size() == 1) {
