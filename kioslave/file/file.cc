@@ -1448,7 +1448,7 @@ bool FileProtocol::pmount(const QString &dev)
         pmountProg = "pmount";
 
     QCString buffer;
-    buffer.sprintf( "%s %s", pmountProg.latin1(),
+    buffer.sprintf( "%s %s", QFile::encodeName(pmountProg).data(),
                     QFile::encodeName(KProcess::quote(dev)).data() );
 
     int res = system( buffer.data() );
@@ -1462,8 +1462,8 @@ bool FileProtocol::pumount(const QString &point)
 		
     KMountPoint::List mtab = KMountPoint::currentMountPoints();
 
-    KMountPoint::List::iterator it = mtab.begin();
-    KMountPoint::List::iterator end = mtab.end();
+    KMountPoint::List::const_iterator it = mtab.begin();
+    KMountPoint::List::const_iterator end = mtab.end();
 
     QString dev;
 	
@@ -1489,7 +1489,7 @@ bool FileProtocol::pumount(const QString &point)
         pumountProg = "pumount";
 
     QCString buffer;
-    buffer.sprintf( "%s %s", pumountProg.latin1(),
+    buffer.sprintf( "%s %s", QFile::encodeName(pumountProg).data(),
                     QFile::encodeName(KProcess::quote(dev)).data() );
 
     int res = system( buffer.data() );
