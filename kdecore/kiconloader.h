@@ -38,8 +38,23 @@ class KStandardDirs;
  *
  * In KDE, icons are loaded by "Group". An icon group is a location on the
  * screen where icons are being used. Standard groups are: Desktop, Kicker, 
- * Toolbar, Small and ListItem. For each group, the user determines what size 
- * of icons are to be used.
+ * Toolbar, Small and ListItem. For each group, the user determines what size of
+ * and/or effects on the icons are to be used. The standard groups are defined 
+ * below:
+ *
+ * @li Desktop: Icons in the iconview of konqueror, kdesktop and similar apps.
+ * @li Kicker: Icons on the face of the panel (not in the menus).
+ * @li Toolbar: Icons in toolbars.
+ * @li Small: Various small (typical 16x16) places: titlebars, listviews and
+ * menu entries.
+ * @li ListItem: Icons used in KJanusWidget's "ListItem" mode.
+ *
+ * All icons loaded by the previous groups are stored in an icon theme,
+ * somewhere under the share/icons/ hierarchy. Typical applications also
+ * install icons in share/apps/$appname/pics and
+ * share/apps/$appname/toolbar. These application specific icons can be
+ * loaded with KIconLoader by using the special group "User". There's no 
+ * global configuration for these icons and no processing is done on them.
  *
  * Experts can also load icons by size. This is not recommended because this
  * won't honour the user's preferences. When loading an icon by size, you
