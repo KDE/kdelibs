@@ -1315,11 +1315,11 @@ bool HTTPProtocol::readHeader()
            pos+=7;
            while( m_strMimeType[pos] == ' ' || m_strMimeType[pos] == '=' ) pos++;
            m_strCharset = m_strMimeType.mid( pos );
-           kdDebug(7103) << "Found charset: " << m_strCharset << endl;
+           //kdDebug(7103) << "Found charset: " << m_strCharset << endl;
          }
          m_strMimeType = m_strMimeType.left( semicolonPos );
        }
-       kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
+       //kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
     }
     //
     else if (strncasecmp(buffer, "Date:", 5) == 0) {
@@ -2705,7 +2705,7 @@ bool HTTPProtocol::readBody( )
       if ( !decode )
       {
         if (useMD5)
-          context.update( QCString( m_bufReceive.data() ) );
+          context.update( m_bufReceive );
 
         // yep, let the world know that we have some data
         array.setRawData( m_bufReceive.data(), bytesReceived );
@@ -2760,7 +2760,7 @@ bool HTTPProtocol::readBody( )
     // received with a transfer-encoding, that encoding MUST be removed
     // prior to checking the Content-MD5 value against the received entity.
     if ( useMD5 )
-        context.update( QCString( big_buffer.data() ) );
+        context.update( big_buffer );
 
     // now decode all of the content encodings
     // -- Why ?? We are not
@@ -2785,22 +2785,18 @@ bool HTTPProtocol::readBody( )
 
   if ( useMD5 )
   {
-    context.finalize();
     HASH digest;
+    context.finalize();
     context.rawDigest(digest);
-    QString enc_digest = KCodecs::base64Encode(QString::fromLatin1(digest,16));
-    // TODO: We need to notify the user if content MD5
-    // check does pan out!!
-    if ( m_sContentMD5 == enc_digest )
-      kdDebug(7103) << "MD5 checksum present, and hey it matched what "
-                       "I calculated." << endl;
+    QCString enc_digest = KCodecs::base64Encode( QCString(digest) );
+    if ( m_sContentMD5 == enc_digest.data() )
+      kdDebug(7103) << "MD5 checksum present and is match!!" << endl;
     else
-      kdDebug(7103) << "MD5 checksum mismatch : got " << m_sContentMD5
-                    << " , calculated " << enc_digest << endl;
-
+      kdDebug(7103) << "MD5 checksum mismatch: got " << m_sContentMD5
+                    << ", calculated " << enc_digest << endl;
   }
   else
-    kdDebug(7103) << "No MD5 checksum found.  Too Bad." << endl;
+    kdDebug(7103) << "No MD5 checksum found.  Too bad..." << endl;
 
   // Close cache entry
   if (m_iBytesLeft == 0)
@@ -3197,7 +3193,6 @@ void HTTPProtocol::reparseConfiguration()
   if ( KProtocolManager::useProxy() )
   {
     // Use the appropriate proxy depending on the protocol
-    kdDebug(7113) << "Protocol is: " << m_protocol << endl;
     QCString protocol = (m_protocol == "https") ? QCString("http") : m_protocol;
     m_proxyURL = KURL( KProtocolManager::proxyFor( protocol ) );
     if (!m_proxyURL.isMalformed() )
@@ -3251,10 +3246,10 @@ void HTTPProtocol::reparseConfiguration()
   // Launch the cookiejar if not already running
   KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
   if( cookieConfig->hasGroup("Browser Settings/HTTP") &&
-          !cookieConfig->hasGroup("Cookie Policy") )
-        cookieConfig->setGroup("Browser Settings/HTTP");
+      !cookieConfig->hasGroup("Cookie Policy") )
+    cookieConfig->setGroup("Browser Settings/HTTP");
   else
-        cookieConfig->setGroup("Cookie Policy");
+    cookieConfig->setGroup("Cookie Policy");
   m_bUseCookiejar = cookieConfig->readBoolEntry( "Cookies", true );
   if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
   {
@@ -3452,7 +3447,7 @@ bool HTTPProtocol::getAuthorization()
       info.url = m_proxyURL;
       info.url.setPass( QString::null );
       info.url.setUser( QString::null );
-      info.url = m_strProxyRealm;
+      info.realmValue = m_strProxyRealm;
     }
     else
     {
@@ -3474,7 +3469,7 @@ bool HTTPProtocol::getAuthorization()
         if ( pos < len && auth.find("true", pos, false) != -1 )
         {
           info.digestInfo = (m_responseCode == 401) ? m_strAuthorization : m_strProxyAuthorization;
-          kdDebug(7113) << "Stale nonce value. Will retry using same info..." << endl;
+          kdDebug(7113) << "Just a stale nonce value! Retrying with the new nonce sent!" << endl;
         }
       }
     }
@@ -3560,9 +3555,8 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   if ( !user.isEmpty() )
   {
     if( !passwd.isEmpty() )
-      auth += KCodecs::base64Encode( (user + ':' + passwd) );
-    else
-      auth += KCodecs::base64Encode( user );
+      user += ':' + passwd;
+    auth += KCodecs::base64Encode(user);
   }
   else
     auth = QString::null;
@@ -3651,7 +3645,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 
   // Use some random # b/n 1 and 100,000 for generating the nonce value...
   info.cnonce.setNum((1 + static_cast<int>(100000.0*rand()/(RAND_MAX+1.0))));
-  info.cnonce = KCodecs::base64Encode(info.cnonce);
+  info.cnonce = KCodecs::base64Encode( info.cnonce );
 
   // HACK: Should be fixed according to RFC 2617 section 3.2.2
   info.nc = "00000001";
@@ -3747,7 +3741,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 
   if ( info.digestURI.isEmpty() )
     info.digestURI.append( m_request.path.latin1() );
-/*
+
   kdDebug(7113) << "RESULT OF PARSING:" << endl
                 << "  algorithm: " << info.algorithm << endl
                 << "  realm:     " << info.realm << endl
@@ -3757,7 +3751,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   int count = info.digestURI.count();
   for( int i = 0; i < count; i++ )
     kdDebug(7113) << "  domain[" << i << "]:    " << info.digestURI.at(i) << endl;
-*/
+
   // Calculate the response...
   calculateResponse( info, Response );
 
