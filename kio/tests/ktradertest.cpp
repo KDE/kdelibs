@@ -22,6 +22,9 @@ int main( int argc, char **argv )
   KApplication app;
   
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+  if ( args->count() < 1 )
+      KCmdLineArgs::usage();
   
   QString query = QString::fromLocal8Bit( args->arg( 0 ) );
 
