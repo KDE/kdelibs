@@ -40,6 +40,10 @@ class KMainWindowPrivate;
 class KAccel;
 class KToolBarMenuAction;
 
+
+#define KDE_DEFAULT_WINDOWFLAGS WType_TopLevel | WDestructiveClose
+
+
 /**
  * Top level widget that provides toolbars, a status line and a frame.
  *
@@ -65,7 +69,7 @@ class KToolBarMenuAction;
  *
  * Fixed aspect ratios (heightForWidth()) and fixed width widgets are
  * not supported.
- *
+*
  * KMainWindow will set icon, mini icon and caption, which it gets
  * from @ref KApplication. It provides full session management, and
  * will save its position, geometry and positions of toolbars and
@@ -118,8 +122,17 @@ public:
      *
      * KMainWindows must be created on the heap with 'new', like:
      *  <pre> KMainWindow *kmw = new KMainWindow (...</pre>
+     *
+     * This constructor automatically creates the "Show Toolbar" action
      **/
     KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
+
+    /*
+     * this constructor exists for BIC reasons. It allows specifying, if the "Show Toolbar" action should be created
+     * automatically. The default is going to be true in KDE 4
+     **/
+    KMainWindow( QWidget* parent, const char *name, WFlags f, bool createToolbarAction);
+
 
     /**
      * Destructor.
@@ -647,6 +660,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     KMainWindowPrivate *d;
+    void initKMainWindow(bool createToolbarAction,const char *name);
 };
 
 #define RESTORE(type) { int n = 1;\

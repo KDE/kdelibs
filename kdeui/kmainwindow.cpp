@@ -153,6 +153,21 @@ static bool beeing_first = true;
 KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
+    initKMainWindow(true,name);
+}
+
+KMainWindow::KMainWindow( QWidget* parent, const char *name,WFlags f, bool createToolbarAction)
+    : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+{
+    initKMainWindow(createToolbarAction,name);
+}
+
+
+void KMainWindow::initKMainWindow(bool createToolbarAction,const char *name)
+{
+  if (createToolbarAction)
+    kdDebug(200) << "KMainWindow::init called with createToolbarAction=true"<< endl;
+
     setDockMenuEnabled( FALSE );
     mHelpMenu = 0;
     kapp->setTopWidget( this );
@@ -186,7 +201,10 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
     d->kaccel = actionCollection()->kaccel();
-    d->toolbarMenu=new KToolBarMenuAction(this,"options_show_toolbar");
+    if (createToolbarAction)
+    {
+       d->toolbarMenu=new KToolBarMenuAction(this,"options_show_toolbar");
+    } else d->toolbarMenu=0;
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
