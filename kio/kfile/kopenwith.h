@@ -68,7 +68,8 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDlg( const KURL::List& urls, const QString& text, const QString& value, QWidget *parent = 0L );
+    KOpenWithDlg( const KURL::List& urls, const QString& text, const QString& value,
+                  QWidget *parent = 0L );
 
     /**
      * Create a dialog to select a service for a given service type.
@@ -78,7 +79,8 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDlg( const QString& serviceType, const QString& value, QWidget *parent = 0L );
+    KOpenWithDlg( const QString& serviceType, const QString& value, 
+                  QWidget *parent = 0L );
 
     /**
      * Create a dialog to select an application

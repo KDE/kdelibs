@@ -394,21 +394,21 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
     // Creates "directory", relative to the current directory (currUrl).
     // The given path may contain any number directories, existant or not.
     // They will all be created, if possible.
-    
+
     bool writeOk = false;
     bool exists = false;
     KURL url( currUrl );
 
     QStringList dirs = QStringList::split( QDir::separator(), directory );
     QStringList::ConstIterator it = dirs.begin();
-    
+
     for ( ; it != dirs.end(); ++it )
     {
         url.addPath( *it );
         exists = KIO::NetAccess::exists( url, false );
         writeOk = !exists && KIO::NetAccess::mkdir( url, kapp->mainWidget() );
     }
-    
+
     if ( exists ) // url was already existant
     {
         QString which = url.isLocalFile() ? url.path() : url.prettyURL();
@@ -477,6 +477,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
 
     if ( doIt ) {
         KIO::DeleteJob *job = KIO::del( urls, false, showProgress );
+        job->setWindow (kapp->mainWidget());
         job->setAutoErrorHandlingEnabled( true, parent );
         return job;
     }
@@ -561,7 +562,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 {
     KURL newurl;
 
-    if ( _newurl.isMalformed() )
+    if ( !_newurl.isValid() )
 	newurl.setPath( QDir::homeDirPath() );
     else
 	newurl = _newurl;

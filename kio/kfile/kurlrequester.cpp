@@ -55,7 +55,7 @@ public:
 
     /* not needed so far
     void setURLs( const KURL::List& urls ) {
-	m_urls = urls;	
+	m_urls = urls;
     }
     const KURL::List& urls() const { return m_urls; }
     */
@@ -128,7 +128,7 @@ public:
 	else
 	    edit->setCompletionObject( comp );
     }
-	
+
     /**
      * replaces ~user or $FOO, if necessary
      */
@@ -276,7 +276,7 @@ void KURLRequester::setMode(unsigned int mode)
     d->fileDialogMode = mode;
     if ( (mode & KFile::Directory) && !(mode & KFile::File) )
         myCompletion->setMode( KURLCompletion::DirCompletion );
-    
+
     if (myFileDialog)
        myFileDialog->setMode( d->fileDialogMode );
 }
@@ -294,7 +294,7 @@ KFileDialog * KURLRequester::fileDialog() const
 	QWidget *p = parentWidget();
 	myFileDialog = new KFileDialog( QString::null, QString::null, p,
 					"file dialog", true );
-	
+
 	myFileDialog->setMode( d->fileDialogMode );
         myFileDialog->setFilter( d->fileDialogFilter );
     }

@@ -551,7 +551,7 @@ void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
 {
     QString number = QString::number( i );
     KURL url = KURL::fromPathOrURL( config->readPathEntry( QString("URL_") + number ));
-    if ( url.isMalformed() || !KProtocolInfo::isKnownProtocol( url ))
+    if ( !url.isValid() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 
     insertItem( url,
@@ -574,11 +574,11 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
     int numLocal = 0;
     KURLBarItem *item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
 
-    while ( item ) 
+    while ( item )
     {
         if ( item->isPersistent() ) // we only save persistent items
         {
-            if ( item->applicationLocal() ) 
+            if ( item->applicationLocal() )
             {
                 writeItem( item, numLocal, config, false );
                 numLocal++;
@@ -599,11 +599,11 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
         int numGlobals = 0;
         item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
 
-        while ( item ) 
+        while ( item )
         {
             if ( item->isPersistent() ) // we only save persistent items
             {
-                if ( !item->applicationLocal() ) 
+                if ( !item->applicationLocal() )
                 {
                     writeItem( item, numGlobals, config, true );
                     numGlobals++;
@@ -623,7 +623,7 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
 {
     if ( !item->isPersistent() )
         return;
-    
+
     QString Description = "Description_";
     QString URL = "URL_";
     QString Icon = "Icon_";
@@ -664,13 +664,13 @@ void KURLBar::slotDropped( QDropEvent *e )
 
 void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
 {
-    if (m_isImmutable) 
+    if (m_isImmutable)
         return;
 
     KURLBarItem *item = dynamic_cast<KURLBarItem*>( _item );
     if ( !item )
         return;
-        
+
     static const int IconSize   = 10;
     static const int AddItem    = 20;
     static const int EditItem   = 30;
@@ -736,7 +736,7 @@ bool KURLBar::editItem( KURLBarItem *item )
 {
     if ( !item || !item->isPersistent() ) // should never happen tho
         return false;
-    
+
     KURL url            = item->url();
     QString description = item->description();
     QString icon        = item->icon();

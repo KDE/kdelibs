@@ -405,7 +405,7 @@ void KFileDialog::slotOk()
 
             // relative path? -> prepend the current directory
             KURL u( ops->url(), locationEdit->currentText() );
-            if ( !u.isMalformed() )
+            if ( u.isValid() )
                 selectedURL = u;
             else
                 selectedURL = ops->url();
@@ -421,7 +421,7 @@ void KFileDialog::slotOk()
         appendExtension (selectedURL);
     }
 
-    if ( selectedURL.isMalformed() ) {
+    if ( !selectedURL.isValid() ) {
        KMessageBox::sorry( d->mainWidget, i18n("%1\ndoes not appear to be a valid URL.\n").arg(d->url.url()), i18n("Invalid URL") );
        return;
     }
@@ -534,6 +534,7 @@ void KFileDialog::slotOk()
               it != list.end(); ++it )
         {
             job = KIO::stat( *it, !(*it).isLocalFile() );
+            job->setWindow (topLevelWidget());
             KIO::Scheduler::scheduleJob( job );
             d->statJobs.append( job );
             connect( job, SIGNAL( result(KIO::Job *) ),
@@ -543,6 +544,7 @@ void KFileDialog::slotOk()
     }
 
     job = KIO::stat(d->url,!d->url.isLocalFile());
+    job->setWindow (topLevelWidget());
     d->statJobs.append( job );
     connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotStatResult(KIO::Job*)));
 }
@@ -1192,7 +1194,7 @@ void KFileDialog::setSelection(const QString& url)
     }
 
     KURL u = getCompleteURL(url);
-    if (u.isMalformed()) { // if it still is
+    if (!u.isValid()) { // if it still is
         kdWarning() << url << " is not a correct argument for setSelection!" << endl;
         return;
     }
@@ -1406,7 +1408,7 @@ KURL::List& KFileDialog::parseSelectedURLs() const
         else
             u.setPath( d->filenames );
 
-        if ( !u.isMalformed() )
+        if ( u.isValid() )
             d->urlList.append( u );
         else
             KMessageBox::error( d->mainWidget,
@@ -1434,7 +1436,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
     int count = line.contains( '"' );
     if ( count == 0 ) { // no " " -> assume one single file
         u.setFileName( line );
-        if ( !u.isMalformed() )
+        if ( u.isValid() )
             urls.append( u );
 
         return urls;
@@ -1462,7 +1464,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
         // get everything between the " "
         name = line.mid( index1 + 1, index2 - index1 - 1 );
         u.setFileName( name );
-        if ( !u.isMalformed() )
+        if ( u.isValid() )
             urls.append( u );
 
         start = index2 + 1;
@@ -1545,7 +1547,7 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
     dlg.exec();
 
     KURL url = dlg.selectedURL();
-    if (!url.isMalformed())
+    if (url.isValid())
         KRecentDocument::add( url );
 
     return url;
@@ -1942,7 +1944,7 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
     {
         // exists?
         KIO::UDSEntry t;
-        if (KIO::NetAccess::stat (url, t, NULL))
+        if (KIO::NetAccess::stat (url, t, topLevelWidget()))
         {
             kdDebug (kfile_area) << "\tfile exists" << endl;
 
@@ -1997,7 +1999,7 @@ void KFileDialog::appendExtension (KURL &url)
 
     // exists?
     KIO::UDSEntry t;
-    if (KIO::NetAccess::stat (url, t, NULL))
+    if (KIO::NetAccess::stat (url, t, topLevelWidget()))
     {
         kdDebug (kfile_area) << "\tfile exists - won't append extension" << endl;
         return;

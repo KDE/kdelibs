@@ -114,7 +114,7 @@ KURL KURLRequesterDlg::getURL(const QString& dir, QWidget *parent,
     dlg.exec();
 
     const KURL& url = dlg.selectedURL();
-    if (!url.isMalformed())
+    if (url.isValid())
         KRecentDocument::add(url);
 
     return url;

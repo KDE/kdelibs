@@ -89,7 +89,7 @@ void KImageFilePreview::showPreview( const KURL& url )
 
 void KImageFilePreview::showPreview( const KURL &url, bool force )
 {
-    if ( url.isMalformed() ) {
+    if ( !url.isValid() ) {
         clearPreview();
         return;
     }
