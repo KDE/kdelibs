@@ -220,6 +220,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    str << "    " << result << " result";
 		    if (isIntType( result ))
 			str << " = 0";
+		    if (result == "float" || result == "double")
+			str << " = 0.0";
 		    else if ( result == "bool" )
 			str << " = false";
 
