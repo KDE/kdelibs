@@ -126,7 +126,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    m_offerListOffset = str.device()->at();
 
    // For each entry in servicetypeFactory
-   for(QDictIterator<KSycocaEntry> it ( *(m_serviceTypeFactory->entryDict()) );
+   for(QDictIterator<KSycocaEntry::Ptr> it ( *(m_serviceTypeFactory->entryDict()) );
        it.current();
        ++it)
    {
@@ -134,15 +134,17 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
       // This means looking for the service type in ALL services
       // This is SLOW. But it used to be done in every app (in KServiceTypeProfile)
       // Doing it here saves a lot of time to the clients
-      QString serviceType = it.current()->name();
-      for(QDictIterator<KSycocaEntry> itserv ( *m_entryDict );
+      KSycocaEntry *entry = (*it.current());
+      QString serviceType = entry->name();
+      for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
           itserv.current();
           ++itserv)
       {
-         if ( ((KService *)itserv.current())->hasServiceType( serviceType ) )
+         KService *service = (KService *) ((KSycocaEntry *)(*itserv.current()));
+         if ( service->hasServiceType( serviceType ) )
          {
-            str << (Q_INT32) it.current()->offset();
-            str << (Q_INT32) itserv.current()->offset();
+            str << (Q_INT32) entry->offset();
+            str << (Q_INT32) service->offset();
          }
       }
    }
@@ -156,11 +158,11 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
 
    KService::List initList;
 
-   for(QDictIterator<KSycocaEntry> itserv ( *m_entryDict );
+   for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
        itserv.current();
        ++itserv)
    {
-      KService::Ptr service = (KService *)itserv.current();
+      KService::Ptr service = (KService *) ((KSycocaEntry *) *itserv.current());
       if ( !service->init().isEmpty() )
       {
           initList.append(service); 

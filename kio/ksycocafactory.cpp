@@ -99,13 +99,14 @@ KSycocaFactory::save(QDataStream &str)
 
    // Write all entries.
    int entryCount = 0;
-   for(QDictIterator<KSycocaEntry> it ( *m_entryDict ); 
+   for(QDictIterator<KSycocaEntry::Ptr> it ( *m_entryDict ); 
        it.current(); 
        ++it)
    {
-      if ( !it.current()->isDeleted() ) 
+      KSycocaEntry *entry = (*it.current());
+      if ( !entry->isDeleted() ) 
       {
-         it.current()->save(str);
+         entry->save(str);
          entryCount++;
       }
    }
@@ -115,13 +116,14 @@ KSycocaFactory::save(QDataStream &str)
    // Write indices...
    // Linear index
    str << (Q_INT32) entryCount;
-   for(QDictIterator<KSycocaEntry> it ( *m_entryDict ); 
+   for(QDictIterator<KSycocaEntry::Ptr> it ( *m_entryDict ); 
        it.current(); 
        ++it)
    {
-      if ( !it.current()->isDeleted() )
+      KSycocaEntry *entry = (*it.current());
+      if ( !entry->isDeleted() )
       {
-         str << (Q_INT32) it.current()->offset(); 
+         str << (Q_INT32) entry->offset(); 
       }
    }
 
@@ -147,7 +149,7 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry, const char *)
    if (!m_sycocaDict) return; // Error!
 
    QString name = newEntry->name();
-   m_entryDict->insert( name, newEntry );
+   m_entryDict->insert( name, new KSycocaEntry::Ptr(newEntry) );
    m_sycocaDict->add( name, newEntry );
 }
 

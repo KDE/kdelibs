@@ -59,7 +59,10 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
      name = "/";
   }
 
-  KServiceGroup *entry = m_entryDict.find(name);
+  KServiceGroup *entry = 0;
+  KSycocaEntry::Ptr *ptr = m_entryDict->find(name);
+  if (ptr)
+     entry = dynamic_cast<KServiceGroup *>((KSycocaEntry *)(*ptr));
 
   if (!entry)
   {
@@ -67,7 +70,6 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
      QString fullPath = locate( resource, name + ".directory");
 
      entry = new KServiceGroup(fullPath, name);
-     m_entryDict.insert(name, entry);
      addEntry( entry, resource );
 
      if (name != "/")
@@ -81,7 +83,10 @@ KBuildServiceGroupFactory::addNewEntry( const QString& file, const char *resourc
         } else {
            parent = "/";
         }
-        parentEntry = m_entryDict.find(parent);
+        parentEntry = 0;
+        ptr = m_entryDict->find(parent);
+        if (ptr)
+           parentEntry = dynamic_cast<KServiceGroup *>((KSycocaEntry *)(*ptr));
         if (!parentEntry)
         {
            parentEntry = addNewEntry( parent, resource, 0 );

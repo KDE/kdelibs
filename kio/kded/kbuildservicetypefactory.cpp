@@ -51,8 +51,10 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
 {
    assert (KSycoca::self()->isBuilding());
    // We're building a database - the service type must be in memory
-   KSycocaEntry * servType = (*m_entryDict)[ _name ];
-   return (KServiceType *) servType;
+   KSycocaEntry::Ptr * servType = (*m_entryDict)[ _name ];
+   if (!servType) 
+      return 0;
+   return (KServiceType *) ((KSycocaEntry*)*servType);
 }
 
 
@@ -138,13 +140,14 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    QDict<KMimeType> dict;
 
    // For each mimetype in servicetypeFactory
-   for(QDictIterator<KSycocaEntry> it ( *m_entryDict );
+   for(QDictIterator<KSycocaEntry::Ptr> it ( *m_entryDict );
        it.current();
        ++it)
    {
-      if ( it.current()->isType( KST_KMimeType ) )
+      KSycocaEntry *entry = (*it.current());
+      if ( entry->isType( KST_KMimeType ) )
       {
-        KMimeType *mimeType = (KMimeType *) it.current();
+        KMimeType *mimeType = (KMimeType *) entry;
         QStringList pat = mimeType->patterns();
         QStringList::ConstIterator patit = pat.begin();
         for ( ; patit != pat.end() ; ++patit )

@@ -30,7 +30,7 @@ class QStringList;
 class KSycocaDict;
 class KSycocaResourceList;
 
-typedef QDict<KSycocaEntry> KSycocaEntryDict;
+typedef QDict<KSycocaEntry::Ptr> KSycocaEntryDict;
 
 /**
  * @internal

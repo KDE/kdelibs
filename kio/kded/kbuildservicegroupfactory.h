@@ -54,9 +54,6 @@ public:
    */
   virtual void addEntry( KSycocaEntry *newEntry, const char *resource );
 
-  	
-protected:
-  QDict<KServiceGroup> m_entryDict;
 };
 
 #endif
