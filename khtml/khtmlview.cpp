@@ -858,7 +858,7 @@ void KHTMLView::focusNextPrevNode(bool next)
     if (!oldFocusNode && newFocusNode) {
         bool visible = false;
         NodeImpl *toFocus = newFocusNode;
-        while (!visible) {
+        while (!visible && toFocus) {
             QRect focusNodeRect = toFocus->getRect();
             if ((focusNodeRect.left() > contentsX()) && (focusNodeRect.right() < contentsX() + visibleWidth()) &&
                 (focusNodeRect.top() > contentsY()) && (focusNodeRect.bottom() < contentsY() + visibleHeight())) {
