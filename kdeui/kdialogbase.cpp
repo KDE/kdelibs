@@ -46,7 +46,7 @@ KDialogBaseTile *KDialogBase::mTile = 0;
 
 int KDialogBaseButton::id()
 {
-  return( mKey );
+    return( mKey );
 }
 
 template class QList<KDialogBaseButton>;
@@ -694,7 +694,7 @@ void KDialogBase::setButtonStyle( int style )
 
   }
 
-  mButton.resize( true, 0, spacingHint(), mButtonOrientation );
+  mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 }
 
 
@@ -775,7 +775,7 @@ void KDialogBase::setButtonOKText( const QString &text,
     "you made will be used to proceed.");
 
   pb->setText( text.isEmpty() ? i18n("&OK") : text );
-  mButton.resize( true, 0, spacingHint(), mButtonOrientation );
+  mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip.isEmpty() ? i18n("Accept settings") : tooltip );
   QWhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
@@ -800,7 +800,7 @@ void KDialogBase::setButtonApplyText( const QString &text,
     "Use this to try different settings. ");
 
   pb->setText( text.isEmpty() ? i18n("&Apply") : text );
-  mButton.resize( true, 0, spacingHint(), mButtonOrientation );
+  mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip.isEmpty() ? i18n("Apply settings") : tooltip );
   QWhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
@@ -818,7 +818,7 @@ void KDialogBase::setButtonCancelText( const QString& text,
   }
 
   pb->setText( text.isEmpty() ? i18n("&Cancel") : text );
-  mButton.resize( true, 0, spacingHint(), mButtonOrientation );
+  mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip );
   QWhatsThis::add( pb, quickhelp );
@@ -831,7 +831,7 @@ void KDialogBase::setButtonText( ButtonCode id, const QString &text )
   if( pb != 0 )
   {
     pb->setText( text );
-    mButton.resize( true, 0, spacingHint(), mButtonOrientation );
+    mButton.resize( false, 0, spacingHint(), mButtonOrientation );
   }
 }
 
