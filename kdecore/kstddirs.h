@@ -211,7 +211,7 @@ public:
 	 * You normally wouldn't call this function, it's called for you from
 	 * KGlobal.
 	 */
-	void addKDEDefaults( const QString& appName = QString::null );
+	void addKDEDefaults();
 
 
 	/**
@@ -237,11 +237,13 @@ public:
 
 	/**
 	 * Recursively creates still missing directories in the given path.
-	 * The directory permissions will depend on your umask setting.
+	 * The resulting permissions will depend on the current umask setting.
+	 * permission = mode & ~umask.
 	 *
 	 * @param dir absolute path of the directory to be made
+	 * @param mode directory permissions
 	 */
-	static bool makeDir(const QString& dir);
+	static bool makeDir(const QString& dir, int mode = 0777);
 
 	static QString kde_data_relative();
 

@@ -347,7 +347,7 @@ QString KStandardDirs::getSaveLocation(const QString& type,
     return local;
 }
 
-bool KStandardDirs::makeDir(const QString& dir)
+bool KStandardDirs::makeDir(const QString& dir, int mode)
 {
     // we want an absolute path
     if (dir.at(0) != '/')
@@ -370,14 +370,14 @@ bool KStandardDirs::makeDir(const QString& dir)
         base += target.mid(i, pos - i + 1);
         // bail out if we encountered a problem
         if (stat(base.ascii(), &st) != 0 && !(S_ISDIR(st.st_mode)) &&
-            mkdir(base.ascii(), 0777) != 0)
+            mkdir(base.ascii(), (mode_t) mode) != 0)
             return false;
         i = pos + 1;
     }
     return true;
 }
 
-void KStandardDirs::addKDEDefaults(const QString &appName) {
+void KStandardDirs::addKDEDefaults() {
 
     QString kdedir = getenv("KDEDIR");
     if (kdedir.isEmpty())
@@ -392,8 +392,6 @@ void KStandardDirs::addKDEDefaults(const QString &appName) {
     addResourceType("apps", "share/applnk/");
     addResourceType("sound", "share/sounds/");
     addResourceType("data", kde_data_relative());
-    if(!appName.isNull())
-        addResourceType("appdata", kde_data_relative() + appName + "/");
     addResourceType("locale", "share/locale/");
     addResourceType("services", "share/services/");
     addResourceType("servicetypes", "share/servicetypes/");

@@ -29,10 +29,10 @@ KStandardDirs *KGlobal::dirs()
 {
 	if( _dirs == 0 ) {
 		_dirs = new KStandardDirs( );
+		_dirs->addKDEDefaults();
 		if( kapp )
-			_dirs->addKDEDefaults( kapp->name() );
-		else
-			_dirs->addKDEDefaults();
+			_dirs->addResourceType("appdata", KStandardDirs::kde_data_relative()
+								   + kapp->name() + "/");
 	}
 
 	return _dirs;
