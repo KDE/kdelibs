@@ -882,7 +882,7 @@ KXMLGUIFactory *KTMainWindow::guiFactory()
     return d->m_factory;
 }
 
-void KTMainWindow::createGUI( const QString &xmlfile )
+void KTMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
 {
     // disabling the updates prevents unnecessary redraws
     setUpdatesEnabled( false );
@@ -914,7 +914,8 @@ void KTMainWindow::createGUI( const QString &xmlfile )
     guiFactory()->addClient( this );
 
     // try and get back *some* of our memory
-    conserveMemory();
+    if ( _conserveMemory )
+      conserveMemory();
 
     setUpdatesEnabled( true );
 

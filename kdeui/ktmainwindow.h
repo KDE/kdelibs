@@ -322,8 +322,8 @@ public:
      * </pre>
      *
      * @param aboutAppText The string that is used in the application
-     *        specific dialog box. If you leave this string empty the 
-     *        information in the global @ref KAboutData of the 
+     *        specific dialog box. If you leave this string empty the
+     *        information in the global @ref KAboutData of the
      *        application will be used to make a standard dialog box.
      *
      * @param showWhatsThis Set this to false if you do not want to include
@@ -339,9 +339,9 @@ public:
      * Retrieve the standard help menu which contains entires for the
      * help system (activated by F1), an optional "What's This?" entry
      * (activated by Shift F1), an application specific dialog box,
-     * and an "About KDE" dialog box. You must create the application 
-     * specific dialog box yourself. When the "About application" 
-     * menu entry is activated, a signal will trigger the @ref 
+     * and an "About KDE" dialog box. You must create the application
+     * specific dialog box yourself. When the "About application"
+     * menu entry is activated, a signal will trigger the @ref
      * showAboutApplication slot. See @ref showAboutApplication for more
      * information.
      *
@@ -349,14 +349,14 @@ public:
      * <pre>
      * menuBar()->insertItem( i18n("&Help"), customHelpMenu() );
      * </pre>
-     * 
+     *
      * @param showWhatsThis Set this to false if you do not want to include
      *        the "What's This" menu entry.
      *
      * @return A standard help menu.
      */
     QPopupMenu* customHelpMenu( bool showWhatsThis=true );
-    
+
 
     /**
      * @sect Session Management
@@ -459,8 +459,10 @@ public:
      * (standard) XML file for the layout purposes.
      *
      * @param xmlfile The local xmlfile (relative or absolute)
+     * @param _conserveMemory Specifiy whether createGUI should call @ref conserveMemory to free
+     *                        all memory allocated by the @ref QDomDocument .
      */
-    virtual void createGUI( const QString &xmlfile = QString::null );
+    virtual void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = true );
 
 protected:
     /**
