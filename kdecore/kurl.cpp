@@ -684,14 +684,14 @@ void KURL::parseRawURI( const QString& _url, int encoding_hint )
     // Note that m_strProtocol is already set here, so we just skip over the protocol.
     if (pos < len && buf[pos] == ':' )
 	pos++;
-    else {
+    else { // can't happen, the caller checked all this already
 	reset();
 	m_strProtocol = _url;
 	m_iUriMode = Invalid;
 	return;
     }
 
-    if ( pos == len )
+    if ( pos == len ) // can't happen, the caller checked this already
 	m_strPath = QString::null;
     else
 	m_strPath = decode( QString( buf + pos, len - pos ), encoding_hint );
@@ -705,7 +705,7 @@ void KURL::parseMailto( const QString& _url, int encoding_hint )
 {
     parseURL( _url, encoding_hint);
     if ( m_bIsMalformed )
-    return;
+        return;
     QRegExp mailre("(.+@)(.+)");
     if ( mailre.exactMatch( m_strPath ) )
     {
