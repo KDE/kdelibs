@@ -24,6 +24,7 @@
 
 class SmbView;
 class QLineEdit;
+class QLabel;
 
 class KMWSmb : public KMWizardPage
 {
@@ -43,6 +44,7 @@ protected slots:
 protected:
 	SmbView	*m_view;
 	QLineEdit	*m_work, *m_server, *m_printer;
+	QLabel *m_loginlabel;
 };
 
 #endif
