@@ -38,6 +38,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	vnd.stardivision.writer.desktop vnd.stardivision.calc.desktop \
 	vnd.stardivision.impress.desktop \
 	vnd.sun.xml.impress.desktop vnd.sun.xml.writer.desktop \
+	vnd.sun.xml.base.desktop \
 	x-magicpoint.desktop x-vnd.kde.kugar.mixed.desktop x-vnd.kde.kexi.desktop \
 	vnd.palm.desktop x-kudesigner.desktop x-vnd.kde.kplato.desktop \
 	vnd.sun.xml.calc.desktop mathml+xml.desktop x-bittorrent.desktop \

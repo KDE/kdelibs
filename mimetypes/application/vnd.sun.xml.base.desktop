@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=OpenOffice.org Database
+Icon=spreadsheet
+Type=MimeType
+Patterns=*.odb;*.ODB;
+MimeType=application/vnd.sun.xml.base
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.odb

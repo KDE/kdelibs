@@ -323,6 +323,7 @@
 >>38 string   application/vnd.sun.xml.writer             application/vnd.sun.xml.writer
 >>38 string   application/vnd.sun.xml.writer.master      application/vnd.sun.xml.writer.master
 >>38 string   application/vnd.sun.xml.writer.template    application/vnd.sun.xml.writer.template
+>>38 string   application/vnd.sun.xml.base               application/vnd.sun.xml.base
 
 # BZIP2
 0	string          BZh             application/x-bzip2
