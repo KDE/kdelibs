@@ -218,6 +218,14 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
     }
 
     /**
+     * Return const value of this KConfigSkeletonItem.
+     */
+    const T & value() const
+    {
+      return mReference;
+    }
+
+    /**
       Set default value for this item.
     */
     virtual void setDefaultValue( const T &v )
