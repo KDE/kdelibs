@@ -56,6 +56,8 @@ HTMLCollectionImpl::HTMLCollectionImpl(NodeImpl *_base, int _type)
     base = _base;
     base->ref();
     type = _type;
+    currentItem = 0L;
+    idsDone = false;
 }
 
 HTMLCollectionImpl::~HTMLCollectionImpl()
@@ -231,6 +233,39 @@ NodeImpl *HTMLCollectionImpl::item( unsigned long index ) const
     return getItem(base->firstChild(), index, pos);
 }
 
+NodeImpl *HTMLCollectionImpl::firstItem() const
+{
+    int pos = 0;
+    currentItem = getItem(base->firstChild(), 0, pos);
+    return currentItem;
+}
+
+NodeImpl *HTMLCollectionImpl::nextItem() const
+{
+    int pos = 0;
+    // Look for the 'second' item. The first one is currentItem, already given back.
+    NodeImpl *retval = getItem(currentItem, 1, pos);
+    if (retval)
+    {
+        currentItem = retval;
+        return retval;
+    }
+    // retval was 0, means we have to go up
+    while( !retval && currentItem->parentNode()
+           && currentItem->parentNode() != base )
+    {
+        currentItem = currentItem->parentNode();
+        if (currentItem->nextSibling())
+        {
+            // ... and to take the first one from there
+            pos = 0;
+            retval = getItem(currentItem->nextSibling(), 0, pos);
+        }
+    }
+    currentItem = retval;
+    return currentItem;
+}
+
 NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                                             const DOMString &name ) const
 {
@@ -306,7 +341,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
             }
             if(check && e->getAttribute(attr_id) == name)
             {
-                //kdDebug( 6030 ) << "found node: " << e << " " << current << " " << e->id() << endl;
+                //kdDebug( 6030 ) << "found node: " << e << " " << current << " " << e->id() << " " << e->tagName().string() << endl;
                 return current;
             }
             NodeImpl *retval = 0;
@@ -325,12 +360,66 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 
 NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
 {
-    NodeImpl *n;
-    n = getNamedItem(base->firstChild(), ATTR_ID, name);
-    if(n) return n;
-    return getNamedItem(base->firstChild(), ATTR_NAME, name);
+    // http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/nameditem.asp
+    // This method first searches for an object with a matching id
+    // attribute. If a match is not found, the method then searches for an
+    // object with a matching name attribute, but only on those elements
+    // that are allowed a name attribute.
+    idsDone = false;
+    currentItem = getNamedItem(base->firstChild(), ATTR_ID, name);
+    if(currentItem)
+        return currentItem;
+    idsDone = true;
+    currentItem = getNamedItem(base->firstChild(), ATTR_NAME, name);
+    return currentItem;
 }
 
+NodeImpl *HTMLCollectionImpl::nextNamedItem( const DOMString &name ) const
+{
+    //kdDebug() << "\nHTMLCollectionImpl::nextNamedItem starting at " << currentItem << endl;
+    // Go to next item first (to avoid returning the same)
+    currentItem = nextItem();
+    //kdDebug() << "*HTMLCollectionImpl::nextNamedItem next item is " << currentItem << endl;
+
+    if ( currentItem )
+    {
+        // Then look for next matching named item
+        NodeImpl *retval = getNamedItem(currentItem, idsDone ? ATTR_NAME : ATTR_ID, name);
+        if ( retval )
+        {
+            //kdDebug() << "*HTMLCollectionImpl::nextNamedItem found " << retval << endl;
+            currentItem = retval;
+            return retval;
+        }
+
+        // retval was 0, means we have to go up
+        while( !retval && currentItem->parentNode()
+               && currentItem->parentNode() != base )
+        {
+            currentItem = currentItem->parentNode();
+            if (currentItem->nextSibling())
+            {
+                // ... and to take the first one from there
+                retval = getNamedItem(currentItem->nextSibling(), idsDone ? ATTR_NAME : ATTR_ID, name);
+            }
+        }
+        if ( retval )
+        {
+            //kdDebug() << "*HTMLCollectionImpl::nextNamedItem found after going up " << retval << endl;
+            currentItem = retval;
+            return currentItem;
+        }
+    }
+
+    if ( idsDone )
+        return 0;
+    // After doing all ATTR_ID, do ATTR_NAME
+    //kdDebug() << "*HTMLCollectionImpl::nextNamedItem going to ATTR_NAME now" << endl;
+    idsDone = true;
+    currentItem = getNamedItem(base->firstChild(), ATTR_NAME, name);
+    return currentItem;
+
+}
 
 // -----------------------------------------------------------------------------
 
@@ -365,6 +454,12 @@ NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *, int index, int&) const
 
 NodeImpl* HTMLFormCollectionImpl::getNamedItem(NodeImpl*, int attr_id, const DOMString& name) const
 {
+    currentPos = 0;
+    return getNamedFormItem( attr_id, name, 0 );
+}
+
+NodeImpl* HTMLFormCollectionImpl::getNamedFormItem(int attr_id, const DOMString& name, int duplicateNumber) const
+{
     if(base->nodeType() == Node::ELEMENT_NODE)
     {
         HTMLElementImpl* e = static_cast<HTMLElementImpl*>(base);
@@ -375,16 +470,20 @@ NodeImpl* HTMLFormCollectionImpl::getNamedItem(NodeImpl*, int attr_id, const DOM
 
             for(element = f->formElements.first(); element; element = f->formElements.next())
                 if(element->isEnumeratable() && element->getAttribute(attr_id) == name)
-                    return element;
+                {
+                    if (!duplicateNumber)
+                        return element;
+                    --duplicateNumber;
+                }
         }
-        NodeImpl* retval = getNamedImgItem( base->firstChild(), attr_id, name );
+        NodeImpl* retval = getNamedImgItem( base->firstChild(), attr_id, name, duplicateNumber );
         if ( retval )
             return retval;
     }
     return 0;
 }
 
-NodeImpl* HTMLFormCollectionImpl::getNamedImgItem(NodeImpl* current, int attr_id, const DOMString& name) const
+NodeImpl* HTMLFormCollectionImpl::getNamedImgItem(NodeImpl* current, int attr_id, const DOMString& name, int& duplicateNumber) const
 {
     // strange case. IE and NS allow to get hold of <img> tags,
     // but they don't include them in the elements() collection.
@@ -394,11 +493,15 @@ NodeImpl* HTMLFormCollectionImpl::getNamedImgItem(NodeImpl* current, int attr_id
         {
             HTMLElementImpl *currelem = static_cast<HTMLElementImpl *>(current);
             if(currelem->id() == ID_IMG && currelem->getAttribute(attr_id) == name)
-                return current;
+            {
+                if (!duplicateNumber)
+                    return current;
+                --duplicateNumber;
+            }
             if(current->firstChild())
             {
                 // The recursion here is the reason why this is a separate method
-                NodeImpl *retval = getNamedImgItem(current->firstChild(), attr_id, name);
+                NodeImpl *retval = getNamedImgItem(current->firstChild(), attr_id, name, duplicateNumber);
                 if(retval)
                 {
                     //kdDebug( 6030 ) << "got a return value " << retval << endl;
@@ -409,4 +512,30 @@ NodeImpl* HTMLFormCollectionImpl::getNamedImgItem(NodeImpl* current, int attr_id
         current = current->nextSibling();
     } // while
     return 0;
+}
+
+NodeImpl * HTMLFormCollectionImpl::firstItem() const
+{
+    currentPos = 0;
+    int dummy = 0;
+    return getItem(0 /*base->firstChild() unused*/, currentPos, dummy);
+}
+
+NodeImpl * HTMLFormCollectionImpl::nextItem() const
+{
+    // This implementation loses the whole benefit of firstItem/nextItem :(
+    int dummy = 0;
+    return getItem(0 /*base->firstChild() unused*/, ++currentPos, dummy);
+}
+
+NodeImpl * HTMLFormCollectionImpl::nextNamedItem( const DOMString &name ) const
+{
+    NodeImpl *retval = getNamedFormItem( idsDone ? ATTR_NAME : ATTR_ID, name, ++currentPos );
+    if ( retval )
+        return retval;
+    if ( idsDone ) // we're done
+        return 0;
+    // After doing all ATTR_ID, do ATTR_NAME
+    idsDone = true;
+    return getNamedItem(base->firstChild(), ATTR_NAME, name);
 }
