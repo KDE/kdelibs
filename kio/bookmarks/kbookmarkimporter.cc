@@ -259,11 +259,11 @@ QString KNSBookmarkImporter::resolveEntities( const QString &input )
         if ( entityLength == 0 )
             continue;
 
-        QChar entityValue = KGlobal::charsets()->fromEntity( QConstString( entityBegin, entityLength ).string() );
+        QChar entityValue = KCharsets::fromEntity( QConstString( entityBegin, entityLength ).string() );
         if ( entityValue.isNull() )
             continue;
 
-        uint ampersandPos = ( entityBegin - 1 ) - text.unicode();
+        uint ampersandPos = ampersand - text.unicode();
 
         text[ ampersandPos ] = entityValue;
         text.remove( ampersandPos + 1, entityLength + 1 );
