@@ -823,11 +823,13 @@ void RenderFlow::layoutInlineChildren()
 	firstLine = true;
 	while( !end.atEnd() ) {
 	    start = end;
+#if 0
 	    if( start.current() == QChar('\n') ) {
 		++start;
 		if( start.atEnd() )
 		    break;
 	    }
+#endif
 	    if(!m_pre) {
 		// remove leading spaces
 		while(!start.atEnd() && start.direction() == QChar::DirWS )
@@ -859,7 +861,6 @@ void RenderFlow::layoutInlineChildren()
 BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 {
     BidiIterator lBreak = start;
-    BidiIterator current = start;
     
     int width = lineWidth(m_height);
     int w = 0;
@@ -869,13 +870,13 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
     kdDebug(6041) << "sol: " << start.obj << " " << start.pos << endl;
 #endif
 
-    RenderObject *o = current.obj;
+    RenderObject *o = start.obj;
     RenderObject *last = o;
-    int pos = current.pos;
+    int pos = start.pos;
     
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
-	kdDebug(6041) << "new object width = " << w << endl;
+	kdDebug(6041) << "new object width = " << w <<" tmpw = " << tmpW << endl;
 #endif
 	if(o->isBR()) {
 	    if( w + tmpW <= width ) {
@@ -973,19 +974,15 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    assert( false );
 
 	if( w + tmpW > width ) {
+	    //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 	    // if we have floats, try to get below them.
 	    int fb = floatBottom();
 	    if(!w && m_height < fb) {
 		m_height = fb;
 		width = lineWidth(m_height);
-	    } else if( !w && current != start ) {
-		if(pos != 0) {
-		    lBreak.obj = o;
-		    lBreak.pos = pos - 1;
-		} else {
-		    lBreak.obj = last;
-		    lBreak.pos = last->length();
-		}
+	    } else if( !w && (o != start.obj || pos != start.pos) ) {
+		lBreak.obj = o;
+		lBreak.pos = pos;
 		return lBreak;
 	    } else {
 		return lBreak;
