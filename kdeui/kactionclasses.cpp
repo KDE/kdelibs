@@ -1013,6 +1013,10 @@ KRecentFilesAction::KRecentFilesAction( QObject* parent, const char* name,
 
 void KRecentFilesAction::init()
 {
+  KRecentFilesAction *that = const_cast<KRecentFilesAction*>(this);
+  that->d->m_popup = new KPopupMenu;
+  connect(d->m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
+  connect(d->m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));
   connect( this, SIGNAL( activated( const QString& ) ),
            this, SLOT( itemSelected( const QString& ) ) );
 
@@ -1023,17 +1027,6 @@ KRecentFilesAction::~KRecentFilesAction()
 {
   delete d->m_popup;
   delete d; d = 0;
-}
-
-KPopupMenu *KRecentFilesAction::popupMenu() const
-{
-  if ( !d->m_popup ) {
-    KRecentFilesAction *that = const_cast<KRecentFilesAction*>(this);
-    that->d->m_popup = new KPopupMenu;
-    connect(d->m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
-    connect(d->m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));
-  }
-  return d->m_popup;
 }
 
 uint KRecentFilesAction::maxItems() const
@@ -1162,12 +1155,12 @@ void KRecentFilesAction::itemSelected( const QString& text )
 
 void KRecentFilesAction::menuItemActivated( int id )
 {
-    emit urlSelected( KURL(popupMenu()->text(id)) );
+    emit urlSelected( KURL(d->m_popup->text(id)) );
 }
 
 void KRecentFilesAction::menuAboutToShow()
 {
-    KPopupMenu *menu = popupMenu();
+    KPopupMenu *menu = d->m_popup;
     menu->clear();
     QStringList list = items();
     for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it ) 
@@ -1200,7 +1193,7 @@ int KRecentFilesAction::plug( QWidget *widget, int index )
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
     
-    bar->setDelayedPopup( id_, popupMenu(), true);
+    bar->setDelayedPopup( id_, d->m_popup, true);
 
     if ( !whatsThis().isEmpty() )
         QWhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
@@ -1215,6 +1208,13 @@ void KRecentFilesAction::slotClicked()
 {
   KAction::slotActivated();
 }
+
+void KRecentFilesAction::slotActivated()
+{
+  emit activated( currentItem() );
+  emit activated( currentText() );
+}
+
 
 class KFontAction::KFontActionPrivate
 {

@@ -811,6 +811,7 @@ protected slots:
   void menuAboutToShow();
   void menuItemActivated( int id );
   void slotClicked();
+  virtual void slotActivated();
 
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -818,13 +819,6 @@ protected:
 private:
   void init();
   
-  /**
-    * The popup menu that is shown when clicking (some time) on the toolbar
-    * button. You may want to plug items into it on creation, or connect to
-    * aboutToShow for a more dynamic menu.
-    */
-  KPopupMenu *popupMenu() const;
-
   class KRecentFilesActionPrivate;
   KRecentFilesActionPrivate *d;
 };
