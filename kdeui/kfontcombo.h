@@ -37,6 +37,11 @@
 class KFontCombo : public KComboBox
 {
     Q_OBJECT
+    Q_PROPERTY(bool bold READ bold WRITE setBold DESIGNABLE true)
+    Q_PROPERTY(bool italic READ italic WRITE setItalic DESIGNABLE true)
+    Q_PROPERTY(bool underline READ underline WRITE setUnderline DESIGNABLE true)
+    Q_PROPERTY(bool strikeOut READ strikeOut WRITE setStrikeOut DESIGNABLE true)
+    Q_PROPERTY(int fontSize READ size WRITE setSize DESIGNABLE true)
 public:
     /**
      * Constructor
