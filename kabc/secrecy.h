@@ -93,8 +93,8 @@ private:
   int mType;
 };
 
-KABC_EXPORT QDataStream &KABC::operator<<( QDataStream &s, const Secrecy &secrecy );
-KABC_EXPORT QDataStream &KABC::operator>>( QDataStream &s, Secrecy &secrecy );
+KABC_EXPORT QDataStream& operator<<( QDataStream &s, const Secrecy &secrecy );
+KABC_EXPORT QDataStream& operator>>( QDataStream &s, Secrecy &secrecy );
 
 }
 #endif
