@@ -4048,6 +4048,19 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     QCString plain("plain");
     QString url = cb->text(plain);
     KURL u(url);
+    if ( u.isMalformed() ) {
+      // some half-baked guesses for incomplete urls
+      if ( url.startsWith( "www." ) )
+      {
+        url.prepend( "http://" );
+        u = url;
+      }
+      else if ( url.startsWith( "ftp." ) )
+      {
+        url.prepend( "ftp://" );
+        u = url;
+      }
+    }
     if (u.isValid())
     {
       QString savedReferrer = d->m_referrer;
