@@ -47,6 +47,7 @@
     <Action name="edit_cut"/>
     <Action name="edit_copy"/>
     <Action name="edit_paste"/>
+    <MergeLocal name="edit_paste_merge"/>
     <Action name="edit_select_all"/>
     <MergeLocal name="edit_select_merge"/>
     <Separator/>
