@@ -124,8 +124,12 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ALIGN:
         if ( strcasecmp( attr->value(), "left") != 0) // _not_ equal
             addCSSProperty(CSS_PROP_MARGIN_LEFT, "auto");
+        else
+            addCSSProperty(CSS_PROP_MARGIN_LEFT, "1px");
         if( strcasecmp( attr->value(), "right") != 0)
             addCSSProperty(CSS_PROP_MARGIN_RIGHT, "auto");
+        else
+            addCSSProperty(CSS_PROP_MARGIN_RIGHT, "1px");
         break;
     case ATTR_SIZE:
     {
