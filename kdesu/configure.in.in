@@ -56,3 +56,4 @@ AC_MSG_RESULT($kde_cv_have_struct_ucred)
 if test "$kde_cv_have_struct_ucred" = yes; then
    AC_DEFINE(HAVE_STRUCT_UCRED,1, [Define if struct ucred is present from sys/socket.h])
 fi
+AC_CHECK_FUNCS(getpeereid)
