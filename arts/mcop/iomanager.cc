@@ -19,11 +19,24 @@
     Boston, MA 02111-1307, USA.
 
     */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "iomanager.h"
 #include "notification.h"
 #include <stdio.h>
 #include <fcntl.h>
+
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>		// Needed on some systems.
+#endif
+// WABA: NOTE!
+// sys/select.h is needed on e.g. AIX to define "fd_set".
+// However, we can not include config.h in a header file.
+// The right solution would be not to use "fd_set" in the
+// header file but to use it only in a private datastructure 
+// defined in the .cc file.
 
 using namespace std;
 
