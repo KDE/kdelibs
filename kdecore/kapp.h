@@ -291,7 +291,7 @@ public:
    *                   value will be appended to the filename,
    *                   prefixed with a "#" (hash) character.
    */
-  void invokeHTMLHelp_x( const QString& aFilename, const QString& aTopic ) const;
+  void invokeHTMLHelp_x( const QString& aFilename, const QString& aTopic = QString::null ) const;
 
   /**
    * Invoke the standard email application.
@@ -753,6 +753,11 @@ public:
 #endif
 
 // $Log$
+// Revision 1.153  2000/05/24 07:51:57  kulow
+// renamed invokeHTMLHelp to invokeHTMLHelp_x to find misuses. This function
+// is declared deprecated and invokeHelp should be used, which takes two
+// completly different arguments: docbook anchor and alternative appname
+//
 // Revision 1.152  2000/05/21 23:09:03  pfeiffer
 // fix against people calling QApplication::setStyle()
 // I.e. Magellan doesn't crash on startup anymore.
