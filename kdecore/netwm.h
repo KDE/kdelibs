@@ -556,6 +556,11 @@ public:
        description for details.
 
        @param window The client window that would be resized/moved.
+       @param flags Flags specifying the operation (see _NET_MOVERESIZE_WINDOW description)
+       @param x Requested X position for the window
+       @param y Requested Y position for the window
+       @param width Requested width for the window
+       @param height Requested height for the window
        
        @since 3.2
     **/
@@ -634,7 +639,7 @@ protected:
        it wants to know when a system tray window has been removed.  This is a KDE 2.0
        extension.
        
-       @param the id of the window to remove
+       @param window the id of the window to remove
     **/
     virtual void removeSystemTrayWin(Window window) { Q_UNUSED(window); }
 
@@ -755,8 +760,7 @@ protected:
        @param window the window from which the reply came
        @param timestamp timestamp of the ping
      */
-    // virtual void gotPing( Window window, Time timestamp ) {};
-    virtual void gotPing( Window, Time ) {};
+    virtual void gotPing( Window window, Time timestamp ) { Q_UNUSED(window); Q_UNUSED(timestamp); }
     /**
        A Window Manager should subclass NETRootInfo2 and reimplement this function
        when it wants to know when a Client made a request to change the active
@@ -786,6 +790,11 @@ protected:
        See _NET_MOVERESIZE_WINDOW for details.
 
        @param window the id of the window to more/resize
+       @param flags Flags specifying the operation (see _NET_MOVERESIZE_WINDOW description)
+       @param x Requested X position for the window
+       @param y Requested Y position for the window
+       @param width Requested width for the window
+       @param height Requested height for the window
     **/
     virtual void moveResizeWindow(Window window, int flags, int x, int y, int width, int height) { Q_UNUSED(window); Q_UNUSED(flags); Q_UNUSED(x); Q_UNUSED(y); Q_UNUSED(width); Q_UNUSED(height); }
 
