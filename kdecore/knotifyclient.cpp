@@ -249,8 +249,9 @@ KNotifyClient::Instance::Instance(KInstance *instance)
 
 KNotifyClient::Instance::~Instance()
 {
-	instances()->pop(this);
-    delete d;
+	if (s_instances)
+		s_instances->pop(this);
+	delete d;
 }
 
 KNotifyClient::InstanceStack *KNotifyClient::Instance::instances()
