@@ -1,5 +1,5 @@
 Matthias Kalle Dalheimer <kalle@kde.org>:
-classes KConfig, KTextStream, KColorSet, 
+classes KConfig, KTextStream, KColorSet, KApplication
 automake, autoconf, maintenance
 
 Richard Moore <moorer@cs.man.ac.uk>:
@@ -25,7 +25,7 @@ Keith Brown <kbrown@pdq.net>
 KTreeList class
 
 Bernd Johannes Wuebben <wuebben@math.cornell.edu>
-KFontDialog class
+KFontDialog classes
 
 Tim D. Gilman <tdgilman@best.com>
 KDatePicker, KDateTable class

@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
+// Source imported
+//
 // Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
 // Sources imported
 //
@@ -105,6 +108,24 @@ class KIconLoader;
 	file is opened read-write).
 	*/
 * are APPCONFIG_NONE (the application-specific config file could not be
+* opened neither read-write nor read-only), APPCONFIG_READONLY (the
+  /// Invoke kdehelp
+  /** Invoke the kdehelp HTML help viewer. The directory is computed
+	  automatically according to the KFSSTND. If aFilename is empty,
+	  the logical appname with .html appended to it is used.
+	  You can provide context-sensitive help by setting aTopic which
+	  will be added to the pathname, together with a separating hash
+	  mark. 
+	*/
+* @param aFilename	The filename that is to be loaded. Its location
+*			is computed automatically according to the KFSSTND. 
+  /// Get the KDE base dir
+  /** Returns the KDE base dir. This is the value of the KDEDIR
+	  environment variable if it is set in the process' environment,
+	  the compile time default of, if this was not present, either,
+	  /usr/local/kde. 
+  */
+/** 
 * Get the KDE base dir. 
   //@Man: Drag 'n Drop stuff
   //@{

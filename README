@@ -1,0 +1,6 @@
+IMPORTANT: You need to set the environment variable QTDIR to your Qt
+directory, and you should set the environment variable KDEDIR to the
+directory you want to install the KDE files to.  
+
+Please direct any bug reports to me (kalle@kde.org). Discussions
+should go to the KDE mailing list (kde@kde.org).

@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
+// Source imported
+//
 // Revision 1.1.1.1  1997/04/09 00:28:06  cvsuser
 // Sources imported
 //
@@ -265,6 +268,42 @@ void KApplication::init()
 		{
 		  if ( rootDropEventID == (int)cme->data.l[1] )
 	emit kdisplayPaletteChanged();
+	emit appearanceChanged();
+
+	// send a resize event to all windows so that they can resize children
+  if ( fork	() == 0 )	
+	QWidgetListIt it( *widgetList );
+	  if( filename.isEmpty() )
+		filename = aAppName + ".html";
+      QString path = KApplication::kdedir();
+      path.append("/doc/HTML/");
+      path.append(filename);
+						backgroundColor.dark(), 
+	  if( topic )
+		{
+		  path.append( "#" );
+		  path.append(topic);
+		}
+
+      execlp( "kdehelp", "kdehelp", path.data(), 0 ); 
+      exit( 1 );
+	    path.append(topic);
+	}
+
+	/* Since this is a library, we must conside the possibilty that
+	 * we are being used by a suid root program. These next two
+	 * lines drop all privileges.
+	 */
+	setuid( getuid() );
+	setgid( getgid() );
+	char* shell = "/bin/sh";
+	if (getenv("SHELL"))
+	  shell = getenv("SHELL");
+	path.prepend("kdehelp ");
+	execl(shell, shell, "-c", path.data(), 0L);
+	exit( 1 );
+  // 	setStyle() works pretty well but may not change the style of combo
+  if( !aAutosaveDir.exists() )
 	{
 	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
 		{

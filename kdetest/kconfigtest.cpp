@@ -2,6 +2,9 @@
 
 /* $Log$
  *
+ * Revision 1.2  1997/04/15 20:01:57  kalle
+ * Kalles changes for 0.8
+ *
  * Revision 1.1  1997/04/13 17:49:40  kulow
  * Sources imported
  *
@@ -257,7 +260,7 @@ void KConfigTestView::keyEditReturnPressed()
       pInfoLabel2->setText( "Key found!" );
       pValueEdit->setText( aValue );
     }
-  pConfig->writeEntry( pKeyEdit->text(), pValueEdit->text() );
+}
 
   pConfig->writeEntry( pKeyEdit->text(), QString( pValueEdit->text() ) );
 

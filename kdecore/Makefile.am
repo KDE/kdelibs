@@ -1,6 +1,6 @@
 ## KDE/lib/core/Makefile.am
 ##
-## (C) 1996 Matthias Kalle Dalheimer
+## (C) 1996-1997 Matthias Kalle Dalheimer
 ## (C) 1997 Stephan Kulow
 
 MOC = @MOC@ 
@@ -10,6 +10,7 @@ VERSION = @VERSION@
 EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
 SUFFIXES = .moc
+CXXFLAGS = -DKDEDIR=\"@KDEDIR@\"
 
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kpixmap.h kkeyconf.h kkeydata.h ckey.h kmisc.h

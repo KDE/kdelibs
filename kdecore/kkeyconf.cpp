@@ -266,7 +266,7 @@ void KKeyConfig::sync()
 	while ( aKeyIt.current() ) {
 		if ( aKeyIt.current()->bConfigurable )
 			pConfig->writeEntry( aKeyIt.currentKey(),
-				(const char *)keyToString(aKeyIt.current()->aCurrentKeyCode) );
+				keyToString(aKeyIt.current()->aCurrentKeyCode) );
 		++aKeyIt;
 	}
 }

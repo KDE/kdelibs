@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
+// Source imported
+//
 // Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
 // Sources imported
 //
@@ -76,7 +79,9 @@
 #include <config.h>
 #endif
 
+#include <qcolor.h>   // QColor
 #include <qfile.h>    // QFile
+#include <qfont.h>    // QFont
 #include <qstring.h>  // QString
 #include <qtstream.h> // QTextStream
 
@@ -125,7 +130,7 @@ public:
   ~KConfig();
 
   /// Set the group in which to search for keys.
-  /** Specify the group in whcih keys will be searched
+  /** Specify the group in which keys will be searched
 	Switch back to the default group by passing an empty string.
    */
   void setGroup( const QString& rGroup );
@@ -145,7 +150,19 @@ public:
   /** Read the value of an entry specified by rKey in the current group
 	and interpret it numerically.
 	*/
-  int KConfig::readNumEntry( const QString& rKey ) const;
+  int readNumEntry( const QString& rKey ) const;
+
+  /// Read a QFont
+  /** Read the value of an entry specified by rKey in the current
+	  group and interpret it numerically.
+	  */
+  QFont readFontEntry( const QString& rKey ) const;
+
+  /// Read a QColor
+  /** Read the value of an entry specified by rKey in the current
+	  group and interpret it as a color.
+	  */
+  QColor readColorEntry( const QString& rKey ) const;
 
   /// Write the key/value pair
   /** Write the key/value pair. This is stored to the most specific
@@ -161,8 +178,18 @@ public:
 
   /// Write the key value pair
   /** Same as above, but write a numerical value. */
-  QString KConfig::writeEntry( const QString& rKey, int rValue,
-							   bool bPersistent = true );
+  QString writeEntry( const QString& rKey, int rValue,
+					  bool bPersistent = true );
+
+  /// Write the key value pair
+  /** Same as above, but write a font */
+  QString writeEntry( const QString& rKey, const QFont& rFont,
+					  bool bPersistent = true );
+
+  /// Write the key value pair
+  /** Same as above, but write a color */
+  QString writeEntry( const QString& rKey, const QColor& rColor,
+					  bool bPersistent = true );
 
   /// Don't write dirty entries at destruction time.
   /** Don't write dirty entries at destruction time. If bDeep is

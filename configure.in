@@ -16,7 +16,7 @@ test "$CXXFLAGS" = "" && CXXFLAGS="-O2 -Wall"
 test "$LDFLAGS" = "" && LDFLAGS="-s"
 
 dnl make $KDEDIR the default for the installation
-AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local})
+AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})
 
 dnl version and name (not really needed)
 VERSION=0.7
@@ -77,5 +77,7 @@ AC_SUBST(topdir)
 AC_SUBST(MISCOBJS)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
+KDEDIR=${KDEDIR:-/usr/local/kde}
+AC_SUBST(KDEDIR)
 
 AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile kdetest/Makefile kdedoc/Makefile)

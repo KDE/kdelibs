@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
+ * Source imported
+ *
  * Revision 1.1.1.1  1997/04/09 00:28:05  cvsuser
  * Sources imported
  *
@@ -95,6 +98,7 @@
 #include <qfile.h>
 #include <qfileinf.h>
 #include <qregexp.h>
+#include <qstring.h>
 
 #include <ctype.h>
 #include <stdlib.h>
@@ -212,8 +216,8 @@ void KConfig::parseOneConfigFile( QTextStream* pStream,
       
       uint nEqualsPos = aCurrentLine.find( '=' );
       if( nEqualsPos == -1 )
-	// no equals sign: incorrect or empty line, skip it
-	continue;
+		// no equals sign: incorrect or empty line, skip it
+		continue;
       
       // insert the key/value line into the current dictionary
 	  KEntryDictEntry* pEntry = new KEntryDictEntry;
@@ -302,6 +306,103 @@ int KConfig::readNumEntry( const QString& rKey ) const
 	}
 }
 
+
+QFont KConfig::readFontEntry( const QString& rKey ) const
+{
+  QFont aRetFont;
+
+  QString aValue = readEntry( rKey );
+  if( !aValue.isNull() )
+	{
+	  // find first part (font family)
+	  int nIndex = aValue.find( ',' );
+	  if( nIndex == -1 )
+		return aRetFont;
+	  aRetFont.setFamily( aValue.left( nIndex ) );
+	  
+	  // find second part (point size)
+	  int nOldIndex = nIndex;
+	  nIndex = aValue.find( ',', nOldIndex+1 );
+	  if( nIndex == -1 )
+		return aRetFont;
+	  aRetFont.setPointSize( aValue.mid( nOldIndex+1, 
+										 nIndex-nOldIndex-1 ).toInt() );
+
+	  // find third part (style hint)
+	  nOldIndex = nIndex;
+	  nIndex = aValue.find( ',', nOldIndex+1 );
+	  if( nIndex == -1 )
+		return aRetFont;
+	  aRetFont.setStyleHint( (StyleHint)aValue.mid( nOldIndex+1, 
+													nIndex-nOldIndex-1 ).toUInt() );
+
+	  // find fourth part (char set)
+	  nOldIndex = nIndex;
+	  nIndex = aValue.find( ',', nOldIndex+1 );
+	  if( nIndex == -1 )
+		return aRetFont;
+	  aRetFont.setCharSet( (CharSet)aValue.mid( nOldIndex+1, 
+									   nIndex-nOldIndex-1 ).toUInt() );
+
+	  // find fifth part (weight)
+	  nOldIndex = nIndex;
+	  nIndex = aValue.find( ',', nOldIndex+1 );
+	  if( nIndex == -1 )
+		return aRetFont;
+	  aRetFont.setWeight( aValue.mid( nOldIndex+1,
+									  nIndex-nOldIndex-1 ).toUInt() );
+
+	  // find sixth part (font bits)
+	  uint nFontBits = aValue.right( aValue.length()-nIndex-1 ).toUInt();
+	  if( nFontBits & 0x01 )
+		aRetFont.setItalic( true );
+	  if( nFontBits & 0x02 )
+		aRetFont.setUnderline( true );
+	  if( nFontBits & 0x04 )
+		aRetFont.setStrikeOut( true );
+	  if( nFontBits & 0x08 )
+		aRetFont.setFixedPitch( true );
+	  if( nFontBits & 0x20 )
+		aRetFont.setRawMode( true );
+	}
+
+  return aRetFont;
+}
+
+
+QColor KConfig::readColorEntry( const QString& rKey ) const
+{
+  QColor aRetColor;
+  int nRed = 0, nGreen = 0, nBlue = 0;
+
+  QString aValue = readEntry( rKey );
+  if( !aValue.isNull() )
+	{
+bool bOK;
+	  // find first part (red)
+	  int nIndex = aValue.find( ',' );
+	  if( nIndex == -1 )
+		return aRetColor;
+	  nRed = aValue.left( nIndex ).toInt( &bOK );
+	  
+	  // find second part (green)
+	  int nOldIndex = nIndex;
+	  nIndex = aValue.find( ',', nOldIndex+1 );
+	  if( nIndex == -1 )
+		return aRetColor;
+	  nGreen = aValue.mid( nOldIndex+1,
+						   nIndex-nOldIndex-1 ).toInt( &bOK );
+
+	  // find third part (blue)
+	  nBlue = aValue.right( aValue.length()-nIndex-1 ).toInt( &bOK );
+
+	  aRetColor.setRgb( nRed, nGreen, nBlue );
+	}
+
+  return aRetColor;
+}
+
+
 QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 							 bool bPersistent )
 {
@@ -358,6 +459,40 @@ QString KConfig::writeEntry( const QString& rKey, int nValue,
 
   return writeEntry( rKey, aValue, bPersistent );
 }
+
+QString KConfig::writeEntry( const QString& rKey, const QFont& rFont,
+							 bool bPersistent )
+{
+  QString aValue;
+  UINT8 nFontBits = 0;
+  // this mimics get_font_bits() from qfont.cpp
+  if( rFont.italic() )
+	nFontBits = nFontBits | 0x01;
+  if( rFont.underline() )
+	nFontBits = nFontBits | 0x02;
+  if( rFont.strikeOut() )
+	nFontBits = nFontBits | 0x04;
+  if( rFont.fixedPitch() )
+	nFontBits = nFontBits | 0x08;
+  if( rFont.rawMode() )
+	nFontBits = nFontBits | 0x20;
+
+  aValue.sprintf( "%s,%d,%d,%d,%d,%d", rFont.family(), rFont.pointSize(),
+				  rFont.styleHint(), rFont.charSet(), rFont.weight(),
+				  nFontBits );
+
+  return writeEntry( rKey, aValue, bPersistent );
+}
+
+QString KConfig::writeEntry( const QString& rKey, const QColor& rColor,
+							 bool bPersistent )
+{
+  QString aValue;
+  aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
+
+  return writeEntry( rKey, aValue, bPersistent );
+}
+
 
 void KConfig::rollback( bool bDeep )
 {

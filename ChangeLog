@@ -1,0 +1,22 @@
+0.1 : first steps with libkde
+0.2 : first release with libkde, khtmlw, kdehelp, acli, kwm, kpanel
+0.3 : added kfm and bugfixes
+0.4 : updated khtmlw, kdehelp, kwm, changed install in all subdirs
+0.5 : support libtool (chooseable shared libs)
+0.6 : split libkde in kdecore and kdeui 
+0.6.1 : Bugfixes
+0.7 : added code from Janos Farkas (configure)
+    : added @{kde,qt}_{includes,libraries}@
+0.7.1: Bugfixes
+0.7.2: Bugfixes
+0.7.3: added @all_includes@ and @all_libraries@
+       replaced all incompatible flags like $(CC) and -DHAVE_UNISTD_H
+0.7.4: changed support for libkde (back in it's own)
+       added kpat
+       updated kpanel, kwm, kghostview
+0.8: removed a bug in kghostview
+	lifted installation process of several apps
+	splitt kdebase into kdelibs and kdeapps	
+	updated khtmlw, kfm and kdehelp
+	added kcalc and kpaint
+	KConfig reads and writes colors and fonts
