@@ -28,14 +28,16 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
     kmainwidgetframe ->setLineWidth(0);
     kmainwidgetframe ->hide();
 
-	// If the application does not yet have a top widget, make it this one
+    // If the application does not yet have a top widget, make it this one
+
+
+    // Enable session management (Matthias)
+    setUnsavedData(False);
     if( !kapp->topWidget() ){
       kapp->setTopWidget( this );
-      // Enable session management (Matthias)
       kapp->enableSessionManagement();
+      connect(kapp, SIGNAL(saveYourself()), SLOT(saveYourself()));
     }
-    connect(kapp, SIGNAL(saveYourself()), SLOT(saveYourself()));
-
 
     // see if there already is a member list
     if( !memberList )
@@ -495,6 +497,8 @@ void KTopLevelWidget::updateRects()
 
 void KTopLevelWidget::saveYourself(){
   // Do session management (Matthias)
+  if (kapp->topWidget() != this)
+    return;
   QListIterator<KTopLevelWidget> it(*memberList);
   int n = 0;
   KConfig* config = KApplication::getKApplication()->getSessionConfig();
@@ -769,6 +773,10 @@ bool KTopLevelWidget::restore(int number){
     return True;
   }
   return False;
+}
+// Matthias
+void KTopLevelWidget::setUnsavedData( bool b){
+  KWM::setUnsavedDataHint(winId(), b);
 }
 
 

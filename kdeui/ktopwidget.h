@@ -192,6 +192,18 @@ public:
    */
   bool restore(int number);
 
+  /**
+    * Tells the session manager wether the window contains
+    * unsaved data which cannot be stored in temporary files
+    * during saveYourself. Note that this is somewhat bad style.
+    * A really good KDE application should store everything in
+    * temporary recover files. Kapplication has some nifty support
+    * for that.
+    *
+    * Default is False == No unsaved data.
+    */
+  void setUnsavedData( bool );
+
 
 
 protected:
@@ -289,7 +301,6 @@ private:
   // Matthias
   void savePropertiesInternal (KConfig*, int);
   bool readPropertiesInternal (KConfig*, int);
-
 };
 
 #endif
