@@ -26,6 +26,9 @@
 #include <qtextstream.h>
 #include <kbookmark.h>
 
+/**
+ * @since 3.2
+ */
 class KBookmarkExporterBase
 {
 public:
@@ -37,10 +40,11 @@ public:
 protected:
     QString m_fileName;
     KBookmarkManager* m_pManager;
+private:
+    class KBookmarkExporterBasePrivate *d;
 };
 
 // for SC
-
 #include "kbookmarkimporter_ns.h"
 
 #endif

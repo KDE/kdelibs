@@ -122,17 +122,19 @@ public:
   /**
    * Structure used for storing information about 
    * the dynamic menu setting
+   * @since 3.2
    */
+  // TODO - transform into class
   struct DynMenuInfo {
      bool show;
      QString location;
      QString type;
      QString name;
-  } ;
+     class DynMenuInfoPrivate *d;
+  };
 
   /**
    * @return dynmenu info block for the given dynmenu name
-   * @param 
    * @since 3.2
    */
   static DynMenuInfo showDynamicBookmarks( const QString &id );
@@ -218,6 +220,7 @@ protected:
    */
   QString m_parentAddress;
 
+  // TODO make non static!
   static QString s_highlightedAddress;
   static QString s_highlightedImportLocation;
   static QString s_highlightedImportType;

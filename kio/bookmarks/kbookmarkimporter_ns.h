@@ -73,6 +73,7 @@ public:
     virtual QString findDefaultLocation(bool forSaving = false) const;
 private:
     bool m_utf8;
+    class KNSBookmarkImporterImplPrivate *d;
 };
 
 /**
@@ -84,14 +85,14 @@ class KMozillaBookmarkImporterImpl : public KNSBookmarkImporterImpl
 {
 public:
     KMozillaBookmarkImporterImpl() { setUtf8(true); }
+private:
+    class KMozillaBookmarkImporterImplPrivate *d;
 };
 
 /**
  * A class that exports all the current bookmarks to Netscape/Mozilla bookmarks
  * Warning, it overwrites the existing bookmarks.html file !
- *
  * @deprecated
- * only for BC - remove for KDE 4.0
  */
 class KDE_DEPRECATED KNSBookmarkExporter
 {
@@ -109,6 +110,9 @@ protected:
     KBookmarkManager* m_pManager;
 };
 
+/**
+ * @since 3.2
+ */
 class KNSBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
@@ -122,6 +126,7 @@ protected:
     QString folderAsString(KBookmarkGroup) const;
 private:
     bool m_utf8;
+    class KNSBookmarkExporterImplPrivate *d;
 };
 
 #endif

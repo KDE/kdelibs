@@ -52,7 +52,6 @@ signals:
 
 protected:
     QString m_fileName;
-
 };
 
 /**
@@ -65,8 +64,13 @@ public:
     KOperaBookmarkImporterImpl() { }
     virtual void parse();
     virtual QString findDefaultLocation(bool forSaving = false) const;
+private:
+    class KOperaBookmarkImporterImplPrivate *d;
 };
 
+/**
+ * @since 3.2
+ */
 class KOperaBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
@@ -75,6 +79,8 @@ public:
     { ; }
     virtual ~KOperaBookmarkExporterImpl() {}
     virtual void write(KBookmarkGroup);
+private:
+    class KOperaBookmarkExporterImplPrivate *d;
 };
 
 #endif

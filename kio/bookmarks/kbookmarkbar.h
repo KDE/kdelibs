@@ -58,10 +58,20 @@ public:
 
     virtual ~KBookmarkBar();
 
+    /**
+     * @since 3.2
+     */
     bool isReadOnly() const;
+
+    /**
+     * @since 3.2
+     */
     void setReadOnly(bool);
 
 signals:
+    /**
+     * @since 3.2
+     */
     void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
 
 public slots:
@@ -70,6 +80,9 @@ public slots:
     void slotBookmarksChanged( const QString & );
     void slotBookmarkSelected();
 
+    /**
+     * all @since 3.2
+     */
     void slotRMBActionRemove( int );
     void slotRMBActionInsert( int );
     void slotRMBActionOpen( int );

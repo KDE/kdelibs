@@ -114,7 +114,7 @@ public:
      * @param url the viewed url
      * @param faviconurl the favicion url
      * @emitSignal iff true emit KBookmarkNotifier signal
-     * @since 3.2
+     * @since 3.3
      */
     void updateFavicon( const QString &url, const QString &faviconurl, bool emitSignal = true );
 
@@ -156,7 +156,7 @@ public:
 
     /**
      * @return true if the NS bookmarks should be dynamically shown
-     * in the toplevel kactionmenu
+     *         in the toplevel kactionmenu
      * @deprecated
      */
     bool showNSBookmarks() const;
@@ -175,6 +175,7 @@ public:
      * @param caption the --caption string, for instance "Konsole"
      * @param browser iff false display no browser specific
      *            menu items in keditbookmarks :: --nobrowser
+     * @since 3.2
      */
     void setEditorOptions( const QString& caption, bool browser );
 
@@ -199,8 +200,7 @@ public:
 
     /**
      * Returns a pointer to the users main bookmark collection.
-     * @return a pointer to the users main bookmark collection.
-     * @since 3.2 (?)
+     * @since 3.2
      */
     static KBookmarkManager* userBookmarksManager();
 
@@ -216,6 +216,9 @@ public:
      */
     KBookmarkNotifier& notifier() { return m_notifier; }
 
+    /**
+     * @since 3.2
+     */
     KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
                                       const QString & _parentBookmarkAddress = QString::null );
 
@@ -321,7 +324,9 @@ protected:
   virtual void virtual_hook( int id, void* data );
 };
 
-class KExtendedBookmarkOwnerPrivate;
+/**
+ * @since 3.2
+ */
 class KExtendedBookmarkOwner : public QObject, virtual public KBookmarkOwner
 {
     Q_OBJECT
@@ -332,6 +337,7 @@ public slots:
 signals:
     void signalFillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list );
 private:
+    class KExtendedBookmarkOwnerPrivate;
     KExtendedBookmarkOwnerPrivate *d;
 };
 

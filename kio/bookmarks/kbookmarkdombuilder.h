@@ -25,6 +25,9 @@
 #include <qvaluestack.h>
 #include <qobject.h>
 
+/**
+ * @since 3.2
+ */
 class KBookmarkDomBuilder : public QObject {
    Q_OBJECT
 public:
@@ -40,6 +43,7 @@ private:
    QValueStack<KBookmarkGroup> m_stack;
    QValueList<KBookmarkGroup> m_list;
    KBookmarkManager *m_manager;
+   class KBookmarkDomBuilderPrivate *p;
 };
 
 #endif

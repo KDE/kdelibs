@@ -32,6 +32,7 @@
  * A class for importing NS bookmarks
  * KEditBookmarks uses it to insert bookmarks into its DOM tree,
  * and KActionMenu uses it to create actions directly.
+ * @since 3.2
  */
 class KBookmarkImporterBase : public QObject
 {
@@ -76,6 +77,8 @@ signals:
 protected:
     QString m_fileName;
 
+private:
+    class KBookmarkImporterBasePrivate *d;
 };
 
 /**
@@ -92,10 +95,11 @@ protected:
     virtual void visit(const KBookmark &);
     virtual void visitEnter(const KBookmarkGroup &);
     virtual void visitLeave(const KBookmarkGroup &);
+private:
+    class KXBELBookmarkImporterImplPrivate *d;
 };
 
 // for SC
-
 #include "kbookmarkimporter_ns.h"
 #include "kbookmarkimporter_kde1.h"
 

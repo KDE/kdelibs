@@ -68,6 +68,7 @@ public:
 private:
     bool m_shouldDelete;
     QMap<QString, QString> parseCrashLog_noemit( const QString & filename, bool del );
+    class KCrashBookmarkImporterImplPrivate *d;
 };
 
 #endif
