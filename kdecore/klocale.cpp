@@ -330,19 +330,20 @@ void KLocale::initFormat(KConfig *config)
   numentry.setGroup(QString::fromLatin1("KCM Locale"));
 
   _decimalSymbol = config->readEntry(QString::fromLatin1("DecimalSymbol"));
-  if (_decimalSymbol.isNull())
+
+  if (_decimalSymbol.isEmpty())
     _decimalSymbol = numentry.readEntry(QString::fromLatin1("DecimalSymbol"), QString::fromLatin1("."));
 
   _thousandsSeparator = config->readEntry(QString::fromLatin1("ThousandsSeparator"));
-  if (_thousandsSeparator.isNull())
+  if (_thousandsSeparator.isEmpty())
     _thousandsSeparator = numentry.readEntry(QString::fromLatin1("ThousandsSeparator"), QString::fromLatin1(","));
 
   _positiveSign = config->readEntry(QString::fromLatin1("PositiveSign"));
-  if (_positiveSign.isNull())
+  if (_positiveSign.isEmpty())
     _positiveSign = numentry.readEntry(QString::fromLatin1("PositiveSign"));
 
   _negativeSign = config->readEntry(QString::fromLatin1("NegativeSign"));
-  if (_negativeSign.isNull())
+  if (_negativeSign.isEmpty())
     _negativeSign = numentry.readEntry(QString::fromLatin1("NegativeSign"), QString::fromLatin1("-"));
 
   // Monetary
@@ -350,15 +351,15 @@ void KLocale::initFormat(KConfig *config)
   monentry.setGroup(QString::fromLatin1("KCM Locale"));
 
   _currencySymbol = config->readEntry(QString::fromLatin1("CurrencySymbol"));
-  if (_currencySymbol.isNull())
+  if (_currencySymbol.isEmpty())
     _currencySymbol = monentry.readEntry(QString::fromLatin1("CurrencySymbol"), QString::fromLatin1("$"));
 
   _monetaryDecimalSymbol = config->readEntry(QString::fromLatin1("MonetaryDecimalSymbol"));
-  if (_monetaryDecimalSymbol.isNull())
+  if (_monetaryDecimalSymbol.isEmpty())
     _monetaryDecimalSymbol = monentry.readEntry(QString::fromLatin1("MonetaryDecimalSymbol"), QString::fromLatin1("."));
 
   _monetaryThousandsSeparator = config->readEntry(QString::fromLatin1("MonetaryThousendSeparator"));
-  if (_monetaryThousandsSeparator.isNull())
+  if (_monetaryThousandsSeparator.isEmpty())
     _monetaryThousandsSeparator = monentry.readEntry(QString::fromLatin1("MonetaryThousandsSeparator"), QString::fromLatin1(","));
 
   _fracDigits = config->readNumEntry(QString::fromLatin1("FractDigits"), -1);
@@ -384,15 +385,15 @@ void KLocale::initFormat(KConfig *config)
   timentry.setGroup(QString::fromLatin1("KCM Locale"));
 
   _timefmt = config->readEntry(QString::fromLatin1("TimeFormat"));
-  if (_timefmt.isNull())
+  if (_timefmt.isEmpty())
     _timefmt = timentry.readEntry(QString::fromLatin1("TimeFormat"), QString::fromLatin1("%I:%M:%S %p"));
 
   _datefmt = config->readEntry(QString::fromLatin1("DateFormat"));
-  if (_datefmt.isNull())
+  if (_datefmt.isEmpty())
     _datefmt = timentry.readEntry(QString::fromLatin1("DateFormat"), QString::fromLatin1("%A %d %B %Y"));
 
   _datefmtshort = config->readEntry(QString::fromLatin1("DateFormatShort"));
-  if (_datefmtshort.isNull())
+  if (_datefmtshort.isEmpty())
     _datefmtshort = timentry.readEntry(QString::fromLatin1("DateFormatShort"), QString::fromLatin1("%m/%d/%y"));
 }
 
@@ -565,6 +566,7 @@ QString KLocale::formatNumber(double num, int precision) const
     if (precision == -1) precision = 2;
     QString res = QString::number(neg?-num:num, 'f', precision);
     int pos = res.find('.');
+
     if (pos == -1) pos = res.length();
     else res.replace(pos, 1, decimalSymbol());
 
