@@ -278,7 +278,7 @@ QPalette cspl;
    d->_validUntil->setPalette(cspl);
    d->_validUntil->setText(x->getNotAfter());
 
-   cspl = d->_csl->palette();
+   cspl = palette();
 
    KSSLCertificate::KSSLValidation ksv;
    KSSLCertificate::KSSLValidationList ksvl;
@@ -286,7 +286,16 @@ QPalette cspl;
       ksvl = d->_cert_ksvl;
       ksv = ksvl.first();
    } else {
-      ksv = x->validate();
+      if (x == d->_cert)
+         ksvl = d->_cert->validateVerbose(KSSLCertificate::SSLServer);
+      else
+         ksvl = d->_cert->validateVerbose(KSSLCertificate::SSLServer, x);
+
+      if (ksvl.isEmpty())
+         ksvl << KSSLCertificate::Ok;
+
+      ksv = ksvl.first();
+         
       if (ksv == KSSLCertificate::SelfSigned) {
          if (x->getQDTNotAfter() > QDateTime::currentDateTime(Qt::UTC) &&
              x->getQDTNotBefore() < QDateTime::currentDateTime(Qt::UTC)) {
@@ -296,13 +305,12 @@ QPalette cspl;
             ksv = KSSLCertificate::Expired;
 	 }
       }
-      ksvl << ksv;
    }
 
-   if (ksv != KSSLCertificate::Ok) {
-      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-   } else {
+   if (ksv == KSSLCertificate::Ok) {
       cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+   } else if (ksv != KSSLCertificate::Irrelevant) {
+      cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
    }
    d->_csl->setPalette(cspl);
 

@@ -18,16 +18,17 @@
  * Boston, MA 02111-1307, USA.
  */
 
-// DON'T INCLUDE ANYTHING IN HERE.  THIS FILE IS NOT COMPILED AS IT IS.
-
 #ifdef KSSL_HAVE_SSL
 #ifndef _kde_ksslcallback_c
 #define _kde_ksslcallback_c
 
+X509 *KSSL_X509CallBack_ca;
+bool KSSL_X509CallBack_ca_found;
+
 extern "C" {
 static int X509Callback(int ok, X509_STORE_CTX *ctx) {
  
-  kdDebug(7029) << "X509Callback: ok = " << ok << " error = " << ctx->error << endl;
+  kdDebug(7029) << "X509Callback: ok = " << ok << " error = " << ctx->error << " depth = " << ctx->error_depth << endl;
   // Here is how this works.  We put "ok = 1;" in any case that we
   // don't consider to be an error.  In that case, it will return OK
   // for the certificate check as long as there are no other critical
@@ -35,6 +36,14 @@ static int X509Callback(int ok, X509_STORE_CTX *ctx) {
   // 
   // Of course we can also put other code in here but any data returned
   // back will not be threadsafe ofcourse.
+
+  if (KSSL_X509CallBack_ca)
+  {
+     if (KOSSL::self()->X509_cmp(ctx->current_cert, KSSL_X509CallBack_ca) != 0)
+        return 1; // Ignore errors for this certificate
+
+     KSSL_X509CallBack_ca_found = true;
+  }
  
   if (!ok) {
     switch (ctx->error) {

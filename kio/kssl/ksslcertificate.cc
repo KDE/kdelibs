@@ -584,8 +584,13 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLP
 // CRL files?  we don't do that yet
 KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertificate::KSSLPurpose purpose) 
 {
+	return validateVerbose(purpose, 0);
+}
+
+KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertificate::KSSLPurpose purpose, KSSLCertificate *ca)
+{
 	KSSLValidationList errors;
-	if (d->_lastPurpose != purpose && d->m_stateCached) {
+	if (ca || (d->_lastPurpose != purpose)) {
 		d->m_stateCached = false;
 	}
 
@@ -668,12 +673,23 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 
 		d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, purposeToOpenSSL(purpose));
 
+		KSSL_X509CallBack_ca = ca ? ca->d->m_cert : 0;
+		KSSL_X509CallBack_ca_found = false;
+
 		certStoreCTX->error = X509_V_OK;
 		rc = d->kossl->X509_verify_cert(certStoreCTX);
 		int errcode = certStoreCTX->error;
-		ksslv = processError(errcode);
+		if (ca && !KSSL_X509CallBack_ca_found)
+		{
+			ksslv = KSSLCertificate::Irrelevant;
+		}
+		else
+		{
+			ksslv = processError(errcode);
+		}
 		// For servers, we can try NS_SSL_SERVER too
-		if (ksslv != KSSLCertificate::Ok &&
+		if (	(ksslv != KSSLCertificate::Ok) &&
+			(ksslv != KSSLCertificate::Irrelevant) &&
 			purpose == KSSLCertificate::SSLServer) {
 			d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX,
 						X509_PURPOSE_NS_SSL_SERVER);
@@ -903,6 +919,8 @@ case KSSLCertificate::PrivateKeyFailed:
 	return i18n("Private key test failed.");
 case KSSLCertificate::InvalidHost:
 	return i18n("The certificate has not been issued for this host.");
+case KSSLCertificate::Irrelevant:
+	return i18n("This certificate is not relevant.");
 default:
 break;
 }
