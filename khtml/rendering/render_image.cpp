@@ -80,7 +80,6 @@ void RenderImage::setStyle(RenderStyle* _style)
 {
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
-    setInline( style()->display()==INLINE );
     //setOverhangingContents(style()->height().isPercent());
     setShouldPaintBackgroundOrBorder(true);
 }
@@ -140,26 +139,30 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     {
 //           qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d",
 //                  intrinsicWidth(), intrinsicHeight(),
-//                o->pixmap_size().width(), o->pixmap_size().height());
+//               o->pixmap_size().width(), o->pixmap_size().height());
 
         if(!o->isErrorImage()) {
             setIntrinsicWidth( o->pixmap_size().width() );
             setIntrinsicHeight( o->pixmap_size().height() );
         }
 
-        // lets see if we need to relayout at all..
-        int oldwidth = m_width;
-        int oldheight = m_height;
-        if ( parent() ) {
-            calcWidth();
-            calcHeight();
-        }
+         // lets see if we need to relayout at all..
+         int oldwidth = m_width;
+         int oldheight = m_height;
+         int oldminwidth = m_minWidth;
+         m_minWidth = 0;
 
-        if(iwchanged || m_width != oldwidth || m_height != oldheight)
-            needlayout = true;
+         if ( parent() ) {
+             calcWidth();
+             calcHeight();
+         }
 
-        m_width = oldwidth;
-        m_height = oldheight;
+         if(iwchanged || m_width != oldwidth || m_height != oldheight)
+             needlayout = true;
+
+         m_minWidth = oldminwidth;
+         m_width = oldwidth;
+         m_height = oldheight;
     }
 
     // we're not fully integrated in the tree yet.. we'll come back.
@@ -168,9 +171,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 
     if(needlayout)
     {
-        setLayouted(false);
         setMinMaxKnown(false);
-
+        setLayouted(false);
 //         kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
 //         kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
     }
