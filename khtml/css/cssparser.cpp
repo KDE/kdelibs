@@ -398,6 +398,10 @@ CSSPrimitiveValueImpl *CSSParser::parseBackgroundPositionXY( int propId, bool fo
 
     case CSS_VAL_LEFT:
     case CSS_VAL_RIGHT:
+        if ( propId == CSS_PROP_BACKGROUND_POSITION_Y ) {
+            ok = false;
+            break;
+        }
     case CSS_VAL_TOP:
     case CSS_VAL_BOTTOM:
         if ( propId == CSS_PROP_BACKGROUND_POSITION_X && ( id == CSS_VAL_BOTTOM || id == CSS_VAL_TOP ) ) {
