@@ -378,6 +378,8 @@ public:
     virtual void setStyle( RenderStyle *style );
     virtual void repaint();
 
+    virtual void updateFromElement();
+
     void setRowHeight(int h) { rowHeight = h; }
 
     void setRowImpl(RenderTableRow *r) { rowimpl = r; }
@@ -462,6 +464,8 @@ public:
     virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
+
+    virtual void updateFromElement();
 
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;

@@ -160,20 +160,22 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
         {
-        RenderContainer::addChild(child,beforeChild);
-        RenderTableCol* colel = static_cast<RenderTableCol *>(child);
-        if (_oldColElem && _oldColElem->style()->display() == TABLE_COLUMN_GROUP)
-            _currentCol = _oldColElem->lastCol();
-        _oldColElem = colel;
-        colel->setStartCol(_currentCol);
-        if (child->style()->display() == TABLE_COLUMN)
-            _currentCol++;
-        else
-            _currentCol+=colel->span();
-        addColInfo(colel);
-        incremental = true;
-        colel->setTable(this);
-        }
+	    RenderContainer::addChild(child,beforeChild);
+	    RenderTableCol* colel = static_cast<RenderTableCol *>(child);
+	    if (_oldColElem && _oldColElem->style()->display() == TABLE_COLUMN_GROUP)
+		_currentCol = _oldColElem->lastCol();
+	    _oldColElem = colel;
+	    colel->setStartCol(_currentCol);
+	    if ( colel->span() != 0 ) {
+		if (child->style()->display() == TABLE_COLUMN)
+		    _currentCol++;
+		else
+		    _currentCol+=colel->span();
+		addColInfo(colel);
+	    }
+	    incremental = true;
+	    colel->setTable(this);
+	}
 	child->setLayouted( false );
 	child->setMinMaxKnown( false );
         return;
@@ -360,13 +362,28 @@ void RenderTable::recalcColInfos()
 
 void RenderTable::recalcColInfo( ColInfo *col )
 {
-    // ### add tablecol element
-    qDebug("recalcColinfo: line=%d, span=%d", col->start, col->span-1);
-    
     KHTMLAssert( colInfos[col->span-1]->data()[col->start] == col );
     ColInfoLine *line = (colInfos[col->span-1]);
     ColInfo **data = line->data() + col->start;
     *data = 0;
+
+    // add table-column if exists
+    RenderObject *child = firstChild();
+    while( child ) {
+	if ( child->style()->display() == TABLE_COLUMN || 
+	     child->style()->display() == TABLE_COLUMN_GROUP ) {
+	    RenderTableCol *tc = static_cast<RenderTableCol *>(child);
+	    if ( tc->span() == col->span && tc->col() == col->start ) {
+		addColInfo( tc );
+		break;
+	    }
+	} else {
+	    break; 
+	}
+	child = child->nextSibling();
+    }
+
+    // now the cells
     KHTMLAssert( colInfos[col->span-1]->data()[col->start] == 0 );
     for ( unsigned int r = 0; r < totalRows; r++ ) {
 	RenderTableCell *cell = cells[r][col->start];
@@ -386,8 +403,10 @@ void RenderTable::addColInfo(RenderTableCol *colel)
     int _minSize=0;
     int _maxSize=0;
     Length _width = colel->width();
-    if (_width.type==Fixed)
+    if (_width.type==Fixed) {
         _maxSize=_width.value;
+	_minSize=_width.value;
+    }
 
     for (int n=0; n<span; ++n) {
 #ifdef TABLE_DEBUG
@@ -1939,16 +1958,7 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
 {
   _col = -1;
   _row = -1;
-  DOM::NodeImpl *node = element();
-  if ( node && (node->id() == ID_TD || node->id() == ID_TH) ) {
-      DOM::HTMLTableCellElementImpl *tc = static_cast<DOM::HTMLTableCellElementImpl *>(node);
-      cSpan = tc->colSpan();
-      rSpan = tc->rowSpan();
-      nWrap = tc->noWrap();
-  } else {
-      cSpan = rSpan = 1;
-      nWrap = false;
-  }
+  updateFromElement();
   _id = 0;
   rowHeight = 0;
   m_table = 0;
@@ -1962,6 +1972,20 @@ RenderTableCell::~RenderTableCell()
 {
     if (m_table)
         m_table->setNeedsCellsRecalc();
+}
+
+void RenderTableCell::updateFromElement()
+{
+  DOM::NodeImpl *node = element();
+  if ( node && (node->id() == ID_TD || node->id() == ID_TH) ) {
+      DOM::HTMLTableCellElementImpl *tc = static_cast<DOM::HTMLTableCellElementImpl *>(node);
+      cSpan = tc->colSpan();
+      rSpan = tc->rowSpan();
+      nWrap = tc->noWrap();
+  } else {
+      cSpan = rSpan = 1;
+      nWrap = false;
+  }
 }
 
 void RenderTableCell::calcMinMaxWidth()
@@ -2145,6 +2169,7 @@ RenderTableCol::RenderTableCol(DOM::NodeImpl* node)
     setInline(true);   // our object is not Inline
 
     _span = 1;
+    updateFromElement();
     _currentCol = 0;
     _startCol = 0;
     _id = 0;
@@ -2154,6 +2179,19 @@ RenderTableCol::~RenderTableCol()
 {
 }
 
+void RenderTableCol::updateFromElement()
+{
+  DOM::NodeImpl *node = element();
+  if ( node && (node->id() == ID_COL || node->id() == ID_COLGROUP) ) {
+      DOM::HTMLTableColElementImpl *tc = static_cast<DOM::HTMLTableColElementImpl *>(node);
+      _span = tc->span();
+  } else {
+      if ( style()->display() == TABLE_COLUMN_GROUP ) 
+	  _span = 0;
+      else 
+	  _span = 1;
+  }
+}
 
 void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
 {

@@ -745,7 +745,7 @@ HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentPtr *doc, ushort i)
     : HTMLElementImpl(doc)
 {
     _id = i;
-    _span = 1;
+    _span = (_id == ID_COLGROUP ? 0 : 1);
 }
 
 HTMLTableColElementImpl::~HTMLTableColElementImpl()

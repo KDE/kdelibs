@@ -225,6 +225,8 @@ public:
 
     // overrides
     virtual void parseAttribute(AttributeImpl *attr);
+    
+    int span() const { return _span; }
 
 protected:
     // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
