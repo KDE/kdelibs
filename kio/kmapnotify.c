@@ -33,6 +33,11 @@
 #include <ltdl.h>
 #include <config.h>
 
+
+#ifndef HAVE_UNSETENV
+int unsetenv(const char * name);
+#endif
+
 int XMapWindow(Display *, Window);
 int XMapRaised(Display *, Window);
 
@@ -153,11 +158,10 @@ KDE_InterceptXMapRequest(Display * d, Window w)
   if (envStr)
     KDE_appStartPid = atoi(envStr);
 
-  /* unsetenv is not available on all platforms... */
-  putenv(strdup("LD_PRELOAD="));
-  putenv(strdup("KDE_INITIAL_DESKTOP="));
-  putenv(strdup("KDE_DISABLE_KMAPNOTIFY="));
-  putenv(strdup("KDE_APP_START_PID="));
+  unsetenv("LD_PRELOAD");
+  unsetenv("KDE_INITIAL_DESKTOP");
+  unsetenv("KDE_DISABLE_KMAPNOTIFY");
+  unsetenv("KDE_APP_START_PID");
 
   /* Find symbols *********************************************************/
 
@@ -236,3 +240,28 @@ KDE_SetNetWmPid(Display *d, Window w) {
     (unsigned char *)&pid, 1);
 
 }
+
+#ifndef HAVE_UNSETENV
+
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
+#include <string.h>
+#include <stdlib.h>
+
+int unsetenv(const char * name) {
+    int i;
+    char * a;
+
+    i = strlen(name) + 2;
+    a = (char*)malloc(i);
+    if (!a) return 1;
+
+    strcpy(a, name);
+    strcat(a, "=");
+
+    return putenv(a);
+}
+
+#endif
