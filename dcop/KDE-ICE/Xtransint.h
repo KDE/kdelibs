@@ -139,7 +139,7 @@ extern int  errno;		/* Internal system error number. */
 #else
 #include <sys/param.h>
 #ifndef OPEN_MAX
-#ifdef __OSF1__
+#if defined(__OSF1__) || defined(__osf__)
 #define OPEN_MAX 256
 #else
 #ifdef NOFILE

@@ -77,7 +77,9 @@ int len;
 #else
     {
 #ifndef __EMX__
+#ifndef __osf__
 	long    time ();
+#endif
 #endif
 	ldata[0] = time ((long *) 0);
 	ldata[1] = getpid ();
