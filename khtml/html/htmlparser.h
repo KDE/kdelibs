@@ -38,6 +38,7 @@
 #include <qdatetime.h>
 #endif
 
+
 #include "dom/dom_string.h"
 #include "xml/dom_nodeimpl.h"
 #include "html/html_documentimpl.h"
@@ -84,7 +85,7 @@ public:
     void reset();
 
     bool skipMode() const { return (discard_until != 0); }
-    bool noSpaces() const { return (!_inline  || !inBody); }
+    bool noSpaces() const { return (!m_inline  || !inBody); }
     bool selectMode() const { return inSelect; }
 
     DOM::HTMLDocumentImpl *doc() const { return static_cast<DOM::HTMLDocumentImpl *>(document->document()); }
@@ -153,7 +154,7 @@ protected:
     bool inBody;
     bool haveContent;
     bool haveFrameSet;
-    bool _inline;
+    bool m_inline;
     bool end;
     bool flat;
     bool haveKonqBlock;
