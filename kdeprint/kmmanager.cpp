@@ -168,10 +168,19 @@ bool KMManager::testPrinter(KMPrinter *prt)
 		return false;
 	}
 	KPrinter	pr;
+	bool		prExist = (findPrinter(prt->printerName()) != 0), result(false);
 	pr.setPrinterName(prt->printerName());
 	pr.setSearchName(prt->name());
 	pr.setDocName("KDE Print Test");
-	return (pr.printFiles(testpage, false, false));
+	// the printing mechanism may involve some needed operations on the
+	// printer, so temporary printers (created when testing) should be
+	// temporarily added to the printer list, then taken out.
+	if (!prExist)
+		m_printers.append(prt);
+	result = pr.printFiles(testpage, false, false);
+	if (!prExist)
+		m_printers.take(m_printers.count()-1);
+	return result;
 	// return notImplemented();
 }
 
