@@ -44,149 +44,149 @@ struct SessionData::AuthData
 {
 
 public:
-    AuthData() {}
+  AuthData() {}
 
-    AuthData(const QCString& k, const QCString& g, bool p) {
-        key = k;
-        group = g;
-        persist = p;
-    }
+  AuthData(const QCString& k, const QCString& g, bool p) {
+    key = k;
+    group = g;
+    persist = p;
+  }
 
-    bool isKeyMatch( const QCString& val ) const {
-        return (val==key);
-    }
+  bool isKeyMatch( const QCString& val ) const {
+    return (val==key);
+  }
 
-    bool isGroupMatch( const QCString& val ) const {
-        return (val==group);
-    }
+  bool isGroupMatch( const QCString& val ) const {
+    return (val==group);
+  }
 
-    QCString key;
-    QCString group;
-    bool persist;
+  QCString key;
+  QCString group;
+  bool persist;
 };
 
 /************************* SessionData::AuthDataList ****************************/
 class SessionData::AuthDataList : public QPtrList<SessionData::AuthData>
 {
 public:
-    AuthDataList();
-    ~AuthDataList();
+  AuthDataList();
+  ~AuthDataList();
 
-    void addData( SessionData::AuthData* );
-    void removeData( const QCString& );
+  void addData( SessionData::AuthData* );
+  void removeData( const QCString& );
 
-    bool pingCacheDaemon();
-    void registerAuthData( SessionData::AuthData* );
-    void unregisterAuthData( SessionData::AuthData* );
-    void purgeCachedData();
-    
+  bool pingCacheDaemon();
+  void registerAuthData( SessionData::AuthData* );
+  void unregisterAuthData( SessionData::AuthData* );
+  void purgeCachedData();
+  
 private:
-    KDEsuClient * m_kdesuClient;    
+  KDEsuClient * m_kdesuClient;    
 };
 
 SessionData::AuthDataList::AuthDataList()
 {
-    m_kdesuClient = new KDEsuClient;
-    setAutoDelete(true);    
+  m_kdesuClient = new KDEsuClient;
+  setAutoDelete(true);    
 }
 
 SessionData::AuthDataList::~AuthDataList()
 {
-    purgeCachedData();
-    delete m_kdesuClient;
-    m_kdesuClient = 0;
+  purgeCachedData();
+  delete m_kdesuClient;
+  m_kdesuClient = 0;
 }
 
 void SessionData::AuthDataList::addData( SessionData::AuthData* d )
 {
-    QPtrListIterator<SessionData::AuthData> it ( *this );
-    for ( ; it.current(); ++it )
-    {
-        if ( it.current()->isKeyMatch( d->key ) )
-            return;
-    }
-    registerAuthData( d );
-    append( d );
+  QPtrListIterator<SessionData::AuthData> it ( *this );
+  for ( ; it.current(); ++it )
+  {
+    if ( it.current()->isKeyMatch( d->key ) )
+        return;
+  }
+  registerAuthData( d );
+  append( d );
 }
 
 void SessionData::AuthDataList::removeData( const QCString& gkey )
 {
-    QPtrListIterator<SessionData::AuthData> it( *this );
-    for( ; it.current(); ++it )
+  QPtrListIterator<SessionData::AuthData> it( *this );
+  for( ; it.current(); ++it )
+  {
+    if ( it.current()->isGroupMatch(gkey) &&  pingCacheDaemon() )
     {
-        if ( it.current()->isGroupMatch(gkey) &&  pingCacheDaemon() )
-        {
-            unregisterAuthData( it.current() );
-            remove( it.current() );
-        }
+        unregisterAuthData( it.current() );
+        remove( it.current() );
     }
+  }
 }
 
 bool SessionData::AuthDataList::pingCacheDaemon()
 {
-    Q_ASSERT(m_kdesuClient);
-    
-    int sucess = m_kdesuClient->ping();
+  Q_ASSERT(m_kdesuClient);
+  
+  int sucess = m_kdesuClient->ping();
+  if( sucess == -1 )
+  {
+    sucess = m_kdesuClient->startServer();
     if( sucess == -1 )
-    {
-        sucess = m_kdesuClient->startServer();
-        if( sucess == -1 )
-            return false;
-    }
-    return true;
+        return false;
+  }
+  return true;
 }
 
 void SessionData::AuthDataList::registerAuthData( SessionData::AuthData* d )
 {
-    if( !pingCacheDaemon() )
-        return;
+  if( !pingCacheDaemon() )
+    return;
 
-    bool ok;
-    QCString ref_key = d->key + "-refcount";
-    int count = m_kdesuClient->getVar(ref_key).toInt( &ok );
-    if( ok )
-    {
-        QCString val;
-        val.setNum( count+1 );
-        m_kdesuClient->setVar( ref_key, val, 0, d->group );
-    }
-    else
-        m_kdesuClient->setVar( ref_key, "1", 0, d->group );
+  bool ok;
+  QCString ref_key = d->key + "-refcount";
+  int count = m_kdesuClient->getVar(ref_key).toInt( &ok );
+  if( ok )
+  {
+    QCString val;
+    val.setNum( count+1 );
+    m_kdesuClient->setVar( ref_key, val, 0, d->group );
+  }
+  else
+    m_kdesuClient->setVar( ref_key, "1", 0, d->group );
 }
 
 void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
 {
-    if ( !d  || d->persist )
-        return;
+  if ( !d  || d->persist )
+    return;
 
-    bool ok;
-    int count;
-    QCString ref_key = d->key + "-refcount";
+  bool ok;
+  int count;
+  QCString ref_key = d->key + "-refcount";
 
-    count = m_kdesuClient->getVar( ref_key ).toInt( &ok );
-    if ( ok )
+  count = m_kdesuClient->getVar( ref_key ).toInt( &ok );
+  if ( ok )
+  {
+    if ( count > 1 )
     {
-        if ( count > 1 )
-        {
-            QCString val;
-            val.setNum(count-1);
-            m_kdesuClient->setVar( ref_key, val, 0, d->group );
-        }
-        else
-        {
-            m_kdesuClient->delVars(d->key);
-        }
+        QCString val;
+        val.setNum(count-1);
+        m_kdesuClient->setVar( ref_key, val, 0, d->group );
     }
+    else
+    {
+        m_kdesuClient->delVars(d->key);
+    }
+  }
 }
 
 void SessionData::AuthDataList::purgeCachedData()
 {
-    if ( !isEmpty() && pingCacheDaemon() )
-    {
-        QPtrListIterator<SessionData::AuthData> it( *this );
-        for ( ; it.current(); ++it )
-            unregisterAuthData( it.current() );
-    }
+  if ( !isEmpty() && pingCacheDaemon() )
+  {
+    QPtrListIterator<SessionData::AuthData> it( *this );
+    for ( ; it.current(); ++it )
+        unregisterAuthData( it.current() );
+  }
 }
 
 /********************************* SessionData ****************************/
@@ -194,54 +194,57 @@ void SessionData::AuthDataList::purgeCachedData()
 class SessionData::SessionDataPrivate
 {
 public:
-    SessionDataPrivate() {
-        useCookie = true;
-        initDone = false;
-    }
+  SessionDataPrivate() {
+    useCookie = true;
+    initDone = false;
+  }
 
-    bool initDone;
-    bool useCookie;
-    QString charsets;
-    QString language;
+  bool initDone;
+  bool useCookie;
+  QString charsets;
+  QString language;
 };
 
 SessionData::SessionData()
 {
-    authData = new AuthDataList;
-    d = new SessionDataPrivate;
+  authData = new AuthDataList;
+  d = new SessionDataPrivate;
 }
 
 SessionData::~SessionData()
 {
-    delete d;
-    delete authData;
-    d = 0L;
-    authData = 0L;
+  delete d;
+  delete authData;
+  d = 0L;
+  authData = 0L;
 }
 
 void SessionData::configDataFor( MetaData &configData, const QString &proto,
-                                      const QString & )
+                             const QString & )
 {
-    if ( (proto.find("http", 0, false) == 0 ) ||
-         (proto.find("webdav", 0, false) == 0) )
+  if ( (proto.find("http", 0, false) == 0 ) ||
+     (proto.find("webdav", 0, false) == 0) )
+  {        
+    if (!d->initDone)
+        reset();
+    
+    // These might have already been set so check first
+    // to make sure that we do not trumpt settings sent
+    // by apps or end-user.
+    if ( configData["Cookies"].isEmpty() )
+        configData["Cookies"] = d->useCookie ? "true" : "false";
+    if ( configData["Languages"].isEmpty() )
+        configData["Languages"] = d->language;
+    if ( configData["Charsets"].isEmpty() )
+        configData["Charsets"] = d->charsets;
+    if ( configData["CacheDir"].isEmpty() )
+        configData["CacheDir"] = KGlobal::dirs()->saveLocation("cache", "http");      
+    if ( configData["UserAgent"].isEmpty() )
     {
-        if (!d->initDone)
-            reset();
-            
-        // These might have already been set so check first
-        // to make sure that we do not trumpt settings sent
-        // by apps or end-user.
-        if ( configData["Cookies"].isEmpty() )
-            configData["Cookies"] = d->useCookie ? "true" : "false";
-        if ( configData["Languages"].isEmpty() )
-            configData["Languages"] = d->language;
-        if ( configData["Charsets"].isEmpty() )
-            configData["Charsets"] = d->charsets;
-        if ( configData["CacheDir"].isEmpty() )
-            configData["CacheDir"] = KGlobal::dirs()->saveLocation("cache", "http");
-        if ( configData["UserAgent"].isEmpty() )
-            configData["UserAgent"] = KProtocolManager::defaultUserAgent();
+      KProtocolManager proto;
+      configData["UserAgent"] = proto.defaultUserAgent();
     }
+  }
 }
 
 void SessionData::reset()
@@ -270,14 +273,14 @@ void SessionData::reset()
 }
 
 void SessionData::slotAuthData( const QCString& key, const QCString& gkey,
-                                     bool keep )
+                                 bool keep )
 {
-    authData->addData( new SessionData::AuthData(key, gkey, keep) );
+  authData->addData( new SessionData::AuthData(key, gkey, keep) );
 }
 
 void SessionData::slotDelAuthData( const QCString& gkey )
 {
-    authData->removeData( gkey );
+  authData->removeData( gkey );
 }
 
 void SessionData::virtual_hook( int, void* )
