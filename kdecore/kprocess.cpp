@@ -544,7 +544,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 {
   uint i;
   uint n = arguments.count();
-  const char *arglist[4];
+  char *arglist[4];
   QString cmd;
 
   if (runs || (0 == n)) {
@@ -578,7 +578,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 //   cmd.stripWhiteSpace();
 //   if (cmd[cmd.length()-1] != '&')
 //       cmd += '&';
-  arglist[2] = cmd.data();
+  arglist[2] = qstrdup(cmd);
   arglist[3] = 0;
 
   if (!setupCommunication(comm))

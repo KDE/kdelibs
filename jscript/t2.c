@@ -467,13 +467,14 @@ char *yytext;
 #include "t1.h"
 #include <string.h>
 #include <stdlib.h>
+#define YY_NO_UNPUT
 
 char* putSymbol( char *_name );
 char* putString( char *_name );
 int yywrap();
 void initFlex( const char *_code );
 
-#line 477 "lex.yyjscript.c"
+#line 478 "lex.yyjscript.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -624,10 +625,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 17 "t2.l"
+#line 18 "t2.l"
 
 
-#line 631 "lex.yyjscript.c"
+#line 632 "lex.yyjscript.c"
 
 	if ( yy_init )
 		{
@@ -712,225 +713,225 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 19 "t2.l"
+#line 20 "t2.l"
 { return FUNCTION; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 20 "t2.l"
+#line 21 "t2.l"
 { return IF; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 21 "t2.l"
+#line 22 "t2.l"
 { return ELSE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 22 "t2.l"
+#line 23 "t2.l"
 { return IN; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 23 "t2.l"
+#line 24 "t2.l"
 { return WITH; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 24 "t2.l"
+#line 25 "t2.l"
 { return WHILE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 25 "t2.l"
+#line 26 "t2.l"
 { return FOR; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 26 "t2.l"
+#line 27 "t2.l"
 { return SHIFT_LEFT; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 27 "t2.l"
+#line 28 "t2.l"
 { return SHIFT_RIGHT; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 28 "t2.l"
+#line 29 "t2.l"
 { return EQ; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 29 "t2.l"
+#line 30 "t2.l"
 { return NEQ; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 30 "t2.l"
+#line 31 "t2.l"
 { return OR; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 31 "t2.l"
+#line 32 "t2.l"
 { return AND; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 32 "t2.l"
+#line 33 "t2.l"
 { return THIS; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 33 "t2.l"
+#line 34 "t2.l"
 { return B_NULL; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 34 "t2.l"
+#line 35 "t2.l"
 { return B_TRUE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 35 "t2.l"
+#line 36 "t2.l"
 { return B_FALSE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 36 "t2.l"
+#line 37 "t2.l"
 { return NEW; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 37 "t2.l"
+#line 38 "t2.l"
 { return DELETE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 38 "t2.l"
+#line 39 "t2.l"
 { return BREAK; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 39 "t2.l"
+#line 40 "t2.l"
 { return CONTINUE; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 40 "t2.l"
+#line 41 "t2.l"
 { return RETURN; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 41 "t2.l"
+#line 42 "t2.l"
 { return VAR; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 42 "t2.l"
+#line 43 "t2.l"
 { return PP; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 43 "t2.l"
+#line 44 "t2.l"
 { return MM; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 44 "t2.l"
+#line 45 "t2.l"
 { return LEQ; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 45 "t2.l"
+#line 46 "t2.l"
 { return GEQ; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 46 "t2.l"
+#line 47 "t2.l"
 { return MAS; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 47 "t2.l"
+#line 48 "t2.l"
 { return DAS; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 48 "t2.l"
+#line 49 "t2.l"
 { return AAS; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 49 "t2.l"
+#line 50 "t2.l"
 { return SAS; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 50 "t2.l"
+#line 51 "t2.l"
 { return PAS; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 51 "t2.l"
+#line 52 "t2.l"
 { return RAS; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 52 "t2.l"
+#line 53 "t2.l"
 { return BAAS; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 53 "t2.l"
+#line 54 "t2.l"
 { return BOAS; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 55 "t2.l"
+#line 56 "t2.l"
 { yyjscriptlval.name = putString( yytext ); return STRING; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 56 "t2.l"
+#line 57 "t2.l"
 { yyjscriptlval.name = putString( yytext ); return STRING; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 58 "t2.l"
+#line 59 "t2.l"
 { yyjscriptlval.vali = atoi( yytext ); return NUM; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 60 "t2.l"
+#line 61 "t2.l"
 { yyjscriptlval.vald = atof( yytext ); return FLOAT; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 62 "t2.l"
+#line 63 "t2.l"
 { yyjscriptlval.name = putSymbol( yytext ); return IDENTIFIER; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 64 "t2.l"
+#line 65 "t2.l"
 { yyjscriptlval.name = 0L; return (int)(*yytext); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 66 "t2.l"
+#line 67 "t2.l"
 /* eat up whitespace */
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 68 "t2.l"
+#line 69 "t2.l"
 { printf( "Unrecognized character: %s\n", yytext ); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 70 "t2.l"
+#line 71 "t2.l"
 ECHO;
 	YY_BREAK
-#line 934 "lex.yyjscript.c"
+#line 935 "lex.yyjscript.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1816,7 +1817,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 70 "t2.l"
+#line 71 "t2.l"
 
 
 char* putSymbol( char *_name )

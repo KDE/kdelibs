@@ -37,12 +37,13 @@ libjscript_la_LIBADD = $(LIB_QT)
 include_HEADERS = bison2cpp.h jstree.h jsexec.h jserror.h builtin.h
 noinst_HEADERS = t1.h
 
-grammarfiles: t1.y t2.l
-	$(YACC) $(YFLAGS) t1.y $< && mv y.tab.c t1.c
+grammarfiles: $(srcdir)/t1.y $(srcdir)/t2.l
+	cd $(srcdir); \
+	$(YACC) $(YFLAGS) t1.y $< && mv y.tab.c t1.c ;\
 	if test -f y.tab.h; then \
 	if cmp -s y.tab.h t1.h; then rm -f y.tab.h; \
 	else mv y.tab.h t1.h; fi \
-	else :; fi
+	else :; fi ;\
 	$(LEX) -Pyyjscript t2.l && mv lex.yyjscript.c t2.c
 
 EXTRA_DIST = t1.y t2.l

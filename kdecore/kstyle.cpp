@@ -44,7 +44,7 @@ void KStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 }
 
 void KStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                          const QColorGroup &g, bool floating = false)
+                          const QColorGroup &g, bool floating)
 {
     if(!floating)
         qDrawShadePanel(p, x, y, w, h, g , false, 1);

@@ -108,7 +108,7 @@ KRegExp::KRegExp()
   m_pPrivate = new KRegExpPrivate;
 }
 
-KRegExp::KRegExp( const char *_pattern, const char *_mode = "" )
+KRegExp::KRegExp( const char *_pattern, const char *_mode)
 {
   m_pPrivate = new KRegExpPrivate( _pattern, _mode );
 }
@@ -118,7 +118,7 @@ KRegExp::~KRegExp()
   delete m_pPrivate;
 }
   
-bool KRegExp::compile( const char *_pattern, const char *_mode = "" )
+bool KRegExp::compile( const char *_pattern, const char *_mode)
 {
   return m_pPrivate->compile( _pattern, _mode );
 }

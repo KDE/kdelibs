@@ -3,6 +3,7 @@
 #include "t1.h"
 #include <string.h>
 #include <stdlib.h>
+#define YY_NO_UNPUT
 
 char* putSymbol( char *_name );
 char* putString( char *_name );

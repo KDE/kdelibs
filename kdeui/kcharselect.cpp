@@ -136,7 +136,7 @@ void KCharSelectTable::mouseMoveEvent(QMouseEvent *e)
 /******************************************************************/
 
 //==================================================================
-KCharSelect::KCharSelect(QWidget *parent,const char *name,const QString &_font,const QChar &_chr,int _tableNum = 0)
+KCharSelect::KCharSelect(QWidget *parent,const char *name,const QString &_font,const QChar &_chr,int _tableNum)
   : QVBox(parent,name)
 {
   QHBox *bar = new QHBox(this);

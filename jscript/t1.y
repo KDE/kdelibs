@@ -1,6 +1,7 @@
 %{
 
 #include "bison2cpp.h"
+#include <stdlib.h>
 
 void yyerror(char *s);
 int yylex();

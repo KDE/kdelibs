@@ -132,12 +132,12 @@ void box::calculate(QPainter &p, int setFontsize)
 	//square drawn.  These are the -, the parentheses, the square
 	//root, and the absolute value.
 	if(parent && (KFormula::delim() +
-		      QChar(SQRT)).contains(QChar(parent->type)) &&
+		      QChar(int(SQRT))).contains(QChar(parent->type)) &&
 	   parent->b1 == this) {
 	  rect.setX(0);
 	  rect.setWidth(1);
 	}
-	if(parent && (KFormula::intext() + QChar(CAT)).
+	if(parent && (KFormula::intext() + QChar(int(CAT))).
 	   contains(QChar(parent->type))) {
 	  rect.setX(0);
 	  rect.setWidth(1);
@@ -410,9 +410,9 @@ void box::draw(QPainter &p, int x, int y)
       //left operands parentheses and square roots as well as
       //all operands of intext operators are not displayed as boxes
       if(parent && (KFormula::delim() +
-		    QChar(SQRT)).contains(QChar(parent->type)) &&
+		    QChar(int(SQRT))).contains(QChar(parent->type)) &&
 	 parent->b1 == this) break;
-      if(parent && (KFormula::intext() + QChar(CAT)).
+      if(parent && (KFormula::intext() + QChar(int(CAT))).
 	 contains(QChar(parent->type))) break;
       
       p.drawRect(x - SPACE, y + rect.center().y() - SPACE,
