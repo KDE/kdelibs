@@ -692,3 +692,12 @@
 0	belong		0x0d1a2702	application/x-kspread-crypt
 
 
+#------------------------------------------------------------------------------
+# DjVu (Leon Bottou <leonb@research.att.com>):
+#
+4      string          FORM
+>12    string          DJVU             image/x-djvu
+>12    string          DJVM             image/x-djvu
+>12    string          BM44             image/x-djvu
+>12    string          PM44             image/x-djvu
+
