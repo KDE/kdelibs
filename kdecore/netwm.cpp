@@ -86,6 +86,7 @@ static Atom kde_net_wm_system_tray_window_for = 0;
 static Atom kde_net_wm_frame_strut            = 0;
 static Atom kde_net_wm_window_type_override   = 0;
 static Atom kde_net_wm_window_type_topmenu    = 0;
+static Atom kde_net_wm_temporary_rules        = 0;
 
 // application protocols
 static Atom wm_protocols = 0;
@@ -225,7 +226,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 73;
+static const int netAtomCount = 74;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -306,6 +307,7 @@ static void create_atoms(Display *d) {
 	    "_KDE_NET_WM_FRAME_STRUT",
 	    "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",
 	    "_KDE_NET_WM_WINDOW_TYPE_TOPMENU",
+            "_KDE_NET_WM_TEMPORARY_RULES",
 
 	    "WM_STATE",
 	    "WM_PROTOCOLS"
@@ -390,6 +392,7 @@ static void create_atoms(Display *d) {
 	    &kde_net_wm_frame_strut,
 	    &kde_net_wm_window_type_override,
 	    &kde_net_wm_window_type_topmenu,
+            &kde_net_wm_temporary_rules,
 
 	    &xa_wm_state,
 	    &wm_protocols
@@ -1252,6 +1255,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS ] & WMKDEFrameStrut)
 	atoms[pnum++] = kde_net_wm_frame_strut;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2KDETemporaryRules)
+	atoms[pnum++] = kde_net_wm_temporary_rules;
+
     XChangeProperty(p->display, p->root, net_supported, XA_ATOM, 32,
 		    PropModeReplace, (unsigned char *) atoms, pnum);
     XChangeProperty(p->display, p->root, net_supporting_wm_check, XA_WINDOW, 32,
@@ -1461,6 +1467,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == kde_net_wm_frame_strut )
         p->properties[ PROTOCOLS ] |= WMKDEFrameStrut;
+
+    else if( atom == kde_net_wm_temporary_rules )
+        p->properties[ PROTOCOLS2 ] |= WM2KDETemporaryRules;
 }
 
 extern Time qt_x_user_time;

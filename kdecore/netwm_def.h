@@ -555,6 +555,7 @@ public:
         @li WM2RestackWindow
         @li WM2MoveResizeWindow
         @li WM2ExtendedStrut
+        @li WM2TemporaryRules internal, for kstart
         
         @since 3.2
 
@@ -568,7 +569,8 @@ public:
         WM2RestackWindow       = 1<<5,
         WM2MoveResizeWindow    = 1<<6,
         WM2ExtendedStrut       = 1<<7,
-        WM2TakeActivity        = 1<<8
+        WM2TakeActivity        = 1<<8,
+        WM2KDETemporaryRules   = 1<<9  // NOT STANDARD
     };
 
     /**
