@@ -625,7 +625,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
       if (it.attribute( attrName ) == action->name())
       {
         // we have a match!
-        ToolbarItem *act = new ToolbarItem(m_activeList, it.tagName(), action->name(), action->statusText());
+        ToolbarItem *act = new ToolbarItem(m_activeList, it.tagName(), action->name(), action->toolTip());
         act->setText(1, action->plainText());
         if (action->hasIcon())
           act->setPixmap(0, BarIcon(action->icon(), 16));
@@ -653,7 +653,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     if ( action->icon().isEmpty() && action->isA("KAction") )
       continue;
 
-    ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->name(), action->statusText());
+    ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->name(), action->toolTip());
     act->setText(1, action->plainText());
     if (!action->icon().isEmpty())
         act->setPixmap(0, BarIcon(action->icon(), 16));
