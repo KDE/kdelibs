@@ -2194,19 +2194,20 @@ void KToolBar::setBarPos(BarPosition bpos)
       hide();
       emit moved (bpos);  // this sets up KTW but not toolbar which floats
       updateRects(false); // we need this to set us up
-      recreate(0, 0, p, false);
-      XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->topLevelWidget()->winId());
-      KWM::setDecoration(winId(), 2);
-      KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
-      setCaption(QString::null); // this triggers a qt bug
+
       if (!d->m_title)
-        setCaption(d->m_title);
+        setCaption(d->m_title + " [tools]");
       else
       {
         QString s = d->m_parent->caption();
         s.append(QString::fromLatin1(" [tools]"));
         setCaption(s);
       }
+
+      recreate(0, 0, p, false);
+      XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->topLevelWidget()->winId());
+      KWM::setDecoration(winId(), 2);
+      KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
       context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
       for (int i = CONTEXT_TOP; i <= CONTEXT_BOTTOM; ++i)
         context->setItemEnabled(i, false);
