@@ -414,7 +414,7 @@ test -n "$QTDIR" && qt_incdirs="$QTDIR/include $QTDIR $qt_incdirs"
 AC_FIND_FILE(qmovie.h, $qt_incdirs, qt_incdir)
 ac_qt_includes=$qt_incdir
 
-qt_libdirs="$ac_qt_libraries /usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/lib $x_libraries $QTLIB"
+qt_libdirs="$ac_qt_libraries /usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/X11R6/lib /usr/lib $x_libraries $QTLIB"
 test -n "$QTDIR" && qt_libdirs="$QTDIR/lib $QTDIR $qt_libdirs"
 AC_FIND_FILE(libqt.so libqt.so.1.30 libqt.so.1.31 libqt.so.1 libqt.a libqt.sl, $qt_libdirs, qt_libdir)
 ac_qt_libraries=$qt_libdir
