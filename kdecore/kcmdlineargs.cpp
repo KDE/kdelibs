@@ -1251,7 +1251,6 @@ static const KCmdLineOptions kde_tempfile_option[] =
 void
 KCmdLineArgs::addTempFileOption()
 {
-    qDebug( "addTempFileOption" );
     KCmdLineArgs::addCmdLineOptions( kde_tempfile_option, "KDE-tempfile", "kde-tempfile" );
 }
 
