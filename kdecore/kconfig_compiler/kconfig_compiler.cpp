@@ -534,12 +534,10 @@ int main( int argc, char **argv )
       for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
         QDomElement e2 = n2.toElement();
         CfgEntry *entry = parseEntry( group, e2, globalEnums );
-        if ( entry && !entry->hidden() ) entries.append( entry );
-        else if ( !entry ) {
+        if ( entry ) entries.append( entry );
+        else {
           kdError() << "Can't parse entry." << endl;
           return 1;
-        } else {
-          kdDebug() << "Hidden entry : " <<  entry->name() << ". Skiping." << endl;
         }
       }
     }
