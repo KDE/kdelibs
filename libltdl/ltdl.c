@@ -723,7 +723,7 @@ sys_shl_open (loader_data, filename)
 {
   /* A NULL handle is used to get symbols from self and everything
      else already loaded that was exported with -E compiler flag.  */
-  lt_module module (lt_module) 0;
+  lt_module module = (lt_module) 0;
 
   if (filename)
     {
