@@ -122,6 +122,10 @@ public:
                            const QSize &s,
                            const QStyleOption &o) const;
 
+    int styleHint(StyleHint, const QWidget * = 0,
+                  const QStyleOption & = QStyleOption::Default,
+                  QStyleHintReturn * = 0 ) const;
+
 protected:
     enum TabPosition
     {

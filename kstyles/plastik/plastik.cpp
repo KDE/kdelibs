@@ -3459,6 +3459,20 @@ QSize PlastikStyle::sizeFromContents(ContentsType t,
     return KStyle::sizeFromContents (t, widget, s, opt);
 }
 
+int PlastikStyle::styleHint( StyleHint stylehint,
+                                   const QWidget *widget,
+                                   const QStyleOption &option,
+                                   QStyleHintReturn* returnData ) const
+{
+    switch (stylehint) {
+        case SH_PopupMenu_SubMenuPopupDelay:
+            return 96; // Motif-like delay...
+
+        default:
+            return KStyle::styleHint(stylehint, widget, option, returnData);
+    }
+}
+
 bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
 {
     if (KStyle::eventFilter(obj, ev) )
