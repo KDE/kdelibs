@@ -53,6 +53,7 @@ class ResourceLDAPKIO : public Resource
     virtual void releaseSaveTicket( Ticket* );
 
     virtual bool readOnly() const { return Resource::readOnly(); }
+    virtual void setReadOnly( bool value );
 
     virtual bool load();
     virtual bool asyncLoad();
@@ -120,6 +121,9 @@ class ResourceLDAPKIO : public Resource
 
     void setCachePolicy( int pol );
     int cachePolicy() const;
+
+    void setAutoCache( bool value );
+    bool autoCache();
     
     QString cacheDst() const;
     
@@ -143,12 +147,14 @@ protected slots:
     QMap<QString, QString> mAttributes;
 
     KURL mLDAPUrl;
-    int mGetCounter;
-    bool mErrorOccured;
+    int mGetCounter; //KDE 4: remove
+    bool mErrorOccured; //KDE 4: remove
     QString mErrorMsg;
-    QMap<KIO::Job*, QByteArray> mJobMap;
+    QMap<KIO::Job*, QByteArray> mJobMap; //KDE 4: remove
 
     KIO::Job *loadFromCache();
+    void createCache();
+    void activateCache();
     void enter_loop();
     QCString addEntry( const QString &attr, const QString &value, bool mod );
     QString findUid( const QString &uid );

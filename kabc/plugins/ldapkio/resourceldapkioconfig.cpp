@@ -95,6 +95,7 @@ void ResourceLDAPKIOConfig::loadSettings( KRES::Resource *res )
   mRDNPrefix = resource->RDNPrefix();
   mCachePolicy = resource->cachePolicy();
   mCacheDst = resource->cacheDst();
+  mAutoCache = resource->autoCache();
 }
 
 void ResourceLDAPKIOConfig::saveSettings( KRES::Resource *res )
@@ -156,9 +157,10 @@ void ResourceLDAPKIOConfig::editCache()
     src.setAttributes( attr );
   }
   src.setExtension( "x-dir", "base" );
-  OfflineDialog dlg( mCachePolicy, src, mCacheDst, this );
+  OfflineDialog dlg( mAutoCache, mCachePolicy, src, mCacheDst, this );
   if ( dlg.exec() ) {
     mCachePolicy = dlg.cachePolicy();
+    mAutoCache = dlg.autoCache();
   }
   
 }
@@ -175,9 +177,20 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mNameDict.insert( "formattedName", new QString( i18n( "Formatted name" ) ) );
   mNameDict.insert( "familyName", new QString( i18n( "Family name" ) ) );
   mNameDict.insert( "givenName", new QString( i18n( "Given name" ) ) );
+  mNameDict.insert( "organization", new QString( i18n( "Organization" ) ) );
+  mNameDict.insert( "title", new QString( i18n( "Title" ) ) );
+  mNameDict.insert( "street", new QString( i18n( "Street" ) ) );
+  mNameDict.insert( "state", new QString( i18n( "State" ) ) );
+  mNameDict.insert( "city", new QString( i18n( "City" ) ) );
+  mNameDict.insert( "postalcode", new QString( i18n( "Postal code" ) ) );
   mNameDict.insert( "mail", new QString( i18n( "Email" ) ) );
   mNameDict.insert( "mailAlias", new QString( i18n( "Email alias" ) ) );
   mNameDict.insert( "phoneNumber", new QString( i18n( "Telephone number" ) ) );
+  mNameDict.insert( "telephoneNumber", new QString( i18n( "Work telephone number" ) ) );
+  mNameDict.insert( "facsimileTelephoneNumber", new QString( i18n( "Fax number" ) ) );
+  mNameDict.insert( "mobile", new QString( i18n( "Cell phone number" ) ) );
+  mNameDict.insert( "pager", new QString( i18n( "Pager" ) ) );
+  mNameDict.insert( "description", new QString( i18n( "Note" ) ) );
   mNameDict.insert( "uid", new QString( i18n( "UID" ) ) );
   mNameDict.insert( "jpegPhoto", new QString( i18n( "Photo" ) ) );
 
@@ -187,9 +200,20 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mDefaultMap.insert( "formattedName", "displayName" );
   mDefaultMap.insert( "familyName", "sn" );
   mDefaultMap.insert( "givenName", "givenName" );
+  mDefaultMap.insert( "title", "title" );
+  mDefaultMap.insert( "street", "street" );
+  mDefaultMap.insert( "state", "st" );
+  mDefaultMap.insert( "city", "l" );
+  mDefaultMap.insert( "organization", "o" );
+  mDefaultMap.insert( "postalcode", "postalCode" );
   mDefaultMap.insert( "mail", "mail" );
   mDefaultMap.insert( "mailAlias", "" );
-  mDefaultMap.insert( "phoneNumber", "telephoneNumber" );
+  mDefaultMap.insert( "phoneNumber", "homePhone" );
+  mDefaultMap.insert( "telephoneNumber", "telephoneNumber" );
+  mDefaultMap.insert( "facsimileTelephoneNumber", "facsimileTelephoneNumber" );
+  mDefaultMap.insert( "mobile", "mobile" );
+  mDefaultMap.insert( "pager", "pager" );
+  mDefaultMap.insert( "description", "description" );
   mDefaultMap.insert( "uid", "uid" );
   mDefaultMap.insert( "jpegPhoto", "jpegPhoto" );
   
@@ -210,7 +234,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mMapList.append( outlookMap );
 
   QFrame *page = plainPage();
-  QGridLayout *layout = new QGridLayout( page, 2, attributes.count() + 2,
+  QGridLayout *layout = new QGridLayout( page, 4, ( attributes.count() + 4 ) >> 1,
                                          0, spacingHint() );
 
   QLabel *label = new QLabel( i18n( "Template:" ), page );
@@ -234,17 +258,24 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mRDNCombo->setCurrentItem( rdnprefix );
 
   QMap<QString, QString>::ConstIterator it;
-  int i;
+  int i, j = 0;
   for ( i = 2, it = attributes.begin(); it != attributes.end(); ++it, ++i ) {
-    if ( mNameDict[ it.key() ] == 0 )
+    if ( mNameDict[ it.key() ] == 0 ) {
+      i--;  
       continue;
+    }
+    if ( i - 2 == ( mNameDict.count()  >> 1 ) ) {
+      i = 0;
+      j = 2;
+    }
+    kdDebug(7125) << "itkey: " << it.key() << " i: " << i << endl;
     label = new QLabel( *mNameDict[ it.key() ] + ":", page );
     KLineEdit *lineedit = new KLineEdit( page );
     mLineEditDict.insert( it.key(), lineedit );
     lineedit->setText( it.data() );
     label->setBuddy( lineedit );
-    layout->addWidget( label, i, 0 );
-    layout->addWidget( lineedit, i, 1 );
+    layout->addWidget( label, i, j );
+    layout->addWidget( lineedit, i, j+1 );
   }
   
   for ( i = 1; i < mMapCombo->count(); i++ ) {
@@ -294,13 +325,15 @@ void AttributesDialog::mapChanged( int pos )
     mLineEditDict[ it.key() ]->setText( it.data() );
 
   for ( it = mMapList[ pos ].begin(); it != mMapList[ pos ].end(); ++it ) {
-    if ( !it.data().isEmpty() )
-      mLineEditDict[ it.key() ]->setText( it.data() );
+    if ( !it.data().isEmpty() ) {
+      KLineEdit *le = mLineEditDict[ it.key() ];
+      if ( le ) le->setText( it.data() );
+    }
   }
 }
 
-OfflineDialog::OfflineDialog( int cachePolicy, const KURL &src, const QString &dst,
-  QWidget *parent, const char *name )
+OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KURL &src, 
+  const QString &dst, QWidget *parent, const char *name )
   : KDialogBase( Plain, i18n( "Offline Configuration" ), Ok | Cancel,
                  Ok, parent, name, true, true )
 {
@@ -311,10 +344,19 @@ OfflineDialog::OfflineDialog( int cachePolicy, const KURL &src, const QString &d
   mSrc = src; mDst = dst;
   mCacheGroup = new QButtonGroup( 1, Qt::Horizontal, 
     i18n("Offline Cache Policy"), page );
+    
+  QRadioButton *bt;
   new QRadioButton( i18n("Do not use offline cache"), mCacheGroup );
-  new QRadioButton( i18n("Use local copy if no connection"), mCacheGroup );
+  bt = new QRadioButton( i18n("Use local copy if no connection"), mCacheGroup );
   new QRadioButton( i18n("Always use local copy"), mCacheGroup );
   mCacheGroup->setButton( cachePolicy );  
+
+  mAutoCache = new QCheckBox( i18n("Refresh offline cache automatically"),
+    page );
+  mAutoCache->setChecked( autoCache );
+  mAutoCache->setEnabled( bt->isChecked() );
+
+  connect( bt, SIGNAL(toggled(bool)), mAutoCache, SLOT(setEnabled(bool)) );
   
   QPushButton *lcache = new QPushButton( i18n("Load into Cache"), page );
   connect( lcache, SIGNAL( clicked() ), SLOT( loadCache() ) );
@@ -322,6 +364,11 @@ OfflineDialog::OfflineDialog( int cachePolicy, const KURL &src, const QString &d
 
 OfflineDialog::~OfflineDialog()
 {
+}
+
+bool OfflineDialog::autoCache() const
+{
+  return mAutoCache->isChecked();
 }
 
 int OfflineDialog::cachePolicy() const

@@ -62,6 +62,7 @@ class ResourceLDAPKIOConfig : public KRES::ConfigWidget
     QCheckBox *mSubTree;
     QMap<QString, QString> mAttributes;
     int mRDNPrefix, mCachePolicy;
+    bool mAutoCache;
     QString mCacheDst;
 };
 
@@ -95,11 +96,12 @@ class OfflineDialog : public KDialogBase
   Q_OBJECT
 
   public:
-    OfflineDialog( int cachePolicy, const KURL &src, const QString &dst,
-      QWidget *parent, const char *name = 0 );
+    OfflineDialog( bool autoCache, int cachePolicy, const KURL &src, 
+      const QString &dst, QWidget *parent, const char *name = 0 );
     ~OfflineDialog();
 
     int cachePolicy() const;
+    bool autoCache() const;
 
   private slots:
     void loadCache();
@@ -108,6 +110,7 @@ class OfflineDialog : public KDialogBase
     KURL mSrc;
     QString mDst;
     QButtonGroup *mCacheGroup;
+    QCheckBox *mAutoCache;
 };
 
 }
