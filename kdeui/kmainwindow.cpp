@@ -589,6 +589,11 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
              this, SLOT( setSettingsDirty() ) );
 }
 
+void KMainWindow::resetAutoSaveSettings()
+{
+    d->autoSaveSettings = false;
+}
+
 void KMainWindow::resizeEvent( QResizeEvent * )
 {
     if ( d->autoSaveWindowSize )

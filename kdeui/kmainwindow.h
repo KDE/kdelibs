@@ -340,6 +340,12 @@ public:
     void setAutoSaveSettings( const QString & groupName, bool saveWindowSize );
 
     /**
+     * Disable the auto-save-settings feature.
+     * You don't normally need to call this, ever.
+     */
+    void resetAutoSaveSettings();
+
+    /**
      * Read settings for statusbar, menubar and toolbar from their respective
      * groups in the config file and apply them.
      *
