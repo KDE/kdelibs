@@ -57,6 +57,8 @@ public:
     DOMString domain() const;
     void setDomain( const DOMString &newDomain ); // not part of the DOM
     DOMString lastModified() const;
+    DOMString cookie() const;
+    void setCookie( const DOMString &);
 
     HTMLElementImpl *body();
     void setBody(HTMLElementImpl *_body);
@@ -74,6 +76,7 @@ public:
     virtual void determineParseMode( const QString &str );
 
     virtual void close();
+    
 
 protected:
     HTMLElementImpl *bodyElement;

@@ -21,9 +21,6 @@
  * $Id$
  */
 // --------------------------------------------------------------------------
-#include <dcopclient.h>
-#include <kapplication.h>
-#include <kdebug.h>
 
 #include "html_document.h"
 
@@ -189,51 +186,15 @@ HTMLCollection HTMLDocument::all() const
 
 DOMString HTMLDocument::cookie() const
 {
-    QCString replyType;
-    QByteArray params, reply;
-    QDataStream stream(params, IO_WriteOnly);
-    stream << URL().string();
-    if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                  "findDOMCookies(QString)", params, replyType, reply)) {
-         // Maybe it wasn't running (e.g. we're opening local html files)
-         KApplication::startServiceByDesktopName( "kcookiejar");
-         if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                       "findDOMCookies(QString)", params, replyType, reply)) {
-           kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
-           return DOMString();
-         }
-    }
-
-    QDataStream stream2(reply, IO_ReadOnly);
-    if(replyType != "QString") {
-         kdError(6010) << "DCOP function findDOMCookies(...) returns "
-                       << replyType << ", expected QString" << endl;
-         return DOMString();
-    }
-
-    QString result;
-    stream2 >> result;
-    return DOMString(result);
+   if (!impl) return DOMString();
+   return ((HTMLDocumentImpl *)impl)->cookie();
 }
 
 void HTMLDocument::setCookie( const DOMString & value )
 {
-    long windowId = view()->winId();
-    QByteArray params;
-    QDataStream stream(params, IO_WriteOnly);
-    QString fake_header("Set-Cookie: ");
-    fake_header.append(value.string());
-    fake_header.append("\n");
-    stream << URL().string() << fake_header.utf8() << windowId;
-    if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
-                                  "addCookies(QString,QCString,long int)", params))
-    {
-         // Maybe it wasn't running (e.g. we're opening local html files)
-         KApplication::startServiceByDesktopName( "kcookiejar");
-         if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
-                                       "addCookies(QString,QCString,long int)", params))
-             kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
-    }
+   if (impl)
+        ((HTMLDocumentImpl *)impl)->setCookie(value);
+        
 }
 
 void HTMLDocument::open(  )

@@ -299,6 +299,11 @@ void HTMLMetaElementImpl::attach()
            KIO::http_update_cache(url, true, 0);
         }
     }
+    else if( (strcasecmp(_equiv, "set-cookie") == 0) && !_content.isNull())
+    {
+        HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
+        d->setCookie(_content);
+    }
     HTMLElementImpl::attach();
 }
 
