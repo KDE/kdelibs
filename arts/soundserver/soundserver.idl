@@ -14,7 +14,7 @@ module Arts {
 interface SampleStorageEntry {
 	readonly attribute string name;
 	readonly attribute string filename;
-	readonly attribute boolean complete;
+	readonly attribute boolean completed;
 
 	void write(sequence<byte> data);
 	void finish();

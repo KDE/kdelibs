@@ -35,7 +35,7 @@ namespace Arts {
 class SampleStorageEntry_impl : public SampleStorageEntry_skel {
 protected:
 	string _name, _filename;
-	bool _complete;
+	bool _completed;
 	FILE *file;
 
 public:
@@ -43,7 +43,7 @@ public:
 	{
 		_name = name;
 		_filename = filename;
-		_complete = false;
+		_completed = false;
 		file = fopen(_filename.c_str(),"w");
 	}
 	~SampleStorageEntry_impl()
@@ -53,7 +53,7 @@ public:
 
 	string name() { return _name; }
 	string filename() { return _filename; }
-	bool complete() { return _complete; }
+	bool completed() { return _completed; }
 
 	void write(const vector<mcopbyte>& data)
 	{
@@ -67,7 +67,7 @@ public:
 
 		fclose(file);
 		file = 0;
-		_complete = true;
+		_completed = true;
 	}
 };
 
