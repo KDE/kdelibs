@@ -1536,12 +1536,15 @@ int main( int argc, char* argv[] )
     if (::access(fName.data(), R_OK) == 0) {
 	QFile f(fName);
 	f.open(IO_ReadOnly);
-	QTextStream t(&f);
-	t.readLine(); // skip over connection list
-	bool ok = false;
-	pid_t pid = t.readLine().toUInt(&ok);
+	int size = QMIN( 1024, f.size() ); // protection against a huge file
+	QCString contents( size+1 );
+	bool ok = f.readBlock( contents.data(), size ) == size;
+	contents[size] = '\0';
+	int pos = contents.find('\n');
+	ok = ok && ( pos != -1 );
+	pid_t pid = ok ? contents.mid(pos+1).toUInt(&ok) : 0;
 	f.close();
-	if (ok && (kill(pid, SIGHUP) == 0)) {
+	if (ok && pid && (kill(pid, SIGHUP) == 0)) {
 	    qWarning( "---------------------------------\n"
 		      "It looks like dcopserver is already running. If you are sure\n"
 		      "that it is not already running, remove %s\n"
