@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: automake (>= 1:1.4-p4-1.1), autoconf, debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), binutils (>= 2.11.92.0.5-3), libsasl-dev, nas-dev
+Build-Depends: automake (>= 1:1.4-p4-1.1), autoconf, debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), binutils (>= 2.11.92.0.5-3), libsasl-dev, libpng2-dev | libpng-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, zlib1g-dev | libz-dev, libfreetype6-dev, nas-dev, libfam-dev
 Build-Depends-Indep: kdoc, qt-doc
 Build-Conflicts: qt3-tools, libglib1.3-dev
 Section: libs
@@ -128,7 +128,7 @@ Package: kdelibs-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs2g-dev, kdepim-dev (<< 4:2.2.2-1), kdelibs3 (<< 4:2.2.2-1)
-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
+Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, libbz2-dev
 Conflicts: kdelibs2g-dev, qt3-tools
 Suggests: kdelibs3-cups, kdelibs3-doc, kdoc, libxml2-dev, libxslt1-dev
 Description: KDE core libraries (development files)
