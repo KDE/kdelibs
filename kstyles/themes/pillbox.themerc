@@ -8,6 +8,7 @@ Name[nl]=Pillbox (Pillendoos)
 Name[no]=Pilleboks
 Name[pt]=Caixa
 Name[sl]=Škatlica tablet
+Name[sv]=Bunker
 Name[tr]=Hap Kutusu
 Comment=Pillbox unthemed style.
 Comment[ca]=Estil sense tema Pillbox.
@@ -26,6 +27,7 @@ Comment[no_NY]='Pillbox'-stil utan tema
 Comment[pt]=Estilo caixa
 Comment[ro]=Stil fără temă Pillbox
 Comment[sl]=Netematski slog škatlice tablet.
+Comment[sv]=Otemad bunker-stil.
 Comment[tr]=Dekorsuz Hap Kutusu stili
 [KDE]
 widgetStyle=pillboxstyle.la
