@@ -18,8 +18,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#pragma implementation
-
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kiconloader.h>

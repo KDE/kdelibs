@@ -22,8 +22,6 @@
 #ifndef KMIMESOURCEFACTORY_H
 #define KMIMESOURCEFACTORY_H
 
-#pragma interface
-
 #include <qmime.h>
 #include <kglobal.h>
 
