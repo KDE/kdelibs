@@ -1,3 +1,10 @@
+1998-11-08  Christian Esken  <esken@kde.org>
+
+	* kconfig.cpp, kapp.cpp: Several security fixes by adding
+	checkAccess() tests before the creation of files and directorys.
+	This is neccesary for SUID programs. Added checkAccess(), which
+	checks if the user may write a file.
+
 Tue Sep 8 16:37:51 1998  Jacek Konieczny  <jacek@kde.org>
 
 	* kcharsets.cpp, kcharsets.h: Added copy constructor and assignment

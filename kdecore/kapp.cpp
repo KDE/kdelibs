@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.114  1998/10/12 13:22:54  ettrich
+// Matthias: small fix
+//
 // Revision 1.113  1998/10/12 00:17:09  ettrich
 // Matthias: automatic removal of session management temp-files
 //
@@ -381,14 +384,26 @@ void KApplication::init()
 
   pIconLoader = 0L;
 
-  // create the config directory
+  // create the config directory ~/.kde/share/config
   QString configPath = KApplication::localkdedir();
   // We should check if  mkdir() succeeds, but since we cannot do much anyway...
-  mkdir (configPath.data(), 0755); // make it public(?)
-  configPath += "/share";
-  mkdir (configPath.data(), 0755); // make it public
-  configPath += "/config";
-  mkdir (configPath.data(), 0700); // make it private
+  // But we'll check at least for access permissions (for SUID case)
+  if ( checkAccess(configPath, W_OK) ) {
+    if ( mkdir (configPath.data(), 0755) == 0) {  // make it public(?)
+      chown(configPath.data(), getuid(), getgid());
+      configPath += "/share";
+      if ( checkAccess(configPath, W_OK) ) {
+        if ( mkdir (configPath.data(), 0755) == 0 ) { // make it public
+          chown(configPath.data(), getuid(), getgid());
+          configPath += "/config";
+          if ( checkAccess(configPath, W_OK) ) {
+            if ( mkdir (configPath.data(), 0700) == 0 ) // make it private
+              chown(configPath.data(), getuid(), getgid());
+          }
+        }
+      }
+    }
+  }
 
   // try to read a global application file
   QString aGlobalAppConfigName = kde_configdir() + "/" + aAppName + "rc";
@@ -409,9 +424,17 @@ void KApplication::init()
 
   QFile aConfigFile( aConfigName );
 
+  // We may write to the file
+  if ( ! checkAccess(aConfigName.data(), W_OK ) )
+    bSuccess = false;
+  else {
   // Open the application-specific config file. It will be created if
   // it does not exist yet.
-  bSuccess = aConfigFile.open( IO_ReadWrite );
+    bSuccess = aConfigFile.open( IO_ReadWrite );
+    // Set uid/gid (neccesary for SUID programs)
+    if ( bSuccess )
+      chown(aConfigFile.name(), getuid(), getgid());
+  }
   if( !bSuccess )
 	{
 	  // try to open at least read-only
@@ -503,8 +526,15 @@ KConfig* KApplication::getSessionConfig() {
     aSessionConfigName = aConfigName + "." + num;
   } while (QFile::exists(aSessionConfigName));
   QFile aConfigFile(aSessionConfigName);
-  bool bSuccess = aConfigFile.open( IO_ReadWrite );
+
+  bool bSuccess;
+  if ( ! checkAccess( aConfigFile.name(), W_OK ) )
+    bSuccess = false;
+  else {
+    bSuccess = aConfigFile.open( IO_ReadWrite );
+  }
   if( bSuccess ){
+    chown(aConfigFile.name(), getuid(), getgid());
     aConfigFile.close();
     pSessionConfig = new KConfig(0L, aSessionConfigName);
     aSessionName = aAppName.copy();
@@ -749,8 +779,15 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		}
 		if (QFile::exists(aSessionConfigName)){
 		  QFile aConfigFile(aSessionConfigName);
-		  bool bSuccess = aConfigFile.open( IO_ReadWrite );
+		  bool bSuccess;
+		  if ( ! checkAccess( aConfigFile.name(), W_OK ) )
+		    bSuccess = false;
+		  else
+		    bSuccess = aConfigFile.open( IO_ReadWrite );
 		  if( bSuccess ){
+                        // Set uid/gid (neccesary for SUID programs)
+                        chown(aConfigFile.name(), getuid(), getgid());
+ 
 			aConfigFile.close();
 			pSessionConfig = new KConfig(0L, aSessionConfigName);
 			
@@ -1611,7 +1648,7 @@ const char* KApplication::tempSaveName( const char* pFilename )
 
 
 const char* KApplication::checkRecoverFile( const char* pFilename,
-											bool& bRecover )
+        bool& bRecover )
 {
   QString aFilename;
 
@@ -1645,6 +1682,36 @@ const char* KApplication::checkRecoverFile( const char* pFilename,
 	  bRecover = false;
 	  return qstrdup( pFilename );
 	}
+}
+
+
+bool checkAccess(const char *pathname, int mode)
+{
+  int accessOK = access( pathname, mode );
+  if ( accessOK == 0 )
+    return true;  // OK, I can really access the file
+
+  // else
+  // if we want to write the file would be created. Check, if the
+  // user may write to the directory to create the file.
+  if ( mode & W_OK == 0 )
+    return false;   // Check for write access is not part of mode => bail out
+    
+
+  //strip the filename (everything until '/' from the end
+  QString dirName(pathname);
+  int pos = dirName.findRev('/');
+  if ( pos == -1 )
+    return false;   // No path in argument. This is evil, we won't allow this
+
+  dirName.resize(pos+1); // strip everything starting from the last '/'
+
+  accessOK = access( dirName, W_OK );  
+  // -?- Can I write to the accessed diretory
+  if ( accessOK == 0 )
+    return true;  // Yes
+  else
+    return false; // No
 }
 
 

@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.17  1998/09/01 20:21:19  kulow
+// I renamed all old qt header files to the new versions. I think, this looks
+// nicer (and gives the change in configure a sense :)
+//
 // Revision 1.16  1998/08/23 15:58:32  kulow
 // fixed some more advanced warnings
 //
@@ -135,9 +139,14 @@ KConfig::KConfig( const char* pGlobalAppFile, const char* pLocalAppFile )
 	  QFileInfo info( pGlobalAppFile );
 	  if( !info.exists() )
 		{
-		  QFile file( pGlobalAppFile );
-		  file.open( IO_WriteOnly );
-		  file.close();
+		  // Can we allow the write? (see above)
+		  if( checkAccess( pGlobalAppFile, W_OK ) )
+		    {
+		      // Yes, write OK
+		      QFile file( pGlobalAppFile );
+		      file.open( IO_WriteOnly );
+		      file.close();
+		    }
 		}
 	}
   if( pLocalAppFile )
@@ -147,9 +156,16 @@ KConfig::KConfig( const char* pGlobalAppFile, const char* pLocalAppFile )
 	  QFileInfo info( pLocalAppFile );
 	  if( !info.exists() )
 		{
-		  QFile file( pLocalAppFile );
-		  file.open( IO_WriteOnly );
-		  file.close();
+		  // Can we allow the write? (see above)
+		  if ( checkAccess( pLocalAppFile, W_OK ) )
+		    {
+		      // Yes, write OK
+		      QFile file( pLocalAppFile );
+		      file.open( IO_WriteOnly );
+                      // Set uid/gid (neccesary for SUID programs)
+                      chown(file.name(), getuid(), getgid());
+		      file.close();
+		    }
 		}
 	}
 
@@ -283,24 +299,17 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
   delete pStream;
   rConfigFile.close();
 
-  // Fix security hole: Don't write to the config file if the program
-  // is running suid and the filename is a symlink to a file we don't
-  // have write permission to as a normal user.
-  struct stat statbuf;
-  lstat( rConfigFile.name(), &statbuf ); // no need to check for
-                                         // return value, if there are 
-                                         // no access rights to this
-                                         // directory, the following
-                                         // cannot do any harm anyway
-  if( ( getuid() != geteuid() ) && // program runs SUID
-	  S_ISLNK( statbuf.st_mode ) && // config file is a symlink
-	  !access( rConfigFile.name(), W_OK ) ) // we would not be allowed 
-	                                        // to write if the program
-	                                        // ran non-SUID 
-	return false; // don't do anything: who does such dirty hack deserves to 
-            // lose his configuration data
+  /* Does program run SUID and user would not be allowed to write 
+   * to the file, if it doesn't run  SUID?
+   */
+  if( ! checkAccess( rConfigFile.name(), W_OK ) ) // write not allowed
+    return false; // can't allow to write config data.
+
 
   rConfigFile.open( IO_Truncate | IO_WriteOnly );
+  // Set uid/gid (neccesary for SUID programs)
+  chown(rConfigFile.name(), getuid(), getgid());
+ 
   pStream = new QTextStream( &rConfigFile );
   
   // write a magic cookie for Fritz' mime magic
@@ -356,7 +365,16 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
   // clean up
   delete pStream;
   rConfigFile.close();
-  rConfigFile.open( IO_ReadWrite );
+
+
+  // Reopen the config file.
+
+  // Can we allow the write? (see above)
+  if( checkAccess( rConfigFile.name(), W_OK ) )
+    // Yes, write OK
+    rConfigFile.open( IO_ReadWrite );
+  else
+    rConfigFile.open( IO_ReadOnly );
   
   return bEntriesLeft;
 }
@@ -373,34 +391,47 @@ void KConfig::sync()
 	  // find out the file to write to (most specific writable file)
 	  // try local app-specific file first
 	  if( !data()->aLocalAppFile.isEmpty() )
-		{
+	    {
+	      // Can we allow the write? We can, if the program
+	      // doesn't run SUID. But if it runs SUID, we must
+	      // check if the user would be allowed to write if
+	      // it wasn't SUID.
+	      if( checkAccess( data()->aLocalAppFile, W_OK ) ) // we would be allowed anyhow
+		{    
 		  // is it writable?
 		  QFile aConfigFile( data()->aLocalAppFile );
 		  aConfigFile.open( IO_ReadWrite );
+                  // Set uid/gid (neccesary for SUID programs)
+                  chown(aConfigFile.name(), getuid(), getgid());
+ 
 		  if ( aConfigFile.isWritable() )
-			{
-			  bEntriesLeft = writeConfigFile( aConfigFile, false );   
-			  bLocalGood = true;
-			}
+		    {
+		      bEntriesLeft = writeConfigFile( aConfigFile, false );   
+		      bLocalGood = true;
+		    }
 		  aConfigFile.close();
 		}
+	    }
 
 	  // If we could not write to the local app-specific config file,
 	  // we can try the global app-specific one. This will only work
 	  // as root, but is worth a try.
 	  if( !bLocalGood && !data()->aGlobalAppFile.isEmpty() )
-		{
+	    {
+	      // Can we allow the write? (see above)
+	      if( checkAccess( data()->aGlobalAppFile, W_OK ) )
+		{    
 		  // is it writable?
 		  QFile aConfigFile( data()->aGlobalAppFile );
 		  aConfigFile.open( IO_ReadWrite );
 		  if ( aConfigFile.isWritable() )
-			{
-			  bEntriesLeft = writeConfigFile( aConfigFile, false );   
-			  bLocalGood = true;
-			}
+		    {
+		      bEntriesLeft = writeConfigFile( aConfigFile, false );   
+		      bLocalGood = true;
+		    }
 		  aConfigFile.close();
 		}
-	  
+	    }
 
 	  if( bEntriesLeft )
 		// If there are entries left, either something went wrong with
@@ -418,14 +449,21 @@ void KConfig::sync()
 	  
 			  QFile aConfigFile( aFileName );
 			  QFileInfo aInfo( aConfigFile );
-			  if( ( aInfo.exists() && aInfo.isWritable() ) ||
+			  // can we allow the write? (see above)
+			  if( checkAccess ( aFileName, W_OK ) )
+			    {
+
+			      if( ( aInfo.exists() && aInfo.isWritable() ) ||
 				  ( !aInfo.exists() && 
-					QFileInfo( aInfo.dirPath( true ) ).isWritable() ) )
+				    QFileInfo( aInfo.dirPath( true ) ).isWritable() ) )
 				{
 				  aConfigFile.open( IO_ReadWrite );
-				  writeConfigFile( aConfigFile, true );
+                                  // Set uid/gid (neccesary for SUID programs)
+                                  chown(aConfigFile.name(), getuid(), getgid());
+ 				  writeConfigFile( aConfigFile, true );
 				  break;
 				}
+			    }
 			}
 		}
 	}

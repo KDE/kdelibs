@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.56  1998/10/22 16:53:22  garbanzo
+// Update the various KDE_VERSION defines.
+//
 // Revision 1.55  1998/09/01 20:21:16  kulow
 // I renamed all old qt header files to the new versions. I think, this looks
 // nicer (and gives the change in configure a sense :)
@@ -604,7 +607,6 @@ public:
 	*/
   const char* checkRecoverFile( const char* pFilename, bool& bRecover );
 
-
   /**
 	* Returns true if the KLocale object for this application has already 
 	* been constructed
@@ -848,5 +850,21 @@ private:
   KApplication& operator=(const KApplication&);
 };
 
+  /** Check, if a file may be accessed in a given mode.
+        * This is a wrapper around the access() system call.
+        * checkAccess() calls access() with the given parameters.
+        * If this is OK, checkAccess() returns true. If not, and W_OK
+        * is part of mode, it is checked if there is write access to
+        * the directory. If yes, checkAccess() returns true.
+        * In all other cases checkAccess() returns false.
+        *
+        * Other than access() this function EXPLICITELY ignores non-existant
+        * files if checking for write access.
+        *
+        * @param pathname The full path of the file you want to test
+        * @param mode     The access mode, as in the access() system call.
+        * @return Whether the access is allowed, true = Access allowed
+        */
+  bool checkAccess(const char *pathname, int mode);
 
 #endif
