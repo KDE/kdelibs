@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                 2000 Stefan Schimanski <1Stein@gmx.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,6 +22,8 @@
 
 #include "kcompletionbox.h"
 #include <qapplication.h>
+#include <qevent.h>
+#include <kdebug.h>
 
 #include <X11/Xlib.h>
 #undef KeyPress
@@ -31,6 +34,7 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
 {
     m_parent = parent;
 
+    setFocusPolicy( NoFocus );
     setColumnMode( 1 );
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );
@@ -39,13 +43,11 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     setHScrollBarMode( AlwaysOff );
 
     connect( this, SIGNAL( selected( QListBoxItem * )),
-	     SLOT( slotActivated( QListBoxItem * )) );
+             SLOT( slotActivated( QListBoxItem * )) );
     connect( this, SIGNAL( clicked( QListBoxItem * )),
-	     SLOT( slotActivated( QListBoxItem * )));
-
-    // highlight on mouseover
-    connect( this, SIGNAL( onItem( QListBoxItem * )),
- 	     SLOT( slotSetCurrentItem( QListBoxItem * )));
+             SLOT( slotActivated( QListBoxItem * )));
+    connect( this, SIGNAL( doubleClicked( QListBoxItem * )),
+             SLOT( slotExecuted( QListBoxItem * )) );
 
     installEventFilter( this );
 }
@@ -58,7 +60,7 @@ QStringList KCompletionBox::items() const
 {
     QStringList list;
     for ( uint i = 0; i < count(); i++ ) {
-	list.append( text( i ) );
+        list.append( text( i ) );
     }
     return list;
 }
@@ -66,47 +68,69 @@ QStringList KCompletionBox::items() const
 void KCompletionBox::slotActivated( QListBoxItem *item )
 {
     if ( !item )
-	return;
+        return;
 
-    hide();
     emit activated( item->text() );
+}
+
+void KCompletionBox::slotExecuted( QListBoxItem *item )
+{
+    if ( !item )
+        return;
+
+    emit executed( item->text() );
 }
 
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
-    
+
     switch( type ) {
     case QEvent::Show:
- 	move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
- 	resize( sizeHint() );
- 	break;
-    case QEvent::Hide:
-	revertFocus();
-	break;
-    case QEvent::KeyPress: {
- 	QKeyEvent *ev = static_cast<QKeyEvent *>( e );
- 	if ( ev->key() == Key_Escape ) {
- 	    hide();
-	    return true;
-	}
-	else if ( ev->key() == Key_Up && currentItem() == 0 ) {
-	    revertFocus();
-	    return true;
-	}
+        move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
+        resize( sizeHint() );
+        break;
 
-	break;
+    case QEvent::Hide:
+        revertFocus();
+        break;
+
+    case QEvent::KeyPress: {
+        QKeyEvent *ev = static_cast<QKeyEvent *>( e );
+        if ( ev->key() == Key_Escape ) {
+            hide();
+            return true;
+        }
+        else if ( ev->key() == Key_Up && currentItem() == 0 ) {
+            revertFocus();
+            return true;
+        }
+
+        break;
     }
+
     case QEvent::FocusIn: // workaround for "first item not highlighted"
-	if ( currentItem() == 0 )
-	    setSelected( currentItem(), true );
+        if ( currentItem() == 0 )
+            setSelected( currentItem(), true );
+        break;
+
+    case QEvent::MouseButtonPress: {
+        QMouseEvent *me = static_cast<QMouseEvent*>(e);
+        QPoint pos = mapFromGlobal( me->globalPos() );
+        if ( me->button()!=0 && !rect().contains( pos ) ) {
+            // outside
+            kdDebug() << "hide" << endl;
+            hide();
+            return FALSE;
+        }
+    }
+
     default:
-	break;
+        break;
     }
 
     return KListBox::eventFilter( o, e );
 }
-
 
 void KCompletionBox::show()
 {
@@ -114,22 +138,23 @@ void KCompletionBox::show()
     XUngrabKeyboard( x11Display(), CurrentTime );
 }
 
-
 void KCompletionBox::popup()
 {
-    if ( count() == 0 ) {
-	hide();
-	return;
+    if ( count()==0 )
+        hide();
+    else {
+        ensureCurrentVisible();
+        if ( isVisible() )
+            resize( sizeHint() );
+        else
+            show();
     }
-
-    ensureCurrentVisible();
-    show();
 }
 
 void KCompletionBox::revertFocus()
 {
     if ( !m_parent->isActiveWindow() )
-	m_parent->setActiveWindow();
+        m_parent->setActiveWindow();
     m_parent->setFocus();
     setSelected( 0, false );
 }
@@ -142,6 +167,44 @@ QSize KCompletionBox::sizeHint() const
 
     int w = QMAX( KListBox::sizeHint().width(), m_parent->width() );
     return QSize( w, h );
+}
+
+void KCompletionBox::down()
+{
+    if ( currentItem() < (int)count() - 1 )
+        setCurrentItem( currentItem() + 1 );
+    else
+        setCurrentItem( 0 );
+
+    emit activated( currentText() );
+}
+
+void KCompletionBox::up()
+{
+    if ( currentItem() > 0 )
+        setCurrentItem( currentItem() - 1 );
+    else
+        setCurrentItem( (int)count()-1 );
+
+    emit activated( currentText() );
+}
+
+void KCompletionBox::pageDown()
+{
+    int i = currentItem() + numItemsVisible();
+    i = i > (int)count() - 1 ? (int)count() - 1 : i;
+    setCurrentItem( i );
+
+    emit activated( currentText() );
+}
+
+void KCompletionBox::pageUp()
+{
+    int i = currentItem() - numItemsVisible();
+    i = i < 0 ? 0 : i;
+    setCurrentItem( i );
+
+    emit activated( currentText() );
 }
 
 #include "kcompletionbox.moc"

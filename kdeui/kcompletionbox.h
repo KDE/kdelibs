@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                 2000 Stefan Schimanski <1Stein@gmx.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -94,6 +95,33 @@ signals:
      */
     void activated( const QString& );
 
+    /**
+     * Emitted when an item is double clicked, contains the text of the selected 
+     * item.
+     */
+    void executed( const QString& );
+
+public slots:
+    /**
+     * Move the selection one line down or select the first item if nothing is selected yet.
+     */
+    void down();
+
+    /** 
+     * Move the selection one line up or select the first item if nothing is selected yet.
+     */
+    void up(); 
+
+    /**
+     * Move the selection one page down.
+     */
+    void pageDown();
+
+    /**
+     * Move the selection one page up.
+     */
+    void pageUp();
+
 protected:
     /**
      * Reimplemented from KListBox to get events from the viewport (to hide
@@ -103,10 +131,16 @@ protected:
 
 protected slots:
     /**
-     * Called when an item was activated. Hides the widget and emits
+     * Called when an item was activated. Emits
      * @ref activated() with the item.
      */
     virtual void slotActivated( QListBoxItem * );
+
+    /**
+     * Called when an item was double clicked. Emits
+     * @ref executed() with the item.
+     */
+    virtual void slotExecuted( QListBoxItem * );
 
 private slots:
     void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
