@@ -71,6 +71,7 @@ void Slave::accept(KSocket *socket)
 Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &socketname)
   : SlaveInterface(&slaveconn), serv(socket), contacted(false)
 {
+    m_refCount = 1;
     m_protocol = protocol;
     // Store the real protocol handled by this slave (i.e. http for ftp proxy)
     // Will be used later on, when trying to reuse the slave
@@ -128,6 +129,7 @@ bool Slave::suspended()
 
 void Slave::gotInput()
 {
+    ref();
     if (!dispatch())
     {
         slaveconn.close();
@@ -143,6 +145,7 @@ void Slave::gotInput()
         emit slaveDied(this);
         // After the above signal we're dead!!
     }
+    deref();
 }
 
 void Slave::gotAnswer()
@@ -150,6 +153,8 @@ void Slave::gotAnswer()
     int cmd = 0;
     QByteArray data;
     bool ok = true;
+
+    ref();
 
     if (slaveconn.read( &cmd, data ) == -1)
 	ok = false;
@@ -167,6 +172,7 @@ void Slave::gotAnswer()
         // TODO: Report start up error to someone who is interested
         dead = true;
     }
+    deref();
 }
 
 void Slave::kill()

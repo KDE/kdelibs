@@ -618,7 +618,7 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
 
     if (!slaveList->removeRef(slave))
        kdDebug(7006) << "Scheduler: BUG!! Slave died, but is NOT in slaveList!!!\n" << endl;
-    delete slave;
+    slave->deref(); // Delete slave
 }
 
 void Scheduler::slotCleanIdleSlaves()

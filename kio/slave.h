@@ -134,6 +134,9 @@ namespace KIO {
 	void setIdle();
 
         Connection *connection() { return &slaveconn; }
+        
+        void ref() { m_refCount++; }
+        void deref() { m_refCount--; if (!m_refCount) delete this; }
 
     public slots:
         void accept(KSocket *socket);
@@ -157,6 +160,7 @@ namespace KIO {
 	time_t contact_started;
 	time_t idle_since;
 	KIO::Connection slaveconn;
+	int m_refCount;
     };
 
 };
