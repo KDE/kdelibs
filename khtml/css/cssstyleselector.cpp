@@ -499,7 +499,6 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImp
         case CSS_PROP_FONT_VARIANT:
         case CSS_PROP_FONT_WEIGHT:
 	case CSS_PROP_FONT_SIZE:
-        case CSS_PROP_LINE_HEIGHT:
         case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
@@ -1210,7 +1209,6 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         case CSS_PROP_FONT_VARIANT:
         case CSS_PROP_FONT_WEIGHT:
 	case CSS_PROP_FONT_SIZE:
-        case CSS_PROP_LINE_HEIGHT:
         case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
