@@ -199,7 +199,7 @@ void KMMainView::initActions()
 
 	KToggleAction	*tact = new KToggleAction(i18n("View &Toolbar"),0,m_actions,"view_toolbar");
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
-	tact = new KToggleAction(i18n("View Printer &Information"),"kdeprint_printer_infos", 0,m_actions,"view_printerinfos");
+	tact = new KToggleAction(i18n("Show/Hide Pr&inter Details"),"kdeprint_printer_infos", 0,m_actions,"view_printerinfos");
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 
