@@ -15,6 +15,11 @@
 #include <qfont.h>
 #include <qtimer.h>
 
+#if QT_VERSION >= 130
+//#include <qmovie.h>
+//#define USE_QMOVIE
+#endif
+
 #include <kurl.h>
 
 class HTMLClueV;
@@ -45,18 +50,18 @@ public:
      * width and height.
      */
     virtual void calcSize( HTMLClue * = NULL ) { }
-	/************************************************************
-	 * This function forces a size calculation for objects which
-	 * calculate their size at construction.  This is useful if
-	 * the metrics of the painter change, e.g. if the html is to
-	 * be printed on a printer instead of the display.
-	 */
-	virtual void recalcBaseSize( QPainter * ) { }
+    /************************************************************
+     * This function forces a size calculation for objects which
+     * calculate their size at construction.  This is useful if
+     * the metrics of the painter change, e.g. if the html is to
+     * be printed on a printer instead of the display.
+     */
+    virtual void recalcBaseSize( QPainter * ) { }
     /************************************************************
      * This function calculates the minimum width that the object
      * can be set to. (added for table support)
      */
-	virtual int  calcMinWidth() { return width; }
+    virtual int  calcMinWidth() { return width; }
     /************************************************************
      * This function calculates the width that the object would like
      * to be. (added for table support)
@@ -291,8 +296,9 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-class HTMLImage : public HTMLObject
+class HTMLImage : public QObject, public HTMLObject
 {
+    Q_OBJECT
 public:
     HTMLImage( KHTMLWidget *widget, const char*, const char *_url,
 		const char *_target, int _max_width, int _width = -1,
@@ -319,6 +325,9 @@ public:
     void setBorderColor( const QColor &color )
 	{   borderColor = color; }
 
+protected slots:
+    void movieUpdated( const QRect &rect );
+
 protected:
 
     /// Calculates the size of the loaded image.
@@ -335,6 +344,12 @@ protected:
       the internet for example.
       */
     QPixmap *pixmap;
+
+#ifdef USE_QMOVIE
+    QMovie *movie;
+#else
+    void *movie;
+#endif
 
     // The URL of this image.
     /**

@@ -2,13 +2,13 @@
 //
 // KDE HTML Widget
 //
-// Copyright (c) 1997 The KDE Project
+// Copyright (c) 1997 Torben Weis and Martin Jones
 //
 
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  807		// 00.08.07
+#define KHTMLW_VERSION  811		// 00.08.11
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -139,6 +139,12 @@ public:
      * Print current HTML page to the printer.
      */
     void print();
+
+    /**
+     * Recalculate the size and position of objects in the page.
+     * This is mainly intended for internal use.
+     */
+    void calcSize();
 
     /**
      * Selects all objects which refer to _url. All selected ojects
@@ -442,13 +448,6 @@ public:
      * web.
      */
     void paintSingleObject( HTMLObject *_obj );
-
-    // Tells the widget to parse again after the last image arrived
-    /*
-     * If we have a image of undefined size, the HTMLImage will call this
-     * function to tell the widget to parse again.
-     */
-    void parseAfterLastImage();
 
     /*
      * return the map matching mapurl
@@ -1027,6 +1026,11 @@ protected:
     bool parsing;
 
     /*
+     * Have we parsed <body> yet?
+     */
+    bool bodyParsed;
+
+    /*
      * size of current indenting
      */
     int indent;
@@ -1094,19 +1098,8 @@ protected:
      */
     QCursor linkCursor;
 
-    // If this flag is set, the HTML code is parsed again after the last
-    // image arrived.
-    bool bParseAfterLastImage;
-    
-    // If this flag is set, the widget must repaint after parsing
-    /*
-      If an image is loaded from the web and we knew already about its size,
-      it may happen that the image arrives during parsing. In this case we
-      paint the loaded image after parsing has finished.
-      */
-    bool bPaintAfterParsing;
-
-    bool bAutoUpdate;
+    // should the background be painted?
+    bool bDrawBackground;
 
     /*
      * The URL of the not loaded!! background image

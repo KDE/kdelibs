@@ -1,7 +1,18 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 30 August 1997 - Martin Jones.
+Last Change: 12 September 1997 - Martin Jones.
+
+Version 0.8.11 - Martin
+-----------------------
+
+Recalc sizes and update when an image with unknown size is loaded.
+Cleaner progressive updates.
+Animated gifs with Qt 1.3
+Top and Bottom borders.
+Post paint events when scrolling instead of repaint() to make scrolling faster.
+Fix scrollbars in HTMLView.
+
 
 Version 0.8.10 - Martin
 -----------------------

@@ -83,12 +83,13 @@ KHTMLView* KHTMLView::findView( const char *_name )
 
 void KHTMLView::begin( const char *_url, int _dx, int _dy )
 {
-/*
+    if ( displayHScroll )
+	view->setGeometry( 0, 0, width(), height() );
     displayVScroll = FALSE;
     displayHScroll = FALSE;
     vert->hide();
     horz->hide();
-*/
+
     if ( _url )
 	url = _url;
     
@@ -241,7 +242,7 @@ void KHTMLView::calcScrollBars()
     if ( displayVScroll && displayHScroll )
     {
 	horz->setRange( 0, view->docWidth() + 16 - view->width() );
-	vert->setRange( 0, view->docHeight() - view->height() );
+	vert->setRange( 0, view->docHeight() - height() + 16 );
     }
     else if ( displayHScroll )
     {
@@ -249,7 +250,7 @@ void KHTMLView::calcScrollBars()
     }
     else if ( displayVScroll )
     {
-	vert->setRange( 0, view->docHeight() - view->height() );
+	vert->setRange( 0, view->docHeight() - height() );
     }    
 
     int right = 0;

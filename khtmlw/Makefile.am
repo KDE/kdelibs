@@ -3,8 +3,9 @@ lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp gif.cpp jpeg.cpp formats.cpp htmlform.cpp ampseq.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp
 libkhtmlw_la_LIBADD = -L@topdir@/kdecore/.libs -L@topdir@/kdeui/.libs -L@topdir@/jscript/.libs @all_libraries@ -lkdecore -lqt -lX11 -lgif @LIBJPEG@
 
-BUILT_SOURCES = html.moc htmlform.moc htmlframe.moc htmlview.moc
+BUILT_SOURCES = html.moc htmlobj.moc htmlform.moc htmlframe.moc htmlview.moc
 html.cpp: html.moc
+htmlobj.cpp: htmlobj.moc
 htmlform.cpp: htmlform.moc
 htmlframe.cpp: htmlframe.moc
 htmlview.cpp: htmlview.moc
@@ -21,6 +22,9 @@ INCLUDES = -I../kdecore -I../kdeui -I../jscript @all_includes@
 
 html.moc: html.h
 	$(MOC) -o html.moc html.h 
+
+htmlobj.moc: htmlobj.h
+	$(MOC) -o htmlobj.moc htmlobj.h 
 
 htmlform.moc: htmlform.h
 	$(MOC) -o htmlform.moc htmlform.h 

@@ -2,7 +2,7 @@
 //
 // KDE HTML Widget
 //
-// Copyright (c) 1997 The KDE Project
+// Copyright (c) 1997 Torben Weis and Martin Jones
 //
 
 #include <kurl.h>
@@ -152,8 +152,6 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     granularity = 500;
     linkCursor = arrowCursor;
     waitingFileList.setAutoDelete( false );
-    bParseAfterLastImage = false;
-    bPaintAfterParsing = false;
     bIsTextSelected = false;
     formList.setAutoDelete( true );
     listStack.setAutoDelete( true );
@@ -228,13 +226,8 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 	{
 	    bgPixmap.load( _filename );					
 	    bgPixmapURL = 0L;
-	    if ( parsing )
-		bPaintAfterParsing = TRUE;
-	    else
-	    {
-		repaint();
-		bPaintAfterParsing = FALSE;
-	    }
+	    bDrawBackground = true;
+	    repaint( false );
 	}
     }    
 
@@ -243,19 +236,9 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 
     if ( waitingFileList.count() == 0 )
     {
-	if ( bParseAfterLastImage )
-    	{
-		clue->reset();
-		parse();
-	}
 	if ( !parsing )
-		emit documentDone();
+	    emit documentDone();
     }
-}
-
-void KHTMLWidget::parseAfterLastImage()
-{
-    bParseAfterLastImage = true;
 }
 
 void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url )
@@ -285,14 +268,15 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 	    emit textSelected( false );
 	}
 	selectPt1.setX( _mouse->pos().x() + x_offset - leftBorder );
-	selectPt1.setY( _mouse->pos().y() + y_offset );
+	selectPt1.setY( _mouse->pos().y() + y_offset - topBorder );
     }
     press_x = _mouse->pos().x();
     press_y = _mouse->pos().y();    
 	    
     HTMLObject *obj;
 
-    obj = clue->checkPoint( _mouse->pos().x() + x_offset - leftBorder, _mouse->pos().y() + y_offset );
+    obj = clue->checkPoint( _mouse->pos().x() + x_offset - leftBorder,
+	    _mouse->pos().y() + y_offset - topBorder );
     
     if ( obj != 0L)
     {
@@ -342,7 +326,8 @@ void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
     
     HTMLObject *obj;
     
-    obj = clue->checkPoint( _mouse->pos().x() + x_offset - leftBorder, _mouse->pos().y() + y_offset );
+    obj = clue->checkPoint( _mouse->pos().x() + x_offset - leftBorder,
+	_mouse->pos().y() + y_offset - topBorder );
     
     if ( obj != 0L)
 	if ( obj->getURL() != 0 )
@@ -352,10 +337,14 @@ void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
 
 void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 {
+    if ( clue == 0 )
+	return;
+
     if ( !pressed )
     {
 	// Look wether the cursor is over an URL.
-	HTMLObject *obj = clue->checkPoint( _mouse->pos().x()+x_offset-leftBorder, _mouse->pos().y() + y_offset );
+	HTMLObject *obj=clue->checkPoint(_mouse->pos().x()+x_offset-leftBorder,
+	    _mouse->pos().y() + y_offset - topBorder );
 	if ( obj != 0 )
 	{
 	    if ( obj->getURL() && obj->getURL()[0] != 0 )
@@ -404,7 +393,7 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 	else if ( point.y() < 0 )
 	    point.setY( 0 );
 	selectPt2.setX( point.x() + x_offset - leftBorder );
-	selectPt2.setY( point.y() + y_offset );
+	selectPt2.setY( point.y() + y_offset - topBorder );
 	if ( selectPt2.y() < selectPt1.y() )
 	{
 	    selectText( 0, selectPt2.x(), selectPt2.y(),
@@ -473,6 +462,9 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 
 void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 {
+    if ( clue == 0 )
+	return;
+
     if ( pressed )
     {
 	// in case we started an autoscroll in MouseMove event
@@ -564,7 +556,7 @@ void KHTMLWidget::select( QPainter * _painter, QRect &_rect )
     // r.setLeft( r.left() + x_offset );
     
     int tx = -x_offset + leftBorder;
-    int ty = -y_offset;
+    int ty = -y_offset + topBorder;
 
     if ( _painter == 0L )
     {
@@ -598,7 +590,7 @@ void KHTMLWidget::selectText( QPainter * _painter, int _x1, int _y1,
     bool newPainter = FALSE;
 
     int tx = -x_offset + leftBorder;
-    int ty = -y_offset;
+    int ty = -y_offset + topBorder;
 
     if ( _painter == 0L )
     {
@@ -642,12 +634,14 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 
     // painter->translate( x_offset, -y_offset );    
     int tx = -x_offset + leftBorder;
-    int ty = -y_offset;
+    int ty = -y_offset + topBorder;
     
-    drawBackground( x_offset, y_offset, _pe->rect().x(), _pe->rect().y(),
+    drawBackground( x_offset, y_offset, _pe->rect().x(),
+	    _pe->rect().y(),
 	    _pe->rect().width(), _pe->rect().height() );
 
-    clue->print( painter, _pe->rect().x()-x_offset, _pe->rect().y()+y_offset,
+    clue->print( painter, _pe->rect().x() - x_offset,
+	    _pe->rect().y() + y_offset - topBorder,
 	    _pe->rect().width(), _pe->rect().height(), tx, ty, false );
     
     if ( bIsSelected )
@@ -690,7 +684,7 @@ void KHTMLWidget::resizeEvent( QResizeEvent* _re )
 	    clue->setPos( 0, clue->getAscent() );
 	}
 
-//	positionFormElements();
+	positionFormElements();
 
 	emit resized( _re->size() );
 }
@@ -780,8 +774,6 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
     if ( clue == 0L )
 	return;
 
-    debugM( "paintSingleObject called\n" );
-
     if ( painter == 0 )
     {
 	painter = new QPainter;
@@ -790,7 +782,7 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
     }
 
     int tx = x_offset + leftBorder;
-    int ty = -y_offset;
+    int ty = -y_offset + topBorder;
     
     clue->print( painter, _obj, x_offset, y_offset,
 		 width(), height(), tx, ty );
@@ -1146,8 +1138,7 @@ void KHTMLWidget::parse()
     if ( !ht )
 	return;
 	
-    bParseAfterLastImage = FALSE;
-    bPaintAfterParsing = FALSE;
+    bDrawBackground = true;
 
     // Cancel all remaining URL requests
     HTMLObject *p;
@@ -1193,6 +1184,7 @@ void KHTMLWidget::parse()
     inOption = false;
     inTextArea = false;
     inTitle = false;
+    bodyParsed = false;
 
     listStack.clear();
     mapList.clear();
@@ -1232,13 +1224,7 @@ void KHTMLWidget::stopParser()
 
     timer.stop();
     
-    parsing = FALSE;
-    
-    if ( bPaintAfterParsing )
-    {
-	repaint();
-	bPaintAfterParsing = FALSE;
-    }
+    parsing = false;
 }
 
 void KHTMLWidget::slotTimeout()
@@ -1270,9 +1256,11 @@ void KHTMLWidget::slotTimeout()
 
     // If the visible rectangle was not filled before the parsing and
     // if we have something to display in the visible area now then repaint.
-    if ( lastHeight - y_offset < height() && docHeight() - y_offset > 0 )
+    if ( lastHeight - y_offset < height() * 2 && docHeight() - y_offset > 0 )
     {
+	bDrawBackground = false;
 	repaint( false );
+	bDrawBackground = true;
     }
 
     emit documentChanged();
@@ -1328,6 +1316,17 @@ void KHTMLWidget::slotTimeout()
 	if ( ( s = framesetList.getFirst() ) )
 	    s->setGeometry( 0, 0, width(), height() );
     }
+}
+
+void KHTMLWidget::calcSize()
+{
+    if ( clue == 0 )
+	return;
+
+    clue->reset();
+    clue->setMaxWidth( width() - leftBorder - rightBorder );
+    clue->calcSize();
+    clue->setPos( 0, clue->getAscent() );
 }
 
 bool KHTMLWidget::insertVSpace( HTMLClueV *_clue, bool _vspace_inserted )
@@ -1704,6 +1703,10 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
     }
     else if ( strncasecmp( str, "<body", 5 ) == 0 )
     {
+	if ( bodyParsed )
+	    return;
+
+	bodyParsed = true;
 	bool bgColorSet = FALSE;
 	bool bgPixmapSet = FALSE;
 	QColor bgColor;
@@ -1729,7 +1732,10 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		const char* filename = token + 11;
 		KURL kurl( baseURL, filename );
 		if ( strcmp( kurl.protocol(), "file" ) == 0 )
+		{
 		    bgPixmap.load( kurl.path() );
+		    repaint( true );
+		}
 		else
 		    requestBackgroundImage( kurl.url() );
 		
@@ -2427,7 +2433,10 @@ void KHTMLWidget::parseK( HTMLClueV *, const char *str )
 // <li>
 void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 {
-    if (strncasecmp( str, "<li", 3 ) == 0)
+    if (strncasecmp( str, "<link", 5 ) == 0)
+    {
+    }
+    else if (strncasecmp( str, "<li", 3 ) == 0)
     {
 	QString item;
 	ListType listType = Unordered;
@@ -3087,288 +3096,322 @@ const char* KHTMLWidget::parseGlossary( HTMLClueV *_clue, int _max_width )
 const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	const char *attr )
 {
-	static const char *endth[] = { "</th>", "<th", "<td", "<tr", "</table", 0 };
-	static const char *endtd[] = { "</td>", "<th", "<td", "<tr", "</table", 0 };    
-	static const char *endcap[] = { "</caption>", 0 };    
-	const char* str = 0;
-	bool firstRow = TRUE;
-	int padding = 1;
-	int spacing = 2;
-	int width = 0;
-	int percent = 0;
-	int border = 0;
-	char has_cell = 0;
-	HTMLClue::VAlign rowvalign = HTMLClue::VNone;
-	HTMLClue::HAlign rowhalign = HTMLClue::HNone;
-	HTMLClue::HAlign align = HTMLClue::HNone;
-	HTMLClueV *caption = 0;
-	HTMLClue::VAlign capAlign = HTMLClue::Bottom;
-	HTMLClue::HAlign olddivalign = divAlign;
-	HTMLClue *oldFlow = flow;
+    static const char *endth[] = { "</th>", "<th", "<td", "<tr", "</table", 0 };
+    static const char *endtd[] = { "</td>", "<th", "<td", "<tr", "</table", 0 };    
+    static const char *endcap[] = { "</caption>", 0 };    
+    const char* str = 0;
+    bool firstRow = TRUE;
+    int padding = 1;
+    int spacing = 2;
+    int width = 0;
+    int percent = 0;
+    int border = 0;
+    char has_cell = 0;
+    HTMLClue::VAlign rowvalign = HTMLClue::VNone;
+    HTMLClue::HAlign rowhalign = HTMLClue::HNone;
+    HTMLClue::HAlign align = HTMLClue::HNone;
+    HTMLClueV *caption = 0;
+    HTMLClue::VAlign capAlign = HTMLClue::Bottom;
+    HTMLClue::HAlign olddivalign = divAlign;
+    HTMLClue *oldFlow = flow;
+    QColor tableColor;
+    QColor rowColor;
 
-	QString s = attr;
-	StringTokenizer st( s, " >" );
-	while ( st.hasMoreTokens() )
+    QString s = attr;
+    StringTokenizer st( s, " >" );
+    while ( st.hasMoreTokens() )
+    {
+	const char* token = st.nextToken();
+	if ( strncasecmp( token, "cellpadding=", 12 ) == 0 )
 	{
-		const char* token = st.nextToken();
-		if ( strncasecmp( token, "cellpadding=", 12 ) == 0 )
-		{
-			padding = atoi( token + 12 );
-		}
-		else if ( strncasecmp( token, "cellspacing=", 12 ) == 0 )
-		{
-			spacing = atoi( token + 12 );
-		}
-		else if ( strncasecmp( token, "border", 6 ) == 0 )
-		{
-			if ( *(token + 6) == '=' )
-				border = atoi( token + 7 );
-			else
-				border = 1;
-		}
-		else if ( strncasecmp( token, "width=", 6 ) == 0 )
-		{
-			if ( strchr( token+6, '%' ) )
-				percent = atoi( token + 6 );
-			else
-				width = atoi( token + 6 );
-		}
-		else if (strncasecmp( token, "align=", 6 ) == 0)
-		{
-			if ( strcasecmp( token + 6, "left" ) == 0 )
-				align = HTMLClue::Left;
-			else if ( strcasecmp( token + 6, "right" ) == 0 )
-				align = HTMLClue::Right;
-		}
+	    padding = atoi( token + 12 );
 	}
+	else if ( strncasecmp( token, "cellspacing=", 12 ) == 0 )
+	{
+	    spacing = atoi( token + 12 );
+	}
+	else if ( strncasecmp( token, "border", 6 ) == 0 )
+	{
+	    if ( *(token + 6) == '=' )
+		border = atoi( token + 7 );
+	    else
+		border = 1;
+	}
+	else if ( strncasecmp( token, "width=", 6 ) == 0 )
+	{
+	    if ( strchr( token+6, '%' ) )
+		percent = atoi( token + 6 );
+	    else
+		width = atoi( token + 6 );
+	}
+	else if (strncasecmp( token, "align=", 6 ) == 0)
+	{
+	    if ( strcasecmp( token + 6, "left" ) == 0 )
+		align = HTMLClue::Left;
+	    else if ( strcasecmp( token + 6, "right" ) == 0 )
+		align = HTMLClue::Right;
+	}
+	else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+	{
+	    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
+	    {
+		QString col = "#";
+		col += token+8;
+		tableColor.setNamedColor( col );
+	    }
+	    else
+		tableColor.setNamedColor( token+8 );
+	    rowColor = tableColor;
+	}
+    }
 
-	HTMLTable *table = new HTMLTable( 0, 0, _max_width, width, percent,
-		 padding, spacing, border );
-	//       _clue->append( table ); 
-	// CC: Moved at the end since we might decide to discard the table while parsing...
+    HTMLTable *table = new HTMLTable( 0, 0, _max_width, width, percent,
+	 padding, spacing, border );
+    //       _clue->append( table ); 
+    // CC: Moved at the end since we might decide to discard the table while parsing...
 
-	bool done = false;
+    bool done = false;
 
     while ( !done && ht->hasMoreTokens() )
-	{
+    {
 	str = ht->nextToken();
 
 	// Every tag starts with an escape character
 	if ( str[0] == TAG_ESCAPE )
 	{
-		str++;
+	    str++;
 
-		if ( strncasecmp( str, "<caption", 8 ) == 0 )
+	    if ( strncasecmp( str, "<caption", 8 ) == 0 )
+	    {
+		QString s = str + 9;
+		StringTokenizer st( s, " >" );
+		while ( st.hasMoreTokens() )
 		{
-			QString s = str + 9;
-			StringTokenizer st( s, " >" );
-			while ( st.hasMoreTokens() )
-			{
-				const char* token = st.nextToken();
-				if ( strncasecmp( token, "align=", 6 ) == 0)
-				{
-					if ( strncasecmp( token+6, "top", 3 ) == 0)
-						capAlign = HTMLClue::Top;
-				}
-			}
-			caption = new HTMLClueV( 0, 0, _clue->getMaxWidth() );
-			divAlign = HTMLClue::HCenter;
-			flow = 0;
-			parseBody( caption, endcap );
-			table->setCaption( caption, capAlign );
+		    const char* token = st.nextToken();
+		    if ( strncasecmp( token, "align=", 6 ) == 0)
+		    {
+			if ( strncasecmp( token+6, "top", 3 ) == 0)
+			    capAlign = HTMLClue::Top;
+		    }
 		}
+		caption = new HTMLClueV( 0, 0, _clue->getMaxWidth() );
+		divAlign = HTMLClue::HCenter;
+		flow = 0;
+		parseBody( caption, endcap );
+		table->setCaption( caption, capAlign );
+	    }
 
-		while ( str && ( strncasecmp( str, "<td", 3 ) == 0 ||
-			strncasecmp( str, "<th", 3 ) == 0 ||
-			strncasecmp( str, "</table>", 8 ) == 0 ||
-			strncasecmp( str, "<tr", 3 ) == 0 ) )
+	    while ( str && ( strncasecmp( str, "<td", 3 ) == 0 ||
+		    strncasecmp( str, "<th", 3 ) == 0 ||
+		    strncasecmp( str, "</table>", 8 ) == 0 ||
+		    strncasecmp( str, "<tr", 3 ) == 0 ) )
+	    {
+		if ( strncasecmp( str, "<tr", 3 ) == 0 )
 		{
-			if ( strncasecmp( str, "<tr", 3 ) == 0 )
+		    if ( !firstRow )
+			table->endRow();
+		    table->startRow();
+		    firstRow = FALSE;
+		    rowvalign = HTMLClue::VNone;
+		    rowhalign = HTMLClue::HNone;
+		    rowColor = tableColor;
+
+		    QString s = str + 4;
+		    StringTokenizer st( s, " >" );
+		    while ( st.hasMoreTokens() )
+		    {
+			const char* token = st.nextToken();
+			if ( strncasecmp( token, "valign=", 7 ) == 0)
 			{
-				if ( !firstRow )
-					table->endRow();
-				table->startRow();
-				firstRow = FALSE;
-				rowvalign = HTMLClue::VNone;
-				rowhalign = HTMLClue::HNone;
-
-				QString s = str + 4;
-				StringTokenizer st( s, " >" );
-				while ( st.hasMoreTokens() )
-				{
-					const char* token = st.nextToken();
-					if ( strncasecmp( token, "valign=", 7 ) == 0)
-					{
-						if ( strncasecmp( token+7, "top", 3 ) == 0)
-							rowvalign = HTMLClue::Top;
-						else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
-							rowvalign = HTMLClue::Bottom;
-						else
-							rowvalign = HTMLClue::VCenter;
-					}
-					else if ( strncasecmp( token, "align=", 6 ) == 0)
-					{
-						if ( strncasecmp( token+6, "left", 4 ) == 0)
-							rowhalign = HTMLClue::Left;
-						else if ( strncasecmp( token+6, "right", 5 ) == 0)
-							rowhalign = HTMLClue::Right;
-						else
-							rowhalign = HTMLClue::HCenter;
-					}
-				}
-
-				break;
+			    if ( strncasecmp( token+7, "top", 3 ) == 0)
+				rowvalign = HTMLClue::Top;
+			    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+				rowvalign = HTMLClue::Bottom;
+			    else
+				rowvalign = HTMLClue::VCenter;
 			}
-			else if ( strncasecmp( str, "<td", 3 ) == 0 ||
-				strncasecmp( str, "<th", 3 ) == 0 )
+			else if ( strncasecmp( token, "align=", 6 ) == 0)
 			{
-				bool heading = false;
-				if ( strncasecmp( str, "<th", 3 ) == 0 )
-					heading = true;
-				// <tr> may not be specified for the first row
-				if ( firstRow )
-				{
-					table->startRow();
-					firstRow = FALSE;
-				}
-
-				int rowSpan = 1, colSpan = 1;
-				int width = _clue->getMaxWidth();
-				int percent = -1;
-				QColor bgcolor;
-				HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
-								HTMLClue::VCenter : rowvalign);
-
-				if ( heading )
-					divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::HCenter :
-						rowhalign);
-				else
-					divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::Left :
-						rowhalign);
-
-				QString s = str + 4;
-				StringTokenizer st( s, " >" );
-				while ( st.hasMoreTokens() )
-				{
-					const char* token = st.nextToken();
-					if ( strncasecmp( token, "rowspan=", 8 ) == 0)
-						rowSpan = atoi( token+8 );
-					else if ( strncasecmp( token, "colspan=", 8 ) == 0)
-						colSpan = atoi( token+8 );
-					else if ( strncasecmp( token, "valign=", 7 ) == 0)
-					{
-						if ( strncasecmp( token+7, "top", 3 ) == 0)
-							valign = HTMLClue::Top;
-						else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
-							valign = HTMLClue::Bottom;
-						else
-							valign = HTMLClue::VCenter;
-					}
-					else if ( strncasecmp( token, "align=", 6 ) == 0)
-					{
-						if ( strncasecmp( token+6, "center", 6 ) == 0)
-							divAlign = HTMLClue::HCenter;
-						else if ( strncasecmp( token+6, "right", 5 ) == 0)
-							divAlign = HTMLClue::Right;
-						else
-							divAlign = HTMLClue::Left;
-					}
-					else if ( strncasecmp( token, "width=", 6 ) == 0 )
-					{
-						if ( strchr( token + 6, '%' ) )
-							percent = atoi( token + 6 );
-						else
-						{
-							width = atoi( token + 6 );
-							percent = 0;
-						}
-					}
-					else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
-					{
-						if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-						{
-							QString col = "#";
-							col += token+8;
-							bgcolor.setNamedColor( col );
-						}
-						else
-							bgcolor.setNamedColor( token+8 );
-					}
-				}
-
-				HTMLTableCell *cell = new HTMLTableCell(0, 0, width, percent,
-					rowSpan, colSpan, padding );
-				if ( bgcolor.isValid() )
-					cell->setBGColor( bgcolor );
-				cell->setVAlign( valign );
-				table->addCell( cell );
-				has_cell = 1;
-				flow = 0;
-				if ( heading )
-				{
-					weight = QFont::Bold;
-					selectFont();
-					str = parseBody( cell, endth );
-					popFont();
-				}
-				else
-					str = parseBody( cell, endtd );
-				if ( str == 0 )
-				{ 
-					// CC: Close table description in case of a malformed table
-					// before returning!
-					if ( !firstRow )
-						table->endRow();
-					table->endTable(); 
-					delete table;
-					divAlign = olddivalign;
-					flow = oldFlow;
-					return 0;
-				}
+			    if ( strncasecmp( token+6, "left", 4 ) == 0)
+				rowhalign = HTMLClue::Left;
+			    else if ( strncasecmp( token+6, "right", 5 ) == 0)
+				rowhalign = HTMLClue::Right;
+			    else
+				rowhalign = HTMLClue::HCenter;
 			}
-			else if ( strncasecmp( str, "</table>", 8 ) == 0 )
+			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
 			{
-				done = true;
-				break;
+			    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
+			    {
+				QString col = "#";
+				col += token+8;
+				rowColor.setNamedColor( col );
+			    }
+			    else
+				rowColor.setNamedColor( token+8 );
 			}
+		    }
+
+		    break;
 		}
+		else if ( strncasecmp( str, "<td", 3 ) == 0 ||
+			strncasecmp( str, "<th", 3 ) == 0 )
+		{
+		    bool heading = false;
+		    if ( strncasecmp( str, "<th", 3 ) == 0 )
+			    heading = true;
+		    // <tr> may not be specified for the first row
+		    if ( firstRow )
+		    {
+			table->startRow();
+			firstRow = FALSE;
+		    }
+
+		    int rowSpan = 1, colSpan = 1;
+		    int width = _clue->getMaxWidth();
+		    int percent = -1;
+		    QColor bgcolor = rowColor;
+		    HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
+					    HTMLClue::VCenter : rowvalign);
+
+		    if ( heading )
+			divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::HCenter :
+			    rowhalign);
+		    else
+			divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::Left :
+			    rowhalign);
+
+		    QString s = str + 4;
+		    StringTokenizer st( s, " >" );
+		    while ( st.hasMoreTokens() )
+		    {
+			const char* token = st.nextToken();
+			if ( strncasecmp( token, "rowspan=", 8 ) == 0)
+			{
+			    rowSpan = atoi( token+8 );
+			    if ( rowSpan < 1 )
+				rowSpan = 1;
+			}
+			else if ( strncasecmp( token, "colspan=", 8 ) == 0)
+			{
+			    colSpan = atoi( token+8 );
+			    if ( colSpan < 1 )
+				colSpan = 1;
+			}
+			else if ( strncasecmp( token, "valign=", 7 ) == 0)
+			{
+			    if ( strncasecmp( token+7, "top", 3 ) == 0)
+				valign = HTMLClue::Top;
+			    else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
+				valign = HTMLClue::Bottom;
+			    else
+				valign = HTMLClue::VCenter;
+			}
+			else if ( strncasecmp( token, "align=", 6 ) == 0)
+			{
+			    if ( strncasecmp( token+6, "center", 6 ) == 0)
+				divAlign = HTMLClue::HCenter;
+			    else if ( strncasecmp( token+6, "right", 5 ) == 0)
+				divAlign = HTMLClue::Right;
+			    else
+				divAlign = HTMLClue::Left;
+			}
+			else if ( strncasecmp( token, "width=", 6 ) == 0 )
+			{
+			    if ( strchr( token + 6, '%' ) )
+				percent = atoi( token + 6 );
+			    else
+			    {
+				width = atoi( token + 6 );
+				percent = 0;
+			    }
+			}
+			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
+			{
+			    if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
+			    {
+				QString col = "#";
+				col += token+8;
+				bgcolor.setNamedColor( col );
+			    }
+			    else
+				bgcolor.setNamedColor( token+8 );
+			}
+		    }
+
+		    HTMLTableCell *cell = new HTMLTableCell(0, 0, width, percent,
+			rowSpan, colSpan, padding );
+		    if ( bgcolor.isValid() )
+			cell->setBGColor( bgcolor );
+		    cell->setVAlign( valign );
+		    table->addCell( cell );
+		    has_cell = 1;
+		    flow = 0;
+		    if ( heading )
+		    {
+			weight = QFont::Bold;
+			selectFont();
+			str = parseBody( cell, endth );
+			popFont();
+		    }
+		    else
+			    str = parseBody( cell, endtd );
+		    if ( str == 0 )
+		    { 
+			// CC: Close table description in case of a malformed table
+			// before returning!
+			if ( !firstRow )
+			    table->endRow();
+			table->endTable(); 
+			delete table;
+			divAlign = olddivalign;
+			flow = oldFlow;
+			return 0;
+		    }
+		}
+		else if ( strncasecmp( str, "</table>", 8 ) == 0 )
+		{
+		    done = true;
+		    break;
+		}
+	    }
 	}
     }
 
-	if (has_cell)
+    if (has_cell)
+    {
+	// CC: the ending "</table>" might be missing, so 
+	// we close the table here... ;-) 
+	if ( !firstRow )
+	    table->endRow();
+	table->endTable();
+	if ( align != HTMLClue::Left && align != HTMLClue::Right )
 	{
-		// CC: the ending "</table>" might be missing, so 
-		// we close the table here... ;-) 
-		if ( !firstRow )
-			table->endRow();
-		table->endTable();
-		if ( align != HTMLClue::Left && align != HTMLClue::Right )
-		{
-			_clue->append ( table );
-			// add a <br>
-			HTMLText *t = new HTMLText( currentFont(), painter );
-			t->setNewline( true );
-			_clue->append( t );
-		}
-		else
-		{
-			HTMLClueAligned *aligned = new HTMLClueAligned (_clue, 0, 0,
-				_clue->getMaxWidth() );
-			aligned->setHAlign( align );
-			aligned->append( table );
-			_clue->append( aligned );
-		}
+	    _clue->append ( table );
+	    // add a <br>
+	    HTMLText *t = new HTMLText( currentFont(), painter );
+	    t->setNewline( true );
+	    _clue->append( t );
 	}
 	else
 	{
-	  // CC: last ressort -- remove tables that do not contain any cells
-	  delete table;
+	    HTMLClueAligned *aligned = new HTMLClueAligned (_clue, 0, 0,
+		    _clue->getMaxWidth() );
+	    aligned->setHAlign( align );
+	    aligned->append( table );
+	    _clue->append( aligned );
 	}
+    }
+    else
+    {
+	// CC: last ressort -- remove tables that do not contain any cells
+	delete table;
+    }
 
-	divAlign = olddivalign;
-	flow = oldFlow;
+    divAlign = olddivalign;
+    flow = oldFlow;
 
-	return str;
+    return str;
 }
 
 const char *KHTMLWidget::parseInput( const char *attr )
@@ -3518,13 +3561,18 @@ void KHTMLWidget::slotScrollVert( int _val )
 	{
 		int diff = _val - y_offset + 2;
 		y_offset = _val;
-		repaint( 0, height() - diff, width(), diff, false );
+		// update region without clearing background
+		QPaintEvent *e = new QPaintEvent( QRect( 0, height() - diff,
+		    width(), diff ) );
+		QApplication::postEvent( this, e );
 	}
 	else
 	{
 		int diff = y_offset - _val + 2;
 		y_offset = _val;
-		repaint( 0, 0, width(), diff, false );
+		// update region without clearing background
+		QPaintEvent *e = new QPaintEvent( QRect(0, 0, width(), diff) );
+		QApplication::postEvent( this, e );
 	}
 }
 
@@ -3557,12 +3605,13 @@ void KHTMLWidget::slotScrollHorz( int _val )
 
 void KHTMLWidget::positionFormElements()
 {
-	HTMLForm *f;
+    HTMLForm *f;
 
-	for ( f = formList.first(); f != 0; f = formList.next() )
-	{
-		f->position( x_offset - leftBorder, y_offset, width(), height() );
-	}
+    for ( f = formList.first(); f != 0; f = formList.next() )
+    {
+	f->position( x_offset - leftBorder, y_offset - topBorder,
+	    width(), height() );
+    }
 }
 
 HTMLMap *KHTMLWidget::getMap( const char *mapurl )
@@ -3581,6 +3630,9 @@ HTMLMap *KHTMLWidget::getMap( const char *mapurl )
 void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
 	int _w, int _h )
 {
+	if ( !bDrawBackground )
+	    return;
+
 	if ( bgPixmap.isNull() )
 	{
 		painter->eraseRect( _x, _y, _w, _h );
@@ -3675,7 +3727,7 @@ void KHTMLWidget::slotUpdateSelectText( int )
 		else if ( point.y() < 0 )
 			point.setY( 0 );
 		selectPt2.setX( point.x() + x_offset - leftBorder );
-		selectPt2.setY( point.y() + y_offset );
+		selectPt2.setY( point.y() + y_offset - topBorder );
 		if ( selectPt2.y() < selectPt1.y() )
 		{
 			selectText( 0, selectPt2.x(), selectPt2.y(),
@@ -3692,7 +3744,7 @@ void KHTMLWidget::slotUpdateSelectText( int )
 void KHTMLWidget::select( QPainter *_painter, bool _select )
 {
     int tx = x_offset + leftBorder;
-    int ty = -y_offset;
+    int ty = -y_offset + topBorder;
 
     if ( clue == 0L )
 	return;
@@ -3727,7 +3779,7 @@ void KHTMLWidget::select( QPainter *_painter, bool _select )
 void KHTMLWidget::selectByURL( QPainter *_painter, const char *_url, bool _select )
 {
     int tx = x_offset + leftBorder;
-    int ty = -y_offset;
+    int ty = -y_offset + topBorder;
     bool newPainter = FALSE;
 
     if ( clue == 0L )
@@ -3758,7 +3810,7 @@ void KHTMLWidget::selectByURL( QPainter *_painter, const char *_url, bool _selec
 void KHTMLWidget::select( QPainter *_painter, QRegExp& _pattern, bool _select )
 {
     int tx = x_offset + leftBorder;
-    int ty = -y_offset;
+    int ty = -y_offset + topBorder;
     bool newPainter = FALSE;
 
     if ( clue == 0L )
@@ -3789,23 +3841,23 @@ void KHTMLWidget::select( QPainter *_painter, QRegExp& _pattern, bool _select )
 int KHTMLWidget::docWidth() const
 {
     if ( bIsFrameSet )
-      return width();
+	return width();
     
-	if ( clue )
-    	return clue->getWidth() + leftBorder + rightBorder;
-	else
-		return leftBorder + rightBorder;
+    if ( clue )
+	return clue->getWidth() + leftBorder + rightBorder;
+    else
+	return leftBorder + rightBorder;
 }
 
 int KHTMLWidget::docHeight() const
 {
-  if ( bIsFrameSet )
-    return height();
+    if ( bIsFrameSet )
+	return height();
   
-	if ( clue )
-    	return clue->getHeight();
+    if ( clue )
+	return clue->getHeight() + topBorder + bottomBorder;
 
-	return 0;
+    return 0;
 }
 
 void KHTMLWidget::setSelected( bool _active )
@@ -3839,7 +3891,7 @@ void KHTMLWidget::setSelected( bool _active )
       }
   }
   else
-    repaint();
+    repaint( false );
 }
 
 void KHTMLWidget::setIsFrameSet( bool _b )

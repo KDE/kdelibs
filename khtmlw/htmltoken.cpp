@@ -24,10 +24,6 @@ const char *BlockingToken::token()
 {
     switch ( ttype )
     {
-	case Grid:
-		return "</grid";
-		break;
-
 	case Table:
 		return "</table";
 		break;
@@ -156,7 +152,12 @@ void HTMLTokenizer::write( const char *str )
 		scriptCodeMaxSize += 1024;
 	    }
 
-	    if ( *src == '\"' && !squote)
+	    if ( *src == '\\' )
+	    {
+		src++;
+		scriptCode[ scriptCodeSize++ ] = *src++;
+	    }
+	    else if ( *src == '\"' && !squote)
 	    {
 		scriptCode[ scriptCodeSize++ ] = *src++;
 		dquote = !dquote;
@@ -173,6 +174,7 @@ void HTMLTokenizer::write( const char *str )
 		scriptCode[ scriptCodeSize ] = 0;
 		scriptCode[ scriptCodeSize + 1 ] = 0;
 		script = false;
+/*
 		printf("================================================================\n");
 		if ( jsEnvironment == 0L )
 		    jsEnvironment = widget->getJSEnvironment();
@@ -193,6 +195,7 @@ void HTMLTokenizer::write( const char *str )
 		strcat( srcPtr, src );
 		src = srcPtr;
 		printf("================================================================\n");
+*/
 	    }
 	    // Find out wether we see a </script> tag without looking at
 	    // any other then the current character, since further characters
@@ -212,6 +215,7 @@ void HTMLTokenizer::write( const char *str )
 		    char *p = scriptBuffer;
 		    while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
 		    scriptCode[ scriptCodeSize++ ] = *src++;
+		    scriptCount = 0;
 		}
 		
 	    }
@@ -290,14 +294,14 @@ void HTMLTokenizer::write( const char *str )
 	    else if ( strncasecmp( src, "<script", 7 ) == 0 )
 	    {
 		script = true;
-		blocking.append( new BlockingToken( BlockingToken::Script,
-				tokenList.at() ) );
-		src = strchr( src, '>' );
-		if ( src == 0L )
-		    src = "";
-		else
+//		blocking.append( new BlockingToken( BlockingToken::Script,
+//				tokenList.at() ) );
+		while ( *src && *src != '>' )
 		    src++;
-		
+
+		if ( *src == '>' )
+		    src++;
+
 		scriptCode = new char[ 1024 ];
 		scriptCodeSize = 0;
 		scriptCodeMaxSize = 1024;
@@ -335,6 +339,11 @@ void HTMLTokenizer::write( const char *str )
 	    else if ( strncasecmp( src, "<dir", 4 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Dir,
+				tokenList.at() ) );
+	    }
+	    else if ( strncasecmp( src, "<dl", 3 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::Glossary,
 				tokenList.at() ) );
 	    }
 	    else if ( !blocking.isEmpty() && 
@@ -378,9 +387,12 @@ void HTMLTokenizer::write( const char *str )
 	    // For every line break in <pre> insert a the tag '\n'.
 	    if ( *src == '\n' )
 	    {
-		*dest++ = 0;
-		tokenList.append( buffer );
-		dest = buffer;
+		if ( dest > buffer )
+		{
+		    *dest++ = 0;
+		    tokenList.append( buffer );
+		    dest = buffer;
+		}
 		*dest++ = TAG_ESCAPE;
 		*dest++ = '\n';
 		*dest++ = 0;
@@ -454,8 +466,11 @@ void HTMLTokenizer::end()
 {
     int pos = tokenList.at();
 
-    *dest = 0;
-    tokenList.append( buffer );
+    if ( dest > buffer )
+    {
+	*dest = 0;
+	tokenList.append( buffer );
+    }
 
     delete [] buffer;
 
