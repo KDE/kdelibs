@@ -19,6 +19,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.12  1998/10/07 06:49:23  kalle
+// Correctly read double dollar signs (patch by Harri Porten)
+// Dollar expansion can be turned off with setDollarExpansion( false ).
+// \sa isDollarExpansion
+//
 // Revision 1.11  1998/08/22 20:02:37  kulow
 // make kdecore have nicer output, when compiled with -Weffc++ :)
 //
@@ -73,7 +78,7 @@
 // KDE includes
 #include <kconfigdata.h>
 
-/** 
+/**
 * Abstract base class for KDE configuration entries
 *
 *	This class forms the base for all KDE configuration. It is an
@@ -81,13 +86,13 @@
 * 	objects of this class. Either use KConfig (for usual KDE
 * 	configuration) or KSimpleConfig (for special needs like ksamba).
 *	one application, independent of the configuration files they came
-*	from. 
+*	from.
 *
 *	All configuration entries are of the form "key=value" and
 *	belong to a certain group. A group can be specified in a
 *	configuration file with "[GroupName]". All configuration entries
 *	from the beginning of a configuration file to the first group
-*	declaration belong to a special group called the default group. 
+*	declaration belong to a special group called the default group.
 *
 *	If there is a $ character in a entry, KConfig tries to expand
 *	environment variable and uses its value instead of its name. You
@@ -153,7 +158,7 @@ protected:
 	* @param pGroup
 	* @param bGlobal
 	*/
-  virtual void parseOneConfigFile( QFile& rFile, 
+  virtual void parseOneConfigFile( QFile& rFile,
 								   KGroupDict* pGroup = 0L,
 								   bool bGlobal = false );
 
@@ -166,24 +171,24 @@ protected:
 	* @param rFile The file to write
 	* @param bGlobal Should the data be saved to a global file
 	* @return Whether some entries are left to be written to other
-	*  files. 
+	*  files.
 	*/
-  virtual bool writeConfigFile( QFile& rFile, bool bGlobal = false ) = 0; 
+  virtual bool writeConfigFile( QFile& rFile, bool bGlobal = false ) = 0;
 
 public:
-  /** 
-	* Construct a KConfigBase object. 
+  /**
+	* Construct a KConfigBase object.
 	*/
   KConfigBase();
 
-  /** 
-	* Destructor. 
+  /**
+	* Destructor.
 	*
 	* Writes back any dirty configuration entries.
 	*/
   virtual ~KConfigBase();
 
-  /** 
+  /**
 	* Specify the group in which keys will be searched.
 	*
 	* Switch back to the default group by passing an empty string.
@@ -191,14 +196,14 @@ public:
 	*/
   void setGroup( const char* pGroup );
 
-  /** 
+  /**
 	* Retrieve the group where keys are currently searched in.
 	*
 	* @return The current group
 	*/
   const char* group() const;
 
-  /** 
+  /**
 	* Retrieve the group where keys are currently searched in. Note:
 	* this method is deprecated; use KConfigBase::group() instead.
 	*
@@ -215,7 +220,7 @@ public:
 	* @return The value for this key or an empty string if no value
 	*	  was found.
 	*/
-  const QString readEntry( const char* pKey, 
+  const QString readEntry( const char* pKey,
 						 const char* pDefault = 0L ) const;
 
   /**
@@ -226,13 +231,13 @@ public:
 	* @param sep  The list separator (default ",")
 	* @return The number of entries in the list.
 	*/
-  int readListEntry( const char* pKey, QStrList &list,  
+  int readListEntry( const char* pKey, QStrList &list,
 					 char sep = ',' ) const;
 
   /**
-	* Read a numerical value. 
+	* Read a numerical value.
 	*
-	* Read the value of an entry specified by rKey in the current group 
+	* Read the value of an entry specified by rKey in the current group
 	* and interpret it numerically.
 	*
 	* @param pKey The key to search for.
@@ -242,21 +247,21 @@ public:
   int readNumEntry( const char* pKey, int nDefault = 0 ) const;
 
   /**
-	* Read a numerical value. 
+	* Read a numerical value.
 	*
-	* Read the value of an entry specified by rKey in the current group 
+	* Read the value of an entry specified by rKey in the current group
 	* and interpret it numerically.
 	*
 	* @param pKey The key to search for.
 	* @param nDefault A default value returned if the key was not found.
 	* @return The value for this key or 0 if no value was found.
 	*/
-  unsigned int readUnsignedNumEntry( const char* pKey, 
+  unsigned int readUnsignedNumEntry( const char* pKey,
 									 unsigned int nDefault = 0 ) const;
   /**
-	* Read a numerical value. 
+	* Read a numerical value.
 	*
-	* Read the value of an entry specified by rKey in the current group 
+	* Read the value of an entry specified by rKey in the current group
 	* and interpret it numerically.
 	*
 	* @param pKey The key to search for.
@@ -266,23 +271,23 @@ public:
   long readLongNumEntry( const char* pKey, long nDefault = 0 ) const;
 
   /**
-	* Read a numerical value. 
+	* Read a numerical value.
 	*
-	* Read the value of an entry specified by rKey in the current group 
+	* Read the value of an entry specified by rKey in the current group
 	* and interpret it numerically.
 	*
 	* @param pKey The key to search for.
 	* @param nDefault A default value returned if the key was not found.
 	* @return The value for this key or 0 if no value was found.
 	*/
-  unsigned long readUnsignedLongNumEntry( const char* pKey, 
+  unsigned long readUnsignedLongNumEntry( const char* pKey,
 										  unsigned long nDefault = 0 ) const;
 
 
   /**
-	* Read a numerical value. 
+	* Read a numerical value.
 	*
-	* Read the value of an entry specified by rKey in the current group 
+	* Read the value of an entry specified by rKey in the current group
 	* and interpret it numerically.
 	*
 	* @param pKey The key to search for.
@@ -291,10 +296,10 @@ public:
 	*/
   double readDoubleNumEntry( const char* pKey, double nDefault = 0.0 ) const;
 
-  /** 
+  /**
 	* Read a QFont.
 	*
-	* Read the value of an entry specified by rKey in the current group 
+	* Read the value of an entry specified by rKey in the current group
 	* and interpret it as a font object.
 	*
 	* @param pKey		The key to search for.
@@ -314,7 +319,7 @@ public:
    * @param pKey		The key to search for
    * @param bDefault    A default value returned if the key was not
    * 					found.
-   * @return The value for this key or a default value if no value was 
+   * @return The value for this key or a default value if no value was
    * found.
    */
   bool readBoolEntry( const char* pKey, const bool bDefault = false ) const;
@@ -322,53 +327,53 @@ public:
 
   /**
    * Read a rect entry.
-   * 
-   * Read the value of an entry specified by pKey in the current group 
+   *
+   * Read the value of an entry specified by pKey in the current group
    * and interpret it as a QRect object.
    *
    * @param pKey		The key to search for
    * @param pDefault	A default value returned if the key was not
    *	 				found.
-   * @return The value for this key or a default rectangle if no value 
+   * @return The value for this key or a default rectangle if no value
    * was found.
    */
   QRect readRectEntry( const char* pKey, const QRect* pDefault = 0L ) const;
-   
+
 
   /**
    * Read a point entry.
-   * 
-   * Read the value of an entry specified by pKey in the current group 
+   *
+   * Read the value of an entry specified by pKey in the current group
    * and interpret it as a QPoint object.
    *
    * @param pKey		The key to search for
    * @param pDefault	A default value returned if the key was not
    *	 				found.
-   * @return The value for this key or a default point if no value 
+   * @return The value for this key or a default point if no value
    * was found.
    */
   QPoint readPointEntry( const char* pKey, const QPoint* pDefault = 0L ) const;
-   
+
 
   /**
    * Read a size entry.
-   * 
-   * Read the value of an entry specified by pKey in the current group 
+   *
+   * Read the value of an entry specified by pKey in the current group
    * and interpret it as a QSize object.
    *
    * @param pKey		The key to search for
    * @param pDefault	A default value returned if the key was not
    *	 				found.
-   * @return The value for this key or a default point if no value 
+   * @return The value for this key or a default point if no value
    * was found.
    */
   QSize readSizeEntry( const char* pKey, const QSize* pDefault = 0L ) const;
-   
 
-  /** 
+
+  /**
 	* Read a QColor.
 	*
-	* Read the value of an entry specified by rKey in the current group 
+	* Read the value of an entry specified by rKey in the current group
 	* and interpret it as a color.
 	*
 	* @param pKey		The key to search for.
@@ -376,10 +381,10 @@ public:
 	* @return The value for this key or a default color if no value
 	* was found.
 	*/
-  QColor readColorEntry( const char* pKey, 
+  QColor readColorEntry( const char* pKey,
 						 const QColor* pDefault = 0L ) const;
 
-  /** Write the key/value pair. 
+  /** Write the key/value pair.
 	*
 	* This is stored to the most specific config file when destroying the
 	* config object or when calling Sync().
@@ -387,30 +392,30 @@ public:
 	*  @param pKey		The key to write.
 	*  @param pValue	The value to write.
 	*  @param bPersistent	If bPersistent is false, the entry's dirty
-	*			flag will not be set and thus the entry will 
+	*			flag will not be set and thus the entry will
 	*			not be written to disk at deletion time.
 	*  @param bGlobal	If bGlobal is true, the pair is not saved to the
 	*   application specific config file, but to the global ~/.kderc
 	*  @param bNLS	If bNLS is true, the locale tag is added to the key
 	*   when writing it back.
 	*  @return The old value for this key. If this key did not
-	*   exist, a null string is returned.	  
+	*   exist, a null string is returned.	
 */
   const char* writeEntry( const char* pKey, const char* pValue,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
-  /** 
+  /**
 	* writeEntry() overriden to accept a list of strings.
 	*
-	* Note: Unlike the other writeEntry() functions, the old value is 
+	* Note: Unlike the other writeEntry() functions, the old value is
 	* _not_ returned here!
 	*
 	* @param pKey		The key to write
 	* @param list		The list to write
 	* @param sep		The list separator
-	* @param bPersistent	If bPersistent is false, the entry's dirty flag 
-	*			will not be set and thus the entry will not be 
+	* @param bPersistent	If bPersistent is false, the entry's dirty flag
+	*			will not be set and thus the entry will not be
 	*			written to disk at deletion time.
 	* @param bGlobal	If bGlobal is true, the pair is not saved to the
 	*  application specific config file, but to the global ~/.kderc
@@ -421,8 +426,8 @@ public:
 	*/
   void writeEntry ( const char* pKey, QStrList &list, char sep = ',',
 					bool bPersistent = true, bool bGlobal = false,
-					bool bNLS = false ); 
-  
+					bool bNLS = false );
+
   /** Write the key value pair.
 	* Same as above, but write a numerical value.
 	* @param pKey The key to write.
@@ -435,12 +440,12 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	  
+	* exist, a null string is returned.	
 	*/
   const char* writeEntry( const char* pKey, int nValue,
 						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false ); 
-  
+						  bool bNLS = false );
+
   /** Write the key value pair.
 	* Same as above, but write an unsigned numerical value.
 	* @param pKey The key to write.
@@ -453,12 +458,12 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	  
+	* exist, a null string is returned.	
 	*/
   const char* writeEntry( const char* pKey, unsigned int nValue,
 						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false ); 
-  
+						  bool bNLS = false );
+
   /** Write the key value pair.
 	* Same as above, but write a long numerical value.
 	* @param pKey The key to write.
@@ -471,12 +476,12 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	  
+	* exist, a null string is returned.	
 	*/
   const char* writeEntry( const char* pKey, long nValue,
 						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false ); 
-  
+						  bool bNLS = false );
+
   /** Write the key value pair.
 	* Same as above, but write an unsigned long numerical value.
 	* @param pKey The key to write.
@@ -489,12 +494,12 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	  
+	* exist, a null string is returned.	
 	*/
   const char* writeEntry( const char* pKey, unsigned long nValue,
 						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false ); 
-  
+						  bool bNLS = false );
+
   /** Write the key value pair.
 	* Same as above, but write a floating-point value.
 	* @param pKey The key to write.
@@ -507,12 +512,12 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	  
+	* exist, a null string is returned.	
 	*/
   const char* writeEntry( const char* pKey, double nValue,
 						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false ); 
-  
+						  bool bNLS = false );
+
   /** Write the key value pair.
 	* Same as above, but write a boolean value.
 	* @param pKey The key to write.
@@ -525,12 +530,12 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	  
+	* exist, a null string is returned.	
 	*/
   const char* writeEntry( const char* pKey, bool bValue,
 						  bool bPersistent = true, bool bGlobal = false,
-						  bool bNLS = false ); 
-  
+						  bool bNLS = false );
+
   /** Write the key value pair.
 	* Same as above, but write a font
 	* @param pKey The key to write.
@@ -543,9 +548,9 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	* exist, a null string is returned.	  
+	* exist, a null string is returned.	
 	*/
-  const char* writeEntry( const char* pKey, const QFont& rFont, 
+  const char* writeEntry( const char* pKey, const QFont& rFont,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -561,9 +566,9 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	*  exist, a null string is returned.	  
+	*  exist, a null string is returned.	
 	*/
-  void writeEntry( const char* pKey, const QColor& rColor, 
+  void writeEntry( const char* pKey, const QColor& rColor,
 				   bool bPersistent = true, bool bGlobal = false,
 				   bool bNLS = false );
 
@@ -579,9 +584,9 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	*  exist, a null string is returned.	  
+	*  exist, a null string is returned.	
 	*/
-  void writeEntry( const char* pKey, const QRect& rColor, 
+  void writeEntry( const char* pKey, const QRect& rColor,
 				   bool bPersistent = true, bool bGlobal = false,
 				   bool bNLS = false );
 
@@ -597,9 +602,9 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	*  exist, a null string is returned.	  
+	*  exist, a null string is returned.	
 	*/
-  void writeEntry( const char* pKey, const QPoint& rColor, 
+  void writeEntry( const char* pKey, const QPoint& rColor,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
 
@@ -615,9 +620,9 @@ public:
 	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
-	*  exist, a null string is returned.	  
+	*  exist, a null string is returned.	
 	*/
-  void writeEntry( const char* pKey, const QSize& rColor, 
+  void writeEntry( const char* pKey, const QSize& rColor,
 						  bool bPersistent = true, bool bGlobal = false,
 						  bool bNLS = false );
   //}
@@ -639,13 +644,13 @@ public:
 	* is set again and all dirty entries will be written.
 	* @param bDeep if
 	* true, the dirty flags of all entries are cleared, as well as the
-	* global dirty flag. 
+	* global dirty flag.
 	*/
   virtual void rollback( bool bDeep = true );
 
   /** Flush the entry cache. Write back dirty configuration entries to
 	* the most specific file. This is called automatically from the
-	* destructor. 
+	* destructor.
 	* This method must be implemented by the derived classes.
    */
   virtual void sync() = 0;
@@ -670,8 +675,8 @@ public:
 	  @param pGroup the group to provide an iterator for
 	  @return The iterator for the group or 0, if the group does not
 	  exist. The caller is responsible for deleting the iterator after
-	  using it. 
-	  */  
+	  using it.
+	  */
   KEntryIterator* entryIterator( const char* pGroup );
 
   /** Reparses all configuration files. This is useful for programms
@@ -681,13 +686,13 @@ public:
 };
 
 
-/** 
+/**
   * Helper class to facilitate working with KConfig/KSimpleConfig groups
   *
   * Careful programmers always set the group of a
   * KConfig/KSimpleConfig object to the group they want to read from
   * and set it back to the old one of afterwards. This is usually
-  * written as  
+  * written as
   *
   * QString oldgroup config->group();
   * config->setGroup( "TheGroupThatIWant" );
@@ -716,16 +721,16 @@ class KConfigGroupSaver
 public:
   /** Constructor. You pass a pointer to the KConfig/KSimpleConfig
 	* object you want to work with and a string indicating the _new_
-	* group. 
+	* group.
 	* @param config the KConfig/KSimpleConfig object this
-	* KConfigGroupSaver works on 
+	* KConfigGroupSaver works on
 	* @param group the new group that the KConfig/KSimpleConfig object
 	* should switch to
 	*/
-  KConfigGroupSaver( KConfigBase* config, QString group ) 
+  KConfigGroupSaver( KConfigBase* config, QString group )
       : _config(config), _oldgroup(config->group())
 	{
-	  //	  _config = config; 
+	  //	  _config = config;
 	  //	  _oldgroup = _config->group();
 	  _config->setGroup( group );
 	};
@@ -738,7 +743,7 @@ public:
 private:
   KConfigBase* _config;
   QString _oldgroup;
-  
+
   KConfigGroupSaver(const KConfigGroupSaver&);
   KConfigGroupSaver& operator=(const KConfigGroupSaver&);
 };
