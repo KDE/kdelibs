@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Python bytecode
+Icon=mimetypes/unknown
+Type=MimeType
+MimeType=application/x-python-bytecode
+Patterns=*.pyc;
