@@ -763,6 +763,10 @@ QImage RegressionTest::renderToImage()
 {
     int ew = m_part->view()->contentsWidth();
     int eh = m_part->view()->contentsHeight();
+
+    if (ew * eh > 4000 * 4000) // don't DoS us
+        return QImage(); 
+
 #if 1
 
     QImage img( ew, eh, 32 );
