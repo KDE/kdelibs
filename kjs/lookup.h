@@ -36,26 +36,26 @@ namespace KJS {
    */
   struct HashEntry {
     /**
-     * s is the key (e.g. a property name)
+     * s is the offset to the string key (e.g. a property name)
      */
-    const char *s;
+    const unsigned short soffset;
     /**
      * value is the result value (usually an enum value)
      */
-    int value;
+    const short int value;
     /**
      * attr is a set for flags (e.g. the property flags, see object.h)
      */
-    short int attr;
+    const unsigned char attr;
     /**
      * params is another number. For property hashtables, it is used to
      * denote the number of argument of the function
      */
-    short int params;
+    const unsigned char params;
     /**
-     * next is the pointer to the next entry for the same hash value
+     * next is the index to the next entry for the same hash value
      */
-    const HashEntry *next;
+    const short next;
   };
 
   /**
@@ -73,22 +73,27 @@ namespace KJS {
     /**
      * type is a version number. Currently always 2
      */
-    int type;
+    const int type;
     /**
      * size is the total number of entries in the hashtable, including the null entries,
      * i.e. the size of the "entries" array.
      * Used to iterate over all entries in the table
      */
-    int size;
+    const int size;
     /**
      * pointer to the array of entries
      * Mind that some entries in the array are null (0,0,0,0).
      */
-    const HashEntry *entries;
+    const HashEntry *const entries;
     /**
      * the maximum value for the hash. Always smaller than size.
      */
-    int hashSize;
+    const int hashSize;
+
+    /**
+     * pointer to the string table.
+     */
+    const char* const sbase;
   };
 
   /**

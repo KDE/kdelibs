@@ -143,27 +143,46 @@ sub output() {
 
   my $nameEntries = "${name}Entries";
   $nameEntries =~ s/:/_/g;
+  my $nameStringTable = "${name}Strings";
+  $nameStringTable =~ y/:/_/;
+
   print "\n#include \"lookup.h\"\n" if ($includelookup);
   print "\nusing namespace KJS;\n"; # because of DontDelete etc.
   print "\nnamespace KJS {\n";
-  print "\nconst struct HashEntry ".$nameEntries."[] = {\n";
+
+  # first, build the string table
+  # TODO: implement tail-string optimisation
+  my %soffset = ();
+  my $l = 1;
+  print "\nstatic const char $nameStringTable\[\] = {\n";
+  foreach my $k (@keys) {
+    print "    \"\\000$k\"\n";
+    $soffset{$k} = $l;
+    $l += length($k)+1;
+  }
+  print "    \"\\000\"\n";
+  print "};\n\n";
+
+  # now, dump the hash table
+
+  print "\nstatic const struct HashEntry ".$nameEntries."[] = {\n";
   my $i = 0;
   #print STDERR "writing out table with ".($#table+1)." entries\n";
   foreach $entry (@table) {
     if (defined($entry)) {
       my $key = $keys[$entry];
-      print "   \{ \"" . $key . "\"";
+      print "   \{ " . $soffset{$key};
       print ", " . $values[$entry];
       print ", " . $attrs[$entry];
       print ", " . $params[$entry];
       print ", ";
       if (defined($links[$i])) {
-	print "&".$nameEntries."[$links[$i]]" . " \}";
+	print $links[$i] . " \}";
       } else {
-	print "0 \}"
+	print "-1 \}"
       }
     } else {
-      print "   \{ 0, 0, 0, 0, 0 \}";
+      print "   \{ 0, 0, 0, 0, -1 \}";
     }
     print "," unless ($i == $size - 1);
     print "\n";
@@ -171,6 +190,6 @@ sub output() {
   }
   print "};\n\n";
   print "const struct HashTable $name = ";
-  print "\{ 2, $size, ".$nameEntries.", $hashsize \};\n\n";
+  print "\{ 2, $size, ".$nameEntries.", $hashsize, ".$nameStringTable."\};\n\n";
   print "} // namespace\n";
 }

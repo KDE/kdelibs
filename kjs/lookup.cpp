@@ -53,16 +53,18 @@ const HashEntry* Lookup::findEntry( const struct HashTable *table,
   const HashEntry *e = &table->entries[h];
 
   // empty bucket ?
-  if (!e->s)
+  if (!e->soffset)
     return 0;
 
-  do {
+  while(1) {
     // compare strings
-    if (keysMatch(c, len, e->s))
+    if (keysMatch(c, len, &table->sbase[e->soffset]))
       return e;
     // try next bucket
-    e = e->next;
-  } while (e);
+    if(e->next < 0) break;
+
+    e = &table->entries[e->next];
+  }
 
   return 0;
 }

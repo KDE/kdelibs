@@ -367,7 +367,7 @@ bool ObjectImp::implementsConstruct() const
   return false;
 }
 
-Object ObjectImp::construct(ExecState */*exec*/, const List &/*args*/)
+Object ObjectImp::construct(ExecState* /*exec*/, const List &/*args*/)
 {
   assert(false);
   return Object(0);
@@ -378,7 +378,7 @@ bool ObjectImp::implementsCall() const
   return false;
 }
 
-Value ObjectImp::call(ExecState */*exec*/, Object &/*thisObj*/, const List &/*args*/)
+Value ObjectImp::call(ExecState* /*exec*/, Object &/*thisObj*/, const List &/*args*/)
 {
   assert(false);
   return Object(0);
@@ -389,7 +389,7 @@ bool ObjectImp::implementsHasInstance() const
   return false;
 }
 
-Boolean ObjectImp::hasInstance(ExecState */*exec*/, const Value &/*value*/)
+Boolean ObjectImp::hasInstance(ExecState* /*exec*/, const Value &/*value*/)
 {
   assert(false);
   return Boolean(false);
@@ -410,8 +410,8 @@ ReferenceList ObjectImp::propList(ExecState *exec, bool recursive)
       int size = info->propHashTable->size;
       const HashEntry *e = info->propHashTable->entries;
       for (int i = 0; i < size; ++i, ++e) {
-        if ( e->s && !(e->attr & DontEnum) )
-          list.append(Reference(this, e->s)); /// ######### check for duplicates with the propertymap
+        if ( e->soffset && !(e->attr & DontEnum) )
+          list.append(Reference(this, &info->propHashTable->sbase[e->soffset])); /// ######### check for duplicates with the propertymap
       }
     }
     info = info->parentClass;
@@ -441,7 +441,7 @@ Value ObjectImp::toPrimitive(ExecState *exec, Type preferredType) const
   return defaultValue(exec,preferredType);
 }
 
-bool ObjectImp::toBoolean(ExecState */*exec*/) const
+bool ObjectImp::toBoolean(ExecState* /*exec*/) const
 {
   return true;
 }
