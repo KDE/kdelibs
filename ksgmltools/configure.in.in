@@ -1,10 +1,4 @@
 
-AC_INIT(template.docbook)
-
-AC_CONFIG_AUX_DIR(../admin)
-
-AM_INIT_AUTOMAKE(ksgmltools, 1.0)
-
 SGML_CATALOGS=
 
 AC_DEFUN(KDE_FIND_CAT, 
@@ -43,9 +37,6 @@ AC_SUBST(dtddir)
 dsldir='$(prefix)/share/apps/ksgmltools/stylesheets'
 AC_SUBST(dsldir)
 
-AC_OUTPUT(kdb2html Makefile \
-	customization/Makefile \
-	customization/stylesheets/Makefile \
-	doc/Makefile \
-	doc/images/Makefile \
-	doc/HTML/Makefile)
+dnl Don't remove !
+dnl AC_OUTPUT(ksgmltools/kdb2html)
+
