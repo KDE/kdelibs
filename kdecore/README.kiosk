@@ -1,0 +1,120 @@
+In KDE3 a kiosk-framework gets introduced. 
+
+On of the drving forces behind KDE is to put the user in control and
+give him or her a large amount of possibilities to adjust KDE to his or her 
+liking. However, in some situations it is required to reduce the possibilities
+of KDE, e.g. because the system is to be used for one or more specific 
+dedicated tasks only.
+
+The kiosk-framework provides an easy way to disable certain features within
+KDE to create a more controlled environment.
+
+KDE's kiosk-framework builds on KDE's configuration framework and adds a
+simple application API that applications can query to get authorisation
+for certain operations.
+
+The configuration framework in KDE3
+===================================
+
+Since the very beginning KDE makes use of file-hierarchy to store resources
+for its applications. Resources range from icons, wallpapers, fonts to 
+sounds, menu-descriptions and configuration files. 
+
+In KDE1 there were two locations were resources could be located: the 
+resources provided by the system where located under $KDEDIR and user-
+specific resources where located under $HOME/.kde.
+
+In KDE2 resource management has been largely abstracted by the introduction
+of the KStandardDirs class and has become much more flexible. The user /
+administrator can now specify a variable number of locations where resources
+can be found. A list of locations can either be specified via $KDEDIRS
+(notice the extra 'S'), via /etc/kderc and even via the kdeglobals config 
+file. The location where user-specific resources can be found can be
+set with $KDEHOME (The default is $HOME/.kde). Changes made by the user
+are always written back to $KDEHOME.
+
+Both KDE1 and KDE2 feature so called "cascading configuration files": There
+can be multiple configuration files with the same name in the various 
+locations for (config) resources, when that is the case, the information of 
+all these configuration files is combined on a key by key basis. If the same
+key (within a certain group) is defined in more than one place, the value
+of the key for the config file that was read last will override any previously
+read values. Configuration files under $KDEHOME are always read last. This
+ensures that after a configuration entry is written, the same value wil be
+read back.
+
+In KDE3 two important changes have been made:
+
+* Default values are no longer written.
+When a configuration file in a location other than $KDEHOME defines a value 
+for a key and the application subsequently writes out a new configuration file
+to $KDEHOME, that configuration file will only contain an entry for the key
+if its value differs from the value read from the other file.
+
+This counters the problem that changing default configuration files under 
+$KDEDIR would not take effect for users, since these users would most likely
+have their own copy of these settings under $KDEHOME. KDE3 will make sure 
+not to copy these settings so changes made under $KDEDIR will affect all users
+that haven't explicitly changed the affected settings to something else.
+
+* Configuration entries can be marked "immutable".
+Starting with KDE3, configuration entries can be marked "immutable". When a
+configuration entry is immutable it means that configurations files that are
+read later will not be able to override its value. Immutable entries can not
+be changed via KConfig and if the entry is present under $KDEHOME it will 
+be ignored.
+
+Entries can be marked immutable on 4 different levels:
+
+- On an entry by entry basis by appending "[$i]" after the key.
+
+Example:
+[MyGroup]
+someKey[$i]=42
+
+- On a group by group basis by appending "[$i]" after the group. All entries
+specified in the group will be marked immutable and no new entries can be
+added to the group.
+
+Example:
+[MyGroup][$i]
+someKey=42
+
+- On a file by file basis. [Not yet implemented]
+
+- On a directory basis. [Not yet implemented]
+
+
+KDE3 Kiosk Application API
+==========================
+
+Two new methods will be added to KApplication:
+
+- bool authorize(QString action);
+
+- bool authorizeURLAction(QString, referringURL, destinationURL)
+
+
+.desktop files can have an additional field "X-KDE-AuthorizeAction". If this
+field is present the .desktop file is only considered if the action mentioned
+in this field gets authorized.
+
+The most important task is to define a managable number of actions that can be 
+disabled. Actions should be defined in a generic way, "open konsole" would be
+too specific, a better definition of an action would be "shell access". 
+It should be noted that such an action might affect KDE features which aren't
+directly associated with "shell access". There are various locations in the 
+file system where creating a .desktop file would effectively allow the user to 
+execute arbitrary commands. This raises the question whether such features 
+should be disabled as part of the "shell access" action or whether it should 
+get its own action definition, e.g. "custom .desktop files".
+
+Another interesting question is what the exact scope of a certain action should
+be. Looking at the "custom .desktop files" action there are two ways to prevent
+the user from executing "custom .desktop files". The first way would be to
+make use of unix file permissions to make it impossible for the user to
+create .desktop files at e.g. the desktop. The second way would be to ignore,
+at the KDE level, any .desktop files that are found under the users home
+directory.
+
+
