@@ -43,7 +43,7 @@ UString RegExp::match(const UString &s, int, int *pos)
 
   if (regexec(&preg, s.ascii(), 10, rmatch, 0)) {
     if (pos)
-      *pos = rmatch[0].rm_so;
+      *pos = -1;
     return "";
   }
 
