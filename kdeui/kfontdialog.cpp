@@ -432,24 +432,8 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
 
   lstSys.sort();
 
-  //
-  // Use KDE fonts if there is a KDE font list and check that the fonts
-  // exist on the server where the desktop is running.
-  //
-  QStringList lstKDE;
-  if ( !kapp->kdeFonts( lstKDE ) )
-  {
-    list = lstSys;
-    return;
-  }
-
-  for (int i = 0; i < (int) lstKDE.count(); i++) {
-    if (lstSys.contains(lstKDE[i]))
-      list.append(lstKDE[i]);
-  }
-  list.sort();
+  list = lstSys;
 }
-
 
 
 void KFontChooser::getFontList( QStringList &list, const char *pattern )
@@ -564,6 +548,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.59  2001/01/31 19:15:20  porten
+* commented out unused variables. a bit ugly but a hint to potential maintainers
+*
 * Revision 1.58  2001/01/15 14:27:24  knoll
 * arrggll... and I was wondering why people complained about not
 * seeing any thai fonts...
