@@ -52,7 +52,7 @@
 <!ENTITY traducteurRobertJacolin      '<othercredit role="translator"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurRobertJacolin      '<othercredit role="reviewer"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<:ENTITY traducteurEquipeKDE         '<othercredit role=\"translator\"><firstname>L'équipe française KDE</firstname><surname></surname><affiliation><address><email>doc@kde-france.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY traducteurEquipeKDE         '<othercredit role=\"translator\"><firstname>L'équipe française KDE</firstname><surname></surname><affiliation><address><email>doc@kde-france.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 
 <!ENTITY traducteurGoneriLeBouder     '<othercredit role="translator"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurGoneriLeBouder     '<othercredit role="reviewer"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
