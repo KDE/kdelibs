@@ -78,7 +78,7 @@ text-top, CSS_VAL_TEXT_TOP
 text-bottom, CSS_VAL_TEXT_BOTTOM
 top, CSS_VAL_TOP
 bottom, CSS_VAL_BOTTOM
-texttop, CSS_VAL_TEXTTOP
+-konq-baseline-middle, CSS_VAL__KONQ_BASELINE_MIDDLE
 left, CSS_VAL_LEFT
 right, CSS_VAL_RIGHT
 center, CSS_VAL_CENTER

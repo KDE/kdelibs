@@ -118,8 +118,8 @@ text-top
 text-bottom
 top
 bottom
-#   NS 2.0 Extension
-texttop
+# HTML alignment MIDDLE has no corresponding CSS alignment
+-konq-baseline-middle
 #
 # CSS_PROP_TEXT_ALIGN: 
 #

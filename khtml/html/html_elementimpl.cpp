@@ -40,6 +40,7 @@
 #include "css/css_valueimpl.h"
 #include "css_stylesheetimpl.h"
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
@@ -312,6 +313,38 @@ DOMString HTMLElementImpl::stripAttributeGarbage( const DOMString &value )
     DOMString res( value );
     return res.split( l );
 }
+
+void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
+{
+    //qDebug("alignment is %s", alignment.string().latin1() );
+    // vertical alignment with respect to the current baseline of the text
+    // right or left means floating images
+    int propfloat = -1;
+    int propver = -1;
+    if ( strcasecmp( alignment, "left" ) == 0 ) {
+	propfloat = CSS_VAL_LEFT;
+	propver = CSS_VAL_TOP;
+    } else if ( strcasecmp( alignment, "right" ) == 0 ) {
+	propfloat = CSS_VAL_RIGHT;
+	propver = CSS_VAL_TOP;
+    } else if ( strcasecmp( alignment, "top" ) == 0 ) {
+	propver = CSS_VAL_TOP;
+    } else if ( strcasecmp( alignment, "middle" ) == 0 ) {
+	propver = CSS_VAL__KONQ_BASELINE_MIDDLE;
+    } else if ( strcasecmp( alignment, "center" ) == 0 ) {
+	propver = CSS_VAL_MIDDLE;
+    } else if ( strcasecmp( alignment, "bottom" ) == 0 ) {
+	propver = CSS_VAL_BASELINE;
+    } else if ( strcasecmp ( alignment, "texttop") == 0 ) {
+	propver = CSS_VAL_TEXT_TOP;
+    }
+    
+    if ( propfloat != -1 )
+	addCSSProperty( CSS_PROP_FLOAT, propfloat );
+    if ( propver != -1 )
+	addCSSProperty( CSS_PROP_VERTICAL_ALIGN, propver );
+}
+
 
 // -------------------------------------------------------------------------
 HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentPtr *doc, ushort i)

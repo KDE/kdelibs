@@ -104,25 +104,8 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
         addCSSProperty(CSS_PROP_HEIGHT, attr->value());
         break;
     case ATTR_ALIGN:
-        // vertical alignment with respect to the current baseline of the text
-        // right or left means floating images
-        if ( strcasecmp( attr->value(), "left" ) == 0 )
-        {
-            addCSSProperty(CSS_PROP_FLOAT, attr->value());
-            valign = khtml::Top;
-        }
-        else if ( strcasecmp( attr->value(), "right" ) == 0 )
-        {
-            addCSSProperty(CSS_PROP_FLOAT, attr->value());
-            valign = khtml::Top;
-        }
-        else if ( strcasecmp( attr->value(), "top" ) == 0 )
-            valign = khtml::Top;
-        else if ( strcasecmp( attr->value(), "middle" ) == 0 )
-            valign = khtml::VCenter;
-        else if ( strcasecmp( attr->value(), "bottom" ) == 0 )
-            valign = khtml::Bottom;
-        break;
+	addHTMLAlignment( attr->value() );
+	break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -238,21 +221,8 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
         addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value());
         break;
      case ATTR_ALIGN:
-        // vertical alignment with respect to the current baseline of the text
-        // right or left means floating images
-        if ( strcasecmp( attr->value(), "left" ) == 0 )
-        {
-           addCSSProperty(CSS_PROP_FLOAT, attr->value());
-           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_TOP);
-        }
-        else if ( strcasecmp( attr->value(), "right" ) == 0 )
-        {
-           addCSSProperty(CSS_PROP_FLOAT, attr->value());
-           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_TOP);
-        }
-        else
-           addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
-        break;
+	addHTMLAlignment( attr->value() );
+	break;
      case ATTR_VALIGN:
         addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
         break;

@@ -1802,26 +1802,26 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	  
 	  switch(primitiveValue->getIdent())
 	    {
-	    case CSS_VAL_TOP:
-	      align = TOP; break;
-            case CSS_VAL_BOTTOM:
-	      align = BOTTOM; break;
-	    case CSS_VAL_MIDDLE:
-	    case CSS_VAL_CENTER: //   None standard CSS-Value
-	      align = MIDDLE; break;
-            case CSS_VAL_BASELINE:
-	      align = BASELINE; break;
-	    case CSS_VAL_TEXT_BOTTOM:
-	      align = TEXT_BOTTOM; break;
-	    case CSS_VAL_TEXT_TOP: 
-	    case CSS_VAL_TEXTTOP: //   NS 2.0 Extension
-	      align = TEXT_TOP; break;
-	    case CSS_VAL_SUB:
-	      align = SUB; break;
-	    case CSS_VAL_SUPER:
-	      align = SUPER; break;
-            default:
-	      return;
+		case CSS_VAL_TOP:
+		    align = TOP; break;
+		case CSS_VAL_BOTTOM:
+		    align = BOTTOM; break;
+		case CSS_VAL_MIDDLE:
+		    align = MIDDLE; break;
+		case CSS_VAL_BASELINE:
+		    align = BASELINE; break;
+		case CSS_VAL_TEXT_BOTTOM:
+		    align = TEXT_BOTTOM; break;
+		case CSS_VAL_TEXT_TOP: 
+		    align = TEXT_TOP; break;
+		case CSS_VAL_SUB:
+		    align = SUB; break;
+		case CSS_VAL_SUPER:
+		    align = SUPER; break;
+		case CSS_VAL__KONQ_BASELINE_MIDDLE:
+		    align = BASELINE_MIDDLE; break;
+		default:
+		    return;
 	    }
 	  style->setVerticalAlign(align);
 	  return;

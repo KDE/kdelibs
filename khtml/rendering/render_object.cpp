@@ -731,7 +731,7 @@ short RenderObject::verticalPositionHint() const
     if ( va == LENGTH ) {
 	return -style()->verticalAlignLength().width( lineHeight() );
     }
-    if ( !parent()->isInline() )
+    if ( !parent()->childrenInline() )
 	return 0;
     int vpos = parent()->verticalPositionHint();
     // ### don't allow elements nested inside text-top to have a different valignment. it completely fucks up the
@@ -744,14 +744,17 @@ short RenderObject::verticalPositionHint() const
 	vpos += f.pixelSize()/5 + 1;
     else if ( va == SUPER )
 	vpos -= f.pixelSize()/3 + 1;
-    else if ( va == TEXT_TOP )
-	vpos += -parent()->baselinePosition() + baselinePosition();
-    else if ( va == MIDDLE ) {
+    else if ( va == TEXT_TOP ) {
+	vpos += -QFontMetrics(f).ascent() + baselinePosition();
+    } else if ( va == MIDDLE ) {
 	QRect b = QFontMetrics(f).boundingRect('x');
 	vpos += -b.height()/2 - contentHeight()/2 + baselinePosition();
-    } else if ( va == TEXT_BOTTOM )
-        vpos += parent()->contentHeight() - parent()->baselinePosition()
-		+ contentHeight() - baselinePosition();
+    } else if ( va == TEXT_BOTTOM ) {
+	if ( parent()->isInline() )
+	    vpos += parent()->contentHeight() - parent()->baselinePosition();
+	vpos += contentHeight() - baselinePosition();
+    } else if ( va == BASELINE_MIDDLE ) 
+	vpos += - contentHeight()/2 + baselinePosition();
     return vpos;
 }
 

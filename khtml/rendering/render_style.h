@@ -289,7 +289,7 @@ enum EOverflow {
 
 enum EVerticalAlign {
     BASELINE, MIDDLE, SUB, SUPER, TEXT_TOP, 
-    TEXT_BOTTOM, TOP, BOTTOM, LENGTH
+    TEXT_BOTTOM, TOP, BOTTOM, BASELINE_MIDDLE, LENGTH
 };
 
 enum EClear{

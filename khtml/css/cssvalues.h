@@ -79,7 +79,7 @@ DOM::DOMString getValueName(unsigned short id);
 #define CSS_VAL_TEXT_BOTTOM 68
 #define CSS_VAL_TOP 69
 #define CSS_VAL_BOTTOM 70
-#define CSS_VAL_TEXTTOP 71
+#define CSS_VAL__KONQ_BASELINE_MIDDLE 71
 #define CSS_VAL_LEFT 72
 #define CSS_VAL_RIGHT 73
 #define CSS_VAL_CENTER 74

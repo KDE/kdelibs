@@ -138,25 +138,10 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value());
         break;
     case ATTR_ALIGN:
-        // vertical alignment with respect to the current baseline of the text
-        // right or left means floating images
-        if ( strcasecmp( attr->value(), "left" ) == 0 )
-        {
-            addCSSProperty(CSS_PROP_FLOAT, attr->value());
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_TOP);
-        }
-        else if ( strcasecmp( attr->value(), "right" ) == 0 )
-        {
-            addCSSProperty(CSS_PROP_FLOAT, attr->value());
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_TOP);
-        }
-        else if( strcasecmp( attr->value(), "center") == 0)
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, CSS_VAL_MIDDLE);
-        else
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
-        break;
+	addHTMLAlignment( attr->value() );
+	break;
     case ATTR_VALIGN:
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
         break;
     case ATTR_USEMAP:
         if ( attr->value()[0] == '#' )
