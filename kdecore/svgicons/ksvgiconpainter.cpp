@@ -2166,6 +2166,10 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
 
+				// Spec: radii are nonnegative numbers
+				rx = fabs(rx);
+				ry = fabs(ry);
+
 				d->helper->calculateArc(true, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
 
 				lastCommand = 'a';
@@ -2180,6 +2184,10 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 				sweep = tox == 1;
 				ptr = getCoord(ptr, tox);
 				ptr = getCoord(ptr, toy);
+
+				// Spec: radii are nonnegative numbers
+				rx = fabs(rx);
+				ry = fabs(ry);
 
 				d->helper->calculateArc(false, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
 
