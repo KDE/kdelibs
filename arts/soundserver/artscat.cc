@@ -39,7 +39,7 @@ int cfgSamplingRate = 44100;
 int cfgBits = 16;
 int cfgChannels = 2;
 
-class Sender :	public ByteSoundProducer_skel,
+class Sender :	public ByteSoundProducerV2_skel,
 				public StdSynthModule,
 				public IONotify
 {
@@ -224,7 +224,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ByteSoundProducer sender = ByteSoundProducer::_from_base(new Sender(infile,server.minStreamBufferTime()));
+	ByteSoundProducerV2 sender = ByteSoundProducerV2::_from_base(new Sender(infile,server.minStreamBufferTime()));
 	server.attach(sender);
 	sender.start();
 	dispatcher.run();

@@ -416,7 +416,7 @@ public:
 	}
 };
 
-class Sender :	public ByteSoundProducer_skel,
+class Sender :	public ByteSoundProducerV2_skel,
 				public StdSynthModule,
 				virtual public Stream
 {
@@ -424,7 +424,7 @@ class Sender :	public ByteSoundProducer_skel,
 	 * FIXME: bsWrapper is a more or less ugly trick to be able to use
 	 * this object although not using smartwrappers to access it
 	 */
-	ByteSoundProducer bsWrapper;
+	ByteSoundProducerV2 bsWrapper;
 
 protected:
 	virtual void attach()
@@ -454,7 +454,7 @@ public:
 	Sender(SoundServer server, int rate, int bits, int channels,
 		string name) : Stream( server, rate, bits, channels, name)
 	{
-		bsWrapper = ByteSoundProducer::_from_base(this);
+		bsWrapper = ByteSoundProducerV2::_from_base(this);
 	}
 
 	virtual ~Sender() {
@@ -506,7 +506,7 @@ public:
 			server.detach(bsWrapper);
 		}
 		// similar effect like "delete this;"		
-		bsWrapper = ByteSoundProducer::null();
+		bsWrapper = ByteSoundProducerV2::null();
 	}
 
 	int write(const mcopbyte *data, int size)

@@ -90,7 +90,9 @@ PlayStreamJob::PlayStreamJob(ByteSoundProducer bsp) : sender(bsp)
 	convert.samplingRate(samplingRate);
 	convert.channels(channels);
 	convert.bits(bits);
-	out.title(sender.title());
+	ByteSoundProducerV2 senderv2 = DynamicCast(sender);
+	if(!senderv2.isNull())
+		out.title(senderv2.title());
 
 	connect(sender,"outdata",convert,"indata");
 	connect(convert,out);

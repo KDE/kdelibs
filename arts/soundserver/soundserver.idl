@@ -65,9 +65,17 @@ interface ByteSoundProducer : SynthModule
 	readonly attribute long samplingRate;
 	readonly attribute long channels;
 	readonly attribute long bits;
-	readonly attribute string title;
 
 	async out byte stream outdata;
+};
+
+/**
+ * V2 version of the ByteSoundProducer interface that implements the title
+ * attribute
+ */
+interface ByteSoundProducerV2 : ByteSoundProducer
+{
+	readonly attribute string title;
 };
 
 /**
