@@ -47,7 +47,7 @@ void KNSBookmarkImporterImpl::parse()
 
     if(f.open(IO_ReadOnly)) {
 
-        static const int g_lineLimit = 4096;
+        static const int g_lineLimit = 16*1024;
         QCString s(g_lineLimit);
         // skip header
         while(f.readLine(s.data(), g_lineLimit) >= 0 && !s.contains("<DL>"));

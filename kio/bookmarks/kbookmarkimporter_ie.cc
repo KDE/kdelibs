@@ -34,13 +34,13 @@
 
 /* antlarr: KDE 4: Make them const QString & */
 void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString name ) {
-    static const int g_lineLimit = 4096;
+    static const int g_lineLimit = 16*1024;
 
     QFile f(filename);
 
     if(f.open(IO_ReadOnly)) {
 
-        QCString s(4096);
+        QCString s(g_lineLimit);
 
         while(f.readLine(s.data(), g_lineLimit)>=0) {
             if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.

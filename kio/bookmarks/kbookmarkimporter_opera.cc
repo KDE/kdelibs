@@ -46,9 +46,10 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
 
    int lineno = 0;
    QString url, name, type;
-   QCString line(4096);
+   static const int g_lineLimit = 16*1024; 
+   QCString line(g_lineLimit);
 
-   while ( file.readLine(line.data(), 4096) >=0 ) {
+   while ( file.readLine(line.data(), g_lineLimit) >=0 ) {
       lineno++;
     
       // skip lines that didn't fit in buffer and first two headers lines 
