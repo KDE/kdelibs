@@ -679,8 +679,8 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 
 QDate KLocale::readDate(const QString &str) const
 {
-	QString fmt(_datefmtshort);
 	QDate date;
+	QString fmt(_datefmtshort);
 	QChar	c;
 	int	i;
 	int day = 0, month = 0, year = 0;
@@ -697,7 +697,7 @@ QDate KLocale::readDate(const QString &str) const
 				while (str.length() > strpos && str.at(strpos).isSpace())
 					strpos++;
 			else if (c != str.at(strpos++))
-				return date;
+				goto error;
 			continue;
 		}
 
@@ -706,14 +706,14 @@ QDate KLocale::readDate(const QString &str) const
 		case 'd':
 		case 'e':
 			if (!str.at(strpos).isDigit())
-				return date;
+				goto error;
 
 			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
 				i *= 10;
 				i += str.at(strpos) - '0';
 			}
 			if (i > 31)
-				return date;
+				goto error;
 
 			day = i;
 
@@ -725,14 +725,14 @@ QDate KLocale::readDate(const QString &str) const
 		case 'n':
 		case 'm':
 			if (!str.at(strpos).isDigit())
-				return date;
+				goto error;
 
 			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
 				i *= 10;
 				i += str.at(strpos) - '0';
 			}
 			if (i < 1 || i > 12)
-				return date;
+				goto error;
 
 			month = i;
 
@@ -747,7 +747,7 @@ QDate KLocale::readDate(const QString &str) const
 				break;
 
 			if (!str.at(strpos).isDigit())
-				return date;
+				goto error;
 
 			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
 				i *= 10;
@@ -758,7 +758,7 @@ QDate KLocale::readDate(const QString &str) const
 				i += 1900;
 			}
 			if (i < 0)
-				return date;
+				goto error;
 
 			year = i;
 
@@ -769,6 +769,9 @@ QDate KLocale::readDate(const QString &str) const
 		}
 	}
 	date.setYMD(year, month, day);
+
+error:
+        // if there was an error date will be zero, if not it would be ok
 	return date;
 }
 
