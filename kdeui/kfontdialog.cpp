@@ -23,6 +23,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.16  1998/01/21 15:06:57  jacek
+    Added real KCharsets support
+
     Revision 1.14  1997/11/20 22:36:48  kalle
     - Removed some more hardcoded colors
     - A patch from Bernd regarding KProgress
@@ -111,10 +114,16 @@
 
 #define YOFFSET  5
 #define XOFFSET  5
-#define LABLE_LENGTH  40
+#define LABLE_LENGTH  75
 #define LABLE_HEIGHT 20
-#define SIZE_X 400
+#define SIZE_X 500
 #define SIZE_Y 280
+#define X1 20
+#define X2 100
+#define COMBOWIDTH 150
+#define X3 270
+#define X4 335
+
 #define FONTLABLE_LENGTH 60
 #define COMBO_BOX_HEIGHT 28
 #define COMBO_ADJUST 3
@@ -140,71 +149,69 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
   family_label = new QLabel(this,"family");
   family_label->setText( klocale->translate("Family:") );
-  family_label->setGeometry(3*XOFFSET,8*YOFFSET -5,LABLE_LENGTH,LABLE_HEIGHT);
+  family_label->setGeometry(X1,8*YOFFSET -5,LABLE_LENGTH,LABLE_HEIGHT);
 
   actual_family_label = new QLabel(this,"afamily");
   actual_family_label->setText(klocale->translate("Family:"));
-  actual_family_label->setGeometry(3*XOFFSET,200,50,LABLE_HEIGHT);
+  actual_family_label->setGeometry(X1,200,50,LABLE_HEIGHT);
 
   actual_family_label_data = new QLabel(this,"afamilyd");
-  actual_family_label_data->setGeometry(3*XOFFSET +60 ,200,110,LABLE_HEIGHT);
+  actual_family_label_data->setGeometry(X2 ,200,110,LABLE_HEIGHT);
 
   charset_label = new QLabel(this,"charset");
   charset_label->setText(klocale->translate("Charset:"));
-  charset_label->setGeometry(3*XOFFSET,
+  charset_label->setGeometry(X1,
     			    11*YOFFSET - COMBO_ADJUST +65 , LABLE_LENGTH +10,
 			     LABLE_HEIGHT);
 
   actual_charset_label = new QLabel(this,"acharset");
   actual_charset_label->setText(klocale->translate("Charset:"));
-  actual_charset_label->setGeometry(3*XOFFSET,200 - LABLE_HEIGHT,50,LABLE_HEIGHT);
+  actual_charset_label->setGeometry(X1,200 - LABLE_HEIGHT,50,LABLE_HEIGHT);
 
   actual_charset_label_data = new QLabel(this,"acharsetd");
-  actual_charset_label_data->setGeometry(3*XOFFSET +60 ,200 - LABLE_HEIGHT,110,LABLE_HEIGHT);
+  actual_charset_label_data->setGeometry(X2 ,200 - LABLE_HEIGHT,110,LABLE_HEIGHT);
 
   size_label = new QLabel(this,"size");
   size_label->setText(klocale->translate("Size:"));
-  size_label->setGeometry(6*XOFFSET + LABLE_LENGTH + 12*XOFFSET +2* FONTLABLE_LENGTH,
+  size_label->setGeometry(X3,
 			  8*YOFFSET -5,LABLE_LENGTH,LABLE_HEIGHT);
 
   actual_size_label = new QLabel(this,"asize");
   actual_size_label->setText(klocale->translate("Size:"));
-  actual_size_label->setGeometry(3*XOFFSET,200 +LABLE_HEIGHT ,
+  actual_size_label->setGeometry(X1,200 + LABLE_HEIGHT,
 				 LABLE_LENGTH +10,LABLE_HEIGHT);
 
   actual_size_label_data = new QLabel(this,"asized");
-  actual_size_label_data->setGeometry(3*XOFFSET +60 ,200 + LABLE_HEIGHT
-				      ,110,LABLE_HEIGHT);
+  actual_size_label_data->setGeometry(X2, 200 + LABLE_HEIGHT ,110,LABLE_HEIGHT);
 
   weight_label = new QLabel(this,"weight");
   weight_label->setText(klocale->translate("Weight:"));
-  weight_label->setGeometry(3*XOFFSET,15*YOFFSET + LABLE_HEIGHT -20 
+  weight_label->setGeometry(X1, 11*YOFFSET + LABLE_HEIGHT  
 			  ,LABLE_LENGTH,LABLE_HEIGHT);
 
   actual_weight_label = new QLabel(this,"aweight");
   actual_weight_label->setText(klocale->translate("Weight:"));
-  actual_weight_label->setGeometry(3*XOFFSET,200 + 2*LABLE_HEIGHT ,
+  actual_weight_label->setGeometry(X1 , 200 + 2*LABLE_HEIGHT,
 				 LABLE_LENGTH +10,LABLE_HEIGHT);
 
   actual_weight_label_data = new QLabel(this,"aweightd");
-  actual_weight_label_data->setGeometry(3*XOFFSET +60 ,200 + 2*LABLE_HEIGHT
+  actual_weight_label_data->setGeometry(X2,200 + 2*LABLE_HEIGHT
 				      ,110,LABLE_HEIGHT);
 
   style_label = new QLabel(this,"style");
   style_label->setText(klocale->translate("Style:"));
-  style_label->setGeometry(6*XOFFSET + LABLE_LENGTH + 12*XOFFSET + 
-			   2*FONTLABLE_LENGTH,
-			   15*YOFFSET + LABLE_HEIGHT  -20
+  style_label->setGeometry(X3,
+			15*YOFFSET + LABLE_HEIGHT  -20
 			 ,LABLE_LENGTH,
 			   LABLE_HEIGHT);
 
   actual_style_label = new QLabel(this,"astyle");
   actual_style_label->setText(klocale->translate("Style:"));
-  actual_style_label->setGeometry(3*XOFFSET,200 + 3*LABLE_HEIGHT ,
+  actual_style_label->setGeometry(X1 ,200 + 3*LABLE_HEIGHT,
 				 LABLE_LENGTH +10,LABLE_HEIGHT);
 
   actual_style_label_data = new QLabel(this,"astyled");
-  actual_style_label_data->setGeometry(3*XOFFSET +60 ,200 + 3*LABLE_HEIGHT
+  actual_style_label_data->setGeometry(X2,200 + 3*LABLE_HEIGHT
 				      ,110,LABLE_HEIGHT);
 
 
@@ -212,8 +219,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   family_combo->setInsertionPolicy(QComboBox::NoInsertion);
 
 
-  family_combo->setGeometry(6*XOFFSET + LABLE_LENGTH
-			    ,8*YOFFSET - COMBO_ADJUST -5 ,4* LABLE_LENGTH,COMBO_BOX_HEIGHT);
+  family_combo->setGeometry(X2 ,
+			    8*YOFFSET - COMBO_ADJUST -5 ,
+			    COMBOWIDTH,COMBO_BOX_HEIGHT);
+
   connect( family_combo, SIGNAL(activated(const char *)),
 	   SLOT(family_chosen_slot(const char *)) );
   //   QToolTip::add( family_combo, "Select Font Family" );
@@ -235,10 +244,12 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
 
   charset_combo = new QComboBox( TRUE, this, klocale->translate("Charset") );
-  charset_combo->setGeometry(6*XOFFSET + LABLE_LENGTH
+  charset_combo->setGeometry(X2
 			    ,11*YOFFSET - COMBO_ADJUST +60 ,
-			     4* LABLE_LENGTH,COMBO_BOX_HEIGHT);
+			     COMBOWIDTH,COMBO_BOX_HEIGHT);
+
   KCharsets *charsets=KApplication::getKApplication()->getCharsets();
+
   QStrList lst=charsets->displayable(selFont.family());
   for(const char * chset=lst.first();chset;chset=lst.next())
       charset_combo->insertItem( chset );
@@ -280,9 +291,11 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
   //  size_combo->setInsertionPolicy(QComboBox::NoInsertion);
 
-  size_combo->setGeometry(10*XOFFSET + 6*LABLE_LENGTH
+  size_combo->setGeometry(X4
 			    ,8*YOFFSET - COMBO_ADJUST -5
-			  ,2*LABLE_LENGTH + 20,COMBO_BOX_HEIGHT);
+			  ,COMBOWIDTH,
+			  COMBO_BOX_HEIGHT);
+
   connect( size_combo, SIGNAL(activated(const char *)),
 	   SLOT(size_chosen_slot(const char *)) );
   //  QToolTip::add( size_combo, "Select Font Size in Points" );
@@ -291,9 +304,11 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   weight_combo = new QComboBox( TRUE, this, klocale->translate("Weight") );
   weight_combo->insertItem( klocale->translate("normal") );
   weight_combo->insertItem( klocale->translate("bold") );
-  weight_combo->setGeometry(6*XOFFSET + LABLE_LENGTH
+  weight_combo->setGeometry( X2
 			    ,19*YOFFSET - COMBO_ADJUST -20
-			    ,4*LABLE_LENGTH,COMBO_BOX_HEIGHT);
+			    ,COMBOWIDTH,
+			    COMBO_BOX_HEIGHT);
+
   weight_combo->setInsertionPolicy(QComboBox::NoInsertion);
   connect( weight_combo, SIGNAL(activated(const char *)),
 	   SLOT(weight_chosen_slot(const char *)) );
@@ -302,9 +317,11 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   style_combo = new QComboBox( TRUE, this, klocale->translate("Style") );
   style_combo->insertItem( klocale->translate("roman") );
   style_combo->insertItem( klocale->translate("italic") );
-  style_combo->setGeometry(10*XOFFSET + 6*LABLE_LENGTH
+  style_combo->setGeometry(X4
 			    ,19*YOFFSET- COMBO_ADJUST - 20
-			   ,2*LABLE_LENGTH + 20,COMBO_BOX_HEIGHT);
+			   ,COMBOWIDTH,
+			   COMBO_BOX_HEIGHT);
+
   style_combo->setInsertionPolicy(QComboBox::NoInsertion);
   connect( style_combo, SIGNAL(activated(const char *)),
 	   SLOT(style_chosen_slot(const char *)) );
@@ -324,7 +341,7 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
   example_label->setFont(selFont);
 
-  example_label->setGeometry(200,190,190, 80);
+  example_label->setGeometry(230,190,230, 80);
   example_label->setAlignment(AlignCenter);
   //  example_label->setBackgroundColor(white);
   example_label->setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
@@ -335,8 +352,8 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   connect(this,SIGNAL(fontSelected( const QFont&  )),
 	  this,SLOT(display_example( const QFont&)));
 
-  this->setMaximumSize(405,330);
-  this->setMinimumSize(405,330);
+  this->setMaximumSize(SIZE_X + XOFFSET,330);
+  this->setMinimumSize(SIZE_X + XOFFSET,330);
 
   // let's initialize the display if possible
   if(family_combo->count() != 0){

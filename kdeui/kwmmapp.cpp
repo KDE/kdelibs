@@ -1,6 +1,6 @@
 /*  
 
-    $Id:$
+    $Id$
 
     This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Ettrich (ettrich@kde.org)
@@ -21,7 +21,9 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 
-    $Log:$
+    $Log$
+    Revision 1.13  1998/03/08 05:51:02  wuebben
+    Bernd: several small fixes
 
 
 */
