@@ -4,18 +4,10 @@
 #ifndef TEST_H
 #define TEST_H
 
-// misc tests:
-// - writeType
-// skel:
-// - non "CLASS" main elements
-// - namespacing stuff in skel
-// - qual / const
-// - does dispatcher cope with unnamed args?
+// still todo:
 // stub:
-// - includes to super relationship, a bit much to test, needs multiple files?
+//    - includes to super relationship, a bit much to test, needs multiple files?
 
-// test for k_dcop 
-// NOTE - non hashing test, therefore use < 7 function
 class DefaultTest : public QObject, virtual public DCOPObject
 {
    Q_OBJECT
@@ -28,12 +20,26 @@ k_dcop:
    void argsTest( QString filename, QString url );
    void unNamedArgsTest( QString, QString );
 
+   void constTest( QString, QString ) const;
+   QStringList writeTypeTest( const QString &, QPtrList<int> );
+
    void voidReturnType( QString filename, QString url, QString text, QString address, QString icon );
    QString nonVoidReturnType( QString filename, QString text, QString address );
    int intReturnType( QString filename, QString text, QString address );
 
    ASYNC asyncTest( QString filename, QString text, QString address );
 };
+
+namespace TestNamespace {
+   class NamespaceTest
+   {
+      K_DCOP
+   public:
+      NamespaceTest();
+   k_dcop:
+      void function1( QString filename, QString url, QString text, QString address, QString icon );
+   };
+}
 
 class NoSuper
 {
@@ -61,7 +67,16 @@ public:
    void nonDcopFunction( QString filename, QString url, QString text, QString address, QString icon );
 };
 
-// test for useHashing
+class NonHashingTest : public QObject, virtual public DCOPObject
+{
+   Q_OBJECT
+   K_DCOP
+public:
+   NonHashingTest();
+k_dcop:
+   void function1( QString );
+};
+
 class HashingTest : public QObject, virtual public DCOPObject
 {
    Q_OBJECT
@@ -79,7 +94,6 @@ k_dcop:
    void function8( QString, QString, QString, QString, QString, QString, QString, QString );
 };
 
-// test for k_dcop_signals
 class SignalTest : virtual public DCOPObject
 {
    K_DCOP
