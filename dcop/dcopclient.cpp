@@ -440,7 +440,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 					static_cast<IcePointer>(this), False, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
         if (bClearServerAddr) {
-           free((char *)d->serverAddr);
+           delete [] d->serverAddr;
            d->serverAddr = 0;
         }
 	emit attachFailed(errBuf);
@@ -462,14 +462,14 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	setupstat == IceProtocolSetupIOError) {
 	IceCloseConnection(d->iceConn);
         if (bClearServerAddr) {
-           free((char *)d->serverAddr);
+           delete [] d->serverAddr;
            d->serverAddr = 0;
         }
 	emit attachFailed(errBuf);
 	return false;
     } else if (setupstat == IceProtocolAlreadyActive) {
         if (bClearServerAddr) {
-           free((char *)d->serverAddr);
+           delete [] d->serverAddr;
            d->serverAddr = 0;
         }
 	/* should not happen because 3rd arg to IceOpenConnection was 0. */
@@ -480,7 +480,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 
     if (IceConnectionStatus(d->iceConn) != IceConnectAccepted) {
         if (bClearServerAddr) {
-           free((char *)d->serverAddr);
+           delete [] d->serverAddr;
            d->serverAddr = 0;
         }
 	emit attachFailed("DCOP server did not accept the connection.");
