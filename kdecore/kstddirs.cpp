@@ -600,20 +600,19 @@ void KStandardDirs::addKDEDefaults()
     QStringList kdedirList;
 
     const char *kdedirs = getenv("KDEDIRS");
-    if (kdedirs)
+    if (kdedirs && strlen(kdedirs))
 	tokenize(kdedirList, kdedirs, ":");
     else {
 	QString kdedir = getenv("KDEDIR");
 	if (!kdedir.isEmpty())
 	  kdedirList.append(kdedir);
+        addPrefix(QDir::homeDirPath() + "/.kde/");
     }
+    kdedirList.append(KDEDIR);  // Location of kdelibs.
 
-    kdedirList.append(KDEDIR);
-    addPrefix(localkdedir());
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)
 	addPrefix(*it);
-
 
     uint index = 0;
     while (types[index] != 0) {
@@ -667,10 +666,8 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
 QString KStandardDirs::localkdedir() const
 {
-    // we don't want to hardcode paths, but we shouldn't
-    // make it too flexible, so that applications find the
-    // files they saved
-    return QDir::homeDirPath() + "/.kde/";
+    // The last dir in KDEDIRS is the local dir.
+    return prefixes.last();
 }
 
 // just to make code more readable without macros
