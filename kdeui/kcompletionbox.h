@@ -1,0 +1,85 @@
+#ifndef KCOMPLETIONBOX_H
+#define KCOMPLETIONBOX_H
+
+#include <qevent.h>
+#include <qstringlist.h>
+
+#include <klistbox.h>
+
+/**
+ * A little utility class for "completion-widgets", like KLineEdit or
+ * KComboBox. KCompletionBox is a listbox, displayed as a rectangle without
+ * any window-decoration, usually directly under the lineedit or combobox.
+ * It is filled with all possible matches for a completion, so the user
+ * can select the one he wants.
+ *
+ * It is used when KGlobalSettings::Completion == CompletionPopup.
+ *
+ * @short A helper widget for "completion-widgets" (KLineEdit, KComboBox))
+ * @author Carsten Pfeiffer <pfeiffer@kde.org>
+ */
+class KCompletionBox : public KListBox
+{
+    Q_OBJECT
+
+public:
+    /**
+     * Constructs a KCompletionBox.
+     *
+     * Notice: the parent needs to be always 0L,
+     * so you can't specify it in the constructor. Because of that, Qt's
+     * auto-deletion does not take place, so you have to explicitly delete
+     * this widget when you don't need it anymore.
+     */
+    KCompletionBox( const char *name = 0 );
+
+public slots:
+    /**
+     * @returns a list of all items currently in the box.
+     */
+    QStringList items() const;
+
+    /**
+     * Adjusts the size of the box to fit the width of @p relativeWidget
+     * and pops it up at the most appropriate place, relative to
+     * @p relativeWidget. Depending on the screensize and the position of
+     * relativeWidget, this may be a different place, however the default is
+     * to pop it up and the lower left corner of relativeWidget.
+     *
+     * Make sure to hide() the box when appropriate.
+     */
+    virtual void popup( QWidget *relativeWidget );
+
+signals:
+    /**
+     * Emitted when an item was selected, contains the text of the selected
+     * item.
+     */
+    void activated( const QString& );
+
+protected:
+    /**
+     * Reimplemented from KListBox to get events from the viewport (to hide
+     * this widget on mouse-click.
+     */
+    virtual bool eventFilter( QObject *, QEvent * );
+
+    /**
+     * Reimplemented to hide() on Escape-keypress
+     */
+    virtual void keyPressEvent( QKeyEvent * );
+
+protected slots:
+    /**
+     * Called when an item was activated. Hides the widget and emits
+     * @ref activated() with the item.
+     */
+    virtual void slotActivated( QListBoxItem * );
+
+private slots:
+    void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
+
+};
+
+
+#endif // KCOMPLETIONBOX_H
