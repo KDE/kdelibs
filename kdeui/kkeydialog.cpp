@@ -359,8 +359,8 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
     (*it).aConfigKeyCode = (*it).aCurrentKeyCode;
 
     QListViewItem * s = new QListViewItem(d->wList,
-                            KAccel::keyToString((*it).aConfigKeyCode),
-                                          (*it).descr);
+                                          (*it).descr,
+                                          KAccel::keyToString((*it).aConfigKeyCode));
     d->actionMap[s] = it;
   }
 
@@ -728,11 +728,6 @@ void KKeyChooser::allDefault()
         at = at->nextSibling();
     }
     emit keyChange();
-}
-
-QListViewItem *KKeyChooser::item( int keyCode, const QString& entryKey ) const
-{
-    return new QListViewItem(d->wList, entryKey, KAccel::keyToString(keyCode, true));
 }
 
 void KKeyChooser::shiftClicked()

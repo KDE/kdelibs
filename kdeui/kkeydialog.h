@@ -102,7 +102,6 @@ protected:
 
 protected:
 
-    QListViewItem *item( int keyCode, const QString& entryKey ) const;
     bool isKeyPresent(int kcode );
     void setKey( int kCode );
 
