@@ -226,7 +226,9 @@ or XML documents can be found in the CSS2 specs.
 <p>
 Once we have this list, we can get a <a
 href="rendering/render_style.h">RenderStyle object</a>
-for every DOM element from the <a href="css/cssstyleselector.h">CSSStyleSelector</a>.
+for every DOM element from the <a
+href="css/cssstyleselector.h">CSSStyleSelector</a> by calling
+"styleForElement(DOM::ElementImpl *".
 The style object describes in a compact form all the
 <a href="css/css_properties.in">CSS properties</a>
 that should get applied to the Node.

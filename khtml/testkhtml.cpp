@@ -49,9 +49,10 @@ int main(int argc, char *argv[])
 
     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
     dtv->show();
+    dtv->setGeometry(5, 0, 200, 800);
 
     toplevel->setCentralWidget( doc->widget() );
-    toplevel->resize(800,800);
+    toplevel->setGeometry(215, 0, 800, 800);
 
     toplevel->guiFactory()->addClient( doc );
 
@@ -76,13 +77,9 @@ int main(int argc, char *argv[])
 
     doc->openURL( KURL( argv[1] ) );
 
-    QPushButton *p = new QPushButton("&Quit", 0);
-    QWidget::connect(p, SIGNAL(pressed()), &a, SLOT(quit()));
-    p->show();
-
     int ret = a.exec();
 
-    delete p;
+    delete dtv;
     delete doc;
 
     khtml::Cache::clear();
