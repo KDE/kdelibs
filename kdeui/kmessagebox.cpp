@@ -3,7 +3,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; version 2 
+    License as published by the Free Software Foundation; version 2
     of the License.
 
     This library is distributed in the hope that it will be useful,
@@ -36,8 +36,8 @@
 #include <kmessagebox.h>
 #include <qlayout.h>
 
- /** 
-  * Easy MessageBox Dialog. 
+ /**
+  * Easy MessageBox Dialog.
   *
   * Provides convenience functions for some i18n'ed standard dialogs.
   *
@@ -45,13 +45,15 @@
   * @version $Id$
   */
 
-int   
+#warning FIXME - Implement Notification
+
+int
 KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &caption,
-                           const QString &buttonYes, 
-                           const QString &buttonNo, bool notify)
+                           const QString &buttonYes,
+                           const QString &buttonNo, bool /*notify*/)
 {
-    return questionYesNoList( parent, text, QStringList(), caption, 
+    return questionYesNoList( parent, text, QStringList(), caption,
 	       	              buttonYes, buttonNo );
 }
 
@@ -60,59 +62,59 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                            const QStringList &strlist,
                            const QString &caption,
                            const QString &buttonYes,
-                           const QString &buttonNo, bool notify)
+                               const QString &buttonNo, bool /*notify*/)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
                        KDialogBase::Yes | KDialogBase::No,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "questionYesNo", true, true,
                        buttonYes, buttonNo);
- 
+
     QVBox *topcontents = new QVBox (&dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
     topcontents->setMargin(KDialog::marginHint()*2);
     QWidget *contents = new QWidget(topcontents);
     QHBoxLayout * lay = new QHBoxLayout(contents);
     lay->setSpacing(KDialog::spacingHint()*2);
- 
+
     lay->addStretch(1);
     QLabel *label1 = new QLabel( contents );
     label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
     lay->add( label1 );
     lay->add( new QLabel( text, contents ) );
     lay->addStretch(1);
- 
+
     if (!strlist.isEmpty())
     {
       KListBox *listbox=new KListBox( topcontents );
       listbox->insertStringList( strlist );
     }
- 
+
     dialog.setMainWidget(topcontents);
     dialog.enableButtonSeparator(false);
- 
+
     int result = dialog.exec();
- 
+
     switch( result )
     {
       case KDialogBase::Yes:
          return Yes;
- 
+
       case KDialogBase::No:
-         return No;  
- 
+         return No;
+
       default: // Huh?
          break;
     }
- 
+
     return Yes; // Default
 }
 
-int 
+int
 KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &caption,
-                          const QString &buttonYes,  
-                          const QString &buttonNo, bool notify)
+                          const QString &buttonYes,
+                          const QString &buttonNo, bool /*notify*/)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
@@ -134,7 +136,7 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
- 
+
     int result = dialog.exec();
 
     switch( result )
@@ -144,7 +146,7 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
 
       case KDialogBase::No:
          return No;
-      
+
       default: // Huh?
          break;
     }
@@ -152,10 +154,10 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
     return No; // Default
 }
 
-int 
+int
 KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
                           const QString &caption,
-                          const QString &buttonContinue, bool notify)
+                                   const QString &buttonContinue, bool /*notify*/)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
@@ -177,7 +179,7 @@ KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
- 
+
     int result = dialog.exec();
 
     switch( result )
@@ -187,7 +189,7 @@ KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
 
       case KDialogBase::No:
          return Cancel;
-      
+
       default: // Huh?
          break;
     }
@@ -196,11 +198,11 @@ KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
 }
 
 
-int 
+int
 KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                                 const QString &caption,
-                                const QString &buttonYes,  
-                                const QString &buttonNo, bool notify)
+                                const QString &buttonYes,
+                                const QString &buttonNo, bool /*notify*/)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
@@ -222,7 +224,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
- 
+
     int result = dialog.exec();
 
     switch( result )
@@ -232,7 +234,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
 
       case KDialogBase::No:
          return No;
-      
+
       case KDialogBase::Cancel:
          return Cancel;
 
@@ -245,7 +247,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
 
 void
 KMessageBox::error(QWidget *parent,  const QString &text,
-                   const QString &caption, bool notify)
+                   const QString &caption, bool /*notify*/)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Error") : caption,
                        KDialogBase::Yes,
@@ -267,13 +269,13 @@ KMessageBox::error(QWidget *parent,  const QString &text,
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
- 
+
     dialog.exec();
 }
 
 void
 KMessageBox::sorry(QWidget *parent, const QString &text,
-                   const QString &caption, bool notify)
+                   const QString &caption, bool /*notify*/)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Sorry") : caption,
                        KDialogBase::Yes,
@@ -295,19 +297,19 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
- 
+
     dialog.exec();
 }
 
 void
 KMessageBox::information(QWidget *parent,const QString &text,
-                   const QString &caption, const QString &dontShowAgainName, bool notify)
+                         const QString &caption, const QString &dontShowAgainName, bool /*notify*/)
 {
     KConfig *config = 0;
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
     bool showMsg = true;
     QCheckBox *checkbox = 0;
-    
+
     if (!dontShowAgainName.isEmpty())
     {
        config = kapp->config();
@@ -348,12 +350,12 @@ KMessageBox::information(QWidget *parent,const QString &text,
 
     dialog.setMainWidget(contents);
     dialog.enableButtonSeparator(false);
- 
+
     dialog.exec();
 
     if (!dontShowAgainName.isEmpty())
     {
-       showMsg = !checkbox->isChecked(); 
+       showMsg = !checkbox->isChecked();
        if (!showMsg)
        {
           KConfigGroupSaver saver( config, grpNotifMsgs );
@@ -376,7 +378,7 @@ KMessageBox::enableAllMessages()
    KConfigGroupSaver saver( config, grpNotifMsgs );
 
    typedef QMap<QString, QString> configMap;
-   
+
    configMap map = config->entryMap(grpNotifMsgs);
 
    configMap::Iterator it;
@@ -387,7 +389,7 @@ KMessageBox::enableAllMessages()
 
 void
 KMessageBox::about(QWidget *parent, const QString &text,
-                   const QString &caption, bool notify)
+                   const QString &caption, bool /*notify*/)
 {
     QString _caption = caption;
     if (_caption.isEmpty())
@@ -395,7 +397,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
 
     QMessageBox *box = new QMessageBox( _caption, text,
               QMessageBox::Information,
-              QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape, 
+              QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
               0, 0,
               parent, "about" );
 

@@ -101,7 +101,6 @@ void KMenuBar::drawContents(QPainter *p)
         QMenuBar::drawContents(p);
     else{
         int i, x, y, nlitems;
-        bool popupshown;
         QFontMetrics fm = fontMetrics();
         stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
                                d->m_macMode, NULL);
@@ -161,7 +160,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
   if ( obj != d->m_parent )
     return false;
 
-  
+
   // finally, ensure that this is a Show event
   if ( ev->type() != QEvent::Show )
     return false;
