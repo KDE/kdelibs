@@ -29,7 +29,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-
+#if 0
 // defined in qapplication_x11.cpp
 extern Atom	qt_embedded_window;
 extern Atom	qt_embedded_window_take_focus;
@@ -41,6 +41,7 @@ extern Atom	qt_wheel_event;
 extern Atom	qt_unicode_key_press;
 extern Atom	qt_unicode_key_release;
 extern Atom	qt_wm_delete_window;
+#endif
 
 class QXEmbedData
 {
@@ -188,6 +189,7 @@ QXEmbed::~QXEmbed()
 
 
     if ( window != 0 ) {
+#if 0
 	XEvent ev;
 	memset(&ev, 0, sizeof(ev));
 	ev.xclient.type = ClientMessage;
@@ -196,6 +198,7 @@ QXEmbed::~QXEmbed()
 	ev.xclient.format = 32;
 	ev.xclient.data.s[0] = qt_wm_delete_window;
 	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+#endif
     }
     window = 0;
 }
@@ -223,11 +226,11 @@ void QXEmbed::showEvent(QShowEvent*)
 /*!
   Reimplimented to route the keyevents to the embedded window.
  */
-void QXEmbed::keyPressEvent( QKeyEvent *e )
+void QXEmbed::keyPressEvent( QKeyEvent */*e*/ )
 {
     if (!window)
 	return;
-
+#if 0
     XEvent ev;
     QString text = e->text();
     int i = 1;
@@ -249,16 +252,17 @@ void QXEmbed::keyPressEvent( QKeyEvent *e )
 	ev.xclient.data.s[8] = m;
 	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
     } while ( i <= m);
+#endif
 }
 
 /*!
   Reimplimented to route the keyevents to the embedded window.
  */
-void QXEmbed::keyReleaseEvent( QKeyEvent *e )
+void QXEmbed::keyReleaseEvent( QKeyEvent */*e*/ )
 {
     if (!window)
 	return;
-
+#if 0
     XEvent ev;
     QString text = e->text();
     int i = 1;
@@ -280,6 +284,7 @@ void QXEmbed::keyReleaseEvent( QKeyEvent *e )
 	ev.xclient.data.s[8] = m;
 	XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
     } while ( i <= m);
+#endif
 }
 
 /*!
@@ -304,11 +309,12 @@ void QXEmbed::focusOutEvent( QFocusEvent * ){
 /*!
   Reimplimented to route the wheel events to the embedded window.
  */
-void QXEmbed::wheelEvent( QWheelEvent * e)
+void QXEmbed::wheelEvent( QWheelEvent * /*e*/)
 {
     if (!window)
 	return;
 
+#if 0
     XEvent ev;
     memset(&ev, 0, sizeof(ev));
     ev.xclient.type = ClientMessage;
@@ -320,6 +326,7 @@ void QXEmbed::wheelEvent( QWheelEvent * e)
     ev.xclient.data.l[2] = e->delta();
     ev.xclient.data.l[3] = e->state();
     XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
+#endif
 }
 
 
@@ -345,9 +352,11 @@ void QXEmbed::embed(WId w)
     window = w;
     long a = 1;
     window_supports_tab_focus = FALSE;
+#if 0
     XChangeProperty(qt_xdisplay(), w,
 		    qt_embedded_window, XA_CARDINAL, 32, PropModeReplace,
 		    (const unsigned char*)&a, 1);
+#endif
     if ( !has_window )
 	XReparentWindow(qt_xdisplay(), w, winId(), 0, 0);
     QApplication::syncX();
@@ -380,6 +389,7 @@ WId QXEmbed::embeddedWinId() const
 
 void QXEmbed::sendFocusIn()
 {
+#if 0
     XClientMessageEvent client_message;
     client_message.type = ClientMessage;
     client_message.window = window;
@@ -387,10 +397,12 @@ void QXEmbed::sendFocusIn()
     client_message.message_type = qt_embedded_window_focus_in;
     XSendEvent( qt_xdisplay(), client_message.window, FALSE, NoEventMask,
 		(XEvent*)&client_message );
+#endif
 }
 
 void QXEmbed::sendFocusOut()
 {
+#if 0
     XClientMessageEvent client_message;
     client_message.type = ClientMessage;
     client_message.window = window;
@@ -398,6 +410,7 @@ void QXEmbed::sendFocusOut()
     client_message.message_type = qt_embedded_window_focus_out;
     XSendEvent( qt_xdisplay(), client_message.window, FALSE, NoEventMask,
 		(XEvent*)&client_message );
+#endif
 }
 
 
@@ -442,6 +455,7 @@ bool QXEmbed::x11Event( XEvent* e)
 	    XMapRaised(qt_xdisplay(), window );
 	break;
     case ClientMessage:
+#if 0
 	if ( e->xclient.format == 32 && e->xclient.message_type ) {
 	    if  ( e->xclient.message_type == qt_embedded_window_support_tab_focus ) {
 		window_supports_tab_focus = TRUE;
@@ -451,6 +465,7 @@ bool QXEmbed::x11Event( XEvent* e)
 		QWidget::focusNextPrevChild( e->xclient.data.l[0] );
 	    }
 	}
+#endif
     default:
 	break;
     }
