@@ -441,15 +441,16 @@ public:
    * Specify whether to start the command via a shell or directly.
    * The default is to start the command directly.
    * If @p useShell is true @p shell will be used as shell, or
-   * if shell is empty, the standard shell is used.
-   * @p quote A flag indicating whether to quote the arguments.
+   * if shell is empty, /bin/sh will be used.
    *
    * When using a shell, the caller should make sure that all filenames etc.
    * are properly quoted when passed as argument.
    * @see quote()
    * @param useShell true if the command should be started via a shell
    * @param shell the path to the shell that will execute the process, or
-   *              0 to use the standard shell
+   *              0 to use /bin/sh. Use getenv("SHELL") to use the user's
+   *              default shell, but note that doing so is usually a bad idea
+   *              for shell compatibility reasons.
    * @since 3.1
    */
   void setUseShell(bool useShell, const char *shell = 0);
@@ -459,7 +460,7 @@ public:
    * the shell processes it properly. This is e. g. necessary for
    * user-provided file names which may contain spaces or quotes.
    * It also prevents expansion of wild cards and environment variables.
-   * @param arg the argument to quite
+   * @param arg the argument to quote
    * @return the quoted argument
    * @since 3.1
    */
@@ -740,34 +741,6 @@ protected:
    */
   friend class KProcessController;
 
-
-private:
-  /**
-   * Searches for a valid shell. 
-   * Here is the algorithm used for finding an executable shell:
-   *
-   *    @li Try the executable pointed to by the "SHELL" environment
-   *    variable with white spaces stripped off
-   *
-   *    @li If your process runs with uid != euid or gid != egid, a shell
-   *    not listed in /etc/shells will not used.
-   *
-   *    @li If no valid shell could be found, "/bin/sh" is used as a last resort.
-   * @since 3.1
-   */
-  QCString searchShell();
-
-  /**
-   * Used by @ref searchShell in order to find out whether the shell found
-   * is actually executable at all.
-   * @since 3.1
-   */
-  bool isExecutable(const QCString &filename);
-
-  // Disallow assignment and copy-construction
-  KProcess( const KProcess& );
-  KProcess& operator= ( const KProcess& );
-
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
@@ -796,8 +769,7 @@ public:
   /**
    * Constructor
    *
-   * By specifying the name of a shell (like "/bin/bash") you can override
-   * the mechanism for finding a valid shell as described in KProcess::searchShell()
+   * If no shellname is specified, the user's default shell is used.
    */
   KShellProcess(const char *shellname=0);
 
@@ -806,29 +778,13 @@ public:
    */
   ~KShellProcess();
 
-  /**
-   * Starts up the process. -- For a detailed description
-   * have a look at the "start" member function and the detailed
-   * description of @ref KProcess .
-   */
   virtual bool start(RunMode  runmode = NotifyOnExit,
 		  Communication comm = NoCommunication);
 
-  /**
-   * This function can be used to quote an argument string such that
-   * the shell processes it properly. This is e. g. necessary for
-   * user-provided file names which may contain spaces or quotes.
-   * It also prevents expansion of wild cards and environment variables.
-   */
   static QString quote(const QString &arg);
 
 private:
-
   QCString shell;
-
-  // Disallow assignment and copy-construction
-  KShellProcess( const KShellProcess& );
-  KShellProcess& operator= ( const KShellProcess& );
 
 protected:
   virtual void virtual_hook( int id, void* data );

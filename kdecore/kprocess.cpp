@@ -854,61 +854,16 @@ void KProcess::setUseShell(bool useShell, const char *shell)
   if (!d)
     d = new KProcessPrivate;
   d->useShell = useShell;
-  d->shell = shell;
-  if (d->shell.isEmpty())
-     d->shell = searchShell();
+  d->shell = (shell && *shell) ? shell : "/bin/sh";
 }
 
 QString KProcess::quote(const QString &arg)
 {
     QString res = arg;
-    res.replace(QRegExp(QString::fromLatin1("\'")),
-                QString::fromLatin1("'\"'\"'"));
+    res.replace(QString::fromLatin1("\'"), QString::fromLatin1("'\\''"));
     res.prepend('\'');
     res.append('\'');
     return res;
-}
-
-QCString KProcess::searchShell()
-{
-  QCString tmpShell = QCString(getenv("SHELL")).stripWhiteSpace();
-  if (!isExecutable(tmpShell))
-  {
-     tmpShell = "/bin/sh";
-  }
-
-  return tmpShell;
-}
-
-bool KProcess::isExecutable(const QCString &filename)
-{
-  struct stat fileinfo;
-
-  if (filename.isEmpty()) return false;
-
-  // CC: we've got a valid filename, now let's see whether we can execute that file
-
-  if (-1 == stat(filename.data(), &fileinfo)) return false;
-  // CC: return false if the file does not exist
-
-  // CC: anyway, we cannot execute directories, block/character devices, fifos or sockets
-  if ( (S_ISDIR(fileinfo.st_mode))  ||
-       (S_ISCHR(fileinfo.st_mode))  ||
-       (S_ISBLK(fileinfo.st_mode))  ||
-#ifdef S_ISSOCK
-       // CC: SYSVR4 systems don't have that macro
-       (S_ISSOCK(fileinfo.st_mode)) ||
-#endif
-       (S_ISFIFO(fileinfo.st_mode)) ||
-       (S_ISDIR(fileinfo.st_mode)) ) {
-    return false;
-  }
-
-  // CC: now check for permission to execute the file
-  if (access(filename.data(), X_OK) != 0) return false;
-
-  // CC: we've passed all the tests...
-  return true;
 }
 
 void KProcess::virtual_hook( int, void* )
@@ -922,9 +877,8 @@ void KProcess::virtual_hook( int, void* )
 KShellProcess::KShellProcess(const char *shellname):
   KProcess()
 {
-  setUseShell(true, shellname);
+  setUseShell( true, shellname ? shellname : getenv("SHELL") );
 }
-
 
 KShellProcess::~KShellProcess() {
 }
