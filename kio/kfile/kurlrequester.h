@@ -124,6 +124,9 @@ public:
      * @returns a pointer to the filedialog
      * You can use this to customize the dialog, e.g. to specify a filter.
      * Never returns 0L.
+     *
+     * Remove in KDE4? KURLRequester should use KDirSelectDialog for
+     * (mode & KFile::Directory) && !(mode & KFile::File)
      */
     virtual KFileDialog * fileDialog() const;
 
