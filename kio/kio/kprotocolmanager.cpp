@@ -298,6 +298,8 @@ static bool revmatch(const char *host, const char *nplist)
     {
       if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ')
         return true;
+      if ( hptr == host ) // e.g. revmatch("bugs.kde.org","mybugs.kde.org")
+        return false;
 
       hptr--;
       nptr--;
