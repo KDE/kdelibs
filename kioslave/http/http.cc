@@ -1697,6 +1697,30 @@ void HTTPProtocol::httpError()
   error( ERR_SLAVE_DEFINED, errorString );
 }
 
+bool HTTPProtocol::isOffline(const KURL &url)
+{
+  const int NetWorkStatusUnknown = 1;
+  const int NetWorkStatusOnline = 8;
+  QCString replyType;
+  QByteArray params;
+  QByteArray reply;
+
+  QDataStream stream(params, IO_WriteOnly);
+  stream << url.url();
+
+  if ( dcopClient()->call( "kded", "networkstatus", "status(QString)",
+                           params, replyType, reply ) && (replyType == "int") )
+  {
+     int result;
+     QDataStream stream2( reply, IO_ReadOnly );
+     stream2 >> result;
+     kdDebug(7113) << "(" << m_pid << ") networkstatus status = " << result << endl;
+     return (result != NetWorkStatusUnknown) && (result != NetWorkStatusOnline);
+  }
+  kdDebug(7113) << "(" << m_pid << ") networkstatus <unreachable>" << endl;
+  return false; // On error, assume we are online
+}
+
 void HTTPProtocol::multiGet(const QByteArray &data)
 {
   QDataStream stream(data, IO_ReadOnly);
@@ -1728,7 +1752,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         m_request.cache = parseCacheControl(tmp);
      else
         m_request.cache = DEFAULT_CACHE_CONTROL;
-
+     
      m_request.passwd = url.pass();
      m_request.user = url.user();
      m_request.doProxy = m_bUseProxy;
@@ -2055,12 +2079,18 @@ bool HTTPProtocol::httpOpen()
   {
      m_request.fcache = checkCacheEntry( );
 
+     bool bOffline = isOffline(m_request.doProxy ? m_proxyURL : m_request.url);
+     if (bOffline && (m_request.cache != KIO::CC_Reload))
+        m_request.cache = KIO::CC_CacheOnly;
+
      if (m_request.cache == CC_Reload && m_request.fcache)
      {
         if (m_request.fcache)
           fclose(m_request.fcache);
         m_request.fcache = 0;
      }
+     if ((m_request.cache == KIO::CC_CacheOnly) || (m_request.cache == KIO::CC_Cache))
+        m_request.bMustRevalidate = false;
 
      m_request.bCachedWrite = true;
 
@@ -2079,9 +2109,9 @@ bool HTTPProtocol::httpOpen()
         // Conditional cache hit. (Validate)
      }
 
-     if (m_request.cache == CC_CacheOnly)
+     if ((m_request.cache == CC_CacheOnly) || bOffline)
      {
-        error( ERR_DOES_NOT_EXIST, m_request.url.url() );
+        error( ERR_COULD_NOT_CONNECT, m_request.url.url() );
         return false;
      }
   }

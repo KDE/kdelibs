@@ -245,6 +245,8 @@ public:
 
   void httpError(); // Generate error message based on response code
 
+  bool isOffline(const KURL &url); // Check network status
+
 protected slots:
   void slotData(const QByteArray &);
   void error( int _errid, const QString &_text );
