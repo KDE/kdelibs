@@ -27,12 +27,32 @@
 #include "kpac_discovery.moc"
 
 KPACDiscovery::KPACDiscovery()
-    : QObject(),
-      m_stage(DHCP)
+              : QObject(), m_stage(DHCP)
 {
-    char hostname[256];
-    if (gethostname(hostname, 255) == 0)
-        m_hostname = hostname;
+    char buf[ 256 ];
+
+    if (gethostname( buf, sizeof( buf ) ) == 0)
+    {
+        buf[ 255 ] = 0;
+        m_hostname = QString::fromLocal8Bit( buf );
+
+        // Need to ensure that the hostname is fully qualified
+        // Otherwise this would fail on some systems that return
+        // non-fully qualified hostname when gethostname is invoked.
+        if (getdomainname (buf, sizeof( buf ) ) == 0)
+        {
+            buf[255] = 0;
+            QString domainname = QString::fromLocal8Bit( buf );
+
+            if (!m_hostname.endsWith(domainname))
+            {
+              if (domainname[0] != '.' || m_hostname[m_hostname.length()-1] != '.')
+                  m_hostname += ".";
+
+              m_hostname += domainname;
+            }
+        }
+    }
 }
 
 bool KPACDiscovery::tryDiscovery()
