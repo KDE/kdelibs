@@ -51,7 +51,7 @@ public:
 	void request_outdata(DataPacket<mcopbyte> *packet);
 
 	long bufferPackets() { return m_packetBuffer; }
-	void setBufferPackets(long i) { m_packetBuffer = i; }
+	void bufferPackets(long i) { m_packetBuffer = i; }
 
 private slots:
 	void slotData(KIO::Job *, const QByteArray &);

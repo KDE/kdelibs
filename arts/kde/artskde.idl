@@ -15,8 +15,7 @@ interface KFloatWatchProxy {
 interface KIOInputStream : InputStream {
 	boolean openURL(string url);
 	
-	long bufferPackets();
-	void setBufferPackets(long i);
+	attribute long bufferPackets;
 };
 
 /*
