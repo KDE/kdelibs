@@ -1,3 +1,22 @@
+/*
+    Copyright (c) 2001,2002 Ellis Whitehead <ellis@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #include "kaccel.h"
 
 #include <qaccel.h>
@@ -148,7 +167,8 @@ void KAccelPrivate::slotKeyPressed( int id )
 	if( m_mapIDToKey.contains( id ) ) {
 		KKey key = m_mapIDToKey[id];
 		KKeySequence seq( key );
-		QPopupMenu* pMenu = createPopupMenu( kapp->mainWidget(), seq );
+		QWidget* pParent = dynamic_cast<QWidget*>(m_pAccel->parent());
+		QPopupMenu* pMenu = createPopupMenu( pParent, seq );
 
 		// If there was only one action mapped to this key,
 		//  and that action is not a multi-key shortcut,
@@ -161,10 +181,13 @@ void KAccelPrivate::slotKeyPressed( int id )
 			slotMenuActivated( iAction );
 		} else {
 			connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)) );
-			pMenu->exec();
+			if( pParent )
+				pMenu->exec( pParent->mapToGlobal( QPoint( 0, 0 ) ) );
+			else
+				pMenu->exec( QPoint( 0, 0 ) );
 			disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)) );
-			delete pMenu;
 		}
+		delete pMenu;
 	}
 }
 
