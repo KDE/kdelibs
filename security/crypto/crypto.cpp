@@ -881,6 +881,7 @@ void KCryptoConfig::save()
 
   config->sync();
   policies->sync();
+  pcerts->sync();
 
   // insure proper permissions -- contains sensitive data
   QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));
