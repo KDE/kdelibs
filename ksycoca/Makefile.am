@@ -1,9 +1,7 @@
 
 INCLUDES= $(all_includes)
 
-#LDADD	= $(LIB_QT) ../kdecore/libkdecore.la -lqk
-
-CXXFLAGS := $(CXXFLAGS) @NOREPO@
+CXXFLAGS := $(CXXFLAGS) -Wall @NOREPO@
 
 lib_LTLIBRARIES = libksycoca.la
 libksycoca_la_LDFLAGS = -version-info 1:0
@@ -15,7 +13,8 @@ ksycocatest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 libksycoca_la_SOURCES = \
 	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp \
-        kservicetypefactory.cpp kservicetype.cpp # kmimetype.cpp
+        kservicetypefactory.cpp kservicetype.cpp \
+	kmimetype.cpp kmimemagic.cpp
 
 ksycocatest_SOURCES = main.cpp
 
@@ -24,5 +23,6 @@ libksycoca_la_METASOURCES = AUTO
 
 # should be include_HEADERS when ready
 noinst_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h \
-	kservicetype.h kservicetypefactory.h # kmimetype.h
+	kservicetype.h kservicetypefactory.h \
+	kmimetype.h kmimemagic.h
 
