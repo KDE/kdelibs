@@ -23,7 +23,6 @@
  */
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
-//#define DEBUG_VALIGN
 
 #include "render_text.h"
 #include "break_lines.h"
@@ -43,9 +42,6 @@
 #include <kdebug.h>
 #include <assert.h>
 
-#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
-#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
-
 using namespace khtml;
 using namespace DOM;
 
@@ -53,34 +49,15 @@ TextSlave::~TextSlave()
 {
 }
 
-void TextSlave::print( QPainter *pt, RenderText* p, int _tx, int _ty)
+void TextSlave::print( QPainter *pt, int _tx, int _ty)
 {
     if (!m_text || m_len <= 0)
         return;
 
     QConstString s(m_text, m_len);
-
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
 
-#ifdef DEBUG_VALIGN
-    int fontsize = QFontInfo( p->style()->font() ).pixelSize();
-    int halfleading = ( p->m_lineHeight - fontsize ) / 2;
-    pt->fillRect(m_x + _tx, m_y + _ty + halfleading, m_width, fontsize, Qt::white );
-#else
-    Q_UNUSED( p );
-#endif
-
     pt->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string(), -1, m_reversed ? QPainter::RTL : QPainter::LTR);
-
-#ifdef DEBUG_VALIGN
-    pt->setBrush( Qt::NoBrush );
-    pt->setPen( QPen( Qt::black, 0, Qt::DotLine ) );
-    pt->drawRect(m_x + _tx, m_y + _ty, m_width, p->m_lineHeight );
-    pt->setPen( QPen( Qt::magenta, 0, Qt::DotLine ) );
-    pt->drawRect(m_x + _tx, m_y + _ty + halfleading, m_width, fontsize );
-    pt->setPen( Qt::red );
-    pt->drawLine(m_x + _tx, m_y + _ty + m_baseline, m_x + _tx + m_width-1, m_y + _ty + m_baseline );
-#endif
 }
 
 void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
@@ -102,10 +79,8 @@ void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, 
         _width = p->fontMetrics().width(s.string());
 
     int _offset = 0;
-    if ( startPos > 0 ) {
-        QConstString aStr(m_text, startPos);
-        _offset = p->fontMetrics().width(aStr.string());
-    }
+    if ( startPos > 0 )
+        _offset = p->fontMetrics().width(QConstString( m_text, startPos ).string());
 
     p->save();
     QColor c = style->color();
@@ -311,7 +286,7 @@ void RenderText::setStyle(RenderStyle *_style)
         delete fm;
         fm = new QFontMetrics( style()->font() );
     }
-    // ### FIXME firstline support
+
     m_lineHeight = RenderObject::lineHeight(false);
 
     if ( style()->fontVariant() == SMALL_CAPS ) {
@@ -587,7 +562,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());
 
-            s->print(p, this, tx, ty);
+            s->print(p, tx, ty);
 
             if(d != TDNONE)
             {
@@ -729,6 +704,9 @@ void RenderText::calcMinMaxWidth()
     }
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
+
+    if (parent()->style()->noLineBreak())
+        m_minWidth = m_maxWidth;
 
     setMinMaxKnown();
 }

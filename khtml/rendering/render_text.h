@@ -61,7 +61,7 @@ public:
         m_firstLine = firstLine;
     }
     ~TextSlave();
-    void print( QPainter *pt, RenderText* p, int _tx, int _ty);
+    void print( QPainter *pt, int _tx, int _ty);
     void printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
     void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
