@@ -171,9 +171,6 @@ namespace KIO {
     /**
      * HTTP POST (for form data).
      *
-     * @param url Where to write data.
-     * @param postData Encoded data to post.
-     *
      * Example:
      * <pre>
      *    job = KIO::http_post( url, postData, false );
@@ -181,15 +178,22 @@ namespace KIO {
      *    job->addMetaData("referrer", referrerURL);
      * </pre>
      *
-     * @param postData is the data that you want to send and
-     * @param contentType is the format of that data.
+     * @p postData is the data that you want to send and
+     * @p contentType is the complete HTTP header line that
+     * specifies the content's MIME type, for example 
+     * "Content-Type: text/xml". 
      *
      * You MUST specify content-type!
      *
-     * Often @p contentType is "application/x-www-form-urlencoded" and
+     * Often @p contentType is 
+     * "Content-Type: application/x-www-form-urlencoded" and
      * the @p postData is then an ASCII string (without null-termination!)
      * with characters like space, linefeed and percent escaped like %20,
      * %0A and %25.
+     *
+     * @param url Where to write data.
+     * @param postData Encoded data to post.
+     * @param showProgressInfo true to display 
      */
     TransferJob *http_post( const KURL& url, const QByteArray &postData,
                             bool showProgressInfo = true );
