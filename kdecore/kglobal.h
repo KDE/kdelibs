@@ -64,6 +64,7 @@ public:
     static QFont                generalFont();
     static QFont                fixedFont();
     static QFont                toolBarFont();
+    static QFont                menuFont();
 
     /**
      * Returns a treshold in pixels for drag & drop operations.
@@ -144,6 +145,7 @@ public:
     static  QFont               *_generalFont;
     static  QFont               *_fixedFont;
     static  QFont               *_toolBarFont;
+    static  QFont               *_menuFont;
 };
 
 /**

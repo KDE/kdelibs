@@ -142,6 +142,20 @@ QFont KGlobal::toolBarFont()
     return *_toolBarFont;
 }
 
+QFont KGlobal::menuFont()
+{
+    if(_menuFont)
+        return *_menuFont;
+
+    _menuFont = new QFont("helvetica", 12, QFont::Normal);
+    charsets()->setQFont(*_menuFont, charsets()->charsetForLocale());
+    KConfig *c = KGlobal::config();
+    c->setGroup( QString::fromLatin1("General") );
+    *_menuFont = c->readFontEntry(QString::fromLatin1("menuFont"),
+                                  _menuFont);
+    return *_menuFont;
+}
+
 int KGlobal::dndEventDelay()
 {
     static int delay = -1;
@@ -221,4 +235,5 @@ KCharsets       *KGlobal::_charsets	= 0;
 
 QFont           *KGlobal::_generalFont  = 0;
 QFont           *KGlobal::_fixedFont    = 0;
-QFont           *KGlobal::_toolBarFont   = 0;
+QFont           *KGlobal::_toolBarFont  = 0;
+QFont           *KGlobal::_menuFont     = 0;
