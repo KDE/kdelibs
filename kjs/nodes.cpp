@@ -374,10 +374,10 @@ Reference ResolveNode::evaluateReference(ExecState *exec) const
   while (!chain.isEmpty()) {
     ObjectImp *o = chain.top();
 
-    //cout << "Resolve: looking at '" << ident.ascii() << "'"
+    //cerr << "Resolve: looking at '" << ident.ascii() << "'"
     //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
     if (o->hasProperty(exec,ident)) {
-      //cout << "Resolve: FOUND '" << ident.ascii() << "'"
+      //cerr << "Resolve: FOUND '" << ident.ascii() << "'"
       //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
       return Reference(o, ident);
     }
@@ -387,7 +387,7 @@ Reference ResolveNode::evaluateReference(ExecState *exec) const
 
   // identifier not found
 #ifdef KJS_VERBOSE
-  cout << "Resolve::evaluateReference: didn't find '" << ident.ustring().ascii() << "'" << endl;
+  cerr << "Resolve::evaluateReference: didn't find '" << ident.ustring().ascii() << "'" << endl;
 #endif
   return Reference(Null(), ident);
 }
@@ -648,6 +648,7 @@ bool AccessorNode2::deref()
 Reference AccessorNode2::evaluateReference(ExecState *exec) const
 {
   Value v = expr->evaluate(exec);
+  assert(v.isValid());
   KJS_CHECKEXCEPTIONREFERENCE
   Object o = v.toObject(exec);
   return Reference(o, ident);
@@ -2988,6 +2989,9 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 
   func.put(exec, lengthPropertyName, Number(plen), ReadOnly|DontDelete|DontEnum);
 
+#ifdef KJS_VERBOSE
+  fprintf(stderr,"KJS: new function %s in %p\n", ident.ustring().cstring().c_str(), ctx->variableObject().imp());
+#endif
   if (exec->_context->type() == EvalCode)
     ctx->variableObject().put(exec,ident,func,Internal);
   else
