@@ -305,7 +305,6 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 
 {
     int		family = ciptr->family;
-    char	*peer_addr = ciptr->peeraddr;
     char	*hostname;
     char	addrbuf[256];
     char	*addr = NULL;
@@ -326,6 +325,7 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 #if defined(TCPCONN) || defined(STREAMSCONN) || defined(MNX_TCPCONN)
     case AF_INET:
     {
+    char	*peer_addr = ciptr->peeraddr;
 	struct sockaddr_in *saddr = (struct sockaddr_in *) peer_addr;
 	struct hostent * hostp = NULL;
 
@@ -361,6 +361,7 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 #if defined(DNETCONN)
     case AF_DECnet:
     {
+    char	*peer_addr = ciptr->peeraddr;
 	struct sockaddr_dn *saddr = (struct sockaddr_dn *) peer_addr;
 	struct nodeent *np;
 

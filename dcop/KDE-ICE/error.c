@@ -430,7 +430,7 @@ IcePointer	values;
     fprintf (stderr, "ICE error:  Offending minor opcode    = %d (%s)\n",
 	offendingMinorOpcode, str);
 
-    fprintf (stderr, "            Offending sequence number = %d\n",
+    fprintf (stderr, "            Offending sequence number = %ld\n",
 	offendingSequence);
 
     switch (errorClass)

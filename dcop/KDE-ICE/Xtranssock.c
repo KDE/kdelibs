@@ -281,7 +281,7 @@ TRANS(SocketSelectFamily) (char *family)
  * This function gets the local address of the socket and stores it in the
  * XtransConnInfo structure for the connection.
  */
-
+#ifdef TCPCONN
 static int
 TRANS(SocketINETGetAddr) (XtransConnInfo ciptr)
 
@@ -364,7 +364,7 @@ TRANS(SocketINETGetPeerAddr) (XtransConnInfo ciptr)
 
     return 0;
 }
-
+#endif //TCPCONN
 
 static XtransConnInfo
 TRANS(SocketOpen) (int i, int type)

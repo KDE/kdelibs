@@ -25,6 +25,7 @@ Author: Ralph Mor, X Consortium
 
 #include "KDE-ICE/ICElib.h"
 #include "KDE-ICE/ICElibint.h"
+#include "KDE-ICE/Xtrans.h"
 #include "KDE-ICE/globals.h"
 
 
