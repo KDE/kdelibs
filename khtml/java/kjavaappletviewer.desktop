@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Embedded Java Applet Viewer
+X-KDE-Library=kjavaappletviewer
+Icon=java
+MimeType=application/x-java-applet;
+ServiceTypes=KParts/ReadOnlyPart,Browser/View
+Type=Service
+InitialPreference=2

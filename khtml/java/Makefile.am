@@ -7,7 +7,7 @@ libkjava_la_SOURCES = kjavaapplet.cpp kjavaappletcontext.cpp \
 
 noinst_HEADERS = javaembed.h kjavaappletwidget.h kqeventutil.h kxeventutil.h \
                  kjavaapplet.h kjavaappletcontext.h \
-                 kjavaappletserver.h kjavaprocess.h
+                 kjavaappletserver.h kjavaprocess.h kjavaappletviewer.h
 
 libkjava_la_METASOURCES = AUTO
 
@@ -20,3 +20,14 @@ data_DATA = kjava.jar kjava.policy
 datadir = $(kde_datadir)/kjava/
 
 SUBDIRS = . tests dummy
+
+kde_module_LTLIBRARIES= kjavaappletviewer.la
+kjavaappletviewer_la_SOURCES= kjavaapplet.cpp kjavaappletcontext.cpp \
+        kjavaappletserver.cpp kjavaappletwidget.cpp kjavaprocess.cpp \
+        kjavadownloader.cpp kjavaappletviewer.cpp
+
+kjavaappletviewer_la_LDFLAGS= $(all_libraries) -module $(KDE_PLUGIN)
+kjavaappletviewer_la_LIBADD= $(LIB_KFILE) $(LIB_KPARTS)
+kjavaappletviewer_la_METASOURCES=kjavaappletviewer.moc
+
+kde_services_DATA= kjavaappletviewer.desktop
