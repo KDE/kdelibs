@@ -985,22 +985,32 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
 
   int pos = str.find(decimalSymbol());
   QString major;
-  QString minior;
+  QString minor;
   if ( pos == -1 )
     major = str;
   else
     {
       major = str.left(pos);
-      minior = str.mid(pos + decimalSymbol().length());
+      minor = str.mid(pos + decimalSymbol().length());
     }
 
   // Remove thousand separators
+  int thlen = thousandsSeparator().length();
   while ( ( pos = major.find( thousandsSeparator() ) ) > 0 )
-    major.remove( pos, thousandsSeparator().length() );
+  {
+    // e.g. 12,,345,,678,,922 Acceptable positions (from the end) are 5, 10, 15... i.e. (3+thlen)*N
+    int fromEnd = major.length() - pos;
+    if ( fromEnd % (3+thlen) != 0 ) // Needs to be a multiple, otherwise it's an error
+    {
+      if (ok) *ok = false;
+      return 0.0;
+    }
+    major.remove( pos, thlen );
+  }
 
   QString tot;
   if (neg) tot = '-';
-  tot += major + '.' + minior;
+  tot += major + '.' + minor;
 
   return tot.toDouble(ok);
 }
@@ -1069,9 +1079,20 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
       minior = str.mid(pos + monetaryDecimalSymbol().length());
     }
 
+
   // Remove thousand separators
+  int thlen = monetaryThousandsSeparator().length();
   while ( ( pos = major.find( monetaryThousandsSeparator() ) ) > 0 )
-    major.remove( pos, monetaryThousandsSeparator().length() );
+  {
+    // e.g. 12,,345,,678,,922 Acceptable positions (from the end) are 5, 10, 15... i.e. (3+thlen)*N
+    int fromEnd = major.length() - pos;
+    if ( fromEnd % (3+thlen) != 0 ) // Needs to be a multiple, otherwise it's an error
+    {
+      if (ok) *ok = false;
+      return 0.0;
+    }
+    major.remove( pos, thlen );
+  }
 
   QString tot;
   if (neg) tot = '-';
@@ -1114,6 +1135,7 @@ QDate KLocale::readDate(const QString &intstr, bool shortFormat, bool* ok) const
 
 QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
+  //kdDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt << endl;
   QString str = intstr.simplifyWhiteSpace().lower();
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
@@ -1318,6 +1340,8 @@ QTime KLocale::readTime(const QString &intstr, bool seconds, bool *ok) const
  error:
   if (ok) *ok = false;
   return QTime(-1, -1, -1); // return invalid date if it didn't work
+  // This will be removed in the near future, since it gives a warning on stderr.
+  // The presence of the bool* (since KDE-3.0) removes the need for an invalid QTime.
 }
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
@@ -1550,9 +1574,9 @@ void KLocale::initEncoding(KConfig *config)
   const int mibDefault = 4; // ISO 8859-1
 
   int encodingMib;
-  
+
   KConfigGroupSaver saver(config, "Locale");
-  
+
   if (config->hasKey("EncodingMib"))
     encodingMib = config->readNumEntry("EncodingMib");
   else
