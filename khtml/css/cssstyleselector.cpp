@@ -374,7 +374,9 @@ static void checkPseudoState( DOM::ElementImpl *e )
 	cleanpath( u );
     }
     //completeURL( attr.string() );
-    if ( KHTMLFactory::vLinks()->contains( u ) )
+
+    KURL url( u );
+    if ( KHTMLFactory::vLinks()->contains( url.prettyURL() ) )
 	pseudoState = PseudoVisited;
     else
 	pseudoState = PseudoLink;
