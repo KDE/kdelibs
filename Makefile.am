@@ -86,3 +86,13 @@ kdedoc:
 	cd $(top_srcdir) && \
 	makekdedoc -p'--skip-internal' --outputdir=$(top_builddir)/srcdoc
 
+qtmessages:
+	cd $(top_srcdir)/../qt-copy/src ;\
+	find . -name "*.cpp" | grep -v moc_ > list ;\
+	for file in qfiledialog qcolordialog qprintdialog \
+		qurloperator qftp qhttp qlocal; do \
+		grep -v $$file list > list.new && mv list.new list ;\
+	done ;\
+	xgettext -C -ktr `cat list` 
+	mv $(top_srcdir)/../qt-copy/src/messages.po $(top_srcdir)
+
