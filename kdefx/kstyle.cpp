@@ -148,6 +148,7 @@ struct KStylePrivate
 	bool  scrollablePopupmenus     : 1;
 	bool  menuAltKeyNavigation     : 1;
 	bool  menuDropShadow           : 1;
+	bool  sloppySubMenus           : 1;
 	int   popupMenuDelay;
 	float menuOpacity;
 
@@ -172,6 +173,7 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	// Read style settings
 	QSettings settings;
 	d->popupMenuDelay       = settings.readNumEntry ("/KStyle/Settings/PopupMenuDelay", 256);
+	d->sloppySubMenus       = settings.readBoolEntry("/KStyle/Settings/SloppySubMenus", true);
 	d->etchDisabledText     = settings.readBoolEntry("/KStyle/Settings/EtchDisabledText", true);
 	d->menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
 	d->scrollablePopupmenus = settings.readBoolEntry("/KStyle/Settings/ScrollablePopupMenus", false);
@@ -1711,7 +1713,13 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 			return d->menuAltKeyNavigation ? 1 : 0;
 
 		case SH_PopupMenu_SubMenuPopupDelay:
-			return d->popupMenuDelay;
+			if ( styleHint( SH_PopupMenu_SloppySubMenus, w ) )
+				return QMIN( 100, d->popupMenuDelay );
+			else
+				return d->popupMenuDelay;
+
+		case SH_PopupMenu_SloppySubMenus:
+			return d->sloppySubMenus;
 
 		case SH_ItemView_ChangeHighlightOnFocus:
 		case SH_Slider_SloppyKeyEvents:
