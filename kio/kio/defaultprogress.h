@@ -39,6 +39,7 @@ class DefaultProgress : public ProgressBase {
 public:
 
   DefaultProgress( bool showNow = true );
+  DefaultProgress( QWidget* parent, const char* name = 0 );
   ~DefaultProgress();
 
 public slots:
@@ -65,6 +66,7 @@ public slots:
   virtual void slotCanResume( KIO::Job*, KIO::filesize_t );
 
 protected:
+  void init();
   void showTotals();
   void setDestVisible( bool visible );
 

@@ -48,6 +48,23 @@ DefaultProgress::DefaultProgress( bool showNow )
   m_iTotalSize(0), m_iTotalFiles(0), m_iTotalDirs(0),
   m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0)
 {
+  init();
+
+  if ( showNow ) {
+    show();
+  }
+}
+
+DefaultProgress::DefaultProgress( QWidget* parent, const char* /*name*/ )
+  : ProgressBase( parent ),
+  m_iTotalSize(0), m_iTotalFiles(0), m_iTotalDirs(0),
+  m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0)
+{
+    init();
+}
+
+void DefaultProgress::init()
+{
   d = new DefaultProgressPrivate;
 
 #ifdef Q_WS_X11 //FIXME(E): Remove once all the KWin::foo calls have been ported to QWS
@@ -120,10 +137,6 @@ DefaultProgress::DefaultProgress( bool showNow )
 
   d->noCaptionYet = true;
   setCaption(i18n("Progress Dialog")); // show something better than kio_uiserver
-
-  if ( showNow ) {
-    show();
-  }
 }
 
 DefaultProgress::~DefaultProgress()
