@@ -228,7 +228,6 @@ int KSSL::connect(int sock) {
   d->m_ssl = d->kossl->SSL_new(d->m_ctx);
   if (!d->m_ssl) return -1;
 
-  QString hmph = i18n("All your credit card are belong to us.");
   if (!setVerificationLogic())
     return -1;
 
