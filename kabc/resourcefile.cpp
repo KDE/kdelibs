@@ -83,6 +83,9 @@ bool ResourceFile::open()
 {
   QFile file( mFileName );
 
+  if ( !file.exists() )
+    return true;
+
   if ( !file.open( IO_ReadOnly ) )
     return true;
 
@@ -204,9 +207,11 @@ QString ResourceFile::identifier() const
   return fileName();
 }
 
-void ResourceFile::removeAddressee( const Addressee& )
+void ResourceFile::removeAddressee( const Addressee &addr )
 {
-  // this function is only used by record-based resources
+  QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/photos/" ) + addr.uid() ) );
+  QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/logos/" ) + addr.uid() ) );
+  QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/sounds/" ) + addr.uid() ) );
 }
 
 #include "resourcefile.moc"

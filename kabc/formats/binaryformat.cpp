@@ -19,12 +19,16 @@
 */
 
 #include <qdatastream.h>
+#include <qimage.h>
 
 #include <kdebug.h>
 #include <klocale.h>
+#include <kstandarddirs.h>
 
 #include "addressbook.h"
 #include "addressee.h"
+#include "picture.h"
+#include "sound.h"
 
 #include "binaryformat.h"
 
@@ -130,8 +134,6 @@ bool BinaryFormat::checkHeader( QDataStream &stream ) const
 
   QFile *file = dynamic_cast<QFile*>( stream.device() );
 
-  kdDebug() << "magic=" << magic << endl;
-
   if ( magic != 0x2e93e ) {
     kdError() << i18n("File '%1' is not binary format.").arg( file->name() ) << endl;
     return false;
@@ -158,9 +160,55 @@ void BinaryFormat::writeHeader( QDataStream &stream )
 void BinaryFormat::loadAddressee( Addressee &addressee, QDataStream &stream )
 {
   stream >> addressee;
+
+  // load pictures
+  Picture photo = addressee.photo();
+  Picture logo = addressee.logo();
+
+  if ( photo.isIntern() ) {
+    QImage img;
+    if ( !img.load( locateLocal( "data", "kabc/photos/" ) + addressee.uid() ) )
+      kdDebug(5700) << "No photo available for '" << addressee.uid() << "'." << endl;
+
+    addressee.setPhoto( img );
+  }
+
+  if ( logo.isIntern() ) {
+    QImage img;
+    if ( !img.load( locateLocal( "data", "kabc/logos/" ) + addressee.uid() ) )
+      kdDebug(5700) << "No logo available for '" << addressee.uid() << "'." << endl;
+
+    addressee.setLogo( img );
+  }
+
+  // load sound
+  // TODO: load sound data from file
 }
 
 void BinaryFormat::saveAddressee( const Addressee &addressee, QDataStream &stream )
 {
   stream << addressee;
+
+  // load pictures
+  Picture photo = addressee.photo();
+  Picture logo = addressee.logo();
+
+  if ( photo.isIntern() ) {
+    QImage img = photo.data();
+    QString fileName = locateLocal( "data", "kabc/photos/" ) + addressee.uid();
+
+    if ( !img.save( fileName, "PNG" ) )
+      kdDebug(5700) << "Unable to save photo for '" << addressee.uid() << "'." << endl;
+  }
+
+  if ( logo.isIntern() ) {
+    QImage img = logo.data();
+    QString fileName = locateLocal( "data", "kabc/logos/" ) + addressee.uid();
+
+    if ( !img.save( fileName, "PNG" ) )
+      kdDebug(5700) << "Unable to save logo for '" << addressee.uid() << "'." << endl;
+  }
+
+  // save sound
+  // TODO: save the sound data to file
 }
