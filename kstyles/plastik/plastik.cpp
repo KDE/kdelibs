@@ -701,7 +701,7 @@ void PlastikStyle::renderButton(QPainter *p,
     // small fix for the kicker buttons...
     if(kickerMode) enabled = true;
 
-    p->save();
+    QPen oldPen( p->pen() );
 
     uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
             Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
@@ -732,7 +732,7 @@ void PlastikStyle::renderButton(QPainter *p,
     renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
                    g.background(), g.button(), getColor(g,MouseOverHighlight), _contrast, surfaceFlags);
 
-    p->restore();
+    p->setPen(oldPen);
 }
 
 void PlastikStyle::renderHeader(QPainter *p,
