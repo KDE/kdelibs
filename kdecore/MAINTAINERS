@@ -28,7 +28,6 @@ kcrash.cpp		Waldo Bastian <bastian@kde.org>
 kdcoppropertyproxy.cpp
 kdebug.cpp
 kdesktopfile.cpp
-kdestyle.cpp
 kextsock.cpp
 kglobal.cpp
 kglobalaccel.cpp	Ellis Whitehead <ellis@kde.org>
