@@ -210,7 +210,15 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return getHTMLCollection(exec,doc.anchors());
     case Scripts: // TODO (IE-specific)
     {
+      // Disable document.scripts unless we try to be IE-compatible
+      // Especially since it's not implemented, so
+      // if (document.scripts) shouldn't return true.
+      if ( exec->interpreter()->compatMode() != Interpreter::IECompat )
+        return Undefined();
       // To be implemented. Meanwhile, return an object with a length property set to 0
+      // This gets some code going on IE-specific pages.
+      // The script object isn't really simple to implement though
+      // (http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/script.asp)
       kdWarning() << "KJS::HTMLDocument document.scripts called - not implemented" << endl;
       Object obj( new ObjectImp() );
       obj.put( exec, "length", Number(0) );
