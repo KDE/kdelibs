@@ -337,13 +337,15 @@ void RenderImage::layout()
 
     // if they are variable width and we calculate a huge height or width, we assume they
     // actually wanted the intrinsic width.
-    if ( m_width > 2048 && !style()->width().isFixed() )
-	m_width = intrinsicWidth();
+    if ( m_width > 4096 && !style()->width().isFixed() )
+	m_width = intrinsicWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight();
     if ( m_height > 2048 && !style()->height().isFixed() )
-	m_height = intrinsicHeight();
+	m_height = intrinsicHeight() + paddingTop() + paddingBottom() + borderTop() + borderBottom();
+
     // limit total size to not run out of memory when doing the xform call.
-    if ( m_width * m_height > 2048*2048 ) {
-	float scale = sqrt( m_width*m_height / ( 2048.*2048. ) );
+    if ( ( m_width * m_height > 4096*2048 ) &&
+         ( contentWidth() > intrinsicWidth() || contentHeight() > intrinsicHeight() ) ) {
+	float scale = sqrt( m_width*m_height / ( 4096.*2048. ) );
 	m_width = (int) (m_width/scale);
 	m_height = (int) (m_height/scale);
     }

@@ -1,3 +1,9 @@
+2004-01-10  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_image.cpp (layout): ugh, major stupidity. don't rescale large
+	images if nobody explicitely asked for it. makes loading of very large images 
+	quite a bit faster.
+
 2004-01-09  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_replaced.cpp (eventFilter): readd the wheel event handling
