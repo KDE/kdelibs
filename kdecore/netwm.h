@@ -29,13 +29,10 @@
 
 #include "kdemacros.h"
 #include <qwidget.h>
-#include "config.h"
-//#ifdef Q_WS_X11
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
-#include <X11/Xutil.h> // schroder
-#include <X11/Xatom.h> // schroder
-//#endif
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
 
 #include "netwm_def.h"
 

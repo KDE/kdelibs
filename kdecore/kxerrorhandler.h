@@ -25,12 +25,9 @@
 #ifndef KXERRORHANDLER_H
 #define KXERRORHANDLER_H
 
-#include "config.h"
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <qvaluelist.h>
 #include <qwindowdefs.h>
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h>
 
 /**
  * This class simplifies handling of X errors. It shouldn't be necessary to use
@@ -103,5 +100,4 @@ class KXErrorHandler
         class KXErrorHandlerPrivate* d;
     };
 
-#endif
 #endif

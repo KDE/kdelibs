@@ -25,11 +25,8 @@
 
 // #define NETWMDEBUG
 
-#include "config.h"
-
 #include <qwidget.h>
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 //FIXME
+#ifdef Q_WS_X11 //FIXME
 
 #include "netwm.h"
 
@@ -38,7 +35,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include <X11/Xmd.h> // schroder
+#include <X11/Xmd.h>
 
 #include "netwm_p.h"
 
