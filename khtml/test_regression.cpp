@@ -1157,10 +1157,6 @@ bool RegressionTest::checkPaintdump(const QString &filename)
     }
     bool result = false;
 
-    if ( ( m_known_failures & AllFailure ) ||
-         ( m_known_failures & PaintFailure ) )
-       return false;
-
     QImage baseline;
     baseline.load( absFilename, "PNG");
     QImage output = renderToImage();
