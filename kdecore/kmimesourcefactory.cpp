@@ -73,7 +73,7 @@ QString KMimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QSt
 	{
 	  result = d->kil->iconPath (myName, KIcon::MainToolbar);
 	}
-  else if (myContext == "small", true)
+  else if (myContext == "small")
 	{
 	  result = d->kil->iconPath (myName, KIcon::Small);
 	}
