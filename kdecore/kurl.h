@@ -30,7 +30,9 @@ class QStringList;
  * Represent and parse a URL.
  *
  * A prototypical URL looks like:
- * <pre>protocol:/user:password@hostname:port/path/to/file.ext#reference</pre>
+ * <pre>
+ *   protocol:/user:password@hostname:port/path/to/file.ext#reference
+ * </pre>
  *
  *  @ref KURL has some restrictions regarding the path
  * encoding. @ref KURL works internally with the decoded path and

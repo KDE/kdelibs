@@ -549,7 +549,7 @@ public:
     * Returns true if the completion object is deleted
     * upon this widget's destruction.
     *
-    * See @ref setCompeltionObject and @ref enableCompletion
+    * See @ref setCompletionObject and @ref enableCompletion
     * for details.
     *
     * @return true if the completion object
