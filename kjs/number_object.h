@@ -76,6 +76,7 @@ namespace KJS {
   class NumberObjectImp : public InternalFunctionImp {
   public:
     NumberObjectImp(ExecState *exec,
+                    FunctionPrototypeImp *funcProto,
                     NumberPrototypeImp *numberProto);
 
     virtual bool implementsConstruct() const;

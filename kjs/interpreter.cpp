@@ -93,7 +93,7 @@ const Context Context::callingContext() const
 
 // ------------------------------ Interpreter ----------------------------------
 
-Interpreter::Interpreter(const Object &global)
+Interpreter::Interpreter(const Object &global) : rep(0)
 {
   rep = new InterpreterImp(this,global);
 }

@@ -118,10 +118,9 @@ const ClassInfo NumberObjectImp::info = {"Number", 0, &numberTable, 0};
 @end
 */
 NumberObjectImp::NumberObjectImp(ExecState *exec,
+                                 FunctionPrototypeImp *funcProto,
                                  NumberPrototypeImp *numberProto)
-  : InternalFunctionImp(
-    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
-    )
+  : InternalFunctionImp(funcProto)
 {
   Value protect(this);
   // Number.Prototype

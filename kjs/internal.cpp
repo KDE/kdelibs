@@ -825,7 +825,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
   b_String = stringObj;
   BooleanObjectImp *booleanObj = new BooleanObjectImp(globExec,funcProto,booleanProto);
   b_Boolean = booleanObj;
-  NumberObjectImp *numberObj = new NumberObjectImp(globExec,numberProto);
+  NumberObjectImp *numberObj = new NumberObjectImp(globExec,funcProto,numberProto);
   b_Number = numberObj;
   DateObjectImp *dateObj = new DateObjectImp(globExec,funcProto,dateProto);
   b_Date = dateObj;
