@@ -611,6 +611,7 @@ void UIServer::slotSelection() {
 
 QByteArray UIServer::authorize( const QString& user, const QString& head, const QString& key )
 {
+	kdDebug( 7024 ) << "User " << user.utf8() << "Header " << head.utf8() << "Key " << key.utf8() << endl;
     QByteArray packedArgs;
   	QDataStream stream( packedArgs, IO_WriteOnly );
   	bool isCached = false;
@@ -628,15 +629,18 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
     		
 		if( sucess != - 1 )
 		{
+            kdDebug(7024) << "Checking for presence of a key named " << (key + "-user").utf8() << endl;   		
    		    QString u = QString::fromUtf8( client.getVar( (key + "-user").utf8() ) );
-   		    // Do not retrieve password for the wrong user!!!   		
-			if( !user.isNull() && u == user )
+            kdDebug(7024) << "Key check resulted in " << u.utf8() << endl;
+   		    // Re-request the password if the user is supplied and is different!!
+			if( ( !user.isNull() && u == user) || ( user.isNull() && !u.isNull() ) )
 			{
 			    isCached = true;
-	   		    kdDebug(7024) << "Found cached Authorization for " << key.utf8() << endl;
+	   		    kdDebug(7024) << "Check for the authorization key named " << (key + "-pass").utf8() << endl;
 			    QString p = QString::fromUtf8( client.getVar( (key + "-pass").utf8() ) );
+	            kdDebug(7024) << "Key check resulted in " << p.utf8() << endl;			
            		stream << Q_UINT8(1) << u << p;
-	   		    kdDebug(7024) << "Sending back authorization..." << endl;           		
+	   		    kdDebug(7024) << "Success.  Sending back Authorization..." << endl;           		
            		return packedArgs;
 			}
 		}
@@ -649,8 +653,10 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
 	    	QString u = dlg.user();
 	    	QString p = dlg.password();
    		    kdDebug(7024) << "Caching Authorization for " << key.utf8() << endl;
-			client.setVar( (key + "-user").utf8() , u.utf8(), 0 );
-			client.setVar( (key + "-pass").utf8() , p.utf8(), 0 );
+   		    kdDebug(7024) << "Username: " << u.utf8() << endl;
+   		    kdDebug(7024) << "Password: " << p.utf8() << endl;   		
+			client.setVar( (key + "-user").utf8() , u.utf8() );
+			client.setVar( (key + "-pass").utf8() , p.utf8() );
        		stream << Q_UINT8(1) << u << p;
    		    kdDebug(7024) << "Authorization cached sucessfully..." << endl;       		
        		return packedArgs;			
