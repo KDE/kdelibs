@@ -174,7 +174,6 @@ private:
   const DOMString& name;
   TagLength *tags;
   int nrTags;
-  void determineNamedTagLength(NodeImpl *start);
 };
 
 void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
