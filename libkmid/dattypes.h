@@ -38,15 +38,8 @@ typedef unsigned long ulong;
 ushort readShort(FILE *fh);
 ulong  readLong (FILE *fh);
 
-#ifdef DEBUG
-#define printfdebug(a)
-#define printfdebug(a,b)
-#define printfdebug(a,b,c)
-#define printfdebug(a,b,c,d)
-#else
-  void printfdebug(const char *s,int a=0,int b=0, int c=0);
-  void printfdebug(const char *s,int a,long b);
-  void printfdebug(const char *s,double a,double b=0, double c=0);
-#endif
+void printfdebug(const char *s,int a=0,int b=0, int c=0);
+void printfdebug(const char *s,int a,long b);
+void printfdebug(const char *s,double a,double b=0, double c=0);
 
 #endif

@@ -50,6 +50,8 @@ ulong readLong(FILE *fh)
   return l;
 }
 
+#ifdef DEBUG
+
 void printfdebug(const char *format, int a, int b, int c)
 {
   char *s=(char *)format;
@@ -92,3 +94,15 @@ void printfdebug(const char *format, double a, double b, double c)
   }
    
 }
+#else
+
+void printfdebug(const char *format, int a, int b, int c)
+{
+}
+void printfdebug(const char *format, int a, long b)
+{
+}
+void printfdebug(const char *format, double a, double b, double c)
+{
+}
+#endif
