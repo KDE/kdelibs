@@ -181,6 +181,9 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
 
   if (!textCodec)
       textCodec = QTextCodec::codecForLocale();
+      
+  if (!textCodec->canEncode(segment))
+      textCodec = codecForHint( 106 ); // Fall back to utf-8 if it doesn't fit.
 
   QCString csegment = textCodec->fromUnicode(segment);
   old_length = csegment.length();
@@ -249,6 +252,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
      decoded = textCodec->toUnicode( array, new_length );
      array.resetRawData(new_segment, new_length);
      QCString validate = textCodec->fromUnicode(decoded);
+
      if (strcmp(validate.data(), new_segment) != 0)
      {
         decoded = QString::fromLocal8Bit(new_segment, new_length);
