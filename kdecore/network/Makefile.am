@@ -42,7 +42,8 @@ include_HEADERS = kresolver.h \
 	knetworkinterface.h \
 	khttpproxysocketdevice.h \
 	ksockssocketdevice.h \
-	kbufferedsocket.h
+	kbufferedsocket.h \
+	kiobuffer.h
 noinst_HEADERS = kresolver_p.h \
 	kresolverworkerbase.h \
 	kresolverstandardworkers_p.h \
