@@ -314,7 +314,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *parent,
     if( hbox == 0 ) { return; }
 
     mIconLabel = new QLabel( productArea );
-    hbox->addWidget( mIconLabel );
+    hbox->addWidget( mIconLabel, 0, AlignLeft|AlignHCenter );
 
     QVBoxLayout *vbox = new QVBoxLayout();
     if( vbox == 0 ) { return; }
@@ -634,14 +634,21 @@ void KAboutContainerBase::setProduct( const QString &appName,
 
   mIconLabel->setPixmap( kapp->icon() );
 
-  QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).arg(QString::fromLatin1(KDE_VERSION_STRING));
-  QString msg2;
+  QString msg1 = i18n("%1 %2 (Using KDE %3)").arg(appName).arg(version).
+    arg(QString::fromLatin1(KDE_VERSION_STRING));
+  QString msg2 = !year.isEmpty() ? i18n("%1 %2, %3").arg('©').arg(year).
+    arg(author) : "";
 
-  if (!year.isEmpty())
-     msg2 = i18n("%1 %2, %3").arg('©').arg(year).arg(author);
+  //if (!year.isEmpty())
+  //  msg2 = i18n("%1 %2, %3").arg('©').arg(year).arg(author);
 
   mVersionLabel->setText( msg1 );
   mAuthorLabel->setText( msg2 );
+  if( msg2.isEmpty() )
+  {
+    mAuthorLabel->hide();
+  }
+
   mIconLabel->parentWidget()->layout()->activate();
 }
 
