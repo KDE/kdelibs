@@ -20,7 +20,6 @@ KDE RGB Palette
 0 255 0	Green
 192 255 192	Light green
 
-0 0 64	Very dark blue
 0 0 128	Dark blue
 0 0 192	Mid blue
 0 0 255	Blue
@@ -38,7 +37,6 @@ KDE RGB Palette
 0 255 255	Cyan
 192 255 255	Light cyan
 
-64 0 64	Very dark magenta
 128 0 128	Dark magenta
 192 0 192	Mid magenta
 255 0 255	Magenta
