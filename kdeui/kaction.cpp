@@ -157,35 +157,27 @@ void KAction::unplug( QWidget *w )
   QAction::unplug( w );
 }
 
-void KAction::plugAccel(KAccel *kacc, const QString &name, bool configurable)
+void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
     if (kaccel) unplugAccel();
 	kaccel = kacc;
-	actionName = name;
-	kaccel->insertItem(plainText(), name, accel(), configurable);
-	kaccel->connectItem(name, this, SLOT(slotActivated()));
+	kaccel->insertItem(plainText(), name(), accel(), configurable);
+	kaccel->connectItem(name(), this, SLOT(slotActivated()));
 	connect(kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
 	connect(kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
-}
-
-void KAction::plugStdAccel(KAccel *kacc, KStdAccel::StdAccel accel)
-{
-	if (text().isNull()) setText(KStdAccel::description(accel));
-	setAccel(KStdAccel::key(accel));
-	plugAccel(kacc, KStdAccel::action(accel), false);
 }
 
 void KAction::unplugAccel()
 {
 	if ( kaccel==0 ) return;
-	kaccel->removeItem(actionName);
+	kaccel->removeItem(name());
 	kaccel->disconnect(this);
 	kaccel = 0;
 }
 
 void KAction::setEnabled(bool enable)
 {
-	if (kaccel) kaccel->setItemEnabled(actionName, enable);
+	if (kaccel) kaccel->setItemEnabled(name(), enable);
 	QAction::setEnabled(enable);
 }
 
@@ -201,7 +193,7 @@ void KAction::setEnabled( int i, bool enable )
 
 void KAction::setText( const QString& text )
 {
-	if (kaccel) kaccel->setDescription(actionName, text);
+	if (kaccel) kaccel->setDescription(name(), text);
 	QAction::setText( text );
 }
 
@@ -236,7 +228,7 @@ void KAction::setIconSet( int id, const QIconSet& iconSet )
 
 void KAction::setAccel(int a)
 {
-	if (kaccel) kaccel->updateItem(actionName, a);
+	if (kaccel) kaccel->updateItem(name(), a);
 	QAction::setAccel(a);
 }
 
@@ -248,7 +240,7 @@ void KAction::slotDestroyed()
 
 void KAction::slotKeycodeChanged()
 {
-	QAction::setAccel(kaccel->currentKey(actionName));
+	QAction::setAccel(kaccel->currentKey(name()));
 }
 
 bool KAction::isPlugged() const

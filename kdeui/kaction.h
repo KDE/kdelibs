@@ -219,9 +219,7 @@ public:
      */
     virtual int plug( QWidget *w, int index = -1 );
 	
-	virtual void plugAccel(KAccel *accel, const QString &actionName,
-						   bool configurable = true);
-	virtual void plugStdAccel(KAccel *accel, KStdAccel::StdAccel stdaccel);
+	virtual void plugAccel(KAccel *accel, bool configurable = true);
 
     /**
      * "Unplug" or remove this action from a given widget.
@@ -258,7 +256,6 @@ public:
 
  private:
 	KAccel  *kaccel;
-    QString  actionName;
 };
 
 /**
