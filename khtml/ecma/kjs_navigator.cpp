@@ -80,7 +80,7 @@ namespace KJS {
         static const TypeInfo info;
     private:
     };
-    const TypeInfo Plugins::info = { "Plugins", HostType, 0, 0, 0 };
+    const TypeInfo Plugins::info = { "PluginArray", HostType, 0, 0, 0 };
 
 
     class MimeTypes : public PluginBase {
@@ -91,7 +91,7 @@ namespace KJS {
         static const TypeInfo info;
     private:
     };
-    const TypeInfo MimeTypes::info = { "MimeTypes", HostType, 0, 0, 0 };
+    const TypeInfo MimeTypes::info = { "MimeTypeArray", HostType, 0, 0, 0 };
 
 
     class Plugin : public HostImp {
