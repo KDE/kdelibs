@@ -241,7 +241,9 @@ NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName 
     return new NameNodeListImpl( this, elementName );
 }
 
+#ifdef __GNUC__
 #warning bloatware
+#endif
 // ### Please remove that duplicate code.
 // this seems somewhat redundant to getElementByID().
 // however, it is not flexible enough to suit specific needs.
