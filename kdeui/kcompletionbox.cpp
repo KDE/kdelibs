@@ -141,26 +141,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
         case QEvent::Hide:
 	    m_parent->removeEventFilter( this );
-            revertFocus();
-            break;
-
-        case QEvent::KeyPress: {
-            QKeyEvent *ev = static_cast<QKeyEvent *>( e );
-            if ( ev->key() == Key_Escape ) {
-                hide();
-                return true;
-            }
-            else if ( ev->key() == Key_Up && currentItem() == 0 ) {
-                revertFocus();
-                return true;
-            }
-
-            break;
-        }
-
-        case QEvent::FocusIn: // workaround for "first item not highlighted"
-            if ( currentItem() == 0 )
-                setSelected( currentItem(), true );
             break;
 
         case QEvent::MouseButtonPress: {
@@ -168,7 +148,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             QPoint pos = mapFromGlobal( me->globalPos() );
             if ( me->button()!=0 && !rect().contains( pos ) ) {
                 // outside
-                kdDebug() << "hide" << endl;
                 hide();
                 return FALSE;
             }
@@ -192,14 +171,6 @@ void KCompletionBox::popup()
         if ( !isVisible() )
             show();
     }
-}
-
-void KCompletionBox::revertFocus()
-{
-    if ( !m_parent->isActiveWindow() )
-        m_parent->setActiveWindow();
-    m_parent->setFocus();
-    setSelected( 0, false );
 }
 
 QSize KCompletionBox::sizeHint() const
