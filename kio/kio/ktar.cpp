@@ -341,6 +341,9 @@ bool KTar::openArchive( int mode )
     d->dirList.clear();
     QIODevice* dev = device();
 
+    if ( !dev )
+        return false;
+
     // read dir infos
     char buffer[ 0x200 ];
     bool ende = false;

@@ -88,10 +88,7 @@ KArchive::~KArchive()
 
 bool KArchive::open( int mode )
 {
-    if(0 == m_dev)
-        return false; // Fail w/o segfaulting if the device is no good
-
-    if ( !m_dev->open( mode ) )
+    if ( m_dev && !m_dev->open( mode ) )
         return false;
 
     if ( m_open )
@@ -114,7 +111,8 @@ void KArchive::close()
     // to the file in closeArchive()
     closeArchive();
 
-    m_dev->close();
+    if ( m_dev )
+        m_dev->close();
 
     delete d->rootDir;
     d->rootDir = 0;
@@ -143,7 +141,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
         	<< " failed: " << strerror(errno) << endl;
         return false;
     }
-    
+
     if (fileInfo.isSymLink()) {
         return writeSymLink(destName, fileInfo.readLink(), fileInfo.owner(),
         		fileInfo.group(), fi.st_mode, fi.st_atime, fi.st_mtime,
@@ -355,6 +353,7 @@ bool KArchive::writeData( const char* data, uint size )
 
 bool KArchive::writeData_impl( const char* data, uint size )
 {
+    Q_ASSERT( device() );
     return device()->writeBlock( data, size ) == (Q_LONG)size;
 }
 

@@ -81,6 +81,8 @@ bool KAr::openArchive( int mode )
     }
 
     QIODevice* dev = device();
+    if ( !dev )
+        return false;
 
     char magic[8];
     dev->readBlock (magic, 8);

@@ -37,20 +37,22 @@
 
 */
 
+#include "kzip.h"
+#include "kfilterdev.h"
+#include "klimitediodevice.h"
+#include <kmimetype.h>
+#include <ksavefile.h>
+#include <kdebug.h>
+
 #include <qasciidict.h>
 #include <qfile.h>
 #include <qdir.h>
+#include <qdatetime.h>
+#include <qptrlist.h>
+
+#include <zlib.h>
 #include <time.h>
 #include <string.h>
-#include <qdatetime.h>
-#include <kdebug.h>
-#include <qptrlist.h>
-#include <kmimetype.h>
-#include <zlib.h>
-
-#include "kfilterdev.h"
-#include "kzip.h"
-#include "klimitediodevice.h"
 
 const int max_path_len = 4095;	// maximum number of character a path may contain
 
@@ -293,7 +295,8 @@ public:
           m_currentDev( 0L ),
           m_compression( 8 ),
           m_extraField( KZip::NoExtraField ),
-	  m_offset( 0L ) { }
+	  m_offset( 0L ),
+          m_saveFile( 0 ) {}
 
     unsigned long           m_crc;         // checksum
     KZipFileEntry*          m_currentFile; // file currently being written
@@ -301,10 +304,11 @@ public:
     QPtrList<KZipFileEntry> m_fileList;    // flat list of all files, for the index (saves a recursive method ;)
     int                     m_compression;
     KZip::ExtraField        m_extraField;
-    unsigned int	        m_offset; // holds the offset of the place in the zip,
+    unsigned int            m_offset; // holds the offset of the place in the zip,
     // where new data can be appended. after openarchive it points to 0, when in
     // writeonly mode, or it points to the beginning of the central directory.
     // each call to writefile updates this value.
+    KSaveFile*              m_saveFile;
 };
 
 KZip::KZip( const QString& filename )
@@ -313,7 +317,9 @@ KZip::KZip( const QString& filename )
     //kdDebug(7040) << "KZip(filename) reached." << endl;
     m_filename = filename;
     d = new KZipPrivate;
-    setDevice( new QFile( filename ) );
+    // unusual: this ctor leaves the device set to 0.
+    // This is for the use of KSaveFile, see openArchive.
+    // KDE4: move KSaveFile support to base class, KArchive.
 }
 
 KZip::KZip( QIODevice * dev )
@@ -329,8 +335,12 @@ KZip::~KZip()
     //kdDebug(7040) << "~KZip reached." << endl;
     if( isOpened() )
         close();
-    if ( !m_filename.isEmpty() )
-        delete device(); // we created it ourselves
+    if ( !m_filename.isEmpty() ) { // we created the device ourselves
+        if ( d->m_saveFile ) // writing mode
+            delete d->m_saveFile;
+        else // reading mode
+            delete device(); // (the QFile)
+    }
     delete d;
 }
 
@@ -339,10 +349,34 @@ bool KZip::openArchive( int mode )
     //kdDebug(7040) << "openarchive reached." << endl;
     d->m_fileList.clear();
 
-    if ( mode == IO_WriteOnly )
+    switch ( mode ) {
+    case IO_WriteOnly:
+        // The use of KSaveFile can't be done in the ctor (no mode known yet)
+        // Ideally we would reimplement open() and do it there (BIC)
+        if ( !m_filename.isEmpty() ) {
+            kdDebug(7040) << "Writing to a file using KSaveFile" << endl;
+            d->m_saveFile = new KSaveFile( m_filename );
+            if ( d->m_saveFile->status() != 0 ) {
+                kdWarning(7040) << "KSaveFile creation for " << m_filename << " failed, " << strerror( d->m_saveFile->status() ) << endl;
+                delete d->m_saveFile;
+                return false;
+            }
+            Q_ASSERT( d->m_saveFile->file() );
+            setDevice( d->m_saveFile->file() );
+        }
         return true;
-    if ( mode != IO_ReadOnly && mode != IO_ReadWrite )
+    case IO_ReadOnly:
+    case IO_ReadWrite:
     {
+        // ReadWrite mode still uses QFile for now; we'd need to copy to the tempfile, in fact.
+        if ( !m_filename.isEmpty() ) {
+            setDevice( new QFile( m_filename ) );
+            if ( !device()->open( mode ) )
+                return false;
+        }
+        break; // continued below
+    }
+    default:
         kdWarning(7040) << "Unsupported mode " << mode << endl;
         return false;
     }
@@ -634,8 +668,13 @@ bool KZip::closeArchive()
         //kdDebug(7040) << "closearchive readonly reached." << endl;
         return true;
     }
+
+    kdDebug() << k_funcinfo << "device=" << device() << endl;
     //ReadWrite or WriteOnly
     //write all central dir file entries
+
+    if ( !device() ) // saving aborted
+        return false;
 
     // to be written at the end of the file...
     char buffer[ 22 ]; // first used for 12, then for 22 at the end
@@ -810,6 +849,13 @@ bool KZip::closeArchive()
     if ( device()->writeBlock( buffer, 22 ) != 22 )
         return false;
 
+    if ( d->m_saveFile ) {
+        d->m_saveFile->close();
+        setDevice( 0 );
+        delete d->m_saveFile;
+        d->m_saveFile = 0;
+    }
+
     //kdDebug(7040) << "kzip.cpp reached." << endl;
     return true;
 }
@@ -864,9 +910,15 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
         return false;
     }
 
+    if ( !device() ) { // aborted
+        //kdWarning(7040) << "prepareWriting_impl: no device" << endl;
+        return false;
+    }
+
     // set right offset in zip.
     if ( !device()->at( d->m_offset ) ) {
         kdWarning(7040) << "prepareWriting_impl: cannot seek in ZIP file. Disk full?" << endl;
+        abort();
         return false;
     }
 
@@ -993,8 +1045,10 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
     delete[] buffer;
 
     Q_ASSERT( b );
-    if (!b)
+    if (!b) {
+        abort();
         return false;
+    }
 
     // Prepare device for writing the data
     // Either device() if no compression, or a KFilterDev to compress
@@ -1005,8 +1059,10 @@ bool KZip::prepareWriting_impl(const QString &name, const QString &user,
 
     d->m_currentDev = KFilterDev::device( device(), "application/x-gzip", false );
     Q_ASSERT( d->m_currentDev );
-    if ( !d->m_currentDev )
+    if ( !d->m_currentDev ) {
+        abort();
         return false; // ouch
+    }
     static_cast<KFilterDev *>(d->m_currentDev)->setSkipHeaders(); // Just zlib, not gzip
 
     b = d->m_currentDev->open( IO_WriteOnly );
@@ -1127,8 +1183,10 @@ bool KZip::writeData_impl(const char * c, uint i)
 {
     Q_ASSERT( d->m_currentFile );
     Q_ASSERT( d->m_currentDev );
-    if (!d->m_currentFile || !d->m_currentDev)
+    if (!d->m_currentFile || !d->m_currentDev) {
+        abort();
         return false;
+    }
 
     // crc to be calculated over uncompressed stuff...
     // and they didn't mention it in their docs...
@@ -1136,7 +1194,10 @@ bool KZip::writeData_impl(const char * c, uint i)
 
     Q_LONG written = d->m_currentDev->writeBlock( c, i );
     //kdDebug(7040) << "KZip::writeData wrote " << i << " bytes." << endl;
-    return written == (Q_LONG)i;
+    bool ok = written == (Q_LONG)i;
+    if ( !ok )
+        abort();
+    return ok;
 }
 
 void KZip::setCompression( Compression c )
@@ -1158,6 +1219,15 @@ KZip::ExtraField KZip::extraField() const
 {
     return d->m_extraField;
 }
+
+void KZip::abort()
+{
+    if ( d->m_saveFile ) {
+        d->m_saveFile->abort();
+        setDevice( 0 );
+    }
+}
+
 
 ///////////////
 
@@ -1197,4 +1267,3 @@ QIODevice* KZipFileEntry::device() const
               <<" please use a command-line tool to handle this file." << endl;
     return 0L;
 }
-
