@@ -374,11 +374,13 @@ void RenderFlow::layoutBlockChildren()
             child->layout();
 	} else if ( child->isFloating() ) {
 	    // margins of floats and other objects do not collapse. The hack below assures this.
-	    m_height += prevMargin;
+	    if ( prevMargin != TABLECELLMARGIN )
+		m_height += prevMargin;
 	    insertSpecialObject( child );
 	    positionNewFloats();
 	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl;
-	    m_height -= prevMargin;
+	    if ( prevMargin != TABLECELLMARGIN )
+		m_height -= prevMargin;
 	    child = child->nextSibling();
 	    continue;
 	}
