@@ -1273,3 +1273,16 @@ bool KHTMLWidget::findTextNext( const QRegExp &/*exp*/ )
     // ###
     return false;
 }
+
+void KHTMLWidget::saveState( QDataStream &stream )
+{ 
+  stream << url() << (Q_INT32)contentsX() << (Q_INT32)contentsY(); 
+}
+  
+void KHTMLWidget::restoreState( QDataStream &stream )
+{ 
+  QString u; 
+  Q_INT32 xOfs, yOfs; 
+  stream >> u >> xOfs >> yOfs;
+  openURL( u, false, xOfs, yOfs ); 
+}

@@ -33,6 +33,7 @@
 // qt includes and classes
 #include <qscrollview.h>
 #include <qstring.h>
+#include <qdatastream.h>
 
 class QPainter;
 
@@ -50,7 +51,6 @@ namespace DOM {
 class KHTMLCache;
 class KHTMLDecoder;
 class HTMLSettings;
-class SavedPage;
 
 // JScript class
 class KJSWorld;
@@ -400,16 +400,18 @@ public:
     void cancelRequestFile( const QString &_url );
 
     void cancelAllRequests();
+
     /**
-     * Function used to save the current html-page into a struct
+     * Function used to save the current html-page into the datastream
      * This does only work, if the page has a valid URL, pages
      * filled with the write() method are not saveable
      */
-    SavedPage *saveYourself(SavedPage *p = 0);
+    virtual void saveState( QDataStream &stream );
+  
     /**
      * restore a page previously saved with @ref saveYourself()
      */
-    void restore(SavedPage *);
+    virtual void restoreState( QDataStream &stream );
 
     /**
      * hook to get the Document. Used eg by jscript to manipulate the document.
