@@ -84,7 +84,7 @@ int main(int argc, char **argv)
   client->attach(); // attach to the server, now we can use DCOP service
 
 
-  client->registerAs( app.name() ); // register at the server, now others can call us.
+  client->registerAs( app.name(), false ); // register at the server, now others can call us.
   qDebug("I registered as '%s'", client->appId().data() );
 
   if ( client->isApplicationRegistered( app.name() ) )
