@@ -1,6 +1,14 @@
 #ifndef __http_h__
 #define __http_h__
 
+#ifdef HAVE_LIBZ
+#define DO_GZIP
+#endif
+
+#ifdef HAVE_SSL_H
+#define DO_SSL
+#endif
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,6 +20,9 @@
 
 #include <errno.h>
 #include <stdio.h>
+#ifdef DO_SSL
+#include <ssl.h>
+#endif
 #include <unistd.h>
 #include <netdb.h>
 
@@ -21,6 +32,7 @@
 #include <kio_interface.h>
 #include <kio_base.h>
 #include <kurl.h>
+
 
 // Default ports.. you might want to change this if you're trying to dodge
 // a proxy with some creative network address translation..  HTTP_PORT
@@ -54,6 +66,12 @@ protected:
 
   void decodeChunked();
   void decodeGzip();
+
+  int openStream();
+  ssize_t write (const void *buf, size_t nbytes);
+  ssize_t read (void *b, size_t nbytes);
+  bool eof ();
+  bool m_bEOF;
 
   /**
     * Add an encoding on to the appropiate stack
@@ -119,6 +137,14 @@ protected: // Members
        m_bIgnoreErrors; 
 
   bool m_bCanResume;
+
+#ifdef DO_SSL
+  bool m_bUseSSL2, m_bUseSSL3, m_bUseTLS1, m_bUseSSL;
+  SSL_METHOD *meth;
+  SSL_CTX *ctx;
+  SSL *hand;
+#endif
+
 };
 
 class HTTPIOJob : public IOJob

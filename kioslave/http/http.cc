@@ -8,6 +8,10 @@
 #define DO_GZIP
 #endif
 
+#ifdef HAVE_SSL_H
+#define DO_SSL
+#endif
+
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -17,6 +21,11 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+
+#ifdef DO_SSL
+#include <ssl.h>
+#include "/usr/local/include/err.h"
+#endif
 
 #ifdef DO_MD5
 #include <md5.h>
@@ -49,7 +58,7 @@ extern "C" {
 int main( int argc, char **argv )
 {
   signal(SIGCHLD, sigchld_handler);
-  signal(SIGSEGV, sigsegv_handler);
+  //signal(SIGSEGV, sigsegv_handler);
 
   Connection parent( 0, 1 );
 
@@ -242,6 +251,15 @@ int revmatch(const char *host, const char *nplist)
     return 0;
 }
 
+extern "C" {
+  int verify_callback();
+}
+
+int verify_callback ()
+{
+  return 1;
+} 
+
 /*****************************************************************************/
 
 HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
@@ -269,6 +287,31 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
     m_strNoProxyFor = ProtocolManager::self()->getNoProxyFor().data();
   }
 
+  m_bEOF=false;
+#ifdef DO_SSL
+  m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
+  m_bUseSSL=false;
+  if (m_bUseSSL2 && m_bUseSSL3)
+    meth=SSLv23_client_method();
+  else if (m_bUseSSL3)
+    meth=SSLv3_client_method();
+  else
+    meth=SSLv2_client_method();
+#ifdef SIGPIPE
+  signal(SIGPIPE,SIG_IGN);
+#endif
+  SSLeay_add_all_algorithms();
+  SSLeay_add_ssl_algorithms();
+  ctx=SSL_CTX_new(meth);
+  if (ctx == NULL) {
+    fprintf(stderr, "We've got a problem!\n");
+    fflush(stderr);
+  }
+  SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
+  hand=SSL_new(ctx);
+  
+#endif
+
   m_sContentMD5 = "";
   Authentication = AUTH_None;
   ProxyAuthentication = AUTH_None;
@@ -292,6 +335,59 @@ bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *ho
 }
 
 
+int HTTPProtocol::openStream() {
+#ifdef DO_SSL
+  if (m_bUseSSL) {
+    fprintf(stderr,"Calling set_fd\n");
+    fflush(stderr);
+    SSL_set_fd(hand, m_sock);
+    fprintf(stderr, "%u,%d\n", m_sock, SSL_connect(hand));
+    fflush(stderr);
+    fprintf(stderr, "err:%d\n",ERR_get_error());
+    fflush(stderr);
+    return true;
+  }
+#endif
+  m_fsocket = fdopen( m_sock, "r+" );
+  if( !m_fsocket ) {
+    return false;
+  }
+  return true;
+}
+
+ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
+{
+#ifdef DO_SSL
+  if (m_bUseSSL)
+    return SSL_write(hand, buf, nbytes);
+#endif
+  return ::write(m_sock, buf, nbytes);
+}
+
+ssize_t HTTPProtocol::read (void *b, size_t nbytes)
+{
+  ssize_t ret;
+#ifdef DO_SSL
+  if (m_bUseSSL) {
+    fprintf(stderr, "SSL used\n");
+    fflush(stderr);
+    ret=SSL_read(hand, b, nbytes);
+    if (ret==0) m_bEOF=true;
+    if (m_bEOF) {fprintf(stderr,"GOT EOF!\n");fflush(stderr);}
+    return ret;
+  }
+#endif
+  ret=fread(b, 1, nbytes, m_fsocket);
+  if (!ret) m_bEOF=feof(m_fsocket);
+  if (m_bEOF) {fprintf(stderr,"GOT EOF!\n");fflush(stderr);}
+  return ret;
+}
+
+bool HTTPProtocol::eof()
+{
+  return m_bEOF;
+}
+
 // It's reasonably safe to assume that it's a vaild protocol..
 // altho it might be a good idea to add an assert trap somewhere
 bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
@@ -301,11 +397,21 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   bool unauthorized = false;
 
   if ( port == -1 ) {
-    if ((_url.protocol() == "http") || (_url.protocol() == "httpf"))
+    if (strncasecmp(_url.protocol(), "https", 5)==0)
+      port = DEFAULT_HTTPS_PORT;
+    else if ((strncasecmp(_url.protocol(), "http", 4)==0) || (strncasecmp(_url.protocol(), "httpf", 5)==0))
 	    port = DEFAULT_HTTP_PORT;
-    else if (_url.protocol() == "https")
-	    port = DEFAULT_HTTPS_PORT;
+
+    else {
+      fprintf(stderr, "Got a werid protocol (%s), assuming port is 80\n", _url.protocol());
+      fflush(stderr);
+      port=80;
+    }
   }
+  fprintf(stderr,"Protocol is: %s:%d\n", _url.protocol(), port);
+  fflush(stderr);
+  if (strncasecmp(_url.protocol(), "https", 5)==0)
+    m_bUseSSL=true;
 
   m_sock = ::socket(PF_INET,SOCK_STREAM,0);
   if ( m_sock < 0 )  {
@@ -344,11 +450,9 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
     }
   }
 
-  m_fsocket = fdopen( m_sock, "r+" );
-  if( !m_fsocket ) {
+  // Placeholder
+  if (!openStream())
     error( ERR_COULD_NOT_CONNECT, _url.host() );
-    return false;
-  }
 
   string command;
 
@@ -439,14 +543,14 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
   int n;
 repeat1:
-  if ( ( n = write( m_sock, command.c_str(), command.size() ) ) != (int)command.size() ) {
+  if ( ( n = write(command.c_str(), command.size() ) ) != (int)command.size() ) {
     if ( n == -1 && errno == EINTR )
       goto repeat1;    
     error( ERR_CONNECTION_BROKEN, _url.host() );
     return false;
   }
 repeat2:
-  if ( _post_data && ( n = write( m_sock, _post_data, _post_data_size ) != _post_data_size ) ) {
+  if ( _post_data && ( n = write(_post_data, _post_data_size ) != _post_data_size ) ) {
     if ( n == -1 && errno == EINTR )
       goto repeat2;
     error( ERR_CONNECTION_BROKEN, _url.host() );
@@ -458,7 +562,7 @@ repeat2:
   // however at least extensions should be checked
   m_strMimeType = "text/html";
 
-  while( len && ( ret = fgets( f_buffer, 1024, m_fsocket ) ) ) { 
+  while( len && ( ret = read( f_buffer, 1024) ) ) { 
     len = strlen( f_buffer );
     while( len && (f_buffer[ len-1 ] == '\n' || f_buffer[ len-1 ] == '\r') )
       f_buffer[ --len ] = 0;
@@ -673,14 +777,14 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  string user_agent("Konqueror/1.9.032299");
+  QString user_agent("Konqueror/1.9.032899");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
 #ifdef DO_GZIP
   user_agent+="; Supports gzip encoding";
 #endif
-  return user_agent.c_str();
+  return user_agent.data();
 }
 
 
@@ -724,8 +828,8 @@ void HTTPProtocol::slotGet( const char *_url )
   MD5_CTX context;
   MD5Init(&context);
 #endif
-  while (!feof(m_fsocket)) {
-    nbytes = fread(buffer, 1, 2048, m_fsocket);
+  while (!eof()) {
+    nbytes = read(buffer, 2048);
     if (nbytes > 0) {
       if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty()) {
 #ifdef DO_MD5
@@ -899,7 +1003,7 @@ void HTTPProtocol::decodeGzip()
   // gunzipping, this should suffice.  It just writes out
   // the gzip'd data to a file.
   fd=mkstemp(filename);
-  write(fd, big_buffer.data(), big_buffer.size());
+  ::write(fd, big_buffer.data(), big_buffer.size());
   lseek(fd, 0, SEEK_SET);
   gzFile gzf = gzdopen(fd, "rb");
 
