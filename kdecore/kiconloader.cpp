@@ -388,8 +388,8 @@ QPixmap KIconLoader::loadIcon(QString name, int group, int size,
     }
 
     key = "$kico_";
-    key += QString().setNum((int) size);
-    key += "_";
+    key += QString().setNum(size); key += "_";
+    key += QString().setNum(state); key += "-";
     key += name;
     bool inCache = QPixmapCache::find(key, pix);
     if (inCache && (path_store == 0L))

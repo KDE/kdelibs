@@ -32,7 +32,7 @@ public:
      */
     void init();
 
-    enum Effects { NoEffect, ToGray, DeSaturate, Emboss, LastEffect };
+    enum Effects { NoEffect, ToGray, DeSaturate, SemiTransparent, LastEffect };
 
     /**
      * Apply an effect to an image. The effect to apply depends on the 
@@ -71,6 +71,8 @@ public:
 private:
     void toGray(QImage &image);
     void deSaturate(QImage &image, float value);
+    void semiTransparent(QImage &image);
+    void semiTransparent(QPixmap &pixmap);
 
     int mEffect[4][3];
     float mValue[4][3];

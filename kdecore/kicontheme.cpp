@@ -110,7 +110,8 @@ KIconTheme::KIconTheme(QString name, QString appName)
 	if (it == icnlibs.end())
 	    return;
 	mDir = *it + appName + "/icons/" + name + "/";
-	mName += "-app";
+	mName += "-";
+	mName += appName;
     }
 
     QStringList dirs = cfg->readListEntry("Directories");

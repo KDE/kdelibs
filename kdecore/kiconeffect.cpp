@@ -11,6 +11,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qbitmap.h>
 #include <qpixmap.h>
 #include <qimage.h>
 #include <qcolor.h>
@@ -49,6 +50,10 @@ void KIconEffect::init()
     QStringList::ConstIterator it, it2;
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
+	// Default effects
+	mEffect[i][0] = NoEffect;
+	mEffect[i][1] = NoEffect;
+	mEffect[i][2] = SemiTransparent;
 	config->setGroup(*it + "Icons");
 	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
 	{
@@ -57,10 +62,12 @@ void KIconEffect::init()
 		effect = ToGray;
 	    else if (tmp == "desaturate")
 		effect = DeSaturate;
-	    else if (tmp == "emboss")
-		effect = Emboss;
-	    else
+	    else if (tmp == "semitransparent")
+		effect = SemiTransparent;
+	    else if (tmp == "noeffect")
 		effect = NoEffect;
+	    else
+		break;
 	    mEffect[i][j] = effect;
 	    mValue[i][j] = config->readDoubleNumEntry(*it2 + "Value");
 	}
@@ -86,7 +93,7 @@ QImage KIconEffect::apply(QImage image, int effect, float value)
 {
     if (effect >= LastEffect )
     {
-	kdDebug(265) << "Illegal icon effect: " << effect << "\n";
+	kdDebug(264) << "Illegal icon effect: " << effect << "\n";
 	return image;
     }
     if (value > 1.0)
@@ -101,8 +108,8 @@ QImage KIconEffect::apply(QImage image, int effect, float value)
     case DeSaturate:
 	deSaturate(image, value);
 	break;
-    case Emboss:
-	kdDebug(265) << "Emboss effect not yet supported\n";
+    case SemiTransparent:
+	semiTransparent(image);
 	break;
     }
     return image;
@@ -110,19 +117,42 @@ QImage KIconEffect::apply(QImage image, int effect, float value)
 
 QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state)
 {
-    QImage img = pixmap.convertToImage();
-    img = apply(img, group, state);
-    QPixmap result;
-    result.convertFromImage(img);
-    return result;
+    if (state >= KIcon::LastState)
+    {
+	kdDebug(264) << "Illegal icon state: " << state << "\n";
+	return pixmap;
+    }
+    if (group >= KIcon::LastGroup)
+    {
+	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	return pixmap;
+    }
+    return apply(pixmap, mEffect[group][state], mValue[group][state]);
 }
     
 QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value)
 {
-    QImage img = pixmap.convertToImage();
-    img = apply(img, effect, value);
     QPixmap result;
-    result.convertFromImage(img);
+    QImage tmpImg;
+
+    if (effect >= LastEffect )
+    {
+	kdDebug(264) << "Illegal icon effect: " << effect << "\n";
+	return result;
+    }
+    switch (effect)
+    {
+    case SemiTransparent:
+	result = pixmap;
+	semiTransparent(result);
+	break;
+    default:
+	tmpImg = pixmap.convertToImage();
+	tmpImg = apply(tmpImg, effect, value);
+	result.convertFromImage(tmpImg);
+	break;
+    }
+    result.save("save.png", "PNG");
     return result;
 }
 
@@ -160,6 +190,65 @@ void KIconEffect::deSaturate(QImage &img, float value)
 	data[i] = qRgba(color.red(), color.green(), color.blue(),
 		qAlpha(data[i]));
     }
+}
+
+void KIconEffect::semiTransparent(QImage &img)
+{
+    img.setAlphaBuffer(true);
+
+    int x, y;
+    if (img.depth() == 32)
+    {
+	for (y=0; y<img.height(); y++)
+	{
+	    QRgb *line = (QRgb *) img.scanLine(y);
+	    for (x=(y%2); x<img.width(); x+=2)
+		line[x] &= 0x00ffffff;
+	}
+    } else
+    {
+	// Insert transparent pixel into the clut.
+	int transColor = 256;
+	if (img.numColors() > 255)
+	{
+	    // no space for transparent pixel..
+	    for (x=0; x<img.numColors(); x++)
+	    {
+		// try to find already transparent pixel
+		if (qAlpha(img.color(x)) < 127)
+		{
+		    transColor = x;
+		    break;
+		}
+	    }
+	} else
+	{
+	    transColor = img.numColors();
+	}
+	img.setColor(transColor, 0);
+
+	for (y=0; y<img.height(); y++)
+	{
+	    unsigned char *line = img.scanLine(y);
+	    for (x=(y%2); x<img.width(); x+=2)
+		line[x] = transColor;
+	}
+    }
+}
+
+void KIconEffect::semiTransparent(QPixmap &pix)
+{
+    QImage img = pix.mask()->convertToImage();
+    for (int y=0; y<img.height(); y++)
+    {
+	QRgb *line = (QRgb *) img.scanLine(y);
+	QRgb pattern = (y % 2) ? 0x55555555 : 0xaaaaaaaa;
+	for (int x=0; x<(img.width()+31)/32; x++)
+	    line[x] &= pattern;
+    }
+    QBitmap mask;
+    mask.convertFromImage(img);
+    pix.setMask(mask);
 }
 
 QImage KIconEffect::doublePixels(QImage src)
