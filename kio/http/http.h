@@ -312,7 +312,7 @@ protected:
   QByteArray m_bufReceive; // Receive buffer
   char m_lineBuf[1024];
   char *m_linePtr;
-  int m_lineCount;
+  size_t m_lineCount;
 
   // Holds the POST data so it won't get lost on if we
   // happend to get a 401/407 response when submitting,
@@ -345,6 +345,7 @@ protected:
 
   // Proxy related members
   bool m_bUseProxy;
+  bool m_bAutoProxyCfg;
   int m_iProxyPort;
   KURL m_proxyURL;
   QString m_strNoProxyFor;

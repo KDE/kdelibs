@@ -1,6 +1,6 @@
 // -*- c-basic-offset: 2 -*-
 //
-//  Portions Copyright 2000-2001 George Staikos <staikos@kde.org>
+//  Portions Copyright 2000 George Staikos <staikos@kde.org>
 //  (mostly SSL related)
 //
 
@@ -180,7 +180,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   kdDebug(7113) << "HTTPProtocol: mProtocol=" << mProtocol << " m_protocol=" << m_protocol << endl;
   m_maxCacheAge = 0;
   m_sock = 0;
-  m_lineCount = 0;
   m_fcache = 0;
   m_bKeepAlive = false;
   m_iSize = -1;
@@ -193,7 +192,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 
   reparseConfiguration();
 
-  m_bEOF=false;
 #ifdef DO_SSL
   m_bUseSSL=true;
 #endif
@@ -336,7 +334,7 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 #endif
   int n;
  keeptrying:
-  if ((n = KSocks::self()->write(m_sock, buf, nbytes)) != (int)nbytes)
+  if ((n = ::write(m_sock, buf, nbytes)) != (int)nbytes)
     {
       if (n == -1 && errno == EINTR)
         goto keeptrying;
@@ -366,7 +364,7 @@ char *HTTPProtocol::gets (char *s, int size)
 
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 {
-  ssize_t ret;
+  ssize_t ret = 0;
   if (m_lineCount > 0)
   {
      ret = ( nbytes < m_lineCount ? nbytes : m_lineCount );
@@ -426,7 +424,7 @@ bool HTTPProtocol::http_isConnected()
     else if ( retval > 0 )
     {
       char buffer[100];
-      retval = KSocks::self()->recv(m_sock, buffer, 80, MSG_PEEK);
+      retval = recv(m_sock, buffer, 80, MSG_PEEK);
       // retval ==  0 ==> Connection clased
       if ( retval == 0 )
         return false;
@@ -503,7 +501,7 @@ static bool waitForHeader( int sock, int maxTimeout )
       timeout.tv_usec = 0;
       timeout.tv_sec = 1; // 1 second
 
-      KSocks::self()->select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
+      select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
 
       if (FD_ISSET(sock, &rd))
       {
@@ -517,8 +515,6 @@ bool
 HTTPProtocol::http_openConnection()
 {
     m_bKeepAlive = false;
-    m_lineCount = 0;
-
     KExtendedSocket ks;
     // do we still want a proxy after all that?
     if ( m_state.do_proxy )
@@ -754,9 +750,11 @@ bool HTTPProtocol::http_open()
   http_checkConnection();
 
   m_fcache = 0;
+  m_lineCount = 0;
   m_bCachedRead = false;
   m_bCachedWrite = false;
   m_bMustRevalidate = false;
+  m_bEOF = false;
   if (m_bUseCache)
   {
      m_fcache = checkCacheEntry( );
@@ -1807,7 +1805,8 @@ bool HTTPProtocol::readHeader()
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
   if( locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
-      m_request.method == HTTP_HEAD) )
+      m_request.method == HTTP_HEAD) &&
+      m_request.url.filename() != "favicon.ico" )
   {
      kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
      mimeType( m_strMimeType );
@@ -2055,7 +2054,6 @@ void HTTPProtocol::http_closeConnection()
   if ( m_sock )
     ::close( m_sock );
   m_sock = 0;
-  m_lineCount = 0;
 #ifdef DO_SSL
   closeSSL();
 #endif
@@ -2635,7 +2633,7 @@ bool HTTPProtocol::readBody( )
     if (bytesReceived > 0)
     {
       // If a broken server does not send the mime-type,
-      // we try to id from the content before dealing
+      // we try to id it from the content before dealing
       // with the content itself.
       if ( m_strMimeType.isEmpty() && !( m_responseCode >= 300 && m_responseCode <=399) )
       {
@@ -3686,11 +3684,13 @@ void HTTPProtocol::reparseConfiguration()
   m_strProxyAuthorization = QString::null;
   if ( KProtocolManager::useProxy() )
   {
-    // Use the appropriate proxy depending on the protocol
-    QCString protocol = (m_protocol == "https") ? QCString("http") : m_protocol;
-    m_proxyURL = KURL( KProtocolManager::proxyFor( protocol ) );
-    if (!m_proxyURL.isMalformed() )
+    //
+    m_bAutoProxyCfg = KProtocolManager::hasProxyConfigScript();
+    if ( !m_bAutoProxyCfg )
     {
+      m_proxyURL = KURL( KProtocolManager::proxyFor( m_protocol ) );
+      if (!m_proxyURL.isMalformed() )
+      {
         m_bUseProxy = true;
         m_strNoProxyFor = KProtocolManager::noProxyFor();
         ProxyAuthentication = AUTH_None;
@@ -3700,12 +3700,12 @@ void HTTPProtocol::reparseConfiguration()
                       << "REALM= " << m_strProxyRealm << endl
                       << "AUTH_STRING= " << m_strProxyAuthorization << endl
                       << "No Proxy for= " << m_strNoProxyFor << endl;
-    }
-    else
+      }
+      else
         kdDebug(7103) << "Proxy URL \"" << m_proxyURL.url() << "\" is either "
                       << "MALFORMED or NOT SUPPORTED. IGNORING it!!" << endl;
+    }
   }
-
   m_bSendUserAgent = KProtocolManager::sendUserAgent();
   m_bUseCache = KProtocolManager::useCache();
   if (m_bUseCache)
@@ -3714,7 +3714,7 @@ void HTTPProtocol::reparseConfiguration()
     m_maxCacheAge = KProtocolManager::maxCacheAge();
   }
 
-  // Update the proxy and remote server connection timeout values
+  // Obtain the proxy and remote server timeout values
   m_proxyConnTimeout = KProtocolManager::proxyConnectTimeout();
   m_remoteConnTimeout = KProtocolManager::connectTimeout();
   m_remoteRespTimeout = KProtocolManager::responseTimeout();
@@ -3758,7 +3758,6 @@ void HTTPProtocol::reparseConfiguration()
      }
   }
   delete cookieConfig;
-
 }
 
 void HTTPProtocol::resetSessionSettings()
