@@ -255,16 +255,6 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       card.addLine( VCardLine( identifier, value ) );
     }
 
-    Messaging::List::ConstIterator imIt;
-    Messaging::List imList = (*addrIt).messagings();
-    for ( imIt = imList.begin(); imIt != imList.end(); ++imIt ) {
-      QString value = (*imIt).serviceType().replace( ';', "\\;" ) + ";" +
-                      (*imIt).accountId().replace( ';', "\\;" ) + ";" +
-                      (*imIt).senderAccountId().replace( ';', "\\;" );
-
-      card.addLine( VCardLine( "x-kabc-im", value ) );
-    }
-
     vCardList.append( card );
   }
 
@@ -494,20 +484,6 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
         // X-
         if ( (*lineIt).identifier().startsWith( "x-" ) ) {
-          if ( (*lineIt).identifier().startsWith( "x-kabc-im" ) ) {
-            QStringList ims = splitString( semicolonSep, (*lineIt).value().asString() );
-
-            if ( ims.count() != 3 )
-              continue;
-
-            Messaging im( ims[ 0 ] );
-            im.setAccountId( ims[ 1 ] );
-            im.setSenderAccountId( ims[ 2 ] );
-
-            addr.insertMessaging( im );
-            continue;
-          }
-
           QString key = (*lineIt).identifier().mid( 2 );
           int dash = key.find( "-" );
           addr.insertCustom( key.left( dash ), key.mid( dash + 1 ), (*lineIt).value().asString() );

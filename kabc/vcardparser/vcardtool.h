@@ -29,7 +29,6 @@ class QDateTime;
 namespace KABC {
 
 class Agent;
-class Messaging;
 class Key;
 class Picture;
 class Secrecy;

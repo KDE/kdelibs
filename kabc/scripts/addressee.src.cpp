@@ -37,7 +37,6 @@ struct Addressee::AddresseeData : public KShared
   PhoneNumber::List phoneNumbers;
   Address::List addresses;
   Key::List keys;
-  Messaging::List ims;
   QStringList emails;
   QStringList categories;
   QStringList custom;
@@ -530,78 +529,9 @@ Key Addressee::findKey( const QString &id ) const
   return Key();
 }
 
-void Addressee::insertMessaging( const Messaging &im )
-{
-  detach();
-  mData->empty = false;
-
-  Messaging::List::Iterator it;
-  for( it = mData->ims.begin(); it != mData->ims.end(); ++it ) {
-    if ( (*it).id() == im.id() ) {
-      *it = im;
-      return;
-    }
-  }
-
-  mData->ims.append( im );
-}
-
-void Addressee::removeMessaging( const Messaging &im )
-{
-  detach();
-
-  Messaging::List::Iterator it;
-  for( it = mData->ims.begin(); it != mData->ims.end(); ++it ) {
-    if ( (*it).id() == im.id() ) {
-      mData->ims.remove( im );
-      return;
-    }
-  }
-}
-
-Messaging Addressee::messaging( const QString &serviceType ) const
-{
-  Messaging::List::ConstIterator it;
-  for( it = mData->ims.begin(); it != mData->ims.end(); ++it ) {
-    if ( (*it).serviceType() == serviceType )
-      return *it;
-  }
-
-  return Messaging();
-}
-
-Messaging::List Addressee::messagings() const
-{
-  return mData->ims;
-}
-
-Messaging::List Addressee::messagings( const QString &serviceType ) const
-{
-  Messaging::List list;
-
-  Messaging::List::ConstIterator it;
-  for( it = mData->ims.begin(); it != mData->ims.end(); ++it ) {
-    if ( (*it).serviceType() == serviceType )
-      list.append( *it );
-  }
-
-  return list;
-}
-
-Messaging Addressee::findMessaging( const QString &id ) const
-{
-  Messaging::List::ConstIterator it;
-  for( it = mData->ims.begin(); it != mData->ims.end(); ++it ) {
-    if ( (*it).id() == id )
-      return *it;
-  }
-
-  return Messaging();
-}
-
 QString Addressee::asString() const
 {
-  return "Smith, special agent Smith...";
+  return "Smith, agent Smith...";
 }
 
 void Addressee::dump() const
