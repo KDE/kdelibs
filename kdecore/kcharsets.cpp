@@ -78,6 +78,20 @@ KCharset::KCharset(QFont::CharSet qtCharset){
   entry=data->charsetEntry(qtCharset);
 }
 
+KCharset::KCharset( const KCharset& kc){
+
+  if (!data || !charsets){
+     fatal("KCharset copy constructor called when no KCharsets object created (???)");
+     return;
+  }   
+  entry=kc.entry;
+}
+
+KCharset& KCharset::operator= ( const KCharset& kc){
+
+  entry=kc.entry;
+}
+ 
 const char * KCharset::name()const{
   
   if (entry) return entry->name;
@@ -257,6 +271,20 @@ const char * KCharsetConverter::outputCharset(){
   return data->outputCharset();
 }
    
+KCharsetConversionResult::KCharsetConversionResult(
+                                        const KCharsetConversionResult& kccr){
+  cCharset=kccr.cCharset;
+  cText=kccr.cText;
+  cText.detach();
+}
+
+KCharsetConversionResult& KCharsetConversionResult::operator =(
+                           const KCharsetConversionResult& kccr){
+  cCharset=kccr.cCharset;
+  cText=kccr.cText;
+  cText.detach();
+}
+
 const KCharsetConversionResult & KCharsetConverter::convert(const char *str){
 
   data->convert(str,result);

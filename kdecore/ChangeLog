@@ -1,3 +1,8 @@
+Tue Sep 8 16:37:51 1998  Jacek Konieczny  <jacek@kde.org>
+
+	* kcharsets.cpp, kcharsets.h: Added copy constructor and assignment
+	  operator (as Stephan asked)
+
 Tue Aug 11 02:25:41 1998  Steffen Hansen  <stefh@slagelse.mip.ou.dk>
 
 	* kapp.cpp (init): Removed creation of KProcessController

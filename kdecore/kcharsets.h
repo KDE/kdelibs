@@ -62,6 +62,17 @@ public:
   * @param id Qt's id of the charset
   */
   KCharset(QFont::CharSet id);
+ 
+ /**
+  * Copy constructor for KCharset
+  */
+  KCharset( const KCharset& );
+
+ /**
+  * Assignment operator for KCharset 
+  */
+  KCharset& operator= ( const KCharset& );
+ 
  /**
   * Gives name of the charset
   *
@@ -191,6 +202,25 @@ friend class KCharsetsData;
    const KCharsetEntry * cCharset;
    QString cText;
 public:
+
+/**
+* Defaulr constructor for KCharsetConversionResult
+*/
+  KCharsetConversionResult(){
+    cCharset=0;
+    cText="";
+  }
+  
+/**
+* Copy constructor for KCharsetConversionResult
+*/
+  KCharsetConversionResult(const KCharsetConversionResult& kccr);
+
+/**
+* Assignment operator
+*/
+  KCharsetConversionResult& operator =(const KCharsetConversionResult& kccr);
+
 /**
 * Operator to cast to QString type
 */
