@@ -653,38 +653,21 @@ void KMdiMainFrm::detachWindow(KMdiChildView *pWnd, bool bShow)
             pWnd->setGeometry( QRect( m_pMdi->getCascadePoint(m_pDocumentViews->count()-1), defaultChildFrmSize()));
          }
       }
-<<<<<<< kmdimainfrm.cpp
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#ifndef NO_KDE
-=======
-
->>>>>>> 1.24
       if (mdiMode() == KMdi::ToplevelMode) {
          XSetTransientForHint(qt_xdisplay(),pWnd->winId(),topLevelWidget()->winId());
       }
-<<<<<<< kmdimainfrm.cpp
 #endif
-#endif
-=======
 
->>>>>>> 1.24
       return;
    }
-<<<<<<< kmdimainfrm.cpp
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#ifndef NO_KDE
-=======
 
->>>>>>> 1.24
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
    if (mdiMode() == KMdi::ToplevelMode) {
       XSetTransientForHint(qt_xdisplay(),pWnd->winId(),topLevelWidget()->winId());
    }
-<<<<<<< kmdimainfrm.cpp
 #endif
-#endif
-=======
 
->>>>>>> 1.24
    // this will show it...
    if (bShow) {
       activateView(pWnd);
@@ -1234,17 +1217,9 @@ void KMdiMainFrm::switchToToplevelMode()
    QPtrListIterator<KMdiChildView> it( *m_pDocumentViews);
    for( it.toFirst(); it.current(); ++it) {
       KMdiChildView* pView = it.current();
-<<<<<<< kmdimainfrm.cpp
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#ifndef NO_KDE
-=======
->>>>>>> 1.24
       XSetTransientForHint(qt_xdisplay(),pView->winId(),winId());
-<<<<<<< kmdimainfrm.cpp
 #endif
-#endif
-=======
->>>>>>> 1.24
 //      if( !pView->isToolView())
          pView->show();
    }
