@@ -20,7 +20,7 @@
 #ifndef StringListSelectOneDialog_included
 #define StringListSelectOneDialog_included
 
-#include "DialogBase.h"
+#include <dialogbase.h>
 #include "stl_headers.h"
 #include <qstring.h>
 #include <qstrlist.h> 

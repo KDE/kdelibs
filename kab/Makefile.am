@@ -19,8 +19,6 @@ libkab_la_SOURCES	= \
 	kabapi.cc \
 	AssertDialog.cpp \
 	AssertDialogData.cpp \
-	DialogBase.cpp \
-	DialogBaseData.cpp \
 	PrintDialog.cpp \
 	PrintDialogData.cpp \
 	SearchDialog.cpp \
@@ -46,6 +44,10 @@ libkab_la_SOURCES	= \
 	SearchDialogMainWidget.cpp \
 	SearchDialogMainWidgetData.cpp 
 
+#	DialogBase.cpp \
+#	DialogBaseData.cpp \
+
+
 include_HEADERS = \
 	stl_headers.h \
 	kabapi.h \
@@ -59,8 +61,8 @@ libkab_la_LDFLAGS = -version-info 3:0 $(X_LDFLAGS) $(QT_LDFLAGS) $(USER_LDFLAGS)
 libkab_la_LIBADD  = ../kfile/libkfile.la
 
 # just to make sure, automake makes them 
-libkab_la_METASOURCES = AssertDialog.moc AssertDialogData.moc DialogBase.moc \
-	DialogBaseData.moc PrintDialog.moc PrintDialogData.moc \
+libkab_la_METASOURCES = AssertDialog.moc AssertDialogData.moc \
+	PrintDialog.moc PrintDialogData.moc \
 	SearchDialog.moc SearchDialogMainWidget.moc \
 	SearchDialogMainWidgetData.moc StringListEditDialog.moc \
 	StringListEditWidget.moc StringListEditWidgetData.moc \
@@ -72,15 +74,18 @@ libkab_la_METASOURCES = AssertDialog.moc AssertDialogData.moc DialogBase.moc \
 	businesscard.moc datepickerdialog.moc editentry.moc \
 	kab.moc kabapi.moc searchresults.moc  
 
+# DialogBase.moc DialogBaseData.moc 
+
 picsdir = $(kde_datadir)/kab/pics
 pics_DATA = dialog_background.jpg background_1.jpg
 
-dlgfiles = AssertDialog.dlg DialogBase.dlg PrintDialog.dlg \
+dlgfiles = AssertDialog.dlg PrintDialog.dlg \
 	StringListEditWidget.dlg StringListSelectAndReorderSet.dlg \
 	StringListSelectOneDialog.dlg StringListSelectSetDialog.dlg
+# DialogBase.dlg 
 
-noinst_HEADERS = AssertDialog.h AssertDialogData.h DialogBase.h \
-	DialogBaseData.h PrintDialog.h PrintDialogData.h SearchDialog.h \
+noinst_HEADERS = AssertDialog.h AssertDialogData.h \
+	PrintDialog.h PrintDialogData.h SearchDialog.h \
 	SearchDialogMainWidget.h SearchDialogMainWidgetData.h \
 	StringListEditDialog.h StringListEditWidget.h \
 	StringListEditWidgetData.h StringListSelectAndReorderSet.h \
@@ -91,6 +96,7 @@ noinst_HEADERS = AssertDialog.h AssertDialogData.h DialogBase.h \
 	dbarr_previous.xbm debug.h editentry.h functions.h \
 	magnify2.xbm searchresults.h select.xbm text.xbm trash_open.xbm \
 	widgets.h
+# DialogBase.h DialogBaseData.h 
 
 EXTRA_DIST = $(pics_DATA) $(dlgfiles) COMPILE_PROBLEMS_FAQ README.FORMAT \
 	README.KABAPI kab.prj kabapi.h.kdoc libkab.kdoc msui.prj 

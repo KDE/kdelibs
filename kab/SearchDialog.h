@@ -14,7 +14,7 @@
 #ifndef SearchDialog_included
 #define SearchDialog_included
 
-#include "DialogBase.h"
+#include <dialogbase.h>
 #include "SearchDialogMainWidget.h"
 #include "stl_headers.h"
 

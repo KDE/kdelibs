@@ -17,7 +17,7 @@
 #define StringListSelectSetDialog_included
 
 #include "stl_headers.h"
-#include "DialogBase.h"
+#include <dialogbase.h>
 #include <qstring.h>
 #include <qstrlist.h> 
 

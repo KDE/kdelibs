@@ -7,7 +7,7 @@
 #include "stl_headers.h"
 #include <qlist.h>
 #include <qsize.h>
-#include "DialogBase.h"
+#include <dialogbase.h>
 #include <qstrlist.h>
 
 class StringListEditWidget;

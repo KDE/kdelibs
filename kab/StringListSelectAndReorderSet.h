@@ -24,7 +24,7 @@
 #include "StringListSelectAndReorderSetData.h"
 #include <qlist.h>
 #include <qsize.h>
-#include "DialogBase.h"
+#include <dialogbase.h>
 
 class StringListSelectAndReorderSet // a widget!, see dialog class below
   : public StringListSelectAndReorderSetData
