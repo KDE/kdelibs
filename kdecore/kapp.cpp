@@ -1,6 +1,15 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.32  1997/09/26 07:01:12  kalle
+// Here are the promised dummies for session management:
+//
+// - KApplication::saveYourself (signal)
+// - KApplication::tempFileName()
+// - KApplication::checkRecoverFile()
+//
+// A short documentation is in kapp.h, more docs will follow.
+//
 // Revision 1.31  1997/09/23 21:02:37  kalle
 // KApplication deletes -caption and the following arguments from the command line arguments
 //
@@ -934,7 +943,7 @@ void KApplication::appendSearchPath( const char *path )
 			applicationStyle=MotifStyle;	
   selectColor.setNamedColor( str );
 
-	printf("contrast = %d\n", contrast);
+	// this default is Qt white
   str = config->readEntry( "SelectTextColor", "#FFFFFF" );
   selectTextColor.setNamedColor( str );
 	// WARNING : QApplication::setPalette() produces inconsistent results.
