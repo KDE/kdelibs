@@ -1,17 +1,25 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KDataTool
 Comment=KDE Data Tool
+Comment[af]=kde data program
+Comment[ar]=أداة KDE للبيانات
 Comment[az]=KDE Verilənlər Vasitəsi
 Comment[da]=KDE dataværktøj
+Comment[de]=KDE-Datenprogramm
 Comment[es]=Herramienta KDE de datos
+Comment[fr]=Outil de données KDE
 Comment[he]=כלי נתונים של KDE
 Comment[hu]=KDE adatkezelő segédprogram
+Comment[lt]=KDE duomenų priemonė
 Comment[lv]=KDE Datu Rīks
 Comment[nl]=KDE Data-gereedschap
+Comment[nn]=KDE Dataverktøy
 Comment[pt]=Ferramenta de Dados do KDE
 Comment[pt_BR]=Ferramenta de Dados do KDE
 Comment[sk]=Dátový nástroj KDE
+Comment[sl]=Podatkovno orodje za KDE
 Comment[sv]=KDE-dataverktyg
 Comment[tr]=KDE Veri Aracı
 Comment[xh]=KDE Isixhobo se Data

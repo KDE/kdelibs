@@ -1,6 +1,20 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=MimeType
 MimeType=application/illustrator
 Icon=postscript
 Patterns=*.ai;*.AI;
 Comment=Adobe Illustrator Document
+Comment[da]=Adobe Illustrator dokument
+Comment[de]=Adobe Illustrator-Dokument
+Comment[es]=Documento de ilustración de Adobe
+Comment[fr]=Document Adobe Illustrator
+Comment[he]=מסמך Adobe Illustrator
+Comment[hu]=Adobe Illustrator dokumentum
+Comment[it]=Documento Adobe Illustrator
+Comment[lt]=Adobe Illustrator dokumentas
+Comment[lv]=Adobe Ilustratora Dokuments
+Comment[sk]=dokument Adobe Illustrator
+Comment[sv]=Adobe Illustrator-dokument
+Comment[ta]=Adobe Illustrator ¬Å½õ
+Comment[xx]=xx

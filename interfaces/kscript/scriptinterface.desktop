@@ -1,4 +1,27 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KScriptRunner/KScriptRunner
 Comment=This is a generic test script engine for testing the script interface.
+Comment[af]=hierdie is 'n generies toets skrip masjien vir toetsing die skrip koppelvlak.
+Comment[az]=Skript ara üzünü sınamaq üçün ümumi sınaq skriptidir.
+Comment[da]=Dette er en generisk testskript-maskine til at teste skriptgrænsefladen.
+Comment[de]=Dies ist eine allgemeine Sammlung von Testroutinen für die Skript-Schnittstelle.
+Comment[es]=Este es un motor de script genérico para probar el interfaz de script.
+Comment[fi]=Tämä on yleinen skriptitestimoottori skriptiliitynnän testaamiseen
+Comment[fr]=Ceci est un moteur de script de test générique pour éprouver l'interface de script.
+Comment[he]=זהו מנוע תסריטים כללי לבדיקת ממשק התסריטים
+Comment[hu]=Ez egy tesztszkript a szkript-felület kipróbálásához.
+Comment[is]=Þetta er almennur þýðandi til að prófa skriftuviðmótið.
+Comment[lt]=Tai yra bendras testavimo skriptų variklis skirtas testuoti skriptų sąsajai.
+Comment[lv]=Šis ir vispārējs skriptu testa dzinējs skriptu saskarsmes virsmas testēšanai.
+Comment[nl]=dit is een generieke test script engine voor het testen van de script interface.
+Comment[nn]=Dette er ein generell testskriptmotor for å prøva ut skriptgrensesnittet.
+Comment[pt]=Este é um motor de 'scripts' de teste para testar a interface de 'scripting'.
+Comment[pt_BR]=Este é um motor de 'scripts' de teste para testar a interface de 'scripting'.
+Comment[sk]=Toto je generický testovací skript pre testovanie skriptovacieho rozhrania.
+Comment[sl]=To je generični poskusni skriptni pogon za preizkušanje skriptnega vmesnika.
+Comment[sv]=Det här är ett generellt skripttestprogram för att testa skriptgränssnittet.
+Comment[xh]=Olu luvavanyo ngokubanzi lenjini yokushicilelweyo yokuvavanya ujongano loshicilelo.
+Comment[xx]=xx
+Comment[zu]=Lena uvivinyo oluhlangeneyo lwenjini ysikripti yokuvivinya uxhumaniso olubhekeneyo  lwesikripti

@@ -1,6 +1,17 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=Service
 Name=Dummy Meta
+Name[af]=fop meta
+Name[da]=Dummy-meta
+Name[fi]=Tyhjä meta
+Name[fr]=Données bidons
+Name[hu]=Üres (dummy) metaadat
+Name[lt]=Netikras Meta
+Name[sk]=Prázdne meta
+Name[sl]=Slepi Meta
+Name[sv]=Testmeta
+Name[xx]=xx
 ServiceTypes=KFilePlugin
 X-KDE-Library=dummymeta
 MimeType=text/plain

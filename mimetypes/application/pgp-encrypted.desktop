@@ -1,6 +1,26 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=MimeType
 MimeType=application/pgp-encrypted
 Icon=encrypted
 Patterns=
 Comment=PGP/MIME encrypted message header
+Comment[af]=pgp/mime encrypted boodskap opskrif
+Comment[da]=PGP/MIME-hoveddel for indkodet brev 
+Comment[de]=Nachrichtenvorspann mit PGP/MIME verschlüsseln
+Comment[es]=Cabecera de mensaje cifrado PGP/MIME
+Comment[fi]=PGP/MIME salattu viestiotsikko
+Comment[fr]=En-tête de message crypté PGP/MIME
+Comment[he]=כותרת הודעה מוצפנת של PGP/MIME
+Comment[hu]=PGP/MIME titkosított üzenetfejléc
+Comment[lt]=PGP/MIME šifruotos žinutės antraštė
+Comment[lv]=PGP/MIME šifrēta ziņojuma galvene
+Comment[nl]=PGP/MIME-gecodeerd berichthoofd
+Comment[nn]=PGP/MIME-kryptert meldingshovud
+Comment[pt]=Cabeçalho de mensagem cifrada de PGP/MIME
+Comment[pt_BR]=Cabeçalho de mensagem cifrada de PGP/MIME
+Comment[sk]=Šifrovaná hlavička správy PGP/MIME
+Comment[sl]=S PGP/MIME kriptirana glava sporočila
+Comment[sv]=PGP/MIME-krypterat meddelandehuvud
+Comment[ta]=PGP/MIME ºí§¸¾î ¦ºö¾¢ò ¾¨ÄôÒ
+Comment[xx]=xx

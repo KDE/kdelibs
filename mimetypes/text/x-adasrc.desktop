@@ -1,5 +1,27 @@
 [Desktop Entry]
+Encoding=UTF-8
 Comment=Ada sources
+Comment[af]=ada bronkodes
+Comment[az]=Ada mənbələri
+Comment[cs]=Zdrojový kód v jazyku Ada
+Comment[da]=Ada-kilder
+Comment[de]=Ada-Quellen
+Comment[es]=Fuentes Ada
+Comment[fi]=Ada-lähdekoodi
+Comment[fr]=Fichier source Ada
+Comment[he]=קודי מקור של Ada
+Comment[hu]=Ada forrásfájl
+Comment[it]=Sorgenti Ada
+Comment[lt]=Ada išeities tekstai
+Comment[lv]=Ada avoti
+Comment[nl]=Ada-bronnen
+Comment[nn]=Ada-kjelde
+Comment[pt]=Código Ada
+Comment[pt_BR]=Código Ada
+Comment[sk]=Zdrojový kód Ada
+Comment[sl]=Izvorna koda Ada
+Comment[sv]=Ada-källkod
+Comment[xx]=xx
 Icon=source_cpp
 Type=MimeType
 MimeType=text/x-adasrc

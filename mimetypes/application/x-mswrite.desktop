@@ -1,9 +1,27 @@
 [Desktop Entry]
+Encoding=UTF-8
 Icon=kword
 Type=MimeType
 MimeType=application/x-mswrite
 Patterns=*.wri;*.WRI;
 Comment=Microsoft Write document
 Comment[da]=Microsoft Write-dokument
+Comment[de]=MS-Write-Dokument
+Comment[es]=Documento de Microsoft Write
+Comment[fi]=Microsoft Write -asiakirja
+Comment[fr]=Document MS-Write
+Comment[he]=מסמך Microsoft Write
+Comment[hu]=Microsoft Write dokumentum
+Comment[it]=Documento Microsoft Write
+Comment[lt]=Microsoft Write dokumentas
 Comment[lv]=Microsoft Write dokuments
+Comment[nl]=Microsoft Write-document
+Comment[nn]=Microsoft Write-dokument
+Comment[pt]=Documento do Microsoft Write
+Comment[pt_BR]=Documento do Microsoft Write
+Comment[sk]=dokument Microsoft Word
+Comment[sl]=Dokument za Microsoft Write
 Comment[sv]=Microsoft Write-dokument
+Comment[ta]=¨Áì§Ã¡º¡ôð ¨Ãð ¬Å½õ
+Comment[tr]=Microsoft Write belgesi
+Comment[xx]=xx

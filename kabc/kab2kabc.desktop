@@ -1,5 +1,6 @@
 # KDE Config File
 [Desktop Entry]
+Encoding=UTF-8
 Name=kab2kabc
 Exec=kab2kabc --disable-autostart
 Icon=misc

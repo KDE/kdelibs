@@ -1,4 +1,26 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=RenameDlg/Plugin
 Comment=Plugin for the Rename Dialog
+Comment[af]=inplak vir die herbenaam dialoog
+Comment[ar]=ملحق لمربع حوار إعادة التسمية
+Comment[da]=Indstik til omdøbningsdialog
+Comment[de]=Plugin für den Umbenennen-Dialog
+Comment[en_GB]=Plugin for the Rename Dialogue
+Comment[es]=Plugin para el diálogo de renombrado
+Comment[fi]=Sovelma uudelleennimeämisikkunalle
+Comment[fr]=Module pour la fenêtre de changement de nom
+Comment[he]=תוסף לדו-שיח שינוי השם
+Comment[hu]=Bővítőmodul az átnevezési párbeszédablakhoz
+Comment[lt]=Priedas pervardinimo dialogui
+Comment[lv]=Iespraudnis Pārsaukšanas Dialogam
+Comment[nl]=Plugin voor het 'Hernoemen'-dialoog
+Comment[nn]=Tillegg til dialogen for namnebyte
+Comment[pt]='Plugin' para a Janela de Mudança do Nome
+Comment[pt_BR]='Plugin' para a Janela de Mudança do Nome
+Comment[sk]=Modul pre premenovací dialóg
+Comment[sl]=Vstavek za pogovorno okno za preimenovanje
+Comment[sv]=Insticksprogram för Byt namn-dialogen
+Comment[ta]=ÁÚ¦ÀÂÃ¢¼ø ¯¨ÃÂ¡¼ü ¦ºÕ¸ø
+Comment[xx]=xx

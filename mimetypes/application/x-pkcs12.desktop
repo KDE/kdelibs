@@ -1,15 +1,31 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-pkcs12
 Icon=lock
 Patterns=*.p12;*.P12;*.pfx
 Comment=PKCS#12 Certificate Bundle
-Comment[ara]=شهادة اعتمادية PKCS#12
+Comment[af]=pkcs#12 sertifikaat bundel
+Comment[ar]=شهادة اعتمادية PKCS#12
 Comment[az]=PKCS#12 Vəsiqə Dəstəsi
-Comment[da]=PKCS#12 Certifikat Bundt
+Comment[da]=PKCS#12 Certifikatbundt
+Comment[de]=Zertifikatpaket PKCS#12
+Comment[es]=Paquete de certificado PKCS#12
+Comment[fi]=PKCS#12 sertifikaattikokoelma
+Comment[fr]=Ensemble de certificats PKCS#12
 Comment[he]=חבילת תעודות PKCS#12
 Comment[hu]=PKCS#12 tanúsítványcsomag
-Comment[nl]=PKCS#12 Certificaatbundel
-Comment[xxx]=xx
+Comment[lt]=PKCS#12 sertifikatų rinkinys
+Comment[lv]=PKCS#12 Sertifikātu Komplekts
+Comment[nl]=PKCS#12 Certificatenbundel
+Comment[nn]=PKCS#12-sertifikatpakke
+Comment[pt]=Pacote de Certificados PKCS#12
+Comment[pt_BR]=PKCS#12 Certificado Empacotado
+Comment[sk]=Balík certifikátov PKCS#12
+Comment[sl]=Zbirka certifikatov PKCS#12
+Comment[sv]=PKCS certifikatsamling nummer 12
+Comment[xh]=PKCS#12 Inyanda Yesiqinisekiso
+Comment[xx]=xx
+Comment[zu]=PKCS#12 Isitifiketi Bundle
 X-KDE-AutoEmbed=true
 

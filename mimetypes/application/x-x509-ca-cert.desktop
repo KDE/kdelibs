@@ -1,10 +1,29 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-x509-ca-cert
 Icon=lock
 Patterns=*.der;*.cer;*.crt;*.cert;*.pem;
 Comment=DER, PEM, or Netscape encoded X.509 certificate
+Comment[az]=DER, PEM, ya da Netscape kodlamalı X.509 vəsiqəsi
 Comment[da]=DER, PEM, eller Netscape-indkodet X.509-certifikat
+Comment[de]=DER, PEM oder netscape-kodiertes X.509-Zertifikat
+Comment[es]=DER, PEM, o certificado Netscape codificado X.509
+Comment[fi]=DER, PEM tai Netscape enkoodattu X.509 sertifikaatti
+Comment[fr]=Certificat X.509 encodé avec Netscape, DER ou PEM
+Comment[he]=תעודת DER, PEM, או תעודה מקודדת X.509 של Netscape
 Comment[hu]=DER, PEM vagy Netscape-formátumú X.509 tanúsítvány
+Comment[is]=DER, PEM eða Netscape kóðað X.509 skírteini
+Comment[lt]=DER, PEM, ar Netscape koduotas X.509 sertifikatas
+Comment[lv]=DER, PEM, vai Netscape kodēts X.509 sertifikāts
+Comment[nl]=DER, PEM, of Netscape encoded X.509 certificaat
+Comment[nn]=DER, PEM eller Netscape-koda X.509-sertifikat
+Comment[pt]=DER, PEM, ou certificado X.509 codificado pelo Netscape
+Comment[pt_BR]=DER, PEM, ou certificado X.509 codificado pelo Netscape
+Comment[sk]=Certifikát X.509 kódovaný DER, PEM, alebo Netscape
+Comment[sl]=DER, PEM ali certifikat X.509, kodiran za Netscape
+Comment[sv]=DER-, PEM-, eller Netscape-kodat X.509-certificat
+Comment[xh]=DER, PEM, okanye Netscape e enkhowudiweyo X.509 isiqinisekiso
+Comment[xx]=xx
 X-KDE-AutoEmbed=true
 

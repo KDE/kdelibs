@@ -1,18 +1,22 @@
 [Desktop Entry]
+Encoding=UTF-8
 MimeType=text/x-makefile
 Comment=Makefile
-Comment[af]=MAAKLEêR
-Comment[da]=Makefil
+Comment[af]=maakleêr
+Comment[da]=Make-fil
 Comment[eo]=Muntdosiero
 Comment[es]=Script Makefile
 Comment[fr]=Fichier d'instructions Makefile
-Comment[he]=Make ץבוק
+Comment[he]=קובץ Make
 Comment[hu]=Makefájl
 Comment[is]=Make-skrá
 Comment[ko]=Make 파일
 Comment[mk]=Makefile датотека
-Comment[no_NY]=Make-fil
+Comment[nn]=Make-fil
 Comment[uk]=Файл Makefile
+Comment[xh]=Yenza ifayile
+Comment[xx]=xx
+Comment[zu]=Yenza ifayela
 Type=MimeType
 Patterns=Makefile*;makefile*;
 Icon=make

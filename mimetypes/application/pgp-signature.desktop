@@ -1,6 +1,24 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=MimeType
 MimeType=application/pgp-signature
 Icon=signature
 Patterns=
 Comment=Detached OpenPGP signature
+Comment[af]=ontkoppel openpgp handtekening
+Comment[da]=Løsreven OpenPGP-underskrift
+Comment[es]=Firma suelta OpenPGP
+Comment[fi]=Liitetty OpenPGP allekirjoitus
+Comment[fr]=Signature OpenPGP détachée
+Comment[he]=חתימה מופרדת של OpenPGP
+Comment[hu]=Leválasztott OpenPGP-aláírás
+Comment[lt]=Atskiras OpenPGP parašas
+Comment[lv]=Pievienots OpenPGP paraksts
+Comment[nl]=Detached OpenPGP-signatuur
+Comment[nn]=Fråkopla OpenPGP-signatur
+Comment[pt]=Assinatura separada do OpenPGP
+Comment[pt_BR]=Assinatura separada do OpenPGP
+Comment[sk]=Oddelený podpis OpenPGP
+Comment[sl]=Izločen podpis OpenPGP
+Comment[sv]=Avskilld OpenPGP-signatur
+Comment[xx]=xx

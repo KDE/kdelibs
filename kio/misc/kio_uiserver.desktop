@@ -1,13 +1,12 @@
 [Desktop Entry]
+Encoding=UTF-8
 Type=Service
 Name=kio_uiserver
-Name[af]=kio_ui-bediener
 Name[de]=Server der graphischen Oberfläche
 Name[ja]=kio_uiサーバ
 Name[xx]=xx
 Exec=kio_uiserver
 Comment=KDE's Progress Info UI server
-Comment[af]=kde's vordering inligting ui bediener
 Comment[ar]=خادم معلومات تقدم واجهة KDE
 Comment[az]=KDE'nin İrəliləmə Bilgisi İstifadaçi Ara Üz Vericisi
 Comment[br]=Servijer stlenn EA Progress KDE
@@ -40,7 +39,7 @@ Comment[nn]=KDE UI-tenar for framgangsinfo
 Comment[oc]=Servor d'informacion de progress KDE
 Comment[pl]=Serwer informacji o postepie procesu
 Comment[pt]=Servidor de informações sobre o progresso das operações
-Comment[pt_BR]=Servidor de informação de progresso
+Comment[pt_BR]=Servidor de informação de progresso do KDE
 Comment[sk]=KDE Progres Info UI server
 Comment[sl]=Strežnik KDE's Progress Info UI
 Comment[sv]=KDE:s server för förloppsinformation
