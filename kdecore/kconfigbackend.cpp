@@ -81,6 +81,9 @@ static QCString printableToString(const char *str, int l)
            case 'r':
               *r++ = '\r';
               break;
+           case '\\':
+              *r++ = '\\';
+              break;
            default:
               *r++ = '\\';
               *r++ = *str;
