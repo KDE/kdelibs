@@ -238,6 +238,8 @@ void KDirOperator::slotToggleHidden( bool show )
 {
     dir->setShowingDotFiles( show );
     updateDir();
+    if ( m_fileView )
+        m_fileView->listingCompleted();
 }
 
 void KDirOperator::slotSingleView()
