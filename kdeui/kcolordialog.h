@@ -35,12 +35,7 @@
 #include <qframe.h>
 #include <qpixmap.h>
 #include <qrangecontrol.h>
-#if QT_VERSION < 300
-#include <qtableview.h>
-#else
-#include <qttableview.h>
-#define QTableView QtTableView
-#endif
+#include <qgridview.h>
 
 #include "kselect.h"
 
@@ -237,7 +232,7 @@ private:
 * @author Martin Jones <mjones@kde.org>
 * @version $Id$
 */
-class KColorCells : public QTableView
+class KColorCells : public QGridView
 {
   Q_OBJECT
 public:

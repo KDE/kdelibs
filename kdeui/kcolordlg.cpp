@@ -299,7 +299,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap)
 //-----------------------------------------------------------------------------
 
 KColorCells::KColorCells( QWidget *parent, int rows, int cols )
-	: QTableView( parent )
+	: QGridView( parent )
 {
 	shade = true;
 	setNumRows( rows );
@@ -314,6 +314,11 @@ KColorCells::KColorCells( QWidget *parent, int rows, int cols )
 
 	// Drag'n'Drop
 	setAcceptDrops( true);
+
+	setHScrollBarMode( AlwaysOff );
+	setVScrollBarMode( AlwaysOff );
+	viewport()->setBackgroundMode( PaletteBackground );
+	setBackgroundMode( PaletteBackground );
 }
 
 KColorCells::~KColorCells()
@@ -430,8 +435,8 @@ void KColorCells::mouseReleaseEvent( QMouseEvent *e )
 	{
 		int prevSel = selected;
 		selected = cell;
-		updateCell( prevSel/numCols(), prevSel%numCols(), FALSE );
-		updateCell( cell/numCols(), cell%numCols(), FALSE );
+		updateCell( prevSel/numCols(), prevSel%numCols() );
+		updateCell( cell/numCols(), cell%numCols() );
         }
 
         inMouse = false;
