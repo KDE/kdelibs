@@ -119,7 +119,7 @@ public:
 
     /**
      * If this rule is contained inside another rule (e.g. a style
-     * rule inside an @media block), this is the containing rule. If
+     * rule inside an \@media block), this is the containing rule. If
      * this rule is not nested inside any other rules, this returns
      * \c null .
      *
@@ -142,8 +142,8 @@ protected:
 class CSSCharsetRuleImpl;
 
 /**
- * The \c CSSCharsetRule interface a <a href=""> @charset
- * rule </a> in a CSS style sheet. A \c @charset rule can
+ * The \c CSSCharsetRule interface a <a href=""> \@charset
+ * rule </a> in a CSS style sheet. A \c \@charset rule can
  * be used to define the encoding of the style sheet.
  *
  */
@@ -162,7 +162,7 @@ public:
     ~CSSCharsetRule();
 
     /**
-     * The encoding information used in this \c @charset
+     * The encoding information used in this \c \@charset
      * rule.
      *
      */
@@ -264,7 +264,7 @@ class CSSMediaRuleImpl;
 /**
  * The \c CSSMediaRule interface represents a <a
  * href="http://www.w3.org/TR/REC-CSS2/media.html#at-media-rule">
- * @media rule </a> in a CSS style sheet. A \c @media rule
+ * \@media rule </a> in a CSS style sheet. A \c \@media rule
  * can be used to delimit style rules for specific media types.
  *
  */

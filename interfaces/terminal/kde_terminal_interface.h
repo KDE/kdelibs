@@ -88,7 +88,7 @@ class TerminalInterface
 {
 public:
   /**
-   * This starts @param progran, with arguments @param args..
+   * This starts @param program, with arguments @param args
    */
   virtual void startProgram( const QString& program,
                              const QStrList& args ) = 0;
@@ -103,7 +103,7 @@ public:
    * This sends @param text as input to the currently running
    * program..
    */
-  virtual void sendInput( const QString& input ) = 0;
+  virtual void sendInput( const QString& text ) = 0;
 
 };
 

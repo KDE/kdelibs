@@ -343,7 +343,7 @@ public:
 
     /**
      * put, aka write.
-     * @param path where to write the file (decoded)
+     * @param url where to write the file (decoded)
      * @param permissions may be -1. In this case no special permission mode is set.
      * @param overwrite if true, any existing file will be overwritten.
      * If the file indeed already exists, the slave should NOT apply the
@@ -384,7 +384,7 @@ public:
 
     /**
      * Create a directory
-     * @param path path to the directory to create
+     * @param url path to the directory to create
      * @param permissions the permissions to set after creating the directory
      * (-1 if no permissions to be set)
      * The slave emits ERR_COULD_NOT_MKDIR if failure.
@@ -444,7 +444,7 @@ public:
      *        slave, but usually starts with an int for the command number.
      * Document your slave's commands, at least in its header file.
      */
-    virtual void special( const QByteArray & );
+    virtual void special( const QByteArray & data );
 
     /**
      * Used for multiple get. Currently only used foir HTTP pielining
@@ -633,7 +633,7 @@ public:
      * }
      * \endcode
      *
-     * @param       See AuthInfo.
+     * @param       info See AuthInfo.
      * @return      @p true if cached Authorization is found, false otherwise.
      */
     bool checkCachedAuthentication( AuthInfo& info );

@@ -200,7 +200,7 @@ public:
    *         found.
    */
   QVariant readPropertyEntry( const QString& pKey,
-                              const QVariant &adefault) const;
+                              const QVariant &aDefault) const;
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.

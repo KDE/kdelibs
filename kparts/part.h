@@ -124,14 +124,16 @@ private:
  * @li GUI elements that will be merged in the "host" user interface
  * (menubars, toolbars... ).
  *
- * @sect About the widget
+ * <b>About the widget:</b>\n
+ *
  * Note that KParts::Part does not inherit QWidget.
  * This is due to the fact that the "visual representation"
  * will probably not be a mere QWidget, but an elaborate one.
  * That's why when implementing your KParts::Part (or derived)
  * you should call KParts::Part::setWidget() in your constructor.
  *
- * @sect About the GUI elements
+ * <b>About the GUI elements:</b>\n
+ *
  * Those elements trigger actions, defined by the part ( action()).
  * The layout of the actions in the GUI is defined by an XML file ( setXMLFile()).
  *
@@ -291,7 +293,7 @@ class ReadOnlyPartPrivate;
 class ReadOnlyPart : public Part
 {
   Q_OBJECT
-  friend class ReadWritePart;  
+  friend class ReadWritePart;
 public:
   /**
    * Constructor
@@ -608,7 +610,7 @@ protected:
    *
    * @return true on success, false on failure.
    * On failure the function should inform the user about the
-   * problem with an appropriate message box. Standard error 
+   * problem with an appropriate message box. Standard error
    * messages can be constructed using KIO::buildErrorString()
    * in combination with the error codes defined in kio/global.h
    */

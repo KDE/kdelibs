@@ -31,17 +31,17 @@ class QGroupBox;
 class QCheckBox;
 
 /**
- * @short A generic "find" dialog.
+ * @brief A generic "find" dialog.
  *
  * @author S.R.Haque <srhaque@iee.org>
  *
- * @sect Detail
+ * \b Detail:\n
  *
  * This widget inherits from KDialogBase and implements
  * the following additional functionalities:  a find string
  * object and an area for a user-defined widget to extend the dialog.
  *
- * @sect Example
+ * \b Example:\n
  *
  * To use the basic modal find dialog, and then run the search:
  *
@@ -126,14 +126,14 @@ public:
      * too long.
      *
      * @param history The find history.
-     * @see #findHistory
+     * @see findHistory
      */
-    void setFindHistory( const QStringList &strings );
+    void setFindHistory( const QStringList &history );
 
     /**
      * Returns the list of history items.
      *
-     * @see #setFindHistory
+     * @see setFindHistory
      */
     QStringList findHistory() const;
 

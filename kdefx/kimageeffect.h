@@ -214,8 +214,6 @@ public:
      * @param upperOffset Offset for the part of the upper image to be used.
      * @param lowerRect Rectangle for the part of the lower image where the
      *                  blending will occur.
-     * @param opacity Opacity (between 0.0 and 1.0) which determines how much
-     *             the source image will be blended into the destination image.
      */
     static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect);

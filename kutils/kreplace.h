@@ -26,17 +26,17 @@
 class KReplaceNextDialog;
 
 /**
- * @short A generic implementation of the "replace" function.
+ * @brief A generic implementation of the "replace" function.
  *
  * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>
  *
- * @sect Detail
+ * \b Detail:\n
  *
  * This class includes prompt handling etc. Also provides some
  * static functions which can be used to create custom behaviour
  * instead of using the class directly.
  *
- * @sect Example
+ * \b Example:\n
  *
  * To use the class to implement a complete replace feature:
  *

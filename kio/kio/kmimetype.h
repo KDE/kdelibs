@@ -127,7 +127,7 @@ public:
    *              Ignored if 0
    * @return the pixmap of the mime type, can be a default icon if not found
    */
-  virtual QPixmap pixmap( KIcon::Group group, int _force_size = 0, int state = 0,
+  virtual QPixmap pixmap( KIcon::Group group, int force_size = 0, int state = 0,
                           QString * path = 0L ) const;
 
   /**

@@ -26,13 +26,13 @@
 #include "addressee.h"
 #include "addresseelist.h"
 
-/**
- * A set of functions to convert a string with LDIF information to addressees and vice versa.
- * ble for searches on LDAP servers, for addressbook 
- * import- and exportfilters and might be used to read and write Mozilla and Netscape addresssbooks.
- */
-
 namespace KABC {
+
+    /**
+     * A set of functions to convert a string with LDIF information to addressees and vice versa.
+     * ble for searches on LDAP servers, for addressbook
+     * import- and exportfilters and might be used to read and write Mozilla and Netscape addresssbooks.
+     */
 
   namespace LDIFConverter {
 
@@ -89,14 +89,14 @@ namespace KABC {
 
   /* internal functions - do not use !! */
 
-  bool parseSingleLine( Addressee &a, 
+  bool parseSingleLine( Addressee &a,
 		Address &homeAddr, Address &workAddr, QString &line );
 
-  
+
   bool splitLine( QString &line, QString &fieldname, QString &value);
 
 
-  bool evaluatePair( Addressee &a, Address &homeAddr, Address &workAddr, 
+  bool evaluatePair( Addressee &a, Address &homeAddr, Address &workAddr,
 	QString &fieldname, QString &value );
 
   }

@@ -434,7 +434,7 @@ public:
    * Unicode.
    *
    * The @p len parameter is needed for streams encoded in utf-16,
-   * since these can have \0 chars in them. In case the encoding
+   * since these can have \\0 chars in them. In case the encoding
    * you're using isn't utf-16, you can safely leave out the length
    * parameter.
    *

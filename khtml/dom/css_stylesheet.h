@@ -218,7 +218,7 @@ public:
     ~CSSStyleSheet();
 
     /**
-     * If this style sheet comes from an \c @import rule,
+     * If this style sheet comes from an \c \@import rule,
      * the \c ownerRule attribute will contain the
      * \c CSSImportRule . In that case, the \c ownerNode
      * attribute in the \c StyleSheet interface
@@ -261,7 +261,7 @@ public:
      *
      * @exception DOMException
      * HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at
-     * the specified index e.g. if an \c @import rule is
+     * the specified index e.g. if an \c \@import rule is
      * inserted after a standard rule set or other at-rule.
      *
      *  INDEX_SIZE_ERR: Raised if the specified index is not a valid

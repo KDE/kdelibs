@@ -48,7 +48,7 @@ public:
      * @param collec parent for the KActions OBSOLETE
      * @param manager the bookmark manager
      */
-    KBookmarkBar( KBookmarkManager* mgr,
+    KBookmarkBar( KBookmarkManager* manager,
                   KBookmarkOwner *owner, KToolBar *toolBar,
                   KActionCollection *,
                   QObject *parent = 0L, const char *name = 0L);

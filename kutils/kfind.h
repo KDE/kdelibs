@@ -25,17 +25,17 @@
 #include <qrect.h>
 
 /**
- * @short A generic implementation of the "find" function.
+ * @brief A generic implementation of the "find" function.
  *
  * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>
  *
- * @sect Detail
+ * \b Detail:\n
  *
  * This class includes prompt handling etc. Also provides some
  * static functions which can be used to create custom behaviour
  * instead of using the class directly.
  *
- * @sect Example
+ * \b Example:\n
  *
  * To use the class to implement a complete find feature:
  *
@@ -186,7 +186,8 @@ public:
      * @param index The starting index where the candidate match was found
      * @param matchedlength The length of the candidate match
      */
-    virtual bool validateMatch( const QString &/*text*/, int /*index*/, int /*matchedlength*/ ) { return true; }
+    virtual bool validateMatch( const QString & text, int index, int matchedlength ) {
+        Q_UNUSED(text); Q_UNUSED(index); Q_UNUSED(matchedLength); return true; }
 
     /**
      * Returns true if we should restart the search from scratch.
@@ -213,10 +214,11 @@ public:
      * @param text The string to search.
      * @param pattern The pattern to look for.
      * @param index The starting index into the string.
-     * @param options. The options to use.
+     * @param options The options to use.
      * @return The index at which a match was found, or -1 if no match was found.
      */
     static int find( const QString &text, const QString &pattern, int index, long options, int *matchedlength );
+
     static int find( const QString &text, const QRegExp &pattern, int index, long options, int *matchedlength );
 
     /**

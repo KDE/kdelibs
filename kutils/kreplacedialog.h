@@ -36,13 +36,13 @@ class QRect;
  *
  * @author S.R.Haque <srhaque@iee.org>
  *
- * @sect Detail
+ * \b Detail:\n
  *
  * This widget inherits from KFindDialog and implements
  * the following additional functionalities:  a replacement string
  * object and an area for a user-defined widget to extend the dialog.
  *
- * @sect Example
+ * \b Example:\n
  *
  * To use the basic replace dialog:
  *
@@ -96,7 +96,7 @@ public:
      * @param history The replacement history.
      * @see #replacementHistory
      */
-    void setReplacementHistory( const QStringList &strings );
+    void setReplacementHistory( const QStringList &history );
 
     /**
      * Returns the list of history items.

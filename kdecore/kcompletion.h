@@ -740,7 +740,7 @@ public:
      * @param compObj a KCompletion() or a derived child object.
      * @param hsig if true, handles signals internally.
      */
-    virtual void setCompletionObject( KCompletion* /*compObj*/, bool hsig = true );
+    virtual void setCompletionObject( KCompletion* compObj, bool hsig = true );
 
     /**
      * Enables this object to handle completion and rotation
@@ -754,7 +754,7 @@ public:
      *
      * @param handle if true, handle completion & rotation internally.
      */
-    virtual void setHandleSignals( bool /*handle*/ );
+    virtual void setHandleSignals( bool handle );
 
     /**
      * Returns true if the completion object is deleted
@@ -891,7 +891,7 @@ public:
      * @return  true if key-binding can successfully be set.
      * @see #getKeyBinding
      */
-    bool setKeyBinding( KeyBindingType /*item*/ , const KShortcut& cut );
+    bool setKeyBinding( KeyBindingType item , const KShortcut& cut );
 
     /**
      * Returns the key-binding used for the specified item.

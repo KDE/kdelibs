@@ -285,7 +285,7 @@ namespace KIO {
         /**
          * @deprecated. Don't use !
          * Emitted when the job is canceled.
-         * Signal @pref result() is emitted as well, and error() is,
+         * Signal result() is emitted as well, and error() is,
          * in this case, ERR_USER_CANCELED.
 	 * @param job the job that emitted this signal
          */
@@ -527,7 +527,7 @@ namespace KIO {
         /**
          * Forward signal from the slave
          * Can also be called by the parent job, when it knows the size.
-	 * @param size the total size
+	 * @param data_size the total size
          */
         void slotTotalSize( KIO::filesize_t data_size );
 
@@ -1500,7 +1500,7 @@ namespace KIO {
 	 * @param file the URL of the file or directory that is being
 	 *        deleted
 	 */
-        void deleting( KIO::Job *, const KURL& file );
+        void deleting( KIO::Job *job, const KURL& file );
 
     protected slots:
         void slotStart();
