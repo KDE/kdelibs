@@ -30,4 +30,24 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
   connect(m_pTabBar, SIGNAL(mouseMiddleClick( QWidget * )), this, SIGNAL(mouseMiddleClick( QWidget * )));
 }
 
+void KTabWidget::mousePressEvent(QMouseEvent *e)
+{
+  if(e->button() == RightButton) {
+    QPoint point = e->pos();
+    QSize size( m_pTabBar->sizeHint() );
+    if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
+      if ( isLeftButton() )
+        point.setX( point.x()-size.height() );
+      if ( tabPosition()==Bottom )
+        point.setY( point.y()-( height()-size.height() ) );
+      QTab *tab = m_pTabBar->selectTab( point);
+      if( tab== 0L ) {
+         emit( tabbarContextMenu( mapToGlobal( e->pos() ) ) );
+         return;
+      }
+    }
+  }
+  QTabWidget::mousePressEvent(e);
+}
+
 #include "ktabwidget.moc"
