@@ -115,6 +115,7 @@ public:
   KSSLValidation validate();
   KSSLValidation validate(KSSLPurpose p);
   KSSLValidation revalidate();
+  KSSLValidation revalidate(KSSLPurpose p);
   KSSLCertChain& chain();
 
   static QString verifyText(KSSLValidation x);

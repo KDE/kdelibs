@@ -642,8 +642,13 @@ return NoSSL;
 
 
 KSSLCertificate::KSSLValidation KSSLCertificate::revalidate() {
+	return revalidate(KSSLCertificate::SSLServer);
+}
+
+
+KSSLCertificate::KSSLValidation KSSLCertificate::revalidate(KSSLCertificate::KSSLPurpose p) {
 	d->m_stateCached = false;
-	return validate();
+	return validate(p);
 }
 
 
