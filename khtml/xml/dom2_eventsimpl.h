@@ -92,7 +92,7 @@ public:
     EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg);
     virtual ~EventImpl();
 
-    EventId id() { return m_id; }
+    EventId id() const { return m_id; }
 
     DOMString type() const { return m_type; }
     NodeImpl *target() const { return m_target; }
