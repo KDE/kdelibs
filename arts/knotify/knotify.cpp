@@ -388,11 +388,8 @@ void KNotify::notify(const QString &event, const QString &fromApp,
     if ( present & KNotifyClient::Sound ) // && QFile(sound).isReadable()
         notifyBySound( sound, fromApp, eventId );
 
-    if ( present & KNotifyClient::PassivePopup )
-        notifyByPassivePopup( text, fromApp, checkWinId( fromApp, winId ));
-
-    else if ( present & KNotifyClient::Messagebox )
-        notifyByMessagebox( text, level, checkWinId( fromApp, winId ));
+    if ( present & KNotifyClient::Execute )
+        notifyByExecute( commandline, event, fromApp, text, winId, eventId );
 
     if ( present & KNotifyClient::Logfile ) // && QFile(file).isWritable()
         notifyByLogfile( text, file );
@@ -400,11 +397,13 @@ void KNotify::notify(const QString &event, const QString &fromApp,
     if ( present & KNotifyClient::Stderr )
         notifyByStderr( text );
 
-    if ( present & KNotifyClient::Execute )
-        notifyByExecute( commandline, event, fromApp, text, winId, eventId );
-
     if ( present & KNotifyClient::Taskbar )
         notifyByTaskbar( checkWinId( fromApp, winId ));
+
+    if ( present & KNotifyClient::PassivePopup )
+        notifyByPassivePopup( text, fromApp, checkWinId( fromApp, winId ));
+    else if ( present & KNotifyClient::Messagebox )
+        notifyByMessagebox( text, level, checkWinId( fromApp, winId ));
 
     QByteArray qbd;
     QDataStream ds(qbd, IO_WriteOnly);
