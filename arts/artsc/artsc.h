@@ -23,6 +23,10 @@
 #ifndef ARTSC_H
 #define ARTSC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @libdoc aRts plain C API
  *
@@ -212,5 +216,9 @@ int arts_stream_set(arts_stream_t stream, arts_parameter_t param, int value);
  * @returns the value of the parameter, or an error code
  */
 int arts_stream_get(arts_stream_t stream, arts_parameter_t param);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ARTSC_H */
