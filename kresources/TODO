@@ -13,3 +13,5 @@ signals.
   storage tree in each resource.
 - Framework widgets - like the resource chooser in KOrganizer and a
   resource chooser for writing an entry for the first time
+- Improve usability - for example there should be only one of some of the
+  items
