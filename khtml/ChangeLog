@@ -1,3 +1,15 @@
+2004-09-02  Leo Savernik  <l.savernik@aon.at>
+
+	* html_formimpl.{cpp,h} (HTMLTextAreaElementImpl::value):
+        Only take text from RenderTextArea when it has been fully initialized.
+        Mark it fully initialized when RenderTextArea has been initialized
+        from the DOM.
+        (HTMLTextAreaElementImpl::setValue): Mark element as initialized after
+        setting. 
+        * render_form.cpp (RenderTextArea::setStyle):
+        Block signals on call to QTextEdit::setAlignment. Otherwise, a bogus
+        textChanged signal is emitted. 
+
 2004-08-27  Germain Garand  <germain@ebooksfrance.org>
         
         scope: - more accurate completed() signal.

@@ -1586,8 +1586,10 @@ void RenderTextArea::setStyle(RenderStyle* _style)
     
     RenderFormElement::setStyle(_style);
 
+    widget()->blockSignals(true);
     widget()->setAlignment( _style->direction() == RTL ?
                             Qt::AlignRight : Qt::AlignLeft );
+    widget()->blockSignals(false);
 
     scrollbarsStyled = false;
     
