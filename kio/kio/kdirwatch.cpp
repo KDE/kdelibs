@@ -869,6 +869,15 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
   }
 }
 
+// Remove entries which were marked to be removed
+void KDirWatchPrivate::slotRemoveDelayed()
+{
+  Entry* e;
+  delayRemove = false;
+  for(e=removeList.first();e;e=removeList.next())
+    removeEntry(0, e->path, 0);
+  removeList.clear();
+}
 
 /* Scan all entries to be watched for changes. This is done regularly
  * when polling and once after a DNOTIFY signal. This is NOT used by FAM.
@@ -937,10 +946,10 @@ void KDirWatchPrivate::slotRescan()
       emitEvent( &(*it), ev);
   }
 
-  Entry* e;
 
 #ifdef HAVE_DNOTIFY
   // Scan parent of deleted directories for new creation
+  Entry* e;
   for(e=dList.first();e;e=dList.next())
     addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);
 
@@ -949,21 +958,18 @@ void KDirWatchPrivate::slotRescan()
     removeEntry(0, QDir::cleanDirPath( e->path+"/.."), e);
 #endif
 
-  // Really remove entries which were marked to be removed
-  delayRemove = false;
-  for(e=removeList.first();e;e=removeList.next())
-    removeEntry(0, e->path, 0);
-  removeList.clear();
-
   if ( timerRunning )
     timer->start(freq);
 
+  QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
 }
 
 #ifdef HAVE_FAM
 void KDirWatchPrivate::famEventReceived()
 {
   static FAMEvent fe;
+
+  delayRemove = true;
 
   while(use_fam && FAMPending(&fc)) {
     if (FAMNextEvent(&fc, &fe) == -1) {
@@ -986,6 +992,8 @@ void KDirWatchPrivate::famEventReceived()
     else
       checkFAMEvent(&fe);
   }
+
+  QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
 }
 
 void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
@@ -1089,6 +1097,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
                        break;
       case FAMChanged: emitEvent(e, Changed);
                        break;
+      default: break;
     }
 }
 #else

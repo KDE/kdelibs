@@ -93,6 +93,7 @@ public slots:
   void slotRescan();
   void famEventReceived(); // for FAM
   void slotActivated(); // for DNOTIFY
+  void slotRemoveDelayed();
 
 public:
   QTimer *timer;
