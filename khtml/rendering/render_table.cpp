@@ -1341,10 +1341,10 @@ static NodeImpl *findLastSelectableNode(NodeImpl *base)
   {
     NodeImpl *next = last->lastChild();
     if ( !next ) next = last->previousSibling();
-    while ( last != base && !next )
+    while ( last && last != base && !next )
     {
       last = last->parentNode();
-      if ( last != base )
+      if ( last && last != base )
         next = last->previousSibling();
     }
     last = next;
