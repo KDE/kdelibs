@@ -133,13 +133,65 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
 	// different handling required for other sample widths
 	assert(sampleWidth == 16 || sampleWidth == 8);
 
-	bufferSize = frameCount * (sampleWidth/8) * channelCount;
-
-	buffer = new uchar[bufferSize];
-	assert(buffer);
-
+	long frameSize = (sampleWidth/8)*channelCount;
 	samplingRate = afGetRate(file, AF_DEFAULT_TRACK);
-	afReadFrames(file, AF_DEFAULT_TRACK, buffer, frameCount);
+
+	/*
+	 * if we don't know the track bytes, we'll have to figure out ourselves
+	 * how many frames are stored here - it would be nicer if libaudiofile
+	 * let us know somehow whether the value returned for getFrameCount
+	 * means "don't know" or is really the correct length
+	 */
+	int trackBytes = afGetTrackBytes(file, AF_DEFAULT_TRACK);
+	if(trackBytes == -1)
+	{
+		arts_debug("unknown length");
+		long fcount = 0, f = 0;
+
+		list<void *> blocks;
+		do
+		{
+			void *block = malloc(1024 * frameSize);
+
+			f = afReadFrames(file, AF_DEFAULT_TRACK,block,1024);
+			if(f > 0)
+			{
+				fcount += f;
+				blocks.push_back(block);
+			}
+			else
+			{
+				free(block);
+			}
+		} while(f > 0);
+
+		frameCount = fcount;
+		arts_debug("figured out frameCount = %ld", fcount);
+
+		bufferSize = frameCount * frameSize;
+		buffer = new uchar[bufferSize];
+		assert(buffer);
+
+		// reassemble and free the blocks
+		while(!blocks.empty())
+		{
+			void *block = blocks.front();
+			blocks.pop_front();
+
+			f = (fcount>1024)?1024:fcount;
+			memcpy(&buffer[(frameCount-fcount)*frameSize],block,f*frameSize);
+			fcount -= f;
+		}
+		assert(fcount == 0);
+	}
+	else
+	{
+		bufferSize = frameCount * frameSize;
+		buffer = new uchar[bufferSize];
+		assert(buffer);
+
+		afReadFrames(file, AF_DEFAULT_TRACK,buffer,frameCount);
+	}
 
 	afCloseFile(file);
 	initOk = true;
