@@ -1523,7 +1523,8 @@ void KHTMLView::setWidgetVisible(RenderWidget* w, bool vis)
         d->visibleWidgets.remove(w);
 }
 
-void KHTMLView::print() {
+void KHTMLView::print() 
+{
     print( false );
 }
 
@@ -4328,8 +4329,6 @@ bool KHTMLView::placeCaret(InlineBox *hintBox)
 
   NodeImpl *caretNode = m_part->d->caretNode().handle();
   // ### why is it sometimes null?
-  if (!caretNode) kdDebug(6200) << "placeCaret caretNode is NULL!" << endl;
-  // umpf! sometimes null nodes creep in.
   if (!caretNode) return false;
   ensureNodeHasFocus(caretNode);
   if (m_part->isCaretMode() || m_part->isEditable()
