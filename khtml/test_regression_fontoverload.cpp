@@ -240,7 +240,9 @@ const QString &KHTMLSettings::availableFamilies()
 {
     if ( !avFamilies ) {
         avFamilies = new QString;
-        *avFamilies = ",Courier,Fixed,Helvetica,Times,Utopia,Times New Roman,Courier New,Verdana,";
+        *avFamilies = ",Adobe Courier,Adobe Helvetica,Adobe New Century Schoolbook,Adobe Times,Adobe Utopia,Century Schoolbook L,Charter,Clean,Console,Courier,Courier 10 Pitch,Cursor,DEC Terminal,Dingbats,ETL Fixed,Fixed,Goha Tibeb Zemen,Gothic,Helvetica,Luxi Mono,Luxi Sans,Luxi Serif,Mincho,New Century Schoolbook,Newspaper,Nil,Proof,Schumacher Clean,Song Ti,Sony Fixed,Standard Symbols L,Symbol,Terminal,Times,Utopia,";
+        // when we need to regenerate the baseline anyway ;/
+        // *avFamilies = ",Courier,Fixed,Helvetica,Times,Utopia,Times New Roman,Courier New,Verdana,";
     }
 
   return *avFamilies;
