@@ -51,8 +51,8 @@ FormatFactory::FormatFactory()
   // dummy entry for default format
   FormatInfo *info = new FormatInfo;
   info->library = "<NoLibrary>";
-  info->nameLabel = i18n( "VCard" );
-  info->descriptionLabel = i18n( "VCard Format" );
+  info->nameLabel = i18n( "vCard" );
+  info->descriptionLabel = i18n( "vCard Format" );
   mFormatList.insert( "vcard", info );
 
   QStringList list = KGlobal::dirs()->findAllResources( "data" ,"kabc/formats/*.desktop", true, true );
@@ -115,8 +115,8 @@ Format *FormatFactory::format( const QString& type )
   if ( type == "vcard" ) {
 	  format = new VCardFormat;
     format->setType( type );
-    format->setNameLabel( i18n( "VCard" ) );
-    format->setDescriptionLabel( i18n( "VCard Format" ) );
+    format->setNameLabel( i18n( "vCard" ) );
+    format->setDescriptionLabel( i18n( "vCard Format" ) );
     return format;
   }
 
