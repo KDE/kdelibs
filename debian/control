@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.3-4), libpng2-dev, libtiff3g-dev, zlib1g-dev, xlibs-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, libmng-dev, docbook-stylesheets, libasound1-dev
+Build-Depends: automake, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.3-4), libpng2-dev, libtiff3g-dev, libz-dev, xlibs-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, libmng-dev, docbook-stylesheets, libasound1-dev
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
