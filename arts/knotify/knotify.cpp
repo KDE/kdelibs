@@ -26,7 +26,6 @@
 #include <sys/stat.h>
 
 // C++ headers
-#include <iostream>
 #include <string>
 
 // aRts headers

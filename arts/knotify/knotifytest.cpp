@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <stdio.h>
 #include <kapplication.h>
