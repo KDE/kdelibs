@@ -40,6 +40,7 @@ KLibFactory::KLibFactory( QObject* parent, const char* name )
 
 KLibFactory::~KLibFactory()
 {
+    kdDebug(150) << "Deleting KLibFactory " << this << endl;
     delete d;
 }
 
@@ -76,16 +77,29 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, lt_dlhandle
 
 KLibrary::~KLibrary()
 {
+    kdDebug(150) << "Deleting KLibrary " << this << "  " << m_libname << endl;
     if ( m_timer && m_timer->isActive() )
       m_timer->stop();
 
+    // If any object is remaining, delete
+    if ( m_objs.count() > 0 )
+    {
+      QListIterator<QObject> it( m_objs );
+      for ( ; it.current() ; ++it )
+      {
+        kdDebug(150) << "Factory still has object " << it.current() << " " << it.current()->name () << endl;
+        disconnect( it.current(), SIGNAL( destroyed() ),
+                    this, SLOT( slotObjectDestroyed() ) );
+      }
+      m_objs.setAutoDelete(true);
+      m_objs.clear();
+    }
+
     if ( m_factory ) {
+      kdDebug(150) << " ... deleting the factory " << m_factory << endl;
       m_factory->destroyMocClasses();
       delete m_factory;
     }
-
-    // If any object is remaining, delete
-    m_objs.setAutoDelete(true);
 
     lt_dlclose( m_handle );
 }
@@ -213,12 +227,16 @@ KLibLoader::KLibLoader( QObject* parent, const char* name )
 
 KLibLoader::~KLibLoader()
 {
+    kdDebug(150) << "Deleting KLibLoader " << this << "  " << name() << endl;
     m_libs.setAutoDelete( TRUE );
 
     QAsciiDictIterator<KLibrary> it( m_libs );
     for (; it.current(); ++it )
+    {
+      kdDebug(150) << "The KLibLoader contains the library " << it.current() << endl;
       disconnect( it.current(), SIGNAL( destroyed() ),
 	 	  this, SLOT( slotLibraryDestroyed() ) );
+    }
 
 
 }
