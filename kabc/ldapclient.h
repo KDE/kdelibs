@@ -19,14 +19,6 @@
  */
 
 
-/**
-  * This file is internal. Binary compatibiliy might be broken any time 
-  * without notification. Do not use it.
-  *
-  * We mean it!
-  *
-  */
-
 #ifndef KABC_LDAPCLIENT_H
 #define KABC_LDAPCLIENT_H
 
@@ -46,6 +38,13 @@ namespace KABC {
 typedef QValueList<QByteArray> LdapAttrValue;
 typedef QMap<QString,LdapAttrValue > LdapAttrMap;
 
+/**
+  * This class is internal. Binary compatibiliy might be broken any time 
+  * without notification. Do not use it.
+  *
+  * We mean it!
+  *
+  */
 class LdapObject {
 public:
   LdapObject() : dn( QString::null ) {};  
@@ -70,6 +69,13 @@ private:
   class LdapObjectPrivate* d;
 };
 
+/**
+  * This class is internal. Binary compatibiliy might be broken any time 
+  * without notification. Do not use it.
+  *
+  * We mean it!
+  *
+  */
 class LdapClient : public QObject {
   Q_OBJECT
 public:
@@ -160,6 +166,15 @@ private:
   class LdapClientPrivate* d;
 };
 
+
+
+/**
+  * This class is internal. Binary compatibiliy might be broken any time 
+  * without notification. Do not use it.
+  *
+  * We mean it!
+  *
+  */
 class LdapSearch
     : public QObject
 {
