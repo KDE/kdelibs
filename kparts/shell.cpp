@@ -23,8 +23,8 @@ Shell::Shell( QWidget* parent, const char* name )
     m_statusBar = 0;
     m_bDoPartActivation = TRUE;
 
-    resize( 650, 480 );
-    
+    resize( 700, 480 );
+
     qApp->installEventFilter( this );
 }
 
@@ -537,8 +537,8 @@ bool Shell::eventFilter( QObject* obj, QEvent* ev )
 	return FALSE;
     }
 
-    if ( ( ev->type() == QEvent::MouseButtonPress || 
-	   ( ev->type() == QEvent::MouseButtonDblClick && m_bDoPartActivation ) ) 
+    if ( ( ev->type() == QEvent::MouseButtonPress ||
+	   ( ev->type() == QEvent::MouseButtonDblClick && m_bDoPartActivation ) )
 	 && m_policy == TriState )
     {
 	if ( obj->inherits("Frame") )
