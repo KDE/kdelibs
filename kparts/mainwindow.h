@@ -25,7 +25,7 @@ class MainWindowPrivate;
  * It implements all internal interfaces in the case of a @ref KTMainWindow as host:
  * the builder and servant interface (for menu merging).
  */
-class MainWindow : public KTMainWindow
+class MainWindow : public KTMainWindow, virtual public PartBase
 {
   Q_OBJECT
  public:

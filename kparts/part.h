@@ -25,7 +25,7 @@ class PartSelectEvent;
 class GUIActivateEvent;
 class PartBasePrivate;
 
-class PartBase : public KXMLGUIBase
+class PartBase : virtual public KXMLGUIBase
 {
 public:
   PartBase( QObject *partObj );
