@@ -207,21 +207,32 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     else
         style = new RenderStyle();
 
-     
-    for(int i = 0; i < (int)propsToApply->count(); i++)
-    {   
-        CSSOrderedProperty* ordprop = propsToApply->at(i);
-        RenderStyle* applyToStyle;
-        if (ordprop->pseudoId==RenderStyle::NOPSEUDO)
-            applyToStyle = style;
-        else
-            applyToStyle = style->addPseudoStyle(ordprop->pseudoId);
-        applyRule(applyToStyle, ordprop->prop, e);
+
+    QList<CSSOrderedProperty> *pseudoProps = new QList<CSSOrderedProperty>;
+    pseudoProps->setAutoDelete( false ); // so we don't delete them twice
+    for(int i = 0; i < (int)propsToApply->count(); i++) {
+	CSSOrderedProperty* ordprop = propsToApply->at(i);
+	// LINK pseudo ids have to be applied to :hover too
+	if ( ordprop->pseudoId == RenderStyle::NOPSEUDO || ordprop->pseudoId == RenderStyle::LINK )
+	    applyRule( style, ordprop->prop, e );
+	if ( ordprop->pseudoId != RenderStyle::NOPSEUDO )
+	    pseudoProps->append( ordprop );
     }
         
+    for(int i = 0; i < (int)pseudoProps->count(); i++) {
+	CSSOrderedProperty* ordprop = pseudoProps->at(i);
+	RenderStyle *pseudoStyle;
+	if ( ordprop->pseudoId != RenderStyle::LINK )
+	    pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
+	else
+	    pseudoStyle = style->getPseudoStyle(RenderStyle::HOVER);
+	if ( pseudoStyle )
+	    applyRule(pseudoStyle, ordprop->prop, e);
+    }
 
+    delete pseudoProps;
     delete propsToApply;
-
+    
     return style;
 }
 
@@ -243,6 +254,7 @@ CSSOrderedRule::~CSSOrderedRule()
 
 bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
 {
+    dynamicPseudo=RenderStyle::NOPSEUDO;
     CSSSelector *sel = selector;
     NodeImpl *n = e;
     // first selector has to match
@@ -372,33 +384,33 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
 	if(sel->value == ":first-child") {
-	    if(e->parentNode()->firstChild() != e)
-		return false;
+	    if(e->parentNode()->firstChild() == e)
+		return true;
 	} else if(sel->value == ":link") {
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
-	    if ( pseudoState == PseudoLink )
+	    if ( pseudoState == PseudoLink ) {
+		dynamicPseudo = RenderStyle::LINK;
 		return true;
-	    else
-		return false;
+	    }
 	} else if ( sel->value == ":visited" ) {
 	    if ( pseudoState == PseudoUnknown )
 		checkPseudoState( e );
-	    if ( pseudoState == PseudoVisited )
+	    if ( pseudoState == PseudoVisited ) {
+		dynamicPseudo = RenderStyle::LINK;
 		return true;
-	    else 
-		return false;
+	    }
 	} else if ( sel->value == ":first-line" ) {
-            dynamicPseudo=RenderStyle::FIRST_LINE;
-            return true;
-        } else if ( sel->value == ":first-letter" ) {
-            dynamicPseudo=RenderStyle::FIRST_LETTER;
-            return true;
-        } else if ( sel->value == ":hover" ) {
-            dynamicPseudo=RenderStyle::HOVER;
-            return true;
-        }
-        return false; 
+	    dynamicPseudo=RenderStyle::FIRST_LINE;
+	    return true;
+	} else if ( sel->value == ":first-letter" ) {
+	    dynamicPseudo=RenderStyle::FIRST_LETTER;
+	    return true;
+	} else if ( sel->value == ":hover" ) {
+	    dynamicPseudo=RenderStyle::HOVER;
+	    return true;
+	}
+	return false; 
     }
     // ### add the rest of the checks...
     return true;
@@ -480,7 +492,6 @@ void CSSStyleSelectorList::collect(CSSOrderedPropertyList *propsToApply, DOM::El
             //kdDebug( 6080 ) << "found matching rule for element " << e->id() << endl;
             CSSStyleDeclarationImpl *decl = at(i)->rule->declaration();
             propsToApply->append(decl, offset + i, important);
-            dynamicPseudo=RenderStyle::NOPSEUDO;
         }
     }
 }

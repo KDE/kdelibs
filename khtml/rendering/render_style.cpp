@@ -27,8 +27,6 @@
 
 using namespace khtml;
 
-const QColor RenderStyle::undefinedColor;
-
 StyleSurroundData::StyleSurroundData()
 {
     margin.left = Length(0,Fixed);
@@ -275,7 +273,7 @@ RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
 
     if (!ps)
     {            
-        ps = new RenderStyle(this);
+        ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
         ps->_styleType = pid;
         ps->pseudoStyle = pseudoStyle;
 

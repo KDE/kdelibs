@@ -27,8 +27,8 @@
 #include <kcharsets.h>
 
 #define MAXFONTSIZES 15
-const int defaultSmallFontSizes[MAXFONTSIZES] = { 6, 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
-const int defaultMediumFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120 };
+const int defaultSmallFontSizes[MAXFONTSIZES] = { 6, 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82 };
+const int defaultMediumFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
 const int defaultLargeFontSizes[MAXFONTSIZES] = { 8, 10, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
 
 
@@ -334,7 +334,7 @@ QString KHTMLSettings::lookupFont(const QFont::CharSet &charset, int i) const
 {
     QString font;
     const QStringList &fontList = fontsForCharset[charset];
-    if (fontList.count() > i)
+    if (fontList.count() > (uint) i)
        font = fontList[i];
     if (font.isEmpty())
        font = defaultFonts[i]; 
@@ -374,7 +374,7 @@ QString KHTMLSettings::fantasyFontName() const
 void KHTMLSettings::setFont(const QFont::CharSet &charset, int i, const QString &n)
 {
     QStringList fontList = fontsForCharset[charset];
-    while (fontList.count() <= i)
+    while (fontList.count() <= (uint)i)
       fontList.append(QString::null);
     fontList[i] = n;
 }

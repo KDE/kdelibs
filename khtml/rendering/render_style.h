@@ -494,7 +494,8 @@ class RenderStyle
 public:
     static void cleanup();
 
-    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, HOVER };
+    // LINK is only used in the CSSStyleSelector, to get the pseudo style for :hover right.
+    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, HOVER, LINK };
     
 protected:
 
@@ -533,7 +534,6 @@ protected:
 
     static RenderStyle* _default;
 
-       
 // non-inherited attributes
     DataRef<StyleBoxData> box;
     DataRef<StyleVisualData> visual;
@@ -546,8 +546,6 @@ protected:
 // list of associated pseudo styles
     RenderStyle* pseudoStyle;
     
-    static const QColor undefinedColor;
-
     void setBitDefaults();
 
 public:        
