@@ -349,35 +349,6 @@ const struct HashTable DOMExceptionConstructorTable = { 2, 19, DOMExceptionConst
 
 namespace KJS {
 
-const struct HashEntry EventConstructorTableEntries[] = {
-   { "BUBBLING_PHASE", DOM::Event::BUBBLING_PHASE, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[12] },
-   { "MOUSEDOWN", 1, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[17] },
-   { "KEYUP", 512, DontDelete|ReadOnly, 0, 0 },
-   { "MOUSEOUT", 8, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[16] },
-   { "CHANGE", 32768, DontDelete|ReadOnly, 0, 0 },
-   { "CAPTURING_PHASE", DOM::Event::CAPTURING_PHASE, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[11] },
-   { "AT_TARGET", DOM::Event::AT_TARGET, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[14] },
-   { "DBLCLICK", 128, DontDelete|ReadOnly, 0, 0 },
-   { "MOUSEUP", 2, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[13] },
-   { 0, 0, 0, 0, 0 },
-   { "FOCUS", 4096, DontDelete|ReadOnly, 0, 0 },
-   { "MOUSEOVER", 4, DontDelete|ReadOnly, 0, 0 },
-   { "MOUSEMOVE", 16, DontDelete|ReadOnly, 0, 0 },
-   { "MOUSEDRAG", 32, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[19] },
-   { "CLICK", 64, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[15] },
-   { "KEYDOWN", 256, DontDelete|ReadOnly, 0, 0 },
-   { "KEYPRESS", 1024, DontDelete|ReadOnly, 0, 0 },
-   { "DRAGDROP", 2048, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[18] },
-   { "BLUR", 8192, DontDelete|ReadOnly, 0, 0 },
-   { "SELECT", 16384, DontDelete|ReadOnly, 0, 0 }
-};
-
-const struct HashTable EventConstructorTable = { 2, 20, EventConstructorTableEntries, 11 };
-
-}; // namespace
-
-namespace KJS {
-
 const struct HashEntry DOMCharacterDataTableEntries[] = {
    { "data", DOMCharacterData::Data, DontDelete, 0, &DOMCharacterDataTableEntries[2] },
    { 0, 0, 0, 0, 0 },

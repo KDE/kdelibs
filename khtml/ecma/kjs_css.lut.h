@@ -90,10 +90,11 @@ namespace KJS {
 
 const struct HashEntry DOMCSSStyleSheetTableEntries[] = {
    { "cssRules", DOMCSSStyleSheet::CssRules, DontDelete|ReadOnly, 0, 0 },
-   { "ownerRule", DOMCSSStyleSheet::OwnerRule, DontDelete|ReadOnly, 0, 0 }
+   { "ownerRule", DOMCSSStyleSheet::OwnerRule, DontDelete|ReadOnly, 0, &DOMCSSStyleSheetTableEntries[2] },
+   { "rules", DOMCSSStyleSheet::Rules, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMCSSStyleSheetTable = { 2, 2, DOMCSSStyleSheetTableEntries, 2 };
+const struct HashTable DOMCSSStyleSheetTable = { 2, 3, DOMCSSStyleSheetTableEntries, 2 };
 
 }; // namespace
 
