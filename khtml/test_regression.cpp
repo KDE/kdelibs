@@ -156,7 +156,8 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 	    UString str = args[0].toString(exec);
             if ( str.qstring().lower().find( "failed!" ) >= 0 )
                 m_regTest->saw_failure = true;
-	    fprintf(stderr, "%s\n",str.qstring().latin1());
+            QString res = str.qstring().replace('\007', "");
+	    fprintf(stderr, "%s\n", res.latin1());
 	    break;
 	}
 	case ReportResult: {
