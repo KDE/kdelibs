@@ -1,6 +1,6 @@
 #include "handler.h"
 #include "container.h"
-
+#include <math.h>
 #include <qwmatrix.h>
 
 EventHandler::EventHandler( QObject* target )
