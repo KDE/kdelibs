@@ -189,6 +189,9 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
     DOMStringImpl* v = value.implementation();
     if ( v ) {
         unsigned int l = 0;
+        
+        while ( l < v->l && v->s[l].latin1()==' ') l++;
+        
         for ( ;l < v->l; l++ ) {
             char cc = v->s[l].latin1();
             if ( cc > '9' || ( cc < '0' && cc != '*' && cc != '%' && cc != '.') )
