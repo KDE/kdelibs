@@ -84,10 +84,11 @@ fi
 if test "$kde_supports_versionmaps" != "yes"; then
   echo ""
   echo "Your ld doesn't support unversioned version scripts."
-  echo "KDE will continue to build, but you might have a slight performance penality."
+  echo "KDE will continue to build and run just fine, but you might"
+  echo "experience a small performance penality."
   echo ""
   echo "If you're running Linux, your binutils are probably too old."
-  echo "If you're running non-linux, support for your platform might not be implemented."
+  echo "If you're running non-linux your platform might simply not support it."
   echo ""
   all_tests=bad
 fi
