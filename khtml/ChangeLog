@@ -1,5 +1,8 @@
 2004-01-25  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_block.cpp (positionNewFloats): when somebody says
+	clear: both;, he usually means it (#68068).
+
 	* html/html_objectimpl.cpp (renderAlternative): give the alternative rendering
 	some time to avoid ugly deletion races.
 
