@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #include <stdio.h>
@@ -99,6 +98,7 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     int **ovector = regExpObj->registerRegexp( re, s.value() );
 
     str = re->match(s.value(), i, 0L, ovector);
+    regExpObj->setSubPatterns(re->subPatterns());
 
     if (id == Test)
       return Boolean(!str.isNull());
@@ -160,15 +160,13 @@ RegExpObjectImp::RegExpObjectImp(ExecState *exec,
 
 RegExpObjectImp::~RegExpObjectImp()
 {
-  if (lastOvector)
-    delete [] lastOvector;
+  delete [] lastOvector;
 }
 
 int **RegExpObjectImp::registerRegexp( const RegExp* re, const UString& s )
 {
   lastString = s;
-  if (lastOvector)
-    delete [] lastOvector;
+  delete [] lastOvector;
   lastOvector = 0;
   lastNrSubPatterns = re->subPatterns();
   return &lastOvector;
