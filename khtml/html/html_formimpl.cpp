@@ -1566,7 +1566,7 @@ DOMString HTMLSelectElementImpl::value( )
             && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
             return static_cast<HTMLOptionElementImpl*>(items[i])->value();
     }
-    return DOMString();
+    return DOMString("");
 }
 
 void HTMLSelectElementImpl::setValue(DOMStringImpl* /*value*/)

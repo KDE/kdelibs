@@ -1522,7 +1522,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
             swallowEvent = true;
 	me->deref();
 
-        if( eventId == EventImpl::CLICK_EVENT ) {
+        if( eventId == EventImpl::MOUSEDOWN_EVENT ) {
             if (targetNode->isSelectable())
                 m_part->xmlDocImpl()->setFocusNode(targetNode);
             else
