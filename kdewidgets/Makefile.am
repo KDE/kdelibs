@@ -28,5 +28,7 @@ kdewidgets_la_LIBADD = $(LIB_KIO)
 kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp
 
 kdewidgets.cpp: kde.widgets
-	$(srcdir)/makekdewidgets -o kdewidgets.cpp $<
+	$(srcdir)/makekdewidgets -o $(srcdir)/kdewidgets.cpp $<
+
+CLEANFILES = $(srcdir)/kdewidgets.cpp
 
