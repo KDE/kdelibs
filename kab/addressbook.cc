@@ -81,11 +81,18 @@ extern "C" {
 
 const char* AddressBook::Entry::Address::Fields[]= {
   "headline", "position", 
-  "org", "orgUnit", "orgSubUnit",
-  "deliveryLabel", "address", "zip", "town", "country", "state" };
+  "org", "orgunit", "orgsubunit",
+  "deliverylabel", "address", "zip", "town", "country", "state" };
 const int AddressBook::Entry::Address::NoOfFields
 =sizeof(AddressBook::Entry::Address::Fields)
 /sizeof(AddressBook::Entry::Address::Fields[0]);
+
+const char* AddressBook::Entry::Fields[]= {
+  "title", "rank", "fn", "nameprefix", "firstname", "middlename", "lastname",
+  "birthday", "comment", "talk", "emails", "keywords", "telephone",
+  "urls", "user1", "user2", "user3", "user4", "custom" };
+const int AddressBook::Entry::NoOfFields
+=sizeof(AddressBook::Entry::Fields)/sizeof(AddressBook::Entry::Fields[0]);
 
 struct QStringLess
   : public binary_function<const QString&, const QString&, bool>
@@ -108,6 +115,7 @@ class KeyNameMap : public map<const char*, const QString, less<const char*> >
 { // same thing
 };
 
+KeyNameMap* AddressBook::Entry::fields;
 KeyNameMap* AddressBook::Entry::Address::fields;
 
 bool
@@ -203,7 +211,131 @@ bool AddressBook::Entry::Address::nameOfField(const char* key, QString& value)
 	}
 #if ! defined NDEBUG
       QString name;
-      kdDebug() << "AddressBook::Entry::Address::get:" << endl
+      kdDebug() << "AddressBook::Entry::Address::nameOfField:" << endl
+		<< "Created key-fieldname-map. Defined fields are:" 
+		<< endl; 
+      for(counter=0; counter<AddressBook::Entry::Address::NoOfFields;
+	  ++counter)
+	{
+	  pos=fields->find(Fields[counter]);
+	  if(pos==fields->end())
+	    {
+	      kdDebug() << "  UNDEFINED" << endl;
+	    } else {
+	      kdDebug() << "  " << Fields[counter] << " ("
+			<< (*pos).second.utf8() << ")" 
+			<< endl;
+	    }
+	}
+#endif
+    }
+  // ----- now finally do the lookup:
+  pos=fields->find(key);
+  if(pos==fields->end())
+    {
+      return false;
+    } else {
+      value=(*pos).second;
+      return true;
+    }
+}
+
+bool AddressBook::Entry::nameOfField(const char* key, QString& value)
+{
+  KeyNameMap::iterator pos;
+  // -----
+  if(fields==0)
+    { // this is executed exactly one time per application instance,
+      // as fields is static 
+      int counter=0;
+      fields=new KeyNameMap;
+      CHECK_PTR(fields);
+      if(!fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Title"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Rank"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Formatted Name"))).second 
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Name Prefix"))).second 
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("First Name"))).second 
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Middle Name"))).second 
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Last Name"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Birthday"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Comment"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Talk Addresses"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Email Addresses"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Keywords"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Telephone Number"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("URLs"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("User Field 1"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("User Field 2"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("User Field 3"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("User Field 4"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Custom"))).second)
+	{
+	  kdDebug() << "AddressBook::Entry::Address::nameOfField (while "
+		    << " creating field-name map): TYPO, correct this." 
+		    << endl;
+	} else {
+	  kdDebug() << "AddressBook::Entry::Address::nameOfField: "
+		    << "inserted field names." << endl;
+	}
+#if ! defined NDEBUG
+      QString name;
+      kdDebug() << "AddressBook::Entry::nameOfField:" << endl
 		<< "Created key-fieldname-map. Defined fields are:" 
 		<< endl; 
       for(counter=0; counter<AddressBook::Entry::Address::NoOfFields;

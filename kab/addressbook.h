@@ -76,9 +76,9 @@ protected:
 #undef KAB_STATE
 #endif
 #define KAB_VERSION 2
-#define KAB_MINOR   0
+#define KAB_MINOR   2
 #define KAB_PATCH   0
-#define KAB_STATE   "alpha"
+#define KAB_STATE   "beta"
 
 // -----------------------------------------------------------------------------
 /** The class AddressBook implements the base class for the KDE addressbook. 
@@ -296,10 +296,7 @@ public:
    *  More fields will surely follow.
    **/
   class Entry {
-  protected:
-    /** \internal The pointer to the file the entry is read from. */
-    // const QConfigDB *file; 
- public:
+  public:
     // types:
     /** Since an entry may have different addresses, we need a type for them.
      *  Multiple addresses are used to distinguish between addresses at home
@@ -349,6 +346,15 @@ public:
     };
     /** Contains one or more Address objects. */
     std::list<AddressBook::Entry::Address> addresses; 
+    // ----- This aggregates are used to access the fields by
+    // keywords. We use char* here to be able to initialize the keys
+    // in code as statics without initializing Qt etc. :
+    /** An aggregat containing the keys of all declared fields:
+     */
+    static const char* Fields[];
+    /** The number of elements in Fields.
+     */
+    static const int NoOfFields;
     // methods:
     /** Use this method to retrieve the address at the given \a index.
      *  The method is provided for convenience. The address data is
@@ -356,6 +362,10 @@ public:
     AddressBook::ErrorCode getAddress(int index, Address& address);
     /** Returns the number of addresses of this entry. */
     int noOfAddresses() const;
+    /** Query the literal, translated name of the field given by its
+	key. 
+	@return false if key is not defined */
+    static bool nameOfField(const char* key, QString& value);
     // members:
     // this parts are assumed to be unique for every entry:
     QString title; /**< The title of the person. */
@@ -380,6 +390,8 @@ public:
     QString user3; /**< The third user-declared field. */
     QString user4; /**< The fourth user-declared field. */    
     QStringList custom;
+  protected:
+    static KeyNameMap *fields;
   };
   /** The constructor. If \e load is true, the user standard file will
    *  automatically be loaded into the object. */
