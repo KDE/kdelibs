@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.91  1998/11/18 01:00:02  radej
+// sven: set*BarPos(Flat) works now (I hope)
+//
 // Revision 1.90  1998/11/11 14:32:08  radej
 // Revision 1.92  1998/11/21 19:27:19  radej
 // sven: doubleClicked signal for buttons.
@@ -271,6 +274,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   connect( this, SIGNAL( clicked() ), this, SLOT( ButtonClicked() ) );
   connect(this, SIGNAL( pressed() ), this, SLOT( ButtonPressed() ) );
   connect(this, SIGNAL( released() ), this, SLOT( ButtonReleased() ) );
+  installEventFilter(this);
 }
 
 void KToolBarButton::beToggle(bool flag)
@@ -368,23 +372,31 @@ void KToolBarButton::enterEvent(QEvent *)
 }
 
 void KToolBarButton::setRadio (bool f)
-{
+{ /*
   if (f && !radio)  // if was not and now is
     installEventFilter(this);
   else if (!f && radio) // if now isn't and was (man!)
     removeEventFilter(this);
-
+  */
   radio = f;
 
-};
+}
 
 bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
 {
+  // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
+  if ((KToolBarButton *)o == this && ev->type () == Event_MouseButtonDblClick)
+  {
+    debug ("Doubleclick");
+    emit doubleClicked (id);
+    return true;
+  }
+      
   if ((KToolBarButton *) o == this)
     if ((ev->type() == Event_MouseButtonPress ||
          ev->type() == Event_MouseButtonRelease ||
          ev->type() == Event_MouseButtonDblClick) && radio && isOn())
-      return false;
+      return true;
 
   if ((QPopupMenu *) o != myPopup)
     return false; // just in case
@@ -769,8 +781,6 @@ void KToolBarButton::ButtonToggled()
 {
   emit toggled(id);
 }
-
-
 /****************************** Tolbar **************************************/
 	    context->popup( mapToGlobal( m->pos() ), 0 );
 KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
@@ -1492,6 +1502,11 @@ void KToolBar::ButtonClicked( int id )
   emit clicked( id );
 }
 
+void KToolBar::ButtonDblClicked( int id )
+{
+  emit doubleClicked( id );
+}
+
 void KToolBar::ButtonPressed( int id )
 {
   emit pressed( id );
@@ -1535,6 +1550,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
     items.insert( index, item );
   
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
+  connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
   connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
   connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
   connect(button, SIGNAL(highlighted(int, bool)), this,
@@ -1568,6 +1584,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   item->show();
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
+  connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
   connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
   connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
   connect(button, SIGNAL(highlighted(int, bool)), this,
@@ -1599,6 +1616,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
     items.insert( index, item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
+  connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
   connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
   connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
   connect(button, SIGNAL(highlighted(int, bool)), this,

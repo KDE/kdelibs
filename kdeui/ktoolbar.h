@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.44  1998/11/11 14:32:11  radej
+// sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
+//
 // Revision 1.43  1998/11/09 00:28:43  radej
 // sven: Docs update (more to come)
 //
@@ -199,6 +202,7 @@ class KToolBarButton : public QButton
 
  signals:
      void clicked(int);
+     void doubleClicked(int);
      void pressed(int);
      void released(int);
      void toggled(int);
@@ -290,10 +294,10 @@ public:
                    const char *tooltiptext = 0L, int index=-1 );
 
   /**
-   * This inserts a button with popupmenu. If button is in toolbar a small
-   * trialngle will be drawn. You have to connect to popup's signals. The
-   * signals pressed, released or clikced are NOT emmited by this button
-   * (see @ref #setDelayedPopup for that).
+   * This inserts a button with popupmenu. Button will have small
+   * trialngle. You have to connect to popup's signals. The
+   * signals pressed, released, clikced or doubleClicked are NOT emmited by
+   * this button (see @ref #setDelayedPopup for that).
    * You can add custom popups which inherit @ref QPopupMenu to get popups
    * with tables, drawings etc. Just don't fiddle with events there.
    */
@@ -406,7 +410,8 @@ public:
    *
    * Don't add delayed popups to buttons which have normal popups.
    *
-   * You may add popups wich are derived from QPopupMenu.
+   * You may add popups wich are derived from QPopupMenu. You may
+   * add popups that are already in menu bar or are submenus of other popups.
    */
   void setDelayedPopup (int id , QPopupMenu *_popup);
 
@@ -722,6 +727,19 @@ signals:
     void clicked(int id);
 
     /**
+     * Emits when button id is double clicked. Note: you will always
+     * recive two @ref #clicked , @ref #pressed and @ref #released signals.
+     * There is no way to avoid it - at least no easy way.
+     * If you need to resolve this all you can do is set up timers
+     * which waits for @ref QApplication::doubleClickInterval to expire.
+     * if in that time you don't get this signal, you may belive that
+     * button was only clicked.
+     * And please note that butons with popup menus do not emit this signal,
+     * but those with delayed popup do.
+     */
+    void doubleClicked (int id);
+    
+    /**
      * Emits when button id is pressed.
      */
     void pressed(int);
@@ -817,6 +835,7 @@ protected:
   
 protected slots:
   void ButtonClicked(int);
+  void ButtonDblClicked( int id );
   void ButtonPressed(int);
   void ButtonReleased(int);
   void ButtonToggled(int);
