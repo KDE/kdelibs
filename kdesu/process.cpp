@@ -242,6 +242,7 @@ int PtyProcess::exec(QCString command, QCStringList args)
     execv(path, (char * const *)argp);
     kdError(900) << k_lineinfo << "execv(\"" << path << "\"): " << perror << "\n";
     _exit(1);
+    return -1; // Shut up compiler. Never reached.
 }
 
 
