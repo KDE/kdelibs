@@ -96,6 +96,7 @@ public:
     virtual tagStatus endTag() { return FONTEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
+    void attach(KHTMLView *w);
 };
 
 // -------------------------------------------------------------------------
