@@ -93,6 +93,7 @@ private:
 private slots:
     void playTimeout();
     void slotPlayerProcessExited( KProcess *proc );
+    void restartedArtsd();
 
 private:
     KNotifyPrivate* d;

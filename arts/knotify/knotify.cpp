@@ -55,6 +55,7 @@
 #include <kpassivepopup.h>
 #include <kiconloader.h>
 #include <kplayobjectfactory.h>
+#include <kaudiomanagerplay.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
 #include <kuniqueapplication.h>
@@ -81,6 +82,7 @@ public:
     bool useArts;
     int volume;
     QTimer *playTimer;
+    KAudioManagerPlay *audioManager;
 };
 
 // Yes, it's ugly to put this here, but this facilitates the cautious startup
@@ -212,6 +214,12 @@ KNotify::KNotify( bool useArts )
     d->externalPlayerProc = 0;
     d->useArts = useArts;
     d->playObjects.setAutoDelete(true);
+    d->audioManager = 0;
+    if( useArts )
+    {
+        connect( soundServer, SIGNAL( restartedServer() ), this, SLOT( restartedArtsd() ) );
+        restartedArtsd(); //started allready need to initialize d->audioManager
+    }
 
     d->volume = 100;
 
@@ -229,6 +237,7 @@ KNotify::~KNotify()
     delete d->globalEvents;
     delete d->globalConfig;
     delete d->externalPlayerProc;
+    delete d->audioManager;
     delete d;
 }
 
@@ -416,6 +425,8 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
             abortFirstPlayObject();
 
         KDE::PlayObjectFactory factory(soundServer->server());
+        if( d->audioManager )
+            factory.setAudioManagerPlay( d->audioManager );
         KURL soundURL;
         soundURL.setPath(soundFile);
         KDE::PlayObject *playObject = factory.createPlayObject(soundURL, true);
@@ -690,3 +701,13 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
     }
     return senderWinId;
 }
+
+void KNotify::restartedArtsd()
+{
+    delete d->audioManager;
+    d->audioManager = new KAudioManagerPlay( soundServer );
+    d->audioManager->setTitle( i18n( "KDE System Notifications" ) );
+    d->audioManager->setAutoRestoreID( "KNotify Aman Play" );
+}
+
+// vim: sw=4 sts=4 ts=8 et
