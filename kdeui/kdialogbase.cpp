@@ -61,6 +61,7 @@ public:
     QWidget *detailsWidget;
     QSize incSize;
     QSize minSize;
+    QString detailsButton;
 };
 
 KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
@@ -671,7 +672,7 @@ void KDialogBase::setButtonStyle( int style )
 
   for( int i=0; i<layoutMax; i++ )
   {
-    if(layout[i] == Stretch) // Unconditional Stretch
+    if(((ButtonCode) layout[i]) == Stretch) // Unconditional Stretch
     {
       lay->addStretch(1);
       continue;
@@ -892,6 +893,12 @@ void KDialogBase::setButtonCancelText( const QString& text,
 
 void KDialogBase::setButtonText( ButtonCode id, const QString &text )
 {
+  if (!d->bSettingDetails && (id == Details))
+  {
+    d->detailsButton = text;
+    setDetails(d->bDetails);
+    return;
+  }
   QPushButton *pb = actionButton( id );
   if( pb != 0 )
   {
@@ -997,13 +1004,14 @@ void KDialogBase::setDetailsWidget(QWidget *detailsWidget)
 
 void KDialogBase::setDetails(bool showDetails)
 {
-  d->bDetails = showDetails;
+  if (d->detailsButton.isEmpty())
+     d->detailsButton = i18n("&Details");
   d->bSettingDetails = true;
-  emit aboutToShowDetails();
-  d->bSettingDetails = false;
+  d->bDetails = showDetails;
   if (d->bDetails)
   {
-     setButtonText(Details, i18n("Details <<"));
+     emit aboutToShowDetails();
+     setButtonText(Details, d->detailsButton+ " <<");
      if (d->detailsWidget)
      {
         if (layout())
@@ -1019,7 +1027,7 @@ void KDialogBase::setDetails(bool showDetails)
   }
   else
   {
-     setButtonText(Details, i18n("Details >>"));
+     setButtonText(Details, d->detailsButton+" >>");
      if (d->detailsWidget)
      {
         d->detailsWidget->hide();
@@ -1028,6 +1036,7 @@ void KDialogBase::setDetails(bool showDetails)
         layout()->activate();
      adjustSize();
   }
+  d->bSettingDetails = false;
 }
 
 void KDialogBase::slotOk()
