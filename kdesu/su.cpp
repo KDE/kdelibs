@@ -103,7 +103,7 @@ int SuProcess::exec(const char *password, int check)
 	return ret;
     }
 
-    if (m_bErase) 
+    if (m_bErase && password) 
     {
 	char *ptr = const_cast<char *>(password);
 	for (unsigned i=0; i<strlen(password); i++)
