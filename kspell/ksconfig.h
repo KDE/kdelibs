@@ -105,7 +105,7 @@ public:
   void setDictFromList (bool dfl);
   //  void setPersonalDict (const char *s);
   /**
-   * 
+   */
   void setEncoding (int enctype);
   void setClient (int client);
 
