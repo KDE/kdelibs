@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=image/x-xbm
+Icon=image.xpm
+Patterns=*.xbm;*.XBM;
+Comment=X bitmap
+Comment[de]=X Bitmap

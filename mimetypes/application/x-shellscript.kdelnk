@@ -1,0 +1,7 @@
+[KDE Desktop Entry]
+Type=MimeType
+Icon=UNIX.xpm
+Patterns=;
+MimeType=application/x-shellscript
+Comment=Shell Script
+Comment[de]=Shell Script

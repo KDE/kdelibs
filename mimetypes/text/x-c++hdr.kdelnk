@@ -1,0 +1,9 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=C++ headers
+Comment[de]=C++ Header
+DefaultApp=
+Icon=h_src.xpm
+Type=MimeType
+MimeType=text/x-c++hdr
+Patterns=*.hh;

@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Tcl file
+Comment[de]=TcL Programm
+Icon=unknown.xpm
+Type=MimeType
+MimeType=text/x-tcl
+Patterns=*.tcl;*.tk;

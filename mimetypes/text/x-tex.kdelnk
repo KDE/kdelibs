@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=TeX file
+Comment[de]=TeX Dokument
+Icon=tex.xpm
+Type=MimeType
+MimeType=text/x-tex
+Patterns=*.tex;*.ltx;*.sty;*.cls;*.TEX;*.LTX;*.STY;*.CLS;

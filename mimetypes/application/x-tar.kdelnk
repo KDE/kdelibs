@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=application/x-tar
+Icon=tgz.xpm
+Patterns=*.tar;
+Comment=Tar archive
+Comment=Tar Archiv

@@ -1,0 +1,9 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=application/postscript
+Icon=postscript.xpm
+Patterns=*.ps;*.PS;*.eps;*.EPS;
+DefaultApp=kghostview
+Comment=PostScript Document
+Comment[de]=Postscript Dokument

@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=application/x-java
+Icon=binary.xpm
+Patterns=*.class;
+Comment=Java Class
+Comment[de]=Java Klasse

@@ -1,0 +1,10 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=application/pdf
+Icon=pdf.xpm
+Patterns=*.pdf;*.PDF;
+DefaultApp=acroread
+Comment=Pdf Document
+Comment[de]=PDF Dokument
+

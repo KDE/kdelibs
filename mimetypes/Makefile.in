@@ -1,0 +1,58 @@
+APPLNKS = "./application/x-dvi.kdelnk" \
+	"./application/x-tex-gf.kdelnk" \
+	"./application/gzip.kdelnk" \
+	"./application/x-object.kdelnk" \
+	"./application/x-tex-pk.kdelnk" \
+	"./application/pdf.kdelnk" \
+	"./application/x-tar.kdelnk" \
+	"./application/x-trash.kdelnk" \
+	"./application/x-zip.kdelnk" \
+	"./application/x-core.kdelnk" \
+	"./application/x-font.kdelnk" \
+	"./application/x-java.kdelnk" \
+	"./application/postscript.kdelnk" \
+	"./video/mpeg.kdelnk" \
+	"./audio/x-wav.kdelnk" \
+	"./text/x-c++src.kdelnk" \
+	"./text/x-c++hdr.kdelnk" \
+	"./text/x-csrc.kdelnk" \
+	"./text/x-java.kdelnk" \
+	"./text/x-makefile.kdelnk" \
+	"./text/x-moc.kdelnk" \
+	"./text/x-pascal.kdelnk" \
+	"./text/x-tcl.kdelnk" \
+	"./text/x-tex.kdelnk" \
+	"./text/html.kdelnk" \
+	"./text/plain.kdelnk" \
+	"./text/x-chdr.kdelnk" \
+	"./image/jpeg.kdelnk" \
+	"./image/tiff.kdelnk" \
+	"./image/x-xpm.kdelnk" \
+	"./image/x-xbm.kdelnk" \
+	"./image/gif.kdelnk"
+
+
+top_srcdir = @top_srcdir@
+DESTDIR = @prefix@/mimetypes
+INSTALL_DIR = $(SHELL) $(top_srcdir)/mkinstalldirs
+INSTALL_DATA = @INSTALL@ -m 644
+
+all:
+
+Makefile: Makefile.in
+	cd ../.. && CONFIG_FILES=kfm/mimetypes/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+install:
+	$(INSTALL_DIR) $(DESTDIR)
+	@for i in $(APPLNKS); do \
+	 echo "$(INSTALL_DATA) $$i $(DESTDIR)"; \
+	 test -d $(DESTDIR)/`dirname "$$i"` \
+	 || $(INSTALL_DIR) $(DESTDIR)/`dirname "$$i"`; \
+	 $(INSTALL_DATA) "$$i" $(DESTDIR)/"$$i"; \
+	done
+
+uninstall:
+	for i in $(APPLNKS); do \
+	 rm -f $(DESTDIR)/"$$i"; \
+	done
+

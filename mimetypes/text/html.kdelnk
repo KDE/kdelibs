@@ -1,0 +1,9 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=HTML Page
+Comment[de]=HTML Seite
+DefaultApp=KDE Browser
+Icon=html.xpm
+Type=MimeType
+MimeType=text/html
+Patterns=*.html;*.HTML;*.htm;*.HTM;

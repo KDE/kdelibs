@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Packed Font file
+Comment[de]=Komprimierte Fontdatei
+Icon=pk.xpm
+Type=MimeType
+MimeType=application/x-tex-pk
+Patterns=*pk;*PK;

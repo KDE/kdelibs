@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=application/x-gzip
+Icon=tgz.xpm
+Patterns=*.gz;
+Comment=Gzip file
+Comment[de]=GZip Datei

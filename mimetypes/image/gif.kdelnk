@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=image/gif
+Icon=image.xpm
+Patterns=*.gif;*.GIF;
+Comment=Gif images
+Comment[de]=GIF Dokument

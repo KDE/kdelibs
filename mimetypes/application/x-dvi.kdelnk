@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=TeX Device Independent file
+Comment[de]=TeX DVI Datei
+Icon=dvi.xpm
+Type=MimeType
+MimeType=application/x-dvi
+Patterns=*.dvi;*.DVI;

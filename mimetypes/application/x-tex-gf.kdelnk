@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Generic Font files
+Comment[de]=Allgemeine Fontdateien
+Icon=gf.xpm
+Type=MimeType
+Mimetype=application/x-tex-gf
+Patterns=*.*gf;*.*GF;

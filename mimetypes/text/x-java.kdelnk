@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Java sources
+Comment[de]=Java Quelldatei
+Icon=java_src.xpm
+Type=MimeType
+MimeType=text/x-java
+Patterns=*.java;

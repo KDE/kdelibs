@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Pascal sources
+Comment[de]=Pascal Quelldatei
+Icon=p_src.xpm
+Type=MimeType
+MimeType=text/x-pascal
+Patterns=*.p;*.pas;

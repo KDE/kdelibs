@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Makefile
+Comment[de]=Makefile
+Icon=unknown.xpm
+Type=MimeType
+MimeType=text/x-makefile
+Patterns=Makefile*;

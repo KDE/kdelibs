@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=application/x-font
+Icon=font.xpm
+Patterns=*.pfa;*.PFB;*.pfb;*.gsf;*.pcf.Z;
+Comment=Fonts
+Comment[de]=Fonts

@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Qt Meta Object file
+Comment[de]=Qt Meta Object Datei
+Icon=unknown.xpm
+Type=MimeType
+MimeType=text/x-moc
+Patterns=*.moc;
