@@ -34,6 +34,8 @@
 #include "jobclasses.h"
 #include "defaultprogress.h"
 
+namespace KIO {
+
 class DefaultProgress::DefaultProgressPrivate
 {
 public:
@@ -332,5 +334,7 @@ void DefaultProgress::setDestVisible( bool visible )
     destLabel->setText( QString::null );
   }
 }
+
+} /* namespace */
 
 #include "defaultprogress.moc"

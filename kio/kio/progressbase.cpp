@@ -19,6 +19,8 @@
 #include "jobclasses.h"
 #include "progressbase.h"
 
+namespace KIO {
+
 ProgressBase::ProgressBase( QWidget *parent )
   : QWidget( parent )
 {
@@ -166,6 +168,7 @@ void ProgressBase::slotClean() {
   hide();
 }
 
+} /* namespace */
 
 #include "progressbase.moc"
 

@@ -27,16 +27,17 @@
 #include "jobclasses.h"
 #include "statusbarprogress.h"
 
+namespace KIO {
+
 StatusbarProgress::StatusbarProgress( QWidget* parent, bool button )
   : ProgressBase( parent ) {
 
   m_bShowButton = button;
 
   // only clean this dialog
-  m_bOnlyClean = true;
-
+  setOnlyClean(true);
   // TODO : is this really needed ?
-  m_bStopOnClose = false;
+  setStopOnClose(false);
 
   int w = fontMetrics().width( " 999.9 kB/s 00:00:01 " ) + 8;
   box = new QHBoxLayout( this, 0, 0 );
@@ -156,4 +157,5 @@ bool StatusbarProgress::eventFilter( QObject *, QEvent *ev ) {
   return false;
 }
 
+} /* namespace */
 #include "statusbarprogress.moc"

@@ -25,6 +25,8 @@
 
 #include "progressbase.h"
 
+namespace KIO {
+    
 /*
  * @ref ProgressBase
  */
@@ -89,6 +91,8 @@ protected:
   class DefaultProgressPrivate;
   DefaultProgressPrivate* d;
 };
+
+} /* namespace */
 
 #endif // __defaultprogress_h__
 

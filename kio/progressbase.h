@@ -35,11 +35,8 @@ namespace KIO
     STATUSBAR = 2,
     LIST = 3
   };
-};
 
 /**
-* Base class for IO progress dialogs.
-*
 * This class does all initialization stuff for progress,
 * like connecting signals to slots.
 * All slots are implemented as pure virtual methods.
@@ -84,9 +81,21 @@ public:
 
   // should we stop the job when the dialog is closed ?
   void setStopOnClose( bool stopOnClose ) { m_bStopOnClose = stopOnClose; }
+  bool stopOnClose() const { return m_bStopOnClose; }
 
+  /**
+   * This controls whether the dialog should be deleted or only cleaned when
+   * the KIO::Job is finished (or canceled).
+   *
+   * If your dialog is an embedded widget and not a separate window, you should
+   * setOnlyClean(true) in the constructor of your custom dialog.
+   *
+   * If true - Dialog will only call method @ref slotClean.
+   * If false - Dialog will be deleted.
+   */
   // should we delete the dialog or just clean it when the job is finished ?
   void setOnlyClean( bool onlyClean ) { m_bOnlyClean = onlyClean; }
+  bool onlyClean() const { return m_bOnlyClean; }
 
 public slots:
   // this method should be called for correct cancelation of IO operation
@@ -129,22 +138,13 @@ protected:
 
   KIO::Job* m_pJob;
 
-  /**
-   * This variable controls whether the dialog should be deleted or only cleaned when
-   * the KIO::Job is finished ( or canceled ).
-   *
-   * If your dialog is embedded widget and not a separate window, you should set this
-   * variable to true in the constructor of your custom dialog.
-   *
-   * If true - Dialog will only call method @ref slotClean.
-   * If false - Dialog will be deleted.
-   */
+private:
   bool m_bOnlyClean;
-
   bool m_bStopOnClose;
 
 
 };
 
+} /* namespace */
 
 #endif // __progressbase_h__

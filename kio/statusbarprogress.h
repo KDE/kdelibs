@@ -26,10 +26,12 @@
 
 #include "progressbase.h"
 
-namespace KIO { class Job; }
-
 class QWidgetStack;
 class QBoxLayout;
+
+namespace KIO {
+
+class Job;
 
 /**
 * This is a special IO progress widget.
@@ -92,5 +94,7 @@ protected:
   QBoxLayout *box;
   QWidgetStack *stack;
 };
+
+} /* namespace */
 
 #endif  //  __statusbarprogress_h__

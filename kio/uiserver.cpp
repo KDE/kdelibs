@@ -91,7 +91,7 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   m_visible = true;
 
   // create dialog, but don't show it
-  defaultProgress = new DefaultProgress( false );
+  defaultProgress = new KIO::DefaultProgress( false );
   defaultProgress->setOnlyClean( true );
   connect ( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
 
