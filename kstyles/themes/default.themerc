@@ -1,16 +1,20 @@
 [Misc]
 Name=KDE Classic
 Name[be]=Клясычны KDE
+Name[cs]=Klasické KDE
 Name[da]=KDE Klassisk
 Name[es]=KDE clásico
 Name[ga]=KDE Claisaiceach
+Name[sk]=KDE Štandardný
 Name[sv]=KDE klassisk
 Comment=Classic KDE style
 Comment[be]=Клясычны стыль KDE
+Comment[cs]=Klasický styl prostředí KDE
 Comment[da]=Klassisk KDE-stil
 Comment[es]=Estilo KDE clásico
 Comment[ga]=Stíl Chlaisaiceach KDE
 Comment[hu]=A KDE korábbi stílusa
+Comment[sk]=Štandardný štýl KDE
 Comment[sv]=Klassisk KDE-stil
 Highcolor=hcstyle.la
 InactiveShading=true

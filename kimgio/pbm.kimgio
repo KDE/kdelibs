@@ -8,6 +8,7 @@ Name[eu]=Bitmap Irudi Eramangarria
 Name[ga]=Íomhá PBM (Portable Bitmap)
 Name[hu]=Portable Bitmap kép
 Name[pt_BR]=Imagem Bitmap Portável
+Name[sk]=Portable Bitmap obrázok
 Name[sv]=Flyttbart bitmappsformat
 Read=true
 Write=true

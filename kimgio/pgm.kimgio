@@ -2,12 +2,14 @@
 Type=PNM
 Header=
 Name=Portable Graymap Image
+Name[cs]=Obrázek ve formátu "Portable Graymap"
 Name[da]=Portabelt Graymap-billede
 Name[es]=Imagen portable Graymap
 Name[eu]=Portable Graymap Irudia
 Name[ga]=Íomhá "Portable Graymap"
 Name[hu]=Portable Graymap kép
 Name[pt_BR]=Imagem de Mapas de Escalas de Cinza Portável
+Name[sk]=Portable Graymap obrázok
 Name[sv]=Flyttbart gråskalefilformat
 Read=true
 Write=true
