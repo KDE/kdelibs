@@ -87,10 +87,10 @@ void KFontRequester::displaySampleText()
   int size = m_selFont.pointSize();
   if(size == -1)
     size = m_selFont.pixelSize();
-  
+
   if ( m_sampleText.isEmpty() )
     m_sampleLabel->setText( QString( "%1 %2" ).arg( m_selFont.family() )
-      .arg( size == -1 ? m_selFont.pointSizeFloat() : size ) );
+      .arg( size ) );
   else
     m_sampleLabel->setText( m_sampleText );
 }
