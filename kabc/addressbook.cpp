@@ -205,7 +205,7 @@ bool AddressBook::load()
 
   Resource *r;
   for( r = mResources.first(); r; r = mResources.next() ) {
-    kdDebug() << " Tick" << endl;
+      // kdDebug() << " Tick" << endl;
     if ( !r->load( this ) ) return false;
   }
 
@@ -258,12 +258,12 @@ void AddressBook::clear()
 
 Ticket *AddressBook::requestSaveTicket( Resource *resource )
 {
-  kdDebug(5700) << "AddressBook::requestSaveTicket()" << endl; 
+  kdDebug(5700) << "AddressBook::requestSaveTicket()" << endl;
 
   if ( !resource ) {
     resource = mResources.first();
   }
-  
+
   if ( mResources.find( resource ) < 0 ) {
     return 0;
   } else {
