@@ -64,6 +64,7 @@ static int get_num( const QString& item_P );
 static QString get_str( const QString& item_P );
 static QCString get_cstr( const QString& item_P );
 static QStringList get_fields( const QString& txt_P );
+static QString escape_str( const QString& str_P );
 
 class KStartupInfo::Data
     : public KStartupInfoData
@@ -611,7 +612,7 @@ const QCString& KStartupInfoId::id() const
 
 QString KStartupInfoId::to_text() const
     {
-    return QString::fromLatin1( " ID=\"%1\" " ).arg( id());
+    return QString::fromLatin1( " ID=\"%1\" " ).arg( escape_str( id()));
     }
 
 KStartupInfoId::KStartupInfoId( const QString& txt_P )
@@ -749,9 +750,9 @@ QString KStartupInfoData::to_text() const
     {
     QString ret = "";
     if( !d->bin.isEmpty())
-        ret += QString::fromLatin1( " BIN=\"%1\"" ).arg( d->bin );
+        ret += QString::fromLatin1( " BIN=\"%1\"" ).arg( escape_str( d->bin ));
     if( !d->name.isEmpty())
-        ret += QString::fromLatin1( " NAME=\"%1\"" ).arg( d->name );
+        ret += QString::fromLatin1( " NAME=\"%1\"" ).arg( escape_str( d->name ));
     if( !d->icon.isEmpty())
         ret += QString::fromLatin1( " ICON=%1" ).arg( d->icon );
     if( d->desktop != 0 )
@@ -987,11 +988,19 @@ QStringList get_fields( const QString& txt_P )
     QStringList ret;
     QString item = "";
     bool in = false;
+    bool escape = false;
     for( unsigned int pos = 0;
          pos < txt.length();
          ++pos )
         {
-        if( txt[ pos ] == '\"' )
+        if( escape )
+            {
+            item += txt[ pos ];
+            escape = false;
+            }
+        else if( txt[ pos ] == '\\' )
+            escape = true;
+        else if( txt[ pos ] == '\"' )
             in = !in;
         else if( txt[ pos ] == ' ' && !in )
             {
@@ -1002,6 +1011,21 @@ QStringList get_fields( const QString& txt_P )
             item += txt[ pos ];
         }
     ret.append( item );
+    return ret;
+    }
+
+static QString escape_str( const QString& str_P )
+    {
+    QString ret = "";
+    for( unsigned int pos = 0;
+	 pos < str_P.length();
+	 ++pos )
+	{
+	if( str_P[ pos ] == '\\'
+	    || str_P[ pos ] == '"' )
+	    ret += '\\';
+	ret += str_P[ pos ];
+	}
     return ret;
     }
 
