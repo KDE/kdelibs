@@ -518,6 +518,8 @@ KJSO Location::get(const UString &p) const
     return toString();
   else if (p == "replace")
     return Function(new LocationFunc(part, LocationFunc::Replace));
+  else if (p == "reload")
+    return Function(new LocationFunc(part, LocationFunc::Reload));
   else
     return Undefined();
 
@@ -568,8 +570,14 @@ LocationFunc::LocationFunc(KHTMLPart *p, int i) : part(p), id(i) { };
 Completion LocationFunc::tryExecute(const List &args)
 {
   if (!part.isNull()) {
-    QString str = args[0].toString().value().qstring();
-    part->scheduleRedirection(0, str);
+    switch (id) {
+    case Replace:
+      part->scheduleRedirection(0, args[0].toString().value().qstring());
+      break;
+    case Reload:
+      part->scheduleRedirection(0, part->url().url());
+      break;
+    }
   }
   return Completion(Normal, Undefined());
 }

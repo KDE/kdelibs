@@ -105,7 +105,7 @@ namespace KJS {
   public:
     LocationFunc(KHTMLPart *p, int i);
     Completion tryExecute(const List &);
-    enum { Replace };
+    enum { Replace, Reload };
   private:
     QGuardedPtr<KHTMLPart> part;
     int id;
