@@ -30,7 +30,10 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 #include <qwidget.h>
-#ifdef Q_WS_X11 // FIXME(E): Re-implement in a less X11 specific way
+
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11 // FIXME(E): Re-implement in a less X11 specific way
 #include <qglobal.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -47,12 +50,16 @@ DEALINGS IN THE SOFTWARE.
 #include <sys/time.h>
 #include <stdlib.h>
 #include <qtimer.h>
-#include <netwm.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <netwm.h> // schroder
+#endif
 #include <kdebug.h>
 #include <kapplication.h>
 #include <signal.h>
-#include <kwinmodule.h>
-#include <kxmessages.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kwinmodule.h> // schroder
+#include <kxmessages.h> // schroder
+#endif
 
 static const char* const KDE_STARTUP_INFO = "_KDE_STARTUP_INFO";
 static const char* const KDE_STARTUP_ID = "_KDE_STARTUP_ID";
@@ -86,13 +93,18 @@ struct KStartupInfoPrivate
         QMap< KStartupInfoId, KStartupInfo::Data > startups;
 	// contains silenced ASN's only if !AnnounceSilencedChanges
         QMap< KStartupInfoId, KStartupInfo::Data > silent_startups;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         KWinModule* wm_module;
         KXMessages msgs;
         KXMessages msgs_2;
+#endif
 	QTimer* cleanup;
 	int flags;
 	KStartupInfoPrivate( int flags_P )
-    	    : msgs( KDE_STARTUP_INFO ), msgs_2( KDE_STARTUP_INFO_2 ),
+    	    : 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+	    msgs( KDE_STARTUP_INFO ), msgs_2( KDE_STARTUP_INFO_2 ),
+#endif
 	      flags( flags_P ) {}
     };
 
@@ -117,6 +129,7 @@ void KStartupInfo::init( int flags_P )
     if (!KApplication::kApplication()->getDisplay()) return;
 
     d = new KStartupInfoPrivate( flags_P );
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( !( d->flags & DisableKWinModule ))
         {
         d->wm_module = new KWinModule( this );
@@ -127,6 +140,7 @@ void KStartupInfo::init( int flags_P )
         d->wm_module = NULL;
     connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
     connect( &d->msgs_2, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
+#endif
     d->cleanup = new QTimer( this );
     connect( d->cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
     }
@@ -444,12 +458,14 @@ void KStartupInfo::appStarted()
         KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
         if( !id.none())
             {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
             Display* disp = XOpenDisplay( NULL );
             if( disp != NULL )
                 {
                 KStartupInfo::sendFinishX( disp, id );
                 XCloseDisplay( disp );
                 }
+#endif
             }
         }
     }
@@ -481,6 +497,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     if (!d) return NoMatch;
     if( d->startups.count() == 0 )
         return NoMatch; // no startups
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     NETWinInfo info( qt_xdisplay(),  w_P, qt_xrootwin(),
         NET::WMWindowType | NET::WMPid | NET::WMState );
     // ignore NET::Tool and other special window types
@@ -500,6 +517,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         && static_cast< WId >( transient_for ) != qt_xrootwin()
         && transient_for != None )
 	return NoMatch;
+#endif
     // Strategy:
     //
     // Is this a compliant app ?
@@ -519,6 +537,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         return find_id( id, id_O, data_O, remove_P ) ? Match : NoMatch;
         }
     // _NET_WM_PID apps are also considered compliant
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     pid_t pid = info.pid();
     if( pid > 0 )
         {
@@ -535,6 +554,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         if( find_wclass( hint.res_name, hint.res_class, id_O, data_O, remove_P ))
             return Match;
         }
+#endif
     kdDebug( 172 ) << "check_startup:cantdetect" << endl;
     return CantDetect;
     }
@@ -614,11 +634,14 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
     return false;
     }
 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 static Atom kde_startup_atom = None;
 static Atom kde_startup_atom_2 = None;
+#endif
 
 QCString KStartupInfo::windowStartupId( WId w_P )
     {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( kde_startup_atom == None )
         kde_startup_atom = XInternAtom( qt_xdisplay(), KDE_STARTUP_ID, False );
     if( kde_startup_atom_2 == None )
@@ -647,20 +670,26 @@ QCString KStartupInfo::windowStartupId( WId w_P )
             XFree( name_ret );
         }
     return ret;
+#else
+    return QCString();
+#endif
     }
 
 void KStartupInfo::setWindowStartupId( WId w_P, const QCString& id_P )
     {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( id_P.isNull())
         return;
     if( kde_startup_atom == None )
         kde_startup_atom = XInternAtom( qt_xdisplay(), KDE_STARTUP_ID, False );
     XChangeProperty( qt_xdisplay(), w_P, kde_startup_atom, XA_STRING, 8,
         PropModeReplace, reinterpret_cast< unsigned char* >( id_P.data()), id_P.length());
+#endif
     }
 
 QCString KStartupInfo::get_window_hostname( WId w_P )
     {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     XTextProperty tp;
     char** hh;
     int cnt;
@@ -675,6 +704,7 @@ QCString KStartupInfo::get_window_hostname( WId w_P )
             }
         XFreeStringList( hh );
         }
+#endif
     // no hostname
     return QCString();
     }

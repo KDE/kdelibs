@@ -15,18 +15,24 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+#include "config.h"
+
 #include <qtimer.h>
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
 #include <kapplication.h>
-#include <kipc.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kipc.h> // schroder
+#endif
+
 #include <kdebug.h>
 
 #include "klistbox.h"
 
-#ifdef Q_WS_X11
-#include <X11/Xlib.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
 #endif
 
 KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
@@ -40,7 +46,9 @@ KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
     if (kapp)
     {
         connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         kapp->addKipcEventMask( KIPC::SettingsChanged );
+#endif
     }
 
     m_pCurrentItem = 0L;
@@ -118,7 +126,7 @@ void KListBox::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-#ifdef Q_WS_X11 //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
@@ -131,14 +139,14 @@ void KListBox::slotAutoSelect()
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
 #endif
       bool block = signalsBlocked();
       blockSignals( true );
 
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
       //No Ctrl? Then clear before!
       if( !(keybstate & ControlMask) )  
 	clearSelection(); 
@@ -171,7 +179,7 @@ void KListBox::slotAutoSelect()
       if( selectionMode() == QListBox::Single )
 	emit selectionChanged( m_pCurrentItem );
     }
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
     else if( (keybstate & ControlMask) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected() );
 #endif
@@ -186,7 +194,7 @@ void KListBox::slotAutoSelect()
 
       setSelected( m_pCurrentItem, true );
     }
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   }
   else
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
@@ -195,7 +203,7 @@ void KListBox::slotAutoSelect()
 
 void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
 {
-#ifdef Q_WS_X11 //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
@@ -206,13 +214,13 @@ void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
     
   m_pAutoSelect->stop();
   
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
 #endif
     emit executed( item );
     emit executed( item, pos );
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   }
 #endif
 }

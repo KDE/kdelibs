@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <qwindowdefs.h>
 #ifdef Q_WS_X11
 
@@ -13,7 +15,10 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kkeynative.h>
-#include <kxerrorhandler.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kxerrorhandler.h> // schroder
+#endif
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -109,7 +114,9 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	if( !keyCodeX )
 		return false;
 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         KXErrorHandler handler( XGrabErrorHandler );
+#endif
 	// We'll have to grab 8 key modifier combinations in order to cover all
 	//  combinations of CapsLock, NumLock, ScrollLock.
 	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
@@ -137,7 +144,9 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 
         bool failed = false;
         if( bGrab ) {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         	failed = handler.error( true ); // sync now
+#endif
         	// If grab failed, then ungrab any grabs that could possibly succeed
 		if( failed ) {
 			kdDebug(125) << "grab failed!\n";

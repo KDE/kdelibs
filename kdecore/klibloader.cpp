@@ -16,6 +16,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+#include "config.h"
+
 #include <config.h>
 #include <qclipboard.h>
 #include <qfile.h>
@@ -32,9 +34,9 @@
 
 #include "ltdl.h"
 
-#ifdef Q_WS_X11
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
+#include <X11/Xatom.h> // schroder
 #endif
 
 template class QAsciiDict<KLibrary>;
@@ -544,7 +546,8 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
 
 //    kdDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
 
-#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS
     if ( !deleted_one ) {
       /* Only do the hack once in this loop.
          WABA: *HACK*

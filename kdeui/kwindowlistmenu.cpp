@@ -22,15 +22,22 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include "config.h"
 #include <qpainter.h>
 #include <qvaluelist.h>
 
-#include <kwin.h>
-#include <kwinmodule.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY // only used in kicker and kdesktop
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kwin.h> // schroder
+#include <kwinmodule.h> // schroder
+#endif
+
 #include <klocale.h>
 #include <kstringhandler.h>
-#ifndef Q_WS_QWS //FIXME
-#include <netwm.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS //FIXME
+#include <netwm.h> // schroder
 #endif
 #include <kapplication.h>
 #include <kstyle.h>
@@ -55,7 +62,8 @@ private:
 
 int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::Item s2 )
 {
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS //FIXME
     KWin::WindowInfo *i1 = static_cast<KWin::WindowInfo *>(s1);
     KWin::WindowInfo *i2 = static_cast<KWin::WindowInfo *>(s2);
     QString title1, title2;
@@ -72,7 +80,8 @@ int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::I
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
   : KPopupMenu(parent, name)
 {
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS //FIXME
     kwin_module = new KWinModule(this);
 #endif
 
@@ -104,7 +113,8 @@ void KWindowListMenu::init()
     int i, d;
     i = 0;
 
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS //FIXME
     int nd = kwin_module->numberOfDesktops();
     int cd = kwin_module->currentDesktop();
     WId active_window = kwin_module->activeWindow();
@@ -205,7 +215,8 @@ void KWindowListMenu::init()
 
 void KWindowListMenu::slotExec(int id)
 {
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS //FIXME
     if (id == 2000)
         ; // do nothing
     else if (id > 1000)
@@ -228,3 +239,4 @@ void KWindowListMenu::slotCascadeWindows()
 void KWindowListMenu::virtual_hook( int id, void* data )
 { KPopupMenu::virtual_hook( id, data ); }
 
+#endif

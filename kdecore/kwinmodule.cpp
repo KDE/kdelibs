@@ -22,17 +22,27 @@
 */
 
 #include <qwidget.h>
-#ifdef Q_WS_X11 //FIXME
+
+#include "config.h"
+#if defined QWS_X11 && ! defined K_WS_QTONLY 
+//#ifdef Q_WS_X11 //FIXME
 #include "kwinmodule.h"
 #include "kwin.h"
-#include <X11/Xatom.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY 
+#include <X11/Xatom.h> // schroder
+#endif
+
 #include "kapplication.h"
 #include "kdebug.h"
 #include <qtl.h>
 #include <qptrlist.h>
 #include <klocale.h>
 #include <dcopclient.h>
-#include "netwm.h"
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY 
+#include "netwm.h" // schroder
+#endif
 
 static KWinModulePrivate* static_d = 0;
 
@@ -62,7 +72,10 @@ public:
     ~KWinModulePrivate()
     {
     }
-
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#else
+    
+#endif
     QPtrList<KWinModule> modules;
 
     QValueList<WId> windows;

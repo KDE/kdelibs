@@ -51,11 +51,17 @@
 #include <kimageeffect.h>
 #include "kstyle.h"
 
-#include <X11/Xlib.h>
-#ifdef HAVE_XRENDER
-#include <X11/extensions/Xrender.h>
+//#if defined Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> //schroder
+#  ifdef HAVE_XRENDER
+#  include <X11/extensions/Xrender.h> // schroder
 extern bool qt_use_xrender;
+#  endif
+#else
+#undef HAVE_XRENDER
 #endif
+
 
 #include <limits.h>
 
@@ -1897,6 +1903,7 @@ void TransparencyHandler::bottomShadow(QImage& dst)
 // Create a shadow of thickness 4.
 void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	int x2 = p->x()+p->width();
 	int y2 = p->y()+p->height();
 	QRect shadow1(x2, p->y() + 4, 4, p->height());
@@ -1936,10 +1943,16 @@ void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
 	// Don't use QWidget::show() so we don't confuse QEffects, thus causing broken focus.
 	XMapWindow(qt_xdisplay(), se.w1->winId());
 	XMapWindow(qt_xdisplay(), se.w2->winId());
+#else
+	// fix compiler warning
+	int foo = p->width();
+	foo++;
+#endif
 }
 
 void TransparencyHandler::removeShadowWindows(const QPopupMenu* p)
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	ShadowMap::iterator it = shadowMap().find(p);
 	if (it != shadowMap().end())
 	{
@@ -1951,6 +1964,11 @@ void TransparencyHandler::removeShadowWindows(const QPopupMenu* p)
 		delete se.w2;
 		shadowMap().erase(it);
 	}
+#else
+	// fix compiler warning
+	int foo = p->width();
+	foo++;
+#endif
 }
 
 bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )

@@ -26,10 +26,12 @@ Author: Ralph Mor, X Consortium
 #ifndef _ICELIBINT_H_
 #define _ICELIBINT_H_
 
-#ifndef QWS
+#include "config.h"
 #include <X11/Xos.h>
-#include <X11/Xfuncs.h>
-#include <X11/Xmd.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#include <X11/Xos.h> // schroder
+#include <X11/Xfuncs.h> // schroder
+#include <X11/Xmd.h> //schroder
 #else
 #define _SIZEOF(x) sz_##x
 #define SIZEOF(x) _SIZEOF(x)

@@ -42,7 +42,10 @@
 #include <kstdaccel.h>
 #include <kstdaction.h>
 
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <qxembed.h>
+#endif
 
 class KHelpMenuPrivate
 {
@@ -277,7 +280,7 @@ void KHelpMenu::contextHelpActivated()
   QWidget* w = QApplication::widgetAt( QCursor::pos(), TRUE );
   while ( w && !w->isTopLevel() && !w->inherits("QXEmbed")  )
       w = w->parentWidget();
-#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
    if ( w && w->inherits("QXEmbed") )
 	  (( QXEmbed*) w )->enterWhatsThisMode();
 #endif

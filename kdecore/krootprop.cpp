@@ -18,7 +18,10 @@
 */
 
 #include <qwidget.h>
-#ifndef Q_WS_QWS
+
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY // not needed anyway :-)
+
 #include "krootprop.h"
 #include "kglobal.h"
 #include "klocale.h"
@@ -26,8 +29,8 @@
 #include "kapplication.h"
 #include <qtextstream.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
+#include <X11/Xlib.h> // schroder
+#include <X11/Xatom.h> // schroder
 
 KRootProp::KRootProp(const QString& rProp )
 {

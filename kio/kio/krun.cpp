@@ -48,7 +48,12 @@
 #include <qregexp.h>
 #include <kwin.h>
 #include <kdesktopfile.h>
-#include <kstartupinfo.h>
+
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kstartupinfo.h> // schroder
+#endif
+
 #include <kmacroexpander.h>
 #include <kshell.h>
 #include <typeinfo>
@@ -483,7 +488,8 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
      return 0;
   }
   QString bin = KRun::binaryName( binName, true );
-#ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
   bool startup_notify = false;
   QCString wmclass;
   KStartupInfoId id;
@@ -1086,7 +1092,8 @@ KProcessRunner::run(KProcess * p, const QString & binName)
   return (new KProcessRunner(p, binName))->pid();
 }
 
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11
 pid_t
 KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id )
 {
@@ -1108,7 +1115,8 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
       slotProcessExited( process_ );
 }
 
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11
 KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& id )
   : QObject(),
     process_(p),
@@ -1160,7 +1168,8 @@ KProcessRunner::slotProcessExited(KProcess * p)
       kapp->deref();
     }
   }
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11
   if( !id_.none())
   {
       KStartupInfoData data;

@@ -25,6 +25,7 @@
 #define INCLUDE_MENUITEM_DEF
 #endif
 
+#include "config.h"
 #include <qevent.h>
 #include <qobjectlist.h>
 #include <qaccel.h>
@@ -33,18 +34,26 @@
 #include <kglobalsettings.h>
 #include <kmenubar.h>
 #include <kapplication.h>
-#include <kwin.h>
-#include <kwinmodule.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kwin.h> // schroder
+#include <kwinmodule.h> // schroder
+#endif
+
 #include <kglobal.h>
 #include <kdebug.h>
-#include <qxembed.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <qxembed.h> // schroder
+#endif
+
 #include <kmanagerselection.h>
 #include <qtimer.h>
 
-#ifndef Q_WS_QWS
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
+#include <X11/Xutil.h> // schroder
+#include <X11/Xatom.h> // schroder
 #endif
 
 /*
@@ -66,13 +75,17 @@ public:
     KMenuBarPrivate()
 	:   forcedTopLevel( false ),
 	    topLevel( false ),
-	    wasTopLevel( false ),
-            selection( NULL )
+	    wasTopLevel( false )
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+	    , selection( NULL )
+#endif
 	{
 	}
     ~KMenuBarPrivate()
         {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         delete selection;
+#endif
         }
     bool forcedTopLevel;
     bool topLevel;
@@ -81,11 +94,14 @@ public:
     int lineWidth;  // dtto
     int margin;     // dtto
     bool fallback_mode; // dtto
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     KSelectionWatcher* selection;
+#endif
     QTimer selection_timer;
     static Atom makeSelectionAtom();
 };
 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 static Atom selection_atom = None;
 static Atom msg_type_atom = None;
 
@@ -101,19 +117,25 @@ void initAtoms()
     selection_atom = atoms[ 0 ];
     msg_type_atom = atoms[ 1 ];
 }
+#endif
 
 Atom KMenuBar::KMenuBarPrivate::makeSelectionAtom()
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( selection_atom == None )
 	initAtoms();
     return selection_atom;
+#else
+    return 0;
+#endif
 }
 
 KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QMenuBar(parent, name)
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     QXEmbed::initialize();
-
+#endif
     d = new KMenuBarPrivate;
     connect( &d->selection_timer, SIGNAL( timeout()),
         this, SLOT( selectionTimeout()));
@@ -156,6 +178,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
   d->topLevel = top_level;
   if ( isTopLevelMenu() )
   {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
       d->selection = new KSelectionWatcher( KMenuBarPrivate::makeSelectionAtom(),
           DefaultScreen( qt_xdisplay()));
       connect( d->selection, SIGNAL( newOwner( Window )),
@@ -163,13 +186,14 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       connect( d->selection, SIGNAL( lostOwner()),
           this, SLOT( updateFallbackSize()));
       kapp->installX11EventFilter( this );
+#endif
       d->frameStyle = frameStyle();
       d->lineWidth = lineWidth();
       d->margin = margin();
       d->fallback_mode = false;
       bool wasShown = !isHidden();
       reparent( parentWidget(), WType_TopLevel | WStyle_Tool | WStyle_NoBorder, QPoint(0,0), false );
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
       KWin::setType( winId(), NET::TopMenu );
 #endif
       QMenuBar::setFrameStyle( NoFrame );
@@ -180,9 +204,11 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
           show();
   } else
   {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
       delete d->selection;
       d->selection = NULL;
       kapp->removeX11EventFilter( this );
+#endif
       setBackgroundMode( PaletteButton );
       setFrameStyle( d->frameStyle );
       setLineWidth( d->lineWidth );
@@ -251,6 +277,7 @@ void KMenuBar::showEvent( QShowEvent *e )
 
 void KMenuBar::updateFallbackSize()
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( !d->topLevel )
 	return;
     if( d->selection->owner() != None )
@@ -261,15 +288,18 @@ void KMenuBar::updateFallbackSize()
         {
             d->fallback_mode = false;
 //            KWin::setStrut( winId(), 0, 0, 0, 0 ); KWin will set strut as it will see fit
+#endif
             setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
             menuContentsChanged();
             resize( sizeHint());
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         }
 	return;
     }
     if( d->selection_timer.isActive())
 	return;
     d->selection_timer.start( 100, true );
+#endif
 }
 
 void KMenuBar::selectionTimeout()
@@ -288,7 +318,7 @@ void KMenuBar::selectionTimeout()
 #endif
 	move(area.left() - margin, area.top() - margin); 
         setFixedSize(area.width() + 2* margin , heightForWidth( area.width() + 2 * margin ) );
-#ifndef Q_WS_QWS //FIXME
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
         int strut_height = height() - margin;
         if( strut_height < 0 )
             strut_height = 0;
@@ -332,8 +362,10 @@ void KMenuBar::resize( int w, int h )
 
 void KMenuBar::checkResizingToParent( int& w, int& h )
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( !d->topLevel || d->selection->owner() == None )
 	return;
+#endif
     if( parentWidget() && parentWidget()->width() == w )
     { // Menubar is possibly being attempted to be resized to match
       // mainwindow size. Resize to sizeHint() instead. Since
@@ -349,6 +381,7 @@ void KMenuBar::checkResizingToParent( int& w, int& h )
 
 bool KMenuBar::x11Event( XEvent* ev )
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( ev->type == ClientMessage && ev->xclient.message_type == msg_type_atom
         && ev->xclient.window == winId())
     {
@@ -361,6 +394,7 @@ bool KMenuBar::x11Event( XEvent* ev )
         resize( sizeHint());
 	return true;
     }
+#endif
     return QMenuBar::x11Event( ev );
 }
 

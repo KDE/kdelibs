@@ -25,19 +25,20 @@
  *
  * $Id$
  */
+#include "config.h"
 
 #include <qwindowdefs.h>
 
-#ifdef Q_WS_X11
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <kxerrorhandler.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/X.h> // schroder
+#include <X11/Xlib.h> // schroder
+#include <kxerrorhandler.h> // schroder
 #endif
 
 #include <kipc.h>
 
 
-#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 static long getSimpleProperty(Window w, Atom a)
 {
     Atom real_type;
@@ -53,10 +54,11 @@ static long getSimpleProperty(Window w, Atom a)
     if (p) XFree((char *) p);
     return res;
 }
-
+#endif
 
 void KIPC::sendMessage(Message msg, WId w, int data)
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     static Atom a = 0;
     if (a == 0)
 	a = XInternAtom(qt_xdisplay(), "KIPC_COMM_ATOM", False);
@@ -79,11 +81,13 @@ void KIPC::sendMessage(Message msg, WId w, int data)
 	XSendEvent(qt_xdisplay(), (Window) w, False, 0L, &ev);
     }
 
+#endif
 }
 
 
 void KIPC::sendMessageAll(Message msg, int data)
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     unsigned int i, nrootwins;
     Window dw1, dw2, *rootwins = 0;
     Display *dpy = qt_xdisplay();
@@ -103,7 +107,6 @@ void KIPC::sendMessageAll(Message msg, int data)
         XFree((char *) rootwins);
     }
     XSync(dpy,False);
-}
-#else
-	// FIXME(E): Implement in Qt Embedded
 #endif
+}
+

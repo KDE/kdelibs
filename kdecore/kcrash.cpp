@@ -25,6 +25,8 @@
  * point exception and such).
  */
 
+#include "config.h"
+
 #include <string.h>
 #include <signal.h>
 #include <stdio.h>
@@ -45,8 +47,8 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 
-#ifdef Q_WS_X11
-#include <X11/Xlib.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
 #endif
 
 KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
@@ -159,7 +161,7 @@ KCrash::defaultCrashHandler (int sig)
 
           // start up on the correct display
           argv[i++] = qstrdup("-display");
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
           if ( qt_xdisplay() )
             argv[i++] = XDisplayString(qt_xdisplay());
           else

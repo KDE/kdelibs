@@ -21,7 +21,12 @@
 #include <qdragobject.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kipc.h>
+
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kipc.h> // schroder
+#endif
+
 #include <kapplication.h>
 
 #include "kpushbutton.h"
@@ -97,7 +102,9 @@ void KPushButton::init( const KGuiItem &item )
     {
        connect( kapp, SIGNAL( settingsChanged(int) ),
                SLOT( slotSettingsChanged(int) ) );
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
        kapp->addKipcEventMask( KIPC::SettingsChanged );
+#endif
     }
 }
 

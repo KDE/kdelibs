@@ -19,6 +19,12 @@
 #ifndef KWIN_H
 #define KWIN_H
 
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#else
+typedef unsigned long Window;
+#endif
+
 #include <sys/types.h>
 #include <qwindowdefs.h>
 #include <qstring.h>

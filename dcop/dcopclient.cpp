@@ -31,6 +31,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qeventloop.h>
 // end of qt <-> dcop integration
 
+#include "config.h"
+
 #include <config.h>
 #include <dcopref.h>
 
@@ -60,8 +62,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopclient.h>
 #include <dcopobject.h>
 
-#ifdef Q_WS_X11
-#include <X11/Xmd.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xmd.h> // schroder
 #endif
 extern "C" {
 #include <KDE-ICE/ICElib.h>

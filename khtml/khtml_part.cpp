@@ -794,6 +794,11 @@ extern "C" { KJSProxy *kjs_html_init(KHTMLPart *khtmlpart); }
 
 KJSProxy *KHTMLPart::jScript()
 {
+#if defined K_WS_QTONLY 
+  return 0;
+#endif
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   if (!jScriptEnabled()) return 0;
 
   if ( !d->m_jscript )
@@ -824,6 +829,7 @@ KJSProxy *KHTMLPart::jScript()
   }
 
   return d->m_jscript;
+#endif // Q_WS_X11
 }
 
 QVariant KHTMLPart::crossFrameExecuteScript(const QString& target,  const QString& script)

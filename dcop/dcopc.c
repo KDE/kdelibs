@@ -21,6 +21,9 @@
 #endif
 
 /* We really don't want to require X11 headers...  */
+
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <X11/Xproto.h>
@@ -32,6 +35,7 @@
 #include <X11/ICE/ICEconn.h>
 #include <X11/ICE/ICEmsg.h>
 #include <X11/ICE/ICEproto.h>
+#endif
 
 #include "dcopglobal.h"
 #include "dcopc.h"

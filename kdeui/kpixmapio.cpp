@@ -27,12 +27,12 @@
 #include <kdebug.h>
 #include "kpixmapio.h"
 
-#ifndef Q_WS_QWS
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/X.h> // schroder
+#include <X11/Xlib.h> // schroder
+#include <X11/Xutil.h> // schroder
 #ifdef HAVE_MITSHM
-#include <X11/extensions/XShm.h>
+#include <X11/extensions/XShm.h> // schroder
 #endif
 #ifdef __osf__
 extern "C" int XShmQueryExtension(Display *display);
@@ -50,7 +50,7 @@ struct KPixmapIOPrivate
     int threshold;
     int bpp;
     int byteorder;
-#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     XImage *ximage;
 #ifdef HAVE_MITSHM
     XShmSegmentInfo *shminfo;

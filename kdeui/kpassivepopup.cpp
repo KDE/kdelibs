@@ -17,7 +17,11 @@
 #include <kpixmap.h>
 #include <kpixmapeffect.h>
 #include <kglobalsettings.h>
-#include <netwm.h>
+
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <netwm.h> // schroder
+#endif
 
 #include "kpassivepopup.h"
 #include "kpassivepopup.moc"
@@ -162,6 +166,7 @@ void KPassivePopup::hideEvent( QHideEvent * )
 
 QRect KPassivePopup::defaultArea() const
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     NETRootInfo info( qt_xdisplay(),
                       NET::NumberOfDesktops |
                       NET::CurrentDesktop |
@@ -171,6 +176,11 @@ QRect KPassivePopup::defaultArea() const
     NETRect workArea = info.workArea( info.currentDesktop() );
     QRect r;
     r.setRect( workArea.pos.x, workArea.pos.y, 0, 0 ); // top left
+#else
+    // FIX IT
+    QRect r;
+    r.setRect( 100, 100, 200, 200 ); // top left
+#endif
     return r;
 }
 
@@ -178,6 +188,7 @@ void KPassivePopup::positionSelf()
 {
     QRect target;
 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if ( window == 0L ) {
         target = defaultArea();
     }
@@ -208,7 +219,9 @@ void KPassivePopup::positionSelf()
                 }
         }
     }
-
+#else
+        target = defaultArea();
+#endif
     moveNear( target );
 }
 

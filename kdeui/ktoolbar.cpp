@@ -55,7 +55,11 @@
 #include <kcombobox.h>
 #include <kpopupmenu.h>
 #include <kanimwidget.h>
-#include <kipc.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kipc.h> // schroder
+#endif
+
 #include <kwin.h>
 #include <kdebug.h>
 #include <qlayout.h>
@@ -242,7 +246,9 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     if ( kapp ) { // may be null when started inside designer
         connect(kapp, SIGNAL(toolbarAppearanceChanged(int)), this, SLOT(slotAppearanceChanged()));
         // request notification of changes in icon style
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         kapp->addKipcEventMask(KIPC::IconChanged);
+#endif
         connect(kapp, SIGNAL(iconChanged(int)), this, SLOT(slotIconChanged(int)));
     }
 

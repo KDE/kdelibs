@@ -40,10 +40,13 @@
 #include <kpopupmenu.h>
 #include <kwin.h>
 #include <kdebug.h>
-#ifdef Q_WS_X11
-#include <X11/X.h>
-#include <X11/Xlib.h>
+
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/X.h> // schroder
+#include <X11/Xlib.h> // schroder
 #endif
+
 #else
 #include <qtoolbar.h>
 #include <qpopupmenu.h>
@@ -804,7 +807,7 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
     move(p);
 
 #ifndef NO_KDE2
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if (d->transient && d->_parent)
       XSetTransientForHint( qt_xdisplay(), winId(), d->_parent->winId() );
 
@@ -813,8 +816,8 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 //      setWFlags(WStyle_Customize | WStyle_NoBorder | WStyle_Tool);
 #else
     KWin::setType( winId(), d->windowType );
-#endif
-#endif
+#endif // BORDERLESS_WINDOW
+#endif // Q_WS_X11 && ! K_WS_QTONLY
 #endif
 
   }

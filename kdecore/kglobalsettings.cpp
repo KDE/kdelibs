@@ -15,7 +15,7 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-
+#include "config.h"
 #include "kglobalsettings.h"
 
 #include <qdir.h>
@@ -26,7 +26,11 @@
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kapplication.h>
-#include <kipc.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kipc.h> // schroder
+#endif
+
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kshortcut.h>
@@ -38,9 +42,10 @@
 #include <stdlib.h>
 #include <kprotocolinfo.h>
 
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11
 //#include <X11/X.h>
-#include <X11/Xlib.h>
+#include <X11/Xlib.h> // schroder
 //#include <X11/Xutil.h>
 #endif
 
@@ -493,8 +498,10 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
       s_documentPath->append('/');
 
     // Make sure this app gets the notifications about those paths
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if (kapp)
         kapp->addKipcEventMask(KIPC::SettingsChanged);
+#endif
 }
 
 void KGlobalSettings::initColors()
@@ -553,7 +560,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
             s.handed = KMouseSettings::LeftHanded;
         else
         {
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
             // get settings from X server
             // This is a simplified version of the code in input/mouse.cpp
             // Keep in sync !

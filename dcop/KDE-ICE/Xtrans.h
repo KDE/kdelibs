@@ -50,9 +50,10 @@ from The Open Group.
 #ifndef _XTRANS_H_
 #define _XTRANS_H_
 
-#ifndef QWS
-#include <X11/Xfuncproto.h>
-#include <X11/Xos.h>
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xfuncproto.h> // schroder
+#include <X11/Xos.h> // schroder
 #else
 #include <KDE-ICE/Xfuncproto.h>
 #include <fcntl.h>

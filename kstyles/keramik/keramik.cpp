@@ -2646,11 +2646,16 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 
 #include <config.h>
 
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef HAVE_X11_EXTENSIONS_SHAPE_H
 //Xlib headers are a mess -> include them down here (any way to ensure that we go second in enable-final order?)
-#include  <X11/Xlib.h>
-#include <X11/extensions/shape.h>
+#include  <X11/Xlib.h> // schroder
+#include <X11/extensions/shape.h> // schroder
 #endif
+#else
+#undef HAVE_X11_EXTENSIONS_SHAPE_H
+#endif //QTONLY
 
 bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 {

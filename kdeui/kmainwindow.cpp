@@ -21,6 +21,7 @@
      the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
      Boston, MA 02111-1307, USA.
  */
+#include "config.h"
 
 #include "kmainwindow.h"
 #include "kmainwindowiface.h"
@@ -45,8 +46,8 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
-#ifndef Q_WS_QWS
-#include <netwm.h>
+#if defined Q_WS_QX11 && ! defined K_WS_QTONLY
+#include <netwm.h> // schroder
 #endif
 
 #include <stdlib.h>
@@ -269,7 +270,8 @@ void KMainWindow::parseGeometry(bool parsewidth)
     assert ( !kapp->geometryArgument().isNull() );
     assert ( d->care_about_geometry );
 
-#ifndef Q_WS_QWS
+#if defined Q_WS_QX11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS
     // FIXME: (E) Implement something similar for Qt Embedded (or decide we don't need it)
     int x, y;
     int w, h;
@@ -517,7 +519,8 @@ void KMainWindow::setCaption( const QString &caption, bool modified )
 void KMainWindow::setPlainCaption( const QString &caption )
 {
     QMainWindow::setCaption( caption );
-#ifndef Q_WS_QWS
+#if defined Q_WS_QX11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS
     NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
     info.setName( caption.utf8().data() );
 #endif
@@ -820,6 +823,7 @@ void KMainWindow::finalizeGUI( bool force )
 
 void KMainWindow::saveWindowSize( KConfig * config ) const
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   int scnum = QApplication::desktop()->screenNumber(parentWidget());
   QRect desk = QApplication::desktop()->screenGeometry(scnum);
   // save maximalization as desktop size + 1 in that direction
@@ -827,6 +831,12 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
   int w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
   int h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
   QRect size( desk.width(), w, desk.height(), h );
+#else
+  int w = 500;
+  int h = 500;
+  QRect desk( 100, 100, 200, 200 ); // fixme
+  QRect size( 100, 100, 200, 200 ); // fixme
+#endif
   bool defaultSize = (size == d->defaultWindowSize);
   QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
   QString heightString = QString::fromLatin1("Height %1").arg(desk.height());

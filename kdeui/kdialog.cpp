@@ -31,7 +31,11 @@
 #include <qvaluelist.h>
 #include <qtimer.h>
 #include <qcursor.h>
-#include <netwm.h>
+
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <netwm.h> // schroder
+#endif
 
 int KDialog::mMarginSize = 11;
 int KDialog::mSpacingSize = 6;
@@ -124,7 +128,8 @@ void KDialog::setPlainCaption( const QString &caption )
 {
   QDialog::setCaption( caption );
 
-#ifdef Q_WS_X11 //FIXME(E) Implement for Qt/E
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11 //FIXME(E) Implement for Qt/E
   NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
   info.setName( caption.utf8().data() );
 #endif

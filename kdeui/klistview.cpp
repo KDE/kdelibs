@@ -17,6 +17,7 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+#include "config.h"
 
 #include <qdragobject.h>
 #include <qtimer.h>
@@ -30,14 +31,18 @@
 #include <kconfig.h>
 #include <kcursor.h>
 #include <kapplication.h>
-#include <kipc.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kipc.h> // schroder
+#endif
+
 #include <kdebug.h>
 
 #include "klistview.h"
 #include "klistviewlineedit.h"
 
-#ifdef Q_WS_X11
-#include <X11/Xlib.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
 #endif
 
 class KListView::Tooltip : public QToolTip
@@ -418,7 +423,9 @@ KListView::KListView( QWidget *parent, const char *name )
   if (kapp)
   {
     connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     kapp->addKipcEventMask( KIPC::SettingsChanged );
+#endif
   }
 
   connect(&d->autoSelect, SIGNAL( timeout() ),
@@ -557,7 +564,7 @@ void KListView::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   // FIXME(E): Implement for Qt Embedded
   Window root;
   Window child;
@@ -570,7 +577,8 @@ void KListView::slotAutoSelect()
   QListViewItem* previousItem = currentItem();
   setCurrentItem( d->pCurrentItem );
 
-#ifndef Q_WS_QWS
+//#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   // FIXME(E): Implement for Qt Embedded
   if( d->pCurrentItem ) {
     //Shift pressed?
@@ -650,7 +658,8 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
         }
         else
         {
-#ifndef Q_WS_QWS
+//#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	    // FIXME(E): Implement for Qt Embedded
             Window root;
             Window child;

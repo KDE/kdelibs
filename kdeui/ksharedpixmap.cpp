@@ -21,7 +21,7 @@
 #include <qwindowdefs.h>
 #include <qwidget.h>
 
-#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 
 #include <kapplication.h>
 #include <krootprop.h>
@@ -29,16 +29,16 @@
 #include <kdebug.h>
 #include <stdlib.h> // for abs
 
-#include <X11/Xlib.h>
+#include <X11/Xlib.h> // schroder
 
 // Make sure to include all this X-based shit before we clean up the mess.
 // Needed for --enable-final. Not needed by this file itself!
-#include <X11/Xutil.h>
+#include <X11/Xutil.h> // schroder
 #ifdef HAVE_MITSHM
-#include <X11/extensions/XShm.h>
+#include <X11/extensions/XShm.h> // schroder
 #endif
 
-#include <netwm.h>
+#include <netwm.h> // schroder
 
 // Clean up the mess
 

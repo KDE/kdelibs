@@ -37,17 +37,24 @@
 #include <kcmdlineargs.h>
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
-#include <kwin.h>
-#include <kstartupinfo.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kwin.h> // schroder
+#include <kstartupinfo.h> // schroder
+#endif
+
 #include <kconfig.h>
 #include "kdebug.h"
 #include "kuniqueapplication.h"
-#ifdef Q_WS_X11
-#include <netwm.h>
-#include <X11/Xlib.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <netwm.h> // schroder
+#include <X11/Xlib.h> // schroder
 #define DISPLAY "DISPLAY"
-#else
+#elsif defined Q_WS_QWS
 #define DISPLAY "QWS_DISPLAY"
+#else
+#define DISPLAY "DISPLAY"
 #endif
 
 bool KUniqueApplication::s_nofork = false;
@@ -157,7 +164,8 @@ KUniqueApplication::start()
            delete dc;	// Clean up DCOP commmunication
            ::write(fd[1], &result, 1);
            ::close(fd[1]);
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11
            // say we're up and running ( probably no new window will appear )
            KStartupInfoId id;
            if( kapp != NULL ) // KApplication constructor unsets the env. variable
@@ -180,7 +188,8 @@ KUniqueApplication::start()
      }
 
      {
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11
          KStartupInfoId id;
          if( kapp != NULL ) // KApplication constructor unsets the env. variable
              id.initId( kapp->startupId());
@@ -243,7 +252,7 @@ KUniqueApplication::start()
      }
 
      QCString new_asn_id;
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
      KStartupInfoId id;
      if( kapp != NULL ) // KApplication constructor unsets the env. variable
          id.initId( kapp->startupId());
@@ -387,7 +396,8 @@ KUniqueApplication::processDelayed()
   d->processingRequest = false;
 }
 
-#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
 extern Time qt_x_time;
 #endif
 
@@ -395,10 +405,11 @@ int KUniqueApplication::newInstance()
 {
   if (!d->firstInstance)
   {
-#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
+//#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
     if ( mainWidget() )
     {
       mainWidget()->show();
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
       long activate = true;
       if( !d->asn_id.isEmpty())
       {
@@ -415,8 +426,8 @@ int KUniqueApplication::newInstance()
       // And even with ASN, it's not possible to get the timestamp here,
       // so if the WM doesn't have support for ASN, it can't be used either.
           KWin::setActiveWindow( mainWidget()->winId(), qt_x_time );
-    }
 #endif
+    }
   }
   d->firstInstance = false;
   return 0; // do nothing in default implementation

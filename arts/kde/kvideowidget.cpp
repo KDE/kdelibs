@@ -18,8 +18,14 @@
 #endif
 #include <qaccel.h>
 #include <qcursor.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
+#include <X11/Xutil.h> // schroder
+#else
+#define XEvent void
+#endif
+
 #include <kaction.h>
 #include <klocale.h>
 #include "kvideowidget.h"
@@ -56,12 +62,14 @@ void KFullscreenVideoWidget::windowActivationChange( bool )
 
 bool KFullscreenVideoWidget::x11Event( XEvent *event )
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if (event->type == ClientMessage &&
 	event->xclient.message_type ==
 		XInternAtom( qt_xdisplay(), "VPO_RESIZE_NOTIFY", False ))
     {
 	videoWidget->resizeNotify( event->xclient.data.l[0], event->xclient.data.l[1] );
     }
+#endif
     return false;
 }
 
@@ -186,6 +194,7 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 
 QImage KVideoWidget::snapshot( Arts::VideoPlayObject vpo )
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     Window root;
     Pixmap pixmap;
     XImage *xImage;
@@ -214,6 +223,9 @@ QImage KVideoWidget::snapshot( Arts::VideoPlayObject vpo )
     XFreePixmap( qt_xdisplay(), pixmap );
 
     return qImage;
+#else
+    return 0;
+#endif
 }
 
 bool KVideoWidget::isEmbedded()
@@ -339,12 +351,14 @@ void KVideoWidget::resizeNotify( int width, int height )
 
 bool KVideoWidget::x11Event( XEvent *event )
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if (event->type == ClientMessage &&
 	event->xclient.message_type ==
 		XInternAtom( qt_xdisplay(), "VPO_RESIZE_NOTIFY", False ))
     {
 	resizeNotify( event->xclient.data.l[0], event->xclient.data.l[1] );
     }
+#endif
     return false;
 }
 

@@ -36,7 +36,11 @@
 #include <kprotocolinfo.h>
 #include <krun.h>
 #include <kstandarddirs.h>
-#include <kstartupinfo.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kstartupinfo.h> // schroder
+#endif
+
 #include <ktempfile.h>
 #include <kconfig.h>
 
@@ -47,8 +51,10 @@
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 
+//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
-#include <X11/Xlib.h>
+//#undef K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
 #endif
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
@@ -212,7 +218,8 @@ KLauncher::~KLauncher()
       QCString filename = QFile::encodeName(mPoolSocketName);
       unlink(filename.data());
    }
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11
    if( mCached_dpy != NULL )
        XCloseDisplay( mCached_dpy );
 #endif
@@ -683,7 +690,8 @@ KLauncher::requestDone(KLaunchRequest *request)
          DCOPresult.error += ":\n" + request->errorMsg;
       DCOPresult.pid = 0;
 
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11
       if (!request->startup_dpy.isEmpty())
       {
          Display* dpy = NULL;
@@ -976,7 +984,8 @@ void
 KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QCString& startup_id,
     const QValueList<QCString> &envs )
 {
-#ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
     request->startup_id = "0";
     if( startup_id == "0" )
         return;
@@ -1043,7 +1052,8 @@ void
 KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QCString& startup_id,
     const QValueList<QCString> &envs )
 {
-#ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
     if( request != NULL )
         request->startup_id = "0";
     if( !startup_id.isEmpty() && startup_id != "0" )

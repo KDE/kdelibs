@@ -18,21 +18,30 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "config.h"
 #include "kaction.h"
 #include "kshortcut.h"
 #include "ksystemtray.h"
 #include "kpopupmenu.h"
 #include "kapplication.h"
 #include "klocale.h"
-#include <kwin.h>
-#include <kwinmodule.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kwin.h> // schroder
+#include <kwinmodule.h> // schroder
+#endif
+
 #include <kiconloader.h>
 #include <kconfig.h>
-#include <qxembed.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <qxembed.h> // schroder
+#endif
 
 #include <qapplication.h>
-#ifndef Q_WS_QWS
-#include <X11/Xlib.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
 #ifndef KDE_USE_FINAL
 const int XFocusOut = FocusOut;
 const int XFocusIn = FocusIn;
@@ -43,7 +52,7 @@ const int XFocusIn = FocusIn;
 #undef KeyRelease
 
 extern Time qt_x_time;
-#endif
+#endif // Q_WS_X11 && ! K_WS_QTONLY
 
 class KSystemTrayPrivate
 {
@@ -65,12 +74,15 @@ public:
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     QXEmbed::initialize();
+#endif
     
     d = new KSystemTrayPrivate;
     d->actionCollection = new KActionCollection(this);
 
-#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS
     // FIXME(E): Talk with QWS
     KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
     setBackgroundMode(X11ParentRelative);
@@ -88,8 +100,10 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
         new KAction(i18n("Minimize"), KShortcut(),
                     this, SLOT( minimizeRestoreAction() ),
                     d->actionCollection, "minimizeRestore");
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	KWin::WindowInfo info = KWin::windowInfo( parentWidget()->winId());
 	d->on_all_desktops = info.onAllDesktops();
+#endif
     }
     else
     {
@@ -130,7 +144,8 @@ void KSystemTray::showEvent( QShowEvent * )
 void KSystemTray::enterEvent( QEvent* e )
 {
 #if QT_VERSION < 0x030200
-#ifndef Q_WS_QWS
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS
     // FIXME(E): Implement for Qt Embedded
     if ( !qApp->focusWidget() ) {
 	XEvent ev;
@@ -214,6 +229,7 @@ void KSystemTray::activateOrHide()
     if ( !pw )
 	return;
 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     KWin::WindowInfo info = KWin::windowInfo( pw->winId() );
     // mapped = visible (but possibly obscured)
     bool mapped = (info.mappingState() != NET::Withdrawn);
@@ -240,6 +256,7 @@ void KSystemTray::activateOrHide()
         }
         minimizeRestore( false ); // hide
     }
+#endif
 }
 
 void KSystemTray::minimizeRestore( bool restore )
@@ -247,10 +264,12 @@ void KSystemTray::minimizeRestore( bool restore )
     QWidget* pw = parentWidget();
     if( !pw )
 	return;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     KWin::WindowInfo info = KWin::windowInfo( pw->winId(), NET::WMGeometry | NET::WMDesktop );
     if ( restore )
     {
-#ifndef Q_WS_QWS //FIXME
+//#ifndef Q_WS_QWS //FIXME
+//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 	if( d->on_all_desktops )
 	    KWin::setOnAllDesktops( pw->winId(), true );
 	else
@@ -259,11 +278,11 @@ void KSystemTray::minimizeRestore( bool restore )
         pw->show();
         pw->raise();
 	KWin::setActiveWindow( pw->winId() );
-#endif
     } else {
 	d->on_all_desktops = info.onAllDesktops();
 	pw->hide();
     }
+#endif
 }
 
 KActionCollection* KSystemTray::actionCollection()

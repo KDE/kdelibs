@@ -19,6 +19,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "config.h"
 
 #include <qstylesheet.h>
 #include <qtimer.h>
@@ -30,7 +31,11 @@
 #include <klocale.h>
 #include <kparts/browserinterface.h>
 #include <kwin.h>
-#include <kwinmodule.h>
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kwinmodule.h> // schroder
+#endif
+
 #include <kbookmarkmanager.h>
 #include <kglobalsettings.h>
 #include <assert.h>
@@ -143,7 +148,9 @@ Value Screen::get(ExecState *exec, const Identifier &p) const
 
 Value Screen::getValueProperty(ExecState *exec, int token) const
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   KWinModule info;
+#endif
   QWidget *thisWidget = Window::retrieveActive(exec)->part()->view();
   QRect sg = KGlobalSettings::desktopGeometry(thisWidget);
 
@@ -158,20 +165,36 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
     return Number(m.depth());
   }
   case AvailLeft: {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     QRect clipped = info.workArea().intersect(sg);
     return Number(clipped.x()-sg.x());
+#else
+    return Number(10);
+#endif
   }
   case AvailTop: {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     QRect clipped = info.workArea().intersect(sg);
     return Number(clipped.y()-sg.y());
+#else
+    return Number(10);
+#endif
   }
   case AvailHeight: {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     QRect clipped = info.workArea().intersect(sg);
     return Number(clipped.height());
+#else
+    return Number(100);
+#endif
   }
   case AvailWidth: {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     QRect clipped = info.workArea().intersect(sg);
     return Number(clipped.width());
+#else
+    return Number(100);
+#endif
   }
   default:
     kdDebug(6070) << "WARNING: Screen::getValueProperty unhandled token " << token << endl;

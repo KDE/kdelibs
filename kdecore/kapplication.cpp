@@ -74,7 +74,9 @@
 #include <kshell.h>
 #include <kprotocolinfo.h>
 
-#include <kstartupinfo.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kstartupinfo.h> // schroder
+#endif
 
 #include <dcopclient.h>
 #include <dcopref.h>
@@ -96,8 +98,9 @@
 #include <errno.h>
 #include <string.h>
 #include <netdb.h>
-#ifndef Q_WS_QWS //FIXME(E): NetWM should talk to QWS...
-#include <netwm.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS //FIXME(E): NetWM should talk to QWS...
+#include <netwm.h> // schroder
 #endif
 
 #include "kprocctrl.h"
@@ -106,12 +109,13 @@
 #include <paths.h>
 #endif
 
+//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#include <X11/SM/SMlib.h>
-#include <fixx11h.h>
+#include <X11/Xlib.h> // schrode
+#include <X11/Xutil.h> // schrode
+#include <X11/Xatom.h> // schrode
+#include <X11/SM/SMlib.h> // schrode
+#include <fixx11h.h> // schrode
 #endif
 #include <KDE-ICE/ICElib.h>
 
@@ -121,7 +125,9 @@
 #define DISPLAY "QWS_DISPLAY"
 #endif
 
-#include <kipc.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kipc.h> // schroder
+#endif
 
 #include "kappdcopiface.h"
 
@@ -708,10 +714,12 @@ void KApplication::init(bool GUIenabled)
   smw = 0;
 
   // Initial KIPC event mask.
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
                   (1 << KIPC::ToolbarStyleChanged) | (1 << KIPC::SettingsChanged) |
                   (1 << KIPC::ClipboardConfigChanged);
+#endif
 
   // Trigger creation of locale.
   (void) KGlobal::locale();
@@ -1541,6 +1549,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
         }
     }
 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if ((_event->type == ClientMessage) &&
             (_event->xclient.message_type == kipcCommAtom))
     {
@@ -1605,7 +1614,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
         }
         return true;
     }
-
+#endif // Q_WS_X11 && ! K_WS_QTONLY
     return false;
 }
 #endif
@@ -2418,7 +2427,8 @@ void KApplication::setTopWidget( QWidget *topWidget )
     // set the specified caption
     if ( !topWidget->inherits("KMainWindow") ) { // KMainWindow does this already for us
         topWidget->setCaption( caption() );
-#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
         NETWinInfo info(qt_xdisplay(), topWidget->winId(), qt_xrootwin(), NET::WMName );
         info.setName( caption().utf8().data() );
 #endif
@@ -2426,7 +2436,8 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     // set the specified icons
     topWidget->setIcon( icon() ); //standard X11
-#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
 
     // set the app startup notification window property
@@ -2452,7 +2463,7 @@ void KApplication::setStartupId( const QCString& startup_id )
 // not to propagate it to processes started from this app
 void KApplication::read_app_startup_id()
 {
-#ifdef Q_WS_X11
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
     KStartupInfo::resetStartupEnv();
     d->startup_id = id.id();

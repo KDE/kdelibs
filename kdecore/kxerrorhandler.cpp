@@ -23,7 +23,11 @@
 */
 
 #include <qwidget.h>
-#ifdef Q_WS_X11 //FIXME
+
+#include "config.h"
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+//#ifdef Q_WS_X11 //FIXME
 
 #include "kxerrorhandler.h"
 #include <assert.h>

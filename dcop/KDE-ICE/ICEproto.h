@@ -26,8 +26,9 @@ Author: Ralph Mor, X Consortium
 #ifndef _ICEPROTO_H_
 #define _ICEPROTO_H_
 
-#ifndef QWS
-#include <X11/Xmd.h>
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xmd.h> // schroder
 #else
 #if defined(__alpha__) || defined(__ia64__) || defined(__s390x__)
 typedef unsigned int CARD32;

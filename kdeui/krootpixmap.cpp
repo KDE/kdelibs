@@ -15,13 +15,15 @@
 #include <qrect.h>
 #include <qimage.h>
 
-#ifndef Q_WS_QWS //FIXME
+#include "config.h"
+
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
 #include <kapplication.h>
 #include <kimageeffect.h>
 #include <kpixmapio.h>
-#include <kwinmodule.h>
+#include <kwinmodule.h> // schroder
 #include <kdebug.h>
-#include <netwm.h>
+#include <netwm.h> // schroder not used
 #include <dcopclient.h>
 
 #include <ksharedpixmap.h>
@@ -263,4 +265,4 @@ void KRootPixmap::slotBackgroundChanged(int desk)
 }
 
 #include "krootpixmap.moc"
-#endif
+#endif // Q_WS_X11 && ! K_WS_QTONLY

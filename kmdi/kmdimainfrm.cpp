@@ -27,6 +27,7 @@
 //    License, or (at your option) any later version.
 //
 //----------------------------------------------------------------------------
+#include "config.h"
 
 #include "kmdimainfrm.h"
 #include "kmdimainfrm.moc"
@@ -42,7 +43,10 @@
 #include <kdeversion.h>
 #include <qtabwidget.h>
 
-#include <kipc.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <kipc.h> // schroder remove this in x11 too, not needed any more...
+#endif
+
 #include <kiconloader.h>
 #include <kmdidockcontainer.h>
 
@@ -81,8 +85,11 @@
 #include "kde2laptop_closebutton.xpm"
 #include "kde2laptop_closebutton_menu.xpm"
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifndef NO_KDE
+#include <X11/X.h> // schroder
+#include <X11/Xlib.h> // schroder
+#endif
 
 #ifdef KeyRelease
 /* I hate the defines in the X11 header files. Get rid of one of them */
@@ -93,6 +100,7 @@
 /* I hate the defines in the X11 header files. Get rid of one of them */
 #undef KeyPress
 #endif
+#endif // Q_WS_X11 && ! K_WS_QTONLY
 
 using namespace KParts;
 
@@ -645,18 +653,38 @@ void KMdiMainFrm::detachWindow(KMdiChildView *pWnd, bool bShow)
             pWnd->setGeometry( QRect( m_pMdi->getCascadePoint(m_pDocumentViews->count()-1), defaultChildFrmSize()));
          }
       }
+<<<<<<< kmdimainfrm.cpp
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifndef NO_KDE
+=======
 
+>>>>>>> 1.24
       if (mdiMode() == KMdi::ToplevelMode) {
          XSetTransientForHint(qt_xdisplay(),pWnd->winId(),topLevelWidget()->winId());
       }
+<<<<<<< kmdimainfrm.cpp
+#endif
+#endif
+=======
 
+>>>>>>> 1.24
       return;
    }
+<<<<<<< kmdimainfrm.cpp
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifndef NO_KDE
+=======
 
+>>>>>>> 1.24
    if (mdiMode() == KMdi::ToplevelMode) {
       XSetTransientForHint(qt_xdisplay(),pWnd->winId(),topLevelWidget()->winId());
    }
+<<<<<<< kmdimainfrm.cpp
+#endif
+#endif
+=======
 
+>>>>>>> 1.24
    // this will show it...
    if (bShow) {
       activateView(pWnd);
@@ -1206,7 +1234,17 @@ void KMdiMainFrm::switchToToplevelMode()
    QPtrListIterator<KMdiChildView> it( *m_pDocumentViews);
    for( it.toFirst(); it.current(); ++it) {
       KMdiChildView* pView = it.current();
+<<<<<<< kmdimainfrm.cpp
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifndef NO_KDE
+=======
+>>>>>>> 1.24
       XSetTransientForHint(qt_xdisplay(),pView->winId(),winId());
+<<<<<<< kmdimainfrm.cpp
+#endif
+#endif
+=======
+>>>>>>> 1.24
 //      if( !pView->isToolView())
          pView->show();
    }

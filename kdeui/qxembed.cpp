@@ -25,14 +25,15 @@
 #include <qguardedptr.h>
 #include <qwhatsthis.h>
 #include <qfocusdata.h>
-#ifdef Q_WS_X11
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/X.h> // schroder
+#include <X11/Xlib.h> // schroder
+#include <X11/Xutil.h> // schroder
+#include <X11/Xatom.h> // schroder
 #define XK_MISCELLANY
 #define XK_LATIN1
-#include <X11/keysymdef.h>
+#include <X11/keysymdef.h> // schroder
 #include <kdebug.h>
 //#include <kxeventutil.h>
 //#include <kqeventutil.h>

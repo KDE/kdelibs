@@ -64,12 +64,14 @@
 #include <config.h>
 #include <kdebug.h>
 
-#ifdef Q_WS_X11
-#include <X11/Xlib.h>
+#include "config.h"
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#include <X11/Xlib.h> // schroder
 
 // defined in qapplication_x11.cpp
 typedef int (*QX11EventFilter) (XEvent*);
 extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
+#endif
 
 static const char * const recentColors = "Recent_Colors";
 static const char * const customColors = "Custom_Colors";
@@ -889,7 +891,9 @@ public:
     QCheckBox *cbDefaultColor;
     KColor defaultColor;
     KColor selColor;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     QX11EventFilter oldfilter;
+#endif
 };
 
 
@@ -901,7 +905,9 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d = new KColorDialogPrivate;
   d->bRecursion = true;
   d->bColorPicking = false;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
   d->oldfilter = 0;
+#endif
   d->cbDefaultColor = 0L;
   setHelp( QString::fromLatin1("kcolordialog.html"), QString::null );
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
@@ -1133,8 +1139,10 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 
 KColorDialog::~KColorDialog()
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if (d->bColorPicking)
         qt_set_x11_event_filter(d->oldfilter);
+#endif
     delete d;
 }
 
@@ -1435,6 +1443,7 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
 
 static QWidget *kde_color_dlg_widget = 0;
 
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 static int kde_color_dlg_handler(XEvent *event)
 {
     if (event->type == ButtonRelease)
@@ -1446,12 +1455,14 @@ static int kde_color_dlg_handler(XEvent *event)
     }
     return FALSE;
 }
-
+#endif
 void
 KColorDialog::slotColorPicker()
 {
     d->bColorPicking = true;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     d->oldfilter = qt_set_x11_event_filter(kde_color_dlg_handler);
+#endif
     kde_color_dlg_widget = this;
     grabMouse( crossCursor );
     grabKeyboard();
@@ -1463,8 +1474,10 @@ KColorDialog::mouseReleaseEvent( QMouseEvent *e )
   if (d->bColorPicking)
   {
      d->bColorPicking = false;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
      qt_set_x11_event_filter(d->oldfilter);
      d->oldfilter = 0;
+#endif
      releaseMouse();
      releaseKeyboard();
      _setColor( grabColor( e->globalPos() ) );
@@ -1490,8 +1503,10 @@ KColorDialog::keyPressEvent( QKeyEvent *e )
      if (e->key() == Key_Escape)
      {
         d->bColorPicking = false;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         qt_set_x11_event_filter(d->oldfilter);
         d->oldfilter = 0;
+#endif
         releaseMouse();
         releaseKeyboard();
      }
@@ -1555,4 +1570,4 @@ void KColorDialog::virtual_hook( int id, void* data )
 
 
 #include "kcolordialog.moc"
-#endif
+//#endif
