@@ -142,16 +142,17 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   mEntryView->addColumn( i18n("Email") );
   mEntryView->addColumn( i18n("Use preferred") );
   topLayout->addWidget( mEntryView );
+  connect(mEntryView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionEntryViewChanged()));
 
-  QPushButton *changeEmailButton = new QPushButton( i18n("Change Email"), this );
+  changeEmailButton = new QPushButton( i18n("Change Email"), this );
   topLayout->addWidget( changeEmailButton );
   connect( changeEmailButton, SIGNAL( clicked() ), SLOT( changeEmail() ) );
 
-  QPushButton *removeEntryButton = new QPushButton( i18n("Remove Entry"), this );
+  removeEntryButton = new QPushButton( i18n("Remove Entry"), this );
   topLayout->addWidget( removeEntryButton );
   connect( removeEntryButton, SIGNAL( clicked() ), SLOT( removeEntry() ) );
 
-  QPushButton *addEntryButton = new QPushButton( i18n("Add Entry"), this );
+  addEntryButton = new QPushButton( i18n("Add Entry"), this );
   topLayout->addWidget( addEntryButton );
   connect( addEntryButton, SIGNAL( clicked() ), SLOT( addEntry() ) );
 
@@ -159,6 +160,9 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   mAddresseeView->addColumn( i18n("Name") );
   mAddresseeView->addColumn( i18n("Preferred Email") );
   topLayout->addWidget( mAddresseeView );
+
+
+  connect(mAddresseeView,SIGNAL(selectionChanged ()),this, SLOT(slotSelectionAddresseeViewChanged()));
 
   mManager = new DistributionListManager( mAddressBook );
   mManager->load();
@@ -174,6 +178,15 @@ DistributionListEditor::~DistributionListEditor()
 
   mManager->save();
   delete mManager;
+}
+
+void DistributionListEditor::slotSelectionEntryViewChanged()
+{
+    EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+    bool state=entryItem;
+
+    changeEmailButton->setEnabled(state);
+    removeEntryButton->setEnabled(state);
 }
 
 void DistributionListEditor::newList()
@@ -261,6 +274,11 @@ void DistributionListEditor::updateEntryView()
   for( it = entries.begin(); it != entries.end(); ++it ) {
     new EntryItem( mEntryView, (*it).addressee, (*it).email );
   }
+   EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
+   bool state=entryItem;
+
+   changeEmailButton->setEnabled(state);
+   removeEntryButton->setEnabled(state);
 }
 
 void DistributionListEditor::updateAddresseeView()
@@ -278,4 +296,12 @@ void DistributionListEditor::updateNameCombo()
   mNameCombo->insertStringList( mManager->listNames() );
 
   updateEntryView();
+}
+
+void DistributionListEditor::slotSelectionAddresseeViewChanged()
+{
+    AddresseeItem *addresseeItem =
+        dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
+    bool state=addresseeItem;
+    addEntryButton->setEnabled( state);
 }

@@ -65,6 +65,8 @@ class DistributionListEditor : public QWidget
     void updateEntryView();
     void updateAddresseeView();
     void updateNameCombo();
+    void slotSelectionEntryViewChanged();
+    void slotSelectionAddresseeViewChanged();
 
   private:
     QComboBox *mNameCombo;  
@@ -74,6 +76,7 @@ class DistributionListEditor : public QWidget
     AddressBook *mAddressBook;
     DistributionListManager *mManager;
     QPushButton *newButton, *removeButton;
+    QPushButton *changeEmailButton,*removeEntryButton,*addEntryButton;
 };
 
 }
