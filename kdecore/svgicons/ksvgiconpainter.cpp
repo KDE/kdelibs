@@ -306,7 +306,7 @@ public:
 			if(element.hasAttribute("x2"))
 				x2 = m_painter->toPixel(element.attribute("x2"), true);
 			else
-				x2 = 1;
+				x2 = m_width;
 
 			if(element.hasAttribute("y2"))
 				y2 = m_painter->toPixel(element.attribute("y2"), false);
