@@ -339,14 +339,6 @@ void RenderFlow::layoutBlockChildren()
         //kdDebug(0) << "margin = " << margin << " prevMargin = " << prevMargin << endl;
         margin = collapseMargins(margin, prevMargin);
 
-        if (child->style()->flowAroundFloats())
-        {
-            // flowAroundFloats element might not fit here
-            while (lineWidth(m_height) < child->minWidth())
-                m_height++;
-        }
-            
-        
         m_height += margin;
 
         //kdDebug(0) << "margin = " << margin << " yPos = " << m_height << endl;
