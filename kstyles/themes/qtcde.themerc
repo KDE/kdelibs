@@ -1,5 +1,6 @@
 [Misc]
 Name=CDE
+Name[xx]=xxCDExx
 Comment=Built-in unthemed CDE style
 Comment[af]=Ingeboude ongetemade Cde styl
 Comment[ar]=مظهر مضمن مشابه لCDE
