@@ -172,7 +172,7 @@ KJSO DOMNodeList::tryGet(const UString &p) const
   // array index ?
   long unsigned int idx;
   if (sscanf(p.cstring().c_str(), "%lu", &idx) == 1)
-    result = getDOMNode(const_cast<DOM::NodeList&>(list).item(idx));
+    result = getDOMNode(list.item(idx));
 
   return result;
 }
