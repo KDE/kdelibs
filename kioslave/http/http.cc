@@ -298,7 +298,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
                             const QString& user, const QString& pass )
 {
   kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << host << endl;
-  
+
   // Reset the webdav-capable flags for this host
   if ( m_request.hostname != host )
     m_davHostOk = m_davHostUnsupported = false;
@@ -880,12 +880,6 @@ void HTTPProtocol::get( const KURL& url )
   if ( !checkRequestURL( url ) )
     return;
 
-  // HACK
-  // If webDAV, check to make sure this host supports WebDAV
-  if ( m_protocol == "webdav" || m_protocol == "webdavs" )
-    if ( !davHostOk() )
-      return;
-
   m_request.method = HTTP_GET;
   m_request.path = url.path();
   m_request.query = url.query();
@@ -931,10 +925,6 @@ void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite 
   // destination has to be "http://..."
   KURL newDest = dest;
   newDest.setProtocol( "http" );
-
-  /*QString filename = src.path().right( src.path().length() - src.path().findRev('/') - 1 );
-
-  newDest.setPath( newDest.path() + '/' + filename );*/
 
   m_request.method = DAV_COPY;
   m_request.path = src.path();
