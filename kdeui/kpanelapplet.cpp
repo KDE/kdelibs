@@ -27,6 +27,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kpanelapplet.h"
 #include "kpanelapplet.moc"
 
+class KPanelApplet::KPanelAppletPrivate
+{
+public:
+  KPanelAppletPrivate() : customMenu(0) {}
+
+  const QPopupMenu* customMenu;
+};
+
 KPanelApplet::KPanelApplet(const QString& configFile, Type type,
                            int actions, QWidget *parent, const char *name, WFlags f)
   : QFrame(parent, name, f)
@@ -35,6 +43,7 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
   , _alignment( LeftTop )
   , _config(0)
   , _actions(actions)
+  , d(new KPanelApplet::KPanelAppletPrivate())
 {
   setFrameStyle(NoFrame);
   QPalette pal(palette());
@@ -50,6 +59,7 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
 KPanelApplet::~KPanelApplet()
 {
   delete _config;
+  delete d;
 }
 
 void KPanelApplet::setPosition( Position p )
@@ -106,6 +116,16 @@ void KPanelApplet::action( Action a )
 	preferences();
     if ( (a & ReportBug) != 0 )
     reportBug();
+}
+
+const QPopupMenu* KPanelApplet::customMenu() const
+{
+    return d->customMenu; 
+}
+
+void KPanelApplet::setCustomMenu(const QPopupMenu* menu)
+{
+    d->customMenu = menu;
 }
 
 void KPanelApplet::virtual_hook( int, void* )

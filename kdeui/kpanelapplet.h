@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __kpanelapplet_h__
 
 class KConfig;
+class QPopupMenu;
 
 #include <qframe.h>
 
@@ -210,6 +211,12 @@ public:
     virtual void action( Action a );
 
     /**
+     * @return the applet's custom menu, usually the same as the context menu, or 0 if none
+     * see @ref setCustomMenu(QPopupMenu*)
+     */
+    const QPopupMenu* customMenu() const;
+
+    /**
      * @internal
      **/
     void setPosition( Position p );
@@ -305,6 +312,17 @@ protected:
      * applet.
      **/
     virtual void alignmentChange( Alignment /*a*/ ) {};
+
+    /**
+     * Use this method to set the custom menu for this applet so that is ca be shown 
+     * in the applet handle menu and other appropriate places that the applet many not itself
+     * be aware of. The applet itself is still responsible for deleting and managing the
+     * the menu.
+     *
+     * If the menu is deleted during the life of the applet, be sure to call this method again
+     * with the new menu (or 0) to avoid crashes
+     */
+    void setCustomMenu(const QPopupMenu*);
 
     /**
      * The orientation changed to @p orientation. Reimplement this
