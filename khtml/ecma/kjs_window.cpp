@@ -29,7 +29,7 @@
 #include <kparts/browserinterface.h>
 #include <kwin.h>
 #include <kwinmodule.h>
-#include <kconfig.h>
+#include <kglobalsettings.h>
 #include <assert.h>
 #include <qstyle.h>
 #include <qobjectlist.h>
@@ -130,17 +130,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
 {
   KWinModule info;
   QWidget *thisWidget = Window::retrieveActive(exec)->part()->view();
-  QDesktopWidget *dw = QApplication::desktop();
-  KConfig gc("kdeglobals", false, false);
-  gc.setGroup("Windows");
-  QRect sg;
-  if (dw->isVirtualDesktop() &&
-      gc.readBoolEntry("XineramaEnabled", true) &&
-      gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-    sg = dw->screenGeometry(dw->screenNumber(thisWidget));
-  } else {
-    sg = dw->geometry();
-  }
+  QRect sg = KGlobalSettings::desktopGeometry(thisWidget);
 
   switch( token ) {
   case Height:
@@ -544,34 +534,14 @@ Value Window::get(ExecState *exec, const UString &p) const
     case ScreenX: {
       if (!m_part->view())
         return Undefined();
-      QDesktopWidget *dw = QApplication::desktop();
-      KConfig gc("kdeglobals", false, false);
-      gc.setGroup("Windows");
-      QRect sg;
-      if (dw->isVirtualDesktop() &&
-          gc.readBoolEntry("XineramaEnabled", true) &&
-          gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-        sg = dw->screenGeometry(dw->screenNumber(m_part->view()));
-      } else {
-        sg = dw->geometry();
-      }
+      QRect sg = KGlobalSettings::desktopGeometry(m_part->view());
       return Number(m_part->view()->mapToGlobal(QPoint(0,0)).x() + sg.x());
     }
     case ScreenTop:
     case ScreenY: {
       if (!m_part->view())
         return Undefined();
-      QDesktopWidget *dw = QApplication::desktop();
-      KConfig gc("kdeglobals", false, false);
-      gc.setGroup("Windows");
-      QRect sg;
-      if (dw->isVirtualDesktop() &&
-          gc.readBoolEntry("XineramaEnabled", true) &&
-          gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-        sg = dw->screenGeometry(dw->screenNumber(m_part->view()));
-      } else {
-        sg = dw->geometry();
-      }
+      QRect sg = KGlobalSettings::desktopGeometry(m_part->view());
       return Number(m_part->view()->mapToGlobal(QPoint(0,0)).y() + sg.y());
     }
     case ScrollX: {
@@ -894,6 +864,9 @@ void Window::afterScriptExecution()
     case DelayedGoHistory:
       goHistory( (*it).param.toInt() );
       break;
+    case NullAction:
+      // FIXME: anything needs to be done here?  This is warning anyways.
+      break;
     };
   }
 }
@@ -1062,17 +1035,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
     return;
   }
 
-  QDesktopWidget *dw = QApplication::desktop();
-  KConfig gc("kdeglobals", false, false);
-  gc.setGroup("Windows");
-  QRect sg;
-  if (dw->isVirtualDesktop() &&
-      gc.readBoolEntry("XineramaEnabled", true) &&
-      gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-    sg = dw->screenGeometry(dw->screenNumber(tl));
-  } else {
-    sg = dw->geometry();
-  }
+  QRect sg = KGlobalSettings::desktopGeometry(tl);
 
   if ( width > sg.width() || height > sg.height() ) {
     kdDebug(6070) << "Window::resizeTo refused, window would be too big ("<<width<<","<<height<<")" << endl;
@@ -1160,18 +1123,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
         if (pos >= 0) {
           key = s.left(pos).stripWhiteSpace().lower();
           val = s.mid(pos + 1).stripWhiteSpace().lower();
-
-          QDesktopWidget *dw = QApplication::desktop();
-          KConfig gc("kdeglobals", false, false);
-          gc.setGroup("Windows");
-          QRect screen;
-          if (dw->isVirtualDesktop() &&
-              gc.readBoolEntry("XineramaEnabled", true) &&
-              gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-            screen = dw->screenGeometry(dw->screenNumber(widget->topLevelWidget()));
-          } else {
-            screen = dw->geometry();
-          }
+          QRect screen = KGlobalSettings::desktopGeometry(widget->topLevelWidget());
 
           if (key == "left" || key == "screenx") {
             winargs.x = val.toInt() + screen.x();
@@ -1347,17 +1299,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if(policy == KHTMLSettings::KJSWindowMoveAllow && args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
-      QDesktopWidget *dw = QApplication::desktop();
-      KConfig gc("kdeglobals", false, false);
-      gc.setGroup("Windows");
-      QRect sg;
-      if (dw->isVirtualDesktop() &&
-          gc.readBoolEntry("XineramaEnabled", true) &&
-          gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-        sg = dw->screenGeometry(dw->screenNumber(tl));
-      } else {
-        sg = dw->geometry();
-      }
+      QRect sg = KGlobalSettings::desktopGeometry(tl);
 
       QPoint dest = tl->pos() + QPoint( args[0].toInt32(exec), args[1].toInt32(exec) );
       // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
@@ -1374,17 +1316,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if(policy == KHTMLSettings::KJSWindowMoveAllow && args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
-      QDesktopWidget *dw = QApplication::desktop();
-      KConfig gc("kdeglobals", false, false);
-      gc.setGroup("Windows");
-      QRect sg;
-      if (dw->isVirtualDesktop() &&
-          gc.readBoolEntry("XineramaEnabled", true) &&
-          gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-        sg = dw->screenGeometry(dw->screenNumber(tl));
-      } else {
-        sg = dw->geometry();
-      }
+      QRect sg = KGlobalSettings::desktopGeometry(tl);
 
       QPoint dest( args[0].toInt32(exec)+sg.x(), args[1].toInt32(exec)+sg.y() );
       // Security check (the spec talks about UniversalBrowserWrite to disable this check...)

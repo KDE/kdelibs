@@ -228,17 +228,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 	resize(550, 230);
         QSize sh = size();
 
-        QDesktopWidget *dw = QApplication::desktop();
-        QRect rect;
-        KConfig gc("kdeglobals", false, false);
-        gc.setGroup("Windows");
-        if (dw->isVirtualDesktop() &&
-            gc.readBoolEntry("XineramaEnabled", true) &&
-            gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-            rect = dw->screenGeometry(dw->screenNumber(parent ? parent : this));
-        } else {
-            rect = dw->geometry();
-        }
+        QRect rect = KGlobalSettings::desktopGeometry(parent ? parent : this);
 
         move(rect.x() + (rect.width() - sh.width())/2,
 	rect.y() + (rect.height() - sh.height())/2);

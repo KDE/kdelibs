@@ -32,6 +32,7 @@
 #include <qstylesheet.h>
 #include <qsimplerichtext.h>
 #include <qpushbutton.h>
+#include <qlayout.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -41,10 +42,10 @@
 #include <klistbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <qlayout.h>
 #include <kstdguiitem.h>
 #include <kactivelabel.h>
 #include <kiconloader.h>
+#include <kglobalsettings.h>
 
  /**
   * Easy MessageBox Dialog.
@@ -127,18 +128,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     // Calculate a proper size for the text.
     {
        QSimpleRichText rt(qt_text, dialog->font());
-
-       QDesktopWidget *dw = QApplication::desktop();
-       KConfig gc("kdeglobals", false, false);
-       gc.setGroup("Windows");
-       QRect d;
-       if (dw->isVirtualDesktop() &&
-           gc.readBoolEntry("XineramaEnabled", true) &&
-           gc.readBoolEntry("XineramaPlacementEnabled", true)) {
-           d = dw->screenGeometry(dw->screenNumber(dialog));
-       } else {
-           d = dw->geometry();
-       }
+       QRect d = KGlobalSettings::desktopGeometry(dialog);
 
        pref_width = d.width() / 3;
        rt.setWidth(pref_width);
