@@ -144,11 +144,6 @@ signals:
   void openURLRequest( const KURL &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
 
   /**
-   * Send a message to the browser's status bar
-   */
-  void setStatusBarText( const QString &text );
-
-  /**
    * Update the URL shown in the browser's location bar to @p url
    */
   void setLocationBarURL( const QString &url );
