@@ -187,7 +187,7 @@ public:
      *
      * @see #operationMode
      * @see KFileDialog::OperationMode
-     */    
+     */
     OperationMode operationMode() const;
 
     /**
@@ -718,7 +718,6 @@ protected slots:
     void pathComboReturnPressed( const QString& url );
     void locationActivated( const QString& url );
     void toolbarCallback(int);
-    void toolbarPressedCallback(int); // ### remove
     void slotFilterChanged();
     void pathComboChanged( const QString& );
     void fileHighlighted(const KFileViewItem *i);

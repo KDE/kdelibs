@@ -1073,11 +1073,6 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 }
 
 
-
-void KFileDialog::toolbarPressedCallback(int /*i*/)
-{
-}
-
 void KFileDialog::buildBookmarkPopup()
 {
     bookmarksMenu->clear();
@@ -1227,7 +1222,7 @@ void KFileDialog::fileCompletion( const QString& file )
     else
         if (locationEdit->completionMode() == KGlobalSettings::CompletionPopup)
             locationEdit->completionBox()->hide();
-    
+
     d->completionLock = false;
 }
 
@@ -1665,7 +1660,6 @@ void KFileDialog::setOperationMode( OperationMode mode )
     d->operationMode = mode;
     d->keepLocation = true;
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
-
 }
 
 KFileDialog::OperationMode KFileDialog::operationMode() const
