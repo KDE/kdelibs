@@ -1871,13 +1871,10 @@ bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
     // pop up the fancy certificate creation dialog here
     KSSLKeyGen *kg = new KSSLKeyGen(static_cast<RenderWidget *>(m_render)->m_widget, "Key Generator", true);
 
-    kg->exec();
+    kg->setKeySize(0);
+    successful = (QDialog::Accepted == kg->exec());
 
-    delete kg;
     encoded_values += "deadbeef";
-
-    // in case the user wasn't too stupid and pressed <cancel>-button
-    successful = true;
 
     return successful;
 }
