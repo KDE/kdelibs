@@ -43,6 +43,7 @@
 #undef Above
 #undef Below
 #undef KeyPress
+#undef KeyRelease
 #undef FocusOut
 
 /**
