@@ -39,7 +39,7 @@ typedef KJScript* (KJSCreateFunc)(KHTMLPart *);
 typedef QVariant (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int,
 			   const DOM::Node &, KHTMLPart *);
 typedef QVariant (KJSExecFuncCall)(KJS::KJSO &, KJS::KJSO &, KJS::List &, bool, KHTMLPart *);
-typedef void (KJSClearFunc)(KJScript *script);
+typedef void (KJSClearFunc)(KJScript *script, KHTMLPart *part);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
 extern "C" {
@@ -104,7 +104,7 @@ inline const char *KJSProxy::special(const char *c) {
 
 inline void KJSProxy::clear() {
   if (script) {
-    (*clr)(script);
+    (*clr)(script,khtmlpart);
     script = 0L;
   }
 }

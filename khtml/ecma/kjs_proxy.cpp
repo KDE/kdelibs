@@ -77,7 +77,7 @@ namespace KJS {
     ScriptMap::Iterator it = script_map->find(khtmlpart);
     if (it != script_map->end())
       return it.data();
-    
+
     KJScript *script = new KJScript();
     script_map->insert((KHTMLPart*)khtmlpart, script);
 #ifndef NDEBUG
@@ -86,7 +86,7 @@ namespace KJS {
     KJS::Imp *global = script->globalObject();
 
     // make "window" prefix implicit for shortcuts like alert()
-    global->setPrototype(new Window(khtmlpart));    
+    global->setPrototype(new Window(khtmlpart));
     global->put("window", global);
 
     return script;
@@ -137,8 +137,12 @@ namespace KJS {
     return res;
   }
   // clear resources allocated by the interpreter
-  void kjs_clear(KJScript *script)
+  void kjs_clear(KJScript *script, KHTMLPart *part)
   {
+    ScriptMap::Iterator it = script_map->find(part);
+    if (it != script_map->end())
+      script_map->remove(it);
+
     script->clear();
     //    delete script;
   }
