@@ -104,11 +104,10 @@ parserfiles = yacc.y lex.l
 
 EXTRA_DIST = $(kde_mime_DATA) $(parserfiles)
 
-dummy.cpp:
+dummy.cpp: uiserver.kidl
 	echo > dummy.cpp
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\
 	flex lex.l && mv lex.yy.c lex.c ;\
 	bison -d yacc.y && mv yacc.tab.c yacc.c; mv yacc.tab.h yacc.h
-
