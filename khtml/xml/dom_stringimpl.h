@@ -68,6 +68,10 @@ public:
 
     unsigned int l;
     QChar *s;
+
+    // returns the (new) lenght of 'value' having stripped away
+    // anything after [0-9.%*]
+    static unsigned int stripAttributeGarbage( QChar *s, unsigned int l );
 };
 
 };

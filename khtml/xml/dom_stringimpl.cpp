@@ -170,6 +170,8 @@ DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
 
 static Length parseLength(QChar *s, unsigned int l)
 {
+    l = DOMStringImpl::stripAttributeGarbage( s, l );
+
     const QChar* last = s+l-1;
 
     if ( *last == QChar('%')) {
@@ -259,4 +261,23 @@ DOMStringImpl *DOMStringImpl::lower()
 
     return c;
 }
+
+unsigned int DOMStringImpl::stripAttributeGarbage( QChar *s, unsigned int l )
+{
+    QChar *ch = s;
+    QChar *endP = ch + l;
+    for ( ; ch != endP; ++ch )
+    {
+        if ( ( *ch < '0' || *ch > '9' ) &&
+             *ch != '.' &&
+             *ch != '%' &&
+             *ch != ' ' &&
+             *ch != '*' )
+            return ch - s;
+    }
+
+    return l;
+}
+
+
 
