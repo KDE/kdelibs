@@ -17,8 +17,19 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+ 
 #include "ksslcertificate.h"
+
+// this hack provided by Malte Starostik to avoid glibc/openssl bug
+// on some systems
+#ifdef HAVE_SSL
+#define crypt _openssl_crypt
+#include <openssl/ssl.h>
+#undef crypt
+#endif
 
 
 class KSSLCertificatePrivate {
@@ -78,10 +89,9 @@ QString rc = "";
 return rc;
 }
 
-
-#ifdef HAVE_SSL
 void KSSLCertificate::setCert(X509 *c) {
+#ifdef HAVE_SSL
   d->m_cert = c;
-}
 #endif
+}
 

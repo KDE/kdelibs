@@ -21,18 +21,6 @@
 #ifndef _KSSL_H
 #define _KSSL_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-// this hack provided by Malte Starostik to avoid glibc/openssl bug
-// on some systems
-#ifdef HAVE_SSL
-#define crypt _openssl_crypt
-#include <openssl/ssl.h>
-#undef crypt
-#endif
-
 #include <ksslsettings.h>
 #include <ksslpeerinfo.h>
 #include <ksslconnectioninfo.h>

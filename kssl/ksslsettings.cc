@@ -18,8 +18,19 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "ksslsettings.h"
 
+// this hack provided by Malte Starostik to avoid glibc/openssl bug
+// on some systems
+#ifdef HAVE_SSL
+#define crypt _openssl_crypt
+#include <openssl/ssl.h>
+#undef crypt
+#endif
 
 
 //

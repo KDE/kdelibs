@@ -21,16 +21,6 @@
 #ifndef _KSSLCONNECTIONINFO_H
 #define _KSSLCONNECTIONINFO_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#ifdef HAVE_SSL
-#define crypt _openssl_crypt
-#include <openssl/ssl.h>
-#undef crypt
-#endif
-
 #include <qstring.h>
 
 class KSSL;

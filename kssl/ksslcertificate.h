@@ -35,21 +35,13 @@
 //  There should be no reason to touch the X509 stuff directly.
 //
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
- 
-#ifdef HAVE_SSL
-#define crypt _openssl_crypt
-#include <openssl/ssl.h>
-#undef crypt
-#endif
- 
 #include <qstring.h>
 
 class KSSL;
 class KSSLCertificatePrivate;
  
+typedef struct x509_st X509;
+
 class KSSLCertificate {
 friend class KSSL;
 friend class KSSLCertificateHome;
@@ -76,9 +68,7 @@ private:
 protected:
   KSSLCertificate();
 
-  #ifdef HAVE_SSL
   void setCert(X509 *c);
-  #endif
 };
 
 

@@ -22,16 +22,6 @@
 #ifndef _KSSLINFODLG_H
 #define _KSSLINFODLG_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
- 
-#ifdef HAVE_SSL
-#define crypt _openssl_crypt
-#include <openssl/ssl.h>
-#undef crypt
-#endif
- 
 #include <qwidget.h>
 #include <kdialog.h>
 #include "ksslx509map.h"

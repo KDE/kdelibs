@@ -21,17 +21,6 @@
 #ifndef _KSSLSETTINGS_H
 #define _KSSLSETTINGS_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#ifdef HAVE_SSL
-#define crypt _openssl_crypt
-#include <openssl/ssl.h>
-#undef crypt
-#endif
-
-
 #include <qstring.h>
 
 #include <kconfig.h>
