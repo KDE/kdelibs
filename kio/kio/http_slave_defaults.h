@@ -20,7 +20,7 @@
 #define _KIO_HTTP_SLAVE_DEFAULTS_H
 
 // CONNECTION
-#define DEFAULT_KEEP_ALIVE_TIMEOUT	60		// 60 seconds
+#define DEFAULT_KEEP_ALIVE_TIMEOUT      60              // 60 seconds
 
 // CACHE SETTINGS
 #define DEFAULT_MAX_CACHE_SIZE          5120            // 5 MB
@@ -44,6 +44,6 @@
 #define DEFAULT_MIME_TYPE               "text/html"
 #define DEFAULT_PARTIAL_CHARSET_HEADER   ", utf-8;q=0.5, *;q=0.5"
 
-#define DEFAULT_ACCEPT_HEADER           "text/*, image/jpeg, image/png, image/*, */*"
+#define DEFAULT_ACCEPT_HEADER           "text/html, image/jpeg, image/png, text/*, image/*, */*"
 
 #endif
