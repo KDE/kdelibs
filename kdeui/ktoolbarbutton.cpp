@@ -36,6 +36,7 @@
 #include <qpopupmenu.h>
 #include <qcursor.h>
 #include <qpainter.h>
+#include <qlayout.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -673,6 +674,7 @@ void KToolBarButton::showMenu()
         p.setY( p.y() - d->m_popup->sizeHint().height() );
     else
         p.setY( p.y() + height( ));
+    if (QApplication::reverseLayout()) p.setX(p.x() -d->m_popup->sizeHint().width() + width() );	
   }
   else
     p = QCursor::pos();
