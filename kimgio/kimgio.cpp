@@ -97,5 +97,4 @@ void kimgioRegister(void)
 	kimgio_init_tiff();
 #endif
       
-      	kimgio_init_krl();
 }
