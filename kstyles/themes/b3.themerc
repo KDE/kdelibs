@@ -1,0 +1,5 @@
+[Misc]
+Name=B3/KDE
+Comment=B3/Modification of B2
+[KDE]
+widgetStyle=b3style.la
