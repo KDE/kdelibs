@@ -1239,7 +1239,7 @@ void KeramikStyle::drawControl( ControlElement element,
 				// Don't leave blank holes if we set NoBackground for the QPopupMenu.
 				// This only happens when the popupMenu spans more than one column.
 				if (! ( widget->erasePixmap() && !widget->erasePixmap()->isNull() ) )
-					p->fillRect( r, cg.background().light( 110 ) );
+					p->fillRect( r, cg.background().light( 105 ) );
 
 				break;
 			}
@@ -1264,7 +1264,7 @@ void KeramikStyle::drawControl( ControlElement element,
 				p->drawPixmap( main.topLeft(), *widget->erasePixmap(), main );
 			// Draw a solid background
 			else
-				p->fillRect( main, cg.background().light( 110 ) );
+				p->fillRect( main, cg.background().light( 105 ) );
 			// Are we a menu item separator?
 
 			if ( mi->isSeparator() )
