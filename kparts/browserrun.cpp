@@ -268,7 +268,8 @@ bool BrowserRun::allowExecution( const QString &serviceType, const KURL &url )
     if ( !url.isLocalFile() ) // Don't permit to execute remote files
         return false;
 
-    return ( KMessageBox::warningYesNo( 0, i18n( "Do you really want to execute '%1'? " ).arg( url.prettyURL() ) ) == KMessageBox::Yes );
+    return ( KMessageBox::warningContinueCancel( 0, i18n( "Do you really want to execute '%1'? " ).arg( url.prettyURL() ),
+    i18n("Execute File?"), i18n("Execute") ) == KMessageBox::Continue );
 }
 
 static QString makeQuestion( const KURL& url, const QString& mimeType, const QString& suggestedFilename )
