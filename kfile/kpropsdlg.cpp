@@ -708,7 +708,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if ( (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
   {
     KIconButton *iconButton = new KIconButton( d->m_frame );
-    iconButton->setFixedSize(50, 50);
+    iconButton->setFixedSize(70, 70);
     iconButton->setStrictIconSize(false);
     iconButton->setIconType(KIcon::Desktop, KIcon::Application);
     // This works for everything except Device icons on unmounted devices
@@ -728,7 +728,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
              this, SIGNAL( changed() ) );
   } else {
     QLabel *iconLabel = new QLabel( d->m_frame );
-    iconLabel->setFixedSize(50, 50);
+    iconLabel->setFixedSize(70, 70);
     iconLabel->setPixmap( DesktopIcon( iconStr ) );
     iconArea = iconLabel;
   }
@@ -2373,7 +2373,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   layout->addMultiCellWidget(sep, 4, 4, 0, 2);
 
   unmounted = new KIconButton( d->m_frame );
-  unmounted->setFixedSize(50, 50);
+  unmounted->setFixedSize(70, 70);
   unmounted->setIconType(KIcon::Desktop, KIcon::Device);
   layout->addWidget(unmounted, 5, 0);
 
