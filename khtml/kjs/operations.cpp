@@ -177,13 +177,9 @@ KJSO *KJS::toObject(KJSO *obj)
   switch (obj->type())
     {
     case Undefined:
-      /* TODO: runtime error */
-      cerr << "KJSO::toObject(): RUNTIME ERROR 1" << endl;
-      exit(1);
+      return new KJSError(ErrUndefToObject, o);
     case Null:
-      /* TODO: Runtime Error */
-      cerr << "KJSO::toObject(): RUNTIME ERROR 2" << endl;
-      exit(1);
+      return new KJSError(ErrNullToObject, o);
     case Boolean:
       o = new KJSBoolean(obj->bVal());
       break;

@@ -1,5 +1,9 @@
 1999-11-07  Harri Porten  <porten@kde.org>
 
+	* return a KJSError object on runtime errors. Until we add some
+	if()'s to catch them our error handling is a bit lazy but it's
+	certainly better than the exit() calls we had before.
+
 	* introduced memory managment based on reference counts
 
 1999-10-29  Harri Porten  <porten@kde.org>

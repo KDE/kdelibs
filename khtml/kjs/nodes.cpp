@@ -156,20 +156,14 @@ KJSO *NewExprNode::evaluate()
   else
     a = 0L;
 
-  if (!v->isObject()) {
-    /* TODO: runtime error */
-    assert(!"NewExprNode::evaluate(): RUNTIME ERROR. Expr is no object");
-  }
-  if (!v->implementsConstruct()) {
-    /* TODO: runtime error */
-    assert(!"NewExprNode::evaluate(): RUNTIME ERROR. No [[Construct]] impl.");
-  }
+  if (!v->isObject())
+    return new KJSError(ErrExprNoObject, this);
+  if (!v->implementsConstruct())
+    return new KJSError(ErrNoConstruct, this);
 
   KJSO *res = v->construct(a);
-  if (!res->isObject()) {
-    /* TODO: runtime error */
-    assert(!"NewExprNode::evaluate(): RUNTIME ERROR. Result is no object.");
-  }
+  if (!res->isObject())
+    return new KJSError(ErrResNoObject, this);
 
   return res;
 }
@@ -184,13 +178,11 @@ KJSO *FunctionCallNode::evaluate()
   Ptr v = e->getValue();
 
   if (!v->isObject()) {
-    /* TODO: Runtime Error */
-    assert(!"FunctionCallNode::evaluate(): Runtime Error I");
+    return new KJSError(ErrFuncNoObject, this);
   }
 
   if (!v->implementsCall()) {
-    /* TODO: Runtime Error */
-    assert(!"FunctionCallNode::evaluate(): Runtime Error II");
+    return new KJSError(ErrFuncNoCall, this);
   }
 
   Ptr o;
@@ -281,14 +273,18 @@ KJSO *ConditionalNode::evaluate()
 KJSO *AssignNode::evaluate()
 {
   Ptr l, e, v;
+  ErrorCode err;
   switch (oper)
     {
     case OpEqual:
       l = left->evaluate();
       e = expr->evaluate();
       v = e->getValue();
-      l->putValue(v);
-      return v.ref();
+      err = l->putValue(v);
+      if (err == ErrOK)
+	return v.ref();
+      else
+	return new KJSError(err, this);
       break;
     default:
       assert(!"AssignNode: unhandled switch case");

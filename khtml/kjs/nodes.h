@@ -38,7 +38,7 @@ public:
   Node();
   virtual ~Node();
   virtual KJSO *evaluate() = 0;
-
+  int lineNo() { return line; }
   static void deleteAllNodes();
 private:
   // disallow assignment and copy-construction

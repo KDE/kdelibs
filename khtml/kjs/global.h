@@ -38,7 +38,8 @@ namespace KJS {
 	      InternalFunction,
 	      DeclaredFunction,
 	      AnonymousFunction,
-	      Activation
+	      Activation,
+	      Error
   };
 
   enum Attribute { None       = 0,
@@ -87,6 +88,19 @@ namespace KJS {
   };
 
   enum FunctionAttribute { ImplicitNone, ImplicitThis, ImplicitParents };
+
+  enum ErrorCode { ErrOK,
+		   ErrUndefToObject,
+		   ErrNullToObject,
+		   ErrFuncNoObject,
+		   ErrFuncNoCall,
+		   ErrBaseIsNull,
+		   ErrNoReference,
+		   ErrBaseNoRef,
+		   ErrExprNoObject,
+		   ErrNoConstruct,
+		   ErrResNoObject
+  };
 
   // XChar2b and QChar compatible character representation
   struct UnicodeChar {

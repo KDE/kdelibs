@@ -39,6 +39,7 @@ union Value {
 class KJSProperty;
 class KJSArgList;
 class KJSParamList;
+class Node;
 class StatementNode;
 
 class KJSO {
@@ -82,7 +83,7 @@ public:
   KJSO *getBase();
   CString getPropertyName();
   KJSO *getValue();
-  void putValue(KJSO *v);
+  ErrorCode putValue(KJSO *v);
 
   // internal value
   bool bVal() { assert(type()==Boolean); return val.b; }
@@ -336,6 +337,16 @@ private:
   CString *param;
 };
 
+class KJSError : public KJSO {
+public:
+  KJSError(ErrorCode e, Node *n);
+  KJSError(ErrorCode e, KJSO *o);
+  Type type() const { return Error; }
+  ErrorCode number() const { return errNo; }
+private:
+  ErrorCode errNo;
+  int line;
+};
 
 };
 

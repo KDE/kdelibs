@@ -131,11 +131,8 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
 // ECMA 8.7.1
 KJSO *KJSO::getBase()
 {
-  if (!isA(Reference)) {
-    /* TODO: runtime error */
-    cerr << "KJSO::getBase(): RUNTIME ERROR" << endl;
-    exit(1);
-  }
+  if (!isA(Reference))
+    return new KJSError(ErrBaseNoRef, this);
 
   return base->ref();
 }
@@ -143,11 +140,11 @@ KJSO *KJSO::getBase()
 // ECMA 8.7.2
 CString KJSO::getPropertyName()
 {
-  if (!isA(Reference)) {
-    /* TODO: runtime error */
-    cerr << "KJSO::getPropertyName(): RUNTIME ERROR" << endl;
-    exit(1);
-  }
+  if (!isA(Reference))
+    // the spec wants a runtime error here. But getValue() and putValue()
+    // will catch this case on their own earlier. When returning a Null
+    // string we should be on the safe side.
+    return CString();
 
   return propname;
 }
@@ -159,28 +156,25 @@ KJSO *KJSO::getValue()
     return this->ref();
   }
   Ptr o = getBase();
-  if (o->isA(Null)) {
-    /* TODO: runtime error */
-    cerr << "KJSO::getValue(): RUNTIME ERROR" << endl;
-    exit(1);
-  }
+  if (o->isA(Null))
+    return new KJSError(ErrBaseIsNull, this);
 
   return o->get(getPropertyName());
 }
 
 // ECMA 8.7.4
-void KJSO::putValue(KJSO *v)
+ErrorCode KJSO::putValue(KJSO *v)
 {
-  if (!isA(Reference)) {
-    /* TODO: runtime error */
-    cerr << "KJSO::putValue(): RUNTIME ERROR" << endl;
-    exit(1);
-  }
+  if (!isA(Reference))
+    return ErrNoReference;
+
   Ptr o = getBase();
   if (o->isA(Null)) {
     KJSWorld::global->put(getPropertyName(), v);
   } else
     o->put(getPropertyName(), v);
+
+  return ErrOK;
 }
 
 KJSReference::KJSReference(KJSO *b, const CString &s)
@@ -458,4 +452,19 @@ KJSO* KJSDeclaredFunction::execute()
 {
  /* TODO */
   return block->evaluate();
+}
+
+KJSError::KJSError(ErrorCode e, Node *n)
+  : errNo(e)
+{
+  line = n ? n->lineNo() : -1;
+
+  cerr << "Runtime error " << (int) e << " at line " << line << endl;
+}
+
+// can we make any use of the object reference ?
+KJSError::KJSError(ErrorCode e, KJSO *)
+  : errNo(e)
+{
+  cerr << "Runtime error " << (int) e << endl;
 }
