@@ -4,7 +4,6 @@
 #include <qpopupmenu.h>
 #include <qstring.h>
 #include <qtimer.h>
-//#include <qwidget.h>
 #include <kaccelbase.h>
 #include <kapplication.h>
 #include <kdebug.h>
@@ -64,10 +63,13 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKey& spec )
 	int nID = ((QAccel*)m_pAccel)->insertItem( keyQt, action.getID() );
 	if( nID != action.getID() )
 		action.setID( nID );
-	if( nID && action.objSlotPtr() )
+	if( nID && action.objSlotPtr() ) {
 		((QAccel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
+		if( !action.isEnabled() )
+			((QAccel*)m_pAccel)->setItemEnabled( nID, false );
+	}
 
-	kdDebug(125) << "KAccelPrivate::connectKey( \"" << action.name() << "\", " << spec.toString() << " = 0x" << QString::number(keyQt,16) << " ): id = " << nID << " m_pObjSlot = " << action.objSlotPtr() << endl;
+	kdDebug(125) << "KAccelPrivate::connectKey( \"" << action.name() << "\", " << spec.toStringInternal() << " = 0x" << QString::number(keyQt,16) << " ): id = " << nID << " m_pObjSlot = " << action.objSlotPtr() << endl;
 	return nID != 0;
 }
 
@@ -78,7 +80,7 @@ bool KAccelPrivate::connectKey( const KKey& spec )
 
 	m_mapIDToSpec[nID] = spec;
 
-	kdDebug(125) << "KAccelPrivate::connectKey( " << spec.toString() << " = 0x" << QString::number(keyQt,16) << " ): id = " << nID << endl;
+	kdDebug(125) << "KAccelPrivate::connectKey( " << spec.toStringInternal() << " = 0x" << QString::number(keyQt,16) << " ): id = " << nID << endl;
 	return nID != 0;
 }
 
@@ -86,7 +88,7 @@ bool KAccelPrivate::disconnectKey( KAccelAction& action, const KKey& spec )
 {
 	QKeySequence key = spec.keyCodeQt();
 	//kdDebug(125) << "KAccelPrivate::disconnectKey( &action = " << &action << " )" << endl;
-	kdDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.name() << "\", " << spec.toString() << " )  m_pObjSlot = " << action.objSlotPtr() << endl;
+	kdDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.name() << "\", " << spec.toStringInternal() << " )  m_pObjSlot = " << action.objSlotPtr() << endl;
 	if( action.getID() && action.objSlotPtr() )
 		return ((QAccel*)m_pAccel)->disconnectItem( action.getID(), action.objSlotPtr(), action.methodSlotPtr() );
 	return true;
@@ -96,7 +98,7 @@ bool KAccelPrivate::disconnectKey( const KKey& spec )
 {
 	QKeySequence key = spec.keyCodeQt();
 	//kdDebug(125) << "KAccelPrivate::disconnectKey( &action = " << &action << " )" << endl;
-	kdDebug(125) << "KAccelPrivate::disconnectKey( " << spec.toString() << " )" << endl;
+	kdDebug(125) << "KAccelPrivate::disconnectKey( " << spec.toStringInternal() << " )" << endl;
 	int id = ((QAccel*)m_pAccel)->findKey( key );
 	return ((QAccel*)m_pAccel)->disconnectItem( id, m_pAccel, SLOT(slotKeyPress(int)) );
 }
@@ -223,29 +225,34 @@ const KShortcut& KAccel::shortcut( const QString& sAction ) const
 
 bool KAccel::setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
-bool KAccel::setEnabled( const QString& sAction, bool bEnabled )
-	{ return d->setActionEnabled( sAction, bEnabled ); }
+
+bool KAccel::setEnabled( const QString& sAction, bool bEnable )
+{
+	kdDebug(125) << "KAccel::setEnabled( " << sAction << ", " << bEnable << " )" << endl;
+	KAccelAction* pAction = d->actionPtr( sAction );
+	if( pAction ) {
+		if( pAction->isEnabled() != bEnable ) {
+			QAccel::setItemEnabled( pAction->getID(), bEnable );
+			pAction->setEnabled( bEnable );
+		}
+		return true;
+	} else
+		return false;
+}
 
 bool KAccel::setShortcut( const QString& sAction, const KShortcut& cut )
 {
-	kdDebug(125) << "KAccel::setShortcuts()" << endl;
+	kdDebug(125) << "KAccel::setShortcut( \"" << sAction << "\", " << cut.toStringInternal() << " )" << endl;
 	KAccelAction* pAction = actions().actionPtr( sAction );
 	if( pAction ) {
-		if( pAction->shortcut() != cut ) {
-			bool bAutoUpdate = d->getAutoUpdate();
-			d->setAutoUpdateTemp( true );
-
-			bool b = d->setShortcut( sAction, cut );
-
-			d->setAutoUpdateTemp( bAutoUpdate );
-			return b;
-		}
+		if( pAction->shortcut() != cut )
+			return d->setShortcut( sAction, cut );
 		return true;
 	}
 	return false;
 }
 
-void KAccel::readSettings( KConfig* pConfig )
+bool KAccel::readSettings( KConfigBase* pConfig )
 {
 	bool bAutoUpdate = d->getAutoUpdate();
 	d->setAutoUpdateTemp( true );
@@ -253,10 +260,11 @@ void KAccel::readSettings( KConfig* pConfig )
 	d->readSettings( pConfig );
 
 	d->setAutoUpdateTemp( bAutoUpdate );
+	return true;
 }
 
-void KAccel::writeSettings( KConfig* pConfig ) const
-	{ d->writeSettings( pConfig ); }
+bool KAccel::writeSettings( KConfigBase* pConfig ) const
+	{ d->writeSettings( pConfig ); return true; }
 
 // for kdegames/ksirtet
 void KAccel::setConfigGroup( const QString& s )

@@ -51,7 +51,6 @@ KAccelAction::KAccelAction()
 	m_bConfigurable = true;
 	m_bEnabled = true;
 	m_nIDAccel = 0;
-	//m_nIDMenu = 0;
 	d->m_nConnections = 0;
 }
 
@@ -89,7 +88,6 @@ void KAccelAction::clear()
 	m_bConfigurable = true;
 	m_bEnabled = true;
 	m_nIDAccel = 0;
-	//m_nIDMenu = 0;
 	d->m_nConnections = 0;
 }
 
@@ -110,14 +108,16 @@ bool KAccelAction::init( const QString& sName, const QString& sLabel, const QStr
 	m_nIDAccel = 0;
 	m_cut = shortcutDefault();
 	d->m_nConnections = 0;
+	if( !m_bEnabled )
+		kdDebug(125) << "KAccelAction::init( \"" << sName << "\" ): created with enabled = false" << endl;
 	return true;
 }
 
 KAccelAction& KAccelAction::operator =( const KAccelAction& action )
 {
 	m_sName          = action.m_sName;
-	m_sLabel          = action.m_sLabel;
-	m_sWhatsThis          = action.m_sWhatsThis;
+	m_sLabel         = action.m_sLabel;
+	m_sWhatsThis     = action.m_sWhatsThis;
 	m_cutDefault3    = action.m_cutDefault3;
 	m_cutDefault4    = action.m_cutDefault4;
 	m_pObjSlot       = action.m_pObjSlot;
@@ -125,7 +125,6 @@ KAccelAction& KAccelAction::operator =( const KAccelAction& action )
 	m_bConfigurable  = action.m_bConfigurable;
 	m_bEnabled       = action.m_bEnabled;
 	m_nIDAccel       = action.m_nIDAccel;
-	//m_nIDMenu        = action.m_nIDMenu;
 	m_cut            = action.m_cut;
 	d->m_nConnections = action.d->m_nConnections;
 
@@ -161,39 +160,9 @@ void KAccelAction::setConfigurable( bool b )
 void KAccelAction::setEnabled( bool b )
 	{ m_bEnabled = b; }
 
-/*KKeySequence& KAccelAction::key( uint iShortcut, uint iSequence, uint iKey )
-{
-	if( iShortcut < count() ) {
-		KAccelShortcut& cut = m_cut[i];
-		if( iSequence < cut.count() ) {
-			KAccelSequence& seq = cut.m_rgSequences[iSequence];
-			if( iKey < seq.count() ) {
-				return Keys
-			}
-	}
-}*/
-
 const KKeySequence& KAccelAction::seq( uint i ) const
 	{ return m_cut.seq( i ); }
 	//{ return (i < count()) ? m_cut[i] : KKeySequence(); }
-
-/*KKeySequences KAccelAction::keyList()
-{
-	KKeySequences keys;
-
-	for( KShortcut::iterator itShortcut = m_cut.begin(); itShortcut != m_cut.end(); ++itShortcut ) {
-		KKeySequence& shortcut = *itShortcut;
-		if( shortcut.count() > 0 ) {
-			// First key of any sequence (Ctrl+X in Ctrl+X,I)
-			KAccelSequence& seq = shortcut.front();
-			// All variations on that key
-			for( KKeySequences::iterator itKey = seq.begin(); itKey != seq.end(); ++itKey )
-				keys.push_back( *itKey );
-		}
-	}
-
-	return keys;
-}*/
 
 QString KAccelAction::toString() const
 	{ return m_cut.toString(); }
@@ -395,12 +364,12 @@ void KAccelActions::updateShortcuts( KAccelActions& actions2 )
 		if( pAction && pAction->m_bConfigurable ) {
 			KAccelAction* pAction2 = actions2.actionPtr( pAction->m_sName );
 			if( pAction2 ) {
-				QString sOld( pAction->m_cut.toString() );
+				QString sOld = pAction->m_cut.toStringInternal();
 				pAction->m_cut = pAction2->m_cut;
 				kdDebug(125) << "\t" << pAction->m_sName
 					<< " found: " << sOld
-					<< " => " << pAction2->m_cut.toString()
-					<< " = " << pAction->m_cut.toString() << endl;
+					<< " => " << pAction2->m_cut.toStringInternal()
+					<< " = " << pAction->m_cut.toStringInternal() << endl;
 				bChanged = true;
 			}
 		}
@@ -447,7 +416,7 @@ KAccelAction* KAccelActions::actionPtr( KKeySequence cut )
 {
 	for( uint i = 0; i < m_nSize; i++ ) {
 		if( m_prgActions[i] == 0 )
-			kdWarning(125) << "KAccelActions::actionPtr( " << cut.toString() << " ): encountered null pointer at m_prgActions[" << i << "]" << endl;
+			kdWarning(125) << "KAccelActions::actionPtr( " << cut.toStringInternal() << " ): encountered null pointer at m_prgActions[" << i << "]" << endl;
 		else if( m_prgActions[i]->contains( cut ) )
 			return m_prgActions[i];
 	}
@@ -505,7 +474,7 @@ KAccelAction* KAccelActions::insert( const QString& sAction, const QString& sLab
 
 bool KAccelActions::remove( const QString& sAction )
 {
-	kdDebug(125) << "KAccelActions::removeAction( \"" << sAction << "\" ): this = " << this << " m_pKAccelBase = " << m_pKAccelBase << endl;
+	kdDebug(125) << "KAccelActions::remove( \"" << sAction << "\" ): this = " << this << " m_pKAccelBase = " << m_pKAccelBase << endl;
 
 	int iAction = actionIndex( sAction );
 	if( iAction < 0 )
@@ -522,29 +491,17 @@ bool KAccelActions::remove( const QString& sAction )
 	return true;
 }
 
-void KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConfig )
+bool KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConfig )
 {
-	kdDebug(125) << "readActions( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
+	kdDebug(125) << "KAccelActions::readActions( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
 	if( !pConfig )
 		pConfig = KGlobal::config();
+	// If the config file still has the old group name:
 	if( sConfigGroup == "Shortcuts" && pConfig->hasGroup( "Keys" ) ) {
 		readActions( "Keys", pConfig );
 		pConfig->deleteGroup( "Keys" );
 	}
 	KConfigGroupSaver cgs( pConfig, sConfigGroup );
-
-	/*QMap<QString, QString> mapEntry = pConfig->entryMap( sConfigGroup );
-	QMap<QString, QString>::Iterator it( mapEntry.begin() );
-	for( uint i = 0; it != mapEntry.end(); ++it, i++ ) {
-		QString sShortcuts = *it;
-		kdDebug(125) << "\t" << it.key() << " = " << sShortcuts << endl;
-	}
-
-	kdDebug(125) << "--------------" << endl;
-	for( uint i = 0; i < m_nSize; i++ ) {
-		KAccelAction* pAction = m_prgActions[i];
-		kdDebug(125) << pAction->m_sName << " bConfigurable = " << pAction->m_bConfigurable << endl;
-	}*/
 
 	for( uint i = 0; i < m_nSize; i++ ) {
 		if( m_prgActions[i] == 0 ) {
@@ -566,7 +523,8 @@ void KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConf
 	}
 
 	emitKeycodeChanged();
-	kdDebug(125) << "readActions done" << endl;
+	kdDebug(125) << "KAccelActions::readActions done" << endl;
+	return true;
 }
 
 /*
@@ -582,11 +540,12 @@ void KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConf
 				1) KKeySequence = Alt+F2
 	-> "Something=Meta+X,Asterisk;Alt+F2"
 */
-void KAccelActions::writeActions( const QString &sGroup, KConfig *config,
+bool KAccelActions::writeActions( const QString &sGroup, KConfigBase* pConfig,
 			bool bWriteAll, bool bGlobal ) const
 {
-	kdDebug(125) << "KAccelActions::writeActions( " << sGroup << ", " << config << ", " << bWriteAll << ", " << bGlobal << " )" << endl;
-	KConfig *pConfig = config ? config : KGlobal::config();
+	kdDebug(125) << "KAccelActions::writeActions( " << sGroup << ", " << pConfig << ", " << bWriteAll << ", " << bGlobal << " )" << endl;
+	if( !pConfig )
+		pConfig = KGlobal::config();
 	KConfigGroupSaver cs( pConfig, sGroup );
 
 	for( uint i = 0; i < m_nSize; i++ ) {
@@ -630,6 +589,7 @@ void KAccelActions::writeActions( const QString &sGroup, KConfig *config,
 	}
 
 	pConfig->sync();
+	return true;
 }
 
 void KAccelActions::emitKeycodeChanged()
@@ -641,3 +601,26 @@ void KAccelActions::emitKeycodeChanged()
 uint KAccelActions::count() const
 	{ return m_nSize; }
 
+//---------------------------------------------------------------------
+// KAccelShortcutSet
+//---------------------------------------------------------------------
+
+KAccelShortcutSet::KAccelShortcutSet( KAccelActions& actions )
+: m_actions( actions )
+	{ }
+KAccelShortcutSet::~KAccelShortcutSet()
+	{ }
+uint KAccelShortcutSet::count() const
+	{ return m_actions.count(); }
+int KAccelShortcutSet::index( const QString& sName ) const
+	{ return m_actions.actionIndex( sName ); }
+const QString& KAccelShortcutSet::name( uint i ) const
+	{ return m_actions.actionPtr(i)->name(); }
+const KShortcut& KAccelShortcutSet::shortcut( uint i ) const
+	{ return m_actions.actionPtr(i)->shortcut(); }
+const KShortcut& KAccelShortcutSet::shortcutDefault( uint i ) const
+	{ return m_actions.actionPtr(i)->shortcut(); }
+bool KAccelShortcutSet::isConfigurable( uint i ) const
+	{ return m_actions.actionPtr(i)->isConfigurable(); }
+bool KAccelShortcutSet::setShortcut( uint i, const KShortcut& cut )
+	{ return m_actions.actionPtr(i)->setShortcut( cut ); }

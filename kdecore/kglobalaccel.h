@@ -93,13 +93,13 @@ class KGlobalAccel : public QObject
 	 * is zero) from the application's configuration file
 	 * @ref KGlobal::config().
 	 */
-	void readSettings( KConfig* pConfig = 0 );
+	void readSettings( KConfigBase* pConfig = 0 );
 	/**
 	 * Write the current shortcuts to @p pConfig,
 	 * or (if @p pConfig is zero) to the application's
 	 * configuration file.
 	 */
-	void writeSettings( KConfig* pConfig = 0 ) const;
+	void writeSettings( KConfigBase* pConfig = 0 ) const;
 
  private:
 	class KGlobalAccelPrivate* d;

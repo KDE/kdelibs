@@ -68,9 +68,9 @@ bool KGlobalAccel::setShortcut( const QString& sAction, const KShortcut& cut )
 bool KGlobalAccel::setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 	{ return d->setActionSlot( sAction, pObjSlot, psMethodSlot ); }
 
-void KGlobalAccel::readSettings( KConfig* pConfig )
+void KGlobalAccel::readSettings( KConfigBase* pConfig )
 	{ d->readSettings( pConfig ); }
-void KGlobalAccel::writeSettings( KConfig* pConfig ) const
+void KGlobalAccel::writeSettings( KConfigBase* pConfig ) const
 	{ d->writeSettings( pConfig ); }
 
 #include <kglobalaccel.moc>

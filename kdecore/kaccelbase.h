@@ -171,14 +171,14 @@ class KAccelBase
 	 * The group in which the configuration is stored can be
 	 * set with @ref setConfigGroup().
 	 */
-	void readSettings( KConfig* pConfig = 0 );
+	void readSettings( KConfigBase* pConfig = 0 );
 
 	/**
 	 * Write the current configurable associations to @p config,
          * or (if @p config is zero) to the application's
 	 * configuration file.
 	 */
-	void writeSettings( KConfig* pConfig = 0 ) const;
+	void writeSettings( KConfigBase* pConfig = 0 ) const;
 
 	QPopupMenu* createPopupMenu( QWidget* pParent, const KKeySequence& );
 

@@ -40,7 +40,7 @@ class KConfig;
  * A @ref KAccel contains a list of @ref KAccelAction objects.
  *
  * For example, CTRL+Key_P could be a shortcut for printing a document. The key
- * codes are listed in qkeycode.h. "Print" could be the action name for printing.
+ * codes are listed in qnamespace.h. "Print" could be the action name for printing.
  * The action name identifies the shortcut in configuration files and the
  * @ref KKeyChooser GUI.
  *
@@ -185,13 +185,13 @@ class KAccel : public QAccel
 	 * The group in which the configuration is stored can be
 	 * set with @ref setConfigGroup().
 	 */
-	void readSettings( KConfig* pConfig = 0 );
+	bool readSettings( KConfigBase* pConfig = 0 );
 	/**
 	 * Write the current shortcuts to @p pConfig,
 	 * or (if @p pConfig is zero) to the application's
 	 * configuration file.
 	 */
-	void writeSettings( KConfig* pConfig = 0 ) const;
+	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 	void setConfigGroup( const QString& );
 
 	void emitKeycodeChanged();

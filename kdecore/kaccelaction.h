@@ -120,16 +120,14 @@ class KAccelAction
 	QString m_sName,
 	        m_sLabel,
 	        m_sWhatsThis;
+	KShortcut m_cut;
 	KShortcut m_cutDefault3, m_cutDefault4;
 	const QObject* m_pObjSlot;
 	const char* m_psMethodSlot;
-
 	bool m_bConfigurable,
 	     m_bEnabled;
-
 	int m_nIDAccel;
-
-	KShortcut m_cut;
+	uint m_nConnections;
 
 	void incConnections();
 	void decConnections();
@@ -167,15 +165,15 @@ class KAccelActions
 	const KAccelAction& operator []( uint ) const;
 
 	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
-	                 const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
-	                 const QObject* pObjSlot = 0, const char* psMethodSlot = 0,
-	                 bool bConfigurable = true, bool bEnabled = true );
+			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
+			const QObject* pObjSlot = 0, const char* psMethodSlot = 0,
+			bool bConfigurable = true, bool bEnabled = true );
 	KAccelAction* insert( const QString& sName, const QString& sLabel );
 	bool remove( const QString& sAction );
 
-	void readActions( const QString& sConfigGroup, KConfigBase* pConfig = 0 );
-        void writeActions( const QString& sGroup, KConfig *config = 0,
-	                   bool bWriteAll = false, bool bGlobal = false ) const;
+	bool readActions( const QString& sConfigGroup = "Shortcuts", KConfigBase* pConfig = 0 );
+	bool writeActions( const QString& sConfigGroup = "Shortcuts", KConfigBase* pConfig = 0,
+			bool bWriteAll = false, bool bGlobal = false ) const;
 
 	void emitKeycodeChanged();
 
@@ -197,6 +195,27 @@ class KAccelActions
 	KAccelActions& operator =( KAccelActions& );
 
 	friend class KAccelBase;
+};
+
+class KAccelShortcutSet : public KShortcutSet
+{
+ public:
+	KAccelShortcutSet( KAccelActions& );
+	virtual ~KAccelShortcutSet();
+
+	virtual uint count() const;
+	virtual int index( const QString& sName ) const;
+	virtual const QString& name( uint ) const;
+	virtual const KShortcut& shortcut( uint ) const;
+	virtual const KShortcut& shortcutDefault( uint ) const;
+	virtual bool isConfigurable( uint ) const;
+	virtual bool setShortcut( uint, const KShortcut& );
+
+ protected:
+	KAccelActions& m_actions;
+
+ private:
+	class KAccelShortcutSetPrivate* d;
 };
 
 #endif // _KACCELACTION_H

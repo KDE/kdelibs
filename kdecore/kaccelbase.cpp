@@ -67,11 +67,11 @@ KAccelAction* KAccelBase::actionPtr( const QString& sAction )
 const KAccelAction* KAccelBase::actionPtr( const QString& sAction ) const
 	{ return m_rgActions.actionPtr( sAction ); }
 
-KAccelAction* KAccelBase::actionPtr( const KKey& spec )
+KAccelAction* KAccelBase::actionPtr( const KKey& key )
 {
-	if( !m_mapKeyToAction.contains( spec ) )
+	if( !m_mapKeyToAction.contains( key ) )
 		return 0;
-	return m_mapKeyToAction[spec].pAction;
+	return m_mapKeyToAction[key].pAction;
 }
 
 void KAccelBase::setConfigGroup( const QString& sConfigGroup )
@@ -88,6 +88,7 @@ bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 			kdDebug(125) << "KAccelBase::setActionEnabled( " << sAction << ", " << bEnable << " )" << endl;
 			pAction->m_bEnabled = bEnable;
 			if( m_bAutoUpdate ) {
+				// FIXME: the action may already have it's connections inserted!
 				if( bEnable )
 					insertConnection( *pAction );
 				else if( pAction->isConnected() )
@@ -109,6 +110,7 @@ bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 
 bool KAccelBase::setAutoUpdate( bool bAuto )
 {
+	kdDebug(125) << "KAccelBase::setAutoUpdate( " << bAuto << " ): m_bAutoUpdate on entrance = " << m_bAutoUpdate << endl;
 	bool b = m_bAutoUpdate;
 	if( !m_bAutoUpdate && bAuto )
 		updateConnections();
@@ -153,7 +155,6 @@ void KAccelBase::slotRemoveAction( KAccelAction* pAction )
 	removeConnection( *pAction );
 }
 
-// BCI: make virtual ASAP, and then make changes to KAccel::connectItem() ???
 bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 {
 	kdDebug(125) << "KAccelBase::setActionSlot()\n";
@@ -176,30 +177,6 @@ bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot,
 	} else
 		return false;
 }
-
-/*bool KAccelBase::removeItem( const QString& sAction )
-{
-	KAccelActions::iterator it = actionIterator( sAction );
-	if( it != m_rgActions.end() ) {
-		KAccelAction& action = *it;
-		QAccel::disconnectItem( action.m_nIDAccel, action.m_pObjSlot, action.m_psMethodSlot );
-		QAccel::removeItem( action.m_nIDAccel );
-		m_rgActions.erase( it );
-		return true;
-	} else
-		return false;
-}*/
-
-/*bool KAccelBase::setItemEnabled( const QString& sAction, bool bActivate )
-{
-	KAccelAction* pAction = actionPtr( sAction );
-	if( pAction ) {
-		QAccel::setItemEnabled( pAction->m_nIDAccel, bActivate );
-		pAction->m_bEnabled = bActivate;
-		return true;
-	} else
-		return false;
-}*/
 
 /*
 KAccelBase
@@ -232,8 +209,6 @@ check for conflicts with implicit keys
 	disconnect conflicting implicit keys
 connect new key sequences
 */
-// Check for double assignments
-// Check for conflicts with implicit keys
 /*
 {
 	For {
@@ -270,15 +245,15 @@ connect new key sequences
 struct X
 {
 	uint iAction, iSeq, iVari;
-	KKey spec;
+	KKey key;
 
 	X() {}
-	X( uint _iAction, uint _iSeq, uint _iVari, const KKey& _spec )
-		{ iAction = _iAction; iSeq = _iSeq; iVari = _iVari; spec = _spec; }
+	X( uint _iAction, uint _iSeq, uint _iVari, const KKey& _key )
+		{ iAction = _iAction; iSeq = _iSeq; iVari = _iVari; key = _key; }
 
 	int compare( const X& x )
 	{
-		int n = spec.compare( x.spec );
+		int n = key.compare( x.key );
 		if( n != 0 )           return n;
 		if( iVari != x.iVari ) return iVari - x.iVari;
 		if( iSeq != x.iSeq )   return iSeq - x.iSeq;
@@ -343,7 +318,7 @@ bool KAccelBase::updateConnections()
 	KKeyToActionMap mapKeyToAction;
 	for( uint i = 0; i < rgKeys.size(); i++ ) {
 		X& x = rgKeys[i];
-		KKey& spec = x.spec;
+		KKey& key = x.key;
 		ActionInfo info;
 		bool bMultiKey = false;
 
@@ -355,8 +330,8 @@ bool KAccelBase::updateConnections()
 		if( info.pAction->shortcut().seq(info.iSeq).count() > 1 )
 			bMultiKey = true;
 		// If this key is requested by more than one action,
-		else if( i < rgKeys.size() - 1 && spec == rgKeys[i+1].spec ) {
-			kdDebug(125) << "spec = " << spec.toString()
+		else if( i < rgKeys.size() - 1 && key == rgKeys[i+1].key ) {
+			kdDebug(125) << "key = " << key.toString()
 				<< " action1 = " << info.pAction->name()
 				<< " action2 = " << m_rgActions.actionPtr( rgKeys[i+1].iAction )->name() << endl;
 			// If multiple actions requesting this key
@@ -365,35 +340,36 @@ bool KAccelBase::updateConnections()
 				bMultiKey = true;
 
 			// Skip over the other records with this same key.
-			while( i < rgKeys.size() - 1 && spec == rgKeys[i+1].spec )
+			while( i < rgKeys.size() - 1 && key == rgKeys[i+1].key )
 				i++;
 		}
 
 		if( bMultiKey ) {
 			// Remove connection to single action if there is one
-			KAccelAction* pAction = actionPtr( spec );
+			KAccelAction* pAction = actionPtr( key );
 			if( pAction ) {
-				m_mapKeyToAction.remove( spec );
-				disconnectKey( *pAction, spec );
+				m_mapKeyToAction.remove( key );
+				disconnectKey( *pAction, key );
 				pAction->decConnections();
 			}
 			// Indicate that no single action is associated with this key.
 			info.pAction = 0;
 		}
 
-		mapKeyToAction[spec] = info;
+		kdDebug(125) << "mapKeyToAction[" << key.toStringInternal() << "] = " << info.pAction << endl;
+		mapKeyToAction[key] = info;
 	}
 
 	// Disconnect keys which no longer have bindings:
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
-		const KKey& spec = it.key();
-		if( !mapKeyToAction.contains( spec ) ) {
+		const KKey& key = it.key();
+		if( !mapKeyToAction.contains( key ) ) {
 			KAccelAction* pAction = (*it).pAction;
 			if( pAction ) {
-				disconnectKey( *pAction, spec );
+				disconnectKey( *pAction, key );
 				pAction->decConnections();
 			} else
-				disconnectKey( spec );
+				disconnectKey( key );
 		}
 	}
 
@@ -427,6 +403,7 @@ bool KAccelBase::updateConnections()
 // Construct a list of keys to be connected, sorted highest priority first.
 void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 {
+	kdDebug(125) << "KAccelBase::createKeyList()" << endl;
 	if( !m_bEnabled )
 		return;
 
@@ -434,16 +411,20 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 	// For each action
 	for( uint iAction = 0; iAction < m_rgActions.count(); iAction++ ) {
 		KAccelAction* pAction = m_rgActions.actionPtr( iAction );
-		if( pAction && pAction->m_bEnabled && pAction->m_pObjSlot && pAction->m_psMethodSlot ) {
+		if( pAction && pAction->m_pObjSlot && pAction->m_psMethodSlot ) {
 			// For each key sequence associated with action
 			for( uint iSeq = 0; iSeq < pAction->sequenceCount(); iSeq++ ) {
 				const KKeySequence& seq = pAction->seq(iSeq);
 				if( seq.count() > 0 ) {
 					KKeyNative::Variations vars;
 					vars.init( seq.key(0), !m_bNativeKeys );
-					for( uint iVari = 0; iVari < vars.count(); iVari++ )
+					for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
 						rgKeys.push_back( X( iAction, iSeq, iVari, vars.key( iVari ) ) );
+						kdDebug(125) << "\t" << pAction->name() << ": " << vars.key(iVari).toStringInternal() << endl;
+					}
 				}
+				else
+					kdDebug(125) << "\t*" << pAction->name() << ":" << endl;
 			}
 		}
 	}
@@ -457,7 +438,7 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 	if( !action.m_bEnabled || !action.m_pObjSlot || !action.m_psMethodSlot )
 		return true;
 
-	kdDebug(125) << "KAccelBase::insertConnection( " << &action << "=\"" << action.m_sName << "\"; shortcut = " << action.shortcut().toString() << " )  this = " << this << endl;
+	kdDebug(125) << "KAccelBase::insertConnection( " << &action << "=\"" << action.m_sName << "\"; shortcut = " << action.shortcut().toStringInternal() << " )  this = " << this << endl;
 
 	// For each sequence associated with the given action:
 	for( uint iSeq = 0; iSeq < action.sequenceCount(); iSeq++ ) {
@@ -553,14 +534,14 @@ bool KAccelBase::setShortcut( const QString& sAction, const KShortcut& cut )
 		return false;
 }
 
-void KAccelBase::readSettings( KConfig* pConfig )
+void KAccelBase::readSettings( KConfigBase* pConfig )
 {
 	m_rgActions.readActions( m_sConfigGroup, pConfig );
 	if( m_bAutoUpdate )
 		updateConnections();
 }
 
-void KAccelBase::writeSettings( KConfig* pConfig ) const
+void KAccelBase::writeSettings( KConfigBase* pConfig ) const
 {
 	m_rgActions.writeActions( m_sConfigGroup, pConfig, m_bConfigIsGlobal, m_bConfigIsGlobal );
 }
