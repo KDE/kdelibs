@@ -254,7 +254,7 @@ void MidiOut::channelMute(uchar chn, int a)
 void MidiOut::seqbuf_dump (void)
 {
 #ifdef HAVE_OSS_SUPPORT
-  if (_seqbufptr && seqfd!=-1 && seqfd!=0) 
+  if (_seqbufptr && seqfd!=-1 && seqfd!=0)
     if (write (seqfd, _seqbuf, _seqbufptr) == -1)
     {
       printfdebug("Error writing to /dev/sequencer in MidiOut::seq_buf_dump\n");
@@ -293,8 +293,10 @@ const char * MidiOut::deviceName(void) const
 
 void MidiOut::sync(int i)
 {
-  if (deviceType()==KMID_ALSA)  // XXX : sync should be virtual after next bic
-     return reinterpret_cast<AlsaOut *>(this)->sync(i);
+  if (deviceType()==KMID_ALSA) { // XXX : sync should be virtual after next bic
+     reinterpret_cast<AlsaOut *>(this)->sync(i);
+     return;
+  }
   SEQ_DUMPBUF();
   printf("MidiOut::sync\n");
 }
