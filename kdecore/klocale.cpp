@@ -613,7 +613,8 @@ QString KLocale::formatNumber(double num, int precision) const
     if (pos == -1) pos = res.length();
     else res.replace(pos, 1, decimalSymbol());
 
-    while (0 < (pos -= 3))
+    if (pos > 4)
+      while (0 < (pos -= 3))
         res.insert(pos, thousandsSeparator()); // thousend sep
 
     // How can we know where we should put the sign?
