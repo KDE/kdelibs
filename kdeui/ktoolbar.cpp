@@ -45,6 +45,9 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.56  1998/04/23 16:08:56  radej
+// Fixed a bug reported by Thomas Tanghus
+//
 // Revision 1.54  1998/04/21 20:37:03  radej
 // Added insertWidget and some reorganisation - BINARY INCOMPATIBLE
 //
@@ -276,7 +279,7 @@ void KToolBarButton::makeDisabledPixmap()
   icontext=config->readNumEntry("IconText", 0);
 void KToolBarButton::paletteChange(const QPalette &)
 {
-  if(ImASeparator)  {
+  if(ImASeparator())  {
     makeDisabledPixmap();
     if ( !isEnabled() ) 
       QButton::setPixmap( disabledPixmap );
