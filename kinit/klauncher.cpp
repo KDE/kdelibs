@@ -820,12 +820,8 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
    request->status = KLaunchRequest::Launching;
    request->transaction = 0; // No confirmation is send
    request->envs = envs;
-   // Find service, if any
-   KService::Ptr service = 0;
-   if (name[0] == '/') // Full path
-      service = new KService(name);
-   else
-      service = KService::serviceByDesktopName(name);
+   // Find service, if any - strip path if needed
+   KService::Ptr service = KService::serviceByDesktopName( name.mid( name.findRev( '/' ) + 1 ));
    if (service != NULL)
        send_service_startup_info( request,  service,
            startup_id, QValueList< QCString >());
