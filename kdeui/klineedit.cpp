@@ -9,9 +9,10 @@
    Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   modify it under the terms of the GNU Lesser General Public
+   License (LGPL) as published by the Free Software Foundation;
+   either version 2 of the License, or (at your option) any later
+   version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -207,6 +208,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 int len = txt.length();
                 if ( !hasMarkedText() && len && cursorPosition() == len )
                 {
+                    kdDebug() << "Automatic Completion" << endl;
                     if ( emitSignals() )
                         emit completion( txt );
                     if ( handleSignals() )
@@ -228,6 +230,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                  (!keycode.isNull() && keycode.unicode()->isPrint()) ||
                  e->key() == Key_BackSpace )
             {
+                kdDebug() << "Popup Completion" << endl;
                 if ( emitSignals() )
                     emit completion( txt ); // emit when requested...
                 if ( handleSignals() )
@@ -249,6 +252,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 int len = txt.length();
                 if ( cursorPosition() == len && len != 0 )
                 {
+                    kdDebug() << "Shell Completion" << endl;
                     if ( emitSignals() )
                         emit completion( txt );
                     if ( handleSignals() )
@@ -414,7 +418,6 @@ void KLineEdit::dropEvent(QDropEvent *e)
         QLineEdit::dropEvent(e);
 }
 
-
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 {
     if( o == this )
@@ -426,14 +429,14 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 
             if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
             {
-		emit QLineEdit::returnPressed();
-		emit returnPressed( displayText() );
+                emit QLineEdit::returnPressed();
+                emit returnPressed( displayText() );
 
                 bool trap = d->completionBox && d->completionBox->isVisible();
-		if ( trap )
-		    d->completionBox->hide();
-		
-		// don't go to QLineEdit::eventFilter!
+                if ( trap )
+                    d->completionBox->hide();
+
+                // don't go to QLineEdit::eventFilter!
                 return d->grabReturnKeyEvents || trap;
             }
         }
@@ -475,8 +478,12 @@ void KLineEdit::makeCompletionBox()
     d->completionBox = new KCompletionBox( this, "completion box" );
 
     if ( handleSignals() )
-        connect( d->completionBox, SIGNAL( highlighted( const QString& )),
-                 SLOT( setText( const QString& )));
+    {
+        connect( d->completionBox, SIGNAL(highlighted( const QString& )),
+                 SLOT(setText( const QString& )));
+        connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
+                 SLOT(setText( const QString& )));
+    }
 }
 
 // FIXME: make pure virtual in KCompletionBase!
@@ -492,6 +499,8 @@ void KLineEdit::setCompletedItems( const QStringList& items )
             if ( !d->completionBox )
                 makeCompletionBox();
 
+            if ( !txt.isEmpty() )
+                d->completionBox->setCancelledText( txt );
             d->completionBox->clear();
             d->completionBox->insertStringList( items );
             d->completionBox->popup();
@@ -519,14 +528,14 @@ KCompletionBox * KLineEdit::completionBox()
 KCompletionBox * KLineEdit::completionBox( bool create )
 {
     if ( create )
-	makeCompletionBox();
-	
+        makeCompletionBox();
+
     return d->completionBox;
 }
 
 void KLineEdit::setCompletionObject( KCompletion* comp, bool hsig )
 {
-    KCompletion *oldComp = completionObject( false, false ); // don't create!
+    KCompletion *oldComp = compObj();
     if ( oldComp && handleSignals() )
         disconnect( oldComp, SIGNAL( matches( const QStringList& )),
                     this, SLOT( setCompletedItems( const QStringList& )));

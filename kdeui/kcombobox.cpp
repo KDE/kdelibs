@@ -5,7 +5,7 @@
                  2000 Stefan Schimanski <1Stein@gmx.de>
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License (LGPL) as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
@@ -235,8 +235,8 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
               type == KCompletionBase::NextCompletionMatch ) )
         {
             QString input = ( type == KCompletionBase::PrevCompletionMatch ) ? comp->previousMatch() : comp->nextMatch();
-           // Ignore rotating to the same text
-           if( input.isNull() || input == currentText() )
+            // Ignore rotating to the same text
+            if( input.isNull() || input == currentText() )
                return;
 
             bool marked = lineEdit()->hasMarkedText();
@@ -269,6 +269,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 int len = txt.length();
                 if (!edit->hasMarkedText() && len && cursorPosition() ==len)
                 {
+                    kdDebug() << "Automatic Completion" << endl;
                     if ( emitSignals() )
                         emit completion( txt ); // emit when requested...
                     if ( handleSignals() )
@@ -286,6 +287,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             if ( !e->text().isNull() && key != Key_Escape &&
                  key != Key_Return && key != Key_Enter )
             {
+                kdDebug() << "Popup Completion" << endl;
                 if ( emitSignals() )
                     emit completion( txt ); // emit when requested...
                 if ( handleSignals() )
@@ -303,8 +305,10 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 // the current text is not the same as the previous and the
                 // cursor is at the end of the string.
                 QString txt = currentText();
-                if ( edit->cursorPosition() == (int) txt.length() )
+                int len = txt.length();
+                if ( edit->cursorPosition() == len && len != 0 )
                 {
+                    kdDebug() << "Shell Completion" << endl;
                     if ( emitSignals() )
                         emit completion( txt ); // emit when requested...
                     if ( handleSignals() )
@@ -383,15 +387,14 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 return true;
             }
 
-            
+
             if ( e->key() == Key_Return || e->key() == Key_Enter)
             {
                 // On Return pressed event, emit both
                 // returnPressed(const QString&) and returnPressed() signals
                 emit returnPressed();
                 emit returnPressed( currentText() );
-
-		if ( d->completionBox && d->completionBox->isVisible() )
+                if ( d->completionBox && d->completionBox->isVisible() )
                     d->completionBox->hide();
 
                 return m_trapReturnKey;
@@ -421,7 +424,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 if ( !d->hasReference ) {
                     delete d->popupMenu;
                     d->popupMenu = 0L;
-		}
+                }
 
                 if ( result == Cut )
                     edit->cut();
@@ -571,6 +574,8 @@ void KComboBox::makeCompletionBox()
     if ( handleSignals() ) {
         connect( d->completionBox, SIGNAL( highlighted( const QString& )),
                  SLOT( setEditText( const QString& )));
+        connect( d->completionBox, SIGNAL( userCancelled( const QString& )),
+                 SLOT( setEditText( const QString& )));
         connect( d->completionBox, SIGNAL( activated( const QString& )),
                  SIGNAL( activated( const QString & )));
     }
@@ -589,6 +594,8 @@ void KComboBox::setCompletedItems( const QStringList& items )
             if ( !d->completionBox )
                 makeCompletionBox();
 
+            if ( !txt.isEmpty() )
+              d->completionBox->setCancelledText( txt );
             d->completionBox->clear();
             d->completionBox->insertStringList( items );
             d->completionBox->popup();
@@ -623,8 +630,7 @@ KCompletionBox * KComboBox::completionBox( bool create )
 
 void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
 {
-    KCompletion *oldComp = completionObject( false, false ); // don't create!
-
+    KCompletion *oldComp = compObj();
     if ( oldComp && handleSignals() )
       disconnect( oldComp, SIGNAL( matches( const QStringList& )),
                   this, SLOT( setCompletedItems( const QStringList& )));
