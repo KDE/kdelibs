@@ -62,6 +62,8 @@ KSSLCertificate::~KSSLCertificate() {
 }
 
 
+#define OPENSSL_free Free
+
 QString KSSLCertificate::getSubject() const {
 QString rc = "";
 
@@ -71,7 +73,6 @@ QString rc = "";
   rc = t;
   Free(t);    // NOTE - _Free_  *NOT*  _free_
 #endif
-
 return rc;
 }
 
