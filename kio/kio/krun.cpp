@@ -383,7 +383,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   // Check if we need kioexec
   if( !mx1.hasUrls ) {
     for( KURL::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it )
-      if ( !(*it).isLocalFile() ) {
+      if ( !(*it).isLocalFile() && !KProtocolInfo::isHelperProtocol(*it) ) {
         // We need to run the app through kioexec
         result << "kioexec" << exec;
         result += _urls.toStringList();
@@ -794,6 +794,11 @@ void KRun::init()
     if (exec.isEmpty())
     {
        exec = KProtocolInfo::exec( m_strURL.protocol() );
+       if (exec.isEmpty())
+       {
+          foundMimeType(KProtocolInfo::defaultMimetype(m_strURL));
+          return;
+       }
        run( exec, urls );
        ok = true;
     }
