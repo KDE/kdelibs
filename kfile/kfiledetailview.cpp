@@ -154,7 +154,7 @@ bool KFileDetailView::isSelected( const KFileViewItem *i ) const
     if ( !i )
 	return false;
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
-    return item->isSelected();
+    return (item && item->isSelected());
 }
 
 
