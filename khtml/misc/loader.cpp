@@ -463,7 +463,7 @@ CachedImage::~CachedImage()
 void CachedImage::ref( CachedObjectClient *c )
 {
 #ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") " << endl;
+    kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") pixmap.isNull()=" << pixmap().isNull() << " valid_rect.isNull()=" << valid_rect().isNull()<< " status=" << m_status << endl;
 #endif
 
     // make sure we don't get it twice...
@@ -814,6 +814,17 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         m_size = s.width() * s.height() * 2;
     }
 }
+
+void CachedImage::finish()
+{
+    Status oldStatus = m_status;
+    CachedObject::finish();
+    if ( oldStatus != m_status ) {
+	const QPixmap &pm = pixmap();
+	do_notify( pm, pm.rect() );
+    }
+}
+
 
 void CachedImage::error( int /*err*/, const char */*text*/ )
 {

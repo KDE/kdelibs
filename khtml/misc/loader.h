@@ -138,7 +138,7 @@ namespace khtml
 	 * the result depends on the objects size and the size of the cache
 	 * also updates the expire date on the cache entry file
 	 */
-	void finish();
+	virtual void finish();
 
         /**
          * Called by the cache if the object has been removed from the cache dict
@@ -154,7 +154,7 @@ namespace khtml
         bool canDelete() const { return (m_clients.count() == 0 && !m_request); }
 
 	void setExpireDate(time_t _expireDate, bool changeHttpCache);
-	
+
 	bool isExpired() const;
 
         virtual bool schedule() const { return false; }
@@ -270,6 +270,8 @@ namespace khtml
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
 
         virtual bool schedule() const { return true; }
+
+	virtual void finish();
 
     protected:
 	void clear();
