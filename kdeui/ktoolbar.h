@@ -276,7 +276,7 @@ public:
    * @see #setItemAutoSized
    * @return Returns item index
    */
-  int insertFrame(int width, int id, int index =-1);
+  int insertFrame(int id, int width, int index =-1);
 
   /**
    * This adds connection to items. Therefore it is important that you
