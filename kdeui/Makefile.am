@@ -41,7 +41,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h \
 		qxembed.h knumvalidator.h knumlineedit.h \
-		kdialog.h \
+		kdialog.h kslidercontrol.h \
 		dialogbase.h kaboutdialog.h kpixmapeffect.h \
 		kauthicon.h
 
@@ -56,7 +56,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
 		ktmlayout.cpp kmenubar.cpp kbutton.cpp kslider.cpp \
 		kseparator.cpp kcombo.cpp krestrictedline.cpp \
 		kcontrol.cpp kcolorbtn.cpp kwmmapp.cpp kbuttonbox.cpp\
-		keditcl1.cpp keditcl2.cpp \
+		keditcl1.cpp keditcl2.cpp kslidercontrol.cpp \
 		ktoolboxmgr.cpp kled.cpp kdbtn.cpp \
 		ktabbar.cpp kwizard.cpp kcontainer.cpp kkeydialog.cpp \
 		kruler.cpp kquickhelp.cpp kcursor.cpp \
@@ -72,7 +72,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kdatepik.moc kdatetbl.moc kdbtn.moc keditcl.moc kfontdialog.moc \
 	kiconloaderdialog.moc kkeydialog.moc kled.moc \
 	kledlamp.moc klined.moc kmenubar.moc \
-	kpopmenu.moc kprogress.moc \
+	kpopmenu.moc kprogress.moc kslidercontrol.moc \
 	kquickhelp.moc krestrictedline.moc kruler.moc kselect.moc \
 	kslider.moc kstatusbar.moc ktabbar.moc ktabctl.moc \
 	ktablistbox.moc ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
