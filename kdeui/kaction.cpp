@@ -88,8 +88,6 @@ public:
   QString m_iconName;
   KAccel *m_kaccel;
 
-  QGuardedPtr<QObject> m_component;
-
   QString m_text;
   QString m_whatsThis;
   QString m_groupText;
@@ -99,7 +97,6 @@ public:
   QString m_group;
   int m_accel;
   QString m_toolTip;
-  QString m_shortText;
   QString m_statusText;
 
   struct Container
@@ -257,16 +254,6 @@ bool KAction::isPlugged( const QWidget *container, const QWidget *_representativ
   return true;
 }
 
-QObject* KAction::component()
-{
-    return d->m_component;
-}
-
-void KAction::setComponent( QObject* obj )
-{
-    d->m_component = obj;
-}
-
 void KAction::setAccel( int a )
 {
   d->m_accel = a;
@@ -344,25 +331,6 @@ QString KAction::toolTip() const
   return d->m_toolTip;
 }
 
-void KAction::setShortText( const QString& st )
-{
-  d->m_shortText = st;
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    setShortText( i, st );
-}
-
-void KAction::setShortText( int, const QString& )
-{
-  // do something
-}
-
-QString KAction::shortText() const
-{
-  return d->m_shortText;
-}
-
 void KAction::setStatusText( const QString &text )
 {
   d->m_statusText = text;
@@ -422,7 +390,7 @@ int KAction::plug( QWidget *w, int index )
     KToolBar *bar = static_cast<KToolBar *>( w );
 
     int id_ = getToolButtonID();
-    if ( d->m_iconName.isEmpty() && d->m_bIconSet )
+    if ( iconName().isEmpty() && d->m_bIconSet )
     {
       bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ),
@@ -619,7 +587,7 @@ void KAction::setIcon( int id, const QString &icon )
     static_cast<KToolBar *>(w)->setButtonIcon( menuId( id ), icon );
 }
 
-QString KAction::iconName() const
+QString KAction::icon() const
 {
   return d->m_iconName;
 }
@@ -2142,7 +2110,7 @@ int KActionMenu::plug( QWidget* widget, int index )
 
     int id_ = KAction::getToolButtonID();
 
-    if ( iconName().isEmpty() && !iconSet().isNull() )
+    if ( icon().isEmpty() && !iconSet().isNull() )
       bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ), isEnabled(), plainText(),
                          index );
@@ -2155,7 +2123,7 @@ int KActionMenu::plug( QWidget* widget, int index )
       else
         instance = KGlobal::instance();
 
-      bar->insertButton( iconName(), id_, SIGNAL( clicked() ), this,
+      bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ), isEnabled(), plainText(),
                          index, instance );
     }
@@ -2460,15 +2428,13 @@ KAction* KActionCollection::take( KAction* action )
   return 0;
 }
 
-KAction* KActionCollection::action( const char* name, const char* classname,
-                                    QObject* component ) const
+KAction* KActionCollection::action( const char* name, const char* classname ) const
 {
   QListIterator<KAction> it( d->m_actions );
   for( ; it.current(); ++it )
   {
     if ( ( !name || strcmp( it.current()->name(), name ) == 0 ) &&
-        ( !classname || strcmp( it.current()->className(), classname ) == 0 ) &&
-        ( !component || component == it.current()->component() ) )
+        ( !classname || strcmp( it.current()->className(), classname ) == 0 ) )
       return it.current();
   }
   return 0;

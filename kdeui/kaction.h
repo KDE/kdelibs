@@ -179,10 +179,9 @@ class KAction : public QObject
   Q_PROPERTY( QString group READ group WRITE setGroup )
   Q_PROPERTY( QString whatsThis READ whatsThis WRITE setWhatsThis )
   Q_PROPERTY( QString toolTip READ toolTip WRITE setToolTip )
-  Q_PROPERTY( QString shortText READ shortText WRITE setShortText )
   Q_PROPERTY( QString statusText READ statusText WRITE setStatusText )
   Q_PROPERTY( QIconSet iconSet READ iconSet WRITE setIconSet )
-  Q_PROPERTY( QString icon READ iconName WRITE setIcon )
+  Q_PROPERTY( QString icon READ icon WRITE setIcon )
 public:
     /**
      * Construct an action with text and potential keyboard
@@ -380,8 +379,6 @@ public:
     virtual bool hasIconSet() const;
     virtual QString plainText() const;
 
-    virtual QObject* component();
-
     /**
      * Get the text associated with this action.
      */
@@ -407,8 +404,6 @@ public:
      */
     virtual QString toolTip() const;
 
-    virtual QString shortText() const;
-
     virtual QString statusText() const;
 
     /**
@@ -417,7 +412,7 @@ public:
      */
     virtual QIconSet iconSet() const;
 
-    virtual QString iconName() const;
+    virtual QString icon() const;
 
     KActionCollection *parentCollection() const;
 
@@ -431,8 +426,6 @@ public:
     void unplugAll();
 
 public slots:
-    virtual void setComponent( QObject* );
-
     /**
      * Set the text associated with this action. The text is used for menu
      * and toolbar labels etc.
@@ -459,8 +452,6 @@ public slots:
      * Set the tooltip text for the action.
      */
     virtual void setToolTip( const QString& );
-
-    virtual void setShortText( const QString& );
 
     /**
      * Set the QIconSet from which the icons used to display this action will
@@ -506,7 +497,6 @@ protected:
     virtual void setIconSet(int i, const QIconSet &iconSet);
     virtual void setIcon( int i, const QString& icon );
     virtual void setToolTip( int id, const QString& tt );
-    virtual void setShortText( int id, const QString& st );
     virtual void setStatusText( int id, const QString &text );
     virtual void setWhatsThis( int id, const QString& text );
 
@@ -1343,8 +1333,7 @@ public:
 
   virtual KAction* action( int index ) const;
   virtual uint count() const;
-  virtual KAction* action( const char* name, const char* classname = 0,
-                           QObject* component = 0 ) const;
+  virtual KAction* action( const char* name, const char* classname = 0 ) const;
 
   virtual QStringList groups() const;
   virtual QValueList<KAction*> actions( const QString& group ) const;
