@@ -80,6 +80,11 @@ public slots:
    void recreate();
 
    /**
+    * Recreating finished
+    */
+   void recreateDone();
+
+   /**
     * Collect all directories to watch
     */
    void updateDirWatch();
@@ -124,6 +129,8 @@ protected:
     */
    void readDirectory(const QString& dir );
 
+   void recreate(bool async);
+
    static void crashHandler(int);
    
 protected:
@@ -144,7 +151,10 @@ protected:
     */
    QTimer* m_pTimer;
    
-   QValueList<DCOPClientTransaction *> m_requests;
+   QValueList<DCOPClientTransaction *> m_recreateRequests;
+   int m_recreateCount;
+   bool m_recreateBusy;
+   
    QAsciiDict<KDEDModule> m_modules;
    QAsciiDict<KLibrary> m_libs;
    QAsciiDict<QObject> m_dontLoad;

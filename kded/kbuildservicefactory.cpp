@@ -103,6 +103,7 @@ KBuildServiceFactory::saveHeader(QDataStream &str)
    str << (Q_INT32) m_relNameDictOffset;
    str << (Q_INT32) m_offerListOffset;
    str << (Q_INT32) m_initListOffset;
+   str << (Q_INT32) m_menuIdDictOffset;
 }
 
 void
@@ -118,6 +119,9 @@ KBuildServiceFactory::save(QDataStream &str)
 
    saveOfferList(str);
    saveInitList(str);
+
+   m_menuIdDictOffset = str.device()->at();
+   m_menuIdDict->save(str);
 
    int endOfFactoryData = str.device()->at();
 
@@ -206,4 +210,7 @@ KBuildServiceFactory::addEntry(KSycocaEntry *newEntry, const char *resource)
 
    QString relName = service->desktopEntryPath();
    m_relNameDict->add( relName, newEntry );
+   QString menuId = service->menuId();
+   if (!menuId.isEmpty())
+      m_menuIdDict->add( menuId, newEntry );
 }

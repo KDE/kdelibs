@@ -52,14 +52,26 @@ Kded *Kded::_self = 0;
 
 static bool checkStamps = true;
 
-static void runBuildSycoca()
+static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
 {
    QStringList args;
    args.append("--incremental");
    if(checkStamps)
       args.append("--checkstamps");
-   KApplication::kdeinitExecWait( "kbuildsycoca", args );
    checkStamps = false; // useful only during kded startup
+   if (callBackObj)
+   {
+      QByteArray data;
+      QDataStream dataStream( data, IO_WriteOnly );
+      dataStream << QString("kbuildsycoca") << args;
+      QCString _launcher = KApplication::launcher();
+
+      kapp->dcopClient()->callAsync(_launcher, _launcher, "kdeinit_exec_wait(QString,QStringList)", data, callBackObj, callBackSlot);
+   }
+   else
+   {
+      KApplication::kdeinitExecWait( "kbuildsycoca", args );
+   }
 }
 
 static void runKonfUpdate()
@@ -94,6 +106,9 @@ Kded::Kded(bool checkUpdates)
   m_pDirWatch = 0;
 
   m_windowIdList.setAutoDelete(true);
+
+  m_recreateCount = 0;
+  m_recreateBusy = false;
 }
 
 Kded::~Kded()
@@ -318,49 +333,82 @@ void Kded::installCrashHandler()
 
 void Kded::recreate()
 {
+   recreate(true); // Async
+}
+
+void Kded::recreate(bool async)
+{
+   m_recreateBusy = true;
    // Using KLauncher here is difficult since we might not have a
    // database
 
    updateDirWatch(); // Update tree first, to be sure to miss nothing.
 
-   runBuildSycoca();
-
-   updateResourceList();
-
-   while( !m_requests.isEmpty())
+   if (async)
    {
-      QCString replyType = "void";
-      QByteArray replyData;
-      kapp->dcopClient()->endTransaction(m_requests.first(), replyType, replyData);
-      m_requests.remove(m_requests.begin());
+      runBuildSycoca(this, SLOT(recreateDone()));
+   }
+   else
+   {
+      runBuildSycoca();
+      recreateDone();
    }
 }
 
-void Kded::dirDeleted(const QString& /*path*/)
+void Kded::recreateDone()
 {
-  // We could be smarter here, and find out which factory
-  // deals with that dir, and update only that...
-  // But rebuilding everything is fine for me.
-  m_pTimer->start( 2000, true /* single shot */ );
+   updateResourceList();
+
+   for(; m_recreateCount; m_recreateCount--)
+   {
+      QCString replyType = "void";
+      QByteArray replyData;
+      DCOPClientTransaction *transaction = m_recreateRequests.first();
+      if (transaction)
+         kapp->dcopClient()->endTransaction(transaction, replyType, replyData);
+      m_recreateRequests.remove(m_recreateRequests.begin());
+   }
+   m_recreateBusy = false;
+   
+   // Did a new request come in while building?
+   if (!m_recreateRequests.isEmpty())
+   {
+      m_pTimer->start(2000, true /* single shot */ );
+      m_recreateCount = m_recreateRequests.count();
+   }
+}
+
+void Kded::dirDeleted(const QString& path)
+{
+  update(path);
 }
 
 void Kded::update(const QString& )
 {
-  // We could be smarter here, and find out which factory
-  // deals with that dir, and update only that...
-  // But rebuilding everything is fine for me.
-  m_pTimer->start( 2000, true /* single shot */ );
+  if (!m_recreateBusy)
+  {
+    m_pTimer->start( 2000, true /* single shot */ );
+  }
+  else
+  {
+    m_recreateRequests.append(0);
+  }
 }
 
 bool Kded::process(const QCString &fun, const QByteArray &data,
                            QCString &replyType, QByteArray &replyData)
 {
   if (fun == "recreate()") {
-    if (m_requests.isEmpty())
+    if (!m_recreateBusy)
     {
-       m_pTimer->start(0, true /* single shot */ );
+       if (m_recreateRequests.isEmpty())
+       {
+          m_pTimer->start(0, true /* single shot */ );
+          m_recreateCount = 0;
+       }
+       m_recreateCount++;
     }
-    m_requests.append(kapp->dcopClient()->beginTransaction());
+    m_recreateRequests.append(kapp->dcopClient()->beginTransaction());
     replyType = "void";
     return true;
   } else {
@@ -686,7 +734,7 @@ extern "C" int kdemain(int argc, char *argv[])
      signal(SIGHUP, sighandler);
      KDEDApplication k;
 
-     kded->recreate();
+     kded->recreate(false);
 
      if (bCheckUpdates)
         (void) new KUpdateD; // Watch for updates
