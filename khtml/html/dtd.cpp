@@ -70,7 +70,7 @@ const unsigned short DOM::tagPriority[] = {
     3, // ID_DD
     1, // ID_DEL
     1, // ID_DFN
-    4, // ID_DIR
+    5, // ID_DIR
     4, // ID_DIV
     4, // ID_DL
     3, // ID_DT
@@ -106,7 +106,7 @@ const unsigned short DOM::tagPriority[] = {
     0, // ID_LINK
     1, // ID_MAP
     3, // ID_MARQUEE
-    4, // ID_MENU
+    5, // ID_MENU
     0, // ID_META
     1, // ID_NOBR
    10,// ID_NOEMBED
@@ -114,7 +114,7 @@ const unsigned short DOM::tagPriority[] = {
     3, // ID_NOSCRIPT
     1, // ID_NOLAYER
     7, // ID_OBJECT
-    4, // ID_OL
+    5, // ID_OL
     1, // ID_OPTGROUP
     2, // ID_OPTION
     3, // ID_P
@@ -144,7 +144,7 @@ const unsigned short DOM::tagPriority[] = {
     7, // ID_TR
     1, // ID_TT
     1, // ID_U
-    4, // ID_UL
+    5, // ID_UL
     1, // ID_VAR
     1, // ID_WBR
     5, // ID_XMP
