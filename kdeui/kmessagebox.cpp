@@ -323,7 +323,7 @@ KMessageBox::detailedError(QWidget *parent,  const QString &text,
 {
     KDialogBase *dialog= new KDialogBase(
                        caption.isEmpty() ? i18n("Error") : caption,
-                       KDialogBase::Yes,
+                       KDialogBase::Yes | KDialogBase::Details,
                        KDialogBase::Yes, KDialogBase::Yes,
                        parent, "error", true, true,
                        i18n("&OK"));
