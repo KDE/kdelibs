@@ -375,11 +375,11 @@ void RenderFlow::layoutBlockChildren()
 
         if(style()->direction() == LTR) {
             // html blocks flow around floats
-            if (style()->htmlHacks() && child->style()->flowAroundFloats() )
+            if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
               chPos = leftOffset(m_height) + child->marginLeft();
         } else {
             chPos -= child->width() + child->marginLeft() + child->marginRight();
-            if (style()->htmlHacks() && child->style()->flowAroundFloats() )
+            if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
                 chPos -= leftOffset(m_height);
         }
         child->setPos(chPos, child->yPos());
@@ -895,7 +895,7 @@ RenderFlow::clearFloats()
     if(!prev->isFlow()) return;
     RenderFlow * flow = static_cast<RenderFlow *>(prev);
     if(!flow->specialObjects) return;
-    if(style()->htmlHacks() && style()->flowAroundFloats())
+    if( ( style()->htmlHacks() || isTable() ) && style()->flowAroundFloats())
         return; //html tables and lists flow as blocks
 
     if(flow->floatBottom() > offset)
