@@ -372,7 +372,7 @@ class DCOPClient : public QObject
    * @return The ID of the current transaction or
    *         0 if no transaction is going on.
    */
-  Q_INT32 transactionId();
+  Q_INT32 transactionId() const;
 
   /**
    * Check whether @p remApp is registered with the @ref DCOPServer.

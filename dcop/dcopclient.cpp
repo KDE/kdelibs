@@ -1530,7 +1530,7 @@ DCOPClient::beginTransaction()
 }
 
 Q_INT32
-DCOPClient::transactionId()
+DCOPClient::transactionId() const
 {
     if (d->transaction)
 	return d->transactionId;
