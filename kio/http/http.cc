@@ -690,6 +690,8 @@ HTTPProtocol::http_openConnection()
         error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
         return false;
       }
+      
+      infoMessage( i18n("Connecting to %1...").arg(m_state.hostname) );
 
       if(::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
         if((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
