@@ -396,7 +396,7 @@ QString KFileInfoContents::findCompletion( const char *base,
 	for (i = 0; i < sorted_length; i++)
 	    nameArray[i] = sortedArray[i]->fileName();
 	
-	qsort(nameArray, sorted_length, sizeof(const char*), stricmp);
+	qsort(nameArray, sorted_length, sizeof(const char*), (int (*)(const void *, const void *)) stricmp);
 	
 	// insert into list. Keeps deep copies
 	for (i = 0; i < sorted_length; i++)

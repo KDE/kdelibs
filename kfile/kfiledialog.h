@@ -64,7 +64,6 @@ class KFileFilter;
  * @short A file selection dialog
  *
  * @author Richard J. Moore rich@kde.org
- * @version $Id$
  */
 class KFileBaseDialog : public QDialog
 {
@@ -177,10 +176,12 @@ public:
 				QWidget *parent= 0, const char *name= 0);
     
     /**
-      * Sets the directory to view 
+      * Set the directory to view
       * @param name URL to show
+      * @param clearforward indicate, if the forward queue
+      * should be cleared
       */
-    void setDir(const char *name) { setDir(name, true); }
+    void setDir(const char *name, bool clearforward = true);
 
     /**
      * Sets the filename to preselect. 
@@ -301,14 +302,6 @@ protected:
     virtual bool getShowFilter() = 0;
     
     /**
-      * Set the directory to view 
-      * @param name URL to show
-      * @param clearforward indicate, if the forward queue 
-      * should be cleared
-      */
-    void setDir(const char *name, bool clearforward = true);
-
-    /**
       * adds a entry of the current directory. If disableUpdating is set
       * to true, it will care about clever updating
       **/
@@ -414,7 +407,6 @@ private:
  *
  * @short A directory selection dialog
  *
- * @version $Id$
  */
 class KDirDialog : public KFileBaseDialog
 {
@@ -505,7 +497,6 @@ enum PreviewType { PreviewText = 0x001,
  *
  * @short A file selection dialog with preview
  *
- * @version $Id$
  */
 class KFilePreviewDialog : public KFileBaseDialog
 {
