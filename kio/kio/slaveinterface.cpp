@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <signal.h>
 #include <kio/observer.h>
 #include <kapplication.h>
 #include <dcopclient.h>

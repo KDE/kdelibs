@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <qfile.h>
 

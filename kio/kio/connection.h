@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 #include <stdio.h>
-#include <kprocess.h>
+#include <qptrlist.h>
 
 class KSocket;
 class QSocketNotifier;
