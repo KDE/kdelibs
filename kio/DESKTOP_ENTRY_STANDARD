@@ -1,0 +1,316 @@
+------------
+
+Desktop Entry Standard
+Version 0.9
+May 05, 1999
+
+Preston Brown <pbrown@kde.org>
+Jonathan Blandford <jrb@redhat.com>
+Owen Taylor <otaylor@gtk.org>
+
+Abstract
+--------
+
+Both the KDE and GNOME desktop environments have adopted a similar
+format for "desktop entries," or configuration files describing how a
+particular program is to be launched, how it appears in menus, etc.
+It is to the larger community's benefit that a unified standard be
+agreed upon by all parties such that interoperation between the two
+environments, and indeed any additional environments that implement
+the specification, becomes simpler.
+
+1. Basic format of the file
+---------------------------
+
+Thes desktop entry files should have an extension of ".desktop" or
+".kdelnk".  ".kdelnk" is deprecated, and is only maintained for
+backwards compatibility.  Determining file type on basis fo extension
+makes determining the file type very easy and quick.  When no file
+extension is present, the desktop system should fall back to
+recognition via "magic detection."  Desktop entries which describe how
+a directory is to be formatted/displayed should be simply called
+".directory".
+
+The basic format of the desktop entry file requires that there be a
+"group" header named "[Desktop Entry]".  For backwards compatibility,
+implementations may also support the header "[KDE Desktop Entry]".
+This "group" entry denotes that all {key,value} pairs following it
+belong in the Desktop Entry group.  There may be other groups present
+in the file (see MIME types discussion below), but this is the most
+important group which explicitly needs to be supported.  This group
+should also be used as the "magic key" for automatic mime type
+detection.  There should be nothing proceeding this group in the
+desktop entry file but possibly one or more comments (see below).
+
+Lines beginning with a "#" are considered comments and will be
+ignored, however they should be preserved across reads / writes of the
+desktop entry file.
+
+Compliant implementations MUST not remove any fields from the file,
+even if they don't support them.  Such fields must be maintained in a
+list somewhere, and if the file is "rewritten," they will be included.
+This ensures that any desktop-specific extensions will be preserved
+even if another system accesses and changes the file.
+
+Entries in the file are {key,value} pairs in the format:
+
+Name=Value
+
+Space before and after the equals sign should be supported; the "="
+sign is the actual delimiter.
+
+2. Possible value types
+-----------------------
+
+The value types recognized are string, regular expression, boolean
+(encoded as the string true/false), and numeric.  Strings may have
+locale-specific characters included, which should be identified as
+part of the key, as described below.
+
+Some keys can have multiple values; these should be separated by a
+semicolon.  Those keys which have several values should have a
+semicolon as the trailing character.
+
+3. Recognized desktop entry keys
+--------------------------------
+
+Keys may be postfixed by [val], where val is the LOCALE type of the
+string or numeric entry.  The locale entries should match those of the
+standard C library.  Locales which specify a specify a specific
+country should fall back to just the language name if no entry is
+available, i.e if the locale is set to pt_BR, and a key with [pt] is
+available, it should be used.  When no [language] postfix is present,
+the C locale [C] is assumed.
+
+Case is significant.  The keys "Name" and "NAME" are not equivalent.
+The same holds for group names.  Key values are case sensitive as
+well.
+
+Keys are either OPTIONAL or REQUIRED.  If a key is optional it may or
+may not be present in the file.  However, if it isn't, the
+implementation of the standard should not blow up, it must provide
+some sane defaults.  Additionally, keys either MUST or MAY be
+supported by a particular implementation.
+
+Some keys only make sense in the context when another particular key
+is also present.
+
+Some example keys: Name[C], Comment[it].
+
+The following table is 100 columns wide.
+
+Key		Description					Value Type	REQ?	MUST?
+-------------------------------------------------------------------------------------------------
+Version		version of Desktop Entry Specification		numeric (4)	NO	YES
+Name		name of the entry, need not match binary name	string		YES	YES
+Type		the type of desktop entry			string (1)	YES	YES
+FilePattern	a list of regular expressions to match against	regexp(s)	NO	NO
+		for a file manager to determine if this entry's
+		icon should be displayed. Usually simply the
+		name of the main executable and friends.
+TryExec		filename of a binary on disk used to determine	string		NO	NO
+		if the program is actually installed.  If not,
+		entry may not show in menus, etc.
+NoDisplay	whether not to display in menus, etc.		boolean		NO	NO
+Comment		descriptive comment				string		NO	YES
+Exec		program to execute, possibly with arguments	string		NO	YES
+Actions		additional actions possible, see MIME type	string(s)	NO	YES
+		discussion in section 5
+Icon		icon to display in file manager, menus, etc.	string		NO	YES
+		the icon MAY specify a specific path to
+		override common search directories
+MiniIcon	small icon for window manager, menus, etc.	string		NO	NO
+Path		if entry is type Application, the working	string		NO	YES
+		directory to run the program in	
+Terminal	whether the program runs in a terminal window	boolean (2)	NO	YES
+TerminalOptions	if the program runs in a terminal, any options	string		NO	NO
+		that should be passed to the terminal emulator
+		before actually executing the program
+SwallowTitle	if entry is swallowed onto the panel, this	string		NO	NO
+		should be the title of window
+SwallowExec	program to exec if swallowed app is clicked	string		NO	NO
+
+
+MimeType	the MIME type(s) supported by this entry	regexp(s)
+Patterns	if entry is type MimeType, various file name
+		extensions associated with the MIME type.	regexp(s)	NO	NO
+DefaultApp	if entry is type MimeType, the default
+		application associated with this mime type	string		NO	NO
+
+
+Dev		if FSDevice type of entry, the device to mount	string		NO	NO
+FSType		The type of filesystem to try to mount		string		NO	NO
+MountPoint	if FSDevice type of entry, the mount point	string		NO	NO
+		of the device in question
+ReadOnly	if FSDevice type of entry, specifies whether	boolean (2)	NO	NO
+		or not the device is read-only
+UnmountIcon	icon to display when device is not mounted	string		NO	NO
+		Mounted devices display icon from Icon key
+
+
+SortOrder	if entry of type Directory, this may specify	strings (3)	NO	NO
+		the order in which to display files
+
+
+URL		if entry is Link type, the URL to access	string		NO	YES
+
+-------------------------------------------------------------------------------------------------
+
+Notes:
+
+(1) possible values are Application, Link, FSDevice, MimeType, Directory 
+
+(2) historically these have been represented by the numeric entries 0
+    or 1.  With this version of the standard they are now to be
+    represented as a boolean string.  However, if an implementation is
+    reading a pre-1.0 desktop entry, it should interpret 0 and 1 as false
+    and true, respectively.  
+
+(3) historically this has been a comma separated list.  This is inconsistent
+    with other lists which are separated by a semicolon.  When reading
+    a pre-1.0 desktop entry, comma separated lists should continue to
+    be supported.
+
+(4) while the version field is not required to be present, it should
+    be in all newer implementations of the Desktop Entry specification.
+    If the version number is not present, a "pre-standard" desktop entry
+    file is to be assumed.
+
+
+4. List of valid Exec parameter variables
+-----------------------------------------
+
+Each "Exec" field may take a number of arguments which will be
+expanded by the file manager or program launcher and passed to the
+program if necessary.  Recognized fields are as follows:
+
+%f - a list of files.  If files are not on the local file system
+     (i.e. HTTP or FTP locations), the files will be copied to the local
+     file system and %f will be expanded to point at the temporary
+     file.  Used for programs that do not understand URL syntax.
+
+%F - a single file name, even if multiple files are selected.  The system
+     reading the Desktop Entry should recognize that the program in
+     question cannot handle multiple file arguments, and it should
+     should probably spawn and execute multiple copies of a program
+     for each selected file if the program is not able to handle
+     additional file arguments.
+
+%u - a list of URLs.
+
+%d - the working directory.
+
+%i - the icon associated with the desktop entry
+
+%m - the mini-icon associated with the desktop entry
+
+%c - the comment associated with the desktop entry
+
+
+5. Detailed discussion of supporting MIME types
+
+It is in every desktop's best interest to have thorough support for
+mime types.  The old /etc/mailcap and /etc/mime.types files are rather
+limited in scope and frankly, are outdated.  Various desktop systems
+have come up with different ways of extending this original system,
+but none are compatible with each other.  The Desktop Entry Standard
+hopes to be able to provide the beginnings of a solution to this
+problem.
+
+At a very basic level, the "Exec" key provides the default action to
+take when the program described by a desktop entry is used to open a
+document or data file.  Usually this consists of some action along the
+lines of "kedit %f" or "ee %f".  This is a good
+start, but it isn't as flexible as it can be.
+
+Let us first establish that a program which supports a MIME type or
+multiple mime types may be able to support multiple actions on those
+MIME types as well.  The desktop entry may want to define additional
+actions in addition to the default.  The toplevel "Exec" key describes
+the default action; Let us define this action to also be known as the
+"Open" action.  Additional actions which might be possible include
+View, Edit, Play, etc.  A further revision of this document will
+probably specify several "standard" actions in addition to the default
+"Open" action, but in all cases, the number of actions is arbitrary.
+
+Let us use a sound player as a simple example.  Call it sp.  The
+default Exec (Open) action for this program would likely look
+something like:
+
+Exec=sp %u
+
+However, imaging the sound player also supports editing of sound files
+in a graphical manner.  We might wish to define an additional action
+which could accomodate this.  Adding the action would be performed
+like this:
+
+Actions=Edit;
+
+[Desktop Action Edit]
+Exec=sp -edit %u
+
+As you can see, defining the action "edit" will enable an additional
+group of the name [Desktop Action <actionname>] to be read.  This
+group can contain an additional Exec line, as well as possibly other
+information like a new Name, Comment, Icon, and Path.  Thus
+right-clicking on a .wav file will show both the default "Open" action
+and this "Edit" action to both be displayed as choices in the
+context-menu.  A left click (double or single, whichever the file
+manager implements) would cause the default action to take place.
+These are implementation-specific details which are up to the
+implementer, and are not enforced by this standard.
+
+If no DefaultApp is specified for a particular MIME type, any one of
+the programs registered which claim to be able to handle the MIME type
+may become the default handler.  This behaviour is undefined and
+implementation-specific.
+
+
+5. Extending the format
+-----------------------
+
+If the standard is to be amended with a new {key,value} pair which
+should be applicable to all supporting parties, a group discussion
+will take place.  This is the preferred method for introducing
+changes.  If one particular party wishes to add a field for personal
+use, they should prefix the key with the string "X-PRODUCT",
+i.e. "X-NewDesktop-Foo", following the precedent set by other IETF and RFC
+standards.
+
+Alternatively, fields can be placed in their own group, where they may
+then have arbitrary key names.  If this is the case, the group should
+follow the scheme outlined above, i.e. [X-PRODUCT GROUPNAME] or
+something similar.  These steps will avoid namespace clashes between
+different yet similar environments.
+
+
+6. Example Desktop Entry File
+-----------------------------
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Foo Viewer
+Comment=The best viewer for Foo objects available!
+TryExec=fooview
+Exec=fooview %F
+Actions=Edit;Inverse
+Icon=fooview.png
+MimeType=image/x-foo
+X-KDE-RepoID=IDL:FooViewer/Application:1.0
+X-KDE-ActivationMode=shared
+X-KDE-ServiceType=FooService
+
+[Desktop Action Inverse]
+Exec=fooview --inverse %f
+Name=Foo Viewer (inverse image)
+
+[Desktop Action Edit]
+Exec=fooview --edit %f
+Name=Foo Viewer (edit image)
+Icon=fooview-edit.png
+
+---
+  Preston Brown                                    Systems Engineer
+  pbrown@redhat.com                                Red Hat Software, Inc. 
+
