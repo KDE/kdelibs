@@ -29,10 +29,6 @@
 
 #include "kcalendarsystem.h"
 
-#define NULLP    ((char *)0)
-#define GJoffset  226894
-#define SolarYear 365.25
-
 class KCalendarSystemJalaliPrivate;
 /**
  Jalali calendar type implementation
