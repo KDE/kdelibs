@@ -48,7 +48,7 @@ bool KMSpecialManager::savePrinters()
 		conf.setGroup(QString::fromLatin1("Printer %1").arg(n));
 		conf.writeEntry("Name",it.current()->name());
 		conf.writeEntry("Description",it.current()->description());
-		conf.writeEntry("Location",it.current()->location());
+		conf.writeEntry("Comment",it.current()->location());
 		conf.writeEntry("Command",it.current()->option("kde-special-command"));
 		conf.writeEntry("File",it.current()->option("kde-special-file"));
 		conf.writeEntry("Icon",it.current()->pixmap());
@@ -76,7 +76,7 @@ bool KMSpecialManager::loadPrinters()
 		printer->setName(conf.readEntry("Name"));
 		printer->setPrinterName(printer->name());
 		printer->setDescription(conf.readEntry("Description"));
-		printer->setLocation(conf.readEntry("Location"));
+		printer->setLocation(conf.readEntry("Comment"));
 		printer->setOption("kde-special-command",conf.readEntry("Command"));
 		printer->setOption("kde-special-file",conf.readEntry("File"));
 		printer->setPixmap(conf.readEntry("Icon","unknown"));
