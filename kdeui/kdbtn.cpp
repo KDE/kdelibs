@@ -65,17 +65,37 @@ void KDirectionButton::drawButton( QPainter *p)
       break;
 
     case UpArrow:
-      x = 4;
-      y = 3;
-      cx = w-4;
-      cy = h-4;
+      if(style == MotifStyle)
+      {
+        x = 4;
+        y = 3;
+        cx = w-4;
+        cy = h-4;
+      }
+      else
+      {
+        x = 2;
+        y = 1;
+        cx = w-4;
+        cy = h-4;
+      }
       break;
 
     case DownArrow:
-      x = 0;
-      y = 3;
-      cx = w-4;
-      cy = h-4;
+      if(style == MotifStyle)
+      {
+        x = 0;
+        y = 3;
+        cx = w-4;
+        cy = h-3;
+      }
+      else
+      {
+        x = 2;
+        y = 1;
+        cx = w-4;
+        cy = h-3;
+      }
       break;
 
     default:
