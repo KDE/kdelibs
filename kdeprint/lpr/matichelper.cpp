@@ -152,7 +152,7 @@ void loadPageSizes(DrMain *driver, MaticBlock *blk)
 		if (p != -1)
 		{
 			int	w = vals.left(p).toInt(), h = vals.right(vals.length()-p-1).toInt();
-			DrPageSize	*ps = new DrPageSize(it.currentKey(), w, h, 36, 24, 36, 24);
+			DrPageSize	*ps = new DrPageSize(it.currentKey(), w, h, 36, 24, w-36, h-24);
 			driver->addPageSize(ps);
 		}
 	}
