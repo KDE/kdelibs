@@ -59,7 +59,6 @@ KAboutData::KAboutData( const char *appName,
 			const char *homePageAddress,
 			const char *bugsEmailAddress
 			) :
-  mAppName( appName ),
   mProgramName( programName ),
   mVersion( version ),
   mShortDescription( shortDescription ),
@@ -69,6 +68,12 @@ KAboutData::KAboutData( const char *appName,
   mHomepageAddress( homePageAddress ),
   mBugEmailAddress( bugsEmailAddress )
 {
+   if( appName ) {
+     char *p = strrchr(appName, '/');
+     if( p )
+       mAppName = p+1;
+   } else
+     mAppName = 0;
 }
 
 void 
