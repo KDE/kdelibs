@@ -23,6 +23,7 @@
 
 class KConfig;
 class KConfigSkeleton;
+class KConfigDialogManager;
 #include <kdialogbase.h>
 #include <qasciidict.h>
 
@@ -30,12 +31,12 @@ class KConfigSkeleton;
  * @author Waldo Bastian <bastian@kde.org>
  *
  * The KConfigDialog class provides an easy and uniform means of displaying
- * a settings dialog using KDialogBase, KConfigDialogManager and a 
+ * a settings dialog using KDialogBase, KConfigDialogManager and a
  * KConfigSkeleton derived settings class.
  *
  * KConfigDialog handles the enabling and disabling of buttons, creation
- * of the dialog, and deletion of the widgets.  Because of 
- * KConfigDialogManager, this class also manages: restoring 
+ * of the dialog, and deletion of the widgets.  Because of
+ * KConfigDialogManager, this class also manages: restoring
  * the settings, reseting them to the default values, and saving them. This
  * requires that the names of the widgets corresponding to configuration entries
  * have to have the same name plus an additional "kcfg_" prefix. For example the
@@ -120,10 +121,10 @@ public:
   //       Make "dialogType" an int
   KConfigDialog( QWidget *parent, const char *name,
                  KConfigSkeleton *config,
-		 DialogType dialogType = IconList,
-		 int dialogButtons = Default|Ok|Apply|Cancel|Help,
-		 ButtonCode defaultButton = Ok,
-		 bool modal=false );
+                 DialogType dialogType = IconList,
+                 int dialogButtons = Default|Ok|Apply|Cancel|Help,
+                 ButtonCode defaultButton = Ok,
+                 bool modal=false );
 
   /**
    * Deconstructor, removes name from the list of open dialogs.
@@ -133,8 +134,8 @@ public:
   ~KConfigDialog();
 
   /**
-   * Adds page to the dialog and to KConfigDialogManager.  When an 
-   * application is done adding pages show() should be called to 
+   * Adds page to the dialog and to KConfigDialogManager.  When an
+   * application is done adding pages show() should be called to
    * display the dialog.
    * Note that after you call show() you can not add any more pages
    * to the dialog.
@@ -148,9 +149,31 @@ public:
    */
   // KDE4: Add a default value for itemName & pixmapName
   void addPage( QWidget *page, const QString &itemName,
-		                  const QString &pixmapName,
-				  const QString &header=QString::null,
-				  bool manage=true);
+                const QString &pixmapName,
+                const QString &header=QString::null,
+                bool manage=true );
+
+  /**
+   * Adds page to the dialog that is managed by a custom KConfigDialogManager.
+   * This is useful for dialogs that contain settings spread over more than
+   * one configuration file and thus have/need more than one KConfigSkeleton.
+   * When an application is done adding pages show() should be called to
+   * display the dialog.
+   * Note that after you call show() you can not add any more pages
+   * to the dialog.
+   * @param page - Pointer to the page that is to be added to the dialog.
+   * This object is reparented.
+   * @param config - Config object containing corresponding settings.
+   * @param itemName - Name of the page.
+   * @param pixmapName - Name of the pixmap that should be used if needed.
+   * @param header - Header text use in the list modes. Ignored in Tabbed
+   *        mode. If empty, the itemName text is used when needed.
+   */
+  // KDE4: Add a default value for itemName & pixmapName
+  void addPage( QWidget *page, KConfigSkeleton *config,
+                const QString &itemName,
+                const QString &pixmapName,
+                const QString &header=QString::null );
 
   /**
    * See if a dialog with the name 'name' already exists.
@@ -179,7 +202,7 @@ protected slots:
    * Virtual function for custom additions.
    *
    * Example use: User clicks Ok or Apply button in a configure dialog.
-   */ 
+   */
   virtual void updateSettings();
 
   /**
@@ -224,6 +247,19 @@ protected slots:
    * Some setting was changed. Emit the signal with the dialogs name
    */
   void settingsChangedSlot();
+
+private:
+  /**
+   * Internal function with common addPage code.
+   */
+  void addPageInternal(QWidget *page, const QString &itemName,
+                           const QString &pixmapName, const QString &header);
+
+  /**
+   * Sets the connections from a manager to the dialog (and the other
+   * way round) up.
+   */
+  void setupManagerConnections(KConfigDialogManager *manager);
 
 private:
   /**

@@ -46,13 +46,13 @@ public:
 };
 
 KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf, const char *name)
- : QObject(parent, name), m_conf(conf), m_dialog(parent) 
+ : QObject(parent, name), m_conf(conf), m_dialog(parent)
 {
   d = new Private();
-  
+
   kapp->installKDEPropertyMap();
   propertyMap = QSqlPropertyMap::defaultMap();
-  
+
   init(true);
 }
 
@@ -153,7 +153,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
     const char *widgetName = childWidget->name(0);
     bool bParseChildren = true;
-    
+
     if (widgetName && (strncmp(widgetName, "kcfg_", 5) == 0))
     {
       // This is one of our widgets!
@@ -211,7 +211,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       if (changedIt != changedMap.end())
         kdDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
     }
-    
+
     if(bParseChildren)
     {
       // this widget is not known as something we can store.
@@ -224,6 +224,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
 void KConfigDialogManager::updateWidgets()
 {
+  bool changed = false;
   bool bSignalsBlocked = signalsBlocked();
   blockSignals(true);
 
@@ -242,6 +243,7 @@ void KConfigDialogManager::updateWidgets()
      if (p != property(widget))
      {
         setProperty(widget, p);
+        changed = true;
      }
      if (item->isImmutable())
      {
@@ -252,6 +254,9 @@ void KConfigDialogManager::updateWidgets()
      }
   }
   blockSignals(bSignalsBlocked);
+
+  if (changed)
+    emit widgetModified();
 }
 
 void KConfigDialogManager::updateWidgetsDefault()

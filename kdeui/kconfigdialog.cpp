@@ -2,6 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2003 Benjamin C Meyer (ben+kdelibs at meyerhome dot net)
  *  Copyright (C) 2003 Waldo Bastian <bastian@kde.org>
+ *  Copyright (C) 2004 Michael Brade <brade@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -19,7 +20,6 @@
  *  Boston, MA 02111-1307, USA.
  */
 #include "kconfigdialog.h"
-#include "kconfigdialog.moc"
 
 #include <kconfigskeleton.h>
 #include <kconfigdialogmanager.h>
@@ -29,32 +29,33 @@
 
 #include <qlayout.h>
 #include <qvbox.h>
+#include <qmap.h>
 
 QAsciiDict<KConfigDialog> KConfigDialog::openDialogs;
 
 // This class is here purly so we don't break binary compatibility down the road.
 class KConfigDialog::KConfigDialogPrivate
 {
-
 public:
-  KConfigDialogPrivate(KDialogBase::DialogType t) 
+  KConfigDialogPrivate(KDialogBase::DialogType t)
   : shown(false), type(t), manager(0) { }
 
   bool shown;
   KDialogBase::DialogType type;
   KConfigDialogManager *manager;
+  QMap<QWidget *, KConfigDialogManager *> managerForPage;
 };
 
 KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
-		  KConfigSkeleton *config,
-		  DialogType dialogType,
-		  int dialogButtons,
-		  ButtonCode defaultButton,
-		  bool modal ) :
+          KConfigSkeleton *config,
+          DialogType dialogType,
+          int dialogButtons,
+          ButtonCode defaultButton,
+          bool modal ) :
     KDialogBase( dialogType, Qt::WStyle_DialogBorder,
-		  parent, name, modal, i18n("Configure"), dialogButtons, defaultButton ),
-    d(new KConfigDialogPrivate(dialogType)) 
-{		  
+          parent, name, modal, i18n("Configure"), dialogButtons, defaultButton ),
+    d(new KConfigDialogPrivate(dialogType))
+{
   if ( name ) {
     openDialogs.insert(name, this);
   } else {
@@ -64,23 +65,14 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
     setName(genericName);
   }
 
-  d->manager = new KConfigDialogManager(this, config);
-
-  // TODO: Emit settingsChanged signal from slot to guarantee sequence
-  connect(d->manager, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
-  connect(d->manager, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
-  connect(d->manager, SIGNAL(widgetModified()), this, SLOT(updateButtons()));
-
   connect(this, SIGNAL(okClicked()), this, SLOT(updateSettings()));
-  connect(this, SIGNAL(okClicked()), d->manager, SLOT(updateSettings()));
-
   connect(this, SIGNAL(applyClicked()), this, SLOT(updateSettings()));
-  connect(this, SIGNAL(applyClicked()), d->manager, SLOT(updateSettings()));
   connect(this, SIGNAL(applyClicked()), this, SLOT(updateButtons()));
-
   connect(this, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
-  connect(this, SIGNAL(defaultClicked()), d->manager, SLOT(updateWidgetsDefault()));
   connect(this, SIGNAL(defaultClicked()), this, SLOT(updateButtons()));
+
+  d->manager = new KConfigDialogManager(this, config);
+  setupManagerConnections(d->manager);
 
   enableButton(Apply, false);
 }
@@ -96,6 +88,27 @@ void KConfigDialog::addPage(QWidget *page,
                                 const QString &pixmapName,
                                 const QString &header,
                                 bool manage)
+{
+  addPageInternal(page, itemName, pixmapName, header);
+  if(manage)
+    d->manager->addWidget(page);
+}
+
+void KConfigDialog::addPage(QWidget *page,
+                                KConfigSkeleton *config,
+                                const QString &itemName,
+                                const QString &pixmapName,
+                                const QString &header)
+{
+  addPageInternal(page, itemName, pixmapName, header);
+  d->managerForPage[page] = new KConfigDialogManager(page, config);
+  setupManagerConnections(d->managerForPage[page]);
+}
+
+void KConfigDialog::addPageInternal(QWidget *page,
+                                        const QString &itemName,
+                                        const QString &pixmapName,
+                                        const QString &header)
 {
   if(d->shown)
   {
@@ -114,7 +127,7 @@ void KConfigDialog::addPage(QWidget *page,
     }
     break;
 
-    case Swallow: 
+    case Swallow:
     {
       page->reparent(this, 0, QPoint());
       setMainWidget(page);
@@ -133,8 +146,16 @@ void KConfigDialog::addPage(QWidget *page,
     default:
       kdDebug(240) << "KConfigDialog::addpage: unknown type.";
   }
-  if(manage)
-    d->manager->addWidget(page);
+}
+
+void KConfigDialog::setupManagerConnections(KConfigDialogManager *manager)
+{
+  connect(manager, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
+  connect(manager, SIGNAL(widgetModified()), this, SLOT(updateButtons()));
+
+  connect(this, SIGNAL(okClicked()), manager, SLOT(updateSettings()));
+  connect(this, SIGNAL(applyClicked()), manager, SLOT(updateSettings()));
+  connect(this, SIGNAL(defaultClicked()), manager, SLOT(updateWidgetsDefault()));
 }
 
 KConfigDialog* KConfigDialog::exists(const char* name)
@@ -155,8 +176,29 @@ void KConfigDialog::updateButtons()
   static bool only_once = false;
   if (only_once) return;
   only_once = true;
-  enableButton(Apply, d->manager->hasChanged() || hasChanged());
-  enableButton(Default, !(d->manager->isDefault() && isDefault()));
+
+  QMap<QWidget *, KConfigDialogManager *>::iterator it;
+
+  bool has_changed = d->manager->hasChanged() || hasChanged();
+  for (it = d->managerForPage.begin();
+          it != d->managerForPage.end() && !has_changed;
+          ++it)
+  {
+    has_changed |= (*it)->hasChanged();
+  }
+
+  enableButton(Apply, has_changed);
+
+  bool is_default = d->manager->isDefault() && isDefault();
+  for (it = d->managerForPage.begin();
+          it != d->managerForPage.end() && is_default;
+          ++it)
+  {
+    is_default &= (*it)->isDefault();
+  }
+
+  enableButton(Default, !is_default);
+
   emit widgetModified();
   only_once = false;
 }
@@ -165,15 +207,38 @@ void KConfigDialog::settingsChangedSlot()
 {
   // Update the buttons
   updateButtons();
-  emit (settingsChanged(name()));
+  emit settingsChanged();
+  emit settingsChanged(name());
 }
 
 void KConfigDialog::show()
 {
+  QMap<QWidget *, KConfigDialogManager *>::iterator it;
+
   updateWidgets();
   d->manager->updateWidgets();
-  enableButton(Apply, d->manager->hasChanged() || hasChanged());
-  enableButton(Default, !(d->manager->isDefault() && isDefault()));
+  for (it = d->managerForPage.begin(); it != d->managerForPage.end(); ++it)
+    (*it)->updateWidgets();
+
+  bool has_changed = d->manager->hasChanged() || hasChanged();
+  for (it = d->managerForPage.begin();
+          it != d->managerForPage.end() && !has_changed;
+          ++it)
+  {
+    has_changed |= (*it)->hasChanged();
+  }
+
+  enableButton(Apply, has_changed);
+
+  bool is_default = d->manager->isDefault() && isDefault();
+  for (it = d->managerForPage.begin();
+          it != d->managerForPage.end() && is_default;
+          ++it)
+  {
+    is_default &= (*it)->isDefault();
+  }
+
+  enableButton(Default, !is_default);
   d->shown = true;
   KDialogBase::show();
 }
@@ -189,3 +254,6 @@ void KConfigDialog::updateWidgets()
 void KConfigDialog::updateWidgetsDefault()
 {
 }
+
+
+#include "kconfigdialog.moc"
