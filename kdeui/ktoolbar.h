@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.34  1998/05/04 16:38:36  radej
+// Bugfixes for moving + opaque moving
+//
 // Revision 1.33  1998/04/28 09:17:49  radej
 // New moving and docking BINARY INCOMPATIBLE
 //
@@ -188,8 +191,9 @@ public:
 
   /**
    * Constructor.
-   * Toolbar will read global-config file for intem Size higlight
-   * option and button type.
+   * Toolbar will read global-config file for item Size higlight
+   * option and button type. However, you can pass desired height.
+   * This is not recomended.
    */
   KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1);
 
@@ -245,6 +249,7 @@ public:
    * Inserts KComboBox with list. Can be writable, but cannot contain pixmaps. By
    * default inserting policy is AtBottom, i.e. typed items are placed at the bottom
    * of the list. Can be autosized
+   * KCombo is almost the same thing as QComboBox.
    * @see #setFullWidth
    * @see #setItemAutoSized
    * @see KCombo
@@ -340,8 +345,7 @@ public:
    * Example:
    * <pre>
    * toolbar->insertButton(pixmap, 1, SIGNAL(pressed()),
-   *                this, SLOT(slotPopup()), true,
-   *                "Press this to popup");
+   *                class, SLOT(slotPopup()), true, "Press this to popup");
    * ...
    * class::slotPopup()
    * {
@@ -355,8 +359,7 @@ public:
 
   /**
    * Returns true if button is on, false if button is off.
-   * If button is not a toggle button, or not button at all
-   * returns false
+   * If button is not a toggle button returns false
    * @see #setToggle
    */
   bool isButtonOn (int id);
@@ -369,7 +372,7 @@ public:
 
   /**
    * Returns Lined text.
-   * If you want to store this text, you have o copy it somwhere
+   * If you want to store this text, you have to deep-copy it somwhere
    */
   const char *getLinedText (int id);
 
@@ -419,8 +422,7 @@ public:
    * </pre>
    * That way you can get access to other public methods
    * that @ref KCombo provides. @ref KCombo is KDE enhancement
-   * of @ref QComboBox plus two signals
-   *
+   * of @ref QComboBox .
    */
   KCombo * getCombo(int id);
   
@@ -438,10 +440,11 @@ public:
   /**
    * This returns a pointer to KToolBarButton. Example:
    * <pre>
-   * KButton * button = toolbar->getButton(button_id);
+   * KToolBarButton * button = toolbar->getButton(button_id);
    * </pre>
    * That way you can get access to other public methods
-   * that @ref KButton provides.
+   * that @ref KToolBarButton provides. Using of this method is not
+   * recomended.
    */  
   KToolBarButton * getButton (int id);
 
@@ -453,6 +456,8 @@ public:
   void alignItemRight (int id, bool right = true);
 
   /**
+   * This function is deprecated and might be removed. Use @ref #insertWidget
+   * and @ref #getWidget instead.<br>
    * Returns pointer to inserted frame. Wrong ids are not tested.
    * Example:
    * <pre>
@@ -533,7 +538,8 @@ public:
 
   /**
    * This shows, hides, or toggles toolbar. If toolbar floats,
-   * hiding means minimizing.
+   * hiding means minimizing. Warning: kwm will not show minimized toolbar
+   * on taskbar. Therefore hiding means hiding.
    * @see #BarStatus
    */
   bool enable(BarStatus stat);
@@ -557,8 +563,8 @@ public:
   void setMaxWidth (int dw);
 
   /**
-   * Sets title for toolbar when it floats.
-   * You can't change toolbar's title while it's floating.
+   * Sets title for toolbar when it floats. Titles are however not (yet)
+   * visible. You can't change toolbar's title while it's floating.
    */
   void setTitle (const char *_title) {title = _title;};
 
