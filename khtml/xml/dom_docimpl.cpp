@@ -285,12 +285,12 @@ DocumentImpl::~DocumentImpl()
 {
     if (changedDocuments && m_docChanged)
         changedDocuments->remove(this);
+    delete m_tokenizer;
     document->doc = 0;
     delete m_sheet;
     delete m_styleSelector;
     delete m_docLoader;
     if (m_elemSheet )  m_elemSheet->deref();
-    delete m_tokenizer;
     if (m_doctype)
         m_doctype->deref();
     m_implementation->deref();
