@@ -47,6 +47,7 @@
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
+#include <kapplication.h>
 #include <kdebug.h>
 
 using namespace DOM;
@@ -378,7 +379,11 @@ bool HTMLElementImpl::isURLAllowed(const QString& url) const
     newURL.setRef(QString::null);
 
     // Prohibit non-file URLs if we are asked to.
-    if (w->part()->onlyLocalReferences() && newURL.protocol() != "file")
+    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file")
+        return false;
+
+    // do we allow this suburl ?
+    if ( !kapp || !kapp->kapp->authorizeURLAction("redirect", w->part()->url(), newURL) )
         return false;
 
     // We allow one level of self-reference because some sites depend on that.
