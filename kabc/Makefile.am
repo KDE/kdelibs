@@ -35,7 +35,7 @@ libkabc_la_SOURCES = \
   timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
   vcardformatimpl.cpp vcardformatplugin.cpp ldifconverter.cpp addresslineedit.cpp \
   ldapclient.cpp addresseelist.cpp vcardtool.cpp addresseehelper.cpp \
-  addresseehelper.skel
+  addresseehelper.skel lock.cpp
 
 
 kabcincludedir = $(includedir)/kabc
@@ -45,7 +45,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   phonenumber.h picture.h plugin.h resource.h \
   resourceselectdialog.h secrecy.h sound.h stdaddressbook.h timezone.h \
   vcardconverter.h vcardformat.h vcardformatplugin.h ldifconverter.h \
-  addresslineedit.h ldapclient.h addresseelist.h vcardtool.h
+  addresslineedit.h ldapclient.h addresseelist.h vcardtool.h lock.h
 
 METASOURCES = AUTO
 
@@ -54,6 +54,12 @@ bin_PROGRAMS = kab2kabc
 kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kab2kabc_LDADD = libkabc.la ../kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
+
+check_PROGRAMS = testlock
+
+testlock_LDFPLAGS = $(all_libraries)
+testlock_LDADD = libkabc.la
+testlock_SOURCES = testlock.cpp
 
 EXTRA_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
   testaddressee testaddresseelist testaddressfmt kabcargl testaddresslineedit
