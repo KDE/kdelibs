@@ -36,13 +36,15 @@ class RegressionTest;
 /**
  * @internal
  */
-class PageLoader : public QObject
+class PartMonitor : public QObject
 {
   Q_OBJECT
 public:
-    static void loadPage(KHTMLPart *part, KURL url);
-    bool m_started;
+    PartMonitor(KHTMLPart *_part);
+    void waitForCompletion();
+    bool m_inLoop;
     bool m_completed;
+    KHTMLPart *m_part;
 public slots:
     void partCompleted();
 };
@@ -70,7 +72,7 @@ public:
     bool implementsCall() const;
     KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
 
-    enum { ReportResult, CheckOutput };
+    enum { Print, ReportResult, CheckOutput };
 
 private:
     RegressionTest *m_regTest;
@@ -102,7 +104,7 @@ public:
     bool implementsCall() const;
     KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args);
 
-    enum { OpenPage, Open, Write, Close };
+    enum { OpenPage, OpenPageAsUrl, Begin, Write, End, ExecuteScript };
 private:
     KHTMLPart *m_part;
     int id;
@@ -123,8 +125,9 @@ public:
     void testStaticFile(QString filename);
     void testJSFile(QString filename);
     bool checkOutput(QString againstFilename, QByteArray data);
-    void runTests(QString relDir = "");
-    void reportResult(bool passed, QString testname = "", QString description = "");
+    bool runTests(QString relPath = "", bool mustExist = false);
+    void reportResult(bool passed, QString description = "");
+    void createMissingDirs(QString path);
 
     KHTMLPart *m_part;
     QString m_sourceFilesDir;
@@ -136,8 +139,9 @@ public:
     QString m_currentTest;
 
     bool m_getOutput;
-    int m_totalPassed;
-    int m_totalFailed;
+    int m_passes;
+    int m_failures;
+    int m_errors;
 
     static RegressionTest *curr;
 };

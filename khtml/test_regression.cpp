@@ -70,6 +70,7 @@
 #include "ecma/kjs_dom.h"
 #include "ecma/kjs_window.h"
 #include "ecma/kjs_binding.h"
+#include "ecma/kjs_proxy.h"
 
 using namespace khtml;
 using namespace DOM;
@@ -77,28 +78,29 @@ using namespace KJS;
 
 // -------------------------------------------------------------------------
 
-void PageLoader::loadPage(KHTMLPart *part, KURL url)
+PartMonitor::PartMonitor(KHTMLPart *_part)
 {
-    PageLoader *pl = new PageLoader();
+    m_part = _part;
+    m_inLoop = false;
+    m_completed = false;
+    connect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
+}
 
-    pl->m_started = false;
-    pl->m_completed = false;
-
-    connect(part,SIGNAL(completed()),pl,SLOT(partCompleted()));
-    part->openURL(url);
-    if (!pl->m_completed) {
-	pl->m_started = true;
-	kapp->enter_loop();
+void PartMonitor::waitForCompletion()
+{
+    if (!m_completed) {
+        m_inLoop = true;
+        kapp->enter_loop();
     }
 }
 
-void PageLoader::partCompleted()
+void PartMonitor::partCompleted()
 {
-    if (!m_started)
-	m_completed = true;
+    if (!m_inLoop)
+        m_completed = true;
     else {
-	kapp->exit_loop();
-	delete this;
+        kapp->exit_loop();
+	disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
     }
 }
 
@@ -107,7 +109,9 @@ void PageLoader::partCompleted()
 RegTestObject::RegTestObject(ExecState *exec, RegressionTest *_regTest)
 {
     m_regTest = _regTest;
-    put(exec, "reportResult", Object(new RegTestFunction(exec,m_regTest,RegTestFunction::ReportResult,3)), DontEnum);
+    put(exec,"print",Object(new RegTestFunction(exec,m_regTest,RegTestFunction::Print,1)), DontEnum);
+    put(exec,"reportResult",Object(new RegTestFunction(exec,m_regTest,RegTestFunction::ReportResult,3)), DontEnum);
+    put(exec,"checkOutput",Object(new RegTestFunction(exec,m_regTest,RegTestFunction::CheckOutput,1)), DontEnum);
 }
 
 RegTestFunction::RegTestFunction(ExecState *exec, RegressionTest *_regTest, int _id, int length)
@@ -126,15 +130,17 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 {
     Value result = Undefined();
     switch (id) {
+	case Print: {
+	    UString str = args[0].toString(exec);
+	    printf("%s\n",str.ascii());
+	    break;
+	}
 	case ReportResult: {
             bool passed = args[0].toBoolean(exec);
-            QString testname = args[1].toString(exec).qstring();
+            QString description = args[1].toString(exec).qstring();
             if (args[1].isA(UndefinedType) || args[1].isA(NullType))
-                testname = "";
-            QString description = args[2].toString(exec).qstring();
-            if (args[2].isA(UndefinedType) || args[2].isA(NullType))
                 description = "";
-            m_regTest->reportResult(passed,testname,description);
+            m_regTest->reportResult(passed,description);
             break;
         }
 	case CheckOutput: {
@@ -154,9 +160,11 @@ KHTMLPartObject::KHTMLPartObject(ExecState *exec, KHTMLPart *_part)
 {
     m_part = _part;
     put(exec, "openPage", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::OpenPage,1)), DontEnum);
-    put(exec, "open",     Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Open,1)), DontEnum);
+    put(exec, "openPageAsUrl", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::OpenPageAsUrl,1)), DontEnum);
+    put(exec, "begin",     Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Begin,1)), DontEnum);
     put(exec, "write",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Write,1)), DontEnum);
-    put(exec, "close",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::Close,0)), DontEnum);
+    put(exec, "end",    Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::End,0)), DontEnum);
+    put(exec, "executeScript", Object(new KHTMLPartFunction(exec,m_part,KHTMLPartFunction::ExecuteScript,0)), DontEnum);
 }
 
 Value KHTMLPartObject::get(ExecState *exec, const UString &propertyName) const
@@ -187,20 +195,80 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 
     switch (id) {
         case OpenPage: {
+	    if (args[0].type() == NullType || args[0].type() == NullType) {
+		exec->setException(Error::create(exec, GeneralError,"No filename specified"));
+		return Undefined();
+	    }
+
             QString filename = args[0].toString(exec).qstring();
             QString fullFilename = QFileInfo(RegressionTest::curr->m_currentBase+"/"+filename).absFilePath();
             KURL url;
             url.setProtocol("file");
             url.setPath(fullFilename);
-            PageLoader::loadPage(m_part,url);
+            PartMonitor pm(m_part);
+            m_part->openURL(url);
+            pm.waitForCompletion();
+            break;
         }
+	case OpenPageAsUrl: {
+	    if (args[0].type() == NullType || args[0].type() == UndefinedType) {
+		exec->setException(Error::create(exec, GeneralError,"No filename specified"));
+		return Undefined();
+	    }
+	    if (args[1].type() == NullType || args[1].type() == UndefinedType) {
+		exec->setException(Error::create(exec, GeneralError,"No url specified"));
+		return Undefined();
+	    }
+
+            QString filename = args[0].toString(exec).qstring();
+            QString url = args[1].toString(exec).qstring();
+            QFile file(RegressionTest::curr->m_currentBase+"/"+filename);
+	    if (!file.open(IO_ReadOnly)) {
+		exec->setException(Error::create(exec, GeneralError,
+						 QString("Error reading " + filename).latin1()));
+	    }
+	    else {
+		QByteArray fileData;
+		QDataStream stream(fileData,IO_WriteOnly);
+		char buf[1024];
+		int bytesread;
+		while (!file.atEnd()) {
+		    bytesread = file.readBlock(buf,1024);
+		    stream.writeRawBytes(buf,bytesread);
+		}
+		file.close();
+		QString contents(fileData);
+		PartMonitor pm(m_part);
+		m_part->begin(url);
+		m_part->write(contents);
+		m_part->end();
+		pm.waitForCompletion();
+	    }
+	    break;
+	}
+	case Begin: {
+            QString url = args[0].toString(exec).qstring();
+            m_part->begin(url);
             break;
-        case Open:
+        }
+        case Write: {
+            QString str = args[0].toString(exec).qstring();
+            m_part->write(str);
             break;
-        case Write:
+        }
+        case End: {
+            m_part->end();
             break;
-        case Close:
-            break;
+        }
+	case ExecuteScript: {
+	    QString code = args[0].toString(exec).qstring();
+	    Completion comp;
+	    KJSProxy *proxy = m_part->jScript();
+	    proxy->evaluate("",0,code,0,&comp);
+	    if (comp.complType() == Throw)
+		exec->setException(comp.value());
+	    break;
+	}
     }
 
     return result;
@@ -208,11 +276,18 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 
 // -------------------------------------------------------------------------
 
-static KCmdLineOptions options[] = {
-				     { "genoutput", "Generate output (instead of checking)", 0 } ,
-				     { "+source_dir", "Directory containing html files to prcoess", 0 } ,
-				     { "+output_dir", "Directory for comparison/storage of KHTMLPart internal structure dump", 0 } ,
-				     {0, 0, 0}, };
+static KCmdLineOptions options[] =
+{
+  { "g", 0, 0 } ,
+  { "genoutput", "Generate output (instead of checking)", 0 } ,
+  { "s", 0, 0 } ,
+  { "show", "Show the window while running tests", 0 } ,
+  { "t", 0, 0 } ,
+  { "test <filename>", "Run only a single test", 0 } ,
+  { "+source_dir", "Directory containing html files to prcoess", 0 } ,
+  { "+output_dir", "Directory for comparison/storage of KHTMLPart internal structure dump", 0 } ,
+  {0, 0, 0}
+};
 
 int main(int argc, char *argv[])
 {
@@ -221,6 +296,7 @@ int main(int argc, char *argv[])
 
     KApplication a;
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
+
     if ( args->count() < 2 ) {
 	KCmdLineArgs::usage();
 	::exit( 1 );
@@ -232,7 +308,7 @@ int main(int argc, char *argv[])
 	exit(1);
     }
 
-    QFileInfo outputDir(args->arg(0));
+    QFileInfo outputDir(args->arg(1));
     if (!outputDir.exists() || !outputDir.isDir() || !outputDir.isDir()) {
 	fprintf(stderr,"ERROR: Output directory \"%s\": no such directory.\n",args->arg(1));
 	exit(1);
@@ -249,21 +325,31 @@ int main(int argc, char *argv[])
     part->executeScript(""); // force the part to create an interpreter
 //    part->setJavaEnabled(true);
 
+    if (args->isSet("show"))
+	toplevel->show();
+
     a.setTopWidget(part->widget());
 
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,args->arg(0),
 							args->arg(1),args->isSet("genoutput"));
-    regressionTest->runTests();
 
+    bool result;
+    if (!args->getOption("test").isNull())
+	result = regressionTest->runTests(args->getOption("test"),true);
+    else
+	result = regressionTest->runTests();
+    if (result) {
     if (args->isSet("genoutput")) {
 	printf("\nOutput generation completed.\n");
     }
     else {
 	printf("\nTests completed.\n");
-	printf("Passed:   %d\n",regressionTest->m_totalPassed);
-	printf("Failed:   %d\n",regressionTest->m_totalFailed);
-	printf("Total:    %d\n",regressionTest->m_totalPassed+regressionTest->m_totalFailed);
+	printf("Passes:   %d\n",regressionTest->m_passes);
+	printf("Failures: %d\n",regressionTest->m_failures);
+	printf("Errors:   %d\n",regressionTest->m_errors);
+	printf("Total:    %d\n",regressionTest->m_passes+regressionTest->m_failures+regressionTest->m_errors);
+    }
     }
 
     // cleanup
@@ -276,7 +362,11 @@ int main(int argc, char *argv[])
     khtml::CSSStyleSelector::clear();
     khtml::RenderStyle::cleanup();
 
-    return 0;
+    // Only return a 0 exit code if all tests were successful
+    if (regressionTest->m_failures == 0 && regressionTest->m_errors == 0)
+      return 0;
+    else
+      return 1;
 }
 
 // -------------------------------------------------------------------------
@@ -292,40 +382,72 @@ RegressionTest::RegressionTest(KHTMLPart *part, QString _sourceFilesDir,
     m_outputFilesDir = _outputFilesDir;
     m_genOutput = _genOutput;
     m_currentBase = "";
-    m_totalPassed = 0;
-    m_totalFailed = 0;
+    m_passes = 0;
+    m_failures = 0;
+    m_errors = 0;
     m_currentCategory = "";
     m_currentTest = "";
 
     curr = this;
 };
 
-void RegressionTest::runTests(QString relDir)
+bool RegressionTest::runTests(QString relPath, bool mustExist)
 {
-    QDir sourceDir(m_sourceFilesDir+"/"+relDir);
-    for (uint fileno = 0; fileno < sourceDir.count(); fileno++) {
-	QString filename = sourceDir[fileno];
+    if (!QFile(m_sourceFilesDir+"/"+relPath).exists()) {
+	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());
+	return false;
+    }
 
-	QString relFilename;
-	if (relDir == "")
-	    relFilename = filename;
-	else
-	    relFilename = relDir+"/"+filename;
+    QString fullPath = m_sourceFilesDir+"/"+relPath;
+    QFileInfo info(fullPath);
 
-	m_currentBase = m_sourceFilesDir+"/"+relDir;
-	m_currentCategory = relDir;
-	m_currentTest = filename;
-	if (filename != "." && filename != ".." &&
-            QFileInfo(m_sourceFilesDir+"/"+relFilename).isDir()) {
-	    runTests(relFilename);
+    if (!info.exists() && mustExist) {
+	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());
+	return false;
+    }
+
+    if (!info.isReadable() && mustExist) {
+	fprintf(stderr,"%s: Access denied\n",relPath.latin1());
+	return false;
+    }
+
+    if (info.isDir()) {
+
+	QDir sourceDir(m_sourceFilesDir+"/"+relPath);
+	for (uint fileno = 0; fileno < sourceDir.count(); fileno++) {
+	    QString filename = sourceDir[fileno];
+	    QString relFilename = relPath == "" ? filename : relPath+"/"+filename;
+	    if (filename != "." && filename != "..")
+		runTests(relFilename,false);
 	}
-	if (filename.endsWith(".html") && !filename.endsWith("-js.html")) {
-	    testStaticFile(relFilename);
+
+    }
+    else if (info.isFile()) {
+	QString relativeDir = QFileInfo(relPath).dirPath();
+	QString filename = info.fileName();
+	m_currentBase = m_sourceFilesDir+"/"+relativeDir;
+	m_currentCategory = relativeDir;
+	m_currentTest = filename;
+	if (filename.endsWith(".html") && !filename.endsWith("-js.html")){
+	    testStaticFile(relPath);
 	}
 	else if (filename.endsWith(".js")) {
-	    testJSFile(relFilename);
+	    testJSFile(relPath);
+	}
+	else if (mustExist) {
+	    fprintf(stderr,"%s: Not a valid test file (must be .html or .js)\n",relPath.latin1());
+	    return false;
+	}
+
+    }
+    else {
+	if (mustExist) {
+	    fprintf(stderr,"%s: Not a regular file\n",relPath.latin1());
+	    return false;
 	}
     }
+
+    return true;
 }
 
 QByteArray RegressionTest::getPartOutput()
@@ -350,7 +472,9 @@ void RegressionTest::testStaticFile(QString filename)
     KURL url;
     url.setProtocol("file");
     url.setPath(QFileInfo(m_sourceFilesDir+"/"+filename).absFilePath());
-    PageLoader::loadPage(m_part,url);
+    PartMonitor pm(m_part);
+    m_part->openURL(url);
+    pm.waitForCompletion();
 
     // compare with (or generate) output file
     QByteArray dumpData = getPartOutput();
@@ -374,7 +498,7 @@ void RegressionTest::testJSFile(QString filename)
 
     if (!sourceFile.open(IO_ReadOnly)) {
         fprintf(stderr,"Error reading file %s\n",fullSourceName.latin1());
-        exit(-1);
+        exit(1);
     }
 
     QByteArray fileData;
@@ -391,7 +515,13 @@ void RegressionTest::testJSFile(QString filename)
     sourceFile.close();
     QString code(fileData);
 
-    interp.evaluate(code.latin1());
+    Completion c = interp.evaluate(code.latin1());
+
+    if (c.complType() == Throw) {
+	QString errmsg = c.value().toString(interp.globalExec()).qstring();
+	printf("ERROR: %s (%s)\n",filename.latin1(),errmsg.latin1());
+	m_errors++;
+    }
 }
 
 bool RegressionTest::checkOutput(QString againstFilename, QByteArray data)
@@ -403,7 +533,7 @@ bool RegressionTest::checkOutput(QString againstFilename, QByteArray data)
 	QFile file(absFilename);
 	if (!file.open(IO_ReadOnly)) {
 	    fprintf(stderr,"Error reading file %s\n",absFilename.latin1());
-	    exit(-1);
+	    exit(1);
 	}
 
 	QByteArray fileData;
@@ -422,37 +552,36 @@ bool RegressionTest::checkOutput(QString againstFilename, QByteArray data)
     }
     else {
 	// generate result file
-
-	QDir dir(m_outputFilesDir);
-	QString absParentDir = absFilename.mid(0,absFilename.findRev('/'));
-	dir.mkdir(absParentDir,true);
-
+	QFileInfo info(absFilename);
+	createMissingDirs(info.dirPath());
 	QFile file(absFilename);
 	if (!file.open(IO_WriteOnly)) {
 	    fprintf(stderr,"Error writing to file %s\n",absFilename.latin1());
-	    exit(-1);
+	    exit(1);
 	}
 
 	QDataStream fileOut(&file);
 	fileOut.writeRawBytes(data.data(),data.size());
 	file.close();
 
+	printf("Generated %s\n",againstFilename.latin1());
+
 	return true;
     }
 }
 
-void RegressionTest::reportResult(bool passed, QString testname, QString description)
+void RegressionTest::reportResult(bool passed, QString description)
 {
     if (m_genOutput)
 	return;
 
     if (passed) {
 	printf("PASS: ");
-	m_totalPassed++;
+	m_passes++;
     }
     else {
 	printf("FAIL: ");
-	m_totalFailed++;
+	m_failures++;
     }
 
     if (m_currentCategory != "")
@@ -460,13 +589,37 @@ void RegressionTest::reportResult(bool passed, QString testname, QString descrip
 
     printf("[%s]",m_currentTest.latin1());
 
-    if (testname != "")
-	printf(" %s",testname.latin1());
-
     if (description != "")
-	printf(" (%s)",description.latin1());
+	printf(" %s",description.latin1());
 
     printf("\n");
+}
+
+void RegressionTest::createMissingDirs(QString path)
+{
+    QFileInfo dirInfo(path);
+    if (dirInfo.exists())
+	return;
+
+    QStringList pathComponents;
+    QFileInfo parentDir = dirInfo;
+    pathComponents.prepend(parentDir.absFilePath());
+    while (!parentDir.exists()) {
+	QString parentPath = parentDir.absFilePath();
+	int slashPos = parentPath.findRev('/');
+	if (slashPos < 0)
+	    break;
+	parentPath = parentPath.left(slashPos);
+	pathComponents.prepend(parentPath);
+	parentDir = QFileInfo(parentPath);
+    }
+    for (uint pathno = 1; pathno < pathComponents.count(); pathno++) {
+	if (!QFileInfo(pathComponents[pathno]).exists() &&
+	    !QDir(pathComponents[pathno-1]).mkdir(pathComponents[pathno])) {
+	    fprintf(stderr,"Error creating directory %s\n",pathComponents[pathno].latin1());
+	    exit(1);
+	}
+    }
 }
 
 #include "test_regression.moc"

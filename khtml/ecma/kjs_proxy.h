@@ -38,6 +38,7 @@ namespace DOM {
 namespace KJS {
   class List;
   class Interpreter;
+  class Completion;
 }
 
 /**
@@ -49,7 +50,8 @@ class KJSProxy {
 public:
   KJSProxy() { m_handlerLineno = 0; }
   virtual ~KJSProxy() { }
-  virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n) = 0;
+  virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
+			    KJS::Completion *completion = 0) = 0;
   virtual void clear() = 0;
   virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString code) = 0;
   virtual void finishedWithEvent(const DOM::Event &event) = 0;

@@ -44,7 +44,8 @@ class KJSProxyImpl : public KJSProxy {
 public:
   KJSProxyImpl(KHTMLPart *part);
   virtual ~KJSProxyImpl();
-  virtual QVariant evaluate(QString filename, int baseLine, const QString&str, const DOM::Node &n);
+  virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
+			    Completion *completion = 0);
   virtual void clear();
   virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString code);
   virtual void finishedWithEvent(const DOM::Event &event);
@@ -111,7 +112,7 @@ KJSProxyImpl::~KJSProxyImpl()
 }
 
 QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
-                                const QString&str, const DOM::Node &n) {
+                                const QString&str, const DOM::Node &n, Completion *completion) {
   // evaluate code. Returns the JS return value or an invalid QVariant
   // if there was none, an error occured or the type couldn't be converted.
 
@@ -147,6 +148,9 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   guard.stop();
 
   bool success = ( comp.complType() == Normal ) || ( comp.complType() == ReturnValue );
+
+  if (completion)
+    *completion = comp;
 
 #ifdef KJS_DEBUGGER
     //    KJSDebugWin::instance()->setCode(QString::null);
