@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
   check("KURL::host()", url1.host(), QString::null);
   check("KURL::ref()", url1.ref(), "gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
-  lst = KURL::split( u1 );
+  lst = KURL::split( url1 );
 /*
   KURL * u = lst.first();
   for ( ; u ; u = lst.next())
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
   printf("\n* URL is %s\n",u3);
   check("KURL::hasSubURL()", KURL(u3).hasSubURL() ? "yes" : "no", "no");
   lst.clear();
-  lst = KURL::split( u3 );
+  lst = KURL::split( KURL(u3) );
   check("KURL::split()", lst.count()==1 ? "1" : "error", "1");
   check("KURL::split()", lst.first().url(), "ftp://host/dir1/dir2/myfile.txt");
   // cdUp code

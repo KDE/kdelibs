@@ -17,17 +17,17 @@ public:
     kdDebug() << k_lineinfo << "error on this line" << endl;
     kdDebug(2 == 2) << "this is right " << perror << endl;
     kdDebug() << "Before instance creation" << endl;
-    kDebugInfo(1202,"Before instance creation");
+    kdDebug(1202) << "Before instance creation" << endl;
     KInstance i("kdebugtest");
-    kDebugInfo(150,"kDebugInfo with inexisting area number");
-    kDebugInfo(1202,"This number has a value of %d",5);
-    // kDebugInfo("This number should come out as appname %d %s", 5, "test");
-    kDebugWarning("1+1 = %d",1+1+1);
+    kdDebug(150) << "kDebugInfo with inexisting area number" << endl;
+    kdDebug(1202) << "This number has a value of " << 5 << endl;
+    // kdDebug() << "This number should come out as appname " << 5 << " " << "test" << endl;
+    kdWarning() << "1+1 = " << 1+1+1 << endl;
     kdError(1+1 != 2) << "there is something really odd!" << endl;
     QString s = "mystring";
     kdDebug() << s << endl;
-    kDebugError(1202,"Error !!!");
-    kDebugError("Error with no area");
+    kdError(1202) << "Error !!!" << endl;
+    kdError() << "Error with no area" << endl;
     
     kdDebug() << "Printing a null QWidget pointer: " << (QWidget*)0 << endl;
   }
