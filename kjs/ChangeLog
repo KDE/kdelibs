@@ -1,3 +1,8 @@
+2004-02-21  Harri Porten  <porten@kde.org>
+
+	* property_map.*: merged index addition from JavaScriptCore to
+	keep the property order stable.
+
 2004-01-25  Harri Porten  <porten@kde.org>
 
 	* nodes.cpp: better error messages when property access fails

@@ -509,7 +509,7 @@ char *UString::ascii() const
 void UString::globalClear()
 {
   delete [] statBuffer;
-  statBuffer = 0L;
+  statBuffer = 0;
   statBufferSize = 0;
 }
 #endif
@@ -594,7 +594,7 @@ static int skipInfString(const char *start)
   return c-start;
 }
 
-double UString::toDouble( bool tolerateTrailingJunk, bool tolerateEmptyString ) const
+double UString::toDouble(bool tolerateTrailingJunk, bool tolerateEmptyString) const
 {
   double d;
   double sign = 1;
@@ -707,6 +707,22 @@ UString UString::toUpper() const
   for (int i = 0; i < size(); i++)
     u[i] = u[i].toUpper();
   return u;
+}
+
+unsigned int UString::toUInt32(bool *ok) const
+{
+  double d = toDouble();
+  bool b = true;
+
+  if (isNaN(d) || d != static_cast<unsigned>(d)) {
+    b = false;
+    d = 0;
+  }
+
+  if (ok)
+    *ok = b;
+
+  return static_cast<unsigned>(d);
 }
 
 unsigned int UString::toStrictUInt32(bool *ok) const

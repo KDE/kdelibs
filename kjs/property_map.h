@@ -55,6 +55,7 @@ namespace KJS {
         UString::Rep *key;
         ValueImp *value;
         int attributes;
+        int index;
     };
 
     class PropertyMap {
@@ -77,11 +78,10 @@ namespace KJS {
         void restore(const SavedProperties &p);
 
     private:
-        int hash(const UString::Rep *) const;
         static bool keysMatch(const UString::Rep *, const UString::Rep *);
         void expand();
         
-        void insert(UString::Rep *, ValueImp *value, int attributes);
+        void insert(UString::Rep *, ValueImp *value, int attributes, int index);
         
         void checkConsistency();
         
