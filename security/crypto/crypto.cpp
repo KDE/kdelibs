@@ -105,12 +105,12 @@ QString whatstr;
   tabSSL = new QFrame(this);
   grid = new QGridLayout(tabSSL, 7, 2, KDialog::marginHint(),
                                         KDialog::spacingHint() );
-  mUseTLS = new QCheckBox(i18n("Use &TLS instead of SSLv2/v3"), tabSSL);
+  mUseTLS = new QCheckBox(i18n("Enable &TLS support if supported by the server."), tabSSL);
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mUseTLS, 0, 0);
-  whatstr = i18n("TLS is the proposed new implementation of secure sockets."
-                "  Enabling TLS in this form disables SSLv2 and SSLv3.  "
-                "You should leave this turned off.");
+  whatstr = i18n("TLS is the newest revision of the SSL protocol."
+                 "  It integrates better with other protocols and has"
+                 " replaced SSL in protocols such as POP3 and SMTP.");
   QWhatsThis::add(mUseTLS, whatstr);
 
   mUseSSLv2 = new QCheckBox(i18n("Enable SSLv&2"), tabSSL);
@@ -470,8 +470,8 @@ void KCryptoConfig::configChanged()
 void KCryptoConfig::load()
 {
 #ifdef HAVE_SSL
-  config->setGroup("TLSv1");
-  mUseTLS->setChecked(config->readBoolEntry("Enabled", false));
+  config->setGroup("TLS");
+  mUseTLS->setChecked(config->readBoolEntry("Enabled", true));
 
   config->setGroup("SSLv2");
   mUseSSLv2->setChecked(config->readBoolEntry("Enabled", true));
@@ -526,8 +526,7 @@ void KCryptoConfig::load()
 void KCryptoConfig::save()
 {
 #ifdef HAVE_SSL
-  if (!mUseTLS->isChecked() &&
-      !mUseSSLv2->isChecked() &&
+  if (!mUseSSLv2->isChecked() &&
       !mUseSSLv3->isChecked())
     KMessageBox::information(this, i18n("If you don't select at least one"
                                        " SSL algorithm, either SSL will not"
@@ -535,7 +534,7 @@ void KCryptoConfig::save()
                                        " forced to choose a suitable default."),
                                    i18n("SSL"));
 
-  config->setGroup("TLSv1");
+  config->setGroup("TLS");
   config->writeEntry("Enabled", mUseTLS->isChecked());
 
   config->setGroup("SSLv2");
@@ -609,7 +608,7 @@ void KCryptoConfig::save()
 
 void KCryptoConfig::defaults()
 {
-  mUseTLS->setChecked(false);
+  mUseTLS->setChecked(true);
   mUseSSLv2->setChecked(true);
   mUseSSLv3->setChecked(false);  // GS 3/2001 - this seems to be more compatible
   mWarnOnEnter->setChecked(false);
@@ -669,7 +668,7 @@ void KCryptoConfig::slotCWcompatible() {
     item->setOn( item->bits() >= 56 );
   }
 
-  mUseTLS->setChecked(false);
+  mUseTLS->setChecked(true);
   mUseSSLv2->setChecked(true);
   mUseSSLv3->setChecked(false);
   configChanged();
@@ -726,7 +725,7 @@ void KCryptoConfig::slotCWall() {
     item->setOn( true );
   }
 
-  mUseTLS->setChecked(false);
+  mUseTLS->setChecked(true);
   mUseSSLv2->setChecked(true);
   mUseSSLv3->setChecked(true);
   configChanged();
