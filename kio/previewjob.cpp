@@ -195,7 +195,7 @@ PreviewJob::PreviewJob( const KURL::List &items, int width, int height, int icon
 PreviewJob::~PreviewJob()
 {
     if (d->shmaddr)
-        shmdt(d->shmaddr);
+        shmdt((char*)d->shmaddr);
     delete d;
 }
 
@@ -412,7 +412,7 @@ void PreviewJob::createThumbnail( QString pixPath )
     if (d->shmid == -1)
     {
         if (d->shmaddr)
-            shmdt(d->shmaddr);
+            shmdt((char*)d->shmaddr);
         d->shmid = shmget(IPC_PRIVATE, d->width * d->height * 4, IPC_CREAT|0777);
         if (d->shmid != -1)
         {

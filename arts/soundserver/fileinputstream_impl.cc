@@ -68,7 +68,7 @@ public:
 	{
 		if(data != 0)
 		{
-			munmap(data, _size);
+			munmap((char*)data, _size);
 			data = 0;
 		}
 

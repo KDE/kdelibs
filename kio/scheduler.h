@@ -204,6 +204,9 @@ namespace KIO {
         void slotAuthorizationKey( const QCString&, const QCString&, bool keep );
         void slotDelAuthorization( const QCString& );
 
+    public:
+	class JobData;
+
     protected:
         bool startJobScheduled(ProtocolInfo *protInfo);
         bool startJobDirect();
@@ -211,7 +214,6 @@ namespace KIO {
 
     private:
         class ProtocolInfoDict;
-        class JobData;
         class ExtraJobData;
 
 	Scheduler(const Scheduler&);

@@ -146,7 +146,7 @@ void KIOInputStream_impl::processQueue()
 		DataPacket<mcopbyte> *packet = m_sendqueue.front();
 		m_sendqueue.pop();
 		
-		packet->size = min(PACKET_SIZE, m_size - m_position);
+		packet->size = std::min(PACKET_SIZE, m_size - m_position);
 		memcpy(packet->contents, m_data + m_position, packet->size);
 		m_position += packet->size;
 		packet->send();
