@@ -1,3 +1,6 @@
+2003-10-24  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_form.cpp (updateFromElement): Fix coolo's commit (#61347)
 
 2003-10-24  Germain Garand  <germain@ebooksfrance.org>
 	* General scope of the change:

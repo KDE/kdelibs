@@ -1019,8 +1019,9 @@ void RenderSelect::updateFromElement()
                     KListBox *l = static_cast<KListBox*>(m_widget);
                     l->insertItem(text, listIndex);
                     DOMString disabled = optElem->getAttribute(ATTR_DISABLED);
-                    if (!disabled.isEmpty() && l->item( listIndex ))
+                    if (!disabled.isNull() && l->item( listIndex )) {
                         l->item( listIndex )->setSelectable( false );
+                    }
                 }  else
                     static_cast<KComboBox*>(m_widget)->insertItem(text, listIndex);
             }
