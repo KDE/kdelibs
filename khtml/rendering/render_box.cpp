@@ -551,7 +551,8 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
 #endif
     if (isReplaced()) {
         setPos( box->xPos(), box->yPos() );
-        box->detach(renderArena());
+        // This seems wrong
+        // box->detach(renderArena());
     }
 }
 
