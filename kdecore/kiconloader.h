@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.19  1999/03/29 04:14:37  ssk
+   Rewrote some docs.
+
    Revision 1.18  1999/03/09 16:39:50  dfaure
    Merging with 1.1 branch : initPath(), and header doc update.
 
@@ -229,7 +232,7 @@ public:
 
 	@return the physical path to the named icon.
   */
-  QString KIconLoader::getIconPath( const QString &name, 
+  QString getIconPath( const QString &name, 
   		bool always_valid=false);
 
 
