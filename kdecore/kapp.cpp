@@ -1698,16 +1698,6 @@ void KApplication::propagateSettings(SettingsCategory arg)
     b = config->readBoolEntry("EffectFadeTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
 
-#ifdef QT_AUTO_COPY_TO_CLIPBOARD
-    b = config->readBoolEntry("AutoCopyToClipboard", false);
-    QApplication::setAutoCopyToClipboard(b);
-#endif
-
-#ifdef QT_AUTO_COPY_TO_CLIPBOARD
-    b = config->readBoolEntry("AutoCopyToClipboard", false);
-    QApplication::setAutoCopyToClipboard(b);
-#endif
-
     emit settingsChanged(arg);
 }
 
