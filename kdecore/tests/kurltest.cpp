@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include <kurl.h>
 #include <stdio.h>
 #include <kapplication.h>
@@ -37,6 +39,7 @@ int main(int argc, char *argv[])
   check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
+  check( "prettyURL()", emptyURL.prettyURL(), "");
 
   emptyURL = "";
   check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
@@ -592,7 +595,11 @@ int main(int argc, char *argv[])
 
   KURL amantia( "http://%E1.foo" );
   check("amantia.isValid()", amantia.isValid() ? "true" : "false", "true");
+#ifdef HAVE_IDNA_H  
+  check("amantia.url()", amantia.url(), "http://xn--80a.foo");   // Non-ascii is allowed in IDN domain names.
+#else
   check("amantia.url()", amantia.url(), "http://"); // OK, an escaped char in a hostname is really evil, not sure what should happen.
+#endif  
 
   KURL smb("smb://domain;username:password@server/share");
   check("smb.isValid()", smb.isValid() ? "true" : "false", "true");
@@ -727,6 +734,8 @@ int main(int argc, char *argv[])
   check("KURL(\"http://www.foobar.com/\").uriMode()", QString::number(url1.uriMode()), QString::number(KURL::URL));
   url1 = "mailto:user@host.com";
   check("KURL(\"mailto:user@host.com\").uriMode()", QString::number(url1.uriMode()), QString::number(KURL::Mailto));
+  check("KURL(\"mailto:user@host.com\").url()", url1.url(), "mailto:user@host.com");
+  check("KURL(\"mailto:user@host.com\").url(0, 106)", url1.url(0, 106), "mailto:user@host.com");
   url1 = "data:text/plain,foobar?gazonk=flarp";
   check("KURL(\"data:text/plain,foobar?gazonk=flarp\").uriMode()", QString::number(url1.uriMode()), QString::number(KURL::RawURI));
   check("KURL(\"data:text/plain,foobar?gazonk=flarp\").path()", url1.path(), "text/plain,foobar?gazonk=flarp");

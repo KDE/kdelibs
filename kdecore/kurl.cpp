@@ -116,6 +116,8 @@ static QString encodeHost( const QString& segment, bool encode_slash, int encodi
 #ifndef KDE_QT_ONLY
   Q_UNUSED( encode_slash );
   Q_UNUSED( encoding_hint );
+  if (!segment.isEmpty() && (segment[0] == '.'))
+     return '.' + KIDNA::toAscii(segment.mid(1));
   return KIDNA::toAscii(segment);
 #else
   return encode(segment, encode_slash, encoding_hint);
@@ -1263,7 +1265,20 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encod
      tmp = path( _trailing );
      if ( _no_empty_path && tmp.isEmpty() )
         tmp = "/";
-     tmp = encode( tmp, false, encoding_hint );
+     if (m_iUriMode == Mailto)
+     {
+        int atIndex = tmp.findRev('@');
+        if (atIndex == -1)
+           tmp = encode( tmp, false, encoding_hint );
+        else
+           tmp = encode( tmp.left(atIndex), false, encoding_hint) +
+                 '@' + 
+                 encode( tmp.mid(atIndex+1), false, encoding_hint);
+     }
+     else
+     {
+        tmp = encode( tmp, false, encoding_hint );
+     }
   }
 
   // TODO apply encoding_hint to the query
@@ -1884,7 +1899,10 @@ KURL::setHost( const QString& _txt )
   {
   case URL:
 #ifndef KDE_QT_ONLY
-   m_strHost = KIDNA::toUnicode(_txt);
+   if (!_txt.isEmpty() && (_txt[0] == '.'))
+      m_strHost = "." + KIDNA::toUnicode(_txt.mid(1));
+   else
+      m_strHost = KIDNA::toUnicode(_txt);
    if (m_strHost.isEmpty())
       m_strHost = _txt.lower(); // Probably an invalid hostname, but...
 #else
