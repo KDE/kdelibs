@@ -751,10 +751,17 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
 
 void FileProtocol::stat( const KURL & url )
 {
-    QCString _path( QFile::encodeName(url.path()));
+    /* directories may not have a slash at the end if
+     * we want to stat() them; it requires that we
+     * change into it .. which may not be allowed
+     * stat("/is/unaccessible")  -> rwx------
+     * stat("/is/unaccessible/") -> EPERM            H.Z.
+     * This is the reason for the -1
+     */
+    QCString _path( QFile::encodeName(url.path(-1)));
     struct stat buff;
     if ( ::lstat( _path.data(), &buff ) == -1 ) {
-	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+	error( KIO::ERR_DOES_NOT_EXIST, url.path(-1) );
 	return;
     }
 
@@ -762,7 +769,7 @@ void FileProtocol::stat( const KURL & url )
     if ( !createUDSEntry( url.fileName(), _path, entry ) )
     {
 	// Should never happen
-	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+	error( KIO::ERR_DOES_NOT_EXIST, url.path(-1) );
 	return;
     }
 #if 0
@@ -954,6 +961,14 @@ void FileProtocol::slotInfoMessage( const QString & msg )
   infoMessage( msg );
 }
 
+static QString shellQuote( const QString &_str )
+{
+    // Credits to Walter, says Bernd G. :)
+    QString str(_str);
+    str.replace(QRegExp(QString::fromLatin1("'")), QString::fromLatin1("'\"'\"'"));
+    return QString::fromLatin1("'")+str+'\'';
+}
+
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     kdDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
@@ -962,8 +977,8 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     KTempFile tmpFile;
     QCString tmpFileC = QFile::encodeName(tmpFile.name());
     const char *tmp = tmpFileC.data();
-    QCString dev = QFile::encodeName( _dev );
-    QCString point = QFile::encodeName( _point );
+    QCString dev = QFile::encodeName( shellQuote(_dev) ); // get those ready to be given to a shell
+    QCString point = QFile::encodeName( shellQuote(_point) );
     QCString fstype = _fstype;
     QCString readonly = _ro ? "-r" : "";
 
@@ -971,15 +986,15 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     for ( int step = 0 ; step <= 1 ; step++ )
     {
         // Mount using device only if no fstype nor mountpoint (KDE-1.x like)
-        if ( !dev.isEmpty() && point.isEmpty() && fstype.isEmpty() )
+        if ( !_dev.isEmpty() && _point.isEmpty() && fstype.isEmpty() )
             buffer.sprintf( "mount %s 2>%s", dev.data(), tmp );
         else
           // Mount using the mountpoint, if no fstype nor device (impossible in first step)
-          if ( !point.isEmpty() && dev.isEmpty() && fstype.isEmpty() )
+          if ( !_point.isEmpty() && _dev.isEmpty() && fstype.isEmpty() )
             buffer.sprintf( "mount %s 2>%s", point.data(), tmp );
           else
             // mount giving device + mountpoint but no fstype
-            if ( !point.isEmpty() && !dev.isEmpty() && fstype.isEmpty() )
+            if ( !_point.isEmpty() && !_dev.isEmpty() && fstype.isEmpty() )
               buffer.sprintf( "mount %s %s %s 2>%s", readonly.data(), dev.data(), point.data(), tmp );
             else
               // mount giving device + mountpoint + fstype
