@@ -71,6 +71,8 @@ public:
   }
 
   KOSSL *kossl;
+  bool m_bUseEGD;
+  QString m_EGDPath;
 };
 
 //

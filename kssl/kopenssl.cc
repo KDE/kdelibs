@@ -90,9 +90,11 @@ QStringList libpaths, libnamesc, libnamess;
    libpaths << "/usr/lib/"
             << "/usr/local/lib/"
             << "/usr/local/openssl/lib/"
+            << "/usr/local/ssl/lib/"
             << "/opt/openssl/lib/"
             << "";
 
+// FIXME: #define here for the various OS types to optimize
    libnamess << "libssl.so"
              << "libssl.sl";
 

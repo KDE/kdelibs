@@ -65,9 +65,6 @@ private:
   bool m_bUseSSLv2, m_bUseSSLv3, m_bUseTLSv1;
   bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
   bool m_bWarnSelfSigned, m_bWarnRevoked, m_bWarnExpired;
-  bool m_bUseEGD;
-
-  QString m_EGDPath;
 
   QValueList<QString> v2ciphers, v2selectedciphers,
                       v3ciphers, v3selectedciphers;
