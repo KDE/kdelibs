@@ -19,7 +19,7 @@
 #include "gslmath.h"
 
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 
@@ -60,6 +60,17 @@
 */
 
 
+/* --- prototypes --- */
+
+/* numerical recipies */
+static void sncndn (double uu, double emmc, double *sn_p, double *cn_p, double *dn_p);
+static double ellf (double phi, double ak);
+static void zrhqr (double a[], int m, double rtr[], double rti[]);
+static double rf (double x, double y, double z);
+static GslComplex rfC (GslComplex x, GslComplex y, GslComplex z);
+static void sncndnC (GslComplex uu, GslComplex emmc, GslComplex *sn_p, GslComplex *cn_p, GslComplex *dn_p);
+
+
 /* --- functions --- */
 static inline char*
 pretty_print_double (char  *str,
@@ -82,7 +93,7 @@ gsl_complex_list (unsigned int n_points,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_alloca ((FLOAT_STRING_SIZE * 2 * n_points) * sizeof(char));
+  char *s, *tbuffer = (char *) g_alloca ((FLOAT_STRING_SIZE * 2 * n_points) * sizeof(char));
   unsigned int i;
 
   rbi++; if (rbi >= RING_BUFFER_LENGTH) rbi -= RING_BUFFER_LENGTH;
@@ -134,7 +145,7 @@ gsl_poly_str (unsigned int degree,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_alloca ((degree * FLOAT_STRING_SIZE) * sizeof (char));
+  char *s, *tbuffer = (char *) g_alloca ((degree * FLOAT_STRING_SIZE) * sizeof (char));
   unsigned int i;
 
   if (!var)
@@ -167,7 +178,7 @@ gsl_poly_str1 (unsigned int degree,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_alloca ((degree * FLOAT_STRING_SIZE) * sizeof (char));
+  char *s, *tbuffer = (char *) g_alloca ((degree * FLOAT_STRING_SIZE) * sizeof (char));
   unsigned int i, need_plus = 0;
 
   if (!var)
@@ -289,9 +300,8 @@ gsl_poly_complex_roots (unsigned int degree,
 			double      *a,		/* [0..degree] (degree+1 elements) */
 			GslComplex  *roots)	/* [degree] */
 {
-  static void zrhqr (double a[], int m, double rtr[], double rti[]);
-  double *roots_re = g_alloca ((1 + degree) * sizeof (double));
-  double *roots_im = g_alloca ((1 + degree) * sizeof (double));
+  double *roots_re = (double *) g_alloca ((1 + degree) * sizeof (double));
+  double *roots_im = (double *) g_alloca ((1 + degree) * sizeof (double));
   unsigned int i;
 
   zrhqr (a, degree, roots_re, roots_im);
@@ -307,8 +317,6 @@ gsl_ellip_rf (double x,
 	      double y,
 	      double z)
 {
-  static double rf (double x, double y, double z);
-
   return rf (x, y, z);
 }
 
@@ -316,8 +324,6 @@ double
 gsl_ellip_F (double phi,
 	     double ak)
 {
-  static double ellf (double phi, double ak);
-
   return ellf (phi, ak);
 }
 
@@ -325,7 +331,6 @@ double
 gsl_ellip_sn (double u,
 	      double emmc)
 {
-  static void sncndn (double uu, double emmc, double *sn_p, double *cn_p, double *dn_p);
   double sn;
 
   sncndn (u, emmc, &sn, NULL, NULL);
@@ -336,8 +341,6 @@ double
 gsl_ellip_asn (double y,
 	       double emmc)
 {
-  static double rf (double x, double y, double z);
-
   return y * rf (1.0 - y * y, 1.0 - y * y * (1.0 - emmc), 1.0);
 }
 
@@ -345,8 +348,6 @@ GslComplex
 gsl_complex_ellip_asn (GslComplex y,
 		       GslComplex emmc)
 {
-  static GslComplex rfC (GslComplex x, GslComplex y, GslComplex z);
-
   return gsl_complex_mul (y,
 			  rfC (gsl_complex_sub (gsl_complex (1.0, 0),
 						gsl_complex_mul (y, y)),
@@ -360,7 +361,6 @@ GslComplex
 gsl_complex_ellip_sn (GslComplex u,
 		      GslComplex emmc)
 {
-  static void sncndnC (GslComplex uu, GslComplex emmc, GslComplex *sn_p, GslComplex *cn_p, GslComplex *dn_p);
   GslComplex sn;
 
   sncndnC (u, emmc, &sn, NULL, NULL);
