@@ -327,7 +327,7 @@ void ReadOnlyPart::showProgressInfo( bool show )
 
 bool ReadOnlyPart::openURL( const KURL &url )
 {
-  if ( url.isMalformed() )
+  if ( !url.isValid() )
     return false;
   if ( !closeURL() )
     return false;
@@ -536,7 +536,7 @@ bool ReadWritePart::save()
 
 bool ReadWritePart::saveAs( const KURL & kurl )
 {
-  if (kurl.isMalformed())
+  if (!kurl.isValid())
   {
       kdError(1000) << "saveAs: Malformed URL" << kurl.url() << endl;
       return false;
@@ -631,9 +631,9 @@ bool ReadWritePart::waitSaveComplete()
 {
   if (!d->m_uploadJob)
      return d->m_saveOk;
-  
+
   d->m_waitForSave = true;
-  
+
   QWidget dummy(0,0,WType_Dialog | WShowModal);
   dummy.setFocusPolicy( QWidget::NoFocus );
   qt_enter_modal(&dummy);
@@ -641,7 +641,7 @@ bool ReadWritePart::waitSaveComplete()
   qt_leave_modal(&dummy);
 
   d->m_waitForSave = false;
-   
+
   return d->m_saveOk;
 }
 

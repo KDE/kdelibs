@@ -278,8 +278,8 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
     QString comment = mimeType;
 
-    // Test if the mimeType is not recognize as octet-stream. 
-    // If so then keep mime-type as comment 
+    // Test if the mimeType is not recognize as octet-stream.
+    // If so then keep mime-type as comment
     if (mime->name() != KMimeType::defaultMimeType()) {
         // The mime-type is known so display the comment instead of mime-type
         comment = mime->comment();
@@ -363,7 +363,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
     if ( dlg->exec() )
     {
         KURL destURL( dlg->selectedURL() );
-        if ( !destURL.isMalformed() )
+        if ( destURL.isValid() )
         {
             KIO::Job *job = KIO::copy( url, destURL );
             job->setWindow (window);
