@@ -892,7 +892,7 @@ RenderFlow::clearFloats()
 	    specialObjects->clear();
     }
 
-    if (isFloating()) return;
+    if (isFloating() || isPositioned()) return;
 
     RenderObject *prev = previousSibling();
 

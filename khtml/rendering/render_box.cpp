@@ -616,8 +616,6 @@ void RenderBox::calcWidth()
 //          kdDebug( 6040 ) <<  m_width <<"," << cw <<"," <<
 //              m_marginLeft <<"," <<  m_marginRight << endl;
 
-            if(m_width < m_minWidth) m_width = m_minWidth;
-
             if (isFloating())
             {
                 calcMinMaxWidth();
@@ -629,8 +627,6 @@ void RenderBox::calcWidth()
 //          kdDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;
             m_width = w.width(cw);
             m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
-
-            if(m_width < m_minWidth) m_width = m_minWidth;
 
             calcHorizontalMargins(ml,mr,cw);
         }
@@ -663,8 +659,9 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
              (ml.type != Variable &&
                 containingBlock()->style()->textAlign() == KONQ_CENTER) )
         {
-            m_marginRight = (cw - m_width)/2;
-            m_marginLeft = cw - m_width - m_marginRight;
+            m_marginLeft = (cw - m_width)/2; 
+            if (m_marginLeft<0) m_marginLeft=0;
+            m_marginRight = cw - m_width - m_marginLeft;           
         }
         else if (mr.type == Variable)
         {

@@ -774,7 +774,8 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         break;
     case CENTER:
     case KONQ_CENTER:
-        x += (availableWidth - totWidth)/2;
+        int xd = (availableWidth - totWidth)/2;
+        x += xd>0?xd:0;
         break;
     }
     while ( r ) {
