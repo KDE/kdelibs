@@ -37,12 +37,12 @@ KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
 
   if (!_str)
 	ret = KJavaScriptDunno;
-  
+
   if (_str.lower() == QString::fromLatin1("accept"))
 	ret = KJavaScriptAccept;
   else if (_str.lower() == QString::fromLatin1("reject"))
 	ret = KJavaScriptReject;
-  
+
   return ret;
 }
 
@@ -57,7 +57,7 @@ const char* KHTMLSettings::adviceToStr(KJavaScriptAdvice _advice)
 }
 
 
-void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain, 
+void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
 									  KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
 {
     QString tmp(configStr);
@@ -142,30 +142,30 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "SerifFont" ) )
   {
-    m_strFixedFontName = config->readEntry( "SerifFont" );
-    if ( m_strFixedFontName.isEmpty() )
-      m_strFixedFontName = HTML_DEFAULT_VIEW_SERIF_FONT;
+    m_strSerifFontName = config->readEntry( "SerifFont" );
+    if ( m_strSerifFontName.isEmpty() )
+      m_strSerifFontName = HTML_DEFAULT_VIEW_SERIF_FONT;
   }
 
   if ( reset || config->hasKey( "SansSerifFont" ) )
   {
-    m_strFixedFontName = config->readEntry( "SansSerifFont" );
-    if ( m_strFixedFontName.isEmpty() )
-      m_strFixedFontName = HTML_DEFAULT_VIEW_SANSSERIF_FONT;
+    m_strSansSerifFontName = config->readEntry( "SansSerifFont" );
+    if ( m_strSansSerifFontName.isEmpty() )
+      m_strSansSerifFontName = HTML_DEFAULT_VIEW_SANSSERIF_FONT;
   }
 
   if ( reset || config->hasKey( "CursiveFont" ) )
   {
-    m_strFixedFontName = config->readEntry( "CursiveFont" );
-    if ( m_strFixedFontName.isEmpty() )
-      m_strFixedFontName = HTML_DEFAULT_VIEW_CURSIVE_FONT;
+    m_strCursiveFontName = config->readEntry( "CursiveFont" );
+    if ( m_strCursiveFontName.isEmpty() )
+      m_strCursiveFontName = HTML_DEFAULT_VIEW_CURSIVE_FONT;
   }
 
   if ( reset || config->hasKey( "FantasyFont" ) )
   {
-    m_strFixedFontName = config->readEntry( "FantasyFont" );
-    if ( m_strFixedFontName.isEmpty() )
-      m_strFixedFontName = HTML_DEFAULT_VIEW_FANTASY_FONT;
+    m_strFantasyFontName = config->readEntry( "FantasyFont" );
+    if ( m_strFantasyFontName.isEmpty() )
+      m_strFantasyFontName = HTML_DEFAULT_VIEW_FANTASY_FONT;
   }
 
   if ( reset || config->hasKey( "DefaultCharset" ) )
@@ -245,7 +245,7 @@ bool KHTMLSettings::isJavaEnabled( const QString& hostname )
   }
 
   // No domain-specific entry, or was dunno: use global setting
-  return m_bEnableJava;  
+  return m_bEnableJava;
 }
 
 
@@ -262,7 +262,7 @@ bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
   }
 
   // No domain-specific entry, or was dunno: use global setting
-  return m_bEnableJavaScript;  
+  return m_bEnableJavaScript;
 }
 
 
