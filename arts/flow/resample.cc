@@ -47,6 +47,9 @@ public:
 	Resampler::Endianness endianness;
 };
 
+const unsigned int Resampler::bufferSize;
+const unsigned int Resampler::bufferWrap;
+
 Resampler::Resampler(Refiller *refiller) :
 	dropBytes(0), refiller(refiller), pos(0.0), step(1.0), channels(2),
 	bits(16),
