@@ -45,7 +45,7 @@ CupsdServerIdentityPage::CupsdServerIdentityPage(QWidget *parent, const char *na
 	remroot_ = new QLineEdit(opt_[4]);
 
 	QLabel	*l1 = new QLabel(i18n("Server name:"), this);
-	QLabel	*l2 = new QLabel(i18n("Administrator's e-mail:"), this);
+	QLabel	*l2 = new QLabel(i18n("Administrator's email:"), this);
 	QLabel	*l3 = new QLabel(i18n("Server user:"), this);
 	QLabel	*l4 = new QLabel(i18n("Server group:"), this);
 	QLabel	*l5 = new QLabel(i18n("Remote user name:"), this);

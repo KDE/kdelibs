@@ -102,7 +102,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   if ( !d->webFormLabel )
   {
     // From
-    QString qwtstr = i18n( "Your e-mail address. If incorrect, use the Configure E-Mail button to change it" );
+    QString qwtstr = i18n( "Your email address. If incorrect, use the Configure Email button to change it" );
     tmpLabel = new QLabel( i18n("From:"), parent );
     glay->addWidget( tmpLabel, row,0 );
     QWhatsThis::add( tmpLabel, qwtstr );
@@ -112,14 +112,14 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
 
     // Configure email button
-    m_configureEmail = new QPushButton( i18n("Configure E-Mail..."),
+    m_configureEmail = new QPushButton( i18n("Configure Email..."),
                                         parent );
     connect( m_configureEmail, SIGNAL( clicked() ), this,
              SLOT( slotConfigureEmail() ) );
     glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
 
     // To
-    qwtstr = i18n( "The e-mail address this bug report is sent to." );
+    qwtstr = i18n( "The email address this bug report is sent to." );
     tmpLabel = new QLabel( i18n("To:"), parent );
     glay->addWidget( tmpLabel, ++row,0 );
     QWhatsThis::add( tmpLabel, qwtstr );
