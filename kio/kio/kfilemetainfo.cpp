@@ -59,8 +59,8 @@ public:
     }
 
     ~Data() {
-        delete mimeTypeInfo;
-        mimeTypeInfo = 0L;
+        // delete mimeTypeInfo;
+        // mimeTypeInfo = 0L;
     }
 
     const KFileMimeTypeInfo::ItemInfo*  mimeTypeInfo;
