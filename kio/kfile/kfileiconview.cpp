@@ -225,7 +225,7 @@ void KFileIconView::writeConfig( KConfig *kc, const QString& group )
         kc->revertToDefault( "Preview Size" );
     else
         kc->writeEntry( "Preview Size", previewsIconSize );
-    
+
     bool showPreviews = d->previews->isChecked();
     if(!kc->hasDefault( "ShowPreviews" ) && showPreviews == DEFAULT_SHOW_PREVIEWS )
         kc->revertToDefault( "ShowPreviews" );
@@ -337,7 +337,7 @@ void KFileIconView::insertItem( KFileItem *i )
     KFileView::insertItem( i );
 
     QIconView* qview = static_cast<QIconView*>( this );
-    // Since creating and initializing an item leads to a repaint, 
+    // Since creating and initializing an item leads to a repaint,
     // we disable updates on the IconView for a while.
     qview->setUpdatesEnabled( false );
     KFileIconViewItem *item = new KFileIconViewItem( qview, i );
@@ -467,6 +467,9 @@ void KFileIconView::removeItem( const KFileItem *i )
 {
     if ( !i )
 	return;
+
+    if ( d->job )
+        d->job->removeItem( i );
 
     KFileIconViewItem *item = viewItem( i );
     m_resolver->m_lstPendingMimeIconItems.remove( item );
@@ -714,7 +717,7 @@ void KFileIconView::determineIcon( KFileIconViewItem *item )
 void KFileIconView::listingCompleted()
 {
     arrangeItemsInGrid();
-    
+
     // QIconView doesn't set the current item automatically, so we have to do
     // that. We don't want to emit selectionChanged() tho.
     if ( !currentItem() ) {

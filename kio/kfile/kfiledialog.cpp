@@ -56,7 +56,6 @@
 #include <kimageio.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
-#include <kio/previewjob.h>
 #include <kio/scheduler.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -1394,7 +1393,7 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           const QString& caption)
 {
 #ifdef Q_WS_WIN
-    return QFileDialog::getExistingDirectory(startDir, parent, "getExistingDirectory", 
+    return QFileDialog::getExistingDirectory(startDir, parent, "getExistingDirectory",
                                              caption, true, true);
 #else
     KURL url = KDirSelectDialog::selectDirectory(startDir, true, parent,
@@ -1599,7 +1598,7 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
     KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id != 0 )
-        XSetTransientForHint(qt_xdisplay(), dlg.winId(), parent_id);    
+        XSetTransientForHint(qt_xdisplay(), dlg.winId(), parent_id);
 #else
     // TODO
 #endif
