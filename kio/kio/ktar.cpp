@@ -50,6 +50,7 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
     : KArchive( 0L )
 {
     m_filename = filename;
+    m_tarEnd = 0;
     d = new KTarPrivate;
     QString mimetype( _mimetype );
     bool forced = true;
