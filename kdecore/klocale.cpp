@@ -273,6 +273,7 @@ void KLocale::initFormat(KConfig *config)
 {
   if (!config)
     return;
+  kdDebug() << "KLocale::initFormat" << endl;
 
   // make sure the config files are read using the correct locale
   KLocale *lsave = KGlobal::_locale;
@@ -294,8 +295,10 @@ void KLocale::initFormat(KConfig *config)
   _thousandsSeparator = config->readEntry(QString::fromLatin1("ThousandsSeparator"));
   if (_thousandsSeparator.isNull())
     _thousandsSeparator = entry.readEntry(QString::fromLatin1("ThousandsSeparator"), QString::fromLatin1(","));
+  kdDebug() << "_thousandsSeparator=" << _thousandsSeparator << endl;
   _thousandsSeparator.replace( QRegExp(QString::fromLatin1("$0")),
-				       QString::null );
+				       "" );
+  kdDebug() << "_thousandsSeparator after replace=" << _thousandsSeparator << endl;
 
   _positiveSign = config->readEntry(QString::fromLatin1("PositiveSign"));
   if (_positiveSign.isNull())
@@ -674,39 +677,55 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
 {
     QString str = _str.stripWhiteSpace();
     bool neg = false;
-    if (negativeMonetarySignPosition() == ParensAround)
-    {
-        int i1 = str.find('(');
-        if (i1 != -1)
-        {
-            int i2 = str.find(')');
-            if (i2 != -1)
-            {
-                if ( (neg = (i1 < i2)) )
-                {
-                    str.remove(i2,1); // this one first
-                    str.remove(i1,1); // otherwise: off-by-one bug !
-                }
-            }
-        }
-    }
-    else
-    {
-        int i1 = str.find(negativeSign());
-        if ( i1 != -1 )
-        {
-            neg = true;
-            str.remove(i1,negativeSign().length());
-        }
-    }
-
-    str = str.stripWhiteSpace();
+    bool currencyFound = false;
+    // First try removing currency symbol from either end
     int pos = str.find(currencySymbol());
     if ( pos == 0 || pos == (int) str.length()-1 )
     {
         str.remove(pos,currencySymbol().length());
         str = str.stripWhiteSpace();
+        currencyFound = true;
     }
+    if (str.isEmpty())
+    {
+        if (ok) *ok = false;
+        return 0;
+    }
+    // Then try removing negative sign from either end
+    // (with a special case for parenthesis)
+    if (negativeMonetarySignPosition() == ParensAround)
+    {
+        if (str[0] == '(' && str[str.length()-1] == ')')
+        {
+            neg = true;
+            str.remove(str.length()-1,1);
+            str.remove(0,1);
+        }
+    }
+    else
+    {
+        int i1 = str.find(negativeSign());
+        if ( i1 == 0 || i1 == (int) str.length()-1 )
+        {
+            neg = true;
+            str.remove(i1,negativeSign().length());
+        }
+    }
+    if (neg) str = str.stripWhiteSpace();
+
+    // Finally try again for the currency symbol, if we didn't find
+    // it already (because of the negative sign being in the way).
+    if ( !currencyFound )
+    {
+        pos = str.find(currencySymbol());
+        if ( pos == 0 || pos == (int) str.length()-1 )
+        {
+            str.remove(pos,currencySymbol().length());
+            str = str.stripWhiteSpace();
+        }
+    }
+
+    // And parse the rest as a number
     pos = str.find(monetaryDecimalSymbol());
     QString major;
     QString minior;
