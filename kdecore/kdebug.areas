@@ -1,4 +1,4 @@
-#This is a dummy kdebug.areas
+#Debug areas for kdebug()
 #when you get a set of KDebug areas, and various descriptions for them
 #please email kde-devel@kde.org with the appropriate descriptions.
 0	generic
@@ -10,7 +10,6 @@
 1202    konqueror (kdebase)
 1203    libkonq (kdebase)
 1204    kdesktop (kdebase)
-1205    kiconcontainer (to be moved)
 1300	kfm (kioslave)
 
 1400	khelpcenter (kdebase)
@@ -39,6 +38,7 @@
 7012    kiolib (KService*)
 7013    kiolib (KPing)
 7014    kiolib (KFind)
+7015    kiolib (KAutoMount)
 
 # 710x  are for kioslaves
 7101    kio_file
