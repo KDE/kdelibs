@@ -130,7 +130,11 @@ QStringList KIMProxy::fileTransferContacts()
 
 bool KIMProxy::isPresent( const QString& uid )
 {
-	return m_im_client_stub->isPresent( uid );
+	if ( initialize() )
+	{
+    	return m_im_client_stub->isPresent( uid );
+    }
+    return false;
 }
 
 int KIMProxy::presenceNumeric( const QString& uid )
