@@ -102,7 +102,7 @@ static char sock_file[MAX_SOCK_FILE];
 #endif
 
 /* Group data */
-struct {
+static struct {
   int maxname;
   int fd[2];
   int launcher[2]; /* socket pair for launcher communication */
@@ -124,6 +124,7 @@ struct {
   int lt_dlopen_flag;
   QCString errorMsg;
   bool launcher_ok;
+  bool suicide;
 } d;
 
 extern "C" {
@@ -1330,6 +1331,14 @@ int kdeinit_xio_errhandler( Display *disp )
       unlink(sock_file);
     }
 
+    // Don't kill our children in suicide mode, they may still be in use
+    if (d.suicide)
+    {
+       if (d.launcher_pid)
+          kill(d.launcher_pid, SIGTERM);
+      exit( 0 );
+    }
+
     if ( disp )
     qWarning( "kdeinit: sending SIGHUP to children." );
 
@@ -1349,7 +1358,7 @@ int kdeinit_xio_errhandler( Display *disp )
     if ( disp )
     qWarning( "kdeinit: Exit." );
 
-    exit( 1 );
+    exit( 0 );
     return 0;
 }
 
@@ -1450,7 +1459,7 @@ int main(int argc, char **argv, char **envp)
    int launch_klauncher = 1;
    int launch_kded = 1;
    int keep_running = 1;
-   int suicide = 0;
+   d.suicide = false;
 
    /** Save arguments first... **/
    char **safe_argv = (char **) malloc( sizeof(char *) * argc);
@@ -1464,7 +1473,7 @@ int main(int argc, char **argv, char **envp)
       if (strcmp(safe_argv[i], "--no-kded") == 0)
          launch_kded = 0;
       if (strcmp(safe_argv[i], "--suicide") == 0)
-         suicide = 1;
+         d.suicide = true;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
    }
@@ -1507,7 +1516,7 @@ int main(int argc, char **argv, char **envp)
    // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
    unsetenv("DYLD_BIND_AT_LAUNCH");
-   if (!suicide)
+   if (!d.suicide)
       setenv("KDE_FULL_SESSION", "true", true);
    KApplication::loadedByKdeinit = true;
 
@@ -1532,7 +1541,7 @@ int main(int argc, char **argv, char **envp)
 
    if (launch_dcop)
    {
-      if (suicide)
+      if (d.suicide)
          pid = launch( 3, "dcopserver", "--nosid\0--suicide" );
       else
          pid = launch( 2, "dcopserver", "--nosid" );
@@ -1547,7 +1556,7 @@ int main(int argc, char **argv, char **envp)
       }
    }
 
-   if (!suicide && !getenv("KDE_IS_PRELINKED"))
+   if (!d.suicide && !getenv("KDE_IS_PRELINKED"))
    {
       QString konq = locate("lib", "libkonq.la", s_instance);
       if (!konq.isEmpty())
