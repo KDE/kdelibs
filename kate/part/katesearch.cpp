@@ -108,7 +108,7 @@ void KateSearch::find()
     searchFlags.replace = false;
     searchFlags.finished = false;
     searchFlags.regExp = KateViewConfig::global()->searchFlags() & KFindDialog::RegularExpression;
-    
+
     if ( searchFlags.selected )
     {
       s.selBegin = KateTextCursor( doc()->selStartLine(), doc()->selStartCol() );
@@ -117,7 +117,7 @@ void KateSearch::find()
     } else {
       s.cursor = getCursor();
     }
-    
+
     s.wrappedEnd = s.cursor;
     s.wrapped = false;
 
@@ -243,7 +243,7 @@ void KateSearch::wrapSearch()
       s.cursor.setCol(doc()->lineLength( s.cursor.line() ));
     }
   }
-  
+
   // oh, we wrapped around one time allready now !
   // only check that on replace
   s.wrapped = s.flags.replace;
@@ -423,7 +423,7 @@ bool KateSearch::askContinue()
 
   return KMessageBox::Yes == KMessageBox::questionYesNo(
      view(), text, s.flags.replace ? i18n("Replace") : i18n("Find"),
-     i18n("&Continue"), i18n("&Stop") );
+     KStdGuiItem::cont(), i18n("&Stop") );
 }
 
 QString KateSearch::getSearchText()
@@ -539,14 +539,14 @@ bool KateSearch::doSearch( const QString& text )
   // save the search result
   s.cursor.setPos(foundLine, foundCol);
   s.matchedLength = matchLen;
-  
+
   // we allready wrapped around one time
   if (s.wrapped)
   {
     if (s.flags.backward)
     {
       if (s.cursor < s.wrappedEnd)
-        return false;    
+        return false;
     }
     else
     {
@@ -555,9 +555,9 @@ bool KateSearch::doSearch( const QString& text )
         return false;
     }
   }
-  
+
   //kdDebug() << "Found at " << s.cursor.line() << ", " << s.cursor.col() << endl;
-  
+
 
   //m_searchResults.append(s);
 

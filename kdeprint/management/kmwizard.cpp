@@ -72,7 +72,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(5);
 	KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
-	QPushButton	*m_help = new KPushButton(KGuiItem(i18n("&Help"), "help"), this);
+	QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), this);
 
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
 	connect(m_next,SIGNAL(clicked()),SLOT(slotNext()));

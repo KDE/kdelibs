@@ -1352,7 +1352,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if ( part && part->xmlDocImpl() )
       part->xmlDocImpl()->updateRendering();
     return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), "JavaScript",
-                                                i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
+                                                KStdGuiItem::ok(), KStdGuiItem::cancel()) == KMessageBox::Yes));
   case Window::Prompt:
     if (!widget->dialogsAllowed())
       return Undefined();

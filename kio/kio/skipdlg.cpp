@@ -22,7 +22,6 @@
 #include <assert.h>
 
 #include <qmessagebox.h>
-#include <qpushbutton.h>
 #include <qwidget.h>
 #include <qlayout.h>
 #include <qlabel.h>
@@ -31,6 +30,8 @@
 #include <klocale.h>
 #include <kurl.h>
 #include <kwin.h>
+#include <kpushbutton.h>
+#include <kstdguiitem.h>
 
 using namespace KIO;
 
@@ -51,14 +52,14 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
 
   setCaption( i18n( "Information" ) );
 
-  b0 = new QPushButton( i18n( "Cancel" ), this );
+  b0 = new KPushButton( KStdGuiItem::cancel(), this );
   connect(b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
 
   if ( _multi )
   {
     b1 = new QPushButton( i18n( "Skip" ), this );
     connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
-  
+
     b2 = new QPushButton( i18n( "Auto Skip" ), this );
     connect(b2, SIGNAL(clicked()), this, SLOT(b2Pressed()));
   }

@@ -141,11 +141,11 @@ void QInputBox::init(int numlines)
 		main_->addSpacing(10);
 	}
 
-	okbtn_ = new QPushButton(i18n("OK"), this);
+	okbtn_ = new KPushButton(KStdGuiItem::ok(), this);
 	connect(okbtn_, SIGNAL(clicked()), SLOT(accept()));
 	okbtn_->setDefault(true);
 
-	cancelbtn_ = new QPushButton(i18n("Cancel"), this);
+	cancelbtn_ = new KPushButton(KStdGuiItem::cancel(), this);
 	connect(cancelbtn_, SIGNAL(clicked()), SLOT(reject()));
 
 	QHBoxLayout	*btnlayout_ = new QHBoxLayout(0, 0, 10);
