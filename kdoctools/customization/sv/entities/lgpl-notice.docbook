@@ -1,15 +1,15 @@
-<para>This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public License
-as published by the Free Software Foundation; either version 2 of
-the License, or (at your option) any later version.</para>
+<para>Detta bibliotek är fri programvara. Du kan distribuera det och/eller
+ändra det under villkoren i GNU Lesser General Public License,
+publicerad av Free Software Foundation, antingen version 2 av
+licensen, eller (om du så vill) någon senare version.</para>
 
-<para>This library is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.</para>
+<para>Detta bibliotek distribueras i hopp om att det ska vara
+användbart, men UTAN NÅGON SOM HELST GARANTI, även utan underförstådd
+garanti om SÄLJBARHET eller LÄMPLIGHET FÖR NÅGOT SPECIELLT ÄNDAMÅL.  Se GNU
+Lesser General Public License för fler detaljer.</para>
 
-<para>You should have received a copy of the GNU Lesser General
-Public License along with this library; if not, write to the Free
+<para>Du bör ha fått en kopia av GNU Lesser General Public
+License tillsammans med detta bibliotek. Om inte, skriv till Free
 Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA</para>
 <!--
