@@ -39,17 +39,16 @@
 class KIconThemeNode
 {
 public:
-    KIconThemeNode() { links.setAutoDelete(true); myTheme = 0; }
+    KIconThemeNode(KIconTheme *theme) {
+      links.setAutoDelete(true);
+      myTheme = theme;
+    }
 
     void queryIcons(QStringList *lst, int size, int context) const;
-    void setIconTheme(const QString& theme);
+    void addIconTheme();
     KIcon findIcon(const QString& name, int size, int match) const;
     void printThemeTree(QString& dbgString) const;
-    void setTheme(KIconTheme *_theme) {
-	assert(!myTheme);
-	myTheme = _theme;
-    }
-    KIconTheme *theme() { return myTheme; }
+    KIconTheme *theme() const { return myTheme; }
     void appendNode(KIconThemeNode *node) {
 	links.append(node);
     }
@@ -57,7 +56,10 @@ public:
 private:
     KIconTheme *myTheme;
     QList<KIconThemeNode> links;
+    static QStringList *mThemesInTree;
 };
+
+QStringList *KIconThemeNode::mThemesInTree = 0;
 
 void KIconThemeNode::printThemeTree(QString& dbgString) const
 {
@@ -83,19 +85,22 @@ void KIconThemeNode::queryIcons(QStringList *result, int size, int context) cons
 	it.current()->queryIcons(result, size, context);
 }
 
-void KIconThemeNode::setIconTheme(const QString& _theme)
+void KIconThemeNode::addIconTheme()
 {
-    myTheme = new KIconTheme(_theme);
+    // next time I purify I will add a qCleanUpRoutine :/
+    if (!mThemesInTree)
+	mThemesInTree = new QStringList();
+
     QStringList lst = myTheme->inherits();
     QStringList::ConstIterator it;
     static QStringList mThemeList = KIconTheme::list();
     for (it=lst.begin(); it!=lst.end(); it++)
     {
-      if (!mThemeList.contains(*it)) // || mThemeTree.contains(*it))
+      if (!mThemeList.contains(*it) || mThemesInTree->contains(*it))
 	    continue;
-	KIconThemeNode *n = new KIconThemeNode;
-	// d->mThemeTree += *it;
-	n->setIconTheme(*it);
+        KIconThemeNode *n = new KIconThemeNode(new KIconTheme(*it));
+	mThemesInTree->append(*it);
+	n->addIconTheme();
 	links.append(n);
     }
 }
@@ -104,6 +109,7 @@ KIcon KIconThemeNode::findIcon(const QString& name, int size,
 			       int match) const
 {
     KIcon icon;
+    kdDebug(264) << myTheme->name() << " iconPath(" << name << ")\n";
     icon = myTheme->iconPath(name, size, match);
     if (icon.isValid())
       return icon;
@@ -156,12 +162,12 @@ KIconLoader::KIconLoader(const QString& _appname)
 	return;
     }
 
-    // Add global themes to the theme tree.
-    d->mpThemeRoot = new KIconThemeNode;
-
     // get the default theme or the one written to config, e.g. "hicolor"
     // the default varies depending on the color depth
-    d->mpThemeRoot->setIconTheme(KIconTheme::current());
+    d->mpThemeRoot = new KIconThemeNode(new KIconTheme(KIconTheme::current()));
+
+    // Add global themes to the theme tree.
+    d->mpThemeRoot->addIconTheme();
 
     // this are the (absolute) dirs we're going to look at when we get an unthemed icon
     // we're looking into everything else first though
@@ -169,38 +175,34 @@ KIconLoader::KIconLoader(const QString& _appname)
     for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); it++)
       d->mpDirs->addResourceDir("appicon", *it);
 
-    /*
-      QString dbgString = "Theme tree: ";
-      d->mpThemeRoot->printThemeTree(dbgString);
-      kdDebug(264) << dbgString << endl;
-    */
-
     // relying on LastGroup's value becomes dangerous as soon
     // as someone is changing KIcon's enum to be bases of 10 ;/
     d->mpGroups = new KIconGroup[KIcon::LastGroup];
 
     // these are the currently known groups and they have to match the order in
     // kicontheme.h
-    const char *groups[] = { "Desktop", "Toolbar", "MainToolbar", 0, "Small", 0 };
+    const char *groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", 0 };
     KConfig *config = KGlobal::config();
     KConfigGroupSaver cs(config, "dummy"); // we need it to reset it later
 
     // loading config and default sizes
     bool isnull = false;
-    for (int i = 0; i < KIcon::LastGroup; i++) {
-      assert(!isnull);
-      if (groups[i] == 0) {
-	isnull = true;
-	// we continue here to catch the assert above if
-	// someone added a group in KIcon without adding a group
-	// here
-	continue;
+    for (int i = 0; i <= KIcon::LastGroup; i++) {
+      if (!isnull) {
+	if (groups[i] == 0) {
+	  isnull = true;
+	  // we continue here to catch the assert above if
+	  // someone added a group in KIcon without adding a group
+	  // here
+	} else {
+	  config->setGroup(QString::fromLatin1(groups[i]) + "Icons");
+	  d->mpGroups[i].size = config->readNumEntry("Size", 0);
+	  d->mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels", false);
+	}
       }
-      config->setGroup(QString::fromLatin1(groups[i]) + "Icons");
-      d->mpGroups[i].size = config->readNumEntry("Size", 0);
-      if (d->mpGroups[i].size) // no config set
+      if (!d->mpGroups[i].size) // no config set
 	  d->mpGroups[i].size = d->mpThemeRoot->theme()->defaultSize(i);
-      d->mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels", false);
+
     }
 
     // by now everything should be setup, it's time to do the
@@ -211,6 +213,11 @@ KIconLoader::KIconLoader(const QString& _appname)
     if (appname.isEmpty())
 	appname = KGlobal::instance()->instanceName();
     addAppDir(appname);
+
+    QString dbgString = "Theme tree: ";
+    d->mpThemeRoot->printThemeTree(dbgString);
+    kdDebug(264) << dbgString << endl;
+
 }
 
 KIconLoader::~KIconLoader()
@@ -234,34 +241,35 @@ void KIconLoader::addAppDir(const QString& appname)
 
 void KIconLoader::addAppThemes(const QString& appname)
 {
-    KIconThemeNode *node = new KIconThemeNode;
-    KIconThemeNode *top = node;
+    KIconThemeNode *node = 0;
     KIconTheme *theme = 0;
 
-    if (QPixmap::defaultDepth() > 8)
-    {
+    if (QPixmap::defaultDepth() > 8) {
 	theme = new KIconTheme("hicolor", appname);
 	if (!theme->isValid()) {
 	    delete theme;
 	    theme = 0;
 	}
     }
-    node->setTheme(theme);
+    if (theme)
+      node = new KIconThemeNode(theme);
 
     theme = new KIconTheme("locolor", appname);
     if (!theme->isValid()) {
 	delete theme;
 	theme = 0;
     } else
-	if (node->theme()) {
-	    KIconThemeNode *tmp = new KIconThemeNode();
-	    tmp->setTheme(theme);
+	if (node) {
+	    KIconThemeNode *tmp = new KIconThemeNode(theme);
 	    node->appendNode(tmp);
-	} else
-	    node->setTheme(theme);
-	
-    top->appendNode(d->mpThemeRoot);
-    d->mpThemeRoot = top;
+	} else {
+	  node = new KIconThemeNode(theme);
+	}
+
+    if (node) {
+      node->appendNode(d->mpThemeRoot);
+      d->mpThemeRoot = node;
+    }
 }
 
 QString KIconLoader::iconPath(const QString& _name, int group_or_size,
@@ -333,7 +341,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
     if (icon.isValid())
       return icon;
 
-    static QString xpm_ext = QString::fromLatin1(".png");
+    static QString xpm_ext = QString::fromLatin1(".xpm");
     icon = d->mpThemeRoot->findIcon(name + xpm_ext, size, KIcon::MatchExact);
     if (icon.isValid())
       return icon;
@@ -532,7 +540,6 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
 
 KIconTheme *KIconLoader::theme()
 {
-    debug("theme %p", d->mpThemeRoot->theme());
     return d->mpThemeRoot->theme();
 }
 

@@ -411,6 +411,12 @@ public:
 	 */
 	QString localkdedir() const;
 
+	/**
+	 * checks for existance and accessability
+	 * faster than creating a QFileInfo first
+	 */
+	static bool exists(const QString &fullPath);
+
  private:
 
 	QStringList prefixes;
@@ -427,10 +433,7 @@ public:
 
 	bool addedCustoms;
 
-	// checks for existance and accessability
-	static bool exists(const QString &fullPath);
-
-    KStandardDirsPrivate *d;
+	KStandardDirsPrivate *d;
 };
 
 /**

@@ -249,18 +249,20 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
     int delta = 1000;
     KIconThemeDir *dir;
 
+    kdDebug(264) << "iconPath " << name <<  " " << mDirs.count() << endl;
     QListIterator<KIconThemeDir> dirs(mDirs);
     for ( ; dirs.current(); ++dirs)
     {
 	dir = dirs.current();
 
+	kdDebug(264) << dir->dir() << " " << size << " " << dir->size() << " " << match << endl;
 	if (match == KIcon::MatchExact)
 	{
 	    if ((dir->type() == KIcon::Fixed) && (dir->size() != size))
 		continue;
 	    if ((dir->type() == KIcon::Scalable) &&
-		    ((size < dir->minSize()) || (size > dir->maxSize())))
-		continue;
+		((size < dir->minSize()) || (size > dir->maxSize())))
+	      continue;
 	} else
 	{
 	    int dw = dir->size() - size;
@@ -277,6 +279,10 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
 	icon.size = dir->size();
 	icon.type = dir->type();
 	icon.context = dir->context();
+
+	// if we got in MatchExact that far, we find no better
+	if (match == KIcon::MatchExact)
+	  return icon;
     }
     return icon;
 }
@@ -372,10 +378,12 @@ QString KIconThemeDir::iconPath(const QString& name) const
 {
     if (!mbValid)
 	return QString::null;
+    kdDebug(264) << "trying " << mDir << "/" << name << endl;
     QString file = mDir + "/" + name;
-    QFileInfo fi(file);
-    if (fi.exists())
-	return file;
+    if (KStandardDirs::exists(file)) {
+      kdDebug(264) << "that worked" << endl;
+      return file;
+    }
     return QString::null;
 }
 
