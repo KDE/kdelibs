@@ -97,7 +97,7 @@ void CachedObject::setExpireDate(time_t _expireDate, bool changeHttpCache)
 
 bool CachedObject::isExpired() const
 {
-    if (!m_expireDate) return false; 
+    if (!m_expireDate) return false;
     time_t now = time(0);
     return (difftime(now, m_expireDate) >= 0);
 }
@@ -461,7 +461,7 @@ void CachedImage::ref( CachedObjectClient *c )
 
     if( m ) {
         m->unpause();
-        if( m->finished() )
+        if( m->finished() || m_clients.count() == 1 )
             m->restart();
     }
 
@@ -514,10 +514,10 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         if ( r.height() < BGMINHEIGHT )
             h = ((BGMINHEIGHT / s.height())+1) * s.height();
     }
-    if ( (w != r.width()) || (h != r.height()) )
+    if ( (w != r.width()) || (h != r.height()) || (isvalid && r.mask()))
     {
         QPixmap pix = r;
-        if ( w != r.width() )
+        if ( w != r.width() || (isvalid && pix.mask()))
         {
             bg = new QPixmap(w, r.height());
             QPainter p(bg);
@@ -664,22 +664,12 @@ void CachedImage::movieStatus(int status)
         bg = 0;
     }
 
-
-    if((status == QMovie::EndOfMovie) ||
+    if((status == QMovie::EndOfMovie && (!m || m->frameNumber() <= 1)) ||
        ((status == QMovie::EndOfLoop) && (m_showAnimations == KHTMLSettings::KAnimationLoopOnce)) ||
        ((status == QMovie::EndOfFrame) && (m_showAnimations == KHTMLSettings::KAnimationDisabled))
       )
     {
-#if 0
-        // the movie has ended and it doesn't loop nor is it an animation,
-        // so there is no need to keep the buffer in memory
-        if(imgSource && (m->frameNumber() == 1))
-#else
-        // WABA: Throw away the movie when it gets to the end.
-        // We might want to do a pause instead in some cases if there is
-        // a chance that we want to play the movie again.
         if(imgSource)
-#endif
         {
             setShowAnimations( KHTMLSettings::KAnimationDisabled );
 
@@ -705,9 +695,9 @@ void CachedImage::movieStatus(int status)
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
 #ifdef CACHE_DEBUG
-//        QRect r(valid_rect());
-//        qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
-//               pixmap().size().width(), pixmap().size().height());
+        QRect r(valid_rect());
+        qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
+               pixmap().size().width(), pixmap().size().height());
 #endif
             do_notify(pixmap(), valid_rect());
     }
@@ -866,7 +856,7 @@ bool DocLoader::needReload(const KURL &fullURL)
     bool reload = false;
     if (m_cachePolicy == KIO::CC_Verify)
     {
-       if (!m_reloadedURLs.contains(fullURL.url())) 
+       if (!m_reloadedURLs.contains(fullURL.url()))
        {
           CachedObject *existing = Cache::cache->find(fullURL.url());
           if (existing && existing->isExpired())
@@ -876,10 +866,10 @@ bool DocLoader::needReload(const KURL &fullURL)
              reload = true;
           }
        }
-    } 
+    }
     else if ((m_cachePolicy == KIO::CC_Reload) || (m_cachePolicy == KIO::CC_Refresh))
     {
-       if (!m_reloadedURLs.contains(fullURL.url())) 
+       if (!m_reloadedURLs.contains(fullURL.url()))
        {
           CachedObject *existing = Cache::cache->find(fullURL.url());
           if (existing)
