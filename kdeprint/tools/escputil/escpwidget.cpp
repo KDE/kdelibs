@@ -47,7 +47,7 @@ protected:
 
 extern "C"
 {
-	void* init_libescputil()
+	void* init_kdeprint_tool_escputil()
 	{
 		return new EscpFactory;
 	}
@@ -131,7 +131,7 @@ void EscpWidget::startCommand(const QString& arg)
 	{
 		KMessageBox::error(this, i18n("The executable escputil cannot be found in your "
 		                              "PATH environment variable. Make sure gimp-print is "
-		                              "installed and that escputil is in your PATH.</p>"));
+		                              "installed and that escputil is in your PATH."));
 		return;
 	}
 

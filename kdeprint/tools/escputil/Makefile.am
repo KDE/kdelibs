@@ -1,10 +1,10 @@
 INCLUDES = $(all_includes)
 
-kde_module_LTLIBRARIES = libescputil.la
-libescputil_la_SOURCES = escpwidget.cpp
-libescputil_la_METASOURCES = AUTO
-libescputil_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-libescputil_la_LIBADD = $(LIB_KDEUI)
+kde_module_LTLIBRARIES = kdeprint_tool_escputil.la
+kdeprint_tool_escputil_la_SOURCES = escpwidget.cpp
+kdeprint_tool_escputil_la_METASOURCES = AUTO
+kdeprint_tool_escputil_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+kdeprint_tool_escputil_la_LIBADD = $(LIB_KDEUI)
 
 noinst_HEADERS = escpwidget.h
 
