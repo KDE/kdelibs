@@ -98,7 +98,6 @@ HR  {
         border-width: 1px;
         border-style: inset;
         margin-left: auto; margin-right: auto; 
-        border-color: white; /* FIXME: this shouldn't be necessary */
 } 
  
 PRE { 
@@ -176,12 +175,8 @@ TABLE {
 	vertical-align: middle;
 	text-align: justify;
 	border-spacing: 2px;
-	border-left-color: #eeeeee;
-	border-top-color: #eeeeee;
-	border-bottom-color: #666666;
-	border-right-color: #666666;
-	border-style: solid;
-	border-width: 0px;
+	border-style: outset;
+	border-width: 2px;
 	padding: 1px;
 }
       
@@ -197,7 +192,8 @@ THEAD {
       
 TBODY { 
 	display: table-row-group;
-	vertical-align: inherit; border: inherit;
+	vertical-align: inherit; 
+        border: inherit;
 	padding: inherit; 
 }
       
@@ -218,6 +214,7 @@ TR {
 	display: table-row;
 	vertical-align: inherit; 
 	border: inherit;
+        border-color: inherit;
 	padding: inherit; 
 }
       
@@ -226,12 +223,10 @@ TD, TH {
 	display: table-cell;
 	vertical-align: inherit;
 	padding: inherit;
-	border-width: inherit;			
-	border-style: inherit;
-	border-left-color: #666666;
-	border-top-color: #666666;
-	border-bottom-color: #eeeeee;
-	border-right-color: #eeeeee;
+	border-style: inset;
+	border-color: inherit;
+        border-width: inherit; /* argh, we shouldn't inherit border-width. looks terrible ugly for <table border=42>. 
+                                  but is currently necessary for <table border=0> :-( */
 }
       
 TH { 
