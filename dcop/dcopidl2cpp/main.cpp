@@ -8,7 +8,7 @@
 
 void usage()
 {
-    fprintf( stderr, "kidl [ --no-skel | --no-stub ] file\n" );
+    fprintf( stderr, "dcopidl2cpp [ --no-skel | --no-stub ] file\n" );
 }
 
 int main( int argc, char** argv )

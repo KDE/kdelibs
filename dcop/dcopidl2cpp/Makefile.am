@@ -4,13 +4,13 @@ LDFLAGS   = $(all_libraries)
 
 ####### Files
 
-bin_PROGRAMS = kidl2cpp
+bin_PROGRAMS = dcopidl2cpp
 
-kidl2cpp_SOURCES = main.cpp
+dcopidl2cpp_SOURCES = main.cpp
 noinst_HEADERS =
 
-kidl2cpp_LDADD = ../kdecore/libkdecore.la
-kidl2cpp_LDFLAGS = $(KDE_RPATH)
+dcopidl2cpp_LDADD = ../kdecore/libkdecore.la
+dcopidl2cpp_LDFLAGS = $(KDE_RPATH)
 
 DISTCLEANFILES = $(SRCMETA)
 
