@@ -64,7 +64,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 
 
     connect( this, SIGNAL( returnPressed(QListViewItem *) ),
-	     SLOT( selected( QListViewItem *) ) );
+	     SLOT( slotReturnPressed( QListViewItem *) ) );
 
     connect( this, SIGNAL( clicked(QListViewItem *, const QPoint&, int)),
 	     SLOT( selected( QListViewItem *) ) );
@@ -229,6 +229,16 @@ void KFileDetailView::selected( QListViewItem *item )
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
 	    sig->activate( fi );
     }
+}
+
+void KFileDetailView::slotReturnPressed( QListViewItem *item )
+{
+    if ( !item )
+	return;
+
+    const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    if ( fi )
+        sig->activate( fi );
 }
 
 void KFileDetailView::highlighted( QListViewItem *item )

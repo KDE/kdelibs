@@ -112,7 +112,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     d->smallColumns->setChecked( true );
 
     connect( this, SIGNAL( returnPressed(QIconViewItem *) ),
-	     SLOT( selected( QIconViewItem *) ) );
+	     SLOT( slotReturnPressed( QIconViewItem *) ) );
 
     // we want single click _and_ double click (as convenience)
     connect( this, SIGNAL( clicked(QIconViewItem *, const QPoint&) ),
@@ -339,6 +339,16 @@ void KFileIconView::selected( QIconViewItem *item )
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
 	    sig->activate( fi );
     }
+}
+
+void KFileIconView::slotReturnPressed( QIconViewItem *item )
+{
+    if ( !item )
+        return;
+        
+    const KFileItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
+    if ( fi )
+        sig->activate( fi );
 }
 
 void KFileIconView::setCurrentItem( const KFileItem *item )
@@ -678,11 +688,11 @@ bool KFileIconView::eventFilter( QObject *o, QEvent *e )
 {
     if ( o == viewport() || o == this ) {
         int type = e->type();
-        if ( type == QEvent::Leave || 
+        if ( type == QEvent::Leave ||
              type == QEvent::FocusOut )
             removeToolTip();
     }
-    
+
     return KIconView::eventFilter( o, e );
 }
 

@@ -156,9 +156,10 @@ protected:
     virtual void showEvent( QShowEvent * );
 
     virtual bool eventFilter( QObject *o, QEvent *e );
-    
+
 private slots:
     void selected( QIconViewItem *item );
+    void slotReturnPressed( QIconViewItem *item );
     void highlighted( QIconViewItem *item );
     void showToolTip( QIconViewItem *item );
     void removeToolTip();
