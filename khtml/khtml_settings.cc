@@ -180,15 +180,6 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "DefaultEncoding" ) )
     m_encoding = config->readEntry( "DefaultEncoding", "iso8859-1" );
 
-  if ( reset || config->hasKey( "TextColor" ) )
-    m_textColor = config->readColorEntry( "TextColor", &HTML_DEFAULT_TXT_COLOR );
-
-  if ( reset || config->hasKey( "LinkColor" ) )
-    m_linkColor = config->readColorEntry( "LinkColor", &HTML_DEFAULT_LNK_COLOR );
-
-  if ( reset || config->hasKey( "VLinkColor" ) )
-    m_vLinkColor = config->readColorEntry( "VLinkColor", &HTML_DEFAULT_VLNK_COLOR);
-
   // Behaviour
   if ( reset || config->hasKey( "ChangeCursor" ) )
     m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
@@ -196,6 +187,20 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "UnderlineLinks" ) )
     m_underlineLink = config->readBoolEntry( "UnderlineLinks", true ); //huh, can't find default define
   //    m_underlineLink = config->readBoolEntry( "UnderlineLink", KDE_DEFAULT_UNDERLINELINKS );
+
+  // Colors
+  if ( reset || config->hasGroup( "General" ) )
+  {
+    config->setGroup( "General" ); // group will be restored by cgs anyway
+    if ( reset || config->hasKey( "TextColor" ) )
+      m_textColor = config->readColorEntry( "foreground", &HTML_DEFAULT_TXT_COLOR );
+
+    if ( reset || config->hasKey( "linkColor" ) )
+      m_linkColor = config->readColorEntry( "linkColor", &HTML_DEFAULT_LNK_COLOR );
+
+    if ( reset || config->hasKey( "visitedLinkColor" ) )
+      m_vLinkColor = config->readColorEntry( "visitedLinkColor", &HTML_DEFAULT_VLNK_COLOR);
+  }
 
   // Other
 
