@@ -28,12 +28,10 @@ progname=`echo "$0" | sed 's%^.*/%%'`
 # Constants.
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION=0.9h
+VERSION=1.0
 
-default_mode=NONE
+default_mode=
 help="Try \`$progname --help' for more information."
-ln_s="ln -s"
-cp_p="cp -p"
 magic="%%%MAGIC variable%%%"
 mkdir="mkdir"
 mv="mv -f"
@@ -63,7 +61,7 @@ show=echo
 show_help=
 
 # Parse our command line options once, thoroughly.
-while test -n "$1"
+while test $# -gt 0
 do
   arg="$1"
   shift
@@ -140,14 +138,19 @@ fi
 if test -z "$show_help"; then
 
   # Infer the operation mode.
-  if test "$mode" = NONE; then
+  if test -z "$mode"; then
     case "$nonopt" in
     *cc)
-      if echo " $@ " | egrep -e "[ 	]-c[ 	]" > /dev/null 2>&1; then
-        mode=compile
-      else
-        mode=link
-      fi
+      mode=link
+      for arg
+      do
+        case "$arg" in
+        -c)
+           mode=compile
+           break
+           ;;
+        esac
+      done
       ;;
     *install*|cp)
       mode=install
@@ -160,7 +163,7 @@ if test -z "$show_help"; then
       ;;
     *)
       # Just use the default operation mode.
-      if test "$mode" = NONE; then
+      if test -z "$mode"; then
 	if test -n "$nonopt"; then
 	  echo "$progname: warning: cannot infer operation mode from \`$nonopt'" 1>&2
 	else
@@ -242,7 +245,7 @@ if test -z "$show_help"; then
     if test "$build_libtool_libs" = yes; then
       # All platforms use -DPIC, to notify preprocessed assembler code.
       $show "$base_compile$pic_flag -DPIC $srcfile"
-      if eval "$run $base_compile$pic_flag -DPIC $srcfile"; then :
+      if $run eval "$base_compile$pic_flag -DPIC $srcfile"; then :
       else
 	test -n "$obj" && $run $rm $obj
 	exit 1
@@ -250,8 +253,8 @@ if test -z "$show_help"; then
 
       # If we have no pic_flag, then copy the object into place and finish.
       if test -z "$pic_flag"; then
-	$show "$ln_s $obj $libobj"
-	$run $ln_s $obj $libobj || $run $cp_p $obj $libobj
+	$show "$LN_S $obj $libobj"
+	$run $LN_S $obj $libobj
 	exit $?
       fi
 
@@ -263,7 +266,7 @@ if test -z "$show_help"; then
     # Only build a position-dependent object if we build old libraries.
     if test "$build_old_libs" = yes; then
       $show "$base_compile $srcfile"
-      if eval "$run $base_compile $srcfile"; then :
+      if $run eval "$base_compile $srcfile"; then :
       else
         $run $rm $obj $libobj
         exit 1
@@ -274,7 +277,7 @@ if test -z "$show_help"; then
     # link it into a program.
     if test "$build_libtool_libs" != yes; then
       $show "echo timestamp > $libobj"
-      eval "$run echo timestamp > $libobj" || exit $?
+      $run eval "echo timestamp > $libobj" || exit $?
     fi
 
     exit 0
@@ -307,9 +310,16 @@ if test -z "$show_help"; then
     vinfo=
 
     # We need to know -static, to get the right output filenames.
-    case " $@ " in
-    *" -static "*) build_libtool_libs=no build_old_libs=yes ;;
-    esac
+    for arg
+    do
+      case "$arg" in
+      -static)
+        build_libtool_libs=no
+        build_old_libs=yes
+        break
+        ;;
+      esac
+    done
 
     for arg
     do
@@ -718,7 +728,7 @@ if test -z "$show_help"; then
 
       # Check to see if the archive will have undefined symbols.
       if test "$allow_undefined" = yes; then
-	if "$allow_undefined_flag" = unsupported; then
+	if test "$allow_undefined_flag" = unsupported; then
 	  echo "$progname: warning: undefined symbols not allowed in $host shared libraries" 1>&2
 	  build_libtool_libs=no
 	fi
@@ -744,7 +754,7 @@ if test -z "$show_help"; then
 	linknames=
 	for link
 	do
-	  linknames="$linknames $objdir/$link"
+	  linknames="$linknames $link"
 	done
 
 	# Use standard objects if they are PIC.
@@ -756,14 +766,14 @@ if test -z "$show_help"; then
 	for cmd in $cmds; do
 	  IFS="$save_ifs"
 	  $show "$cmd"
-	  eval "$run $cmd" || exit $?
+	  $run eval "$cmd" || exit $?
 	done
 	IFS="$save_ifs"
 
 	# Create links to the real library.
 	for link in $linknames; do
-	  $show "$ln_s $realname $link"
-	  $run $ln_s $realname $link || exit $?
+	  $show "(cd $objdir && $LN_S $realname $link)"
+	  $run eval "(cd $objdir && $LN_S $realname $link)" || exit $?
 	done
 
 	# If -export-dynamic was specified, set the dlname.
@@ -819,7 +829,7 @@ if test -z "$show_help"; then
       for cmd in $cmds; do
         IFS="$save_ifs"
         $show "$cmd"
-	eval "$run $cmd" || exit $?
+	$run eval "$cmd" || exit $?
       done
       IFS="$save_ifs"
 
@@ -830,7 +840,7 @@ if test -z "$show_help"; then
         # Create an invalid libtool object if no PIC, so that we don't
         # accidentally link it into a program.
 	$show "echo timestamp > $libobj"
-	eval "$run echo timestamp > $libobj" || exit $?
+	$run eval "echo timestamp > $libobj" || exit $?
 	exit 0
       fi
 
@@ -843,13 +853,13 @@ if test -z "$show_help"; then
         for cmd in $cmds; do
           IFS="$save_ifs"
           $show "$cmd"
-          eval "$run $cmd" || exit $?
+          $run eval "$cmd" || exit $?
         done
         IFS="$save_ifs"
       else
         # Just create a symlink.
-        $show "$ln_s $obj $libobj"
-        $run $ln_s $obj $libobj || $run $cp_p $obj $libobj || exit 1
+        $show "$LN_S $obj $libobj"
+        $run $LN_S $obj $libobj || exit 1
       fi
 
       exit 0
@@ -949,7 +959,7 @@ if test -z "$show_help"; then
       esac
 
       $show "$compile_command"
-      eval "$run $compile_command" || exit $?
+      $run eval "$compile_command" || exit $?
 
       # Now create the wrapper script.
       echo "creating $output"
@@ -1008,6 +1018,10 @@ EOF
 
     # Add our own library path to $shlibpath_var
     $shlibpath_var="$temp_rpath\$$shlibpath_var"
+
+    # Some systems cannot cope with colon-terminated $shlibpath_var
+    $shlibpath_var=\`echo \$$shlibpath_var | sed -e 's/:*\$//'\`
+
     export $shlibpath_var
 EOF
 	fi
@@ -1056,7 +1070,7 @@ EOF
       for cmd in $cmds; do
         IFS="$save_ifs"
         $show "$cmd"
-	eval "$run $cmd" || exit $?
+	$run eval "$cmd" || exit $?
       done
       IFS="$save_ifs"
     fi
@@ -1096,8 +1110,8 @@ EOF
 
       # Do a symbolic link so that the libtool archive can be found in
       # LD_LIBRARY_PATH before the program is installed.
-      $show "$ln_s ../$output $objdir/$output"
-      $run $ln_s ../$output $objdir/$output || $run $cp_p ../$output $objdir/$output || exit 1
+      $show "(cd $objdir && $LN_S ../$output $output)"
+      $run eval "(cd $objdir && $LN_S ../$output $output)" || exit 1
       ;;
     esac
     exit 0
@@ -1188,7 +1202,7 @@ EOF
 
       # Not a directory, so check to see that there is only one file specified.
       set dummy $files
-      if $# -gt 2; then
+      if test $# -gt 2; then
         echo "$progname: \`$dest' is not a directory" 1>&2
         echo "$help" 1>&2
 	exit 1
@@ -1266,7 +1280,7 @@ EOF
 
 	  # Install the shared library and build the symlinks.
 	  $show "$install_prog $dir/$realname $destdir/$realname"
-	  eval "$run $install_prog $dir/$realname $destdir/$realname" || exit $?
+	  $run eval "$install_prog $dir/$realname $destdir/$realname" || exit $?
 	  test "X$dlname" = "X$realname" && dlname=
 
 	  # Support stripping libraries.
@@ -1279,7 +1293,7 @@ EOF
 	    fi
 	  fi
 
-	  if test -n "$1"; then
+	  if test $# -gt 0; then
 	    # Delete the old symlinks.
             rmcmd="$rm"
             for linkname
@@ -1293,15 +1307,15 @@ EOF
 	    for linkname
 	    do
 	      test "X$dlname" = "X$linkname" && dlname=
-	      $show "$ln_s $realname $destdir/$linkname"
-	      $run $ln_s $realname $destdir/$linkname
+	      $show "(cd $destdir && $LN_S $realname $linkname)"
+	      $run eval "(cd $destdir && $LN_S $realname $linkname)"
 	    done
 	  fi
 
 	  if test -n "$dlname"; then
 	    # Install the dynamically-loadable library.
 	    $show "$install_prog $dir/$dlname $destdir/$dlname"
-	    eval "$run $install_prog $dir/$dlname $destdir/$dlname" || exit $?
+	    $run eval "$install_prog $dir/$dlname $destdir/$dlname" || exit $?
 	  fi
 
 	  # Do each command in the postinstall commands.
@@ -1311,7 +1325,7 @@ EOF
 	  for cmd in $cmds; do
 	    IFS="$save_ifs"
 	    $show "$cmd"
-	    eval "$run $cmd" || exit $?
+	    $run eval "$cmd" || exit $?
 	  done
 	  IFS="$save_ifs"
 	fi
@@ -1412,9 +1426,7 @@ EOF
 	  done
 
 	  if test "$hardcode_action" = relink; then
-	    if test "$finalize" = no; then
-	      echo "$progname: warning: cannot relink \`$file' on behalf of your buggy system linker" 1>&2
-	    else
+	    if test "$finalize" = yes; then
 	      echo "$progname: warning: relinking \`$file' on behalf of your buggy system linker" 1>&2
 	      $show "$finalize_command"
 	      if $run $finalize_command; then :
@@ -1423,6 +1435,8 @@ EOF
 		continue
 	      fi
 	      file="$objdir/$file"T
+	    else
+	      echo "$progname: warning: cannot relink \`$file' on behalf of your buggy system linker" 1>&2
 	    fi
 	  else
 	    # Install the binary that we compiled earlier.
@@ -1466,7 +1480,7 @@ EOF
       for cmd in $cmds; do
         IFS="$save_ifs"
         $show "$cmd"
-        eval "$run $cmd" || exit $?
+        $run eval "$cmd" || exit $?
       done
       IFS="$save_ifs"
     done
@@ -1555,7 +1569,7 @@ EOF
 	for cmd in $cmds; do
 	  IFS="$save_ifs"
 	  $show "$cmd"
-	  eval "$run $cmd"
+	  $run eval "$cmd"
 	done
 	IFS="$save_ifs"
       done
