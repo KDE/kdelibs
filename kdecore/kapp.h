@@ -24,10 +24,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "Almost 2.0 Alpha"
+#define KDE_VERSION_STRING "Almost 2.0 - Beta1"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
-#define KDE_VERSION_RELEASE 1
+#define KDE_VERSION_RELEASE 2
 
 class KConfig;
 class KCharsets;
@@ -739,6 +739,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.146  2000/05/08 01:16:46  waba
+// WABA: Explain the X-DCOP-ServiceType fields in desktop files.
+//
 // Revision 1.145  2000/05/01 23:32:43  waba
 // WABA: startServiceBy... now takes a list of URLs as argument as well.
 // Rearranged the other parameters in a way that makes more sense.
