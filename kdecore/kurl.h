@@ -96,20 +96,30 @@ public:
    * Constructor taking a char * @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
+   * @param url A encoded URL. If the URL does not have a protocol part, 
+   *            "file:" is assumed.
+   * @param encoding_hint MIB of original encoding of URL.
+   * @see QTextCodec::mibEnum()
    */
   KURL( const char * url, int encoding_hint = 0 );
   /**
    * Constructor taking a QCString @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
+   * @param url A encoded URL. If the URL does not have a protocol part, 
+   *            "file:" is assumed.
+   * @param encoding_hint MIB of original encoding of URL.
+   * @see QTextCodec::mibEnum()
    */
   KURL( const QCString& url, int encoding_hint = 0 );
   /**
    * Copy constructor.
+   * @param u the KURL to copy
    */
   KURL( const KURL& u );
   /**
    * Converts from a @ref QUrl.
+   * @param u the QUrl
    */
   KURL( const QUrl &u );
   /**
@@ -128,70 +138,90 @@ public:
 
   /**
    * Returns the protocol for the URL (i.e., file, http, etc.).
+   * @return the protocol of the URL, does not include the colon. If the
+   *         URL is malformed, QString::null will be returned.
    **/
   QString protocol() const { return m_bIsMalformed ? QString::null : m_strProtocol; }
   /**
    * Sets the protocol for the URL (i.e., file, http, etc.)
+   * @param _txt the new protocol of the URL (without colon)
    **/
   void setProtocol( const QString& _txt );
 
   /**
    * Returns the decoded user name (login, user id, ...) included in the URL.
+   * @return the user name or QString::null if there is no user name
    **/
   QString user() const { return m_strUser; }
   /**
    * Sets the user name (login, user id, ...) included in the URL.
    *
    * Special characters in the user name will appear encoded in the URL.
+   * @param _txt the name of the user or QString::null to remove the user
    **/
   void setUser( const QString& _txt );
   /**
    * Test to see if this URL has a user name included in it.
+   * @return true if the URL has an non-empty user name
    **/
   bool hasUser() const { return !m_strUser.isEmpty(); }
 
   /**
    * Returns the decoded password (corresponding to @ref user()) included in the URL.
+   * @return the password or QString::null if it does not exist
    **/
   QString pass() const { return m_strPass; }
   /**
    * Sets the password (corresponding to @ref user()) included in the URL.
    *
    * Special characters in the password will appear encoded in the URL.
+   * Note that a password can only appear in a URL string if you also set 
+   * a user.
+   * @param _txt the password to set or QString::null to remove the password
+   * @see #setUser
+   * @see #hasUser
    **/
   void setPass( const QString& _txt );
   /**
    * Test to see if this URL has a password included in it.
+   * @return true if there is a non-empty password set
    **/
   bool hasPass() const { return !m_strPass.isEmpty(); }
 
   /**
    * Returns the decoded hostname included in the URL.
+   * @return the name of the host or QString::null if no host is set
    **/
   QString host() const { return m_strHost; }
   /**
    * Sets the hostname included in the URL.
    *
    * Special characters in the hostname will appear encoded in the URL.
+   * @param _txt the new name of the host or QString::null to remove the host
    **/
   void setHost( const QString& _txt );
   /**
    * Test to see if this URL has a hostname included in it.
+   * @return true if the URL has a host
    **/
   bool hasHost() const { return !m_strHost.isEmpty(); }
 
   /**
    * Returns the port number included in the URL.
-   * If there is no port number specified in the URL, returns 0.
+   * @return the port number. If there is no port number specified in the 
+   *         URL, returns 0.
    **/
   unsigned short int port() const { return m_iPort; }
   /**
    * Sets the port number included in the URL.
+   * @param _p the new port number or 0 to have no port number
    **/
   void setPort( unsigned short int _p );
 
   /**
    * Returns the current decoded path. This does @em not include the query.
+   * @return the path of the URL (without query), or QString::null if no 
+   *         path set. 
    */
   QString path() const  { return m_strPath; }
 
@@ -205,18 +235,24 @@ public:
    *                  the '/' would really alter the URL, while "ftp://host/path" and
    *                  "ftp://host/path/" mean the same directory.
    *
-   * @return The current decoded path. This does not include the query.
+   * @return The current decoded path. This does not include the query. Can
+   *         be QString::null if no path is set.
    */
   QString path( int _trailing ) const;
 
   /**
-   * path This is considered to be decoded. This means: %3f does not become decoded
-   *      and the ? does not indicate the start of the query part.
-   *      The query is not changed by this function.
+   * Sets the path of the URL. The query is not changed by this function.
+   *
+   * @param path The new path. This is considered to be decoded. This 
+   *             means: %3f does not become decoded
+   *             and the ? does not indicate the start of the query part.
+   *             Can be QString::null to delete the path.
    */
   void setPath( const QString& path );
+
   /**
    * Test to see if this URL has a path is included in it.
+   * @return true if there is a path
    **/
   bool hasPath() const { return !m_strPath.isEmpty(); }
 
@@ -247,16 +283,32 @@ public:
   /**
    * This is useful for HTTP. It looks first for '?' and decodes then.
    * The encoded path is the concatenation of the current path and the query.
+   * @param _txt the new path and query.
    * @param encoding_hint MIB of original encoding of @p _txt .
-   *             @see QTextCodec::mibEnum()
+   * @see QTextCodec::mibEnum()
    */
   void setEncodedPathAndQuery( const QString& _txt, int encoding_hint = 0 );
 
+  /**
+   * Sets the (already encoded) path
+   * @param _txt the new path
+   * @param encoding_hint MIB of original encoding of @p _txt .
+   * @see QTextCodec::mibEnum()
+   */
   void setEncodedPath(const QString& _txt, int encoding_hint = 0 );
 
   /**
+   * Returns the encoded path and the query.
    * @return The concatenation if the encoded path , '?' and the encoded query.
    *
+   * @param _trailing May be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
+   *                  a trailing '/' if there is none yet and 0 returns the
+   *                  path unchanged. If the URL has no path, then no '/' is added
+   *                  anyway. And on the other side: If the path is "/", then this
+   *                  character won't be stripped. Reason: "ftp://weis@host" means something
+   *                  completely different than "ftp://weis@host/". So adding or stripping
+   *                  the '/' would really alter the URL, while "ftp://host/path" and
+   *                  "ftp://host/path/" mean the same directory.
    * @param _no_empty_path If set to true then an empty path is substituted by "/".
    * @param encoding_hint MIB of desired encoding of URL.
    *             @see QTextCodec::mibEnum()
@@ -268,33 +320,35 @@ public:
    * The query may contain the 0 character.
    *
    * The query should start with a '?'. If it doesn't '?' is prepended.
-   * @param encoding_hint MIB of original encoding of _txt.
-   *             @see QTextCodec::mibEnum()
    * @param encoding_hint Reserved, should be 0.
+   * @see QTextCodec::mibEnum()
    */
   void setQuery( const QString& _txt, int encoding_hint = 0);
 
   /**
-   * @return The encoded query.
-   * This has a good reason: The query may contain the 0 character.
+   * Returns the query of the URL.
+   * The query may contain the 0 character.
    * If a query is present it always starts with a '?'.
    * A single '?' means an empty query.
    * An empty string means no query.
+   * @return The encoded query, or QString::null if there is none.
    */
   QString query() const;
 
   /**
    * The reference is @em never decoded automatically.
+   * @return the undecoded reference, or QString::null if there is none
    */
   QString ref() const { return m_strRef_encoded; }
 
   /**
    * Sets the reference part (everything after '#').
-   * @param _txt is considered encoded.
+   * @param _txt The encoded reference (or QString::null to remove it).
    */
   void setRef( const QString& _txt ) { m_strRef_encoded = _txt; }
 
   /**
+   * Checks whether the URL has a reference part.
    * @return @p true if the URL has a reference part. In a URL like
    *         http://www.kde.org/kdebase.tar#tar:/README it would
    *         return @p true, too.
@@ -302,11 +356,17 @@ public:
   bool hasRef() const { return !m_strRef_encoded.isNull(); }
 
   /**
+   * Returns the HTML reference (the part of the URL after "#").
    * @return The HTML-style reference.
+   * @see #split
+   * @see #hasSubURL
+   * @see #encodedHtmlRef
    */
   QString htmlRef() const;
 
   /**
+   * Returns the HTML reference (the part of the URL after "#") in
+   * encoded form.
    * @return The HTML-style reference in its original form.
    */
   QString encodedHtmlRef() const;
@@ -314,20 +374,21 @@ public:
   /**
    * Sets the HTML-style reference.
    *
-   * @param _ref This is considered to be @em not encoded in contrast to @ref setRef()
-   *
+   * @param _ref The new reference. This is considered to be @em not encoded in 
+   *         contrast to @ref setRef(). Use QString::null to remove it.
    * @see htmlRef()
    */
   void setHTMLRef( const QString& _ref );
 
   /**
+   * Checks whether there is a HTML reference.
    * @return @p true if the URL has an HTML-style reference.
-   *
    * @see htmlRef()
    */
   bool hasHTMLRef() const;
 
   /**
+   * Checks whether the URL is well formed.
    * @return @p false if the URL is malformed. This function does @em not test
    *         whether sub URLs are well-formed, too.
    */
@@ -338,26 +399,33 @@ public:
   bool isMalformed() const { return !isValid(); }
 
   /**
+   * Checks whether the file is local.
    * @return @p true if the file is a plain local file and has no filter protocols
    *         attached to it.
    */
   bool isLocalFile() const;
 
   /**
-   * Adds encoding information to url.
+   * Adds encoding information to url by adding a "charset" parameter. If there
+   * is already a charset parameter, it will be replaced.
+   * @param encoding the encoding to add or QString::null to remove the 
+   *                 encoding.
    */
   void setFileEncoding(const QString &encoding);
 
   /**
-   * Returns encoding information from url.
+   * Returns encoding information from url, the content of the "charset"
+   * parameter.
    * @return An encoding suitable for QTextCodec::codecForName()
-   *         or an empty string if not encoding was specified.
+   *         or QString::null if not encoding was specified.
    */
   QString fileEncoding() const;
 
   /**
+   * Checks whether the URL has any sub URLs. See @ref #split()
+   * for examples for sub URLs.
    * @return @p true if the file has at least one sub URL.
-   *         Use @ref split() to get the sub URLs.
+   * @see #split
    */
   bool hasSubURL() const;
 
@@ -369,7 +437,7 @@ public:
    * '/' or not. If there is none, it becomes appended. If @p _txt
    * has a leading '/' then this one is stripped.
    *
-   * @param _txt This is considered to be decoded
+   * @param _txt The text to add. It is considered to be decoded.
    */
   void addPath( const QString& _txt );
 
@@ -392,7 +460,6 @@ public:
    * @param _value Value of item to add
    * @param encoding_hint MIB of encoding to use for _value.
    *             @see QTextCodec::mibEnum()
-   *
    */
   void addQueryItem( const QString& _item, const QString& _value, int encoding_hint = 0 );
 
@@ -404,34 +471,37 @@ public:
   void removeQueryItem( const QString& _item );
 
   /**
-   * In comparison to @ref addPath() this function does not assume that the current path
-   * is a directory. This is only assumed if the current path ends with '/'.
+   * Sets the filename of the path.
+   * In comparison to @ref addPath() this function does not assume that the current 
+   * path is a directory. This is only assumed if the current path ends with '/'.
    *
    * Any reference is reset.
    *
-   * @param _txt This is considered to be decoded. If the current path ends with '/'
-   *             then @p _txt int just appended, otherwise all text behind the last '/'
-   *             in the current path is erased and @p _txt is appended then. It does
-   *             not matter whether @p _txt starts with '/' or not.
+   * @param _txt The filename to be set. It is considered to be decoded. If the 
+   *             current path ends with '/' then @p _txt int just appended, otherwise 
+   *             all text behind the last '/' in the current path is erased and 
+   *             @p _txt is appended then. It does not matter whether @p _txt starts 
+   *             with '/' or not.
    */
   void setFileName( const QString&_txt );
 
   /**
-   * @return The filename of the current path. The returned string is decoded.
-   *
-   * @param _ignore_trailing_slash_in_path This tells whether a trailing '/' should be ignored.
-   *                                     This means that the function would return "torben" for
-   *                                     <tt>file:/hallo/torben/</tt> and <tt>file:/hallo/torben</tt>.
-   *                                     If the flag is set to false, then everything behind the last '/'
-   *                                     is considered to be the filename.
+   * Returns the filename of the path.
+   * @param _ignore_trailing_slash_in_path This tells whether a trailing '/' should 
+   *        be ignored. This means that the function would return "torben" for
+   *        <tt>file:/hallo/torben/</tt> and <tt>file:/hallo/torben</tt>.
+   *        If the flag is set to false, then everything behind the last '/'
+   *        is considered to be the filename.
+   * @return The filename of the current path. The returned string is decoded. Null
+   *         if there is no file (and thus no path).
    */
   QString fileName( bool _ignore_trailing_slash_in_path = true ) const;
 
   /**
+   * Returns the directory of the path.
    * @return The directory part of the current path. Everything between the last and the second last '/'
    *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
-   *         <tt>file:/hallo/torben</tt> would return "hallo/". The returned string is decoded.
-   *
+   *         <tt>file:/hallo/torben</tt> would return "hallo/". The returned string is decoded. QString::null is returned when there is no path.
    * @param _strip_trailing_slash_from_result tells whether the returned result should end with '/' or not.
    *                                          If the path is empty or just "/" then this flag has no effect.
    * @param _ignore_trailing_slash_in_path means that <tt>file:/hallo/torben</tt> and
@@ -451,11 +521,13 @@ public:
    * file:/dir/dir2/my.tgz#tar:/ and you do cd("..") you will
    * still be in file:/dir/dir2/my.tgz#tar:/
    *
-   * @return true
+   * @param _dir the directory to change to
+   * @return true if successful
    */
   bool cd( const QString& _dir );
 
   /**
+   * Returns the URL as string.
    * @return The complete URL, with all escape sequences intact, encoded
    * in a given charset.
    * This is used in particular for encoding URLs in UTF-8 before using them
@@ -465,19 +537,21 @@ public:
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged.
    * @param encoding_hint MIB of encoding to use.
-   *             @see QTextCodec::mibEnum()
+   * @see QTextCodec::mibEnum()
    */
   QString url( int _trailing = 0, int encoding_hint = 0) const;
 
   /**
+   * Returns the URL as string in human-friendly format.
+   * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters.
-   * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    */
   QString prettyURL( int _trailing = 0) const;
   
   
   /**
+   * Returns the URL as string, escaped for HTML.
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters which is html encoded for safe inclusion in html or
    * rich text.
@@ -485,15 +559,17 @@ public:
   QString htmlURL() const;
   
   /**
+   * Returns the URL as string, escaped for HTML.
+   * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters.
-   * Example: http://localhost:8080/test.cgi?test=hello world&name=fred
    */
   QString prettyURL( int _trailing, AdjustementFlags _flags) const;
   // ### BIC: Merge the two above
 
   /**
    * Test to see if the KURL is empty.
+   * @return true if the URL is empty
    **/
   bool isEmpty() const;
 
@@ -503,6 +579,7 @@ public:
    * file:/home/x.tgz#gzip:/#tar:/ and hit the up button you expect to see
    * file:/home. The algorithm tries to go up on the right-most URL. If that is not
    * possible it strips the right most URL. It continues stripping URLs.
+   * @return a URL that is a level higher
    */
   KURL upURL( ) const;
 
@@ -537,8 +614,9 @@ public:
   bool equals( const KURL &u, bool ignore_trailing = false ) const;
 
   /**
-   * @return true if this url is a parent of @p u (or the same URL as @p u)
+   * Checks whether the given URL is parent of this URL. 
    * For instance, ftp://host/dir/ is a parent of ftp://host/dir/subdir/subsubdir/.
+   * @return true if this url is a parent of @p u (or the same URL as @p u)
    */
   bool isParentOf( const KURL& u ) const;
 
@@ -555,18 +633,33 @@ public:
    * @return An empty list on error or the list of split URLs.
    *
    * @param _url The URL that has to be split.
+   * @see #hasSubURL
    */
   static List split( const QString& _url );
 
   /**
-   * A convenience function.
+   * Splits nested URLs like file:/home/weis/kde.tgz#gzip:/#tar:/kdebase
+   * A URL like http://www.kde.org#tar:/kde/README.hml#ref1 will be split in
+   * http://www.kde.org and tar:/kde/README.html#ref1.
+   * That means in turn that "#ref1" is an HTML-style reference and not a new sub URL.
+   * Since HTML-style references mark
+   * a certain position in a document this reference is appended to every URL.
+   * The idea behind this is that browsers, for example, only look at the first URL while
+   * the rest is not of interest to them.
+   *
+   * @return An empty list on error or the list of split URLs.
+   *
+   * @param _url The URL that has to be split.
+   * @see #hasSubURL
    */
   static List split( const KURL& _url );
 
   /**
-   * Reverses @ref split(). Only the first URL may have a reference. This reference
+   * Reverses @ref #split(). Only the first URL may have a reference. This reference
    * is considered to be HTML-like and is appended at the end of the resulting
    * joined URL.
+   * @param _list the list to join
+   * @return the joined URL
    */
   static KURL join( const List& _list );
 
@@ -575,9 +668,10 @@ public:
    *
    * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters.
-   * @param str String to encode
+   * @param str String to encode (can be QString::null).
    * @param encoding_hint MIB of encoding to use.
    *             @see QTextCodec::mibEnum()
+   * @return the encoded string
    **/
   static QString encode_string(const QString &str, int encoding_hint = 0);
 
@@ -599,7 +693,7 @@ public:
    * Decode %-style encoding and convert from local encoding to unicode.
    *
    * Reverse of encode_string()
-   * @param str String to decode
+   * @param str String to decode (can be QString::null).
    * @param encoding_hint MIB of original encoding of @p str .
    *             @see QTextCodec::mibEnum()
    **/
