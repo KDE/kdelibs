@@ -1,20 +1,20 @@
 Source: kdelibs
-Section: contrib/x11
+Section: main/x11
 Priority: extra
 Maintainer: Stephan Kulow <coolo@kde.org>
 Standards-Version: 2.1.2.2
 
-Package: kdelibs3g-dev
+Package: kdelibs3-dev
 Architecture: any
-Depends: kdelibs3g (= ${Source-Version}), qt2beta-dev, libjpeg62-dev, xlib6g-dev
+Depends: kdelibs3 (= ${Source-Version}), qt2beta-dev, libjpeg62-dev, xlib6g-dev
 Conflicts: kdelibs0-dev, kdelibs2g-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
  You need these files to compile kde applications.
 
-Package: kdelibs3g
+Package: kdelibs3
 Architecture: any
-Depends: ${shlibs:Depends}, libjpeg62, qt2beta
+Depends: ${shlibs:Depends}, libjpeg62, qt2beta, libjpeg62, xlib6
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.

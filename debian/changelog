@@ -1,9 +1,10 @@
-kdelibs (4:2.0-19990303-1) unstable; urgency=low
+kdelibs (4:2.0-19990309-1) experimental; urgency=low
 
-  * version from CVS
+  * new upstream version out of CVS (many translation updates and some
+    security fixes
   * install it into /opt/kde2pre for now (unstripped)
 
- -- Stephan Kulow <coolo@kde.org>  Wed,  3 Mar 1999 22:25:37 +0100
+ -- Stephan Kulow <coolo@kde.org>  Sat,  6 Mar 1999 18:03:04 +0100
 
 kdelibs (4:1.1-19990217-1) unstable; urgency=low
 

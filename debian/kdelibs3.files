@@ -1,0 +1,6 @@
+opt/kde2pre/lib/lib*.so.*
+opt/kde2pre/share/config/charsets
+opt/kde2pre/share/config//kdebug.areas
+opt/kde2pre/share/doc
+opt/kde2pre/share
+usr/doc/kdelibs
