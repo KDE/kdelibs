@@ -850,7 +850,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         return;
     }
     case CSS_PROP_DISPLAY:
-    {
+    {   
         if(value->valueType() == CSSValue::CSS_INHERIT)
         {
             if(!e->parentNode()) return;
@@ -902,8 +902,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         default:
             break;
         }
+        if ((style->position()==ABSOLUTE || style->position()==FIXED)
+                && d!=NONE)
+            style->setDisplay(BLOCK);
+        else
+            style->setDisplay(d);
         //kdDebug( 6080 ) << "setting display to " << d << endl;
-        style->setDisplay(d);
+        
         break;
     }
 
@@ -1124,16 +1129,21 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         {
         case CSS_VAL_STATIC:
             p = STATIC; break;
-        case CSS_VAL_RELATIVE:
+        case CSS_VAL_RELATIVE:            
             p = RELATIVE; break;
         case CSS_VAL_ABSOLUTE:
+            if (style->display()!=NONE)
+                style->setDisplay(BLOCK);
             p = ABSOLUTE; break;
         case CSS_VAL_FIXED:
             {
                 DocumentImpl *doc = e->ownerDocument();
                 if(doc && doc->view())
                     doc->view()->useSlowRepaints();
-                p = FIXED; break;
+                p = FIXED; 
+                if (style->display()!=NONE)
+                    style->setDisplay(BLOCK);
+                break;
             }
         default:
             return;
