@@ -115,10 +115,13 @@ public:
 	                              SubControl subcontrol,
 	                              const QStyleOption& opt = QStyleOption::Default ) const;
 
-public slots:
+private slots:
+	//Animation slots.
 	void updateProgressPos();
+	void progressBarDestroyed(QObject* bar);
 
 private:
+
 	bool isSizeConstrainedCombo(const QComboBox* combo) const;
 	bool isFormWidget          (const QWidget*   widget) const;
 
@@ -133,8 +136,6 @@ private:
 	mutable bool formMode;   //Set when rendering form widgets
 
 	mutable const QWidget* toolbarBlendWidget;  //Ditto for blending with toolbars
-
-	int                        progAnimShift;
 
 	enum TitleBarMode
 	{
@@ -152,6 +153,9 @@ private:
 
 	mutable bool customScrollMode; //Set when drawing scrollbars with custom colors.
 
+	//Animation support.
+	QMap<QWidget*, bool> progAnimWidgets;
+	int                  progAnimShift;
 
 	bool eventFilter( QObject* object, QEvent* event );
 

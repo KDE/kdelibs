@@ -301,6 +301,11 @@ void KeramikStyle::updateProgressPos()
 	progAnimShift++;
 	if (progAnimShift == 28)
 		progAnimShift = 0;
+		
+	//Update the registered progressbars.
+	QMap<QWidget*, bool>::iterator iter;
+	for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
+		iter.key()->update();
 }
 
 KeramikStyle::~KeramikStyle()
@@ -345,11 +350,10 @@ void KeramikStyle::polish(QWidget* widget)
 		widget->installEventFilter(this);
 	}
 
-	if (animateProgressBar && widget->inherits("QProgressBar"))
+	if (animateProgressBar && ::qt_cast<QProgressBar*>(widget))
 	{
-		QTimer* timer = new QTimer(widget);
-		timer->start(50);
-		connect(timer, SIGNAL(timeout()), widget, SLOT(update()));
+		progAnimWidgets[widget] = true;
+		connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(progressBarDestroyed(QObject*)));
 	}
 
 	KStyle::polish(widget);
@@ -357,6 +361,7 @@ void KeramikStyle::polish(QWidget* widget)
 
 void KeramikStyle::unPolish(QWidget* widget)
 {
+	//### TODO: This needs major cleanup (and so does polish() )
 	if ( widget->inherits( "QPushButton" ) || widget->inherits( "QComboBox"  ) )
 	{
 		if ( widget->inherits( "QComboBox" ) )
@@ -381,8 +386,17 @@ void KeramikStyle::unPolish(QWidget* widget)
 		widget->setBackgroundMode( PaletteBackground );
 		widget->removeEventFilter(this);
 	}
+	else if ( ::qt_cast<QProgressBar*>(widget) )
+	{
+		progAnimWidgets.remove(widget);
+	}
 
 	KStyle::unPolish(widget);
+}
+
+void KeramikStyle::progressBarDestroyed(QObject* obj)
+{
+	progAnimWidgets.remove(static_cast<QWidget*>(obj));
 }
 
 
