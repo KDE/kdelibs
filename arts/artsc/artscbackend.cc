@@ -308,7 +308,7 @@ public:
 			DataPacket<mcopbyte> *packet = outqueue.front();
 
 			/* copy some data there */
-			int tocopy = min(remaining,packetCapacity);
+			int tocopy = min(remaining,packetCapacity-pos);
 			memcpy(&packet->contents[pos],data,tocopy);
 			pos += tocopy;
 			data += tocopy;
