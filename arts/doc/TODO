@@ -34,8 +34,6 @@
   in nfs mounted home directory)
 - make it possible for artsd to cascade audio input/output to another artsd
 - ARTS_COOKIE, OSS_DEVICE
-- calling artsd -n -u -p12345 repeatedly doesn't clean stale references
-  properly
 
 ## KMedia2
 

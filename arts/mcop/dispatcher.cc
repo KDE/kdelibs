@@ -861,9 +861,17 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 		Connection *conn = connectUrl(*ui);
 		if(conn)
 		{
-			assert(conn->isConnected(reference.serverID));	// FIXME
-			return conn;
-		}	
+			if(conn->isConnected(reference.serverID))
+			{
+				return conn;
+			}
+			else
+			{
+				/* we connected somewhere, but not the right server ;) */
+				connections.remove(conn);
+				conn->_release();
+			}
+		}
 	}
 	return 0;
 }
