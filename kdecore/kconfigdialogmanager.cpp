@@ -179,6 +179,12 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         setupWidget(childWidget, item);
 
         QMap<QString, QCString>::const_iterator changedIt = changedMap.find(childWidget->className());
+
+        if (changedIt == changedMap.end())
+        {
+          changedIt = changedMap.find(childWidget->metaObject()->superClassName());
+        }
+
         if (changedIt == changedMap.end())
         {
           kdWarning(178) << "Don't know how to monitor widget '" << childWidget->className() << "' for changes!" << endl;
