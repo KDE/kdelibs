@@ -64,6 +64,7 @@ class KXMLGUIFactory
   ~KXMLGUIFactory();
 
   // XXX move to somewhere else? (Simon)
+  static QString readConfigFile( const QString &filename, bool never_null );
   static QString readConfigFile( const QString &filename );
   static bool saveConfigFile( const QDomDocument& doc, const QString& filename);
 

@@ -132,6 +132,11 @@ KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &
 
 QString KXMLGUIFactory::readConfigFile( const QString &filename )
 {
+  return readConfigFile( filename, false );
+}
+
+QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null )
+{
   QString xml_file;
 
   if (filename[0] == '/')
@@ -144,7 +149,10 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename )
   if ( !file.open( IO_ReadOnly ) )
   {
     kdError(1000) << "No such XML file " << filename.local8Bit().data() << endl;
-    return QString::null;
+    if ( never_null )
+      return "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>";
+    else 
+      return QString::null;
   }
 
   uint size = file.size();
