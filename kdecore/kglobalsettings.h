@@ -160,7 +160,12 @@ class KGlobalSettings
        /**
         * Lists all possible matches in a popup list-box to choose from.
         */
-       CompletionPopup
+       CompletionPopup,
+       /**
+        * Lists all possible matches in a popup list-box to choose from, and automatically
+	* fill the result whenever possible.
+        */
+       CompletionPopupAuto
    };
 
     /**

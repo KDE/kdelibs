@@ -33,7 +33,7 @@ class QEvent;
  * It is filled with all possible matches for a completion, so the user
  * can select the one he wants.
  *
- * It is used when KGlobalSettings::Completion == CompletionPopup.
+ * It is used when KGlobalSettings::Completion == CompletionPopup or CompletionPopupAuto.
  *
  * @short A helper widget for "completion-widgets" (KLineEdit, KComboBox))
  * @author Carsten Pfeiffer <pfeiffer@kde.org>

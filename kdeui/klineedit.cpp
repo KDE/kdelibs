@@ -50,6 +50,9 @@ public:
         grabReturnKeyEvents = false;
         handleURLDrops = true;
         completionBox = 0L;
+        userSelection = true;
+        autoSuggest = true;
+        disableRestoreSelection = false;
     }
     ~KLineEditPrivate()
     {
@@ -58,7 +61,12 @@ public:
 
     bool grabReturnKeyEvents;
     bool handleURLDrops;
+    bool userSelection;
+    bool autoSuggest;
+    QColor previousHighlightColor;
+    QColor previousHighlightedTextColor;
     KCompletionBox *completionBox;
+    bool disableRestoreSelection;
 };
 
 
@@ -87,19 +95,29 @@ void KLineEdit::init()
     setContextMenuEnabled( true );
     KCursor::setAutoHideCursor( this, true, true );
     installEventFilter( this );
+    connect( this, SIGNAL(selectionChanged()), this, SLOT(slotRestoreSelectionColors()));
+    QPalette p=palette();
+    if ( !d->previousHighlightedTextColor.isValid() )
+      d->previousHighlightedTextColor=p.color(QPalette::Normal,QColorGroup::HighlightedText);
+    if ( !d->previousHighlightColor.isValid() )
+      d->previousHighlightColor=p.color(QPalette::Normal,QColorGroup::Highlight);
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 {
     KGlobalSettings::Completion oldMode = completionMode();
-    if ( oldMode != mode && oldMode == KGlobalSettings::CompletionPopup &&
-         d->completionBox && d->completionBox->isVisible() )
-        d->completionBox->hide();
+    if ( oldMode != mode && (oldMode == KGlobalSettings::CompletionPopup ||
+	  oldMode == KGlobalSettings::CompletionPopupAuto ) &&
+	  d->completionBox && d->completionBox->isVisible() )
+      d->completionBox->hide();
 
     // If the widgets echo mode is not Normal, no completion
     // feature will be enabled even if one is requested.
     if ( echoMode() != QLineEdit::Normal )
         mode = KGlobalSettings::CompletionNone; // Override the request.
+
+    if ( mode == KGlobalSettings::CompletionPopup ) d->autoSuggest = false;
+    else if ( mode == KGlobalSettings::CompletionPopupAuto ) d->autoSuggest = true;
 
     KCompletionBase::setCompletionMode( mode );
 }
@@ -111,7 +129,11 @@ void KLineEdit::setCompletedText( const QString& t, bool marked )
     {
         int curpos = marked ? txt.length() : t.length();
         validateAndSet( t, curpos, curpos, t.length() );
+        setUserSelection(false);
     }
+    else 
+      setUserSelection(true);
+
 }
 
 void KLineEdit::setCompletedText( const QString& text )
@@ -119,7 +141,8 @@ void KLineEdit::setCompletedText( const QString& text )
     KGlobalSettings::Completion mode = completionMode();
     bool marked = ( mode == KGlobalSettings::CompletionAuto ||
                     mode == KGlobalSettings::CompletionMan ||
-                    mode == KGlobalSettings::CompletionPopup );
+                    mode == KGlobalSettings::CompletionPopup ||
+                    mode == KGlobalSettings::CompletionPopupAuto );
     setCompletedText( text, marked );
 }
 
@@ -146,7 +169,7 @@ void KLineEdit::makeCompletion( const QString& text )
 
     QString match = comp->makeCompletion( text );
     KGlobalSettings::Completion mode = completionMode();
-    if ( mode == KGlobalSettings::CompletionPopup )
+    if ( mode == KGlobalSettings::CompletionPopup || mode == KGlobalSettings::CompletionPopupAuto )
     {
         if ( match.isNull() )
         {
@@ -164,6 +187,9 @@ void KLineEdit::makeCompletion( const QString& text )
         // If no match or the same match, simply return without completing.
         if ( match.isNull() || match == text )
             return;
+
+	if ( mode == KGlobalSettings::CompletionAuto )
+	  setUserSelection(false);
 
         setCompletedText( match );
     }
@@ -183,7 +209,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     }
     else if ( KStdAccel::deleteWordForward().contains( key ) )
     {
-        // Workaround for QT bug where
         cursorWordForward(TRUE);
         if ( hasSelectedText() )
             del();
@@ -201,44 +226,128 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         KGlobalSettings::Completion mode = completionMode();
         bool noModifier = (e->state() == NoButton || e->state()== ShiftButton);
 
+        if ( ( mode == KGlobalSettings::CompletionAuto || mode == KGlobalSettings::CompletionPopupAuto ) && noModifier )
+	{
+            if ( !d->userSelection && ( e->key() == Key_Left || e->key() == Key_Right ) && e->state()==NoButton )
+            {
+
+                QString old_txt = text();
+                d->disableRestoreSelection=true;
+
+                deselect();
+                QLineEdit::keyPressEvent ( e );
+                int cPosition=cursorPosition();
+                validateAndSet(old_txt, cPosition, cPosition, old_txt.length());
+	
+                d->disableRestoreSelection=false;
+                return;
+            }
+
+            if ( e->key() == Key_Escape ) 
+            {
+                if (hasSelectedText() )
+                {
+                    if (d->userSelection)
+                        deselect();
+                    else
+                    {
+                        d->autoSuggest=false;
+                        int start,end;
+                        getSelection(&start, &end);
+                        QString s=text().remove(start, end-start+1);
+                        validateAndSet(s,start,s.length(),s.length());
+                        d->autoSuggest=true;
+                    }
+                }
+
+                return;
+            }
+
+	}
+
+
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
             QString keycode = e->text();
-            if ( !keycode.isNull() && keycode.unicode()->isPrint() )
+            if ( !keycode.isNull() && (keycode.unicode()->isPrint() || (e->key() == Key_Backspace && mode == KGlobalSettings::CompletionAuto )))
             {
+                bool hasUserSelection=d->userSelection;
+                bool hadSelection=hasSelectedText();
+	    
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
                 int len = txt.length();
                 if ( !hasSelectedText() && len && cursorPosition() == len )
                 {
+		    if ( e->key() == Key_Backspace && hadSelection && !hasUserSelection )
+		    {
+                        backspace();
+                        txt = text();
+                        len = txt.length();
+                    }
+		   
+		    if (e->key() == Key_Delete )
+		      d->autoSuggest=false;
+
                     if ( emitSignals() )
                         emit completion( txt );
                     if ( handleSignals() )
                         makeCompletion( txt );
+
+		    if (e->key() == Key_Backspace || e->key() == Key_Delete )
+		      d->autoSuggest=true;
+
                     e->accept();
                 }
                 return;
             }
+
         }
 
-        else if ( mode == KGlobalSettings::CompletionPopup && noModifier )
+        else if (( mode == KGlobalSettings::CompletionPopupAuto || mode == KGlobalSettings::CompletionPopup ) && noModifier )
         {
             QString old_txt = text();
+
+	    bool hasUserSelection=d->userSelection;
+	    bool hadSelection=hasSelectedText();
+
+            int selectedLength=selectedText().length();
+
             QLineEdit::keyPressEvent ( e );
+		
+            if (( selectedLength != selectedText().length() )&& !hasUserSelection )
+                slotRestoreSelectionColors(); // and set userSelection to true
+	                   
             QString txt = text();
             int len = txt.length();
             QString keycode = e->text();
 
-
             if ( txt != old_txt && len && cursorPosition() == len &&
                  ( (!keycode.isNull() && keycode.unicode()->isPrint()) ||
-                   e->key() == Key_Backspace ) )
+                   e->key() == Key_Backspace || e->key() == Key_Delete) )
             {
-                if ( emitSignals() )
-                    emit completion( txt ); // emit when requested...
-                if ( handleSignals() )
-                    makeCompletion( txt );  // handle when requested...
+
+                if (e->key() == Key_Backspace && d->completionBox &&
+		    d->completionBox->isVisible() && hadSelection && !hasUserSelection )
+                {
+                      backspace();
+                      txt = text();
+                      len = txt.length();
+		}
+
+		if (e->key() == Key_Delete )
+		   d->autoSuggest=false; 
+
+		if ( emitSignals() )
+		  emit completion( txt ); // emit when requested...
+
+		if ( handleSignals() )
+		  makeCompletion( txt );  // handle when requested...
+
+		if ( (e->key() == Key_Backspace || e->key() == Key_Delete ) && mode ==  KGlobalSettings::CompletionPopupAuto )
+		  d->autoSuggest=true;
+
                 e->accept();
             }
             else if (!len && d->completionBox && d->completionBox->isVisible())
@@ -333,8 +442,12 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
     }
 
+    int selectedLength=selectedText().length();
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( e );
+    
+    if ( selectedLength != selectedText().length() )
+	slotRestoreSelectionColors(); // and set userSelection to true
 }
 
 void KLineEdit::mouseDoubleClickEvent( QMouseEvent* e )
@@ -387,6 +500,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
         subMenu->insertItem( i18n("Automatic"), AutoCompletion );
         subMenu->insertItem( i18n("Dropdown List"), PopupCompletion );
         subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
+        subMenu->insertItem( i18n("Dropdown List")+QString(" + ") +i18n("Automatic"), PopupAutoCompletion );
 
         KGlobalSettings::Completion mode = completionMode();
         subMenu->setItemChecked( NoCompletion,
@@ -399,6 +513,8 @@ QPopupMenu *KLineEdit::createPopupMenu()
                                  mode == KGlobalSettings::CompletionAuto );
         subMenu->setItemChecked( SemiAutoCompletion,
                                  mode == KGlobalSettings::CompletionMan );
+        subMenu->setItemChecked( PopupAutoCompletion,
+                                 mode == KGlobalSettings::CompletionPopupAuto );
         if ( mode != KGlobalSettings::completionMode() )
         {
             subMenu->insertSeparator();
@@ -431,13 +547,16 @@ void KLineEdit::completionMenuActivated( int id )
             setCompletionMode( KGlobalSettings::CompletionShell ); break;
         case PopupCompletion:
             setCompletionMode( KGlobalSettings::CompletionPopup ); break;
+        case PopupAutoCompletion:
+            setCompletionMode( KGlobalSettings::CompletionPopupAuto ); break;
         default: return;
     }
 
     if ( oldMode != completionMode() )
     {
-        if ( oldMode == KGlobalSettings::CompletionPopup &&
-             d->completionBox && d->completionBox->isVisible() )
+        if ( (oldMode == KGlobalSettings::CompletionPopup ||
+	      oldMode == KGlobalSettings::CompletionPopupAuto ) &&
+	      d->completionBox && d->completionBox->isVisible() )
             d->completionBox->hide();
         emit completionModeChanged( completionMode() );
     }
@@ -495,7 +614,11 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                 emit returnPressed( displayText() );
 
                 if ( trap )
-                    d->completionBox->hide();
+		{
+		    d->completionBox->hide();
+		    deselect();
+		    setCursorPosition(text().length());
+		}
 
                 // Eat the event if the user asked for it, or if a completionbox was visible
                 return d->grabReturnKeyEvents || trap;
@@ -542,7 +665,7 @@ void KLineEdit::makeCompletionBox()
         connect( d->completionBox, SIGNAL(highlighted( const QString& )),
                  SLOT(setText( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
-                 SLOT(setText( const QString& )) );
+                 SLOT(userCancelled( const QString& )) );
 
         // Nice lil' hacklet ;) KComboBox doesn't know when the completionbox
         // is created (childEvent() is even more hacky, IMHO), so we simply
@@ -550,6 +673,26 @@ void KLineEdit::makeCompletionBox()
         if ( parentWidget() && parentWidget()->inherits("KComboBox") )
             connect( d->completionBox, SIGNAL( activated( const QString& )),
                      parentWidget(), SIGNAL( activated( const QString & )));
+    }
+}
+
+void KLineEdit::userCancelled(const QString & cancelText)
+{
+    if ( completionMode() != KGlobalSettings::CompletionPopupAuto ) setText(cancelText);
+    else 
+    if (hasSelectedText() )
+    {
+      if (d->userSelection) 
+        deselect();
+      else
+      {
+        d->autoSuggest=false;
+        int start,end;
+        getSelection(&start, &end);
+        QString s=text().remove(start, end-start+1);
+        validateAndSet(s,start,s.length(),s.length());
+        d->autoSuggest=true;
+      }
     }
 }
 
@@ -605,11 +748,20 @@ void KLineEdit::setCompletedItems( const QStringList& items )
         if ( !d->completionBox )
             makeCompletionBox();
 
+	    kdDebug() << "setCompletedItems" << endl;
+
         if ( !txt.isEmpty() )
             d->completionBox->setCancelledText( txt );
         d->completionBox->clear();
         d->completionBox->insertItems( items );
         d->completionBox->popup();
+        if ( d->autoSuggest )
+	{
+	    int index = items.first().find( txt );
+	    QString newText = items.first().mid( index );
+	    setUserSelection(false);
+            setCompletedText(newText,true);
+        }
     }
     else
     {
@@ -645,4 +797,28 @@ void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 {
     QLineEdit::create( id, initializeWindow, destroyOldWindow );
     KCursor::setAutoHideCursor( this, true, true );
+}
+
+void KLineEdit::setUserSelection(bool userSelection)
+{
+    QPalette p=palette();
+    if (userSelection)
+    {
+        p.setColor(QColorGroup::Highlight, d->previousHighlightColor);
+        p.setColor(QColorGroup::HighlightedText, d->previousHighlightedTextColor);
+    }
+    else
+    {
+        QColor color=p.color(QPalette::Disabled, QColorGroup::Text);
+        p.setColor(QColorGroup::HighlightedText, color);
+        p.setColor(QColorGroup::Highlight, Qt::white);
+    }
+    d->userSelection=userSelection;
+    setPalette(p);
+}
+
+void KLineEdit::slotRestoreSelectionColors()
+{
+    if (d->disableRestoreSelection) return;
+    setUserSelection(true);
 }

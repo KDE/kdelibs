@@ -214,7 +214,8 @@ QString KCompletion::makeCompletion( const QString& string )
 
     QString completion;
     // in case-insensitive popup mode, we search all completions at once
-    if ( myCompletionMode == KGlobalSettings::CompletionPopup ) {
+    if ( myCompletionMode == KGlobalSettings::CompletionPopup ||
+         myCompletionMode == KGlobalSettings::CompletionPopupAuto ) {
         findAllCompletions( string, &d->matches, myHasMultipleMatches );
         if ( !d->matches.isEmpty() )
             completion = d->matches.first();

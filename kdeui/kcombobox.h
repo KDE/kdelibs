@@ -310,7 +310,7 @@ public:
 
     /**
      * @returns the completion-box, that is used in completion mode
-     * @ref KGlobalSettings::CompletionPopup.
+     * @ref KGlobalSettings::CompletionPopup and @ref KGlobalSettings::CompletionPopupAuto.
      * This method will create a completion-box by calling
      * @ref KLineEdit::completionBox, if none is there, yet.
      *
