@@ -88,6 +88,11 @@ static const char textareaEnd [] = "</textarea";
                 case 0x97: (x) = '-'; break; \
                 case 0x98: (x) = '~'; break; \
                 case 0xb7: (x) = '*'; break; \
+                default: break; \
+                } \
+            } \
+            else { \
+                switch( (x).unicode() ) { \
                 case 0x2014: (x) = '-'; break; \
                 case 0x2019: (x) = '\''; break; \
                 case 0x201c: (x) = '"'; break; \
