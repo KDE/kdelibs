@@ -133,16 +133,14 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 X509_STORE *certStore;
 X509_LOOKUP *certLookup;
 X509_STORE_CTX *certStoreCTX;
+int rc;
 
   if (!d->m_cert) return Unknown;
 
-  if (d->m_stateCached) return d->m_stateCache;
-
-  certStore = X509_STORE_new();
-  if (!certStore)
-    return Unknown;
-
-  X509_STORE_set_verify_cb_func(certStore, X509Callback);
+  if (d->m_stateCached) {
+    kdDebug() << "KSSL returning a cached value" << d->m_stateCached << endl;
+    return d->m_stateCache;
+  }
 
   QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
 
@@ -151,68 +149,75 @@ X509_STORE_CTX *certStoreCTX;
     return KSSLCertificate::NoCARoot;
   }
 
-  certLookup = X509_STORE_add_lookup(certStore, X509_LOOKUP_hash_dir());
-  if (!certLookup) {
-    X509_STORE_free(certStore);
-    return Unknown;
-  }
+  KSSLCertificate::KSSLValidation ksslv = Unknown;
 
-  // FIXME: OpenSSL doesn't seem to be able to handle multiple paths
-  //        simultaneously.  Therefore we have to just take the first path.
-#if 1
-  QString _j = *(qsl.begin())+"caroot/";
-  kdDebug() << "KSSL Certificate Root directory found: " << _j << endl;
-  
-  if (!X509_LOOKUP_add_dir(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
-    // error accessing directory and loading pems
-    X509_STORE_free(certStore);
-    kdDebug() << "KSSL couldn't read CA root: " << _j << endl;
-    return KSSLCertificate::ErrorReadingRoot;
-  }
-#else
   for (QValueListIterator<QString> j = qsl.begin();
                                    j != qsl.end(); ++j) {
     QString _j = (*j)+"caroot/";
     kdDebug() << "KSSL Certificate Root directory found: " << _j << endl;
 
+    certStore = X509_STORE_new();
+    if (!certStore)
+      return Unknown;
+
+    X509_STORE_set_verify_cb_func(certStore, X509Callback);
+
+    certLookup = X509_STORE_add_lookup(certStore, X509_LOOKUP_hash_dir());
+    if (!certLookup) {
+      kdDebug() << "KSSL error adding lookup hash directory" << endl;
+      ksslv = KSSLCertificate::Unknown;
+      X509_STORE_free(certStore);
+      continue;
+    }
+
     if (!X509_LOOKUP_add_dir(certLookup, _j.ascii(), X509_FILETYPE_PEM)) {
       // error accessing directory and loading pems
-      X509_STORE_free(certStore);
       kdDebug() << "KSSL couldn't read CA root: " << _j << endl;
-      return KSSLCertificate::ErrorReadingRoot;
+      ksslv = KSSLCertificate::ErrorReadingRoot;
+      X509_STORE_free(certStore);
+      continue;
+    }
+
+    //
+    // This is the checking code
+    certStoreCTX = X509_STORE_CTX_new();
+
+    // this is a bad error - could mean no free memory.  This may be the
+    // wrong thing to do here
+    if (!certStoreCTX) {
+      kdDebug() << "KSSL couldn't create an X509 store context." << endl;
+      X509_STORE_free(certStore);
+      continue;
+    }
+
+    kdDebug() << "KSSL Initializing the certificate store context" << endl;
+    X509_STORE_CTX_init(certStoreCTX, certStore, d->m_cert, NULL);
+
+    // FIXME: do all the X509_STORE_CTX_set_flags(); here
+    //   +----->  Note that this is for 0.9.6 or better ONLY!
+
+    certStoreCTX->error = X509_V_OK;
+    rc = X509_verify_cert(certStoreCTX);
+    int errcode = certStoreCTX->error;
+    X509_STORE_CTX_free(certStoreCTX);
+    X509_STORE_free(certStore);
+    // end of checking code
+    //
+
+    ksslv = processError(errcode);
+    kdDebug() << "KSSL Validation procedure RC: " << rc << endl;
+    kdDebug() << "KSSL Validation procedure errcode: " << errcode << endl;
+    kdDebug() << "KSSL Validation procedure RESULTS: " << ksslv << endl;
+
+    if (ksslv != NoCARoot && ksslv != InvalidCA) {
+      d->m_stateCached = true;
+      d->m_stateCache = ksslv;
+      break;
     }
   }
-#endif
 
-  //
-  // This is the checking code
-  certStoreCTX = X509_STORE_CTX_new();
+  return (d->m_stateCache);
 
-  if (!certStoreCTX) {
-    X509_STORE_free(certStore);
-    return KSSLCertificate::Unknown;
-  }
-
-  kdDebug() << "KSSL Initializing the certificate store context" << endl;
-  X509_STORE_CTX_init(certStoreCTX, certStore, d->m_cert, NULL);
-
-  // do all the X509_STORE_CTX_set_flags(); here
-  //   +----->  Note that this is for 0.9.6 or better ONLY!
-
-  int rc = X509_verify_cert(certStoreCTX);
-  int errcode = certStoreCTX->error;
-  X509_STORE_CTX_free(certStoreCTX);
-  // end of checking code
-  //
-
-  X509_STORE_free(certStore);
-  kdDebug() << "KSSL Validation procedure RC: " << rc << endl;
-  kdDebug() << "KSSL Validation procedure errcode: " << errcode << endl;
-  if (rc) {
-    d->m_stateCached = true;
-    d->m_stateCache = KSSLCertificate::Ok;
-  }
-  return (rc ? KSSLCertificate::Ok : processError(errcode));
 #endif
 return NoSSL;
 }
@@ -289,6 +294,8 @@ case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
 case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
 case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
  rc = KSSLCertificate::Expired;
+ kdDebug() << "KSSL apparently this is expired.  Not after: "
+           << getNotAfter() << endl;
 break;
 
 case 1:
@@ -304,7 +311,6 @@ break;
 d->m_stateCache = rc;
 d->m_stateCached = true;
 #endif
-kdDebug() << "KSSL Validation procedure RESULTS!!: " << rc << endl;
 return rc;
 }
 

@@ -35,13 +35,6 @@
 //  There should be no reason to touch the X509 stuff directly.
 //
 
-//  This class looks exceptionally complicated for a reason.  OpenSSL works
-//  differently for remote and local certificates.  If we are to re-use the
-//  verification code for a local and a remote certificate, we would have to
-//  write the remote certificate to disk first.  This is a waste of cpu
-//  cycles, disk, and any other resource it might consume.  And well, it's
-//  just plain silly.
-
 #include <qstring.h>
 
 class KSSL;

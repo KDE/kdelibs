@@ -57,13 +57,11 @@ public:
 
 
 KSSL::KSSL(bool init) {
-  kdDebug() << "KSSL constructor enter" << endl;
   d = new KSSLPrivate;
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
   if (init) initialize();
-  kdDebug() << "KSSL constructor exit" << endl;
 }
 
 
@@ -71,13 +69,12 @@ KSSL::~KSSL() {
   close();
   delete m_cfg;
   delete d;
-  kdDebug() << "KSSL destructor exit" << endl;
 }
 
 
 bool KSSL::initialize() {
-  kdDebug() << "KSSL initialize" << endl;
 #ifdef HAVE_SSL
+  kdDebug() << "KSSL initialize" << endl;
   if (m_bInit) return false;
 
   if (m_bAutoReconfig)
@@ -139,7 +136,8 @@ bool KSSL::reInitialize() {
 
 
 bool KSSL::setVerificationLogic() {
-//#if 0
+#if 0
+  // FIXME: this has to work like the one in ksslcertificate.cc
   kdDebug() << "KSSL verification logic" << endl;
 #ifdef HAVE_SSL
 // FIXME - check return code
@@ -164,14 +162,14 @@ if (!SSL_CTX_load_verify_locations(d->m_ctx, NULL, _j.ascii())) {
 
 return true;
 #endif
-//#endif
+#endif
 return true;
 }
 
 
 int KSSL::connect(int sock) {
-  kdDebug() << "KSSL connect" << endl;
 #ifdef HAVE_SSL
+  kdDebug() << "KSSL connect" << endl;
 int rc;
   if (!m_bInit) return -1;
   d->m_ssl = SSL_new(d->m_ctx);
@@ -186,7 +184,6 @@ int rc;
   if (rc != -1) {
     setConnectionInfo();
     setPeerInfo();
-    kdDebug() << "KSSL connected properly - Connection and Peer info set" << endl;
   }
   return rc;
 #else
@@ -264,8 +261,6 @@ char buf[1024];
 
 void KSSL::setPeerInfo() {
 #ifdef HAVE_SSL
-kdDebug() << "KSSL setting Peer info - verify result is " << SSL_get_verify_result(d->m_ssl) << endl;
-
 // FIXME: Set the right value here
 //                          d->m_cert_vfy_res);
 
