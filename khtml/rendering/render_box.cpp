@@ -613,7 +613,7 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
     else
     {
         if ( (ml.type == Variable && mr.type == Variable) ||
-             (ml.type != Variable &&
+             (!(ml.type == Variable) &&
                 containingBlock()->style()->textAlign() == KONQ_CENTER) )
         {
             m_marginLeft = (cw - m_width)/2;

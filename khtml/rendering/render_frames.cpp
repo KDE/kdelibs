@@ -135,7 +135,7 @@ void RenderFrameSet::layout( )
 	bool allFixed = true;
 	int totalFixed = 0;
 	for(i = 0; i< m_frameset->totalRows(); i++) {
-	    if(m_rows->at(i)->type != Fixed)
+	    if(!(m_rows->at(i)->type == Fixed))
 		allFixed = false;
 	    else
 		totalFixed += m_rows->at(i)->value;
@@ -225,7 +225,7 @@ void RenderFrameSet::layout( )
 	bool allFixed = true;
 	int totalFixed = 0;
 	for(i = 0; i< m_frameset->totalCols(); i++) {
-	    if(m_cols->at(i)->type != Fixed)
+	    if(!(m_cols->at(i)->type == Fixed))
 		allFixed = false;
 	    else
 		totalFixed += m_cols->at(i)->value;

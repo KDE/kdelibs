@@ -466,8 +466,8 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
     if (_width.type == col->type)
         col->value = _width.value > col->value ? _width.value : col->value;    
     
-    if ( (_width.type > col->type && (_width.type!=Fixed || col->type<=Variable))
-            || ( col->type == Fixed && _width.type!=Variable) )
+    if ( (_width.type > int(col->type) && (!(_width.type==Fixed) || (int(col->type)<=Variable)))
+            || ( col->type == Fixed && !(_width.type==Variable)) )
     {
         col->type = _width.type;
         col->value = _width.value;
@@ -1920,7 +1920,7 @@ void RenderTableCell::calcMinMaxWidth()
 
     RenderFlow::calcMinMaxWidth();
 
-    if(nWrap && style()->width().type!=Fixed)
+    if(nWrap && !(style()->width().type==Fixed))
         m_minWidth = m_maxWidth;
 
     if (m_minWidth!=oldMin || m_maxWidth!=oldMax)

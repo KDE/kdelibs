@@ -1123,9 +1123,9 @@ void RenderFlow::calcMinMaxWidth()
             }
             else
             {
-                if (ml.type!=Variable && mr.type!=Variable)
+                if (!(ml.type==Variable) && !(mr.type==Variable))
                 {
-                    if (child->style()->width().type!=Variable)
+                    if (!(child->style()->width().type==Variable))
                     {
                         if (child->style()->direction()==LTR)
                             margin = child->marginLeft();
@@ -1136,9 +1136,9 @@ void RenderFlow::calcMinMaxWidth()
                         margin = child->marginLeft()+child->marginRight();
 
                 }
-                else if (ml.type != Variable)
+                else if (!(ml.type == Variable))
                     margin = child->marginLeft();
-                else if (mr.type != Variable)
+                else if (!(mr.type == Variable))
                     margin = child->marginRight();
             }
 

@@ -336,7 +336,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
                     if(dir != QChar::DirL) {
                         //last stuff takes embedding dir
                         if( context->dir == QChar::DirR ) {
-                            if(status.eor != QChar::DirR) {
+                            if(!(status.eor == QChar::DirR)) {
                                 // AN or EN
                                 appendRun(runs, sor, eor, context, dir);
                                 ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
@@ -385,7 +385,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
                 case QChar::DirS:
                 case QChar::DirWS:
                 case QChar::DirON:
-                    if( status.eor != QChar::DirR && status.eor != QChar::DirAL ) {
+                    if( !(status.eor == QChar::DirR) && !(status.eor == QChar::DirAL) ) {
                         //last stuff takes embedding dir
                         if(context->dir == QChar::DirR || status.lastStrong == QChar::DirR) {
                             appendRun(runs, sor, eor, context, dir);
@@ -413,7 +413,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
             // ### if @sor, set dir to dirSor
             break;
         case QChar::DirEN:
-            if(status.lastStrong != QChar::DirAL) {
+            if(!(status.lastStrong == QChar::DirAL)) {
                 // if last strong was AL change EN to AN
                 if(dir == QChar::DirON) {
                     if(status.lastStrong == QChar::DirAL)
