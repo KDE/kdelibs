@@ -397,7 +397,7 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_REQ_READ)
 			result = indent + "Arts::mcopbyte "+name+" = request->readByte();\n";
 		if(model==MODEL_REQ_READ_SEQ)
-			result = indent + "vector<Arts::mcopbyte> "+name+";\n"
+			result = indent + "std::vector<Arts::mcopbyte> "+name+";\n"
 				   + indent + "request->readByteSeq("+name+");\n";
 		if(model==MODEL_WRITE)
 			result = "stream.writeByte("+name+")";
