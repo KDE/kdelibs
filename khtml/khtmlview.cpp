@@ -1569,22 +1569,8 @@ void KHTMLView::dragEnterEvent( QDragEnterEvent* ev )
     // in e.g. kmail, so not handled here).
     if ( m_part->parentPart() )
     {
-        // Duplicated from KonqView::eventFilter
-        if ( QUriDrag::canDecode( ev ) )
-        {
-            KURL::List lstDragURLs;
-            bool ok = KURLDrag::decode( ev, lstDragURLs );
-            QObjectList *children = this->queryList( "QWidget" );
-
-            if ( ok &&
-                 !lstDragURLs.first().url().contains( "javascript:", false ) && // ### this looks like a hack to me
-                 ev->source() != this &&
-                 children &&
-                 children->findRef( ev->source() ) == -1 )
-                ev->acceptAction();
-
-            delete children;
-        }
+    	QApplication::sendEvent(m_part->parentPart()->widget(), ev);
+	return;
     }
     QScrollView::dragEnterEvent( ev );
 }
@@ -1596,15 +1582,8 @@ void KHTMLView::dropEvent( QDropEvent *ev )
     // in e.g. kmail, so not handled here).
     if ( m_part->parentPart() )
     {
-        KURL::List lstDragURLs;
-        bool ok = KURLDrag::decode( ev, lstDragURLs );
-
-        KHTMLPart* part = m_part->parentPart();
-        while ( part && part->parentPart() )
-            part = part->parentPart();
-        KParts::BrowserExtension *ext = part->browserExtension();
-        if ( ok && ext && lstDragURLs.first().isValid() )
-            emit ext->openURLRequest( lstDragURLs.first() );
+    	QApplication::sendEvent(m_part->parentPart()->widget(), ev);
+	return;
     }
     QScrollView::dropEvent( ev );
 }
