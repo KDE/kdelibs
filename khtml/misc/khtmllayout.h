@@ -108,8 +108,8 @@ namespace khtml
 	bool isRelative() const { return (type == Relative); }
 	bool isPercent() const { return (type == Percent); }
 	bool isFixed() const { return (type == Fixed); }
-	int value;
-	LengthType type;
+	int value : 29;
+	LengthType type : 3;
     };
     
 };
