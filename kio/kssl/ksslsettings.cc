@@ -123,115 +123,86 @@ bool KSSLSettings::tlsv1() const {
 //        since OpenSSL seems to just choose any old thing if it's given an
 //        empty list.  This behavior is not confirmed though.
 QString KSSLSettings::getCipherList() {
-QString clist = "";
+  QString clist;
 #ifdef KSSL_HAVE_SSL
-    QString tcipher;
-    bool firstcipher = true;
-    SSL_METHOD *meth;
-    QSortedList<CipherNode> cipherSort;
-                            cipherSort.setAutoDelete(true);
+  QString tcipher;
+  bool firstcipher = true;
+  SSL_METHOD *meth = 0L;
+  QSortedList<CipherNode> cipherSort;
 
+  cipherSort.setAutoDelete(true);
 
-    if (!d->kossl)
-	    d->kossl = KOSSL::self();
+  if (!d->kossl)
+    d->kossl = KOSSL::self();
 
-    // The user might have v2 and v3 enabled so we start with an
-    // empty buffer and add v2 if needed, then v3 if needed.
-    // we assume that the config file will have consecutive entries.
-    for (int k = 0; k < 2; k++) {
- 
-      if (k == 0) {                   // do v2, then v3
-        if (!m_bUseSSLv2)
-          continue;
-        m_cfg->setGroup("SSLv2");
-        meth = d->kossl->SSLv2_client_method();
-      } else {
-        if (!m_bUseSSLv3)
-          continue;
-        m_cfg->setGroup("SSLv3");
-        meth = d->kossl->SSLv3_client_method();
-      }
- 
-      // I always thought that OpenSSL negotiated the best possible
-      // cipher for the connection based on the list provided.  Boy
-      // was I ever wrong.  There have been many complaints over the
-      // fact that we do not care about the order of ciphers we submit
-      // to OpenSSL for use, and thus 40 bit is sometimes used.  Ok,
-      // that's fine, but choosing more bits does not mean it's more
-      // secure.  Infact, it could be quite the opposite sometimes!!
-      // DO NOT TRUST THIS TO MAKE IT MORE SECURE.  It is here only
-      // for peace of mind of the users.  Eventually it would be best
-      // to set an internal preference order based on accepted strength
-      // analyzes of the various algorithms INCLUDING the key length.
+  if (m_bUseSSLv3) {
+    m_cfg->setGroup("SSLv3");
+    meth = d->kossl->SSLv3_client_method();
+    for(int i = 0; ; i++) {
+      SSL_CIPHER *sc = (meth->get_cipher)(i);
+      if (!sc)
+        break;
+      tcipher.sprintf("cipher_%s", sc->name);
+      int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
 
-      for(int i = 0;; i++) {
-        SSL_CIPHER *sc = (meth->get_cipher)(i);
-        if (!sc)
-          break;
-        tcipher.sprintf("cipher_%s", sc->name);
-        int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
- 
-        if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
-          CipherNode *xx = new CipherNode(sc->name,bits);
-          if (!cipherSort.contains(xx)) {
-             cipherSort.inSort(xx);
-	  } else {
-             delete xx;
-          }
-        } // if
-      } // for  i
-    } // for    k
-
-    // Hack time
-    // ---------
-    //    A lot of these webservers suck.  So in order to get around their
-    // sucking, we take the most common ciphers and make them the first ones
-    // we offer.  This seems to make it work better.
-    //
-
-    // Put least preferred first, most preferred last.
-    CipherNode tnode("", 0);
-
-#define AdjustCipher(X, Y)    tnode.name = X;  tnode.keylen = Y;             \
-    if (cipherSort.find(&tnode) != -1) {                                     \
-       cipherSort.remove();                                                  \
-       cipherSort.append(new CipherNode(tnode.name.latin1(), tnode.keylen)); \
-    }
-
-    AdjustCipher("IDEA-CBC-MD5", 128);
-    AdjustCipher("DES-CBC3-MD5", 168);
-    AdjustCipher("RC2-CBC-MD5", 128);
-    AdjustCipher("DES-CBC3-SHA", 168);
-    AdjustCipher("IDEA-CBC-SHA", 128);
-    AdjustCipher("RC4-SHA", 128);
-    AdjustCipher("RC4-MD5", 128);
-#undef AdjustCipher
-
-    // Remove any ADH ciphers as per RFC2246
-    for (unsigned int i = 0; i < cipherSort.count(); i++) {
-      CipherNode *j = 0L;
-      while ((j = cipherSort.at(i)) != 0L) {
-        if (j->name.contains("ADH-")) {
-          cipherSort.remove(j);
+      if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
+        CipherNode *xx = new CipherNode(sc->name,bits);
+        if (!cipherSort.contains(xx)) {
+          cipherSort.prepend(xx);
         } else {
-          break;
-	}
+          delete xx;
+        }
       }
-    } 
+    }
+  }
 
-    // now assemble the list  cipher1:cipher2:cipher3:...:ciphern
-    while (!cipherSort.isEmpty()) {
-      if (firstcipher)
-        firstcipher = false;
-      else clist.append(":");
-      clist.append(cipherSort.getLast()->name);
-      cipherSort.removeLast();
-    } // while
-    
-    //    kdDebug(7029) << "Cipher list is: " << clist << endl;
+  if (m_bUseSSLv2) {
+    m_cfg->setGroup("SSLv2");
+    meth = d->kossl->SSLv2_client_method();
+
+    for(int i = 0; meth; i++) {
+      SSL_CIPHER *sc = (meth->get_cipher)(i);
+      if (!sc)
+        break;
+      tcipher.sprintf("cipher_%s", sc->name);
+      int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
+
+      if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
+        CipherNode *xx = new CipherNode(sc->name,bits);
+        if (!cipherSort.contains(xx)) {
+          cipherSort.prepend(xx);
+        } else {
+          delete xx;
+        }
+      }
+    }
+  }
+
+  // Remove any ADH ciphers as per RFC2246
+  for (unsigned int i = 0; i < cipherSort.count(); i++) {
+    CipherNode *j = 0L;
+    while ((j = cipherSort.at(i)) != 0L) {
+      if (j->name.contains("ADH-")) {
+        cipherSort.remove(j);
+      } else {
+        break;
+      }
+    }
+  } 
+
+  // now assemble the list  cipher1:cipher2:cipher3:...:ciphern
+  while (!cipherSort.isEmpty()) {
+    if (firstcipher)
+      firstcipher = false;
+    else clist.append(":");
+    clist.append(cipherSort.getLast()->name);
+    cipherSort.removeLast();
+  } // while
+
+  kdDebug(7029) << "Cipher list is: " << clist << endl;
 
 #endif
-return clist;
+  return clist;
 }
 
 // FIXME - sync these up so that we can use them with the control module!!
