@@ -7,6 +7,7 @@ L	[a-zA-Z_]
 
 %{
 #include <stdlib.h>
+#include <stdio.h>
 #include "matic.h"
 
 #include "maticparser.cpp.h"
@@ -29,6 +30,7 @@ void newStr(const char *_s, bool str = false)
 #.*$		/* eat comments */
 
 '([^']|\\')*'	{ newStr(matictext,true); return STRING; }
+\"([^"]|\\\")*\"	{ newStr(matictext,true); return STRING; }
 
 "-"		{ return '-'; }
 ">"		{ return '>'; }
