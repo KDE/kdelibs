@@ -471,19 +471,15 @@ protected:
        Example:
        <pre>
 
-           switch ( QMessageBox::warning( this, "Appname",
-				   i18n("Save changes to Document Foo?"),
-				   i18n("&Yes"),
-				   i18n("&No"),
-				   i18n("Cancel"),
-				   0, 2) ) {
-           case 0: // yes
-	// save document here. If saving fails, return FALSE;
-	return TRUE;
-           case 1: // no
-	return TRUE;
+           switch ( KMessageBox::warningYesNoCancel( this,
+				   i18n("Save changes to Document Foo?")) ) {
+           case KMessageBox::Yes :
+             // save document here. If saving fails, return FALSE;
+             return TRUE;
+           case KMessageBox::No :
+             return TRUE;
            default: // cancel
-	return FALSE;
+             return FALSE;
 
     </pre>
  
