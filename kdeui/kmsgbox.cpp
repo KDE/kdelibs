@@ -251,10 +251,13 @@ KMsgBox::KMsgBox( QWidget *parent, const char *caption,
 	topLayout->activate();
 }
 
-void KMsgBox::initMe( const char *caption, const char *message,
-	const char *b1text, const char *b2text,
-	const char *b3text, const char *b4text,
-	const QPixmap & icon )
+void KMsgBox::initMe( const char */*caption*/, 
+		      const char */*message*/,
+		      const char */*b1text*/, 
+		      const char */*b2text*/,
+		      const char */*b3text*/, 
+		      const char */*b4text*/,
+		      const QPixmap &/* icon*/ )
 {
    /*
    
@@ -464,6 +467,9 @@ void KMsgBox::b4Pressed() { done(4); }
 int KMsgBox::message(QWidget *parent, const char *caption, const char *message, int type, const char *btext)
 
 {
+    if (!btext)
+	btext = klocale->translate("OK");
+
     KMsgBox *mb = new KMsgBox(parent, caption, message, type, btext);
 
     int retcode = mb->exec();
@@ -474,6 +480,11 @@ int KMsgBox::message(QWidget *parent, const char *caption, const char *message, 
 
 int KMsgBox::yesNo(QWidget *parent, const char *caption, const char *message, int type, const char *yes, const char *no)
 {
+    if (!no)
+	no = klocale->translate("No");
+    if (!yes)
+	yes = klocale->translate("Yes");
+
     KMsgBox *mb = new KMsgBox(parent, caption, message, type, yes, no);
 
     int retcode = mb->exec();
@@ -484,9 +495,17 @@ int KMsgBox::yesNo(QWidget *parent, const char *caption, const char *message, in
 int KMsgBox::yesNoCancel(QWidget *parent, const char *caption, const char *message, int type,
                         const char *yes, const char *no, const char *cancel)
 {
+    if (!no)
+	no = klocale->translate("No");
+    if (!yes)
+	yes = klocale->translate("Yes");
+    if (!cancel)
+	cancel = klocale->translate("Cancel");
+    
     KMsgBox *mb = new KMsgBox(parent, caption, message, type, yes, no, cancel);
 
     int retcode = mb->exec();
     delete mb;
     return retcode;
 }
+

@@ -121,7 +121,7 @@ public:
      */
     
     static int yesNo(QWidget *parent = 0, const char *caption = 0, const char *message = 0, int type = 0,
-                     const char *yes = "Yes", const char *no = "No");
+                     const char *yes = 0, const char *no = 0);
 
     /// yesNoCancel
     /** A static member function for creating a three-way message box. The box has three
@@ -130,7 +130,7 @@ public:
      */
     
     static int yesNoCancel(QWidget *parent = 0, const char *caption = 0, const char *message = 0, int type = 0,
-                           const char *yes = "Yes", const char *no = "No", const char *cancel = "Cancel");
+                           const char *yes = 0, const char *no = 0, const char *cancel = 0);
 
     /// message
     /** A static member function. Creates a simple message box with only one button ("Ok")
@@ -139,7 +139,7 @@ public:
      */
     
     static int message(QWidget *parent = 0, const char *caption = 0, const char *message = 0, int type = 0,
-                       const char *btext = "Ok");
+                       const char *btext = 0);
 
 
 private:
