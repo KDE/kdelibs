@@ -117,12 +117,19 @@ void KCookie::getICECookie()
 	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
 	    return;
 	}
+	QCString disp = getenv("DISPLAY");
+	if (disp.isEmpty())
+	{
+	    kdWarning(900) << k_lineinfo << "Cannot find DCOP server.\n";
+	    return;
+        }
 	QCString dcopFile = home + "/.DCOPserver_";
-    char hostName[256];
-    if (gethostname(hostName, 255))
+	char hostName[256];
+	if (gethostname(hostName, 255))
 	    dcopFile += "localhost";
-    else
-        dcopFile += hostName;
+	else
+	    dcopFile += hostName;
+        dcopFile += "_"+disp;
 
 	if (!(f = fopen(dcopFile, "r"))) 
 	{
