@@ -715,6 +715,8 @@ HTTPProtocol::http_openConnection()
         return false;
       }
 
+      infoMessage( i18n("Connecting to %1...").arg(m_state.hostname) );
+
       if(::connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
         if((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
           // Error
