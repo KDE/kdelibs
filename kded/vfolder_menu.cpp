@@ -953,6 +953,7 @@ VFolderMenu::processKDELegacyDirs()
 {
 kdDebug(7021) << "processKDELegacyDirs()" << endl;
 
+   QDict<KService> items;
    QString prefix = "kde-";
 
    QStringList relFiles;
@@ -1000,14 +1001,14 @@ kdDebug(7021) << "processKDELegacyDirs()" << endl;
 
             // TODO: add Legacy category
             addApplication(id, service);
-
+            items.replace(service->menuId(), service);
             if (service->categories().isEmpty())
-            {
                insertService(m_currentMenu, name, service);
-            }
+
          }
       }
    }
+   markUsedApplications(&items);
    m_legacyLoaded = true;
 }
 
@@ -1016,6 +1017,7 @@ VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const Q
 {
 kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")" << endl;
 
+   QDict<KService> items;
    // We look for a set of files.
    DIR *dp = opendir( QFile::encodeName(dir));
    if (!dp)
@@ -1064,6 +1066,7 @@ kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix 
 
             // TODO: Add legacy category
             addApplication(id, service);
+            items.replace(service->menuId(), service);
             
             if (service->categories().isEmpty())
                m_currentMenu->items.replace(id, service);
@@ -1071,6 +1074,7 @@ kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix 
       }
     }
     closedir( dp );
+    markUsedApplications(&items);
 }
 
 
