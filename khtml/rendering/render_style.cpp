@@ -123,22 +123,21 @@ RenderStyle::setBitDefaults()
     inherited_flags._htmlHacks=false;
     inherited_flags._unused = 0;
 
-    _display = INLINE;
+    noninherited_flags._display = INLINE;
 
-    _overflow = OVISIBLE;
-    _vertical_align = BASELINE;
-    _clear = CNONE;
-    _table_layout = TAUTO;
-    _bg_repeat = REPEAT;
-    _bg_attachment = SCROLL;
-    _position = STATIC;
-    _floating = FNONE;
-    _flowAroundFloats=false;
-    _styleType = NOPSEUDO;
-    _hasHover = false;
-    _hasFocus = false;
-    _hasActive = false;
-    _unused = 0;
+    noninherited_flags._overflow = OVISIBLE;
+    noninherited_flags._vertical_align = BASELINE;
+    noninherited_flags._clear = CNONE;
+    noninherited_flags._table_layout = TAUTO;
+    noninherited_flags._bg_repeat = REPEAT;
+    noninherited_flags._bg_attachment = SCROLL;
+    noninherited_flags._position = STATIC;
+    noninherited_flags._floating = FNONE;
+    noninherited_flags._flowAroundFloats=false;
+    noninherited_flags._styleType = NOPSEUDO;
+    noninherited_flags._hasHover = false;
+    noninherited_flags._hasActive = false;
+    noninherited_flags._unused = 0;
 }
 
 
@@ -183,23 +182,7 @@ RenderStyle::RenderStyle(const RenderStyle& other)
 {
 
     inherited_flags = other.inherited_flags;
-    _display = other._display;
-
-    _overflow = other._overflow;
-    _vertical_align = other._vertical_align;
-    _clear = other._clear;
-    _table_layout = other._table_layout;
-    _bg_repeat = other._bg_repeat;
-    _bg_attachment = other._bg_attachment;
-    _position = other._position;
-    _floating = other._floating;
-
-    _flowAroundFloats = other._flowAroundFloats;
-
-    _styleType=NOPSEUDO;
-    _hasHover = other._hasHover;
-    _hasFocus = other._hasFocus;
-    _hasActive = other._hasActive;
+    noninherited_flags = other.noninherited_flags;
 
     box = other.box;
     visual = other.visual;
@@ -213,7 +196,6 @@ RenderStyle::RenderStyle(const RenderStyle& other)
 
 void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
 {
-
     inherited = inheritParent->inherited;
     inherited_flags = inheritParent->inherited_flags;
 }
@@ -238,20 +220,7 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 {
 // compare everything except the pseudoStyle pointer
     return (inherited_flags == o.inherited_flags &&
-            _display == o._display &&
-            _overflow == o._overflow &&
-            _vertical_align == o._vertical_align &&
-            _clear == o._clear &&
-            _table_layout == o._table_layout &&
-            _bg_repeat == o._bg_repeat &&
-            _bg_attachment == o._bg_attachment &&
-            _position == o._position &&
-            _floating == o._floating &&
-            _flowAroundFloats == o._flowAroundFloats &&
-            _styleType == o._styleType &&
-	    _hasHover == o._hasHover &&
-	    _hasFocus == o._hasFocus &&
-	    _hasActive == o._hasActive &&
+            noninherited_flags == o.noninherited_flags &&
             *box.get() == *o.box.get() &&
             *visual.get() == *o.visual.get() &&
             *background.get() == *o.background.get() &&
@@ -262,13 +231,13 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 {
 
-    if (!(_styleType==NOPSEUDO))
+    if (!(noninherited_flags._styleType==NOPSEUDO))
         return 0;
 
     RenderStyle *ps = pseudoStyle;
 
     while (ps) {
-        if (ps->_styleType==pid)
+        if (ps->noninherited_flags._styleType==pid)
             return ps;
 
         ps = ps->pseudoStyle;
@@ -288,7 +257,7 @@ RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
         else
             ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
         ps->ref();
-        ps->_styleType = pid;
+        ps->noninherited_flags._styleType = pid;
         ps->pseudoStyle = pseudoStyle;
 
         pseudoStyle = ps;
@@ -303,7 +272,7 @@ void RenderStyle::removePseudoStyle(PseudoId pid)
     RenderStyle *prev = this;
 
     while (ps) {
-        if (ps->_styleType==pid) {
+        if (ps->noninherited_flags._styleType==pid) {
             prev->pseudoStyle = ps->pseudoStyle;
             ps->deref();
             return;
@@ -378,16 +347,16 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     ETableLayout _table_layout : 1;
 //     EPosition _position : 2;
 //     EFloat _floating : 2;
-    if ( ((int)_display) >= TABLE ) {
+    if ( ((int)noninherited_flags._display) >= TABLE ) {
 	// Stupid gcc gives a compile error on
 	// a != other->b if a and b are bitflags. Using
 	// !(a== other->b) instead.
 	if ( !(inherited_flags._border_collapse == other->inherited_flags._border_collapse) ||
 	     !(inherited_flags._empty_cells == other->inherited_flags._empty_cells) ||
 	     !(inherited_flags._caption_side == other->inherited_flags._caption_side) ||
-	     !(_table_layout == other->_table_layout) ||
-	     !(_position == other->_position) ||
-	     !(_floating == other->_floating) )
+	     !(noninherited_flags._table_layout == other->noninherited_flags._table_layout) ||
+	     !(noninherited_flags._position == other->noninherited_flags._position) ||
+	     !(noninherited_flags._floating == other->noninherited_flags._floating) )
 
 	    d = CbLayout;
     }
@@ -395,7 +364,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 // only for lists:
 // 	EListStyleType _list_style_type : 5 ;
 // 	EListStylePosition _list_style_position :1;
-    if (_display == LIST_ITEM ) {
+    if (noninherited_flags._display == LIST_ITEM ) {
 	if ( !(inherited_flags._list_style_type == other->inherited_flags._list_style_type) ||
 	     !(inherited_flags._list_style_position == other->inherited_flags._list_style_position) )
 	    d = Layout;
@@ -416,15 +385,15 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 	 !(inherited_flags._direction == other->inherited_flags._direction) ||
 	 !(inherited_flags._white_space == other->inherited_flags._white_space) ||
 	 !(inherited_flags._font_variant == other->inherited_flags._font_variant) ||
-	 !(_clear == other->_clear)
+	 !(noninherited_flags._clear == other->noninherited_flags._clear)
 	)
 	d = Layout;
 
 // only for inline:
 //     EVerticalAlign _vertical_align : 4;
 
-    if ( !(_display == INLINE) ) {
-	if ( !(_vertical_align == other->_vertical_align))
+    if ( !(noninherited_flags._display == INLINE) ) {
+	if ( !(noninherited_flags._vertical_align == other->noninherited_flags._vertical_align))
 	    d = Layout;
     }
 
@@ -440,9 +409,9 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 // 	int _text_decoration : 4;
 //     DataRef<StyleBackgroundData> background;
     if ( !(inherited_flags._visibility == other->inherited_flags._visibility) ||
-	 !(_overflow == other->_overflow) ||
-	 !(_bg_repeat == other->_bg_repeat) ||
-	 !(_bg_attachment == other->_bg_attachment) ||
+	 !(noninherited_flags._overflow == other->noninherited_flags._overflow) ||
+	 !(noninherited_flags._bg_repeat == other->noninherited_flags._bg_repeat) ||
+	 !(noninherited_flags._bg_attachment == other->noninherited_flags._bg_attachment) ||
 	 !(inherited_flags._text_decoration == other->inherited_flags._text_decoration) ||
 	 *background.get() != *other->background.get()
 	)

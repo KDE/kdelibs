@@ -52,7 +52,7 @@ RenderReplaced::RenderReplaced()
 void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
                             int _tx, int _ty)
 {
-    if (style()->visibility() != VISIBLE) return;
+    if (style()->visibility() != VISIBLE || !layouted()) return;
 
     _tx += m_x;
     _ty += m_y;

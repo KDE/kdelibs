@@ -582,23 +582,32 @@ protected:
     } inherited_flags;
 
 // don't inherit
-    EDisplay _display : 5;
-    EOverflow _overflow : 4 ;
-    EVerticalAlign _vertical_align : 4;
-    EClear _clear : 2;
-    ETableLayout _table_layout : 1;
-    EBackgroundRepeat _bg_repeat : 2;
-    bool _bg_attachment : 1;
-    EPosition _position : 2;
-    EFloat _floating : 2;
-    bool _flowAroundFloats :1;
+    struct NonInheritedFlags {
+    // 32 bit non-inherited, don't add to the struct, or the operator will break.
+	bool operator==( const NonInheritedFlags &other ) const {
+	    return *((Q_UINT32 *)this) == *((Q_UINT32 *)&other);
+	}
+	bool operator!=( const NonInheritedFlags &other ) const {
+	    return *((Q_UINT32 *)this) != *((Q_UINT32 *)&other);
+	}
 
-    PseudoId _styleType : 3;
-    bool _hasHover : 1;
-    bool _hasFocus : 1;
-    bool _hasActive : 1;
+        EDisplay _display : 5;
+        EOverflow _overflow : 4 ;
+        EVerticalAlign _vertical_align : 4;
+        EClear _clear : 2;
+        ETableLayout _table_layout : 1;
+        EBackgroundRepeat _bg_repeat : 2;
+        bool _bg_attachment : 1;
+        EPosition _position : 2;
+        EFloat _floating : 2;
+        bool _flowAroundFloats :1;
 
-    int _unused : 2;
+        PseudoId _styleType : 3;
+        bool _hasHover : 1;
+        bool _hasActive : 1;
+
+        int _unused : 3;
+    } noninherited_flags;
 
 // non-inherited attributes
     DataRef<StyleBoxData> box;
@@ -631,23 +640,21 @@ public:
 
     void inheritFrom(const RenderStyle* inheritParent);
 
-    PseudoId styleType() { return  _styleType; }
+    PseudoId styleType() { return  noninherited_flags._styleType; }
 
     RenderStyle* getPseudoStyle(PseudoId pi);
     RenderStyle* addPseudoStyle(PseudoId pi);
     bool hasPseudoStyle() const { return pseudoStyle; }
     void removePseudoStyle(PseudoId pi);
 
-    bool hasHover() const { return  _hasHover; }
-    bool hasFocus() const { return  _hasFocus; }
-    bool hasActive() const { return  _hasActive; }
+    bool hasHover() const { return  noninherited_flags._hasHover; }
+    bool hasActive() const { return  noninherited_flags._hasActive; }
 
-    void setHasHover() {  _hasHover = true; }
-    void setHasFocus() {  _hasFocus = true; }
-    void setHasActive() {  _hasActive = true; }
+    void setHasHover() {  noninherited_flags._hasHover = true; }
+    void setHasActive() {  noninherited_flags._hasActive = true; }
 
     bool operator==(const RenderStyle& other) const;
-    bool        isFloating() const { return !(_floating == FNONE); }
+    bool        isFloating() const { return !(noninherited_flags._floating == FNONE); }
     bool        hasMargin() const { return surround->margin.nonZero(); }
     bool        hasPadding() const { return surround->padding.nonZero(); }
     bool        hasBorder() const { return surround->border.hasBorder(); }
@@ -658,15 +665,15 @@ public:
 
 // attribute getter methods
 
-    EDisplay 	display() const { return _display; }
+    EDisplay 	display() const { return noninherited_flags._display; }
 
     Length  	left() const {  return surround->offset.left; }
     Length  	right() const {  return surround->offset.right; }
     Length  	top() const {  return surround->offset.top; }
     Length  	bottom() const {  return surround->offset.bottom; }
 
-    EPosition 	position() const { return  _position; }
-    EFloat  	floating() const { return  _floating; }
+    EPosition 	position() const { return  noninherited_flags._position; }
+    EFloat  	floating() const { return  noninherited_flags._floating; }
 
     Length  	width() const { return box->width; }
     Length  	height() const { return box->height; }
@@ -697,17 +704,17 @@ public:
     EBorderStyle    outlineStyle() const {  return surround->outline.style; }
     const QColor &  	    outlineColor() const {  return surround->outline.color; }
 
-    EOverflow overflow() const { return  _overflow; }
+    EOverflow overflow() const { return  noninherited_flags._overflow; }
     EVisibility visibility() const { return inherited_flags._visibility; }
-    EVerticalAlign verticalAlign() const { return  _vertical_align; }
+    EVerticalAlign verticalAlign() const { return  noninherited_flags._vertical_align; }
     Length verticalAlignLength() const { return box->vertical_align; }
 
     Length clipLeft() const { return visual->clip.left; }
     Length clipRight() const { return visual->clip.right; }
     Length clipTop() const { return visual->clip.top; }
     Length clipBottom() const { return visual->clip.bottom; }
-    EClear clear() const { return  _clear; }
-    ETableLayout inheritedLayout() const { return  _table_layout; }
+    EClear clear() const { return  noninherited_flags._clear; }
+    ETableLayout inheritedLayout() const { return  noninherited_flags._table_layout; }
 
     short colSpan() const { return visual->colspan; }
 
@@ -730,9 +737,8 @@ public:
 
     const QColor & backgroundColor() const { return background->color; }
     CachedImage *backgroundImage() const { return background->image; }
-    EBackgroundRepeat backgroundRepeat() const { return  _bg_repeat; }
-    // backgroundAttachment returns true for scrolling (regular) attachment, false for fixed
-    bool backgroundAttachment() const { return  _bg_attachment; }
+    EBackgroundRepeat backgroundRepeat() const { return  noninherited_flags._bg_repeat; }
+    bool backgroundAttachment() const { return  noninherited_flags._bg_attachment; }
     Length backgroundXPosition() const { return background->x_position; }
     Length backgroundYPosition() const { return background->y_position; }
 
@@ -767,9 +773,9 @@ public:
 
 // attribute setter methods
 
-    void setDisplay(EDisplay v) {  _display = v; }
-    void setPosition(EPosition v) {  _position = v; }
-    void setFloating(EFloat v) {  _floating = v; }
+    void setDisplay(EDisplay v) {  noninherited_flags._display = v; }
+    void setPosition(EPosition v) {  noninherited_flags._position = v; }
+    void setFloating(EFloat v) {  noninherited_flags._floating = v; }
 
     void setLeft(Length v)  {  SET_VAR(surround,offset.left,v) }
     void setRight(Length v) {  SET_VAR(surround,offset.right,v) }
@@ -800,9 +806,9 @@ public:
     void setOutlineStyle(EBorderStyle v)   {  SET_VAR(surround,outline.style,v) }
     void setOutlineColor(const QColor & v) {  SET_VAR(surround,outline.color,v) }
 
-    void setOverflow(EOverflow v) {  _overflow = v; }
+    void setOverflow(EOverflow v) {  noninherited_flags._overflow = v; }
     void setVisibility(EVisibility v) { inherited_flags._visibility = v; }
-    void setVerticalAlign(EVerticalAlign v) { _vertical_align = v; }
+    void setVerticalAlign(EVerticalAlign v) { noninherited_flags._vertical_align = v; }
     void setVerticalAlignLength(Length l) { SET_VAR(box, vertical_align, l ) }
 
     void setClipLeft(Length v) { SET_VAR(visual,clip.left,v) }
@@ -810,8 +816,8 @@ public:
     void setClipTop(Length v) { SET_VAR(visual,clip.top,v) }
     void setClipBottom(Length v) { SET_VAR(visual,clip.bottom,v) }
 
-    void setClear(EClear v) {  _clear = v; }
-    void setTableLayout(ETableLayout v) {  _table_layout = v; }
+    void setClear(EClear v) {  noninherited_flags._clear = v; }
+    void setTableLayout(ETableLayout v) {  noninherited_flags._table_layout = v; }
     void ssetColSpan(short v) { SET_VAR(visual,colspan,v) }
 
     void setFont(const QFont & v) { SET_VAR(inherited,font,v) }
@@ -832,8 +838,8 @@ public:
 
     void setBackgroundColor(const QColor & v) {  SET_VAR(background,color,v) }
     void setBackgroundImage(CachedImage *v) {  SET_VAR(background,image,v) }
-    void setBackgroundRepeat(EBackgroundRepeat v) {  _bg_repeat = v; }
-    void setBackgroundAttachment(bool scroll) {   _bg_attachment = scroll; }
+    void setBackgroundRepeat(EBackgroundRepeat v) {  noninherited_flags._bg_repeat = v; }
+    void setBackgroundAttachment(bool scroll) {  noninherited_flags._bg_attachment = scroll; }
     void setBackgroundXPosition(Length v) {  SET_VAR(background,x_position,v) }
     void setBackgroundYPosition(Length v) {  SET_VAR(background,y_position,v) }
 
@@ -867,8 +873,8 @@ public:
     bool htmlHacks() const { return inherited_flags._htmlHacks; }
     void setHtmlHacks(bool b=true) { inherited_flags._htmlHacks = b; }
 
-    bool flowAroundFloats() const { return  _flowAroundFloats; }
-    void setFlowAroundFloats(bool b=true) {  _flowAroundFloats = b; }
+    bool flowAroundFloats() const { return  noninherited_flags._flowAroundFloats; }
+    void setFlowAroundFloats(bool b=true) {  noninherited_flags._flowAroundFloats = b; }
 
     int zIndex() const { return box->z_index; }
     void setZIndex(int v) { SET_VAR(box,z_index,v) }

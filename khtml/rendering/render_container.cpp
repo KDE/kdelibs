@@ -23,6 +23,8 @@
  * $Id$
  */
 
+//#define DEBUG_LAYOUT
+
 #include "render_container.h"
 #include "render_table.h"
 #include "render_text.h"
@@ -58,7 +60,7 @@ RenderContainer::~RenderContainer()
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " <<
+    kdDebug( 6040 ) << this << ": " <<  renderName() << "(RenderObject)::addChild( " << newChild << ": " <<
         newChild->renderName() << ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
 
@@ -261,7 +263,7 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
 void RenderContainer::layout()
 {
     assert( !layouted() );
-    
+
     RenderObject *child = firstChild();
     while( child ) {
 	if( !child->layouted() )
@@ -270,3 +272,5 @@ void RenderContainer::layout()
     }
     setLayouted();
 }
+
+#undef DEBUG_LAYOUT

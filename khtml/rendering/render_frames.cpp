@@ -921,15 +921,19 @@ void RenderPartObject::layout( )
 {
     assert( !layouted() );
 
-    // minimum height
-    m_height = 0;
+    qDebug("RenderPartObject::layout()");
+    qDebug("parent: %p", RenderObject::parent());
+
+    short m_oldwidth = m_width;
+    int m_oldheight = m_height;
 
     calcWidth();
     calcHeight();
 
-    if ( style()->width().isPercent() )
-	RenderPart::layout();
-    setLayouted();
+    if (m_width != m_oldwidth || m_height != m_oldheight)
+        RenderPart::layout();
+
+    setLayouted(!style()->width().isPercent());
 }
 
 void RenderPartObject::slotViewCleared()

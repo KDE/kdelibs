@@ -295,8 +295,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     if ( usedDynamicStates & StyleSelector::Hover )
 	style->setHasHover();
-    if ( usedDynamicStates & StyleSelector::Focus )
-	style->setHasFocus();
     if ( usedDynamicStates & StyleSelector::Active )
 	style->setHasActive();
 

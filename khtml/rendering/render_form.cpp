@@ -602,6 +602,8 @@ void RenderFileButton::slotClicked()
 
 void RenderFileButton::layout( )
 {
+    assert(!layouted());
+
     // this is largely taken from the RenderLineEdit layout
     QFontMetrics fm = fontMetrics( m_edit->font() );
     HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
@@ -727,7 +729,7 @@ RenderSelect::RenderSelect(KHTMLView *view, HTMLSelectElementImpl *element)
 void RenderSelect::calcMinMaxWidth()
 {
     assert( !minMaxKnown() );
-    
+
     // ### ugly HACK FIXME!!!
     if ( !layouted() )
         layout();
@@ -738,6 +740,8 @@ void RenderSelect::calcMinMaxWidth()
 
 void RenderSelect::layout( )
 {
+    assert(!layouted());
+
     // ### maintain selection properly between type/size changes, and work
     // out how to handle multiselect->singleselect (probably just select
     // first selected one)
@@ -1086,7 +1090,7 @@ void RenderTextArea::handleFocusOut()
 void RenderTextArea::calcMinMaxWidth()
 {
     assert( !minMaxKnown() );
-    
+
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
     QFontMetrics m = fontMetrics(style()->font());
@@ -1106,7 +1110,7 @@ void RenderTextArea::calcMinMaxWidth()
 void RenderTextArea::layout( )
 {
     assert( !layouted() );
-    
+
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
