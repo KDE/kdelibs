@@ -196,6 +196,7 @@ static struct Builtin
     { "gbk-0", "gbk" },
     { "gb2312", "gbk" },
     { "gb2312.1980-0", "gbk" },
+    { "big5-0", "big5" },
     { "euc-kr", "euckr" },
     { "x-euc-kr", "euckr" },
     { "euc-jp", "eucjp" },
@@ -351,7 +352,7 @@ KCharsets::~KCharsets()
     delete d;
 }
 
-QChar KCharsets::fromEntity(const QString &str) 
+QChar KCharsets::fromEntity(const QString &str)
 {
     QChar res = QChar::null;
 
@@ -387,7 +388,7 @@ QChar KCharsets::fromEntity(const QString &str)
     return QChar(e->code);
 }
 
-QChar KCharsets::fromEntity(const QString &str, int &len) 
+QChar KCharsets::fromEntity(const QString &str, int &len)
 {
     // entities are never longer than 8 chars... we start from
     // that length and work backwards...
@@ -403,7 +404,7 @@ QChar KCharsets::fromEntity(const QString &str, int &len)
 }
 
 
-QString KCharsets::toEntity(const QChar &ch) 
+QString KCharsets::toEntity(const QChar &ch)
 {
     QString ent;
     ent.sprintf("&#0x%x;", ch.unicode());
