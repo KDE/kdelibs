@@ -84,6 +84,7 @@ namespace Internal
     virtual ~QGetAddrinfoWorker();
     virtual bool preprocess();
     virtual bool run();
+    virtual bool postprocess() { return true; }
 
     bool wantThis(int family);
   };

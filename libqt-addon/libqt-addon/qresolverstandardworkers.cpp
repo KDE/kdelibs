@@ -184,34 +184,35 @@ namespace
 	switch (herrno)
 	  {
 	  case HOST_NOT_FOUND:
-	    setError(QResolver::NoName);
+	    results.setError(QResolver::NoName);
 	    return;
 
 	  case TRY_AGAIN:
-	    setError(QResolver::TryAgain);
+	    results.setError(QResolver::TryAgain);
 	    return;
 
 	  case NO_RECOVERY:
-	    setError(QResolver::NonRecoverable);
+	    results.results.setError(QResolver::NonRecoverable);
 	    return;
 
 	  case NO_ADDRESS:
-	    setError(QResolver::NoName);
+	    results.setError(QResolver::NoName);
 	    return;
 
 	  default:
-	    setError(QResolver::UnknownError);
+	    results.setError(QResolver::UnknownError);
 	    return;
 	  }
       }
     else if (he == 0L)
       {
-	setError(QResolver::NoName);
+	results.setError(QResolver::NoName);
 	return;			// this was an error
       }
 
     // clear any errors
     setError(QResolver::NoError);
+    results.setError(QResolver::NoError);
 
     // we process results in the reverse order
     // that is, we prepend each result to the list of results
@@ -304,46 +305,46 @@ namespace
 	switch (res)
 	  {
 	  case EAI_BADFLAGS:
-	    setError(QResolver::BadFlags);
+	    results.setError(QResolver::BadFlags);
 	    break;
 
 #ifdef EAI_NODATA
 	  case EAI_NODATA:	// it was removed in RFC 3493
 #endif
 	  case EAI_NONAME:
-	    setError(QResolver::NoName);
+	    results.setError(QResolver::NoName);
 	    break;
 
 	  case EAI_AGAIN:
-	    setError(QResolver::TryAgain);
+	    results.setError(QResolver::TryAgain);
 	    break;
 
 	  case EAI_FAIL:
-	    setError(QResolver::NonRecoverable);
+	    results.setError(QResolver::NonRecoverable);
 	    break;
 
 	  case EAI_FAMILY:
-	    setError(QResolver::UnsupportedFamily);
+	    results.setError(QResolver::UnsupportedFamily);
 	    break;
 
 	  case EAI_SOCKTYPE:
-	    setError(QResolver::UnsupportedSocketType);
+	    results.setError(QResolver::UnsupportedSocketType);
 	    break;
 
 	  case EAI_SERVICE:
-	    setError(QResolver::UnsupportedService);
+	    results.setError(QResolver::UnsupportedService);
 	    break;
 
 	  case EAI_MEMORY:
-	    setError(QResolver::Memory);
+	    results.setError(QResolver::Memory);
 	    break;
 
 	  case EAI_SYSTEM:
-	    setError(QResolver::SystemError, errno);
+	    results.setError(QResolver::SystemError, errno);
 	    break;
 
 	  default:
-	    setError(QResolver::UnknownError, errno);
+	    results.setError(QResolver::UnknownError, errno);
 	    break;
 	  }
 
@@ -372,7 +373,7 @@ namespace
       }
 
     freeaddrinfo(result);
-    setError(QResolver::NoError);
+    results.setError(QResolver::NoError);
     finished();
     return results.errorCode() == QResolver::NoError;
   }
@@ -713,7 +714,7 @@ bool QStandardWorker::run()
   resultList.setAutoDelete(true);
 
   for (int i = 0; i < familyCount; i++)
-    if (familyMask() && families[i].mask)
+    if (familyMask() & families[i].mask)
       {
 	QResolverWorkerBase *worker;
 	QResolverResults *res = new QResolverResults;
@@ -760,7 +761,7 @@ bool QStandardWorker::postprocess()
       else if (results.isEmpty())
 	// this generated an error
 	// copy the error code over
-	setError(results.errorCode(), results.systemError());
+	setError(rr->errorCode(), rr->systemError());
 
       rr = resultList.prev();
     }
@@ -796,7 +797,10 @@ bool QGetAddrinfoWorker::run()
   if (!worker.run())
     {
       if (wantThis(AF_UNIX))
-	setError(addUnix());
+	{
+	  if (addUnix() == QResolver::NoError)
+	    setError(QResolver::NoError);
+	}
       else
 	setError(worker.results.errorCode(), worker.results.systemError());
 
