@@ -102,6 +102,10 @@ public:
   /**
    * Constructor. Takes appname and command line arguments from KCmdLineArgs
    *
+   * @param aboutData data about this instance (see @ref KAboutData)
+   * You should provide it for the "about" box and the bug report dialog to
+   * work properly.
+   *
    * @param allowStyles Set to false to disable the loading on plugin based
    * styles. This is only useful to applications that do not display a GUI
    * normally. If you do create an application with allowStyles set to false
@@ -111,13 +115,13 @@ public:
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
    */
-  KApplication(bool allowStyles=true, bool GUIenabled=true);
+  KApplication( const KAboutData * aboutData = 0L, bool allowStyles=true, bool GUIenabled=true);
 
   /**
     * Add Qt and KDE command line options to KCmdLineArgs.
     */
   static void addCmdLineOptions();
-  
+
   virtual ~KApplication();
 
   /** Returns the number of command line arguments, i. e. the length
@@ -202,7 +206,7 @@ public:
 
   /**
       Sets the top widget of the application.
-      
+
       @param topWidget a top widget of the application.
 
       This means bascially applying the right window caption and
@@ -318,13 +322,13 @@ public:
    * do not display a GUI and created the KApplication with allowStyles=false.
    */
   void enableStyles();
-    
-    
-    
-  /** 
+
+
+
+  /**
       Installs widget \a filter as global x11 event filter. The widget
       \a filter receives XEvents in its standard x11Event() function.
-      
+
       Warning: only do that when absolutely necessary. Installed x11 filter
       can slow things down.
    */
@@ -565,6 +569,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.129  2000/01/07 21:50:29  waba
+// WABA: KApplication can now make use of KCmdLineArgs. (Optional)
+//
 // Revision 1.128  2000/01/03 15:52:25  waba
 // WABA: Allow to make KApplications without a GUI which saves
 // you a wopping 80Kb. Not that we have a lot of such applications

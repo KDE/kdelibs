@@ -102,7 +102,7 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 {
     char errstr[256];
     XGetErrorText( dpy, err->error_code, errstr, 256 );
-    if ( err->error_code != BadWindow ) 
+    if ( err->error_code != BadWindow )
 	qWarning( "KDE detected X Error: %s %d\n  Major opcode:  %d", errstr, err->error_code, err->request_code );
     return 0;
 }
@@ -185,10 +185,10 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     parseCommandLine( argc, argv );
 }
 
-KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
-  QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(), 
-                GUIenabled ), 
-  KInstance(KCmdLineArgs::appname)
+KApplication::KApplication( const KAboutData * aboutData, bool allowStyles, bool GUIenabled ) :
+  QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+                GUIenabled ),
+  KInstance(KCmdLineArgs::appname, aboutData)
 {
     if (!GUIenabled)
        allowStyles = false;
@@ -585,7 +585,7 @@ static const KCmdLineOptions qt_options[] =
    { "font <fontname>",  I18N_NOOP("Set default font to 'fontname'"), 0},
    { 0, 0, 0 }
 };
- 
+
 static const KCmdLineOptions kde_options[] =
 {
    { "caption <caption>",	I18N_NOOP("Use 'caption' as name in the titlebar"), 0},
@@ -594,7 +594,7 @@ static const KCmdLineOptions kde_options[] =
    { "restore <number>", 	I18N_NOOP("Restore session and use 'number' for something"), 0},
    { "dcopserver <server address>", I18N_NOOP("Use the DCOP Server specified by 'server address'"), 0},
    { 0, 0, 0 }
-};  
+};
 
 void
 KApplication::addCmdLineOptions()
@@ -609,7 +609,7 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("caption"))
     {
-       aCaption = args->getOption("caption");       
+       aCaption = args->getOption("caption");
     }
 
     if (args->isSet("miniicon"))
@@ -1021,7 +1021,7 @@ void KApplication::kdisplaySetPalette()
   colgrp.setColor( QColorGroup::Button, button);
   colgrp.setColor( QColorGroup::ButtonText, buttonText);
   colgrp.setColor(QColorGroup::Midlight, background.light(110));
-  
+
   disabledgrp.setColor( QColorGroup::Button, button);
   disabledgrp.setColor( QColorGroup::ButtonText, buttonText);
   disabledgrp.setColor(QColorGroup::Midlight, background.light(110));

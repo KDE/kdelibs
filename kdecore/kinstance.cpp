@@ -4,13 +4,15 @@
 #include "klocale.h"
 #include "kcharsets.h"
 #include "kiconloader.h"
+#include "kaboutdata.h"
 #include "kstddirs.h"
+#include "kdebug.h"
 #include "kglobal.h"
 
 #include <qfont.h>
 
-KInstance::KInstance( const QCString& name )
-    : _name( name )
+KInstance::KInstance( const QCString& name, const KAboutData * aboutData )
+  : _name( name ), _aboutData( aboutData )
 {
     ASSERT(!name.isEmpty());
     if (!KGlobal::_instance)
@@ -19,6 +21,9 @@ KInstance::KInstance( const QCString& name )
     _iconLoader = 0;
     _config = 0;
     _dirs = 0;
+
+    if (!aboutData)
+      kDebugWarning("Instance %s has no about data",name.data());
 }
 
 KInstance::~KInstance()
@@ -41,7 +46,7 @@ KStandardDirs *KInstance::dirs() const
 	_dirs = new KStandardDirs( );
 	_dirs->addKDEDefaults();
     }
-    
+
     return _dirs;
 }
 
@@ -53,7 +58,7 @@ KConfig	*KInstance::config() const
 	else
 	    _config = new KConfig();
     }
-    
+
     return _config;
 }
 
@@ -62,7 +67,7 @@ KIconLoader *KInstance::iconLoader() const
     if( _iconLoader == 0 ) {
 	_iconLoader = new KIconLoader( this );
     }
-    
+
     return _iconLoader;
 }
 

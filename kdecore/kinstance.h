@@ -4,6 +4,7 @@
 class KStandardDirs;
 class KConfig;
 class KIconLoader;
+class KAboutData;
 class KCharsets;
 class QFont;
 
@@ -19,47 +20,63 @@ class QFont;
 class KInstance
 {
  public:
-    
-    KInstance( const QCString& libname );
+
     /**
-     * Destructor
+     *  Constructor
+     *  @param instanceName the name of the instance
+     *  @param aboutData data about this instance (see @ref KAboutData)
+     */
+    KInstance( const QCString& instanceName,
+               const KAboutData * aboutData = 0L );
+
+    /**
+     *  Destructor
      */
     virtual ~KInstance();
-    
+
     /**
-     *  Retrieves the application standard dirs object.
+     *  @return the application standard dirs object.
      */
-    KStandardDirs	*dirs() const;
-    
+    KStandardDirs *dirs() const;
+
     /**
-     *  Retrieves the general config object.
+     *  @return the general config object.
      */
     KConfig *config() const;
-    
+
     /**
-     *  Retrieves an iconloader object.
+     *  @return an iconloader object.
      */
     KIconLoader	*iconLoader() const;
-    
-    KCharsets	     *charsets() const;
-    
-    QCString          instanceName() const;
+
+    KCharsets *charsets() const;
+
+    /**
+     *  @return the about data of this instance
+     *  Warning, can be 0L
+     */
+    KAboutData *aboutData() const;
+
+    /**
+     * @return the instance name
+     */
+    QCString instanceName() const;
 
 protected:
     /**
      *  Copy Constructor is not allowed
      */
     KInstance( const KInstance& );
-    
+
 public:
     mutable KStandardDirs	*_dirs;
-    
+
     mutable KConfig		*_config;
     mutable KIconLoader	        *_iconLoader;
-    
-    QCString                     _name;
 
+    QCString                     _name;
+    const KAboutData            *_aboutData;
 };
 
-#endif 
+#endif
 
