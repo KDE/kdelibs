@@ -84,8 +84,8 @@ public:
     virtual void insertItem( KFileViewItem *i );
 
     // implemented to get noticed about sorting changes (for sortingIndicator)
-    void setSorting( QDir::SortSpec );
-    void sortReversed();
+    virtual void setSorting( QDir::SortSpec );
+    virtual void sortReversed();
 
     void ensureItemVisible( const KFileViewItem * );
 

@@ -284,8 +284,16 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                           (int)CONFIGURE_BUTTON, true,
                           i18n("Configure this dialog"));
     */
-    coll->action( "mkdir" )->plug( toolbar );
-
+    KActionMenu *menu = new KActionMenu( i18n("Extras"), "misc", this, "extra menu" );
+    menu->insert( coll->action( "mkdir" ));
+    menu->insert( coll->action( "delete" ));
+    menu->insert( coll->action( "separator" ));
+    menu->insert( coll->action( "sorting menu" ));
+    menu->insert( coll->action( "separator" ));
+    menu->insert( coll->action( "view menu" ));
+    menu->setDelayed( false );
+    menu->plug( toolbar );
+    
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));
     // for the bookmark "menu"
