@@ -443,8 +443,8 @@ void KIconViewItem::calcRect( const QString& text_ )
         ph = pixmap()->height() + 2;
     }
     itemIconRect.setWidth( pw );
-#if QT_VERSION < 0x030302
-    // There is a bug in Qt < 3.3.2 which prevents the item from being placed
+#if 1 // FIXME 
+    // There is a bug in Qt which prevents the item from being placed
     // properly when the pixmapRect is not at the top of the itemRect, so we
     // have to increase the height of the pixmapRect and leave it at the top
     // of the itemRect...
@@ -498,8 +498,9 @@ void KIconViewItem::calcRect( const QString& text_ )
         {
             w = QMAX( itemTextRect.width(), d->m_pixmapSize.width() + 2 );
             h = itemTextRect.height() + d->m_pixmapSize.height() + 2 + 1;
-#if QT_VERSION >= 0x030302
-            // With Qt < 3.1.2, the pixmapRect must stay on the top...
+#if 0 // FIXME 
+            // Waiting for the qt bug to be solved, the pixmapRect must
+            // stay on the top...
             y = d->m_pixmapSize.height() + 2 - itemIconRect.height();
 #endif
         }
@@ -521,8 +522,9 @@ void KIconViewItem::calcRect( const QString& text_ )
         if ( d && !d->m_pixmapSize.isNull() )
         {
             h = QMAX( itemTextRect.height(), d->m_pixmapSize.height() + 2 );
-#if QT_VERSION >= 0x030302
-            // With Qt < 3.1.2, the pixmapRect must stay on the top...
+#if 0 // FIXME 
+            // Waiting for the qt bug to be solved, the pixmapRect must
+            // stay on the top...
             y = ( d->m_pixmapSize.height() + 2 - itemIconRect.height() ) / 2;
 #endif
         }
@@ -606,7 +608,10 @@ void KIconViewItem::paintPixmap( QPainter *p, const QColorGroup &cg )
         if ( !pix || pix->isNull() )
             return;
 
-#if QT_VERSION < 0x030302
+#if 1 // FIXME 
+        // Move the pixmap manually because the pixmapRect is at the
+        // top of the itemRect
+        // (won't be needed anymore in future versions of qt)
         if ( d && !d->m_pixmapSize.isNull() )
         {
             int offset = 0;
