@@ -199,6 +199,8 @@ KProcess::runPrivileged() const
 
 KProcess::~KProcess()
 {
+  // this will kill the child process unless it has terminated
+  // already or was started with DontCare, because we detached() before
   kill(SIGKILL);
   detach();
 
@@ -214,7 +216,6 @@ void KProcess::detach()
   if (runs) {
     KProcessController::theKProcessController->addProcess(pid_);
     runs = false;
-    pid_ = 0; // deny that the process has ever run
     commClose(); // Clean up open fd's and socket notifiers.
   }
 }
@@ -434,9 +435,8 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
 bool KProcess::kill(int signo)
 {
-  if (runs)
-    if (!::kill(pid_, signo))
-      return true;
+  if (runs && pid_ > 0 && !::kill(pid_, signo))
+    return true;
   return false;
 }
 
