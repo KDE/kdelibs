@@ -6,6 +6,10 @@
 [750]
 InfoOutput=4
 
+# KPart's builder info off
+[1001]
+InfoOutput=4
+
 # KRun debug info off
 [7010]
 InfoOutput=4
