@@ -623,13 +623,20 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
 
 void KDirListerCache::FilesChanged( const KURL::List &fileList )
 {
-  kdWarning(7004) << k_funcinfo << "ONLY HALF IMPLEMENTED!" << endl;
+  kdDebug(7004) << k_funcinfo << "only half implemented" << endl;
   KURL::List::ConstIterator it = fileList.begin();
   for ( ; it != fileList.end() ; ++it )
   {
+      kdDebug(7004) << "KDirListerCache::FilesChanged " << *it << endl;
       KFileItem* fileitem = findByURL( 0, *it );
       if ( fileitem )
+      {
+          // we need to refresh the item, because e.g. the permissions can have changed.
+          fileitem->refresh();
           emitRefreshItem( fileitem );
+      }
+      else
+          kdDebug(7004) << "item not found" << endl;
   }
   // ## TODO problems with current jobs listing/updating that dir
   // ( see kde-2.2.2's kdirlister )
