@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     KCmdLineArgs::addCmdLineOptions( options );
 
     KApplication app; // needed now because of properties.
-    puts("settheme: (C)1999 KDE Artisic License - D.M. Duley (mosfet@kde.org)");
+    puts("settheme: (C)2000 MIT License - D.M. Duley (mosfet@kde.org)");
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
