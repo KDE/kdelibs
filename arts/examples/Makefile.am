@@ -1,5 +1,7 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
-   -I$(top_builddir)/arts/flow
+   -I$(top_builddir)/arts/flow -I$(top_srcdir)/arts/soundserver \
+   -I$(top_builddir)/arts/soundserver
+
 LDFLAGS   = $(all_libraries) $(top_builddir)/arts/mcop/libmcop.la
 MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
 FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
@@ -7,8 +9,7 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 ####### Files
 
 check_PROGRAMS = helloserver helloclient referenceinfo testflow testdynflow \
-  irdemo x11commtest
-
+  irdemo x11commtest testflowcxx streamsound
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
 helloclient_SOURCES = hello.cc helloclient.cc
 referenceinfo_SOURCES = referenceinfo.cc
@@ -18,9 +19,15 @@ x11commtest_SOURCES = x11commtest.cc
 testflow_LDFLAGS = $(FLOWLIBS)
 testflow_SOURCES = testflow.cc
 
+testflowcxx_LDFLAGS = $(FLOWLIBS)
+testflowcxx_SOURCES = testflowcxx.cc
+
 testdynflow_LDFLAGS = $(FLOWLIBS)
 testdynflow_SOURCES = testdynflow.cc
 
+streamsound_LDFLAGS = $(FLOWLIBS) \
+    $(top_builddir)/arts/soundserver/libsoundserver_idl.la
+streamsound_SOURCES = streamsound.cc
 
 DISTCLEANFILES = $(SRCMETA) hello.cc hello.h
 
