@@ -64,28 +64,35 @@ void KProgress::advance(int offset)
 
 void KProgress::initialize()
 {
-	//setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	//setLineWidth(2);
-        //setMidLineWidth(2);
-  format_ = "%p%";
+	format_ = "%p%";
 	use_supplied_bar_color = false;
 	bar_pixmap = 0;
 	bar_style = Solid;
-	bar_color = colorGroup().highlight();
-	bar_text_color = colorGroup().highlightedText();
-	text_color = colorGroup().text();
+        text_enabled = TRUE;
 	setBackgroundMode( PaletteBase );
+	connect(kapp, SIGNAL(appearanceChanged()), this, SLOT(paletteChange()));
 	QFont f(QString::fromLatin1("helvetica"), 12, QFont::Bold);
 	f.setPixelSize(12);
 	setFont(f);
-        text_enabled = TRUE;
+        paletteChange();
+}
+
+void KProgress::paletteChange()
+{
+        QPalette p = kapp->palette();
+        QColorGroup &colorGroup = p.active();
+        if (!use_supplied_bar_color)
+	   bar_color = colorGroup.highlight();
+	bar_text_color = colorGroup.highlightedText();
+	text_color = colorGroup.text();
+
         if(kapp->kstyle()){
             QBrush b;
-            QPalette p = palette();
-            kapp->kstyle()->getKProgressBackground(colorGroup(), b);
+            kapp->kstyle()->getKProgressBackground(colorGroup, b);
             p.setBrush(QColorGroup::Base, b);
-            setPalette(p);
         }
+        setPalette(p);
+
 	adjustStyle();
 }
 
@@ -153,15 +160,15 @@ bool KProgress::textEnabled() const
 
 QSize KProgress::sizeHint() const
 {
-  QSize s( size() );
+	QSize s( size() );
 
-  if(orientation() == KProgress::Vertical) {
-    s.setWidth(24);
-  } else {
-    s.setHeight(24);
-  }
+	if(orientation() == KProgress::Vertical) {
+	  s.setWidth(24);
+	} else {
+	  s.setHeight(24);
+	}
 
-  return s;
+	return s;
 }
 
 QSizePolicy KProgress::sizePolicy() const
@@ -221,12 +228,11 @@ void KProgress::adjustStyle()
 	update();
 }
 
-void KProgress::paletteChange( const QPalette & )
+void KProgress::paletteChange( const QPalette &p )
 {
-	if ( !use_supplied_bar_color )
-		bar_color = colorGroup().highlight();
-	bar_text_color = colorGroup().highlightedText();
-	text_color = colorGroup().text();
+   // This never gets called because we call setPalette()
+   QFrame::paletteChange(p);
+   paletteChange();
 }
 		
 void KProgress::drawText(QPainter *p)
@@ -234,13 +240,13 @@ void KProgress::drawText(QPainter *p)
 	QRect r(contentsRect());
 	//QColor c(bar_color.rgb() ^ backgroundColor().rgb());
 
-  // Rik: Replace the tags '%p', '%v' and '%m' with the current percentage,
-  // the current value and the maximum value respectively.
-  QString s(format_);
+	// Rik: Replace the tags '%p', '%v' and '%m' with the current percentage,
+	// the current value and the maximum value respectively.
+	QString s(format_);
 
-  s.replace(QRegExp(QString::fromLatin1("%p")), QString::number(recalcValue(100)));
-  s.replace(QRegExp(QString::fromLatin1("%v")), QString::number(value()));
-  s.replace(QRegExp(QString::fromLatin1("%m")), QString::number(maxValue()));
+	s.replace(QRegExp(QString::fromLatin1("%p")), QString::number(recalcValue(100)));
+	s.replace(QRegExp(QString::fromLatin1("%v")), QString::number(value()));
+	s.replace(QRegExp(QString::fromLatin1("%m")), QString::number(maxValue()));
 
 	p->setPen(text_color);
 	//p->setRasterOp(XorROP);

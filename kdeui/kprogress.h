@@ -225,6 +225,9 @@ protected:
 	 * @reimplemented
 	 */
 	void drawContents( QPainter * );
+
+private slots:
+	void paletteChange();
 	
 private:
 	QPixmap		*bar_pixmap;
@@ -236,14 +239,14 @@ private:
 	BarStyle	bar_style;
 	Orientation orient;
 	bool		text_enabled;
-  QString   format_;
-	void initialize();
+	QString   format_;
+        void initialize();
 	int recalcValue(int);
 	void drawText(QPainter *);
 	void adjustStyle();
 
-    class KProgressPrivate;
-    KProgressPrivate *d;
+	class KProgressPrivate;
+	KProgressPrivate *d;
 };
 
 
