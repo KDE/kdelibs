@@ -27,7 +27,7 @@
 #include <stdlib.h> // Needed for size_t
 
 #include "ustring.h"
-#include "global.h"
+#include <kjs/global.h>
 
 // Primitive data types
 

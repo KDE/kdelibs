@@ -311,11 +311,11 @@ namespace KJS {
   private:
 
     List scope;
+    Object activation;
     Object variable;
     Object thisVal;
-    ContextImp *callingCon;
-    Object activation;
 
+    ContextImp *callingCon;
 
     LabelStack ls;
     CodeType codeType;
