@@ -26,6 +26,7 @@
 #include <qpoint.h>
 #include <qrect.h>
 #include <qsize.h>
+#include <qregion.h>
 #include <qstringlist.h>
 #include <qbrush.h>
 
