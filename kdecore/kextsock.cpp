@@ -504,7 +504,7 @@ int KExtendedSocket::lookup()
       if (!process_flags(m_flags, hint))
 	return EAI_BADFLAGS;
 
-      kdDebug() << "Performing lookup on " << d->host << "/" << d->service << endl;
+      kdDebug(170) << "Performing lookup on " << d->host << "/" << d->service << endl;
       int err = doLookup(d->host, d->service, hint, &d->resolution);
       if (err != 0)
 	{
@@ -518,7 +518,7 @@ int KExtendedSocket::lookup()
       /* leave hint.ai_socktype the same */
       hint.ai_flags |= AI_PASSIVE;  // this is passive, for bind()
 
-      kdDebug() << "Performing lookup on " << d->localhost << "/" << d->localservice << endl;
+      kdDebug(170) << "Performing lookup on " << d->localhost << "/" << d->localservice << endl;
       int err = doLookup(d->localhost, d->localservice, hint, &d->bindres);
       if (err != 0)
 	{
@@ -549,25 +549,25 @@ int KExtendedSocket::listen(int N)
       if (!valid_family(p, m_flags))
 	continue;
 
-      kdDebug() << "Trying to listen on " << pretty_sock(p) << endl;
+      kdDebug(170) << "Trying to listen on " << pretty_sock(p) << endl;
       sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
       if (sockfd == -1)
 	{
 	  // socket failed creating
-	  kdDebug() << "Failed to create: " << perror << endl;
+	  kdDebug(170) << "Failed to create: " << perror << endl;
 	  continue;
 	}
 
       if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	{
-	  kdDebug() << "Failed to bind: " << perror << endl;
+	  kdDebug(170) << "Failed to bind: " << perror << endl;
 	  ::close(sockfd);
 	  sockfd = -1;
 	  continue;
 	}
 
       // ok, socket has bound
-      kdDebug() << "Socket bound: " << sockfd << endl;
+      kdDebug(170) << "Socket bound: " << sockfd << endl;
       break;
     }
 
@@ -611,7 +611,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
       FD_ZERO(&set);
       FD_SET(sockfd, &set);
 
-      kdDebug().form("Accepting on %d with %d.%06d second timeout\n",
+      kdDebug(170).form("Accepting on %d with %d.%06d second timeout\n",
 		     sockfd, d->timeout.tv_sec, d->timeout.tv_usec);
       // check if there is anything to accept now
       int retval = select(sockfd + 1, &set, NULL, NULL, &d->timeout);
@@ -638,7 +638,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
       return -1;
     }
 
-  kdDebug().form("Socket %d accepted socket %d\n", sockfd, newfd);
+  kdDebug(170).form("Socket %d accepted socket %d\n", sockfd, newfd);
 
   setBlockingMode(block);	// restore blocking mode
 
@@ -684,7 +684,7 @@ int KExtendedSocket::connect()
 	  end.tv_usec -= 1000*1000;
 	  end.tv_sec++;
 	}
-      kdDebug().form("Connection with timeout of %d.%06d seconds (ends in %d.%06d)\n",
+      kdDebug(170).form("Connection with timeout of %d.%06d seconds (ends in %d.%06d)\n",
 		     d->timeout.tv_sec, d->timeout.tv_usec, end.tv_sec, end.tv_usec);
     }
 
@@ -694,10 +694,10 @@ int KExtendedSocket::connect()
       if (!valid_family(p, m_flags))
 	continue;
 
-      kdDebug() << "Trying to connect to " << pretty_sock(p) << endl;
+      kdDebug(170) << "Trying to connect to " << pretty_sock(p) << endl;
       if (q != NULL)
 	{
-	  kdDebug() << "Searching bind socket for family " << p->ai_family << endl;
+	  kdDebug(170) << "Searching bind socket for family " << p->ai_family << endl;
 	  if (q->ai_family != p->ai_family)
 	    // differing families, scan bindres for a matching family
 	    for (q = d->bindres; q; q = q->ai_next)
@@ -707,18 +707,18 @@ int KExtendedSocket::connect()
 	  if (q == NULL || q->ai_family != p->ai_family)
 	    {
 	      // no matching families for this
-	      kdDebug() << "No matching family for bind socket\n";
+	      kdDebug(170) << "No matching family for bind socket\n";
 	      q = d->bindres;
 	      continue;
 	    }
 
-	  kdDebug() << "Binding on " << pretty_sock(q) << " before connect" << endl;
+	  kdDebug(170) << "Binding on " << pretty_sock(q) << " before connect" << endl;
 	  sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
 	  if (::bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
 	    {
-	      kdDebug() << "Bind failed: " << perror << endl;
+	      kdDebug(170) << "Bind failed: " << perror << endl;
 	      ::close(sockfd);
 	      sockfd = -1;
 	      continue;
@@ -732,7 +732,7 @@ int KExtendedSocket::connect()
 	    continue;
 	}
 
-      kdDebug() << "Socket " << sockfd << " created" << endl;
+      kdDebug(170) << "Socket " << sockfd << " created" << endl;
       m_status = created;
 
       // check if we have to do timeout
@@ -748,7 +748,7 @@ int KExtendedSocket::connect()
 	      // this could be EWOULDBLOCK
 	      if (errno != EWOULDBLOCK && errno != EINPROGRESS)
 		{
-		  kdDebug() << "Socket " << sockfd << " did not connect: " << perror << endl;
+		  kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
 		  ::close(sockfd);
 		  sockfd = -1;
 		  continue;	// nope, another error
@@ -766,7 +766,7 @@ int KExtendedSocket::connect()
 		{
 		  ::close(sockfd);
 		  sockfd = -1;
-		  kdDebug() << "Time out while trying to connect to " << 
+		  kdDebug(170) << "Time out while trying to connect to " << 
 		    pretty_sock(p) << endl;
 		  m_status = lookupDone;
 		  setError(IO_TimeOutError, 0);
@@ -782,7 +782,7 @@ int KExtendedSocket::connect()
 		  d->timeout.tv_usec += 1000*1000;
 		  d->timeout.tv_sec--;
 		}
-	      kdDebug().form("Socket %d activity; %d.%06d seconds remaining\n",
+	      kdDebug(170).form("Socket %d activity; %d.%06d seconds remaining\n",
 			     sockfd, d->timeout.tv_sec, d->timeout.tv_usec);
 
 	      // this means that an event occurred in the socket
@@ -793,7 +793,7 @@ int KExtendedSocket::connect()
 	      if (retval == -1 || errcode != 0)
 		{
 		  // socket did not connect
-		  kdDebug() << "Socket " << sockfd << " did not connect: " 
+		  kdDebug(170) << "Socket " << sockfd << " did not connect: " 
 			    << strerror(errcode) << endl;
 		  ::close(sockfd);
 		  sockfd = -1;
@@ -814,7 +814,7 @@ int KExtendedSocket::connect()
 	  setBlockingMode(true);
 	  m_status = connected;
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open);
-	  kdDebug() << "Socket " << sockfd << " connected\n";
+	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;
 	}
       else
@@ -822,7 +822,7 @@ int KExtendedSocket::connect()
 	  // without timeouts
 	  if (::connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	    {
-	      kdDebug() << "Socket " << sockfd << " did not connect: " << perror << endl;
+	      kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
 	      ::close(sockfd);
 	      sockfd = -1;
 	      continue;
@@ -830,13 +830,13 @@ int KExtendedSocket::connect()
 
 	  m_status = connected;
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open);
-	  kdDebug() << "Socket " << sockfd << " connected\n";
+	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;		// it connected
 	}
     }
 
   // getting here means no socket connected or stuff like that
-  kdDebug() << "Failed to connect\n";
+  kdDebug(170) << "Failed to connect\n";
   setError(IO_ConnectError, errno);
   return -1;
 }
@@ -986,7 +986,7 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
   if (!process_flags(flags, hint))
     return l;
 
-  kdDebug() << "Performing lookup on " << host << "|" << port << endl;
+  kdDebug(170) << "Performing lookup on " << host << "|" << port << endl;
   err = doLookup(host, port, hint, &res);
   if (err)
     return l;
@@ -999,7 +999,7 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
 	memcpy(ai->ai, p, sizeof(*p));
 	ai->ai->ai_next = NULL;
 	ai->addr = KSocketAddress::newAddress(p->ai_addr, p->ai_addrlen);
-	kdDebug() << "Using socket " << pretty_sock(p) << endl;
+	kdDebug(170) << "Using socket " << pretty_sock(p) << endl;
 	l.append(ai);
       }
 

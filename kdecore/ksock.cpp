@@ -242,7 +242,7 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
     return false;
 
   memcpy(server_name, sin->addressV4(), sizeof(*server_name));
-  kdDebug() << "KSocket::initSockaddr: returning " << sin->pretty() << endl;
+  kdDebug(170) << "KSocket::initSockaddr: returning " << sin->pretty() << endl;
   return true;
 }
 

@@ -321,7 +321,7 @@ bool KInetSocketAddress::setHost(const QString& addr, int family)
 #endif
       )
     {
-      kdDebug() << "KInetSocketAddress::setHost(QString, int) called with unknown family address";
+      kdWarning() << "KInetSocketAddress::setHost(QString, int) called with unknown family address";
       return false;
     }
 
@@ -380,7 +380,7 @@ bool KInetSocketAddress::setFamily(int _family)
 #endif
       )
     {
-      kdDebug() << "KInetSocketAddress::setFamily(int) called with unknown family";
+      kdWarning() << "KInetSocketAddress::setFamily(int) called with unknown family";
       return false;
     }
 
