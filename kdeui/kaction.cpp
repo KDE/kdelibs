@@ -210,6 +210,8 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	initPrivate( item.text(), cut, receiver, slot );
 	if( item.hasIconSet() )
 		setIcon( item.iconName() );
+	setToolTip( item.toolTip() );
+	setWhatsThis( item.whatsThis() );
 }
 
 #if KDE_VERSION < 400
