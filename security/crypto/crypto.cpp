@@ -1212,13 +1212,14 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 
   policies->setGroup(x->getSub());
   KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", "").local8Bit());
-  cert->chain().setChain(policies->readListEntry("Chain"));
 
   if (!cert) {
     KMessageBox::error(this, i18n("Error obtaining the certificate."), i18n("SSL"));
     return;
   }
  
+  cert->chain().setChain(policies->readListEntry("Chain"));
+
   if (cert->isValid()) {
      KMessageBox::information(this, i18n("This certificate passed the verification tests successfully."), i18n("SSL"));
   } else {
