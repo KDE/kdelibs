@@ -522,6 +522,7 @@ void RenderObject::printTree(int indent) const
                  << " cp=" << (int)containsPositioned()
                  << " lt=" << (int)layouted()
                  << " cw=" << (int)containsWidget()
+                 << " pa=" << (int)parsing()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
@@ -559,10 +560,10 @@ void RenderObject::setStyle(RenderStyle *style)
 
     RenderStyle *oldStyle = m_style;
     m_style = style;
-  
+
     CachedImage* ob = 0;
-    CachedImage* nb = 0;    
-        
+    CachedImage* nb = 0;
+
     if (m_style)
     {
 	m_style->ref();
@@ -571,8 +572,8 @@ void RenderObject::setStyle(RenderStyle *style)
     if (oldStyle)
     {
         ob = oldStyle->backgroundImage();
-	oldStyle->deref();        
-    }   
+	oldStyle->deref();
+    }
 
     if( ob != nb ) {
 	if(ob) ob->deref(this);
@@ -696,7 +697,7 @@ RenderObject *RenderObject::container() const
     return o;
 }
 
-void RenderObject::invalidateLayout() 
+void RenderObject::invalidateLayout()
 {
     setLayouted(false);
     if (m_parent && m_parent->layouted())
