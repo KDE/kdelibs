@@ -108,6 +108,10 @@ public:
      * which items the context menu over the applet handle contains.
      */
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
+    // FIXME: Remove 'p' from element names for KDE 4.
+    enum Position { pLeft = 0, pRight, pTop, pBottom };
+    enum Alignment { LeftTop = 0, Center, RightBottom };
+    // FIXME: Remove for KDE 4.
     enum Direction { Up = 0, Down, Left, Right };
 
     /**
@@ -205,6 +209,15 @@ public:
      **/
     virtual void action( Action a );
 
+    /**
+     * @internal
+     **/
+    void setPosition( Position p );
+    /**
+     * @internal
+     **/
+    void setAlignment( Alignment a );
+
 signals:
     /**
      * Emit this signal to make the panel relayout all applets, when
@@ -226,18 +239,6 @@ signals:
      * Request keyboard focus from the panel.
      **/
     void requestFocus();
-
-
-public slots:
-    /**
-     * Don't reimplement, this is used internally
-     **/
-    void slotSetOrientation(Orientation o);
-
-    /**
-     * Don't reimplement, this is used internally
-     **/
-    void slotSetPopupDirection(Direction d);
 
 protected:
 
@@ -281,35 +282,62 @@ protected:
     /**
      * @return the applet's orientation. (horizontal or vertical)
      **/
-    Orientation orientation() const { return _orient; }
+    Orientation orientation() const;
+    /**
+     * @return the applet's position. (top, left, bottom, or right)
+     **/
+    Position position() const { return _position; }
+    /**
+     * @return the applet's alignment. (top/left, center, or bottom/right)
+     **/
+    Alignment alignment() const { return _alignment; }
 
+    /**
+     * The panel on which this applet resides has changed its position.
+     * Reimplement this change handler in order to adjust the look of your
+     * applet.
+     **/
+    virtual void positionChange( Position p );
+
+    /**
+     * The panel on which this applet resides has changed its alignment.
+     * Reimplement this change handler in order to adjust the look of your
+     * applet.
+     **/
+    virtual void alignmentChange( Alignment a ) {};
 
     /**
      * The orientation changed to @p orientation. Reimplement this
      * change handler in order to adjust the look of your applet.
+     *
+     * @deprecated Reimplement arrangementChanged instead.
      **/
+    // FIXME: Remove for KDE 4
     virtual void orientationChange( Orientation /* orientation*/) {}
 
     /**
      * You may need this if you want to popup menus at the right position.
      *
      * See @ref  popupDirectionChange()
+     *
+     * @deprecated Use position() instead.
      **/
-    Direction popupDirection() const { return _dir; }
-
+    // FIXME: Remove for KDE 4
+    Direction popupDirection();
 
     /**
      * The popup direction changed to @p direction. Reimplement this
      * change handler in order to adjust the look of your applet.
+     *
+     * @deprecated Reimplement arrangementChanged instead.
      **/
+    // FIXME: Remove for KDE 4
     virtual void popupDirectionChange( Direction /*direction*/ ) {}
-
-
 
 private:
     Type         _type;
-    Orientation  _orient;
-    Direction    _dir;
+    Position     _position;
+    Alignment    _alignment;
     KConfig*     _config;
     int          _actions;
 protected:

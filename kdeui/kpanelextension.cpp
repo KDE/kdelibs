@@ -30,7 +30,8 @@ KPanelExtension::KPanelExtension(const QString& configFile, Type type,
 				 int actions, QWidget *parent, const char *name)
   : QFrame(parent, name)
   , _type(type)
-  , _pos( Top )
+  , _position( Top )
+  , _alignment( LeftTop )
   , _config(0)
   , _actions(actions)
 {
@@ -43,12 +44,18 @@ KPanelExtension::~KPanelExtension()
     delete _config;
 }
 
-void KPanelExtension::slotSetPosition(Position p)
+void KPanelExtension::setPosition( Position p )
 {
-    _pos = p;
-    positionChange(p);
-    QResizeEvent e(size(), size());
-    resizeEvent(&e);
+  if( _position == p ) return;
+  _position = p;
+  positionChange( p );
+}
+
+void KPanelExtension::setAlignment( Alignment a )
+{
+  if( _alignment == a ) return;
+  _alignment = a;
+  alignmentChange( a );
 }
 
 void KPanelExtension::action( Action a )
@@ -65,7 +72,7 @@ void KPanelExtension::action( Action a )
 
 Qt::Orientation KPanelExtension::orientation()
 {
-    if (_pos == Left || _pos == Right)
+    if (_position == Left || _position == Right)
 	return Vertical;
     else
 	return Horizontal;

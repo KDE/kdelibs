@@ -102,6 +102,7 @@ public:
     enum Type { Normal = 0, Stretch };
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { Left = 0, Right, Top, Bottom };
+    enum Alignment { LeftTop = 0, Center, RightBottom };
 
     /**
      * Constructs a KPanelExtension just like any other widget.
@@ -175,6 +176,15 @@ public:
      **/
     virtual Position preferedPosition() const { return Bottom; }
 
+    /**
+     * @internal
+     **/
+    void setPosition( Position p );
+    /**
+     * @internal
+     **/
+    void setAlignment( Alignment a );
+
 signals:
     /**
      * Emit this signal to make the panel relayout all extensions in the dock, when you want
@@ -182,12 +192,6 @@ signals:
      * The panel is going to relayout all extensions based on their prefered size.
      **/
     void updateLayout();
-
-public slots:
-    /**
-     * Don't reimplement, this is used internally
-     **/
-    void slotSetPosition(Position p);
 
 protected:
 
@@ -231,7 +235,12 @@ protected:
     /**
      * @return the extension's position. (left, right, top, bottom)
      **/
-    Position position() const { return _pos; }
+    Position position() const { return _position; }
+
+    /**
+     * @return the extension's alignment. (left/top, center, or right/bottom)
+     **/
+    Alignment alignment() const { return _alignment; }
 
     /**
      * @return the extensions orientation. (horizontal or vertical)
@@ -239,14 +248,23 @@ protected:
     Orientation orientation();
 
     /**
-     * The position changed to @p position. Reimplement this
-     * change handler in order to adjust the look of your extension.
+     * This extension has changed its position.
+     * Reimplement this change handler in order to adjust the look of your
+     * applet.
      **/
-    virtual void positionChange( Position /* position */) {}
+    virtual void positionChange( Position ) {};
+
+    /**
+     * This extension has changed its alignment.
+     * Reimplement this change handler in order to adjust the look of your
+     * applet.
+     **/
+    virtual void alignmentChange( Alignment ) {};
 
 private:
     Type         		_type;
-    Position     		_pos;
+    Position     		_position;
+    Alignment    		_alignment;
     KConfig*     		_config;
     int          		_actions;
 protected:

@@ -30,8 +30,8 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
                            int actions, QWidget *parent, const char *name, WFlags f)
   : QFrame(parent, name, f)
   , _type(type)
-  , _orient( Horizontal )
-  , _dir(Up)
+  , _position( pBottom )
+  , _alignment( LeftTop )
   , _config(0)
   , _actions(actions)
 {
@@ -50,20 +50,49 @@ KPanelApplet::~KPanelApplet()
   delete _config;
 }
 
-void KPanelApplet::slotSetOrientation(Orientation o)
+void KPanelApplet::setPosition( Position p )
 {
-  _orient = o;
-  orientationChange( o );
+  if( _position == p ) return;
+  _position = p;
+  positionChange( p );
+}
+
+void KPanelApplet::setAlignment( Alignment a )
+{
+  if( _alignment == a ) return;
+  _alignment = a;
+  alignmentChange( a );
+}
+
+// FIXME: Remove implementation for KDE 4
+void KPanelApplet::positionChange( Position )
+{
+  orientationChange( orientation() );
   QResizeEvent e( size(), size() );
   resizeEvent( &e );
+  popupDirectionChange( popupDirection() );
 }
 
-void KPanelApplet::slotSetPopupDirection(Direction d)
+Qt::Orientation KPanelApplet::orientation() const
 {
-  _dir = d;
-  popupDirectionChange( d );
+  if( _position == pTop || _position == pBottom ) {
+    return Horizontal;
+  } else {
+    return Vertical;
+  }
 }
 
+// FIXME: Remove for KDE 4
+KPanelApplet::Direction KPanelApplet::popupDirection()
+{
+    switch( _position ) {
+    case pTop:     return Down;
+    case pRight:   return Left;
+    case pLeft:    return Right;
+    default:
+    case pBottom:  return Up;
+    }
+}
 
 void KPanelApplet::action( Action a )
 {
