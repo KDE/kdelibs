@@ -212,6 +212,9 @@ public final class KJASAppletClassLoader
         return codeBaseURL;
     }
 
+    AccessControlContext getAccessControlContext() {
+        return acc;
+    }
     Hashtable getJSReferencedObjects() {
         return jsReferencedObjects;
     }
@@ -221,73 +224,25 @@ public final class KJASAppletClassLoader
     public synchronized Class findClass( String name ) throws ClassNotFoundException
     {
         Class rval = null;
-        try
-        {
-            //check for a system class
-            rval = findSystemClass( name );
-        } catch (ClassNotFoundException e )
-        {
-            String displayName = name;
-            // we lie a bit and do not display the inner
-            // classes because their names are ugly
-            int idx = name.indexOf('$');
-            if (idx > 0) {
-                displayName = name.substring(0, idx);
-            }
-            showStatus("Loading Class: " + displayName + "...");
-            //check the loaded classes 
-            rval = findLoadedClass( name );
-            if( rval == null ) {
-                try {
-                    rval =  super.findClass(name);
-                } catch (ClassFormatError cfe) {
-                    Main.debug(name + ": Catched " + cfe + ". Trying to repair...");
-                    rval = loadFixedClass( name );
-                } catch (Exception ex)
-                {
-                    Main.debug("findClass " + name + " " + ex.getMessage());
-                }
+        //check the loaded classes 
+        rval = findLoadedClass( name );
+        if( rval == null ) {
+            try {
+                rval =  super.findClass(name);
+            } catch (ClassFormatError cfe) {
+                Main.debug(name + ": Catched " + cfe + ". Trying to repair...");
+                rval = loadFixedClass( name );
+            } catch (Exception ex) {
+                Main.debug("findClass " + name + " " + ex.getMessage());
             }
         }
         if (rval == null) {
-            throw new ClassNotFoundException("Class:" + name);
+            throw new ClassNotFoundException("Class: " + name);
         }
         return rval;
     }
     
     private Hashtable loadedClasses = new Hashtable();
-    public synchronized Class loadClass( String name ) throws ClassNotFoundException
-    {
-        //Main.debug( dbgID + "loadClass, class name = " + name );
-        //We need to be able to handle foo.class, so strip off the suffix
-        String fixed_name = name;
-        /*
-        // need to convert to lowercase to match the suffix
-        // people from the windoze world don't know the difference
-        // see http://www.zdftext.de/
-        String lowerName = name.toLowerCase();
-        if( lowerName.endsWith( ".class" ) )
-        {
-            int max = lowerName.lastIndexOf( ".class" );
-            fixed_name = name.substring( 0, max);
-        }
-        else if( lowerName.endsWith( ".java" ) )
-        {
-            // be smart, some applets specify code=XyzClass.java
-            int max = lowerName.lastIndexOf( ".java" );
-            fixed_name = name.substring( 0, max);
-        }
-        */
-        Object o = loadedClasses.get(fixed_name);
-        if (o != null) {
-            Main.debug("already loaded: " + o);
-            return (Class)o;
-        }
-        Class cl = findClass(fixed_name);
-        //Class cl = super.loadClass(fixed_name);
-        //Main.debug(dbgID + " returns class " + cl.getName() + " Classloader=" + cl.getClassLoader());
-        return cl;
-    }
 
     private synchronized final Class loadFixedClass(String name) throws ClassNotFoundException {
         final String fileName = name.replace('.', '/') + ".class";
