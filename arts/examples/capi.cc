@@ -84,12 +84,12 @@ protected:
 	int _lastResult;
 	Dispatcher dispatcher;
 
-	SimpleSoundServer_var server;
+	SimpleSoundServer server;
 
-	ArtsCApi() :_lastResult(0)
+	ArtsCApi() :_lastResult(0),
+		server(Reference("global:Arts_SimpleSoundServer"))
 	{
-		server=SimpleSoundServer::_fromString("global:Arts_SimpleSoundServer");
-		if(!server)
+		if(server.isNull())
 			_lastResult = E_ARTS_NOSERVER;
 	}
 	void connect()
@@ -97,10 +97,10 @@ protected:
 		if(_lastResult == E_ARTS_NOSERVER) return;
 
 		Sender *sender = new Sender();
-		server->attach(sender);
+		server.attach(sender);
 		sender->start();
 		// we don't hold a reference to the sender at all any more - the
-		// soundserver should do so, as long as he wants
+		// soundserver should do so, as long as he wants -> FIXME
 		sender->_release();
 
 		_lastResult = 0;

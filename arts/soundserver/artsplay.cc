@@ -41,13 +41,12 @@ int main(int argc, char **argv)
 	}
 
 	Dispatcher dispatcher;
-	SimpleSoundServer_var server;
+	SimpleSoundServer server(Reference("global:Arts_SimpleSoundServer"));
 
-	server = SimpleSoundServer_base::_fromString("global:Arts_SimpleSoundServer_base");
-	if(!server)
+	if(server.isNull())
 	{
 		cerr << "Can't connect to sound server" << endl;
 		return 1;
 	}
-	return server->play(argv[1]) != 0;
+	return server.play(argv[1]) != 0;
 }
