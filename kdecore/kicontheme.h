@@ -234,6 +234,12 @@ public:
     bool isValid() const;
 
     /**
+     * The icon theme should be hidden to the user?
+     * @return true if the icon theme is hidden
+     */
+    bool isHidden() const;
+
+    /**
      * The minimum display depth required for this theme. This can either
      * be 8 or 32.
      * @return the minimum bpp (8 or 32)

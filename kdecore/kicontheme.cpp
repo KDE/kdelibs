@@ -42,6 +42,7 @@ class KIconThemePrivate
 public:
     QString example, screenshot;
     QString linkOverlay, lockOverlay, zipOverlay, shareOverlay;
+    bool hidden; 
 };
 
 /**
@@ -135,6 +136,11 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     mDesc = cfg.readEntry("Comment");
     mDepth = cfg.readNumEntry("DisplayDepth", 32);
     mInherits = cfg.readListEntry("Inherits");
+    if ( name != "crystalsvg" )
+      for ( QStringList::Iterator it = mInherits.begin(); it != mInherits.end(); ++it )
+         if ( *it == "default" || *it == "hicolor" ) *it="crystalsvg";
+
+    d->hidden = cfg.readBoolEntry("Hidden", false);
     d->example = cfg.readEntry("Example");
     d->screenshot = cfg.readEntry("ScreenShot");
     d->linkOverlay = cfg.readEntry("LinkOverlay", "link");
@@ -199,6 +205,11 @@ KIconTheme::~KIconTheme()
 bool KIconTheme::isValid() const
 {
     return !mDirs.isEmpty();
+}
+
+bool KIconTheme::isHidden() const
+{
+    return d->hidden;
 }
 
 QString KIconTheme::example() const { return d->example; }
@@ -378,14 +389,15 @@ QString KIconTheme::current()
     _theme = new QString();
     KConfig *config = KGlobal::config();
     KConfigGroupSaver saver(config, "Icons");
-    *_theme = config->readEntry("Theme");
-    if (_theme->isEmpty())
+    *_theme = config->readEntry("Theme",defaultThemeName());
+    if ( *_theme == "hicolor" ) *_theme == defaultThemeName();
+/*    if (_theme->isEmpty())
     {
         if (QPixmap::defaultDepth() > 8)
             *_theme = defaultThemeName();
         else
             *_theme = QString::fromLatin1("locolor");
-    }
+    }*/
     return *_theme;
 }
 
