@@ -52,7 +52,7 @@ include_HEADERS = kautoconfig.h kconfig.h kconfigdata.h ksimpleconfig.h \
 	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
 	ktypelist.h ksortablevaluelist.h kdebugclasses.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
-	kmanagerselection.h \
+	kmanagerselection.h kmountpoint.h \
 	kidna.h ktempdir.h kshell.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
@@ -103,7 +103,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kautoconfig.cpp \
 	kcalendarsystem.cpp kcalendarsystemgregorian.cpp \
 	kcalendarsystemhijri.cpp kcalendarsystemhebrew.cpp \
 	kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp \
-	ktempdir.cpp kshell.cpp
+	ktempdir.cpp kshell.cpp kmountpoint.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(LIBART_LIBS) ../kdefx/libkdefx.la
