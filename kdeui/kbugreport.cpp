@@ -366,7 +366,7 @@ bool KBugReport::sendBugReport()
   fwrite(btext.ascii(),btext.length(),1,fd);
 
   int error = pclose(fd);
-  if (error) {
+  if (error == 42) {
       QFile of(outputfile.name());
       if (of.open(IO_ReadOnly )) {
           QTextStream is(&of);
