@@ -47,6 +47,26 @@ extern "C" {
 static KJSDebugWin *kjs_html_debugger = 0;
 #endif
 
+QVariant KJSOToVariant(KJSO obj) {
+  QVariant res;
+  switch (obj.type()) {
+  case BooleanType:
+    res = QVariant(obj.toBoolean().value(), 0);
+    break;
+  case NumberType:
+    res = QVariant(obj.toNumber().value());
+    break;
+  case StringType:
+    res = QVariant(obj.toString().value().qstring());
+    break;
+  default:
+    // everything else will be 'invalid'
+    break;
+  }
+  return res;
+}
+
+
 // initialize HTML module
 KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 {
@@ -118,25 +138,10 @@ namespace KJS {
 #endif
 
     // let's try to convert the return value
-    QVariant res;
-    if (ret && script->returnValue()) {
-      KJS::KJSO retVal(script->returnValue());
-      switch (retVal.type()) {
-      case BooleanType:
-	  res = QVariant(retVal.toBoolean().value(), 0);
-	  break;
-      case NumberType:
-	  res = QVariant(retVal.toNumber().value());
-	  break;
-      case StringType:
-	  res = QVariant(retVal.toString().value().qstring());
-	  break;
-      default:
-	// everything else will be 'invalid'
-	  break;
-      }
-    }
-    return res;
+    if (ret && script->returnValue())
+      return KJSOToVariant(script->returnValue());
+    else
+      return QVariant();
   }
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script, KHTMLPart *part)
@@ -161,17 +166,18 @@ namespace KJS {
 
   QVariant kjs_execFuncCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, bool inEvaluate, KHTMLPart *khtmlpart)
   {
+    QVariant ret;
     if (functionObj.implementsCall()) {
       if (!inEvaluate)
 	KJS::Global::current().setExtra(khtmlpart);
-      functionObj.executeCall(thisVal,&args);
+      ret = KJSOToVariant(functionObj.executeCall(thisVal,&args));
       if (!inEvaluate)
 	KJS::Global::current().setExtra(0L);
     }
-    return QVariant(); // ### return proper value
+    return ret;
   }
 
-  DOM::EventListener* kjs_createHTMLEventHandler(KJScript *script, QString code)
+  DOM::EventListener* kjs_createHTMLEventHandler(KJScript */*script*/, QString code)
   {
     KJS::Constructor constr(KJS::Global::current().get("Function").imp());
     KJS::List args;
