@@ -22,8 +22,7 @@
 
 */
 
-//#undef NETWMDEBUG
-#define NETWMDEBUG
+#undef NETWMDEBUG
 
 #include "netwm.h"
 
