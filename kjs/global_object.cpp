@@ -260,11 +260,14 @@ Completion GlobalFunc::execute(const List &args)
 	res = Undefined();
       else {
 	Completion c(res.imp());
-	if ((c.complType() == Normal && c.isValueCompletion())
-	    || c.complType() != Normal)
+	if (c.complType() == Normal) {
+	  if (c.isValueCompletion())
+	    res = c.value();
+	  else
+	    res = Undefined();
+	} else {
 	  return c;
-	else
-	  res = Undefined();
+	}
       }
 
       //      if (KJS::Node::progNode())
