@@ -177,7 +177,7 @@ KDatePicker::dateChangedSlot(QDate date)
     line->setText(KGlobal::locale()->formatDate(date, true));
     d->selectWeek->setText(i18n("Week %1").arg(calendar->weekNumber(date)));
     selectMonth->setText(calendar->monthName(date, false));
-    selectYear->setText(QString().setNum(calendar->year(date)));
+    selectYear->setText(calendar->yearString(date, false));
 
     emit(dateChanged(date));
 }
@@ -205,19 +205,19 @@ KDatePicker::date() const
 bool
 KDatePicker::setDate(const QDate& date)
 {
-    if(date.isValid()) {
+    if(date.isValid())
+    {
         const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-	QString temp;
-	// -----
 	table->setDate(date);
 	d->selectWeek->setText(i18n("Week %1").arg(calendar->weekNumber(date)));
 	selectMonth->setText(calendar->monthName(date, false));
-	temp.setNum(calendar->year(date));
-	selectYear->setText(temp);
+	selectYear->setText(calendar->yearString(date, true));
 	line->setText(KGlobal::locale()->formatDate(date, true));
 	return true;
-    } else {
+    }
+    else
+    {
 	kdDebug(298) << "KDatePicker::setDate: refusing to set invalid date." << endl;
 	return false;
     }

@@ -150,6 +150,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   QFont font=KGlobalSettings::generalFont();
   // -----
   int firstWeekDay = KGlobal::locale()->weekStartDay();
+
   if(row==0)
     { // we are drawing the headline
       font.setBold(true);
@@ -186,27 +187,39 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       bool paintRect=true;
       painter->setFont(font);
       pos=7*(row-1)+col;
+
+      QDate pCellDate;
+      // First day of month
+      calendar->setYMD(pCellDate, calendar->year(date), calendar->month(date), 1);
+      pCellDate = calendar->addDays(pCellDate, firstWeekDay - calendar->dayOfWeek(pCellDate));
+      // The first day of the month should never be the first day in the calendar
+      if (calendar->day(pCellDate) == 1 )
+	pCellDate = calendar->addDays(pCellDate, -7);
+
+      pCellDate = calendar->addDays(pCellDate, pos);
+      kdDebug() << "MyDate: " << pCellDate.toString() << endl;
+
       if ( firstWeekDay < 4 )
           pos += firstWeekDay;
       else
           pos += firstWeekDay - 7;
+      text = calendar->dayString(pCellDate, true);
       if(pos<firstday || (firstday+numdays<=pos))
         { // we are either
           // ° painting a day of the previous month or
           // ° painting a day of the following month
           if(pos<firstday)
             { // previous month
-              text.setNum(numDaysPrevMonth+pos-firstday+1);
+              //text.setNum(numDaysPrevMonth+pos-firstday+1);
             } else { // following month
-              text.setNum(pos-firstday-numdays+1);
+              //text.setNum(pos-firstday-numdays+1);
             }
           painter->setPen(gray);
         } else { // paint a day of the current month
-          text.setNum(pos-firstday+1);
+          //text.setNum(pos-firstday+1);
 	  if ( d->useCustomColors )
 	  {
-	    const QString key=text+"-"+QString::number( date.month() )+"-"+QString::number( date.year() );
-	    KDateTablePrivate::DatePaintingMode *mode=d->customPaintingModes[key];
+	    KDateTablePrivate::DatePaintingMode *mode=d->customPaintingModes[pCellDate.toString()];
 	    if (mode)
 	    {
 	      if (mode->bgMode != NoBgMode)
@@ -525,18 +538,15 @@ void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor,
     mode->bgMode=bgMode;
     mode->fgColor=fgColor;
     mode->bgColor=bgColor;
-    const QString key=QString::number(date.day())+"-"+QString::number( date.month() )+"-"+QString::number( date.year() );
 		
-    d->customPaintingModes.replace( key, mode );
+    d->customPaintingModes.replace( date.toString(), mode );
     d->useCustomColors=true;
     update();
 }
 
 void KDateTable::unsetCustomDatePainting( const QDate &date )
 {
-    const QString key=QString::number(date.day())+"-"+QString::number( date.month() )+"-"+QString::number( date.year() );
-
-    d->customPaintingModes.remove( key );
+    d->customPaintingModes.remove( date.toString() );
 }	
 
 KDateInternalWeekSelector::KDateInternalWeekSelector
@@ -626,10 +636,7 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   setNumCols(3);
   d = new KDateInternalMonthPrivate(date.year(), date.month(), date.day());
   // For monthsInYear != 12
-  if( KGlobal::locale()->calendar()->monthsInYear(date) % 3 == 0 )
-     setNumRows( KGlobal::locale()->calendar()->monthsInYear(date) / 3 );
-  else
-     setNumRows( KGlobal::locale()->calendar()->monthsInYear(date) / 3 + 1);
+  setNumRows( (KGlobal::locale()->calendar()->monthsInYear(date) + 2) / 3);
   // enable to find drawing failures:
   // setTableFlags(Tbl_clipCellPainting);
   viewport()->setEraseColor(KGlobalSettings::baseColor()); // for consistency with the datepicker
@@ -645,7 +652,6 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
       if(max.width()<rect.width()) max.setWidth(rect.width());
       if(max.height()<rect.height()) max.setHeight(rect.height());
     }
-
 }
 
 QSize
@@ -670,8 +676,8 @@ KDateInternalMonthPicker::setupPainter(QPainter *p)
 void
 KDateInternalMonthPicker::viewportResizeEvent(QResizeEvent*)
 {
-  setCellWidth(width()/3);
-  setCellHeight(height()/4);
+  setCellWidth(width() / numCols());
+  setCellHeight(height() / numRows());
 }
 
 void
@@ -774,6 +780,7 @@ KDateInternalMonthPicker::contentsMouseReleaseEvent(QMouseEvent *e)
     { // the user clicked on the frame of the table
       emit(closeMe(0));
     }
+
   pos=3*row+col+1;
   result=pos;
   emit(closeMe(1));
