@@ -74,11 +74,13 @@ that we would like to make for the next binary incompatible release.
   window and the tray (like KSIrc and Kopete) will quit at the right time without nasty
   hacks.
 
-- Change classes that store bool data using strings ("true"/"false") to use bool calls (readBoolEntry()).  Although not technicly a binary incompatiblity... just something to bring up for possible change (for the better)
+- Change classes that store bool data using strings ("true"/"false") to use bool
+  calls (readBoolEntry()).  Although not technicly a binary incompatiblity...
+  just something to bring up for possible change (for the better)
 
-- Is it really necessary to bother people using the KCM API:s with withFallback? I have never heard
-of it failing and when would you not like to have that fallback? I think a default of 'true' would be 
-fine.
+- Is it really necessary to bother people using the KCM API:s with withFallback? I have
+  never heard of it failing and when would you not like to have that fallback? I think
+  a default of 'true' would be fine.
 
 - KCModuleInfo and KService should use d-pointer. Perhaps there is more.
 
