@@ -1186,7 +1186,7 @@ static DOMStringImpl* cleanString (DOMStringImpl *str, bool preserveLF, bool pre
     bool collapsingLF = false; // collapsing around linefeed
     for(int i=0; i<len; i++) {
         QChar ch = str->s[i];
-        if (!preserveLF && (ch == '\n' || ch == '\r')
+        if (!preserveLF && (ch == '\n' || ch == '\r'))
             // ### Not strictly correct according to CSS3 text-module.
             // - In ideographic languages linefeed should be ignored
             // - and in Thai and Khmer it should be treated as a zero-width space
