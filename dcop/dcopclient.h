@@ -272,7 +272,7 @@ class DCOPClient : public QObject
 
 
   /**
-   * Emit @p signal as DCOP signal from object @p object with @data as
+   * Emit @p signal as DCOP signal from object @p object with @p data as
    * arguments
    */
   void emitDCOPSignal( const QCString &object, const QCString &signal,

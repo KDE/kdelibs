@@ -146,7 +146,7 @@ public:
   virtual QCStringList functions();
 
   /**
-   * Emit @p signal as DCOP signal from this object with @data as
+   * Emit @p signal as DCOP signal from this object with @p data as
    * arguments
    */
   void emitDCOPSignal( const QCString &signal, const QByteArray &data);
