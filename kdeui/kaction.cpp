@@ -2821,6 +2821,9 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
         bar->getButton(id_)->setPopup(popupMenu(), stickyMenu());
     }
 
+    if ( !whatsThis().isEmpty() )
+        QWhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+
     return containerCount() - 1;
   }
 

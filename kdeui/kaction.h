@@ -551,6 +551,7 @@ protected:
     virtual void updateWhatsThis( int i );
 
     KActionCollection *m_parentCollection;
+    QString whatsThisWithIcon() const;
 
 signals:
     void activated();
@@ -566,8 +567,6 @@ private:
     void insertKAccel( KAccel* );
     /** @internal To be used exclusively by KActionCollection::removeWidget(). */
     void removeKAccel( KAccel* );
-
-    QString whatsThisWithIcon() const;
 
 #ifndef KDE_NO_COMPAT
 public:
