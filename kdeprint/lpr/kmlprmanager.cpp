@@ -37,6 +37,7 @@
 #include <kprocess.h>
 #include <kaction.h>
 #include <kmessagebox.h>
+#include <klibloader.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -123,6 +124,7 @@ void KMLprManager::insertHandler(LprHandler *handler)
 {
     m_handlers.insert(handler->name(), handler);
     m_handlerlist.append(handler);
+    kdDebug() << "Handler: " << handler->name() << endl;
 }
 
 void KMLprManager::initHandlers()
@@ -133,6 +135,22 @@ void KMLprManager::initHandlers()
 	insertHandler(new MaticHandler(this));
 	insertHandler(new ApsHandler(this));
 	insertHandler(new LPRngToolHandler(this));
+
+	// now load external handlers
+	QStringList	l = KGlobal::dirs()->findAllResources("data", "kdeprint/lpr/*.la");
+	for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
+	{
+		KLibrary	*library = KLibLoader::self()->library(QFile::encodeName(*it));
+		if (library)
+		{
+			kdDebug() << "loading external handler from " << *it << endl;
+			LprHandler*(*func)(KMManager*) = (LprHandler*(*)(KMManager*))(library->symbol("create_handler"));
+			if (func)
+				insertHandler(func(this));
+			else
+				kdDebug() << "couldn't find the symbol 'create_handler'" << endl;
+		}
+	}
 
 	// default handler
 	insertHandler(new LprHandler("default", this));

@@ -21,7 +21,7 @@
 #define LPRSETTINGS_H
 
 #include <qobject.h>
-#include "kpreloadobject.h"
+#include <kdeprint/kpreloadobject.h>
 
 class LprSettings : public QObject, public KPReloadObject
 {
