@@ -23,6 +23,7 @@
 
 #include "kjs.h"
 #include "types.h"
+#include "operations.h"
 #include "error_object.h"
 #include "nodes.h"
 #include "lexer.h"
@@ -132,6 +133,21 @@ void KJScript::clear()
     initialized = false;
   }
 }
+
+/**
+ * @short Print to stderr for debugging purposes.
+ */
+class DebugPrint : public InternalFunction {
+public:
+  KJSO* execute(const List &args)
+    {
+      Ptr v = args[0];
+      Ptr s = toString(v);
+      fprintf(stderr, "---> %s\n", s->stringVal().cstring().c_str());
+
+      return newCompletion(Normal);
+    }
+};
 
 void KJScript::enableDebug()
 {

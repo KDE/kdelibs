@@ -27,6 +27,7 @@
 namespace DOM {
   class DOMString;
 };
+class KJScript;
 class QString;
 
 namespace KJS {
@@ -97,33 +98,27 @@ namespace KJS {
   class UString;
 
   /**
-   * @internal
-   */
-  class UStringData {
-    friend UString;
-    friend bool operator==(const UString&, const UString&);
-  public:
-    UStringData() : dat(0L), len(0), rc(1) { }
-    UStringData(UChar *d, unsigned int l) : dat(d), len(l), rc(1) { }
-    ~UStringData() { delete dat; }
-  private:
-    UChar *data() const { return dat; }
-    unsigned int size() const { return len; }
-
-    void ref() { rc++; }
-    unsigned int deref() { return --rc; }
-
-    UChar *dat;
-    unsigned int len;
-    unsigned int rc;
-    static UStringData null;
-  };
-
-  /**
    * @short Unicode string class
    */
   class UString {
     friend bool operator==(const UString&, const UString&);
+    friend KJScript;
+    struct Rep {
+      friend UString;
+      friend bool operator==(const UString&, const UString&);
+      static Rep *create(UChar *d, unsigned int l);
+      inline UChar *data() const { return dat; }
+      inline unsigned int size() const { return len; }
+
+      inline void ref() { rc++; }
+      inline unsigned int deref() { return --rc; }
+
+      UChar *dat;
+      unsigned int len;
+      unsigned int rc;
+      static Rep null;
+    };
+
   public:
     UString();
     UString(char c);
@@ -154,7 +149,7 @@ namespace KJS {
     UString &operator+=(const UString &s);
 
     const UChar* data() const { return rep->data(); }
-    bool isNull() const { return (rep == &UStringData::null); }
+    bool isNull() const { return (rep == &Rep::null); }
     bool isEmpty() const { return (!rep->len); }
     bool is8Bit() const;
     unsigned int size() const { return rep->size(); }
@@ -166,9 +161,9 @@ namespace KJS {
     UString substr(int pos = 0, int len = -1) const;
     static UString null;
   private:
-    void attach(UStringData *r);
+    void attach(Rep *r);
     void release();
-    UStringData *rep;
+    Rep *rep;
     static char *statBuffer;
   };
 

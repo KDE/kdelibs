@@ -32,7 +32,8 @@ namespace KJS {
   class Null : public KJSO {
   public:
     Null() { }
-    Type type() const { return NullType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   class Number : public KJSO {
@@ -41,39 +42,45 @@ namespace KJS {
     Number(unsigned int u) { value.d = static_cast<double>(u); }
     Number(double d) { value.d = d; }
     Number(long unsigned int l) { value.d = static_cast<double>(l); }
-    Type type() const { return NumberType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   class String : public KJSO {
   public:
     String(const UString &s) { value.s = new UString(s); }
     ~String() { delete value.s; }
-    Type type() const { return StringType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   class Undefined : public KJSO {
   public:
-    Type type() const { return UndefinedType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   class Boolean : public KJSO {
   public:
     Boolean(bool b) { value.b = b; }
-    Type type() const { return BooleanType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   class Completion : public KJSO {
   public:
     Completion(Compl c, KJSO *v, const UString &t);
     virtual ~Completion() { if (complVal) complVal->deref(); }
-    Type type() const { return CompletionType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   class Reference : public KJSO {
   public:
     Reference(KJSO *b, const UString &s);
     ~Reference();
-    Type type() const { return ReferenceType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   class ParamList {
@@ -94,7 +101,6 @@ namespace KJS {
   class Property {
   public:
     Property(const UString &n, KJSO *o, int attr = None);
-    Type type() const { return PropertyType; }
   public:
     UString name;
     int attribute;
@@ -106,7 +112,8 @@ namespace KJS {
   public:
     Activation(Function *f, const List *args);
     virtual ~Activation();
-    Type type() const { return ObjectType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   private:
     Function *func;
   };
@@ -137,7 +144,8 @@ namespace KJS {
   class DeclaredFunction : public Function {
   public:
     DeclaredFunction(ParamList *p, StatementNode *b);
-    Type type() const { return DeclaredFunctionType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
     KJSO* execute(const List &);
     CodeType codeType() const { return FunctionCode; }
   private:
@@ -147,7 +155,6 @@ namespace KJS {
   class AnonymousFunction : public Function {
   public:
     AnonymousFunction() { /* TODO */ }
-    Type type() const { return AnonymousFunctionType; }
     KJSO* execute(const List &);
     CodeType codeType() const { return AnonymousCode; }
   };

@@ -27,6 +27,16 @@
 
 using namespace KJS;
 
+const TypeInfo Function::info = { "Function", FunctionType, 0, 0, 0 };
+const TypeInfo DeclaredFunction::info= { "DeclaredFunction",
+					  DeclaredFunctionType,
+					  &Function::info, 0, 0 };
+const TypeInfo InternalFunction::info = { "InternalFunction",
+					  InternalFunctionType,
+					  &Function::info, 0, 0 };
+const TypeInfo Constructor::info = { "Constructor", ConstructorType,
+				     &InternalFunction::info, 0, 0 };
+
 Constructor::Constructor()
 {
   setPrototype(KJScript::global()->funcProto);
@@ -206,13 +216,4 @@ KJSO* AnonymousFunction::execute(const List &)
 {
  /* TODO */
   return 0L;
-}
-
-KJSO *DebugPrint::execute(const List &args)
-{
-  Ptr v = args[0];
-  Ptr s = toString(v);
-  fprintf(stderr, "---> %s\n", s->stringVal().cstring().c_str());
-
-  return newCompletion(Normal);
 }

@@ -27,6 +27,17 @@
 
 using namespace KJS;
 
+const TypeInfo Null::info = { "Null", NullType, 0, 0, 0 };
+const TypeInfo Number::info = { "Number", NumberType, 0, 0,0  };
+const TypeInfo String::info = { "String", StringType, 0, 0, 0 };
+const TypeInfo Undefined::info = { "Undefined", UndefinedType, 0, 0, 0 };
+const TypeInfo Boolean::info = { "Boolean", BooleanType, 0, 0, 0 };
+const TypeInfo Completion::info = { "Completion", CompletionType, 0, 0, 0 };
+const TypeInfo Reference::info = { "Reference", ReferenceType, 0, 0, 0 };
+const TypeInfo Activation::info = { "Activation", ActivationType, 0, 0, 0 };
+const TypeInfo List::info = { "List", ListType, 0, 0, 0 };
+const TypeInfo Object::info = { "Object", ObjectType, 0, 0, 0 };
+
 Property::Property(const UString &n, KJSO *o, int attr)
 {
   name = n;

@@ -44,6 +44,7 @@ namespace KJS {
   class Function : public KJSO {
   public:
     Function() { attr = ImplicitNone; }
+    static const TypeInfo info;
     void processParameters(const List *);
     virtual KJSO* execute(const List &) = 0;
     virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
@@ -63,7 +64,8 @@ namespace KJS {
     /**
      * @return @ref InternalFunctionType
      */
-    virtual Type type() const { return InternalFunctionType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
     virtual KJSO* execute(const List &) = 0;
     /**
      * @return @ref HostCode
@@ -81,17 +83,10 @@ namespace KJS {
     /**
      * @return @ref ConstructorType
      */
-    virtual Type type() const { return ConstructorType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
     virtual KJSO* execute(const List &);
     virtual Object* construct(const List &args) = 0;
-  };
-
-  /**
-   * @short Print to stdout for debugging purposes.
-   */
-  class DebugPrint : public InternalFunction {
-  public:
-    KJSO* execute(const List &args);
   };
 
 }; // namespace

@@ -109,32 +109,43 @@ bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
   return (strcmp(c1.c_str(), c2.c_str()) == 0);
 }
 
-UChar UChar::null = UChar(0, 0);
-UStringData UStringData::null = UStringData();
-UString UString::null = UString();
+UChar UChar::null;
+UString::Rep UString::Rep::null = { 0, 0, 1 };
+UString UString::null;
 char* UString::statBuffer = 0L;
+
+UString::Rep *UString::Rep::create(UChar *d, unsigned int l)
+{
+  Rep *r = new Rep;
+  r->dat = d;
+  r->len = l;
+  r->rc = 1;
+
+  return r;
+}
 
 UString::UString()
 {
-  attach(&UStringData::null);
+  null.rep = &Rep::null;
+  attach(&Rep::null);
 }
 
 UString::UString(char c)
 {
-  rep = new UStringData(new UChar(0, c), 1);
+  rep = Rep::create(new UChar(0, c), 1);
 }
 
 UString::UString(int i)
 {
   char buffer[30];
   sprintf(buffer, "%d", i);
-  attach(&UStringData::null);
+  attach(&Rep::null);
   operator=(buffer);
 }
 
 UString::UString(const char *c)
 {
-  attach(&UStringData::null);
+  attach(&Rep::null);
   operator=(c);
 }
 
@@ -142,7 +153,7 @@ UString::UString(const UChar *c, unsigned int length)
 {
   UChar *d = new UChar[length];
   memcpy(d, c, length * sizeof(UChar));
-  rep = new UStringData(d, length);
+  rep = Rep::create(d, length);
 }
 
 UString::UString(UChar *c, unsigned int length, bool copy)
@@ -153,7 +164,7 @@ UString::UString(UChar *c, unsigned int length, bool copy)
     memcpy(d, c, length * sizeof(UChar));
   } else
     d = c;
-  rep = new UStringData(d, length);
+  rep = Rep::create(d, length);
 }
 
 UString::UString(const UString &b)
@@ -209,7 +220,7 @@ UString &UString::append(const UString &t)
   memcpy(n, data(), l * sizeof(UChar));
   memcpy(n+l, t.data(), t.size() * sizeof(UChar));
   release();
-  rep = new UStringData(n, l + t.size());
+  rep = Rep::create(n, l + t.size());
 
   return *this;
 }
@@ -239,7 +250,7 @@ UString &UString::operator=(const char *c)
   UChar *d = new UChar[l];
   for (unsigned int i = 0; i < l; i++)
     d[i].lo = c[i];
-  rep = new UStringData(d, l);
+  rep = Rep::create(d, l);
 
   return *this;
 }
@@ -381,7 +392,7 @@ UString UString::substr(int pos, int len) const
   return result;
 }
 
-void UString::attach(UStringData *r)
+void UString::attach(Rep *r)
 {
   rep = r;
   rep->ref();
@@ -389,9 +400,10 @@ void UString::attach(UStringData *r)
 
 void UString::release()
 {
-  if (rep)
-    if (!rep->deref())
-      delete rep;
+  if (!rep->deref()) {
+    delete [] rep->dat;
+    delete rep;
+  }
   rep = 0L;
 }
 

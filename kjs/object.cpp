@@ -22,6 +22,7 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#include <string.h>
 
 #include "kjs.h"
 #include "object.h"
@@ -74,6 +75,8 @@ const char *typeName[] = {
   "Error"
 };
 #endif
+
+const TypeInfo KJSO::info = { "KJSO", AbstractType, 0, 0, 0 };
 
 KJSO *KJS::zeroRef(KJSO *obj)
 {
@@ -128,12 +131,45 @@ KJSO::~KJSO()
 #endif
 }
 
+Type KJSO::type() const
+{
+  return typeInfo()->type;
+}
+
+bool KJSO::isA(const char *s) const
+{
+  const TypeInfo *info = typeInfo();
+
+  if (!s || !info || !info->name)
+    return false;
+
+  if (info->type == HostType && strcmp(s, "HostObject") == 0)
+    return true;
+
+  return (strcmp(s, info->name) == 0);
+}
+
 bool KJSO::isClass(Class c) const
 {
   if (!isA(ObjectType))
     return false;
 
   return (static_cast<const Object*>(this)->getClass() == c);
+}
+
+bool KJSO::derivedFrom(const char *s) const
+{
+  if (!s)
+    return false;
+
+  const TypeInfo *info = typeInfo();
+  while (info) {
+    if (info->name && strcmp(s, info->name) == 0)
+      return true;
+    info = info->base;
+  }
+
+  return false;
 }
 
 KJSO *KJSO::newNull()
@@ -587,6 +623,8 @@ void KJSO::dump(int level)
     printf("-------------------------\n");
 }
 
+TypeInfo HostObject::info = { "HostObject", HostType, &Object::info, 0, 0 };
+
 KJSO *HostObject::get(const UString &)
 {
   return newUndefined();
@@ -595,4 +633,9 @@ KJSO *HostObject::get(const UString &)
 void HostObject::put(const UString &, KJSO *)
 {
   //  cout << "Ignoring put() in HostObject" << endl;
+}
+
+const TypeInfo* HostObject::typeInfo() const
+{
+  return &info;
 }

@@ -34,6 +34,7 @@ namespace KJS {
    * Types of classes derived from KJSO
    */
   enum Type { // main types
+              AbstractType = 1,
               UndefinedType,
 	      NullType,
 	      BooleanType,
@@ -45,7 +46,7 @@ namespace KJS {
 	      ListType,
               CompletionType,
 	      // extended types
-	      PropertyType,
+	      FunctionType,
 	      InternalFunctionType,
 	      DeclaredFunctionType,
 	      AnonymousFunctionType,
@@ -98,6 +99,33 @@ namespace KJS {
   class Node;
 
   /**
+   * @short Type information.
+   */
+  struct TypeInfo {
+    /**
+     * A string denoting the type name. Example: "Number".
+     */
+    const char *name;
+    /**
+     * One of the @ref KJS::Type enums.
+     */
+    Type type;
+    /**
+     * Pointer to the type information of the base class.
+     * NULL if there is none.
+     */
+    const TypeInfo *base;
+    /**
+     * Additional specifier for your own use.
+     */
+    int extra;
+    /**
+     * Reserved for future extensions (internal).
+     */
+    void *dummy;
+  };
+
+  /**
    * @short Main base class for every KJS object.
    */
   // this is class is a terrible mess. Dynamic casts might
@@ -115,12 +143,22 @@ namespace KJS {
     /**
      * @return the type of the object. One of the @ref KJS::Type enums.
      */
-    virtual Type type() const = 0L;
+    Type type() const;
+    /**
+     * @return The TypeInfo struct describing this object.
+     */
+    virtual const TypeInfo* typeInfo() const = 0;
     /**
      * Check whether object is of a certain type
      * @param t type to check for
      */
     bool isA(Type t) const { return (type() == t); }
+    /**
+     * Check whether object is of a certain type. Allows checking of
+     * host objects, too.
+     * @param type name (Number, Boolean etc.)
+     */
+    bool isA(const char *s) const;
     /**
      * Use this method when checking for objects. It's safer than checking
      * for a single object type with @ref isA().
@@ -132,6 +170,12 @@ namespace KJS {
      * @return True if this object is of class c. False otherwise.
      */
     bool isClass(Class c) const;
+    /**
+     * Examine the inheritance structure of this object.
+     * @param t Name of the base class.
+     * @return True if object is of type t or a derived from such a type.
+     */
+    bool derivedFrom(const char *s) const;
 
 #ifdef KJS_DEBUG_MEM
     static int count;
@@ -259,6 +303,7 @@ namespace KJS {
 
   private:
     friend KJSO *zeroRef(KJSO *obj);
+    static const TypeInfo info;
     // disallow copy constructor and assignment operator
     KJSO(const KJSO &);
     KJSO& operator=(const KJSO &);
@@ -401,7 +446,8 @@ namespace KJS {
     /**
      * @return KJS::ListType
      */
-    Type type() const { return ListType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
     /**
      * Append an object to the end of the list.
      *
@@ -473,7 +519,8 @@ namespace KJS {
   public:
     Object(Class c = UndefClass, KJSO *v = 0L, Object *p = 0L);
     ~Object() { if (objValue) objValue->deref(); }
-    Type type() const { return ObjectType; }
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
     void setClass(Class c) { classType = c; }
     Class getClass() const { return classType; }
     void setInternalValue(KJSO *v) { objValue = v ? v->ref() : 0L; }
@@ -488,19 +535,20 @@ namespace KJS {
    * @short Base class for language extensions.
    */
   class HostObject : public KJSO {
+    friend KJSO;
   public:
-    virtual Type type() const { return HostType; }
     virtual KJSO *get(const UString &p);
     virtual void put(const UString &p, KJSO *v);
+    virtual const TypeInfo* typeInfo() const;
+    static TypeInfo info;
   };
 
   /**
    * @short Unique global object containing initial native properties.
    */
-  class Global : public KJSO {
+  class Global : public Object {
   public:
     Global();
-    Type type() const { return ObjectType; }
     Object *objProto;
     Object *funcProto;
     Object *arrayProto;
