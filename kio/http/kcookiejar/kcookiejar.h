@@ -4,7 +4,7 @@
     Copyright (C) 1998 Waldo Bastian (bastian@kde.org)
 
     This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License 
+    modify it under the terms of the GNU General Public License
     version 2 as published by the Free Software Foundation.
 
     This software is distributed in the hope that it will be useful,
@@ -38,14 +38,14 @@ class KHttpCookieList;
 class KHttpCookie;
 typedef KHttpCookie *KHttpCookiePtr;
 
-enum KCookieAdvice { 
-    KCookieDunno=0, 
-    KCookieAccept, 
-    KCookieReject, 
-    KCookieAsk 
+enum KCookieAdvice {
+    KCookieDunno=0,
+    KCookieAccept,
+    KCookieReject,
+    KCookieAsk
 };
 
-class KHttpCookie 
+class KHttpCookie
 {
     friend KCookieJar;
     friend KHttpCookieList;
@@ -63,15 +63,15 @@ protected:
 
     QString cookieStr(void);
 public:
-    KHttpCookie(const QString &_host=QString::null, 
-            const QString &_domain=QString::null, 
+    KHttpCookie(const QString &_host=QString::null,
+            const QString &_domain=QString::null,
             const QString &_path=QString::null,
-            const QString &_name=QString::null, 
-            const QString &_value=QString::null, 
+            const QString &_name=QString::null,
+            const QString &_value=QString::null,
             time_t _expireDate=0,
             int _protocolVersion=0);
-            
-    QString domain(void) { return mDomain; } 
+
+    QString domain(void) { return mDomain; }
     QString host(void) { return mHost; }
     QString path(void) { return mPath; }
     QString name(void) { return mName; }
@@ -79,9 +79,9 @@ public:
     void fixDomain(const QString &domain) { mDomain = domain; }
     time_t  expireDate(void) { return mExpireDate; }
     int     protocolVersion(void) { return mProtocolVersion; }
-    
+
     bool    isExpired(time_t currentDate);
-    bool    match(const QString &domain, const QString &fqdn, 
+    bool    match(const QString &domain, const QString &fqdn,
                   const QString &path);
 
     KHttpCookiePtr next() { return nextCookie; }
@@ -90,11 +90,11 @@ public:
 class KHttpCookieList : public QList<KHttpCookie>
 {
 public:
-    KHttpCookieList() : QList<KHttpCookie>(), advice( KCookieDunno ) 
+    KHttpCookieList() : QList<KHttpCookie>(), advice( KCookieDunno )
     { setAutoDelete(true); }
     virtual ~KHttpCookieList() { }
 
-    virtual int compareItems( KHttpCookie * item1, KHttpCookie * item2);
+    virtual int compareItems( void * item1, void * item2);
 
     KCookieAdvice getAdvice(void) { return advice; }
     void setAdvice(KCookieAdvice _advice) { advice = _advice; }
@@ -147,9 +147,9 @@ public:
 
     /**
      * Looks for cookies in the cookie jar which are appropriate for _url.
-     * Returned is a string containing all appropriate cookies in a format 
+     * Returned is a string containing all appropriate cookies in a format
      * which can be added to a HTTP-header without any additional processing.
-     */                
+     */
     QString findCookies(const QString &_url);
 
     /**
@@ -164,63 +164,63 @@ public:
 
     /**
      * This function hands a KHttpCookie object over to the cookie jar.
-     * 
+     *
      * On return cookiePtr is set to 0.
      */
     void addCookie(KHttpCookiePtr &cookiePtr);
 
     /**
-     * This function advices whether a single KHttpCookie object should 
+     * This function advices whether a single KHttpCookie object should
      * be added to the cookie jar.
      *
      * Possible return values are:
      *     - KCookieAccept, the cookie should be added
      *     - KCookieReject, the cookie should not be added
-     *     - KCookieAsk, the user should decide what to do 
+     *     - KCookieAsk, the user should decide what to do
      */
     KCookieAdvice cookieAdvice(KHttpCookiePtr cookiePtr);
 
     /**
-     * This function gets the advice for all cookies originating from 
-     * _domain.    
+     * This function gets the advice for all cookies originating from
+     * _domain.
      *
      *     - KCookieDunno, no specific advice for _domain
      *     - KCookieAccept, accept all cookies for _domain
-     *     - KCookieReject, reject all cookies for _domain 
+     *     - KCookieReject, reject all cookies for _domain
      *     - KCookieAsk, the user decides what to do with cookies for _domain
      */
     KCookieAdvice getDomainAdvice(const QString &_domain);
 
     /**
-     * This function sets the advice for all cookies originating from 
-     * _domain.    
+     * This function sets the advice for all cookies originating from
+     * _domain.
      *
      * _advice can have the following values:
      *     - KCookieDunno, no specific advice for _domain
      *     - KCookieAccept, accept all cookies for _domain
-     *     - KCookieReject, reject all cookies for _domain 
+     *     - KCookieReject, reject all cookies for _domain
      *     - KCookieAsk, the user decides what to do with cookies for _domain
      */
     void setDomainAdvice(const QString &_domain, KCookieAdvice _advice);
 
     /**
-     * This function sets the advice for all cookies originating from 
-     * the same domain as _cookie    
+     * This function sets the advice for all cookies originating from
+     * the same domain as _cookie
      *
      * _advice can have the following values:
      *     - KCookieDunno, no specific advice for _domain
      *     - KCookieAccept, accept all cookies for _domain
-     *     - KCookieReject, reject all cookies for _domain 
+     *     - KCookieReject, reject all cookies for _domain
      *     - KCookieAsk, the user decides what to do with cookies for _domain
      */
     void setDomainAdvice(KHttpCookiePtr _cookie, KCookieAdvice _advice);
 
     /**
-     * This function sets the global advice for cookies 
+     * This function sets the global advice for cookies
      *
      * _advice can have the following values:
      *     - KCookieAccept, accept cookies
-     *     - KCookieReject, reject cookies 
+     *     - KCookieReject, reject cookies
      *     - KCookieAsk, the user decides what to do with cookies
      *
      * The global advice is used if the domain has no advice set.
@@ -233,8 +233,8 @@ public:
      *     - It has a cookie originating from the domain
      *     - It has a specific advice set for the domain
      */
-    const QStringList *getDomainList();    
-    
+    const QStringList *getDomainList();
+
     /**
      * Get a list of all cookies in the cookie jar originating from _domain.
      */
@@ -244,7 +244,7 @@ public:
      * Remove & delete a cookie from the jar.
      *
      * cookiePtr should be one of the entries in a KHttpCookieList.
-     * Update your KHttpCookieList by calling getCookieList after 
+     * Update your KHttpCookieList by calling getCookieList after
      * calling this function.
      */
     void eatCookie(KHttpCookiePtr cookiePtr);
@@ -255,7 +255,7 @@ public:
     void eatAllCookies();
 
     /**
-     * Parses _url and returns the FQDN (_fqdn) 
+     * Parses _url and returns the FQDN (_fqdn)
      * as well as the domain name without the hostname (_domain).
      */
     static bool extractDomain(const QString &_url,
@@ -263,7 +263,7 @@ public:
                               QString &_domain,
                               QString &_path);
 
-protected:  
+protected:
     QDict<KHttpCookieList> cookieDomains;
 
     QStringList domainList;

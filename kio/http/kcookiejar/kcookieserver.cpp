@@ -93,7 +93,7 @@ KCookieServer::~KCookieServer()
 }
 
 int
-KCookieServer::newInstance()
+KCookieServer::newInstance(QValueList<QCString>)
 {
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    if (args->isSet("remove-all"))
