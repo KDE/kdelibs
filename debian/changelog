@@ -1,9 +1,10 @@
 kdelibs (4:2.2.1-14) unstable; urgency=low
 
   * Fix overwrite problem (Closes: #116773)
+  * Hopefully fix arts for bigendian (Closes: #115292)
   * Sync with upstream
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 24 Oct 2001 10:00:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 25 Oct 2001 09:39:00 -0700
 
 kdelibs (4:2.2.1-13) unstable; urgency=low
 
