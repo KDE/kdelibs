@@ -1494,21 +1494,23 @@ void HTMLTokenizer::processToken()
 #else
 #ifdef TOKEN_DEBUG
     QString name = getTagName(currToken.id).string();
-    QString text = currToken.text.string();
+    QString text;
+    if(currToken.text)
+        text = QConstString(currToken.text->s, currToken.text->l).string();
 
     kdDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.id << endl;
-    if(currToken.text != 0)
+    if(!text.isNull())
         kdDebug( 6036 ) << "text: \"" << text << "\"" << endl;
-    int l = currToken.attrs.length();
+    int l = currToken.attrs ? currToken.attrs->length() : 0;
     if(l>0)
     {
         int i = 0;
         kdDebug( 6036 ) << "Attributes: " << l << endl;
         while(i<l)
         {
-            name = currToken.attrs.name(i).string();
-            text = currToken.attrs.value(i).string();
-            kdDebug( 6036 ) << "    " << currToken.attrs.id(i) << " " << name << "=\"" << text << "\"" << endl;
+            AttrImpl* c = static_cast<AttrImpl*>(currToken.attrs->item(i));
+            kdDebug( 6036 ) << "    " << c->attrId << " " << c->name().string()
+                            << "=\"" << c->value().string() << "\"" << endl;
             i++;
         }
     }
