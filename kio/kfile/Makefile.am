@@ -37,11 +37,11 @@ include_HEADERS = kfiledialog.h \
 	kdirselectdialog.h kurlbar.h kpropertiesdialog.h knotifydialog.h \
 	kcustommenueditor.h
 
-noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h kmetaprops.h \
+noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
 	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \
 	knotifydialog_private.h 
 
-libkfile_la_SOURCES = knotifydialog.cpp kfiledialogconf.cpp \
+libkfile_la_SOURCES = knotifydialog.cpp \
 	kfilefiltercombo.cpp \
 	kfileview.cpp kfileiconview.cpp  \
 	krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp \

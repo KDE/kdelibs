@@ -74,8 +74,6 @@ namespace KIO {
  * <pre>
  *   KDirOperator *op = new KDirOperator( KURL( "file:/home/gis" ), this );
  *   // some signals you might be interested in
- *   connect(op, SIGNAL(updateInformation(int, int)),
- *           SLOT(updateStatusLine(int, int)));
  *   connect(op, SIGNAL(urlEntered(const KURL&)),
  *           SLOT(urlEntered(const KURL&)));
  *   connect(op, SIGNAL(fileHighlighted(const KFileItem *)),
