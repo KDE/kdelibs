@@ -41,7 +41,10 @@ class PartMonitor : public QObject
 public:
     PartMonitor(KHTMLPart *_part);
     void waitForCompletion();
-    bool m_inLoop;
+    static int sm_loopLevel;
+    static PartMonitor* sm_highestMonitor;
+    int m_ownLoopLevel;
+    PartMonitor *m_previousMonitor;
     bool m_completed;
     KHTMLPart *m_part;
 public slots:

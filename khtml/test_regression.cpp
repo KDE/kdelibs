@@ -89,19 +89,31 @@ bool visual = false;
 
 // -------------------------------------------------------------------------
 
+int PartMonitor::sm_loopLevel = 0;
+PartMonitor *PartMonitor::sm_highestMonitor = NULL;
+
 PartMonitor::PartMonitor(KHTMLPart *_part)
 {
     m_part = _part;
-    m_inLoop = false;
     m_completed = false;
+    m_ownLoopLevel = 0;
     connect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 
 void PartMonitor::waitForCompletion()
 {
     if (!m_completed) {
-        m_inLoop = true;
+	m_ownLoopLevel = ++sm_loopLevel;
+	m_previousMonitor = sm_highestMonitor;
+	sm_highestMonitor = this;
+
         kapp->enter_loop();
+
+	if (--sm_loopLevel) {
+	    assert(m_previousMonitor);
+	    QTimer::singleShot( visual ? 100 : 20 , m_previousMonitor, SLOT( timeout() ) );
+	}
+	sm_highestMonitor = m_previousMonitor;
     }
 }
 
@@ -112,13 +124,15 @@ void PartMonitor::timeout()
 
 void PartMonitor::partCompleted()
 {
-    if (!m_inLoop)
+    if (m_ownLoopLevel == 0) {
         m_completed = true;
-    else {
-	disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
+    }
+    else if (m_ownLoopLevel == sm_loopLevel)
+    {
         RenderWidget::flushWidgetResizes();
         QTimer::singleShot( visual ? 100 : 20, this, SLOT( timeout() ) );
     }
+    disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 
 void signal_handler( int x )
