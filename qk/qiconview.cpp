@@ -2200,7 +2200,7 @@ void QIconView::slotUpdate()
 	    item = item->next;
 	}
 
-	if ( d->alignMode == South ) {
+	if ( d->lastItem && d->alignMode == South ) {
 	    item = d->lastItem;
 	    int x = item->x();
 	    while ( item && item->x() >= x ) {
@@ -2592,7 +2592,7 @@ void QIconView::alignItemsInGrid( bool update )
 	item = item->next;
     }
 
-    if ( d->alignMode == South ) {
+    if ( d->lastItem && d->alignMode == South ) {
 	item = d->lastItem;
 	int x = item->x();
 	while ( item && item->x() >= x ) {
