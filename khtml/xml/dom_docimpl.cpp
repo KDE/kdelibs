@@ -49,6 +49,7 @@
 
 #include <kglobalsettings.h>
 #include <kstringhandler.h>
+#include <krfcdate.h>
 #include "khtml_settings.h"
 #include "khtmlpart_p.h"
 
@@ -1420,8 +1421,9 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     else if(strcasecmp(equiv, "expires") == 0)
     {
         QString str = content.string().stripWhiteSpace();
-        time_t expire_date = str.toLong();
-        KURL url = v->part()->url();
+        time_t expire_date = KRFCDate::parseDate(str);
+        if (!expire_date)
+            expire_date = 1; // expire now
         if (m_docLoader)
             m_docLoader->setExpireDate(expire_date);
     }
