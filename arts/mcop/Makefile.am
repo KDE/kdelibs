@@ -24,7 +24,7 @@ artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
   mcoputils.h  object.h objectmanager.h pool.h socketconnection.h \
   startupmanager.h tcpconnection.h tcpserver.h type.h unixconnection.h \
   unixserver.h  referenceclean.h datapacket.h asyncstream.h notification.h \
-  extensionloader.h mcopconfig.h connect.h reference.h
+  extensionloader.h mcopconfig.h connect.h reference.h weakreference.h
 
 core: $(srcdir)/core.idl $(MCOPIDL)
 	$(MCOPIDL) -I$(srcdir) $(srcdir)/core.idl

@@ -165,12 +165,15 @@ void readObjectSeq(Buffer& stream, std::vector<T>& sequence)
 }
 
 template<class T>
-void writeObjectSeq(Buffer& stream, std::vector<T>& sequence)
+void writeObjectSeq(Buffer& stream, const std::vector<T>& sequence)
 {
 	stream.writeLong(sequence.size());
 
 	for(unsigned long l=0;l<sequence.size();l++)
-		writeObject(stream,sequence[l]._base());
+	{
+		T object = sequence[l];
+		writeObject(stream,object._base());
+	}
 }
 
 #ifndef MCOPBYTE_DEFINED

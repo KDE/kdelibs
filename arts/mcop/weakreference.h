@@ -54,7 +54,7 @@ public:
 		content = 0;
 	}
 	WeakReference(const WeakReference<SmartWrapper>& source)
-		:content(source.content)
+		:WeakReferenceBase(source), content(source.content)
 	{
 		if(content)
 			content->_addWeakReference(this);
