@@ -49,6 +49,10 @@
 </xsl:choose>
 </xsl:template>
 
+<xsl:template name="user.head.content">
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
+</xsl:template>
+
 <!-- libxslt has problems with customizing this one, so 
     I changed the docbook xsl itself for now
     (FF) body attrs are set to kde ones: attributes cannot be "unset"
