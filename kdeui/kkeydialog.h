@@ -79,6 +79,12 @@ public slots:
      **/
     void allDefault();
 
+   /**
+    * Set all list entries to their changed values.
+    * Use this if you changed the underlying map
+    **/
+    void listSync();
+
 protected slots:
 
     void toChange( QListViewItem *item );

@@ -711,6 +711,7 @@ void KKeyChooser::defaultKey()
     emit keyChange();
 }
 
+
 void KKeyChooser::allDefault()
 {
     // Change all configKeyCodes to default values
@@ -751,6 +752,22 @@ void KKeyChooser::shiftClicked()
     }
     toChange(item);
     emit keyChange();
+}
+
+
+void KKeyChooser::listSync()
+{
+    QListView *item = d->wList->firstItem();
+
+    while (item) {
+        KKeyEntryMap::Iterator it = d->actionMap[item];
+
+        if ( (*it).bConfigurable )
+            item->setText(1, KAccel::keyToString((*it).aConfigKeyCode));
+
+        item = item->nextSibling();
+    }
+
 }
 
 void KKeyChooser::ctrlClicked()
