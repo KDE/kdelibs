@@ -23,11 +23,11 @@
 #include <qtextbrowser.h>
 
 /**
- * This class provides an extended QTextBrowser. By default it will 
- * invoke the system mailer or the system browser when a link is 
- * activated, or it can emit the signal @ref urlClick or @ref mailClick 
+ * This class provides an extended QTextBrowser. By default it will
+ * invoke the system mailer or the system browser when a link is
+ * activated, or it can emit the signal @ref urlClick or @ref mailClick
  * when a link is activated.
- * 
+ *
  * @short Extended QTextBrowser.
  * @author Espen Sand (espensa@online.no)
  * @version $Id$
@@ -36,18 +36,18 @@
 class KTextBrowser : public QTextBrowser
 {
   Q_OBJECT
-  
+
   public:
-    /** 
+    /**
      * Constructore wher you specify the face.
-     * 
+     *
      * @param parent Parent of the widget.
      * @param name Widget name.
      * @param notifyClick True causes signals to be emitted.
      */
-    KTextBrowser( QWidget *parent=0, const char *name=0, 
+    KTextBrowser( QWidget *parent=0, const char *name=0,
 		  bool notifyClick=false );
-  
+
     /**
      * Destructor
      */
@@ -56,28 +56,24 @@ class KTextBrowser : public QTextBrowser
     /**
      * Decides whether a click on a link should be handled internally
      * or if a signal should be emitted.
-     * 
+     *
      * @param notifyClick True causes signals to be emitted.
      */
     void setNotifyClick( bool notifyClick );
 
+
   protected:
     /**
-     * Emits the signal or takes care of the action itself.
+       Reimplemented to NOT set the source but to do the special handling.
+       Do not call.
      */
-    virtual void viewportMouseReleaseEvent( QMouseEvent *e );  
+    void setSource(const QString& name);
 
     /**
      * Makes sure Key_Escape is ignored
      */
     virtual void keyPressEvent(QKeyEvent *e);
 
-  protected slots:
-    /**
-     * Stores the current reference. This reference in used in 
-     * @ref viewportMouseReleaseEvent.
-     */
-    void refChanged( const QString & );
 
   signals:
     /**
@@ -87,16 +83,15 @@ class KTextBrowser : public QTextBrowser
      * @param address The destination address.
      */
     void mailClick( const QString &name, const QString &address );
-    
+
     /**
-     * Emitted if @ref mailClick is not emitted and the widget has been 
+     * Emitted if @ref mailClick is not emitted and the widget has been
      * configured to emit the signal.
      * @param url The destination address.
      */
     void urlClick( const QString &url );
 
   private:
-    QString mActiveRef;
     bool    mNotifyClick;
 };
 

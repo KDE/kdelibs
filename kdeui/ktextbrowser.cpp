@@ -29,7 +29,7 @@
 #include <kapp.h>
 #include <ktextbrowser.h>
 
-KTextBrowser::KTextBrowser( QWidget *parent, const char *name, 
+KTextBrowser::KTextBrowser( QWidget *parent, const char *name,
 			    bool notifyClick )
   : QTextBrowser( parent, name ), mNotifyClick(notifyClick)
 {
@@ -48,39 +48,33 @@ void KTextBrowser::setNotifyClick( bool notifyClick )
 }
 
 
-void KTextBrowser::refChanged( const QString &ref )
+void KTextBrowser::setSource( const QString& name )
 {
-  mActiveRef = ref;
-}
-
-
-void KTextBrowser::viewportMouseReleaseEvent( QMouseEvent * )
-{
-  if( mActiveRef.isNull() == true )
+  if( name.isNull() == true )
   {
     return;
   }
 
-  if( mActiveRef.contains('@') == true )
+  if( name.contains('@') == true )
   {
     if( mNotifyClick == false )
     {
-      kapp->invokeMailer( mActiveRef, QString::null );
+      kapp->invokeMailer( name, QString::null );
     }
     else
     {
-      emit mailClick( QString::null, mActiveRef );
+      emit mailClick( QString::null, name );
     }
   }
   else
   {
     if( mNotifyClick == false )
     {
-      kapp->invokeBrowser( mActiveRef );
+      kapp->invokeBrowser( name );
     }
     else
     {
-      emit urlClick( mActiveRef );
+      emit urlClick( name );
     }
   }
 }
