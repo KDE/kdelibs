@@ -12,32 +12,31 @@ to play sound
 2. How to use it?
 <snip>
 1	KArtsDispatcher dispatcher;
-2	Arts::SoundServerV2 server;
-3	server = Arts::Reference("global:Arts_SoundServerV2");
+2	KArtsServer server;
 
-4	KURL file = "file:/home/nikoz/test.mp3";
+3	KURL file = "file:/home/nikoz/test.mp3";
 
-5	KPlayObjectFactory factory(server);
-6	KPlayObject *playobj = factory.createPlayObject(file, true);
+4	KPlayObjectFactory factory(server);
+5	KPlayObject *playobj = factory.createPlayObject(file, true);
 
-7	playobj->play();
+6	playobj->play();
 <snap>
 
 Line:
 1	Sets up the a KArtsDispatcher
-2-3	Starts a new SoundServerV2 in the running artsd process
+2	Starts a new SoundServerV2 in the running artsd process
 
-4	Simple test URL to demonstrate the use with KURL
+3	Simple test URL to demonstrate the use with KURL
 
-5	Creates a KPlayObjectFactory, parameter: our SoundServerV2
-6	Gets a KPlayObject from the factory, containing an Arts::PlayObject
+4	Creates a KPlayObjectFactory, parameter: our SoundServerV2
+5	Gets a KPlayObject from the factory, containing an Arts::PlayObject
 	created in our running artsd process
 	Parameters:
 					KURL url
 						(specifies the url to be played)
 					bool createBUS
 					 	(specifies wheter to create a Synth_BUS_UPLINK or not, "false" is only interesting if you want to use EffectsStacks etc..., see Noatun)
-7	Play the file
+6	Play the file
 
 That's it, with 7 LOC a "full" media player :)
 
