@@ -1069,8 +1069,13 @@ QRect RenderObject::viewRect() const
 
 bool RenderObject::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    if(parent())
-        return parent()->absolutePosition(xPos, yPos, f);
+    RenderObject* p = parent();
+    if(p) {
+        parent()->absolutePosition(xPos, yPos, f);
+        if ( p->style()->hidesOverflow() && p->layer() )
+            p->layer()->subtractScrollOffset( xPos, yPos );
+        return true;
+    }
     else
     {
         xPos = yPos = 0;
