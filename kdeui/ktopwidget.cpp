@@ -108,7 +108,7 @@ KTopLevelWidget::~KTopLevelWidget()
 	memberList->remove( this );
 
 	// if this was the topWidget, find a new one to be it
-	if( kapp->topWidget() == this )
+	if( kapp && kapp->topWidget() == this )
 	  {
 		KTopLevelWidget* pTemp = 0L;
 		if( ( pTemp = memberList->getFirst() ) )
