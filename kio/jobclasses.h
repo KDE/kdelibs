@@ -130,7 +130,7 @@ namespace KIO {
         /**
          * Emitted when the job is canceled.
          * @deprecated. Don't use !
-         * @sig result is emitted as well, and error() is,
+         * Signal @p result is emitted as well, and error() is,
          * in this case, ERR_USER_CANCELED.
          */
         void canceled( KIO::Job *job );
@@ -623,7 +623,7 @@ namespace KIO {
          */
         void moving( KIO::Job *, const KURL& from, const KURL& to );
         /**
-         * The job is creating the directory @dir
+         * The job is creating the directory @p dir
          */
         void creatingDir( KIO::Job *, const KURL& dir );
         /**
@@ -664,6 +664,7 @@ namespace KIO {
         void copyNextFile();
         void slotResultDeletingDirs( KIO::Job * job );
         void deleteNextDir();
+        void skip( const KURL & sourceURL );
 
     protected slots:
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );

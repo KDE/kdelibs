@@ -1256,9 +1256,11 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
                 info.uSource.addPath( relName );
             info.uDest = m_currentDest;
+            kdDebug(7007) << "uDest(1)=" << info.uDest.prettyURL() << endl;
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
                 info.uDest.addPath( relName );
+            kdDebug(7007) << "uDest(2)=" << info.uDest.prettyURL() << endl;
             if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) && m_mode != Link ) // Dir
             {
                 dirs.append( info ); // Directories
@@ -1307,7 +1309,7 @@ void CopyJob::startNextJob()
         kdDebug(7007) << "KDirNotify'ing with m_dest=" << url.prettyURL() << endl;
         allDirNotify.FilesAdded( url );
 
-        if ( m_mode == Move )
+        if ( m_mode == Move && !m_srcListCopy.isEmpty() )
             allDirNotify.FilesRemoved( m_srcListCopy );
 
         emit result(this);
@@ -1449,6 +1451,18 @@ void CopyJob::startListing( const KURL & src )
     addSubjob( newjob );
 }
 
+void CopyJob::skip( const KURL & sourceUrl )
+{
+    // Check if this is one if toplevel sources
+    kdDebug() << "CopyJob::skip: looking for " << sourceUrl.prettyURL() << endl;
+    KURL::List::Iterator sit = m_srcListCopy.find( sourceUrl );
+    if ( sit != m_srcListCopy.end() )
+    {
+        kdDebug() << "CopyJob::skip: removing " << sourceUrl.prettyURL() << " from list" << endl;
+        m_srcListCopy.remove( sit );
+    }
+}
+
 void CopyJob::slotResultCreatingDirs( Job * job )
 {
     // The dir we are trying to create:
@@ -1465,6 +1479,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
             if ( m_bAutoSkip ) {
                 // We dont want to copy files in this directory, so we put it on the skip list
                 m_skipList.append( oldPath );
+                skip( oldPath );
                 dirs.remove( it ); // Move on to next dir
             } else if ( m_bOverwriteAll ) { // overwrite all => just skip
                 dirs.remove( it ); // Move on to next dir
@@ -1584,6 +1599,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             // fall through
         case R_SKIP:
             m_skipList.append( existingDest );
+            skip( (*it).uSource );
             // Move on to next dir
             dirs.remove( it );
             break;
@@ -1652,7 +1668,10 @@ void CopyJob::slotResultCopyingFiles( Job * job )
     {
         // Should we skip automatically ?
         if ( m_bAutoSkip )
+        {
+            skip( (*it).uSource );
             files.remove( it ); // Move on to next file
+        }
         else
         {
             m_conflictError = job->error(); // save for later
@@ -1797,6 +1816,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         case R_SKIP:
             // Move on to next file
             files.remove( it );
+            skip( (*it).uSource );
             break;
        case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
@@ -1858,6 +1878,7 @@ void CopyJob::copyNextFile()
         KIO::Job * newjob;
         if ( m_mode == Link )
         {
+            kdDebug(7007) << "Linking" << endl;
             if (
                 ((*it).uSource.protocol() == (*it).uDest.protocol()) &&
                 ((*it).uSource.host() == (*it).uDest.host()) &&
@@ -1872,13 +1893,19 @@ void CopyJob::copyNextFile()
                 m_bCurrentOperationIsLink = true;
                 Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
             } else {
+                kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource.prettyURL() << " link=" << (*it).uDest.prettyURL() << endl;
                 if ( (*it).uDest.isLocalFile() )
                 {
-                    QFile f( (*it).uDest.path() );
+                    // We have to change the extension anyway, so while we're at it,
+                    // name the file like the URL
+                    (*it).uDest.setFileName( KIO::encodeFileName( (*it).uSource.prettyURL() ) );
+                    QString path = (*it).uDest.path();
+                    kdDebug() << "CopyJob::copyNextFile path=" << path << endl;
+                    QFile f( path );
                     if ( f.open( IO_ReadWrite ) )
                     {
                         f.close();
-                        KSimpleConfig config( (*it).uDest.path() );
+                        KSimpleConfig config( path );
                         config.setDesktopGroup();
                         config.writeEntry( QString::fromLatin1("URL"), (*it).uSource.url() );
                         config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
@@ -2237,8 +2264,11 @@ void DeleteJob::startNextJob()
     } else
     {
         // Finished - tell the world
-        KDirNotify_stub allDirNotify("*", "KDirNotify*");
-        allDirNotify.FilesRemoved( m_srcListCopy );
+        if ( !m_srcListCopy.isEmpty() )
+        {
+            KDirNotify_stub allDirNotify("*", "KDirNotify*");
+            allDirNotify.FilesRemoved( m_srcListCopy );
+        }
         emit result(this);
         delete this;
     }

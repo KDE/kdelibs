@@ -32,8 +32,8 @@ namespace KIO {
      *
      *
      *
-     * @param @p url The URL of the directory to create.
-     * @param @p permissions The permissions to set after creating the directory.
+     * @param url The URL of the directory to create.
+     * @param permissions The permissions to set after creating the directory.
      * @return A pointer to the job handling the operation.
      */
     SimpleJob * mkdir( const KURL& url, int permissions = -1 );
@@ -45,7 +45,7 @@ namespace KIO {
      *
      *
      *
-     * @param @p url The URL of the directory to remove.
+     * @param url The URL of the directory to remove.
      * @return A pointer to the job handling the operation.
      */
     SimpleJob * rmdir( const KURL& url );
