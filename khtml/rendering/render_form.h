@@ -87,12 +87,12 @@ public:
 
 public slots:
     virtual void slotClicked();
+    void slotPressed();
+    void slotReleased();
 
 protected:
     virtual bool isRenderButton() const { return false; }
     virtual bool isEditable() const { return false; }
-
-    virtual void handleFocusOut() {};
 
     QPoint m_mousePos;
     int m_state;
@@ -243,11 +243,15 @@ private:
 
 class LineEditWidget : public KLineEdit
 {
+    Q_OBJECT
 public:
     LineEditWidget(QWidget *parent);
 
 protected:
     virtual bool event( QEvent *e );
+signals:
+    void pressed();
+    void released();
 };
 
 // -------------------------------------------------------------------------

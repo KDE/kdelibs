@@ -184,6 +184,22 @@ void RenderFormElement::slotClicked()
     deref();
 }
 
+void RenderFormElement::slotPressed()
+{
+    ref();
+    QMouseEvent e2( QEvent::MouseButtonPress, m_mousePos, m_button, m_state);
+    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEDOWN_EVENT, m_clickCount);
+    deref();
+}
+
+void RenderFormElement::slotReleased()
+{
+    ref();
+    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
+    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEUP_EVENT, m_clickCount);
+    deref();
+}
+
 // -------------------------------------------------------------------------
 
 RenderButton::RenderButton(HTMLGenericFormElementImpl *element)
@@ -207,6 +223,8 @@ RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     setQWidget(b);
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
+    connect(b, SIGNAL(pressed()), this, SLOT(slotPressed()));
+    connect(b, SIGNAL(released()), this, SLOT(slotReleased()));
 }
 
 
@@ -245,6 +263,8 @@ RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     b->setMouseTracking(true);
     setQWidget(b);
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
+    connect(b, SIGNAL(pressed()), this, SLOT(slotPressed()));
+    connect(b, SIGNAL(released()), this, SLOT(slotReleased()));
 }
 
 void RenderRadioButton::updateFromElement()
@@ -286,6 +306,8 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     p->setAutoMask(true);
     p->setMouseTracking(true);
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
+    connect(p, SIGNAL(pressed()), this, SLOT(slotPressed()));
+    connect(p, SIGNAL(released()), this, SLOT(slotReleased()));
 }
 
 QString RenderSubmitButton::rawText()
@@ -405,6 +427,10 @@ bool LineEditWidget::event( QEvent *e )
             }
         }
     }
+    else if ( e->type() == QEvent::MouseButtonPress )
+        emit pressed();
+    else if ( e->type() == QEvent::MouseButtonRelease )
+        emit released();
     return KLineEdit::event( e );
 }
 
@@ -416,6 +442,8 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     LineEditWidget *edit = new LineEditWidget(view()->viewport());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
+    connect(edit,SIGNAL(pressed()), this, SLOT(slotPressed()));
+    connect(edit,SIGNAL(released()), this, SLOT(slotReleased()));
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
@@ -522,10 +550,10 @@ bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
 {
     RenderObject *r = this, *ref = 0;
     int minx = 0, curx = 0, maxw = 0;
-    if( r->firstChild() && r->firstChild()->element() && 
+    if( r->firstChild() && r->firstChild()->element() &&
         r->firstChild()->element()->id() == ID_LEGEND)
             r = r->firstChild();
-    else 
+    else
         return false;
     if(!r->firstChild() || r->isSpecial())
         return false;
@@ -534,7 +562,7 @@ bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
     curx = r->xPos();
     lh = r->height();
     ref = r;
- 
+
     while(r) {
         if(r->firstChild())
             r = r->firstChild();
@@ -559,25 +587,25 @@ bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
         }
         if(!r->childrenInline())
             curx -= r->xPos();
-    }  
+    }
     end:
         lx = minx - ref->paddingLeft();
         lw = maxw + ref->paddingLeft() + ref->paddingRight();
         if(lx < 0 || lx+lw > width())
-            return false; 
+            return false;
         return !!maxw;
 }
 
-void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,                                                                      
+void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty)
 {
     //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
-    int lx = 0, ly = 0, lw = 0, lh = 0; 
+    int lx = 0, ly = 0, lw = 0, lh = 0;
     bool legend = findLegend(lx, ly, lw, lh);
-   
+
     if(legend) {
         int yOff = ly + lh/2 - borderTop()/2;
         h -= yOff;
@@ -602,8 +630,8 @@ void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,
 
 void RenderFieldset::printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,
                                             const RenderStyle* style, int lx, int lw)
-{    
-    
+{
+
     const QColor& tc = style->borderTopColor();
     const QColor& bc = style->borderBottomColor();
 
@@ -623,7 +651,7 @@ void RenderFieldset::printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
         drawBorder(p, _tx+lx+lw, _ty, _tx + w, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
                    0, (render_r && rs<=DOUBLE?style->borderRightWidth():0));
     }
-    
+
     if(render_b)
         drawBorder(p, _tx, _ty + h - style->borderBottomWidth(), _tx + w, _ty + h, BSBottom, bc, style->color(), bs,
                    (render_l && ls<=DOUBLE?style->borderLeftWidth():0),
@@ -683,6 +711,8 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     m_button = new QPushButton(i18n("Browse..."), w);
     m_button->setFocusPolicy(QWidget::ClickFocus);
     connect(m_button,SIGNAL(clicked()), this, SLOT(slotClicked()));
+    connect(m_button, SIGNAL(pressed()), this, SLOT(slotPressed()));
+    connect(m_button, SIGNAL(released()), this, SLOT(slotReleased()));
 
     w->setStretchFactor(m_edit, 2);
     w->setFocusProxy(m_edit);
