@@ -166,3 +166,19 @@ bool StdAddressBook::automaticSave()
 {
   return mAutomaticSave;
 }
+
+QString StdAddressBook::usersContact()
+{
+  KConfig config( "kabcrc" );
+  config.setGroup( "General" );
+
+  return config.readEntry( "UsersContact" );
+}
+
+void StdAddressBook::setUsersContact( const QString &uid )
+{
+  KConfig config( "kabcrc" );
+  config.setGroup( "General" );
+
+  config.writeEntry( "UsersContact", uid );
+}
