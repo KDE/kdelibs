@@ -286,7 +286,7 @@ void HTMLHeadingElementImpl::layout(bool deep)
     HTMLBlockElementImpl::layout(deep);
     //QFontMetrics fm(*getFont());      //put some space after
     //descent+=fm.ascent();
-    //descent+=13; that was way too much space (Lars)
+    descent+=10; //that was way too much space (Lars)
 }
 
 ushort HTMLHeadingElementImpl::id() const
