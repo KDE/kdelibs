@@ -18,6 +18,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef _KHTBLayout_h_
 #define _KHTBLayout_h_
 
@@ -43,34 +44,39 @@
  *
  * @see KTMainWindow
  * @short Special layout manager for KTMainWindow.
- * @author Chris Schlaeger (cs@kde.org) */
+ * @author Chris Schlaeger (cs@kde.org)
+ */
 
 class KTMLayout : public QLayout
 {
 public:
 	/**
-	 * The constructor. It probably makes no use to call this version. */
+	 * The constructor. It probably makes no use to call this version.
+         */
 	KTMLayout()
 	{
 		topMenuBar = bottomMenuBar = statusBar = 0;
 		mainItem = 0;
 	}
 	/**
-	 * The constructor. */
+	 * The constructor.
+         */
 	KTMLayout(QWidget *parent, int border = 0, int space = -1,
 			  const char *name = 0);
 
 	~KTMLayout() { }
 
 	/**
-	 * Register the top menu bar. There can only be one.  */
+	 * Register the top menu bar. There can only be one.
+         */
 	void addTopMenuBar(QWidget* w)
 	{
 		topMenuBar = w;
 	}
 
 	/**
-	 * Register the bottom menu bar. There can only be one.  */
+	 * Register the bottom menu bar. There can only be one.
+         */
 	void addBottomMenuBar(QWidget* w)
 	{
 		bottomMenuBar = w;
@@ -78,7 +84,8 @@ public:
 
 	/**
 	 * Call this function to register all bars that are
-	 * flattened. This can tool bars as well as menu bars.  */
+	 * flattened. This can tool bars as well as menu bars.
+         */
 	void addFlatBar(QWidget* w)
 	{
 		flatBars.append(w);
@@ -86,7 +93,8 @@ public:
 
 	/**
 	 * Register top tool bars. There is no limit in the number of tool
-	 * bars that you can register.  */
+	 * bars that you can register.
+         */
 	void addTopToolBar(KToolBar* w)
 	{
 		topToolBars.append(w);
@@ -94,7 +102,8 @@ public:
 
 	/**
 	 * Register left hand side tool bars. There is no limit in the
-	 * number of tool bars that you can register.  */
+	 * number of tool bars that you can register.
+         */
 	void addLeftToolBar(KToolBar* w)
 	{
 		leftToolBars.append(w);
@@ -102,7 +111,8 @@ public:
 
 	/**
 	 * Register right hand side tool bars. There is no limit in the
-	 * number of tool bars that you can register.  */
+	 * number of tool bars that you can register.
+         */
 	void addRightToolBar(KToolBar* w)
 	{
 		rightToolBars.append(w);
@@ -110,7 +120,8 @@ public:
 
 	/**
 	 * Register bottom tool bars. There is no limit in the number of
-	 * tool bars that you can register.  */
+	 * tool bars that you can register.
+         */
 	void addBottomToolBar(KToolBar* w)
 	{
 		bottomToolBars.append(w);
@@ -118,7 +129,8 @@ public:
 
 	/**
 	 * Use this function to register the main widget. There must be
-	 * exactly one main widget!  */
+	 * exactly one main widget!
+         */
 	void addMainItem(QWidget* w)
 	{
 		mainItem = w;
@@ -126,7 +138,8 @@ public:
 
 	/**
 	 * Use this function to register the status bar. There can only be
-	 * one. */
+	 * one.
+         */
 	void addStatusBar(QWidget* w)
 	{
 		statusBar = w;
@@ -136,23 +149,28 @@ public:
 	/**
 	 * This function arranges the widgets. It determines the necessary
 	 * space for the toolbars and assignes the remainder to the main
-	 * widget.  */
+	 * widget.
+         */
 	void setGeometry(const QRect& rect);
 
 	/**
-	 * Returns the preferred size of the layout. */
+	 * Returns the preferred size of the layout.
+         */
 	QSize sizeHint(void) const;
 
 	/**
-	 * Returns the minimum required size of the layout. */
+	 * Returns the minimum required size of the layout.
+         */
 	QSize minimumSize(void) const;
 
 	/**
-	 * Never use this function. It is provided to be compliant with Qt. */
+	 * Never use this function. It is provided to be compliant with Qt.
+         */
 	void addItem(QLayoutItem* item);
 
 	/**
-	 * Never use this function. It is provided to be compliant with Qt. */
+	 * Never use this function. It is provided to be compliant with Qt.
+         */
 	QLayoutIterator iterator();
 	
 private:
@@ -170,12 +188,14 @@ private:
 					   const QList<QWidget>& fbl);
 
 	/**
-	 * This is only provided to support a Qt compliant interface. */
+	 * This is only provided to support a Qt compliant interface.
+         */
 	QList<QLayoutItem> list;
 
 	/**
 	 * The following variables store the references to the items that are 
-	 * managed by this layout manager. */
+	 * managed by this layout manager.
+         */
 	QWidget* topMenuBar;
 	QWidget* bottomMenuBar;
 
@@ -188,7 +208,7 @@ private:
 
 	QWidget* mainItem;
 	QWidget* statusBar;
-} ;
+};
 
 /**
  * Auxillary class for KTMLayout.

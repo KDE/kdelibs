@@ -192,22 +192,24 @@ public:
      */
     void setStatusBar (KStatusBar *statusBar);
 
-    /* You probably do not need this. Anyway, if you are porting code
+    /**
+     * You probably do not need this. Anyway, if you are porting code
      * which have been written for the former @ref KTopLevelWidget you may
      * find the following three boolean has-functions useful:
      *
      * This function returns wether the menubar is existing
      */
     bool hasMenuBar();
+
     /**
      * Returns wether the statusbar is existing
      */
     bool hasStatusBar();
+
     /**
      * Returns wether the specified toolbar  is existing
      */
     bool hasToolBar( int ID = 0);
-
 
     /**
      * Shows toplevel widget. Reimplemented from QWidget, and calls
@@ -215,102 +217,103 @@ public:
      */
     virtual void show ();
 
-	/**
-	 * Returns the geometry of the main view widget. You are strongly
-	 * encouraged to use those instead of the globally visible variables
-	 * view_*!
-	 */
-	QRect mainViewGeometry() const;
+    /**
+     * Returns the geometry of the main view widget. You are strongly
+     * encouraged to use those instead of the globally visible variables
+     * view_*!
+     */
+    QRect mainViewGeometry() const;
 
-  /**
-   * This function tries to restore the toplevel widget as defined number (1..X)
-   * If the session did not contain that high number, the configuration
-   * is not changed and False returned.
-   *
-   * That means clients could simply do the following:
-   * <pre>
-   * if (kapp->isRestored()){
-   *   int n = 1;
-   *   while (KTMainWindow::canBeRestored(n)){
-   *     (new childTLW)->restore(n);
-   *     n++;
-   *   }
-   * } else {
-   * // create default application as usual
-   * }
-   * </pre>
-   * Note that "show()" is called implicit in restore.
-   *
-   * With this you can easily restore all toplevel windows of your
-   * application.
-   *
-   * If your application uses different kinds of toplevel
-   * windows, then you can use KTMainWindow::classNameOfToplevel(n)
-   * to determine the exact type before calling the childTLW
-   * constructor in the example from above.
-   *
-   * If your client has only one kind of toplevel widgets (which should
-   * be pretty usual) then you should use the RESTORE-macro:
-   *
-   * <pre>
-   * if (kapp->isRestored())
-   *   RESTORE(childTLW)
-   * else {
-   * // create default application as usual
-   * }
-   * </pre>
-   *
-   * The macro expands to the term above but is easier to use and
-   * less code to write.
-   *
-   * @see #restore
-   * @see #classNameOfToplevel
-   *
-   *(Matthias)
-   */
-  static bool canBeRestored(int number);
+    /**
+     * This function tries to restore the toplevel widget as defined number (1..X)
+     * If the session did not contain that high number, the configuration
+     * is not changed and False returned.
+     *
+     * That means clients could simply do the following:
+     * <pre>
+     * if (kapp->isRestored()){
+     *   int n = 1;
+     *   while (KTMainWindow::canBeRestored(n)){
+     *     (new childTLW)->restore(n);
+     *     n++;
+     *   }
+     * } else {
+     * // create default application as usual
+     * }
+     * </pre>
+     * Note that "show()" is called implicit in restore.
+     *
+     * With this you can easily restore all toplevel windows of your
+     * application.
+     *
+     * If your application uses different kinds of toplevel
+     * windows, then you can use KTMainWindow::classNameOfToplevel(n)
+     * to determine the exact type before calling the childTLW
+     * constructor in the example from above.
+     *
+     * If your client has only one kind of toplevel widgets (which should
+     * be pretty usual) then you should use the RESTORE-macro:
+     *
+     * <pre>
+     * if (kapp->isRestored())
+     *   RESTORE(childTLW)
+     * else {
+     * // create default application as usual
+     * }
+     * </pre>
+     *
+     * The macro expands to the term above but is easier to use and
+     * less code to write.
+     *
+     * @see #restore
+     * @see #classNameOfToplevel
+     *
+     *(Matthias)
+     */
+    static bool canBeRestored(int number);
 
+    /**
+     * Returns the className of the numberth toplevel window which
+     * should be restored. This is only usefull if you application uses
+     * different kinds of toplevel windows. (Matthias)
+     */
+    static const QString classNameOfToplevel(int number);
+ 
+    /**
+     * Restores the specified number. Returns "False" if this
+     * fails, otherwise returns "True" and shows the window
+     * You should call @ref canBeRestored first.
+     */
+    bool restore(int number);
 
-  /**
-   * Returns the className of the numberth toplevel window which
-   * should be restored. This is only usefull if you application uses
-   * different kinds of toplevel windows. (Matthias)
-   */
-  static const QString classNameOfToplevel(int number);
-
-  /**
-   * Restores the specified number. Returns "False" if this
-   * fails, otherwise returns "True" and shows the window
-   * You should call @ref canBeRestored first.
-   */
-  bool restore(int number);
-
-  /**
-    * Tells the session manager wether the window contains
-    * unsaved data which cannot be stored in temporary files
-    * during saveYourself. Note that this is somewhat bad style.
-    * A really good KDE application should store everything in
-    * temporary recover files. Kapplication has some nifty support
-    * for that.
-    *
-    * Default is False == No unsaved data.
-    * @see KApplication::tempSaveName
-    */
-  void setUnsavedData( bool );
+    /**
+     * Tells the session manager wether the window contains
+     * unsaved data which cannot be stored in temporary files
+     * during saveYourself. Note that this is somewhat bad style.
+     * A really good KDE application should store everything in
+     * temporary recover files. Kapplication has some nifty support
+     * for that.
+     *
+     * Default is False == No unsaved data.
+     * @see KApplication::tempSaveName
+     */
+    void setUnsavedData( bool );
 
 
 protected:
-   /**
-    * Default implementation calls @ref #updateRects if main widget
-    * is resizable. If mainWidget is not resizable it does
-    * nothing. You shouldn't need to override this function.
-    */
+    /**
+     * Default implementation calls @ref #updateRects if main widget
+     * is resizable. If mainWidget is not resizable it does
+     * nothing. You shouldn't need to override this function.
+     */
     virtual void resizeEvent( QResizeEvent *e);
+
     /**
      * Default implementation just calls repaint (FALSE); You may
      * reimplement this function if you want to.
      */
     virtual void focusInEvent ( QFocusEvent *);
+
     /**
      * Default implementation just calls repaint (FALSE); You may
      * reimplement this function if you want to.
@@ -318,26 +321,26 @@ protected:
     virtual void focusOutEvent ( QFocusEvent *);
 
     /**
-      * This is called when the widget is closed.
-      * The default implementation will also destroy the
-      * widget.(Matthias)
-      */
+     * This is called when the widget is closed.
+     * The default implementation will also destroy the
+     * widget.(Matthias)
+     */
     virtual void closeEvent ( QCloseEvent *);
 
-   /**
-    * KTMainWindow has the nice habbit that it will exit the
-    * application when the very last KTMainWindow is
-    * closed. Some applications may not want this default
-    * behaviour, for example if the application wants to ask the user
-    * wether he really wants to quit the application.  This can be
-    * achived by overloading the @ref #queryExit () method.  The default
-    * implementation simply returns TRUE, which means that the
-    * application will be quitted. FALSE will cancel the exiting
-    * process. (Matthias)
-    * Note, if you cancel exiting, your application will live on without
-    * windows (sven).
-    * @see #queryClose
-    */
+    /**
+     * KTMainWindow has the nice habbit that it will exit the
+     * application when the very last KTMainWindow is
+     * closed. Some applications may not want this default
+     * behaviour, for example if the application wants to ask the user
+     * wether he really wants to quit the application.  This can be
+     * achived by overloading the @ref #queryExit () method.  The default
+     * implementation simply returns TRUE, which means that the
+     * application will be quitted. FALSE will cancel the exiting
+     * process. (Matthias)
+     * Note, if you cancel exiting, your application will live on without
+     * windows (sven).
+     * @see #queryClose
+     */
     virtual bool queryExit();
 
     /**
@@ -349,112 +352,114 @@ protected:
      */
     virtual bool queryClose();
 
-    
-  /**
-   * Save your instance-specific properties.
-   * You MUST NOT change the group of the kconfig object,
-   * since KTMainWindow uses one group for each window.
-   * Please overload these function in childclasses.
-   *
-   * Note that any interaction or X calls are forbidden
-   * in these functions!
-   *
-   * (Matthias)
-   */
-  virtual void saveProperties(KConfig*){};
+     /**
+     * Save your instance-specific properties.
+     * You MUST NOT change the group of the kconfig object,
+     * since KTMainWindow uses one group for each window.
+     * Please overload these function in childclasses.
+     *
+     * Note that any interaction or X calls are forbidden
+     * in these functions!
+     *
+     * (Matthias)
+     */
+    virtual void saveProperties(KConfig*){};
 
-  /**
-  * Read your instance-specific properties.
-  */
-  virtual void readProperties(KConfig*){};
-  /**
-   * This method is called, when @ref KApplication emits signal saveYourself
-   * and after KTMainWindow has verified that it is "main" top-level window.
-   * So this method will be called only once and not in every widget.
-   * Override it if you need to save other data about your documents on
-   * session end. sessionConfig is a config to which that data should be
-   * saved. Normaly, you don't need this function. But if you want to save
-   * data about your documents that are not in opened windows you might need
-   * it.
-   *
-   * Default implementation does nothing.
-   */
-  virtual void saveData(KConfig* sessionConfig);
+   /**
+    * Read your instance-specific properties.
+    */
+   virtual void readProperties(KConfig*){};
+
+   /**
+    * This method is called, when @ref KApplication emits signal saveYourself
+    * and after KTMainWindow has verified that it is "main" top-level window.
+    * So this method will be called only once and not in every widget.
+    * Override it if you need to save other data about your documents on
+    * session end. sessionConfig is a config to which that data should be
+    * saved. Normaly, you don't need this function. But if you want to save
+    * data about your documents that are not in opened windows you might need
+    * it.
+    *
+    * Default implementation does nothing.
+    */
+   virtual void saveData(KConfig* sessionConfig);
 
 protected slots:
-    /**
-	 * This slot must be called whenever the arrangement of the child element
-	 * has been changed. It needs not to be called for a resize operation.
-	 * This is handled by Qt layout management.
-     */
-    virtual void updateRects();
 
- private slots:
-  /**
-   * React on the request of the session manager (Matthias)
-   */
-    void saveYourself();
+   /**
+    * This slot must be called whenever the arrangement of the child element
+    * has been changed. It needs not to be called for a resize operation.
+    * This is handled by Qt layout management.
+    */
+   virtual void updateRects();
 
-    /**
-     * Notices when toolbar is deleted.
-     */
-    void toolbarKilled();
+private slots:
+   /**
+    * React on the request of the session manager (Matthias)
+    */
+   void saveYourself();
 
-    /**
-     * Notices when menubar is killed.
-     */
-    void menubarKilled();
+   /**
+    * Notices when toolbar is deleted.
+    */
+   void toolbarKilled();
 
+   /**
+    * Notices when menubar is killed.
+    */
+   void menubarKilled();
 
 public:
 
-  /**
-   * List of members of KTMainWindow class
-   */
-  static QList<KTMainWindow>* memberList;
+   /**
+    * List of members of KTMainWindow class
+    */
+   static QList<KTMainWindow>* memberList;
 
 private:
-    /**
-     * List of toolbars.
-     */
-    QList <KToolBar> toolbars;
+   /**
+    * List of toolbars.
+    */
+   QList <KToolBar> toolbars;
 
-    /**
-     * Main widget. If you want fixed-widget just call setFixedSize(w.h)
-     * on your mainwidget.
-     * You should not setFixedSize on KTMainWindow.
-     */
-    QWidget *kmainwidget;
+   /**
+    * Main widget. If you want fixed-widget just call setFixedSize(w.h)
+    * on your mainwidget.
+    * You should not setFixedSize on KTMainWindow.
+    */
+   QWidget *kmainwidget;
 
-    /**
-     * Menubar.
-     */
-    KMenuBar *kmenubar;
+   /**
+    * Menubar.
+    */
+   KMenuBar *kmenubar;
 
-    /**
-     * Statusbar
-     */
-    KStatusBar *kstatusbar;
+   /**
+    * Statusbar
+    */
+   KStatusBar *kstatusbar;
 
-    /**
-     * Frame around main widget
-     */
-    QFrame *kmainwidgetframe;
+   /**
+    * Frame around main widget
+    */
+   QFrame *kmainwidgetframe;
 
-    /**
-     * Stores the width of the view frame
-     */
+   /**
+    * Stores the width of the view frame
+    */
     int borderwidth;
 
-    /**
-     * True if toolbars are killed by this destructor.
-     */
-    bool localKill;
+   /**
+    * True if toolbars are killed by this destructor.
+    */
+   bool localKill;
 
-	KTMLayout* layoutMgr;
+   KTMLayout* layoutMgr;
 
-  // Matthias
+   // Matthias
+
 protected:
+
   void savePropertiesInternal (KConfig*, int);
   bool readPropertiesInternal (KConfig*, int);
 };
