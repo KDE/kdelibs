@@ -23,6 +23,7 @@
 #include <qheader.h>
 #include <qcursor.h>
 #include <qtooltip.h>
+#include <qpaintdevice.h>
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
@@ -1193,15 +1194,13 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
   QListView::viewportPaintEvent(e);
   if (d->mOldDropVisualizer.isValid())
   {
-    static bool invalidated=false;
-    if (!invalidated)
+    QPixmap surface(viewport()->size());
+    QPainter painter(&surface, viewport());
+    if (e->rect().intersects(drawDropVisualizer(&painter,d->parentItemDrop, d->afterItemDrop)))
     {
-      invalidated=true;
-      viewport()->repaint(d->mOldDropVisualizer);
+      bitBlt(viewport(), d->mOldDropVisualizer.topLeft(), &surface,
+             d->mOldDropVisualizer, Qt::CopyROP);
     }
-    QPainter painter(viewport());
-    drawDropVisualizer(&painter, d->parentItemDrop, d->afterItemDrop);
-    invalidated=false;
   }
 }
 
