@@ -567,6 +567,7 @@ bool KHistoryCombo::removeFromHistory( const QString& item )
 	return false;
 
     bool removed = false;
+    QString temp = currentText();
     for ( int i = 0; i < count(); i++ ) {
 	while ( item == text( i ) ) {
 	    removed = true;
@@ -576,7 +577,8 @@ bool KHistoryCombo::removeFromHistory( const QString& item )
 
     if ( removed )
 	completionObject()->removeItem( item );
-
+   
+    setEditText( temp );
     return removed;
 }
 
