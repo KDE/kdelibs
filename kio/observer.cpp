@@ -188,24 +188,32 @@ void Observer::unmounting( KIO::Job* job, const QString & point )
 bool Observer::authorize( QString& user, QString& pass ,const QString& head, const QString& key )
 {
 //   kdDebug() << "** Observer::authorize " << endl;
-  QByteArray resultArgs = m_uiserver->authorize( user, head, key );
-  if ( m_uiserver->ok() )
-  {
-    kdDebug(7007) << "Call was ok" << endl;
-    QDataStream stream( resultArgs, IO_ReadOnly );
-    Q_UINT8 authorized;
-    QString u, p;
-    stream >> authorized >> u >> p;
-    if( authorized )
+    QByteArray data, replyData;
+    QCString replyType;
+    QDataStream arg( data, IO_WriteOnly );
+    arg << user;
+    arg << head;
+    arg << key;
+    if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "authorize(QString,QString,QString)", data, replyType, replyData, true ) && replyType == "QByteArray" )
     {
-      user = u;
-      pass = p;
-      return true;
+        kdDebug(7007) << "Call was ok" << endl;
+        QDataStream _reply_stream( replyData, IO_ReadOnly );
+        QByteArray res;
+        _reply_stream >> res;
+        QDataStream stream( res, IO_ReadOnly );
+        Q_UINT8 authorized;
+        QString u, p;
+        stream >> authorized >> u >> p;
+        if( authorized )
+        {
+            user = u;
+            pass = p;
+            return true;
+        }
     }
-  }
-  else
-    kdDebug(7007) << "Call was not OK" << endl;
-  return false;
+    else
+        kdDebug(7007) << "Call was not OK" << endl;
+    return false;
 }
 
 int Observer::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
