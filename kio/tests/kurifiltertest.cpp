@@ -30,6 +30,7 @@
 #include <ksimpleconfig.h>
 
 #include <qdir.h>
+#include <qregexp.h>
 #include <kio/netaccess.h>
 
 static const char * const s_uritypes[] = { "NET_PROTOCOL", "LOCAL_FILE", "LOCAL_DIR", "EXECUTABLE", "HELP", "SHELL", "BLOCKED", "ERROR", "UNKNOWN" };
@@ -95,6 +96,8 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
 
         if ( expectedResult )
         {
+            // Hack for other locales than english, normalize google hosts to google.com
+            cmd = cmd.replace( QRegExp( "www\\.google\\.[^/]*/" ), "www.google.com/" );
             if ( cmd != QString::fromLatin1( expectedResult ) )
             {
                 kdError() << " Got " << cmd << " expected " << expectedResult << endl;
