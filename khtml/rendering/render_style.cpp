@@ -113,7 +113,7 @@ RenderStyle::setBitDefaults()
 
     _htmlHacks=false;
     _flowAroundFloats=false;
-    
+
     _hasHover = false;
     _hasFocus = false;
     _hasActive = false;

@@ -241,17 +241,8 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
             p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), pix, rect );
         }
     }
-    if (hasKeyboardFocus!=DOM::ActivationOff)
-    {
-	p->setRasterOp(Qt::CopyROP);
-	p->setBrush(Qt::NoBrush);
-        if (hasKeyboardFocus==DOM::ActivationPassive)
-            p->setPen(Qt::green);
-        else
-            p->setPen(Qt::blue);
-        p->drawRect( _tx + leftBorder, _ty + topBorder-1, cWidth, cHeight+2);
-        p->drawRect( _tx + leftBorder-1, _ty + topBorder, cWidth+2, cHeight);
-    }
+    if(style()->outlineWidth())
+        printOutline(p, _tx, _ty, width(), height(), style());
 }
 
 void RenderImage::calcMinMaxWidth()

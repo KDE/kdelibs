@@ -555,7 +555,7 @@ void ElementImpl::recalcStyle()
 	dynamicState |= StyleSelector::Focus;
     if ( m_active )
 	dynamicState |= StyleSelector::Active;
-	
+
     setStyle( document->styleSelector()->styleForElement(this, dynamicState) );
 
     if (oldDisplay != m_style->display()) {
@@ -673,17 +673,12 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 
 void ElementImpl::setFocus(bool received)
 {
+    NodeBaseImpl::setFocus(received);
+
     if (!m_render)
 	return;
 
-    if (received)
-	m_render->setKeyboardFocus(DOM::ActivationPassive);
-    else
-	m_render->setKeyboardFocus(DOM::ActivationOff);
-
-    NodeBaseImpl::setFocus(received);
-    if (m_style->hasFocus())
-        applyChanges(true,false);
+    applyChanges(true,false);
 
     RenderObject *cb = m_render->containingBlock();
     cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
@@ -692,18 +687,12 @@ void ElementImpl::setFocus(bool received)
 
 void ElementImpl::setActive(bool down)
 {
+    NodeBaseImpl::setActive(down);
+
     if (!m_render)
 	return;
-    if (down)
-	m_render->setKeyboardFocus(DOM::ActivationActive);
-    else if (m_focused)
-	m_render->setKeyboardFocus(DOM::ActivationPassive);
-    else
-	m_render->setKeyboardFocus(DOM::ActivationOff);
 
-    NodeBaseImpl::setActive(down);
-    if (m_style->hasActive())
-        applyChanges(true,false);
+    applyChanges(true,false);
 
     RenderObject *cb = m_render->containingBlock();
     cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);

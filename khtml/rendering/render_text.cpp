@@ -483,7 +483,6 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         //QConstString cstr(str->s, str->l);
         //kdDebug(6040) << this << " RenderText text '" << (const char *)cstr.string().utf8() << "'" << endl;
         //kdDebug(6040) << this << " RenderText::printObject y=" << y << " ty=" << ty << " h=" << h << " first line is " << si << endl;
-        int firstSi = si;
 
         // Now calculate startPos and endPos, for printing selection.
         // We print selection while endPos > 0
@@ -527,10 +526,6 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         int outlinebox_y = m_lines[si]->m_y;
 
         RenderStyle* outlineStyle = 0;
-//        if (hasKeyboardFocus == DOM::ActivationActive)
-//            outlineStyle = style()->getPseudoStyle(RenderStyle::ACTIVE);
-//        if (!outlineStyle && hasKeyboardFocus == DOM::ActivationPassive) {
-//        outlineStyle = style()->getPseudoStyle(RenderStyle::FOCUS);
         if (!outlineStyle && style()->outlineWidth())
             outlineStyle = style();
 
@@ -553,7 +548,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             s->print(p, tx, ty);
 
-            if(d != TDNONE && hasKeyboardFocus == DOM::ActivationOff)
+            if(d != TDNONE)
             {
                 p->setPen(_style->textDecorationColor());
                 s->printDecoration(p, tx, ty, d);
@@ -591,27 +586,6 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
         if(outlineStyle)
             printOutline(p, tx+minx, ty+outlinebox_y, maxx-minx, s->m_height, outlineStyle);
-
-// ### get rid of this
-        if (hasKeyboardFocus!=DOM::ActivationOff)
-        {
-            si = firstSi;
-            p->setClipping(false);
-            p->setRasterOp(Qt::CopyROP);
-	    p->setBrush(Qt::NoBrush);
-            if (hasKeyboardFocus==DOM::ActivationPassive)
-                p->setPen(Qt::green);
-            else
-                p->setPen(Qt::blue);
-
-            do {
-                TextSlave* s = m_lines[si];
-
-                if(s->checkVerticalPoint(y, ty, h))
-                    s->printActivation(p, tx, ty);
-
-            } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
-        }
     }
 }
 
@@ -692,7 +666,7 @@ int RenderText::minXPos() const
     if (!m_lines.count())
 	return 0;
     unsigned int retval=6666666;
-    for (int i=0;i<m_lines.count();i++)
+    for (int i=0;i < int(m_lines.count());i++)
     {
 	retval = QMIN ( retval, m_lines[i]->m_x);
     }

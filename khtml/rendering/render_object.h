@@ -109,15 +109,6 @@ public:
 
     static RenderObject *createObject(DOM::NodeImpl *node);
 
-    /**
-     * (defined in dom_nodeimpl.h)
-     * Generally, this is DOM::ActivationOff, except the keyboard cursor
-     * is over this node (DOM::ActivationPassive), or even
-     * pushed down(DOM::ActivationActive).
-     * visited links carry DOM::ActivationOffButVisited (at least i hope so...)
-     */
-    DOM::ActivationState hasKeyboardFocus;
-
     // some helper functions...
     /**
      * is an Element that should be floated in the textstream
@@ -405,7 +396,7 @@ public:
     };
     void drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width, BorderSide s,
                     QColor c, const QColor& textcolor, EBorderStyle style, bool sb1, bool sb2,
-                    int adjbw1, int adjbw2);
+                    int adjbw1, int adjbw2, bool invalidisInvert = false);
 
     virtual void setTable(RenderTable*) {};
 
@@ -445,16 +436,6 @@ public:
     virtual void setSelectionState(SelectionState) {}
 
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
-
-    /**
-     * called by the dom node. affects rendering so that the next call
-     * to print() adds an activation. DOM::ActivationPassive indicates that
-     * the keyboard cursor is over the associated dom node, while
-     * DOM::ActivationActive means that the activating key is
-     * currently pressed.
-     */
-    virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
-
 
     /**
      * absolute lowest position (highest y-value) the object covers

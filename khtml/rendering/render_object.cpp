@@ -97,7 +97,6 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
 RenderObject::RenderObject()
 {
     m_style = 0;
-    hasKeyboardFocus=DOM::ActivationOff;
 
     m_layouted = false;
     m_parsing = false;
@@ -384,16 +383,23 @@ QSize RenderObject::size() const
 
 void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width,
                               BorderSide s, QColor c, const QColor& textcolor, EBorderStyle style,
-                              bool sb1, bool sb2, int adjbw1, int adjbw2)
+                              bool sb1, bool sb2, int adjbw1, int adjbw2, bool invalidisInvert)
 {
     if(style == DOUBLE && width < 3)
         style = SOLID;
 
     if(!c.isValid())
-        if(style == INSET || style == OUTSET)
-            c.setRgb(238, 238, 238);
-        else
-            c = textcolor;
+        if(invalidisInvert)
+        {
+            p->setRasterOp(Qt::XorROP);
+            c = Qt::white;
+        }
+        else {
+            if(style == INSET || style == OUTSET)
+                c.setRgb(238, 238, 238);
+            else
+                c = textcolor;
+        }
 
     int half = width/2;
     switch(style)
@@ -401,6 +407,9 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
     case BNONE:
     case BHIDDEN:
         // should not happen
+        if(invalidisInvert && p->rasterOp() == Qt::XorROP)
+            p->setRasterOp(Qt::CopyROP);
+
         return;
     case DOTTED:
         p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DotLine));
@@ -498,61 +507,75 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
                     tri.setPoints(3, x2-adjbw2, y2, x2, y2, x2-adjbw2, y2+width);
                     p->drawPolygon(tri);
                  }
+                 p->drawRect(x1+adjbw1, y1, x2-x1-adjbw1-(sb2 ? adjbw2 : 0), width);
             }
-            p->drawRect(x1+(sb1 ? adjbw1 : 0), y1, x2-x1-(sb1 ? adjbw1 : 0)-(sb2 ? adjbw2 : 0), width);
+            else
+                p->drawRect(x1, y1, x2-x1, 0);
             break;
         case BSBottom:
             if(width)
             {
-//                if(sb1)
-//                {
+                if(sb1)
+                {
                     tri.setPoints(3, x1, y1, x1+adjbw1, y1, x1+adjbw1, y1-width);
                     p->drawPolygon(tri);
-//                }
-//                 if(sb2)
-//                 {
+                }
+                if(sb2)
+                {
                     tri.setPoints(3, x2-adjbw2, y2-width, x2-adjbw2, y2, x2, y2);
                     p->drawPolygon(tri);
-//                }
+                }
+                p->drawRect(x1+(sb1 ? adjbw1 : 0), y1-width, x2-x1-(sb1 ? adjbw1 : 0)-adjbw2, width);
             }
-            p->drawRect(x1+adjbw1, y1-width, x2-x1-adjbw1-adjbw2, width);
+            else
+                p->drawRect(x1, y1, x2-x1, 0);
+
             break;
         break;
         case BSLeft:
             if(width)
             {
-//                 if(sb1)
-//                 {
-                     tri.setPoints(3, x1, y1, x1, y1+adjbw1, x1+width, y1+adjbw1);
-                     p->drawPolygon(tri);
-//                 }
-//                 if(sb2)
-//                 {
+                if(sb1)
+                {
+                    tri.setPoints(3, x1, y1, x1, y1+adjbw1, x1+width, y1+adjbw1);
+                    p->drawPolygon(tri);
+                }
+                if(sb2)
+                {
                     tri.setPoints(3, x2, y2-adjbw2, x2, y2, x2+width, y2-adjbw2);
                     p->drawPolygon(tri);
-//                }
+                }
+                p->drawRect(x1, y1+(sb1 ? adjbw1 : 0), width, y2-y1-(sb1 ? adjbw1:0)-adjbw2);
             }
-            p->drawRect(x1, y1+adjbw1, width, y2-y1-adjbw1-adjbw2);
+            else
+                p->drawRect(x1, y1+adjbw1, 0, y2-y1);
+
             break;
         case BSRight:
             if(width)
             {
-//                 if(sb1)
-//                 {
+                if(sb1)
+                {
                     tri.setPoints(3, x1, y1, x1, y1+adjbw1, x1-width, y1+adjbw1);
                     p->drawPolygon(tri);
-//                 }
-//                 if(sb2)
-//                 {
+                }
+                if(sb2)
+                {
                     tri.setPoints(3, x2, y2, x2, y2-adjbw2, x2-width, y2-adjbw2);
                     p->drawPolygon(tri);
-//                 }
+                }
+                p->drawRect(x1-width, y1+adjbw1, width, y2-y1-adjbw1-(sb2 ? adjbw2 : 0));
             }
-            p->drawRect(x1-width, y1+adjbw1, width, y2-y1-adjbw1-adjbw2);
+            else
+                p->drawRect(x1, y1+adjbw1, 0, y2-y1);
+
             break;
         }
         break;
     }
+
+    if(invalidisInvert && p->rasterOp() == Qt::XorROP)
+        p->setRasterOp(Qt::CopyROP);
 }
 
 void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)
@@ -596,13 +619,13 @@ void RenderObject::printOutline(QPainter *p, int _tx, int _ty, int w, int h, con
     EBorderStyle os = style->outlineStyle();
 
     drawBorder(p, _tx - ow, _ty-ow, _tx - ow, _ty + h+ow, ow, BSLeft, oc, style->color(),
-               os, false, false, ow, ow);
+               os, false, false, ow, ow, true);
     drawBorder(p, _tx - ow, _ty - ow, _tx + w + ow, _ty - ow, ow, BSTop, oc, style->color(),
-               os, false, false, ow, ow);
+               os, false, false, ow, ow, true);
     drawBorder(p, _tx + w + ow, _ty - ow, _tx + w + ow, _ty + h + ow, ow, BSRight, oc, style->color(),
-               os, false, false, ow, ow);
+               os, false, false, ow, ow, true);
     drawBorder(p, _tx -ow, _ty + h + ow, _tx + w + ow, _ty + h + ow, ow, BSBottom, oc, style->color(),
-               os, false, false, ow, ow);
+               os, false, false, ow, ow, true);
 }
 
 void RenderObject::print( QPainter *p, int x, int y, int w, int h, int tx, int ty)
@@ -725,17 +748,6 @@ void RenderObject::setContainsPositioned(bool p)
                 containingBlock()->setContainsPositioned(false);
         }
     }
-}
-
-void RenderObject::setKeyboardFocus(DOM::ActivationState b)
-{
-  RenderObject *actChild = firstChild();
-  //  printTree(0);
-  while(actChild) {
-      actChild->setKeyboardFocus(b);
-      actChild=actChild->nextSibling();
-  }
-  hasKeyboardFocus=b;
 }
 
 QRect RenderObject::viewRect() const

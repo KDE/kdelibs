@@ -742,13 +742,13 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
 class FontParser {
 public:
     enum { Tok_None, Tok_Eoi, Tok_Slash, Tok_Comma, Tok_String, Tok_Symbol };
-    
+
     QChar yyCh;
     QString yyIn;
     unsigned int yyPos;
     QString yyStr;
     bool strictParsing;
-    
+
     int getChar() {
 	return ( yyPos == yyIn.length() ) ? QChar('\0') : QChar(yyIn[yyPos++]);
     }
@@ -902,14 +902,14 @@ public:
     bool matchFontFamily( QString *ffamily )
     {
 	QStringList t;
-	if ( !matchFontFamily( &t ) ) 
+	if ( !matchFontFamily( &t ) )
 	    return false;
-	
+
 	*ffamily = t.join(", ");
 	return TRUE;
     }
 
-    bool matchFontFamily ( QStringList *ffamily ) 
+    bool matchFontFamily ( QStringList *ffamily )
     {
 	if ( yyTok == Tok_None )
 	    yyTok = getToken();
@@ -931,7 +931,7 @@ public:
 
 	return true;
     }
-    
+
     bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
 			       QString *fsize, QString *lheight, QString *ffamily )
     {
@@ -1170,7 +1170,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_FONT_WEIGHT:
 	// 100 - 900 values
     {
-        
+
 	value = value.stripWhiteSpace();
 	int id = 0;
 	if ( value == "100" || value == "200" || value == "300" || value == "400" || value == "500" )
@@ -1183,7 +1183,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	    return false;
 	break;
     }
-    
+
 // special properties (css_extensions)
     case CSS_PROP_AZIMUTH:
         // CSS2Azimuth
@@ -1249,9 +1249,10 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
 // colors || inherit
     case CSS_PROP_OUTLINE_COLOR:
-	// outline has "invert" as additional keyword.
+	// outline has "invert" as additional keyword. we handle
+        // it as invalid color and add a special case during rendering
 	if ( value == "invert" ) {
-	    parsedValue = new CSSPrimitiveValueImpl( QColor(INVERT_COLOR) );
+	    parsedValue = new CSSPrimitiveValueImpl( QColor() );
 	    break;
 	}
     case CSS_PROP_BACKGROUND_COLOR:
@@ -1427,7 +1428,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             delete list;
         break;
     }
-    
+
     case CSS_PROP_FONT_FAMILY:
         // list of strings and ids
     {
@@ -1442,7 +1443,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it ) {
 	    if( *it != QString::null ) {
 	       list->append(new CSSPrimitiveValueImpl(DOMString(*it), CSSPrimitiveValue::CSS_STRING));
-	       //kdDebug() << "StyleBaseImpl::parsefont: family='" << *it << "'" << endl; 
+	       //kdDebug() << "StyleBaseImpl::parsefont: family='" << *it << "'" << endl;
 	    }
 	}
         //kdDebug( 6080 ) << "got " << list->length() << " faces" << endl;
@@ -1517,7 +1518,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE, CSS_PROP_BORDER_LEFT_COLOR };
         const int properties_border_right[3] = {
             CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE, CSS_PROP_BORDER_RIGHT_COLOR };
-	const int properties_outline[3] = 
+	const int properties_outline[3] =
 	{ CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE, CSS_PROP_OUTLINE_WIDTH };
         if(propId == CSS_PROP_BORDER)
             properties = properties_border;
