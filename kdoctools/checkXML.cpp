@@ -1,53 +1,37 @@
-/*
- * tester.c : a small tester program for parsing using the SAX API.
- *
- * See Copyright for the status of this software.
- *
- * Daniel.Veillard@w3.org
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <assert.h>
 
-#include <libxml/parser.h>
-#include <libxml/parserInternals.h> /* only for xmlNewInputFromFile() */
-#include <libxml/tree.h>
-#include <libxml/debugXML.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/xmlerror.h>
-
 #include <qstring.h>
 #include <kstddirs.h>
 #include <kinstance.h>
 #include <xslt.h>
-
-extern int xmlLoadExtDtdDefaultValue;
+#include <qfileinfo.h>
+#include <unistd.h>
+#include <qfile.h>
+#include <config.h>
 
 int main(int argc, char **argv) {
-    int i;
-    int files = 0;
-
     if ( argc != 2 ) {
         fprintf( stderr, "usage: %s xml\n", argv[0] );
         ::exit( 1 );
     }
-    xmlLoadExtDtdDefaultValue = 1;
-
-    KInstance ins("meinproc");
+    KInstance ins("checkXML");
     fillInstance(ins);
 
-    LIBXML_TEST_VERSION
-    xmlSubstituteEntitiesDefault(1);
-    xmlLoadExtDtdDefaultValue = 1;
-    xmlSetExternalEntityLoader(meinExternalEntityLoader);
+    QFileInfo file( argv[0] );
+    chdir( QFile::encodeName( file.dirPath( true ) ) );
 
-    xmlParseFile(argv[1]);
+    QString catalogs;
+    catalogs += locate( "dtd", "customization/catalog" );
+    catalogs += ":";
+    catalogs += locate( "dtd", "docbook/xml-dtd-4.1.2/docbook.cat" );
 
-    xmlCleanupParser();
-    xmlMemoryDump();
+    setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).data(), 1);
+    system( QString::fromLatin1( "xmllint --catalogs --valid --nowarning --noout %1" ).arg( file.fileName() ).local8Bit().data() );
+
 
     return(0);
 }
