@@ -40,6 +40,7 @@
 #include "kjs_html.h"
 #include "kjs_range.h"
 #include "kjs_traversal.h"
+#include "kjs_css.h"
 #include "kjs_events.h"
 
 #include "khtmlview.h"
@@ -176,6 +177,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   Range		Window::Range		DontDelete
   NodeFilter	Window::NodeFilter	DontDelete
   DOMException	Window::DOMException	DontDelete
+  CSSRule	Window::CSSRule		DontDelete
   frames	Window::Frames		DontDelete|ReadOnly
   history	Window::_History	DontDelete|ReadOnly
   event		Window::Event		DontDelete|ReadOnly
@@ -395,6 +397,8 @@ Value Window::get(ExecState *exec, const UString &p) const
       return getNodeFilterConstructor(exec);
     case DOMException:
       return getDOMExceptionConstructor(exec);
+    case CSSRule:
+      return getCSSRuleConstructor(exec);
     case EventCtor:
       return getEventConstructor(exec);
     case Frames:
