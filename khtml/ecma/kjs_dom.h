@@ -247,6 +247,7 @@ namespace KJS {
   };
 
   Value getDOMNode(ExecState *exec, DOM::Node n);
+  Value getDOMNodeOrFrame(ExecState *exec, DOM::Node n);
   Value getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m);
   Value getDOMNodeList(ExecState *exec, DOM::NodeList l);
   Value getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i);

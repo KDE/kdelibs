@@ -23,6 +23,8 @@
 #include "rendering/render_root.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
+#include "misc/htmltags.h" // ID_*
+#include "html/html_baseimpl.h"
 #include <kdebug.h>
 #include <khtml_part.h>
 
@@ -1222,6 +1224,29 @@ Value DOMEntity::getValueProperty(ExecState *, int token) const
 
 // -------------------------------------------------------------------------
 
+// When someone does document.myiframe they want the window object of the iframe,
+// but not when doing document.getElementById('myiframe').
+// The former calls this method, the latter calls the normal getDOMNode
+Value KJS::getDOMNodeOrFrame(ExecState *exec, DOM::Node n)
+{
+  if (n.isNull())
+    return Null();
+  if (n.nodeType() == DOM::Node::ELEMENT_NODE)
+  {
+    DOM::Element element = static_cast<DOM::Element>(n);
+    if (element.elementId() == ID_IFRAME || element.elementId() == ID_FRAME)
+    {
+      DOM::DocumentImpl* doc = static_cast<DOM::HTMLFrameElementImpl *>(element.handle())->contentDocument();
+      if ( doc && doc->view() ) {
+        KHTMLPart* part = doc->view()->part();
+        if ( part )
+          return Window::retrieve( part );
+      }
+    }
+  }
+  return getDOMNode(exec, n);
+}
+
 Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
 {
   DOMObject *ret = 0;
@@ -1458,7 +1483,7 @@ Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyNa
   unsigned int u = propertyName.toULong(&ok);
   if (ok) {
     DOM::Node node = m_nodes[u];
-    return getDOMNode(exec,node);
+    return getDOMNodeOrFrame(exec,node); // optionnally call getDOMNode?
   }
   return DOMObject::tryGet(exec,propertyName);
 }
