@@ -430,10 +430,9 @@ QString KIconTheme::current()
         return *_theme;
 
     _theme = new QString();
-    KSimpleConfig *config = new KSimpleConfig("kdeglobals", false);
-    config->setGroup("Icons");
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver saver(config, "Icons");
     *_theme = config->readEntry("Theme",defaultThemeName());
-    delete config;
     if ( *_theme == QString::fromLatin1("hicolor") ) *_theme = defaultThemeName();
 /*    if (_theme->isEmpty())
     {
