@@ -22,6 +22,8 @@
 #ifndef _K_CONTROL_
 #define _K_CONTROL_
 
+#warning This is obsolete, please use kcmodule.h instead
+
 #include <qtabbar.h>
 #include <qtabdialog.h>
 #include <qstrlist.h>
