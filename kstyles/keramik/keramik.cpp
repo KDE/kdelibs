@@ -2846,7 +2846,8 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 		return false;	// Now draw the contents
 	}
-	else if (event->type() == QEvent::Paint  &&  object->parent() && ::qt_cast<QToolBar*>(object->parent()))
+	else if (event->type() == QEvent::Paint  &&  object->parent() && ::qt_cast<QToolBar*>(object->parent()) 
+			&& !::qt_cast<QPopupMenu*>(object) )
 	{
 		// We need to override the paint event to draw a
 		// gradient on a QToolBarExtensionWidget.
