@@ -433,7 +433,7 @@ void KCharsets::setQFont(QFont &f, QFont::CharSet charset) const
 bool KCharsets::isAvailable(const QString &charset)
 {
     QFont::CharSet cs = nameToID(charset);
-    return cs == QFont::AnyCharSet ? false : cs;
+    return cs == QFont::AnyCharSet ? false : isAvailable(cs);
 }
 
 bool KCharsets::isAvailable(QFont::CharSet charset)
