@@ -17,10 +17,13 @@
 */
 
 #include "ktabwidget.h"
+#include "ktabbar.h"
 
 KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     : QTabWidget( parent, name, f )
 {
+  m_pTabBar = new KTabBar(this, "tabbar");
+  setTabBar(m_pTabBar);
 }
 
 #include "ktabwidget.moc"

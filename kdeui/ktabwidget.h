@@ -20,7 +20,9 @@
 #define KTABWIDGET_H
 
 #include <qtabwidget.h>
+#include "ktabbar.h"
 
+class KTabBar;
 class KTabWidgetPrivate;
 
 class KTabWidget : public QTabWidget
@@ -31,6 +33,8 @@ public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
 
 private:
+    KTabBar *m_pTabBar;
+
     KTabWidgetPrivate *d;
 };
 
