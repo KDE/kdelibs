@@ -48,6 +48,7 @@
 #include "kmwfile.h"
 #include "kmwsmb.h"
 #include "kmwlocal.h"
+#include "sidepixmap.h"
 
 KMWizard::KMWizard(QWidget *parent, const char *name)
 : QDialog(parent,name,true)
@@ -70,29 +71,38 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	m_title->setFont(f);
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(5);
+	KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
 
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
 	connect(m_next,SIGNAL(clicked()),SLOT(slotNext()));
 	connect(m_prev,SIGNAL(clicked()),SLOT(slotPrev()));
 
+	m_side = new SidePixmap(this);
+	if (!m_side->isValid())
+	{
+		delete m_side;
+		m_side = 0;
+	}
+
 	// layout
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 0);
+	QVBoxLayout *main0_ = new QVBoxLayout(this, 10, 10);
+	QVBoxLayout	*main_ = new QVBoxLayout(0, 0, 0);
+	QHBoxLayout *main1_ = new QHBoxLayout(0, 0, 10);
 	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 10);
-	QHBoxLayout	*btn2_ = new QHBoxLayout(0, 0, 10);
+	main0_->addLayout(main1_);
+	if (m_side)
+		main1_->addWidget(m_side);
+	main1_->addLayout(main_);
 	main_->addWidget(m_title);
 	main_->addWidget(sep);
 	main_->addSpacing(10);
 	main_->addWidget(m_stack,1);
-	main_->addSpacing(20);
-	main_->addLayout(btn_);
+	main0_->addWidget(sep2);
+	main0_->addLayout(btn_);
 	btn_->addStretch(1);
+	btn_->addWidget(m_prev);
+	btn_->addWidget(m_next);
 	btn_->addWidget(m_cancel);
-	btn_->addSpacing(30);
-	btn_->addStretch(1);
-	btn_->addLayout(btn2_);
-	btn_->addStretch(1);
-	btn2_->addWidget(m_prev);
-	btn2_->addWidget(m_next);
 
 	// create standard pages
 	addPage(new KMWInfoPage(this));
@@ -152,6 +162,14 @@ void KMWizard::configure(int start, int end, bool inclusive)
 	m_backend->enableBackend(KMWizard::Class,(m_start == KMWizard::Start));
 	setCaption((m_start == KMWizard::Start ? i18n("Add printer wizard") : i18n("Modify printer")));
 
+	if (m_side)
+	{
+		if (start == KMWizard::Start && end == KMWizard::End)
+			m_side->show();
+		else
+			m_side->hide();
+	}
+
 	setCurrentPage(m_start,false);
 }
 
@@ -180,10 +198,10 @@ void KMWizard::setCurrentPage(int ID, bool back)
 	if (!back) page->initPrinter(m_printer);
 
 	// update buttons
-	if (ID == m_start) m_prev->hide();
-	else m_prev->show();
+	if (ID == m_start) m_prev->setEnabled(false);
+	else m_prev->setEnabled(true);
 	if ((m_inclusive && ID == m_end) || (!m_inclusive && page->nextPage() == m_end))
-		m_next->setText(i18n("OK"));
+		m_next->setText(i18n("Finish"));
 	else
 		m_next->setText(i18n("Next >"));
 }
@@ -210,7 +228,7 @@ void KMWizard::slotNext()
 		else
 		{
 			page->updatePrinter(m_printer);
-			if (m_next->text() == i18n("OK"))
+			if (m_next->text() == i18n("Finish"))
 				accept();
 			else
 			{
