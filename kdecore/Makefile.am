@@ -90,7 +90,7 @@ install-data-local: charsets.config
 install-data-hook:
 	# For compatibility with KDE 2.1 (remove in 3.0)
 	-rm -f $(DESTDIR)$(includedir)/kio/kmdcodec.h
-	$(mkinstalldirs) $(includedir)/kio
+	$(mkinstalldirs) $(DESTDIR)$(includedir)/kio
 	$(LN_S) ../kmdcodec.h $(DESTDIR)$(includedir)/kio/kmdcodec.h
 
 uninstall-local:
