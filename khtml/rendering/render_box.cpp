@@ -623,7 +623,11 @@ void RenderBox::calcHeight()
 	    m_marginBottom = bm.minWidth(ch.value);		
 	else
 	    m_marginBottom = 0;
-        
+
+        // for tables, calculate margins only
+        if (isTable())
+            return;      
+                
 	if (h.isFixed())
     	    m_height = MAX (h.value + borderTop() + paddingTop()
 		+ borderBottom() + paddingBottom() , m_height);

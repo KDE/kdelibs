@@ -844,10 +844,6 @@ void RenderTable::calcColMinMax()
 
     if(m_style->width().type == Fixed)
     	m_minWidth = m_maxWidth = m_width;
-    else if (m_style->width().type == Percent)
-    {
-        m_maxWidth = realMaxWidth;    
-    } 
     else
     {
         m_maxWidth = spacing;
@@ -855,6 +851,12 @@ void RenderTable::calcColMinMax()
     	for(int i = 0; i < (int)totalCols; i++)
 	    m_maxWidth += colMaxWidth[i] + spacing;
     }
+    
+    if (m_style->width().type == Percent)
+    {
+        if (realMaxWidth > m_maxWidth)
+            m_maxWidth = realMaxWidth;    
+    } 
 
     m_minWidth += borderLeft() + borderRight();
     m_maxWidth += borderLeft() + borderRight();
