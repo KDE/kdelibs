@@ -18,6 +18,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <qstylesheet.h>
 #include <qtimer.h>
 #include <qinputdialog.h>
 #include <qpaintdevicemetrics.h>
@@ -884,22 +885,22 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   switch (id) {
   case Window::Alert:
     part->xmlDocImpl()->updateRendering();
-    KMessageBox::error(widget, str, "JavaScript");
+    KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), "JavaScript");
     return Undefined();
   case Window::Confirm:
     part->xmlDocImpl()->updateRendering();
-    return Boolean((KMessageBox::warningYesNo(widget, str, "JavaScript",
+    return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), "JavaScript",
                                                 i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
   case Window::Prompt:
     part->xmlDocImpl()->updateRendering();
     if (args.size() >= 2)
-      str2 = QInputDialog::getText("Konqueror: Prompt", str,
+      str2 = QInputDialog::getText("Konqueror: Prompt", QStyleSheet::convertFromPlainText(str),
 #if QT_VERSION >= 300
                                    QLineEdit::Normal,
 #endif
                                    args[1].toString(exec).qstring());
     else
-      str2 = QInputDialog::getText("Konqueror: Prompt", str);
+      str2 = QInputDialog::getText("Konqueror: Prompt", QStyleSheet::convertFromPlainText(str));
     return String(str2);
   case Window::Open:
   {
