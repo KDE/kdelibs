@@ -39,7 +39,7 @@
 template<class KBookmarkBar, class KBookmarkBarPrivate>
 class Private {
 public:
-    static KBookmarkBarPrivate* d( const KBookmarkBar* instance ) 
+    static KBookmarkBarPrivate* d( const KBookmarkBar* instance )
     {
         if ( !d_ptr ) {
             d_ptr = new QPtrDict<KBookmarkBarPrivate>;
@@ -52,13 +52,13 @@ public:
         }
         return ret;
     }
-    static void delete_d( const KBookmarkBar* instance ) 
+    static void delete_d( const KBookmarkBar* instance )
     {
         if ( d_ptr )
             d_ptr->remove( (void*) instance );
     }
 private:
-    static void cleanup_d_ptr() 
+    static void cleanup_d_ptr()
     {
         delete d_ptr;
     }
@@ -72,7 +72,7 @@ static bool *s_advanced = 0;
 
 static bool isAdvanced()
 {
-  if (!s_advanced) 
+  if (!s_advanced)
   {
     s_advanced = new bool;
     KConfig config("kbookmarkrc", false, false);
@@ -189,7 +189,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
         else
         {
             KActionMenu *action = new KBookmarkActionMenu( text, bm.icon(),
-                                                           m_actionCollection, 
+                                                           m_actionCollection,
                                                            "bookmarkbar-actionmenu");
             action->setProperty( "address", bm.address() );
             action->setDelayed(false);
@@ -216,7 +216,7 @@ void KBookmarkBar::slotBookmarkSelected()
     m_pOwner->openBookmarkURL( sender()->property("url").toString() );
 }
 
-static bool findDestAction(QDragMoveEvent *dme, QPtrList<KAction> actions, 
+static bool findDestAction(QDragMoveEvent *dme, QPtrList<KAction> actions,
                            KToolBarButton* &b, KToolBar* &tb, KAction* &a)
 {
     // iterate actions list until we find a match
@@ -229,7 +229,7 @@ static bool findDestAction(QDragMoveEvent *dme, QPtrList<KAction> actions,
         QWidget *c = a->container(0);
         // continue search unless we find a toolbarbutton at dme->pos()
         b = dynamic_cast<KToolBarButton*>(c->childAt(dme->pos()));
-        if (b && a->isPlugged(c, b->id())) 
+        if (b && a->isPlugged(c, b->id()))
         {
             tb = dynamic_cast<KToolBar*>(c);
             break;
@@ -237,8 +237,9 @@ static bool findDestAction(QDragMoveEvent *dme, QPtrList<KAction> actions,
     }
     if (tb)
     {
-        kdDebug(7043) << "b->geometry() == " << r << endl;
         QRect r = b->geometry();
+        kdDebug(7043) << "b->geometry() == " << r << endl;
+
         // if ((r->left() + r->right())/2 <= dme->pos()->x())
     }
     return !!tb;
@@ -249,7 +250,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     static int sepId = -9999; // fixme
     static KToolBar* tb = 0;
     static KAction* a = 0;
-    if ( e->type() == QEvent::DragLeave ) 
+    if ( e->type() == QEvent::DragLeave )
     {
         // clear up any separators
         if (tb) {
@@ -261,7 +262,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     else if ( e->type() == QEvent::Drop )
     {
         QDropEvent *dev = (QDropEvent*)e;
-        if ( KBookmarkDrag::canDecode( dev ) ) 
+        if ( KBookmarkDrag::canDecode( dev ) )
         {
             // clear up any separators
             if (tb) {
@@ -282,20 +283,20 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
             Q_ASSERT(!parentBookmark.isNull());
             kdDebug(7043) << "inserting bookmark after " << insertAfter << endl;
             kdDebug(7043) << "inserted after " << bookmark.address() << endl;
-            KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, toInsert.fullText(), 
+            KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, toInsert.fullText(),
                                                                 toInsert.url() );
             parentBookmark.moveItem( newBookmark, bookmark );
             m_pManager->emitChanged( parentBookmark );
             return true;
         }
     }
-    else if ( e->type() == QEvent::DragMove ) 
+    else if ( e->type() == QEvent::DragMove )
     {
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         KToolBar* otb = tb;
         KToolBarButton* b;
         if (findDestAction(dme, dptr()->m_actions, b, tb, a)
-         && KBookmarkDrag::canDecode( dme ) 
+         && KBookmarkDrag::canDecode( dme )
         ) {
             int index = tb->itemIndex(b->id());
             // delete+insert the separator if moved
@@ -303,7 +304,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
             {
                 if (otb)
                     otb->removeItem(sepId);
-                sepIndex = tb->insertLineSeparator(index + 1, sepId); 
+                sepIndex = tb->insertLineSeparator(index + 1, sepId);
             }
             dme->accept();
         }
