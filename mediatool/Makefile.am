@@ -32,6 +32,8 @@ include_HEADERS= 	mediatool.h kaudio.h
 libmediatool_la_LDFLAGS = -version-info 0:91 
 
 kaudio.cpp: kaudio.moc
-
 kaudio.moc: kaudio.h
 	$(MOC) -o kaudio.moc kaudio.h
+
+DISTCLEANFILES = kaudio.moc
+
