@@ -300,7 +300,7 @@ class KURIFilterPlugin : public QObject
 public:
 
     /**
-     * Constructor to create a filter plugin with a given name and
+     * Constructs a filter plugin with a given name and
      * priority.
      *
      * @param parent the parent object.
@@ -310,14 +310,14 @@ public:
     KURIFilterPlugin( QObject *parent = 0, const char *name = 0, double pri = 1.0 );
 
     /**
-     * Return the filter's name.
+     * Returns the filter's name.
      *
      * @return A string naming the filter.
      */
     virtual QString name() const { return m_strName; }
 
     /**
-     * Return the filter's .
+     * Returns the filter's priority.
      *
      * Each filter has an assigned priority, a float from 0 to 1. Filters
      * with the lowest priority are first given a chance to filter a URI.
@@ -335,7 +335,7 @@ public:
     virtual bool filterURI( KURIFilterData& data ) const = 0;
 
     /**
-     * Returns a configuration module for the filter.
+     * Creates a configuration module for the filter.
      *
      * It is the responsability of the caller to delete the module
      * once it is not needed anymore.
@@ -373,10 +373,10 @@ protected:
         data.m_bChanged = true;
     }
 
-	/**
-	 * Sets the arguments and options string in @p data
-	 * to @p args if any were found during filterting.
-	 */
+    /**
+     * Sets the arguments and options string in @p data
+     * to @p args if any were found during filterting.
+     */
     void setArguments( KURIFilterData& data, const QString& args ) const;
 
     QString m_strName;

@@ -61,7 +61,16 @@ namespace KIO {
         static QStringList supportedMimeTypes();
 
     signals:
+        /**
+         * Emitted when a thumbnail picture for @p item has been successfully
+         * retrieved.
+         */
         void gotPreview( const KFileItem *item, const QPixmap &preview );
+        /**
+         * Emitted when a thumbnail for @p item could not be created,
+         * either because a ThumbCreator for its MIME type does not
+         * exist, or because something went wrong.
+         */
         void failed( const KFileItem *item );
 
     protected:
@@ -87,7 +96,7 @@ namespace KIO {
     };
 
     /**
-     * Generate or retrieve a preview image for the given URL.
+     * Generates or retrieves a preview image for the given URL.
      *
      * @param items files to get previews for
      * @param width the maximum width to use

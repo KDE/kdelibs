@@ -38,7 +38,7 @@ class KAutoMount : public QObject
   Q_OBJECT
 public:
   /**
-   * Mount a device
+   * Mounts a device.
    * @param readonly if true, the device is mounted read-only
    * @param format the file system (e.g. vfat, ext2...) [optional, fstab is used otherwise]
    * @param device the path to the device (e.g. /dev/fd0)
@@ -72,7 +72,7 @@ class KAutoUnmount : public QObject
   Q_OBJECT
 public:
   /**
-   * Unmount a device
+   * Unmounts a device.
    * @param mountpoint the mount point - KAutoUnmount finds the device from that
    * @param desktopFile the file the user clicked on - to notify KDirWatch of the fact that
    * it should emit fileDirty for it (to have the icon change)

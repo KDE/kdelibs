@@ -43,10 +43,13 @@ class KShellCompletion : public KURLCompletion
 	Q_OBJECT
 
 public:
+        /**
+         * Constructs a KShellCompletion object.
+         */
 	KShellCompletion();
 
 	/**
-	 * Find completions to the given text
+	 * Finds completions to the given text.
 	 * The first match is returned and emitted in the signal match() 
 	 */
 	QString makeCompletion(const QString&);

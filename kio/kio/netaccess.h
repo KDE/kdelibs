@@ -40,9 +40,9 @@ namespace KIO {
    *
    * This class isn't meant to be used as a class but only as a simple
    *  namespace for static functions, though an instance of the class
-   *  is built for internal purposes.  Whereas a @p kiojob is
+   *  is built for internal purposes.  Whereas a @ref KIO::Job is
    *  asynchronous, meaning that the developer has to connect slots
-   *  for it, @p KIO::NetAccess provides synchronous downloads and
+   *  for it, KIO::NetAccess provides synchronous downloads and
    *  uploads, as well as temporary file creation and removal.
    *
    *  Port to kio done by David Faure, faure@kde.org
@@ -55,17 +55,17 @@ class NetAccess : public QObject
 
 public:
     /**
-     * Download a file from an arbitrary URL (@p src) to a
+     * Downloads a file from an arbitrary URL (@p src) to a
      * temporary file on the local filesystem (@p target).
      *
      * If the argument
      * for @p target is an empty string, download will generate a
      * unique temporary filename in /tmp. Since @p target is a reference
      * to @ref QString you can access this filename easily. Download will
-     * return @p true if the download was successful, otherwise @p false.
+     * return true if the download was successful, otherwise false.
      *
      * Special case:
-     * If the URL is of kind @p file: then no downloading is
+     * If the URL is of kind file:, then no downloading is
      * processed but the full filename is returned in @p target.
      * That means you @em have to take care about the @p target argument.
      * (This is very easy to do, please see the example below.)
@@ -95,7 +95,7 @@ public:
     static bool download(const KURL& src, QString & target);
 
     /**
-     * Remove the specified file if and only if it was created
+     * Removes the specified file if and only if it was created
      * by KIO::NetAccess as a temporary file for a former download.
      *
      * Note: This means that if you created your temporary with @ref KTempFile,
@@ -108,7 +108,7 @@ public:
     static void removeTempFile(const QString& name);
 
     /**
-     * Upload file @p src to URL @p target.
+     * Uploads file @p src to URL @p target.
      *
      * Both must be specified, unlike @ref download.
      * Note that this is assumed to be used for saving a file over
@@ -141,7 +141,7 @@ public:
     static bool dircopy( const KURL& src, const KURL& target );
 
     /**
-     * Test whether a URL exists.
+     * Tests whether a URL exists.
      *
      * This is a convenience function for @ref KIO::stat
      * (it saves creating a slot and testing for the job result).
@@ -151,7 +151,7 @@ public:
     static bool exists(const KURL& url);
 
     /**
-     * Test whether a URL exists and return information on it.
+     * Tests whether a URL exists and return information on it.
      *
      * This is a convenience function for @ref KIO::stat
      * (it saves creating a slot and testing for the job result).
@@ -163,7 +163,7 @@ public:
     static bool stat(const KURL& url, KIO::UDSEntry & entry);
 
     /**
-     * Delete a file or a directory in an synchronous way.
+     * Deletes a file or a directory in an synchronous way.
      *
      * This is a convenience function for @ref KIO::del
      * (it saves creating a slot and testing for the job result).
@@ -174,7 +174,7 @@ public:
     static bool del( const KURL & url );
 
     /**
-     * Create a directory in an synchronous way.
+     * Creates a directory in a synchronous way.
      *
      * This is a convenience function for @p KIO::mkdir
      * (it saves creating a slot and testing for the job result).
@@ -186,7 +186,7 @@ public:
 
 
     /**
-     * Determine the mimetype of a given URL.
+     * Determines the mimetype of a given URL.
      *
      * This is a convenience function for @ref KIO::mimetype.  You
      * should call this only when really necessary.  @ref
@@ -201,7 +201,7 @@ public:
     static QString mimetype( const KURL & url );
 
     /**
-     * Return error string for the last job, in case it failed
+     * Returns the error string for the last job, in case it failed.
      */
     static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString::null; }
 

@@ -32,10 +32,10 @@
 
 class QTimer;
 class ListProgress;
-class DefaultProgress;
 
 namespace KIO {
   class Job;
+  class DefaultProgress;
 };
 
 /**
@@ -109,7 +109,7 @@ protected:
   ListProgress *listProgress;
 
   // associated default progress dialog
-  DefaultProgress *defaultProgress;
+  KIO::DefaultProgress *defaultProgress;
 
   // we store these values for calculation of totals ( for statusbar )
   unsigned long m_iTotalSize;

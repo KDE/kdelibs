@@ -36,15 +36,17 @@ class KFilterDev : public QIODevice
 {
 public:
     /**
-     * Create a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
+     * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
      */
     KFilterDev( KFilterBase * filter ); // BCI remove and add default value to 2nd constructor
     /**
-     * Create a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
+     * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
      * Call this with autodeleteFilterBase so that the KFilterDev owns the KFilterBase.
      */
     KFilterDev( KFilterBase * filter, bool autodeleteFilterBase );
-
+    /**
+     * Destructs the KFilterDev.
+     */
     virtual ~KFilterDev();
 
     virtual bool open( int mode );
@@ -86,7 +88,7 @@ public:
 
 
     /**
-     * Return an i/o device that is able to read from @p fileName,
+     * Creates an i/o device that is able to read from @p fileName,
      * whether it's compressed or not. Available compression filters
      * (gzip/bzip2 etc.) will automatically be used.
      *

@@ -86,7 +86,7 @@ namespace KIO {
     SimpleJob * mkdir( const KURL& url, int permissions = -1 );
 
     /**
-     * Remove a single directory.
+     * Removes a single directory.
      *
      * The directory is assumed to be empty.
      *
@@ -98,7 +98,7 @@ namespace KIO {
     SimpleJob * rmdir( const KURL& url );
 
     /**
-     * Change permissions on a file or directory.
+     * Changes permissions on a file or directory.
      * See the other @ref chmod below for changing many files
      * or directories.
      *
@@ -141,7 +141,7 @@ namespace KIO {
      * @param url The URL isn't passed to the slave, but is used to know
      *        which slave to send it to :-)
      * @param data Packed data.  The meaning is completely dependent on the
-     *        slave, but usually starts with an @p int for the command number.
+     *        slave, but usually starts with an int for the command number.
      */
     SimpleJob * special( const KURL& url, const QByteArray & data, bool showProgressInfo = true );
 
@@ -228,12 +228,14 @@ namespace KIO {
      * @param postData Encoded data to post.
      *
      * Example:
+     * <pre>
      *    job = KIO::http_post( url, postData, false );
      *    job->addMetaData("content-type", contentType );
      *    job->addMetaData("referrer", referrerURL);
+     * </pre>
      *
-     * @p postData is the data that you want to send and
-     * @p contentType is the format of that data.
+     * @param postData is the data that you want to send and
+     * @param contentType is the format of that data.
      *
      * You MUST specify content-type!
      *

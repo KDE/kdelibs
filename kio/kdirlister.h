@@ -57,17 +57,17 @@ class KDirLister : public QObject, public KDirNotify
   Q_OBJECT
 public:
   /**
-   * Create a directory lister.
+   * Constructs a directory lister.
    */
   KDirLister( bool _delayedMimeTypes = false );
 
   /**
-   * Destroy the directory lister.
+   * Destructs the directory lister.
    */
   virtual ~KDirLister();
 
   /**
-   * Run the directory lister on the given url. If @p _url is already in the cache
+   * Runs the directory lister on the given url. If @p _url is already in the cache
    * (i.e. openURL() was already called with @p _url) and _keep == true this is
    * equivalent to @p updateDirectory( _url ).
    *
@@ -84,7 +84,7 @@ public:
   virtual void openURL( const KURL& _url, bool _showDotFiles, bool _keep = false );
 
   /**
-   * Stop listing all directories currently being listed.
+   * Stops listing all directories currently being listed.
    *
    * Emits @ref canceled() if there was at least one job running.
    * Emits @ref canceled( const KURL& ) for each stopped job if
@@ -93,7 +93,7 @@ public:
   virtual void stop();
 
   /**
-   * Stop listing the given directory.
+   * Stops listing the given directory.
    *
    * Emits @ref canceled() if the killed job was the last running one.
    * Emits @ref canceled( const KURL& ) for the killed job if
@@ -121,7 +121,7 @@ public:
   virtual bool setURL( const KURL& url );
 
   /**
-   * Update @p _dir.
+   * Updates @p _dir.
    * The current implementation calls it automatically for
    * local files, using KDirWatch (if autoUpdate() is true), but it might be
    * useful to force an update manually.
@@ -169,14 +169,14 @@ public:
   virtual bool showingDotFiles() const;
 
   /**
-   * Find an item by its URL
+   * Finds an item by its URL.
    * @param _url the item URL
    * @returns the pointer to the KFileItem
    **/
   KFileItem* find( const KURL& _url ) const;
 
   /**
-   * Find an item by its name
+   * Finds an item by its name.
    * @param name the item name
    * @returns the pointer to the KFileItem
    **/
@@ -211,7 +211,7 @@ public:
   bool dirOnlyMode() const { return m_bDirOnlyMode; }
 
   /**
-   * Set a name filter to only list items matching this name, e.g. "*.cpp".
+   * Sets a name filter to only list items matching this name, e.g. "*.cpp".
    *
    * You can set more than one filter by separating them with whitespace, e.g
    * "*.cpp *.h".
@@ -223,7 +223,7 @@ public:
   void setNameFilter( const QString& );
 
   /**
-   * Set mime-based filter to only list items matching the given mimetypes
+   * Sets mime-based filter to only list items matching the given mimetypes.
    *
    * NOTE: setting the filter does not automatically reload direcory.
    * Also calling this function will not affect any named filter already set.
@@ -316,37 +316,37 @@ public:
 
 signals:
   /**
-   * Tell the view that we started to list _url.
+   * Emitted when the dir lister starts to list url.
    * The view knows that openURL should start it, so it might seem useless,
    * but the view also needs to know when an automatic update happens.
    *
    * ## KDE 3.0: change to const KURL&
    */
-  void started( const QString& _url );
+  void started( const QString& url );
 
   /**
-   * Tell the view that listing is finished. There are no jobs running anymore.
+   * Emitted when the listing is finished. There are no jobs running anymore.
    */
   void completed();
 
   /**
-   * Tell the view that the listing of the directory @p _url is finished.
+   * Emitted when the listing of the directory @p url is finished.
    * There might be other running jobs left.
    * @param _url the directory URL
    */
-  void completed( const KURL& _url );
+  void completed( const KURL& url );
 
   /**
-   * Tell the view that the user canceled the listing. No running jobs are left.
+   * Emitted when the user has canceled the listing. No running jobs are left.
    */
   void canceled();
 
   /**
-   * Tell the view that the listing of the directory @p _url was canceled.
+   * Emitted when the view that the listing of the directory @p url was canceled.
    * There might be other running jobs left.
    * @param _url the directory URL
    */
-  void canceled( const KURL& _url );
+  void canceled( const KURL& url );
 
   /**
    * Signal a redirection.

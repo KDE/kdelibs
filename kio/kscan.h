@@ -69,12 +69,16 @@ class KScanDialog : public KDialogBase
 
 public:
     /**
-     * @returns the user's preferred scanning dialog, or 0L if no scan-support
+     * Creates the user's preferred scanning dialog and returns it,
+     * or 0L if no scan-support
      * is available. Pass a suitable @p parent widget, if you like. If you
      * don't you have to 'delete' the returned pointer yourself.
      */
     static KScanDialog * getScanDialog( QWidget *parent=0L,
 					const char *name=0, bool modal=false );
+    /**
+     * Destructs the scan dialog.
+     */
     ~KScanDialog();
 
     /**
@@ -153,7 +157,7 @@ private:
 
 /**
  * A factory for creating a KScanDialog. You need to reimplement
- * @p createDialog().
+ * @ref createDialog().
  *
  */
 class KScanDialogFactory : public KLibFactory

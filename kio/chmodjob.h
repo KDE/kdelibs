@@ -77,7 +77,7 @@ namespace KIO {
 
 
     /**
-     * Change permissions/ownership on several files or directories,
+     * Creates a job that changes permissions/ownership on several files or directories,
      * optionally recursively.
      * This version of chmod uses a KFileItemList so that it directly knows
      * what to do with the items. TODO: a version that takes a KURL::List,

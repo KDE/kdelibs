@@ -30,6 +30,9 @@ namespace KIO {
 
   SkipDlg_Result open_SkipDlg( bool _multi, const QString& _error_text = QString::null );
 
+/**
+ * @internal
+ */
 class SkipDlg : public KDialog
 {
   Q_OBJECT

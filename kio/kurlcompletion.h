@@ -51,57 +51,62 @@ public:
 	 * @li FileCompletion - all files with full path or in dir(), URLs
 	 * are listed using KIO
 	 */
-    enum Mode { ExeCompletion=1, FileCompletion };
+	enum Mode { ExeCompletion=1, FileCompletion };
 
+	/**
+	 * Constructs a KURLCompletion object in FileCompletion mode.
+	 */
 	KURLCompletion();
 	/**
 	 * This overloaded constructor allows you to set the Mode to ExeCompletion
 	 * or FileCompletion without using @ref setMode. Default is FileCompletion
 	 */
 	KURLCompletion(Mode);
-
+	/**
+	 * Destructs the KURLCompletion object.
+	 */
 	virtual ~KURLCompletion();
 
 	/**
-	 * Find completions to the given text
+	 * Finds completions to the given text.
 	 *
 	 * Remote URLs are listed with KIO. For performance reasons, local files
 	 * are listed with KIO only if KURLCOMPLETION_LOCAL_KIO is set.
 	 * The completion is done asyncronously if KIO is used.
 	 *
 	 * Returns the first match for user, environment, and local dir completion
-	 * and QString::null for asyncronous completion (KIO)
+	 * and QString::null for asyncronous completion (KIO).
 	 */
 	virtual QString makeCompletion(const QString&);
 
 	/**
-	 * Set the current directory (used as base for completion)
-	 * Default = $HOME
+	 * Sets the current directory (used as base for completion)
+	 * Default = $HOME.
 	 */
 	virtual void setDir( QString dir) { m_cwd = dir; };
 	
 	/**
-	 * Get the current directory
+	 * Returns the current directory.
 	 */
 	virtual QString dir() { return m_cwd; };
 
 	/**
-	 * Returns true if asyncronous completion is in progress
+	 * Returns true if asyncronous completion is in progress.
 	 */
 	virtual bool isRunning();
 
 	/**
-	 * Stop asyncronous copmpletion
+	 * Stops asyncronous completion.
 	 */
 	virtual void stop();
 
 	/**
-	 * Return completion mode: exe or file completion (default FileCompletion)
+	 * Returns the completion mode: exe or file completion (default FileCompletion)
 	 */
 	virtual Mode mode() { return m_mode; };
 
 	/**
-	 * Change completion mode: exe or file completion
+	 * Changes the completion mode: exe or file completion
 	 */
 	virtual void setMode( Mode mode ) { m_mode = mode; };
 
