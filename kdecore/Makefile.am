@@ -22,8 +22,6 @@ DISTCLEANFILES = $(BUILT_SOURCES)
 EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
 
-DEFS += -DTEST_KDEDIR        
-
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcolorgroup.h kapp.h kcharsets.h \
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\

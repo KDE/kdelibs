@@ -20,6 +20,16 @@
 // $Id$
 //
 // $Log$
+// Revision 1.101  1998/04/12 08:52:36  jacek
+//
+// * Updtated KCharset class documentation.
+//
+// * Chnged font entry in config files to store charset as string, not numerical
+//   id (which worked only for iso-8859-* charsets)
+//
+// * added KCharset::xCharset method for getting charset name to use for X font
+//   names.
+//
 // Revision 1.100  1998/04/03 14:25:59  kulow
 // fixed a memory leak
 //
@@ -1307,21 +1317,6 @@ QString KApplication::kdedir()
 	}
   }
 
-#ifdef TEST_KDEDIR
-  static QString testdir;
-
-  if (testdir.isEmpty()) // make a deep copy. MML, but just for debugging
-      testdir = kdedir.data();
-  
-  if (testdir != kdedir) {
-      QString tmp;
-      tmp.sprintf("Application %s overwrote KDEDIR\n"
-		  "Value has been reset now, but please report this error!\n"
-		  "Application wrote %s", kapp->appName().data(), kdedir.data());
-      kdedir = testdir.data();
-      QMessageBox::critical(0, "Fatal Error", tmp.data());
-  }
-#endif
   return kdedir;
 }
 
