@@ -25,7 +25,7 @@
 class KIntNumInput;
 class KURLRequester;
 class QCheckBox;
-
+class QPushButton;
 class KMConfigGeneral : public KMConfigPage
 {
 	Q_OBJECT
@@ -37,11 +37,13 @@ public:
 
 protected slots:
 	void slotTestPagePreview();
-
+        void testPageChanged(const QString & );
+	void setEnabledPreviewButton(bool b);
 private:
 	KIntNumInput	*m_timer;
 	KURLRequester	*m_testpage;
 	QCheckBox	*m_defaulttestpage;
+	QPushButton	*m_preview;
 };
 
 #endif

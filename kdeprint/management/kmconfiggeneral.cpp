@@ -31,6 +31,7 @@
 #include <knuminput.h>
 #include <kmessagebox.h>
 #include <kcursor.h>
+#include <klineedit.h>
 
 KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 : KMConfigPage(parent,"ConfigTimer")
@@ -47,10 +48,11 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	QGroupBox	*m_testpagebox = new QGroupBox(0, Qt::Vertical, i18n("Test page"), this);
 	m_defaulttestpage = new QCheckBox(i18n("Use non default test page"), m_testpagebox, "TestPageCheck");
 	m_testpage = new KURLRequester(m_testpagebox,"TestPage");
-	QPushButton	*m_preview = new QPushButton(i18n("Preview..."), m_testpagebox);
+	m_preview = new QPushButton(i18n("Preview..."), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));
-	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_preview,SLOT(setEnabled(bool)));
+	connect(m_defaulttestpage,SIGNAL(toggled(bool)),this,SLOT(setEnabledPreviewButton(bool)));
 	connect(m_preview,SIGNAL(clicked()),SLOT(slotTestPagePreview()));
+        connect(m_testpage->lineEdit(),SIGNAL(textChanged ( const QString & )),this,SLOT(testPageChanged(const QString & )));
 	m_testpage->setDisabled(true);
 	m_preview->setDisabled(true);
 	m_defaulttestpage->setCursor(KCursor::handCursor());
@@ -70,6 +72,17 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	lay2->addLayout(lay3);
 	lay3->addWidget(m_preview);
 	lay3->addStretch(1);
+        m_preview->setEnabled( !m_testpage->lineEdit()->text().isEmpty());
+}
+
+void KMConfigGeneral::testPageChanged(const QString &test )
+{
+    m_preview->setEnabled( !test.isEmpty());
+}
+
+void KMConfigGeneral::setEnabledPreviewButton(bool b)
+{
+    m_preview->setEnabled(!m_testpage->lineEdit()->text().isEmpty()&&b);
 }
 
 void KMConfigGeneral::loadConfig(KConfig *conf)
