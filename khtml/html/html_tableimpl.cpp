@@ -579,6 +579,7 @@ void HTMLTableCellElementImpl::parseAttribute(Attribute *attr)
     case ATTR_ROWSPAN:
 	// ###
 	rSpan = attr->val()->toInt();
+	if(rSpan < 1) rSpan = 1; // fix for GNOME websites... ;-)
 	break;
     case ATTR_COLSPAN:
 	// ###
