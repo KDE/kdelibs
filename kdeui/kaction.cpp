@@ -1217,7 +1217,7 @@ int KSelectAction::plug( QWidget *widget, int index )
     int id_ = KAction::getToolButtonID();
     bar->insertCombo( items(), id_, isEditable(),
                       SIGNAL( activated( const QString & ) ), this,
-                      SLOT( slotActivated( const QString & ) ), true,
+                      SLOT( slotActivated( const QString & ) ), isEnabled(),
                       QString::null, 70, index );
     QComboBox *cb = bar->getCombo( id_ );
     if ( cb )
@@ -1949,6 +1949,8 @@ int KActionMenu::plug( QWidget* widget, int index )
     int id;
     id = bar->insertItem( text(), d->m_popup, -1, index );
 
+    bar->setItemEnabled( id, isEnabled() );
+	
     addContainer( bar, id );
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
@@ -1999,7 +2001,8 @@ int KActionMenu::plug( QWidget* widget, int index )
     int id;
 
     id = bar->insertItem( text(), popupMenu(), -1, index );
-
+    bar->setItemEnabled( id, isEnabled() );
+    
     addContainer( bar, id );
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 

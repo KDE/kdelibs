@@ -100,7 +100,7 @@ KActionCollection *KXMLGUIClient::actionCollection() const
 KAction *KXMLGUIClient::action( const QDomElement &element )
 {
   static QString attrName = QString::fromLatin1( "name" );
-  return action( element.attribute( attrName ).ascii() );
+  return action( element.attribute( attrName ).latin1() );
 }
 
 KInstance *KXMLGUIClient::instance() const
