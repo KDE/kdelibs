@@ -2576,8 +2576,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 z_index = ZAUTO;
             } else if (primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
                 return; // Error case.
-
-	    z_index = (int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER);
+	    else {
+		z_index = (int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER);
+	    }
 	}
 
         style->setZIndex(z_index);
