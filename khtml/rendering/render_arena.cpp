@@ -42,23 +42,15 @@ using namespace khtml;
 
 namespace khtml {
 
-
-// ### for now don't use the arena allocator!
-#ifdef NDEBUG
-#undef NDEBUG
-#endif
-
-#ifndef NDEBUG
-
-const int signature = 0xDBA00AEA;
+//#ifdef NDEBUG
+#define KHTML_USE_ARENA_ALLOCATOR
+//#endif
 
 typedef struct {
     RenderArena *arena;
     size_t size;
-    int signature;
 } RenderArenaDebugHeader;
 
-#endif
 
 RenderArena::RenderArena(unsigned int arenaSize)
 {
@@ -67,29 +59,22 @@ RenderArena::RenderArena(unsigned int arenaSize)
 
     // Zero out the recyclers array
     memset(m_recyclers, 0, sizeof(m_recyclers));
-#ifndef NDEBUG
-    signature = ::signature;
-#endif
 }
 
 RenderArena::~RenderArena()
 {
     // Free the arena in the pool and finish using it
     FreeArenaPool(&m_pool);
-#ifndef NDEBUG
-    signature = 0;
-#endif
 }
 
 void* RenderArena::allocate(size_t size)
 {
-#ifndef NDEBUG
+#ifndef KHTML_USE_ARENA_ALLOCATOR
     // Use standard malloc so that memory debugging tools work.
     void *block = ::malloc(sizeof(RenderArenaDebugHeader) + size);
     RenderArenaDebugHeader *header = (RenderArenaDebugHeader *)block;
     header->arena = this;
     header->size = size;
-    header->signature = signature;
     return header + 1;
 #else
     void* result = 0;
@@ -120,13 +105,12 @@ void* RenderArena::allocate(size_t size)
 
 void RenderArena::free(size_t size, void* ptr)
 {
-#ifndef NDEBUG
+#ifndef KHTML_USE_ARENA_ALLOCATOR
     // Use standard free so that memory debugging tools work.
+    assert(this);
     RenderArenaDebugHeader *header = (RenderArenaDebugHeader *)ptr - 1;
-    assert(header->signature == signature);
     assert(header->size == size);
     assert(header->arena == this);
-    assert(signature == ::signature);
     ::free(header);
 #else
     // Ensure we have correct alignment for pointers.  Important for Tru64
