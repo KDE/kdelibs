@@ -27,7 +27,7 @@
 #include <qptrlist.h>
 #include <qdict.h>
 
-#include "resourcemanageriface.h"
+#include "manageriface.h"
 
 class KConfig;
 

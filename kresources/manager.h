@@ -27,8 +27,8 @@
 #include <qdict.h>
 #include <qstringlist.h>
 
-#include "resourcefactory.h"
-#include "resourcemanagerimpl.h"
+#include "factory.h"
+#include "managerimpl.h"
 
 namespace KRES {
 

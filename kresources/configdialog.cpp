@@ -33,8 +33,8 @@
 #include <kdialog.h>
 #include <klineedit.h>
 
-#include "resourcefactory.h"
-#include "resourceconfigdlg.h"
+#include "factory.h"
+#include "configdialog.h"
 
 using namespace KRES;
 
@@ -133,4 +133,4 @@ void ResourceConfigDlg::accept()
   QDialog::accept();
 }
 
-#include "resourceconfigdlg.moc"
+#include "configdialog.moc"

@@ -28,7 +28,7 @@
 
 #include <kcmodule.h>
 
-#include "resourcemanager.h"
+#include "manager.h"
 
 class KListView;
 class QPushButton;

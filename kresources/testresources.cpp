@@ -4,7 +4,7 @@
 #include <kcmdlineargs.h>
 
 #include "resource.h"
-#include "resourcemanager.h"
+#include "manager.h"
 
 using namespace KRES;
 

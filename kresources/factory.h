@@ -29,7 +29,7 @@
 #include <klibloader.h>
 
 #include "resource.h"
-#include "resourceconfigwidget.h"
+#include "configwidget.h"
 
 namespace KRES {
 

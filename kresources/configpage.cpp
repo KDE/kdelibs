@@ -36,9 +36,9 @@
 #include <kbuttonbox.h>
 
 #include "resource.h"
-#include "resourceconfigdlg.h"
+#include "configdialog.h"
 
-#include "resourcesconfigpage.h"
+#include "configpage.h"
 
 using namespace KRES;
 
@@ -391,5 +391,5 @@ void ResourcesConfigPage::init( const QString &configFile )
   load();
 }
 
-#include "resourcesconfigpage.moc"
+#include "configpage.moc"
 

@@ -5,28 +5,28 @@ METASOURCES = AUTO
 lib_LTLIBRARIES = libkderesources.la
 
 libkderesources_la_SOURCES = resource.cpp \
-  resourcefactory.cpp \
-  resourcemanageriface.skel \
-  resourcemanageriface.stub \
-  resourcemanagerimpl.cpp \
-  resourceconfigwidget.cpp \
-  resourceconfigdlg.cpp \
-  resourceselectdialog.cpp \
-  resourcesconfigpage.cpp
+  factory.cpp \
+  manageriface.skel \
+  manageriface.stub \
+  managerimpl.cpp \
+  configwidget.cpp \
+  configdialog.cpp \
+  selectdialog.cpp \
+  configpage.cpp
 
 libkderesources_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
 libkderesources_la_LIBADD = $(LIB_KDEUI)
 
 kresincludedir = $(includedir)/kresources
 kresinclude_HEADERS = resource.h \
-  resourceconfigwidget.h \
-  resourcefactory.h \
-  resourcemanageriface.h \
-  resourcemanagerimpl.h \
-  resourcemanager.h \
-  resourceselectdialog.h \
-  resourceconfigdlg.h \
-  resourcesconfigpage.h 
+  configwidget.h \
+  factory.h \
+  manageriface.h \
+  managerimpl.h \
+  manager.h \
+  selectdialog.h \
+  configdialog.h \
+  configpage.h 
 
 check_PROGRAMS = testresources
 

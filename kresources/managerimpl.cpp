@@ -30,9 +30,9 @@
 #include <kstandarddirs.h>
 
 #include "resource.h"
-#include "resourcefactory.h"
-#include "resourcemanagerimpl.h"
-#include "resourcemanageriface_stub.h"
+#include "factory.h"
+#include "managerimpl.h"
+#include "manageriface_stub.h"
 
 using namespace KRES;
 
@@ -430,4 +430,4 @@ Resource* ResourceManagerImpl::getResource( const QString& identifier )
   return 0;
 }
 
-#include "resourcemanagerimpl.moc"
+#include "managerimpl.moc"

@@ -29,7 +29,7 @@
 
 #include "resource.h"
 
-#include "resourceselectdialog.h"
+#include "selectdialog.h"
 
 using namespace KRES;
 
@@ -120,5 +120,5 @@ Resource *ResourceSelectDialog::getResource( QPtrList<Resource> list, QWidget *p
   else return 0;
 }
 
-#include "resourceselectdialog.moc"
+#include "selectdialog.moc"
 

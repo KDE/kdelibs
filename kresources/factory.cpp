@@ -28,7 +28,7 @@
 #include <qfile.h>
 
 #include "resource.h"
-#include "resourcefactory.h"
+#include "factory.h"
 
 using namespace KRES;
 
