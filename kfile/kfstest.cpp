@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <qdir.h>
 #include <qfiledialog.h>
+#include <qstringlist.h>
 #include <qwidget.h>
 
 #include "kfiledialog.h"
@@ -36,6 +37,7 @@
 #include <qlayout.h>
 #include "kdiroperator.h"
 #include "kfilewidget.h"
+#include <kfile.h>
 
 int main(int argc, char **argv)
 {
@@ -48,7 +50,7 @@ int main(int argc, char **argv)
 
     if (argv1 == QString::fromLatin1("diroperator")) {
 	KDirOperator *op = new KDirOperator(QString::null, 0, "operator");
-	op->setView(KDirOperator::Simple, false);
+	op->setView(KFile::Simple);
 	op->show();
 	a.setMainWidget(op);
 	a.exec();
@@ -65,15 +67,34 @@ int main(int argc, char **argv)
     } else if (argv1 == QString::fromLatin1("dirs"))
 	name1 = KFileDialog::getExistingDirectory();
     else{
-      KFileDialog dlg(QString::null, QString::fromLatin1("*|All files\n"
-				     "*.lo *.o *.la|All libtool files"),
-		      0, 0, true);
-	if ( dlg.exec() == QDialog::Accepted )
+	KFileDialog dlg(QString::null, 
+			QString::fromLatin1("*|All files\n"
+					    "*.lo *.o *.la|All libtool files"),
+			0, 0, true);
+	dlg.setMode( KFile::Files );
+	if ( dlg.exec() == QDialog::Accepted ) {
+	    /*
+	    QStringList list = dlg.selectedFiles();
+	    QStringList::Iterator it = list.begin();
+	    while ( it != list.end() ) {
+		debug("Selected: %s", (*it).latin1());
+		++it;
+	    }
+	    */
+	    QValueList<KURL> list = dlg.selectedURLs();
+	    QValueListIterator<KURL> it = list.begin();
+	    while ( it != list.end() ) {
+		debug("Selected URL: %s", (*it).url().latin1());
+		++it;
+	    }
+				    
+	    
 	    name1 = dlg.selectedURL().url();
+	}
     }
 
     if (!(name1.isNull()))
-	KMessageBox::information(0,  QString::fromLatin1("You selected the file " ) + name1,
+	KMessageBox::information(0, QString::fromLatin1("You selected the file " ) + name1,
 				 QString::fromLatin1("Your Choice"));
     return 0;
 }

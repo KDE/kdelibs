@@ -26,8 +26,10 @@ class KFileViewItemList;
 class QSignal;
 class QPoint;
 
-#include "kfilereader.h"
 #include <qwidget.h>
+
+#include "kfilereader.h"
+#include "kfile.h"
 
 /**
  * internal class to make easier to use signals possible
@@ -40,8 +42,7 @@ public:
     void activateDir(const KFileViewItem *i) { emit dirActivated(i); }
     void highlightFile(const KFileViewItem *i) { emit fileHighlighted(i); }
     void activateFile(const KFileViewItem *i) { emit fileSelected(i); }
-    void activateMenu( const KFileViewItem *i )
-    { emit activatedMenu( i ); }
+    void activateMenu( const KFileViewItem *i ) { emit activatedMenu( i ); }
 
 signals:
     void dirActivated(const KFileViewItem*);
@@ -69,17 +70,7 @@ signals:
 class KFileView {
 
 public:
-    enum ViewMode {
-	Files = 1,
-	Directories = 2,
-	All = Files | Directories
-    };
-    enum SelectionMode {
-	Single,
-	Multi
-    };
-
-    KFileView( );
+    KFileView();
 
     /** Destructor */
     virtual ~KFileView();
@@ -147,26 +138,18 @@ public:
     virtual void setSorting(QDir::SortSpec sort);
 
     /**
-      * Increasing means greater indicies means bigger values
-      *
-      * Decrease means greater indicies means smaller values
-      * Switching is deprecated, don't use that anymore!
-      **/
-    enum SortMode { Increasing, Decreasing, Switching };
-
-    /**
       * set the sorting mode. Default mode is Increasing. Affects only
       * newly added items.
       * @see #setSorting
       **/
-    void setSortMode(SortMode mode) { mySortMode = mode; }
+    void setSortMode(KFile::SortMode mode) { mySortMode = mode; }
 
     /**
      * @returns the current sort mode
      * @see #setSortMode
      * @see #setSorting
      */
-    SortMode sortMode() const { return mySortMode; }
+    KFile::SortMode sortMode() const { return mySortMode; }
 
     /**
      * Toggles the current sort order, i.e. the order is reversed.
@@ -195,11 +178,16 @@ public:
       **/
     uint numDirs() const { return dirsNumber; }
 
-    virtual void setSelectMode( SelectionMode sm );
-    virtual SelectionMode selectMode() const;
+    virtual void setSelectionMode( KFile::SelectionMode sm );
+    virtual KFile::SelectionMode selectionMode() const;
 
+    enum ViewMode {
+	Files       = 1,
+	Directories = 2,
+	All = Files | Directories
+    };
     virtual void setViewMode( ViewMode vm );
-    virtual ViewMode viewMode() const;
+    virtual ViewMode viewMode() const { return view_mode; }
 
     /**
      * @returns the localized name of the view, which could be displayed
@@ -237,10 +225,22 @@ public:
 
     /**
      * Selects all items. You may want to override this, if you can implement
-     * it more efficiently than calling highlightItem() with every item.
+     * it more efficiently than calling setSelected() with every item.
      * This works only in Multiselection mode of course.
      */
     virtual void selectAll();
+
+    /**
+     * Inverts the current selection, i.e. selects all items, that were up to
+     * now not selected and deselects the other.
+     */
+    virtual void invertSelection();
+
+    /**
+      * Tells the view that it should highlight the item.
+      * This function must be implemented by the view
+      **/
+    virtual void setSelected(const KFileViewItem *, bool enable) = 0;
 
     /**
      * @returns whether the given item is currently selected.
@@ -277,22 +277,16 @@ public:
 protected:
 
     /**
-      * Tells the view that it should highlight the item.
-      * This function must be implemented by the view
-      **/
-    virtual void highlightItem(const KFileViewItem *) = 0;
-
-    /**
       * Call this method when an item is selected (depends on single click /
       * double click configuration). Emits the appropriate signal.
       **/
-    void select( const KFileViewItem *entry);
+    void select( const KFileViewItem *item );
 
     /**
      * emits the highlighted signal for item. Call this in your subclass,
      * whenever the selection changes.
      */
-    void highlight( const KFileViewItem *item);
+    void highlight( const KFileViewItem *item) { sig->highlightFile( item ); }
 
     /**
      * compares two items in the current context (sortMode and others)
@@ -313,7 +307,7 @@ protected:
 
     KFileViewItem *mergeLists(KFileViewItem *list1, KFileViewItem *list2);
 
-    void activateMenu( const KFileViewItem *i );
+    void activateMenu( const KFileViewItem *i ) { sig->activateMenu(i); }
 
     /**
      * @internal
@@ -333,7 +327,7 @@ private:
     bool reversed;
     QDir::SortSpec mySorting;
     static QDir::SortSpec defaultSortSpec;
-    enum SortMode mySortMode;
+    KFile::SortMode mySortMode;
     QString viewname;
 
     /**
@@ -343,7 +337,7 @@ private:
     uint dirsNumber;
 
     ViewMode view_mode;
-    SelectionMode selection_mode;
+    KFile::SelectionMode selection_mode;
 
     KFileViewItem *first;
     mutable KFileViewItemList *itemList, *selectedList;

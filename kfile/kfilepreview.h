@@ -30,6 +30,7 @@
 #include <kfileiconview.h>
 #include <kfiledetailview.h>
 #include <config-kfile.h>
+#include <kfile.h>
 
 #include <qsplitter.h>
 #include <qwidget.h>
@@ -55,20 +56,19 @@ public:
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
 
-    virtual void setSelectMode( KFileView::SelectionMode sm );
+    virtual void setSelectionMode( KFile::SelectionMode sm );
 
-    virtual void clear();
     virtual void clearSelection();
     virtual bool isSelected( const KFileViewItem * ) const;
+    virtual void setSelected(const KFileViewItem *, bool);
+
+    virtual void insertItem(KFileViewItem *);
+    virtual void clear();
 
     void setPreviewWidget(const QWidget *w, const KURL &u);
 
 signals:
     void showPreview(const KURL &);
-
-protected:
-    virtual void insertItem(KFileViewItem *);
-    virtual void highlightItem(const KFileViewItem *);
 
 protected slots:
     void activatedMenu(const KFileViewItem*);

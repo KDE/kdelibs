@@ -1,3 +1,27 @@
+Tue Feb 15 14:21:41 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfile.h (class KFile): 
+	added a small class that contains all the enums now.
+	cleaned up the enums (hope not too many apps will be broken)
+	added flags for "Existing files only" and "local files only"
+
+	* all views (setSelected()):
+	replaced highlightItem(item) with setSelected(item, bool) which makes
+	it more suitable and more consistent with Qt.
+	added selectionChanged() method (necessary for multiselection)
+
+	* kfileview.*:
+	added invertSelection()
+
+	* kfiledialog.cpp:
+	made it work with multiselection
+	added static methods for multiselection
+	added getOpenURL(), getOpenURLs and getSaveURL()
+	
+	* kdiroperator.cpp (setSorting): 
+	added setSorting() and sorting() to keep sorting when switching views
+	a few cosmetic and KAction changes
+
 Sun Feb 13 00:45:12 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfiledialog.cpp (completion): 

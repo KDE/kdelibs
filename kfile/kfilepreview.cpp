@@ -110,12 +110,12 @@ bool KFilePreview::isSelected( const KFileViewItem *i ) const
     return left->isSelected( i );
 }
 
-void KFilePreview::setSelectMode(KFileView::SelectionMode sm) {
-    left->setSelectMode( sm );
+void KFilePreview::setSelectionMode(KFile::SelectionMode sm) {
+    left->setSelectionMode( sm );
 }
 
-void KFilePreview::highlightItem(const KFileViewItem *) {
-    // todo?
+void KFilePreview::setSelected(const KFileViewItem *item, bool enable) {
+    left->setSelected( item, enable );
 }
 
 void KFilePreview::selectDir(const KFileViewItem* item) {

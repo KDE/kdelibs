@@ -1,11 +1,12 @@
 TODO-List for the KFileDialog and associated classes (in order of importance)
 
-- Multi-selection
+- check ExistingFiles and OnlyLocal flags
 - save all properties of KFileDialog in kdeglobals and restore
   (add KDirOperator::saveProperties( KConfig * ) and readProperties())
 - use KComboBox
 - KFileView::setCurrentItem() / highlight() ?!?!
 - KFileView::setSelected( const QRegExp& )
+- implement KFile::PreviewInfo
 - remember directory when entering it, when coming back, set it as current
 - history of last files/dirs
 - flag for local files only (or what about KRemoteFile?)

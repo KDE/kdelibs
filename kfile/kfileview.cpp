@@ -39,7 +39,7 @@ KFileView::KFileView()
 {
     reversed   = false;        // defaults
     itemListDirty = true;
-    mySortMode = Increasing;
+    mySortMode = KFile::Increasing;
     mySorting  = KFileView::defaultSortSpec;
 
     sig = new KFileViewSignaler();
@@ -53,7 +53,7 @@ KFileView::KFileView()
     // last = 0;
 
     view_mode = All;
-    selection_mode = Single;
+    selection_mode = KFile::Single;
     viewname = i18n("Unknown View");
 }
 
@@ -61,6 +61,7 @@ KFileView::~KFileView()
 {
     delete sig;
     delete itemList;
+    delete selectedList;
 }
 
 void KFileView::setOperator(QObject *ops)
@@ -80,14 +81,9 @@ void KFileView::setOperator(QObject *ops)
 	
 	QObject::connect(sig,
 			 SIGNAL( fileHighlighted(const KFileViewItem *) ),
-			 ops, SLOT( highlightFile(const KFileViewItem*) ) );
+			 ops, SIGNAL( fileHighlighted(const KFileViewItem*) ));
     } else
 	sig->disconnect((QObject*)0);
-}
-
-void KFileView::activateMenu( const KFileViewItem *i )
-{
-    sig->activateMenu( i );
 }
 
 /*
@@ -248,7 +244,7 @@ void KFileView::setSorting(QDir::SortSpec new_sort)
 {
     if ( mySorting == new_sort )
 	return;
-    
+
     mySorting = new_sort;
 
     if ( count() > 1 ) {
@@ -387,23 +383,19 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
     return (bigger ? 1 : -1);
 }
 
-void KFileView::select( const KFileViewItem *entry )
+void KFileView::select( const KFileViewItem *item )
 {
-    kDebugInfo(kfile_area, "select %s", entry->name().ascii());
-    assert(entry);
+    assert(item);
+    kDebugInfo(kfile_area, "select %s", item->name().ascii());
 
-    if ( entry->isDir() ) {
-	kDebugInfo(kfile_area, "selectDir %s", entry->name().ascii());
-	sig->activateDir(entry);
+    if ( item->isDir() ) {
+	kDebugInfo(kfile_area, "selectDir %s", item->name().ascii());
+	sig->activateDir(item);
     } else {
-	sig->activateFile(entry);
+	sig->activateFile(item);
     }
 }
 
-void KFileView::highlight( const KFileViewItem *entry )
-{
-    sig->highlightFile(entry);
-}
 
 void  KFileView::updateView(bool f)
 {
@@ -422,14 +414,14 @@ void KFileView::setCurrentItem(const QString &item,
 	KFileViewItem *it = first;
 	while (it) {
 	    if (it->name() == item) {
-		highlightItem(it);
+		setSelected(it, true);
 		highlight(it);
 		return;
 	    }
 	    it = it->next();
 	}
     } else {
-	highlightItem(entry);
+	setSelected(entry, true);
 	return;
     }
 
@@ -474,17 +466,31 @@ const KFileViewItemList * KFileView::selectedItems() const
 
 void KFileView::selectAll()
 {
+    if (selection_mode == KFile::NoSelection || selection_mode== KFile::Single)
+	return;
+
     KFileViewItem *item = 0L;
     for (item = first; item; item = item->next())
-	highlightItem( item );
+	setSelected( item, true );
 }
 
-void KFileView::setSelectMode( SelectionMode sm )
+
+void KFileView::invertSelection()
+{
+    KFileViewItem *item;
+    const KFileViewItemList *list = items();
+    KFileViewItemListIterator it ( *list );
+    for ( ; (item = it.current()); ++it )
+	setSelected( item, isSelected( item ) );
+}
+
+
+void KFileView::setSelectionMode( KFile::SelectionMode sm )
 {
     selection_mode = sm;
 }
 
-KFileView::SelectionMode KFileView::selectMode() const
+KFile::SelectionMode KFileView::selectionMode() const
 {
     return selection_mode;
 }
@@ -494,10 +500,4 @@ void KFileView::setViewMode( ViewMode vm )
     view_mode = vm;
 }
 
-KFileView::ViewMode KFileView::viewMode() const
-{
-    return view_mode;
-}
-
 #include "kfileview.moc"
-

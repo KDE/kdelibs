@@ -30,7 +30,8 @@
 
 #include <kdialogbase.h>
 
-#include "kfilereader.h"
+#include <kfile.h>
+#include <kfilereader.h>
 
 class QCheckBox;
 class QHBoxLayout;
@@ -56,8 +57,9 @@ struct KFileDialogPrivate;
  * The widget can be used as a drop in replacement for the
  * @ref  QFileDialog widget, but has greater functionality and a nicer GUI.
  *
- * You will usually want to use one of the two static methods
- * @ref getOpenFileName() or @ref getSaveFileName().
+ * You will usually want to use one of the static methods
+ * @ref getOpenFileName(), @ref getSaveFileName(), @ref getOpenURL()
+ * or for multiple files @ref getOpenFileNames() or @ref getOpenURLs()
  *
  * The dialog has been designed to allow applications to customise it
  * by subclassing. It uses geometry management to ensure that subclasses
@@ -65,26 +67,13 @@ struct KFileDialogPrivate;
  *
  * @short A file selection dialog.
  *
- * @author Richard J. Moore rich@kde.org
+ * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KFileDialog : public KDialogBase
 {
     Q_OBJECT
 
 public:
-    /**
-     * Modes of operation for the dialog.
-     * @li @p File - Get a single file name from the user.
-     * @li @p Directory - Get a directory name from the user.
-     * @li @p Files - Get multiple file names from the user.
-     * @li @p Preview - Show a preview of the file that has the user's attention.
-     **/
-    enum Mode {
-	File = 1,
-	Directory = 2,
-	Files = 4,
-    Preview = 8
-    };
     /**
       * Construct a KFileDialog
       *
@@ -104,9 +93,14 @@ public:
     ~KFileDialog();
 
     /**
-      * Retrieve the fully qualified filename.
-      */
+     * Retrieve the fully qualified filename.
+     */
     KURL selectedURL() const;
+
+    /**
+     * Retrieve the list a selected URLs
+     */
+    QValueList<KURL> selectedURLs() const;
 
     /**
      * Retrieve the current directory.
@@ -114,9 +108,14 @@ public:
     KURL baseURL() const;
 
     /**
-      * @return Full path in local filesystem. (Local files only)
-      */
+     * @return Full path in local filesystem. (Local files only)
+     */
     QString selectedFile() const;
+
+    /**
+     * @returns a list of all selected local files
+     */
+    QStringList selectedFiles() const;
 
     /**
      * Set the directory to view.
@@ -177,7 +176,7 @@ public:
     void setPreviewWidget(const QWidget *w);
 
     /**
-     * Thi method creates a modal file dialog and returns the selected
+     * This method creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen.
      *
      * Note that with
@@ -192,6 +191,59 @@ public:
 				   const QString& filter= QString::null,
 				   QWidget *parent= 0,
 				   const QString& caption = QString::null);
+
+
+    /**
+     * This method creates a modal file dialog and returns the selected
+     * filenames or an empty list if none was chosen.
+     *
+     * Note that with
+     * this method the user must select an existing filename.
+     *
+     * @param dir This specifies the path the dialog will start in.
+     * @param filter This is a space seperated list of shell globs.
+     * @param parent The widget the dialog will be centered on initially.
+     * @param name The name of the dialog widget.
+     */
+    static QStringList getOpenFileNames(const QString& dir= QString::null,
+					const QString& filter= QString::null,
+					QWidget *parent = 0,
+					const QString& caption= QString::null);
+
+    /**
+     * This method creates a modal file dialog and returns the selected
+     * URL or an empty string if none was chosen.
+     *
+     * Note that with
+     * this method the user must select an existing URL.
+     *
+     * @param dir This specifies the path the dialog will start in.
+     * @param filter This is a space seperated list of shell globs.
+     * @param parent The widget the dialog will be centered on initially.
+     * @param name The name of the dialog widget.
+     */
+    static KURL getOpenURL(const QString& dir= QString::null,
+			      const QString& filter= QString::null,
+			      QWidget *parent= 0,
+			      const QString& caption = QString::null);
+
+
+    /**
+     * This method creates a modal file dialog and returns the selected
+     * URLs or an empty list if none was chosen.
+     *
+     * Note that with
+     * this method the user must select an existing filename.
+     *
+     * @param dir This specifies the path the dialog will start in.
+     * @param filter This is a space seperated list of shell globs.
+     * @param parent The widget the dialog will be centered on initially.
+     * @param name The name of the dialog widget.
+     */
+    static QValueList<KURL> getOpenURLs(const QString& dir= QString::null,
+					const QString& filter= QString::null,
+					QWidget *parent = 0,
+					const QString& caption= QString::null);
 
     /**
      * Creates a modal file dialog and returns the selected
@@ -212,6 +264,22 @@ public:
 
     /**
      * Creates a modal file dialog and returns the selected
+     * filename or an empty string if none was chosen.
+     *
+     * Note that with this
+     * method the user need not select an existing filename.
+     *
+     * @param dir This specifies the path the dialog will start in.
+     * @param filter This is a space seperated list of shell globs.
+     * @param parent The widget the dialog will be centered on initially.
+     * @param caption The name of the dialog widget.
+     */
+    static KURL getSaveURL(const QString& dir= QString::null,
+			      const QString& filter= QString::null,
+			      QWidget *parent= 0,
+			      const QString& caption = QString::null);
+    /**
+     * Creates a modal file dialog and returns the selected
      * directory or an empty string if none was chosen.
      *
      * Note that with this
@@ -223,7 +291,7 @@ public:
      */
     static QString getExistingDirectory(const QString & dir = QString::null,
 					QWidget * parent = 0,
-					const QString& caption = QString::null);
+					const QString& caption= QString::null);
 
     /**
      * Show the widget.
@@ -233,12 +301,12 @@ public:
     /**
      * Set the mode of the dialog.
      */
-    void setMode( Mode m );
+    void setMode( KFile::Mode m );
 
     /**
      * Retrieve the mode of the filedialog.
      */
-    Mode mode() const;
+    KFile::Mode mode() const;
 
     /**
      * sets the text to be displayed in front of the
@@ -249,7 +317,7 @@ public:
     void setLocationLabel(const QString& text);
 
     /**
-     * KFileDialog uses chhdir() to change the current working directory to
+     * KFileDialog uses chdir() to change the current working directory to
      * increase performance. If you don't like this, disable it.
      *
      * When using one of the static methods, e.g. @ref getOpenFileName,
@@ -319,6 +387,12 @@ protected:
       * txt is a file name
       */
     void checkPath(const QString& txt, bool takeFiles = false);
+
+    /**
+     * called when an item is highlighted/selected in multiselection mode.
+     * handles setting the locationEdit.
+     */
+    void multiSelectionChanged(const KFileViewItem *);
 
 protected slots:
     void urlEntered(const KURL&);

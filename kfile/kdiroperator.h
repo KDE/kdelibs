@@ -1,6 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Stephan Kulow <coolo@kde.org>
+		  2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,11 +27,9 @@
 #include <kaction.h>
 #include <kcompletion.h>
 
-
-#include "kfileviewitem.h"
-
-// for public enums - may move to KFile (TODO)
-#include "kfiledialog.h"
+#include <kfileview.h>
+#include <kfileviewitem.h>
+#include <kfile.h>
 
 class QPopupMenu;
 class QTimer;
@@ -40,7 +39,6 @@ class KToggleAction;
 class KActionSeparator;
 class KActionMenu;
 class KFileReader;
-class KFileView;
 class QWidgetStack;
 class KProgress;
 
@@ -48,15 +46,12 @@ class KDirOperator : public QWidget {
     Q_OBJECT
 	
  public:
-
-    enum FileView { Default = 0, Simple = 1, Detail = 2, Preview = 4, SeparateDirs = 8 };
-
     KDirOperator(const QString& dirName = QString::null,
 		 QWidget *parent = 0, const char* name = 0);
     virtual ~KDirOperator();
 
-    void setShowHiddenFiles ( bool s );
-    bool showHiddenFiles () const;
+    void setShowHiddenFiles ( bool s ) { showHiddenAction->setChecked( s ); }
+    bool showHiddenFiles () const { return showHidden; }
 
     void close();
 
@@ -69,16 +64,27 @@ class KDirOperator : public QWidget {
     //this also reads the current url(), so you better call this after setURL()
     void setView(KFileView *view);
     const KFileView * view() const { return fileView; }
-    void setView(FileView view, bool separateDirs = false);
+    void setView(KFile::FileView view);
+
+    void setSorting( QDir::SortSpec );
+    QDir::SortSpec sorting() const { return mySorting; }
 
     bool isRoot() const;
 
     KFileReader *fileReader() const { return dir; }
 
-    void setMode( KFileDialog::Mode m );
-    KFileDialog::Mode mode() const;
+    void setMode( KFile::Mode m );
+    KFile::Mode mode() const;
 
     void setPreviewWidget(const QWidget *w);
+
+    const KFileViewItemList * selectedItems() const {
+	return ( fileView ? fileView->selectedItems() : 0L );
+    }
+    inline bool isSelected( const KFileViewItem *item ) const {
+	return ( fileView ? fileView->isSelected( item ) : false );
+    }
+
 
     int numDirs() const;
     int numFiles() const;
@@ -89,8 +95,8 @@ class KDirOperator : public QWidget {
      * the signals QActionCollection::inserted() or removed().
      *
      * There are the following actions:
-     * 
-     * @li popupMenu : a ActionMenu presenting a popupmenu with all actions
+     *
+     * @li popupMenu : an ActionMenu presenting a popupmenu with all actions
      * @li up : changes to the parent directory
      * @li back : goes back to the previous directory
      * @li forward : goes forward in the history
@@ -111,15 +117,15 @@ class KDirOperator : public QWidget {
      * @li show hidden : shows hidden files
      * @li separate dirs : shows directories in a separate pane
      *
-     * The short and detailed view are in an exclusive group. The sort-by 
+     * The short and detailed view are in an exclusive group. The sort-by
      * actions are in an exclusive group as well.
      *
-     * You can e.g. use 
+     * You can e.g. use
      * <pre>actionCollection()->action( "up" )->plug( someToolBar );</pre>
-     * to add an button into a toolbar, which makes the dirOperator change to
+     * to add a button into a toolbar, which makes the dirOperator change to
      * its parent directory.
      *
-     * @returns all available Actions 
+     * @returns all available Actions
      */
     QActionCollection * actionCollection() const { return myActionCollection; }
 
@@ -151,6 +157,7 @@ class KDirOperator : public QWidget {
 
     KCompletion myCompletion;
     bool myCompleteListDirty;
+    QDir::SortSpec mySorting;
 
     /**
       * takes action on the new location. If it's a directory, change
@@ -168,12 +175,13 @@ class KDirOperator : public QWidget {
 
     KFileViewItemList pendingMimeTypes;
 
+    // the enum KFile::FileView as an int
     int viewKind;
 
-    KFileDialog::Mode _mode;
+    KFile::Mode myMode;
     KProgress *progress;
 
-    QWidget *preview;    // temporary pointer for the preview widget
+    QWidget *myPreview;    // temporary pointer for the preview widget
 
     // actions for the popupmenus
     KActionMenu *actionMenu;
@@ -187,21 +195,21 @@ class KDirOperator : public QWidget {
     KAction 	*mkdirAction;
 
     KActionMenu *sortActionMenu;
-    KToggleAction *byNameAction;
-    KToggleAction *byDateAction;
-    KToggleAction *bySizeAction;
+    KRadioAction *byNameAction;
+    KRadioAction *byDateAction;
+    KRadioAction *bySizeAction;
     KToggleAction *reverseAction;
     KToggleAction *dirsFirstAction;
     KToggleAction *caseInsensitiveAction;
 
     KActionMenu *viewActionMenu;
-    KToggleAction *shortAction;
-    KToggleAction *detailedAction;
+    KRadioAction *shortAction;
+    KRadioAction *detailedAction;
     KToggleAction *showHiddenAction;
     KToggleAction *separateDirsAction;
-    
+
     QActionCollection *myActionCollection;
-    
+
  public slots:
     void back();
     void forward();
@@ -222,13 +230,8 @@ class KDirOperator : public QWidget {
 
     void selectDir(const KFileViewItem*);
     void selectFile(const KFileViewItem*);
-    void highlightFile(const KFileViewItem*);
     void activatedMenu( const KFileViewItem * );
 
-    void detailedView() 	{ detailedAction->setChecked( true ); }
-    void simpleView() 		{ shortAction->setChecked( true ); }
-    void toggleHidden() 	{ showHiddenAction->setChecked( !showHiddenAction->isChecked() ); }
-    void toggleMixDirsAndFiles(){ separateDirsAction->setChecked( !separateDirsAction->isChecked() ); }
     void sortByName() 		{ byNameAction->setChecked( true ); }
     void sortBySize() 		{ bySizeAction->setChecked( true ); }
     void sortByDate() 		{ byDateAction->setChecked( true ); }
@@ -244,7 +247,7 @@ class KDirOperator : public QWidget {
 private slots:
     void slotDetailedView();
     void slotSimpleView();
-    void slotToggleHidden();
+    void slotToggleHidden( bool );
     void slotToggleMixDirsAndFiles();
     void slotSortByName();
     void slotSortBySize();
@@ -253,7 +256,7 @@ private slots:
     void slotToggleDirsFirst();
     void slotToggleIgnoreCase();
 
-  signals:
+signals:
     void urlEntered(const KURL& );
     void updateInformation(int files, int dirs);
     void completion(const QString&);

@@ -27,7 +27,9 @@ class QLabel;
 
 #include <kiconview.h>
 #include <kiconloader.h>
-#include "kfileview.h"
+#include <kfileview.h>
+
+#include <kfile.h>
 
 class KFileIconViewItem : public QIconViewItem
 {
@@ -62,20 +64,20 @@ public:
     virtual void clearView();
     virtual void setAutoUpdate( bool ) {}
 
-    virtual void setSelectMode( KFileView::SelectionMode sm );
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
 
     virtual void insertItem( KFileViewItem *i );
-    virtual void clearSelection();
+    virtual void setSelectionMode( KFile::SelectionMode sm );
+
+    virtual void setSelected(const KFileViewItem *, bool);
     virtual bool isSelected(const KFileViewItem *i) const;
+    virtual void clearSelection();
 
     void setIconSize( KIconLoader::Size size );
     KIconLoader::Size iconSize() const { return myIconSize; }
 
-protected:
-    virtual void highlightItem(const KFileViewItem *);
-
+    
 private slots:
     void selected( QIconViewItem *item );
     void highlighted( QIconViewItem *item );

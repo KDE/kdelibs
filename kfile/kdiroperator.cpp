@@ -46,8 +46,6 @@
 #include "kfileview.h"
 #include "kfileviewitem.h"
 
-// for public enums
-#include "kfiledialog.h"
 
 template class QStack<KURL>;
 template class QDict<KFileViewItem>;
@@ -58,7 +56,10 @@ KDirOperator::KDirOperator(const QString& dirName,
 			   QWidget *parent, const char* _name)
     : QWidget(parent, _name), fileView(0), oldView(0), progress(0)
 {
-    _mode=KFileDialog::Files;
+    myPreview = 0L;
+    myMode=KFile::File;
+    viewKind = KFile::Simple;
+    mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
 
     if (dirName.isEmpty()) // no dir specified -> current dir
 	lastDirectory = new QString(QDir::currentDirPath());
@@ -88,18 +89,27 @@ KDirOperator::KDirOperator(const QString& dirName,
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver sa(c, ConfigGroup);
-    setShowHiddenFiles(c->readBoolEntry(QString::fromLatin1("ShowHidden"), DefaultShowHidden));
-    setFocusPolicy(QWidget::WheelFocus);
-
+    showHidden = c->readBoolEntry(QString::fromLatin1("ShowHidden"),
+				       DefaultShowHidden);
 
     // action stuff
     setupActions();
     setupMenu();
+
+    setShowHiddenFiles( showHidden );
+    setFocusPolicy(QWidget::WheelFocus);
 }
 
 KDirOperator::~KDirOperator()
 {
     delete fileView;
+}
+
+
+void KDirOperator::setSorting( QDir::SortSpec spec )
+{
+    fileView->setSorting( spec );
+    mySorting = fileView->sorting();
 }
 
 void KDirOperator::readNextMimeType()
@@ -144,12 +154,12 @@ void KDirOperator::activatedMenu( const KFileViewItem *item )
 
 void KDirOperator::setPreviewWidget(const QWidget *w) {
 
-    if(w!=0L)
-        _mode=static_cast<KFileDialog::Mode>(_mode | KFileDialog::Preview);
+    if(w != 0L)
+        viewKind = (viewKind | KFile::PreviewContents & ~KFile::SeparateDirs);
     else
-        _mode=static_cast<KFileDialog::Mode>(_mode & ~KFileDialog::Preview);
-    preview=const_cast<QWidget*>(w);
-    setView(Simple, false);
+        viewKind = (viewKind & ~KFile::PreviewContents);
+    myPreview=const_cast<QWidget*>(w);
+    setView( static_cast<KFile::FileView>(viewKind) );
 }
 
 int KDirOperator::numDirs() const
@@ -164,22 +174,27 @@ int KDirOperator::numFiles() const
 
 void KDirOperator::slotDetailedView()
 {
-    setView(Detail, (viewKind & SeparateDirs) == SeparateDirs);
+    KFile::FileView view = static_cast<KFile::FileView>( viewKind & ~KFile::Simple | KFile::Detail );
+    setView( view );
 }
 
 void KDirOperator::slotSimpleView()
 {
-    setView(Simple, (viewKind & SeparateDirs) == SeparateDirs);
+    KFile::FileView view = static_cast<KFile::FileView>( viewKind & ~KFile::Detail | KFile::Simple );
+    setView( view );
 }
 
-void KDirOperator::slotToggleHidden()
+void KDirOperator::slotToggleHidden( bool show )
 {
-    setShowHiddenFiles(!showHidden);
+    showHidden = show;
+    dir->setShowHiddenFiles( showHidden );
 }
 
 void KDirOperator::slotToggleMixDirsAndFiles()
 {
-    setView(static_cast<FileView>(viewKind & ~SeparateDirs), (viewKind & SeparateDirs) != SeparateDirs);
+    int flag = ((viewKind & KFile::SeparateDirs) == KFile::SeparateDirs) ? 0 : KFile::SeparateDirs;
+    KFile::FileView view = static_cast<KFile::FileView>( viewKind & ~KFile::SeparateDirs | flag );
+    setView( view );
 }
 
 void KDirOperator::slotSortByName()
@@ -539,75 +554,71 @@ bool KDirOperator::isRoot() const
     return dir->isRoot();
 }
 
-void KDirOperator::setShowHiddenFiles(bool b)
+void KDirOperator::setView( KFile::FileView view )
 {
-    showHidden = b;
-    dir->setShowHiddenFiles(b);
-}
+    bool separateDirs = (view & KFile::SeparateDirs) == KFile::SeparateDirs;
 
-bool KDirOperator::showHiddenFiles() const
-{
-    return showHidden;
-}
-
-void KDirOperator::setView(FileView view, bool separateDirs)
-{
     // TODO write the config
-    if (view == Default) {
+    if (view == KFile::Default) {
 	KConfig *c= KGlobal::config();
 	KConfigGroupSaver sc(c, ConfigGroup);
 
-	if ( c->readEntry( QString::fromLatin1("ViewStyle"),
-			   DefaultViewStyle) ==
-	     QString::fromLatin1("DetailView") ) {
-	    view = Detail;
-	} else {
-	    view = Simple;
-	}
+	if (c->readEntry(QString::fromLatin1("ViewStyle"), DefaultViewStyle)
+	    == QString::fromLatin1("DetailView"))
+	    view = KFile::Detail;
+	else
+	    view = KFile::Simple;
 
 	separateDirs = ! c->readBoolEntry( QString::fromLatin1("MixDirsAndFiles"), DefaultMixDirsAndFiles );
     }
 
-    // if only directories separating makes only limited sense :)
-    if ( (mode() & KFileDialog::Directory) == KFileDialog::Directory ||
-         (mode() & KFileDialog::Preview) == KFileDialog::Preview )
-        separateDirs = false;
+    bool preview=( (view & KFile::PreviewInfo) == KFile::PreviewInfo ||
+		   (view & KFile::PreviewContents) == KFile::PreviewContents );
 
-    viewKind = static_cast<int>(view) | (separateDirs ? SeparateDirs : 0);
+    // we only have a dual combi view, not a triple one. So in Directory and
+    // preview mode, we don't allow separating dirs & files
+    if ( (mode() & KFile::Directory) == KFile::Directory || preview )
+	separateDirs = false;
 
-    KFileView *myFileView = 0;
+    viewKind = static_cast<int>(view) | (separateDirs ? KFile::SeparateDirs : 0);
+
+    KFileView *new_view = 0L;
 
     if (separateDirs) {
         KCombiView *combi = new KCombiView(this, "combi view");
-        if (view == Simple) {
+        new_view = combi;
+
+        if ( (view & KFile::Simple) == KFile::Simple ) {
 	    KFileIconView *view = new KFileIconView( combi, "simple view" );
 	    view->setViewName( i18n("Short View") );
             combi->setRight( view );
 	}
         else
             combi->setRight(new KFileDetailView( combi, "detail view" ));
-        myFileView = combi;
+	
     } else {
-        if (view == Simple && (mode() & KFileDialog::Preview)==0) {
-            myFileView = new KFileIconView( this, "simple view" );
-	    myFileView->setViewName( i18n("Short View") );
+        if ( (view & KFile::Simple) == KFile::Simple && !preview ) {
+            new_view = new KFileIconView( this, "simple view" );
+	    new_view->setViewName( i18n("Short View") );
 	}
-        else if (view == Detail && (mode() & KFileDialog::Preview)==0)
-            myFileView = new KFileDetailView( this, "detail view" );
-        else {
-            KFilePreview *tmp=new KFilePreview(this, "preview");
-            tmp->setPreviewWidget(preview, url());
-            myFileView=tmp;
+        else if ( (view & KFile::Detail) == KFile::Detail && !preview )
+            new_view = new KFileDetailView( this, "detail view" );
+
+        else { // FIXME: make Preview and Detail possible?
+            KFilePreview *tmp = new KFilePreview(this, "preview");
+            tmp->setPreviewWidget(myPreview, url());
+            new_view=tmp;
         }
     }
 
-    if ( (mode() & KFileDialog::Directory) )
-        myFileView->setViewMode(KFileView::Directories);
+    if ( (mode() & KFile::Directory) )
+        new_view->setViewMode(KFileView::Directories);
     else
-        myFileView->setViewMode(KFileView::All);
+        new_view->setViewMode(KFileView::All);
 
-    setFocusProxy(myFileView->widget());
-    connectView(myFileView);
+    setFocusProxy(new_view->widget());
+    new_view->setSorting( mySorting );
+    connectView(new_view);
 }
 
 void KDirOperator::deleteOldView()
@@ -618,6 +629,7 @@ void KDirOperator::deleteOldView()
 	oldView = 0;
     }
 }
+
 
 void KDirOperator::connectView(KFileView *view)
 {
@@ -636,19 +648,20 @@ void KDirOperator::connectView(KFileView *view)
     fileView = view;
     fileView->setOperator(this);
 
-    if ( _mode == KFileDialog::File ) {
+    if ( myMode == KFile::File ) {
 	fileView->setViewMode( KFileView::All );
-	fileView->setSelectMode( KFileView::Single );
-    } else if ( _mode == KFileDialog::Directory ) {
+	fileView->setSelectionMode( KFile::Single );
+    } else if ( myMode == KFile::Directory ) {
 	fileView->setViewMode( KFileView::Directories );
-	fileView->setSelectMode( KFileView::Single );
-    } else if ( _mode == KFileDialog::Files ) {
+	fileView->setSelectionMode( KFile::Single );
+    } else if ( myMode == KFile::Files ) {
 	fileView->setViewMode( KFileView::All );
-	fileView->setSelectMode( KFileView::Multi );
+	fileView->setSelectionMode( KFile::Extended );
     }
-    else if( _mode == KFileDialog::Preview ) {
-    fileView->setViewMode( KFileView::All );
-    fileView->setSelectMode( KFileView::Single );
+    else if ( (viewKind & KFile::PreviewContents) == KFile::PreviewContents ||
+	      (viewKind & KFile::PreviewInfo) == KFile::PreviewInfo ) {
+	fileView->setViewMode( KFileView::All );
+	fileView->setSelectionMode( KFile::Single );
     }
 
     dir->listContents();
@@ -677,7 +690,7 @@ void KDirOperator::connectView(KFileView *view)
     dirsFirstAction->setChecked((sorting & QDir::DirsFirst)== QDir::DirsFirst);
     caseInsensitiveAction->setChecked( (sorting & QDir::IgnoreCase ) == QDir::IgnoreCase );
     showHiddenAction->setChecked( showHiddenFiles() );
-    separateDirsAction->setChecked( (viewKind & SeparateDirs) == SeparateDirs);
+    separateDirsAction->setChecked( (viewKind & KFile::SeparateDirs) == KFile::SeparateDirs);
 
     shortAction->setChecked( (fileView->viewName() == i18n("Short View")));
     detailedAction->setChecked((fileView->viewName() ==i18n("Detailed View")));
@@ -699,27 +712,27 @@ void KDirOperator::connectView(KFileView *view)
     fileView->widget()->resize(size());
 }
 
-KFileDialog::Mode KDirOperator::mode() const
+KFile::Mode KDirOperator::mode() const
 {
-    return _mode;
+    return myMode;
 }
 
-void KDirOperator::setMode(KFileDialog::Mode m)
+void KDirOperator::setMode(KFile::Mode m)
 {
-    if (_mode == m)
+    if (myMode == m)
 	return;
 
-    _mode = m;
+    myMode = m;
 
     // reset the view with the different mode
-    setView(static_cast<FileView>(viewKind & ~SeparateDirs), (viewKind & SeparateDirs) == SeparateDirs);
+    setView( static_cast<KFile::FileView>(viewKind) );
 }
 
 void KDirOperator::setView(KFileView *view)
 {
     connectView(view);
     // TODO: this is a hack! It should be 0
-    viewKind = Simple | SeparateDirs;
+    // viewKind = KFile::Simple | KFile::SeparateDirs;
 }
 
 void KDirOperator::setFileReader( KFileReader *reader )
@@ -805,10 +818,6 @@ void KDirOperator::selectFile(const KFileViewItem *item)
     finished = false;
 }
 
-void KDirOperator::highlightFile(const KFileViewItem *i)
-{
-    emit fileHighlighted(i);
-}
 
 void KDirOperator::filterChanged()
 {
@@ -884,7 +893,7 @@ void KDirOperator::setupActions()
 
     upAction = KStdAction::up( this, SLOT( cdUp() ), this, "up" );
     backAction = KStdAction::back( this, SLOT( back() ), this, "back" );
-    forwardAction = KStdAction::forward( this, SLOT(forward()), this, "forward");
+    forwardAction = KStdAction::forward(this, SLOT(forward()), this,"forward");
     homeAction = KStdAction::home( this, SLOT( home() ), this, "home" );
     reloadAction =KStdAction::redisplay(this,SLOT(rereadDir()),this, "reload");
     actionSeparator = new KActionSeparator( this, "separator" );
@@ -892,44 +901,48 @@ void KDirOperator::setupActions()
 				 this, SLOT( mkdir() ), this, "mkdir");
     reloadAction->setText( i18n("Reload") );
 
-
+    
+    // the sort menu actions
     sortActionMenu = new KActionMenu( i18n("Sorting"), this, "sorting menu");
-    byNameAction = new KToggleAction( i18n("By Name"), 0,
-					this, SLOT( slotSortByName() ),
-					this, "by name" );
-    byDateAction = new KToggleAction( i18n("By Date"), 0,
-					this, SLOT( slotSortByDate() ),
-					this, "by date" );
-    bySizeAction = new KToggleAction( i18n("By Size"), 0,
-				       this, SLOT( slotSortBySize() ),
-				       this, "by size" );
+    byNameAction = new KRadioAction( i18n("By Name"), 0,
+				     this, SLOT( slotSortByName() ),
+				     this, "by name" );
+    byDateAction = new KRadioAction( i18n("By Date"), 0,
+				     this, SLOT( slotSortByDate() ),
+				     this, "by date" );
+    bySizeAction = new KRadioAction( i18n("By Size"), 0,
+				     this, SLOT( slotSortBySize() ),
+				     this, "by size" );
     reverseAction = new KToggleAction( i18n("Reverse"), 0,
-					 this, SLOT( slotSortReversed() ),
-					 this, "reversed" );
+				       this, SLOT( slotSortReversed() ),
+				       this, "reversed" );
 
     QString sortGroup = QString::fromLatin1("sort");
     byNameAction->setExclusiveGroup( sortGroup );
     byDateAction->setExclusiveGroup( sortGroup );
     bySizeAction->setExclusiveGroup( sortGroup );
 
+    
     dirsFirstAction = new KToggleAction( i18n("Directories first"), 0,
-					 this, SLOT( slotToggleDirsFirst() ),
 					 this, "dirs first");
-    caseInsensitiveAction = new KToggleAction(i18n("Case insensitive"),0, this,
-					      SLOT( slotToggleIgnoreCase() ),
+    caseInsensitiveAction = new KToggleAction(i18n("Case insensitive"), 0,
 					      this, "case insensitive" );
 
+    connect( dirsFirstAction, SIGNAL( toggled( bool ) ), 
+	     SLOT( slotToggleDirsFirst() ));
+    connect( caseInsensitiveAction, SIGNAL( toggled( bool ) ), 
+	     SLOT( slotToggleIgnoreCase() ));
 
+    
+    
+    // the view menu actions
     viewActionMenu = new KActionMenu( i18n("View"), this, "view menu" );
-    shortAction = new KToggleAction( i18n("Short View"), 0,
-				     this, SLOT( slotSimpleView() ),
+    shortAction = new KRadioAction( i18n("Short View"), 0,
 				     this, "short view" );
-    detailedAction = new KToggleAction( i18n("Detailed View"), 0,
-					this, SLOT( slotDetailedView() ),
+    detailedAction = new KRadioAction( i18n("Detailed View"), 0,
 					this, "detailed view" );
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), 0,
-					  this, SLOT( slotToggleHidden() ),
 					  this, "show hidden" );
     separateDirsAction = new KToggleAction( i18n("Separate Directories"), 0,
 					    this,
@@ -940,7 +953,14 @@ void KDirOperator::setupActions()
     shortAction->setExclusiveGroup( viewGroup );
     detailedAction->setExclusiveGroup( viewGroup );
 
+    connect( shortAction, SIGNAL( toggled( bool ) ), 
+	     SLOT( slotSimpleView() ));
+    connect( detailedAction, SIGNAL( toggled( bool ) ), 
+	     SLOT( slotDetailedView() ));
+    connect( showHiddenAction, SIGNAL( toggled( bool ) ), 
+	     SLOT( slotToggleHidden( bool ) ));
 
+    
     // insert them into the actionCollection
     myActionCollection = new QActionCollection( this, "action collection" );
     myActionCollection->insert( actionMenu );

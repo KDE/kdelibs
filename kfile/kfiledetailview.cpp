@@ -67,12 +67,22 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 	     this, SLOT( highlighted( QListViewItem *)	) );
     connect( this, SIGNAL(rightButtonPressed ( QListViewItem *, const QPoint &, int )),
 	     this, SLOT( rightButtonPressed ( QListViewItem * )));
-    /*
-      if ( KFileView::selectMode() == KFileView::Single )
-      KListView::setSelectionMode( QListView::Single );
-      else
-      KListView::setSelectionMode( QListView::Extended );
-    */
+
+    switch ( KFileView::selectionMode() ) {
+    case KFile::Multi:
+	QListView::setSelectionMode( QListView::Multi );
+	break;
+    case KFile::Extended:
+	QListView::setSelectionMode( QListView::Extended );
+	break;
+    case KFile::NoSelection:
+	QListView::setSelectionMode( QListView::NoSelection );
+	break;
+    default: // fall through
+    case KFile::Single:
+	QListView::setSelectionMode( QListView::Single );
+	break;
+    }
 
     setSorting( sorting() );
 }
@@ -81,7 +91,7 @@ KFileDetailView::~KFileDetailView()
 {
 }
 
-void KFileDetailView::highlightItem( const KFileViewItem *info )
+void KFileDetailView::setSelected( const KFileViewItem *info, bool enable )
 {
     if ( !info )
 	return;
@@ -89,10 +99,10 @@ void KFileDetailView::highlightItem( const KFileViewItem *info )
     // we can only hope that this casts works
     KFileListViewItem *item = (KFileListViewItem*)info->viewItem( this );
 
-    if ( item != currentItem() ) {
+    if ( item && item != currentItem() ) {
         KListView::setCurrentItem( item );
 	KListView::ensureItemVisible( item );
-	setSelected( item, TRUE );
+	KListView::setSelected( item, enable );
     }
 }
 
@@ -153,15 +163,25 @@ void KFileDetailView::highlighted( QListViewItem *item )
 	highlight( const_cast<KFileViewItem*>( fi ) );
 }
 
-void KFileDetailView::setSelectMode( KFileView::SelectionMode sm )
+void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
 {
-    KFileView::setSelectMode( sm );
-    /*
-      if ( KFileView::selectMode() == KFileView::Single )
-      KListView::setSelectionMode( QListView::Single );
-      else
-      KListView::setSelectionMode( QListView::Extended );
-    */
+    KFileView::setSelectionMode( sm );
+
+    switch ( KFileView::selectionMode() ) {
+    case KFile::Multi:
+	QListView::setSelectionMode( QListView::Multi );
+	break;
+    case KFile::Extended:
+	QListView::setSelectionMode( QListView::Extended );
+	break;
+    case KFile::NoSelection:
+	QListView::setSelectionMode( QListView::NoSelection );
+	break;
+    default: // fall through
+    case KFile::Single:
+	QListView::setSelectionMode( QListView::Single );
+	break;
+    }
 }
 
 bool KFileDetailView::isSelected( const KFileViewItem *i ) const
@@ -203,6 +223,9 @@ void KFileDetailView::updateView( const KFileViewItem *i )
     viewport()->setUpdatesEnabled( false );
 
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
+    if ( !item )
+	return;
+    
     item->setPixmap( 0, i->pixmap() );
     item->setText( 2, i->access() );
 

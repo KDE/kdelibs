@@ -103,7 +103,7 @@ void KCombiView::insertSorted(KFileViewItem *first, uint )
 	left->insertSorted(d_first, dirs);
     if (files)
 	right->insertSorted(f_first, files);
- 
+
     setFirstItem( right->firstItem() );
 }
 
@@ -148,15 +148,18 @@ bool KCombiView::isSelected( const KFileViewItem *item ) const
     return (left->isSelected( item ) || right->isSelected( item ));
 }
 
-void KCombiView::setSelectMode( KFileView::SelectionMode sm )
+void KCombiView::setSelectionMode( KFile::SelectionMode sm )
 {
-    left->setSelectMode( sm );
-    right->setSelectMode( sm );
+    // I think the left view (directories should always be in
+    // Single-Mode, right?
+    // left->setSelectionMode( sm );
+    right->setSelectionMode( sm );
 }
 
-void KCombiView::highlightItem( const KFileViewItem *)
+void KCombiView::setSelected( const KFileViewItem *item, bool enable )
 {
-    debug("TODO");
+    left->setSelected( item, enable );
+    right->setSelected( item, enable );
 }
 
 void KCombiView::selectDir(const KFileViewItem* item)

@@ -22,9 +22,11 @@
 #ifndef _KCOMBIVIEW_H
 #define _KCOMBIVIEW_H
 
-#include "kfileview.h"
 #include <qsplitter.h>
 #include <klocale.h>
+
+#include <kfile.h>
+#include <kfileview.h>
 
 class KFileIconView;
 class QIconViewItem;
@@ -32,7 +34,7 @@ class QIconViewItem;
 /**
  * This view is designed to combine two KFileViews into one widget, to show
  * directories on the left side and files on the right side.
- * 
+ *
  * Methods like selectedItems() to query status _only_ work on the right side,
  * i.e. on the files.
  */
@@ -53,16 +55,15 @@ public:
 
     void setRight(KFileView *view);
 
-    virtual void setSelectMode( KFileView::SelectionMode sm );
+    virtual void setSelectionMode( KFile::SelectionMode sm );
 
+    virtual void setSelected(const KFileViewItem *, bool);
     virtual bool isSelected( const KFileViewItem * ) const;
-    virtual void insertSorted(KFileViewItem *first, uint counter);
-    virtual void clear();
     virtual void clearSelection();
 
-protected:
+    virtual void insertSorted(KFileViewItem *first, uint counter);
     virtual void insertItem( KFileViewItem *i );
-    virtual void highlightItem(const KFileViewItem *);
+    virtual void clear();
 
 private:
     KFileIconView *left;

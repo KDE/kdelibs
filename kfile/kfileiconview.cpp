@@ -61,14 +61,24 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	     this, SLOT( showToolTip( QIconViewItem * ) ) );
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( removeToolTip() ) );
-    connect( this, SIGNAL( rightButtonPressed( QIconViewItem*, const QPoint&) ),
+    connect( this, SIGNAL( rightButtonPressed( QIconViewItem*, const QPoint&)),
 	     SLOT( slotRightButtonPressed( QIconViewItem* ) ) );
 
-    if ( KFileView::selectMode() == KFileView::Single )
-	QIconView::setSelectionMode( QIconView::Single );
-    else
+    switch ( KFileView::selectionMode() ) {
+    case KFile::Multi:
+	QIconView::setSelectionMode( QIconView::Multi );
+	break;
+    case KFile::Extended:
 	QIconView::setSelectionMode( QIconView::Extended );
-
+	break;
+    case KFile::NoSelection:
+	QIconView::setSelectionMode( QIconView::NoSelection );
+	break;
+    default: // fall through
+    case KFile::Single:
+	QIconView::setSelectionMode( QIconView::Single );
+	break;
+    }
 }
 
 void KFileIconView::removeToolTip()
@@ -116,7 +126,7 @@ KFileIconView::~KFileIconView()
 {
 }
 
-void KFileIconView::highlightItem( const KFileViewItem *info )
+void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
 {
     if ( !info )
 	return;
@@ -124,10 +134,10 @@ void KFileIconView::highlightItem( const KFileViewItem *info )
     // we can only hope that this casts works
     KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
 
-    if ( item != currentItem() ) {
-        QIconView::setCurrentItem( item );
-	QIconView::ensureItemVisible( item );
-	setSelected( item, TRUE );
+    if ( item && item != currentItem() ) {
+        KIconView::setCurrentItem( item );
+	KIconView::ensureItemVisible( item );
+	KIconView::setSelected( item, enable );
     }
 }
 
@@ -175,13 +185,24 @@ void KFileIconView::highlighted( QIconViewItem *item )
 	highlight( const_cast<KFileViewItem*>( fi ) );
 }
 
-void KFileIconView::setSelectMode( KFileView::SelectionMode sm )
+void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
 {
-    KFileView::setSelectMode( sm );
-    if ( KFileView::selectMode() == KFileView::Single )
-	QIconView::setSelectionMode( QIconView::Single );
-    else
+    KFileView::setSelectionMode( sm );
+    switch ( KFileView::selectionMode() ) {
+    case KFile::Multi:
+	QIconView::setSelectionMode( QIconView::Multi );
+	break;
+    case KFile::Extended:
 	QIconView::setSelectionMode( QIconView::Extended );
+	break;
+    case KFile::NoSelection:
+	QIconView::setSelectionMode( QIconView::NoSelection );
+	break;
+    default: // fall through
+    case KFile::Single:
+	QIconView::setSelectionMode( QIconView::Single );
+	break;
+    }
 }
 
 bool KFileIconView::isSelected( const KFileViewItem *i ) const

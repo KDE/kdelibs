@@ -67,20 +67,22 @@ public:
     virtual void clearView();
     virtual void setAutoUpdate( bool ) {}
 
-    virtual void setSelectMode( KFileView::SelectionMode sm );
+    virtual void setSelectionMode( KFile::SelectionMode sm );
 
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
-    virtual void clearSelection();
+
+    virtual void setSelected(const KFileViewItem *, bool);
     virtual bool isSelected(const KFileViewItem *i) const;
+    virtual void clearSelection();
+
+    virtual void insertItem( KFileViewItem *i );
 
     // implemented to get noticed about sorting changes (for sortingIndicator)
     void setSorting( QDir::SortSpec );
     void sortReversed();
 
 protected:
-    virtual void highlightItem(const KFileViewItem *);
-    virtual void insertItem( KFileViewItem *i );
     void setSortIndicator();
 
     QListViewItem *myLastItem;
