@@ -127,6 +127,13 @@ namespace khtml
         void setRequest(Request *_request);
 
         bool canDelete();
+        
+        /*
+         * List of acceptable mimetypes seperated by ",". A mimetype may contain a wildcard.
+         * E.g. "text/*"
+         */
+        QString accept() { return m_accept; }
+        void setAccept(const QString &_accept) { m_accept = _accept; }
 
     protected:
 	DOM::DOMString m_url;
@@ -137,6 +144,7 @@ namespace khtml
         bool m_free;
         bool m_reload;
         Request *m_request;
+        QString m_accept;
     };
 
 

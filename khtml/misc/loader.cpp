@@ -46,6 +46,8 @@
 
 #include <kio/job.h>
 #include <kio/jobclasses.h>
+#include <kglobal.h>
+#include <kimageio.h>
 #include <kdebug.h>
 
 #include "css/css_stylesheetimpl.h"
@@ -334,11 +336,21 @@ void ImageSource::setEOF( bool state )
   eof = state;
 }
 
+static QString buildAcceptHeader()
+{
+  QString result = KImageIO::mimeTypes( KImageIO::Reading ).join(", ");
+  if (result.right(2) == ", ")
+     result = result.left(result.length()-2);
+  return result;
+}
+
 // -------------------------------------------------------------------------------------
 
 CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool reload)
     : QObject(), CachedObject(url, Image, reload)
 {
+    static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );
+
     p = 0;
     m = 0;
     bg = 0;
@@ -349,6 +361,7 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool re
     imgSource = 0;
     gotFrame = false;
     m_baseURL = baseURL;
+    setAccept( acceptHeader );
 
     if ( Cache::autoloadImages() )
       load();
@@ -773,6 +786,8 @@ void Loader::servePendingRequests()
 
   KIO::TransferJob* job = KIO::get( req->object->url().string(), req->object->reload(), false /*no GUI*/);
   job->addMetaData("referrer", req->m_baseURL.string());
+  if (!req->object->accept().isEmpty())
+     job->addMetaData("accept", req->object->accept());
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
