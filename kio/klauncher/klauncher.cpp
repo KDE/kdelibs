@@ -62,7 +62,7 @@ IdleSlave::gotInput()
    if (mConn.read( &cmd, data) == -1)
    {
       // Communication problem with slave.
-      kdDebug(7016) << "SlavePool: No communication with slave." << endl;
+      kdError(7016) << "SlavePool: No communication with slave." << endl;
       delete this;
    }
    else if (cmd == MSG_SLAVE_ACK)
@@ -71,7 +71,7 @@ IdleSlave::gotInput()
    }
    else if (cmd != MSG_SLAVE_STATUS)
    {
-      kdDebug(7016) << "SlavePool: Unexpected data from slave." << endl;
+      kdError(7016) << "SlavePool: Unexpected data from slave." << endl;
       delete this;
    }
    else
@@ -242,7 +242,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    {
       return true;
    }
-   kdDebug(7016) << "Got unknown DCOP function: " << fun << endl;
+   kdWarning(7016) << "Got unknown DCOP function: " << fun << endl;
    return false;
 }
 
@@ -293,7 +293,7 @@ KLauncher::slotKDEInitData(int)
                             sizeof( request_header));
    if (result == -1)
    {
-      kdDebug(7016) << "KLauncher: KDEInit communication error! Commiting suicide!" << endl;
+      kdError(7016) << "KLauncher: KDEInit communication error! Commiting suicide!" << endl;
       destruct(255); // Exit!
    }
    requestData.resize(request_header.arg_length);
@@ -341,7 +341,7 @@ KLauncher::slotKDEInitData(int)
      return;
    }
 
-   kdDebug(7016) << "Unexpected command from KDEInit (" << (unsigned int) request_header.cmd
+   kdWarning(7016) << "Unexpected command from KDEInit (" << (unsigned int) request_header.cmd
                  << ")" << endl;
 }
 
