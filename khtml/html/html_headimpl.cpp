@@ -37,9 +37,6 @@
 #include "css/csshelper.h"
 using namespace khtml;
 
-//#include <qfile.h>
-//#include <qtextstream.h>
-
 #include <kurl.h>
 #include <kio/job.h>
 
