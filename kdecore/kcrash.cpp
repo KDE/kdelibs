@@ -35,7 +35,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include <qwindowdefs.h>
+#include <qwindowdefs.h> 
 #include <kglobal.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -44,21 +44,21 @@
 
 #include <X11/Xlib.h>
 
-KCrash_HandlerType KCrash::_emergencySaveFunction = 0;
-KCrash_HandlerType KCrash::_crashHandler = 0;
+KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
+KCrash::HandlerType KCrash::_crashHandler = 0;
 const char *KCrash::appName = 0;
 const char *KCrash::appPath = 0;
 
-// This function sets the function which should be called when the
+// This function sets the function which should be called when the 
 // application crashes and the
 // application is asked to try to save its data.
 void
-KCrash::setEmergencySaveFunction (KCrash_HandlerType saveFunction)
+KCrash::setEmergencySaveFunction (HandlerType saveFunction)
 {
   _emergencySaveFunction = saveFunction;
-
-  /*
-   * We need at least the default crash handler for
+  
+  /* 
+   * We need at least the default crash handler for 
    * emergencySaveFunction to be called
    */
   if (_emergencySaveFunction && !_crashHandler)
@@ -66,11 +66,11 @@ KCrash::setEmergencySaveFunction (KCrash_HandlerType saveFunction)
 }
 
 
-// This function sets the function which should be responsible for
+// This function sets the function which should be responsible for 
 // the application crash handling.
 
 void
-KCrash::setCrashHandler (KCrash_HandlerType handler)
+KCrash::setCrashHandler (HandlerType handler)
 {
   if (!handler)
     handler = SIG_DFL;
@@ -103,12 +103,12 @@ KCrash::defaultCrashHandler (int signal)
     if (_emergencySaveFunction) {
       _emergencySaveFunction (signal);
     }
-    crashRecursionCounter++; //
+    crashRecursionCounter++; // 
   }
-
+  
   if (crashRecursionCounter < 3)
   {
-    if (appName)
+    if (appName) 
     {
       fprintf(stderr, "KCrash: crashing.... crashRecursionCounter = %d\n", crashRecursionCounter);
       fprintf(stderr, "KCrash: Application Name = %s path = %s\n", appName ? appName : "<unknown>" , appPath ? appPath : "<unknown>");
@@ -193,7 +193,7 @@ KCrash::defaultCrashHandler (int signal)
       fprintf(stderr, "Unknown appname\n");
     }
   }
-
+   
   if (crashRecursionCounter < 4)
   {
      fprintf(stderr, "Unable to start dr. konqi\n");

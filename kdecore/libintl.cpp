@@ -1739,7 +1739,7 @@ extend_alias_table ()
   maxmap = new_size;
 }
 
-extern "C" {
+
 static int
 alias_compare (const struct alias_map *map1,
 	       const struct alias_map *map2)
@@ -1769,7 +1769,6 @@ alias_compare (const struct alias_map *map1,
 
   return c1 - c2;
 #endif
-}
 }
 /* Name of the default text domain.  */
 extern const char _nl_default_default_domain[];

@@ -24,10 +24,6 @@
 
 #include <qstring.h>
 
-extern "C" {
-    typedef void (*KCrash_HandlerType)(int);
-}
-
 /**
  * This class handles segmentation-faults.
  * By default it displays a  message-box saying the application crashed.
@@ -45,6 +41,7 @@ class KCrash
 
  public:
   static void defaultCrashHandler (int signal);
+  typedef void (*HandlerType)(int);
 
   /**
    * Install a function to be called in case a SIGSEGV is caught.
@@ -56,12 +53,12 @@ class KCrash
    * static (if in a class) void myCrashHandler(int);
    */
 
-  static void setCrashHandler (KCrash_HandlerType handler = defaultCrashHandler);
+  static void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
   /**
    * Returns the intalled crash handler
    */
-  static KCrash_HandlerType crashHandler() { return _crashHandler; }
+  static HandlerType crashHandler() { return _crashHandler; }
 
   /**
    * Installs a function which should try to save the applications data.
@@ -69,11 +66,11 @@ class KCrash
    * Therefore, if no crash handler is set, the default crash handler
    * is installed to ensure the save function is called.
    */
-  static void setEmergencySaveFunction (KCrash_HandlerType saveFunction = (KCrash_HandlerType)0);
+  static void setEmergencySaveFunction (HandlerType saveFunction = (HandlerType)0);
   /**
    * Return the currently set emergency save function.
    */
-  static KCrash_HandlerType emergencySaveFunction() { return _emergencySaveFunction; }
+  static HandlerType emergencySaveFunction() { return _emergencySaveFunction; }
 
   /**
    * Sets the application path @param path which should be passed to
@@ -88,8 +85,8 @@ class KCrash
   static void setApplicationName (QString name) { appName = qstrdup(name.local8Bit().data()); }
 
  protected:
-  static KCrash_HandlerType _crashHandler;
-  static KCrash_HandlerType _emergencySaveFunction;
+  static HandlerType _crashHandler;
+  static HandlerType _emergencySaveFunction;
 };
 
 #endif
