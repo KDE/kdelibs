@@ -20,6 +20,7 @@
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
+#include <qtooltip.h>
 #include <qvbox.h>
 #include <qlabel.h>
 #include <qstrlist.h>
@@ -59,6 +60,47 @@
 #include <qstringlist.h>
 #include "kcmoduleproxy.h"
 
+/*
+	Custom QToolTip for the list view.
+	The decision whether or not to show tooltips is taken in
+	maybeTip(). See also the QListView sources from Qt itself.
+*/
+class KPluginListViewToolTip : public QToolTip
+{
+public:
+	KPluginListViewToolTip( QWidget *parent, KListView *lv );
+
+	void maybeTip( const QPoint &pos );
+
+private:
+	KListView *m_listView;
+};
+
+KPluginListViewToolTip::KPluginListViewToolTip( QWidget *parent, KListView *lv )
+: QToolTip( parent ), m_listView( lv )
+{
+}
+
+void KPluginListViewToolTip::maybeTip( const QPoint &pos )
+{
+    if ( !parentWidget() || !m_listView )
+        return;
+
+    QListViewItem *item = m_listView->itemAt( pos );
+    if ( !item )
+        return;
+
+    QString toolTip = i18n( "<qt><table>"
+        "<tr><td><b>Description:</b></td><td>%1</td></tr>"
+        "<tr><td><b>Author:</b></td><td>%2</td></tr>"
+        "<tr><td><b>Version:</b></td><td>%3</td></tr>"
+        "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" ).arg( item->text( 1 ),
+        item->text( 2 ), item->text( 3 ), item->text( 4 ) );
+
+    //kdDebug( 702 ) << k_funcinfo << "Adding tooltip: itemRect: " << itemRect << ", tooltip:  " << toolTip << endl;
+    tip( m_listView->itemRect( item ), toolTip );
+}
+
 struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 {
     KPluginSelectionWidgetPrivate( const QString & _instanceName,
@@ -68,6 +110,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
         , widgetstack( 0 )
         , kps( _kps )
         , config( _config )
+        , tooltip( 0 )
         , catname( _cat )
         , currentplugininfo( 0 )
         , visible( true )
@@ -88,6 +131,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     QWidgetStack * widgetstack;
     KPluginSelector * kps;
     KConfigGroup * config;
+    KPluginListViewToolTip *tooltip;
 
     QDict<KCModuleInfo> pluginconfigmodules;
     QMap<QString, int> widgetIDs;
@@ -145,6 +189,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
     // setup Widgets
     ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     KListView * listview = new KListView( this );
+    d->tooltip = new KPluginListViewToolTip( listview->viewport(), listview );
     connect( listview, SIGNAL( pressed( QListViewItem * ) ), this,
             SLOT( executed( QListViewItem * ) ) );
     connect( listview, SIGNAL( spacePressed( QListViewItem * ) ), this,
@@ -191,6 +236,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
 
 KPluginSelectionWidget::~KPluginSelectionWidget()
 {
+    delete d->tooltip;
     delete d;
 }
 
@@ -481,8 +527,8 @@ class KPluginSelector::KPluginSelectorPrivate
         bool hideconfigpage;
 };
 
-    KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
-    : QWidget( parent, name )
+KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
+: QWidget( parent, name )
 , d( new KPluginSelectorPrivate )
 {
     QBoxLayout * vbox = new QVBoxLayout( this, 0, KDialog::spacingHint() );
