@@ -1236,7 +1236,7 @@ const char *HTTPProtocol::getUserAgentString ()
 {
   // This is kio_http, but what we want to show the world
   // is probably more "Konqueror".
-  QString user_agent("Mozilla/4.0 (compatible; Konqueror; $Revision$)");
+  QString user_agent("Konqueror ($Revision$)");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
