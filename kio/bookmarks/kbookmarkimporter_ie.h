@@ -24,6 +24,8 @@
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
+#include <kbookmarkimporter.h>
+
 /**
  * A class for importing IE bookmarks
  * @deprecated
