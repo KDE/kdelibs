@@ -868,21 +868,6 @@ KJSO *DebugNode::evaluate()
   return new KJSCompletion(Normal);
 }
 
-// for debugging purposes
-KJSO *AlertNode::evaluate()
-{
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr s = toString(v);
-
-  cout << "---> " << s->sVal().ascii() << endl;
-  //  UString u = s->sVal();
-  //  QString str = QString((QChar*) u.unicode(), u.length());
-  //  QMessageBox::information(0L, "KJS", str);
-
-  return new KJSCompletion(Normal);
-}
-
 ArgumentListNode::ArgumentListNode(Node *e) : list(0L), expr(e) {}
 
 VarDeclNode::VarDeclNode(const CString &id, AssignExprNode *in)

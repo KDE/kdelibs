@@ -536,15 +536,6 @@ private:
   Node *expr;
 };
 
-// for debugging
-class AlertNode : public StatementNode {
-public:
-  AlertNode(Node *e) : expr(e) { }
-  KJSO *evaluate();
-private:
-  Node *expr;
-};
-
 };
 
 #endif

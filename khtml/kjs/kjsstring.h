@@ -26,6 +26,7 @@
 namespace DOM {
   class DOMString;
 };
+class QString;
 
 namespace KJS {
 
@@ -69,7 +70,9 @@ namespace KJS {
 
     void append(const UString &);
 
+    // to be implemented when needed, e.g. in a module
     DOM::DOMString string() const;
+    QString qstring() const;
 
     UString &operator=(const char *c);
     UString &operator=(const UString &);

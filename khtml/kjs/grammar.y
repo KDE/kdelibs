@@ -285,7 +285,7 @@ Statement:
   | ReturnStatement
   | WithStatement
   | DEBUG '(' Expr ')'             { $$ = new DebugNode($3); }
-  | ALERT '(' Expr ')'             { $$ = new AlertNode($3); }
+  | ALERT '(' Expr ')'             { /* TODO: remove rule */ }
 ;
 
 Block:

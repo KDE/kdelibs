@@ -647,6 +647,5 @@ struct KJSLexer::keyword KJSLexer::keytable[] = {
   { "try",       RESERVED },
   // extension for debugging purposes
   { "debug",     DEBUG },
-  { "alert",     ALERT },
   { 0,             0      }
 };

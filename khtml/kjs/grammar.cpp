@@ -1274,7 +1274,7 @@ case 97:
     break;}
 case 98:
 #line 288 "grammar.y"
-{ yyval.stat = new AlertNode(yyvsp[-1].node); ;
+{ /* TODO: remove rule */ ;
     break;}
 case 99:
 #line 292 "grammar.y"
