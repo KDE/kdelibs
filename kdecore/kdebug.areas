@@ -117,6 +117,7 @@
 7108	kio_info
 7109	kio_tar
 7110	kio_gzip
+7111	kio_sql
 7113	kio_http_debug
 
 # old stuff
@@ -138,6 +139,12 @@
 
 # toys and games
 10000   amor
+
+20000   KDB (core)
+20001   KDB (ui)
+20010   KDB (DBEngine)
+20011   KDB (Connection)
+20012   KDB (plugin)
 
 # 30001-40000 are for KOffice
 30001	koffice (lib koml)
