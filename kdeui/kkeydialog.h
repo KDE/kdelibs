@@ -171,6 +171,9 @@ class KKeyChooser : public QWidget
         void removeStandardShortcut( const QString& name );
         void removeGlobalShortcut( const QString& name );
         bool resetShortcut( const QString& name );
+        
+ private slots:
+        void captureCurrentItem();
 
 #ifndef KDE_NO_COMPAT
  public:
