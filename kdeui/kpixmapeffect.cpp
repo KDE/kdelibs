@@ -295,3 +295,14 @@ KPixmap& KPixmapEffect::desaturate(KPixmap &pixmap, float desat)
 
     return pixmap;
 }
+// -----------------------------------------------------------------------------
+KPixmap& KPixmapEffect::contrast(KPixmap &pixmap, int c)
+{
+    QImage img = pixmap.convertToImage();
+    KImageEffect::contrast(img, c);
+    pixmap.convertFromImage(img);
+
+    return pixmap;
+}
+
+

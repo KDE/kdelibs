@@ -184,6 +184,16 @@ public:
      * @return Returns the @ref #pixmap, provided for convenience.
      */
     static KPixmap& desaturate(KPixmap& pixmap, float desat = 0.3);
+
+    /**
+     * Modifies the contrast of a pixmap.
+     *
+     * @param pixmap The pixmap to process.
+     * @param c a contrast value between -255 and 255
+     * @return Returns the @ref #pixmap, provided for convenience.
+     */
+    static KPixmap& contrast(KPixmap& pixmap, int c);
+
 };
 
 

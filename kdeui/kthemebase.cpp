@@ -278,6 +278,8 @@ KThemeBase::KThemeBase(const QString &)
     KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_default("data") + "kstyle/pixmaps/");
     readConfig(Qt::WindowsStyle);
     cache = new KThemeCache(cacheSize);
+    setButtonDefaultIndicatorWidth(0);
+
 }
 
 void KThemeBase::applyConfigFile(const QString &file)

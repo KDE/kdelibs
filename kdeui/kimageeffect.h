@@ -166,7 +166,13 @@ public:
      * @return Returns the @ref #image, provided for convenience.
      */
     static QImage& desaturate(QImage &image, float desat = 0.3);
-
+    /**
+     * Modifies the contrast of an image.
+     * @param image The QImage to process.
+     * @param c A contrast value between -255 to 255.
+     * @return Returns the @ref #image, provided for convenience.
+     */
+    static QImage& contrast(QImage &image, int c);
 private:
 
     /**

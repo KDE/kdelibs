@@ -1188,15 +1188,54 @@ QImage& KImageEffect::desaturate(QImage &img, float desat)
     if (desat < 0) desat = 0.;
     if (desat > 1) desat = 1.;
     int pixels = img.depth() > 8 ? img.width()*img.height() :
-		 img.numColors();
+        img.numColors();
     unsigned int *data = img.depth() > 8 ? (unsigned int *)img.bits() :
-		 (unsigned int *)img.colorTable();
+        (unsigned int *)img.colorTable();
     int h, s, v, i;
+    QColor clr; // keep constructor out of loop (mosfet)
     for(i=0; i < pixels; ++i){
-	QColor clr(data[i]);
+        clr.setRgb(data[i]);
 	clr.hsv(&h, &s, &v);
 	clr.setHsv(h, (int)(s * (1. - desat)), v);
 	data[i] = clr.rgb();
     }
     return img;
 }
+
+// Contrast stuff (mosfet)
+QImage& KImageEffect::contrast(QImage &img, int c)
+{
+    if(c > 255)
+        c = 255;
+    if(c < -255)
+        c =  -255;
+    int pixels = img.depth() > 8 ? img.width()*img.height() :
+        img.numColors();
+    unsigned int *data = img.depth() > 8 ? (unsigned int *)img.bits() :
+        (unsigned int *)img.colorTable();
+    int i, r, g, b;
+    for(i=0; i < pixels; ++i){
+        r = qRed(data[i]);
+        g = qGreen(data[i]);
+        b = qBlue(data[i]);
+        if(qGray(data[i]) <= 127){
+            if(r - c <= 255)
+                r -= c;
+            if(g - c <= 255)
+                g -= c;
+            if(b - c <= 255)
+                b -= c;
+        }
+        else{
+            if(r + c <= 255)
+                r += c;
+            if(g + c <= 255)
+                g += c;
+            if(b + c <= 255)
+                b += c;
+        }
+        data[i] = QRgb(r, g, b);
+    }
+    return(img);
+}
+
