@@ -6,7 +6,7 @@
 
 static KCmdLineOptions options[] =
 {
-	{ "config", I18N_NOOP("Configure KDE Print"), 0 },
+	{ "kdeconfig", I18N_NOOP("Configure KDE Print"), 0 },
 	{ "serverconfig", I18N_NOOP("Configure print server"), 0 },
 	{0, 0, 0}
 };
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
 	KApplication app;
 	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();
-	bool	doConfig = args->isSet("config");
+	bool	doConfig = args->isSet("kdeconfig");
 	bool	doSrvConfig = args->isSet("serverconfig");
 
 	if (doConfig)
