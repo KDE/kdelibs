@@ -270,7 +270,7 @@ int KProcess::exitStatus()
 
 
 
-bool KProcess::writeStdin(char *buffer, int buflen)
+bool KProcess::writeStdin(const char *buffer, int buflen)
 {
   bool rv;
 

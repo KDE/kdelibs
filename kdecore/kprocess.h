@@ -272,7 +272,7 @@ public:
 	 data has been sent or a "processHasExited" signal shows that
 	 the child process is no longer alive...
   */
-  bool writeStdin(char *buffer, int buflen);
+  bool writeStdin(const char *buffer, int buflen);
 
   /**
      This causes the stdin file descriptor of the child process to be
@@ -493,7 +493,7 @@ protected:
    
   // information about the data that has to be sent to the child:
 
-  char *input_data;  // the buffer holding the data
+  const char *input_data;  // the buffer holding the data
   int input_sent;    // # of bytes already transmitted
   int input_total;   // total length of input_data
 

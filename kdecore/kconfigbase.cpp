@@ -821,7 +821,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QProperty &prop,
       writeEntry( pKey, prop.stringValue(), bPersistent, bGlobal, bNLS );
       break;
     case QProperty::StringListType:
-      writeEntry( pKey, prop.stringListValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.stringListValue(), ',', bPersistent, bGlobal, bNLS );
       break;
     case QProperty::IntListType:
       ASSERT( 0 );
