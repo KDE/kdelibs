@@ -88,8 +88,8 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 }
 
 // init the interpreter
-  KJScript* kjs_create(KHTMLPart *khtmlpart)
-  {
+KJScript* kjs_create(KHTMLPart *khtmlpart)
+{
     // Creating an interpreter doesn't mean it should be made current !
     KJScript *current = KJScript::current();
 
@@ -103,13 +103,13 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 
     KJScript::setCurrent(current);
     return script;
-  }
+}
 
   // evaluate code. Returns the JS return value or an invalid QVariant
   // if there was none, an error occured or the type couldn't be converted.
-  QVariant kjs_eval(KJScript *script, const QChar *c, unsigned int len,
-		    const DOM::Node &n, KHTMLPart *khtmlpart)
-  {
+QVariant kjs_eval(KJScript *script, const QChar *c, unsigned int len,
+                  const DOM::Node &n, KHTMLPart *khtmlpart)
+{
     script->init(); // set a valid current interpreter
 
 #ifdef KJS_DEBUGGER
@@ -123,7 +123,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
     KJS::Global::current().setExtra(khtmlpart);
     bool ret = script->evaluate(thisNode, c, len);
     if (script->recursion() == 0)
-      KJS::Global::current().setExtra(0L);
+        KJS::Global::current().setExtra(0L);
 
 #ifdef KJS_DEBUGGER
     kjs_html_debugger->setCode(QString::null);
@@ -134,38 +134,41 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
       return KJSOToVariant(script->returnValue());
     else
       return QVariant();
-  }
+}
+
   // clear resources allocated by the interpreter
-  void kjs_clear(KJScript *script, KHTMLPart * part)
-  {
+void kjs_clear(KJScript *script, KHTMLPart * part)
+{
     script->clear();
     Window *win = Window::retrieveWindow(part);
     if (win)
         win->clear();
     //    delete script;
-  }
+}
+
   // for later extensions.
-  const char *kjs_special(KJScript *, const char *)
-  {
+const char *kjs_special(KJScript *, const char *)
+{
     // return something like a version number for now
     return "1";
-  }
-  void kjs_destroy(KJScript *script)
-  {
-    delete script;
-  }
+}
 
-  DOM::EventListener* kjs_createHTMLEventHandler(KJScript *script, QString code, KHTMLPart *part)
-  {
+void kjs_destroy(KJScript *script)
+{
+    delete script;
+}
+
+DOM::EventListener* kjs_createHTMLEventHandler(KJScript *script, QString code, KHTMLPart *part)
+{
     script->init(); // set a valid current interpreter
+    KJS::Global::current().setExtra(part);
     KJS::Constructor constr(KJS::Global::current().get("Function").imp());
     KJS::List args;
     args.append(KJS::String("event"));
     args.append(KJS::String(code));
     KJS::KJSO handlerFunc = constr.construct(args);
+    if (script->recursion() == 0)
+        KJS::Global::current().setExtra(0L);
+
     return KJS::Window::retrieveWindow(part)->getJSEventListener(handlerFunc,true);
-  }
-
-
-
-
+}
