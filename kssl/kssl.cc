@@ -95,9 +95,9 @@ int rc = 0;
   if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
     rc = d->kossl->RAND_egd(m_cfg->getEGDPath().latin1());
     if (rc < 0) 
-      kdDebug() << "KSSL: Error seeding PRNG with the EGD." << endl;
+      kdDebug(7029) << "KSSL: Error seeding PRNG with the EGD." << endl;
     else 
-      kdDebug() << "KSSL: PRNG was seeded with " << rc 
+      kdDebug(7029) << "KSSL: PRNG was seeded with " << rc 
                 << " bytes from the EGD." << endl;
   }
   #endif
@@ -107,7 +107,7 @@ int rc = 0;
 
 bool KSSL::TLSInit() {
 #ifdef HAVE_SSL
-  // kdDebug() << "KSSL TLS initialize" << endl;
+  // kdDebug(7029) << "KSSL TLS initialize" << endl;
   if (m_bInit) return false;
 
   if (m_bAutoReconfig)
@@ -139,7 +139,7 @@ return false;
 
 bool KSSL::initialize() {
 #ifdef HAVE_SSL
-  kdDebug() << "KSSL initialize" << endl;
+  kdDebug(7029) << "KSSL initialize" << endl;
   if (m_bInit) return false;
 
   if (m_bAutoReconfig)
@@ -160,9 +160,9 @@ bool KSSL::initialize() {
     d->m_meth = d->kossl->SSLv2_client_method();
 
   /*
-  if (m_cfg->sslv2() && m_cfg->sslv3()) kdDebug() << "Double method" << endl;
-  else if (m_cfg->sslv2()) kdDebug() << "SSL2 method" << endl;
-  else if (m_cfg->sslv3()) kdDebug() << "SSL3 method" << endl;
+  if (m_cfg->sslv2() && m_cfg->sslv3()) kdDebug(7029) << "Double method" << endl;
+  else if (m_cfg->sslv2()) kdDebug(7029) << "SSL2 method" << endl;
+  else if (m_cfg->sslv3()) kdDebug(7029) << "SSL3 method" << endl;
   */
 
   d->m_ctx = d->kossl->SSL_CTX_new(d->m_meth);
@@ -187,7 +187,7 @@ return false;
 
 void KSSL::close() {
 #ifdef HAVE_SSL
-  //kdDebug() << "KSSL close" << endl;
+  //kdDebug(7029) << "KSSL close" << endl;
   if (!m_bInit) return;
   if (d->m_ssl) {
      d->kossl->SSL_shutdown(d->m_ssl);
@@ -222,7 +222,7 @@ bool KSSL::setVerificationLogic() {
 
 int KSSL::connect(int sock) {
 #ifdef HAVE_SSL
-  // kdDebug() << "KSSL connect" << endl;
+  // kdDebug(7029) << "KSSL connect" << endl;
   int rc;
   if (!m_bInit) return -1;
   d->m_ssl = d->kossl->SSL_new(d->m_ctx);
@@ -241,17 +241,17 @@ int KSSL::connect(int sock) {
   if (rc == 1) {
     setConnectionInfo();
     setPeerInfo(sock);
-    kdDebug() << "KSSL connected OK" << endl;
+    kdDebug(7029) << "KSSL connected OK" << endl;
   } else {
-    kdDebug() << "KSSL connect failed - rc = " << rc << endl;
-    kdDebug() << "                      ERROR = " << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
+    kdDebug(7029) << "KSSL connect failed - rc = " << rc << endl;
+    kdDebug(7029) << "                      ERROR = " << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
     if (m_cfg->sslv2() && m_cfg->sslv3()) {
       m_cfg->setSSLv2(true);
       m_cfg->setSSLv3(false);
       m_bAutoReconfig = false;
       m_bInit = false;
       d->kossl->SSL_CTX_free(d->m_ctx);
-      kdDebug() << "KSSL connecting again" << endl;
+      kdDebug(7029) << "KSSL connecting again" << endl;
       initialize();
       rc = KSSL::connect(sock);
       if (rc == 1) {
@@ -260,7 +260,7 @@ int KSSL::connect(int sock) {
       } else {
 	m_cfg->setSSLv3(true);
 	m_bAutoReconfig = true;
-	kdDebug() << "KSSL connect FAILED" << endl;
+	kdDebug(7029) << "KSSL connect FAILED" << endl;
 	return -1;
       }
     } else return -1;
@@ -328,7 +328,7 @@ void KSSL::setConnectionInfo() {
   buf[0] = 0;  // for safety.
   sc = d->kossl->SSL_get_current_cipher(d->m_ssl);
   if (!sc) {
-   kdDebug() << "KSSL get current cipher failed - we're probably gonna crash!" << endl;
+   kdDebug(7029) << "KSSL get current cipher failed - we're probably gonna crash!" << endl;
   return;
   }
   // set the number of bits, bits used
@@ -382,13 +382,13 @@ bool KSSL::setClientCertificate(KSSLPKCS12 *pkcs) {
 
   rc = d->kossl->SSL_CTX_use_certificate(d->m_ctx, x);
   if (rc <= 0) {
-    kdDebug() << "KSSL - SSL_CTX_use_certificate failed.  rc = " << rc << endl;
+    kdDebug(7029) << "KSSL - SSL_CTX_use_certificate failed.  rc = " << rc << endl;
     return false;
   }
 
   rc = d->kossl->SSL_CTX_use_PrivateKey(d->m_ctx, k);
   if (rc <= 0) {
-    kdDebug() << "KSSL - SSL_CTX_use_PrivateKey failed.  rc = " << rc << endl;
+    kdDebug(7029) << "KSSL - SSL_CTX_use_PrivateKey failed.  rc = " << rc << endl;
     return false;
   }
 

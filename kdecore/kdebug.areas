@@ -133,6 +133,7 @@
 7025        kpac
 7026        kio (KShred)
 7028        kio (Observer)
+7029        kssl
 
 # 71xx        are for kioslaves
 7101        kio_file

@@ -66,12 +66,12 @@ bool KSSLPeerInfo::certMatchesAddress() {
   QList<KAddressInfo> cns = KExtendedSocket::lookup(certinfo.getValue("CN").latin1(), 0, 0, &err);
   cns.setAutoDelete(true);
 
-  kdDebug() << "The original ones were: " << d->host->nodeName()
+  kdDebug(7029) << "The original ones were: " << d->host->nodeName()
             << " and: " << certinfo.getValue("CN").latin1()
             << endl;
 
   for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
-     // kdDebug() << "Found address: " << (**x).pretty() << endl;
+     // kdDebug(7029) << "Found address: " << (**x).pretty() << endl;
      if ((*x).address()->isCoreEqual(d->host))
         return true;
   }
