@@ -23,7 +23,7 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
-#include <klineeditdlg.h>
+#include <kinputdialog.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
 
@@ -228,11 +228,12 @@ void DistributionListEditorWidget::slotSelectionEntryViewChanged()
 
 void DistributionListEditorWidget::newList()
 {
-  KLineEditDlg dlg(i18n("Please enter name:"), QString::null, this);
-  dlg.setCaption(i18n("New Distribution List"));
-  if (!dlg.exec()) return;
+  bool ok;
+  QString name = KInputDialog::getText( i18n( "New Distribution List" ),
+    i18n( "Please enter &name:" ), QString::null, &ok );
+  if (!ok) return;
 
-  new DistributionList( mManager, dlg.text() );
+  new DistributionList( mManager, name );
 
   mNameCombo->clear();
   mNameCombo->insertStringList( mManager->listNames() );
@@ -245,13 +246,13 @@ void DistributionListEditorWidget::newList()
 void DistributionListEditorWidget::editList()
 {
   QString oldName = mNameCombo->currentText();
-  
-  KLineEditDlg dlg(i18n("Please change name:"), oldName, this);
-  dlg.setCaption(i18n("Distribution List"));
-  if (!dlg.exec()) return;
+  bool ok;
+  QString name = KInputDialog::getText( i18n( "Distribution List" ),
+    i18n( "Please change &name:" ), oldName, &ok );
+  if (!ok) return;
 
   DistributionList *list = mManager->list( oldName );
-  list->setName( dlg.text() );
+  list->setName( name );
 
   mNameCombo->clear();
   mNameCombo->insertStringList( mManager->listNames() );

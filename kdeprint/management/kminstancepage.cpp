@@ -33,7 +33,7 @@
 #include <qwhatsthis.h>
 #include <qpushbutton.h>
 #include <kmessagebox.h>
-#include <klineeditdlg.h>
+#include <kinputdialog.h>
 #include <klistbox.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -136,7 +136,7 @@ void KMInstancePage::slotNew()
 	KMTimer::self()->hold();
 
 	bool	ok(false);
-	QString	name = KLineEditDlg::getText(i18n("Instance Name"),i18n("Enter name for new instance (leave untouched for default):"),
+	QString	name = KInputDialog::getText(i18n("Instance Name"),i18n("Enter name for new instance (leave untouched for default):"),
 			                     i18n("(Default)"),&ok,this);
 	if (ok)
 	{
@@ -181,7 +181,7 @@ void KMInstancePage::slotCopy()
 	if (!src.isEmpty())
 	{
 		bool	ok(false);
-		QString	name = KLineEditDlg::getText(i18n("Instance Name"),i18n("Enter name for new instance (leave untouched for default):"),
+		QString	name = KInputDialog::getText(i18n("Instance Name"),i18n("Enter name for new instance (leave untouched for default):"),
 				                     i18n("(Default)"),&ok,this);
 		if (ok)
 		{

@@ -29,7 +29,7 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qlineedit.h>
-#include <klineeditdlg.h>
+#include <kinputdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
@@ -183,7 +183,7 @@ void KXmlCommandSelector::setCommand(const QString& cmd)
 void KXmlCommandSelector::slotAddCommand()
 {
 	bool	ok(false);
-	QString	cmdId = KLineEditDlg::getText(i18n("Command Name"), i18n("Enter an identification name for the new command:"), QString::null, &ok, this);
+	QString	cmdId = KInputDialog::getText(i18n("Command Name"), i18n("Enter an identification name for the new command:"), QString::null, &ok, this);
 	if (ok)
 	{
 		bool	added(true);
