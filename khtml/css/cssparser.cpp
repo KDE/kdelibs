@@ -397,7 +397,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                     return 0;
                 }
 #ifdef CSS_DEBUG
-                kdDebug( 6080 ) << "tag = " << tag << endl;
+                kdDebug( 6080 ) << "tag = \"" << tag << "\"" << endl;
 #endif
                 const QChar *closebracket = parseToChar(curP, endP, ']', false);
                 if (!closebracket)
@@ -530,7 +530,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
         {
             tag = QString( startP, curP - startP );
         }
-        if(tag == "*")
+        if(tag.isEmpty() || tag == "*")
         {
             //kdDebug( 6080 ) << "found '*' selector" << endl;
             cs->tag = -1;
@@ -1189,7 +1189,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_PAGE_BREAK_INSIDE:    // avoid | auto | inherit
       case CSS_PROP_POSITION:             // static | relative | absolute | fixed | inherit
       case CSS_PROP_EMPTY_CELLS:          // show | hide | inherit
-      case CSS_PROP_TABLE_LAYOUT:         // auto | fixed | inherit
 	{
 	  const struct css_value *cssval = findValue(val, len);
 	  if (cssval)
@@ -1903,6 +1902,13 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	    }
 	  break;
 	}
+      case CSS_PROP_TABLE_LAYOUT:         // auto | fixed | inherit
+      {
+	  const struct css_value *cssval = findValue(val, len);
+	  if (cssval->id == CSS_VAL_AUTO || cssval->id == CSS_VAL_FIXED)
+	      parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+	  break;
+      }
       case CSS_PROP__KONQ_FLOW_MODE:
       {
 	  if (cssval->id==CSS_VAL__KONQ_NORMAL || cssval->id==CSS_VAL__KONQ_AROUND_FLOATS)
@@ -2347,8 +2353,7 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
         if (str.startsWith("url("))
         {
             // url
-	    DOMString value(curP, endP - curP);
-	    value = khtml::parseURL(value);
+	    DOMString value = khtml::parseURL(DOMString(str));
             parsedValue = new CSSImageValueImpl(
             DOMString(KURL(baseURL().string(), value.string()).url()), this);
 #ifdef CSS_DEBUG
