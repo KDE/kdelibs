@@ -6,7 +6,7 @@ class KAutoConfig;
 #include <qasciidict.h>
 
 /**
- * @author Benjamin C Meyer <ben@meyerhome.net>
+ * @author Benjamin C Meyer <ben at meyerhome.net>
  * 
  * The KAutoConfigDialog class provides an easy and uniform means of displaying
  * a settings dialog use KDialogBase and KAutoConfig.
