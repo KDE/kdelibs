@@ -1,7 +1,9 @@
 <!-- Stolen from imagemap.dsl
 . ($graphic$) redefines the same function in dbgraph.dsl
+. graphicco replaced by imageobjectco
  -->
-(element (graphicco areaspec)
+
+(element (imageobjectco areaspec)
   (make element gi: "MAP"
 	attributes: (list (list "NAME" (element-id)))
 	(let loop ((nl (select-elements (descendants (current-node)) 
