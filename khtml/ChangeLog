@@ -1,5 +1,9 @@
 2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
 
+        * html/htmlblockimpl.cpp: When a NS-layer gets DIV layer children. The NS layer should let the DIV layer control position.
+
+2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
+
         * misc/loader.cpp: Do not override existing charset with an empty one.
 
 2005-03-21  Allan Sandfeld Jensen <kde@carewolf.com>

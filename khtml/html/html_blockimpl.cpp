@@ -259,7 +259,7 @@ void HTMLMarqueeElementImpl::parseAttribute(AttributeImpl *attr)
 HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc, ushort _tagid)
     : HTMLDivElementImpl( doc, _tagid )
 {
-    fixed = false;
+    transparent = fixed = false;
 }
 
 void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
@@ -274,14 +274,14 @@ void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSProperty(CSS_PROP_TOP, attr->value());
             break;
         case ATTR_PAGEX:
-            if (!fixed) {
+            if (!transparent && !fixed) {
                 addCSSProperty(CSS_PROP_POSITION, CSS_VAL_FIXED);
                 fixed = true;
             }
             addCSSProperty(CSS_PROP_LEFT, attr->value());
             break;
         case ATTR_PAGEY:
-            if (!fixed) {
+            if (!transparent && !fixed) {
                 addCSSProperty(CSS_PROP_POSITION, CSS_VAL_FIXED);
                 fixed = true;
             }
@@ -324,3 +324,14 @@ void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
+NodeImpl *HTMLLayerElementImpl::addChild(NodeImpl *child)
+{
+    NodeImpl *retval = HTMLDivElementImpl::addChild(child);
+    // When someone adds standard layers, we make sure not to interfere
+    if (retval->id() == ID_DIV) {
+        if (!transparent)
+            addCSSProperty(CSS_PROP_POSITION, CSS_VAL_STATIC);
+        transparent = true;
+    }
+    return retval;
+}
