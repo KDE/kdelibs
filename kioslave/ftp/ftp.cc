@@ -1760,20 +1760,26 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                       de.access |= S_IRUSR;
                     if ( p_access[2] == 'w' )
                       de.access |= S_IWUSR;
-                    if ( p_access[3] == 'x' )
+                    if ( p_access[3] == 'x' || p_access[3] == 's' )
                       de.access |= S_IXUSR;
                     if ( p_access[4] == 'r' )
                       de.access |= S_IRGRP;
                     if ( p_access[5] == 'w' )
                       de.access |= S_IWGRP;
-                    if ( p_access[6] == 'x' )
+                    if ( p_access[6] == 'x' || p_access[6] == 's' )
                       de.access |= S_IXGRP;
                     if ( p_access[7] == 'r' )
                       de.access |= S_IROTH;
                     if ( p_access[8] == 'w' )
                       de.access |= S_IWOTH;
-                    if ( p_access[9] == 'x' )
+                    if ( p_access[9] == 'x' || p_access[9] == 't' )
                       de.access |= S_IXOTH;
+		    if ( p_access[3] == 's' || p_access[3] == 'S' )
+		      de.access |= S_ISUID;
+		    if ( p_access[6] == 's' || p_access[6] == 'S' )
+		      de.access |= S_ISGID;
+		    if ( p_access[9] == 't' || p_access[9] == 'T' )
+		      de.access |= S_ISVTX;
 
                     // maybe fromLocal8Bit would be better in some cases,
                     // but what proves that the ftp server is in the same encoding
