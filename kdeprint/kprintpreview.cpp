@@ -20,6 +20,7 @@
  **/
 
 #include "kprintpreview.h"
+#include "kmfactory.h"
 
 #include <klibloader.h>
 #include <ktrader.h>
@@ -29,6 +30,36 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
+#include <kconfig.h>
+#include <kprocess.h>
+
+KPreviewProc::KPreviewProc()
+: KProcess()
+{
+	connect(this, SIGNAL(processExited(KProcess*)), SLOT(slotProcessExited(KProcess*)));
+}
+
+KPreviewProc::~KPreviewProc()
+{
+}
+
+bool KPreviewProc::startPreview()
+{
+	if (start())
+	{
+		kapp->enter_loop();
+		return true;
+	}
+	else
+		return false;
+}
+
+void KPreviewProc::slotProcessExited(KProcess*)
+{
+	kapp->exit_loop();
+}
+
+//*******************************************************************************************
 
 KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 : KParts::MainWindow(parent,"KPrintPreview",WType_Modal|WType_TopLevel|WStyle_Dialog)
@@ -133,8 +164,38 @@ void KPrintPreview::closeEvent(QCloseEvent *e)
 
 bool KPrintPreview::preview(const QString& file, bool previewOnly)
 {
-	KPrintPreview	dlg(0, previewOnly);
-	dlg.exec(file);
-	return dlg.status();
+	KConfig	*conf = KMFactory::self()->printConfig();
+	conf->setGroup("General");
+	if (conf->readBoolEntry("ExternalPreview", false))
+	{
+		QString	exe = conf->readEntry("PreviewCommand", "gv");
+		if (KStandardDirs::findExe(exe).isEmpty())
+		{
+			KMessageBox::error(NULL, i18n("The preview program <b>%1</b> cannot be found. "
+						      "Check that the program is correctly installed and "
+						      "located in a directory included in your <b>PATH</b> "
+						      "environment variable.").arg(exe));
+			return false;
+
+		}
+		else
+		{
+			KPreviewProc	proc;
+			proc << exe << file;
+			if (!proc.startPreview())
+			{
+				KMessageBox::error(NULL, i18n("Preview failed: unable to start program <b>%1</b>.").arg(exe));
+				return false;
+			}
+			else
+				return !previewOnly;
+		}
+	}
+	else
+	{
+		KPrintPreview	dlg(0, previewOnly);
+		dlg.exec(file);
+		return dlg.status();
+	}
 }
 #include "kprintpreview.moc"

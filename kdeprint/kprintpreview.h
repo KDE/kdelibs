@@ -25,6 +25,7 @@
 #include <kparts/part.h>
 #include <kparts/mainwindow.h>
 #include <qstring.h>
+#include <kprocess.h>
 
 class KPrintPreview : public KParts::MainWindow
 {
@@ -51,6 +52,19 @@ protected:
 private:
 	KParts::ReadOnlyPart	*gvpart_;
 	bool			status_;
+};
+
+class KPreviewProc : public KProcess
+{
+	Q_OBJECT
+public:
+	KPreviewProc();
+	virtual ~KPreviewProc();
+
+	bool startPreview();
+
+protected slots:
+	void slotProcessExited(KProcess*);
 };
 
 inline bool KPrintPreview::status() const
