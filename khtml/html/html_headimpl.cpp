@@ -299,6 +299,26 @@ NodeImpl::Id HTMLScriptElementImpl::id() const
     return ID_SCRIPT;
 }
 
+DOMString HTMLScriptElementImpl::text() const
+{
+    if (firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
+        return firstChild()->nodeValue();
+    }
+    return "";
+}
+
+void HTMLScriptElementImpl::setText(const DOMString& str)
+{
+    int exceptioncode = 0;
+    if (firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
+        static_cast<DOM::TextImpl *>(firstChild())->setData(str, exceptioncode);
+        return;
+    }
+    // No child text node found, creating one
+    DOM::TextImpl* t = getDocument()->createTextNode(str);
+    appendChild(t, exceptioncode);
+}
+
 // -------------------------------------------------------------------------
 
 HTMLStyleElementImpl::HTMLStyleElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)

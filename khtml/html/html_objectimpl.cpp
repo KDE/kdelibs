@@ -85,7 +85,7 @@ void LiveConnectElementImpl::setLiveConnect(KParts::LiveConnectExtension * lc) {
         connect(lc, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), static_cast<LiveConnectElementImpl*>(this), SLOT(liveConnectEvent( const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
 }
 
-void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args) 
+void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args)
 {
     if (!liveconnect)
         // not attached
@@ -146,7 +146,7 @@ KJavaApplet* HTMLAppletElementImpl::applet() const
 {
     if (!m_render || !m_render->isApplet())
         return 0L;
-    
+
     return static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget())->applet();
 }
 
@@ -386,7 +386,11 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
 
 DocumentImpl* HTMLObjectElementImpl::contentDocument() const
 {
-    // ###
+    if ( !m_render ) return 0;
+    if ( !m_render->isWidget() ) return 0;
+    QWidget* widget = static_cast<RenderWidget*>( m_render )->widget();
+    if( widget && widget->inherits("KHTMLView") )
+        return static_cast<KHTMLView*>( widget )->part()->xmlDocImpl();
     return 0;
 }
 

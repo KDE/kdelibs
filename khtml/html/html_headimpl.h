@@ -132,6 +132,9 @@ public:
     ~HTMLScriptElementImpl();
 
     virtual Id id() const;
+
+    DOMString text() const;
+    void setText( const DOMString& str );
 };
 
 // -------------------------------------------------------------------------
