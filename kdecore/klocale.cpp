@@ -93,7 +93,6 @@ const QString KLocale::mergeLocale(const QString& lang,const QString& country,
 	ret += "_" + country;
     if (!charset.isEmpty()) 
 	ret+= "." +charset;
-    printf("KLocale::mergeLocale: %s\n", ret.ascii());
     return ret;
 }
 
