@@ -95,7 +95,7 @@ void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
   if(!e || e->dn_fd != si->si_fd) {
     qDebug("fatal error in KDirWatch");
   } else
-    e->dn_dirty = true;
+    e->dirty = true;
 
   char c = 0;
   write(dwp_self->mPipe[1], &c, 1);
@@ -181,6 +181,10 @@ KDirWatchPrivate::KDirWatchPrivate()
 
   QString available("Stat");
 
+  // used for FAM and DNOTIFY
+  rescan_all = false;
+  connect(&rescan_timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
+
 #ifdef HAVE_FAM
   // It's possible that FAM server can't be started
   if (FAMOpen(&fc) ==0) {
@@ -199,7 +203,6 @@ KDirWatchPrivate::KDirWatchPrivate()
 
 #ifdef HAVE_DNOTIFY
   supports_dnotify = true; // not guilty until proven guilty
-  rescan_all = false;
   struct utsname uts;
   int major, minor, patch;
   if (uname(&uts) < 0)
@@ -219,7 +222,6 @@ KDirWatchPrivate::KDirWatchPrivate()
     fcntl(mPipe[1], F_SETFD, FD_CLOEXEC);
     mSn = new QSocketNotifier( mPipe[0], QSocketNotifier::Read, this);
     connect(mSn, SIGNAL(activated(int)), this, SLOT(slotActivated()));
-    connect(&mTimer, SIGNAL(timeout()), this, SLOT(slotRescan()));
     // Install the signal handler only once
     if ( dnotify_signal == 0 )
     {
@@ -268,17 +270,18 @@ KDirWatchPrivate::~KDirWatchPrivate()
 #endif
 }
 
-#ifdef HAVE_DNOTIFY
 void KDirWatchPrivate::slotActivated()
 {
+#ifdef HAVE_DNOTIFY
    char dummy_buf[100];
    read(mPipe[0], &dummy_buf, 100);
 
-   if (!mTimer.isActive())
-      mTimer.start(200, true);
+   if (!rescan_timer.isActive())
+      rescan_timer.start(m_PollInterval, true);
+#endif
 }
 
-/* In DNOTIFY mode, only entries which are marked dirty are scanned.
+/* In DNOTIFY/FAM mode, only entries which are marked dirty are scanned.
  * We first need to mark all yet nonexistent, but possible created
  * entries as dirty...
  */
@@ -287,18 +290,14 @@ void KDirWatchPrivate::Entry::propagate_dirty()
   Entry* sub_entry;
   for(sub_entry = m_entries.first(); sub_entry; sub_entry = m_entries.next())
   {
-     if (!sub_entry->dn_dirty)
+     if (!sub_entry->dirty)
      {
-        sub_entry->dn_dirty = true;
+        sub_entry->dirty = true;
         sub_entry->propagate_dirty();
      }
   }
 }
 
-#else // !HAVE_DNOTIFY
-// slots always have to be defined...
-void KDirWatchPrivate::slotActivated() {}
-#endif
 
 /* A KDirWatch instance is interested in getting events for
  * this file/Dir entry.
@@ -390,6 +389,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
   if (!use_fam) return false;
 
   e->m_mode = FAMMode;
+  e->dirty = false;
 
   if (e->isDir) {
     if (e->m_status == NonExistent) {
@@ -448,7 +448,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
   e->m_mode = DNotifyMode;
 
   if (e->isDir) {
-    e->dn_dirty = false;
+    e->dirty = false;
     if (e->m_status == Normal) {
       int fd = open(QFile::encodeName(e->path).data(), O_RDONLY);
       // Migrate fd to somewhere above 128. Some libraries have 
@@ -869,8 +869,11 @@ void KDirWatchPrivate::resetList( KDirWatch* /*instance*/,
 int KDirWatchPrivate::scanEntry(Entry* e)
 {
 #ifdef HAVE_FAM
-  // we do not stat entries using FAM
-  if (e->m_mode == FAMMode) return NoChange;
+  if (e->m_mode == FAMMode) {
+    // we know nothing has changed, no need to stat
+    if(!e->dirty) return NoChange;
+    e->dirty = false;
+  }
 #endif
 
   // Shouldn't happen: Ignore "unknown" notification method
@@ -879,8 +882,8 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 #ifdef HAVE_DNOTIFY
   if (e->m_mode == DNotifyMode) {
     // we know nothing has changed, no need to stat
-    if(!e->dn_dirty) return NoChange;
-    e->dn_dirty = false;
+    if(!e->dirty) return NoChange;
+    e->dirty = false;
   }
 #endif
 
@@ -1006,14 +1009,14 @@ void KDirWatchPrivate::slotRescan()
 
 #ifdef HAVE_DNOTIFY
   QPtrList<Entry> dList, cList;
+#endif
 
-  // for DNotify method,
   if (rescan_all)
   {
     // mark all as dirty
     it = m_mapEntries.begin();
     for( ; it != m_mapEntries.end(); ++it )
-      (*it).dn_dirty = true;
+      (*it).dirty = true;
     rescan_all = false;
   }
   else
@@ -1021,11 +1024,9 @@ void KDirWatchPrivate::slotRescan()
     // progate dirty flag to dependant entries (e.g. file watches)
     it = m_mapEntries.begin();
     for( ; it != m_mapEntries.end(); ++it )
-      if ( ((*it).m_mode == DNotifyMode) && (*it).dn_dirty )
+      if ( ((*it).m_mode == DNotifyMode) && (*it).dirty )
         (*it).propagate_dirty();
   }
-
-#endif
 
   it = m_mapEntries.begin();
   for( ; it != m_mapEntries.end(); ++it ) {
@@ -1166,6 +1167,12 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
     return;
   }
 
+  // Delayed handling. This rechecks changes with own stat calls.
+  e->dirty = true;
+  if (!rescan_timer.isActive())
+    rescan_timer.start(m_PollInterval, true);
+
+  // needed FAM control actions on FAM events
   if (e->isDir)
     switch (fe->code)
     {
@@ -1183,7 +1190,6 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           // Scan parent for a new creation
           addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);
         }
-        emitEvent(e, Deleted, QFile::decodeName(fe->filename));
         break;
 
       case FAMCreated: {
@@ -1197,28 +1203,12 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
             sub_entry->m_status = Normal;
             if (!useFAM(sub_entry))
               useStat(sub_entry);
-
-            emitEvent(sub_entry, Created);
           }
-          else emitEvent(e, Created, QFile::decodeName(fe->filename));
           break;
         }
 
-      case FAMChanged:
-        emitEvent(e, Changed, QFile::decodeName(fe->filename));
-
       default:
         break;
-    }
-  else switch (fe->code)
-    {
-      case FAMCreated: emitEvent(e, Created);
-                       break;
-      case FAMDeleted: emitEvent(e, Deleted);
-                       break;
-      case FAMChanged: emitEvent(e, Changed);
-                       break;
-      default: break;
     }
 }
 #else

@@ -59,14 +59,15 @@ public:
     int clients();
     bool isValid() { return m_clients.count() || m_entries.count(); }
 
+    bool dirty;
+    void propagate_dirty();
+
 #ifdef HAVE_FAM
     FAMRequest fr;
 #endif
 
 #ifdef HAVE_DNOTIFY
     int dn_fd;
-    bool dn_dirty;
-    void propagate_dirty();
 #endif
   };
 
@@ -114,6 +115,9 @@ public:
   bool delayRemove;
   QPtrList<Entry> removeList;
 
+  bool rescan_all;
+  QTimer rescan_timer;
+
 #ifdef HAVE_FAM
   QSocketNotifier *sn;
   FAMConnection fc;
@@ -125,9 +129,7 @@ public:
 
 #ifdef HAVE_DNOTIFY
   bool supports_dnotify;
-  bool rescan_all;
   int mPipe[2];
-  QTimer mTimer;
   QSocketNotifier *mSn;
   QIntDict<Entry> fd_Entry;
 
