@@ -79,6 +79,8 @@ public:
                 wordSpacing == other.wordSpacing );
     }
 
+    const FontDef& getFontDef() const { return fontDef; }
+
     void update( QPaintDeviceMetrics *devMetrics ) const;
 
     /**
