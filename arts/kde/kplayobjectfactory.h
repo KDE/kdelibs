@@ -42,8 +42,13 @@ public:
 
 	bool isAStream() { return m_stream; }
 
+	/**
+	 * Return the mimetypes that are playable
+	 */
+	static QStringList mimeTypes(void);
+
 private slots:
-        void slotMimeType(const QString &mimetype);
+	void slotMimeType(const QString &mimetype);
 
 private:
 	Arts::SoundServerV2 m_server;

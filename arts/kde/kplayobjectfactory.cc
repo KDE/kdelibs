@@ -140,3 +140,42 @@ KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& url, const QString
 	else
 		return new KPlayObject();
 }
+
+QStringList KPlayObjectFactory::mimeTypes(void)
+{
+	Arts::TraderQuery query;
+	vector<Arts::TraderOffer> *offers = query.query();
+
+	QStringList results;
+	for(vector<Arts::TraderOffer>::iterator offer = offers->begin();
+	    offer != offers->end(); ++offer)
+	{
+		vector<string> *mimetypes = (*offer).getProperty("MimeType");
+
+		for(vector<string>::iterator mimetype = mimetypes->begin();
+		    mimetype != mimetypes->end(); ++mimetype)
+		{
+			QString name = QString::fromLocal8Bit((*mimetype).c_str()).stripWhiteSpace();
+			if(KMimeType::mimeType(name))
+				results.append(name);
+		}
+
+		delete mimetypes;
+	}
+	delete offers;
+
+	// clean out duplicates
+	results.sort();
+	for(QStringList::iterator result = results.begin(); result != results.end(); )
+	{
+		QStringList::iterator previous = result;
+		++result;
+		if(result != results.end() && *result == *previous)
+		{
+			results.remove(result);
+			result = previous;
+		}
+	}
+
+	return results;
+}
