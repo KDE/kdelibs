@@ -440,6 +440,15 @@ public:
    *        into.
    * @param diffFlags a reference to the int into which the chosen
    *        difference selection bitmask should be written.
+   *        Check the returned bitmask like:
+   *        <pre>
+   *        if ( diffFlags & KFontChooser::FontDiffFamily )
+   *            [...]
+   *        if ( diffFlags & KFontChooser::FontDiffStyle )
+   *            [...]
+   *        if ( diffFlags & KFontChooser::FontDiffSize )
+   *            [...]
+   *        </pre>
    * @param onlyFixed if true, only select from fixed-width fonts.
    * @param parent Parent widget of the dialog. Specifying a widget different
    *        from 0 (Null) improves centering (looks better).
