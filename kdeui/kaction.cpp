@@ -97,9 +97,7 @@ public:
   KActionPrivate() : KGuiItem()
   {
     m_kaccel    = 0;
-    //m_pAccelAction   = 0;
-    m_bIconSet  = false;
-    m_bIconSetNotYetLoaded=false;
+    m_pAccelAction   = 0;
     m_accel     = 0;
   }
   ~KActionPrivate()
@@ -111,8 +109,6 @@ public:
   QString m_groupText;
   QString m_group;
 
-  bool m_bIconSet:1;
-  bool m_bIconSetNotYetLoaded:1;
   QKeySequence m_accel;
 
   struct Container
@@ -199,8 +195,6 @@ KAction::KAction( const QString& text, const QString& pix,
     setAccel( accel );
 
     d->setIconName( pix );
-    d->m_bIconSetNotYetLoaded=!(pix == "unknown");
-    d->m_bIconSet=!(pix == "unknown");
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix,
@@ -243,8 +237,6 @@ KAction::KAction( const QString& text, const QString& pix,
     setText( text );
 
     d->setIconName(pix);
-    d->m_bIconSetNotYetLoaded=!(pix == "unknown");
-    d->m_bIconSet=!(pix == "unknown");
 
     if ( receiver )
       connect( this, SIGNAL( activated() ), receiver, slot );
@@ -453,7 +445,7 @@ int KAction::plug( QWidget *w, int index )
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
     int id;
 
-    if ( d->m_bIconSet )
+    if ( d->hasIconSet() )
         id = menu->insertItem( iconSet(), d->text(), this,//dsweet
                                SLOT( slotActivated() ), d->m_accel,
                                -1, index );
@@ -483,7 +475,7 @@ int KAction::plug( QWidget *w, int index )
     KToolBar *bar = static_cast<KToolBar *>( w );
 
     int id_ = getToolButtonID();
-    if ( icon().isEmpty() && d->m_bIconSet )
+    if ( icon().isEmpty() && d->hasIconSet() )
     {
       bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ),
@@ -720,9 +712,7 @@ QString KAction::icon() const
 
 void KAction::setIconSet( const QIconSet &iconset )
 {
-  d->setIconSet( iconset);
-  d->m_bIconSet = true;
-  d->m_bIconSetNotYetLoaded=false;
+  d->setIconSet( iconset );
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
@@ -739,21 +729,19 @@ void KAction::setIconSet( int id, const QIconSet& iconset )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), iconset, d->text() );
   else if ( w->inherits( "KToolBar" ) )
   {
-    if ( icon().isEmpty() && d->m_bIconSet ) // only if there is no named icon ( scales better )
+    if ( icon().isEmpty() && d->hasIconSet() ) // only if there is no named icon ( scales better )
       static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), iconset );
   }
 }
 
 QIconSet KAction::iconSet() const
 {
-   if (d->m_bIconSetNotYetLoaded)
-      const_cast<KAction *>(this)->setIcon(d->iconName() );
-   return d->iconSet( );
+   return d->iconSet();
 }
 
 bool KAction::hasIconSet() const
 {
-  return d->m_bIconSet;
+  return d->hasIconSet();
 }
 
 void KAction::setWhatsThis( const QString& text )

@@ -23,19 +23,28 @@
 #include <qpixmap.h>
 
 #include <assert.h>
+#include <kconfig.h>
+#include <kglobal.h>
+#include <kiconloader.h>
+#include <kdebug.h>
 
 #include "kguiitem.h"
 
-class KGuiItem::KGuiItemPrivate{
+class KGuiItem::KGuiItemPrivate
+{
 public:
     KGuiItemPrivate()
     {
-        m_enabled=true;
+        m_enabled = true;
+        m_hasIcon = false;
+        m_iconLoaded = false;
     }
+    
     KGuiItemPrivate( const KGuiItemPrivate &rhs )
     {
         (*this ) = rhs;
     }
+    
     KGuiItemPrivate &operator=( const KGuiItemPrivate &rhs )
     {
         m_text = rhs.m_text;
@@ -45,29 +54,69 @@ public:
         m_whatsThis = rhs.m_whatsThis;
         m_statusText = rhs.m_statusText;
         m_enabled = rhs.m_enabled;
+        m_iconLoaded = rhs.m_iconLoaded;
+        m_hasIcon = rhs.m_hasIcon;
+
+        return *this;
     }
 
     QString m_text;
-    QIconSet m_iconSet;
-    QString m_iconName;
     QString m_toolTip;
     QString m_whatsThis;
     QString m_statusText;
     bool m_enabled : 1;
+    
+    QString m_iconName;
+    QIconSet m_iconSet;
+    bool m_hasIcon;
+    bool m_iconLoaded;
 };
 
 
 KGuiItem::KGuiItem() {
     d = new KGuiItemPrivate;
 }
-KGuiItem::KGuiItem( const QString &text, const QIconSet &iconSet, const QString &iconName,
-                    const QString &toolTip, const QString &whatsThis ) {
+
+KGuiItem::KGuiItem( const QString &text, const QIconSet &iconSet,
+                    const QString &iconName,
+                    const QString &toolTip, const QString &whatsThis )
+{
+    kdWarning() << "This KGuiItem c'tor is deprecated! Please use the c'tor "
+                   "that takes either an iconName or an iconSet, but not "
+                   "both!" << endl;
+                   
     d = new KGuiItemPrivate;
     d->m_text = text;
-    d->m_iconSet = iconSet;
-    d->m_iconName = iconName;
+    if( iconName.isEmpty() )
+    {
+        if( !iconSet.isNull() )
+            setIconSet( iconSet );
+    }
+    else
+        setIconName( iconName );
+
     d->m_toolTip =  toolTip;
     d->m_whatsThis = whatsThis;
+}
+
+KGuiItem::KGuiItem( const QString &text,    const QString &iconName,
+                    const QString &toolTip, const QString &whatsThis )
+{
+    d = new KGuiItemPrivate;
+    d->m_text = text;
+    d->m_toolTip =  toolTip;
+    d->m_whatsThis = whatsThis;
+    setIconName( iconName );
+}
+
+KGuiItem::KGuiItem( const QString &text,    const QIconSet &iconSet,
+                    const QString &toolTip, const QString &whatsThis )
+{
+    d = new KGuiItemPrivate;
+    d->m_text = text;
+    d->m_toolTip =  toolTip;
+    d->m_whatsThis = whatsThis;
+    setIconSet( iconSet );
 }
 
 KGuiItem::KGuiItem( const KGuiItem &rhs )
@@ -103,31 +152,70 @@ QString KGuiItem::plainText() const {
 
   return stripped;
 }
-QIconSet KGuiItem::iconSet() const {
-    return d->m_iconSet;
+
+QIconSet KGuiItem::iconSet() const
+{
+    KConfigGroup cg ( KGlobal::config(), "KDE" );
+    if( d->m_hasIcon && cg.readBoolEntry( "showIcons", true ) )
+    {
+        if( !d->m_iconLoaded )
+        {
+            d->m_iconSet = SmallIconSet( d->m_iconName );
+            if( d->m_iconSet.isNull() )
+            {
+                d->m_hasIcon = false;
+                return QIconSet();
+            }
+            d->m_iconLoaded = true;
+        }
+        return d->m_iconSet;
+    }
+    else
+        return QIconSet();
 }
+
 QString KGuiItem::iconName() const
 {
     return d->m_iconName;
 }
+
 QString KGuiItem::toolTip() const {
     return d->m_toolTip;
 }
 QString KGuiItem::whatsThis() const {
     return d->m_whatsThis;
 }
-bool KGuiItem::isEnabled( ) const {
+
+bool KGuiItem::isEnabled() const
+{
     return d->m_enabled;
 }
+
+bool KGuiItem::hasIconSet() const
+{
+    return d->m_hasIcon;
+}
+
 void KGuiItem::setText( const QString &text ) {
     d->m_text=text;
 }
-void KGuiItem::setIconSet( const QIconSet &iconset ) {
+
+void KGuiItem::setIconSet( const QIconSet &iconset )
+{
     d->m_iconSet = iconset;
+    d->m_iconName = QString::null;
+    d->m_hasIcon = !iconset.isNull();
+    d->m_iconLoaded = true;
 }
-void KGuiItem::setIconName( const QString &iconName ) {
+
+void KGuiItem::setIconName( const QString &iconName )
+{
     d->m_iconName = iconName;
+    d->m_iconSet = QIconSet();
+    d->m_hasIcon = !iconName.isEmpty();
+    d->m_iconLoaded = false;
 }
+
 void KGuiItem::setToolTip( const QString &toolTip) {
     d->m_toolTip = toolTip;
 }

@@ -18,13 +18,8 @@
 
 #include "kstdguiitem.h"
 
-#include <kiconloader.h>
-#include <kconfig.h>
-#include <kglobal.h>
 #include <kguiitem.h>
 #include <klocale.h>
-
-#include <qiconset.h>
 
 KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
 {
@@ -62,76 +57,64 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
 
 KGuiItem KStdGuiItem::ok()
 {
-  return KGuiItem(i18n("&OK"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("ok" ) : QIconSet()  , "ok",
-          i18n("Accept settings"),
-          i18n(""  "If you press the <b>OK<b> button, all changes\n"
-                    "you made will be used to proceed ") ); 
+  return KGuiItem( i18n( "&OK" ), "ok", i18n( "Accept settings" ),
+                   i18n( "If you press the <b>OK<b> button, all changes\n"
+                         "you made will be used to proceed." ) ); 
 }
 
 
 KGuiItem KStdGuiItem::cancel()
 {
-  return KGuiItem(i18n("&Cancel"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("cancel" ) : QIconSet(),
-                  "cancel", i18n("Cancel operation") );
+  return KGuiItem( i18n( "&Cancel" ), "cancel", i18n( "Cancel operation" ) );
 }
 
 KGuiItem KStdGuiItem::yes()
 {
-  return KGuiItem(i18n("&Yes"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("ok" ) : QIconSet(),
-                   "yes" );
+  return KGuiItem( i18n( "&Yes" ), "ok", i18n( "Yes" ) );
 }
 
 KGuiItem KStdGuiItem::no()
 {
-  return KGuiItem(i18n("&No"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("no" ) : QIconSet(),
-                   "no"  );
+  return KGuiItem( i18n( "&No" ), "no", i18n( "No" ) );
 }
 
 KGuiItem KStdGuiItem::discard()
 {
-  return KGuiItem(i18n("&Discard"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("discard" ) : QIconSet(),
-                  "discard", i18n("Discard changes"),
-                  i18n("Pressing this button will discard all recent changes") );
+  return KGuiItem( i18n( "&Discard" ), "discard", i18n( "Discard changes" ),
+                   i18n( "Pressing this button will discard all recent "
+                         "changes made in this dialog" ) );
 }
 
 KGuiItem KStdGuiItem::save()
 {
-  return KGuiItem(i18n("&Save"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("filesave" ) : QIconSet(),
-                  "save", i18n("Save data") );
+  return KGuiItem( i18n( "&Save" ), "filesave", i18n( "Save data" ) );
 }
 
 KGuiItem KStdGuiItem::dontSave()
 {
-  return KGuiItem(i18n("&Don't save"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("filedontsave" ) : QIconSet(),
-                  "dontSave", i18n("Don't save data") );
+  return KGuiItem( i18n( "&Don't save" ), "filedontsave",
+                   i18n( "Don't save data" ) );
 }
 
 KGuiItem KStdGuiItem::saveAs()
 {
-  return KGuiItem(i18n("Save &As..."), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("saveas" ) : QIconSet(),
-                  "saveAs" );
+  return KGuiItem( i18n( "Save &As..." ), "saveas",
+                   i18n( "Save file with another name" ) );
 }
 
 KGuiItem KStdGuiItem::apply()
 {
-  return KGuiItem(i18n("&Apply"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("apply" ) : QIconSet(),
-          "apply", i18n("Apply settings"),
-          i18n(""
-               "When clicking <b>Apply<b>, the settings will be\n"
-               "handed over to the program, but the dialog\n"
-               "will not be closed. "
-               "Use this to try different settings. " ) );
+  return KGuiItem( i18n( "&Apply" ), "apply", i18n( "Apply changes" ),
+                   i18n( "When clicking <b>Apply<b>, the settings will be "
+                         "handed over to the program, but the dialog "
+                         "will not be closed.\n"
+                         "Use this to try different settings." ) );
 }
 
 KGuiItem KStdGuiItem::clear()
 {
-  QIconSet icon;
-  
-  if( KConfigGroup( KGlobal::config(), "KDE" ).
-                    readBoolEntry( "showIcons", false ) )
-    icon = SmallIconSet( "locationbar_erase" );
-    
-  return KGuiItem( i18n( "C&lear" ), icon, "clear", i18n("Clear input"),
+  return KGuiItem( i18n( "C&lear" ), "locationbar_erase",
+                   i18n( "Clear input" ),
                    i18n( "Clear the input in the edit field" ) );
 }
 

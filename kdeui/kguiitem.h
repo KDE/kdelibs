@@ -21,20 +21,36 @@
 
 #ifndef __kguiitem_h__
 #define __kguiitem_h__
+
 #include <qstring.h>
 #include <qiconset.h>
 #include <qpixmap.h>
 #include <qvaluelist.h>
 
-class KGuiItem {
+class KGuiItem
+{
 public:
     KGuiItem();
 
+    /*
+       BIC: This constructor takes both an iconset and an iconname, which
+       is redundant. remove this ctor on bic day!!!!
+     */
     KGuiItem( const QString &text, 
-              const QIconSet &iconSet=QIconSet(), 
-              const QString &iconName=QString::null,
-              const QString &toolTip=QString::null, 
-              const QString &whatsThis=QString::null);
+              const QIconSet &iconSet, 
+              const QString &iconName,
+              const QString &toolTip, 
+              const QString &whatsThis );
+    /* END BIC - Martijn */
+              
+    KGuiItem( const QString &text, 
+              const QString &iconName  = QString::null,
+              const QString &toolTip   = QString::null, 
+              const QString &whatsThis = QString::null );
+
+    KGuiItem( const QString &text, const QIconSet &iconSet, 
+              const QString &toolTip   = QString::null, 
+              const QString &whatsThis = QString::null );
 
     KGuiItem( const KGuiItem &rhs );
     KGuiItem &operator=( const KGuiItem &rhs );
@@ -48,6 +64,7 @@ public:
     QString toolTip() const;
     QString whatsThis() const;
     bool isEnabled() const;
+    bool hasIconSet() const;
 
     void setText( const QString &text );
     void setIconSet( const QIconSet &iconset );
