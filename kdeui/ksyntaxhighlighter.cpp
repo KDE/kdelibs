@@ -102,10 +102,10 @@ QDict<int>* KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::statDict 
 
 KSyntaxHighlighter::KSyntaxHighlighter( QTextEdit *textEdit,
 					  bool colorQuoting,
-					  QColor depth0,
-					  QColor depth1,
-					  QColor depth2,
-					  QColor depth3,
+					  const QColor& depth0,
+					  const QColor& depth1,
+					  const QColor& depth2,
+					  const QColor& depth3,
 					  SyntaxMode mode )
     : QSyntaxHighlighter( textEdit )
 {
@@ -146,12 +146,12 @@ int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
 }
 
 KSpellingHighlighter::KSpellingHighlighter( QTextEdit *textEdit,
-					    QColor spellColor,
+					    const QColor& spellColor,
 					    bool colorQuoting,
-					    QColor depth0,
-					    QColor depth1,
-					    QColor depth2,
-					    QColor depth3 )
+					    const QColor& depth0,
+					    const QColor& depth1,
+					    const QColor& depth2,
+					    const QColor& depth3 )
     : KSyntaxHighlighter( textEdit, colorQuoting, depth0, depth1, depth2, depth3 )
 {
     d = new KSpellingHighlighterPrivate();
@@ -252,12 +252,12 @@ QObject *KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDictionaryM
 KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
 						    bool spellCheckingActive ,
 						    bool autoEnable,
-						    QColor spellColor,
+						    const QColor& spellColor,
 						    bool colorQuoting,
-						    QColor depth0,
-						    QColor depth1,
-						    QColor depth2,
-						    QColor depth3 )
+						    const QColor& depth0,
+						    const QColor& depth1,
+						    const QColor& depth2,
+						    const QColor& depth3 )
     : KSpellingHighlighter( textEdit, spellColor,
 			    colorQuoting, depth0, depth1, depth2, depth3 )
 {
@@ -482,7 +482,7 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 	}
     }
 
-    if ( o == textEdit()->viewport() &&
+    else if ( o == textEdit()->viewport() &&
 	 ( e->type() == QEvent::MouseButtonPress )) {
 	if ( intraWordEditing() ) {
 	    setIntraWordEditing( false );

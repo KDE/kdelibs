@@ -42,10 +42,10 @@ public:
     };
     KSyntaxHighlighter( QTextEdit *textEdit,
 			 bool colorQuoting = false,
-			 QColor QuoteColor0 = black,
-			 QColor QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
-			 QColor QuoteColor2 = QColor( 0x00, 0x80, 0x00 ),
-			 QColor QuoteColor3 = QColor( 0x00, 0x80, 0x00 ),
+			 const QColor& QuoteColor0 = black,
+			 const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
+			 const QColor& QuoteColor2 = QColor( 0x00, 0x80, 0x00 ),
+			 const QColor& QuoteColor3 = QColor( 0x00, 0x80, 0x00 ),
 			 SyntaxMode mode = PlainTextMode );
     ~KSyntaxHighlighter();
 
@@ -60,12 +60,12 @@ class KSpellingHighlighter : public KSyntaxHighlighter
 {
 public:
     KSpellingHighlighter( QTextEdit *textEdit,
-			  QColor spellColor = red,
+			  const QColor& spellColor = red,
 			  bool colorQuoting = false,
-			  QColor QuoteColor0 = black,
-			  QColor QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
-			  QColor QuoteColor2 = QColor( 0x00, 0x80, 0x00 ),
-			  QColor QuoteColor3 = QColor( 0x00, 0x80, 0x00 ) );
+			  const QColor& QuoteColor0 = black,
+			  const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
+			  const QColor& QuoteColor2 = QColor( 0x00, 0x80, 0x00 ),
+			  const QColor& QuoteColor3 = QColor( 0x00, 0x80, 0x00 ) );
     ~KSpellingHighlighter();
 
     virtual int highlightParagraph( const QString &text,
@@ -90,12 +90,12 @@ public:
     KDictSpellingHighlighter( QTextEdit *textEdit,
 			      bool spellCheckingActive = true,
 			      bool autoEnable = true,
-			      QColor spellColor = red,
+			      const QColor& spellColor = red,
 			      bool colorQuoting = false,
-			      QColor QuoteColor0 = black,
-			      QColor QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
-			      QColor QuoteColor2 = QColor( 0x00, 0x70, 0x00 ),
-			      QColor QuoteColor3 = QColor( 0x00, 0x60, 0x00 ) );
+			      const QColor& QuoteColor0 = black,
+			      const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
+			      const QColor& QuoteColor2 = QColor( 0x00, 0x70, 0x00 ),
+			      const QColor& QuoteColor3 = QColor( 0x00, 0x60, 0x00 ) );
     ~KDictSpellingHighlighter();
 
     virtual bool isMisspelled( const QString &word );
