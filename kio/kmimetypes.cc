@@ -159,20 +159,23 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   QString path ( _url.path( 0 ) );
 
-  // Try to find it out by looking at the filename
-  assert( s_mapMimeTypes );
-  QDictIterator<KMimeType> it( *s_mapMimeTypes );
-  for( ; it.current() != 0L; ++it )
-    if ( it.current()->matchFilename( path.data() ) )
-      return it.current();
-
-  // Another filename binding, hardcoded, is .desktop:
-  if ( path.right(8) == ".desktop" )
-    return find( "application/x-desktop" );
-  // Another filename binding, hardcoded, is .kdelnk;
-  // this is preserved for backwards compatibility
-  if ( path.right(7) == ".kdelnk" )
-    return find( "application/x-desktop" );
+  if ( ! path.isNull() )
+    {
+      // Try to find it out by looking at the filename
+      assert( s_mapMimeTypes );
+      QDictIterator<KMimeType> it( *s_mapMimeTypes );
+      for( ; it.current() != 0L; ++it )
+	if ( it.current()->matchFilename( path.data() ) )
+	  return it.current();
+      
+      // Another filename binding, hardcoded, is .desktop:
+      if ( path.right(8) == ".desktop" )
+	return find( "application/x-desktop" );
+      // Another filename binding, hardcoded, is .kdelnk;
+      // this is preserved for backwards compatibility
+      if ( path.right(7) == ".kdelnk" )
+	return find( "application/x-desktop" );
+    }
 
   if ( !_is_local_file || _fast_mode )
   {
