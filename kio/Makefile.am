@@ -60,7 +60,6 @@ include_HEADERS = \
         krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kdirlister.h kservicegroup.h\
-	progressbase.h defaultprogress.h statusbarprogress.h \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
         kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h
