@@ -267,6 +267,25 @@ bool KPty::open()
     }
 #endif
 
+#if defined(_SCO_DS) || defined(__USLC__) // SCO OSr5 and UnixWare, might be obsolete
+    for (int idx = 0; idx < 256; idx++)
+    { 
+      ptyName.sprintf("/dev/ptyp%d", idx);
+      d->ttyName.sprintf("/dev/ttyp%d", idx);
+      if (access(d->ttyName.data(), F_OK) < 0) 
+        break; // no such device ...
+     
+      d->masterFd = ::open(ptyName.data(), O_RDWR);
+      if (d->masterFd >= 0)
+      {
+        if (geteuid() == 0 || access (d->ttyName.data(), R_OK|W_OK) == 0)
+          goto gotpty;
+        ::close(d->masterFd); 
+        d->masterFd = -1;
+      }
+    }
+#endif
+
     // Linux device names, FIXME: Trouble on other systems?
     for (const char* s3 = "pqrstuvwxyzabcdefghijklmno"; *s3 != 0; s3++)
     { 
