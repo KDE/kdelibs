@@ -366,20 +366,6 @@ void KEditListBox::virtual_hook( int, void* )
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
-// KURLRequester is in KIO :[
-// KEditListBox::CustomEditor::CustomEditor( KURLRequester *requester )
-// {
-//     m_representationWidget = requester;
-//     m_lineEdit = requester->lineEdit();
-//     if ( !m_lineEdit )
-//     {
-//         KComboBox *combo = requester->comboBox();
-//         if ( combo )
-//             m_lineEdit = dynamic_cast<KLineEdit*>( combo->lineEdit() );
-//     }
-//     assert( m_lineEdit );
-// }
-
 KEditListBox::CustomEditor::CustomEditor( KComboBox *combo )
 {
     m_representationWidget = combo;
