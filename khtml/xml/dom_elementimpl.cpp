@@ -474,8 +474,10 @@ void ElementImpl::attach()
         RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
         _style->ref();
         m_render = RenderObject::createObject(this, _style);
-        if(m_render)
+        if(m_render) {
+            m_render->setStyle(_style);
             parentNode()->renderer()->addChild(m_render, nextRenderer());
+        }
         _style->deref();
     }
 #endif

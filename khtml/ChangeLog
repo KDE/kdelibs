@@ -1,3 +1,19 @@
+2004-08-05  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_block.cpp (layoutBlockChildren): when positionning floats,
+        use the margin tracking variables, and not the prevFlow -there might be
+        self-collapsing blocks in between (#85150).
+        (calcMinMaxWidth): better calculation merged from WebCore.  Fixes a few testcases.
+
+        * rendering/render_object.h (collapsedMarginTop/Bottom): don't avoid max(Top|Bottom)Margin, 
+        they are virtuals reimplemented for RenderBlock.
+
+        * rendering/render_object.cpp (createObject): do not set the style before
+        the renderer is assigned to a node. Fixes Marquee initial layout
+        (unsorted/RESOLVED-57087-1342.html) failing because of 'element()->renderer() == this' checks.
+
+        * xml/dom_elementimpl.cpp (attach): ditto
+
 2004-08-04  Germain Garand <germain@ebooksfrance.org>
 
 	* khtmlview.cpp (resizeEvent): take care, in case we are shrinking,

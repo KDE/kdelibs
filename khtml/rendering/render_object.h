@@ -488,8 +488,8 @@ public:
     int scrollHeight() const;
 
     virtual bool isSelfCollapsingBlock() const { return false; }
-    short collapsedMarginTop() const { return kMax( int( marginTop() ), 0 ) + kMin( int( marginTop() ), 0 );  }
-    short collapsedMarginBottom() const { return kMax( int( marginBottom() ), 0 ) + kMin( int( marginBottom() ), 0 );  }
+    short collapsedMarginTop() const { return maxTopMargin(true)-maxTopMargin(false);  }
+    short collapsedMarginBottom() const { return maxBottomMargin(true)-maxBottomMargin(false); }
 
     virtual bool isTopMarginQuirk() const { return false; }
     virtual bool isBottomMarginQuirk() const { return false; }

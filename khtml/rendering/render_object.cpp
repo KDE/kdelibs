@@ -145,7 +145,6 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
         o = new (arena) RenderTableCell(node);
         break;
     }
-    if(o) o->setStyle(style);
     return o;
 }
 

@@ -698,9 +698,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             // height again.  In the case of self-collapsing blocks, we always just
             // use the top margins, since the self-collapsing block collapsed its
             // own bottom margin into its top margin. -dwh
-            int marginOffset = prevFlow ? (prevFlow->isSelfCollapsingBlock() ?
-                                           prevFlow->collapsedMarginTop() :
-                                           prevFlow->collapsedMarginBottom()) : 0;
+            int marginOffset = (!topMarginContributor || !canCollapseTopWithChildren) ? (prevPosMargin - prevNegMargin) : 0;
+
             m_height += marginOffset;
             positionNewFloats();
             m_height -= marginOffset;
@@ -1938,13 +1937,30 @@ void RenderBlock::calcMinMaxWidth()
 
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
 
-    if (preOrNowrap && childrenInline())
-        m_minWidth = m_maxWidth;
+    if (preOrNowrap && childrenInline()) {
+         m_minWidth = m_maxWidth;
 
-    if (style()->width().isFixed() && style()->width().value() > 0) {
-        m_maxWidth = KMAX(m_minWidth,short(style()->width().value()));
-        if (!isTableCell())
-            m_minWidth = m_maxWidth;
+        // A horizontal marquee with inline children has no minimum width.
+        if (style()->overflow() == OMARQUEE && m_layer && m_layer->marquee() &&
+            m_layer->marquee()->isHorizontal() && !m_layer->marquee()->isUnfurlMarquee())
+            m_minWidth = 0;
+    }
+
+     if (style()->width().isFixed() && style()->width().value() > 0) {
+        if (isTableCell())
+            m_maxWidth = KMAX(m_minWidth,short(style()->width().value()));
+        else
+            m_minWidth = m_maxWidth = short(style()->width().value());
+    }
+
+    if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
+        m_maxWidth = KMAX(m_maxWidth, short(style()->minWidth().value()));
+        m_minWidth = KMAX(m_minWidth, short(style()->minWidth().value()));
+    }
+
+    if (style()->maxWidth().isFixed() && style()->maxWidth().value() != UNDEFINED) {
+        m_maxWidth = KMIN(m_maxWidth, short(style()->maxWidth().value()));
+        m_minWidth = KMIN(m_minWidth, short(style()->maxWidth().value()));
     }
 
     int toAdd = 0;
@@ -1952,14 +1968,6 @@ void RenderBlock::calcMinMaxWidth()
 
     m_minWidth += toAdd;
     m_maxWidth += toAdd;
-
-    // Scrolling marquees like to use this trick:
-    // <td><div style="overflow:hidden; width:300px"><nobr>.....[lots of text].....</nobr></div></td>
-    // We need to sanity-check our m_minWidth, and not let it exceed our clipped boundary. -dwh
-    // FIXME: For now, punt on trying to apply this fix to table cells.  We don't know an accurate
-    // width for the cell here, so we can't do a comparison.
-    if (style()->hidesOverflow() && m_minWidth > m_width && !isTableCell())
-        m_minWidth = m_width;
 
     setMinMaxKnown();
 
