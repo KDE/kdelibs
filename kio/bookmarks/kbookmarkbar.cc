@@ -48,7 +48,7 @@ public:
     KBookmarkManager* m_filteredMgr;
 };
 template<> QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
-;
+
 
 KBookmarkBarPrivate* KBookmarkBar::dptr() const {
     return KBookmarkBarPrivate::d( this );
