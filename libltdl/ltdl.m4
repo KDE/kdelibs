@@ -91,6 +91,9 @@ AC_CACHE_CHECK([whether deplibs are loaded by dlopen],
 	cygwin*)
 	  libltdl_cv_sys_dlopen_deplibs=yes
 	  ;;
+	darwin*)
+	  libltdl_cv_sys_dlopen_deplibs=yes
+	  ;;
 	linux*)
 	  libltdl_cv_sys_dlopen_deplibs=yes
 	  ;;
