@@ -1,7 +1,7 @@
 
 INCLUDES = $(all_includes) -I$(srcdir)/..
 LDFLAGS   = $(all_libraries)
-LDADD = ../mcop/libmcop.la $(LIBSOCKET)
+LDADD = ../mcop/libmcop.la 
 
 ####### Files
 

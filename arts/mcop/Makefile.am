@@ -1,3 +1,4 @@
+
 MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
 ##
 
@@ -11,6 +12,8 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
 	 unixconnection.cc tcpserver.cc unixserver.cc objectmanager.cc \
 	 factory.cc idlfilereg.cc ifacerepo_impl.cc mcoputils.cc \
 	 startupmanager.cc
+libmcop_la_LIBADD = $(LIBSOCKET)
 
 core: $(top_srcdir)/arts/mcop/core.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/mcop/core.idl
+
