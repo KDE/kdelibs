@@ -763,7 +763,12 @@ Arts::InterfaceRepo_base *Arts::InterfaceRepo_base::_fromReference(Arts::ObjectR
 {
 	Arts::InterfaceRepo_base *result;
 	result = (Arts::InterfaceRepo_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::InterfaceRepo");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
 		if(conn)
@@ -1116,7 +1121,12 @@ Arts::FlowSystemSender_base *Arts::FlowSystemSender_base::_fromReference(Arts::O
 {
 	Arts::FlowSystemSender_base *result;
 	result = (Arts::FlowSystemSender_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::FlowSystemSender");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
 		if(conn)
@@ -1235,7 +1245,12 @@ Arts::FlowSystemReceiver_base *Arts::FlowSystemReceiver_base::_fromReference(Art
 {
 	Arts::FlowSystemReceiver_base *result;
 	result = (Arts::FlowSystemReceiver_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::FlowSystemReceiver");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
 		if(conn)
@@ -1361,7 +1376,12 @@ Arts::FlowSystem_base *Arts::FlowSystem_base::_fromReference(Arts::ObjectReferen
 {
 	Arts::FlowSystem_base *result;
 	result = (Arts::FlowSystem_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::FlowSystem");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
 		if(conn)
@@ -1666,7 +1686,12 @@ Arts::GlobalComm_base *Arts::GlobalComm_base::_fromReference(Arts::ObjectReferen
 {
 	Arts::GlobalComm_base *result;
 	result = (Arts::GlobalComm_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::GlobalComm");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
 		if(conn)
@@ -1853,7 +1878,12 @@ Arts::TmpGlobalComm_base *Arts::TmpGlobalComm_base::_fromReference(Arts::ObjectR
 {
 	Arts::TmpGlobalComm_base *result;
 	result = (Arts::TmpGlobalComm_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::TmpGlobalComm");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
 		if(conn)
@@ -1958,7 +1988,12 @@ Arts::TraderOffer_base *Arts::TraderOffer_base::_fromReference(Arts::ObjectRefer
 {
 	Arts::TraderOffer_base *result;
 	result = (Arts::TraderOffer_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::TraderOffer");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
 		if(conn)
@@ -2116,7 +2151,12 @@ Arts::TraderQuery_base *Arts::TraderQuery_base::_fromReference(Arts::ObjectRefer
 {
 	Arts::TraderQuery_base *result;
 	result = (Arts::TraderQuery_base *)Arts::Dispatcher::the()->connectObjectLocal(r,"Arts::TraderQuery");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Arts::Connection *conn = Arts::Dispatcher::the()->connectObjectRemote(r);
 		if(conn)

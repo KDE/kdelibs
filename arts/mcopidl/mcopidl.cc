@@ -1910,7 +1910,12 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,
 		"\tresult = (%s_base *)Arts::Dispatcher::the()->connectObjectLocal(r,\"%s\");\n",
 										d.name.c_str(),d.name.c_str());
-		fprintf(source,"\tif(!result)\n");
+		fprintf(source,"\tif(result)\n");
+		fprintf(source,"\t{\n");
+		fprintf(source,"\t\tif(!needcopy)\n");
+		fprintf(source,"\t\t\tresult->_cancelCopyRemote();\n");
+		fprintf(source,"\t}\n");
+		fprintf(source,"\telse\n");
 		fprintf(source,"\t{\n");
 		fprintf(source,"\t\tArts::Connection *conn = "
 							"Arts::Dispatcher::the()->connectObjectRemote(r);\n");

@@ -136,6 +136,9 @@ public:
 	virtual void _useRemote() = 0;
 	virtual void _releaseRemote() = 0;
 
+	// BC issue: added _cancelCopyRemote here to avoid virtual function
+	void _cancelCopyRemote();
+
 	void _addWeakReference(WeakReferenceBase *reference);
 	void _removeWeakReference(WeakReferenceBase *reference);
 

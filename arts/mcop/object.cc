@@ -369,6 +369,25 @@ void Object_skel::_useRemote()
 	_remoteUsers.push_back(conn);
 }
 
+/*
+ * This is needed when we've received an object from wire which we now
+ * hold locally. Of course it has been _copyRemote()d (rightly so), but
+ * we will not use it remotely, so we need to cancel the _copyRemote().
+ *
+ * Added to _base due to BC.
+ */
+void Object_base::_cancelCopyRemote()
+{
+	assert(_location() == objectIsLocal);
+
+	if(_skel()->_remoteSendCount == 0)
+	{
+		cerr << "warning: _cancelCopyRemote without prior _copyRemote() -"
+					" this might fail sometimes" << endl;
+	}
+	else _skel()->_remoteSendCount--;
+}
+
 void Object_skel::_disconnectRemote(Connection *conn)
 {
 	//cout << "_disconnectRemote();" << endl;
@@ -408,8 +427,8 @@ void Object_skel::_referenceClean()
 		}
 		else
 		{
-			cerr << "_referenceClean: found unused object"
-			        " marked by _copyRemote => releasing" << endl;
+			cerr << "_referenceClean: found unused " << _interfaceName()
+			     << " object marked by _copyRemote => releasing" << endl;
 			_remoteSendCount = 0;
 			_refCnt++;
 			_release();
@@ -844,7 +863,12 @@ Object_base *Object_base::_fromReference(ObjectReference r, bool needcopy)
 {
 	Object_base *result;
 	result = (Object_base *)Dispatcher::the()->connectObjectLocal(r,"Object");
-	if(!result)
+	if(result)
+	{
+		if(!needcopy)
+			result->_cancelCopyRemote();
+	}
+	else
 	{
 		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
 		if(conn)
