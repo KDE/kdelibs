@@ -2,7 +2,7 @@
   kcontrol - Base for KDE Control Applications
 
   written 1997 by Matthias Hoelzer
-  
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -26,6 +26,7 @@
 #include "kcontrol.h"
 #include "kcontrol.moc"
 
+static int minimum_width_;
 
 KControlDialog::KControlDialog()
   : QTabDialog(0, 0, FALSE)
@@ -35,6 +36,7 @@ KControlDialog::KControlDialog()
   helpBtn->resize(helpBtn->sizeHint());
   helpBtn->move(7, height() - helpBtn->height() - 6);
 
+  
   // Create default button
   defaultBtn = new QPushButton(klocale->translate("Default"), this);
   defaultBtn->resize(defaultBtn->sizeHint());
@@ -44,8 +46,20 @@ KControlDialog::KControlDialog()
   setOKButton(klocale->translate("OK"));
   setApplyButton(klocale->translate("Apply"));
   setCancelButton(klocale->translate("Cancel"));
-}
+  
+  //geometry hack.
+  defaultBtn->setText(klocale->translate("OK"));
+  int w = defaultBtn->sizeHint().width();
+  defaultBtn->setText(klocale->translate("Apply"));
+  w  = QMAX(w, defaultBtn->sizeHint().width());
+  defaultBtn->setText(klocale->translate("Cancel"));
+  w  = QMAX(w, defaultBtn->sizeHint().width());
 
+  defaultBtn->setText(klocale->translate("Default"));
+  
+
+  minimum_width_ = w*3+20+ defaultBtn->width() + 30 + helpBtn->width();
+}
 
 void KControlDialog::done(int result)
 {
@@ -117,8 +131,6 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
 	}
     }
 
-  // set the default size
-  dialog->resize(480, 480);
 }
 
 
@@ -146,6 +158,8 @@ void KControlApplication::addPage(QWidget *page, const QString &name, const QStr
     {
       dialog->addTab(page, name);
       helpNames.append(help_name.data());
+      // set the default size
+      dialog->resize(QMAX(dialog->sizeHint().width(), minimum_width_), dialog->height());
     }
 }
 
@@ -153,7 +167,7 @@ void KControlApplication::addPage(QWidget *page, const QString &name, const QStr
 void KControlApplication::help()
 {
   QString name("index.html");
-  
+
   if (dialog)
     name = helpNames.at(dialog->tabBar()->currentTab());
 
