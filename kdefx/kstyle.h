@@ -32,6 +32,8 @@
 // This API is still subject to change.
 // I will remove this warning when I feel the API is sufficiently flexible.
 
+#include <config.h>
+
 #include <qcommonstyle.h>
 
 class TransparencyHandler;

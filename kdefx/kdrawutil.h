@@ -18,6 +18,7 @@
 #ifndef __KDRAWUTIL_H
 #define __KDRAWUTIL_H
 
+#include <config.h>
 #include <qnamespace.h>
 #include <qpainter.h>
 #include <qbitmap.h>
