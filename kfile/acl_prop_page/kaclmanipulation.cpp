@@ -60,8 +60,12 @@ bool KACLList::ReadACL ()
 	}
 	
 	KACLEntry *e;
-	for (int i=0; i < acl->acl_cnt; i++) {
-		e = KACLEntry::GetACLEntry(acl->acl_entry[i]);
+	acl_entry_t acl_entry;
+	int entry_id = ACL_FIRST_ENTRY;
+
+	while (acl_get_entry(acl, entry_id, &acl_entry) == 1) {
+		entry_id = ACL_NEXT_ENTRY;
+		e = KACLEntry::GetACLEntry(acl_entry);
 		if (e)
 			entries.append(e);
 	}
@@ -112,7 +116,7 @@ void KACLList::PrintItem (const KACLEntry *e)
 #endif
 }
 
-KACLEntry *KACLEntry::GetACLEntry (acl_entry &acl)
+KACLEntry *KACLEntry::GetACLEntry (acl_entry_t acl)
 {
 	KACLEntry *e = new KACLEntry;
 	acl_tag_t tag;
@@ -120,12 +124,12 @@ KACLEntry *KACLEntry::GetACLEntry (acl_entry &acl)
 
 	e->ignore = e->error = false;
 
-	if (!acl_get_tag_type(&acl, &tag)) {
+	if (!acl_get_tag_type(acl, &tag)) {
 		switch (tag) {
 			case ACL_USER_OBJ:
 			case ACL_USER: {
 				e->tag = KACLEntry::USER;
-				uid = static_cast<uid_t *>(acl_get_qualifier(&acl));
+				uid = static_cast<uid_t *>(acl_get_qualifier(acl));
 				if (uid) {
 					struct passwd *pw = getpwuid(*uid);
 					if (pw) {
@@ -142,7 +146,7 @@ KACLEntry *KACLEntry::GetACLEntry (acl_entry &acl)
 			case ACL_GROUP_OBJ:
 			case ACL_GROUP: {
 				e->tag = KACLEntry::GROUP;
-				gid = static_cast<gid_t *>(acl_get_qualifier(&acl));
+				gid = static_cast<gid_t *>(acl_get_qualifier(acl));
 				if (gid) {
 					struct group *gr = getgrgid(*gid);
 					if (gr) {
@@ -180,16 +184,10 @@ KACLEntry *KACLEntry::GetACLEntry (acl_entry &acl)
 	}
 
 	acl_permset_t perms;
-	if (!acl_get_permset(&acl, &perms)) {
-#if defined(ACL_READ)
+	if (!acl_get_permset(acl, &perms)) {
 		e->access_r = (*perms & ACL_READ);
 		e->access_w = (*perms & ACL_WRITE);
 		e->access_x = (*perms & ACL_EXECUTE);
-#else
-		e->access_r = (*perms & ACL_PERM_READ);
-		e->access_w = (*perms & ACL_PERM_WRITE);
-		e->access_x = (*perms & ACL_PERM_EXEC);
-#endif
 	} else {
 		kdDebug() << "acl-get_permset failed: " << strerror(errno) << endl;
 		e->error = true;

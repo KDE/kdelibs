@@ -23,7 +23,7 @@ public:
 	QString qualifier;
 	bool access_r, access_w, access_x;
 	bool error, ignore;
-	static KACLEntry *GetACLEntry (acl_entry &acl);
+	static KACLEntry *GetACLEntry (acl_entry_t acl);
 };
 
 class KACLList
