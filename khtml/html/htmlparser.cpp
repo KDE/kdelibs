@@ -421,12 +421,22 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		throw exception;
             break;
         case ID_HTML:
-        case ID_BODY:
         case ID_BASE:
         case ID_META:
         case ID_LINK:
             // SCRIPT and OBJECT are allowd in the body.
             if(inBody) throw exception;
+            break;
+        case ID_BODY:
+            if(inBody && document->body()) {
+		// we have another <BODY> element.... apply attributes to existing one
+		NamedNodeMapImpl *map = n->attributes();
+		unsigned long attrNo;
+		for (attrNo = 0; attrNo < map->length(); attrNo++)
+		    document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
+		document->body()->applyChanges(true,false);
+		throw exception;
+	    }
             break;
         case ID_STYLE:
             if(inBody)

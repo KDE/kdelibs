@@ -632,7 +632,7 @@ NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg )
 	}
     }
 
-    // attribute with this id not yet in list
+    // attribute with this name not yet in list
     AttrImpl **newAttrs = new AttrImpl* [len+1];
     if (attrs) {
       for (i = 0; i < len; i++)
