@@ -256,8 +256,8 @@ void KToolBarButton::modeChange()
 
 void KToolBarButton::setEnabled( bool enabled )
 {
-  QButton::setPixmap( (enabled ? defaultPixmap : disabledPixmap) );
   QButton::setEnabled( enabled );
+  QButton::setPixmap( (isEnabled() ? defaultPixmap : disabledPixmap) );
 }
 
 void KToolBarButton::setTextLabel( const QString& text)
