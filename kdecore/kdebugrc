@@ -84,6 +84,10 @@ InfoOutput=2
 [5710]
 InfoOutput=4
 
+# kalarmd check
+[5901]
+InfoOutput=4
+
 # kio_http_debug debug info off
 [7113]
 InfoOutput=4
