@@ -47,6 +47,7 @@ typedef QMap<QString, QString> UserList;
 
 static DCOPClient* dcop = 0;
 
+static QTextStream cin_ ( stdin,  IO_ReadOnly );
 static QTextStream cout_( stdout, IO_WriteOnly );
 static QTextStream cerr_( stderr, IO_WriteOnly );
 
@@ -652,23 +653,24 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	    default:
 		if( readStdin )
 		{
-		    QCStringList::Iterator replaceArg = args.end();
+		    QCStringList::Iterator replaceArg = params.end();
 
 		    QCStringList::Iterator it;
-		    for( it = args.begin(); it != args.end(); it++ )
+		    for( it = params.begin(); it != params.end(); it++ )
 			if( *it == "%1" )
 			    replaceArg = it;
 
-		    // Read from stdin until EOF and call function for each line read
-		    char *buf = new char[ 1000 ];
-		    while ( !feof( stdin ) )
+		    // Read from stdin until EOF and call function for each
+		    // read line
+		    while ( !cin_.atEnd() )
 		    {
-			fgets( buf, 1000, stdin );
+			QString buf = cin_.readLine();
 
-			if( replaceArg != args.end() )
-			    *replaceArg = buf;
+			if( replaceArg != params.end() )
+			    *replaceArg = buf.local8Bit();
 
-			callFunction( app, objid, function, params );
+			if( !buf.isNull() )
+			    callFunction( app, objid, function, params );
 		    }
 		}
 		else
@@ -698,6 +700,8 @@ int main( int argc, char** argv )
     QString user;
     Session session = DefaultSession;
     QString sessionName;
+
+    cin_.setEncoding( QTextStream::Locale );
 
     // Scan for command-line options first
     for( int pos = 1 ; pos <= argc - 1 ; pos++ )
