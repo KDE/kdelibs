@@ -113,7 +113,7 @@ public:
      * You can specify two tokens, for example &lt;/li&gt; and &lt;/menu&gt;.
      * You may even set the second one to "" if you dont need it.
      */
-    int parseBody( HTMLClue *_clue, const char *_end, bool toplevel = FALSE );
+    int parseBody( HTMLClue *_clue, const int *_end, bool toplevel = FALSE );
 
    /**
     * Set document charset.

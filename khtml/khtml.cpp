@@ -1413,7 +1413,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
   printf("############### timerEvent ##############\n");
   /*** END DEBUG ***/
 
-    static const char end[] = { ID_BODY + ID_CLOSE_TAG, 0 }; 
+    static const int end[] = { ID_BODY + ID_CLOSE_TAG, 0 }; 
 
     if ( !painter )
     {

@@ -704,7 +704,7 @@ void KHTMLParser::insertText(char *str, const HTMLFont * fp)
     }
 }                                         
 
-int KHTMLParser::parseBody( HTMLClue *__clue, const char _end[], bool toplevel )
+int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 {
     const char *str;
     
@@ -808,26 +808,15 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const char _end[], bool toplevel )
 	{
 	    str++;
 
-	    tagID = *((unsigned char *) str);
+	    tagID = *((unsigned char *) str++);
 
-	    if (index(_end, *str))
-	    {
-           	str++;
-	        return (tagID);
-	    }
-	    str++;
-#if 0
-	    int i = 0;
-
-	    while ( _end[i] != 0 )
-	    {
-		if ( strncasecmp( str, _end[i], strlen( _end[i] ) ) == 0 )
-		{
-		    return str;
-		}
-		i++;
-	    }
-#endif	    
+            for(int j; _end[j]; j++)
+            {
+	      if (_end[j] == tagID)
+	      {
+	          return (tagID);
+              }
+            }
 	    // The tag used for line break when we are in <pre>...</pre>
 	    if ( tagID == ID_NEWLINE )
 	    {
@@ -1305,7 +1294,7 @@ void KHTMLParser::parseTagCell(void)
     if (!flow)
         newFlow();
 
-    static const char end[] = { ID_CELL + ID_CLOSE_TAG, 0 }; 
+    static const int end[] = { ID_CELL + ID_CLOSE_TAG, 0 }; 
     HTMLClue::HAlign olddivalign = divAlign;
     HTMLClue *oldFlow = flow;
     HTMLClue *__clue = flow;
@@ -2724,19 +2713,19 @@ void KHTMLParser::parseTagTable(void)
     // <col> <colgroup> </colgroup>
     // <thead> </thead> <tbody> </tbody> <tfoot> </tfoot>
  
-    static const char endthtd[] = { ID_TH + ID_CLOSE_TAG, 
+    static const int endthtd[] = { ID_TH + ID_CLOSE_TAG, 
     				    ID_TD + ID_CLOSE_TAG,
     				    ID_TR + ID_CLOSE_TAG,
     				    ID_TH, ID_TD, ID_TR,
     				    ID_TABLE + ID_CLOSE_TAG, 
     				    ID_BODY + ID_CLOSE_TAG, 
     				    0 };
-    static const char endcap[] = { ID_CAPTION + ID_CLOSE_TAG,
+    static const int endcap[] = { ID_CAPTION + ID_CLOSE_TAG,
     				   ID_TABLE + ID_CLOSE_TAG,
     				   ID_TR, ID_TD, ID_TH,
    				   ID_BODY + ID_CLOSE_TAG, 
     				   0 };    
-    static const char endall[] = { ID_CAPTION + ID_CLOSE_TAG,
+    static const int endall[] = { ID_CAPTION + ID_CLOSE_TAG,
     				   ID_TABLE + ID_CLOSE_TAG,
 				   ID_TH + ID_CLOSE_TAG, 
     				   ID_TD + ID_CLOSE_TAG,
