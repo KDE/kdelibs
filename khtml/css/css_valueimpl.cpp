@@ -263,6 +263,14 @@ void CSSStyleDeclarationImpl::setChanged()
         }
 }
 
+void CSSStyleDeclarationImpl::removeCSSHints()
+{
+    for (int i = (int)m_lstValues->count()-1; i >= 0; i--) {
+	if (!m_lstValues->at(i)->nonCSSHint)
+	    m_lstValues->remove(i);
+    }
+}
+
 bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID ) const
 {
     if ( m_lstValues) {

@@ -152,11 +152,11 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         setChanged(); // in case of a CSS selector on class/name
         break;
     case ATTR_STYLE:
-        // ### we need to remove old style info in case there was any!
-        // ### the inline sheet ay contain more than 1 property!
-        // stylesheet info
         setHasStyle();
-        if(!m_styleDecls) createDecl();
+        if (m_styleDecls)
+	    m_styleDecls->removeCSSHints();
+	else
+	    createDecl();
         m_styleDecls->setProperty(attr->value());
         setChanged();
         break;
