@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=iCalendar file
+Icon=vcalendar
+Type=MimeType
+MimeType=text/calendar
+Patterns=*.ics
