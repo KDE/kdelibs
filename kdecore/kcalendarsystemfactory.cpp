@@ -51,3 +51,12 @@ KCalendarSystem *KCalendarSystemFactory::create( const QString &calType,
 
   return 0;
 }
+
+QStringList KCalendarSystemFactory::calendarSystems()
+{
+   QStringList lst;
+   lst.append("gregorian");
+   lst.append("hijri");
+
+   return lst;
+}

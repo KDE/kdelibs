@@ -22,6 +22,7 @@
 #define KCALENDARSYSTEMFACTORY_H
 
 #include <qstring.h>
+#include <qstringlist.h>
 
 class KCalendarSystem;
 class KLocale;
@@ -51,6 +52,13 @@ public:
    */
   static KCalendarSystem *create (const QString & calType = "gregorian",
                                   const KLocale * locale = 0);
+
+  /**
+   * Gets list of names of supported calendar systems
+   *
+   * @return A QStringList object
+   */
+  static QStringList calendarSystems();
 
 private:
 };
