@@ -295,7 +295,6 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
             return false;
         }
         QByteArray buffer(8*1024);
-        filterDev->close();
         if ( ! filterDev->open( IO_ReadOnly ) )
         {
             delete filterDev;

@@ -148,6 +148,8 @@ bool KFilterDev::open( int mode )
 
 void KFilterDev::close()
 {
+    if ( !isOpen() )
+        return;
     //kdDebug(7005) << "KFilterDev::close" << endl;
     if ( filter->mode() == IO_WriteOnly )
         writeBlock( 0L, 0 ); // finish writing
