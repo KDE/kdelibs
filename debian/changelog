@@ -1,3 +1,26 @@
+kdelibs (4:2.1.0-3) unstable; urgency=low
+ 
+  * More upstream fixes
+   Fix for URLs like "http://www.kde.org?query=bla" and "http://www.kde.org#ref"
+   Fix for crashes opening http://www.radiocomercial.pt
+   Fix for accessing cookies via javascript
+   Fix for problem with filenames getting cut with umlauts
+   Fix for problem with permission changes in properties dialog
+   Don't unzip if the filename ends with .gz
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 07 Mar 2001 01:54:00 -0700
+
+kdelibs (4:2.1.0-2) unstable; urgency=low
+ 
+  * Adding libbz2-dev and libsasl-dev into Build-Depends so that the ioslaves
+    will be built on other archs.  Other archs probably didn't even notice. 
+  * dcopserver freeze fix
+  * Several other http fixes along with hopefully proper fixes to
+    the url entry problems
+  * Applying patch for Simplified Chinese support
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 04 Mar 2001 09:09:00 -0700
+
 kdelibs (4:2.1.0-1) unstable; urgency=low
  
    * Re-pulling from CVS instead of using the official tarballs.  The

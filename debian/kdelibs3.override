@@ -120,4 +120,22 @@ kdelibs3: shlib-missing-in-control-file kio_ftp.so usr/lib/kde2/kio_ftp.so
 kdelibs3: shlib-missing-in-control-file kio_uiserver.so usr/lib/kio_uiserver.so
 kdelibs3: shlib-missing-in-control-file kio_https.so usr/lib/kde2/kio_https-nossl.so
 kdelibs3: unused-shlib-entry-in-control-file kio_https
-
+kdelibs3: binary-without-manpage dcop
+kdelibs3: binary-without-manpage dcopidl
+kdelibs3: binary-without-manpage dcopidl2cpp
+kdelibs3: binary-without-manpage dcopserver
+kdelibs3: binary-without-manpage kbuildsycoca
+kdelibs3: binary-without-manpage kcookiejar
+kdelibs3: binary-without-manpage kdb2html
+kdelibs3: binary-without-manpage kde-config
+kdelibs3: binary-without-manpage kded
+kdelibs3: binary-without-manpage kdeinit
+kdelibs3: binary-without-manpage kdeinit_wrapper
+kdelibs3: binary-without-manpage kdesu_stub
+kdelibs3: binary-without-manpage kio_http_cache_cleaner
+kdelibs3: binary-without-manpage kio_uiserver
+kdelibs3: binary-without-manpage klauncher
+kdelibs3: binary-without-manpage kmailservice
+kdelibs3: binary-without-manpage ksendbugmail
+kdelibs3: binary-without-manpage lnusertemp
+kdelibs3: binary-without-manpage settheme
