@@ -19,7 +19,7 @@ else
   COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
 
-tmp = $(shell pwd)/debian/install-tmp
+tmp = $(shell pwd)/debian/build-tmp
 alsa-tmp = $(shell pwd)/debian/alsa-tmp
 
 build: build-stamp alsa-stamp
@@ -67,7 +67,8 @@ debian-clean:
 	dh_clean
 
 clean: debian-clean
-	-rm -rf debian/debiandirs debian/install-tmp debian/alsa-tmp
+	-rm -rf debian/debiandirs debian/build-tmp \
+		debian/install-tmp debian/alsa-tmp
 	if test -d CVS; then \
 	  make -f admin/Makefile.common cvs-clean ;\
 	fi
@@ -107,28 +108,30 @@ install: build
 	dh_testroot
 	dh_clean -a
 	-rm -rf debian/alsa-tmp debian/kdelibs4
+	-install -d debian/kdelibs4
+	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
 	make -C libkmid/ DESTDIR=$(alsa-tmp)/ install
 	make -C arts/ DESTDIR=$(alsa-tmp)/ install
-	make -C kdeprint/cups DESTDIR=`pwd`/debian/install-tmp/ install
+	make -C kdeprint/cups DESTDIR=`pwd`/debian/build-tmp/ install
 
 binary-arch:  build install
 	dh_testdir
 	dh_testroot
 	dh_installdirs -a
-	-rm -f debian/install-tmp/usr/share/doc/kde/HTML/default
-	debianrc=debian/kdelibs4/etc/kde3/system.kdeglobals ;\
+	-rm -f debian/build-tmp/usr/share/doc/kde/HTML/default
+	debianrc=debian/build-tmp/etc/kde/system.kdeglobals ;\
 	echo "[Directories]" > $$debianrc ;\
-	echo "dir_config=/etc/kde3" >> $$debianrc ;\
+	echo "dir_config=/etc/kde" >> $$debianrc ;\
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
 	echo "dir_cgi=/usr/lib/cgi-bin" >> $$debianrc ;\
-	echo "dir_apps=/usr/share/applnk" >> $$debianrc ;\
-	echo "dir_mime=/usr/share/mimelnk" >> $$debianrc ;\
-	echo "dir_services=/usr/share/services" >> $$debianrc ;\
-	echo "dir_servicetypes=/usr/share/servicetypes" >> $$debianrc ;\
+	echo "dir_apps=/usr/share/kde/applnk" >> $$debianrc ;\
+	echo "dir_mime=/usr/share/kde/mimelnk" >> $$debianrc ;\
+	echo "dir_services=/usr/share/kde/services" >> $$debianrc ;\
+	echo "dir_servicetypes=/usr/share/kde/servicetypes" >> $$debianrc ;\
 	echo "[General]" >> $$debianrc ;\
 	echo "TerminalApplication=x-terminal-emulator" >> $$debianrc
-	cp debian/kde.pamd debian/kdelibs4/etc/pam.d/kde3
+	cp debian/kde.pamd debian/kdelibs4/etc/pam.d/kde
 	dh_installdocs -a
 	-cp debian/dh-make/* debian/kdelibs4-dev/usr/share/doc/kdelibs4-dev/dh-make/
 	-cp admin/debianrules debian/kdelibs4-dev/usr/share/doc/kdelibs4-dev/dh-make/
@@ -157,7 +160,7 @@ binary-arch:  build install
 	dh_fixperms -a
 	dh_makeshlibs -V
 	dh_installdeb -a
-	dh_shlibdeps -a -l`pwd`/debian/kdelibs4/usr/lib/kde3:`pwd`/debian/libarts1/usr/lib/kde3:`pwd`/debian/libkmid0/usr/lib/kde3:`pwd`/debian/kdelibs4-cups/usr/lib/kde3
+	dh_shlibdeps -a -l`pwd`/debian/kdelibs4/usr/lib/kde:`pwd`/debian/libarts1/usr/lib/kde:`pwd`/debian/libkmid0/usr/lib/kde:`pwd`/debian/kdelibs4-cups/usr/lib/kde
 	echo -n `cat debian/libarts1.substvars ` > debian/libarts1-alsa.substvars
 	echo ", libasound2 (>= 0.9.0beta7-1)" >> debian/libarts1-alsa.substvars
 	echo -n `cat debian/libkmid0.substvars` > debian/libkmid0-alsa.substvars

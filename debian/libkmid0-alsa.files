@@ -1,7 +1,7 @@
-usr/lib/kde3/libartskde.so
-usr/lib/kde3/knotify.so
-usr/lib/kde3/knotify.la
-usr/lib/kde3/libkmid.so.*
-usr/lib/kde3/libkmid.la
-usr/lib/kde3/libqtmcop.so.*
-usr/lib/kde3/libqtmcop.la
+usr/lib/kde/libartskde.so
+usr/lib/kde/knotify.so
+usr/lib/kde/knotify.la
+usr/lib/kde/libkmid.so.*
+usr/lib/kde/libkmid.la
+usr/lib/kde/libqtmcop.so.*
+usr/lib/kde/libqtmcop.la

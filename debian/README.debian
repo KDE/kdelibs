@@ -44,17 +44,16 @@ I chose the below paths - following Andreas's settings.
 
 /usr			prefix
 /usr/bin		kde binaries (was KDE/bin)
-/usr/lib/kde3		kde shared libraries (was KDE/lib)
+/usr/lib/kde		kde shared libraries (was KDE/lib)
 /usr/include/kde	kde include files (was KDE/include)
 /usr/lib/cgi-bin	kde cgi binaries (was KDE/cgi-bin)
 /usr/share/doc/kde/HTML kde online documentation (was KDE/share/doc)
-/etc/kde3		kde config files (was KDE/share/config)
-/usr/share/applnk	kde applnk files (provide a link to /usr/share/applnk)
-/usr/share/mimelnk	kde mimelink files
-/usr/share/icons	kde icons (and mini icons in .../icons/mini)
-/usr/share/wallpapers	kde wallpaper icons (can also be used by other apps)
-/usr/share/apps/	kde per application directory
-/usr/share/locale	locales
+/etc/kde		kde config files (was KDE/share/config)
+/usr/share/kde/applnk	kde applnk files (provide a link to /usr/share/applnk)
+/usr/share/kde/mimelnk	kde mimelink files
+/usr/share/kde/icons	kde icons (and mini icons in .../icons/mini)
+/usr/share/kde/apps/	kde per application directory
+/usr/share/kde/locale	locales
 
 3. Kpanel and menus:
 -------------------

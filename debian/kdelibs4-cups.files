@@ -1,10 +1,10 @@
 usr/lib/kde3/libkdeprint_cups.so
 usr/lib/kde3/libkdeprint_cups.la
-usr/lib/kde3/libcupsdconf.so
-usr/lib/kde3/libcupsdconf.la
-usr/share/apps/kdeprint/plugins/cups.print
-usr/share/apps/kdeprint/cups_logo.png
-usr/share/apps/kdeprint/cupsd.conf.template
+usr/lib/kde/libcupsdconf.so
+usr/lib/kde/libcupsdconf.la
+usr/share/kde/apps/kdeprint/plugins/cups.print
+usr/share/kde/apps/kdeprint/cups_logo.png
+usr/share/kde/apps/kdeprint/cupsd.conf.template
 usr/bin/make_driver_db_cups
 usr/bin/cupsdconf
 usr/bin/cupsdoprint
