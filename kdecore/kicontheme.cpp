@@ -420,7 +420,7 @@ QStringList KIconTheme::list()
         QStringList::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); it2++)
         {
-            if ((*it2 == ".") || (*it2 == ".."))
+            if ((*it2 == ".") || (*it2 == "..") || (*it2).startsWith("default.") )
                 continue;
             if (!KStandardDirs::exists(*it + *it2 + "/index.desktop") && !KStandardDirs::exists(*it + *it2 + "/index.theme"))
                 continue;

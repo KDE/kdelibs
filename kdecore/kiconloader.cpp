@@ -309,6 +309,8 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
 
 void KIconLoader::addExtraDesktopThemes()
 {
+    if ( d->extraDesktopIconsLoaded ) return;
+
     QStringList list;
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
     QStringList::ConstIterator it;
@@ -353,7 +355,12 @@ void KIconLoader::addExtraDesktopThemes()
     }
 
     d->extraDesktopIconsLoaded=true;
+   
+}
 
+bool KIconLoader::extraDesktopThemesAdded() const
+{
+    return d->extraDesktopIconsLoaded;
 }
 
 QString KIconLoader::removeIconExtension(const QString &name) const
@@ -496,6 +503,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	     path = d->mpDirs->findResource("appicon", name + xpm_ext);
 	return path;
     }
+    
     if (group_or_size >= KIcon::LastGroup)
     {
 	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
@@ -516,15 +524,6 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     }
 
     KIcon icon = findMatchingIcon(name, size);
-
-    if ( !d->extraDesktopIconsLoaded && !icon.isValid() &&
-	( group_or_size == KIcon::Desktop || group_or_size == KIcon::Small ||
-	    group_or_size == KIcon::Panel ) &&
-	     name != QString(KGlobal::instance()->instanceName()) )
-    {
-	const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
-        icon = findMatchingIcon(name, size);
-    }
 
     if (!icon.isValid())
     {
@@ -676,15 +675,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         {
             if (!name.isEmpty())
                 icon = findMatchingIcon(favIconOverlay ? QString("www") : name, size);
-
-	    if ( !d->extraDesktopIconsLoaded && !icon.isValid() &&
-		    ( group == KIcon::Desktop || group == KIcon::Small ||
-		      group == KIcon::Panel ) &&
-		    name != QString(KGlobal::instance()->instanceName()) )
-	    {
-		const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
-		icon = findMatchingIcon(name, size);
-	    }
 
             if (!icon.isValid())
             {

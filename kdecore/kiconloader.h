@@ -290,8 +290,23 @@ public:
      *  using the alpha channel information for a given group.
      * @param group the group to check
      * @return true if alpha blending is desired
+     * @obsolete
      */
     bool alphaBlending( KIcon::Group group ) const;
+
+    /**
+     * Adds all the default themes from other desktops at the end of
+     * the list of icon themes.
+     * @since 3.1
+     */
+    void addExtraDesktopThemes();
+
+    /**
+     * Returns if the default icon themes of other desktops have been added
+     * to the list of icon themes where icons are searched.
+     * @since 3.1
+     */ 
+    bool extraDesktopThemesAdded() const;
 
     /**
      * Enables on-demand icon loading for QIconSets using @ref QIconFactory.
@@ -353,14 +368,6 @@ public:
      * @internal
      */
     void addBaseThemes(KIconThemeNode *node, const QString &appname);
-
-    /**
-     * Adds all the default themes from other desktops at the end of
-     * the list of icon themes.
-     * @internal
-     * @since 3.1
-     */
-    void addExtraDesktopThemes();
 
     /**
      * @internal
