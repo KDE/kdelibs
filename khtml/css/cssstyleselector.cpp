@@ -538,6 +538,7 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
     // Frames and framesets never honor position:relative or position:absolute.  This is necessary to
     // fix a crash where a site tries to position these objects.
     if ( e ) {
+        // ignore display: none for <frame>
         if ( e->id() == ID_FRAME ) {
             style->setPosition( STATIC );
             style->setDisplay( BLOCK );

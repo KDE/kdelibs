@@ -1,5 +1,8 @@
 2003-11-19  Dirk Mueller  <mueller@kde.org>
 
+	* html/html_baseimpl.cpp (attach): respect display: NONE on <frame>, since
+	it is used to indicate the FOUC prevention code path now. 
+
 	* css/cssparser.cpp (parseColor): remove use of invalidColor. use a boolean
 	return instead. invalidColor was confusing as it was actually a valid color. 
 	Also add rgba() parsing. 

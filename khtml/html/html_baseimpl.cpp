@@ -318,12 +318,15 @@ void HTMLFrameElementImpl::attach()
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
 
-    // ignore display: none for this element!
-
     if (parentNode()->renderer() && getDocument()->isURLAllowed(url.string()))  {
-        m_render = new (getDocument()->renderArena()) RenderFrame(this);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
+        RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+        _style->ref();
+        if ( _style->display() != NONE ) {
+            m_render = new (getDocument()->renderArena()) RenderFrame(this);
+            m_render->setStyle(_style);
+            parentNode()->renderer()->addChild(m_render, nextRenderer());
+        }
+        _style->deref();
     }
 
     NodeBaseImpl::attach();
