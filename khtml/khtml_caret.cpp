@@ -217,7 +217,6 @@ InlineBoxIterator& InlineBoxIterator::operator --()
 
 // code copied from khtml_part.cpp
 // ### please, use DOM::Range before you rewrite the functionality!
-#ifndef KDE_USE_FINAL
 /** Determines whether @p start_sp appears before @p end_sp in document order
  */
 static bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
@@ -266,7 +265,6 @@ static bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
   }
   return result;
 }
-#endif
 
 /** tests whether the given (n1, ofs1) pair is before the second given
  * (n2, ofs2) pair.

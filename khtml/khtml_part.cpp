@@ -5197,6 +5197,8 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
 
 /** Determines whether @p start_sp appears before @p end_sp in document order
  */
+// duplicated in khtml_caret
+#ifndef KDE_USE_FINAL
 static bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
   if ( start_sp.isNull() || end_sp.isNull() ) return true;
 
@@ -5243,6 +5245,7 @@ static bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
   }
   return result;
 }
+#endif
 
 #ifndef KHTML_NO_SELECTION
 void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::Node &innerNode)
