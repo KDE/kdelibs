@@ -36,7 +36,9 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
     setAcceptDrops( true );
     setMouseTracking( true );
 
+#if QT_VERSION >= 0x030200
     connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
+#endif
 }
 
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
@@ -268,6 +270,9 @@ void KTabBar::setTabReorderingEnabled( bool on )
 void KTabBar::closeButtonClicked()
 {
     emit closeRequest( indexOf( mHoverCloseButtonTab->identifier() ) );
+#if QT_VERSION < 0x030200
+    onLayoutChange();
+#endif
 }
 
 void KTabBar::setHoverCloseButton( bool button )
