@@ -101,6 +101,7 @@ private:
 	PluginComboBox	*m_plugin;
 	int		m_pactionsindex;
 	QStringList	m_toollist;
+	bool		m_first;
 };
 
 #endif

@@ -82,6 +82,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 : QWidget(parent, name)
 {
 	m_current = 0;
+	m_first = true;
 
 	// create widgets
 	m_splitter = new QSplitter(Qt::Vertical, this, "Splitter");
@@ -255,8 +256,13 @@ void KMMainView::slotTimer()
 	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	bool ok = m_manager->errorMsg().isEmpty();
 	m_printerview->setPrinterList(printerlist);
-	if (!ok)
+kdDebug() << "error=" << !ok << ", first=" << m_first << endl;
+	if (!ok && m_first)
+	{
 		showErrorMsg(i18n("An error occurred while retrieving the printer list."));
+		m_first = false;
+kdDebug() << "message shown, first=" << m_first << endl;
+	}
 }
 
 void KMMainView::slotPrinterSelected(KMPrinter *p)
