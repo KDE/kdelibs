@@ -120,8 +120,7 @@ struct ContainerNode
     QString mergingName;
 
     void clearChildren() { children.clear(); }
-    void removeChild( ContainerNode *child )
-    { children.removeRef( child ); }
+    void removeChild( ContainerNode *child );
 
     MergingIndexList::Iterator findIndex( const QString &name );
     ContainerNode *findContainerNode( QWidget *container );
@@ -141,6 +140,13 @@ struct ContainerNode
     void unplugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt );
 
     void adjustMergingIndices( int offset, const MergingIndexList::Iterator &it );
+
+    bool destruct( QDomElement element, BuildState &state );
+    void destructChildren( const QDomElement &element, BuildState &state );
+    QDomElement findElementForChild( const QDomElement &baseElement, 
+                                     ContainerNode *childNode );
+    void unplugActions( BuildState &state );
+    void unplugClient( ContainerClient *client );
 
     void reset();
 };

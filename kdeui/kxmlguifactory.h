@@ -163,8 +163,6 @@ class KXMLGUIFactory : public QObject
 
  private:
 
-  bool removeRecursive( QDomElement &element, KXMLGUI::ContainerNode *node );
-
   int calcMergingIndex( KXMLGUI::ContainerNode *node, const QString &mergingName,
                         QValueList<KXMLGUI::MergingIndex>::Iterator &it, bool ingoreDefaultMergingIndex );
 

@@ -45,6 +45,13 @@ ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
         parent->children.append( this );
 }
 
+void ContainerNode::removeChild( ContainerNode *child )
+{
+    MergingIndexList::Iterator mergingIt = findIndex( child->mergingName );
+    adjustMergingIndices( -1, mergingIt );
+    children.removeRef( child );
+}
+
 /*
  * Find a merging index with the given name. Used to find an index defined by <Merge name="blah"/>
  * or by a <DefineGroup name="foo" /> tag.
@@ -265,6 +272,151 @@ void ContainerNode::adjustMergingIndices( int offset,
         (*mergingIt).value += offset;
 
     index += offset;
+}
+
+bool ContainerNode::destruct( QDomElement element, BuildState &state )
+{
+    destructChildren( element, state );
+
+    unplugActions( state );
+
+    // remove all merging indices the client defined
+    MergingIndexList::Iterator cmIt = mergingIndices.begin();
+    while ( cmIt != mergingIndices.end() )
+        if ( (*cmIt).clientName == state.clientName )
+            cmIt = mergingIndices.remove( cmIt );
+        else
+            ++cmIt;
+
+    // ### check for merging index count, too?
+    if ( clients.count() == 0 && children.count() == 0 && container &&
+         client == state.guiClient )
+    {
+        QWidget *parentContainer = 0L;
+
+        if ( parent && parent->container )
+            parentContainer = parent->container;
+
+        assert( builder );
+
+        builder->removeContainer( container, parentContainer, element, containerId );
+
+        client = 0L;
+
+        return true;
+    }
+
+    if ( client == state.guiClient )
+        client = 0L;
+
+    return false;
+
+}
+
+void ContainerNode::destructChildren( const QDomElement &element, BuildState &state )
+{
+    QPtrListIterator<ContainerNode> childIt( children );
+    while ( childIt.current() )
+    {
+        ContainerNode *childNode = childIt.current();
+
+        QDomElement childElement = findElementForChild( element, childNode );
+
+        // destruct returns true in case the container really got deleted
+        if ( childNode->destruct( childElement, state ) )
+            removeChild( childNode );
+        else
+            ++childIt;
+    }
+}
+
+QDomElement ContainerNode::findElementForChild( const QDomElement &baseElement,
+                                                ContainerNode *childNode )
+{
+    static const QString &attrName = KGlobal::staticQString( "name" );
+
+    QDomElement e;
+    // ### slow
+    for ( e = baseElement.firstChild().toElement(); !e.isNull();
+          e = e.nextSibling().toElement() )
+        if ( e.tagName() == childNode->tagName &&
+             e.attribute( attrName ) == childNode->name )
+            return e;
+
+    return QDomElement();
+}
+
+void ContainerNode::unplugActions( BuildState &state )
+{
+    if ( !container )
+        return;
+
+    ContainerClientListIt clientIt( clients );
+
+    if ( clients.count() == 1 && clientIt.current()->client == client &&
+         client == state.guiClient )
+        container->hide(); // this container is going to die, that's for sure.
+                           // in this case let's just hide it, which makes the
+                           // destruction faster
+
+    while ( clientIt.current() )
+        //only unplug the actions of the client we want to remove, as the container might be owned
+        //by a different client
+        if ( clientIt.current()->client == state.guiClient )
+        {
+            unplugClient( clientIt.current() );
+            clients.removeRef( clientIt.current() );
+        }
+        else
+            ++clientIt;
+}
+
+void ContainerNode::unplugClient( ContainerClient *client )
+{
+    static const QString &tagActionList = KGlobal::staticQString( "actionlist" );
+
+    assert( builder );
+
+    // now quickly remove all custom elements (i.e. separators) and unplug all actions
+
+    QValueList<int>::ConstIterator custIt = client->customElements.begin();
+    QValueList<int>::ConstIterator custEnd = client->customElements.end();
+    for (; custIt != custEnd; ++custIt )
+        builder->removeCustomElement( container, *custIt );
+
+    client->actions.unplug( container );
+
+    // now adjust all merging indices
+
+    MergingIndexList::Iterator mergingIt = findIndex( client->mergingName );
+
+    adjustMergingIndices( - ( client->actions.count()
+                          + client->customElements.count() ),
+                          mergingIt );
+
+    // unplug all actionslists
+
+    ActionListMap::ConstIterator alIt = client->actionLists.begin();
+    ActionListMap::ConstIterator alEnd = client->actionLists.end();
+    for (; alIt != alEnd; ++alIt )
+    {
+        alIt.data().unplug( container );
+
+        // construct the merging index key (i.e. like named merging) , find the
+        // corresponding merging index and adjust all indices
+        QString mergingKey = alIt.key();
+        mergingKey.prepend( tagActionList );
+
+        MergingIndexList::Iterator mIt = findIndex( mergingKey );
+        if ( mIt == mergingIndices.end() )
+            continue;
+
+        adjustMergingIndices( - alIt.data().count(), mIt );
+
+        // remove the actionlists' merging index
+        // ### still needed? we clean up below anyway?
+        mergingIndices.remove( mIt );
+    }
 }
 
 void ContainerNode::reset()
