@@ -23,21 +23,34 @@
 #include <kglobalsettings.h>
 #include <kstdaccel.h>
 
+class KTextEdit::KTextEditPrivate
+{
+public:
+    KTextEditPrivate()
+        : customPalette( false )
+    {}
+
+    bool customPalette;
+};
+
 KTextEdit::KTextEdit( const QString& text, const QString& context,
                       QWidget *parent, const char *name )
     : QTextEdit ( text, context, parent, name )
 {
+    d = new KTextEditPrivate();
     KCursor::setAutoHideCursor( this, true, false );
 }
 
 KTextEdit::KTextEdit( QWidget *parent, const char *name )
     : QTextEdit ( parent, name )
 {
+    d = new KTextEditPrivate();
     KCursor::setAutoHideCursor( this, true, false );
 }
 
 KTextEdit::~KTextEdit()
 {
+    delete d;
 }
 
 void KTextEdit::keyPressEvent( QKeyEvent *e )
@@ -116,22 +129,42 @@ void KTextEdit::contentsWheelEvent( QWheelEvent *e )
         QScrollView::contentsWheelEvent( e );
 }
 
+void KTextEdit::setPalette( const QPalette& palette )
+{
+    QTextEdit::setPalette( palette );
+    // unsetPalette() is not virtual and calls setPalette() as well
+    // so we can use ownPalette() to find out about unsetting
+    d->customPalette = ownPalette();
+}
+
 void KTextEdit::setReadOnly(bool readOnly)
 {
-    QPalette p = palette();
+    if ( readOnly == isReadOnly() )
+        return;
+
     if (readOnly)
     {
+        bool custom = ownPalette();
+        QPalette p = palette();
         QColor color = p.color(QPalette::Disabled, QColorGroup::Background);
         p.setColor(QColorGroup::Base, color);
         p.setColor(QColorGroup::Background, color);
+        setPalette(p);
+        d->customPalette = custom;
     }
     else
     {
+        if ( d->customPalette )
+        {
+            QPalette p = palette();
         QColor color = p.color(QPalette::Normal, QColorGroup::Base);
         p.setColor(QColorGroup::Base, color);
         p.setColor(QColorGroup::Background, color);
-    }
     setPalette(p);
+        }
+        else
+            unsetPalette();
+    }
 
     QTextEdit::setReadOnly (readOnly);
 }

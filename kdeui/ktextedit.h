@@ -63,6 +63,11 @@ public:
      */
     virtual void setReadOnly (bool readOnly);
 
+    /**
+     * Reimplemented for tracking custom palettes.
+     */
+    virtual void setPalette( const QPalette& palette );
+
 protected:
     /**
      * Reimplemented to catch "delete word" key events.
