@@ -48,13 +48,14 @@ static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
     return QTextCodec::codecForMib( encoding_hint );
 }
 
-static QString encode( const QString& segment, bool encode_slash, int encoding_hint )
+// encoding_offset:
+// 0 encode both @ and /
+// 1 encode @ but not /
+// 2 encode neither @ or /
+static QString encode( const QString& segment, int encoding_offset, int encoding_hint )
 {
-  const char *encode_string;
-  if (encode_slash)
-    encode_string = "<>#@\"&%?={}|^~[]\'`\\:+/";
-  else
-    encode_string = "<>#@\"&%?={}|^~[]\'`\\:+";
+  const char *encode_string = "/@<>#\"&%?={}|^~[]\'\:+";
+  encode_string += encoding_offset;
 
   QCString local;
   if (encoding_hint==0)
@@ -120,7 +121,7 @@ static QString encodeHost( const QString& segment, bool encode_slash, int encodi
      return '.' + KIDNA::toAscii(segment.mid(1));
   return KIDNA::toAscii(segment);
 #else
-  return encode(segment, encode_slash, encoding_hint);
+  return encode(segment, encode_slash ? 0 : 1, encoding_hint);
 #endif
 }
 
@@ -145,7 +146,7 @@ static int hex2int( unsigned int _char )
 //      KURL(url.prettyURL()).url()
 
 
-static QString lazy_encode( const QString& segment )
+static QString lazy_encode( const QString& segment, bool encodeAt=true )
 {
   int old_length = segment.length();
 
@@ -167,7 +168,7 @@ static QString lazy_encode( const QString& segment )
           (hex2int(segment[i+1].unicode())!= -1) &&
           (hex2int(segment[i+2].unicode())!= -1)) ||
         (character == '?') || // Start of query delimiter
-        (character == '@') || // Username delimiter
+        ((character == '@') && encodeAt) || // Username delimiter
         (character == '#') || // Start of reference delimiter
         ((character == 32) && (i+1 == old_length))) // A trailing space
     {
@@ -1267,17 +1268,11 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encod
         tmp = "/";
      if (m_iUriMode == Mailto)
      {
-        int atIndex = tmp.findRev('@');
-        if (atIndex == -1)
-           tmp = encode( tmp, false, encoding_hint );
-        else
-           tmp = encode( tmp.left(atIndex), false, encoding_hint) +
-                 '@' +
-                 encode( tmp.mid(atIndex+1), false, encoding_hint);
+        tmp = encode( tmp, 2, encoding_hint );
      }
      else
      {
-        tmp = encode( tmp, false, encoding_hint );
+        tmp = encode( tmp, 1, encoding_hint );
      }
   }
 
@@ -1436,11 +1431,11 @@ QString KURL::url( int _trailing, int encoding_hint ) const
     u += "//";
     if ( hasUser() )
     {
-      u += encode(m_strUser, true, encoding_hint);
+      u += encode(m_strUser, 0, encoding_hint);
       if ( hasPass() )
       {
         u += ":";
-        u += encode(m_strPass, true, encoding_hint);
+        u += encode(m_strPass, 0, encoding_hint);
       }
       u += "@";
     }
@@ -1525,13 +1520,7 @@ QString KURL::prettyURL( int _trailing ) const
 
   if (m_iUriMode == Mailto)
   {
-     int atIndex = m_strPath.findRev('@');
-     if (atIndex == -1)
-        u += lazy_encode( m_strPath );
-     else
-        u += lazy_encode( m_strPath.left(atIndex) ) +
-             '@' +
-             lazy_encode( m_strPath.mid(atIndex+1) );
+     u += lazy_encode( m_strPath, false );
   }
   else
   {
@@ -1862,13 +1851,13 @@ void KURL::setHTMLRef( const QString& _ref )
 {
   if ( !hasSubURL() )
   {
-    m_strRef_encoded = encode( _ref, true, 0 /*?*/);
+    m_strRef_encoded = encode( _ref, 0, 0 /*?*/);
     return;
   }
 
   List lst = split( *this );
 
-  (*lst.begin()).setRef( encode( _ref, true, 0 /*?*/) );
+  (*lst.begin()).setRef( encode( _ref, 0, 0 /*?*/) );
 
   *this = join( lst );
 }
@@ -2018,12 +2007,12 @@ QString KURL::decode_string(const QString &str, int encoding_hint)
 
 QString KURL::encode_string(const QString &str, int encoding_hint)
 {
-   return encode(str, false, encoding_hint);
+   return encode(str, 1, encoding_hint);
 }
 
 QString KURL::encode_string_no_slash(const QString &str, int encoding_hint)
 {
-   return encode(str, true, encoding_hint);
+   return encode(str, 0, encoding_hint);
 }
 
 bool urlcmp( const QString& _url1, const QString& _url2 )
@@ -2172,7 +2161,7 @@ void KURL::removeQueryItem( const QString& _item )
 void KURL::addQueryItem( const QString& _item, const QString& _value, int encoding_hint )
 {
   QString item = _item + '=';
-  QString value = encode( _value, true, encoding_hint );
+  QString value = encode( _value, 0, encoding_hint );
 
   if (!m_strQuery_encoded.isEmpty())
      m_strQuery_encoded += '&';
@@ -2261,7 +2250,7 @@ QString KURL::relativeURL(const KURL &base_url, const KURL &url, int encoding_hi
    {
       bool dummy;
       QString basePath = base_url.directory(false, false);
-      relURL = encode( _relativePath(basePath, url.path(), dummy), false, encoding_hint);
+      relURL = encode( _relativePath(basePath, url.path(), dummy), 1, encoding_hint);
       relURL += url.query();
    }
 
