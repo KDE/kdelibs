@@ -365,9 +365,9 @@ void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &w
    if (grayscale) {
        for (i=0; i<pixels; i++) {
            int v = qRed(data[i]);
-           rval = static_cast<int>( ((255-v)*rw + v*rb)*value/255 + (1.0-value)*qRed(data[i]));
-           gval = static_cast<int>( ((255-v)*gw + v*gb)*value/255 + (1.0-value)*qGreen(data[i]));
-           bval = static_cast<int>( ((255-v)*bw + v*bb)*value/255 + (1.0-value)*qBlue(data[i]));
+           rval = static_cast<int>( ((255-v)*rb + v*rw)*value/255 + (1.0-value)*qRed(data[i]));
+           gval = static_cast<int>( ((255-v)*gb + v*gw)*value/255 + (1.0-value)*qGreen(data[i]));
+           bval = static_cast<int>( ((255-v)*bb + v*bw)*value/255 + (1.0-value)*qBlue(data[i]));
 
            alpha = qAlpha(data[i]);
            data[i] = qRgba(rval, gval, bval, alpha);
@@ -388,7 +388,7 @@ void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &w
 
          alpha = qAlpha(data[i]);
          data[i] = qRgba(rval, gval, bval, alpha);
-   }
+      }
    }
 }
 
