@@ -27,15 +27,28 @@
 #include "kcombobox.moc"
 
 
+class KComboBox::KComboBoxPrivate
+{
+public:
+    bool grabReturnKeyEvents;
+};
+
+
 KComboBox::KComboBox( QWidget *parent, const char *name )
           :QComboBox( parent, name )
 {
+    d = new KComboBoxPrivate;
+    d->grabReturnKeyEvents = false;
+
     init();
 }
 
 KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
           :QComboBox( rw, parent, name )
 {
+    d = new KComboBoxPrivate;
+    d->grabReturnKeyEvents = false;
+
     if ( rw )
     {
         m_pEdit = QComboBox::lineEdit();
@@ -50,6 +63,8 @@ KComboBox::~KComboBox()
     {
         m_pEdit->removeEventFilter( this );
     }
+
+    delete d;
 }
 
 void KComboBox::init()
@@ -287,14 +302,6 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 
     if( m_pEdit && m_pEdit->hasFocus() )
     {
-        // On Return pressed event, emit both returnPressed( const QString& )
-        // and returnPressed() signals
-        if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
-        {
-            emit returnPressed();
-            emit returnPressed( currentText() );
-        }
-
     	KGlobalSettings::Completion mode = completionMode();
         if( mode == KGlobalSettings::CompletionAuto )
         {
@@ -425,5 +432,31 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             return true;
         }
     }
+    
+    else if ( o == m_pEdit && ev->type() == QEvent::KeyPress ) {
+	QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+	if ( d->grabReturnKeyEvents && 
+	     (e->key() == Key_Return || e->key() == Key_Enter) ) {
+
+	    // On Return pressed event, emit both returnPressed(const QString&)
+	    // and returnPressed() signals
+            emit returnPressed();
+            emit returnPressed( currentText() );
+
+	    return true;
+	}
+    }
+    
     return QComboBox::eventFilter( o, ev );
+}
+
+
+void KComboBox::setGrabReturnKeyEvents( bool grab )
+{
+    d->grabReturnKeyEvents = grab;
+}
+
+bool KComboBox::grabReturnKeyEvents() const
+{
+    return d->grabReturnKeyEvents;
 }

@@ -220,6 +220,28 @@ public:
      */
     bool isInserted( const QString& text ) const;
 
+    /**
+     * By default, KComboBox recognizes Key_Return and Key_Enter and emits
+     * the @ref returnPressed() signals, but it also passes the events further,
+     * i.e. it doesn't call event->accept().
+     *
+     * Call this method with @p grab = true to make KComboBox stop these
+     * events. The signals will still be emitted of course.
+     *
+     * Only affects read-writable comboboxes.
+     *
+     * @see #grabReturnKeyEvents
+     */
+    void setGrabReturnKeyEvents( bool grab );
+
+    /**
+     * @returns true if keyevents of Key_Return or Key_Enter will be stopped
+     * or if they will be propagated.
+     *
+     * @see #setGrabReturnKeyEvents
+     */
+    bool grabReturnKeyEvents() const;
+
 signals:
     /**
     * This signal is emitted when the user presses
