@@ -65,12 +65,12 @@ struct URLArgs
   URLArgs();
   URLArgs( const URLArgs &args );
   URLArgs &operator=( const URLArgs &args);
-  
+
   URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
   virtual ~URLArgs();
 
   QStringList docState() const;
-  void setDocState(const QStringList &);  
+  void setDocState(const QStringList &);
 
   bool reload;
   int xOffset;
@@ -96,6 +96,8 @@ class BrowserExtensionPrivate;
   * trash : move selected items to trash
   * del : delete selected items (couldn't call it delete!)
   * shred : shred selected items (secure deletion)
+  * properties : show file/document properties
+  * editMimeType : show file/document's mimetype properties
   *      <P>
   * [normal actions]
   * print : print :-)
