@@ -118,6 +118,7 @@ void KPFilterPage::slotAddClicked()
 	if (ok)
 	{
 		KXmlCommand	*cmd = KXmlCommandManager::self()->loadCommand(choice);
+		if (!cmd) return; // Error
 		QStringList	filters = activeList();
 		int		pos = KXmlCommandManager::self()->insertCommand(filters, cmd->name());
 		QListViewItem	*prev(0);

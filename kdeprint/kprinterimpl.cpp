@@ -350,6 +350,12 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	for (uint i=0;i<flist.count();i++)
 	{
 		KXmlCommand	*filter = KXmlCommandManager::self()->loadCommand(flist[i]);
+		if (!filter)
+		{
+			// TODO: better error message
+			printer->setErrorMessage(i18n("<p>Error while reading filter description for <b>%1</b>. Empty command line received.</p>").arg(flist[i]));
+			return -1; // Error
+		}
 		if (i == 0)
 			inputMimeTypes = filter->inputMimeTypes();
 
