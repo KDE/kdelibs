@@ -200,11 +200,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     // for non important rules the order is reversed
 
     if(userStyle) userStyle->collect(propsToApply, e, 0x00200000, 0x04000000);
-    if(e->styleRules()) propsToApply->append(e->styleRules(), 0x00400000, 0x01000000);
+
     if(authorStyle) authorStyle->collect(propsToApply, e, 0x00400000, 0x01000000);
     // inline style declarations, after all others. non css hints 
     // count as author rules, and come before all other style sheets, see hack in append()
-
+    dynamicPseudo = RenderStyle::NOPSEUDO;
+    if(e->styleRules()) propsToApply->append(e->styleRules(), 0x00800000, 0x020000000);
+    
     propsToApply->sort();
 
     RenderStyle *style;
