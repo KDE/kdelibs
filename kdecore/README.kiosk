@@ -116,7 +116,7 @@ the path to another name and create a new kickerrc _with_ write-access.
 KDE3 Kiosk Application API
 ==========================
 
-Two new methods have been added to KApplication:
+Three new methods have been added to KApplication:
 
 - bool authorize(QString action); // Generic actions
 - bool authorizeKAction(QString action); // For KActions exclusively
