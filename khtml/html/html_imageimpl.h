@@ -48,6 +48,9 @@ public:
 
     virtual void attach();
 
+    long width() const;
+    long height() const;
+
     bool isServerMap() const { return ( ismap && !usemap.length() );  }
     QImage currentImage() const;
 
