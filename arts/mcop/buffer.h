@@ -33,17 +33,15 @@ namespace Arts {
 typedef unsigned char mcopbyte;
 #endif
 
-// BCI: private data pointer is missing, add next time when breaking binary
-// compatibility, so that internal representation can be changed to something
-// else than vector. Also think about seek.
 class Buffer {
-	std::vector<unsigned char> contents;
-	long rpos;
-	bool _readError;
+private:
+	struct BufferPrivate *d;
 	unsigned char fromHexNibble(char c);
 
 public:
 	Buffer();
+	~Buffer();
+
 	bool readError();
 	void writeBool(bool b);
 	void writeByte(mcopbyte b);
@@ -54,14 +52,9 @@ public:
 	void writeFloatSeq(const std::vector<float>& seq);
 	void writeString(const std::string& s);
 	void writeStringSeq(const std::vector<std::string>& seq);
-	inline long size() {
-		return contents.size();
-	}
 
-	inline long remaining() {
-		return size()-rpos;
-	}
-
+	long size();
+	long remaining();
 	void *read(long l);
 	void *peek(long l);
 	void skip(long l);
