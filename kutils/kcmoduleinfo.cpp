@@ -121,6 +121,11 @@ KCModuleInfo &KCModuleInfo::operator=( const KCModuleInfo &rhs )
     return *this;
 }
 
+bool KCModuleInfo::operator==( const KCModuleInfo & rhs )
+{
+  return ( ( _name == rhs._name ) && ( _lib == rhs._lib ) && ( _fileName == rhs._fileName ) );
+}
+
 KCModuleInfo::~KCModuleInfo() { }
 
 void
