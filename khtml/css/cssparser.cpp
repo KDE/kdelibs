@@ -1165,7 +1165,44 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	// close-quote | no-open-quote | no-close-quote ]+ | inherit
         {
             if (len>0)
-               parsedValue = new CSSPrimitiveValueImpl(DOMString(value), CSSPrimitiveValue::CSS_STRING);                  
+            {
+                const QString str(value.stripWhiteSpace()); // ### Optimize
+	        if (str.left(4).lower() == "url(") 
+                {
+		    DOMString value(curP, endP - curP);
+		    value = khtml::parseURL(value);
+            	    parsedValue = new CSSImageValueImpl(value, this);
+#ifdef CSS_DEBUG
+		    kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << baseURL().string() << endl;
+#endif
+	        }
+                else
+                {
+                    while(curP < endP && *curP == ' ')
+                        curP++;
+                    if(curP >= endP ) {
+                        break;
+                    }
+                    const QChar* endVal = curP;
+                    if(*curP == '\'') {
+                        curP++;
+                        endVal++;
+                        while(endVal < endP && *endVal != '\'')
+                            endVal++;
+                    } else if(*curP == '\"') {
+                        curP++;
+                        endVal++;
+                        while(endVal < endP && *endVal != '\"')
+                            endVal++;
+                    } else {
+                      while(endVal < endP)
+                        endVal++;
+                    }
+                    QString str = QConstString( const_cast<QChar*>( curP ), endVal - curP ).string();
+                    str = str.replace(QRegExp("\\\\a"),"\n");
+                    parsedValue = new CSSPrimitiveValueImpl(DOMString(str), CSSPrimitiveValue::CSS_STRING);                  
+                }
+            }
             break;
         }
 

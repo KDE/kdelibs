@@ -27,6 +27,7 @@
 #include "render_table.h"
 
 #include "render_text.h"
+#include "render_image.h"
 
 #include <kdebug.h>
 #include <assert.h>
@@ -194,6 +195,13 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
             
             t->close();
             po->close();
+        } 
+        else if (pseudo->contentType()==RenderStyle::CONTENT_OBJECT)
+        {
+            RenderObject* po = new RenderImage(0);
+            po->setStyle(pseudo);
+            addChild(po, beforeChild);
+            po->close();                        
         }
 
     }

@@ -68,6 +68,13 @@ void RenderImage::setStyle(RenderStyle* _style)
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
     setInline( style()->display()==INLINE );
+    
+    if (style()->contentObject())
+    {
+        if (image) image->deref(this);
+        image = static_cast<CachedImage*>(style()->contentObject());
+        image->ref(this);
+    }
 }
 
 void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
@@ -307,6 +314,6 @@ void RenderImage::setAlt(DOM::DOMString text)
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if ( image == finishedObj )
+    if ( image == finishedObj && element)
         element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }

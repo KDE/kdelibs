@@ -41,6 +41,7 @@ using namespace DOM;
 #include "khtml_settings.h"
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
+#include "misc/loader.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -2152,13 +2153,18 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_CONTENT:
         // list of string, uri, counter, attr, i
     {
-        if(primitiveValue 
-            && primitiveValue->primitiveType()==CSSPrimitiveValue::CSS_STRING)
+        if (primitiveValue  && (style->styleType()==RenderStyle::BEFORE ||  
+                style->styleType()==RenderStyle::AFTER))
         {
-            if (style->styleType()==RenderStyle::BEFORE ||  
-                style->styleType()==RenderStyle::AFTER)
+            if(primitiveValue->primitiveType()==CSSPrimitiveValue::CSS_STRING)
             {
+            
                 style->setContent(primitiveValue->getStringValue());                   
+            }
+            else if (primitiveValue->primitiveType()==CSSPrimitiveValue::CSS_URI)
+            {
+                CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(primitiveValue);
+                style->setContent(image->image());
             }
         }
         break;
