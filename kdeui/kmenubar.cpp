@@ -41,6 +41,15 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.56  1998/12/09 14:11:58  radej
+// sven: Bad geometry (vanishing last item) fixed. Debug output commented out.
+//
+// Revision 1.55  1998/12/07 21:47:26  tibirna
+// Endorsed by: Sven Radej <sven@kde.org>
+//
+// CT: 1)         ~/.kderc#[Menubar]\TopOfScreen=yes|no
+//        becomes ~/.kderc#[KDE]\macStyle=on|off
 //     2) GUI config for the macStyle
 //     3) krootwm supports "hot" switching of macStyle (still small problems,
 // 	a restart of krootwm fixes them)
@@ -201,7 +210,7 @@ void KMenuBar::resizeEvent (QResizeEvent *)
   if (position == Flat)
   
   int hwidth = 9;
-                     menu->heightForWidth(width()));
+  if (standalone_menubar)
     hwidth = 20;
 
   frame->setGeometry(hwidth , 0, width()-hwidth,
@@ -211,9 +220,9 @@ void KMenuBar::resizeEvent (QResizeEvent *)
   if (height() != heightForWidth(width()))
   {
     resize(width(), heightForWidth(width()));
-void KMenuBar::ContextCallback( int index )
+    return;
   }
-  int i = index; // to shut the -Wall up
+}
 
 void KMenuBar::ContextCallback( int )
 {
@@ -535,8 +544,8 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 
         if (miniGo)
         {
-        else
-          debug ("No go mini Go");
+        //else
+          //debug ("No go mini Go");
         
           int dy = ( handle->height() - miniGo->height() ) / 2;
           paint.drawPixmap( dx, dy, *miniGo);
@@ -866,7 +875,7 @@ void KMenuBar::setFlat (bool flag)
     return;
   if ( flag == (position == Flat))
 
-    debug ("Flat");
+  if (flag) //flat
   {
     context->changeItem (i18n("UnFlat"), CONTEXT_FLAT);
     lastPosition = position; // test float. I did and it works by miracle!?
@@ -876,7 +885,7 @@ void KMenuBar::setFlat (bool flag)
     handle->resize(30, 10);
     frame->move(100, 100); // move menubar out of sight
     enableFloating(false);
-    debug ("Unflat");
+  }
   else //unflat
   {
     context->changeItem (i18n("Flat"), CONTEXT_FLAT);
