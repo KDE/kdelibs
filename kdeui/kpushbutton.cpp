@@ -106,8 +106,7 @@ bool KPushButton::needIcons()
 
 void KPushButton::readSettings()
 {
-    KConfigGroup cg ( KGlobal::config(), "KDE" );
-    s_useIcons = cg.readBoolEntry( "ShowIconsOnPushButtons", false );
+    s_useIcons = KGlobalSettings::showIconsOnPushButtons();
 }
 
 void KPushButton::setGuiItem( const KGuiItem& item )
