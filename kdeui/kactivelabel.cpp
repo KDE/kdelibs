@@ -54,7 +54,7 @@ void KActiveLabel::init()
 void KActiveLabel::paletteChanged()
 {
    QPalette p = kapp ? kapp->palette() : palette();
-   p.setColor(QColorGroup::Base, p.color(QPalette::Normal, QColorGroup::Background));
+   p.setBrush(QColorGroup::Base, p.brush(QPalette::Normal, QColorGroup::Background));
    p.setColor(QColorGroup::Text, p.color(QPalette::Normal, QColorGroup::Foreground));
    setPalette(p);
 }
