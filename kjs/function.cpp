@@ -318,6 +318,11 @@ ActivationImp::ActivationImp(ExecState *exec, FunctionImp *f, const List &args)
   put(exec,"arguments", arguments, DontDelete);
 }
 
+ActivationImp::~ActivationImp()
+{
+  arguments->setGcAllowed();
+}
+
 // ------------------------------ GlobalFunc -----------------------------------
 
 

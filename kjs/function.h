@@ -99,13 +99,14 @@ namespace KJS {
   class ActivationImp : public ObjectImp {
   public:
     ActivationImp(ExecState *exec, FunctionImp *f, const List &args);
+    ~ActivationImp();
 
     Object argumentsObject() { return arguments; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   private:
-    Object arguments; // ### use ObjectImp* and mark it
+    ObjectImp* arguments;
   };
 
   class GlobalFuncImp : public InternalFunctionImp {
