@@ -310,6 +310,8 @@ public:
    * KWM_MODULE_DESKTOP_NAME_CHANGE   - a desktop got a new name
    * KWM_MODULE_DESKTOP_NUMBER_CHANGE - the number of desktop changed
    * KWM_MODULE_WIN_ADD          - new window
+   * KWM_MODULE_DIALOG_WIN_ADD     - new dialog window. The signal comes _before_
+   *                        the WIN_ADD signal to allow clients to exclude dialog windows.
    * KWM_MODULE_WIN_REMOVE       - remove window
    * KWM_MODULE_WIN_CHANGE       - size, properties, map state etc.
    * KWM_MODULE_WIN_RAISE        - raise and lower allow a module (for example
@@ -551,7 +553,7 @@ public:
    * Move a window to another geometric position
    */
   static void move(Window w, const QPoint &pos);
-    
+
   /**
    * Maximize/Unmaximize a window according to value.  If the window
    *  is not mapped yet, this function only sets the _state_ of the
