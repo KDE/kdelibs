@@ -45,7 +45,6 @@ public:
   }
   ~KXMLGUIClientPrivate()
   {
-    delete m_actionCollection;
   }
 
   KInstance *m_instance;
@@ -85,6 +84,7 @@ KXMLGUIClient::~KXMLGUIClient()
   d->m_children.setAutoDelete( true );
   d->m_children.clear();
   */
+  delete d->m_actionCollection;
   delete d;
 }
 
@@ -96,7 +96,7 @@ KAction *KXMLGUIClient::action( const char *name ) const
 KActionCollection *KXMLGUIClient::actionCollection() const
 {
   if ( !d->m_actionCollection )
-    d->m_actionCollection = new KActionCollection( (QWidget*)0,
+    d->m_actionCollection = new KActionCollection( 0, 0,
       "KXMLGUILClient-KActionCollection" );
   return d->m_actionCollection;
 }
