@@ -112,7 +112,7 @@ kabcdatadir = $(kde_appsdir)/Settings/Components
 map_DATA = countrytransl.map
 mapdir = $(kde_datadir)/kabc/
 
-EXTRA_DIST = $(data_DATA) $(map_DATA)
+EXTRA_DIST = $(kabcdata_DATA) $(map_DATA)
 
 include ../admin/Doxyfile.am
 
