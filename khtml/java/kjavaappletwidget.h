@@ -3,11 +3,9 @@
 #ifndef KJAVAAPPLETWIDGET_H
 #define KJAVAAPPLETWIDGET_H
 
-#include <qwidget.h>
+#include "kjavaappletcontext.h"
+#include "kjavaapplet.h"
 #include <qxembed.h>
-
-#include <kjavaappletcontext.h>
-#include <kjavaapplet.h>
 
 class KWinModule;
 
@@ -47,7 +45,6 @@ class KWinModule;
  * a while before settling down. This will not affect you unless you use the
  * KJAS protocol directly.
  *
- * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
 class KJavaAppletWidget : public QXEmbed
@@ -149,7 +146,6 @@ protected slots:
      //
      // Stuff to do with swallowing the applets Frame
      //
-
      void setWindow( WId w );
 
 protected:
@@ -172,55 +168,3 @@ private:
 
 #endif // KJAVAAPPLETWIDGET_H
 
-/*
- * $Log$
- * Revision 1.13  2000/09/19 23:21:04  rogozin
- * Fix #9091 and partially #10125
- * Implement support for BASE tag
- *
- * Revision 1.12  2000/08/19 01:41:59  rogozin
- * - fix problem when Java 1.1 displays cliped applet
- * - withdrow code is removed since it exists in the QXEmbed
- *
- * Revision 1.11  2000/07/23 03:06:18  rogozin
- * 1. Clean up old stuff accumulated in applet widget. Since we use embed now a lot of thing can be removed.
- *
- * 2. Bug fix: trailing slash in Java path prevents Java from correct start. Just cut it off.
- *
- * Revision 1.10  2000/07/10 12:34:19  hoelzer
- * Use qxembed to embed the java view.
- * Now a KWin guru should put this code from 'working'
- * to 'working well'. :)
- *
- * Revision 1.9  2000/06/08 22:48:24  pfeiffer
- * actually s/kwin.h//, as it's not needed at all in the headerfile.
- * No idea how to fix the cpp-file, tho.
- *
- * Revision 1.8  2000/06/08 22:40:15  pfeiffer
- * s/kwm/kwin/
- *
- * Revision 1.7  2000/06/06 22:53:36  gehrmab
- * Beauty and wellness for the API documentation
- *
- * Revision 1.6  2000/03/21 03:44:44  rogozin
- *
- * New Java support has been merged.
- *
- * Revision 1.5  2000/01/27 23:41:56  rogozin
- * All applet parameters are passed to KJAS now
- * Next step - make use of them.
- *
- * Revision 1.4  1999/12/14 19:56:59  rich
- * Many fixes, see changelog
- *
- * Revision 1.3  1999/10/09 13:20:45  rich
- * Changed Wid to WId
- *
- * Revision 1.2  1999/10/09 11:20:55  rich
- * Const clean and no longer needs KWMModuleApp
- *
- * Revision 1.1.1.1  1999/07/22 17:28:07  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- */
