@@ -92,7 +92,6 @@ kdelibs3: shlib-missing-in-control-file kded.so usr/lib/kded.so
 kdelibs3: shlib-missing-in-control-file ksgistyle.so usr/lib/ksgistyle.so
 kdelibs3: shlib-missing-in-control-file kio_file.so usr/lib/kde2/kio_file.so
 kdelibs3: shlib-missing-in-control-file kio_http.so usr/lib/kde2/kio_http.so
-kdelibs3: shlib-missing-in-control-file libkdeprint_cups.so usr/lib/kde2/libkdeprint_cups.so
 kdelibs3: shlib-missing-in-control-file klauncher.so usr/lib/klauncher.so
 kdelibs3: shlib-missing-in-control-file basicstyle.so usr/lib/basicstyle.so
 kdelibs3: shlib-missing-in-control-file kimg_eps.so usr/lib/kde2/kimg_eps.so
@@ -107,7 +106,6 @@ kdelibs3: shlib-missing-in-control-file ksasl_auth_cram.so usr/lib/ksasl_auth_cr
 kdelibs3: shlib-missing-in-control-file kimg_tiff.so usr/lib/kde2/kimg_tiff.so
 kdelibs3: shlib-missing-in-control-file kbuildsycoca.so usr/lib/kbuildsycoca.so
 kdelibs3: shlib-missing-in-control-file kstephighcolor.so usr/lib/kstephighcolor.so
-kdelibs3: shlib-missing-in-control-file libkdeprint_lpd.so usr/lib/kde2/libkdeprint_lpd.so
 kdelibs3: shlib-missing-in-control-file kjs_html.so usr/lib/kde2/kjs_html.so
 kdelibs3: shlib-missing-in-control-file kcookiejar.so usr/lib/kcookiejar.so
 kdelibs3: shlib-missing-in-control-file ksasl_auth_plain.so usr/lib/ksasl_auth_plain.so
@@ -116,13 +114,10 @@ kdelibs3: shlib-missing-in-control-file kbzip2filter.so usr/lib/kde2/kbzip2filte
 kdelibs3: shlib-missing-in-control-file b3style.so usr/lib/b3style.so
 kdelibs3: shlib-missing-in-control-file libkhtmlimage.so usr/lib/libkhtmlimage.so
 kdelibs3: shlib-missing-in-control-file libkpac.so usr/lib/kde2/libkpac.so
-kdelibs3: shlib-missing-in-control-file libkdeprint_lpdunix.so usr/lib/kde2/libkdeprint_lpdunix.so
-kdelibs3: shlib-missing-in-control-file libcupsdconf.so usr/lib/libcupsdconf.so
 kdelibs3: shlib-missing-in-control-file dcopserver.so usr/lib/dcopserver.so
 kdelibs3: shlib-missing-in-control-file kgzipfilter.so usr/lib/kde2/kgzipfilter.so
 kdelibs3: shlib-missing-in-control-file kio_ftp.so usr/lib/kde2/kio_ftp.so
 kdelibs3: shlib-missing-in-control-file kio_uiserver.so usr/lib/kio_uiserver.so
 kdelibs3: shlib-missing-in-control-file kio_https.so usr/lib/kde2/kio_https-nossl.so
-kdelibs3: shlib-missing-in-control-file libkdeprint_rlpr.so usr/lib/kde2/libkdeprint_rlpr.so
 kdelibs3: unused-shlib-entry-in-control-file kio_https
 kdelibs3: unused-shlib-entry-in-control-file libkssl-nossl
