@@ -1058,7 +1058,17 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
     oy = rr.y();
     ow = rr.width();
     oh = rr.height();
-    if (d->m_parent->inherits("KTMainWindow"))
+
+    if (d->m_parent->inherits("KTMainWindow") && d->m_parent->parentWidget()) {
+	QRect mainView = ( (KTMainWindow*)d->m_parent )->mainViewGeometry();
+	QWidget* myWidget = d->m_parent->parentWidget();
+	QPoint xy = QPoint( mainView.left(), mainView.top() );
+	ox += myWidget->mapToGlobal( xy ).x();
+	oy += myWidget->mapToGlobal( xy ).y();
+	ow = mainView.width();
+	oh = mainView.height();
+    }
+    else if (d->m_parent->inherits("KTMainWindow"))
     {
       QRect mainView = ((KTMainWindow*) d->m_parent)->mainViewGeometry();
 
@@ -1072,17 +1082,17 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 
     mgr = new KToolBoxManager(this, d->m_transparent);
 
-    //Firt of all discover _your_ position
+    //First of all discover _your_ position
 
     if (d->m_position == Top )
       mgr->addHotSpot(geometry(), true);             // I'm on top
     else
-      mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
+      mgr->addHotSpot(ox, oy, ow, fat); // top
 
     if (d->m_position == Bottom)
       mgr->addHotSpot(geometry(), true);           // I'm on bottom
     else
-      mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
+      mgr->addHotSpot(ox, oy+oh-fat, ow, fat); // bottom
 
     if (d->m_position == Left)
       mgr->addHotSpot(geometry(), true);           // I'm on left
