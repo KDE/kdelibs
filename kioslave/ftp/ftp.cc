@@ -2203,13 +2203,10 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
         error( ERR_CANNOT_DELETE_PARTIAL, dest_orig );
         return;
       }
-    } else if ( !overwrite && !resume ) {
-      resume = canResume (m_size);
-      if (!resume)
-      {
-        error( ERR_FILE_ALREADY_EXIST, dest_orig );
-        return;
-      }
+    } else if ( !overwrite && !resume ) {    
+       error( ERR_FILE_ALREADY_EXIST, dest_orig );
+       return;
+       
     } else if ( bMarkPartial ) { // when using mark partial, append .part extension
       if ( !ftpRename( dest_orig, dest_part, true ) )
       {
