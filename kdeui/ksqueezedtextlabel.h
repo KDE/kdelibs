@@ -53,6 +53,7 @@ public:
   KSqueezedTextLabel( const QString &text, QWidget *parent, const char *name = 0 );
 
   virtual QSize minimumSizeHint() const;
+  virtual QSize sizeHint() const;
 
 public slots:
   void setText( const QString & );

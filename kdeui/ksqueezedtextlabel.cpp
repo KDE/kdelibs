@@ -43,6 +43,11 @@ QSize KSqueezedTextLabel::minimumSizeHint() const
   return sh;
 }
 
+QSize KSqueezedTextLabel::sizeHint() const
+{
+  return QSize(contentsRect().width(), QLabel::sizeHint().height());
+}
+
 void KSqueezedTextLabel::setText( const QString &text ) {
   fullText = text;
   squeezeTextToLabel();
