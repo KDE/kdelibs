@@ -53,8 +53,7 @@ libkssl_la_SOURCES	= \
 			keygenwizard.ui		  \
 			keygenwizard2.ui
 
-libkssl_la_LDFLAGS = $(all_libraries) -no-undefined
-libkssl_la_LIBADD = $(LIB_KDEUI) 
+# convenience lib - no _LDFLAGS or _LIBADD
 libkssl_la_DEPENDENCIES = $(LIB_KDEUI)
 
 libkssl_la_METASOURCES = AUTO

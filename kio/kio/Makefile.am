@@ -22,9 +22,7 @@ INCLUDES=  -I$(top_srcdir) -I$(srcdir)/.. -I$(srcdir)/../kssl  $(all_includes) $
 
 noinst_LTLIBRARIES = libkiocore.la libksycoca.la
 
-libksycoca_la_LDFLAGS = $(KDE_MT_LDFLAGS)
-#libksycoca_la_LIBADD = nothing, undefined references will be checked
-# when creating libkio.la
+# convenience lib - no LDFLAGS or LIBADD !
 
 libksycoca_la_SOURCES = \
 	kdirwatch.cpp \
@@ -61,8 +59,8 @@ include_HEADERS = \
 	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
 	kmimetyperesolver.h
 
-libkiocore_la_LDFLAGS = $(all_libraries)
-libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
+#libkiocore_la_LDFLAGS = $(all_libraries)
+#libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 libkiocore_la_SOURCES = \
 	kshred.cpp \

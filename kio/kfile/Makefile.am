@@ -50,9 +50,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 
 EXTRA_DIST = NOTES
 
-libkfile_la_LDFLAGS = $(KDE_MT_LDFLAGS)
-#libkfile_la_LIBADD = = nothing, undefined references will be checked
-# when creating libkio.la
+# convenience lib - no _LDFLAGS or _LIBADD !
 
 servicetype_DATA = kpropsdlgplugin.desktop
 servicetypedir = $(kde_servicetypesdir)

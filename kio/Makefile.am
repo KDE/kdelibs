@@ -26,8 +26,11 @@ lib_LTLIBRARIES = libkio.la
 
 libkio_la_SOURCES = dummy.cpp
 
-libkio_la_LDFLAGS = -version-info 4:0 -no-undefined $(all_libraries)
-libkio_la_LIBADD = kssl/libkssl.la kio/libkiocore.la kio/libksycoca.la kfile/libkfile.la \
+libkio_la_LDFLAGS = -version-info 4:0 -no-undefined $(all_libraries) \
+	$(KDE_MT_LDFLAGS)
+libkio_la_LIBADD = kssl/libkssl.la kio/libkiocore.la \
+	kio/libksycoca.la kfile/libkfile.la \
+	../kdeui/libkdeui.la ../kdesu/libkdesu.la \
 	$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 kde_mime_DATA = magic
