@@ -26,7 +26,7 @@
 #define KHTMLVIEW_H
 
 // qt includes and classes
-#include <qscrollview.h>
+#include <kscrollview.h>
 
 #include <kdelibs_export.h>
 
@@ -74,7 +74,7 @@ class KHTMLViewPrivate;
  *
  * Suitable for use as an application's main view.
  **/
-class KHTML_EXPORT KHTMLView : public QScrollView
+class KHTML_EXPORT KHTMLView : public KScrollView
 {
     Q_OBJECT
 
@@ -166,8 +166,8 @@ public:
      * Display all accesskeys in small tooltips
      */
     void displayAccessKeys();
-    
-    
+
+
 
 signals:
     void finishedLayout();
@@ -214,14 +214,14 @@ private slots:
     void tripleClickTimeout();
     void findTimeout();
     void accessKeysTimeout();
-    
+
     /**
     * @internal
     * @since 3.4
     * used for autoscrolling with MMB
     */
     void slotMouseScrollTimer();
-    
+
 private:
 
     void scheduleRelayout(khtml::RenderObject* clippedObj=0);
@@ -229,7 +229,7 @@ private:
 
     void scheduleRepaint(int x, int y, int w, int h, bool asap=false);
     void unscheduleRepaint();
-    
+
     bool needsFullRepaint() const;
 
     void closeChildDialogs();

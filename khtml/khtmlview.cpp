@@ -373,9 +373,9 @@ public:
     bool accessKeysActivated;
     bool accessKeysPreActivate;
     CompletedState emitCompletedAfterRepaint;
-    
+
     QWidget* cursor_icon_widget;
-        
+
     // scrolling activated by MMB
     int m_mouseScroll_byX : 4;
     int m_mouseScroll_byY : 4;
@@ -456,7 +456,7 @@ void KHTMLToolTip::maybeTip(const QPoint& p)
 #endif
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
+    : KScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
 {
     m_medium = "screen";
 
@@ -722,7 +722,7 @@ static int cnt=0;
 
     khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
-    
+
     d->painting = false;
 }
 
@@ -773,7 +773,7 @@ void KHTMLView::layout()
         root->layout();
 
         emit finishedLayout();
-        if (d->firstRelayout) { 
+        if (d->firstRelayout) {
             // make sure firstRelayout is set to false now in case this layout
             // wasn't scheduled
             d->firstRelayout = false;
@@ -1040,28 +1040,28 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
     if ( d->m_mouseScrollTimer ) {
         QPoint point = mapFromGlobal( _mouse->globalPos() );
-        
+
         int deltaX = point.x() - d->m_mouseScrollIndicator->x() - 24;
         int deltaY = point.y() - d->m_mouseScrollIndicator->y() - 24;
-    
+
         (deltaX > 0) ? d->m_mouseScroll_byX = 1 : d->m_mouseScroll_byX = -1;
         (deltaY > 0) ? d->m_mouseScroll_byY = 1 : d->m_mouseScroll_byY = -1;
-    
+
         int adX = abs( deltaX );
         int adY = abs( deltaY );
-    
+
         if (adX > 100) d->m_mouseScroll_byX *= 7;
         else if (adX > 75) d->m_mouseScroll_byX *= 4;
         else if (adX > 50) d->m_mouseScroll_byX *= 2;
         else if (adX > 25) d->m_mouseScroll_byX *= 1;
-        else d->m_mouseScroll_byX = 0; 
-    
+        else d->m_mouseScroll_byX = 0;
+
         if (adY > 100) d->m_mouseScroll_byY *= 7;
         else if (adY > 75) d->m_mouseScroll_byY *= 4;
         else if (adY > 50) d->m_mouseScroll_byY *= 2;
         else if (adY > 25) d->m_mouseScroll_byY *= 1;
-        else d->m_mouseScroll_byY = 0; 
-    
+        else d->m_mouseScroll_byY = 0;
+
         if (d->m_mouseScroll_byX == 0 && d->m_mouseScroll_byY == 0) {
             d->m_mouseScrollTimer->stop();
         }
@@ -1072,7 +1072,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     if(!m_part->xmlDocImpl()) return;
 
-    int xm, ym;    
+    int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
@@ -1170,7 +1170,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             viewport()->setCursor( c );
         }
     }
-    
+
     if ( mailtoCursor && isVisible() && hasFocus() ) {
         if( !d->cursor_icon_widget ) {
             QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
@@ -1194,7 +1194,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
     else if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
-            
+
     if (r && r->isWidget()) {
 	_mouse->ignore();
     }
@@ -1847,7 +1847,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
 		    bool asap = !d->contentsMoving && ::qt_cast<QScrollView *>(c);
-		    
+
 		    // QScrollView needs fast repaints
 		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
@@ -2764,7 +2764,7 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
     if (d->accessKeysPreActivate) d->accessKeysPreActivate=false;
-    
+
     if ( ( e->state() & ControlButton) == ControlButton )
     {
         emit zoomView( - e->delta() );
@@ -2783,21 +2783,21 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
                     ((d->ignoreWheelEvents && !horizontalScrollBar()->isVisible())
                      || e->delta() > 0 && contentsX() <=0
                      || e->delta() < 0 && contentsX() >= contentsWidth() - visibleWidth())))
-            && m_part->parentPart()) 
+            && m_part->parentPart())
     {
         if ( m_part->parentPart()->view() )
             m_part->parentPart()->view()->wheelEvent( e );
         e->ignore();
     }
     else if ( (e->orientation() == Vertical && d->vmode == QScrollView::AlwaysOff) ||
-              (e->orientation() == Horizontal && d->hmode == QScrollView::AlwaysOff) ) 
+              (e->orientation() == Horizontal && d->hmode == QScrollView::AlwaysOff) )
     {
         e->accept();
     }
     else
     {
         d->scrollBarMoved = true;
-        QScrollView::viewportWheelEvent( e );
+        KScrollView::viewportWheelEvent( e );
 
         QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->state() );
         emit viewportMouseMoveEvent ( tempEvent );
@@ -2836,7 +2836,7 @@ void KHTMLView::dropEvent( QDropEvent *ev )
 void KHTMLView::focusInEvent( QFocusEvent *e )
 {
     DOM::NodeImpl* fn = m_part->xmlDocImpl() ? m_part->xmlDocImpl()->focusNode() : 0;
-    if (fn && fn->renderer() && fn->renderer()->isWidget() && 
+    if (fn && fn->renderer() && fn->renderer()->isWidget() &&
         (e->reason() != QFocusEvent::Mouse) &&
         static_cast<khtml::RenderWidget*>(fn->renderer())->widget())
         static_cast<khtml::RenderWidget*>(fn->renderer())->widget()->setFocus();
@@ -2897,7 +2897,7 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 	}/*end switch*/
     }/*end if*/
 #endif // KHTML_NO_CARET
-    
+
     if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
 
