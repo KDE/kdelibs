@@ -24,6 +24,8 @@
     */
 
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 #include <vector>
 #include <list>
 #include <stack>
@@ -704,7 +706,7 @@ const char *generated_disclaimer =
 
 FILE *startHeader(string prefix)
 {
-	string header_name = prefix+".h";
+	string header_name = prefix+".h.new";
 	FILE *header = fopen(header_name.c_str(),"w");
 
 	fprintf(header,generated_disclaimer);
@@ -729,7 +731,7 @@ void endHeader(FILE *header, string prefix)
 FILE *startSource(string prefix)
 {
 	string header_name = prefix+".h";
-	string source_name = prefix+".cc";
+	string source_name = prefix+".cc.new";
 
 	FILE *source = fopen(source_name.c_str(),"w");
 	fprintf(source,generated_disclaimer);
@@ -741,6 +743,51 @@ FILE *startSource(string prefix)
 void endSource(FILE *source)
 {
 	fclose(source);
+}
+
+/* moves file BASE.new to BASE, but only if there are any changes. Otherwise
+   BASE.new is simply removed */
+void moveIfChanged(string base)
+{
+	string newn = base+".new";
+	FILE *oldf = fopen(base.c_str(), "r");
+	if (!oldf) {
+		rename(newn.c_str(), base.c_str());
+		return;
+	}
+	FILE *newf = fopen(newn.c_str(), "r");
+	if (!newf) {
+		fclose(oldf);
+		return;
+	}
+	bool different = false;
+	unsigned char *oldb, *newb;
+	size_t blen = 65536;
+	oldb = new unsigned char[blen];
+	newb = new unsigned char[blen];
+	while (1) {
+		size_t olen = fread(oldb, 1, blen, oldf);
+		size_t nlen = fread(newb, 1, blen, newf);
+		if (olen != nlen) {
+			different = true;
+			break;
+		}
+		if (!olen) break;
+		if (memcmp(oldb, newb, olen)) {
+			different = true;
+			break;
+		}
+		if (olen < blen) break;
+	}
+	delete newb;
+	delete oldb;
+	fclose(newf);
+	fclose(oldf);
+	if (different) {
+		rename(newn.c_str(), base.c_str());
+	} else {
+		unlink(newn.c_str());
+	}
 }
 
 bool haveIncluded(string filename)
@@ -2415,6 +2462,7 @@ int main(int argc, char **argv)
 	doStructHeader(header);
 	doInterfacesHeader(header);
 	endHeader(header,prefix);
+	moveIfChanged(string(prefix)+".h");
 
 	// generate code for C++ source file
 	FILE *source = startSource(prefix);
@@ -2422,4 +2470,5 @@ int main(int argc, char **argv)
 	doInterfacesSource(source);
 	doInterfaceRepoSource(source,prefix);
 	endSource(source);
+	moveIfChanged(string(prefix)+".cc");
 }
