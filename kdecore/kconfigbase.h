@@ -84,10 +84,10 @@ public:
   virtual ~KConfigBase();
 
   /**
-   * Specifies the group in which keys will be searched.
+   * Specifies the group in which keys will be read and written.
    *
    *  Subsequent
-   * calls to @ref readEntry() will look only for keys in the currently
+   * calls to @ref readEntry() and @ref writeEntry() will be aplied only in the
    * activated group.
    *
    * Switch back to the default group by passing a null string.
