@@ -68,7 +68,7 @@ public:
 static QList<KDebugEntry> *KDebugCache;
 #define MAX_CACHE 20
 
-static KStaticDeleter<QList<KDebugEntry>> kdd;
+static KStaticDeleter< QList<KDebugEntry> > kdd;
 
 static QString getDescrFromNum(unsigned short _num)
 {
