@@ -345,7 +345,7 @@ void StdScheduleNode::accessModule()
 	}
 }
 
-StdScheduleNode::StdScheduleNode(Object_skel *object, FlowSystem_impl *flowSystem) : ScheduleNode(object)
+StdScheduleNode::StdScheduleNode(Object_skel *object, StdFlowSystem *flowSystem) : ScheduleNode(object)
 {
 	_object = object;
 	this->flowSystem = flowSystem;
@@ -453,7 +453,8 @@ void StdScheduleNode::stop()
 void StdScheduleNode::requireFlow()
 {
 	// cout << "rf" << module->_interfaceName() << endl;
-	request(requestSize());
+	//request(requestSize());
+	flowSystem->schedule(requestSize());
 }
 
 bool StdScheduleNode::suspendable()
@@ -504,6 +505,8 @@ void StdScheduleNode::virtualize(std::string port, ScheduleNode *implNode,
 		Port *p1 = findPort(port);
 		Port *p2 = impl->findPort(implPort);
 
+		assert(p1);
+		assert(p2);
 		p1->vport()->virtualize(p2->vport());
 	}
 }
@@ -595,7 +598,7 @@ void StdScheduleNode::setFloatValue(string port, float value)
 	AudioPort *p = findPort(port)->audioPort();
 
 	if(p) {
-		p->setFloatValue(value);
+		p->vport()->setFloatValue(value);
 	} else {
 		assert(false);
 	}
@@ -871,7 +874,17 @@ AttributeType StdFlowSystem::queryFlags(Object node, const std::string& port)
 {
 	StdScheduleNode *sn =
 		(StdScheduleNode *)node._node()->cast("StdScheduleNode");
+	assert(sn);
 	return sn->queryFlags(port);
+}
+
+void StdFlowSystem::setFloatValue(Object node, const std::string& port,
+							float value)
+{
+	StdScheduleNode *sn =
+		(StdScheduleNode *)node._node()->cast("StdScheduleNode");
+	assert(sn);
+	return sn->setFloatValue(port,value);
 }
 
 FlowSystemReceiver StdFlowSystem::createReceiver(Object object,
@@ -898,6 +911,53 @@ FlowSystemReceiver StdFlowSystem::createReceiver(Object object,
 		return FlowSystemReceiver::_from_base((new ASyncNetReceive(ap, sender))->_copy());
 	}
 	return FlowSystemReceiver::null();
+}
+
+void StdFlowSystem::schedule(unsigned long samples)
+{
+/** new style (dynamic size) scheduling **/
+
+	unsigned long MCount = nodes.size();
+	unsigned long *done = (unsigned long *)calloc(MCount,sizeof(unsigned long));
+	unsigned long i;
+	list<StdScheduleNode*>::iterator ni;
+	long incomplete, died = 0;
+
+	//printf("entering; samples = %d\n",samples);
+	do {
+		incomplete = 0;		/* assume we have calculated all samples for all
+								consumers, and later increment if some are
+								still missing */
+		for(ni = nodes.begin(), i = 0; ni != nodes.end(); ni++, i++)
+		{
+			StdScheduleNode *node = *ni;
+
+			if(node->outConnCount == 0 && node->running)
+			{
+				//printf("consumber = %s,done = %d, samples = %d\n",SynthModules[i]->getClassName(),done[i],samples);
+				/* a module whose input is not comsumed from other modules
+					is a "push delivery" style module, such as speakers,
+					or writing audio to log file, etc. and has to get
+					external requests from the scheduling system */
+
+				if(done[i] != samples)
+					done[i] += node->request(samples-done[i]);
+				assert(done[i] <= samples);
+				if(done[i] != samples) incomplete++;
+				//printf("*scheduler*\n");
+				died ++;
+				if(died > 10000)
+				{
+					free(done);
+					//return false;
+				}
+			}
+		}
+	} while(incomplete);
+
+	//printf("<=> done!!\n");
+	free(done);
+	//return true;
 }
 
 // hacked initialization of Dispatcher::the()->flowSystem ;)

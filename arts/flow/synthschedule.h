@@ -190,14 +190,17 @@ public:
 	void disconnect(Port *port);
 };
 
+class StdFlowSystem;
+
 class StdScheduleNode :public ScheduleNode
 {
+	friend class StdFlowSystem;
 	bool running;
 	bool suspended;
 
 	Object_skel *_object;
 	SynthModule_base *module;
-	FlowSystem_impl *flowSystem;
+	StdFlowSystem *flowSystem;
 	std::list<Port *> ports;
 	AudioPort **inConn;
 	AudioPort **outConn;
@@ -217,7 +220,7 @@ class StdScheduleNode :public ScheduleNode
 
 public:
 
-	StdScheduleNode(Object_skel *object, FlowSystem_impl *flowSystem);
+	StdScheduleNode(Object_skel *object, StdFlowSystem *flowSystem);
 	virtual ~StdScheduleNode();
 	void initStream(std::string name, void *ptr, long flags);
 	void addDynamicPort(Port *port);
@@ -273,9 +276,13 @@ public:
 	void disconnectObject(Object sourceObject, const std::string& sourcePort,
 						Object destObject, const std::string& destPort);
 	AttributeType queryFlags(Object node, const std::string& port);
+	void setFloatValue(Object node, const std::string& port, float value);
 
 	FlowSystemReceiver createReceiver(Object object, const std::string &port,
 										FlowSystemSender sender);
+
+	/* interface to StdScheduleNode */
+	void schedule(unsigned long samples);
 };
 
 };
