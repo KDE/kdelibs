@@ -130,6 +130,7 @@ void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
 void HTMLAppletElementImpl::detach()
 {
     if(applet) delete applet;
+    applet = 0;
     view = 0;
 }
 
