@@ -549,6 +549,8 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   QFont tmp_font(KGlobalSettings::toolBarFont());
   QFontMetrics fm(tmp_font);
+  QRect textRect;
+  int textFlags;
 
   if (d->m_iconText == KToolBar::IconOnly) // icon only
   {
@@ -580,7 +582,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
     if (!textLabel().isNull())
     {
-      int tf = AlignVCenter|AlignLeft;
+      textFlags = AlignVCenter|AlignLeft;
       if (pixmap())
         dx = 4 + pixmap()->width() + 2;
       else
@@ -591,20 +593,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dx;
         ++dy;
       }
-
-      _painter->setFont(KGlobalSettings::toolBarFont());
-      if(d->m_isRaised)
-        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
-      _painter->drawText(dx, dy, width()-dx, height(), tf, textLabel());
+      textRect = QRect(dx, dy, width()-dx, height());
     }
   }
   else if (d->m_iconText == KToolBar::TextOnly)
   {
     if (!textLabel().isNull())
     {
-      int tf = AlignTop|AlignLeft;
-      if (!isEnabled())
-        _painter->setPen(palette().disabled().dark());
+      textFlags = AlignTop|AlignLeft;
       dx = (width() - fm.width(textLabel())) / 2;
       dy = (height() - fm.lineSpacing()) / 2;
       if ( isDown() && style().guiStyle() == WindowsStyle )
@@ -612,11 +608,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dx;
         ++dy;
       }
-
-      _painter->setFont(KGlobalSettings::toolBarFont());
-      if(d->m_isRaised)
-        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
-      _painter->drawText(dx, dy, fm.width(textLabel()), fm.lineSpacing(), tf, textLabel());
+      textRect = QRect( dx, dy, fm.width(textLabel()), fm.lineSpacing() );
     }
   }
   else if (d->m_iconText == KToolBar::IconTextBottom)
@@ -635,7 +627,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
     if (!textLabel().isNull())
     {
-      int tf = AlignBottom|AlignHCenter;
+      textFlags = AlignBottom|AlignHCenter;
       dx = (width() - fm.width(textLabel())) / 2;
       dy = height() - fm.lineSpacing() - 4;
 
@@ -644,12 +636,19 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dx;
         ++dy;
       }
-
-      _painter->setFont(KGlobalSettings::toolBarFont());
-      if(d->m_isRaised)
-        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
-      _painter->drawText(dx, dy, fm.width(textLabel()), fm.lineSpacing(), tf, textLabel());
+      textRect = QRect( dx, dy, fm.width(textLabel()), fm.lineSpacing() );
     }
+  }
+
+  // Draw the text at the position given by textRect, and using textFlags
+  if (!textLabel().isNull() && !textRect.isNull())
+  {
+      _painter->setFont(KGlobalSettings::toolBarFont());
+      if (!isEnabled())
+        _painter->setPen(palette().disabled().dark());
+      else if(d->m_isRaised)
+        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
+      _painter->drawText(textRect, textFlags, textLabel());
   }
 
   if (d->m_popup)
