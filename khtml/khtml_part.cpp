@@ -300,10 +300,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font Size<p>"
                                             "Make the font in this window smaller. "
 					    "Hold the mouse button for a menu with all available font sizes." ) );
-  /*KAction *incZoomFactorFast = */new KAction(i18n("Zoom in fast"),
+  /*KAction *incZoomFactorFast = */new KAction(i18n("Zoom In Fast"),
 				0, this, SLOT(slotIncZoomFast()),
 				actionCollection(), "incZoomFast");
-  /*KAction *decZoomFactorFast = */new KAction(i18n("Zoom out fast"),
+  /*KAction *decZoomFactorFast = */new KAction(i18n("Zoom Out Fast"),
 				0, this, SLOT(slotDecZoomFast()),
 				actionCollection(), "decZoomFast");
 
