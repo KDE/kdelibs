@@ -11,6 +11,7 @@ class QString;
 #endif
 
 extern int idl_line_no;
+int comment_mode;
 
 #include <qstring.h>
 
@@ -126,6 +127,11 @@ Kidl_Identifier	[_a-zA-Z][a-zA-Z0-9_]*
 
 [ \t]			;
 [\n]			{ idl_line_no++; }
+
+"/*"[^\n]*		{ comment_mode = 1; }
+"*/"[^\n]*		{ comment_mode = 0; }
+[^\n]*			{ if (!comment_mode) { REJECT; } }
+
 "//"[^\n]*		;
 "#!"[^\n]*		{
                           exit( 1 );
@@ -210,5 +216,6 @@ K_DCOP			return T_DCOP;
 
 void dcopidlInitFlex( const char *_code )
 {
+   comment_mode = 0;
    yy_switch_to_buffer( yy_scan_string( _code ) );
 }
