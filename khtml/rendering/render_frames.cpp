@@ -825,12 +825,9 @@ void RenderPartObject::slotPartLoadingErrorNotify()
 }
 
 // duplication of RenderFormElement... FIX THIS!
-short RenderPartObject::calcReplacedWidth(bool* ieHack) const
+short RenderPartObject::calcReplacedWidth(bool*) const
 {
     Length w = style()->width();
-    if (ieHack)
-        *ieHack = true;
-
     if ( w.isVariable() )
         return intrinsicWidth();
     else
