@@ -811,6 +811,8 @@ QCString DCOPClient::senderId() const
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data)
 {
+    if (remApp.isEmpty())
+       return false;
     DCOPClient *localClient = findLocalClient( remApp );
 
     if ( localClient  ) {
@@ -1418,6 +1420,8 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      QCString& replyType, QByteArray &replyData,
                       bool useEventLoop)
 {
+    if (remApp.isEmpty())
+       return false;
     DCOPClient *localClient = findLocalClient( remApp );
 
     if ( localClient ) {
