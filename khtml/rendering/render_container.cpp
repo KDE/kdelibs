@@ -73,6 +73,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         case MARKER:
         case TABLE:
         case INLINE_TABLE:
+        case KONQ_RULER:
             break;
         case TABLE_COLUMN_GROUP:
         case TABLE_COLUMN:
@@ -161,7 +162,6 @@ void RenderContainer::removeChild(RenderObject *oldChild)
             // ### propagate to parent!!
         }
     }
-    setChanged(true);
 }
 
 void RenderContainer::appendChildNode(RenderObject* newChild)
@@ -188,7 +188,6 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
             o = o->parent();
         }
     }
-    setChanged(true);
 }
 
 void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
@@ -220,7 +219,6 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
             o = o->parent();
         }
     }
-    setChanged(true);
 }
 
 
