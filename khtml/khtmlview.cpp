@@ -2537,16 +2537,16 @@ bool KHTMLView::placeCaret(InlineBox *hintBox)
 {
   CaretViewContext *cv = d->caretViewContext();
   caretOff();
-  recalcAndStoreCaretPos(hintBox);
-
-  cv->origX = cv->x;
-
   NodeImpl *caretNode = m_part->d->caretNode().handle();
   // ### why is it sometimes null?
   if (!caretNode || !caretNode->renderer()) return false;
   ensureNodeHasFocus(caretNode);
   if (m_part->isCaretMode() || m_part->isEditable()
      || caretNode->renderer()->style()->userInput() == UI_ENABLED) {
+    recalcAndStoreCaretPos(hintBox);
+
+    cv->origX = cv->x;
+
     caretOn();
     return true;
   }/*end if*/

@@ -5285,8 +5285,7 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
                            d->m_selectionStart.handle(),d->m_startOffset);
       }
 #ifndef KHTML_NO_CARET
-      bool v = d->m_view->placeCaret();
-      emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+      d->m_view->placeCaret();
 #endif
 }
 
