@@ -70,6 +70,7 @@ void SynthOut::openDev (int sqfd)
     printfdebug("ERROR: Could not open /dev/sequencer\n");
     return;
   }
+#ifdef HAVE_OSS_SUPPORT
 #ifdef HANDLETIMEINDEVICES
   ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
   ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
@@ -113,7 +114,8 @@ void SynthOut::openDev (int sqfd)
     printfdebug(" Found AWE32 dev=%d \n",device);
 #endif
   }
-#endif
+#endif // HAVE_AWE32
+#endif // HAVE_OSS_SUPPORT
 
 }
 
@@ -130,6 +132,7 @@ void SynthOut::closeDev (void)
 
 void SynthOut::initDev (void)
 {
+#ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
 #ifdef HANDLETIMEINDEVICES
@@ -149,6 +152,7 @@ void SynthOut::initDev (void)
     chnController(chn, CTL_CHORUS_DEPTH, 0);
     chnController(chn, 0x4a, 127);
   }
+#endif
 }
 
 void SynthOut::noteOn  (uchar chn, uchar note, uchar vel)

@@ -25,19 +25,60 @@
 #ifndef _SNDCARD_H
 #define _SNDCARD_H
 
-#ifndef __FreeBSD__
-#include <sys/soundcard.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+ 
+#ifdef HAVE_SYS_SOUNDCARD_H
+ #include <sys/soundcard.h>
+ #define HAVE_OSS_SUPPORT
+#elif defined(HAVE_MACHINE_SOUNDCARD_H)
+ #include <machine/soundcard.h>
+ #define HAVE_OSS_SUPPORT
 #else
-#include <machine/soundcard.h>
+ #undef HAVE_OSS_SUPPORT
 #endif
 
+#ifdef HAVE_OSS_SUPPORT
 
 #ifndef HZ
 #define HZ 100
 #endif
+
 #ifndef MIDI_TYPE_MPU401
 #define MIDI_TYPE_MPU401 0x401
 #endif
+
+#else
+ 
+#define MIDI_NOTEON 0x80
+#define MIDI_NOTEOFF 0x90
+#define MIDI_KEY_PRESSURE 0xA0
+#define MIDI_CTL_CHANGE 0xB0
+#define MIDI_PGM_CHANGE 0xC0
+#define MIDI_CHN_PRESSURE 0xD0
+#define MIDI_PITCH_BEND 0xE0
+#define MIDI_SYSTEM_PREFIX 0xF0
+#define CTL_MAIN_VOLUME 7
+
+#define SEQ_DEFINEBUF(a)
+#define SEQ_USE_EXTBUF()
+#define SEQ_MIDIOUT(a,b) {}
+#define SEQ_START_NOTE(a,b,c,d) {}
+#define SEQ_STOP_NOTE(a,b,c,d) {}
+#define SEQ_SET_PATCH(a,b,c) {}
+#define SEQ_CONTROL(a,b,c,d) {}
+#define SEQ_BENDER(a,b,c) {}
+#define SEQ_CHN_PRESSURE(a,b,c) {}
+#define SEQ_KEY_PRESSURE(a,b,c,d) {}
+#define SEQ_DUMPBUF()
+#define SEQ_WAIT_TIME(a)
+#define SEQ_STOP_TIMER()
+#define CONTINUE_TIMER()
+
+
+#endif
+
 
 
 #endif

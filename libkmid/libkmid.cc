@@ -76,11 +76,13 @@ int KMidSimpleAPI::kMidInit(void)
 
 int KMidSimpleAPI::kMidLoad(const char *filename)
 {
+  if (kMidDevices()==0) return 0;
   return kMid.player->loadSong(filename);
 }
 
 int KMidSimpleAPI::kMidPlay(int loop)
 {
+  if (kMidDevices()==0) return 4;
   if (!kMid.player->isSongLoaded()) return 1; 
   if (kMid.pctl->playing==1) return 2;
   if (kMid.midi->checkInit()==-1) return 3;
@@ -119,6 +121,7 @@ int KMidSimpleAPI::kMidPlay(int loop)
 
 int KMidSimpleAPI::kMidStop(void)
 {
+  if (kMidDevices()==0) return 4;
   if (kMid.pctl->playing==0) return 1;
   if (kMid.pid!=0)
   {
@@ -169,6 +172,7 @@ void KMidSimpleAPI::kMidSetDevice(int i)
 
 void KMidSimpleAPI::kMidSetMidiMapper(const char *mapfilename)
 {
+  if (kMidDevices()==0) return;
    kMid.map=new MidiMapper(mapfilename);
    if ((kMid.map->ok() == 0L)||(!kMid.map->ok())) return;
    kMid.midi->setMidiMap(kMid.map);

@@ -16,6 +16,8 @@ int main (int argc, char **argv)
     return 0;
   }
 
+  if (kMidDevices()!=0)
+  {
   printf("Available devices :\n");
   for (i=0;i<kMidDevices();i++)
   {
@@ -23,6 +25,13 @@ int main (int argc, char **argv)
   }
   printf("\nSelect one:");
   c=getc(stdin);
+  }
+  else
+  {
+  printf("There's no available devices. Let's pretend we didn't noticed it\n");
+  printf("and start playing.\n");
+  c='0';
+  }
 
   kMidSetDevice((int)(c-'0'));
 

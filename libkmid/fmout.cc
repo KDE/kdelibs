@@ -74,6 +74,7 @@ FMOut::~FMOut()
 
 void FMOut::openDev (int sqfd)
 {
+#ifdef HAVE_OSS_SUPPORT
   _ok=1;
   seqfd = sqfd;
   //vm->clearLists();
@@ -100,6 +101,7 @@ void FMOut::openDev (int sqfd)
   //ioctl(seqfd,SNDCTL_SEQ_PANIC);
 
   loadFMPatches();
+#endif
 
 }
 
@@ -117,6 +119,7 @@ void FMOut::closeDev (void)
 
 void FMOut::initDev (void)
 {
+#ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
 #ifdef HANDLETIMEINDEVICES
@@ -145,10 +148,12 @@ void FMOut::initDev (void)
     SEQ_CONTROL(device, i, SEQ_VOLMODE, VOL_METHOD_LINEAR);
     SEQ_STOP_NOTE(device, i, vm->note(i), 64);
   }
+#endif
 }
 
 void FMOut::loadFMPatches(void)
 {
+#ifdef HAVE_OSS_SUPPORT
   char patchesfile[120];
   char drumsfile[120];
   int size;
@@ -222,6 +227,7 @@ void FMOut::loadFMPatches(void)
 
 #ifdef FMOUTDEBUG
   printfdebug("Patches loaded\n");
+#endif
 #endif
 }
 
@@ -356,6 +362,7 @@ void FMOut::setFMPatchesDirectory(const char *dir)
 
 void FMOut::setVolumePercentage    ( int i )
 {
+#ifdef HAVE_OSS_SUPPORT
   int fd=open("/dev/mixer0",O_RDWR,0);
   if (fd==-1) return;
   int a=i*255/100;
@@ -364,6 +371,7 @@ void FMOut::setVolumePercentage    ( int i )
   if (ioctl(fd,MIXER_WRITE(SOUND_MIXER_SYNTH),&a) == -1) 
     printfdebug("ERROR writing to mixer\n");
   close(fd);
+#endif
   volumepercentage=i;
 }
 

@@ -46,10 +46,8 @@
 #endif
 
 #ifdef HAVE_LIBASOUND
-#define ALSA_SUPPORT
-#endif
+#define HAVE_ALSA_SUPPORT
 
-#ifdef ALSA_SUPPORT
 #include <sys/asoundlib.h>
 #include <linux/asequencer.h>
 #endif
@@ -91,12 +89,12 @@ DeviceManager::DeviceManager(int def)
   initialized=0;
   _ok=1;
   alsa=false;
-  device = NULL;
+  device = 0L;
 #ifdef HANDLETIMEINDEVICES
   rate=100;
   convertrate=10;
 #endif
-  mapper_tmp = NULL;
+  mapper_tmp = 0L;
   seqfd=-1;
   timerstarted=0;
   for (int i=0;i<16;i++) chn2dev[i]=default_dev;
@@ -105,12 +103,12 @@ DeviceManager::DeviceManager(int def)
 DeviceManager::~DeviceManager(void)
 {
   closeDev();
-  if (device!=NULL)
+  if (device!=0L)
   {
     for (int i=0;i<n_midi;i++)
       delete device[i];
     delete device;
-    device=NULL;
+    device=0L;
   }
 }
 
@@ -140,14 +138,9 @@ void DeviceManager::checkAlsa(void)
   struct stat buf;
   stat("/proc/asound", &buf);
   if ((stat("/proc/asound", &buf) == 0 ) && (S_ISDIR(buf.st_mode)))
-  {
     alsa=true;
-    printf("ALSA\n");
-  } else 
-  {
+  else 
     alsa=false;  
-    printf("!ALSA\n");
-  };
 #else
 #warning "ALSA won't be found at runtime"
   alsa=false;
@@ -160,6 +153,7 @@ int DeviceManager::initManager(void)
 
   if (!alsa)  // We are using OSS
   {
+#ifdef HAVE_OSS_SUPPORT
     seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
@@ -239,11 +233,23 @@ int DeviceManager::initManager(void)
     }
 
     close(seqfd);
+#else // There's no OSS support and ALSA wasn't detected
+      // It must be one of those systems coolo is using :-)
+
+    n_synths=0;
+    n_midi=0;
+    n_total=0;
+    device=0L;
+    midiinfo=0L;
+    synthinfo=0L;
+
+#endif
 
   }
   else
   {  // We are using ALSA
-#ifdef ALSA_SUPPORT
+
+#ifdef HAVE_ALSA_SUPPORT
     snd_seq_client_info_t clienti;
     snd_seq_port_info_t porti;
     int  client;
@@ -305,6 +311,7 @@ void DeviceManager::openDev(void)
 
   if (!alsa)
   {
+#ifdef HAVE_OSS_SUPPORT
     seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
@@ -322,6 +329,7 @@ void DeviceManager::openDev(void)
     if ((r==-1)||(rate<=0)) rate=HZ;
 
     convertrate=1000/rate;
+#endif
 #endif
   }
   else seqfd=0L; // ALSA
@@ -353,6 +361,7 @@ void DeviceManager::closeDev(void)
    return;
   }
 
+#ifdef HAVE_OSS_SUPPORT
   if (seqfd==-1) return;
 #ifndef HANDLETIMEINDEVICES
   tmrStop();
@@ -370,11 +379,12 @@ void DeviceManager::closeDev(void)
    */
   close(seqfd);
   seqfd=-1;
+#endif
 }
 
 void DeviceManager::initDev(void)
 {
-  if (device!=NULL) 
+  if (device!=0L) 
   {
     DEBUGPRINTF("Initializing devices :");
     for (int i=0;i<n_total;i++) 
@@ -389,37 +399,37 @@ void DeviceManager::initDev(void)
 void DeviceManager::noteOn         ( uchar chn, uchar note, uchar vel )
 {
   MidiOut *midi=chntodev(chn);
-  midi->noteOn(chn,note,vel);
+  if (midi) midi->noteOn(chn,note,vel);
 }
 void DeviceManager::noteOff        ( uchar chn, uchar note, uchar vel )
 {
   MidiOut *midi=chntodev(chn);
-  midi->noteOff(chn,note,vel);
+  if (midi) midi->noteOff(chn,note,vel);
 }
 void DeviceManager::keyPressure    ( uchar chn, uchar note, uchar vel )
 {
   MidiOut *midi=chntodev(chn);
-  midi->keyPressure(chn,note,vel);
+  if (midi) midi->keyPressure(chn,note,vel);
 }
 void DeviceManager::chnPatchChange ( uchar chn, uchar patch )
 {
   MidiOut *midi=chntodev(chn);
-  midi->chnPatchChange(chn,patch);
+  if (midi) midi->chnPatchChange(chn,patch);
 }
 void DeviceManager::chnPressure    ( uchar chn, uchar vel )
 {
   MidiOut *midi=chntodev(chn);
-  midi->chnPressure(chn,vel);
+  if (midi) midi->chnPressure(chn,vel);
 }
 void DeviceManager::chnPitchBender ( uchar chn, uchar lsb,  uchar msb )
 {
   MidiOut *midi=chntodev(chn);
-  midi->chnPitchBender(chn,lsb,msb);
+  if (midi) midi->chnPitchBender(chn,lsb,msb);
 }
 void DeviceManager::chnController  ( uchar chn, uchar ctl , uchar v )
 {
   MidiOut *midi=chntodev(chn);
-  midi->chnController(chn,ctl,v);
+  if (midi) midi->chnController(chn,ctl,v);
 }
 void DeviceManager::sysEx          ( uchar *data,ulong size)
 {
@@ -429,10 +439,11 @@ void DeviceManager::sysEx          ( uchar *data,ulong size)
 
 void DeviceManager::wait (double ticks)
 {
-#ifdef ALSA_SUPPORT
+#ifdef HAVE_ALSA_SUPPORT
   if (alsa) { ((AlsaOut *)device[default_dev])->wait(ticks); return; };
 #endif
 
+#ifdef HAVE_OSS_SUPPORT
   unsigned long int t=(unsigned long int)(ticks/convertrate);
   if (lastwaittime==t) return;
   lastwaittime=t;
@@ -443,26 +454,29 @@ void DeviceManager::wait (double ticks)
   SEQ_WAIT_TIME(t);
   SEQ_DUMPBUF();
 #endif
-
+#endif
 }
 
 //void DeviceManager::tmrSetTempo(int v)
 void DeviceManager::tmrSetTempo(int v)
 {
-#ifdef ALSA_SUPPORT
+#ifdef HAVE_ALSA_SUPPORT
   if (alsa) { ((AlsaOut *)device[default_dev])->tmrSetTempo(v); return; }
 #endif
 
+#ifdef HAVE_OSS_SUPPORT
   SEQ_SET_TEMPO(v);
   SEQ_DUMPBUF();
+#endif
 }
 
 void DeviceManager::tmrStart(long int tpcn)
 {
-#ifdef ALSA_SUPPORT
+#ifdef HAVE_ALSA_SUPPORT
   if (alsa) { ((AlsaOut *)device[default_dev])->tmrStart(tpcn); return; }
 #endif
 
+#ifdef HAVE_OSS_SUPPORT
 #ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrStart();
 #else
@@ -479,14 +493,16 @@ void DeviceManager::tmrStart(long int tpcn)
   SEQ_DUMPBUF();
 #endif
 #endif
+#endif
 }
 
 void DeviceManager::tmrStop(void)
 {
-#ifdef ALSA_SUPPORT
+#ifdef HAVE_ALSA_SUPPORT
   if (alsa) { ((AlsaOut *)device[default_dev])->tmrStop(); return; }
 #endif
 
+#ifdef HAVE_OSS_SUPPORT
 #ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrStop();
 #else
@@ -502,13 +518,16 @@ void DeviceManager::tmrStop(void)
   SEQ_DUMPBUF();
 #endif
 #endif
+#endif
 }
 
 void DeviceManager::tmrContinue(void)
 {
-#ifdef ALSA_SUPPORT
+#ifdef HAVE_ALSA_SUPPORT
   if (alsa) { ((AlsaOut *)device[default_dev])->tmrContinue(); return; }
 #endif
+
+#ifdef HAVE_OSS_SUPPORT
 #ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrContinue();
 #else
@@ -523,14 +542,16 @@ void DeviceManager::tmrContinue(void)
   SEQ_DUMPBUF();
 #endif
 #endif
+#endif
 }
 
 void DeviceManager::sync(bool f)
 {
-#ifdef ALSA_SUPPORT
+#ifdef HAVE_ALSA_SUPPORT
   if (alsa) { ((AlsaOut *)device[default_dev])->sync(f); return ; };
 #endif
 
+#ifdef HAVE_OSS_SUPPORT
 #ifdef HANDLETIMEINDEVICES
   device[default_dev]->sync(f);
 #else
@@ -551,12 +572,14 @@ void DeviceManager::sync(bool f)
     ioctl(seqfd, SNDCTL_SEQ_SYNC);
   };
 #endif
+#endif
 }
 
 void DeviceManager::seqbuf_dump (void)
 {
   if (!alsa)
   {
+#ifdef HAVE_OSS_SUPPORT
     if (_seqbufptr)
     {
       int r=0;
@@ -595,22 +618,26 @@ void DeviceManager::seqbuf_dump (void)
      *       }
      */
     _seqbufptr = 0;
+#endif
   }
 }
 
 void DeviceManager::seqbuf_clean(void)
 {
-#ifdef ALSA_SUPPORT
+#ifdef HAVE_ALSA_SUPPORT
   if (alsa)
     ((AlsaOut *)device[default_dev])->seqbuf_clean();
   else
 #endif
+#ifdef HAVE_OSS_SUPPORT
     _seqbufptr=0;
+#endif
 }
 
 
 const char *DeviceManager::name(int i)
 {
+#ifdef HAVE_OSS_SUPPORT
   if (checkInit()<0) {_ok = 0; return NULL;}
 
   if (alsa)
@@ -622,11 +649,13 @@ const char *DeviceManager::name(int i)
     if (i<n_midi) return midiinfo[i].name; 
     if (i<n_midi+n_synths) return synthinfo[i-n_midi].name;
   };
+#endif
   return (char *)"";
 }
 
 const char *DeviceManager::type(int i)
 {
+#ifdef HAVE_OSS_SUPPORT
   if (checkInit()<0) {_ok = 0; return NULL;}
 
   if (alsa)
@@ -650,6 +679,7 @@ const char *DeviceManager::type(int i)
       }
     }
   }
+#endif
   return "";
 }
 
@@ -667,7 +697,7 @@ void DeviceManager::setDefaultDevice(int i)
 
 char *DeviceManager::midiMapFilename(void)
 {
-  if (device==NULL) return (char *)"";
+  if (device==0L) return (char *)"";
   return (device[default_dev]!=NULL) ? 
     device[default_dev]->midiMapFilename() : (char *)"";
 }
@@ -677,7 +707,7 @@ void DeviceManager::setMidiMap(MidiMapper *map)
   if (map==NULL) return;
   mapper_tmp=map;
   if (default_dev>=n_total) {default_dev=0;return;};
-  if ((device==NULL)||(device[default_dev]==NULL)) 
+  if ((device==0L)||(device[default_dev]==NULL)) 
     return;
   device[default_dev]->setMidiMapper(map);
 }
@@ -685,10 +715,12 @@ void DeviceManager::setMidiMap(MidiMapper *map)
 int DeviceManager::setPatchesToUse(int *patchesused)
 {
   if (checkInit()<0) return -1;
+  if ((device==0L)||(device[default_dev]==NULL)) 
+    return 0;
 
-  if ((device[defaultDevice()]->deviceType())==KMID_GUS)
+  if ((device[default_dev]->deviceType())==KMID_GUS)
   {
-    GUSOut *gus=(GUSOut *)device[defaultDevice()];
+    GUSOut *gus=(GUSOut *)device[default_dev];
     gus->setPatchesToUse(patchesused);
   }
   return 0;
@@ -696,7 +728,7 @@ int DeviceManager::setPatchesToUse(int *patchesused)
 
 void DeviceManager::setVolumePercentage(int v)
 {
-  if (device!=NULL)
+  if (device!=0L)
   {
     for (int i=0;i<n_total;i++)
     {

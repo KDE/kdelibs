@@ -165,10 +165,10 @@ class DeviceManager
   public:
     /**
      * Constructor. It just initializes internal variables, before playing any
-     * music, you should call @ref #initManager(), @ref #setMidiMap() (optional), 
-     * @ref #openDev(), @ref #initDev(), @ref #setPatchesToUse() (optional, except
-     * if you're playing to a GUS device, which must load the patches),
-     * @ref #tmrStart(), and finally, play the music.
+     * music, you should call @ref #initManager(), @ref #setMidiMap() 
+     * (optional), @ref #openDev(), @ref #initDev(), @ref #setPatchesToUse()
+     * (optional, except if you're playing to a GUS device, which must load
+     * the patches), @ref #tmrStart(), and finally, play the music.
      */
     DeviceManager(int def=0);
 
@@ -184,9 +184,9 @@ class DeviceManager
      * The /dev/sequencer file is opened,  available devices are analyzed and
      * *Out objects are created. Then, the /dev/sequencer file is closed.
      *
-     * @return 0 if everything was OK, or -1 if there was an error and it couldn't
-     * be initialized (for example, because it couldn't open the /dev/sequencer i
-     * file)
+     * @return 0 if everything was OK, or -1 if there was an error and it
+     * couldn't be initialized (for example, because it couldn't open the 
+     * /dev/sequencer file)
      */
     int initManager(void); 
 
@@ -194,8 +194,8 @@ class DeviceManager
      * Checks if the device manager has been initialized (with @initManager),
      * and in case it wasn't, initializes it.
      * 
-     * @return 0 if it was (or has just been) correctly initialized, and -1 if there
-     * was an error.
+     * @return 0 if it was (or has just been) correctly initialized, and -1 if
+     * there was an error.
      */
     int checkInit(void); 
 
@@ -204,9 +204,11 @@ class DeviceManager
      * so that you can for example send channel 1 to an external synthesizer,
      * channel 2 to a FM device and channel 10 to an AWE synth.
      *
-     * @return the device to which MIDI events goind to channel @p chn should be sent. 
+     * @return the device to which MIDI events goind to channel @p chn should
+     * be sent. 
      */
-    MidiOut *chntodev(int chn) { return device[chn2dev[chn]]; };
+    MidiOut *chntodev(int chn) 
+		{ return (device!=0L) ? device[chn2dev[chn]] : 0L ; };
 
     /**
      * @return 0 if there was a problem and 1 if everything was OK. Note that the
@@ -214,13 +216,18 @@ class DeviceManager
      */
     int ok(void);
 
-    // The following funtion are here to emulate a midi, so that the DeviceManager
-    // sends the events to the appropiate devices.
+    /**
+     * Returns true if it's running ALSA and false if OSS is being run
+     */
+    int usingAlsa(void) { return alsa; };
+
+    // The following funtion are here to emulate a midi, so that the 
+    // DeviceManager sends the events to the appropiate devices.
 
     /**
-     * Open the devices. It first initializes the manager it that wasn't done yet
-     * (you should do it yourself, to be able to choose the MIDI output device, as
-     * it will be set to an external synth by default, if available) .
+     * Open the devices. It first initializes the manager it that wasn't done
+     * yet (you should do it yourself, to be able to choose the MIDI output 
+     * device, as it will be set to an external synth by default, if available).
      *
      * Then /dev/sequencer is opened and the MIDI devices are opened 
      * (calling @ref MidiOut::openDev() ).
@@ -245,11 +252,6 @@ class DeviceManager
     void initDev        (void);
 
     /**
-     * Returns true if it's running ALSA and false if OSS is being run
-     */
-    int usingAlsa(void) { return alsa; };
-
-    /**
      * Sends a Note On MIDI event.
      *
      * @param chn the MIDI channel (0 to 15) to play the note on.
@@ -261,8 +263,8 @@ class DeviceManager
     void noteOn         ( uchar chn, uchar note, uchar vel );
 
     /**
-     * Sends a Note Off MIDI event. This is equivalent to send a Note On event with a 
-     * vel value of 0.
+     * Sends a Note Off MIDI event. This is equivalent to send a Note On event
+     * with a vel value of 0.
      *
      * @param chn the MIDI channel (0 to 15) to play the note on.
      * @param note the key of the note to play (0 to 127).
@@ -293,8 +295,8 @@ class DeviceManager
     void chnPatchChange ( uchar chn, uchar patch );
 
     /**
-     * Changes the Pressure (Aftertouch) on a MIDI channel. Keep in mind that some
-     * synthesizers don't like this events, and it's better not to send it. 
+     * Changes the Pressure (Aftertouch) on a MIDI channel. Keep in mind that
+     * some synthesizers don't like this events, and it's better not to send it. 
      * 
      * @param chn the MIDI channel (0 to 15) to change.
      * @param vel the velocity (0 to 127) to use on the channel chn.
@@ -313,9 +315,10 @@ class DeviceManager
     void chnPitchBender ( uchar chn, uchar lsb,  uchar msb );
 
     /**
-     * Sends a Controller event to a MIDI channel. This can be used for example to
-     * change the volume, set a XG patch, etc. Look for any General Midi resource
-     * page on the net for more information about the available controller events.
+     * Sends a Controller event to a MIDI channel. This can be used for example
+     * to change the volume, set a XG patch, etc. Look for any General Midi
+     * resource page on the net for more information about the available
+     * controller events.
      *
      * For example, to set the tremolo value to a maximum on the MIDI channel
      * number one, you should pass 1 to @p chn, 1 to @p ctl and 127 to @p v.
@@ -328,7 +331,8 @@ class DeviceManager
 
     /**
      * Sends a SYStem EXclusive message to the default MIDI device (usually,
-     * external MIDI synths, as most internal synths do not support sysex messages)
+     * external MIDI synths, as most internal synths do not support sysex
+     * messages)
      * 
      * @param data the array of bytes that comform the system exclusive message.
      * Without the initial 0xF0 char, and including the final 0xF7 char (end of
@@ -340,24 +344,26 @@ class DeviceManager
     void sysEx          ( uchar *data,ulong size);
 
     /**
-     * Sets the number of MIDI ticks to wait until the next event is sent. This way,
-     * you can schedule notes and events to send to the MIDI device.
+     * Sets the number of milliseconds at which the next event will be sent.
+     * This way, you can schedule notes and events to send to the MIDI device.
+     * @see tmrStart()
      */
-    void wait (double ticks);
+    void wait (double ms);
 
     /**
-     * Sets the tempo which will be used to convert between ticks and milliseconds.  
+     * Sets the tempo which will be used to convert between ticks and 
+     * milliseconds.  
      */
      void tmrSetTempo(int v);
 
     /**
-     * Starts the timer. You should call tmrStart before using @ref #wait()
+     * Starts the timer. You must call tmrStart before using @ref #wait()
      */
     void tmrStart(long int tpcn);
-//    void tmrStart(void);
 
     /**
-     * Stops the timer. This will be called by @ref #closeDev() before closing the device
+     * Stops the timer. This will be called by @ref #closeDev() before closing
+     * the device
      */
     void tmrStop(void);
 
@@ -368,27 +374,32 @@ class DeviceManager
     void tmrContinue(void);
 
     /**
-     * Synchronizes with the MIDI buffer. Midi events are put into a buffer, along 
-     * with timer delays (see @ref #wait() ). sync returns when the buffer is empty.
+     * Synchronizes with the MIDI buffer. Midi events are put into a buffer,
+     * along with timer delays (see @ref #wait() ). sync returns when the buffer
+     * is empty.
      * 
      * @param f if false, it syncronizes by waiting for the buffer to be sent.
-     * If true, it forces the synchronization by clearing the buffer inmediately.
-     * The "force" method is, of course, not recommended, except in rare situations.
+     * If true, it forces the synchronization by clearing the buffer
+     * inmediately. The "force" method is, of course, not recommended, except
+     * in rare situations.
      */ 
     void sync(bool f=0);  
 
     /**
      * Changes the "master" volume of the played events by altering next volume
-     * controller events. The parameter @p i should be in the range of 0 (nothing
-     * is heard) to 150 (music is played at a 150% of the original volume).
+     * controller events. The parameter @p i should be in the range of 0
+     * (nothing is heard) to 150 (music is played at a 150% of the original
+     * volume).
      * 
-     * Keep in mind that as most MIDI files already play music at near the maximumi
-     * volume, an @p i value greater than 100 is very probably ignored most of the times.
+     * Keep in mind that as most MIDI files already play music at near the
+     * maximum volume, an @p i value greater than 100 is very probably ignored
+     * most of the times.
      */
     void setVolumePercentage(int i);
 
     /**
      * Returns the device to which the MIDI events will be sent.
+     * Returns -1 if there's no available device.
      *
      * @see #setDefaultDevice()
      */
@@ -406,26 +417,26 @@ class DeviceManager
     void setDefaultDevice(int i);
 
     /**
-     * Loads the patches you're going to use . This has effect only for GUS cards,
-     * although, if you use this function when @ref defaultDevice() is not a GUS
-     * device, it will be ignored.
+     * Loads the patches you're going to use . This has effect only for GUS
+     * cards, although, if you use this function when @ref defaultDevice() is
+     * not a GUS device, it will be ignored.
      *
      * The parameter is an int [256] array, which contain the following:
      * 
      * The first 0..127 integers, are the number of times each General MIDI patch
      * will be used, and -1 when the corresponding patch won't be used.
      *
-     * The 128..255 integers are the number of times each drum voice (each note on
-     * the drum channel) will be used, and -1 when the corresponding percussion
-     * won't be used.
+     * The 128..255 integers are the number of times each drum voice (each note
+     * on the drum channel) will be used, and -1 when the corresponding
+     * percussion won't be used.
      *
-     * This is done this way so that if the user has very little memory on his GUS
-     * card, and not all patches will be loaded, they are at least reordered, so
-     * that it first loads the one you're going to use most.
+     * This is done this way so that if the user has very little memory on his
+     * GUS card, and not all patches will be loaded, they are at least
+     * reordered, so that it first loads the one you're going to use most.
      *
-     * In case you don't worry about such users, or you don't know "a priori" the
-     * number of notes you're going to play, you can just use 1 for each patch you
-     * want to load and -1 in the rest.
+     * In case you don't worry about such users, or you don't know "a priori"
+     * the number of notes you're going to play, you can just use 1 for each
+     * patch you want to load and -1 in the rest.
      * 
      * @see GUSOut::setPatchesToUse()
      * @see GUSOut::loadPatch()
@@ -476,17 +487,17 @@ class DeviceManager
     int synthDevices(void) { return n_synths; };
 
     /**
-     * Returns the name of the @p i-th device . In case the DeviceManager wasn't yet
-     * initialized ( see @ref #checkInit() ), the return value is NULL, and in case
-     * the parameter has a value out of the valid range ( 0 to @ref midiPorts() +
-     * @ref synthDevices() ) it returns an empty string.
+     * Returns the name of the @p i-th device . In case the DeviceManager wasn't
+     * yet initialized ( see @ref #checkInit() ), the return value is NULL, and
+     * in case the parameter has a value out of the valid range ( 0 to 
+     * @ref midiPorts() + @ref synthDevices() ) it returns an empty string.
      */
     const char *name(int i);
 
     /**
-     * Returns the type of device the @p i-th device is , in a user-friendly string.
-     * For example, "External Midi Port" for midi ports, "FM" for FM synthesizers,
-     * "GUS" for Gravis Ultrasound devices, etc.
+     * Returns the type of device the @p i-th device is , in a user-friendly
+     * string . For example, "External Midi Port" for midi ports, "FM" for FM
+     * synthesizers, "GUS" for Gravis Ultrasound devices, etc.
      */
     const char *type(int i);
 

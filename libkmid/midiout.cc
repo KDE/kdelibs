@@ -68,6 +68,7 @@ MidiOut::~MidiOut()
 
 void MidiOut::openDev (int sqfd)
 {
+#ifdef HAVE_OSS_SUPPORT
   _ok=1;
   seqfd=sqfd;
   if (seqfd==-1)
@@ -76,6 +77,7 @@ void MidiOut::openDev (int sqfd)
     _ok=0;
     return;
   }
+
 #ifdef HANDLETIMEINDEVICES
   ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
   ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
@@ -134,7 +136,6 @@ void MidiOut::openDev (int sqfd)
 
 #endif
 
-
   count=0.0;
   lastcount=0.0;
   if (nmidiports<=0)
@@ -143,6 +144,7 @@ void MidiOut::openDev (int sqfd)
     _ok=0;
     return;
   }
+#endif
 #endif
 
 }
@@ -160,6 +162,7 @@ void MidiOut::closeDev (void)
 
 void MidiOut::initDev (void)
 {
+#ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
 #ifdef HANDLETIMEINDEVICES
@@ -179,6 +182,7 @@ void MidiOut::initDev (void)
     chnController(chn, CTL_CHORUS_DEPTH, 0);
     chnController(chn, 0x4a, 127);
   }
+#endif
 }
 
 void MidiOut::setMidiMapper(MidiMapper *_map)
@@ -315,11 +319,12 @@ void MidiOut::channelMute(uchar chn, int a)
   {
     chnmute[chn]=a;
   }
-  /*  else ignore the call to this procedure */
+  /*  else ignore the call to this function */
 }
 
 void MidiOut::seqbuf_dump (void)
 {
+#ifdef HAVE_OSS_SUPPORT
   if (_seqbufptr)
     if (write (seqfd, _seqbuf, _seqbufptr) == -1)
     {
@@ -328,11 +333,14 @@ void MidiOut::seqbuf_dump (void)
       exit (-1);
     }
   _seqbufptr = 0;
+#endif
 }
 
 void MidiOut::seqbuf_clean(void)
 {
+#ifdef HAVE_OSS_SUPPORT
   _seqbufptr=0;
+#endif
 }
 
 #ifdef HANDLETIMEINDEVICES
@@ -363,6 +371,7 @@ void MidiOut::sync(int i)
 #ifdef MIDIOUTDEBUG
   printfdebug("Sync %d\n",i);
 #endif
+#ifdef HAVE_OSS_SUPPORT
   if (i==1) 
   {    
     seqbuf_clean();
@@ -373,6 +382,7 @@ void MidiOut::sync(int i)
     ioctl(seqfd,SNDCTL_SEQ_PANIC);
   }
   ioctl(seqfd, SNDCTL_SEQ_SYNC);
+#endif
 }
 
 void MidiOut::tmrStart(void)

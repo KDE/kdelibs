@@ -1,23 +1,24 @@
 dnl libkmid's specific checks
-AC_MSG_CHECKING(if libkmid would compile)
-AC_CACHE_VAL(kde_libkmid_compiles,
-[
-AC_TRY_COMPILE([
-#ifndef __FreeBSD__
-#include <sys/soundcard.h>
-#else
-#include <machine/soundcard.h>
-#endif
-],
-[
-],
-  kde_libmid_compiles=yes,
-kde_libmid_compiles=no)
-])
-AC_MSG_RESULT($kde_libmid_compiles)
-if test $kde_libmid_compiles = no; then
-  DO_NOT_COMPILE="$DO_NOT_COMPILE libkmid"
-fi
+
+#AC_MSG_CHECKING(if libkmid would compile)
+#AC_CACHE_VAL(kde_libkmid_compiles,
+#[
+#AC_TRY_COMPILE([
+##ifndef __FreeBSD__
+##include <sys/soundcard.h>
+##else
+##include <machine/soundcard.h>
+##endif
+#],
+#[
+#],
+#  kde_libmid_compiles=yes,
+#kde_libmid_compiles=no)
+#])
+#AC_MSG_RESULT($kde_libmid_compiles)
+#if test $kde_libmid_compiles = no; then
+#  DO_NOT_COMPILE="$DO_NOT_COMPILE libkmid"
+#fi
 
 #AC_ARG_ENABLE(alsa, 
 #[  --enable-alsa    Turn on alsa support], 
@@ -46,9 +47,28 @@ AC_DEFUN(AC_CHECK_LIBASOUND,
   LDFLAGS="$ac_ldflags_save"
 ])
 
+#AC_MSG_CHECKING([for OSS support])
+#AC_CACHE_VAL(ac_cv_header_soundcard_h,
+#[
+#AC_TRY_COMPILE([
+##include <unistd.h>
+#],
+#[ ],
+#ac_cv_header_soundcard_h=yes,
+#ac_cv_header_soundcard_h=no)
+#])
+#AC_MSG_RESULT($ac_cv_header_soundcard_h)
+#if eval "test \"`echo $ac_cv_header_soundcard_h`\" = yes"; then
+#  AC_DEFINE(HAVE_GETHOSTNAME, 1, [Define if you have getdomainname])
+#fi
+#CXXFLAGS="$save_CXXFLAGS"
+#])
+
+
+
 #AM_CONDITIONAL(HAVE_ALSA, test x$alsa = xtrue) 
 
-AC_CHECK_HEADERS(linux/awe_voice.h awe_voice.h /usr/src/sys/i386/isa/sound/awe_voice.h /usr/src/sys/gnu/i386/isa/sound/awe_voice.h)  
+AC_CHECK_HEADERS(sys/soundcard.h machine/soundcard.h linux/awe_voice.h awe_voice.h /usr/src/sys/i386/isa/sound/awe_voice.h /usr/src/sys/gnu/i386/isa/sound/awe_voice.h)  
 
 AC_CHECK_LIBASOUND
 

@@ -595,6 +595,7 @@ void MidiPlayer::play(bool calloutput,void output(void))
   ctl->beginmillisec=begintv.tv_sec*1000+begintv.tv_usec/1000;
   ctl->OK=1;
   ctl->playing=playing=1;
+
   while (playing)
     {
       /*

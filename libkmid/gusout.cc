@@ -42,6 +42,7 @@
 
 SEQ_USE_EXTBUF();
 
+#ifdef HAVE_OSS_SUPPORT
 struct pat_header
 {
   char            magic[12];
@@ -105,6 +106,8 @@ unsigned short get_word(unsigned char *p)
   return (short)v;
 }
 
+#endif 
+
 GUSOut::GUSOut(int d,int total)
 {
   seqfd = -1;
@@ -145,6 +148,7 @@ void GUSOut::openDev (int sqfd)
     return;
   }
 
+#ifdef HAVE_OSS_SUPPORT
 #ifdef HANDLETIMEINDEVICES
   ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
   ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
@@ -178,6 +182,7 @@ void GUSOut::openDev (int sqfd)
   printfdebug("Number of midi ports : %d\n",nmidiports);
   printfdebug("Rate : %d\n",rate);
 #endif
+#endif
 
 
 }
@@ -197,6 +202,7 @@ void GUSOut::closeDev (void)
 
 void GUSOut::initDev (void)
 {
+#ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
 #ifdef HANDLETIMEINDEVICES
@@ -224,6 +230,7 @@ void GUSOut::initDev (void)
     SEQ_STOP_NOTE(device, i, vm->note(i), 64);
   }
 
+#endif
 }
 
 
@@ -359,6 +366,7 @@ char *GUSOut::patchName(int pgm)
 
 int GUSOut::loadPatch(int pgm)
 {
+#ifdef HAVE_OSS_SUPPORT
   struct pat_header header;
   struct sample_header sample;
   if (patchloaded[pgm]==1)
@@ -538,12 +546,14 @@ int GUSOut::loadPatch(int pgm)
   delete s;
   freememory = device;
   ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
+#endif
   return 0;
 }
 
 
 void GUSOut::setPatchesToUse(int *patchesused)
 {
+#ifdef HAVE_OSS_SUPPORT
   int k;
   for (k=0;k<256;k++) patchloaded[k]=0;
 
@@ -577,6 +587,7 @@ void GUSOut::setPatchesToUse(int *patchesused)
     loadPatch(patchesordered[i]);
     i++;
   }
+#endif
 }
 
 int compare_decreasing(const void *a,const void *b)
@@ -590,6 +601,7 @@ int compare_decreasing(const void *a,const void *b)
   instr_gm *bi=(instr_gm *)b;
   return ai->used<bi->used;
 }
+
 
 void GUSOut::patchesLoadingOrder(int *patchesused,int *patchesordered)
 {
