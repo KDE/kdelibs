@@ -72,9 +72,8 @@ void KLineEdit::init()
 
     // Enable the context menu by default.
     setContextMenuEnabled( true );
-    KCursor::setAutoHideCursor( this, true );
-    // KCursor::setAutoHideCursor( this, true, true );
-    // installEventFilter( this );
+    KCursor::setAutoHideCursor( this, true, true );
+    installEventFilter( this );
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
@@ -257,16 +256,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             return;
         }
     }
-    if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
-    {
-        kdDebug() << "Got Keyboard Enter Event!!" << endl;
-        emit returnPressed( displayText() );
-        if ( d->grabReturnKeyEvents )
-        {
-            e->accept();
-            return;
-        }
-    }
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( e );
 }
@@ -365,10 +354,21 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 {
-/*
+
     if ( o == this )
+    {
         KCursor::autoHideEventFilter( this, ev );
-*/
+        QKeyEvent* e = static_cast<QKeyEvent*>(ev);
+        if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
+        {
+            emit returnPressed( displayText() );
+            if ( d->grabReturnKeyEvents )
+            {
+                e->accept();
+                return true;
+            }
+        }
+    }
     return QLineEdit::eventFilter( o, ev );
 }
 
