@@ -50,6 +50,22 @@ namespace khtml {
     class RenderTable;
     class CachedObject;
 
+/**
+ * Abstract Base Class for the XML renderer.
+ * the DOM implementation calls one of three functions to get the contents
+ * to the screen:
+ * - layout
+ * - print
+ * - repaint
+ *
+ * rendering objects are constructed by calling
+ * createObject(DOM::NodeImpl *) on an existing renderer.
+ * there, depending on the node's display() value, a particular
+ * a RenderStyle is provided to the child via setStyle(RenderStyle *)
+ * after that, they are attached to the
+ * view. (##: where is this done?)
+ * 
+ */
 class RenderObject : public CachedObjectClient
 {
 public:
@@ -57,8 +73,6 @@ public:
     RenderObject();
     virtual ~RenderObject();
 
-    // RenderObject tree manipulation
-    //////////////////////////////////////////
     RenderObject *parent() const { return m_parent; }
 
     RenderObject *previousSibling() const { return m_previous; }
@@ -67,6 +81,8 @@ public:
     RenderObject *firstChild() const { return m_first; }
     RenderObject *lastChild() const { return m_last; }
 
+    // RenderObject tree manipulation
+    //////////////////////////////////////////
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
     virtual void removeChild(RenderObject *oldChild);
 
@@ -120,6 +136,11 @@ public:
     virtual bool isWidget() const { return false; }
     virtual bool isBody() const { return false; }
 
+    /**
+     * a block box that holds inline content or vice versa.
+     * All inline children of a block level element box become anonymous
+     * boxes as soon as they have any block level siblings.
+     */
     bool isAnonymousBox() const { return m_isAnonymous; }
     void setIsAnonymousBox(bool b) { m_isAnonymous = b; }
 
@@ -136,9 +157,8 @@ public:
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
 
-        // absolute relative or fixed positioning
-
     RenderObject *root() const;
+
     /**
      * returns the object containing this one. can be different from parent for
      * positioned elements
@@ -204,9 +224,6 @@ public:
      * This function should cause the Element to calculate its
      * width and height and the layout of it's content
      *
-     * if deep is true, the Element should also layout all it's
-     * direct child items.
-     *
      * when the Element calls setLayouted(true), layout() is no
      * longer called during relayouts, as long as there is no
      * style sheet change. When that occurs, isLayouted will be
@@ -229,7 +246,7 @@ public:
 
     /**
      * This function gets called as soon as the parser leaves the element
-     *
+     * 
      */
     virtual void close() { setParsing(false); }
 
@@ -429,7 +446,9 @@ public:
     virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
 
 
-    // - absolute lowest position the object covers  
+    /**
+     * absolute lowest position (highest y-value) the object covers
+     */
     virtual int lowestPosition() const {return 0;}
 
     CachedImage *backgroundImage() const { return m_bgImage; }
