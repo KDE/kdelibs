@@ -60,6 +60,7 @@ private:
 	unsigned long _protocol;
 	QString _name;
 	bool _transacting;
+	unsigned long _readerLen, _atrLen;
 };
 
 

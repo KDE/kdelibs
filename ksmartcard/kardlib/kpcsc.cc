@@ -25,27 +25,27 @@
 #include <winscard.h>
 
 KPCSC::KPCSC(bool autoConnect) {
-   _connected = false;
-   if (autoConnect) connect();
+	_connected = false;
+	if (autoConnect) connect();
 }
 
 
 KPCSC::~KPCSC() {
-   disconnect();
+	disconnect();
 }
 
 
 int KPCSC::connect() {
 long rc;
 
-   if (_connected) return 0;
+	if (_connected) return 0;
 
-   rc = SCardEstablishContext(SCARD_SCOPE_SYSTEM, 0, 0, &_ctx);
+	rc = SCardEstablishContext(SCARD_SCOPE_SYSTEM, 0, 0, &_ctx);
 
-   if (rc != SCARD_S_SUCCESS) {
-	return rc;
-   	_connected = false;
-   }
+	if (rc != SCARD_S_SUCCESS) {
+		_connected = false;
+		return rc;
+	}
 
    _connected = true;
 return 0;
@@ -112,13 +112,14 @@ KCardReader *cr = NULL;
 long card;
 unsigned long protocol;
 
-   rc = SCardConnect(_ctx, x.local8Bit(), SCARD_SHARE_EXCLUSIVE,
-		                          SCARD_PROTOCOL_ANY,
-					  &card, &protocol);
-   if (rc == SCARD_S_SUCCESS) {
-      cr = new KCardReader;
-      cr->setCard(_ctx, x, card, protocol);
-   }
+	rc = SCardConnect(_ctx, x.local8Bit(), SCARD_SHARE_EXCLUSIVE,
+						SCARD_PROTOCOL_ANY,
+						&card, &protocol);
+
+	if (rc == SCARD_S_SUCCESS) {
+		cr = new KCardReader;
+		cr->setCard(_ctx, x, card, protocol);
+	}
 
 return cr;
 }
