@@ -85,7 +85,7 @@ public:
      * @param parent The parent object of this widget.
      * @param name The name of this widget.
      * @param options A bitfield of the @ref Options to be enabled.
-     * @param findStrings The find history, @see findHistory()
+     * @param findStrings The find history, see @ref findHistory()
      * @param hasSelection Whether a selection exists
      */
     KFindDialog( QWidget *parent = 0, const char *name = 0, long options = 0,

@@ -596,7 +596,7 @@ public:
      * These three types of nodes inheriting from CharacterData copy their data
      * and length attributes from those of the source node.
      *
-     * @paramimportedNode The node to import.
+     * @param importedNode The node to import.
      *
      * @param deep If true, recursively import the subtree under the specified
      * node; if false, import only the node itself, as explained above. This
