@@ -339,7 +339,9 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
       }
       if ( libfile.isEmpty() )
       {
-        kdWarning(150) << "library=" << libname << ": No file names " << libname.data() << " found in paths." << endl;
+#ifndef NDEBUG
+        kdDebug(150) << "library=" << libname << ": No file names " << libname.data() << " found in paths." << endl;
+#endif
       }
     }
     return libfile;
