@@ -52,7 +52,7 @@ void KMPages::initialize()
 
 	// Info page
 	KMInfoPage	*infopage = new KMInfoPage(this, "InfoPage");
-	addTab(infopage, SmallIcon("help"), i18n("Informations"));
+	addTab(infopage, SmallIcon("help"), i18n("Information"));
 	m_pages.append(infopage);
 
 	// Job page
