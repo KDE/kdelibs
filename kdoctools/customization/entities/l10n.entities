@@ -147,6 +147,14 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
+<!ENTITY % Indonesian "IGNORE">
+<![%Indonesian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Indonesian Documentation V1.0//ID"
+           "../id/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
 <!ENTITY % Italian "IGNORE">
 <![%Italian;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Italian Documentation V1.0//IT"
@@ -281,6 +289,14 @@
 <![%Turkish;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Turkish Documentation V1.0//TR"
            "../tr/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % Ukrainian "IGNORE">
+<![%Ukrainian;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Ukrainian Documentation V1.0//UK"
+           "../uk/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
