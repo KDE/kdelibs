@@ -27,7 +27,7 @@
 
 #include <qfontinfo.h>
 #include <X11/Xlib.h>
-#include <stdio.h>
+#include <kdebug.h>
 
 template class QList<KFontStruct>;
 template class QList<QFont::CharSet>;
@@ -208,7 +208,7 @@ QChar KCharsets::fromEntity(const QString &str) const
 
     if(!e)
     {
-	printf("unknown entity '%s', len = %d\n", str.ascii(), str.length());
+	kdDebug( 0 ) << "unknown entity '%s', len = %d\n" << str.ascii() << str.length() << endl;
 	return QChar::null;
     }
     //printf("got entity %s = %x\n", str.ascii(), e->code);	
