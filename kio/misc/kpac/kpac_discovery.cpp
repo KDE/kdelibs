@@ -89,7 +89,7 @@ bool KPACDiscovery::tryDiscovery()
             if (m_hostname.isEmpty())
                 return false;
             else if (m_data.isEmpty())
-                m_data = m_hostname;
+                m_data = m_hostname.utf8();
             int pos = m_data.find('.');
             if (pos == -1)
                 return false;
@@ -101,7 +101,7 @@ bool KPACDiscovery::tryDiscovery()
             m_curl.setPath("/wpad.dat");
             kdDebug(7025) << "KPACDiscovery::tryDiscovery(): returning " << m_curl.prettyURL() << endl;
             return true;
-        }    
+        }
         default:
             return false;
     }
