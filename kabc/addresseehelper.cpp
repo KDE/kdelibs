@@ -87,6 +87,7 @@ void AddresseeHelper::initSettings()
   addToSet( config.readListEntry( "Prefixes" ),   mTitles );
   addToSet( config.readListEntry( "Inclusions" ), mPrefixes );
   addToSet( config.readListEntry( "Suffixes" ),   mSuffixes );
+  mTradeAsFamilyName = config.readBoolEntry( "TradeAsFamilyName", true );
 }
 
 bool AddresseeHelper::containsTitle( const QString& title ) const
@@ -102,4 +103,9 @@ bool AddresseeHelper::containsPrefix( const QString& prefix ) const
 bool AddresseeHelper::containsSuffix( const QString& suffix ) const
 {
   return mSuffixes.find( suffix ) != mSuffixes.end();
+}
+
+bool AddresseeHelper::tradeAsFamilyName() const
+{
+  return mTradeAsFamilyName;
 }

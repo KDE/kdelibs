@@ -191,8 +191,12 @@ void Addressee::setNameFromString( const QString &str )
     if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].lower() ) ) {
       setFamilyName( parts[ rightOffset - 1 ] + spaceStr + parts[ rightOffset ] );
       rightOffset--;
-    } else
-      setFamilyName( parts[ rightOffset ] );
+    } else {
+      if ( helper->tradeAsFamilyName() )
+        setFamilyName( parts[ rightOffset ] );
+      else
+        setGivenName( parts[ rightOffset ] );
+    }
 
     QString prefix;
     while ( leftOffset < rightOffset ) {

@@ -43,6 +43,7 @@ class AddresseeHelper : public QObject, public DCOPObject
     bool containsTitle( const QString& title ) const;
     bool containsPrefix( const QString& prefix ) const;
     bool containsSuffix( const QString& suffix ) const;
+    bool tradeAsFamilyName() const;
 
   k_dcop:
     ASYNC initSettings();
@@ -55,6 +56,7 @@ class AddresseeHelper : public QObject, public DCOPObject
     std::set<QString> mTitles;
     std::set<QString> mPrefixes;
     std::set<QString> mSuffixes;
+    bool mTradeAsFamilyName;
 
     static AddresseeHelper *s_self;
 };
