@@ -1998,9 +1998,19 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
   if ( port == 0 )
      port = m_DefaultPort;
 
-  m_proxyURL = metaData("UseProxy");
-  kdDebug(7113) << "Proxy URL is now: " << m_proxyURL.url() << endl;
-  m_bUseProxy = m_proxyURL.isValid();
+  // Do not reset the URL on redirection if the proxy
+  // URL, username or password has not changed!
+  KURL proxy = metaData("UseProxy");
+  if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
+       m_proxyURL.host() != proxy.host() ||
+       (!proxy.user().isNull() && proxy.user() != m_proxyURL.user()) ||
+       (!proxy.pass().isNull() && proxy.pass() != m_proxyURL.pass()) )
+  {
+    m_proxyURL = proxy;
+    m_bUseProxy = m_proxyURL.isValid();
+    kdDebug(7113) << "Proxy URL is now: " << m_proxyURL.url() << endl;
+  }
+
   m_request.port = port;
   m_request.user = user;
   m_request.passwd = pass;
@@ -3125,15 +3135,9 @@ void HTTPProtocol::cleanCache()
 
 void HTTPProtocol::retrieveContent( bool check_ssl )
 {
-  if ( !retrieveHeader(false) )
-    return;
-
-  if (check_ssl)
-    if (!checkSSL())
-      return;
-
-  if (!readBody())
-    return;
+  if ( retrieveHeader(false) )
+    if ( check_ssl && checkSSL() )
+      (void) readBody();
 
   http_close();
   finished();
