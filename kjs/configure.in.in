@@ -61,3 +61,5 @@ quite limited if libpcre isn't present.])
 AC_CHECK_PCREPOSIX
 AC_SUBST(LIBPCRE)
 AC_SUBST(PCRECFLAGS)
+
+dnl AC_OUTPUT(kjs/global.h)

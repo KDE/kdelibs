@@ -34,7 +34,7 @@
 #define KJS_PACKED
 #endif
 
-#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 4)
+#if @HAVE_GCC_VISIBILITY@
 #define KJS_EXPORT __attribute__ ((visibility("default")))
 #else
 #define KJS_EXPORT
