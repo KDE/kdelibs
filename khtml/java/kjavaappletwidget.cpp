@@ -192,7 +192,7 @@ void KJavaAppletWidget::swallowWindow( WId w )
 
    embed(window);
 
-   KWin::setType(window, NET::Toolbar);
+   XWithdrawWindow(qt_xdisplay(), w, qt_xscreen());
 
    XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
    XMapRaised( qt_xdisplay(), window );
