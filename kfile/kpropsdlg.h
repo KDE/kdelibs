@@ -51,7 +51,7 @@ class QCheckBox;
 class QPushButton;
 class KLineEdit;
 
-class KIconLoaderButton;
+class KIconButton;
 class PropsPage;
 
 namespace KIO { class Job; }
@@ -442,7 +442,7 @@ public:
 
 protected:
   QLineEdit *URLEdit;
-  KIconLoaderButton *iconBox;
+  KIconButton *iconBox;
 
   QString URLStr;
   QString iconStr;
@@ -544,8 +544,8 @@ protected:
   QLineEdit* mountpoint;
   QCheckBox* readonly;
   QLineEdit* fstype;
-  //KIconLoaderButton* mounted;
-  KIconLoaderButton* unmounted;
+  //KIconButton* mounted;
+  KIconButton* unmounted;
 
   bool IamRoot;
 

@@ -59,7 +59,7 @@
 #include <kdirwatch.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
-#include <kiconloaderdialog.h>
+#include <kicondialog.h>
 #include <kurl.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -383,7 +383,7 @@ FilePropsPage::FilePropsPage( PropertiesDialog *_props )
   bool bDesktopFile = isDesktopFile(item);
   if (bDesktopFile || S_ISDIR( item->mode())) {
 
-    KIconLoaderButton *iconButton = new KIconLoaderButton(KGlobal::iconLoader(), this);
+    KIconButton *iconButton = new KIconButton(this);
     iconButton->setFixedSize(50, 50);
     iconButton->setIconType(KIcon::Desktop, KIcon::Application);
     // This works for everything except Device icons on unmounted devices
@@ -627,7 +627,7 @@ void FilePropsPage::slotRenameFinished( KIO::Job * job )
   // handle icon changes - only local files for now
   // TODO: Use KTempFile and KIO::file_copy with resume = true
   if (!iconArea->isA("QLabel") && properties->kurl().isLocalFile()) {
-    KIconLoaderButton *iconButton = (KIconLoaderButton *) iconArea;
+    KIconButton *iconButton = (KIconButton *) iconArea;
     QString path;
 
     if (S_ISDIR(properties->item()->mode()))
@@ -1658,7 +1658,7 @@ DevicePropsPage::DevicePropsPage( PropertiesDialog *_props ) : PropsPage( _props
   layout->addMultiCellWidget(frame, 4, 4, 0, 2);
 
 
-  unmounted = new KIconLoaderButton( KGlobal::iconLoader(), this );
+  unmounted = new KIconButton(this);
   unmounted->setFixedSize(50, 50);
   unmounted->setIconType(KIcon::Desktop, KIcon::Device);
   layout->addWidget(unmounted, 5, 0);
