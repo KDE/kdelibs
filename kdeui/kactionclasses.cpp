@@ -44,7 +44,6 @@
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>
-#include <kstandarddirs.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -896,8 +895,10 @@ public:
   KRecentFilesActionPrivate()
   {
     m_maxItems = 0;
+    m_popup = 0;
   }
   uint m_maxItems;
+  KPopupMenu *m_popup;
 };
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -1014,7 +1015,19 @@ void KRecentFilesAction::init()
 
 KRecentFilesAction::~KRecentFilesAction()
 {
+  delete d->m_popup;
   delete d; d = 0;
+}
+
+KPopupMenu *KRecentFilesAction::popupMenu() const
+{
+  if ( !d->m_popup ) {
+    KRecentFilesAction *that = const_cast<KRecentFilesAction*>(this);
+    that->d->m_popup = new KPopupMenu;
+    connect(d->m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
+    connect(d->m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));
+  }
+  return d->m_popup;
 }
 
 uint KRecentFilesAction::maxItems() const
@@ -1045,8 +1058,6 @@ void KRecentFilesAction::setMaxItems( uint maxItems )
 void KRecentFilesAction::addURL( const KURL& url )
 {
     QString     file = url.prettyURL();
-    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
-        return;
     QStringList lst = items();
 
     // remove file if already in list
@@ -1139,6 +1150,62 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
 void KRecentFilesAction::itemSelected( const QString& text )
 {
     emit urlSelected( KURL( text ) );
+}
+
+void KRecentFilesAction::menuItemActivated( int id )
+{
+    emit urlSelected( KURL(popupMenu()->text(id)) );
+}
+
+void KRecentFilesAction::menuAboutToShow()
+{
+    KPopupMenu *menu = popupMenu();
+    menu->clear();
+    QStringList list = items();
+    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it ) 
+        menu->insertItem(*it);
+}
+
+int KRecentFilesAction::plug( QWidget *widget, int index )
+{
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
+  // This is very related to KActionMenu::plug.
+  // In fact this class could be an interesting base class for KActionMenu
+  if ( widget->inherits( "KToolBar" ) )
+  {
+    KToolBar *bar = (KToolBar *)widget;
+
+    int id_ = KAction::getToolButtonID();
+
+    KInstance * instance;
+    if ( m_parentCollection )
+        instance = m_parentCollection->instance();
+    else
+        instance = KGlobal::instance();
+
+    bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
+                       SLOT( slotClicked() ), isEnabled(), plainText(),
+                       index, instance );
+
+    addContainer( bar, id_ );
+
+    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+    
+    bar->setDelayedPopup( id_, popupMenu(), true);
+
+    if ( !whatsThis().isEmpty() )
+        QWhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+
+    return containerCount() - 1;
+  }
+
+  return KListAction::plug( widget, index );
+}
+
+void KRecentFilesAction::slotClicked()
+{
+  KAction::slotActivated();
 }
 
 class KFontAction::KFontActionPrivate
@@ -1810,7 +1877,7 @@ void KToggleToolBarAction::setChecked( bool c )
 
 ////////
 
-KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,
+KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut, 
                              const QObject* receiver, const char* slot,
                              QObject* parent, const char* name )
   : KToggleAction( QString::null, cut, receiver, slot, parent, name )

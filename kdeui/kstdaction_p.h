@@ -21,7 +21,7 @@ static const KStdActionInfo g_rgActionInfo[] =
 {
 	{ New,           KStdAccel::New, "file_new", I18N_NOOP("&New"), 0, "filenew" },
 	{ Open,          KStdAccel::Open, "file_open", I18N_NOOP("&Open..."), 0, "fileopen" },
-	{ OpenRecent,    KStdAccel::AccelNone, "file_open_recent", I18N_NOOP("Open &Recent"), 0, 0 },
+	{ OpenRecent,    KStdAccel::AccelNone, "file_open_recent", I18N_NOOP("Open &Recent"), 0, "fileopen" },
 	{ Save,          KStdAccel::Save, "file_save", I18N_NOOP("&Save"), 0, "filesave" },
 	{ SaveAs,        KStdAccel::AccelNone, "file_save_as", I18N_NOOP("Save &As..."), 0, "filesaveas" },
 	{ Revert,        KStdAccel::AccelNone, "file_revert", I18N_NOOP("Re&vert"), 0, "revert" },

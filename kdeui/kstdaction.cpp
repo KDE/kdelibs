@@ -80,7 +80,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		KShortcut cut = KStdAccel::shortcut(pInfo->idAccel);
 		switch( id ) {
 		 case OpenRecent:
-			pAction = new KRecentFilesAction( sLabel, cut,
+			pAction = new KRecentFilesAction( sLabel, pInfo->psIconName, cut,
 					recvr, slot,
 					parent, (name) ? name : pInfo->psName );
 			break;

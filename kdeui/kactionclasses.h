@@ -741,6 +741,8 @@ public:
    */
   virtual ~KRecentFilesAction();
 
+  virtual int plug( QWidget *widget, int index = -1 );
+  
   /**
    *  Returns the maximum of items in the recent files list.
    */
@@ -775,7 +777,6 @@ public slots:
    */
   void saveEntries( KConfig* config, QString groupname=QString::null );
 
-public slots:
   /**
    *  Add URL to recent files list.
    *
@@ -805,15 +806,23 @@ signals:
   void urlSelected( const KURL& url );
 
 protected slots:
-  /**
-   *
-   */
   void itemSelected( const QString& string );
+  void menuAboutToShow();
+  void menuItemActivated( int id );
+  void slotClicked();
 
 protected:
   virtual void virtual_hook( int id, void* data );
+
 private:
   void init();
+  
+  /**
+    * The popup menu that is shown when clicking (some time) on the toolbar
+    * button. You may want to plug items into it on creation, or connect to
+    * aboutToShow for a more dynamic menu.
+    */
+  KPopupMenu *popupMenu() const;
 
   class KRecentFilesActionPrivate;
   KRecentFilesActionPrivate *d;
