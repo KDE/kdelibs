@@ -922,9 +922,11 @@ public:
   QCString startupId() const;
 
   /**
+   * @internal
    * Sets a new value for the application startup notification window property for newly
-   * created toplevel windows.
+   * created toplevel windows. 
    * @param startup_id the startup notification identifier
+   * @see KStartupInfo::setNewStartupId
    */
   void setStartupId( const QCString& startup_id );
 

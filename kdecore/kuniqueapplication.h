@@ -177,6 +177,11 @@ public:
    * @since KDE 3.3
    */
   bool restoringSession();
+  
+  /**
+   * @internal
+   */
+  static void setHandleAutoStarted();
 
 private:
   /**
@@ -198,6 +203,7 @@ private:
   static bool s_nofork;
   static bool s_multipleInstances;
   static bool s_uniqueTestDone;
+  static bool s_handleAutoStarted;
 
 protected:
   virtual void virtual_hook( int id, void* data );

@@ -62,6 +62,7 @@
 bool KUniqueApplication::s_nofork = false;
 bool KUniqueApplication::s_multipleInstances = false;
 bool KUniqueApplication::s_uniqueTestDone = false;
+bool KUniqueApplication::s_handleAutoStarted = false;
 
 static KCmdLineOptions kunique_options[] =
 {
@@ -369,9 +370,17 @@ void KUniqueApplication::newInstanceNoFork()
     return;
   }
   
+  s_handleAutoStarted = false;
   newInstance();
   d->firstInstance = false;
-  KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
+  // KDE4 remove
+  // A hack to make startup notification stop for apps which override newInstance()
+  // and reuse an already existing window there, but use KWin::activateWindow()
+  // instead of KStartupInfo::setNewStartupId(). Therefore KWin::activateWindow()
+  // for now sets this flag. Automatically ending startup notification always
+  // would cause problem if the new window would show up with a small delay.
+  if( s_handleAutoStarted )
+      KStartupInfo::handleAutoAppStartedSending();
   // What to do with the return value ?
 }
 
@@ -425,9 +434,11 @@ KUniqueApplication::processDelayed()
            ds >> asn_id;
            setStartupId( asn_id );
        }
+       s_handleAutoStarted = false;
        int exitCode = newInstance();
        d->firstInstance = false;
-       KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
+       if( s_handleAutoStarted )
+           KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
        QDataStream rs(replyData, IO_WriteOnly);
        rs << exitCode;
        replyType = "int";
@@ -448,6 +459,7 @@ int KUniqueApplication::newInstance()
 {
   if (!d->firstInstance)
   {
+    
 //#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
     if ( mainWidget() )
     {
@@ -461,6 +473,11 @@ int KUniqueApplication::newInstance()
     }
   }
   return 0; // do nothing in default implementation
+}
+
+void KUniqueApplication::setHandleAutoStarted()
+{
+    s_handleAutoStarted = false;
 }
 
 void KUniqueApplication::virtual_hook( int id, void* data )

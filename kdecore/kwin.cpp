@@ -26,7 +26,7 @@
 #include <sysent.h>
 #endif
 
-#include <qapplication.h>
+#include <kuniqueapplication.h>
 #include <qbitmap.h>
 #include <qimage.h>
 #include <qwhatsthis.h>
@@ -219,6 +219,7 @@ void KWin::activateWindow( WId win, long time )
     info.setActiveWindow( win, NET::FromApplication, time,
         kapp->activeWindow() ? kapp->activeWindow()->winId() : 0 );
 #endif // Q_WS_X11 ...
+    KUniqueApplication::setHandleAutoStarted();
 }
 
 void KWin::forceActiveWindow( WId win, long time )
@@ -229,6 +230,7 @@ void KWin::forceActiveWindow( WId win, long time )
         time = qt_x_time;
     info.setActiveWindow( win, NET::FromTool, time, 0 );
 #endif // Q_WS_X11 ...
+    KUniqueApplication::setHandleAutoStarted();
 }
 
 void KWin::setActiveWindow( WId win )
@@ -237,6 +239,7 @@ void KWin::setActiveWindow( WId win )
     NETRootInfo info( qt_xdisplay(), 0 );
     info.setActiveWindow( win, NET::FromUnknown, 0, 0 );
 #endif
+    KUniqueApplication::setHandleAutoStarted();
 }
 
 void KWin::demandAttention( WId win, bool set )
