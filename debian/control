@@ -1,6 +1,6 @@
 Source: kdelibs
-Build-Depends: automake, libtool, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000906-7), libpng2-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev | xlibs, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, libmng-dev, docbook-stylesheets
-Build-Conflicts: kdelibs3-nossl, libssl09-dev
+Build-Depends: automake, libtool, debhelper, libjpeg62-dev, libqt2.2-dev, libpng2-dev, libtiff3g-dev, zlib1g-dev, xlibs-dev, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, libmng-dev, docbook-stylesheets
+Build-Conflicts: kdelibs3-crypto
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -12,7 +12,7 @@ Section: libs
 Replaces: kdelibs3-cvs, kdelibs3-nossl
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3-crypto
-Conflicts: kdelibs3-nossl
+Conflicts: kdelibs3-nossl, kdeadmin, kdegames, kdegraphics, kdemultimedia, kdenetwork, kdepim, kdetoys, kdeutils, koffice
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
@@ -21,7 +21,7 @@ Package: kdelibs3-doc
 Architecture: all
 Section: doc
 Replaces: kdelibs3-doc-cvs, kdelibs-doc
-Suggests: kdelibs3, kdelibs3-dev, libqt2.2-dev, kdoc, kdevelop
+Suggests: kdelibs3, kdelibs3-dev, libqt2.2-dev, kdoc
 Provides: kdelibs-doc
 Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
@@ -31,9 +31,9 @@ Package: kdelibs3-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev
-Depends: kdelibs3 (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlib6g-dev | xlibs, libc6-dev
+Depends: kdelibs3 (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlibs-dev, libc6-dev
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev
-Suggests: kdelibs3-doc
+Suggests: kdelibs3-doc, kdoc
 Provides: kdelibs-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
