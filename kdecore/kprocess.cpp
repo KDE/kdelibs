@@ -638,7 +638,17 @@ void KProcess::commClose()
           }
 
 
-          while (1) {
+          while (b_out || b_err) {
+            // * If the process is still running we block until we
+            // receive data. (p_timeout = 0, no timeout)
+            // * If the process has already exited, we only check 
+            // the available data, we don't wait for more. 
+            // (p_timeout = &timeout, timeout immediately)
+            struct timeval timeout;
+            timeout.tv_sec = 0;
+            timeout.tv_usec = 0; 
+            struct timeval *p_timeout = runs ? 0 : &timeout;
+            
             FD_ZERO(&rfds);
             if (b_out)
               FD_SET(out[0], &rfds);
@@ -646,19 +656,21 @@ void KProcess::commClose()
             if (b_err)
               FD_SET(err[0], &rfds);
 
-            fds_ready = select(max_fd+1, &rfds, 0, 0, 0);
+            fds_ready = select(max_fd+1, &rfds, 0, 0, p_timeout);
             if (fds_ready <= 0) break;
 
             if (b_out && FD_ISSET(out[0], &rfds)) {
               int ret = 1;
               while (ret > 0) ret = childOutput(out[0]);
-              if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
+              if ((ret == -1 && errno != EAGAIN) || ret == 0) 
+                 b_out = false;
             }
 
             if (b_err && FD_ISSET(err[0], &rfds)) {
               int ret = 1;
               while (ret > 0) ret = childError(err[0]);
-              if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
+              if ((ret == -1 && errno != EAGAIN) || ret == 0) 
+                 b_err = false;
             }
           }
         }
