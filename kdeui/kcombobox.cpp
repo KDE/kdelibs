@@ -194,7 +194,6 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 
 void KComboBox::itemSelected( QListBoxItem* item )
 {
-    kdDebug() << QString::fromLatin1( "KComobBox: Item Selected" ) << endl;
     if( item != 0 && m_pEdit )
     {
        m_pEdit->setSelection( 0, currentText().length() );
@@ -215,8 +214,6 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 QString txt = currentText();
                 if( !m_pEdit->hasMarkedText() && txt.length() )
                 {
-                    kdDebug() << "Key Pressed: " << keycode << endl;
-                    kdDebug() << "Current text: " << txt << endl;
                     if( emitSignals() )
                         emit completion( txt ); // emit when requested...
                     if( handleSignals() )
