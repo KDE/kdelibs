@@ -24,6 +24,7 @@
 #include <kglobal.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <qlist.h>
 #include <qasciidict.h>
 
