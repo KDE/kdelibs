@@ -66,7 +66,11 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
             _mimetype == "application/x-shellscript")
    {
     if ( u.isLocalFile() )
-      return (KRun::run(u.path())); // just execute the url as a command
+    {
+      QString path = u.path();
+      shellQuote( path );
+      return (KRun::run(path)); // just execute the url as a command
+    }
   }
 
   KURL::List lst;
