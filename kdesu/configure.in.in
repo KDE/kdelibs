@@ -35,5 +35,5 @@ AC_DEFINE_UNQUOTED(__KDE_BINDIR, $bindir, [KDE bindir])
 
 dnl openpty stuff
 AC_CHECK_HEADERS(libutil.h util.h pty.h)
-AC_CHECK_FUNCS(openpty)
 AC_CHECK_LIB(util, openpty, [AC_DEFINE_UNQUOTED(HAVE_OPENPTY, 1, [Define if you have openpty in -lutil])])
+AC_CHECK_FUNCS(openpty initgroups setgroups getgroups grantpt setpriority getpt unlockpt ptsname )
