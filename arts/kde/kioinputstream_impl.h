@@ -19,6 +19,9 @@
 
 	*/
 
+#ifndef KIOINPUTSTREAM_IMPL
+#define KIOINPUTSTREAM_IMPL
+
 #include <qobject.h>
 #include <qcstring.h>
 #include <kio/jobclasses.h>
@@ -80,4 +83,4 @@ private:
 
 };
 
-
+#endif

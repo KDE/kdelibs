@@ -19,6 +19,9 @@
 
 	*/
 
+#ifndef KDATAREQUEST_IMPL
+#define KDATAREQUEST_IMPL
+
 #include <qobject.h>
 #include "artskde.h"
 #include "stdsynthmodule.h" 
@@ -52,3 +55,5 @@ private:
 };
 
 };
+
+#endif
