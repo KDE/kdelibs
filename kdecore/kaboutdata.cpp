@@ -352,7 +352,10 @@ KAboutData::otherText() const
 QString
 KAboutData::license() const
 {
-  QString result = copyrightStatement() + "\n\n";
+  QString result;
+  if (!copyrightStatement().isEmpty())
+    result = copyrightStatement() + "\n\n";
+  
   QString l;
   QString f;
   switch ( mLicenseKey )
