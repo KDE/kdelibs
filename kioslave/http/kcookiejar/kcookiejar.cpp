@@ -265,7 +265,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     if (!parseURL(_url, fqdn, path))
         return cookieStr;
 
-    bool secureRequest = (_url.find( "https://", 0, false) == 0 &&
+    bool secureRequest = (_url.find( "https://", 0, false) == 0 ||
                           _url.find( "webdavs://", 0, false) == 0);
 
     extractDomains(fqdn, domains);
