@@ -63,8 +63,8 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
 	// widget creation
-	QGroupBox	*m_hostbox = new QGroupBox(0, Qt::Vertical, i18n("Server informations"), this);
-	QGroupBox	*m_loginbox = new QGroupBox(0, Qt::Vertical, i18n("Account informations"), this);
+	QGroupBox	*m_hostbox = new QGroupBox(0, Qt::Vertical, i18n("Server information"), this);
+	QGroupBox	*m_loginbox = new QGroupBox(0, Qt::Vertical, i18n("Account information"), this);
 	QLabel	*m_hostlabel = new QLabel(i18n("Host:"), m_hostbox);
 	QLabel	*m_portlabel = new QLabel(i18n("Port:"), m_hostbox);
 	m_host = new QLineEdit(m_hostbox);

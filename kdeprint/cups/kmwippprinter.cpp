@@ -38,7 +38,7 @@
 KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
 {
-	m_title = i18n("IPP printer informations");
+	m_title = i18n("IPP printer information");
 	m_ID = KMWizard::Custom+1;
 	m_nextpage = KMWizard::Driver;
 
@@ -199,7 +199,7 @@ void KMWIppPrinter::slotPrinterSelected(QListViewItem *item)
 	else
 	{
 		m_uri->setText(uri);
-		m_info->setText(i18n("Unable to retrieve printer infos. Printer answered:<br><br>%1").arg(ippErrorString((ipp_status_t)req.status())));
+		m_info->setText(i18n("Unable to retrieve printer info. Printer answered:<br><br>%1").arg(ippErrorString((ipp_status_t)req.status())));
 	}
 }
 #include "kmwippprinter.moc"

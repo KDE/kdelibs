@@ -162,7 +162,7 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	if (!printer->driver() || printer->driver()->get("drtype") == "printtool")
 		if (!createPrinttoolEntry(printer,ent))
 		{
-			setErrorMsg(i18n("Unable to save informations for printer <b>%1</b>.").arg(printer->printerName()));
+			setErrorMsg(i18n("Unable to save information for printer <b>%1</b>.").arg(printer->printerName()));
 			delete ent;
 			return false;
 		}

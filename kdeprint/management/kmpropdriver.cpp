@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@ KMPropDriver::KMPropDriver(QWidget *parent, const char *name)
 
 	QLabel	*l1 = new QLabel(i18n("Manufacturer:"), this);
 	QLabel	*l2 = new QLabel(i18n("Printer model:"), this);
-	QLabel	*l3 = new QLabel(i18n("Driver Infos:"), this);
+	QLabel	*l3 = new QLabel(i18n("Driver Info:"), this);
 
 	// layout
 	QGridLayout	*main_ = new QGridLayout(this, 4, 2, 10, 7);

@@ -58,7 +58,7 @@ KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
 	l0->setText(i18n("<p>Now you can test the printer before finishing installation. "
 			 "Use the <b>Settings</b> button to configure the printer driver and "
 			 "the <b>Test</b> button to test your configuration. Use the <b>Back</b> "
-			 "button to change the driver (you current configuration will be discarded).</p>"));
+			 "button to change the driver (your current configuration will be discarded).</p>"));
 
 	QVBoxLayout	*lay1 = new QVBoxLayout(this, 0, 30);
 	QGridLayout	*lay2 = new QGridLayout(0, 3, 3, 0, 0);
