@@ -3787,14 +3787,38 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	    }
 	}
     } break;
-    case Key_Next:
-	scrollBy( 0, visibleHeight() );
+    case Key_Next: {
+	if ( d->alignMode == East )
+	    scrollBy( 0, visibleHeight() );
+	else
+	    scrollBy( visibleWidth(), 0 );
+	QIconViewItem *item = d->currentItem;
 	setCurrentItem( findFirstVisibleItem() );
-	break;
-    case Key_Prior:
-	scrollBy( 0, -visibleHeight() );
+	if ( d->selectionMode == Single ) {
+	    if ( item )
+		item->setSelected( FALSE );
+	    d->currentItem->setSelected( TRUE, TRUE );
+	} else {
+	    if ( e->state() & ShiftButton )
+		d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
+	}
+    } break;
+    case Key_Prior: {
+	if ( d->alignMode == East )
+	    scrollBy( 0, -visibleHeight() );
+	else
+	    scrollBy( -visibleWidth(), 0 );
+	QIconViewItem *item = d->currentItem;
 	setCurrentItem( findFirstVisibleItem() );
-	break;
+	if ( d->selectionMode == Single ) {
+	    if ( item )
+		item->setSelected( FALSE );
+	    d->currentItem->setSelected( TRUE, TRUE );
+	} else {
+	    if ( e->state() & ShiftButton )
+		d->currentItem->setSelected( !d->currentItem->isSelected(), TRUE );
+	}
+    } break;
     default:
 	if ( !e->text().isEmpty() && e->text()[ 0 ].isPrint() )
 	    findItemByName( e->text() );
