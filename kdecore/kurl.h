@@ -355,6 +355,11 @@ public:
   QString url( int _trailing ) const;
 
   /**
+  *
+  */
+  QString malformedUrl() const { return m_strMalformed; }
+
+  /**
    * Test to see if the @ref KURL is empty.
    **/
   bool isEmpty() const;
@@ -443,6 +448,7 @@ private:
   QString m_strPath;
   QString m_strRef_encoded;
   QString m_strQuery_encoded;
+  QString m_strMalformed;
 
   bool m_bIsMalformed;
   unsigned short int m_iPort;
