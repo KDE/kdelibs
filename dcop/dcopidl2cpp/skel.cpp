@@ -279,6 +279,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		}
 		str << "\tQDataStream arg( data, IO_ReadOnly );" << endl;
 		for( args_count = args.begin(); args_count != args.end(); ++args_count ){
+		    str << "\tif (arg.atEnd()) return false;" << endl; // Basic error checking
 		    str << "\targ >> " << *args_count << ";" << endl;
 		}
 	    }
