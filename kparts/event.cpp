@@ -34,3 +34,7 @@ bool Event::test( const QEvent *event, const char *name )
   
   return ( strcmp( name, (const char *)((QCustomEvent *)event)->data() ) == 0 );
 } 
+
+const char *GUIActivateEvent::s_strGUIActivateEvent = "KParts/GUIActivate";
+const char *PartActivateEvent::s_strPartActivateEvent = "KParts/PartActivateEvent";
+const char *PartSelectEvent::s_strPartSelectEvent = "KParts/PartSelectEvent";

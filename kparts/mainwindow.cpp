@@ -21,8 +21,6 @@
 
 using namespace KParts;
 
-const char *GUIActivateEvent::s_strGUIActivateEvent = "KParts/GUIActivate";
-
 namespace KParts
 {
 class MainWindowPrivate

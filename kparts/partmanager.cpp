@@ -9,9 +9,6 @@ using namespace KParts;
 
 template class QList<Part>;
 
-const char *PartActivateEvent::s_strPartActivateEvent = "KParts/PartActivateEvent";
-const char *PartSelectEvent::s_strPartSelectEvent = "KParts/PartSelectEvent";
-
 namespace KParts {
 
 class PartManagerPrivate
