@@ -146,7 +146,7 @@ public:
     static void setState( WId win, unsigned long state );
 
     /**
-     * Cleras the state of window @p win from @p state.
+     * Clears the state of window @p win from @p state.
      *
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
