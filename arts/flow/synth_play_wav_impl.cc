@@ -50,6 +50,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <unistd.h>
 
+using namespace std;
 using namespace Arts;
 
 

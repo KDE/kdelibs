@@ -9,6 +9,7 @@
 #include <iostream>
 #include <math.h>
 
+using namespace std;
 using namespace Arts;
 
 class WavPlayObject_impl :public WavPlayObject_skel, public StdSynthModule {

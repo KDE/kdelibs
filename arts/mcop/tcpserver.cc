@@ -98,7 +98,7 @@ bool TCPServer::initSocket()
 	{
 		int optval = 1;
 		if(setsockopt (theSocket, SOL_SOCKET, SO_REUSEADDR,
-		               &optval, sizeof (optval)) < 0)
+		               (const char *)&optval, sizeof (optval)) < 0)
 		{
 			fprintf(stderr,"MCOP TCPServer: can't set adress reuse\n");
 			close(theSocket);
