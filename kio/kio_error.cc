@@ -80,6 +80,9 @@ QString kioErrorString( int _errid, const char *_errortext )
     case  ERR_UNKNOWN_HOST:
       result = i18n( "Unknown host\n%1" ).arg( _errortext );
       break;
+    case  ERR_UNKNOWN_PROXY_HOST:
+      result = i18n( "Unknown proxy host\n%1" ).arg( _errortext );
+      break;
     case  ERR_CONNECTION_BROKEN:
       result = i18n( "Connection to host\n%1\nis broken" ).arg( _errortext );
       break;
