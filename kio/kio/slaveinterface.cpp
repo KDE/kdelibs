@@ -197,16 +197,22 @@ void SlaveInterface::calcSpeed()
       d->nums--;
     }
     d->times[d->nums] = diff;
-    d->sizes[d->nums++] = d->filesize;
+    d->sizes[d->nums++] = d->filesize - d->offset;
 
     KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
 
-    // kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " << long(d->sizes[d->nums-1] - d->sizes[0]) << " " <<  d->times[d->nums-1] - d->times[0] << " " << long(lspeed) << " " << double(d->filesize) / diff << " " << convertSize(lspeed) << " " << convertSize(long(double(d->filesize) / diff) * 1000) << " " <<  endl ;
+//     kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " 
+// 	      << long(d->sizes[d->nums-1] - d->sizes[0]) << " " 
+// 	      <<  d->times[d->nums-1] - d->times[0] << " " 
+// 	      << long(lspeed) << " " << double(d->filesize) / diff 
+// 	      << " " << convertSize(lspeed) << " " 
+// 	      << convertSize(long(double(d->filesize) / diff) * 1000) << " " 
+// 	      <<  endl ;
 
     if (!lspeed) {
       d->nums = 1;
       d->times[0] = diff;
-      d->sizes[0] = d->filesize;
+      d->sizes[0] = d->filesize - d->offset;
     }
     emit speed(lspeed);
   }
@@ -260,8 +266,8 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case MSG_RESUME: // From the put job
 	{
-	    KIO::filesize_t offset = readFilesize_t(stream);
-	    emit canResume( offset );
+	    d->offset = readFilesize_t(stream);
+	    emit canResume( d->offset );
 	}
 	break;
     case MSG_CANRESUME: // From the get job
@@ -291,7 +297,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	    gettimeofday(&d->start_time, 0);
 	    d->last_time = 0;
 	    d->filesize = d->offset;
-	    d->sizes[0] = d->filesize;
+	    d->sizes[0] = d->filesize - d->offset;
 	    d->times[0] = 0;
 	    d->nums = 1;
 	    d->speed_timer.start(1000);
