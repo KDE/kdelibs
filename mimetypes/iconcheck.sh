@@ -16,7 +16,7 @@ for i in */*top ; do
       if [ $verbose = 1 ]; then
         echo $i
       fi
-      if ! find ../pics | grep $grepopt "\-$icon\.png" ; then
+      if ! find ../pics | grep $grepopt "mime\-$icon\.png" ; then
        if [ $verbose = 0 ]; then
          echo -n "$i : "
        fi
