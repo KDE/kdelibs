@@ -81,6 +81,7 @@ QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
     QString retValue = (*aIt).aValue;
     // we found the key, get rid of it
     aEntryMap.remove(aIt);
+    setDirty(true);
     return retValue;
   } else
     return QString::null;
@@ -99,6 +100,7 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
     if (!bDeep) {
       // just remove the special group entry
       aEntryMap.remove(aIt);
+      setDirty(true);
       return false;
     } else {
       // we have to build up a list of things to remove, because if you
@@ -112,6 +114,7 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
       QValueList<KEntryKey>::Iterator kIt(keyList.begin());
       for (; kIt != keyList.end(); ++kIt)
 	aEntryMap.remove(*kIt);
+      setDirty(true);
 
       return true;
     }
