@@ -4,6 +4,8 @@
 #include <qtimer.h>
 #include <kwinmodule.h>
 
+#include <unistd.h>  
+
 // For future expansion
 struct KJavaAppletWidgetPrivate
 {
@@ -186,8 +188,15 @@ void KJavaAppletWidget::swallowWindow( WId w )
    
    KWM::prepareForSwallowing( w );
    
-   XReparentWindow( qt_xdisplay(), w, winId(), 0, 0 );
-   XMapRaised( qt_xdisplay(), w );
+   XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
+   XMapRaised( qt_xdisplay(), window );
+   XSync( qt_xdisplay(), False );
+   
+   // HACK here: If we do not wait this second resize event 
+   // is ignored and applet stays of size 1x1->invisible
+   // (Note: This happens for IBM JDK 1.1.8 but not for SUN JDK 1.2.2)
+   sleep(1);
+ 
    XResizeWindow( qt_xdisplay(), window, width(), height() );
 }
 

@@ -12,6 +12,10 @@ import java.awt.event.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.6  2000/03/22 05:19:38  rogozin
+ *
+ * Window geometry is now handled correctly.
+ *
  * Revision 1.5  2000/01/29 04:22:28  rogozin
  * Preliminary support for archive tag.
  * Fix size problem.
@@ -107,24 +111,17 @@ public class KJASAppletContext implements AppletContext
    public void show( Applet app, String title )
    {
       if ( applets.contains( app ) ) {
-         final Frame f = new Frame( title );
+         Frame f = new Frame( title );
          AppletPanel p = new AppletPanel( app.getSize() );
-
+         
          p.add("Center", app);
          f.add("Center", p);
          f.pack();
-
-         f.addWindowListener( new WindowAdapter() {
-               public void windowClosing( WindowEvent e ) {
-                  f.setVisible( false );
-                  // Should stop the applet thread
-               }
-            });
-
-         f.setVisible( true );
          
          app.init();
          app.start();
+
+         f.setVisible( true );
       }
    }
 
