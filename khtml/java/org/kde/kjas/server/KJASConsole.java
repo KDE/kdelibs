@@ -83,7 +83,9 @@ class KJASConsoleStream
         try
         {
             if( Main.log )
+            {
                 dbg_log = new FileOutputStream( "/tmp/kjas.log" );
+            }
         }
         catch( FileNotFoundException e ) {}
     }

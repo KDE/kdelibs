@@ -12,9 +12,6 @@ import java.io.*;
  */
 public class KJASAppletContext implements AppletContext
 {
-    //* All the applets in this context
-    private Hashtable appletNames;
-    private Hashtable appletIDs;
     private Hashtable stubs;
 
     private String myID;
@@ -25,8 +22,6 @@ public class KJASAppletContext implements AppletContext
      */
     public KJASAppletContext( String _contextID )
     {
-        appletNames   = new Hashtable();
-        appletIDs     = new Hashtable();
         stubs         = new Hashtable();
         myID          = _contextID;
     }
@@ -39,9 +34,39 @@ public class KJASAppletContext implements AppletContext
     public void createApplet( String appletID, String name,
                               String className, String docBase,
                               String codeBase, String archives,
-                              Dimension size, String windowName,
-                              Hashtable params )
+                              String width, String height,
+                              String windowName, Hashtable params )
     {
+        Main.kjas_debug( "KJASAppletContext.createApplet begin" );
+
+        //do kludges to support mess with parameter table and
+        //the applet variables
+        String key = new String( "archive" ).toUpperCase();
+        if( archives == null )
+        {
+            if( params.containsKey( key ) )
+                archives = (String)params.get( key );
+        }
+        else
+        {
+            if( !params.containsKey( key ) )
+                params.put( key, archives );
+        }
+
+        key = new String( "codebase" ).toUpperCase();
+        if( codeBase == null )
+        {
+            if( params.containsKey( key ) )
+                codeBase = (String) params.get( key );
+        }
+
+        key = new String( "width" ).toUpperCase();
+        if( !params.containsKey( key ) )
+            params.put( key, width );
+        key = new String( "height" ).toUpperCase();
+        if( !params.containsKey( key ) )
+            params.put( key, height );
+
         try
         {
             KJASAppletClassLoader loader =
@@ -56,18 +81,25 @@ public class KJASAppletContext implements AppletContext
                 }
             }
 
+            Dimension size = new Dimension( Integer.parseInt(width),
+                                            Integer.parseInt(height) );
             KJASAppletStub stub =
                 new KJASAppletStub( this, appletID, loader.getCodeBase(),
                                     loader.getDocBase(), name, className,
                                     size, params, windowName, loader );
-            stub.show();
-            new Thread( stub ).start();
             stubs.put( appletID, stub );
+
+            //launch two threads to handle the class downloading and showing
+            //the initial window that gets swallowed
+            stub.setupWindow();
+            stub.downloadClass();
         }
         catch ( Exception e )
         {
             Main.kjas_err( "Something bad happened in createApplet: " + e, e );
         }
+
+        Main.kjas_debug( "KJASAppletContext.createApplet end" );
     }
 
     public void initApplet( String appletID )
@@ -94,9 +126,12 @@ public class KJASAppletContext implements AppletContext
         else
         {
             Main.kjas_debug( "stopping applet: " + appletID );
-            stub.die();
+
+            stub.setVisible( false );
+            stub.stopApplet();
+            stub.dispose();
+
             stubs.remove( appletID );
-            System.gc();
         }
     }
 
@@ -132,11 +167,13 @@ public class KJASAppletContext implements AppletContext
         while ( e.hasMoreElements() )
         {
             KJASAppletStub stub = (KJASAppletStub) e.nextElement();
-            stub.die();
+            stub.setVisible( false );
+            stub.stopApplet();
+            stub.dispose();
         }
-        stubs.clear();
 
-        System.gc();
+        stubs.clear();
+        KJASAppletClassLoader.removeLoader( loader );
     }
 
     /***************************************************************************

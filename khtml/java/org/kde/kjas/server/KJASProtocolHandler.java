@@ -43,7 +43,6 @@ public class KJASProtocolHandler
 
     public void commandLoop()
     {
-        Main.kjas_debug( "Start commandLoop" );
         try
         {
             while( true )
@@ -115,21 +114,21 @@ public class KJASProtocolHandler
         if( cmd_code_value == CreateAppletCode )
         {
             //9 arguments- this order is important...
-            String contextID  = getArg( command );
-            String appletID   = getArg( command );
-            String appletName = getArg( command );
-            String className  = getArg( command );
-            String baseURL    = getArg( command );
-            String codeBase   = getArg( command );
-            String archives   = getArg( command );
-            String width      = getArg( command );
-            String height     = getArg( command );
-            String title      = getArg( command );
+            final String contextID  = getArg( command );
+            final String appletID   = getArg( command );
+            final String appletName = getArg( command );
+            final String className  = getArg( command );
+            final String baseURL    = getArg( command );
+            final String codeBase   = getArg( command );
+            final String archives   = getArg( command );
+            final String width      = getArg( command );
+            final String height     = getArg( command );
+            final String title      = getArg( command );
 
             //get the number of parameter pairs...
             String str_params = getArg( command );
             int num_params = Integer.parseInt( str_params.trim() );
-            Hashtable params = new Hashtable();
+            final Hashtable params = new Hashtable();
             for( int i = 0; i < num_params; i++ )
             {
                 String name  = getArg( command );
@@ -139,16 +138,8 @@ public class KJASProtocolHandler
                 String value = getArg( command );
                 if( value == null )
                     value = new String();
-                Main.kjas_debug( "parameter, name = " + name + ", value = " + value );
-                params.put( name, value );
-
-                //these are necessary kludges to work around some dumb html
-                //which work in the appletviewer
-                if( name.equalsIgnoreCase( "archive" ) && archives == null )
-                    archives = value;
-                else
-                if( name.equalsIgnoreCase( "codebase" ) && codeBase == null )
-                    codeBase = value;
+                params.put( name.toUpperCase(), value );
+                //Main.kjas_debug( "parameter, name = " + name + ", value = " + value );
             }
 
             Main.kjas_debug( "createApplet, context = " + contextID + ", applet = " + appletID );
@@ -156,12 +147,26 @@ public class KJASProtocolHandler
             Main.kjas_debug( "              baseURL = " + baseURL + ", codeBase = " + codeBase );
             Main.kjas_debug( "              archives = " + archives + ", width = " + width + ", height = " + height );
 
-            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            final KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if( context != null )
+            {
+//                new Thread
+//                (
+//                    new Runnable()
+//                    {
+//                        public void run()
+//                        {
+//                            context.createApplet( appletID, appletName, className,
+//                                                  baseURL, codeBase, archives,
+//                                                  width, height, title, params );
+//                        }
+//                    }
+//                ).start();
                 context.createApplet( appletID, appletName, className,
                                       baseURL, codeBase, archives,
-                                      new Dimension( Integer.parseInt(width), Integer.parseInt(height) ),
-                                      title, params );
+                                      width, height, title, params );
+            }
+
         } else
         if( cmd_code_value == DestroyAppletCode )
         {
@@ -223,7 +228,7 @@ public class KJASProtocolHandler
      **************************************************************/
     public void sendShowDocumentCmd( String contextID, String url )
     {
-        Main.kjas_debug( "sendShowDocumentCmd, contextID, url" );
+        Main.kjas_debug( "sendShowDocumentCmd from context#" + contextID + " url = " + url );
 
         //figure out how long this will be, 4 extra for 2 seps, end, and code
         int length = contextID.length() + url.length() + 4;
@@ -257,7 +262,8 @@ public class KJASProtocolHandler
 
     public void sendShowDocumentCmd( String contextID, String url, String frame)
     {
-        Main.kjas_debug( "sendShowDocumentCmd, contextID, url, frame" );
+        Main.kjas_debug( "sendShowDocumentCmd from context#" + contextID +
+                         " url = " + url + ", frame = " + frame );
 
         //length = length of args plus code, 3 seps, end
         int length = contextID.length() + url.length() + frame.length() + 5;

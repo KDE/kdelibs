@@ -14,28 +14,40 @@ import java.security.*;
 public class KJASAppletClassLoader
     extends URLClassLoader
 {
-    static Hashtable loaders = new Hashtable();
-    synchronized static KJASAppletClassLoader getLoader( String docBase, String codeBase )
+    private static Hashtable loaders = new Hashtable();
+    public static KJASAppletClassLoader getLoader( String docBase, String codeBase )
     {
         String key = docBase + codeBase;
+        Main.kjas_debug( "getLoader: key = " + key );
         KJASAppletClassLoader loader = (KJASAppletClassLoader) loaders.get( key );
         if( loader == null )
         {
             loader = new KJASAppletClassLoader( docBase, codeBase );
             loaders.put( key, loader );
         }
+        else
+        {
+            Main.kjas_debug( "reusing classloader" );
+        }
 
         return loader;
+    }
+
+    public static void removeLoader( KJASAppletClassLoader loader )
+    {
+        loaders.remove( loader.getKey() );
     }
 
 
     private URL docBaseURL  = null;
     private URL codeBaseURL = null;
-
+    private Vector archives = null;
+    private String key;
     public KJASAppletClassLoader( String docBase, String codeBase )
     {
         super( new URL[0] );
-
+        key = docBase + codeBase;
+        archives = new Vector();
         Main.kjas_debug( "Creating classloader with docBase = " + docBase +
                          " and codeBase = " + codeBase );
 
@@ -111,11 +123,20 @@ public class KJASAppletClassLoader
         }catch( Exception e )
         {
         }
+    }
 
+    public String getKey()
+    {
+        return key;
     }
 
     public void addJar( String jarname )
     {
+        if( archives.contains( jarname ) )
+            return;
+        else
+            archives.add( jarname );
+
         try
         {
             URL newurl = new URL( codeBaseURL, jarname );
@@ -230,6 +251,8 @@ public class KJASAppletClassLoader
                 }
             );
         }
+
+        //permissions for thread access??
 
         return perms;
     }
