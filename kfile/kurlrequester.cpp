@@ -117,16 +117,9 @@ QString KURLRequester::url() const
 void KURLRequester::slotOpenDialog()
 {
     KFileDialog *dlg = fileDialog();
-    if ( !myEdit->text().isEmpty() ) {
-	/*
-	// if local, check if we have a directory
-	QString text = url();
-	if ( text == QString::fromLatin1("file:") ) {
-	    text = 
-	}
-	*/  
-	const KURL u( url() );
-	dlg->setURL( u );
+    if ( !myEdit->text().isEmpty() ) 
+    {
+	dlg->setSelection( url() );
     }
 
     if ( dlg->exec() == QDialog::Accepted )
