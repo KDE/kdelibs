@@ -111,14 +111,21 @@ public:
       @param argc  number of commandline arguments
       @param argv  commandline arguments
       @param name  name of the application
-      @param title text to be shown in the dialogs titlebar
-  */      
-  KControlApplication(int &argc, char **argv, char *name=0, char *title=0);
-
+   */      
+  KControlApplication(int &argc, char **argv, const char *name=0);
 
   /// Destructor. Cleans up.
   ~KControlApplication();
 
+  /** Sets the title of the dialog.
+      
+      It's not possible to set the title within the constructor, 
+      because we need the application to get the translator and
+      it would mean a lot of effort to do it without the one in kapp.
+      
+      @param title text to be shown in the dialogs titlebar
+    */
+  void setTitle(const char *title);
 
   /** Determines if the setup dialog has to be run. 
 

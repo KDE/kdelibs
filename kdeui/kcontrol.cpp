@@ -59,7 +59,7 @@ void KControlDialog::resizeEvent(QResizeEvent *event)
 }
 
 
-KControlApplication::KControlApplication(int &argc, char **argv, char *name, char *title)
+KControlApplication::KControlApplication(int &argc, char **argv, const char *name)
   : KApplication(argc, argv, name)
 {
   dialog = 0;
@@ -80,7 +80,8 @@ KControlApplication::KControlApplication(int &argc, char **argv, char *name, cha
   dialog = new KControlDialog();
   if (!dialog)
     return;
-  dialog->setCaption(klocale->translate(title));
+  // Stephan: this is not possible (or better: not practical)
+  // dialog->setCaption(klocale->translate(title));
 
   // connect the buttons
   connect(dialog, SIGNAL(applyButtonPressed()), this, SLOT(apply()));
@@ -108,6 +109,11 @@ KControlApplication::KControlApplication(int &argc, char **argv, char *name, cha
 }
 
 
+void KControlApplication::setTitle(const char *title)
+{
+    dialog->setCaption(title);
+}
+
 KControlApplication::~KControlApplication()
 {
   if (dialog)
@@ -121,7 +127,7 @@ void KControlApplication::addPage(QWidget *page, const QString &name, const QStr
 {
   if (dialog)
     {
-      dialog->addTab(page, klocale->translate(name));
+      dialog->addTab(page, name);
       helpNames.append(help_name.data());
     }
 }
