@@ -49,7 +49,7 @@ public:
 Plugin::Plugin( QObject* parent, const char* name )
     : QObject( parent, name )
 {
-  kdDebug() << className() << endl;
+  //kdDebug() << className() << endl;
   d = new PluginPrivate();
 }
 
