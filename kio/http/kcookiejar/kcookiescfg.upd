@@ -1,0 +1,4 @@
+#Update for old cookie config files, if present
+Id=kde2.2/b1
+File=kcookiejarrc
+Group=Browser Settings/HTTP,Cookie Policy

@@ -19,8 +19,11 @@ kcookiejar_SOURCES = dummy.cpp
 kcookiejar_LDADD = kcookiejar.la
 kcookiejar_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-servicesdir = $(kde_servicesdir)
 services_DATA = kcookiejar.desktop
+servicesdir = $(kde_servicesdir)
+
+update_DATA = kcookiecfg.upd
+updatedir = $(kde_datadir)/kconf_update
 
 dummy.cpp:
 	echo > dummy.cpp
