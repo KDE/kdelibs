@@ -17,11 +17,11 @@ genembed_SOURCES = genembed.cpp
 genembed_LDADD = ../../kdefx/libkdefx.la
 genembed_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-$(srcdir)/pixmaploader.cpp $(srcdir)/keramik.cpp: $(top_builddir)/kstyles/keramik/pixmaps.keramik $(top_builddir)/kstyles/keramik/keramikrc.h
+pixmaploader.lo keramik.lo: pixmaps.keramik keramikrc.h
 
-$(top_builddir)/kstyles/keramik/pixmaps.keramik $(top_builddir)/kstyles/keramik/keramikrc.h: genembed
+pixmaps.keramik keramikrc.h: genembed
 	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\ 
-	$(top_builddir)/kstyles/keramik/genembed $$pics > pixmaps.keramik
+	./genembed $$pics > pixmaps.keramik
 
 .PHONY: make-embed
 
