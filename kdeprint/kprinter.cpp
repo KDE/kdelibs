@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -423,3 +423,132 @@ void dumpOptions(const QMap<QString,QString>& opts)
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 		qDebug("%s = %s",it.key().latin1(),it.data().latin1());
 }
+
+KPrinterImpl* KPrinter::implementation() const
+{ return m_impl; }
+
+const QString& KPrinter::option(const QString& key) const
+{ return m_options[key]; }
+
+void KPrinter::setOption(const QString& key, const QString& value)
+{ m_options[key] = value; }
+
+QString KPrinter::docName() const
+{ return option("kde-docname"); }
+
+void KPrinter::setDocName(const QString& d)
+{ setOption("kde-docname",d); }
+
+QString KPrinter::creator() const
+{ return option("kde-creator"); }
+
+void KPrinter::setCreator(const QString& d)
+{ setOption("kde-creator",d); }
+
+bool KPrinter::fullPage() const
+{ return (option("kde-fullpage") == "1"); }
+
+void KPrinter::setFullPage(bool on)
+{ setOption("kde-fullpage",(on ? "1" : "0")); }
+
+KPrinter::ColorMode KPrinter::colorMode() const
+{ return (option("kde-colormode") == "GrayScale" ? GrayScale : Color); }
+
+void KPrinter::setColorMode(ColorMode m)
+{ setOption("kde-colormode",(m == Color ? "Color" : "GrayScale")); }
+
+void KPrinter::setNumCopies(int n)
+{ setOption("kde-copies",QString::number(n)); }
+
+KPrinter::Orientation KPrinter::orientation() const
+{ return (option("kde-orientation") == "Landscape" ? Landscape : Portrait); }
+
+KPrinter::PageOrder KPrinter::pageOrder() const
+{ return (option("kde-pageorder") == "Reverse" ? LastPageFirst : FirstPageFirst); }
+
+void KPrinter::setPageOrder(PageOrder o)
+{ setOption("kde-pageorder",(o == LastPageFirst ? "Reverse" : "Forward")); }
+
+KPrinter::CollateType KPrinter::collate() const
+{ return (option("kde-collate") == "Collate" ? Collate : Uncollate); }
+
+void KPrinter::setCollate(CollateType c)
+{ setOption("kde-collate",(c == Collate ? "Collate" : "Uncollate")); }
+
+int KPrinter::minPage() const
+{ return (option("kde-minpage").isEmpty() ? 0 : option("kde-minpage").toInt()); }
+
+int KPrinter::maxPage() const
+{ return (option("kde-maxpage").isEmpty() ? 0 : option("kde-maxpage").toInt()); }
+
+void KPrinter::setMinMax(int m, int M)
+{ setOption("kde-minpage",QString::number(m)); setOption("kde-maxpage",QString::number(M)); }
+
+int KPrinter::fromPage() const
+{ return (option("kde-frompage").isEmpty() ? 0 : option("kde-frompage").toInt()); }
+
+int KPrinter::toPage() const
+{ return (option("kde-topage").isEmpty() ? 0 : option("kde-topage").toInt()); }
+
+void KPrinter::setFromTo(int m, int M)
+{ setOption("kde-frompage",QString::number(m)); setOption("kde-topage",QString::number(M)); setOption("kde-range",(m>0 && M>0 ? QString("%1-%2").arg(m).arg(M) : QString::fromLatin1(""))); }
+
+KPrinter::PageSize KPrinter::pageSize() const
+{ return (option("kde-pagesize").isEmpty() ? A4 : (PageSize)option("kde-pagesize").toInt()); }
+
+KPrinter::PageSetType KPrinter::pageSet() const
+{ return (option("kde-pageset").isEmpty() ? AllPages : (PageSetType)(option("kde-pageset").toInt())); }
+
+bool KPrinter::currentPage() const
+{ return (option("kde-current") == "1"); }
+
+QString KPrinter::printerName() const
+{ return m_printername; }
+
+void KPrinter::setPrinterName(const QString& s)
+{ m_printername = s; }
+
+QString KPrinter::printProgram() const
+{ return QString::fromLatin1(""); }
+
+void KPrinter::setPrintProgram(const QString&)
+{}
+
+QString KPrinter::printerSelectionOption() const
+{ return QString::fromLatin1(""); }
+
+void KPrinter::setPrinterSelectionOption(const QString&)
+{}
+
+const QMap<QString,QString>& KPrinter::options() const
+{ return m_options; }
+
+QString KPrinter::searchName() const
+{ return m_searchname; }
+
+void KPrinter::setSearchName(const QString& s)
+{ m_searchname = s; }
+
+bool KPrinter::newPage()
+{ return m_wrapper->newPage(); }
+
+QString KPrinter::outputFileName() const
+{ return m_psbuffer; }
+
+bool KPrinter::outputToFile() const
+{ return m_outputtofile; }
+
+bool KPrinter::abort()
+{ return m_wrapper->abort(); }
+
+bool KPrinter::aborted() const
+{ return m_wrapper->aborted(); }
+
+void KPrinter::setMargins(QSize m)
+{ m_margins = m; }
+
+QSize KPrinter::realPageSize() const
+{ return m_pagesize; }
+
+void KPrinter::setRealPageSize(QSize p)
+{ m_pagesize = p; }

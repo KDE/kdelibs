@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -193,135 +193,6 @@ protected:
 	QSize			m_margins;
 	QSize			m_pagesize;
 };
-
-inline KPrinterImpl* KPrinter::implementation() const
-{ return m_impl; }
-
-inline const QString& KPrinter::option(const QString& key) const
-{ return m_options[key]; }
-
-inline void KPrinter::setOption(const QString& key, const QString& value)
-{ m_options[key] = value; }
-
-inline QString KPrinter::docName() const
-{ return option("kde-docname"); }
-
-inline void KPrinter::setDocName(const QString& d)
-{ setOption("kde-docname",d); }
-
-inline QString KPrinter::creator() const
-{ return option("kde-creator"); }
-
-inline void KPrinter::setCreator(const QString& d)
-{ setOption("kde-creator",d); }
-
-inline bool KPrinter::fullPage() const
-{ return (option("kde-fullpage") == "1"); }
-
-inline void KPrinter::setFullPage(bool on)
-{ setOption("kde-fullpage",(on ? "1" : "0")); }
-
-inline KPrinter::ColorMode KPrinter::colorMode() const
-{ return (option("kde-colormode") == "GrayScale" ? GrayScale : Color); }
-
-inline void KPrinter::setColorMode(ColorMode m)
-{ setOption("kde-colormode",(m == Color ? "Color" : "GrayScale")); }
-
-inline void KPrinter::setNumCopies(int n)
-{ setOption("kde-copies",QString::number(n)); }
-
-inline KPrinter::Orientation KPrinter::orientation() const
-{ return (option("kde-orientation") == "Landscape" ? Landscape : Portrait); }
-
-inline KPrinter::PageOrder KPrinter::pageOrder() const
-{ return (option("kde-pageorder") == "Reverse" ? LastPageFirst : FirstPageFirst); }
-
-inline void KPrinter::setPageOrder(PageOrder o)
-{ setOption("kde-pageorder",(o == LastPageFirst ? "Reverse" : "Forward")); }
-
-inline KPrinter::CollateType KPrinter::collate() const
-{ return (option("kde-collate") == "Collate" ? Collate : Uncollate); }
-
-inline void KPrinter::setCollate(CollateType c)
-{ setOption("kde-collate",(c == Collate ? "Collate" : "Uncollate")); }
-
-inline int KPrinter::minPage() const
-{ return (option("kde-minpage").isEmpty() ? 0 : option("kde-minpage").toInt()); }
-
-inline int KPrinter::maxPage() const
-{ return (option("kde-maxpage").isEmpty() ? 0 : option("kde-maxpage").toInt()); }
-
-inline void KPrinter::setMinMax(int m, int M)
-{ setOption("kde-minpage",QString::number(m)); setOption("kde-maxpage",QString::number(M)); }
-
-inline int KPrinter::fromPage() const
-{ return (option("kde-frompage").isEmpty() ? 0 : option("kde-frompage").toInt()); }
-
-inline int KPrinter::toPage() const
-{ return (option("kde-topage").isEmpty() ? 0 : option("kde-topage").toInt()); }
-
-inline void KPrinter::setFromTo(int m, int M)
-{ setOption("kde-frompage",QString::number(m)); setOption("kde-topage",QString::number(M)); setOption("kde-range",(m>0 && M>0 ? QString("%1-%2").arg(m).arg(M) : QString::fromLatin1(""))); }
-
-inline KPrinter::PageSize KPrinter::pageSize() const
-{ return (option("kde-pagesize").isEmpty() ? A4 : (PageSize)option("kde-pagesize").toInt()); }
-
-inline KPrinter::PageSetType KPrinter::pageSet() const
-{ return (option("kde-pageset").isEmpty() ? AllPages : (PageSetType)(option("kde-pageset").toInt())); }
-
-inline bool KPrinter::currentPage() const
-{ return (option("kde-current") == "1"); }
-
-inline QString KPrinter::printerName() const
-{ return m_printername; }
-
-inline void KPrinter::setPrinterName(const QString& s)
-{ m_printername = s; }
-
-inline QString KPrinter::printProgram() const
-{ return QString::fromLatin1(""); }
-
-inline void KPrinter::setPrintProgram(const QString&)
-{}
-
-inline QString KPrinter::printerSelectionOption() const
-{ return QString::fromLatin1(""); }
-
-inline void KPrinter::setPrinterSelectionOption(const QString&)
-{}
-
-inline const QMap<QString,QString>& KPrinter::options() const
-{ return m_options; }
-
-inline QString KPrinter::searchName() const
-{ return m_searchname; }
-
-inline void KPrinter::setSearchName(const QString& s)
-{ m_searchname = s; }
-
-inline bool KPrinter::newPage()
-{ return m_wrapper->newPage(); }
-
-inline QString KPrinter::outputFileName() const
-{ return m_psbuffer; }
-
-inline bool KPrinter::outputToFile() const
-{ return m_outputtofile; }
-
-inline bool KPrinter::abort()
-{ return m_wrapper->abort(); }
-
-inline bool KPrinter::aborted() const
-{ return m_wrapper->aborted(); }
-
-inline void KPrinter::setMargins(QSize m)
-{ m_margins = m; }
-
-inline QSize KPrinter::realPageSize() const
-{ return m_pagesize; }
-
-inline void KPrinter::setRealPageSize(QSize p)
-{ m_pagesize = p; }
 
 //**************************************************************************************
 
