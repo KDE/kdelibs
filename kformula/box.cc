@@ -524,7 +524,7 @@ void box::draw(QPainter &p, int x, int y, QFont *f_, QColor *bc, QColor *fc)
   if ( fc )
       p.setPen( *fc );
 
-  QFontMetrics fm( f );
+  QFontMetrics fm = p.fontMetrics();
 
   QRect tmp;
   int i;
