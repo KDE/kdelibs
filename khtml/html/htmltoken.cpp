@@ -45,19 +45,33 @@ Attribute::Attribute(const DOMStringImpl *name, DOMStringImpl *val)
     v->ref();
 }
 
-const DOMString &Attribute::name() const
+DOMString Attribute::name() const
 {
-    return getAttrName(id);
+    if(id)
+	return getAttrName(id);
+    else if(n)
+	return n;
+    else
+	return DOMString();
 }
 
 void Attribute::setName(const DOMString &name)
 {
     id = khtml::getAttrID(name.string().ascii(), name.length());
+    if(!id) {
+	// no HTML attribute, we store the whole name
+	n = name.implementation();
+	n->ref();
+    }
 }
 
 void Attribute::setName(const DOMStringImpl *name)
 {
     id = khtml::getAttrID(QConstString(name->s, name->l).string().ascii(), name->l);
+    if(!id) {
+	n = const_cast<DOMStringImpl *>(name);
+	n->ref();
+    }
 }
 
 //-----------------------------------------------------------------------------

@@ -157,11 +157,12 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 	    o = o->nextSibling();
 	else {
 	    RenderObject *next = 0;
-	    while(o && !next) {
+	    while(!next) {
 		o = o->parent();
+		if(!o) return;
 		next = o->nextSibling();
 	    }
-	    if(!o) return;
+	    o = next;
 	}
 	if(o->isText() || o->isReplaced()) {
 	    xPos += o->xPos();

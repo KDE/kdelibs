@@ -42,7 +42,7 @@ namespace khtml {
 class Attribute
 {
 public:
-    Attribute() { id = 0, v = 0; }
+    Attribute() { id = 0, v = 0, n = 0; }
     Attribute(const DOMString &name, const DOMString &val);
     Attribute(const DOMStringImpl *name, DOMStringImpl *val);
     Attribute(int _id, const DOMString &val)
@@ -59,11 +59,14 @@ public:
 	    id = other.id;
 	    v = other.v;
 	    if(v) v->ref();
+	    n = other.n;
+	    if(n) n->ref();
 	}
 
     ~Attribute()
 	{
 	    if(v) v->deref();
+	    if(n) n->deref();
 	}
 
     Attribute &operator = (const Attribute &other) {
@@ -96,13 +99,13 @@ public:
     DOMString value() const { return v; }
     DOMStringImpl *val() const { return v; }
 
-    const DOMString &name() const;
+    DOMString name() const;
     void setName(const DOMString &name);
     void setName(const DOMStringImpl *name);
 
-    ushort id;
-
+    unsigned char id;
 protected:
+    DOM::DOMStringImpl *n;
     DOM::DOMStringImpl *v;
 };
 

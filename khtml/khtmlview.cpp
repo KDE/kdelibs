@@ -159,6 +159,8 @@ void KHTMLView::clear()
     d->startOffset = 0;
     d->endOffset = 0;
     d->underMouse = 0;
+    d->currentNode = 0;
+    d->linkPressed = false;
 }
 
 /*
@@ -694,12 +696,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         gotoPrevLink();
         break;
     case Key_Enter:
+    case Key_Return:
         if (!d->linkPressed)
 	  {
 	    activateActLink();
 	  }
         else
-	    keyReleaseEvent(_ke);
+	    followLink();
         break;
     default:
 	QScrollView::keyPressEvent( _ke );
@@ -708,15 +711,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 {
-   switch(_ke->key())
-     {
-     case Key_Enter:
- 	followLink();
-       break;
-     default:
-       if(m_part->keyReleaseHook(_ke)) return;
-       QScrollView::keyReleaseEvent( _ke);
-     }
+    if(m_part->keyReleaseHook(_ke)) return;
+    QScrollView::keyReleaseEvent( _ke);
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )
@@ -750,17 +746,8 @@ bool KHTMLView::gotoLink()
 //calculate x- and ypos
   int x = 0, y = 0;
   n->getAnchorPosition(x,y);
-  // setContentsPos(x-50, y-50);
     ensureVisible(x, y);
 
-  // Not needed. We force the repaint of the changed area in
-  // NodeImpl::setKeyboardFocus(). Lars.
-
-  //overwrite old contents
-  // ###: only repaint widget area of no-more active widget.
-  //QRect re(0,0,viewport()->width(),viewport()->height());
-  //QPaintEvent *pe= new QPaintEvent(re, true);
-  //viewportPaintEvent(pe);
   return true;
 }
 
@@ -771,7 +758,7 @@ bool KHTMLView::gotoNextLink()
     // find next link
     NodeImpl *n = d->currentNode;
     if(!n) n = m_part->docImpl()->body();
-    while(1) {
+    while(n) {
 	// find next Node
 	if(n->firstChild())
 	    n = n->firstChild();
@@ -779,15 +766,15 @@ bool KHTMLView::gotoNextLink()
 	    n = n->nextSibling();
 	else {
 	    NodeImpl *next = 0;
-	    while(n && !next) {
+	    while(!next) {
 		n = n->parentNode();
+		if(!n) {
+		    d->currentNode = 0;
+		    return false;
+		}
 		next = n->nextSibling();
 	    }
 	    n = next;
-	    if(!n) {
-		d->currentNode = 0;
-		return false;
-	    }
 	}
 	if(n->id() == ID_A) {
 	    d->currentNode = n;
@@ -806,7 +793,7 @@ bool KHTMLView::gotoPrevLink()
     // find next link
     NodeImpl *n = d->currentNode;
     if(!n) n = m_part->docImpl()->body();
-    while(1) {
+    while(n) {
 	// find next Node
 	if(n->lastChild())
 	    n = n->lastChild();
@@ -814,15 +801,15 @@ bool KHTMLView::gotoPrevLink()
 	    n = n->previousSibling();
 	else {
 	    NodeImpl *prev = 0;
-	    while(n && !prev) {
+	    while(!prev) {
 		n = n->parentNode();
+		if(!n) {
+		    d->currentNode = 0;
+		    return false;
+		}
 		prev = n->previousSibling();
 	    }
 	    n = prev;
-	    if(!n) {
-		d->currentNode = 0;
-		return false;
-	    }
 	}
 	// ### add handling of form elements here!
 	if(n->id() == ID_A) {
@@ -840,7 +827,6 @@ void KHTMLView::activateActLink()
 {
   if ( d->currentNode && !d->linkPressed )
     {
- // ### zusammenfassen: setkeyboardfocus und viewportpaintevent.
       d->currentNode->setKeyboardFocus(DOM::ActivationActive);
       d->linkPressed=true;
     }
@@ -849,8 +835,8 @@ void KHTMLView::activateActLink()
 void KHTMLView::followLink()
 {
   d->linkPressed=false;
-  if ((!d->currentNode)) {
-      gotoNextLink(); //ersten Link anzeigen.
+  if (!d->currentNode) {
+      gotoNextLink(); // show first link
   } else {
       d->currentNode->setKeyboardFocus(DOM::ActivationOff);
 
