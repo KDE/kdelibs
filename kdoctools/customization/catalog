@@ -63,6 +63,7 @@ PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
        "entities/artistic-license"
 
 CATALOG af/catalog
+CATALOG bg/catalog
 CATALOG ca/catalog
 CATALOG cs/catalog
 CATALOG da/catalog
@@ -73,6 +74,7 @@ CATALOG en-GB/catalog
 CATALOG es/catalog
 CATALOG et/catalog
 CATALOG fi/catalog
+CATALOG fo/catalog
 CATALOG fr/catalog
 CATALOG he/catalog
 CATALOG hu/catalog
@@ -80,6 +82,7 @@ CATALOG id/catalog
 CATALOG it/catalog
 CATALOG ja/catalog
 CATALOG ko/catalog
+CATALOG lt/catalog
 CATALOG nl/catalog
 CATALOG no/catalog -- considered to be the same as nb --
 CATALOG nn/catalog -- incorrectly known as no_NY --
