@@ -18,14 +18,6 @@ case "$1" in
         rm -rf /usr/share/doc/kde/HTML/default > /dev/null 2>&1
         ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default > /dev/null 2>&1
       fi
-      if [ -e /usr/share/config -a ! -L /usr/share/config ]; then
-        mv /usr/share/config/* /etc/kde2/ >/dev/null 2>&1
-        rm -rf /usr/share/config > /dev/null 2>&1
-      fi
-      if [ -e /etc/kde2/services -a ! -L /etc/kde2/services ]; then
-        rm -rf /etc/kde2/services > /dev/null 2>&1
-        ln -s /usr/share/services /etc/kde2/services > /dev/null 2>&1
-      fi
       if [ ! -e /usr/share/doc/kde/HTML/default ]; then
          ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default > /dev/null 2>&1
       fi
