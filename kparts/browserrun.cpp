@@ -233,13 +233,18 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
 // Default implementation, overriden in KHTMLRun
 void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
 {
+    simpleSave( url, suggestedFilename );
+}
 
+// static
+void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename )
+{
     // DownloadManager <-> konqueror integration
     // find if the integration is enabled
     // the empty key  means no integration
-    KConfig *cfg = new KConfig("konquerorrc", false, false);
-    cfg->setGroup("HTML Settings");
-    QString downloadManger=cfg->readEntry("DownloadManager");
+    KConfig cfg("konquerorrc", false, false);
+    cfg.setGroup("HTML Settings");
+    QString downloadManger = cfg.readEntry("DownloadManager");
     if (!downloadManger.isEmpty())
     {
         // then find the download manager location
@@ -250,24 +255,22 @@ void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
             QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
             QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
             KMessageBox::detailedSorry(0,errMsg,errMsgEx);
-            cfg->writeEntry("DownloadManager",QString::null);
-            cfg->sync ();
+            cfg.writeEntry("DownloadManager",QString::null);
+            cfg.sync ();
         }
         else
         {
-	     cmd += " " + KProcess::quote(url.url());
+            // ### suggestedFilename not taken into account. Fix this (and
+            // the duplicated code) with shiny new KDownload class for 3.2 
+            // (pfeiffer)
+            cmd += " " + KProcess::quote(url.url());
             kdDebug(1000) << "Calling command  "<<cmd<<endl;
             KRun::runCommand(cmd);
+            return;
         }
     }
-    else
-        simpleSave( url, suggestedFilename );
-    delete cfg;
-}
 
-// static
-void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename )
-{
+    // no download manager available, let's do it ourself
     KFileDialog *dlg = new KFileDialog( QString::null, QString::null /*all files*/,
                                         0L , "filedialog", true );
 
