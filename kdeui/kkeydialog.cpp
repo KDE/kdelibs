@@ -38,7 +38,6 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobalaccel.h>
-#include <kkey_x11.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kshortcut.h>
@@ -101,9 +100,6 @@ class KKeyChooserPrivate
 	//  otherwise aDefaultKeycode.
 	bool bPreferFourModifierKeys;
 };
-
-// HACK: for getting around some of Qt's lack of Win support
-enum { QT_META_MOD = Qt::ALT << 1 };	// Supply Meta bit where Qt left it out.
 
 /************************************************************************/
 /* KKeyDialog                                                           */

@@ -27,7 +27,6 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kglobalaccel.h>
-#include <kkey_x11.h>
 #include <klocale.h>
 
 #ifdef Q_WS_X11

@@ -64,7 +64,7 @@ class KKeyChooser : public QWidget
 	 *
 	 * @param aKeyDict A dictionary (@ref QMap) of key definitons.
 	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
-	 *  are not permissible shortcuts.
+	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 **/
 	KKeyChooser( KAccelActions& actions, QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts = true );
@@ -120,12 +120,9 @@ class KKeyChooser : public QWidget
 	void capturedShortcut( const KShortcut& cut );
 
  protected:
-	bool m_bAllowWinKey;
-	// If this is set, then shortcuts require a modifier:
-	//  so 'A' would not be valid, whereas 'Ctrl+A' would be.
-	// Note, however, that this only applies to printable characters.
-	//  'F1', 'Insert', etc., could still be used.
+	ActionType type;
 	bool m_bAllowLetterShortcuts;
+	bool m_bAllowWinKey;
 	// When set, pressing the 'Default' button will select the aDefaultKeycode4,
 	//  otherwise aDefaultKeycode.
 	bool m_bPreferFourModifierKeys;
