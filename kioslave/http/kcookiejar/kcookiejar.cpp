@@ -669,10 +669,12 @@ KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
 //
 void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 {
-    QString domain;
     QStringList domains;
     KHttpCookieList *cookieList = 0L;
 
+    QString domain1 = cookiePtr->domain();
+    if (domain1.isEmpty())
+       domain1 = cookiePtr->host();
     // We always need to do this to make sure that the
     // that cookies of type hostname == cookie-domainname
     // are properly removed and/or updated as necessary!
@@ -687,8 +689,13 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 
         for ( KHttpCookiePtr cookie=list->first(); cookie != 0; )
         {
-            if ( cookiePtr->name() == cookie->name() &&
-                 cookie->match(cookiePtr->host(),domains,cookiePtr->path()) )
+            QString domain2 = cookie->domain();
+            if (domain2.isEmpty())
+               domain2 = cookie->host();
+
+            if ( domain1 == domain2 &&
+                 cookiePtr->name() == cookie->name() &&
+                 cookiePtr->path() == cookie->path() )
             {
                 KHttpCookiePtr old_cookie = cookie;
                 cookie = list->next();
@@ -702,7 +709,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
         }
     }
 
-    domain = stripDomain( cookiePtr );
+    QString domain = stripDomain( cookiePtr );
     QString key = domain.isNull() ? "" : domain;
     cookieList = m_cookieDomains[ key ];
     if (!cookieList)
