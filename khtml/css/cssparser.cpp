@@ -1560,7 +1560,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
 
     const QChar *ch = str.unicode();
     const QChar *last = str.unicode()+str.length();
-    while(ch <= last) {
+    while(ch < last) {
 	if ( !comment && !sq && *ch == '"' ) {
 	    dq = !dq;
 	    processed += *ch;
