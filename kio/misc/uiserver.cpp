@@ -593,10 +593,10 @@ UIServer::UIServer()
   toolBar()->setBarPos( KToolBar::Left );
 
   // setup statusbar
-  statusBar()->insertItem( i18n(" Files: %1 ").arg( 555 ), ID_TOTAL_FILES);
-  statusBar()->insertItem( i18n(" Size: %1 kB ").arg( "134.56" ), ID_TOTAL_SIZE);
+  statusBar()->insertItem( i18n(" Files: %1 ").arg( 0 ), ID_TOTAL_FILES);
+  statusBar()->insertItem( i18n(" Size: %1 kB ").arg( "0" ), ID_TOTAL_SIZE);
   statusBar()->insertItem( i18n(" Time: 00:00:00 "), ID_TOTAL_TIME);
-  statusBar()->insertItem( i18n(" %1 kB/s ").arg("123.34"), ID_TOTAL_SPEED);
+  statusBar()->insertItem( i18n(" %1 kB/s ").arg("0"), ID_TOTAL_SPEED);
 
   // setup listview
   listProgress = new ListProgress( this, "progresslist" );
@@ -1279,7 +1279,7 @@ int UIServer::open_SkipDlg( int id,
 void UIServer::readSettings() {
   KConfig config("uiserverrc");
   config.setGroup( "UIServer" );
-  m_showStatusBar=config.readBoolEntry("ShowStatusBar",true);
+  m_showStatusBar=config.readBoolEntry("ShowStatusBar",false);
   m_showToolBar=config.readBoolEntry("ShowToolBar",true);
   m_keepListOpen=config.readBoolEntry("KeepListOpen",false);
   m_initWidth=config.readNumEntry("InitialWidth",460);
