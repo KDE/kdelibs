@@ -1289,7 +1289,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   KURL ref(url);
   ref.setRef(QString::null);
-  d->m_referrer = ref.url();
+  d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : "";
 
   m_url = url;
   KURL baseurl;
