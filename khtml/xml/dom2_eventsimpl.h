@@ -383,7 +383,7 @@ protected:
 class RegisteredEventListener {
 public:
     RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
-        : id(_id), listener(_listener), useCapture(_useCapture) {};
+        : id(_id), listener(_listener), useCapture(_useCapture) { listener->ref(); }
 
     ~RegisteredEventListener() { listener->deref(); }
 
