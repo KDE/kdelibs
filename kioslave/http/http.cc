@@ -1668,8 +1668,11 @@ void HTTPProtocol::httpCheckConnection()
   if ( m_iSock != -1 )
   {
      bool closeDown = false;
-     
-     if ( !m_state.doProxy && !m_request.doProxy )
+     if ( m_request.method != HTTP_GET )
+     {
+        closeDown = true;
+     }
+     else if ( !m_state.doProxy && !m_request.doProxy )
      {
         if (m_state.hostname != m_request.hostname ||
             m_state.port != m_request.port ||
@@ -3413,7 +3416,7 @@ void HTTPProtocol::httpClose( bool keepAlive )
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
-  if (keepAlive && m_request.method == HTTP_GET && (!m_bUseProxy ||
+  if (keepAlive && (!m_bUseProxy ||
       m_bPersistentProxyConnection))
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
