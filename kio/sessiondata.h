@@ -25,6 +25,11 @@
 
 namespace KIO  {
 
+class SlaveConfig;
+
+/**
+ *
+ */
 class SessionData : public QObject
 {
     Q_OBJECT
@@ -32,6 +37,10 @@ class SessionData : public QObject
 public:
     SessionData();
     ~SessionData();
+
+    virtual void configDataFor( SlaveConfig*, const QString&,
+                                const QString& = QString::null );
+    virtual void reset();
 
 public slots:
     void slotAuthData( const QCString&, const QCString&, bool );
@@ -43,7 +52,7 @@ private:
     AuthDataList* authData;
 
     class SessionDataPrivate;
-    SessionDataPrivate* cookieData;
+    SessionDataPrivate* d;
 };
 
 };

@@ -55,22 +55,19 @@
 #include <kurl.h>
 #include <ksocks.h>
 #include <kdebug.h>
-#include <kconfig.h>
-#include <kglobal.h>
 #include <klocale.h>
+#include <kconfig.h>
 #include <kextsock.h>
 #include <kstddirs.h>
 #include <kservice.h>
 #include <krfcdate.h>
 #include <kinstance.h>
-#include <kcharsets.h>
 #include <kmimemagic.h>
 #include <dcopclient.h>
-#include <kmessagebox.h>
 #include <kdatastream.h>
-#include <kprotocolmanager.h>
-#include <kio/ioslave_defaults.h>
-#include <kio/http_slave_defaults.h>
+
+#include "kio/ioslave_defaults.h"
+#include "kio/http_slave_defaults.h"
 
 #include "http.h"
 
@@ -153,9 +150,8 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
      kdDebug(7103) << "Can't connect with DCOP server." << endl;
   }
 
-  reparseConfiguration();
   setMultipleAuthCaching( true );
-  cleanCache();
+  reparseConfiguration();
 }
 
 HTTPProtocol::~HTTPProtocol()
@@ -172,43 +168,6 @@ void HTTPProtocol::reparseConfiguration()
   m_strProxyRealm = QString::null;
   m_strProxyAuthorization = QString::null;
   ProxyAuthentication = AUTH_None;
-
-  // Define language and charset settings from KLocale (David)
-  // Get rid of duplicate language entries!!
-  QString tmp;
-  QStringList languageList = KGlobal::locale()->languageList();
-  QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
-  kdDebug(7103) << "Languages: " << KGlobal::locale()->languages() << endl;
-  if ( it != languageList.end() )
-  {
-    if ( languageList.contains( QString::fromLatin1("en") ) > 0 )
-        languageList.remove( it );
-    else
-        (*it) = QString::fromLatin1("en");
-  }
-
-  // Use commas not spaces.
-  m_strLanguages = languageList.join( ", " );
-  kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
-  // Ugly conversion. kdeglobals has the xName (e.g. iso8859-1 instead of iso-8859-1)
-  m_strCharsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
-  m_strCharsets += QString::fromLatin1(", utf-8, *");
-
-  // Launch the cookiejar if not already running
-  KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
-  cookieConfig->setGroup("Cookie Policy");
-  m_bUseCookiejar = cookieConfig->readBoolEntry( "Cookies", true );
-  if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
-  {
-     QString error;
-     if ( KApplication::startServiceByDesktopName("kcookiejar", QStringList(),
-                                                  &error ) )
-     {
-        // Error starting kcookiejar.
-        kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
-     }
-  }
-  delete cookieConfig;
 
   struct servent *sent = getservbyname(m_protocol, "tcp");
   if (!sent)
@@ -264,13 +223,23 @@ void HTTPProtocol::setHost( const QString& host, int port,
     kdDebug(7113) << "Proxy URL is now: " << m_proxyURL.url() << endl;
   }
 
-
-  m_bUseCache = config()->readBoolEntry("UseCache", true);
+  m_bUseCookiejar = config()->readBoolEntry("Cookies");
+  m_bUseCache = config()->readBoolEntry("UseCache");
   m_strCacheDir = config()->readEntry("CacheDir");
-  if (m_strCacheDir.isEmpty())
-    m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-  m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
+  m_maxCacheAge = config()->readNumEntry("MaxCacheAge");
+  if ( m_bUseCache ) { cleanCache(); }
 
+  if (m_bUseCookiejar && !m_dcopClient->isApplicationRegistered("kcookiejar"))
+  {
+     QString error;
+     if ( KApplication::startServiceByDesktopName("kcookiejar", QStringList(),
+                                                  &error ) )
+     {
+        // Error starting kcookiejar.
+        kdDebug(1202) << "Error starting KCookiejar: "
+                      << error << "\n" << endl;
+     }
+  }
 
   if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" )
     setEnableSSLTunnel( true );
@@ -303,8 +272,14 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
 
 void HTTPProtocol::retrieveContent()
 {
-  if ( retrieveHeader(false) )
-    (void) readBody();
+  if ( !retrieveHeader(false) )
+  {
+    if ( m_bError ) { return; }
+  }
+  else
+  {
+    if ( !readBody() && m_bError ) { return; }
+  }
 
   http_close();
   finished();
@@ -442,7 +417,7 @@ void HTTPProtocol::post( const KURL& url)
 ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
 {
   int bytes_sent = 0;
-  const char* buf = static_cast<const char*>( _buf );
+  const char* buf = static_cast<const char*>(_buf);
   while ( nbytes > 0 ) {
     int n = Write(buf, nbytes);
 
@@ -782,17 +757,16 @@ bool HTTPProtocol::http_open()
     if ( config()->readBoolEntry("SendUserAgent", true) )
     {
       QString agent = metaData("UserAgent");
-      if( agent.isEmpty() )
-        agent = KProtocolManager::defaultUserAgent( config()->readEntry("User"
-                                                    "AgentKeys",
-                                                    DEFAULT_USER_AGENT_KEYS) );
       if( !agent.isEmpty() )
         header += "User-Agent: " + agent + "\r\n";
     }
 
-    QString referrer = metaData("referrer");
-    if (!referrer.isEmpty())
-      header += "Referer: "+referrer+"\r\n"; //Don't try to correct spelling!
+    if ( config()->readBoolEntry("SendReferrer", true) )
+    {
+      QString referrer = metaData("referrer");
+      if (!referrer.isEmpty())
+        header += "Referer: "+referrer+"\r\n"; //Don't try to correct spelling!
+    }
 
     // Adjust the offset value based on the "resume" meta-data.
     QString resumeOffset = metaData("resume");
@@ -829,19 +803,27 @@ bool HTTPProtocol::http_open()
       header += DEFAULT_ACCEPT_HEADER;
     header += "\r\n";
 
+    if ( config()->readBoolEntry("AllowCompressedPage", true) )
+    {
 #ifdef DO_GZIP
-    // Content negotiation
-    // header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
-    header += "Accept-Encoding: x-gzip, gzip, identity\r\n";
+      // Content negotiation
+      // header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
+      header += "Accept-Encoding: x-gzip, gzip, identity\r\n";
 #endif
+    }
 
-    // Charset negotiation:
-    if ( !m_strCharsets.isEmpty() )
+    if ( config()->readBoolEntry("SendLanguageSettings", true) )
+    {
+      m_strCharsets = config()->readEntry( "Charsets",
+                                           DEFAULT_FULL_CHARSET_HEADER );
+      if ( !m_strCharsets.isEmpty() )
+        m_strCharsets += DEFAULT_PARIAL_CHARSET_HEADER;
       header += "Accept-Charset: " + m_strCharsets + "\r\n";
 
-    // Language negotiation:
-    if ( !m_strLanguages.isEmpty() )
+      m_strLanguages = config()->readEntry( "Languages",
+                                            DEFAULT_LANGUAGE_HEADER );
       header += "Accept-Language: " + m_strLanguages + "\r\n";
+    }
 
     /* support for virtual hosts and required by HTTP 1.1 */
     header += "Host: ";
@@ -1145,8 +1127,23 @@ bool HTTPProtocol::readHeader()
          if ( m_strMimeType.find("charset", pos, false) == pos )
          {
            pos+=7;
-           while( m_strMimeType[pos] == ' ' || m_strMimeType[pos] == '=' ) pos++;
-           m_strCharset = m_strMimeType.mid( pos );
+           while( m_strMimeType[pos] == ' ' || m_strMimeType[pos] == '=' )
+              pos++;
+           int end_pos = m_strMimeType.length();
+           if ( m_strMimeType[pos] == '"' )
+           {
+              pos++;
+              int index = end_pos-1;
+              while ( index > pos )
+              {
+                  if ( m_strMimeType[index] == '"' )
+                      break;
+                  index--;
+              }
+              if ( index > pos )
+                end_pos = index;
+           }
+           m_strCharset = m_strMimeType.mid( pos, end_pos );
            //kdDebug(7103) << "Found charset: " << m_strCharset << endl;
          }
          m_strMimeType.truncate( semicolonPos );
@@ -1312,7 +1309,9 @@ bool HTTPProtocol::readHeader()
       }
       else if ( m_responseCode == 204 ) // No content
       {
-        error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
+        // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
+        // Short circuit and do nothing!
+        m_bError = true;
         return false;
       }
       else if ( m_responseCode == 206 )
@@ -2150,7 +2149,7 @@ bool HTTPProtocol::readBody()
 
   // Update the application with total size except when
   // it is compressed.  Then we have to wait until we
-  // uncompress to find out the actual data.
+  // uncompress to find out the actual data size
   if ( !decode )
     totalSize( (m_iSize > -1) ? m_iSize : 0 );
 
@@ -2288,6 +2287,7 @@ bool HTTPProtocol::readBody()
 
         if (m_bCachedWrite && m_fcache)
            writeCacheEntry(m_bufReceive.data(), bytesReceived);
+
         sz += bytesReceived;
         processedSize( sz );
         time_t t = time( 0L );
@@ -2796,7 +2796,7 @@ void HTTPProtocol::cleanCache()
    int result = ::stat(cleanFile.latin1(), &stat_buf);
    if (result == -1)
    {
-      int fd = creat( cleanFile.latin1(), 0666);
+      int fd = creat( cleanFile.latin1(), 0600);
       if (fd != -1)
       {
          doClean = true;

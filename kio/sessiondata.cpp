@@ -21,10 +21,20 @@
 #include <qlist.h>
 
 #include <kdebug.h>
+#include <kconfig.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kcharsets.h>
 #include <dcopclient.h>
+#include <kprotocolmanager.h>
+
 #include <kdesu/client.h>
+#include <kio/slaveconfig.h>
+#include <kio/http_slave_defaults.h>
 
 #include "sessiondata.h"
+
+
 
 using namespace KIO;
 
@@ -165,15 +175,105 @@ void KIO::SessionData::AuthDataList::purgeCachedData()
 }
 
 /********************************* SessionData ****************************/
+
+class KIO::SessionData::SessionDataPrivate
+{
+public:
+    SessionDataPrivate() {
+        useCookie = true;
+        maxCacheAge = DEFAULT_MAX_CACHE_AGE;
+    }
+
+    int maxCacheAge;
+    bool useCookie;
+    bool useCache;
+    QString charsets;
+    QString language;
+    QString cacheDir;
+    QString userAgent;
+};
+
 SessionData::SessionData()
 {
     authData = new AuthDataList;
+    d = new SessionDataPrivate;
+    reset();
 }
 
 SessionData::~SessionData()
 {
+    delete d;
     delete authData;
+    d = 0L;
     authData = 0L;
+}
+
+void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
+                                      const QString& host )
+{
+    if ( cfg && proto.find("http", 0, false) == 0 )
+    {
+        cfg->setConfigData( proto, host, "Languages", d->language );
+        cfg->setConfigData( proto, host, "Charsets", d->charsets );
+        cfg->setConfigData( proto, host, "Cookies",
+                            d->useCookie ? "true":"false" );
+
+        // These might have already been set so check first
+        // to make sure that we do not trumpt settings sent
+        // by apps or end-user.
+        if ( cfg->configData(proto,host)["UseCache"].isEmpty() )
+            cfg->setConfigData( proto, host, "UseCache",
+                                d->useCache ? "true":"false" );
+        if ( cfg->configData(proto,host)["CacheDir"].isEmpty() )
+            cfg->setConfigData( proto, host, "CacheDir", d->cacheDir );
+        if ( cfg->configData(proto,host)["MaxCacheAge"].isEmpty() )
+            cfg->setConfigData( proto, host, "MaxCacheAge",
+                                QString::number(d->maxCacheAge) );
+        if ( cfg->configData(proto,host)["UserAgent"].isEmpty() )
+        {
+            if ( d->userAgent.isEmpty() )
+            {
+                QString keys = cfg->configData(proto,host)["UserAgentKeys"];
+                if ( keys.isEmpty() )
+                    keys = DEFAULT_USER_AGENT_KEYS;
+                d->userAgent = KProtocolManager::defaultUserAgent( keys );
+            }
+            cfg->setConfigData( proto, host, "UserAgent", d->userAgent );
+        }
+    }
+}
+
+void KIO::SessionData::reset()
+{
+    // Get Cookie settings...
+    KConfig* cfg = new KConfig("kcookiejarrc", false, false);
+    cfg->setGroup( "Cookie Policy" );
+    d->useCookie = cfg->readBoolEntry( "Cookies", true );
+    delete cfg;
+
+    // Get language settings...
+    QStringList languageList = KGlobal::locale()->languageList();
+    QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
+    if ( it != languageList.end() )
+    {
+        if ( languageList.contains( QString::fromLatin1("en") ) > 0 )
+          languageList.remove( it );
+        else
+          (*it) = QString::fromLatin1("en");
+    }
+    d->language = languageList.join( ", " );
+
+    // Get charset settings...
+    // FIXME: Ugly hack to get appropriate charset value.  Needs
+    // to be simplified when it gets fixed in QT/kdecore.
+    d->charsets = KGlobal::charsets()->name(KGlobal::charsets()->xNameToID(KGlobal::locale()->charset()));
+
+    // Get cache settings...
+    KProtocolManager::reparseConfiguration();
+    d->useCache = KProtocolManager::useCache();
+    d->cacheDir = KProtocolManager::cacheDir();
+    d->maxCacheAge = KProtocolManager::maxCacheAge();
+    d->userAgent = QString::null;
 }
 
 void KIO::SessionData::slotAuthData( const QCString& key, const QCString& gkey,
