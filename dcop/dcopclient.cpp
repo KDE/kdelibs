@@ -258,6 +258,30 @@ bool DCOPClient::process(const QString &fun, const QByteArray &data,
   return false;
 }
 
+bool DCOPClient::isApplicationAttached( const QString& remApp)
+{
+  QByteArray data, replyData;
+  QDataStream arg( data, IO_WriteOnly );
+  arg << remApp;
+  int result = false;
+  if ( call( "DCOPServer", "", "isApplicationAttached", data, replyData ) ) {
+    QDataStream reply( replyData, IO_ReadOnly );
+    reply >> result;
+  }
+  return result;
+}
+
+QStringList DCOPClient::attachedApplications()
+{
+  QByteArray data, replyData;
+  QStringList result;
+  if ( call( "DCOPServer", "", "isApplicationAttached", data, replyData ) ) {
+    QDataStream reply( replyData, IO_ReadOnly );
+    reply >> result;
+  }
+  return result;
+}
+
 bool DCOPClient::receive(const QString &app, const QString &objId, 
 			 const QString &fun, const QByteArray &data,
 			 QByteArray &replyData)

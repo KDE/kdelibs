@@ -437,7 +437,7 @@ bool DCOPServer::receive(const QString &app, const QString &obj,
       QString s;
       args >> s;
       QDataStream reply( replyData, IO_WriteOnly );
-      bool b = ( appIds.find( s ) != 0 );
+      int b = ( appIds.find( s ) != 0 );
       reply << b;
       return TRUE;
     }
