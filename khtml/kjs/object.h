@@ -59,7 +59,7 @@ public:
   bool canPut(const CString &p) const;
   void deleteProperty(const CString &p);
   KJSO defaultValue(Hint hint = NoneHint);
-  void dump();
+  void dump(int level = 0);
   virtual KJSO *construct() { return 0L; }
 
   // Reference
@@ -80,7 +80,7 @@ public:
   bool implementsCall() const { return (type() == InternalFunction ||
 				  type() == DeclaredFunction ||
 				  type() == AnonymousFunction); }
-  KJSO *executeCall(KJSO *, KJSArgList *);
+  KJSO *executeCall(KJSO *thisV, KJSArgList *args);
   KJSO* (*call)(KJSO*);
 
   // constructor
@@ -163,6 +163,7 @@ public:
   void processParameters(KJSArgList *);
   virtual KJSO* execute() = 0;
   virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
+  virtual CodeType codeType() = 0;
 protected:
   FunctionAttribute attr;
   KJSParamList *param;
@@ -173,6 +174,7 @@ public:
   KJSInternalFunction(KJSO* (*f)()) { func = f; }
   Type type() const { return InternalFunction; }
   KJSO* execute() { return (*func)(); }
+  CodeType codeType() { return HostCode; }
 private:
   KJSO* (*func)();
 };
@@ -182,6 +184,7 @@ public:
   KJSDeclaredFunction(KJSParamList *p, StatementNode *b);
   Type type() const { return DeclaredFunction; }
   KJSO* execute();
+  CodeType codeType() { return FunctionCode; }
 private:
   StatementNode *block;
 };
@@ -191,6 +194,7 @@ public:
   KJSAnonymousFunction() { /* TODO */ }
   Type type() const { return AnonymousFunction; }
   KJSO* execute() { /* TODO */ }
+  CodeType codeType() { return AnonymousCode; }
 };
 
 class KJSCompletion : public KJSO {
@@ -220,7 +224,7 @@ class KJSActivation : public KJSO {
 public:
   KJSActivation(KJSFunction *f, KJSArgList *args);
   ~KJSActivation();
-  Type type() const { return Activation; }
+  Type type() const { return Object; }
 private:
   KJSFunction *func;
 };
@@ -228,12 +232,13 @@ private:
 class KJSArguments : public KJSO {
 public:
   KJSArguments(KJSFunction *func, KJSArgList *args);
+  Type type() const { return Object; }
 };
 
 class KJSContext {
 public:
   KJSContext(CodeType type = GlobalCode, KJSContext *callingContext = 0L,
-	     KJSFunction *func = 0L, KJSArgList *args = 0L);
+	     KJSFunction *func = 0L, KJSArgList *args = 0L, KJSO *thisV = 0L);
   ~KJSContext();
   KJSScope *firstScope() const { return scopeChain; }
   void insertScope(KJSO *s);
@@ -243,7 +248,6 @@ public:
 public:
   KJSO *thisValue;
   KJSActivation *activation;
-  KJSArguments *arguments;
 private:
   KJSO *variable;
   KJSScope *scopeChain;

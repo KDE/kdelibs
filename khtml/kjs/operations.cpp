@@ -175,11 +175,13 @@ KJSO *KJS::toObject(KJSO *obj)
   switch (obj->type())
     {
     case Undefined:
-      /* TODO: Runtime Error */
-      return 0L;
+      /* TODO: runtime error */
+      cerr << "KJSO::toObject(): RUNTIME ERROR 1" << endl;
+      exit(1);
     case Null:
       /* TODO: Runtime Error */
-      return 0L;
+      cerr << "KJSO::toObject(): RUNTIME ERROR 2" << endl;
+      exit(1);
     case Boolean:
       o = new KJSBoolean(obj->bVal());
       break;
@@ -190,13 +192,16 @@ KJSO *KJS::toObject(KJSO *obj)
       o = new KJSString(obj->sVal().ascii());
       break;
     case Object:
+    case DeclaredFunction:
+    case InternalFunction:
+    case AnonymousFunction:
       return obj;
     default:
       assert(!"toObject: unhandled switch case");
       exit(1);
     }
 
-  delete obj;
+  //  delete obj;
   return o;
 }
 

@@ -35,29 +35,15 @@ namespace KJS {
 using namespace KJS;
 
 // [[call]]
-KJSO *KJSO::executeCall(KJSO *, KJSArgList *args)
+KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
 {
   KJSFunction *func = static_cast<KJSFunction*>(this);
 
   KJSContext *save = KJSWorld::context;
-  CodeType ctype;
-  switch(func->type()) {
-    case InternalFunction:
-      ctype = HostCode;
-      break;
-    case DeclaredFunction:
-      ctype = FunctionCode;
-      break;
-    case AnonymousFunction:
-      ctype = AnonymousCode;
-      break;
-    default:
-      assert(!"KJSO::executeCall(): unhandled switch case");
-      exit(1);
-  }
 
-  KJSWorld::context = new KJSContext(ctype, save, func, args);
-  
+  CodeType ctype = func->codeType();
+  KJSWorld::context = new KJSContext(ctype, save, func, args, thisV);
+
   // assign user supplied arguments to parameter
   func->processParameters(args);
 
@@ -132,27 +118,42 @@ KJSReference::KJSReference(KJSO *b, const CString &s)
   propname = s;
 }
 
-// ECMA 10.1.6
+// ECMA 10.1.7 (draft April 98, 10.1.6 previously)
 KJSActivation::KJSActivation(KJSFunction *f, KJSArgList *args)
 {
+  char buffer[10];
+  KJSArg *arg;
+
   func = f;
 
+  put("arguments", this, DontDelete | DontEnum);
   if (func->hasProperty("arguments"))
-    put("OldArguments", func->get("arguments")); /* TODO: deep copy ? */
+    put("OldArguments", func->get("arguments"));
+  put("callee", func, DontEnum);
 
-  func->put("arguments", args);
+  if (args) {
+    int iarg = args->count();
+    put("length", new KJSNumber(iarg), DontEnum);
+    arg = args->firstArg();
+    for (int i = 0; i < iarg && i < 100; i++) {
+      sprintf(buffer, "%d", i);
+      put(buffer, arg->object());
+      arg = arg->nextArg();
+    }
+  }
+  func->put("arguments", this);
 }
 
 // ECMA 10.1.6
 KJSActivation::~KJSActivation()
 {
-  if (hasProperty("OldArguments"))
+  if (!hasProperty("OldArguments"))
     func->deleteProperty("arguments");
   else
     func->put("arguments", get("OldArguments")); /* TODO: deep copy ? */
 }
 
-#include "operations.h"
+#if 0
 // ECMA 10.1.8
 KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
 {
@@ -163,7 +164,6 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
   // TODO:
   // put("Prototype", _Object.prototype_ );
   put("callee", func, DontEnum);
-  // what is this needed for anyway ?
   if(args) {
     int iarg = args->count();
     put("length", new KJSNumber(iarg), DontEnum);
@@ -176,7 +176,7 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
     /* TODO: length != num. of arguments */
   }
 }
-
+#endif
 
 KJSGlobal::KJSGlobal()
 {
@@ -197,7 +197,7 @@ KJSO* KJSGlobal::eval()
 
 // ECMA 10.2
 KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
-		       KJSFunction *func, KJSArgList *args)
+		       KJSFunction *func, KJSArgList *args, KJSO *thisV)
 {
   KJSGlobal *glob = KJSWorld::global;
   assert(glob);
@@ -206,10 +206,8 @@ KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
   if (type == FunctionCode || type == AnonymousCode || type == HostCode) {
     activation = new KJSActivation(func, args);
     variable = activation;
-    arguments = new KJSArguments(func, args);
   } else {
     activation = 0L;
-    arguments = 0L;
     variable = glob;
   }
 
@@ -232,14 +230,15 @@ KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
       scopeChain = new KJSScope(activation);
       scopeChain->append(glob);
       variable = activation; /* TODO: DontDelete ? (ECMA 10.2.3) */
-      if (callingContext->thisValue->isA(Object))
-	thisValue = callingContext->thisValue;
+      if (thisV->isA(Object)) {
+	thisValue = thisV;
+      }
       else
 	thisValue = glob;
       break;
     case HostCode:
-      if (callingContext->thisValue->isA(Object))
-	thisValue = callingContext->thisValue;
+      if (thisV->isA(Object))
+	thisValue = thisV;
       else
 	thisValue = glob;
       variable = activation; /* TODO: DonDelete (ECMA 10.2.4) */
@@ -275,13 +274,22 @@ void KJSContext::insertScope(KJSO *s)
 }
 
 // debugging info
-void KJSO::dump()
+void KJSO::dump(int level)
 {
-  cout << "Properties: " << endl;
+  if (level == 0) {
+    cout << "-------------------------" << endl;
+    cout << "Properties: " << endl;
+    cout << "-------------------------" << endl;
+  }
   if (prop) {
     KJSProperty *pr = prop;
     while (pr) {
-      cout << "  " << pr->name.ascii() << endl;
+      for (int i = 0; i < level; i++)
+	cout << "  ";
+      cout << pr->name.ascii() << endl;
+      if (pr->object->prop && !(pr->name == "callee")) {
+	pr->object->dump(level+1);
+      }
       pr = pr->next;
     }
   } else
@@ -293,6 +301,8 @@ void KJSO::dump()
     prototype()->dump();
   }
 #endif
+ if (level == 0)
+    cout << "-------------------------" << endl;
 }
 
 KJSArgList *KJSArgList::append(KJSO *o)

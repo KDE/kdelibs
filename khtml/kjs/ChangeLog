@@ -1,3 +1,8 @@
+1999-10-24  Harri Porten  <porten@kde.org>
+
+	* KJSContext: "argument" property works now (adopted model
+	proposed in the	latest spec draft from April 98)
+
 1999-10-20  Harri Porten  <porten@kde.org>
 
 	* math_object.cpp: seperated Math object and put in sample E and

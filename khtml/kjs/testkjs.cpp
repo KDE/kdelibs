@@ -21,7 +21,6 @@
 #include <stdio.h>
 
 #include <qapplication.h>
-#include <qstring.h>
 
 #include "kjs.h"
 
@@ -53,7 +52,7 @@ int main(int argc, char **argv)
 
   KJSWorld *kjs = new KJSWorld(0L);
 
-  kjs->evaluate(QString(code));
+  kjs->evaluate(code);
 
   fprintf(stderr, "OK.\n");
 }
