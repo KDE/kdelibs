@@ -66,10 +66,11 @@ public:
 
     // Returns a child of this node matching ch, if available.
     // Otherwise, returns 0L
-    inline KCompTreeNode * find( const QChar& ch, bool ignoreCase ) const {
+    inline KCompTreeNode * find( const QChar& ch, bool /*ignoreCase*/ ) const {
 	KCompTreeChildren::ConstIterator it;
 	for ( it = myChildren.begin(); it != myChildren.end(); ++it )
-	    if ( isEqual( *(*it), ch, ignoreCase ) )
+	    // if ( isEqual( *(*it), ch, ignoreCase ) ) // wow, this is slooow
+	    if ( *(*it) == ch )
 		return *it;
 
 	return 0L;
@@ -98,10 +99,11 @@ public:
 	return myChildren.last();
     }
 
-
 private:
     uint myWeight;
     KCompTreeChildren	myChildren;
+    
+    // not used up to now... slows things down
     inline bool isEqual( const KCompTreeNode& node1,
 			 const KCompTreeNode& node2,
 			 bool ignoreCase ) const
@@ -111,7 +113,6 @@ private:
 	else
 	    return ( node1 == node2 );
     }
-
 };
 
 #endif // KCOMPLETION_PRIVATE_H

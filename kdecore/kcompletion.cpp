@@ -89,19 +89,18 @@ void KCompletion::addItem( const QString& item, uint weight )
 {
     if ( item.isEmpty() )
 	return;
-    
-    QChar ch;
+
     KCompTreeNode *node = myTreeRoot;
     uint len = item.length();
 
     bool sorted = (myOrder == Sorted);
     bool weighted = ((myOrder == Weighted) && weight > 1);
+
     // knowing the weight of an item, we simply add this weight to all of its
     // nodes.
 
     for ( uint i = 0; i < len; i++ ) {
-        ch = item.at( i );
-	node = node->insert( ch, sorted );
+	node = node->insert( item.at(i), sorted );
 	if ( weighted )
 	    node->confirm( weight -1 ); // node->insert() sets weighting to 1
     }
@@ -495,7 +494,6 @@ void KCompletion::doBeep( BeepMode mode )
 // QChar( 0x0 ) is used as the delimiter of a string; the last child of each
 // inserted string is 0x0.
 
-
 KCompTreeNode::~KCompTreeNode()
 {
     // delete all children
@@ -558,6 +556,5 @@ void KCompTreeNode::remove( const QString& string )
 	}
     }
 }
-
 
 #include "kcompletion.moc"
