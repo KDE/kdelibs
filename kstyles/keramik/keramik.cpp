@@ -318,7 +318,7 @@ void KeramikStyle::polish(QApplication* app)
 void KeramikStyle::polish(QWidget* widget)
 {
 	// Put in order of highest occurrence to maximise hit rate
-	if ( widget->inherits( "QPushButton" )  || widget->inherits( "QComboBox" ) )
+	if ( widget->inherits( "QPushButton" )  || widget->inherits( "QComboBox" ) || widget->inherits("QToolButton") )
 	{
 		widget->installEventFilter(this);
 		if ( widget->inherits( "QComboBox" ) )
@@ -541,18 +541,13 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ButtonDropDown:
 		case PE_ButtonTool:
 		{
-//			bool sunken = on || down;
-
 			if (titleBarMode)
 			{
 				QRect nr;
 				if (titleBarMode == Maximized)
 				{
 					//### What should we draw at sides?
-					//nr = QRect(r.x(), r.y(),
-					//	QMIN(r.width(), r.height()), r.width() ) );
 					nr = QRect(r.x(), r.y(), r.width()-1, r.height() );
-
 				}
 				else
 				{
@@ -582,9 +577,16 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				Keramik::RectTilePainter(keramik_toolbar_clk).draw(p, r, cg.button(), cg.background());
 			}
 			else {
+				if (flags & Style_MouseOver)
+				{
 				Keramik::GradientPainter::renderGradient( p,
 					QRect(r.x(), 0, r.width(), r.height()),
 					Keramik::ColorUtil::lighten(cg.button(), 115), flags & Style_Horizontal, false );
+				}
+				else
+					Keramik::GradientPainter::renderGradient( p,
+						QRect(r.x(), 0, r.width(), r.height()),
+						cg.button(), flags & Style_Horizontal, false );
 
 				p->setPen(cg.button().light(70));
 				p->drawLine(x, y, x2-1, y);
@@ -650,6 +652,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				p->drawLine(x, y, x, y2);
 				p->drawLine(x, y2, x2, y2);
 				p->drawLine(x2, y, x2, y2);
+				flatMode = false;
 			}
 
 			break;
@@ -1316,8 +1319,6 @@ void KeramikStyle::drawControl( ControlElement element,
 
 				toolbarBlendWidget = 0;
 			}
-
-			flatMode = false;
 
 			break;
 		}
@@ -2163,6 +2164,10 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			if (active & SC_ToolButtonMenu)
 				mflags |= Style_Down;
 
+			if ( widget == hoverWidget )
+				bflags |= Style_MouseOver;
+
+
 			if (onToolbar &&  static_cast<QToolBar*>(widget->parent())->orientation() == Qt::Horizontal)
 				bflags |= Style_Horizontal;
 
@@ -2170,8 +2175,14 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			{
 				// If we're pressed, on, or raised...
 				if (bflags & (Style_Down | Style_On | Style_Raised) || onControlButtons)
-					drawPrimitive(onToolbar || onControlButtons ? PE_ButtonTool : PE_ButtonCommand, p, button, cg,
+				{
+					//Make sure the standalone toolbuttons have a gradient in the right direction
+					if (!onToolbar && !onControlButtons)
+						bflags |= Style_Horizontal;
+
+					drawPrimitive( PE_ButtonTool, p, button, cg,
 					 bflags, opt);
+				}
 
 				// Check whether to draw a background pixmap
 				else if ( toolbutton->parentWidget() &&
@@ -2411,7 +2422,7 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			}
 
 			if ( ! mi->text().isNull() && mi->text().find('\t') >= 0 )
-				w += 12;
+				w += itemHMargin + itemFrame*2 + 7;
 			else if ( mi->popup() )
 				w += 2 * arrowHMargin;
 
@@ -2648,25 +2659,29 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 	if ( !object->isWidgetType() ) return false;
 
-	//Hover highlight on buttons and combos
-	if ( object->inherits("QPushButton") || object->inherits("QComboBox") )
-	{
-		if ( (event->type() == QEvent::Enter) && static_cast<QWidget*>(object)->isEnabled())
+	//Clear hover highlight when needed
+	if ( (event->type() == QEvent::Leave) && (object == hoverWidget) )
 		{
 			QWidget* button = static_cast<QWidget*>(object);
-			hoverWidget = button;
+		hoverWidget = 0;
 			button->repaint( false );
+		return false;
 		}
-		else if ( (event->type() == QEvent::Leave) && (object == hoverWidget) )
+
+	//Hover highlight on buttons, toolbuttons and combos
+	if ( object->inherits("QPushButton") || object->inherits("QComboBox") || object->inherits("QToolButton") )
 		{
-			QWidget* button = static_cast<QWidget*>(object);
-			hoverWidget = 0;
-			button->repaint( false );
+		if (event->type() == QEvent::Enter && static_cast<QWidget*>(object)->isEnabled() )
+		{
+			hoverWidget = static_cast<QWidget*>(object);
+			hoverWidget->repaint( false );
+
 		}
 		return false;
 	}
+
 	//Combo line edits get special frames
-	else if ( event->type() == QEvent::Paint && object->inherits( "QLineEdit" ) )
+	if ( event->type() == QEvent::Paint && object->inherits( "QLineEdit" ) )
 	{
 		static bool recursion = false;
 		if (recursion )
@@ -2774,3 +2789,4 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 }
 
 // vim: ts=4 sw=4 noet
+// kate: indent-width 4; replace-tabs off; tab-width 4;
