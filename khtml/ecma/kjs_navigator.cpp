@@ -81,7 +81,9 @@ KJSO Navigator::get(const UString &p) const
   } else if (p == "userAgent") {
     return String(userAgent);
   } else if (p == "platform") {
-    return String("X11");
+    // danimo: yet another evil hack, but necessary to spoof some sites...
+    return String((userAgent.find(QString::fromLatin1("Win"),0,false)==-1) ?
+           QString::fromLatin1("X11") : QString::fromLatin1("Win32"));
   } else if (p == "plugins")
     return KJSO(new Plugins());
   else
