@@ -442,6 +442,8 @@ RenderBlock *RenderObject::containingBlock() const
 {
     if(isTableCell())
         return static_cast<RenderBlock*>( parent()->parent()->parent() );
+    if (isCanvas())
+        return const_cast<RenderBlock*>( static_cast<const RenderBlock*>(this) );
 
     RenderObject *o = parent();
     if(m_style->position() == FIXED) {
@@ -909,9 +911,11 @@ void RenderObject::setStyle(RenderStyle *style)
         return;
 
     RenderStyle::Diff d = m_style ? m_style->diff( style ) : RenderStyle::Layout;
+
     //qDebug("new style, diff=%d", d);
 
-#warning FIXME - outline
+    if ( d == RenderStyle::Visible && m_style && m_style->outlineWidth() > style->outlineWidth() )
+        repaint();
 
     if ( m_style &&
          ( ( isFloating() && m_style->floating() != style->floating() ) ||
