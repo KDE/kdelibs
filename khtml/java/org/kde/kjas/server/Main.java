@@ -24,6 +24,8 @@ public class Main
     static final boolean                     cacheImages;
     public  static String                    liveconnect_returnval = null;
     public  static Thread                    liveconnect_thread = null;
+    public static String                     proxyHost = null;
+    public static int                        proxyPort = 0;
     private static boolean                   good_jdk = true;
 
     /**************************************************************************
@@ -50,6 +52,14 @@ public class Main
             cacheImages = false;
         } else {
             cacheImages = true;
+        }
+        
+        // determine system proxy
+        proxyHost = System.getProperty( "http.proxyHost" );
+        String proxyPortString = System.getProperty( "http.proxyPort" );
+        try {
+            proxyPort = Integer.parseInt(proxyPortString);
+        } catch (Exception e) {
         }
 
         protocol_stdout = System.out;
@@ -80,7 +90,7 @@ public class Main
         }
     }
     public static void info (String msg ) {
-        System.out.println( "KJAS: " + msg );
+        System.err.println( "KJAS: " + msg );
     }
 
     public static void kjas_err( String msg, Exception e )

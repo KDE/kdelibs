@@ -235,8 +235,8 @@ public class KJASProtocolHandler
             KJASAppletClassLoader loader = KJASAppletClassLoader.getLoader( loaderID );
             if( loader != null )
             {
-                Main.debug( "this is a class loader request" );
-                loader.addResource( requestedURL, data );
+                Main.info( "this is a class loader request and should not happen!" );
+                // loader.addResource( requestedURL, data );
             }
             else //see if there is a context with that ID, could be an image request
             {
@@ -327,7 +327,7 @@ public class KJASProtocolHandler
      **************************************************************/
     public void sendGetURLDataCmd( String loaderID, String file )
     {
-        Main.debug( "sendGetURLCmd from loader: " + loaderID + " url = " + file );
+        Main.info( "sendGetURLCmd from loader: " + loaderID + " url = " + file );
         String ID_str = null;
         String file_str = null;
         try

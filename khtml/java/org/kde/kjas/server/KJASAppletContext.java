@@ -93,6 +93,7 @@ public class KJASAppletContext implements AppletContext
         {
             KJASAppletClassLoader loader =
                 KJASAppletClassLoader.getLoader( docBase, codeBase );
+            loader.setAppletContext(this);
             if( archives != null )
             {
                 StringTokenizer parser = new StringTokenizer( archives, ",", false );
@@ -219,7 +220,7 @@ public class KJASAppletContext implements AppletContext
             while( e.hasMoreElements() )
             {
                 KJASAppletStub stub = (KJASAppletStub) e.nextElement();
-                v.add( stub );
+                v.add( stub.getApplet() );
             }
 
             return v.elements();
@@ -231,7 +232,10 @@ public class KJASAppletContext implements AppletContext
     public AudioClip getAudioClip( URL url )
     {
         Main.debug( "getAudioClip, url = " + url );
-        return new KJASSoundPlayer( myID, url );
+        AudioClip clip = java.applet.Applet.newAudioClip(url); 
+        Main.debug( "got AudioClip " + clip);
+        return clip;
+        // return new KJASSoundPlayer( myID, url );
     }
 
     public void addImage( String url, byte[] data )
@@ -248,10 +252,16 @@ public class KJASAppletContext implements AppletContext
         if( active && url != null )
         {
             // directly load images using JVM
-            //if (false) {
-            //    Toolkit kit = Toolkit.getDefaultToolkit();
-            //    return kit.createImage( url );
-            //}
+            if (true) {
+                // Main.info("Getting image using ClassLoader:" + url); 
+                if (loader != null) {
+                    url = loader.findResource(url.toString());
+                    Main.debug("Resulting URL:" + url);
+                }
+                Toolkit kit = Toolkit.getDefaultToolkit();
+                Image img = kit.createImage(url);
+                return img;
+            }
 
             //check with the Web Server
             String str_url = url.toString();
@@ -518,4 +528,5 @@ public class KJASAppletContext implements AppletContext
         return streams.keySet().iterator();
     }
 
+    
 }

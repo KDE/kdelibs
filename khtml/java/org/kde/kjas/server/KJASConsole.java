@@ -15,6 +15,7 @@ public class KJASConsole
 
         txt = new TextArea();
         txt.setEditable(false);
+        txt.setBackground(Color.white);
 
         Panel main = new Panel(new BorderLayout());
         Panel btns = new Panel(new BorderLayout());
@@ -47,7 +48,7 @@ public class KJASConsole
                 }
             }
         );
-
+        
         addWindowListener
         (
             new WindowAdapter() {
@@ -57,7 +58,7 @@ public class KJASConsole
             }
         );
 
-        setSize(300, 300);
+        setSize(500, 300);
 
         PrintStream st = new PrintStream( new KJASConsoleStream(txt) );
         System.setOut(st);
@@ -84,7 +85,7 @@ class KJASConsoleStream
         {
             if( Main.log )
             {
-                dbg_log = new FileOutputStream( "/tmp/kjas.log" );
+                dbg_log = new FileOutputStream( "/tmp/kjas.log");
             }
         }
         catch( FileNotFoundException e ) {}
@@ -111,6 +112,7 @@ class KJASConsoleStream
                 if( Main.log && dbg_log != null )
                 {
                     dbg_log.write( msg.getBytes() );
+                    dbg_log.flush();
                 }
             }
         }
