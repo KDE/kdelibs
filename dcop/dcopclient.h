@@ -1,6 +1,6 @@
 /*
 Copyright (c) 1999 Preston Brown <pbrown@kde.org>
-Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
+Copyright (c) 1999, 2000 Matthias Ettrich <ettrich@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -202,14 +202,14 @@ class DCOPClient : public QObject
    * answer.
    *
    * If @useEventLoop is true, a local event loop will be started after
-   * 1/10th of a second in order to keep the user interface updated 
+   * 1/10th of a second in order to keep the user interface updated
    * (by processing paint events and such) until an answer is received.
    *
    * @see send()
    */
   bool call(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
-	    QCString& replyType, QByteArray &replyData, 
+	    QCString& replyType, QByteArray &replyData,
 	    bool useEventLoop=false, bool fast=false);
 
   /**
@@ -218,8 +218,8 @@ class DCOPClient : public QObject
    * @param remApp The remote application id.
    * @param remObj The name of the remote object.
    * @param remFun The remote function in the specified object to call.
-   *               This function should return a bool and is used as 
-   *               criteria. 
+   *               This function should return a bool and is used as
+   *               criteria.
    * @param data The data to provide to the remote function.
    * @param foundApp The remote application id that matched the criteria.
    * @param foundObj The remote object that matched the criteria.
@@ -229,11 +229,11 @@ class DCOPClient : public QObject
    *        the network.  "fast" is only a hint not an order.
    *
    * findObject calls @p remFun in the applications and objects identified
-   * by @p remApp and @p remObj until @p remFun returns @p true. The name of 
+   * by @p remApp and @p remObj until @p remFun returns @p true. The name of
    * the application and object that returned @p true are returned in
    * @p foundApp and @p foundObj respectively.
    *
-   * If @p remFun is empty a default function is called in the object 
+   * If @p remFun is empty a default function is called in the object
    * which always returns @p true.
    *
    * @return @p true is returned when an object was found for which @remFun
@@ -243,7 +243,7 @@ class DCOPClient : public QObject
    * answer.
    *
    * If @p useEventLoop is @p true, a local event loop will be started after
-   * 1/10th of a second in order to keep the user interface updated 
+   * 1/10th of a second in order to keep the user interface updated
    * (by processing paint events and such) until an answer is received.
    *
    * @see send()
@@ -256,7 +256,7 @@ class DCOPClient : public QObject
   /**
    * Emit @p signal as DCOP signal with @data as arguments
    */
-  void emitDCOPSignal( const QCString &signal, const QByteArray &data);  
+  void emitDCOPSignal( const QCString &signal, const QByteArray &data);
 
   /**
    * Connect to a DCOP signal
@@ -265,15 +265,15 @@ class DCOPClient : public QObject
    * @param signal the name of the signal. The arguments should match with slot.
    * @param receiverObj The name of the object to call
    * @param slot The name of the slot to call. Its arguments should match with signal.
-   * @param Volatile If true, the connection will not be reestablished when 
+   * @param Volatile If true, the connection will not be reestablished when
    * @p sender unregisters and reregisters with DCOP. In this case the @p sender
    * must be registered when the connection is made.
-   * If false, the connection will be reestablished when @p sender reregisters. 
+   * If false, the connection will be reestablished when @p sender reregisters.
    * In this case the connection can be made even if @p sender is not registered
    * at that time.
    *
-   * @return false if a connection could not be established. 
-   * This will be the case when 
+   * @return false if a connection could not be established.
+   * This will be the case when
    * @li @p Volatile is true and @p sender  does not exist.
    * @li @p signal and @p slot do not have matching arguments.
    */
@@ -294,7 +294,7 @@ class DCOPClient : public QObject
    */
   bool disconnectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot);
-   
+
   /**
    * Reimplement to handle app-wide function calls unassociated w/an object.
    *
@@ -339,9 +339,20 @@ class DCOPClient : public QObject
   bool isApplicationRegistered( const QCString& remApp);
 
   /**
-   * Retrieve the list of all currently registered applications.
+   * Retrieves the list of all currently registered applications.
    */
   QCStringList registeredApplications();
+
+  /**
+   * Retrieves the list of objects of the remote application @p remApp
+   */
+  QCStringList remoteObjects( const QCString& remApp, bool *ok = 0 );
+
+  /** 
+   * Retrieves the list of functions of the remote object @remObj
+   * of application @p remApp
+  */
+  QCStringList remoteFunctions( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
 
   /**
    * Receive a DCOPSend or DCOPCall message from the server.
@@ -397,13 +408,13 @@ class DCOPClient : public QObject
   QCString senderId() const;
 
 
-    /**
-     * Installs object @p objId as application-wide default object.
-     *
-     * All app-wide messages that have not been processed by the dcopclient
-     * will be send further to @p objId.
-     */
-    void setDefaultObject( const QCString& objId );
+   /**
+    * Installs object @p objId as application-wide default object.
+    *
+    * All app-wide messages that have not been processed by the dcopclient
+    * will be send further to @p objId.
+    */
+  void setDefaultObject( const QCString& objId );
 
     /**
      * Retrieve the current default object or an empty string if no object is
@@ -412,15 +423,15 @@ class DCOPClient : public QObject
      * A default object receives application-wide messages that have not
      * been processed by the @ref DCOPClient itself.
      */
-    QCString defaultObject() const;
+  QCString defaultObject() const;
 
-    /**
-     * Enable / disable the @ref applicationRegistered() / 
-     * @ref applicationRemoved() signals.
-     *
-     * They are disabled by default.  */
-    void setNotifications( bool enabled );
-    
+  /**
+   * Enable / disable the @ref applicationRegistered() /
+   * @ref applicationRemoved() signals.
+   *
+   * They are disabled by default.  */
+  void setNotifications( bool enabled );
+
 
 signals:
   /**
@@ -436,7 +447,7 @@ signals:
    * been removed.
    *
    * You need to call @ref setNotifications() first, to tell the @ref
-   * DCOPServer that you want to get these events 
+   * DCOPServer that you want to get these events
    */
   void applicationRemoved( const QCString& appId );
 
@@ -447,42 +458,42 @@ signals:
    *  Usually attached to a dialog box or some other visual
    * aid.
    */
-    void attachFailed(const QString &msg);
-    
-    /** 
-     * Indicate that user input shall be blocked or released,
-     * depending on the argument.
-     * 
-     * The signal is emitted whenever the client has to wait too long
-     * (i.e. more than 1/10 of a second) for an answer to a
-     * synchronous call. In that case, it will enter a local event
-     * loop to keep the GUI updated until finally an answer arrives.
-     *
-     * In KDE, the @ref KApplication object connects to this signal to be
-     * able to block any user input (i.e. mouse and key events) while
-     * we are waiting for an answer. If we did not do this, the
-     * application might end up in an illegal state, as a keyboard
-     * shortcut or a mouse action might cause another dcop call to be
-     * issued.
-     */
-    void blockUserInput( bool );
+  void attachFailed(const QString &msg);
+
+  /**
+   * Indicate that user input shall be blocked or released,
+   * depending on the argument.
+   *
+   * The signal is emitted whenever the client has to wait too long
+   * (i.e. more than 1/10 of a second) for an answer to a
+   * synchronous call. In that case, it will enter a local event
+   * loop to keep the GUI updated until finally an answer arrives.
+   *
+   * In KDE, the @ref KApplication object connects to this signal to be
+   * able to block any user input (i.e. mouse and key events) while
+   * we are waiting for an answer. If we did not do this, the
+   * application might end up in an illegal state, as a keyboard
+   * shortcut or a mouse action might cause another dcop call to be
+   * issued.
+   */
+  void blockUserInput( bool );
 
 
 public slots:
 
-    protected slots:
-    void processSocketData(int socknum);
+  protected slots:
+  void processSocketData(int socknum);
 
- protected:
+protected:
 
- private:
-    DCOPClientPrivate *d;
+private:
+  DCOPClientPrivate *d;
 
-    bool attachInternal( bool registerAsAnonymous = TRUE );
+  bool attachInternal( bool registerAsAnonymous = TRUE );
 
-    bool callInternal(const QCString &remApp, const QCString &remObj,
+  bool callInternal(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
-	    QCString& replyType, QByteArray &replyData, 
+	    QCString& replyType, QByteArray &replyData,
 	    bool useEventLoop, bool fast, int minor_opcode);
 };
 

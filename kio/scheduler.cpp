@@ -156,9 +156,11 @@ bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &r
   return true;
 }
 
-QCString Scheduler::functions()
+QCStringList Scheduler::functions()
 {
-  return DCOPObject::functions() + "reparseSlaveConfiguration(QString);";
+    QCStringList funcs = DCOPObject::functions();
+    funcs << "void reparseSlaveConfiguration(QString)";
+    return funcs;
 }
 
 void Scheduler::_doJob(SimpleJob *job) {

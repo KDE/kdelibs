@@ -55,6 +55,8 @@ extern "C" {
 #include <unistd.h>
 }
 
+extern QMap<QCString, DCOPObject *> *dcopObjMap; // defined in dcopobject.cpp
+
 template class QList<DCOPObjectProxy>;
 template class QList<DCOPClientTransaction>;
 template class QList<_IceConn>;
@@ -82,7 +84,7 @@ public:
     QList<DCOPClientTransaction> *transactionList;
     bool transaction;
     Q_INT32 transactionId;
-    
+
 
     CARD32 time;
 };
@@ -257,7 +259,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
             else
                 b = c->receive( app, objId, fun, data, replyType, replyData );
 	    // set notifier back to previous state
-	    d->notifier_enabled = old_notifier_enabled; 
+	    d->notifier_enabled = old_notifier_enabled;
 	}
 	
 	if (opcode == DCOPSend)
@@ -634,8 +636,8 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
 
     if (app[app.length()-1] == '*')
     {
-       // Find all apps that match 'app'. 
-       // NOTE: It would be more efficient to do the filtering in 
+       // Find all apps that match 'app'.
+       // NOTE: It would be more efficient to do the filtering in
        // the dcopserver itself.
        int len = app.length()-1;
        QCStringList apps=registeredApplications();
@@ -658,7 +660,7 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
     {
         QCString replyType;
         QByteArray replyData;
-        if (callInternal((*it), remObj, remFun, data, 
+        if (callInternal((*it), remObj, remFun, data,
                      replyType, replyData, useEventLoop, fast, DCOPFind))
         {
            if (replyType == "DCOPRef")
@@ -666,18 +668,18 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
               DCOPRef ref;
               QDataStream reply( replyData, IO_ReadOnly );
               reply >> ref;
-              
+
               if (ref.app() == (*it)) // Consistency check
               {
                  // replyType contains objId.
                  foundApp = ref.app();
-                 foundObj = ref.object();           
-                 return true; 
+                 foundObj = ref.object();
+                 return true;
               }
            }
         }
     }
-    return false;       
+    return false;
 }
 
 bool DCOPClient::process(const QCString &, const QByteArray &,
@@ -712,6 +714,38 @@ QCStringList DCOPClient::registeredApplications()
     return result;
 }
 
+QCStringList DCOPClient::remoteObjects( const QCString& remApp, bool *ok )
+{
+    QCString replyType;
+    QByteArray data, replyData;
+    QCStringList result;
+    if ( ok )
+	*ok = FALSE;
+    if ( call( remApp, "DCOPClient", "objects()", data, replyType, replyData ) ) {
+	QDataStream reply( replyData, IO_ReadOnly );
+	reply >> result;
+	if ( ok )
+	    *ok = TRUE;
+    }
+    return result;
+}
+
+QCStringList DCOPClient::remoteFunctions( const QCString& remApp, const QCString& remObj, bool *ok  )
+{
+    QCString replyType;
+    QByteArray data, replyData;
+    QCStringList result;
+    if ( ok )
+	*ok = FALSE;
+    if ( call( remApp, remObj, "functions()", data, replyType, replyData ) ) {
+	QDataStream reply( replyData, IO_ReadOnly );
+	reply >> result;
+	if ( ok )
+	    *ok = TRUE;
+    }
+    return result;
+}
+
 void DCOPClient::setNotifications(bool enabled)
 {
     QByteArray data;
@@ -725,16 +759,29 @@ void DCOPClient::setNotifications(bool enabled)
 }
 
 
-bool DCOPClient::receive(const QCString &app, const QCString &objId,
+bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 			 const QCString &fun, const QByteArray &data,
 			 QCString& replyType, QByteArray &replyData)
 {
-    if ( !app.isEmpty() && app != d->appId && app[app.length()-1] != '*') {
-	qWarning("WEIRD! we somehow received a DCOP message w/a different appId");
-	return false;
-    }
-
-    if ( objId.isEmpty() ) {
+    if ( objId == "DCOPClient" ) {
+	if ( fun == "objects()" ) {
+	    replyType = "QCStringList";
+	    QDataStream reply( replyData, IO_WriteOnly );
+	    QCStringList l;
+	    if ( dcopObjMap ) {
+		QMap<QCString, DCOPObject *>::ConstIterator it( dcopObjMap->begin());
+		for (; it != dcopObjMap->end(); ++it) {
+		    if ( !it.key().isEmpty() ) {
+			if ( it.key() == d->defaultObject )
+			    l << "default";
+			l << it.key();
+		    }
+		}
+	    }
+	    reply << l;
+	    return true;
+	}
+    } else if ( objId.isEmpty() || objId == "DCOPClient" ) {
 	if ( fun == "applicationRegistered(QCString)" ) {
 	    QDataStream ds( data, IO_ReadOnly );
 	    QCString r;
@@ -751,8 +798,10 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 	
 	if ( process( fun, data, replyType, replyData ) )
 	    return true;
-
 	// fall through and send to defaultObject if available
+    }
+
+    if ( objId.isEmpty() || objId == "default" ) {
 	if ( !d->defaultObject.isEmpty() && DCOPObject::hasObject( d->defaultObject ) ) {
 	    if (DCOPObject::find( d->defaultObject )->process(fun, data, replyType, replyData))
 		return true;
@@ -793,7 +842,7 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
     return true;
 }
 
-// Check if the function result is a bool with the value "true" 
+// Check if the function result is a bool with the value "true"
 // If so set the function result to DCOPRef pointing to (app,objId) and
 // return true. Return false otherwise.
 static bool findResultOk(QCString &replyType, QByteArray &replyData)
@@ -809,7 +858,7 @@ static bool findResultOk(QCString &replyType, QByteArray &replyData)
 }
 
 // set the function result to DCOPRef pointing to (app,objId) and
-// return true. 
+// return true.
 static bool findSuccess(const QCString &app, const QCString objId, QCString &replyType, QByteArray &replyData)
 {
     DCOPRef ref(app, objId);
@@ -820,7 +869,7 @@ static bool findSuccess(const QCString &app, const QCString objId, QCString &rep
     final_reply << ref;
     return true;
 }
-    
+
 
 bool DCOPClient::find(const QCString &app, const QCString &objId,
 		      const QCString &fun, const QByteArray &data,
@@ -831,7 +880,7 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
 	return false;
     }
 
-    if (objId.isEmpty() || objId[objId.length()-1] != '*') 
+    if (objId.isEmpty() || objId[objId.length()-1] != '*')
     {
         if (fun.isEmpty())
             return findSuccess(app, objId, replyType, replyData);
@@ -849,7 +898,7 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
 	QList<DCOPObject> matchList =
 	    DCOPObject::match(objId.left(objId.length()-1));
 	for (DCOPObject *objPtr = matchList.first();
-	     objPtr != 0L; objPtr = matchList.next()) 
+	     objPtr != 0L; objPtr = matchList.next())
         {
             replyType = 0;
             replyData = QByteArray();
@@ -860,23 +909,23 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
                     return findSuccess(app, objPtr->objId(), replyType, replyData);
 	}
 	return false;
-    } 
+    }
     return false;
 }
 
 
 bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
-		      QCString& replyType, QByteArray &replyData, 
+		      QCString& replyType, QByteArray &replyData,
                       bool useEventLoop, bool fast)
 {
-    return callInternal(remApp, remObjId, remFun, data, 
+    return callInternal(remApp, remObjId, remFun, data,
                          replyType, replyData, useEventLoop, fast, DCOPCall);
 }
 
 bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
-		      QCString& replyType, QByteArray &replyData, 
+		      QCString& replyType, QByteArray &replyData,
                       bool useEventLoop, bool, int minor_opcode)
 {
     if ( !isAttached() )
@@ -920,7 +969,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	IceProcessMessagesStatus s;
 
 	do {
-	    
+	
 	    if ( useEventLoop && d->notifier ) { // we have a socket notifier and a qApp
 		
 		int msecs = 100; // timeout for the GUI refresh
@@ -945,7 +994,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 		    }
 		}
 	    }
-	    
+	
 	    // something is available
 	    s = IceProcessMessages(d->iceConn, &waitInfo,
 				   &readyRet);
@@ -970,12 +1019,12 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 
 void DCOPClient::processSocketData(int)
 {
-    
+
     if ( d->non_blocking_call_lock ) {
 	qApp->exit_loop();
 	return;
     }
-    
+
     if ( !d->notifier_enabled )
 	return;
 
@@ -1059,24 +1108,24 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
     delete trans;
 }
 
-void 
+void
 DCOPClient::emitDCOPSignal( const QCString &signal, const QByteArray &data)
 {
     send("DCOPServer", "emit", normalizeFunctionSignature(signal), data);
 }
 
-bool 
+bool
 DCOPClient::connectDCOPSignal( const QCString &sender, const QCString &signal,
   const QCString &receiverObj, const QCString &slot, bool Volatile)
 {
   QCString replyType;
   QByteArray data, replyData;
   Q_INT8 iVolatile = Volatile ? 1 : 0;
- 
+
   QDataStream args(data, IO_WriteOnly );
   args << sender << normalizeFunctionSignature(signal) << receiverObj << normalizeFunctionSignature(slot) << iVolatile;
-  
-  if (!call("DCOPServer", 0, 
+
+  if (!call("DCOPServer", 0,
 	"connectSignal(QCString,QCString,QCString,QCSQtring,bool)",
 	data, replyType, replyData))
      return false;
@@ -1090,17 +1139,17 @@ DCOPClient::connectDCOPSignal( const QCString &sender, const QCString &signal,
   return (result != 0);
 }
 
-bool 
+bool
 DCOPClient::disconnectDCOPSignal( const QCString &sender, const QCString &signal,
   const QCString &receiverObj, const QCString &slot)
 {
   QCString replyType;
   QByteArray data, replyData;
- 
+
   QDataStream args(data, IO_WriteOnly );
   args << sender << normalizeFunctionSignature(signal) << receiverObj << normalizeFunctionSignature(slot);
-  
-  if (!call("DCOPServer", 0, 
+
+  if (!call("DCOPServer", 0,
 	"disconnectSignal(QCString,QCString,QCString,QCSQtring)",
 	data, replyType, replyData))
      return false;

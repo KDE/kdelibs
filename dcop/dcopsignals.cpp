@@ -35,14 +35,14 @@ DCOPSignals::DCOPSignals()
 void
 DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &fun, const QByteArray &data, bool excludeSelf)
 {
-   DCOPSignalConnectionList *list = connections.find(fun);	 
+   DCOPSignalConnectionList *list = connections.find(fun);	
    if (!list) return;
    for(DCOPSignalConnection *current = list->first(); current; current = list->next())
    {
       bool doSend = false;
       if (current->senderConn)
       {
-         if (current->senderConn == conn) 
+         if (current->senderConn == conn)
 	    doSend = true;
       }
       else if (!current->sender.isEmpty())
@@ -54,12 +54,12 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &fun, const QByteA
       {
          doSend = true;
       }
-      
+
       if (excludeSelf && (conn == current->recvConn))
          doSend = false;
       if (doSend)
       {
-         the_server->sendMessage(current->recvConn, conn->appId, 
+         the_server->sendMessage(current->recvConn, conn->appId,
                                  current->recvConn->appId, current->recvObj,
                                  current->slot, data);
       }
@@ -67,7 +67,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &fun, const QByteA
 }
 
 /**
- * Connects "signal" of the client named "sender" with the "slot" of 
+ * Connects "signal" of the client named "sender" with the "slot" of
  * "receiverObj" in the "conn" client.
  *
  * If "Volatile" is true the connection will be removed when either
@@ -76,9 +76,9 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &fun, const QByteA
  * If "Volatile" is false the connection will only be removed when
  * "conn" unregisters.
  */
-bool 
-DCOPSignals::connectSignal( const QCString &sender, const QCString &signal, 
-                       DCOPConnection *conn, const QCString &receiverObj, 
+bool
+DCOPSignals::connectSignal( const QCString &sender, const QCString &signal,
+                       DCOPConnection *conn, const QCString &receiverObj,
                        const QCString &slot, bool Volatile)
 {
    // TODO: Check if signal and slot match
@@ -111,7 +111,7 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &signal,
    DCOPConnection *senderConn = 0;
    if (Volatile)
    {
-      senderConn = the_server->findClient(sender);
+      senderConn = the_server->findApp(sender);
       if (!senderConn)
          return false; // Sender does not exist.
    }
@@ -138,18 +138,18 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &signal,
 }
 
 /**
- * Disconnects "signal" of the client named "sender" from the "slot" of 
+ * Disconnects "signal" of the client named "sender" from the "slot" of
  * "receiverObj" in the "conn" client.
  */
-bool 
-DCOPSignals::disconnectSignal( const QCString &sender, const QCString &signal, 
-                       DCOPConnection *conn, const QCString &receiverObj, 
+bool
+DCOPSignals::disconnectSignal( const QCString &sender, const QCString &signal,
+                       DCOPConnection *conn, const QCString &receiverObj,
                        const QCString &slot)
 {
    DCOPSignalConnectionList *list = connections.find(signal);
    if (!list)
       return false; // Not found...
-  
+
    DCOPSignalConnection *next = 0;
    bool result = false;
 
@@ -162,20 +162,20 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &signal,
 
       if (current->senderConn)
       {
-         if (current->senderConn->appId != sender) 
+         if (current->senderConn->appId != sender)
 	    continue;
       }
       else if (current->sender != sender)
 	    continue;
 
-      if (!receiverObj.isEmpty() && 
+      if (!receiverObj.isEmpty() &&
           (current->recvObj != receiverObj))
          continue;
 
-      if (!slot.isEmpty() && 
+      if (!slot.isEmpty() &&
           (current->slot != slot))
          continue;
-         
+
       result = true;
       list->removeRef(current);
       conn->signalConnectionList()->removeRef(current);
@@ -192,13 +192,13 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &signal,
  *   All connections for which "conn" is the receiver.
  *   All volatile connections for which "conn" is the sender.
  */
-void 
+void
 DCOPSignals::removeConnections(DCOPConnection *conn)
 {
    DCOPSignalConnectionList *list = conn->_signalConnectionList;
    if (!list)
       return; // Nothing to do...
-  
+
    DCOPSignalConnection *next = 0;
 
    for(DCOPSignalConnection *current = list->first(); current; current = next)

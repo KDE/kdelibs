@@ -25,13 +25,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopobject.h>
 #include <dcopclient.h>
 
-static QMap<QCString, DCOPObject *> *objMap_ = 0;
+QMap<QCString, DCOPObject *> *dcopObjMap = 0;
 
 inline QMap<QCString, DCOPObject *> *objMap()
 {
-  if (!objMap_)
-    objMap_ = new QMap<QCString, DCOPObject *>;
-  return objMap_;
+  if (!dcopObjMap)
+    dcopObjMap = new QMap<QCString, DCOPObject *>;
+  return dcopObjMap;
 }
 
 DCOPObject::DCOPObject()
@@ -125,7 +125,7 @@ bool DCOPObject::process(const QCString &fun, const QByteArray &data,
 			 QCString& replyType, QByteArray &replyData)
 {
     if ( fun == "functions()" ) {
-	replyType = "QCString";
+	replyType = "QCStringList";
 	QDataStream reply( replyData, IO_WriteOnly );
 	reply << functions();
 	return TRUE;
@@ -138,9 +138,11 @@ bool DCOPObject::processDynamic( const QCString&, const QByteArray&, QCString&, 
     return FALSE;
 }
 
-QCString DCOPObject::functions()
+QCStringList DCOPObject::functions()
 {
-    return "QStringList functions();";
+    QCStringList result;
+    result << "QCStringList functions()";
+    return result;
 }
 
 QList<DCOPObjectProxy>* DCOPObjectProxy::proxies = 0;

@@ -57,10 +57,11 @@ class DCOPConnection : public QSocketNotifier
 public:
     DCOPConnection( IceConn conn );
     ~DCOPConnection();
-    
+
     DCOPSignalConnectionList *signalConnectionList();
 
     QCString appId;
+    QCString plainAppId;
     IceConn iceConn;
     bool notifyRegister;
     CARD32 time;
@@ -89,10 +90,10 @@ public:
 			 const QCString &fun, const QByteArray& data,
 			 QCString& replyType, QByteArray &replyData, IceConn iceConn);
 
-    DCOPConnection *findClient(const QCString &appId) { return appIds.find(appId); }
+    DCOPConnection *findApp(const QCString &appId);
 
-    void sendMessage(DCOPConnection *conn, const QCString &sApp, 
-                     const QCString &rApp, const QCString &rObj, 
+    void sendMessage(DCOPConnection *conn, const QCString &sApp,
+                     const QCString &rApp, const QCString &rObj,
                      const QCString &rFun, const QByteArray &data);
 
 private slots:
@@ -103,7 +104,7 @@ private:
     int majorOpcode;
     CARD32 time;
     QList<DCOPListener> listener;
-    QDict<DCOPConnection> appIds;
+    QAsciiDict<DCOPConnection> appIds;
     QPtrDict<DCOPConnection> clients;
     DCOPSignals *dcopSignals;
 };

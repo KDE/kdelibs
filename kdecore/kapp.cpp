@@ -859,7 +859,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 	    case KIPC::FontChanged:
 		KGlobal::config()->reparseConfiguration();
-                KGlobalSettings::rereadFontSettings();
+		KGlobalSettings::rereadFontSettings();
 		kdisplaySetFont();
 		break;
 
@@ -869,7 +869,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 	    case KIPC::SettingsChanged:
 		KGlobal::config()->reparseConfiguration();
-                propagateSettings((SettingsCategory)arg);
+		propagateSettings((SettingsCategory)arg);
 		break;
 
 	    case KIPC::IconChanged:
@@ -1634,7 +1634,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
 	NETWinInfo info( qt_xdisplay(), topWidget->winId(), qt_xrootwin(), 0 );
 	info.setName( caption().utf8().data() );
     }
-    
+
     // set the specified icons
     topWidget->setIcon( icon() ); //standard X11
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin

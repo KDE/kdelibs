@@ -55,9 +55,9 @@ namespace KIO {
 
         virtual bool process(const QCString &fun, const QByteArray &data,
 		             QCString& replyType, QByteArray &replyData);
-    
-        virtual QCString functions();
-    
+
+        virtual QCStringList functions();
+
     public slots:
         void slotSlaveDied(KIO::Slave *slave);
 	void slotSlaveStatus(pid_t pid, const QCString &protocol,

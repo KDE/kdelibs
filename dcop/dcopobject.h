@@ -1,6 +1,6 @@
 /*
 Copyright (c) 1999,2000 Preston Brown <pbrown@kde.org>
-Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
+Copyright (c) 1999, 2000 Matthias Ettrich <ettrich@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,15 +27,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qmap.h>
 #include <qstring.h>
 #include <qlist.h>
+#include <qvaluelist.h>
 
 class DCOPClient;
+typedef QValueList<QCString> QCStringList;
 
 // Makros for DCOP interfaces
 
 #define K_DCOP \
 public:        \
   virtual bool process(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData); \
-  QCString functions(); \
+  QCStringList functions(); \
 private:
 
 #define k_dcop public
@@ -116,11 +118,11 @@ public:
 			      QCString& replyType, QByteArray &replyData);
 
 
-  /**
-   * Returns a semicolon-separated list of functions understood by
-   * the object. It gets reimplemented by the IDL compiler. If you
-   * don't use the IDL compiler, consider implementing this function
-   * manually if you want your object to be easily scriptable.
+  /** 
+   * Returns the list of functions understood by the object. It gets
+   * reimplemented by the IDL compiler. If you don't use the IDL
+   * compiler, consider implementing this function manually if you
+   * want your object to be easily scriptable.
    *
    * Rationale: functions() allows an interpreter to do client-side
    * type-casting properly.
@@ -130,7 +132,7 @@ public:
    *
    * @see process(), processDynamic(), DCOPClient::normalizeFunctionSignature()
    */
-  virtual QCString functions();
+  virtual QCStringList functions();
 
   /**
    * @return @p true if an obejct with the questionable @p objId is
@@ -189,14 +191,14 @@ public:
      */
     DCOPObjectProxy();
 
-    /** 
+    /**
      * Obsolete, do not use. DCOP clients know about object proxies
      * automatically.
      *
      * @deprecated
      */
     DCOPObjectProxy( DCOPClient*);
-    
+
     /**
      * Destroy the proxy.
      */

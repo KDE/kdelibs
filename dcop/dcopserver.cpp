@@ -368,7 +368,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    QDataStream ds( ba, IO_ReadOnly );
 	    QCString appFrom, app;
 	    ds >> appFrom >> app;
-	    DCOPConnection* target = appIds.find( app );
+	    DCOPConnection* target = findApp( app );
 	    DCOPConnection* conn = clients.find( iceConn );
 	    if ( opcode == DCOPReplyDelayed ) {
 // 		qDebug("DCOPServer::Got DCOPReplyDelayed (from: \"%s\" to: \"%s\")",
@@ -398,7 +398,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		}
 	    } else if ( app[app.length()-1] == '*') {
 		// handle a multicast.
-		QDictIterator<DCOPConnection> aIt(appIds);
+		QAsciiDictIterator<DCOPConnection> aIt(appIds);
 		int l = app.length()-1;
 		for ( ; aIt.current(); ++aIt) {
 		    DCOPConnection *client = aIt.current();
@@ -425,7 +425,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    QDataStream ds( ba, IO_ReadOnly );
 	    QCString appFrom, app;
 	    ds >> appFrom >> app;
-	    DCOPConnection* target = appIds.find( app );
+	    DCOPConnection* target = findApp( app );
 	    int datalen = ba.size();
 	
 	    DCOPConnection* conn = clients.find( iceConn );
@@ -674,6 +674,17 @@ DCOPServer::~DCOPServer()
 }
 
 
+DCOPConnection* DCOPServer::findApp( const QCString& appId )
+{
+    DCOPConnection* conn = appIds.find( appId );
+    if ( !conn && appId.find( '-' ) < 0 ) {
+	for ( QAsciiDictIterator<DCOPConnection> it( appIds ); it.current(); ++it )
+	    if ( it.current()->plainAppId == appId )
+		return it.current();
+    }
+    return conn;
+}
+
 /*!
   Called from our IceIoErrorHandler
  */
@@ -841,6 +852,13 @@ qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
 		    conn->appId = tmp;
 		}
 		appIds.insert( conn->appId, conn );
+		int c = conn->appId.find( '-' );
+		if ( c > 0 )
+		    conn->plainAppId = conn->appId.left( c );
+		else
+		    conn->plainAppId = conn->appId;
+		
+		qDebug("plain app id is %s", conn->plainAppId.data() );
 
 		QPtrDictIterator<DCOPConnection> it( clients );
 		QByteArray data;
@@ -873,9 +891,9 @@ qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
     else if ( fun == "registeredApplications()" ) {
 	QDataStream reply( replyData, IO_WriteOnly );
 	QCStringList applications;
-	QDictIterator<DCOPConnection> it( appIds );
+	QAsciiDictIterator<DCOPConnection> it( appIds );
 	while ( it.current() ) {
-	    applications << it.currentKey().ascii();
+	    applications << it.currentKey();
 	    ++it;
 	}
 	replyType = "QCStringList";
@@ -887,7 +905,7 @@ qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
 	    QCString s;
 	    args >> s;
 	    QDataStream reply( replyData, IO_WriteOnly );
-	    int b = ( appIds.find( s ) != 0 );
+	    int b = ( findApp( s ) != 0 );
 	    replyType = "bool";
 	    reply << b;
 	    return TRUE;
@@ -930,14 +948,14 @@ qDebug("DCOPServer: disconnectSignal(sender = %s signal = %s recvObj = %s slot =
         QDataStream reply( replyData, IO_WriteOnly );
         reply << (Q_INT8) (b?1:0);
         return TRUE;
-    }   
+    }
 
     return FALSE;
 }
 
-void 
-DCOPServer::sendMessage(DCOPConnection *conn, const QCString &sApp, 
-                        const QCString &rApp, const QCString &rObj, 
+void
+DCOPServer::sendMessage(DCOPConnection *conn, const QCString &sApp,
+                        const QCString &rApp, const QCString &rObj,
                         const QCString &rFun,  const QByteArray &data)
 {
    QByteArray ba;

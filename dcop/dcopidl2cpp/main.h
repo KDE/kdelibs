@@ -37,3 +37,4 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
  * Writes the stub implementation
  */
 void generateStubImpl( const QString& idl, const QString& header, const QString& filename, QDomElement de );
+
