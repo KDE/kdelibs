@@ -225,7 +225,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
     entry.aDefaultKeyCode = defaultKeyCode3.key();
     //entry.aDefaultKeyCode4 = defaultKeyCode4.key();
     entry.aCurrentKeyCode = /*entry.aConfigKeyCode = useFourModifierKeys() ? defaultKeyCode4.key() : */ defaultKeyCode3.key();
-    kdDebug(125) << "useFourModifierKeys() = " << useFourModifierKeys() << " entry.aCurrentKeyCode = " << entry.aCurrentKeyCode << endl;
+    //kdDebug(125) << "useFourModifierKeys() = " << useFourModifierKeys() << " entry.aCurrentKeyCode = " << entry.aCurrentKeyCode << endl;
     entry.bConfigurable = configurable;
     entry.descr = descr;
     entry.menuId = id;
@@ -803,6 +803,9 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	if( keyStr.isNull() || keyStr.isEmpty() )
 		return 0;
 
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
+
 	int iOffset = 0, iOffsetToken;
 	do {
 		int i;
@@ -1020,6 +1023,9 @@ uint KAccel::keySymXToKeyQt( uint keySymX, uint keyModX )
 {
 	uint	keyCombQt = 0;
 
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
+
 	// Qt's own key definitions begin at 0x1000
 	if( keySymX < 0x1000 ) {
 		// For some reason, Qt wants 'a-z' converted to 'A-Z'
@@ -1075,6 +1081,9 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 	uint	keyModX = 0;
 
 	const char *psKeySym = 0;
+
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
 
 	// Get code of just the primary key
 	keySymQt = keyCombQt & 0xffff;
@@ -1213,7 +1222,13 @@ QString KAccel::keySymXToString( uint keySymX, uint keyModX, bool bi18n )
 uint KAccel::keyModXShift()		{ return ShiftMask; }
 uint KAccel::keyModXLock()		{ return LockMask; }
 uint KAccel::keyModXCtrl()		{ return ControlMask; }
-uint KAccel::keyModXAlt()		{ return g_aModKeys[ModAltIndex].keyModMaskX; }
+
+uint KAccel::keyModXAlt()
+{
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
+	return g_aModKeys[ModAltIndex].keyModMaskX;
+}
 
 uint KAccel::keyModXNumLock()
 {
