@@ -1056,6 +1056,7 @@ void B2Style::polishPopupMenu(QPopupMenu *mnu)
     // (void)new B2AniMenu(mnu); 
 }
 
+/*
 void B2Style::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
                       bool selected)
 {
@@ -1080,7 +1081,6 @@ void B2Style::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
         p->drawLine(r.right()-6, r.y()+2, r.right()-6, r.bottom()-5);
         p->drawLine(r.right()-5, r.bottom()-4, r.right()-1, r.bottom());
 
-        //evidently masks don't work so we need to do the bg manually
         p->fillRect(r.x()+2, r.y()+2, r.width()-10, r.height()-2,
                     g.button());
         p->setPen(g.button());
@@ -1105,13 +1105,10 @@ void B2Style::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
         p->drawLine(r.x(), r.y()+2, r.x(), r.bottom());
         p->drawPoint(r.right()-7, r.y()+1);
 
-        //p->drawLine(r.right()-4, r.bottom()-1, r.right(), r.bottom()-1);
 
         p->setPen(g.midlight());
         p->drawLine(r.x()+1, r.y()+2, r.x()+1, r.bottom());
         p->drawLine(r.x()+2, r.y()+1, r.right()-8, r.y()+1);
-
-        //p->drawLine(r.right()-4, r.bottom(), r.right(), r.bottom());
 
         p->setPen(g.dark());
         p->drawLine(r.right()-6, r.y()+2, r.right()-6, r.bottom());
@@ -1123,7 +1120,6 @@ void B2Style::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
     }
 }
 
-// isn't being called :P
 void B2Style::drawTabMask(QPainter *p, const QTabBar*, QTab *tab,
                           bool )
 
@@ -1142,7 +1138,7 @@ void B2Style::tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
     else
         KStyle::tabbarMetrics(t, hFrame, vFrame, overlap);
 }
-
+*/
 #include "b2style.moc"
 
 

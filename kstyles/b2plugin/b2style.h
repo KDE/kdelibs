@@ -137,11 +137,12 @@ public:
                               QCOORD, Orientation);
     int defaultFrameWidth() const {return(2);}
     void polishPopupMenu(QPopupMenu *mnu);
+    /*
     void drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
                  bool selected);
     void drawTabMask( QPainter*, const QTabBar*, QTab*, bool selected );
     void tabbarMetrics(const QTabBar *t, int &hFrame, int &vFrame,
-                       int &overlap);
+                       int &overlap);*/
 protected:
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                    bool horiz);
