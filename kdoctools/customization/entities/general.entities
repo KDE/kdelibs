@@ -298,7 +298,7 @@
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
 <!ENTITY Shift	"<keycap>Shift</keycap>">
-<!ENTITY SMTP	"<acronym>SMTP<acronym>">
+<!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
 <!ENTITY ThreeCom	'<trademark class="registered">3Com</trademark>'>
