@@ -445,11 +445,16 @@ bool ReadWritePart::closeURL()
       if (m_url.isEmpty())
       {
           KURL url = KFileDialog::getSaveURL();
-          if (url.isEmpty()) return false;
-          return saveAs( url ) && ReadOnlyPart::closeURL();
+          if (url.isEmpty())
+          {
+            m_bClosing = false;
+            return false;
+          }
+          return saveAs( url );
       }
-      return save() && ReadOnlyPart::closeURL();
+      return save();
     case KMessageBox::No :
+      setModified( false ); // the user isn't interested in the changes, forget them
       return true;
     default : // case KMessageBox::Cancel :
       return false;
@@ -461,7 +466,10 @@ bool ReadWritePart::closeURL()
 
 bool ReadWritePart::save()
 {
-  return saveFile() && saveToURL();
+  if( saveFile() )
+    return saveToURL();
+  m_bClosing = false;
+  return false;
 }
 
 bool ReadWritePart::saveAs( const KURL & kurl )
@@ -469,6 +477,7 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   if (kurl.isMalformed())
   {
       kdError(1000) << "saveAs: Malformed URL" << kurl.url() << endl;
+      m_bClosing = false;
       return false;
   }
   m_url = kurl; // Store where to upload in saveToURL
@@ -503,6 +512,9 @@ bool ReadWritePart::saveToURL()
   {
     setModified( false );
     emit completed();
+    // if m_url is a local file there won't be a temp file -> nothing to remove
+    assert( !m_bTemp );
+    m_bClosing = false; // no temp file to cleaned up
     return true; // Nothing to do
   }
   else
@@ -520,10 +532,16 @@ void ReadWritePart::slotUploadFinished( KIO::Job * job )
   else
   {
     setModified( false );
-    if ( m_bClosing )
-      ReadOnlyPart::closeURL();
+    if ( m_bClosing && m_bTemp ) // We're finished with this document -> remove temp file
+    {
+      unlink( QFile::encodeName(m_file) );
+      m_bTemp = false;
+    }
     emit completed();
   }
+  m_bClosing = false; // temp file was cleaned up
 }
 
 #include "part.moc"
+
+// vim:sw=2:ts=8:et
