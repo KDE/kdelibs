@@ -1,3 +1,10 @@
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifndef HAVE_FUNC_SETENV
+
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
@@ -21,3 +28,5 @@ int setenv(const char *name, const char *value, int overwrite) {
     
     return putenv(a);
 }
+
+#endif

@@ -7,6 +7,10 @@
 
 #include <qlist.h>
 #include <qpalette.h>
+#include <qbitmap.h>
+#include <qstring.h>
+#include <qframe.h>
+#include <qbutton.h>
 #include "kbutton.h"
 #include "klined.h"
 #include "kcombo.h"

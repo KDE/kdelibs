@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream.h>
+#include <string.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 extern "C" {
 #include <mediatool.h>
 }

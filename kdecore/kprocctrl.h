@@ -24,7 +24,7 @@
 */
 class KProcessController : public QObject
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
   KProcessController();

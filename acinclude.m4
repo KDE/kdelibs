@@ -354,7 +354,6 @@ if test "$ac_cv_func_setenv" = "yes"; then
   AC_DEFINE_UNQUOTED(HAVE_FUNC_SETENV)
 else
   AC_MSG_RESULT(no)
-  MISCOBJS="$MISCOBJS setenv.lo"
 fi
 ])
 

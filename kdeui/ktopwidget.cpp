@@ -3,7 +3,7 @@
 
 
 KTopLevelWidget::KTopLevelWidget(
-                                  const char *name = NULL )
+                                  const char *name )
   : QWidget( 0L, name )
  {
    kmenubar = NULL;
@@ -116,7 +116,8 @@ void KTopLevelWidget::updateRects()
      b += kstatusbar->height();
    }
 
-  for ( KToolBar *toolbar = toolbars.first() ;
+  KToolBar *toolbar;
+  for ( toolbar = toolbars.first() ;
         toolbar != NULL ; toolbar = toolbars.next() )
     if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
      {
@@ -135,7 +136,7 @@ void KTopLevelWidget::updateRects()
        to += toolbar->width();
      }
 
-  for ( KToolBar *toolbar = toolbars.first();
+  for ( toolbar = toolbars.first();
         toolbar != NULL; toolbar = toolbars.next() )
     if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() ) {
       toolbar->updateRects (TRUE);   // Sven: You have to this
@@ -152,7 +153,7 @@ void KTopLevelWidget::updateRects()
     }
 
   h = height() - t - b;
-  for ( KToolBar *toolbar = toolbars.first();
+  for ( toolbar = toolbars.first();
         toolbar != NULL; toolbar = toolbars.next() )
     if ( toolbar->barPos() == KToolBar::Left && toolbar->isVisible() ) {
       toolbar->setMaxHeight(h);   // Sven: You have to do this here
@@ -169,7 +170,7 @@ void KTopLevelWidget::updateRects()
       lo += toolbar->height();
     }
 
-  for ( KToolBar *toolbar = toolbars.first();
+  for ( toolbar = toolbars.first();
         toolbar != NULL; toolbar = toolbars.next() )
     if ( toolbar->barPos() == KToolBar::Right && toolbar->isVisible() ) {
       toolbar->setMaxHeight(h);   // Sven: You have to do this here
@@ -191,7 +192,7 @@ void KTopLevelWidget::updateRects()
   view_top=0;
   view_bottom=height();
 
-  for (KToolBar *toolbar = toolbars.first();
+  for (toolbar = toolbars.first();
        toolbar != NULL; toolbar = toolbars.next()) {
 
     if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )

@@ -18,10 +18,8 @@ include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 
 libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
-	klocale.cpp libintl.cpp
+	klocale.cpp libintl.cpp setenv.cpp
 
-libkdecore_la_LIBADD = @MISCOBJS@
-libkdecore_la_DEPENDENCIES = @MISCOBJS@ 
 libkdecore_la_LDFLAGS = -version-info 0:10 -rpath $(libdir) 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\

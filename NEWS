@@ -1,3 +1,6 @@
+23.08.97	SGI patches by Claus Riemann
+			corrected the setenv file. It's now C++ not C.
+			removed the historical AC_C_INLINE test. 
 22.08.97	added a global object to KLocale 
 			
 20.08.97	added KColorButton

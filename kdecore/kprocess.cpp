@@ -116,7 +116,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
 {
   uint i;
   uint n = arguments.count();
-  int dummy;
   char **arglist;
 
   if (runs || (NULL == process) ) {
@@ -411,11 +410,11 @@ int KProcess::commSetupDoneC()
 	  ok &= dup2(in[0],  STDIN_FILENO) != -1;
 	if (communication & Stdout) {
 	  ok &= dup2(out[1], STDOUT_FILENO) != -1;    
-	  ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (void*)&so, sizeof(so));
+	  ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
 	}
 	if (communication & Stderr) {
 	  ok &= dup2(err[1], STDERR_FILENO) != -1;
-	  ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, (void*)&so, sizeof(so));
+	  ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
 	}
   }
   return ok;

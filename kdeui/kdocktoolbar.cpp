@@ -6,13 +6,17 @@
   *
   */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "kdocktoolbar.h"
 #include "kdocktoolbar.moc"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-KDockToolBar::KDockToolBar( QWidget *parent=NULL,char *name=NULL ) :
+KDockToolBar::KDockToolBar( QWidget *parent, char *name ) :
   KToolBar( parent, name )
 {
   _bMightDock = false;

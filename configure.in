@@ -55,13 +55,12 @@ AC_FIND_GIF
 AC_FIND_JPEG
 
 dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_INLINE
 AC_HEADER_TIME
 
 dnl check if the compiler has bool
 AC_CHECK_BOOL
 
-dnl Checks for library functions. MISCOBJS is for kdecore
+dnl Checks for library functions. 
 AC_CHECK_FUNCS(socket)
 AC_CHECK_SETENV
 AC_LANG_CPLUSPLUS
@@ -75,7 +74,6 @@ topdir=`pwd`
 AC_SUBST(x_includes)
 AC_SUBST(x_libraries)
 AC_SUBST(topdir)
-AC_SUBST(MISCOBJS)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBCOMPAT)
 if test "${prefix}" = NONE; then
