@@ -897,7 +897,7 @@ public:
       return INT_MIN;
     } else {
       *ok = true;
-      return int( value * f + 0.5 );
+      return int( value * f + ( value < 0 ? -0.5 : 0.5 ) );
     }
   }
 
