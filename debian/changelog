@@ -2,6 +2,7 @@ kdelibs (4:2.1-20010111-1) unstable; urgency=low
  
    * more upstream bug fixes
    * a ton of documentation updates
+   * move away from suidregister
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 11 Jan 2001 13:39:00 -0700
 

@@ -87,6 +87,7 @@ binary-arch:  build
 	make DESTDIR=`pwd`/debian/tmp/ install
 	-rm -f debian/tmp/usr/share/doc/kde/HTML/default
 	cp debian/kdelibs3.override debian/tmp/usr/share/lintian/overrides/kdelibs3
+	cp debian/libarts.override debian/tmp/usr/share/lintian/overrides/libarts
 	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
@@ -123,7 +124,6 @@ binary-arch:  build
 	dh_fixperms -a
 	chmod 644 debian/tmp/etc/pam.d/kde debian/tmp/usr/share/lintian/overrides/*
 	chmod 4755 debian/libarts/usr/bin/artswrapper
-	#dh_suidregister -plibarts usr/bin/artswrapper
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a

@@ -24,3 +24,4 @@ usr/bin/artsshell
 usr/share/man/man1/mcopidl*
 usr/share/man/man1/arts*
 usr/share/doc/kde/HTML/arts*
+usr/share/lintian/overrides/libarts

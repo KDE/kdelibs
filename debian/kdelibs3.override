@@ -119,8 +119,7 @@ kdelibs3: shlib-missing-in-control-file kimg_xview usr/lib/kde2/kimg_xview.so
 kdelibs3: shlib-missing-in-control-file kded usr/lib/kded.so
 kdelibs3: ldconfig-symlink-missing-for-shlib usr/lib/kde2/kio_https.so usr/lib/kde2/kio_https-nossl.so kio_https.so
 kdelibs3: shlib-missing-in-control-file libkpac usr/lib/kde2/libkpac.so
-kdelibs3: non-dev-pkg-with-shlib-symlink usr/lib/libksasl.so.3.0.0 usr/lib/libksasl.so
-kdelibs3: shlib-missing-in-control-file libksasl usr/lib/libksasl.so.3.0.0
+kdelibs3: shlib-missing-in-control-file libksasl usr/lib/libksasl.so
 kdelibs3: shlib-missing-in-control-file ksasl_auth_cram usr/lib/ksasl_auth_cram.so
 kdelibs3: shlib-missing-in-control-file ksasl_auth_plain usr/lib/ksasl_auth_plain.so
 kdelibs3: shlib-missing-in-control-file kbzip2filter usr/lib/kde2/kbzip2filter.so
