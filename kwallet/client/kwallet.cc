@@ -617,7 +617,7 @@ void Wallet::walletOpenResult(int id) {
 
 
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder) {
-DCOPReply r = DCOPRef("kded", "kwalletd").call("fodlerDoesNotExist", wallet, folder);
+DCOPReply r = DCOPRef("kded", "kwalletd").call("folderDoesNotExist", wallet, folder);
 bool rc = true;
 	if (r.isValid()) {
 		r.get(rc);
