@@ -139,5 +139,6 @@ AC_OUTPUT(Makefile \
 	po/Makefile \
 	toolbar/Makefile \
 	doc/Makefile \
-	doc/kfile/Makefile )
+	doc/kfile/Makefile \
+	doc/kspell/Makefile )
 
