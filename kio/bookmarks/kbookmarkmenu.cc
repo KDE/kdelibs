@@ -609,7 +609,7 @@ void KBookmarkMenu::fillBookmarkMenu()
           new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
                              m_actionCollection, false,
                              m_bAddBookmark, QString::null );
-       connect( subMenu, SIGNAL( openBookmark( const QString &, Qt::Buttonstate ) ),
+       connect( subMenu, SIGNAL( openBookmark( const QString &, Qt::ButtonState ) ),
                 this, SIGNAL( openBookmark( const QString &, Qt::ButtonState ) ));
        m_lstSubMenus.append(subMenu);
 
