@@ -76,7 +76,7 @@ void TextSlave::printSelection(const Font *f, QPainter *p, RenderStyle* style, i
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
     f->drawText(p, m_x + tx + _offset, m_y + ty, m_text + startPos, _len, 
-		/* ### */0, m_reversed ? QPainter::RTL : QPainter::LTR);
+		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR);
     p->restore();
 }
 
@@ -561,7 +561,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
 	    if (s->m_text && s->m_len > 0)
 		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, s->m_text, s->m_len, 
-			       0 /* ### */, s->m_reversed ? QPainter::RTL : QPainter::LTR);
+			       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 
             if(d != TDNONE)
             {
@@ -782,7 +782,7 @@ short RenderText::baselinePosition( bool firstLine ) const
         ( lineHeight( firstLine ) - fm.height() ) / 2;
 }
 
-void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
+void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int spaceAdd)
 {
     // ### should not be needed!!!
     if(len == 0 || (len == 1 && *(str->s+from) == '\n') ) return;
@@ -808,7 +808,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
     TextSlave *s = new TextSlave(x, y, ch, len,
                                  baselinePosition( firstLine ),
-                                 width, reverse, firstLine);
+                                 width, reverse, spaceAdd, firstLine);
 
     if(m_lines.count() == m_lines.size())
         m_lines.resize(m_lines.size()*2+1);

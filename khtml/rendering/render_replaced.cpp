@@ -109,7 +109,7 @@ short RenderReplaced::baselinePosition( bool ) const
     return height()+marginTop()+marginBottom();
 }
 
-void RenderReplaced::position(int x, int y, int, int, int, bool, bool)
+void RenderReplaced::position(int x, int y, int, int, int, bool, bool, int)
 {
     m_x = x + marginLeft();
     m_y = y + marginTop();

@@ -387,7 +387,7 @@ public:
     virtual bool hasOverhangingFloats() { return false; }
 
     // positioning of inline childs (bidi)
-    virtual void position(int, int, int, int, int, bool, bool) {}
+    virtual void position(int, int, int, int, int, bool, bool, int) {}
 
     enum SelectionState {
         SelectionNone,

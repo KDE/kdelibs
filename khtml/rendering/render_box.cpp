@@ -361,7 +361,7 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
     }
 }
 
-void RenderBox::position(int x, int y, int, int, int, bool, bool)
+void RenderBox::position(int x, int y, int, int, int, bool, bool, int)
 {
     m_x = x + marginLeft();
     m_y = y;

@@ -139,7 +139,7 @@ void RenderTable::setStyle(RenderStyle *_style)
     collapseBorders = style()->borderCollapse();
 }
 
-void RenderTable::position(int x, int y, int, int, int, bool, bool)
+void RenderTable::position(int x, int y, int, int, int, bool, bool, int)
 {
     //for inline tables only
     m_x = x + marginLeft();

@@ -416,7 +416,7 @@ enum EWhiteSpace {
 };
 
 enum ETextAlign {
-    LEFT, RIGHT, CENTER, JUSTIFY, KONQ_CENTER
+    TAAUTO, LEFT, RIGHT, CENTER, JUSTIFY, KONQ_CENTER
 };
 
 enum ETextTransform {

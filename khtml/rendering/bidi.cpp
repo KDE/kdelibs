@@ -42,6 +42,7 @@ static QPtrList<BidiRun> *sruns = 0;
 static QChar::Direction dir;
 static bool adjustEmbeddding = false;
 static bool emptyRun = true;
+static int numSpaces;
 
 static void embed( QChar::Direction d );
 
@@ -319,6 +320,8 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 
     dir = QChar::DirON;
     emptyRun = true;
+    
+    numSpaces = 0;
 
     BidiIterator current = start;
     BidiIterator last = current;
@@ -585,6 +588,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
             // ### implement rule L1
             break;
         case QChar::DirWS:
+	    numSpaces++;
         case QChar::DirON:
             break;
         default:
@@ -814,26 +818,49 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     int availableWidth = lineWidth(m_height);
     switch(style()->textAlign()) {
     case LEFT:
+	numSpaces = 0;
         break;
     case JUSTIFY:
-        if(endEmbed->basicDir == QChar::DirL)
+        if(numSpaces != 0 && !current.atEnd() && !current.obj->isBR() )
             break;
+	// fall through
+    case TAAUTO:
+	numSpaces = 0;
         // for right to left fall through to right aligned
+	if ( endEmbed->basicDir == QChar::DirL )
+	    break;
     case RIGHT:
         x += availableWidth - totWidth;
+	numSpaces = 0;
         break;
     case CENTER:
     case KONQ_CENTER:
         int xd = (availableWidth - totWidth)/2;
         x += xd>0?xd:0;
+	numSpaces = 0;
         break;
     }
     while ( r ) {
 #if BIDI_DEBUG > 1
         kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " yPos=" << r->vertical << endl;
 #endif
-        r->obj->position(x, r->vertical, r->start, r->stop - r->start, r->width, r->level%2, firstLine);
-        x += r->width;
+	int spaceAdd = 0;
+	if ( numSpaces > 0 ) {
+	    if ( r->obj->isText() ) {
+		// get number of spaces in run
+		int spaces = 0;
+		for ( int i = r->start; i < r->stop; i++ )
+		    if ( static_cast<RenderText *>(r->obj)->text()[i].direction() == QChar::DirWS )
+			spaces++;
+		if ( spaces > numSpaces ) // should never happen...
+		    spaces = numSpaces;
+		spaceAdd = (availableWidth - totWidth)*spaces/numSpaces;
+		numSpaces -= spaces;
+		totWidth += spaceAdd;
+	    }
+	}
+        r->obj->position(x, r->vertical, r->start, r->stop - r->start, r->width, r->level%2, firstLine, spaceAdd);
+        x += r->width + spaceAdd;
         r = runs.next();
     }
 

@@ -5,22 +5,43 @@
 
 using namespace khtml;
 
-void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, int width, QPainter::TextDirection d ) const
+void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, int toAdd, QPainter::TextDirection d ) const
 {
     // ### fixme for RTL
-    if ( !letterSpacing && !wordSpacing || d == QPainter::RTL ) {
+    if ( !letterSpacing && !wordSpacing && !toAdd ) {
 	// simply draw it
 	p->drawText( x, y, QConstString(str, len).string(), len, d );
     } else {
+	int numSpaces = 0;
+	if ( toAdd ) {
+	    for( int i = 0; i < len; i++ )
+		if ( str[i].direction() == QChar::DirWS )
+		    numSpaces++;
+	}
+	    
 	QConstString cstr( str, len );
 	QString s( cstr.string() );
+	if ( d == QPainter::RTL ) {
+	    x += width( str, len ) + toAdd;
+	}
 	for( int i = 0; i < len; i++ ) {
-	    p->drawText( x, y, s, i, 1, d );
-	    x += fm.charWidth( s, i );
+	    int chw = fm.charWidth( s, i );
 	    if ( letterSpacing )
-		x += letterSpacing;
-	    if ( wordSpacing && str[i].isSpace() )
-		x += wordSpacing;
+		chw += letterSpacing;
+	    if ( (wordSpacing || toAdd) && str[i].isSpace() ) {
+		chw += wordSpacing;
+		if ( numSpaces ) {
+		    int a = toAdd/numSpaces;
+		    chw += a;
+		    toAdd -= a;
+		    numSpaces--;
+		}
+	    }
+	    if ( d == QPainter::RTL )
+		x -= chw;
+	    p->drawText( x, y, s, i, 1, d );
+	    if ( d != QPainter::RTL )
+		x += chw;
 	}
     }
 }
