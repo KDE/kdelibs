@@ -30,35 +30,16 @@
 #include <qpushbutton.h>
 #include <kmessagebox.h>
 #include <qlayout.h>
+#include <qregexp.h>
 
 #include <kapplication.h>
 #include <klocale.h>
+#include <kextsock.h>
+#include <kdebug.h>
 
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
 
-
-#define	LONGTOIN(x)	(*(struct in_addr*)(&(x)))
-#define	INTOLONG(x)	((unsigned long)((x).s_addr))
-
-// For Sun Solaris, maybe others
-//
-//
-#ifndef INADDR_NONE
-#define INADDR_NONE	((unsigned int)-1)
-#endif
-
-unsigned long getIP();
-unsigned long getIPStart(unsigned long IP);
-unsigned long getIPStop(unsigned long IP);
-unsigned long getIPStep();
+QString localRootIP();
 
 //----------------------------------------------------------------------------------------
 
@@ -89,9 +70,7 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	portlabel->setBuddy(port_);
 	toutlabel->setBuddy(tout_);
 
-	QString	IPTest = inet_ntoa(LONGTOIN(util->start_));
-	int 	p = IPTest.findRev('.');
-	mask_->setText(IPTest.left(p));
+	mask_->setText(util->root_);
 	port_->insertItem("631");
 	port_->insertItem("9100");
 	port_->insertItem("9101");
@@ -126,9 +105,20 @@ void SocketConfig::done(int result)
 {
 	if (result == Accepted)
 	{
-		QString	test(mask_->text() + ".1"), msg;
-		if (inet_addr(test.latin1()) == INADDR_NONE)
+		QString	msg;
+		QRegExp	re("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})");
+		if (!re.exactMatch(mask_->text()))
 			msg = i18n("Wrong subnetwork specification.");
+		else
+		{
+			for (int i=1; i<=3; i++)
+				if (re.cap(i).toInt() >= 255)
+				{
+					msg = i18n("Wrong subnetwork specification.");
+					break;
+				}
+		}
+
 		bool 	ok(false);
 		int 	v = tout_->text().toInt(&ok);
 		if (!ok || v <= 0)
@@ -150,84 +140,52 @@ void SocketConfig::done(int result)
 KMWSocketUtil::KMWSocketUtil()
 {
 	printerlist_.setAutoDelete(true);
-	unsigned long	IP = getIP();
-	start_ = getIPStart(IP);
-	stop_ = getIPStop(IP);
+	root_ = localRootIP();
 	port_ = 9100;
 	timeout_ = 50;
 }
 
-bool KMWSocketUtil::checkPrinter(const char *host, int port)
+bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostname)
 {
-	struct hostent	*ent = gethostbyname(host);
-	if (ent)
+	KExtendedSocket	sock(IPstr, port, KExtendedSocket::inetSocket|KExtendedSocket::streamSocket);
+	bool	result(false);
+	sock.setTimeout(0, timeout_ * 1000);
+	sock.setBlockingMode(true);
+	if (sock.connect() == 0)
 	{
-		unsigned long	IP = *(unsigned long*)(ent->h_addr);
-		return checkPrinter(IP,port);
-	}
-	return false;
-}
-
-bool KMWSocketUtil::checkPrinter(unsigned long IP, int port)
-{
-	struct sockaddr_in	sin;
-	int	sock;
-	bool	val(false);
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons(port);
-	sin.sin_addr = *(struct in_addr*)&IP;
-	sock = ::socket(AF_INET,SOCK_STREAM,0);
-	if (sock < 0) return false;
-	fcntl(sock,F_SETFL,fcntl(sock,F_GETFL)|O_NONBLOCK);
-	if (::connect(sock,(struct sockaddr*)&sin,sizeof(sin)) < 0)
-	{
-		if (errno == EINPROGRESS)
+		if (hostname)
 		{
-			struct timeval	tout = {0, timeout_*1000};
-			fd_set	wfd;
-			FD_ZERO(&wfd);
-			FD_SET(sock,&wfd);
-			if (::select(sock+1,0,&wfd,0,&tout) <= 0)
-				goto end;
-			int	res;
-			socklen_t	len = sizeof(res);
-			getsockopt(sock,SOL_SOCKET,SO_ERROR,(char *)&res,&len);
-			if (res != 0) goto end;
+			QString	portname;
+			KExtendedSocket::resolve((KSocketAddress*)(sock.peerAddress()), *hostname, portname);
 		}
-		else goto end;
+		result = true;
 	}
-	val = true;
-end:	::close(sock);
-	return val;
+	sock.close();
+	return result;
 }
 
 bool KMWSocketUtil::scanNetwork(QProgressBar *bar)
 {
 	printerlist_.setAutoDelete(true);
 	printerlist_.clear();
-	unsigned long	IP = getIP();
-	if (start_ == 0) start_ = getIPStart(IP);
-	if (stop_ == 0) stop_ = getIPStop(IP);
-	unsigned long	step = getIPStep();
-	int	n = (stop_-start_)/step+1;
-	if (bar) bar->setTotalSteps(n);
-	for (unsigned long ip=start_,count=0;ip<=stop_ && count <= 255;ip+=step,count++)
+	int	n(254);
+	if (bar)
+		bar->setTotalSteps(n);
+	for (int i=1; i<n; i++)
 	{
-		if (checkPrinter(ip,port_))
+		QString	IPstr = root_ + "." + QString::number(i);
+		QString	hostname;
+		if (checkPrinter(IPstr, port_, &hostname))
 		{ // we found a printer at this address, create SocketInfo entry in printer list
 			SocketInfo	*info = new SocketInfo;
-			info->IP = inet_ntoa(LONGTOIN(ip));
+			info->IP = IPstr;
 			info->Port = port_;
-			// look for printer name
-			struct hostent	*print = gethostbyaddr((char*)&ip,sizeof(ip),AF_INET);
-			if (print) info->Name = print->h_name;
-			// add it to list
+			info->Name = hostname;
 			printerlist_.append(info);
 		}
 		if (bar)
 		{
-			bar->setProgress(count);
-//			kapp->processEvents(10);
+			bar->setProgress(i);
 			kapp->flushX();
 		}
 	}
@@ -239,10 +197,7 @@ void KMWSocketUtil::configureScan(QWidget *parent)
 	SocketConfig	*dlg = new SocketConfig(this,parent);
 	if (dlg->exec())
 	{
-		QString	IPTest(dlg->mask_->text()+".1");
-		int 	IP = inet_addr(IPTest.latin1());
-		start_ = getIPStart(IP);
-		stop_ = getIPStop(IP);
+		root_ = dlg->mask_->text();
 		port_ = dlg->port_->currentText().toInt();
 		timeout_ = dlg->tout_->text().toInt();
 	}
@@ -250,28 +205,22 @@ void KMWSocketUtil::configureScan(QWidget *parent)
 
 //----------------------------------------------------------------------------------------
 
-unsigned long getIP()
+QString localRootIP()
 {
 	char	buf[256];
-	struct hostent	*host;
-	gethostname(buf,255);
-	host = gethostbyname(buf);
-	if (host) return (*(unsigned long*)(host->h_addr));
-	else return 0xFFFFFFFF;
+	gethostname(buf, 255);
+	QPtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
+	infos.setAutoDelete(true);
+	if (infos.count() > 0)
+	{
+		QString	IPstr = infos.first()->address()->pretty();
+		int	p = IPstr.find(' ');
+		IPstr.truncate(p);
+		p = IPstr.findRev('.');
+		IPstr.truncate(p);
+		return IPstr;
+	}
+	return QString::null;
 }
 
-unsigned long getIPStart(unsigned long IP)
-{
-	return ((inet_addr("255.255.255.1") & IP) | inet_addr("0.0.0.1"));
-}
-
-unsigned long getIPStop(unsigned long IP)
-{
-	return (inet_addr("0.0.0.254") | IP);
-}
-
-unsigned long getIPStep()
-{
-	return (inet_addr("0.0.0.1"));
-}
 #include "kmwsocketutil.moc"

@@ -61,8 +61,7 @@ class KMWSocketUtil
 public:
 	KMWSocketUtil();
 
-	bool checkPrinter(const char *host, int port);
-	bool checkPrinter(unsigned long IP, int port);
+	bool checkPrinter(const QString& host, int port, QString* hostname = 0);
 
 	const QPtrList<SocketInfo>* printerList() { return &printerlist_; }
 	bool scanNetwork(QProgressBar *bar = 0);
@@ -71,7 +70,7 @@ public:
 
 private:
 	QPtrList<SocketInfo>	printerlist_;
-	unsigned long		start_, stop_;
+	QString			root_;
 	int			port_;
 	int			timeout_;	// in milliseconds
 };

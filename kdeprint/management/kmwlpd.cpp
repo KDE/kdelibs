@@ -30,15 +30,8 @@
 #include <kdebug.h>
 #include <qlineedit.h>
 #include <kmessagebox.h>
+#include <kextsock.h>
 
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <unistd.h>
-
-static int openConnection(const char *host);
 static bool checkLpdQueue(const char *host, const char *queue);
 
 //********************************************************************************************************
@@ -65,14 +58,11 @@ bool KMWLpd::isValid(QString& msg)
 	}
 
 	// check LPD queue
-kdDebug() << "checking LPD queue" << endl;
 	if (!checkLpdQueue(text(0).latin1(),text(1).latin1()))
 	{
-kdDebug() << "Invalid queue" << endl;
 		if (KMessageBox::warningYesNo(this, i18n("Can't find queue %1 on server %2! Do you want to continue anyway?").arg(text(1)).arg(text(0))) == KMessageBox::No)
 			return false;
 	}
-kdDebug() << "Valid queue" << endl;
 	return true;
 }
 
@@ -80,68 +70,35 @@ void KMWLpd::updatePrinter(KMPrinter *p)
 {
 	QString	dev = QString::fromLatin1("lpd://%1/%2").arg(text(0)).arg(text(1));
 	p->setDevice(KURL(dev));
-kdDebug() << "update end" << endl;
 }
 
 //*******************************************************************************************************
 
-int openConnection(const char *rhost)
-{
-	int	sock;
-	struct hostent	*host;
-	struct servent	*serv;
-	struct sockaddr_in	sin;
-
-	if (!rhost) return -1;
-	host = gethostbyname(rhost);
-	if (!host) return -1;
-	serv = getservbyname("printer","tcp");
-	if (!serv) return -1;
-	memset(&sin,0,sizeof(sin));
-	if (host->h_length > (int)sizeof(sin.sin_addr))
-		host->h_length = sizeof(sin.sin_addr);
-	memcpy((caddr_t)&sin.sin_addr,host->h_addr,host->h_length);
-	sin.sin_family = host->h_addrtype;
-	sin.sin_port = serv->s_port;
-
-	sock = socket(AF_INET,SOCK_STREAM,0);
-	if (sock < 0) return -1;
-	// host connecting
-	if (::connect(sock,(struct sockaddr*)(&sin),sizeof(sin)) < 0) return -1;
-	return sock;
-}
-
 bool checkLpdQueue(const char *host, const char *queue)
 {
-	int	sock = openConnection(host);
-	if (sock < 0) return false;
+	KExtendedSocket	sock(host, "printer", KExtendedSocket::streamSocket);
+	sock.setBlockingMode(true);
+	if (sock.connect() != 0)
+		return false;
 
 	char	res[64] = {0};
 	snprintf(res,64,"%c%s\n",(char)4,queue);
-kdDebug() << "write: " << res << endl;
-	if ((int)::write(sock,res,strlen(res)) != (int)strlen(res))
-	{
-kdDebug() << "connection closed" << endl;
-		close(sock);
+	if (sock.writeBlock(res, strlen(res)) != strlen(res))
 		return false;
-	}
-
+	
 	char	buf[1024] = {0};
 	int	n, tot(0);
-kdDebug() << "reading" << endl;
-	while ((n=::read(sock,res,63)) > 0)
+	while ((n = sock.readBlock(res, 63)) > 0)
 	{
 		res[n] = 0;
 		tot += n;
 		if (tot > 1024)
 			break;
 		else
-			strcat(buf,res);
+			strcat(buf, res);
 	}
-kdDebug() << "bytes read: " << buf << endl;
-kdDebug() << "closing connection" << endl;
-	close(sock);
-kdDebug() << "returning status: " << !(strlen(buf) == 0 || strstr(buf,"unknown printer") != NULL) << endl;
-	if (strlen(buf) == 0 || strstr(buf,"unknown printer") != NULL) return false;
-	else return true;
+	sock.close();
+	if (strlen(buf) == 0 || strstr(buf, "unknown printer") != NULL)
+		return false;
+	return true;
 }
