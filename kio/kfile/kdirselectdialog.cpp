@@ -39,7 +39,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     m_mainLayout = new QVBoxLayout(page, marginHint(), spacingHint());
 
     if ( m_startDir.isEmpty() )
-        m_startDir = QDir::homeDirPath();
+        m_startDir = "/";
 
     // Create dir list
     m_treeView = new KFileTreeView( page );
@@ -67,10 +67,10 @@ KURL KDirSelectDialog::selectDirectory( const QString& startDir,
     KDirSelectDialog myDialog( startDir, localOnly, parent,
                                "kdirselect dialog", true );
     KURL root;
-    root.setPath("/");
+    root.setPath(myDialog.startDir());
 
     KFileTreeView *view = myDialog.view();
-    KFileTreeBranch *rootBranch = view->addBranch( root, "/" );
+    KFileTreeBranch *rootBranch = view->addBranch( root, myDialog.startDir() );
     view->setDirOnlyMode( rootBranch, true );
 
     rootBranch->setOpen(true);

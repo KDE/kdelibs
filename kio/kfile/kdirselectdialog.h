@@ -38,12 +38,13 @@ class KDirSelectDialog : public KDialogBase
 public:
     /**
      * The constructor. Creates a dialog to select a directory (url).
+     * @internal use the static selectDirectory function
      * @param startDir the directory, initially shown
      * @param parent the parent for the dialog, usually 0L
      * @param name the QObject::name
      * @param modal if the dialog is modal or not
      */
-    KDirSelectDialog(const QString& startDir = QString::null, 
+    KDirSelectDialog(const QString& startDir = QString::null,
                      bool localOnly = false,
                      QWidget *parent = 0L,
                      const char *name = 0, bool modal = false);
@@ -66,12 +67,18 @@ public:
      * Creates a KDirSelectDialog, and returns the result.
      * @param startDir the directory, initially shown
      * The tree will display this directory and subdirectories of it.
+     * @param localOnly unused. You can only select paths below the startDir
      * @return The URL selected, or an empty URL if the user cancelled
      * or no URL was selected.
      */
     static KURL selectDirectory( const QString& startDir = QString::null,
                                  bool localOnly = false, QWidget *parent = 0L,
                                  const QString& caption = QString::null);
+
+    /**
+     * @return The path for the root node
+     */
+    QString startDir() const { return m_startDir; }
 
 protected:
     // Layouts protected so that subclassing is easy
