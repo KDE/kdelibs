@@ -45,6 +45,11 @@ KFileSharePrivate::KFileSharePrivate()
 	  SLOT(slotFileChange(const QString &)));
 }
 
+KFileSharePrivate::~KFileSharePrivate()
+{
+  delete m_watchFile;
+}
+
 KFileSharePrivate *KFileSharePrivate::_self=0L;
 
 static KStaticDeleter<KFileSharePrivate> kstFileShare;

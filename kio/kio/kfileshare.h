@@ -29,6 +29,7 @@ class KFileSharePrivate : public QObject
 
 public:
   KFileSharePrivate();
+  ~KFileSharePrivate();
   KDirWatch* m_watchFile;
   static KFileSharePrivate *self();
   static KFileSharePrivate *_self;
