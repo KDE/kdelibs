@@ -694,12 +694,6 @@ void KStandardDirs::addKDEDefaults()
 	 it != kdedirList.end(); it++)
 	addPrefix(*it);
 
-    QString gnomedir(getenv("GNOMEDIR"));
-    if (!gnomedir.isEmpty()) {
-	addPrefix(gnomedir);
-	addResourceDir("apps", gnomedir + "/share/gnome/apps");
-    }
-
     uint index = 0;
     while (types[index] != 0) {
 	addResourceType(types[index], kde_default(types[index]));
