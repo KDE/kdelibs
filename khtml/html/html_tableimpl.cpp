@@ -476,8 +476,9 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         int c;
         c = attr->val()->toInt();
         addColumns(c-totalCols);
-        break;
 #endif
+        break;
+
     }
     case ATTR_ALIGN:
         if (!attr->value().isEmpty())
