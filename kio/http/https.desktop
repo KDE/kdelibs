@@ -5,4 +5,5 @@ protocol=https
 input=none
 output=filesystem
 reading=true
+mimetypefastmode=false
 

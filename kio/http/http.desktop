@@ -5,3 +5,4 @@ protocol=http
 input=none
 output=filesystem
 reading=true
+mimetypefastmode=false
