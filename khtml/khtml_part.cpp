@@ -2610,7 +2610,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
           emit d->m_extension->openURLNotify();
   }
 
-  if ( !child->m_services.contains( mimetype ) )
+  if ( child->m_serviceType != mimetype )
   {
     KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, child->m_services, child->m_params );
 
