@@ -345,7 +345,7 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
         if (text(i) == item)
         {
             sel = i;
-            return;
+            break;
         }
     if (sel == -1 && insert)
     {
