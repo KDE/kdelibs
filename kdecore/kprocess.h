@@ -378,6 +378,7 @@ public:
    * This function may return false in the following cases:
    *
    *     @li The process is not currently running.
+   * This implies that you cannot use this function in Block mode.
    *
    *     @li Communication to stdin has not been requested in the start() call.
    *
@@ -387,16 +388,15 @@ public:
    * Please note that the data is sent to the client asynchronously,
    * so when this function returns, the data might not have been
    * processed by the child process.
+   * That means that you must not free @p buffer or call writeStdin()
+   * again until either a wroteStdin() signal indicates that the
+   * data has been sent or a processExited() signal shows that
+   * the child process is no longer alive.
    *
    * If all the data has been sent to the client, the signal
    * wroteStdin() will be emitted.
    *
-   * Please note that you must not free @p buffer or call writeStdin()
-   * again until either a wroteStdin() signal indicates that the
-   * data has been sent or a processExited() signal shows that
-   * the child process is no longer alive.
-   * @param buffer the buffer to write. Do not free or modify it until
-   * you get a wroteStdin() or processExited() signal
+   * @param buffer the buffer to write
    * @param buflen the length of the buffer
    * @return false if an error has occurred
    **/
