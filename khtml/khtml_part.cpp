@@ -2333,7 +2333,21 @@ void KHTMLPart::findTextNext()
       {
         // Grab text from render object
         QString s;
-        if ( obj->isText() )
+        bool renderAreaText = (obj->parent()->renderName()=="RenderTextArea");
+        bool renderLineText = (obj->parent()->renderName()=="RenderLineEdit");
+        if ( renderAreaText )
+        {
+          khtml::RenderTextArea *parent= static_cast<khtml::RenderTextArea *>(obj->parent());
+          s = parent->text();
+          s = s.replace(0xa0, ' ');
+        }
+        else if ( renderLineText )
+        {
+          khtml::RenderLineEdit *parentLine= static_cast<khtml::RenderLineEdit *>(obj->parent());
+          s = parentLine->widget()->text();
+          s = s.replace(0xa0, ' ');
+        }
+        else if ( obj->isText() )
         {
           s = static_cast<khtml::RenderText *>(obj)->data().string();
           s = s.replace(0xa0, ' ');
