@@ -65,6 +65,7 @@ public:
     mutable KIconLoader	        *_iconLoader;
     
     QString                     _name;
+
 };
 
 #endif 

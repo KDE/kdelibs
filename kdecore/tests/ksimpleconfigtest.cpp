@@ -1,6 +1,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.1.1.1  1999/10/09 17:40:52  kulow
+ * moving tests
+ *
  * Revision 1.4  1999/05/26 11:28:59  kulow
  * some fixes
  *
@@ -38,7 +41,7 @@
 
 int main( int argc, char **argv )
 {
-  KApplication  a( argc, argv );
+  KApplication  a( argc, argv, "kconfigtest" );
 
   KSimpleConfig aConfig( _PATH_TMP"/simpleconfig.cfg" );
 

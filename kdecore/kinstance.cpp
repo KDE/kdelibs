@@ -12,6 +12,8 @@
 KInstance::KInstance( const QString& name )
     : _name( name )
 {
+    if (!KGlobal::_instance)
+      KGlobal::_instance = this;
     _iconLoader = 0;
     _config = 0;
     _dirs = 0;
