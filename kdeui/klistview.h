@@ -162,7 +162,7 @@ public:
   bool dragEnabled() const;
 
   /**
-   * @return true if AutoOpen is enabled.
+   * @return true if AutoOpen is enabled (not implemented currently).
    *
    * @see #setAutoOpen()
    */
@@ -411,7 +411,7 @@ public slots:
   virtual void setDragEnabled(bool b);
 
   /**
-   * Enable/Disable AutoOpen.
+   * Enable/Disable AutoOpen (not implemented currently).
    */
   virtual void setAutoOpen(bool b);
 

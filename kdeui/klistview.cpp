@@ -465,10 +465,17 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
 
   if (e->button() == LeftButton)
     {
+        // if the user clicked into the root decoration of the item, don't try to start a drag!
+        if ( !at
+             || p.x() > header()->cellPos( header()->mapToActual( 0 ) ) +
+                treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin()
+             || p.x() < header()->cellPos( header()->mapToActual( 0 ) ) )
+        {
       d->startDragPos = e->pos();
 
       if (at)
         d->validDrag = true;
+    }
     }
 
   QListView::contentsMousePressEvent( e );
@@ -476,6 +483,9 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
 
 void KListView::contentsMouseMoveEvent( QMouseEvent *e )
 {
+  if (!dragEnabled() || d->startDragPos.isNull() || !d->validDrag)
+      QListView::contentsMouseMoveEvent (e);
+
   QPoint vp = contentsToViewport(e->pos());
   QListViewItem *item = itemAt( vp );
 
@@ -509,8 +519,12 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
       d->validDrag = false;
     }
 
+  /*
   if (!dragOn || d->startDragPos.isNull() || !d->validDrag)
+  {
     QListView::contentsMouseMoveEvent (e);
+  }
+  */
 }
 
 void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
@@ -567,7 +581,6 @@ void KListView::contentsDropEvent(QDropEvent* e)
 
 void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
 {
-
   QList<QListViewItem> items, afterFirsts, afterNows;
   QListViewItem *current=currentItem();
   for (QListViewItem *i = firstChild(), *iNext=0; i != 0; i = iNext)
@@ -675,7 +688,6 @@ void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
     d->validDrag = false;
     d->startDragPos = QPoint();
   }
-
   QListView::contentsMouseReleaseEvent( e );
 }
 
