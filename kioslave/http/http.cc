@@ -376,7 +376,13 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
   // if data is required internally, don't finish,
   // it is processed before we finish()
   if ( !dataInternal )
-    finished();
+  {
+    if ((m_responseCode == 204) &&
+        ((m_request.method == HTTP_GET) || (m_request.method == HTTP_POST)))
+       error(ERR_NO_CONTENT, "");
+    else
+       finished();
+  }
 }
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
@@ -3025,6 +3031,10 @@ bool HTTPProtocol::readHeader()
   {
     return readHeader();
   }
+  if ( m_responseCode == 204 )
+  {
+    return true;
+  }
 
   // We need to try to login again if we failed earlier
   if ( m_bUnauthorized )
@@ -3616,6 +3626,8 @@ void HTTPProtocol::slotData(const QByteArray &d)
  */
 bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {  
+  if (m_responseCode == 204)
+     return true;
   // Note that when dataInternal is true, we are going to:
   // 1) save the body data to a member variable, m_intData
   // 2) _not_ advertise the data, speed, size, etc., through the
