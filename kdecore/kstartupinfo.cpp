@@ -457,10 +457,11 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     if( pid > 0 )
         {
         QCString hostname = get_window_hostname( w_P );
-        if( !hostname.isEmpty())
-            return find_pid( pid, hostname, id_O, data_O, remove_P ) ? Match : NoMatch;
+        if( !hostname.isEmpty()
+            && find_pid( pid, hostname, id_O, data_O, remove_P ))
+            return Match;
+        // try XClass matching , this PID stuff sucks :(
         }
-        // no hostname !?
     // Hard - this app is not even NET_WM compliant
     XClassHint hint;
     if( XGetClassHint( qt_xdisplay(), w_P, &hint ) != 0 )
