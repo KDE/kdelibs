@@ -40,7 +40,7 @@ bin_SCRIPTS = xmlizer
 METASOURCES = AUTO
 
 messages:
-	$(XGETTEXT) *.cpp -o $(podir)/kio_help.pot
+	$(XGETTEXT) *.cpp -o $(podir)/kdebase/kio_help.pot
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/ksgmltools2
