@@ -28,7 +28,7 @@
 #include <qtranslator.h>
 #define QT_NO_TRANSLATION
 #undef Unsorted
-#include <qdir.h> 
+#include <qdir.h>
 #include <qcollection.h>
 #include <qwidgetlist.h>
 #include <qstrlist.h>
@@ -47,6 +47,7 @@
 #include <qpixmapcache.h>
 #include <qtooltip.h>
 #include <qpushbutton.h>
+#include <qstylefactory.h>
 
 #undef QT_NO_TRANSLATION
 #include <kapp.h>
@@ -75,10 +76,6 @@
 #include <qtabbar.h>
 
 #include <kstyle.h>
-#include <qplatinumstyle.h>
-#include <qcdestyle.h>
-#include <qmotifplusstyle.h>
-#include <qsgistyle.h>
 #include <kdestyle.h>
 #include <kstartupinfo.h>
 
@@ -89,8 +86,6 @@
 #include <sys/stat.h>
 #endif
 #include <sys/wait.h>
-
-#include "ltdl.h"
 
 #include "kwin.h"
 
@@ -676,8 +671,6 @@ void KApplication::init(bool GUIenabled)
 
   KApp = this;
 
-  styleHandle = 0;
-  pKStyle = 0;
   smw = 0;
 
   // Initial KIPC event mask.
@@ -705,6 +698,15 @@ void KApplication::init(bool GUIenabled)
     kipcCommAtom = XInternAtom(display, "KIPC_COMM_ATOM", false);
 #endif
 
+    {
+        QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
+        QStringList::Iterator it = plugins.begin();
+        while (it != plugins.end()) {
+            addLibraryPath( *it );
+            ++it;
+        }
+
+    }
     kdisplaySetStyle();
     kdisplaySetFont();
 //    kdisplaySetPalette(); done by kdisplaySetStyle
@@ -1047,7 +1049,7 @@ void KApplication::startKdeinit()
   if (srv.isEmpty())
      return;
   if (kapp)
-    setOverrideCursor( Qt::waitCursor ); 
+    setOverrideCursor( Qt::waitCursor );
   my_system(QFile::encodeName(srv)+" --suicide");
   if (kapp)
     restoreOverrideCursor();
@@ -1426,7 +1428,7 @@ void KApplication::enableStyles()
     if (!useStyles)
     {
         useStyles = true;
-        applyGUIStyle(Qt::WindowsStyle);
+        applyGUIStyle();
     }
 }
 
@@ -1435,148 +1437,42 @@ void KApplication::disableStyles()
     useStyles = false;
 }
 
-void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
-#if QT_VERSION < 300
-    /* Hey, we actually do stuff here now :)
-     * The widgetStyle key is used as a style string. If it matches a
-     * Qt internal style that is used, otherwise it is checked to see
-     * if it matches a lib name in either $(KDEDIR)/lib or
-     * ~/.kde/share/apps/kstyle/modules. If it does we assume it's a style
-     * plugin and try to dlopen and allocate a KStyle. If libtool dlopen
-     * isn't supported that's no problem, plugins just won't work and you'll
-     * be restricted to the internal styles.
-     *
-     * Whenever we create a KStyle object, we have to connect to its signal
-     * destroyed() to make sure we notice its destruction when someone calls
-     * QApplication::setStyle(). He shouldn't do this of course, but we can't
-     * prevent it. (pfeiffer)
-     *
-     * mosfet@jorsm.com
-     */
+void KApplication::applyGUIStyle()
+{
+    if ( !useStyles ) return;
 
-    static bool dlregistered = false;
     KSimpleConfig pConfig(d->styleFile , true );
     QString oldGroup = pConfig.group();
     pConfig.setGroup("KDE");
-    QString styleStr = pConfig.readEntry("widgetStyle",
-                                          QPixmap::defaultDepth() > 8 ? "hcstyle.la" : "Default");
+    QString styleStr = pConfig.readEntry("WidgetStyle",
+                                          QPixmap::defaultDepth() > 8 ? "HighColor" : "Default");
 
-    void *oldHandle = styleHandle;
-
-    if(pKStyle)
-        disconnect(pKStyle, SIGNAL(destroyed()), this, 0);
-
+#if 0
+    // default style is not yet ported - currently looking into it
     if(styleStr == "Default"){
         pKStyle = new KDEStyle;
         setStyle(pKStyle);
         styleHandle=0;
     }
-    else if(styleStr == "Platinum" || styleStr == "CDE" || styleStr == "Motif"
-         || styleStr == "MotifPlus") {
-        pKStyle=0;
-        styleHandle=0;
-        setStyle(QStyleFactory::create(styleStr));
-    }
-    else if(styleStr == "Windows 95"){
-        pKStyle=0;
-        styleHandle=0;
-        setStyle(QStyleFactory::create("Windows"));
+    else
+#endif
+        if(styleStr == "Windows 95"){
+        setStyle("Windows");
     }
     else if(styleStr == "Qt SGI"){
-        pKStyle=0;
-        styleHandle=0;
-        setStyle(QStyleFactory::create("SGI"));
+        setStyle("SGI");
     }
-    else if(useStyles){
-        if(!dlregistered){
-            dlregistered = true;
-            lt_dlinit();
-        }
+    else {
+        qDebug( "trying to open styleStr..: %s", styleStr.latin1() );
 
-        if(!locate("lib", styleStr).isNull()) {
-            styleStr = locate("lib", styleStr);
-            styleHandle = lt_dlopen(QFile::encodeName(styleStr));
-        }
-        else {
-            kdWarning() << "Unable to find style plugin " << styleStr << endl;
-            pKStyle = new KDEStyle;
-            setStyle(pKStyle);
-            styleHandle=0;
-            connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
-            kdisplaySetPalette(); // Don't forget to set palette though
-            return;
-        }
-
-        if(!styleHandle){
-            kdWarning() << "Unable to open style plugin " << styleStr
-                    << "(" << lt_dlerror() << ")\n";
-
-            pKStyle = new KDEStyle;
-            setStyle(pKStyle);
-        }
-        else{
-            lt_ptr alloc_func;
-            if (styleStr.find("basicstyle.la",0,false)==-1)
-                alloc_func=lt_dlsym((lt_dlhandle)styleHandle,"allocate");
-            else
-                alloc_func= lt_dlsym((lt_dlhandle)styleHandle,"allocateCustomTheme");
-
-            if(!alloc_func){
-	        kdWarning() << "Unable to init style plugin " << styleStr
-		                      << "(" << lt_dlerror() << ")\n";
-                pKStyle = new KDEStyle;
-                setStyle(pKStyle);
-                lt_dlclose((lt_dlhandle)styleHandle);
-                styleHandle = 0;
-            }
-            else{
-                if (styleStr.find("basicstyle.la",0,false)!=-1)
-                {
-                 KStyle* (*alloc_ptr)(QString &configFile);
-                 alloc_ptr = (KStyle* (*)(QString &configFile))(alloc_func);
-                 pKStyle=alloc_ptr(d->styleFile);
-                }
-                else
-                    {
-                     KStyle* (*alloc_ptr)();
-                     alloc_ptr = (KStyle* (*)())(alloc_func);
-                     pKStyle = alloc_ptr();
-                    }
-               if(pKStyle){
-                  setStyle(pKStyle);
-               }
-               else{
-                    kdWarning() << "Style plugin unable to allocate style.\n";
-                    pKStyle = new KDEStyle;
-                    setStyle(pKStyle);
-                    lt_dlclose((lt_dlhandle)styleHandle);
-                    styleHandle = 0;
-                }
-            }
-        }
-    }
-    else{
-        pKStyle = new KDEStyle;
-        setStyle(pKStyle);
-        styleHandle=0;
+        QStyle* sp = QStyleFactory::create( styleStr );
+        qDebug( "got %p", sp );
+        if ( sp )
+            setStyle(sp);
     }
 
-    if(oldHandle){
-        lt_dlclose((lt_dlhandle)oldHandle);
-    }
-    if(pKStyle)
-        connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
-
-#endif // QT_VERSION < 300
-    // WABA: Reread palette from config file.
+    // Reread palette from config file.
     kdisplaySetPalette();
-}
-
-// in case someone calls QApplication::setStyle(), our kstyle would get deleted
-// without us noticing...
-void KApplication::kstyleDestroyed()
-{
-    pKStyle = 0L;
 }
 
 QString KApplication::caption() const
@@ -1727,7 +1623,7 @@ void KApplication::kdisplaySetStyle()
 {
     if (useStyles)
     {
-        applyGUIStyle(WindowsStyle);
+        applyGUIStyle();
         emit kdisplayStyleChanged();
         emit appearanceChanged();
     }
@@ -1837,7 +1733,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
    KConfig config("emaildefaults");
    config.setGroup( QString::fromLatin1("PROFILE_Default") );
    QString command = config.readEntry("EmailClient");
-   
+
    if (command.isEmpty() || command == QString::fromLatin1("kmail"))
      command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A %t");
 
@@ -1893,7 +1789,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
      else
      if ((*it).find("%A") >= 0)
        (*it).replace(QRegExp("%A"), attach);
-   
+
    QString error;
 
    if (kdeinitExec(cmd, cmdTokens, &error))
@@ -1962,7 +1858,7 @@ startServiceInternal( const QCString &function,
        envs.append( QCString("DISPLAY=") + dpystring );
    }
 #endif
-   stream << envs;   
+   stream << envs;
    if( !startup_id.isNull()) // not kdeinit_exec
        stream << startup_id;
 
@@ -2067,12 +1963,6 @@ KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
 {
    return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)",
         name, args, error, 0, pid, QCString());
-}
-
-// Old deprecated useless method
-bool KApplication::kdeFonts(QStringList &) const
-{
-    return false;
 }
 
 QString KApplication::tempSaveName( const QString& pFilename ) const
@@ -2222,7 +2112,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     // set a short icon text
     XSetIconName( qt_xdisplay(), topWidget->winId(), caption().utf8() );
-    
+
     // set the app startup notification window property
     KStartupInfo::setWindowStartupId( topWidget->winId(), startupId());
 #endif
@@ -2252,7 +2142,7 @@ void KApplication::read_app_startup_id()
     d->startup_id = id.id();
 #endif
 }
-    
+
 int KApplication::random()
 {
    static int init = false;

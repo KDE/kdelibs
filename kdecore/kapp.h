@@ -32,7 +32,6 @@
 
 class KConfig;
 class KCharsets;
-class KStyle;
 class DCOPClient;
 class DCOPObject;
 
@@ -50,6 +49,8 @@ struct _IceConn;
 class QPopupMenu;
 class QStrList;
 class KSessionManaged;
+class KStyle;
+
 #define kapp KApplication::kApplication()
 
 class KApplicationPrivate;
@@ -425,18 +426,6 @@ public:
                 QString *error=0, int *pid = 0 );
 
   /**
-   * Retrieve the current KDE style object if a plugin is in use,
-   *  or else NULL if a Qt internal style is being used.
-   *
-   */
-  KStyle* kstyle() const {return pKStyle;}
-
-  /**
-   * @deprecated Don't use.
-   */
-  bool kdeFonts(QStringList &) const;
-
-  /**
    * Return a text for the window caption.
    *
    * This may be set by
@@ -445,6 +434,11 @@ public:
    */
   QString caption() const;
 
+  /**
+   * @deprecated
+   */
+  KStyle* kstyle() const { return 0; }
+          
   /**
    * Build a caption that contains the application name along with the
    * @ref userCaption() using a standard layout.
@@ -600,7 +594,6 @@ private slots:
   void dcopFailure(const QString &);
   void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
-  void kstyleDestroyed();
 
 private:
   KApplicationPrivate* d;
@@ -610,9 +603,7 @@ private:
   bool bSessionManagement;
   QPixmap aIconPixmap;
   QPixmap aMiniIconPixmap;
-  KStyle *pKStyle; // A KDE style object if available (mosfet)
   bool useStyles;
-  void* styleHandle; // A KDE style dlopen handle, if used
   QWidget *smw;
 
   void init( bool GUIenabled );
@@ -762,7 +753,7 @@ private:
   void kdisplaySetPalette();
   void kdisplaySetStyle();
   void kdisplaySetFont();
-  void applyGUIStyle(GUIStyle);
+  void applyGUIStyle();
 
   int captionLayout;
 
@@ -833,116 +824,3 @@ private:
 
 #endif
 
-// $Log$
-// Revision 1.234  2001/08/31 07:17:25  mueller
-// increase version number
-//
-// Revision 1.233  2001/08/29 15:25:38  bero
-// _WS_X11_ -> Q_WS_X11
-// _WS_QWS_ -> Q_WS_QWS
-//
-// Revision 1.232  2001/08/26 11:35:23  faure
-// Never heard that a public header file should never include config.h ?
-// I can't see why you included it, in addition. _WS_blah_ are all defined in Qt,
-// not in config.h
-//
-// Revision 1.231  2001/08/26 10:03:46  bero
-// Allow to build with Qt/Embedded
-//
-// Revision 1.230  2001/08/08 20:34:41  hausmann
-// - there's no point in returning a const QCString (note the lack of a
-//   reference :)
-// -  const QCString startupId() const;
-// +  QCString startupId() const;
-//
-// Revision 1.229  2001/08/08 14:19:15  hausmann
-// - cleaned up the '### KDE 3.0: merge with above' methods (a
-//   const QCString &startup_id with a default of "" was added to
-//   startServiceBy*)
-// - made _KShared_count() const and made the count member private
-//   (it's just too annoying that when inheriting from KShared you can't have
-//    a member named 'count' :)
-//
-// Revision 1.228  2001/08/06 17:17:42  mueller
-// increasing version number
-//
-// Revision 1.227  2001/07/29 06:03:38  waba
-// -#define KDE_VERSION_STRING "2.2beta1"
-// +#define KDE_VERSION_STRING "2.2"
-//
-// Revision 1.226  2001/07/20 22:25:10  waba
-// Add KDE 3.0 todo items.
-//
-// Revision 1.225  2001/07/17 01:00:56  waba
-// * Single "start kdeinit" function.
-// * Show busy cursor to make the wait more pleasant :-]
-//
-// Revision 1.224  2001/07/08 19:05:59  faure
-// Committing patch by Lubos to fix startup notification for the kfmclient case.
-// Not that I can really review it, but who can ? :)
-//
-// Revision 1.223  2001/06/25 20:07:37  waba
-// -#define KDE_VERSION_STRING "2.2alpha2"
-// +#define KDE_VERSION_STRING "2.2beta1"
-//
-// Revision 1.222  2001/06/11 19:29:00  malte
-// alternate background colour belongs into KGlobalSettings, not KApplication
-//
-// Revision 1.221  2001/06/11 02:48:26  malte
-// Alternate background in listviews
-//
-// Revision 1.220  2001/06/10 21:37:39  ellis
-// Add support for quit logout (i.e., without confirmation)
-//
-// Revision 1.219  2001/06/06 20:47:50  lunakl
-// More work on app startup notification.
-//
-// Revision 1.218  2001/05/31 09:36:46  mueller
-// Xinerama support, based on patch by  Balaji Ramani <balaji@spinnakernet.com>
-//
-// Revision 1.217  2001/05/17 20:08:40  waba
-// KDE 2.2alpha2
-//
-// Revision 1.216  2001/05/03 00:15:40  mueller
-// update version string
-//
-// Revision 1.215  2001/04/13 01:37:37  waba
-// -#define KDE_VERSION_STRING "2.1.9 >= 20010310"
-// +#define KDE_VERSION_STRING "2.2alpha1"
-//
-// Revision 1.214  2001/03/10 15:45:59  faure
-// While I'm at it, update the date.
-//
-// Revision 1.213  2001/03/10 15:36:44  faure
-// Removing the code from kdeFonts() and marking it as deprecated
-// (just in case some stupid app is still calling it)
-//
-// Revision 1.212  2001/02/26 13:52:24  dnaber
-// document the fact that invokeHTMLHelp() is deprecated
-//
-// Revision 1.211  2001/02/23 21:26:20  waba
-// -#define KDE_VERSION 210
-// -#define KDE_VERSION_STRING "2.1"
-// +#define KDE_VERSION 220
-// +#define KDE_VERSION_STRING "2.1.9 >= 20010223"
-//
-// Revision 1.210  2001/02/19 11:05:10  faure
-// 2.1, and fixing a docu bug found by werner
-//
-// Revision 1.209  2001/02/16 23:54:27  pfeiffer
-// KDoc fixes from Otto Bruggeman <bruggie@home.nl>
-//
-// Revision 1.208  2001/01/30 21:19:21  coolo
-// moved --geometry from qt options to kde options and support it in kmainwindow.
-// the qt option only works for setMainWidget calls and is called -geometry not
-// --geometry as --help-qt says (the same with every qt option)
-//
-// Revision 1.207  2001/01/28 14:47:59  mueller
-// make HEAD distinguishable from beta2
-//
-// Revision 1.206  2001/01/22 11:56:47  faure
-// 2.1 Beta 2
-//
-// Revision 1.205  2001/01/08 10:22:38  hausmann
-// - made ref() and deref() public slots
-//

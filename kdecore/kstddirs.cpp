@@ -55,7 +55,7 @@ template class QDict<QStringList>;
 static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
-			      "wallpaper", "lib", "pixmap", "templates", "module", 0 };
+			      "wallpaper", "lib", "pixmap", "templates", "module", "qtplugins", 0 };
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -697,7 +697,9 @@ QString KStandardDirs::kde_default(const char *type) {
     if (!strcmp(type, "lib"))
 	return "lib/";
     if (!strcmp(type, "module"))
-	return "lib/kde2/";
+	return "lib/kde/";
+    if (!strcmp(type, "qtplugins"))
+        return "lib/kde/plugins";
     qFatal("unknown resource type %s", type);
     return QString::null;
 }

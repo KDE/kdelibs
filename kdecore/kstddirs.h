@@ -80,6 +80,7 @@ class KStandardDirsPrivate;
 * @li locale - Translation files for @ref KLocale.
 * @li mime - Mime types.
 * @li module - Module (dynamically loaded library).
+* @li qtplugins - Qt plugins (dynamically loaded objects for Qt)
 * @li services - Services.
 * @li servicetypes - Service types.
 * @li sound - Application sounds.
