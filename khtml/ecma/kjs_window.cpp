@@ -703,7 +703,7 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
       return;
     }
     case _Location:
-      goURL(exec, value.toString(exec).qstring());
+      goURL(exec, value.toString(exec).qstring(), false /*don't lock history*/);
       return;
     case Onabort:
       if (isSafeScript(exec))
