@@ -130,16 +130,12 @@ dnl CXXFLAGS="$CXXFLAGS -ansi -pedantic"
 KDE_CHECK_ANSI
 
 AC_OUTPUT(Makefile \
-	kio/Makefile \
 	kdecore/Makefile \
 	kdeui/Makefile \
 	kimgio/Makefile \
 	khtmlw/Makefile \
-	khtml/Makefile \
 	kdetest/Makefile \
 	kfile/Makefile \
-	kdeutils/Makefile \
-	kio/Makefile \
 	jscript/Makefile \
 	kfmlib/Makefile \
 	mediatool/Makefile \
