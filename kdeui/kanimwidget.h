@@ -106,8 +106,8 @@ public:
 
   /**
    * Set the list of icons to use for the animation.  They will all be
-   * loaded using the BarIcon() function so make sure that they are
-   * toolbar icons... or at least loadable using BarIcon()
+   * loaded using the @p BarIcon() function so make sure that they are
+   * toolbar icons... or at least loadable using @p BarIcon().
    *
    * @param icons The icons to use for the animation
    */

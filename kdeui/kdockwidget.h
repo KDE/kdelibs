@@ -412,19 +412,19 @@ public:
   /** 
    * @return if it may be possible to hide this.  
    * There are reasons that it's impossible:
-   * <UL><LI>it is a (tab) group</LI>
-   * <LI>it is invisible, already ;-)</LI>
-   * <LI>the parent of this is the KDockMainWindow</LI>
-   * <LI>it isn't able to dock to another widget</LI></UL>
+   * @li it is a (tab) group
+   * @li it is already invisible ;-)
+   * @li the parent of this is the KDockMainWindow
+   * @li it isn't able to dock to another widget
    */
   bool mayBeHide();
   
   /** 
    * @return if it may be possible to show this
    * There are reasons that it's impossible:
-   * <UL><LI>it is a (tab) group</LI>
-   * <LI>it is visible, already ;-)</LI>
-   * <LI>the parent of this is the KDockMainWindow</LI></UL>
+   * @li it is a (tab) group
+   * @li it is already visible ;-)
+   * @li the parent of this is the KDockMainWindow
    */
   bool mayBeShow();
 
@@ -489,9 +489,9 @@ protected:
   /**
    * Check some conditions and show or hide the dockwidget header (drag panel).
    * The header is hidden if:
-   * <LU><LI>the parent widget is the KDockMainWindow</LI>
-   * <LI>this is a (tab) group dockwidget</LI>
-   * <LI>it is not able to dock to another dockwidgets</LI>
+   * @li the parent widget is the KDockMainWindow
+   * @li this is a (tab) group dockwidget
+   * @li it is not able to dock to another dockwidget
    */
   void updateHeader();
 
@@ -619,10 +619,10 @@ friend class KDockMainWindow;
 public:
   /**
    * Constructs a dockmanager. Some initialization happen:
-   * <UL><LI>It installs an event filter for the main window,</LI>
-   * <LI>a control list for dock objects</LI>
-   * <LI>a control list for menu items concerning to menus provided by the dockmanager</LI>
-   * <LI>Some state variables are set</LI></UL>
+   * @li It installs an event filter for the main window,
+   * @li a control list for dock objects
+   * @li a control list for menu items concerning to menus provided by the dockmanager
+   * @li Some state variables are set
    *
    * @param mainWindow the main window controlled by this
    * @param name the internal QOject name
@@ -919,10 +919,10 @@ public:
   /**
    * Constructs a dockmainwindow. It calls its base class constructor and does additional things concerning
    * to the dock stuff:
-   * <UL><LI>information about the dock state of this' children gets initialized</LI>
-   * <LI>a dockmanager is created...</LI>
-   * <LI>...and gets initialized</LI>
-   * <LI>the main dockwidget is set to 0L</LI></UL>
+   * @li information about the dock state of this' children gets initialized
+   * @li a dockmanager is created...
+   * @li ...and gets initialized
+   * @li the main dockwidget is set to 0
    *
    * @param name object name
    */

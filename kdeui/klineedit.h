@@ -45,41 +45,41 @@
  * modes on the fly based on their preference.
  *
  * To support these new features KLineEdit also emits a few more additional
- * signals.  These are: @ref completion, @ref previousMatch, @ref nextMatch
- * and @ref returnPressed.  The completion signal can be connected to a
+ * signals.  These are: @ref completion(), @ref previousMatch(), @ref nextMatch()
+ * and @ref returnPressed().  The completion signal can be connected to a
  * slot that will assist the user in filling out the remaining text.  The
  * two iteration signals are intended to be used to iterate through the list
  * of all possible matches whenever there is more than one match for the given
- * text.  The returnPressed signal is the same as QLineEdit's except it provides
+ * text.  The @ref returnPressed() signal is the same as QLineEdit's except it provides
  * the current text in the widget as its argument whenever appropriate.
  *
  * This widget by default creates a completion object whenever you invoke
- * the member function @ref completionObject for the first time.  You can
- * also assign your own completion object through @ref setCompletionObject
+ * the member function @ref completionObject() for the first time.  You can
+ * also assign your own completion object through @ref setCompletionObject()
  * function if you want to control the kind of completion object that needs
  * to be used.  Additionally, to make this widget more functional, KLineEdit
  * will automatically handle the iteration and completion signals internally
  * when a completion object is created through either one of the previously
  * defined methods.  If you do not need this feature, simply use @ref
- * KCompletionBase::setHandleSignals or the boolean paramter when calling
- * @p setCompletionObject, to turn it off.
+ * KCompletionBase::setHandleSignals() or the boolean paramter when calling
+ * @ref setCompletionObject(), to turn it off.
  *
  * The default key-bindings for the completion and iteration are determined
  * from the global settings in @ref KStdAccel.  However, these values can
  * be set locally overriding the global settings.  Afterwards, simply
- * invoking @ref useGlobalKeyBindings allows you to immediately default the
+ * invoking @ref useGlobalKeyBindings() allows you to immediately default the
  * bindings back to the global settings again.  Also if you are interested
  * in only defaulting the key-bindings individually for each action, simply
- * call the @ ref KCompletionBase::setKeyBinding method with only the first
+ * call the @ref KCompletionBase::setKeyBinding() method with only the first
  * argument set to the appropriate feature.  For example, after locally
  * customizing the key-binding that invokes a manual completion simply calling
  * @ref setKeyBinding( KCompletionBase::TextCompletion ), without the second
  * argument, will result in the completion key being set to 0. This will then
  * force the key-event filter to use the global value.
  *
- * NOTE: if the EchoMode for this widget is set to something other than
+ * NOTE: if the @ref EchoMode for this widget is set to something other than
  * @ref QLineEdit::Normal, the completion mode will always be defaulted to
- * KGlobal::CompletionNone.  This is done purposefully to guard against protected
+ * @ref KGlobal::CompletionNone.  This is done purposefully to guard against protected
  * entries such as passwords being cached in KCompletion's list.  Hence, if the
  * EchoMode is not QLineEdit::Normal, the completion mode is automatically disabled.
  *
@@ -105,7 +105,7 @@
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
  * </pre>
  *
- * Other miscelanous function calls :
+ * @sect Miscellaneous function calls :
  *
  * <pre>
  * // Tell the widget not to handle completion and
@@ -184,7 +184,7 @@ public:
     * Note that when this function is invoked with its argument
     * set to @p true, then both the context menu and the completion
     * menu item are enabled.  If you do not want to the completion
-    * item to be visible simply invoke @ref hideModechanger right
+    * item to be visible simply invoke @ref hideModechanger() right
     * after calling this method.  Also by default, the context
     * menu is automatically created if this widget is editable. Thus
     * you need to call this function with the argument set to false
@@ -224,7 +224,7 @@ signals:
     * Signal emitted when the key-binding set for
     * the next text match is pressed.
     *
-    * See @ref KCompletionBase::setKeyBinding.
+    * See @ref KCompletionBase::setKeyBinding().
     *
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
@@ -235,7 +235,7 @@ signals:
     * Signal emitted when the key-binding set for
     * the previous text match is pressed.
     *
-    * See @ref KCompletionBase::setKeyBinding.
+    * See @ref KCompletionBase::setKeyBinding().
     *
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone or EchoMode is NOT normal.
@@ -284,14 +284,14 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See @ref QLineEdit::keyPressEvent.
+    * See @ref QLineEdit::keyPressEvent().
     */
     virtual void keyPressEvent( QKeyEvent * );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See @ref QLineEdit::mousePressEvent.
+    * See @ref QLineEdit::mousePressEvent().
     */
     virtual void mousePressEvent( QMouseEvent * );
 

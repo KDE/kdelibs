@@ -29,10 +29,10 @@
 
 /** 
  * Restricted Editline: Only selected Characters are valid input. 
- * All other characters will be discarded and the signal invalidChar() 
+ * All other characters will be discarded and the signal @ref invalidChar() 
  * will be emitted for each of them. Valid characters can be passed 
  * through a pointer to the constructor or call of a public method.
- * The default key binding of QLineEdit is still in effect.
+ * The default key binding of @ref QLineEdit is still in effect.
  *
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
  * @version 0.0.1
@@ -46,7 +46,7 @@ public:
 
   /**
    * Constructor: This contructor takes three - optional - arguments.
-   *  The first two parameters are simply passed on to QLineEdit.
+   *  The first two parameters are simply passed on to @ref QLineEdit.
    *  @param parent   pointer to the parent widget
    *  @param name     pointer to the name of this widget
    *  @param valid    pointer to set of valid characters 
@@ -83,6 +83,3 @@ private:
 };
 
 #endif // KRESTRICTEDLINE_H
-
-
-

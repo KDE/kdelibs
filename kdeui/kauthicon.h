@@ -35,7 +35,7 @@ class KAuthIconPrivate;
  * something, and why that is.
  *
  * One of the most useful things you can do with this is connect
- * authChanged(bool) to setEnabled(bool) for a widget to turn it on and
+ * @ref authChanged(bool) to @ref setEnabled(bool) for a widget to turn it on and
  * off depending on the status of whatever it is you are monitoring.
  *
  * @short ABC for authorization icon widgets

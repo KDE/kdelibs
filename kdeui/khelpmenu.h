@@ -46,13 +46,17 @@ class KHelpMenuPrivate;
  *
  * The usage is simple:
  *
+ * <pre>
  * mHelpMenu = new KHelpMenu( this, <someText> );
  * kmenubar->insertItem(i18n("&Help"), mHelpMenu->menu() );
+ * </pre>
  *
  * or if you just want to open a dialog box:
  *
+ * <pre>
  * mHelpMenu = new KHelpMenu( this, <someText> );
  * connect( this, SIGNAL(someSignal()), mHelpMenu,SLOT(mHelpMenu->aboutKDE()));
+ * </pre>
  *
  * IMPORTANT:
  * The first time you use mHelpMenu->menu(), a QPopupMenu object is
@@ -64,10 +68,12 @@ class KHelpMenuPrivate;
  * The KHelpMenu object will be deleted when its parent is destroyed but you
  * can delete it yourself if you want. The code below will always work.
  *
+ * <pre>
  * MyClass::~MyClass()
  * {
  *   delete mHelpMenu;
  * }
+ * </pre>
  *
  *
  * Using your own "about application" dialog box:
@@ -141,7 +147,7 @@ class KHelpMenu : public QObject
      * @param aboutAppText User definable string that is used in the
      *        application specific dialog box. Note: The help menu will
      *        not open this dialog box if you don't define a string. See
-     *        @ref showAboutApplication for more information.
+     *        @ref showAboutApplication() for more information.
      * @param showWhatsThis Decides whether a "Whats this" entry will be
      *        added to the dialog.
      * 
@@ -194,7 +200,7 @@ class KHelpMenu : public QObject
     /**
      * Opens an application specific dialog box. The dialog box will display
      * the string that was defined in the constructor. If that string was 
-     * empty the @ref showAboutApplication is emitted instead.
+     * empty the @ref showAboutApplication() is emitted instead.
      */
     void aboutApplication();
 
@@ -231,10 +237,11 @@ class KHelpMenu : public QObject
 
   signals:
     /**
-     * This signal is emitted from the @ref aboutApplication if no 
+     * This signal is emitted from @ref aboutApplication() if no 
      * "about application" string has been defined. The standard 
      * application specific dialog box that is normally activated in 
-     * @ref aboutApp will not be displayed when this signal is emitted.
+     * @ref aboutApplication() will not be displayed when this signal 
+     * is emitted.
      */
     void showAboutApplication();
 
@@ -254,5 +261,3 @@ class KHelpMenu : public QObject
 
 
 #endif
-
-
