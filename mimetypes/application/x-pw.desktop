@@ -1,6 +1,7 @@
 [Desktop Entry]
 MimeType=application/x-pw
 Comment=Pathetic Writer
+Comment[af]=PATETIESE SKRYWER
 Comment[cs]=Pathetic writer
 Comment[da]=Patetisk skribent
 Comment[de]=Kümmerlicher Schreiber
@@ -9,16 +10,17 @@ Comment[es]=Documento de Pathetic Writer
 Comment[hu]=Jegyzetelő alkalmazás
 Comment[is]=Pathetic Writer-skjal
 Comment[ja]=パセティックライター
+Comment[ko]=패스틱 라이터
 Comment[lv]=Pathetic Rakstītājs
 Comment[no]=Registrerer notiser
-Comment[pt]=Escritor Patético
 Comment[pt_BR]=Redator patético
-Comment[ro]=Programul Pathetic Writer
+Comment[pt]=Escritor patético
 Comment[ru]=Файл Pathetic Writer
 Comment[sl]=Patetični pisec
 Comment[sr]=Patetični pisac
 Comment[tr]=Pathetic Writer(beş para etmez yazıcı)
 Comment[uk]=Патетичний писака
+Comment[vi]=Trình viết Pathetic 
 Comment[zh_CN.GB2312]=可怜的作家
 Comment[zh_TW.Big5]=Pathetic 筆記本
 Icon=unknown

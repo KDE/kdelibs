@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=MimeType
 Comment=Ogg Vorbis audio
+Comment[af]=OGG VORBIS AUDIO
 Comment[az]=Ogg Vorbis səsi
 Comment[bg]=Звуков файл Ogg Vorbis
 Comment[br]=Klevet Ogg Vorbis
@@ -8,7 +9,7 @@ Comment[ca]=Àudio Ogg Vorbis
 Comment[de]=Ogg Vorbis-Audio
 Comment[el]=Ήχος Ogg Vorbis
 Comment[eo]=Ogg-Vorbis-sonoro
-Comment[es]=Archivo de audio Ogg Vorbis
+Comment[es]=Sonido Ogg Vorbis
 Comment[et]=Ogg Vorbis audiofail
 Comment[fi]=Ogg Vorbis -ääni
 Comment[fr]=Fichier Ogg Vorbis
@@ -30,8 +31,10 @@ Comment[pt]=Audio Ogg Vorbis
 Comment[ru]=Звуковой файл Ogg Vorbis
 Comment[sl]=Zvok Ogg Vorbis
 Comment[sv]=Ogg Vorbis ljud
+Comment[ta]=Ogg Vorbis ´Ä¢
 Comment[tr]=Ogg Vorbis sesi
 Comment[uk]=Аудіо Ogg Vorbis
+Comment[vi]=Audio Ogg Vorbis 
 Comment[zh_CN.GB2312]=Ogg Vorbis 音频文件
 Comment[zh_TW.Big5]=Ogg Vorbis 音效
 MimeType=application/x-ogg
