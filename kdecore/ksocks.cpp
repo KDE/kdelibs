@@ -196,7 +196,7 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
              << "/usr/local/lib/"
              << "/usr/local/socks5/lib/"
              << "/opt/socks5/lib/";
-   _libNames << "libsocks.so"                  // Dante
+   _libNames << "libdsocks.so"                 // Dante
              << "libsocks5.so"                 // ?
              << "libsocks5_sh.so";             // NEC
 
@@ -211,7 +211,7 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
       QString thisone = *it;
       if (thisone[thisone.length()-1] != '/') thisone += "/";
       _libPaths << thisone;
-      kdDebug() << "KSocks added a new library path: " << thisone << endl;
+      kdDebug(171) << "KSocks added a new library path: " << thisone << endl;
    }
 
    // Load the proper libsocks and KSocksTable
@@ -253,14 +253,14 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
       if (_socksLib) {
          if ((_meth == 1 || _meth == 2) &&
              _socksLib->symbol("S5LogShowThreadIDS") != NULL) {  // NEC SOCKS
-            kdDebug() << "Found NEC SOCKS" << endl;
+            kdDebug(171) << "Found NEC SOCKS" << endl;
             _st = new KNECSocksTable;
             _useSocks = true;
             _hasSocks = true;
             break;
          } else if ((_meth == 1 || _meth == 3) && 
                     _socksLib->symbol("sockaddr2ruleaddress") != NULL) { //Dante
-            kdDebug() << "Found Dante SOCKS" << endl;
+            kdDebug(171) << "Found Dante SOCKS" << endl;
             _st = new KDanteSocksTable;
             _useSocks = true;
             _hasSocks = true;
@@ -337,7 +337,7 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
                     _socksLib->symbol(it.data().latin1());
           break;
          default:
-          kdDebug() << "KSocks got a symbol it doesn't know about!" << endl;
+          kdDebug(171) << "KSocks got a symbol it doesn't know about!" << endl;
           break;
          }
       }
@@ -346,7 +346,7 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
       if (F_SOCKSinit) {
         int rc = (*F_SOCKSinit)((char *)"KDE");
         if (rc != 0) stopSocks();
-        else  kdDebug() << "SOCKS has been activated!" << endl;
+        else  kdDebug(171) << "SOCKS has been activated!" << endl;
       } else {
         stopSocks();
       }
