@@ -102,28 +102,6 @@ public:
 
 // -------------------------------------------------------------------------
 
-class HTMLIFrameElementImpl : public HTMLElementImpl
-{
-public:
-    HTMLIFrameElementImpl(DocumentImpl *doc);
-
-    ~HTMLIFrameElementImpl();
-
-    virtual const DOMString nodeName() const;
-    virtual ushort id() const;
-
-    virtual tagStatus startTag() { return IFRAMEStartTag; }
-    virtual tagStatus endTag() { return IFRAMEEndTag; }
-
-    virtual void parseAttribute(khtml::Attribute *attr);
-    virtual void attach(KHTMLView *w);
-
-    QString url;
-    QString name;
-};
-
-// -------------------------------------------------------------------------
-
 class HTMLModElementImpl : public HTMLElementImpl
 {
 public:

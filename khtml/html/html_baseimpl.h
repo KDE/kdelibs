@@ -34,6 +34,7 @@ class KHTMLView;
 
 namespace khtml {
     class RenderFrame;
+    class RenderPartObject;
 }
 
 namespace DOM {
@@ -66,6 +67,7 @@ protected:
 class HTMLFrameElementImpl : public HTMLElementImpl
 {
     friend class khtml::RenderFrame;
+    friend class khtml::RenderPartObject;
 public:
     HTMLFrameElementImpl(DocumentImpl *doc);
 
@@ -175,6 +177,27 @@ public:
     virtual tagStatus endTag() { return HTMLEndTag; }
 
 };
+
+
+// -------------------------------------------------------------------------
+
+class HTMLIFrameElementImpl : public HTMLFrameElementImpl
+{
+public:
+    HTMLIFrameElementImpl(DocumentImpl *doc);
+
+    ~HTMLIFrameElementImpl();
+
+    virtual const DOMString nodeName() const;
+    virtual ushort id() const;
+
+    virtual tagStatus startTag() { return IFRAMEStartTag; }
+    virtual tagStatus endTag() { return IFRAMEEndTag; }
+
+    //    virtual void parseAttribute(khtml::Attribute *attr);
+    virtual void attach(KHTMLView *w);
+};
+
 
 }; //namespace
 

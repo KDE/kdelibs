@@ -36,6 +36,7 @@
 #include "css/cssproperties.h"
 #include "misc/loader.h"
 #include "misc/htmlhashes.h"
+#include "dom/dom_string.h"
 
 #include <kurl.h>
 #include <kdebug.h>
@@ -201,7 +202,7 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 void HTMLFrameElementImpl::attach(KHTMLView *w)
 {
     kdDebug( 6031 ) << "Frame::attach" <<endl;
-    
+
     m_style = document->styleSelector()->styleForElement( this );
 
     khtml::RenderObject *r = _parent->renderer();
@@ -228,59 +229,6 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
 
     NodeBaseImpl::attach( w );
     return;
-#if 0
-    kdDebug( 6030 ) << "Frame::attach" << endl;
-    m_style = document->styleSelector()->styleForElement(this);
-
-    // needed for restoring frames
-    bool open = true;
-
-    parentWidget = w;
-    if(w)
-    {	
-	// we need a unique name for every frame in the frameset. Hope that's unique enough.
-	if(name.isEmpty())
-	{
-	    QString tmp;
-	    tmp.sprintf("0x%p", this);
-	    name = DOMString(tmp) + url;
-	    kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
-	}
-	view = w->getFrame(name.string());
-	if(view)
-	    open = false;
-	else
-	    view = w->createFrame(w->viewport(), name.string());
-	view->setIsFrame(true);
-    }
-    if(url != 0 && open)
-    {
-      //KURL u(w->url(), url.string());
-      QString str = url.string();
-	view->openURL(w->completeURL(str));
-    }
-
-    if(!parentWidget || !view) return;
-
-    int x,y;
-    getAbsolutePosition(x, y);
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6030 ) << "adding frame at " << x << "/" << y << endl;
-    kdDebug( 6030 ) << "frame size " << width << "/" << descent << endl;
-#endif
-    w->addChild(view, x, y);
-    view->resize(width, descent);
-
-    if(!frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(_parent))->frameBorder()))
-	view->setFrameStyle(QFrame::NoFrame);
-    view->setVScrollBarMode(scrolling);
-    view->setHScrollBarMode(scrolling);
-    if(marginWidth != -1) view->setMarginWidth(marginWidth);
-    if(marginHeight != -1) view->setMarginHeight(marginHeight);
-
-    view->show();
-    kdDebug( 6030 ) << "adding frame" << endl;
-#endif
 }
 
 void HTMLFrameElementImpl::detach()
@@ -352,41 +300,7 @@ void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
 	HTMLElementImpl::parseAttribute(attr);
     }
 }
-/*
-void HTMLFrameSetElementImpl::positionFrames(bool deep)
-{
-    int r;
-    int c;
-    NodeImpl *child = _first;
-    if(!child) return;
 
-    int yPos = 0;
-
-    for(r = 0; r < totalRows; r++)
-    {
-	int xPos = 0;
-	for(c = 0; c < totalCols; c++)
-	{
-	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
-	
-	    if ( !e->renderer() )
-	      continue;
-	
-	    e->renderer()->setXPos(xPos);
-	    e->renderer()->setYPos(yPos);
-	    e->setWidth(colWidth[c]);
-	    e->setAvailableWidth(colWidth[c]);
-	    e->setDescent(rowHeight[r]);
-	    if(deep)
-		e->layout(deep);
-	    xPos += colWidth[c] + border;
-	    child = child->nextSibling();
-	    if(!child) return;
-	}
-	yPos += rowHeight[r] + border;
-    }
-}
-*/
 void HTMLFrameSetElementImpl::attach(KHTMLView *w)
 {
     m_style = document->styleSelector()->styleForElement( this );
@@ -406,14 +320,6 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     NodeBaseImpl::attach( w );
-#if 0
-    m_style = document->styleSelector()->styleForElement(this);
-
-    // ensure the htmlwidget knows we have a frameset, and adjusts the width accordingly
-    w->layout();
-    view = w;
-    NodeBaseImpl::attach(w);
-#endif
 }
 
 NodeImpl *HTMLFrameSetElementImpl::addChild(NodeImpl *child)
@@ -578,5 +484,80 @@ const DOMString HTMLHtmlElementImpl::nodeName() const
 ushort HTMLHtmlElementImpl::id() const
 {
     return ID_HTML;
+}
+
+
+// -------------------------------------------------------------------------
+
+HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentImpl *doc) : HTMLFrameElementImpl(doc)
+{
+}
+
+HTMLIFrameElementImpl::~HTMLIFrameElementImpl()
+{
+}
+
+const DOMString HTMLIFrameElementImpl::nodeName() const
+{
+    return "IFRAME";
+}
+
+ushort HTMLIFrameElementImpl::id() const
+{
+    return ID_IFRAME;
+}
+
+#if 0
+void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
+{
+  DOM::DOMStringImpl *stringImpl = attr->val();
+  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+  switch (  attr->id )
+  {
+    case ATTR_SRC:
+      url = val;
+      break;
+    case ATTR_NAME:
+      name = val;
+      break;
+    case ATTR_WIDTH:
+      addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
+      break;
+    case ATTR_HEIGHT:
+      addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
+      break;
+    // ### MORE ATTRIBUTES
+    default:
+      HTMLElementImpl::parseAttribute( attr );
+  }
+}
+#endif
+
+void HTMLIFrameElementImpl::attach(KHTMLView *w)
+{
+  m_style = document->styleSelector()->styleForElement( this );
+
+  khtml::RenderObject *r = _parent->renderer();
+
+  if ( !r )
+    return;
+
+  // we need a unique name for every frame in the frameset. Hope that's unique enough.
+  if(name.isEmpty())
+  {
+    QString tmp;
+    tmp.sprintf("0x%p", this);
+    name = DOMString(tmp) + url;
+    kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
+  }
+
+  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, this );
+  m_render = renderFrame;
+  m_render->setStyle(m_style);
+  m_render->ref();
+  r->addChild( m_render, _next ? _next->renderer() : 0 );
+
+
+  NodeBaseImpl::attach( w );
 }
 

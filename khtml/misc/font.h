@@ -30,7 +30,7 @@ namespace khtml {
 
     /**
      * This class implements the CSS2 font selection specifications.
-     * 
+     *
      * QFont can only handle one character set at a time, but for HTML
      * we might need to switch charsets of the font (or even font families)
      * for HTML pages mixing several languages.
@@ -70,10 +70,23 @@ namespace khtml {
 	enum Stretch { UltraCondensed, ExtraCondensed, Condensed,
 		       SemiCondensed, StretchNormal, SemiExpanded, Expanded,
 		       ExtraExpanded, UltraExpanded };
-	Stretch stretch() const { return Normal; }
+	Stretch stretch() const { return StretchNormal; }
 	void setStretch(Stretch) {};
 
+	// replacement for QFontMetrics::width
+	int width(const QString &str) const;
+	
+	// replacement for QPainter::drawText()
+	// complex = true means we have to use a different QFont than the standard one
+	// (or several fonts) to print the string 
+	void drawText(QPainter *p, int x, int y, const QString &str, bool complex = false) const;
+
+	// do we need complex text processing?
+	bool complexText(const QString &text) const;
+	
     private:
+	void setDefaultFont();
+	
 	// the font that will be used for most of the characters in the
 	// document. It's charset will be either the one specified
 	// by the meta tag or by the language.
@@ -84,6 +97,7 @@ namespace khtml {
 	Variant m_variant;
 	QFont::Weight m_weight;
 	int m_size;
+	QFont::CharSet m_defCharset;
     };
 
 };

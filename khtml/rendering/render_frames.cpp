@@ -25,7 +25,7 @@
 #include "render_frames.h"
 #include "html_baseimpl.h"
 #include "html_objectimpl.h"
-#include "html_inlineimpl.h"
+//#include "html_inlineimpl.h"
 #include "htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -462,8 +462,8 @@ void RenderFrame::setWidget( QWidget *widget )
 	QScrollView *view = static_cast<QScrollView *>(widget);
 	if(!m_frame->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(m_frame->_parent))->frameBorder()))
 	    view->setFrameStyle(QFrame::NoFrame);
-	if(m_frame->scrolling == QScrollView::AlwaysOff)
-	    kdDebug(6031) << "no scrollbar"<<endl;
+	//	if(m_frame->scrolling == QScrollView::AlwaysOff)
+	//    kdDebug(6031) << "no scrollbar"<<endl;
 	view->setVScrollBarMode(m_frame->scrolling);
 	view->setHScrollBarMode(m_frame->scrolling);
 	if(view->inherits("KHTMLView")) {
@@ -541,9 +541,17 @@ void RenderPartObject::close()
   } else {
       assert(m_obj->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_obj);
-      url = o->url;
+      url = o->url.string();
       if( url.isEmpty()) return;
-      static_cast<KHTMLView *>(m_view)->part()->requestFrame( this, url, o->name );
+      KHTMLView *v = static_cast<KHTMLView *>(m_view);
+      v->setMarginHeight(o->marginHeight);
+      v->setMarginWidth(o->marginWidth);
+      if(!o->frameBorder)
+	  v->setFrameStyle(QFrame::NoFrame);
+      v->setVScrollBarMode(o->scrolling);
+      v->setHScrollBarMode(o->scrolling);
+
+      v->part()->requestFrame( this, url, o->name.string() );
   }
 
   layout();

@@ -22,31 +22,71 @@
  */
 #include <font.h>
 
+#include <qfontdatabase.h>
+
+#include <khtmldata.h>
+#include <kglobal.h>
+#include <kcharsets.h>
+
 using namespace khtml;
 
-Font::Font() 
+Font::Font()
 {
+    m_defCharset = QFont::Latin1;
 }
 
 
-void Font::setFamilies(const QStringList &)
+void Font::setFamilies(const QStringList &f)
 {
+    m_families = f;
 }
 
-void Font::setStyle(Style)
+void Font::setStyle(Style s)
 {
+    m_style = s;
 }
 	
-void Font::setVariant(Variant)
+void Font::setVariant(Variant v)
+{
+    m_variant = v;
+}
+
+void Font::setWeight(QFont::Weight w)
+{
+    m_weight = w;
+}
+
+void Font::setSize(int s)
+{
+    m_size = s;
+}
+
+void Font::setDefaultFont()
+{
+    QFontDatabase db;
+
+    KCharsets *kc = KGlobal::charsets();
+    QString style = "Normal";
+    if(m_weight >= QFont::Bold && m_style > Normal)
+	style = "Bold Italic";
+    else if(m_weight >= QFont::Bold)
+	style = "Bold";
+    else if(m_style > Normal) // ### oblique == italic
+	style = "Italic";
+    m_font = db.font(m_families[0], style, m_size, kc->xCharsetName(m_defCharset));
+}
+
+int Font::width(const QString &str) const
+{
+    // ###
+    return 0;
+}
+
+void Font::drawText(QPainter *p, int x, int y, const QString &str, bool complex = false) const
 {
 }
 
-void Font::setWeight(QFont::Weight)
+bool Font::complexText(const QString &text) const
 {
 }
-
-void Font::setSize(int)
-{
-}
-
 

@@ -25,6 +25,7 @@
 #include "dom_string.h"
 #include "html_inline.h"
 #include "html_inlineimpl.h"
+#include "html_baseimpl.h"
 using namespace DOM;
 
 #include "htmlhashes.h"
