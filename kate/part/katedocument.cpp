@@ -243,6 +243,12 @@ KateDocument::~KateDocument()
   //
   // remove file from dirwatch
   //
+  if (!m_oldFile.isEmpty() && (m_oldFile != m_file))
+  {
+    KateFactory::self()->dirWatch ()->removeFile (m_file);
+    m_oldFile = "";
+  }
+  
   if (m_url.isLocalFile() && !m_file.isEmpty())
     KateFactory::self()->dirWatch ()->removeFile (m_file);
 
@@ -2346,7 +2352,12 @@ bool KateDocument::openFile(KIO::Job * job)
   // add the file to dirwatch
   //
   if (m_url.isLocalFile() && !m_file.isEmpty())
+  {
+    // save this new url
+    m_oldFile = m_file;
+    
     KateFactory::self()->dirWatch ()->addFile (m_file);
+  }
 
   //
   // to houston, we are not modified
@@ -2501,9 +2512,15 @@ bool KateDocument::saveFile()
   //
   // remove the m_file before saving from dirwatch
   //
+  if (!m_oldFile.isEmpty() && (m_oldFile != m_file))
+  {
+    KateFactory::self()->dirWatch ()->removeFile (m_file);
+    m_oldFile = "";
+  }
+  
   if (m_url.isLocalFile() && !m_file.isEmpty())
     KateFactory::self()->dirWatch ()->removeFile (m_file);
-
+  
   //
   // start with worst case, we had no success
   //
@@ -2611,6 +2628,12 @@ bool KateDocument::closeURL()
   //
   // remove file from dirwatch
   //
+  if (!m_oldFile.isEmpty() && (m_oldFile != m_file))
+  {
+    KateFactory::self()->dirWatch ()->removeFile (m_file);
+    m_oldFile = "";
+  }
+  
   if (m_url.isLocalFile() && !m_file.isEmpty())
     KateFactory::self()->dirWatch ()->removeFile (m_file);
 
