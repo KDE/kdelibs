@@ -56,7 +56,6 @@
 
 #include "bitmaps.h"
 
-
 bool TransMenuHandler::eventFilter(QObject *obj, QEvent *ev)
 {
     static QWidget w(NULL, NULL,  WType_Popup  | WRepaintNoErase);
@@ -96,31 +95,31 @@ KPixmap * GradientSet::gradient(GradientType type)
     case VSmall:
         gradients[VSmall] = new KPixmap;
         gradients[VSmall]->resize(18, 24);
-        KPixmapEffect::gradient(*gradients[VSmall], c.light(110), c.dark(110),
+        KPixmapEffect::gradient(*gradients[VSmall], c.light(120), c.dark(130),
                                 KPixmapEffect::VerticalGradient);
         break;
     case VMed:
         gradients[VMed] = new KPixmap;
         gradients[VMed]->resize(18, 34);
-        KPixmapEffect::gradient(*gradients[VMed], c.light(110), c.dark(110),
+        KPixmapEffect::gradient(*gradients[VMed], c.light(120), c.dark(130),
                                 KPixmapEffect::VerticalGradient);
         break;
     case VLarge:
         gradients[VLarge] = new KPixmap;
         gradients[VLarge]->resize(18, 64);
-        KPixmapEffect::gradient(*gradients[VLarge], c.light(110), c.dark(110),
+        KPixmapEffect::gradient(*gradients[VLarge], c.light(120), c.dark(130),
                                 KPixmapEffect::VerticalGradient);
         break;
     case HMed:
         gradients[HMed] = new KPixmap;
         gradients[HMed]->resize(34, 18);
-        KPixmapEffect::gradient(*gradients[HMed], c.light(110), c.dark(110),
+        KPixmapEffect::gradient(*gradients[HMed], c.light(120), c.dark(130),
                                 KPixmapEffect::HorizontalGradient);
         break;
     case HLarge:
         gradients[HLarge] = new KPixmap;
         gradients[HLarge]->resize(52, 18);
-        KPixmapEffect::gradient(*gradients[HLarge], c.light(110), c.dark(110),
+        KPixmapEffect::gradient(*gradients[HLarge], c.light(120), c.dark(130),
                                 KPixmapEffect::HorizontalGradient);
         break;
     default:
@@ -175,7 +174,7 @@ void MegaStyle::unPolish(QApplication *app)
 
 
 
-void MegaStyle::polish(QPalette &)
+void MegaStyle::polish(QPalette &/*oldPal*/)
 {
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
@@ -203,6 +202,36 @@ void MegaStyle::polish(QPalette &)
     }
     config->setGroup(oldGrp);
     gDict.clear();
+
+    QColorGroup g = pal.active();
+    int h, s, v;
+    g.background().hsv(&h, &s, &v);
+    radioOnPix = QPixmap(radio_down_xpm);
+    adjustHSV(radioOnPix, h, s);
+    radioOffPix = QPixmap(radio_up_xpm);
+    adjustHSV(radioOffPix, h, s);
+
+    /*
+    QPixmap basePix(32, 32);
+    QColor c = g.base();
+    basePix.fill(c.rgb());
+    QPainter p;
+    p.begin(&basePix);
+    p.setPen(c.dark(103));
+    int y;
+    for(y=0; y < 32; y+=4){
+        p.drawLine(0, y, 31, y);
+        p.drawLine(0, y+1, 31, y+1);
+    }
+    p.end();
+    QBrush brush(g.base(), basePix);
+    oldPal.setBrush(QColorGroup::Base, brush); */
+
+    int contrast = KGlobalSettings::contrast();
+    cHighVal = 100+(2*contrast+4)*16/10;
+    cMidVal = 100+(2*contrast+4)*10;
+
+
 }
 
 void MegaStyle::polish(QWidget *w)
@@ -256,10 +285,11 @@ void MegaStyle::unPolish(QWidget *w)
         w->inherits("KCModule") || w->inherits("ProxyWidget")){
         w->removeEventFilter(this);
         w->setBackgroundPixmap(QPixmap());
+        //w->setPalette(QApplication::palette());
         return;
     }
-    if(!w->ownPalette() && w->backgroundMode() ==
-       QWidget::X11ParentRelative){
+    w->setPalette(QApplication::palette());
+    if(w->backgroundMode() == QWidget::X11ParentRelative){
         if(w->inherits("QPushButton"))
             w->setBackgroundMode(QWidget::PaletteButton);
         else
@@ -301,7 +331,15 @@ bool MegaStyle::eventFilter(QObject *obj, QEvent *ev)
                 KPixmapEffect::gradient(pix, c.light(130), c.dark(150),
                                         KPixmapEffect::VerticalGradient);
                 w->setBackgroundPixmap(pix);
+                /*
+                QPalette pal = w->palette();
+                QBrush brush(pal.active().background(), pix);
+                pal.setBrush(QColorGroup::Background, brush);
+                w->setPalette(pal);*/
             }
+        }
+        else if(ev->type() == QEvent::ApplicationPaletteChange){
+            qWarning("In parent palette change!");
         }
         else if(obj->inherits("KToolBar")){
             if(ev->type() == QEvent::Resize){
@@ -392,11 +430,13 @@ void MegaStyle::drawPushButton(QPushButton *btn, QPainter *p)
     bool sunken = btn->isOn() || btn->isDown();
     QColorGroup g = btn->colorGroup();
     int x = r.x(), y = r.y(), w = r.width(), h = r.height();
+
     if(sunken)
         kDrawBeButton(p, x, y, w, h, g, true,
                       &g.brush(QColorGroup::Mid));
     else {
 	if (btn != highlightWidget) {
+	    // -----
 	    if(highcolor){
 		int x2 = x+w-1;
 		int y2 = y+h-1;
@@ -406,25 +446,16 @@ void MegaStyle::drawPushButton(QPushButton *btn, QPainter *p)
 		p->drawLine(x, y+1, x, y2-1);
 		p->drawLine(x2, y+1, x2, y2-1);
 
-		if(!sunken){
-		    p->setPen(g.light());
-		    p->drawLine(x+2, y+2, x2-1, y+2);
-		    p->drawLine(x+2, y+3, x2-2, y+3);
-		    p->drawLine(x+2, y+4, x+2, y2-1);
-		    p->drawLine(x+3, y+4, x+3, y2-2);
-		}                  
-		else{
-		    p->setPen(g.mid());
-		    p->drawLine(x+2, y+2, x2-1, y+2);
-		    p->drawLine(x+2, y+3, x2-2, y+3);
-		    p->drawLine(x+2, y+4, x+2, y2-1);
-		    p->drawLine(x+3, y+4, x+3, y2-2);
-		}
-		p->setPen(sunken? g.light() : g.mid());
+                p->setPen(g.light());
+                p->drawLine(x+2, y+2, x2-1, y+2);
+                p->drawLine(x+2, y+3, x2-2, y+3);
+                p->drawLine(x+2, y+4, x+2, y2-1);
+                p->drawLine(x+3, y+4, x+3, y2-2);
+
+                p->setPen(g.mid());
 		p->drawLine(x2-1, y+2, x2-1, y2-1);
 		p->drawLine(x+2, y2-1, x2-1, y2-1);
 
-		p->setPen(g.mid());
 		p->drawLine(x+1, y+1, x2-1, y+1);
 		p->drawLine(x+1, y+2, x+1, y2-1);
 		p->drawLine(x2-2, y+3, x2-2, y2-2);
@@ -949,45 +980,22 @@ QStyle::ScrollControl MegaStyle::scrollBarPointOver(const QScrollBar *sb,
 
 QSize MegaStyle::exclusiveIndicatorSize() const
 {
-    return(QSize(13,13));
+    return(QSize(15,15));
 }
 
-void MegaStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
-                                     int h, const QColorGroup &g, bool on,
-                                     bool down, bool)
+void MegaStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int,
+                                       int, const QColorGroup &, bool on,
+                                       bool down, bool)
 {
-    if (lightBmp.isNull())
-    {
-       lightBmp = QBitmap(13, 13, radiooff_light_bits, true);
-       grayBmp = QBitmap(13, 13, radiooff_gray_bits, true);
-       dgrayBmp = QBitmap(13, 13, radiooff_dgray_bits, true);
-    }
-
-    p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
-    kColorBitmaps(p, g, x, y, &lightBmp, &grayBmp,
-                  NULL, &dgrayBmp);
-
-    if(on || down){
-        p->setPen(Qt::black);
-        p->drawLine(5, 4, 7, 4);
-        p->drawLine(4, 5, 4, 7);
-        p->drawLine(5, 8, 7, 8);
-        p->drawLine(8, 5, 8, 7);
-        p->fillRect(5, 5, 3, 3, Qt::black);
-    }
-
+    p->drawPixmap(x, y, on || down ? radioOnPix : radioOffPix);
 }
 
 void MegaStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
-                                         int h, bool)
+                                           int h, bool down)
 {
-    if (maskBmp.isNull())
-    {
-        maskBmp = QBitmap(13, 13, radiomask_bits, true);
-    }
     p->fillRect(x, y, w, h, Qt::color0);
     p->setPen(Qt::color1);
-    p->drawPixmap(x, y, maskBmp);
+    p->drawPixmap(x, y, down ? *radioOnPix.mask() : *radioOffPix.mask());
 }
 
 
@@ -1045,15 +1053,15 @@ void MegaStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
 
 }
 
-void MegaStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int)
+void MegaStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
+                                  int)
 {
-    // needed for some reason by KHtml, even tho it's all filled ;P
     p->fillRect(x, y, w, h, Qt::color1);
 }
 
 void MegaStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
-                         const QColorGroup &g, Orientation orient,
-                         bool, bool)
+                           const QColorGroup &g, Orientation orient,
+                           bool, bool)
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
@@ -1111,76 +1119,37 @@ void MegaStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
     p->drawPoint(x2, y);
     p->drawPoint(x, y2);
     p->drawPoint(x2, y2);
+
 }
 
-// QPlatinumStyle's, without the bg fillRect(no good w/ X11ParentRelative)
 void MegaStyle::drawSliderGroove(QPainter *p,
                                  int x, int y, int w, int h,
-                                 const QColorGroup& g, QCOORD c,
+                                 const QColorGroup& g, QCOORD,
                                  Orientation orient )
 {
-
-    //p->fillRect(x, y, w, h, g.brush( QColorGroup::Background ));
-    if ( orient == Horizontal ) {
-	y = y+c-3;
-	h = 7;
+    // I don't think we need to cache this, horiz and vert gradients
+    // are very fast to make
+    static KPixmap buffer;
+    if(orient == Horizontal){
+        y+=(h-10)/2;
+        h = 10;
+        if(buffer.width() != w || buffer.height() != h){
+            buffer.resize(w-2, h-2);
+            KPixmapEffect::gradient(buffer, Qt::darkRed, Qt::green,
+                                    KPixmapEffect::HorizontalGradient);
+        }
     }
-    else {
-	x = x+c-3;
-	w = 7;
+    else{
+        x+=(w-10)/2;
+        w = 10;
+        if(buffer.width() != w || buffer.height() != h){
+            buffer.resize(w-2, h-2);
+            KPixmapEffect::gradient(buffer, Qt::green, Qt::darkRed,
+                                    KPixmapEffect::VerticalGradient);
+        }
     }
-    p->fillRect(x, y, w, h, g.brush( QColorGroup::Dark ));
-
-	 // the dark side
-    p->setPen(g.dark());
-    p->drawLine(x, y, x+w-1, y);
-    p->drawLine(x, y, x, y+h-1);
-
-    p->setPen(g.shadow());
-    p->drawLine(x+1, y+1, x+w-2, y+1);
-    p->drawLine(x+1, y+1, x+1, y+h-2);
-
-
-	 // the bright side!
-
-    p->setPen(g.shadow());
-    p->drawLine(x+1, y+h-2 ,x+w-2, y+h-2);
-    p->drawLine(x+w-2, y+1, x+w-2, y+h-2);
-
-    p->setPen(g.light());
-    p->drawLine(x, y+h-1,x+w-1, y+h-1);
-    p->drawLine(x+w-1, y, x+w-1, y+h-1);
-
-    // top left corner:
-    p->setPen(g.background());
-    p->drawPoint(x, y);
-    p->drawPoint(x+1, y);
-    p->drawPoint(x, y+1);
-    p->setPen(g.shadow());
-    p->drawPoint(x+1, y+1);
-    // bottom left corner:
-    p->setPen(g.background());
-    p->drawPoint(x, y+h-1);
-    p->drawPoint(x+1, y+h-1);
-    p->drawPoint(x, y+h-2);
-    p->setPen(g.light());
-    p->drawPoint(x+1, y+h-2);
-    // top right corner:
-    p->setPen(g.background());
-    p->drawPoint(x+w-1, y);
-    p->drawPoint(x+w-2, y);
-    p->drawPoint(x+w-1, y+1);
-    p->setPen(g.dark());
-    p->drawPoint(x+w-2, y+1);
-    // bottom right corner:
-    p->setPen(g.background());
-    p->drawPoint(x+w-1, y+h-1);
-    p->drawPoint(x+w-2, y+h-1);
-    p->drawPoint(x+w-1, y+h-2);
-    p->setPen(g.light());
-    p->drawPoint(x+w-2, y+h-2);
-    p->setPen(g.dark());
-    p->drawPoint(x+w-3, y+h-3);
+    qDrawShadePanel(p, x, y, w, h, g, true, 1);
+    p->drawPixmap(x+1, y+1, buffer);
 
 }
 
@@ -1371,20 +1340,28 @@ void MegaStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     }
 
     if(raised || sunken) {
+        QColor c = g.button();
         int x2 = x+w;
         int y2 = y+h;
-        p->setPen(g.dark());
+        p->setPen(c.dark(120));
         p->drawLine(x+1, y+1, x2-2, y+1);
         p->drawLine(x, y+2, x, y2-3);
         p->drawLine(x2-1, y+2, x2-1, y2-3);
         p->drawLine(x+1, y2-2, x2-2, y2-2);
 
-        p->setPen(sunken ? g.mid() : g.light());
+        p->setPen(sunken ? c.dark(cMidVal) : c.light(cHighVal));
         p->drawLine(x+1, y+2, x2-2, y+2);
         p->drawLine(x+1, y+2, x+1, y2-3);
-        p->setPen(sunken ? g.light() : g.mid());
+        p->setPen(sunken ? c.light(cHighVal) : c.dark(cMidVal));
         p->drawLine(x2-2, y+3, x2-2, y2-3);
         p->drawLine(x+2, y2-3, x2-2, y2-3);
+        if(toolbar->orientation() == Qt::Horizontal)
+            drawVGradient(p, g, QColorGroup::Button, x+2, y+3, w-4, h-6,
+                          x+3, y+3, w-4, h-4);
+        else
+            drawHGradient(p, g, QColorGroup::Button, x+2, y+3, w-4, h-6,
+                          x+3, y+3, w-4, h-4);
+
     }
     p->setPen(g.text());
 
@@ -1514,98 +1491,6 @@ void MegaStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                        g, mi->isEnabled(), mi->pixmap(), mi->text(),
                                        -1, &g.text() );
 }
-
-
-/*
-void MegaStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
-                                     int tab, QMenuItem* mi,
-                                     const QPalette& pal, bool act,
-                                     bool enabled, int x, int y, int w, int h)
-{
-static const int motifItemFrame         = 2;
-static const int motifItemHMargin       = 3;
-static const int motifItemVMargin       = 2;
-static const int motifArrowHMargin      = 6;
-static const int windowsRightBorder     = 12;
-
-    maxpmw = QMAX( maxpmw, 20 );
-
-    if ( p->font() == KGlobalSettings::generalFont() )
-      p->setFont( KGlobalSettings::menuFont() );
-
-    if(act){
-        bool dis = !enabled;
-        QColorGroup itemg = dis ? pal.disabled() : pal.active();
-
-        int checkcol = maxpmw;
-
-        qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
-                        &itemg.brush(QColorGroup::Midlight));
-
-        if ( mi->iconSet() ) {
-            QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
-            if (!dis)
-                mode = QIconSet::Active;
-            QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
-            int pixw = pixmap.width();
-            int pixh = pixmap.height();
-            QRect cr(x, y, checkcol, h);
-            QRect pmr(0, 0, pixw, pixh);
-            pmr.moveCenter( cr.center() );
-            p->setPen(itemg.highlightedText());
-            p->drawPixmap(pmr.topLeft(), pixmap );
-
-        }
-        else if(checkable) {
-            int mw = checkcol + motifItemFrame;
-            int mh = h - 2*motifItemFrame;
-            if (mi->isChecked()){
-                drawCheckMark( p, x + motifItemFrame,
-                               y+motifItemFrame, mw, mh, itemg, act, dis );
-            }
-        }
-        p->setPen(Qt::black);
-        QColor discol;
-        if (dis) {
-            discol = itemg.mid();
-            p->setPen(discol);
-        }
-        int xm = motifItemFrame + checkcol + motifItemHMargin;
-        QString s = mi->text();
-        if (!s.isNull()) {
-            int t = s.find( '\t' );
-            int m = motifItemVMargin;
-            const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
-            if (t >= 0) {
-                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame+1,
-                            y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ));
-            }
-            p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
-        } else if (mi->pixmap()) {
-            QPixmap *pixmap = mi->pixmap();
-            if (pixmap->depth() == 1)
-                p->setBackgroundMode(OpaqueMode);
-            p->drawPixmap( x+xm, y+motifItemFrame, *pixmap);
-            if (pixmap->depth() == 1)
-                p->setBackgroundMode(TransparentMode);
-        }
-        if (mi->popup()) {
-            int dim = (h-2*motifItemFrame) / 2;
-            if (!dis)
-                discol = itemg.text();
-            QColorGroup g2(discol, itemg.highlight(),
-                           white, white,
-                           dis ? discol : white,
-                           discol, white);
-            drawArrow(p, RightArrow, true,
-                      x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
-                      dim, dim, itemg, TRUE);
-        }
-    }
-    else
-        KStyle::drawPopupMenuItem(p, checkable, maxpmw, tab, mi, pal, act,
-                                  enabled, x, y, w, h);
-}*/
 
 void MegaStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
                                      int tab, QMenuItem* mi,
@@ -2051,6 +1936,27 @@ void MegaStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
                     AlignLeft|AlignVCenter, s);
     }
 
+}
+
+void MegaStyle::adjustHSV(QPixmap &pix, int h, int s)
+{
+    QBitmap maskBmp(*pix.mask());
+    QImage img = pix.convertToImage();
+    if(img.depth() != 32)
+        img.convertDepth(32);
+    unsigned int *data = (unsigned int *)img.bits();
+    int total = img.width()*img.height();
+    int current;
+    QColor c;
+    int oldH, oldS, oldV;
+    for(current=0; current<total; ++current){
+        c.setRgb(data[current]);
+        c.hsv(&oldH, &oldS, &oldV);
+        c.setHsv(h, s, oldV);
+        data[current] = c.rgb();
+    }
+    pix.convertFromImage(img);
+    pix.setMask(maskBmp);
 }
 
 /* vim: set noet sw=8 ts=8: */

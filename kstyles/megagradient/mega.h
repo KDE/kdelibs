@@ -186,6 +186,7 @@ protected:
                    bool horiz);
     void drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
                       bool down=false, bool fast = true);
+    void adjustHSV(QPixmap &pix, int h, int s);
 private:
     bool highcolor;
     QColorGroup radioOnGrp;
@@ -197,8 +198,10 @@ private:
     QBitmap dgrayBmp;
     QBitmap maskBmp;
     QBitmap xBmp;
+    QPixmap radioOnPix, radioOffPix;
     TransMenuHandler *menuHandler;
     bool menuAni, menuFade;
+    int cHighVal, cMidVal;
 
     QIntDict<GradientSet>gDict;
 };
