@@ -459,26 +459,36 @@ QVariant KService::property( const QString& _name) const
    return property( _name, QVariant::Invalid);
 }
 
+// Return a string QVariant if string isn't null, and invalid variant otherwise
+// (the variant must be invalid if the field isn't in the .desktop file)
+// This allows trader queries like "exist Library" to work.
+static QVariant makeStringVariant( const QString& string )
+{
+    // Using isEmpty here would be wrong.
+    // Empty is "specified but empty", null is "not specified" (in the .desktop file)
+    return string.isNull() ? QVariant() : QVariant( string );
+}
+
 QVariant KService::property( const QString& _name, QVariant::Type t ) const
 {
   if ( _name == "Type" )
-    return QVariant( m_strType );
+    return QVariant( m_strType ); // can't be null
   else if ( _name == "Name" )
-    return QVariant( m_strName );
+    return QVariant( m_strName ); // can't be null
   else if ( _name == "Exec" )
-    return QVariant( m_strExec );
+    return makeStringVariant( m_strExec );
   else if ( _name == "Icon" )
-    return QVariant( m_strIcon );
+    return makeStringVariant( m_strIcon );
   else if ( _name == "Terminal" )
     return QVariant( static_cast<int>(m_bTerminal) );
   else if ( _name == "TerminalOptions" )
-    return QVariant( m_strTerminalOptions );
+    return makeStringVariant( m_strTerminalOptions );
   else if ( _name == "Path" )
-    return QVariant( m_strPath );
+    return makeStringVariant( m_strPath );
   else if ( _name == "Comment" )
-    return QVariant( m_strComment );
+    return makeStringVariant( m_strComment );
   else if ( _name == "GenericName" )
-    return QVariant( m_strGenName );
+    return makeStringVariant( m_strGenName );
   else if ( _name == "ServiceTypes" )
     return QVariant( m_lstServiceTypes );
   else if ( _name == "AllowAsDefault" )
@@ -486,11 +496,11 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
   else if ( _name == "InitialPreference" )
     return QVariant( m_initialPreference );
   else if ( _name == "Library" )
-    return QVariant( m_strLibrary );
-  else if ( _name == "DesktopEntryPath" )
+    return makeStringVariant( m_strLibrary );
+  else if ( _name == "DesktopEntryPath" ) // can't be null
     return QVariant( entryPath() );
   else if ( _name == "DesktopEntryName")
-    return QVariant( m_strDesktopEntryName );
+    return QVariant( m_strDesktopEntryName ); // can't be null
   else if ( _name == "Categories")
     return QVariant( d->categories );
   else if ( _name == "Keywords")
