@@ -21,7 +21,7 @@
  * $Id$
  */
 //#define DEBUG_LAYOUT
-//#define BIDI_DEBUG
+#define BIDI_DEBUG
 //#define NO_COMPOSE
 
 #if 0
@@ -247,7 +247,6 @@ void RenderText::deleteSlaves()
 
 bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
 {
-    int off = 0;
     TextSlave *s = m_first;
     while(s)
     {
@@ -267,13 +266,12 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
 		pos++;
 		delta -= w;
 	    }
-	    offset = off + pos;
+	    offset = s->m_text - m_first->m_text + pos;
 	    //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
 
 	    return true;
 	}
 	// ### this might be wrong, if combining chars are used ( eg arabic )
-	off += s->len;
 	s=s->next();
     }
     return false;
@@ -294,12 +292,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   while(offset > off && s->next())
   {
       s=s->next();
-      off += s->len;
-      if( s->y != y )  // ugly hack to fix problem with space removal on line wrap
-      {
-          y = s->y;
-          offset--;
-      }
+      off = s->m_text - m_first->m_text + s->len;
   }   // we are now in the correct text slave
 
   int pos = (offset > off ? s->len : s->len - (off - offset ));
@@ -416,8 +409,13 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	{
 	    if(s->checkVerticalPoint(y, ty, h))
 	    	s->printSelection(p, tx, ty, startPos, endPos);
-	    endPos -= s->len;
-	    startPos -= s->len;
+	    int diff;
+	    if(s->next())
+		diff = s->next()->m_text - s->m_text;
+	    else
+		diff = s->len;
+	    endPos -= diff;
+	    startPos -= diff;
 	    if(breakAtEnd && endPos < 0) break;
 	    s=s->next();	
 	}

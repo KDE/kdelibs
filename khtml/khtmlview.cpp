@@ -402,7 +402,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     DOMString url=0;
     NodeImpl *innerNode=0;
-    long offset;
+    long offset = 0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseRelease, 0, 0, url, innerNode, offset );
 
     khtml::MouseReleaseEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
