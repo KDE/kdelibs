@@ -182,6 +182,7 @@
 6090        khtml (memory)
 6100        kjas
 6200        khtml (caret)
+6201        khtml (caret table)
 6210        khtml (editor)
 
 # libkio
