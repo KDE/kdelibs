@@ -77,7 +77,11 @@ ac_cpp_safe=$ac_cpp
 ac_CPPFLAGS_safe=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $X_INCLUDES"
 ac_cpp='$CXXCPP $CPPFLAGS'
-KDE_CHECK_HEADERS(X11/extensions/shape.h,,, [#include <X11/Xlib.h>])
+KDE_CHECK_HEADERS(X11/extensions/shape.h,,,
+[
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+])
 KDE_CHECK_HEADERS(X11/extensions/XShm.h, 
   [have_mitshm=yes], [have_mitshm=no], [#include <X11/Xlib.h>])
 KDE_CHECK_HEADERS(X11/ICE/ICElib.h)
