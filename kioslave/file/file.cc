@@ -124,30 +124,30 @@ void FileProtocol::mkdir( const KURL& url, int permissions )
     QCString _path( QFile::encodeName(url.path()));
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
-	if ( ::mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
-	    if ( errno == EACCES ) {
-		error( KIO::ERR_ACCESS_DENIED, url.path() );
-		return;
-	    } else if ( errno == ENOSPC ) {
-		error( KIO::ERR_DISK_FULL, url.path() );
-		return;
-	    } else {
-		error( KIO::ERR_COULD_NOT_MKDIR, url.path() );
-		return;
-	    }
-	} else {
-	    if ( permissions != -1 )
-	        chmod( url, permissions );
-	    else
-	        finished();
-	    return;
-	}
+        if ( ::mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
+            if ( errno == EACCES ) {
+          error( KIO::ERR_ACCESS_DENIED, url.path() );
+          return;
+            } else if ( errno == ENOSPC ) {
+          error( KIO::ERR_DISK_FULL, url.path() );
+          return;
+            } else {
+          error( KIO::ERR_COULD_NOT_MKDIR, url.path() );
+          return;
+            }
+        } else {
+            if ( permissions != -1 )
+                chmod( url, permissions );
+            else
+                finished();
+            return;
+        }
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-	kdDebug() << "ERR_DIR_ALREADY_EXIST" << endl;
-	error( KIO::ERR_DIR_ALREADY_EXIST, url.path() );
-	return;
+        kdDebug() << "ERR_DIR_ALREADY_EXIST" << endl;
+        error( KIO::ERR_DIR_ALREADY_EXIST, url.path() );
+        return;
     }
     error( KIO::ERR_FILE_ALREADY_EXIST, url.path() );
     return;
@@ -162,22 +162,22 @@ void FileProtocol::get( const KURL& url )
            error( KIO::ERR_ACCESS_DENIED, url.path() );
         else
            error( KIO::ERR_DOES_NOT_EXIST, url.path() );
-	return;
+        return;
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-	error( KIO::ERR_IS_DIRECTORY, url.path() );
-	return;
+        error( KIO::ERR_IS_DIRECTORY, url.path() );
+        return;
     }
     if ( !S_ISREG( buff.st_mode ) ) {
-	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
-	return;
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        return;
     }
 
     int fd = KDE_open( _path.data(), O_RDONLY);
     if ( fd < 0 ) {
-	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
-	return;
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        return;
     }
 
     // Determine the mimetype of the file to be retrieved, and emit it.
@@ -185,8 +185,26 @@ void FileProtocol::get( const KURL& url )
     KMimeType::Ptr mt = KMimeType::findByURL( url.path(), buff.st_mode, true /* local URL */ );
     emit mimeType( mt->name() );
 
-    totalSize( buff.st_size );
     KIO::filesize_t processed_size = 0;
+
+    QString resumeOffset = metaData("resume");
+    if ( !resumeOffset.isEmpty() )
+    {
+        bool ok;
+        KIO::fileoffset_t offset = resumeOffset.toLongLong(&ok);
+
+        if (ok && (offset > 0) && (offset < buff.st_size))
+        {
+            if (KDE_lseek(fd, offset, SEEK_SET) == offset)
+            {
+                canResume ();
+                processed_size = offset;
+                kdDebug( 7101 ) << "Resume offset: " << KIO::number(offset) << endl;
+            }
+        }
+    }
+
+    totalSize( buff.st_size );
 
     char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
@@ -211,6 +229,8 @@ void FileProtocol::get( const KURL& url )
 
        processed_size += n;
        processedSize( processed_size );
+
+       //kdDebug( 7101 ) << "Processed: " << KIO::number (processed_size) << endl;
     }
 
     data( QByteArray() );
@@ -243,138 +263,150 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 {
     QString dest_orig = url.path();
     QCString _dest_orig( QFile::encodeName(dest_orig));
-    kdDebug( 7101 ) << "Put " << dest_orig << endl;
+
+    kdDebug(7101) << "Put " << dest_orig << endl;
+
     QString dest_part( dest_orig );
     dest_part += QString::fromLatin1(".part");
     QCString _dest_part( QFile::encodeName(dest_part));
 
+    int fd = -1;
+    KDE_struct_stat buff_orig;
+    bool orig_exists = (KDE_stat( _dest_orig.data(), &buff_orig ) != -1);
+    bool part_exists = false;
     bool bMarkPartial = config()->readBoolEntry("MarkPartial", true);
 
-    KDE_struct_stat buff_orig;
-    bool orig_exists = ( KDE_stat( _dest_orig.data(), &buff_orig ) != -1 );
-    if ( orig_exists &&  !_overwrite && !_resume)
-    {
-        if (S_ISDIR(buff_orig.st_mode))
-           error( KIO::ERR_DIR_ALREADY_EXIST, dest_orig );
-        else
-           error( KIO::ERR_FILE_ALREADY_EXIST, dest_orig );
-        return;
-    }
-
-    QString dest;
     if (bMarkPartial)
     {
-        kdDebug(7101) << "Appending .part extension to " << dest_orig << endl;
-        dest = dest_part;
-
         KDE_struct_stat buff_part;
-        bool part_exists = ( KDE_stat( _dest_part.data(), &buff_part ) != -1 );
-        if ( part_exists && !_resume && buff_part.st_size > 0 )
+        part_exists = (KDE_stat( _dest_part.data(), &buff_part ) != -1);
+
+        if (part_exists && !_resume && buff_part.st_size > 0)
         {
-            kdDebug() << "FileProtocol::put : calling canResume with " << KIO::number(buff_part.st_size) << endl;
-             // Maybe we can use this partial file for resuming
-             // Tell about the size we have, and the app will tell us
-             // if it's ok to resume or not.
-             _resume = canResume( buff_part.st_size );
+            kdDebug(7101) << "FileProtocol::put : calling canResume with "
+                          << KIO::number(buff_part.st_size) << endl;
 
-             kdDebug() << "FileProtocol::put got answer " << _resume << endl;
+            // Maybe we can use this partial file for resuming
+            // Tell about the size we have, and the app will tell us
+            // if it's ok to resume or not.
+            _resume = canResume( buff_part.st_size );
 
-             if (!_resume)
-             {
-                 kdDebug(7101) << "Deleting partial file " << dest_part << endl;
-                 if ( ! remove( _dest_part.data() ) ) {
-                     part_exists = false;
-                 } else {
-                     error( KIO::ERR_CANNOT_DELETE_PARTIAL, dest_part );
-                     return;
-                 }
-             }
+            kdDebug(7101) << "FileProtocol::put got answer " << _resume << endl;
         }
-    }
-    else
-    {
-       dest = dest_orig;
-       if ( orig_exists && !_resume )
-        {
-             kdDebug(7101) << "Deleting destination file " << dest_part << endl;
-             remove( _dest_orig.data() );
-             // Catch errors when we try to open the file.
-        }
-    }
-    QCString _dest( QFile::encodeName(dest));
-
-    int fd;
-
-    if ( _resume ) {
-        fd = KDE_open( _dest.data(), O_RDWR );  // append if resuming
-        KDE_lseek(fd, 0, SEEK_END); // Seek to end
-    } else {
-        // WABA: Make sure that we keep writing permissions ourselves,
-        // otherwise we can be in for a surprise on NFS.
-        mode_t initialMode;
-        if (_mode != -1)
-           initialMode = _mode | S_IWUSR | S_IRUSR;
-        else
-           initialMode = 0666;
-
-        fd = KDE_open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
-    }
-
-    if ( fd < 0 ) {
-	kdDebug(7101) << "####################### COULD NOT WRITE " << dest << _mode << endl;
-	kdDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")" << endl;
-        if ( errno == EACCES ) {
-            error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
-        } else {
-            error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest );
-        }
-        return;
     }
 
     int result;
+    QString dest;
+    QCString _dest;
+
     // Loop until we got 0 (end of data)
     do
     {
-      QByteArray buffer;
-      dataReq(); // Request for data
-      result = readData( buffer );
-      if (result > 0)
-      {
-         if (write_all( fd, buffer.data(), buffer.size()))
-         {
-            if ( errno == ENOSPC ) // disk full
+        QByteArray buffer;
+        dataReq(); // Request for data
+        result = readData( buffer );
+
+        if (result > 0)
+        {
+            if (dest.isEmpty())
             {
-              error( KIO::ERR_DISK_FULL, dest_orig);
-              result = -2; // means: remove dest file
+                if ( orig_exists &&  !_overwrite && !_resume)
+                {
+                    if (S_ISDIR(buff_orig.st_mode))
+                      error( KIO::ERR_DIR_ALREADY_EXIST, dest_orig );
+                    else
+                      error( KIO::ERR_FILE_ALREADY_EXIST, dest_orig );
+                    return;
+                }
+
+                if (bMarkPartial)
+                {
+                    kdDebug(7101) << "Appending .part extension to " << dest_orig << endl;
+                    dest = dest_part;
+                    if ( part_exists && !_resume )
+                    {
+                        kdDebug(7101) << "Deleting partial file " << dest_part << endl;
+                        remove( _dest_part.data() );
+                        // Catch errors when we try to open the file.
+                    }
+                }
+                else
+                {
+                    dest = dest_orig;
+                    if ( orig_exists && !_resume )
+                    {
+                        kdDebug(7101) << "Deleting destination file " << dest_orig << endl;
+                        remove( _dest_orig.data() );
+                        // Catch errors when we try to open the file.
+                    }
+                }
+
+                _dest = QFile::encodeName(dest);
+
+                if ( _resume )
+                {
+                    fd = KDE_open( _dest.data(), O_RDWR );  // append if resuming
+                    KDE_lseek(fd, 0, SEEK_END); // Seek to end
+                }
+                else
+                {
+                    // WABA: Make sure that we keep writing permissions ourselves,
+                    // otherwise we can be in for a surprise on NFS.
+                    mode_t initialMode;
+                    if (_mode != -1)
+                        initialMode = _mode | S_IWUSR | S_IRUSR;
+                    else
+                        initialMode = 0666;
+
+                    fd = KDE_open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+                }
+
+                if ( fd < 0 )
+                {
+                    kdDebug(7101) << "####################### COULD NOT WRITE " << dest << _mode << endl;
+                    kdDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")" << endl;
+                    if ( errno == EACCES )
+                        error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
+                    else
+                        error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest );
+                    return;
+                }
             }
-            else
+
+            if (write_all( fd, buffer.data(), buffer.size()))
             {
-              kdWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
-              error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
-              result = -1;
+                if ( errno == ENOSPC ) // disk full
+                {
+                  error( KIO::ERR_DISK_FULL, dest_orig);
+                  result = -2; // means: remove dest file
+                }
+                else
+                {
+                  kdWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
+                  error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
+                  result = -1;
+                }
             }
-         }
-      }
+        }
     }
     while ( result > 0 );
 
 
-    if (result != 0)
+    // An error occurred deal with it.
+    if (result < 0)
     {
-        close(fd);
-	kdDebug(7101) << "Error during 'put'. Aborting." << endl;
-        if (result == -2)
-        {
-	   remove(_dest.data());
-        } else if (bMarkPartial)
-        {
-           KDE_struct_stat buff;
-           if (( KDE_stat( _dest.data(), &buff ) == -1 ) ||
-               ( buff.st_size < config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ))
-           {
-	       remove(_dest.data());
-           }
-        }
+        kdDebug(7101) << "Error during 'put'. Aborting." << endl;
+
+        if (fd != -1)
+          close(fd);
+
+        KDE_struct_stat buff;
+        int size = config()->readNumEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
+
+        if (bMarkPartial &&
+            (KDE_stat( _dest.data(), &buff ) == -1 || buff.st_size <  size))
+            remove(_dest.data());
+
         ::exit(255);
     }
 
@@ -388,21 +420,19 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     // after full download rename the file back to original name
     if ( bMarkPartial )
     {
-       if ( ::rename( _dest.data(), _dest_orig.data() ) )
-       {
-           kdWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig << endl;
-           error( KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig );
-           return;
-       }
+        if ( ::rename( _dest.data(), _dest_orig.data() ) )
+        {
+            kdWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig << endl;
+            error( KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig );
+            return;
+        }
     }
 
     // set final permissions
     if ( _mode != -1 && !_resume )
     {
-       if (::chmod(_dest_orig.data(), _mode) != 0)
-       {
-           warning( i18n( "Could not change permissions for\n%1" ).arg( dest_orig ) );
-       }
+        if (::chmod(_dest_orig.data(), _mode) != 0)
+            warning( i18n( "Could not change permissions for\n%1" ).arg( dest_orig ) );
     }
 
     // We have done our job => finish
