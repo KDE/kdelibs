@@ -168,7 +168,7 @@ public:
      * In this mode
      * the dialog is split and the right part contains your widget.
      * This widget has to inherit @ref QWidget and it has to implement
-     * a slot @p showPreview(const KURL &); which is called
+     * a slot showPreview(const KURL &); which is called
      * every time the file changes. You may want to look at
      * koffice/lib/kofficecore/koFilterManager.cc for some hints :)
      */
@@ -255,11 +255,6 @@ signals:
       * Emitted when the allowable history operations change.
       */
     void historyUpdate(bool, bool);
-
-    /**
-     * Emitted when in preview mode and the user selects a file.
-     */
-    void showPreview(const KURL &url);
 
 protected:
     KToolBar *toolbar;

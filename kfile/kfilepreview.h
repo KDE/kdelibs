@@ -62,9 +62,6 @@ public:
 
     void setPreviewWidget(const QWidget *w, const KURL &u);
 
-public slots:
-    void fileSelected(const KFileViewItem *i);
-
 signals:
     void showPreview(const KURL &);
 

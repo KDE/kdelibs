@@ -41,7 +41,6 @@ KFilePreview::KFilePreview(QWidget *parent, const char *name) :
     setResizeMode(previewBase, QSplitter::KeepSize);
     deleted=false;
     previewMode=false;
-    previewBase->hide();
 }
 
 KFilePreview::~KFilePreview() {
@@ -74,6 +73,7 @@ void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u) {
     preview=const_cast<QWidget*>(w);
     preview->recreate(previewBase, 0, QPoint(0, 0), true);
     preview->resize(preview->sizeHint());
+    preview->show();
     previewBase->show();
     emit showPreview(u);
 }
@@ -122,6 +122,8 @@ void KFilePreview::selectDir(const KFileViewItem* item) {
 }
 
 void KFilePreview::highlightFile(const KFileViewItem* item) {
+    emit showPreview(item->url());
+    kDebugInfo(kfile_area, "emitted KFilePreview::showPreview() :)");
     sig->highlightFile(item);
 }
 
@@ -131,9 +133,4 @@ void KFilePreview::selectFile(const KFileViewItem* item) {
 
 void KFilePreview::activatedMenu(const KFileViewItem *item) {
     sig->activateMenu(item);
-}
-
-void KFilePreview::fileSelected(const KFileViewItem *i) {
-    emit showPreview(i->url());
-    kdebug(KDEBUG_INFO, 31000, "emitted :)");
 }
