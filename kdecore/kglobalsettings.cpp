@@ -111,26 +111,28 @@ void KGlobalSettings::initStatic()
     if ( s_desktopPath->right(1) != "/")
 	*s_desktopPath += "/";
 
-    // Templates Path
-    *s_templatesPath = *s_desktopPath + "Templates/";
-    *s_templatesPath = config->readEntry( "Templates" , *s_templatesPath);
-    *s_templatesPath = QDir::cleanDirPath( *s_templatesPath );
-    if ( s_templatesPath->right(1) != "/")
-	*s_templatesPath += "/";
-
-    // Autostart Path
-    *s_autostartPath = *s_desktopPath + "Autostart/";
-    *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
-    *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
-    if ( s_autostartPath->right(1) != "/")
-	*s_autostartPath += "/";
-
     // Trash Path
     *s_trashPath = *s_desktopPath + "Trash/";
     *s_trashPath = config->readEntry( "Trash" , *s_trashPath);
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
     if ( s_trashPath->right(1) != "/")
 	*s_trashPath += "/";
+
+    // Templates Path
+    // TODO: Honor KDEHOME - possibly adding KStdDirs::localKdeDir()
+    *s_templatesPath = QDir::homeDirPath() + "/.kde/" + "Templates/";
+    *s_templatesPath = config->readEntry( "Templates" , *s_templatesPath);
+    *s_templatesPath = QDir::cleanDirPath( *s_templatesPath );
+    if ( s_templatesPath->right(1) != "/")
+	*s_templatesPath += "/";
+
+    // Autostart Path
+    // TODO: Honor KDEHOME - possibly adding KStdDirs::localKdeDir()
+    *s_autostartPath = QDir::homeDirPath() + "/.kde/" + "Autostart/";
+    *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
+    *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
+    if ( s_autostartPath->right(1) != "/")
+	*s_autostartPath += "/";
 }
 
 QColor KGlobalSettings::toolBarHighlightColor()
