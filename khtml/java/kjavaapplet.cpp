@@ -17,37 +17,37 @@ bool KJavaApplet::isCreated()
 
 void KJavaApplet::setAppletClass( const QString clazzName )
 {
-   this->clazzName = clazzName;
+    this->clazzName = clazzName;
 }
 
 const QString KJavaApplet::appletClass()
 {
-   return clazzName;
+    return clazzName;
 }
 
 void KJavaApplet::setJARFile( const QString jar )
 {
-   this->jar = jar;
+    this->jar = jar;
 }
 
 const QString KJavaApplet::jarFile()
 {
-   return jar;
+    return jar;
 }
 
 void KJavaApplet::setParameter( const QString name, const QString value )
 {
-  context->setParameter( this, name, value );
+    context->setParameter( this, name, value );
 }
 
 void KJavaApplet::setBaseURL( const QString base )
 {
-   this->base = base;
+    this->base = base;
 }
 
 const QString KJavaApplet::baseURL()
 {
-   return base;
+    return base;
 }
 
 void KJavaApplet::setAppletName( const QString name )

@@ -15,6 +15,9 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  1999/10/09 11:20:55  rich
+ * Const clean and no longer needs KWMModuleApp
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:06  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -62,7 +65,7 @@ public:
     void setAppletName( const QString name );
     const QString appletName();
 
-   void create();
+    void create();
     bool isCreated();
 
    void show( const QString title );

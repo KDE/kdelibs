@@ -17,6 +17,10 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.1.1.1  1999/07/22 17:28:07  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
  * </PRE>
  *
  * @version $Id$
@@ -27,10 +31,20 @@ class KJavaProcess : public QObject
 Q_OBJECT
 
 public:
+    /**
+     * Create a process object, the process is NOT invoked at this point.
+     */
    KJavaProcess();
    virtual ~KJavaProcess();
 
+    /**
+     * Invoke the JVM.
+     */
    void startJava();
+
+    /**
+     * Stop the JVM (if it's running).
+     */
    void stopJava();
 
    bool isOK();
@@ -39,21 +53,21 @@ public:
    /**
     * Used to specify the location of the JVM.
     */
-   void setJVMPath( QString path );
+   void setJVMPath( const QString path );
 
    /**
     * Used to decide the parameter names for JVM stack size etc.
     */
    void setJVMVersion( int major, int minor = 0, int patch = 0 );
 
-   void setHTTPProxy( QString host, int port );
-   void setFTPProxy( QString host, int port );
-   void setSystemProperty( QString name, QString value );
-   void setMainClass( QString clazzName );
-   void setExtraArgs( QString args );
-   void setClassArgs( QString classArgs );
+   void setHTTPProxy( const QString host, int port );
+   void setFTPProxy( const QString host, int port );
+   void setSystemProperty( const QString name, const QString value );
+   void setMainClass( const QString clazzName );
+   void setExtraArgs( const QString args );
+   void setClassArgs( const QString classArgs );
 
-   void send( QString command );
+   void send( const QString command );
 
 protected slots:
     void wroteData();
@@ -74,7 +88,7 @@ protected:
    QString jvmPath;
    QString mainClass;
    QString extraArgs;
-  QString classArgs;
+    QString classArgs;
 
     QStrList inputBuffer;
 private:

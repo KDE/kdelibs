@@ -37,7 +37,7 @@ void KJavaProcess::stopJava()
    killJVM();
 }
 
-void KJavaProcess::setJVMPath( QString path )
+void KJavaProcess::setJVMPath( const QString path )
 {
    jvmPath = path;
 }
@@ -49,38 +49,38 @@ void KJavaProcess::setJVMVersion( int major, int minor, int patch )
    versionPatch = patch;
 }
 
-void KJavaProcess::setHTTPProxy( QString host, int port )
+void KJavaProcess::setHTTPProxy( const QString host, int port )
 {
    httpProxyHost = host;
    httpProxyPort = port;
 }
 
-void KJavaProcess::setFTPProxy( QString host, int port )
+void KJavaProcess::setFTPProxy( const QString host, int port )
 {
    ftpProxyHost = host;
    ftpProxyPort = port;
 }
 
-void KJavaProcess::setSystemProperty( QString name, QString value )
+void KJavaProcess::setSystemProperty( const QString name, const QString value )
 {
 }
 
-void KJavaProcess::setMainClass( QString clazzName )
+void KJavaProcess::setMainClass( const QString clazzName )
 {
    mainClass = clazzName;
 }
 
-void KJavaProcess::setExtraArgs( QString args )
+void KJavaProcess::setExtraArgs( const QString args )
 {
    extraArgs = args;
 }
 
-void KJavaProcess::setClassArgs( QString args )
+void KJavaProcess::setClassArgs( const QString args )
 {
    classArgs = args;
 }
 
-void KJavaProcess::send( QString command )
+void KJavaProcess::send( const QString command )
 {
     inputBuffer.append( command );
 
