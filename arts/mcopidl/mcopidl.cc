@@ -1550,7 +1550,7 @@ void doInterfacesHeader(FILE *header)
 			&& (ad.type == "byte" || ad.type == "float" || ad.type == "long"
 			||  ad.type == "string" || ad.type == "boolean"
 			||  ad.type == "*byte" || ad.type == "*float" || ad.type == "*long"
-			||  ad.type == "*string"))
+			||  ad.type == "*string" || isEnum(ad.type)))
 			{
 				if(!haveChangeNotifications)
 				{

@@ -250,6 +250,9 @@ void Object_skel::notify(const Notification& notification)
 	_release();
 }
 
+/* for simplicity and efficiency, enums are emitted as normal "long" values,
+ * so that finding out/using the enum type via value.type() is not be possible
+ */
 void Object_skel::_emit_changed(const char *attrib, const AnyConstRef& value)
 {
 	list<AttributeSlotBind *>::iterator i;
