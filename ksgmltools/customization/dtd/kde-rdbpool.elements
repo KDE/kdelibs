@@ -133,6 +133,10 @@ zh      Chinese
      me know.  It's easy to add them on again.  -->
 <!ENTITY % effectivity.attrib "">
 
+<!ENTITY % othercredit.role.attrib
+        "Role   (Translator|Developer|Reviewer|Graphist|Musician)
+                #REQUIRED">
+
 <!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE">
 <![ %kde.compulsory.datereleaseinfo; [
 <!-- Unchanged -->
@@ -157,3 +161,5 @@ zh      Chinese
                 |%ndxterm.class;
                 %local.bibliocomponent.mix;">
 <!-- End of compulsory ReleaseInfo -->]]>
+
+<!ENTITY % olink.attlist "IGNORE">
