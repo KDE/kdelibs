@@ -125,7 +125,7 @@ public:
 
   virtual void setWidget( QWidget *widget );
 
-  virtual bool isInline();
+  virtual bool isInline() const;
 
   virtual void setSize( int w, int h );
 
