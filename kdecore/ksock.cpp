@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.19  1998/07/29 12:39:17  kalle
+ * Don't hardcode maximum of pending connections in listen(). Should work on all platforms including QNX.
+ *
  * Revision 1.18  1998/02/20 02:37:25  torben
  * Torben: Fixes permissions
  *
@@ -127,13 +130,11 @@
 #  include <time.h>
 # endif
 #endif
-#ifdef HAVE_LINUX_SOCKET_H
-#include <linux/socket.h>
-#endif
 #ifdef HAVE_SYS_SOCKET_H
+// on Linux/libc5, this includes linux/socket.h where SOMAXCONN is defined
 #include <sys/socket.h>
 #endif
-// Play it safe, use a reasonable default, if SOMAXCONN was no where defined.
+// Play it safe, use a reasonable default, if SOMAXCONN was nowhere defined.
 #ifndef SOMAXCONN
 #warning Your header files do not seem to support SOMAXCONN
 #define SOMAXCONN 5
