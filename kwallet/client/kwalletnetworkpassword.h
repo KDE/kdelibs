@@ -37,6 +37,12 @@ class NetworkPassword : private Entry {
 		virtual ~NetworkPassword();
 		
 		QString url() const;
+		/**
+		 * A URL can be blocked. This allows features like
+		 * Mozilla's "never save passwords for this site".
+		 * @return true if blocked
+		 */
+		bool blocked() const;
 		QString userName() const;
 		QString password() const;
 
@@ -53,6 +59,7 @@ class NetworkPassword : private Entry {
 		static const char *typeName;
 		class NetworkPasswordPrivate;
 		NetworkPasswordPrivate *d;
+		bool _blocked;
 		QString _userName;
 		QString _password;
 };

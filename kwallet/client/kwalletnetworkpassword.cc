@@ -35,7 +35,8 @@ NetworkPassword::NetworkPassword(const QString &type,
 
 	QDataStream s(value, IO_ReadOnly);
 	int version;
-	s >> version >> _userName >> _password;
+	int blockedInt = _blocked ? 1 : 0;
+	s >> version >> blockedInt >> _userName >> _password;
 	Q_ASSERT(version == 1); // do something when this fails?
 }
 
@@ -44,6 +45,10 @@ NetworkPassword::~NetworkPassword() {
 		
 QString NetworkPassword::url() const {
 	return key()["url"];
+}
+
+bool NetworkPassword::blocked() const {
+	return _blocked;
 }
 
 QString NetworkPassword::userName() const {
