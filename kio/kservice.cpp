@@ -61,6 +61,8 @@ KService::init( KDesktopFile *config )
 
   m_strDesktopEntryPath = config->filename();
 
+  bool absPath = (m_strDesktopEntryPath[0] == '/');
+
   config->setDesktopGroup();
   m_strType = config->readEntry( "Type" );
   if ( m_strType.isEmpty() )
@@ -83,7 +85,8 @@ KService::init( KDesktopFile *config )
 
   if ( (m_strType == "Application") && 
        (!resource.isEmpty()) &&
-       (resource != "apps"))
+       (resource != "apps") &&
+       !absPath)
   {
     kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
             "but is located under \"%3\" instead of \"apps\"")
@@ -94,7 +97,8 @@ KService::init( KDesktopFile *config )
 
   if ( (m_strType == "Service") && 
        (!resource.isEmpty()) &&
-       (resource != "services"))
+       (resource != "services") &&
+       !absPath)
   {
     kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
             "but is located under \"%3\" instead of \"services\"")
