@@ -34,6 +34,7 @@ class KHttpCookie;
 class QTimer;
 class RequestList;
 class DCOPClient;
+class KConfig;
 
 class KCookieServer : public KDEDModule
 {
@@ -79,6 +80,7 @@ protected:
   QTimer *mTimer;
   bool mAdvicePending;
   DCOPClient *mOldCookieServer;
+  KConfig *mConfig;
 
 private:
   virtual int newInstance(QValueList<QCString>) { return 0; }

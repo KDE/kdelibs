@@ -86,9 +86,10 @@ KCookieServer::KCookieServer(const QCString &name)
    mRequestList = new RequestList;
    mAdvicePending = false;
    mTimer = 0;
-   mCookieJar->loadConfig( kapp->config());
+   mConfig = new KConfig("kcookiejarrc");
+   mCookieJar->loadConfig( mConfig );
 
-   QString filename = locateLocal("appdata", "cookies");
+   QString filename = locateLocal("data", "kcookiejar/cookies");
 
    // Stay backwards compatible!
    QString filenameOld = locate("data", "kfm/cookies");
@@ -116,6 +117,7 @@ KCookieServer::~KCookieServer()
    delete mCookieJar;
    delete mTimer;
    delete mPendingCookies;
+   delete mConfig;
 }
 
 bool KCookieServer::cookiesPending( const QString &url )
@@ -223,7 +225,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     KCookieAdvice userAdvice = kw->advice(mCookieJar, currentCookie);
     delete kw;
     // Save the cookie config if it has changed
-    mCookieJar->saveConfig( kapp->config() );
+    mCookieJar->saveConfig( mConfig );
 
     // Apply the user's choice to all cookies that are currently
     // queued for this host.
@@ -573,7 +575,7 @@ KCookieServer::getDomainAdvice(QString url)
 void
 KCookieServer::reloadPolicy()
 {
-   mCookieJar->loadConfig( kapp->config(), true );
+   mCookieJar->loadConfig( mConfig, true );
 }
 
 // DCOP function
