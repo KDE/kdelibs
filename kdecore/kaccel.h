@@ -89,18 +89,59 @@ class KAccel : public QAccel
 {
 	Q_OBJECT
  public:
+	/**
+	 * Creates a new KAccel that watches @p pParent, which is also
+	 * the QObject's parent. 
+	 *
+	 * @param pParent the parent and widget to watch for key strokes
+	 * @param psName the name of the QObject
+	 */
 	KAccel( QWidget* pParent, const char* psName = 0 );
+
+	/**
+	 * Creates a new KAccel that watches @p watch.
+	 *
+	 * @param watch the widget to watch for key strokes
+	 * @param parent the parent of the QObject
+	 * @param psName the name of the QObject
+	 */
 	KAccel( QWidget* watch, QObject* parent, const char* psName = 0 );
 	virtual ~KAccel();
 
+	/**
+	 * Returns the KAccel's @p KAccelActions, a list of @p KAccepAction.
+	 * @return the KAccelActions of the KAccel
+	 */
 	KAccelActions& actions();
+
+	/**
+	 * Returns the KAccel's @p KAccelActions, a list of @p KAccepAction.
+	 * @return the KAccelActions of the KAccel
+	 */
 	const KAccelActions& actions() const;
 
+	/**
+	 * Checks whether the KAccel is active.
+	 * @return true if the QAccel enabled
+	 */
 	bool isEnabled();
+
+	/**
+	 * Enables or disables the KAccel.
+	 * @param bEnabled true to enable, false to disable
+	 */
 	void setEnabled( bool bEnabled );
 
+	/**
+	 * @internal
+	 * (this function gets a flag, but it is used nowhere??)
+	 */
 	bool getAutoUpdate();
 	// return value of AutoUpdate flag before this call.
+	/**
+	 * @internal
+	 * (this function sets a flag, but it is used nowhere??)
+	 */
 	bool setAutoUpdate( bool bAuto );
 
 	/**
@@ -129,7 +170,7 @@ class KAccel : public QAccel
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
 	/**
-	 * Same as first insert(), but with separate shortcuts defined for
+	 * Same as first @ref insert(), but with separate shortcuts defined for
 	 * 3- and 4- modifier defaults.
 	 */
 	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
@@ -141,7 +182,10 @@ class KAccel : public QAccel
 	 * The advantage of this is when you want to use the same text for the name
 	 * of the action as for the user-visible label.
 	 *
-	 * Usage: insert( I18N_NOOP("Do Something"), ALT+Key_D, this, SLOT(slotDoSomething()) );
+	 * Usage: 
+	 * <pre>
+	 * insert( I18N_NOOP("Do Something"), ALT+Key_D, this, SLOT(slotDoSomething()) );
+	 * </pre>
 	 *
 	 * @param psAction The name AND label of the action.
 	 * @param cutDef The default shortcut for this action.
@@ -150,7 +194,7 @@ class KAccel : public QAccel
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
 	/**
-	 * Similar to the first insert() method, but with the action
+	 * Similar to the first @ref insert() method, but with the action
 	 * name, short description, help text, and default shortcuts all
 	 * set according to one of the standard accelerators.
 	 * @see KStdAccel.
@@ -161,6 +205,9 @@ class KAccel : public QAccel
 	/**
 	 * Use this to insert a label into the action list.  This will be
 	 * displayed when the user configures shortcuts.
+	 * @param sName the name of the action
+	 * @param sLabel the label of the action
+	 * @return the created KAccelAction
 	 */
 	KAccelAction* insert( const QString& sName, const QString& sLabel );
 
@@ -169,25 +216,49 @@ class KAccel : public QAccel
 
 	/**
 	 * Return the shortcut associated with the action named by @p sAction.
+	 * @param sAction the name of the action
+	 * @return the action's shortcut, or a null shortcut if not found
 	 */
 	const KShortcut& shortcut( const QString& sAction ) const;
 
 	/**
 	 * Set the shortcut to be associated with the action named by @p sAction.
+	 * @param sAction the name of the action
+	 * @param shortcut the shortcut to set
+	 * @return true if successful, false otherwise
 	 */
-	bool setShortcut( const QString& sAction, const KShortcut& );
+	bool setShortcut( const QString& sAction, const KShortcut &shortcut );
+
 	/**
 	 * Set the slot to be called when the shortcut of the action named
 	 * by @p sAction is pressed.
+	 * @param sAction the name of the action
+	 * @param pObjSlot the owner of the slot
+	 * @param psMethodSlot the name of the slot
+	 * @return true if successful, false otherwise
 	 */
 	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 	/**
 	 * Enable or disable the action named by @p sAction.
+	 * @param sAction the action to en-/disable
+	 * @param bEnabled true to enable, false to disable
+	 * @return true if successful, false otherwise
 	 */
 	bool setEnabled( const QString& sAction, bool bEnabled );
 
+	/**
+	 * Returns the configuration group of the settings.
+	 * @return the configuration group
+	 * @see KConfig
+	 */
 	const QString& configGroup() const;
-	void setConfigGroup( const QString& );
+
+	/**
+	 * Returns the configuration group of the settings.
+	 * @param name the new configuration group
+	 * @see KConfig
+	 */
+	void setConfigGroup( const QString &name );
 
 	/**
 	 * Read all shortcuts from @p pConfig, or (if @p pConfig
@@ -196,37 +267,81 @@ class KAccel : public QAccel
 	 *
 	 * The group in which the configuration is stored can be
 	 * set with @ref setConfigGroup().
+	 * @param pConfig the configuration file, or 0 for the application
+	 *         configuration file
+	 * @return true if successful, false otherwise
 	 */
 	bool readSettings( KConfigBase* pConfig = 0 );
 	/**
 	 * Write the current shortcuts to @p pConfig,
 	 * or (if @p pConfig is zero) to the application's
 	 * configuration file.
+	 * @param pConfig the configuration file, or 0 for the application
+	 *         configuration file
+	 * @return true if successful, false otherwise
 	 */
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 
+	/**
+	 * @internal
+	 * Emits the @ref keycodeChanged() signal.
+	 */
 	void emitKeycodeChanged();
 
  signals:
+	/**
+	 * @internal
+	 * Emitted by calling @ref emitKeycodeChanged().
+	 */
 	void keycodeChanged();
 
 #ifndef KDE_NO_COMPAT
  public:
 	// Source compatibility to KDE 2.x
+	/** 
+	 * @deprecated
+	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 const char* psKey,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
+	/** 
+	 * @deprecated
+	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 int key,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
+	/** 
+	 * @deprecated
+	 */
 	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null );
+	/** 
+	 * @deprecated
+	 */
 	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true );
+	/** 
+	 * @deprecated
+	 */
 	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
 		{ return insert( accel, pObjSlot, psMethodSlot ); }
+	/** 
+	 * @deprecated
+	 */
 	bool removeItem( const QString& sAction );
+	/** 
+	 * @deprecated
+	 */
 	bool setItemEnabled( const QString& sAction, bool bEnable );
+	/** 
+	 * @deprecated
+	 */
 	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action );
+	/** 
+	 * @deprecated
+	 */
 	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel );
+	/** 
+	 * @deprecated
+	 */
 	static int stringToKey( const QString& );
 
 	/**
