@@ -871,6 +871,7 @@ void KEditToolbarWidget::slotUpButton()
 
       // remove the old me
       m_activeList->takeItem(item);
+      delete item;
 
       // select my clone
       m_activeList->setSelected(clone, true);
@@ -927,6 +928,7 @@ void KEditToolbarWidget::slotDownButton()
 
       // remove the old me
       m_activeList->takeItem(item);
+      delete item;
 
       // select my clone
       m_activeList->setSelected(clone, true);
