@@ -480,7 +480,8 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h))
             si--;
 
-        //kdDebug(6040) << endl;
+        //QConstString cstr(str->s, str->l);
+        //kdDebug(6040) << this << " RenderText text '" << (const char *)cstr.string().utf8() << "'" << endl;
         //kdDebug(6040) << this << " RenderText::printObject y=" << y << " ty=" << ty << " h=" << h << " first line is " << si << endl;
         int firstSi = si;
 
