@@ -74,7 +74,17 @@ KIntNumInput::KIntNumInput(const QString& label,
                            QWidget *parent, const char *name)
     : QWidget(parent, name )
 {
-    spin = new KIntSpinBox(lower, upper, step, val, _base, this, "KIntSpinBox");
+  // Check boundaries, since 'val' can be provided from a function call or a
+  // variable, so the programmer doesn't have full control on it.
+  // Not checking the boundaries blocks the code in this constructor for
+  // some reason.
+  
+  int_value = val;
+
+  if (val > upper) int_value = upper;
+  if (val < lower) int_value = lower;
+
+    spin = new KIntSpinBox(lower, upper, step, int_value, _base, this, "KIntSpinBox");
     spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
 
     main_label = new QLabel( spin, label, this, "KNumInput::QLabel" );
@@ -83,7 +93,7 @@ KIntNumInput::KIntNumInput(const QString& label,
         spin->setSuffix(" " + units);
     
     if(use_slider) {
-        slider = new QSlider(lower, upper, step, val, QSlider::Horizontal, this);
+        slider = new QSlider(lower, upper, step, int_value, QSlider::Horizontal, this);
         slider->setTickmarks(QSlider::Below);
         
         connect(slider, SIGNAL(valueChanged(int)), SLOT(resetValueField(int)));
