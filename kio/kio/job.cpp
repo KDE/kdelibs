@@ -341,6 +341,14 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
         return;
     }
 
+    if ((m_command == CMD_LISTDIR) && !kapp->authorizeURLAction("list", m_url, m_url))
+    {
+        m_error = ERR_ACCESS_DENIED;
+        m_errorText = m_url.url();
+        QTimer::singleShot(0, this, SLOT(slotFinished()) );
+        return;
+    }
+
     if (m_url.hasSubURL())
     {
        KURL::List list = KURL::split(m_url);
