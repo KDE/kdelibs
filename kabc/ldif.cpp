@@ -164,7 +164,27 @@ bool LDIF::splitLine( const QCString &line, QString &fieldname, QByteArray &valu
   return false;
 }
 
-LDIF::ParseVal LDIF::processLine()
+bool LDIF::splitControl( const QCString &line, QString &oid, bool &critical, 
+  QByteArray &value )
+{
+  QString tmp;
+  critical = false;
+  bool url = splitLine( line, tmp, value );
+  
+  if ( tmp.isEmpty() ) tmp = QString::fromUtf8( value, value.size() );
+  value.resize( 0 );
+  if ( tmp.right( 4 ) == "true" ) {
+    critical = true;
+    tmp.truncate( tmp.length() - 5 );
+  } else  if ( tmp.right( 5 ) == "false" ) {
+    critical = false;
+    tmp.truncate( tmp.length() - 6 );
+  }
+  oid = tmp;
+  return url;
+}
+
+LDIF::ParseVal LDIF::processLine() 
 {
 
   if ( mIsComment ) return None;
@@ -172,7 +192,7 @@ LDIF::ParseVal LDIF::processLine()
   ParseVal retval = None;
   if ( mLastParseVal == EndEntry ) mEntryType = Entry_None;
 
-  splitLine( line, mAttr, mVal );
+  mUrl = splitLine( line, mAttr, mVal );
 
   QString attrLower = mAttr.lower();
 
@@ -203,7 +223,8 @@ LDIF::ParseVal LDIF::processLine()
           else retval = Err;
         }
       } else if ( attrLower == "control" ) {
-      //TODO
+        mUrl = splitControl( QCString( mVal, mVal.size() + 1 ), mOid, mCritical, mVal );
+        retval = Control;
       } else if ( !mAttr.isEmpty() && mVal.size() > 0 ) {
         mEntryType = Entry_Add;
         retval = Item;

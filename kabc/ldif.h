@@ -74,6 +74,15 @@ namespace KABC {
      */
     static bool splitLine( const QCString &line, QString &fieldname, QByteArray &value );
     /**
+     * Splits a control specification (without the "control:" directive)
+     * @param line is the control directive
+     * @oid will contain the OID
+     * @critical will contain the criticality of control
+     * @value is the control value
+     */
+    static bool splitControl( const QCString &line, QString &oid, bool &critical,
+      QByteArray &value );
+    /**
      * Starts the parsing of a new LDIF
      */
     void startParsing();
@@ -131,6 +140,10 @@ namespace KABC {
      */
     QByteArray val() const { return mVal; }
     /**
+     * Returns if val() is an url
+     */
+    bool isUrl() const { return mUrl; }
+    /**
      * Returns the criticality level when modType() returned Control.
      */
     bool critical() const { return mCritical; }
@@ -144,7 +157,7 @@ namespace KABC {
     uint lineNo() const { return mLineNo; }
   private:
     int mModType;
-    bool mDelOldRdn;
+    bool mDelOldRdn, mUrl;
     QString mDn,mAttr,mNewRdn,mNewSuperior, mOid;
     QByteArray mLdif, mVal;
     EntryType mEntryType;
