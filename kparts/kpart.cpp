@@ -15,15 +15,26 @@
 KPart::KPart( const char* name )
     : QObject( 0L, name ), m_collection( this )
 {
+  m_widget = 0;
+  m_host = 0;
 }
 
 KPart::~KPart()
 {
+  if ( m_widget )
+    delete (QWidget *)m_widget;
 }
 
 void KPart::embed( QWidget * parentWidget )
 {
   m_widget->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
+}
+
+void KPart::setWidget( QWidget *widget )
+{
+  m_widget = widget;
+  connect( m_widget, SIGNAL( destroyed() ),
+	   this, SLOT( slotWidgetDestroyed() ) );
 }
 
 QString KPart::readConfigFile( const QString& filename ) const
@@ -90,6 +101,12 @@ KPlugin* KPart::plugin( const char* libname )
     }
 
     return (KPlugin*)obj;
+}
+
+void KPart::slotWidgetDestroyed()
+{
+  m_widget = 0;
+  delete this;
 }
 
 //////////////////////////////////////////////////

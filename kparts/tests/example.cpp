@@ -112,21 +112,14 @@ bool Part1::openFile()
     f.close();
   }
   m_edit->setText(s);
-  // can a part set the caption ? setCaption(m_url); // what the user sees is m_url
 
-  // HA! That's exactly what I meant in the two kde-core-devel discussions ;-)
-  // We need support for caption stuff in KInstance, in order to make libkparts support it.
+  if ( m_host )
+  {
+    m_host->setWindowCaption( m_url.url() );
+    
+    ((KStatusBar *)m_host->topLevelContainer( "StatusBar" ))->message( m_url.url() );
+  }
 
-  // I really don't see the relation with KInstance... I think of it
-  // differently :
-  // our architecture must give the parts a way to change the caption of the
-  // 'shell'. What about a signal emitted from KPart and that the developer has
-  // to connect to its KTMainWindow class ?
-
-  // KInstance would mean that the caption is fixed for a given
-  // instance/part/... That may not be what we want (think of kedit wanting to
-  // print the currently opened file name in the caption, this can change over
-  // time. Or even some progress information :) )
   return true;
 }
 

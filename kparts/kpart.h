@@ -13,8 +13,22 @@ class QWidget;
 class QAction;
 class QActionCollection;
 
+class KPartHost : public QObject
+{
+  Q_OBJECT
+ public:
+  KPartHost( QObject *parent, const char *name = 0 ) : QObject( parent, name ) {}
+  virtual ~KPartHost() {}
+
+  virtual QWidget *topLevelContainer( const QString &name ) = 0;
+
+  virtual QString windowCaption() = 0;
+  virtual void setWindowCaption( const QString &caption ) = 0;
+};
+
 class KPart : public QObject
 {
+  Q_OBJECT
 public:
     KPart( const char* name = 0 );
     virtual ~KPart();
@@ -36,18 +50,26 @@ public:
 
     virtual QWidget *widget() { return m_widget; }
 
+    void setHost( KPartHost *host ) { m_host = host; }
+    KPartHost *host() { return m_host; }
+
 protected:
-	/**
-	 * Call this in the KPart-inherited class constructor
-	 * to set the main widget
-	 */
-	virtual void setWidget( QWidget * widget ) { m_widget = widget; }
+    /**
+     * Call this in the KPart-inherited class constructor
+     * to set the main widget
+     */
+    virtual void setWidget( QWidget * widget );
 
     virtual QString configFile() const = 0;
     virtual QString readConfigFile( const QString& filename ) const;
 
+    QGuardedPtr<KPartHost> m_host;
+
+private slots:
+    void slotWidgetDestroyed();
+
 private:
-	QGuardedPtr<QWidget> m_widget;
+    QGuardedPtr<QWidget> m_widget;
     QString m_config;
     QActionCollection m_collection;
 };
