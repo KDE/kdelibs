@@ -45,6 +45,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual bool isDocumentNode() { return true; }
 
     //DocumentType doctype() const;
 

@@ -54,6 +54,8 @@ public:
     DOMString URL() const;
     HTMLElementImpl *body();
 
+    virtual bool isInline() { return false; }
+
     void open (  );
     void close (  );
     void write ( const DOMString &text );
@@ -72,11 +74,11 @@ public:
     virtual int getWidth() const { return width; }
     virtual int getHeight() const { return height; }
     virtual void layout( bool deep = false);
-    virtual bool mouseEvent( int x, int y, int button, 
-			     DOM::NodeImpl::MouseEventType, 
+    virtual bool mouseEvent( int x, int y, int button,
+			     DOM::NodeImpl::MouseEventType,
 			     int _tx, int _ty, DOMString &url);
 
-    virtual void getAbsolutePosition(int &xPos, int &yPos) 
+    virtual void getAbsolutePosition(int &xPos, int &yPos)
 	{ xPos = yPos = 0; };
 
     /** forces the redrawing of the object */

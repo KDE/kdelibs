@@ -21,8 +21,8 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
-#define DEBUG
-#define DEBUG_LAYOUT
+//#define DEBUG
+//#define DEBUG_LAYOUT
 #undef PAR_DEBUG
 
 #include "dom_string.h"
@@ -251,7 +251,7 @@ void HTMLElementImpl::updateSize()
 //    printf("element::updateSize()\n");
     setLayouted(false);
     calcMinMaxWidth();
-    if(_parent) 
+    if(_parent)
     	_parent->updateSize();
 }
 
@@ -510,12 +510,12 @@ void HTMLBlockElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 {
     _tx += x;
     _ty += y;
-    
+
 
     // check if we need to do anything at all...
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
     if(!layouted()) return;
-    
+
 
     // default implementation. Just pass things through to the children
     // and paint paragraphs (groups of inline elements)
@@ -559,7 +559,7 @@ void HTMLBlockElementImpl::layout( bool deep )
 
     if(!width) return;
     clearMargins();
-    
+
     bool layouted_ = true;
 
     // Block elements usually just have descent.
@@ -608,7 +608,7 @@ void HTMLBlockElementImpl::layout( bool deep )
 	    descent += child->getDescent();
 	    child = child->nextSibling();
 	}
-    }    
+    }
     setLayouted(layouted_);
 }
 
@@ -1291,7 +1291,7 @@ void HTMLBlockElementImpl::calcMinMaxWidth()
 
     minWidth = 0;
     maxWidth = 0;
-    
+
     int inlineMax=0;
 
     NodeImpl *child = firstChild();
@@ -1315,11 +1315,11 @@ void HTMLBlockElementImpl::calcMinMaxWidth()
 	    w = child->getMaxWidth();
 	    if(maxWidth < w) maxWidth = w;
 	    if(maxWidth < inlineMax) maxWidth = inlineMax;
-            inlineMax=0;                                    
+            inlineMax=0;
 	}
 	child = child->nextSibling();
     }
-     if(maxWidth < inlineMax) maxWidth = inlineMax; 
+     if(maxWidth < inlineMax) maxWidth = inlineMax;
     if(maxWidth < minWidth) maxWidth = minWidth;
 
 //    if(availableWidth && minWidth > availableWidth)

@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 
 #ifdef GrayScale
 #undef GrayScale
@@ -67,8 +67,8 @@
 
 // ### FIXME: move this list to dtd.cpp
 //
-// priority of tags. Closing tags of higher priority close tags of lower 
-// priority. 
+// priority of tags. Closing tags of higher priority close tags of lower
+// priority.
 // Update this list, whenever you change khtmltags.*
 //
 // 0 elements with forbidden close tag and text. They don't get pushed
@@ -181,19 +181,19 @@ const unsigned short tagPriority[] = {
 };
 
 /*
- * The parser parses tokenized input into the document, building up the 
- * document tree. If the document is wellformed, parsing it is 
+ * The parser parses tokenized input into the document, building up the
+ * document tree. If the document is wellformed, parsing it is
  * straightforward.
  * Unfortunately, people can't write wellformed HTML documents, so the parser
  * has to be tolerant about errors.
- * 
+ *
  * We have to take care of the following error conditions:
  * 1. The element being added is explicitly forbidden inside some outer tag.
  *    In this case we should close all tags up to the one, which forbids
  *    the element, and add it afterwards.
  * 2. We are not allowed to add the element directly. It could be, that
  *    the person writing the document forgot some tag inbetween (or that the
- *    tag inbetween is optional...) This could be the case with the following 
+ *    tag inbetween is optional...) This could be the case with the following
  *    tags: HTML HEAD BODY TBODY TR TD LI (did I forget any????)
  * 3. We wan't to add a block element inside to an inline element. Close all
  *    inline elements up to the next higher block element.
@@ -220,7 +220,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
 #ifdef CSS_TEST
     styleSheet->test();
 #endif
-    
+
     currentStyle = styleSheet->newStyle(NULL);
 
     // ID_CLOSE_TAG == Num of tags
@@ -275,7 +275,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // set attributes
     if(n->isElementNode())
-    { 
+    {
 	ElementImpl *e = static_cast<ElementImpl *>(n);
 	e->setAttribute(t->attrs);
 
@@ -313,13 +313,13 @@ void KHTMLParser::insertNode(NodeImpl *n)
 #endif
 	NodeImpl *newNode = current->addChild(n);
 #ifdef PARSER_DEBUG
-	printf("added %s to %s, new current=%s\n", 
+	printf("added %s to %s, new current=%s\n",
 	       n->nodeName().string().ascii(),
 	       tmp->nodeName().string().ascii(),
 	       newNode->nodeName().string().ascii());
 #endif
 	// don't push elements without end tag on the stack
-	if(tagPriority[id] != 0) 
+	if(tagPriority[id] != 0)
 	{
 	    pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
 	    current = newNode;
@@ -339,7 +339,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
     {
 #ifdef PARSER_DEBUG
 	printf("\nADDING NODE FAILED!!!!\ncurrent = %s, new = %s\n\n",
-	       current->nodeName().string().ascii(), 
+	       current->nodeName().string().ascii(),
 	       n->nodeName().string().ascii());
 #endif
 
@@ -424,16 +424,24 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	default:
 	    if(current->isDocumentNode())
 	    {
-		e = new HTMLHtmlElementImpl(document);
-		insertNode(e);
+		if(current->firstChild() != 0)
+		{
+		    // already have a HTML element...
+		    ignore = true;
+		}
+		else
+		{
+		    e = new HTMLHtmlElementImpl(document);
+		    insertNode(e);
+		}
 	    }
 	    else if(current->isInline())
 		popInlineBlocks();
 	    else
 		ignore = true;
-	}	    
+	}	
 	// if we couldn't handle the error, just rethrow the exception...
-	if(ignore) 
+	if(ignore)
 	{
 	    printf("Exception handler failed in HTMLPArser::insertNode()\n");
 	    throw exception;
@@ -536,7 +544,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	popBlock(ID_DT);
 	break;
     case ID_DT:
-	// ### 
+	// ###
 	n = new HTMLInlineElementImpl(document, t->id);
 	popBlock(ID_DD);
 	break;
@@ -759,23 +767,23 @@ void KHTMLParser::processCloseTag(Token *t)
 
 
 void KHTMLParser::pushBlock(int _id, int _level,
-                            blockFunc _exitFunc, 
+                            blockFunc _exitFunc,
                             int _miscData1)
 {
-    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, currentStyle, 
-					    current, _exitFunc, _miscData1, 
+    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, currentStyle,
+					    current, _exitFunc, _miscData1,
     					    blockStack);
-    
+
     currentStyle = styleSheet->newStyle(currentStyle);
     blockStack = Elem;
     addForbidden(_id, forbiddenTag);
-}    					     
+}    					
 
 void KHTMLParser::popBlock( int _id )
 {
     HTMLStackElem *Elem = blockStack;
     int maxLevel = 0;
-    
+
     while( Elem && (Elem->id != _id))
     {
     	if (maxLevel < Elem->level)
@@ -801,7 +809,7 @@ void KHTMLParser::popBlock( int _id )
 	    popOneBlock();
 	    Elem = blockStack;
 	}
-    }    
+    }
 }
 
 void KHTMLParser::popOneBlock()
@@ -811,8 +819,8 @@ void KHTMLParser::popOneBlock()
 #ifdef PARSER_DEBUG
     printf("popping block: %d\n", Elem->id);
 #endif
-    
-    if(Elem->node != current) 
+
+    if(Elem->node != current)
     {
 	current->close();
 
@@ -826,7 +834,7 @@ void KHTMLParser::popOneBlock()
 	    if(height > docHeight)
 		HTMLWidget->resizeContents(HTMLWidget->contentsWidth(), height);
 	}
-	else if(block == current) 
+	else if(block == current)
 	{
 	    block = 0;
 	}
@@ -835,7 +843,7 @@ void KHTMLParser::popOneBlock()
 	(this->*(Elem->exitFunc))( Elem );
 
     removeForbidden(Elem->id, forbiddenTag);
-    
+
     if (Elem && Elem->style)
     {
 	delete currentStyle;
@@ -846,7 +854,7 @@ void KHTMLParser::popOneBlock()
 
     delete Elem;
 }
-                    
+
 void KHTMLParser::popInlineBlocks()
 {
     while(current->isInline())

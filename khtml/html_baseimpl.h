@@ -45,7 +45,7 @@ public:
     virtual tagStatus endTag() { return BODYEndTag; }
 
     virtual void parseAttribute(Attribute *);
-    	    
+    	
 //    virtual void layout(bool);  // just use BlockElement layout instead
 
 
@@ -156,7 +156,8 @@ public:
     virtual int getWidth() const { return width; }
     virtual NodeImpl *addChild(NodeImpl *child);
 
-    virtual void getAbsolutePosition(int &xPos, int &yPos); 
+    virtual void getAbsolutePosition(int &xPos, int &yPos);
+    virtual bool isInline() { return false; }
 
     virtual void layout(bool);
 
