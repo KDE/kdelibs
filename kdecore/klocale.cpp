@@ -168,7 +168,7 @@ void KLocale::doBindInit()
 		    "crash!!\nDefinition of PluralForm - to be set by the "
 		    "translator of kdelibs.po"), 0);
       if ( pf.isEmpty() ) {
-	kdWarning(173) << "found no definition of PluralForm" << endl;
+	kdWarning(173) << "found no definition of PluralForm for " << m_language << endl;
 	d->plural_form = -1;
       } else if ( pf == "NoPlural" )
 	d->plural_form = 0;
