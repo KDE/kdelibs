@@ -12,6 +12,7 @@
 220	kdeui (KToolBar)
 250	kfile (kdelibs)
 264	kdecore (KIconLoader)
+265	kdecore (KIconEffect)
 270	kdeui (KRootPixmap)
 280	kdeui (KSharedPixmap)
 290	kdeui (KPixmapIO)
