@@ -31,6 +31,8 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #include <qlist.h>
@@ -43,9 +45,6 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 
-#ifndef IN6_IS_ADDR_LOOPBACK
-# define NEED_IN6_TESTS
-#endif
 #include "netsupp.h"
 
 /*
@@ -127,7 +126,7 @@ bool try_pton()
       return false;
     }
 
-  if (IN6_IS_ADDR_LOOPBACK(&in))
+  if (KDE_IN6_IS_ADDR_LOOPBACK(&in))
     {
       printf("succeeded\n");
       return true;

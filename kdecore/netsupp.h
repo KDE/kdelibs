@@ -44,7 +44,7 @@
  */
 struct kde_in6_addr
 {
-  unsigned char ks6_addr[16];
+  unsigned char __u6_addr[16];
 };
 
 struct kde_sockaddr_in6
@@ -59,52 +59,66 @@ struct kde_sockaddr_in6
   Q_UINT32		sin6_scope_id;
 };
 
-#ifdef NEED_IN6_TESTS
-
-#define IN6_IS_ADDR_UNSPECIFIED(a) \
+#define KDE_IN6_IS_ADDR_UNSPECIFIED(a) \
 	(((Q_UINT32 *) (a))[0] == 0 && ((Q_UINT32 *) (a))[1] == 0 && \
 	 ((Q_UINT32 *) (a))[2] == 0 && ((Q_UINT32 *) (a))[3] == 0)
 
-#define IN6_IS_ADDR_LOOPBACK(a) \
+#define KDE_IN6_IS_ADDR_LOOPBACK(a) \
 	(((Q_UINT32 *) (a))[0] == 0 && ((Q_UINT32 *) (a))[1] == 0 && \
 	 ((Q_UINT32 *) (a))[2] == 0 && ((Q_UINT32 *) (a))[3] == htonl (1))
 
-#define IN6_IS_ADDR_MULTICAST(a) (((u_int8_t *) (a))[0] == 0xff)
+#define KDE_IN6_IS_ADDR_MULTICAST(a) (((u_int8_t *) (a))[0] == 0xff)
 
-#define IN6_IS_ADDR_LINKLOCAL(a) \
+#define KDE_IN6_IS_ADDR_LINKLOCAL(a) \
 	((((Q_UINT32 *) (a))[0] & htonl (0xffc00000)) == htonl (0xfe800000))
 
-#define IN6_IS_ADDR_SITELOCAL(a) \
+#define KDE_IN6_IS_ADDR_SITELOCAL(a) \
 	((((Q_UINT32 *) (a))[0] & htonl (0xffc00000)) == htonl (0xfec00000))
 
-#define IN6_IS_ADDR_V4MAPPED(a) \
+#define KDE_IN6_IS_ADDR_V4MAPPED(a) \
 	((((Q_UINT32 *) (a))[0] == 0) && (((Q_UINT32 *) (a))[1] == 0) && \
 	 (((Q_UINT32 *) (a))[2] == htonl (0xffff)))
 
-#define IN6_IS_ADDR_V4COMPAT(a) \
+#define KDE_IN6_IS_ADDR_V4COMPAT(a) \
 	((((Q_UINT32 *) (a))[0] == 0) && (((Q_UINT32 *) (a))[1] == 0) && \
 	 (((Q_UINT32 *) (a))[2] == 0) && (ntohl (((Q_UINT32 *) (a))[3]) > 1))
 
-#define IN6_ARE_ADDR_EQUAL(a,b) \
+#define KDE_IN6_ARE_ADDR_EQUAL(a,b) \
 	((((Q_UINT32 *) (a))[0] == ((Q_UINT32 *) (b))[0]) && \
 	 (((Q_UINT32 *) (a))[1] == ((Q_UINT32 *) (b))[1]) && \
 	 (((Q_UINT32 *) (a))[2] == ((Q_UINT32 *) (b))[2]) && \
 	 (((Q_UINT32 *) (a))[3] == ((Q_UINT32 *) (b))[3]))
 
-#define IN6_IS_ADDR_MC_NODELOCAL(a) \
+#define KDE_IN6_IS_ADDR_MC_NODELOCAL(a) \
 	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x1))
 
-#define IN6_IS_ADDR_MC_LINKLOCAL(a) \
+#define KDE_IN6_IS_ADDR_MC_LINKLOCAL(a) \
 	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x2))
 
-#define IN6_IS_ADDR_MC_SITELOCAL(a) \
+#define KDE_IN6_IS_ADDR_MC_SITELOCAL(a) \
 	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x5))
 
-#define IN6_IS_ADDR_MC_ORGLOCAL(a) \
+#define KDE_IN6_IS_ADDR_MC_ORGLOCAL(a) \
 	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x8))
 
-#define IN6_IS_ADDR_MC_GLOBAL(a) \
+#define KDE_IN6_IS_ADDR_MC_GLOBAL(a) \
 	(IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0xe))
+
+#ifdef NEED_IN6_TESTS
+
+# define IN6_IS_ADDR_UNSPECIFIED	KDE_IN6_IS_ADDR_UNSPECIFIED
+# define IN6_IS_ADDR_LOOPBACK		KDE_IN6_IS_ADDR_LOOPBACK
+# define IN6_IS_ADDR_MULTICAST		KDE_IN6_IS_ADDR_MULTICAST
+# define IN6_IS_ADDR_LINKLOCAL		KDE_IN6_IS_ADDR_LINKLOCAL
+# define IN6_IS_ADDR_SITELOCAL		KDE_IN6_IS_ADDR_SITELOCAL
+# define IN6_IS_ADDR_V4MAPPED		KDE_IN6_IS_ADDR_V4MAPPED
+# define IN6_IS_ADDR_V4COMPAT		KDE_IN6_IS_ADDR_V4COMPAT
+# define IN6_ARE_ADDR_EQUAL		KDE_IN6_ARE_ADDR_EQUAL
+# define IN6_IS_ADDR_MC_NODELOCAL	KDE_IN6_IS_ADDR_MC_NODELOCAL
+# define IN6_IS_ADDR_MC_LINKLOCAL	KDE_IN6_IS_ADDR_MC_LINKLOCAL
+# define IN6_IS_ADDR_MC_SITELOCAL	KDE_IN6_IS_ADDR_MC_SITELOCAL
+# define IN6_IS_ADDR_MC_ORGLOCAL	KDE_IN6_IS_ADDR_MC_ORGLOCAL
+# define IN6_IS_ADDR_MC_GLOBAL		KDE_IN6_IS_ADDR_MC_GLOBAL
 
 #endif
 
