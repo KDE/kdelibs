@@ -27,43 +27,45 @@
 <!ENTITY Sicco.Ens          '<othercredit role="translator"><firstname>Sicco</firstname><surname>Ens</surname><affiliation><address><email>sicco.ens@vlinderstichting.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Marc.Heyvaert      '<othercredit role="translator"><firstname>Marc</firstname><surname>Heyvaert</surname><affiliation><address><email>marc_heyvaert@yahoo.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Claire.Lotion      '<othercredit role="translator"><firstname>Claire</firstname><surname>Lotion</surname><affiliation><address><email>cmlotion@wanadoo.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-<!ENTITY Rijk.van.Wel      '<othercredit role="translator"><firstname>Rijk</firstname><surname>van Wel</surname><affiliation><address><email>hotmail@ridge.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Rijk.van.Wel       '<othercredit role="translator"><firstname>Rijk</firstname><surname>van Wel</surname><affiliation><address><email>hotmail@ridge.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Jonas.Drieghe      '<othercredit role="translator"><firstname>Jonas</firstname><surname>Drieghe</surname><affiliation><address><email>jonas_drieghe@skynet.be</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Pieter.Hoekstra    '<othercredit role="translator"><firstname>Pieter</firstname><surname>Hoekstra</surname><affiliation><address><email>pieterhoekstra@tiscali.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Niels.Luten        '<othercredit role="translator"><firstname>Niels</firstname><surname>Luten</surname><affiliation><address><email>mail@niels1.tmfweb.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Rik.van.Achterberg '<othercredit role="translator"><firstname>Rik</firstname><surname>van Achterberg</surname><affiliation><address><email>rikratva@xs4all.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-<!ENTITY Daniel.Huisman	'<othercredit role="translator"><firstname>Daniel</firstname><surname>Huisman</surname><affiliation><address><email>phptesten@lycos.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Daniel.Huisman	    '<othercredit role="translator"><firstname>Daniel</firstname><surname>Huisman</surname><affiliation><address><email>phptesten@lycos.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Alexander.Koning   '<othercredit role="translator"><firstname>Alexander</firstname><surname>Koning</surname><affiliation><address><email>skoning@ch.its.tudelft.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
 <!ENTITY meld.fouten '<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u melden op <ulink url="http://www.kde.nl/bugs">http://www.kde.nl/bugs</ulink>.</para>'>
 
 <!-- Entities voor vertalers (voor CREDITS_FOR_TRANSLATORS)-->
-<!ENTITY vertaling.bram    "<para>Dit document is vertaald in het Nederlands door &Bram.Schoenmakers;.</para>">
-<!ENTITY vertaling.douwe   "<para>Dit document is vertaald in het Nederlands door &Douwe.vanderSchaaf;.</para>">
-<!ENTITY vertaling.floris  "<para>Dit document is vertaald in het Nederlands door &Floris.Lambrechts;.</para>">
-<!ENTITY vertaling.frank   "<para>Dit document is vertaald in het Nederlands door &Frank.Mulder;.</para>">
-<!ENTITY vertaling.jaap    "<para>Dit document is vertaald in het Nederlands door &Jaap.Woldringh;.</para>">
-<!ENTITY vertaling.jo      "<para>Dit document is vertaald in het Nederlands door &Jo.Vermeulen;.</para>">
-<!ENTITY vertaling.jogchum "<para>Dit document is vertaald in het Nederlands door &Jogchum.Reitsma;.</para>">
-<!ENTITY vertaling.michel  "<para>Dit document is vertaald in het Nederlands door &Michel.Fontes;.</para>">
-<!ENTITY vertaling.niels   "<para>Dit document is vertaald in het Nederlands door &Niels.Reedijk;.</para>">
-<!ENTITY vertaling.otto    "<para>Dit document is vertaald in het Nederlands door &Otto.Bruggeman;.</para>">
-<!ENTITY vertaling.richard "<para>Dit document is vertaald in het Nederlands door &Richard.Voss;.</para>">
-<!ENTITY vertaling.rinse   "<para>Dit document is vertaald in het Nederlands door &Rinse.Devries;.</para>">
-<!ENTITY vertaling.rob     "<para>Dit document is vertaald in het Nederlands door &Rob.Lalau;.</para>">
-<!ENTITY vertaling.tijmen  "<para>Dit document is vertaald in het Nederlands door &Tijmen.Baarda;.</para>">
-<!ENTITY vertaling.tom     "<para>Dit document is vertaald in het Nederlands door &Tom.Albers;.</para>">
-<!ENTITY vertaling.fabrice "<para>Dit document is vertaald in het Nederlands door &Fabrice.Mous;.</para>">
-<!ENTITY vertaling.sicco   "<para>Dit document is vertaald in het Nederlands door &Sicco.Ens;.</para>">
-<!ENTITY vertaling.marc    "<para>Dit document is vertaald in het Nederlands door &Marc.Heyvaert;.</para>">
-<!ENTITY vertaling.claire  "<para>Dit document is vertaald in het Nederlands door &Claire.Lotion;.</para>">
-<!ENTITY vertaling.rijk    "<para>Dit document is vertaald in het Nederlands door &Rijk.van.Wel;.</para>">
-<!ENTITY vertaling.jonas   "<para>Dit document is vertaald in het Nederlands door &Jonas.Drieghe;.</para>">
-<!ENTITY vertaling.pieter  "<para>Dit document is vertaald in het Nederlands door &Pieter.Hoekstra;.</para>">
+<!ENTITY vertaling.bram         "<para>Dit document is vertaald in het Nederlands door &Bram.Schoenmakers;.</para>">
+<!ENTITY vertaling.douwe        "<para>Dit document is vertaald in het Nederlands door &Douwe.vanderSchaaf;.</para>">
+<!ENTITY vertaling.floris       "<para>Dit document is vertaald in het Nederlands door &Floris.Lambrechts;.</para>">
+<!ENTITY vertaling.frank        "<para>Dit document is vertaald in het Nederlands door &Frank.Mulder;.</para>">
+<!ENTITY vertaling.jaap         "<para>Dit document is vertaald in het Nederlands door &Jaap.Woldringh;.</para>">
+<!ENTITY vertaling.jo           "<para>Dit document is vertaald in het Nederlands door &Jo.Vermeulen;.</para>">
+<!ENTITY vertaling.jogchum      "<para>Dit document is vertaald in het Nederlands door &Jogchum.Reitsma;.</para>">
+<!ENTITY vertaling.michel       "<para>Dit document is vertaald in het Nederlands door &Michel.Fontes;.</para>">
+<!ENTITY vertaling.niels        "<para>Dit document is vertaald in het Nederlands door &Niels.Reedijk;.</para>">
+<!ENTITY vertaling.otto         "<para>Dit document is vertaald in het Nederlands door &Otto.Bruggeman;.</para>">
+<!ENTITY vertaling.richard      "<para>Dit document is vertaald in het Nederlands door &Richard.Voss;.</para>">
+<!ENTITY vertaling.rinse        "<para>Dit document is vertaald in het Nederlands door &Rinse.Devries;.</para>">
+<!ENTITY vertaling.rob          "<para>Dit document is vertaald in het Nederlands door &Rob.Lalau;.</para>">
+<!ENTITY vertaling.tijmen       "<para>Dit document is vertaald in het Nederlands door &Tijmen.Baarda;.</para>">
+<!ENTITY vertaling.tom          "<para>Dit document is vertaald in het Nederlands door &Tom.Albers;.</para>">
+<!ENTITY vertaling.fabrice      "<para>Dit document is vertaald in het Nederlands door &Fabrice.Mous;.</para>">
+<!ENTITY vertaling.sicco        "<para>Dit document is vertaald in het Nederlands door &Sicco.Ens;.</para>">
+<!ENTITY vertaling.marc         "<para>Dit document is vertaald in het Nederlands door &Marc.Heyvaert;.</para>">
+<!ENTITY vertaling.claire       "<para>Dit document is vertaald in het Nederlands door &Claire.Lotion;.</para>">
+<!ENTITY vertaling.rijk         "<para>Dit document is vertaald in het Nederlands door &Rijk.van.Wel;.</para>">
+<!ENTITY vertaling.jonas        "<para>Dit document is vertaald in het Nederlands door &Jonas.Drieghe;.</para>">
+<!ENTITY vertaling.pieter       "<para>Dit document is vertaald in het Nederlands door &Pieter.Hoekstra;.</para>">
 <!ENTITY vertaling.niels.luten	"<para>Dit document is vertaald in het Nederlands door &Niels.Luten;.</para>">
-<!ENTITY vertaling.rik	   "<para>Dit document is vertaald in het Nederlands door &Rik.van.Achterberg;.</para>">
-<!ENTITY vertaling.daniel  "<para>Dit document is vertaald in het Nederlands door &Daniel.Huisman;.</para>">
+<!ENTITY vertaling.rik	        "<para>Dit document is vertaald in het Nederlands door &Rik.van.Achterberg;.</para>">
+<!ENTITY vertaling.daniel       "<para>Dit document is vertaald in het Nederlands door &Daniel.Huisman;.</para>">
+<!ENTITY vertaling.alexander    "<para>Dit document is vertaald in het Nederlands door &Alexander.Koning;.</para>">
 
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
@@ -73,29 +75,30 @@
 -->
 
 <!-- Entities voor nalezers (voor CREDITS_FOR_TRANSLATORS)-->
-<!ENTITY nagelezen.bram    "<para>De vertaling werd nagelezen door &Bram.Schoenmakers;.</para>">
-<!ENTITY nagelezen.douwe   "<para>De vertaling werd nagelezen door &Douwe.vanderSchaaf;.</para>">
-<!ENTITY nagelezen.floris  "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
-<!ENTITY nagelezen.frank   "<para>De vertaling werd nagelezen door &Frank.Mulder;.</para>">
-<!ENTITY nagelezen.jaap    "<para>De vertaling werd nagelezen door &Jaap.Woldringh;.</para>">
-<!ENTITY nagelezen.jo      "<para>De vertaling werd nagelezen door &Jo.Vermeulen;.</para>">
-<!ENTITY nagelezen.jogchum "<para>De vertaling werd nagelezen door &Jogchum.Reitsma;.</para>">
-<!ENTITY nagelezen.michel  "<para>De vertaling werd nagelezen door &Michel.Fontes;.</para>">
-<!ENTITY nagelezen.niels   "<para>De vertaling werd nagelezen door &Niels.Reedijk;.</para>">
-<!ENTITY nagelezen.otto    "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
-<!ENTITY nagelezen.richard "<para>De vertaling werd nagelezen door &Richard.Voss;.</para>">
-<!ENTITY nagelezen.rinse   "<para>De vertaling werd nagelezen door &Rinse.Devries;.</para>">
-<!ENTITY nagelezen.rob     "<para>De vertaling werd nagelezen door &Rob.Lalau;.</para>">
-<!ENTITY nagelezen.tijmen  "<para>De vertaling werd nagelezen door &Tijmen.Baarda;.</para>">
-<!ENTITY nagelezen.tom     "<para>De vertaling werd nagelezen door &Tom.Albers;.</para>">
-<!ENTITY nagelezen.fabrice "<para>De vertaling werd nagelezen door &Fabrice.Mous;.</para>">
-<!ENTITY nagelezen.sicco   "<para>De vertaling werd nagelezen door &Sicco.Ens;.</para>">
-<!ENTITY nagelezen.marc    "<para>De vertaling werd nagelezen door &Marc.Heyvaert;.</para>">
-<!ENTITY nagelezen.claire  "<para>De vertaling werd nagelezen door &Claire.Lotion;.</para>">
-<!ENTITY nagelezen.rijk    "<para>De vertaling werd nagelezen door &Rijk.van.Wel;.</para>">
-<!ENTITY nagelezen.jonas   "<para>De vertaling werd nagelezen door &Jonas.Drieghe;.</para>">
-<!ENTITY nagelezen.pieter  "<para>De vertaling werd nagelezen door &Pieter.Hoekstra;.</para>">
-<!ENTITY nagelezen.daniel  "<para>De vertaling werd nagelezen door &Daniel.Huisman;.</para>">
+<!ENTITY nagelezen.bram       "<para>De vertaling werd nagelezen door &Bram.Schoenmakers;.</para>">
+<!ENTITY nagelezen.douwe      "<para>De vertaling werd nagelezen door &Douwe.vanderSchaaf;.</para>">
+<!ENTITY nagelezen.floris     "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
+<!ENTITY nagelezen.frank      "<para>De vertaling werd nagelezen door &Frank.Mulder;.</para>">
+<!ENTITY nagelezen.jaap       "<para>De vertaling werd nagelezen door &Jaap.Woldringh;.</para>">
+<!ENTITY nagelezen.jo         "<para>De vertaling werd nagelezen door &Jo.Vermeulen;.</para>">
+<!ENTITY nagelezen.jogchum    "<para>De vertaling werd nagelezen door &Jogchum.Reitsma;.</para>">
+<!ENTITY nagelezen.michel     "<para>De vertaling werd nagelezen door &Michel.Fontes;.</para>">
+<!ENTITY nagelezen.niels      "<para>De vertaling werd nagelezen door &Niels.Reedijk;.</para>">
+<!ENTITY nagelezen.otto       "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
+<!ENTITY nagelezen.richard    "<para>De vertaling werd nagelezen door &Richard.Voss;.</para>">
+<!ENTITY nagelezen.rinse      "<para>De vertaling werd nagelezen door &Rinse.Devries;.</para>">
+<!ENTITY nagelezen.rob        "<para>De vertaling werd nagelezen door &Rob.Lalau;.</para>">
+<!ENTITY nagelezen.tijmen     "<para>De vertaling werd nagelezen door &Tijmen.Baarda;.</para>">
+<!ENTITY nagelezen.tom        "<para>De vertaling werd nagelezen door &Tom.Albers;.</para>">
+<!ENTITY nagelezen.fabrice    "<para>De vertaling werd nagelezen door &Fabrice.Mous;.</para>">
+<!ENTITY nagelezen.sicco      "<para>De vertaling werd nagelezen door &Sicco.Ens;.</para>">
+<!ENTITY nagelezen.marc       "<para>De vertaling werd nagelezen door &Marc.Heyvaert;.</para>">
+<!ENTITY nagelezen.claire     "<para>De vertaling werd nagelezen door &Claire.Lotion;.</para>">
+<!ENTITY nagelezen.rijk       "<para>De vertaling werd nagelezen door &Rijk.van.Wel;.</para>">
+<!ENTITY nagelezen.jonas      "<para>De vertaling werd nagelezen door &Jonas.Drieghe;.</para>">
+<!ENTITY nagelezen.pieter     "<para>De vertaling werd nagelezen door &Pieter.Hoekstra;.</para>">
+<!ENTITY nagelezen.daniel     "<para>De vertaling werd nagelezen door &Daniel.Huisman;.</para>">
+<!ENTITY nagelezen.alexander  "<para>De vertaling werd nagelezen door &Alexander.Koning;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
@@ -125,10 +128,9 @@
 <!ENTITY Enter   "<keycap>Enter</keycap>">
 <!ENTITY FAQ     "<acronym>FAQ</acronym>">
 <!ENTITY HTML    "<acronym>HTML</acronym>">
-<!-- Dubbelzinnig!  Wat betekent OS?  OS trademark of luie versie voor besturingssysteem? -->
 <!ENTITY OS      "<acronym>OS</acronym>">
 <!ENTITY Mac     '<trademark class="registered">Mac</trademark>'>
-<!ENTITY cdrom   "<acronym>CD-ROM</acronym>">
+<!ENTITY cdrom   "<acronym>cd-rom</acronym>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
 <!-- hiervoor gebruik je beter de vertaalde naam -->
@@ -136,6 +138,4 @@
 <!ENTITY kcc     "<application>KDE Configuratiecentrum</application>">
 <!ENTITY khc     "<application>KDE Helpcentrum</application>">
 <!ENTITY kic     "<application>KDE Informatiecentrum</application>">
-
-<!-- Entities om het leven makkelijk te maken -->
 <!ENTITY palm     "PalmOS(tm)-apparaat">
