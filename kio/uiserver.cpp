@@ -29,7 +29,6 @@
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kconfig.h>
 #include <kiconloader.h>
 #include <dcopclient.h>
 #include <kdebug.h>

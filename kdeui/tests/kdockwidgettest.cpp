@@ -195,7 +195,6 @@ void DockApplication::updateButton()
     m_bname->setText("MainDockWidget is NULL");
 }
 
-#include <kapp.h>
 int main(int argc, char* argv[]) {
   KApplication a(argc,argv, "kdockdemoapp1");
   DockApplication* ap = new DockApplication("DockWidget demo");

@@ -193,7 +193,6 @@ void application::slotTAB_TOP()
   tab->setTabPos( KDockTabBar::TAB_TOP );
 }
 
-#include <kapp.h>
 int main(int argc, char* argv[]) { 
   KApplication a(argc,argv,"kdocktabctltest");
   

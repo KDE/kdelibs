@@ -13,8 +13,6 @@
 #include <qevent.h>
 #include <qpopupmenu.h>
 #include <qpushbutton.h>
-#include <qfile.h>
-#include <qtextstream.h>
 #include <qpoint.h>
 #include <qmessagebox.h>
 #include <qmime.h>
