@@ -695,7 +695,7 @@ void KColorDialog::writeSettings()
 	{
 		color = custColorCells->color( i );
 		key.sprintf( "Color%d", i );
-		config->writeEntry( key, color );
+		config->writeEntry( key, color, true, true );
 	}
 
 	config->setGroup( oldgroup );
