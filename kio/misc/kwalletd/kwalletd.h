@@ -135,6 +135,10 @@ class KWalletD : public KDEDModule {
 
 		virtual void closeAllWallets();
 
+		virtual QString networkWallet();
+
+		virtual QString localWallet();
+
 	private slots:
 		void slotAppUnregistered(const QCString& app);
 		void emitWalletListDirty();

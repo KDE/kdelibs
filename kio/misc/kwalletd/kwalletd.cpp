@@ -1172,4 +1172,15 @@ void KWalletD::closeAllWallets() {
 	_passwords.clear();
 }
 
+
+QString KWalletD::networkWallet() {
+	return KWallet::Wallet::NetworkWallet();
+}
+
+
+QString KWalletD::localWallet() {
+	return KWallet::Wallet::LocalWallet();
+}
+
+
 #include "kwalletd.moc"
