@@ -452,8 +452,8 @@ void CachedImage::deref( CachedObjectClient *c )
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
-
-    if ( newc.rgb() != bgColor ) {
+    static QRgb bgTransparant = qRgba( 0, 0, 0, 0xFF );
+    if ( (bgColor != bgTransparant) && (bgColor != newc.rgb()) ) {
         delete bg; bg = 0;
     }
 
@@ -471,32 +471,56 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     QSize s(pixmap_size());
     int w = r.width();
     int h = r.height();
-    if ( w*h < 8192 ) {
+    if ( w*h < 8192 ) 
+    {
         if ( r.width() < BGMINWIDTH )
             w = ((BGMINWIDTH  / s.width())+1) * s.width();
         if ( r.height() < BGMINHEIGHT )
             h = ((BGMINHEIGHT / s.height())+1) * s.height();
     }
-
-    if ( w != r.width() || h != r.height() ) {
-        bg = new QPixmap(w, h);
-        QPixmap pix = pixmap();
-        QPainter p(bg);
-        if(isvalid) p.fillRect(0, 0, w, h, newc);
-        p.drawTiledPixmap(0, 0, w, h, pix);
-        if(!isvalid && pix.mask())
+    if ( (w != r.width()) || (h != r.height()) )
+    {
+        QPixmap pix = r;
+        if ( w != r.width() )
         {
-            // unfortunately our anti-transparency trick doesn't work here
-            // we need to create a mask.
-            QBitmap newmask(w, h);
-            QPainter pm(&newmask);
-            pm.drawTiledPixmap(0, 0, w, h, *pix.mask());
-            bg->setMask(newmask);
-            bgColor = qRgba( 0, 0, 0, 0xFF );
+            bg = new QPixmap(w, r.height());
+            QPainter p(bg);
+            if(isvalid) p.fillRect(0, 0, w, r.height(), newc);
+            p.drawTiledPixmap(0, 0, w, r.height(), pix);
+            if(!isvalid && pix.mask())
+            {
+                // unfortunately our anti-transparency trick doesn't work here
+                // we need to create a mask.
+                QBitmap newmask(w, r.height());
+                QPainter pm(&newmask);
+                pm.drawTiledPixmap(0, 0, w, r.height(), *pix.mask());
+                bg->setMask(newmask);
+                bgColor = bgTransparant;
+            }
+            else
+                bgColor= newc.rgb();
+            pix = *bg;
         }
-        else
-            bgColor= newc.rgb();
-
+        if ( h != r.height() )
+        {
+            delete bg;
+            bg = new QPixmap(w, h);
+            QPainter p(bg);
+            if(isvalid) p.fillRect(0, 0, w, h, newc);
+            p.drawTiledPixmap(0, 0, w, h, pix);
+            if(!isvalid && pix.mask())
+            {
+                // unfortunately our anti-transparency trick doesn't work here
+                // we need to create a mask.
+                QBitmap newmask(w, h);
+                QPainter pm(&newmask);
+                pm.drawTiledPixmap(0, 0, w, h, *pix.mask());
+                bg->setMask(newmask);
+                bgColor = bgTransparant;
+            }
+            else
+                bgColor= newc.rgb();
+        }
         return *bg;
     }
 
