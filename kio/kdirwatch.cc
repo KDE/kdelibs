@@ -4,7 +4,7 @@
   Copyright 1998 Sven Radej <sven@lisa.exp.univie.ac.at>
 
   It is licensed under GPL version 2.
-  
+
   If it is part of KDE libraries than this file is licensed under
   LGPL version 2.
  */
@@ -56,14 +56,14 @@ KDirWatch::~KDirWatch()
 void KDirWatch::addDir( const QString& _path )
 {
   QString path = _path;
-  
+
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
   QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
   if ( it != m_mapDirs.end() )
   {
-    it->m_clients++;
+    (*it).m_clients++;
     return;
   }
 
@@ -83,7 +83,7 @@ void KDirWatch::removeDir( const QString& _path )
     return;
 
   QString path = _path;
-  
+
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
@@ -91,10 +91,10 @@ void KDirWatch::removeDir( const QString& _path )
   if ( it == m_mapDirs.end() )
     return;
 
-  it->m_clients--;
-  if ( it->m_clients > 0 )
+  (*it).m_clients--;
+  if ( (*it).m_clients > 0 )
     return;
-  
+
   m_mapDirs.remove( it );
 
   if( m_mapDirs.isEmpty() )
@@ -113,9 +113,9 @@ bool KDirWatch::stopDirScan( const QString& _path )
   QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
   if ( it == m_mapDirs.end() )
     return false;
-  
-  it->m_ctime = NO_NOTIFY;
-  
+
+  (*it).m_ctime = NO_NOTIFY;
+
   return true;
 }
 
@@ -133,7 +133,7 @@ bool KDirWatch::restartDirScan( const QString& _path )
     return false;
 
   stat( path.ascii(), &statbuff );
-  it->m_ctime = statbuff.st_ctime;
+  (*it).m_ctime = statbuff.st_ctime;
   return true;
 }
 
@@ -159,10 +159,10 @@ void KDirWatch::resetList( bool skippedToo )
   QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
   for( ; it != m_mapDirs.end(); ++it )
   {
-    if ( it->m_ctime != NO_NOTIFY || skippedToo )
+    if ( (*it).m_ctime != NO_NOTIFY || skippedToo )
     {
       stat( it.key().ascii(), &statbuff );
-      it->m_ctime = statbuff.st_ctime;
+      (*it).m_ctime = statbuff.st_ctime;
     }
   }
 }
@@ -181,10 +181,10 @@ void KDirWatch::slotRescan()
       del.append( it.key() );
       continue; // iterator incremented
     }
-    if ( statbuff.st_ctime != it->m_ctime &&
-	 it->m_ctime != NO_NOTIFY)
+    if ( statbuff.st_ctime != (*it).m_ctime &&
+         (*it).m_ctime != NO_NOTIFY)
     {
-      it->m_ctime = statbuff.st_ctime;
+      (*it).m_ctime = statbuff.st_ctime;
       emit dirty( it.key() );
     }
   }
@@ -199,7 +199,7 @@ bool KDirWatch::contains( const QString& _path ) const
   QString path = _path;
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
- 
+
   return m_mapDirs.contains( path );
 }
 
@@ -238,7 +238,7 @@ int main (int argc, char **argv)
   dirwatch->startScan();
   if (!dirwatch->stopDirScan(home.data()))
     kdebug( KDEBUG_ERROR, 7001,"stopDirScan: error");
-  
+
   return a.exec();
 }
 */

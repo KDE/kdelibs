@@ -1,4 +1,4 @@
-#include "kio_job.h"   
+#include "kio_job.h"
 #include "kmimetypes.h"
 #include "kmimemagic.h"
 #include "kservices.h"
@@ -28,7 +28,7 @@ void KMimeType::initStatic()
 {
   if ( s_mapMimeTypes != 0L )
     return;
-  
+
   s_mapMimeTypes = new QDict<KMimeType>;
 }
 
@@ -41,7 +41,7 @@ void KMimeType::check()
   kdebug( KDEBUG_INFO, 7009, "================== %d MTs ==========", s_mapMimeTypes->count() );
 
   s_bChecked = true; // must be done before building mimetypes
-  
+
   // Try to find the default type
   if ( ( s_pDefaultType = KMimeType::mimeType( "application/octet-stream" ) ) == 0L )
     errorMissingMimeType( "application/octet-stream" );
@@ -52,7 +52,7 @@ void KMimeType::check()
     QStringList tmp;
     s_pDefaultType = new KMimeType( "application/octet-stream", "unknown.xpm", "", tmp );
   }
-  
+
   // No Mime-Types installed ?
   // Lets do some rescue here.
   if ( s_mapMimeTypes->count() <= 1 )
@@ -81,11 +81,11 @@ void KMimeType::check()
 void KMimeType::errorMissingMimeType( const QString& _type )
 {
   QString tmp = i18n( "Could not find mime type\n%1" ).arg( _type );
-    
+
   QMessageBox::critical( 0, i18n( "KFM Error" ), tmp, i18n("OK" ) );
 
   QStringList dummy;
-  
+
   KMimeType *e;
   if ( _type == "inode/directory" )
     e = new KFolderType( _type, "unknown.xpm", "", dummy );
@@ -119,7 +119,7 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   if ( !_fast_mode && !_is_local_file && _url.isLocalFile() )
     _is_local_file = true;
-  
+
   if ( !_fast_mode && _is_local_file && _mode == 0 )
   {
     struct stat buff;
@@ -151,16 +151,16 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   // KMimeMagic can do that better for local files
   if ( !_is_local_file && S_ISREG( _mode ) && ( _mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
     return find( "application/x-executable" );
-      
+
   QString path ( _url.path( 0 ) );
-  
+
   // Try to find it out by looking at the filename
   assert( s_mapMimeTypes );
   QDictIterator<KMimeType> it( *s_mapMimeTypes );
   for( ; it.current() != 0L; ++it )
     if ( it.current()->matchFilename( path.data() ) )
       return it.current();
-  
+
   // Another filename binding, hardcoded, is .desktop:
   if ( path.right(8) == ".desktop" )
     return find( "application/x-desktop" );
@@ -175,11 +175,11 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
     if ( path.right(1) == "/" || path.isEmpty() )
       return find( "inode/directory" );
   }
-  
+
   // No more chances for non local URLs
   if ( !_is_local_file || _fast_mode )
     return find( "application/octet-stream" );
-  
+
   // Do some magic for local files
   kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.data() );
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path.ascii() );
@@ -202,9 +202,9 @@ KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString&
   : KServiceType( _type, _icon, _comment )
 {
   initStatic();
-  
+
   assert( s_mapMimeTypes );
-  
+
   s_mapMimeTypes->insert( _type, this );
   m_lstPatterns = _patterns;
 }
@@ -212,8 +212,8 @@ KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString&
 KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
 {
   initStatic();
- 
-  _cfg.setDesktopGroup(); 
+
+  _cfg.setDesktopGroup();
   m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
 
   if ( isValid() )
@@ -256,12 +256,12 @@ void KMimeType::save( QDataStream& _str ) const
 KServiceType::PropertyPtr KMimeType::property( const QString& _name ) const
 {
   QProperty* p = 0;
-  
+
   if ( _name == "Patterns" )
     p = new QProperty( m_lstPatterns );
-  
+
   if ( p )
-  {    
+  {
     // We are not interested in these
     p->deref();
     return p;
@@ -274,7 +274,7 @@ QStringList KMimeType::propertyNames() const
 {
   QStringList res = KServiceType::propertyNames();
   res.append( "Patterns" );
-  
+
   return res;
 }
 
@@ -286,19 +286,19 @@ KMimeType::~KMimeType()
 bool KMimeType::matchFilename( const QString& _filename ) const
 {
   int len = _filename.length();
-  
+
   QStringList::ConstIterator it = m_lstPatterns.begin();
   for( ; it != m_lstPatterns.end(); ++it )
   {
-    const char* s = it->ascii();
-    int pattern_len = it->length();
+    const char* s = (*it).ascii();
+    int pattern_len = (*it).length();
     if (!pattern_len)
       continue;
 
     if ( s[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
       if ( strncasecmp( _filename.ascii(), s, pattern_len - 1 ) == 0 )
 	return true;
-    
+
     if ( s[ 0 ] == '*' && len + 1 >= pattern_len )
       if ( strncasecmp( _filename.ascii() + len - pattern_len + 1, s + 1, pattern_len - 1 ) == 0 )
 	return true;
@@ -336,7 +336,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
 
   KURL u( _url );
   u.addPath( ".directory" );
-  
+
   KSimpleConfig cfg( u.path(), true );
   cfg.setDesktopGroup();
   QString icon = cfg.readEntry( "Icon" );
@@ -359,7 +359,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
         isempty = (readdir(dp) == 0L);
       closedir( dp );
     }
-    
+
     if ( isempty )
       return empty_icon;
   }
@@ -438,7 +438,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
 	return unmount_icon;
     }
   }
-  
+
   if ( icon.isEmpty() )
     return KMimeType::icon( _url, _is_local );
 
@@ -476,7 +476,7 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
     return false;
 
   KURL u( _url );
-  
+
   KSimpleConfig cfg( u.path(), true );
   cfg.setDesktopGroup();
   QString type = cfg.readEntry( "Type" );
@@ -489,7 +489,7 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
   }
 
   kdebug( KDEBUG_INFO, 7009, "TYPE = %s", type.data() );
-  
+
   if ( type == "FSDevice" )
     return runFSDevice( _url, cfg );
   else if ( type == "Application" )
@@ -498,12 +498,12 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
     return runLink( _url, cfg );
   else if ( type == "MimeType" )
     return runMimeType( _url, cfg );
-  
-  
+
+
   QString tmp = i18n("The desktop entry of type\n%1\nis unknown").arg( type );
   QMessageBox::critical( 0L, i18n("Error"), tmp, i18n( "OK" ) );
-  
-  return false;    
+
+  return false;
 }
 
 bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
@@ -528,13 +528,13 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
     KFileManager::getFileManager()->openFileManagerWindow( mp2.ascii() );
   }
   else
-  {    
+  {
     QString readonly = cfg.readEntry( "ReadOnly" );
     bool ro = FALSE;
     if ( !readonly.isNull() )
       if ( readonly == "1" )
 	ro = true;
-		    
+		
     (void) new KAutoMount( ro, 0L, dev.ascii(), 0L );
   }
 
@@ -547,7 +547,7 @@ bool KDEDesktopMimeType::runApplication( const QString& , KSimpleConfig &cfg )
   if ( !s.isValid() )
     // The error message was already displayed, so we can just quit here
     return false;
-  
+
   QStringList empty;
   bool res = KRun::run( s, empty );
 
@@ -578,16 +578,16 @@ bool KDEDesktopMimeType::runMimeType( const QString& , KSimpleConfig & )
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
 {
   QValueList<Service> result;
-  
+
   if ( !_url.isLocalFile() )
     return result;
-  
+
   KSimpleConfig cfg( _url.path(), true );
   cfg.setDesktopGroup();
   QString type = cfg.readEntry( "Type" );
   if ( type.isEmpty() )
     return result;
-  
+
   if ( type == "FSDevice" )
   {
     QString dev = cfg.readEntry( "Dev" );
@@ -605,14 +605,14 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
 	Service mount;
 	mount.m_strName = i18n("Mount");
 	mount.m_type = ST_MOUNT;
-	result.append( mount );  
+	result.append( mount );
       }
       else
       {
 	Service unmount;
 	unmount.m_strName = i18n("Unmount");
 	unmount.m_type = ST_UNMOUNT;
-	result.append( unmount );  
+	result.append( unmount );
       }
     }
   }
@@ -621,29 +621,29 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
   props.m_strName = i18n("Properties");
   props.m_type = ST_PROPERTIES;
   _lst.push_back( props );   */
-  
+
   return result;
 }
 
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( const KURL& _url )
 {
   QValueList<Service> result;
-  
+
   if ( !_url.isLocalFile() )
     return result;
 
   KSimpleConfig cfg( _url.path(), true );
   cfg.setGroup( "Menu" );
-  
+
   QStrList keys;
   if ( cfg.readListEntry( "Menus", keys ) <= 0 )
     return result;
-  
+
   const char *k;
   for( k = keys.first(); k != 0L; k = keys.next() )
   {
     kdebug( KDEBUG_INFO, 7009, "CURRENT KEY = %s", k );
-   
+
     QStrList lst;
     if ( cfg.readListEntry( k, lst ) == 3 )
     {
@@ -652,7 +652,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
       s.m_strIcon = lst.at(1);
       s.m_strExec = lst.at(2);
       s.m_type = ST_USER_DEFINED;
-      result.append( s ); 
+      result.append( s );
     }
     else
     {
@@ -667,9 +667,9 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType::Service& _service )
 {
   kdebug( KDEBUG_INFO, 7009, "EXECUTING Service %s", _service.m_strName.data() );
-  
+
   KURL u( _url );
-  
+
   if ( _service.m_type == ST_USER_DEFINED )
   {
     QStringList lst;
@@ -703,7 +703,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
 	kdebug( KDEBUG_INFO, 7009, "ALREADY Mounted" );
 	return;
       }
-      
+
       QString readonly = cfg.readEntry( "ReadOnly" );
       bool ro = false;
       if ( !readonly.isNull() )

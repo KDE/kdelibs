@@ -24,7 +24,7 @@ KFileManager * KFileManager::pFileManager = 0L;
 
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
-  
+
   if ( strcmp( _mimetype, "text/html" ) == 0 )
   {
     KFileManager::getFileManager()->openFileManagerWindow( _url );
@@ -47,32 +47,32 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
     if ( u.isLocalFile() )
       return KDEDesktopMimeType::run( _url, true );
   }
-  
+
   // Get all services for this mime type
   KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( _mimetype );
-  
-  if ( offers.count() == 0 || !offers.begin()->allowAsDefault() )
+
+  if ( offers.count() == 0 || !(*offers.begin()).allowAsDefault() )
   {
     kdebug( KDEBUG_INFO, 7010, "No Offers" );
     // HACK TODO: OpenWith
     return false;
   }
-  
+
   QStringList lst;
   lst.append( _url );
   // Choose the first service from the list and do the job
-  return KRun::run( offers.begin()->service(), lst );
+  return KRun::run( (*offers.begin()).service(), lst );
 }
 
 void KRun::shellQuote( QString &_str )
 {
   int i = 0;
   while( ( i = _str.find( '\'', i ) ) != -1 )
-  {    
+  {
     _str.replace( i, 1, "'\''" );
     i += 4;
   }
-  
+
   _str.insert( 0, "'" );
   _str += "'";
 }
@@ -90,9 +90,9 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
 		const QString& _icon, const QString& _mini_icon, const QString& _desktop_file )
 {
   bool b_local_files = true;
-  
+
   QString U = "",F = "",D = "",N = "";
-  
+
   QStringList::Iterator it = _urls.begin();
   for( ; it != _urls.end(); ++it )
   {
@@ -126,12 +126,12 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
     F += tmp;
     F += " ";
   }
-  
+
   QString exec = _exec;
   bool b_local_app = false;
   if ( exec.find( "%u" ) == -1 )
     b_local_app = true;
-    
+
   // Did the user forget to append something like '%f' ?
   // If so, then assume that '%f' is the right choice => the application
   // accepts only local files.
@@ -139,7 +139,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
        exec.find( "%d" ) == -1 && exec.find( "%F" ) == -1 && exec.find( "%U" ) == -1 &&
        exec.find( "%N" ) == -1 && exec.find( "%D" ) == -1 )
     exec += " %f";
-  
+
   // Can we pass multiple files on the command line or do we have to start the application for every single file ?
   bool b_allow_multiple = false;
   if ( exec.find( "%F" ) != -1 || exec.find( "%U" ) != -1 || exec.find( "%N" ) != -1 ||
@@ -147,7 +147,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
     b_allow_multiple = true;
 
   int pos;
-  
+
   QString name = _name;
   shellQuote( name );
   while ( ( pos = exec.find( "%c" ) ) != -1 )
@@ -175,7 +175,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
   {
     return runOldApplication( _exec, _urls, b_allow_multiple );
   }
-  
+
   if ( b_allow_multiple || _urls.isEmpty() )
   {	
     while ( ( pos = exec.find( "%f" )) != -1 )
@@ -213,7 +213,7 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
     shellQuote( n );
     QString u ( *it );
     shellQuote( u );
-   
+
     while ( ( pos = e.find( "%f" )) != -1 )
       e.replace( pos, 2, f );
     while ( ( pos = e.find( "%n" )) != -1 )
@@ -225,14 +225,14 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
 
     return run( e );
   }
-  
+
   return true;
 }
 
 bool KRun::run( const QString& _cmd )
 {
   kdebug( KDEBUG_INFO, 7010, "Running %s", _cmd.ascii() );
-  
+
   QString exec = _cmd;
   exec += " &";
   system( exec.ascii() );
@@ -243,10 +243,10 @@ bool KRun::run( const QString& _cmd )
 bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_multiple )
 {
   char **argv = 0L;
-  
+
   QString kfmexec = kapp->kde_bindir();
   kfmexec += "/kfmexec";
-  
+
   if ( _allow_multiple )
   {
     argv = new char*[ _urls.count() + 3 ];
@@ -255,12 +255,12 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
     int i = 1;
     QStringList::Iterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
-      argv[ i++ ] = (char*)it->ascii();
+      argv[ i++ ] = (char*)(*it).ascii();
     argv[ i ] = 0;
-      
+
     int pid;
     if ( ( pid = fork() ) == 0 )
-    {    
+    {
       execvp( argv[0], argv );
       _exit(1);
     }
@@ -272,18 +272,18 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
     {
       argv = new char*[ 3 ];
       argv[ 0 ] = (char*)kfmexec.data();
-      argv[ 1 ] = (char*)it->ascii();
+      argv[ 1 ] = (char*)(*it).ascii();
       argv[ 2 ] = 0;
-      
+
       int pid;
       if ( ( pid = fork() ) == 0 )
-      {    
+      {
 	execvp( argv[0], argv );
 	_exit(1);
       }
     }
   }
-  
+
   return true;
 }
 
@@ -310,12 +310,12 @@ KRun::KRun( const QString& _url, mode_t _mode, bool _is_local_file, bool _auto_d
 void KRun::init()
 {
   kdebug( KDEBUG_INFO, 7010, "INIT called" );
-  
+
   KURL url( m_strURL );
-  
+
   if ( !m_bIsLocalFile && url.isLocalFile() )
     m_bIsLocalFile = true;
-  
+
   if ( m_bIsLocalFile )
   {
     if ( m_mode == 0 )
@@ -357,7 +357,7 @@ void KRun::init()
   }
 
   kdebug( KDEBUG_INFO, 7010, "##### TESTING DIRECTORY" );
-  
+
   // It may be a directory
   KIOJob* job = new KIOJob();
   connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory( int ) ) );
@@ -381,7 +381,7 @@ KRun::~KRun()
 void KRun::scanFile()
 {
   kdebug( KDEBUG_INFO, 7010, "###### Scanning file %s", m_strURL.data() );
-  
+
   KIOJob* job = new KIOJob();
   connect( job, SIGNAL( sigMimeType( int, const char* ) ), this, SLOT( slotMimeType( int, const char* ) ) );
   connect( job, SIGNAL( sigPreData( int, const char*, int ) ),
@@ -402,7 +402,7 @@ void KRun::slotTimeout()
     init();
     return;
   }
-  
+
   if ( m_bFault ){
       emit error();
   }
@@ -417,12 +417,12 @@ void KRun::slotTimeout()
     return;
   }
   else if ( m_bIsDirectory )
-  {    
+  {
     m_bIsDirectory = false;
     foundMimeType( "inode/directory" );
     return;
   }
-  
+
   if ( m_bAutoDelete )
   {
     delete this;
@@ -448,7 +448,7 @@ void KRun::slotFinished( int /* _id */ )
   kdebug( KDEBUG_INFO, 7010, "####### FINISHED" );
 
   if ( m_bFault )
-  {    
+  {
     m_bFinished = true;
 
     if ( m_bAutoDelete )
@@ -458,7 +458,7 @@ void KRun::slotFinished( int /* _id */ )
     }
     return;
   }
-  
+
   // Start the timer. Once we get the timer event this
   // protocol server is back in the pool and we can reuse it.
   // This gives better performance then starting a new slave
@@ -474,7 +474,7 @@ void KRun::slotError( int, int _errid, const char *_errortext )
   kioErrorDialog( _errid, _errortext );
 
   m_bFault = true;
-  // m_timer.start( 0, true ); 
+  // m_timer.start( 0, true );
 }
 
 void KRun::slotMimeType( int, const char *_type )
@@ -516,14 +516,14 @@ void KRun::foundMimeType( const char *_type )
     // Move the HTML style reference to the leftmost URL
     KURL::List::Iterator it = lst.begin();
     ++it;
-    lst.begin()->setRef( it->ref() );
-    it->setRef( QString::null );
-    
+    (*lst.begin()).setRef( (*it).ref() );
+    (*it).setRef( QString::null );
+
     // Create the new URL
     m_strURL = KURL::join( lst );
-    
+
     kdebug( KDEBUG_INFO, 7010, "Now trying with %s", m_strURL.ascii() );
-    
+
     killJob();
 
     KIOJob* job = new KIOJob();

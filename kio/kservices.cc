@@ -29,21 +29,21 @@ void KService::initStatic()
 KService* KService::service( const QString& _name )
 {
   initStatic();
-  
+
   assert( s_lstServices );
 
   KService *s;
   for( s = s_lstServices->first(); s != 0L; s = s_lstServices->next() )
     if ( s->name() == _name )
       return s;
-  
+
   return 0L;
 }
 
 KService::KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
-                    const QString& _icon, const QStringList& _lstServiceTypes, 
-		    const QString& _comment, bool _allow_as_default, 
-		    const QString& _path, const QString& _terminal, 
+                    const QString& _icon, const QStringList& _lstServiceTypes,
+		    const QString& _comment, bool _allow_as_default,
+		    const QString& _path, const QString& _terminal,
 		    const QString&, const QString& _act_mode,
 		    const QStringList& _repo_ids, bool _put_in_list )
 {
@@ -52,7 +52,7 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
 
   if ( _put_in_list )
     s_lstServices->append( this );
-  
+
   m_strName = _name;
   m_strExec = _exec;
   m_strCORBAExec = _corbaexec;
@@ -95,7 +95,7 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
 
   m_strCORBAExec = config.readEntry( "CORBAExec" ); //should we use X-KDE-CORBAExec instead?? (Simon)
   m_strIcon = config.readEntry( "Icon", "unknown.xpm" );
-  m_strTerminalOptions = config.readEntry( "TerminalOptions" );  
+  m_strTerminalOptions = config.readEntry( "TerminalOptions" );
   m_strPath = config.readEntry( "Path" );
   m_strComment = config.readEntry( "Comment" );
   m_strActivationMode = config.readEntry( "X-KDE-ActivationMode", "UNIX" );
@@ -105,11 +105,11 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
   m_lstServiceTypes += config.readListEntry( "MimeType", ';' );
 
   m_bAllowAsDefault = config.readBoolEntry( "AllowDefault" );
-  
+
   // Load all additional properties
   QStringList::Iterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
-  {    
+  {
     KServiceType* s = KServiceType::serviceType( *it );
     if ( s )
     {
@@ -121,7 +121,7 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
       }
     }
   }
-  
+
 }
 
 KService::KService( QDataStream& _str, bool _put_in_list )
@@ -142,19 +142,19 @@ KService::~KService()
 void KService::load( QDataStream& s )
 {
   Q_INT8 b;
-  
-  s >> m_strName >> m_strExec >> m_strCORBAExec >> m_strIcon >> m_strTerminalOptions 
-    >> m_strPath >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps 
+
+  s >> m_strName >> m_strExec >> m_strCORBAExec >> m_strIcon >> m_strTerminalOptions
+    >> m_strPath >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps
     >> m_strActivationMode >> m_lstRepoIds;
   m_bAllowAsDefault = b;
-  
+
   m_bValid = true;
 }
 
 void KService::save( QDataStream& s ) const
 {
-  s << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions 
-    << m_strPath << m_strComment << m_lstServiceTypes << (Q_INT8)m_bAllowAsDefault 
+  s << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions
+    << m_strPath << m_strComment << m_lstServiceTypes << (Q_INT8)m_bAllowAsDefault
     << m_mapProps << m_strActivationMode << m_lstRepoIds;
 }
 
@@ -163,11 +163,11 @@ bool KService::hasServiceType( const QString& _servicetype ) const
   if (!m_bValid) return false; // safety test
 
   kdebug(KDEBUG_INFO, 7012, "Testing %s", m_strName.ascii());
-  
+
   QStringList::ConstIterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
-    kdebug(KDEBUG_INFO, 7012, "    has %s", it->ascii() );
-  
+    kdebug(KDEBUG_INFO, 7012, "    has %s", (*it).ascii() );
+
   // TODO : what about "all", "allfiles" and "alldirs" ?
   return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );
 }
@@ -202,29 +202,29 @@ KService::PropertyPtr KService::property( const QString& _name ) const
     p = new QProperty( m_bAllowAsDefault );
 
   if ( p )
-  {    
+  {
     // We are not interestes in these
     p->deref();
     return p;
   }
-  
+
   QMap<QString,QProperty>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
     return (QProperty*)0;
-  
+
   p = (QProperty*)(&(it.data()));
-  
+
   return p;
 }
 
 QStringList KService::propertyNames() const
 {
   QStringList res;
-  
+
   QMap<QString,QProperty>::ConstIterator it = m_mapProps.begin();
   for( ; it != m_mapProps.end(); ++it )
     res.append( it.key() );
-  
+
   res.append( "Name" );
   res.append( "Comment" );
   res.append( "Icon" );
