@@ -105,6 +105,8 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
                      // by the first row parsed
     totalRows = 1;
     allocRows = 5;   // allocate five rows initially
+    rowHeights.resize( totalRows+1 );
+    rowHeights[0] = rowHeights[1] = 0;
 
     cells = new RenderTableCell ** [allocRows];
 
@@ -1550,7 +1552,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
                                   int _w, int _h, int _tx, int _ty)
 {
 
-    if(!layouted()) return;
+//     if(!layouted()) return;
 
     _tx += xPos();
     _ty += yPos();
@@ -1573,6 +1575,11 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
     if ( tCaption )
         tCaption->print( p, _x, _y, _w, _h, _tx, _ty );
+
+    // the case below happens during parsing
+    // when we have a new table that never got layouted. Don't print it.
+    if ( totalRows == 1 && rowHeights[1] == 0 )
+	return;
 
     // check which rows and cols are visible and only print these
     // ### fixme: could use a binary search here
