@@ -56,7 +56,7 @@ public:
 	KURLCompletion();
 	/**
 	 * This overloaded constructor allows you to set the Mode to ExeCompletion
-	 * or FileCompletion without using @ref setMode
+	 * or FileCompletion without using @ref setMode. Default is FileCompletion
 	 */
 	KURLCompletion(Mode);
 
@@ -110,6 +110,9 @@ public:
 	 */
 	virtual bool replaceEnv() { return m_replace_env; };
 	
+        /**
+	 * Enables/disables replacing of environment variables (default is enabled)
+	 */
 	virtual void setReplaceEnv( bool replace ) { m_replace_env = replace; };
 
 	/**
@@ -117,6 +120,10 @@ public:
 	 */
 	virtual bool replaceHome() { return m_replace_home; };
 	
+        /**
+	 * Enables/disables replacing of ~username with the user's homedirectory.
+	 * Default is enabled.
+	 */
 	virtual void setReplaceHome( bool replace ) { m_replace_home = replace; };
 
 protected:
