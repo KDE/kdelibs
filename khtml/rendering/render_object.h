@@ -300,7 +300,7 @@ public:
 
     virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, CachedImage* /*bg*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
-                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ ) {};
+                                         int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ ) {}
 
 
     /*
@@ -343,7 +343,7 @@ public:
 
     // used for element state updates that can not be fixed with a
     // repaint and do not need a relayout
-    virtual void updateFromElement() {};
+    virtual void updateFromElement() {}
 
     // The corresponding closing element has been parsed. ### remove me
     virtual void close() { }

@@ -40,7 +40,7 @@ public:
         m_parent = 0;
     }
 
-    virtual ~InlineBox() {};
+    virtual ~InlineBox() {}
 
     void detach(RenderArena* renderArena);
 
@@ -135,9 +135,9 @@ public:
     void setPreviousLineBox(InlineRunBox* p) { m_prevLine = p; }
 
     virtual void paintBackgroundAndBorder(QPainter* /*p*/, int /*_x*/, int /*_y*/,
-                       int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/, int /*xOffsetOnLine*/) {};
+                       int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/, int /*xOffsetOnLine*/) {}
     virtual void paintDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
-                       int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {};
+                       int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
 protected:
     InlineRunBox* m_prevLine;  // The previous box that also uses our RenderObject
