@@ -2716,8 +2716,21 @@ void KApplication::initUrlActionRestrictions()
   }
 }
 
+void KApplication::allowURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
+{
+  if (authorizeURLAction(action, _baseURL, _destURL))
+     return;
+     
+  d->urlActionRestrictions.append(new KApplicationPrivate::URLActionRule
+        ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(-1),
+                  _destURL.protocol(), _destURL.host(), _destURL.path(-1), true));
+}
+
 bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
 {
+  if (_destURL.isEmpty())
+     return true;
+
   bool result = false;
   if (d->urlActionRestrictions.isEmpty())
      initUrlActionRestrictions();

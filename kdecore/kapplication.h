@@ -955,6 +955,17 @@ public:
   bool authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL);
 
   /**
+   * Allow a certain URL action. This can be useful if your application
+   * needs to ensure access to an application specific directory that may 
+   * otherwise be subject to KIOSK restrictions.
+   * @param action The name of the action.
+   * @param baseURL The url where the action originates from
+   * @param destURL The object of the action
+   * @since 3.2
+   */
+  void allowURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL);
+
+  /**
    * Returns whether access to a certain control module is authorized.
    *
    * @param menuId identifying the control module, e.g. kde-mouse.desktop
