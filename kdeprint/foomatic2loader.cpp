@@ -208,54 +208,83 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 {
 	if ( !m_foodata.isEmpty() )
 	{
-		QVariant v = m_foodata.find( "VAR" ).data();
-		if ( !v.isNull() && v.type() == QVariant::Map )
+		QValueList<DrBase*> optList;
+		DrGroup *grp = NULL;
+
+		QVariant V = m_foodata.find( "VAR" ).data();
+		if ( !V.isNull() && V.type() == QVariant::Map )
 		{
-			v = v.mapFind( "args" ).data();
+			QVariant v = V.mapFind( "args" ).data();
 			if ( !v.isNull() && v.type() == QVariant::List )
 			{
 				QValueList<QVariant>::ConstIterator it = v.listBegin();
-				DrGroup *grp = NULL;
 				for ( ; it!=v.listEnd(); ++it )
 				{
 					if ( ( *it ).type() != QVariant::Map )
 						continue;
 					DrBase *opt = createOption( ( *it ).toMap() );
 					if ( opt )
-						switch ( opt->type() )
-						{
-							case DrBase::List:
-							case DrBase::Boolean:
-								delete opt;
-								break;
-							default:
-								{
-									if ( !grp )
-									{
-										grp = new DrGroup;
-										grp->set( "text", i18n( "Adjustments" ) );
-										driver->addGroup( grp );
-									}
-									DrBase *oldOpt = driver->findOption( opt->name() );
-									if ( oldOpt && oldOpt->type() == DrBase::List )
-									{
-										QPtrListIterator<DrBase> it( *( static_cast<DrListOption*>( oldOpt )->choices() ) );
-										QString fixedvals;
-										for ( ; it.current(); ++it )
-										{
-											fixedvals.append( it.current()->name() );
-											if ( !it.atLast() )
-												fixedvals.append( "|" );
-										}
-										opt->set( "fixedvals", fixedvals );
-									}
-									driver->removeOptionGlobally( opt->name() );
-									grp->addOption( opt );
-									break;
-								}
-						}
+						optList.append( opt );
 					else
 						kdWarning( 500 ) << "Failed to create option: " << ( *it ).toMap()[ "name" ].toString() << endl;
+				}
+			}
+			else
+			{
+				v = V.mapFind( "args_byname" ).data();
+				if ( !v.isNull() && v.type() == QVariant::Map )
+				{
+					QMap<QString,QVariant>::ConstIterator it = v.mapBegin();
+					for ( ; it!=v.mapEnd(); ++it )
+					{
+						if ( ( *it ).type() != QVariant::Map )
+							continue;
+						DrBase *opt = createOption( ( *it ).toMap() );
+						if ( opt )
+							optList.append( opt );
+						else
+							kdWarning( 500 ) << "Failed to create option: " << ( *it ).toMap()[ "name" ].toString() << endl;
+					}
+				}
+			}
+		}
+
+		for ( QValueList<DrBase*>::ConstIterator it=optList.begin(); it!=optList.end(); ++it )
+		{
+			DrBase *opt = ( *it );
+			if ( opt )
+			{
+				switch ( opt->type() )
+				{
+					case DrBase::List:
+					case DrBase::Boolean:
+						delete opt;
+						break;
+					default:
+						{
+							if ( !grp )
+							{
+								grp = new DrGroup;
+								grp->set( "text", i18n( "Adjustments" ) );
+								driver->addGroup( grp );
+							}
+							DrBase *oldOpt = driver->findOption( opt->name() );
+							if ( oldOpt && oldOpt->type() == DrBase::List )
+							{
+								QPtrListIterator<DrBase> it( *( static_cast<DrListOption*>( oldOpt )->choices() ) );
+								QString fixedvals;
+								for ( ; it.current(); ++it )
+								{
+									fixedvals.append( it.current()->name() );
+									if ( !it.atLast() )
+										fixedvals.append( "|" );
+								}
+								opt->set( "fixedvals", fixedvals );
+							}
+							driver->removeOptionGlobally( opt->name() );
+							grp->addOption( opt );
+							break;
+						}
 				}
 			}
 		}
