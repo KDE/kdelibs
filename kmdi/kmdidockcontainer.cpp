@@ -19,7 +19,7 @@
 
 // $Id$
 
-#include "katedockcontainer.h"
+#include "kmdidockcontainer.h"
 #include <qwidgetstack.h>
 #include <qlayout.h>
 #include <kmultitabbar.h>
@@ -42,7 +42,7 @@ static const char* const not_close_xpm[]={
 "#####"};
 
 
-KateDockContainer::KateDockContainer(QWidget *parent, QWidget *win, int position):QWidget(parent),KDockContainer()
+KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position):QWidget(parent),KDockContainer()
 {         
 	m_block=false;
 	m_inserted=-1;
@@ -88,12 +88,12 @@ KateDockContainer::KateDockContainer(QWidget *parent, QWidget *win, int position
 
 }
 
-KateDockContainer::~KateDockContainer()
+KMdiDockContainer::~KMdiDockContainer()
 {
 }
 
 
-void KateDockContainer::init()
+void KMdiDockContainer::init()
 {
 	if (m_vertical) {
 		parentDockWidget()->setForcedFixedWidth(m_tb->width());	
@@ -108,9 +108,9 @@ void KateDockContainer::init()
 }
 
 
-KDockWidget *KateDockContainer::parentDockWidget(){return ((KDockWidget*)parent());}
+KDockWidget *KMdiDockContainer::parentDockWidget(){return ((KDockWidget*)parent());}
     
-void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QString &text, int &)
+void KMdiDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QString &text, int &)
 {
 	int tab;
 	bool alreadyThere=m_map.contains(w);
@@ -146,7 +146,7 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 		kdDebug()<<"NAMENAMENAMENAME:===========================:"<<w->tabPageLabel()<<endl;
 		m_tb->setTab(tab,true);
 		connect(m_tb->tab(tab),SIGNAL(clicked(int)),this,SLOT(tabClicked(int)));
-		kdDebug()<<"KateDockContainer::insertWidget()"<<endl;
+		kdDebug()<<"KMdiDockContainer::insertWidget()"<<endl;
 		m_tb->setTab(oldtab,false);
 		mTabCnt++;
 		m_inserted=tab;
@@ -159,7 +159,7 @@ void KateDockContainer::insertWidget (KDockWidget *w, QPixmap pixmap, const QStr
 		
 }
 
-void KateDockContainer::changeOverlapMode() {
+void KMdiDockContainer::changeOverlapMode() {
 	const KDockButton_Private *btn=dynamic_cast<const KDockButton_Private*>(sender());
 	if (!btn) return;
 	if (!btn->isOn()) {
@@ -179,7 +179,7 @@ void KateDockContainer::changeOverlapMode() {
 		it.data()->setOn(!isOverlapMode());
 }
 
-void KateDockContainer::removeWidget(KDockWidget* w)
+void KMdiDockContainer::removeWidget(KDockWidget* w)
 {
 	if (!m_map.contains(w)) return;
 	int id=m_map[w];
@@ -196,7 +196,7 @@ void KateDockContainer::removeWidget(KDockWidget* w)
 	itemNames.remove(w->name());
 }
 
-void KateDockContainer::undockWidget(KDockWidget *w)
+void KMdiDockContainer::undockWidget(KDockWidget *w)
 {
 	if (!m_map.contains(w)) return;
 	kdDebug()<<"Wiget has been undocked, setting tab down"<<endl;
@@ -205,10 +205,10 @@ void KateDockContainer::undockWidget(KDockWidget *w)
 	tabClicked(id);
 }
 
-void KateDockContainer::tabClicked(int t)
+void KMdiDockContainer::tabClicked(int t)
 {
 
-	kdDebug()<<"KateDockContainer::tabClicked()"<<endl;
+	kdDebug()<<"KMdiDockContainer::tabClicked()"<<endl;
 
 	if (m_tb->isTabRaised(t))
 	{         
@@ -229,7 +229,7 @@ void KateDockContainer::tabClicked(int t)
 				if (tmpDw->getWidget()) tmpDw->getWidget()->setFocus();
 			} else kdDebug()<<"Something really wierd is going on"<<endl;
 		} else
-			kdDebug()<<"KateDockContainer::tabClicked(int): m_ws->widget(t)==0 "<<endl;
+			kdDebug()<<"KMdiDockContainer::tabClicked(int): m_ws->widget(t)==0 "<<endl;
 
 		if (oldtab!=t) m_tb->setTab(oldtab,false);
 		oldtab=t;	
@@ -253,18 +253,18 @@ void KateDockContainer::tabClicked(int t)
  	}
 }
 
-void KateDockContainer::setToolTip (KDockWidget *, QString &s)
+void KMdiDockContainer::setToolTip (KDockWidget *, QString &s)
 {
 	kdDebug()<<"***********************************Setting tooltip for a widget: "<<s<<endl;
 	;
 }
 
-void KateDockContainer::save(KConfig*)
+void KMdiDockContainer::save(KConfig*)
 {
 	KConfig *cfg=kapp->config();
 	QString grp=cfg->group();
-	cfg->deleteGroup(QString("KateDock::%1").arg(parent()->name()));
-	cfg->setGroup(QString("KateDock::%1").arg(parent()->name()));
+	cfg->deleteGroup(QString("KMdiDock::%1").arg(parent()->name()));
+	cfg->setGroup(QString("KMdiDock::%1").arg(parent()->name()));
 	
 	if (isOverlapMode()) cfg->writeEntry("overlapMode","true");
 		else cfg->writeEntry("overlapMode","false");
@@ -287,11 +287,11 @@ void KateDockContainer::save(KConfig*)
 
 }
   
-void KateDockContainer::load(KConfig*)
+void KMdiDockContainer::load(KConfig*)
 {
 	KConfig *cfg=kapp->config();
 	QString grp=cfg->group();	
-	cfg->setGroup(QString("KateDock::%1").arg(parent()->name()));
+	cfg->setGroup(QString("KMdiDock::%1").arg(parent()->name()));
 	
 	if (cfg->readEntry("overlapMode")!="false")
 		activateOverlapMode(m_tb->width());
@@ -355,13 +355,13 @@ void KateDockContainer::load(KConfig*)
 	
 }
 
-void KateDockContainer::delayedRaise()
+void KMdiDockContainer::delayedRaise()
 {
 				m_tb->setTab(m_delayedRaise,true);
 				tabClicked(m_delayedRaise);
 }
 
-void KateDockContainer::collapseOverlapped()
+void KMdiDockContainer::collapseOverlapped()
 {
 	if (isOverlapMode()){
 		QPtrList<KMultiTabBarTab>* tl=m_tb->tabs();
@@ -376,4 +376,4 @@ void KateDockContainer::collapseOverlapped()
 	}
 }
 
-#include "katedockcontainer.moc"
+#include "kmdidockcontainer.moc"
