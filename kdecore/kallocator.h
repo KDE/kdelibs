@@ -91,9 +91,6 @@ public:
      * Deallocate many objects at once.
      * @ref free_since() deallocates all objects allocated after @p ptr, 
      * @em including @p ptr itself.
-     * @param ptr Pointer as returned by @ref allocate().  It acts like
-     * a kind of mark of a certain position in the stack of all objects,
-     * off which you can throw away everything above that mark.
      *
      * The intended use is something along the lines of:
      * <pre>
@@ -106,6 +103,9 @@ public:
      * Note, that we don't need to remember all the pointers to the 12-byte
      * objects for freeing them.  The @ref free_since() does deallocate them
      * all at once.
+     * @param ptr Pointer as returned by @ref allocate().  It acts like
+     * a kind of mark of a certain position in the stack of all objects,
+     * off which you can throw away everything above that mark.
      */
     void free_since(void *ptr);
 
