@@ -169,11 +169,11 @@ public:
 	if ( block )
 	    return false;
 	if ( e->type() == QEvent::Accel ) {
-	    if ( ( (QKeyEvent*) e )->key() == key ) {
+	    if ( ( static_cast<QKeyEvent *>(e) )->key() == key ) {
 		block = true;
 		checkAccelerators();
 		block = false;
-		( (QKeyEvent*) e )->accept();
+		( static_cast<QKeyEvent *>(e) )->accept();
 		return true;
 	    }
 	}
@@ -265,10 +265,10 @@ public:
 	    return;
 	QMenuBar* mbar = 0;
 	for ( QObject *o = l->first(); o; o = l->next() ) {
-	    if ( ( (QWidget*)o )->isVisibleTo( actWin ) ) {
-		QWidget *w = (QWidget*)o;
+	    if ( ( static_cast<QWidget *>(o) )->isVisibleTo( actWin ) ) {
+		QWidget *w = static_cast<QWidget *>(o);
 		if ( w->inherits( "QMenuBar" ) )
-		    mbar = (QMenuBar*) w;
+		    mbar = static_cast<QMenuBar *>(w);
 		const QMetaProperty* text = w->metaObject()->property( "text", TRUE );
 		const QMetaProperty* title = w->metaObject()->property( "title", TRUE );
 		if ( text )
@@ -277,7 +277,7 @@ public:
 		    findAccel( w->className(), w->property( "title" ).toString(), accels );
 
 		if ( w->inherits( "QTabBar" ) ) {
-		    QTabBar* tbar = (QTabBar*) w;
+		    QTabBar *tbar = static_cast<QTabBar *>(w);
 		    for ( int i = 0; i < tbar->count(); i++ )
 			findAccel( tbar->className(), tbar->tab( i )->text(), accels );
 		}
@@ -444,7 +444,7 @@ void KApplication::x11FilterDestroyed()
 {
     if ( !x11Filter || !sender() )
         return;
-    QWidget* w = (QWidget*) sender();
+    QWidget *w = static_cast<QWidget *>(const_cast<QObject *>(sender()));
     x11Filter->removeRef( w );
     if ( x11Filter->isEmpty() ) {
         delete x11Filter;
@@ -460,7 +460,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
        static uint _selectAll = KStdAccel::selectAll();
        if (receiver && receiver->inherits("QLineEdit"))
        {
-          QLineEdit* edit = static_cast<QLineEdit*>(receiver);
+          QLineEdit *edit = static_cast<QLineEdit *>(receiver);
           // We have a keypress for a lineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
           if (KStdAccel::isEqual(kevent, _selectAll))
@@ -497,7 +497,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
        }
        if (receiver && receiver->inherits("QMultiLineEdit"))
        {
-          QMultiLineEdit* medit = static_cast<QMultiLineEdit*>(receiver);
+          QMultiLineEdit *medit = static_cast<QMultiLineEdit *>(receiver);
           // We have a keypress for a multilineedit...
           QKeyEvent *kevent = static_cast<QKeyEvent *>(event);
           if (KStdAccel::isEqual(kevent, _selectAll))
@@ -1154,7 +1154,7 @@ QString KApplication::geometryArgument() const
 QPixmap KApplication::icon() const
 {
   if( aIconPixmap.isNull()) {
-      KApplication *that = const_cast<KApplication*>(this);
+      KApplication *that = const_cast<KApplication *>(this);
       that->aIconPixmap = DesktopIcon( instanceName() );
   }
   return aIconPixmap;
@@ -1163,7 +1163,7 @@ QPixmap KApplication::icon() const
 QPixmap KApplication::miniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
-      KApplication *that = const_cast<KApplication*>(this);
+      KApplication *that = const_cast<KApplication *>(this);
       that->aMiniIconPixmap = SmallIcon( instanceName() );
   }
   return aMiniIconPixmap;
@@ -1238,7 +1238,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
     }
 
     if (x11Filter) {
-        for (QWidget* w=x11Filter->first(); w; w=x11Filter->next()) {
+        for (QWidget *w=x11Filter->first(); w; w=x11Filter->next()) {
             if (((KAppX11HackWidget*) w)->publicx11Event(_event))
                 return true;
         }
@@ -2116,15 +2116,15 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     XClassHint hint;
     hint.res_name = string_buffer.data();
-    hint.res_class = const_cast<char*>("toplevel");
+    hint.res_class = const_cast<char *>("toplevel");
     XSetClassHint(display, leader, &hint);
 
-    XWMHints * hints = XAllocWMHints();
+    XWMHints *hints = XAllocWMHints();
     hints->window_group = leader;
     hints->input = True;
     hints->flags = WindowGroupHint | InputHint;
     XSetWMHints(display, leader, hints);
-    XFree( (char*)hints);
+    XFree(reinterpret_cast<char *>(hints));
 
     NETWinInfo info(qt_xdisplay(), topWidget->winId(), qt_xrootwin(),
         NET::WMName | NET::WMPid
