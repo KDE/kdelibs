@@ -127,6 +127,7 @@ extern "C" {
 #include <kdebug.h>
 #include <kstandarddirs.h>	// locate
 
+// not defined on HP-UX for example
 #ifndef CTRL
 # define CTRL(x) ((x) & 037)
 #endif
@@ -161,10 +162,10 @@ public:
 //////////////////
 
 struct KPtyPrivate {
-   KPtyPrivate() : 
+   KPtyPrivate() :
      xonXoff(false),
      masterFd(-1), slaveFd(-1)
-   { 
+   {
      memset(&winSize, 0, sizeof(winSize));
      winSize.ws_row = 24;
      winSize.ws_col = 80;
@@ -192,7 +193,7 @@ KPty::~KPty()
   close();
   delete d;
 }
-  
+
 bool KPty::open()
 {
   if (d->masterFd >= 0)
@@ -229,12 +230,12 @@ bool KPty::open()
 
   // Linux device names, FIXME: Trouble on other systems?
   for (const char* s3 = "pqrstuvwxyzabcdefghijklmno"; *s3; s3++)
-  { 
+  {
     for (const char* s4 = "0123456789abcdefghijklmnopqrstuvwxyz"; *s4; s4++)
-    { 
+    {
       ptyName.sprintf("/dev/pty%c%c", *s3, *s4);
       d->ttyName.sprintf("/dev/tty%c%c", *s3, *s4);
-         
+
       d->masterFd = ::open(ptyName.data(), O_RDWR);
       if (d->masterFd >= 0)
       {
@@ -311,8 +312,8 @@ bool KPty::open()
 
     // set xon/xoff & control keystrokes
   // without the '::' some version of HP-UX thinks, this declares
-  // the struct in this class, in this method, and fails to find 
-  // the correct tc[gs]etattr 
+  // the struct in this class, in this method, and fails to find
+  // the correct tc[gs]etattr
   struct ::termios ttmode;
 
   _tcgetattr(d->slaveFd, &ttmode);
@@ -413,7 +414,7 @@ void KPty::login(const char *user, const char *remotehost)
 # endif
 
     // Handle 64-bit time_t properly, where it may be larger
-    // than the integral type of ut_time. 
+    // than the integral type of ut_time.
     {
         time_t ut_time_temp;
         time(&ut_time_temp);
@@ -456,14 +457,14 @@ void KPty::setWinSize(int lines, int columns)
   if (d->masterFd >= 0)
     ioctl( d->masterFd, TIOCSWINSZ, (char *)&d->winSize );
 }
-  
+
 void KPty::setXonXoff(bool useXonXoff)
 {
   d->xonXoff = useXonXoff;
   if (d->masterFd >= 0) {
     // without the '::' some version of HP-UX thinks, this declares
-    // the struct in this class, in this method, and fails to find 
-    // the correct tc[gs]etattr 
+    // the struct in this class, in this method, and fails to find
+    // the correct tc[gs]etattr
     struct ::termios ttmode;
 
     _tcgetattr(d->masterFd, &ttmode);
