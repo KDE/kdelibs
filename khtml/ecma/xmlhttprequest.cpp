@@ -358,7 +358,7 @@ void XMLHttpRequest::send(const QString& _body)
 void XMLHttpRequest::abort()
 {
   if (job) {
-    job->kill(false);
+    job->kill();
     job = 0;
   }
   delete decoder;
@@ -496,14 +496,16 @@ void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &
   slotFinished(0);
 }
 
-void XMLHttpRequest::slotFinished(KIO::Job *job)
+void XMLHttpRequest::slotFinished(KIO::Job *)
 {
   if (decoder) {
     response += decoder->flush();
   }
 
-  changeState(Completed);
+  // make sure to forget about the job before emitting completed,
+  // since changeState triggers JS code, which might e.g. call abort.
   job = 0;
+  changeState(Completed);
 
   delete decoder;
   decoder = 0;
