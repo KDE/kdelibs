@@ -16,6 +16,8 @@
 #define __KDE_su_Client_h_Included__
 
 #include <qglobal.h>
+#include <kdelibs_export.h>
+
 #ifdef Q_OS_UNIX
 
 #include <sys/types.h>
@@ -45,7 +47,7 @@ typedef QValueList<QCString> QCStringList;
  * See setVar, delVar, delGroup.
  */
 
-class KDEsuClient {
+class KDESU_EXPORT KDEsuClient {
 public:
     KDEsuClient();
     ~KDEsuClient();
