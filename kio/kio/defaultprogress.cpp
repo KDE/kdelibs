@@ -229,7 +229,9 @@ void DefaultProgress::showTotals()
 
 void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
 {
-  QString tmp(i18n( "%1% of %2 ").arg( percent ).arg( KIO::convertSize(m_iTotalSize)));
+  QString total = m_iTotalSize ? KIO::convertSize( m_iTotalSize )
+                  : i18n( "%1 files" ).arg( m_iTotalFiles );
+  QString tmp = i18n( "%1 % of %2 " ).arg( percent ).arg( total );
   m_pProgressBar->setValue( percent );
   switch(mode) {
   case Copy:
