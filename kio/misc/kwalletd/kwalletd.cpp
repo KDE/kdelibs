@@ -20,6 +20,7 @@
 
 */
 
+#include "kwalletwizard.h"
 #include "kwalletd.h"
 #include "ktimeout.h"
 
@@ -61,6 +62,7 @@ KWalletD::KWalletD(const QCString &name)
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	KApplication::dcopClient()->setNotifications(true);
+	KApplication::dcopClient()->setQtBridgeEnabled(false);
 	connect(KApplication::dcopClient(),
 		SIGNAL(applicationRemoved(const QCString&)),
 		this,
@@ -100,7 +102,7 @@ int rc;
 	// ASSUMPTION: RAND_MAX is fairly large.
 	do {
 		rc = rand();
-	} while(_wallets.find(rc));
+	} while (_wallets.find(rc));
 
 return rc;
 }
@@ -116,6 +118,41 @@ void KWalletD::openAsynchronous(const QString& wallet, const QCString& returnObj
 int KWalletD::open(const QString& wallet) {
 	if (!_enabled) { // guard
 		return -1;
+	}
+
+	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) { // First use wizard
+		KApplication::dcopClient()->suspend();
+		KWalletWizard *wiz = new KWalletWizard;
+		int rc = wiz->exec();
+		KApplication::dcopClient()->resume();
+		if (rc == QDialog::Accepted) {
+			KConfig cfg("kwalletrc");
+			cfg.setGroup("Wallet");
+			cfg.writeEntry("First Use", false);
+			cfg.writeEntry("Enabled", wiz->_useWallet->isChecked());
+			cfg.writeEntry("Close When Idle", wiz->_closeIdle->isChecked());
+			cfg.writeEntry("Use One Wallet", !wiz->_networkWallet->isChecked());
+			cfg.sync();
+			reconfigure();
+			// Create the wallet
+			KWallet::Backend *b = new KWallet::Backend(KWallet::Wallet::LocalWallet());
+			QByteArray p;
+			p.duplicate(wiz->_pass1->text().utf8(), wiz->_pass1->text().length());
+			b->open(p);
+			b->close(p);
+			p.fill(0);
+			delete b;
+			delete wiz;
+		} else {
+			delete wiz;
+			return -1;
+		}
+	} else if (_firstUse) {
+		KConfig cfg("kwalletrc");
+		_firstUse = false;
+		cfg.setGroup("Wallet");
+		cfg.writeEntry("First Use", false);
+		cfg.sync();
 	}
 
 	int rc = -1;
@@ -138,6 +175,10 @@ int KWalletD::open(const QString& wallet) {
 			kdDebug() << "Too many wallets open." << endl;
 			return -1;
 		}
+
+		// Any place where we could prompt, we have to serialize in the
+		// event loop
+		KApplication::dcopClient()->suspend();
 
 		KWallet::Backend *b = new KWallet::Backend(wallet);
 		KPasswordDialog *kpd;
@@ -174,6 +215,7 @@ int KWalletD::open(const QString& wallet) {
 		if (!p || !b->isOpen()) {
 			delete b;
 			delete kpd;
+			KApplication::dcopClient()->resume();
 			return -1;
 		}
 
@@ -201,6 +243,7 @@ int KWalletD::open(const QString& wallet) {
 		if (_wallets.count() == 1 && _launchManager) {
 			KApplication::startServiceByDesktopName("kwalletmanager");
 		}
+		KApplication::dcopClient()->resume();
 	} else {
 		int response = KMessageBox::Yes;
 
@@ -834,6 +877,7 @@ void KWalletD::emitWalletListDirty() {
 void KWalletD::reconfigure() {
 	KConfig cfg("kwalletrc");
 	cfg.setGroup("Wallet");
+	_firstUse = cfg.readBoolEntry("First Use", true);
 	_enabled = cfg.readBoolEntry("Enabled", true);
 	_launchManager = cfg.readBoolEntry("Launch Manager", true);
 	_leaveOpen = cfg.readBoolEntry("Leave Open", false);

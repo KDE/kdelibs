@@ -116,9 +116,6 @@
                         <property name="name">
                             <cstring>_advanced</cstring>
                         </property>
-                        <property name="enabled">
-                            <bool>false</bool>
-                        </property>
                         <property name="text">
                             <string>&amp;Advanced Setup</string>
                         </property>
@@ -159,6 +156,27 @@
                     </size>
                 </property>
             </spacer>
+        </grid>
+    </widget>
+    <widget class="QWidget">
+        <property name="name">
+            <cstring>page4</cstring>
+        </property>
+        <attribute name="title">
+            <string>Information</string>
+        </attribute>
+        <grid>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <widget class="QLabel" row="0" column="0">
+                <property name="name">
+                    <cstring>textLabel2_3</cstring>
+                </property>
+                <property name="text">
+                    <string>The KDE Wallet system stores your data in a &lt;i&gt;wallet&lt;/i&gt; file on your local hard disk.  The data is only written in encrypted form, presently using the blowfish algorithm with your password as the key.  When a wallet is opened, the wallet manager application will launch and display an icon in the system tray.  You can use this application to manage your wallets.  It even permits you to drag wallets and wallet contents, allowing you to easily copy a wallet to a remote system.</string>
+                </property>
+            </widget>
         </grid>
     </widget>
     <widget class="QWidget">
@@ -355,6 +373,80 @@
             </widget>
         </grid>
     </widget>
+    <widget class="QWidget">
+        <property name="name">
+            <cstring>page3</cstring>
+        </property>
+        <attribute name="title">
+            <string>Security Level</string>
+        </attribute>
+        <grid>
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
+                <property name="name">
+                    <cstring>textLabel1_3</cstring>
+                </property>
+                <property name="text">
+                    <string>The KDE Wallet system allows you to control the level of security of your personal data.  Some of these settings do impact usability.  While the default settings are generally acceptable for most users, you may wish to change some of them.  You may further tune these settings from the KWallet control module.</string>
+                </property>
+                <property name="alignment">
+                    <set>WordBreak|AlignVCenter</set>
+                </property>
+            </widget>
+            <spacer row="4" column="1">
+                <property name="name">
+                    <cstring>spacer8</cstring>
+                </property>
+                <property name="orientation">
+                    <enum>Vertical</enum>
+                </property>
+                <property name="sizeType">
+                    <enum>Expanding</enum>
+                </property>
+                <property name="sizeHint">
+                    <size>
+                        <width>21</width>
+                        <height>121</height>
+                    </size>
+                </property>
+            </spacer>
+            <widget class="QCheckBox" row="3" column="0" rowspan="1" colspan="2">
+                <property name="name">
+                    <cstring>_networkWallet</cstring>
+                </property>
+                <property name="text">
+                    <string>Store network passwords and local passwords in separate wallet files</string>
+                </property>
+            </widget>
+            <widget class="QCheckBox" row="2" column="0">
+                <property name="name">
+                    <cstring>_closeIdle</cstring>
+                </property>
+                <property name="text">
+                    <string>Automatically close idle wallets</string>
+                </property>
+            </widget>
+            <spacer row="1" column="0">
+                <property name="name">
+                    <cstring>spacer9</cstring>
+                </property>
+                <property name="orientation">
+                    <enum>Vertical</enum>
+                </property>
+                <property name="sizeType">
+                    <enum>Expanding</enum>
+                </property>
+                <property name="sizeHint">
+                    <size>
+                        <width>21</width>
+                        <height>51</height>
+                    </size>
+                </property>
+            </spacer>
+        </grid>
+    </widget>
 </widget>
 <connections>
     <connection>
@@ -405,6 +497,18 @@
         <receiver>KWalletWizard</receiver>
         <slot>passwordPageUpdate()</slot>
     </connection>
+    <connection>
+        <sender>_advanced</sender>
+        <signal>clicked()</signal>
+        <receiver>KWalletWizard</receiver>
+        <slot>setAdvanced()</slot>
+    </connection>
+    <connection>
+        <sender>_basic</sender>
+        <signal>clicked()</signal>
+        <receiver>KWalletWizard</receiver>
+        <slot>setBasic()</slot>
+    </connection>
 </connections>
 <tabstops>
     <tabstop>_basic</tabstop>
@@ -415,9 +519,14 @@
 </tabstops>
 <includes>
     <include location="local" impldecl="in implementation">kwalletwizard.ui.h</include>
+    <include location="global" impldecl="in declaration">qcheckbox.h</include>
 </includes>
 <slots>
     <slot access="private">passwordPageUpdate()</slot>
+    <slot access="private">init()</slot>
+    <slot>setAdvanced()</slot>
+    <slot>setBasic()</slot>
+    <slot access="private">destroy()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

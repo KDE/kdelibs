@@ -153,7 +153,7 @@ class KWalletD : public KDEDModule {
 		KDirWatch *_dw;
 		int _failed;
 
-		bool _leaveOpen, _closeIdle, _launchManager, _enabled, _openPrompt;
+		bool _leaveOpen, _closeIdle, _launchManager, _enabled, _openPrompt, _firstUse;
 		int _idleTime;
 		QMap<QString,QStringList> _implicitAllowMap;
 		KTimeout *_timeouts;
