@@ -219,7 +219,14 @@ public:
 
   QString m_userHeaders;
 
-  QString m_lastFindWord;
+  struct findState
+  {
+    QString text;
+    bool caseSensitive;
+    bool direction;
+  };
+  
+  findState m_lastFindState;
 };
 
 namespace khtml {
@@ -2464,14 +2471,18 @@ void KHTMLPart::slotFind()
     part = static_cast<KHTMLPart *>( partManager()->activePart() );
 
   assert( part->inherits( "KHTMLPart" ) );
-  
+
   KHTMLFind *findDlg = new KHTMLFind( part, d->m_view, "khtmlfind" );
-  findDlg->setText( part->d->m_lastFindWord );
+  findDlg->setText( part->d->m_lastFindState.text );
+  findDlg->setCaseSensitive( part->d->m_lastFindState.caseSensitive );
+  findDlg->setDirection( part->d->m_lastFindState.direction );
 
   findDlg->exec();
 
-  part->d->m_lastFindWord = findDlg->getText();
-  
+  part->d->m_lastFindState.text = findDlg->getText();
+  part->d->m_lastFindState.caseSensitive = findDlg->case_sensitive();
+  part->d->m_lastFindState.direction = findDlg->get_direction();
+
   delete findDlg;
 }
 
