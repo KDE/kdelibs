@@ -691,8 +691,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
         popup->insertItem( SmallIconSet("editdelete"), i18n("&Remove Entry"),
                           RemoveItem );
     }
-    else
-        popup->insertItem(SmallIconSet("filenew"), i18n("&Add Entry..."), AddItem);
+    popup->insertItem(SmallIconSet("filenew"), i18n("&Add Entry..."), AddItem);
     
     int result = popup->exec( pos );
     switch ( result ) {
