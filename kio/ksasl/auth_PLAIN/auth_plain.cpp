@@ -1,97 +1,70 @@
 // $Id$
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <qstring.h>
 
 #include <kdebug.h>
+#include <kinstance.h>
+#include <kmdbase.h>
 
-#include "../saslmodule.h"
+#include "auth_plain.h"
 
-DECLARE_SASL_MODULE("PLAIN", PlainAuth);
-
-QString base64_encode_string(const QString &string);
-QString base64_encode_auth_line(const QString &username, const QString &pass);
-
-PlainAuth::PlainAuth()
-	: KSASLAuthModule()
+PlainAuthModule::PlainAuthModule(QObject *parent, const char *name)
+	: KSASLAuthModule(parent, name)
 {
 }
 
-PlainAuth::~PlainAuth()
+PlainAuthModule::~PlainAuthModule()
 {
 }
 
-QString PlainAuth::auth_response(const QString &, const KURL &auth_url)
+QString PlainAuthModule::auth_method()
 {
-	return base64_encode_auth_line(auth_url.user(), auth_url.pass());
+	return QString::fromLatin1("PLAIN");
 }
 
-/*
- * Copyright (c) 1991 Bell Communications Research, Inc. (Bellcore)
- *
- * Permission to use, copy, modify, and distribute this material
- * for any purpose and without fee is hereby granted, provided
- * that the above copyright notice and this permission notice
- * appear in all copies, and that the name of Bellcore not be
- * used in advertising or publicity pertaining to this
- * material without the specific, prior written permission
- * of an authorized representative of Bellcore.  BELLCORE
- * MAKES NO REPRESENTATIONS ABOUT THE ACCURACY OR SUITABILITY
- * OF THIS MATERIAL FOR ANY PURPOSE.  IT IS PROVIDED "AS IS",
- * WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
- */
-QString base64_encode_string( const QString &buf)
+QString PlainAuthModule::auth_response(const QString &, const KURL &auth_url)
 {
-  char basis_64[] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  QString out;
-  int inPos  = 0;
-  int c1, c2, c3;
-  unsigned int i;
-  unsigned int len=buf.length();
-
-  /* Get three characters at a time and encode them. */
-  for (i=0; i < len/3; ++i) {
-      c1 = buf[inPos++] & 0xFF;
-      c2 = buf[inPos++] & 0xFF;
-      c3 = buf[inPos++] & 0xFF;
-      out+= basis_64[(c1 & 0xFC) >> 2];
-      out+= basis_64[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
-      out+= basis_64[((c2 & 0x0F) << 2) | ((c3 & 0xC0) >> 6)];
-      out+= basis_64[c3 & 0x3F];
-  }
-
-  /* Encode the remaining one or two characters. */
-
-  switch (len % 3) {
-      case 0:
-          break;
-      case 1:
-          c1 = buf[inPos] & 0xFF;
-          out+= basis_64[(c1 & 0xFC) >> 2];
-          out+= basis_64[((c1 & 0x03) << 4)];
-          out+= '=';
-          out+= '=';
-          break;
-      case 2:
-          c1 = buf[inPos++] & 0xFF;
-          c2 = buf[inPos] & 0xFF;
-          out+= basis_64[(c1 & 0xFC) >> 2];
-          out+= basis_64[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
-          out+= basis_64[((c2 & 0x0F) << 2)];
-          out+= '=';
-          break;
-  }
-  return out.copy();
-}
-
-QString base64_encode_auth_line(const QString &username, const QString &pass)
-{
-	QString ret, line;
-	line.append(username);
+	QString line;
+	line.append(auth_url.user());
 	line.append(QChar(static_cast<char>(0)));
-	line.append(username);
+	line.append(auth_url.user());
 	line.append(QChar(static_cast<char>(0)));
-	line.append(pass);
-        ret=base64_encode_string(line);
-        return ret;
+	line.append(auth_url.pass());
+	return KBase64::encodeString(line);
 }
+
+// Module factory stuff.. should be automated
+
+PlainAuthModuleFactory::PlainAuthModuleFactory (QObject *parent, const char *name)
+	: KLibFactory (parent, name)
+{
+	s_instance = new KInstance( "authplainmodule" );
+}
+
+PlainAuthModuleFactory::~PlainAuthModuleFactory()
+{
+	delete s_instance;
+}
+
+QObject *PlainAuthModuleFactory::create (QObject *parent, const char *name, const char *, const QStringList &)
+{
+	QObject *obj = new PlainAuthModule (parent, name);
+	emit objectCreated( obj );
+	return obj;
+}
+
+KInstance *PlainAuthModuleFactory::instance()
+{
+	return s_instance;
+}
+
+extern "C" {
+	void *init_ksasl_auth_plain() {
+		return new PlainAuthModuleFactory;
+	}
+}
+
