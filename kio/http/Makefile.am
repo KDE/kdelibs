@@ -9,7 +9,8 @@ LDFLAGS =       $(SSL_LDFLAGS) $(all_libraries)
 ####### Files
 
 bin_PROGRAMS = kio_http_cache_cleaner
-kde_module_LTLIBRARIES = kio_http.la kio_https.la kio_http_cache_cleaner.la
+lib_LTLIBRARIES = kio_http_cache_cleaner.la
+kde_module_LTLIBRARIES = kio_http.la kio_https.la
 
 kio_https_la_SOURCES = https.cc extern_md5.c base64.c
 kio_https_la_LIBADD = ../libkio.la $(LIB_KSSL) $(LIBZ)
