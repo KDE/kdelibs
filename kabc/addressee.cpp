@@ -62,7 +62,7 @@ void Addressee::detach()
   *this = copy();
 }
 
-bool Addressee::isEmpty()
+bool Addressee::isEmpty() const
 {
   if ( mData->name.isEmpty() && mData->formattedName.isEmpty() &&
        mData->emails.isEmpty() ) return true;

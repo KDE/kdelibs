@@ -92,7 +92,7 @@ class Addressee
     /**
       Return, if the address book entry is empty.
     */
-    bool isEmpty();
+    bool isEmpty() const;
 
     /*
       Set unique identifier.
