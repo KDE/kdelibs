@@ -77,4 +77,18 @@ typedef struct
  * (void)
  */
 
+#define LAUNCHER_EXT_EXEC	6
+/*
+ * LAUNCHER_EXT_EXEC
+ *
+ * Start a new process and adjust enviroment. (Not yet implemented)
+ *
+ * long argc: number of arguments
+ * char *args: arguments, argument 0 is the program to start.
+ * char *cwd: Working directory.
+ * long envc: number of environment vars
+ * char *envs: environment strings.
+ * char *tty: tty to redirect stdout/stderr to.
+ */ 
+
 #endif

@@ -31,6 +31,8 @@
 #include <qtimer.h>
 
 #include <kuniqueapp.h>
+#include <kcmdlineargs.h>
+#include <klocale.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
@@ -159,15 +161,18 @@ void Kded::readDirectory( const QString& _path )
 
 int main(int argc, char *argv[])
 {
-     printf("MAIN called.\n");
-     if (!KUniqueApplication::start(argc, argv, "kded"))
+     KCmdLineArgs::init(argc, argv, "kded", 
+        I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed."),
+        "$Id:  $");
+
+     if (!KUniqueApplication::start())
      {
-        printf("KDED already running!\n");
+        fprintf(stderr, "KDED already running!\n");
         exit(0);
      }
-     KUniqueApplication k(argc,argv, "kded", false, false );
+     KUniqueApplication k( false, false ); // No styles, no GUI
 
-     Kded *kded= new Kded; // Build data base
+     Kded *kded = new Kded; // Build data base
 
      kded->build();
      kded->recreate();

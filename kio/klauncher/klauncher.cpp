@@ -32,9 +32,8 @@
 
 template class QList<KLaunchRequest>;
 
-KLauncher::KLauncher(int argc, char **argv, const QCString &appName, 
-                     int _kinitSocket)
-  : KUniqueApplication(argc, argv, appName, false), 
+KLauncher::KLauncher(int _kinitSocket)
+  : KUniqueApplication( false, false ), // No Styles, No GUI
     kinitSocket(_kinitSocket)
 {
    requestList.setAutoDelete(true);

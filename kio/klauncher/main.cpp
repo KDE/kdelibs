@@ -20,7 +20,7 @@
 #include "config.h"
 
 #include "klauncher.h"
-
+#include "kcmdlineargs.h"
 #include <stdio.h>
 
 
@@ -29,11 +29,12 @@ extern "C" { int start_launcher(int); }
 int
 start_launcher(int socket)
 {
-   QCString appName = "klauncher";
-   char *argv[2];
-   argv[0] = appName.data();
-   argv[1] = 0;
-   KLauncher launcher(1, argv, appName, socket);
+   // Started via kinit.
+   KCmdLineArgs::init(0, (char **) 0, "klauncher", "A service launcher.", 
+                       "v0.1");
+   KLauncher::addCmdLineOptions();
+
+   KLauncher launcher(socket);
    launcher.exec();
    return 0;
 }

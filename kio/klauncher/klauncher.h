@@ -53,7 +53,7 @@ class KLauncher : public KUniqueApplication
    Q_OBJECT
 
 public:
-   KLauncher(int argc, char **argv, const QCString &appName, int _kinitSocket);
+   KLauncher(int _kinitSocket);
 
 protected:
    bool process(const QCString &fun, const QByteArray &data,
