@@ -238,15 +238,15 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
     {
         // get delay and url
         QString str = _content.string();
-        int pos = str.find(QRegExp("[;, ]"));
+        int pos = str.find(QRegExp("[;,]"));
         if (pos == -1) // There can be no url (David)
         {
-            int delay = str.toInt();
+            int delay = str.stripWhiteSpace().toInt();
 //             kdDebug( 6030 ) << "delay = " << delay << endl;
 //             kdDebug( 6030 ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
             v->part()->scheduleRedirection(delay, v->part()->url().url());
         } else {
-            int delay = str.left(pos).toInt();
+            int delay = str.left(pos).stripWhiteSpace().toInt();
 //            kdDebug( 6030 ) << "delay = " << delay << ", separator at " << pos << endl;
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
