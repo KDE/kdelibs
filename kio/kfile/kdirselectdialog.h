@@ -24,6 +24,7 @@
 #include <kurl.h>
 
 class QVBoxLayout;
+class KConfig;
 class KFileTreeView;
 
 /**
@@ -53,6 +54,8 @@ public:
      */
     ~KDirSelectDialog();
 
+    void setCurrentURL( const KURL& url );
+
     /**
      * Returns the currently-selected URL, or a blank URL if none is selected.
      * @return The currently-selected URL, if one was selected.
@@ -81,11 +84,23 @@ public:
     QString startDir() const { return m_startDir; }
 
 protected:
+    virtual void accept();
+
     // Layouts protected so that subclassing is easy
     QVBoxLayout *m_mainLayout;
     QString m_startDir;
 
+private slots:
+    void slotCurrentChanged();
+    void slotURLActivated( const QString& );
+    void slotNextDirToList( KFileTreeViewItem *dirItem );
+
 private:
+    void readConfig( KConfig *config, const QString& group );
+    void saveConfig( KConfig *config, const QString& group );
+    void openNextDir( KFileTreeViewItem *parent );
+    KFileTreeBranch * createBranch( const KURL& url );
+
     KFileTreeView *m_treeView;
     bool m_localOnly;
 

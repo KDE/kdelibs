@@ -19,46 +19,274 @@
 
 #include <qdir.h>
 #include <qlayout.h>
+#include <qstringlist.h>
+#include <qvaluestack.h>
 
+#include <kcombobox.h>
+#include <kconfig.h>
+#include <kfiledialog.h>
+#include <kglobalsettings.h>
+#include <kiconloader.h>
 #include <klocale.h>
+#include <kprotocolinfo.h>
+#include <krecentdirs.h>
 #include <kurl.h>
+#include <kurlcompletion.h>
+#include <kurlpixmapprovider.h>
 
 #include "kfiletreeview.h"
 #include "kdirselectdialog.h"
 
 // ### add mutator for treeview!
 
+class KDirSelectDialog::KDirSelectDialogPrivate
+{
+public:
+    KDirSelectDialogPrivate()
+    {
+        urlCombo = 0L;
+        branch = 0L;
+    }
+    
+    KHistoryCombo *urlCombo;
+    QString recentDirClass;
+    KURL startURL;
+    KFileTreeBranch *branch;
+    QValueStack<KURL> dirsToList;
+};
+
 KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
                                    QWidget *parent, const char *name,
                                    bool modal)
     : KDialogBase( parent, name, modal, i18n("Select a Directory"), Ok|Cancel),
-      m_startDir( startDir ),
       m_localOnly( localOnly )
 {
-    QFrame *page = makeMainWidget();
-    m_mainLayout = new QVBoxLayout(page, marginHint(), spacingHint());
+    d = new KDirSelectDialogPrivate;
+    d->branch = 0L;
 
-    if ( m_startDir.isEmpty() )
-        m_startDir = "/";
+    QFrame *page = makeMainWidget();
+    m_mainLayout = new QVBoxLayout(page, 0, spacingHint());
 
     // Create dir list
     m_treeView = new KFileTreeView( page );
     m_treeView->addColumn( i18n("Directory") );
     m_treeView->setColumnWidthMode( 0, QListView::Maximum );
     m_treeView->setResizeMode( QListView::AllColumns );
+
+    d->urlCombo = new KHistoryCombo( page, "url combo" );
+    d->urlCombo->setTrapReturnKey( true );
+    d->urlCombo->setPixmapProvider( new KURLPixmapProvider() );
+    KURLCompletion *comp = new KURLCompletion();
+    comp->setMode( KURLCompletion::DirCompletion );
+    d->urlCombo->setCompletionObject( comp, true );
+    d->urlCombo->setAutoDeleteCompletionObject( true );
+
+
+    d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
+    if ( localOnly && !d->startURL.isLocalFile() )
+        d->startURL = KURL::fromPathOrURL( KGlobalSettings::documentPath() );
+
+    KURL root = d->startURL;
+    root.setPath( "/" );
+
+    m_startDir = d->startURL.url();
+
+    d->branch = createBranch( root );
+
+    readConfig( KGlobal::config(), "DirSelect Dialog" );
+
     m_mainLayout->addWidget(m_treeView, 1);
+    m_mainLayout->addWidget(d->urlCombo, 0);
+
+    connect( m_treeView, SIGNAL( currentChanged( QListViewItem * )),
+             SLOT( slotCurrentChanged() ));
+
+    connect( d->urlCombo, SIGNAL( activated( const QString& )),
+             SLOT( slotURLActivated( const QString& )));
+    connect( d->urlCombo, SIGNAL( returnPressed( const QString& )),
+             SLOT( slotURLActivated( const QString& )));
+
+    setMinimumSize( 300, 400 );
+    
+    setCurrentURL( d->startURL );
 }
 
 
 KDirSelectDialog::~KDirSelectDialog()
 {
+    delete d;
 }
+
+void KDirSelectDialog::setCurrentURL( const KURL& url )
+{
+    if ( !url.isValid() )
+        return;
+    
+    KURL root = url;
+    root.setPath( "/" );
+
+    d->startURL = url;
+    if ( url.protocol() != d->branch->url().protocol() )
+    {
+        if ( d->branch )
+            view()->removeBranch( d->branch );
+
+        d->branch = createBranch( root );
+    }
+    
+    d->branch->disconnect( SIGNAL( populateFinished( KFileTreeViewItem * )),
+                           this, SLOT( slotNextDirToList( KFileTreeViewItem *)));
+    connect( d->branch, SIGNAL( populateFinished( KFileTreeViewItem * )),
+             SLOT( slotNextDirToList( KFileTreeViewItem * ) ));
+
+    KURL dirToList = root;
+    d->dirsToList.clear();
+    QString path = url.path(+1);
+    int pos = path.length();
+    while ( pos > 0 )
+    {
+        pos = path.findRev( '/', pos -1 );
+        if ( pos >= 0 )
+        {
+            dirToList.setPath( path.left( pos +1 ) );
+            d->dirsToList.push( dirToList );
+//             qDebug( "List: %s", dirToList.url().latin1());
+        }
+    }
+
+    if ( !d->dirsToList.isEmpty() )
+        openNextDir( d->branch->root() );
+}
+
+void KDirSelectDialog::openNextDir( KFileTreeViewItem * /*parent*/ )
+{
+    if ( !d->branch )
+        return;
+
+    KURL url = d->dirsToList.pop();
+
+    KFileTreeViewItem *item = view()->findItem( d->branch, url.path().mid(1));
+    if ( item )
+    {
+        if ( !item->isOpen() )
+            item->setOpen( true );
+        else // already open -> go to next one
+            slotNextDirToList( item );
+    }
+//     else
+//         qDebug("###### openNextDir: item not found!");
+}
+
+void KDirSelectDialog::slotNextDirToList( KFileTreeViewItem *item )
+{
+    // scroll to make item the topmost item
+    view()->ensureItemVisible( item );
+    QRect r = view()->itemRect( item );
+    if ( r.isValid() )
+    {
+        int x, y;
+        view()->viewportToContents( view()->contentsX(), r.y(), x, y );
+        view()->setContentsPos( x, y );
+    }
+
+    if ( !d->dirsToList.isEmpty() )
+        openNextDir( item );
+    else
+    {
+        d->branch->disconnect( SIGNAL( populateFinished( KFileTreeViewItem * )),
+                               this, SLOT( slotNextDirToList( KFileTreeViewItem *)));
+        view()->setCurrentItem( item );
+        item->setSelected( true );
+    }
+}
+
+void KDirSelectDialog::readConfig( KConfig *config, const QString& group )
+{
+    d->urlCombo->clear();
+
+    KConfigGroup conf( config, group );
+    d->urlCombo->setHistoryItems( conf.readListEntry( "History Items" ));
+}
+
+void KDirSelectDialog::saveConfig( KConfig *config, const QString& group )
+{
+    KConfigGroup conf( config, group );
+    conf.writeEntry( "History Items", d->urlCombo->historyItems(), ',',
+                     true, true);
+    config->sync();
+}
+
+void KDirSelectDialog::accept()
+{
+    KFileTreeViewItem *item = m_treeView->currentKFileTreeViewItem();
+    if ( !item )
+        return;
+
+    if ( !d->recentDirClass.isEmpty() )
+    {
+        KURL dir = item->url();
+        if ( !item->isDir() )
+            dir = dir.upURL();
+
+        KRecentDirs::add(d->recentDirClass, dir.url());
+    }
+
+    d->urlCombo->addToHistory( item->url().prettyURL() );
+
+    KDialogBase::accept();
+    saveConfig( KGlobal::config(), "DirSelect Dialog" );
+}
+
 
 KURL KDirSelectDialog::url() const
 {
     return m_treeView->currentURL();
 }
 
+void KDirSelectDialog::slotCurrentChanged()
+{
+    KURL u = url();
+    if ( u.isValid() )
+    {
+        if ( u.isLocalFile() )
+            d->urlCombo->setEditText( u.path() );
+
+        else // remote url
+            d->urlCombo->setEditText( u.prettyURL() );
+    }
+    else
+        d->urlCombo->setEditText( QString::null );
+}
+
+void KDirSelectDialog::slotURLActivated( const QString& text )
+{
+    if ( text.isEmpty() )
+        return;
+
+    KURL url = KURL::fromPathOrURL( text );
+    d->urlCombo->addToHistory( url.prettyURL() );
+    
+    if ( localOnly() && !url.isLocalFile() )
+        return; // ### messagebox
+
+    KURL oldURL = m_treeView->currentURL();
+    if ( oldURL.isEmpty() )
+        oldURL = KURL::fromPathOrURL( m_startDir );
+
+    setCurrentURL( url );
+}
+
+KFileTreeBranch * KDirSelectDialog::createBranch( const KURL& url )
+{
+    QString title = url.isLocalFile() ? url.path() : url.prettyURL();
+    KFileTreeBranch *branch = view()->addBranch( url, title );
+    branch->setChildRecurse( false );
+    view()->setDirOnlyMode( branch, true );
+    
+    return branch;
+}
+
+// static
 KURL KDirSelectDialog::selectDirectory( const QString& startDir,
                                         bool localOnly,
                                         QWidget *parent,
@@ -66,14 +294,6 @@ KURL KDirSelectDialog::selectDirectory( const QString& startDir,
 {
     KDirSelectDialog myDialog( startDir, localOnly, parent,
                                "kdirselect dialog", true );
-    KURL root;
-    root.setPath(myDialog.startDir());
-
-    KFileTreeView *view = myDialog.view();
-    KFileTreeBranch *rootBranch = view->addBranch( root, myDialog.startDir() );
-    view->setDirOnlyMode( rootBranch, true );
-
-    rootBranch->setOpen(true);
     
     if ( !caption.isNull() )
         myDialog.setCaption( caption );
