@@ -39,6 +39,7 @@ using namespace KJS;
 JSEventListener::JSEventListener(Object _listener, const Object &_win, bool _html)
 {
     listener = _listener;
+    //fprintf(stderr,"JSEventListener::JSEventListener this=%p listener=%p\n",this,listener.imp());
     html = _html;
     win = _win;
     static_cast<Window*>(win.imp())->jsEventListeners.append(this);
@@ -47,6 +48,7 @@ JSEventListener::JSEventListener(Object _listener, const Object &_win, bool _htm
 JSEventListener::~JSEventListener()
 {
     static_cast<Window*>(win.imp())->jsEventListeners.removeRef(this);
+    //fprintf(stderr,"JSEventListener::~JSEventListener this=%p listener=%p\n",this,listener.imp());
 }
 
 void JSEventListener::handleEvent(DOM::Event &evt)
@@ -57,6 +59,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 #endif
   KHTMLPart *part = static_cast<Window*>(win.imp())->part();
   if (part && listener.implementsCall()) {
+    ref();
 
     KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(KJSProxy::proxy( part )->interpreter());
     ExecState *exec = interpreter->globalExec();
@@ -102,6 +105,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
             evt.preventDefault();
     }
     DOM::DocumentImpl::updateDocumentsRendering();
+    deref();
   }
 }
 
