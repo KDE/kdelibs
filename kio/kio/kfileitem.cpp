@@ -571,7 +571,7 @@ QString KFileItem::getToolTipText(int maxcount)
   
   QStringList keys;
   
-  KFileMetaInfo info = d->metaInfo;
+  KFileMetaInfo info = metaInfo();
 
   tip = "<table cellspacing=0 cellpadding=0>"
          "<tr>"
@@ -808,7 +808,7 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 
 const KFileMetaInfo & KFileItem::metaInfo() const
 {
-    if ( m_url.isLocalFile() && !d->metaInfo.isValid() )
+    if ( !d->metaInfo.isValid() && m_url.isLocalFile() )
         d->metaInfo = KFileMetaInfo( m_url.path() );
 
     return d->metaInfo;
