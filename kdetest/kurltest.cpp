@@ -17,14 +17,16 @@ int main()
 {
   KURL::List lst;
 
-  char * u1 = "file:/home/dfaure/my tar file.tgz#gzip:/decompress#tar:/";
+//  char * u1 = "file:/home/dfaure/my tar file.tgz#gzip:/decompress#tar:/";
+  char * u1 = "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz";
   KURL url1(u1);
   printf("\n* URL to be split is %s\n",u1);
-  check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/decompress#tar:/");
-  check("KURL::protocol()", url1.protocol(), "file");
-  check("KURL::path()", url1.path(), "/home/dfaure/my tar file.tgz");
+  //check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/decompress#tar:/");
+  check("KURL::url()", url1.url(), "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
+  check("KURL::protocol()", url1.protocol(), "tar");
+  check("KURL::path()", url1.path(), "/");
   check("KURL::host()", url1.host(), "");
-  check("KURL::ref()", url1.ref(), "gzip:/decompress#tar:/");
+  check("KURL::ref()", url1.ref(), "gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   lst = KURL::split( u1 );
 /*
@@ -59,14 +61,16 @@ int main()
   printf("\n* URL is %s\n",u2.url().data());
   u2.cd("pub");
   check("KURL::cd(\"pub\")", u2.url(), "ftp://ftp.kde.org/pub");
+  u2 = u2.upURL();
+  check("KURL::upURL()", u2.url(), "ftp://ftp.kde.org/");
   u2 = u1;
   printf("\n* URL is %s\n",u2.url().data());
   u2.cd("dir");
-  check("KURL::cd(\"dir\")", u2.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/decompress#tar:/dir");
-  u2.cd("..");
-  check("KURL::cd(\"..\")", u2.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/decompress#tar:/");
-  u2.cd("..");
-  check("KURL::cd(\"..\")", u2.url(), "file:/home/dfaure/");
+  check("KURL::cd(\"dir\")", u2.url(), "tar:/dir#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
+  u2 = u2.upURL();
+  check("KURL::upURL()", u2.url(), "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz");
+  u2 = u2.upURL();
+  check("KURL::upURL()", u2.url(), "file:/home/dfaure/");
 
   char * u3 = "ftp://host/dir1/dir2/myfile.txt";
   printf("\n* URL is %s\n",u3);

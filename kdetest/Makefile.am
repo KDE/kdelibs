@@ -27,7 +27,7 @@ LDFLAGS = -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs \
 	  -rpath $(topdir)/kfile/.libs \
           $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-LDADD = $(LIB_KIO) $(LIB_KDEUI)
+LDADD = $(LIB_KFILE) $(LIB_KIO) $(LIB_KDEUI)
 kformulatest_LDADD = $(LIB_KFORMULA)
 
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
