@@ -60,13 +60,13 @@ binary-arch:  build
 	dh_installdocs
 	if test -f /usr/bin/qt2kdoc; then \
 	(mkdir -p debian/tmp/usr/share/kdoc/index) ; \
-	(mkdir -p debian/kdelibs-doc-cvs/usr/doc/kdelibs-doc-cvs/html) ; \
-	qt2kdoc --url=/usr/doc/qt2-doc/doc \
+	(mkdir -p debian/kdelibs-doc-cvs/usr/share/doc/kdelibs-doc-cvs/html) ; \
+	qt2kdoc --url=/usr/share/doc/qt2-doc/doc \
 	--outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
 	--compress \
-	/usr/doc/qt2-doc/doc ; \
+	/usr/share/doc/qt2-doc/doc ; \
 	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
-	--outputdir=`pwd`/debian/kdelibs-doc-cvs/usr/doc/kdelibs-doc-cvs/html ; \
+	--outputdir=`pwd`/debian/kdelibs-doc-cvs/usr/share/doc/kdelibs-doc-cvs/html ; \
 	dh_movefiles -pkdelibs-doc-cvs /usr/share/kdoc ; \
 	fi
 

@@ -1,3 +1,18 @@
+kdelibs-cvs (4:2.0-19990921-0.1) experimental; urgency=low
+
+  * new upstream CVS version
+  * Fixing postinst script and one minor issue with rules to bring everything
+    up to Debian policy.
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 21 Sep 1999 11:15:00 -0400
+
+kdelibs-cvs (4:2.0-19990912-0.1) experimental; urgency=low
+
+  * new upstream CVS version
+  * Using 0.x numbers for my updates which is mainly to keep up with CVS
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 13 Sep 1999 14:30:39 -0400
+
 kdelibs-cvs (4:2.0-19990903-1.0) experimental; urgency=low
 
   * new upstream version
