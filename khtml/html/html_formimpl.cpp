@@ -571,16 +571,7 @@ bool HTMLGenericFormElementImpl::isSelectable() const
 {
     if (m_disabled)
 	return false;
-    if (!renderer())
-    {
-	kdDebug(6000)<<"isSelectable: no renderer for "<<getTagName(id()).string()<<"\n";
-	return false;
-    }
-    if (!renderer()->isReplaced())
-	return true;
-    if (!static_cast<RenderWidget*>(renderer())->isWidget())
-	return true;
-    return static_cast<RenderWidget*>(renderer())->m_widget->isEnabled();
+    return renderer()!=0;
 }
 
 // -------------------------------------------------------------------------
