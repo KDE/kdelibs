@@ -33,17 +33,19 @@ class KSSLCertificateHome {
  
 public:
 
+  // AuthNone means there is no policy.  AuthDont means _don't_ _send_!!
+  enum KSSLAuthAction {AuthNone, AuthSend, AuthPrompt, AuthDont};
   /*
    *  These methods might dynamically allocate an object for you.  Be sure to
    *  delete them when you are done.
    */
-  static KSSLPKCS12* getCertificateByHost(QString host, QString password, bool* send = NULL, bool *prompt = NULL);
+  static KSSLPKCS12* getCertificateByHost(QString host, QString password, KSSLAuthAction* aa);
   static KSSLPKCS12* getCertificateByName(QString name, QString password);
   static KSSLPKCS12* getCertificateByName(QString name);
-  static QString getDefaultCertificateName(QString host, bool *send = NULL, bool *prompt = NULL);
-  static QString getDefaultCertificateName(bool *send = NULL, bool *prompt = NULL);
-  static KSSLPKCS12* getDefaultCertificate(QString password, bool *send = NULL, bool *prompt = NULL);
-  static KSSLPKCS12* getDefaultCertificate(bool *send = NULL, bool *prompt = NULL);
+  static QString getDefaultCertificateName(QString host, KSSLAuthAction *aa = NULL);
+  static QString getDefaultCertificateName(KSSLAuthAction *aa = NULL);
+  static KSSLPKCS12* getDefaultCertificate(QString password, KSSLAuthAction *aa = NULL);
+  static KSSLPKCS12* getDefaultCertificate(KSSLAuthAction *aa = NULL);
 
 
   /*
