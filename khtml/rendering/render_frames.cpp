@@ -415,8 +415,8 @@ void RenderFrameSet::positionFrames()
 #ifdef DEBUG_LAYOUT
       kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_colWidth[c] << "/" << m_rowHeight[r] << ")" << endl;
 #endif
-      child->setSize( m_colWidth[c], m_rowHeight[r] );
-
+      child->setWidth( m_colWidth[c] );
+      child->setHeight( m_rowHeight[r] );
       child->layout( );
 
       xPos += m_colWidth[c] + m_frameset->border();
@@ -596,8 +596,8 @@ void RenderPart::setWidget( QWidget *widget )
 
 void RenderPart::layout( )
 {
-  if ( m_widget )
-    m_widget->resize( m_width, m_height );
+    if ( m_widget )
+        m_widget->resize( m_width, m_height );
 }
 
 void RenderPart::partLoadingErrorNotify()
