@@ -81,15 +81,26 @@ using namespace KJS;
 void PageLoader::loadPage(KHTMLPart *part, KURL url)
 {
     PageLoader *pl = new PageLoader();
+
+    pl->m_started = false;
+    pl->m_completed = false;
+
     connect(part,SIGNAL(completed()),pl,SLOT(partCompleted()));
     part->openURL(url);
-    kapp->enter_loop();
+    if (!pl->m_completed) {
+	pl->m_started = true;
+	kapp->enter_loop();
+    }
 }
 
 void PageLoader::partCompleted()
 {
-    kapp->exit_loop();
-    delete this;
+    if (!m_started)
+	m_completed = true;
+    else {
+	kapp->exit_loop();
+	delete this;
+    }
 }
 
 // -------------------------------------------------------------------------

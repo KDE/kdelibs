@@ -40,6 +40,8 @@ class PageLoader : public QObject
   Q_OBJECT
 public:
     static void loadPage(KHTMLPart *part, KURL url);
+    bool m_started;
+    bool m_completed;
 public slots:
     void partCompleted();
 };
