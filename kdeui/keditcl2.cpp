@@ -218,19 +218,19 @@ int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 
 
 
-int KEdit::repeatSearch() {
+bool KEdit::repeatSearch() {
 
   if(!srchdialog)
-      return 0;
+      return false;
 
 
   if(pattern.isEmpty()) // there wasn't a previous search
-    return 0;
+    return false;
 
   search_slot();
 
   this->setFocus();
-  return 1;
+  return true;
 
 }
 

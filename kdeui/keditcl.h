@@ -147,22 +147,6 @@ public:
 	   FORWARD,
 	   BACKWARD };
     /**
-     * @internal
-     **/
-    enum { KEDIT_OK 		= 0,
-	   KEDIT_OS_ERROR 	= 1,
-	   KEDIT_USER_CANCEL 	= 2 ,
-	   KEDIT_RETRY 		= 3,
-	   KEDIT_NOPERMISSIONS 	= 4};
-
-    /**
-     * @internal
-     **/
-    enum { OPEN_READWRITE 	= 1,
-	   OPEN_READONLY 	= 2,
-	   OPEN_INSERT 		= 4 };
-
-    /**
      * Insert text from the text stream into the edit widget.
      **/
     void insertText(QTextStream *);
@@ -194,9 +178,9 @@ public:
      *  If the user hasn't searched for anything until now, this method
      *   will simply return without doing anything.
      *
-     * @return 1 if a search was done. 0 if no search was done.
+     * @return @p true if a search was done. @p false if no search was done.
      **/
-    int 	repeatSearch();
+    bool 	repeatSearch();
 
     /**  
      * Present a Search and Replace Dialog to the user.
@@ -336,8 +320,6 @@ public slots:
 protected:
     QTimer* repaintTimer;
 
-    int 	saveFile();
-
     int 	doSearch(QString s_pattern, bool case_sensitive,
 			 bool regex, bool forward,int line, int col);
 
@@ -360,13 +342,6 @@ protected:
     void        dragMoveEvent(QDragMoveEvent* e);
     void        dragEnterEvent(QDragEnterEvent* e);
     void        dropEvent(QDropEvent* e);
-
-private:
-
-    void 	setContextSens();
-    void        mynewLine();
-    QString 	prefixString(QString);
-
 
 private:
     QString	killbufferstring;

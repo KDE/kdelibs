@@ -53,8 +53,6 @@ KEdit::KEdit(QWidget *_parent, const char *name)
     replace_dialog= NULL;
     gotodialog = NULL;
 
-    setContextSens();
-
     setAcceptDrops(true);
 }
 
@@ -414,13 +412,6 @@ void KEdit::setModified(bool _mod){
 bool KEdit::isModified(){
     return edited();
 }
-
-
-
-void KEdit::setContextSens(){
-
-}
-
 
 bool KEdit::eventFilter(QObject *o, QEvent *ev){
 
