@@ -55,6 +55,7 @@ public:
     DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
     DOM::DOMString getPropertyValue ( int id );
     CSSValueImpl *getPropertyCSSValue ( const DOM::DOMString &propertyName );
+    bool removeProperty( int propertyID, bool onlyNonCSSHints );
     DOM::DOMString removeProperty ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( int propertyId );
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );

@@ -97,6 +97,24 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 }
 
 
+bool CSSStyleDeclarationImpl::removeProperty( int propertyID, bool onlyNonCSSHints )
+{
+    QListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+    lstValuesIt.toLast();
+    while (lstValuesIt.current() && lstValuesIt.current()->m_id != propertyID)
+        --lstValuesIt;
+    if (lstValuesIt.current()) {
+	if ( onlyNonCSSHints && !lstValuesIt.current()->nonCSSHint )
+	    return false;
+	m_lstValues->removeRef(lstValuesIt.current());
+	return true;
+	if (m_node)
+	    m_node->setChanged(true);
+    }
+    return false;
+}    
+    
+
 DOMString CSSStyleDeclarationImpl::removeProperty( const DOMString &propertyName )
 {
     int id = getPropertyID(propertyName.string().lower().ascii(), propertyName.length());
@@ -115,10 +133,9 @@ DOMString CSSStyleDeclarationImpl::removeProperty(int id)
     if (lstValuesIt.current()) {
 	value = lstValuesIt.current()->value()->cssText();
         m_lstValues->removeRef(lstValuesIt.current());
+	if (m_node)
+	    m_node->setChanged(true);
     }
-    if (m_node)
-	m_node->setChanged(true);
-
     return value;
 }
 
@@ -170,7 +187,8 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	m_lstValues = new QList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
-    removeProperty(id);
+    if ( !removeProperty(id, nonCSSHint ) )
+	return;
     int pos = m_lstValues->count();
     DOMString ppValue = preprocess(value.string(),true);
     parseValue(ppValue.unicode(), ppValue.unicode()+ppValue.length(), id, important, m_lstValues);
@@ -196,7 +214,8 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
 	m_lstValues = new QList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
-    removeProperty(id);
+    if ( !removeProperty(id, nonCSSHint ) )
+	return;
     int pos = m_lstValues->count();
     CSSValueImpl * cssValue = new CSSPrimitiveValueImpl(value);
     setParsedValue(id, cssValue, important, m_lstValues);
@@ -238,7 +257,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     {
 	//kdDebug( 6080 ) << "setting property" << endl;
 	CSSProperty *prop = props->at(i);
-	removeProperty(prop->m_id);
+	removeProperty(prop->m_id, false);
 	m_lstValues->append(prop);
 	i++;
     }
