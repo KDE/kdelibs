@@ -94,7 +94,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         int ih = p.height() + 8;
 
         // we have an alt and the user meant it (its not a text we invented)
-        if ( !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
+        if ( element() && !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
             const QFontMetrics &fm = style()->fontMetrics();
             QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignAuto|Qt::WordBreak, alt.string() );
             if ( br.width() > iw )
@@ -309,7 +309,7 @@ void RenderImage::layout()
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if (image == finishedObj && !loadEventSent) {
+    if (image == finishedObj && !loadEventSent && element()) {
         loadEventSent = true;
         element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
     }
