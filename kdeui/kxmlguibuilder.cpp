@@ -18,6 +18,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include "kapplication.h"
 #include "kxmlguibuilder.h"
 #include "kmenubar.h"
 #include "kpopupmenu.h"
@@ -160,7 +161,12 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     while ( p && !p->inherits("KMainWindow") )
         p = p->parentWidget();
 
-    KPopupMenu *popup = new KPopupMenu( p, element.attribute( d->attrName ).utf8());
+    QCString name = element.attribute( d->attrName ).utf8();
+    
+    if (!kapp->authorizeKAction(name))
+       return 0;
+
+    KPopupMenu *popup = new KPopupMenu( p, name);
 
     QString i18nText;
     QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
