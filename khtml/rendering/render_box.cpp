@@ -696,7 +696,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, boo
     // kdDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) {
-        if (o->style()->hidesOverflow() && m_layer)
+        if (o->style()->hidesOverflow() && o->layer())
             o->layer()->subtractScrollOffset(x,y); // For overflow:auto/scroll/hidden.
         o->repaintRectangle(x, y, w, h, immediate, f);
     }
