@@ -36,7 +36,6 @@
 
         * rendering/render_table.cpp (calcWidth): style()->flowAroundFloats => flowAroundFloats()
 
->>>>>>> 1.336
 2004-11-19  Stephan Kulow  <coolo@kde.org>
 
         * rendering/render_form.cpp (updateFromElement): restore scrolling position in case of a change
