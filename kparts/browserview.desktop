@@ -15,3 +15,5 @@ Type=bool
 [PropertyDef::X-KDE-BrowserView-PassiveMode]
 Type=bool
 
+[PropertyDef::X-KDE-BrowserView-Toggable]
+Type=bool
