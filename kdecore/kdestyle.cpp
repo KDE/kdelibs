@@ -197,7 +197,7 @@ void KDEStyle::polish(QPalette &pal)
         radioOnGrp.setColor(QColorGroup::Dark, QColor(0, 0, 128));
     }
     config->setGroup("KStyle"); // all kstyle global flags will go here
-    if(config->readBoolEntry("inactiveShading", true)){
+    if(config->readBoolEntry("inactiveShading", false)){
         QColorGroup aGrp = pal.active();
         QColorGroup dGrp = pal.disabled();
         QColorGroup iGrp = aGrp;
