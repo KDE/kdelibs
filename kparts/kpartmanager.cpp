@@ -43,7 +43,7 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
     if ( part && part != m_activePart )
     {
       m_activePart = part;
-      qDebug(QString("Part %1 made active because %2 got focus").arg(part->name()).arg(w->className()));
+      qDebug(QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()));
       emit activePartChanged( m_activePart );
       // I suppose we don't return here in case of child parts, right ?
       // But it means we'll emit the event for each intermediate parent ? (David)
@@ -91,10 +91,12 @@ void KPartManager::removePart( KPart *part )
   if ( m_parts.findRef( part ) == -1 )
   {
     qDebug(QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()));
+    abort();
     return;
   }
+  disconnect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
-  //qDebug(QString("Part %1 removed").arg(part->name()));
+  qDebug(QString("Part %1 removed").arg(part->name()));
   m_parts.removeRef( part );
 
   if ( part == m_activePart )
@@ -106,6 +108,7 @@ void KPartManager::removePart( KPart *part )
 
 void KPartManager::slotObjectDestroyed()
 {
+  qDebug("KPartManager::slotObjectDestroyed()");
   removePart( (KPart *)sender() );
 }
 

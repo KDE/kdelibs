@@ -99,6 +99,7 @@ QDomDocument KPart::mergedActionDOM()
 
 void KPart::setWidget( QWidget *widget )
 {
+  assert ( !m_widget ); // otherwise we get two connects
   m_widget = widget;
   connect( m_widget, SIGNAL( destroyed() ),
 	   this, SLOT( slotWidgetDestroyed() ) );
