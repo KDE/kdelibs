@@ -1073,7 +1073,9 @@ void RenderFlow::calcMinMaxWidth()
     }
 
     int cw = containingBlock()->contentWidth();
-    bool tableCell = isTableCell();
+    // "style()->width().isVariable()" in the contition below gives more mozilla like behaviour, the current
+    // condition is more IE like.
+    bool tableCell = (isTableCell() && !style()->width().isFixed());
 
     // non breaking space
     const QChar nbsp = 0xa0;
