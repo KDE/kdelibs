@@ -343,7 +343,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_ACRONYM:
     case ID_SUB:
     case ID_SUP:
-    case ID_SPAN:
     case ID_BDO:
     case ID_P:
     case ID_H1:
@@ -389,6 +388,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_LI:
     case ID_DT:
     case ID_DIV:
+    case ID_SPAN:
     case ID_LAYER:
     case ID_CENTER:
     case ID_BLOCKQUOTE:
