@@ -49,6 +49,7 @@ public:
 
 	void readSettings( KConfig* pConfig = 0 );
 	void writeSettings( KConfig* pConfig = 0 ) const;
+	void setConfigGroup( const QString& );
 
 	// Source compatibility to KDE 2.x
 	virtual bool insertItem( const QString& sDesc, const QString& sAction,
@@ -62,6 +63,8 @@ public:
 	// OBSOLETE!
 	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
 		{ return insertAction( accel, pObjSlot, psMethodSlot ); }
+	bool removeItem( const QString& sAction );
+	bool setItemEnabled( const QString& sAction, bool bEnable );
 	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action );
 	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel );
 	static int stringToKey( const QString& );

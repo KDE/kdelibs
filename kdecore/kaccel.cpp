@@ -218,6 +218,14 @@ void KAccel::readSettings( KConfig* pConfig )
 void KAccel::writeSettings( KConfig* pConfig ) const
 	{ d->writeSettings( pConfig ); }
 
+// for kdegames/ksirtet
+void KAccel::setConfigGroup( const QString& s )
+	{ d->setConfigGroup( s ); }
+
+//------------------------------------------------------------
+// Obsolete methods -- for backward compatibility
+//------------------------------------------------------------
+
 bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 		const char* cutsDef,
 		int nIDMenu, QPopupMenu *pMenu, bool bConfigurable )
@@ -230,9 +238,6 @@ bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 	return b;
 }
 
-//------------------------------------------------------------
-// Obsolete methods -- for backward compatibility
-//------------------------------------------------------------
 bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 		int key,
 		int nIDMenu, QPopupMenu* pMenu, bool bConfigurable )
@@ -267,6 +272,12 @@ bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const
 		d->setActionEnabled( sAction, true );
 	return b;
 }
+
+bool KAccel::removeItem( const QString& sAction )
+	{ d->removeAction( sAction ); }
+
+bool KAccel::setItemEnabled( const QString& sAction, bool bEnable )
+	{ setActionEnabled( sAction, bEnable ); }
 
 #include <qpopupmenu.h>
 void KAccel::changeMenuAccel( QPopupMenu *menu, int id, const QString& action )

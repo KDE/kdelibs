@@ -875,7 +875,7 @@ KAccelAction* KAccelBase::insertAction( const QString& sAction, const QString& s
 bool KAccelBase::removeAction( const QString& sAction )
 {
 	KAccelAction* pAction = m_rgActions.actionPtr( sAction );
-	if( pAction && m_bAutoUpdate )
+	if( pAction )
 		removeConnection( *pAction );
 	return m_rgActions.removeAction( sAction );
 }
