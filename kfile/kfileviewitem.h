@@ -125,7 +125,7 @@ public:
      * this pixmap thru this method without specifying the size.
      * The default size is KIconLoader::Small
      */
-    QPixmap pixmap() { return pixmap( myPixmapSize ); }
+    QPixmap pixmap() const { return pixmap( myPixmapSize ); }
     
     /**
       * Returns a string of the date of the file.
