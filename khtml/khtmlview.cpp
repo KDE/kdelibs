@@ -708,8 +708,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 	d->clickX = xm;
 	d->clickY = ym;
     }
-    kdDebug() << "KHTMLView::viewportMouseDoubleClickEvent clickCount=" << d->clickCount << endl;
-    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
+     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
     if (mev.innerNode.handle())
@@ -868,9 +867,12 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
 
     if (d->clickCount > 0 &&
-        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
-	dispatchMouseEvent(EventImpl::CLICK_EVENT,mev.innerNode.handle(),true,
-                           d->clickCount,_mouse,true,DOM::NodeImpl::MouseRelease);
+        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance()) {
+	QMouseEvent me(d->isDoubleClick ? QEvent::MouseButtonDblClick : QEvent::MouseButtonRelease,
+		       _mouse->pos(), _mouse->button(), _mouse->state());
+	dispatchMouseEvent(EventImpl::CLICK_EVENT, mev.innerNode.handle(),true,
+                           d->clickCount, &me, true, DOM::NodeImpl::MouseRelease);
+    }
 
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed(false);

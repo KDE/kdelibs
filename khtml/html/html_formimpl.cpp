@@ -1435,7 +1435,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         if (evt->isMouseEvent()) {
 	    MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
             if ((m_type == RADIO || m_type == CHECKBOX)
-		&& me->id() == EventImpl::MOUSEUP_EVENT && me->detail() == 1) {
+		&& me->id() == EventImpl::MOUSEUP_EVENT && me->detail() > 0) {
 		// click will follow
 		setChecked(m_type == RADIO ? true : !checked());
 	    }
