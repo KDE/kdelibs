@@ -31,7 +31,8 @@ Entry::Entry() :
 {
 }
 
-Entry::Entry( const QDomElement &e )
+Entry::Entry( const QDomElement &e ) :
+  mRelease( 0 ), mRating( 0 ), mDownloads( 0 )
 {
   parseDomElement( e );
 }
