@@ -8,7 +8,7 @@ more logical grouping.
 kaboutapplication.cpp
 kaboutdialog.cpp
 kaboutkde.cpp
-kaction.cpp		Holger Freyther <freyther@kde.org>
+kaction.cpp		Holger Freyther <freyther@kde.org>, Martijn Klingens <klingens@kde.org>
 kanimwidget.cpp		Waldo Bastian <bastian@kde.org>
 karrowbutton.cpp
 kauthicon.cpp
@@ -24,7 +24,7 @@ kcolordrag.cpp
 kcombobox.cpp   	Dawit Alemayehu <adawit@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
 kcommand.cpp		Werner Trobin <trobin@kde.org>
 kcompletionbox.cpp	Carsten Pfeiffer <pfeiffer@kde.org>
-kcursor.cpp			Carsten Pfeiffer <pfeiffer@kde.org>
+kcursor.cpp		Carsten Pfeiffer <pfeiffer@kde.org>
 kdatepicker.cpp
 kdatetbl.cpp
 kdatewidget.cpp		Waldo Bastian <bastian@kde.org>
@@ -40,7 +40,7 @@ keditlistbox.cpp
 kedittoolbar.cpp
 kfontcombo.cpp
 kfontdialog.cpp
-kguiitem.cpp		Holger Freyther <freyther@kde.org>
+kguiitem.cpp		Holger Freyther <freyther@kde.org>, Martijn Klingens <klingens@kde.org>
 khelpmenu.cpp
 kiconview.cpp
 kjanuswidget.cpp
@@ -65,7 +65,7 @@ kpassdlg.cpp		Waldo Bastian <bastian@kde.org>
 kpixmapio.cpp
 kpopupmenu.cpp
 kprogress.cpp
-kpushbutton.cpp		Carsten Pfeiffer <pfeiffer@kde.org>
+kpushbutton.cpp		Carsten Pfeiffer <pfeiffer@kde.org>, Martijn Klingens <klingens@kde.org>
 krestrictedline.cpp
 krootpixmap.cpp
 kruler.cpp
@@ -76,7 +76,7 @@ kshortcutdialog.cpp	Ellis Whitehead <ellis@kde.org>
 ksqueezedtextlabel.cpp
 kstatusbar.cpp
 kstdaction.cpp
-kstdguiitem.cpp		Holger Freyther <freyther@kde.org>
+kstdguiitem.cpp		Holger Freyther <freyther@kde.org>, Martijn Klingens <klingens@kde.org>
 kstringvalidator.cpp	Marc Mutz <mutz@kde.org>
 ksystemtray.cpp
 ktabctl.cpp
