@@ -47,6 +47,9 @@ public:
 
     virtual void setAvailableWidth(int w = -1);
     virtual void setXPos( int xPos );
+    virtual void setPos( int xPos, int yPos );
+    virtual int getXPos() const;
+    virtual void calcMinMaxWidth();
 
     //virtual void layout(bool deep = false);
 };

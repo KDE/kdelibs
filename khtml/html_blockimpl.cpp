@@ -60,23 +60,61 @@ ushort HTMLBlockquoteElementImpl::id() const
 
 void HTMLBlockquoteElementImpl::setAvailableWidth(int w)
 {
-    if(w != -1) availableWidth = w - 2*BLOCKQUOTEINDENT;
-    if(availableWidth < 20) availableWidth = 20;
-
-    setLayouted(false);
-
-    NodeImpl *child = firstChild();
-    while(child != 0)
-    {
-	child->setAvailableWidth(availableWidth);
-	child = child->nextSibling();
+    if(w != -1)
+    { 
+	availableWidth = w - 2*BLOCKQUOTEINDENT;
+	if(availableWidth < 20) availableWidth = 20;
     }
+
+    //setLayouted(false);
+
+    HTMLBlockElementImpl::setAvailableWidth(availableWidth);
     width = availableWidth;
 }
 
 void HTMLBlockquoteElementImpl::setXPos( int xPos )
 {
     x = xPos+BLOCKQUOTEINDENT;
+}
+
+void HTMLBlockquoteElementImpl::setPos( int xPos, int yPos )
+{
+    x = xPos+BLOCKQUOTEINDENT;
+    y = yPos;
+}
+
+int HTMLBlockquoteElementImpl::getXPos() const
+{
+  return x - BLOCKQUOTEINDENT;
+}
+
+void HTMLBlockquoteElementImpl::calcMinMaxWidth()
+{
+#ifdef DEBUG_LAYOUT
+    printf("%s(Element)::calcMinMaxWidth() known=%d\n", nodeName().string().ascii(), minMaxKnown());
+#endif
+
+    //if(minMaxKnown()) return;
+
+    minWidth = 0;
+    maxWidth = 0;
+
+    NodeImpl *child = firstChild();
+    while(child != 0)
+    {
+	int w = child->getMinWidth();
+	if(minWidth < w) minWidth = w;
+	w = child->getMaxWidth();
+	if(maxWidth < w) maxWidth = w;
+	child = child->nextSibling();
+    }
+    if(maxWidth < minWidth) maxWidth = minWidth;
+
+    minWidth += 2*BLOCKQUOTEINDENT;
+    maxWidth += 2*BLOCKQUOTEINDENT;
+
+    if(availableWidth && minWidth > availableWidth)
+      if(_parent) _parent->updateSize();
 }
 
 // -------------------------------------------------------------------------

@@ -568,10 +568,17 @@ void HTMLBlockElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
     _tx += x;
     _ty += y;
 
+#ifdef DEBUG_LAYOUT
+    printf("%s(BlockElement)::print()\n", nodeName().string().ascii());
+#endif
 
     // check if we need to do anything at all...
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
     if(!layouted()) return;
+
+#ifdef DEBUG_LAYOUT
+    printf("print 2\n");
+#endif
 
 
     // default implementation. Just pass things through to the children
@@ -675,6 +682,8 @@ void HTMLBlockElementImpl::layout( bool deep )
     descent = MAX (descent, getLeftBottom());
     descent = MAX (descent, getRightBottom());
     setLayouted(layouted_);
+
+    printf("layouted = %d\n", layouted_);
 }
 
 
