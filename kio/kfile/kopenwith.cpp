@@ -533,6 +533,7 @@ void KOpenWithDlg::slotOK()
   QString serviceName;
   QString pathName;
   QString initialServiceName;
+  QString preferredTerminal;
   if (!m_pService) {
     // No service selected - check the command line
 
@@ -588,9 +589,18 @@ void KOpenWithDlg::slotOK()
     pathName = m_pService->desktopEntryPath();
   }
 
-  if (terminal->isChecked()) {
+  if (terminal->isChecked())
+  {
     KSimpleConfig conf(QString::fromLatin1("kdeglobals"), true);
     conf.setGroup(QString::fromLatin1("General"));
+    preferredTerminal = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+    m_command = preferredTerminal;
+    // only add --noclose when we are sure it is konsole we're using
+    if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
+      m_command += QString::fromLatin1(" --noclose");
+    m_command += QString::fromLatin1(" -e ");
+    m_command += edit->url();
+    kdDebug(250) << "Setting m_command to " << m_command << endl;
   }
   if ( m_pService && terminal->isChecked() != m_pService->terminal() )
       m_pService = 0L; // It's not exactly this service we're running
@@ -624,18 +634,9 @@ void KOpenWithDlg::slotOK()
   if (terminal->isChecked())
   {
     desktop.writeEntry(QString::fromLatin1("Terminal"), true);
-    KSimpleConfig conf(QString::fromLatin1("kdeglobals"), true);
-    conf.setGroup(QString::fromLatin1("General"));
-    m_command = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
-    // only add --noclose when we are sure it is konsole we'r using
-    if (m_command == "konsole" && nocloseonexit->isChecked())
-    {
-      desktop.writeEntry(QString::fromLatin1("TerminalOptions"), " --noclose ");
-      m_command += " --noclose";
-    }
-    m_command += QString::fromLatin1(" -e ");
-    m_command += edit->url();
-    kdDebug(250) << "Setting m_command to " << m_command << endl;
+    // only add --noclose when we are sure it is konsole we're using
+    if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
+      desktop.writeEntry(QString::fromLatin1("TerminalOptions"), "--noclose");
   }
   else
     desktop.writeEntry(QString::fromLatin1("Terminal"), false);
@@ -693,6 +694,13 @@ QString KOpenWithDlg::text() const
         return m_command;
     else
         return edit->url();
+}
+
+void KOpenWithDlg::hideNoCloseOnExit()
+{
+    // uncheck the checkbox because the value could be used when "Run in Terminal" is selected
+    nocloseonexit->setChecked( false );
+    nocloseonexit->hide();
 }
 
 void KOpenWithDlg::accept()

@@ -99,6 +99,10 @@ public:
      */
     QString text() const;
     /**
+     * Hide the "Do not &close when command exits" Checkbox
+     */
+    void hideNoCloseOnExit();
+    /**
      * @return the chosen service in the application tree
      * Can be null, if the user typed some text and didn't select a service.
      */
