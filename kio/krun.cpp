@@ -159,7 +159,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
     } else {
 
       kdDebug(7010) << error << endl;
-      KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( exec ) );
+      KMessageBox::sorry( 0L, error );
       return 0;
     }
   }

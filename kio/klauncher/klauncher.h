@@ -73,6 +73,7 @@ public:
    DCOPClientTransaction *transaction;
    KService::DCOPServiceType_t dcop_service_type;
    bool autoStart;
+   QString errorMsg;
 };
 
 struct serviceResult

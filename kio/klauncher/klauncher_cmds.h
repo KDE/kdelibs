@@ -74,7 +74,7 @@ typedef struct
  *
  * Notification Last process could not be launched.
  *
- * (void)
+ * char *error msg (utf8)
  */
 
 #define LAUNCHER_EXT_EXEC	6

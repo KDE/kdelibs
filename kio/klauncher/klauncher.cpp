@@ -414,6 +414,8 @@ KLauncher::slotKDEInitData(int)
    if (lastRequest && (request_header.cmd == LAUNCHER_ERROR))
    {
      lastRequest->status = KLaunchRequest::Error;
+     if (!requestData.isEmpty())
+        lastRequest->errorMsg = QString::fromUtf8((char *) requestData.data());
      lastRequest = 0;
      return;
    }
@@ -504,6 +506,8 @@ KLauncher::requestDone(KLaunchRequest *request)
       DCOPresult.result = 1;
       DCOPresult.dcopName = "";
       DCOPresult.error = i18n("KDEInit could not launch '%1'").arg(request->name);
+      if (!request->errorMsg.isEmpty())
+         DCOPresult.error += ":\n" + request->errorMsg;
       DCOPresult.pid = 0;
    }
    if (request->autoStart)
