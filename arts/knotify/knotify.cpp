@@ -279,7 +279,7 @@ bool KNotify::notifyBySound( const QString &sound )
     bool external = d->useExternal && !d->externalPlayer.isEmpty();
     // get file name
     QString soundFile(sound);
-    if ( QFileInfo(sound).isRelative() )
+    if ( !sound.isEmpty() && QFileInfo(sound).isRelative() )
 	soundFile = locate( "sound", sound );
     if ( soundFile.isEmpty() )
         return false;
