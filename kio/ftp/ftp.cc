@@ -1498,20 +1498,27 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
             // crw-rw-rw-   1 root     root       1,   5 Jun 29  1997 zero
             // So we just ignore the number in front of the ",". Ok, its a hack :-)
             if ( strchr( p_size, ',' ) != 0L )
+	    {
+	      //kdDebug() << "Size contains a ',' -> reading size again (/dev hack)" << endl;
               if ((p_size = strtok(NULL," ")) == 0)
                 return 0L;
+	    }
 
             // Check whether the size we just read was really the size
             // or a month (this happens when the server lists no group)
             // Test on sunsite.uio.no, for instance
             if ( !isdigit( *p_size ) )
             {
-              p_size = p_group;
               p_date_1 = p_size;
+              p_size = p_group;
               p_group = 0;
+	      //kdDebug() << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1 << endl;
             }
             else
+	    {
               p_date_1 = strtok(NULL," ");
+              //kdDebug() << "Size has a digit -> ok. p_date_1=" << p_date_1 << endl;
+	    }
 
             if ( p_date_1 != 0 )
               if ((p_date_2 = strtok(NULL," ")) != 0)
@@ -1603,11 +1610,13 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     // Get month from first field
                     // NOTE : no, we don't want to use KLocale here
                     // It seems all FTP servers use the English way
+		    //kdDebug() << "Looking for month " << p_date_1 << endl;
                     static const char * s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
                     for ( int c = 0 ; c < 12 ; c ++ )
                       if ( !strcmp( p_date_1, s_months[c]) )
                       {
+			//kdDebug() << "Found month " << c << " for " << p_date_1 << endl;
                         tmptr->tm_mon = c;
                         break;
                       }
