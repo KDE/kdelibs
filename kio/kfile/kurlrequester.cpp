@@ -348,4 +348,10 @@ KEditListBox::CustomEditor KURLRequester::customEditor()
 void KURLRequester::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+KURLComboRequester::KURLComboRequester( QWidget *parent,
+			      const char *name )
+  : KURLRequester( new KComboBox(false), parent, name)
+{
+}
+
 #include "kurlrequester.moc"

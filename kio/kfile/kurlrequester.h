@@ -65,6 +65,7 @@ public:
      * Constructs a KURLRequester widget with the initial URL @p url.
      */
     KURLRequester( const QString& url, QWidget *parent=0, const char *name=0 );
+
     /**
      * Special constructor, which creates a KURLRequester widget with a custom
      * edit-widget. The edit-widget can be either a KComboBox or a KLineEdit
@@ -248,5 +249,16 @@ private:
     class KURLRequesterPrivate;
     KURLRequesterPrivate *d;
 };
+
+class KURLComboRequester : public KURLRequester // For use in Qt Designer
+{
+    Q_OBJECT
+public:    
+    /**
+     * Constructs a KURLRequester widget with a combobox.
+     */
+    KURLComboRequester( QWidget *parent=0, const char *name=0 );
+};
+
 
 #endif // KURLREQUESTER_H
