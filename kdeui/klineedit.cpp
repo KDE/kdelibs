@@ -482,18 +482,23 @@ void KLineEdit::setCompletedItems( const QStringList& items )
     if ( completionMode() == KGlobalSettings::CompletionPopup ||
          completionMode() == KGlobalSettings::CompletionShell )
     {
-        if ( !items.isEmpty() )
+        QString txt = text();
+        if ( !items.isEmpty() &&
+             !(items.count() == 1 && txt == items[0]) )
         {
             if ( !d->completionBox )
                 makeCompletionBox();
 
-            d->completionBox->setCancelledText( text() );
+            d->completionBox->setCancelledText( txt );
             d->completionBox->clear();
             d->completionBox->insertStringList( items );
             d->completionBox->popup();
         }
         else
-            hideCompletionBox();
+        {
+            if ( d->completionBox->isVisible() )
+                hideCompletionBox();
+        }
     }
     else {
         if ( !items.isEmpty() ) // fallback

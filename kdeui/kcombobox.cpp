@@ -580,7 +580,9 @@ void KComboBox::setCompletedItems( const QStringList& items )
     if ( completionMode() == KGlobalSettings::CompletionPopup ||
          completionMode() == KGlobalSettings::CompletionShell )
     {
-        if ( !items.isEmpty() )
+        QString txt = currentText();
+        if ( !items.isEmpty() &&
+             !(items.count() == 1 && txt == items[0]) )
         {
             if ( !d->completionBox )
                 makeCompletionBox();
@@ -591,7 +593,10 @@ void KComboBox::setCompletedItems( const QStringList& items )
             d->completionBox->popup();
         }
         else
-            hideCompletionBox();
+        {
+            if ( d->completionBox->isVisible() )
+                hideCompletionBox();
+        }
     }
     else
     {
