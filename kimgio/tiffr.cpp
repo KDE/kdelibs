@@ -9,7 +9,55 @@
 #include <qimage.h>
 #include <qfile.h>
 
+#include <assert.h>
+
 #include "tiffr.h"
+
+static tsize_t tiff_read( thandle_t handle, tdata_t buf, tsize_t size )
+{
+    QIODevice *dev = reinterpret_cast<QIODevice *>( handle );
+    return dev->readBlock( reinterpret_cast<char *>( buf ), size );
+}
+
+static tsize_t tiff_write( thandle_t, tdata_t, tsize_t )
+{
+    return 0;
+}
+
+static toff_t tiff_seek( thandle_t handle, toff_t off, int whence )
+{
+    QIODevice *dev = reinterpret_cast<QIODevice *>( handle );
+
+    if ( whence == SEEK_CUR )
+	off += dev->at();
+    else if ( whence == SEEK_END )
+	off += dev->size();
+
+    if ( !dev->at( off ) )
+	return ( toff_t )-1;
+
+    return dev->at();
+}
+
+static toff_t tiff_size( thandle_t handle )
+{
+    QIODevice *dev = reinterpret_cast<QIODevice *>( handle );
+    return dev->size();
+}
+
+static int tiff_close( thandle_t )
+{
+    return 0;
+}
+
+static int tiff_map( thandle_t, tdata_t *, toff_t * )
+{
+    return 0;
+}
+
+static void tiff_unmap( thandle_t, tdata_t, toff_t )
+{
+}
 
 void kimgio_tiff_read( QImageIO *io )
 {
@@ -20,7 +68,10 @@ void kimgio_tiff_read( QImageIO *io )
 	// FIXME: use qdatastream
 
 	// open file
-	tiff = TIFFOpen( QFile::encodeName(io->fileName()), "r" );
+	tiff = TIFFClientOpen( QFile::encodeName( io->fileName() ), "r",
+			       ( thandle_t )io->ioDevice(),
+			       tiff_read, tiff_write, tiff_seek, tiff_close, 
+			       tiff_size, tiff_map, tiff_unmap );
 
 	if( tiff == 0 ) {
 		return;
