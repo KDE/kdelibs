@@ -24,7 +24,7 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "Almost 2.0 - Beta1"
+#define KDE_VERSION_STRING "1.90 Beta (Konfucious)
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 2
@@ -739,6 +739,13 @@ public:
 #endif
 
 // $Log$
+// Revision 1.147  2000/05/09 21:44:46  coolo
+// is that ok?
+// -#define KDE_VERSION_STRING "Almost 2.0 Alpha"
+// +#define KDE_VERSION_STRING "Almost 2.0 - Beta1"
+// -#define KDE_VERSION_RELEASE 1
+// +#define KDE_VERSION_RELEASE 2
+//
 // Revision 1.146  2000/05/08 01:16:46  waba
 // WABA: Explain the X-DCOP-ServiceType fields in desktop files.
 //
