@@ -116,7 +116,7 @@ public:
    * @param name     Will be handed over to QWidget.
    * @short Constructor
    */
-  KLed(const QColor& col, KLed::State st, KLed::Look look, KLed::Shape shape,
+  KLed(const QColor& col, KLed::State state, KLed::Look look, KLed::Shape shape,
        QWidget *parent=0, const char *name=0);
 
 

@@ -127,7 +127,9 @@ public:
      * you do not want this behavior.
      *
      * KMainWindows must be created on the heap with 'new', like:
-     *  \code KMainWindow *kmw = new KMainWindow (...\endcode
+     * \code 
+     * KMainWindow *kmw = new KMainWindow (...);
+     * \endcode
      **/
     KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
 
@@ -145,7 +147,7 @@ public:
     KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
 
     /**
-     * Destructor.
+     * \brief Destructor.
      *
      * Will also destroy the toolbars, and menubar if
      * needed.
@@ -220,7 +222,7 @@ public:
      *     n++;
      *   }
      * } else {
-     * // create default application as usual
+     *   // create default application as usual
      * }
      * \endcode
      * Note that QWidget::show() is called implicitly in restore.
@@ -241,7 +243,7 @@ public:
      * if (kapp->isRestored())
      *   RESTORE(childMW)
      * else {
-     * // create default application as usual
+     *   // create default application as usual
      * }
      * \endcode
      *
@@ -256,7 +258,7 @@ public:
      * if (kapp->isRestored())
      *   kRestoreMainWindows< childMW1, childMW2, childMW3 >();
      * else {
-     * // create default application as usual
+     *   // create default application as usual
      * }
      * \endcode
      *
@@ -275,7 +277,7 @@ public:
      * Returns the className() of the @p number of the toplevel window which
      * should be restored.
      *
-     *  This is only useful if your application uses
+     * This is only useful if your application uses
      * different kinds of toplevel windows.
      */
     // KDE 4 return QCString - QObject::className() returns const char*
@@ -456,7 +458,7 @@ public:
     /**
      * Sets whether KMainWindow should provide a menu that allows showing/hiding
      * the available toolbars ( using KToggleToolBarAction ) . In case there
-     * is only one toolbar configured a simple 'Show <toolbar name here>' menu item
+     * is only one toolbar configured a simple 'Show \<toolbar name here\>' menu item
      * is shown.
      *
      * The menu / menu item is implemented using xmlgui. It will be inserted in your
@@ -527,12 +529,10 @@ public:
     void ignoreInitialGeometry();
 
     /**
-     * @deprecated 
-     *
      * @return the size the mainwindow should have so that the central
      * widget will be of @p size.
      *
-     * You normally don't need this, the recommended way to achieve a
+     * @deprecated {You normally don't need this, the recommended way to achieve a
      * certain central widget size is as follows:
      * @li Override sizeHint() in the central widget so that it
      * returns the desired size.
@@ -541,6 +541,7 @@ public:
      * propagated to any parent layout.
      * @li Now call adjustSize() in the mainwindow to resize the
      * mainwindow such that the central widget will become the desired size.
+     * }
      */
     // KDE4 to be removed
     QSize sizeForCentralWidgetSize(QSize size);

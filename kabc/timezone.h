@@ -54,7 +54,7 @@ public:
    *   
    * @param offset Offset in minutes.
    */
-  void setOffset( int );
+  void setOffset( int offset );
 
   /**
    * Return offset in minutes relative to UTC.
