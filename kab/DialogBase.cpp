@@ -151,11 +151,11 @@ void DialogBase::resizeEvent(QResizeEvent*)
     FrameBaseFrameWidth=frameBase->frameWidth(),
     FrameMainWidth=width()-2*Grid-2*FrameBaseFrameWidth;
   // -----
-  ID(if(width()<sizeHint.width() || height()<sizeHint().height())
+  if(width()<sizeHint().width() || height()<sizeHint().height())
      {
        debug("DialogBase::resizeEvent: "
-	     "warning - size is smaller than size hint.");
-     }); // ID( ..) --> .. is only compiled in when logging is enabled
+	     "warning - size is smaller than size hint, sloppy WM?");
+     }
   int count, x, y, frameMainHeight, cx, cy;
   QPushButton *buttons[]= { buttonOK, buttonApply, 0, buttonCancel};
   const int Size=sizeof(buttons)/sizeof(buttons[0]);

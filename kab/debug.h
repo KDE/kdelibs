@@ -30,6 +30,10 @@ extern "C" {
 #include "stl_headers.h"
 #include <kapp.h>
 
+#if defined USE_NAMESPACES
+using namespace std;
+#endif
+
 // ##############################################################################
 // use version without Nana per default, define KAB_DEBUG to enable logging:
 #ifndef KAB_DEBUG
@@ -41,16 +45,12 @@ extern "C" {
 #define EIFFEL_CHECK CHECK_NO 
 #define L_LEVEL 0 
 #define I_LEVEL 0
-#define L(x...)
-#define LG(x...)
-// There is a problem with the ID(..) function in ktoolbar.h:
-#if !defined ID_already_declared
-#define ID(a...)
-#endif
-#define CHECK(a...)
-#define I(a...)
-#define REQUIRE(a...)
-#define ENSURE(a...)
+inline void L(...) {}
+inline void LG(...) {}
+#define CHECK(a)
+#define I(a)
+#define REQUIRE(a)
+#define ENSURE(a)
 // ------------------------------------------------------------------------------
 #else 
 // ------------------------------------------------------------------------------

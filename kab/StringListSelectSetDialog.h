@@ -20,7 +20,7 @@
 #include "DialogBase.h"
 #include <qstring.h>
 #include <qstrlist.h> 
-// #include "StringListSelectSetDialogData.h"
+#include <debug.h>
 
 class QListBox;
 

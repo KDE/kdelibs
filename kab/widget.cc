@@ -65,7 +65,7 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
     showSearchResults(false),
     kfm(0)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // ############################################################################
   LG(GUARD, "AddressWidget constructor: creating object.\n");
   string bgFilename="background_1.jpg";
@@ -75,7 +75,10 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   KeyValueMap* keys;
   QPixmap pixmap;
   // ----- 
-  readonlyGUI=readonly_;
+  if(!readonly_ && isRO())
+    { // if r/w requested, but file locked
+      readonlyGUI=true;
+    }
   // -----
   QBitmap first(16, 16, (unsigned char*)previous_xbm_bits, true);
   QBitmap previous(16, 16, (unsigned char*)arrow_left_bits, true);
@@ -192,7 +195,7 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
 
 bool AddressWidget::updateDB()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::updateDB: updating database.\n");
   // ############################################################################
   int format=0;
@@ -330,7 +333,7 @@ bool AddressWidget::updateDB()
 
 AddressWidget::~AddressWidget()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget destructor: trying to save and clear database.\n");
   // ############################################################################
   // ----- let us try to handle autosaving here:
@@ -409,7 +412,7 @@ AddressWidget::~AddressWidget()
 
 void AddressWidget::initializeGeometry()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "AddressWidget::initializeGeometry: setting widget geometry.\n");
   QButton* buttons[]= { buttonFirst, buttonPrevious, 0, 
@@ -561,7 +564,7 @@ void AddressWidget::last()
 
 void AddressWidget::currentChanged()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   LG(GUARD, "AddressWidget::currentChanged: current entry changed.\n");
   // ############################################################################
   unsigned int which=0;
@@ -602,7 +605,7 @@ void AddressWidget::changed()
 
 void AddressWidget::remove()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   REQUIRE(isRO());
   LG(GUARD, "AddressWidget::remove: removing entry ...");
   // ############################################################################
@@ -656,27 +659,32 @@ void AddressWidget::remove()
 
 void AddressWidget::add()
 {
-  ID(bool GUARD=false);
-  REQUIRE(isRO());
+  register bool GUARD; GUARD=false;
   LG(GUARD, "AddressWidget::add: adding an empty entry.\n");
   // ############################################################################
   Entry dummy;
   string theNewKey;
-  // ----- until now we only have RO access:
-  if(setFileName(filename, true, false))
-    { // ----- now we have RW access:
-      if(fileChanged())
-	{ // ----- switch back to RO access:
-	  setFileName(filename, true, true);
-	  checkFile();
-	  setStatus(i18n("Sorry, file changed."));
+  bool ro=isRO();
+  // -----
+  if(ro)
+    {
+      // ----- until now we only have RO access:
+      if(setFileName(filename, true, false))
+	{ // ----- now we have RW access:
+	  if(fileChanged())
+	    { // ----- switch back to RO access:
+	      setFileName(filename, true, true);
+	      checkFile();
+	      setStatus(i18n("Sorry, file changed."));
+	      qApp->beep();
+	    }
+	} else {
+	  setStatus(i18n("Permission denied."));
 	  qApp->beep();
+	  return;
 	}
-    } else {
-      setStatus(i18n("Permission denied."));
-      qApp->beep();
-      return;
     }
+  CHECK(!isRO());
   // ----- it is sure that we have locked the file here
   if(edit(dummy))
     {
@@ -691,13 +699,16 @@ void AddressWidget::add()
     }
   // -----
   save();
-  setFileName(filename, true, true);
+  if(ro) 
+    {
+      setFileName(filename, true, true);
+    }
   // ############################################################################
 }
 
 void AddressWidget::updateSelector()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "AddressWidget::updateSelector: doing it.\n");
   StringStringMap::iterator pos;
@@ -719,7 +730,7 @@ void AddressWidget::updateSelector()
 
 void AddressWidget::select(int index)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "AddressWidget::select: item %i selected.\n", index);
   setCurrent(index);
@@ -729,7 +740,7 @@ void AddressWidget::select(int index)
 
 void AddressWidget::enableWidgets()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "AddressWidget::enableWidgets: doing it.\n");
   QWidget* widgets[]= {comboSelector, buttonFirst, 
@@ -790,7 +801,7 @@ void AddressWidget::enableWidgets()
 
 void AddressWidget::browse()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   LG(GUARD, "AddressWidget::browse: calling kfm.\n");
   // ############################################################################
   Entry entry;
@@ -882,7 +893,7 @@ void AddressWidget::save()
 
 void AddressWidget::dropAction(KDNDDropZone*)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "AddressWidget::dropAction: got drop event.\n");
   // ############################################################################
@@ -890,7 +901,7 @@ void AddressWidget::dropAction(KDNDDropZone*)
   
 void AddressWidget::edit()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // ############################################################################
   LG(GUARD, "AddressWidget::edit: called.\n");
   Entry entry;
@@ -946,14 +957,14 @@ void AddressWidget::edit()
       if(!rejected) save();
       setFileName(filename, true, true);
     }
-  ENSURE(isRO());
+  ENSURE(isRO() || wasLocked);
   LG(GUARD, "AddressWidget::edit: done.\n");
   // ############################################################################
 }
 
 bool AddressWidget::edit(Entry& entry)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "AddressWidget::edit: creating edit dialog.\n");
   EditEntryDialog dialog(this);
@@ -972,7 +983,7 @@ bool AddressWidget::edit(Entry& entry)
 
 void AddressWidget::search()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "AddressWidget::search: creating search dialog.\n");
   SearchDialog dialog(this);
@@ -1045,7 +1056,7 @@ void AddressWidget::search()
 
 void AddressWidget::searchResultsClose()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   if(showSearchResults==true)
     {
@@ -1133,7 +1144,7 @@ int AddressWidget::printFooter(QPainter* p, QRect pageSize, int pageNum,
 
 void AddressWidget::talk()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::browse: calling talk client.\n");
   // ############################################################################
   KProcess proc;
@@ -1230,7 +1241,7 @@ void AddressWidget::talk()
 
 void AddressWidget::setReadonlyGUI(bool state)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::setReadonlyGUI: setting GUI to %s.\n", 
      state ? "true" : "false");
   // ############################################################################
@@ -1241,7 +1252,7 @@ void AddressWidget::setReadonlyGUI(bool state)
 
 void AddressWidget::checkFile()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // this produces too much noise:
   // LG(GUARD, "AddressWidget::checkFile: called.\n");
   // ############################################################################
@@ -1269,7 +1280,7 @@ bool AddressWidget::print(QPrinter& printer, const list<string>& fields,
 			  const string& header, const string& ftLeft,
 			  const string& ftRight)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   REQUIRE(fields.size()!=0);
   debug(i18n("Attention: printing is still experimental!"));
   // ############################################################################
@@ -1594,7 +1605,7 @@ bool AddressWidget::print(QPrinter& printer, const list<string>& fields,
 
 bool AddressWidget::emailAddress(const string& key, string& address, bool select)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::emailAddress: called.\n");
   // ############################################################################
   Entry entry;
@@ -1633,7 +1644,7 @@ bool AddressWidget::emailAddress(const string& key, string& address, bool select
 
 void AddressWidget::exportPlain()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::exportPlain: called.\n");
   // ############################################################################
   // ############################################################################
@@ -1641,7 +1652,7 @@ void AddressWidget::exportPlain()
 
 void AddressWidget::exportTeXTable()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::exportTeXTable: called.\n");
   // ############################################################################
   // ############################################################################
@@ -1649,7 +1660,7 @@ void AddressWidget::exportTeXTable()
 
 void AddressWidget::exportTeXLabels()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::exportTeXLabels: called.\n");
   // ############################################################################
   // ############################################################################
@@ -1743,7 +1754,7 @@ void AddressWidget::copy()
 
 void AddressWidget::exportHTML()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::exportHTML: called.\n");
   // ############################################################################
   const string background=card->getBackground();;
@@ -1939,7 +1950,7 @@ void AddressWidget::exportHTML()
  
 void AddressWidget::print()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // ############################################################################
   LG(GUARD, "AddressWidget::print: printing database.\n");
   QPrinter prt;
@@ -2023,7 +2034,7 @@ void AddressWidget::print()
 void AddressWidget::mail()
 {
   REQUIRE(configSection()!=0);
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "AddressWidget::mail: calling mail composer.\n");
   // ############################################################################
   KeyValueMap* keys=configSection()->getKeys();
@@ -2084,7 +2095,7 @@ void AddressWidget::mail()
 
 bool AddressWidget::sendEmail(const string& address, const string& subject)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   REQUIRE(configSection()!=0);
   // ############################################################################
   KProcess proc;

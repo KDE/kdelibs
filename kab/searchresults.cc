@@ -21,7 +21,7 @@ const int SearchResults::Grid=3;
 SearchResults::SearchResults(QWidget* parent, const char* name)
   : QWidget(parent, name)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "SearchResults constructor: creating window.\n");
   listbox=new QListBox(this);
@@ -36,7 +36,7 @@ SearchResults::SearchResults(QWidget* parent, const char* name)
 
 void SearchResults::resizeEvent(QResizeEvent*)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   LG(GUARD, "SearchResults::resizeEvent: setting position of subwidgets.\n");
   // ############################################################################
   int cy=0;
@@ -55,7 +55,7 @@ void SearchResults::resizeEvent(QResizeEvent*)
 
 QSize SearchResults::sizeHint()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   int x=listbox->maxItemWidth();
   int y=5*(listbox->itemHeight()+1)+Grid+buttonClose->sizeHint().height()+2*Grid;

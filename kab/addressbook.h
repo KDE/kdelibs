@@ -128,13 +128,6 @@ protected:
   StringStringMap::iterator current;
   bool isFirstEntry();
   bool isLastEntry();
-  /** This method sets current to the element in entries at the given index.
-    */
-  bool setCurrent(int index); 
-  /** This method sets the current key to the one with the given key 
-    * in the ENTRIES-section. This is reverse to the method before!
-    */
-  bool setCurrent(const string& key); 
   /** This method creates the mirror map by inserting an entry for each 
     * (DB) entry in it. It sets current to the entry with the key <key>.
     */
@@ -166,6 +159,12 @@ public:
   /// This methods retrieve the current entry.
   bool currentEntry(Section**);
   bool currentEntry(Entry&);
+  /** This method sets current to the element in entries at the given index. */
+  bool setCurrent(int index); 
+  /** This method sets the current key to the one with the given key 
+    * in the ENTRIES-section. This is reverse to the method before!
+    */
+  bool setCurrent(const string& key); 
   /** This method returns the entry that has the key given in the 
     * reference. It returns false if there is no entry with this
     * key.

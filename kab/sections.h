@@ -25,6 +25,7 @@
 #include "keyvaluemap.h"
 #include <algorithm>
 #include <fstream.h>
+#include "debug.h"
 
 class Section
 {

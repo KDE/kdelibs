@@ -26,6 +26,8 @@ extern "C" {
 #include <unistd.h>
 	   }
 
+#include "debug.h"
+
 class ConfigDB
 {
 protected:

@@ -25,6 +25,7 @@
 #include <qstring.h>
 #include <qstrlist.h> 
 #include <qsize.h>
+#include "debug.h"
 
 class QVBoxLayout;
 class QComboBox;

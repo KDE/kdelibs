@@ -18,22 +18,25 @@
 
 #include "stl_headers.h"
 #include <fstream.h>
+#include "debug.h"
 
-/** read a line, ignore comments
-  */
+/** Read a line, ignore comments. */
 string ReadLineFromStream(ifstream&);
 
-/** find out wether a line is a comment or not 
-  * (comments start with #)
-  */
+/** Find out wether a line is a comment or not (comments start with #). */
 bool isComment(string);
 
-/// get the users home directory by checking for ENV variable "HOME"
+/** Get the users home directory by checking for ENV variable "HOME". */
 bool getHomeDirectory(string&);
 
 /** Parse the string and replace all non-standard characters with its
-  * HTML equivalents.
-  */
+  * HTML equivalents. */
 bool htmlizeString(const string& orig, string& target);
+
+/** #tokenize partens the given string "text" into its tokens at every occurence
+ *  of the designator "des" and delivers the result in the list reference. 
+ *  If "strict" is true, the last token is only added if there are characters 
+ *  the last designator end the string end. */
+void tokenize(list<string>& res, const string& text, char tr, bool strikt=false);
 
 #endif // MS_FUNCTIONS_H_INCLUDED

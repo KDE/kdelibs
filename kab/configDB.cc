@@ -33,7 +33,8 @@ ConfigDB::ConfigDB()
   // ########################################################
 }
 
-bool ConfigDB::invariant()
+bool 
+ConfigDB::invariant()
 {
   // ########################################################
   if(!isRO() && !locked)
@@ -46,17 +47,12 @@ bool ConfigDB::invariant()
   // ########################################################
 }
 
-bool ConfigDB::setFileName
-(
- const string& filename_, 
- bool mustexist,
- bool readonly_
-)
+bool 
+ConfigDB::setFileName(const string& filename_, bool mustexist, bool readonly_)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // ########################################################  
-  LG(GUARD, "ConfigDB::setFileName: "
-     "setting filename to \"%s\"%s.\n",
+  LG(GUARD, "ConfigDB::setFileName: setting filename to \"%s\"%s.\n",
      filename_.c_str(), readonly_ ? " (read only)" : "");
   // ----- remove previous lock:
   if(locked)
@@ -70,8 +66,7 @@ bool ConfigDB::setFileName
     }
   if(mustexist)
     {
-      if(access(filename_.c_str(), 
-		readonly_==true ? R_OK : W_OK | R_OK)==0)
+      if(access(filename_.c_str(), readonly_==true ? R_OK : W_OK | R_OK)==0)
 	{ 
 	  LG(GUARD, "ConfigDB::setFileName: "
 	     "permission granted, file exists.\n");
@@ -145,16 +140,18 @@ bool ConfigDB::setFileName
   // ########################################################
 }
 
-string ConfigDB::fileName()
+string 
+ConfigDB::fileName()
 {
   // ########################################################
   return filename;
   // ########################################################
 }
 
-bool ConfigDB::save(const char* header)
+bool 
+ConfigDB::save(const char* header)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   REQUIRE(!filename.empty());
   // ########################################################
   LG(GUARD, "ConfigDB::save: saving database -->%s<--.\n",
@@ -197,9 +194,10 @@ bool ConfigDB::save(const char* header)
   // ########################################################
 }
 
-bool ConfigDB::load()
+bool 
+ConfigDB::load()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   REQUIRE(!filename.empty());
   // ########################################################  
   ifstream file(filename.c_str());
@@ -222,11 +220,10 @@ bool ConfigDB::load()
 }
 
 
-bool ConfigDB::get
-(const list<string>& key, 
- KeyValueMap*& map)
+bool 
+ConfigDB::get(const list<string>& key, KeyValueMap*& map)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ########################################################
   LG(GUARD, "ConfigDB::get: trying to get keys ... ");
   Section* section=&top;
@@ -256,14 +253,16 @@ bool ConfigDB::get
   // ########################################################
 }
 
-KeyValueMap* ConfigDB::get()
+KeyValueMap* 
+ConfigDB::get()
 {
   // ########################################################
   return top.getKeys();
   // ########################################################
 }
 
-bool ConfigDB::createSection(const list<string>& key)
+bool 
+ConfigDB::createSection(const list<string>& key)
 { // WORK_TO_DO: report errors (much) better!
   // (by now it is only possible to report ANY failure)
   /*
@@ -305,9 +304,10 @@ bool ConfigDB::createSection(const list<string>& key)
   // ########################################################
 }
 
-bool ConfigDB::clear()
+bool 
+ConfigDB::clear()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ########################################################
   LG(GUARD, "ConfigDB::clear: clearing database.\n");
   bool rc=top.clear();
@@ -317,23 +317,26 @@ bool ConfigDB::clear()
   // ########################################################
 }
 
-bool ConfigDB::createSection(const string& desc)
+bool 
+ConfigDB::createSection(const string& desc)
 {
   // ########################################################
   return createSection(stringToKeylist(desc));
   // ########################################################
 }
 
-bool ConfigDB::get(const string& key, KeyValueMap*& map)
+bool 
+ConfigDB::get(const string& key, KeyValueMap*& map)
 {
   // ########################################################
   return get(stringToKeylist(key), map);
   // ########################################################
 }
 
-list<string> ConfigDB::stringToKeylist(const string& desc)
+list<string> 
+ConfigDB::stringToKeylist(const string& desc)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   LG(GUARD, "ConfigDB::stringToKeylist: parsing path %s.\n",
      desc.c_str());
   // ########################################################
@@ -373,18 +376,18 @@ list<string> ConfigDB::stringToKeylist(const string& desc)
   // ########################################################
 }
 
-bool ConfigDB::get(const string& key, Section*& section)
+bool 
+ConfigDB::get(const string& key, Section*& section)
 {
   // ########################################################
   return get(stringToKeylist(key), section);
   // ########################################################
 }
 
-bool ConfigDB::get
-(const list<string>& key, 
- Section*& section)
+bool 
+ConfigDB::get(const list<string>& key, Section*& section)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ########################################################
   LG(GUARD, "ConfigDB::get: searching section ... ");
   Section* temp=&top;
@@ -403,16 +406,18 @@ bool ConfigDB::get
   // ########################################################
 }
 
-bool ConfigDB::isRO()
+bool 
+ConfigDB::isRO()
 {
   // ########################################################
   return readonly;
   // ########################################################
 }
 
-int ConfigDB::IsLocked(const string& file)
+int 
+ConfigDB::IsLocked(const string& file)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // ########################################################
   string lockfile=file+(string)".lock";
   int pid=-1;
@@ -447,9 +452,10 @@ int ConfigDB::IsLocked(const string& file)
   // ########################################################
 }
 
-bool ConfigDB::lock()
+bool 
+ConfigDB::lock()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   REQUIRE(!filename.empty());
   // ########################################################
   if(locked)
@@ -468,9 +474,10 @@ bool ConfigDB::lock()
   // ########################################################
 }
 
-bool ConfigDB::lock(const string& file)
+bool 
+ConfigDB::lock(const string& file)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // ########################################################
   LG(GUARD, "ConfigDB::lock: locking the file %s.\n",
      file.c_str());
@@ -496,9 +503,10 @@ bool ConfigDB::lock(const string& file)
   // ########################################################  
 }
 
-bool ConfigDB::unlock()
+bool 
+ConfigDB::unlock()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   REQUIRE(!filename.empty());
   // ########################################################
   LG(GUARD, "ConfigDB::unlock: unlocking the file %s.\n",
@@ -544,9 +552,10 @@ bool ConfigDB::unlock()
   // ########################################################
 }
 
-void ConfigDB::CleanLockFiles(int)
+void 
+ConfigDB::CleanLockFiles(int)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // ########################################################
   list<string>::iterator pos;
   // -----
@@ -568,9 +577,10 @@ void ConfigDB::CleanLockFiles(int)
   // ########################################################
 }
 
-bool ConfigDB::CheckLockFile(const string& file)
+bool 
+ConfigDB::CheckLockFile(const string& file)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // ########################################################
   LG(GUARD, "ConfigDB::CheckLockFile: called.\n");
   int pid;
@@ -604,7 +614,7 @@ bool ConfigDB::CheckLockFile(const string& file)
   
 bool ConfigDB::fileChanged()
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   // LG(GUARD, "ConfigDB::fileChanged: called.\n");
   // ########################################################
   struct stat s;
@@ -643,7 +653,7 @@ bool ConfigDB::fileChanged()
   
 bool ConfigDB::storeFileAge()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   REQUIRE(!filename.empty());
   // ########################################################
   struct stat s;
@@ -661,7 +671,8 @@ bool ConfigDB::storeFileAge()
   // ########################################################
 }  
 
-void ConfigDB::changed()
+void 
+ConfigDB::changed()
 {
   // ########################################################
   // ########################################################

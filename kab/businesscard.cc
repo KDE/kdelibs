@@ -21,6 +21,7 @@
 extern "C" {
 #include <stdio.h>
 	   }
+
 #include "debug.h"
 
 const int BusinessCard::Grid=5;
@@ -31,7 +32,7 @@ BusinessCard::BusinessCard(QWidget* parent, const char* name)
     bgColor(lightGray),
     background(0)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "BusinessCard constructor: creating object.\n");
   urlEmail=new KURLLabel(this);
@@ -61,7 +62,7 @@ BusinessCard::BusinessCard(QWidget* parent, const char* name)
 
 BusinessCard::~BusinessCard()
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   if(background!=0) delete background;
   LG(GUARD, "BusinessCard destructor: object removed.\n");
@@ -70,7 +71,7 @@ BusinessCard::~BusinessCard()
   
 void BusinessCard::paintEvent(QPaintEvent*)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   LG(GUARD, "BusinessCard::paintEvent: repainting.\n");
   // ############################################################################
   QFont original, font;
@@ -264,7 +265,7 @@ void BusinessCard::paintEvent(QPaintEvent*)
 
 void BusinessCard::currentChanged(AddressBook::Entry entry)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "BusinessCard::currentChanged: updating and repainting.\n");
   current=entry;
@@ -274,7 +275,7 @@ void BusinessCard::currentChanged(AddressBook::Entry entry)
 
 void BusinessCard::setBackground(QPixmap* pixmap)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   LG(GUARD, "BusinessCard::setBackground: background pixmap changed.\n");
   if(background==0)
@@ -288,7 +289,7 @@ void BusinessCard::setBackground(QPixmap* pixmap)
 
 void BusinessCard::setBackground(const string& path)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################
   QPixmap pixmap;
   if(!pixmap.load(path.c_str()))

@@ -20,7 +20,7 @@ string AuthorEmailAddress;
 
 string ReadLineFromStream(ifstream& stream)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   REQUIRE(stream.good());
   // ############################################################################
   string line;
@@ -68,7 +68,7 @@ bool isComment(string line)
   
 bool getHomeDirectory(string& ref)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ############################################################################  
   char* temp=getenv("HOME");
   // -----
@@ -88,7 +88,7 @@ bool getHomeDirectory(string& ref)
 
 bool htmlizeString(const string& orig, string& target)
 {
-  ID(bool GUARD=true);
+  register bool GUARD; GUARD=true;
   LG(GUARD, "htmlizeString: called.\n");
   // ############################################################################
   string temp;
@@ -110,6 +110,48 @@ bool htmlizeString(const string& orig, string& target)
   target=temp;
   LG(GUARD, "htmlizeString: done.\n");
   return false; // not implemented
+  // ############################################################################
+}
+
+void tokenize(list<string>& resultat, const string& text, char tr, bool strikt)
+{
+  register bool GUARD; GUARD=false;
+  // ############################################################################
+  LG(GUARD, "tokenize: called.\n");
+  string::size_type eins=0, zwei=0;
+  string teil;
+  // -----
+  LG(GUARD, "tokenize: partening -->%s<--.\n", text.c_str());
+  resultat.erase(resultat.begin(), resultat.end());
+  // -----
+  if(text.empty())
+    {
+      LG(GUARD, "tokenize: empty string, done.\n");
+      return;
+    }
+  while(zwei!=string::npos)
+    {
+      teil="";
+      zwei=text.find(tr, eins);
+      if(zwei!=string::npos)
+	{
+	  teil.assign(text, eins, zwei-eins);
+	  CHECK(teil.size()==zwei-eins);
+	  resultat.push_back(teil);
+	} else { // last element
+	  if(!strikt && zwei>eins+1) // nur wenn dazwischen Zeichen sind
+	    {
+	      teil.assign(text, eins);
+	      CHECK(teil.size()==text.size()-eins);
+	      resultat.push_back(teil);
+	    }
+	}
+      eins=zwei+1;
+      if(eins>=text.size()) break;
+    }
+  LG(GUARD, "tokenize: partened in %i parts.\n", resultat.size());
+  // -----
+  LG(GUARD, "tokenize: done.\n");
   // ############################################################################
 }
 

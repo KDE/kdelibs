@@ -63,6 +63,8 @@ public:
   /** sendEmail sends an email to the address given.
    */
   bool sendEmail(const string& address, const string& subject="");
+  /** Synchronize selector combobox and addressbook contents. */
+  void updateSelector();
   // ----------------------------------------------------------------------------
 protected:
   // the child widgets:
@@ -86,7 +88,6 @@ protected:
   // methods
   void createConnections();
   void createTooltips();
-  void updateSelector();
   void enableWidgets();
   bool edit(Entry&);
   // helper methods for printing:

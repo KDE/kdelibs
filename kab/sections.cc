@@ -34,7 +34,7 @@ Section::Section(const KeyValueMap& contents)
 
 bool Section::add(const string& name)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ########################################################
   Section* section=new Section; // create an empty section
   bool rc;
@@ -57,7 +57,7 @@ bool Section::add(const string& name)
 
 bool Section::add(const string& name, Section* section)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ########################################################
   if(sections.insert(StringSectionMap::value_type
 		     (name, section)).second)
@@ -77,7 +77,7 @@ bool Section::find
 (const string& name, 
  StringSectionMap::iterator& result)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   // ########################################################
   LG(GUARD, "Section::find: "
      "trying to get section \"%s\" ... ", name.c_str());
@@ -148,7 +148,7 @@ void Section::insertIndentSpace(ofstream& file, int level)
 
 bool Section::save(ofstream& stream, int level)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   REQUIRE(stream.good());
   CHECK(level>=0);
   // ########################################################
@@ -193,7 +193,7 @@ bool Section::save(ofstream& stream, int level)
 
 bool Section::readSection(ifstream& file, bool finish)
 {
-  ID(bool GUARD=false);
+  register bool GUARD; GUARD=false;
   REQUIRE(file.good());
   // ########################################################
   LG(GUARD, "Section::readSection: reading section.\n");

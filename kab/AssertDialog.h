@@ -17,6 +17,7 @@ class QRadioButton;
 
 #include "stl_headers.h"
 #include "AssertDialogData.h"
+#include "debug.h"
 
 class AssertDialog : public AssertDialogData
 {
