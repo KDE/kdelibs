@@ -972,6 +972,10 @@ KLauncher::requestSlave(const QString &_protocol,
 
     // We don't care about this request any longer....
     requestDone(request);
+    if (!pid)
+    {
+       error = i18n("Error loading '%1'.\n").arg(name);
+    }
     return pid;
 }
 
