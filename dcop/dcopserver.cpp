@@ -21,6 +21,7 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -547,6 +548,11 @@ CloseListeners ()
   FreeAuthenticationData(numTransports, authDataEntries);
 }
 
+static void sighandler(int)
+{
+  CloseListeners();
+}
+
 DCOPServer::DCOPServer()
   : QObject(0,0), appIds(200), clients(200)
 {
@@ -784,6 +790,8 @@ int main( int argc, char* argv[] )
   DCOPServer server;
 
   daemon(1, 0);
+
+  signal(SIGTERM, sighandler);
 
   return a.exec();
 }
