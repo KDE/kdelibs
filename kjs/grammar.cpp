@@ -68,7 +68,7 @@
 #define	MODEQUAL	311
 #define	XOREQUAL	312
 #define	OREQUAL	313
-#define	DOUBLE	314
+#define	NUMBER	314
 #define	IDENT	315
 #define	AUTO	316
 
@@ -304,7 +304,7 @@ static const char * const yytname[] = {   "$","error","$undefined.","NULLTOKEN",
 "TRY","CATCH","FINALLY","EQEQ","NE","STREQ","STRNEQ","LE","GE","OR","AND","PLUSPLUS",
 "MINUSMINUS","LSHIFT","RSHIFT","URSHIFT","PLUSEQUAL","MINUSEQUAL","MULTEQUAL",
 "DIVEQUAL","LSHIFTEQUAL","RSHIFTEQUAL","URSHIFTEQUAL","ANDEQUAL","MODEQUAL",
-"XOREQUAL","OREQUAL","DOUBLE","IDENT","AUTO","'/'","'('","')'","'{'","'}'","'['",
+"XOREQUAL","OREQUAL","NUMBER","IDENT","AUTO","'/'","'('","')'","'{'","'}'","'['",
 "']'","','","':'","'.'","'+'","'-'","'~'","'!'","'*'","'%'","'<'","'>'","'&'",
 "'^'","'|'","'?'","'='","';'","Literal","PrimaryExpr","ArrayLiteral","ElementList",
 "ElisionOpt","Elision","PropertyNameAndValueList","PropertyName","MemberExpr",

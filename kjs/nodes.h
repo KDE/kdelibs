@@ -105,7 +105,6 @@ namespace KJS {
 
   class NumberNode : public Node {
   public:
-    NumberNode(int v) : value((double)v) { }
     NumberNode(double v) : value(v) { }
     KJSO evaluate();
   private:

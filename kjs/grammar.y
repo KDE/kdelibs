@@ -64,7 +64,7 @@ using namespace KJS;
 
 /* literals */
 %token NULLTOKEN TRUETOKEN FALSETOKEN
-%token STRING DECIMAL INTEGER
+%token STRING NUMBER
 
 /* keywords */
 %token BREAK CASE DEFAULT FOR NEW VAR CONTINUE
@@ -89,8 +89,7 @@ using namespace KJS;
 %token XOREQUAL OREQUAL            /* ^= and |= */
 
 /* terminal types */
-%token <ival> INTEGER
-%token <dval> DOUBLE
+%token <dval> NUMBER
 %token <ustr> STRING
 %token <ustr> IDENT
 
@@ -141,8 +140,7 @@ Literal:
     NULLTOKEN                      { $$ = new NullNode(); }
   | TRUETOKEN                      { $$ = new BooleanNode(true); }
   | FALSETOKEN                     { $$ = new BooleanNode(false); }
-  | INTEGER                        { $$ = new NumberNode($1); }
-  | DOUBLE                         { $$ = new NumberNode($1); }
+  | NUMBER                         { $$ = new NumberNode($1); }
   | STRING                         { $$ = new StringNode($1); delete $1; }
   | '/'       /* a RegExp ? */     { Lexer *l = Lexer::curr();
                                      if (!l->scanRegExp()) YYABORT;
@@ -192,8 +190,7 @@ PropertyName:
     IDENT                          { $$ = new PropertyNode($1);
                                      delete $1; }
   | STRING                         { $$ = new PropertyNode($1); delete $1; }
-  | INTEGER                        { $$ = new PropertyNode((double)$1); }
-  | DOUBLE                         { $$ = new PropertyNode($1); }
+  | NUMBER                         { $$ = new PropertyNode($1); }
 ;
 
 MemberExpr:

@@ -409,7 +409,7 @@ int Lexer::lex()
     kjsyylval.ustr = new UString(buffer16, pos16); return STRING;
   case Number:
     kjsyylval.dval = dval;
-    return DOUBLE;
+    return NUMBER;
   case Bad:
     fprintf(stderr, "yylex: ERROR.\n");
     return -1;

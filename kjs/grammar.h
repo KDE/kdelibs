@@ -26,7 +26,6 @@ typedef union {
 #define	TRUETOKEN	259
 #define	FALSETOKEN	260
 #define	STRING	261
-#define	DECIMAL	262
 #define	INTEGER	263
 #define	BREAK	264
 #define	CASE	265
@@ -78,7 +77,7 @@ typedef union {
 #define	MODEQUAL	311
 #define	XOREQUAL	312
 #define	OREQUAL	313
-#define	DOUBLE	314
+#define	NUMBER	314
 #define	IDENT	315
 #define	AUTO	316
 
