@@ -37,7 +37,7 @@
 #include <qpainter.h>
 #include <qpalette.h>
 #include <qdrawutil.h>
-
+#include <kglobal.h>
 #include "dom_string.h"
 
 #include "misc/helper.h"
@@ -573,7 +573,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
         }
 
         for (int c=col; c < col+span ; ++c)
-            colMaxWidth[c]=QMAX(colMinWidth[c],colMaxWidth[c]);
+            colMaxWidth[c]=KMAX(colMinWidth[c],colMaxWidth[c]);
 
     }
 }
@@ -620,9 +620,9 @@ int RenderTable::distributeMinWidth(int distrib, LengthType distType,
             if (totper)
                 delta=(distrib * colValue[c])/totper;
             if (mlim)
-                delta = QMIN(delta,colMaxWidth[c]-colMinWidth[c]);
+                delta = KMIN(delta,colMaxWidth[c]-colMinWidth[c]);
 
-            delta = QMIN(tdis,delta);
+            delta = KMIN(tdis,delta);
 
             if (delta==0 && tdis && (!mlim || colMaxWidth[c]>colMinWidth[c]))
                 delta=1;
@@ -706,7 +706,7 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
     int smax = col->max;
 
     if (col->type==Fixed)
-        smax = QMAX(smin,col->value);
+        smax = KMAX(smin,col->value);
 
     if (span==1)
     {
@@ -751,19 +751,19 @@ void RenderTable::calcFinalColMax(int c, ColInfo* col)
 
     if (col->type==Fixed)
     {
-        smax = QMAX(smin,col->value);
+        smax = KMAX(smin,col->value);
     }
     else if (col->type == Percent)
     {
-        smax = m_width * col->value / QMAX(100,totalPercent);
+        smax = m_width * col->value / KMAX(100u,totalPercent);
     }
     else if (col->type == Relative && totalRelative)
     {
         smax= m_width * col->value / totalRelative;
     }
 
-    smax = QMAX(smax,oldmin);
-//    smax = QMIN(smax,m_width);
+    smax = KMAX(smax,oldmin);
+//    smax = KMIN(smax,m_width);
 
 //    kdDebug( 6040 ) << "smin " << smin << " smax " << smax << " span " << span << endl;
     if (span==1)
@@ -935,12 +935,14 @@ void RenderTable::calcColMinMax()
     }
     else if (hasPercent && !hasFixed)
     {
-        int tot = QMIN(99,totalPercent);
-        m_width = QMIN((minVar + minRel)*100/(100-tot), availableWidth);
+        //kdDebug( 6040 ) << "2 percentWidest=" << percentWidest << " percentWidestPercent=" << percentWidestPercent << " " << endl;
+        int tot = KMIN(99,int( totalPercent ));
+        int w = KMAX(availableWidth, (minVar + minRel)*100/(100-tot) );
+        m_width = KMIN(w, availableWidth);
     }
     else if (hasPercent && hasFixed)
     {
-        int tot = QMIN(99,totalPercent);
+        unsigned int tot = KMIN(99u,totalPercent);
 
         // Don't let columns with both fixed and percent constrain the table
         // size.
@@ -951,15 +953,16 @@ void RenderTable::calcColMinMax()
             ourPercent = maxFixedPercent;
 
 //      kdDebug( 6040 ) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
+        // int w necessary here to prevent arithmetic overflow of m_width !
         int w = (maxFixed + minVar + minRel) * 100 / ourPercent;
-        m_width = QMIN (w, availableWidth);
+        m_width = KMIN (w, availableWidth);
     }
     else
     {
-        m_width = QMIN(availableWidth,m_maxWidth);
+        m_width = KMIN(short( availableWidth ),m_maxWidth);
     }
 
-    m_width = QMAX (m_width, m_minWidth);
+    m_width = KMAX (m_width, m_minWidth);
 
 
     // PHASE 4, calculate maximums for percent and relative columns
@@ -992,10 +995,10 @@ void RenderTable::calcColMinMax()
     {
         m_minWidth = m_maxWidth = m_width;
     }
-    
+
     else if(style()->width().type == Variable && hasPercent)
     {
-        int tot = QMIN(99,totalPercent);
+        unsigned int tot = KMIN(99u,totalPercent);
         int mx;
         if (hasFixed)
             mx = (maxFixed + minVar + minRel) * 100 /(100 - tot);
@@ -1016,7 +1019,7 @@ void RenderTable::calcColMinMax()
     m_maxWidth += borderLeft() + borderRight();
     m_width += borderLeft() + borderRight();
 
-   /*kdDebug( 6040 ) << "TABLE width=" << m_width <<
+/*    kdDebug( 6040 ) << "TABLE width=" << m_width <<
                 " TABLE m_minWidth=" << m_minWidth <<
                 " TABLE m_maxWidth=" << m_maxWidth << endl;*/
 
@@ -1193,8 +1196,8 @@ int RenderTable::distributeWidth(int distrib, LengthType type, int typeCols )
     {
         if (colType[c]==type)
         {
-            int delta = QMIN(distrib/typeCols,colMaxWidth[c]-actColWidth[c]);
-            delta = QMIN(tdis,delta);
+            int delta = KMIN(distrib/typeCols,colMaxWidth[c]-actColWidth[c]);
+            delta = KMIN(tdis,delta);
             if (delta==0 && tdis && colMaxWidth[c]>actColWidth[c])
                 delta=1;
             actColWidth[c]+=delta;
@@ -1229,7 +1232,7 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
         if (colType[c]==type)
         {
             int delta = (colMaxWidth[c] * distrib) / divider;
-            delta=QMIN(delta,tdis);
+            delta=KMIN(delta,tdis);
             if (delta==0 && tdis)
                 delta=1;
             actColWidth[c] += delta;
@@ -1861,12 +1864,12 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
 
-    int my = QMAX(_ty,_y);
+    int my = KMAX(_ty,_y);
     int mh;
     if (_ty<_y)
-        mh= QMAX(0,h-(_y-_ty));
+        mh= KMAX(0,h-(_y-_ty));
     else
-        mh = QMIN(_h,h);
+        mh = KMIN(_h,h);
 
     QColor c = style()->backgroundColor();
     if ( !c.isValid() && parent() ) // take from row
@@ -1945,3 +1948,6 @@ RenderTableCaption::~RenderTableCaption()
 {
 }
 
+#undef TABLE_DEBUG
+#undef DEBUG_LAYOUT
+#undef BOX_DEBUG
