@@ -43,6 +43,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <config.h>
 
+#if 0 
+//disabled until #74478 fixed.
+
 #if defined(__i386__) && ( defined(__GNUC__) || defined(__INTEL_COMPILER) )
 #  if defined( HAVE_X86_MMX )
 #    define USE_MMX_INLINE_ASM
@@ -52,6 +55,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #  endif
 #endif
 
+#endif
 //======================================================================
 //
 // Utility stuff for effects ported from ImageMagick to QImage
