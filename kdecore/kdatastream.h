@@ -8,14 +8,14 @@
 #endif
 
 #if SIZEOF_LONG == 8
-QDataStream & operator << (QDataStream & str, long l)
+inline QDataStream & operator << (QDataStream & str, long l)
 {
   str << Q_INT32((l & 0xffffffff00000000) >> 32);
   str << Q_INT32(l & 0x00000000ffffffff);
   return str;
 }
 
-QDataStream & operator >> (QDataStream & str, long & l)
+inline QDataStream & operator >> (QDataStream & str, long & l)
 {
   Q_INT32 hi, lo;
   str >> hi;
@@ -27,13 +27,13 @@ QDataStream & operator >> (QDataStream & str, long & l)
 #else
 #if SIZEOF_LONG == 4
 
-QDataStream & operator << (QDataStream & str, long l)
+inline QDataStream & operator << (QDataStream & str, long l)
 {
   str << Q_INT32(l);
   return str;
 }
 
-QDataStream & operator >> (QDataStream & str, long & l)
+inline QDataStream & operator >> (QDataStream & str, long & l)
 {
   Q_INT32 i;
   str >> i;
@@ -52,7 +52,7 @@ inline QDataStream & operator << (QDataStream & str, unsigned long l)
   return str;
 }
 
-QDataStream & operator >> (QDataStream & str, unsigned long & l)
+inline QDataStream & operator >> (QDataStream & str, unsigned long & l)
 {
   long sl;
   str >> sl;
@@ -66,7 +66,7 @@ inline QDataStream & operator << (QDataStream & str, bool b)
   return str;
 }
 
-QDataStream & operator >> (QDataStream & str, bool & b)
+inline QDataStream & operator >> (QDataStream & str, bool & b)
 {
   Q_INT32 l;
   str >> l;
