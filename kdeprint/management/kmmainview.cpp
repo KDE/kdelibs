@@ -205,13 +205,13 @@ void KMMainView::initActions()
 	stateAct->insert(new KAction(i18n("&Disable Job Spooling"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_disable"));
 
 	new KAction(i18n("&Remove"),"edittrash",0,this,SLOT(slotRemove()),m_actions,"printer_remove");
-	new KAction(i18n("&Configure"),"configure",0,this,SLOT(slotConfigure()),m_actions,"printer_configure");
+	new KAction(i18n("&Configure..."),"configure",0,this,SLOT(slotConfigure()),m_actions,"printer_configure");
 	new KAction(i18n("Add &Printer/Class..."),"kdeprint_addprinter",0,this,SLOT(slotAdd()),m_actions,"printer_add");
 	new KAction(i18n("Add &Special (pseudo) Printer..."),"kdeprint_addpseudo",0,this,SLOT(slotAddSpecial()),m_actions,"printer_add_special");
 	new KAction(i18n("Set as &Local Default"),"kdeprint_defaulthard",0,this,SLOT(slotHardDefault()),m_actions,"printer_hard_default");
 	new KAction(i18n("Set as &User Default"),"kdeprint_defaultsoft",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
-	new KAction(i18n("&Test Printer"),"kdeprint_testprinter",0,this,SLOT(slotTest()),m_actions,"printer_test");
-	new KAction(i18n("Configure &Manager"),"kdeprint_configmgr",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
+	new KAction(i18n("&Test Printer..."),"kdeprint_testprinter",0,this,SLOT(slotTest()),m_actions,"printer_test");
+	new KAction(i18n("Configure &Manager..."),"kdeprint_configmgr",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
 	new KAction(i18n("Initialize Manager/&View"),"reload",0,this,SLOT(slotInit()),m_actions,"view_refresh");
 
 	KIconSelectAction	*dact = new KIconSelectAction(i18n("&Orientation"),0,m_actions,"orientation_change");
@@ -222,7 +222,7 @@ void KMMainView::initActions()
 	connect(dact,SIGNAL(activated(int)),SLOT(slotChangeDirection(int)));
 
 	new KAction(i18n("R&estart Server"),"kdeprint_restartsrv",0,this,SLOT(slotServerRestart()),m_actions,"server_restart");
-	new KAction(i18n("Configure &Server"),"kdeprint_configsrv",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
+	new KAction(i18n("Configure &Server..."),"kdeprint_configsrv",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
 
 	KToggleAction	*tact = new KToggleAction(i18n("View &Toolbar"),0,m_actions,"view_toolbar");
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
