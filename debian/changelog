@@ -1,8 +1,10 @@
 kdelibs (4:2.1-beta2-4) unstable; urgency=low
  
    * Fixing artsdsp LD_PRELOAD problem (Closes: #83592)
+   * Adding in replaces/conflicts for *ancient* non-existant kdelibs-nossl
+     package. (Closes: #83607)
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 25 Jan 2001 18:00:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 26 Jan 2001 01:00:00 -0700
 
 kdelibs (4:2.1-beta2-3) unstable; urgency=low
  

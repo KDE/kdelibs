@@ -20,10 +20,10 @@ Description: KDE core libraries (runtime files)
 Package: libarts
 Architecture: any
 Section: libs
-Replaces: libarts-alsa
+Replaces: libarts-alsa, kdelibs3-nossl
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
-Conflicts: suidmanager (<< 0.50), libarts-alsa
+Conflicts: suidmanager (<< 0.50), libarts-alsa, kdelibs3-nossl
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -36,10 +36,10 @@ Description: aRts Sound system
 Package: libkmid
 Architecture: any
 Section: libs
-Replaces: libarts (<= 4:2.1-20010115-1), libarts-alsa (<= 4:2.1-20010115-1), libkmid-alsa, kdelibs3 (<= 4:2.1-20010115-1)
+Replaces: libarts (<= 4:2.1-20010115-1), libarts-alsa (<= 4:2.1-20010115-1), libkmid-alsa, kdelibs3 (<= 4:2.1-20010115-1), kdelibs3-nossl
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
-Conflicts: libkmid-alsa
+Conflicts: libkmid-alsa, kdelibs3-nossl
 Description: aRts Sound system (midi support libraries)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -52,10 +52,10 @@ Description: aRts Sound system (midi support libraries)
 Package: libkmid-alsa
 Architecture: any
 Section: libs
-Replaces: libarts (<= 4:2.1-20010115-1), libarts-alsa (<= 4:2.1-20010115-1), libkmid, kdelibs3 (<= 4:2.1-20010115-1)
+Replaces: libarts (<= 4:2.1-20010115-1), libarts-alsa (<= 4:2.1-20010115-1), libkmid, kdelibs3 (<= 4:2.1-20010115-1), kdelibs3-nossl
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
-Conflicts: libkmid
+Conflicts: libkmid, kdelibs3-nossl
 Description: aRts Sound system (midi support libraries with alsa)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -68,10 +68,10 @@ Description: aRts Sound system (midi support libraries with alsa)
 Package: libarts-alsa
 Architecture: any
 Section: libs
-Replaces: libarts
+Replaces: libarts, kdelibs3-nossl
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
-Conflicts: suidmanager (<< 0.50), libarts
+Conflicts: suidmanager (<< 0.50), libarts, kdelibs3-nossl
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
