@@ -767,7 +767,7 @@ void doStructSource(FILE *source)
 
 		/** copy constructor **/
 
-		fprintf(source,"%s::%s(const %s& copyType) :Type()\n{\n",
+		fprintf(source,"%s::%s(const %s& copyType) : ::Type(copyType)\n{\n",
 			d->name.c_str(),d->name.c_str(),d->name.c_str());
 		fprintf(source,"\tBuffer buffer;\n");
 		fprintf(source,"\tcopyType.writeType(buffer);\n");

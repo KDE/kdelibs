@@ -10,6 +10,7 @@ These are:
 
 - move required stuff
    => knotify should probably be in kdebase
+- fix crash when playing wav files without libaudiofile installed
 
 2. To get everything up again
 
