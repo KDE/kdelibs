@@ -96,6 +96,7 @@ DefaultProgress::DefaultProgress( bool showNow )
   setMaximumHeight(sizeHint().height());
 
   d->noCaptionYet = true;
+  setCaption(i18n("Progress Dialog")); // show something better than kio_uiserver
 
   if ( showNow ) {
     show();
