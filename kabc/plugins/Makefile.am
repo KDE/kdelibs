@@ -2,7 +2,7 @@ if include_LDAP
 LDAP_SUBDIR = ldap
 endif
 
-SUBDIRS = file dir $(LDAP_SUBDIR) net ldapkio
+SUBDIRS = file dir net ldapkio xmlrpc
 
 #imap \
 #sql \
