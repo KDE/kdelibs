@@ -376,6 +376,10 @@ body
 	  {
 		$$ = new QString( *($1) + *($2) );
 	  }
+	| T_INLINE function body
+	  {
+		$$ = new QString( *($2) + *($3) );
+	  }
 	| function body
 	  {
 		$$ = new QString( *($1) + *($2) );
