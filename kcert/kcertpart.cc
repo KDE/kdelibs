@@ -456,6 +456,10 @@ bool KCertPart::openFile() {
 	return false;
 #else
 
+if (QFileInfo(m_file).size() == 0) {
+	KMessageBox::sorry(_frame, i18n("Certificate file is empty."), i18n("Certificate Import"));
+	return false;
+}
 
 QString whatType = d->browserExtension->urlArgs().serviceType;
 //whatType = KMimeType::findByURL(m_url,0,true)->name();
