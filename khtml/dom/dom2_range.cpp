@@ -38,6 +38,12 @@ using namespace DOM;
 
 Range::Range()
 {
+    startContainer = 0;
+    endContainer = 0;
+    startOffset = 0;
+    endOffset = 0;
+    commonAncestorContainer = 0;
+    collapsed = true;
     detached = false;
 }
 
@@ -127,26 +133,29 @@ Node Range::getCommonAncestorContainer() /*const*/
 {
     if( isDetached() )
         throw DOMException(DOMException::INVALID_STATE_ERR);
-
+    
     // this function must be somewhat slow.. if this is a problem,
     // maybe we should come up with something better :)
-    Node parentStart;
-    Node parentEnd;
+    Node parentStart = startContainer;
+    Node parentEnd = endContainer;
+    
+    while( !parentStart.isNull() && (parentStart != parentEnd) )
+    {
+        while( !parentEnd.isNull() && (parentStart != parentEnd) )
+            parentEnd = parentEnd.parentNode();
 
-    for(parentStart = startContainer;
-        (!parentStart.isNull() ) && (parentStart != parentEnd);
-        parentStart = parentStart.parentNode() )
-        for(parentEnd = endContainer;
-            (!parentEnd.isNull() ) && (parentStart != parentEnd);
-            parentEnd = parentEnd.parentNode() );
+        if(parentStart == parentEnd)  break;
+        parentStart = parentStart.parentNode();
+    }
 
     if(parentStart == parentEnd)
         commonAncestorContainer = parentStart;
     else
     {
-        printf("uh? No common ancestor container?\n");
+        printf("Error in getCommonAncestorContainer(): No common ancestor container?\n");
         return Node();
     }
+    
     return commonAncestorContainer;
 }
 
@@ -202,12 +211,15 @@ void Range::setStart( const Node &refNode, long offset )
     startContainer = refNode;
     startOffset = offset;
 
-    Node oldCommonAncestorContainer = commonAncestorContainer;
-    if( oldCommonAncestorContainer != getCommonAncestorContainer() )
-        collapse( true );
+    if( endContainer != 0 )
+    {
+        Node oldCommonAncestorContainer = commonAncestorContainer;
+//        if( oldCommonAncestorContainer != getCommonAncestorContainer() )
+//            collapse( true );
+    }
 
-    if( !boundaryPointsValid() )
-        collapse( true );
+//    if( !boundaryPointsValid() )
+//        collapse( true );
 }
 
 void Range::setEnd( const Node &refNode, long offset )
@@ -249,12 +261,15 @@ void Range::setEnd( const Node &refNode, long offset )
     endContainer = refNode;
     endOffset = offset;
 
-    Node oldCommonAncestorContainer = commonAncestorContainer;
-    if( oldCommonAncestorContainer != getCommonAncestorContainer() )
-        collapse( false );
-
-    if( !boundaryPointsValid() )
-        collapse( false );
+    if( startContainer != 0 )
+    {
+        Node oldCommonAncestorContainer = commonAncestorContainer;
+//        if( oldCommonAncestorContainer != getCommonAncestorContainer() )
+//            collapse( false );
+    }
+    
+//    if( !boundaryPointsValid() )
+//        collapse( false );
 }
 
 void Range::setStartBefore( const Node &refNode )
@@ -608,46 +623,37 @@ short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containe
         return 2;     // undocumented - should throw an exception here
     }
 
-    if( containerA == containerB )        // Case 1 in DOM2 pt. 8.5
+    if( containerA == containerB )
     {
-        if( offsetA < offsetB )  return -1;
-        else if( offsetA == offsetB )  return 0;
-        else if( offsetA > offsetB )  return 1;
+        if( offsetA == offsetB )  return 0;    // A is equal to B
+        if( offsetA < offsetB )  return -1;    // A is before B
+        else  return 1;                        // A is after B
     }
-    else
+
+    Node n = containerA;
+    while( n != 0 )
     {
-        Node _tempNode = containerB;      // Case 2 in DOM2 pt. 8.5
-        while( !_tempNode.isNull() )
+        if( n == containerB)
+            return -1;      // A is before B
+        Node next = n.firstChild();
+        if( next == 0 )
+            next = n.nextSibling();
+        while( n != 0 && next == 0 )
         {
-            if( _tempNode.parentNode() == containerA )
-            {
-                if( _tempNode.parentNode().index() < (unsigned)offsetA )  return -1;
-                else  return 1;
-            }
-            _tempNode = _tempNode.parentNode();
+            n = n.parentNode();
+            next = n.nextSibling();
         }
-
-        _tempNode = containerA;           // Case 3 in DOM2 pt. 8.5
-        while( !_tempNode.isNull() )
-        {
-            if( _tempNode.parentNode() == containerB )
-            {
-                if( _tempNode.parentNode().index() > (unsigned)offsetB )  return -1;
-                else  return 1;
-            }
-            _tempNode = _tempNode.parentNode();
-        }
-
-        // Case 4 in DOM2 pt. 8.5 (use a treewalker here)
-        }
-    return 0;
+        n = next;
+    }
+    return 1;         // A is after B
 }
 
 bool Range::boundaryPointsValid(  )
 {
     short valid =  compareBoundaryPoints( getStartContainer(), getStartOffset(),
                                           getEndContainer(), getEndOffset() );
-    if( valid == -1 )  return false;
+    printf( "valid: %d\n", valid );
+    if( valid == 1 )  return false;
     else  return true;
 }
 
