@@ -1330,14 +1330,13 @@ void KConfigBase::writeEntry ( const char *pKey, const QStrList &list,
   QStrListIterator it( list );
   for( ; it.current(); ++it )
     {
-      uint i, len;
+      uint i;
       QString value;
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // A QStrList may contain values in 8bit locale cpecified
       // encoding or in UTF8 encoding.
       value = KStringHandler::from8Bit(it.current());
-      len = value.length();
-      for( i = 0; i < len; i++ )
+      for( i = 0; i < value.length(); i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
             str_list += '\\';
@@ -1372,9 +1371,8 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
   for( ; it != list.end(); ++it )
     {
       QString value = *it;
-      uint i, len;
-      len = value.length();
-      for( i = 0; i < len; i++ )
+      uint i;
+      for( i = 0; i < value.length(); i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
             str_list += '\\';
