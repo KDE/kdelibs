@@ -30,4 +30,3 @@ Comment[zh_TW]=可執行檔
 Icon=exec
 Type=MimeType
 MimeType=application/x-executable
-Patterns=*.exe;*.EXE;
