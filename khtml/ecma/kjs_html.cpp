@@ -164,6 +164,7 @@ const ClassInfo KJS::HTMLDocument::info =
   height		HTMLDocument::Height		DontDelete|ReadOnly
   width			HTMLDocument::Width		DontDelete|ReadOnly
   dir			HTMLDocument::Dir		DontDelete
+  compatMode		HTMLDocument::CompatMode	DontDelete|ReadOnly
 #IE extension
   frames		HTMLDocument::Frames		DontDelete|ReadOnly
 #potentially obsolete array properties
@@ -327,6 +328,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
     case CaptureEvents:
     case ReleaseEvents:
       return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
+    case CompatMode:
+      return getString(static_cast<HTMLDocumentImpl *>(doc.handle())->parseMode()
+              == DocumentImpl::Compat ? "BackCompat" : "CSS1Compat");
     }
   }
   // Look for overrides

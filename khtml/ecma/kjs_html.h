@@ -49,7 +49,7 @@ namespace KJS {
            Images, Applets, Links, Forms, Anchors, Scripts, All, Clear, Open, Close,
            Write, WriteLn, GetElementsByName, GetSelection, CaptureEvents, ReleaseEvents,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified,
-           Height, Width, Dir, Frames };
+           Height, Width, Dir, Frames, CompatMode };
     DOM::Document toDocument() const { return static_cast<DOM::Document>( node ); }
   };
 
