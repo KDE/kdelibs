@@ -48,6 +48,7 @@
 #include <kurl.h>
 #include <kiconloaderdialog.h>
 #include <kiconloader.h>
+#include <klocale.h>
 
 class PropsPage;
 
