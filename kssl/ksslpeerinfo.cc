@@ -29,6 +29,7 @@
 
 #include <ksockaddr.h>
 #include <kextsock.h>
+#include <netsupp.h>
 #include <netdb.h>
 
 #include "ksslx509map.h"
