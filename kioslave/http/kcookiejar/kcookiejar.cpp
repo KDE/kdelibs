@@ -636,15 +636,9 @@ void KCookieJar::extractDomains(const QString &_fqdn,
        partList.remove(partList.begin()); // Remove part
     }
 
-    // Only URLs that would get in here are of type
-    // "host.foo" or "host.co.fo" so simply append
-    // a '.' on top to make sure they are stored under
-    // the proper cookie domain.
-    if (_domains.isEmpty())
-       _domains.append( '.' + _fqdn );
-
     // Always add the FQDN at the end of the list for
     // hostname == cookie-domainname checks!
+    _domains.append( '.' + _fqdn );
     _domains.append( _fqdn );
 }
 
