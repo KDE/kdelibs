@@ -336,11 +336,12 @@ short RenderBox::containingBlockWidth() const
         return containingBlock()->contentWidth();
 }
 
-void RenderBox::absolutePosition(int &xPos, int &yPos)
+void RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    if(m_parent)
-    {
-        m_parent->absolutePosition(xPos, yPos);
+    if( m_style->position() == FIXED )
+	f = true;
+    if(m_parent) {
+        m_parent->absolutePosition(xPos, yPos, f);
         if((!isInline() || isReplaced()) && xPos != -1)
             xPos += m_x, yPos += m_y;
     }

@@ -501,10 +501,10 @@ QRect RenderObject::viewRect() const
     return containingBlock()->viewRect();
 }
 
-void RenderObject::absolutePosition(int &xPos, int &yPos)
+void RenderObject::absolutePosition(int &xPos, int &yPos, bool f)
 {
     if(m_parent)
-        m_parent->absolutePosition(xPos, yPos);
+        m_parent->absolutePosition(xPos, yPos, f);
     else
         xPos = yPos = -1;
 }

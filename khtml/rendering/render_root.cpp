@@ -116,9 +116,13 @@ QScrollView *RenderRoot::view()
     return m_view;
 }
 
-void RenderRoot::absolutePosition(int &xPos, int &yPos)
+void RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
 {
     xPos = yPos = 0;
+    if ( f ) {
+	xPos += m_view->contentsX();
+	yPos += m_view->contentsY();
+    }
 }
 
 void RenderRoot::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)

@@ -78,38 +78,35 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
     if(!m_render) return false;
 
-    if(m_render->parent() && m_render->parent()->isAnonymousBox())
-    {
+    if(m_render->parent() && m_render->parent()->isAnonymousBox()) {
 	//kdDebug( 6030 ) << "parent is anonymous!" << endl;
 	// we need to add the offset of the anonymous box
 	_tx += m_render->parent()->xPos();
 	_ty += m_render->parent()->yPos();
     }
 
-    if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating())
-    {
-	_tx += m_render->xPos();
-	_ty += m_render->yPos();
-
+    
+    if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() ) {
+	if ( m_render->style()->position() == FIXED ) {
+	    m_render->absolutePosition( _tx, _ty );
+	    //kdDebug() << "positioned element at " << _tx << "/" << _ty << endl;
+	} else {
+	    _tx += m_render->xPos();
+	    _ty += m_render->yPos();
+	}
+	
 	inside = true;
-        if( (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
+	if( (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
 	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
-        {
-            inside = false;
-	    //kdDebug( 6030 ) << "not inside the block element!" << endl;
-        }
+	    inside = false;
 	else
-	  innerNode = this;
-
+	    innerNode = this;
     }
 
     NodeImpl *child = firstChild();
-    while(child != 0)
-    {
+    while(child != 0) {
 	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, url, innerNode, offset))
-	{
 	    inside = true;
-	}
 	child = child->nextSibling();
     }
 

@@ -333,10 +333,10 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 
 }
 
-void RenderText::absolutePosition(int &xPos, int &yPos)
+void RenderText::absolutePosition(int &xPos, int &yPos, bool)
 {
     if(m_parent) {
-        m_parent->absolutePosition(xPos, yPos);
+        m_parent->absolutePosition(xPos, yPos, false);
         if ( m_first ) {
             xPos += m_first->x;
             yPos += m_first->y;

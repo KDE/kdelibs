@@ -73,6 +73,7 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
 
     if(inside && _url==0)
     {
+	//kdDebug() << "HTMLAnchorElementImpl::mouseEvent" << _tx << "/" << _ty <<endl; 
 	// set the url
 	if(target && href) {
 	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);

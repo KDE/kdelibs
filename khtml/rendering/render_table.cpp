@@ -1806,9 +1806,9 @@ void RenderTableCell::repaintObject(RenderObject *o, int x, int y)
     RenderFlow::repaintObject(o, x, y);
 }
 
-void RenderTableCell::absolutePosition(int &xPos, int &yPos)
+void RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
 {
-    RenderFlow::absolutePosition(xPos, yPos);
+    RenderFlow::absolutePosition(xPos, yPos, f);
     if (yPos != -1)
       yPos += _topExtra;
 }

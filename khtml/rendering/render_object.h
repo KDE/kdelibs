@@ -267,7 +267,7 @@ public:
      */
     virtual int yPos() const { return 0; }
 
-    virtual void absolutePosition(int &/*xPos*/, int &/*yPos*/);
+    virtual void absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
 
     // width and height are without margins but include paddings and borders
     virtual short width() const { return 0; }
