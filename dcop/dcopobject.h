@@ -26,6 +26,9 @@
 #include <qmap.h>
 #include <qstring.h>
 
+class DCOPClient;
+
+
 #define K_DCOP \
 public:        \
   virtual bool process(const QString &fun, const QByteArray &data, QByteArray &replyData); \
@@ -53,11 +56,11 @@ class DCOPObject
   /**
    * dispatch a message.
    *
-   * Note that @param fun is normalized. 
+   * Note that @param fun is normalized.
    * @see DCOPClient::normalizeFunctionSignature
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
-		       QByteArray &replyData) = 0;
+		       QCString& replyType, QByteArray &replyData) = 0;
 
   static bool hasObject(const QCString &objId);
   static DCOPObject *find(const QCString &objId);
@@ -65,5 +68,19 @@ class DCOPObject
  private:
   QCString ident;
 };
+
+class DCOPObjectProxy
+{
+public:
+    DCOPObjectProxy( DCOPClient* client );
+    virtual ~DCOPObjectProxy();
+    
+    virtual bool process( const QCString& obj, const QCString& fun, const QByteArray& data, 
+			  QCString& replyType, QByteArray &replyData );
+private:
+    DCOPClient* parent;
+};
+
+
 
 #endif

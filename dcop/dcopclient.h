@@ -27,6 +27,7 @@
 #include <qvaluelist.h>
 #include <qstring.h>
 
+class DCOPObjectProxy;
 class DCOPClientPrivate;
 
 typedef QValueList<QCString> QCStringList;
@@ -172,7 +173,7 @@ class DCOPClient : public QObject
    */
   bool call(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
-	    QByteArray &replyData, bool fast=false);
+	    QCString& replyType, QByteArray &replyData, bool fast=false);
 
 
   /**
@@ -180,7 +181,7 @@ class DCOPClient : public QObject
    * Note that @param fun is normalized. See normalizeFunctionSignature().
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
-		       QByteArray &replyData);
+		       QCString& replyType, QByteArray &replyData);
 
   /**
    * Check whether @param remApp is registered with the DCOPServer.
@@ -205,7 +206,7 @@ class DCOPClient : public QObject
    */
   bool receive(const QCString &app, const QCString &obj,
 	       const QCString &fun, const QByteArray& data,
-	       QByteArray &replyData);
+	       QCString& replyType, QByteArray &replyData);
 
 
 
@@ -224,13 +225,14 @@ class DCOPClient : public QObject
      *
      */
     static QCString normalizeFunctionSignature( const QCString& fun );
-    
-    
+
+
     /*
      * Returns the appId of the last application that talked to us.
      */
-    QCString senderId() const; 
-
+    QCString senderId() const;
+    
+    
 signals:
   /**
    * Indicates that the application @param appId has been registered with
@@ -258,7 +260,12 @@ signals:
  protected:
 
  private:
-  DCOPClientPrivate *d;
+    DCOPClientPrivate *d;
+    
+    friend class DCOPObjectProxy;
+    void installObjectProxy( DCOPObjectProxy*);
+    void removeObjectProxy( DCOPObjectProxy*);
+
 
 };
 

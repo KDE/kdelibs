@@ -20,6 +20,7 @@
 */
 
 #include <dcopobject.h>
+#include <dcopclient.h>
 
 static QMap<QCString, DCOPObject *> *objMap_ = 0;
 
@@ -78,4 +79,27 @@ DCOPObject *DCOPObject::find(const QCString &objId)
     return *it;
   else
     return 0L;
+}
+
+
+DCOPObjectProxy::DCOPObjectProxy( DCOPClient* client )
+{
+    parent = client;
+    if ( !parent ) {
+	qWarning("DCOPObjectProxy: no client specified" );
+	return;
+    }
+    parent->installObjectProxy( this );
+}
+
+DCOPObjectProxy:: ~DCOPObjectProxy()
+{
+    if ( parent )
+	parent->removeObjectProxy( this );
+}
+    
+bool DCOPObjectProxy::process( const QCString& obj, const QCString& fun, const QByteArray& data, 
+			       QCString& replyType, QByteArray &replyData )
+{
+    return FALSE;
 }

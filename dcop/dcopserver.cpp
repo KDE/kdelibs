@@ -130,8 +130,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	QCString obj, fun;
 	QByteArray data;
 	ds >> obj >> fun >> data;
+	QCString replyType;
 	QByteArray replyData;
-	if ( !receive( app, obj, fun, data, replyData, iceConn ) ) {
+	if ( !receive( app, obj, fun, data, replyType, replyData, iceConn ) ) {
 	    qWarning("%s failure: object '%s' has no function '%s'", app.data(), obj.data(), fun.data() );
 	}
       }
@@ -157,23 +158,28 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	IceSendData(target->iceConn, datalen, (char *) ba.data());
 	//IceFlush( target->iceConn );
       } else {
+	QCString replyType;
 	QByteArray replyData;
 	bool b = FALSE;
 	if ( app == "DCOPServer" ) {
 	  QCString obj, fun;
 	  QByteArray data;
 	  ds >> obj >> fun >> data;
-	  b = receive( app, obj, fun, data, replyData, iceConn );
+	  b = receive( app, obj, fun, data, replyType, replyData, iceConn );
 	  if ( !b )
 	      qWarning("%s failure: object '%s' has no function '%s'", app.data(), obj.data(), fun.data() );
 	}
-	int datalen = replyData.size();
+
+	QByteArray reply;
+	QDataStream replyStream( reply, IO_WriteOnly );
+	replyStream << replyType << replyData.size();
+	
+	int datalen = reply.size() + replyData.size();
 	IceGetHeader( iceConn, majorOpcode, b? DCOPReply : DCOPReplyFailed,
 		      sizeof(DCOPMsg), DCOPMsg, pMsg );
 	pMsg->length += datalen;
-	//IceWriteData( iceConn, datalen, (char *) replyData.data());
-	IceSendData(iceConn, datalen, (char *) replyData.data());
-	//IceFlush( iceConn );
+	IceSendData( iceConn, reply.size(), (char *) reply.data());
+	IceSendData( iceConn, replyData.size(), (char *) replyData.data());
       }
     }
     break;
@@ -192,9 +198,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 			sizeof(DCOPMsg), DCOPMsg, pMsg );
 	  int datalen = ba.size();
 	  pMsg->length += datalen;
-	  //IceWriteData( connreply->iceConn, datalen, (char *) ba.data());
 	  IceSendData(connreply->iceConn, datalen, (char *) ba.data());
-	  //IceFlush( connreply->iceConn );
 	}
       }
     }
@@ -432,8 +436,8 @@ void DCOPServer::removeConnection( void* data )
       datas << conn->appId;
       QByteArray ba;
       QDataStream ds( ba, IO_WriteOnly );
-      ds << QCString("DCOPServer") << QCString("") 
-	 << QCString("") << QCString("void applicationRemoved(QCString)") << data;
+      ds << QCString("DCOPServer") << QCString("")
+	 << QCString("") << QCString("applicationRemoved(QCString)") << data;
       int datalen = ba.size();
       DCOPMsg *pMsg = 0;
       while ( it.current() ) {
@@ -443,9 +447,7 @@ void DCOPServer::removeConnection( void* data )
 	      IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
 			    sizeof(DCOPMsg), DCOPMsg, pMsg );
 	      pMsg->length += datalen;
-	      //IceWriteData( c->iceConn, datalen, (char *) ba.data());
 	      IceSendData(c->iceConn, datalen, (char *) ba.data());
-	      //IceFlush( c->iceConn );
 	  }
       }
   }
@@ -456,9 +458,10 @@ void DCOPServer::removeConnection( void* data )
 
 bool DCOPServer::receive(const QCString &app, const QCString &obj,
 			 const QCString &fun, const QByteArray& data,
-			 QByteArray &replyData,  IceConn iceConn)
+			 QCString& replyType, QByteArray &replyData,  
+			 IceConn iceConn)
 {
-  if ( fun == "QCString registerAs(QCString)" ) {
+  if ( fun == "registerAs(QCString)" ) {
     QDataStream args( data, IO_ReadOnly );
     if (!args.atEnd()) {
       QCString app;
@@ -493,8 +496,8 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
 	  datas << conn->appId;
 	  QByteArray ba;
 	  QDataStream ds( ba, IO_WriteOnly );
-	  ds <<QCString("DCOPServer") <<  QCString("") << QCString("") 
-	     << QCString("void applicationRegistered(QCString)") << data;
+	  ds <<QCString("DCOPServer") <<  QCString("") << QCString("")
+	     << QCString("applicationRegistered(QCString)") << data;
 	  int datalen = ba.size();
 	  DCOPMsg *pMsg = 0;
 	  while ( it.current() ) {
@@ -509,11 +512,12 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
 	      }
 	  }
       }
+      replyType = "QCString";
       reply << conn->appId;
       return TRUE;
     }
   }
-  else if ( fun == "QCStringList registeredApplications()" ) {
+  else if ( fun == "registeredApplications()" ) {
     QDataStream reply( replyData, IO_WriteOnly );
     QCStringList applications;
     QDictIterator<DCOPConnection> it( appIds );
@@ -521,15 +525,17 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
       applications << it.currentKey().ascii();
       ++it;
     }
+    replyType = "QCStringList";
     reply << applications;
     return TRUE;
-  } else if ( fun == "bool isApplicationRegistered(QCString)" ) {
+  } else if ( fun == "isApplicationRegistered(QCString)" ) {
     QDataStream args( data, IO_ReadOnly );
     if (!args.atEnd()) {
       QCString s;
       args >> s;
       QDataStream reply( replyData, IO_WriteOnly );
       int b = ( appIds.find( s ) != 0 );
+      replyType = "bool";
       reply << b;
       return TRUE;
     }

@@ -35,22 +35,23 @@ class MyDCOPObject : public DCOPObject
 public:
   MyDCOPObject(const QCString &name) : DCOPObject(name) {}
   bool process(const QCString &fun, const QByteArray &data,
-	       QByteArray &replyData);
+	       QCString& replyType, QByteArray &replyData);
   void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d",arg1.data(), arg2); }
 };
 
 bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
-			   QByteArray &replyData)
+			   QCString& replyType, QByteArray &replyData)
 {
   qDebug("in MyDCOPObject::process");
   
   // note "fun" is normlized here (i.e. whitespace clean)
-  if (fun == "void aFunction(QString,int)") {
+  if (fun == "aFunction(QString,int)") {
     QDataStream args(data, IO_ReadOnly);
     QString arg1;
     int arg2;
     args >> arg1 >> arg2;
     function(arg1, arg2);
+    replyType = "void";
     return true;
   }
 
@@ -61,6 +62,7 @@ int main(int argc, char **argv)
 {
   KApplication app(argc, argv);
 
+  QCString replyType;
   QByteArray data, reply;
   DCOPClient *client; client = app.dcopClient();
 
@@ -78,8 +80,10 @@ int main(int argc, char **argv)
 
   QDataStream ds(data, IO_WriteOnly);
   ds << QString("fourty-two") << 42;
-  if (!client->call(app.name(), "object1", "void    aFunction(   QString , int  )", data, reply))
+  if (!client->call(app.name(), "object1", "  aFunction(   QString , int  )", data, replyType, reply))
     qDebug("I couldn't call myself");
+  else
+      qDebug("return type was '%s'", replyType.data() ); 
 
   int n = client->registeredApplications().count();
   qDebug("number of attached applications = %d", n );

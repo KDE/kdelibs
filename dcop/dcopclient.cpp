@@ -55,13 +55,16 @@ public:
   static char* serverAddr; // location of server in ICE-friendly format.
   QSocketNotifier *notifier;
   bool registered;
+
+  QCString senderId;
     
-  QCString senderId; 
+   QList<DCOPObjectProxy> proxies;
 };
 
 struct ReplyStruct
 {
   bool result;
+  QCString* replyType;
   QByteArray* replyData;
 };
 
@@ -82,11 +85,17 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
   if (opcode == DCOPReply || opcode == DCOPReplyFailed) {
     if ( replyWait ) {
       QByteArray* b = ((ReplyStruct*) replyWait->reply)->replyData;
+      QCString* t =  ((ReplyStruct*) replyWait->reply)->replyType;
       ((ReplyStruct*) replyWait->reply)->result = opcode == DCOPReply;
 
       IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
-      b->resize( length );
-      IceReadData(iceConn, length, b->data() );
+      QByteArray tmp( length );
+      IceReadData(iceConn, length, tmp.data() );
+      
+      // TODO: avoid this data copying
+      QDataStream tmpStream( tmp, IO_ReadOnly );
+      tmpStream >> *t >> *b;
+      
       *replyWaitRet = True;
       return;
     } else {
@@ -102,9 +111,10 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     QByteArray data;
     ds >> d->senderId >> app >> objId >> fun >> data;
 
+    QCString replyType;
     QByteArray replyData;
     bool b = c->receive( app, objId, fun,
-			 data, replyData );
+			 data, replyType, replyData );
 
     if ( !b )
 	qWarning("DCOP failure in applicaton %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
@@ -112,15 +122,19 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     if (opcode != DCOPCall)
       return;
 
+    QByteArray reply;
+    QDataStream replyStream( reply, IO_WriteOnly );
+    replyStream << replyType << replyData.size();
+    
     // we are calling, so we need to set up reply data
     IceGetHeader( iceConn, 1, b ? DCOPReply : DCOPReplyFailed,
 		  sizeof(DCOPMsg), DCOPMsg, pMsg );
-    int datalen = replyData.size();
+    int datalen = reply.size() + replyData.size();
     pMsg->length += datalen;
     // use IceSendData not IceWriteData to avoid a copy.  Output buffer
     // shouldn't need to be flushed.
-    IceSendData( iceConn, datalen, (char *) replyData.data());
-    //    IceFlush( iceConn );
+    IceSendData( iceConn, reply.size(), (char *) reply.data());
+    IceSendData( iceConn, replyData.size(), (char *) replyData.data());
   }
 }
 
@@ -222,7 +236,7 @@ bool DCOPClient::attach()
     connect(d->notifier, SIGNAL(activated(int)),
 	    SLOT(processSocketData(int)));
   }
-  
+
   registerAs( "anonymous" );
 
   return true;
@@ -264,10 +278,11 @@ QCString DCOPClient::registerAs( const QCString& appId )
     }
 	
     // register the application identifier with the server
+    QCString replyType;
     QByteArray data, replyData;
     QDataStream arg( data, IO_WriteOnly );
     arg <<appId;
-    if ( call( "DCOPServer", "", "QCString registerAs(QCString)", data, replyData ) ) {
+    if ( call( "DCOPServer", "", "registerAs(QCString)", data, replyType, replyData ) ) {
 	QDataStream reply( replyData, IO_ReadOnly );
 	reply >> result;
     }
@@ -296,6 +311,12 @@ int DCOPClient::socket() const
     return 0;
 }
 
+static inline bool isIdentChar( char x )
+{						// Avoid bug in isalnum
+    return x == '_' || (x >= '0' && x <= '9') ||
+	 (x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z');
+}
+
 QCString DCOPClient::normalizeFunctionSignature( const QCString& fun ) {
     if ( fun.isEmpty() )				// nothing to do
 	return fun.copy();
@@ -307,10 +328,8 @@ QCString DCOPClient::normalizeFunctionSignature( const QCString& fun ) {
     while ( TRUE ) {
 	while ( *from && isspace(*from) )
 	    from++;
-	if ( last && last != ',' && last !='(' && last !=')'
-	     && *from != ',' && *from != ')' && *from !=')') {
+	if ( last && isIdentChar( last ) && isIdentChar( *from ) )
 	    *to++ = 0x20;
-	}
 	while ( *from && !isspace(*from) ) {
 	    last = *from++;
 	    *to++ = last;
@@ -344,18 +363,16 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
-  ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data;
+  ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
 
   IceGetHeader(d->iceConn, d->majorOpcode, DCOPSend,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);
 
-  int datalen = ba.size();
+  int datalen = ba.size() + data.size();
   pMsg->length += datalen;
 
-  //  IceWriteData(d->iceConn, datalen, (char *) ba.data());
-  IceSendData(d->iceConn, datalen, (char *) ba.data());
-
-  //  IceFlush(d->iceConn);
+  IceSendData( d->iceConn, ba.size(), (char *) ba.data() );
+  IceSendData( d->iceConn, data.size(), (char *) data.size() );
 
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
     return false;
@@ -374,18 +391,19 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 }
 
 bool DCOPClient::process(const QCString &, const QByteArray &,
-			 QByteArray &)
+			 QCString&, QByteArray &)
 {
   return false;
 }
 
 bool DCOPClient::isApplicationRegistered( const QCString& remApp)
 {
+  QCString replyType;
   QByteArray data, replyData;
   QDataStream arg( data, IO_WriteOnly );
   arg << remApp;
   int result = false;
-  if ( call( "DCOPServer", "", "bool isApplicationRegistered(QCString)", data, replyData ) ) {
+  if ( call( "DCOPServer", "", "isApplicationRegistered(QCString)", data, replyType, replyData ) ) {
     QDataStream reply( replyData, IO_ReadOnly );
     reply >> result;
   }
@@ -394,9 +412,10 @@ bool DCOPClient::isApplicationRegistered( const QCString& remApp)
 
 QCStringList DCOPClient::registeredApplications()
 {
+  QCString replyType;
   QByteArray data, replyData;
   QCStringList result;
-  if ( call( "DCOPServer", "", "QCStringList registeredApplications()", data, replyData ) ) {
+  if ( call( "DCOPServer", "", "registeredApplications()", data, replyType, replyData ) ) {
     QDataStream reply( replyData, IO_ReadOnly );
     reply >> result;
   }
@@ -405,7 +424,7 @@ QCStringList DCOPClient::registeredApplications()
 
 bool DCOPClient::receive(const QCString &app, const QCString &objId,
 			 const QCString &fun, const QByteArray &data,
-			 QByteArray &replyData)
+			 QCString& replyType, QByteArray &replyData)
 {
   if ( !app.isEmpty() && app != d->appId) {
       qDebug("WEIRD! we somehow received a DCOP message w/a different appId");
@@ -413,27 +432,33 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
   }
 
   if ( objId.isEmpty() ) {
-      if ( fun == "void applicationRegistered(QCString)" ) {
+      if ( fun == "applicationRegistered(QCString)" ) {
 	  QDataStream ds( data, IO_ReadOnly );
 	  QCString r;
 	  ds >> r;
 	  emit applicationRegistered( r );
 	  return TRUE;
-      } else if ( fun == "void applicationRemoved(QCString)" ) {
+      } else if ( fun == "applicationRemoved(QCString)" ) {
 	  QDataStream ds( data, IO_ReadOnly );
 	  QCString r;
 	  ds >> r;
 	  emit applicationRemoved( r );
 	  return TRUE;
       }
-      return process( fun, data, replyData );
+      return process( fun, data, replyType, replyData );
   }
   if (!DCOPObject::hasObject(objId)) {
-    qDebug("we received a DCOP message for an object we don't know about!");
-    return false;
+      
+      for ( DCOPObjectProxy* proxy = d->proxies.first(); proxy; proxy = d->proxies.next() ) {
+	  if ( proxy->process( objId, fun, data, replyType, replyData ) )
+	      return TRUE;
+      }
+      qDebug("we received a DCOP message for an object '%s' we don't know about!", objId.data());
+      return false;
+      
   } else {
     DCOPObject *objPtr = DCOPObject::find(objId);
-    if (!objPtr->process(fun, data, replyData)) {
+    if (!objPtr->process(fun, data, replyType, replyData)) {
       qDebug("for some reason, the function didn't process the DCOP request.");
       // obj doesn't understand function or some other error.
       return false;
@@ -445,7 +470,7 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 
 bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
-		      QByteArray &replyData, bool)
+		      QCString& replyType, QByteArray &replyData, bool)
 {
   if ( !isAttached() )
       return false;
@@ -454,18 +479,17 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
-  ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data;
+  ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
 
   IceGetHeader(d->iceConn, d->majorOpcode, DCOPCall,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);
 
-  int datalen = ba.size();
+  int datalen = ba.size() + data.size();
   pMsg->length += datalen;
 
-  //IceWriteData(d->iceConn, datalen, (char *) ba.data());
-  IceSendData(d->iceConn, datalen, (char *) ba.data());
+  IceSendData(d->iceConn, ba.size(), (char *) ba.data());
+  IceSendData(d->iceConn, data.size(), (char *) data.data());
 
-  //  IceFlush(d->iceConn);
 
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
     return false;
@@ -475,6 +499,7 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
   waitInfo.major_opcode_of_request = d->majorOpcode;
   waitInfo.minor_opcode_of_request = DCOPCall;
   ReplyStruct tmp;
+  tmp.replyType = &replyType;
   tmp.replyData = &replyData;
   waitInfo.reply = (IcePointer) &tmp;
 
@@ -504,4 +529,14 @@ void DCOPClient::processSocketData(int)
     qDebug("received an error processing data from the DCOP server!");
     return;
   }
+}
+
+void DCOPClient::installObjectProxy( DCOPObjectProxy* obj)
+{
+    d->proxies.append( obj );
+}
+
+void DCOPClient::removeObjectProxy( DCOPObjectProxy* obj)
+{
+    d->proxies.removeRef( obj );
 }

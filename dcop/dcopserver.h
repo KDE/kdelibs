@@ -59,7 +59,7 @@ Q_OBJECT
 
  virtual bool receive(const QCString &app, const QCString &obj,
 		      const QCString &fun, const QByteArray& data,
-		      QByteArray &replyData, IceConn iceConn);
+		      QCString& replyType, QByteArray &replyData, IceConn iceConn);
 
 private slots:
   void newClient( int socket );
