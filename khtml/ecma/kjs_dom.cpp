@@ -249,10 +249,21 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     }
 
     switch (token) {
-    case OffsetLeft:
-      return rend ? static_cast<Value>(Number(rend->xPos())) : Value(Undefined());
+    case OffsetLeft: {
+      if ( !rend )
+        return Undefined();
+      //return Number(rend->xPos());
+      int x, y;
+      if ( rend->absolutePosition( x, y ) )
+        return Number(x);
+    }
     case OffsetTop:
-      return rend ? static_cast<Value>(Number(rend->yPos())) : Value(Undefined());
+      if ( !rend )
+        return Undefined();
+      //return Number(rend->yPos());
+      int x, y;
+      if ( rend->absolutePosition( x, y ) )
+        return Number(y);
     case OffsetWidth:
       return rend ? static_cast<Value>(Number(rend->width()) ) : Value(Undefined());
     case OffsetHeight:
