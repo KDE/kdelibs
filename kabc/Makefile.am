@@ -6,7 +6,9 @@ INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kab \
            -I$(srcdir)/vcard/include/generated \
            -I$(srcdir)/vcardparser $(all_includes)
 
-addressee.h addressee.cpp field.cpp: \
+field.cpp: addressee.h addressee.cpp
+addressee.cpp: addressee.h
+addressee.cpp addressee.h field.cpp: \
 				$(srcdir)/scripts/makeaddressee \
 				$(srcdir)/scripts/addressee.src.cpp \
 				$(srcdir)/scripts/addressee.src.h \
@@ -18,10 +20,10 @@ addressee.h addressee.cpp field.cpp: \
 CLEANFILES = addressee.h addressee.cpp field.cpp
 
 lib_LTLIBRARIES = libkabc.la
-libkabc_la_COMPILE_FIRST = addressee.h
 libkabc_la_LDFLAGS = $(KDE_RPATH) $(all_libraries) -version-info 3:0:2 -no-undefined
 libkabc_la_LIBADD = vcard/libvcard.la vcardparser/libvcards.la $(LIB_KIO) \
                     $(top_builddir)/kresources/libkresources.la
+libkabc_la_COMPILE_FIRST = addressee.h
 
 libkabc_la_SOURCES = \
   address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp agent.cpp \
