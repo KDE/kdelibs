@@ -415,8 +415,7 @@ void Window::put(const UString &p, const KJSO &v)
 //       str = v.toString().value().qstring();
 //     }
     /*else*/ {
-      KJS::Window* w = newWindow(getInstance());
-      part->scheduleRedirection(0, (w->part ? w->part : part)->
+      part->scheduleRedirection(0, getInstance()->
                                 completeURL(str).url().prepend( "target://_self/#" ));
     }
   } else if (p == "onload") {
@@ -860,10 +859,9 @@ void Location::put(const UString &p, const KJSO &v)
   QString str = v.toString().value().qstring();
   KURL url;
 
-  if (p == "href") {
-       KJS::Window* w =  newWindow(getInstance());
-       url = (w && w->part ? w->part : part)->completeURL(str);
-  } else {
+  if (p == "href") 
+       url = getInstance()->completeURL(str);
+  else {
     url = part->url();
     if (p == "hash") url.setRef(str);
     else if (p == "host") {
