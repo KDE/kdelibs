@@ -48,7 +48,7 @@ public:
    *                  instance, you might want to specify "config".
    */
   KDesktopFile( const QString &pFileName, bool bReadOnly = false,
-		const QString &resType = "apps");
+		const QString &resType = QString::fromLatin1("apps"));
 
   /** 
    * Destructor. 
