@@ -421,7 +421,7 @@ const char* KURL::reference() const
 	return ref_part.data(); 
 }
 
-const char* KURL::user() 
+const char* KURL::user() const
 { 
     if (user_part.isNull()) 
 	return "";
@@ -434,7 +434,7 @@ unsigned int KURL::port() const
     return port_number;
 }
 
-const char* KURL::passwd() 
+const char* KURL::passwd() const
 { 
     if (passwd_part.isNull()) 
 	return "";
@@ -442,9 +442,29 @@ const char* KURL::passwd()
 	return passwd_part.data(); 
 }
 
+void KURL::setPath( const char *newPath )
+{
+	path_part = newPath;
+}
+
+void KURL::setHost( const char *newHost )
+{
+	host_part = newHost;
+}
+
 void KURL::setPassword( const char *password )
 {
     passwd_part = password;
+}
+
+void KURL::setUser( const char *newUser )
+{
+    user_part = newUser;
+}
+
+void KURL::setPort( const unsigned int newPort )
+{
+    port_number = newPort;
 }
 
 bool KURL::cdUp( bool zapRef ) 

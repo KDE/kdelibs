@@ -192,14 +192,14 @@ public:
      * This function returns the user name or an empty string if
      * no user has been specified.
      */
-    const char* user();
+    const char* user() const;
     
     /**
      * The password.
      *
      * @return the password, or an empty string if no password was specified.
      */
-    const char* passwd();
+    const char* passwd() const;
     
     /**
      * The port number.
@@ -272,11 +272,31 @@ public:
      * "file:/tmp/interesting.zip", then it might do setProtocol( "zip").
      */ 
     void setProtocol( const char* newProto) ;
-    
+
+   /** 
+    * Sets the path to newPath.
+    */ 
+    void setPath( const char *newPath) ;   
+
+   /** 
+    * Sets the host
+    */ 
+    void setHost( const char *host) ;   
+
     /**
      * Set the password.
      */
     void setPassword( const char *password );
+
+    /**
+     * Set the user.
+     */
+    void setUser( const char *user );
+
+    /**
+     * Set the port.
+     */
+    void setPort( const unsigned int newPort );
 
     /**
      * Set the search-part.
