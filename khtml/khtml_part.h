@@ -623,6 +623,7 @@ public:
 
 public slots:
   void copy();
+  void reparseConfiguration();
 
 private:
   KHTMLPart *m_part;

@@ -1732,6 +1732,11 @@ void KHTMLPartBrowserExtension::copy()
   cb->setText(text);
 }
 
+void KHTMLPartBrowserExtension::reparseConfiguration()
+{
+  kdDebug() << "void KHTMLPartBrowserExtension::reparseConfiguration()" << endl;
+} 
+
 class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate
 {
 public:
