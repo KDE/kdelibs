@@ -1087,6 +1087,17 @@ bool HTTPProtocol::http_open()
 
   if( !agent.isEmpty() )
   {
+    header += "User-Agent: " + agent;
+#ifdef DO_MD5
+    header+="; Supports MD5-Digest";
+#endif
+#ifdef DO_GZIP
+    header+="; Supports gzip encoding";
+#endif
+#ifdef HAVE_SSL
+    header+="; Supports SSL/HTTPS";
+#endif
+    header += "\r\n";
     header += "User-Agent: " + agent + "\r\n";
   }
 
