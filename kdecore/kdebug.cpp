@@ -32,7 +32,7 @@ void kdebug( ushort nLevel, ushort nArea,
   
   /* The QBitArrays should rather be application-static, but since
 	 some stupid platforms do not support that... */
-#ifdef KALLE_DOES_NOT_WHY_THIS_CRASHES
+#ifdef KALLE_DOES_NOT_UNDERSTAND_WHY_THIS_CRASHES
   if( !bAreaCalculated )
 	{
 	  // check to see if we need to create the bit arrays first
@@ -198,6 +198,9 @@ void kdebug( ushort nLevel, ushort nArea,
 		va_end( arguments );
 		syslog( nPriority, buf );
 	  }	  
+	case 4: // nothing
+	  {
+	  }
 	}
 
   // check if we should abort
@@ -225,6 +228,7 @@ KDebugDialog::KDebugDialog() :
   pInfoCombo->insertItem( "Message Box" );
   pInfoCombo->insertItem( "Shell" );
   pInfoCombo->insertItem( "Syslog" );
+  pInfoCombo->insertItem( "None" );
   pInfoCombo->show();
   pInfoLabel2 = new QLabel( "Filename:", this );
   pInfoLabel2->setGeometry( 15, 85, 120, 15 );
@@ -250,7 +254,8 @@ KDebugDialog::KDebugDialog() :
   pWarnCombo->insertItem( "File" );
   pWarnCombo->insertItem( "Message Box" );
   pWarnCombo->insertItem( "Shell" );
-  pWarnCombo->insertItem( "Syslog" ); 
+  pWarnCombo->insertItem( "Syslog" );
+  pWarnCombo->insertItem( "None" );
   pWarnCombo->show();
   pWarnLabel2 = new QLabel( "Filename:", this );
   pWarnLabel2->setGeometry( 175, 85, 120, 15 );
@@ -277,6 +282,7 @@ KDebugDialog::KDebugDialog() :
   pErrorCombo->insertItem( "Message Box" );
   pErrorCombo->insertItem( "Shell" );
   pErrorCombo->insertItem( "Syslog" );
+  pErrorCombo->insertItem( "None" );
   pErrorCombo->show();
   pErrorLabel2 = new QLabel( "Filename:", this );
   pErrorLabel2->setGeometry( 15, 290, 120, 15 );
@@ -303,6 +309,7 @@ KDebugDialog::KDebugDialog() :
   pFatalCombo->insertItem( "Message Box" );
   pFatalCombo->insertItem( "Shell" );
   pFatalCombo->insertItem( "Syslog" );
+  pFatalCombo->insertItem( "None" );
   pFatalCombo->show();
   pFatalLabel2 = new QLabel( "Filename:", this );
   pFatalLabel2->setGeometry( 175, 290, 120, 15 );

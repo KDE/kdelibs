@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.38  1997/10/04 19:42:44  kalle
+// new KConfig
+//
 // Revision 1.37  1997/10/02 22:09:49  ettrich
 // Matthias: BINARY INCOMPATIBLE CHANGES:
 //      * enhancements to icon loading and additional features for kwm modules
@@ -426,19 +429,19 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
   int id = pMenu->insertItem( klocale->translate( "&Help..." ) );
   pMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
 
-		  pDialog->setInfoOutput( pConfig->readNumEntry( "InfoOutput", 1 ) );
+  pMenu->insertSeparator();
 
   id = pMenu->insertItem( QString(klocale->translate( "&About" )) + " " + aAppName + "...");
   pMenu->connectItem( id, this, SLOT( aboutApp() ) );
-		  pDialog->setWarnOutput( pConfig->readNumEntry( "WarnOutput", 1 ) );
+  aAppAboutString = aboutAppText;
 
   id = pMenu->insertItem( klocale->translate( "About &KDE..." ) );
   pMenu->connectItem( id, this, SLOT( aboutKDE() ) );
-		  pDialog->setErrorOutput( pConfig->readNumEntry( "ErrorOutput", 1 ) );
+  /*
 	if( bAboutQtMenu )
 	{
 	id = pMenu->insertItem( klocale->translate( "About Qt" ) );
-		  pDialog->setFatalOutput( pConfig->readNumEntry( "FatalOutput", 1 ) );
+										 "Please send bug reports to kde-bugs@kde.org.\n\n\n"
 	}
   */
 										 "Please report bug at http://buglist.kde.org.\n\n\n"
