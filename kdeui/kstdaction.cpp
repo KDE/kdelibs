@@ -697,7 +697,7 @@ KAction *KStdAction::goTo(const QObject *recvr, const char *slot,
 KAction *KStdAction::gotoPage(const QObject *recvr, const char *slot,
                               QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Go to Page..."), 0, recvr, slot, parent,
+    return new KAction(i18n("&Go to Page..."), "goto", 0, recvr, slot, parent,
                        name ? name : stdName(GotoPage));
 }
 
