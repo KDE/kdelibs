@@ -1,5 +1,4 @@
 #include <kurl.h>
-#include <kapp.h>
 #include <stdio.h>
 
 bool check(QString txt, QString a, QString b)
@@ -14,9 +13,8 @@ bool check(QString txt, QString a, QString b)
   }
 }
 
-int main( int argc, char ** argv ) 
+int main() 
 {
-  KApplication a( argc, argv ); // for kdebug
   KURL::List lst;
 
 //  char * u1 = "file:/home/dfaure/my tar file.tgz#gzip:/decompress#tar:/";
