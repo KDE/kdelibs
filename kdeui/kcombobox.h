@@ -52,7 +52,7 @@ class KURL;
  * @ref completion( const QString& ) and @ref textRotation( KeyBindgingType )
  * signals.  The completion signal is intended to be connected to a slot
  * that will assist the user in filling out the remaining text while
- * the rotation signals is intended to be used to trasverse through all
+ * the rotation signals is intended to be used to traverse through all
  * possible matches whenever text completion results in multiple matches.
  * The @ref returnPressed() and @ref returnPressed( const QString& )
  * signal is emitted when the user presses the Enter/Return key.
@@ -195,7 +195,7 @@ public:
     void changeURL( const QPixmap& pixmap, const KURL& url, int index );
 
     /**
-    * Retreive the current cursor position.
+    * Retrieve the current cursor position.
     *
     * This method always returns a -1 if the combo-box is @em not
     * editable (read-write).
@@ -208,8 +208,8 @@ public:
     * Re-implemented from @ref QComboBox.
     *
     * If @p true, the completion mode will be set to automatic.
-    * Otherwise, it is defaulted to the gloabl setting.  This
-    * methods has been replaced by the more comprehensive
+    * Otherwise, it is defaulted to the global setting.  This
+    * method has been replaced by the more comprehensive
     * @ref setCompletionMode().
     *
     * @param autocomplete Flag to enable/disable automatic completion mode.
@@ -757,12 +757,12 @@ protected:
 
 private slots:
     /**
-     * resets the iterate index to -1
+     * Resets the iterate index to -1
      */
     void slotReset();
 
     /**
-     * called from the popupmenu
+     * Called from the popupmenu,
      * calls clearHistory() and emits cleared()
      */
     void slotClear();
@@ -776,7 +776,7 @@ private:
     void init( bool useCompletion );
 
     /**
-     * the current position (index) in the combobox, used for Up and Down
+     * The current position (index) in the combobox, used for Up and Down
      */
     int myIterateIndex;
 
@@ -799,3 +799,4 @@ private:
 
 
 #endif
+
