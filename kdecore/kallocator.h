@@ -29,6 +29,8 @@
 #include <stdio.h>
 #include <qlist.h>
 
+class KZoneAllocatorPrivate;
+
 /**
  * Memory allocator for large groups of small objects.
  * This should be used for large groups of objects that are created and
@@ -62,6 +64,8 @@ protected:
     QList<char> memoryBlocks;
     char *currentBlock;
     long blockOffset;
+private:
+    KZoneAllocatorPrivate *d;
 };
 
 #endif

@@ -23,6 +23,8 @@
 
 #include <kcompletion.h>
 
+class KCompletionBasePrivate;
+
  /**
  * A base class for adding completion feature into
  * widgets.
@@ -313,6 +315,8 @@ protected:
     KGlobal::Completion m_iCompletionMode;
     // Pointer to Completion object.
     KCompletion* m_pCompObj;
+
+    KCompletionBasePrivate *d;
 };
 
 #endif

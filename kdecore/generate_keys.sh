@@ -26,6 +26,7 @@ sed -n '/enum Key/!d
 # write header file
 begin_line="// This file has been automatically genrated by \"generate_keys.sh\""
 echo -e $begin_line \
+        "\n// Distributed under the GNU Library General Public License" \
 		"\n#ifndef KCKEY_H" \
 		"\n#define KCKEY_H" \
 		"\n\ntypedef struct {" \
@@ -42,6 +43,7 @@ echo -e $begin_line \
 
 # write source file
 echo -e $begin_line \
+        "\n// Distributed under the GNU Library General Public License" \
 		"\n\n#include <qnamespace.h>" \
 		"\n#include \"kckey.h\"" \
 		"\n\nconst KKeys KKEYS[NB_KEYS] = {" \

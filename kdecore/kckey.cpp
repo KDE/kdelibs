@@ -1,4 +1,5 @@
 // This file has been automatically genrated by "generate_keys.sh" 
+// Distributed under the GNU Library General Public License 
 
 #include <qnamespace.h> 
 #include "kckey.h" 

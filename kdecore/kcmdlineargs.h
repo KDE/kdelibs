@@ -39,6 +39,7 @@ class KUniqueApplication;
 class KCmdLineParsedOptions;
 class KCmdLineParsedArgs;
 class KAboutData;
+class KCmdLineArgsPrivate;
 
 /**
  *  Simple access to the command-line arguments.
@@ -508,6 +509,8 @@ protected:
   static char **argv; // The original argv
   static bool parsed; // Whether we have parsed the arguments since calling init
   static char *mCwd; // Current working directory. Important for KUnqiueApp!  
+
+  KCmdLineArgsPrivate *d;
 };
 
 #endif

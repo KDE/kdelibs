@@ -28,6 +28,7 @@
 struct KFontStruct;
 class KFontStructList;
 class KGlobal;
+class KCharsetsPrivate;
 
 /**
  * Charset font and encoder/decoder handling.
@@ -156,6 +157,8 @@ protected:
     QFont::CharSet nameToID(QString name) const;
     QFont::CharSet xNameToID(QString name) const;
 
+private:
+    KCharsetsPrivate *d;
 };
 
 /**

@@ -29,7 +29,7 @@
 
 #include "kcompletion_private.h"
 
-struct KCompletionPrivate;
+class KCompletionPrivate;
 
 /**
  * This class let's you easily use "auto-completion", "manual-completion" or
@@ -382,6 +382,8 @@ private:
   bool 			myBackwards;
   bool 			myIgnoreCase;
   int 			myItemIndex; // FIXME
+
+  KCompletionPrivate *d;
 };
 
 

@@ -25,6 +25,9 @@
 #ifndef _KABOUTDATA_H_
 #define _KABOUTDATA_H_
 
+class KAboutPersonPrivate;
+class KAboutDataPrivate;
+
 /**
  * This structure is used to store information about a person or developer.
  * It can store the person's name, a task, an email address and a
@@ -86,6 +89,8 @@ protected:
     const char *mTask;
     const char *mEmailAddress;
     const char *mWebAddress;
+
+    KAboutPersonPrivate *d;
 };
 
 /**
@@ -285,6 +290,8 @@ class KAboutData
     QValueList<KAboutPerson> mAuthorList;
     QValueList<KAboutPerson> mCreditList;
     const char *mLicenseText;
+
+    KAboutDataPrivate *d;
 };
 
 

@@ -31,6 +31,7 @@ class QPopupMenu;
 class KConfig;
 class QObject;
 class QWidget;
+class KAccelPrivate;
 
 /**
  * Accelerator information, similar to an action.
@@ -509,6 +510,8 @@ class KAccel : public QAccel
 	bool bEnabled;
 	bool bGlobal;
 	QString aGroup;
+ private:
+    KAccelPrivate *d;
 };
 	
 #endif

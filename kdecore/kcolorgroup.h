@@ -18,50 +18,6 @@
 */
 // $Id$
 //
-// $Log$
-// Revision 1.10  1999/04/19 15:49:36  kulow
-// cleaning up yet some more header files (fixheaders is your friend).
-// Adding copy constructor to KPixmap to avoid casting while assingment.
-//
-// The rest of the fixes in kdelibs and kdebase I will commit silently
-//
-// Revision 1.9  1999/04/18 09:15:04  kulow
-// taking out config.h from Header files. I don't know if I haven't noticed
-// before, but this is even very dangerous
-//
-// Revision 1.8  1998/06/16 06:03:20  kalle
-// Implemented copy constructors and assignment operators or disabled them
-//
-// Revision 1.7  1998/01/18 14:38:36  kulow
-// reverted the changes, Jacek commited.
-// Only the RCS comments were affected, but to keep them consistent, I
-// thought, it's better to revert them.
-// I checked twice, that only comments are affected ;)
-//
-// Revision 1.5  1997/10/21 20:44:43  kulow
-// removed all NULLs and replaced it with 0L or "".
-// There are some left in mediatool, but this is not C++
-//
-// Revision 1.4  1997/10/16 11:14:29  torben
-// Kalle: Copyright headers
-// kdoctoolbar removed
-//
-// Revision 1.3  1997/10/09 11:46:20  kalle
-// Assorted patches by Fritz Elfert, Rainer Bawidamann, Bernhard Kuhn and Lars Kneschke
-//
-// Revision 1.2  1997/10/04 19:42:46  kalle
-// new KConfig
-//
-// Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
-// Source imported
-//
-// Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
-// Sources imported
-//
-// Revision 1.1  1996/11/24 12:54:42  kalle
-// Initial revision
-//
-//
 // KColorGroup header file - provide consistent colors for applications
 //
 // (C) 1996 Matthias Kalle Dalheimer <mda@stardivision.de>
@@ -71,6 +27,8 @@
 
 class KConfig;
 class QString;
+class KColorGroupPrivate;
+
 #include <qpalette.h>
 
 /** 
@@ -90,6 +48,8 @@ class KColorGroup
 {
 private:
   QColorGroup* pQColorGroup;
+  KColorGroupPrivate *d;
+
 public:
   /** Construct a KColorGroup with all colors black */
   KColorGroup();
