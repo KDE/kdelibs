@@ -29,8 +29,8 @@
 
 //
 // Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned
-// to the system wide slave pool.
-#define MAX_SLAVE_IDLE 30
+// to the system wide slave pool. (3 minutes)
+#define MAX_SLAVE_IDLE (3*60)
 
 using namespace KIO;
 
