@@ -370,6 +370,7 @@ final class KJASHttpURLConnection extends HttpURLConnection
         return false; // FIXME
     }
     public synchronized void connect() throws IOException {
+        Main.debug ("KJASHttpURLConnection.connect " + url);
         kioconnection.connect(doInput);
     }
     public void disconnect() {
@@ -403,6 +404,7 @@ final class KJASSimpleURLConnection extends URLConnection
         return new SocketPermission(url.getHost() + ":" + p, "connect");
     }
     public synchronized void connect() throws IOException {
+        Main.debug ("KJASSimpleURLConnection.connection " + url);
         kioconnection.connect(doInput);
     }
     public void disconnect() {
@@ -423,7 +425,6 @@ final class KJASHttpURLStreamHandler extends URLStreamHandler
         default_port = port;
     }
     protected URLConnection openConnection(URL u) throws IOException {
-        Main.debug ("openConnection " + u);
         return new KJASHttpURLConnection(u);
     }
     protected int getDefaultPort() {
@@ -438,7 +439,6 @@ final class KJASSimpleURLStreamHandler extends URLStreamHandler
         default_port = port;
     }
     protected URLConnection openConnection(URL u) throws IOException {
-        Main.debug ("KJASSimpleURLStreamHandler.openConnection " + u);
         URLConnection conn = new KJASSimpleURLConnection(u, default_port);
         SecurityManager security = System.getSecurityManager();
         if (security != null)

@@ -67,6 +67,7 @@ public final class KJASAppletStub
     private Applet                app;
     private Thread                runThread;
     private Thread                appletThread = null;
+    private Thread                destroyThread = null;
     KJASAppletStub                me;
 
     /**
@@ -294,7 +295,7 @@ public final class KJASAppletStub
             stateChange(STOPPED);
             // kill the windowClosing listener(s)
             WindowListener[] wl = frame.getWindowListeners();
-            for (int i = 0; wl != null && wl[i] != null; i++)
+            for (int i = 0; wl != null && i < wl.length; i++)
                 frame.removeWindowListener(wl[i]);
             frame.hide();
         }
@@ -317,35 +318,43 @@ public final class KJASAppletStub
     * Also marks the the applet as inactive.
     * @see java.applet.Applet#init()
     */
-    void destroyApplet()
+    synchronized void destroyApplet()
     {
-        if( runThread != null && runThread.isAlive() ) {
-            Main.debug( "runThread is active when stub is dying" );
-            tryToStopThread(runThread);
-            runThread = null;
-            panel.stopAnimation();
-            loader.removeStatusListener(panel);
-        }
-        if( app != null ) {
-            synchronized (app) {
-                if (active) {
-                    try {
-                        stopApplet();
-                    } catch (Exception e) {
+        if (state >= DESTROYED || destroyThread != null)
+            return;
+        destroyThread = new Thread("applet destroy thread") {
+            public void run() {
+                if( runThread != null && runThread.isAlive() ) {
+                    Main.debug( "runThread is active when stub is dying" );
+                    tryToStopThread(runThread);
+                    runThread = null;
+                    panel.stopAnimation();
+                    loader.removeStatusListener(panel);
+                }
+                if( app != null ) {
+                    synchronized (app) {
+                        if (active) {
+                            try {
+                                stopApplet();
+                            } catch (Exception e) {
+                            }
+                        }
+                        try {
+                            app.destroy();
+                        } catch (Exception e) {
+                        }
                     }
+                    frame.dispose();
+                    app = null;
+                    stateChange(DESTROYED);
                 }
-                try {
-                    app.destroy();
-                } catch (Exception e) {
-                }
-                frame.dispose();
-            }
-            app = null;
-            stateChange(DESTROYED);
-        }
 
-        loader = null;
-        context = null;
+                loader = null;
+                context = null;
+                destroyThread = null;
+            }
+        };
+        destroyThread.start();
     }
 
     /**

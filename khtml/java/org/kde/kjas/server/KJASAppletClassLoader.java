@@ -249,7 +249,7 @@ public final class KJASAppletClassLoader
     private Hashtable loadedClasses = new Hashtable();
     public synchronized Class loadClass( String name ) throws ClassNotFoundException
     {
-        Main.debug( dbgID + "loadClass, class name = " + name );
+        //Main.debug( dbgID + "loadClass, class name = " + name );
         //We need to be able to handle foo.class, so strip off the suffix
         String fixed_name = name;
         /*
@@ -276,7 +276,7 @@ public final class KJASAppletClassLoader
         }
         Class cl = findClass(fixed_name);
         //Class cl = super.loadClass(fixed_name);
-        Main.debug(dbgID + " returns class " + cl.getName() + " Classloader=" + cl.getClassLoader());
+        //Main.debug(dbgID + " returns class " + cl.getName() + " Classloader=" + cl.getClassLoader());
         return cl;
     }
 
