@@ -8,3 +8,5 @@ data_DATA = x-dvi.kdelnk x-tex-gf.kdelnk gzip.kdelnk \
 	x-executable.kdelnk x-ar.kdelnk x-lha.kdelnk
 
 datadir = $(kde_mimedir)/application
+
+EXTRA_DIST = $(data_DATA)

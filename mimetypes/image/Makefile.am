@@ -3,4 +3,6 @@ data_DATA = jpeg.kdelnk tiff.kdelnk x-xpm.kdelnk x-xbm.kdelnk gif.kdelnk fax-g3.
 
 datadir = $(kde_mimedir)/image
 
+EXTRA_DIST = $(data_DATA)
+
 
