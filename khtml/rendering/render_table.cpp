@@ -149,6 +149,13 @@ bool RenderTable::isInline() const
     return false;
 }
 
+bool RenderTable::isReplaced() const
+{
+    if (style()->display()==INLINE_TABLE)
+    	return true;
+    return false;
+}
+
 
 inline void
 RenderTable::ColInfo::update()

@@ -80,6 +80,7 @@ public:
     virtual void setStyle(RenderStyle *style);
 
     virtual bool isInline() const;
+    virtual bool isReplaced() const;
     virtual bool isRendered() const { return true; }
     virtual bool isTable() const { return true; }
 
