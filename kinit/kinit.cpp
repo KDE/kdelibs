@@ -509,7 +509,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 #endif
      {
        int r;
-       QCString procTitle( name );
+       QCString procTitle;
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
        d.argv[0] = (char *) _name;
        for (int i = 1;  i < argc; i++)
@@ -527,11 +527,11 @@ static pid_t launch(int argc, const char *_name, const char *args,
        /* set the process name, so that killall works like intended */
        r = prctl(PR_SET_NAME, (unsigned long) name.data(), 0, 0, 0);
        if ( r == 0 )
-           kdeinit_setproctitle( "%s [kdeinit] %s", name.data(), procTitle.data() );
+           kdeinit_setproctitle( "%s [kdeinit]%s", name.data(), procTitle.data() ? procTitle.data() : "" );
        else
-           kdeinit_setproctitle( "kdeinit: %s", procTitle.data() );
+           kdeinit_setproctitle( "kdeinit: %s%s", name.data(), procTitle.data() ? procTitle.data() : "" );
 #else
-       kdeinit_setproctitle( "kdeinit: %s", procTitle.data() );
+       kdeinit_setproctitle( "kdeinit: %s%s", name.data(), procTitle.data() ? procTitle.data() : "" );
 #endif
      }
 
