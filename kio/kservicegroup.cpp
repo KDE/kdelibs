@@ -194,6 +194,8 @@ KServiceGroup::entries(bool sort)
     if (order.isEmpty())
         return lsort;
 
+    //kdDebug() << "Honouring sort order " << order.join(",") << endl;
+
     // Iterate through the sort spec list. If we find an entry that matches one
     // in the original list, take it out of the original list and add it to the
     // sorted list. Finally, add all entries that are still in the original list
@@ -203,15 +205,21 @@ KServiceGroup::entries(bool sort)
     List orig = lsort;
 
     for (QStringList::ConstIterator it(order.begin()); it != order.end(); ++it)
+    {
         for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
             {
-                if (*it == (*sit)->entryPath().mid((*sit)->entryPath().findRev('/') + 1))
+                QString entry = (*sit)->entryPath();
+                // Groups have a trailing slash, we need to remove it first
+                if ( entry[entry.length()-1] == '/' )
+                   entry.truncate(entry.length()-1);
+                if (*it == entry.mid(entry.findRev('/')+1))
                     {
                         sorted.append(*sit);
                         orig.remove(sit);
                         break;
                     }
             }
+    }
 
     for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
         sorted.append(*sit);
