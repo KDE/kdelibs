@@ -1,6 +1,7 @@
 [Misc]
 Name=KDE default
 Name[az]=KDE əsas
+Name[bg]=KDE
 Name[br]=KDE dre ziouer
 Name[bs]=KDE uobičajeno
 Name[ca]=Omissió KDE
@@ -45,6 +46,7 @@ Name[uk]=Типовий для KDE
 Name[zh_CN.GB2312]=KDE 默认
 Comment=Default KDE style
 Comment[az]=Əsas KDE tərzi
+Comment[bg]=Стил на KDE по подразбиране
 Comment[br]=Giz KDE dre ziouer
 Comment[bs]=Uobičajeni KDE stil
 Comment[ca]=Estil KDE per omissió

@@ -1,11 +1,13 @@
 [Misc]
 Name=Web style
 Name[az]=Veb tərzi
+Name[bg]=WWW-стил
 Name[cs]=Webový styl
 Name[da]=Netsidestil
 Name[de]=Webstil
 Name[eo]=TTT-stilo
 Name[es]=Estilo web
+Name[et]=Web stiil
 Name[fi]=Web tyyli
 Name[fr]=Style web
 Name[hu]=Web-szerű stílus
@@ -26,11 +28,13 @@ Name[tr]=Ağ stili
 Name[uk]=Стиль а ля 'Web'
 Comment=Web widget style
 Comment[az]=Veb pəncərəcik tərzi
+Comment[bg]=Стил на Web графични обекти
 Comment[cs]=Styl prvků webu
 Comment[da]=Netside dims-stil
 Comment[de]=Web-ähnlicher Stil für Bedienelemente
 Comment[eo]=TTT-speca stilo
 Comment[es]=Estilo widget web
+Comment[et]=Web kasutajaliidese elementide stiil
 Comment[fi]=Web työkalu tyyli
 Comment[fr]=Style web
 Comment[hu]=Web-szerű grafikus stílus
