@@ -3485,7 +3485,7 @@ bool HTTPProtocol::readHeader()
      else if (ext == ".PLS")
         m_strMimeType = QString::fromLatin1("audio/x-scpls");
      else if (ext == ".WMV")
-        m_strMimeType = QString::fromLatin1("video/w-ms-wmv");
+        m_strMimeType = QString::fromLatin1("video/x-ms-wmv");
   }
 
 #if 0
