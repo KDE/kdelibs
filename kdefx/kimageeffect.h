@@ -48,7 +48,7 @@ class QRect;
 class KImageEffect
 {
 public:
-    /** 
+    /**
      * This enum provides a gradient type specification
      * @see KImageEffect::blend(), KImageEffect::gradient(),
      * KImageEffect::unbalancedGradient()
@@ -63,7 +63,7 @@ public:
 			EllipticGradient
     };
 
-    /** 
+    /**
      * This enum provides a RGB channel specification
      * @see KImageEffect::blend(), KImageEffect::channelIntensity(),
      * KImageEffect::modulate()
@@ -75,7 +75,7 @@ public:
 			All    //!< All channels
     };
 
-    /** 
+    /**
      * This enum provides a lighting direction specification
      * @see KImageEffect::hash()
      */
@@ -89,7 +89,7 @@ public:
 		   NELite     //!< Lighting from the top right of the image
     };
 
-    /** 
+    /**
      * This enum provides a modulation type specification
      * @see KImageEffect::modulate()
      */
@@ -99,7 +99,7 @@ public:
 			  Contrast    //!< Modulate image contrast
     };
 
-    /** 
+    /**
      * This enum provides a noise type specification
      * @see KImageEffect::addNoise()
      */
@@ -109,7 +109,7 @@ public:
                      ImpulseNoise,                //!< Impulse distribution
 		     LaplacianNoise,              //!< Laplacian distribution
 		     PoissonNoise                 //!< Poisson distribution
-    };  
+    };
 
     /**
      * This enum provides a rotation specification.
@@ -118,6 +118,16 @@ public:
     enum RotateDirection{ Rotate90,  //!< Rotate 90 degrees to the right.
 			  Rotate180, //!< Rotate 180 degrees.
 			  Rotate270  //!< Rotate 90 degrees to the left.
+    };
+
+    /**
+     * This enum lists possible bumpmapping implementations.
+     * @see KImageEffect::bumpmap()
+     */
+    enum BumpmapType {
+        Linear,
+        Spherical,
+        Sinuosidal
     };
 
     /**
@@ -274,7 +284,7 @@ public:
      */
     static bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
 
-    /** 
+    /**
      * Blend part of an image into part of another, using the alpha channel in
      * the expected way.
      * Note that the destination rectangle will be correctly clipped.
@@ -289,7 +299,7 @@ public:
     static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect);
 
-    /** 
+    /**
      * Blend part of an image into part of another, using the opacity value
      * and the alpha channel in the expected way.
      * Note that the destination rectangle will be correctly clipped.
@@ -306,7 +316,7 @@ public:
     static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect, float opacity);
 
-    /** 
+    /**
      * Disposition of a source image on top of a destination image.
      * @see KImageEffect::computeDestinationRect, KImageEffect::blendOnLower
      * @since 3.2
@@ -490,7 +500,7 @@ public:
     /**
      * Normalises the pixel values to span the full range of color values.
      * This is a contrast enhancement technique.
-     * @param img the image that is normalised 
+     * @param img the image that is normalised
      * @author Daniel M. Duley (mosfet)
      */
     static void normalize(QImage &img);
@@ -718,22 +728,46 @@ public:
      * @return The swirled image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-     static QImage swirl(QImage &src, double degrees=50.0, unsigned int background =
+    static QImage swirl(QImage &src, double degrees=50.0, unsigned int background =
                          0xFFFFFFFF);
 
-     /**
-      * Modifies the pixels along a sine wave.
-      *
-      * @param src        The QImage to process.
-      * @param amplitude  The amplitude of the sine wave.
-      * @param frequency  The frequency of the sine wave.
-      * @param background An RGBA value to use for the background. After the
-      * effect some pixels may be "empty". This value is used for those pixels.
-      * @return The new image. The original is not changed.
-      * @author Daniel M. Duley (mosfet)
-      */
-     static QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
+    /**
+     * Modifies the pixels along a sine wave.
+     *
+     * @param src        The QImage to process.
+     * @param amplitude  The amplitude of the sine wave.
+     * @param frequency  The frequency of the sine wave.
+     * @param background An RGBA value to use for the background. After the
+     * effect some pixels may be "empty". This value is used for those pixels.
+     * @return The new image. The original is not changed.
+     * @author Daniel M. Duley (mosfet)
+     */
+    static QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
                         unsigned int background = 0xFFFFFFFF);
+
+    /**
+     * A bumpmapping algorithm.
+     *
+     * @param img the image you want bumpmap
+     * @param map the map used
+     * @param azimuth azimuth
+     * @param elevation elevation
+     * @param depth depth (not the depth of the image, but of the map)
+     * @param xofs X offset
+     * @param yofs Y offset
+     * @param waterlevel level that full transparency should represent
+     * @param ambient ambient lighting factor
+     * @param compensate compensate for darkening
+     * @param invert invert bumpmap
+     * @param type type of the bumpmap
+     *
+     * @return The destination image (dst) containing the result.
+     * @author Zack Rusin <zack@kde.org>
+     */
+    static QImage bumpmap(QImage &img, QImage &map, double azimuth, double elevation,
+                          int depth, int xofs, int yofs, int waterlevel,
+                          int ambient, bool compensate, bool invert,
+                          BumpmapType type, bool tiled);
 
 private:
 

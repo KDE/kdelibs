@@ -4,6 +4,7 @@
     (C) 1998, 1999 Dirk A. Mueller <mueller@kde.org>
     (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
     (C) 2000 Josef Weidendorfer <weidendo@in.tum.de>
+    (C) 2004 Zack Rusin <zack@kde.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -61,6 +62,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MagickSQ2PI 2.50662827463100024161235523934010416269302368164062
 #define MagickEpsilon  1.0e-12
 #define MagickPI  3.14159265358979323846264338327950288419716939937510
+#define MOD(x, y) ((x) < 0 ? ((y) - 1 - ((y) - 1 - (x)) % (y)) : (x) % (y))
+
+/**
+ * \relates KGlobal
+ * A typesafe function that returns x if it's between low and high values.
+ * low if x is smaller than then low and high if x is bigger than high.
+ */
+#define FXCLAMP(x,low,high) fxClamp(x,low,high)
+template<class T>
+inline const T& fxClamp( const T& x, const T& low, const T& high )
+{
+    if ( x < low )       return low;
+    else if ( x > high ) return high;
+    else                 return x;
+}
 
 static inline unsigned int intensityValue(unsigned int color)
 {
@@ -4630,5 +4646,286 @@ void KImageEffect::contrastHSV(QImage &img, bool sharpen)
 }
 
 
+struct BumpmapParams {
+    BumpmapParams( double bm_azimuth, double bm_elevation,
+                   int bm_depth, KImageEffect::BumpmapType bm_type,
+                   bool invert ) {
+         /* Convert to radians */
+        double azimuth = DegreesToRadians( bm_azimuth );
+        double elevation = DegreesToRadians( bm_elevation );
+
+        /* Calculate the light vector */
+        lx = (int)( cos(azimuth) * cos(elevation) * 255.0 );
+        ly = (int)( sin(azimuth) * cos(elevation) * 255.0 );
+        int lz         = (int)( sin(elevation) * 255.0 );
+
+        /* Calculate constant Z component of surface normal */
+        int nz  = (6 * 255) / bm_depth;
+        nz2     = nz * nz;
+        nzlz    = nz * lz;
+
+        /* Optimize for vertical normals */
+        background = lz;
+
+        /* Calculate darkness compensation factor */
+        compensation = sin(elevation);
+
+        /* Create look-up table for map type */
+        for (int i = 0; i < 256; i++)
+        {
+            double n = 0;
+            switch (bm_type)
+            {
+            case KImageEffect::Spherical:
+                n = i / 255.0 - 1.0;
+                lut[i] = (int) (255.0 * sqrt(1.0 - n * n) + 0.5);
+                break;
+
+            case KImageEffect::Sinuosidal:
+                n = i / 255.0;
+                lut[i] = (int) (255.0 * (sin((-M_PI / 2.0) + M_PI * n) + 1.0) /
+                                        2.0 + 0.5);
+                break;
+
+            case KImageEffect::Linear:
+            default:
+                lut[i] = i;
+            }
+
+            if (invert)
+                lut[i] = 255 - lut[i];
+        }
+    }
+    int lx,  ly;
+    int nz2, nzlz;
+    int background;
+    double compensation;
+    uchar lut[256];
+};
 
 
+static void bumpmap_convert_row( uint *row,
+                                 int    width,
+                                 int    bpp,
+                                 int    has_alpha,
+                                 uchar *lut,
+                                 int waterlevel )
+{
+  uint *p;
+
+  p = row;
+
+  has_alpha = has_alpha ? 1 : 0;
+
+  if (bpp >= 3)
+      for (; width; width--)
+      {
+          if (has_alpha) {
+              unsigned int idx = (unsigned int)(intensityValue( *row ) + 0.5);
+              *p++ = lut[(unsigned int) ( waterlevel +
+                                          ( ( idx -
+                                              waterlevel) * qBlue( *row )) / 255.0 )];
+          } else {
+              unsigned int idx = (unsigned int)(intensityValue( *row ) + 0.5);
+              *p++ = lut[idx];
+          }
+
+          ++row;
+      }
+}
+
+static void bumpmap_row( uint           *src,
+                         uint           *dest,
+                         int              width,
+                         int              bpp,
+                         int              has_alpha,
+                         uint           *bm_row1,
+                         uint           *bm_row2,
+                         uint           *bm_row3,
+                         int              bm_width,
+                         int              bm_xofs,
+                         bool          tiled,
+                         bool          row_in_bumpmap,
+                         int           ambient,
+                         bool          compensate,
+                         BumpmapParams *params )
+{
+    int xofs1, xofs2, xofs3;
+    int shade;
+    int ndotl;
+    int nx, ny;
+    int x;
+    int pbpp;
+    int tmp;
+
+    if (has_alpha)
+        pbpp = bpp - 1;
+    else
+        pbpp = bpp;
+
+    tmp = bm_xofs;
+    xofs2 = MOD(tmp, bm_width);
+
+    for (x = 0; x < width; x++)
+    {
+        /* Calculate surface normal from bump map */
+
+        if (tiled || (row_in_bumpmap &&
+                      x >= - tmp && x < - tmp + bm_width)) {
+            if (tiled) {
+                xofs1 = MOD(xofs2 - 1, bm_width);
+                xofs3 = MOD(xofs2 + 1, bm_width);
+	    } else {
+                xofs1 = FXCLAMP(xofs2 - 1, 0, bm_width - 1);
+                xofs3 = FXCLAMP(xofs2 + 1, 0, bm_width - 1);
+	    }
+            nx = (bm_row1[xofs1] + bm_row2[xofs1] + bm_row3[xofs1] -
+                  bm_row1[xofs3] - bm_row2[xofs3] - bm_row3[xofs3]);
+            ny = (bm_row3[xofs1] + bm_row3[xofs2] + bm_row3[xofs3] -
+                  bm_row1[xofs1] - bm_row1[xofs2] - bm_row1[xofs3]);
+	} else {
+            nx = ny = 0;
+        }
+
+      /* Shade */
+
+        if ((nx == 0) && (ny == 0))
+            shade = params->background;
+        else {
+            ndotl = nx * params->lx + ny * params->ly + params->nzlz;
+
+            if (ndotl < 0)
+                shade = (int)( params->compensation * ambient );
+            else {
+                shade = (int)( ndotl / sqrt(nx * nx + ny * ny + params->nz2) );
+
+                shade = (int)( shade + QMAX(0.0, (255 * params->compensation - shade)) *
+                               ambient / 255 );
+	    }
+	}
+
+        /* Paint */
+
+        /**
+         * NOTE: if we want to work with non-32bit images the alpha handling would
+         * also change
+         */
+        if (compensate) {
+            int red = (int)((qRed( *src ) * shade) / (params->compensation * 255));
+            int green = (int)((qGreen( *src ) * shade) / (params->compensation * 255));
+            int blue = (int)((qBlue( *src ) * shade) / (params->compensation * 255));
+            int alpha = (int)((qAlpha( *src ) * shade) / (params->compensation * 255));
+            ++src;
+            *dest++ = qRgba( red, green, blue, alpha );
+        } else {
+            int red = qRed( *src ) * shade / 255;
+            int green = qGreen( *src ) * shade / 255;
+            int blue = qBlue( *src ) * shade / 255;
+            int alpha = qAlpha( *src ) * shade / 255;
+            ++src;
+            *dest++ = qRgba( red, green, blue, alpha );
+        }
+
+        /* Next pixel */
+
+        if (++xofs2 == bm_width)
+            xofs2 = 0;
+    }
+}
+
+/**
+ * A bumpmapping algorithm.
+ *
+ * @param img the image you want bumpmap
+ * @param map the map used
+ * @param azimuth azimuth
+ * @param elevation elevation
+ * @param depth depth (not the depth of the image, but of the map)
+ * @param xofs X offset
+ * @param yofs Y offset
+ * @param waterlevel level that full transparency should represent
+ * @param ambient ambient lighting factor
+ * @param compensate compensate for darkening
+ * @param invert invert bumpmap
+ * @param type type of the bumpmap
+ *
+ * @return The destination image (dst) containing the result.
+ * @author Zack Rusin <zack@kde.org>
+ */
+QImage KImageEffect::bumpmap(QImage &img, QImage &map, double azimuth, double elevation,
+                             int depth, int xofs, int yofs, int waterlevel,
+                             int ambient, bool compensate, bool invert,
+                             BumpmapType type, bool tiled)
+{
+    QImage dst;
+
+    if ( img.depth() != 32 || img.depth() != 32 ) {
+        qWarning( "Bump-mapping effect works only with 32 bit images");
+        return dst;
+    }
+
+    dst.create( img.width(), img.height(), img.depth() );
+    int bm_width  = map.width();
+    int bm_height = map.height();
+    int bm_bpp = map.depth();
+    int bm_has_alpha = map.hasAlphaBuffer();
+
+    int yofs1, yofs2, yofs3;
+
+    if ( tiled ) {
+        yofs2 = MOD( yofs, bm_height );
+        yofs1 = MOD( yofs2 - 1, bm_height);
+        yofs3 = MOD( yofs2 + 1, bm_height);
+    } else {
+        yofs1 = 0;
+        yofs2 = 0;
+        yofs3 = FXCLAMP( yofs2+1, 0, bm_height - 1 );
+    }
+
+    BumpmapParams params( azimuth, elevation, depth, type, invert );
+
+    uint* bm_row1 = (unsigned int*)map.scanLine( yofs1 );
+    uint* bm_row2 = (unsigned int*)map.scanLine( yofs2 );
+    uint* bm_row3 = (unsigned int*)map.scanLine( yofs3 );
+
+    bumpmap_convert_row( bm_row1, bm_width, bm_bpp, bm_has_alpha, params.lut, waterlevel );
+    bumpmap_convert_row( bm_row2, bm_width, bm_bpp, bm_has_alpha, params.lut, waterlevel );
+    bumpmap_convert_row( bm_row3, bm_width, bm_bpp, bm_has_alpha, params.lut, waterlevel );
+
+    for (int y = 0; y < img.height(); ++y)
+    {
+        int row_in_bumpmap = (y >= - yofs && y < - yofs + bm_height);
+
+        uint* src_row = (unsigned int*)img.scanLine( y );
+        uint* dest_row = (unsigned int*)dst.scanLine( y );
+
+        bumpmap_row( src_row, dest_row, img.width(), img.depth(), img.hasAlphaBuffer(),
+                     bm_row1, bm_row2, bm_row3, bm_width, xofs,
+                     tiled,
+                     row_in_bumpmap, ambient, compensate,
+                     &params );
+
+        /* Next line */
+
+        if (tiled || row_in_bumpmap)
+	{
+            uint* bm_tmprow = bm_row1;
+            bm_row1   = bm_row2;
+            bm_row2   = bm_row3;
+            bm_row3   = bm_tmprow;
+
+            if (++yofs2 == bm_height)
+                yofs2 = 0;
+
+            if (tiled)
+                yofs3 = MOD(yofs2 + 1, bm_height);
+            else
+                yofs3 = FXCLAMP(yofs2 + 1, 0, bm_height - 1);
+
+            bm_row3 = (unsigned int*)map.scanLine( yofs3 );
+            bumpmap_convert_row( bm_row3, bm_width, bm_bpp, bm_has_alpha,
+                                 params.lut, waterlevel );
+	}
+    }
+    return dst;
+}
