@@ -101,10 +101,9 @@ class BrowserExtensionPrivate;
   *      <P>
   * [normal actions]
   * print : print :-)
-  * saveLocalProperties : save current configuration into .directory
-  * savePropertiesAsDefault : save current configuration as default
   * reparseConfiguration : re-read configuration and apply it
   * refreshMimeTypes : if the view uses mimetypes it should re-determine them
+  *      <P>
   *
   * The view defines a slot with the name of the action in order to implement the action.
   * The browser will detect the slot automatically and connect its action to it when
@@ -117,6 +116,11 @@ class BrowserExtensionPrivate;
   * The normal actions does not depend on the selection. For each slot that is
   * defined in the second list, the action is automatically enabled.
   *
+  * A special case is the configuration slots, not connected to any action directly,
+  * and having parameters.
+  * [configuration slot]
+  * setSaveViewPropertiesLocally( bool ): if true, view properties are saved into .directory
+  *                                       otherwise, they are saved globally.
   */
 class BrowserExtension : public QObject
 {

@@ -188,11 +188,11 @@ QMap<QCString,QCString> BrowserExtension::actionSlotMap()
   res.insert( "properties", SLOT( properties() ) );
   res.insert( "editMimeType", SLOT( editMimeType() ) );
   res.insert( "print", SLOT( print() ) );
-  res.insert( "saveLocalProperties", SLOT( saveLocalProperties() ) );
   // Tricky. Those aren't actions in fact, but simply methods that a browserextension
   // can have or not. No need to return them here.
   //res.insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
   //res.insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
+  // nothing for setSaveViewPropertiesLocally either
 
   return res;
 }
@@ -218,26 +218,26 @@ public:
 BrowserHostExtension::BrowserHostExtension( KParts::ReadOnlyPart *parent, const char *name )
  : QObject( parent, name )
 {
-  d = new BrowserHostExtensionPrivate; 
+  d = new BrowserHostExtensionPrivate;
   d->m_part = parent;
 }
 
 BrowserHostExtension::~BrowserHostExtension()
 {
-  delete d; 
+  delete d;
 }
 
 QStringList BrowserHostExtension::frameNames() const
 {
-  return QStringList(); 
+  return QStringList();
 }
 
 const QList<KParts::ReadOnlyPart> BrowserHostExtension::frames() const
 {
-  return QList<KParts::ReadOnlyPart>(); 
-} 
+  return QList<KParts::ReadOnlyPart>();
+}
 
 bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs & )
 {
-  return false; 
+  return false;
 }
