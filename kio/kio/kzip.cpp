@@ -556,7 +556,23 @@ bool KZip::writeFile( const QString& name, const QString& user, const QString& g
     return KArchive::writeFile( name, user, group, size, data );
 }
 
-bool KZip::prepareWriting( const QString& name, const QString& user, const QString& group, uint /*size*/ )
+bool KZip::prepareWriting(const QString& name, const QString& user,
+                         const QString& group, uint size, mode_t perm,
+                         time_t atime, time_t mtime, time_t ctime) {
+  return KArchive::prepareWriting(name,user,group,size,perm,atime,mtime,ctime);
+}
+
+bool KZip::prepareWriting( const QString& name, const QString& user, const QString& group, uint size )
+{
+    mode_t dflt_perm = 0777; // was 0100644 ?;
+    time_t the_time = getActualTime();
+    return prepareWriting(name,user,group,size,dflt_perm,
+                the_time,the_time,the_time);
+}
+
+bool KZip::prepareWriting_impl( const QString& name, const QString& user,
+                         const QString& group, uint /*size*/, mode_t perm,
+                         time_t /*atime*/, time_t mtime, time_t /*ctime*/)
 {
     //kdDebug(7040) << "prepareWriting reached." << endl;
     if ( !isOpened() )
@@ -603,10 +619,8 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
         parentDir = findOrCreate( dir );
     }
 
-    int time = getActualTime();
-
     // construct a KZipFileEntry and add it to list
-    KZipFileEntry * e = new KZipFileEntry( this, fileName, 0777, time, user, group, QString::null,
+    KZipFileEntry * e = new KZipFileEntry( this, fileName, perm, mtime, user, group, QString::null,
                                            name, device()->at() + 30 + name.length(), // start
                                            0 /*size unknown yet*/, d->m_compression, 0 /*csize unknown yet*/ );
     e->setHeaderStart( device()->at() );
@@ -724,10 +738,20 @@ bool KZip::doneWriting( uint size )
 
 void KZip::virtual_hook( int id, void* data )
 {
-    if ( id == VIRTUAL_WRITE_DATA ) {
+    switch ( id ) {
+    case VIRTUAL_WRITE_DATA: {
         WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
         params->retval = writeData_impl( params->data, params->size );
-    } else {
+        break;
+    }
+    case VIRTUAL_PREPARE_WRITING: {
+      PrepareWritingParams *params = reinterpret_cast<PrepareWritingParams *>(data);
+      params->retval = prepareWriting_impl(*params->name,*params->user,
+                       *params->group,params->size,params->perm,
+                       params->atime,params->mtime,params->ctime);
+      break;
+    }
+    default:
         KArchive::virtual_hook( id, data );
     }
 }

@@ -129,6 +129,10 @@ public:
      * @return true if successful, false otherwise
      */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
+    // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
+    bool prepareWriting( const QString& name, const QString& user,
+                         const QString& group, uint size, mode_t perm,
+                         time_t atime, time_t mtime, time_t ctime );
 
     /**
      * Write data to a file that has been created using @ref prepareWriting().
@@ -166,6 +170,10 @@ protected:
     /** @internal for virtual_hook */
     // from KArchive
     bool writeData_impl( const char* data, uint size );
+    bool prepareWriting_impl(const QString& name, const QString& user,
+                        const QString& group, uint size, mode_t perm,
+                        time_t atime, time_t mtime, time_t ctime);
+
 private:
     QString m_filename;
     class KZipPrivate;
