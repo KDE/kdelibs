@@ -38,11 +38,14 @@ static KStaticDeleter<QStringList> sdShareList;
 
 KFileSharePrivate::KFileSharePrivate()
 {
-  m_watchFile=new KDirWatch();
-  m_watchFile->addFile("/etc/security/fileshare.conf");
-  m_watchFile->startScan();
-  connect(m_watchFile, SIGNAL(dirty (const QString&)),this,
-	  SLOT(slotFileChange(const QString &)));
+  if (KStandardDirs::exists("/etc/security/fileshare.conf")) {
+        m_watchFile=new KDirWatch();
+        m_watchFile->addFile("/etc/security/fileshare.conf");
+        m_watchFile->startScan();
+        connect(m_watchFile, SIGNAL(dirty (const QString&)),this,
+   	        SLOT(slotFileChange(const QString &)));
+  } else 
+	m_watchFile = 0;
 }
 
 KFileSharePrivate::~KFileSharePrivate()
