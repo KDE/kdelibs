@@ -939,9 +939,45 @@ QPopupMenu * KMdiMainFrm::taskBarPopup(KMdiChildView *pWnd,bool /*bIncludeWindow
 }
 
 
-void KMdiMainFrm::slotDocCurrentChanged(QWidget* pWnd) {
-    activateView((KMdiChildView*) pWnd);
+void KMdiMainFrm::slotDocCurrentChanged(QWidget* pWidget) {
+
+   KMdiChildView *pWnd = static_cast<KMdiChildView*>(pWidget);
+   pWnd->m_bMainframesActivateViewIsPending = true;
+
+   bool bActivateNecessary = true;
+   if (m_pCurrentWindow != pWnd) {
+      m_pCurrentWindow = pWnd;
+   }
+
+   if (m_pTaskBar) {
+      m_pTaskBar->setActiveButton(pWnd);
+   }
+
+   if (m_documentTabWidget && m_mdiMode == KMdi::TabPageMode || m_mdiMode==KMdi::IDEAlMode) {
+      m_documentTabWidget->showPage(pWnd);
+      pWnd->activate();
+   }
+   else {
+      if (pWnd->isAttached()) {
+         if (bActivateNecessary && (m_pMdi->topChild() == pWnd->mdiParent())) {
+            pWnd->activate();
+         }
+         pWnd->mdiParent()->raiseAndActivate();
+      }
+      if (!pWnd->isAttached()) {
+         if (bActivateNecessary)
+           pWnd->activate();
+         m_pMdi->setTopChild(0L); // lose focus in the mainframe window
+         if (!pWnd->isActiveWindow()) {
+            pWnd->setActiveWindow();
+         }
+         pWnd->raise();
+      }
+   }
+   emit collapseOverlapContainers();
+   pWnd->m_bMainframesActivateViewIsPending = false;
 }
+
 void KMdiMainFrm::activateView(KMdiChildView* pWnd)
 {
    pWnd->m_bMainframesActivateViewIsPending = true;
