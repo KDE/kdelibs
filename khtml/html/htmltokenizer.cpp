@@ -248,6 +248,13 @@ void HTMLTokenizer::processListing(DOMStringIt list)
                 // Process this LF
                 if (pending)
                     addPending();
+
+                // we used to do it not at all and we want to have
+                // it fixed for textarea. So here we are
+                if ( textarea ) {
+                    prePos++;
+                    *dest++ = *list;
+                }
                 pending = LFPending;
             }
             /* Check for MS-DOS CRLF sequence */
@@ -1111,7 +1118,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     searchStopper = textareaEnd;
                     searchStopperLen = 10;
                     textarea = true;
-                    discard = AllDiscard;
+                    discard = LFDiscard;
                     parseSpecial(src);
                 }
                 break;

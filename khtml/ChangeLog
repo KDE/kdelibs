@@ -5,6 +5,9 @@
 
 2003-10-23  Stephan Kulow  <coolo@kde.org>
 
+	* html/htmltokenizer.cpp (processListing): do not discard all white space
+	   in textareas (#62076)
+
 	* css/cssstyleselector.cpp (applyRule): if the first font isn't found,
 		continue looking (#60556)
 
