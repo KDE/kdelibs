@@ -17,20 +17,9 @@
     Boston, MA 02111-1307, USA.
 */
 
-// $Id$
+#include "kdeversion.h"
 
-#ifndef _KDE_VERSION_H_
-#define _KDE_VERSION_H_
-
-#define KDE_VERSION 308
-#define KDE_VERSION_STRING "3.0.8 (KDE 3.1 beta2)"
-#define KDE_VERSION_MAJOR 3
-#define KDE_VERSION_MINOR 0
-#define KDE_VERSION_RELEASE 8
-
-namespace KDE
+const char *KDE::version()
 {
-    const char *version();
-};
-
-#endif // _KDE_VERSION_H_
+    return KDE_VERSION_STRING;
+}
