@@ -232,7 +232,7 @@ void KSystemTray::activateOrHide()
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     KWin::WindowInfo info = KWin::windowInfo( pw->winId() );
     // mapped = visible (but possibly obscured)
-    bool mapped = (info.mappingState() != NET::Withdrawn);
+    bool mapped = (info.mappingState() == NET::Visible) && !info.isMinimized();
 //    - not mapped -> show, raise, focus
 //    - mapped
 //        - obscured -> raise, focus
