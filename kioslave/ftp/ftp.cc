@@ -1972,11 +1972,12 @@ void Ftp::get( const KURL & url )
         return;
       }
   }
+  bool textMode = !metaData(QString::fromLatin1("textmode")).isEmpty();
 
   // try to find the size of the file (and check that it exists at the same time)
   // 550 is "File does not exist"/"not a plain file"
   // If we got something else, maybe SIZE isn't supported.
-  if ( !ftpSize( url.path(), 'I' ) && strncmp( rspbuf, "550", 3) == 0 )
+  if ( !ftpSize( url.path(), textMode ? 'A' : 'I' ) && strncmp( rspbuf, "550", 3) == 0 )
   {
       // Not a file, or doesn't exist. We need to find out.
       QCString tmp = "cwd ";
@@ -2003,7 +2004,7 @@ void Ftp::get( const KURL & url )
       kdDebug(7102) << "Ftp::get got offset from medata : " << offset << endl;
   }
 
-  if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
+  if ( !ftpOpenCommand( "retr", url.path(), textMode ? 'A' : 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
     kdWarning(7102) << "Can't open for reading" << endl;
     return;
   }
@@ -2180,7 +2181,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
 
   // Don't use mark partial over anonymous FTP.
   // My incoming dir allows put but not rename...
-  if (m_user == FTP_LOGIN)
+  if (m_user.isEmpty () || m_user == FTP_LOGIN)
       bMarkPartial = false;
 
   if ( ftpSize( dest_orig, 'I' ) )
@@ -2209,7 +2210,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
     }
     // Don't chmod an existing file
     permissions = -1;
-  } else if ( ftpSize( dest_part, 'I' ) ) { // file with extension .part exists
+  } else if ( bMarkPartial && ftpSize( dest_part, 'I' ) ) { // file with extension .part exists
     if ( m_size == 0 ) {  // delete files with zero size
       QCString cmd = "DELE ";
       cmd += dest_part.ascii();
@@ -2225,14 +2226,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
         error( ERR_FILE_ALREADY_EXIST, dest_orig );
         return;
       }
-    } else if ( !bMarkPartial ) { // when using mark partial, remove .part extension
-      if ( !ftpRename( dest_part, dest_orig, true ) )
-      {
-        error( KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig );
-        return;
-      }
     }
-
   }
 
   QString dest;
