@@ -565,8 +565,6 @@ void CachedImage::movieUpdated( const QRect & )
         // updateSize() does not exist in CachecObjectClient only
         // in RenderBox()
         c->setPixmap( pixmap, this, &manualUpdate );
-        if (manualUpdate)
-           updateList.append(c);
    }
 }
 
