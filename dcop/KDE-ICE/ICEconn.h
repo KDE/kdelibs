@@ -26,6 +26,8 @@ Author: Ralph Mor, X Consortium
 #ifndef _ICECONN_H_
 #define _ICECONN_H_
 
+#include "KDE-ICE/ICElib.h"
+
 /*
  * Data structures for ICE connection object 
  */

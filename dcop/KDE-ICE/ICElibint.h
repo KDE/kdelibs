@@ -1,15 +1,10 @@
-/* $XConsortium: ICElibint.h,v 1.42 94/04/17 20:15:25 mor Exp $ */
+/* $Xorg: ICElibint.h,v 1.3 2000/08/17 19:44:10 cpqbld Exp $ */
 /******************************************************************************
 
 
-Copyright (c) 1993  X Consortium
+Copyright (c) 1993, 1998  The Open Group
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+All Rights Reserved. 
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
@@ -17,17 +12,17 @@ all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Except as contained in this notice, the name of the X Consortium shall not be
+Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from the X Consortium.
+in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-
+/* $XFree86: xc/lib/ICE/ICElibint.h,v 1.4 2001/01/17 19:41:29 dawes Exp $ */
 #ifndef _ICELIBINT_H_
 #define _ICELIBINT_H_
 
@@ -271,15 +266,13 @@ typedef struct {
 #define EXTRACT_STRING(_pBuf, _swap, _string) \
 { \
     CARD16 _len; \
-    char *_str;	\
     EXTRACT_CARD16 (_pBuf, _swap, _len); \
-    _str = (char *) malloc (_len + 1); \
-    memcpy (_str, _pBuf, _len); \
+    _string = (char *) malloc (_len + 1); \
+    memcpy (_string, _pBuf, _len); \
     _pBuf += _len; \
-    _str[_len] = '\0'; \
+    _string[_len] = '\0'; \
     if (PAD32 (2 + _len)) \
         _pBuf += PAD32 (2 + _len); \
-    _string = _str;	\
 }
 
 #define EXTRACT_LISTOF_STRING(_pBuf, _swap, _count, _strings) \
@@ -290,20 +283,21 @@ typedef struct {
 }
 
 
-#define SKIP_STRING(_pBuf, _swap) \
+#define SKIP_STRING(_pBuf, _swap, _end, _bail) \
 { \
     CARD16 _len; \
     EXTRACT_CARD16 (_pBuf, _swap, _len); \
-    _pBuf += _len; \
-    if (PAD32 (2 + _len)) \
-        _pBuf += PAD32 (2 + _len); \
-}
+   _pBuf += _len + PAD32(2+_len); \
+    if (_pBuf > _end) { \
+       _bail; \
+    } \
+} 
 
-#define SKIP_LISTOF_STRING(_pBuf, _swap, _count) \
+#define SKIP_LISTOF_STRING(_pBuf, _swap, _count, _end, _bail) \
 { \
     int _i; \
     for (_i = 0; _i < _count; _i++) \
-        SKIP_STRING (_pBuf, _swap); \
+        SKIP_STRING (_pBuf, _swap, _end, _bail); \
 }
 
 

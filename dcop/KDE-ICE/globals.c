@@ -54,6 +54,3 @@ _IceWatchProc	*_IceWatchProcs = NULL;
 IceErrorHandler   _IceErrorHandler   = _IceDefaultErrorHandler;
 IceIOErrorHandler _IceIOErrorHandler = _IceDefaultIOErrorHandler;
 IceWriteHandler   _IceWriteHandler   = _IceWrite;
-
-int _IcePaAuthDataEntryCount = 0;
-IceAuthDataEntry _IcePaAuthDataEntries[ICE_MAX_AUTH_DATA_ENTRIES];

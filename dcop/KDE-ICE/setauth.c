@@ -1,15 +1,10 @@
-/* $XConsortium: setauth.c,v 1.8 94/04/17 20:15:39 mor Exp $ */
+/* $Xorg: setauth.c,v 1.3 2000/08/17 19:44:18 cpqbld Exp $ */
 /******************************************************************************
 
 
-Copyright (c) 1993  X Consortium
+Copyright 1993, 1998  The Open Group
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+All Rights Reserved.
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
@@ -17,17 +12,17 @@ all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Except as contained in this notice, the name of the X Consortium shall not be
+Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from the X Consortium.
+in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
-/* $XFree86: xc/lib/ICE/setauth.c,v 1.1.1.1.12.2 1998/10/19 20:57:04 hohndel Exp $ */
+/* $XFree86: xc/lib/ICE/setauth.c,v 1.3 2001/01/17 19:41:29 dawes Exp $ */
 
 #include "KDE-ICE/ICElib.h"
 #include "KDE-ICE/ICElibint.h"
@@ -49,6 +44,14 @@ Author: Ralph Mor, X Consortium
  * file is not secure - someone can just modify the contents of the
  * .ICEauthority file behind our back.
  */
+
+int		 _IcePaAuthDataEntryCount = 0;
+#ifndef __EMX__
+IceAuthDataEntry _IcePaAuthDataEntries[ICE_MAX_AUTH_DATA_ENTRIES];
+#else
+IceAuthDataEntry _IcePaAuthDataEntries[ICE_MAX_AUTH_DATA_ENTRIES] = {0};
+#endif
+
 
 void
 IceSetPaAuthData (numEntries, entries)

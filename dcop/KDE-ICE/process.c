@@ -1,16 +1,10 @@
-/* $XConsortium: process.c,v 1.43 94/08/25 15:44:43 mor Exp $ */
-/* $XFree86: xc/lib/ICE/process.c,v 3.1 1994/09/17 13:43:45 dawes Exp $ */
+/* $Xorg: process.c,v 1.3 2000/08/17 19:44:16 cpqbld Exp $ */
 /******************************************************************************
 
 
-Copyright (c) 1993  X Consortium
+Copyright 1993, 1998  The Open Group
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+All Rights Reserved.
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
@@ -18,26 +12,27 @@ all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Except as contained in this notice, the name of the X Consortium shall not be
+Except as contained in this notice, the name of The Open Group shall not be
 used in advertising or otherwise to promote the sale, use or other dealings
-in this Software without prior written authorization from the X Consortium.
+in this Software without prior written authorization from The Open Group.
 
 Author: Ralph Mor, X Consortium
 ******************************************************************************/
+/* $XFree86: xc/lib/ICE/process.c,v 3.5 2001/01/17 19:41:29 dawes Exp $ */
 
 #include "KDE-ICE/ICElib.h"
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/globals.h"
 
-#ifdef MINIX
-#include "KDE-ICE/Xtrans.h"
-#endif
+#include <stdio.h> /* sprintf */
 
-#include <stdio.h>
+#ifdef MINIX
+#include <KDE-ICE/Xtrans.h>
+#endif
 
 /*
  * Check for bad length
@@ -66,7 +61,11 @@ Author: Ralph Mor, X Consortium
        return (0); \
     }
 
-
+#define BAIL_STRING(_iceConn, _opcode, _pStart) {\
+    _IceErrorBadLength (_iceConn, 0, _opcode, IceFatalToConnection);\
+    IceDisposeCompleteMessage (_iceConn, _pStart);\
+    return (0);\
+}
 
 /*
  * IceProcessMessages:
@@ -597,9 +596,8 @@ IceReplyWaitInfo *replyWait;
 	    _IceConnectionError *errorReply =
 	        &(((_IceReply *) (replyWait->reply))->connection_error);
 	    char *errorStr = NULL;
-	    const char *tempstr;
-	    const char *prefix;
-            char *temp;
+	    char *tempstr;
+	    char *prefix, *temp;
 
 	    invokeHandler = 0;
 	    errorReturned = True;
@@ -668,9 +666,8 @@ IceReplyWaitInfo *replyWait;
 	{
 	    _IceProtocolError *errorReply =
 	        &(((_IceReply *) (replyWait->reply))->protocol_error);
-	    char *errorStr = NULL;
-	    const char *prefix;
-            const char *temp;
+	    char *errorStr = "";
+	    char *prefix, *temp;
 
 	    invokeHandler = 0;
 	    errorReturned = True;
@@ -701,7 +698,7 @@ IceReplyWaitInfo *replyWait;
 		errorStr = (char *) malloc (
 		    strlen (prefix) + strlen (temp) + 1);
 		sprintf (errorStr, "%s%s", prefix, temp);
-		free ((char *)temp);
+		free (temp);
 		break;
 
 	    case IceAuthRejected:
@@ -711,7 +708,7 @@ IceReplyWaitInfo *replyWait;
 		errorStr = (char *) malloc (
 		    strlen (prefix) + strlen (temp) + 1);
 		sprintf (errorStr, "%s%s", prefix, temp);
-		free ((char *)temp);
+		free (temp);
 		break;
 
 	    case IceAuthFailed:
@@ -721,7 +718,7 @@ IceReplyWaitInfo *replyWait;
 		errorStr = (char *) malloc (
 		    strlen (prefix) + strlen (temp) + 1);
 		sprintf (errorStr, "%s%s", prefix, temp);
-		free ((char *)temp);
+		free (temp);
 		break;
 
 	    case IceProtocolDuplicate:
@@ -731,7 +728,7 @@ IceReplyWaitInfo *replyWait;
 		errorStr = (char *) malloc (
 		    strlen (prefix) + strlen (temp) + 1);
 		sprintf (errorStr, "%s%s", prefix, temp);
-		free ((char *)temp);
+		free (temp);
 		break;
 
 	    case IceMajorOpcodeDuplicate:
@@ -748,7 +745,7 @@ IceReplyWaitInfo *replyWait;
 		errorStr = (char *) malloc (
 		    strlen (prefix) + strlen (temp) + 1);
 		sprintf (errorStr, "%s%s", prefix, temp);
-		free ((char *)temp);
+		free (temp);
 		break;
 
 	    default:
@@ -771,8 +768,8 @@ IceReplyWaitInfo *replyWait;
 	    if (iceConn->connect_to_you &&
 		iceConn->connect_to_you->auth_active)
 	    {
-		authProc = _IcePoAuthProcs[
-		    iceConn->connect_to_you->my_auth_index];
+		authProc = _IcePoAuthProcs[(int)
+		    (iceConn->connect_to_you->my_auth_index)];
 
 		(*authProc) (iceConn, &iceConn->connect_to_you->my_auth_state,
 		    True /* clean up */, False /* swap */,
@@ -784,8 +781,8 @@ IceReplyWaitInfo *replyWait;
 		_IcePoProtocol *protocol = _IceProtocols[
 		    iceConn->protosetup_to_you->my_opcode - 1].orig_client;
 
-		authProc = protocol->auth_procs[iceConn->
-		    protosetup_to_you->my_auth_index];
+		authProc = protocol->auth_procs[(int)(iceConn->
+		    protosetup_to_you->my_auth_index)];
 
 		(*authProc) (iceConn,
 		    &iceConn->protosetup_to_you->my_auth_state,
@@ -823,9 +820,8 @@ Bool		swap;
     int  hisMajorVersion, hisMinorVersion;
     int	 myAuthCount, hisAuthCount;
     int	 found, i, j;
-    const char *myAuthName;
-    char **hisAuthNames;
-    char *pData, *pStart;
+    char *myAuthName, **hisAuthNames;
+    char *pData, *pStart, *pEnd;
     char *vendor = NULL;
     char *release = NULL;
     int myAuthIndex = 0;
@@ -849,10 +845,18 @@ Bool		swap;
     }
 
     pData = pStart;
-
-    SKIP_STRING (pData, swap);				       /* vendor */
-    SKIP_STRING (pData, swap);				       /* release */
-    SKIP_LISTOF_STRING (pData, swap, (int) message->authCount);/* auth names */
+    pEnd = pStart + (length << 3);
+    
+    SKIP_STRING (pData, swap, pEnd, 
+		 BAIL_STRING(iceConn, ICE_ConnectionSetup,
+			     pStart));			       /* vendor */
+    SKIP_STRING (pData, swap, pEnd, 
+		 BAIL_STRING(iceConn, ICE_ConnectionSetup,
+			    pStart));	        	       /* release */
+    SKIP_LISTOF_STRING (pData, swap, (int) message->authCount, pEnd, 
+			BAIL_STRING(iceConn, ICE_ConnectionSetup,
+				   pStart));		       /* auth names */
+    
     pData += (message->versionCount * 4);		       /* versions */
 
     CHECK_COMPLETE_SIZE (iceConn, ICE_ConnectionSetup,
@@ -1106,7 +1110,7 @@ IceReplyWaitInfo	*replyWait;
 	    _IceConnectionError *errorReply =
 	        &(((_IceReply *) (replyWait->reply))->connection_error);
 
-	    const char *tempstr = "Received bad authIndex in the AuthRequired message";
+	    char *tempstr = "Received bad authIndex in the AuthRequired message";
 	    char errIndex = (int) message->authIndex;
 
 	    errorString = (char *) malloc (strlen (tempstr) + 1);
@@ -1136,7 +1140,7 @@ IceReplyWaitInfo	*replyWait;
 	    _IceProtocolError *errorReply =
 	        &(((_IceReply *) (replyWait->reply))->protocol_error);
 
-	    const char *tempstr = "Received bad authIndex in the AuthRequired message";
+	    char *tempstr = "Received bad authIndex in the AuthRequired message";
 	    char errIndex = (int) message->authIndex;
 
 	    errorString = (char *) malloc (strlen (tempstr) + 1);
@@ -1202,8 +1206,7 @@ IceReplyWaitInfo	*replyWait;
     }
     else if (status == IcePoAuthRejected || status == IcePoAuthFailed)
     {
-	const char *prefix;
-        char *returnErrorString;
+	char *prefix, *returnErrorString;
 
 	if (status == IcePoAuthRejected)
 	{
@@ -1294,8 +1297,8 @@ Bool		swap;
 
     if (iceConn->connect_to_me)
     {
-	IcePaAuthProc authProc = _IcePaAuthProcs[
-	    iceConn->connect_to_me->my_auth_index];
+	IcePaAuthProc authProc = _IcePaAuthProcs[(int)
+	    (iceConn->connect_to_me->my_auth_index)];
 	IcePaAuthStatus status =
 	    (*authProc) (iceConn, &iceConn->connect_to_me->my_auth_state, swap,
 	    replyDataLen, replyData, &authDataLen, &authData, &errorString);
@@ -1366,8 +1369,8 @@ Bool		swap;
     {
 	_IcePaProtocol *myProtocol = _IceProtocols[iceConn->protosetup_to_me->
 	    my_opcode - 1].accept_client;
-	IcePaAuthProc authProc = myProtocol->auth_procs[
-	    iceConn->protosetup_to_me->my_auth_index];
+	IcePaAuthProc authProc = myProtocol->auth_procs[(int)
+	    (iceConn->protosetup_to_me->my_auth_index)];
 	IcePaAuthStatus status =
 	    (*authProc) (iceConn, &iceConn->protosetup_to_me->my_auth_state,
 	    swap, replyDataLen, replyData,
@@ -1421,7 +1424,7 @@ Bool		swap;
 	    _IceProcessMsgInfo *process_msg_info;
 	    IcePointer clientData = NULL;
 	    char *failureReason = NULL;
-	    Status setupStatus = 1;
+	    Status status = 1;
 
 	    protocolSetupProc = myProtocol->protocol_setup_proc;
 	    protocolActivateProc = myProtocol->protocol_activate_proc;
@@ -1432,7 +1435,7 @@ Bool		swap;
 		 * Notify the client of the Protocol Setup.
 		 */
 
-		setupStatus = (*protocolSetupProc) (iceConn,
+		status = (*protocolSetupProc) (iceConn,
 		    myProtocol->version_recs[iceConn->protosetup_to_me->
 		        my_version_index].major_version,
 		    myProtocol->version_recs[iceConn->protosetup_to_me->
@@ -1451,7 +1454,7 @@ Bool		swap;
 		iceConn->protosetup_to_me->his_release = NULL;
 	    }
 
-	    if (setupStatus != 0)
+	    if (status != 0)
 	    {
 		/*
 		 * Send the Protocol Reply
@@ -1592,8 +1595,8 @@ IceReplyWaitInfo	*replyWait;
 
     if (iceConn->connect_to_you)
     {
-	authProc = _IcePoAuthProcs[
-	    iceConn->connect_to_you->my_auth_index];
+	authProc = _IcePoAuthProcs[(int)
+	    (iceConn->connect_to_you->my_auth_index)];
 
 	authState = &iceConn->connect_to_you->my_auth_state;
     }
@@ -1602,8 +1605,8 @@ IceReplyWaitInfo	*replyWait;
 	_IcePoProtocol *myProtocol =
 	  _IceProtocols[iceConn->protosetup_to_you->my_opcode - 1].orig_client;
 
-	authProc = myProtocol->auth_procs[
-	    iceConn->protosetup_to_you->my_auth_index];
+	authProc = myProtocol->auth_procs[(int)
+	    (iceConn->protosetup_to_you->my_auth_index)];
 
 	authState = &iceConn->protosetup_to_you->my_auth_state;
     }
@@ -1632,8 +1635,7 @@ IceReplyWaitInfo	*replyWait;
     }
     else if (status == IcePoAuthRejected || status == IcePoAuthFailed)
     {
-	const char *prefix;
-        char *returnErrorString;
+	char *prefix, *returnErrorString;
 
 	if (status == IcePoAuthRejected)
 	{
@@ -1693,7 +1695,7 @@ IceReplyWaitInfo 	*replyWait;
 
 {
     iceConnectionReplyMsg 	*message;
-    char 			*pData, *pStart;
+    char 			*pData, *pStart, *pEnd;
     Bool			replyReady;
 
     CHECK_AT_LEAST_SIZE (iceConn, ICE_ConnectionReply,
@@ -1709,9 +1711,14 @@ IceReplyWaitInfo 	*replyWait;
     }
 
     pData = pStart;
+    pEnd = pStart + (length << 3);
 
-    SKIP_STRING (pData, swap);				     /* vendor */
-    SKIP_STRING (pData, swap);				     /* release */
+    SKIP_STRING (pData, swap, pEnd,
+		 BAIL_STRING (iceConn, ICE_ConnectionReply,
+			      pStart));		    	     /* vendor */
+    SKIP_STRING (pData, swap, pEnd,
+		 BAIL_STRING (iceConn, ICE_ConnectionReply,
+			      pStart));			     /* release */
 
     CHECK_COMPLETE_SIZE (iceConn, ICE_ConnectionReply,
 	length, pData - pStart + SIZEOF (iceConnectionReplyMsg),
@@ -1727,8 +1734,8 @@ IceReplyWaitInfo 	*replyWait;
 	     * Tell the authentication procedure to clean up.
 	     */
 
-	    IcePoAuthProc authProc = _IcePoAuthProcs[
-		iceConn->connect_to_you->my_auth_index];
+	    IcePoAuthProc authProc = _IcePoAuthProcs[(int)
+		(iceConn->connect_to_you->my_auth_index)];
 
 	    (*authProc) (iceConn, &iceConn->connect_to_you->my_auth_state,
 		True /* clean up */, False /* swap */,
@@ -1737,8 +1744,6 @@ IceReplyWaitInfo 	*replyWait;
 
 	if ((int) message->versionIndex >= _IceVersionCount)
 	{
-            const char *errorString;
-            char *returnErrorString;
 	    _IceConnectionError *errorReply =
 	        &(((_IceReply *) (replyWait->reply))->connection_error);
 	    char errIndex = message->versionIndex;
@@ -1747,11 +1752,8 @@ IceReplyWaitInfo 	*replyWait;
 		ICE_ConnectionReply, 2, 1, &errIndex);
 	    
 	    errorReply->type = ICE_CONNECTION_ERROR;
-	    errorString =
+	    errorReply->error_message =
 		"Received bad version index in Connection Reply";
-            returnErrorString = (char *) malloc (strlen (errorString) + 1);
-            strcpy(returnErrorString, errorString);
-	    errorReply->error_message = returnErrorString;
 	}
 	else
 	{
@@ -1784,7 +1786,7 @@ IceReplyWaitInfo 	*replyWait;
 
 
 
-static
+static int
 ProcessProtocolSetup (iceConn, length, swap)
 
 IceConn		iceConn;
@@ -1800,10 +1802,9 @@ Bool		swap;
     int	 	      	myAuthCount, hisAuthCount;
     int  	      	myOpcode, hisOpcode;
     int	 	      	found, i, j;
-    const char	      	*myAuthName;
-    char	      	**hisAuthNames;
+    char	      	*myAuthName, **hisAuthNames;
     char 	      	*protocolName;
-    char 		*pData, *pStart;
+    char 		*pData, *pStart, *pEnd;
     char 	      	*vendor = NULL;
     char 	      	*release = NULL;
     int  	      	accept_setup_now = 0;
@@ -1838,11 +1839,20 @@ Bool		swap;
     }
 
     pData = pStart;
+    pEnd = pStart + (length << 3);
 
-    SKIP_STRING (pData, swap);				       /* proto name */
-    SKIP_STRING (pData, swap);				       /* vendor */
-    SKIP_STRING (pData, swap);				       /* release */
-    SKIP_LISTOF_STRING (pData, swap, (int) message->authCount);/* auth names */
+    SKIP_STRING (pData, swap, pEnd,
+		 BAIL_STRING(iceConn, ICE_ProtocolSetup, 
+			     pStart));			       /* proto name */
+    SKIP_STRING (pData, swap, pEnd,
+		 BAIL_STRING(iceConn, ICE_ProtocolSetup, 
+			     pStart));			       /* vendor */
+    SKIP_STRING (pData, swap, pEnd,
+		 BAIL_STRING(iceConn, ICE_ProtocolSetup, 
+			     pStart));			       /* release */
+    SKIP_LISTOF_STRING (pData, swap, (int) message->authCount, pEnd,
+			BAIL_STRING(iceConn, ICE_ProtocolSetup, 
+				    pStart));		       /* auth names */
     pData += (message->versionCount * 4);		       /* versions */
 
     CHECK_COMPLETE_SIZE (iceConn, ICE_ProtocolSetup,
@@ -2184,7 +2194,7 @@ IceReplyWaitInfo 	*replyWait;
 
 {
     iceProtocolReplyMsg *message;
-    char		*pData, *pStart;
+    char		*pData, *pStart, *pEnd;
     Bool		replyReady;
 
     CHECK_AT_LEAST_SIZE (iceConn, ICE_ProtocolReply,
@@ -2200,9 +2210,14 @@ IceReplyWaitInfo 	*replyWait;
     }
 
     pData = pStart;
+    pEnd = pStart + (length << 3);
 
-    SKIP_STRING (pData, swap);				     /* vendor */
-    SKIP_STRING (pData, swap);				     /* release */
+    SKIP_STRING (pData, swap, pEnd,
+		 BAIL_STRING(iceConn, ICE_ProtocolReply,
+			     pStart));			     /* vendor */
+    SKIP_STRING (pData, swap, pEnd,
+		 BAIL_STRING(iceConn, ICE_ProtocolReply,
+			     pStart));			     /* release */
 
     CHECK_COMPLETE_SIZE (iceConn, ICE_ProtocolReply,
 	length, pData - pStart + SIZEOF (iceProtocolReplyMsg),
@@ -2221,8 +2236,8 @@ IceReplyWaitInfo 	*replyWait;
 	    _IcePoProtocol *myProtocol = _IceProtocols[
 		iceConn->protosetup_to_you->my_opcode - 1].orig_client;
 
-	    IcePoAuthProc authProc = myProtocol->auth_procs[
-		iceConn->protosetup_to_you->my_auth_index];
+	    IcePoAuthProc authProc = myProtocol->auth_procs[(int)
+		(iceConn->protosetup_to_you->my_auth_index)];
 
 #ifdef SVR4
 
@@ -2242,8 +2257,6 @@ IceReplyWaitInfo 	*replyWait;
 
 	if ((int) message->versionIndex >= _IceVersionCount)
 	{
-            const char *errorString;
-            char *returnErrorString;
 	    _IceProtocolError *errorReply =
 	        &(((_IceReply *) (replyWait->reply))->protocol_error);
 	    char errIndex = message->versionIndex;
@@ -2252,11 +2265,8 @@ IceReplyWaitInfo 	*replyWait;
 		ICE_ProtocolReply, 2, 1, &errIndex);
 	    
 	    errorReply->type = ICE_PROTOCOL_ERROR;
-            errorString = 
+	    errorReply->error_message =
 		"Received bad version index in Protocol Reply";
-            returnErrorString = (char *) malloc(strlen(errorString)+1);
-            strcpy(returnErrorString, errorString);
-	    errorReply->error_message = returnErrorString;
 	}
 	else
 	{
@@ -2287,7 +2297,7 @@ IceReplyWaitInfo 	*replyWait;
 
 
 
-static
+static int
 ProcessPing (iceConn, length)
 
 IceConn 	iceConn;
@@ -2304,7 +2314,7 @@ unsigned long	length;
 
 
 
-static
+static int
 ProcessPingReply (iceConn, length)
 
 IceConn 	iceConn;
@@ -2334,7 +2344,7 @@ unsigned long	length;
 
 
 
-static
+static int
 ProcessWantToClose (iceConn, length, connectionClosedRet)
 
 IceConn 	iceConn;
@@ -2394,7 +2404,7 @@ Bool		*connectionClosedRet;
 
 
 
-static
+static int
 ProcessNoClose (iceConn, length)
 
 IceConn 	iceConn;
