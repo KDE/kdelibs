@@ -57,6 +57,7 @@
 #include <kmimetype.h>
 #include <kextsock.h>
 #include <ksockaddr.h>
+#include <ksocks.h>
 
 #define FTP_LOGIN QString::fromLatin1("anonymous")
 #define FTP_PASSWD QString::fromLatin1("kde-user@kde.org")
@@ -165,7 +166,7 @@ int Ftp::ftpReadline(char *buf,int max,netbuf *ctl)
         retval = -1;
       break;
     }
-    if ((x = ::read(ctl->handle,ctl->cput,ctl->cleft)) == -1)
+    if ((x = KSocks::self()->read(ctl->handle,ctl->cput,ctl->cleft)) == -1)
     {
       kdError(7102) << "read failed: " << strerror(errno) << endl;
       retval = -1;
@@ -535,7 +536,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
   if ( cmd.left(4).lower() != "pass" ) // don't print out the password
     kdDebug(7102) << cmd.data() << endl;
 
-  if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
+  if ( KSocks::self()->write( sControl, buf.data(), buf.length() ) <= 0 )  {
     error( ERR_COULD_NOT_WRITE, QString::null );
     return false;
   }
@@ -1815,7 +1816,7 @@ void Ftp::ftpAbortTransfer()
    // Send ABOR
    kdDebug(7102) << "send ABOR" << endl;
    QCString buf = "ABOR\r\n";
-   if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
+   if ( KSocks::self()->write( sControl, buf.data(), buf.length() ) <= 0 )  {
      error( ERR_COULD_NOT_WRITE, QString::null );
      return;
    }
@@ -2026,11 +2027,11 @@ bool Ftp::ftpSize( const QString & path, char mode )
 
 size_t Ftp::ftpRead(void *buffer, long len)
 {
-  size_t n = ::read( sData, buffer, len );
+  size_t n = KSocks::self()->read( sData, buffer, len );
   return n;
 }
 
 size_t Ftp::ftpWrite(void *buffer, long len)
 {
-  return( ::write( sData, buffer, len ) );
+  return( KSocks::self()->write( sData, buffer, len ) );
 }
