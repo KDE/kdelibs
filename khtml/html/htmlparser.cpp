@@ -1315,7 +1315,9 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
 
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
-    DOMString text( i18n("This is a searchable index. Enter search keywords:") );
+    DOMString text = t->attrs.valueForId( ATTR_PROMPT );
+    if( text.isNull() )
+	text =  i18n("This is a searchable index. Enter search keywords:");
     child = new TextImpl(document, text);
     n->addChild( child );
     child = new HTMLInputElementImpl(document, myform);
