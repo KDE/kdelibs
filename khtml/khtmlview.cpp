@@ -233,14 +233,15 @@ public:
 void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
 {
     DOM::NodeImpl *node = m_viewprivate->underMouse;
+    QRect region;
     while ( node ) {
         if ( node->isElementNode() ) {
             QString s = static_cast<DOM::ElementImpl*>( node )->getAttribute( ATTR_TITLE ).string();
+            region |= QRect( m_view->contentsToViewport( node->getRect().topLeft() ), node->getRect().size() );
             if ( !s.isEmpty() ) {
-                QRect r( m_view->contentsToViewport( node->getRect().topLeft() ), node->getRect().size() );
                 tip( r,  s );
+                break;
             }
-            break;
         }
         node = node->parentNode();
     }
