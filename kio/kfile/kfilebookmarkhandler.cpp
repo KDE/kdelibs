@@ -30,7 +30,7 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
             importOldBookmarks( oldFile, file );
     }
 
-    KBookmarkManager *manager = KBookmarkManager::self( file, false );
+    KBookmarkManager *manager = KBookmarkManager::managerForFile( file, false );
     manager->setUpdate( true );
 
 
@@ -102,7 +102,6 @@ void KFileBookmarkHandler::endMenu()
 {
     *m_importStream << "</folder>\n";
 }
-
 
 
 #include "kfilebookmarkhandler.moc"
