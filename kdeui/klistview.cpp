@@ -490,7 +490,7 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
         }
     }
 
-  bool dragOn = dragEnabled(), dragged=false;
+  bool dragOn = dragEnabled();
   QPoint newPos = e->pos();
   if (dragOn && d->validDrag &&
       (newPos.x() > d->startDragPos.x()+d->dragDelay ||
@@ -500,12 +500,11 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
     //(d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
     {
       startDrag();
-//      dragged=true;
       d->startDragPos = QPoint();
       d->validDrag = false;
     }
 
-  if (!dragged && (!dragOn || d->startDragPos.isNull() || !d->validDrag))
+  if (!dragOn || d->startDragPos.isNull() || !d->validDrag)
     QListView::contentsMouseMoveEvent (e);
 }
 
@@ -666,8 +665,7 @@ void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
     d->startDragPos = QPoint();
   }
 
-//  if (!d->validDrag)
-    QListView::contentsMouseReleaseEvent( e );
+  QListView::contentsMouseReleaseEvent( e );
 }
 
 QListViewItem* KListView::lastChild () const
