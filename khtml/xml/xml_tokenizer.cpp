@@ -404,12 +404,11 @@ void XMLTokenizer::finish()
         while (m_doc->document()->hasChildNodes())
             static_cast<NodeImpl*>(m_doc->document())->removeChild(m_doc->document()->firstChild(),exceptioncode);
 
-        QString xmlCode = m_source.data();
-        QTextIStream stream(&xmlCode);
         QString line, errorLocPtr;
         if ( m_handler.errorLine ) {
-            unsigned long lineno;
-            for (lineno = 1; lineno < m_handler.errorLine; lineno++)
+            QString xmlCode = m_source.data();
+            QTextIStream stream(&xmlCode);
+            for (unsigned long lineno = 0; lineno < m_handler.errorLine-1; lineno++)
                 stream.readLine();
             line = stream.readLine();
 
