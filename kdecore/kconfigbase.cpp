@@ -800,7 +800,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
       writeEntry( pKey, prop.toBool(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Double:
-      writeEntry( pKey, prop.toDouble(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toDouble(), bPersistent, bGlobal, 'g', 6, bNLS );
       break;
     default:
       ASSERT( 0 );
@@ -907,9 +907,11 @@ QString KConfigBase::writeEntry( const QString& pKey, unsigned long nValue,
 
 QString KConfigBase::writeEntry( const QString& pKey, double nValue,
 				 bool bPersistent, bool bGlobal,
+                                 char format, int precision,
 				 bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  return writeEntry( pKey, QString::number(nValue, format, precision),
+                     bPersistent, bGlobal, bNLS );
 }
 
 

@@ -568,6 +568,10 @@ public:
    * disk at deletion time.
    * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
    *  application specific config file, but to the global KDE config file.
+   * @param format      @p format determines the format to which the value
+   *  is converted. Default is 'g'.
+   * @param precision   @p precision sets the precision with which the
+   *  value is converted. Default is 6 as in QString.
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    * @return The old value for this key. If this key did not
@@ -575,6 +579,7 @@ public:
    */
   QString writeEntry( const QString& pKey, double nValue,
                       bool bPersistent = true, bool bGlobal = false,
+                      char format = 'g', int precision = 6,
                       bool bNLS = false );
 
   /**
