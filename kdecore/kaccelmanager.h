@@ -73,7 +73,7 @@ public:
    */
   static void manage(QWidget *widget, bool programmers_mode);
 
-    /// @internal returns the result of the last manage operation.
+    /** \internal returns the result of the last manage operation. */
     static void last_manage(QString &added,  QString &changed,  QString &removed);
 };
 

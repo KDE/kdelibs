@@ -467,7 +467,7 @@ public:
    * @param config the desktop configuration file that describes the mime type
    */
   KFolderType( KDesktopFile *config) : KMimeType( config ) { }
-  /// @internal
+  /** \internal */
   KFolderType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
@@ -512,7 +512,7 @@ public:
    * @param config the desktop configuration file that describes the mime type
    */
   KDEDesktopMimeType( KDesktopFile *config) : KMimeType( config ) { }
-  /// @internal
+  /** \internal */
   KDEDesktopMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
@@ -595,7 +595,7 @@ public:
    * @param config the desktop configuration file that describes the mime type
    */
   KExecMimeType( KDesktopFile *config) : KMimeType( config ) { }
-  /// @internal
+  /** \internal */
   KExecMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 protected:
   virtual void virtual_hook( int id, void* data );

@@ -35,7 +35,7 @@ namespace KIO {
 
 class ParseTreeBase;
 
-/// @internal
+/** \internal */
 struct PreferencesReturn
 {
   enum Type { PRT_DOUBLE, PRT_ERROR };

@@ -388,7 +388,7 @@ class KAccel : public QAccel
 #endif // !KDE_NO_COMPAT
 
  protected:
-        /// @internal
+        /** \internal */
 	virtual void virtual_hook( int id, void* data );
  private:
 	class KAccelPrivate* d;

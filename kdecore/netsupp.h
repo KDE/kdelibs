@@ -248,15 +248,15 @@ struct addrinfo
 
 namespace KDE
 {
-  /// @internal
+  /** \internal */
   extern int getaddrinfo(const char *name, const char *service,
 			 const struct addrinfo* hint,
 			 struct addrinfo** result);
-  /// @internal
+  /** \internal */
   extern void freeaddrinfo(struct addrinfo* ai);
-  /// @internal
+  /** \internal */
   extern char *gai_strerror(int errorcode);
-  /// @internal
+  /** \internal */
   extern int getnameinfo(const struct sockaddr *sa,
 			 unsigned int salen,
 			 char *host, size_t hostlen,
@@ -276,7 +276,7 @@ namespace KDE
 
 namespace KDE
 {
-  /// @internal
+  /** \internal */
   extern int inet_pton(int af, const char *cp, void* buf);
 }
 
@@ -287,7 +287,7 @@ namespace KDE
 
 namespace KDE
 {
-  /// @internal
+  /** \internal */
   extern const char* inet_ntop(int af, const void *cp, char *buf, size_t len);
 }
 

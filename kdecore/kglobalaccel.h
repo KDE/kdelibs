@@ -208,7 +208,7 @@ class KGlobalAccel : public QObject
 	friend class KGlobalAccelPrivate;
 	friend class KAccelShortcutList;
 protected:
-	/// @internal
+	/** \internal */
 	virtual void virtual_hook( int id, void* data );
 private:
 	class KGlobalAccelPrivate* d;

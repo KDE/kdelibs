@@ -46,7 +46,7 @@ public:
    */
   static KProtocolInfoFactory* self() 
   { if ( !_self) new KProtocolInfoFactory(); return _self; }
-  /// @internal
+  /** \internal */
   KProtocolInfoFactory();
   virtual ~KProtocolInfoFactory();
 

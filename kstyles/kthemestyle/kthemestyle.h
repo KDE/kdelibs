@@ -140,7 +140,7 @@ public:
     virtual void polish( QApplication *app );
     virtual void unPolish( QApplication* );
 
-    /// @internal
+    /** \internal */
     // to make it possible for derived classes to overload this function
     virtual void polish( QPalette& pal );
 

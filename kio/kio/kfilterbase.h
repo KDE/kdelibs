@@ -49,36 +49,36 @@ public:
      * @returns the device on which the filter will work
      */
     QIODevice * device() { return m_dev; }
-    /// @internal
+    /** \internal */
     virtual void init( int mode ) = 0;
-    /// @internal
+    /** \internal */
     virtual int mode() const = 0;
-    /// @internal
+    /** \internal */
     virtual void terminate() {}
-    /// @internal
+    /** \internal */
     virtual void reset() {}
-    /// @internal
+    /** \internal */
     virtual bool readHeader() = 0;
-    /// @internal
+    /** \internal */
     virtual bool writeHeader( const QCString & filename ) = 0;
-    /// @internal
+    /** \internal */
     virtual void setOutBuffer( char * data, uint maxlen ) = 0;
-    /// @internal
+    /** \internal */
     virtual void setInBuffer( const char * data, uint size ) = 0;
-    /// @internal
+    /** \internal */
     virtual bool inBufferEmpty() const { return inBufferAvailable() == 0; }
-    /// @internal
+    /** \internal */
     virtual int  inBufferAvailable() const = 0;
-    /// @internal
+    /** \internal */
     virtual bool outBufferFull() const { return outBufferAvailable() == 0; }
-    /// @internal
+    /** \internal */
     virtual int  outBufferAvailable() const = 0;
 
-    /// @internal
+    /** \internal */
     enum Result { OK, END, ERROR };
-    /// @internal
+    /** \internal */
     virtual Result uncompress() = 0;
-    /// @internal
+    /** \internal */
     virtual Result compress( bool finish ) = 0;
 
     /**

@@ -78,7 +78,7 @@ signals:
    */
   void readyWrite();
 protected:
-    /// @internal
+    /** \internal */
   virtual void virtual_hook( int id, void* data );
 private:
   KAsyncIOPrivate* d;

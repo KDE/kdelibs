@@ -140,9 +140,9 @@ class KShortcutList
 
 	// These are here in order to handle expansion.
 	enum Other { };
-	/// @internal
+	/** \internal */
 	virtual QVariant getOther( Other, uint index ) const = 0;
-	/// @internal
+	/** \internal */
 	virtual bool setOther( Other, uint index, QVariant ) = 0;
 
 	/**
@@ -228,9 +228,9 @@ class KAccelShortcutList : public KShortcutList
 	virtual bool setShortcut( uint index , const KShortcut& shortcut );
 	virtual bool isGlobal( uint index ) const;
 
-	/// @internal
+	/** \internal */
 	virtual QVariant getOther( Other, uint index ) const;
-	/// @internal
+	/** \internal */
 	virtual bool setOther( Other, uint index, QVariant );
 
 	virtual bool save() const;
@@ -272,9 +272,9 @@ class ShortcutList : public KShortcutList
 	virtual bool isConfigurable( uint index ) const;
 	virtual bool setShortcut( uint index , const KShortcut& shortcut );
 
-	/// @internal
+	/** \internal */
 	virtual QVariant getOther( Other, uint index ) const;
-	/// @internal
+	/** \internal */
 	virtual bool setOther( Other, uint index, QVariant );
 
 	virtual bool save() const;
