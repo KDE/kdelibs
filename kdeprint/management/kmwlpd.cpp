@@ -122,12 +122,15 @@ kdDebug() << "connection closed" << endl;
 	}
 
 	char	buf[1024] = {0};
-	int	n;
+	int	n, tot(1);
 kdDebug() << "reading" << endl;
 	while ((n=::read(sock,res,63)) > 0)
 	{
 		res[n] = 0;
+		tot += n;
 kdDebug() << buf << endl;
+		if (tot >= 1024)
+			break;
 		strncat(buf,res,1023);
 	}
 	close(sock);

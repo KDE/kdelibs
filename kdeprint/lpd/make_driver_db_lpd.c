@@ -82,7 +82,7 @@ int parseRhsPrinterDb(const char *filename, FILE *out)
 			c2 = strchr(c+12,'}');
 			if (c1 && c2)
 			{
-				char 	model[256], manuf[256];
+				char 	model[BUFFER_SIZE], manuf[BUFFER_SIZE];
 				char 	*c3;
 
 				*c2 = 0;

@@ -109,8 +109,8 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      return 1;
   }
 
-  strcpy(user_tmp_dir, tmp_prefix);
-  strcat(user_tmp_dir, pw_ent->pw_name);
+  strncpy(user_tmp_dir, tmp_prefix, PATH_MAX);
+  strncat(user_tmp_dir, pw_ent->pw_name, PATH_MAX - strlen(tmp_prefix));
 
   if (!kde_home || !kde_home[0])
   {
@@ -130,9 +130,9 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
         exit(255);
      }
      kde_home++;
-     strcat(kde_tmp_dir, home_dir);
+     strncpy(kde_tmp_dir, home_dir, PATH_MAX);
   }
-  strcat(kde_tmp_dir, kde_home);
+  strncat(kde_tmp_dir, kde_home, PATH_MAX - strlen(kde_tmp_dir));
 
   /** Strip trailing '/' **/
   if ( kde_tmp_dir[strlen(kde_tmp_dir)-1] == '/')
@@ -148,7 +148,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      return 1;
   }  
 
-  strcat(kde_tmp_dir, kde_prefix);
+  strncat(kde_tmp_dir, kde_prefix, PATH_MAX - strlen(kde_tmp_dir));
   if (gethostname(kde_tmp_dir+strlen(kde_tmp_dir), PATH_MAX - strlen(kde_tmp_dir) - 1) != 0)
   {
      perror("Aborting. Could not determine hostname: ");
@@ -168,7 +168,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      result = create_link(kde_tmp_dir, user_tmp_dir);
      if (result == 0) return 0; /* Success */
      unlink(kde_tmp_dir);
-     strcat(user_tmp_dir, "XXXXXX");
+     strncat(user_tmp_dir, "XXXXXX", PATH_MAX - strlen(user_tmp_dir));
      mktemp(user_tmp_dir);
      return create_link(kde_tmp_dir, user_tmp_dir);
   }
@@ -194,7 +194,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      result = create_link(kde_tmp_dir, user_tmp_dir);
      if (result == 0) return 0; /* Success */
      unlink(kde_tmp_dir);
-     strcat(user_tmp_dir, "XXXXXX");
+     strncat(user_tmp_dir, "XXXXXX", PATH_MAX - strlen(user_tmp_dir));
      mktemp(user_tmp_dir);
      return create_link(kde_tmp_dir, user_tmp_dir);
      return 1;
@@ -202,7 +202,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
   result = check_tmp_dir(tmp_buf);
   if (result == 0) return 0; /* Success */
   unlink(kde_tmp_dir);
-  strcat(user_tmp_dir, "XXXXXX");
+  strncat(user_tmp_dir, "XXXXXX", PATH_MAX - strlen(user_tmp_dir));
   mktemp(user_tmp_dir);
   return create_link(kde_tmp_dir, user_tmp_dir);
 }
