@@ -148,7 +148,7 @@ void KDirWatch::addDir( const QString& _path )
 
 #ifdef HAVE_FAM
   if (d->use_fam) {
-    FAMMonitorDirectory(&fc, QFile::encodeName(path), &(e.fr), 0);
+    FAMMonitorDirectory(&(d->fc), QFile::encodeName(path), &(e.fr), 0);
     // kdDebug(7001) << "KDirWatch added " <<
     //	  QFile::encodeName(path) << " -> FAMReq " << FAMREQUEST_GETREQNUM(&(e.fr)) << endl;
   }
