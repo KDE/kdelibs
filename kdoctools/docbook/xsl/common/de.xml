@@ -200,6 +200,7 @@
       <template name="partintro" text="%t"/>
       <template name="preface" text="%t"/>
       <template name="procedure" text="%t"/>
+      <template name="procedure.formal" text="Prozedur %n. %t"/>
       <template name="qandadiv" text="%t"/>
       <template name="qandaset" text="%t"/>
       <template name="reference" text="%t"/>
