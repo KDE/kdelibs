@@ -160,7 +160,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 		if (p->driver())
 			result = savePrinterDriver(p,p->driver());
 		if (result)
-			enablePrinter(p);
+			upPrinter(p, true);
 	}
 	else reportIppError(&req);
 
@@ -173,18 +173,14 @@ bool KMCupsManager::removePrinter(KMPrinter *p)
 	return result;
 }
 
-bool KMCupsManager::enablePrinter(KMPrinter *p)
+bool KMCupsManager::enablePrinter(KMPrinter *p, bool state)
 {
-	bool	result = setPrinterState(p,CUPS_ACCEPT_JOBS);
-	result = result && setPrinterState(p,IPP_RESUME_PRINTER);
-	return result;
+	return setPrinterState(p, (state ? CUPS_ACCEPT_JOBS : CUPS_REJECT_JOBS));
 }
 
-bool KMCupsManager::disablePrinter(KMPrinter *p)
+bool KMCupsManager::startPrinter(KMPrinter *p, bool state)
 {
-	bool	result = setPrinterState(p,CUPS_REJECT_JOBS);
-	result = result && setPrinterState(p,IPP_PAUSE_PRINTER);
-	return result;
+	return setPrinterState(p, (state ? IPP_RESUME_PRINTER : IPP_PAUSE_PRINTER));
 }
 
 bool KMCupsManager::setDefaultPrinter(KMPrinter *p)
@@ -368,6 +364,7 @@ void KMCupsManager::loadServerPrinters()
 	// location needed for filtering
 	keys.append("printer-location");
 	keys.append("printer-uri-supported");
+	keys.append("printer-is-accepting-jobs");
 	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
 
 	if (req.doRequest("/printers/"))
@@ -398,7 +395,7 @@ void KMCupsManager::loadServerPrinters()
 			}
 		}
 	}
-	
+
 	// something went wrong if we get there, report the error
 	reportIppError(&req);
 }
@@ -440,6 +437,10 @@ void KMCupsManager::processRequest(IppRequest* req)
 		else if (attrname == "printer-location")
 		{
 			printer->setLocation(QString::fromLocal8Bit(attr->values[0].string.text));
+		}
+		else if (attrname == "printer-is-accepting-jobs")
+		{
+			printer->setAcceptJobs(attr->values[0].boolean);
 		}
 		if (attrname.isEmpty() || attr == req->last())
 		{

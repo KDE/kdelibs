@@ -391,7 +391,7 @@ void KMMainView::slotEnable()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		bool	result = m_manager->enablePrinter(m_current);
+		bool	result = m_manager->upPrinter(m_current, true);
 		if (!result)
 			showErrorMsg(i18n("Unable to enable printer %1.").arg(m_current->printerName()));
 		KMTimer::self()->release(result);
@@ -403,7 +403,7 @@ void KMMainView::slotDisable()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		bool	result = m_manager->disablePrinter(m_current);
+		bool	result = m_manager->upPrinter(m_current, false);
 		if (!result)
 			showErrorMsg(i18n("Unable to disable printer %1.").arg(m_current->printerName()));
 		KMTimer::self()->release(result);

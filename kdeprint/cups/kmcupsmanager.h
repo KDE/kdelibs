@@ -40,8 +40,8 @@ public:
 	// printer management functions
 	bool createPrinter(KMPrinter *p);
 	bool removePrinter(KMPrinter *p);
-	bool enablePrinter(KMPrinter *p);
-	bool disablePrinter(KMPrinter *p);
+	bool enablePrinter(KMPrinter *p, bool state);
+	bool startPrinter(KMPrinter *p, bool state);
 	bool completePrinter(KMPrinter *p);
 	bool completePrinterShort(KMPrinter *p);
 	bool setDefaultPrinter(KMPrinter *p);

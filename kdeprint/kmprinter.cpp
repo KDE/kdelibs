@@ -133,13 +133,16 @@ int KMPrinter::compare(KMPrinter *p1, KMPrinter *p2)
 
 QString KMPrinter::stateString() const
 {
-	switch (m_state)
+	QString	s;
+	switch (state())
 	{
-		case KMPrinter::Idle: return i18n("Idle");
-		case KMPrinter::Processing: return i18n("Processing...");
-		case KMPrinter::Stopped: return i18n("Stopped");
+		case KMPrinter::Idle: s = i18n("Idle"); break;
+		case KMPrinter::Processing: s = i18n("Processing..."); break;
+		case KMPrinter::Stopped: s = i18n("Stopped"); break;
 		default: return i18n("Unknown State", "Unknown");
 	}
+	s += (" " + (m_state & Rejecting ? i18n("(rejecting jobs)") : i18n("(accepting jobs)")));
+	return s;
 }
 
 bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)

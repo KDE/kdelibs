@@ -50,7 +50,9 @@ public:
 		Idle       = 0x01,
 		Stopped    = 0x02,
 		Processing = 0x03,
-		Unknown    = 0x04
+		Unknown    = 0x04,
+		Rejecting  = 0x08,
+		StateMask  = 0x07
 	};
 
 	// constructor functions
@@ -70,9 +72,11 @@ public:
 	int type() const 			{ return m_type; }
 	void setType(int t) 			{ m_type = t; }
 	void addType(int t) 			{ m_type |= t; }
-	PrinterState state() const 		{ return m_state; }
+	PrinterState state(bool complete = false) const 		{ return PrinterState(m_state & (complete ? ~0x0 : StateMask)); }
 	QString stateString() const;
-	void setState(PrinterState s) 		{ m_state = s; }
+	void setState(PrinterState s) 		{ m_state = PrinterState((m_state & ~StateMask) | s); }
+	bool acceptJobs() const			{ return (m_state & Rejecting); }
+	void setAcceptJobs(bool on)		{ m_state = PrinterState((m_state & StateMask) | (on ? 0 : Rejecting)); }
 	const KURL& device() const 		{ return m_device; }
 	void setDevice(const KURL& d) 		{ m_device = d; }
 	const QStringList& members() const	{ return m_members; }

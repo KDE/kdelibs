@@ -37,15 +37,15 @@ public:
 	KMPrinter::PrinterState state(KMPrinter*) const;
 	void updateStates();
 
-	bool enable(KMPrinter*, QString&);
-	bool disable(KMPrinter*, QString&);
+	bool enable(KMPrinter*, bool, QString&);
+	bool start(KMPrinter*, bool, QString&);
 	bool removeJob(KMJob*, QString&);
 	bool changeJobState(KMJob*, int, QString&);
-	
+
 	bool restart(QString&);
 
 protected:
-	bool changeState(const QString&, bool, QString&);
+	bool changeState(const QString&, const QString&, QString&);
 	void parseStatusLPR(QTextStream&);
 	void parseStatusLPRng(QTextStream&);
 	int parseStateChangeLPR(const QString&, const QString&);

@@ -99,26 +99,34 @@ bool KMManager::removePrinter(const QString& name)
 	return (p ? removePrinter(p) : false);
 }
 
-bool KMManager::enablePrinter(KMPrinter*)
+bool KMManager::enablePrinter(KMPrinter*, bool)
 {
 	return notImplemented();
 }
 
-bool KMManager::enablePrinter(const QString& name)
+bool KMManager::enablePrinter(const QString& name, bool state)
 {
 	KMPrinter	*p = findPrinter(name);
-	return (p ? enablePrinter(p) : false);
+	return (p ? enablePrinter(p, state) : false);
 }
 
-bool KMManager::disablePrinter(KMPrinter*)
+bool KMManager::startPrinter(KMPrinter*, bool)
 {
 	return notImplemented();
 }
 
-bool KMManager::disablePrinter(const QString& name)
+bool KMManager::startPrinter(const QString& name, bool state)
 {
 	KMPrinter	*p = findPrinter(name);
-	return (p ? disablePrinter(p) : false);
+	return (p ? startPrinter(p, state) : false);
+}
+
+bool KMManager::upPrinter(KMPrinter *p, bool state)
+{
+	bool	result = enablePrinter(p, state);
+	if (result)
+		result = startPrinter(p, state);
+	return result;
 }
 
 bool KMManager::completePrinter(KMPrinter*)

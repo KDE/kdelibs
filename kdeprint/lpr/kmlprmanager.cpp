@@ -176,9 +176,16 @@ bool KMLprManager::completePrinterShort(KMPrinter *prt)
 void KMLprManager::checkPrinterState(KMPrinter *prt)
 {
 	if (m_lpchelper)
-		prt->setState(m_lpchelper->state(prt));
+	{
+		KMPrinter::PrinterState	st = m_lpchelper->state(prt);
+		prt->setState(st);
+		prt->setAcceptJobs(!(st & KMPrinter::Rejecting));
+	}
 	else
+	{
 		prt->setState(KMPrinter::Idle);
+		prt->setAcceptJobs(true);
+	}
 }
 
 DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool config)
@@ -210,10 +217,10 @@ DrMain* KMLprManager::loadFileDriver(const QString& filename)
 	return NULL;
 }
 
-bool KMLprManager::enablePrinter(KMPrinter *prt)
+bool KMLprManager::enablePrinter(KMPrinter *prt, bool state)
 {
 	QString	msg;
-	if (!m_lpchelper->enable(prt, msg))
+	if (!m_lpchelper->enable(prt, state, msg))
 	{
 		setErrorMsg(msg);
 		return false;
@@ -221,10 +228,10 @@ bool KMLprManager::enablePrinter(KMPrinter *prt)
 	return true;
 }
 
-bool KMLprManager::disablePrinter(KMPrinter *prt)
+bool KMLprManager::startPrinter(KMPrinter *prt, bool state)
 {
 	QString	msg;
-	if (!m_lpchelper->disable(prt, msg))
+	if (!m_lpchelper->start(prt, state, msg))
 	{
 		setErrorMsg(msg);
 		return false;

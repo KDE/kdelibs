@@ -39,8 +39,8 @@ public:
 
 	bool completePrinter(KMPrinter*);
 	bool completePrinterShort(KMPrinter*);
-	bool enablePrinter(KMPrinter*);
-	bool disablePrinter(KMPrinter*);
+	bool enablePrinter(KMPrinter*, bool);
+	bool startPrinter(KMPrinter*, bool);
 	bool savePrinterDriver(KMPrinter*, DrMain*);
 	DrMain* loadPrinterDriver(KMPrinter*, bool = false);
 	DrMain* loadFileDriver(const QString&);

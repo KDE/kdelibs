@@ -75,16 +75,17 @@ public:
 	// printer management functions
 	virtual bool createPrinter(KMPrinter *p);
 	virtual bool removePrinter(KMPrinter *p);
-	virtual bool enablePrinter(KMPrinter *p);
-	virtual bool disablePrinter(KMPrinter *p);
+	virtual bool enablePrinter(KMPrinter *p, bool on);
+	virtual bool startPrinter(KMPrinter *p, bool on);
 	virtual bool completePrinter(KMPrinter *p);
 	virtual bool completePrinterShort(KMPrinter *p);
 	virtual bool setDefaultPrinter(KMPrinter *p);
 	virtual bool testPrinter(KMPrinter *p);
+	bool upPrinter(KMPrinter *p, bool state);
 	bool modifyPrinter(KMPrinter *oldp, KMPrinter *newp);
 	bool removePrinter(const QString& name);
-	bool enablePrinter(const QString& name);
-	bool disablePrinter(const QString& name);
+	bool enablePrinter(const QString& name, bool state);
+	bool startPrinter(const QString& name, bool state);
 	bool completePrinter(const QString& name);
 	bool setDefaultPrinter(const QString& name);
 	int printerOperationMask() const 	{ return m_printeroperationmask; }
