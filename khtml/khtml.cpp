@@ -522,7 +522,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
   }
   else
   {
-      m_job = KIO::get( u );
+      m_job = KIO::get( u, m_bReload );
       post_data = 0;
   }
 
