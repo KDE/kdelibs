@@ -105,6 +105,7 @@ protected slots:
   void slotOk();
   void slotCancel();
   void slotInsertFolder();
+  void slotDoubleClicked(QListViewItem* item);
 
 private:
   QWidget * m_main;

@@ -655,9 +655,17 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
   grid->addWidget( new QLabel( m_url, i18n( "Location:" ), m_main ), 1, 0 );
 
   m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
+  connect( m_folderTree, SIGNAL( doubleClicked(QListViewItem*) ), 
+           this,         SLOT( slotDoubleClicked(QListViewItem*) ) );
   vbox->addWidget( m_folderTree );
 
   connect( this, SIGNAL( user1Clicked() ), SLOT( slotInsertFolder() ) );
+}
+
+void KBookmarkEditDialog::slotDoubleClicked(QListViewItem* item)
+{
+  m_folderTree->setCurrentItem( item );
+  accept();
 }
 
 void KBookmarkEditDialog::slotOk() 
