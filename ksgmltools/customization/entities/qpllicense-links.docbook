@@ -1,5 +1,5 @@
 <!-- Only for backwards compatibility; will be removed after the release -->
-<para>This program is licensed under the terms of the <ulink
+<para  id="gnu-fdl" xreflabel="the section entitled &quot;GNU Free Documentation License&quot;">This program is licensed under the terms of the <ulink
 url="common/qpl-license.html">QPL License</ulink>.  The documentation
 is licensed under the terms of the <ulink url="common/fdl-licence.html">GNU Free
 Documentation License.</ulink></para>
