@@ -156,7 +156,7 @@ Name[es]=Mármol
 Name[et]=Marmor
 Name[fi]=Marmori
 Name[fr]=Marbre
-Name[he]=שיש
+Name[he]=���
 Name[hr]=Mramor
 Name[hu]=Márvány
 Name[is]=Marmari
@@ -183,7 +183,7 @@ Comment[es]=Tema estilo marmol claro
 Comment[et]=Hele marmor teemaga stiil
 Comment[fi]=Vaalealla marmorilla teemoitetty tyyli
 Comment[fr]=Style avec thème marbre clair
-Comment[he]=ריהב שיש themed ןונגס
+Comment[he]=���� ��� themed �����
 Comment[hr]=Stil svjetlog mramora
 Comment[hu]=Halvány márvány téma stílus
 Comment[is]=Ljósleitur marmarastíll (með þema)
@@ -200,7 +200,7 @@ Comment[sl]=Tematski slog svetlih frnikol
 Comment[sr]=Svetli mermer stil sa temom
 Comment[sv]=Temad stil med ljus marmor
 Comment[ta]=சலைவகலஂ பாநஂதமஂ
-Comment[tr]=Açýk mermer temalý stil
+Comment[tr]=Açık mermer temalı stil
 
 [General]
 foreground=0,0,0

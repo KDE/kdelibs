@@ -217,7 +217,7 @@ Name[es]=Testeando
 Name[et]=Test
 Name[fi]=Kokeilu
 Name[fr]=Test
-Name[he]=הקידב
+Name[he]=�����
 Name[hr]=Iskušavam
 Name[hu]=Próba
 Name[is]=Tilraun
@@ -241,7 +241,7 @@ Comment[es]=Estilo inestable de desarrollo
 Comment[et]=Ebastabiilne arendusteema
 Comment[fi]=Epävakaa testityyli
 Comment[fr]=Style instable en développement
-Comment[he]=ביצי אל חותיפ ןונגס
+Comment[he]=���� �� ����� �����
 Comment[hr]=Nestabilan razvojni stil
 Comment[hu]=Rendszer téma stílus
 Comment[is]=Stíll sem er enn í vinnslu
@@ -258,7 +258,7 @@ Comment[sl]=Slog nestabilnega razvoja
 Comment[sr]=Nestabilan razvojni stil
 Comment[sv]=Ostabil utvecklingsstil
 Comment[ta]=Unstable உருவாகஂக பாநஂதமஂ
-Comment[tr]=Oturmamýþ geliþtirme stili
+Comment[tr]=Oturmamış geliştirme stili
 ScrollBarExtent=14
 
 [General]
