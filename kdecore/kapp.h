@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 210
-#define KDE_VERSION_STRING "2.1 Beta 1 >= 20001213"
+#define KDE_VERSION_STRING "2.1 post Beta 1"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 0
@@ -785,6 +785,14 @@ private:
 #endif
 
 // $Log$
+// Revision 1.202  2000/12/13 14:26:20  faure
+// After you've updated qt-copy, update kdelibs, it will save you recompilations :)
+// * Updated version string to 2.1 beta1
+// * Removed the slotAboutToQuit hack, it broke kdevelop. Matthias says Qt 2.2.3
+// contains the code that destroys toplevel windows with WDestructiveClose,
+// so if your konqueror crashes when saving Session Management, you have a
+// good reason to update qt-copy...
+//
 // Revision 1.201  2000/12/11 23:42:16  faure
 // Thus spoke master Matthias... connecting to slotAboutToQuit and deleting
 // the toplevel-widgets that have WDestructiveClose indeed works very nicely.
