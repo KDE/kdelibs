@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=Locked Directory
 Comment[de]=Gesperrter Ordner
+Comment[pl]=Zablokowany katalog
 Icon=lockedfolder.xpm
 Type=MimeType
 MimeType=inode/directory-locked

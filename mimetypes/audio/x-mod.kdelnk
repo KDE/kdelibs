@@ -7,3 +7,4 @@ Patterns=*.mod;*.MOD;*.s3m;*.S3M;*.stm;*.STM;*.ult;*.ULT;*.UNI;*.uni;*.xm;*.XM;*
 Comment=Mod file
 Comment[de]=Mod Dokument
 Comment[nl]=Mod bestand
+Comment[pl]=Plik d¼wiêkowy modu³
