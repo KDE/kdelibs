@@ -41,6 +41,8 @@
 #include <qmutex.h>
 #include <qstrlist.h>
 
+#include "kapplication.h"
+
 #include "kresolver.h"
 #include "ksocketaddress.h"
 #include "kresolver_p.h"
@@ -244,11 +246,12 @@ namespace
     QCString m_node;
     QCString m_serv;
     int m_af;
+    int m_flags;
     KResolverResults& results;
 
-    GetAddrInfoThread(const char* node, const char* serv, int af,
+    GetAddrInfoThread(const char* node, const char* serv, int af, int flags,
 		      KResolverResults* res) :
-      m_node(node), m_serv(serv), m_af(af), results(*res)
+      m_node(node), m_serv(serv), m_af(af), m_flags(flags), results(*res)
     { }
 
     ~GetAddrInfoThread()
@@ -282,12 +285,12 @@ namespace
     if (hint.ai_socktype == 0)
       hint.ai_socktype = SOCK_STREAM; // default
 
-    if (flags() & KResolver::Passive)
+    if (m_flags & KResolver::Passive)
       hint.ai_flags |= AI_PASSIVE;
-    if (flags() & KResolver::CanonName)
+    if (m_flags & KResolver::CanonName)
       hint.ai_flags |= AI_CANONNAME;
 # ifdef AI_NUMERICHOST
-    if (flags() & KResolver::NoResolve)
+    if (m_flags & KResolver::NoResolve)
       hint.ai_flags |= AI_NUMERICHOST;
 # endif
 
@@ -733,7 +736,7 @@ bool KStandardWorker::run()
 #ifdef HAVE_GETADDRINFO
 	worker = new GetAddrInfoThread(m_encodedName, 
 				       serviceName().latin1(),
-				       families[i].af, res);
+				       families[i].af, flags(), res);
 #else
 	worker = new GetHostByNameThread(m_encodedName, port, scopeid,
 					 families[i].af, res);
@@ -803,7 +806,7 @@ bool KGetAddrinfoWorker::run()
 {
   // make an AF_UNSPEC getaddrinfo(3) call
   GetAddrInfoThread worker(m_encodedName, serviceName().latin1(), 
-			   AF_UNSPEC, &results);
+			   AF_UNSPEC, flags(), &results);
 
   if (!worker.run())
     {
