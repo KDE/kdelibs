@@ -58,7 +58,7 @@ int isIntType( const QString& t)
 /**
  * Writes the stub implementation
  */
-void generateStubImpl( const QString& idl, const QString& header, const QString& headerBase, const QString& filename, QDomElement de, bool signals )
+void generateStubImpl( const QString& idl, const QString& header, const QString& headerBase, const QString& filename, QDomElement de )
 {
     QFile impl( filename );
     if ( !impl.open( IO_WriteOnly ) )
@@ -79,10 +79,6 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
     str << "#include <dcopclient.h>" << endl << endl;
     str << "#include <kdatastream.h>" << endl;
 
-    if (signals) {
-       str << "#include <kapp.h>" << endl << endl;
-    }
-
     QDomElement e = de.firstChild().toElement();
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
 	if ( e.tagName() == "CLASS" ) {
@@ -90,7 +86,6 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	    Q_ASSERT( n.tagName() == "NAME" );
   	    QString classNameBase = n.firstChild().toText().data();
   	    QString className_stub = classNameBase + "_stub";
-  	    QString className_signals = classNameBase + "_signals";
 	
 	    // find dcop parent ( rightmost super class )
 	    QString DCOPParent;
@@ -119,36 +114,33 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 
             str << endl;
 
-            if (!signals) {
-               // Write constructors
-               str << className_stub << "::" << className_stub << "( const QCString& app, const QCString& obj )" << endl;
-               str << "  : ";
+            // Write constructors
+            str << className_stub << "::" << className_stub << "( const QCString& app, const QCString& obj )" << endl;
+            str << "  : ";
            
-               if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
-                   str << "DCOPStub( app, obj )" << endl;
-               else
-                   str << DCOPParent << "( app, obj )" << endl;
+            if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
+                str << "DCOPStub( app, obj )" << endl;
+            else
+                str << DCOPParent << "( app, obj )" << endl;
 
-               str << "{" << endl;
-               str << "}" << endl << endl;
+            str << "{" << endl;
+            str << "}" << endl << endl;
 
-               str << className_stub << "::" << className_stub << "( DCOPClient* client, const QCString& app, const QCString& obj )" << endl;
-               str << "  : ";
-           
-               if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
-                   str << "DCOPStub( client, app, obj )" << endl;
-               else
-                   str << DCOPParent << "(  client, app, obj )" << endl;
+            str << className_stub << "::" << className_stub << "( DCOPClient* client, const QCString& app, const QCString& obj )" << endl;
+            str << "  : ";
+        
+            if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
+                str << "DCOPStub( client, app, obj )" << endl;
+            else
+                str << DCOPParent << "(  client, app, obj )" << endl;
 
-               str << "{" << endl;
-               str << "}" << endl << endl;
-            }
+            str << "{" << endl;
+            str << "}" << endl << endl;
 
 	    // Write marshalling code
 	    s = e.firstChild().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-		if ( (!signals && s.tagName() == "FUNC") 
-                  || (signals && s.tagName() == "SIGNAL") ) {
+		if (s.tagName() == "FUNC") {
 		    QDomElement r = s.firstChild().toElement();
 		    Q_ASSERT( r.tagName() == "TYPE" );
 		    QString result = r.firstChild().toText().data();
@@ -166,7 +158,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    r = r.nextSibling().toElement();
 		    Q_ASSERT ( r.tagName() == "NAME" );
 		    QString funcName = r.firstChild().toText().data();
-		    str << ( signals ? className_signals : className_stub ) << "::" << funcName << "(";
+		    str << className_stub << "::" << funcName << "(";
 
 		    QStringList args;
 		    QStringList argtypes;
@@ -213,17 +205,12 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    }
 		    funcName += ")";
 		
-		    if ( async || signals ) {
+		    if ( async ) {
 
-			if ( signals && (result != "void") )
-                            qFatal("Sorry DCOP signals can not return values.");
-		
-                        if (!signals) {
-                            str << "    if ( !dcopClient()  ) {"<< endl;
-                            str << "\tsetStatus( CallFailed );" << endl;
-                            str << "\treturn;" << endl;
-                            str << "    }" << endl;
-                        }
+                        str << "    if ( !dcopClient()  ) {"<< endl;
+                        str << "\tsetStatus( CallFailed );" << endl;
+                        str << "\treturn;" << endl;
+                        str << "    }" << endl;
 		
 			str << "    QByteArray data;" << endl;
 			if ( !args.isEmpty() ) {
@@ -233,12 +220,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			    }
 			}
 
-                        if (signals)  {
-                            str << "    kapp->dcopClient()->emitDCOPSignal( \"" << funcName << "\", data );" << endl;
-                        } else {
-                            str << "    dcopClient()->send( app(), obj(), \"" << funcName << "\", data );" << endl;
-                            str << "    setStatus( CallSucceeded );" << endl;
-                        }
+                        str << "    dcopClient()->send( app(), obj(), \"" << funcName << "\", data );" << endl;
+                        str << "    setStatus( CallSucceeded );" << endl;
 
 		    } else {
 

@@ -31,10 +31,10 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 /**
  * Writes the stubs header
  */
-void generateStub( const QString& idl, const QString& filename, QDomElement de, bool signals );
+void generateStub( const QString& idl, const QString& filename, QDomElement de);
 
 /**
  * Writes the stub implementation
  */
-void generateStubImpl( const QString& idl, const QString& header, const QString& headerBase, const QString& filename, QDomElement de, bool signals );
+void generateStubImpl( const QString& idl, const QString& header, const QString& headerBase, const QString& filename, QDomElement de);
 

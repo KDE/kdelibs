@@ -65,7 +65,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 {
     QFile skel( filename );
     if ( !skel.open( IO_WriteOnly ) )
-	qFatal("Could not write to %s", filename.latin1() );
+	qFatal("Could not write to %s", filename.local8Bit().data() );
 
     QTextStream str( &skel );
 
@@ -215,7 +215,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		str << "    switch ( fp?*fp:-1) {" << endl;
 	    }
 	    s = n.nextSibling().toElement();
-	    int fcount = 0;
+	    int fcount = 0; // counter of written functions
 	    bool firstFunc = TRUE;
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if ( s.tagName() == "FUNC" ) {
@@ -293,19 +293,33 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		    }
 		}
 	    }
-	    if ( useHashing ) {
-		str << "    default: " << endl;
-	    } else {
-		str << " else {" << endl;
+
+            // only open an 'else' clause if there were one or more functions
+	    if ( fcount > 0 ) {
+		if ( useHashing ) {
+		    str << "    default: " << endl;
+		} else {
+		    str << " else {" << endl;
+		}
 	    }
+	    
+	    // if no DCOP function was called, delegate the request to the parent
 	    if (!DCOPParent.isEmpty()) {
 		str << "\treturn " << DCOPParent << "::process( fun, data, replyType, replyData );" << endl;
 	    } else {
 		str << "\treturn FALSE;" << endl;
 	    }
-	    str << "    }" << endl;
-	    str << "    return TRUE;" << endl;
-	    str << "}" << endl << endl;
+
+            // only close the 'else' clause and add the default 'return TRUE'
+            // (signifying a DCOP method was found and called) if there were
+            // one or more functions.
+	    if ( fcount > 0 ) {
+	        str << "    }" << endl;
+	        str << "    return TRUE;" << endl;
+	    }
+
+            // close the 'process' function
+            str << "}" << endl << endl;
 	
 	    str << "QCStringList " << className;
 	    str << "::interfaces()" << endl;
@@ -336,6 +350,89 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "    }" << endl;
 	    str << "    return funcs;" << endl;
 	    str << "}" << endl << endl;
+	    
+	    // Add signal stubs
+
+	    // Go over all children of the CLASS tag
+	    for(s = e.firstChild().toElement(); !s.isNull(); s = s.nextSibling().toElement() ) {
+	        if (s.tagName() == "SIGNAL") {
+		    QDomElement r = s.firstChild().toElement();
+		    Q_ASSERT( r.tagName() == "TYPE" );
+		    QString result = r.firstChild().toText().data();
+		    if ( r.hasAttribute( "qleft" ) )
+			str << r.attribute("qleft") << " ";
+		    str << result;
+		    if ( r.hasAttribute( "qright" ) )
+			str << r.attribute("qright") << " ";
+		    else
+			str << " ";
+
+		    r = r.nextSibling().toElement();
+		    Q_ASSERT ( r.tagName() == "NAME" );
+		    QString funcName = r.firstChild().toText().data();
+		    str << className << "::" << funcName << "(";
+
+		    QStringList args;
+		    QStringList argtypes;
+		    bool first = TRUE;
+		    r = r.nextSibling().toElement();
+		    for( ; !r.isNull(); r = r.nextSibling().toElement() ) {
+			if ( !first )
+			    str << ", ";
+			else
+			    str << " ";
+			first = FALSE;
+			Q_ASSERT( r.tagName() == "ARG" );
+			QDomElement a = r.firstChild().toElement();
+			Q_ASSERT( a.tagName() == "TYPE" );
+			if ( a.hasAttribute( "qleft" ) )
+			    str << a.attribute("qleft") << " ";
+			argtypes.append( a.firstChild().toText().data() );
+			str << argtypes.last();
+			if ( a.hasAttribute( "qright" ) )
+			    str << a.attribute("qright") << " ";
+			else
+			    str << " ";
+			args.append( QString("arg" ) + QString::number( args.count() ) ) ;
+			str << args.last();
+		    }
+		    if ( !first )
+			str << " ";
+		    str << ")";
+
+		    if ( s.hasAttribute("qual") )
+			str << " " << s.attribute("qual");
+		    str << endl;
+		
+		    str << "{" << endl ;
+
+		    funcName += "(";
+		    first = TRUE;
+		    for( QStringList::Iterator it = argtypes.begin(); it != argtypes.end(); ++it ){
+			if ( !first )
+			    funcName += ",";
+			first = FALSE;
+			funcName += *it;
+		    }
+		    funcName += ")";
+		
+		    if ( result != "void" )
+                       qFatal("Error in DCOP signal %s::%s: DCOP signals can not return values.", className.latin1(), funcName.latin1());
+		
+		    str << "    QByteArray data;" << endl;
+		    if ( !args.isEmpty() ) {
+		        str << "    QDataStream arg( data, IO_WriteOnly );" << endl;
+			for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
+			    str << "    arg << " << *args_count << ";" << endl;
+			}
+		    }
+
+                    str << "    emitDCOPSignal( \"" << funcName << "\", data );" << endl;
+
+		    str << "}" << endl << endl;
+	        
+	        } // if SIGNAL tag
+	    } // for each class function 
 
             for(;
                  namespace_count > 0;
@@ -343,8 +440,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
                 str << "} // namespace" << endl;
             str << endl;
 
-	}
-    }
+	} // if CLASS tag
+    } // for each CLASS-level tag
 	
     skel.close();
 }

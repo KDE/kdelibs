@@ -48,7 +48,6 @@ int main( int argc, char** argv )
     int argpos = 1;
     bool generate_skel    = TRUE;
     bool generate_stub    = TRUE;
-    bool generate_signals = TRUE;
 
     QString suffix = "cpp";
 
@@ -68,7 +67,8 @@ int main( int argc, char** argv )
 	}
 	else if ( strcmp( argv[argpos], "--no-signals" ) == 0 )
 	{
-	    generate_signals = FALSE;
+	    // Obsolete: Signal stubs are now always generated.
+	    // Leave this command line argument intact, so old Makefiles won't break.
 	    for (int i = argpos; i < argc - 1; i++) argv[i] = argv[i+1];
 	    argc--;
 	}
@@ -88,7 +88,7 @@ int main( int argc, char** argv )
 	}
     }
 
-    QFile in( argv[argpos] );
+    QFile in( QFile::decodeName(argv[argpos]) );
     if ( !in.open( IO_ReadOnly ) )
 	qFatal("Could not read %s", argv[argpos] );
 
@@ -112,22 +112,13 @@ int main( int argc, char** argv )
     if ( generate_skel )
 	generateSkel( idl, base + "_skel." + suffix, de );
 
-    if ( generate_signals ) {
-	QString header = base;
-	generateStub( idl, header + "_signals.h", de, true );
-	pos = header.findRev('/');
-	if ( pos != -1 )
-	    header = header.mid( pos+1 );
-	generateStubImpl( idl, header + "_signals.h", base+".h", base + "_signals." + suffix, de, true );
-    }
-
     if ( generate_stub ) {
 	QString header = base;
-	generateStub( idl, header + "_stub.h", de, false );
+	generateStub( idl, header + "_stub.h", de );
 	pos = header.findRev('/');
 	if ( pos != -1 )
 	    header = header.mid( pos+1 );
-	generateStubImpl( idl, header + "_stub.h", base+".h", base + "_stub." + suffix, de, false );
+	generateStubImpl( idl, header + "_stub.h", base+".h", base + "_stub." + suffix, de);
     }
 
     return 0;
