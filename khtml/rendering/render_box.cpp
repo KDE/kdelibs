@@ -85,7 +85,7 @@ void RenderBox::setStyle(RenderStyle *_style)
     default:
         setInline(false);
     }
-        
+
     switch(_style->position())
     {
     case ABSOLUTE:
@@ -1252,8 +1252,9 @@ short RenderBox::rightmostPosition() const
     return m_width;
 }
 
-void RenderBox::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height)
+void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width, int &height)
 {
+#if 0
     _x = -1;
 
     // propagate it downwards to its children, someone will feel responsible
@@ -1290,6 +1291,81 @@ void RenderBox::caretPos(int offset, bool override, int &_x, int &_y, int &width
             // just a relative one
             _x = _y = -1;
         }
+    }
+#endif
+
+    _x = xPos();
+    _y = yPos();
+//     kdDebug(6040) << "_x " << _x << " _y " << _y << endl;
+    width = 1;		// no override is indicated in boxes
+
+    RenderBlock *cb = containingBlock();
+
+    // Place caret outside the border
+    if (flags & CFOutside) {
+
+        RenderStyle *s = element() && element()->parent()
+			&& element()->parent()->renderer()
+			? element()->parent()->renderer()->style()
+			: cb->style();
+
+        const QFontMetrics &fm = s->fontMetrics();
+        height = fm.height();
+
+	bool rtl = s->direction() == RTL;
+	bool outsideEnd = flags & CFOutsideEnd;
+
+	if (outsideEnd) {
+	    _x += this->width();
+	} else {
+	    _x--;
+	}
+
+	int hl = fm.leading() / 2;
+	if (!isReplaced() || style()->display() == BLOCK) {
+	    if (!outsideEnd ^ rtl)
+	        _y -= hl;
+	    else
+	        _y += kMax(this->height() - fm.ascent() - hl, 0);
+	} else {
+	    _y += baselinePosition(false) - fm.ascent() - hl;
+	}
+
+    // Place caret inside the element
+    } else {
+        const QFontMetrics &fm = style()->fontMetrics();
+        height = fm.height();
+
+        RenderStyle *s = style();
+
+        _x += borderLeft() + paddingLeft();
+        _y += borderTop() + paddingTop();
+
+        // ### regard direction
+	switch (s->textAlign()) {
+	case LEFT:
+	case TAAUTO:	// ### find out what this does
+	case JUSTIFY:
+	    break;
+	case CENTER:
+	case KONQ_CENTER:
+	    _x += contentWidth() / 2;
+	    break;
+	case RIGHT:
+	    _x += contentWidth();
+	    break;
+	}
+    }
+
+    int absx, absy;
+    if (cb && cb != this && cb->absolutePosition(absx,absy)) {
+//         kdDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
+        _x += absx;
+        _y += absy;
+    } else {
+        // we don't know our absolute position, and there is no point returning
+        // just a relative one
+        _x = _y = -1;
     }
 }
 

@@ -121,24 +121,6 @@ public:
     virtual void setFirstChild(NodeImpl *child);
     virtual void setLastChild(NodeImpl *child);
 
-    /** (Not part of the official DOM)
-     * Returns the next leaf node.
-     *
-     * Using this function delivers leaf nodes as if the whole DOM tree
-     * were a linear chain of its leaf nodes.
-     * @return next leaf node or 0 if there are no more.
-     */
-    NodeImpl *nextLeafNode() const;
-
-    /** (Not part of the official DOM)
-     * Returns the previous leaf node.
-     *
-     * Using this function delivers leaf nodes as if the whole DOM tree
-     * were a linear chain of its leaf nodes.
-     * @return previous leaf node or 0 if there are no more.
-     */
-    NodeImpl *prevLeafNode() const;
-
     // used by the parser. Doesn't do as many error checkings as
     // appendChild(), and returns the node into which will be parsed next.
     virtual NodeImpl *addChild(NodeImpl *newChild);
@@ -310,8 +292,8 @@ public:
     /**
      * Returns the maximum caret offset that is allowed for this node.
      *
-     * This default implementation always returns 1. Textual child nodes
-     * return the character count instead.
+     * This default implementation always returns the node count.
+     * Textual child nodes return the character count instead.
      */
     virtual long maxOffset() const;
 

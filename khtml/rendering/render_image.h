@@ -71,7 +71,9 @@ public:
 
     virtual SelectionState selectionState() const {return m_selectionState;}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
-    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
+#if 0
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+#endif
 
 private:
     void updateImage(CachedImage* new_image);

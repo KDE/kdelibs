@@ -499,10 +499,10 @@ int RenderImage::calcReplacedHeight() const
     return RenderReplaced::calcReplacedHeight();
 }
 
-
-void RenderImage::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height)
+#if 0
+void RenderImage::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
 {
-    RenderReplaced::caretPos(offset, override, _x, _y, width, height);
+    RenderReplaced::caretPos(offset, flags, _x, _y, width, height);
 
 #if 0	// doesn't work reliably
     height = intrinsicHeight();
@@ -525,3 +525,4 @@ void RenderImage::caretPos(int offset, bool override, int &_x, int &_y, int &wid
     }
 #endif
 }
+#endif

@@ -87,6 +87,12 @@
 
 #define PAINT_BUFFER_HEIGHT 128
 
+#if 0
+namespace khtml {
+    void dumpLineBoxes(RenderFlow *flow);
+}
+#endif
+
 using namespace DOM;
 using namespace khtml;
 class KHTMLToolTip;
@@ -325,7 +331,8 @@ void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
     while ( node ) {
         if ( node->isElementNode() ) {
             QString s = static_cast<DOM::ElementImpl*>( node )->getAttribute( ATTR_TITLE ).string();
-            region |= QRect( m_view->contentsToViewport( node->getRect().topLeft() ), node->getRect().size() );
+            QRect r = node->getRect();
+            region |= QRect( m_view->contentsToViewport( r.topLeft() ), r.size() );
             if ( !s.isEmpty() ) {
                 tip( region, QStyleSheet::convertFromPlainText( s, QStyleSheetItem::WhiteSpaceNormal ) );
                 break;
@@ -621,6 +628,11 @@ void KHTMLView::layout()
         root->setMinMaxKnown(false);
         root->setLayouted(false);
         root->layout();
+#if 0
+    ElementImpl *listitem = m_part->xmlDocImpl()->getElementById("__test_element__");
+    if (listitem) kdDebug(6000) << "after layout, before repaint" << endl;
+    if (listitem) dumpLineBoxes(static_cast<RenderFlow *>(listitem->renderer()));
+#endif
 #ifndef KHTML_NO_CARET
         hideCaret();
         if ((m_part->isCaretMode() || m_part->isEditable())
@@ -2621,6 +2633,10 @@ void KHTMLView::initCaret(bool keepSelection)
 #endif
   // save caretMoved state as moveCaretTo changes it
   if (m_part->xmlDocImpl()) {
+#if 0
+    ElementImpl *listitem = m_part->xmlDocImpl()->getElementById("__test_element__");
+    if (listitem) dumpLineBoxes(static_cast<RenderFlow *>(listitem->renderer()));
+#endif
     d->caretViewContext();
     bool cmoved = d->m_caretViewContext->caretMoved;
     if (m_part->d->caretNode().isNull()) {
@@ -2686,7 +2702,7 @@ void KHTMLView::ensureNodeHasFocus(NodeImpl *node)
   emit m_part->nodeActivated(Node(firstAncestor));
 }
 
-void KHTMLView::recalcAndStoreCaretPos(InlineBox *hintBox)
+void KHTMLView::recalcAndStoreCaretPos(CaretBox *hintBox)
 {
     if (!m_part || m_part->d->caretNode().isNull()) return;
     d->caretViewContext();
@@ -2694,8 +2710,7 @@ void KHTMLView::recalcAndStoreCaretPos(InlineBox *hintBox)
 #if DEBUG_CARETMODE > 0
   kdDebug(6200) << "recalcAndStoreCaretPos: caretNode=" << caretNode << (caretNode ? " "+caretNode->nodeName().string() : QString::null) << " r@" << caretNode->renderer() << (caretNode->renderer() && caretNode->renderer()->isText() ? " \"" + QConstString(static_cast<RenderText *>(caretNode->renderer())->str->s, kMin(static_cast<RenderText *>(caretNode->renderer())->str->l, 15u)).string() + "\"" : QString::null) << endl;
 #endif
-    caretNode->getCaret(m_part->d->caretOffset(),
-                caretOverrides(),
+    caretNode->getCaret(m_part->d->caretOffset(), caretOverrides(),
     		d->m_caretViewContext->x, d->m_caretViewContext->y,
 		d->m_caretViewContext->width,
 		d->m_caretViewContext->height);
@@ -2710,8 +2725,8 @@ void KHTMLView::recalcAndStoreCaretPos(InlineBox *hintBox)
 	r->containingBlock()->absolutePosition(absx, absy,
 						false);	// ### what about fixed?
 	d->m_caretViewContext->x = absx + hintBox->xPos();
-	d->m_caretViewContext->y = absy + hintBox->yPos()
-				+ hintBox->baseline() - fm.ascent();
+	d->m_caretViewContext->y = absy + hintBox->yPos();
+// 				+ hintBox->baseline() - fm.ascent();
 	d->m_caretViewContext->width = 1;
 	// ### firstline not regarded. But I think it can be safely neglected
 	// as hint boxes are only used for empty lines.
@@ -2854,7 +2869,7 @@ void KHTMLView::setCaretDisplayPolicyNonFocused(int policy)
   }/*end if*/
 }
 
-bool KHTMLView::placeCaret(InlineBox *hintBox)
+bool KHTMLView::placeCaret(CaretBox *hintBox)
 {
   CaretViewContext *cv = d->caretViewContext();
   caretOff();
@@ -3046,20 +3061,30 @@ void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 
 bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
 {
-  sanitizeCaretState(node, offset);
+  if (!node) return false;
+  ElementImpl *baseElem = determineBaseElement(node);
+  RenderFlow *base = static_cast<RenderFlow *>(baseElem ? baseElem->renderer() : 0);
+  sanitizeCaretState(node, offset, VisibleFlows, base);
   if (!node) return false;
 
   // need to find out the node's inline box. If there is none, this function
   // will snap to the next node that has one. This is necessary to make the
   // caret visible in any case.
-  RenderArena arena;
-  RenderFlow *cb;
-  InlineBox *box = 0;
-  findFlowBox(node, offset, &arena, cb, &box);
-  if (box && box->object() != node->renderer()) {
+  CaretBoxLineDeleter cblDeleter;
+//   RenderBlock *cb;
+  long r_ofs;
+  CaretBoxIterator cbit;
+  CaretBoxLine *cbl = findCaretBoxLine(node, offset, &cblDeleter, VisibleFlows,
+  			base, r_ofs, cbit);
+#if DEBUG_CARETMODE > 3
+  if (cbl) kdDebug(6200) << cbl->information() << endl;
+#endif
+  CaretBox *box = *cbit;
+  if (cbit != cbl->end() && box->object() != node->renderer()) {
     if (box->object()->element()) {
-      node = box->object()->element();
-      offset = node->minOffset();
+      mapRenderPosToDOMPos(box->object(), r_ofs, box->isOutside(),
+      			box->isOutsideEnd(), node, offset);
+      //if (!outside) offset = node->minOffset();
 #if DEBUG_CARETMODE > 1
       kdDebug(6200) << "set new node " << node->nodeName().string() << "@" << node << endl;
 #endif
@@ -3108,8 +3133,6 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
 
 void KHTMLView::moveCaretByLine(bool next, int count)
 {
-  // FIXME: what if the node is removed whilst we access it?
-  // Current solution: bail out
   Node &caretNodeRef = m_part->d->caretNode();
   if (caretNodeRef.isNull()) return;
 
@@ -3119,7 +3142,8 @@ void KHTMLView::moveCaretByLine(bool next, int count)
 
   CaretViewContext *cv = d->caretViewContext();
 
-  LinearDocument ld(m_part, caretNode, offset);
+  ElementImpl *baseElem = determineBaseElement(caretNode);
+  LinearDocument ld(m_part, caretNode, offset, LeafsOnly, baseElem);
 
   ErgonomicEditableLineIterator it(ld.current(), cv->origX);
 
@@ -3133,24 +3157,24 @@ void KHTMLView::moveCaretByLine(bool next, int count)
   if (it == ld.end() || it == ld.preBegin()) return;
 
   int x, absx, absy;
-  InlineBox *caretBox = nearestInlineBox(it, d->m_caretViewContext, x, absx, absy);
+  CaretBox *caretBox = nearestCaretBox(it, d->m_caretViewContext, x, absx, absy);
 
   placeCaretOnLine(caretBox, x, absx, absy);
 }
 
-void KHTMLView::placeCaretOnLine(InlineBox *caretBox, int x, int absx, int absy)
+void KHTMLView::placeCaretOnLine(CaretBox *caretBox, int x, int absx, int absy)
 {
   // paranoia sanity check
   if (!caretBox) return;
 
   RenderObject *caretRender = caretBox->object();
-  NodeImpl *caretNode = caretRender->element();
 
 #if DEBUG_CARETMODE > 0
   kdDebug(6200) << "got valid caretBox " << caretBox << endl;
   kdDebug(6200) << "xPos: " << caretBox->xPos() << " yPos: " << caretBox->yPos()
   		<< " width: " << caretBox->width() << " height: " << caretBox->height() << endl;
-  if (caretBox->isInlineTextBox()) { kdDebug(6200) << "contains \"" << QString(((RenderText *)((InlineTextBox *)caretBox)->object())->str->s + ((InlineTextBox *)caretBox)->m_start, ((InlineTextBox *)caretBox)->m_len) << "\"" << endl;}
+  InlineTextBox *tb = static_cast<InlineTextBox *>(caretBox->inlineBox());
+  if (caretBox->isInlineTextBox()) { kdDebug(6200) << "contains \"" << QString(static_cast<RenderText *>(tb->object())->str->s + tb->m_start, tb->m_len) << "\"" << endl;}
 #endif
   // inquire height of caret
   int caretHeight = caretBox->height();
@@ -3159,16 +3183,18 @@ void KHTMLView::placeCaretOnLine(InlineBox *caretBox, int x, int absx, int absy)
   if (isText) {
     // text boxes need extrawurst
     RenderText *t = static_cast<RenderText *>(caretRender);
-    const QFontMetrics &fm = t->metrics(caretBox->m_firstLine);
+    const QFontMetrics &fm = t->metrics(caretBox->inlineBox()->m_firstLine);
     caretHeight = fm.height();
-    yOfs = caretBox->baseline() - fm.ascent();
+    yOfs = caretBox->inlineBox()->baseline() - fm.ascent();
   }/*end if*/
 
   caretOff();
 
   // set new caret node
-  m_part->d->caretNode() = caretNode;
+  NodeImpl *caretNode;
   long &offset = m_part->d->caretOffset();
+  mapRenderPosToDOMPos(caretRender, offset, caretBox->isOutside(),
+  		caretBox->isOutsideEnd(), caretNode, offset);
 
   // set all variables not needing special treatment
   d->m_caretViewContext->y = caretBox->yPos() + yOfs;
@@ -3177,38 +3203,51 @@ void KHTMLView::placeCaretOnLine(InlineBox *caretBox, int x, int absx, int absy)
 
   int xPos = caretBox->xPos();
   int caretBoxWidth = caretBox->width();
+  d->m_caretViewContext->x = xPos;
 
-  // before or at beginning of inline box -> place at beginning
-  if (x <= xPos) {
-    d->m_caretViewContext->x = xPos;
-    offset = caretBox->minOffset();
+  if (!caretBox->isOutside()) {
+    // before or at beginning of inline box -> place at beginning
+    long r_ofs = 0;
+    if (x <= xPos) {
+      r_ofs = caretBox->minOffset();
   // somewhere within this block
-  } else if (x > xPos && x <= xPos + caretBoxWidth) {
-    if (isText) { // find out where exactly
-      offset = static_cast<InlineTextBox *>(caretBox)->offsetForPoint(x,
-      		d->m_caretViewContext->x);
+    } else if (x > xPos && x <= xPos + caretBoxWidth) {
+      if (isText) { // find out where exactly
+        r_ofs = static_cast<InlineTextBox *>(caretBox->inlineBox())
+      		->offsetForPoint(x, d->m_caretViewContext->x);
 #if DEBUG_CARETMODE > 2
-      kdDebug(6200) << "deviation from origX " << d->m_caretViewContext->x - x << endl;
+        kdDebug(6200) << "deviation from origX " << d->m_caretViewContext->x - x << endl;
 #endif
-    } else {	// snap to nearest end
-      if (xPos + caretBoxWidth - x < x - xPos) {
-        d->m_caretViewContext->x = xPos + caretBoxWidth;
-        offset = caretNode ? caretNode->maxOffset() : 1;
-      } else {
-        d->m_caretViewContext->x = xPos;
-        offset = caretNode ? caretNode->minOffset() : 0;
+#if 0
+      } else {	// snap to nearest end
+        if (xPos + caretBoxWidth - x < x - xPos) {
+          d->m_caretViewContext->x = xPos + caretBoxWidth;
+          r_ofs = caretNode ? caretNode->maxOffset() : 1;
+        } else {
+          d->m_caretViewContext->x = xPos;
+          r_ofs = caretNode ? caretNode->minOffset() : 0;
+        }/*end if*/
+#endif
       }/*end if*/
+    } else {		// after the inline box -> place at end
+      d->m_caretViewContext->x = xPos + caretBoxWidth;
+      r_ofs = caretBox->maxOffset();
     }/*end if*/
-  } else {		// after the inline box -> place at end
-    d->m_caretViewContext->x = xPos + caretBoxWidth;
-    offset = caretBox->maxOffset();
+    offset = r_ofs;
   }/*end if*/
 #if DEBUG_CARETMODE > 0
       kdDebug(6200) << "new offset: " << offset << endl;
 #endif
 
+  m_part->d->caretNode() = caretNode;
+  m_part->d->caretOffset() = offset;
+
   d->m_caretViewContext->x += absx;
   d->m_caretViewContext->y += absy;
+
+#if DEBUG_CARETMODE > 1
+	kdDebug(6200) << "new caret position: x " << d->m_caretViewContext->x << " y " << d->m_caretViewContext->y << " w " << d->m_caretViewContext->width << " h " << d->m_caretViewContext->height << " absx " << absx << " absy " << absy << endl;
+#endif
 
   ensureVisible(d->m_caretViewContext->x, d->m_caretViewContext->y,
   	d->m_caretViewContext->width, d->m_caretViewContext->height);
@@ -3220,8 +3259,6 @@ void KHTMLView::placeCaretOnLine(InlineBox *caretBox, int x, int absx, int absy)
 
 void KHTMLView::moveCaretToLineBoundary(bool end)
 {
-  // FIXME: what if the node is removed whilst we access it?
-  // Current solution: bail out
   Node &caretNodeRef = m_part->d->caretNode();
   if (caretNodeRef.isNull()) return;
 
@@ -3229,30 +3266,29 @@ void KHTMLView::moveCaretToLineBoundary(bool end)
 //  kdDebug(6200) << ": caretNode=" << caretNode << endl;
   long offset = m_part->d->caretOffset();
 
-  LinearDocument ld(m_part, caretNode, offset);
+  ElementImpl *baseElem = determineBaseElement(caretNode);
+  LinearDocument ld(m_part, caretNode, offset, LeafsOnly, baseElem);
 
   EditableLineIterator it = ld.current();
   if (it == ld.end()) return;	// should not happen, but who knows
 
-  EditableInlineBoxIterator fbit(it, end);
-  InlineBox *b = *fbit;
-  Q_ASSERT(b);
+  EditableCaretBoxIterator fbit(it, end);
+  Q_ASSERT(fbit != (*it)->end() && fbit != (*it)->preBegin());
+  CaretBox *b = *fbit;
 
-  RenderObject *cb = (*it)->object();
+  RenderObject *cb = b->containingBlock();
   int absx, absy;
 
   if (cb) cb->absolutePosition(absx,absy);
   else absx = absy = 0;
 
-  int x = b->xPos() + (end ? b->width() : 0);
+  int x = b->xPos() + (end && !b->isOutside() ? b->width() : 0);
   d->m_caretViewContext->origX = absx + x;
   placeCaretOnLine(b, x, absx, absy);
 }
 
 void KHTMLView::moveCaretToDocumentBoundary(bool end)
 {
-  // FIXME: what if the node is removed whilst we access it?
-  // Current solution: bail out
   Node &caretNodeRef = m_part->d->caretNode();
   if (caretNodeRef.isNull()) return;
 
@@ -3260,16 +3296,17 @@ void KHTMLView::moveCaretToDocumentBoundary(bool end)
 //  kdDebug(6200) << ": caretNode=" << caretNode << endl;
   long offset = m_part->d->caretOffset();
 
-  LinearDocument ld(m_part, caretNode, offset);
+  ElementImpl *baseElem = determineBaseElement(caretNode);
+  LinearDocument ld(m_part, caretNode, offset, IndicatedFlows, baseElem);
 
   EditableLineIterator it(end ? ld.preEnd() : ld.begin(), end);
   if (it == ld.end() || it == ld.preBegin()) return;	// should not happen, but who knows
 
-  EditableInlineBoxIterator fbit = it;
-  InlineBox *b = *fbit;
-  Q_ASSERT(b);
+  EditableCaretBoxIterator fbit = it;
+  Q_ASSERT(fbit != (*it)->end() && fbit != (*it)->preBegin());
+  CaretBox *b = *fbit;
 
-  RenderObject *cb = (*it)->object();
+  RenderObject *cb = (*it)->containingBlock();
   int absx, absy;
 
   if (cb) cb->absolutePosition(absx, absy);
@@ -3283,8 +3320,6 @@ void KHTMLView::moveCaretToDocumentBoundary(bool end)
 void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
 {
   if (!m_part) return;
-  // FIXME: what if the node is removed whilst we access it?
-  // Current solution: bail out
   Node &caretNodeRef = m_part->d->caretNode();
   if (caretNodeRef.isNull()) return;
 
@@ -3292,11 +3327,12 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
 //  kdDebug(6200) << ": caretNode=" << caretNode << endl;
   long &offset = m_part->d->caretOffset();
 
-  LinearDocument ld(m_part, caretNode, offset);
+  ElementImpl *baseElem = determineBaseElement(caretNode);
+  CaretAdvancePolicy advpol = cmv != CaretByWord ? IndicatedFlows : LeafsOnly;
+  LinearDocument ld(m_part, caretNode, offset, advpol, baseElem);
 
   EditableCharacterIterator it(&ld);
-  InlineBox *hintBox = it.box();
-  while (it.node() && count > 0) {
+  while (!it.isEnd() && count > 0) {
     count--;
     if (cmv == CaretByCharacter) {
       if (next) ++it;
@@ -3305,13 +3341,20 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
       if (next) moveItToNextWord(it);
       else moveItToPrevWord(it);
     }/*end if*/
+//kdDebug(6200) << "movecaret" << endl;
   }/*wend*/
-  if (it.node()) {
-    caretNodeRef = it.node();
-    offset = it.offset();
-    hintBox = it.box();
+  CaretBox *hintBox = 0;	// make gcc uninit warning disappear
+  if (!it.isEnd()) {
+    NodeImpl *node = caretNodeRef.handle();
+    hintBox = it.caretBox();
+//kdDebug(6200) << "hintBox = " << hintBox << endl;
+//kdDebug(6200) << " outside " << hintBox->isOutside() << " outsideEnd " << hintBox->isOutsideEnd() << " r " << it.renderer() << " ofs " << it.offset() << " cb " << hintBox->containingBlock() << endl;
+    mapRenderPosToDOMPos(it.renderer(), it.offset(), hintBox->isOutside(),
+    		hintBox->isOutsideEnd(), node, offset);
+//kdDebug(6200) << "mapRTD" << endl;
+    caretNodeRef = node;
 #if DEBUG_CARETMODE > 2
-    kdDebug(6200) << "set by valid node. offset: " << offset << endl;
+    kdDebug(6200) << "set by valid node " << node << " " << (node?node->nodeName().string():QString::null) << " offset: " << offset << endl;
 #endif
   } else {
     offset = next ? caretNode->maxOffset() : caretNode->minOffset();
@@ -3322,7 +3365,7 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
   placeCaretOnChar(hintBox);
 }
 
-void KHTMLView::placeCaretOnChar(InlineBox *hintBox)
+void KHTMLView::placeCaretOnChar(CaretBox *hintBox)
 {
   caretOff();
   recalcAndStoreCaretPos(hintBox);
@@ -3339,10 +3382,7 @@ void KHTMLView::placeCaretOnChar(InlineBox *hintBox)
 
 void KHTMLView::moveCaretByPage(bool next)
 {
-  // FIXME: what if the node is removed whilst we access it?
-  // Current solution: bail out
   Node &caretNodeRef = m_part->d->caretNode();
-  if (caretNodeRef.isNull()) return;
 
   NodeImpl *caretNode = caretNodeRef.handle();
 //  kdDebug(6200) << ": caretNode=" << caretNode << endl;
@@ -3355,14 +3395,15 @@ void KHTMLView::moveCaretByPage(bool next)
   CaretViewContext *cv = d->caretViewContext();
 //  int y = cv->y;		// we always measure the top border
 
-  LinearDocument ld(m_part, caretNode, offset);
+  ElementImpl *baseElem = determineBaseElement(caretNode);
+  LinearDocument ld(m_part, caretNode, offset, LeafsOnly, baseElem);
 
   ErgonomicEditableLineIterator it(ld.current(), cv->origX);
 
   moveIteratorByPage(ld, it, mindist, next);
 
   int x, absx, absy;
-  InlineBox *caretBox = nearestInlineBox(it, d->m_caretViewContext, x, absx, absy);
+  CaretBox *caretBox = nearestCaretBox(it, d->m_caretViewContext, x, absx, absy);
 
   placeCaretOnLine(caretBox, x, absx, absy);
 }

@@ -221,7 +221,7 @@ public:
 
     virtual SelectionState selectionState() const {return m_selectionState;}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
-    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool f = false);
     bool posOfChar(int ch, int &x, int &y);
 

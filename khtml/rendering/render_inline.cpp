@@ -383,3 +383,60 @@ bool RenderInline::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
     return inside;
 }
 
+void RenderInline::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
+{
+    _x = -1;
+
+    RenderBlock *cb = containingBlock();
+    bool rtl = cb->style()->direction() == RTL;
+    bool outsideEnd = flags & CFOutsideEnd;
+    // I need to explain that: outsideEnd contains a meaningful value if
+    // and only if flags & CFOutside is set. If it is not, then randomly
+    // either the first or the last line box is returned.
+    // This doesn't matter because the only case this can happen is on an
+    // empty inline element, whose first and last line boxes are actually
+    // the same.
+    InlineFlowBox *line = !outsideEnd ^ rtl ? firstLineBox() : lastLineBox();
+
+    if (!line) {		// umpf, handle "gracefully"
+        RenderFlow::caretPos(offset, flags, _x, _y, width, height);
+        return;
+    }
+
+    _x = line->xPos();
+    width = 1;		// ### regard CFOverride
+
+    // Place caret outside the border
+    if (flags & CFOutside) {
+        RenderStyle *s = element() && element()->parent()
+			&& element()->parent()->renderer()
+			? element()->parent()->renderer()->style()
+			: style();
+        const QFontMetrics &fm = s->fontMetrics();
+        _y = line->yPos() + line->baseline() - fm.ascent();
+        height = fm.height();
+
+	if (!outsideEnd ^ rtl) {
+	    _x -= line->marginBorderPaddingLeft();
+	} else {
+	    _x += line->width() + line->marginBorderPaddingRight();
+	}
+
+    } else {
+        const QFontMetrics &fm = style()->fontMetrics();
+        _y = line->yPos() + line->baseline() - fm.ascent();
+        height = fm.height();
+    }
+
+    int absx, absy;
+    if (cb && cb->absolutePosition(absx,absy)) {
+        //kdDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
+        _x += absx;
+        _y += absy;
+    } else {
+        // we don't know our absolute position, and there is no point returning
+        // just a relative one
+        _x = _y = -1;
+    }
+}
+

@@ -66,6 +66,8 @@ public:
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
 
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+
 protected:
     static RenderInline* cloneInline(RenderFlow* src);
 

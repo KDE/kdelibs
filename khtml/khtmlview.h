@@ -60,7 +60,7 @@ namespace khtml {
     class RenderWidget;
     class CSSStyleSelector;
     class LineEditWidget;
-    class InlineBox;
+    class CaretBox;
     void applyRule(DOM::CSSProperty *prop);
 }
 
@@ -298,10 +298,10 @@ private:
     /** inquires the current caret position and stores it in the caret view
      * context. Also resets the blink frequency timer. It will not display
      * the caret on the canvas.
-     * @param hintBox inline box whose coordinates will be used if the
+     * @param hintBox caret box whose coordinates will be used if the
      * caret position could not be determined otherwise.
      */
-    void recalcAndStoreCaretPos(khtml::InlineBox *hintBox = 0);
+    void recalcAndStoreCaretPos(khtml::CaretBox *hintBox = 0);
     /** displays the caret and reinitializes the blink frequency timer.
      *
      * The caret will only be displayed on screen if the view has focus, or
@@ -360,11 +360,11 @@ private:
      * The caret is switched off, the position recalculated with respect to
      * the new position. The caret will only be redisplayed if it is on an
      * editable node, in design mode, or in caret mode.
-     * @param hintBox inline box whose coordinates will be used if the
+     * @param hintBox caret box whose coordinates will be used if the
      * caret position could not be determined otherwise.
      * @return @p true if the caret has been displayed.
      */
-    bool placeCaret(khtml::InlineBox *hintBox = 0);
+    bool placeCaret(khtml::CaretBox *hintBox = 0);
 
     /** extends the selection up to the current caret position.
      *
@@ -422,7 +422,7 @@ private:
 
     /** moves the caret to the given position and displays it.
      *
-     * If the node is an invalid place, the function sets the caret to an
+     * If the node resembles an invalid position, the function sets the caret to a
      * nearby node that is valid.
      *
      * @param node node to be set to
@@ -453,7 +453,6 @@ private:
     void moveCaretBy(bool next, CaretMovement cmv, int n);
 
     /** moves the caret by line.
-     * @internal only meant to be called from within moveCaretBy
      */
     void moveCaretByLine(bool next, int n);
 
@@ -474,10 +473,10 @@ private:
      *
      * This method is only suitable if the new caret position has already been
      * determined.
-     * @param hintBox inline box whose coordinates will be used if the
+     * @param hintBox caret box whose coordinates will be used if the
      * caret position could not be determined otherwise.
      */
-    void placeCaretOnChar(khtml::InlineBox *hintBox);
+    void placeCaretOnChar(khtml::CaretBox *hintBox);
 
     /** does the actual caret placement so that it becomes visible at
      * the new position.
@@ -485,7 +484,7 @@ private:
      * Additionally, it calculates the new caret position from the given
      * box and coordinates.
      *
-     * @param caretBox inline box serving as a measurement point for offset.
+     * @param caretBox caret box serving as a measurement point for offset.
      * @param x x-coordinate relative to containing block. The offset will
      *		be approximated as closely as possible to this coordinate,
      *		but never less than caretBox->xPos() and greater than
@@ -495,7 +494,7 @@ private:
      * @param absy absolute y-coordinate of containing block, needed for
      *		calculation of final caret position
      */
-    void placeCaretOnLine(khtml::InlineBox *caretBox, int x, int absx, int absy);
+    void placeCaretOnLine(khtml::CaretBox *caretBox, int x, int absx, int absy);
 
     /** moves the caret by a page length.
      * @param next @p true, move down, @p false, move up.

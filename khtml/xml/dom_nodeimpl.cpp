@@ -34,12 +34,19 @@
 #include <kdebug.h>
 
 #include "rendering/render_text.h"
+#include "rendering/render_flow.h"
+#include "rendering/render_line.h"
 
 #include "ecma/kjs_proxy.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "dom_nodeimpl.h"
 
+// from khtml_caret_p.h
+namespace khtml {
+void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(DOM::NodeImpl *node, long offset,
+		khtml::RenderObject *&r, long &r_ofs, bool &outside, bool &outsideEnd);
+}
 
 using namespace DOM;
 using namespace khtml;
@@ -316,8 +323,24 @@ QString NodeImpl::recursive_toHTML(bool start) const
 
 void NodeImpl::getCaret(int offset, bool override, int &_x, int &_y, int &width, int &height)
 {
-    if(m_render) m_render->caretPos(offset, override, _x, _y, width, height);
-    else _x = _y = height = -1, width = 1;
+    if (m_render) {
+        RenderObject *r;
+	long r_ofs;
+	bool outside, outsideEnd;
+#if 0
+kdDebug(6200) << "getCaret: node " << this << " " << nodeName().string() << " offset: " << offset << endl;
+#endif
+        mapDOMPosToRenderPos(this, offset, r, r_ofs, outside, outsideEnd);
+#if 0
+kdDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString::null) << " r_ofs: " << r_ofs << " outside " << outside << " outsideEnd " << outsideEnd << endl;
+#endif
+	if (r) {
+            r->caretPos(r_ofs, override*RenderObject::CFOverride
+		    + outside*RenderObject::CFOutside
+		    + outsideEnd*RenderObject::CFOutsideEnd, _x, _y, width, height);
+	} else
+	    _x = _y = height = -1, width = 1;
+    } else _x = _y = height = -1, width = 1;
 }
 
 QRect NodeImpl::getRect() const
@@ -962,66 +985,6 @@ bool NodeImpl::contentEditable() const
     return r->style()->userInput() == UI_ENABLED;
 }
 
-NodeImpl *NodeImpl::prevLeafNode() const
-{
-  const NodeImpl *r = this;
-  const NodeImpl *n = firstChild();
-  if (n) {
-    while (n) { r = n; n = n->firstChild(); }
-    return const_cast<NodeImpl *>(r);
-  }/*end if*/
-  n = r->previousSibling();
-  if (n) {
-    r = n;
-    while (n) { r = n; n = n->firstChild(); }
-    return const_cast<NodeImpl *>(r);
-  }/*end if*/
-
-  n = r->parentNode();
-  while (n) {
-    r = n;
-    n = r->previousSibling();
-    if (n) {
-      r = n;
-      n = r->lastChild();
-      while (n) { r = n; n = n->lastChild(); }
-      return const_cast<NodeImpl *>(r);
-    }/*end if*/
-    n = r->parentNode();
-  }/*wend*/
-  return 0;
-}
-
-NodeImpl *NodeImpl::nextLeafNode() const
-{
-  const NodeImpl *r = this;
-  const NodeImpl *n = firstChild();
-  if (n) {
-    while (n) { r = n; n = n->firstChild(); }
-    return const_cast<NodeImpl *>(r);
-  }/*end if*/
-  n = r->nextSibling();
-  if (n) {
-    r = n;
-    while (n) { r = n; n = n->firstChild(); }
-    return const_cast<NodeImpl *>(r);
-  }/*end if*/
-
-  n = r->parentNode();
-  while (n) {
-    r = n;
-    n = r->nextSibling();
-    if (n) {
-      r = n;
-      n = r->firstChild();
-      while (n) { r = n; n = n->firstChild(); }
-      return const_cast<NodeImpl *>(r);
-    }/*end if*/
-    n = r->parentNode();
-  }/*wend*/
-  return 0;
-}
-
 long NodeImpl::minOffset() const
 {
   // Arrgh! You'd think *every* offset starts at zero, but loo,
@@ -1031,7 +994,8 @@ long NodeImpl::minOffset() const
 
 long NodeImpl::maxOffset() const
 {
-  return renderer() ? renderer()->maxOffset() : 1;
+  return const_cast<NodeImpl *>(this)->childNodeCount();
+//  return renderer() ? renderer()->maxOffset() : 1;
 }
 
 //-------------------------------------------------------------------------
@@ -1600,7 +1564,7 @@ NodeImpl *NodeBaseImpl::childNode(unsigned long index)
 {
     unsigned long i;
     NodeImpl *n = firstChild();
-    for (i = 0; i < index; i++)
+    for (i = 0; n && i < index; i++)
         n = n->nextSibling();
     return n;
 }

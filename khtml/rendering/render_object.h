@@ -209,6 +209,7 @@ public:
     virtual bool isInlineBlockOrInlineTable() const { return false; }
     virtual bool childrenInline() const { return false; }
     virtual bool isBox() const { return false; }
+    virtual bool isRenderReplaced() const { return false; }
 
     virtual bool isListItem() const { return false; }
     virtual bool isCanvas() const { return false; }
@@ -547,17 +548,26 @@ public:
     virtual void setSelectionState(SelectionState) {}
 
     /**
+     * Flags which influence the appearence and position
+     * @param CFOverride input overrides existing character, caret should be
+     *		cover the whole character
+     * @param CFOutside coordinates are to be interpreted outside of the
+     *		render object
+     * @param CFOutsideEnd coordinates are to be interpreted at the outside
+     *		end of the render object (only valid if CFOutside is also set)
+     */
+    enum CaretFlags { CFOverride = 0x01, CFOutside = 0x02, CFOutsideEnd = 0x04 };
+
+    /**
      * Returns the content coordinates of the caret within this render object.
      * @param offset zero-based offset determining position within the render object.
-     * @param override @p true if input overrides existing characters,
-     *		@p false if it inserts them. The width of the caret depends on
-     *		this one.
+     * @param flags combination of enum CaretFlags
      * @param _x returns the left coordinate
      * @param _y returns the top coordinate
      * @param width returns the caret's width
      * @param height returns the caret's height
      */
-    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
 
     // returns the lowest position of the lowest object in that particular object.
     // This 'height' is relative to the topleft of the margin box of the object.

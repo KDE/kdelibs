@@ -42,6 +42,7 @@ public:
     RenderReplaced(DOM::NodeImpl* node);
 
     virtual const char *renderName() const { return "RenderReplaced"; }
+    virtual bool isRenderReplaced() const { return true; }
 
     virtual bool childAllowed() const { return false; }
 
@@ -70,10 +71,9 @@ public:
     /** returns the highest possible value the caret offset may have to
      * still point to a valid position.
      *
-     * Returns 1 as replaced elements are considered to be an entity that
-     * can have the caret positioned at their beginning (0), and at their end (1).
+     * Returns 0.
      */
-    virtual long maxOffset() const { return 1; }
+    virtual long maxOffset() const { return 0; }
 
 protected:
     short m_intrinsicWidth;

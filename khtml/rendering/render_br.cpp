@@ -35,9 +35,10 @@ RenderBR::~RenderBR()
 {
 }
 
-void RenderBR::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height)
+#if 0
+void RenderBR::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
 {
-  RenderText::caretPos(offset,override,_x,_y,width,height);
+  RenderText::caretPos(offset,flags,_x,_y,width,height);
   return;
 #if 0
     if (previousSibling() && !previousSibling()->isBR() && !previousSibling()->isFloating()) {
@@ -65,6 +66,7 @@ void RenderBR::caretPos(int offset, bool override, int &_x, int &_y, int &width,
     width = override ? height / 2 : 1;
 #endif
 }
+#endif
 
 FindSelectionResult RenderBR::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &state)
 {

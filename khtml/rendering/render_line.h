@@ -98,7 +98,7 @@ public:
     virtual int bottomOverflow() const { return yPos()+height(); }
 
     virtual long minOffset() const { return 0; }
-    virtual long maxOffset() const { return 1; }
+    virtual long maxOffset() const { return 0; }
 
 public: // FIXME: Would like to make this protected, but methods are accessing these
         // members over in the part.

@@ -664,7 +664,7 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
 
 FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
 {
-//       kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+//        kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                     << " _tx=" << _tx << " _ty=" << _ty << endl;
 //kdDebug(6040) << renderName() << "::checkSelectionPoint x=" << xPos() << " y=" << yPos() << " w=" << width() << " h=" << height() << " m_lines.count=" << m_lines.count() << endl;
 
@@ -683,14 +683,14 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         if ( result == SelectionPointInside ) // x,y is inside the textrun
         {
             offset += s->m_start; // add the offset from the previous lines
-            //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
+//             kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
             node = element();
             return SelectionPointInside;
         } else if ( result == SelectionPointBefore ) {
 	    if (!lastNode) {
                 // x,y is before the textrun -> stop here
                offset = 0;
-               //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << "before us -> returning Before" << endl;
+//                kdDebug(6040) << "RenderText::checkSelectionPoint " << this << "before us -> returning Before" << endl;
                node = element();
                return SelectionPointBefore;
 	    }
@@ -710,6 +710,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     if (lastNode) {
         offset = lastOffset;
 	node = lastNode;
+//         kdDebug(6040) << "RenderText::checkSelectionPoint: lastNode " << lastNode << " lastOffset " << lastOffset << endl;
 	return lastResult;
     }
 
@@ -717,10 +718,11 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     offset = str->l;
     //qDebug("setting node to %p", element());
     node = element();
+//     kdDebug(6040) << "RenderText::checkSelectionPoint: node " << node << " offset " << offset << endl;
     return SelectionPointAfter;
 }
 
-void RenderText::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height)
+void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
 {
   if (!m_lines.count()) {
     _x = _y = height = -1;
@@ -739,7 +741,7 @@ void RenderText::caretPos(int offset, bool override, int &_x, int &_y, int &widt
   _x = s->m_x + s->widthFromStart(pos);
   _y = s->m_y + s->baseline() - fm.ascent();
   width = 1;
-  if (override) {
+  if (flags & CFOverride) {
     width = offset < maxOffset() ? fm.width(str->s[offset]) : 1;
   }/*end if*/
 #if 0
@@ -1160,12 +1162,12 @@ int RenderText::minXPos() const
 
 int RenderText::xPos() const
 {
-    return 0;
+    return 0;//m_lines.isEmpty() ? 0 : m_lines[0]->xPos();
 }
 
 int RenderText::yPos() const
 {
-    return 0;
+    return 0;//m_lines.isEmpty() ? 0 : m_lines[0]->yPos();
 }
 
 const QFont &RenderText::font()

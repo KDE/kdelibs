@@ -102,7 +102,7 @@ public:
     void setStaticX(short staticX);
     void setStaticY(int staticY);
 
-    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
 
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
 

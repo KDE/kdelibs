@@ -57,7 +57,9 @@ public:
 						     SelPointState & );
 
     virtual bool isBR() const { return true; }
-    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
+#if 0
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+#endif
     /** returns the lowest possible value the caret offset may have to
      * still point to a valid position.
      *
