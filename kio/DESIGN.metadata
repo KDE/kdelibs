@@ -1,7 +1,7 @@
 METADATA
 ========
 
-Applications can provide "metadata" to the slaves. Metadata can influence 
+Applications can provide "metadata" to the slaves. Metadata can influence
 the behaviour of a slave and is usally protocol dependent. MetaData consists
 of two strings: a "key" and a "value".
 
@@ -34,8 +34,9 @@ resume          number          Try to get the file starting at the given offset
 
 ssl_*           *               Many SSL metadata fields (see khtml_part and kio_http)
 
-authGroupKey    string          Key used to group Authentication information (used by SlaveBase/Scheduler)
+charset         string          Charset of the current content as returned by a HTTP Header Response.
 
-charset         string          Charset of the current content as returned by the HTTP Header Response.
+content-
+disposition     string          Suggested name to Save a file as as returned by a HTTP Header Response.
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
