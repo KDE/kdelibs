@@ -35,7 +35,9 @@ QPixmap *KFileInfoContents::locked_file = 0;
 
 KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 {
-    sortedList = new KFileInfoList;
+    sorted_max = 1;
+    sortedArray = new KFileInfo*[sorted_max];
+    sorted_length = 0;
     itemsList  = new KFileInfoList;
     reversed   = false;        // defaults
     mySortMode = Increasing;
@@ -72,7 +74,7 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 
 KFileInfoContents::~KFileInfoContents()
 {
-    delete sortedList;
+    delete [] sortedArray;
     delete itemsList;
     delete nameList;
 
@@ -129,7 +131,7 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
         keepDirsFirst = false;
 
     setAutoUpdate(false);
-    sortedList->clear();
+    sorted_length = 0;
     firstfile = 0;
     clearView();
 
@@ -149,7 +151,7 @@ void KFileInfoContents::clear()
     lastHFile = 0;
     lastSFile = 0;
     lastSDir = 0;
-    sortedList->clear();
+    sorted_length = 0;
     itemsList->clear();
     nameList->clear();
     clearView();
@@ -183,10 +185,11 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
    if (counter % 1000 == 0)
      debugC("compare %d", counter);
 
+
     bool bigger = true;
 
     if (keepDirsFirst && (fi1->isDir() != fi2->isDir()))
-      bigger = fi1->isDir();
+      bigger = !fi1->isDir();
     else {
 
       QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
@@ -210,11 +213,12 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
     
     if (reversed)
       bigger = !bigger;
-    
+
     return (bigger ? 1 : -1);
 }
 
 
+/*
 bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 {
     int pos = -1;
@@ -233,26 +237,26 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
             pos = 0;
         }
 	
-	if (pos >= static_cast<int>(sortedList->count()))
+	if ( pos >= sorted_length )
 	    found = true;
             
 	while (!found) {
 	    
-	    bool bigger = compareItems(i, sortedList->at(pos)) > 0;
+	    bool bigger = compareItems(i, sortedArray[pos]) > 0;
 
 	    if (bigger)
 		pos++;
 	    else
 		found = true;
 
-	    if (pos >= static_cast<int>(sortedList->count())) {
+	    if (pos >= sorted_length) {
 	        if (keepDirsFirst) {
                     if (!isDir)
-	                pos = sortedList->count();
+	                pos = sorted_length;
 	            else
 	                pos = firstfile;
                 } else {
-                    pos = sortedList->count();
+                    pos = sorted_length;
                 }
 		found = true;
 	    }
@@ -266,27 +270,71 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
     }
     
     if (pos < 0) {
-	sortedList->append(i);
-	pos = sortedList->at(); // to avoid the -1
+        insertSortedItem(i, sorted_length);
+	// sorted_length has new value
+	pos = sorted_length;
     }  else
-	sortedList->insert(pos, i);
+        insertSortedItem(i, pos);
 
     return insertItem(i, pos);
-}
+} */
+
+bool KFileInfoContents::addItemInternal(const KFileInfo *i)
+{
+  int pos = -1;
+  int result;
+
+  if ( sorted_length > 1 && mySorting != QDir::Unsorted) 
+    {
+      bool found = false;
+      int left = 0;
+      int right = sorted_length - 1;
+      
+      while (!found) {
+	pos = (left + right) / 2;
+	result = compareItems(i, sortedArray[pos]);
+	if (result < 0) 
+	  right = pos;
+	else
+	  left = pos;
+
+	if (left >= right-1) {
+	  if (pos == left && compareItems(i, sortedArray[right]) > 0)
+	    pos = right+1;
+	  else 
+	    pos = right;
+	  found = true;
+	}
+      }
+    }
+  else
+    {
+      if (sorted_length == 1) {
+	pos = (compareItems(i, sortedArray[0]) < 0) ? 0 : 1;
+      }
+    }
+  if (pos < 0) {
+    insertSortedItem(i, sorted_length);
+    // sorted_length has new value 
+    pos = sorted_length - 1;
+  }  else 
+    insertSortedItem(i, pos); 
+
+  return insertItem(i, pos);
+} 
 
 
 const char *KFileInfoContents::text(uint index) const
 {
-    if (index < count())
-	return sortedList->at(index)->fileName();
+    if (index < sorted_length)
+	return sortedArray[index]->fileName();
     else
 	return "";
 }
 
 void KFileInfoContents::select( int index )
 {
-    KFileInfo *i = sortedList->at(index);
-    select(i);
+    select(sortedArray[index]);
 }
 
 void KFileInfoContents::select( KFileInfo *entry)
@@ -309,8 +357,7 @@ void KFileInfoContents::highlight( KFileInfo *entry )
 
 void KFileInfoContents::highlight( int index )
 {
-    KFileInfo *i = sortedList->at(index);
-    highlight(i);
+    highlight(sortedArray[index]);
 }
 
 
@@ -322,17 +369,18 @@ void  KFileInfoContents::repaint(bool f)
 void KFileInfoContents::setCurrentItem(const char *item, 
 				       const KFileInfo *entry)
 {
+  uint i;
     if (item != 0) {
-	for (KFileInfo *i = sortedList->first(); i; i = sortedList->next())
-	    if (sortedList->current()->fileName() == item) {
-		highlightItem(sortedList->at());
-		highlight(sortedList->at());
+	for (i = 0; i < sorted_length; i++)
+	    if (sortedArray[i]->fileName() == item) {
+		highlightItem(i);
+		highlight(i);
 		return;
 	    }
     } else
-	for (KFileInfo *i = sortedList->first(); i; i = sortedList->next())
-	    if (i == entry) {
-		highlightItem(sortedList->at());
+	for (i = 0; i < sorted_length; i++)
+	    if (sortedArray[i] == entry) {
+		highlightItem(i);
 		return;
 	    }
     
@@ -400,20 +448,21 @@ QString KFileInfoContents::findCompletion( const char *base,
 
 	if (matchExactly && (activateFound || useSingleClick))
 	    { 
-		for (KFileInfo *i = sortedList->first(); i; 
-		     i = sortedList->next())
+	      for (uint j = 0; j < sorted_length; j++)
+		{
+		  KFileInfo *i = sortedArray[j];
 		    
 		    if (i->fileName() == name) {
-			int found = sortedList->at();
-			if (sortedList->at(found)->isDir())
+			if (sortedArray[j]->isDir())
 			    body += "/";
-			highlightItem(found);
+			highlightItem(j);
 			if (activateFound)
-			    select(found);
+			    select(j);
 			else
-			    highlight(found);
+			    highlight(j);
 			break;
 		    }
+		}
 	    } else
 		setCurrentItem(name); // the first matching name
 
@@ -423,4 +472,42 @@ QString KFileInfoContents::findCompletion( const char *base,
 	return 0;
     }
     
+}
+
+void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
+{
+  // debug("insert %s %d", item->fileName().data(), pos);
+  if (sorted_length == sorted_max) {
+    sorted_max *= 2;
+    KFileInfo **newArray = new KFileInfo*[sorted_max];
+    int found = 0;
+    for (uint j = 0; j < sorted_length; j++) {
+      if (j == pos) {
+	found = 1;
+	newArray[j] = const_cast<KFileInfo*>(item);
+      }
+      newArray[j+found] = sortedArray[j];
+    }
+    if (!found)
+      newArray[pos] = const_cast<KFileInfo*>(item);
+
+    delete [] sortedArray;
+    sortedArray = newArray;
+    sorted_length++;
+    return;
+  }
+
+  /*
+  memcpy(sortedArray + (pos + 1) * sizeof(KFileInfo*), 
+	 sortedArray + pos * sizeof(KFileInfo*),
+	 (sorted_max - 1 - pos) * sizeof(KFileInfo*));
+  */
+  
+  for ( int i = sorted_length - 1; i >= static_cast<int>(pos); i--) {
+    // debug("move %d", i);
+    sortedArray[i+1] = sortedArray[i];
+  }
+  sortedArray[pos] = const_cast<KFileInfo*>(item);
+  sorted_length++;
+  
 }

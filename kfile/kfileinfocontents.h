@@ -289,15 +289,16 @@ protected:
     void highlight( KFileInfo *);
     
     bool useSingle() const { return useSingleClick; }
-    bool isDir( uint index) const { return sortedList->at(index)->isDir(); }
+    bool isDir( uint index) const { return sortedArray[index]->isDir(); }
     int firstFile() const { return firstfile; }
 
-    const KFileInfo *at( uint index ) const { return sortedList->at(index); }
+    const KFileInfo *at( uint index ) const { return sortedArray[index]; }
 
     /**
      * compares two items in the current context (sortMode and others) 
      * returns -1, if i1 is before i2 and 1, if the other case is true
-     * in case, both are equal (in current context), the behaviour is undefined!
+     * in case, both are equal (in current context), the behaviour is 
+     * undefined!
      **/
     int compareItems(const KFileInfo *fi1, const KFileInfo *fi2);
 
@@ -309,7 +310,10 @@ private:
     bool keepDirsFirst;
     QDir::SortSpec mySorting;
     enum SortMode mySortMode;
-    KFileInfoList *sortedList;
+    KFileInfo **sortedArray;
+    uint sorted_length;
+    uint sorted_max;
+
     KFileInfoList *itemsList;
 
     QSignal *sActivateDir;
@@ -322,6 +326,11 @@ private:
     KFileInfo *lastSDir;
     uint filesNumber, dirsNumber;
 
+  /**
+   * @internal
+   * adds an item to sortedArray
+   **/
+  void insertSortedItem(const KFileInfo *item, uint pos);
 };
 
 #endif // KFILEINFOLISTWIDGET_H
