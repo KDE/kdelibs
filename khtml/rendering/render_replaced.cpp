@@ -126,7 +126,6 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
 
 void RenderWidget::detach()
 {
-    kdDebug( 6040 ) << "RenderWidget::detach( " << this << " )" << endl;
     remove();
 
     if ( m_widget ) {
