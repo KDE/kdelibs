@@ -445,7 +445,6 @@ public:
 
     long span() const { return _span; }
     void setSpan( long s ) { _span = s; }
-    khtml::Length width();
 
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 
