@@ -4112,9 +4112,11 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 {
     static const char *endthtd[] = { "</th", "</td", "</tr", "<th", "<td", "<tr", "</table", 0 };
     static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", 0 };    
+    static const char *endall[] = { "</caption>", "</table>", "<tr", "<td", "<th"," </th", "</td", "</tr", 0 };  
     const char* str = 0;
     bool firstRow = true;
     bool tableTag = true;
+    bool noCell = true;
     int padding = 1;
     int spacing = 2;
     int width = 0;
@@ -4297,12 +4299,18 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    break; // Get next token from 'ht'
 		}
 		
-		if (*str=='<' && *(str+1)=='t' && (*(str+2)=='d' ||
-			 *(str+2)=='h'))
+
+		// <td, <th, or we get something before the 
+		// first <td or <th. Lets put that into one row 
+		// of it's own... (Lars)
+		bool tableEntry = *str=='<' && *(str+1)=='t' && 
+		    (*(str+2)=='d' || *(str+2)=='h');
+		if ( tableEntry || noCell ) 
 		//		else if ( strncmp( str, "<td", 3 ) == 0 ||
 		//			strncmp( str, "<th", 3 ) == 0 )
 		{
 		    bool heading = false;
+		    noCell = false;
 
 		    // if ( strncasecmp( str, "<th", 3 ) == 0 )
 		    if (*(str+2)=='h')
@@ -4329,6 +4337,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::Left :
 			    rowhalign);
 
+		    if(tableEntry)
+		    {
 		    stringTok->tokenize( str + 4, " >" );
 		    while ( stringTok->hasMoreTokens() )
 		    {
@@ -4385,6 +4395,7 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 				bgcolor.setNamedColor( token+8 );
 			}
 		    } // while (hasMoreTokens)
+		    } // if(tableEntry)
 
 		    HTMLTableCell *cell = new HTMLTableCell(0, 0, width, percent,
 			rowSpan, colSpan, padding );
@@ -4401,6 +4412,17 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			pushBlock( ID_TH, 3, &KHTMLWidget::blockEndFont);
 		        str = parseBody( cell, endthtd );
                         popBlock( ID_TH, cell );
+		    }
+		    else if ( !tableEntry )
+		    {
+			// put all the junk between <table> and the first table
+			// tag into one row.
+		    	pushBlock( ID_TD, 3 );
+			parseOneToken( cell, str );
+			str = parseBody( cell, endall );
+			popBlock( ID_TD, cell );
+			table->endRow();
+			table->startRow();
 		    }
 		    else
 		    {
