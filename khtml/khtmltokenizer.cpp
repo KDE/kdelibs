@@ -414,17 +414,17 @@ void HTMLTokenizer::parseEntity(HTMLStringIt &src, bool start)
 	{
 	    QConstString cStr(entityBuffer, entityPos);
 	    QChar res = charsets->fromEntity(cStr.string());
-	    
+	
 	    //printf("ENTITY %d, %c\n",res.unicode(), res.latin1());
 	
 	    if (tag && src[0] != ';' ) {
 		// Don't translate entities in tags with a missing ';'
 		res = QChar::null;
 	    }
-	    
+	
 	    // Partial support for MS Windows Latin-1 extensions
 	    // full list http://www.bbsinc.com/iso8859.html
-	    // There may be better equivelants  
+	    // There may be better equivelants
 	    if ( res != QChar::null ) {
 	    	switch (res.unicode())
 		{

@@ -94,7 +94,7 @@ protected:
 
     // check if we have enough space in the buffer.
     // if not enlarge it
-    void checkBuffer(int len = 1);
+    void checkBuffer(int len = 10);
 protected:
     // Internal buffers
     ///////////////////
