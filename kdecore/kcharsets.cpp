@@ -42,7 +42,7 @@ template class QList<QFont::CharSet>;
 #else
 #define CHARSETS_COUNT 27
 #endif
-static const char *charsetsStr[CHARSETS_COUNT] = {
+static const char * const charsetsStr[CHARSETS_COUNT] = {
     "unicode",
     "iso-8859-1",
     "iso-8859-2",
@@ -76,7 +76,7 @@ static const char *charsetsStr[CHARSETS_COUNT] = {
 };
 
 // these can contain wildcard characters. Needed for fontset matching (CJK fonts)
-static const char *xNames[CHARSETS_COUNT] = {
+static const char * const xNames[CHARSETS_COUNT] = {
     "iso10646-1",
     "iso8859-1",
     "iso8859-2",
@@ -216,27 +216,27 @@ QChar KCharsets::fromEntity(const QString &str) const
 
     // Check for '&#000' or '&#x0000' sequence
     if (str[pos] == '#' && str.length()-pos > 1) {
-	bool ok;
-	pos++;
-	if (str[pos] == 'x' || str[pos] == 'X') {
-	    pos++;
-	    // '&#x0000', hexadeciaml character reference	
-	    QString tmp(str.unicode()+pos, str.length()-pos);
-	    res = tmp.toInt(&ok, 16);
-	} else {
-	    //  '&#0000', deciaml character reference
-	    QString tmp(str.unicode()+pos, str.length()-pos);
-	    res = tmp.toInt(&ok, 10);
-	}
-	return res;
+        bool ok;
+        pos++;
+        if (str[pos] == 'x' || str[pos] == 'X') {
+            pos++;
+            // '&#x0000', hexadeciaml character reference
+            QString tmp(str.unicode()+pos, str.length()-pos);
+            res = tmp.toInt(&ok, 16);
+        } else {
+            //  '&#0000', deciaml character reference
+            QString tmp(str.unicode()+pos, str.length()-pos);
+            res = tmp.toInt(&ok, 10);
+        }
+        return res;
     }
 
     const entity *e = findEntity(str.ascii(), str.length());
 
     if(!e)
     {
-	kdDebug( 0 ) << "unknown entity " << str <<", len = " << str.length() << endl;
-	return QChar::null;
+        kdDebug( 0 ) << "unknown entity " << str <<", len = " << str.length() << endl;
+        return QChar::null;
     }
     //kdDebug() << "got entity " << str << " = " << e->code << endl;
 
@@ -250,10 +250,10 @@ QChar KCharsets::fromEntity(const QString &str, int &len) const
     len = 8;
     while(len > 0)
     {
-	QString tmp = str.left(len);
-	QChar res = fromEntity(tmp);
-	if( res != QChar::null ) return res;
-	len--;
+        QString tmp = str.left(len);
+        QChar res = fromEntity(tmp);
+        if( res != QChar::null ) return res;
+        len--;
     }
     return QChar::null;
 }
@@ -279,14 +279,14 @@ QList<QFont::CharSet> KCharsets::availableCharsets(QString family)
     KFontStruct *fs;
 
     for(fs = lst.first(); fs != 0; fs = lst.next() ) {
-	  if(!chList.contains(&(fs->charset))) {
-		QFont::CharSet *c = new QFont::CharSet;
-		*c = fs->charset;
-		chList.append(c);
-	  }
-	}
-	
-	return chList;
+          if(!chList.contains(&(fs->charset))) {
+                QFont::CharSet *c = new QFont::CharSet;
+                *c = fs->charset;
+                chList.append(c);
+          }
+        }
+
+        return chList;
 }
 
 QStringList KCharsets::availableCharsetNames(QString family)
@@ -302,12 +302,12 @@ QStringList KCharsets::availableCharsetNames(QString family)
 
     for(fs = lst.first(); fs != 0; fs = lst.next() )
     {
-	if(fs->charset != QFont::AnyCharSet )
-	{
-	    QString name = this->name(fs->charset);
-	    if(!chList.contains(name))
-		chList.append(name);
-	}
+        if(fs->charset != QFont::AnyCharSet )
+        {
+            QString name = this->name(fs->charset);
+            if(!chList.contains(name))
+                chList.append(name);
+        }
     }
     return chList;
 }
@@ -323,20 +323,20 @@ QStringList KCharsets::availableEncodingNames()
 
     QMap<QString, QString>::Iterator it;
     for( it = map.begin(); it != map.end(); ++it ) {
-	//kdDebug(0) << "key = " << it.key() << " string =" << it.data() << endl;
+        //kdDebug(0) << "key = " << it.key() << " string =" << it.data() << endl;
 
-	//kdDebug(0) << "list is: " << conf.readEntry(it.key()) << endl;
-	QStringList charsets = conf.readListEntry(it.key());
+        //kdDebug(0) << "list is: " << conf.readEntry(it.key()) << endl;
+        QStringList charsets = conf.readListEntry(it.key());
 
-	// iterate thorugh the list and find the first charset that is available
-	for ( QStringList::Iterator sit = charsets.begin(); sit != charsets.end(); ++sit ) {
-	    //kdDebug(0) << "checking for " << *sit << endl;
-	    if( const_cast<KCharsets *>(this)->isAvailable(*sit) ) {
-		//kdDebug(0) << *sit << " available" << endl;
-		available.append(it.key());
-		break;
-	    }
-	}
+        // iterate thorugh the list and find the first charset that is available
+        for ( QStringList::Iterator sit = charsets.begin(); sit != charsets.end(); ++sit ) {
+            //kdDebug(0) << "checking for " << *sit << endl;
+            if( const_cast<KCharsets *>(this)->isAvailable(*sit) ) {
+                //kdDebug(0) << *sit << " available" << endl;
+                available.append(it.key());
+                break;
+            }
+        }
     }
     return available;
 }
@@ -356,17 +356,17 @@ QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
     int uc = c.unicode();
 
     if( uc < 0xff ) // 8859-1
-	setQFont( f, QFont::Latin1 );
+        setQFont( f, QFont::Latin1 );
     else if ( uc > 0x0400 && uc < 0x0460 )
-	setQFont( f, QFont::Latin5 );
+        setQFont( f, QFont::Latin5 );
     else if ( uc > 0x0600 && uc < 0x0660 )
-	setQFont( f, QFont::Latin6 );
+        setQFont( f, QFont::Latin6 );
     else if ( uc > 0x0380 && uc < 0x03e0 )
-	setQFont( f, QFont::Latin7 );
+        setQFont( f, QFont::Latin7 );
     else if ( uc >= 0x05d0 && uc < 0x05f0 )
-	setQFont( f, QFont::Latin8 );
+        setQFont( f, QFont::Latin8 );
     else if ( hasUnicode( f ) ) // don't know, let's try Unicode
-	setQFont( f, QFont::Unicode );
+        setQFont( f, QFont::Unicode );
 
     return f;
 }
@@ -553,41 +553,41 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
     switch( charSet )
     {
     case QFont::Unicode:
-	return "iso10646-1";
+        return "iso10646-1";
     case QFont::ISO_8859_1:
-	return "iso8859-1";
+        return "iso8859-1";
     case QFont::ISO_8859_2:
-	return "iso8859-2";
+        return "iso8859-2";
     case QFont::ISO_8859_3:
-	return "iso8859-3";
+        return "iso8859-3";
     case QFont::ISO_8859_4:
-	return "iso8859-4";
+        return "iso8859-4";
     case QFont::ISO_8859_5:
-	return "iso8859-5";
+        return "iso8859-5";
     case QFont::ISO_8859_6:
-	return "iso8859-6";
+        return "iso8859-6";
     case QFont::ISO_8859_7:
-	return "iso8859-7";
+        return "iso8859-7";
     case QFont::ISO_8859_8:
-	return "iso8859-8";
+        return "iso8859-8";
     case QFont::ISO_8859_9:
-	return "iso8859-9";
+        return "iso8859-9";
     case QFont::ISO_8859_10:
-	return "iso8859-10";
+        return "iso8859-10";
     case QFont::ISO_8859_11:
-	return "iso8859-11";
+        return "iso8859-11";
     case QFont::ISO_8859_12:
-	return "iso8859-12";
+        return "iso8859-12";
     case QFont::ISO_8859_13:
-	return "iso8859-13";
+        return "iso8859-13";
     case QFont::ISO_8859_14:
-	return "iso8859-14";
+        return "iso8859-14";
     case QFont::ISO_8859_15:
-	return "iso8859-15";
+        return "iso8859-15";
     case QFont::KOI8R:
-	return "koi8-*";
+        return "koi8-*";
     case QFont::Set_Ko:
-	return "ksc5601.1987-0";
+        return "ksc5601.1987-0";
     case QFont::Set_Ja:
         return "jisx0208.1983-0";
 #ifdef USE_TSCII
@@ -599,7 +599,7 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
     case QFont::Set_Zh_TW:
     case QFont::AnyCharSet:
     default:
-	break;
+        break;
     }
     return "*-*";
 }
@@ -611,17 +611,17 @@ QFont::CharSet KCharsets::nameToID(QString name) const
     int i = 0;
     while(i < CHARSETS_COUNT)
     {
-	if( name == charsetsStr[i] )
-	    return charsetsIds[i];
-	i++;
+        if( name == charsetsStr[i] )
+            return charsetsIds[i];
+        i++;
     }
 
     i = 0;
     while(i < CHARSETS_COUNT)
     {
-	if( name == xNames[i] )
-	    return charsetsIds[i];
-	i++;
+        if( name == xNames[i] )
+            return charsetsIds[i];
+        i++;
     }
     return QFont::AnyCharSet;
 }
@@ -639,9 +639,9 @@ QString KCharsets::name(QFont::CharSet c)
 
     while(i < CHARSETS_COUNT)
     {
-	if( c == charsetsIds[i] )
-	    return charsetsStr[i];
-	i++;
+        if( c == charsetsIds[i] )
+            return charsetsStr[i];
+        i++;
     }
     return "any";
 }
@@ -654,10 +654,10 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
     int i = 0;
     while(i < CHARSETS_COUNT)
     {
-	QRegExp r(xNames[i]);
-	if( r.match(name) != -1 )
-	    return charsetsIds[i];
-	i++;
+        QRegExp r(xNames[i]);
+        if( r.match(name) != -1 )
+            return charsetsIds[i];
+        i++;
     }
     return QFont::AnyCharSet;
 }
@@ -669,7 +669,7 @@ QTextCodec *KCharsets::codecForName(const QString &n) const
     QTextCodec *codec = QTextCodec::codecForName(name.latin1());
 
     if(codec)
-	return codec;
+        return codec;
 
     KConfig conf( "charsets", true );
 
@@ -679,7 +679,7 @@ QTextCodec *KCharsets::codecForName(const QString &n) const
 
     QString cname = conf.readEntry(name);
     if(!cname.isEmpty() && !cname.isNull())
-	codec = QTextCodec::codecForName(cname.latin1());
+        codec = QTextCodec::codecForName(cname.latin1());
 
     if(codec) return codec;
 
@@ -693,13 +693,13 @@ QTextCodec *KCharsets::codecForName(const QString &n) const
 
     cname = conf.readEntry(name);
     if(cname.isNull() || cname.isEmpty())
-	cname = name;
+        cname = name;
     cname = cname.upper();
 
     codec = QTextCodec::loadCharmapFile(dir + cname);
 
     if(codec)
-	return codec;
+        return codec;
 
     // this also failed, the last resort is now to take some compatibility charmap
 
@@ -708,10 +708,10 @@ QTextCodec *KCharsets::codecForName(const QString &n) const
     cname = conf.readEntry(cname);
 
     if(!cname.isEmpty() && !cname.isNull())
-	codec = QTextCodec::codecForName(cname.latin1());
+        codec = QTextCodec::codecForName(cname.latin1());
 
     if(codec)
-	return codec;
+        return codec;
 
     // could not assign a codec, let's return Latin1
     return QTextCodec::codecForName("iso8859-1");
@@ -729,11 +729,11 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
 
     // iterate thorugh the list and find the first charset that is available
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it ) {
-	if( const_cast<KCharsets *>(this)->isAvailable(*it) ) {
-	    kdDebug(0) << *it << " available" << endl;
-	    return nameToID(*it);
-	}
-	kdDebug(0) << *it << " is not available" << endl;
+        if( const_cast<KCharsets *>(this)->isAvailable(*it) ) {
+            kdDebug(0) << *it << " available" << endl;
+            return nameToID(*it);
+        }
+        kdDebug(0) << *it << " is not available" << endl;
     }
     // let's hope the system has a unicode font...
     return QFont::Unicode;
