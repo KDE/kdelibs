@@ -348,7 +348,7 @@ QPopupMenu *LineEditWidget::createPopupMenu()
              this, SLOT( extendedMenuActivated( int ) ) );
 
     popup->insertSeparator();
-    popup->insertItem( i18n("Clear History"), ClearHistory );
+    popup->insertItem( i18n("Clear &History"), ClearHistory );
     return popup;
 }
 
