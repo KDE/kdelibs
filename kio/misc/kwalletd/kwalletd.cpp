@@ -78,21 +78,7 @@ KWalletD::~KWalletD() {
 	delete _timeouts;
 	_timeouts = 0;
 
-	// Open wallets get closed without being saved of course.
-	for (QIntDictIterator<KWallet::Backend> it(_wallets);
-						it.current();
-							++it) {
-		doCloseSignals(it.currentKey(), it.current()->walletName());
-		delete it.current();
-	}
-	_wallets.clear();
-
-	for (QMap<QString,QCString>::Iterator it = _passwords.begin();
-						it != _passwords.end();
-						++it) {
-		it.data().fill(0);
-	}
-	_passwords.clear();
+	closeAllWallets();
 }
 
 
@@ -120,7 +106,8 @@ int KWalletD::open(const QString& wallet) {
 		return -1;
 	}
 
-	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) { // First use wizard
+	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
+	       	// First use wizard
 		KApplication::dcopClient()->suspend();
 		KWalletWizard *wiz = new KWalletWizard;
 		int rc = wiz->exec();
@@ -1008,7 +995,17 @@ void KWalletD::closeAllWallets() {
 		closeWallet(it.current(), it.currentKey(), true);
 	}
 
+	tw.clear();
+
+	// All of this should be basically noop.  Let's just be safe.
 	_wallets.clear();
+
+	for (QMap<QString,QCString>::Iterator it = _passwords.begin();
+						it != _passwords.end();
+						++it) {
+		it.data().fill(0);
+	}
+	_passwords.clear();
 }
 
 #include "kwalletd.moc"
