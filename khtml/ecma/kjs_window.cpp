@@ -1027,6 +1027,12 @@ void Window::goHistory( int steps )
 
 void KJS::Window::resizeTo(QWidget* tl, int width, int height)
 {
+  KParts::BrowserExtension *ext = m_part->browserExtension();
+  if (!ext) {
+    kdDebug(6070) << "Window::resizeTo found no browserExtension" << endl;
+    return;
+  }
+
   // Security check: within desktop limits and bigger than 100x100 (per spec)
   if ( width < 100 || height < 100 ) {
     kdDebug(6070) << "Window::resizeTo refused, window would be too small ("<<width<<","<<height<<")" << endl;
@@ -1047,7 +1053,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
 
   kdDebug() << "resizing to " << width - deltaWidth << "x" << height - deltaHeight << endl;
 
-  tl->resize( width - deltaWidth, height - deltaHeight );
+  emit ext->resizeTopLevelWidget( width - deltaWidth, height - deltaHeight );
 
   // If the window is out of the desktop, move it up/left
   // (maybe we should use workarea instead of sg, otherwise the window ends up below kicker)
@@ -1060,7 +1066,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
   if ( bottom > sg.bottom() )
     moveByY = - bottom + sg.bottom(); // always <0
   if ( moveByX || moveByY )
-    tl->move( tl->x() + moveByX , tl->y() + moveByY );
+    emit ext->moveTopLevelWidget( tl->x() + moveByX , tl->y() + moveByY );
 }
 
 Value Window::openWindow(ExecState *exec, const List& args)
@@ -1298,15 +1304,18 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 		part->settings()->windowMovePolicy(part->url().host());
     if(policy == KHTMLSettings::KJSWindowMoveAllow && args.size() == 2 && widget)
     {
-      QWidget * tl = widget->topLevelWidget();
-      QRect sg = KGlobalSettings::desktopGeometry(tl);
+      KParts::BrowserExtension *ext = part->browserExtension();
+      if (ext) {
+        QWidget * tl = widget->topLevelWidget();
+        QRect sg = KGlobalSettings::desktopGeometry(tl);
 
-      QPoint dest = tl->pos() + QPoint( args[0].toInt32(exec), args[1].toInt32(exec) );
-      // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
-      if ( dest.x() >= sg.x() && dest.y() >= sg.x() &&
-           dest.x()+tl->width() <= sg.width()+sg.x() &&
-           dest.y()+tl->height() <= sg.height()+sg.y() )
-        tl->move( dest );
+        QPoint dest = tl->pos() + QPoint( args[0].toInt32(exec), args[1].toInt32(exec) );
+        // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
+        if ( dest.x() >= sg.x() && dest.y() >= sg.x() &&
+             dest.x()+tl->width() <= sg.width()+sg.x() &&
+             dest.y()+tl->height() <= sg.height()+sg.y() )
+          emit ext->moveTopLevelWidget( dest.x(), dest.y() );
+      }
     }
     return Undefined();
   }
@@ -1315,15 +1324,18 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 		part->settings()->windowMovePolicy(part->url().host());
     if(policy == KHTMLSettings::KJSWindowMoveAllow && args.size() == 2 && widget)
     {
-      QWidget * tl = widget->topLevelWidget();
-      QRect sg = KGlobalSettings::desktopGeometry(tl);
+      KParts::BrowserExtension *ext = part->browserExtension();
+      if (ext) {
+        QWidget * tl = widget->topLevelWidget();
+        QRect sg = KGlobalSettings::desktopGeometry(tl);
 
-      QPoint dest( args[0].toInt32(exec)+sg.x(), args[1].toInt32(exec)+sg.y() );
-      // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
-      if ( dest.x() >= sg.x() && dest.y() >= sg.y() &&
-           dest.x()+tl->width() <= sg.width()+sg.x() &&
-           dest.y()+tl->height() <= sg.height()+sg.y() )
-        tl->move( dest );
+        QPoint dest( args[0].toInt32(exec)+sg.x(), args[1].toInt32(exec)+sg.y() );
+        // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
+        if ( dest.x() >= sg.x() && dest.y() >= sg.y() &&
+             dest.x()+tl->width() <= sg.width()+sg.x() &&
+             dest.y()+tl->height() <= sg.height()+sg.y() )
+		emit ext->moveTopLevelWidget( dest.x(), dest.y() );
+      }
     }
     return Undefined();
   }

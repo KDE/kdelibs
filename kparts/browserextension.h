@@ -580,6 +580,17 @@ signals:
    */
   void addWebSideBar(const KURL &url, const QString& name);
 
+  /**
+   * Ask the hosting application to move the top level widget.
+   */
+  void moveTopLevelWidget( int x, int y );
+
+  /**
+   * Ask the hosting application to resize the top level widget.
+   */
+  void resizeTopLevelWidget( int w, int h );
+
+
 private slots:
   void slotCompleted();
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );

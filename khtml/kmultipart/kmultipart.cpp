@@ -335,6 +335,10 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( selectionInfo( const KURL::List& ) ) );
         connect( childExtension, SIGNAL( mouseOverInfo( const KFileItem* ) ),
                  m_extension, SIGNAL( mouseOverInfo( const KFileItem* ) ) );
+        connect( childExtension, SIGNAL( moveTopLevelWidget( int, int ) ),
+                 m_extension, SIGNAL( moveTopLevelWidget( int, int ) ) );
+        connect( childExtension, SIGNAL( resizeTopLevelWidget( int, int ) ),
+                 m_extension, SIGNAL( resizeTopLevelWidget( int, int ) ) );
     }
 
     m_isHTMLPart = ( mimeType == "text/html" );
