@@ -263,7 +263,7 @@ static lt_syshandle
 sys_dl_open (filename)
 	const char *filename;
 {
-	lt_ptr_t handle = dlopen(filename, LTDL_GLOBAL | LTDL_LAZY_OR_NOW);
+	lt_ptr_t handle = dlopen(filename, LTDL_LAZY_OR_NOW);
 	if (!handle) {
 #if HAVE_DLERROR
 		last_error = dlerror();
