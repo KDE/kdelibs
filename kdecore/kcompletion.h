@@ -28,12 +28,14 @@
 #include <qguardedptr.h>
 
 #include <kglobalsettings.h>
+#include <ksortablevaluelist.h>
 #include <kshortcut.h>
 
 class KCompTreeNode;
 class KCompletionPrivate;
 class KCompletionBasePrivate;
 class KCompletionMatchesWrapper;
+class KCompletionMatches;
 class QPopupMenu;
 
 /**
@@ -306,6 +308,24 @@ public:
     QStringList allMatches( const QString& string );
 
     /**
+     * @returns a list of all items matching the last completed string.
+     * Might take some time, when you have LOTS of items.
+     * The matches are returned as KCompletionMatches, which also
+     * keeps the weight of the matches, allowing
+     * you to modify some matches or merge them with matches
+     * from another call to allWeightedMatches(), and sort the matches
+     * after that in order to have the matches ordered correctly
+     *
+     * @see #substringCompletion
+     */
+    KCompletionMatches allWeightedMatches();
+
+    /**
+     * @returns a list of all items matching @p string.
+     */
+    KCompletionMatches allWeightedMatches( const QString& string );
+
+    /**
      * Enables/disables playing a sound when
      * @li @ref makeCompletion() can't find a match
      * @li there is a partial completion (= multiple matches in
@@ -476,6 +496,17 @@ protected:
      */
     virtual void postProcessMatches( QStringList * /*matches*/ ) const {}
 
+    /**
+     * This method is called before a list of all available completions is
+     * emitted via @ref matches. You can override this method to modify the
+     * found items before @ref match() or @ref matches() are emitted.
+     * Never delete that pointer!
+     *
+     * Default implementation does nothing.
+     * @see #postProcessMatch
+     */
+    virtual void postProcessMatches( KCompletionMatches * /*matches*/ ) const {}
+
 private:
     void 		addWeightedItem( const QString& );
     QString 		findCompletion( const QString& string );
@@ -512,6 +543,60 @@ private:
     KCompletionPrivate *d;
 };
 
+// some more helper stuff
+typedef KSortableValueList<QString> KCompletionMatchesList;
+class KCompletionMatchesPrivate;
+
+/**
+ * This structure is returned by @ref KCompletion::allWeightedMatches .
+ * It also keeps the weight of the matches, allowing
+ * you to modify some matches or merge them with matches
+ * from another call to allWeightedMatches(), and sort the matches
+ * after that in order to have the matches ordered correctly
+ * 
+ * Example (a simplified example of what Konqueror's completion does):
+ * <pre>
+ * KCompletionMatches matches = completion->allWeightedMatches( location );
+ * if( !location.startsWith( "www." ))
+       matches += completion->allWeightedmatches( "www." + location" );
+ * matches.removeDuplicates();
+ * QStringList list = matches.list();
+ * </pre>
+ *
+ * @short List for keeping matches returned from KCompletion
+ */
+class KCompletionMatches
+    : public KCompletionMatchesList
+{
+public:
+    KCompletionMatches( bool sort );
+    /**
+     * @internal
+     */
+    KCompletionMatches( const KCompletionMatchesWrapper& matches );
+    ~KCompletionMatches();
+    /**
+     * Removes duplicate matches. Needed only when you merged several matches
+     * results and there's a possibility of duplicates.
+     */
+    void removeDuplicates();
+    /**
+     * Returns the matches as a QStringList.
+     * @param sort if false, the matches won't be sorted before the conversion,
+     *             use only if you're sure the sorting is not needed
+     */
+    QStringList list( bool sort = true ) const;
+    /**
+     * If sorting() returns false, the matches aren't sorted by their weight,
+     * even if true is passed to list().
+     */
+    bool sorting() const {
+        return _sorting;
+    }
+private:
+    bool _sorting;
+    KCompletionMatchesPrivate* d;
+};
 
 /**
  * An abstract base class for adding a completion feature

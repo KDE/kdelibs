@@ -107,13 +107,13 @@ private:
 
 
 // some more helper stuff
-typedef KSortableValueList<QString> KCompletionMatches;
+typedef KSortableValueList<QString> KCompletionMatchesList;
 
 class KCompletionMatchesWrapper
 {
 public:
     KCompletionMatchesWrapper( bool sort = false )
-        : sortedList( sort ? new KCompletionMatches : 0L ),
+        : sortedList( sort ? new KCompletionMatchesList : 0L ),
           dirty( false )
     {}
     ~KCompletionMatchesWrapper() {
@@ -122,7 +122,7 @@ public:
 
     void setSorting( bool sort ) {
         if ( sort && !sortedList )
-            sortedList = new KCompletionMatches;
+            sortedList = new KCompletionMatchesList;
         else if ( !sort ) {
             delete sortedList;
             sortedList = 0L;
@@ -135,7 +135,7 @@ public:
         return sortedList != 0L;
     }
 
-    void append( int i, const QString string ) {
+    void append( int i, const QString& string ) {
         if ( sortedList )
             sortedList->insert( i, string );
         else
@@ -168,24 +168,10 @@ public:
         return list().last();
     }
 
-    QStringList list() const {
-        if ( sortedList && dirty ) {
-            sortedList->sort();
-            dirty = false;
-
-            stringList.clear();
-
-            // high weight == sorted last -> reverse the sorting here
-            QValueListConstIterator<KSortableItem<QString> > it;
-            for ( it = sortedList->begin(); it != sortedList->end(); ++it )
-                stringList.prepend( (*it).value() );
-        }
-
-        return stringList;
-    }
+    QStringList list() const;
 
     mutable QStringList stringList;
-    KCompletionMatches *sortedList;
+    KCompletionMatchesList *sortedList;
     mutable bool dirty;
 };
 

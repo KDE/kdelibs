@@ -22,6 +22,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <knotifyclient.h>
+#include <kglobal.h>
 
 #include "kcompletion.h"
 #include "kcompletion_private.h"
@@ -299,6 +300,19 @@ QStringList KCompletion::allMatches()
     return l;
 }
 
+KCompletionMatches KCompletion::allWeightedMatches()
+{
+    // Don't use d->matches since calling postProcessMatches()
+    // on d->matches here would interfere with call to
+    // postProcessMatch() during rotation
+    KCompletionMatchesWrapper matches( myOrder == Weighted );
+    bool dummy;
+    findAllCompletions( myLastString, &matches, dummy );
+    KCompletionMatches ret( matches );
+    postProcessMatches( &ret );
+    return ret;
+}
+
 QStringList KCompletion::allMatches( const QString &string )
 {
     KCompletionMatchesWrapper matches( myOrder == Weighted );
@@ -307,6 +321,16 @@ QStringList KCompletion::allMatches( const QString &string )
     QStringList l = matches.list();
     postProcessMatches( &l );
     return l;
+}
+
+KCompletionMatches KCompletion::allWeightedMatches( const QString &string )
+{
+    KCompletionMatchesWrapper matches( myOrder == Weighted );
+    bool dummy;
+    findAllCompletions( string, &matches, dummy );
+    KCompletionMatches ret( matches );
+    postProcessMatches( &ret );
+    return ret;
 }
 
 /////////////////////////////////////////////////////
@@ -692,6 +716,72 @@ void KCompTreeNode::remove( const QString& string )
         if ( child->myChildren.count() == 0 ) {
             delete child;
             myChildren.remove( child );
+        }
+    }
+}
+
+QStringList KCompletionMatchesWrapper::list() const {
+    if ( sortedList && dirty ) {
+        sortedList->sort();
+        dirty = false;
+
+        stringList.clear();
+
+        // high weight == sorted last -> reverse the sorting here
+        QValueListConstIterator<KSortableItem<QString> > it;
+        for ( it = sortedList->begin(); it != sortedList->end(); ++it )
+            stringList.prepend( (*it).value() );
+    }
+
+    return stringList;
+}
+
+KCompletionMatches::KCompletionMatches( bool sort_P )
+    : _sorting( sort_P )
+{
+}
+
+KCompletionMatches::KCompletionMatches( const KCompletionMatchesWrapper& matches )
+    : _sorting( matches.sorting())
+{
+    if( matches.sortedList != 0L )
+        KCompletionMatchesList::operator=( *matches.sortedList );
+    else {
+        QStringList l = matches.list();
+        for( QStringList::ConstIterator it = l.begin();
+             it != l.end();
+             ++it )
+            prepend( KSortableItem<QString, int>( 1, *it ) );
+    }
+}
+    
+KCompletionMatches::~KCompletionMatches()
+{
+}
+
+QStringList KCompletionMatches::list( bool sort_P ) const
+{
+    if( _sorting && sort_P )
+        const_cast< KCompletionMatches* >( this )->sort();
+    QStringList stringList;
+    // high weight == sorted last -> reverse the sorting here
+    for ( ConstIterator it = begin(); it != end(); ++it )
+        stringList.prepend( (*it).value() );
+    return stringList;
+}
+
+void KCompletionMatches::removeDuplicates()
+{
+    Iterator it1, it2;
+    for ( it1 = begin(); it1 != end(); ++it1 ) {
+        for ( (it2 = it1), ++it2; it2 != end();) {
+            if( (*it1).value() == (*it2).value()) {
+                // use the max height
+                (*it1).first = kMax( (*it1).index(), (*it2).index());
+                it2 = remove( it2 );
+                continue;
+            }
+            ++it2;
         }
     }
 }
