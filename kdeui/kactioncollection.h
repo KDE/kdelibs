@@ -90,7 +90,9 @@ public:
    * you don't require shortcuts, you can pass a null to the @p watch parameter.
    */
   KActionCollection( QWidget *watch, QObject* parent, const char *name = 0, KInstance *instance = 0 );
+#ifndef KDE_NO_COMPAT
   KActionCollection( const KActionCollection &copy );
+#endif
   virtual ~KActionCollection();
 
   /**
