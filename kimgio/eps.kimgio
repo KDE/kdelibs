@@ -2,6 +2,7 @@
 Type=EPS
 Header=^(?:%c5%d0%d3%c6|%!PS-Adobe)
 Name=Encapsulated PostScript Image
+Name[ar]=Encapsulated PostScript صورة
 Name[az]=Encapsulated PostScript Rəsmi
 Name[be]=Малюнкі Encapsulated PostScript
 Name[bg]=Пълно изображение Postscript (encapsulated)
@@ -23,7 +24,7 @@ Name[fr]=Image PostScript encapsulée
 Name[ga]=Íomhá "Encapsulated PostScript"
 Name[gl]=Imaxes en Postscript Encapsulado
 Name[he]=תמונת PostScript מכומסת
-Name[hi]=एनकेप्सुलेटेड पोस्टस्क्रिप्ट चित्र
+Name[hi]=एनकेप्सुलेटेड पोस्टस्क्रिप्ट छवि
 Name[hr]=Enkapsulirana PostScript slika
 Name[hu]=Encapsulated PostScript-kép
 Name[id]=Gambar Encapsulated Postscript

@@ -2,6 +2,7 @@
 Type=XPM
 Header=
 Name=X PixMap Image
+Name[ar]=صورة من نوع X PixMap
 Name[az]=X PixMap Rəsmi
 Name[be]=Малюнак X PixMap
 Name[bg]=Изображение X PixMap Image
@@ -22,7 +23,7 @@ Name[fr]=Image X Pixmap
 Name[ga]=Íomhá "X PixMap"
 Name[gl]=Imaxe X PixMap
 Name[he]=תמונת מפת פיקסלים של X
-Name[hi]=X PixMap चित्र
+Name[hi]=X PixMap छवि
 Name[hr]=X PixMap slika
 Name[hu]=XPM-kép
 Name[id]=Gambar X PixMap

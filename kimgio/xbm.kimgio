@@ -2,6 +2,7 @@
 Type=XBM
 Header=
 Name=X BitMap Image
+Name[ar]=صورة من نوع XBitMap
 Name[az]=X BitMap Rəsmi
 Name[be]=Малюнак X BitMap
 Name[bg]=Изображение X BitMap Image
@@ -22,7 +23,7 @@ Name[fr]=Image X Bitmap
 Name[ga]=Íomhá "X BitMap"
 Name[gl]=Imaxe X BitMap
 Name[he]=תמונת מפת סיביות של X
-Name[hi]=X BitMap चित्र
+Name[hi]=X BitMap छवि
 Name[hr]=X Bitmapska sličica
 Name[hu]=XBM-kép
 Name[id]=Gambar X BitMap

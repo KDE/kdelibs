@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Gzip compressed DVI File
+Comment[ar]=ملف DVI مضغوط بGzip
 Comment[az]=Gzip ilə sıxışdırılmış DVI faylı
 Comment[bg]=Компресиран файл DVI с gzip
 Comment[bn]=জি-জিপকৃত (gzipped) ডি-ভি-আই ফাইল
@@ -20,7 +21,8 @@ Comment[fr]=Fichier DVI compressé avec Gzip
 Comment[ga]=Comhad DVI dlúite le gzip
 Comment[gl]=Ficheiro DVI Comprimido con Gzip
 Comment[he]=קובץ DVI דחוס של באמצעות Gzip
-Comment[hi]=गजिप (Gzip) कॉम्प्रेस्ड DVI फाइल
+Comment[hi]=गजिप (Gzip) कॉम्प्रेस्ड DVI फ़ाइल
+Comment[hr]=Gzip kompresirana DVI datoteka
 Comment[hu]=Gzippel tömörített DVI fájl
 Comment[is]=Þjöppuð DVI skrá (Gzip)
 Comment[it]=File DVI compresso con Gzip

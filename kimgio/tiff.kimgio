@@ -2,6 +2,7 @@
 Type=TIFF
 Header=[MI][MI]
 Name=TIFF Image
+Name[ar]=صورة من نوع TIFF
 Name[az]=TIFF Rəsmi
 Name[be]=Малюнак TIFF
 Name[bg]=Изображение TIFF
@@ -22,7 +23,7 @@ Name[fr]=Image TIFF
 Name[ga]=Íomhá TIFF
 Name[gl]=Imaxe TIFF
 Name[he]=תמונת TIFF
-Name[hi]=TIFF चित्र
+Name[hi]=TIFF छवि
 Name[hr]=TIFF slika
 Name[hu]=TIFF-kép
 Name[id]=Gambar TIFF

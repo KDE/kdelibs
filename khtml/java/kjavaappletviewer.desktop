@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Embedded Java Applet Viewer
+Name[ar]=عارض بريمجات جافا المدمج
 Name[az]=Daxili Java Applet Nümayişçisi
 Name[bg]=Вграден визуализатор на Джава аплети
 Name[bn]=অভ্যন্তরীণ জাভা অ্যাপলেট প্রদর্শক
@@ -20,6 +21,7 @@ Name[ga]=Amharcán Feidhmchláiríní Java Inleabaithe
 Name[gl]=Visualizador de Applets de Java Incrustado
 Name[he]=מציג יישומוני Java מוטבע
 Name[hi]=अंतरनिहित जावा एप्लेट दर्शक
+Name[hr]=Ugrađeni prikazivač Java appleta
 Name[hu]=Beágyazott megjelenítőprogram Java kisalkalmazásokhoz
 Name[is]=Ívefjanlegur Java Applet skoðari
 Name[it]=Visualizzatore integrato di applet Java

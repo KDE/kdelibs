@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Graymap Image
+Name[ar]=صورة ثنائية اللون قابلة للنقل
 Name[az]=Portable Graymap Rəsmi
 Name[bg]=Изображение Portable Graymap Image
 Name[bn]=পোর্টেবল গ্রেম্যাপ চিত্র
@@ -22,7 +23,7 @@ Name[fr]=Image Graymap Portable
 Name[ga]=Íomhá "Portable Graymap"
 Name[gl]=Imaxe de Mapa de Grises Portábel
 Name[he]=תמונת מפת גווני אפור ניידת
-Name[hi]=पोर्टेबल ग्रे-मेप चित्र
+Name[hi]=पोर्टेबल ग्रे-मेप छवि
 Name[hr]=Portabilna slika u nijansama sive
 Name[hu]=PGM-kép
 Name[id]=Gambar Portable Graymap

@@ -2,6 +2,7 @@
 Type=GIF
 Header=
 Name=GIF Image
+Name[ar]=صورة من نوع GIF
 Name[az]=GIF Rəsmi
 Name[be]=Малюнак GIF
 Name[bg]=Изображение GIF
@@ -23,7 +24,7 @@ Name[fr]=Image GIF
 Name[ga]=Íomhá GIF
 Name[gl]=Imaxes GIF
 Name[he]=תמונת GIF
-Name[hi]=GIF चित्र
+Name[hi]=GIF छवि
 Name[hr]=GIF slika
 Name[hu]=GIF-kép
 Name[id]=Gambar GIF

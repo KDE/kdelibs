@@ -5,6 +5,7 @@ MimeType=application/x-deb
 Icon=deb
 Patterns=*.deb;*.DEB;
 Comment=Debian Package
+Comment[ar]=حزمة ديبيان
 Comment[az]=Debian Paketi
 Comment[bg]=Пакет на Дебиан
 Comment[bn]=ডেবিয়ান প্যাকেজ

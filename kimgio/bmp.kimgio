@@ -2,6 +2,7 @@
 Type=BMP
 Header=
 Name=BMP Image
+Name[ar]=صورة من نوع BMP
 Name[az]=BMP Rəsmi
 Name[be]=Малюнак BMP
 Name[bg]=Изображение BMP
@@ -23,7 +24,7 @@ Name[fr]=Image BMP
 Name[ga]=Íomhá BMP
 Name[gl]=Imaxe BMP
 Name[he]=תמונת BMP
-Name[hi]=BMP चित्र
+Name[hi]=BMP छवि
 Name[hr]=BMP slika
 Name[hu]=BMP-kép
 Name[id]=Gambar BMP
