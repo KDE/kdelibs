@@ -112,4 +112,15 @@ inline const char* debugString(const QString& a) { if (a.isNull()) return "<null
 #define KASSERT( Cond, Level, Area, String ) { if( !(Cond) ) kdebug( (Level), (Area), (String) ); }
 // -----
 
+/*  Script to help porting from kdebug to kDebug* :
+#!/bin/sh
+perl -pi -e 's/kdebug\([ ]*KDEBUG_INFO,/kDebugInfo\(/' $*
+perl -pi -e 's/kdebug\([ ]*0,/kDebugInfo\(/' $*
+perl -pi -e 's/kdebug\([ ]*KDEBUG_WARN,/kDebugWarning\(/' $*
+perl -pi -e 's/kdebug\([ ]*KDEBUG_ERROR,/kDebugError\(/' $*
+perl -pi -e 's/kdebug\([ ]*KDEBUG_FATAL,/kDebugFatal\(/' $*
+
+(Then cvs update -A, check compile and cvs commit)
+*/
+
 #endif

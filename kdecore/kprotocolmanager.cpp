@@ -87,7 +87,7 @@ bool KProtocolManager::isSourceProtocol( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -99,7 +99,7 @@ bool KProtocolManager::isFilterProtocol( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -116,7 +116,7 @@ bool KProtocolManager::supportsListing( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -128,7 +128,7 @@ QStringList KProtocolManager::listing( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return QStringList();
   }
 
@@ -140,7 +140,7 @@ bool KProtocolManager::supportsReading( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -152,7 +152,7 @@ bool KProtocolManager::supportsWriting( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -164,7 +164,7 @@ bool KProtocolManager::supportsMakeDir( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -176,7 +176,7 @@ bool KProtocolManager::supportsDeleting( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -188,7 +188,7 @@ bool KProtocolManager::supportsLinking( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -200,7 +200,7 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return false;
   }
 
@@ -224,7 +224,7 @@ QString KProtocolManager::executable( const QString& _protocol ) const
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return QString::null;
   }
 
@@ -236,7 +236,7 @@ KProtocolManager::Type KProtocolManager::inputType( const QString& _protocol ) c
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return T_NONE;
   }
 
@@ -248,7 +248,7 @@ KProtocolManager::Type KProtocolManager::outputType( const QString& _protocol ) 
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
   {
-    kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
+    kDebugError( 7008, "Protocol %s not found", _protocol.ascii() );
     return T_NONE;
   }
 

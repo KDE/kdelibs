@@ -1168,7 +1168,7 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
 
   if( pFilename[0] != '/' )
     {
-      kdebug( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
+      kDebugWarning( 101, "Relative filename passed to KApplication::tempSaveName" );
       aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
     }
   else
@@ -1197,7 +1197,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
 
   if( pFilename[0] != '/' )
     {
-      kdebug( KDEBUG_WARN, 101, "Relative filename passed to KApplication::tempSaveName" );
+      kDebugWarning( 101, "Relative filename passed to KApplication::tempSaveName" );
       aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
     }
   else

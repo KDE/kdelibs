@@ -388,7 +388,7 @@ void KURL::parse( const QString& _url )
   return;
 
  NodeErr:
-  kdebug(KDEBUG_ERROR, 126, "Error in parsing \"%s\"",_url.ascii());
+  kDebugError( 126, "Error in parsing \"%s\"",_url.ascii());
   delete []orig;
   m_bIsMalformed = true;
 }

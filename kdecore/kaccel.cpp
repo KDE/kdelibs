@@ -440,7 +440,7 @@ void KAccel::setItemEnabled( const QString& action, bool activate )
 bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 {
 
-	kdebug(KDEBUG_INFO, 125, "Disconnect and remove");
+	kDebugInfo( 125, "Disconnect and remove");
 	// Disconnect and remove all items in pAccel
 	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
 	aKeyIt->toFirst();
@@ -456,12 +456,12 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 	}
 #undef pE
 	
-	kdebug(KDEBUG_INFO, 125, "Clear the dictionary");
+	kDebugInfo( 125, "Clear the dictionary");
 	
 	// Clear the dictionary
 	aKeyDict.clear();
 	
-	kdebug(KDEBUG_INFO, 125, "Insert new items");
+	kDebugInfo( 125, "Insert new items");
 	
 	// Insert the new items into the dictionary and reconnect if neccessary
 	// Note also swap config and current key codes !!!!!!
@@ -726,10 +726,10 @@ uint KAccel::stringToKey(const QString& key)
         // consistent with the behaviour of other KAccel methods
 
 	if ( key.isNull() ) {
-//		kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");
+//		kDebugWarning( 125, "stringToKey::Null key");
 		return 0;
 	} else if ( key.isEmpty() ) {
-//		kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");
+//		kDebugWarning( 125, "stringToKey::Empty key");
 		return 0;
 	}
 
@@ -757,7 +757,7 @@ uint KAccel::stringToKey(const QString& key)
 		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1);
 		str.stripWhiteSpace();
 		if ( str.isEmpty() ) {
-			kdebug(KDEBUG_WARN, 125, "stringToKey::Empty token");
+			kDebugWarning( 125, "stringToKey::Empty token");
 			return 0;
 		}
 
@@ -765,7 +765,7 @@ uint KAccel::stringToKey(const QString& key)
 		else if ( str.upper()=="CTRL" ) keyCode |= Qt::CTRL;
 		else if ( str.upper()=="ALT" )  keyCode |= Qt::ALT;
 		else if (codeFound) {
-			kdebug(KDEBUG_WARN, 125, 
+			kDebugWarning( 125, 
 				"stringToKey::Duplicate keycode");
 			return 0;
 		} else {
@@ -778,7 +778,7 @@ uint KAccel::stringToKey(const QString& key)
 				}
 			}
 			if ( j==NB_KEYS ) {
-				kdebug(KDEBUG_WARN, 125, 
+				kDebugWarning( 125, 
 					"stringToKey::Unknown key name %s", 
 					str.ascii());
 				return 0;
