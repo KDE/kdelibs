@@ -55,7 +55,6 @@ class KLibrary : public QObject
     Q_OBJECT
 public:
     /**
-     * @internal
      * Don't create KLibrary objects on your own. Instead use KLibLoader.
      */
     KLibrary( const QString& libname, const QString& filename, void * handle );
