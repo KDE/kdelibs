@@ -789,8 +789,16 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                 *lastDirectory = QDir::currentDirPath();
         }
         d->url = *lastDirectory;
-        // If local, check it exists. If not, go up until it exists.
-        if ( d->url.isLocalFile() ) {
+    }
+
+    d->selection = d->url.url();
+
+    // If local, check it exists. If not, go up until it exists.
+    if ( d->url.isLocalFile() )
+    {
+        if ( !QFile::exists( d->url.path() ) )
+        {
+            d->url = d->url.upURL();
             QDir dir( d->url.path() );
             while ( !dir.exists() )
             {
@@ -980,6 +988,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     // inserting the list of URLs into the combo.
     d->completionLock = true;
     readConfig( config, ConfigGroup );
+    setSelection(d->selection);
     d->completionLock = false;
 }
 
@@ -1027,7 +1036,6 @@ void KFileDialog::initSpeedbar()
     // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
     if ( d->urlBar )
         d->urlBar->setCurrentItem( d->url );
-    setSelection(d->url.url()); // ### move that into show() as well?
 
     d->urlBarLayout->insertWidget( 0, d->urlBar );
 }
