@@ -140,6 +140,10 @@ bool KApplication::s_dcopClientNeedsPostInit = false;
 
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
+#if KDE_IS_VERSION( 3, 2, 90 )
+#warning Obsolete, remove.
+// remove atom_KdeNetUserTime related stuff
+#endif
 static Atom atom_KdeNetUserTime;
 
 template class QPtrList<KSessionManaged>;

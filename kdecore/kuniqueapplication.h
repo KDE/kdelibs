@@ -129,6 +129,11 @@ public:
    *
    * Command line arguments have been passed to KCmdLineArgs before this
    * function is called and can be checked in the usual way.
+   *
+   * The default implementation ensures the mainwindow of the already
+   * running instance is shown and activated if necessary. You should
+   * prefer using it from your overriden method instead of doing
+   * it directly.
    * 
    * Note that newInstance() is called also in the first started 
    * application process.

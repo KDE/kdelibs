@@ -60,14 +60,70 @@ class KWin
 public:
 
     /**
-     * Sets window @p win to be the active window.
+     * Requests that window @p is activated.
      *
-     * This is a request to the window manager. It may or may not be
-     * obeyed.
+     * There are two ways how to activate a window, by calling
+     * activateWindow() and @ref setActiveWindow(). Generally,
+     * applications shouldn't make attempts to explicitly activate
+     * their windows, and instead let the user to activate them.
+     * In the special cases where this may be needed, applications
+     * should use activateWindow(). Window manager may consider whether
+     * this request wouldn't result in focus stealing, which
+     * would be obtrusive, and may refuse the request.
+     *
+     * The usage of @ref setActiveWindow() is meant only for pagers
+     * and similar tools, which represent direct user actions.
+     * Except for rare cases, this request will be always honoured,
+     * and normal applications are forbidden to use it.
+     *
      * @param win the if of the window to make active
+     * @param time X server timestamp of the user activity that
+     *    caused this request
     */
-    static void setActiveWindow( WId win);
+    static void activateWindow( WId win, long time = 0 );
 
+    /**
+     * Sets window @p win to be the active window. Note that this
+     * should be called only in special cases, applications
+     * shouldn't force themselves or other windows to be the active
+     * window. Generally, this call should used only by pagers
+     * and similar tools. See the explanation in description
+     * of @ref activateWindow().
+     *
+     * @param win the if of the window to make active
+     * @param time X server timestamp of the user activity that
+     *    caused this request
+     *
+     * @since 3.2
+    */
+    static void setActiveWindow( WId win, long time );
+    /**
+     * @overload
+     */
+    // KDE4 merge with above with time = 0
+    static void setActiveWindow( WId win );
+
+    /**
+     * When application finishes some operation and wants to notify
+     * the user about it, it can call demandAttention(). Instead
+     * of activating the window, which could be obtrusive, the window
+     * will be marked specially as demanding user's attention.
+     * See also explanation in description of @ref activateWindow().
+     *
+     * @since 3.2
+     */
+    static void demandAttention( WId win, bool set = true );
+
+    /**
+     * Sets user timestamp @p time on window @win. The timestamp
+     * is expressed as XServer time. If a window
+     * is shown with user timestamp older than the time of the last
+     * user action, it won't be activated after being shown.
+     * The most common case is the special value 0 which means
+     * not to activate the window after being shown.
+     */    
+    static void setUserTime( WId win, long time );
+    
     /**
      * Invokes interactive context help.
      */

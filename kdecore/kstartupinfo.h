@@ -529,6 +529,21 @@ class KStartupInfoData
 	 * @since 3.1.1
 	 */
 	TriState silent() const;
+        
+        /**
+         * Sets timestamp for the startup notification. The timestamp is expressed
+         * as XServer time, and is used to prevent activation of the matching
+         * window if user interaction took place after this timestamp.
+         * Value -1 means no timestamp set, value 0 means that the window should
+         * not be activated.
+         */
+        void setTimestamp( unsigned long time );
+        
+        /**
+         * Return the timestamp for the startup notification, or -1 if no timestamp
+         * is set.
+         */
+        unsigned long timestamp() const;
 
 	/**
 	 * Updates the notification data from the given data. Some data, such as the desktop
@@ -536,6 +551,7 @@ class KStartupInfoData
 	 * @param data the data to update
 	 */
         void update( const KStartupInfoData& data );
+
 	/**
 	 * Constructor. Initializes all the data to their default empty values.
 	 */

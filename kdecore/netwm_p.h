@@ -1,6 +1,7 @@
 /*
 
   Copyright (c) 2000 Troll Tech AS
+  Copyright (c) 2003 Lubos Lunak <l.lunak@kde.org>
 
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
@@ -132,6 +133,8 @@ struct NETWinInfoPrivate {
     int pid;
     int handled_icons;
     Window kde_system_tray_win_for;
+    Time user_time;
+    char* startup_id;
 
     unsigned long properties[ 2 ];
 

@@ -72,7 +72,8 @@ static const char* const KDE_STARTUP_ENV = "KDE_STARTUP_ENV";
 static const char* const KDE_STARTUP_INFO_2 = "KDE_STARTUP_INFO";
 static const char* const KDE_STARTUP_ID_2 = "KDE_STARTUP_ID";
 
-static int get_num( const QString& item_P );
+static long get_num( const QString& item_P );
+static unsigned long get_unum( const QString& item_P );
 static QString get_str( const QString& item_P );
 static QCString get_cstr( const QString& item_P );
 static QStringList get_fields( const QString& txt_P );
@@ -912,7 +913,7 @@ bool KStartupInfoId::none() const
 struct KStartupInfoDataPrivate
     {
     KStartupInfoDataPrivate() : desktop( 0 ), wmclass( "" ), hostname( "" ),
-	silent( KStartupInfoData::Unknown ) {};
+	silent( KStartupInfoData::Unknown ), timestamp( -1U ) {};
     QString bin;
     QString name;
     QString icon;
@@ -921,6 +922,7 @@ struct KStartupInfoDataPrivate
     QCString wmclass;
     QCString hostname;
     KStartupInfoData::TriState silent;
+    unsigned long timestamp;
     };
 
 QString KStartupInfoData::to_text() const
@@ -944,6 +946,8 @@ QString KStartupInfoData::to_text() const
         ret += QString::fromLatin1( " PID=%1" ).arg( *it );
     if( d->silent != Unknown )
 	ret += QString::fromLatin1( " SILENT=%1" ).arg( d->silent == Yes ? 1 : 0 );
+    if( d->timestamp != -1U )
+        ret += QString::fromLatin1( " TIMESTAMP=%1" ).arg( d->timestamp );
     return ret;
     }
 
@@ -959,6 +963,7 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P )
     const QString hostname_str = QString::fromLatin1( "HOSTNAME=" );
     const QString pid_str = QString::fromLatin1( "PID=" );
     const QString silent_str = QString::fromLatin1( "SILENT=" );
+    const QString timestamp_str = QString::fromLatin1( "TIMESTAMP=" );
     for( QStringList::Iterator it = items.begin();
          it != items.end();
          ++it )
@@ -979,6 +984,8 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P )
             addPid( get_num( *it ));
         else if( ( *it ).startsWith( silent_str ))
             d->silent = get_num( *it ) != 0 ? Yes : No;
+        else if( ( *it ).startsWith( timestamp_str ))
+            d->timestamp = get_unum( *it );
         }
     }
 
@@ -1016,6 +1023,8 @@ void KStartupInfoData::update( const KStartupInfoData& data_P )
         addPid( *it );
     if( data_P.silent() != Unknown )
 	d->silent = data_P.silent();
+    if( data_P.timestamp() != -1U && timestamp() == -1U ) // don't overwrite
+        d->timestamp = data_P.timestamp();
     }
 
 KStartupInfoData::KStartupInfoData()
@@ -1149,11 +1158,28 @@ KStartupInfoData::TriState KStartupInfoData::silent() const
     return d->silent;
     }
 
+void KStartupInfoData::setTimestamp( unsigned long time )
+    {
+    d->timestamp = time;
+    }
+    
+unsigned long KStartupInfoData::timestamp() const
+    {
+    return d->timestamp;
+    }
+    
 static
-int get_num( const QString& item_P )
+long get_num( const QString& item_P )
     {
     unsigned int pos = item_P.find( '=' );
-    return item_P.mid( pos + 1 ).toInt();
+    return item_P.mid( pos + 1 ).toLong();
+    }
+
+static
+unsigned long get_unum( const QString& item_P )
+    {
+    unsigned int pos = item_P.find( '=' );
+    return item_P.mid( pos + 1 ).toULong();
     }
 
 static

@@ -43,6 +43,7 @@
 #include "kdebug.h"
 #include "kuniqueapplication.h"
 #ifdef Q_WS_X11
+#include <netwm.h>
 #include <X11/Xlib.h>
 #define DISPLAY "DISPLAY"
 #else
@@ -70,6 +71,7 @@ public:
    QPtrList <DCOPRequest> requestList;
    bool processingRequest;
    bool firstInstance;
+   QCString asn_id;
 };
 
 void
@@ -239,10 +241,23 @@ KUniqueApplication::start()
      if (!dc->isApplicationRegistered(appName)) {
         kdError() << "KUniqueApplication: Registering failed!" << endl;
      }
+
+     QCString new_asn_id;
+#ifdef Q_WS_X11
+     KStartupInfoId id;
+     if( kapp != NULL ) // KApplication constructor unsets the env. variable
+         id.initId( kapp->startupId());
+     else
+         id = KStartupInfo::currentStartupIdEnv();
+     if( !id.none())
+         new_asn_id = id.id();
+#endif
+     
      QByteArray data, reply;
      QDataStream ds(data, IO_WriteOnly);
 
      KCmdLineArgs::saveAppArgs(ds);
+     ds << new_asn_id;
 
      QCString replyType;
      if (!dc->call(appName, KCmdLineArgs::about->appName(), "newInstance()", data, replyType, reply))
@@ -351,7 +366,10 @@ KUniqueApplication::processDelayed()
      if (request->fun == "newInstance()") {
        QDataStream ds(request->data, IO_ReadOnly);
        KCmdLineArgs::loadAppArgs(ds);
+       if( !ds.atEnd()) // backwards compatibility
+           ds >> d->asn_id;
        int exitCode = newInstance();
+       d->asn_id = QCString();
        QDataStream rs(replyData, IO_WriteOnly);
        rs << exitCode;
        replyType = "int";
@@ -363,15 +381,35 @@ KUniqueApplication::processDelayed()
   d->processingRequest = false;
 }
 
+#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
+extern Time qt_x_time;
+#endif
+
 int KUniqueApplication::newInstance()
 {
   if (!d->firstInstance)
   {
 #ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
-     if ( mainWidget() ) {
-	mainWidget()->show();
-        KWin::setActiveWindow(mainWidget()->winId());
-     }
+    if ( mainWidget() )
+    {
+      mainWidget()->show();
+      long activate = true;
+      if( !d->asn_id.isEmpty())
+      {
+          NETRootInfo i( qt_xdisplay(), NET::Supported );
+          if( i.isSupported( NET::WM2StartupId ))
+          {
+              KStartupInfo::setWindowStartupId( mainWidget()->winId(), d->asn_id );
+              activate = false; // WM will take care of it
+          }
+      }
+      if( activate )
+      // This is not very nice, but there's no way how to get any
+      // usable timestamp without ASN, so force activating the window.
+      // And even with ASN, it's not possible to get the timestamp here,
+      // so if the WM doesn't have support for ASN, it can't be used either.
+          KWin::setActiveWindow( mainWidget()->winId(), qt_x_time );
+    }
 #endif
   }
   d->firstInstance = false;

@@ -1,6 +1,7 @@
 /*
 
   Copyright (c) 2000 Troll Tech AS
+  Copyright (c) 2003 Lubos Lunak <l.lunak@kde.org>
 
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
@@ -74,7 +75,9 @@ static Atom net_wm_strut             = 0;
 static Atom net_wm_icon_geometry     = 0;
 static Atom net_wm_icon              = 0;
 static Atom net_wm_pid               = 0;
+static Atom net_wm_user_time         = 0;
 static Atom net_wm_handled_icons     = 0;
+static Atom net_startup_id           = 0;
 
 // KDE extensions
 static Atom kde_net_system_tray_windows       = 0;
@@ -109,6 +112,7 @@ static Atom net_wm_state_hidden       = 0;
 static Atom net_wm_state_fullscreen   = 0;
 static Atom net_wm_state_above        = 0;
 static Atom net_wm_state_below        = 0;
+static Atom net_wm_state_demands_attention = 0;
 
 // KDE extension that's not in the specs - Replaced by state_above now?
 static Atom net_wm_state_stays_on_top = 0;
@@ -189,6 +193,7 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 
 	if (p->name) delete [] p->name;
 	if (p->visible_name) delete [] p->visible_name;
+        if (p->startup_id) delete[] p->startup_id;
 
 	int i;
 	for (i = 0; i < p->icons.size(); i++)
@@ -202,7 +207,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 55;
+static const int netAtomCount = 58;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -233,7 +238,13 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_ICON_GEOMETRY",
 	    "_NET_WM_ICON",
 	    "_NET_WM_PID",
+	    "_NET_WM_USER_TIME",
 	    "_NET_WM_HANDLED_ICONS",
+            "_KDE_STARTUP_ID",
+#ifdef KWIN_FOCUS
+ // SELI HACK
+#endif
+//            "_NET_STARTUP_ID",
 	    "_NET_WM_PING",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
@@ -256,6 +267,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_STATE_FULLSCREEN",
 	    "_NET_WM_STATE_ABOVE",
 	    "_NET_WM_STATE_BELOW",
+	    "_NET_WM_STATE_DEMANDS_ATTENTION",
 
 	    "_NET_WM_STATE_STAYS_ON_TOP",
 
@@ -298,7 +310,9 @@ static void create_atoms(Display *d) {
 	    &net_wm_icon_geometry,
 	    &net_wm_icon,
 	    &net_wm_pid,
+	    &net_wm_user_time,
 	    &net_wm_handled_icons,
+            &net_startup_id,
 	    &net_wm_ping,
 
 	    &net_wm_window_type_normal,
@@ -321,6 +335,7 @@ static void create_atoms(Display *d) {
 	    &net_wm_state_fullscreen,
 	    &net_wm_state_above,
 	    &net_wm_state_below,
+	    &net_wm_state_demands_attention,
 
 	    &net_wm_state_stays_on_top,
 
@@ -1101,6 +1116,8 @@ void NETRootInfo::setSupported() {
 	    atoms[pnum++] = net_wm_state_above;
         if (p->properties[ STATES ] & KeepBelow)
 	    atoms[pnum++] = net_wm_state_below;
+        if (p->properties[ STATES ] & DemandsAttention)
+	    atoms[pnum++] = net_wm_state_demands_attention;
 
         if (p->properties[ STATES ] & StaysOnTop)
 	    atoms[pnum++] = net_wm_state_stays_on_top;
@@ -1123,6 +1140,12 @@ void NETRootInfo::setSupported() {
 
     if (p->properties[ PROTOCOLS ] & WMPing)
 	atoms[pnum++] = net_wm_ping;
+
+    if (p->properties[ PROTOCOLS2 ] & WM2UserTime)
+	atoms[pnum++] = net_wm_user_time;
+
+    if (p->properties[ PROTOCOLS2 ] & WM2StartupId)
+	atoms[pnum++] = net_startup_id;
 
     // KDE specific extensions
     if (p->properties[ PROTOCOLS ] & KDESystemTrayWindows)
@@ -1267,6 +1290,8 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ STATES ] |= KeepAbove;
     else if( atom == net_wm_state_below )
         p->properties[ STATES ] |= KeepBelow;
+    else if( atom == net_wm_state_demands_attention )
+        p->properties[ STATES ] |= DemandsAttention;
 
     else if( atom == net_wm_state_stays_on_top )
         p->properties[ STATES ] |= StaysOnTop;
@@ -1289,6 +1314,12 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
     else if( atom == net_wm_ping )
         p->properties[ PROTOCOLS ] |= WMPing;
 
+    else if( atom == net_wm_user_time )
+        p->properties[ PROTOCOLS2 ] |= WM2UserTime;
+
+    else if( atom == net_startup_id )
+        p->properties[ PROTOCOLS2 ] |= WM2StartupId;
+
     // KDE specific extensions
     else if( atom == kde_net_system_tray_windows )
         p->properties[ PROTOCOLS ] |= KDESystemTrayWindows;
@@ -1300,7 +1331,20 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ PROTOCOLS ] |= WMKDEFrameStrut;
 }
 
+#ifdef KWIN_FOCUS
+extern Time qt_x_last_input_time;
 void NETRootInfo::setActiveWindow(Window window) {
+    setActiveWindow( window, FromUnknown, qt_x_last_input_time );
+}
+#else
+extern Time qt_x_time;
+void NETRootInfo::setActiveWindow(Window window) {
+    setActiveWindow( window, FromUnknown, qt_x_time );
+}
+#endif
+
+void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
+    Time timestamp ) {
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setActiveWindow(0x%lx) (%s)\n",
@@ -1319,8 +1363,8 @@ void NETRootInfo::setActiveWindow(Window window) {
 	e.xclient.display = p->display;
 	e.xclient.window = window;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = 0l;
-	e.xclient.data.l[1] = 0l;
+	e.xclient.data.l[0] = src;
+	e.xclient.data.l[1] = timestamp;
 	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
@@ -1485,6 +1529,8 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
     unsigned long& dirty = props[ PROTOCOLS ];
     unsigned long& dirty2 = props[ PROTOCOLS2 ];
     bool do_update = false;
+    
+    Q_UNUSED( dirty2 ); // for now
 
     // the window manager will be interested in client messages... no other
     // client should get these messages
@@ -1547,6 +1593,16 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 #endif
 
 	    changeActiveWindow(event->xclient.window);
+	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
+            {
+                RequestSource src = FromUnknown;
+                // make sure there aren't unknown values
+                if( event->xclient.data.l[0] >= FromUnknown
+                    && event->xclient.data.l[0] <= FromTool )
+                    src = static_cast< RequestSource >( event->xclient.data.l[0] );
+		this2->changeActiveWindow( event->xclient.window, src,
+                    event->xclient.data.l[1]);
+            }
 	} else if (event->xclient.message_type == net_wm_moveresize) {
 
 #ifdef    NETWMDEBUG
@@ -1671,6 +1727,8 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
         props[ i ] = dirty_props[ i ] & p->client_properties[ i ];
     const unsigned long& dirty = props[ PROTOCOLS ];
     const unsigned long& dirty2 = props[ PROTOCOLS2 ];
+
+    Q_UNUSED( dirty2 ); // for now
 
     if (dirty & Supported ) {
         // only in Client mode
@@ -2260,6 +2318,8 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->icon_name = (char *) 0;
     p->visible_icon_name = (char *) 0;
     p->desktop = p->pid = p->handled_icons = 0;
+    p->user_time = -1U;
+    p->startup_id = NULL;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2312,6 +2372,8 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->icon_name = (char *) 0;
     p->visible_icon_name = (char *) 0;
     p->desktop = p->pid = p->handled_icons = 0;
+    p->user_time = -1U;
+    p->startup_id = NULL;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2599,11 +2661,21 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 
 	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 	}
+
+        if ((mask & DemandsAttention) &&
+	    ((p->state & DemandsAttention) != (state & DemandsAttention))) {
+            e.xclient.data.l[0] = (state & Hidden) ? 1 : 0;
+            e.xclient.data.l[1] = net_wm_state_demands_attention;
+            e.xclient.data.l[2] = 0l;
+
+            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        }
+
     } else {
 	p->state &= ~mask;
 	p->state |= state;
 
-	long data[8];
+	long data[50];
 	int count = 0;
 
 	// hints
@@ -2613,6 +2685,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 	if (p->state & Shaded) data[count++] = net_wm_state_shaded;
 	if (p->state & Hidden) data[count++] = net_wm_state_hidden;
 	if (p->state & FullScreen) data[count++] = net_wm_state_fullscreen;
+	if (p->state & DemandsAttention) data[count++] = net_wm_state_demands_attention;
 
 	// policy
 	if (p->state & KeepAbove) data[count++] = net_wm_state_above;
@@ -2820,6 +2893,19 @@ void NETWinInfo::setHandledIcons(Bool handled) {
 		    PropModeReplace, (unsigned char *) &d, 1);
 }
 
+void NETWinInfo::setStartupId(const char* id) {
+    if (role != Client) return;
+
+    if(p->startup_id) delete[] p->startup_id;
+    p->startup_id = nstrdup(id);
+    XChangeProperty(p->display, p->window, net_startup_id, XA_STRING, 8,
+#ifdef KWIN_FOCUS
+// SELI HACK
+#endif
+        PropModeReplace, reinterpret_cast< unsigned char* >( p->startup_id ),
+        strlen( p->startup_id ));
+}
+
 
 void NETWinInfo::setKDESystemTrayWinFor(Window window) {
     if (role != Client) return;
@@ -2900,6 +2986,15 @@ NETIcon NETWinInfo::icon(int width, int height) const {
     return result;
 }
 
+void NETWinInfo::setUserTime( Time time ) {
+    if (role != Client) return;
+
+    p->user_time = time;
+    long d = time;
+    XChangeProperty(p->display, p->window, net_wm_user_time, XA_CARDINAL, 32,
+		    PropModeReplace, (unsigned char *) &d, 1);
+}
+
 
 unsigned long NETWinInfo::event(XEvent *ev )
 {
@@ -2964,6 +3059,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		    mask |= KeepAbove;
                 else if ((Atom) event->xclient.data.l[i] == net_wm_state_below)
 		    mask |= KeepBelow;
+                else if ((Atom) event->xclient.data.l[i] == net_wm_state_demands_attention)
+		    mask |= DemandsAttention;
 		else if ((Atom) event->xclient.data.l[i] == net_wm_state_stays_on_top)
 		    mask |= StaysOnTop;
 	    }
@@ -3021,24 +3118,36 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		dirty |= WMName;
 	    else if (pe.xproperty.atom == net_wm_visible_name)
 		dirty |= WMVisibleName;
+	    else if (pe.xproperty.atom == net_wm_desktop)
+		dirty |= WMDesktop;
 	    else if (pe.xproperty.atom == net_wm_window_type)
 		dirty |=WMWindowType;
+	    else if (pe.xproperty.atom == net_wm_state)
+		dirty |= WMState;
 	    else if (pe.xproperty.atom == net_wm_strut)
 		dirty |= WMStrut;
 	    else if (pe.xproperty.atom == net_wm_icon_geometry)
 		dirty |= WMIconGeometry;
 	    else if (pe.xproperty.atom == net_wm_icon)
 		dirty |= WMIcon;
-	    else if (pe.xproperty.atom == xa_wm_state)
-		dirty |= XAWMState;
-	    else if (pe.xproperty.atom == net_wm_state)
-		dirty |= WMState;
-	    else if (pe.xproperty.atom == net_wm_desktop)
-		dirty |= WMDesktop;
-	    else if (pe.xproperty.atom == kde_net_wm_frame_strut)
-		dirty |= WMKDEFrameStrut;
+	    else if (pe.xproperty.atom == net_wm_pid)
+		dirty |= WMPid;
+	    else if (pe.xproperty.atom == net_wm_handled_icons)
+		dirty |= WMHandledIcons;
+	    else if (pe.xproperty.atom == net_startup_id)
+		dirty2 |= WM2StartupId;
 	    else if (pe.xproperty.atom == kde_net_wm_system_tray_window_for)
 		dirty |= WMKDESystemTrayWinFor;
+	    else if (pe.xproperty.atom == xa_wm_state)
+		dirty |= XAWMState;
+	    else if (pe.xproperty.atom == kde_net_wm_frame_strut)
+		dirty |= WMKDEFrameStrut;
+	    else if (pe.xproperty.atom == net_wm_icon_name)
+		dirty |= WMIconName;
+	    else if (pe.xproperty.atom == net_wm_visible_icon_name)
+		dirty |= WMVisibleIconName;
+	    else if (pe.xproperty.atom == net_wm_user_time)
+		dirty2 |= WM2UserTime;
 	    else {
 
 #ifdef    NETWMDEBUG
@@ -3182,6 +3291,8 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 			p->state |= KeepAbove;
 		    else if ((Atom) states[count] == net_wm_state_below)
 			p->state |= KeepBelow;
+		    else if ((Atom) states[count] == net_wm_state_demands_attention)
+			p->state |= DemandsAttention;
 		    else if ((Atom) states[count] == net_wm_state_stays_on_top)
 			p->state |= StaysOnTop;
 		}
@@ -3283,8 +3394,6 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 	    if( data_ret )
 		XFree(data_ret);
 	}
-
-
     }
 
     if (dirty & WMWindowType) {
@@ -3433,6 +3542,40 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		XFree(data_ret);
 	}
     }
+
+    if (dirty2 & WM2StartupId)
+    {
+        delete[] p->startup_id;
+        p->startup_id = NULL;
+	if (XGetWindowProperty(p->display, p->window, net_startup_id, 0l,
+			       (long) BUFSIZE, False, XA_STRING, &type_ret,
+#ifdef KWIN_FOCUS
+// SELI FOCUS HACK
+#endif
+			       &format_ret, &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
+		p->startup_id = nstrndup((const char *) data_ret, nitems_ret);
+	    }
+
+	    if( data_ret )
+		XFree(data_ret);
+	}
+    }
+
+    if (dirty2 & WM2UserTime) {
+	p->user_time = -1U;
+	if (XGetWindowProperty(p->display, p->window, net_wm_user_time, 0l, 1l,
+			       False, XA_CARDINAL, &type_ret, &format_ret,
+			       &nitems_ret, &unused, &data_ret) == Success) {
+            // don't do nitems_ret check - Qt does PropModeAppend to avoid API call for it
+	    if (type_ret == XA_CARDINAL && format_ret == 32 /*&& nitems_ret == 1*/) {
+		p->user_time = *((long *) data_ret);
+	    }
+	    if ( data_ret )
+		XFree(data_ret);
+	}
+    }
 }
 
 
@@ -3512,6 +3655,9 @@ int NETWinInfo::pid() const {
     return p->pid;
 }
 
+Time NETWinInfo::userTime() const {
+    return p->user_time;
+}
 
 Bool NETWinInfo::handledIcons() const {
     return p->handled_icons;

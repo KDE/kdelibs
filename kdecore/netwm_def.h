@@ -1,6 +1,7 @@
 /*
 
   Copyright (c) 2000 Troll Tech AS
+  Copyright (c) 2003 Lubos Lunak <l.lunak@kde.org>
 
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
@@ -299,6 +300,10 @@ public:
 
        @li StaysOnTop is an obsolete name for KeepAbove.
        
+       @li DemandsAttention there was an attempt to activate this window, but the window manager prevented
+           this. E.g. taskbar should mark such window specially to bring user's attention to this window.
+           Only the window manager is allowed to change it.
+
        Note that KeepAbove (StaysOnTop) and KeepBelow are meant as user preference and applications
        should avoid setting these states themselves.
     **/
@@ -316,7 +321,8 @@ public:
 	SkipPager    = 1<<7,
 	Hidden       = 1<<8,	///< @since 3.2
 	FullScreen   = 1<<9,	///< @since 3.2
-	KeepBelow    = 1<<10	///< @since 3.2
+	KeepBelow    = 1<<10,	///< @since 3.2
+        DemandsAttention = 1<<11  ///< @since 3.2
     };
 
     /**
@@ -466,9 +472,16 @@ public:
     /**
         Supported properties. This enum is an extension to NET::Property,
         because them enum is limited only to 32 bits.
+
+        Client window properties and protocols:
+
+        @li WM2UserTime
+        @li WM2StartupId
+
     **/
     enum Property2 {
-        WM2Test               = 1<<0
+        WM2UserTime            = 1<<0,
+        WM2StartupId           = 1<<1
     };
 
     /**
@@ -477,6 +490,18 @@ public:
        @since 3.2
      **/ 
     enum { OnAllDesktops = -1 };
+    
+    /**
+       Source of the request.
+       @li FromApplication the request comes from a normal application
+       @li FromTool the request comes from pager or similar tool
+    **/
+    // must match the values for data.l[0] field in _NET_ACTIVE_WINDOW message
+    enum RequestSource {
+        FromUnknown, // internal
+        FromApplication,
+        FromTool
+    };
 };
 
 

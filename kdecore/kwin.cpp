@@ -52,6 +52,11 @@
 
 static bool atoms_created = FALSE;
 extern Atom qt_wm_protocols;
+#ifdef KWIN_FOCUS
+extern Time qt_x_last_input_time;
+#else
+extern Time qt_x_time;
+#endif
 
 // Fix for --enable-final. This gets undefined at the end of this file.
 #ifndef None
@@ -190,10 +195,45 @@ void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
 	forWin = qt_xrootwin();
     info.setKDESystemTrayWinFor( forWin );
 }
-void KWin::setActiveWindow( WId win)
+
+void KWin::activateWindow( WId win, long time )
 {
     NETRootInfo info( qt_xdisplay(), 0 );
-    info.setActiveWindow( win );
+    if( time == 0 )
+#ifdef KWIN_FOCUS
+        time = qt_x_last_input_time;
+#else
+        time = qt_x_time;
+#endif
+    info.setActiveWindow( win, NET::FromApplication, time );
+}
+
+void KWin::setActiveWindow( WId win, long time )
+{
+    NETRootInfo info( qt_xdisplay(), 0 );
+#ifdef KWIN_FOCUS
+        time = qt_x_last_input_time;
+#else
+        time = qt_x_time;
+#endif
+    info.setActiveWindow( win, NET::FromTool, time );
+}
+
+void KWin::setActiveWindow( WId win )
+{
+    setActiveWindow( win, 0 );
+}
+
+void KWin::demandAttention( WId win, bool set )
+{
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), 0 );
+    info.setState( set ? NET::DemandsAttention : 0, NET::DemandsAttention );
+}
+
+void KWin::setUserTime( WId win, long time )
+{
+    NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), 0 );
+    info.setUserTime( time );
 }
 
 KWin::WindowInfo KWin::windowInfo( WId win, unsigned long properties )

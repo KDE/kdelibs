@@ -1,6 +1,7 @@
 /*
 
   Copyright (c) 2000 Troll Tech AS
+  Copyright (c) 2003 Lubos Lunak <l.lunak@kde.org>
 
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
@@ -467,7 +468,22 @@ public:
     void setDesktopName(int desktop, const char *desktopName);
 
     /**
-       Sets the active (focused) window the specified window.
+       Requests that the specified window becomes the active (focused) one.
+
+       @param window the id of the new active window
+       @param src whether the request comes from normal application
+          or from a pager or similar tool
+       @param timestamp X server timestamp of the user action that
+          caused the request
+          
+       @since 3.2
+    **/
+    void setActiveWindow(Window window, NET::RequestSource src,
+        Time timestamp );
+
+    /**
+       Sets the active (focused) window the specified window. This should
+       be used only in the window manager mode.
 
        @param window the if of the new active window
     **/
@@ -636,9 +652,11 @@ protected:
     virtual void changeCurrentDesktop(int) { }
 
     /**
+       @deprecated
        A Window Manager should subclass NETRootInfo and reimplement this function
        when it wants to know when a Client made a request to change the active
-       (focused) window.
+       (focused) window. The changeActiveWindow() method in NETRootInfo2
+       should be used instead.
 
        @param window the id of the window to activate
     **/
@@ -697,6 +715,18 @@ public:
 protected:
     friend class NETRootInfo;
     virtual void gotPing( Window, Time ) {};
+    /**
+       A Window Manager should subclass NETRootInfo and reimplement this function
+       when it wants to know when a Client made a request to change the active
+       (focused) window.
+
+       @param window the id of the window to activate
+       @param src the source from which the request came
+       @param timestamp the timestamp of the user action causing this request
+    **/
+    // virtual void changeActiveWindow(Window window,NET::RequestSource src, Time timestamp ) { }
+    virtual void changeActiveWindow(Window,NET::RequestSource,Time) { }
+
 // no private data, use NETRootInfoPrivate
 };
 
@@ -1034,6 +1064,30 @@ public:
     **/
     NETIcon icon(int width = -1, int height = -1) const;
 
+    /*    
+     * Sets user timestamp @p time on the window (property _NET_WM_USER_TIME).
+     * The timestamp is expressed as XServer time. If a window
+     * is shown with user timestamp older than the time of the last
+     * user action, it won't be activated after being shown, with the special
+     * value 0 meaning not to activate the window after being shown.
+     */
+    void setUserTime( Time time );
+    
+    /**
+     * Returns the time of last user action on the window, or -1 if not set.
+     */
+    Time userTime() const;
+
+    /*    
+     * Sets the startup notification id @p id on the window.
+     */
+    void setStartupId( const char* startup_id );
+    
+    /**
+     * Returns the startup notification id of the window.
+     */
+    const char* startupId() const;
+
     /**
        Places the window frame geometry in frame, and the application window
        geometry in window.  Both geometries are relative to the root window.
@@ -1114,6 +1168,8 @@ private:
     NETWinInfoPrivate *p;
 };
 
+
+//#define KWIN_FOCUS
 
 #endif
 #endif // __net_wm_h
