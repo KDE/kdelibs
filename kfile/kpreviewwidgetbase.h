@@ -20,6 +20,11 @@
 #ifndef __KPREVIEWWIDGETBASE_H__
 #define __KPREVIEWWIDGETBASE_H__
 
+
+#include <qwidget.h>
+
+class KURL;
+
 /**
  * Abstract baseclass for all preview widgets which shall be used via
  * KFileDialog::setPreviewWidget(const KPreviewWidgetBase *).
@@ -33,15 +38,10 @@
  * @short Abstract baseclass for all preview widgets.
  * @author Frerich Raabe <raabe@kde.org>
  */
-
-#include <qwidget.h>
-
-class KURL;
-
 class KPreviewWidgetBase : public QWidget
 {
     Q_OBJECT
-	
+
 public:
     /**
      * Constructor. Construct the user interface of your preview widget here
