@@ -628,12 +628,13 @@ const QString KTMainWindow::classNameOfToplevel(int number){
 
 
 
-bool KTMainWindow::restore(int number){
+bool KTMainWindow::restore(int number, bool show){
     if (!canBeRestored(number))
 	return false;
     KConfig *config = kapp->sessionConfig();
     if (readPropertiesInternal(config, number)){
-	show();
+	if (show)
+	    KTMainWindow::show();
 	return true;
     }
     return false;
@@ -641,7 +642,7 @@ bool KTMainWindow::restore(int number){
 
 bool KTMainWindow::event(QEvent* ev)
 {
-	if ( QWidget::event(ev) ) return TRUE;
+    if ( QWidget::event(ev) ) return TRUE;
     /* We will get a layout hint when the view widget or a bar changes it's
      * size constraines. Since we might have to adjust the window size we
      * call updateGeometry.
@@ -649,7 +650,7 @@ bool KTMainWindow::event(QEvent* ev)
     if (ev->type() == QEvent::LayoutHint) {
 		updateRects();
 		return TRUE;
-	}
+    }
     return FALSE;
 }
 

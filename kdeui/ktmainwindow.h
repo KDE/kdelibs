@@ -427,8 +427,9 @@ public:
      * Return @p false if this
      * fails, otherwise returns @p true and shows the window.
      * You should call @ref canBeRestored() first.
+     * If @p show is true (default), this widget will be show()n automatically.
      */
-    bool restore(int number);
+    bool restore(int number, bool show=true);
 
     /**
      * @sect Methods you probably don't need.
@@ -620,7 +621,7 @@ public slots:
      * standard.
      */
     virtual void setCaption( const QString &caption );
-   
+
     /**
      * Makes a KDE compliant caption.
      *
