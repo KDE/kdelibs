@@ -89,6 +89,11 @@ class QToolBar;
 
 class KDockContainer;
 
+namespace KMDI
+{
+  class MainWindow;
+}
+
 /**
  * An abstract base clase for all dockwidget headers (and member of the dockwidget class set).
  * See the class description of KDockWidgetHeader!
@@ -723,6 +728,7 @@ public slots:
 
 protected:
   friend class KMdiMainFrm;
+  friend class KMDI::MainWindow;
   /**
    * Checks some conditions and shows or hides the dockwidget header (drag panel).
    * The header is hidden if:
@@ -1055,10 +1061,10 @@ public:
   /**
    * @since 3.2
    */
-  void setSpecialLeftDockContainer(KDockWidget* container);  
-  void setSpecialTopDockContainer(KDockWidget* container);  
-  void setSpecialRightDockContainer(KDockWidget* container);  
-  void setSpecialBottomDockContainer(KDockWidget* container);  
+  void setSpecialLeftDockContainer(KDockWidget* container);
+  void setSpecialTopDockContainer(KDockWidget* container);
+  void setSpecialRightDockContainer(KDockWidget* container);
+  void setSpecialBottomDockContainer(KDockWidget* container);
 
   void removeFromAutoCreateList(KDockWidget* pDockWidget);
   void finishReadDockConfig();
