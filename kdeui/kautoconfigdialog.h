@@ -29,12 +29,12 @@ class KAutoConfig;
  *   dialog->addPage(new Appearance(0, "Appearance"), i18n("Appearance"), "Game", "style");
  *   connect(dialog, SIGNAL(settingsChanged()), mainWidget, SLOT(readSettings()));
  *   connect(dialog, SIGNAL(settingsChanged()), this, SLOT(readSettings()));
- *   dialog->doneSetup();
+ *   dialog->show();
  * }
  * </pre>
  * 
  * Other then the above code each class that has settings in the dialog should
- * have a readSettings() slot to read its settings and perform any necessary
+ * have a readSettings() type slot to read its settings and perform any necessary
  * changes.
  * 
  */ 
@@ -71,13 +71,15 @@ public:
 		  bool modal=false);
   /**
    * Deconstructor, removes name from openDialogs list.
+   * @ref exists()
    */ 
   ~KAutoConfigDialog();
   
   /**
    * Adds page to the dialog and to KAutoConfig.  When
-   * all done adding pages show() should be called.  Note
-   * that after you call show you can not add any more pages.
+   * all done adding pages @ref show() should be called to display
+   * the dialog.  Note that after you call show you can
+   * not add any more pages to the dialog.
    * @param page - The page that is to be added to the dialog.
    * @param itemName - QString used in the page's name.
    * @param groupName - Name of the group where all of the settings
@@ -93,6 +95,7 @@ public:
  
   /**
    * See if a dialog already exists.
+   * @ref showDialog()
    * @param name dialog name to look for.
    * @return pointer to widget or NULL if does not exist.
    */ 
@@ -100,6 +103,7 @@ public:
  
   /**
    * Attempts to show a dialog specified by 'name'.
+   * @ref exists()
    * @param name - The name of the dialog to show.
    * @return true if the dialog 'name' exists and was shown. 
    */ 
@@ -108,11 +112,13 @@ public:
   /**
    * Shows the dialog.  This should be called after all of the pages
    * have been added.
+   * @ref hide()
    */ 
   virtual void show();
   
   /**
    * Hides the dialog.  A program shouldn't normally need to use this function.
+   * @ref show()
    */ 
   inline void hide(){ kdialogbase->hide(); };
 
