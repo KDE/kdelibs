@@ -313,7 +313,7 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   mouseCoord = e->pos();
   row=rowAt(mouseCoord.y());
   col=columnAt(mouseCoord.x());
-  if(row<0 || col<0)
+  if(row<1 || col<0)
     { // the user clicked on the frame of the table
       return;
     }
