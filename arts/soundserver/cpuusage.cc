@@ -90,7 +90,12 @@ void CPUUsage::check()
 
 	if(cpu_time > 0 && real_time > 0) // there may be wraparounds
 	{
+#ifdef USE_SOLARIS
+#warning fixme - the CPU usage test does not work under solaris
+		d->usage=0.25;
+#else
 		d->usage = cpu_time / real_time;
+#endif
 
 		if(d->usage > 0.95)	  // more than 95%  -> not good! (probably freeze)
 			d->stalled++;
