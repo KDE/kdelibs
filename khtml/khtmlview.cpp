@@ -932,7 +932,8 @@ void KHTMLView::print()
     khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
-    KPrinter *printer = new KPrinter(QPrinter::ScreenResolution);
+    // this only works on Unix - we assume 72dpi
+    KPrinter *printer = new KPrinter(QPrinter::PrinterResolution);
     if(printer->setup(this)) {
         QApplication::setOverrideCursor( waitCursor );
         // set up KPrinter
