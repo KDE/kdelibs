@@ -24,6 +24,8 @@
 #include <kdialogbase.h>
 #include <qrect.h>
 
+class KFindNextDialog;
+
 /**
  * @short A generic implementation of the "find" function.
  *
@@ -39,49 +41,95 @@
  *
  * To use the class to implement a complete find feature:
  *
+ * In the slot connected to the find action:
  * <pre>
  *
  *  // This creates a find-next-prompt dialog if needed.
- *  dialog = new KFind(find, options);
+ *  m_find = new KFind(pattern, options);
  *
- *  // Connect signals to code which handles highlighting
+ *  // Connect highlight signal to code which handles highlighting
  *  // of found text.
- *  connect(dialog, SIGNAL( highlight( const QString &, int, int, const QRect & ) ),
- *          this, SLOT( highlight( const QString &, int, int, const QRect & ) ) );
- *
- *  // Loop over all the text fragments of our document or selection
- *  for (text chosen by option SelectedText and in a direction set by FindBackwards)
- *       // don't forget to honour FromCursor too
- *  {
- *      // Let KFind inspect the text fragment, and display a dialog if a match is found
- *      if ( !dialog->find( text_fragment, region_to_expose ) )
- *          break; // if cancelled by user
- *  }
- *  delete dialog;
- *
+ *  connect(m_find, SIGNAL( highlight( const QString &, int, int ) ),
+ *          this, SLOT( slotHighlight( const QString &, int, int ) ) );
+ *  // Connect findNext signal - called when pressing the button in the dialog
+ *  connect(m_find, SIGNAL( findNext() ),
+ *          this, SLOT( slotFindNext() ) );
  * </pre>
+ *
+ *  Then initialize the variables determining the "current position"
+ *  (to the cursor, if the option FromCursor is set,
+ *   to the beginning of the selection if the option SelectedText is set,
+ *   and to the beginning of the document otherwise).
+ *  Initialize the "end of search" variables as well (end of doc or end of selection).
+ *  Finally, call slotFindNext();
+ *
+ * <pre>
+ *  void slotFindNext()
+ *  {
+ *      KFind::Result res = KFind::NoMatch;
+ *      while ( res == KFind::NoMatch && <position not at end> ) {
+ *          if ( m_find->needData() )
+ *              m_find->setData( <current text fragment> );
+ *
+ *          // Let KFind inspect the text fragment, and display a dialog if a match is found
+ *          KFind::Result res = m_find->find();
+ *
+ *          if ( res == KFind::NoMatch ) {
+ *              <Move to the next non-empty text fragment, honouring the FindBackwards setting for the direction>
+ *          }
+ *      }
+ *
+ *      if ( res == KFind::NoMatch ) // i.e. at end
+ *          <Call either  m_find->displayFinalDialog()
+ *           or           if ( m_find->shouldRestart() ) { reinit and call findNext(); }>
+ *  }
+ * </pre>
+ *
+ *  Don't forget delete m_find in the destructor of your class,
+ *  unless you gave it a parent widget on construction.
+ *
+ *  This implementation allows to have a "Find Next" action, which resumes the
+ *  search, even if the user closed the "Find Next" dialog.
+ *
+ *  A "Find Previous" action can simply switch temporarily the value of
+ *  FindBackwards and call slotFindNext() - and reset the value afterwards.
  */
 class KFind :
-    public KDialogBase
+    public QObject
 {
     Q_OBJECT
 
 public:
 
-    /** Will create a prompt dialog and use it as needed. */
-    KFind(const QString &pattern, long options, QWidget *parent = 0);
+    KFind(const QString &pattern, long options, QWidget *parent);
     virtual ~KFind();
 
+    enum Result { NoMatch, Match /*, Cancelled*/ };
+
     /**
-     * Walk the text fragment (e.g. kwrite line, kspread cell) looking for matches.
+     * @return true if the application must supply a new text fragment
+     * It also means the last call returned "NoMatch". But by storing this here
+     * the application doesn't have to store it in a member variable (between
+     * calls to slotFindNext()).
+     */
+    bool needData() const;
+    /**
+     * Call this when needData returns true, before calling @ref find().
+     * @param data the text fragment (line)
+     * @param startPos if set, the index at which the search should start.
+     * This is only necessary for the very first call to setData usually,
+     * for the 'find in selection' feature. A value of -1 (the default value)
+     * means "process all the data", i.e. either 0 or data.length()-1 depending
+     * on FindBackwards.
+     */
+    void setData( const QString& data, int startPos = -1 );
+
+    /**
+     * Walk the text fragment (e.g. text-processor line, kspread cell) looking for matches.
      * For each match, emits the expose() signal and displays the find-again dialog
      * proceeding.
-     *
-     * @param text The text fragment to modify.
-     * @param expose The region to expose
-     * @return false if the user elected to discontinue the find.
      */
-    bool find(const QString &text, const QRect &expose);
+    Result find();
 
     /**
      * Return the current options.
@@ -147,28 +195,10 @@ public:
     static int find( const QString &text, const QRegExp &pattern, int index, long options, int *matchedlength );
 
     /**
-     * Abort the current find process. Call this when the parent widget
-     * is getting destroyed.
+     * Displays the final dialog saying "no match was found", if that was the case.
+     * Call either this or shouldRestart().
      */
-    void abort();
-
-    /**
-     * Sets whether the final dialog saying "no match was found"
-     * or "N replacements were made" should be displayed.
-     * This is true by default, but some apps might want to deactivate this
-     * to display a dialog that includes "do you want to start again"?
-     *
-     * The final dialog is displayed by the destructor (when abort() wasn't called
-     * and the user didn't press Cancel).
-     */
-    void setDisplayFinalDialog( bool b ) { m_displayFinalDialog = b; }
-    bool displayFinalDialog() const { return m_displayFinalDialog; }
-
-protected:
-    /**
-     * @internal Constructor for KReplace
-     */
-    KFind(const QString &pattern, const QString &replacement, long options, QWidget *parent);
+    void displayFinalDialog();
 
 signals:
 
@@ -176,36 +206,51 @@ signals:
      * Connect to this signal to implement highlighting of found text during the find
      * operation.
      */
-    void highlight(const QString &text, int matchingIndex, int matchedLength, const QRect &expose);
+    void highlight(const QString &text, int matchingIndex, int matchedLength);
+
+    // ## TODO docu
+    // findprevious will also emit findNext, after temporarily switching the value
+    // of FindBackwards
+    void findNext();
+
+protected:
+    /**
+     * @internal Constructor for KReplace
+     */
+    KFind(const QString &pattern, const QString &replacement, long options, QWidget *parent);
+
+    QWidget* parentWidget() const { return (QWidget *)parent(); }
+
+    KFindNextDialog* dialog();
+
+private slots:
+
+    void slotFindNext();
+    void slotDialogClosed() { m_dialogClosed = true; }
 
 private:
     void init( const QString& pattern );
-
-
-    QString m_pattern;
-    QRegExp *m_regExp;
-    long m_options;
-    unsigned m_matches;
-    QString m_text;
-    QRect m_expose;
-    int m_index;
-    int m_matchedLength;
-    bool m_cancelled;
-    bool m_displayFinalDialog;
 
     static bool isInWord( QChar ch );
     static bool isWholeWords( const QString &text, int starts, int matchedLength );
 
     friend class KReplace;
 
+
+    QString m_pattern;
+    QRegExp *m_regExp;
+    KFindNextDialog* m_dialog;
+    long m_options;
+    unsigned m_matches;
+
+    QString m_text; // the text set by setData
+    int m_index;
+    int m_matchedLength;
+    bool m_dialogClosed;
+
     // Binary compatible extensibility.
     class KFindPrivate;
     KFindPrivate *d;
-
-private slots:
-
-    virtual void slotUser1();   // Yes
-    virtual void slotClose();
 };
 
 #endif

@@ -39,9 +39,12 @@
 class KFindDialog::KFindDialogPrivate
 {
 public:
-    KFindDialogPrivate() : m_regexpDialog(0), m_regexpDialogQueryDone(false) {}
+    KFindDialogPrivate() : m_regexpDialog(0),
+        m_regexpDialogQueryDone(false), m_hasCursor(true), m_hasSelection(false) {}
     QDialog* m_regexpDialog;
     bool m_regexpDialogQueryDone;
+    bool m_hasCursor;
+    bool m_hasSelection;
 };
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
@@ -249,6 +252,7 @@ void KFindDialog::setFindHistory(const QStringList &strings)
 
 void KFindDialog::setHasSelection(bool hasSelection)
 {
+    d->m_hasSelection = hasSelection;
     m_selectedText->setEnabled( hasSelection );
     // If we have a selection, we make 'find in selection' default
     // and if we don't, then the option has to be unchecked, obviously.
@@ -259,26 +263,25 @@ void KFindDialog::setHasSelection(bool hasSelection)
 void KFindDialog::slotSelectedTextToggled(bool selec)
 {
     // From cursor doesn't make sense if we have a selection
-    m_fromCursor->setEnabled( !selec );
+    m_fromCursor->setEnabled( !selec && d->m_hasCursor );
     if ( selec ) // uncheck if disabled
         m_fromCursor->setChecked( false );
 }
 
 void KFindDialog::setHasCursor(bool hasCursor)
 {
-    if ( !hasCursor ) {
-        m_fromCursor->hide();
-        m_fromCursor->setChecked( false );
-    }
+    d->m_hasCursor = hasCursor;
+    m_fromCursor->setEnabled( hasCursor );
+    m_fromCursor->setChecked( hasCursor && (options() & FromCursor) );
 }
 
 void KFindDialog::setOptions(long options)
 {
     m_caseSensitive->setChecked(options & CaseSensitive);
     m_wholeWordsOnly->setChecked(options & WholeWordsOnly);
-    m_fromCursor->setChecked(options & FromCursor);
+    m_fromCursor->setChecked(d->m_hasCursor && (options & FromCursor));
     m_findBackwards->setChecked(options & FindBackwards);
-    m_selectedText->setChecked(options & SelectedText);
+    m_selectedText->setChecked(d->m_hasSelection && (options & SelectedText));
     m_regExp->setChecked(options & RegularExpression);
 }
 
