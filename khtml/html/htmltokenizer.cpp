@@ -61,6 +61,9 @@ static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>' };
 static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>' };
 static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>' };
 
+#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
+#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
+
 // ----------------------------------------------------------------------------
 
 HTMLTokenizer::HTMLTokenizer(KHTMLParser *p, KHTMLView *_view)
@@ -85,7 +88,7 @@ void HTMLTokenizer::reset()
     cachedScript = 0;
 
     if ( buffer )
-        delete [] buffer;
+        QT_DELETE_QCHAR_VEC(buffer);
     buffer = 0;
     size = 0;
 
@@ -104,7 +107,7 @@ void HTMLTokenizer::begin()
     reset();
     currToken = 0;
     size = 1023;
-    buffer = new QChar[ 1024 ];
+    buffer = QT_ALLOC_QCHAR_VEC( 1024 );
     dest = buffer;
     tag = NoTag;
     pending = NonePending;
@@ -365,13 +368,14 @@ void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
 {
     while ( src.length() )
     {
+        char chbegin = src[0].latin1();
         // Look for '?>'
-        if ( src[0] == '?' )
+        if ( chbegin == '?' )
         {
             if (searchCount < 1)        // Watch out for '--->'
                 searchCount++;
         }
-        else if ((searchCount == 1) && (src[0] == '>'))
+        else if ((searchCount == 1) && (chbegin == '>'))
         {
             // We got a '?>' sequence
             processingInstruction = false;
@@ -394,7 +398,10 @@ void HTMLTokenizer::parseText(DOMStringIt &src)
         // do we need to enlarge the buffer?
         checkBuffer();
 
-        if (skipLF && ( src[0] != '\n' ))
+        // ascii is okay because we only do ascii comparisons
+        char chbegin = src[0].latin1();
+
+        if (skipLF && ( chbegin != '\n' ))
         {
             skipLF = false;
         }
@@ -404,12 +411,12 @@ void HTMLTokenizer::parseText(DOMStringIt &src)
             skipLF = false;
             ++src;
         }
-        else if (( src[0] == '\n' ) || ( src[0] == '\r' ))
+        else if (( chbegin == '\n' ) || ( chbegin == '\r' ))
         {
             processToken();
 
             /* Check for MS-DOS CRLF sequence */
-            if (src[0] == '\r')
+            if (chbegin == '\r')
             {
                 skipLF = true;
             }
@@ -520,9 +527,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         checkBuffer();
 
         const QChar &curChar = src[0];
+        const char curchar = src[0].latin1();
 
         // decide if quoted or not....
-        if ( curChar == '\"' || curChar == '\'' )
+        if ( curchar == '\"' || curchar == '\'' )
         { // we treat " & ' the same in tags
             if ( !tquote )
             {
@@ -530,13 +538,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 // strings like "  my \nstring " to "my string"
                 discard = SpaceDiscard; // ignore leading spaces
                 pending = NonePending;
-                if (curChar == '\'')
+                if (curchar == '\'')
                     tquote = SingleQuote;
                 else
                     tquote = DoubleQuote;
             }
-            else if ( (( tquote == SingleQuote )&&( curChar == '\'')) ||
-                      (( tquote == DoubleQuote )&&( curChar == '\"')) )
+            else if ( (( tquote == SingleQuote )&&( curchar == '\'')) ||
+                      (( tquote == DoubleQuote )&&( curchar == '\"')) )
             {
                 tquote = NoQuote;
                 discard = NoneDiscard;
@@ -562,8 +570,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             ++src;
         }
         else if ( discard != NoneDiscard &&
-                  ( curChar == ' ' || curChar == '\t' ||
-                    curChar == '\n' || curChar == '\r' ) )
+                  ( curchar == ' ' || curchar == '\t' ||
+                    curchar == '\n' || curchar == '\r' ) )
         {
             pending = SpacePending;
             ++src;
@@ -620,9 +628,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         searchCount = 0; // Stop looking for '<!--' sequence
                     }
                 }
-                if( ((curChar.lower() >= 'a') && (curChar.lower() <= 'z')) ||
-                    ((curChar >= '0') && (curChar <= '9')) ||
-                    curChar == '/' )
+                if( ((curchar >= 'a') && (curchar <= 'z')) ||
+                    ((curchar >= 'A') && (curchar <= 'Z')) ||
+                    ((curchar >= '0') && (curchar <= '9')) ||
+                    curchar == '/' )
                 {
                     *dest = curChar.lower();
                     dest++;
@@ -686,7 +695,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     ++src;
                     break;
                 }
-                if( curChar == '>' )
+                if( curchar == '>' )
                 {
                     tag = SearchEnd; // we reached the end
                     break;
@@ -696,9 +705,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     ++src;
                     break;
                 }
-                if( ((curChar.lower() >= 'a') && (curChar.lower() <= 'z')) ||
-                    ((curChar >= '0') && (curChar <= '9')) ||
-                    curChar == '-' )
+                if( ((curchar >= 'a') && (curchar <= 'z')) ||
+                    ((curchar >= 'A') && (curchar <= 'Z')) ||
+                    ((curchar >= '0') && (curchar <= '9')) ||
+                    curchar == '-' )
                 {
                     tag = AttributeName;
                     discard = NoneDiscard;
@@ -709,9 +719,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case AttributeName:
             {
-                if( (((curChar.lower() >= 'a') && (curChar.lower() <= 'z')) ||
-                     ((curChar >= '0') && (curChar <= '9')) ||
-                     curChar == '-') && !tquote )
+                if( (((curchar >= 'a') && (curchar <= 'z')) ||
+                     ((curchar >= 'A') && (curchar <= 'Z')) ||
+                     ((curchar >= '0') && (curchar <= '9')) ||
+                     curchar == '-') && !tquote )
                 {
                     *dest = curChar.lower();
                     dest++;
@@ -764,14 +775,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                       discard = SpaceDiscard;
                       pending = NonePending;
                 }
-                else if( curChar == '=' )
+                else if( curchar == '=' )
                 {
                     tag = SearchValue;
                     pending = NonePending; // ignore spaces before '='
                     discard = SpaceDiscard; // discard spaces after '='
                     ++src;
                 }
-                else if( curChar == '>' )
+                else if( curchar == '>' )
                     tag = SearchEnd;
                 else // other chars indicate a new attribte
                 {
@@ -805,7 +816,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             case QuotedValue:
             {
                 // ### attributes like '&{blaa....};' are supposed to be treated as jscript.
-                if ( curChar == '&' )
+                if ( curchar == '&' )
                 {
                     ++src;
 
@@ -852,7 +863,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     ++src;
                     tquote = NoQuote;
                 }
-                if ( pending || curChar == '>' )
+                if ( pending || curchar == '>' )
                 {
                     // no quotes. Every space means end of value
                     Attribute a;
@@ -873,7 +884,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case SearchEnd:
             {
-                if ( curChar != '>')
+                if ( curchar != '>')
                 {
                     ++src; // discard everything, until we found the end
                     break;
@@ -1346,7 +1357,9 @@ void HTMLTokenizer::end()
 
     if(currToken) processToken();
 
-    delete [] buffer;
+    if(buffer)
+        QT_DELETE_QCHAR_VEC(buffer);
+
     buffer = 0;
     emit finishedParsing();
 }
@@ -1439,12 +1452,13 @@ void HTMLTokenizer::checkBuffer(int len)
         // do we need to enlarge the buffer?
         if ( (dest - buffer) > size-len )
         {
-            QChar *newbuf = new QChar [ size + 1024 ];
+            int newsize = QMAX(2*size, size+2048);
+            QChar *newbuf = QT_ALLOC_QCHAR_VEC( newsize );
             memcpy( newbuf, buffer, (dest - buffer + 1)*sizeof(QChar) );
             dest = newbuf + ( dest - buffer );
-            delete [] buffer;
+            QT_DELETE_QCHAR_VEC(buffer);
             buffer = newbuf;
-            size += 1024;
+            size = newsize;
         }
 }
 

@@ -291,7 +291,7 @@ void KHTMLParser::parseToken(Token *t)
 
 #ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "\n\n==> parser: processing token " << t->id << " current = " << current->id() << endl;
-	kdDebug(6035) << "inline=" << _inline << " inBody=" << inBody << endl;
+        kdDebug(6035) << "inline=" << _inline << " inBody=" << inBody << endl;
 #endif
 
     if(t->id > ID_CLOSE_TAG)
@@ -303,12 +303,11 @@ void KHTMLParser::parseToken(Token *t)
 
     // ignore spaces, if we're not inside a paragraph or other inline code
     if( t->id == ID_TEXT && (!_inline  || !inBody) )
-//      || ( current && current->renderer() && !current->renderer()->isInline())))
     {
 #ifdef PARSER_DEBUG
-	kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
+        kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
 #endif
-        if(t->text.length() == 1 && t->text[0] == QChar(' '))
+        if(t->text.length() == 1 && t->text[0].latin1() == ' ')
         {
             //kdDebug( 6035 ) << "discarding space!" << endl;
             delete t;
@@ -419,17 +418,17 @@ void KHTMLParser::insertNode(NodeImpl *n)
             if (!current->isDocumentNode() && !current->id() == ID_HTML )
                 throw exception;
             break;
-	    // We can deal with a <base> element in the body, by just adding the element to head.
+            // We can deal with a <base> element in the body, by just adding the element to head.
         case ID_BASE:
-	    if(head) {
-		head->addChild(n);
-		n->attach(HTMLWidget);
-		return;
-	    }
+            if(head) {
+                head->addChild(n);
+                n->attach(HTMLWidget);
+                return;
+            }
         case ID_HTML:
             if (!current->isDocumentNode())
-		throw exception;
-	    break;
+                throw exception;
+            break;
         case ID_META:
         case ID_LINK:
             // SCRIPT and OBJECT are allowd in the body.
@@ -445,7 +444,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 document->body()->applyChanges(true,false);
                 explicitBody = true;
             }
-	    throw exception;
+            throw exception;
             break;
         case ID_STYLE:
             if(inBody)
@@ -456,8 +455,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
             break;
         case ID_LI:
             e = new HTMLUListElementImpl(document);
-	    e->addCSSProperty(CSS_PROP_MARGIN_LEFT, DOMString("0pt"), false);
-	    e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside"), false);
+            e->addCSSProperty(CSS_PROP_MARGIN_LEFT, DOMString("0pt"), false);
+            e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside"), false);
             insertNode(e);
             insertNode(n);
             return;
@@ -502,7 +501,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
                     if(tagPriority[id] != 0)
                     {
                         pushBlock(id, tagPriority[id]);
-			current = n;
+                        current = n;
                     }
                     n->attach(HTMLWidget);
                     if(tagPriority[id] == 0 && n->renderer())
@@ -562,23 +561,23 @@ void KHTMLParser::insertNode(NodeImpl *n)
             case ID_ISINDEX:
             case ID_BASE:
                 // ### what about <script> tags between head and body????
-		if(!head) {
-		    head = new HTMLHeadElementImpl(document);
-		    e = head;
-		    insertNode(e);
-		    handled = true;
-		}
+                if(!head) {
+                    head = new HTMLHeadElementImpl(document);
+                    e = head;
+                    insertNode(e);
+                    handled = true;
+                }
                 break;
-		case ID_FRAME:
-		    if( haveFrameSet ) break;
-		    e = new HTMLFrameSetElementImpl(document);
-		    inBody = true;
-		    haveFrameSet = true;
-		    document->createSelector();
-		    insertNode(e);
-		    handled = true;
-		    break;
-		default:
+                case ID_FRAME:
+                    if( haveFrameSet ) break;
+                    e = new HTMLFrameSetElementImpl(document);
+                    inBody = true;
+                    haveFrameSet = true;
+                    document->createSelector();
+                    insertNode(e);
+                    handled = true;
+                    break;
+                default:
                 e = new HTMLBodyElementImpl(document);
                 inBody = true;
                 document->createSelector();
@@ -589,17 +588,17 @@ void KHTMLParser::insertNode(NodeImpl *n)
             break;
         case ID_HEAD:
             // we can get here only if the element is not allowed in head.
-	    if (id == ID_HTML)
-		throw exception;
-	    else {
-		// This means the body starts here...
-		popBlock(ID_HEAD);
-		e = new HTMLBodyElementImpl(document);
-		inBody = true;
-		document->createSelector();
-		insertNode(e);
-		handled = true;
-	    }
+            if (id == ID_HTML)
+                throw exception;
+            else {
+                // This means the body starts here...
+                popBlock(ID_HEAD);
+                e = new HTMLBodyElementImpl(document);
+                inBody = true;
+                document->createSelector();
+                insertNode(e);
+                handled = true;
+            }
             break;
         case ID_BODY:
 
@@ -677,7 +676,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 e = new HTMLTableCellElementImpl(document, ID_TD);
                 insertNode(e);
                 handled = true;
-		break;
+                break;
             }
             break;
         case ID_UL:
@@ -685,19 +684,19 @@ void KHTMLParser::insertNode(NodeImpl *n)
         case ID_DIR:
         case ID_MENU:
             e = new HTMLLIElementImpl(document);
-	    e->addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, DOMString("none"), false);
+            e->addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, DOMString("none"), false);
             insertNode(e);
             handled = true;
             break;
-	    case ID_DL:
-		e = new HTMLGenericElementImpl(document, ID_DD);
-		insertNode(e);
-		handled = true;
-		break;
+            case ID_DL:
+                e = new HTMLGenericElementImpl(document, ID_DD);
+                insertNode(e);
+                handled = true;
+                break;
         case ID_SELECT:
-	    if( n->isInline() )
-		throw exception;
-	    break;
+            if( n->isInline() )
+                throw exception;
+            break;
         case ID_P:
         case ID_H1:
         case ID_H2:
@@ -723,10 +722,10 @@ void KHTMLParser::insertNode(NodeImpl *n)
             popBlock(ID_ADDRESS);
             handled = true;
             break;
-	case ID_COLGROUP:
-	    popBlock(ID_COLGROUP);
-	    handled = true;
-	    break;
+        case ID_COLGROUP:
+            popBlock(ID_COLGROUP);
+            handled = true;
+            break;
         default:
             if(current->isDocumentNode())
             {
@@ -766,10 +765,10 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLHtmlElementImpl(document);
         break;
     case ID_HEAD:
-	if(!head && current->id() == ID_HTML) {
-	    head = new HTMLHeadElementImpl(document);
-	    n = head;
-	}
+        if(!head && current->id() == ID_HTML) {
+            head = new HTMLHeadElementImpl(document);
+            n = head;
+        }
         break;
     case ID_BODY:
         popBlock(ID_HEAD);
@@ -808,7 +807,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
             break;
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
-	inBody = true;
+        inBody = true;
         break;
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
@@ -1082,10 +1081,6 @@ void KHTMLParser::processCloseTag(Token *t)
         document->createSelector();
         break;
     case ID_TITLE+ID_CLOSE_TAG:
-        // This crashes with http://lists.kde.org/?t=95871288200004&w=2&r=1
-        // i.e. when a title contains <pre>. (David)
-        //static_cast<HTMLTitleElementImpl *>(current)->setTitle();
-        // then let's use khtml's "RTTI" ;-) (Simon)
         if ( current->id() == ID_TITLE )
           static_cast<HTMLTitleElementImpl *>(current)->setTitle();
         break;
