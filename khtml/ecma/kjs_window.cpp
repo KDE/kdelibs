@@ -42,14 +42,14 @@ void Window::put(const UString &, KJSO *, int)
 {
 }
 
-KJSO *WindowFunc::execute(Context *context)
+KJSO *WindowFunc::execute(const List &args)
 {
   Ptr result;
   Ptr v, s;
   QString str;
   int i;
 
-  v = context->arg(0);
+  v = args[0];
   s = toString(v);
   str = s->stringVal().qstring();
 

@@ -39,7 +39,7 @@ namespace KJS {
   class WindowFunc : public InternalFunction {
   public:
     WindowFunc(KHTMLView *w, int i) : widget(w), id(i) { };
-    KJSO *execute(Context *);
+    KJSO *execute(const List &);
     enum { Alert, Confirm };
   private:
     KHTMLView *widget;

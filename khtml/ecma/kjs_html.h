@@ -36,7 +36,7 @@ namespace KJS {
   public:
     HTMLDocFunction(DOM::HTMLDocument d, int i) : doc(d), id(i) { };
     virtual KJSO *get(const UString &p);
-    KJSO *execute(Context *);
+    KJSO *execute(const List &);
     enum { Images, Applets, Links, Forms, Anchors, Open, Close,
 	   Write, Writeln, ElByID, ElByName };
   private:
@@ -73,7 +73,7 @@ namespace KJS {
   class HTMLCollectionFunc : public InternalFunction {
   public:
     HTMLCollectionFunc(DOM::HTMLCollection c, int i) : coll(c), id(i) { };
-    KJSO *execute(Context *);
+    KJSO *execute(const List &);
     enum { Item, NamedItem };
   private:
     DOM::HTMLCollection coll;
@@ -85,7 +85,7 @@ namespace KJS {
   class ImageObject : public InternalFunction {
   public:
     ImageObject(Global *global);
-    KJSO* execute(Context *);
+    KJSO* execute(const List &);
   private:
     UString src;
   };

@@ -121,14 +121,14 @@ KJSO *KJS::HTMLDocFunction::get(const UString &p)
   return tmp->get(p);
 }
 
-KJSO *KJS::HTMLDocFunction::execute(Context *context)
+KJSO *KJS::HTMLDocFunction::execute(const List &args)
 {
   KJSO *result;
   Ptr v, n;
   DOM::HTMLElement element;
   DOM::HTMLCollection coll;
 
-  v = context->arg(0);
+  v = args[0];
 
   switch (id) {
   case Images:
@@ -522,14 +522,14 @@ KJSO *KJS::HTMLCollection::get(const UString &p)
   return result;
 }
 
-KJSO *KJS::HTMLCollectionFunc::execute(Context *context)
+KJSO *KJS::HTMLCollectionFunc::execute(const List &args)
 {
   KJSO *result;
   Ptr v, n;
 
   assert(id == Item || id == NamedItem);
 
-  v = context->arg(0);
+  v = args[0];
   if (id == Item) {
     n = toNumber(v);
     result = new DOMNode(coll.item((unsigned long)n->doubleVal()));
@@ -553,7 +553,7 @@ ImageObject::ImageObject(Global *global)
   put("length", zeroRef(newNumber(2)), DontEnum);
 }
 
-KJSO* ImageObject::execute(Context *)
+KJSO* ImageObject::execute(const List &)
 {
   return newCompletion(Normal, zeroRef(newUndefined()));
 }
