@@ -615,26 +615,19 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
 
     QStatusBar* sb = internalStatusBar();
     if (sb) {
-        QStrList entryList;
-        if ( sb->isHidden() ) {
-            entryList.append("Disabled");
-	    config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
-        } else {
-            entryList.append("Enabled");
-	    config->revertToDefault(QString::fromLatin1("StatusBar"));
-        }
+       if(!config->hasDefault("StatusBar") && !sb->isHidden() )
+           config->revertToDefault("StatusBar");
+       else
+           config->writeEntry("StatusBar", sb->isHidden() ? "Disabled" : "Enabled");
     }
 
     QMenuBar* mb = internalMenuBar();
     if (mb) {
-        QStrList entryList;
-        if ( mb->isHidden() ) {
-            entryList.append("Disabled");
-	    config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
-        } else {
-            entryList.append("Enabled");
-	    config->revertToDefault(QString::fromLatin1("MenuBar"));
-        }
+       QString MenuBar = QString::fromLatin1("MenuBar");
+       if(!config->hasDefault("MenuBar") && !mb->isHidden() )
+           config->revertToDefault("MenuBar");
+       else
+           config->writeEntry("MenuBar", mb->isHidden() ? "Disabled" : "Enabled");
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
@@ -661,22 +654,22 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
 void KMainWindow::setStandardToolBarMenuEnabled( bool enable )
 {
     if ( enable ) {
-	if ( d->toolBarHandler )
-	    return;
+        if ( d->toolBarHandler )
+            return;
 
-	d->toolBarHandler = new KDEPrivate::ToolBarHandler( this );
+    d->toolBarHandler = new KDEPrivate::ToolBarHandler( this );
 
-	if ( factory() )
-	    factory()->addClient( d->toolBarHandler );
+    if ( factory() )
+        factory()->addClient( d->toolBarHandler );
     } else {
-	if ( !d->toolBarHandler )
-	    return;
+        if ( !d->toolBarHandler )
+            return;
 
-	if ( factory() )
-	    factory()->removeClient( d->toolBarHandler );
+        if ( factory() )
+            factory()->removeClient( d->toolBarHandler );
 
-	delete d->toolBarHandler;
-	d->toolBarHandler = 0;
+        delete d->toolBarHandler;
+        d->toolBarHandler = 0;
     }
 }
 
@@ -721,10 +714,6 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup)
 {
     kdDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
-    QString entry;
-    QStrList entryList;
-    int i = 0; // Number of entries in list
-
     if (!configGroup.isEmpty())
        config->setGroup(configGroup);
 
@@ -732,49 +721,39 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
     QStatusBar* sb = internalStatusBar();
     if (sb) {
-        entryList.clear();
-        i = config->readListEntry (QString::fromLatin1("StatusBar"), entryList, ';');
-        entry = entryList.first();
-        if (entry == QString::fromLatin1("Disabled"))
-           sb->hide();
-        else
-           sb->show();
-	if(d->showStatusBarAction)
-	   d->showStatusBarAction->setChecked(!sb->isHidden());
+        QString entry = config->readEntry("StatusBar", "Enabled");
+        ( entry == "Disabled" ) ?  sb->hide() :sb->show();
+        if(d->showStatusBarAction)
+            d->showStatusBarAction->setChecked(!sb->isHidden());
     }
 
     QMenuBar* mb = internalMenuBar();
     if (mb) {
-        entryList.clear();
-        i = config->readListEntry (QString::fromLatin1("MenuBar"), entryList, ';');
-        entry = entryList.first();
-        if (entry==QString::fromLatin1("Disabled"))
-            mb->hide();
-        else
-            mb->show();
+        QString entry = config->readEntry ("MenuBar", "Enabled");
+        ( entry == "Disabled" ) ?  mb->hide() : mb->show();
     }
 
-        int n = 1; // Toolbar counter. toolbars are counted from 1,
-        KToolBar *toolbar;
-        QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
+    int n = 1; // Toolbar counter. toolbars are counted from 1,
+    KToolBar *toolbar;
+    QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
 
-        for ( ; it.current(); ++it) {
-            toolbar= it.current();
-            QString group;
-            if (!configGroup.isEmpty())
-            {
-               // Give a number to the toolbar, but prefer a name if there is one,
-               // because there's no real guarantee on the ordering of toolbars
-               group = (!::qstrcmp(toolbar->name(), "unnamed") ? QString::number(n) : QString(" ")+toolbar->name());
-               group.prepend(" Toolbar");
-               group.prepend(configGroup);
-            }
-            toolbar->applySettings(config, group);
-            n++;
+    for ( ; it.current(); ++it) {
+        toolbar= it.current();
+        QString group;
+        if (!configGroup.isEmpty())
+        {
+           // Give a number to the toolbar, but prefer a name if there is one,
+           // because there's no real guarantee on the ordering of toolbars
+           group = (!::qstrcmp(toolbar->name(), "unnamed") ? QString::number(n) : QString(" ")+toolbar->name());
+           group.prepend(" Toolbar");
+           group.prepend(configGroup);
         }
+        toolbar->applySettings(config, group);
+        n++;
+    }
 
     finalizeGUI( true );
-    }
+}
 
 void KMainWindow::finalizeGUI( bool force )
 {
@@ -923,7 +902,7 @@ void KMainWindow::resizeEvent( QResizeEvent * )
 
 bool KMainWindow::hasMenuBar()
 {
-	return (internalMenuBar());
+    return (internalMenuBar());
 }
 
 KMenuBar *KMainWindow::menuBar()
