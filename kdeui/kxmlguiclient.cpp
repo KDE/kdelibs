@@ -45,6 +45,7 @@ public:
     m_factory = 0L;
     m_parent = 0L;
     m_builder = 0L;
+    m_xmlFile = QString::null;
   }
   ~KXMLGUIClientPrivate()
   {
@@ -59,6 +60,7 @@ public:
   KXMLGUIClient *m_parent;
   QList<KXMLGUIClient> m_children;
   KXMLGUIBuilder *m_builder;
+  QString m_xmlFile;
 };
 
 KXMLGUIClient::KXMLGUIClient()
@@ -113,6 +115,11 @@ QDomDocument KXMLGUIClient::document() const
   return d->m_doc;
 }
 
+QString KXMLGUIClient::xmlFile() const
+{
+  return d->m_xmlFile;
+}
+
 void KXMLGUIClient::setInstance( KInstance *instance )
 {
   d->m_instance = instance;
@@ -120,8 +127,11 @@ void KXMLGUIClient::setInstance( KInstance *instance )
 
 void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
 {
-  QString file = _file;
+  // store our xml file name
+  if ( !_file.isNull() )
+    d->m_xmlFile = _file;
 
+  QString file = _file;
   if ( file[0] != '/' )
   {
     file = locate( "data", QString(instance()->instanceName())+"/"+file );

@@ -50,6 +50,22 @@ public:
    * setXMLFile() or @ref setXML()
    */
   virtual QDomDocument document() const;
+
+  /**
+   * This will return the XML file as set by @ref setXMLFile.  If
+   * @ref setXML is used directly, then this will return NULL.
+   *
+   * The filename that this returns is obvious for components as each
+   * component has exactly one XML file.  In non-components, however,
+   * there are usually two: the global file and the local file.  This
+   * function doesn't really care about that, though.  It will always
+   * return the last XML file set.  This, in almost all cases, will
+   * be the local XML file.
+   *
+   * @return The name of the XML file or QString::null
+   */
+  virtual QString xmlFile() const;
+
   /**
    * default implementation, storing the given data in an internal
    * map. Called from KKXMLGUIFactory when removing containers which
