@@ -300,7 +300,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	// onmouseover and onmouseout
 	int id = ATTR_ONMOUSEOVER;
 	if(!inside) id = ATTR_ONMOUSEOUT;
-	script = getAttribute(id);
+	DOMString script = getAttribute(id);
 	if(script.length())
 	{
 	    htmlwidget->executeScript( script.string() );
