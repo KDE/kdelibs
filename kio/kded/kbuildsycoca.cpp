@@ -46,7 +46,7 @@
 #include <klocale.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <unistd.h>
+#include <kcrash.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -376,6 +376,10 @@ int main(int argc, char **argv)
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
    KInstance k(&d);
+
+   KCrash::setCrashHandler(KCrash::defaultCrashHandler);
+   KCrash::setEmergencySaveFunction(NULL);
+   KCrash::setApplicationName(QString(appName));
 
    // this program is in kdelibs so it uses kdelibs as catalogue
    KLocale::setMainCatalogue("kdelibs");
