@@ -40,7 +40,6 @@ using namespace DOM;
 using namespace khtml;
 
 #include <kdebug.h>
-#include <iostream.h>
 
 HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
   : HTMLElementImpl(doc)
@@ -402,16 +401,11 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLTablePartElementImpl::recalcTable()
 {
-    // this is slow but at least it works ;)
-    // ### just make the change in the rendering tree and make sure the table
-    // gets re-layed out again on the next layout
     NodeImpl *table = parentNode();
     while (table && !(table->isElementNode() && table->id() == ID_TABLE))
 	table = table->parentNode();
-    if (table) {
-	table->detach();
-	table->attach(document->view());
-    }
+    if (table)
+	table->setChanged(true);
 }
 
 NodeImpl *HTMLTablePartElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
@@ -663,12 +657,12 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ROWSPAN:
 	// ###
 	rSpan = attr->val() ? attr->val()->toInt() : 1;
-	if(rSpan < 1) rSpan = 1; // fix for GNOME websites... ;-)
+	if(rSpan < 1) rSpan = 1; // ### allow rowspan=0 (actually valid)
 	break;
     case ATTR_COLSPAN:
 	// ###
 	cSpan = attr->val() ? attr->val()->toInt() : 1;
-	if(cSpan < 1) cSpan = 1; // fix for GNOME websites... ;-)
+	if(cSpan < 0) cSpan = 0;
 	break;
     case ATTR_NOWRAP:
 	nWrap = (attr->val() != 0);
@@ -714,7 +708,8 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 	{
 	    RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);
 	    cell->setRowSpan(rSpan);
-	    cell->setColSpan(cSpan);
+	    cell->setColSpan(cSpan ? cSpan : 1);
+	    cell->setSpansRemaining(cSpan == 0);
             cell->setNoWrap(nWrap);
 	}
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);

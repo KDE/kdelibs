@@ -1422,7 +1422,7 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 void HTMLTokenizer::addScriptOutput()
 {
     if ( !scriptOutput.isEmpty() ) {
-	kdDebug( 6036 ) << "adding scriptOutput to parsed string" << endl;
+//	kdDebug( 6036 ) << "adding scriptOutput to parsed string" << endl;
 	QString newStr = scriptOutput;
 	newStr += QString(src.current(), src.length());
 	_src = newStr;

@@ -79,53 +79,14 @@ RenderTable::RenderTable()
     _htmlBorder = 0;
 
     incremental = false;
-    m_maxWidth = 0;
-
 
     rules = None;
     frame = Void;
 
-    row = 0;
-    col = 0;
-
-    maxColSpan = 0;
-    totalColInfos = 0;
-
+    setParsing();
     colInfos.setAutoDelete(true);
 
-    setParsing();
-
-    _currentCol=0;
-
-    _lastParentWidth = 0;
-
-    columnPos.resize( 2 );
-    colMaxWidth.resize( 1 );
-    colMinWidth.resize( 1 );
-    colValue.resize(1);
-    colType.resize(1);
-    actColWidth.resize(1);
-    columnPos.fill( 0 );
-    colMaxWidth.fill( 0 );
-    colMinWidth.fill( 0 );
-    colValue.fill(0);
-    colType.fill(Variable);
-    actColWidth.fill(0);
-
-    columnPos[0] = spacing;
-
-    totalCols = 0;   // this should be expanded to the maximum number of cols
-                     // by the first row parsed
-    totalRows = 1;
-    allocRows = 5;   // allocate five rows initially
-
-    cells = new RenderTableCell ** [allocRows];
-
-    for ( unsigned int r = 0; r < allocRows; r++ )
-    {
-	cells[r] = new RenderTableCell * [totalCols];
-	memset( cells[r], 0, totalCols * sizeof( RenderTableCell * ));
-    }
+    reset();
 }
 
 RenderTable::~RenderTable()
@@ -211,6 +172,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 	    firstBody = static_cast<RenderTableSection *>(child);
 	break;
     default:
+	break;
 	if ( !beforeChild )
 	    beforeChild = lastChild();
 	if ( beforeChild && beforeChild->isAnonymousBox() )
@@ -229,28 +191,6 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     }
     RenderObject::addChild(child,beforeChild);
     child->setTable(this);
-}
-
-void RenderTable::startRow()
-{
-    while ( col < totalCols && cells[row][col] != 0 )
-	col++;
-    if ( col )
-	row++;
-    col = 0;
-    if(row > totalRows) totalRows = row;
-}
-
-void RenderTable::addCell( RenderTableCell *cell )
-{
-    while ( col < totalCols && cells[row][col] != 0L )
-	col++;
-    setCells( row, col, cell );
-
-    setMinMaxKnown(false);
-    setLayouted(false);
-
-    col++;
 }
 
 void RenderTable::setCells( unsigned int r, unsigned int c,
@@ -1235,6 +1175,8 @@ void RenderTable::layout()
     if (layouted() && !containsPositioned() && _lastParentWidth == containingBlockWidth())
    	return;
 
+    calcCells();
+
     _lastParentWidth = containingBlockWidth();
 
     m_height = 0;
@@ -1509,6 +1451,143 @@ int RenderTable::borderBottomExtra()
         return 0;
 }
 
+void RenderTable::reset()
+{
+    m_maxWidth = 0;
+
+    row = 0;
+    col = 0;
+
+    maxColSpan = 0;
+    totalColInfos = 0;
+    colInfos.resize(0);
+
+    _currentCol=0;
+
+    _lastParentWidth = 0;
+
+    columnPos.resize( 2 );
+    colMaxWidth.resize( 1 );
+    colMinWidth.resize( 1 );
+    colValue.resize(1);
+    colType.resize(1);
+    actColWidth.resize(1);
+    columnPos.fill( 0 );
+    colMaxWidth.fill( 0 );
+    colMinWidth.fill( 0 );
+    colValue.fill(0);
+    colType.fill(Variable);
+    actColWidth.fill(0);
+
+    columnPos[0] = spacing;
+
+    totalCols = 0;   // this should be expanded to the maximum number of cols
+                     // by the first row parsed
+    totalRows = 1;
+    allocRows = 5;   // allocate five rows initially
+
+    cells = new RenderTableCell ** [allocRows];
+
+    for ( unsigned int r = 0; r < allocRows; r++ )
+    {
+	cells[r] = new RenderTableCell * [totalCols];
+	memset( cells[r], 0, totalCols * sizeof( RenderTableCell * ));
+    }
+}
+
+void RenderTable::calcCells()
+{
+    // ### what about rows with no cells in them?
+    QArray<RenderTableCell*> rowSpanCell(5);
+    rowSpanCell.fill(0);
+    QArray<uint> rowColsUsed(5);
+    rowColsUsed.fill(0);
+
+    setMinMaxKnown(false);
+    setLayouted(false);
+    RenderObject *section;
+    bool haveSpansRemaining = false;
+    reset();
+    for (section = firstChild(); section; section = section->nextSibling()) {
+	RenderObject *r;
+	for (r = section->firstChild(); r; r = r->nextSibling()) {
+	    col = 0;
+	    while ( col < totalCols && cells[row][col] != 0L )
+		col++;
+	    if (col) {
+		row++;
+		col = 0;
+		if (row % 5 == 0) {
+		    rowSpanCell.resize(row+5);
+		    rowColsUsed.resize(row+5);
+		    uint i;
+		    for (i = row; i < row+5; i++) {
+			rowSpanCell[i] = static_cast<RenderTableCell*>(0);
+			rowColsUsed[i] = 0;
+		    }
+		    if(row > totalRows) totalRows = row;
+		}
+	    }
+
+	    RenderObject *c;
+	    for (c = r->firstChild(); c; c = c->nextSibling()) {
+		if (static_cast<RenderTableCell*>(c)->spansRemaining() && !rowSpanCell[row]) {
+		    rowSpanCell[row] = static_cast<RenderTableCell*>(c);
+		    static_cast<RenderTableCell*>(c)->setColSpan(1);
+		    haveSpansRemaining = true;
+		}
+
+		while ( col < totalCols && cells[row][col] != 0L )
+		    col++;
+
+		setCells( row, col, static_cast<RenderTableCell*>(c) );
+		col++;
+		addColInfo(static_cast<RenderTableCell*>(c));
+	    }
+	    while ( col < totalCols && cells[row][col] != 0L )
+		col++;
+	    rowColsUsed[row] = col;
+	}
+    }
+
+    if (!haveSpansRemaining)
+	return;
+
+    // go through again, adjusting colspan for cells that span remaining cols
+
+    int cols = totalCols;
+    reset();
+    for (section = firstChild(); section; section = section->nextSibling()) {
+	RenderObject *r;
+	for (r = section->firstChild(); r; r = r->nextSibling()) {
+	    col = 0;
+	    while ( col < totalCols && cells[row][col] != 0L )
+		col++;
+	    if (col) {
+		row++;
+		col = 0;
+	    }
+	    if (rowSpanCell[row]) {
+		RenderTableCell *spanCell = rowSpanCell[row];
+		spanCell->setColSpan(cols+1-rowColsUsed[row]);
+		if (spanCell->colSpan() < 1)
+		    spanCell->setColSpan(1);
+	    }
+	    if(row > totalRows) totalRows = row;
+
+	    RenderObject *c;
+	    for (c = r->firstChild(); c; c = c->nextSibling()) {
+		while ( col < totalCols && cells[row][col] != 0L )
+		    col++;
+
+		setCells( row, col, static_cast<RenderTableCell*>(c) );
+		col++;
+		addColInfo(static_cast<RenderTableCell*>(c));
+	    }
+	}
+    }
+
+}
 
 // --------------------------------------------------------------------------
 
@@ -1528,14 +1607,10 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
     kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", " <<
                        beforeChild ? beforeChild->renderName() : 0 << " )" << endl;
 #endif
-    RenderObject *row = child;
-    if( !beforeChild )
-	beforeChild = lastChild();
 
     if ( !child->isTableRow() ) {
-	if( beforeChild && beforeChild->isAnonymousBox() )
-	    row = beforeChild;
-	else {
+	RenderObject *row = beforeChild ? beforeChild : lastChild();
+	if( !row || !row->isAnonymousBox() ) {
 //	    kdDebug( 6040 ) << "creating anonymous table row" << endl;
 	    row = new RenderTableRow();
 	    RenderStyle *newStyle = new RenderStyle(m_style);
@@ -1548,7 +1623,6 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 	return;
     }
 
-    table->startRow();
     child->setTable(table);
     RenderObject::addChild(child,beforeChild);
 }
@@ -1594,7 +1668,6 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 
     cell->setTable(table);
     cell->setRowImpl(this);
-    table->addCell(cell);  // ### may not work for beforeChild != 0
 
     RenderObject::addChild(cell,beforeChild);
 }
@@ -1613,6 +1686,7 @@ RenderTableCell::RenderTableCell()
   rowimpl = 0;
   m_printSpecial=true;
   _topExtra = 0;
+  _spansRemaining = false;
 }
 
 RenderTableCell::~RenderTableCell()
@@ -1626,17 +1700,8 @@ void RenderTableCell::calcMinMaxWidth()
 #endif
 
     //if(minMaxKnown()) return;
-
-    int oldMin = m_minWidth;
-    int oldMax = m_maxWidth;
-
     RenderFlow::calcMinMaxWidth();
-
     if(nWrap && m_style->width().type!=Fixed) m_minWidth = m_maxWidth;
-
-    if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
-        m_table->addColInfo(this);	
-
 }
 
 void RenderTableCell::calcWidth()

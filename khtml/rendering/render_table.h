@@ -95,10 +95,6 @@ public:
 
     QColor bgColor() { return style()->backgroundColor(); }
 
-
-    void startRow();
-    void addCell( RenderTableCell *cell );
-    void endTable();
     void  addColInfo(RenderTableCell *cell);
     void  addColInfo(RenderTableCol *colel);
 
@@ -190,6 +186,8 @@ protected:
     void addRows( int num );
     void addColumns( int num );
     // ### need to provide some delete* methods too...
+    void reset();
+    void calcCells();
 
     RenderTableCell ***cells;
 
@@ -319,7 +317,6 @@ public:
 
 protected:
     RenderTable *table;
-    int ncols;
 };
 
 // -------------------------------------------------------------------------
@@ -348,8 +345,12 @@ public:
 
     int col() { return _col; }
     void setCol(int col) { _col = col; }
+
     int row() { return _row; }
     void setRow(int r) { _row = r; }
+
+    bool spansRemaining() { return _spansRemaining; }
+    void setSpansRemaining(bool spansRemaining) { _spansRemaining = spansRemaining; }
 
     khtml::LengthType colType();
 
@@ -396,6 +397,7 @@ protected:
     int rowHeight;
     int _topExtra;
     int _bottomExtra;
+    bool _spansRemaining;
 
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }
