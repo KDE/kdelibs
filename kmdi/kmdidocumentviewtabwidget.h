@@ -2,7 +2,7 @@
 #define _KMDI_DOCUMENT_VIEW_TAB_WIDGET_H_
 
 #include <ktabwidget.h>
-#include <kmdidefines.h>
+#include "kmdidefines.h"
 
 class KMdiDocumentViewTabWidget:
  public KTabWidget
