@@ -471,8 +471,7 @@ bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
 }
 
 bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
-    uint keyModMaskX = KAccel::accelModMaskX(),
-    	 keyModX, keyModX2;
+    uint keyModX, keyModX2;
     uint keySymX, keySymX2;
 
     if ( event_->type == MappingNotify ) {
@@ -491,7 +490,7 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
     if ( !KGlobalAccelPrivate::g_bKeyEventsEnabled ) return false;
 
     KAccel::keyEventXToKeyX( event_, 0, &keySymX, &keyModX );
-    keyModX &= keyModMaskX;
+    keyModX &= g_keyModMaskXAccel;
 
     kdDebug(125) << "x11EventFilter: seek " << KAccel::keySymXToString( keySymX, keyModX, false )
     	<< QString( " keyCodeX: %1 state: %2 keySym: %3 keyMod: %4\n" )
@@ -504,7 +503,7 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	KAccel::keyQtToKeyX( (*it).aCurrentKeyCode, 0, &keySymX2, &keyModX2 );
 	//kdDebug() << "x11EventFilter: inspecting " << KAccel::keyToString( (*it).aCurrentKeyCode )
 	//	<< QString( " keySym: %1 keyMod: %2\n" ).arg( keySymX2, 0, 16 ).arg( keyModX2, 0, 16 );
-	if ( keySymX == keySymX2 && keyModX == (keyModX2 & keyModMaskX) ) {
+	if ( keySymX == keySymX2 && keyModX == (keyModX2 & g_keyModMaskXAccel) ) {
 	    entry = *it;
 	    sConfigKey = it.key();
 	    break;
