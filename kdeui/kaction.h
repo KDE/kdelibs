@@ -334,6 +334,8 @@ public:
     virtual void setIconSet( const QIconSet &iconSet );
     virtual void setIcon( const QString& icon );
 
+    virtual QString iconName() const;
+
     /**
      * @internal
      * Generate a toolbar button id. Made public for reimplementations.

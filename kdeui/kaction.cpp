@@ -137,6 +137,7 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
 : QAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, parent, name ), kaccel(0)
 {
   d = new KActionPrivate;
+  d->m_iconName = pix;
   
   if ( parent && parent->inherits( "KActionCollection" ) )
     setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
@@ -283,6 +284,11 @@ void KAction::setText( int i, const QString &text )
 void KAction::setIcon( const QString &icon )
 {
   d->m_iconName = icon;
+}
+
+QString KAction::iconName() const
+{
+  return d->m_iconName;
 }
 
 void KAction::setIconSet( const QIconSet &iconSet )
