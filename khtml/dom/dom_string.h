@@ -86,7 +86,12 @@ public:
 
     uint length() const;
     void truncate( unsigned int len );
-
+    void remove(unsigned int pos, int len=1);
+    /**
+     * Splits the string into two. The original string gets truncated to pos, and the rest is returned.
+     */
+    DOMString split(unsigned int pos);
+    
     QChar *unicode() const;
     QString string() const;
 

@@ -83,6 +83,34 @@ void DOMStringImpl::truncate(int len)
     memcpy(c, s, len*sizeof(QChar));
     if(s) QT_DELETE_QCHAR_VEC(s);
     s = c;
+    l = len;
+}
+
+void DOMStringImpl::remove(uint pos, int len)
+{
+  if(pos >= l ) return;
+  if(pos+len > l)
+    len = l - pos;
+  
+  uint newLen = l-len;
+  QChar *c = QT_ALLOC_QCHAR_VEC(newLen);
+  memcpy(c, s, pos*sizeof(QChar));
+  memcpy(c+pos, s+pos+len, (l-len-pos)*sizeof(QChar));
+  if(s) QT_DELETE_QCHAR_VEC(s);
+  s = c;
+  l = newLen;
+}
+
+DOMStringImpl *DOMStringImpl::split(uint pos)
+{
+  if( pos >=l ) return new DOMStringImpl();
+
+  uint newLen = l-pos;
+  QChar *c = QT_ALLOC_QCHAR_VEC(newLen);
+  memcpy(c, s+pos, newLen*sizeof(QChar));
+  
+  truncate(pos);
+  return new DOMStringImpl(c, newLen);
 }
 
 DOMStringImpl *DOMStringImpl::copy() const

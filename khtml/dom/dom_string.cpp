@@ -23,6 +23,7 @@
 
 #include "dom_string.h"
 #include "dom_stringimpl.h"
+#include <qstring.h>
 using namespace DOM;
 
 
@@ -188,6 +189,18 @@ void DOMString::truncate( unsigned int len )
 {
     if(impl) impl->truncate(len);
 }
+
+void DOMString::remove(unsigned int pos, int len)
+{
+  if(impl) impl->remove(pos, len);
+}
+
+DOMString DOMString::split(unsigned int pos)
+{
+  if(!impl) return 0;
+  return impl->split(pos);
+}
+
 
 bool DOMString::percentage(int &_percentage) const
 {

@@ -41,6 +41,8 @@ public:
     void append(DOMStringImpl *str);
     void insert(DOMStringImpl *str, uint pos);
     void truncate(int len);
+    void remove(uint pos, int len=1);
+    DOMStringImpl *split(uint pos);
     DOMStringImpl *copy() const;
 
     const QChar &operator [] (int pos)
