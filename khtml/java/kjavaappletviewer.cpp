@@ -173,7 +173,9 @@ protected:
     void resizeEvent (QResizeEvent * e);
 };
 
-inline CoverWidget::CoverWidget (QWidget * parent) : QWidget (parent) {
+inline CoverWidget::CoverWidget (QWidget * parent)
+ : QWidget (parent, "KJavaAppletViewer Widget")
+{
     m_appletwidget = new KJavaAppletWidget (this);
     setFocusProxy (m_appletwidget);
     hide ();
@@ -462,7 +464,7 @@ void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
 //-----------------------------------------------------------------------------
 
 KJavaAppletViewerLiveConnectExtension::KJavaAppletViewerLiveConnectExtension(KJavaAppletViewer * parent)
-    : KParts::LiveConnectExtension (parent), m_viewer (parent) {
+    : KParts::LiveConnectExtension (parent, "KJavaAppletViewer LiveConnect Extension"), m_viewer (parent) {
 }
 
 bool KJavaAppletViewerLiveConnectExtension::get (
