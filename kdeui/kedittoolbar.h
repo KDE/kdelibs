@@ -139,8 +139,13 @@ protected slots:
    * Overridden in order to save any changes made to the toolbars
    */
   virtual void slotOk();
+  /**
+   * idem
+   */
+  virtual void slotApply();
 
 private:
+  void init();
   KEditToolbarWidget *m_widget;
   KEditToolbarPrivate *d;
 };

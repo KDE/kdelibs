@@ -177,26 +177,29 @@ public:
 
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
                            bool global, QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel, parent, name),
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Cancel, parent, name),
       m_widget(new KEditToolbarWidget(collection, file, global, this))
 {
-    setMainWidget(m_widget);
-
-    connect(m_widget, SIGNAL(enableOk(bool)),
-            this,     SLOT(enableButtonOK(bool)));
-    enableButtonOK(false);
-    incInitialSize( QSize( 200, 200 ) );
+    init();
 }
 
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel, parent, name),
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Cancel, parent, name),
       m_widget(new KEditToolbarWidget(factory, this))
+{
+    init();
+}
+
+void KEditToolbar::init()
 {
     setMainWidget(m_widget);
 
     connect(m_widget, SIGNAL(enableOk(bool)),
             this,     SLOT(enableButtonOK(bool)));
+    connect(m_widget, SIGNAL(enableOk(bool)),
+            this,     SLOT(enableButtonApply(bool)));
     enableButtonOK(false);
+    enableButtonApply(false);
     incInitialSize( QSize( 200, 200 ) );
 }
 
@@ -212,6 +215,12 @@ void KEditToolbar::slotOk()
   {
     accept();
   }
+}
+
+void KEditToolbar::slotApply()
+{
+    (void)m_widget->save();
+    enableButtonApply(false);
 }
 
 KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
@@ -425,13 +434,13 @@ void KEditToolbarWidget::setupLayout()
   d->m_helpArea->setAlignment( Qt::WordBreak );
 
   // now start with our layouts
-  QVBoxLayout *top_layout = new QVBoxLayout(this, 5);
+  QVBoxLayout *top_layout = new QVBoxLayout(this, KDialog::marginHint(), KDialog::spacingHint());
 
-  QVBoxLayout *name_layout = new QVBoxLayout;
-  QHBoxLayout *list_layout = new QHBoxLayout;
+  QVBoxLayout *name_layout = new QVBoxLayout(KDialog::spacingHint());
+  QHBoxLayout *list_layout = new QHBoxLayout(KDialog::spacingHint());
 
-  QVBoxLayout *inactive_layout = new QVBoxLayout;
-  QVBoxLayout *active_layout = new QVBoxLayout;
+  QVBoxLayout *inactive_layout = new QVBoxLayout(KDialog::spacingHint());
+  QVBoxLayout *active_layout = new QVBoxLayout(KDialog::spacingHint());
 
   QGridLayout *button_layout = new QGridLayout(5, 3, 0);
 
@@ -457,7 +466,7 @@ void KEditToolbarWidget::setupLayout()
 
   top_layout->addLayout(name_layout);
   top_layout->addWidget(new KSeparator(this));
-  top_layout->addLayout(list_layout);
+  top_layout->addLayout(list_layout,10);
   top_layout->addWidget(d->m_helpArea);
   top_layout->addWidget(new KSeparator(this));
 }
@@ -595,12 +604,15 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     // insert this into the inactive list
     // for now, only deal with buttons with icons.. later, we'll need
     // to look into actions a LOT more carefully
-    if ( action->icon().isEmpty() )
+    // Hmm, we also accept non-basic-KActions that have no icon
+    // (e.g. konqueror's location bar)
+    if ( action->icon().isEmpty() && action->isA("KAction") )
       continue;
 
     ToolbarItem *act = new ToolbarItem(m_inactiveList, action->name(), action->statusText());
     act->setText(1, action->plainText());
-    act->setPixmap(0, BarIcon(action->icon(), 16));
+    if (!action->icon().isEmpty())
+        act->setPixmap(0, BarIcon(action->icon(), 16));
   }
 
   // finally, add a default separator to the inactive list
