@@ -47,7 +47,10 @@ static KStaticDeleter<KFileMetaInfoItem::Data> sd_KFileMetaInfoItemData;
 KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
 {
     if (!null)
-        sd_KFileMetaInfoItemData.setObject( null,
+        // We deliberately do not reset "null" after it has been destroyed!
+        // Otherwise we will run into problems later in ~KFileMetaInfoItem 
+        // where the d-pointer is compared against null.
+        null = sd_KFileMetaInfoItemData.setObject( 
                 new KFileMetaInfoItem::Data(QString::null, QString::null, QVariant(),
                                             QString::null, QString::null, false) );
     return null;
@@ -68,7 +71,11 @@ KFileMetaInfoItem::KFileMetaInfoItem( const KFileMetaInfoItem& item )
 //    kdDebug(7033) << "KFileMetaInfoItem copy constructor\n";
     *this = item;
     // d gets copied by value, i.e. the pointer is shared!
-    if (d != Data::makeNull()) d->ref();
+    // We don't call makeNull here since it isn't necassery:
+    // If d is equal to null it means that null is initialized already.
+    // null is 0L when it hasn't been initialized and d is never 0L.
+    if (d != Data::null)
+        d->ref();
 }
 
 KFileMetaInfoItem::KFileMetaInfoItem()
@@ -81,7 +88,10 @@ KFileMetaInfoItem::KFileMetaInfoItem()
 KFileMetaInfoItem::~KFileMetaInfoItem()
 {
 //    kdDebug(7033) << "KFileMetaInfoItem destructor\n";
-    if ( d != Data::makeNull() && d->deref() )
+    // We don't call makeNull here since it isn't necassery:
+    // If d is equal to null it means that null is initialized already.
+    // null is 0L when it hasn't been initialized and d is never 0L.
+    if ((d != Data::null) && d->deref() )
     {
         kdDebug(7033) << "a metainfoitem " << d->key << " is finally deleted\n";
         delete d;
@@ -92,7 +102,11 @@ const KFileMetaInfoItem& KFileMetaInfoItem::operator=
                                               (const KFileMetaInfoItem & item )
 {
     d = item.d;
-    d->ref();
+    // We don't call makeNull here since it isn't necassery:
+    // If d is equal to null it means that null is initialized already.
+    // null is 0L when it hasn't been initialized and d is never 0L.
+    if (d != Data::null)
+        d->ref();
 //    kdDebug(7033) << "operator=\n";
     return *this;
 }
@@ -104,7 +118,10 @@ void KFileMetaInfoItem::setValue( const QVariant& value )
     kdDebug(7033) << "type: " << value.typeName() << " and " << d->value.typeName()
               << endl;
     
-    if ( d == Data::makeNull() ) return;
+    // We don't call makeNull here since it isn't necassery:
+    // If d is equal to null it means that null is initialized already.
+    // null is 0L when it hasn't been initialized and d is never 0L.
+    if ( d == Data::null ) return;
     
     if ( !d->editable ||
          (d->value.isValid() && value.type() != d->value.type()) )
@@ -223,7 +240,11 @@ KFileMetaInfo::KFileMetaInfo( const KFileMetaInfo& original )
 //    kdDebug(7033) << "KFileMetaInfo( const KFileMetaInfo& original)\n";
     *this = original;
     // d gets copied by value, i.e. the pointer is shared!
-    if (d!=Data::makeNull()) d->ref();
+    // We don't call makeNull here since it isn't necassery:
+    // If d is equal to null it means that null is initialized already.
+    // null is 0L when it hasn't been initialized and d is never 0L.
+    if (d != Data::null)
+       d->ref();
 }
 
 KFileMetaInfo::KFileMetaInfo()
@@ -234,12 +255,15 @@ KFileMetaInfo::KFileMetaInfo()
 KFileMetaInfo::~KFileMetaInfo()
 {
 //    if (d!=Data::makeNull()) kdDebug(7033) << "KFileMetaInfo()\n";
-    if ( d != Data::makeNull() && d->deref() )
+    // We don't call makeNull here since it isn't necassery:
+    // If d is equal to null it means that null is initialized already.
+    // null is 0L when it hasn't been initialized and d is never 0L.
+    if ( d != Data::null && d->deref() )
        delete d;
 }
 
 KFileMetaInfoItem & KFileMetaInfo::addItem( const QString& key,
-                                            const QVariant& value )
+                                            const QVariant& /* value */ )
 {
     KFileMetaInfoItem item;
     d->items.insert(key, item);
@@ -249,14 +273,21 @@ KFileMetaInfoItem & KFileMetaInfo::addItem( const QString& key,
 const KFileMetaInfo& KFileMetaInfo::operator= (const KFileMetaInfo& info )
 {
     d = info.d;
-    if (d != Data::makeNull()) d->ref();
+    // We don't call makeNull here since it isn't necassery:
+    // If d is equal to null it means that null is initialized already.
+    // null is 0L when it hasn't been initialized and d is never 0L.
+    if (d != Data::null) 
+       d->ref();
 //    kdDebug(7033) << "info::operator=\n";
     return *this;
 }
 
 bool KFileMetaInfo::isValid() const
 {
-    return d != Data::makeNull();
+    // We don't call makeNull here since it isn't necassery:
+    // If d is equal to null it means that null is initialized already.
+    // null is 0L when it hasn't been initialized and d is never 0L.
+    return d != Data::null;
 }
 
 // ### Rolf, can you add some comment, what this method does? 
@@ -371,7 +402,10 @@ static KStaticDeleter<KFileMetaInfo::Data> sd_KFileMetaInfoData;
 KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
 {
     if (!null)
-	sd_KFileMetaInfoData.setObject( null, new KFileMetaInfo::Data(QString::null) );
+        // We deliberately do not reset "null" after it has been destroyed!
+        // Otherwise we will run into problems later in ~KFileMetaInfoItem 
+        // where the d-pointer is compared against null.
+	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(QString::null) );
     return null;
 }
 
