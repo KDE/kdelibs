@@ -1047,36 +1047,17 @@ void KStandardDirs::addKDEDefaults()
        kdedirList.append(execPrefix);
 #endif
 
-    QString localKdeDir;
-    if (getuid())
+    // We treat root differently to prevent a "su" shell messing up the
+    // file permissions in the user's home directory.
+    QString localKdeDir = readEnvPath(getuid() ? "KDEHOME" : "KDEROOTHOME");
+    if (!localKdeDir.isEmpty())
     {
-       localKdeDir = readEnvPath("KDEHOME");
-       if (!localKdeDir.isEmpty())
-       {
-          if (localKdeDir[localKdeDir.length()-1] != '/')
-             localKdeDir += '/';
-       }
-       else
-       {
-          localKdeDir =  QDir::homeDirPath() + "/.kde/";
-       }
+       if (localKdeDir[localKdeDir.length()-1] != '/')
+          localKdeDir += '/';
     }
     else
     {
-       // We treat root different to prevent root messing up the
-       // file permissions in the users home directory.
-       localKdeDir = readEnvPath("KDEROOTHOME");
-       if (!localKdeDir.isEmpty())
-       {
-          if (localKdeDir[localKdeDir.length()-1] != '/')
-             localKdeDir += '/';
-       }
-       else
-       {
-          struct passwd *pw = getpwuid(0);
-          localKdeDir =  QFile::decodeName((pw && pw->pw_dir) ? pw->pw_dir : "/root")  + "/.kde/";
-       }
-
+       localKdeDir =  QDir::homeDirPath() + "/.kde/";
     }
 
     if (localKdeDir != "-/")
