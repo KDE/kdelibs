@@ -323,37 +323,40 @@ static void readIcon(NETWinInfoPrivate *p) {
     unsigned long nitems_ret = 0, after_ret = 0;
     unsigned char *data_ret = 0;
 
-    int ret =
-	XGetWindowProperty(p->display, p->window, net_wm_icon, 0l, 3l, False,
-			   XA_CARDINAL, &type_ret, &format_ret, &nitems_ret,
-			   &after_ret, &data_ret);
-
-    if (data_ret) XFree(data_ret);
-
-    if (ret != Success || nitems_ret < 3 || type_ret != XA_CARDINAL ||
-	format_ret != 32) {
-	// either we didn't get the property, or the property has less than
-	// 3 elements in it
-	// NOTE: 3 is the ABSOLUTE minimum:
-	//     width = 1, height = 1, length(data) = 1 (width * height)
-	return;
-    }
-
-    // allocate space after_ret (bytes remaining in property) + 3*sizeof(CARD32)
-    // (the 3 32bit quantities we just read)
-    unsigned long proplen = after_ret + (3 * sizeof(CARD32));
-    proplen *= sizeof(long) / sizeof(CARD32);
-
     // allocate buffers
-    unsigned char *buffer = new unsigned char[proplen];
-    unsigned long offset = 0, buffer_offset = 0;
+    unsigned char *buffer = 0;
+    unsigned long offset = 0;
+    unsigned long buffer_offset = 0;
+    unsigned long bufsize = 0;
 
     // read data
     while (after_ret > 0) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon, offset,
-			       (long) BUFSIZE, False, XA_CARDINAL, &type_ret,
+			       BUFSIZE, False, XA_CARDINAL, &type_ret,
 			       &format_ret, &nitems_ret, &after_ret, &data_ret)
 	    == Success) {
+            if (!bufsize)
+            {
+               if (nitems_ret < 3 || type_ret != XA_CARDINAL ||
+                  format_ret != 32) {
+                  // either we didn't get the property, or the property has less than
+                  // 3 elements in it
+                  // NOTE: 3 is the ABSOLUTE minimum:
+                  //     width = 1, height = 1, length(data) = 1 (width * height)
+                  if ( data_ret )
+                     XFree(data_ret);
+                  return;
+               }
+
+               bufsize = nitems_ret * sizeof(long) + after_ret;
+               buffer = (unsigned char *) malloc(bufsize);
+            }
+            else if (buffer_offset + nitems_ret*sizeof(long) > bufsize)
+            {
+fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
+               bufsize = nitems_ret * sizeof(long) + after_ret;
+               buffer = (unsigned char *) realloc(buffer, bufsize);
+            }
 	    memcpy((buffer + buffer_offset), data_ret, nitems_ret * sizeof(long));
 	    buffer_offset += nitems_ret * sizeof(long);
 	    offset += nitems_ret;
@@ -361,14 +364,16 @@ static void readIcon(NETWinInfoPrivate *p) {
 	    if ( data_ret )
 		XFree(data_ret);
 	} else {
-	    after_ret = 0;
+            if (buffer)
+               free(buffer);
+	    return; // Some error occured cq. property didn't exist.
 	}
     }
 
     CARD32 *data32;
     unsigned long i, j, k, sz, s;
     unsigned long *d = (unsigned long *) buffer;
-    for (i = 0, j = 0; i < proplen; i++) {
+    for (i = 0, j = 0; i < bufsize; i++) {
 	p->icons[j].size.width = *d++;
 	i += sizeof(long);
 	p->icons[j].size.height = *d++;
@@ -377,7 +382,7 @@ static void readIcon(NETWinInfoPrivate *p) {
 	sz = p->icons[j].size.width * p->icons[j].size.height;
 	s = sz * sizeof(long);
 
-	if ( i + s - 1 > proplen ) {
+	if ( i + s - 1 > bufsize ) {
 	    break;
 	}
 
@@ -394,7 +399,7 @@ static void readIcon(NETWinInfoPrivate *p) {
     fprintf(stderr, "NET: readIcon got %d icons\n", p->icons.size());
 #endif
 
-    delete [] buffer;
+    free(buffer);
 }
 
 
