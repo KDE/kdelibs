@@ -220,7 +220,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   bool retval = true;
 
   if ( b_allow_multiple || _urls.isEmpty() )
-  {	
+  {
     while ( ( pos = exec.find( "%f" )) != -1 )
       exec.replace( pos, 2, "" );
     while ( ( pos = exec.find( "%n" )) != -1 )
@@ -291,7 +291,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
 pid_t KRun::run( const QString& _cmd )
 {
   kdDebug(7010) << "Running " << _cmd << endl;
-  
+
   // Figure out current desktop
   int desktop = KWin::currentDesktop();
 
@@ -324,6 +324,22 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
 {
   // find kfmexec in $PATH
   QString kfmexec = KStandardDirs::findExe( "kfmexec" );
+
+  // Hey, did someone forget about the case where the app
+  // is given without any arguments ?? (DA)
+  if( _urls.isEmpty() )
+  {
+    KProcess proc;
+    proc << kfmexec;
+    proc << app;
+    proc.start(KProcess::DontCare);
+    pid_t pid = proc.getPid();
+
+    if ( pid != -1 )
+      clientStarted(app, "" /* mini_icon */, pid);
+
+    return (pid != -1);
+  }
 
   if ( _allow_multiple )
   {
