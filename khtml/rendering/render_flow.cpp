@@ -282,44 +282,20 @@ void RenderFlow::layoutBlockChildren(bool deep)
     int prevMargin = 0;
     while( child != 0 )
     {
-#if 0
-	if(child->isFloating())
-	{
-	    printf("floating child!\n");
-	    insertFloat(child);
-	    positionNewFloats();
-	}
-	else
-#endif
-	{
-	    if(checkClear(child)) prevMargin = 0; // ### should only be 0
-	    // if oldHeight+prevMargin < newHeight
-	    int margin = child->marginTop();
-	    margin = MAX(margin, prevMargin);
-	    m_height += margin;
+	if(checkClear(child)) prevMargin = 0; // ### should only be 0
+	// if oldHeight+prevMargin < newHeight
+	int margin = child->marginTop();
+	margin = MAX(margin, prevMargin);
+	m_height += margin;
 
-	    if(child->isHTMLTable())
-	    {
-		//printf("htmlTable!!!\n");
-		int indent = xPos + getIndent(child);
-		RenderObject *prev = child->previousSibling();
-		if(prev && prev->isFlow())
-		{
-		    RenderFlow *previous = static_cast<RenderFlow *>(prev);
-		    indent = previous->leftMargin(m_height - previous->yPos());
-		}
-		child->setPos(indent, m_height);
-	    }
-	    else
-		child->setPos(xPos + getIndent(child), m_height);
+	child->setPos(xPos + getIndent(child), m_height);
 
-	    if(deep) child->layout(deep);
-	    else if (!child->layouted())
-		_layouted = false;
+	if(deep) child->layout(deep);
+	else if (!child->layouted())
+	    _layouted = false;
 
-	    m_height += child->height();
-	    prevMargin = child->marginBottom();
-	}
+	m_height += child->height();
+	prevMargin = child->marginBottom();
 	child = child->nextSibling();
     }
 
@@ -425,28 +401,32 @@ RenderFlow::insertFloat(RenderObject *o)
     f->node = o;
 
     specialObjects->append(f);
-    printf("inserting node %p number of specialobject = %d\n", o,
-	   specialObjects->count());
+//    printf("inserting node %p number of specialobject = %d\n", o,
+//	   specialObjects->count());
+	   
+    positionNewFloats();
 }
 
 void RenderFlow::positionNewFloats()
 {
     if(!specialObjects) return;
-
     SpecialObject *f = specialObjects->getLast();
     if(!f || f->startY != -1) return;
     while(1)
     {
 	SpecialObject *aFloat = specialObjects->prev();
-	if(!aFloat || aFloat->startY != -1) break;
+	if(!aFloat || aFloat->startY != -1) {
+	    specialObjects->next();
+	    break;
+	}	 
 	f = aFloat;
     }
-
+    
     int y;
     if(m_childrenInline)
-	y = currentY();
+        y = currentY();
     else
-	y = m_height;
+        y = m_height;    
 
     while(f)
     {
@@ -462,8 +442,8 @@ void RenderFlow::positionNewFloats()
 		y=leftBottom()+1;
 	    }
 	    f->left = fx;
-	    printf("positioning left aligned float at (%d/%d)\n",
-		   fx + o->marginLeft(), y + o->marginTop());
+//	    printf("positioning left aligned float at (%d/%d)\n",	
+//		   fx + o->marginLeft() , y + o->marginTop());	        
 	    o->setXPos(fx + o->marginLeft());			
 	    o->setYPos(y + o->marginTop());
 	}
@@ -476,14 +456,16 @@ void RenderFlow::positionNewFloats()
 		y=leftBottom()+1;
 	    }
 	    f->left = fx - f->width;
-	    printf("positioning right aligned float at (%d/%d)\n",
-		   fx - o->marginRight() - o->width(), y + o->marginTop());
+//	    printf("positioning right aligned float at (%d/%d)\n",
+//		   fx - o->marginRight() - o->width(), y + o->marginTop());
 	    o->setXPos(fx - o->marginRight() - o->width());
 	    o->setYPos(y + o->marginTop());
 	}	
 
 	f->startY = currentY();
 	f->endY = f->startY + _height;
+	
+//	printf("specialObject y= (%d-%d)\n",f->startY,f->endY);
 
 	f = specialObjects->next();
     }
@@ -509,7 +491,7 @@ void RenderFlow::newLine()
     }
     if(currentY() < newY)
     {
-	printf("adjusting y position\n");
+//	printf("adjusting y position\n");
 	setCurrentY(newY);
     }
     m_clearStatus = CNONE;
@@ -532,12 +514,14 @@ RenderFlow::leftMargin(int y) const
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
+//    	printf("left: sy, ey, x, w %d,%d,%d,%d \n", 
+//	    r->startY, r->endY, r->left, r->width);
 	if (r->startY <= y && r->endY > y &&
 	    r->type == SpecialObject::FloatLeft &&
 	    r->left + r->width > left)
 	    left = r->left + r->width;
     }
-    //printf("leftMargin(%d) = %d\n", y, left);
+//    printf("leftMargin(%d) = %d\n", y, left);
     return left;
 }
 
@@ -557,17 +541,21 @@ RenderFlow::rightMargin(int y) const
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
+//    	printf("right: sy, ey, x, w %d,%d,%d,%d \n", 
+//	    r->startY, r->endY, r->left, r->width);
 	if (r->startY <= y && r->endY > y &&
 	    r->type == SpecialObject::FloatRight &&
 	    r->left < right)
-	    right -= r->left;
+	    right = r->left;
     }
+//    printf("rightMargin(%d) = %d\n", y, right);
     return right;
 }
 
 unsigned short
 RenderFlow::lineWidth(int y) const
 {
+//    printf("lineWidth(%d)=%d\n",y,rightMargin(y) - leftMargin(y));
     return rightMargin(y) - leftMargin(y);
 #if 0
     int res = m_width;
@@ -632,6 +620,8 @@ RenderFlow::rightBottom()
 void
 RenderFlow::clearFloats()
 {
+
+//    printf("clearFloats\n");
     if (specialObjects)
     {
 #if 0
@@ -994,7 +984,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 	margin = MAX(margin, newChild->marginTop());
 	//printf("margin = %d\n", margin);
 	m_height += margin;
-	printf("positioning new block child at (%d/%d)\n", xPos, m_height);
+//	printf("positioning new block child at (%d/%d)\n", xPos, m_height);
 	newChild->calcWidth();
 	newChild->setPos(xPos + getIndent(newChild), m_height);
     }
@@ -1063,7 +1053,6 @@ void RenderFlow::specialHandler(BiDiObject *special)
 
     if(o->isFloating())
     {
-	printf("specialHandler: inserting float\n");
 	o->layout(true);
 	insertFloat(o);
     }
