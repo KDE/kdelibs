@@ -177,10 +177,10 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
 
     QByteArray params;
     QDataStream stream(params, IO_WriteOnly);
-    QString fake_header("Set-Cookie: ");
-    fake_header.append(value.string());
+    QCString fake_header("Set-Cookie: ");
+    fake_header.append(value.string().latin1());
     fake_header.append("\n");
-    stream << URL() << fake_header.utf8() << windowId;
+    stream << URL() << fake_header << windowId;
     if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
                                   "addCookies(QString,QCString,long int)", params))
     {
