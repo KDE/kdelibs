@@ -135,7 +135,7 @@ Plugin::registerConnection(Connection *conn)
     if (m_connections.containsRef(conn))
         return;
     m_connections.append(conn);
-    connect(conn, SIGNAL(closing(Connection *)), SLOT(slotConnectionClose(Connection *)));
+    connect(conn, SIGNAL(closing(KDB::Connection *)), SLOT(slotConnectionClose(KDB::Connection *)));
 }
 
 void

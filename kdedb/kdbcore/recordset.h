@@ -103,9 +103,9 @@ class Recordset : public DataObject {
     KDB_ULONG count();
     
  signals:
-    void recordAdded( RecordPtr );
-    void recordRemoved( RecordPtr );
-    void recordUpdated( RecordPtr );
+    void recordAdded( KDB::RecordPtr );
+    void recordRemoved( KDB::RecordPtr );
+    void recordUpdated( KDB::RecordPtr );
     void changed();
     
  private:

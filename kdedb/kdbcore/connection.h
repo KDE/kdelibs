@@ -182,7 +182,7 @@ class Connection : public Object {
         
  signals:
 
-    void closing(Connection *);
+    void closing(KDB::Connection *);
     void opened();
     void databaseAdded( QString );
     void databaseRemoved( QString );

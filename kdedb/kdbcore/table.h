@@ -140,12 +140,12 @@ public:
 
  signals:
 
-    void fieldAdded( Field * );
-    void fieldRemoved( Field * );
+    void fieldAdded( KDB::Field * );
+    void fieldRemoved( KDB::Field * );
     void changed();
-    void indexAdded( Index * );
-    void indexRemoved( Index * );
-    void created( Table * );
+    void indexAdded( KDB::Index * );
+    void indexRemoved( KDB::Index * );
+    void created( KDB::Table * );
 
  private:
 

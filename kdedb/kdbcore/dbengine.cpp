@@ -182,7 +182,9 @@ DBEngine::addConnection(const QString &plugin,
     
     if (conn) {
         m_connections.append(conn);
-        connect(conn, SIGNAL(closing(Connection *)), SLOT(slotConnectionClosed(Connection *)));
+        connect(conn,
+                SIGNAL(closing(KDB::Connection *)),
+                SLOT(slotConnectionClosed(KDB::Connection *)));
         conn->setUser(user);
         conn->setPassword(password);
     }

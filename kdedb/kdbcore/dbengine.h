@@ -156,8 +156,8 @@ class DBEngine : public Object{
 
  signals:
 
-    void connectionAdded(Connection *);
-    void connectionRemoved(Connection *);
+    void connectionAdded(KDB::Connection *);
+    void connectionRemoved(KDB::Connection *);
         
  protected:
 
@@ -168,7 +168,7 @@ class DBEngine : public Object{
     
  protected slots:
 
-    void slotConnectionClosed(Connection *);
+    void slotConnectionClosed(KDB::Connection *);
  
  private:
 

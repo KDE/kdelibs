@@ -171,7 +171,7 @@ class Database : public Object{
 
  protected slots:
 
-    void tableCreated( Table * );
+    void tableCreated( KDB::Table * );
 
  private:
 

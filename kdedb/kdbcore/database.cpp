@@ -158,7 +158,7 @@ TablePtr
 Database::newTable(const QString &name) 
 {
     Table * tab = new Table(connector, this, name.utf8(), true);
-    connect(tab, SIGNAL(created(Table *)),SLOT(tableCreated(Table *)));
+    connect(tab, SIGNAL(created(KDB::Table *)),SLOT(tableCreated(KDB::Table *)));
     return tab;
 }
 

@@ -142,11 +142,11 @@ public:
 
  signals:
 
-    void closing(Plugin *);
+    void closing(KDB::Plugin *);
 
  protected slots:
         
-    void slotConnectionClose(Connection *);
+    void slotConnectionClose(KDB::Connection *);
         
  protected:
 
