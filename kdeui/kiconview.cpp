@@ -278,7 +278,6 @@ void KIconView::leaveEvent( QEvent *e )
 
 void KIconView::contentsMousePressEvent( QMouseEvent *e )
 {
-  QIconView::contentsMousePressEvent( e );
   if( (selectionMode() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) ) {
     bool block = signalsBlocked();
     blockSignals( true );
@@ -294,6 +293,7 @@ void KIconView::contentsMousePressEvent( QMouseEvent *e )
   }
   // end QIconView bug workaround
 
+  QIconView::contentsMousePressEvent( e );
   d->doAutoSelect = FALSE;
 }
 
