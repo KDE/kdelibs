@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=audio/mp4
+Icon=sound
+Patterns=*.m4a;*.M4A;
+Comment=MPEG-4 Audio

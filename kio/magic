@@ -84,6 +84,10 @@
 >28	string		fLaC		audio/x-oggflac
 >28	string		\x80theora	video/x-theora
 >28	string		Speex\ \ 	audio/x-speex
+>29	string		video		video/x-ogm
+
+# FLAC files
+0	string		fLaC		audio/x-flac
 
 #------------------------------------------------------------------------------
 # KSysV stuff: logfiles and packages belonging to KSysV

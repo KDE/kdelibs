@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=video/x-ogm
+Icon=video
+Patterns=*.ogm;*.OGM;
+X-KDE-IsAlso=application/ogg
+Comment=Ogg/Ogm Video
