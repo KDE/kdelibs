@@ -34,14 +34,10 @@
 #include "kio/global.h"
 #include "kio/job.h"
 
-#include <qfileinfo.h>
-#include <qfile.h>
-
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
 #include <kglobal.h>
-#include <kstandarddirs.h>
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
@@ -383,42 +379,418 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
 
 QString KIO::buildHTMLErrorString(int errorCode, const QString &errorText)
 {
-    // copied gratuitously from kio_help
-    QStringList search;
+  /**
+   * % markers used in these strings...
+   * 1: URL
+   * 2: hostname
+   * 3: protocol
+   * 4: date and time, locale-adjusted
+   */
 
-    // assemble the local search paths
-    const QStringList localDoc = KGlobal::dirs()->resourceDirs("html");
+  QString errorName, action, description;
+  QStringList causes, solutions;
 
-    // look up the different languages
-    for ( int id = localDoc.count() - 1; id >= 0; --id )
-    {
-        QStringList langs = KGlobal::locale()->languageList();
-        langs.append( "en" );
-        langs.remove( "C" );
-        QStringList::ConstIterator lang;
-        for (lang = langs.begin(); lang != langs.end(); ++lang)
-            search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang)
-                                .arg(QString("kioslave/errors/error%1.html").arg(errorCode)));
-    }
+  QString sysadmin = i18n( "Contact your system administrator, "
+    "techincal support group, or Internet Service Provider (ISP) (in the case of "
+    "internet problems) for further assistance." );
+  QString serveradmin = i18n( "Contact the administrator of the server, "
+    "typically at <a href=\"mailto:webmaster@%3\">webmaster@%3</a>, for further "
+    "assistance." );
+  // FIXME active link to permissions dialog
+  QString access = i18n( "Check your access permissions on this resource." );
+  QString locked = i18n( "The file may be in use (and thus locked) by "
+    "another user or application." );
+  QString querylock = i18n( "Check to make sure that no other "
+    "application or user is using the file or has locked the file." );
+  QString hardware = i18n( "Although unlikely, a hardware error may have "
+    "occurred." );
+  QString bug = i18n( "You may have encountered a bug in the program." );
+  QString update = i18n( "Update your software to the latest version. "
+    "Your distribution should provide tools to update your software." );
+  QString bugreport = i18n( "Please consider helping the KDE team by "
+    "submitting a high quality bug report. First, look to see if the same bug has "
+    "been submitted by someone else by searching at the "
+    "<a href=\"http://bugs.kde.org/\">KDE bug reporting website</a>. If not, take "
+    "note of the details given above, and include them in your bug report, along "
+    "with as many other details as you think might help." );
+  QString network = i18n( "There may have been a problem with your network "
+    "connection." );
+  // FIXME netconf kcontrol link
+  QString netconf = i18n( "There may have been a problem with your network "
+    "configuration. If you have been accessing the internet with no problems "
+    "recently, this is unlikely." );
+  QString writeperm = i18n( "You may not have permissions to write to "
+    "the file." );
 
-    // try to locate the file
-    QStringList::Iterator it;
-    for ( it = search.begin(); it != search.end(); ++it )
-    {
-        QFileInfo info( *it );
-        if (info.exists() && info.isFile() && info.isReadable()) {
-          QFile docFile( *it );
+  switch( errorCode ){
+    case  KIO::ERR_CANNOT_OPEN_FOR_READING:
+      errorName = i18n( "Cannot open resource for reading." );
+      description = i18n( "This means that the contents of the requested file "
+        "or directory could not be retrieved, as read access could not be obtained." );
+      causes << i18n( "You may not have permissions to read the file or open "
+        "the directory.") << locked << hardware;
+      solutions << access << querylock << sysadmin;
+      break;
 
-          if ( docFile.open( IO_ReadOnly ) ) {
-            QString doc = QString( docFile.readAll() ).arg( errorText );
-            docFile.close();
-            return doc;
-          }
-        }
-    }
+    case  KIO::ERR_CANNOT_OPEN_FOR_WRITING:
+      errorName = i18n( "Cannot open resource for writing." );
+      description = i18n( "This means that the file could not be written to "
+        "as requested, because access with permission to write could not be "
+        "obtained." );
+      causes << writeperm << locked << hardware;
+      solutions << access << querylock << sysadmin;
+      break;
 
-    // fall back to the plain error...
-    return buildErrorString( errorCode, errorText );
+    case  KIO::ERR_CANNOT_LAUNCH_PROCESS:
+      errorName = i18n( "Cannot initiate the %3 protocol (unable to launch "
+        "process)." );
+      description = i18n( "The program on your computer which provides access "
+        "to the %3 protocol could not be started. This is usually due to "
+        "technical reasons." );
+      causes << i18n( "The program which provides compatability with this "
+        "protocol may have not been updated with your last update of KDE. "
+        "This can cause the program to be incompatible with the current version "
+        "and thus not start." ) << bug;
+      solutions << update << sysadmin;
+      break;
+
+    case  KIO::ERR_INTERNAL:
+      errorName = i18n( "Internal error" );
+      description = i18n( "The program on your computer which provides access "
+        "to the %3 protocol has reported an internal error." );
+      causes << i18n( "This is most likely to be caused by a bug in the program. "
+        "Please consider submitting a full bug report as detailed below." );
+      solutions << update << bugreport;
+      break;
+
+    case  KIO::ERR_MALFORMED_URL:
+      errorName = i18n( "Inproperly Formatted URL" );
+      description = i18n( "The <b>U</b>niversal <b>R</b>esource <b>L</b>ocation "
+        "(URL) that you entered was not properly formatted. The format of a URL "
+        "is generally as follows:"
+        "<blockquote><b>protocol://user@password:www.example.org:port/directory/"
+        "filename.extension?query=value</b></blockquote>" );
+      solutions << i18n( "Double-check that you have entered a properly formatted "
+        "URL and try again." ) << sysadmin;
+      break;
+
+    case  KIO::ERR_UNSUPPORTED_PROTOCOL:
+      errorName = i18n( "Unsupported Protocol %3" );
+      description = i18n( "The protocol %3 is not supported by the programs "
+        "currently installed on this computer." );
+      causes << i18n( "A protocol was requested that is not supported." )
+        << i18n( "The versions of the %3 protocol supported by this computer and "
+        "the server are incompatible." );
+      solutions << i18n( "You may perform a search on the internet for a KDE "
+        "program (called a kioslave or ioslave) which supports this protocol. "
+        "Places to search include <a href=\"http://apps.kde.com/\">"
+        "http://apps.kde.com/</a> and <a href=\"http://freshmeat.net/\">"
+        "http://freshmeat.net/</a>. Click on the following to perform a search "
+        "for \"%3 ioslave\" at <a href=\"fm:%3 ioslave\">"
+        "freshmeat.net</a>." ) << update << sysadmin;
+      break;
+
+    case  KIO::ERR_NO_SOURCE_PROTOCOL:
+      errorName = i18n( "URL Does Not Refer to a Resource." );
+      description = i18n( "The <b>U</b>niversal <b>R</b>esource <b>L</b>ocation "
+        "(URL) that you entered did not refer to a specific resource." );
+      causes << i18n( "KDE is able to communicate through a protocol within a "
+        "protocol; the protocol specified is only for use in such situations, "
+        "however this is not one of these situations. This is a rare event, and "
+        "is likely to indicate a programming error." );
+      solutions << i18n( "Double-check that you have entered the correct URL "
+        "and try again." ) << sysadmin;
+      break;
+
+    case  KIO::ERR_UNSUPPORTED_ACTION:
+      errorName = i18n( "Unsupported Action: %1" ).arg( errorText );
+      description = i18n( "The requested action is not supported by the KDE "
+        "program which is implementing the %3 protocol." );
+      causes << i18n( "This error is very much dependant on the KDE program. The "
+        "additional information should give you more information than is available"
+        "to the KDE input / output architecture." );
+      solutions << i18n( "Attempt to find another way to accomplish the same outcome." )
+        << sysadmin;
+      break;
+
+    case  KIO::ERR_IS_DIRECTORY:
+      errorName = i18n( "File Expected" );
+      description = i18n( "The request expected to return a file, however the "
+        "directory %1 was returned instead." ).arg( errorText );
+      causes << i18n( "This may be an error on the server side." );
+      solutions << sysadmin;
+      break;
+
+    case  KIO::ERR_IS_FILE:
+      errorName = i18n( "Directory Expected" );
+      description = i18n( "The request expected to return a directory, however "
+        "the file %1 was returned instead." ).arg( errorText );
+      causes << i18n( "This may be an error on the server side." );
+      solutions << sysadmin;
+      break;
+
+    case  KIO::ERR_DOES_NOT_EXIST:
+      errorName = i18n( "File or Directory Does Not Exist" );
+      description = i18n( "The request expected to return a directory, however "
+        "the file %1 was returned instead." ).arg( errorText );
+      causes << i18n( "This may be an error on the server side." );
+      solutions << sysadmin;
+      break;
+
+    case  KIO::ERR_FILE_ALREADY_EXIST:
+      errorName = i18n( "File Already Exists" );
+      description = i18n( "The requested file could not be created because a "
+        "file with the same name already exists." );
+      solutions << i18n ( "Try moving the current file out of the way first, "
+        "and then try again." )
+        << i18n ( "Delete the current file and try again." )
+        << i18n( "Choose an alternate filename for the new file." );
+      break;
+
+    case  KIO::ERR_DIR_ALREADY_EXIST:
+      errorName = i18n( "Directory Already Exists" );
+      description = i18n( "The requested directory could not be created because "
+        "a directory with the same name already exists." );
+      solutions << i18n( "Try moving the current directory out of the way first, "
+        "and then try again." )
+        << i18n( "Delete the current directory and try again." )
+        << i18n( "Choose an alternate name for the new directory." );
+      break;
+
+    case  KIO::ERR_UNKNOWN_HOST:
+      errorName = i18n( "Unknown Host" );
+      description = i18n( "An unknown host error indicates that the server with "
+        "the requested name, for example <b>www.example.org</b>, could not be "
+        "located on the internet." );
+      causes << i18n( "The name that you typed, %2, may not exist: it may be "
+        "incorrectly typed." ) << network << netconf;
+      solutions << sysadmin << serveradmin;
+      break;
+
+    case  KIO::ERR_ACCESS_DENIED:
+      errorName = i18n( "Access Denied" );
+      description = i18n( "Access was denied to the specified resource." );
+      causes << i18n( "You may have supplied incorrect authentication details or "
+        "none at all." )
+        << i18n( "Your account may not have access to the specified resource." )
+        << i18n( "On occasion this may be caused by an incorrectly configured "
+        "server, for example where a script does not have execution permissions." );
+      solutions << i18n( "Retry the request and ensure your authentication details "
+        "are entered correctly." ) << sysadmin << serveradmin;
+      break;
+
+    case  KIO::ERR_WRITE_ACCESS_DENIED:
+      errorName = i18n( "Write Access Denied" );
+      description = i18n( "This means that an attempt to write to the file "
+        "was rejected." );
+      causes << writeperm << locked << hardware;
+      solutions << access << querylock << sysadmin;
+      break;
+
+    case  KIO::ERR_CANNOT_ENTER_DIRECTORY:
+      errorName = i18n( "Unable to Enter Directory" );
+      description = i18n( "This means that an attempt to enter (in other words, "
+        "to open) the requested directory was rejected." );
+      causes << writeperm << locked;
+      solutions << access << querylock << sysadmin;
+      break;
+
+    case  KIO::ERR_PROTOCOL_IS_NOT_A_FILESYSTEM:
+      errorName = i18n( "Directory Listing Unavailable" );
+      description = i18n( "This means that a request was made which requires "
+        "determining the contents of the directory, and the KDE program supporting "
+        "this protocol is unable to do so." );
+      causes << bug;
+      solutions << update << bugreport;
+      break;
+
+    case  KIO::ERR_CYCLIC_LINK:
+      errorName = i18n( "Cyclic Link Detected" );
+      description = i18n( "Unix environments are commonly able to link a file or "
+        "directory to a separate name and/or location. KDE detected a link or "
+        "series of links that results in an infinite loop - i.e., the file was "
+        "(perhaps in a roundabout way) linked to itself." );
+      solutions << i18n( "Delete one part of the loop in order that it does not "
+        "cause an infinite loop, and try again." ) << sysadmin;
+      break;
+
+    case  KIO::ERR_USER_CANCELED:
+      // Do nothing in this case. The user doesn't need to be told what he just did.
+      break;
+
+    case  KIO::ERR_CYCLIC_COPY:
+      errorName = i18n( "Cyclic Link Detected During Copy" );
+      description = i18n( "Unix environments are commonly able to link a file or "
+        "directory to a separate name and/or location. During the requested copy "
+        "operation, KDE detected a link or series of links that results in an "
+        "infinite loop - i.e., the file was (perhaps in a roundabout way) linked "
+        "to itself." );
+      solutions << i18n( "Delete one part of the loop in order that it does not "
+        "cause an infinite loop, and try again." ) << sysadmin;
+      break;
+
+    case  KIO::ERR_COULD_NOT_CREATE_SOCKET:
+      errorName = i18n( "Could Not Create Network Connection (Socket)" );
+      description = i18n( "This is a fairly technical error in which a required "
+        "device for network communications (a socket) could not be created." );
+      causes << i18n( "The network connection may be incorrectly configured, or "
+        "the network interface may not be enabled." )
+        << i18n( "You may not have permissions to create the device. This occurs "
+        "typically in UNIX environments where a non-privileged user trys to open "
+        "a port in the privileged range, 1-1024." );
+      solutions << i18n( "Check your network connection status." )
+        << i18n( "Start konqueror as the root user if required." ) << sysadmin;
+      break;
+
+    case  KIO::ERR_COULD_NOT_CONNECT:
+      errorName = i18n( "Connection to Server Refused" );
+      description = i18n( "An unknown host error indicates that the server with "
+        "the requested name, for example <b>www.example.org</b>, could not be "
+        "located on the internet." );
+      causes << i18n( "The name that you typed, %2, may not exist: it may be "
+        "incorrectly typed." ) << network << netconf;
+      solutions << sysadmin << serveradmin;
+      break;
+
+    case  KIO::ERR_CONNECTION_BROKEN:
+      //result = i18n( "Connection to host %1 is broken" ).arg( errorText );
+      break;
+    case  KIO::ERR_NOT_FILTER_PROTOCOL:
+      //result = i18n( "The protocol %1 is not a filter protocol" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_MOUNT:
+      //result = i18n( "Could not mount device.\nThe reported error was:\n%1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_UNMOUNT:
+      //result = i18n( "Could not unmount device.\nThe reported error was:\n%1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_READ:
+      //result = i18n( "Could not read file %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_WRITE:
+      //result = i18n( "Could not write to file %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_BIND:
+      //result = i18n( "Could not bind %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_LISTEN:
+      //result = i18n( "Could not listen %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_ACCEPT:
+      //result = i18n( "Could not accept %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_LOGIN:
+      //result = errorText;
+      break;
+    case  KIO::ERR_COULD_NOT_STAT:
+      //result = i18n( "Could not access %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_CLOSEDIR:
+      //result = i18n( "Could not terminate listing %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_MKDIR:
+      //result = i18n( "Could not make directory %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_RMDIR:
+      //result = i18n( "Could not remove directory %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_CANNOT_RESUME:
+      //result = i18n( "Could not resume file %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_CANNOT_RENAME:
+      //result = i18n( "Could not rename file %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_CANNOT_CHMOD:
+      //result = i18n( "Could not change permissions for %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_CANNOT_DELETE:
+      //result = i18n( "Could not delete file %1" ).arg( errorText );
+      break;
+    case  KIO::ERR_SLAVE_DIED:
+      //result = i18n( "The process for the %1 protocol died unexpectedly." ).arg( errorText );
+      break;
+    case  KIO::ERR_OUT_OF_MEMORY:
+      //result = i18n( "Error. Out of Memory.\n%1" ).arg( errorText );
+      break;
+    case  KIO::ERR_UNKNOWN_PROXY_HOST:
+      //result = i18n( "Unknown proxy host\n%1" ).arg( errorText );
+      break;
+    case  KIO::ERR_COULD_NOT_AUTHENTICATE:
+      //result = i18n( "Authorization failed, %1 authentication not supported" ).arg( errorText );
+      break;
+    case  KIO::ERR_ABORTED:
+      //result = i18n( "User canceled action\n%1" ).arg( errorText );
+      break;
+    case  KIO::ERR_INTERNAL_SERVER:
+      //result = i18n( "Internal error in server\n%1" ).arg( errorText );
+      break;
+    case  KIO::ERR_SERVER_TIMEOUT:
+      //result = i18n( "Timeout on server\n%1" ).arg( errorText );
+      break;
+    case  KIO::ERR_UNKNOWN:
+      //result = i18n( "Unknown error\n%1" ).arg( errorText );
+      break;
+    case  KIO::ERR_UNKNOWN_INTERRUPT:
+      //result = i18n( "Unknown interrupt\n%1" ).arg( errorText );
+      break;
+    case KIO::ERR_CANNOT_DELETE_ORIGINAL:
+      //result = i18n( "Could not delete original file %1.\nPlease check permissions." ).arg( errorText );
+      break;
+    case KIO::ERR_CANNOT_DELETE_PARTIAL:
+      //result = i18n( "Could not delete partial file %1.\nPlease check permissions." ).arg( errorText );
+      break;
+    case KIO::ERR_CANNOT_RENAME_ORIGINAL:
+      //result = i18n( "Could not rename original file %1.\nPlease check permissions." ).arg( errorText );
+      break;
+    case KIO::ERR_CANNOT_RENAME_PARTIAL:
+      //result = i18n( "Could not rename partial file %1.\nPlease check permissions." ).arg( errorText );
+      break;
+    case KIO::ERR_CANNOT_SYMLINK:
+      //result = i18n( "Could not create symlink %1.\nPlease check permissions." ).arg( errorText );
+      break;
+    case KIO::ERR_NO_CONTENT:
+      //result = errorText;
+      break;
+    case KIO::ERR_DISK_FULL:
+      //result = i18n( "Could not write file %1.\nDisk full." ).arg( errorText );
+      break;
+    case KIO::ERR_IDENTICAL_FILES:
+      //result = i18n( "The source and destination are the same file.\n%1" ).arg( errorText );
+      break;
+    default:
+      // fall back to the plain error...
+      return buildErrorString( errorCode, errorText );
+  }
+
+  QString doc = "<html><head><title>";
+  doc += i18n( "Error: " );
+  doc += errorName;
+  doc += " (%1)</title></head><body><h1>";
+  doc += i18n( "The requested page could not be retrieved" );
+  doc += "</h1><h2>";
+  doc += errorName;
+  doc += "</h2><h3>";
+  doc += i18n( "Details of the Request:" );
+  doc += "</h3><ul><li>URL: %1</li><li>";
+  doc += i18n( "Date and Time:" );
+  doc += " %4</li><li>";
+  doc += i18n( "Additional Information:" );
+  doc += " %5</li></ul><h3>";
+  doc += i18n( "Description:" );
+  doc += "</h3><p>";
+  doc += description;
+  doc += "</p><h3>";
+  if ( causes.count() ) {
+    doc += i18n( "Possible Causes:" );
+    doc += "</h3><ul><li>";
+    doc += causes.join( "</li><li>" );
+    doc += "</li></ul><h3>";
+  }
+  doc += i18n( "Possible Solutions:" );
+  doc += "</h3><ul><li>";
+  doc += solutions.join( "</li><li>" );
+  doc += "</li></ul></body></html>";
+  return doc;
 }
 
 #include <limits.h>
