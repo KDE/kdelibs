@@ -479,10 +479,6 @@ private:
   static KConfig *config();
   static KConfig *http_config();
   static KPAC *pac();
-
-  static KConfig *_config;
-  static KConfig *_http_config;
-  static KPAC *_pac;
 };
 
 #endif

@@ -33,10 +33,41 @@
 
 #include "kprotocolmanager.h"
 
-KConfig *KProtocolManager::_config = 0;
-KConfig *KProtocolManager::_http_config = 0;
-KPAC *KProtocolManager::_pac = 0;
-KStaticDeleter<KPAC> _pacDeleter;
+class
+KProtocolManagerPrivate
+{
+public:
+   KProtocolManagerPrivate();
+
+   ~KProtocolManagerPrivate();
+   
+   KConfig *config;
+   KConfig *http_config;
+   KPAC *pac;
+   KURL url;
+   QString protocol;
+   QString proxy;
+   QString modifiers;
+   QString useragent;
+};
+
+static KStaticDeleter<KProtocolManagerPrivate> kpmpksd;
+
+KProtocolManagerPrivate::KProtocolManagerPrivate()
+ : config(0), http_config(0), pac(0) 
+{ 
+   kpmpksd.setObject(this);        
+}
+
+KProtocolManagerPrivate::~KProtocolManagerPrivate() 
+{ 
+   delete config; 
+   delete http_config; 
+   delete pac;
+   kpmpksd.setObject(0);   
+}
+
+static KProtocolManagerPrivate* d = 0;
 
 // DEFUALT USERAGENT STRING
 #define CFG_DEFAULT_UAGENT(X) \
@@ -44,32 +75,31 @@ QString("Mozilla/5.0 (compatible; Konqueror/%1%2)").arg(KDE_VERSION_STRING).arg(
 
 void KProtocolManager::reparseConfiguration()
 {
-  delete _config;
-  _config = 0;
-  delete _http_config;
-  _http_config = 0;
+  delete d; d = 0;
 }
 
 KConfig *KProtocolManager::config()
 {
-  if (!_config)
+  if (!d)
+     d = new KProtocolManagerPrivate;
+
+  if (!d->config)
   {
-     if (!_http_config)
-        qAddPostRoutine(KProtocolManager::reparseConfiguration);
-     _config = new KConfig("kioslaverc", false, false);
+     d->config = new KConfig("kioslaverc", false, false);
   }
-  return _config;
+  return d->config;
 }
 
 KConfig *KProtocolManager::http_config()
 {
-  if (!_http_config)
+  if (!d)
+     d = new KProtocolManagerPrivate;
+
+  if (!d->http_config)
   {
-     if (!_config)
-        qAddPostRoutine(KProtocolManager::reparseConfiguration);
-     _http_config = new KConfig("kio_httprc", false, false);
+     d->http_config = new KConfig("kio_httprc", false, false);
   }
-  return _http_config;
+  return d->http_config;
 }
 
 KPAC *KProtocolManager::pac()
@@ -77,8 +107,8 @@ KPAC *KProtocolManager::pac()
   ProxyType type = proxyType();
   if (type < PACProxy)
     return 0;
-
-  if (!_pac)
+ 
+  if (!d->pac)
   {
     KLibrary *lib = KLibLoader::self()->library("libkpac");
     if (lib)
@@ -86,22 +116,22 @@ KPAC *KProtocolManager::pac()
       KPAC *(*create_pac)() = (KPAC *(*)())(lib->symbol("create_pac"));
       if (create_pac)
       {
-        // Need to set _pac here to avoid infinite recursion
-        _pacDeleter.setObject(_pac = create_pac());
+        d->pac = create_pac();
+        // Need to set d->pac here to avoid infinite recursion
         switch (type)
         {
           case PACProxy:
-            _pac->init( proxyConfigScript() );
+            d->pac->init( proxyConfigScript() );
             break;
           case WPADProxy:
-            _pac->discover();
+            d->pac->discover();
           default:
             break;
         }
       }
     }
   }
-  return _pac;
+  return d->pac;
 }
 
 bool KProtocolManager::markPartial()
@@ -273,8 +303,8 @@ QString KProtocolManager::proxyForURL( const KURL &url )
 
 void KProtocolManager::badProxy( const QString &proxy )
 {
-  if ( _pac ) // don't load KPAC here if it isn't already
-    _pac->badProxy( proxy );
+  if ( d && d->pac ) // don't load KPAC here if it isn't already
+    d->pac->badProxy( proxy );
 }
 
 QString KProtocolManager::slaveProtocol( const QString & protocol )
@@ -317,6 +347,12 @@ static bool revmatch(const char *host, const char *nplist)
 
 QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
 {
+  if (d && d->url == url)
+  {
+     proxy = d->proxy;
+     return d->protocol;
+  }
+
   if (useProxy())
   {
      proxy = proxyForURL(url);
@@ -326,11 +362,18 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
         if (noProxy.isEmpty() || url.host().isEmpty() ||
             !revmatch( url.host().lower().latin1(),
                        noProxy.lower().latin1() ))
-           return QString::fromLatin1("http");
+        {
+           d->url = url;
+           d->protocol = QString::fromLatin1("http");
+           d->proxy = proxy;
+           return d->protocol;
+        }
      }
   }
-  proxy = QString::null;
-  return url.protocol();
+  d->url = url;
+  d->proxy = proxy = QString::null;
+  d->protocol = url.protocol();
+  return d->protocol;
 }
 
 void KProtocolManager::setReadTimeout( int _timeout )
@@ -462,14 +505,19 @@ void KProtocolManager::setProxyConfigScript( const QString& _url )
   cfg->setGroup( "Proxy Settings" );
   cfg->writeEntry( "Proxy Config Script", _url );
   cfg->sync();
-  if (_pac)
+  // TODO: download it
+  if (d->pac)
+  {
     if (_url.isEmpty())
     {
-      _pacDeleter.destructObject();
-      _pac = 0;
+       delete d->pac;
+       d->pac = 0;
     }
-    else
-      _pac->init( _url );
+    else 
+    {
+       d->pac->init( _url );
+    }
+  }
 }
 
 void KProtocolManager::setProxyFor( const QString& protocol, const QString& _proxy )
@@ -504,9 +552,15 @@ QString KProtocolManager::defaultUserAgent( )
 
 QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 {
+  if (!d)
+     d = new KProtocolManagerPrivate;
+
   QString modifiers = _modifiers.lower();
   if (modifiers.isEmpty())
      modifiers = DEFAULT_USER_AGENT_KEYS;
+
+  if (d->modifiers == modifiers)
+     return d->useragent;
      
   QString supp;
   struct utsname nam;
@@ -541,7 +595,9 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
         supp += QString("; %1").arg(languageList.join(", "));
     }
   }
-  return CFG_DEFAULT_UAGENT(supp);
+  d->modifiers = modifiers;
+  d->useragent = CFG_DEFAULT_UAGENT(supp);
+  return d->useragent;
 }
 
 // obsolete, remove me in KDE 3.0
