@@ -66,9 +66,9 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QLabel	*m_locationlabel = new QLabel(i18n("Location:"), m_pbox);
 	QLabel	*m_commentlabel = new QLabel(i18n("Comment:"), m_pbox);
 	m_properties = new QPushButton(i18n("Properties..."), m_pbox);
-	m_options = new QPushButton(i18n("Options"), this);
+	m_options = new QPushButton(i18n("Options..."), this);
 	m_default = new QPushButton(i18n("Set as default"), m_pbox);
-	m_filebrowse = new QPushButton(i18n("Browse"), m_pbox);
+	m_filebrowse = new QPushButton(i18n("Browse..."), m_pbox);
 	m_ok = new QPushButton(i18n("OK"), this);
 	m_ok->setDefault(true);
 	QPushButton	*m_cancel = new QPushButton(i18n("Cancel"), this);
