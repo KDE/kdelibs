@@ -36,7 +36,7 @@ class QSocketNotifier;
  *
  * This class takes care of the actual (UN*X) signal handling.
  */
-class KProcessController : public QObject
+class KDECORE_EXPORT KProcessController : public QObject
 {
   Q_OBJECT
 

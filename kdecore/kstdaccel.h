@@ -44,7 +44,7 @@ namespace KStdAccel
   /**
    * Defines the identifier of all standard accelerators.
    */
-  enum StdAccel {
+  KDECORE_EXPORT enum StdAccel {
     AccelNone,
     // File menu
     Open, New, Close, Save,
@@ -84,28 +84,28 @@ namespace KStdAccel
    * Returns the keybinding for @p accel.
    * @param id the id of the accelerator
    */
-  const KShortcut& shortcut(StdAccel id);
+  KDECORE_EXPORT const KShortcut& shortcut(StdAccel id);
 
   /**
    * Returns a unique name for the given accel.
    * @param id the id of the accelerator
    * @return the unique name of the accelerator
    */
-  QString name(StdAccel id);
+  KDECORE_EXPORT QString name(StdAccel id);
 
   /**
    * Returns a localized label for user-visible display.
    * @param id the id of the accelerator
    * @return a localized label for the accelerator
    */
-  QString label(StdAccel id);
+  KDECORE_EXPORT QString label(StdAccel id);
 
   /**
    * Returns an extended WhatsThis description for the given accelerator.
    * @param id the id of the accelerator
    * @return a localized description of the accelerator
    */
-  QString whatsThis(StdAccel id);
+  KDECORE_EXPORT QString whatsThis(StdAccel id);
 
   /**
    * Return the StdAccel id of the standard accel action which
@@ -115,7 +115,7 @@ namespace KStdAccel
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
-  StdAccel findStdAccel( const KKeySequence &keySeq );
+  KDECORE_EXPORT StdAccel findStdAccel( const KKeySequence &keySeq );
 
   /**
    * Returns the hardcoded default shortcut for @p id.
@@ -123,348 +123,348 @@ namespace KStdAccel
    * @param id the id of the accelerator
    * @return the default shortcut of the accelerator
    */
-  KShortcut shortcutDefault(StdAccel id);
+  KDECORE_EXPORT KShortcut shortcutDefault(StdAccel id);
   /**
    * Returns the hardcoded default 3 modifier shortcut for @p id.
    * This does not take into account the user's configuration.
    * @param id the id of the accelerator
    * @return the default 3 modifier shortcut
    */
-  KShortcut shortcutDefault3(StdAccel id);
+  KDECORE_EXPORT KShortcut shortcutDefault3(StdAccel id);
   /**
    * Returns the hardcoded default 4 modifier shortcut for @p id.
    * This does not take into account the user's configuration.
    * @param id the id of the accelerator
    * @return the default 4 modifier shortcut
    */
-  KShortcut shortcutDefault4(StdAccel id);
+  KDECORE_EXPORT KShortcut shortcutDefault4(StdAccel id);
 
   /**
    * Open file. Default: Ctrl-o
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& open();
+  KDECORE_EXPORT const KShortcut& open();
 
   /**
    * Create a new document (or whatever). Default: Ctrl-n
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& openNew();
+  KDECORE_EXPORT const KShortcut& openNew();
 
   /**
    * Close current document. Default: Ctrl-w
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& close();
+  KDECORE_EXPORT const KShortcut& close();
 
   /**
    * Save current document. Default: Ctrl-s
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& save();
+  KDECORE_EXPORT const KShortcut& save();
 
   /**
    * Print current document. Default: Ctrl-p
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& print();
+  KDECORE_EXPORT const KShortcut& print();
 
   /**
    * Quit the program. Default: Ctrl-q
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& quit();
+  KDECORE_EXPORT const KShortcut& quit();
 
   /**
    * Undo last operation. Default: Ctrl-z
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& undo();
+  KDECORE_EXPORT const KShortcut& undo();
 
   /**
    * Redo. Default: Shift-Ctrl-z
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& redo();
+  KDECORE_EXPORT const KShortcut& redo();
 
   /**
    * Cut selected area and store it in the clipboard. Default: Ctrl-x
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& cut();
+  KDECORE_EXPORT const KShortcut& cut();
 
   /**
    * Copy selected area into the clipboard. Default: Ctrl-c
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& copy();
+  KDECORE_EXPORT const KShortcut& copy();
 
   /**
    * Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& paste();
+  KDECORE_EXPORT const KShortcut& paste();
 
   /**
    * Paste the selection at mouse/cursor position. Default: Ctrl-Shift-Insert
    * @return the shortcut of the standard accelerator
    * @since 3.4
    */
-  const KShortcut& pasteSelection();
+  KDECORE_EXPORT const KShortcut& pasteSelection();
 
   /**
    * Reload. Default: Ctrl-A
    * @return the shortcut of the standard accelerator
    **/
-  const KShortcut& selectAll();
+  KDECORE_EXPORT const KShortcut& selectAll();
 
   /**
    * Delete a word back from mouse/cursor position. Default: Ctrl-Backspace
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& deleteWordBack();
+  KDECORE_EXPORT const KShortcut& deleteWordBack();
 
   /**
    * Delete a word forward from mouse/cursor position. Default: Ctrl-Delete
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& deleteWordForward();
+  KDECORE_EXPORT const KShortcut& deleteWordForward();
 
   /**
    * Find, search. Default: Ctrl-f
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& find();
+  KDECORE_EXPORT const KShortcut& find();
 
   /**
    * Find/search next. Default: F3
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& findNext();
+  KDECORE_EXPORT const KShortcut& findNext();
 
   /**
    * Find/search previous. Default: Shift-F3
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& findPrev();
+  KDECORE_EXPORT const KShortcut& findPrev();
 
   /**
    * Find and replace matches. Default: Ctrl-r
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& replace();
+  KDECORE_EXPORT const KShortcut& replace();
 
   /**
    * Zoom in. Default: Ctrl-Plus
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& zoomIn();
+  KDECORE_EXPORT const KShortcut& zoomIn();
 
   /**
    * Zoom out. Default: Ctrl-Minus
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& zoomOut();
+  KDECORE_EXPORT const KShortcut& zoomOut();
 
   /**
    * Toggle insert/overwrite (with visual feedback, e.g. in the statusbar). Default: Insert
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& insert();
+  KDECORE_EXPORT const KShortcut& insert();
 
   /**
    * Goto beginning of the document. Default: Ctrl-Home
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& home();
+  KDECORE_EXPORT const KShortcut& home();
 
   /**
    * Goto end of the document. Default: Ctrl-End
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& end();
+  KDECORE_EXPORT const KShortcut& end();
 
   /**
    * Goto beginning of current line. Default: Home
    * @return the shortcut of the standard accelerator
    * @since 3.3
    */
-  const KShortcut& beginningOfLine();
+  KDECORE_EXPORT const KShortcut& beginningOfLine();
 
   /**
    * Goto end of current line. Default: End
    * @return the shortcut of the standard accelerator
    * @since 3.3
    */
-  const KShortcut& endOfLine();
+  KDECORE_EXPORT const KShortcut& endOfLine();
 
   /**
    * Scroll up one page. Default: Prior
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& prior();
+  KDECORE_EXPORT const KShortcut& prior();
 
   /**
    * Scroll down one page. Default: Next
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& next();
+  KDECORE_EXPORT const KShortcut& next();
 
   /**
    * Go to line. Default: Ctrl+G
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& gotoLine();
+  KDECORE_EXPORT const KShortcut& gotoLine();
 
   /**
    * Add current page to bookmarks. Default: Ctrl+B
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& addBookmark();
+  KDECORE_EXPORT const KShortcut& addBookmark();
 
   /**
    * Next Tab. Default: Ctrl-<
    * @return the shortcut of the standard accelerator
    * @since 3.2
    */
-  const KShortcut& tabNext();
+  KDECORE_EXPORT const KShortcut& tabNext();
 
   /**
    * Previous Tab. Default: Ctrl->
    * @return the shortcut of the standard accelerator
    * @since 3.2
    */
-  const KShortcut& tabPrev();
+  KDECORE_EXPORT const KShortcut& tabPrev();
 
   /**
    * Full Screen Mode. Default: Ctrl+Shift+F
    * @return the shortcut of the standard accelerator
    * @since 3.2
    */
-  const KShortcut& fullScreen();
+  KDECORE_EXPORT const KShortcut& fullScreen();
 
   /**
    * Help the user in the current situation. Default: F1
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& help();
+  KDECORE_EXPORT const KShortcut& help();
 
   /**
    * Complete text in input widgets. Default Ctrl+E
    * @return the shortcut of the standard accelerator
    **/
-  const KShortcut& completion();
+  KDECORE_EXPORT const KShortcut& completion();
 
   /**
    * Iterate through a list when completion returns
    * multiple items. Default: Ctrl+Up
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& prevCompletion();
+  KDECORE_EXPORT const KShortcut& prevCompletion();
 
   /**
    * Iterate through a list when completion returns
    * multiple items. Default: Ctrl+Down
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& nextCompletion();
+  KDECORE_EXPORT const KShortcut& nextCompletion();
 
   /**
    * Find a string within another string or list of strings.
    * Default: Ctrl-T
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& substringCompletion();
+  KDECORE_EXPORT const KShortcut& substringCompletion();
 
   /**
    * Help users iterate through a list of entries. Default: Up
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& rotateUp();
+  KDECORE_EXPORT const KShortcut& rotateUp();
 
   /**
    * Help users iterate through a list of entries. Default: Down
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& rotateDown();
+  KDECORE_EXPORT const KShortcut& rotateDown();
 
   /**
    * popup a context menu. Default: Menu
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& popupMenuContext();
+  KDECORE_EXPORT const KShortcut& popupMenuContext();
 
   /**
    * What's This button. Default: Shift+F1
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& whatsThis();
+  KDECORE_EXPORT const KShortcut& whatsThis();
 
   /**
    * Reload. Default: F5
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& reload();
+  KDECORE_EXPORT const KShortcut& reload();
 
   /**
    * Up. Default: Alt+Up
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& up();
+  KDECORE_EXPORT const KShortcut& up();
 
   /**
    * Back. Default: Alt+Left
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& back();
+  KDECORE_EXPORT const KShortcut& back();
 
   /**
    * Forward. Default: ALT+Right
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& forward();
+  KDECORE_EXPORT const KShortcut& forward();
 
   /**
    * BackwardWord. Default: Ctrl+Left
    * @return the shortcut of the standard accelerator
    * @since 3.3
    */
-  const KShortcut& backwardWord();
+  KDECORE_EXPORT const KShortcut& backwardWord();
 
   /**
    * ForwardWord. Default: Ctrl+Right
    * @return the shortcut of the standard accelerator
    * @since 3.3
    */
-  const KShortcut& forwardWord();
+  KDECORE_EXPORT const KShortcut& forwardWord();
 
   /**
    * Show Menu Bar.  Default: Ctrl-M
    * @return the shortcut of the standard accelerator
    */
-  const KShortcut& showMenubar();
+  KDECORE_EXPORT const KShortcut& showMenubar();
 
 #if !defined(KDE_NO_COMPAT) && !defined(__KSTDACCEL_CPP_)
   /**
    * @deprecated
    * Obsolete.  Use name().  Returns a string representation for @p accel.
    */
-  QString action(StdAccel id) KDE_DEPRECATED;
+  KDECORE_EXPORT QString action(StdAccel id) KDE_DEPRECATED;
   /**
    * @deprecated
    * Obsolete.  Use desc().  Returns a localized description of @p accel.
    */
-  QString description(StdAccel id) KDE_DEPRECATED;
+  KDECORE_EXPORT QString description(StdAccel id) KDE_DEPRECATED;
   /**
    * @deprecated
    * Obsolete.  Use shortcut().  Returns the keybinding for @p accel.
    */
-  int key(StdAccel) KDE_DEPRECATED;
+  KDECORE_EXPORT int key(StdAccel) KDE_DEPRECATED;
   /**
    * @deprecated
    * Obsolete.  Use shortcutDefault().
    */
-  int defaultKey(StdAccel accel) KDE_DEPRECATED;
+  KDECORE_EXPORT int defaultKey(StdAccel accel) KDE_DEPRECATED;
 
   /**
    * @deprecated.  Use KKey(const QKeyEvent*) == KKey(int).
@@ -481,7 +481,7 @@ namespace KStdAccel
    *
    * @return true if the int value matches the integer representation of the QKeyEvent
    */
-  bool isEqual(const QKeyEvent* pEvent, int keyQt) KDE_DEPRECATED;
+  KDECORE_EXPORT bool isEqual(const QKeyEvent* pEvent, int keyQt) KDE_DEPRECATED;
 #endif // !KDE_NO_COMPAT
 
 }

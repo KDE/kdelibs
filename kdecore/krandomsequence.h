@@ -18,6 +18,8 @@
 #ifndef K_RANDOM_SEQUENCE_H
 #define K_RANDOM_SEQUENCE_H
 
+#include "kdelibs.h"
+
 class KRandomSequencePrivate;
 class QGList;
 /**
@@ -34,7 +36,7 @@ class QGList;
  *
  * @author Sean Harmer <sh@astro.keele.ac.uk>
  */
-class KRandomSequence
+class KDECORE_EXPORT KRandomSequence
 {
 public: 
   /**

@@ -21,6 +21,7 @@
 #define KCATALOGUE_H
 
 #include <qstring.h>
+#include "kdelibs.h"
 
 struct kde_loaded_l10nfile;
 
@@ -33,7 +34,7 @@ class KCataloguePrivate;
  * @see KLocale
  */
 //REVISED: hausmann
-class KCatalogue
+class KDECORE_EXPORT KCatalogue
 {
 public:
   /**

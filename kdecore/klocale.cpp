@@ -1592,7 +1592,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
     Format.remove(QRegExp(".%S"));
 
   int hour = -1, minute = -1;
-  int second = ( flags & WithoutSeconds == 0 ) ? -1 : 0; // don't require seconds
+  int second = ( (flags & WithoutSeconds) == 0 ) ? -1 : 0; // don't require seconds
   bool g_12h = false;
   bool pm = false;
   uint strpos = 0;

@@ -18,6 +18,8 @@
 #ifndef KSharedPTR_H
 #define KSharedPTR_H
 
+#include "kdelibs.h"
+
 /**
  * Reference counting for shared objects.  If you derive your object
  * from this class, then you may use it in conjunction with
@@ -36,7 +38,7 @@
  * @author Waldo Bastian <bastian@kde.org>
  * @version $Id$
  */
-class KShared {
+class KDECORE_EXPORT KShared {
 public:
    /**
     * Standard constructor.  This will initialize the reference count
@@ -97,7 +99,7 @@ private:
  * @version $Id$
  */
 template< class T >
-struct KSharedPtr
+class KDECORE_EXPORT KSharedPtr
 {
 public:
 /**

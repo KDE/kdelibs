@@ -36,7 +36,7 @@ typedef QDict<KSycocaEntry::Ptr> KSycocaEntryDict;
  * @internal
  * Base class for sycoca factories
  */
-class KSycocaFactory
+class KDECORE_EXPORT KSycocaFactory
 {
 public:
    virtual KSycocaFactoryId factoryId() const = 0;
@@ -134,7 +134,7 @@ protected:
 /** This, instead of a typedef, allows to declare "class ..." in header files
  * @internal
  */
-class KSycocaFactoryList : public QPtrList<KSycocaFactory>
+class KDECORE_EXPORT KSycocaFactoryList : public QPtrList<KSycocaFactory>
 {
 public:
    KSycocaFactoryList() { }

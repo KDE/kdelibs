@@ -1,8 +1,8 @@
 /*
   This file is part of the KDE libraries
   Copyright (C) 1999 Sirtaj Singh Kang <taj@kde.org>
-                     Stephan Kulow <coolo@kde.org>
-		     Waldo Bastian <bastian@kde.org>
+  Copyright (C) 1999 Stephan Kulow <coolo@kde.org>
+  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -553,6 +553,18 @@ public:
 	QString localkdedir() const;
 
 	/**
+	 * @internal
+	 * Returns the default toplevel directory where KDE is installed.
+	 */
+	QString kfsstnd_defaultprefix();
+
+	/**
+	 * @internal
+	 * Returns the default bin directory in which KDE executables are stored.
+	 */
+	QString kfsstnd_defaultbindir();
+
+	/**
 	 * @return $XDG_DATA_HOME
 	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
 	 */
@@ -572,25 +584,26 @@ public:
 	 */
 	static bool exists(const QString &fullPath);
 
-        /**
-         * Expands all symbolic links and resolves references to
-         * '/./', '/../' and extra  '/' characters in @p dirname
-         * and returns the canonicalized absolute pathname.
-         * The resulting path will have no symbolic link, '/./'
-         * or '/../' components.
+	/**
+	 * Expands all symbolic links and resolves references to
+	 * '/./', '/../' and extra  '/' characters in @p dirname
+	 * and returns the canonicalized absolute pathname.
+	 * The resulting path will have no symbolic link, '/./'
+	 * or '/../' components.
 	 * @since 3.1
-         */
-        static QString realPath(const QString &dirname);
+	 */
+	static QString realPath(const QString &dirname);
 
-        /**
-         * Expands all symbolic links and resolves references to
-         * '/./', '/../' and extra  '/' characters in @p filename
-         * and returns the canonicalized absolute pathname.
-         * The resulting path will have no symbolic link, '/./'
-         * or '/../' components.
+	/**
+	 * Expands all symbolic links and resolves references to
+	 * '/./', '/../' and extra  '/' characters in @p filename
+	 * and returns the canonicalized absolute pathname.
+	 * The resulting path will have no symbolic link, '/./'
+	 * or '/../' components.
 	 * @since 3.4
-         */
-        static QString realFilePath(const QString &filename);
+	 */
+	static QString realFilePath(const QString &filename);
+
  private:
 
 	QStringList prefixes;
@@ -608,7 +621,7 @@ public:
 
 	bool addedCustoms;
 
-        class KStandardDirsPrivate;
+	class KStandardDirsPrivate;
 	KStandardDirsPrivate *d;
 
 	void checkConfig() const;

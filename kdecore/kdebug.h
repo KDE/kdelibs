@@ -23,6 +23,7 @@
 #define _KDEBUG_H_
 
 #include <qstring.h>
+#include "kdelibs.h"
 
 class QWidget;
 class QDateTime;
@@ -76,7 +77,7 @@ class kdbgstreamprivate;
  * \endcode
  * @see kndbgstream
  */
-class kdbgstream {
+class KDECORE_EXPORT kdbgstream {
  public:
   /**
    * @internal
@@ -436,7 +437,7 @@ inline kdbgstream &endl( kdbgstream &s) { s << "\n"; return s; }
  */
 inline kdbgstream &flush( kdbgstream &s) { s.flush(); return s; }
 
-kdbgstream &perror( kdbgstream &s);
+KDECORE_EXPORT kdbgstream &perror( kdbgstream &s);
 
 /**
  * \relates KGlobal
@@ -444,7 +445,7 @@ kdbgstream &perror( kdbgstream &s);
  * nothing.
  * @see kndDebug()
  */
-class kndbgstream {
+class KDECORE_EXPORT kndbgstream {
  public:
     /// Default constructor.
     kndbgstream() {}
@@ -595,14 +596,14 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
  * @param area an id to identify the output, 0 for default
  * @see kndDebug()
  */
-kdbgstream kdDebug(int area = 0);
-kdbgstream kdDebug(bool cond, int area = 0);
+KDECORE_EXPORT kdbgstream kdDebug(int area = 0);
+KDECORE_EXPORT kdbgstream kdDebug(bool cond, int area = 0);
 /**
  * \relates KGlobal
  * Returns a backtrace.
  * @return a backtrace
  */
-QString kdBacktrace();
+KDECORE_EXPORT QString kdBacktrace();
 /**
  * \relates KGlobal
  * Returns a backtrace.
@@ -610,7 +611,7 @@ QString kdBacktrace();
  * @return a backtrace
  * @since 3.1
  */
-QString kdBacktrace(int levels);
+KDECORE_EXPORT QString kdBacktrace(int levels);
 /**
  * Returns a dummy debug stream. The stream does not print anything.
  * @param area an id to identify the output, 0 for default
@@ -627,31 +628,31 @@ inline QString kndBacktrace(int) { return QString::null; }
  * information.
  * @param area an id to identify the output, 0 for default
  */
-kdbgstream kdWarning(int area = 0);
-kdbgstream kdWarning(bool cond, int area = 0);
+KDECORE_EXPORT kdbgstream kdWarning(int area = 0);
+KDECORE_EXPORT kdbgstream kdWarning(bool cond, int area = 0);
 /**
  * \relates KGlobal
  * Returns an error stream. You can use it to print error
  * information.
  * @param area an id to identify the output, 0 for default
  */
-kdbgstream kdError(int area = 0);
-kdbgstream kdError(bool cond, int area = 0);
+KDECORE_EXPORT kdbgstream kdError(int area = 0);
+KDECORE_EXPORT kdbgstream kdError(bool cond, int area = 0);
 /**
  * \relates KGlobal
  * Returns a fatal error stream. You can use it to print fatal error
  * information.
  * @param area an id to identify the output, 0 for default
  */
-kdbgstream kdFatal(int area = 0);
-kdbgstream kdFatal(bool cond, int area = 0);
+KDECORE_EXPORT kdbgstream kdFatal(int area = 0);
+KDECORE_EXPORT kdbgstream kdFatal(bool cond, int area = 0);
 
 /**
  * \relates KGlobal
  * Deletes the kdebugrc cache and therefore forces KDebug to reread the
  * config file
  */
-void kdClearDebugConfig();
+KDECORE_EXPORT void kdClearDebugConfig();
 
 /** @} */
 

@@ -36,7 +36,7 @@ class QString;
  * @since 3.1
 */
 
-class KAcceleratorManager
+class KDECORE_EXPORT KAcceleratorManager
 {
 public:
 

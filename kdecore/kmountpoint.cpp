@@ -37,7 +37,7 @@
 #endif
 #ifdef HAVE_MNTENT_H
 #include <mntent.h>
-#elif HAVE_SYS_MNTENT_H
+#elif defined(HAVE_SYS_MNTENT_H)
 #include <sys/mntent.h>
 #endif
 
@@ -322,6 +322,8 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
     }
 
     free( mntctl_buffer );
+#elif defined(Q_WS_WIN)
+    //TODO?
 #else
    STRUCT_SETMNTENT mnttab;
    if ((mnttab = SETMNTENT(MNTTAB, "r")) == 0)

@@ -42,7 +42,7 @@ class KCalendarSystemGregorianPrivate;
  * @version $Id$
  * @since 3.2
  */
-class KCalendarSystemGregorian: public KCalendarSystem
+class KDECORE_EXPORT KCalendarSystemGregorian: public KCalendarSystem
 {
 public:
   KCalendarSystemGregorian (const KLocale * locale = 0);

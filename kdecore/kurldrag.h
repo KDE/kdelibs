@@ -41,7 +41,7 @@ class KURLDragPrivate;
  * To create a drag object, use the KURLDrag constructor.
  * To handle drops, use QUriDrag::canDecode() and KURLDrag::decode()
  */
-class KURLDrag : public QUriDrag
+class KDECORE_EXPORT KURLDrag : public QUriDrag
 {
 public:
   /**

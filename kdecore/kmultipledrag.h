@@ -24,6 +24,7 @@
 
 #include <qdragobject.h>
 #include <qvaluelist.h>
+#include "kdelibs.h"
 
 class KMultipleDragPrivate;
 /**
@@ -50,7 +51,7 @@ class KMultipleDragPrivate;
  *
  * @author David Faure <david@mandrakesoft.com>
  */
-class KMultipleDrag : public QDragObject
+class KDECORE_EXPORT KMultipleDrag : public QDragObject
 {
     Q_OBJECT
 

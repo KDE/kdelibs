@@ -18,6 +18,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qptrlist.h>
+#include "kdelibs.h"
 
 class KConfig;
 class KIconThemeDir;
@@ -33,7 +34,7 @@ class KIconPrivate;
  * @see KIconTheme
  * @see KIconLoader
  */
-class KIcon
+class KDECORE_EXPORT KIcon
 {
 public:
     KIcon() { size = 0; }
@@ -159,7 +160,7 @@ inline KIcon::Group operator++(KIcon::Group& group,int) { KIcon::Group ret = gro
  * iconloader but can be used by others too.
  * @see KIconLoader
  */
-class KIconTheme
+class KDECORE_EXPORT KIconTheme
 {
 public:
     /**

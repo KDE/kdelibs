@@ -469,7 +469,7 @@ QString KCharsets::resolveEntities( const QString &input )
 
         const uint ampersandPos = ampersand - text.unicode();
 
-        text[ ampersandPos ] = entityValue;
+        text[ (int)ampersandPos ] = entityValue;
         text.remove( ampersandPos + 1, entityLength + 1 );
         p = text.unicode() + ampersandPos;
         end = text.unicode() + text.length();

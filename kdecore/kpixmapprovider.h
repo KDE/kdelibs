@@ -22,6 +22,7 @@
 #define KPIXMAPPROVIDER_H
 
 #include <qpixmap.h>
+#include "kdelibs.h"
 
 /**
  * A tiny abstract class with just one method:
@@ -34,7 +35,7 @@
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short an abstract interface for looking up icons
  */
-class KPixmapProvider
+class KDECORE_EXPORT KPixmapProvider
 {
 public:
     virtual ~KPixmapProvider();

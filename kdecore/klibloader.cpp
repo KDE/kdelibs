@@ -21,6 +21,7 @@
 #include <config.h>
 #include <qclipboard.h>
 #include <qfile.h>
+#include <qdir.h>
 #include <qtimer.h>
 #include <qobjectdict.h>
 
@@ -52,10 +53,6 @@ template class QAsciiDict<KLibrary>;
 #  define LT_GLOBAL             0
 #endif /* !LT_GLOBAL */
 
-
-extern "C" {
-extern int lt_dlopen_flag;
-}
 
 class KLibLoaderPrivate
 {
@@ -356,7 +353,7 @@ QString KLibLoader::findLibrary( const char * name, const KInstance * instance )
     // only look up the file if it is not an absolute filename
     // (mhk, 20000228)
     QString libfile;
-    if (libname[0] == '/')
+    if (!QDir::isRelativePath(libname))
       libfile = QFile::decodeName( libname );
     else
     {
@@ -429,7 +426,7 @@ KLibrary* KLibLoader::library( const char *name )
         return 0;
       }
 
-      lt_dlhandle handle = lt_dlopen( libfile.latin1() );
+      lt_dlhandle handle = lt_dlopen( QFile::encodeName(libfile) );
       if ( !handle )
       {
         const char* errmsg = lt_dlerror();

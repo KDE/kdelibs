@@ -23,6 +23,7 @@
 
 #include <qobject.h>
 #include <qptrlist.h>
+#include "kdelibs.h"
 
 class KConfigSkeleton;
 class KConfigSkeletonItem;
@@ -74,7 +75,7 @@ class QSqlPropertyMap;
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KConfigDialogManager : public QObject {
+class KDECORE_EXPORT KConfigDialogManager : public QObject {
 
 Q_OBJECT
 

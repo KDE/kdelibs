@@ -23,6 +23,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include "kdelibs.h"
 
 /**
  * \namespace KShell
@@ -87,7 +88,7 @@ namespace KShell {
      *  target, see Errors
      * @return a list of unquoted words or an empty list if an error occurred
      */
-    QStringList splitArgs( const QString &cmd, int flags = 0, int *err = 0 );
+    KDECORE_EXPORT QStringList splitArgs( const QString &cmd, int flags = 0, int *err = 0 );
 
     /**
      * Quotes and joins @p args together according to POSIX shell rules.
@@ -95,7 +96,7 @@ namespace KShell {
      * @param args a list of strings to quote and join
      * @return a command suitable for shell execution
      */
-    QString joinArgs( const QStringList &args );
+    KDECORE_EXPORT QString joinArgs( const QStringList &args );
 
     /**
      * Same as above, but $'' is used instead of '' for the quoting.
@@ -107,7 +108,7 @@ namespace KShell {
      * @param args a list of strings to quote and join
      * @return a command suitable for shell execution
      */
-    QString joinArgsDQ( const QStringList &args );
+    KDECORE_EXPORT QString joinArgsDQ( const QStringList &args );
 
     /**
      * Quotes and joins @p argv together according to POSIX shell rules.
@@ -118,7 +119,7 @@ namespace KShell {
      *  @p argv must be null-terminated.
      * @return a command suitable for shell execution
      */
-    QString joinArgs( const char * const *argv, int argc = -1 );
+    KDECORE_EXPORT QString joinArgs( const char * const *argv, int argc = -1 );
 
     /**
      * Performs tilde expansion on @p path. Interprets "~/path" and
@@ -127,7 +128,7 @@ namespace KShell {
      * @param path the path to tilde-expand
      * @return the expanded path
      */
-    QString tildeExpand( const QString &path );
+    KDECORE_EXPORT QString tildeExpand( const QString &path );
 
     /**
      * Obtain a @p user's home directory.
@@ -136,7 +137,7 @@ namespace KShell {
      *  An empty string denotes the current user.
      * @return The user's home directory.
      */
-    QString homeDir( const QString &user );
+    KDECORE_EXPORT QString homeDir( const QString &user );
 
 }
 

@@ -21,6 +21,7 @@
 #include <qstring.h>
 #include <qcolor.h>
 #include <qfont.h>
+#include "kdelibs.h"
 
 #define KDE_DEFAULT_SINGLECLICK true
 #define KDE_DEFAULT_INSERTTEAROFFHANDLES 0
@@ -42,7 +43,7 @@ class KURL;
  * @author David Faure <faure@kde.org>
  * @version $Id$
  */
-class KGlobalSettings
+class KDECORE_EXPORT KGlobalSettings
 {
   public:
 

@@ -1,3 +1,25 @@
+/*
+    Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
+
+    Win32 port:
+    Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #ifndef _KKEYSERVER_X11_H
 #define _KKEYSERVER_X11_H
 
@@ -6,7 +28,7 @@
 
 /**
  * A collection of functions for the conversion of key presses and
- * their modifiers from the window system (X11) specific format
+ * their modifiers from the window system specific format
  * to the generic format and vice-versa.
  */
 namespace KKeyServer
@@ -22,7 +44,7 @@ namespace KKeyServer
 	 * @see KKey
 	 * @see KKeyServer
 	 */
-	struct Sym
+	struct KDECORE_EXPORT Sym
 	{
 	 public:
 		/// the actual value of the symbol
@@ -112,7 +134,7 @@ namespace KKeyServer
 	 * Represents a key press.
 	 * @see KKey
 	 */
-	struct Key
+	struct KDECORE_EXPORT Key
 	{
 		/// Code for native Keys in Qt
 		enum { CODE_FOR_QT = 256 };
@@ -219,7 +241,7 @@ namespace KKeyServer
 	/**
 	 * TODO: please document this class
 	 */
-	struct Variations
+	struct KDECORE_EXPORT Variations
 	{
 		enum { MAX_VARIATIONS = 4 };
 
@@ -235,14 +257,14 @@ namespace KKeyServer
 	};
 
 	/// TODO: please document
-	bool initializeMods();
+	KDECORE_EXPORT bool initializeMods();
 
 	/**
 	 * Returns the equivalent X modifier mask of the given modifier flag.
 	 * @param modFlag the generic flags to check
 	 * @return the window system specific flags
 	 */
-	uint modX( KKey::ModFlag modFlag );
+	KDECORE_EXPORT uint modX( KKey::ModFlag modFlag );
 
 	/**
 	 * Returns true if the current keyboard layout supports the Win key.
@@ -250,42 +272,42 @@ namespace KKeyServer
 	 * @return true if the keyboard has a Win key
 	 * @see modXWin()
 	 */
-	bool keyboardHasWinKey();
+	KDECORE_EXPORT bool keyboardHasWinKey();
 
 	/**
 	 * Returns the X11 Shift modifier mask/flag.
 	 * @return the X11 Shift modifier mask/flag.
 	 * @see accelModMaskX()
 	 */
-	uint modXShift();
+	KDECORE_EXPORT uint modXShift();
 
 	/**
 	 * Returns the X11 Lock modifier mask/flag.
 	 * @return the X11 Lock modifier mask/flag.
 	 * @see accelModMaskX()
 	 */
-	uint modXLock();
+	KDECORE_EXPORT uint modXLock();
 
 	/**
 	 * Returns the X11 Ctrl modifier mask/flag.
 	 * @return the X11 Ctrl modifier mask/flag.
 	 * @see accelModMaskX()
 	 */
-	uint modXCtrl();
+	KDECORE_EXPORT uint modXCtrl();
 
 	/**
 	 * Returns the X11 Alt (Mod1) modifier mask/flag.
 	 * @return the X11 Alt (Mod1) modifier mask/flag.
 	 * @see accelModMaskX()
 	 */
-	uint modXAlt();
+	KDECORE_EXPORT uint modXAlt();
 
 	/**
 	 * Returns the X11 NumLock modifier mask/flag.
 	 * @return the X11 NumLock modifier mask/flag.
 	 * @see accelModMaskX()
 	 */
-	uint modXNumLock();
+	KDECORE_EXPORT uint modXNumLock();
 
 	/**
 	 * Returns the X11 Win (Mod3) modifier mask/flag.
@@ -293,14 +315,14 @@ namespace KKeyServer
 	 * @see keyboardHasWinKey()
 	 * @see accelModMaskX()
 	 */
-	uint modXWin();
+	KDECORE_EXPORT uint modXWin();
 
 	/**
 	 * Returns the X11 ScrollLock modifier mask/flag.
 	 * @return the X11 ScrollLock modifier mask/flag.
 	 * @see accelModMaskX()
 	 */
-	uint modXScrollLock();
+	KDECORE_EXPORT uint modXScrollLock();
 
 	/**
 	 * Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
@@ -313,7 +335,7 @@ namespace KKeyServer
 	 * @see modXWin()
 	 * @see modXScrollLock()
 	 */
-	uint accelModMaskX();
+	KDECORE_EXPORT uint accelModMaskX();
 
 	/**
 	 * Extracts the symbol from the given Qt key and
@@ -324,7 +346,7 @@ namespace KKeyServer
 	 * @see Qt::Key
 	 * @see Sym
 	 */
-	bool keyQtToSym( int keyQt, uint& sym );
+	KDECORE_EXPORT bool keyQtToSym( int keyQt, uint& sym );
 
 	/**
 	 * Extracts the modifiers from the given Qt key and
@@ -334,7 +356,7 @@ namespace KKeyServer
 	 * @return true if successful, false otherwise
 	 * @see Qt::Key
 	 */
-	bool keyQtToMod( int keyQt, uint& mod );
+	KDECORE_EXPORT bool keyQtToMod( int keyQt, uint& mod );
 
 	/**
 	 * Converts the given symbol to a Qt key code.
@@ -344,7 +366,7 @@ namespace KKeyServer
 	 * @see Qt::Key
 	 * @see Sym
 	 */
-	bool symToKeyQt( uint sym, int& keyQt );
+	KDECORE_EXPORT bool symToKeyQt( uint sym, int& keyQt );
 
 	/**
 	 * Converts the mask of ORed KKey::ModFlag modifiers to
@@ -356,7 +378,7 @@ namespace KKeyServer
 	 * @see Qt::Key
 	 * @see KKey
 	 */
-	bool modToModQt( uint mod, int& modQt );
+	KDECORE_EXPORT bool modToModQt( uint mod, int& modQt );
 
 	/**
 	 * Converts the mask of ORed KKey::ModFlag modifiers to
@@ -367,7 +389,7 @@ namespace KKeyServer
 	 * @return true if successful, false otherwise
 	 * @see KKey
 	 */
-	bool modToModX( uint mod, uint& modX );
+	KDECORE_EXPORT bool modToModX( uint mod, uint& modX );
 
 	/**
 	 * Converts the mask of ORed X11 modifiers to
@@ -378,7 +400,13 @@ namespace KKeyServer
 	 * @return true if successful, false otherwise
 	 * @see Qt::Key
 	 */
-	bool modXToModQt( uint modX, int& modQt );
+	//wrapped for win32
+	KDECORE_EXPORT bool modXToModQt( uint modX, int& modQt );
+
+	/**
+	 * Converts the Qt-compatible button state to x11 modifier. 
+	 */
+	KDECORE_EXPORT int qtButtonStateToMod( Qt::ButtonState s );
 
 	/**
 	 * Converts the mask of ORed X11 modifiers to
@@ -389,7 +417,7 @@ namespace KKeyServer
 	 * @return true if successful, false otherwise
 	 * @see KKey
 	 */
-	bool modXToMod( uint modX, uint& mod );
+	KDECORE_EXPORT bool modXToMod( uint modX, uint& mod );
 
 	/**
 	 * Converts a X11 key code and a mask of ORed X11 modifiers
@@ -402,12 +430,12 @@ namespace KKeyServer
 	 * @see Qt::Key
 	 * @see Sym
 	 */
-	bool codeXToSym( uchar codeX, uint modX, uint& symX );
+	KDECORE_EXPORT bool codeXToSym( uchar codeX, uint modX, uint& symX );
 
 	/**
 	 * @internal
 	 */
-	QString modToStringInternal( uint mod );
+	KDECORE_EXPORT QString modToStringInternal( uint mod );
 
 	/**
 	 * Converts the mask of ORed KKey::ModFlag modifiers to a
@@ -415,19 +443,19 @@ namespace KKeyServer
 	 * @param mod the mask of ORed KKey::ModFlag modifiers
 	 * @return the user-readable string
 	 */
-	QString modToStringUser( uint mod );
+	KDECORE_EXPORT QString modToStringUser( uint mod );
 
 	/**
 	 * @internal
 	 * Unimplemented?
 	 */
-	bool stringToSymMod( const QString&, uint& sym, uint& mod );
+	KDECORE_EXPORT bool stringToSymMod( const QString&, uint& sym, uint& mod );
 
 	/**
 	 * @internal
 	 * Unimplemented?
 	 */
-	void keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	KDECORE_EXPORT void keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
 }
 
 #endif // !_KKEYSERVER_X11_H

@@ -106,7 +106,7 @@ KSaveFile::abort()
 bool
 KSaveFile::close()
 {
-   if (mTempFile.name().isEmpty())
+   if (mTempFile.name().isEmpty() || mTempFile.handle()==-1)
       return false; // Save was aborted already
    if (!mTempFile.sync())
    {
@@ -115,6 +115,14 @@ KSaveFile::close()
    }
    if (mTempFile.close())
    {
+#ifdef Q_WS_WIN 
+      // QDir::rename() has non-unix semantics, first we need to remove dest. file
+      // TODO: let's move this code to a separate public function
+      if (QFile(mFileName).exists()) {
+         if (::remove(QFile::encodeName(mFileName)) != 0 )
+            return false;
+      }
+#endif
       QDir dir;
       bool result = dir.rename( mTempFile.name(), mFileName);
       if ( result )
@@ -153,7 +161,7 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
    QCString cFilename = QFile::encodeName(qFilename);
    const char *filename = cFilename.data();
 
-   int fd = open( filename, O_RDONLY);
+   int fd = open( filename, O_RDONLY | O_BINARY);
    if (fd < 0)
       return false;
 
@@ -194,7 +202,7 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
    }
 
    mode_t old_umask = umask(0);
-   int fd2 = open( backup, O_WRONLY | O_CREAT | O_EXCL, permissions | S_IWUSR);
+   int fd2 = open( backup, O_WRONLY | O_CREAT | O_EXCL | O_BINARY, permissions | S_IWUSR);
    umask(old_umask);
 
    if ( fd2 < 0 )

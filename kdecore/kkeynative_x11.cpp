@@ -1,6 +1,9 @@
 /*
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
 
+    Win32 port:
+    Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -20,7 +23,7 @@
 #include <qnamespace.h>
 #include <qwindowdefs.h>
 
-#ifdef Q_WS_X11	// Only compile this module if we're compiling for X11
+#if defined(Q_WS_X11) || defined(Q_WS_WIN) // Only compile this module if we're compiling for X11 or win32
 
 #include "kkeynative.h"
 #include "kkeyserver_x11.h"
@@ -31,6 +34,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 
+#ifdef Q_WS_X11
 #define XK_MISCELLANY
 #define XK_XKB_KEYS
 #include <X11/X.h>
@@ -38,6 +42,7 @@
 #include <X11/Xutil.h>
 #include <X11/keysymdef.h>
 #include <ctype.h>
+#endif
 
 //---------------------------------------------------------------------
 
@@ -50,7 +55,9 @@ static KKeyNative* gx_pkey = 0;
 KKeyNative::KKeyNative()                           { clear(); }
 KKeyNative::KKeyNative( const KKey& key )          { init( key ); }
 KKeyNative::KKeyNative( const KKeyNative& key )    { init( key ); }
+#ifdef Q_WS_X11
 KKeyNative::KKeyNative( const XEvent* pEvent )     { init( pEvent ); }
+#endif
 
 KKeyNative::KKeyNative( uint code, uint mod, uint sym )
 {
@@ -69,6 +76,7 @@ void KKeyNative::clear()
 	m_sym = 0;
 }
 
+#ifdef Q_WS_X11
 bool KKeyNative::init( const XEvent* pEvent )
 {
 	m_code = pEvent->xkey.keycode;
@@ -76,9 +84,15 @@ bool KKeyNative::init( const XEvent* pEvent )
 	XLookupString( (XKeyEvent*) pEvent, 0, 0, (KeySym*) &m_sym, 0 );
 	return true;
 }
+#endif
 
 bool KKeyNative::init( const KKey& key )
 {
+#ifdef Q_WS_WIN
+	m_sym = key.sym();
+	m_code = m_sym; //key.keyCodeQt();
+	m_mod = key.m_mod;
+#else
 	// Get any extra mods required by the sym.
 	//  E.g., XK_Plus requires SHIFT on the en layout.
 	m_sym = key.sym();
@@ -106,7 +120,7 @@ bool KKeyNative::init( const KKey& key )
 	//  E.g., Shift+Equal => Plus on the en layout.
 	if( key.modFlags() )
 		KKeyServer::codeXToSym( m_code, m_mod, m_sym );
-
+#endif
 	return true;
 }
 
@@ -146,11 +160,15 @@ KKeyNative& KKeyNative::null()
 
 KKey KKeyNative::key() const
 {
+#ifdef Q_WS_WIN
+	return KKey( m_sym, m_mod );
+#else
 	uint modSpec;
 	if( KKeyServer::modXToMod( m_mod, modSpec ) )
 		return KKey( m_sym, modSpec );
 	else
 		return KKey();
+#endif
 }
 
 int KKeyNative::keyCodeQt() const
@@ -163,11 +181,14 @@ int KKeyNative::keyCodeQt() const
 	return 0;
 }
 
-uint KKeyNative::modX( KKey::ModFlag modFlag ) { return KKeyServer::modX( modFlag ); }
 bool KKeyNative::keyboardHasWinKey()           { return KKeyServer::keyboardHasWinKey(); }
+
+#ifdef Q_WS_X11
+uint KKeyNative::modX( KKey::ModFlag modFlag ) { return KKeyServer::modX( modFlag ); }
 uint KKeyNative::accelModMaskX()               { return KKeyServer::accelModMaskX(); }
 uint KKeyNative::modXNumLock()                 { return KKeyServer::modXNumLock(); }
 uint KKeyNative::modXLock()                    { return KKeyServer::modXLock(); }
 uint KKeyNative::modXScrollLock()              { return KKeyServer::modXScrollLock(); }
+#endif
 
 #endif // Q_WS_X11

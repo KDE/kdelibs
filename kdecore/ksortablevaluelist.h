@@ -22,13 +22,14 @@
 
 #include <qpair.h>
 #include <qvaluelist.h>
+#include "kdelibs.h"
 
 /**
  * KSortableItem is a QPair that provides several operators
  * for sorting.
  * @see KSortableValueList
  */
-template<class T, class Key = int> class KSortableItem : public QPair<Key,T>
+template<class T, class Key = int> class KDECORE_EXPORT KSortableItem : public QPair<Key,T>
 {
 public:
     /**
@@ -126,7 +127,7 @@ public:
  * to sort all items.
  */
 template <class T, class Key = int>
-class KSortableValueList : public QValueList<KSortableItem<T, Key> >
+class KDECORE_EXPORT KSortableValueList : public QValueList<KSortableItem<T, Key> >
 {
 public:
     /**

@@ -27,6 +27,8 @@
 #include <qvaluelist.h>
 #include "kdemacros.h"
 
+#ifdef Q_OS_UNIX
+
 class KWinModulePrivate;
 
 /**
@@ -312,5 +314,7 @@ private:
 
     friend class KWinModulePrivate;
 };
+
+#endif //Q_OS_UNIX
 
 #endif

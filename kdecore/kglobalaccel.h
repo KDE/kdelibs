@@ -42,7 +42,7 @@ class KGlobalAccelPrivate;
 * @see KKeyDialog
 * @short Configurable global shortcut support
 */
-class KGlobalAccel : public QObject
+class KDECORE_EXPORT KGlobalAccel : public QObject
 {
 	Q_OBJECT
  public:
@@ -94,15 +94,15 @@ class KGlobalAccel : public QObject
 	                 const KShortcut& cutDef3, const KShortcut& cutDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
-                         
-        /**
-         * Removes the accelerator action identified by the name.
-         * Remember to also call updateConnections().
+
+	/**
+	 * Removes the accelerator action identified by the name.
+	 * Remember to also call updateConnections().
 	 * @param sAction the name of the action to remove
 	 * @since 3.1
-         */
-        bool remove( const QString& sAction );
-        
+	 */
+	bool remove( const QString& sAction );
+
 	/**
 	 * Use this to insert a label into the action list.  This will be
 	 * displayed when the user configures shortcuts.
@@ -145,7 +145,7 @@ class KGlobalAccel : public QObject
 	 * Return the label (i18n'ized short description) associated with the action named by @p sAction.
 	 * @param sAction the name of the action
 	 * @return the label
-         * @since 3.3
+	 * @since 3.3
 	 */
 	QString label( const QString& sAction ) const;
 
@@ -202,7 +202,7 @@ class KGlobalAccel : public QObject
 	 */
 	static bool useFourModifierKeys();
 
- private:
+private:
 
 	KAccelActions& actions();
 	const KAccelActions& actions() const;

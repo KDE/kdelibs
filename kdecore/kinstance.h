@@ -29,7 +29,7 @@ class KMimeSourceFactory;
 class KSharedConfig;
 
 #include <qstring.h>
-
+#include "kdelibs.h"
 
 
 /**
@@ -41,7 +41,7 @@ class KSharedConfig;
  * @author Torben Weis
  * @version $Id$
  */
-class KInstance
+class KDECORE_EXPORT KInstance
 {
     friend class KStandardDirs;
 

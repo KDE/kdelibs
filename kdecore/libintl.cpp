@@ -47,6 +47,7 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02111-1307, USA.  */
 
+#include "kdelibs.h"
 #include <config.h>
 
 #include <qglobal.h>
@@ -293,7 +294,7 @@ k_nl_load_domain (struct kde_loaded_l10nfile *domain_file)
     return;
 
   /* Try to open the addressed file.  */
-  fd = open (domain_file->filename, O_RDONLY);
+  fd = open (domain_file->filename, O_RDONLY | O_BINARY);
   if (fd == -1)
     return;
 

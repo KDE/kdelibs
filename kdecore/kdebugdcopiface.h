@@ -22,11 +22,12 @@
 
 #include <dcopobject.h>
 #include <dcopref.h>
+#include "kdelibs.h"
 
 /**
  * @short DCOP interface to KDebug.
  **/
-class KDebugDCOPIface : virtual public DCOPObject
+class KDECORE_EXPORT KDebugDCOPIface : virtual public DCOPObject
 {
 	K_DCOP
 public:

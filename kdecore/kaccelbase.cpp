@@ -31,7 +31,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kkeynative.h>
-#include "kkeyserver_x11.h"
+#include "kkeyserver.h"
 #include <klocale.h>
 #include "kshortcutmenu.h"
 
@@ -240,6 +240,7 @@ connect new key sequences
 }
 */
 
+#ifdef Q_WS_X11
 struct KAccelBase::X
 {
 	uint iAction, iSeq, iVari;
@@ -262,6 +263,7 @@ struct KAccelBase::X
 	bool operator >( const X& x )  { return compare( x ) > 0; }
 	bool operator <=( const X& x ) { return compare( x ) <= 0; }
 };
+#endif //Q_WS_X11
 
 /*
 #1 Ctrl+A
@@ -307,6 +309,7 @@ struct KAccelBase::X
 
 bool KAccelBase::updateConnections()
 {
+#ifdef Q_WS_X11
 	kdDebug(125) << "KAccelBase::updateConnections()  this = " << this << endl;
 	// Retrieve the list of keys to be connected, sorted by priority.
 	//  (key, variation, seq)
@@ -405,9 +408,11 @@ bool KAccelBase::updateConnections()
 			<< (((*it).pAction) ? (*it).pAction->name() : QString::null) << "'" << endl;
 	}
 #endif
+#endif //Q_WS_X11
 	return true;
 }
 
+#ifdef Q_WS_X11
 // Construct a list of keys to be connected, sorted highest priority first.
 void KAccelBase::createKeyList( QValueVector<struct X>& rgKeys )
 {
@@ -441,6 +446,7 @@ void KAccelBase::createKeyList( QValueVector<struct X>& rgKeys )
 	// sort by priority: iVariation[of first key], iSequence, iAction
 	qHeapSort( rgKeys.begin(), rgKeys.end() );
 }
+#endif //Q_WS_X11
 
 bool KAccelBase::insertConnection( KAccelAction* pAction )
 {

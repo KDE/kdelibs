@@ -89,7 +89,9 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#ifndef Q_WS_WIN
 #include "kwin.h"
+#endif
 
 #include <fcntl.h>
 #include <stdlib.h> // getenv(), srand(), rand()
@@ -119,7 +121,12 @@
 #include <X11/SM/SMlib.h> // schrode
 #include <fixx11h.h> // schrode
 #endif
+
+#ifndef Q_WS_WIN
 #include <KDE-ICE/ICElib.h>
+#else
+typedef void* IceIOErrorHandler;
+#endif
 
 #ifdef Q_WS_X11
 #define DISPLAY "DISPLAY"
@@ -142,11 +149,13 @@ bool KApplication::loadedByKdeinit = false;
 DCOPClient *KApplication::s_DCOPClient = 0L;
 bool KApplication::s_dcopClientNeedsPostInit = false;
 
+#ifndef Q_WS_WIN
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
 extern Time qt_x_time;
 extern Time qt_x_user_time;
 static Atom kde_xdnd_drop;
+#endif
 
 // duplicated from patched Qt, so that there won't be unresolved symbols if Qt gets
 // replaced by unpatched one
@@ -167,7 +176,6 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 }
 
 }
-#endif
 
 extern "C" {
 static void kde_ice_ioerrorhandler( IceConn conn )
@@ -177,6 +185,7 @@ static void kde_ice_ioerrorhandler( IceConn conn )
     // else ignore the error for now
 }
 }
+#endif
 
 /*
   Private data to make keeping binary compatibility easier
@@ -193,9 +202,11 @@ public:
 	startup_id( "0" ),
         app_started_timer( NULL ),
 	m_KAppDCOPInterface( 0L ),
-	session_save( false ),
-        oldXErrorHandler( NULL ),
-        oldXIOErrorHandler( NULL )
+	session_save( false )
+#ifdef Q_WS_X11
+        ,oldXErrorHandler( NULL )
+        ,oldXIOErrorHandler( NULL )
+#endif
   {
   }
 
@@ -220,8 +231,10 @@ public:
   QTimer* app_started_timer;
   KAppDCOPInterface *m_KAppDCOPInterface;
   bool session_save;
+#ifdef Q_WS_X11
   int (*oldXErrorHandler)(Display*,XErrorEvent*);
   int (*oldXIOErrorHandler)(Display*);
+#endif
 
   class URLActionRule
   {
@@ -480,9 +493,11 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     }
     if( t == QEvent::Show && receiver->isWidgetType())
     {
-	QWidget* w = static_cast< QWidget* >( receiver );
+    QWidget* w = static_cast< QWidget* >( receiver );
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
+#endif
         if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
@@ -499,7 +514,9 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
 void KApplication::checkAppStartedSlot()
 {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     KStartupInfo::handleAutoAppStartedSending();
+#endif
 }
 
 // the help class for session management communication
@@ -528,7 +545,7 @@ QString KApplication::sessionConfigName() const
 #endif
 }
 
-#ifndef Q_WS_QWS
+#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
 static SmcConn mySmcConnection = 0;
 static SmcConn tmpSmcConnection = 0;
 #else
@@ -661,7 +678,9 @@ int KApplication::xioErrhandler( Display* dpy )
     if(kapp)
     {
         emit shutDown();
+#ifdef Q_WS_X11
         d->oldXIOErrorHandler( dpy );
+#endif
     }
     exit( 1 );
     return 0;
@@ -669,12 +688,14 @@ int KApplication::xioErrhandler( Display* dpy )
 
 int KApplication::xErrhandler( Display* dpy, void* err_ )
 { // no idea how to make forward decl. for XErrorEvent
+#ifdef Q_WS_X11
     XErrorEvent* err = static_cast< XErrorEvent* >( err_ );
     if(kapp)
     {
         // add KDE specific stuff here
         d->oldXErrorHandler( dpy, err );
     }
+#endif
     return 0;
 }
 
@@ -682,9 +703,10 @@ void KApplication::iceIOErrorHandler( _IceConn *conn )
 {
     emit shutDown();
 
+#ifdef Q_WS_X11
     if ( d->oldIceIOErrorHandler != NULL )
       (*d->oldIceIOErrorHandler)( conn );
-
+#endif
     exit( 1 );
 }
 
@@ -852,11 +874,10 @@ void KApplication::init(bool GUIenabled)
 		    atom_DesktopWindow, atom_DesktopWindow,
 		    32, PropModeReplace, (unsigned char *)&data, 1);
   }
+  d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
 #else
   // FIXME(E): Implement for Qt Embedded
 #endif
-
-  d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
 }
 
 static int my_system (const char *command) {
@@ -983,6 +1004,7 @@ void KApplication::disableSessionManagement() {
 
 void KApplication::enableSessionManagement() {
   bSessionManagement = true;
+#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
   // Session management support in Qt/KDE is awfully broken.
   // If konqueror disables session management right after its startup,
   // and enables it later (preloading stuff), it won't be properly
@@ -1000,6 +1022,7 @@ void KApplication::enableSessionManagement() {
 	// flush the request
 	IceFlush(SmcGetIceConnection(mySmcConnection));
   }
+#endif
 }
 
 
@@ -1068,11 +1091,12 @@ bool KApplication::requestShutDown(
 
 bool KApplication::kdmExec( const char *cmd, QCString *buf, int *fdp )
 {
+    bool ret = false;
+#ifdef Q_WS_X11
     static char *ctl, *dpy;
     char *ptr;
     int fd, tl;
     unsigned len = 0;
-    bool ret = false;
     struct sockaddr_un sa;
     QCString lbuf;
 
@@ -1130,11 +1154,13 @@ bool KApplication::kdmExec( const char *cmd, QCString *buf, int *fdp )
         *fdp = fd;
     else
         ::close( fd );
+#endif //Q_WS_X11
     return ret;
 }
 
 void KApplication::propagateSessionManager()
 {
+#ifdef Q_WS_X11
     QCString fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
     QCString display = ::getenv(DISPLAY);
     // strip the screen number from the display
@@ -1164,6 +1190,7 @@ void KApplication::propagateSessionManager()
         f.close();
         ::setenv( "SESSION_MANAGER", s.latin1(), true  );
     }
+#endif
 }
 
 void KApplication::commitData( QSessionManager& sm )
@@ -1213,7 +1240,7 @@ void KApplication::commitData( QSessionManager& sm )
 void KApplication::saveState( QSessionManager& sm )
 {
     d->session_save = true;
-#ifndef Q_WS_QWS
+#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
     static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
 
@@ -1316,7 +1343,7 @@ void KApplication::startKdeinit()
   // Try to launch kdeinit.
   QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
   if (srv.isEmpty())
-     srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
+     srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KGlobal::dirs()->kfsstnd_defaultbindir());
   if (srv.isEmpty())
      return;
   if (kapp && (Tty != kapp->type()))
@@ -1577,17 +1604,19 @@ KApplication::~KApplication()
 
   KProcessController::deref();
 
+#ifdef Q_WS_X11
   if ( d->oldXErrorHandler != NULL )
       XSetErrorHandler( d->oldXErrorHandler );
   if ( d->oldXIOErrorHandler != NULL )
       XSetIOErrorHandler( d->oldXIOErrorHandler );
   if ( d->oldIceIOErrorHandler != NULL )
       IceSetIOErrorHandler( d->oldIceIOErrorHandler );
+#endif
 
   delete d;
   KApp = 0;
 
-#ifndef Q_WS_QWS
+#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
   mySmcConnection = 0;
   delete smModificationTime;
   smModificationTime = 0;
@@ -2428,8 +2457,10 @@ startServiceInternal( const QCString &function,
    }
 #endif
    stream << envs;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
    // make sure there is id, so that user timestamp exists
    stream << ( startup_id.isEmpty() ? KStartupInfo::createNewStartupId() : startup_id );
+#endif
    if( function.left( 12 ) != "kdeinit_exec" )
        stream << noWait;
 
@@ -2686,11 +2717,13 @@ void KApplication::setStartupId( const QCString& startup_id )
     else
         {
         d->startup_id = startup_id;
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
         KStartupInfoId id;
         id.initId( startup_id );
         long timestamp = id.timestamp();
         if( timestamp != 0 )
             updateUserTimestamp( timestamp );
+#endif
         }
 }
 
@@ -2906,6 +2939,7 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseUR
 
 uint KApplication::keyboardModifiers()
 {
+#ifdef Q_WS_X11
     Window root;
     Window child;
     int root_x, root_y, win_x, win_y;
@@ -2913,10 +2947,15 @@ uint KApplication::keyboardModifiers()
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &keybstate );
     return keybstate & 0x00ff;
+#else
+    //TODO for win32
+    return 0;
+#endif
 }
 
 uint KApplication::mouseState()
 {
+#ifdef Q_WS_X11
     Window root;
     Window child;
     int root_x, root_y, win_x, win_y;
@@ -2924,15 +2963,21 @@ uint KApplication::mouseState()
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &keybstate );
     return keybstate & 0xff00;
+#else
+    //TODO for win32
+    return 0;
+#endif
 }
 
 void KApplication::installSigpipeHandler()
 {
+#ifdef Q_OS_UNIX
     struct sigaction act;
     act.sa_handler = SIG_IGN;
     sigemptyset( &act.sa_mask );
     act.sa_flags = 0;
     sigaction( SIGPIPE, &act, 0 );
+#endif
 }
 
 void KApplication::sigpipeHandler(int)

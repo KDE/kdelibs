@@ -23,6 +23,9 @@
 #ifndef __kpty_h__
 #define __kpty_h__
 
+#include <qglobal.h>
+#ifdef Q_OS_UNIX
+
 struct KPtyPrivate;
 
 /**
@@ -129,5 +132,6 @@ private:
   KPtyPrivate *d;
 };
 
+#endif //Q_OS_UNIX
 #endif
 

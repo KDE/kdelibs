@@ -19,6 +19,7 @@
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qrect.h>
+#include "kdelibs.h"
 
 class QWidget;
 
@@ -32,7 +33,7 @@ class KIconEffectPrivate;
  * in a toolbar gray.
  * @see KIcon
  */
-class KIconEffect
+class KDECORE_EXPORT KIconEffect
 {
 public:
   /**

@@ -26,7 +26,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#if HAVE_LIMITS_H
+#ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
 
@@ -1076,11 +1076,13 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
       addArgument(arg);
       addArgument(value);
 
+#ifdef Q_WS_X11
       // Hack coming up!
       if (arg == "-display")
       {
          setenv(DISPLAY, value, true);
       }
+#endif
    }
    if (!parsedOptionList) {
 	parsedOptionList = new KCmdLineParsedOptions;

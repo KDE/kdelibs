@@ -405,7 +405,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
     if (-1 != minusPos) {
       QString offsetString = timeString.mid(minusPos + 1);
 
-      offset = - (offsetString.left(2).toUInt() * 60 + offsetString.right(2).toUInt());
+      offset = - int(offsetString.left(2).toUInt() * 60 + offsetString.right(2).toUInt());
 
       timeString = timeString.left(minusPos);
     }

@@ -24,6 +24,7 @@
 #include <qstringlist.h>
 #include <qcstring.h>
 #include <dcopref.h>
+#include "kdelibs.h"
 
 class KApplication;
 
@@ -33,7 +34,7 @@ dcop interface to all KDE applications that use it.
 @short DCOP interface to KApplication.
 @author Ian Reinhart Geiser <geiseri@yahoo.com>
 */
-class KAppDCOPInterface : virtual public DCOPObject
+class KDECORE_EXPORT KAppDCOPInterface : virtual public DCOPObject
 {
 K_DCOP
 

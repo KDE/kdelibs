@@ -23,6 +23,7 @@
 #define __KCRASH_H
 
 #include <qstring.h>
+#include "kdelibs.h"
 
 /**
  * This class handles segmentation-faults.
@@ -33,7 +34,7 @@
  * be called by the default crash handler, giving the application a chance
  * to save its data.
  */
-class KCrash
+class KDECORE_EXPORT KCrash
 {
  private: // ;o)
   static const char *appName;

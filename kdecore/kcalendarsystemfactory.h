@@ -23,6 +23,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include "kdelibs.h"
 
 class KCalendarSystem;
 class KLocale;
@@ -33,7 +34,7 @@ class KLocale;
  * @version $Id$
  * @since 3.2
  */
-class KCalendarSystemFactory
+class KDECORE_EXPORT KCalendarSystemFactory
 {
 public:
   KCalendarSystemFactory ();

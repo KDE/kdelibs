@@ -22,6 +22,7 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <qdatastream.h>
+#include "kdelibs.h"
 
 class KSycocaEntry;
 class KSycocaDictStringList;
@@ -30,7 +31,7 @@ class KSycocaDictStringList;
  * @internal
  * Hash table implementation for the sycoca database file
  */
-class KSycocaDict
+class KDECORE_EXPORT KSycocaDict
 {
 public:
    /**

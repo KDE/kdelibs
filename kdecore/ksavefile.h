@@ -38,7 +38,7 @@ class KSaveFilePrivate;
  *   Some error occurred, no changes have been written whatsoever and the
  *   old file is still in place.
  */
-class KSaveFile
+class KDECORE_EXPORT KSaveFile
 {
 public:
    /**

@@ -23,6 +23,7 @@
 #include <qobject.h>
 #include <qcstring.h>
 #include <qstring.h>
+#include "kdelibs.h"
 
 /*
  * This file defines a class that envelopes most, if not all, socket addresses
@@ -42,7 +43,7 @@ class KSocketAddressPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short a socket address.
  */
-class KSocketAddress: public QObject
+class KDECORE_EXPORT KSocketAddress: public QObject
 {
   Q_OBJECT
 protected:
@@ -229,7 +230,7 @@ class KInetSocketAddressPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short an Internet socket address
  */
-class KInetSocketAddress: public ::KSocketAddress
+class KDECORE_EXPORT KInetSocketAddress: public ::KSocketAddress
 {
   Q_OBJECT
 public:
@@ -580,7 +581,7 @@ class KUnixSocketAddressPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short a Unix socket address
  */
-class KUnixSocketAddress: public ::KSocketAddress
+class KDECORE_EXPORT KUnixSocketAddress: public ::KSocketAddress
 {
   Q_OBJECT
 public:

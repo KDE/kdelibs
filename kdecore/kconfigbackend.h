@@ -45,7 +45,7 @@ class KConfigBackEndPrivate;
  * @version $Id$
  * @short KDE Configuration file loading/saving abstract base class
  */
-class KConfigBackEnd
+class KDECORE_EXPORT KConfigBackEnd
 {
   friend class KConfig;
   friend class KSharedConfig;
@@ -189,7 +189,7 @@ protected:
  *         Matthias Kalle Dalheimer <kalle@kde.org>
  * @version $Id$
  */
-class KConfigINIBackEnd : public KConfigBackEnd
+class KDECORE_EXPORT KConfigINIBackEnd : public KConfigBackEnd
 {
 
 public:

@@ -23,6 +23,7 @@
 #define __KIPC_h_Included__
 
 #include <qwindowdefs.h>
+#include "kdelibs.h"
 
 /**
  * This class implements a very simple IPC mechanism for KDE. You can send
@@ -46,7 +47,7 @@
  * @author Geert Jansen <jansen@kde.org>
  * @version $Id$
  */
-class KIPC
+class KDECORE_EXPORT KIPC
 {
 public:
     /**

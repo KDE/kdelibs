@@ -39,6 +39,7 @@
 #include <qglobal.h>
 #include <qstring.h>
 #include <qiodevice.h>
+#include "kdelibs.h"
 
 /**
  * A wrapper class for the most commonly used encoding and
@@ -70,7 +71,7 @@
  * @author Dawit Alemayehu <adawit@kde.org>
  * @author Rik Hemsley <rik@kde.org>
  */
-class KCodecs
+class KDECORE_EXPORT KCodecs
 {
 public:
 
@@ -401,7 +402,7 @@ class KMD5Private;
  * @author Dirk Mueller <mueller@kde.org>, Dawit Alemayehu <adawit@kde.org>
  */
 
-class KMD5
+class KDECORE_EXPORT KMD5
 {
 public:
 

@@ -20,6 +20,10 @@
 #ifndef KEXTSOCK_H
 #define KEXTSOCK_H
 
+#include "kdemacros.h"
+
+#ifdef Q_OS_UNIX
+
 #include <sys/time.h>
 
 #include <qstring.h>
@@ -28,7 +32,6 @@
 
 #include "kbufferedio.h"
 #include "ksockaddr.h"
-#include "kdemacros.h"
 
 /* External reference to netdb.h */
 struct addrinfo;
@@ -1101,5 +1104,7 @@ public:
 
   friend class KExtendedSocket;
 };
+
+#endif //Q_OS_UNIX
 
 #endif // KEXTSOCK_H

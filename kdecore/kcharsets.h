@@ -23,6 +23,7 @@
 #include <qfont.h>
 #include <qstringlist.h>
 #include <qptrlist.h>
+#include "kdelibs.h"
 
 class KGlobal;
 class KCharsetsPrivate;
@@ -39,7 +40,7 @@ class QTextCodec;
  *
  * @author Lars Knoll <knoll@kde.org>
  */
-class KCharsets
+class KDECORE_EXPORT KCharsets
 {
     friend class KGlobal;
 

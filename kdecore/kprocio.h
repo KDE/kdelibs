@@ -48,7 +48,7 @@ class QTextCodec;
  **/
 
 
-class KProcIO : public KProcess
+class KDECORE_EXPORT KProcIO : public KProcess
 {
   Q_OBJECT
 

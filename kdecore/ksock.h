@@ -21,6 +21,9 @@
 #define KSOCK_H
 
 #include "kdemacros.h"
+
+#ifdef Q_OS_UNIX
+
 #include <qobject.h>
 #include <sys/types.h>
 // we define STRICT_ANSI to get rid of some warnings in glibc
@@ -340,5 +343,6 @@ private:
     KServerSocketPrivate *d;
 };
 
+#endif //Q_OS_UNIX
 
 #endif

@@ -69,7 +69,7 @@ class KConfigBase;
  * @see KKeyChooser
  * @see KKeyDialog
  */
-class KAccelAction
+class KDECORE_EXPORT KAccelAction
 {
  public:
         /**
@@ -363,7 +363,7 @@ class KAccelAction
  * @short A collection of accelerator actions
  * @see KAccelAction
  */
-class KAccelActions
+class KDECORE_EXPORT KAccelActions
 {
  public:
        /**

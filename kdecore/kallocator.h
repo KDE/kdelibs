@@ -28,6 +28,7 @@
 #define KALLOCATOR_H
 
 #include <qvaluelist.h>
+#include "kdelibs.h"
 
 class KZoneAllocatorPrivate;
 
@@ -44,7 +45,7 @@ class KZoneAllocatorPrivate;
  * @author Waldo Bastian <bastian@kde.org>, Michael Matz <matz@kde.org>
  * @version $Id$
  */
-class KZoneAllocator
+class KDECORE_EXPORT KZoneAllocator
 {
 public:
     /**

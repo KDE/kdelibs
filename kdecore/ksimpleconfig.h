@@ -40,7 +40,7 @@ class KSimpleConfigPrivate;
  * @see KConfigBase KConfig
  * @short KDE Configuration Management class with deletion ability
  */
-class KSimpleConfig : public KConfig
+class KDECORE_EXPORT KSimpleConfig : public KConfig
 {
   Q_OBJECT
 

@@ -24,6 +24,7 @@
 #define __KAUDIOPLAYER_H__
 
 #include <qobject.h>
+#include "kdelibs.h"
 
 class KAudioPlayerPrivate;
 /**
@@ -52,7 +53,7 @@ class KAudioPlayerPrivate;
  *
  */
 //REVISED: hausmann
-class KAudioPlayer : public QObject {
+class KDECORE_EXPORT KAudioPlayer : public QObject {
 Q_OBJECT
 public:
 	/**

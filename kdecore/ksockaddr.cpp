@@ -18,11 +18,14 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include "ksockaddr.h"
 #include <config.h>
 
 #include <sys/types.h>
 
+#ifdef Q_OS_UNIX
 #include <arpa/inet.h>
+#endif
 #include <netinet/in.h>
 
 #include <limits.h>
@@ -36,7 +39,6 @@
 
 #include "kdebug.h"
 #include "klocale.h"
-#include "ksockaddr.h"
 //#include "kextsock.h"
 
 #ifndef HAVE_STRUCT_SOCKADDR_IN6

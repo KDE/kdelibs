@@ -53,7 +53,7 @@ class KBufferedIOPrivate;
  * @author Thiago Macieira <thiagom@mail.com>
  * @short Buffered I/O
  */
-class KBufferedIO: public KAsyncIO
+class KDECORE_EXPORT KBufferedIO: public KAsyncIO
 {
   Q_OBJECT
 

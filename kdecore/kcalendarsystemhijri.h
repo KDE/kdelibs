@@ -42,7 +42,7 @@ class KCalendarSystemHijriPrivate;
  * @version $Id$
  * @since 3.2
  */
-class KCalendarSystemHijri : public KCalendarSystem
+class KDECORE_EXPORT KCalendarSystemHijri : public KCalendarSystem
 {
 public:
   KCalendarSystemHijri(const KLocale * locale = 0);

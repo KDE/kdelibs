@@ -91,7 +91,7 @@ namespace KNotifyClient
      *
      * @short Enables KNotifyClient to use a different KInstance
      */
-    class Instance
+    class KDECORE_EXPORT Instance
     {
     public:
         /**
@@ -173,7 +173,7 @@ namespace KNotifyClient
 	 * first triggered.
 	 * @return true if daemon is running (always true at the moment)
 	 **/
-	bool startDaemon();
+	KDECORE_EXPORT bool startDaemon();
 
 //#ifndef KDE_NO_COMPAT
 	/**
@@ -183,7 +183,7 @@ namespace KNotifyClient
 	 *             the user connected the event to sound, only. Can be QString::null.
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	int event(const QString &message, const QString &text=QString::null) KDE_DEPRECATED;
+	KDECORE_EXPORT int event(const QString &message, const QString &text=QString::null) KDE_DEPRECATED;
 
 	/**
 	 * @deprecated
@@ -192,7 +192,7 @@ namespace KNotifyClient
 	 * @param text The text explaining the event you raise. Can be QString::null.
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	int event( StandardEvent event, const QString& text=QString::null ) KDE_DEPRECATED;
+	KDECORE_EXPORT int event( StandardEvent event, const QString& text=QString::null ) KDE_DEPRECATED;
 
 	/**
 	 * @deprecated
@@ -204,8 +204,8 @@ namespace KNotifyClient
 	 * @param file The log file to append the message to if selected with @p present
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 */
-	int userEvent(const QString &text=QString::null, int present=Default, int level=Default,
-	                      const QString &sound=QString::null, const QString &file=QString::null) KDE_DEPRECATED;
+	KDECORE_EXPORT int userEvent(const QString &text=QString::null, int present=Default, int level=Default,
+	                             const QString &sound=QString::null, const QString &file=QString::null) KDE_DEPRECATED;
 	
 //#endif
 
@@ -224,8 +224,8 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
-	int event( int winId, const QString& message,
-                    const QString& text = QString::null );
+	KDECORE_EXPORT int event( int winId, const QString& message,
+                              const QString& text = QString::null );
 
 	/**
 	 * You should
@@ -238,8 +238,8 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
-	int event( int winId, StandardEvent event,
-                    const QString& text = QString::null );
+	KDECORE_EXPORT int event( int winId, StandardEvent event,
+                              const QString& text = QString::null );
 
 	/**
 	 * Will fire an event that's not registered.
@@ -255,7 +255,7 @@ namespace KNotifyClient
 	 * @return a value > 0, unique for this event if successful, 0 otherwise
 	 * @since 3.1.1
 	 */
-	int userEvent(int winId, const QString &text=QString::null, int present=Default, int level=Default,
+	KDECORE_EXPORT int userEvent(int winId, const QString &text=QString::null, int present=Default, int level=Default,
 	                      const QString &sound=QString::null, const QString &file=QString::null);
 	
 	/**
@@ -266,7 +266,7 @@ namespace KNotifyClient
 	 * \endcode
 	 * @param reason the reason, can be QString::null.
 	 */
-	void beep(const QString& reason=QString::null);
+	KDECORE_EXPORT void beep(const QString& reason=QString::null);
 
 	/**
 	 * Gets the presentation associated with a certain event name
@@ -277,7 +277,7 @@ namespace KNotifyClient
 	 * @param eventname the event name to check
 	 * @return the presentation methods
 	 */
-	int getPresentation(const QString &eventname);
+	KDECORE_EXPORT int getPresentation(const QString &eventname);
 	
 	/**
 	 * Gets the default file associated with a certain event name
@@ -287,7 +287,7 @@ namespace KNotifyClient
 	 * @param present the presentation method
 	 * @return the associated file. Can be QString::null if not found.
 	 */
-	QString getFile(const QString &eventname, int present);
+	KDECORE_EXPORT QString getFile(const QString &eventname, int present);
 	
 	/**
 	 * Gets the default presentation for the event of this program.
@@ -297,7 +297,7 @@ namespace KNotifyClient
 	 * \endcode
 	 * @return the presentation methods
 	 */
-	int getDefaultPresentation(const QString &eventname);
+	KDECORE_EXPORT int getDefaultPresentation(const QString &eventname);
 	
 	/**
 	 * Gets the default File for the event of this program.
@@ -308,13 +308,13 @@ namespace KNotifyClient
 	 * @param present the presentation method
 	 * @return the default file. Can be QString::null if not found.
 	 */
-	QString getDefaultFile(const QString &eventname, int present);
+	KDECORE_EXPORT QString getDefaultFile(const QString &eventname, int present);
 
 	/**
 	 * Shortcut to KNotifyClient::Instance::current() :)
 	 * @returns the current KInstance.
 	 */
-	KInstance * instance();
+	KDECORE_EXPORT KInstance * instance();
 }
 
 #endif

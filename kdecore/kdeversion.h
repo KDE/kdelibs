@@ -22,6 +22,8 @@
 #ifndef _KDE_VERSION_H_
 #define _KDE_VERSION_H_
 
+#include "kdelibs.h"
+
 #define KDE_VERSION_STRING "3.3.89 (CVS >= 20040820)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 3
@@ -46,34 +48,34 @@ namespace KDE
      * @return the version number, encoded in a single uint
      * @since 3.2
      */
-    unsigned int version();
+    KDECORE_EXPORT unsigned int version();
     /**
      * Returns the major number of KDE's version, e.g.
      * 3 for KDE 3.1.2. 
      * @return the major version number
      * @since 3.1
      */
-    unsigned int versionMajor();
+    KDECORE_EXPORT unsigned int versionMajor();
     /**
      * Returns the minor number of KDE's version, e.g.
      * 1 for KDE 3.1.2. 
      * @return the minor version number
      * @since 3.1
      */
-    unsigned int versionMinor();
+    KDECORE_EXPORT unsigned int versionMinor();
     /**
      * Returns the release of KDE's version, e.g.
      * 2 for KDE 3.1.2. 
      * @return the release number
      * @since 3.1
      */
-    unsigned int versionRelease();
+    KDECORE_EXPORT unsigned int versionRelease();
     /**
      * Returns the KDE version as string, e.g. "3.1.2".
      * @return the KDE version. You can keep the string forever
      * @since 3.1
      */
-    const char *versionString();
+    KDECORE_EXPORT const char *versionString();
 }
 
 #endif // _KDE_VERSION_H_

@@ -22,6 +22,7 @@
 
 #include <qglobal.h>	// For uint
 #include <qstring.h>
+#include "kdelibs.h"
 
 class QVariant;
 class KConfigBase;
@@ -44,7 +45,7 @@ class KShortcut;
  *
  * @short Base class for accessing accelerator lists
  */
-class KShortcutList
+class KDECORE_EXPORT KShortcutList
 {
  public:
         /**
@@ -191,7 +192,7 @@ class KGlobalAccel;
  * KShortcutList implementation to access KAccel and
  * KGlobalAccel lists.
  */
-class KAccelShortcutList : public KShortcutList
+class KDECORE_EXPORT KAccelShortcutList : public KShortcutList
 {
  public:
         /**
@@ -254,7 +255,7 @@ namespace KStdAccel {
  * KShortcutList implementation that accesses KStdAccel
  * actions.
  */
-class ShortcutList : public KShortcutList
+class KDECORE_EXPORT ShortcutList : public KShortcutList
 {
  public:
         /**

@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <stdio.h>
 #include <errno.h>
+#include "kdelibs.h"
 
 class QFile;
 class QTextStream;
@@ -51,7 +52,7 @@ class KTempFilePrivate;
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KTempFile
+class KDECORE_EXPORT KTempFile
 {
    friend class KSaveFile;
 public:

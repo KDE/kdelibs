@@ -91,7 +91,7 @@ class KAccelPrivate;
  * @version $Id$
  */
 
-class KAccel : public QAccel
+class KDECORE_EXPORT KAccel : public QAccel
 {
 	Q_OBJECT
  public:

@@ -19,9 +19,7 @@
 
 #include "kshortcut.h"
 #include "kkeynative.h"
-#ifdef Q_WS_X11
-#include "kkeyserver_x11.h"
-#endif
+#include "kkeyserver.h"
 
 #include <qevent.h>
 #include <qstringlist.h>

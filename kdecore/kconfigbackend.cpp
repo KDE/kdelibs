@@ -34,6 +34,10 @@
 #include <signal.h>
 #include <setjmp.h>
 
+#ifdef Q_WS_WIN
+# include <stdlib.h>
+#endif
+
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextcodec.h>
@@ -228,7 +232,7 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
    useKDEGlobals = _useKDEGlobals;
    if (mfileName.isEmpty())
       mLocalFileName = QString::null;
-   else if (mfileName[0] == '/')
+   else if (!QDir::isRelativePath(mfileName))
       mLocalFileName = mfileName;
    else
       mLocalFileName = KGlobal::dirs()->saveLocation(resType) + mfileName;
@@ -328,8 +332,14 @@ bool KConfigINIBackEnd::parseConfigFiles()
     QStringList kdercs = KGlobal::dirs()->
       findAllResources("config", QString::fromLatin1("kdeglobals"));
 
-    if (checkAccess(QString::fromLatin1("/etc/kderc"), R_OK))
-      kdercs += QString::fromLatin1("/etc/kderc");
+#ifdef Q_WS_WIN
+    QString etc_kderc = QFile::decodeName( QCString(getenv("WINDIR")) + "\\kderc" );
+#else
+    QString etc_kderc = QString::fromLatin1("/etc/kderc");
+#endif
+
+    if (checkAccess(etc_kderc, R_OK))
+      kdercs += etc_kderc;
 
     kdercs += KGlobal::dirs()->
       findAllResources("config", QString::fromLatin1("system.kdeglobals"));
@@ -360,7 +370,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
     bFileImmutable = false;
     QStringList list;
-    if ( mfileName[0] == '/' )
+    if ( !QDir::isRelativePath(mfileName) )
        list << mfileName;
     else
        list = KGlobal::dirs()->findAllResources(resType, mfileName);
@@ -719,7 +729,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
   if (!mfileName.isEmpty()) {
     // Create the containing dir if needed
-    if ((resType!="config") && mLocalFileName[0]=='/')
+    if ((resType!="config") && !QDir::isRelativePath(mLocalFileName))
     {
        KURL path;
        path.setPath(mLocalFileName);
@@ -842,10 +852,12 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
 
      if (hasDefault)
      {
+#ifndef Q_WS_WIN //TODO: this will be removed later
         // Entry had a default value
         if ((currentEntry.mValue == (*aTestIt).mValue) &&
             (currentEntry.bDeleted == (*aTestIt).bDeleted))
            continue; // Same as default, don't write.
+#endif
      }
      else
      {
@@ -1014,7 +1026,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   {
      // Open existing file.
      // We use open() to ensure that we call without O_CREAT.
-     int fd = open( QFile::encodeName(filename), O_WRONLY | O_TRUNC);
+     int fd = open( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
      if (fd < 0)
      {
         return bEntriesLeft;

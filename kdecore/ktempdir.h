@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <stdio.h>
 #include <errno.h>
+#include "kdelibs.h"
 
 class QDir;
 class KTempDirPrivate;
@@ -49,7 +50,7 @@ class KTempDirPrivate;
  * @since 3.2
  * @author Joseph Wenninger <jowenn@kde.org>
  */
-class KTempDir
+class KDECORE_EXPORT KTempDir
 {
 public:
    /**

@@ -1,6 +1,9 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2002 Ellis Whitehead <ellis@kde.org>
 
+    Win32 port:
+    Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -31,7 +34,7 @@ class KKeyNativePrivate;
  * Representation of a key in the format native of the windowing system (eg. X11).
  * @see KKey
  */
-class KKeyNative
+class KDECORE_EXPORT KKeyNative
 {
  public:
 	/**
@@ -73,6 +76,7 @@ class KKeyNative
 	 */
 	void clear();
 
+#ifdef Q_WS_X11
 	/**
 	 * Initializes the native key by extracting the information
 	 * from the given xevent.
@@ -80,6 +84,7 @@ class KKeyNative
 	 * @return true if successful, false otherwise
 	 */
 	bool init( const XEvent* xevent );
+#endif
 
 	/**
 	 * Creates a new native key for the given KKey code.
@@ -200,6 +205,7 @@ class KKeyNative
 	 */
 	static bool keyboardHasWinKey();
 
+#ifdef Q_WS_X11
 	/**
 	 * Returns the equivalent X modifier mask of the given modifier flag.
 	 * @param modFlag the mod flags to test
@@ -234,6 +240,7 @@ class KKeyNative
 	 * @see accelModMaskX()
 	 */
 	static uint modXScrollLock();
+#endif
 
  private:
 	uint m_code, m_mod, m_sym;

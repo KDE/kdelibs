@@ -30,10 +30,12 @@ DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 #include <qobject.h>
 
-//#ifdef Q_WS_X11 // FIXME(E): Redo in a less X11-specific way
+#ifdef Q_WS_X11 // FIXME(E): Redo in a less X11-specific way
+
 #include <qcstring.h>
 #include <qstring.h>
 #include <qvaluelist.h>
+#include "kdelibs.h"
 
 class KStartupInfoId;
 class KStartupInfoData;
@@ -61,7 +63,7 @@ class KStartupInfoPrivate;
  * @author Lubos Lunak <l.lunak@kde.org>
  * @version $Id$
  */
-class KStartupInfo
+class KDECORE_EXPORT KStartupInfo
     : public QObject
     {
     Q_OBJECT
@@ -389,7 +391,7 @@ class KStartupInfoIdPrivate;
  * @author Lubos Lunak <l.lunak@kde.org>
  * @version $Id$
  */
-class KStartupInfoId
+class KDECORE_EXPORT KStartupInfoId
     {
     public:
 	/**
@@ -463,7 +465,7 @@ class KStartupInfoDataPrivate;
  * @author Lubos Lunak <l.lunak@kde.org>
  * @version $Id$
  */
-class KStartupInfoData
+class KDECORE_EXPORT KStartupInfoData
     {
     public:
 	/**
@@ -665,5 +667,7 @@ class KStartupInfoData
         friend class KStartupInfo::Data;
         KStartupInfoDataPrivate* d;
     };
+
+#endif //Q_WS_X11
 
 #endif

@@ -22,6 +22,7 @@
 #include <qobject.h>
 #include <qcstring.h>
 #include <qvaluelist.h>
+#include "kdelibs.h"
 
 class KDCOPPropertyProxyPrivate;
 /**
@@ -35,7 +36,7 @@ class KDCOPPropertyProxyPrivate;
  * "setFoo( QString )" and "QString foo()" automatically into the corresponding
  * setProperty/property calls.
  */
-class KDCOPPropertyProxy
+class KDECORE_EXPORT KDCOPPropertyProxy
 {
 public:
   /**

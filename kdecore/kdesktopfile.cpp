@@ -25,6 +25,7 @@
 #include <unistd.h>
 
 #include <qfile.h>
+#include <qdir.h>
 #include <qtextstream.h>
 
 #include "kurl.h"
@@ -60,13 +61,13 @@ QString KDesktopFile::locateLocal(const QString &path)
   if (path.endsWith(".directory"))
   {
     local = path;
-    if (local.startsWith("/"))
+    if (!QDir::isRelativePath(local))
     {
       // Relative wrt apps?
       local = KGlobal::dirs()->relativeLocation("apps", path);
     }
 
-    if (!local.startsWith("/"))
+    if (QDir::isRelativePath(local))
     {
       local = ::locateLocal("apps", local); // Relative to apps
     }
@@ -75,7 +76,7 @@ QString KDesktopFile::locateLocal(const QString &path)
       // XDG Desktop menu items come with absolute paths, we need to 
       // extract their relative path and then build a local path.
       local = KGlobal::dirs()->relativeLocation("xdgdata-dirs", local);
-      if (local.startsWith("/"))
+      if (!QDir::isRelativePath(local))
       {
         // Hm, that didn't work...
         // What now? Use filename only and hope for the best.
@@ -86,7 +87,7 @@ QString KDesktopFile::locateLocal(const QString &path)
   }
   else
   {
-    if (!path.startsWith("/"))
+    if (QDir::isRelativePath(path))
     {
       local = ::locateLocal("apps", path); // Relative to apps
     }
@@ -95,7 +96,7 @@ QString KDesktopFile::locateLocal(const QString &path)
       // XDG Desktop menu items come with absolute paths, we need to 
       // extract their relative path and then build a local path.
       local = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-      if (local.startsWith("/"))
+      if (!QDir::isRelativePath(local))
       {
         // What now? Use filename only and hope for the best.
         local = path.mid(path.findRev('/')+1);
@@ -126,15 +127,15 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   if (path.isEmpty())
      return false; // Empty paths are not ok.
   
-  if (path[0] != '/')
+  if (QDir::isRelativePath(path))
      return true; // Relative paths are ok.
      
   KStandardDirs *dirs = KGlobal::dirs();
-  if (dirs->relativeLocation("apps", path)[0] != '/')
+  if (QDir::isRelativePath( dirs->relativeLocation("apps", path) ))
      return true;
-  if (dirs->relativeLocation("xdgdata-apps", path)[0] != '/')
+  if (QDir::isRelativePath( dirs->relativeLocation("xdgdata-apps", path) ))
      return true;
-  if (dirs->relativeLocation("services", path)[0] != '/')
+  if (QDir::isRelativePath( dirs->relativeLocation("services", path) ))
      return true;
   if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
      return true;
@@ -196,7 +197,7 @@ QString KDesktopFile::readURL() const
         return QString::null;
     } else {
 	QString url = readPathEntry("URL");
-        if ( !url.isEmpty() && url[0] == '/' )
+        if ( !url.isEmpty() && !QDir::isRelativePath(url) )
         {
             // Handle absolute paths as such (i.e. we need to escape them)
             KURL u;
@@ -249,7 +250,7 @@ bool KDesktopFile::tryExec() const
   QString te = readPathEntry("TryExec");
 
   if (!te.isEmpty()) {
-    if (te[0] == '/') {
+    if (!QDir::isRelativePath(te)) {
       if (::access(QFile::encodeName(te), R_OK | X_OK))
 	return false;
     } else {

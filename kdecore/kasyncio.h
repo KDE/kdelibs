@@ -23,6 +23,7 @@
 
 #include <qobject.h>
 #include <qiodevice.h>
+#include "kdelibs.h"
 
 class KAsyncIOPrivate;
 /**
@@ -34,7 +35,7 @@ class KAsyncIOPrivate;
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @short Asynchronous I/O support
  */
-class KAsyncIO: public QObject, public QIODevice
+class KDECORE_EXPORT KAsyncIO: public QObject, public QIODevice
 {
   Q_OBJECT
 protected:

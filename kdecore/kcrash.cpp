@@ -79,6 +79,7 @@ KCrash::setEmergencySaveFunction (HandlerType saveFunction)
 void
 KCrash::setCrashHandler (HandlerType handler)
 {
+#ifdef Q_OS_UNIX
   if (!handler)
     handler = SIG_DFL;
 
@@ -103,6 +104,7 @@ KCrash::setCrashHandler (HandlerType handler)
 #endif
 
   sigprocmask(SIG_UNBLOCK, &mask, 0);
+#endif //Q_OS_UNIX
 
   _crashHandler = handler;
 }
@@ -110,6 +112,7 @@ KCrash::setCrashHandler (HandlerType handler)
 void
 KCrash::defaultCrashHandler (int sig)
 {
+#ifdef Q_OS_UNIX
   // WABA: Do NOT use kdDebug() in this function because it is much too risky!
   // Handle possible recursions
   static int crashRecursionCounter = 0;
@@ -257,6 +260,7 @@ KCrash::defaultCrashHandler (int sig)
       fprintf(stderr, "Unable to start Dr. Konqi\n");
     }
   }
+#endif //Q_OS_UNIX
 
   _exit(255);
 }

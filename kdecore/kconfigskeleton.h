@@ -47,7 +47,7 @@
    * addItem() functions of KConfigSkeleton instead. If you subclass this class you will
    * have to register instances with the function KConfigSkeleton::addItem().
    */
-  class KConfigSkeletonItem
+  class KDECORE_EXPORT KConfigSkeletonItem
   {
   public:
     typedef QValueList < KConfigSkeletonItem * >List;
@@ -228,7 +228,7 @@
   };
 
 
-template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonItem
+template < typename T > class KDECORE_EXPORT KConfigSkeletonGenericItem:public KConfigSkeletonItem
   {
   public:
     KConfigSkeletonGenericItem(const QString & group, const QString & key, T & reference,
@@ -362,14 +362,14 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    * subclasses yourself, but you can use \ref kconfig_compiler to automatically
    * generate the C++ code from an XML description of the configuration options.
    */
-class KConfigSkeleton
+class KDECORE_EXPORT KConfigSkeleton
 {
 public:
 
   /**
    * Class for handling a string preferences item.
    */
-  class ItemString:public KConfigSkeletonGenericItem < QString >
+  class KDECORE_EXPORT ItemString:public KConfigSkeletonGenericItem < QString >
   {
   public:
     enum Type { Normal, Password, Path };
@@ -391,7 +391,7 @@ public:
   /**
    * Class for handling a password preferences item.
    */
-  class ItemPassword:public ItemString
+  class KDECORE_EXPORT ItemPassword:public ItemString
   {
   public:
     ItemPassword(const QString & group, const QString & key,
@@ -402,7 +402,7 @@ public:
   /**
    * Class for handling a path preferences item.
    */
-  class ItemPath:public ItemString
+  class KDECORE_EXPORT ItemPath:public ItemString
   {
   public:
     ItemPath(const QString & group, const QString & key,
@@ -414,7 +414,7 @@ public:
   /**
    * Class for handling a QVariant preferences item.
    */
-  class ItemProperty:public KConfigSkeletonGenericItem < QVariant >
+  class KDECORE_EXPORT ItemProperty:public KConfigSkeletonGenericItem < QVariant >
   {
   public:
     ItemProperty(const QString & group, const QString & key,
@@ -429,7 +429,7 @@ public:
   /**
    * Class for handling a bool preferences item.
    */
-  class ItemBool:public KConfigSkeletonGenericItem < bool >
+  class KDECORE_EXPORT ItemBool:public KConfigSkeletonGenericItem < bool >
   {
   public:
     ItemBool(const QString & group, const QString & key, bool & reference,
@@ -444,7 +444,7 @@ public:
   /**
    * Class for handling an integer preferences item.
    */
-  class ItemInt:public KConfigSkeletonGenericItem < int >
+  class KDECORE_EXPORT ItemInt:public KConfigSkeletonGenericItem < int >
   {
   public:
     ItemInt(const QString & group, const QString & key, int &reference,
@@ -469,7 +469,7 @@ public:
   /**
    * Class for handling an 64-bit integer preferences item.
    */
-  class ItemInt64:public KConfigSkeletonGenericItem < Q_INT64 >
+  class KDECORE_EXPORT ItemInt64:public KConfigSkeletonGenericItem < Q_INT64 >
   {
   public:
     ItemInt64(const QString & group, const QString & key, Q_INT64 &reference,
@@ -495,7 +495,7 @@ public:
   /**
    * Class for handling enums.
    */
-  class ItemEnum:public ItemInt
+  class KDECORE_EXPORT ItemEnum:public ItemInt
   {
   public:
     struct Choice
@@ -521,7 +521,7 @@ public:
   /**
    * Class for handling an unsingend integer preferences item.
    */
-  class ItemUInt:public KConfigSkeletonGenericItem < unsigned int >
+  class KDECORE_EXPORT ItemUInt:public KConfigSkeletonGenericItem < unsigned int >
   {
   public:
     ItemUInt(const QString & group, const QString & key,
@@ -547,7 +547,7 @@ public:
   /**
    * Class for hanlding a long integer preferences item.
    */
-  class ItemLong:public KConfigSkeletonGenericItem < long >
+  class KDECORE_EXPORT ItemLong:public KConfigSkeletonGenericItem < long >
   {
   public:
     ItemLong(const QString & group, const QString & key, long &reference,
@@ -573,7 +573,7 @@ public:
   /**
    * Class for handling an unsigned long integer preferences item.
    */
-  class ItemULong:public KConfigSkeletonGenericItem < unsigned long >
+  class KDECORE_EXPORT ItemULong:public KConfigSkeletonGenericItem < unsigned long >
   {
   public:
     ItemULong(const QString & group, const QString & key,
@@ -598,7 +598,7 @@ public:
   /**
    * Class for handling unsigned 64-bit integer preferences item.
    */
-  class ItemUInt64:public KConfigSkeletonGenericItem < Q_UINT64 >
+  class KDECORE_EXPORT ItemUInt64:public KConfigSkeletonGenericItem < Q_UINT64 >
   {
   public:
     ItemUInt64(const QString & group, const QString & key, Q_UINT64 &reference,
@@ -624,7 +624,7 @@ public:
   /**
    * Class for handling a floating point preference item.
    */
-  class ItemDouble:public KConfigSkeletonGenericItem < double >
+  class KDECORE_EXPORT ItemDouble:public KConfigSkeletonGenericItem < double >
   {
   public:
     ItemDouble(const QString & group, const QString & key,
@@ -650,7 +650,7 @@ public:
   /**
    * Class for handling a color preferences item.
    */
-  class ItemColor:public KConfigSkeletonGenericItem < QColor >
+  class KDECORE_EXPORT ItemColor:public KConfigSkeletonGenericItem < QColor >
   {
   public:
     ItemColor(const QString & group, const QString & key,
@@ -666,7 +666,7 @@ public:
   /**
    * Class for handling a font preferences item.
    */
-  class ItemFont:public KConfigSkeletonGenericItem < QFont >
+  class KDECORE_EXPORT ItemFont:public KConfigSkeletonGenericItem < QFont >
   {
   public:
     ItemFont(const QString & group, const QString & key, QFont & reference,
@@ -681,7 +681,7 @@ public:
   /**
    * Class for handling a QRect preferences item.
    */
-  class ItemRect:public KConfigSkeletonGenericItem < QRect >
+  class KDECORE_EXPORT ItemRect:public KConfigSkeletonGenericItem < QRect >
   {
   public:
     ItemRect(const QString & group, const QString & key, QRect & reference,
@@ -696,7 +696,7 @@ public:
   /**
    * Class for handling a QPoint preferences item.
    */
-  class ItemPoint:public KConfigSkeletonGenericItem < QPoint >
+  class KDECORE_EXPORT ItemPoint:public KConfigSkeletonGenericItem < QPoint >
   {
   public:
     ItemPoint(const QString & group, const QString & key, QPoint & reference,
@@ -711,7 +711,7 @@ public:
   /**
    * Class for handling a QSize preferences item.
    */
-  class ItemSize:public KConfigSkeletonGenericItem < QSize >
+  class KDECORE_EXPORT ItemSize:public KConfigSkeletonGenericItem < QSize >
   {
   public:
     ItemSize(const QString & group, const QString & key, QSize & reference,
@@ -726,7 +726,7 @@ public:
   /**
    * Class for handling a QDateTime preferences item.
    */
-  class ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
+  class KDECORE_EXPORT ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
   {
   public:
     ItemDateTime(const QString & group, const QString & key,
@@ -742,7 +742,7 @@ public:
   /**
    * Class for handling a string list preferences item.
    */
-  class ItemStringList:public KConfigSkeletonGenericItem < QStringList >
+  class KDECORE_EXPORT ItemStringList:public KConfigSkeletonGenericItem < QStringList >
   {
   public:
     ItemStringList(const QString & group, const QString & key,
@@ -758,7 +758,7 @@ public:
   /**
    * Class for handling an integer list preferences item.
    */
-  class ItemIntList:public KConfigSkeletonGenericItem < QValueList < int > >
+  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QValueList < int > >
   {
   public:
     ItemIntList(const QString & group, const QString & key,

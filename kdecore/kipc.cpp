@@ -29,6 +29,10 @@
 
 #include <qwindowdefs.h>
 
+#ifdef Q_WS_WIN //TMP
+#define K_WS_QTONLY
+#endif
+
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <X11/X.h> 
 #include <X11/Xlib.h> 

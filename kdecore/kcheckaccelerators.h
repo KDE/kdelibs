@@ -33,6 +33,8 @@
 class QMenuData;
 class QTextView;
 
+#include "kdelibs.h"
+
 /**
  @internal
  This class allows translators (and application developers) to check for accelerator
@@ -63,7 +65,7 @@ class QTextView;
  there are shown all conflicts grouped by accelerator, and a list of all used
  accelerators.
 */
-class KCheckAccelerators : public QObject
+class KDECORE_EXPORT KCheckAccelerators : public QObject
 {
     Q_OBJECT
 public:

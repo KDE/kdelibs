@@ -23,6 +23,7 @@
 
 #include <qdatetime.h>
 #include <qstring.h>
+#include "kdelibs.h"
 
 class KLocale;
 
@@ -39,7 +40,7 @@ class KCalendarSystemPrivate;
  * @version $Id$
  * @since 3.2
  */
-class KCalendarSystem
+class KDECORE_EXPORT KCalendarSystem
 {
 public:
   /**

@@ -35,8 +35,8 @@ class KLibFactoryPrivate;
 class KLibLoaderPrivate;
 class KLibraryPrivate;
 
-#define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
-    extern "C" { void *init_##libname() { return new factory; } }
+# define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
+    extern "C" { _KDE_EXPORT_ void *init_##libname() { return new factory; } };
 
 /**
  * @short Represents a dynamically loaded library.
@@ -47,7 +47,7 @@ class KLibraryPrivate;
  * @see KLibLoader
  * @author Torben Weis <weis@kde.org>
  */
-class KLibrary : public QObject
+class KDECORE_EXPORT KLibrary : public QObject
 {
     friend class KLibLoader;
     friend class QAsciiDict<KLibrary>;
@@ -139,7 +139,7 @@ class KLibWrapPrivate;
  * @see KLibrary
  * @author Torben Weis <weis@kde.org>
  */
-class KLibLoader : public QObject
+class KDECORE_EXPORT KLibLoader : public QObject
 {
     friend class KLibrary;
 
@@ -327,7 +327,7 @@ private:
  *
  * @author Torben Weis <weis@kde.org>
  */
-class KLibFactory : public QObject
+class KDECORE_EXPORT KLibFactory : public QObject
 {
     Q_OBJECT
 public:

@@ -22,13 +22,14 @@
 
 #include <qstring.h>
 #include <time.h>
+#include "kdelibs.h"
 
 /**
  * The KRFCDate class contains functions related to the parsing of dates.
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KRFCDate
+class KDECORE_EXPORT KRFCDate
 {
 public:
    /**

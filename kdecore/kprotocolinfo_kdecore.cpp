@@ -16,6 +16,11 @@
    Boston, MA 02111-1307, USA.
 */
 
+#ifdef MAKE_KDECORE_LIB //needed for proper linkage (win32)
+#undef KIO_EXPORT
+#define KIO_EXPORT KDE_EXPORT
+#endif
+
 #include "kprotocolinfo.h"
 #include "kprotocolinfofactory.h"
 

@@ -67,7 +67,7 @@
  * @author Ian Zepp <icszepp@islc.net>
  * @see KShell
  */
-class KStringHandler
+class KDECORE_EXPORT KStringHandler
 {
 public:
     /** Returns the nth word in the string if found

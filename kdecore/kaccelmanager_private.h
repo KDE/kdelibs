@@ -93,17 +93,26 @@ class KAccelManagerAlgorithm
 {
 public:
 
-  static const int DEFAULT_WEIGHT;
-
-  static const int FIRST_CHARACTER_EXTRA_WEIGHT;
-  static const int WORD_BEGINNING_EXTRA_WEIGHT;
-  static const int WANTED_ACCEL_EXTRA_WEIGHT;
-  static const int DIALOG_BUTTON_EXTRA_WEIGHT;
-  static const int STANDARD_ACCEL;
-
-  static const int ACTION_ELEMENT_WEIGHT;
-  static const int GROUP_BOX_WEIGHT;
-  static const int MENU_TITLE_WEIGHT;
+  enum {
+    // Default control weight
+    DEFAULT_WEIGHT = 50,
+    // Additional weight for first character in string
+    FIRST_CHARACTER_EXTRA_WEIGHT = 50,
+    // Additional weight for the beginning of a word
+    WORD_BEGINNING_EXTRA_WEIGHT = 50,
+    // Additional weight for the dialog buttons (large, we basically never want these reassigned)
+    DIALOG_BUTTON_EXTRA_WEIGHT = 300,
+    // Additional weight for a 'wanted' accelerator
+    WANTED_ACCEL_EXTRA_WEIGHT = 150,
+    // Default weight for an 'action' widget (ie, pushbuttons)
+    ACTION_ELEMENT_WEIGHT = 50,
+    // Default weight for group boxes (low priority)
+    GROUP_BOX_WEIGHT = 0,
+    // Default weight for menu titles
+    MENU_TITLE_WEIGHT = 250,
+    // Additional weight for KDE standard accelerators
+    STANDARD_ACCEL = 300
+  };
 
   static void findAccelerators(KAccelStringList &result, QString &used);
 

@@ -23,6 +23,7 @@
 #include <qmime.h>
 #include <qobject.h>
 #include <qstrlist.h>
+#include "kdelibs.h"
 
 /**
  * This class is only for internal use.
@@ -31,7 +32,7 @@
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @since 3.1
  */
-class KClipboardSynchronizer : public QObject
+class KDECORE_EXPORT KClipboardSynchronizer : public QObject
 {
     Q_OBJECT
 

@@ -43,7 +43,7 @@ class KConfigPrivate;
 * @see KGlobal::config(), KConfigBase, KSimpleConfig
 * @short KDE Configuration Management class
 */
-class KConfig : public KConfigBase
+class KDECORE_EXPORT KConfig : public KConfigBase
 {
   Q_OBJECT
 
@@ -267,7 +267,7 @@ private:
   KConfigPrivate *d;
 };
 
-class KSharedConfig : public KConfig, public KShared
+class KDECORE_EXPORT KSharedConfig : public KConfig, public KShared
 {
   friend class QValueList<KSharedConfig*>;
 public:

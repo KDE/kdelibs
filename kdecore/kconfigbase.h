@@ -33,6 +33,7 @@
 #include <qmap.h>
 
 #include "kconfigdata.h"
+#include "kdelibs.h"
 
 class KConfigBackEnd;
 class KConfigBasePrivate;
@@ -64,7 +65,7 @@ class KConfigGroup;
  * @see  KGlobal#config()  KConfig  KSimpleConfig
  * @short KDE Configuration Management abstract base class
  */
-class KConfigBase : public QObject
+class KDECORE_EXPORT KConfigBase : public QObject
 {
   Q_OBJECT
 
@@ -2042,7 +2043,7 @@ class KConfigGroupSaverPrivate;
   * @short Helper class for easier use of KConfig/KSimpleConfig groups
   */
 
-class KConfigGroupSaver // KDE4 remove
+class KDECORE_EXPORT KConfigGroupSaver // KDE4 remove
 {
 public:
   /**
@@ -2086,7 +2087,7 @@ class KConfigGroupPrivate;
 /**
  * A KConfigBase derived class for one specific group in a KConfig object.
  */
-class KConfigGroup: public KConfigBase
+class KDECORE_EXPORT KConfigGroup: public KConfigBase
 {
 public:
    /**

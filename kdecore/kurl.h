@@ -115,7 +115,7 @@ class KURLPrivate;
  *
  *  @author  Torben Weis <weis@kde.org>
  */
-class KURL
+class KDECORE_EXPORT KURL
 {
 public:
   enum AdjustementFlags
@@ -162,7 +162,7 @@ public:
    * @see KURL
    * @see QValueList
    */
-  class List : public QValueList<KURL>
+  class KDECORE_EXPORT List : public QValueList<KURL>
   {
   public:
     /**
@@ -982,8 +982,8 @@ private:
   unsigned short int m_iPort;
   QString m_strPath_encoded;
 
-  friend QDataStream & operator<< (QDataStream & s, const KURL & a);
-  friend QDataStream & operator>> (QDataStream & s, KURL & a);
+  friend KDECORE_EXPORT QDataStream & operator<< (QDataStream & s, const KURL & a);
+  friend KDECORE_EXPORT QDataStream & operator>> (QDataStream & s, KURL & a);
 private:
   KURLPrivate* d;
 };
@@ -995,7 +995,7 @@ private:
  * are nevertheless considered to be unequal.
  * That means no malformed URL equals anything else.
  */
-bool urlcmp( const QString& _url1, const QString& _url2 );
+KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
 
 /**
  * \relates KURL
@@ -1009,9 +1009,9 @@ bool urlcmp( const QString& _url1, const QString& _url2 );
  * @param _ignore_trailing Described in KURL::cmp
  * @param _ignore_ref If true, disables comparison of HTML-style references.
  */
-bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref );
+KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref );
 
-QDataStream & operator<< (QDataStream & s, const KURL & a);
-QDataStream & operator>> (QDataStream & s, KURL & a);
+KDECORE_EXPORT QDataStream & operator<< (QDataStream & s, const KURL & a);
+KDECORE_EXPORT QDataStream & operator>> (QDataStream & s, KURL & a);
 
 #endif

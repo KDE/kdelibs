@@ -44,7 +44,7 @@ template <class T> class QValueList;
  * @author Tim Jansen <tim@tjansen.de>
  * @since 3.2
  */
-class KUser {
+class KDECORE_EXPORT KUser {
 
 public:
 
@@ -253,7 +253,7 @@ struct group;
  * @author Jan Schaefer <j_schaef@informatik.uni-kl.de>
  * @since 3.3
  */
-class KUserGroup {
+class KDECORE_EXPORT KUserGroup {
 
 public:
 

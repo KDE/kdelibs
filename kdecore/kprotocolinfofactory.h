@@ -37,7 +37,7 @@ class KProtocolInfoPrivate;
  *
  * @short Factory for KProtocolInfo
  */
-class KProtocolInfoFactory : public KSycocaFactory
+class KDECORE_EXPORT KProtocolInfoFactory : public KSycocaFactory
 { 
   K_SYCOCAFACTORY( KST_KProtocolInfoFactory )
 public:

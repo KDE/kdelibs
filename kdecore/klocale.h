@@ -70,7 +70,7 @@ class KCalendarSystem;
  *  for e.g. german umlauts or french accents should be recoded to
  *  UTF-8)
  **/
-QString i18n(const char *text);
+KDECORE_EXPORT QString i18n(const char *text);
 
 /**
  * \relates KLocale
@@ -79,7 +79,7 @@ QString i18n(const char *text);
  *  text.
  *  @see translate
  **/
-QString i18n(const char *comment, const char *text);
+KDECORE_EXPORT QString i18n(const char *comment, const char *text);
 
 /**
  * \relates KLocale
@@ -87,7 +87,7 @@ QString i18n(const char *comment, const char *text);
  *  The plural has to contain a %n where n fits into.
  *  @see translate
  **/
-QString i18n(const char *singular, const char *plural, unsigned long n);
+KDECORE_EXPORT QString i18n(const char *singular, const char *plural, unsigned long n);
 
 /**
  * \relates KLocale
@@ -111,7 +111,7 @@ inline QString tr2i18n(const char* message, const char* =0) {
   * Hans Petter Bieker <bieker@kde.org>, Lukas Tinkl <lukas.tinkl@suse.cz>
   * @short class for supporting locale settings and national language
   */
-class KLocale
+class KDECORE_EXPORT KLocale
 {
   friend class KGlobal; // for initInstance()
 public:

@@ -70,6 +70,8 @@ public:
    QAsciiDict<bool> restrictions;
    QStringList xdgdata_prefixes;
    QStringList xdgconf_prefixes;
+   QString defaultprefix;
+   QString defaultbindir;
 };
 
 static const char* const types[] = {"html", "icon", "apps", "sound",
@@ -217,17 +219,17 @@ void KStandardDirs::addXdgDataPrefix( const QString& _dir, bool priority )
 
 QString KStandardDirs::kfsstnd_prefixes()
 {
-   return prefixes.join(":");
+   return prefixes.join(QChar(KPATH_SEPARATOR));
 }
 
 QString KStandardDirs::kfsstnd_xdg_conf_prefixes()
 {
-   return d->xdgconf_prefixes.join(":");
+   return d->xdgconf_prefixes.join(QChar(KPATH_SEPARATOR));
 }
 
 QString KStandardDirs::kfsstnd_xdg_data_prefixes()
 {
-   return d->xdgdata_prefixes.join(":");
+   return d->xdgdata_prefixes.join(QChar(KPATH_SEPARATOR));
 }
 
 bool KStandardDirs::addResourceType( const char *type,
@@ -295,7 +297,7 @@ bool KStandardDirs::addResourceDir( const char *type,
 QString KStandardDirs::findResource( const char *type,
 				     const QString& filename ) const
 {
-    if (filename.at(0) == '/')
+	if (!QDir::isRelativePath(filename))
 	return filename; // absolute dirs are absolute dirs, right? :-/
 
 #if 0
@@ -332,7 +334,7 @@ Q_UINT32 KStandardDirs::calcResourceHash( const char *type,
 {
     Q_UINT32 hash = 0;
 
-    if (filename.at(0) == '/')
+    if (!QDir::isRelativePath(filename))
     {
         // absolute dirs are absolute dirs, right? :-/
 	return updateHash(filename, hash);
@@ -358,7 +360,7 @@ QStringList KStandardDirs::findDirs( const char *type,
 {
     QDir testdir;
     QStringList list;
-    if (reldir.startsWith("/"))
+    if (!QDir::isRelativePath(reldir))
     {
         testdir.setPath(reldir);
         if (testdir.exists())
@@ -403,9 +405,19 @@ QString KStandardDirs::findResourceDir( const char *type,
     QString fullPath;
 
     for (QStringList::ConstIterator it = candidates.begin();
-	 it != candidates.end(); it++)
-      if (exists(*it + filename))
-	return *it;
+      it != candidates.end(); it++) {
+      if (exists(*it + filename)) {
+#ifdef Q_WS_WIN //this ensures we're using installed .la files
+          if ((*it).isEmpty() && filename.right(3)==".la") {
+#ifndef NDEBUG
+              kdDebug() << "KStandardDirs::findResourceDir() found .la in cwd: skipping. (fname=" << filename  << ")" << endl;
+#endif
+              continue;
+          }
+#endif //Q_WS_WIN
+          return *it;
+      }
+    }
 
 #ifndef NDEBUG
     if(false && type != "locale")
@@ -437,12 +449,18 @@ static void lookupDirectory(const QString& path, const QString &relPart,
   QString pattern = regexp.pattern();
   if (recursive || pattern.contains('?') || pattern.contains('*'))
   {
+    if (path.isEmpty()) //for sanity
+      return;
     // We look for a set of files.
     DIR *dp = opendir( QFile::encodeName(path));
     if (!dp)
       return;
 
+#ifdef Q_WS_WIN
+    assert(path.at(path.length() - 1) == '/' || path.at(path.length() - 1) == '\\');
+#else
     assert(path.at(path.length() - 1) == '/');
+#endif
 
     struct dirent *ep;
     struct stat buff;
@@ -527,8 +545,13 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
        }
     }
 
+    if (prefix.isEmpty()) //for sanity
+      return;
+#ifdef Q_WS_WIN
+    assert(prefix.at(prefix.length() - 1) == '/' || prefix.at(prefix.length() - 1) == '\\');
+#else
     assert(prefix.at(prefix.length() - 1) == '/');
-
+#endif
     struct stat buff;
 
     if (path.contains('*') || path.contains('?')) {
@@ -597,10 +620,15 @@ KStandardDirs::findAllResources( const char *type,
     checkConfig();
 
     QStringList candidates;
-    if (filterPath.startsWith("/")) // absolute path
+	if (!QDir::isRelativePath(filter)) // absolute path
     {
-        filterPath = filterPath.mid(1);
+#ifdef Q_OS_WIN
+        candidates << filterPath.left(3); //e.g. "C:\"
+        filterPath = filterPath.mid(3);
+#else
         candidates << "/";
+        filterPath = filterPath.mid(1);
+#endif
     }
     else
     {
@@ -676,7 +704,7 @@ void KStandardDirs::createSpecialResource(const char *type)
    link[1023] = 0;
    int result = readlink(QFile::encodeName(dir).data(), link, 1023);
    bool relink = (result == -1) && (errno == ENOENT);
-   if ((result > 0) && (link[0] == '/'))
+   if ((result > 0) && !QDir::isRelativePath(link))
    {
       link[result] = 0;
       struct stat stat_buf;
@@ -696,9 +724,18 @@ void KStandardDirs::createSpecialResource(const char *type)
          relink = true;
       }
    }
+#ifdef Q_WS_WIN
    if (relink)
    {
-      QString srv = findExe(QString::fromLatin1("lnusertemp"), KDEDIR+QString::fromLatin1("/bin"));
+      if (!makeDir(dir, 0700))
+         fprintf(stderr, "failed to create \"%s\"", dir.latin1());
+      else
+         result = readlink(QFile::encodeName(dir).data(), link, 1023);
+   }
+#else //UNIX
+   if (relink)
+   {
+      QString srv = findExe(QString::fromLatin1("lnusertemp"), kfsstnd_defaultbindir());
       if (srv.isEmpty())
          srv = findExe(QString::fromLatin1("lnusertemp"));
       if (!srv.isEmpty())
@@ -715,6 +752,7 @@ void KStandardDirs::createSpecialResource(const char *type)
       else
          dir = QDir::cleanDirPath(dir+QFile::decodeName(link));
    }
+#endif
    addResourceDir(type, dir+'/');
 }
 
@@ -815,7 +853,9 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
 	p = getenv( "PATH" );
     }
 
-    tokenize( tokens, p, ":\b" );
+    QString delimiters(QChar(KPATH_SEPARATOR));
+    delimiters += "\b";
+    tokenize( tokens, p, delimiters );
 
     QStringList exePaths;
 
@@ -852,20 +892,25 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
 QString KStandardDirs::findExe( const QString& appname,
 				const QString& pstr, bool ignore)
 {
+#ifdef Q_WS_WIN
+    QString real_appname = appname + ".exe";
+#else
+    QString real_appname = appname;
+#endif
     QFileInfo info;
 
     // absolute path ?
-    if (appname.startsWith(QString::fromLatin1("/")))
+    if (!QDir::isRelativePath(real_appname))
     {
-        info.setFile( appname );
+        info.setFile( real_appname );
         if( info.exists() && ( ignore || info.isExecutable() )
             && info.isFile() ) {
-            return appname;
+            return real_appname;
         }
         return QString::null;
     }
 
-    QString p = QString("%1/%2").arg(__KDE_BINDIR).arg(appname);
+    QString p = QString("%1/%2").arg(KGlobal::dirs()->kfsstnd_defaultbindir()).arg(real_appname);
     info.setFile( p );
     if( info.exists() && ( ignore || info.isExecutable() )
          && ( info.isFile() || info.isSymLink() )  ) {
@@ -876,7 +921,7 @@ QString KStandardDirs::findExe( const QString& appname,
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); it++)
     {
 	p = (*it) + "/";
-	p += appname;
+	p += real_appname;
 
 	// Check for executable in this tokenized path
 	info.setFile( p );
@@ -896,6 +941,11 @@ QString KStandardDirs::findExe( const QString& appname,
 int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 			const QString& pstr, bool ignore )
 {
+#ifdef Q_WS_WIN
+    QString real_appname = appname + ".exe";
+#else
+    QString real_appname = appname;
+#endif
     QFileInfo info;
     QString p;
     list.clear();
@@ -904,7 +954,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); it++)
     {
 	p = (*it) + "/";
-	p += appname;
+	p += real_appname;
 
 	info.setFile( p );
 
@@ -1029,22 +1079,30 @@ QString KStandardDirs::saveLocation(const char *type,
 
        savelocations.insert(type, pPath);
     }
-    QString fullPath = *pPath + suffix;
+    QString fullPath = *pPath + (pPath->endsWith("/") ? "" : "/") + suffix;
 
     struct stat st;
-    if (stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
+    QString _fullPath = fullPath;
+#ifdef Q_WS_WIN
+    //stat() on win32 won't accept "/" at the end of path
+    if (_fullPath.endsWith("/"))
+        _fullPath.truncate(_fullPath.length()-1);
+#endif
+    if (stat(QFile::encodeName(_fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
 #ifndef NDEBUG
-	    qDebug("save location %s doesn't exist", fullPath.latin1());
+	    kdDebug() << QString("save location %1 doesn't exist").arg(fullPath) << endl;
 #endif
 	    return fullPath;
 	}
-	if(!makeDir(fullPath, 0700)) {
-            qWarning("failed to create %s", fullPath.latin1());
+	if(!makeDir(_fullPath, 0700)) {
+	    kdWarning() << "failed to create " << fullPath << endl;
 	    return fullPath;
 	}
         dircache.remove(type);
     }
+    if (!fullPath.endsWith("/"))
+	    fullPath += "/";
     return fullPath;
 }
 
@@ -1073,7 +1131,7 @@ QString KStandardDirs::relativeLocation(const char *type, const QString &absPath
 bool KStandardDirs::makeDir(const QString& dir, int mode)
 {
     // we want an absolute path
-    if (dir.at(0) != '/')
+    if (QDir::isRelativePath(dir))
         return false;
 
     QString target = dir;
@@ -1090,6 +1148,10 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
     {
         struct stat st;
         int pos = target.find('/', i);
+#ifdef Q_WS_WIN
+        if ((pos > 0) && target.at(pos-1)==':') //stat() on win32 won't work e.g. with just "c:", pass "c:/"
+            pos++;
+#endif
         base += target.mid(i - 1, pos - i + 1);
         QCString baseEncoded = QFile::encodeName(base);
         // bail out if we encountered a problem
@@ -1145,6 +1207,40 @@ static QString executablePrefix()
 }
 #endif
 
+QString KStandardDirs::kfsstnd_defaultprefix()
+{
+   if (!d->defaultprefix.isEmpty())
+      return d->defaultprefix;
+#ifdef Q_WS_WIN
+   d->defaultprefix = readEnvPath("KDEDIR");
+   if (d->defaultprefix.isEmpty()) {
+      d->defaultprefix = QFile::decodeName("c:\\kde");
+      //TODO: find other location (the Registry?)
+   }
+#else //UNIX
+   d->defaultprefix = KDEDIR;
+#endif
+   if (d->defaultprefix.isEmpty())
+      kdWarning() << "KStandardDirs::kfsstnd_defaultprefix(): default KDE prefix not found!" << endl;
+   return d->defaultprefix;
+}
+
+QString KStandardDirs::kfsstnd_defaultbindir()
+{
+   if (!d->defaultbindir.isEmpty())
+      return d->defaultbindir;
+#ifdef Q_WS_WIN
+   d->defaultbindir = kfsstnd_defaultprefix() + QString::fromLatin1("/bin");
+#else //UNIX
+   d->defaultbindir = __KDE_BINDIR;
+   if (d->defaultbindir.isEmpty())
+      d->defaultbindir = kfsstnd_defaultprefix() + QString::fromLatin1("/bin");
+#endif
+   if (d->defaultbindir.isEmpty())
+      kdWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!" << endl;
+  return d->defaultbindir;
+}
+
 void KStandardDirs::addKDEDefaults()
 {
     QStringList kdedirList;
@@ -1153,7 +1249,7 @@ void KStandardDirs::addKDEDefaults()
     QString kdedirs = readEnvPath("KDEDIRS");
     if (!kdedirs.isEmpty())
     {
-	tokenize(kdedirList, kdedirs, ":");
+	tokenize(kdedirList, kdedirs, QChar(KPATH_SEPARATOR));
     }
     else
     {
@@ -1207,13 +1303,17 @@ void KStandardDirs::addKDEDefaults()
     QString xdgdirs = readEnvPath("XDG_CONFIG_DIRS");
     if (!xdgdirs.isEmpty())
     {
-	tokenize(xdgdirList, xdgdirs, ":");
+	tokenize(xdgdirList, xdgdirs, QChar(KPATH_SEPARATOR));
     }
     else
     {
 	xdgdirList.clear();
         xdgdirList.append("/etc/xdg");
+#ifdef Q_WS_WIN
+        xdgdirList.append(kfsstnd_defaultprefix() + "/etc/xdg");
+#else
         xdgdirList.append(KDESYSCONFDIR "/xdg");
+#endif
     }
 
     QString localXdgDir = readEnvPath("XDG_CONFIG_HOME");
@@ -1242,7 +1342,7 @@ void KStandardDirs::addKDEDefaults()
     xdgdirs = readEnvPath("XDG_DATA_DIRS");
     if (!xdgdirs.isEmpty())
     {
-	tokenize(xdgdirList, xdgdirs, ":");
+	tokenize(xdgdirList, xdgdirs, QChar(KPATH_SEPARATOR));
     }
     else
     {

@@ -22,6 +22,7 @@
 
 #include <qkeysequence.h>
 #include <qstring.h>
+#include "kdelibs.h"
 
 class QKeyEvent;
 class KKeyNative;
@@ -36,7 +37,7 @@ class KKeyNative;
 * @see KShortcut
 */
 
-class KKey
+class KDECORE_EXPORT KKey
 {
  public:
         /**
@@ -284,7 +285,7 @@ class KKey
 * @see KShortcut
 */
 
-class KKeySequence
+class KDECORE_EXPORT KKeySequence
 {
  public:
         /// Defines the maximum length of the key sequence
@@ -524,7 +525,7 @@ class KKeySequence
 * defined that key as their primary key.  Ex: Ctrl+V;Shift+Insert.
 */
 
-class KShortcut
+class KDECORE_EXPORT KShortcut
 {
  public:
         /**

@@ -36,7 +36,7 @@
  * @see KGlobal::unregisterStaticDeleter()
  * @see KGlobal::deleteStaticDeleters()
  */
-class KStaticDeleterBase {
+class KDECORE_EXPORT KStaticDeleterBase {
 public:
     virtual ~KStaticDeleterBase() { }
     /**
@@ -71,7 +71,7 @@ public:
  * }
  * \endcode
  */
-template<class type> class KStaticDeleter : public KStaticDeleterBase {
+template<class type> class KDECORE_EXPORT KStaticDeleter : public KStaticDeleterBase {
 public:
     KStaticDeleter() { deleteit = 0; globalReference = 0; array = false; }
     /**

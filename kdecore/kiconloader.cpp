@@ -482,7 +482,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     if (d->mpThemeRoot == 0L)
 	return QString::null;
 
-    if (_name.at(0) == '/')
+    if (!QDir::isRelativePath(_name))
 	return _name;
 
     QString name = removeIconExtension( _name );
@@ -560,7 +560,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
        favIconOverlay = true;
        name = locateLocal("cache", name+".png");
     }
-    if (name.at(0) == '/') absolutePath=true;
+    if (!QDir::isRelativePath(name)) absolutePath=true;
 
     static const QString &str_unknown = KGlobal::staticQString("unknown");
 
@@ -1080,12 +1080,12 @@ KIconEffect * KIconLoader::iconEffect() const
 
 bool KIconLoader::alphaBlending(KIcon::Group group) const
 {
-    if (!d->mpGroups) return -1;
+    if (!d->mpGroups) return false;
 
     if (group < 0 || group >= KIcon::LastGroup)
     {
 	kdDebug(264) << "Illegal icon group: " << group << endl;
-	return -1;
+	return false;
     }
     return d->mpGroups[group].alphaBlending;
 }

@@ -56,7 +56,8 @@ template class QPtrList<KSycocaFactory>;
 // The purpose of these limitations is to limit the impact
 // of database corruption.
 
-struct KSycocaPrivate {
+class KSycocaPrivate {
+public:
     KSycocaPrivate() {
         database = 0;
         readError = false;

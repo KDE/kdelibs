@@ -43,7 +43,7 @@ class KCalendarSystemHebrewPrivate;
  * @version $Id$
  * @since 3.2
  */
-class KCalendarSystemHebrew : public KCalendarSystem
+class KDECORE_EXPORT KCalendarSystemHebrew : public KCalendarSystem
 {
 public:
   KCalendarSystemHebrew(const KLocale * locale = 0);

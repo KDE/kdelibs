@@ -23,12 +23,13 @@
 #define _KCONFIGDATA_H
 
 #include <qmap.h> // generic red-black tree class
+#include "kdelibs.h"
 
 /**
  * map/dict/list config node entry.
  * @internal
  */
-struct KEntry
+struct KDECORE_EXPORT KEntry
 {
   KEntry()
     : mValue(0), bDirty(false), bNLS(false), 
@@ -65,7 +66,7 @@ struct KEntry
  * to which it belongs.
  * @internal
  */
-struct KEntryKey
+struct KDECORE_EXPORT KEntryKey
 {
   KEntryKey(const QCString& _group = 0,
 	    const QCString& _key = 0)

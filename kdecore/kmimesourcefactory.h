@@ -36,7 +36,7 @@ class KMimeSourceFactoryPrivate;
  * @version $Id$
  * @author Peter Putzer <putzer@kde.org>
  */
-class KMimeSourceFactory : public QMimeSourceFactory
+class KDECORE_EXPORT KMimeSourceFactory : public QMimeSourceFactory
 {
 public:
 

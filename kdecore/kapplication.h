@@ -33,7 +33,7 @@ class DCOPClient;
 class DCOPObject;
 
 typedef unsigned long Atom;
-#ifdef Q_WS_QWS
+#if defined(Q_WS_QWS) || defined(Q_WS_WIN)
 typedef void Display;
 #endif
 
@@ -93,7 +93,7 @@ class KApplicationPrivate;
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 * @version $Id$
 */
-class KApplication : public QApplication, public KInstance
+class KDECORE_EXPORT KApplication : public QApplication, public KInstance
 {
 
   Q_OBJECT
@@ -115,7 +115,7 @@ public:
    */
   KApplication( bool allowStyles=true, bool GUIenabled=true);
 
-#ifndef Q_WS_QWS
+#if !defined(Q_WS_QWS) && !defined(Q_WS_WIN)
   /**
    * Constructor. Parses command-line arguments. Use this constructor when you
    * you need to use a non-default visual or colormap. 
@@ -1418,7 +1418,7 @@ private:
  * @param mode     The access mode, as in the access() system call.
  * @return Whether the access is allowed, true = Access allowed
  */
-bool checkAccess(const QString& pathname, int mode);
+KDECORE_EXPORT bool checkAccess(const QString& pathname, int mode);
 
 class KSessionManagedPrivate;
 
@@ -1438,7 +1438,7 @@ class KSessionManagedPrivate;
   @short Highlevel access to session management.
   @author Matthias Ettrich <ettrich@kde.org>
  */
-class KSessionManaged
+class KDECORE_EXPORT KSessionManaged
 {
 public:
   KSessionManaged();

@@ -41,6 +41,12 @@
 #include <qtextcodec.h>
 #include <qmutex.h>
 
+#ifdef Q_WS_WIN
+# define KURL_ROOTDIR_PATH "C:/"
+#else
+# define KURL_ROOTDIR_PATH "/"
+#endif
+
 static const QString fileProt = "file";
 
 static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
@@ -364,8 +370,14 @@ static QString cleanpath(const QString &_path, bool cleanDirSeparator, bool deco
     orig_pos = pos;
   }
 
+#ifdef Q_WS_WIN // prepend drive letter if exists (js)
+  if (orig_pos >= 2 && isalpha(path[0].latin1()) && path[1]==':') {
+    result.prepend(QString(path[0])+":");
+  }
+#endif
+
   if ( result.isEmpty() )
-    result = "/";
+    result = KURL_ROOTDIR_PATH;
   else if ( slash && result[result.length()-1] != '/' )
        result.append('/');
 

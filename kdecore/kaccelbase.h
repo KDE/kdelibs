@@ -27,7 +27,7 @@
 #include <qvaluelist.h>
 
 #include "kaccelaction.h"
-#include "kkeyserver_x11.h"
+#include "kkeyserver.h"
 
 class QPopupMenu;
 class QWidget;
@@ -119,7 +119,7 @@ class QWidget;
  * @version $Id$
  */
 
-class KAccelBase
+class KDECORE_EXPORT KAccelBase
 {
  public:
 	enum Init { QT_KEYS = 0x00, NATIVE_KEYS = 0x01 };

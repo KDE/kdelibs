@@ -32,9 +32,13 @@
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
+#ifdef Q_WS_WIN
+static bool qt_use_xrender=true;
+static bool qt_has_xft=true;
+#else
 extern bool qt_use_xrender;
 extern bool qt_has_xft;
-
+#endif
 class KIconEffectPrivate
 {
 public:

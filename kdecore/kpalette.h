@@ -26,6 +26,7 @@
 #include <qptrlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include "kdelibs.h"
 
 class KPalettePrivate;
 
@@ -43,7 +44,7 @@ class KPalettePrivate;
  * @author Waldo Bastian (bastian@kde.org)
  * @version $Id$
  **/
-class KPalette
+class KDECORE_EXPORT KPalette
 {
 public:
    /**

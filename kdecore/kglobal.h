@@ -42,7 +42,7 @@ class QString;
  * @author Sirtaj Singh Kang (taj@kde.org)
  * @version $Id$
  */
-class KGlobal
+class KDECORE_EXPORT KGlobal
 {
 public:
 

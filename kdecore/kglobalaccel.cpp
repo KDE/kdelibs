@@ -20,6 +20,8 @@
 #include "kglobalaccel.h"
 #ifdef Q_WS_X11
 #include "kglobalaccel_x11.h"
+#elif defined(Q_WS_WIN)
+#include "kglobalaccel_win.h"
 #else
 #include "kglobalaccel_emb.h"
 #endif
