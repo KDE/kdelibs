@@ -175,6 +175,8 @@ QList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
     ++it;
   }
 
+  delete plugins;
+
   return objects;
 }
 
