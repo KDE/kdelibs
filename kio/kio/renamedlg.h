@@ -38,6 +38,7 @@ enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERW
 
 /**
  * A dialog for the options to rename two files
+ * @since 3.1
  */
 class RenameDlg : public QDialog
 {

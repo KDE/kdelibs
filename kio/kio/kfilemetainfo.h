@@ -75,8 +75,8 @@ public:
         Modifiable  =  4,
         Cummulative =  8,
         Averaged    = 16,
-        MultiLine   = 32,
-        SqueezeText = 64
+        MultiLine   = 32, ///< @since 3.1
+        SqueezeText = 64  ///< @since 3.1
     };
 
     /**
@@ -139,11 +139,11 @@ public:
         Inches          = 5,
         Centimeters     = 6,
         Bytes           = 7,
-        FramesPerSecond = 8,
-        DotsPerInch     = 9,
-        BitsPerPixel    = 10,
-        Hertz           = 11,
-        KiloBytes       = 12
+        FramesPerSecond = 8,  ///< @since 3.1
+        DotsPerInch     = 9,  ///< @since 3.1
+        BitsPerPixel    = 10, ///< @since 3.1
+        Hertz           = 11, ///< @since 3.1
+        KiloBytes       = 12  ///< @since 3.1
     };
 
 
@@ -321,6 +321,7 @@ public:
          *
          * if @p mangle is true, the string will already contain prefix and
          * suffix
+	 * @since 3.1
          */
         QString string( QVariant value, bool mangle = true ) const;
 
@@ -686,6 +687,7 @@ public:
 
     /**
      * Default constructor. This creates an "invalid" item
+     * @since 3.1
      */
      KFileMetaInfoGroup();
 
@@ -1168,7 +1170,8 @@ public:
 
     QStringList preferredKeys( const QString& mimeType ) const;
     QStringList preferredGroups( const QString& mimeType ) const;
-
+    
+    /// @since 3.1
     QStringList supportedMimeTypes() const;
 
 protected:

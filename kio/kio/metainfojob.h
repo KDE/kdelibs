@@ -27,6 +27,9 @@
 #include <kio/job.h>
 
 namespace KIO {
+    /**
+     * @since 3.1
+     */
     class MetaInfoJob : public KIO::Job
     {
         Q_OBJECT

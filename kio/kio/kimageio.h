@@ -120,6 +120,7 @@ public:
    * @param mimeType the MIME type to search
    * @return type id of the MIME type or QString::null if the MIME type
    *         is not supported
+   * @since 3.1
    */
   static QString typeForMime(const QString& mimeType);
 

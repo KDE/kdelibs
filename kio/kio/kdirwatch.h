@@ -199,6 +199,7 @@ class KDirWatch : public QObject
    static KDirWatch* self();
    /**
     * Return true if KDirWatch::self() exists
+    * @since 3.1
     */
    static bool exists();
 

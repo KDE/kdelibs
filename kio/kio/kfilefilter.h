@@ -56,6 +56,7 @@ public:
     bool filterSpecials() const { return m_filterSpecials; }
 
     // ### KDE4 make virtual and bool caseSensitive = false
+    /// @since 3.1
     void setNameFilters( const QString& nameFilters, bool caseSensitive,
                          const QChar& separator = ' ' );
     virtual void setNameFilters( const QString& nameFilters );

@@ -106,6 +106,7 @@ public:
 
     /**
      * Presets the password
+     * @since 3.1
      */
     void setPassword( const QString& password );
 

@@ -216,6 +216,7 @@ namespace KIO {
          * Send the slave that was put on hold back to KLauncher. This
          * allows another process to take over the slave and resume the job
          * the that was started.
+	 * @since 3.1
          */
         static void registerWindow(QWidget *wid)
         { self()->_registerWindow(wid); }
@@ -276,6 +277,7 @@ namespace KIO {
         void slotSlaveConnected();
         void slotSlaveError(int error, const QString &errorMsg);
         void slotScheduleCoSlave();
+      /// @since 3.1
         void slotUnregisterWindow(QObject *);
 
     private:

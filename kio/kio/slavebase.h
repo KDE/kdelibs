@@ -487,6 +487,7 @@ public:
      *
      * Only one timeout at a time is supported, setting a timeout
      * cancels any pending timeout.
+     * @since 3.1
      */
     void setTimeoutSpecialCommand(int timeout, const QByteArray &data=QByteArray());
 
@@ -589,6 +590,7 @@ public:
      * @param info  See @ref AuthInfo.
      * @param errorMsg Error message to show
      * @return      @p TRUE if user clicks on "OK", @p FALSE otherwsie.
+     * @since 3.1
      */
     bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg );
 
@@ -734,6 +736,7 @@ public:
 
     /**
      * Return the dcop client used by this slave.
+     * @since 3.1
      */
     DCOPClient *dcopClient();
 
@@ -762,9 +765,12 @@ public:
      Check it regularly in lengthy functions (e.g. in get();) and return
      as fast as possible from this function if wasKilled() returns true.
      This will ensure that your slave destructor will be called correctly.
+     @since 3.1
      */
     bool wasKilled() const;
     /** Internally used.
+     * @internal
+     * @since 3.1
      */
     void setKillFlag();
 private:

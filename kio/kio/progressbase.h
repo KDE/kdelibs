@@ -99,6 +99,7 @@ public:
   void setOnlyClean( bool onlyClean ) { m_bOnlyClean = onlyClean; }
   bool onlyClean() const { return m_bOnlyClean; }
 
+  /// @since 3.1
   void finished();
 
 public slots:

@@ -72,6 +72,7 @@ public:
 public:
   /**
    * Construct a dummy servicegroup indexed with @p name
+   * @since 3.1
    */
   KServiceGroup( const QString & name );
   
@@ -125,6 +126,7 @@ public:
   /**
    * @return true if the NoDisplay flag was set, i.e. if this
    * group should be hidden from menus, while still being in ksycoca.
+   * @since 3.1
    */
   bool noDisplay() const;
 
@@ -174,6 +176,7 @@ public:
   /**
    * @return the group of services that have X-KDE-ParentApp equal
    * to @p parent
+   * @since 3.1
    */
   static Ptr childGroup(const QString &parent);
 

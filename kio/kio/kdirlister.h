@@ -249,6 +249,7 @@ public:
    * @see #matchesMimeFilter
    *
    * @param a list of mime-types.
+   * @since 3.1
    */
   void setMimeExcludeFilter(const QStringList &);
 
@@ -285,11 +286,13 @@ public:
   /**
    * Pass the main window this object is associated with
    * this is used for caching authentication data
+   * @since 3.1
    */
   void setMainWindow(QWidget *window);
 
   /**
    * Returns the main window associated with this object.
+   * @since 3.1
    */
   QWidget *mainWindow();
 

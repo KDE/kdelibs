@@ -49,6 +49,7 @@ namespace KIO {
      * Data is sent to the slave on request of the slave (@ref dataReq).
      * If data coming from the slave can not be handled, the
      * reading of data from the slave should be suspended.
+     * @since 3.1
      */
     class DavJob : public TransferJob {
     Q_OBJECT

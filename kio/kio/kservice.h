@@ -186,6 +186,7 @@ public:
 
   /**
    * @return a list of VFolder categories.
+   * @since 3.1
    */
   QStringList categories() const;
 
@@ -236,6 +237,7 @@ public:
   /**
    * Name of the application this service belongs to.
    * (Usefull for e.g. plugins)
+   * @since 3.1
    */
   QString parentApp() const;
 

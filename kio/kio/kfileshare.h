@@ -44,6 +44,7 @@ protected slots: // this is why this class needs to be in the .h
 /**
  * Common functionality for the file sharing
  * (communication with the backend)
+ * @since 3.1
  */
 class KFileShare
 {

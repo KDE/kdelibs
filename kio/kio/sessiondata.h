@@ -44,6 +44,7 @@ public:
                                 const QString &host );
     virtual void reset();
 
+    /// @since 3.1
     struct AuthData;
 public slots:
     void slotAuthData( const QCString&, const QCString&, bool );

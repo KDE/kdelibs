@@ -49,6 +49,7 @@ class KZipFileEntry;
  *   were looking.
  *   for more information on the zip fileformat go to 
  *   http://www.pkware.com/support/appnote.html .
+ * @since 3.1
  */
 class KZip : public KArchive
 {

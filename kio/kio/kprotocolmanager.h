@@ -312,6 +312,7 @@ public:
   /*============================ NETWORK CONNECTIONS ==========================*/
   /**
    * Returns true if connections should be persistent
+   * @since 3.1
    */
   static bool persistentProxyConnection(); 
 

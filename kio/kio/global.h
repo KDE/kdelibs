@@ -205,53 +205,55 @@ namespace KIO
    * Constants used to specify the type of a KUDSAtom.
    */
   enum UDSAtomTypes {
-    // First let's define the item types
+    /// First let's define the item types
     UDS_STRING = 1,
     UDS_LONG = 2,
     UDS_TIME = 4 | UDS_LONG,
 
-    // Size of the file
+    /// Size of the file
     UDS_SIZE = 8 | UDS_LONG,
     UDS_SIZE_LARGE = 32768 | UDS_LONG, // For internal use only
-    // User ID of the file owner
+    /// User ID of the file owner
     UDS_USER = 16 | UDS_STRING,
-    // Group ID of the file owner
+    /// Group ID of the file owner
     UDS_GROUP =	32 | UDS_STRING,
-    // Filename
+    /// Filename
     UDS_NAME = 64 | UDS_STRING,
-    // Access permissions (part of the mode returned by stat)
+    /// Access permissions (part of the mode returned by stat)
     UDS_ACCESS = 128 | UDS_LONG,
-    // The last time the file was modified
+    /// The last time the file was modified
     UDS_MODIFICATION_TIME = 256 | UDS_TIME,
-    // The last time the file was opened
+    /// The last time the file was opened
     UDS_ACCESS_TIME = 512 | UDS_TIME,
-    // The time the file was created
+    /// The time the file was created
     UDS_CREATION_TIME = 1024 | UDS_TIME,
-    // File type, part of the mode returned by stat
-    // (for a link, this returns the file type of the pointed item)
-    // check UDS_LINK_DEST to know if this is a link
+    /// File type, part of the mode returned by stat
+    /// (for a link, this returns the file type of the pointed item)
+    /// check UDS_LINK_DEST to know if this is a link
     UDS_FILE_TYPE = 2048 | UDS_LONG,
-    // Name of the file where the link points to
-    // Allows to check for a symlink (don't use S_ISLNK !)
+    /// Name of the file where the link points to
+    /// Allows to check for a symlink (don't use S_ISLNK !)
     UDS_LINK_DEST = 4096 | UDS_STRING,
-    // An alternative URL (If different from the caption)
+    /// An alternative URL (If different from the caption)
     UDS_URL = 8192 | UDS_STRING,
-    // A mime type; prevents guessing
+    /// A mime type; prevents guessing
     UDS_MIME_TYPE = 16384 | UDS_STRING,
-    // A mime type to be used for displaying only.
-    // But when 'running' the file, the mimetype is re-determined
+    /// A mime type to be used for displaying only.
+    /// But when 'running' the file, the mimetype is re-determined
     UDS_GUESSED_MIME_TYPE = 16392 | UDS_STRING,
-    // XML properties, e.g. for WebDAV
+    /// XML properties, e.g. for WebDAV
+    /// @since 3.1
     UDS_XML_PROPERTIES = 32768 | UDS_STRING
   };
 
   enum CacheControl
   {
-      CC_CacheOnly, // Fail request if not in cache
-      CC_Cache,     // Use cached entry if available
-      CC_Verify,    // Validate cached entry with remote site if expired
-      CC_Refresh,   // Always validate cached entry with remote site
-      CC_Reload     // Always fetch from remote site.
+      CC_CacheOnly, ///< Fail request if not in cache
+      CC_Cache,     ///< Use cached entry if available
+      CC_Verify,    ///< Validate cached entry with remote site if expired
+      CC_Refresh,   ///< Always validate cached entry with remote site
+                    ///< @since 3.1
+      CC_Reload     ///< Always fetch from remote site.
   };
 
   KIO::CacheControl parseCacheControl(const QString &cacheControl);

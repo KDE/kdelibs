@@ -517,6 +517,7 @@ namespace KIO {
         /**
          * Signals a permanent redirection.
          * The redirection itself is handled internally.
+	 * @since 3.1
          */
         void permanentRedirection( KIO::Job *, const KURL &fromUrl, const KURL &toUrl );
 
@@ -614,6 +615,7 @@ namespace KIO {
         /**
          * Signals a permanent redirection.
          * The redirection itself is handled internally.
+	 * @since 3.1
          */
         void permanentRedirection( KIO::Job *, const KURL &fromUrl, const KURL &toUrl );
 
@@ -848,6 +850,7 @@ namespace KIO {
         /**
          * Signals a permanent redirection.
          * The redirection itself is handled internally.
+	 * @since 3.1
          */
         void permanentRedirection( KIO::Job *, const KURL &fromUrl, const KURL &toUrl );
 
