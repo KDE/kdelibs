@@ -469,12 +469,12 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
         col->max = _maxSize;
         col->maxCell = _cell;
     }
-    
-    // Fixed width is treated as variable 
+
+    // Fixed width is treated as variable
 
     if (_width.type == col->type)
-        col->value = _width.value > col->value ? _width.value : col->value;    
-    
+        col->value = _width.value > col->value ? _width.value : col->value;
+
     if ( (_width.type > int(col->type) && (!(_width.type==Fixed) || (int(col->type)<=Variable)))
             || ( col->type == Fixed && !(_width.type==Variable)) )
     {
@@ -711,7 +711,7 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
         {
             oldmin+=colMinWidth[o];
             oldmax+=colMaxWidth[o];
-        }        
+        }
         int spreadmin = smin-oldmin-(span-1)*spacing;
 //        kdDebug( 6040 ) << "colmin " << smin  << endl;
 //        kdDebug( 6040 ) << "oldmin " << oldmin  << endl;
@@ -794,7 +794,7 @@ void RenderTable::calcColMinMax()
     int availableWidth = containingBlockWidth();
 
     int realMaxWidth=spacing;
-    
+
     int* spanPercent = new int[maxColSpan];
     int* spanPercentMax = new int[maxColSpan];
 
@@ -815,7 +815,7 @@ void RenderTable::calcColMinMax()
 
         int spanMax=0;
         spanPercentMax[s] = spacing;
-        spanPercent[s] = 0;        
+        spanPercent[s] = 0;
 
         for ( unsigned int c=0; c<totalCols-s; ++c)
         {
@@ -829,9 +829,9 @@ void RenderTable::calcColMinMax()
                         " max="<<col->max<< endl;
 #endif
             col->update();
-            
+
             spanMax += col->max + spacing;
-            
+
             if (col->type==Percent)
             {
                 spanPercentMax[s] += col->max+spacing;
@@ -865,7 +865,7 @@ void RenderTable::calcColMinMax()
     int minRel=0;
     int minVar=0;
     int maxRel=0;
-    int maxVar=0;    
+    int maxVar=0;
     bool hasPercent=false;
     bool hasRel=false;
     bool hasVar=false;
@@ -893,7 +893,7 @@ void RenderTable::calcColMinMax()
             if (!hasRel){
                 hasRel=true;
                 minRel=maxRel=spacing;
-            }            
+            }
             totalRelative += colValue[i] ;
             minRel += colMinWidth[i] + spacing;
             maxRel += colMaxWidth[i] + spacing;
@@ -905,13 +905,13 @@ void RenderTable::calcColMinMax()
             if (!hasVar){
                 hasVar=true;
                 minVar=maxVar=spacing;
-            }                
+            }
             minVar += colMinWidth[i] + spacing;
             maxVar += colMaxWidth[i] + spacing;
         }
 
     }
-    
+
     for ( int s=0; s<maxColSpan ; ++s)
     {
         maxPercent = KMAX(spanPercentMax[s],maxPercent);
@@ -927,11 +927,11 @@ void RenderTable::calcColMinMax()
 	//kdDebug( 6040 ) << "1 width=" << m_width << " minWidth=" << m_minWidth << " availableWidth=" << availableWidth << " " << endl;
     }
     else if (hasPercent)
-    {        
+    {
 	    int tot = KMIN(100u, totalPercent );
         if (tot>0)
 	        m_maxWidth = maxPercent*100/tot;
-        if (tot<100) 
+        if (tot<100)
             m_maxWidth = KMAX( short((maxVar+maxRel)*100/(100-tot)), m_maxWidth );
         m_width = KMIN(short( availableWidth ),m_maxWidth);
 //        kdDebug( 6040 ) << "width=" << m_width << " maxPercent=" << maxPercent << " maxVar=" << maxVar << " " << endl;
@@ -974,7 +974,7 @@ void RenderTable::calcColMinMax()
     {
         m_minWidth = m_maxWidth = m_width;
     }
-    else 
+    else
     {
         if (realMaxWidth > m_maxWidth)
             m_maxWidth = realMaxWidth;
@@ -1005,11 +1005,16 @@ void RenderTable::calcColMinMax()
 
 void RenderTable::calcWidth()
 {
-    Length ml = style()->marginLeft();
-    Length mr = style()->marginRight();
-    int cw = containingBlockWidth();
-    m_marginLeft = ml.minWidth(cw);
-    m_marginRight = mr.minWidth(cw);
+    if ( isPositioned() ) {
+        calcAbsoluteHorizontal();
+    }
+    else {
+        Length ml = style()->marginLeft();
+        Length mr = style()->marginRight();
+        int cw = containingBlockWidth();
+        m_marginLeft = ml.minWidth(cw);
+        m_marginRight = mr.minWidth(cw);
+    }
 }
 
 void RenderTable::calcColWidth(void)
@@ -1295,7 +1300,8 @@ void RenderTable::layout()
 {
     recalcCells();
 //kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
-    if (layouted() && !containsPositioned() && _lastParentWidth == containingBlockWidth())
+
+    if (layouted() && !containsPositioned() && _lastParentWidth == containingBlockWidth() && !isPositioned())
         return;
 
     _lastParentWidth = containingBlockWidth();
@@ -1306,6 +1312,8 @@ void RenderTable::layout()
     kdDebug( 6040 ) << renderName() << "(Table)::layout1() width=" << width() << ", layouted=" << layouted() << endl;
 #endif
 
+    if ( isPositioned() )
+        calcWidth();
 
     FOR_EACH_CELL( r, c, cell)
     {
@@ -1359,7 +1367,7 @@ void RenderTable::layoutRows(int yoff)
     int indx, rindx;
 
     for ( unsigned int r = 0; r < totalRows; r++ )
-    {    
+    {
         for ( unsigned int c = 0; c < totalCols; c++ )
         {
             RenderTableCell *cell = cells[r][c];
@@ -1378,7 +1386,7 @@ void RenderTable::layoutRows(int yoff)
 
         calcRowHeight(r);
     }
-    
+
 
     // html tables with percent height are relative to view
     Length h = style()->height();
@@ -1391,13 +1399,13 @@ void RenderTable::layoutRows(int yoff)
         RenderObject *containing = containingBlock();
         if (ch.isFixed())
             th = h.width(ch.value);
-        else 
-        {        
+        else
+        {
             // check we or not inside a table
-            RenderObject* ro = parent();    
-            for (; ro && !ro->isTableCell(); ro=ro->parent());            
+            RenderObject* ro = parent();
+            for (; ro && !ro->isTableCell(); ro=ro->parent());
             if (!ro)
-            {            
+            {
                 th = h.width(viewRect().height())-5;
                 // not really, but this way the view height change
                 // gets propagated correctly
@@ -1413,7 +1421,7 @@ void RenderTable::layoutRows(int yoff)
         {
             int tot=rowHeights[totalRows];
             int add=0;
-            int prev=rowHeights[0];            
+            int prev=rowHeights[0];
             for ( unsigned int r = 0; r < totalRows; r++ )
             {
                 //weight with the original height
@@ -1424,8 +1432,8 @@ void RenderTable::layoutRows(int yoff)
             rowHeights[totalRows]=th;
         }
     }
-       
-    
+
+
     for ( unsigned int r = 0; r < totalRows; r++ )
     {
         for ( unsigned int c = 0; c < totalCols; c++ )
@@ -2047,7 +2055,7 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     if ( !c.isValid() && parent() ) // take from row
         c = parent()->style()->backgroundColor();
     if ( !c.isValid() && parent() && parent()->parent() ) // take from rowgroup
-        c = parent()->parent()->style()->backgroundColor();    
+        c = parent()->parent()->style()->backgroundColor();
     // ### col is missing...
 
     // ### get offsets right in case the bgimage is inherited.
