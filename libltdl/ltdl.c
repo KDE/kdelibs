@@ -517,7 +517,6 @@ rpl_realloc (ptr, size)
 
 /* --- DLOPEN() INTERFACE LOADER --- */
 
-
 /* The Cygwin dlopen implementation prints a spurious error message to
    stderr if its call to LoadLibrary() fails for any reason.  We can
    mitigate this by not using the Cygwin implementation, and falling
@@ -629,7 +628,8 @@ static struct lt_user_dlloader sys_dl =
 #  endif
     sys_dl_open, sys_dl_close, sys_dl_sym, 0, 0 };
 
-
+#else
+int lt_dlopen_flag = 0;
 #endif /* HAVE_LIBDL */
 
 
