@@ -41,12 +41,14 @@
 #include <kapplication.h>
 #include <ktempfile.h>
 #include <ksock.h>
+#include <kprocess.h>
+#include <klibloader.h>
 
 #include "kio/slave.h"
 #include "kio/kservice.h"
 #include <kio/global.h>
 #include <kprotocolmanager.h>
-
+#include <kprotocolinfo.h>
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -291,6 +293,37 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
     Slave *slave = new Slave(kss, protocol, socketfile.name());
 
+    if (!client->isAttached() || client->isAttachedToForeignServer())
+    {
+       QString _name = KProtocolInfo::exec(protocol);
+       if (_name.isEmpty())
+       {
+          error_text = i18n("Unknown protocol '%1'.\n").arg(protocol);
+          error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+          delete slave;
+	  return 0;
+       }
+       QString lib_path = KLibLoader::findLibrary(_name.latin1());
+       if (lib_path.isEmpty())
+       {
+          error_text = i18n("Can not find io-slave for protocol '%1'.").arg(protocol);
+	  error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+	  return 0;
+       }
+
+       KProcess proc;
+       
+       proc << "kioslave" << lib_path << protocol << "" << socketfile.name();
+       kdDebug(7002) << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString::null << ", " << socketfile.name() << endl;
+
+       proc.start(KProcess::DontCare);
+
+       slave->setPID(proc.pid());
+       QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
+       return slave;
+    }
+
+
     QByteArray params, reply;
     QCString replyType;
     QDataStream stream(params, IO_WriteOnly);
@@ -299,7 +332,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     QCString launcher = KApplication::launcher();
     if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)",
 	    params, replyType, reply)) {
-	error_text = i18n("can't talk to klauncher");
+	error_text = i18n("Can't talk to klauncher");
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
 	return 0;

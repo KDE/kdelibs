@@ -220,7 +220,7 @@ void SlaveBase::dispatchLoop()
         else // some error occured, perhaps no more application
         {
           // When the app exits, should the slave be put back in the pool ?
-          if (mConnectedToApp)
+          if (mConnectedToApp && !mPoolSocket.isEmpty())
           {
             disconnectSlave();
             mConnectedToApp = false;
