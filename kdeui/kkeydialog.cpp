@@ -328,7 +328,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   QWhatsThis::add( m_prbDef, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
   connect( m_prbDef, SIGNAL(clicked()), SLOT(slotDefaultKey()) );
 
-  m_prbCustom = new QRadioButton( i18n("&Custom"), d->fCArea );
+  m_prbCustom = new QRadioButton( i18n("C&ustom"), d->fCArea );
   d->kbGroup->insert( m_prbCustom, CustomKey );
   m_prbCustom->setEnabled( false );
   //grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
@@ -433,7 +433,6 @@ void KKeyChooser::updateButtons()
 		d->bChange->setEnabled( false );
 		d->bChange->setShortcut( KShortcut() );
 	} else {
-		//KAccelAction& action = pItem->action();
 		bool bConfigurable = pItem->isConfigurable();
 		const KShortcut& cutDef = pItem->shortcutDefault();
 
@@ -447,7 +446,7 @@ void KKeyChooser::updateButtons()
 		d->lInfo->setText( i18n("Default Key") + QString(": %1").arg(keyStrDef.isEmpty() ? i18n("None") : keyStrDef) );
 
 		// Select the appropriate radio button.
-		int index = (pItem->shortcut().count() == 0) ? NoKey
+		int index = (pItem->shortcut().isNull()) ? NoKey
 				: (pItem->shortcut() == cutDef) ? DefaultKey
 				: CustomKey;
 		m_prbNone->setChecked( index == NoKey );
@@ -470,7 +469,6 @@ void KKeyChooser::slotNoKey()
 	if( pItem ) {
 		//kdDebug(125) << "no Key" << d->pList->currentItem()->text(0) << endl;
 		pItem->setShortcut( KShortcut() );
-		//updateButtons( d->pList->currentItem() );
 		updateButtons();
 		emit keyChange();
 	}
@@ -537,7 +535,7 @@ void KKeyChooser::setPreferFourModifierKeys( bool bPreferFourModifierKeys )
 void KKeyChooser::capturedShortcut( const KShortcut& cut )
 {
 	if( cut.isNull() )
-		d->lInfo->setText( i18n("Undefined key") );
+		slotNoKey();
 	else
 		setShortcut( cut );
 }
