@@ -191,32 +191,19 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       QDate pCellDate;
       // First day of month
       calendar->setYMD(pCellDate, calendar->year(date), calendar->month(date), 1);
-      pCellDate = calendar->addDays(pCellDate, firstWeekDay - calendar->dayOfWeek(pCellDate));
-      // The first day of the month should never be the first day in the calendar
-      if (calendar->day(pCellDate) == 1 )
-	pCellDate = calendar->addDays(pCellDate, -7);
-
-      pCellDate = calendar->addDays(pCellDate, pos);
-      kdDebug() << "MyDate: " << pCellDate.toString() << endl;
 
       if ( firstWeekDay < 4 )
           pos += firstWeekDay;
       else
           pos += firstWeekDay - 7;
+      pCellDate = calendar->addDays(pCellDate, pos-firstday);
       text = calendar->dayString(pCellDate, true);
       if(pos<firstday || (firstday+numdays<=pos))
         { // we are either
           // ° painting a day of the previous month or
           // ° painting a day of the following month
-          if(pos<firstday)
-            { // previous month
-              //text.setNum(numDaysPrevMonth+pos-firstday+1);
-            } else { // following month
-              //text.setNum(pos-firstday-numdays+1);
-            }
           painter->setPen(gray);
         } else { // paint a day of the current month
-          //text.setNum(pos-firstday+1);
 	  if ( d->useCustomColors )
 	  {
 	    KDateTablePrivate::DatePaintingMode *mode=d->customPaintingModes[pCellDate.toString()];
@@ -262,10 +249,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           painter->setPen(KGlobalSettings::baseColor());
         }
 
-      QDate cur_date = QDate::currentDate();
-      if ( (calendar->year(date)  == calendar->year(cur_date)) &&
-           (calendar->month(date) == calendar->month(cur_date)) &&
-           (firstday+calendar->day(cur_date)-1 == pos) )
+      if ( pCellDate == QDate::currentDate() )
       {
          painter->setPen(KGlobalSettings::textColor());
       }
