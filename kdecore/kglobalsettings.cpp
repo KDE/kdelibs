@@ -92,7 +92,7 @@ bool KGlobalSettings::showContextMenusOnPress ()
     return cgs.config()->readBoolEntry("ShowOnPress", true);
 }
 
-uint KGlobalSettings::contextMenuKey ()
+int KGlobalSettings::contextMenuKey ()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs (c, "Keys");

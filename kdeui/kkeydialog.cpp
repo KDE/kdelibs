@@ -679,8 +679,8 @@ void KKeyChooser::toChange( int index )
 		bChange->setEnabled( FALSE );  //bDefault->setEnabled( FALSE );
 		lNotConfig->setEnabled( TRUE );
 		
-		uint kCode = pEntry->aConfigKeyCode;
-		uint kSCode = kCode & ~(SHIFT | CTRL | ALT);
+		int kCode = pEntry->aConfigKeyCode;
+		int kSCode = kCode & ~(SHIFT | CTRL | ALT);
 		
 		if ( kSCode == Key_Shift ) cShift->setChecked(FALSE);
 		else cShift->setChecked( kCode & SHIFT );
@@ -696,8 +696,8 @@ void KKeyChooser::toChange( int index )
 		lNotConfig->setEnabled( FALSE );
 		lInfo->setText(QString::null); lInfo->setEnabled( TRUE );
 		
-		uint kCode = pEntry->aConfigKeyCode;
-		uint kSCode = kCode & ~(SHIFT | CTRL | ALT);
+		int kCode = pEntry->aConfigKeyCode;
+		int kSCode = kCode & ~(SHIFT | CTRL | ALT);
 		
 		//cShift->setEnabled( TRUE ); cCtrl->setEnabled( TRUE ); cAlt->setEnabled( TRUE );
 		if ( kSCode == Key_Shift ) cShift->setChecked(FALSE);
@@ -903,7 +903,7 @@ void KKeyChooser::listSync()
 	wList->setCurrentItem( 0 );
 }
 
-const QString KKeyChooser::item( uint keyCode, const QString& entryKey )
+const QString KKeyChooser::item( int keyCode, const QString& entryKey )
 {
 	QString str = entryKey;
 	str = str.leftJustify(MAX_FCTN_LENGTH, ' ', TRUE);
@@ -918,7 +918,7 @@ void KKeyChooser::shiftClicked()
 {
   if (!pEntry)
     return;
-	uint kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
+	int kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
 	if ( kSCode != Key_Shift ) {
 		if ( cShift->isOn() )
 			pEntry->aConfigKeyCode |= SHIFT;
@@ -946,7 +946,7 @@ void KKeyChooser::ctrlClicked()
 {
   if (!pEntry)
     return;
-	uint kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
+	int kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
 	if ( kSCode != Key_Control ) {
 		if ( cCtrl->isOn() )
 			pEntry->aConfigKeyCode |= CTRL;
@@ -974,7 +974,7 @@ void KKeyChooser::altClicked()
 {
   if (!pEntry)
     return;
-	uint kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
+	int kSCode = pEntry->aConfigKeyCode & ~(SHIFT | CTRL | ALT);
 	if ( kSCode != Key_Alt ) {
 		if ( cAlt->isOn() )
 			pEntry->aConfigKeyCode |= ALT;
@@ -1022,7 +1022,7 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
     return;
   }
 	
-  uint kCode = e->key() & ~(SHIFT | CTRL | ALT);
+  int kCode = e->key() & ~(SHIFT | CTRL | ALT);
   /* check the given key :
      if it is a non existent key (=0) : keep the old value and say
      what happened.
@@ -1041,11 +1041,11 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
   setKey(kCode);
 }
 
-void KKeyChooser::setKey( uint kCode)
+void KKeyChooser::setKey( int kCode)
 {
   if (!pEntry)
     return;
-	// uint kOldCode = pEntry->aConfigKeyCode;
+	// int kOldCode = pEntry->aConfigKeyCode;
 	
 	/* add the current modifier to the key */
 	if ( kCode!=Key_Shift ) kCode |= (pEntry->aConfigKeyCode & SHIFT);
@@ -1086,8 +1086,8 @@ void KKeyChooser::editEnd()
 {
 	kdDebug() << "Called editEnd() which relies on eKey widget" << endl;
 	
-	//uint kCode = KAccel::stringToKey(eKey->text());
-	uint kCode = 0;
+	//int kCode = KAccel::stringToKey(eKey->text());
+	int kCode = 0;
 	if ( kCode==0 || (kCode & (SHIFT | CTRL | ALT)) ) {
 		lInfo->setText( i18n("Incorrect key") );
 		return;
@@ -1107,7 +1107,7 @@ bool KKeyChooser::isKeyPresent()
 	gIt.toFirst();
 	while ( gIt.current() ) {
 		kdDebug() << "current " << gIt.currentKey() << ":" << *gIt.current() << " code " << pEntry->aConfigKeyCode << endl;
-		if ( (unsigned int)(*gIt.current()) == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
+		if ( (*gIt.current()) == pEntry->aConfigKeyCode && *gIt.current() != 0 ) {
 			QString actionName( gIt.currentKey() );
 			actionName.stripWhiteSpace();
 
@@ -1135,7 +1135,7 @@ bool KKeyChooser::isKeyPresent()
 	sIt.toFirst();
 	while ( sIt.current() ) {
 		kdDebug() << "current " << sIt.currentKey() << ":" << *sIt.current() << " code " << pEntry->aConfigKeyCode << endl;
-		if ( (unsigned int)(*sIt.current()) == pEntry->aConfigKeyCode && *sIt.current() != 0 ) {
+		if ( (*sIt.current()) == pEntry->aConfigKeyCode && *sIt.current() != 0 ) {
 			QString actionName( sIt.currentKey() );
 			actionName.stripWhiteSpace();
 

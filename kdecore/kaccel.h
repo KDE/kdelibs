@@ -41,9 +41,9 @@ class KAccelPrivate;
  * @deprecated
  */
 struct KKeyEntry {
-    uint aCurrentKeyCode;
-    uint aDefaultKeyCode;
-    uint aConfigKeyCode;
+    int aCurrentKeyCode;
+    int aDefaultKeyCode;
+    int aConfigKeyCode;
     bool bConfigurable;
     bool bEnabled;
     int aAccelId;
@@ -190,7 +190,7 @@ class KAccel : public QAccel
 	* action, or zero if either the action name cannot be
 	* found or the current key is set to no key.
 	*/
-	uint currentKey( const QString& action ) const;
+	int currentKey( const QString& action ) const;
 
 	/**
 	 * Retrieve the description  of the accelerator item with the
@@ -205,7 +205,7 @@ class KAccel : public QAccel
 	* the action name
 	* @p action, or zero if the action name cannot be found.
 	*/
-	uint defaultKey( const QString& action) const;
+	int defaultKey( const QString& action) const;
 	
 	/**
 	 * Disconnect an accelerator item from a function in another object.
@@ -239,7 +239,7 @@ class KAccel : public QAccel
 	 *  @return @p true if successful.
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
-					uint defaultKeyCode, bool configurable = true );
+					int defaultKeyCode, bool configurable = true );
 	
 	/**
 	 * Insert an accelerator item.
@@ -264,7 +264,7 @@ class KAccel : public QAccel
 	 *
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
-					uint defaultKeyCode, int id, QPopupMenu *qmenu, 
+					int defaultKeyCode, int id, QPopupMenu *qmenu, 
 					bool configurable = true );
 	
 	 /**
@@ -338,7 +338,7 @@ class KAccel : public QAccel
 	 * is only used internally, without appearing in a menu or a
 	 * keybinding editor.
 	 */
-	bool insertItem( const QString& action, uint defaultKeyCode,
+	bool insertItem( const QString& action, int defaultKeyCode,
 				 bool configurable = true );
 
 	/**
@@ -350,7 +350,7 @@ class KAccel : public QAccel
 	 * is only used internally, without appearing in a menu or a
 	 * keybinding editor.
 	 */
-	bool insertItem( const QString& action, uint defaultKeyCode,
+	bool insertItem( const QString& action, int defaultKeyCode,
 				 int id, QPopupMenu *qmenu, 
 				 bool configurable = true );
 
@@ -468,7 +468,7 @@ class KAccel : public QAccel
 	/**
 	 *  Change the keycode for an accelerator.
 	 */
-	bool updateItem( const QString &action, uint keyCode);
+	bool updateItem( const QString &action, int keyCode);
 
 	/**
 	 *  Remove the keycode for an accelerator.
@@ -492,14 +492,14 @@ class KAccel : public QAccel
 	 *
 	 * N.B.: @p sKey must @bf not be @ref i18n()'d!
 	 */	
-	static uint stringToKey( const QString& sKey );
+	static int stringToKey( const QString& sKey );
 	
 	/**
 	 * Retrieve a string corresponding to the key code @p keyCode,
 	  * which is empty if
 	 * @p keyCode is not recognized or zero.
 	 */
-	static QString keyToString( uint keyCode, bool i18_n = false );
+	static QString keyToString( int keyCode, bool i18_n = false );
 
  signals:
 	void keycodeChanged();

@@ -115,7 +115,7 @@ class KGlobalSettings
      *
      * @return the key that pops up context menus.
      */
-    static uint contextMenuKey ();
+    static int contextMenuKey ();
 
     /**
      * Returns the KDE setting for context menus.

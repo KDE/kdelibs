@@ -315,9 +315,9 @@ protected:
 	
   int kbMode;
 
-  const QString item( uint keyCode, const QString& entryKey );
+  const QString item( int keyCode, const QString& entryKey );
   bool isKeyPresent();
-  void setKey( uint kCode );
+  void setKey( int kCode );
 
   class KKeyChooserPrivate;
   KKeyChooserPrivate *d;

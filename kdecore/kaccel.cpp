@@ -92,7 +92,7 @@ uint KAccel::count() const
 	return aKeyDict.count();
 }
 
-uint KAccel::currentKey( const QString& action ) const
+int KAccel::currentKey( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -123,7 +123,7 @@ QString KAccel::description( const QString& action ) const
 		return pEntry->descr;
 }
 
-uint KAccel::defaultKey( const QString& action ) const
+int KAccel::defaultKey( const QString& action ) const
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
@@ -155,14 +155,14 @@ QString KAccel::findKey( int key ) const
 	return QString::null;
 }
 
-bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCode,
+bool KAccel::insertItem( const QString& descr, const QString& action, int keyCode,
 			 bool configurable )
 {
 	return insertItem( descr, action,  keyCode,
 			 0, 0, configurable);
 }
 
-bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCode,
+bool KAccel::insertItem( const QString& descr, const QString& action, int keyCode,
 			 int id, QPopupMenu *qmenu, bool configurable)
 {
 	KKeyEntry *pEntry = aKeyDict[ action ];
@@ -190,7 +190,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCo
 bool KAccel::insertItem( const QString& descr, const QString& action,
 			 const QString& keyCode, bool configurable )
 {
-	uint iKeyCode = stringToKey( keyCode );
+	int iKeyCode = stringToKey( keyCode );
 	return insertItem( descr, action, iKeyCode, configurable );
 }
 
@@ -198,17 +198,17 @@ bool KAccel::insertItem( const QString& descr, const QString& action,
 			 const QString& keyCode, int id,
 			 QPopupMenu *qmenu, bool configurable)
 {
-	uint iKeyCode = stringToKey( keyCode );
+	int iKeyCode = stringToKey( keyCode );
 	return insertItem( descr, action, iKeyCode, id, qmenu, configurable);
 }
 
-bool KAccel::insertItem( const QString& action, uint keyCode,
+bool KAccel::insertItem( const QString& action, int keyCode,
 			 bool configurable )
 {
     return insertItem(action, action, keyCode, configurable);
 }
 
-bool KAccel::insertItem( const QString& action, uint keyCode,
+bool KAccel::insertItem( const QString& action, int keyCode,
 			 int id, QPopupMenu *qmenu, bool configurable)
 {
     return insertItem(action, action, keyCode, id, qmenu, configurable);
@@ -489,7 +489,7 @@ void KAccel::clearItem(const QString &action)
     }
 }
 
-bool KAccel::updateItem( const QString &action, uint keyCode)
+bool KAccel::updateItem( const QString &action, int keyCode)
 {
   KKeyEntry *pEntry = aKeyDict[ action ];
   if ( pEntry->aCurrentKeyCode==keyCode ) return true;
@@ -532,7 +532,7 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
 
 
 /*****************************************************************************/
-QString KAccel::keyToString( uint keyCode, bool i18_n )
+QString KAccel::keyToString( int keyCode, bool i18_n )
 {
 	QString res = "";
 	
@@ -553,10 +553,10 @@ QString KAccel::keyToString( uint keyCode, bool i18_n )
 	    res += "+";
 	}
 
-	uint kCode = keyCode & ~(Qt::SHIFT | Qt::CTRL | Qt::ALT);
+	int kCode = keyCode & ~(Qt::SHIFT | Qt::CTRL | Qt::ALT);
 
 	for (int i=0; i<NB_KEYS; i++) {
-		if ( kCode == (uint)KKEYS[i].code ) {
+		if ( kCode == (int)KKEYS[i].code ) {
 			res += KKEYS[i].name;
 			return res;
 		}
@@ -565,7 +565,7 @@ QString KAccel::keyToString( uint keyCode, bool i18_n )
 	return QString::null;
 }
 
-uint KAccel::stringToKey(const QString& key)
+int KAccel::stringToKey(const QString& key)
 {
         // Empty string is interpreted as code zero, which is
         // consistent with the behaviour of other KAccel methods
@@ -579,7 +579,7 @@ uint KAccel::stringToKey(const QString& key)
 	}
 
 	// break the string in tokens separated by "+"
-	uint k = 0;
+	int k = 0;
 	QArray<int> tokens;
 	int plus = -1;
 	do {
@@ -597,8 +597,8 @@ uint KAccel::stringToKey(const QString& key)
 	// the order is unimportant
 	bool codeFound = false;
 	QString str;
-	uint keyCode = 0;
-	for (uint i=0; i<k; i++) {
+	int keyCode = 0;
+	for (int i=0; i<k; i++) {
 		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1);
 		str.stripWhiteSpace();
 		if ( str.isEmpty() ) {
@@ -617,7 +617,7 @@ uint KAccel::stringToKey(const QString& key)
 			return 0;
 		}
 		// search for keycode
-		uint j;
+		int j;
 		for(j=0; j<NB_KEYS; j++) {
 			if ( str==KKEYS[j].name ) {
 				keyCode |= KKEYS[j].code;
