@@ -26,6 +26,7 @@
 #include <qlabel.h>
 #include <qstring.h>
 #include <kurl.h>
+class QStrList;
 
 class KDirEntry
 {

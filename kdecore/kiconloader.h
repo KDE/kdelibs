@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.20  1999/04/06 12:54:11  dfaure
+   warning: extra qualification `KIconLoader::' on member `getIconPath' ignored
+
    Revision 1.19  1999/03/29 04:14:37  ssk
    Rewrote some docs.
 
@@ -80,11 +83,8 @@
 #ifndef KICONLOADER_H
 #define KICONLOADER_H
 
-#ifndef _KCONFIG_H
-#include <kconfig.h>
-#endif
-
-#include <qapplication.h>
+class KConfig;
+#include <qobject.h>
 #include <qlist.h>
 #include <qpixmap.h>
 #include <qstrlist.h>

@@ -19,6 +19,9 @@
 
 /*
  * $Log$
+ * Revision 1.28  1999/04/11 00:00:46  garbanzo
+ * Introduce the new static member, initsockaddr
+ *
  */
 
 #include <qapplication.h>
@@ -254,8 +257,19 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
 
       ret = select(rlp.rlim_cur, (fd_set *)&rd, (fd_set *)&wr, (fd_set *)0,
                    (struct timeval *)&timeout);
-      if(ret)
-          return(true);
+      // if(ret)
+      //    return(true);
+
+      switch (ret)
+      {
+	  case 0: break; // Timeout
+	  case 1: return(true); // Success
+	  default: // Error
+	      ::close(sock);
+	      sock = -1;
+	      return false;
+      }
+
       qApp->processEvents();
       qApp->flushX();
   }
