@@ -301,7 +301,10 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
   if ( d->mResources.find( resource ) < 0 ) {
     return 0;
   } else {
-    return resource->requestSaveTicket();
+    if ( resource->readOnly() )
+      return 0;
+    else
+      return resource->requestSaveTicket();
   }
 }
 
