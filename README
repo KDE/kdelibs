@@ -150,7 +150,7 @@ headings and other identifying marks.
 Common Mistakes
 ---------------
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 3.0.1 or newer. If you have peeked there
+to get a copy of Qt, version 3.0.5 or newer. If you have peeked there
 already, grab the CVS module qt-copy from anoncvs.kde.org, or a snapshot
 thereof.
 
