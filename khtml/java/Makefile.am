@@ -18,4 +18,4 @@ INCLUDES = -I$(top_srcdir) $(all_includes)
 data_DATA = kjava.jar kjava.policy
 datadir = $(kde_datadir)/kjava/
 
-SUBDIRS = tests
+SUBDIRS = . tests
