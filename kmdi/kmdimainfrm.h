@@ -539,8 +539,9 @@ public slots:
    virtual void finishIDEAlMode(bool full=true);
    /**
     * Sets the appearance of the IDEAl mode. See KMultiTabBar styles for the first 3 bits.
+    * @deprecated use setToolviewStyle(int flags) instead
     */
-   void setIDEAlModeStyle(int flags);
+   void setIDEAlModeStyle(int flags) KDE_DEPRECATED;
    //KDE4: Get rid of the above.
    /**
     * Sets the appearance of the toolview tabs.
