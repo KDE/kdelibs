@@ -23,6 +23,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <config.h>
+
 #ifdef KDE_USE_FINAL
 #undef Always
 #include <qdockwindow.h>
@@ -40,8 +42,6 @@
 #include <qobjectlist.h>
 #include <qtimer.h>
 #include <qstyle.h>
-
-#include <config.h>
 
 #include "klineedit.h"
 #include "kseparator.h"
