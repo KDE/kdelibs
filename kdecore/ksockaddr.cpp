@@ -503,10 +503,10 @@ QString KInetSocketAddress::pretty() const
 
 #ifdef AF_INET6
   // sin could be empty; sin6 never is
-  return i18n("%1 port %2").arg(prettyHost()).arg(ntohs(d->sin6.sin6_port));
+  return i18n("1: hostname, 2: port number", "%1 port %2").arg(prettyHost()).arg(ntohs(d->sin6.sin6_port));
 #else
   // sin is now never empty
-  return i18n("%1 port %2").arg(prettyHost()).arg(ntohs(d->sin.sin_port));
+  return i18n("1: hostname, 2: port number", "%1 port %2").arg(prettyHost()).arg(ntohs(d->sin.sin_port));
 #endif
 }
 
