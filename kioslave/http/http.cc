@@ -2655,7 +2655,7 @@ bool HTTPProtocol::readHeader()
     // calling application later
     m_responseHeader << QString::fromLatin1(buf);
 
-    if ((strncasecmp(buf, "HTTP/", 5) == 0) ||
+    if ((strncasecmp(buf, "HTTP", 4) == 0) ||
         (strncasecmp(buf, "ICY ", 4) == 0)) // Shoutcast support
     {
       if (strncasecmp(buf, "ICY ", 4) == 0)
@@ -2686,7 +2686,10 @@ bool HTTPProtocol::readHeader()
       if (m_responseCode)
         m_prevResponseCode = m_responseCode;
 
-      m_responseCode = atoi(buf+9);
+      const char* rptr = buf;
+      while ( *rptr && *rptr > ' ' )
+          ++rptr;
+      m_responseCode = atoi(rptr);
 
       // server side errors
       if (m_responseCode >= 500 && m_responseCode <= 599)
@@ -3986,7 +3989,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
       m_bEOD = true;
       return;
    }
-   
+
    if (m_iContentLeft != NO_SIZE)
    {
       if (m_iContentLeft >= _d.size())
