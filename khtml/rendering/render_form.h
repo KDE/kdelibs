@@ -334,7 +334,8 @@ protected:
     bool m_ignoreSelectEvents;
 
 protected slots:
-    void slotActivated(int index);
+    void slotSelected(int index);
+    void slotSelectionChanged();
 };
 
 // -------------------------------------------------------------------------

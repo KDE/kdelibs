@@ -653,6 +653,7 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
     : RenderFormElement(view, element)
 {
+    m_ignoreSelectEvents = false;
     m_multiple = element->multiple();
     m_size = QMAX(element->size(), 1);
     m_useListBox = (m_multiple || m_size > 1);
@@ -663,7 +664,6 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
 	setQWidget(createComboBox(), false);
 
     m_widget->installEventFilter(this);
-    m_ignoreSelectEvents = false;
 }
 
 void RenderSelect::layout( )
@@ -820,37 +820,64 @@ void RenderSelect::close()
     RenderFormElement::close();
 }
 
-void RenderSelect::slotActivated(int index)
+void RenderSelect::slotSelected(int index)
 {
-    if (m_ignoreSelectEvents)
-        return;
+    if ( m_ignoreSelectEvents ) return;
 
-    m_ignoreSelectEvents = true;
+    assert( !m_useListBox );
 
     QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
-    index = static_cast<HTMLSelectElementImpl*>(m_element)->listToOptionIndex(index);
     if(index >= 0 && index < int(listItems.size()))
     {
-        if (listItems[index]->id() == ID_OPTION) {
-            if (m_useListBox)
-                static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(static_cast<KListBox*>(m_widget)->isSelected(index));
-            else
+        if ( listItems[index]->id() == ID_OPTGROUP ) {
+
+            // this one is not selectable,  we need to find an option element
+            bool found = false;
+            while ( ( unsigned ) index < listItems.size() ) {
+                if ( listItems[index]->id() == ID_OPTION ) {
+                    found = true;
+                    break;
+                }
+                ++index;
+            }
+
+            if ( !found ) {
+                while ( index >= 0 ) {
+                    if ( listItems[index]->id() == ID_OPTION ) {
+                        found = true;
+                        break;
+                    }
+                    --index;
+                }
+            }
+
+            if ( found )
                 static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(true);
         }
         else {
-            // nope, sorry, can't select this
-            if (m_useListBox)
-                static_cast<KListBox*>(m_widget)->setCurrentItem(-1);
-            else {
-                // ###
-            }
+            static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(true);
         }
     }
 
-    m_ignoreSelectEvents = false;
+    static_cast<HTMLSelectElementImpl*>(m_element)->onChange();
+}
+
+
+void RenderSelect::slotSelectionChanged()
+{
+    if ( m_ignoreSelectEvents ) return;
+
+    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    for ( unsigned i = 0; i < listItems.count(); i++ )
+        // don't use setSelected() here because it will cause us to be called
+        // again with updateSelection.
+        if ( listItems[i]->id() == ID_OPTION )
+            static_cast<HTMLOptionElementImpl*>( listItems[i] )
+                ->m_selected = static_cast<KListBox*>( m_widget )->isSelected( i );
 
     static_cast<HTMLSelectElementImpl*>(m_element)->onChange();
 }
+
 
 void RenderSelect::setOptionsChanged(bool /*ptionsChanged*/)
 {
@@ -862,11 +889,11 @@ KListBox* RenderSelect::createListBox()
 {
     KListBox *lb = new KListBox(m_view->viewport());
     lb->installEventFilter(this);
-    lb->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
+    lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
     // ### looks broken
     //lb->setAutoMask(true);
-    // connect(lb, SIGNAL(pressed(QListBoxItem*)), lb, SLOT(slotPressed(QListBoxItem*)));
-    connect(lb, SIGNAL(highlighted(int)), this, SLOT(slotActivated(int)));
+    connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
+    m_ignoreSelectEvents = false;
     lb->setMouseTracking(true);
 
     return lb;
@@ -876,7 +903,7 @@ ComboBoxWidget *RenderSelect::createComboBox()
 {
     ComboBoxWidget *cb = new ComboBoxWidget(m_view->viewport());
     cb->installEventFilter(this);
-    connect(cb, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
+    connect(cb, SIGNAL(activated(int)), this, SLOT(slotSelected(int)));
     return cb;
 }
 
