@@ -207,9 +207,14 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 
     IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
     CARD32 key = pMsg->key;
+
+    //qDebug("message key: %ld", key);
+    //qDebug("current key: %ld", d->currentkey);
+
     if ( d->key == 0 )
 	d->key = key; // received a key from the server
 
+    qDebug("process: %d", opcode);
     QByteArray dataReceived( length );
     IceReadData(iceConn, length, dataReceived.data() );
 
@@ -315,7 +320,10 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     ds >> fromApp >> app >> objId >> fun >> data;
     d->senderId = fromApp;
 
+    qDebug("key: %ld, ckey: %ld", key, d->currentKey);
+
     if ( canPost && d->currentKey && key != d->currentKey ) {
+	qDebug("queque");
 	DCOPClientMessage* msg = new DCOPClientMessage;
 	msg->opcode = opcode;
 	msg->key = key;
@@ -642,6 +650,7 @@ QCString DCOPClient::registerAs( const QCString &appId, bool addPID )
     QByteArray data, replyData;
     QDataStream arg( data, IO_WriteOnly );
     arg << _appId;
+
     if ( call( "DCOPServer", "", "registerAs(QCString)", data, replyType, replyData ) ) {
 	QDataStream reply( replyData, IO_ReadOnly );
 	reply >> result;
@@ -1284,7 +1293,7 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
         {
             if (objId.isEmpty() || DCOPObject::hasObject(objId))
                return findSuccess(app, objId, replyType, replyData);
-            return false;	                
+            return false;	
         }
         // Message to application or single object...
         if (receive(app, objId, fun, data, replyType, replyData))
@@ -1340,11 +1349,18 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
     if ( !isAttached() )
 	return false;
 
+    //qDebug("DCOPClient::callInternal");
+
     DCOPMsg *pMsg;
 
     CARD32 oldCurrentKey = d->currentKey;
+
+    //qDebug("old current key: %ld", oldCurrentKey);
+
     if ( !d->currentKey )
 	d->currentKey = d->key; // no key yet, initiate new call
+
+    //qDebug("call key: %ld", d->currentKey);
 
     QByteArray ba;
     QDataStream ds(ba, IO_WriteOnly);
