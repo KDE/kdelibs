@@ -183,7 +183,7 @@ declaration
 	| T_STRUCT Identifier T_SEMICOLON
 	  {
 	  }
-	| T_STRUCT Identifier T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET  T_SEMICOLON
+	| T_STRUCT Identifier class_header body T_SEMICOLON
 	  {
 	  }
 	| T_NAMESPACE T_IDENTIFIER T_LEFT_CURLY_BRACKET
