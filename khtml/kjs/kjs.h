@@ -22,6 +22,7 @@
 #define _KJS_H_
 
 class KHTMLWidget;
+class KJScriptLock;
 
 namespace KJS {
   class UnicodeChar;
@@ -30,6 +31,7 @@ namespace KJS {
   class KJSGlobal;
   class ProgramNode;
   class KJSError;
+  class KJSInternal;
 };
 
 /**
@@ -38,18 +40,19 @@ namespace KJS {
  * This library implements ECMAScript. Currently its main aim is to add
  * JavaScript support to KHTMLWidget.
  */
-class KJSWorld {
+class KJScript {
+  friend KJScriptLock;
 public:
   /**
    * Create a new ECMAScript interpreter. You can later ask it to interprete
    * code by pass it via @ref #evaluate.
    * @param w is pointing to the KHTMLWidget you wish the script to operate on.
    */
-  KJSWorld(KHTMLWidget *w);
+  KJScript(KHTMLWidget *w);
   /**
    *  Destructor
    */
-  ~KJSWorld();
+  ~KJScript();
   /**
    * Asks the interpreter to evaluate a piece of code. If called more than
    * once the state (global variables, functions etc.) will be preserved
@@ -64,16 +67,33 @@ public:
    * @param length of the string.
    */
   bool evaluate(const KJS::UnicodeChar *code, unsigned int length);
-private:
-  KHTMLWidget *htmlw;
-
 public:
-  // this is very ugly but makes life easy
-  static KJS::KJSLexer *lexer;
-  static KJS::KJSContext *context;
-  static KJS::KJSGlobal *global;
-  static KJS::ProgramNode *prog;
-  static KJS::KJSError *error;
+  static KJScript *current() { return curr; }
+  void setCurrent(KJScript *c) { curr = c; }
+
+  static KJS::KJSError *error() { return current()->err; }
+  static void setError(KJS::KJSError *e) { current()->err = e; }
+
+  static KJS::KJSContext *context() { return current()->con; }
+  static void setContext(KJS::KJSContext *c) { current()->con = c; }
+
+  static KJS::KJSGlobal *global() { return current()->glob; }
+  static void setGlobal(KJS::KJSGlobal *g) { current()->glob = g; }
+
+  static KJS::ProgramNode *progNode() { return current()->prog; }
+  static void setProgNode(KJS::ProgramNode *p) { current()->prog = p; }
+
+  static KJS::KJSLexer *lexer() { return current()->lex; }
+  static void setLexer(KJS::KJSLexer *l) { current()->lex = l; }
+private:
+  static KJScript *curr;
+  KJS::KJSLexer *lex;
+  KJS::KJSInternal *internal;
+  KJS::KJSError *err;
+  KJS::KJSContext *con;
+  KJS::KJSGlobal *glob;
+  KJS::ProgramNode *prog;
+  KHTMLWidget *htmlw;
 };
 
 #endif

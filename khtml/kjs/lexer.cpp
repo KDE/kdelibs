@@ -36,9 +36,10 @@ using namespace KJS;
 #include "grammar.h"
 #endif
 
+// a bridge for yacc from the C world to C++
 int kjsyylex()
 {
-  return KJSWorld::lexer->lex();
+  return KJScript::lexer()->lex();
 }
 
 KJSLexer::KJSLexer(const UString &c)

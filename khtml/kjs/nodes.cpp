@@ -40,8 +40,8 @@ Node *Node::firstNode = 0L;
 
 Node::Node()
 {
-  assert(KJSWorld::lexer);
-  line = KJSWorld::lexer->yylineno;
+  assert(KJScript::lexer());
+  line = KJScript::lexer()->lineNo();
   nodeCount++;
   //  cout << "Node()" << endl;
 
@@ -92,14 +92,14 @@ KJSO *StringNode::evaluate()
 // ECMA 11.1.1
 KJSO *ThisNode::evaluate()
 {
-  return KJSWorld::context->thisValue;
+  return KJScript::context()->thisValue;
 }
 
 // ECMA 11.1.2 & 10.1.4
 KJSO *ResolveNode::evaluate()
 {
-  assert(KJSWorld::context);
-  const KJSScopeChain *chain = KJSWorld::context->pScopeChain();
+  assert(KJScript::context());
+  const KJSScopeChain *chain = KJScript::context()->pScopeChain();
   KJSListIterator scope = chain->begin();
 
   while (scope != chain->end()) {
@@ -603,7 +603,7 @@ KJSO *VarStatementNode::evaluate()
 // ECMA 12.2
 KJSO *VarDeclNode::evaluate()
 {
-  KJSO *variable = KJSWorld::context->variableObject();
+  KJSO *variable = KJScript::context()->variableObject();
 
   // TODO: coded with help of 10.1.3. Correct ?
   if (!variable->hasProperty(ident)) {
@@ -768,9 +768,9 @@ KJSO *WithNode::evaluate()
   Ptr e = expr->evaluate();
   Ptr v = e->getValue();
   Ptr o = toObject(v);
-  KJSWorld::context->pushScope(o);
+  KJScript::context()->pushScope(o);
   Ptr res = stat->evaluate();
-  KJSWorld::context->popScope();
+  KJScript::context()->popScope();
 
   return res->ref();
 }
@@ -792,7 +792,7 @@ void FuncDeclNode::processFuncDecl()
   Ptr f = new KJSDeclaredFunction(plist, block);
 
   /* TODO: decide between global and activation object */
-  KJSWorld::global->put(ident, f);
+  KJScript::global()->put(ident, f);
 }
 
 // ECMA 13
@@ -813,19 +813,19 @@ KJSO *ProgramNode::evaluate()
 // ECMA 14
 KJSO *SourceElementsNode::evaluate()
 {
-  if (KJSWorld::error)
-    return new KJSCompletion(ReturnValue, KJSWorld::error);
+  if (KJScript::error())
+    return new KJSCompletion(ReturnValue, KJScript::error());
 
   if (!elements)
     return element->evaluate();
 
   Ptr res1 = elements->evaluate();
-  if (KJSWorld::error)
-    return new KJSCompletion(ReturnValue, KJSWorld::error);
+  if (KJScript::error())
+    return new KJSCompletion(ReturnValue, KJScript::error());
 
   Ptr res2 = element->evaluate();
-  if (KJSWorld::error)
-    return new KJSCompletion(ReturnValue, KJSWorld::error);
+  if (KJScript::error())
+    return new KJSCompletion(ReturnValue, KJScript::error());
 
   if (res2->isA(Completion))
     return res2.ref();

@@ -142,19 +142,19 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSList *args)
 {
   KJSFunction *func = static_cast<KJSFunction*>(this);
 
-  KJSContext *save = KJSWorld::context;
+  KJSContext *save = KJScript::context();
 
   CodeType ctype = func->codeType();
-  KJSWorld::context = new KJSContext(ctype, save, func, args, thisV);
+  KJScript::setContext(new KJSContext(ctype, save, func, args, thisV));
 
   // assign user supplied arguments to parameters
   if (args)
     func->processParameters(args);
 
-  Ptr comp = func->execute(KJSWorld::context);
+  Ptr comp = func->execute(KJScript::context());
 
-  delete KJSWorld::context;
-  KJSWorld::context = save;
+  delete KJScript::context();
+  KJScript::setContext(save);
 
   if (comp->isValueCompletion())
     return comp->complValue();
@@ -211,7 +211,7 @@ ErrorCode KJSO::putValue(KJSO *v)
 
   Ptr o = getBase();
   if (o->isA(Null)) {
-    KJSWorld::global->put(getPropertyName(), v);
+    KJScript::global()->put(getPropertyName(), v);
   } else {
     // are we writing into an array ?
     if (o->isA(Object) && (((KJSObject*)(KJSO*)o)->getClass() == ArrayClass))
@@ -337,7 +337,7 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
 KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
 		       KJSFunction *func, KJSList *args, KJSO *thisV)
 {
-  KJSGlobal *glob = KJSWorld::global;
+  KJSGlobal *glob = KJScript::global();
   assert(glob);
 
   // create and initialize activation object (ECMA 10.1.6)
@@ -438,7 +438,7 @@ void KJSO::dump(int level)
 // ECMA 10.1.3
 void KJSFunction::processParameters(KJSList *args)
 {
-  KJSO *variable = KJSWorld::context->variableObject();
+  KJSO *variable = KJScript::context()->variableObject();
 
   assert(args);
 
@@ -476,9 +476,9 @@ KJSError::KJSError(ErrorCode e, Node *n)
 {
   line = n ? n->lineNo() : -1;
 
-  if (!KJSWorld::error) {
+  if (!KJScript::error()) {
     ref();
-    KJSWorld::error = this;
+    KJScript::setError(this);
   }
 
   cerr << "Runtime error " << (int) e << " at line " << line << endl;
@@ -488,9 +488,9 @@ KJSError::KJSError(ErrorCode e, Node *n)
 KJSError::KJSError(ErrorCode e, KJSO *)
   : errNo(e)
 {
-  if (!KJSWorld::error) {
+  if (!KJScript::error()) {
     ref();
-    KJSWorld::error = this;
+    KJScript::setError(this);
   }
 
   cerr << "Runtime error " << (int) e << endl;

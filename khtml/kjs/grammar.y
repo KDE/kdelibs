@@ -384,8 +384,8 @@ FormalParameterList:
 ;
 
 Program:
-    SourceElements                 { $$ = KJSWorld::prog
-					= new ProgramNode($1); }
+    SourceElements                 { $$ = new ProgramNode($1);
+                                     KJScript::setProgNode($$); }
 ;
 
 SourceElements:
@@ -402,6 +402,7 @@ SourceElement:
 
 int yyerror (const char *s)  /* Called by yyparse on error */
 {
-  fprintf (stderr, "ERROR: %s at line %d\n", s, KJSWorld::lexer->lineNo());
+  fprintf(stderr, "ERROR: %s at line %d\n",
+	  s, KJScript::lexer()->lineNo());
   return 1;
 }

@@ -1403,8 +1403,8 @@ case 129:
     break;}
 case 130:
 #line 387 "grammar.y"
-{ yyval.prog = KJSWorld::prog
-					= new ProgramNode(yyvsp[0].srcs); ;
+{ yyval.prog = new ProgramNode(yyvsp[0].srcs);
+                                     KJScript::setProgNode(yyval.prog); ;
     break;}
 case 131:
 #line 392 "grammar.y"
@@ -1625,6 +1625,7 @@ yyerrhandle:
 
 int yyerror (const char *s)  /* Called by yyparse on error */
 {
-  fprintf (stderr, "ERROR: %s at line %d\n", s, KJSWorld::lexer->lineNo());
+  fprintf(stderr, "ERROR: %s at line %d\n",
+	  s, KJScript::lexer()->lineNo());
   return 1;
 }
