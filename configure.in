@@ -48,16 +48,23 @@ AC_FIND_JPEG
 
 # configure would do this very late. Too late for us!
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
-# Let make expand exec_prefix.
-test "x$exec_prefix" = xNONE && exec_prefix='$(prefix)' 
 
 AC_DEFINE_UNQUOTED(KDEDIR, "$prefix")
 
+if test "x$exec_prefix" = xNONE; then
+  ac_kde_exec_prefix=KDEDIR
+else 
+  ac_kde_exec_prefix=$exec_prefix
+fi
+
 AC_DEFUN(AC_DEFINE_PATH,
 [
-  eval "tempdir=`echo $2 | sed -e 's/\$(exec_prefix)/KDEDIR/' -e 's/\$(prefix)/KDEDIR/'`"
+  eval "tempdir=`echo $2 | sed -e 's/\$(exec_prefix)/$ac_kde_exec_prefix/' -e 's/\$(prefix)/KDEDIR/'`"
   AC_DEFINE_UNQUOTED($1, "$tempdir")
 ])
+
+# Let make expand exec_prefix.
+test "x$exec_prefix" = xNONE && exec_prefix='$(prefix)' 
 
 AC_DEFINE_PATH(KDE_HTMLDIR, $kde_htmldir)
 AC_DEFINE_PATH(KDE_APPSDIR, $kde_appsdir)
