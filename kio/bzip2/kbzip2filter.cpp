@@ -47,10 +47,10 @@ extern "C" {
     }
 }
 
+// Not really useful anymore
 class KBzip2Filter::KBzip2FilterPrivate
 {
 public:
-    // The reason for this stuff here is to avoid including zlib.h in kbzip2dev.h
     bz_stream zStream;
 };
 
@@ -60,6 +60,9 @@ KBzip2Filter::KBzip2Filter()
     d->zStream.bzalloc = 0;
     d->zStream.bzfree = 0;
     d->zStream.opaque = 0;
+    d->zStream.next_in = 0;
+    d->zStream.avail_in = 0;
+    m_mode = 0;
 }
 
 
@@ -68,46 +71,59 @@ KBzip2Filter::~KBzip2Filter()
     delete d;
 }
 
-void KBzip2Filter::init()
+void KBzip2Filter::init( int mode )
 {
-    // warning this may be read-only specific
-    d->zStream.next_in = 0;
-    d->zStream.avail_in = 0;
-    /*outputBuffer.resize( 8*1024 );// Start with a modest buffer
-      zStream.avail_out = outputBuffer.size();
-      zStream.next_out = outputBuffer.data();*/
-
+    if ( mode == IO_ReadOnly )
+    {
 #ifdef NEED_BZ2_PREFIX
-    int result = BZ2_bzDecompressInit(&d->zStream, 0, 0);
+        int result = BZ2_bzDecompressInit(&d->zStream, 0, 0);
 #else
-    int result = bzDecompressInit(&d->zStream, 0, 0);
+        int result = bzDecompressInit(&d->zStream, 0, 0);
 #endif
-    kdDebug() << "bzDecompressInit returned " << result << endl;
-    // Not idea what to do with result :)
+        kdDebug() << "bzDecompressInit returned " << result << endl;
+        // No idea what to do with result :)
+    } else if ( mode == IO_WriteOnly )
+    {
+#ifdef NEED_BZ2_PREFIX
+        int result = BZ2_bzCompressInit(&d->zStream, 5, 0, 0);
+#else
+        int result = bzCompressInit(&d->zStream, 5, 0, 0);
+#endif
+        kdDebug() << "bzDecompressInit returned " << result << endl;
+    } else
+        kdWarning() << "Unsupported mode " << mode << ". Only IO_ReadOnly and IO_WriteOnly supported" << endl;
+    m_mode = mode;
 }
 
 void KBzip2Filter::terminate()
 {
-    // readonly specific !
+    if ( m_mode == IO_ReadOnly )
+    {
 #ifdef NEED_BZ2_PREFIX
-    int result = BZ2_bzDecompressEnd(&d->zStream);
+        int result = BZ2_bzDecompressEnd(&d->zStream);
 #else
-    int result = bzDecompressEnd(&d->zStream);
+        int result = bzDecompressEnd(&d->zStream);
 #endif
-    kdDebug() << "bzDecompressEnd returned " << result << endl;
+        kdDebug() << "bzDecompressEnd returned " << result << endl;
+    } else if ( m_mode == IO_WriteOnly )
+    {
+#ifdef NEED_BZ2_PREFIX
+        int result = BZ2_bzCompressEnd(&d->zStream);
+#else
+        int result = bzCompressEnd(&d->zStream);
+#endif
+        kdDebug() << "bzCompressEnd returned " << result << endl;
+    } else
+        kdWarning() << "Unsupported mode " << m_mode << ". Only IO_ReadOnly and IO_WriteOnly supported" << endl;
 }
 
 
 void KBzip2Filter::reset()
 {
+    kdDebug() << "KBzip2Filter::reset" << endl;
     // bzip2 doesn't seem to have a reset call...
     terminate();
-    init();
-}
-
-bool KBzip2Filter::readHeader()
-{
-    return true;
+    init( m_mode );
 }
 
 void KBzip2Filter::setOutBuffer( char * data, uint maxlen )
@@ -115,10 +131,10 @@ void KBzip2Filter::setOutBuffer( char * data, uint maxlen )
     d->zStream.avail_out = maxlen;
     d->zStream.next_out = data;
 }
-void KBzip2Filter::setInBuffer( char * data, uint size )
+void KBzip2Filter::setInBuffer( const char * data, uint size )
 {
     d->zStream.avail_in = size;
-    d->zStream.next_in = data;
+    d->zStream.next_in = const_cast<char *>(data);
 }
 int KBzip2Filter::inBufferAvailable() const
 {
@@ -140,7 +156,22 @@ KBzip2Filter::Result KBzip2Filter::uncompress()
     if ( result != BZ_OK )
     {
         kdDebug() << "bzDecompress returned " << result << endl;
-        kdDebug() << "KBzip2Filter::uncompress" << ( result == BZ_OK ? OK : ( result == BZ_STREAM_END ? END : ERROR ) ) << endl;
+        kdDebug() << "KBzip2Filter::uncompress " << ( result == BZ_OK ? OK : ( result == BZ_STREAM_END ? END : ERROR ) ) << endl;
     }
     return ( result == BZ_OK ? OK : ( result == BZ_STREAM_END ? END : ERROR ) );
+}
+
+KBzip2Filter::Result KBzip2Filter::compress( bool finish )
+{
+    //kdDebug() << "Calling bzCompress with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
+#ifdef NEED_BZ2_PREFIX
+    int result = BZ2_bzCompress(&d->zStream, finish ? BZ_FINISH : BZ_RUN );
+#else
+    int result = bzCompress(&d->zStream, finish ? BZ_FINISH : BZ_RUN );
+#endif
+    if ( result != BZ_OK )
+    {
+        kdDebug() << "  bzCompress returned " << result << endl;
+    }
+    return ( (result == BZ_OK || result == BZ_FLUSH_OK || result == BZ_RUN_OK || result == BZ_FINISH_OK) ? OK : ( result == BZ_STREAM_END ? END : ERROR ) );
 }
