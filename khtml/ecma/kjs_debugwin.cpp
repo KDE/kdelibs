@@ -250,7 +250,7 @@ QString SourceFile::getCode()
 {
   if (interpreter) {
     KHTMLPart *part = static_cast<ScriptInterpreter*>(interpreter)->part();
-    if (url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
+    if (part && url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
       Decoder *decoder = part->createDecoder();
       QByteArray data;
       QDataStream stream(data,IO_WriteOnly);
@@ -1102,7 +1102,8 @@ bool KJSDebugWin::haveBreakpoint(SourceFile *sourceFile, int line0, int line1)
   for (int i = 0; i < m_breakpointCount; i++) {
     int sourceId = m_breakpoints[i].sourceId;
     int lineno = m_breakpoints[i].lineno;
-    if (m_sourceFragments[sourceId]->sourceFile == sourceFile) {
+    if (m_sourceFragments.contains(sourceId) &&
+        m_sourceFragments[sourceId]->sourceFile == sourceFile) {
       int absLineno = m_sourceFragments[sourceId]->baseLine+lineno-1;
       if (absLineno >= line0 && absLineno <= line1)
 	return true;
