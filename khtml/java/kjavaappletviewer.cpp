@@ -249,7 +249,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                     width = value.toInt();
                 else if (name_lower == QString::fromLatin1("height"))
                     height = value.toInt();
-                else {
+                if (!name.startsWith ("__KHTML__")) {
                     applet->setParameter (name, value);
                 }
             }

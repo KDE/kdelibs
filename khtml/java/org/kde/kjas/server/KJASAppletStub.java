@@ -199,8 +199,8 @@ public final class KJASAppletStub
                     break;
                 case STARTED:
                     active = true;
-                    frame.validate();
                     app.start();
+                    frame.validate();
                     app.repaint();
                     break;
                 case STOPPED:
