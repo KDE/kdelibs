@@ -5,6 +5,7 @@
 
 class KActiveLabel : public QFrame
 {
+	friend class KActiveToolTip;
 	Q_OBJECT
 public:
 	KActiveLabel(QWidget *parent = 0, const char *name = 0);
