@@ -53,9 +53,12 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                  true // separator
                  )
 {
+  // Use supplied aboutdata, otherwise the one from the active instance
+  // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
   m_aboutData = aboutData
     ? aboutData
-    : KGlobal::instance()->aboutData(); // TODO : use the "active" instance
+    : ( KGlobal::_activeInstance ? KGlobal::_activeInstance->aboutData()
+                                 : KGlobal::instance()->aboutData() );
   m_process = 0L;
   QWidget * parent = plainPage();
   QLabel * tmpLabel;
