@@ -45,3 +45,13 @@ debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
 debian/tmp/usr/bin/preparetips
 debian/tmp/usr/bin/xml2man
+debian/tmp/usr/lib/libkdeinit_dcopserver.so.*
+debian/tmp/usr/lib/libkdeinit_kaddprinterwizard.*
+debian/tmp/usr/lib/libkdeinit_kbuildsycoca.so.*
+debian/tmp/usr/lib/libkdeinit_kconf_update.so.*
+debian/tmp/usr/lib/libkdeinit_kcookiejar.so.*
+debian/tmp/usr/lib/libkdeinit_kded.so.*
+debian/tmp/usr/lib/libkdeinit_kio_http_cache_cleaner.so.*
+debian/tmp/usr/lib/libkdeinit_kio_uiserver.so.*
+debian/tmp/usr/lib/libkdeinit_klauncher.so.*
+
