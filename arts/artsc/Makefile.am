@@ -10,7 +10,7 @@ bin_SCRIPTS = artsc-config artsdsp
 
 libartsdsp_la_SOURCES = artsdsp.c
 libartsdsp_la_LDFLAGS = -no-undefined -module
-libartsdsp_la_LIBADD = $(top_builddir)/arts/artsc/libartsc.la
+libartsdsp_la_LIBADD = libartsc.la
 
 libartsc_la_SOURCES = artsc.c
 libartsc_la_LDFLAGS = -no-undefined
