@@ -90,6 +90,10 @@ public:
    */
   KDateInternalMonthPicker(const QDate & date, int fontsize, QWidget* parent, const char* name=0);
   /**
+   * The destructor.
+   */
+  ~KDateInternalMonthPicker();
+  /**
    * The size hint.
    */
   QSize sizeHint() const;

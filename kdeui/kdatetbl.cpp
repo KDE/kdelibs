@@ -593,8 +593,9 @@ KDateInternalWeekSelector::setMaxWeek(int max)
   val->setRange(1, max);
 }
 
-// ### CFM To avoid Binary Incompatibility  
-//     const QDate & might be added to KDateInternalMonthPicker::painyCell
+// ### CFM To avoid binary incompatibility.  
+//     In future releases, remove this and replace by  a QDate 
+//     private member, needed in KDateInternalMonthPicker::paintCell
 class KDateInternalMonthPicker::KDateInternalMonthPrivate {
 public:
         KDateInternalMonthPrivate (int y, int m, int d)
@@ -604,6 +605,10 @@ public:
         int month;
         int day;
 };
+
+KDateInternalMonthPicker::~KDateInternalMonthPicker() {
+   delete d;
+}
 
 KDateInternalMonthPicker::KDateInternalMonthPicker
 (const QDate & date, int fontsize, QWidget* parent, const char* name)
@@ -672,7 +677,6 @@ KDateInternalMonthPicker::viewportResizeEvent(QResizeEvent*)
   setCellHeight(height()/4);
 }
 
-// ### CFM See previous comment (BIC)
 void
 KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
 {
