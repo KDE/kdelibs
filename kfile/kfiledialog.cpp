@@ -955,11 +955,11 @@ bool KFileComboBox::eventFilter( QObject *o, QEvent *ev )
 	    emit previous();
 	    ret = true;
 	}
-	
+
 	return ret;
     }
 
-    return false;
+    return QComboBox::eventFilter( o, ev );
 }
 
 

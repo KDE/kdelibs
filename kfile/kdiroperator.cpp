@@ -190,10 +190,12 @@ void KDirOperator::activatedMenu( const KFileViewItem *item )
 	    p->insertSeparator();
 
 	    QPopupMenu *views = new QPopupMenu(p);
-	    views->insertItem(i18n("Short View"),
-			      this, SLOT(simpleView()));
-	    views->insertItem(i18n("Detailed View"),
+	    id = views->insertItem(i18n("Short View"),
+				   this, SLOT(simpleView()));
+	    views->setItemChecked(id,fileList->widget()->isA("KFileIconView"));
+	    id = views->insertItem(i18n("Detailed View"),
 			      this, SLOT(detailedView()));
+	    views->setItemChecked(id,fileList->widget()->isA("KFileDetailView"));
 	    views->insertSeparator();
 	    id = views->insertItem(i18n("Show Hidden Files"),
 			       this, SLOT(toggleHidden()));

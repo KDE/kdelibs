@@ -250,13 +250,13 @@ public:
      * KFileDialog uses chhdir() to change the current working directory to
      * increase performance. If you don't like this, disable it.
      *
-     * When using one of the static methods, e.g. @ref getOpenFileName, 
+     * When using one of the static methods, e.g. @ref getOpenFileName,
      * and chdir is enabled, the working directory will be restored when the
      * dialog is closed.
      * Default is enabled.
      * @see #isChdirEnabled
      */
-    static void setEnableChdir( bool enable ) { 
+    static void setEnableChdir( bool enable ) {
 	KFileReader::setEnableChdir( enable );
     }
 
@@ -266,8 +266,8 @@ public:
      * @see #setEnableChdir
      */
     static bool isChdirEnabled() { return KFileReader::isChdirEnabled(); }
-    
-    
+
+
 signals:
     /**
       * Emitted when the user selects a file.
@@ -366,7 +366,6 @@ public:
     QObjectList *list = queryList( "QLineEdit" );
     QObjectListIt it( *list );
     edit = (QLineEdit*) it.current();
-    connect(edit, SIGNAL(returnPressed()), SIGNAL(returnPressed()));
     edit->installEventFilter( this );
   }
 
