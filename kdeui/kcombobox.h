@@ -106,7 +106,7 @@
  * // set your own completion key for manual completions.
  * combo->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
  * // Shows the context (popup) menu
- * combo->setEnableContextMenu( false );
+ * combo->setContextMenuEnabled( false );
  * // Temporarly disable signal emition
  * combo->disableSignals();
  * // Default the key-bindings to system settings.
@@ -119,6 +119,8 @@
 class KComboBox : public QComboBox, public KCompletionBase
 {
   Q_OBJECT
+  Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )
+  Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
 
 public:
 	
@@ -177,7 +179,6 @@ public:
     *
     * @return true when completion mode is automatic.
     */
-    // FIXME: For uniformity, this should be isAutoCompletion()
     bool autoCompletion() const { return completionMode() == KGlobalSettings::CompletionAuto; }
 
     /**
@@ -196,7 +197,6 @@ public:
     * @param showMenu if true, show the context menu.
     * @param showMode if true, show the mode changer.
     */
-    // FIXME: For uniformity, this should be setContextMenuEnabled()
     virtual void setContextMenuEnabled( bool showMenu );
 
     /**

@@ -114,7 +114,7 @@
  * // Set your own completion key for manual completions.
  * edit->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
  * // Hide the context (popup) menu
- * edit->setEnableContextMenu( false );
+ * edit->setContextMenuEnabled( false );
  * // Temporarly disable signal emitions
  * // (both completion & iteration signals)
  * edit->disableSignals();
@@ -129,6 +129,7 @@
 class KLineEdit : public QLineEdit, public KCompletionBase
 {
 	Q_OBJECT
+	Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
 
 public:
 
