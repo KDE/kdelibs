@@ -1,5 +1,4 @@
 #include "kpopmenu.h"
-#include "kpopmenu.h"
 #include <qpainter.h>
 #include <klocale.h>
 #include <kapp.h>
@@ -28,7 +27,7 @@ QString KPopupMenu::title() const
 
 void KPopupMenu::setTitle(const QString& title)
 {
-    changeItem(title, 0);
+    changeItem(0, title);
 }
 
 void KPopupMenu::initialize(const QString& title)
