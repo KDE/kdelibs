@@ -48,7 +48,7 @@ extern "C" {
     DOM::HTMLDocument doc;
     doc = khtml->htmlDocument();
     global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
-    global->put("window", zeroRef(new KJS::Window(0L)));
+    global->put("window", zeroRef(new KJS::Window(khtml->view())));
     global->put("navigator", zeroRef(new Navigator()));
     global->put("Image", zeroRef(new ImageObject(global)));
 
