@@ -5119,7 +5119,8 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.docState = docState;
     d->m_extension->setURLArgs( args );
 
-    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+    d->m_view->resizeContents( wContents,  hContents);
+    d->m_view->setContentsPos( xOffset, yOffset );
 
     m_url = u;
   }
