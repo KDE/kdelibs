@@ -161,8 +161,8 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 
 void TextSlave::printActivation( QPainter *p, int _tx, int _ty)
 {
-  p->drawRect(_tx+m_x-2,_ty+m_y, m_width+3, m_height+2);
-  p->drawRect(_tx+m_x-3,_ty+m_y+1, m_width+5, m_height);
+    p->drawRect(_tx+m_x-2,_ty+m_y, m_width+3, m_height+2);
+    p->drawRect(_tx+m_x-3,_ty+m_y+1, m_width+5, m_height);
 }
 
 bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
@@ -597,9 +597,10 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             si = firstSi;
             bool clip = p->hasClipping();
             p->setClipping(false);
-            p->setRasterOp(Qt::XorROP);
+            p->setRasterOp(Qt::CopyROP);
+	    p->setBrush(Qt::NoBrush);
             if (hasKeyboardFocus==DOM::ActivationPassive)
-                p->setPen(Qt::white);
+                p->setPen(Qt::green);
             else
                 p->setPen(Qt::blue);
 
@@ -616,8 +617,6 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                     diff = s->m_len;
 
             } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
-            p->setRasterOp(Qt::CopyROP);
-            p->setClipping(clip);
         }
     }
 }

@@ -227,14 +227,14 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
     {
-	p->setRasterOp(Qt::XorROP);
+	p->setRasterOp(Qt::CopyROP);
+	p->setBackgroundMode(Qt::TransparentMode);
         if (hasKeyboardFocus==DOM::ActivationPassive)
-            p->setPen(QColor("white"));
+            p->setPen(Qt::green);
         else
-            p->setPen(QColor("blue"));
+            p->setPen(Qt::blue);
         p->drawRect( _tx + leftBorder, _ty + topBorder-1, cWidth, cHeight+2);
         p->drawRect( _tx + leftBorder-1, _ty + topBorder, cWidth+2, cHeight);
-	p->setRasterOp(Qt::CopyROP);
     }
 }
 
