@@ -11,6 +11,7 @@
 #define PCX_H
 
 #include <qglobal.h>
+#include <qcolor.h>
 
 class QImageIO;
 
@@ -20,14 +21,29 @@ extern "C"
   void kimgio_pcx_write( QImageIO * );
 }
 
-struct PALETTE
+struct RGB
 {
-  struct
-  {
-    Q_UINT8 r;
-    Q_UINT8 g;
-    Q_UINT8 b;
-  } p[ 16 ];
+  Q_UINT8 r;
+  Q_UINT8 g;
+  Q_UINT8 b;
+};
+
+class Palette
+{
+  public:
+    void setColor( int i, const QRgb color )
+    {
+      rgb[ i ].r = qRed( color );
+      rgb[ i ].g = qGreen( color );
+      rgb[ i ].b = qBlue( color );
+    }
+
+    QRgb color( int i )
+    {
+      return qRgb( rgb[ i ].r, rgb[ i ].g, rgb[ i ].b );
+    }
+
+    struct RGB rgb[ 16 ];
 };
 
 struct PCXHEADER
@@ -52,7 +68,7 @@ struct PCXHEADER
   Q_UINT16 YMax;
   Q_UINT16 HDpi;
   Q_UINT16 YDpi;
-  struct PALETTE Palette;
+  Palette  ColorMap;
   Q_UINT8  Reserved;        // Should be set to 0.
   Q_UINT8  NPlanes;         // Number of color planes
   Q_UINT16 BytesPerLine;    // Number of bytes to allocate for a scanline
