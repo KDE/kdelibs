@@ -73,7 +73,7 @@
 #include <kprotocolinfo.h>
 #include <kkeynative.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 #include <kstartupinfo.h>
 #endif
 
@@ -99,7 +99,7 @@
 #include <errno.h>
 #include <string.h>
 #include <netdb.h>
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 //#ifndef Q_WS_QWS //FIXME(E): NetWM should talk to QWS...
 #include <netwm.h>
 #endif
@@ -110,7 +110,6 @@
 #include <paths.h>
 #endif
 
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
 #include <X11/Xlib.h> // schrode
 #include <X11/Xutil.h> // schrode
@@ -136,7 +135,7 @@ typedef void* IceIOErrorHandler;
 #define DISPLAY "QWS_DISPLAY"
 #endif
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 #include <kipc.h>
 #endif
 
@@ -190,6 +189,12 @@ static void kde_ice_ioerrorhandler( IceConn conn )
 }
 #endif
 
+#ifdef Q_WS_WIN
+void KApplication_init_windows(bool GUIenabled);
+
+class QAssistantClient;
+#endif
+
 /*
   Private data to make keeping binary compatibility easier
  */
@@ -203,18 +208,24 @@ public:
 	checkAccelerators( 0 ),
 	overrideStyle( QString::null ),
 	startup_id( "0" ),
-        app_started_timer( NULL ),
+	app_started_timer( NULL ),
 	m_KAppDCOPInterface( 0L ),
 	session_save( false )
 #ifdef Q_WS_X11
-        ,oldXErrorHandler( NULL )
-        ,oldXIOErrorHandler( NULL )
+	,oldXErrorHandler( NULL )
+	,oldXIOErrorHandler( NULL )
+#elif defined Q_WS_WIN
+	,qassistantclient( 0 )
 #endif
   {
   }
 
   ~KApplicationPrivate()
-  {}
+  {
+#ifdef Q_WS_WIN
+     delete qassistantclient;
+#endif
+  }
 
 
   bool actionRestrictions : 1;
@@ -237,6 +248,8 @@ public:
 #ifdef Q_WS_X11
   int (*oldXErrorHandler)(Display*,XErrorEvent*);
   int (*oldXIOErrorHandler)(Display*);
+#elif defined Q_WS_WIN
+  QAssistantClient* qassistantclient;
 #endif
 
   class URLActionRule
@@ -497,7 +510,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if( t == QEvent::Show && receiver->isWidgetType())
     {
     QWidget* w = static_cast< QWidget* >( receiver );
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
 #endif
@@ -517,7 +530,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
 void KApplication::checkAppStartedSlot()
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
     KStartupInfo::handleAutoAppStartedSending();
 #endif
 }
@@ -780,7 +793,7 @@ void KApplication::init(bool GUIenabled)
   smw = 0;
 
   // Initial KIPC event mask.
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
                   (1 << KIPC::ToolbarStyleChanged) | (1 << KIPC::SettingsChanged) |
@@ -878,6 +891,8 @@ void KApplication::init(bool GUIenabled)
 		    32, PropModeReplace, (unsigned char *)&data, 1);
   }
   d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
+#elif defined(Q_WS_WIN)
+  KApplication_init_windows(GUIenabled);
 #else
   // FIXME(E): Implement for Qt Embedded
 #endif
@@ -1645,7 +1660,6 @@ bool KApplication::x11EventFilter( XEvent *_event )
         }
     }
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if ((_event->type == ClientMessage) &&
             (_event->xclient.message_type == kipcCommAtom))
     {
@@ -1710,14 +1724,13 @@ bool KApplication::x11EventFilter( XEvent *_event )
         }
         return true;
     }
-#endif // Q_WS_X11 && ! K_WS_QTONLY
     return false;
 }
-#endif
+#endif // Q_WS_X11
 
 void KApplication::updateUserTimestamp( unsigned long time )
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
     if( time == 0 )
     { // get current X timestamp
         Window w = XCreateSimpleWindow( qt_xdisplay(), qt_xrootwin(), 0, 0, 1, 1, 0, 0, 0 );
@@ -1737,7 +1750,7 @@ void KApplication::updateUserTimestamp( unsigned long time )
 
 unsigned long KApplication::userTimestamp() const
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
     return qt_x_user_time;
 #else
     return 0;
@@ -1746,7 +1759,7 @@ unsigned long KApplication::userTimestamp() const
 
 void KApplication::updateRemoteUserTimestamp( const QCString& dcopId, unsigned long time )
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
     if( time == 0 )
         time = qt_x_user_time;
     DCOPRef( dcopId, "MainApplication-Interface" ).call( "updateUserTimestamp", time );
@@ -2091,6 +2104,9 @@ void KApplication::invokeHelp( const QString& anchor,
     return invokeHelp( anchor, _appname, "" );
 }
 
+#ifndef Q_WS_WIN 
+// for win32 we're using simple help tools like Qt Assistant, 
+// see kapplication_win.cpp
 void KApplication::invokeHelp( const QString& anchor,
                                const QString& _appname,
                                const QCString& startup_id ) const
@@ -2123,6 +2139,7 @@ void KApplication::invokeHelp( const QString& anchor,
    else
        DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openUrl", url, startup_id );
 }
+#endif
 
 void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
 {
@@ -2220,6 +2237,9 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
     return invokeMailer(to,cc,bcc,subject,body,messageFile,attachURLs,"");
 }
 
+#ifndef Q_WS_WIN
+// on win32, for invoking browser we're using win32 API
+// see kapplication_win.cpp
 void KApplication::invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                                 const QString &subject, const QString &body,
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
@@ -2317,13 +2337,16 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
      else
        kdWarning() << "Could not launch mail client:\n" << error << endl;
 }
-
+#endif
 
 void KApplication::invokeBrowser( const QString &url )
 {
     return invokeBrowser( url, "" );
 }
 
+#ifndef Q_WS_WIN
+// on win32, for invoking browser we're using win32 API
+// see kapplication_win.cpp
 void KApplication::invokeBrowser( const QString &url, const QCString& startup_id )
 {
    QString error;
@@ -2338,6 +2361,7 @@ void KApplication::invokeBrowser( const QString &url, const QCString& startup_id
       return;
    }
 }
+#endif
 
 void KApplication::cut()
 {
@@ -2416,7 +2440,7 @@ startServiceInternal( const QCString &function,
    }
 #endif
    stream << envs;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
    // make sure there is id, so that user timestamp exists
    stream << ( startup_id.isEmpty() ? KStartupInfo::createNewStartupId() : startup_id );
 #endif
@@ -2655,7 +2679,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
     // set the specified icons
     topWidget->setIcon( icon() ); //standard X11
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 //#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     KWin::setIcons(topWidget->winId(), icon(), miniIcon() ); // NET_WM hints for KWin
 
@@ -2676,7 +2700,7 @@ void KApplication::setStartupId( const QCString& startup_id )
     else
         {
         d->startup_id = startup_id;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
         KStartupInfoId id;
         id.initId( startup_id );
         long timestamp = id.timestamp();
@@ -2690,7 +2714,7 @@ void KApplication::setStartupId( const QCString& startup_id )
 // not to propagate it to processes started from this app
 void KApplication::read_app_startup_id()
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
     KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
     KStartupInfo::resetStartupEnv();
     d->startup_id = id.id();

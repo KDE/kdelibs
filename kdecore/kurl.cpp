@@ -635,7 +635,15 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
     // Node 1: Accept alpha or slash
     QChar x = buf[pos++];
+#ifdef Q_WS_WIN
+    /* win32: accept <letter>: or <letter>:/ or <letter>:\ */
+    const bool alpha = isalpha((int)x);
+    if (alpha && len<2)
+        goto NodeErr;
+    if (alpha && buf[pos]==':' && (len==2 || (len>2 && (buf[pos+1]=='/' || buf[pos+1]=='\\'))))
+#else
     if ( x == '/' )
+#endif
     {
 	// A slash means we immediately proceed to parse it as a file URL.
 	m_iUriMode = URL;
@@ -748,7 +756,15 @@ void KURL::parseURL( const QString& _url, int encoding_hint )
 
   // Node 1: Accept alpha or slash
   QChar x = buf[pos++];
+#ifdef Q_WS_WIN
+  /* win32: accept <letter>: or <letter>:/ or <letter>:\ */
+  const bool alpha = isalpha((int)x);
+  if (alpha && len<2)
+    goto NodeErr;
+  if (alpha && buf[pos]==':' && (len==2 || (len>2 && (buf[pos+1]=='/' || buf[pos+1]=='\\'))))
+#else
   if ( x == '/' )
+#endif
     goto Node9;
   if ( !isalpha( (int)x ) )
     goto NodeErr;
@@ -2187,7 +2203,7 @@ KURL KURL::fromPathOrURL( const QString& text )
         return KURL();
 
     KURL url;
-    if ( text[0] == '/' )
+		if (!QDir::isRelativePath(text))
         url.setPath( text );
     else
         url = text;
