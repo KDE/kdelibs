@@ -102,6 +102,9 @@ void KIntNumInput::init(const QString& label, int lower, int upper, int step, in
 
     main_label = new QLabel( spin, label, this, "KNumInput::QLabel" );
     
+	if ( label.isEmpty() )
+		main_label->hide();
+
     if(!units.isEmpty())
         spin->setSuffix(' ' + units);
     
