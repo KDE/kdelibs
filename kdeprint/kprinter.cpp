@@ -352,6 +352,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 					QStringList args;
 					args << "-d";
 					args << printerName();
+					args << "--noshow";
 					kapp->kdeinitExec("kjobviewer", args);
 				}
 			}
