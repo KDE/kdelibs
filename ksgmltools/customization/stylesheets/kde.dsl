@@ -387,12 +387,17 @@
 ; image library: to be made by documentation authors (imagelib.xml)
 ; One with every document with pictures
 
+; These are are overridden by CSS on good browsers.  On bad ones,
+; these things will be chosen, so everyone is happy.
 (define %body-attr%
   (list
    (list "BGCOLOR" "#FFFFFF")
    (list "TEXT" "#000000")
-   (list "LINK" "#aa0000")
-   (list "STYLE" "font-family: sans-serif;"))) ;; This should go in CSS style sheets as well - it used to be Helvetica, Arial, sans-serif
+   (list "LINK" "#AA0000")
+   (list "VLINK" "#AA0055")
+   (list "ALINK" "#AA0000")
+   (list "STYLE" "font-family: sans-serif;")))
+
 (define %shade-verbatim% #t)
 (define ($shade-verbatim-attr$)
   (list
