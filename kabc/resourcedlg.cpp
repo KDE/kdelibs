@@ -59,8 +59,9 @@ ResourceDlg::ResourceDlg( AddressBook *ab, QWidget *parent, const char *name )
 
     // setup listbox
     uint counter = 0;
-    for ( uint i = 0; i < ab->mResources.count(); ++i ) {
-	Resource *resource = ab->mResources.at( i );
+    QPtrList<Resource> list = ab->resources();
+    for ( uint i = 0; i < list.count(); ++i ) {
+	Resource *resource = list.at( i );
 	if ( resource && !resource->readOnly() ) {
 	    resourceMap.insert( counter, resource );
 	    resourceId->insertItem( resource->name() + " " +

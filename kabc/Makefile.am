@@ -1,4 +1,4 @@
-SUBDIRS = vcard
+SUBDIRS = vcard plugins
 
 INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated -I$(top_srcdir)/kab \
   $(all_includes)

@@ -20,6 +20,7 @@ Resource::~Resource()
 
 bool Resource::open()
 {
+    kdDebug() << "resource: standard" << endl;
   return true;
 }
 
@@ -54,7 +55,8 @@ QString Resource::identifier()
 
 void Resource::removeAddressee( const Addressee& )
 {
-	// do nothing
+    // do nothing
+    kdDebug() << "resource: removeAddressee" << endl;
 }
 
 void Resource::setReadOnly( bool value )

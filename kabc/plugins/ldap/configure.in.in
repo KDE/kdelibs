@@ -1,0 +1,97 @@
+AC_MSG_CHECKING(whether to compile LDAP support)
+AC_ARG_WITH(ldap,
+[  --without-ldap=PATH     Set path for LDAP files [default=check]],
+[ case "$withval" in
+  yes)
+    with_ldap=CHECK
+    ;;
+  esac ],
+[ with_ldap=CHECK ]
+)dnl
+
+if test "x$with_ldap" = "xCHECK" ; then
+  with_ldap=NOTFOUND
+  search_incs="$kde_includes /usr/include /usr/local/include"
+  AC_FIND_FILE(ldap.h, $search_incs, ldap_incdir)
+  if test -r $ldap_incdir/ldap.h ; then
+    test "x$ldap_incdir" != "x/usr/include" && LDAP_INCS="-I$ldap_incdir"
+    with_ldap=FOUND
+  fi
+  if test $with_ldap = FOUND ; then
+    with_ldap=NOTFOUND
+    for ext in la so sl a ; do
+      AC_FIND_FILE(libldap.$ext, $kde_libraries /usr/lib /usr/local/lib,
+        ldap_libdir)
+      if test -r $ldap_libdir/libldap.$ext ; then
+        if test "x$ldap_libdir" != "x/usr/lib" ; then
+          LDAP_LIBS="-L$ldap_libdir "
+          test "$USE_RPATH" = yes && LDAP_RPATH="-R $ldap_libdir"
+        fi
+        LDAP_LIBS="${LDAP_LIBS}-lldap -llber -lresolv"
+        with_ldap=FOUND
+        break
+      fi
+    done
+  fi
+fi
+
+case "$with_ldap" in
+no) AC_MSG_RESULT(no) ;;
+NOTFOUND) AC_MSG_RESULT(searched but not found) ;;
+*)
+  if test "x$with_ldap" = "xFOUND" ; then
+    msg="incs=$ldap_incdir libs=$ldap_libdir"
+  else
+    msg="$with_ldap"
+    LDAP_ROOT="$with_ldap"
+    if test "x$LDAP_ROOT" != "x/usr" ; then
+      LDAP_INCS="-I${LDAP_ROOT}/include"
+      LDAP_LIBS="-L${LDAP_ROOT}/lib "
+      if test "$USE_RPATH" = "yes" ; then
+        LDAP_RPATH="-R ${LDAP_ROOT}/lib"
+      fi
+    fi
+    LDAP_LIBS="${LDAP_LIBS}-lldap -llber -lresolv"
+  fi
+  kde_safe_LIBS="$LIBS"
+  kde_safe_CFLAGS="$CFLAGS"
+  LIBS="$LIBS $all_libraries $LDAP_LIBS $KERBEROS_LIBS $X_EXTRA_LIBS"
+  CFLAGS="$CFLAGS $all_includes $LDAP_INCS $KERBEROS_INCS"
+  AC_LANG_SAVE
+  AC_LANG_C
+  AC_TRY_LINK(dnl
+  [
+  #include <lber.h>
+  #include <ldap.h>
+  #if LDAP_VENDOR_VERSION < 20000
+  #error OpenLDAP version too old, please upgrade to version 2 or higher
+  #endif
+  ],
+  [
+  LDAP *ldap;
+  ],
+  , with_ldap=no
+  )
+  AC_LANG_RESTORE
+  CFLAGS=$kde_safe_CFLAGS
+  LIBS=$kde_safe_LIBS
+  if test "$with_ldap" = "no" ; then
+    LDAP_INCS=
+    LDAP_LIBS=
+    LDAP_RPATH=
+    LDAP_SUBDIR=
+    AC_MSG_RESULT(no (but first try gave $msg))
+  else
+    AC_DEFINE_UNQUOTED(HAVE_LIBLDAP, 1, [Define if you have LDAP libraries])
+    LDAP_SUBDIR="ldap"
+    AC_MSG_RESULT($msg)
+  fi
+  ;;
+esac
+
+AC_SUBST(LDAP_INCS)
+AC_SUBST(LDAP_LIBS)
+AC_SUBST(LDAP_RPATH)
+
+AM_CONDITIONAL(include_kioslave_ldap, test -n "$LDAP_SUBDIR")
+

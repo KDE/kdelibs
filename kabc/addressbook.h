@@ -43,7 +43,6 @@ class AddressBook : public QObject
 
     friend QDataStream &operator<<( QDataStream &, const AddressBook & );
     friend QDataStream &operator>>( QDataStream &, AddressBook & );
-    friend class ResourceDlg;
 
   public:
     /**
@@ -239,6 +238,16 @@ class AddressBook : public QObject
       Remove address book resource.
     */
     bool removeResource( Resource * );
+
+    /**
+      Move addressee to an other resource
+    */
+    void resourceAddressee( Addressee&, Resource * );
+
+    /**
+      Return pointer list of all resources
+    */
+    QPtrList<Resource> resources();
 
   signals:
     /**

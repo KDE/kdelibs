@@ -201,7 +201,8 @@ bool AddressBook::load()
 
   Resource *r;
   for( r = mResources.first(); r; r = mResources.next() )
-    if ( !r->load() ) return false;
+    if ( !r->load() )
+	return false;
 
   return true;
 }
@@ -288,6 +289,7 @@ void AddressBook::insertAddressee( const Addressee &a )
 
 void AddressBook::removeAddressee( const Addressee &a )
 {
+    kdDebug() << "removeAddressee: " << a.uid() << endl;
   Iterator it;
   for ( it = begin(); it != end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
@@ -446,7 +448,12 @@ QDataStream &KABC::operator>>( QDataStream &s, AddressBook &ab )
 
 bool AddressBook::addResource( Resource *resource )
 {
-  if ( !resource->open() ) return false;
+    kdDebug() << "AddressBook::addResource()" << endl;
+
+  if ( !resource->open() ) {
+    kdDebug() << "AddressBook::addResource(): not added" << endl;
+      return false;
+    }
   mResources.append( resource );
   return true;
 }
@@ -478,4 +485,20 @@ bool AddressBook::saveAll()
     }
 
     return ok;
+}
+
+void AddressBook::resourceAddressee( Addressee& addr, Resource *resource )
+{
+    Resource *res = addr.resource();
+    
+    // remove addressee from old resource before adding to the new one
+    if ( res )
+	res->removeAddressee( addr );
+
+    addr.setResource( resource );
+}
+
+QPtrList<Resource> AddressBook::resources()
+{
+    return mResources;
 }
