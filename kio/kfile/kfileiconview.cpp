@@ -657,9 +657,17 @@ void KFileIconView::determineIcon( KFileIconViewItem *item )
 
 void KFileIconView::listingCompleted()
 {
-    if ( !currentItem() )
-        setCurrentItem( firstFileItem() );
-        
+    // QIconView doesn't set the current item automatically, so we have to do
+    // that. We don't want to emit selectionChanged() tho.
+    if ( !currentItem() ) {
+        bool block = signalsBlocked();
+        blockSignals( true );
+        QIconViewItem *item = viewItem( firstFileItem() );
+        KIconView::setCurrentItem( item );
+        KIconView::setSelected( item, false );
+        blockSignals( block );
+    }
+
     arrangeItemsInGrid();
     m_resolver->start( d->previews->isChecked() ? 0 : 10 );
 }
