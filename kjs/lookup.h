@@ -27,7 +27,6 @@
 #include "value.h"
 #include "object.h"
 #include "interpreter.h"
-#include "internal.h"
 #include <stdio.h>
 
 namespace KJS {
@@ -140,7 +139,10 @@ namespace KJS {
         return Value(cachedVal);
 
       Value val(new FuncImp(exec,token, params));
-      setFunctionName( val, propertyName );
+
+      if (val.isA(ObjectType) && static_cast<ObjectImp*>(val.imp())->inherits(&InternalFunctionImp::info))
+        static_cast<InternalFunctionImp*>(val.imp())->setName(propertyName);
+
       ObjectImp *thatObj = const_cast<ObjectImp *>(thisObj);
       thatObj->ObjectImp::put(exec, propertyName, val, attr);
       return val;

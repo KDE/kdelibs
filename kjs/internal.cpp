@@ -974,12 +974,6 @@ Boolean InternalFunctionImp::hasInstance(ExecState *exec, const Value &value)
   return Boolean(false);
 }
 
-void KJS::setFunctionName(Value v, const Identifier &propertyName)
-{
-  if (v.isValid() && v.isA(ObjectType) && static_cast<ObjectImp*>(v.imp())->inherits(&InternalFunctionImp::info))
-    static_cast<InternalFunctionImp*>(v.imp())->setName(propertyName);
-}
-
 // ------------------------------ global functions -----------------------------
 
 double KJS::roundValue(ExecState *exec, const Value &v)

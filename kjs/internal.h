@@ -397,8 +397,6 @@ namespace KJS {
     Identifier ident;
   };
 
-  void setFunctionName(Value v, const Identifier &propertyName);
-
   // helper function for toInteger, toInt32, toUInt32 and toUInt16
   double roundValue(ExecState *exec, const Value &v);
 
