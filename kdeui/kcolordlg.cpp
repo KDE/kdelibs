@@ -529,7 +529,11 @@ static const char **namedColorFilePath( void )
   //
   static const char *path[] =
   {
+#ifdef X11_RGBFILE
+    X11_RBGFILE,
+#endif
     "/usr/X11R6/lib/X11/rgb.txt",
+    "/usr/openwin/lib/X11/rgb.txt", // for Solaris.
     0
   };
   return( path );
@@ -567,7 +571,7 @@ KPaletteTable::readNamedColor( void )
       int pos = 0;
 
       if( sscanf(line.ascii(), "%d %d %d%n", &red, &green, &blue, &pos ) == 3 )
-      {	
+      {
 	//
 	// Remove duplicates. Every name with a space and every name
 	// that start with "gray".
@@ -805,7 +809,7 @@ public:
 
 
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
-  :KDialogBase( parent, name, modal, i18n("Select Color"), 
+  :KDialogBase( parent, name, modal, i18n("Select Color"),
 		modal ? Help|Ok|Cancel : Help|Close,
 		Ok, true )
 {
@@ -855,7 +859,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   l_ltop->addWidget(d->hsSelector, 8);
   connect( d->hsSelector, SIGNAL( valueChanged( int, int ) ),
 	   SLOT( slotHSChanged( int, int ) ) );
-	
+
   d->valuePal = new KValueSelector( page );
   d->valuePal->setMinimumSize(26, 70);
   l_ltop->addWidget(d->valuePal, 1);
@@ -873,7 +877,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->hedit->setValidator( new QIntValidator( d->hedit ) );
   l_lbot->addWidget(d->hedit, 0, 3);
   connect( d->hedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
-	
+
   label = new QLabel( QString::fromLatin1("S:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 1, 2);
@@ -881,7 +885,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->sedit->setValidator( new QIntValidator( d->sedit ) );
   l_lbot->addWidget(d->sedit, 1, 3);
   connect( d->sedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
-	
+
   label = new QLabel( QString::fromLatin1("V:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 2);
@@ -889,7 +893,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->vedit->setValidator( new QIntValidator( d->vedit ) );
   l_lbot->addWidget(d->vedit, 2, 3);
   connect( d->vedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
-	
+
   //
   // add the RGB fields
   //
@@ -900,7 +904,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->redit->setValidator( new QIntValidator( d->redit ) );
   l_lbot->addWidget(d->redit, 0, 5);
   connect( d->redit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
-	
+
   label = new QLabel( QString::fromLatin1("G:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget( label, 1, 4);
@@ -908,7 +912,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->gedit->setValidator( new QIntValidator( d->gedit ) );
   l_lbot->addWidget(d->gedit, 1, 5);
   connect( d->gedit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
-	
+
   label = new QLabel( QString::fromLatin1("B:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 4);
@@ -928,7 +932,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->redit->setFixedWidth(w);
   d->gedit->setFixedWidth(w);
   d->bedit->setFixedWidth(w);
-	
+
   //
   // add a layout for left-side (colors)
   //
@@ -1203,7 +1207,7 @@ void KColorDialog::_setColor(const KColor &color, const QString &name)
   d->valuePal->repaint( FALSE );
   d->valuePal->setValue( v );
   d->bRecursion = false;
-	
+
   emit colorSelected( d->selColor );
 }
 
