@@ -2,8 +2,9 @@ kdelibs (4:2.1.2-2) unstable; urgency=low
  
   * Add provides in for -alsa packages (Closes: #96372)
   * Add in new xpm's (Closes: #96019)
+  * More Build-Depends work
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 04 May 2001 16:44:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 05 May 2001 13:40:00 -0700
 
 kdelibs (4:2.1.2-1) unstable; urgency=low
  
