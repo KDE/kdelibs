@@ -26,6 +26,7 @@
 #include <qimage.h>
 #include <qbitmap.h>
 #include <qcolor.h>
+#include <qdatetime.h>
 
 #include <kapp.h>
 #include <dither.h>
@@ -282,33 +283,44 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         }
         paint.end();
     }
-    else{ // diagonal gradient
+    else{
+        // Diagonal gradient code inspired by BlackBox (mosfet)
+        // BlackBox is (C) Brad Hughes, <bhughes@tcac.net>
         QImage image(width(), height(), 32);
-        int totColors = width()+height();
-        int rc, gc, bc ;
-        float rInc, gInc, bInc;
+        float rfd, gfd, bfd;
+        float rd = rca, gd = gca, bd = bca;
 
-        rInc = (float)rDiff/totColors;
-        gInc = (float)gDiff/totColors;
-        bInc = (float)bDiff/totColors;
-        
-        rc = rca;
-        gc = gca;
-        bc = bca;
-        int x, y, offset, startPos;
-        unsigned int *scanline;
-        unsigned int buffer[totColors];
-        for(offset = 0; offset < totColors-1; ++offset){
-            rc = (int)(rca + rInc*offset);
-            gc = (int)(gca + gInc*offset);
-            bc = (int)(bca + bInc*offset);
-            buffer[offset] = qRgb(rc, gc, bc);
+        unsigned char xtable[width()][3], ytable[height()][3];
+        unsigned int w = width() * 2, h = height() * 2;
+
+        register unsigned int x, y;
+
+        rfd = (float)rDiff/w;
+        gfd = (float)gDiff/w;
+        bfd = (float)bDiff/w;
+        for (x = 0; x < width(); x++, rd+=rfd, gd+=gfd, bd+=bfd) {
+            xtable[x][0] = (unsigned char) (rd);
+            xtable[x][1] = (unsigned char) (gd);
+            xtable[x][2] = (unsigned char) (bd);
+        }
+        rfd = (float)rDiff/h;
+        gfd = (float)gDiff/h;
+        bfd = (float)bDiff/h;
+
+        rd = gd = bd = 0;
+        for (y = 0; y < height(); y++, rd+=rfd, gd+=gfd, bd+=bfd) {
+            ytable[y][0] = ((unsigned char) rd);
+            ytable[y][1] = ((unsigned char) gd);
+            ytable[y][2] = ((unsigned char) bd);
         }
 
-        for(startPos=0, y=0; y < height(); ++y, ++startPos){
-            scanline = (unsigned int *)image.scanLine(y);
-            for(x=0; x < width(); ++x)
-                scanline[x] = buffer[startPos+x];
+        for (y = 0; y < height(); y++) {
+            unsigned int *scanline = (unsigned int *)image.scanLine(y);
+            for (x = 0; x < width(); x++) {
+                scanline[x] = qRgb(xtable[x][0] + ytable[y][0],
+                                   xtable[x][1] + ytable[y][1],
+                                   xtable[x][2] + ytable[y][2]);
+            }
         }
         if(depth() <= 16 ) {
             if( depth() == 16 )
