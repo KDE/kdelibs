@@ -224,7 +224,7 @@ AC_CHECK_HEADERS(netinet/in.h,
 AC_CHECK_HEADERS(sys/mount.h)
 
 AC_ARG_WITH(ipv6-lookup, 
-[  --with-ipv6-lookup=mode Set the mode for IPv6 lookups: yes, auto and no],
+AC_HELP_STRING([--with-ipv6-lookup=mode],[Set the mode for IPv6 lookups: yes, auto and no]),
 [
   AC_MSG_CHECKING([how we should treat IPv6 lookups])
   if test "$withval" = yes -o "$withval" = always; then
