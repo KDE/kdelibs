@@ -161,7 +161,7 @@ void KHTMLView::clear()
     if(d->useSlowRepaints) {
 	delete paintBuffer;
 	paintBuffer = 0;
-// ###	setStaticBackground(false);
+	setStaticBackground(false);
     }
 	
     delete d;
@@ -833,7 +833,7 @@ void KHTMLView::useSlowRepaints()
 {
     kdDebug(0) << "slow repaints requested" << endl;
     d->useSlowRepaints = true;
-// ###    setStaticBackground(true);
+    setStaticBackground(true);
 }
 
 
