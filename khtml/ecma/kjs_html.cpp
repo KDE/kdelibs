@@ -53,6 +53,7 @@
 #include "misc/htmlattrs.h"
 #include "rendering/render_object.h"
 #include "rendering/render_canvas.h"
+#include "rendering/render_layer.h"
 
 #include "kmessagebox.h"
 #include <kstringhandler.h>
@@ -163,6 +164,7 @@ const ClassInfo KJS::HTMLDocument::info =
   height		HTMLDocument::Height		DontDelete|ReadOnly
   width			HTMLDocument::Width		DontDelete|ReadOnly
   dir			HTMLDocument::Dir		DontDelete
+  compatMode		HTMLDocument::CompatMode	DontDelete|ReadOnly
 #IE extension
   frames		HTMLDocument::Frames		DontDelete|ReadOnly
 #potentially obsolete array properties
@@ -326,6 +328,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
     case CaptureEvents:
     case ReleaseEvents:
       return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
+    case CompatMode:
+      return getString(static_cast<HTMLDocumentImpl *>(doc.handle())->parseMode()
+              == DocumentImpl::Compat ? "BackCompat" : "CSS1Compat");
     }
   }
   // Look for overrides
@@ -505,6 +510,7 @@ const ClassInfo KJS::HTMLElement::tablecell_info = { "HTMLTableCellElement", &KJ
 const ClassInfo KJS::HTMLElement::frameSet_info = { "HTMLFrameSetElement", &KJS::HTMLElement::info, &HTMLFrameSetElementTable, 0 };
 const ClassInfo KJS::HTMLElement::frame_info = { "HTMLFrameElement", &KJS::HTMLElement::info, &HTMLFrameElementTable, 0 };
 const ClassInfo KJS::HTMLElement::iFrame_info = { "HTMLIFrameElement", &KJS::HTMLElement::info, &HTMLIFrameElementTable, 0 };
+const ClassInfo KJS::HTMLElement::marquee_info = { "HTMLMarqueeElement", &KJS::HTMLElement::info, &HTMLMarqueeElementTable, 0 };
 
 const ClassInfo* KJS::HTMLElement::classInfo() const
 {
@@ -629,6 +635,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
     return &frame_info;
   case ID_IFRAME:
     return &iFrame_info;
+  case ID_MARQUEE:
+    return &marquee_info;
   default:
     return &info;
   }
@@ -1087,6 +1095,12 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   src		  KJS::HTMLElement::IFrameSrc			DontDelete
   width		  KJS::HTMLElement::IFrameWidth			DontDelete
 @end
+
+@begin HTMLMarqueeElementTable 2
+  start           KJS::HTMLElement::MarqueeStart		DontDelete|Function 0
+  stop            KJS::HTMLElement::MarqueeStop                 DontDelete|Function 0
+@end
+
 */
 
 class EmbedLiveConnect : public ObjectImp {
@@ -1928,9 +1942,9 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ElementClassName:
     return getString(element.className());
   case ElementInnerHTML:
-    return getString(element.innerHTML());
+    return String(element.innerHTML());
   case ElementInnerText:
-    return getString(element.innerText());
+    return String(element.innerText());
   case ElementDocument:
     return getDOMNode(exec,element.ownerDocument());
   case ElementChildren:
@@ -2122,8 +2136,12 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
               trg == "_parent")
             block = false;
 
+          QString caption;
+
           // if there is a frame with the target name, don't block
           if ( view && view->part() )  {
+            if (!view->part()->url().host().isEmpty())
+              caption = view->part()->url().host() + " - ";
             // search all (possibly nested) framesets
             KHTMLPart *currentPart = view->part()->parentPart();
             while( currentPart != 0L ) {
@@ -2134,14 +2152,16 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
           }
 
           if ( block && policy == KHTMLSettings::KJSWindowOpenAsk && view ) {
-
+            if (view && view->part())
+            emit view->part()->browserExtension()->requestFocus(view->part());
+            caption += i18n( "Confirmation: JavaScript Popup" );
             if ( KMessageBox::questionYesNo(view, form.action().isEmpty() ?
                    i18n( "This site is submitting a form which will open up a new browser "
                          "window via JavaScript.\n"
                          "Do you want to allow the form to be submitted?" ) :
                    i18n( "<qt>This site is submitting a form which will open <p>%1</p> in a new browser window via JavaScript.<br />"
                          "Do you want to allow the form to be submitted?</qt>").arg(KStringHandler::csqueeze(form.action().string(),  100)),
-                   i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
+                   caption ) == KMessageBox::Yes )
               block = false;
 
           } else if ( block && policy == KHTMLSettings::KJSWindowOpenSmart ) {
@@ -2277,6 +2297,21 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
         return getDOMNode(exec,tableRow.insertCell(args[0].toInteger(exec)));
       else if (id == KJS::HTMLElement::TableRowDeleteCell) {
         tableRow.deleteCell(args[0].toInteger(exec));
+        return Undefined();
+      }
+      break;
+    }
+    case ID_MARQUEE: {
+      if (id == KJS::HTMLElement::MarqueeStart && element.handle()->renderer() &&
+        element.handle()->renderer()->layer() &&
+        element.handle()->renderer()->layer()->marquee()) {
+        element.handle()->renderer()->layer()->marquee()->start();
+        return Undefined();
+      }
+      else if (id == KJS::HTMLElement::MarqueeStop && element.handle()->renderer() &&
+              element.handle()->renderer()->layer() &&
+              element.handle()->renderer()->layer()->marquee()) {
+        element.handle()->renderer()->layer()->marquee()->stop();
         return Undefined();
       }
       break;

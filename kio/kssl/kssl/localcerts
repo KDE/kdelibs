@@ -7,4 +7,8 @@ icpbrasil.pem
 dfn-root-ca-cert.pem
 argedaten-root-ca-cert.pem
 ipsservidores.pem
-
+utn-network.pem
+utn-sgc.pem
+comodo1.pem
+comodo2.pem
+comodo3.pem

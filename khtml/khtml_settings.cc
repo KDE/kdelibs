@@ -322,11 +322,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     d->fonts = config->readListEntry( "Fonts" );
 
-    if ( reset || config->hasKey( "DefaultEncoding" ) ) {
+    if ( reset || config->hasKey( "DefaultEncoding" ) )
         d->m_encoding = config->readEntry( "DefaultEncoding", "" );
-        if ( d->m_encoding.isEmpty() )
-            d->m_encoding = KGlobal::locale()->encoding();
-    }
 
     if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
         d->enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );

@@ -5,7 +5,6 @@ Name[af]=Sql
 Name[bn]=এস-কিউ-এল (SQL)
 Name[hi]=एसक्यूएल (SQL)
 Name[ss]=I-SQL
-Name[xx]=xxSQLxx
 
 [Plugin]
 Type=sql

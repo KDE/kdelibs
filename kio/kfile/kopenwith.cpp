@@ -101,15 +101,27 @@ void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, const Q
 }
 
 
-// ----------------------------------------------------------------------
-// Ensure that dirs are sorted in front of files and case is ignored
+/* Ensures that directories sort before non-directories */
+int KAppTreeListItem::compare(QListViewItem *i, int col, bool ascending) const
+{
+	KAppTreeListItem *other = dynamic_cast<KAppTreeListItem *>(i);
 
+	// Directories sort first
+	if (directory && !other->directory)
+		return -1;
+
+	else if (!directory && other->directory)
+		return 1;
+
+	else // both directories or both not
+		return QListViewItem::compare(i, col, ascending);
+}
+
+// ----------------------------------------------------------------------
+// Ensure that case is ignored
 QString KAppTreeListItem::key(int column, bool /*ascending*/) const
 {
-    if (directory)
-        return QString::fromLatin1(" ") + text(column).upper();
-    else
-        return text(column).upper();
+	return text(column).upper();
 }
 
 void KAppTreeListItem::activate()
@@ -141,6 +153,7 @@ KApplicationTree::KApplicationTree( QWidget *parent )
     setRootIsDecorated( true );
 
     addDesktopGroup( QString::null );
+	cleanupTree();
 
     connect( this, SIGNAL( currentChanged(QListViewItem*) ),
             SLOT( slotItemHighlighted(QListViewItem*) ) );
@@ -273,6 +286,40 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
     KListView::resizeEvent(e);
 }
 
+// Prune empty directories from the tree
+void KApplicationTree::cleanupTree()
+{
+	QListViewItem *item=firstChild();
+	while(item!=0)
+	{
+		if(item->isExpandable())
+		{
+			item->setOpen(true);
+			if(item->childCount()==0) {
+				QListViewItem *current=item;
+				item=item->itemBelow();
+				delete current;
+				continue;
+			}
+			item=item->itemBelow();
+			continue;
+		}
+		item=item->itemBelow();
+	}
+	item=firstChild();
+	while(item!=0)
+	{
+		if(item->isExpandable())
+		{
+			QListViewItem *temp=item->itemBelow();
+			if(item->text(0)!=i18n("Applications"))
+				item->setOpen(false);
+			item=temp;
+			continue;
+		}
+		item=item->itemBelow();
+	}
+}
 
 /***************************************************************
  *
@@ -289,7 +336,7 @@ public:
 };
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
-             :QDialog( parent, 0L, true )
+             :QDialog( parent, "openwith", true )
 {
     setCaption( i18n( "Open With" ) );
     QString text;
@@ -308,7 +355,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
-             :QDialog( parent, 0L, true )
+             :QDialog( parent, "openwith", true )
 {
   QString caption = KStringHandler::csqueeze( _urls.first().prettyURL() );
   if (_urls.count() > 1)
@@ -320,7 +367,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 
 KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
                             QWidget *parent)
-             :QDialog( parent, 0L, true )
+             :QDialog( parent, "openwith", true )
 {
     setCaption(i18n("Choose Application for %1").arg(serviceType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
@@ -333,7 +380,7 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
 }
 
 KOpenWithDlg::KOpenWithDlg( QWidget *parent)
-             :QDialog( parent, 0L, true )
+             :QDialog( parent, "openwith", true )
 {
   setCaption(i18n("Choose Application"));
   QString text = i18n("<qt>Select a program. "

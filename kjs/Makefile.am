@@ -22,10 +22,10 @@ INCLUDES = -I$(top_srcdir) $(PCRECFLAGS) $(all_includes)
 
 lib_LTLIBRARIES = libkjs.la
 
-libkjs_la_SOURCES =  ustring.cpp internal.cpp collector.cpp nodes.cpp \
+libkjs_la_SOURCES =  ustring.cpp date_object.cpp collector.cpp nodes.cpp \
 		     grammar.cpp lexer.cpp lookup.cpp operations.cpp \
 		     regexp.cpp function_object.cpp string_object.cpp \
-		     bool_object.cpp number_object.cpp date_object.cpp \
+		     bool_object.cpp number_object.cpp internal.cpp \
 		     array_object.cpp math_object.cpp object_object.cpp \
 		     regexp_object.cpp error_object.cpp function.cpp \
 		     debugger.cpp value.cpp list.cpp object.cpp \

@@ -236,7 +236,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
     for (uint z = 0; z < m_views.count(); z++)
       connect( m_views.at(z), SIGNAL(gotFocus( Kate::View * )), this, SLOT(slotModifiedOnDisk()) );
 
-  m_isasking = false;
+  m_isasking = 0;
 }
 
 //
@@ -1051,17 +1051,37 @@ bool KateDocument::wrapText (uint startLine, uint endLine)
     if (!l)
       return false;
 
-    if (l->length() > col)
+    kdDebug () << "try wrap line: " << line << endl;
+
+    if (l->lengthWithTabs(m_buffer->tabWidth()) > col)
     {
       KateTextLine::Ptr nextl = m_buffer->line(line+1);
 
+      kdDebug () << "do wrap line: " << line << endl;
+
       const QChar *text = l->text();
       uint eolPosition = l->length()-1;
-      uint searchStart = col;
 
-      //If where we are wrapping is an end of line and is a space we don't
-      //want to wrap there
-      if (col == eolPosition && text[col].isSpace())
+      // take tabs into account here, too
+      uint x = 0;
+      const QString & t = l->string();
+      uint z2 = 0;
+      for ( ; z2 < l->length(); z2++)
+      {
+        if (t[z2] == QChar('\t'))
+          x += m_buffer->tabWidth() - (x % m_buffer->tabWidth());
+        else
+          x++;
+
+        if (x > col)
+          break;
+      }
+
+      uint searchStart = KMIN (z2, l->length()-1);
+
+      // If where we are wrapping is an end of line and is a space we don't
+      // want to wrap there
+      if (searchStart == eolPosition && text[searchStart].isSpace())
         searchStart--;
 
       // Scan backwards looking for a place to break the line
@@ -1110,8 +1130,7 @@ bool KateDocument::wrapText (uint startLine, uint endLine)
 
         editMarkLineAutoWrapped (line+1, true);
 
-        if (newLineAdded)
-          endLine++;
+        endLine++;
       }
     }
   }
@@ -3653,7 +3672,12 @@ void KateDocument::addStartLineCommentToSelection( int attrib )
 bool KateDocument::nextNonSpaceCharPos(int &line, int &col)
 {
   for(; line < (int)m_buffer->count(); line++) {
-    col = m_buffer->plainLine(line)->nextNonSpaceChar(col);
+    KateTextLine::Ptr textLine = m_buffer->plainLine(line);
+
+    if (!textLine)
+      break;
+
+    col = textLine->nextNonSpaceChar(col);
     if(col != -1)
       return true; // Next non-space char found
     col = 0;
@@ -3668,11 +3692,16 @@ bool KateDocument::previousNonSpaceCharPos(int &line, int &col)
 {
   while(true)
   {
-    col = m_buffer->plainLine(line)->previousNonSpaceChar(col);
+    KateTextLine::Ptr textLine = m_buffer->plainLine(line);
+
+    if (!textLine)
+      break;
+
+    col = textLine->previousNonSpaceChar(col);
     if(col != -1) return true;
     if(line == 0) return false;
     --line;
-    col = m_buffer->plainLine(line)->length();
+    col = textLine->length();
 }
   // No non-space char found
   line = -1;
@@ -3689,8 +3718,8 @@ bool KateDocument::removeStartStopCommentFromSelection( int attrib )
   QString startComment = m_highlight->getCommentStart( attrib );
   QString endComment = m_highlight->getCommentEnd( attrib );
 
-  int sl = selectStart.line();
-  int el = selectEnd.line();
+  int sl = kMax<int> (0, selectStart.line());
+  int el = kMin<int>  (selectEnd.line(), lastLine());
   int sc = selectStart.col();
   int ec = selectEnd.col();
 
@@ -3969,10 +3998,38 @@ void KateDocument::joinLines( uint first, uint last )
 {
 //   if ( first == last ) last += 1;
   editStart();
-  int l( first );
+  int line( first );
   while ( first < last )
   {
-    editUnWrapLine( l );
+    // Normalize the whitespace in the joined lines by making sure there's
+    // always exactly one space between the joined lines
+    // This cannot be done in editUnwrapLine, because we do NOT want this
+    // behaviour when deleting from the start of a line, just when explicitly
+    // calling the join command
+    KateTextLine::Ptr l = m_buffer->line( line );
+    KateTextLine::Ptr tl = m_buffer->line( line + 1 );
+
+    if ( !l || !tl )
+    {
+      editEnd();
+      return;
+    }
+
+    int pos = tl->firstChar();
+    if ( pos >= 0 )
+    {
+      if (pos != 0)
+        editRemoveText( line + 1, 0, pos );
+      if ( !( l->length() == 0 || l->getChar( l->length() - 1 ).isSpace() ) )
+        editInsertText( line + 1, 0, " " );
+    }
+    else
+    {
+      // Just remove the whitespace and let Kate handle the rest
+      editRemoveText( line + 1, 0, tl->length() );
+    }
+
+    editUnWrapLine( line );
     first++;
   }
   editEnd();
@@ -4130,9 +4187,9 @@ inline bool isBracket     ( const QChar& c ) { return isStartBracket( c ) || isE
 /*
    Bracket matching uses the following algorithm:
    If in overwrite mode, match the bracket currently underneath the cursor.
-   Otherwise, if the character to the left of the cursor is an ending bracket,
-   match it. Otherwise if the character to the right of the cursor is a
-   starting bracket, match it. Otherwise, if the the character to the left
+   Otherwise, if the character to the right of the cursor is an starting bracket,
+   match it. Otherwise if the character to the left of the cursor is a
+   ending bracket, match it. Otherwise, if the the character to the left
    of the cursor is an starting bracket, match it. Otherwise, if the character
    to the right of the cursor is an ending bracket, match it. Otherwise, don't
    match anything.
@@ -4165,11 +4222,11 @@ bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& e
     } else {
       return false;
     }
+  } else if ( isStartBracket( right ) ) {
+    bracket = right;
   } else if ( isEndBracket( left ) ) {
     start.setCol(start.col() - 1);
     bracket = left;
-  } else if ( isStartBracket( right ) ) {
-    bracket = right;
   } else if ( isBracket( left ) ) {
     start.setCol(start.col() - 1);
     bracket = left;
@@ -4278,19 +4335,13 @@ void KateDocument::setDocName (QString name )
 
 void KateDocument::slotModifiedOnDisk( Kate::View *v )
 {
-  if ( ! s_fileChangedDialogsActivated || m_isasking )
+  if ( !s_fileChangedDialogsActivated || m_isasking )
     return;
-
-  // we got focus after the dialog was canceled for the active view
-  if ( m_isasking < 0 )
-  {
-    m_isasking = 0;
-    return;
-  }
 
   if (m_modOnHd && !url().isEmpty())
   {
     m_isasking = 1;
+
     int exitval = ( v && v->hasFocus() ? 0 : -1 );
 
     switch ( KMessageBox::warningYesNoCancel( widget(),
@@ -4302,15 +4353,18 @@ void KateDocument::slotModifiedOnDisk( Kate::View *v )
         m_modOnHd = false; // trick reloadFile() to not ask again
         emit modifiedOnDisc( this, false, 0 );
         reloadFile();
+        m_isasking = 0;
         break;
+
       case KMessageBox::No:  // "ignore changes"
         m_modOnHd = false;
         emit modifiedOnDisc( this, false, 0 );
+        m_isasking = 0;
         break;
-//       default:               // cancel: ignore next focus event
-    }
 
-    m_isasking = exitval;
+      default:               // cancel: ignore next focus event
+        m_isasking = -1;
+    }
   }
 }
 
@@ -4334,7 +4388,7 @@ void KateDocument::reloadFile()
     if (m_modOnHd && s_fileChangedDialogsActivated)
     {
       int i = KMessageBox::warningYesNoCancel
-                (0, reasonedMOHString() + "\n\n" + i18n("What do you want to do?"), 
+                (0, reasonedMOHString() + "\n\n" + i18n("What do you want to do?"),
                 i18n("File Was Changed on Disk"), i18n("&Reload File"), i18n("&Ignore Changes"));
 
       if ( i != KMessageBox::Yes)
@@ -5142,6 +5196,11 @@ void KateDocument::slotModOnHdDirty (const QString &path)
 
     m_modOnHd = true;
     m_modOnHdReason = 1;
+
+    // reenable dialog if not running atm
+    if (m_isasking == -1)
+      m_isasking = false;
+
     emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
   }
 }
@@ -5152,6 +5211,11 @@ void KateDocument::slotModOnHdCreated (const QString &path)
   {
     m_modOnHd = true;
     m_modOnHdReason = 2;
+
+    // reenable dialog if not running atm
+    if (m_isasking == -1)
+      m_isasking = false;
+
     emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
   }
 }
@@ -5162,6 +5226,11 @@ void KateDocument::slotModOnHdDeleted (const QString &path)
   {
     m_modOnHd = true;
     m_modOnHdReason = 3;
+
+    // reenable dialog if not running atm
+    if (m_isasking == -1)
+      m_isasking = false;
+
     emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
   }
 }
@@ -5183,6 +5252,20 @@ bool KateDocument::createDigest( QCString &result )
   }
   return ret;
 }
+
+QString KateDocument::reasonedMOHString() const
+{
+  QString reason;
+  if ( m_modOnHdReason == 1 )
+    reason = i18n("modified");
+  else if ( m_modOnHdReason == 2 )
+    reason = i18n("created");
+  else if ( m_modOnHdReason == 3 )
+    reason = i18n("deleted");
+
+  return i18n("The file '%1' was changed (%2) on disk by another program!").arg( url().prettyURL() ).arg( reason );
+}
+
 
 void KateDocument::removeTrailingSpace( uint line )
 {

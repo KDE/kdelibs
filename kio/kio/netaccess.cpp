@@ -26,9 +26,12 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include <cstring>
+
 #include <qstring.h>
 #include <qapplication.h>
 #include <qfile.h>
+#include <qmetaobject.h>
 
 #include <kapplication.h>
 #include <klocale.h>
@@ -229,6 +232,13 @@ QString NetAccess::fish_execute( const KURL & url, const QString command, QWidge
   return kioNet.fish_executeInternal( url, command, window );
 }
 
+bool NetAccess::synchronousRun( Job* job, QWidget* window, QByteArray* data,
+                                KURL* finalURL, QMap<QString, QString>* metaData )
+{
+  NetAccess kioNet;
+  return kioNet.synchronousRunInternal( job, window, data, finalURL, metaData );
+}
+
 QString NetAccess::mimetype( const KURL& url )
 {
   NetAccess kioNet;
@@ -392,6 +402,52 @@ QString NetAccess::fish_executeInternal(const KURL & url, const QString command,
   return resultData;
 }
 
+bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* data,
+                                        KURL* finalURL, QMap<QString,QString>* metaData )
+{
+  job->setWindow( window );
+
+  m_metaData = metaData;
+  if ( m_metaData ) {
+      for ( QMap<QString, QString>::iterator it = m_metaData->begin(); it != m_metaData->end(); ++it ) {
+          job->addMetaData( it.key(), it.data() );
+      }
+  }
+
+  if ( finalURL ) {
+      SimpleJob *sj = dynamic_cast<SimpleJob*>( job );
+      if ( sj ) {
+          m_url = sj->url();
+      }
+  }
+
+  connect( job, SIGNAL( result (KIO::Job *) ),
+           this, SLOT( slotResult (KIO::Job *) ) );
+
+  QMetaObject *meta = job->metaObject();
+
+  static const char dataSignal[] = "data(KIO::Job*,const QByteArray&)";
+  if ( meta->findSignal( dataSignal ) != -1 ) {
+      connect( job, SIGNAL(data(KIO::Job*,const QByteArray&)),
+               this, SLOT(slotData(KIO::Job*,const QByteArray&)) );
+  }
+
+  static const char redirSignal[] = "redirection(KIO::Job*,const KURL&)";
+  if ( meta->findSignal( redirSignal ) != -1 ) {
+      connect( job, SIGNAL(redirection(KIO::Job*,const KURL&)),
+               this, SLOT(slotRedirection(KIO::Job*, const KURL&)) );
+  }
+
+  enter_loop();
+
+  if ( finalURL )
+      *finalURL = m_url;
+  if ( data )
+      *data = m_data;
+
+  return bJobOK;
+}
+
 // If a troll sees this, he kills me
 void qt_enter_modal( QWidget *widget );
 void qt_leave_modal( QWidget *widget );
@@ -417,7 +473,26 @@ void NetAccess::slotResult( KIO::Job * job )
   }
   if ( job->isA("KIO::StatJob") )
     m_entry = static_cast<KIO::StatJob *>(job)->statResult();
+
+  if ( m_metaData )
+    *m_metaData = job->metaData();
+
   qApp->exit_loop();
+}
+
+void NetAccess::slotData( KIO::Job*, const QByteArray& data )
+{
+  if ( data.isEmpty() )
+    return;
+
+  unsigned offset = m_data.size();
+  m_data.resize( offset + data.size() );
+  std::memcpy( m_data.data() + offset, data.data(), data.size() );
+}
+
+void NetAccess::slotRedirection( KIO::Job*, const KURL& url )
+{
+  m_url = url;
 }
 
 #include "netaccess.moc"

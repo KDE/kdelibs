@@ -292,6 +292,8 @@ public:
     DOMString altText() const;
     void activate();
 
+    void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
+    
 protected:
 
     DOMString m_value;
@@ -530,14 +532,16 @@ public:
     void focus();
 
     virtual bool isEditable();
+    void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
 
 protected:
     int m_rows;
     int m_cols;
     WrapMethod m_wrap;
     QString m_value;
-    bool m_dirtyvalue;
-    bool m_unsubmittedFormChange;
+    bool m_dirtyvalue: 1;
+    bool m_unsubmittedFormChange: 1;
+    bool m_initialized: 1;
 };
 
 // -------------------------------------------------------------------------

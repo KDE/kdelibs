@@ -530,14 +530,6 @@ void RenderPart::setWidget( QWidget *widget )
     slotViewCleared();
 }
 
-bool RenderPart::eventFilter(QObject *o, QEvent *e)
-{
-    if (element() && element()->id() == ID_FRAME && e->type()==QEvent::FocusIn) {
-	element()->getDocument()->setFocusNode(element());
-    }
-    return RenderWidget::eventFilter(o, e);
-}
-
 bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const QString& )
 {
     return false;
@@ -608,7 +600,7 @@ void RenderPartObject::updateWidget()
 
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
       url = o->url.string();
-      if( url.isEmpty() || !o->getDocument()->isURLAllowed(url) ) return;
+      if( !o->getDocument()->isURLAllowed(url) ) return;
       part->requestFrame( this, url, o->name.string(), QStringList(), true );
   // ### this should be constant true - move iframe to somewhere else
   } else {
@@ -715,8 +707,6 @@ void RenderPartObject::updateWidget()
       }
       if ((url.isEmpty() && !embed) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
-      else
-          objbase->setLiveConnect(part->liveConnectExtension(this));
   }
 }
 

@@ -86,6 +86,9 @@ void KTabBar::setTabEnabled( int id, bool enabled )
 
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 {
+    if( e->button() != LeftButton )
+        return;
+
     QTab *tab = selectTab( e->pos() );
     if( tab!= 0L ) {
         emit( mouseDoubleClick( indexOf( tab->identifier() ) ) );

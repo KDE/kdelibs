@@ -1727,7 +1727,7 @@ void KateHighlighting::createKateHlItemData(KateHlItemDataList &list)
   // If no highlighting is selected we need only one default.
   if (noHl)
   {
-    list.append(new KateHlItemData(I18N_NOOP("Normal Text"), KateHlItemData::dsNormal));
+    list.append(new KateHlItemData(i18n("Normal Text"), KateHlItemData::dsNormal));
     return;
   }
 
@@ -1984,7 +1984,7 @@ bool KateHighlighting::canComment( int startAttrib, int endAttrib ) const
   int k = hlKeyForAttrib( startAttrib );
   return ( k == hlKeyForAttrib( endAttrib ) &&
       ( ( !m_additionalData[k][0].isEmpty() && !m_additionalData[k][1].isEmpty() ) ||
-       m_additionalData[k][2].isEmpty() ) );
+       ! m_additionalData[k][2].isEmpty() ) );
 }
 
 QString KateHighlighting::getCommentString( int which, int attrib ) const
@@ -2926,31 +2926,49 @@ uint KateHlManager::defaultStyles()
   return 14;
 }
 
-QString KateHlManager::defaultStyleName(int n)
+QString KateHlManager::defaultStyleName(int n, bool translateNames)
 {
   static QStringList names;
+  static QStringList translatedNames;
 
   if (names.isEmpty())
   {
-    names << i18n("Normal");
-    names << i18n("Keyword");
-    names << i18n("Data Type");
-    names << i18n("Decimal/Value");
-    names << i18n("Base-N Integer");
-    names << i18n("Floating Point");
-    names << i18n("Character");
-    names << i18n("String");
-    names << i18n("Comment");
-    names << i18n("Others");
-    names << i18n("Alert");
-    names << i18n("Function");
+    names << "Normal";
+    names << "Keyword";
+    names << "Data Type";
+    names << "Decimal/Value";
+    names << "Base-N Integer";
+    names << "Floating Point";
+    names << "Character";
+    names << "String";
+    names << "Comment";
+    names << "Others";
+    names << "Alert";
+    names << "Function";
     // this next one is for denoting the beginning/end of a user defined folding region
-    names << i18n("Region Marker");
+    names << "Region Marker";
     // this one is for marking invalid input
-    names << i18n("Error");
+    names << "Error";
+
+    translatedNames << i18n("Normal");
+    translatedNames << i18n("Keyword");
+    translatedNames << i18n("Data Type");
+    translatedNames << i18n("Decimal/Value");
+    translatedNames << i18n("Base-N Integer");
+    translatedNames << i18n("Floating Point");
+    translatedNames << i18n("Character");
+    translatedNames << i18n("String");
+    translatedNames << i18n("Comment");
+    translatedNames << i18n("Others");
+    translatedNames << i18n("Alert");
+    translatedNames << i18n("Function");
+    // this next one is for denoting the beginning/end of a user defined folding region
+    translatedNames << i18n("Region Marker");
+    // this one is for marking invalid input
+    translatedNames << i18n("Error");
   }
 
-  return names[n];
+  return translateNames ? translatedNames[n] : names[n];
 }
 
 void KateHlManager::getDefaults(uint schema, KateAttributeList &list)

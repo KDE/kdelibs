@@ -1,8 +1,7 @@
-dnl --enable-fast-malloc depends on $KDE_MALLOC
-dnl --disable-fast-malloc disabled
-dnl --enable-fast-malloc=full enabled always
+dnl --enable-fast-malloc      - depends on $KDE_MALLOC
+dnl --disable-fast-malloc     - disabled
+dnl --enable-fast-malloc=full - enabled always
 dnl
-dnl enable on x86 Linux and x86 FreeBSD
 dnl gcc3.0 needs -finline-limit=100000 (large num)
 
 kde_fast_malloc=
@@ -90,16 +89,14 @@ dnl $KDE_MALLOC needs glibc (__libc_malloc etc.)
     fi
 fi
 
-dnl enable by default where possible
-dnl on FreeBSD (no glibc), the default is =full, as =yes doesn't work there,
-dnl   unless --enable-debug is used, in which case it's =no
-dnl on Linux (glibc), the default is =yes
 if test "$kde_fast_malloc" = "notgiven"; then
-    kde_fast_malloc=yes
+    #kde_fast_malloc=yes
+    kde_fast_malloc=no
 fi
 if test "$kde_fast_malloc" = "notgiven_full"; then
     if test "$kde_use_debug_code" = "no"; then
-        kde_fast_malloc=full
+        #kde_fast_malloc=full
+        kde_fast_malloc=no
     else
         kde_fast_malloc=no
     fi

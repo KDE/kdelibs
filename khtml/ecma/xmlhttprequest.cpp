@@ -40,6 +40,9 @@
 
 #ifdef APPLE_CHANGES
 #include "KWQLoader.h"
+#else
+#include <kio/netaccess.h>
+using KIO::NetAccess;
 #endif
 
 using namespace KJS;
@@ -303,12 +306,6 @@ void XMLHttpRequest::send(const QString& _body)
 {
   aborted = false;
 
-#ifndef APPLE_CHANGES
-  if (!async) {
-    return;
-  }
-#endif
-
   if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
       // FIXME: determine post encoding correctly by looking in headers for charset
       job = KIO::http_post( url, QCString(_body.utf8()), false );
@@ -322,18 +319,23 @@ void XMLHttpRequest::send(const QString& _body)
   }
   job->addMetaData( "PropagateHttpHeader", "true" );
 
-#ifdef APPLE_CHANGES
   if (!async) {
     QByteArray data;
     KURL finalURL;
     QString headers;
 
+#ifdef APPLE_CHANGES
     data = KWQServeSynchronousRequest(khtml::Cache::loader(), doc->docLoader(), job, finalURL, headers);
+#else
+    QMap<QString, QString> metaData;
+    if ( NetAccess::synchronousRun( job, 0, &data, &finalURL, &metaData ) ) {
+      headers = metaData[ "HTTP-Headers" ];
+    }
+#endif
     job = 0;
     processSyncLoadResults(data, finalURL, headers);
     return;
   }
-#endif
 
   qObject->connect( job, SIGNAL( result( KIO::Job* ) ),
 		    SLOT( slotFinished( KIO::Job* ) ) );
@@ -466,7 +468,6 @@ Value XMLHttpRequest::getStatusText() const
   return String(statusText);
 }
 
-#ifdef APPLE_CHANGES
 void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &finalURL, const QString &headers)
 {
   if (!urlMatchesDocumentDomain(finalURL)) {
@@ -480,10 +481,14 @@ void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &
     return;
   }
 
+#ifdef APPLE_CHANGES
   const char *bytes = (const char *)data.data();
   int len = (int)data.size();
 
   slotData(0, bytes, len);
+#else
+  slotData(0, data);
+#endif
 
   if (aborted) {
     return;
@@ -491,7 +496,6 @@ void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &
 
   slotFinished(0);
 }
-#endif
 
 void XMLHttpRequest::slotFinished(KIO::Job *job)
 {
@@ -585,7 +589,10 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       }
 
       QString method = args[0].toString(exec).qstring();
-      KURL url = KURL(Window::retrieveActive(exec)->part()->document().completeURL(args[1].toString(exec).qstring()).string());
+      KHTMLPart *part = ::qt_cast<KHTMLPart *>(Window::retrieveActive(exec)->part());
+      if (!part)
+        return Undefined();
+      KURL url = KURL(part->document().completeURL(args[1].toString(exec).qstring()).string());
 
       bool async = true;
       if (args.size() >= 3) {
@@ -653,6 +660,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   return Undefined();
 }
 
-}; // end namespace
+} // end namespace
 
 #include "xmlhttprequest.moc"

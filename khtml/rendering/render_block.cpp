@@ -556,9 +556,11 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         m_maxBottomNegMargin = m_maxBottomPosMargin = 0;
     }
 
-    // Always ensure our overflow width is at least as large as our width.
+    // Always ensure our overflow width/height is at least as large as our width/height.
     if (m_overflowWidth < m_width)
         m_overflowWidth = m_width;
+    if (m_overflowHeight < m_height)
+        m_overflowHeight = m_height;
 
     // Update our scrollbars if we're overflow:auto/scroll now that we know if
     // we overflow or not.
@@ -991,14 +993,6 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         child->setPos(chPos, child->yPos());
 
         m_height += child->height();
-        int overflowDelta = - child->height() ;
-        if ( child->isBlockFlow () && !child->isTable() && child->style()->hidesOverflow() )
-            overflowDelta += child->height();
-        else
-            overflowDelta += child->overflowHeight();
-
-        if (m_height + overflowDelta > m_overflowHeight)
-            m_overflowHeight = m_height + overflowDelta;
 
         if (child->isRenderBlock())
             prevFlow = static_cast<RenderBlock*>(child);
@@ -1011,8 +1005,28 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         // See if this child has made our overflow need to grow.
         // XXXdwh Work with left overflow as well as right overflow.
-        int rightChildPos = child->xPos() + kMax(child->overflowWidth(),
+        int overflowDelta = - child->height() ;
+        if ( child->isBlockFlow () && !child->isTable() && child->style()->hidesOverflow() )
+            overflowDelta += child->height();
+        else
+            overflowDelta += child->overflowHeight();
+
+        int rightChildPos = child->xPos() + kMax(child->effectiveWidth(),
                                                  child->width() + child->marginRight());
+        if (child->isRelPositioned()) {
+            // CSS 2.1-9.4.3 - allow access to relatively positioned content
+            // ### left overflow support
+            int xoff = 0, yoff = 0;
+            static_cast<RenderBox*>(child)->relativePositionOffset(xoff, yoff);
+            if (xoff>0)
+               rightChildPos += xoff;
+            if (yoff>0)
+               overflowDelta += yoff;
+        }
+
+        if (m_height + overflowDelta > m_overflowHeight)
+            m_overflowHeight = m_height + overflowDelta;
+
         if (rightChildPos > m_overflowWidth)
             m_overflowWidth = rightChildPos;
 
@@ -1093,12 +1107,19 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
         //kdDebug( 6040 ) << renderName() << " " << this << "::layoutPositionedObjects() start" << endl;
         RenderObject* r;
         QPtrListIterator<RenderObject> it(*m_positionedObjects);
+        bool adjOverflow = !(style()->position() == FIXED) && style()->hidesOverflow();
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "   have a positioned object" << endl;
             if ( relayoutChildren )
                 r->setLayouted( false );
             if ( !r->layouted() )
                 r->layout();
+            if (adjOverflow && r->style()->position() == ABSOLUTE) {
+                if (r->xPos() + r->effectiveWidth() > m_overflowWidth)
+                    m_overflowWidth = r->xPos() + r->effectiveWidth();
+                if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
+                    m_overflowHeight = r->yPos() + r->effectiveHeight();
+            }
         }
     }
 }

@@ -77,7 +77,7 @@ static KCmdLineOptions options[] =
     { "htdig", I18N_NOOP( "Create a ht://dig compatible index" ), 0 },
     { "check", I18N_NOOP( "Check the document for validity" ), 0 },
     { "cache <file>", I18N_NOOP( "Create a cache file for the document" ), 0},
-    { "srcdir <dir>", I18N_NOOP( "Cet the srcdir, for kdelibs" ), 0},
+    { "srcdir <dir>", I18N_NOOP( "Set the srcdir, for kdelibs" ), 0},
     { "+xml", I18N_NOOP("The file to transform"), 0},
     KCmdLineLastOption // End of options.
 };

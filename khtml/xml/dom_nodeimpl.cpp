@@ -323,10 +323,14 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
 	m_regdListeners->setAutoDelete(true);
     }
 
-    // remove existing ones of the same type - ### is this correct (or do we ignore the new one?)
+    listener->ref();
+
+    // remove existing identical listener set with identical arguments - the DOM2
+    // spec says that "duplicate instances are discarded" in this case.
     removeEventListener(id,listener,useCapture);
 
     m_regdListeners->append(rl);
+    listener->deref();
 }
 
 void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapture)
@@ -491,6 +495,28 @@ void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     dispatchGenericEvent( evt, exceptioncode );
     if (!evt->defaultPrevented() && doc->document())
 	doc->document()->defaultEventHandler(evt);
+
+    if (_id == EventImpl::LOAD_EVENT && !evt->propagationStopped() && doc->document()) {
+        // For onload events, send them to the enclosing frame only.
+        // This is a DOM extension and is independent of bubbling/capturing rules of
+        // the DOM.  You send the event only to the enclosing frame.  It does not
+        // bubble through the parent document.
+        DOM::ElementImpl* elt = doc->document()->ownerElement();
+        if (elt && (elt->getDocument()->domain().isNull() ||
+                    elt->getDocument()->domain() == doc->document()->domain())) {
+            // We also do a security check, since we don't want to allow the enclosing
+            // iframe to see loads of child documents in other domains.
+            evt->setCurrentTarget(elt);
+
+            // Capturing first.
+            elt->handleLocalEvents(evt,true);
+
+            // Bubbling second.
+            if (!evt->propagationStopped())
+                elt->handleLocalEvents(evt,false);
+        }
+    }
+
     doc->deref();
     evt->deref();
 }
@@ -1350,11 +1376,13 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
         }
         if((o->isText() && !o->isBR()) || o->isReplaced()) {
             o->container()->absolutePosition( xPos, yPos );
-            if (o->isText())
-                xPos += static_cast<RenderText *>(o)->minXPos();
-            else
+            if (o->isText()) {
+                xPos += o->inlineXPos();
+                yPos += o->inlineYPos();
+            } else {
                 xPos += o->xPos();
-            yPos += o->yPos();
+                yPos += o->yPos();
+            }
             return true;
         }
     }
@@ -1392,11 +1420,13 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
         }
         if((o->isText() && !o->isBR()) || o->isReplaced()) {
             o->container()->absolutePosition(xPos, yPos);
-            if (o->isText())
-                xPos += static_cast<RenderText *>(o)->minXPos() + o->width();
-            else
-                xPos += o->xPos()+o->width();
-            yPos += o->yPos()+o->height();
+            if (o->isText()) {
+                xPos += o->inlineXPos() + o->width();
+                yPos += o->inlineYPos() + o->height();
+            } else {
+                xPos += o->xPos() + o->width();
+                yPos += o->yPos() + o->height();
+            }
             return true;
         }
     }

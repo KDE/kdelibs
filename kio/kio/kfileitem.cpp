@@ -635,6 +635,7 @@ QString KFileItem::getToolTipText(int maxcount)
 
   if (info.isValid() && !info.isEmpty() )
   {
+    tip += "<tr><td colspan=2><center><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</s></center></td></tr>";
     QStringList keys = info.preferredKeys();
 
     // now the rest

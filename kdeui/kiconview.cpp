@@ -265,6 +265,7 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
   if( !( m_bUseSingle && ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
     setSelected( item, false );
+    viewport()->unsetCursor();
     emit executed( item );
     emit executed( item, pos );
   }

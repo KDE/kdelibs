@@ -44,6 +44,7 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
       m_wantOpenFolderPixmaps( true ),
       m_toolTip( this )
 {
+    setDragEnabled(true);
     setSelectionModeExt( KListView::Single );
 
     m_animationTimer = new QTimer( this );
@@ -91,6 +92,21 @@ KFileTreeView::~KFileTreeView()
    m_branches.clear(); // finally delete the branches and KFileItems
 }
 
+
+bool KFileTreeView::isValidItem( QListViewItem *item)
+{
+   if (!item)
+      return false;
+   QPtrList<QListViewItem> lst;
+   QListViewItemIterator it( this );
+   while ( it.current() )
+   {
+      if ( it.current() == item )
+         return true;
+      ++it;
+   }
+   return false;
+}
 
 void KFileTreeView::contentsDragEnterEvent( QDragEnterEvent *ev )
 {
@@ -151,12 +167,12 @@ void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
 void KFileTreeView::contentsDragLeaveEvent( QDragLeaveEvent * )
 {
    // Restore the current item to what it was before the dragging (#17070)
-   if ( m_currentBeforeDropItem )
+   if ( isValidItem(m_currentBeforeDropItem) )
    {
       setSelected( m_currentBeforeDropItem, true );
       ensureItemVisible( m_currentBeforeDropItem );
    }
-   else
+   else if ( isValidItem(m_dropItem) )
       setSelected( m_dropItem, false ); // no item selected
    m_currentBeforeDropItem = 0;
    m_dropItem = 0;
@@ -322,7 +338,7 @@ void KFileTreeView::slotAutoOpenFolder()
 {
    m_autoOpenTimer->stop();
 
-   if ( !m_dropItem || m_dropItem->isOpen() )
+   if ( !isValidItem(m_dropItem) || m_dropItem->isOpen() )
       return;
 
    m_dropItem->setOpen( true );
@@ -495,16 +511,27 @@ void KFileTreeView::slotAnimation()
 {
    MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.begin();
    MapCurrentOpeningFolders::Iterator end = m_mapCurrentOpeningFolders.end();
-   for (; it != end; ++it )
+   for (; it != end;)
    {
+      KFileTreeViewItem *item = it.key();
+      if (!isValidItem(item))
+      {
+         MapCurrentOpeningFolders::Iterator deleteIt = it;
+         ++it;
+         m_mapCurrentOpeningFolders.remove(item);
+         continue;
+      }
+         
       uint & iconNumber = it.data().iconNumber;
       QString icon = QString::fromLatin1( it.data().iconBaseName ).append( QString::number( iconNumber ) );
       // kdDebug(250) << "Loading icon " << icon << endl;
-      it.key()->setPixmap( 0, SmallIcon( icon )); // KFileTreeViewFactory::instance() ) );
+      item->setPixmap( 0, SmallIcon( icon )); // KFileTreeViewFactory::instance() ) );
 
       iconNumber++;
       if ( iconNumber > it.data().iconCount )
 	 iconNumber = 1;
+
+      ++it;
    }
 }
 

@@ -1359,7 +1359,10 @@ private slots:
    * @internal
    */
   void slotChildDocCreated();
-
+  /**
+   * @internal
+   */
+  void slotRequestFocus( KParts::ReadOnlyPart * );
   void slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* obj);
   void slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *obj );
   void checkCompleted();
@@ -1551,6 +1554,7 @@ private:
    */
   bool isExtendingSelection() const;
   khtml::Decoder *createDecoder();
+  QString defaultEncoding() const;
 
   /** @internal
    * generic zoom in

@@ -25,7 +25,9 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/types.h>
 #include <unistd.h>
+#include <pwd.h>
 #include <signal.h>
 
 #include <kapplication.h>
@@ -373,7 +375,15 @@ static KCmdLineOptions options[] =
 int main(int argc, char *argv[])
 {
     // forget about any settings
-    setenv( "KDEHOME", "/var/tmp/non_existant", 1 );
+    passwd* pw = getpwuid( getuid() );
+    if (!pw) {
+        fprintf(stderr, "dang, I don't even know who I am.\n");
+        exit(1);
+    }
+        
+    QString kh("/var/tmp/%1-khtml_testregression");
+    kh = kh.arg( pw->pw_name );
+    setenv( "KDEHOME", kh.latin1(), 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
 

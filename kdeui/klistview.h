@@ -968,6 +968,7 @@ protected:
 private:
   class KListViewPrivate;
   KListViewPrivate *d;
+  bool isExecuteArea( int x, QListViewItem* item );
 };
 
 /**

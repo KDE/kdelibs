@@ -780,7 +780,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
-  if (entry)
+  if (entry && !m_part.isNull())
   {
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "Window("<<this<<")::put " << propertyName.qstring() << endl;
@@ -1210,6 +1210,11 @@ Value Window::openWindow(ExecState *exec, const List& args)
   KHTMLSettings::KJSWindowOpenPolicy policy =
 		m_part->settings()->windowOpenPolicy(m_part->url().host());
   if ( policy == KHTMLSettings::KJSWindowOpenAsk ) {
+    emit m_part->browserExtension()->requestFocus(m_part);
+    QString caption;
+    if (!m_part->url().host().isEmpty())
+      caption = m_part->url().host() + " - ";
+    caption += i18n( "Confirmation: JavaScript Popup" );
     if ( KMessageBox::questionYesNo(widget,
                                     str.isEmpty() ?
                                     i18n( "This site is requesting to open up a new browser "
@@ -1217,7 +1222,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
                                           "Do you want to allow this?" ) :
                                     i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
                                           "Do you want to allow this?</qt>").arg(KStringHandler::csqueeze(url.htmlURL(),  100)),
-                                    i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
+                                    caption ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
   {
@@ -1369,6 +1374,10 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   UString s = v.toString(exec);
   str = s.qstring();
 
+  QString caption;
+  if (part && !part->url().host().isEmpty())
+    caption = part->url().host() + " - ";
+  caption += "JavaScript"; // TODO: i18n
   // functions that work everywhere
   switch(id) {
   case Window::Alert:
@@ -1376,27 +1385,33 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       return Undefined();
     if ( part && part->xmlDocImpl() )
       part->xmlDocImpl()->updateRendering();
-    KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), "JavaScript");
+    if ( part )
+      emit part->browserExtension()->requestFocus(part);
+    KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), caption);
     return Undefined();
   case Window::Confirm:
     if (!widget->dialogsAllowed())
       return Undefined();
     if ( part && part->xmlDocImpl() )
       part->xmlDocImpl()->updateRendering();
-    return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), "JavaScript",
+    if ( part )
+      emit part->browserExtension()->requestFocus(part);
+    return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), caption,
                                                 KStdGuiItem::ok(), KStdGuiItem::cancel()) == KMessageBox::Yes));
   case Window::Prompt:
     if (!widget->dialogsAllowed())
       return Undefined();
     if ( part && part->xmlDocImpl() )
       part->xmlDocImpl()->updateRendering();
+    if ( part )
+      emit part->browserExtension()->requestFocus(part);
     bool ok;
     if (args.size() >= 2)
-      str2 = KInputDialog::getText(i18n("Prompt"),
+      str2 = KInputDialog::getText(caption,
                                    QStyleSheet::convertFromPlainText(str),
                                    args[1].toString(exec).qstring(), &ok, widget);
     else
-      str2 = KInputDialog::getText(i18n("Prompt"),
+      str2 = KInputDialog::getText(caption,
                                    QStyleSheet::convertFromPlainText(str),
                                    QString::null, &ok, widget);
     if ( ok )
@@ -1559,9 +1574,19 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       // To conform to the SPEC, we only ask if the window
       // has more than one entry in the history (NS does that too).
       History history(exec,part);
-      if ( history.get( exec, "length" ).toInt32(exec) <= 1 ||
-           KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") ) == KMessageBox::Yes )
+
+      if ( history.get( exec, "length" ).toInt32(exec) <= 1 )
+      {
         doClose = true;
+      }
+      else
+      {
+        // Can we get this dialog with tabs??? Does it close the window or the tab in that case?
+        emit part->browserExtension()->requestFocus(part);
+        if ( KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") )
+             == KMessageBox::Yes )
+          doClose = true;
+      }
     }
     else
       doClose = true;
@@ -2148,9 +2173,15 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       question = i18n("Do you want a bookmark pointing to the location \"%1\" titled \"%2\" to be added to your collection?")
                  .arg(url).arg(title);
 
+    emit part->browserExtension()->requestFocus(part);
+
+    QString caption;
+    if (!part->url().host().isEmpty())
+       caption = part->url().host() + " - ";
+    caption += i18n("JavaScript Attempted Bookmark Insert");
+
     if (KMessageBox::warningYesNo(
-          widget, question,
-          i18n("JavaScript Attempted Bookmark Insert"),
+          widget, question, caption,
           i18n("Insert"), i18n("Disallow")) == KMessageBox::Yes)
     {
       KBookmarkManager *mgr = KBookmarkManager::userBookmarksManager();

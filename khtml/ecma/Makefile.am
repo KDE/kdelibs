@@ -41,40 +41,40 @@ LUT_FILES = kjs_dom.lut.h kjs_html.lut.h kjs_css.lut.h kjs_events.lut.h kjs_navi
 CREATE_HASH_TABLE = $(top_srcdir)/kjs/create_hash_table
 
 kjs_dom.lut.h : $(srcdir)/kjs_dom.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_dom.cpp > $@
 kjs_dom.lo: kjs_dom.lut.h
 kjs_html.lut.h : $(srcdir)/kjs_html.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_html.cpp > $@
 kjs_html.lo: kjs_html.lut.h
 kjs_css.lut.h : $(srcdir)/kjs_css.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_css.cpp > $@
 kjs_css.lo: kjs_css.lut.h
 kjs_events.lut.h : $(srcdir)/kjs_events.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_events.cpp > $@
 kjs_events.lo: kjs_events.lut.h
 kjs_navigator.lut.h : $(srcdir)/kjs_navigator.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_navigator.cpp > $@
 kjs_navigator.lo: kjs_navigator.lut.h
 kjs_mozilla.lut.h : $(srcdir)/kjs_mozilla.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_mozilla.cpp > $@
 kjs_mozilla.lo: kjs_mozilla.lut.h
 kjs_range.lut.h : $(srcdir)/kjs_range.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_range.cpp > $@
 kjs_range.lo: kjs_range.lut.h
 kjs_traversal.lut.h : $(srcdir)/kjs_traversal.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_traversal.cpp > $@
 kjs_traversal.lo: kjs_traversal.lut.h
 kjs_views.lut.h : $(srcdir)/kjs_views.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_views.cpp > $@
 kjs_views.lo: kjs_views.lut.h
 kjs_window.lut.h : $(srcdir)/kjs_window.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/kjs_window.cpp > $@
 kjs_window.lo: kjs_window.lut.h
 xmlhttprequest.lut.h : $(srcdir)/xmlhttprequest.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/xmlhttprequest.cpp > $@
 xmlhttprequest.lo: xmlhttprequest.lut.h
 xmlserializer.lut.h : $(srcdir)/xmlserializer.cpp $(CREATE_HASH_TABLE)
-	$(PERL) $(CREATE_HASH_TABLE) $< > $@
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/xmlserializer.cpp > $@
 xmlserializer.lo: xmlserializer.lut.h
 
 

@@ -627,8 +627,10 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
       if( destURL.isLocalFile() )
       {
         QFileInfo info( destURL.path() );
-        if( info.exists() )
+        if( info.exists() ) {
+          // TODO: use KIO::RenameDlg (shows more information)
           query = KMessageBox::warningYesNo( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ).arg( info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ), KStdGuiItem::cancel() );
+       }
        }
    } while ( query == KMessageBox::No );
 
@@ -664,7 +666,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                     destFile.close();
                     KURL url2 = KURL();
                     url2.setPath(destFile.name());
-                    KIO::move(url2, destURL);
+                    KIO::file_move(url2, destURL, -1, true /*overwrite*/);
                     saved = true;
                 }
             }
@@ -709,7 +711,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
 
           if ( downloadViaKIO )
           {
-              KIO::Job *job = KIO::copy( url, destURL );
+              KIO::Job *job = KIO::file_copy( url, destURL, -1, true /*overwrite*/ );
               job->setMetaData(metadata);
               job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
               job->addMetaData("cache", "cache"); // Use entry from cache if available.

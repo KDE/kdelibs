@@ -290,7 +290,16 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 		    memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size()); 
                     form_data[form_data.size()-2] = '\r';
                     form_data[form_data.size()-1] = '\n';
-                }
+
+		    // reset unsubmittedFormChange flag
+                    if (current->id() == ID_INPUT &&
+                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT)
+                        static_cast<HTMLInputElementImpl*>(current)->setUnsubmittedFormChange(false);
+                
+                    if (current->id() == ID_TEXTAREA)
+                        static_cast<HTMLTextAreaElementImpl*>(current)->setUnsubmittedFormChange(false);
+
+		}
             }
         }
     }
@@ -792,12 +801,22 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 bool HTMLGenericFormElementImpl::isSelectable() const
 {
     return  m_render && m_render->isWidget() &&
-        static_cast<RenderWidget*>(m_render)->widget();
+        static_cast<RenderWidget*>(m_render)->widget() &&
+        static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= QWidget::TabFocus;
 }
+
+class FocusHandleWidget : public QWidget
+{
+public:
+    void focusNextPrev(bool n) {
+	focusNextPrevChild(n);
+    }
+};
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->target() == this && renderer() && renderer()->isWidget()) {
+    if (evt->target() == this && renderer() && renderer()->isWidget() &&
+        !static_cast<RenderWidget*>(renderer())->widget()->inherits("QScrollView")) {
         switch(evt->id())  {
         case EventImpl::MOUSEDOWN_EVENT:
         case EventImpl::MOUSEUP_EVENT:
@@ -833,12 +852,24 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	    if (m_active)
 	    {
 		setActive(false);
-		getDocument()->setFocusNode(this);
+		setFocus();
 	    }
 	    else {
                 setActive(false);
             }
         }
+
+	if (evt->id() == EventImpl::KHTML_KEYPRESS_EVENT) {
+	    TextEventImpl * k = static_cast<TextEventImpl *>(evt);
+	    int key = k->qKeyEvent ? k->qKeyEvent->key() : 0;
+	    if (m_render && (key == Qt::Key_Tab || key == Qt::Key_BackTab)) {
+		QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
+		if (widget)
+		    static_cast<FocusHandleWidget *>(widget)
+			->focusNextPrev(key == Qt::Key_Tab);
+	    }
+	}
+
 
 	if (view && evt->id() == EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render && m_render->isWidget()) {
 	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
@@ -1084,7 +1115,7 @@ void HTMLInputElementImpl::restoreState(const QString &state)
         break;
     default:
         setValue(DOMString(state.left(state.length()-1)));
-        m_unsubmittedFormChange = (state.right(1)=="M");
+        m_unsubmittedFormChange = state.endsWith("M");
         break;
     }
 }
@@ -2181,6 +2212,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_cols = 20;
     m_wrap = ta_Virtual;
     m_dirtyvalue = true;
+    m_initialized = false;
     m_unsubmittedFormChange = false;
 }
 
@@ -2207,7 +2239,7 @@ QString HTMLTextAreaElementImpl::state( )
 void HTMLTextAreaElementImpl::restoreState(const QString &state)
 {
     setDefaultValue(state.left(state.length()-1));
-    m_unsubmittedFormChange = (state.right(1)=="M");
+    m_unsubmittedFormChange = state.endsWith("M");
     // the close() in the rendertree will take care of transferring defaultvalue to 'value'
 }
 
@@ -2290,10 +2322,12 @@ void HTMLTextAreaElementImpl::reset()
 DOMString HTMLTextAreaElementImpl::value()
 {
     if ( m_dirtyvalue) {
-        if ( m_render )
+        if ( m_render && m_initialized )
             m_value = static_cast<RenderTextArea*>( m_render )->text();
-        else
+        else {
             m_value = defaultValue().string();
+            m_initialized = true;
+        }
 
         m_dirtyvalue = false;
     }
@@ -2309,6 +2343,7 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
     QString str = _value.string().replace( "\r\n", "\n" );
     m_value = str.replace( '\r', '\n' );
     m_dirtyvalue = false;
+    m_initialized = true;
     setChanged(true);
 }
 

@@ -248,7 +248,7 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
       // better by concatenating a few of them into a big buffer
       // question is: how big should that buffer be? 2 kB should be enough
 
-      Q_ULONG bufsize = 2048;
+      Q_ULONG bufsize = 1460;
       if (len != -1 && len < bufsize)
 	bufsize = len;
       QByteArray buf(bufsize);
@@ -260,6 +260,16 @@ Q_LONG KSocketBuffer::sendTo(KActiveSocketBase* dev, Q_LONG len)
 	  count += (*it).size() - offset;
 	  offset = 0;
 	  ++it;
+	}
+
+      // see if we can still fit more
+      if (count < bufsize && it != end)
+	{
+	  // getting here means this buffer (*it) is larger than
+	  // (bufsize - count) (even for count == 0).
+	  memcpy(buf.data() + count, (*it).data() + offset, bufsize - count);
+	  offset += bufsize - count;
+	  count = bufsize;
 	}
 
       // now try to write those bytes

@@ -50,6 +50,7 @@
 #include "rendering/render_replaced.h"
 #include "rendering/render_arena.h"
 #include "rendering/render_layer.h"
+#include "rendering/render_frames.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -1706,7 +1707,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     QConstString n(_name->s, _name->l);
     bool cs = true; // case sensitive
     if (_type != NodeImpl::NamespaceId) {
-        if (_nsURI) 
+        if (_nsURI)
             nsid = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 ) << 16;
 
         // Each document maintains a mapping of tag name -> id for every tag name encountered
@@ -2051,26 +2052,20 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
             if (m_focusNode != newFocusNode) return;
             m_focusNode->setFocus();
             if (m_focusNode != newFocusNode) return;
+
+            // eww, I suck. set the qt focus correctly
+            // ### find a better place in the code for this
+            if (view()) {
+                if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
+                    view()->setFocus();
+                else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
+                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
+            }
         }
 
         updateRendering();
     }
-
-    // ### remove this code as soon as the event flow between frames
-    // is completely handled via the DOM event model.
-    // At the moment, this code is required exactly here (not inside the
-    // if (m_focusNode != newFocusNode) clause), because a form element
-    // which the document erroneously considers the focus widget
-    // can receive focus by a mouse click, e.g. if a widget outside
-    // KHTML was focused before.
-            if (view()) {
-	if (!m_focusNode || !m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
-                    view()->setFocus();
-	else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget() &&
-		 qApp->focusWidget() != static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
-                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
-            }
-        }
+}
 
 void DocumentImpl::attachNodeIterator(NodeIteratorImpl *ni)
 {
@@ -2311,6 +2306,58 @@ EventListener *DocumentImpl::createHTMLEventListener(QString code, QString name)
 void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
 {
     m_decoderMibEnum = codec->mibEnum();
+}
+
+ElementImpl *DocumentImpl::ownerElement() const
+{
+    KHTMLView *childView = view();
+    if (!childView)
+        return 0;
+    KHTMLPart *childPart = childView->part();
+    if (!childPart)
+        return 0;
+    KHTMLPart *parent = childPart->parentPart();
+    if (!parent)
+        return 0;
+    ChildFrame *childFrame = parent->frame(childPart);
+    if (!childFrame)
+        return 0;
+    RenderPart *renderPart = childFrame->m_frame;
+    if (!renderPart)
+        return 0;
+    return static_cast<ElementImpl *>(renderPart->element());
+}
+
+DOMString DocumentImpl::domain() const
+{
+    if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
+        m_domain = URL().host(); // Initially set to the host
+    return m_domain;
+}
+
+void DocumentImpl::setDomain(const DOMString &newDomain)
+{
+    if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
+        m_domain = URL().host().lower(); // Initially set to the host
+
+    if ( m_domain.isEmpty() /*&& view() && view()->part()->openedByJS()*/ )
+        m_domain = newDomain.lower();
+
+    // Both NS and IE specify that changing the domain is only allowed when
+    // the new domain is a suffix of the old domain.
+    int oldLength = m_domain.length();
+    int newLength = newDomain.length();
+    if ( newLength < oldLength ) // e.g. newDomain=kde.org (7) and m_domain=www.kde.org (11)
+    {
+        DOMString test = m_domain.copy();
+        DOMString reference = newDomain.lower();
+        if ( test[oldLength - newLength - 1] == '.' ) // Check that it's a subdomain, not e.g. "de.org"
+        {
+            test.remove( 0, oldLength - newLength ); // now test is "kde.org" from m_domain
+            if ( test == reference )                 // and we check that it's the same thing as newDomain
+                m_domain = reference;
+        }
+    }
 }
 
 DOMString DocumentImpl::toString() const

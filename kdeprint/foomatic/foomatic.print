@@ -10,6 +10,5 @@ Comment[fa]=Foomatic (CUPS،LPRng،PDQ)
 Comment[hi]=फूमेटिक (CUPS, LPRng, PDQ)
 Comment[sq]=Foomatik (CUPS, LPRng, PDQ)
 Comment[sv]=Foomatic (Cups, LPRng, PDQ)
-Comment[xx]=xxFoomatic (CUPS, LPRng, PDQ)xx
 DetectUris=exec:/foomatic-configure,config:/foomatic/
 DetectPrecedence=0

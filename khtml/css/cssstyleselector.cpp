@@ -2034,6 +2034,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_UNICODE_BIDI: {
         HANDLE_INHERIT_AND_INITIAL(unicodeBidi, UnicodeBidi)
+        if(!primitiveValue) break;
         switch (primitiveValue->getIdent()) {
             case CSS_VAL_NORMAL:
                 style->setUnicodeBidi(UBNormal);
@@ -2052,6 +2053,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_TEXT_TRANSFORM: {
         HANDLE_INHERIT_AND_INITIAL(textTransform, TextTransform)
 
+        if(!primitiveValue) break;
         if(!primitiveValue->getIdent()) return;
 
         ETextTransform tt;
@@ -2070,6 +2072,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         HANDLE_INHERIT_AND_INITIAL(visibility, Visibility)
 
+        if(!primitiveValue) break;
         switch( primitiveValue->getIdent() ) {
         case CSS_VAL_HIDDEN:
             style->setVisibility( HIDDEN );
@@ -2087,6 +2090,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_WHITE_SPACE:
         HANDLE_INHERIT_AND_INITIAL(whiteSpace, WhiteSpace)
 
+        if(!primitiveValue) break;
         if(!primitiveValue->getIdent()) return;
 
         EWhiteSpace s;

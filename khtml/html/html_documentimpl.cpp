@@ -67,7 +67,6 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
   : DocumentImpl(_implementation, v)
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
-    bodyElement = 0;
     htmlElement = 0;
 
     m_doAutoFill = false;
@@ -91,38 +90,6 @@ DOMString HTMLDocumentImpl::referrer() const
     if ( view() )
         return view()->part()->pageReferrer();
     return DOMString();
-}
-
-DOMString HTMLDocumentImpl::domain() const
-{
-    if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        m_domain = URL().host(); // Initially set to the host
-    return m_domain;
-}
-
-void HTMLDocumentImpl::setDomain(const DOMString &newDomain)
-{
-    if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        m_domain = URL().host().lower(); // Initially set to the host
-
-    if ( m_domain.isEmpty() /*&& view() && view()->part()->openedByJS()*/ )
-        m_domain = newDomain.lower();
-
-    // Both NS and IE specify that changing the domain is only allowed when
-    // the new domain is a suffix of the old domain.
-    int oldLength = m_domain.length();
-    int newLength = newDomain.length();
-    if ( newLength < oldLength ) // e.g. newDomain=kde.org (7) and m_domain=www.kde.org (11)
-    {
-        DOMString test = m_domain.copy();
-        DOMString reference = newDomain.lower();
-        if ( test[oldLength - newLength - 1] == '.' ) // Check that it's a subdomain, not e.g. "de.org"
-        {
-            test.remove( 0, oldLength - newLength ); // now test is "kde.org" from m_domain
-            if ( test == reference )                 // and we check that it's the same thing as newDomain
-                m_domain = reference;
-        }
-    }
 }
 
 DOMString HTMLDocumentImpl::lastModified() const
@@ -310,14 +277,8 @@ void HTMLDocumentImpl::close()
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
-        // The body has the listener for <frame onload>
-        b->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
-
-        b = body(); // the onload code could have changed it (e.g. document.open/write/close)
-
-        // The document has the listener for <frameset onload>
-        if (b && b->id() == ID_FRAMESET)
-            getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+        //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
+        getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         // don't update rendering if we're going to redirect anyway
         if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||

@@ -184,8 +184,23 @@ bool KateTextLine::endingWith(const QString& match) const
 int KateTextLine::cursorX(uint pos, uint tabChars) const
 {
   uint x = 0;
-  uint z;
-  for ( z = 0; z < kMin (pos, m_text.length()); z++)
+
+  for ( uint z = 0; z < kMin (pos, m_text.length()); z++)
+  {
+    if (m_text[z] == QChar('\t'))
+      x += tabChars - (x % tabChars);
+    else
+      x++;
+  }
+
+  return x;
+}
+
+uint KateTextLine::lengthWithTabs (uint tabChars) const
+{
+  uint x = 0;
+
+  for ( uint z = 0; z < m_text.length(); z++)
   {
     if (m_text[z] == QChar('\t'))
       x += tabChars - (x % tabChars);
@@ -210,7 +225,14 @@ bool KateTextLine::searchText (uint startCol, const QString &text, uint *foundAt
   int index;
 
   if (backwards)
-    index = m_text.findRev (text, startCol, casesensitive);
+  {
+    int col = startCol;
+    uint l = text.length();
+    do {
+      index = m_text.findRev( text, col, casesensitive );
+      col--;
+    } while ( col >= 0 && l + index >= startCol );
+  }
   else
     index = m_text.find (text, startCol, casesensitive);
 
@@ -229,7 +251,13 @@ bool KateTextLine::searchText (uint startCol, const QRegExp &regexp, uint *found
   int index;
 
   if (backwards)
-    index = regexp.searchRev (m_text, startCol);
+  {
+    int col = startCol;
+    do {
+      index = regexp.searchRev (m_text, col);
+      col--;
+    } while ( col >= 0 && regexp.matchedLength() + index >= (int)startCol );
+  }
   else
     index = regexp.search (m_text, startCol);
 

@@ -92,6 +92,12 @@ public:
   static bool isKnownProtocol( const KURL &url );
 
   /**
+   * Same as above except you can supply just the protocol instead of
+   * the whole URL.
+   */
+  static bool isKnownProtocol( const QString& protocol );
+
+  /**
    * Returns the library / executable to open for the protocol @p protocol
    * Example : "kio_ftp", meaning either the executable "kio_ftp" or
    * the library "kio_ftp.la" (recommended), whichever is available.
@@ -203,6 +209,12 @@ public:
   static bool isHelperProtocol( const KURL &url );
 
   /**
+   * Same as above except you can supply just the protocol instead of
+   * the whole URL.
+   */
+  static bool isHelperProtocol( const QString& protocol );
+
+  /**
    * Returns whether the protocol can act as a filter protocol.
    *
    * A filter protocol can operate on data that is passed to it
@@ -219,6 +231,12 @@ public:
    *         protocol is a helper or source
    */
   static bool isFilterProtocol( const KURL &url );
+
+  /**
+   * Same as above except you can supply just the protocol instead of
+   * the whole URL.
+   */
+  static bool isFilterProtocol( const QString& protocol );
 
   /**
    * Returns whether the protocol can list files/objects.
@@ -471,6 +489,19 @@ public:
    */
   static QStringList capabilities( const QString& protocol );
 
+  /**
+   * Returns the name of the protocol through which the request
+   * will be routed if proxy support is enabled.
+   *
+   * A good example of this is the ftp protocol for which proxy
+   * support is commonly handled by the http protocol.
+   *
+   * This corresponds to the "ProxiedBy=" in the protocol description file.
+   * 
+   * @since 3.3
+   */
+  static QString proxiedBy( const QString& protocol );
+
 public:
   // Internal functions:
   /**
@@ -508,12 +539,6 @@ public:
   static QStringList listing( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
   static bool isSourceProtocol( const QString& protocol ) KDE_DEPRECATED;
-  /// @deprecated
-  static bool isHelperProtocol( const QString& protocol ) KDE_DEPRECATED;
-  /// @deprecated
-  static bool isFilterProtocol( const QString& protocol ) KDE_DEPRECATED;
-  /// @deprecated
-  static bool isKnownProtocol( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
   static bool supportsListing( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated

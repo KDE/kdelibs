@@ -316,10 +316,11 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     result = Number(ms);
     break;
   case GetTimezoneOffset:
-#if defined BSD || defined(__APPLE__)
-    result = Number(-(t->tm_gmtoff / 60) + (t->tm_isdst > 0 ? 60 : 0));
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
+    result = Number(-(t->tm_gmtoff / 60) );
 #else
 #  if defined(__BORLANDC__)
+// FIXME consider non one-hour DST change
 #error please add daylight savings offset here!
     result = Number(_timezone / 60 - (t->tm_isdst > 0 ? 60 : 0));
 #  else
@@ -379,7 +380,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
       id == SetMinutes || id == SetHours || id == SetDate ||
       id == SetMonth || id == SetFullYear ) {
-    result = Number(mktime(t) * 1000.0 + ms);
+    result = makeTime(t, ms, utc);
     thisObj.setInternalValue(result);
   }
 
@@ -460,7 +461,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     t.tm_sec = (numArgs >= 6) ? args[5].toInt32(exec) : 0;
     t.tm_isdst = -1;
     int ms = (numArgs >= 7) ? args[6].toInt32(exec) : 0;
-    value = Number(mktime(&t) * 1000.0 + ms);
+    value = makeTime(&t, ms, false);
   }
 
   Object proto = exec->interpreter()->builtinDatePrototype();
@@ -520,7 +521,7 @@ Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &
     t.tm_min = (n >= 5) ? args[4].toInt32(exec) : 0;
     t.tm_sec = (n >= 6) ? args[5].toInt32(exec) : 0;
     int ms = (n >= 7) ? args[6].toInt32(exec) : 0;
-    return Number(mktime(&t) * 1000.0 + ms);
+    return makeTime(&t, ms, true);
   }
 }
 
@@ -592,19 +593,30 @@ static const struct {
     { { 0, 0, 0, 0 }, 0 }
 };
 
-int KJS::local_timeoffset()
+Number KJS::makeTime(struct tm *t, int ms, bool utc)
 {
-     static int local_offset = -1;
+    int utcOffset;
+    if (utc) {
+	time_t zero = 0;
+	struct tm t3;
+       	localtime_r(&zero, &t3);
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
+        utcOffset = t3.tm_gmtoff;
+        t->tm_isdst = t3.tm_isdst;
+#else
+#  if defined(__BORLANDC__)
+        utcOffset = - _timezone;
+#  else
+        utcOffset = - timezone;
+#  endif
+        t->tm_isdst = 0;
+#endif
+    } else {
+	utcOffset = 0;
+	t->tm_isdst = -1;
+    }
 
-     if ( local_offset != -1 ) return local_offset;
-
-     time_t local = time(0);
-     struct tm* tm_local = gmtime(&local);
-     local_offset = local-mktime(tm_local);
-     if(tm_local->tm_isdst)
-       local_offset += 3600;
-
-     return local_offset;
+    return Number( ( mktime(t) + utcOffset ) * 1000.0 + ms );
 }
 
 double KJS::KRFCDate_parseDate(const UString &_date)
@@ -677,12 +689,28 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      day = strtol(dateString, &newPosStr, 10);
      dateString = newPosStr;
 
-     if ((day < 1) || (day > 31))
-     	return invalidDate;
      if (!*dateString)
      	return invalidDate;
 
-     if (*dateString == '/' && day <= 12 && month == -1)
+     if (day < 1)
+       return invalidDate;
+     if (day > 31) {
+       // ### where is the boundary and what happens below?
+       if (*dateString == '/' && day >= 1000) {
+         // looks like a YYYY/MM/DD date
+         if (!*++dateString)
+           return invalidDate;
+         year = day;
+         month = strtol(dateString, &newPosStr, 10) - 1;
+         dateString = newPosStr;
+         if (*dateString++ != '/' || !*dateString)
+           return invalidDate;
+         day = strtol(dateString, &newPosStr, 10);
+         dateString = newPosStr;
+       } else {
+         return invalidDate;
+       }
+     } else if (*dateString == '/' && day <= 12 && month == -1)
      {
      	dateString++;
         // This looks like a MM/DD/YYYY date, not an RFC date.....
@@ -743,7 +771,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      }
 
      // '99 23:12:40 GMT'
-     year = strtol(dateString, &newPosStr, 10);
+     if (year <= 0 && *dateString)
+       year = strtol(dateString, &newPosStr, 10);
 
      // Don't fail if the time is missing.
      if (*newPosStr)
@@ -861,7 +890,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      if ((year < 1900) || (year > 2500))
      	return invalidDate;
 
-     if (!have_time && !have_tz) {
+     if (!have_tz) {
        // fall back to midnight, local timezone
        struct tm t;
        memset(&t, 0, sizeof(tm));
@@ -869,12 +898,15 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        t.tm_mon = month;
        t.tm_year = year - 1900;
        t.tm_isdst = -1;
+       if (have_time) {
+         t.tm_sec = second;
+         t.tm_min = minute;
+         t.tm_hour = hour;
+       }
+
        return mktime(&t);
      }
 
-     if(!have_tz)
-       offset = local_timeoffset();
-     else
        offset *= 60;
 
      result = ymdhms_to_seconds(year, month+1, day, hour, minute, second);

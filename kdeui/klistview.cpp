@@ -461,16 +461,18 @@ bool KListView::isExecuteArea( const QPoint& point )
 {
   QListViewItem* item = itemAt( point );
   if ( item ) {
-    int offset = treeStepSize() * ( item->depth() + ( rootIsDecorated() ? 1 : 0) );
-    if (point.x() > (item->width( fontMetrics() , this, 0 ) + offset ))
-      return false;
-    return isExecuteArea( point.x() );
+    return isExecuteArea( point.x(), item );
   }
 
   return false;
 }
 
 bool KListView::isExecuteArea( int x )
+{
+  return isExecuteArea( x, 0 );
+}
+
+bool KListView::isExecuteArea( int x, QListViewItem* item )
 {
   if( allColumnsShowFocus() )
     return true;
@@ -483,6 +485,19 @@ bool KListView::isExecuteArea( int x )
       offset += columnWidth( header()->mapToSection( index ) );
 
     x += contentsX(); // in case of a horizontal scrollbar
+
+    if ( item )
+    {
+	width = treeStepSize()*( item->depth() + ( rootIsDecorated() ? 1 : 0 ) );
+	width += itemMargin();
+	int ca = AlignHorizontal_Mask & columnAlignment( 0 );
+	if ( ca == AlignLeft || ca == AlignAuto ) {
+	    width += item->width( fontMetrics(), this, 0 );
+	    if ( width > columnWidth( 0 ) )
+		width = columnWidth( 0 );
+	}
+    }
+
     return ( x > offset && x < ( offset + width ) );
   }
 }
@@ -654,6 +669,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
         // Double click mode ?
         if ( !d->bUseSingle )
         {
+            viewport()->unsetCursor();
             emit executed( item );
             emit executed( item, pos, c );
         }
@@ -668,6 +684,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 
             //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
             if( !( ((keybstate & KApplication::ShiftModifier) || (keybstate & KApplication::ControlModifier)) ) ) {
+                viewport()->unsetCursor();
                 emit executed( item );
                 emit executed( item, pos, c );
             }

@@ -25,6 +25,7 @@
 #include <qdir.h>
 #include <qtable.h>
 #include <qpair.h>
+#include <qtimer.h>
 #include <qguardedptr.h>
 
 #include <klibloader.h>
@@ -365,6 +366,8 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
     // delay showApplet if size is unknown and m_view not shown
     if (applet->size().width() > 0 || m_view->isVisible())
         w->showApplet ();
+    else
+        QTimer::singleShot (10, this, SLOT (delayedCreateTimeOut ()));
     if (!applet->failed ())
         emit started (0L);
     return url.isValid ();
@@ -388,6 +391,12 @@ bool KJavaAppletViewer::appletAlive () const {
 
 bool KJavaAppletViewer::openFile () {
     return false;
+}
+
+void KJavaAppletViewer::delayedCreateTimeOut () {
+    KJavaAppletWidget * w = m_view->appletWidget ();
+    if (!w->applet ()->isCreated () && !m_closed)
+        w->showApplet ();
 }
 
 void KJavaAppletViewer::appletLoaded () {

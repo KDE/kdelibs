@@ -30,7 +30,7 @@ namespace KSettings
 
 /**
   Dialog for selecting which plugins should be active for an application. Set
-  the list of available plugins with setPluginInfos(). The dialog will save the
+  the list of available plugins with \ref setPluginInfos. The dialog will save the
   configuration on clicking ok or apply to the applications config file. Connect
   to the okClicked() and applyClicked() signals to be notified about
   configuration changes.

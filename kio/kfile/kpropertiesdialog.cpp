@@ -789,6 +789,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     KIconButton *iconButton = new KIconButton( d->m_frame );
     int bsize = 66 + 2 * iconButton->style().pixelMetric(QStyle::PM_ButtonMargin);
     iconButton->setFixedSize(bsize, bsize);
+    iconButton->setIconSize(48);
     iconButton->setStrictIconSize(false);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
@@ -814,7 +815,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QLabel *iconLabel = new QLabel( d->m_frame );
     int bsize = 66 + 2 * iconLabel->style().pixelMetric(QStyle::PM_ButtonMargin);
     iconLabel->setFixedSize(bsize, bsize);
-    iconLabel->setPixmap( DesktopIcon( iconStr ) );
+    iconLabel->setPixmap( KGlobal::iconLoader()->loadIcon( iconStr, KIcon::Desktop, 48) );
     iconArea = iconLabel;
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
@@ -863,6 +864,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 
+    if (!kapp->authorizeKAction("editfiletype"))
+       button->hide();
 
     grid->addWidget(box, curRow++, 2);
   }
@@ -954,7 +957,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l = new QLabel(i18n("Points to:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    l = new QLabel(item->linkDest(), d->m_frame );
+    l = new KSqueezedTextLabel(item->linkDest(), d->m_frame );
     grid->addWidget(l, curRow++, 2);
   }
 
@@ -1236,6 +1239,10 @@ void KFilePropsPlugin::applyChanges()
       qt_leave_modal(&dummy);
       return;
     }
+    properties->updateUrl(properties->kurl());
+    // Update also relative path (for apps and mimetypes)
+    if ( !m_sRelativePath.isEmpty() )
+      determineRelativePath( properties->kurl().path() );
   }
 
   // No job, keep going

@@ -1701,7 +1701,7 @@ bool Ftp::ftpOpenDir( const QString & path )
 
   // We try to change to this directory first to see whether it really is a directory.
   // (And also to follow symlinks)
-  QString tmp = path.isEmpty() ? QString("/") : remoteEncoding()->encode(path);
+  QString tmp = path.isEmpty() ? QString("/") : path;
 
   // We get '550', whether it's a file or doesn't exist...
   if( !ftpFolder(tmp, false) )

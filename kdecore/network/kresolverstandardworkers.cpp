@@ -382,7 +382,7 @@ namespace
   }
 
 #endif // HAVE_GETADDRINFO
-}; // namespace
+} // namespace
 
 bool KStandardWorker::sanityCheck()
 {
@@ -861,6 +861,8 @@ bool KGetAddrinfoWorker::wantThis(int family)
   return false;
 }
 
+#endif
+
 void KNetwork::Internal::initStandardWorkers()
 {
   // register the workers in the order we want them to be tried
@@ -868,7 +870,8 @@ void KNetwork::Internal::initStandardWorkers()
   // special case in KResolverManager::findWorker
 
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KStandardWorker>);
-  KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KGetAddrinfoWorker>);
-}
 
+#ifdef HAVE_GETADDRINFO
+  KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KGetAddrinfoWorker>);
 #endif
+}

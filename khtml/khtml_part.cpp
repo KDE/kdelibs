@@ -37,6 +37,7 @@
 #include "html/html_baseimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_imageimpl.h"
+#include "html/html_objectimpl.h"
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_layer.h"
@@ -574,6 +575,7 @@ bool KHTMLPart::openURL( const KURL &url )
     args.xOffset = d->m_view->contentsX();
     args.yOffset = d->m_view->contentsY();
     d->m_extension->setURLArgs(args);
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
     connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   }
 
@@ -2223,7 +2225,20 @@ QString KHTMLPart::encoding() const
     if(d->m_decoder && d->m_decoder->encoding())
         return QString(d->m_decoder->encoding());
 
-    return(settings()->encoding());
+    return defaultEncoding();
+}
+
+QString KHTMLPart::defaultEncoding() const
+{
+  QString encoding = settings()->encoding();
+  if ( !encoding.isEmpty() )
+    return encoding;
+  // HTTP requires the default encoding to be latin1, when neither
+  // the user nor the page requested a particular encoding.
+  if ( url().protocol().startsWith( "http" ) )
+    return "iso-8859-1";
+  else
+    return KGlobal::locale()->encoding();
 }
 
 void KHTMLPart::setUserStyleSheet(const KURL &url)
@@ -2240,9 +2255,12 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 
 void KHTMLPart::gotoAnchor()
 {
-  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
-  if ( !gotoAnchor( m_url.encodedHtmlRef()) )
-      gotoAnchor( m_url.htmlRef() );
+  if ( !d->m_doc || !d->m_doc->parsing() ) {
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(gotoAnchor()));
+  }
+
+  if ( !gotoAnchor(m_url.encodedHtmlRef()) )
+      gotoAnchor(m_url.htmlRef());
 }
 
 bool KHTMLPart::gotoAnchor( const QString &name )
@@ -2260,7 +2278,13 @@ bool KHTMLPart::gotoAnchor( const QString &name )
       n = d->m_doc->getElementById( name );
   }
 
-  if(!n) {
+  // Implement the rule that "" and "top" both mean top of page as in other browsers.
+  bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.lower() == "top");
+
+  if (quirkyName) {
+      d->m_view->setContentsPos(0, 0);
+      return true;
+  } else if (!n) {
       kdDebug(6050) << "KHTMLPart::gotoAnchor node '" << name << "' not found" << endl;
       return false;
   }
@@ -2848,7 +2872,7 @@ bool KHTMLPart::findTextNext()
             // Otherwise (if we keep the 'last node', and it has a '\n') we might be stuck
             // on that object forever...
             obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
-          } while ( obj && !obj->element() );
+          } while ( obj && ( !obj->element() || obj->isInlineContinuation() ) );
         }
         if ( obj )
           lastNode = obj->element();
@@ -3889,7 +3913,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
           emit d->m_extension->openURLNotify();
   }
 
-  if ( child->m_serviceType != mimetype )
+  if ( child->m_serviceType != mimetype || !child->m_part )
   {
     // Before attempting to load a part, check if the user wants that.
     // Many don't like getting ZIP files embedded.
@@ -3926,6 +3950,18 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
         checkEmitLoadEvent();
         return false;
+    } else if (child->m_frame) {
+        child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
+        DOM::NodeImpl* elm = child->m_frame->element();
+        if (elm)
+            switch (child->m_frame->element()->id()) {
+                case ID_APPLET:
+                case ID_EMBED:
+                case ID_OBJECT:
+                    static_cast<HTMLObjectBaseElementImpl*>(elm)->setLiveConnect(child->m_liveconnect);
+                default:
+                    break;
+            }
     }
 
     //CRITICAL STUFF
@@ -4001,9 +4037,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
                d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
 
+      connect( child->m_extension, SIGNAL( requestFocus( KParts::ReadOnlyPart * ) ),
+               this, SLOT( slotRequestFocus( KParts::ReadOnlyPart * ) ) );
+
       child->m_extension->setBrowserInterface( d->m_extension->browserInterface() );
     }
-    child->m_liveconnect = KParts::LiveConnectExtension::childObject( part );
   }
   else if ( child->m_frame && child->m_part &&
             child->m_frame->widget() != child->m_part->widget() )
@@ -4456,7 +4494,7 @@ void KHTMLPart::slotChildDocCreated()
 void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &args )
 {
   khtml::ChildFrame *child = frame( sender()->parent() );
-  KHTMLPart *callingHtmlPart = const_cast<KHTMLPart *>(dynamic_cast<const KHTMLPart *>(sender()));
+  KHTMLPart *callingHtmlPart = const_cast<KHTMLPart *>(dynamic_cast<const KHTMLPart *>(sender()->parent()));
 
   // TODO: handle child target correctly! currently the script are always executed fur the parent
   QString urlStr = url.url();
@@ -4510,6 +4548,11 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
       newArgs.frameName = QString::null;
       emit d->m_extension->openURLRequest( url, newArgs );
   }
+}
+
+void KHTMLPart::slotRequestFocus( KParts::ReadOnlyPart * )
+{
+  emit d->m_extension->requestFocus(this);
 }
 
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
@@ -5550,8 +5593,6 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
 
   QString str;
   int len = 0;
-  // make offset point left to current char
-  if (right && offset > 0) offset--;
   if ( obj->isText() ) { // can be false e.g. when double-clicking on a disabled submit button
     str = static_cast<khtml::RenderText *>(obj)->data().string();
     len = str.length();
@@ -6368,7 +6409,7 @@ khtml::Decoder *KHTMLPart::createDecoder()
   if( !d->m_encoding.isNull() )
     dec->setEncoding( d->m_encoding.latin1(), true );
   else
-    dec->setEncoding( settings()->encoding().latin1(), d->m_haveEncoding );
+    dec->setEncoding( defaultEncoding().latin1(), d->m_haveEncoding );
 
   dec->setAutoDetectLanguage( d->m_autoDetectLanguage );
   return dec;
