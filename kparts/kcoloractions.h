@@ -1,7 +1,7 @@
 #ifndef kcoloractions_h
 #define kcoloractions_h
 
-#include <k2action.h>
+#include <kaction.h>
 #include <qvaluelist.h>
 #include <qcolor.h>
 #include <qwidget.h>
@@ -9,7 +9,7 @@
 class QMouseEvent;
 class QPaintEvent;
 
-class KColorAction : public K2Action
+class KColorAction : public KAction
 {
     Q_OBJECT
     
@@ -64,7 +64,7 @@ signals:
     
 };
 
-class KColorBarAction : public K2Action
+class KColorBarAction : public KAction
 {
     Q_OBJECT
     

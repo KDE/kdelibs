@@ -9,7 +9,7 @@
 
 KColorAction::KColorAction( const QString& text, int accel,
 			    QObject* parent, const char* name )
-    : K2Action( text, accel, parent, name )
+    : KAction( text, accel, parent, name )
 {
     init();
 }
@@ -17,14 +17,14 @@ KColorAction::KColorAction( const QString& text, int accel,
 KColorAction::KColorAction( const QString& text, int accel,
 			    QObject* receiver, const char* slot, QObject* parent, 
 			    const char* name )
-    : K2Action( text, accel, receiver, slot, parent, name )
+    : KAction( text, accel, receiver, slot, parent, name )
 {
     init();
 }
 
 KColorAction::KColorAction( const QString& text, Type type, int accel,
 			    QObject* parent, const char* name )
-    : K2Action( text, accel, parent, name )
+    : KAction( text, accel, parent, name )
 {
     init();
     setType( type );
@@ -33,14 +33,14 @@ KColorAction::KColorAction( const QString& text, Type type, int accel,
 KColorAction::KColorAction( const QString& text, Type type, int accel,
 			    QObject* receiver, const char* slot, QObject* parent, 
 			    const char* name )
-    : K2Action( text, accel, receiver, slot, parent, name )
+    : KAction( text, accel, receiver, slot, parent, name )
 {
     init();
     setType( type );
 }
 
 KColorAction::KColorAction( QObject* parent, const char* name )
-    : K2Action( parent, name )
+    : KAction( parent, name )
 {
     init();
 }
@@ -239,7 +239,7 @@ void KColorBar::paintEvent( QPaintEvent * )
 KColorBarAction::KColorBarAction( const QString &text, int accel, 
 				  QObject *r, const char *leftClickSlot_, const char *rightClickSlot_,
 				  const QValueList<QColor> &cols, QObject *parent, const char *name )
-    : K2Action( text, accel, parent, name ), colors( cols )
+    : KAction( text, accel, parent, name ), colors( cols )
 {
     receiver = r;
     leftClickSlot = qstrdup( leftClickSlot_ );
