@@ -20,6 +20,7 @@
 #ifndef __kxmlgui_h__
 #define __kxmlgui_h__
 
+#include <qlist.h>
 #include <qdom.h>
 #include <qmap.h>
 
