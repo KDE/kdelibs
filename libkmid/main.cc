@@ -31,11 +31,16 @@
 #include "sndcard.h"
 #include "../version.h"
 
+// Here is the output device to use
+#define DEVICETOUSE 0
+// If you preffer another device (such as fm, awe, or other), try different
+//  values ( 1, 2 , ... etc.  but probably smaller than 7)
+
 // If you want to use a midi map you have to change the next definition :
-//#define MAP_PATH NULL
+#define MAP_PATH NULL
 // For example to something like :
-//#define MAP_PATH "/home/Antonio/prg/kmid1/kmid/maps/yamaha790.map"
-#define MAP_PATH "/opt/kde/share/apps/kmid/maps/YamahaPSS790.map"
+//#define MAP_PATH "/home/antonio/prg/kmid1/kmid/maps/yamaha790.map"
+//#define MAP_PATH "/opt/kde/share/apps/kmid/maps/YamahaPSS790.map"
 
 
 PlayerController pctl;
@@ -72,7 +77,7 @@ if (argc<2)
     exit(0);
     };
 
-DeviceManager * devman=new DeviceManager(0);
+DeviceManager * devman=new DeviceManager(DEVICETOUSE);
 //midiOut *midi=new midiOut();
 MidiMapper *map=new MidiMapper(MAP_PATH);
 devman->initManager();

@@ -68,7 +68,9 @@ songLoaded=0;
 int player::loadSong(char *filename)
 {
 removeSong();
+#ifdef PLAYERDEBUG
 printf("Loading Song : %s\n",filename);
+#endif
 info=new midifileinfo;
 int ok;
 tracks=readMidiFile(filename,info,ok);

@@ -146,7 +146,9 @@ s[0]=0;
 if (filename!=NULL) delete filename;
 filename=new char[strlen(name)+1];
 strcpy(filename,name);
+#ifdef MIDIMAPPERDEBUG
 printf("Loading mapper ...\n");
+#endif
 while (!feof(fh))
     {
     s[0]=0;
@@ -218,7 +220,9 @@ return km;
 
 void MidiMapper::readOptions(FILE *fh)
 {
+#ifdef MIDIMAPPERDEBUG
 printf("Loading Options ... \n");
+#endif
 char s[101];
 char v[101];
 char t[101];
@@ -258,7 +262,9 @@ char t[101];
 char name[101];
 int i=0;
 int j,w;
+#ifdef MIDIMAPPERDEBUG
 printf("Loading Patch map ... \n");
+#endif
 while (i<128)
     {
     s[0]=0;
@@ -307,7 +313,9 @@ void MidiMapper::readKeymap(FILE *fh,char *first_line)
 {
 char s[101];
 char v[101];
+#ifdef MIDIMAPPERDEBUG
 printf("Loading Key map ... %s",first_line);
+#endif
 removeSpaces(first_line);
 getWord(v,first_line,2);
 Keymap *km=new Keymap;
@@ -340,7 +348,9 @@ char v[101];
 char t[101];
 int i=0;
 int w,j;
+#ifdef MIDIMAPPERDEBUG
 printf("Loading Channel map ... \n");
+#endif
 while (i<16)
     {
     s[0]=0;
