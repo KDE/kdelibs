@@ -140,7 +140,7 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
     f->drawText(p, m_x + tx, m_y + ty + m_baseline, text->str->s, text->str->l,
     		m_start, m_len, m_toAdd,
 		m_reversed ? QPainter::RTL : QPainter::LTR,
-		startPos, endPos, hbg, m_y + ty, text->lineHeight(m_firstLine), deco);
+		startPos, endPos, hbg, m_y + ty, height(), deco);
 }
 
 void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco)

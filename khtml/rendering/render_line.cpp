@@ -420,9 +420,9 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
             newY += curr->baseline() - newBaseline;
             newHeight = newBaseline+fm.descent();
 #else
-            int ascent = fm.ascent()+fm.leading()/2;
-            // Only shrink. Enlarging would break specified line-height (cf.CSS2: 10.8.1)
-            if (ascent < curr->baseline()) {
+            // only adjust if the leading delta is superior to the font's natural leading
+            if ( kAbs(fm.ascent() - curr->baseline()) > fm.leading()/2 ) {
+                int ascent = fm.ascent()+fm.leading()/2;
                 newBaseline = ascent;
                 newY += curr->baseline() - newBaseline;
                 newHeight = fm.lineSpacing();
@@ -457,8 +457,8 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
         setYPos(yPos() + baseline() - fm.ascent());
         setBaseline(fm.ascent());
 #else
-        int ascent = fm.ascent()+fm.leading()/2;
-        if (ascent < baseline()) {
+        if ( kAbs(fm.ascent() - baseline()) > fm.leading()/2 ) {
+            int ascent = fm.ascent()+fm.leading()/2;
             setHeight(fm.lineSpacing());
             setYPos(yPos() + baseline() - ascent);
             setBaseline(ascent);

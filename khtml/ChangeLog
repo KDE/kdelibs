@@ -1,3 +1,15 @@
+2005-02-12  Germain Garand  <germain@ebooksfrance.org>
+
+        fix inline formatting model
+        
+        * rendering/render_line.cpp (placeBoxesVertically): shrink/enlarge inlineboxes' height according to rendered gliphes, 
+        but only if the calculated leading delta is superior to our font's natural leading
+
+        * rendering/render_text.cpp (paintSelection): use the linebox's height, not the line-height anymore.
+
+        * rendering/render_inline.cpp (collectVerticalBoxCoordinates): previous linebox's bottomPosition 
+        might now be lower than current linebox's topPosition. Adjust outline algorithm.
+
 2005-02-08  David Faure  <faure@kde.org>
 
         * khtml_part.cpp (executeScript): Handle immediate redirects, scheduled

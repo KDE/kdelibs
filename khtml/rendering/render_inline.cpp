@@ -564,7 +564,11 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
                       left ? root->topOverflow() : root->bottomOverflow());
         if (!pointArray.isEmpty()) {
             QPoint lastPnt = pointArray.back();
-            QPoint insPnt(newPnt.x(), lastPnt.y());
+            if (newPnt.x()>lastPnt.x() && !left)
+                pointArray.back().setY( kMin(lastPnt.y(), root->topOverflow()) );
+            else if (newPnt.x()<lastPnt.x() && left)
+                pointArray.back().setY( kMax(lastPnt.y(), root->bottomOverflow()) );                
+            QPoint insPnt(newPnt.x(), pointArray.back().y());
 //         kdDebug(6040) << "left: " << lastPnt << " == " << insPnt << ": " << (insPnt == lastPnt) << endl;
             appendPoint(pointArray, insPnt);
         }
