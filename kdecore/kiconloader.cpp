@@ -320,18 +320,21 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 
     static const QString &png_ext = KGlobal::staticQString(".png");
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
-#ifdef HAVE_LIBART
-    static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-    static const QString &svg_ext = KGlobal::staticQString(".svg");
-
-    if (name.right(5) == svgz_ext)
-       extensionLength=5;
-    else
-    if (ext == svg_ext || ext == png_ext || ext == xpm_ext)
-#else
     if (ext == png_ext || ext == xpm_ext)
-#endif
-       extensionLength=4;
+      extensionLength=4;
+#ifdef HAVE_LIBART
+    else
+    {
+	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
+	static const QString &svg_ext = KGlobal::staticQString(".svg");
+
+	if (name.right(5) == svgz_ext)
+	    extensionLength=5;
+	else if (ext == svg_ext)
+	    extensionLength=4;
+    }
+#endif       
+
     if ( extensionLength > 0 )
     {
 #ifndef NDEBUG
@@ -348,6 +351,15 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     KIcon icon;
+
+    static const QString &png_ext = KGlobal::staticQString(".png");
+    icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchExact);
+    if (icon.isValid())
+      return icon;
+    icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchBest);
+    if (icon.isValid())
+      return icon;
+
 #ifdef HAVE_LIBART
     static const QString &svgz_ext = KGlobal::staticQString(".svgz");
     icon = d->mpThemeRoot->findIcon(name + svgz_ext, size, KIcon::MatchExact);
@@ -365,14 +377,6 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
     if (icon.isValid())
       return icon;
 #endif
-
-    static const QString &png_ext = KGlobal::staticQString(".png");
-    icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchExact);
-    if (icon.isValid())
-      return icon;
-    icon = d->mpThemeRoot->findIcon(name + png_ext, size, KIcon::MatchBest);
-    if (icon.isValid())
-      return icon;
 
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
     icon = d->mpThemeRoot->findIcon(name + xpm_ext, size, KIcon::MatchExact);
@@ -404,15 +408,16 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     {
 	static const QString &png_ext = KGlobal::staticQString(".png");
 	static const QString &xpm_ext = KGlobal::staticQString(".xpm");
+	path = d->mpDirs->findResource("appicon", name + png_ext);
+
 #ifdef HAVE_LIBART
 	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
 	static const QString &svg_ext = KGlobal::staticQString(".svg");
-	path = d->mpDirs->findResource("appicon", name + svgz_ext);
+	if (path.isEmpty())
+	    path = d->mpDirs->findResource("appicon", name + svgz_ext);
 	if (path.isEmpty())
 	   path = d->mpDirs->findResource("appicon", name + svg_ext);
-	if (path.isEmpty())
 #endif
-	    path = d->mpDirs->findResource("appicon", name + png_ext);
 	if (path.isEmpty())
 	     path = d->mpDirs->findResource("appicon", name + xpm_ext);
 	return path;
