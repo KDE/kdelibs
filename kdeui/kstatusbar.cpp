@@ -24,6 +24,10 @@
 #include <kstatusbar.h>
 // $Id$
 // $Log$
+// sven: connected timeout to clear. Thanks to Taj for hint, and no-thanks to
+//       me - alzheimer for forgeting it
+//
+// Revision 1.14  1998/09/04 22:58:09  radej
 // sven: added sizeHint. Very primitive - width is ?, but height is set
 //       according to fontMetrics
 //
@@ -108,6 +112,8 @@ void KStatusBar::init()
   setFrameStyle( QFrame::NoFrame );
   resize( width(), fieldheight + 2* borderwidth);
   tempWidget=0;
+  tempMessage=0;
+
   tmpTimer = new QTimer(this);
   connect (tmpTimer, SIGNAL(timeout()), this, SLOT(clear()));
 
