@@ -605,6 +605,12 @@ protected:
    * Save to a local file.
    * You need to implement it, to save to @p m_file.
    * The framework takes care of re-uploading afterwards.
+   *
+   * @return true on success, false on failure.
+   * On failure the function should inform the user about the
+   * problem with an appropriate message box. Standard error 
+   * messages can be constructed using @ref KIO::buildErrorString()
+   * in combination with the error codes defined in kio/global.h
    */
   virtual bool saveFile() = 0;
 
@@ -614,6 +620,7 @@ protected:
    * Uploads the file, if @p m_url is remote.
    * This will emit @ref started(), and either @ref completed() or @ref canceled(),
    * in case you want to provide feedback.
+   * @return true on success, false on failure.
    */
   virtual bool saveToURL();
 
