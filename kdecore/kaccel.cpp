@@ -561,8 +561,8 @@ bool KAccel::useFourModifierKeys()
 	if( g_bUseFourModifierKeys == -1 ) {
 		// Read in whether to use 4 modifier keys
 		KConfigGroupSaver cgs( KGlobal::config(), "Keyboard Layout" );
-		QString fourMods = KGlobal::config()->readEntry( "Use Four Modifier Keys", KAccel::keyboardHasMetaKey() ? "true" : "false" );
-		g_bUseFourModifierKeys = (fourMods == "true") && keyboardHasMetaKey();
+		bool fourMods = KGlobal::config()->readBoolEntry( "Use Four Modifier Keys",  false );
+		g_bUseFourModifierKeys = fourMods && keyboardHasMetaKey();
 	}
 	return g_bUseFourModifierKeys == 1;
 }
@@ -577,7 +577,7 @@ void KAccel::useFourModifierKeys( bool b )
 			kdDebug(125) << "Tried to use four modifier keys on a keyboard layout without a Meta key.\n";
 	}
 	KConfigGroupSaver cgs( KGlobal::config(), "Keyboard Layout" );
-	KGlobal::config()->writeEntry( "Use Four Modifier Keys", g_bUseFourModifierKeys ? "true" : "false", true, true );
+	KGlobal::config()->writeEntry( "Use Four Modifier Keys", g_bUseFourModifierKeys, true, true);
 
 	kdDebug(125) << "bUseFourModifierKeys = " << g_bUseFourModifierKeys << endl;
 }
