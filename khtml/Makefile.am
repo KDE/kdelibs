@@ -50,7 +50,6 @@ libkhtml_la_LDFLAGS = -version-info 6:0:2 -module -no-undefined $(VSCRIPT) $(all
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
 	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la $(LIBKJAVA) \
-	$(LIB_KIO) \
 	$(LIB_KPARTS) \
 	$(top_builddir)/kdeprint/libkdeprint.la  \
 	$(top_builddir)/kutils/libkutils.la 
