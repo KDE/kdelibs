@@ -1085,10 +1085,12 @@ static QString translatePath( QString path )
         startsWithFile && path[5] != '/')
 	return path;
 
-   if (path.startsWith("file://", false))
-        path.remove(0,7); // strip leading "file:///" off the string
-   else if (startsWithFile)
+   if (startsWithFile)
         path.remove(0,5); // strip leading "file:/" off the string
+
+   // keep only one single '/' at the beginning - needed for cleanHomeDirPath()
+   while (path[0] == '/' && path[1] == '/')
+	path.remove(0,1);
 
    // we can not use KGlobal::dirs()->relativeLocation("home", path) here,
    // since it would not recognize paths without a trailing '/'.
@@ -1104,7 +1106,7 @@ static QString translatePath( QString path )
    }
 
    if (startsWithFile)
-      path.prepend( "file:" );
+      path.prepend( "file://" );
 
    return path;
 }
