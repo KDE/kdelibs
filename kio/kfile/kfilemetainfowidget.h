@@ -42,9 +42,9 @@ public:
     }
 
     void setValue(const QVariant& value)  { m_value = value;    }
-    QVariant value()                      { return m_value;     }
-    QValidator* validator()               { return m_validator; }
-    KFileMetaInfoItem item()              { return m_item;      }
+    QVariant value()const                      { return m_value;     }
+    QValidator* validator() const              { return m_validator; }
+    KFileMetaInfoItem item()const              { return m_item;      }
 
 signals:
     void valueChanged(const QVariant& value);
