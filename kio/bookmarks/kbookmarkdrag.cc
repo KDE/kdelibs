@@ -116,7 +116,7 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
     if ( e->provides("application/x-xbel") )
     {
         QByteArray s( e->encodedData("application/x-xbel") );
-        //kdDebug(7043) << "KBookmarkDrag::decode s=" << s << endl;
+        //kdDebug(7043) << "KBookmarkDrag::decode s=" << QCString(s) << endl;
         QDomDocument doc;
         doc.setContent( s );
         QDomElement elem = doc.documentElement();
@@ -130,13 +130,17 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
     if ( e->provides("text/uri-list") )
     {
         KURL::List m_lstDragURLs;
+        //kdDebug(7043) << "KBookmarkDrag::decode uri-list" << endl;
         if ( KURLDrag::decode( e, m_lstDragURLs ) )
         {
-            // FIXME iterate through them!!!
-            if ( m_lstDragURLs.count() > 1 )
-                kdWarning() << "Only first URL inserted, known limitation" << endl;
-            //kdDebug(7043) << "KBookmarkDrag::decode url=" << m_lstDragURLs.first().url() << endl;
-            bookmarks.append( KBookmark::standaloneBookmark( m_lstDragURLs.first().fileName(), m_lstDragURLs.first() ));
+            KURL::List::ConstIterator uit = m_lstDragURLs.begin();
+            KURL::List::ConstIterator uEnd = m_lstDragURLs.end();
+            for ( ; uit != uEnd ; ++uit )
+            {
+                //kdDebug(7043) << "KBookmarkDrag::decode url=" << (*uit).url() << endl;
+                bookmarks.append( KBookmark::standaloneBookmark( 
+                                        (*uit).fileName(), (*uit) ));
+            }
             return bookmarks;
         }
     }
