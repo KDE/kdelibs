@@ -805,6 +805,7 @@ static inline bool matchNth(int count, const QString& nth)
         else
             return (b - count) % (-a) == 0;
     }
+    return false;
 }
 
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
