@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import org.kde.javascript.JSObject;
 
+
 /**
  * The context in which applets live.
  */
@@ -19,13 +20,13 @@ public class KJASAppletContext implements AppletContext
     private Hashtable images;
     private Vector    pendingImages;
     private Hashtable streams;
+    private Stack jsobjects;
 
     private String myID;
     private KJASAppletClassLoader loader;
     private boolean active;
     // a mapping JS referenced Java objects
     private Hashtable jsReferencedObjects;
-    private JSObject jsobject = null;
     // keep this in sync with KParts::LiveConnectExtension::Type
     private final static int JError    = -1;
     private final static int JVoid     = 0;
@@ -44,6 +45,7 @@ public class KJASAppletContext implements AppletContext
         images = new Hashtable();
         pendingImages = new Vector();
         streams = new Hashtable();
+        jsobjects = new Stack();
         jsReferencedObjects = new Hashtable();
         myID   = _contextID;
         active = true;
@@ -224,6 +226,7 @@ public class KJASAppletContext implements AppletContext
 
         stubs.clear();
         jsReferencedObjects.clear();
+        jsobjects.clear();
         active = false;
     }
 
@@ -365,12 +368,11 @@ public class KJASAppletContext implements AppletContext
     }
     public void evaluateJavaScript(String script, String appletID, JSObject jso) {
         if( active && (script != null) ) {
-            jsobject = jso;
-            int [] types = new int[1];
-            // keep in sync with KPart::LiveConnectExtension::TypeString
-            types[0] = 5;
-            String [] arglist = new String[1];
-            arglist[0] = script;
+            synchronized (jsobjects) {
+                jsobjects.push(jso);
+            }
+            int [] types = { JString };
+            String [] arglist = { script };
             Main.protocol.sendJavaScriptEventCmd(myID, appletID, 0, "eval", types, arglist);
         }
     }
@@ -428,14 +430,20 @@ public class KJASAppletContext implements AppletContext
 
     public boolean putMember(String appletID, int objid, String name, String value)
     {
-        if (jsobject != null && name.equals("__lc_ret")) {
+        if (name.equals("__lc_ret")) {
             // special case; return value of JS script evaluation
             Main.debug("putValue: applet " + name + "=" + value);
-            jsobject.returnvalue = value;
+            JSObject jso = null;
+            synchronized (jsobjects) {
+                if (!jsobjects.empty())
+                    jso = (JSObject) jsobjects.pop();
+            }
+            if (jso == null)
+                return false;
+            jso.returnvalue = value;
             try {
-                jsobject.thread.interrupt();
+                jso.thread.interrupt();
             } catch (SecurityException ex) {}
-            jsobject = null;
             return true;
         }
         KJASAppletStub stub = null;

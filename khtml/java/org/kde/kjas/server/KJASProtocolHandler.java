@@ -50,8 +50,6 @@ public class KJASProtocolHandler
     private int cmd_index;
     private final static char sep = (char) 0;
 
-    private byte[] currentcommand = null;
-
     public KJASProtocolHandler( InputStream  _commands,
                                 OutputStream _signals )
     {
@@ -256,6 +254,7 @@ public class KJASProtocolHandler
         {
             String contextID = getArg( command );
             String appletID  = getArg( command );
+            int ticketnr = Integer.parseInt( getArg( command ) );
             int objid  = Integer.parseInt( getArg( command ) );
             String name  = getArg( command );
             int [] ret_type_obj = { -1, 0 };
@@ -265,12 +264,13 @@ public class KJASProtocolHandler
             if ( context != null )
                 ret_type_obj = context.getMember(appletID, objid, name, value);
             Main.debug( "GetMember " + name + "=" + value.toString());
-            sendMemberValue(contextID, GetMember, ret_type_obj[0], ret_type_obj[1], value.toString()); 
+            sendMemberValue(contextID, GetMember, ticketnr, ret_type_obj[0], ret_type_obj[1], value.toString()); 
         } else
         if (cmd_code_value == PutMember)
         {
             String contextID = getArg( command );
             String appletID  = getArg( command );
+            int ticketnr = Integer.parseInt( getArg( command ) );
             int objid  = Integer.parseInt( getArg( command ) );
             String name  = getArg( command );
             String value  = getArg( command );
@@ -279,25 +279,26 @@ public class KJASProtocolHandler
             if ( context != null )
                 ret = context.putMember(appletID, objid, name, value);
             Main.debug( "PutMember " + name + "=" + value);
-            sendPutMember(contextID, ret); 
+            sendPutMember(contextID, ticketnr, ret); 
         } else
         if (cmd_code_value == CallMember)
         {
-            currentcommand = command;
             new Thread("CallMember") {
+                byte [] command;
                 public void run() {
-                    String contextID = getArg( currentcommand );
-                    String appletID  = getArg( currentcommand );
-                    int objid  = Integer.parseInt( getArg( currentcommand ) );
-                    String name  = getArg( currentcommand );
+                    String contextID = getArg( command );
+                    String appletID  = getArg( command );
+                    int ticketnr = Integer.parseInt( getArg( command ) );
+                    int objid  = Integer.parseInt( getArg( command ) );
+                    String name  = getArg( command );
                     int [] ret_type_obj = { -1, 0 };
                     StringBuffer value = new StringBuffer();
                     java.util.List args = new java.util.Vector();
                     try { // fix getArg
-                        String param = getArg(currentcommand);
+                        String param = getArg(command);
                         while (param != null) {
                             args.add(param);
-                            param = getArg(currentcommand);
+                            param = getArg(command);
                         }
                     } catch (Exception e) {}
                     int type = 0;
@@ -306,9 +307,13 @@ public class KJASProtocolHandler
                     if ( context != null )
                         ret_type_obj = context.callMember(appletID, objid, name, value, args);
                     Main.debug( "CallMember " + name + "=" + value.toString());
-                    sendMemberValue(contextID, CallMember, ret_type_obj[0], ret_type_obj[1], value.toString()); 
+                    sendMemberValue(contextID, CallMember, ticketnr, ret_type_obj[0], ret_type_obj[1], value.toString()); 
                 }
-            }.start();
+                void startIt(byte [] cmd) {
+                    command = cmd;
+                    start();
+                }
+            }.startIt(command);
         /*    if ( context != null )
                 ret_type_obj = context.callMember(appletID, objid, name, value, args);
             Main.debug( "CallMember " + name + "=" + value.toString());
@@ -670,13 +675,14 @@ public class KJASProtocolHandler
 
         signals.print( chars );
     }
-    public void sendMemberValue( String contextID, int cmd, int type, int rid, String value )
+    public void sendMemberValue( String contextID, int cmd, int ticketnr, int type, int rid, String value )
     {
         Main.debug( "sendMemberValue, contextID = " + contextID + " value = " + value + " type=" + type + " rid=" + rid );
 
+        String strticket = new String("" + ticketnr);
         String strtype = new String("" + type);
         String strobj = new String("" + rid);
-        int length = contextID.length() + value.length() + strtype.length() + strobj.length() + 6;
+        int length = contextID.length() + value.length() + strtype.length() + strobj.length() + strticket.length() + 7;
         char[] chars = new char[ length + 8 ]; //for length of message
         char[] tmpchar = getPaddedLength( length );
         int index = 0;
@@ -687,6 +693,11 @@ public class KJASProtocolHandler
         chars[index++] = sep;
 
         tmpchar = contextID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = strticket.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
@@ -743,12 +754,13 @@ public class KJASProtocolHandler
         sendAudioClipCommand(contextId, url, AudioClipStopCode);
     }
 
-    public void sendPutMember( String contextID, boolean success )
+    public void sendPutMember( String contextID, int ticketnr, boolean success )
     {
         Main.debug("sendPutMember, contextID = " + contextID + " success = " + success);
 
         String strret = new String(success ? "1" : "0");
-        int length = contextID.length() + strret.length() + 4;
+        String strticket = new String("" + ticketnr);
+        int length = contextID.length() + strret.length() + strticket.length() + 5;
         char[] chars = new char[ length + 8 ]; //for length of message
         char[] tmpchar = getPaddedLength( length );
         int index = 0;
@@ -759,6 +771,11 @@ public class KJASProtocolHandler
         chars[index++] = sep;
 
         tmpchar = contextID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = strticket.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;

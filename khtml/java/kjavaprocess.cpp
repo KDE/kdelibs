@@ -47,8 +47,10 @@ private:
     QString classArgs;
     QPtrList<QByteArray> BufferList;
     QMap<QString, QString> systemProps;
+    QValueList<int> tickets;
     bool processKilled;
     int sync_count;
+    int prev_sync_count;
 };
 
 KJavaProcess::KJavaProcess() : KProcess()
@@ -179,13 +181,13 @@ void KJavaProcess::storeSize( QByteArray* buff )
 void KJavaProcess::sendBuffer( QByteArray* buff )
 {
     d->BufferList.append( buff );
-    if( d->BufferList.count() == 1 )
+    if( d->BufferList.count() == 1 && d->sync_count == 0)
     {
         popBuffer();
     }
 }
 
-void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
+void KJavaProcess::sendSync( int ticket, char cmd_code, const QStringList& args ) {
     kdDebug(6100) << ">KJavaProcess::sendSync " << d->sync_count << endl;
     if (d->sync_count++ == 0)
         javaProcess->suspend();
@@ -195,6 +197,9 @@ void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
     int current_sync_count;
     int size = buff->size();
     char *data = buff->data();
+
+    d->tickets.append( ticket );
+
     fd_set fds;
     timeval tv;
     do {
@@ -217,7 +222,7 @@ void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
             data += nr;
         }
     } while (size > 0);
-    current_sync_count = d->sync_count;
+    d->prev_sync_count = current_sync_count = d->sync_count;
     do {
         FD_ZERO(&fds);
         FD_SET(out[0], &fds);
@@ -229,27 +234,31 @@ void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
         if (retval < 0 && errno == EINTR) {
             continue;
         } else if (retval <= 0) {
-            kdError(6100) << "KJavaProcess::sendSync timeout" <<endl;
-            d->sync_count--;
+            if (d->prev_sync_count != current_sync_count) {
+                d->prev_sync_count = current_sync_count;
+                continue;
+            }
+            kdError(6100) << "KJavaProcess::sendSync timeout " << retval << endl;
             break;
         } else {
             slotReceivedData(out[0], dummy);
         }
-        if (d->sync_count < current_sync_count)
+        QValueList<int>::iterator it = d->tickets.find(ticket);
+        if (it == d->tickets.end())
             break;
     } while(true);
 bail_out:
     delete buff;
-    if (d->sync_count == 0)
+    if (--d->sync_count <= 0) {
         javaProcess->resume();
+        if ( d->BufferList.count() > 0 )
+            popBuffer();
+    }
     kdDebug(6100) << "<KJavaProcess::sendSync " << d->sync_count << endl;
 }
 
-void KJavaProcess::syncCommandReceived() {
-    if (--d->sync_count < 0) {
-        kdError(6100) << "syncCommandReceived() sync_count below zero" << endl;
-        d->sync_count = 0;
-    }
+void KJavaProcess::syncCommandReceived(int ticket) {
+    d->tickets.remove( ticket );
 }
 
 void KJavaProcess::send( char cmd_code, const QStringList& args )
@@ -258,6 +267,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
     {
         QByteArray* buff = addArgs( cmd_code, args );
         storeSize( buff );
+        kdDebug(6100) << "<KJavaProcess::send " << (int)cmd_code << endl;
         sendBuffer( buff );
     }
 }
