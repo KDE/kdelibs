@@ -23,6 +23,7 @@
 
 #include <qregexp.h>
 #include <qptrlist.h>
+#include <qtimer.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -58,6 +59,7 @@ KDirListerCache::KDirListerCache( int maxCount )
   itemsCached.setAutoDelete( true );
   urlsCurrentlyListed.setAutoDelete( true );
   urlsCurrentlyHeld.setAutoDelete( true );
+  pendingUpdates.setAutoDelete( true );
 
   connect( kdirwatch, SIGNAL( dirty( const QString& ) ),
            this, SLOT( slotFileDirty( const QString& ) ) );
@@ -499,20 +501,8 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
   kdDebug(7004) << k_funcinfo << _dir << endl;
 
   QString urlStr = _dir.url(-1);
-  if ( !itemsInUse[urlStr] )
-  {
-    DirItem *item = itemsCached[urlStr];
-    if ( item )
-    {
-      item->complete = false;
-      item->decAutoUpdate();
-      kdDebug(7004) << k_funcinfo << "directory " << _dir << " not in use, marked dirty." << endl;
-    }
-    else
-      kdDebug(7004) << k_funcinfo << "aborted, directory " << _dir << " not in cache." << endl;
-
+  if ( !checkUpdate( urlStr ) )
     return;
-  }
 
   // A job can be running to
   //   - only list a new directory: the listers are in urlsCurrentlyListed
@@ -555,6 +545,26 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
       emit kdl->started( _dir );
     }
   }
+}
+
+bool KDirListerCache::checkUpdate( const QString& _dir )
+{
+  if ( !itemsInUse[_dir] )
+  {
+    DirItem *item = itemsCached[_dir];
+    if ( item && item->complete )
+    {
+      item->complete = false;
+      item->decAutoUpdate();
+      kdDebug(7004) << k_funcinfo << "directory " << _dir << " not in use, marked dirty." << endl;
+    }
+    //else
+    //  kdDebug(7004) << k_funcinfo << "aborted, directory " << _dir << " not in cache." << endl;
+      
+    return false;
+  }
+  else
+    return true;
 }
 
 KFileItemList* KDirListerCache::itemsForDir( const KURL &_dir ) const
@@ -736,12 +746,43 @@ KDirListerCache* KDirListerCache::self()
 
 // private slots
 
+// _file can also be a directory being currently held!
 void KDirListerCache::slotFileDirty( const QString& _file )
 {
-  kdDebug(7004) << k_funcinfo << _file << endl;
+  //kdDebug(7004) << k_funcinfo << _file << endl;
+
+  if ( !pendingUpdates[_file] )
+  {
+    KURL dir = KURL( _file );
+    if ( checkUpdate( _file ) )
+      updateDirectory( dir );
+
+    // the parent directory of _file    
+    dir.setPath( dir.directory() );
+    if ( checkUpdate( dir.url() ) )
+    {
+      // Nice hack to save memory: use the qt object name to store the filename
+      QTimer *timer = new QTimer( this, _file.utf8() );
+      connect( timer, SIGNAL(timeout()), this, SLOT(slotFileDirtyDelayed()) );
+      pendingUpdates.insert( _file, timer );
+      timer->start( 500, true );
+    }
+  }
+}
+
+// delayed updating of files, FAM is flooding us with events
+void KDirListerCache::slotFileDirtyDelayed()
+{
+  QString file = QString::fromUtf8( sender()->name() );
+
+  kdDebug(7004) << k_funcinfo << file << endl;
+
+  // TODO: do it better: don't always create/delete the QTimer but reuse it. 
+  // Delete the timer after the parent directory is removed from the cache.
+  pendingUpdates.remove( file );
 
   KURL u;
-  u.setPath( _file );
+  u.setPath( file );
   KFileItem *item = findByURL( 0, u ); // search all items
   if ( item )
   {
@@ -749,9 +790,6 @@ void KDirListerCache::slotFileDirty( const QString& _file )
     item->refresh();
     emitRefreshItem( item );
   }
-
-  // in case u is a directory that is held by some lister
-  updateDirectory( u );
 }
 
 void KDirListerCache::slotFileCreated( const QString& _file )

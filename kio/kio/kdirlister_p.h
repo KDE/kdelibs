@@ -31,6 +31,7 @@
 #include <kio/global.h>
 #include <kdirwatch.h>
 
+class QTimer;
 class KDirLister;
 namespace KIO { class Job; class ListJob; }
 
@@ -181,6 +182,8 @@ private slots:
   void slotFileDirty( const QString &_file );
   void slotFileCreated( const QString &_file );
   void slotFileDeleted( const QString &_file );
+  
+  void slotFileDirtyDelayed();
 
   void slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
   void slotResult( KIO::Job *j );
@@ -190,8 +193,10 @@ private slots:
   void slotUpdateResult( KIO::Job *job );
 
 private:
-  bool killJob( const QString &_url );
-
+  bool killJob( const QString& _url );
+  // check if _url is held by some lister and return true,
+  // otherwise schedule a delayed update and return false
+  bool checkUpdate( const QString& _url );
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the childs.
@@ -284,6 +289,9 @@ private:
   // saves all KDirListers that are just holding url
   QDict< QPtrList<KDirLister> > urlsCurrentlyHeld;
 
+  // running timers for the delayed update
+  QDict<QTimer> pendingUpdates;
+  
   static KDirListerCache* s_pSelf;
 };
 
