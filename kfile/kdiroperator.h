@@ -85,6 +85,16 @@ class KDirOperator : public QWidget {
 
     KFileReader *fileReader() const { return dir; }
 
+    /**
+     * Sets the listing/selection mode for the views, an OR'ed combination of
+     * @li File
+     * @li Directory
+     * @li Files
+     * @li ExistingOnly
+     * @li LocalOnly
+     *
+     * You cannot mix File and Files of course.
+     */
     void setMode( KFile::Mode m );
     KFile::Mode mode() const;
 
