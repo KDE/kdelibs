@@ -308,6 +308,8 @@ void KVideoWidget::resizeEvent( QResizeEvent *event )
 
 void KVideoWidget::resizeNotify( int width, int height )
 {
+    if(!isEmbedded()) return;
+
     videoWidth = width;
     videoHeight = height;
 
@@ -374,7 +376,7 @@ void KVideoWidget::halfSizeActivated()
 {
     if (isHalfSize())
     {
-	emit adaptSize( (videoWidth / 2), (videoHeight / 2) );
+	if(isEmbedded()) emit adaptSize( (videoWidth / 2), (videoHeight / 2) );
 	setWindowed();
     }
 }
@@ -383,7 +385,7 @@ void KVideoWidget::normalSizeActivated()
 {
     if (isNormalSize())
     {
-	emit adaptSize( videoWidth, videoHeight );
+	if(isEmbedded()) emit adaptSize( videoWidth, videoHeight );
 	setWindowed();
     }
 }
@@ -392,7 +394,7 @@ void KVideoWidget::doubleSizeActivated()
 {
     if (isDoubleSize())
     {
-	emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
+	if(isEmbedded()) emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
 	setWindowed();
     }
 }
