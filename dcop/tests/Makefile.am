@@ -27,7 +27,9 @@ test-clean:
 
 test.h: generate
 
-generate: testcases generate.pl
+generate: shell.generated
+
+shell.generated: testcases generate.pl
 	perl ./generate.pl < testcases
 
 doit: dcop_test driver
