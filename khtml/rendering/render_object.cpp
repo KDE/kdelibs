@@ -245,20 +245,20 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case DASHED:
         if(style == DASHED)
             p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DashLine));
-	{
-	int half = width/2;
-
-        switch(s)
         {
-        case BSTop:
-	case BSBottom:
-	  p->drawLine((x1+x2)/2, y1+half, (x1+x2)/2, y2-half);
-	case BSLeft:
-	case BSRight:
-	  p->drawLine(x1+half, (y1+y2)/2, x2-half, (y1+y2)/2);
-        }
+            int half = width/2;
 
-	}
+            switch(s)
+            {
+            case BSTop:
+            case BSBottom:
+                p->drawLine(x1+half, (y1+y2)/2, x2-half, (y1+y2)/2);
+            case BSLeft:
+            case BSRight:
+                p->drawLine((x1+x2-1)/2, y1+half, (x1+x2-1)/2, y2-half);
+            }
+
+        }
         break;
 
     case DOUBLE:
