@@ -191,9 +191,12 @@ action/help_about_app
 action/help_about_kde
 action/fullscreen
 
+Konqueror & KDesktop related:
 action/editfiletype
 action/properties
 action/openwith
+action/openintab
+action/openintabfront
 
 Notes:
 * action/options_show_toolbar will also disable the "Toolbars" submenu
