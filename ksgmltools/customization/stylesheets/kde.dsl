@@ -198,12 +198,13 @@
 
 ; These should not be put in the general style sheet, because
 ; defaults are different from HTML and other printing backends
-(define %graphic-default-extension% "eps")
+(define %graphic-default-extension% ".eps")
 (define %graphic-extensions% (list "eps" "epsf"))
 (define preferred-mediaobject-extensions (list "eps"))
 (define acceptable-mediaobject-extensions '())
 (define preferred-mediaobject-notations (list  "EPS"))
 (define acceptable-mediaobject-notations (list "EPS" "linespecific"))
+(define admon-graphic-default-extension %graphic-default-extension%)
 
 ;; Adds the KDE logo to printed versions (thanks to Éric Bischoff)
 ;; From: print/dbcompon.dsl
@@ -211,7 +212,7 @@
 ;; Here is also better than in a LaTeX style file, as it will also work for RTF
 (define ($center-header$ #!optional (gi (gi)))
   (make external-graphic
-    entity-system-id: "logotp3.eps"
+    entity-system-id: "logotp3"
     notation-system-id: "EPS"))
 
     </STYLE-SPECIFICATION-BODY>
@@ -250,7 +251,7 @@
 (define use-output-dir #f)              ;; output in separate directory?
 (define %output-dir% "HTML")            ;; if output in directory, it's called HTML
 
-(define %graphic-default-extension% "png")
+(define %graphic-default-extension% ".png")
 (define %graphic-extensions%            ;; default value + png - gif
   '("jpg" "jpeg" "tif" "tiff" "eps" "epsf" "png"))
 (define preferred-mediaobject-extensions
@@ -368,6 +369,7 @@
 
 ; === Rendering ===
 (define %admon-graphics% #t)	  ;; use symbols for Caution|Important|Note|Tip|Warning
+(define admon-graphic-default-extension %graphic-default-extension%)
 (define %admon-graphics-path% (string-append %kde-doc-common-path%))
 ; Possibly not necessary to make so elaborate: the png part is added automatically!
 ; (define ($admon-graphic$ #!optional (nd (current-node)))
@@ -391,7 +393,7 @@
 	     (equal? (gi nd) (normalize "warning")))
 	 (string-append %admon-graphics-path%
 			(case-fold-down (gi nd))
-			"." %graphic-default-extension%))
+			admon-graphic-default-extension))
 	(else (error (string-append (gi nd) " is not an admonition.")))))
 
 (define html-manifest #f)
@@ -463,7 +465,7 @@
 
 ; Callouts - first attempts
 (define %callout-graphics% #t)
-(define %callout-graphics-extension% ".png")
+(define %callout-graphics-extension% %graphic-default-extension%)
 (define %callout-graphics-path% %kde-doc-common-path%)
 (define %callout-graphics-number-limit% 10)
 
