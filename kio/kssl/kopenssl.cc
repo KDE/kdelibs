@@ -248,10 +248,10 @@ KConfig *cfg;
 	    << "/usr/lib/"
 	    << "/usr/ssl/lib/"
             << "/usr/local/lib/"
-            << "/lib/"
             << "/usr/local/openssl/lib/"
             << "/usr/local/ssl/lib/"
             << "/opt/openssl/lib/"
+            << "/lib/"
             << "";
 
 // FIXME: #define here for the various OS types to optimize
@@ -289,7 +289,10 @@ KConfig *cfg;
       for (QStringList::Iterator shit = libnamesc.begin();
                                  shit != libnamesc.end();
                                  ++shit) {
-         QString alib = *it+*shit;
+         QString alib = *it;
+         if (!alib.isEmpty() && !alib.endsWith("/"))
+            alib += "/";
+         alib += *shit;
 	 if (!access(alib.latin1(), R_OK))
             _cryptoLib = ll->globalLibrary(alib.latin1());
          if (_cryptoLib) break;
@@ -406,7 +409,10 @@ KConfig *cfg;
       for (QStringList::Iterator shit = libnamess.begin();
                                  shit != libnamess.end();
                                  ++shit) {
-         QString alib = *it+*shit;
+         QString alib = *it;
+         if (!alib.isEmpty() && !alib.endsWith("/"))
+            alib += "/";
+         alib += *shit;
 	 if (!access(alib.latin1(), R_OK))
          	_sslLib = ll->globalLibrary(alib.latin1());
          if (_sslLib) break;
