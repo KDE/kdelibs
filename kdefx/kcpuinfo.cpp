@@ -43,6 +43,8 @@
 #  define KDE_NO_EXPORT
 #endif
 
+typedef void (*kde_sighandler_t) (int);
+
 
 static jmp_buf KDE_NO_EXPORT env;
 
@@ -104,7 +106,7 @@ static int KDE_NO_EXPORT getCpuFeatures()
 
         // OS support test for SSE.
         // Install our own sighandler for SIGILL.
-        __sighandler_t oldhandler = std::signal( SIGILL, sighandler );
+        kde_sighandler_t oldhandler = std::signal( SIGILL, sighandler );
 
         // Try executing an SSE insn to see if we get a SIGILL
         if ( setjmp( env ) )
