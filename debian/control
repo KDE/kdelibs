@@ -160,10 +160,10 @@ Description: KDE core library documentation
 Package: kdelibs4-dev
 Architecture: any
 Section: devel
-Replaces: kdelibs-dev, kdelibs4 (<< 3.0-0.alpha1-6), kdelibs3 (<< 4:2.2.2-1)
-Depends: kdelibs4 (= ${Source-Version}), libarts1-dev (= ${Source-Version}), libkmid0-dev (= ${Source-Version}), libqt3-dev (>= 2:3.0.1-1), libqt3-mt-dev (>= 2:3.0.1-1), qt3-tools (>= 2:3.0.1-1), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, libbz2-dev
+Replaces: kdelibs-dev, kdelibs4 (<< 3.0-0.beta1-1), kdelibs3 (<< 4:2.2.2-9)
+Depends: kdelibs4 (= ${Source-Version}), libarts1-dev (= ${Source-Version}), libkmid0-dev (= ${Source-Version}), libqt3-dev (>= 2:3.0.1-1), libqt3-mt-dev (>= 2:3.0.1-1), qt3-tools (>= 2:3.0.1-1), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libjpeg62-dev (>= 6b-4) | libjpeg-dev, libfam-dev, libbz2-dev
 Recommends: libarts-bin (= ${Source-Version}), libkmid-bin (= ${Source-Version}), kdelibs4-cups (= ${Source-Version})
-Conflicts: kdelibs-dev
+Conflicts: kdelibs-dev, kdelibs3 (<< 4:2.2.2-9)
 Suggests: kdelibs4-doc, kdoc, libxml2-dev, libxslt1-dev
 Description: KDE core libraries (development files)
  KDE core libraries.

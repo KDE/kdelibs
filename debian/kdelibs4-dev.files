@@ -1,5 +1,6 @@
 usr/include/kde/*
 usr/share/doc/kdelibs4-dev/dh-make/*
+usr/lib/kde/*.la
 usr/lib/kde/libkscript.so
 usr/lib/kde/libkdefx.so
 usr/lib/kde/libshellscript.so
