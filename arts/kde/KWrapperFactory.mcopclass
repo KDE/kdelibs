@@ -1,0 +1,5 @@
+Interface=Arts::KWrapperFactory,Arts::Object
+Author="Nikolas Zimmermann <wildfox@kde.org>"
+Language=C++
+Library=libartskde.la
+MimeType=application/kwrapperfactory

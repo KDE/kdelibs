@@ -1,0 +1,17 @@
+#include <kmedia2.idl>
+
+module Arts {
+
+/**
+ * used internally!
+ */
+interface KWrapperFactory {
+	/**
+	 * creates a PlayObjects
+	 *
+	 * @param url the url to create a play object for
+	 */
+	PlayObject createPlayObject(string url, string mimetype, boolean createBUS);
+};
+
+};
