@@ -1,4 +1,4 @@
-
+l
 ##    This file is part of the KDE libraries/packages
 ##    Copyright (C) 1997 Janos Farkas (chexum@shadow.banki.hu)
 ##              (C) 1997 Stephan Kulow (coolo@kde.org)
@@ -73,21 +73,20 @@ AC_LANG_CPLUSPLUS
 cat > conftest.$ac_ext <<EOF
 #include <kapp.h>
 #include <stdio.h>
-int main(int argc, char **argv) {
-KApplication a(argc, argv);
-printf("kde_htmldir=\"%s\"\n", a.kde_htmldir().data());
-printf("kde_appsdir=\"%s\"\n", a.kde_appsdir().data());
-printf("kde_icondir=\"%s\"\n", a.kde_icondir().data());
-printf("kde_minidir=\"%s\"\n", a.kde_minidir().data());
-printf("kde_datadir=\"%s\"\n", a.kde_datadir().data());
-printf("kde_locale=\"%s\"\n", a.kde_localedir().data());
-printf("kde_cgidir=\"%s\"\n", a.kde_cgidir().data());
-printf("kde_confdir=\"%s\"\n", a.kde_configdir().data());
-printf("kde_mimedir=\"%s\"\n", a.kde_mimedir().data());
-printf("kde_toolbardir=\"%s\"\n", a.kde_toolbardir().data());
-printf("kde_wallpaperdir=\"%s\"\n", a.kde_wallpaperdir().data());
-printf("kde_bindir=\"%s\"\n", a.kde_bindir().data());
-printf("kde_partsdir=\"%s\"\n", a.kde_partsdir().data());
+int main() {
+printf("kde_htmldir=\"%s\"\n", KApplication::kde_htmldir().data());
+printf("kde_appsdir=\"%s\"\n", KApplication::kde_appsdir().data());
+printf("kde_icondir=\"%s\"\n", KApplication::kde_icondir().data());
+printf("kde_minidir=\"%s\"\n", KApplication::kde_minidir().data());
+printf("kde_datadir=\"%s\"\n", KApplication::kde_datadir().data());
+printf("kde_locale=\"%s\"\n", KApplication::kde_localedir().data());
+printf("kde_cgidir=\"%s\"\n", KApplication::kde_cgidir().data());
+printf("kde_confdir=\"%s\"\n", KApplication::kde_configdir().data());
+printf("kde_mimedir=\"%s\"\n", KApplication::kde_mimedir().data());
+printf("kde_toolbardir=\"%s\"\n", KApplication::kde_toolbardir().data());
+printf("kde_wallpaperdir=\"%s\"\n", KApplication::kde_wallpaperdir().data());
+printf("kde_bindir=\"%s\"\n", KApplication::kde_bindir().data());
+printf("kde_partsdir=\"%s\"\n", KApplication::kde_partsdir().data());
 }
 EOF
 
