@@ -4852,7 +4852,8 @@ void HTTPProtocol::configAuth( char *p, bool b )
   }
 #endif
 #ifdef HAVE_LIBNTLM
-  else if ( strncasecmp( p, "NTLM", 4 ) == 0 && m_bPersistentProxyConnection )
+  else if ( strncasecmp( p, "NTLM", 4 ) == 0 && 
+    (( b && m_bPersistentProxyConnection ) || !b ) )
   {
     f = AUTH_NTLM;
     memcpy((void *)p, "NTLM", 4); // Correct for upper-case variations.
