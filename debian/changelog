@@ -4,8 +4,9 @@ kdelibs (4:2.1-20010118-1) unstable; urgency=low
      fix JS and onmouseovers
    * mimetype fixes (Closes: #76455)
    * fix build order for libarts-alsa
-   * breaking out libkmid to avoid unnessary depends (Closes: #82901)
- 
+   * breaking out libkmid to avoid unnessary depends (Closes: #82901, #82924)
+   * libarts and libkmid are Recommends of kdelibs3 and not dependant now
+
  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 18 Jan 2001 13:00:00 -0700
 
 kdelibs (4:2.1-20010115-1) unstable; urgency=low
