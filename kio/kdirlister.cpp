@@ -515,10 +515,10 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
 
     if ( !kit.current() ) // we didn't find it
     {
-      // maybe it's the dir we're listing ?
+      // maybe it's the dir we're listing (or a parent of it) ?
       // Check for dir in m_lstDirs
       for ( KURL::List::ConstIterator dit = m_lstDirs.begin(); dit != m_lstDirs.end(); ++dit )
-        if ( (*dit).cmp( (*it), true /* ignore trailing slash */ ) )
+        if ( (*it).isParentOf(*dit) )
         {
           kdDebug(7003) << "emit closeView for " << (*dit).url() << endl;
           emit closeView( (*dit) );
