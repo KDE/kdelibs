@@ -446,9 +446,9 @@ void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
 int KFontChooser::fontDiffFlags() {
    int diffFlags = 0;
    if (familyCheckbox && styleCheckbox && sizeCheckbox) {
-      diffFlags = familyCheckbox->isChecked() ? FontDiffFamily : 0
-                |  styleCheckbox->isChecked() ? FontDiffStyle  : 0
-                |   sizeCheckbox->isChecked() ? FontDiffSize   : 0;
+      diffFlags = (int)(familyCheckbox->isChecked() ? FontDiffFamily : 0)
+                | (int)( styleCheckbox->isChecked() ? FontDiffStyle  : 0)
+                | (int)(  sizeCheckbox->isChecked() ? FontDiffSize   : 0);
    }
    return diffFlags;
 }
