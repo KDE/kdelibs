@@ -152,7 +152,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       } else { 
 	QByteArray replyData;
 	bool b = FALSE;
-	if ( app = "DCOPserver" ) {
+	if ( app == "DCOPserver" ) {
 	  QString obj, fun;
 	  QByteArray data;
 	  ds >> obj >> fun >> data;
