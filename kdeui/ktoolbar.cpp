@@ -1202,8 +1202,7 @@ void KToolBar::childEvent( QChildEvent *e )
                 }
             }
         } else {
-            widgets.removeRef(w);
-            //removeWidgetInternal( w );
+            removeWidgetInternal( w );
         }
         if ( isVisibleTo( 0 ) )
             layoutTimer->start( 50, TRUE );
