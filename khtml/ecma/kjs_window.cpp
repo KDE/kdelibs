@@ -856,9 +856,6 @@ Completion WindowFunc::tryExecute(const List &args)
   QString str, str2;
   int i;
 
-  if (!window->m_part)
-    return Completion(Normal);
-
   KHTMLPart *part = window->m_part;
   if (!part)
     return Completion(Normal);
@@ -867,6 +864,7 @@ Completion WindowFunc::tryExecute(const List &args)
   KJSO v = args[0];
   String s = v.toString();
   str = s.value().qstring();
+  KJScript *currentScript = KJScript::current();
 
   switch (id) {
   case Alert:
@@ -1047,17 +1045,10 @@ Completion WindowFunc::tryExecute(const List &args)
     }
     break;
   case SetTimeout:
-    if (args.size() == 2 && v.isA(StringType)) {
-      int i = args[1].toInt32();
-      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, true /*single shot*/);
-      result = Number(r);
-    } else
-      result = Undefined();
-    break;
   case SetInterval:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32();
-      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, false);
+      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, (SetTimeout == id));
       result = Number(r);
     } else
       result = Undefined();
@@ -1107,6 +1098,8 @@ Completion WindowFunc::tryExecute(const List &args)
     result = window->toString();
     break;
   }
+  if (KJScript::current() != currentScript)
+    KJScript::setCurrent(currentScript);
   return Completion(ReturnValue, result);
 
 }
@@ -1151,10 +1144,10 @@ void WindowQObject::timerEvent(QTimerEvent *e)
 {
   if (!parent->part().isNull()) {
     QString hnd = map[e->timerId()];
-    parent->part()->executeScript(hnd.mid(1));
     // remove single shots installed by setTimeout()
     if (hnd.startsWith("0"))
       clearTimeout(e->timerId());
+    parent->part()->executeScript(hnd.mid(1));
   }
 }
 
