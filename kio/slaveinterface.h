@@ -59,7 +59,8 @@ class Connection;
    CMD_USERPASS = 'N',
    CMD_REPARSECONFIGURATION = 'O',
    CMD_META_DATA = 'P',
-   CMD_SYMLINK = 'Q'
+   CMD_SYMLINK = 'Q',
+   CMD_SUBURL = 'R'	// Inform the slave about the url it is streaming on.
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };
@@ -99,7 +100,8 @@ class Connection;
    MSG_SLAVE_STATUS,
    MSG_SLAVE_ACK,
    MSG_NET_REQUEST,
-   MSG_NET_DROP
+   MSG_NET_DROP,
+   MSG_NEED_SUBURL_DATA
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -135,6 +137,7 @@ public:
     void slaveStatus(pid_t, const QCString &, const QString &, bool);
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
+    void needSubURLData();
 
     void canResume( bool ) ;
 

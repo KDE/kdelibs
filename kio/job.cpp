@@ -219,10 +219,21 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
         m_error = ERR_MALFORMED_URL;
         m_errorText = m_url.url();
         QTimer::singleShot(0, this, SLOT(slotFinished()) );
-    } else
-    {
-        Scheduler::doJob(this);
+        return;
     }
+    if (m_url.hasSubURL())
+    {
+kdDebug(7007) << "Original URL = "  << m_url.url() << endl;
+       KURL::List list = KURL::split(m_url);
+       KURL::List::Iterator it = list.fromLast();
+       m_url = *it;
+       list.remove(it);
+       m_subUrl = KURL::join(list);
+kdDebug(7007) << "New URL = "  << m_url.url() << endl;
+kdDebug(7007) << "Sub URL = "  << m_subUrl.url() << endl;
+    }
+
+    Scheduler::doJob(this);
 }
 
 void SimpleJob::kill( bool quietly )
@@ -280,7 +291,13 @@ void SimpleJob::start(Slave *slave)
              SLOT( slotProcessedSize( unsigned long ) ) );
 
     connect( m_slave, SIGNAL( speed( unsigned long ) ),
-             SLOT( slotSpeed( unsigned long ) ) );
+	     SLOT( slotSpeed( unsigned long ) ) );
+
+    if (!m_subUrl.isEmpty())
+    {
+       KIO_ARGS << m_subUrl;
+       m_slave->connection()->send( CMD_SUBURL, packedArgs );
+    }
 
     m_slave->connection()->send( m_command, m_packedArgs );
 }
@@ -482,6 +499,7 @@ void TransferJob::slotRedirection( const KURL &url)
 
 void TransferJob::slotFinished()
 {
+   kdDebug(7007) << "TransferJob::slotFinished(" << this << ", " << m_url.url() << ")" << endl;
     if (m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
         SimpleJob::slotFinished();
     else {
@@ -550,6 +568,12 @@ void TransferJob::slotDataReq()
        emit dataReq( this, dataForSlave);
     }
     m_slave->connection()->send( MSG_DATA, dataForSlave );
+    if (m_subJob)
+    {
+       // Bitburger protocol in action
+       suspend(); // Wait for more data from subJob.
+       m_subJob->resume(); // Ask for more!
+    }
 }
 
 void TransferJob::slotMimetype( const QString& type )
@@ -619,6 +643,9 @@ void TransferJob::start(Slave *slave)
     connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
              SLOT( slotMetaData( const KIO::MetaData& ) ) );
 
+    connect( slave, SIGNAL( needSubURLData() ),
+	     SLOT( slotNeedSubURLData() ) );
+
     if (slave->suspended())
     {
        m_mimetype = "unknown";
@@ -635,6 +662,48 @@ void TransferJob::start(Slave *slave)
     SimpleJob::start(slave);
     if (m_suspended)
        slave->connection()->suspend();
+}
+
+void TransferJob::slotNeedSubURLData()
+{
+    // Job needs data from subURL.
+    m_subJob = KIO::get( m_subUrl, false, false);
+    suspend(); // Put job on hold until we have some data.
+    connect(m_subJob, SIGNAL( data(KIO::Job*,const QByteArray &)),
+            SLOT( slotSubURLData(KIO::Job*,const QByteArray &)));
+    addSubjob(m_subJob);
+}
+
+void TransferJob::slotSubURLData(KIO::Job*, const QByteArray &data)
+{
+    // The Alternating Bitburg protocol in action again.
+    staticData = data;
+    m_subJob->suspend(); // Put job on hold until we have delivered the data.
+    resume(); // Activate ourselves again.
+}
+
+void TransferJob::slotResult( KIO::Job *job)
+{
+   // This can only be our suburl.
+   kdDebug(7007) << "TransferJob::slotResult(" << job << ")" << endl;
+   assert(job = m_subJob);
+   // Did job have an error ?
+   if ( job->error() )
+   {
+      m_error = job->error();
+      m_errorText = job->errorText();
+
+      emit result( this );
+      delete this;
+      return;
+   }
+
+   if (job == m_subJob)
+   {
+      m_subJob = 0; // No action required
+      resume(); // Make sure we get the remaining data.
+   }
+   subjobs.remove(job); // Remove job, but don't kill this job.
 }
 
 TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )

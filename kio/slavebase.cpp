@@ -215,6 +215,11 @@ void SlaveBase::finished()
     m_pConnection->send( MSG_FINISHED );
 }
 
+void SlaveBase::needSubURLData()
+{
+    m_pConnection->send( MSG_NEED_SUBURL_DATA );
+}
+
 void SlaveBase::slaveStatus( const QString &host, bool connected )
 {
     pid_t pid = getpid();
@@ -427,6 +432,8 @@ void SlaveBase::mkdir(KURL const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, "mkdir" ); }
 void SlaveBase::chmod(KURL const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, "chmod" ); }
+void SlaveBase::setSubURL(KURL const &)
+{ error(  ERR_UNSUPPORTED_ACTION, "suburl" ); }
 
 void SlaveBase::slave_status()
 { slaveStatus( QString::null, false ); }
@@ -590,6 +597,10 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_META_DATA:
         stream >> mIncomingMetaData;
 	break;
+    case CMD_SUBURL:
+        stream >> url;
+        setSubURL(url);
+        break;
     case CMD_NONE:
 	fprintf(stderr, "Got unexpected CMD_NONE!\n");
 	break;

@@ -317,6 +317,7 @@ namespace KIO {
         Slave * m_slave;
         QByteArray m_packedArgs;
         KURL m_url;
+        KURL m_subUrl;
         int m_command;
         unsigned long m_totalSize;
     };
@@ -364,6 +365,11 @@ namespace KIO {
                     bool showProgressInfo);
 
         virtual void start(Slave *slave);
+
+        /**
+         * Called when m_subJob finishes.
+         */
+        virtual void slotResult( KIO::Job *job );
 
         /**
          * Flow control. Suspend data processing from the slave.
@@ -433,6 +439,8 @@ namespace KIO {
         virtual void slotDataReq();
         virtual void slotMimetype( const QString &mimetype );
         virtual void slotMetaData( const KIO::MetaData &_metaData);
+        virtual void slotNeedSubURLData();
+        virtual void slotSubURLData(KIO::Job*, const QByteArray &);
 
     protected:
         bool m_suspended;
@@ -442,6 +450,7 @@ namespace KIO {
         QString m_mimetype;
         MetaData m_outgoingMetaData;
         MetaData m_incomingMetaData;
+        TransferJob *m_subJob;
     };
 
     // Mimetype Job

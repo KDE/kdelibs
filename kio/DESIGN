@@ -231,3 +231,23 @@ D. Some notes
  3. developers can create their custom progress dialogs that inherit
     ProgressBase and do any manipulation with a dialog if they use a second
     approach ( see A.2 above )
+
+
+E. Streaming 
+------------
+
+ 1. We currently support a streaming "GET": e.g. file:/tmp/test.gz#gzip:/
+    works. The following should also work: file:/tmp/test.gz.gz#gzip:/#gzip:/
+    The current approach makes a TrasnferJob for gzip:/ and then adds a
+    subjob for "file:/tmp/test.gz.gz#gzip:/" which itself adds a subjob
+    for "file:/tmp/test.gz.gz".
+ 2. This doesn't extend very well to PUT, because there the order should
+    basically be the other way around, but the "input" to the job as a whole
+    should go to the "gzip:/" job, not to the "file:/tmp/test.gz.gz."
+    It would probably be easier to implement such a job in the way the 
+    current "CopyJob" is done. Have a Job and make all sub-urls sub-jobs of
+    this Job.
+ 3. As a result of 1. COPY FROM an url like file:/tmp/test.gz#gzip:/ should
+    work. COPY TO does not, because that would require PUT.
+    
+

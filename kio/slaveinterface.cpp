@@ -187,6 +187,10 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         dropNetwork(host);
         break;
     }
+    case MSG_NEED_SUBURL_DATA: {
+        emit needSubURLData();
+        break;
+    }
     default:
 	assert( 0 );
     }
