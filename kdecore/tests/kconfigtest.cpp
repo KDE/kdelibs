@@ -197,7 +197,7 @@ void KConfigTestView::writeButtonClicked()
 
 int main( int argc, char **argv )
 {
-  KApplication  a( argc, argv, "kconfigtest" );
+  KApplication  a( argc, argv, "bla" );
 
   //  KConfigTestView   *w = new KConfigTestView();
   // a.setMainWidget( w );
@@ -219,20 +219,22 @@ int main( int argc, char **argv )
   sc.writeEntry( "Bua", "Brumm" );
   sc.writeEntry( "Test", QString::fromLocal8Bit("Hello הצü"));
   sc.writeEntry( "Test2", "");
-  sc.writeEntry( "boolEntry1", BOOLENTRY1 ); 
-  sc.writeEntry( "boolEntry2", BOOLENTRY2 );
   sc.writeEntry( "stringEntry1", STRINGENTRY1 );
   sc.writeEntry( "stringEntry2", STRINGENTRY2 );
   sc.writeEntry( "stringEntry3", STRINGENTRY3 );
   sc.writeEntry( "stringEntry4", STRINGENTRY4 );
   sc.writeEntry( "stringEntry5", STRINGENTRY5 );
-  sc.writeEntry( "stringEntry6", STRINGENTRY6 );
+//  sc.writeEntry( "stringEntry6", STRINGENTRY6 );
   sc.writeEntry( "keywith=equalsign", STRINGENTRY1 );
+  sc.deleteEntry( "stringEntry5" );
+  sc.deleteEntry( "stringEntry6" );
+
+  sc.deleteGroup("deleteMe", true);
 
   sc.setGroup("Bye");  
-  sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 12 ) );
-  sc.writeEntry( "pointEntry", QPoint( 4351, 1234 ) );
-  sc.sync();
+  sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 13 ) );
+  sc.writeEntry( "pointEntry", QPoint( 4351, 1235 ) );
+  sc.sync(); 
 
   KConfig sc2( "kconfigtest" );
   sc2.setGroup("Hello");  
@@ -294,18 +296,18 @@ int main( int argc, char **argv )
     exit(-1);
   }
 
-  s = sc2.readEntry( "stringEntry5" );
-  fprintf(stderr, "comparing stringEntry5 %s with %s -> ", STRINGENTRY5, s.latin1());
-  if (s == STRINGENTRY5)
+  s = sc2.readEntry( "stringEntry5", "test" );
+  fprintf(stderr, "comparing stringEntry5 '%s' with '%s' -> ", "test", s.latin1());
+  if (s == "test")
     fprintf(stderr, "OK\n");
   else {
     fprintf(stderr, "not OK\n");
     exit(-1);
   }
 
-  s = sc2.readEntry( "stringEntry6" );
-  fprintf(stderr, "comparing stringEntry6 %s with %s -> ", STRINGENTRY6, s.latin1());
-  if (s == STRINGENTRY6)
+  s = sc2.readEntry( "stringEntry6", "foo" );
+  fprintf(stderr, "comparing stringEntry6 %s with %s -> ", "foo", s.latin1());
+  if (s == "foo")
     fprintf(stderr, "OK\n");
   else {
     fprintf(stderr, "not OK\n");
