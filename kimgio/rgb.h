@@ -12,6 +12,7 @@
 #define KIMG_SGI_H
 
 #include <qimage.h>
+#include <qptrlist.h>
 
 
 class QImageIO;
@@ -25,7 +26,6 @@ void kimgio_rgb_write(QImageIO *);
 class RLEPacket {
 	QMemArray<uchar>	m_data;
 public:
-	RLEPacket() {}						// required for QValueList
 	RLEPacket(uchar *d, uint len) { m_data.duplicate(d, len); }
 	QMemArray<uchar> *data() { return &m_data; }
 };
@@ -33,7 +33,8 @@ public:
 
 class SGIImage {
 	enum { NORMAL, DITHERED, SCREEN, COLORMAP };		// colormap
-	typedef QValueList<RLEPacket> RLEList;
+	typedef QPtrList<RLEPacket> RLEList;
+	typedef QPtrListIterator<RLEPacket> RLEListIterator;
 
 	QImageIO		*m_io;
 	QIODevice		*m_dev;

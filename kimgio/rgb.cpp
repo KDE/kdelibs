@@ -119,7 +119,7 @@ bool SGIImage::getRow(uchar *dest)
 
 bool SGIImage::readData(QImage& img)
 {
-	QRgb *c, old;
+	QRgb *c;
 	Q_UINT32 *start = m_starttab;
 	uchar line[m_xsize];
 	unsigned x, y;
@@ -133,9 +133,8 @@ bool SGIImage::readData(QImage& img)
 			m_pos = m_data.begin() + *start++;
 		if (!getRow(line))
 			return false;
-		for (x = 0; x < m_xsize; x++) {
-			*c++ = qRgb(line[x], line[x], line[x]);
-		}
+		for (x = 0; x < m_xsize; x++, c++)
+			*c = qRgb(line[x], line[x], line[x]);
 	}
 
 	if (m_zsize == 1)
@@ -148,10 +147,8 @@ bool SGIImage::readData(QImage& img)
 				m_pos = m_data.begin() + *start++;
 			if (!getRow(line))
 				return false;
-			for (x = 0; x < m_xsize; x++) {
-				old = *c;
-				*c++ = qRgb(qRed(old), line[x], line[x]);
-			}
+			for (x = 0; x < m_xsize; x++, c++)
+				*c = qRgb(qRed(*c), line[x], line[x]);
 		}
 
 		for (y = 0; y < m_ysize; y++) {
@@ -160,10 +157,8 @@ bool SGIImage::readData(QImage& img)
 				m_pos = m_data.begin() + *start++;
 			if (!getRow(line))
 				return false;
-			for (x = 0; x < m_xsize; x++) {
-				old = *c;
-				*c++ = qRgb(qRed(old), qGreen(old), line[x]);
-			}
+			for (x = 0; x < m_xsize; x++, c++)
+				*c = qRgb(qRed(*c), qGreen(*c), line[x]);
 		}
 
 		if (m_zsize == 3)
@@ -176,10 +171,8 @@ bool SGIImage::readData(QImage& img)
 			m_pos = m_data.begin() + *start++;
 		if (!getRow(line))
 			return false;
-		for (x = 0; x < m_xsize; x++) {
-			old = *c;
-			*c++ = qRgba(qRed(old), qGreen(old), qBlue(old), line[x]);
-		}
+		for (x = 0; x < m_xsize; x++, c++)
+			*c = qRgba(qRed(*c), qGreen(*c), qBlue(*c), line[x]);
 	}
 
 	return true;
@@ -219,7 +212,7 @@ bool SGIImage::readImage(QImage& img)
 	// number of dimensions
 	m_stream >> m_dim;
 	kdDebug(399) << "dimensions: " << m_dim << endl;
-	if (!(m_dim >=1 && m_dim <= 3))
+	if (m_dim < 1 || m_dim > 3)
 		return false;
 
 	m_stream >> m_xsize >> m_ysize >> m_zsize >> m_pixmin >> m_pixmax >> u32;
@@ -250,7 +243,7 @@ bool SGIImage::readImage(QImage& img)
 		return false;
 	}
 
-	if (m_zsize == 4)
+	if (m_zsize == 2 || m_zsize == 4)
 		img.setAlphaBuffer(true);
 
 	if (m_zsize > 4)
@@ -285,7 +278,7 @@ bool SGIImage::readImage(QImage& img)
 
 void SGIImage::addRlePacket(uchar *s, uint l)
 {
-	m_rlelist.append(RLEPacket(s, l));
+	m_rlelist.append(new RLEPacket(s, l));
 }
 
 
@@ -428,9 +421,10 @@ bool SGIImage::writeImage(QImage& img)
 	for (i = 0; i < m_ysize * m_zsize; i++)
 		m_stream << m_lengthtab[i];
 
-	RLEList::iterator it;
-	for (it = m_rlelist.begin(); it != m_rlelist.end(); it++) {
-		QMemArray<uchar> *a = (*it).data();
+	RLEListIterator it(m_rlelist);
+	RLEPacket *pack;
+	for (; (pack = it.current()); ++it) {
+		QMemArray<uchar> *a = pack->data();
 		for (unsigned j = 0; j < a->size(); j++)
 			m_stream << (*a)[j];
 	}
