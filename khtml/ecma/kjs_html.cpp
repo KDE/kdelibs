@@ -1215,7 +1215,11 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
                                                  return;
                                              }
                                          }
-                                         kdWarning() << "HTMLElement::tryPut failed, no text node in option" << endl;
+                                         // No child text node found, creating one
+                                         DOM::Text t = option.ownerDocument().createTextNode(str);
+                                         try { option.appendChild(t); }
+                                         catch(DOM::DOMException& e) {
+                                         }
                                          return;
       }
       // read-only: index
