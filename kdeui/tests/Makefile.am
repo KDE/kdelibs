@@ -39,7 +39,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	ktextedittest kmainwindowtest kmainwindowrestoretest \
 	kactiontest kdatetimewidgettest ktimewidgettest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
-	kdocktest qxembedtest
+	kdocktest qxembedtest ksqueezedtextlabeltest
 
 METASOURCES = AUTO
 
@@ -98,3 +98,4 @@ ktabwidgettest_SOURCES = ktabwidgettest.cpp
 kwordwraptest_SOURCES = kwordwraptest.cpp
 kdocktest_SOURCES=kdocktest.cpp
 qxembedtest_SOURCES=qxembedtest.cpp
+ksqueezedtextlabeltest_SOURCES = ksqueezedtextlabeltest.cpp
