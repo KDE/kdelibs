@@ -175,7 +175,7 @@ protected:
  * with a number of different kinds of Iterators, encouraging code
  * reuse.
  *
- * To create your own cutsom NodeFilter, define a subclass of
+ * To create your own custom NodeFilter, define a subclass of
  * CustomNodeFilter which overrides the acceptNode() method and assign
  * an instance of it to the NodeFilter. For more details see the
  * CustomNodeFilter class
@@ -283,7 +283,7 @@ protected:
  *
  *
  * MyCustomFilter *filter = new MyCustomFilter();
- * NodeFilter nf = NodeFilter::createCutsom(filter);
+ * NodeFilter nf = NodeFilter::createCustom(filter);
  * NodeIterator ni = document.createNodeIterator(document,NodeFilter.SHOW_ALL,nf,false);
  *
  * The default implementation of acceptNode() returns NodeFilter::FILTER_ACCEPT
