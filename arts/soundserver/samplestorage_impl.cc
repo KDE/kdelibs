@@ -48,6 +48,11 @@ public:
 	}
 	~SampleStorageEntry_impl()
 	{
+		if(file)
+		{
+			fclose(file);
+			file = 0;
+		}
 		unlink(_filename.c_str());
 	}
 
