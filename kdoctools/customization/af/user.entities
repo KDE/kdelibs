@@ -9,9 +9,10 @@
 <!-- Temporary hack: Please translate to Afrikaans
      You can translate both entity name and contents -->
 
-<!ENTITY eg     "<abbrev>e.g.</abbrev>">
-<!ENTITY etc    "<abbrev>etc.</abbrev>">
-<!ENTITY ie     "<abbrev>i.e.</abbrev>">
-<!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button">
-<!ENTITY RMB    "<mousebutton>right</mousebutton> mouse button">
+<!ENTITY bv     "<abbrev>bv.</abbrev>">
+<!ENTITY ens    "<abbrev>ens.</abbrev>">
+<!ENTITY LMK    "<mousebutton>linker</mousebutton> muis knoppie">
+<!ENTITY RMK    "<mousebutton>regter</mousebutton> muis knoppie">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY Alt	"<keycap>Alt</keycap>">
