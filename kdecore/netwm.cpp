@@ -2885,9 +2885,12 @@ void NETWinInfo::setName(const char *name) {
 
     if (p->name) delete [] p->name;
     p->name = nstrdup(name);
-    XChangeProperty(p->display, p->window, net_wm_name, UTF8_STRING, 8,
+    if( p->name[ 0 ] != '\0' )
+        XChangeProperty(p->display, p->window, net_wm_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->name,
 		    strlen(p->name));
+    else
+        XDeleteProperty(p->display, p->window, net_wm_name);
 }
 
 
@@ -2896,9 +2899,12 @@ void NETWinInfo::setVisibleName(const char *visibleName) {
 
     if (p->visible_name) delete [] p->visible_name;
     p->visible_name = nstrdup(visibleName);
-    XChangeProperty(p->display, p->window, net_wm_visible_name, UTF8_STRING, 8,
+    if( p->visible_name[ 0 ] != '\0' )
+        XChangeProperty(p->display, p->window, net_wm_visible_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->visible_name,
 		    strlen(p->visible_name));
+    else
+        XDeleteProperty(p->display, p->window, net_wm_visible_name);
 }
 
 
@@ -2907,9 +2913,12 @@ void NETWinInfo::setIconName(const char *iconName) {
 
     if (p->icon_name) delete [] p->icon_name;
     p->icon_name = nstrdup(iconName);
-    XChangeProperty(p->display, p->window, net_wm_icon_name, UTF8_STRING, 8,
+    if( p->icon_name[ 0 ] != '\0' )
+        XChangeProperty(p->display, p->window, net_wm_icon_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->icon_name,
 		    strlen(p->icon_name));
+    else
+        XDeleteProperty(p->display, p->window, net_wm_icon_name);
 }
 
 
@@ -2918,9 +2927,12 @@ void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
 
     if (p->visible_icon_name) delete [] p->visible_icon_name;
     p->visible_icon_name = nstrdup(visibleIconName);
-    XChangeProperty(p->display, p->window, net_wm_visible_icon_name, UTF8_STRING, 8,
+    if( p->visible_icon_name[ 0 ] != '\0' )
+        XChangeProperty(p->display, p->window, net_wm_visible_icon_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->visible_icon_name,
 		    strlen(p->visible_icon_name));
+    else
+        XDeleteProperty(p->display, p->window, net_wm_visible_icon_name);
 }
 
 
