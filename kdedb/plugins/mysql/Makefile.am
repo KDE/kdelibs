@@ -1,4 +1,6 @@
-INCLUDES = -I$(top_builddir)/kdedb $(all_includes)
+# $Id$
+
+INCLUDES = -I$(top_builddir)/kdedb -I$(top_srcdir)/kio $(all_includes)
 
 METASOURCES = AUTO
 
