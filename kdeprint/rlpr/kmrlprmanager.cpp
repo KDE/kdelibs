@@ -73,7 +73,7 @@ bool KMRlprManager::removePrinter(KMPrinter *p)
 
 bool KMRlprManager::testPrinter(KMPrinter *)
 {
-	setErrorMsg("Not implemented yet.");
+	setErrorMsg(i18n("Not implemented yet."));
 	return false;
 }
 
