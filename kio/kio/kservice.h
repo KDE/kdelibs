@@ -463,7 +463,7 @@ public:
    * @em Very @em important: Don't store the result in a KService* !
    * @since 3.2
    */
-  static Ptr serviceByStorageId( const QString& _menuId );
+  static Ptr serviceByStorageId( const QString& _storageId );
 
   /**
    * Returns the whole list of services.
