@@ -300,11 +300,10 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   //set the addressee's url
   tmpStr = mVCard->getValue(VCARD_URL);
 
-  if (!tmpStr.isEmpty())
+  if (!tmpStr.isEmpty()) {
     KURL url(tmpStr);
-
-  addressee.setUrl(url);
-}
+    addressee.setUrl(url);
+  }
 
   //set the addressee's birthday
   tmpStr = mVCard->getValue(VCARD_BDAY);
