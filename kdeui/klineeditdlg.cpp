@@ -1,3 +1,21 @@
+/* This file is part of the KDE libraries
+   Copyright (C) 1999 Preston Brown <pbrown@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -14,42 +32,6 @@
 #include <klineedit.h>
 
 #include "klineeditdlg.h"
-
-
-/*
-****************************************************************************
-*
-* $Log$
-* Revision 1.11  2000/03/24 18:25:19  wgreven
-* Removed the file selection stuff. That functionality is now provided by
-* kurlrequestdlg.
-*
-* Revision 1.10  2000/02/20 22:18:53  mueller
-* added a convenience static ::getText function
-*
-* Revision 1.9  2000/01/17 19:07:59  bieker
-* Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
-* yet).
-*
-* Revision 1.8  1999/11/19 21:09:34  pbrown
-* don't need to activate().
-*
-* Revision 1.7  1999/10/21 23:55:39  pbrown
-* Dfaure is right.  Select all text instead of putting cursor at beginning.
-*
-* Revision 1.6  1999/10/21 18:13:12  pbrown
-* position cursor at beginning of the line if text is pre-supplied.
-*
-* Revision 1.5  1999/09/30 21:29:42  espensa
-* KLineEditDlg now descends from KDialogBase with proper caption,
-* std margins and action button layout. Hmm, KLineEditDlg should not be
-* in kdeui since it can not use the KDE file dialog. kfile is a better
-* location.
-*
-*
-*
-****************************************************************************
-*/
 
 KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 			    QWidget *parent )
