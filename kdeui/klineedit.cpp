@@ -124,7 +124,7 @@ void KLineEdit::init()
     d->bgMode = backgroundMode ();
 
     // Enable the context menu by default.
-    setContextMenuEnabled( true );
+    KLineEdit::setContextMenuEnabled( true );
     KCursor::setAutoHideCursor( this, true, true );
     installEventFilter( this );
 
