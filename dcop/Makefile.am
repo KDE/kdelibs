@@ -54,6 +54,7 @@ dcopserver_LDADD   = dcopserver.la
 
 dcopserver_shutdown_SOURCES = dcopserver_shutdown.c
 
+testdcop_LDFLAGS = $(KDE_RPATH)
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
 
