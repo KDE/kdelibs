@@ -121,7 +121,8 @@
 <!ENTITY kdvi	"<application>kdvi</application>">
 <!ENTITY kedit	"<application>KEdit</application>">
 <!ENTITY keystone	"<application>Keystone</application>">
-<!ENTITY kfax	"<application>kfax</application>"> and Kfaxview
+<!ENTITY kfax	"<application>kfax</application>">
+<!ENTITY kfaxview "<application>Kfaxview</application>">
 <!ENTITY kfind	"<application>KFind</application>">
 <!ENTITY kfloppy	"<application>Kfloppy</application>">
 <!ENTITY kfm	"<application>KFM</application>">
