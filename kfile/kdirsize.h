@@ -39,12 +39,7 @@ public:
   /**
    * @return the size we found
    */
-  unsigned long totalSize() const { return m_totalSize; }
-
-  /**
-   * @return the size we found
-   */
-  long long totalSize64() const { return m_totalSize; }
+  KIO::filesize_t totalSize() const { return m_totalSize; }
 
   /**
    * Asynchronous method. Connect to the result signal.
@@ -65,13 +60,7 @@ public:
    * Synchronous method - you get the result as soon as
    * the call returns.
    */
-  static unsigned long dirSize( const KURL & directory );
-
-  /**
-   * Synchronous method - you get the result as soon as
-   * the call returns.
-   */
-  static long long dirSize64( const KURL & directory );
+  static KIO::filesize_t dirSize( const KURL & directory );
 
 protected:
   /**
@@ -89,7 +78,7 @@ protected slots:
 
 private:
   bool m_bAsync;
-  long long m_totalSize;
+  KIO::filesize_t m_totalSize;
   KFileItemList m_lstItems;
 };
 

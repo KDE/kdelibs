@@ -594,7 +594,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
   QString mimeComment = item->mimeComment();
-  long long totalSize = static_cast<long long>( item->size() );
+  KIO::filesize_t totalSize = item->size();
 
   // Those things only apply to 'single file' mode
   QString filename = QString::null;
@@ -786,7 +786,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if ( !hasDirs ) // Only files [and symlinks]
   {
-    m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize64(totalSize)).arg(KGlobal::locale()->formatNumber(totalSize, 0)));
+    m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize)).arg(KGlobal::locale()->formatNumber(totalSize, 0)));
     m_sizeDetermineButton = 0L;
     m_sizeStopButton = 0L;
   }
@@ -939,8 +939,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
     m_sizeLabel->setText( job->errorString() );
   else
   {
-    long long totalSize = static_cast<KDirSize*>(job)->totalSize64();
-    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)").arg(KIO::convertSize64(totalSize)).arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
+    KIO::filesize_t totalSize = static_cast<KDirSize*>(job)->totalSize();
+    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize)).arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
   }
   m_sizeStopButton->setEnabled(false);
   // just in case you change something and try again :)

@@ -52,7 +52,7 @@ void KDirSize::processList()
         }
         else
         {
-            m_totalSize += (unsigned long)item->size();
+            m_totalSize += item->size();
 // no long long with kdDebug()
 //            kdDebug(kfile_area) << "KDirSize::processList file -> " << m_totalSize << endl;
         }
@@ -79,7 +79,7 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
     KIO::UDSEntryListConstIterator end = list.end();
     for (; it != end; ++it) {
         KIO::UDSEntry::ConstIterator it2 = (*it).begin();
-        long long size = 0L;
+        KIO::filesize_t size = 0;
         bool isLink = false;
         QString name;
         for( ; it2 != (*it).end(); it2++ ) {
@@ -118,18 +118,12 @@ KDirSize * KDirSize::dirSizeJob( const KFileItemList & lstItems )
 }
 
 //static
-unsigned long KDirSize::dirSize( const KURL & directory )
-{
-    return dirSize64( directory );
-}
-
-//static
-long long KDirSize::dirSize64( const KURL & directory )
+KIO::filesize_t KDirSize::dirSize( const KURL & directory )
 {
     KDirSize * dirSize = dirSizeJob( directory );
     dirSize->setSync();
     qApp->enter_loop();
-    return dirSize->totalSize64();
+    return dirSize->totalSize();
 }
 
 
