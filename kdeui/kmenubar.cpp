@@ -43,6 +43,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.73  1999/05/08 18:26:21  ssk
+// Removed KChildMenu altogether. All it was doing was setting the line width
+// anyway.
+//
 // Revision 1.72  1999/05/08 18:05:55  ssk
 // Apparently moc doesn't like inner Q_OBJECTs. Moved KChildMenu (used to be
 // _menuBar) to kmenubar.cpp
@@ -214,19 +218,6 @@
 // Revision 1.26  1998/05/19 14:10:23  radej
 // Bugfixes: Unhighlighting a handle and catching the fast click
 //
-class KChildMenu : public QMenuBar
-{
-	Q_OBJECT
-
-	public:
-		KChildMenu(QWidget *parent=0, const char *name=0)
-			: QMenuBar( parent, name ) 
-			{ setLineWidth( 1 ); }
-		virtual ~KChildMenu() {}
-};
-
-
-
 // Revision 1.25  1998/05/07 23:13:09  radej
 // Moving with KToolBoxManager
 //
@@ -242,7 +233,8 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
 {
   Parent = parent;        // our father
   oldWFlags = getWFlags();
-  menu = new KChildMenu (frame);
+
+  standalone_menubar = FALSE;
   frame = new QFrame (this);
   frame->setFrameStyle(NoFrame);
   menu = new QMenuBar (frame);
