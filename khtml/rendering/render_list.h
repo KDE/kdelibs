@@ -38,6 +38,7 @@ namespace khtml
     public:
 	RenderListMarker( RenderStyle *style );
 	
+	virtual const char *renderName() const { return "RenderListMarker"; }
 	virtual bool isInline() const { return true; }
 	// so the marker gets to layout itself. Only needed for
 	// list-style-position: inside
@@ -53,8 +54,8 @@ namespace khtml
 	long int val;
 	QString item;
     };
-    
-    
+
+
 class RenderListItem : public RenderFlow
 {
 public:
