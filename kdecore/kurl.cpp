@@ -525,13 +525,8 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
   //Node 3: We need at least one character here
   if ( pos == len )
-    // goto NodeOk; Wrong!!!  As the above comment states at least one character is required here!!!
       goto NodeErr;
-#if 0
-  start = pos++;
-#else
   start = pos;
-#endif
 
   // Node 4: Accept any amount of characters.
   // Terminate or / or @
