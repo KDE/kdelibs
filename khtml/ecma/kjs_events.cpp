@@ -145,6 +145,13 @@ JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_n
 {
 }
 
+JSLazyEventListener::~JSLazyEventListener()
+{
+  if (!listener.isNull() && listener.imp()) {
+    static_cast<Window*>(win.imp())->jsEventListeners.remove(listener.imp());
+  }
+}
+
 void JSLazyEventListener::handleEvent(DOM::Event &evt)
 {
   parseCode();

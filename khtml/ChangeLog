@@ -1,3 +1,10 @@
+2004-06-22  Zack Rusin  <zack@kde.org>
+
+        * ecma/kjs_events.cpp (JSLazyEventListener): Adding a destructor
+        which is now needed since Niko's eventlistener changes make 
+        jseventlistener destructor not remove the listener from 
+        jsEventListeners
+
 2004-06-22  Germain Garand  <germain@ebooksfrance.org>
 
         Scope: Inline-blocks inlining. Merge Webcore improvements for 
