@@ -20,11 +20,11 @@
 #ifndef __KDIRECTIONBUTTON_H__
 #define __KDIRECTIONBUTTON_H__
 
-#include <kapp.h>
-#include <qbutton.h>
-#include <qpainter.h>
-#include <qpen.h>
 #include <qdrawutil.h>
+
+class QButton;
+class QPainter;
+class QWidget;
 
 /**
 * KDirectionButton is a helper class for KTabBar and KWizard. It provides the buttons

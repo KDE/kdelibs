@@ -1,5 +1,5 @@
 /*  This file is part of the KDE Libraries
-    Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
+    Copyright (C) 1998 Thomas Tanghus (tanghus@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,6 +16,12 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */  
+
+#include <kapp.h>
+#include <qbutton.h>
+#include <qpainter.h>
+#include <qpen.h>
+#include <qdrawutil.h>
 
 
 #include "kdbtn.moc"
@@ -43,72 +49,106 @@ KDirectionButton::~KDirectionButton()
 
 void KDirectionButton::drawButton( QPainter *p)
 {
-  // This is only tested in Motif style. May give poor results in Win9x style.
+  // This is still only implemented in Motif style.
+  // I abandoned qDrawArrow(...) 'cause the result was totally unpredictable :-(
 
   int style = kapp->applicationStyle;
-  int h = height(), w = width(), x, y, cx, cy;
+  int wm = width()/2, hm = height()/2;
+  QColorGroup g = QWidget::colorGroup();
+
+  QPen lightPen(g.light(), 1), darkPen(g.dark(), 1);
+
+  if(style != MotifStyle)
+  {
+#if defined(CHECK_RANGE)
+      warning( "KDirectionButton: Windows style not yet supported" );
+#endif
+  }
 
   switch (direct)
   {
     case LeftArrow:
-      x = 2;
-      y = 2;
-      cx = w-4;
-      cy = h-4;
-      break;
-
-    case RightArrow:
-      x = 2;
-      y = 3;
-      cx = w-4;
-      cy = h-4;
-      break;
-
-    case UpArrow:
-      if(style == MotifStyle)
+      if(isDown())
       {
-        x = 4;
-        y = 3;
-        cx = w-4;
-        cy = h-4;
+        p->setPen(darkPen);
+        p->drawLine(2, hm, (2*wm)-4, 2);
+        p->setPen(lightPen);
+        p->drawLine((2*wm)-4, 2, (2*wm)-4, (2*hm)-4);
+        p->drawLine((2*wm)-4, (2*hm)-4, 2, hm);
       }
       else
       {
-        x = 2;
-        y = 1;
-        cx = w-4;
-        cy = h-4;
+        p->setPen(lightPen);
+        p->drawLine(2, hm, (2*wm)-4, 2);
+        p->setPen(darkPen);
+        p->drawLine((2*wm)-4, 2, (2*wm)-4, (2*hm)-4);
+        p->drawLine((2*wm)-4, (2*hm)-4, 2, hm);
+      }
+      break;
+
+    case RightArrow:
+      if(isDown())
+      {
+        p->setPen(darkPen);
+        p->drawLine(2, (2*hm)-4, 2, 2);
+        p->drawLine(2, 2, (2*wm)-4, hm);
+        p->setPen(lightPen);
+        p->drawLine((2*wm)-4, hm, 2, (2*hm)-4);
+      }
+      else
+      {
+        p->setPen(lightPen);
+        p->drawLine(2, (2*hm)-4, 2, 2);
+        p->drawLine(2, 2, (2*wm)-4, hm);
+        p->setPen(darkPen);
+        p->drawLine((2*wm)-4, hm, 2, (2*hm)-4);
+      }
+      break;
+
+    case UpArrow:
+      if(isDown())
+      {
+        p->setPen(lightPen);
+        p->drawLine(2, (2*hm)-4, (2*wm)-4, (2*hm)-4);
+        p->drawLine((2*wm)-4, (2*hm)-4, wm, 2);
+        p->setPen(darkPen);
+        p->drawLine(wm, 2, 2, (2*hm)-4);
+      }
+      else
+      {
+        p->setPen(darkPen);
+        p->drawLine(2, (2*hm)-4, (2*wm)-4, (2*hm)-4);
+        p->drawLine((2*wm)-4, (2*hm)-4, wm, 2);
+        p->setPen(lightPen);
+        p->drawLine(wm, 2, 2, (2*hm)-4);
       }
       break;
 
     case DownArrow:
-      if(style == MotifStyle)
+      if(isDown())
       {
-        x = 0;
-        y = 3;
-        cx = w-4;
-        cy = h-3;
+        p->setPen(darkPen);
+        p->drawLine(wm, (2*hm)-4, 2, 2);
+        p->drawLine(2, 2, (2*wm)-4, 2);
+        p->setPen(lightPen);
+        p->drawLine((2*wm)-4, 2, wm, (2*hm)-4);
       }
       else
       {
-        x = 2;
-        y = 1;
-        cx = w-4;
-        cy = h-3;
+        p->setPen(lightPen);
+        p->drawLine(wm, (2*hm)-4, 2, 2);
+        p->drawLine(2, 2, (2*wm)-4, 2);
+        p->setPen(darkPen);
+        p->drawLine((2*wm)-4, 2, wm, (2*hm)-4);
       }
       break;
 
     default:
-      x = 3;
-      y = 3;
-      cx = w-4;
-      cy = h-4;
+#if defined(CHECK_RANGE)
+      warning( "KDirectionButton: Requested Arrow style not supported" );
+#endif
       break;
   }
-
-  QColorGroup g = QWidget::colorGroup();
-
-  qDrawArrow( p, direct, (GUIStyle)style, isDown(), x, y, cx, cy, g, true );
 }
 
 KTabButton::KTabButton(QWidget *parent, const char *name)

@@ -357,7 +357,7 @@ void KWizard::resizeEvent(QResizeEvent *)
                            pwiz->title->sizeHint().height());
 
   pwiz->right->setGeometry(width()-(pwiz->title->sizeHint().height()+10),
-                           6, // had to make a little hack :-(
+                           5, // had to make a little hack :-(
                            pwiz->title->sizeHint().height(),
                            pwiz->title->sizeHint().height()+2);
 
