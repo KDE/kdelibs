@@ -226,6 +226,7 @@ void KEditListBox::addItem()
    if (!alreadyInList)
    {
       m_listBox->insertItem(currentTextLE);
+      m_lineEdit->clear();
       emit changed();
    }
 }
@@ -237,6 +238,9 @@ void KEditListBox::removeItem()
    if ( selected >= 0 )
    {
       m_listBox->removeItem( selected );
+      if ( count() > 0 )
+          m_listBox->setSelected( QMIN( selected, count() - 1 ), true );
+      
       emit changed();
    }
 
