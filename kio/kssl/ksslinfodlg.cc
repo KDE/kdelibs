@@ -203,7 +203,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
        d->_chain->setCurrentItem(0);
     } else d->_chain->setEnabled(false);
 
-    layout->addWidget(new QLabel(i18n("Peer Certificate:"), this), 2, 0);
+    layout->addWidget(new QLabel(i18n("Peer certificate:"), this), 2, 0);
     layout->addWidget(d->_subject = dynamic_cast<KSSLCertBox*>(buildCertInfo(cert->getSubject())), 3, 0);
     layout->addWidget(new QLabel(i18n("Issuer:"), this), 2, 1);
     layout->addWidget(d->_issuer = dynamic_cast<KSSLCertBox*>(buildCertInfo(cert->getIssuer())), 3, 1);
@@ -211,7 +211,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
 
     layout = new QGridLayout(11, 2, KDialog::spacingHint());
     layout->setColStretch(1, 1);
-    layout->addWidget(new QLabel(i18n("IP Address:"), this), 0, 0);
+    layout->addWidget(new QLabel(i18n("IP address:"), this), 0, 0);
     layout->addWidget(new QLabel(ip, this), 0, 1);
     layout->addWidget(new QLabel(i18n("URL:"), this), 1, 0);
     // truncate the label if it will be too long
@@ -222,7 +222,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     KURLLabel *urlLabel = new KURLLabel(url, urllabel, this);
     layout->addWidget(urlLabel, 1, 1);
     connect(urlLabel, SIGNAL(leftClickedURL(const QString &)), SLOT(urlClicked(const QString &)));
-    layout->addWidget(new QLabel(i18n("Certificate State:"), this), 2, 0);
+    layout->addWidget(new QLabel(i18n("Certificate state:"), this), 2, 0);
 
     layout->addWidget(d->_csl = new QLabel("", this), 2, 1);
 
@@ -233,18 +233,18 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(new QLabel(i18n("Valid until:"), this), 4, 0);
     layout->addWidget(d->_validUntil = new QLabel("", this), 4, 1);
 
-    layout->addWidget(new QLabel(i18n("Serial Number:"), this), 5, 0);
+    layout->addWidget(new QLabel(i18n("Serial number:"), this), 5, 0);
     layout->addWidget(d->_serialNum = new QLabel("", this), 5, 1);
-    layout->addWidget(new QLabel(i18n("MD5 Digest:"), this), 6, 0);
+    layout->addWidget(new QLabel(i18n("MD5 digest:"), this), 6, 0);
     layout->addWidget(d->_digest = new QLabel("", this), 6, 1);
 
     layout->addWidget(new QLabel(i18n("Cipher in Use:"), this), 7, 0);
     layout->addWidget(new QLabel(cipher, this), 7, 1);
     layout->addWidget(new QLabel(i18n("Details:"), this), 8, 0);
     layout->addWidget(new QLabel(cipherdesc.simplifyWhiteSpace(), this), 8, 1);
-    layout->addWidget(new QLabel(i18n("SSL Version:"), this), 9, 0);
+    layout->addWidget(new QLabel(i18n("SSL version:"), this), 9, 0);
     layout->addWidget(new QLabel(sslversion, this), 9, 1);
-    layout->addWidget(new QLabel(i18n("Cipher Strength:"), this), 10, 0);
+    layout->addWidget(new QLabel(i18n("Cipher strength:"), this), 10, 0);
     layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 10, 1);
     d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
 

@@ -195,7 +195,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  grid->addWidget(new QLabel(i18n("File:"), _pkcsFrame), 7, 0);
  _p12_filenameLabel = new QLabel("", _pkcsFrame);
  grid->addWidget(_p12_filenameLabel, 7, 1);
- grid->addWidget(new QLabel(i18n("File Format:"), _pkcsFrame), 7, 3);
+ grid->addWidget(new QLabel(i18n("File format:"), _pkcsFrame), 7, 3);
  grid->addWidget(new QLabel("PKCS#12", _pkcsFrame), 7, 4);
 
 
@@ -212,15 +212,15 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  _p12_certState = new QLabel("", tab);
  tabGrid->addMultiCellWidget(_p12_certState, 0, 0, 1, 4);
 
- tabGrid->addWidget(new QLabel(i18n("Valid From:"), tab), 1, 0);
+ tabGrid->addWidget(new QLabel(i18n("Valid from:"), tab), 1, 0);
  _p12_validFrom = new QLabel("", tab);
  tabGrid->addMultiCellWidget(_p12_validFrom, 1, 1, 1, 4);
 
- tabGrid->addWidget(new QLabel(i18n("Valid Until:"), tab), 2, 0);
+ tabGrid->addWidget(new QLabel(i18n("Valid until:"), tab), 2, 0);
  _p12_validUntil = new QLabel("", tab);
  tabGrid->addMultiCellWidget(_p12_validUntil, 2, 2, 1, 4);
 
- tabGrid->addWidget(new QLabel(i18n("Serial Number:"), tab), 3, 0);
+ tabGrid->addWidget(new QLabel(i18n("Serial number:"), tab), 3, 0);
  _p12_serialNum = new QLabel("", tab);
  tabGrid->addWidget(_p12_serialNum, 3, 1);
  _tabs->addTab(tab, i18n("State"));
@@ -232,7 +232,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  tab = new QFrame(_pkcsFrame);
  tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
                                       KDialog::spacingHint() );
- tabGrid->addWidget(new QLabel(i18n("MD5 Digest:"), tab), 0, 0);
+ tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
  _p12_digest = new QLabel(tab);
  tabGrid->addMultiCellWidget(_p12_digest, 0, 0, 1, 4);
  tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
@@ -249,7 +249,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  tab = new QFrame(_pkcsFrame);
  tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
                                       KDialog::spacingHint() );
- tabGrid->addWidget(new QLabel(i18n("Public Key:"), tab), 0, 0);
+ tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
  _p12_pubkey = new QMultiLineEdit(tab);
  tabGrid->addMultiCellWidget(_p12_pubkey, 0, 3, 1, 4);
  _p12_pubkey->setReadOnly(true);
@@ -282,7 +282,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  grid->addWidget(new QLabel(i18n("File:"), _x509Frame), 6, 0);
  _ca_filenameLabel = new QLabel("", _x509Frame);
  grid->addWidget(_ca_filenameLabel, 6, 1);
- grid->addWidget(new QLabel(i18n("File Format:"), _x509Frame), 6, 3);
+ grid->addWidget(new QLabel(i18n("File format:"), _x509Frame), 6, 3);
  grid->addWidget(new QLabel("PEM or DER Encoded X.509", _x509Frame), 6, 4);
 
 
@@ -299,15 +299,15 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  _ca_certState = new QLabel("", tab);
  tabGrid->addMultiCellWidget(_ca_certState, 0, 0, 1, 4);
 
- tabGrid->addWidget(new QLabel(i18n("Valid From:"), tab), 1, 0);
+ tabGrid->addWidget(new QLabel(i18n("Valid from:"), tab), 1, 0);
  _ca_validFrom = new QLabel("", tab);
  tabGrid->addMultiCellWidget(_ca_validFrom, 1, 1, 1, 4);
 
- tabGrid->addWidget(new QLabel(i18n("Valid Until:"), tab), 2, 0);
+ tabGrid->addWidget(new QLabel(i18n("Valid until:"), tab), 2, 0);
  _ca_validUntil = new QLabel("", tab);
  tabGrid->addMultiCellWidget(_ca_validUntil, 2, 2, 1, 4);
 
- tabGrid->addWidget(new QLabel(i18n("Serial Number:"), tab), 3, 0);
+ tabGrid->addWidget(new QLabel(i18n("Serial number:"), tab), 3, 0);
  _ca_serialNum = new QLabel("", tab);
  tabGrid->addWidget(_ca_serialNum, 3, 1);
  _tabs->addTab(tab, i18n("State"));
@@ -319,7 +319,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  tab = new QFrame(_x509Frame);
  tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
                                       KDialog::spacingHint() );
- tabGrid->addWidget(new QLabel(i18n("MD5 Digest:"), tab), 0, 0);
+ tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
  _ca_digest = new QLabel(tab);
  tabGrid->addMultiCellWidget(_ca_digest, 0, 0, 1, 4);
  tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
@@ -336,7 +336,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  tab = new QFrame(_x509Frame);
  tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
                                       KDialog::spacingHint() );
- tabGrid->addWidget(new QLabel(i18n("Public Key:"), tab), 0, 0);
+ tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
  _ca_pubkey = new QMultiLineEdit(tab);
  tabGrid->addMultiCellWidget(_ca_pubkey, 0, 3, 1, 4);
  _ca_pubkey->setReadOnly(true);

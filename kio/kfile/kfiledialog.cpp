@@ -327,7 +327,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
 
-    KActionMenu *menu = new KActionMenu( i18n("Extras"), "configure", this, "extra menu" );
+    KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", this, "extra menu" );
     menu->insert( coll->action( "sorting menu" ));
     menu->insert( coll->action( "separator" ));
     coll->action( "short view" )->setShortcut(Key_F6);

@@ -773,9 +773,9 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 
 	QLabel	*m_desclab = new QLabel(i18n("&Description:"), topmain);
 	m_desclab->setBuddy(m_description);
-	QLabel	*m_mimetypelab = new QLabel(i18n("Output &Format:"), dummy);
+	QLabel	*m_mimetypelab = new QLabel(i18n("Output &format:"), dummy);
 	m_mimetypelab->setBuddy(m_mimetype);
-	QLabel	*m_idnamelab = new QLabel(i18n("ID Name:"), topmain);
+	QLabel	*m_idnamelab = new QLabel(i18n("ID name:"), topmain);
 
 	QFont	f(m_idname->font());
 	f.setBold(true);

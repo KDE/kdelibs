@@ -75,8 +75,8 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 	QLabel	*l4 = new QLabel(i18n("Names:"), dummy);
 	QLabel	*l5 = new QLabel(i18n("Encryption:"), dummy);
 	QLabel	*l6 = new QLabel(i18n("Satisfy:"), dummy);
-	QLabel	*l7 = new QLabel(i18n("ACL Order:"), dummy);
-	QLabel	*l8 = new QLabel(i18n("ACL Addresses:"),dummy);
+	QLabel	*l7 = new QLabel(i18n("ACL order:"), dummy);
+	QLabel	*l8 = new QLabel(i18n("ACL addresses:"),dummy);
 
 	QGridLayout	*m1 = new QGridLayout(dummy, 8, 2, 0, 5);
 	m1->setColStretch(1, 1);

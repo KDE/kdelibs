@@ -44,14 +44,14 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   grid->setColStretch(0,1);
   grid->setColStretch(1,100);
 
-  lb_from = new QLabel( "From :", main_widget );
+  lb_from = new QLabel( "From:", main_widget );
   grid->addWidget( lb_from, 0, 0 );
 
   le_source = new QLineEdit( main_widget );
   grid->addWidget( le_source, 0, 1 );
   le_source->setText( src );
 
-  lb_to = new QLabel( "To :", main_widget );
+  lb_to = new QLabel( "To:", main_widget );
   grid->addWidget( lb_to, 1, 0 );
 
   le_dest = new QLineEdit( main_widget );

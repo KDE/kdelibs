@@ -85,7 +85,7 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent, const char *name )
 	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "viewmag" ), this );
 	d->timer = new QTimer( this );
 	d->socket = new QSocket( this );
-	QLabel *label = new QLabel( i18n( "Network Scan:" ), this );
+	QLabel *label = new QLabel( i18n( "Network scan:" ), this );
 
 	QGridLayout *l0 = new QGridLayout( this, 3, 2, 0, 10 );
 	l0->addMultiCellWidget( label, 0, 0, 0, 1 );
