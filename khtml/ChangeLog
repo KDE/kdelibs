@@ -1,3 +1,8 @@
+2004-03-20  Dirk Mueller  <mueller@kde.org>
+
+	* xml/dom_docimpl.cpp (processHttpEquiv): improve refresh handling for negative and
+	slightly malformed delays (#78049)
+
 2004-03-18  Lubos Lunak <l.lunak@kde.org>
 
         * khtmlview.cpp, xml/dom_docimpl.cpp: accesskey attribute support
