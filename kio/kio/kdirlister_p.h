@@ -101,6 +101,7 @@ public:
   QString nameFilter;
   QPtrList<QRegExp> lstFilters, oldFilters;
   QStringList mimeFilter, oldMimeFilter;
+  QStringList mimeExcludeFilter, oldMimeExcludeFilter;
 };
 
 /**

@@ -240,6 +240,20 @@ public:
   virtual void setMimeFilter( const QStringList& );
 
   /**
+   * Set mime-based exclude filter to only list items not matching the given mimetypes
+   *
+   * NOTE: setting the filter does not automatically reload direcory.
+   * Also calling this function will not affect any named filter already set.
+   *
+   * @see #clearMimeFilter
+   * @see #matchesMimeFilter
+   *
+   * @param a list of mime-types.
+   */
+  void setMimeExcludeFilter(const QStringList &);
+
+
+  /**
    * Clears the mime based filter.
    *
    * @see #setMimeFilter
@@ -407,6 +421,7 @@ protected:
    */
   virtual bool doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const;
   virtual bool doMimeFilter( const QString& mime, const QStringList& filters ) const;
+  bool doMimeExcludeFilter( const QString& mimeExclude, const QStringList& filters ) const;
 
   /**
    * Checks if an url is malformed or not and displays an error message

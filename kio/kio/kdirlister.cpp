@@ -1551,8 +1551,10 @@ void KDirLister::emitChanges()
 
       if ( d->changes & MIME_FILTER )
       {
-        oldMime = doMimeFilter( (*kit)->mimetype(), d->oldMimeFilter );
-        newMime = doMimeFilter( (*kit)->mimetype(), d->mimeFilter );
+        oldMime = doMimeFilter( (*kit)->mimetype(), d->oldMimeFilter )
+		 && doMimeExcludeFilter( (*kit)->mimetype(), d->oldMimeExcludeFilter );
+        newMime = doMimeFilter( (*kit)->mimetype(), d->mimeFilter ) 
+		&& doMimeExcludeFilter( (*kit)->mimetype(), d->mimeExcludeFilter );
 
         if ( oldMime && !newMime )
         {
@@ -1687,12 +1689,25 @@ void KDirLister::setMimeFilter( const QStringList& mimeFilter )
   d->changes |= MIME_FILTER;
 }
 
+void KDirLister::setMimeExcludeFilter( const QStringList& mimeExcludeFilter )
+{
+  if ( !(d->changes & MIME_FILTER) )
+    d->oldMimeExcludeFilter = d->mimeExcludeFilter;
+
+  d->mimeExcludeFilter = mimeExcludeFilter;
+  d->changes |= MIME_FILTER;
+}
+
+
 void KDirLister::clearMimeFilter()
 {
   if ( !(d->changes & MIME_FILTER) )
-    d->oldMimeFilter = d->mimeFilter;
-
+  {
+       d->oldMimeFilter = d->mimeFilter;
+       d->oldMimeExcludeFilter = d->mimeExcludeFilter;
+  }
   d->mimeFilter.clear();
+  d->mimeExcludeFilter.clear();
   d->changes |= MIME_FILTER;
 }
 
@@ -1708,7 +1723,7 @@ bool KDirLister::matchesFilter( const QString& name ) const
 
 bool KDirLister::matchesMimeFilter( const QString& mime ) const
 {
-  return doMimeFilter( mime, d->mimeFilter );
+  return doMimeFilter( mime, d->mimeFilter ) && doMimeExcludeFilter(mime,d->mimeExcludeFilter);
 }
 
 // ================ protected methods ================ //
@@ -1757,6 +1772,24 @@ bool KDirLister::doMimeFilter( const QString& mime, const QStringList& filters )
 
   return false;
 }
+
+bool KDirLister::doMimeExcludeFilter( const QString& mime, const QStringList& filters ) const
+{
+kdDebug(7004)<<"CHECK EXCLUDE 2"<<endl;
+
+  if ( filters.isEmpty() )
+    return true;
+
+kdDebug(7004)<<"CHECK EXCLUDE 2"<<endl;
+
+  QStringList::ConstIterator it = filters.begin();
+  for ( ; it != filters.end(); ++it )
+    if ( (*it) == mime )
+      return false;
+
+  return true;
+}
+
 
 bool KDirLister::validURL( const KURL& _url ) const
 {
