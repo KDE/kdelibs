@@ -25,7 +25,7 @@
       	    	    	margin-left: 0;
 			margin-right: auto;
       	    	    	border-collapse: separate
-      	    	    	text-align: justify;
+      	    	    	text-align: inherit;
 			vertical-align: middle;
 			border-spacing: 2px;
 			border-left-color: #eeeeee;
@@ -54,7 +54,7 @@
 			    border-top-color: #666666;
 			    border-bottom-color: #eeeeee;
 			    border-right-color: #eeeeee;
-      	    	    	    text-align: justify;
+      	    	    	    text-align: inherit;
                             background-color: inherit; /* ### hack */
 			 }
       CAPTION         { display: table-caption;  }
