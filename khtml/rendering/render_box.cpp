@@ -765,9 +765,15 @@ void RenderBox::calcAbsoluteVertical()
     if(!m_style->bottom().isVariable())
 	b = m_style->bottom().width(ch);		
     if(!m_style->height().isVariable())
+    {
 	h = m_style->height().width(ch);
+        // use real height if higher
+        if (h < m_height - pab)
+            h = m_height - pab;
+    }
     else if (isReplaced())
         h = intrinsicHeight();
+    
     if(!m_style->marginTop().isVariable())
 	mt = m_style->marginTop().width(ch);		
     if(!m_style->marginBottom().isVariable())
