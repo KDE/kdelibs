@@ -157,6 +157,7 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
         // ### change cursor like in KHTMLView?
     }
     break;
+    default: break;
     };
     return khtml::RenderWidget::eventFilter(o, e);
 }
