@@ -21,6 +21,7 @@ int main ( int argc, char **argv)
 
     // All the other widgets
     KComboBox *rwc = new KComboBox( true, w, "rwcombobox" );
+    // rwc->setEnableContextMenu( false );
     QLabel* lblrw = new QLabel( rwc, i18n("&Editable ComboBox"), w, "rwcombolabel" );
     KCompletion* comp = rwc->completionObject();
     KComboBox *soc = new KComboBox( w, "socombobox" );
