@@ -562,7 +562,7 @@ void KFileDetailView::slotAutoOpen()
 bool KFileDetailView::acceptDrag(QDropEvent* e) const
 {
    return KURLDrag::canDecode( e ) &&
-       (e->source()!=viewport()) &&
+       (e->source()!=this) &&
        ( e->action() == QDropEvent::Copy
       || e->action() == QDropEvent::Move
       || e->action() == QDropEvent::Link );
