@@ -847,10 +847,12 @@ void KFileDialog::setSelection(const QString& url)
 	return;
     }
 
+    /** hmm, this would prevent using remote urls, right?
     if (!u.isLocalFile()) { // no way to detect, if we have a directory!?
 	d->url = u;
 	return;
     }
+    */
 
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr

@@ -80,9 +80,9 @@ public:
     uint count() const;
 
     /**
-     * Returns true if KFM has finished the operation.
+     * Returns true if no io operation is currently in progress.
      */
-  //    bool isFinished() const { return (myJob == 0); }
+    bool isFinished() const { return (myJob == 0); }
 
     /**
      * Initiates reading the current directory or url. Returns the contents

@@ -152,10 +152,11 @@ void KFileIconView::setSelected( const KFileViewItem *info, bool enable )
     // we can only hope that this cast works
     KFileIconViewItem *item = (KFileIconViewItem*)info->viewItem( this );
 
-    if ( item && item != currentItem() ) {
+    if ( item ) {
+	slotUpdate();
+	KIconView::setSelected( item, enable );
         KIconView::setCurrentItem( item );
 	KIconView::ensureItemVisible( item );
-	KIconView::setSelected( item, enable );
     }
 }
 
