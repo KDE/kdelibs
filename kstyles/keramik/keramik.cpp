@@ -1982,8 +1982,8 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 		}
 
 		case CT_ComboBox:
-			return QSize( contentSize.width() + 11 + loader.size( keramik_ripple ).width() + 36,
-			              contentSize.height() + 9 );
+			return QSize( contentSize.width() + 8 + loader.size( keramik_ripple ).width() + 26,
+			              contentSize.height() + 10 );
 
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
@@ -2084,13 +2084,11 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 				case SC_ComboBoxEditField:
 				{
 					if ( widget->width() < 36 || widget->height() < 22 )
-					{
-
 						return QRect( 4, 3, widget->width() - arrow - 20, widget->height() - 6 );
-					}
-//					if ( static_cast< const QComboBox* >( widget )->editable() )
-//						return QRect( 10, 8, widget->width() - arrow - 30, widget->height() - 16 );
-					return QRect( 8, 4, widget->width() - arrow - 28, widget->height() - 11 );
+					else if ( static_cast< const QComboBox* >( widget )->editable() )
+						return QRect( 7, 4, widget->width() - arrow - 26, widget->height() - 11 );
+					else
+						return QRect( 6, 4, widget->width() - arrow - 22, widget->height() - 9 );
 				}
 
 				default: break;
