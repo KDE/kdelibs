@@ -311,4 +311,18 @@ protected:
   virtual void virtual_hook( int id, void* data );
 };
 
+class KExtendedBookmarkOwnerPrivate;
+class KExtendedBookmarkOwner : public QObject, virtual public KBookmarkOwner
+{
+    Q_OBJECT
+public:    
+    typedef QValueList<QPair<QString,QString> > QStringPairList;
+public slots:
+    void fillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list ) { emit signalFillBookmarksList( list ); };
+signals:
+    void signalFillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list );
+private:
+    KExtendedBookmarkOwnerPrivate *d;
+};
+
 #endif
