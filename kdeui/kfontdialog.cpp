@@ -37,6 +37,7 @@
 #include <qlayout.h>
 #include <qscrollbar.h>
 #include <qstringlist.h>
+#include <qfontdatabase.h>
 
 #include <kapp.h>
 #include <kcharsets.h>
@@ -400,25 +401,42 @@ void KFontChooser::setupDisplay()
 
 void KFontChooser::getFontList( QStringList &list, bool fixed )
 {
-  //
-  // Use KDE fonts if there is a KDE font list and check that the fonts
-  // exist on the server where the desktop is running.
-  //
-  QStringList lstSys, lstKDE;
+  QFontDatabase dbase;
+  QStringList lstSys(dbase.families());
 
-  if ( fixed )
+  // Since QFontDatabase doesn't have any easy way of returning just
+  // the fixed width fonts, we'll do it in a very hacky way
+  if (fixed)
   {
-    getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-m-*-*-*" );
-    getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-c-*-*-*" );
-  }
-  else
-  {
-    //getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-p-*-*-*" );
-    getFontList(lstSys, "*");
+    QStringList lstFixed;
+    for (QStringList::Iterator it = lstSys.begin(); it != lstSys.end(); ++it)
+    {
+        // To get the fixed with info (known as fixed pitch in Qt), we
+        // need to get a QFont or QFontInfo object.  To do this, we
+        // need a family name, style, and point size.
+        QStringList styles(dbase.styles(*it));
+        QStringList::Iterator astyle = styles.begin();
+ 
+        QFontInfo info(dbase.font(*it, *astyle, 10));
+        if (info.fixedPitch())
+          lstFixed.append(*it);
+    }
+
+    // Fallback.. if there are no fixed fonts found, it's probably a
+    // bug in the font server or Qt.  In this case, just use 'fixed'
+    if (lstFixed.count() == 0)
+      lstFixed.append("fixed");
+
+    lstSys = lstFixed;
   }
 
   lstSys.sort();
 
+  //
+  // Use KDE fonts if there is a KDE font list and check that the fonts
+  // exist on the server where the desktop is running.
+  //
+  QStringList lstKDE;
   if ( !kapp->kdeFonts( lstKDE ) )
   {
     list = lstSys;
@@ -546,6 +564,13 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.56  2000/09/25 13:45:17  faure
+* * Added extractors for the charset that is set in the combobox.
+* The font holds the charset, but this means 'default' was useless.
+* Now the application can know when "default" was chosen.
+* * Removed "any" entry in the charset combo.
+* According to Denis, Lukas and Lars, it doesn't make any sense.
+*
 * Revision 1.55  2000/09/22 12:37:26  faure
 * Fixed another charset bug: KFontDialog didn't find the charset in
 * the list.
