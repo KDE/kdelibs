@@ -1,3 +1,11 @@
+kdelibs (4:2.2.0-0.1beta1-2) unstable; urgency=low
+ 
+  * synce with upstream
+  * more https related fixes
+  * Fix shlibs
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 27 Jul 2001 12:18:00 -0700
+
 kdelibs (4:2.2.0-0.1beta1-1) unstable; urgency=low
  
   * synce with upstream
