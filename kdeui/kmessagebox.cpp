@@ -63,21 +63,16 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
 {
     QVBox *topcontents = new QVBox (dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
-    topcontents->setMargin(KDialog::marginHint()*2);
+    topcontents->setMargin(KDialog::marginHint());
 
     QWidget *contents = new QWidget(topcontents);
     QHBoxLayout * lay = new QHBoxLayout(contents);
     lay->setSpacing(KDialog::spacingHint()*2);
 
     QLabel *label1 = new QLabel( contents);
-#if QT_VERSION < 300
-    label1->setPixmap(QMessageBox::standardIcon(icon, kapp->style().guiStyle()));
-#else
     label1->setPixmap(QMessageBox::standardIcon(icon));
-#endif
-    lay->addSpacing(15);
     lay->addWidget( label1, 0, Qt::AlignCenter );
-    lay->addSpacing(15);
+    lay->addSpacing(KDialog::spacingHint());
     // Enforce <p>text</p> otherwise the word-wrap doesn't work well 
     QString qt_text;
     if ( !text.isEmpty() && (text[0] != '<') )
@@ -128,8 +123,9 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     }
     KActiveLabel *label2 = new KActiveLabel( qt_text, contents );
 
-    // We add 5 pixels extra to compensate for some KActiveLabel margins.
-    label2->setFixedSize(QSize(pref_width+5, pref_height));
+    // We add 10 pixels extra to compensate for some KActiveLabel margins.
+    // TODO: find out why this is 10.
+    label2->setFixedSize(QSize(pref_width+10, pref_height));
     lay->addWidget( label2 );
 
     if (!strlist.isEmpty())
