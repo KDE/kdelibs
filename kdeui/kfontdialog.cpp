@@ -245,7 +245,7 @@ void KFontChooser::enableColumn( int column, bool state )
   {
     styleLabel->setEnabled(state);
     styleListBox->setEnabled(state);
-  }  
+  }
   if( column & SizeList )
   {
     sizeLabel->setEnabled(state);
@@ -292,7 +292,7 @@ void KFontChooser::fillCharsetsCombo()
       charsetsCombo->insertItem( *it );
   charsetsCombo->insertItem( i18n("any") );
 
-  QString charset=charsets->name(selFont);
+  QString charset=charsets->xCharsetName(selFont.charSet());
   for(i = 0; i < charsetsCombo->count(); i++){
     if (charset == charsetsCombo->text(i)){
       charsetsCombo->setCurrentItem(i);
@@ -530,6 +530,12 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.54  2000/06/16 11:40:38  coolo
+* removing the #ifdef HAVE_CONFIG_H stuff. This isn't logical anymore now we
+* define even prototypes within config.h. someone I know tried kdevelop to setup
+* a little C++ project and the first line of code was #ifdef HAVE_CONFIG_H and
+* asked me what this does. And the only valid answer one can have is "it's historical"
+*
 * Revision 1.53  2000/06/03 21:00:11  bieker
 * DOn't include headers we don't use.
 *
