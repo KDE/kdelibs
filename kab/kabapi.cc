@@ -135,7 +135,7 @@ AddressBook::ErrorCode KabAPI::add(const AddressBook::Entry& entry, KabKey& key,
   {
   REQUIRE(widget!=0);
   register bool GUARD; GUARD=true;
-  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit[foreign entry]: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::edit[foreign entry]: called.");
   // ############################################################################  
   EditEntryDialog dialog(this);
   // -----
@@ -194,7 +194,7 @@ AddressBook::ErrorCode KabAPI::remove(const KabKey& key)
 {
   REQUIRE(book!=0);
   register bool GUARD; GUARD=true;
-  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::remove: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::remove: called.");
   // ############################################################################  
   if(book->AddressBook::remove(key)==AddressBook::NoError)
     {
@@ -226,19 +226,19 @@ AddressBook::ErrorCode KabAPI::getEntries(list<AddressBook::Entry>& entries)
   register bool GUARD; GUARD=true;
   REQUIRE(entries.empty());
   REQUIRE(book!=0);
-  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: called.\n");
+  kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: called.");
   // ############################################################################  
   if(book->noOfEntries()==0)
     { // ----- database is valid, but empty:
-      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: no entries.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: no entries.");
       return AddressBook::NoEntry;
     }
   if(!book->getEntries(entries))
     {
-      kDebugInfo("KabAPI::getEntries: intern error.\n");
+      kDebugInfo("KabAPI::getEntries: intern error.");
       return AddressBook::InternError;
     } else {
-      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: done.\n");
+      kDebugInfo(GUARD, KAB_KDEBUG_AREA, "KabAPI::getEntries: done.");
       return AddressBook::NoError;
     }
   // ############################################################################  
