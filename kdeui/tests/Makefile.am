@@ -22,7 +22,6 @@ INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-# Please keep sorted
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest kcomboboxtest kcompletiontest \
 	kcontainertest kdatepicktest kdialogbasetest \
@@ -36,7 +35,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kstatusbartest ktabctltest \
 	kunbalancedgrdtest kwindowtest kwizardtest \
 	itemcontainertest kpanelmenutest kedittest kalphaicontest \
-	kxmlguitest
+	kxmlguitest kaccelgentest
 
 noinst_HEADERS = \
 		ktabctltest.h kwindowtest.h kstatusbartest.h \
@@ -52,7 +51,6 @@ METASOURCES = AUTO
 
 LDADD = ../libkdeui.la
 
-# Please keep sorted
 kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
 kblendtest_SOURCES = kblendtest.cpp
 kdesattest_SOURCES = kdesattest.cpp
@@ -93,4 +91,5 @@ kdocktabctltest_SOURCES = kdocktabctltest.cpp
 kdockwidgettest_SOURCES = kdockwidgettest.cpp
 kalphaicontest_SOURCES = kalphaicontest.cpp
 kxmlguitest_SOURCES = kxmlguitest.cpp
+kaccelgentest_SOURCES = kaccelgentest.cpp
 
