@@ -152,7 +152,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
       gridLayout->addRowSpacing( 4, 20 );
 
-      QLabel * lb2 = new QLabel( i18n("The original file is '%1'").arg(src), this );
+      QLabel * lb2 = new QLabel( i18n("The source file is '%1'").arg(src), this );
       gridLayout->addMultiCellWidget( lb2, 5, 5, 0, 1 ); // takes the complete first line
 
       lb2 = new QLabel( this );
