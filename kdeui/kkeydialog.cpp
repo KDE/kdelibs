@@ -24,16 +24,16 @@
 #include <qpainter.h>
 #include <qapplication.h>
 #include <qdrawutil.h>
-#include <kmessagebox.h>
 #include <qradiobutton.h>
 
-#include <kglobal.h>
-#include <klocale.h>
 #include <kbuttonbox.h>
 #include <kckey.h>
+#include <kconfig.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 
 #include "kkeydialog.h"
-#include <kconfig.h>
 
 /*****************************************************************************/
 /* KSplitListItem                                                            */

@@ -6,12 +6,12 @@
 //////////////////////////////////////////////////////////////////////
 #include "../config.h"
 
-#include <kmessagebox.h>
 #include <qregexp.h>
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
 #include <klocale.h>
+#include <kmessagebox.h>
 
 #include "kaccelmenu.h"
 
@@ -123,7 +123,7 @@ void KAccelMenu::popMsg () {
       QWhatsThis::remove(this);
     } else {
       msg = i18n("Global Key: cannot change shortcut");
-      KMessageBox::sorry(this, msg, "KAccelMenu Warning");
+      KMessageBox::sorry(this, msg, i18n("KAccelMenu Warning"));
     }
   }
 }
