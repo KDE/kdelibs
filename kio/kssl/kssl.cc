@@ -343,7 +343,7 @@ int KSSL::read(void *buf, int len) {
   if (rc <= 0) {
     int err = d->kossl->SSL_get_error(d->m_ssl, rc);
     kdDebug(7029) << "SSL READ ERROR: " << err << endl;
-    if (err != SSL_ERROR_NONE && err != SSL_ERROR_ZERO_RETURN)
+    if (err != SSL_ERROR_NONE && err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL)
       rc = -1;      // OpenSSL returns 0 on error too
   }
   return rc;
@@ -361,7 +361,7 @@ int KSSL::write(const void *buf, int len) {
   if (rc <= 0) {      // OpenSSL returns 0 on error too
     int err = d->kossl->SSL_get_error(d->m_ssl, rc);
     kdDebug(7029) << "SSL WRITE ERROR: " << err << endl;
-    if (err != SSL_ERROR_NONE && err != SSL_ERROR_ZERO_RETURN)
+    if (err != SSL_ERROR_NONE && err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL)
       rc = -1;
   }
 
