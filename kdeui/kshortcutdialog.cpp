@@ -121,6 +121,7 @@ void KShortcutDialog::initGUI()
 
 	QVBox* pVBox = new QVBox( this );
         
+	// Don't use KStdGuiItem because shown accels would be assigned as shortcut when pressed
 	m_pcmdOK = new KPushButton( KGuiItem(i18n( "OK" ), "button_ok"), pVBox );
 	m_pcmdCancel = new KPushButton( KGuiItem(i18n( "Cancel" ), "button_cancel"), pVBox );
 	m_pcbAutoClose = new QCheckBox( i18n("Auto-close"), pVBox );
