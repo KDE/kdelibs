@@ -121,6 +121,7 @@ protected:
 					// calling this function. Useful when listing printers.
 	void setHardDefault(KMPrinter*);
 	void setSoftDefault(KMPrinter*);
+	KMPrinter* softDefault() const;
 	// this function uncompress the given file (or does nothing
 	// if the file is not compressed). Returns wether the file was
 	// compressed or not.

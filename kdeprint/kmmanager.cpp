@@ -155,6 +155,14 @@ KMPrinter* KMManager::findPrinter(const QString& name)
 	return 0;
 }
 
+KMPrinter* KMManager::softDefault() const
+{
+	QListIterator<KMPrinter>	it(m_printers);
+	for (;it.current();++it)
+		if (it.current()->isSoftDefault()) return it.current();
+	return 0;
+}
+
 QList<KMPrinter>* KMManager::printerList(bool reload)
 {
 	if (reload || m_printers.count() == 0)
@@ -180,6 +188,16 @@ QList<KMPrinter>* KMManager::printerList(bool reload)
 				m_printers.remove(i);
 				i--;
 			}
+
+		// try to find the default printer from these situations:
+		//   - it already exists from .lpoptions file
+		//   - use the PRINTER variable
+		if (!softDefault())
+		{
+			KMPrinter	*defprinter = findPrinter(QString::fromLatin1(getenv("PRINTER")));
+			if (defprinter)
+				setSoftDefault(defprinter);
+		}
 	}
 
 	return &m_printers;
