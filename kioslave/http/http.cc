@@ -3400,11 +3400,6 @@ bool HTTPProtocol::readHeader()
     }
   }
 
-  // Do not do a keep-alive connection if the size of the
-  // response is not known and the response is not Chunked.
-  if (!m_bChunked && m_iSize == NO_SIZE)
-    m_bKeepAlive = false;
-
   if (m_request.bMustRevalidate)
   {
     m_request.bMustRevalidate = false; // Reset just in case.
@@ -3440,6 +3435,12 @@ bool HTTPProtocol::readHeader()
   {
     return readHeader();
   }
+
+  // Do not do a keep-alive connection if the size of the
+  // response is not known and the response is not Chunked.
+  if (!m_bChunked && (m_iSize == NO_SIZE))
+    m_bKeepAlive = false;
+
   if ( m_responseCode == 204 )
   {
     return true;
