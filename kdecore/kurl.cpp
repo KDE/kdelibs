@@ -1523,7 +1523,21 @@ QString KURL::prettyURL( int _trailing ) const
     }
   }
 
-  u += trailingSlash( _trailing, lazy_encode( m_strPath ) );
+  if (m_iUriMode == Mailto)
+  {
+     int atIndex = m_strPath.findRev('@');
+     if (atIndex == -1)
+        u += lazy_encode( m_strPath );
+     else
+        u += lazy_encode( m_strPath.left(atIndex) ) +
+             '@' + 
+             lazy_encode( m_strPath.mid(atIndex+1) );
+  }
+  else
+  {
+     u += trailingSlash( _trailing, lazy_encode( m_strPath ) );
+  }
+
   if (!m_strQuery_encoded.isNull())
       u += '?' + m_strQuery_encoded;
 
