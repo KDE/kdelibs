@@ -745,9 +745,9 @@ bool KExtendedSocket::setAddressReusable(int fd, bool enable)
   if (fd == -1)
     return false;
 
-  int on = (int)enable;		// just to be on the safe side
+  int on = enable;		// just to be on the safe side
 
-  if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) == -1)
+  if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1)
     return false;
   return true;
 }
