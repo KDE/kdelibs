@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+#include <limits.h>
 
 #include <qpainter.h>
 #include <qpixmap.h>
@@ -124,14 +125,18 @@ bool KProgress::setIndicator(QString &indicator, int progress, int totalSteps)
     if (!totalSteps)
         return false;
     QString newString(mFormat);
-    newString.replace(QRegExp(QString::fromLatin1("%p")),
-                      QString::number(progress > 1000 ?
-                        (progress / 10) / ( totalSteps / 1000) :
-                        (progress * 100) / totalSteps));
     newString.replace(QRegExp(QString::fromLatin1("%v")),
                       QString::number(progress));
     newString.replace(QRegExp(QString::fromLatin1("%m")),
                       QString::number(totalSteps));
+
+    if (totalSteps > INT_MAX / 1000) {
+        progress /= 1000;
+        totalSteps /= 1000;
+    }
+
+    newString.replace(QRegExp(QString::fromLatin1("%p")),
+                      QString::number(progress * 100 / totalSteps));
 
     if (newString != indicator)
     {
