@@ -132,6 +132,7 @@ public:
         autoDelete = true;
         xplain = false;
         xgrab = false;
+        mapAfterRelease = false;
         lastPos = QPoint(0,0);
     }
     ~QXEmbedData(){};
@@ -139,6 +140,7 @@ public:
     bool autoDelete;      // L0101: See L2600
     bool xplain;          // L0102: See L1100
     bool xgrab;           // L0103: See L2800
+    bool mapAfterRelease;
     QWidget* focusProxy;  // L0104: See XEmbed spec
     QPoint lastPos;       // L0105: See L1390
 };
@@ -673,6 +675,8 @@ QXEmbed::~QXEmbed()
             XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
             if( !d->xplain )
                 XRemoveFromSaveSet( qt_xdisplay(), window );
+            if( d->mapAfterRelease )
+                XMapWindow( qt_xdisplay(), window );
             XSync(qt_xdisplay(), false);
             // L1022: Send the WM_DELETE_WINDOW message
             if( autoDelete() /*&& d->xplain*/ ) 
@@ -1264,6 +1268,16 @@ bool QXEmbed::autoDelete() const
 bool QXEmbed::customWhatsThis() const
 {
     return true;
+}
+
+// Used by system tray when embedding tray window using the KDE tray mechanism.
+// Those windows use XEMBED protocol, but when Kicker releases them, they should
+// be mapped after reparented back to root, otherwise KWin won't detect them.
+// Due to the simple API (KWin::setSystemTrayWindowFor()) it's not possible to make them
+// detect themselves that they're not embedded anymore and handle the situation themselves.
+void QXEmbed::setMapAfterRelease( bool set )
+{
+    d->mapAfterRelease = set;
 }
 
 // L2800: When using the XPLAIN protocol, this function maintains
