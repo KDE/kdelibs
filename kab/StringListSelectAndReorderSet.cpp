@@ -4,6 +4,7 @@
 
 #include "StringListSelectAndReorderSet.h"
 #include <qbitmap.h>
+#include <qstrlist.h>
 // the bitmaps
 #include "arrow_left.xbm"
 #include "arrow_right.xbm"
