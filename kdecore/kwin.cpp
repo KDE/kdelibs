@@ -354,7 +354,10 @@ void KWin::avoid(WId win, AnchorEdge edge)
     case Bottom:  anchorEdge = "S"; break;
     case Right:   anchorEdge = "E"; break;
     case Left:    anchorEdge = "W"; break;
+    default:      anchorEdge = "0"; break;
   }
+  
+  qDebug("KWin::avoid - anchor edge == '%s'", anchorEdge);
 
   Status status = XStringListToTextProperty(&anchorEdge, 1, &avoidProp);
 
@@ -362,5 +365,28 @@ void KWin::avoid(WId win, AnchorEdge edge)
     XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
   else
     qDebug("KWin::avoid(): Couldn't set text property");
+}
+
+void KWin::stopAvoiding(WId win)
+{
+  qDebug("KWin::stopAvoiding()");
+
+  Atom avoidAtom = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
+
+  XTextProperty avoidProp;
+
+  char * anchorEdge = "0";
+
+  Status status = XStringListToTextProperty(&anchorEdge, 1, &avoidProp);
+
+  if (0 != status)
+    XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
+  else
+    qDebug("KWin::avoid(): Couldn't set text property");
+}
+
+void KWin::updateClientArea()
+{
+  // Send signal to kwin to tell it to update the client area.
 }
 

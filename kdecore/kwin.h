@@ -132,8 +132,26 @@ public:
      * when maximising, mapping new windows etc.
      *
      * Use @p edge to specify which edge your window is stuck to.
+     *
+     * You can call this function as many times as you like. kwin
+     * will just forget about the old edge you were anchored to, so
+     * you can move to another one if you want.
      */
     static void avoid(WId win, AnchorEdge edge);
+
+    /**
+     * Remove the window @p win from the list of those that should be avoided.
+     *
+     * This is useful if your window can be hidden in some way, e.g.
+     * kicker can be scrolled off-screen.
+     */
+    static void stopAvoiding(WId win);
+
+    /**
+     * Tell kwin that it needs to update the client area - that is, the
+     * area which isn't taken by windows that cling to the screen edges.
+     */
+    static void updateClientArea();
 };
 
 #endif
