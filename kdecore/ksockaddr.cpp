@@ -284,7 +284,7 @@ KInetSocketAddress::~KInetSocketAddress()
 bool KInetSocketAddress::setAddress(const sockaddr_in* sin, ksocklen_t len)
 {
   // This is supposed to be a AF_INET socket
-  if (len < sizeof(sockaddr_in) || sin->sin_family != AF_INET)
+  if ((len < sizeof(sockaddr_in)) || (sin->sin_family != AF_INET))
     {
       kdWarning() << "KInetSocketAddress::setAddress(sockaddr_in*) called with invalid sockaddr_in\n";
       return false;
@@ -297,8 +297,8 @@ bool KInetSocketAddress::setAddress(const sockaddr_in6* sin6, ksocklen_t len)
 {
 #ifdef AF_INET6
   // should be family AF_INET6
-  if (len < (offsetof(sockaddr_in6, sin6_addr) + sizeof(sin6->sin6_addr)) ||
-      sin6->sin6_family != AF_INET6)
+  if ((len < (offsetof(sockaddr_in6, sin6_addr) + sizeof(sin6->sin6_addr))) ||
+      (sin6->sin6_family != AF_INET6))
     {
       kdWarning() << "KInetSocketAddress::setAddress(sockaddr_in6*) called with invalid sockaddr_in6\n";
       return 0;
@@ -360,9 +360,9 @@ bool KInetSocketAddress::setHost(const in6_addr& addr)
 bool KInetSocketAddress::setHost(const QString& addr, int family)
 {
   // if family == -1, we'll try to guess the host name
-  if (family != -1 && family != AF_INET 
+  if ((family != -1) && (family != AF_INET)
 #ifdef AF_INET6
-      && family != AF_INET6
+      && (family != AF_INET6)
 #endif
       )
     {
@@ -684,14 +684,14 @@ bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
       return false;
     }
 
-  if (owndata && d->m_sun != NULL && datasize >= _size)
+  if (owndata && (d->m_sun != NULL) && (datasize >= _size))
     {
       // reuse this without reallocating
       memcpy(d->m_sun, _sun, _size);
     }
   else
     {
-      if (owndata && d->m_sun != NULL)
+      if (owndata && (d->m_sun != NULL))
 	free(d->m_sun);
 
       d->m_sun = (sockaddr_un*)malloc(_size);
@@ -719,7 +719,7 @@ bool KUnixSocketAddress::setAddress(QCString path)
 {
   ksocklen_t newsize = offsetof(sockaddr_un, sun_path) + path.length();
 
-  if (owndata && d->m_sun != NULL && datasize >= newsize)
+  if (owndata && (d->m_sun != NULL) && (datasize >= newsize))
     {
       // we can reuse this
       strcpy(d->m_sun->sun_path, path);
@@ -730,7 +730,7 @@ bool KUnixSocketAddress::setAddress(QCString path)
     }
 
   // nah, we have to do better
-  if (owndata && d->m_sun != NULL)
+  if (owndata && (d->m_sun != NULL))
     free(d->m_sun);
 
   d->m_sun = (sockaddr_un*) malloc(newsize);
