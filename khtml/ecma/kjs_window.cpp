@@ -83,7 +83,6 @@ class Screen : public ObjectImp {
 public:
   Screen() : ObjectImp( UndefClass ) { }
   KJSO get(const UString &p) const;
-  virtual Boolean toBoolean() const { return Boolean(true); }
 private:
   KHTMLView *view;
 };
