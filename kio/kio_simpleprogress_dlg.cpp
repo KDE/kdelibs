@@ -77,8 +77,11 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified
   speedLabel = new QLabel(this);
   hBox->addWidget(speedLabel, 1);
 
-  statusLabel = new QLabel(this);
-  hBox->addWidget(statusLabel);
+  sizeLabel = new QLabel(this);
+  hBox->addWidget(sizeLabel);
+  
+  resumeLabel = new QLabel(this);
+  hBox->addWidget(resumeLabel);
 
   hBox = new QHBoxLayout();
   topLayout->addLayout(hBox);
@@ -136,17 +139,35 @@ void KIOSimpleProgressDlg::slotTotalDirs( int, unsigned long _dirs )
 
 void KIOSimpleProgressDlg::slotPercent( int, unsigned long _percent ) 
 {
-  //  QString tmp(i18n( "%1% of %2 ").arg( _percent ).arg( KIOJob::convertSize(m_iTotalSize)));
+  QString tmp(i18n( "%1% of %2 ").arg( _percent ).arg( KIOJob::convertSize(m_iTotalSize)));
   m_pProgressBar->setValue( _percent );
-  //  setCaption( tmp );
+  switch(mode) {
+  case Copy:
+    tmp.append(i18n(" (Deleting)"));
+    break;
+  case Delete:
+    tmp.append(i18n(" (Deleting)"));
+    break;
+  case Create:
+    tmp.append(i18n(" (Creating)"));
+    break;
+  case Scan:
+    tmp.append(i18n(" (Scanning)"));
+    break;
+  case Fetch:
+    tmp.append(i18n(" (Fetching)"));
+    break;
+  }
+
+  setCaption( tmp );
 }
 
 
 void KIOSimpleProgressDlg::slotProcessedSize( int, unsigned long _bytes ) {
   QString tmp;
 
-  tmp = i18n( "%1 from %2 ").arg( KIOJob::convertSize(_bytes) ).arg( KIOJob::convertSize(m_iTotalSize));
-  sourceLabel->setText( tmp );
+  tmp = i18n( "%1 of %2 ").arg( KIOJob::convertSize(_bytes) ).arg( KIOJob::convertSize(m_iTotalSize));
+  sizeLabel->setText( tmp );
 }
 
 
@@ -175,6 +196,7 @@ void KIOSimpleProgressDlg::slotSpeed( int, unsigned long _bytes_per_second )
 void KIOSimpleProgressDlg::slotScanningDir( int , const char *_dir) 
 {
   setCaption(i18n("Scanning %1").arg( _dir ) );
+  mode = Scan;
 }
 
 
@@ -182,6 +204,7 @@ void KIOSimpleProgressDlg::slotCopyingFile( int, const char *_from,
 					    const char *_to ) 
 {
   setCaption(i18n("Copy file(s) progress"));
+  mode = Copy;
   sourceLabel->setText( _from );
   destLabel->setText( _to );
 }
@@ -190,6 +213,7 @@ void KIOSimpleProgressDlg::slotCopyingFile( int, const char *_from,
 void KIOSimpleProgressDlg::slotMakingDir( int, const char *_dir ) 
 {
   setCaption(i18n("Creating directory"));
+  mode = Create;
   sourceLabel->setText( _dir );
 }
 
@@ -197,6 +221,7 @@ void KIOSimpleProgressDlg::slotMakingDir( int, const char *_dir )
 void KIOSimpleProgressDlg::slotGettingFile( int, const char *_url ) 
 {
   setCaption(i18n("Fetch file(s) progress"));
+  mode = Fetch;
   sourceLabel->setText( _url );
 }
 
@@ -204,6 +229,7 @@ void KIOSimpleProgressDlg::slotGettingFile( int, const char *_url )
 void KIOSimpleProgressDlg::slotDeletingFile( int, const char *_url ) 
 {
   setCaption(i18n("Delete file(s) progress"));
+  mode = Delete;
   sourceLabel->setText( _url );
 }
 
@@ -211,9 +237,9 @@ void KIOSimpleProgressDlg::slotDeletingFile( int, const char *_url )
 void KIOSimpleProgressDlg::slotCanResume( int, bool _resume )
 {
   if ( _resume ) {
-    statusLabel->setText( i18n("Resumable") );
+    resumeLabel->setText( i18n("Resumable") );
   } else {
-    statusLabel->setText( i18n("Not resumable") );
+    resumeLabel->setText( i18n("Not resumable") );
   }
 }
 

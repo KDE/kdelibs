@@ -134,7 +134,9 @@ void KBuildSycoca::dirDeleted(const QString& /*path*/)
   // We could be smarter here, and find out which factory
   // deals with that dir, and update only that...
   // But rebuilding everything is fine for me.
-  m_pTimer->start( 5000, true /* single shot */ );
+  if (m_pTimer->isActive())
+    m_pTimer->stop();
+  m_pTimer->start( 1200, true /* single shot */ );
 }
 
 void KBuildSycoca::update(const QString& path)
@@ -143,7 +145,11 @@ void KBuildSycoca::update(const QString& path)
   // We could be smarter here, and find out which factory
   // deals with that dir, and update only that...
   // But rebuilding everything is fine for me.
-  m_pTimer->start( 5000, true /* single shot */ );
+  if (m_pTimer->isActive()) {
+    m_pTimer->stop();
+    qDebug("KBuildSycoca::update - cancelling old update request, resetting timer");
+  }
+  m_pTimer->start( 1200, true /* single shot */ );
 }
 
 void KBuildSycoca::readDirectory( const QString& _path, KSycocaFactory * factory )

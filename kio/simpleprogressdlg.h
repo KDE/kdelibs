@@ -15,7 +15,7 @@ class KIOSimpleProgressDlg : public QWidget {
 public:
   KIOSimpleProgressDlg( KIOJob*, bool m_bStartIconified = false );
   ~KIOSimpleProgressDlg() {}
-
+  
 public slots:
 
   void slotTotalSize( int, unsigned long _bytes );
@@ -42,7 +42,8 @@ protected:
   QLabel* sourceLabel;
   QLabel* destLabel;
   QLabel* speedLabel;
-  QLabel* statusLabel;
+  QLabel* sizeLabel;
+  QLabel* resumeLabel;
 
   KProgress* m_pProgressBar;
 
@@ -51,6 +52,9 @@ protected:
   unsigned long m_iTotalDirs;
 
   KIOJob* m_pJob;
+  
+  enum ModeType { Copy, Delete, Create, Scan, Fetch };
+  ModeType mode;
 };
 
 #endif
