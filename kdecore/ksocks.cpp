@@ -57,23 +57,23 @@ enum SymbolKeys {
 
 extern "C" {
 // Function pointer table
-static int     (*F_SOCKSinit)   (char *);
-static int     (*F_connect)     (int, const struct sockaddr *, ksocklen_t);
-static signed long int (*F_read)        (int, void *, unsigned long int);
-static signed long int (*F_write)       (int, const void *, unsigned long int);
+static int     (*F_SOCKSinit)   (char *) = NULL;
+static int     (*F_connect)     (int, const struct sockaddr *, ksocklen_t) = NULL;
+static signed long int (*F_read)        (int, void *, unsigned long int) = NULL;
+static signed long int (*F_write)       (int, const void *, unsigned long int) = NULL;
 static int     (*F_recvfrom)    (int, void *, unsigned long int, int, struct sockaddr *, 
-                                 ksocklen_t *);
+                                 ksocklen_t *) = NULL;
 static int     (*F_sendto)      (int, const void *, unsigned long int, int,
-                                 const struct sockaddr *, ksocklen_t);
-static int     (*F_recv)        (int, void *, unsigned long int, int);
-static int     (*F_send)        (int, const void *, unsigned long int, int);
-static int     (*F_getsockname) (int, struct sockaddr *, ksocklen_t *);
-static int     (*F_getpeername) (int, struct sockaddr *, ksocklen_t *);
-static int     (*F_accept)      (int, struct sockaddr *, ksocklen_t *);
+                                 const struct sockaddr *, ksocklen_t) = NULL;
+static int     (*F_recv)        (int, void *, unsigned long int, int) = NULL;
+static int     (*F_send)        (int, const void *, unsigned long int, int) = NULL;
+static int     (*F_getsockname) (int, struct sockaddr *, ksocklen_t *) = NULL;
+static int     (*F_getpeername) (int, struct sockaddr *, ksocklen_t *) = NULL;
+static int     (*F_accept)      (int, struct sockaddr *, ksocklen_t *) = NULL;
 static int     (*F_select)      (int, fd_set *, fd_set *, fd_set *, 
-                                 struct timeval *);
-static int     (*F_listen)      (int, int);
-static int     (*F_bind)        (int, struct sockaddr *, ksocklen_t);
+                                 struct timeval *) = NULL;
+static int     (*F_listen)      (int, int) = NULL;
+static int     (*F_bind)        (int, struct sockaddr *, ksocklen_t) = NULL;
 };
 
 
