@@ -398,8 +398,8 @@ int main(int argc, char **argv)
       if( kwrapper )
       {
           tty = ttyname(1);
-          if (!tty || !ttyname(2))
-             tty = "/dev/null";
+          if (!tty || !isatty(2))
+             tty = "";
           size += strlen(tty)+1;
       }
    }
