@@ -1,5 +1,3 @@
-#ifdef WITH_DMALLOC 
-
 /*
  * File that facilitates C++ program debugging.
  *
@@ -35,6 +33,9 @@
  * and ideas for C++ users would be much appreciated.
  */
  
+#include <config.h>
+#ifdef WITH_DMALLOC
+
 extern "C" {
 #include <stdlib.h>
 #include <stdio.h>
