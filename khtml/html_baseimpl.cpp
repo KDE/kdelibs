@@ -35,7 +35,7 @@ using namespace DOM;
 #include <kurl.h>
 
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *v)
-    : HTMLBlockElementImpl(doc)
+    : HTMLBlockElementImpl(doc), HTMLImageRequester()
 {
     ascent = descent = 0;
     view = v;
@@ -68,6 +68,7 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
 	break;
     }
     case ATTR_BACKGROUND:
+        bgURL = attr->value();
 	// ### add the other attrs...
     default:
 	HTMLBlockElementImpl::parseAttribute(attr);
@@ -118,11 +119,35 @@ void HTMLBodyElementImpl::layout(bool deep)
 
 #endif
 
-void HTMLBodyElementImpl::close() 
-{ 
+void HTMLBodyElementImpl::attach(KHTMLWidget *)
+{
+    printf("Body: Requesting URL=%s\n", bgURL.string().ascii() );
+    if(bgURL.length())
+	bgURL = document->requestImage(this, bgURL);
+}
+
+void HTMLBodyElementImpl::detach()
+{
+    KHTMLCache::free(bgURL, this);
+    NodeBaseImpl::detach();
+}
+
+void  HTMLBodyElementImpl::setPixmap( QPixmap *p )
+{
+    printf("setting bg pixmap\n");
+    if(view) view->viewport()->setBackgroundPixmap( *p );
+}
+
+void  HTMLBodyElementImpl::pixmapChanged( QPixmap *p )
+{
+    if(view) view->viewport()->setBackgroundPixmap( *p );
+}
+
+void HTMLBodyElementImpl::close()
+{
     printf("BODY:close\n");
     setLayouted(false);
-    _parent->updateSize(); 
+    _parent->updateSize();
 }
 
 // -------------------------------------------------------------------------
@@ -549,7 +574,7 @@ void HTMLHtmlElementImpl::layout(bool deep)
 	child->setXPos(BORDER);
 	child->setYPos(BORDER);
     }
-    
+
     QTime qt;
     qt.start();
     child->layout(deep);

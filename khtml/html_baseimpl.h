@@ -26,6 +26,7 @@
 
 #include "dtd.h"
 #include "html_elementimpl.h"
+#include "khtmlio.h"
 
 #define BORDER 5
 
@@ -35,7 +36,8 @@ namespace DOM {
 
 class DOMString;
 
-class HTMLBodyElementImpl : public HTMLBlockElementImpl
+class HTMLBodyElementImpl : public HTMLBlockElementImpl,
+    public HTMLImageRequester
 {
 public:
     HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *view = 0);
@@ -54,9 +56,14 @@ public:
     	
 //    virtual void layout(bool);  // just use BlockElement layout instead
 
+    void attach(KHTMLWidget *);
+    void detach();
+    virtual void setPixmap( QPixmap * );
+    virtual void pixmapChanged( QPixmap * );
 
 protected:
     KHTMLWidget *view;
+    DOMString bgURL;
 };
 
 // -------------------------------------------------------------------------
