@@ -138,7 +138,7 @@ UString encodeURI(ExecState *exec, UString string, UString unescapedSet)
   return encoded;
 }
 
-bool decodeHex(UChar hi, UChar lo, unsigned short *val)
+static bool decodeHex(UChar hi, UChar lo, unsigned short *val)
 {
   *val = 0;
   if (hi.uc >= '0' && hi.uc <= '9')
