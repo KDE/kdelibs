@@ -77,7 +77,6 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
 KService::KService( const QString & _fullpath )
 {
   KSimpleConfig config( _fullpath, true );
-  config.setDesktopGroup();
 
   m_bValid = true;
 
@@ -85,15 +84,15 @@ KService::KService( const QString & _fullpath )
   m_strType = config.readEntry( "Type" );
   if ( m_strType.isEmpty() )
   {
-    kdebug( KDEBUG_WARN, 7012, "The desktop entry file has no Type=... entry. "
-            "It should be \"Application\", or \"Service\"");
+    kdebug( KDEBUG_WARN, 7012, QString("The desktop entry file %1 has no Type=... entry. "
+            "It should be \"Application\", or \"Service\"").arg( _fullpath ) );
     m_bValid = false;
     return;
   }
   if ( m_strType != "Application" && m_strType != "Service" )
   {
-    kdebug( KDEBUG_WARN, 7012, QString("The desktop entry file has Type=%1 "
-            "instead of \"Application\" or \"Service\"").arg(m_strType) );
+    kdebug( KDEBUG_WARN, 7012, QString("The desktop entry file %1 has Type=%2 "
+            "instead of \"Application\" or \"Service\"").arg( _fullpath ).arg(m_strType) );
     m_bValid = false;
     return;
   }
