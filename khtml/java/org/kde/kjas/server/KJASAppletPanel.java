@@ -45,10 +45,11 @@ public class KJASAppletPanel extends javax.swing.JPanel implements StatusListene
 		validate();
 	}
 
-	public void showStatus(String msg) {
-		this.msg = msg;
-		repaint();
-	}
+    public void showStatus(String msg) {
+        this.msg = msg;
+        if (status != RUNNING)
+            repaint();
+    }
 
 	public void paint(Graphics g) {
 		super.paint(g);

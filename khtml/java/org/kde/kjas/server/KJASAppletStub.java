@@ -6,8 +6,6 @@ import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import javax.swing.JFrame;
-
 
 /**
  * The stub used by Applets to communicate with their environment.
@@ -27,7 +25,7 @@ public final class KJASAppletStub
     private String            windowName;
     private String            className;
     private Class             appletClass;
-    private JFrame            frame;
+    private Frame             frame;
     private boolean           failed = false;
    
     
@@ -145,7 +143,7 @@ public final class KJASAppletStub
     
     void createApplet() {
         panel = new KJASAppletPanel();
-        frame = new JFrame(windowName);
+        frame = new Frame(windowName);
         // under certain circumstances, it may happen that the
         // applet is not embedded but shown in a separate window.
         // think of konqueror running under fvwm or gnome.
@@ -159,7 +157,9 @@ public final class KJASAppletStub
                 }
             }
         );
-        frame.getContentPane().add( "Center", panel );
+        frame.add( panel, BorderLayout.CENTER );
+        frame.setUndecorated(true);
+        frame.setLocation( 0, 0 );
         frame.pack();
         frame.setVisible(true);
         loader.addStatusListener(panel);
@@ -224,7 +224,10 @@ public final class KJASAppletStub
                 stateChange(INSTANCIATED);
                 app.setVisible(false);
                 panel.setApplet( app );
-                app.setSize(appletSize.getWidth() > 0 ? appletSize : panel.getSize());
+                if (appletSize.getWidth() > 0)
+                    app.setBounds( 0, 0, appletSize.width, appletSize.height );
+                else
+                    app.setBounds( 0, 0, panel.getSize().width, panel.getSize().height );
 
                 try {
                     app.init();
