@@ -1546,24 +1546,33 @@ KJSO KJS::HTMLCollection::tryGet(const UString &p) const
 void KJS::HTMLCollection::tryPut(const UString &p, const KJSO& v)
 {
   // NON-STANDARD inserting new'ed Option objects into the collection
-  // is v an option element ?
-  DOM::Node node = KJS::toNode(v);
-  if (node.isNull() || node.elementId() != ID_OPTION)
-      return;
-
-  DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
-  // an index ?
-  bool ok;
-  unsigned int u = p.toULong(&ok);
-  if (!ok)
-    return;
-  node = collection.item(0).parentNode();
+  DOM::Node node = collection.item(0).parentNode();
   while (node.elementId() != ID_SELECT) {
       if (node.isNull())
 	  return;
       node = node.parentNode();
   }
   DOM::HTMLSelectElement sel = static_cast<DOM::HTMLSelectElement>(node);
+  // resize ?
+  if (p == "length") {
+    long newLen = v.toInt32();
+    long diff = sel.length() - newLen;
+    while (diff-- > 0) {
+      sel.remove(newLen);
+    }
+    return;
+  }
+  // is v an option element ?
+  node = KJS::toNode(v);
+  if (node.isNull() || node.elementId() != ID_OPTION)
+    return;
+  DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
+  // an index ?
+  bool ok;
+  unsigned int u = p.toULong(&ok);
+  if (!ok)
+    return;
+
   long diff = long(u) - sel.length();
   DOM::HTMLElement before;
   // out of array bounds ? first insert empty dummies
