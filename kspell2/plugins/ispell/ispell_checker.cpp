@@ -319,7 +319,8 @@ s_buildHashNames (std::vector<std::string> & names, const char * dict)
 	names.clear ();
 
 	while ( (tmp = ispell_dirs[i++]) ) {
-		QCString maybeFile = QCString( tmp ) + '/' + QCString( dict );
+		QCString maybeFile = QCString( tmp ) + '/';
+		maybeFile += dict;
 		names.push_back( maybeFile.data() );
 	}
 }
