@@ -360,6 +360,10 @@ private:
     KFileViewItem *myFirstItem;
     mutable KFileViewItemList *itemList, *selectedList;
     mutable  bool itemListDirty;
+
+private:
+    class KFileViewPrivate;
+    KFileViewPrivate *d;
 };
 
 #endif // KFILEINFOLISTWIDGET_H

@@ -131,6 +131,9 @@ signals:
    */
   void error(int, const QString&);
 
+private:
+  class KFileWidgetPrivate;
+  KFileWidgetPrivate *d;
 };
 
 

@@ -296,9 +296,8 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     initGUI(); // activate GM
 
-#warning Why does this work with an own KConfig object, but not KGlobal::config()?
-    //    readRecentFiles( KGlobal::config() );
-    readRecentFiles( kc );
+    readRecentFiles( KGlobal::config() );
+    //    readRecentFiles( kc );
 
 
     adjustSize();
@@ -328,7 +327,7 @@ void KFileDialog::setFilter(const QString& filter)
     ops->setNameFilter(filterWidget->currentFilter());
 }
 
-QString KFileDialog::currentFilter() const 
+QString KFileDialog::currentFilter() const
 {
     return filterWidget->currentFilter();
 }
@@ -470,9 +469,7 @@ void KFileDialog::accept()
     KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
                                          false);
     saveConfig( c, ConfigGroup );
-#warning saving in KGlobal::config() apparently works (but is disabled now)
-    //    saveRecentFiles( KGlobal::config() );
-    saveRecentFiles( c );
+    saveRecentFiles( KGlobal::config() );
     delete c;
 
     KDialogBase::accept();
@@ -1214,6 +1211,8 @@ void KFileDialog::readRecentFiles( KConfig *kc )
     QString oldGroup = kc->group();
     kc->setGroup( ConfigGroup );
 
+#warning Still the KConfig-bug (reparseConfiguration() needed)
+    kc->reparseConfiguration();
     locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
 						 DefaultRecentURLsNumber ) );
     locationEdit->setURLs( kc->readListEntry( RecentFiles ) );

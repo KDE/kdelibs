@@ -50,6 +50,10 @@ public:
 private:
     const KFileViewItem *inf;
 
+private:
+    class KFileListViewItemPrivate;
+    KFileListViewItemPrivate *d;
+
 };
 
 class KFileDetailView : public KListView, public KFileView
@@ -94,6 +98,10 @@ private slots:
     void selected( QListViewItem *item );
     void highlighted( QListViewItem *item );
     void rightButtonPressed ( QListViewItem *item );
+
+private:
+    class KFileDetailViewPrivate;
+    KFileDetailViewPrivate *d;
 };
 
 #endif // KFILEDETAILVIEW_H

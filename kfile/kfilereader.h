@@ -224,6 +224,10 @@ private:
 
     long int currentSize;
 
+private:
+    class KFileReaderPrivate;
+    KFileReaderPrivate *d;
+
 };
 
 

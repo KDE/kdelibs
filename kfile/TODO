@@ -1,8 +1,8 @@
 TODO-List for the KFileDialog and associated classes (in order of importance)
 
 - are more messageboxes necessary?
+- remove KFileWidget??
 - drag&drop support for the views (somehow into baseclass KFileView?
-- test, fix, implement KURLEdit (and give it a better name (KFileRequester?))
 - fix multiselection (parsing of the selected files in the locationCombo)
 - add private d struct everywhere
 - KFileView::setCurrentItem() / highlight() ?!?!

@@ -55,6 +55,10 @@ private:
 	QString url;
 	int type;
 	QList<KFileBookmark> children;
+
+private:
+    class KFileBookmarkPrivate;
+    KFileBookmarkPrivate *d;
 };
 
 class KFileBookmarkManager : public QObject

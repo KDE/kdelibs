@@ -292,6 +292,9 @@ signals:
     void dirActivated(const KFileViewItem*);
     void fileSelected(const KFileViewItem*);
 
+private:
+    class KDirOperatorPrivate;
+    KDirOperatorPrivate *d;
 };
 
 #endif

@@ -76,6 +76,10 @@ protected:
     KURLCompletion *    urlCompletion_;
     KURLRequester *     urlRequester_;
 
+private:
+    class KURLRequesterDlgPrivate;
+    KURLRequesterDlgPrivate *d;
+
 };
 
 #endif // KURLREQUESTERDIALOG_H

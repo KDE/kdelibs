@@ -48,6 +48,10 @@ public:
 private:
     const KFileViewItem *inf;
 
+private:
+    class KFileIconViewItemPrivate;
+    KFileIconViewItemPrivate *d;
+
 };
 
 class KFileIconView : public KIconView, public KFileView
@@ -89,6 +93,9 @@ private:
     int th;
     KIconLoader::Size myIconSize;
 
+private:
+    class KFileIconViewPrivate;
+    KFileIconViewPrivate *d;
 };
 
 #endif // KFILESIMPLEVIEW_H

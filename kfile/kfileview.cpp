@@ -327,7 +327,7 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
     if (fi1 == fi2)
 	return 0;
 
-    // .. is always bigger, independent from the sort criteria
+    // .. is always bigger, independent of the sort criteria
     if ( fi1->name() == dirup ) {
 	bigger = false;
 	keepFirst = dirsFirst;
@@ -369,11 +369,9 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
 	    }
 	}
     }
-    
+
     if (reversed && !keepFirst ) // don't reverse dirs to the end!
       bigger = !bigger;
-
-    // kdDebug() << "" << endl;
 
     return (bigger ? 1 : -1);
 }

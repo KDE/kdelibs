@@ -56,6 +56,7 @@ KURLRequester::KURLRequester( const KURL& url, QWidget *parent,
 KURLRequester::~KURLRequester()
 {
     delete myCompletion;
+    delete myFileDialog;
 }
 
 

@@ -48,9 +48,9 @@ public:
 	Default         = 0,
 	Simple          = 1,
 	Detail          = 2,
-	PreviewContents = 4,
-	PreviewInfo     = 8,
-	SeparateDirs    = 16
+	SeparateDirs    = 4,
+	PreviewContents = 8,
+	PreviewInfo     = 16 // not implemented yet!
     };
 
     enum SelectionMode {

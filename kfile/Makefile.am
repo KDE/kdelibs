@@ -26,7 +26,7 @@ lib_LTLIBRARIES  = libkfile.la
 METASOURCES = AUTO
 
 include_HEADERS = kfiledialog.h kfileviewitem.h kfilebookmark.h  \
-	kfilereader.h kdirlistbox.h kdiroperator.h kfileview.h \
+	kfilereader.h kdiroperator.h kfileview.h \
 	booktoken.h kfiledetailview.h kcombiview.h \
 	kfileiconview.h kfilefilter.h krecentdocument.h kfileview.h \
 	kfiledialog.h kfilewidget.h kurlrequester.h kfilepreview.h kfile.h \

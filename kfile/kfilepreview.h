@@ -83,5 +83,9 @@ private:
     KFileView *left;
     QWidget *preview;
     QString viewname;
+
+private:
+    class KFilePreviewPrivate;
+    KFilePreviewPrivate *d;
 };
 #endif

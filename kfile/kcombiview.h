@@ -82,6 +82,10 @@ protected slots:
     void highlightFile(const KFileViewItem*);
     void selectFile(const KFileViewItem*);
 
+private:
+    class KCombiViewPrivate;
+    KCombiViewPrivate *d;
+
 };
 
 #endif

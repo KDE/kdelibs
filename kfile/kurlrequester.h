@@ -150,6 +150,10 @@ protected slots:
      * Also called when @ref KStdAccel::Open (default is Ctrl-O) is pressed.
      */
     void 		slotOpenDialog();
+
+private:
+    class KURLRequesterPrivate;
+    KURLRequesterPrivate *d;
     
 };
 

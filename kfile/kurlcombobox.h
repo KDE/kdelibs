@@ -168,6 +168,10 @@ private:
     Mode myMode; // can be used as parameter to KUR::path( int ) or url( int )
                  // to specify if we want a trailing slash or not
 
+private:
+    class KURLComboBoxPrivate;
+    KURLComboBoxPrivate *d;
+
 };
 
 

@@ -48,6 +48,10 @@ class KFileDialogConfigure : public QWidget
 
   protected:  
     QCheckBox *myShowStatusLine;
+
+  private:
+    class KFileDialogConfigurePrivate;
+    KFileDialogConfigurePrivate *d;
 };
 
 

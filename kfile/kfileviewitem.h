@@ -255,6 +255,10 @@ private:
     void init();
     QString defaultIcon() const;
 
+private:
+    class KFileViewItemPrivate;
+    KFileViewItemPrivate *d;
+
 };
 
 // typedef QList<KFileViewItem> KFileViewItemList;

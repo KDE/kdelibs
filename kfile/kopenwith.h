@@ -92,6 +92,9 @@ protected:
     QPushButton *cancel;
 
     KService::Ptr m_pService;
+
+    class KOpenWithDlgPrivate;
+    KOpenWithDlgPrivate *d;
 };
 
 /* ------------------------------------------------------------------------- */
