@@ -71,6 +71,8 @@ class KStartupInfo
 	 * @param clean_on_cantdetect if true, and a new unknown window appears,
 	 *  removes all notification for applications that are not compliant
 	 *  with the app startup protocol
+	 * @param parent the parent of this QObject (can be 0 for no parent)
+	 * @param name the name of the QObject (can be 0 for no name)
 	 */
         KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0, const char* name = 0 );
         virtual ~KStartupInfo();
@@ -78,6 +80,10 @@ class KStartupInfo
 	 * Sends given notification data about started application
 	 * with the given startup identification. If no notification for this identification
 	 * exists yet, it is created, otherwise it's updated.
+	 * 
+	 * @param id the id of the application
+	 * @param data the application's data
+	 * @return true if successful, false otherwise
 	 * @see KStartupInfoId
 	 * @see KStartupInfoData
 	 */
@@ -85,6 +91,10 @@ class KStartupInfo
 
 	/**
 	 * Like @ref sendStartup , uses dpy instead of qt_x11display() for sending the info.
+	 * @param dpy the display of the application.
+	 * @param id the id of the application
+	 * @param data the application's data
+	 * @return true if successful, false otherwise
 	 */
         static bool sendStartupX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
@@ -93,6 +103,9 @@ class KStartupInfo
 	 * Sends given notification data about started application
 	 * with the given startup identification. This is used for updating the notification
 	 * info, if no notification for this identification exists, it's ignored.
+	 * @param id the id of the application
+	 * @param data the application's data
+	 * @return true if successful, false otherwise
 	 * @see KStartupInfoId
 	 * @see KStartupInfoData
 	 */
@@ -100,28 +113,44 @@ class KStartupInfo
 
 	/**
 	 * Like @ref sendChange , uses dpy instead of qt_x11display() for sending the info.
+	 * @param dpy the display of the application.
+	 * @param id the id of the application
+	 * @param data the application's data
+	 * @return true if successful, false otherwise
 	 */
         static bool sendChangeX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
 
 	/**
 	 * Ends startup notification with the given identification.
+	 * @param id the id of the application
+	 * @return true if successful, false otherwise
 	 */
         static bool sendFinish( const KStartupInfoId& id );
 
 	/**
 	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
+	 * @param dpy the display of the application.
+	 * @param id the id of the application
+	 * @return true if successful, false otherwise
 	 */
         static bool sendFinishX( Display* dpy, const KStartupInfoId& id );
 
 	/**
 	 * Ends startup notification with the given identification and the given data ( e.g.
 	 * PIDs of processes for this startup notification that exited ).
+	 * @param id the id of the application
+	 * @param data the application's data
+	 * @return true if successful, false otherwise
 	 */
         static bool sendFinish( const KStartupInfoId& id, const KStartupInfoData& data );
 
 	/**
 	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
+	 * @param dpy the display of the application.
+	 * @param id the id of the application
+	 * @param data the application's data
+	 * @return true if successful, false otherwise
 	 */
         static bool sendFinishX( Display* dpy, const KStartupInfoId& id,
             const KStartupInfoData& data );
@@ -130,6 +159,7 @@ class KStartupInfo
 	 * Returns the current startup notification identification for the current
 	 * startup notification environment variable. Note that KApplication constructor
 	 * unsets the variable and you have to use @ref KApplication::startupId .
+	 * @return the current startup notification identification
 	 */
         static KStartupInfoId currentStartupIdEnv();
 	/**
@@ -154,35 +184,52 @@ class KStartupInfo
 	/**
 	 * Checks if the given windows matches any existing startup notification. If yes,
 	 * the startup notification is removed.
+	 * @param w the window id to check
+	 * @return the result of the operation
 	 */
         startup_t checkStartup( WId w );
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
 	 * if yes, returns the identification in id, and removes the startup notification.
+	 * @param w the window id to check
+	 * @param id if found, the id of the startup notification will be written here
+	 * @return the result of the operation
 	 */
         startup_t checkStartup( WId w, KStartupInfoId& id );
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
 	 * if yes, returns the notification data in data, and removes the startup
 	 * notification.
+	 * @param w the window id to check
+	 * @param data if found, the data of the startup notification will be written here
+	 * @return the result of the operation
 	 */
         startup_t checkStartup( WId w, KStartupInfoData& data );
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
 	 * if yes, returns the identification in id and notification data in data,
 	 * and removes the startup notification.
+	 * @param w the window id to check
+	 * @param id if found, the id of the startup notification will be written here
+	 * @param data if found, the data of the startup notification will be written here
+	 * @return the result of the operation
 	 */
         startup_t checkStartup( WId w, KStartupInfoId& id, KStartupInfoData& data );
 	/**
 	 * Sets the timeout for notifications, after this timeout a notification is removed.
+	 * @param secs the new timeout in seconds
 	 */
         void setTimeout( unsigned int secs );
 	/**
 	 * Sets the startup notification window property on the given window.
+	 * @param windows the id of the window
+	 * @param id the startup notification id
 	 */
         static void setWindowStartupId( WId window, const QCString& id );
 	/**
 	 * Returns startup notification identification of the given window.
+	 * @param windows the id of the window
+	 * @return the startup notification id. Can be null if not found.
 	 */
         static QCString windowStartupId( WId w );
 	/**
@@ -262,14 +309,17 @@ class KStartupInfoId
     {
     public:
 	/**
-	 * @returns true if the notification identifications are the same
+	 * Overloaded operator.
+	 * @return true if the notification identifications are the same
 	 */
         bool operator==( const KStartupInfoId& id ) const;
 	/**
-	 * @returns true if the notification identifications are different
+	 * Overloaded operator.
+	 * @return true if the notification identifications are different
 	 */
         bool operator!=( const KStartupInfoId& id ) const;
 	/**
+	 * Checks whether the identifier is valid.
 	 * @return true if this object doesn't represent a valid notification identification
 	 */
         bool none() const;
@@ -277,20 +327,27 @@ class KStartupInfoId
 	 * Initializes this object with the given identification ( which may be also "0"
 	 * for no notification ), or if "" is given, tries to read it from the startup
 	 * notification environment variable, and if it's not set, creates a new one.
+	 * @param id the new identification, "0" for no notification or "" to read
+	 *           the environment variable
 	 */
         void initId( const QCString& id = "" );
 	/**
-	 * @returns the identification string for the notification
+	 * Returns the notification identifier as string.
+	 * @return the identification string for the notification
 	 */
         const QCString& id() const;
 	/**
 	 * Sets the startup notification environment variable to this identification.
+	 * @return true if successful, false otherwise
 	 */
         bool setupStartupEnv() const;
 	/**
 	 * Creates an empty identification
 	 */
         KStartupInfoId();
+	/**
+	 * Copy constructor.
+	 */
         KStartupInfoId( const KStartupInfoId& data );
         ~KStartupInfoId();
         KStartupInfoId& operator=( const KStartupInfoId& data );
@@ -321,10 +378,12 @@ class KStartupInfoData
     public:
 	/**
 	 * Sets the binary name of the application ( e.g. 'kcontrol' ).
+	 * @param bin the new binary name of the application
 	 */
         void setBin( const QString& bin );
 	/**
 	 * Returns the binary name of the starting application
+	 * @return the new binary name of the application
 	 */
         const QString& bin() const;
 	/**
@@ -333,48 +392,63 @@ class KStartupInfoData
         void setName( const QString& name );
 	/**
 	 * Returns the name of the startup notification, or if it's not available,
-	 * the binary name
+	 * the binary name.
+	 * @return the name of the startup notification, or the binary name
+	 *         if not available
 	 */
         const QString& findName() const;
 	/**
 	 * Returns the name of the startup notification, or empty if not available.
+	 * @return the name of the startup notificaiton, or an empty string
+	 *         if not set.
 	 */
         const QString& name() const;
 	/**
 	 * Sets the icon for the startup notification ( e.g. 'kcontrol' )
+	 * @param icon the name of the icon
 	 */
         void setIcon( const QString& icon );
 	/**
 	 * Returns the icon of the startup notification, and if it's not available,
 	 * tries to get it from the binary name.
+	 * @return the name of the startup notification's icon, or the name of
+	 *         the binary if not set
 	 */
         const QString& findIcon() const;
 	/**
 	 * Returns the icon of the startup notification, or empty if not available.
+	 * @return the name of the icon, or an empty string if not set.
 	 */
         const QString& icon() const;
 	/**
 	 * Sets the desktop for the startup notification ( i.e. the desktop on which
 	 * the starting application should appear ).
+	 * @param desktop the desktop for the startup notification
 	 */
         void setDesktop( int desktop );
 	/**
 	 * Returns the desktop for the startup notification.
+	 * @return the desktop for the startup notification
 	 */
         int desktop() const;
 	/**
 	 * Sets a WM_CLASS value for the startup notification, it may be used for increasing
 	 * the chance that the windows created by the starting application will be
 	 * detected correctly.
+	 * @param wmclass the WM_CLASS value for the startup notification
 	 */
         void setWMClass( const QCString& wmclass );
 	/**
 	 * Returns the WM_CLASS value for the startup notification, or binary name if not
 	 * available.
+	 * @return the WM_CLASS value for the startup notification, or the binary name
+	 *         if not set
 	 */
         const QCString findWMClass() const;
 	/**
 	 * Returns the WM_CLASS value for the startup notification, or empty if not available.
+	 * @return the WM_CLASS value for the startup notification, or empty
+	 *         if not set
 	 */
         const QCString& WMClass() const;
 	/**
@@ -382,35 +456,45 @@ class KStartupInfoData
 	 * may be used to increase the chance that the windows created by the starting
 	 * application will be detected correctly, and also for detecting if the application
 	 * has quit without creating any window.
+	 * @param pid the PID to add
 	 */
         void addPid( pid_t pid );
 	/**
 	 * Returns all PIDs for the startup notification.
+	 * @return the list of all PIDs
 	 */
         const QValueList< pid_t >& pids() const;
 	/**
-	 * @returns true if the given PID is in the list of PIDs for the startup notification
+	 * Checks whether the given @p pid is in the list of PIDs for starup
+	 * notification.
+	 * @return true if the given @p pid is in the list of PIDs for the startup notification
 	 */
         bool is_pid( pid_t pid ) const;
 	/**
 	 * Sets the hostname on which the application is starting. It's necessary to set
 	 * it if PIDs are set.
-	 * @param hostname if it's a null string, the current hostname is used
+	 * @param hostname the application's hostname. If it's a null string, the current hostname is used
 	 */
         void setHostname( const QCString& hostname = QCString());
 	/**
 	 * Returns the hostname for the startup notification.
+	 * @return the hostname
 	 */
         const QCString& hostname() const;
 	/**
 	 * Updates the notification data from the given data. Some data, such as the desktop
 	 * or the name, won't be rewritten if already set.
+	 * @param data the data t update
 	 */
         void update( const KStartupInfoData& data );
 	/**
 	 * Constructor. Initializes all the data to their default empty values.
 	 */
         KStartupInfoData();
+
+	/**
+	 * Copy constructor.
+	 */
         KStartupInfoData( const KStartupInfoData& data );
         ~KStartupInfoData();
         KStartupInfoData& operator=( const KStartupInfoData& data );
