@@ -24,6 +24,8 @@
 #include <unistd.h>
 
 #include <kdeversion.h>
+#include <kglobal.h>
+#include <klocale.h>
 
 KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
     : QUriDrag(dragSource, name), m_metaData()
@@ -50,9 +52,7 @@ void KURLDrag::init(const KURL::List &urls)
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
     {
-        QString url = (*uit).url(0, 106); // 106 is mib enum for utf8 codec
-        url = KURLDrag::checkFilenameURL( url );
-        m_urls.append( url.latin1() ); 
+        m_urls.append( urlToString(*uit).latin1() ); 
     }
     setUris(m_urls);
 }
@@ -73,7 +73,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
     QStrList lst;
     bool ret = QUriDrag::decode( e, lst );
     for (QStrListIterator it(lst); *it; ++it)
-      uris.append(KURL(*it, 106)); // 106 is mib enum for utf8 codec
+      uris.append(urlToString(*it);
     return ret;
 }
 
@@ -139,7 +139,8 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     {
 	QStringList uris;
         for (QStrListIterator it(m_urls); *it; ++it)
-         uris.append(checkFilenameURL(KURL(*it, 106).prettyURL())); // 106 is mib enum for utf8 codec
+           uris.append(stringToUrl(*it).prettyURL());
+
         QCString s = uris.join( "\n" ).local8Bit();
         if( uris.count() > 1 ) // terminate last line, unless it's the only line
             s.append( "\n" );
@@ -150,7 +151,8 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     {
         QStringList uris;
         for (QStrListIterator it(m_urls); *it; ++it)
-         uris.append(checkFilenameURL(KURL(*it, 106).url(0, 4))); // 106 is mib enum for utf8 codec; 4 for latin1
+        for (QStrListIterator it(m_urls); *it; ++it)
+           uris.append(stringToUrl(*it).url(0, 4)); // 4 is mib for latin1
 
         QCString s = uris.join( "\n" ).latin1();
         if( uris.count() > 1 )
@@ -162,7 +164,8 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     {
         QStringList uris;
         for (QStrListIterator it(m_urls); *it; ++it)
-         uris.append(checkFilenameURL(KURL(*it, 106).prettyURL())); // 106 is mib enum for utf8 codec
+           uris.append(stringToUrl(*it).prettyURL());
+
         QCString s = uris.join( "\n" ).utf8();
         if( uris.count() > 1 )
             s.append( "\n" );
@@ -189,24 +192,37 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     return a;
 }
 
-QString KURLDrag::checkFilenameURL( const QString& url )
+KURL KURLDrag::stringToUrl(const QCString &s)
 {
-#if KDE_IS_VERSION( 3, 2, 90 )
-#warning Consider enabling this for KDE3.3.
-#endif
-#if 0
-// According to the XDND spec, file:/ URLs for DND must have
-// the hostname part. But in really it just breaks many apps,
-// so it's disabled for now.
-    if( url.startsWith( "file:/" ) && !url.startsWith( "file://" ))
-    {
-        char hostname[257];
-        if ( gethostname( hostname, 255 ) == 0 )
-        {
-	    hostname[256] = '\0';
-            return QString( "file://" ) + hostname + url.mid( 5 );
-        }
-    }
-#endif
-    return url;
+    if (strncmp(s.data(), "file:", 5) == 0)
+       return KURL(s, KGlobal::locale()->fileEncodingMib());
+    
+    return KURL(s, 106); // 106 is mib enum for utf8 codec;
 }
+
+QString KURLDrag::urlToString(const KURL &url)
+{
+    if (url.isLocalFile())
+    {
+#if 1
+        return url.url(0, KGlobal::locale()->fileEncodingMib());
+#else
+        // According to the XDND spec, file:/ URLs for DND must have
+        // the hostname part. But in really it just breaks many apps,
+        // so it's disabled for now.
+        QString s = url.url(0, KGlobal::locale()->fileEncodingMib());
+        if( !s.startsWith( "file://" ))
+        {
+            char hostname[257];
+            if ( gethostname( hostname, 255 ) == 0 )
+            {
+	        hostname[256] = '\0';
+                return QString( "file://" ) + hostname + s.mid( 5 );
+            }
+        }
+#endif
+    }
+
+    return url.url(0, 106); // 106 is mib enum for utf8 codec
+}
+
