@@ -228,12 +228,17 @@ void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
 {
   kdDebug(7003) << "KDirLister::slotRedirection " << url.url() << endl;
   m_url = url;
-  emit redirection( url );
   if ( m_lstDirs.count() == 1 )
   {
       kdDebug( 7003 ) << "setting first URL to " << url.url() << endl;
       m_lstDirs.first() = m_url;
   }
+  if ( !m_lstFileItems.isEmpty() )
+  {
+      kdDebug( 7003 ) << "getting rid of current stuff by emitting clear" << endl;
+      emit clear();
+  }
+  emit redirection( url );
 }
 
 void KDirLister::updateDirectory( const KURL& _dir )
