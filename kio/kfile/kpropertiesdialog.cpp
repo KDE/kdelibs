@@ -1024,7 +1024,9 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
 void KFilePropsPlugin::slotEditFileType()
 {
   QString keditfiletype = QString::fromLatin1("keditfiletype");
-  KRun::runCommand( keditfiletype + " " + KProcess::quote(d->mimeType),
+  KRun::runCommand( keditfiletype
+                    + " --parent " + QString::number( properties->topLevelWidget()->winId())
+                    + " " + KProcess::quote(d->mimeType),
                     keditfiletype, keditfiletype /*unused*/);
 }
 
