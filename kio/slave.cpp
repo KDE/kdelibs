@@ -72,9 +72,20 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     m_socket = socketname;
     dead = false;
     contact_started = time(0);
+    idle_since = contact_started;
     m_pid = 0;
     connect(serv, SIGNAL(accepted( KSocket* )),
 	    SLOT(accept(KSocket*) ) );
+}
+
+void Slave::setIdle()
+{
+    idle_since = time(0);
+}
+
+time_t Slave::idleTime()
+{
+    return (time_t) difftime(time(0), idle_since);
 }
 
 void Slave::setPID(pid_t pid)

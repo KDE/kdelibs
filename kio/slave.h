@@ -116,6 +116,16 @@ namespace KIO {
 	static Slave* createSlave( const KURL& url, int& error, QString& error_text );
 
 	void queueOnly(bool queue) { slaveconn.queueOnly(queue); }
+	
+	/**
+	 * @return The time this slave has been idle.
+	 */
+	time_t idleTime();
+	
+	/**
+	 * Marks this slave as idle.
+	 */
+	void setIdle();
 
     public slots:
         void accept(KSocket *socket);
@@ -136,6 +146,7 @@ namespace KIO {
 	bool contacted;
 	bool dead;
 	time_t contact_started;
+	time_t idle_since;
 	KIO::Connection slaveconn;
     };
 

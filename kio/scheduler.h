@@ -50,6 +50,7 @@ namespace KIO {
 
     protected slots:
         void startStep();
+        void slotCleanIdleSlaves();
 
     protected:
 	Scheduler();
@@ -62,9 +63,11 @@ namespace KIO {
 	void _doJob(SimpleJob *job);
 	void _cancelJob(SimpleJob *job);
         void _jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
+        void _scheduleCleanup();
 
 	QList<SimpleJob> joblist;
 	QTimer mytimer;
+	QTimer cleanupTimer;
 	bool busy;
 	/* (Stephan) Of course this isn't meant to be
 	 * the final solution, the slaves should be handled

@@ -4,6 +4,11 @@
 #include <kdebug.h>
 #include <assert.h>
 
+//
+// Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned
+// to the system wide slave pool.
+#define MAX_SLAVE_IDLE 30
+
 using namespace KIO;
 
 Scheduler *Scheduler::instance = 0;
@@ -15,12 +20,16 @@ class KIO::SlaveList: public QList<Slave>
 };
 
 Scheduler::Scheduler()
-    : QObject(0, "scheduler"), mytimer(this, "Scheduler::mytimer")
+    : QObject(0, "scheduler"), 
+    mytimer(this, "Scheduler::mytimer"),
+    cleanupTimer(this, "Scheduler::cleanupTimer")
 {
     slaveList = new SlaveList;
     idleSlaves = new SlaveList;
     connect(&mytimer, SIGNAL(timeout()),
 	    SLOT(startStep()));
+    connect(&cleanupTimer, SIGNAL(timeout()),
+	    SLOT(slotCleanIdleSlaves()));
     joblist.setAutoDelete(false);
     busy = false;
 }
@@ -165,6 +174,8 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     if (slave->isAlive())
     {
        idleSlaves->append(slave);
+       slave->setIdle();
+       _scheduleCleanup();
        if (joblist.count())
        {
            kDebugInfo(7006, "Scheduler has now %d jobs", joblist.count());
@@ -184,6 +195,39 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
     idleSlaves->removeRef(slave);
     slaveList->removeRef(slave);
     delete slave;
+}
+
+void Scheduler::slotCleanIdleSlaves()
+{
+   kdDebug(7006) << "Clean Idle Slaves" << endl;
+   for(Slave *slave = idleSlaves->first();slave;)
+   {
+      kdDebug(7006) << "Slave: " << slave->protocol() << " " << slave->host() 
+	            << " Idle for " << slave->idleTime() << "secs" << endl;
+      if (slave->idleTime() >= MAX_SLAVE_IDLE)
+      {
+         kdDebug(7006) << "Removing idle slave: " << slave->protocol() << " " << slave->host() << endl;
+         Slave *removeSlave = slave;
+         slave = idleSlaves->next();
+         idleSlaves->removeRef(removeSlave);
+         slaveList->removeRef(removeSlave);
+         delete removeSlave;
+      }
+      else
+      {
+         slave = idleSlaves->next();
+      }
+   }
+   _scheduleCleanup();
+}
+
+void Scheduler::_scheduleCleanup()
+{
+   if (idleSlaves->count())
+   {
+      if (!cleanupTimer.isActive())
+         cleanupTimer.start( MAX_SLAVE_IDLE*1000, true );
+   }   
 }
 
 Scheduler* Scheduler::self() {
