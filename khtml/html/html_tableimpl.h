@@ -168,9 +168,6 @@ public:
     HTMLElementImpl *insertCell ( long index );
     void deleteCell ( long index );
 
-    // overrides
-    virtual void parseAttribute(AttrImpl *attr);
-
 protected:
     int ncols;
 };

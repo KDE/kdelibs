@@ -428,6 +428,25 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
             removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
         break;
     }
+    case ATTR_BORDERCOLOR:
+    {
+        if(!attr->value().isEmpty()) {
+            addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
+            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
+        }
+        break;
+    }
+    case ATTR_VALIGN:
+    {
+        if (!attr->value().isEmpty())
+            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+        else
+            removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
+        break;
+    }
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -590,20 +609,6 @@ void HTMLTableRowElementImpl::deleteCell( long index )
     if(children) delete children;
 }
 
-void HTMLTableRowElementImpl::parseAttribute(AttrImpl *attr)
-{
-    switch(attr->attrId)
-    {
-    case ATTR_VALIGN:
-        if (attr->val())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
-        else
-            removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
-    default:
-        HTMLTablePartElementImpl::parseAttribute(attr);
-    }
-}
-
 // -------------------------------------------------------------------------
 
 HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentPtr *doc, int tag)
@@ -662,12 +667,6 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
             addCSSLength(CSS_PROP_HEIGHT, attr->value());
         else
             removeCSSProperty(CSS_PROP_HEIGHT);
-        break;
-    case ATTR_VALIGN:
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
-        else
-            removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
     default:
         HTMLTablePartElementImpl::parseAttribute(attr);
