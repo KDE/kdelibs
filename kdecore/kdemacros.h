@@ -157,33 +157,33 @@
  */
 
 #define RESERVE_VIRTUAL_1 \
-    virtual void reservedVirtual1();
+    virtual void reservedVirtual1() {}
 #define RESERVE_VIRTUAL_2 \
-    virtual void reservedVirtual2(); \
+    virtual void reservedVirtual2() {} \
     RESERVE_VIRTUAL_1
 #define RESERVE_VIRTUAL_3 \
-    virtual void reservedVirtual3(); \
+    virtual void reservedVirtual3() {} \
     RESERVE_VIRTUAL_2
 #define RESERVE_VIRTUAL_4 \
-    virtual void reservedVirtual4(); \
+    virtual void reservedVirtual4() {} \
     RESERVE_VIRTUAL_3
 #define RESERVE_VIRTUAL_5 \
-    virtual void reservedVirtual5(); \
+    virtual void reservedVirtual5() {} \
     RESERVE_VIRTUAL_4
 #define RESERVE_VIRTUAL_6 \
-    virtual void reservedVirtual6(); \
+    virtual void reservedVirtual6() {} \
     RESERVE_VIRTUAL_5
 #define RESERVE_VIRTUAL_7 \
-    virtual void reservedVirtual7(); \
+    virtual void reservedVirtual7() {} \
     RESERVE_VIRTUAL_6
 #define RESERVE_VIRTUAL_8 \
-    virtual void reservedVirtual8(); \
+    virtual void reservedVirtual8() {} \
     RESERVE_VIRTUAL_7
 #define RESERVE_VIRTUAL_9 \
-    virtual void reservedVirtual9(); \
+    virtual void reservedVirtual9() {} \
     RESERVE_VIRTUAL_8
 #define RESERVE_VIRTUAL_10 \
-    virtual void reservedVirtual10(); \
+    virtual void reservedVirtual10() {} \
     RESERVE_VIRTUAL_9
 
 #endif // _KDE_MACROS_H_
