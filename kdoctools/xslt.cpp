@@ -15,6 +15,7 @@
 #include <kfilterdev.h>
 #include <qtextcodec.h>
 #include <stdlib.h>
+#include <config.h>
 
 #include "bzip2/kbzip2filter.h"
 #include "gzip/kgzipfilter.h"
@@ -224,17 +225,19 @@ static KFilterBase *findFilterByFileName( const QString &filename )
 #if defined( HAVE_BZIP2_SUPPORT )
         return new KBzip2Filter;
 #endif
-        return 0;
     }
 
     // we return gzip in any case
-    return new KBzip2Filter;
+    return new KGzipFilter;
 }
 
 bool saveToCache( const QString &contents, const QString &filename )
 {
     QFile raw(filename);
     KFilterBase *f = ::findFilterByFileName(filename);
+    if ( !f )
+        return false;
+
     QIODevice *fd= KFilterDev::createFilterDevice(f, &raw);
 
     if (!fd->open(IO_WriteOnly))
