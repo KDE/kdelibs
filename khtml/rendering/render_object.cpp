@@ -380,24 +380,24 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         p->setPen(Qt::NoPen);
         p->setBrush(c);
 
-        int w = width/3;
+        int w = (width+1)/3;
         switch(s)
         {
         case BSTop:
             p->drawRect(x1, y1, x2-x1, w);
-            p->drawRect(x1+(sb1 ? 0 : width), y1+width-w, x2-x1-(sb1 ? 0 : width)-(sb2 ? 0 : width), width-2*w);
+            p->drawRect(x1+(sb1 ? 0 : width), y1+width-w, x2-x1-(sb1 ? 0 : width)-(sb2 ? 0 : width), w);
             break;
         case BSBottom:
             p->drawRect(x1, y1-w, x2-x1, w);
-            p->drawRect(x1+(sb1 ? 0 : width-w), y1-width, x2-x1-(sb1 ? 0 : width-w)-(sb2 ? 0 : width-w), width-2*w);
+            p->drawRect(x1+(sb1 ? 0 : width-w), y1-width, x2-x1-(sb1 ? 0 : width-w)-(sb2 ? 0 : width-w), w);
             break;
         case BSLeft:
             p->drawRect(x1, y1, w, y2-y1);
-            p->drawRect(x1+width-w, y1+width-w, width-2*w, y2-y1-2*width+2*w);
+            p->drawRect(x1+width-w, y1+width-w, w, y2-y1-2*width+2*w);
             break;
         case BSRight:
             p->drawRect(x1-w, y1, w, y2-y1);
-            p->drawRect(x1-width, y1+width-w, width-2*w, y2-y1-2*width+2*w);
+            p->drawRect(x1-width, y1+width-w, w, y2-y1-2*width+2*w);
             break;
         }
 
