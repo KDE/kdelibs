@@ -30,7 +30,7 @@
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
-<!ENTITY meld.fouten "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u naar &kde.nl.groep; sturen.</para>">
+<!ENTITY meld.fouten "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u melden op <ulink url=\"http://www.kde.nl/bugs\">.</para>">
 
 <!-- Entities voor vertalers (voor CREDITS_FOR_TRANSLATORS)-->
 <!ENTITY vertaling.bram    "<para>Dit document is vertaald in het Nederlands door &Bram.Schoenmakers;.</para>">
