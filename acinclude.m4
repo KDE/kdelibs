@@ -58,14 +58,14 @@ AC_DEFUN(K_PATH_X,
 [
 AC_REQUIRE([AC_PATH_X])
 
-if test -z $x_includes; then
+if test -z "$x_includes"; then
   X_INCLUDES=""
   x_includes="."; dnl better than nothing :-)
  else
   X_INCLUDES="-I$x_includes"
 fi
 
-if test -z $x_libraries; then
+if test -z "$x_libraries"; then
   X_LDFLAGS=""
   x_libraries="/usr/lib"; dnl better than nothing :-)
   all_libraries=""
