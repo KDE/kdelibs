@@ -710,12 +710,12 @@ double KConfigBase::readDoubleNumEntry( const char *pKey, double nDefault) const
 }
 
 
-bool KConfigBase::readBoolEntry( const QString& pKey, const bool bDefault ) const
+bool KConfigBase::readBoolEntry( const QString& pKey, bool bDefault ) const
 {
    return readBoolEntry(pKey.utf8().data(), bDefault);
 }
 
-bool KConfigBase::readBoolEntry( const char *pKey, const bool bDefault ) const
+bool KConfigBase::readBoolEntry( const char *pKey, bool bDefault ) const
 {
   QCString aValue = readEntryUtf8( pKey );
 

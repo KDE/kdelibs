@@ -561,7 +561,7 @@ public:
    * @param bDefault A default value returned if the key was not found.
    * @return The value for this key.
    */
-  bool readBoolEntry( const QString& pKey, const bool bDefault = false ) const;
+  bool readBoolEntry( const QString& pKey, bool bDefault = false ) const;
 
   /**
    * Reads a boolean entry.
@@ -574,7 +574,7 @@ public:
    * @param bDefault A default value returned if the key was not found.
    * @return The value for this key.
    */
-  bool readBoolEntry( const char *pKey, const bool bDefault = false ) const;
+  bool readBoolEntry( const char *pKey, bool bDefault = false ) const;
 
   /**
    * Reads a QRect entry.
