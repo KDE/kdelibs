@@ -1006,28 +1006,35 @@ QString KIOJob::convertSize( unsigned long size )
 {
     float fsize;
     QString s;
+    // Tera-byte
+    if ( size >= 1099511627776 )
+    {
+        fsize = (float) size / (float) 1099511627776;
+        s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
+    }
     // Giga-byte
     if ( size >= 1073741824 )
     {
         fsize = (float) size / (float) 1073741824;
-        s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
+        s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Mega-byte
     else if ( size >= 1048576 )
     {
         fsize = (float) size / (float) 1048576;
-        s = i18n( "%1 MB" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
+        s = i18n( "%1 MB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Kilo-byte
     else if ( size > 1024 )
     {
         fsize = (float) size / (float) 1024;
-        s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
+        s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
-    // Just a byte
+    // Just byte
     else
     {
-        s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(size, 0));
+        fsize = (float) size;
+        s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     return s;
 }
