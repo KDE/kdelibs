@@ -213,7 +213,7 @@ int main( int argc, char** argv )
     {
         QIODevice *dev = static_cast<const KZipFileEntry *>(entry)->device();
         QByteArray contents = dev->readAll();
-        printf("contents='%s'\n", QCString(contents).data());
+        printf("contents='%s'\n", QCString(contents, contents.size()+1).data());
     } else
         printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
     return 0;
