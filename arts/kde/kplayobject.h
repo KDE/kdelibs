@@ -36,6 +36,14 @@ public:
 	void setObject(Arts::PlayObject playObject);
 	Arts::PlayObject object();
 
+	/**
+	 * return true if both this!=0, and object.isNull()
+	 *
+	 * in essence, ((KPlayObject*)0)->isNull() will not 
+	 * crash
+	 **/
+	bool isNull();
+
 	bool stream();
 
 	void play();

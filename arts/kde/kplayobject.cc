@@ -107,6 +107,15 @@ PlayObject KPlayObject::object()
 	return m_playObject;
 }
 
+bool KPlayObject::isNull()
+{
+	if (!this)
+		return true;
+	if (object().isNull())
+		return true;
+	return false;
+}
+
 void KPlayObject::setObject(Arts::PlayObject playObject)
 {
 	m_playObject = playObject;
