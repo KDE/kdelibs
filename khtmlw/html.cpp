@@ -3593,9 +3593,10 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 		}
 		debugM( "Meta: name=%s httpequiv=%s content=%s\n",
                           (const char *)name,(const char *)httpequiv,(const char *)content );
-		if ( !httpequiv.isEmpty() &&
-		    strcasecmp(httpequiv.data(),"content-type") == 0)
+		if ( !httpequiv.isEmpty() )
 		{
+		    if ( strcasecmp(httpequiv.data(),"content-type") == 0 )
+		    {
 			stringTok->tokenize( content, " >;" );
 			while ( stringTok->hasMoreTokens() )
 	   		{
@@ -3604,8 +3605,40 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 				if ( strncasecmp( token, "charset=", 8 ) == 0
 				    && overrideCharset.isEmpty() )
 				  	setCharset(token+8);
-			}                         
-		}
+			}
+		    }
+		    if ( strcasecmp(httpequiv.data(), "refresh") == 0 )
+		    {
+			stringTok->tokenize( content, " >;" );
+			QString t = stringTok->nextToken();
+			bool ok;
+			int delay = t.toInt( &ok );
+			QString url;
+			if ( !ok ) delay = 0;
+			while ( stringTok->hasMoreTokens() )
+	   		{
+			    const char* token = stringTok->nextToken();
+			    debugM("token: %s\n",token);
+			    if ( strncasecmp( token, "url=", 4 ) == 0 )
+			    {
+				token += 4;
+				if ( *token == '#' )
+				{// reference
+				    KURL u( actualURL );
+				    u.setReference( token + 1 );
+				    url = u.url();
+				}
+				else 
+				{
+				    KURL u( baseURL, token );
+				    url = u.url();
+				}
+			    }
+			}
+			// set up the redirect...
+			emit redirect( delay, url );
+		    }
+		} 
 			 
 	}
 }

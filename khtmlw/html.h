@@ -760,6 +760,11 @@ signals:
 
     // signal that the HTML Widget has changed size
     void resized( const QSize &size );
+
+    /**
+     * used for url redirection
+     */
+    void redirect( int delay, const char * url );
       
 public slots:
     /**
@@ -1542,6 +1547,7 @@ protected:
      * Keeps a list of all pending file.
      */
     QDict<HTMLPendingFile> mapPendingFiles;
+
 };
 
 extern QCursor handCursor;
