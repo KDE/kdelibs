@@ -56,7 +56,7 @@ void KPanelMenu::init(const QString& path)
 {
     d = new KPanelMenuPrivate;
 
-    d->init = false;
+    setInitialized( false );
     d->startPath = path;
 
     connect(this, SIGNAL(activated(int)), SLOT(slotExec(int)));
@@ -86,13 +86,13 @@ void KPanelMenu::slotAboutToShow()
     if ( isTopLevel() )
         d->clearDelay = 0;
 
-    initialize();
+    internalInitialize();
 }
 
 void KPanelMenu::slotClear()
 {
+    setInitialized( false );
     clear();
-    d->init = false;
 }
 
 void KPanelMenu::hideEvent(QHideEvent *ev)
@@ -133,8 +133,24 @@ void KPanelMenu::setInitialized(bool on)
 
 void KPanelMenu::reinitialize()
 {
+    deinitialize();
+    // Yes, reinitialize must call initialize(). Otherwise, menus
+    // may not appear in the right place. Don't change this! If
+    // you want delayed initialization, use deinitialize() instead.
+    internalInitialize();
+}
+
+void KPanelMenu::deinitialize()
+{
     slotClear();
-    setInitialized(false);
+}
+
+void KPanelMenu::internalInitialize()
+{
+    if( initialized() )
+        return;
+    initialize();
+    setInitialized( true );
 }
 
 void KPanelMenu::virtual_hook( int id, void* data )

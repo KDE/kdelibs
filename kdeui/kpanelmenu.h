@@ -113,9 +113,15 @@ public slots:
     /**
      * Reinitialize the menu: the menu is first cleared, the initial state is set
      * to false, and finally @ref initialize() is called. Use this if you want to
-     * refill your menu.
+     * refill your menu immediately.
      */
     void reinitialize();
+    /**
+     * Deinitialize the menu: the menu is cleared and the initialized state is set to
+     * false. @ref initialize() is NOT called. It will be called before the menu is
+     * next shown, however. Use this slot if you want a delayed reinitialization.
+     */
+    void deinitialize();
 
 protected slots:
     /**
@@ -162,6 +168,7 @@ protected:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    void internalInitialize();
     KPanelMenuPrivate *d;
 };
 
