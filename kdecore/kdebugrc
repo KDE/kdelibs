@@ -80,6 +80,10 @@ InfoOutput=4
 [5006]
 InfoOutput=2
 
+# calendarsystem debug info off
+[5400]
+InfoOutput=4
+
 # kabc/vcard
 [5710]
 InfoOutput=4
