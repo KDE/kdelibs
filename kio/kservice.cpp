@@ -176,9 +176,13 @@ KService::init( KDesktopFile *config )
   QStringList::Iterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
-    KServiceType * s = KServiceTypeFactory::self()->findServiceTypeByName( *it );
-    if ( s )
+    QString servicetype = *it;
+    kdDebug() << m_strName << ":" << servicetype << endl;
+    while ( true )
     {
+      KServiceType * s = KServiceTypeFactory::self()->findServiceTypeByName( servicetype );
+      if (!s) break;
+
       const QMap<QString,QVariant::Type>& pd = s->propertyDefs();
       QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
       for( ; pit != pd.end(); ++pit )
@@ -187,12 +191,18 @@ KService::init( KDesktopFile *config )
         if ( v.isValid() )
           m_mapProps.insert( pit.key(), v );
       }
+      // Now look at "parent" service type
+      if (s->isDerived())
+          servicetype = s->parentServiceType();
+      else
+          servicetype = QString::null;
+
       // We should delete 's' when we are not in build mode.
       // When we are in build mode, 's' was allocated via
-      // KBuilServiceTypeFactory::findServiceTypeByName() instead of
+      // KBuildServiceTypeFactory::findServiceTypeByName() instead of
       // KServiceTypeFactory::findServiceTypeByName().
 
-      // KBuilServiceTypeFactory::findServiceTypeByName() does not allocate
+      // KBuildServiceTypeFactory::findServiceTypeByName() does not allocate
       // 's' but returns the version stored in a dictionary.
       // We should not delete such entries.
 
@@ -202,6 +212,8 @@ KService::init( KDesktopFile *config )
 
       if ( !KSycoca::self()->isBuilding() ) // kbuildservicetypefactory returns them from the dict...
         delete s;
+
+      if (servicetype.isNull()) break;
     }
   }
 
