@@ -696,8 +696,6 @@ void HTMLImage::init()
 	if ( !predefinedHeight )
 	    ascent = pixmap->height() * width / pixmap->width();
 	setFixedWidth( false );
-
-	debug( "max_width=%d, percent=%d, width=%d",(int)max_width,(int)percent,(int)width);
     }
     else
     {
@@ -719,9 +717,6 @@ void HTMLImage::setOverlay( const char *_ol )
 {
     // overlays must be cached
     overlay = HTMLImage::findImage( _ol );
-
-    if ( overlay )
-	debug( "Found image: %s", _ol );
 }
 
 void HTMLImage::fileLoaded( const char *_filename )
@@ -786,7 +781,6 @@ void HTMLImage::setMaxWidth( int _max_width )
 	if ( !predefinedHeight )
 	    ascent = pixmap->height() * width / pixmap->width() + border * 2;
 	width += border * 2;
-	debug( "max_width=%d, percent=%d, width=%d",(int)max_width,(int)percent,(int)width);
     }
 }
 
@@ -865,11 +859,8 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	    matrix.scale( (float)(width-border*2)/pixptr->width(),
 		    (float)(ascent-border*2)/pixptr->height() );
 	    QPixmap tp = pm.xForm( matrix );
-	    debug( "pixmap: %d, %d", tp.width(), tp.height() );
-	    debug( "rect: %d, %d", rect.right(), rect.bottom() );
 	    rect.setRight( rect.width() * (width-border*2)/pixptr->width() );
 	    rect.setBottom( rect.height() * (ascent-border*2)/pixptr->height());
-	    debug( "rect: %d, %d", rect.right(), rect.bottom() );
 	    _painter->drawPixmap( QPoint( x + _tx + border,
 		    y - ascent + _ty + border ), tp, rect );
 	}

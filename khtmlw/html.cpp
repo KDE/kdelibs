@@ -1886,6 +1886,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "a ", 2 ) == 0 )
     {
+	closeAnchor();
 	char tmpurl[1024];
 	tmpurl[0] = '\0';
 	target = 0;
