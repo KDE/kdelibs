@@ -400,9 +400,10 @@ protected slots:
      */
     virtual void slotDropped( QDropEvent * );
 
-private:
+private slots:
     void slotSelected( int button, QListBoxItem * );
-    
+
+private:
     KURLBarListBox *m_listBox;
     int m_iconSize;
 
