@@ -1341,6 +1341,11 @@ void RenderFlow::makeChildrenNonInline()
 	
 	child = next;
     }
+    if ( isInline() ) {
+	m_inline = false;
+	if ( parent()->isFlow() )
+	    static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
+    }
     setLayouted(false);
 }
 
