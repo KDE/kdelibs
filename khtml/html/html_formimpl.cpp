@@ -574,7 +574,6 @@ void HTMLFormElementImpl::submit(  )
                 // check if the login information changed from what
                 // we had so far.
                 if (w->hasFolder(KWallet::Wallet::FormDataFolder())) {
-                    kdDebug() << "   -> has folder" << endl;
                     w->setFolder(KWallet::Wallet::FormDataFolder());
                     QMap<QString, QString> map;
                     if (!w->readMap(key, map)) {
@@ -589,7 +588,6 @@ void HTMLFormElementImpl::submit(  )
                         login_changed = true;
                     }
                 }
-                kdDebug() << "   -> login_changed=" << (login_changed ? "true" : "false" ) << endl;
             }
 
             if ( doesnotexist || !w || login_changed ) {
