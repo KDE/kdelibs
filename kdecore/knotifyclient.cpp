@@ -30,7 +30,7 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-static const char *daemonName="knotify";
+static const char * const daemonName="knotify";
 
 static bool sendNotifyEvent(const QString &message, const QString &text,
                  int present, int level, const QString &sound,
