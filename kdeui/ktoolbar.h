@@ -133,7 +133,7 @@ public:
    *                    and IconText will be honored
    */
     KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
-    
+
     virtual ~KToolBar();
 
   /**
@@ -694,7 +694,7 @@ public:
    * @deprecated
    * Show, hide, or toggle toolbar.
    *
-   * This method is provided for compatibility only, 
+   * This method is provided for compatibility only,
    * please use show() and/or hide() instead.
    * @see BarStatus
    */
@@ -773,7 +773,7 @@ public:
    * this, the icon size is taken care of by KIconLoader
    * and globally configured.
    * By default, the toolbar will load icons of size 32 for main
-   * toolbars and 22 for other toolbars 
+   * toolbars and 22 for other toolbars
    * @see KIconLoader.
    *
    * @param size The size to use
@@ -967,6 +967,21 @@ signals:
      * internal, aimed to buttons.
      */
     void modechange ();
+
+    /**
+     * @return global setting for "Highlight buttons under mouse"
+     */
+    static bool highlightSetting();
+
+    /**
+     * @return global setting for "Toolbars transparent when moving"
+     */
+    static bool transparentSetting();
+
+    /**
+     * @return global setting for "Icon Text"
+     */
+    static IconText iconTextSetting();
 
 protected:
     void mousePressEvent( QMouseEvent * );

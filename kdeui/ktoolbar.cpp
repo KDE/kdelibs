@@ -307,9 +307,9 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     KComboBox *combo = new KComboBox ( writable, this );
     // make the combo shrinkable even if the contents are longer than the
     // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, 
+    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
 				       QSizePolicy::Fixed ));
-    
+
     inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
     inserted.append( combo );
@@ -337,9 +337,9 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     KComboBox *combo = new KComboBox ( writable, this );
     // make the combo shrinkable even if the contents are longer than the
     // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, 
+    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
 				       QSizePolicy::Fixed ));
-    
+
     inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
     inserted.append( combo );
@@ -367,9 +367,9 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     KComboBox *combo = new KComboBox ( writable, this );
     // make the combo shrinkable even if the contents are longer than the
     // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, 
+    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
 				       QSizePolicy::Fixed ));
-    
+
     inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
     inserted.append( combo );
@@ -1447,22 +1447,71 @@ void KToolBar::slotReadConfig()
     applySettings(config, QString::null);
 }
 
+//static
+bool KToolBar::highlightSetting()
+{
+    QString grpToolbar(QString::fromLatin1("Toolbar style"));
+    KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
+    return KGlobal::config()->readBoolEntry(QString::fromLatin1("Highlighting"),true);
+}
+
+//static
+bool KToolBar::transparentSetting()
+{
+    QString grpToolbar(QString::fromLatin1("Toolbar style"));
+    KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
+    return KGlobal::config()->readBoolEntry(QString::fromLatin1("TransparentMoving"),true);
+}
+
+//static
+KToolBar::IconText KToolBar::iconTextSetting()
+{
+    QString grpToolbar(QString::fromLatin1("Toolbar style"));
+    KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
+    QString icontext = KGlobal::config()->readEntry(QString::fromLatin1("IconText"),QString::fromLatin1("IconOnly"));
+    if ( icontext == "IconTextRight" )
+        return IconTextRight;
+    else if ( icontext == "IconTextBottom" )
+        return IconTextBottom;
+    else if ( icontext == "TextOnly" )
+        return TextOnly;
+    else
+        return IconOnly;
+}
+
 void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
 {
     QString configGroup = _configGroup;
     if (configGroup.isEmpty())
     {
-       if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
-           configGroup = "Toolbar style";
-       else
-           configGroup = QString(name()) + " Toolbar style";
-       if (parentWidget())
-       {
-           configGroup.prepend(" ");
-           configGroup.prepend(parentWidget()->name());
-       }
+        if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
+            configGroup = "Toolbar style";
+        else
+            configGroup = QString(name()) + " Toolbar style";
+        if (parentWidget())
+        {
+            configGroup.prepend(" ");
+            configGroup.prepend(parentWidget()->name());
+        }
     }
-    // read in the global ('kdeglobals') config file
+    // We have application-specific settings in the XML file,
+    // and nothing in the application's config file
+    // -> don't apply the global defaults, the XML ones are preferred
+    if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() &&
+           !config->hasGroup(configGroup) )
+        return;
+
+    /*
+      Let's explain this a bit more in details.
+      The order in which we apply settings is :
+       Global config / App specific config                         if no XMLGUI is used
+       Global config / App-XML attributess / App specific config   if XMLGUI is used
+
+      So in the first case, we simply read everything from KConfig as below,
+      but in the second case we don't do anything here if there is no app-specific config,
+      and the XMLGUI uses the static methods of this class to get the global defaults.
+    */
+
     KConfig *gconfig = KGlobal::config();
 
     static const QString &grpKDE     = KGlobal::staticQString("KDE");
@@ -1514,14 +1563,15 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         offset = gconfig->readEntry(attrOffset, offset );
         nl = gconfig->readEntry(attrNewLine, nl );
 
-        if (config->hasGroup(configGroup)) {
+        if ( config->hasGroup(configGroup) )
+        {
             config->setGroup(configGroup);
 
-                // first, get the generic settings
+            // first, get the generic settings
             highlight   = config->readBoolEntry(attrHighlight, highlight);
             transparent = config->readBoolEntry(attrTrans, transparent);
             hidden = config->readBoolEntry(attrHidden, hidden);
-                // now we always read in the IconText property
+            // now we always read in the IconText property
             icontext = config->readEntry(attrIconText, "icontext");
 
             // now get the size
@@ -1534,7 +1584,6 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
             offset = config->readEntry(attrOffset, offset );
             nl = config->readEntry(attrNewLine, nl );
         }
-
         // revert back to the old group
     } // end block for KConfigGroupSaver
 
@@ -1550,7 +1599,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     else
         icon_text = IconOnly;
 
- // check if the icon/text has changed
+    // check if the icon/text has changed
     if (icon_text != d->m_iconText) {
         setIconText(icon_text, false);
         doUpdate = true;
@@ -1567,15 +1616,15 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         mw = (QMainWindow*)parentWidget();
 
     // ...and if we should highlight
-    if ( mw && highlight != d->m_highlight ) {
+    if ( highlight != d->m_highlight ) {
         d->m_highlight = highlight;
         doUpdate = true;
     }
 
     // ...and if we should move transparently
     if ( mw && transparent != (!mw->opaqueMoving()) ) {
-        mw->setOpaqueMoving( transparent );
-        doUpdate = false;
+        mw->setOpaqueMoving( !transparent );
+        //doUpdate = false; // DF: Huh ? Seems wrong.
     }
 
     // ...and now the position stuff
@@ -1597,9 +1646,9 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         pos = Flat;
 
     if (hidden)
-       hide();
+        hide();
     else
-       show();
+        show();
 
     if ( mw ) {
         mw->moveToolBar( this, (QMainWindow::ToolBarDock)pos, newLine, idx, offs );
@@ -1611,6 +1660,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         emit modechange(); // tell buttons what happened
     if (isVisible ())
         updateGeometry();
+
 }
 
 bool KToolBar::event( QEvent *e )
@@ -1637,6 +1687,7 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
 
 void KToolBar::loadState( const QDomElement &element )
 {
+    kdDebug() << "KToolBar::loadState " << this << endl;
     if ( !parentWidget() || !parentWidget()->inherits( "KMainWindow") )
         return;
     KMainWindow *mw = static_cast<KMainWindow *>( parentWidget() );
@@ -1691,7 +1742,11 @@ void KToolBar::loadState( const QDomElement &element )
         nl = attrNewLine == "true" ? TRUE : FALSE;
 
     d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, index, nl, offset );
-    setBarPos( (KToolBar::BarPosition)dock );
+    if ( mw )
+    {
+       mw->moveToolBar( this, dock, nl, index, offset );
+       //kdDebug() << "moveToolBar in loadState nl=" << nl << " offset=" << offset << endl;
+    }
 
     if ( !attrIconText.isEmpty() ) {
         if ( attrIconText == "icontextright" )
@@ -1702,10 +1757,20 @@ void KToolBar::loadState( const QDomElement &element )
             setIconText( KToolBar::IconTextBottom );
         else if ( attrIconText == "icononly" )
             setIconText( KToolBar::IconOnly );
-    }
+    } else
+        // Use global setting
+        setIconText( iconTextSetting() );
 
     if ( !attrIconSize.isEmpty() )
         setIconSize( attrIconSize.toInt() );
+
+    // Apply the highlight button setting
+    d->m_highlight = highlightSetting();
+
+    // Apply transparent-toolbar-moving setting (ok, this is global to the mainwindow,
+    // but we do it only if there are toolbars...)
+    if ( transparentSetting() != (!mw->opaqueMoving()) )
+        mw->setOpaqueMoving( !transparentSetting() );
 
     show();
 }
@@ -1784,13 +1849,15 @@ void KToolBar::positionYourself()
 {
     if ( d->positioned || !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
         return;
+    //kdDebug() << "positionYourself newLine=" << d->toolBarInfo.newline << " offset=" << d->toolBarInfo.offset << endl;
     ( (QMainWindow*)parentWidget() )->moveToolBar( this, d->toolBarInfo.dock,
                                                    d->toolBarInfo.newline,
                                                    d->toolBarInfo.index,
                                                    d->toolBarInfo.offset );
     if ( testWState( Qt::WState_ForceHide ) )
         hide();
-    d->positioned = FALSE; // should be set to TRUE, but for a koffice hack we can't do that at the moment
+    // This method can only have an effect once
+    d->positioned = TRUE;
 }
 
 KPopupMenu *KToolBar::contextMenu()
