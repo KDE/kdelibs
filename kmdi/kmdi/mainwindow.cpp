@@ -97,19 +97,11 @@ MainWindow::MainWindow(QWidget* parentWidget, const char* name, WFlags flags)
    ,m_pDockMenu(0L)
    ,m_pMdiModeMenu(0L)
    ,m_pPlacingMenu(0L)
-   ,m_pUndock(0L)
-   ,m_pMinimize(0L)
-   ,m_pRestore(0L)
-   ,m_pClose(0L)
    ,m_bMaximizedChildFrmMode(false)
-   ,m_oldMainFrmHeight(0)
-   ,m_oldMainFrmMinHeight(0)
-   ,m_oldMainFrmMaxHeight(0)
    ,m_bSDIApplication(false)
    ,m_pDockbaseAreaOfDocumentViews(0L)
    ,m_bClearingOfWindowMenuBlocked(false)
    ,m_pDragEndTimer(0L)
-   ,m_bSwitching(false)
    ,m_leftContainer(0)
    ,m_rightContainer(0)
    ,m_topContainer(0)
@@ -250,74 +242,6 @@ KMDI::ToolViewAccessor *MainWindow::addToolWindow( QWidget* pWnd, KDockWidget::D
   }
 
   return mtva;
-}
-
-/** find the root dockwidgets and store their geometry */
-void MainWindow::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList)
-{
-  if (!pRootDockWidgetList) return;
-  if (!pPositionList) return;
-
-  // since we set some windows to toplevel, we must consider the window manager's window frame
-  const int frameBorderWidth  = 7;  // @todo: Can we / do we need to ask the window manager?
-  const int windowTitleHeight = 10; // @todo:    -"-
-
-  QObjectList* pObjList = queryList( "KDockWidget");
-  if (pObjList->isEmpty()) {
-    pObjList = queryList( "KDockWidget_Compat::KDockWidget");
-  }
-  QObjectListIt it( *pObjList);
-  QObject* pObj;
-  // for all dockwidgets (which are children of this mainwindow)
-  while ((pObj = it.current()) != 0L) {
-    ++it;
-    KDockWidget* pDockW = (KDockWidget*) pObj;
-    KDockWidget* pRootDockW = 0L;
-    KDockWidget* pUndockCandidate = 0L;
-    QWidget* pW = pDockW;
-    // find the oldest ancestor of the current dockwidget that can be undocked
-    while (!pW->isTopLevel()) {
-      if (pW->inherits("KDockWidget") || pW->inherits("KDockWidget_Compat::KDockWidget")) {
-        pUndockCandidate = (KDockWidget*) pW;
-        if (pUndockCandidate->enableDocking() != KDockWidget::DockNone)
-          pRootDockW = pUndockCandidate;
-      }
-      pW = pW->parentWidget();
-    }
-    if (pRootDockW) {
-      // if that oldest ancestor is not already in the list, append it
-      bool found = false;
-      QPtrListIterator<KDockWidget> it2( *pRootDockWidgetList);
-      if (!pRootDockWidgetList->isEmpty()) {
-        for ( ; it2.current() && !found; ++it2 ) {
-          KDockWidget* pDockW = it2.current();
-          if (pDockW == pRootDockW)
-            found = true;
-        }
-        if (!found) {
-          pRootDockWidgetList->append( (KDockWidget*)pDockW);
-          kdDebug(760)<<"pRootDockWidgetList->append("<<pDockW->name()<<");"<<endl;
-          QPoint p = pDockW->mapToGlobal( pDockW->pos())-pDockW->pos();
-          QRect r( p.x(),
-              p.y()+m_undockPositioningOffset.y(),
-              pDockW->width()  - windowTitleHeight - frameBorderWidth*2,
-              pDockW->height() - windowTitleHeight - frameBorderWidth*2);
-          pPositionList->append( r);
-        }
-      }
-      else {
-        pRootDockWidgetList->append( (KDockWidget*)pRootDockW);
-        kdDebug(760)<<"pRootDockWidgetList->append("<<pDockW->name()<<");"<<endl;
-        QPoint p = pRootDockW->mapToGlobal( pRootDockW->pos())-pRootDockW->pos();
-        QRect r( p.x(),
-            p.y()+m_undockPositioningOffset.y(),
-            pRootDockW->width()  - windowTitleHeight - frameBorderWidth*2,
-            pRootDockW->height() - windowTitleHeight - frameBorderWidth*2);
-        pPositionList->append( r);
-      }
-    }
-  }
-  delete pObjList;
 }
 
 void MainWindow::setIDEAlModeStyle(int flags)

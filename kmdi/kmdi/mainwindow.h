@@ -48,8 +48,6 @@ class QMenuBar;
 
 #include <kmdi/toolviewaccessor.h>
 
-class QToolButton;
-
 namespace KMDIPrivate {
   class KMDIGUIClient;
 }
@@ -75,22 +73,13 @@ protected:
    QPopupMenu              *m_pMdiModeMenu;
    QPopupMenu              *m_pPlacingMenu;
 
-   QToolButton             *m_pUndock;
-   QToolButton             *m_pMinimize;
-   QToolButton             *m_pRestore;
-   QToolButton             *m_pClose;
    QPoint                  m_undockPositioningOffset;
    bool                    m_bMaximizedChildFrmMode;
-   int                     m_oldMainFrmHeight;
-   int                     m_oldMainFrmMinHeight;
-   int                     m_oldMainFrmMaxHeight;
    bool                    m_bSDIApplication;
    KDockWidget*         m_pDockbaseAreaOfDocumentViews;
    bool                    m_bClearingOfWindowMenuBlocked;
 
    QTimer*                 m_pDragEndTimer;
-
-   bool                    m_bSwitching;
 
    KDockWidget*         m_leftContainer;
    KDockWidget*         m_rightContainer;
@@ -134,18 +123,6 @@ public:
    * Do nothing when in Toplevel mode
    */
    virtual void setMinimumSize( int minw, int minh);
-   /**
-   * Returns the Childframe mode height of this. Makes only sense when in Toplevel mode.
-   */
-   int childFrameModeHeight() { return m_oldMainFrmHeight; };
-
-   /**
-   *
-   */
-   void findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList);
-
-   void setSwitching( const bool switching ) { m_bSwitching = switching; }
-   bool switching(void) const { return m_bSwitching; }
 
 public slots:
    /**
