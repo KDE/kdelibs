@@ -244,9 +244,10 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
             if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url());
         } else {
             int delay = 0;
+            bool ok = false;
             if(!_content.isNull()) {
-                DOMStringImpl* s = _content.implementation()->substring(pos, _content.length()-pos);
-                delay = s->toInt();
+                DOMStringImpl* s = _content.implementation()->substring(0, pos);
+                delay = s->toInt(&ok);
                 delete s;
             }
             pos++;
@@ -256,7 +257,8 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
             {
                 str = str.mid(4).simplifyWhiteSpace();
 		str = parseURL( DOMString(str) ).string();
-                v->part()->scheduleRedirection(delay, str);
+                if ( ok )
+                    v->part()->scheduleRedirection(delay, str);
             }
         }
     }
