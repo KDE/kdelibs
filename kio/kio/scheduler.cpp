@@ -168,6 +168,7 @@ bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &r
     if ( fun != "reparseSlaveConfiguration(QString)" )
         return DCOPObject::process( fun, data, replyType, replyData );
 
+    slaveConfig = SlaveConfig::self();
     replyType = "void";
     QDataStream stream( data, IO_ReadOnly );
     QString proto;
@@ -292,6 +293,8 @@ void Scheduler::setupSlave(KIO::Slave *slave, const KURL &url, const QString &pr
         (slave->user() != user) ||
         (slave->passwd() != passwd))
     {
+        slaveConfig = SlaveConfig::self();
+        
         MetaData configData = slaveConfig->configData(protocol, host);
         sessionData->configDataFor( configData, protocol, host );
 
@@ -723,6 +726,7 @@ void
 Scheduler::slotScheduleCoSlave()
 {
     Slave *nextSlave;
+    slaveConfig = SlaveConfig::self();
     for(Slave *slave = coIdleSlaves->first();
         slave;
         slave = nextSlave)
