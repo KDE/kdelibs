@@ -39,6 +39,7 @@
 #include <kprotocolinfo.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <klocale.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -772,10 +773,6 @@ bool KURLCompletion::manCompletion(const MyURL &url, QString *match)
 		*match = finished();
 	}
 	else {
-		if ( d->dir_lister ) {
-			setListedURL( CTMan, "", url.file() );
-			d->dir_lister->setFilter( url.file() );
-		}
 		*match = QString::null;
 	}
 
@@ -786,6 +783,7 @@ bool KURLCompletion::manCompletion(const MyURL &url, QString *match)
  * getManDirectories
  *
  * Read man directories from /etc/man.conf, MANPATH and MANSECT
+ * TODO: use manpath if it exists...
  */
 static QStringList getManDirectories()
 {
@@ -816,10 +814,6 @@ static QStringList getManDirectories()
 			}
 			f.close();
 		}
-
-		// TODO: Add man paths "close to" $PATH directories
-		//
-		
 	}
 
 	// Use MANPATH instead of man.config if it's set
@@ -834,6 +828,44 @@ static QStringList getManDirectories()
 
 	QStringList manpath = QStringList::split( ":", manpath_str );
 	QStringList mansect = QStringList::split( ":", mansect_str );
+
+	// Some default directories
+	//
+	const char* default_path[] = { "/usr/local/man",
+	                               "/usr/share/man",
+	                               "/usr/X11R6/man",
+	                               "/usr/man", 
+	                               0L };
+
+	for ( int i = 0; default_path[i] != 0L; i++ )
+		if ( manpath.findIndex( QString( default_path[i] ) ) == -1 )
+			manpath.append( QString( default_path[i] ) );
+
+	// Some directories in the $PATH
+	//
+	if ( !::getenv("MANPATH") && ::getenv("PATH") ) {
+		QStringList path =
+			QStringList::split( ":",
+				QString::fromLocal8Bit( ::getenv("PATH") ) );
+
+		for ( QStringList::Iterator it = path.begin();
+		      it != path.end();
+		      it++ )
+		{
+			QString s = (*it) + "/man";
+			if ( manpath.findIndex( s ) == -1 )
+				manpath.append( s );
+		}
+	}
+
+	// And some default sections
+	//
+	const char* default_sect[] =
+		{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "n", 0L }; 
+
+	for ( int i = 0; default_sect[i] != 0L; i++ )
+		if ( mansect.findIndex( QString( default_sect[i] ) ) == -1 )
+			mansect.append( QString( default_sect[i] ) );
 
 	// Put all combinations "<path>/man<sect>/" that actually exist
 	// in manDirs
@@ -852,6 +884,27 @@ static QStringList getManDirectories()
 				&& S_ISDIR( sbuff.st_mode ) )
 			{
 				manDirs.append( dir );
+			}
+		}
+	}
+	
+	// And translations "<path>/<lang>/man<sect>/"...
+	//
+	QStringList languages = KGlobal::locale()->languageList();
+
+	QStringList::Iterator it_l;
+
+	for ( it = manpath.begin(); it != manpath.end(); it++ ) {
+		for ( it_l = languages.begin(); it_l != languages.end(); it_l++ ) {
+			for ( it2 = mansect.begin(); it2 != mansect.end(); it2++ ) {
+				QString dir = (*it) + "/" + (*it_l) + "/man" + (*it2) + "/";
+				struct stat sbuff;
+
+				if ( ::stat( QFile::encodeName(dir), &sbuff ) == 0
+					&& S_ISDIR( sbuff.st_mode ) )
+				{
+					manDirs.append( dir );
+				}
 			}
 		}
 	}
@@ -1112,13 +1165,19 @@ void KURLCompletion::addMatches( QStringList *matches )
 			// Drop trailing ".section[.gz]" before adding
 			// to matches
 			QString name = (*it);
+			
+			int pos = name.length();
 
-			int pos = name.findRev('.');
-
-			if ( pos > 2 && name[pos-2] == '.')
+			if ( name.find(".gz", -3) != -1 )
+				pos -= 3;
+			else if ( name.find(".z", -2, false) != -1 )
 				pos -= 2;
-				
-			if ( pos > 0 && name.startsWith( m_last_file_listed ) )
+
+			if ( pos > 0 ) 
+				pos = name.findRev('.', pos-1);
+
+//			if ( pos > 0 && name.startsWith( m_last_file_listed ) )
+			if ( pos > 0 )
 				addItem( m_prepend + name.left(pos) );
 		}
 	}
@@ -1196,7 +1255,7 @@ QString KURLCompletion::listDirectories(
 		if ( isAutoCompletion() )
 			// Start with a longer timeout as a compromize to
 			// be able to return the match more often
-			d->dir_lister->setTimeout(150); // 150 ms
+			d->dir_lister->setTimeout(100); // 100 ms
 		else
 			// More like no timeout for manual completion
 			d->dir_lister->setTimeout(3000); // 3 s
@@ -1208,7 +1267,7 @@ QString KURLCompletion::listDirectories(
 		                                      no_hidden,
 		                                      append_slash_to_dir);
 		
-		d->dir_lister->setTimeout(50); // 50 ms
+		d->dir_lister->setTimeout(20); // 20 ms
 		
 		QString match = QString::null;
 		
@@ -1268,7 +1327,7 @@ void KURLCompletion::listURLs(
 	m_list_urls_only_exe = only_exe;
 	m_list_urls_no_hidden = no_hidden;
 
-//	kdDebug() << "Listing (listURLs)... " << endl;
+//	kdDebug() << "Listing URLs: " << urls[0]->prettyURL() << ",..." << endl;
 	
 	// Start it off by calling slotIOFinished
 	//
