@@ -34,6 +34,12 @@
 #include <kfiledialog.h>
 #include <kimagefilepreview.h>
 
+#include <config.h>
+#ifdef HAVE_LIBART
+#include <../../kdecore/svgicons/ksvgiconengine.h>
+#include <../../kdecore/svgicons/ksvgiconpainter.h>
+#endif
+
 #include "kicondialog.h"
 
 class KIconCanvas::KIconCanvasPrivate
@@ -112,6 +118,10 @@ void KIconCanvas::slotLoadFiles()
     // disable updates to not trigger paint events when adding child items
     setUpdatesEnabled( false );
 
+#ifdef HAVE_LIBART
+    KSVGIconEngine *svgEngine = new KSVGIconEngine();
+#endif
+    
     d->m_bLoading = true;
     int i;
     QStringList::ConstIterator it;
@@ -133,8 +143,20 @@ void KIconCanvas::slotLoadFiles()
         if ( !d->m_bLoading ) // user clicked on a button that will load another set of icons
             break;
 	QImage img;
-	img.load(*it);
-	if (img.isNull())
+	
+	// Use the extension as the format. Works for XPM and PNG, but not for SVG
+	QString path= *it;
+	QString ext = path.right(3).upper();
+
+	if (ext != "SVG" && ext != "VGZ")
+	    img.load(*it);
+#ifdef HAVE_LIBART
+	else
+	    if (svgEngine->load(60, 60, *it))
+		img = *svgEngine->painter()->image();
+#endif
+	
+	if (img.isNull()) 
 	    continue;
 	if (img.width() > 60 || img.height() > 60)
 	{
@@ -156,6 +178,10 @@ void KIconCanvas::slotLoadFiles()
 	item->setDragEnabled(false);
 	item->setDropEnabled(false);
     }
+
+#ifdef HAVE_LIBART
+    delete svgEngine;
+#endif
 
     // enable updates since we have to draw the whole view now
     setUpdatesEnabled( true );
@@ -305,7 +331,7 @@ void KIconDialog::showIcons()
     QStringList::Iterator it;
     for( it = filelist.begin(); it != filelist.end(); ++it )
        iconlist.append(new IconPath(*it));
-
+       
     iconlist.sort();
     filelist.clear();
 
