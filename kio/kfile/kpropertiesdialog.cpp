@@ -2459,7 +2459,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
            this, SLOT( slotActivated( int ) ) );
 
   readonly = new QCheckBox( d->m_frame, "CheckBox_readonly" );
-  readonly->setText(  i18n("Read Only") );
+  readonly->setText(  i18n("Read only") );
   layout->addWidget(readonly, 1, 1);
 
   label = new QLabel( d->m_frame );
