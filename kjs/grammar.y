@@ -23,6 +23,11 @@
 #include "kjs.h"
 #include "nodes.h"
 #include "lexer.h"
+
+/* default values for bison */
+#define YYDEBUG 0
+#define YYMAXDEPTH 0
+
 extern int yylex();
 int yyerror (const char *);
 bool automatic();

@@ -1,6 +1,6 @@
 
 /*  A Bison parser, made from grammar.y
- by  GNU Bison version 1.25
+ by  GNU Bison version 1.27
   */
 
 #define YYBISON 1  /* Identify Bison output.  */
@@ -12,63 +12,63 @@
 #define yychar kjsyychar
 #define yydebug kjsyydebug
 #define yynerrs kjsyynerrs
-#define	NULLTOKEN	258
-#define	TRUETOKEN	259
-#define	FALSETOKEN	260
-#define	STRING	261
-#define	NUMBER	262
-#define	BREAK	263
-#define	CASE	264
-#define	DEFAULT	265
-#define	FOR	266
-#define	NEW	267
-#define	VAR	268
-#define	CONTINUE	269
-#define	FUNCTION	270
-#define	RETURN	271
-#define	VOID	272
-#define	DELETE	273
-#define	IF	274
-#define	THIS	275
-#define	DO	276
-#define	WHILE	277
-#define	ELSE	278
-#define	IN	279
-#define	INSTANCEOF	280
-#define	TYPEOF	281
-#define	SWITCH	282
-#define	WITH	283
-#define	RESERVED	284
-#define	THROW	285
-#define	TRY	286
-#define	CATCH	287
-#define	FINALLY	288
-#define	EQEQ	289
-#define	NE	290
-#define	STREQ	291
-#define	STRNEQ	292
-#define	LE	293
-#define	GE	294
-#define	OR	295
-#define	AND	296
-#define	PLUSPLUS	297
-#define	MINUSMINUS	298
-#define	LSHIFT	299
-#define	RSHIFT	300
-#define	URSHIFT	301
-#define	PLUSEQUAL	302
-#define	MINUSEQUAL	303
-#define	MULTEQUAL	304
-#define	DIVEQUAL	305
-#define	LSHIFTEQUAL	306
-#define	RSHIFTEQUAL	307
-#define	URSHIFTEQUAL	308
-#define	ANDEQUAL	309
-#define	MODEQUAL	310
-#define	XOREQUAL	311
-#define	OREQUAL	312
-#define	IDENT	313
-#define	AUTO	314
+#define	NULLTOKEN	257
+#define	TRUETOKEN	258
+#define	FALSETOKEN	259
+#define	STRING	260
+#define	NUMBER	261
+#define	BREAK	262
+#define	CASE	263
+#define	DEFAULT	264
+#define	FOR	265
+#define	NEW	266
+#define	VAR	267
+#define	CONTINUE	268
+#define	FUNCTION	269
+#define	RETURN	270
+#define	VOID	271
+#define	DELETE	272
+#define	IF	273
+#define	THIS	274
+#define	DO	275
+#define	WHILE	276
+#define	ELSE	277
+#define	IN	278
+#define	INSTANCEOF	279
+#define	TYPEOF	280
+#define	SWITCH	281
+#define	WITH	282
+#define	RESERVED	283
+#define	THROW	284
+#define	TRY	285
+#define	CATCH	286
+#define	FINALLY	287
+#define	EQEQ	288
+#define	NE	289
+#define	STREQ	290
+#define	STRNEQ	291
+#define	LE	292
+#define	GE	293
+#define	OR	294
+#define	AND	295
+#define	PLUSPLUS	296
+#define	MINUSMINUS	297
+#define	LSHIFT	298
+#define	RSHIFT	299
+#define	URSHIFT	300
+#define	PLUSEQUAL	301
+#define	MINUSEQUAL	302
+#define	MULTEQUAL	303
+#define	DIVEQUAL	304
+#define	LSHIFTEQUAL	305
+#define	RSHIFTEQUAL	306
+#define	URSHIFTEQUAL	307
+#define	ANDEQUAL	308
+#define	MODEQUAL	309
+#define	XOREQUAL	310
+#define	OREQUAL	311
+#define	IDENT	312
+#define	AUTO	313
 
 #line 1 "grammar.y"
 
@@ -96,6 +96,11 @@
 #include "kjs.h"
 #include "nodes.h"
 #include "lexer.h"
+
+/* default values for bison */
+#define YYDEBUG 0
+#define YYMAXDEPTH 0
+
 extern int yylex();
 int yyerror (const char *);
 bool automatic();
@@ -103,7 +108,7 @@ bool automatic();
 using namespace KJS;
 
 
-#line 34 "grammar.y"
+#line 39 "grammar.y"
 typedef union {
   int                 ival;
   double              dval;
@@ -142,7 +147,7 @@ typedef union {
 #define	YYFLAG		-32768
 #define	YYNTBASE	84
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 314 ? yytranslate[x] : 146)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 313 ? yytranslate[x] : 146)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -170,13 +175,13 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-    36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-    46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-    56,    57,    58,    59
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+    37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+    47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+    57,    58,    59
 };
 
 #if YYDEBUG != 0
@@ -271,25 +276,25 @@ static const short yyrhs[] = {     3,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   139,   141,   142,   143,   144,   145,   150,   152,   154,   155,
-   156,   157,   158,   161,   163,   164,   167,   169,   173,   175,
-   178,   180,   183,   185,   189,   192,   193,   196,   198,   199,
-   201,   204,   206,   209,   211,   212,   213,   216,   218,   221,
-   223,   226,   228,   231,   233,   234,   237,   239,   240,   241,
-   242,   243,   244,   245,   246,   247,   248,   249,   252,   254,
-   255,   256,   259,   261,   262,   265,   267,   268,   269,   272,
-   274,   276,   278,   280,   282,   286,   288,   289,   290,   291,
-   294,   296,   299,   301,   304,   306,   309,   311,   315,   317,
-   321,   323,   327,   329,   333,   335,   336,   337,   338,   339,
-   340,   341,   342,   343,   344,   345,   348,   350,   353,   355,
-   356,   357,   358,   359,   360,   361,   362,   363,   364,   365,
-   366,   367,   370,   372,   375,   377,   380,   382,   388,   390,
-   394,   396,   399,   403,   407,   409,   415,   417,   421,   423,
-   424,   426,   428,   430,   433,   438,   440,   443,   445,   446,
-   452,   454,   455,   461,   463,   464,   470,   474,   478,   480,
-   484,   486,   489,   491,   494,   496,   499,   501,   504,   508,
-   510,   513,   515,   516,   519,   523,   527,   530,   535,   537,
-   541,   545,   547,   550,   552
+   144,   146,   147,   148,   149,   150,   155,   157,   159,   160,
+   161,   162,   163,   166,   168,   169,   172,   174,   178,   180,
+   183,   185,   188,   190,   194,   197,   198,   201,   203,   204,
+   206,   209,   211,   214,   216,   217,   218,   221,   223,   226,
+   228,   231,   233,   236,   238,   239,   242,   244,   245,   246,
+   247,   248,   249,   250,   251,   252,   253,   254,   257,   259,
+   260,   261,   264,   266,   267,   270,   272,   273,   274,   277,
+   279,   281,   283,   285,   287,   291,   293,   294,   295,   296,
+   299,   301,   304,   306,   309,   311,   314,   316,   320,   322,
+   326,   328,   332,   334,   338,   340,   341,   342,   343,   344,
+   345,   346,   347,   348,   349,   350,   353,   355,   358,   360,
+   361,   362,   363,   364,   365,   366,   367,   368,   369,   370,
+   371,   372,   375,   377,   380,   382,   385,   387,   393,   395,
+   399,   401,   404,   408,   412,   414,   420,   422,   426,   428,
+   429,   431,   433,   435,   438,   443,   445,   448,   450,   451,
+   457,   459,   460,   466,   468,   469,   475,   479,   483,   485,
+   489,   491,   494,   496,   499,   501,   504,   506,   509,   513,
+   515,   518,   520,   521,   524,   528,   532,   535,   540,   542,
+   546,   550,   552,   555,   557
 };
 #endif
 
@@ -706,7 +711,8 @@ static const short yycheck[] = {     0,
     72,    73
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+#line 3 "/usr/share/bison.simple"
+/* This file comes from bison-1.27.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -723,46 +729,66 @@ static const short yycheck[] = {     0,
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef alloca
-#ifdef __GNUC__
-#define alloca __builtin_alloca
-#else /* not GNU C.  */
-#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
-#include <alloca.h>
-#else /* not sparc */
-#if defined (MSDOS) && !defined (__TURBOC__)
-#include <malloc.h>
-#else /* not MSDOS, or __TURBOC__ */
-#if defined(_AIX)
-#include <malloc.h>
- #pragma alloca
-#else /* not MSDOS, __TURBOC__, or _AIX */
-#ifdef __hpux
-#ifdef __cplusplus
-extern "C" {
-void *alloca (unsigned int);
-};
-#else /* not __cplusplus */
-void *alloca ();
-#endif /* not __cplusplus */
-#endif /* __hpux */
-#endif /* not _AIX */
-#endif /* not MSDOS, or __TURBOC__ */
-#endif /* not sparc.  */
-#endif /* not GNU C.  */
-#endif /* alloca not defined.  */
-
 /* This is the parser code that is written into each bison parser
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYSTACK_USE_ALLOCA
+#ifdef alloca
+#define YYSTACK_USE_ALLOCA
+#else /* alloca not defined */
+#ifdef __GNUC__
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi) || (defined (__sun) && defined (__i386))
+#define YYSTACK_USE_ALLOCA
+#include <alloca.h>
+#else /* not sparc */
+/* We think this test detects Watcom and Microsoft C.  */
+/* This used to test MSDOS, but that is a bad idea
+   since that symbol is in the user namespace.  */
+#if (defined (_MSDOS) || defined (_MSDOS_)) && !defined (__TURBOC__)
+#if 0 /* No need for malloc.h, which pollutes the namespace;
+	 instead, just don't use alloca.  */
+#include <malloc.h>
+#endif
+#else /* not MSDOS, or __TURBOC__ */
+#if defined(_AIX)
+/* I don't know what this was needed for, but it pollutes the namespace.
+   So I turned it off.   rms, 2 May 1997.  */
+/* #include <malloc.h>  */
+ #pragma alloca
+#define YYSTACK_USE_ALLOCA
+#else /* not MSDOS, or __TURBOC__, or _AIX */
+#if 0
+#ifdef __hpux /* haible@ilog.fr says this works for HPUX 9.05 and up,
+		 and on HPUX 10.  Eventually we can turn this on.  */
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#endif /* __hpux */
+#endif
+#endif /* not _AIX */
+#endif /* not MSDOS, or __TURBOC__ */
+#endif /* not sparc */
+#endif /* not GNU C */
+#endif /* alloca not defined */
+#endif /* YYSTACK_USE_ALLOCA not defined */
+
+#ifdef YYSTACK_USE_ALLOCA
+#define YYSTACK_ALLOC alloca
+#else
+#define YYSTACK_ALLOC malloc
+#endif
 
 /* Note: there must be only one dollar sign in this file.
    It is replaced by the list of actions, each action
@@ -772,8 +798,8 @@ void *alloca ();
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		-2
 #define YYEOF		0
-#define YYACCEPT	return(0)
-#define YYABORT 	return(1)
+#define YYACCEPT	goto yyacceptlab
+#define YYABORT 	goto yyabortlab
 #define YYERROR		goto yyerrlab1
 /* Like YYERROR except do call yyerror.
    This remains here temporarily to ease the
@@ -854,12 +880,12 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
-/* Prevent warning if -Wstrict-prototypes.  */
-#ifdef __GNUC__
-int yyparse (void);
-#endif
 
+/* Define __yy_memcpy.  Note that the size argument
+   should be passed with type unsigned int, because that is what the non-GCC
+   definitions require.  With GCC, __builtin_memcpy takes an arg
+   of type size_t, but it can handle unsigned int.  */
+
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
 #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
@@ -871,7 +897,7 @@ static void
 __yy_memcpy (to, from, count)
      char *to;
      char *from;
-     int count;
+     unsigned int count;
 {
   register char *f = from;
   register char *t = to;
@@ -886,10 +912,10 @@ __yy_memcpy (to, from, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *to, char *from, int count)
+__yy_memcpy (char *to, char *from, unsigned int count)
 {
-  register char *f = from;
   register char *t = to;
+  register char *f = from;
   register int i = count;
 
   while (i-- > 0)
@@ -899,7 +925,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/lib/bison.simple"
+#line 216 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -919,6 +945,15 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_ARG
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
+
+/* Prevent warning if -Wstrict-prototypes.  */
+#ifdef __GNUC__
+#ifdef YYPARSE_PARAM
+int yyparse (void *);
+#else
+int yyparse (void);
+#endif
+#endif
 
 int
 yyparse(YYPARSE_PARAM_ARG)
@@ -948,6 +983,7 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+  int yyfree_stacks = 0;
 
 #ifdef YYPURE
   int yychar;
@@ -1032,18 +1068,32 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+	  if (yyfree_stacks)
+	    {
+	      free (yyss);
+	      free (yyvs);
+#ifdef YYLSP_NEEDED
+	      free (yyls);
+#endif
+	    }
 	  return 2;
 	}
       yystacksize *= 2;
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
-      yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-      yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+#ifndef YYSTACK_USE_ALLOCA
+      yyfree_stacks = 1;
+#endif
+      yyss = (short *) YYSTACK_ALLOC (yystacksize * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1,
+		   size * (unsigned int) sizeof (*yyssp));
+      yyvs = (YYSTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
+		   size * (unsigned int) sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
-      yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
+      yyls = (YYLTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1,
+		   size * (unsigned int) sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -1204,621 +1254,621 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 140 "grammar.y"
+#line 145 "grammar.y"
 { yyval.node = new NullNode(); ;
     break;}
 case 2:
-#line 141 "grammar.y"
+#line 146 "grammar.y"
 { yyval.node = new BooleanNode(true); ;
     break;}
 case 3:
-#line 142 "grammar.y"
+#line 147 "grammar.y"
 { yyval.node = new BooleanNode(false); ;
     break;}
 case 4:
-#line 143 "grammar.y"
+#line 148 "grammar.y"
 { yyval.node = new NumberNode(yyvsp[0].dval); ;
     break;}
 case 5:
-#line 144 "grammar.y"
+#line 149 "grammar.y"
 { yyval.node = new StringNode(yyvsp[0].ustr); delete yyvsp[0].ustr; ;
     break;}
 case 6:
-#line 145 "grammar.y"
+#line 150 "grammar.y"
 { Lexer *l = Lexer::curr();
                                      if (!l->scanRegExp()) YYABORT;
                                      yyval.node = new RegExpNode(l->pattern,l->flags);;
     break;}
 case 7:
-#line 151 "grammar.y"
+#line 156 "grammar.y"
 { yyval.node = new ThisNode(); ;
     break;}
 case 8:
-#line 152 "grammar.y"
+#line 157 "grammar.y"
 { yyval.node = new ResolveNode(yyvsp[0].ustr);
                                      delete yyvsp[0].ustr; ;
     break;}
 case 11:
-#line 156 "grammar.y"
+#line 161 "grammar.y"
 { yyval.node = new GroupNode(yyvsp[-1].node); ;
     break;}
 case 12:
-#line 157 "grammar.y"
+#line 162 "grammar.y"
 { yyval.node = new ObjectLiteralNode(0L); ;
     break;}
 case 13:
-#line 158 "grammar.y"
+#line 163 "grammar.y"
 { yyval.node = new ObjectLiteralNode(yyvsp[-1].node); ;
     break;}
 case 14:
-#line 162 "grammar.y"
+#line 167 "grammar.y"
 { yyval.node = new ArrayNode(yyvsp[-1].eli); ;
     break;}
 case 15:
-#line 163 "grammar.y"
+#line 168 "grammar.y"
 { yyval.node = new ArrayNode(yyvsp[-1].elm); ;
     break;}
 case 16:
-#line 164 "grammar.y"
+#line 169 "grammar.y"
 { yyval.node = new ArrayNode(yyvsp[-1].eli, yyvsp[-3].elm); ;
     break;}
 case 17:
-#line 168 "grammar.y"
+#line 173 "grammar.y"
 { yyval.elm = new ElementNode(yyvsp[-1].eli, yyvsp[0].node); ;
     break;}
 case 18:
-#line 170 "grammar.y"
+#line 175 "grammar.y"
 { yyval.elm = new ElementNode(yyvsp[-3].elm, yyvsp[-1].eli, yyvsp[0].node); ;
     break;}
 case 19:
-#line 174 "grammar.y"
+#line 179 "grammar.y"
 { yyval.eli = 0L; ;
     break;}
 case 21:
-#line 179 "grammar.y"
+#line 184 "grammar.y"
 { yyval.eli = new ElisionNode(0L); ;
     break;}
 case 22:
-#line 180 "grammar.y"
+#line 185 "grammar.y"
 { yyval.eli = new ElisionNode(yyvsp[-1].eli); ;
     break;}
 case 23:
-#line 184 "grammar.y"
+#line 189 "grammar.y"
 { yyval.node = new PropertyValueNode(yyvsp[-2].node, yyvsp[0].node); ;
     break;}
 case 24:
-#line 186 "grammar.y"
+#line 191 "grammar.y"
 { yyval.node = new PropertyValueNode(yyvsp[-2].node, yyvsp[0].node, yyvsp[-4].node); ;
     break;}
 case 25:
-#line 190 "grammar.y"
+#line 195 "grammar.y"
 { yyval.node = new PropertyNode(yyvsp[0].ustr);
                                      delete yyvsp[0].ustr; ;
     break;}
 case 26:
-#line 192 "grammar.y"
+#line 197 "grammar.y"
 { yyval.node = new PropertyNode(yyvsp[0].ustr); delete yyvsp[0].ustr; ;
     break;}
 case 27:
-#line 193 "grammar.y"
+#line 198 "grammar.y"
 { yyval.node = new PropertyNode(yyvsp[0].dval); ;
     break;}
 case 29:
-#line 198 "grammar.y"
+#line 203 "grammar.y"
 { yyval.node = new AccessorNode1(yyvsp[-3].node, yyvsp[-1].node); ;
     break;}
 case 30:
-#line 199 "grammar.y"
+#line 204 "grammar.y"
 { yyval.node = new AccessorNode2(yyvsp[-2].node, yyvsp[0].ustr);
                                      delete yyvsp[0].ustr; ;
     break;}
 case 31:
-#line 201 "grammar.y"
+#line 206 "grammar.y"
 { yyval.node = new NewExprNode(yyvsp[-1].node, yyvsp[0].args); ;
     break;}
 case 33:
-#line 206 "grammar.y"
+#line 211 "grammar.y"
 { yyval.node = new NewExprNode(yyvsp[0].node); ;
     break;}
 case 34:
-#line 210 "grammar.y"
+#line 215 "grammar.y"
 { yyval.node = new FunctionCallNode(yyvsp[-1].node, yyvsp[0].args); ;
     break;}
 case 35:
-#line 211 "grammar.y"
+#line 216 "grammar.y"
 { yyval.node = new FunctionCallNode(yyvsp[-1].node, yyvsp[0].args); ;
     break;}
 case 36:
-#line 212 "grammar.y"
+#line 217 "grammar.y"
 { yyval.node = new AccessorNode1(yyvsp[-3].node, yyvsp[-1].node); ;
     break;}
 case 37:
-#line 213 "grammar.y"
+#line 218 "grammar.y"
 { yyval.node = new AccessorNode2(yyvsp[-2].node, yyvsp[0].ustr); ;
     break;}
 case 38:
-#line 217 "grammar.y"
+#line 222 "grammar.y"
 { yyval.args = new ArgumentsNode(0L); ;
     break;}
 case 39:
-#line 218 "grammar.y"
+#line 223 "grammar.y"
 { yyval.args = new ArgumentsNode(yyvsp[-1].alist); ;
     break;}
 case 40:
-#line 222 "grammar.y"
+#line 227 "grammar.y"
 { yyval.alist = new ArgumentListNode(yyvsp[0].node); ;
     break;}
 case 41:
-#line 223 "grammar.y"
+#line 228 "grammar.y"
 { yyval.alist = new ArgumentListNode(yyvsp[-2].alist, yyvsp[0].node); ;
     break;}
 case 45:
-#line 233 "grammar.y"
+#line 238 "grammar.y"
 { yyval.node = new PostfixNode(yyvsp[-1].node, OpPlusPlus); ;
     break;}
 case 46:
-#line 234 "grammar.y"
+#line 239 "grammar.y"
 { yyval.node = new PostfixNode(yyvsp[-1].node, OpMinusMinus); ;
     break;}
 case 48:
-#line 239 "grammar.y"
+#line 244 "grammar.y"
 { yyval.node = new DeleteNode(yyvsp[0].node); ;
     break;}
 case 49:
-#line 240 "grammar.y"
+#line 245 "grammar.y"
 { yyval.node = new VoidNode(yyvsp[0].node); ;
     break;}
 case 50:
-#line 241 "grammar.y"
+#line 246 "grammar.y"
 { yyval.node = new TypeOfNode(yyvsp[0].node); ;
     break;}
 case 51:
-#line 242 "grammar.y"
+#line 247 "grammar.y"
 { yyval.node = new PrefixNode(OpPlusPlus, yyvsp[0].node); ;
     break;}
 case 52:
-#line 243 "grammar.y"
+#line 248 "grammar.y"
 { yyval.node = new PrefixNode(OpPlusPlus, yyvsp[0].node); ;
     break;}
 case 53:
-#line 244 "grammar.y"
+#line 249 "grammar.y"
 { yyval.node = new PrefixNode(OpMinusMinus, yyvsp[0].node); ;
     break;}
 case 54:
-#line 245 "grammar.y"
+#line 250 "grammar.y"
 { yyval.node = new PrefixNode(OpMinusMinus, yyvsp[0].node); ;
     break;}
 case 55:
-#line 246 "grammar.y"
+#line 251 "grammar.y"
 { yyval.node = new UnaryPlusNode(yyvsp[0].node); ;
     break;}
 case 56:
-#line 247 "grammar.y"
+#line 252 "grammar.y"
 { yyval.node = new NegateNode(yyvsp[0].node); ;
     break;}
 case 57:
-#line 248 "grammar.y"
+#line 253 "grammar.y"
 { yyval.node = new BitwiseNotNode(yyvsp[0].node); ;
     break;}
 case 58:
-#line 249 "grammar.y"
+#line 254 "grammar.y"
 { yyval.node = new LogicalNotNode(yyvsp[0].node); ;
     break;}
 case 60:
-#line 254 "grammar.y"
+#line 259 "grammar.y"
 { yyval.node = new MultNode(yyvsp[-2].node, yyvsp[0].node, '*'); ;
     break;}
 case 61:
-#line 255 "grammar.y"
+#line 260 "grammar.y"
 { yyval.node = new MultNode(yyvsp[-2].node, yyvsp[0].node, '/'); ;
     break;}
 case 62:
-#line 256 "grammar.y"
+#line 261 "grammar.y"
 { yyval.node = new MultNode(yyvsp[-2].node,yyvsp[0].node,'%'); ;
     break;}
 case 64:
-#line 261 "grammar.y"
+#line 266 "grammar.y"
 { yyval.node = new AddNode(yyvsp[-2].node, yyvsp[0].node, '+'); ;
     break;}
 case 65:
-#line 262 "grammar.y"
+#line 267 "grammar.y"
 { yyval.node = new AddNode(yyvsp[-2].node, yyvsp[0].node, '-'); ;
     break;}
 case 67:
-#line 267 "grammar.y"
+#line 272 "grammar.y"
 { yyval.node = new ShiftNode(yyvsp[-2].node, OpLShift, yyvsp[0].node); ;
     break;}
 case 68:
-#line 268 "grammar.y"
+#line 273 "grammar.y"
 { yyval.node = new ShiftNode(yyvsp[-2].node, OpRShift, yyvsp[0].node); ;
     break;}
 case 69:
-#line 269 "grammar.y"
+#line 274 "grammar.y"
 { yyval.node = new ShiftNode(yyvsp[-2].node, OpURShift, yyvsp[0].node); ;
     break;}
 case 71:
-#line 275 "grammar.y"
+#line 280 "grammar.y"
 { yyval.node = new RelationalNode(yyvsp[-2].node, OpLess, yyvsp[0].node); ;
     break;}
 case 72:
-#line 277 "grammar.y"
+#line 282 "grammar.y"
 { yyval.node = new RelationalNode(yyvsp[-2].node, OpGreater, yyvsp[0].node); ;
     break;}
 case 73:
-#line 279 "grammar.y"
+#line 284 "grammar.y"
 { yyval.node = new RelationalNode(yyvsp[-2].node, OpLessEq, yyvsp[0].node); ;
     break;}
 case 74:
-#line 281 "grammar.y"
+#line 286 "grammar.y"
 { yyval.node = new RelationalNode(yyvsp[-2].node, OpGreaterEq, yyvsp[0].node); ;
     break;}
 case 75:
-#line 283 "grammar.y"
+#line 288 "grammar.y"
 { yyval.node = new RelationalNode(yyvsp[-2].node, OpInstanceOf, yyvsp[0].node); ;
     break;}
 case 77:
-#line 288 "grammar.y"
+#line 293 "grammar.y"
 { yyval.node = new EqualNode(yyvsp[-2].node, OpEqEq, yyvsp[0].node); ;
     break;}
 case 78:
-#line 289 "grammar.y"
+#line 294 "grammar.y"
 { yyval.node = new EqualNode(yyvsp[-2].node, OpNotEq, yyvsp[0].node); ;
     break;}
 case 79:
-#line 290 "grammar.y"
+#line 295 "grammar.y"
 { yyval.node = new EqualNode(yyvsp[-2].node, OpStrEq, yyvsp[0].node); ;
     break;}
 case 80:
-#line 291 "grammar.y"
+#line 296 "grammar.y"
 { yyval.node = new EqualNode(yyvsp[-2].node, OpStrNEq, yyvsp[0].node);;
     break;}
 case 82:
-#line 296 "grammar.y"
+#line 301 "grammar.y"
 { yyval.node = new BitOperNode(yyvsp[-2].node, OpBitAnd, yyvsp[0].node); ;
     break;}
 case 84:
-#line 301 "grammar.y"
+#line 306 "grammar.y"
 { yyval.node = new BitOperNode(yyvsp[-2].node, OpBitXOr, yyvsp[0].node); ;
     break;}
 case 86:
-#line 306 "grammar.y"
+#line 311 "grammar.y"
 { yyval.node = new BitOperNode(yyvsp[-2].node, OpBitOr, yyvsp[0].node); ;
     break;}
 case 88:
-#line 312 "grammar.y"
+#line 317 "grammar.y"
 { yyval.node = new BinaryLogicalNode(yyvsp[-2].node, OpAnd, yyvsp[0].node); ;
     break;}
 case 90:
-#line 318 "grammar.y"
+#line 323 "grammar.y"
 { yyval.node = new BinaryLogicalNode(yyvsp[-2].node, OpOr, yyvsp[0].node); ;
     break;}
 case 92:
-#line 324 "grammar.y"
+#line 329 "grammar.y"
 { yyval.node = new ConditionalNode(yyvsp[-4].node, yyvsp[-2].node, yyvsp[0].node); ;
     break;}
 case 94:
-#line 330 "grammar.y"
+#line 335 "grammar.y"
 { yyval.node = new AssignNode(yyvsp[-2].node, yyvsp[-1].op, yyvsp[0].node);;
     break;}
 case 95:
-#line 334 "grammar.y"
+#line 339 "grammar.y"
 { yyval.op = OpEqual; ;
     break;}
 case 96:
-#line 335 "grammar.y"
+#line 340 "grammar.y"
 { yyval.op = OpPlusEq; ;
     break;}
 case 97:
-#line 336 "grammar.y"
+#line 341 "grammar.y"
 { yyval.op = OpMinusEq; ;
     break;}
 case 98:
-#line 337 "grammar.y"
+#line 342 "grammar.y"
 { yyval.op = OpMultEq; ;
     break;}
 case 99:
-#line 338 "grammar.y"
+#line 343 "grammar.y"
 { yyval.op = OpDivEq; ;
     break;}
 case 100:
-#line 339 "grammar.y"
+#line 344 "grammar.y"
 { yyval.op = OpLShift; ;
     break;}
 case 101:
-#line 340 "grammar.y"
+#line 345 "grammar.y"
 { yyval.op = OpRShift; ;
     break;}
 case 102:
-#line 341 "grammar.y"
+#line 346 "grammar.y"
 { yyval.op = OpURShift; ;
     break;}
 case 103:
-#line 342 "grammar.y"
+#line 347 "grammar.y"
 { yyval.op = OpAndEq; ;
     break;}
 case 104:
-#line 343 "grammar.y"
+#line 348 "grammar.y"
 { yyval.op = OpXOrEq; ;
     break;}
 case 105:
-#line 344 "grammar.y"
+#line 349 "grammar.y"
 { yyval.op = OpOrEq; ;
     break;}
 case 106:
-#line 345 "grammar.y"
+#line 350 "grammar.y"
 { yyval.op = OpModEq; ;
     break;}
 case 108:
-#line 350 "grammar.y"
+#line 355 "grammar.y"
 { yyval.node = new CommaNode(yyvsp[-2].node, yyvsp[0].node); ;
     break;}
 case 123:
-#line 371 "grammar.y"
+#line 376 "grammar.y"
 { yyval.stat = new BlockNode(0L); ;
     break;}
 case 124:
-#line 372 "grammar.y"
+#line 377 "grammar.y"
 { yyval.stat = new BlockNode(yyvsp[-1].slist); ;
     break;}
 case 125:
-#line 376 "grammar.y"
+#line 381 "grammar.y"
 { yyval.slist = new StatListNode(yyvsp[0].stat); ;
     break;}
 case 126:
-#line 377 "grammar.y"
+#line 382 "grammar.y"
 { yyval.slist = new StatListNode(yyvsp[-1].slist, yyvsp[0].stat); ;
     break;}
 case 127:
-#line 381 "grammar.y"
+#line 386 "grammar.y"
 { yyval.stat = new VarStatementNode(yyvsp[-1].vlist); ;
     break;}
 case 128:
-#line 382 "grammar.y"
+#line 387 "grammar.y"
 { if (automatic())
                                           yyval.stat = new VarStatementNode(yyvsp[-1].vlist);
                                         else
 					  YYABORT; ;
     break;}
 case 129:
-#line 389 "grammar.y"
+#line 394 "grammar.y"
 { yyval.vlist = new VarDeclListNode(yyvsp[0].decl); ;
     break;}
 case 130:
-#line 391 "grammar.y"
+#line 396 "grammar.y"
 { yyval.vlist = new VarDeclListNode(yyvsp[-2].vlist, yyvsp[0].decl); ;
     break;}
 case 131:
-#line 395 "grammar.y"
+#line 400 "grammar.y"
 { yyval.decl = new VarDeclNode(yyvsp[0].ustr, 0); delete yyvsp[0].ustr; ;
     break;}
 case 132:
-#line 396 "grammar.y"
+#line 401 "grammar.y"
 { yyval.decl = new VarDeclNode(yyvsp[-1].ustr, yyvsp[0].init); delete yyvsp[-1].ustr; ;
     break;}
 case 133:
-#line 400 "grammar.y"
+#line 405 "grammar.y"
 { yyval.init = new AssignExprNode(yyvsp[0].node); ;
     break;}
 case 134:
-#line 404 "grammar.y"
+#line 409 "grammar.y"
 { yyval.stat = new EmptyStatementNode(); ;
     break;}
 case 135:
-#line 408 "grammar.y"
+#line 413 "grammar.y"
 { yyval.stat = new ExprStatementNode(yyvsp[-1].node); ;
     break;}
 case 136:
-#line 409 "grammar.y"
+#line 414 "grammar.y"
 { if (automatic())
                                        yyval.stat = new ExprStatementNode(yyvsp[-1].node);
                                      else
 				       YYABORT; ;
     break;}
 case 137:
-#line 416 "grammar.y"
+#line 421 "grammar.y"
 { yyval.stat = new IfNode(yyvsp[-2].node, yyvsp[0].stat, 0L); ;
     break;}
 case 138:
-#line 418 "grammar.y"
+#line 423 "grammar.y"
 { yyval.stat = new IfNode(yyvsp[-4].node, yyvsp[-2].stat, yyvsp[0].stat); ;
     break;}
 case 139:
-#line 422 "grammar.y"
+#line 427 "grammar.y"
 { yyval.stat = new DoWhileNode(yyvsp[-4].stat, yyvsp[-1].node); ;
     break;}
 case 140:
-#line 423 "grammar.y"
+#line 428 "grammar.y"
 { yyval.stat = new WhileNode(yyvsp[-2].node, yyvsp[0].stat); ;
     break;}
 case 141:
-#line 425 "grammar.y"
+#line 430 "grammar.y"
 { yyval.stat = new ForNode(yyvsp[-6].node, yyvsp[-4].node, yyvsp[-2].node, yyvsp[0].stat); ;
     break;}
 case 142:
-#line 427 "grammar.y"
+#line 432 "grammar.y"
 { yyval.stat = new ForNode(yyvsp[-6].vlist, yyvsp[-4].node, yyvsp[-2].node, yyvsp[0].stat); ;
     break;}
 case 143:
-#line 429 "grammar.y"
+#line 434 "grammar.y"
 { yyval.stat = new ForInNode(yyvsp[-4].node, yyvsp[-2].node, yyvsp[0].stat); ;
     break;}
 case 144:
-#line 431 "grammar.y"
+#line 436 "grammar.y"
 { yyval.stat = new ForInNode(yyvsp[-4].ustr, 0L, yyvsp[-2].node, yyvsp[0].stat);
                                      delete yyvsp[-4].ustr; ;
     break;}
 case 145:
-#line 434 "grammar.y"
+#line 439 "grammar.y"
 { yyval.stat = new ForInNode(yyvsp[-5].ustr, yyvsp[-4].init, yyvsp[-2].node, yyvsp[0].stat);
                                      delete yyvsp[-5].ustr; ;
     break;}
 case 146:
-#line 439 "grammar.y"
+#line 444 "grammar.y"
 { yyval.node = 0L; ;
     break;}
 case 148:
-#line 444 "grammar.y"
+#line 449 "grammar.y"
 { yyval.stat = new ContinueNode(); ;
     break;}
 case 149:
-#line 445 "grammar.y"
+#line 450 "grammar.y"
 { yyval.stat = new ContinueNode(yyvsp[-1].ustr); delete yyvsp[-1].ustr; ;
     break;}
 case 150:
-#line 446 "grammar.y"
+#line 451 "grammar.y"
 { if (automatic()) {
                                        yyval.stat = new ContinueNode(yyvsp[-1].ustr); delete yyvsp[-1].ustr;
                                      } else
 				       YYABORT; ;
     break;}
 case 151:
-#line 453 "grammar.y"
+#line 458 "grammar.y"
 { yyval.stat = new BreakNode(); ;
     break;}
 case 152:
-#line 454 "grammar.y"
+#line 459 "grammar.y"
 { yyval.stat = new BreakNode(yyvsp[-1].ustr); delete yyvsp[-1].ustr; ;
     break;}
 case 153:
-#line 455 "grammar.y"
+#line 460 "grammar.y"
 { if (automatic()) {
                                        yyval.stat = new BreakNode(yyvsp[-1].ustr); delete yyvsp[-1].ustr;
                                      } else
 				       YYABORT; ;
     break;}
 case 154:
-#line 462 "grammar.y"
+#line 467 "grammar.y"
 { yyval.stat = new ReturnNode(0L); ;
     break;}
 case 155:
-#line 463 "grammar.y"
+#line 468 "grammar.y"
 { yyval.stat = new ReturnNode(yyvsp[-1].node); ;
     break;}
 case 156:
-#line 464 "grammar.y"
+#line 469 "grammar.y"
 { if (automatic())
                                        yyval.stat = new ReturnNode(yyvsp[-1].node);
                                      else
 				       YYABORT; ;
     break;}
 case 157:
-#line 471 "grammar.y"
+#line 476 "grammar.y"
 { yyval.stat = new WithNode(yyvsp[-2].node, yyvsp[0].stat); ;
     break;}
 case 158:
-#line 475 "grammar.y"
+#line 480 "grammar.y"
 { yyval.stat = new SwitchNode(yyvsp[-2].node, yyvsp[0].cblk); ;
     break;}
 case 159:
-#line 479 "grammar.y"
+#line 484 "grammar.y"
 { yyval.cblk = new CaseBlockNode(yyvsp[-1].clist, 0L, 0L); ;
     break;}
 case 160:
-#line 481 "grammar.y"
+#line 486 "grammar.y"
 { yyval.cblk = new CaseBlockNode(yyvsp[-3].clist, yyvsp[-2].ccl, yyvsp[-1].clist); ;
     break;}
 case 161:
-#line 485 "grammar.y"
+#line 490 "grammar.y"
 { yyval.clist = 0L; ;
     break;}
 case 163:
-#line 490 "grammar.y"
+#line 495 "grammar.y"
 { yyval.clist = new ClauseListNode(yyvsp[0].ccl); ;
     break;}
 case 164:
-#line 491 "grammar.y"
+#line 496 "grammar.y"
 { yyval.clist = yyvsp[-1].clist->append(yyvsp[0].ccl); ;
     break;}
 case 165:
-#line 495 "grammar.y"
+#line 500 "grammar.y"
 { yyval.ccl = new CaseClauseNode(yyvsp[-1].node, 0L); ;
     break;}
 case 166:
-#line 496 "grammar.y"
+#line 501 "grammar.y"
 { yyval.ccl = new CaseClauseNode(yyvsp[-2].node, yyvsp[0].slist); ;
     break;}
 case 167:
-#line 500 "grammar.y"
+#line 505 "grammar.y"
 { yyval.ccl = new CaseClauseNode(0L, 0L);; ;
     break;}
 case 168:
-#line 501 "grammar.y"
+#line 506 "grammar.y"
 { yyval.ccl = new CaseClauseNode(0L, yyvsp[0].slist); ;
     break;}
 case 169:
-#line 505 "grammar.y"
+#line 510 "grammar.y"
 { yyval.stat = new LabelNode(yyvsp[-2].ustr, yyvsp[0].stat); delete yyvsp[-2].ustr; ;
     break;}
 case 170:
-#line 509 "grammar.y"
+#line 514 "grammar.y"
 { yyval.stat = new ThrowNode(0L); ;
     break;}
 case 171:
-#line 510 "grammar.y"
+#line 515 "grammar.y"
 { yyval.stat = new ThrowNode(yyvsp[-1].node); ;
     break;}
 case 172:
-#line 514 "grammar.y"
+#line 519 "grammar.y"
 { yyval.stat = new TryNode(yyvsp[-1].stat, yyvsp[0].node); ;
     break;}
 case 173:
-#line 515 "grammar.y"
+#line 520 "grammar.y"
 { yyval.stat = new TryNode(yyvsp[-1].stat, 0L, yyvsp[0].node); ;
     break;}
 case 174:
-#line 516 "grammar.y"
+#line 521 "grammar.y"
 { yyval.stat = new TryNode(yyvsp[-2].stat, yyvsp[-1].node, yyvsp[0].node); ;
     break;}
 case 175:
-#line 520 "grammar.y"
+#line 525 "grammar.y"
 { yyval.node = new CatchNode(yyvsp[-2].ustr, yyvsp[0].stat); delete yyvsp[-2].ustr; ;
     break;}
 case 176:
-#line 524 "grammar.y"
+#line 529 "grammar.y"
 { yyval.node = new FinallyNode(yyvsp[0].stat); ;
     break;}
 case 177:
-#line 528 "grammar.y"
+#line 533 "grammar.y"
 { yyval.func = new FuncDeclNode(yyvsp[-3].ustr, 0L, yyvsp[0].stat);
                                      delete yyvsp[-3].ustr; ;
     break;}
 case 178:
-#line 531 "grammar.y"
+#line 536 "grammar.y"
 { yyval.func = new FuncDeclNode(yyvsp[-4].ustr, yyvsp[-2].param, yyvsp[0].stat);
                                      delete yyvsp[-4].ustr; ;
     break;}
 case 179:
-#line 536 "grammar.y"
+#line 541 "grammar.y"
 { yyval.param = new ParameterNode(yyvsp[0].ustr); delete yyvsp[0].ustr; ;
     break;}
 case 180:
-#line 537 "grammar.y"
+#line 542 "grammar.y"
 { yyval.param = yyvsp[-2].param->append(yyvsp[0].ustr);
 	                             delete yyvsp[0].ustr; ;
     break;}
 case 181:
-#line 542 "grammar.y"
+#line 547 "grammar.y"
 { yyval.prog = new ProgramNode(yyvsp[0].srcs); ;
     break;}
 case 182:
-#line 546 "grammar.y"
+#line 551 "grammar.y"
 { yyval.srcs = new SourceElementsNode(yyvsp[0].src); ;
     break;}
 case 183:
-#line 547 "grammar.y"
+#line 552 "grammar.y"
 { yyval.srcs = new SourceElementsNode(yyvsp[-1].srcs, yyvsp[0].src); ;
     break;}
 case 184:
-#line 551 "grammar.y"
+#line 556 "grammar.y"
 { yyval.src = new SourceElementNode(yyvsp[0].stat); ;
     break;}
 case 185:
-#line 552 "grammar.y"
+#line 557 "grammar.y"
 { yyval.src = new SourceElementNode(yyvsp[0].func); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/lib/bison.simple"
+#line 542 "/usr/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2013,8 +2063,32 @@ yyerrhandle:
 
   yystate = yyn;
   goto yynewstate;
+
+ yyacceptlab:
+  /* YYACCEPT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 0;
+
+ yyabortlab:
+  /* YYABORT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 1;
 }
-#line 555 "grammar.y"
+#line 560 "grammar.y"
 
 
 int yyerror (const char *)  /* Called by yyparse on error */
