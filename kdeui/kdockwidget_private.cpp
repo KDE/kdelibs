@@ -483,8 +483,8 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,pendingDtor(false)
   ,forcedWidth(-1)
   ,forcedHeight(-1)
-  ,container(0)
   ,isContainer(false)
+  ,container(0)
 {
 #ifndef NO_KDE2
   windowType = NET::Normal;
