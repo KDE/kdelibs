@@ -250,15 +250,6 @@ public:
     bool trapReturnKey() const;
     
     /**
-     * Enables text update if and only if the new text is different
-     * from the current one.  Otherwise, the call to setText is ignored.
-     *
-     * @param true enable smart text update, false otherwise.
-     * @since 3.1
-     */
-    void setEnableSmartTextUpdate (bool);
-    
-    /**
      * Re-implemented for internal reasons.  API not affected.
      *
      * @reimplemented
@@ -284,7 +275,7 @@ public:
      * Reimplemented for internal reasons, the API is not affected.
      */
     virtual void copy() const;
-    
+
 signals:
 
     /**
@@ -391,11 +382,6 @@ public slots:
      * @since 3.1
      */
     void setSqueezedText( const QString &text);
-    
-    /**
-     * Re-implemented for internal reasons.  API is unaffected.
-     */
-    virtual void setText (const QString &text);
 
 protected slots:
 
