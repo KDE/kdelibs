@@ -136,7 +136,7 @@ void KApplicationTree::parseKdelnkFile( QFileInfo *fi, KTreeList *tree, KAppTree
   }
 }
 
-short KApplicationTree::parseKdelnkDir( QDir d, KTreeList *tree, KAppTreeListItem *item = 0)
+short KApplicationTree::parseKdelnkDir( QDir d, KTreeList *tree, KAppTreeListItem *item)
 {
   if( !d.exists() )
     return -1;
