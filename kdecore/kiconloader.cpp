@@ -2,7 +2,7 @@
    $Id$
    
    This file is part of the KDE libraries
-   Copyright (C) 1997 Christoph Neerfeld (Christoph.Neerfeld@bonn.netsurf.de)
+   Copyright (C) 1997 Christoph Neerfeld (chris@kde.org)
    
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.20  1998/08/17 10:34:02  konold
+	QStringList::Iterator it = list.begin();
+   Martin K.: Fixed a typo
+	for ( ; it != list.end(); ++it ) {
    Revision 1.19  1998/06/15 12:49:32  kulow
    applied patch to replace .kde with localkdedir()
 		addPath( *it );
@@ -219,7 +223,7 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
     
     pix = new QPixmap;
     
-    if( name.left(1) == '/' ){
+    if( name[0] == '/' ){
       full_path = name;
     }
     else{

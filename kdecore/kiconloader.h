@@ -2,7 +2,7 @@
    $Id$
    
    This file is part of the KDE libraries
-   Copyright (C) 1997 Christoph Neerfeld (Christoph.Neerfeld@bonn.netsurf.de)
+   Copyright (C) 1997 Christoph Neerfeld (chris@kde.org)
    
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.12  1998/08/22 20:02:41  kulow
+   make kdecore have nicer output, when compiled with -Weffc++ :)
+
    Revision 1.11  1998/08/17 10:34:03  konold
 
    Martin K.: Fixed a typo
