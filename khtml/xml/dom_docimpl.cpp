@@ -2051,20 +2051,26 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
             if (m_focusNode != newFocusNode) return;
             m_focusNode->setFocus();
             if (m_focusNode != newFocusNode) return;
-
-            // eww, I suck. set the qt focus correctly
-            // ### find a better place in the code for this
-            if (view()) {
-                if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
-                    view()->setFocus();
-                else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
-                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
-            }
         }
 
         updateRendering();
     }
-}
+
+    // ### remove this code as soon as the event flow between frames
+    // is completely handled via the DOM event model.
+    // At the moment, this code is required exactly here (not inside the
+    // if (m_focusNode != newFocusNode) clause), because a form element
+    // which the document erroneously considers the focus widget
+    // can receive focus by a mouse click, e.g. if a widget outside
+    // KHTML was focused before.
+            if (view()) {
+	if (!m_focusNode || !m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
+                    view()->setFocus();
+	else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget() &&
+		 qApp->focusWidget() != static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
+                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
+            }
+        }
 
 void DocumentImpl::attachNodeIterator(NodeIteratorImpl *ni)
 {

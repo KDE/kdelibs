@@ -792,22 +792,12 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 bool HTMLGenericFormElementImpl::isSelectable() const
 {
     return  m_render && m_render->isWidget() &&
-        static_cast<RenderWidget*>(m_render)->widget() &&
-        static_cast<RenderWidget*>(m_render)->widget()->focusPolicy() >= QWidget::TabFocus;
+        static_cast<RenderWidget*>(m_render)->widget();
 }
-
-class FocusHandleWidget : public QWidget
-{
-public:
-    void focusNextPrev(bool n) {
-	focusNextPrevChild(n);
-    }
-};
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->target() == this && renderer() && renderer()->isWidget() &&
-        !static_cast<RenderWidget*>(renderer())->widget()->inherits("QScrollView")) {
+    if (evt->target() == this && renderer() && renderer()->isWidget()) {
         switch(evt->id())  {
         case EventImpl::MOUSEDOWN_EVENT:
         case EventImpl::MOUSEUP_EVENT:
@@ -843,24 +833,12 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	    if (m_active)
 	    {
 		setActive(false);
-		setFocus();
+		getDocument()->setFocusNode(this);
 	    }
 	    else {
                 setActive(false);
             }
         }
-
-	if (evt->id() == EventImpl::KHTML_KEYPRESS_EVENT) {
-	    TextEventImpl * k = static_cast<TextEventImpl *>(evt);
-	    int key = k->qKeyEvent ? k->qKeyEvent->key() : 0;
-	    if (m_render && (key == Qt::Key_Tab || key == Qt::Key_BackTab)) {
-		QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
-		if (widget)
-		    static_cast<FocusHandleWidget *>(widget)
-			->focusNextPrev(key == Qt::Key_Tab);
-	    }
-	}
-
 
 	if (view && evt->id() == EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render && m_render->isWidget()) {
 	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
