@@ -61,8 +61,7 @@ public:
     virtual DOM::DOMString type() const { return DOMString(); }
 
     bool disabled() const { return m_disabled; }
-    void setDisabled( bool disabled ) { m_disabled = disabled; }
-
+    void setDisabled( bool disabled );
     DOM::NodeImpl *ownerNode() const { return m_parentNode; }
     StyleSheetImpl *parentStyleSheet() const;
     DOM::DOMString href() const { return m_strHref; }

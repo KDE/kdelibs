@@ -152,7 +152,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
     QPtrListIterator<StyleSheetImpl> it( styleSheets->styleSheets );
     for ( ; it.current(); ++it ) {
-        if ( it.current()->isCSSStyleSheet() ) {
+        if ( it.current()->isCSSStyleSheet() && !it.current()->disabled()) {
             authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ), m_medium );
         }
     }
