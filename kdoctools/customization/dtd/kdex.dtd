@@ -53,6 +53,14 @@
 <!-- Declarations in this part should only *restrict* the DocBook 
      DTD                                                           -->
 
+<!-- copied from docbookx.dtd: these values are for 
+     %xml.features; = "INCLUDE"
+     Files that define elements need them (currently only 
+     modifications.elements) -->
+<!ENTITY % ho "">
+<!ENTITY % ubiq.inclusion "">
+<!ENTITY % beginpage.exclusion "">
+
 <!-- Modifications in pool
      %rdbpool; is called in the DocBook DTD
      NEEDS TO BE CHECKED ON CHANGES
