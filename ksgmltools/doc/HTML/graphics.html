@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Graphics</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.52"><LINK
+REL="HOME"
+TITLE="Writing Documentation Using DocBook"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="A Crash Course in DocBook"
+HREF="crashcourse.html"><LINK
+REL="PREVIOUS"
+TITLE="Tables"
+HREF="tables.html"><LINK
+REL="NEXT"
+TITLE="Links"
+HREF="links.html"><META
+HTTP-EQUIV="Content-Style-Type"
+CONTENT="text/css"><LINK
+REL="stylesheet"
+HREF="common/kde-common.css"
+TYPE="text/css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=iso-8859-1"><META
+HTTP-EQUIV="Content-Language"
+CONTENT="en"><LINK
+REL="stylesheet"
+HREF="common/kde-localised.css"
+TYPE="text/css"
+TITLE="KDE-English"><LINK
+REL="stylesheet"
+HREF="common/kde-default.css"
+TYPE="text/css"
+TITLE="KDE-Default"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#aa0000"
+STYLE="font-family: Helvetica, Arial, sans-serif;"
+><A
+HREF="http://www.kde.org/"
+><IMG
+SRC="common/logotp3.png"
+BORDER="0"
+ALT="The K Desktop Environment"
+HEIGHT="62"
+WIDTH="229"></A
+><HR
+WIDTH="100%"
+SIZE="2"
+ALIGN="CENTER"
+NOSHADE="NOSHADE"><DIV
+ALIGN="RIGHT"
+CLASS="NAVBAR"
+><P
+><A
+HREF="links.html"
+>Next</A
+> <A
+HREF="tables.html"
+>Prev</A
+> <A
+HREF="index.html"
+>Table of Contents</A
+></P
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GRAPHICS"
+>3.6. Graphics</A
+></H1
+><P
+>Below is a list of tags related to graphical objects:
+<TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>ScreenInfo - Information about how a ScreenShot was produced</TD
+></TR
+><TR
+><TD
+>ScreenShot - Representation  of what the user sees or might see on a computer
+screen</TD
+></TR
+><TR
+><TD
+>Graphic - Graphical data, or a pointer to an external entity containing such
+data, to be rendered as an object, not in-line</TD
+></TR
+><TR
+><TD
+>InlineGraphic - Graphical data, or a pointer to an external entity containing
+such data, to be rendered in-line</TD
+></TR
+></TBODY
+></TABLE
+></P
+><P
+>Documentation for graphical applications demands screenshots, pictures of icons
+and buttons, and other graphical elements. DocBook has tags to
+support screenshots, graphics, and inline graphics.  The examples below
+contain the same picture as a screenshot and as an inline graphic. </P
+><DIV
+CLASS="IMPORTANT"
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="common/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Please do not use
+GIF files in KDE documentation because the compression algorithm used in
+the GIF format has problematic patent issues. The preferred format is now
+PNG.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-11. An Inline Graphic</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+> &#60;para&#62;
+ Here are a bunch of rectangles:
+ &#60;inlinegraphic fileref="rectangles.png"
+ format="png" align="center"&#62;&#60;/inlinegraphic&#62;
+ &#60;/para&#62;  </PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>The <SPAN
+CLASS="MARKUP"
+>&lt;InlineGraphic&gt;</SPAN
+> tag is a graphic to be displayed
+alongside text. The FileRef attribute contains the name of the graphic file,
+the Format attribute contains the type of the graphic file, and the optional
+Align attribute changes the alignment of the graphic. The example will
+look something like this when converted to HTML:</P
+><P
+>Here are a bunch of rectangles: <IMG
+SRC="rectangles.png"
+ALIGN="CENTER"> </P
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-12. A Screenshot</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+> &#60;screenshot&#62;
+ &#60;screeninfo&#62;Colored Rectangles&#60;/screeninfo&#62;
+ &#60;graphic fileref="rectangles.png" format="png"&#62;&#60;/graphic&#62;
+ &#60;/screenshot&#62; </PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>The <SPAN
+CLASS="MARKUP"
+>&lt;ScreenShot&gt;</SPAN
+> tag designates a screenshot with the
+<SPAN
+CLASS="MARKUP"
+>&lt;ScreenInfo&gt;</SPAN
+> tag providing a textual description of the
+screen shot. The heart of the ScreenShot is the Graphic tag which points to a
+graphic file as explained in the first example. A screen shot looks something
+like this when converted to HTML:
+<P
+><IMG
+SRC="rectangles.png"></P
+></P
+></DIV
+><DIV
+ALIGN="RIGHT"
+CLASS="NAVBAR"
+><P
+><A
+HREF="links.html"
+>Next</A
+> <A
+HREF="tables.html"
+>Prev</A
+> <A
+HREF="index.html"
+>Table of Contents</A
+></P
+></DIV
+><HR
+WIDTH="100%"
+SIZE="2"
+ALIGN="CENTER"
+NOSHADE="NOSHADE"></BODY
+></HTML
+>

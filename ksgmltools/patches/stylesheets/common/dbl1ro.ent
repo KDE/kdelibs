@@ -1,0 +1,79 @@
+<!ENTITY Abstract	"Rezumat">
+<!ENTITY Appendix	"Anexa">
+<!ENTITY Article	"Articol">
+<!ENTITY Bibliography	"Bibliografie">
+<!ENTITY Book		"Carte">
+<!ENTITY CAUTION	"ATEN&#222;IE">
+<!ENTITY Caution	"Aten&#254;ie">
+<!ENTITY Chapter	"Capitolul">
+<!ENTITY Copyright	"Copyright">
+<!ENTITY Dedication	"Dedica&#254;ie">
+<!ENTITY Edition	"Edi&#254;ie">
+<!ENTITY Equation	"ecua&#254;ia">
+<!ENTITY Example	"Exemplul">
+<!ENTITY Figure		"Figura">
+<!ENTITY Glossary	"Glosar">
+<!ENTITY GlossSee       "Vezi">
+<!ENTITY GlossSeeAlso   "Vezi &scedil;i">
+<!ENTITY IMPORTANT	"IMPORTANT">
+<!ENTITY ISBN		"ISBN">
+<!ENTITY Important	"Important">
+<!ENTITY Index		"Index">
+<!ENTITY LegalNotice	"">
+<!ENTITY MsgAud		"">
+<!ENTITY MsgLevel	"Nivel">
+<!ENTITY MsgOrig	"Origine">
+<!ENTITY NOTE		"NOT&#195;">
+<!ENTITY Note		"Not&#227;">
+<!ENTITY RefName	"Nume">
+<!ENTITY Note		"Not&#227;">
+<!ENTITY Part		"Parte">
+<!ENTITY Preface	"Prefa&#254;&#227;">
+<!ENTITY Procedure	"Procedur&#227;">
+<!ENTITY Published	"Publicat">
+<!ENTITY Reference	"Referin&#254;&#227;">
+<!ENTITY RefEntry       "">
+<!ENTITY Reference	"Referin&#254;&#227;">
+<!ENTITY RefName	"Nume">
+<!ENTITY RefSection     "Sec&#254;iune">
+<!ENTITY RefSynopsisDiv "Rezumat">
+<!ENTITY Revision	"Versiune">
+<!ENTITY RevHistory	"Istoricul versiunilor">
+<!ENTITY Section	"Sec&#254;iune">
+<!ENTITY See		"Vezi">
+<!ENTITY SeeAlso	"Vezi &scedil;i">
+<!ENTITY Set		"Set">
+<!ENTITY SetIndex	"Index">
+<!ENTITY Sidebar	"">
+<!ENTITY Step		"Opera&#254;ie">
+<!ENTITY TIP		"SFAT">
+<!ENTITY Table		"Tabelul">
+<!ENTITY Tip		"Indica&#254;ie">
+<!ENTITY WARNING	"AVERTISMENT">
+<!ENTITY Warning	"Avertisment">
+<!ENTITY appendix	"anexa">
+<!ENTITY sidebar	"">
+<!ENTITY chapter	"cap.">
+<!ENTITY section	"sec.">
+<!ENTITY step		"opera&#254;iune">
+<!ENTITY Seealso	"Vezi &scedil;i">
+
+<!ENTITY TableofContents	"Cuprins">
+<!ENTITY in		"&icirc;n">
+<!ENTITY by		"de">
+<!ENTITY Edited		"Publicat">
+<!ENTITY Editedby	"Editat &by;"> <!-- pref. reuse of &Edited; but of course not if not acceptable! -->
+<!ENTITY and		"&scedil;i">
+<!ENTITY Notes		"Note">
+<!ENTITY TableNotes     "Remarci">
+<!ENTITY nonexistantelement	"element inexistent">
+<!ENTITY Pgs 		"Pagini">
+<!ENTITY unsupported	"nerecunoscut de sistem">
+<!ENTITY xrefto		"referin&#254;&#227; la">
+<!ENTITY unexpectedelementname	"Nume de element nea&scedil;teptat">
+
+<!ENTITY ListofTables "List&#227; de tabele">
+<!ENTITY ListofExamples "List&#227; de exemple">
+<!ENTITY ListofFigures "List&#227; de figuri">
+<!ENTITY ListofEquations "List&#227; de ecua&#254;ii">
+<!ENTITY ListofUnknown "List&#227; de necunoscute">

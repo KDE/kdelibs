@@ -1,0 +1,776 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Lists</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.52"><LINK
+REL="HOME"
+TITLE="Writing Documentation Using DocBook"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="A Crash Course in DocBook"
+HREF="crashcourse.html"><LINK
+REL="PREVIOUS"
+TITLE="Meta Information"
+HREF="metainfo.html"><LINK
+REL="NEXT"
+TITLE="Tables"
+HREF="tables.html"><META
+HTTP-EQUIV="Content-Style-Type"
+CONTENT="text/css"><LINK
+REL="stylesheet"
+HREF="common/kde-common.css"
+TYPE="text/css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=iso-8859-1"><META
+HTTP-EQUIV="Content-Language"
+CONTENT="en"><LINK
+REL="stylesheet"
+HREF="common/kde-localised.css"
+TYPE="text/css"
+TITLE="KDE-English"><LINK
+REL="stylesheet"
+HREF="common/kde-default.css"
+TYPE="text/css"
+TITLE="KDE-Default"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#aa0000"
+STYLE="font-family: Helvetica, Arial, sans-serif;"
+><A
+HREF="http://www.kde.org/"
+><IMG
+SRC="common/logotp3.png"
+BORDER="0"
+ALT="The K Desktop Environment"
+HEIGHT="62"
+WIDTH="229"></A
+><HR
+WIDTH="100%"
+SIZE="2"
+ALIGN="CENTER"
+NOSHADE="NOSHADE"><DIV
+ALIGN="RIGHT"
+CLASS="NAVBAR"
+><P
+><A
+HREF="tables.html"
+>Next</A
+> <A
+HREF="metainfo.html"
+>Prev</A
+> <A
+HREF="index.html"
+>Table of Contents</A
+></P
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LISTS"
+>3.4. Lists</A
+></H1
+><P
+>DocBook lists are very similar to their counterparts in HTML except that DocBook
+contains several more types of lists for specialized purposes.</P
+><P
+>The tags covered in this chapter are listed below.
+<TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>SimpleList - List of single words or short phrases</TD
+></TR
+><TR
+><TD
+>Member - Member of a SimpleList </TD
+></TR
+><TR
+><TD
+>ItemizedList - List in which each entry is marked with a bullet, dash, or other dingbat</TD
+></TR
+><TR
+><TD
+>ListItem - Wrapper for the elements of items in an ItemizedList or OrderedList</TD
+></TR
+><TR
+><TD
+>OrderedList - List in which each entry is marked with a sequentially incremented label</TD
+></TR
+><TR
+><TD
+>VariableList - List in which each entry is composed of sets of one or more Terms with associated ListItems</TD
+></TR
+><TR
+><TD
+>VarListEntry - Wrapper for Term and its associated ListItem in a VariableList</TD
+></TR
+><TR
+><TD
+>Term - Hanging term attached to a ListItem within a VarListEntry in a VariableList</TD
+></TR
+><TR
+><TD
+>SegmentedList - List of sets of information</TD
+></TR
+><TR
+><TD
+>SegTitle - Title that pertains to one Seg in each SegListItem</TD
+></TR
+><TR
+><TD
+>SegListItem - List item in a SegmentedList</TD
+></TR
+><TR
+><TD
+>Seg - Component of a SegmentedList</TD
+></TR
+><TR
+><TD
+>QandASet - A question-and-answer set</TD
+></TR
+><TR
+><TD
+>QandAEntry - A question/answer set within a QandASet</TD
+></TR
+><TR
+><TD
+>Question - A question in a QandASet</TD
+></TR
+><TR
+><TD
+>Answer - An answer to a question posed in a QandASet</TD
+></TR
+><TR
+><TD
+>Procedure - List of operations to be performed</TD
+></TR
+><TR
+><TD
+>Step - Part of a Procedure</TD
+></TR
+><TR
+><TD
+>SubSteps - Wrapper for Steps within Steps</TD
+></TR
+></TBODY
+></TABLE
+></P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN244"
+>3.4.1. The SimpleList</A
+></H2
+><P
+>The easiest of all the lists to use is the SimpleList. It is designed for lists
+of short phrases (like a grocery list) and only requires two tags for building
+the list as you can see in the example below. The <SPAN
+CLASS="MARKUP"
+>&lt;Member&gt;</SPAN
+> tag can
+only contain inline content, so a SimpleList cannot contain other lists.</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-3. Example of a SimpleList</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+> &#60;simplelist&#62;
+ &#60;member&#62;Apples&#60;/member&#62;
+ &#60;member&#62;Oranges&#60;/member&#62;
+ &#60;member&#62;Bananas&#60;/member&#62;
+ &#60;member&#62;Grapefruit&#60;/member&#62;
+ &#60;member&#62;Black Beans&#60;/member&#62;
+ &#60;/simplelist&#62;</PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>When converted to HTML, a SimpleList will look something like this:
+<TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>Apples</TD
+></TR
+><TR
+><TD
+>Oranges</TD
+></TR
+><TR
+><TD
+>Bananas</TD
+></TR
+><TR
+><TD
+>Grapefruit</TD
+></TR
+><TR
+><TD
+>Black Beans</TD
+></TR
+></TBODY
+></TABLE
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN259"
+>3.4.2. The ItemizedList</A
+></H2
+><P
+>An ItemizedList is similar to the SimpleList except that each entry contains a
+paragraph instead of just a short phrase, allowing you to put more
+varied content in your list. ItemizedLists can contain other
+lists.</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-4. Example of an ItemizedList</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+> &#60;itemizedlist&#62;
+ &#60;listitem&#62;&#60;para&#62;Apples - my favorite fruit.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;listitem&#62;&#60;para&#62;Oranges - yummy, but sticky.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;listitem&#62;&#60;para&#62;Bananas - they ripen too quickly!&#60;/para&#62;&#60;/listitem&#62;
+ &#60;listitem&#62;&#60;para&#62;Grapefruit - great when eaten in halves.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;listitem&#62;&#60;para&#62;Black Beans - go well with rice.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;/itemizedlist&#62;</PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>The example will look something like this when converted to HTML:
+<UL
+><LI
+><P
+>Apples - my favorite fruit.</P
+></LI
+><LI
+><P
+>Oranges - yummy, but sticky.</P
+></LI
+><LI
+><P
+>Bananas - they ripen too quickly!</P
+></LI
+><LI
+><P
+>Grapefruit - great when eaten in halves.</P
+></LI
+><LI
+><P
+>Black Beans - go well with rice.</P
+></LI
+></UL
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN278"
+>3.4.3. The OrderedList</A
+></H2
+><P
+>The OrderedList is like the ItemizedList except that each ListItem is numbered
+or lettered. The Numeration attribute specifies what kind of numbering will be
+used and can be one of the following values: Arabic, Upperalpha, Loweralpha,
+Upperroman, Lowerroman.  There are several other attributes that control the
+appearance of an OrderedList. See the DocBook Reference for
+details. OrderedLists can contain other lists. </P
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-5. Example of an OrderedList</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  
+ &#60;orderedlist numeration="arabic"&#62;
+ &#60;listitem&#62;&#60;para&#62;Wake up.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;listitem&#62;&#60;para&#62;Eat Breakfast.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;listitem&#62;&#60;para&#62;Take a shower.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;listitem&#62;&#60;para&#62;Contemplate my navel.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;listitem&#62;&#60;para&#62;Go to Sleep.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;/orderedlist&#62;</PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>The example will look something like this when converted to HTML:
+<OL
+TYPE="1"
+><LI
+><P
+>Wake up.</P
+></LI
+><LI
+><P
+>Eat Breakfast.</P
+></LI
+><LI
+><P
+>Take a shower.</P
+></LI
+><LI
+><P
+>Contemplate my navel.</P
+></LI
+><LI
+><P
+>Go to Sleep.</P
+></LI
+></OL
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN297"
+>3.4.4. The VariableList</A
+></H2
+><P
+>The VariableList is similar to an HTML definition list. It is used when you have
+a list of terms and definitions. The VariableList consists of several
+tags: <SPAN
+CLASS="MARKUP"
+>&lt;VarListEntry&gt;</SPAN
+>, which is used to group related
+terms together, <SPAN
+CLASS="MARKUP"
+>&lt;Term&gt;</SPAN
+>, which contains the term, and
+<SPAN
+CLASS="MARKUP"
+>&lt;ListItem&gt;</SPAN
+>, which contains the decription of the term.</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-6. Example of a VariableList</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  
+ &#60;variablelist&#62;
+ &#60;varlistentry&#62;
+ &#60;term&#62;Black Beans&#60;/term&#62;
+ &#60;listitem&#62;&#60;para&#62;My favorite black bean recipe is black bean
+ soup, but they also go well with rice.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;/varlistentry&#62;
+ &#60;varlistentry&#62;
+ &#60;term&#62;Apples&#60;/term&#62;
+ &#60;term&#62;Bananas&#60;/term&#62;
+ &#60;listitem&#62;&#60;para&#62;You can eat them straight, but they also go
+ well in salads and in desserts.&#60;/para&#62;&#60;/listitem&#62;
+ &#60;/varlistentry&#62;
+ &#60;/variablelist&#62; </PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>When converted to HTML, the example VariableList will look something like this:
+<DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Black Beans</DT
+><DD
+><P
+>My favorite black bean recipe is black bean
+soup, but they also go well with rice.</P
+></DD
+><DT
+>Apples, Bananas</DT
+><DD
+><P
+>You can eat them straight, but they also go
+well in salads and in desserts.</P
+></DD
+></DL
+></DIV
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN318"
+>3.4.5. The SegmentedList</A
+></H2
+><P
+>SegmentedLists are used to list information in distinct fields
+like the contents of an address book. The name of each field is put inside of a
+<SPAN
+CLASS="MARKUP"
+>&lt;SegTitle&gt;</SPAN
+> tag. Then, use the <SPAN
+CLASS="MARKUP"
+>&lt;SegListItem&gt;</SPAN
+> tag to start and end
+each set of data. The actual data is put in the <SPAN
+CLASS="MARKUP"
+>&lt;Seg&gt;</SPAN
+> tag.</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-7. Example of a SegmentedList</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  
+ &#60;segmentedlist&#62;
+ &#60;segtitle&#62;Name&#60;/segtitle&#62;
+ &#60;segtitle&#62;Occupation&#60;/segtitle&#62;
+ &#60;segtitle&#62;Favorite Food&#60;/segtitle&#62;
+ &#60;seglistitem&#62;
+ &#60;seg&#62;Tux&#60;/seg&#62;
+ &#60;seg&#62;Linux mascot&#60;/seg&#62;
+ &#60;seg&#62;Herring&#60;/seg&#62;
+ &#60;/seglistitem&#62;
+ &#60;seglistitem&#62;
+ &#60;seg&#62;Konqui&#60;/seg&#62;
+ &#60;seg&#62;The KDE Dragon&#60;/seg&#62;
+ &#60;seg&#62;Gnomes&#60;/seg&#62;
+ &#60;/seglistitem&#62;
+ &#60;/segmentedlist&#62;
+  </PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>This silly example looks something like this when converted to HTML:
+<P
+><B
+>Name: </B
+>Tux</P
+><P
+><B
+>Occupation: </B
+>Linux mascot</P
+><P
+><B
+>Favorite Food: </B
+>Herring</P
+><P
+><B
+>Name: </B
+>Konqui</P
+><P
+><B
+>Occupation: </B
+>The KDE Dragon</P
+><P
+><B
+>Favorite Food: </B
+>Gnomes</P
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN341"
+>3.4.6. QandASet</A
+></H2
+><P
+>The QandASet is a specialized list designed specifically to deal with sets of
+questions and answers, like you would see in a FAQ. Each set of questions and
+answers are contained within a <SPAN
+CLASS="MARKUP"
+>&lt;QandAEntry&gt;</SPAN
+> tag. The <SPAN
+CLASS="MARKUP"
+>&lt;Question&gt;</SPAN
+> and
+<SPAN
+CLASS="MARKUP"
+>&lt;Answer&gt;</SPAN
+> tags contain the questions and answers respectively.</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-8. Example of a QandASet</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  
+ &#60;qandaset&#62;
+ &#60;qandaentry&#62;
+ &#60;question&#62;
+ &#60;para&#62;What are little boys made of?&#60;/para&#62;
+ &#60;/question&#62;
+ &#60;answer&#62;
+ &#60;para&#62;Snips and snails and puppy dog tails.&#60;/para&#62;
+ &#60;/answer&#62;
+ &#60;/qandaentry&#62;
+ &#60;qandaentry&#62;
+ &#60;question&#62;
+ &#60;para&#62;What are little girls made of?&#60;/para&#62;
+ &#60;/question&#62;
+ &#60;answer&#62;
+ &#60;para&#62;Sugar and spice and everything nice.&#60;/para&#62;
+ &#60;/answer&#62;
+ &#60;/qandaentry&#62;
+ &#60;/qandaset&#62; </PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>The QandASet looks something like this when converted to HTML:</P
+><DIV
+CLASS="QANDASET"
+><DL
+><DT
+>3.4.6.1. <A
+HREF="lists.html#AEN354"
+>What are little boys made of?</A
+></DT
+><DT
+>3.4.6.2. <A
+HREF="lists.html#AEN359"
+>What are little girls made of?</A
+></DT
+></DL
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN354"
+></A
+><B
+>3.4.6.1. </B
+>What are little boys made of?</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>Snips and snails and puppy dog tails.</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN359"
+></A
+><B
+>3.4.6.2. </B
+>What are little girls made of?</P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>Sugar and spice and everything nice.</P
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN363"
+>3.4.7. Procedures</A
+></H2
+><P
+>Procedure Lists are a specialized OrderedList used for listing step-by-step
+procedures like you would find in a recipe or Linux HowTo.</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><HR><P
+><B
+>Example 3-9. Example of a Procedure List (Stolen from the DocBook reference)</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  
+ &#60;procedure&#62;
+ &#60;title&#62;Waking Up&#60;/title&#62;
+ &#60;para&#62;This is what you must do to awaken.&#60;/para&#62;
+ &#60;step performance="required"&#62;
+ &#60;para&#62;
+ Bring yourself to a hypnopompic state, either from an ongoing dream or by use of
+ your internal clock.  You may feel unable to move, but you will no longer be
+ dreaming. &#60;/para&#62;
+ &#60;para&#62;Now you are ready for real-world readjustment.&#60;/para&#62;
+ &#60;substeps&#62;
+ &#60;step performance="optional"&#62;
+ &#60;para&#62;Roll over.&#60;/para&#62;
+ &#60;/step&#62;
+ &#60;step performance="required"&#62;
+ &#60;para&#62;Squint out of one eye.&#60;/para&#62;
+ &#60;/step&#62;
+ &#60;/substeps&#62;
+ &#60;/step&#62;
+ &#60;step performance="required"&#62;
+ &#60;para&#62;Yawn and rise from your bed.
+ &#60;/para&#62;
+ &#60;/step&#62;
+ &#60;/procedure&#62; </PRE
+></TD
+></TR
+></TABLE
+><HR></DIV
+></P
+><P
+>The above example would look something like this when converted to HTML:</P
+><DIV
+CLASS="PROCEDURE"
+><P
+><B
+>Waking Up</B
+></P
+><P
+>This is what you must do to awaken.</P
+><OL
+TYPE="1"
+><LI
+><P
+>Bring yourself to a hypnopompic state, either from an ongoing dream or by use of
+your internal clock.  You may feel unable to move, but you will no longer be
+dreaming. </P
+><P
+>Now you are ready for real-world readjustment.</P
+><OL
+CLASS="SUBSTEPS"
+TYPE="a"
+><LI
+><P
+>Roll over.</P
+></LI
+><LI
+><P
+>Squint out of one eye.</P
+></LI
+></OL
+></LI
+><LI
+><P
+>Yawn and rise from your bed.</P
+></LI
+></OL
+></DIV
+></DIV
+></DIV
+><DIV
+ALIGN="RIGHT"
+CLASS="NAVBAR"
+><P
+><A
+HREF="tables.html"
+>Next</A
+> <A
+HREF="metainfo.html"
+>Prev</A
+> <A
+HREF="index.html"
+>Table of Contents</A
+></P
+></DIV
+><HR
+WIDTH="100%"
+SIZE="2"
+ALIGN="CENTER"
+NOSHADE="NOSHADE"></BODY
+></HTML
+>

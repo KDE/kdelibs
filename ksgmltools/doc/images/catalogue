@@ -1,0 +1,3 @@
+OVERRIDE YES
+
+SGMLDECL "../common/xml.dcl"

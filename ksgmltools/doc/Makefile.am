@@ -1,0 +1,2 @@
+
+SUBDIRS = HTML images

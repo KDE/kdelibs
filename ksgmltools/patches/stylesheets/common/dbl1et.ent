@@ -1,0 +1,79 @@
+<!ENTITY Abstract	"Ülevaade">
+<!ENTITY Answer		"V:">
+<!ENTITY Appendix	"Lisa">
+<!ENTITY Article	"Artikkel">
+<!ENTITY Bibliography	"Bibliograafia">
+<!ENTITY Book		"Raamat">
+<!ENTITY CAUTION	"HOIATUS">
+<!ENTITY Caution	"Hoiatus">
+<!ENTITY Chapter	"Peatükk">
+<!ENTITY Colophon	"Kolofoon/lõppmärgis">
+<!ENTITY Copyright	"Autoriõigus">
+<!ENTITY Dedication	"Pühendus">
+<!ENTITY Edition	"Väljaanne">
+<!ENTITY Equation	"Valem">
+<!ENTITY Example	"Näidis">
+<!ENTITY Figure		"Joonis">
+<!ENTITY GlossSee	"Vaata">
+<!ENTITY GlossSeeAlso	"Vaata ka">
+<!ENTITY Glossary	"Sõnastik">
+<!ENTITY IMPORTANT	"OLULINE">
+<!ENTITY ISBN		"ISBN">
+<!ENTITY Important	"Oluline">
+<!ENTITY Index		"Aineregister">
+<!ENTITY LegalNotice	"Seadusmärge">
+<!ENTITY MsgAud		"Auditoorium">
+<!ENTITY MsgLevel	"Tase">
+<!ENTITY MsgOrig	"Algallikas">
+<!ENTITY NOTE		"MÄRKUS">
+<!ENTITY Note		"Märkus">
+<!ENTITY Part		"Osa">
+<!ENTITY Preface	"Eessõna">
+<!ENTITY Procedure	"Protseduur">
+<!ENTITY Published	"Avaldatud">
+<!ENTITY Question	"K:">
+<!ENTITY RefEntry       "">
+<!ENTITY Reference	"Viitemärk">
+<!ENTITY RefName	"Nimi">
+<!ENTITY RefSection     "Sektsioon">
+<!ENTITY RefSynopsisDiv "Sünopsis">
+<!ENTITY Revision	"Revisjon">
+<!ENTITY RevHistory	"Revisjoni ajalugu">
+<!ENTITY Section	"Sektsioon">
+<!ENTITY See		"Vaata">
+<!ENTITY SeeAlso	"Vaata ka">
+<!ENTITY Set		"Seadista">
+<!ENTITY SetIndex	"Sea indeks">
+<!ENTITY Sidebar	"">
+<!ENTITY Step		"Samm">
+<!ENTITY TIP		"VIHJE">
+<!ENTITY Table		"Tabel">
+<!ENTITY Tip		"Vihje">
+<!ENTITY WARNING	"HOIATUS">
+<!ENTITY Warning	"Hoiatus">
+<!ENTITY appendix	"lisa">
+<!ENTITY chapter	"peatükk">
+<!ENTITY section	"sektsioon">
+<!ENTITY sidebar	"külgriba">
+<!ENTITY step		"aste">
+<!ENTITY Seealso	"Vaata ka">
+
+<!ENTITY TableofContents	"Sisukord">
+<!ENTITY in		"in">
+<!ENTITY by		"poolt">
+<!ENTITY Edited		"Redigeerinud">
+<!ENTITY Editedby	"&Edited; &by;">
+<!ENTITY and		"ja">
+<!ENTITY Notes		"Märkused">
+<!ENTITY TableNotes     "Märkused">
+<!ENTITY nonexistantelement	"Mitte eksisteeriv element">
+<!ENTITY Pgs 		"Lk.">
+<!ENTITY unsupported	"toetuseta">
+<!ENTITY xrefto		"xref to">
+<!ENTITY unexpectedelementname	"Ootamatu elemendi nimi">
+
+<!ENTITY ListofTables "Tabelite nimekiri">
+<!ENTITY ListofExamples "Näidiste nimekiri">
+<!ENTITY ListofFigures "Jooniste nimekiri">
+<!ENTITY ListofEquations "Võrrandite nimekiri">
+<!ENTITY ListofUnknown "Tundmatute nimekiri">

@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>A Crash Course in DocBook</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.52"><LINK
+REL="HOME"
+TITLE="Writing Documentation Using DocBook"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Running the Tools"
+HREF="usage.html"><LINK
+REL="NEXT"
+TITLE="The Structure of a DocBook File"
+HREF="doc-structure.html"><META
+HTTP-EQUIV="Content-Style-Type"
+CONTENT="text/css"><LINK
+REL="stylesheet"
+HREF="common/kde-common.css"
+TYPE="text/css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=iso-8859-1"><META
+HTTP-EQUIV="Content-Language"
+CONTENT="en"><LINK
+REL="stylesheet"
+HREF="common/kde-localised.css"
+TYPE="text/css"
+TITLE="KDE-English"><LINK
+REL="stylesheet"
+HREF="common/kde-default.css"
+TYPE="text/css"
+TITLE="KDE-Default"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#aa0000"
+STYLE="font-family: Helvetica, Arial, sans-serif;"
+><A
+HREF="http://www.kde.org/"
+><IMG
+SRC="common/logotp3.png"
+BORDER="0"
+ALT="The K Desktop Environment"
+HEIGHT="62"
+WIDTH="229"></A
+><HR
+WIDTH="100%"
+SIZE="2"
+ALIGN="CENTER"
+NOSHADE="NOSHADE"><DIV
+ALIGN="RIGHT"
+CLASS="NAVBAR"
+><P
+><A
+HREF="doc-structure.html"
+>Next</A
+> <A
+HREF="usage.html"
+>Prev</A
+> <A
+HREF="index.html"
+>Table of Contents</A
+></P
+></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CRASHCOURSE"
+>Chapter 3. A Crash Course in DocBook</A
+></H1
+><P
+>This tutorial will teach you enough DocBook to write KDE documentation. You will learn how to:</P
+><P
+><UL
+><LI
+><P
+>Understand the format of a DocBook tag</P
+></LI
+><LI
+><P
+>Structure your documents properly</P
+></LI
+><LI
+><P
+>Use lists and tables to organize data</P
+></LI
+><LI
+><P
+>Describe GUI elements and Unix Commands</P
+></LI
+><LI
+><P
+>Include graphics in your documentation</P
+></LI
+><LI
+><P
+>Link to URL's and create cross-references</P
+></LI
+></UL
+></P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="TAGS"
+>3.1. Anatomy of a DocBook Tag</A
+></H1
+><P
+>A DocBook tag consists of an element and attributes. For example, <SPAN
+CLASS="MARKUP"
+>&lt;Chapter ID="Introduction"&gt;</SPAN
+>
+contains the element Chapter and the attribute ID. The element modifies the text within the markup,
+and the element's attributes modify the element. For example, the Chapter element says that all text included within the
+starting and closing tags should be treated as a chapter, while the ID attribute labels the Chapter so it can be linked to
+or used as a file name when DocBook is translated to another format.</P
+><P
+>Most DocBook tags contain a common set of attributes. The common
+attributes that you will be using most often are Lang, which specifies the
+language of the data inside the tag, and ID, which labels the tag.</P
+><DIV
+CLASS="IMPORTANT"
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="common/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>All DocBook tags must have a start and an end tag. If you
+read through the DocBook Reference you will notice that not all DocBook tags are
+required to have both start and end tags. Omitting the ending tags where they
+are not required is not an option because it will make your document
+inconsistent with the other KDE documentation and it will make it harder to make
+the transistion to XML DocBook. Also, make sure to follow the proper case of the tag
+because XML is picky about the case of tags.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>For detailed information about tags and a list of all available tags,
+see the DocBook 3.0 Reference and the <A
+HREF="http://nwalsh.com/docbook/defguide/qr/quickref.htm"
+TARGET="_top"
+> DocBook 3.1 Quick
+Reference</A
+>.</P
+></DIV
+></DIV
+><DIV
+ALIGN="RIGHT"
+CLASS="NAVBAR"
+><P
+><A
+HREF="doc-structure.html"
+>Next</A
+> <A
+HREF="usage.html"
+>Prev</A
+> <A
+HREF="index.html"
+>Table of Contents</A
+></P
+></DIV
+><HR
+WIDTH="100%"
+SIZE="2"
+ALIGN="CENTER"
+NOSHADE="NOSHADE"></BODY
+></HTML
+>

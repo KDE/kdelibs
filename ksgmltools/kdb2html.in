@@ -1,0 +1,47 @@
+#! /bin/sh
+
+CATALOG=@prefix@/share/apps/ksgmltools/kde.cat
+DB_STYLESHEET=@prefix@/share/apps/ksgmltools/stylesheets/kde.dsl
+
+SGML_CATALOG_FILES=@SGML_CATALOGS@
+
+export SGML_CATALOG_FILES
+
+output=HTML
+TMPDIR=DBTOHTML_OUTPUT_DIR$$
+
+if [ ! $# = 1 ]
+then
+  echo "Usage: `basename $0` [filename.docbook]" >&2
+  exit 1
+fi
+
+if [ ! -r $1 ]
+then
+  echo Cannot read \"$1\".  Exiting. >&2
+  exit 1
+fi
+
+mkdir $TMPDIR
+SAVE_PWD=`pwd`
+(cd $TMPDIR;
+  if test -f ../$1; then
+    input_file=../$1
+  else
+    input_file=$1
+  fi
+  echo jade -c $CATALOG -t sgml -d ${DB_STYLESHEET}\#html $input_file 
+  jade -c $CATALOG -t sgml -d ${DB_STYLESHEET}\#html $input_file
+  cd $SAVE_PWD
+)
+
+if [ -d ${output}.junk ]; then
+     /bin/rm -rf ${output}.junk
+fi
+if [ -d ${output} ]; then
+    mv $output ${output}.junk
+fi
+mv ${TMPDIR} $output
+
+exit 0
+

@@ -1,0 +1,64 @@
+* Style sheets
+- check interpretation of generated keywords in HTML
++ crystal clear documentation: where does the code come from and how was it
+  modified, what were the reasons for it. (in which case the structure of the
+  files does not need to be similar)
++ fix ALT= and </P> problems: Will happen when mediaobject is used instead of
+  graphic and when the library is used.  The </P> problem is unsolved as yet,
+  but patched in the CSS style sheets.
+- othercredit: translators should be inserted
+  author/authorgroup: what it says
+  contrib: contributors to the *text*
+  othercredit: translators and proofreaders
+  Distinction should be made between text and software (and indicated)
+  ChangeLog: in reference doc and ChangeLog file - not in documentation
+  Translators can change: lang attribute in top element, id attribute in all
+  but anchors, othercredits: add translators and contributors to translation
+  RevHistory: changes to the text(!)
+- abstract: make more clear from layout (?)
+- make list of authors/contributors from code, and put them at the back of the
+  document if html, at the front on verso if printed
+- decide on swapover date for patches (and make old version available)
+- make script that allows to check if entities are out of date (*.dsl is too
+  hard) from English
+- investigate image printing/HTML
+- investigate olinks
+- Add language to link to chunk is that it is different (both in HTML
+  and in the visible text)
+
+* DocBook
++ Add check script for format of languages: lg-CY (RFC1766)
+- write style checker
+- add code for index in prologs and for app-entities
++ ask NW about positioning of qandaset: for customisation (ID cannot be made
+  compulsory)
++ Is qandaset isolation a bug?
+
+* Other
+- make clear: &kapp; and indexterm use (so that index can be activated)
+- anchors can be requested by programmers (change as little as possible)
+- guidelines/checker
+- different types of links and targets
+- HTML result OK?  ()
+- make clear other functionality can be requested by documentation writers (eg
+  line numbering, etc.)
+- Provide info for Postscript (and source code) (with link?)
+- consider format script and all options, ... in SGML file (~ DB-CDROM)
+- create tool that builds graphics library (and a catalogue in the same dir)
+  (use pngmeta-1.10 to find the sizes)
+- create scripts for catalogue files and document entities
+- Language specific parts in document (eg links to dictionaries etc should be
+  done with an entity), eg in Translation howto
+- Write FPI script (for external references).
++ Fix make complaints in lang-conv (error: nothing to be done for all-am)
+
+* TeX
+- diacritics have to be changed by a script.
+- generate pictures with correct BB
+- Check if the fonts are installed, and don't need too much changing.
+
+* Meaning of characters:
+ `*' indicates a TODO item
+ `-' indicates a TODO subitem, no action taken
+ `+' indicates a TODO subitem, some action was taken, but not finished
+ Finished items are removed

@@ -1,0 +1,309 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Writing Documentation Using DocBook</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.52"><LINK
+REL="NEXT"
+TITLE="Introduction"
+HREF="introduction.html"><META
+NAME="KEYWORD"
+CONTENT="KDE documentation"><META
+NAME="KEYWORD"
+CONTENT="documentation"><META
+NAME="KEYWORD"
+CONTENT="ksgml"><META
+NAME="KEYWORD"
+CONTENT="DocBook"><META
+NAME="KEYWORD"
+CONTENT="Linuxdoc"><META
+HTTP-EQUIV="Content-Style-Type"
+CONTENT="text/css"><LINK
+REL="stylesheet"
+HREF="common/kde-common.css"
+TYPE="text/css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=iso-8859-1"><META
+HTTP-EQUIV="Content-Language"
+CONTENT="en"><LINK
+REL="stylesheet"
+HREF="common/kde-localised.css"
+TYPE="text/css"
+TITLE="KDE-English"><LINK
+REL="stylesheet"
+HREF="common/kde-default.css"
+TYPE="text/css"
+TITLE="KDE-Default"><META
+NAME="KEYWORDS"
+CONTENT="KDE documentation, documentation, ksgml, DocBook, Linuxdoc"></HEAD
+><BODY
+CLASS="BOOK"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#aa0000"
+STYLE="font-family: Helvetica, Arial, sans-serif;"
+><A
+HREF="http://www.kde.org/"
+><IMG
+SRC="common/logotp3.png"
+BORDER="0"
+ALT="The K Desktop Environment"
+HEIGHT="62"
+WIDTH="229"></A
+><HR
+WIDTH="100%"
+SIZE="2"
+ALIGN="CENTER"
+NOSHADE="NOSHADE"><DIV
+ALIGN="RIGHT"
+CLASS="NAVBAR"
+><P
+><A
+HREF="introduction.html"
+>Next</A
+> Prev Table of Contents</P
+></DIV
+><DIV
+CLASS="BOOK"
+><A
+NAME="CRASH-COURSE"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Writing Documentation Using DocBook</A
+></H1
+><H2
+CLASS="SUBTITLE"
+>A Crash Course</H2
+><SPAN
+CLASS="RELEASEINFO"
+><BR></SPAN
+><SPAN
+CLASS="DATE"
+><BR></SPAN
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN6"
+>David Rugge</A
+></H3
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><P
+>This document describes how to write KDE documentation in DocBook using the KDE
+DocBook package. There is also a guide to moving from the old Linuxdoc format to
+the newer and more flexible DocBook format.</P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="introduction.html"
+>Introduction</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="introduction.html#WHY"
+>Why DocBook?</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="kdetools.html"
+>The KDE DocBook Tools</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="kdetools.html#INSTALLATION"
+>Installing the Tools</A
+></DT
+><DT
+>2.2. <A
+HREF="usage.html"
+>Running the Tools</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="crashcourse.html"
+>A Crash Course in DocBook</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="crashcourse.html#TAGS"
+>Anatomy of a DocBook Tag</A
+></DT
+><DT
+>3.2. <A
+HREF="doc-structure.html"
+>The Structure of a DocBook File</A
+></DT
+><DT
+>3.3. <A
+HREF="metainfo.html"
+>Meta Information</A
+></DT
+><DT
+>3.4. <A
+HREF="lists.html"
+>Lists</A
+></DT
+><DD
+><DL
+><DT
+>3.4.1. <A
+HREF="lists.html#AEN244"
+>The SimpleList</A
+></DT
+><DT
+>3.4.2. <A
+HREF="lists.html#AEN259"
+>The ItemizedList</A
+></DT
+><DT
+>3.4.3. <A
+HREF="lists.html#AEN278"
+>The OrderedList</A
+></DT
+><DT
+>3.4.4. <A
+HREF="lists.html#AEN297"
+>The VariableList</A
+></DT
+><DT
+>3.4.5. <A
+HREF="lists.html#AEN318"
+>The SegmentedList</A
+></DT
+><DT
+>3.4.6. <A
+HREF="lists.html#AEN341"
+>QandASet</A
+></DT
+><DT
+>3.4.7. <A
+HREF="lists.html#AEN363"
+>Procedures</A
+></DT
+></DL
+></DD
+><DT
+>3.5. <A
+HREF="tables.html"
+>Tables</A
+></DT
+><DT
+>3.6. <A
+HREF="graphics.html"
+>Graphics</A
+></DT
+><DT
+>3.7. <A
+HREF="links.html"
+>Links</A
+></DT
+><DT
+>3.8. <A
+HREF="interface.html"
+>Describing the Application's Interface</A
+></DT
+><DD
+><DL
+><DT
+>3.8.1. <A
+HREF="interface.html#EXAMPLES"
+>Examples</A
+></DT
+><DT
+>3.8.2. <A
+HREF="interface.html#AEN534"
+>Command Line</A
+></DT
+><DT
+>3.8.3. <A
+HREF="interface.html#GUI"
+>GUI Interface Elements</A
+></DT
+></DL
+></DD
+><DT
+>3.9. <A
+HREF="misc.html"
+>Miscellaneous Useful Tags</A
+></DT
+><DD
+><DL
+><DT
+>3.9.1. <A
+HREF="misc.html#LABEL"
+>Labelling Tags</A
+></DT
+><DT
+>3.9.2. <A
+HREF="misc.html#FORMATTING"
+>Formatting Tags</A
+></DT
+><DT
+>3.9.3. <A
+HREF="misc.html#WARNINGS"
+>Warnings, Tips, and Notes</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>4. <A
+HREF="next.html"
+>Where to Go Next</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="next.html#RESOURCES"
+>DocBook and SGML resources</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+ALIGN="RIGHT"
+CLASS="NAVBAR"
+><P
+><A
+HREF="introduction.html"
+>Next</A
+> Prev Table of Contents</P
+></DIV
+><HR
+WIDTH="100%"
+SIZE="2"
+ALIGN="CENTER"
+NOSHADE="NOSHADE"></BODY
+></HTML
+>
