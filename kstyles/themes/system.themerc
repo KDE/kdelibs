@@ -303,5 +303,5 @@ windowBackground=255,255,255
 [KDE]
 contrast=2
 widgetStyle=basicstyle.la
-WidgetStyle=KPixmap - system
+WidgetStyle=system [Pixmap]
 

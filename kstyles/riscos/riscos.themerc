@@ -222,7 +222,7 @@ Pixmap=riscos/background.png
 
 [KDE]
 widgetStyle=basicstyle.la 
-WidgetStyle=KPixmap - riscos
+WidgetStyle=riscos [Pixmap]
 [Misc]
 ShadeStyle=Motif
 ScrollBarExtent=20

@@ -42,7 +42,7 @@
 
 class QImage;
 
-#define WIDGETS 54
+
 
 /**
  * This class adds simple time management to KPixmap for use in flushing
@@ -58,6 +58,7 @@ public:
 
     KThemePixmap(bool timer = true);
     KThemePixmap(const KThemePixmap &p);
+	KThemePixmap(const KThemePixmap &p,const QPixmap& rp);
     ~KThemePixmap();
     QPixmap* border(BorderType type);
     void setBorder(BorderType type, const QPixmap &p);
@@ -269,7 +270,7 @@ public:
         IndicatorOff, ExIndicatorOn, ExIndicatorOff, HBarHandle, VBarHandle,
         ToolBar, Splitter, CheckMark, MenuBar, DisArrowUp, DisArrowDown,
         DisArrowLeft, DisArrowRight, ProgressBar, ProgressBg, MenuBarItem,
-        Background};
+        Background, RotSliderGroove, WIDGETS};
 
     /**
      * The scaling type specified by the KConfig file.
@@ -426,6 +427,7 @@ public:
      * @return The pixmap or NULL if one is not specified.
      */
     virtual KThemePixmap *scalePixmap(int w, int h, WidgetType widget) const;
+protected:
     /**
      * This method reads a configuration file and sets things up so overrideColorGroup
     * works. Modiying user's config files within a style is evil, IMHO
@@ -433,8 +435,8 @@ public:
      *
      * @param file The configuration file to apply.
      */
-    void applyConfigFile();
-protected:
+    void applyConfigFile(QSettings & settings);
+
     /*
     *	Generates a new palette based on the values for which have been specified explicitly
     * in the .themerc file.

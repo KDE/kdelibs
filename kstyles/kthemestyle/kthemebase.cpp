@@ -44,9 +44,8 @@ typedef QMap<QString, QString> Prop;
 template class QIntCache<KThemePixmap>;
 
 /*
-TODO - Optimizations:
-Aviod repeatedly reading contrast value from themerc
-Avoid repeatedly calculating pixmap colos for background
+Bugs:
+Can't delete old slider image when calculating the rotated one for some reason.
 */
 
 //Shamelessly stolen from KConfigBase
@@ -120,18 +119,15 @@ static const char * const widgetEntries[] = { // unsunken widgets (see header)
             "CheckBox", "RadioDown", "Radio", "HBarHandle", "VBarHandle",
             "ToolBar", "Splitter", "CheckMark", "MenuBar", "DisableArrowUp",
             "DisableArrowDown", "DisableArrowLeft", "DisableArrowRight", "ProgressBar",
-            "ProgressBackground", "MenuBarItem", "Background"
+            "ProgressBackground", "MenuBarItem", "Background","RotSlider"
         };
 
 #define INHERIT_ITEMS 16
 
-#include <iostream.h>
 
 class KThemeBasePrivate
 {
 public:
-
-    //TODO: Should this stuff go under the d pointer?
     /** Color overrides flags..*/
     bool overrideForeground;
     bool overrideBackground;
@@ -150,38 +146,48 @@ public:
     QColor overrideWindowForegroundCol;
     QColor overrideWindowBackgroundCol;
 
+	int contrast;
+
     KStyleDirs dirs;
 
     QMap <QString, QMap<QString, QString> > props;
+
+	QMap<const QPixmap*, QColor> colorCache;
 
 	/*
 	A heuristic routine that tries to determine the  avergae color of the image
 	Wouldn't work for things like sliders, etc.
 	*/
-	QColor pixmapAveColor(const QPixmap& p)
+	QColor pixmapAveColor(const QPixmap* p)
 	{
-		QImage to_ave = p.convertToImage();
-		double r=0,g=0,b=0;
+		if (colorCache.contains(p))
+			return colorCache[p];
+
+		QImage to_ave = p->convertToImage();
+		double h=0,s=0,v=0;
 		int count=0;
-		for (int x=0; x<p.width(); x++)
+		int dh,ds,dv;
+		for (int x=0; x<p->width(); x++)
 		{
-			QRgb pix = to_ave.pixel(x,p.height()/2);
-			r+=qRed(pix);
-			g+=qGreen(pix);
-			b+=qBlue(pix);
+			QColor pix(to_ave.pixel(x,p->height()/2));
+			pix.hsv(&dh,&ds,&dv);
+			h+=dh;
+			s+=ds;
+			v+=dv;
 			count++;
 		}
 
-		for (int y=0; y<p.height(); y++)
+		for (int y=0; y<p->height(); y++)
 		{
-			QRgb pix = to_ave.pixel(p.width()/2,y);
-			r+=qRed(pix);
-			g+=qGreen(pix);
-			b+=qBlue(pix);
+			QColor pix(to_ave.pixel(p->width()/2,y));
+			pix.hsv(&dh,&ds,&dv);
+			h+=dh;
+			s+=ds;
+			v+=dv;
 			count++;
 		}
-		//cout<<"RGB:"<<r/count<<","<<g/count<<","<<b/count<<"\n";
-		return QColor(r/count,g/count,b/count);
+		colorCache[p]=QColor(int(h/count+0.5),int(s/count+0.5),int(v/count+0.5),QColor::Hsv);
+		return colorCache[p];
 	}
 };
 
@@ -379,6 +385,9 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     QSettings config;
     d->dirs.addToSearch(config,"share/apps/kstyle/themes");
 
+	applyConfigFile(config);
+
+    d->contrast = config.readNumEntry(configFileName+"KDE/contrast",7);
 
 
 
@@ -407,8 +416,26 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
     roundedButton = roundedCombo = roundedSlider = focus3D = false;
     splitterWidth = 10;
 
+	//Handle the rotated background separately..
+ 	d->props[widgetEntries[RotSliderGroove]] = d->props[widgetEntries[SliderGroove]];
+
     for(i=0; i < WIDGETS; ++i)
         readResourceGroup(i, pixnames, brdnames, loaded);
+
+	if (pixmaps[RotSliderGroove])
+	{
+		QWMatrix r270; //TODO: 90 if reverse?
+		r270.rotate(270);
+		KThemePixmap* bf=new KThemePixmap(pixmaps[RotSliderGroove],pixmaps[RotSliderGroove]->xForm(r270));//
+		//delete pixmaps[RotSliderGroove]; CHECKME: Why cna't I do this?
+		pixmaps[RotSliderGroove]=bf;
+		if (images[RotSliderGroove])
+		{
+			delete images[RotSliderGroove];
+			images[RotSliderGroove]=new QImage(bf->convertToImage());
+		}
+	}
+
 
     // misc items
     readMiscResourceGroup();
@@ -418,6 +445,9 @@ void KThemeBase::readConfig(Qt::GUIStyle /*style*/)
         if(pixmaps[preBlend[i]] != NULL && blends[preBlend[i]] != 0.0)
             blend(preBlend[i]);
     }
+
+
+
 }
 
 KThemeBase::KThemeBase(const QString & configFile)
@@ -434,17 +464,13 @@ KThemeBase::KThemeBase(const QString & configFile)
     //else SCREAM!!
     configFileName="/"+configFileName+"/";
 
-    applyConfigFile();
     readConfig(Qt::WindowsStyle);
     cache = new KThemeCache(cacheSize);
 
 }
 
-void KThemeBase::applyConfigFile()
+void KThemeBase::applyConfigFile(QSettings& config)
 {
-    QSettings config;
-    d->dirs.addToSearch(config,"share/apps/kstyle/themes");
-
     QStringList keys=config.entryList(configFileName);
 
     if(keys.contains("foreground"))
@@ -499,7 +525,6 @@ void KThemeBase::applyConfigFile()
         d->overrideWindowForeground = false;
 
 
-    //TODO: Other settings
 #ifndef Q_WS_QWS //FIXME
     for(int input=0; input < WIDGETS; ++input){
         d->props.erase(widgetEntries[input]);
@@ -930,30 +955,13 @@ KThemePixmap* KThemeBase::scalePixmap(int w, int h, WidgetType widget) const
     return(scale(w, h, widget));
 }
 
-//#include <iostream.h>
-
 QColorGroup* KThemeBase::makeColorGroup(const QColor &fg, const QColor &bg,
                                         Qt::GUIStyle)
 {
-    /**
-    FIXME:
-    This uses either the themerc's contrast setting or 7 - never
-    the one configured by the user.
-
-    How do I get to the constrast value with QSettings
-    if kdeglobals doesn't have "rc" at the end of it?
-    */
-
-	//TODO:Cache
-    QSettings settings;
-    d->dirs.addToSearch(settings,"share/apps/kstyle/themes");
-
-    int contrast = settings.readNumEntry(configFileName+"KDE/contrast",7);
-    //cout<<"Contrast:"<<contrast<<"\n";
     if(shading == Motif){
         int highlightVal, lowlightVal;
-        highlightVal=100+(2*contrast+4)*16/10;
-        lowlightVal=100+((2*contrast+4)*10);
+        highlightVal=100+(2*d->contrast+4)*16/10;
+        lowlightVal=100+((2*d->contrast+4)*10);
         return(new QColorGroup(fg, bg, bg.light(highlightVal),
                                bg.dark(lowlightVal), bg.dark(120),
                                fg, QApplication::palette().active().base()));
@@ -1397,9 +1405,6 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
 QPalette KThemeBase::overridePalette(const QPalette& pal)
 {
 
-//	return pal;
-	//cout<<"Override palette called!\n";
-
 	//Read current settings for colors..
 	QColor background = pal.active().background();
     QColor foreground = pal.active().foreground();
@@ -1429,7 +1434,7 @@ QPalette KThemeBase::overridePalette(const QPalette& pal)
 
 	//Now, try to get the button color from the pixmap
 	if ( uncached(Bevel) )
-		button=d->pixmapAveColor(*uncached(Bevel));
+		button=d->pixmapAveColor(uncached(Bevel));
 
 
     if ( isPixmap( Background ) || isColor( Background ) )
@@ -1441,23 +1446,14 @@ QPalette KThemeBase::overridePalette(const QPalette& pal)
         }
         if ( isPixmap( Background ) )
         {
-			background = d->pixmapAveColor(*uncached( Background ));
+			background = d->pixmapAveColor(uncached( Background ));
         }
         buttonText = colorGroup( pal.active(), PushButton ) ->foreground();
     }
 
-//	cout<<"Background:"<<background.name().latin1()<<"\n";
-
-
-	//TODO:Cache
-    QSettings settings;
-    d->dirs.addToSearch(settings,"share/apps/kstyle/themes");
-
-    int contrast = settings.readNumEntry(configFileName+"KDE/contrast",7);
-
     int highlightVal, lowlightVal;
-    highlightVal = 100 + (2*contrast+4)*16/10;
-    lowlightVal = 100 + (2*contrast+4)*10;
+    highlightVal = 100 + (2*d->contrast+4)*16/10;
+    lowlightVal = 100 + (2*d->contrast+4)*10;
 
     QColor disfg = foreground;
 
@@ -1479,8 +1475,6 @@ QPalette KThemeBase::overridePalette(const QPalette& pal)
                             background.dark(120),
                             background.dark(120), base);
 
-	//cout<<"Light:"<<background.light(highlightVal).name().latin1()<<"\n";
-
     QColorGroup colgrp(foreground, background,
 					   background.light(highlightVal),
                        background.dark(lowlightVal),
@@ -1498,11 +1492,6 @@ QPalette KThemeBase::overridePalette(const QPalette& pal)
     colgrp.setColor(QColorGroup::ButtonText, buttonText);
     colgrp.setColor(QColorGroup::Midlight, button.light(110));
 
-/*	for (int c=0; c<QColorGroup::NColorRoles; c++)
-	{
-		cout<<"Style Color #"<<c<<colgrp.color((QColorGroup::ColorRole)c).name().latin1()<<"\n";
-	}
-*/
     disabledgrp.setColor(QColorGroup::Button, button);
     disabledgrp.setColor(QColorGroup::ButtonText, buttonText);
     disabledgrp.setColor(QColorGroup::Midlight, button.light(110));
@@ -1529,6 +1518,23 @@ KThemePixmap::KThemePixmap(bool timer)
 
 KThemePixmap::KThemePixmap(const KThemePixmap &p)
         :KPixmap(p)
+{
+    if(p.t){
+        t = new QTime;
+        t->start();
+    }
+    else
+        t = NULL;
+    int i;
+    for(i=0; i < 8; ++i)
+        if(p.b[i])
+            b[i] = new QPixmap(*p.b[i]);
+        else
+            b[i] = NULL;
+}
+
+KThemePixmap::KThemePixmap(const KThemePixmap &p, const QPixmap &p2)
+        :KPixmap(p2)
 {
     if(p.t){
         t = new QTime;

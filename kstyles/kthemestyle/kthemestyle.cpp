@@ -1,11 +1,11 @@
-/* 
+/*
   $Id$
 
   This file is part of the KDE libraries
   Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
   KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-  Port version 0.8.5
+  Port version 0.8.6
 
   Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -96,10 +96,14 @@ static const int rightBorder     = 12;
 /*
 BUGS:
 Vertical sliders, other things flash..
+<gallium> SadEagle: Did you try SH_ScrollBar_BackgroundMode: return NoBackground; to reduce scrollbar flicker?
+ --Doesn't seem to help; neither does the equivalent polish
+
+Masking of radio buttons?
 
 TODO:
-Optimize slider rotation
 Nicer disabled buttons.
+Sliders are not disabled properly
 
 */
 
@@ -129,11 +133,11 @@ public:
                 QString rname=files[f];
                 rname.truncate(rname.length()-2);
                 rname = "/"+rname+"/";
-                if (conf.readEntry(rname+"KDE/widgetStyle")=="basicstyle.la" || conf.readEntry(rname+"KDE/WidgetStyle").startsWith("KPixmap - ") )
+                if (conf.readEntry(rname+"KDE/widgetStyle")=="basicstyle.la" || conf.readEntry(rname+"KDE/WidgetStyle").endsWith(" [Pixmap]") )
                 {
                     QString close_name=files[f];
                     close_name.truncate(close_name.length()-8);//Get rid of .themerc
-                    keys.append("KPixmap - "+close_name);
+                    keys.append(close_name+" [Pixmap]");
                 }
             }
         }
@@ -142,9 +146,9 @@ public:
 
     QStyle* create( const QString& key )
     {
-        if ( key.startsWith("kpixmap - " ) )
+        if ( key.endsWith(" [pixmap]" ) )
         {
-            QString themerc = key.mid(10,key.length()-10)+".themerc";
+            QString themerc = key.left(key.length()-9)+".themerc";
             return new KThemeStyle( themerc );
         }
 
@@ -296,7 +300,8 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
 }
 
 
-int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget) const
+
+int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget  ) const
 {
     int m;
     switch ( metric )
@@ -399,7 +404,7 @@ void KThemeStyle::polish( QPalette &p )
     {
         if ( isPixmap( Background ) )
         {
-            QBrush bgBrush( oldPalette.color( QPalette::Normal,
+            QBrush bgBrush( p.color( QPalette::Normal,
                                               QColorGroup::Background ),
                             *uncached( Background ) );
             p.setBrush( QColorGroup::Background, bgBrush );
@@ -431,7 +436,7 @@ void KThemeStyle::polish( QWidget *w )
 
     if ( !w->isTopLevel() )
     {
-        if ( w->inherits( "QGroupBox" ) )
+        if ( w->inherits( "QGroupBox" )) //#### Doing this for TabWidget created problems -- should this one go as well?
         {
             w->setAutoMask( TRUE );
             return ;
@@ -445,7 +450,7 @@ void KThemeStyle::polish( QWidget *w )
             w->setBackgroundOrigin( QWidget::ParentOrigin );
         }
     }
-    if ( w->inherits( "QMenuBar" ) )
+    if ( w->inherits( "QMenuBar" ) || w->inherits("QScrollBar"))
     {
         w->setBackgroundMode(QWidget::NoBackground);
     }
@@ -521,7 +526,7 @@ void KThemeStyle::unPolish( QWidget* w )
             w->setBackgroundOrigin( QWidget::WidgetOrigin );
         }
     }
-    if (w->inherits("QMenuBar"))
+    if (w->inherits("QMenuBar") ||w->inherits( "QPopupMenu" ) || w->inherits( "QMenuItem" )  || w->inherits("QScrollBar") )
         w->setBackgroundMode(QWidget::PaletteBackground);
     else if ( w->inherits( "QPopupMenu" ) )
         w->unsetPalette();
@@ -1670,23 +1675,13 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
 				bool horizontal = slider->orientation() == Horizontal;
                 if ( horizontal )
                 {
-	                drawBaseButton( p, x, y, w, h, *colorGroup( cg, SliderGroove ), true,
-                                false, SliderGroove );
+					drawBaseButton( p, x, y, w, h, *colorGroup( cg, SliderGroove ), true,
+							false, SliderGroove );
 				}
 				else
 				{
-					//TODO:Optimize
-					//I likely need to intrduced a rotated version of this and the slider itself
-					//Into the base class, and generate them automatically..
-					QPixmap bf(h-y,w-x);
-					QPainter p2(&bf);
-					drawBaseButton( &p2, 0, 0, h-y, w-x, *colorGroup( cg, SliderGroove ), true,
-                                false, SliderGroove );
-					p2.end();
-					QWMatrix r270;
-					r270.rotate(270);
-					QPixmap px = bf.xForm(r270);
-					bitBlt(p->device(), x, y, &px);
+	                drawBaseButton( p, x, y, w, h, *colorGroup( cg, RotSliderGroove ), true,
+                                false, RotSliderGroove );
 				}
             }
             else
@@ -1889,7 +1884,8 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
         {
             if ( controls & SC_ComboBoxFrame)
             {
-                handled = true;
+				//TODO: Anyway of detecting when the poup is there -- would look nicer if sunken then to
+				bool sunken = (active == SC_ComboBoxArrow);
                 //No frame, edit box and button for now?
                 WidgetType widget = sunken ? ComboBoxDown : ComboBox;
                 drawBaseButton( p, x, y, w, h, *colorGroup( g, widget ), sunken,
@@ -1905,8 +1901,8 @@ void KThemeStyle::drawComplexControl ( ComplexControl control, QPainter * p, con
                                querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxArrow ),
                                widget );
                 ar.rect( &x, &y, &w, &h );
+				WidgetType widget = sunken ? ComboBoxDown : ComboBox;
 
-                WidgetType widget = sunken ? ComboBoxDown : ComboBox;
                 if ( !sunken && isPixmap( ComboDeco ) )
                     bitBlt(p->device(),
                         x + ( w - uncached( ComboDeco ) ->width() - decoWidth( ComboBox ) / 2 ),
