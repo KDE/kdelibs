@@ -214,7 +214,8 @@ bool KGzipFilter::writeHeader( const QCString & fileName )
     *p++ = 0; // Extra flags (2=max compress, 4=fastest compress)
     *p++ = 3; // Unix
 
-    for ( uint j = 0 ; j < fileName.length() ; ++j )
+    uint len = fileName.length();
+    for ( uint j = 0 ; j < len ; ++j )
         *p++ = fileName[j];
     *p++ = 0;
     int headerSize = p - d->zStream.next_out;
