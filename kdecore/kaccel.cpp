@@ -30,6 +30,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 
+#include "kckey.h"
+
 #include "kaccel.h"
 
 KAccel::KAccel( QWidget * parent, const QString& name ):
@@ -710,8 +712,8 @@ QString keyToString( uint keyCode, bool i18_n )
 	uint kCode = keyCode & ~(Qt::SHIFT | Qt::CTRL | Qt::ALT);
 
 	for (int i=0; i<NB_KEYS; i++) {
-		if ( kCode == (uint)KKeys[i].code ) {
-			res += KKeys[i].name;
+		if ( kCode == (uint)KKEYS[i].code ) {
+			res += KKEYS[i].name;
 			return res;
 		}
 	}
@@ -771,8 +773,8 @@ uint stringToKey(const QString& key )
 			
 			/* search key */
 			for(j=0; j<NB_KEYS; j++) {
-				if ( strcmp(toks[i], KKeys[j].name)==0 ) {
-				    keyCode |= KKeys[j].code;
+				if ( strcmp(toks[i], KKEYS[j].name)==0 ) {
+				    keyCode |= KKEYS[j].code;
 					break;
 				}
 			}

@@ -116,9 +116,9 @@ KDE_CHECK_MINI_STL
 KDE_CHECK_PYTHON(1.5)
 
 if test -n "$qt_includes"; then
-  QKEYCODE_H="$qt_includes/qkeycode.h"
+  QNAMESPACE_H="$qt_includes/qnamespace.h"
 fi
-AC_SUBST(QKEYCODE_H)
+AC_SUBST(QNAMESPACE_H)
 
 dnl Perform program name transformation
 AC_ARG_PROGRAM

@@ -18,23 +18,23 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = $(all_includes)
-EXTRA_DIST = convert_key.c charsets.config $(kdebug_DATA) kdebugareas.txt \
+EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt \
 	kstddirs.h kstddirs.cpp
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcolorgroup.h kapp.h kcharsets.h \
-	kurl.h ksock.h drag.h  ckey.h kmisc.h \
+	kurl.h ksock.h drag.h kmisc.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h kstring.h kpixmap.h dither.h \
-	kaccel.h kglobalaccel.h kckey.h kclipboard.h krect.h ksize.h \
+	kckey.h kaccel.h kglobalaccel.h kclipboard.h krect.h ksize.h \
 	kpoint.h 
 
-noinst_HEADERS = kdebugdialog.h kcharsetsdata.h 
+noinst_HEADERS = kdebugdialog.h kcharsetsdata.h
 
 libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kcolorgroup.cpp kapp.cpp kurl.cpp ksock.cpp drag.cpp \
-	 kprocess.cpp kprocctrl.cpp klocale.cpp \
+	kprocess.cpp kprocctrl.cpp klocale.cpp \
 	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
 	kchartables.cpp kpixmap.cpp dither.cpp \
@@ -61,11 +61,8 @@ srcdoc:
 	kdoc -H -d $(SRCDOC_DEST) kdecore \
 		 $(include_HEADERS) -lqt
 
-ckey.h : convert_key.c
-	$(CC) $(CFLAGS) convert_key.c -o convert_key
-	./convert_key $(QKEYCODE_H)
-	cat ackey ckey > ckey.h
-	rm -f ackey ckey
+kckey.h : generate_keys.sh $(QNAMESPACE_H)
+	./generate_keys.sh $(QNAMESPACE_H)
 
 install-data-local: charsets.config 
 	$(mkinstalldirs) $(kde_confdir)

@@ -28,7 +28,7 @@
 
 #include <kconfig.h>
 
-#include "kckey.h"
+//#include "kckey.h"
 #include <qcstring.h>
 
 /**
