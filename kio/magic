@@ -481,6 +481,14 @@
 0	string		Xref:		message/news
 0	string		From:		message/rfc822
 0	string		Article 	message/news
+
+#------------------------------------------------------------------------------
+# mswrite
+
+0	lelong		0xBE31		application/x-mswrite
+# with OLE objects
+0	lelong		0xBE32		application/x-mswrite
+
 #------------------------------------------------------------------------------
 # msword: file(1) magic for MS Word files
 #
