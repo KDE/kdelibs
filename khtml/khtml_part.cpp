@@ -100,7 +100,6 @@ namespace khtml
 
       ChildFrame() {
         m_bCompleted = false;
-        m_frame = 0L;
         m_bPreloaded = false;
         m_type = Frame;
         m_bNotify = false;
@@ -108,7 +107,7 @@ namespace khtml
 
       ~ChildFrame() {  delete (KHTMLRun*) m_run; }
 
-    RenderPart *m_frame;
+    QGuardedPtr<khtml::RenderPart> m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
     QGuardedPtr<KParts::BrowserExtension> m_extension;
     QString m_serviceName;
@@ -3214,7 +3213,7 @@ bool KHTMLPart::frameExists( const QString &frameName )
   // WABA: We only return true if the child actually has a frame
   // set. Otherwise we might find our preloaded-selve.
   // This happens when we restore the frameset.
-  return ((*it).m_frame != 0);
+  return (!(*it).m_frame.isNull());
 }
 
 KHTMLPart *KHTMLPart::parentPart()
