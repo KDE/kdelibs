@@ -161,7 +161,7 @@ public:
      * items anymore.
      */
     virtual void listingCompleted();
-    
+
     /**
       * Returns the sorting order of the internal list. Newly added files
       * are added through this sorting.
@@ -330,12 +330,13 @@ public:
     bool updateNumbers(const KFileItem *i);
 
     // ### make virtual and override in kfilepreview and kcombiview
+    //  Made virtual and overrode in kfilepreview -- ellis, 2002/01/27
     /**
      * @returns the view-specific action-collection. Every view should
      * add its actions here (if it has any) to make them available to
      * e.g. the KDirOperator's popup-menu.
      */
-    KActionCollection * actionCollection() const;
+    virtual KActionCollection * actionCollection() const;
 
     KFileViewSignaler * signaler() const { return sig; }
 
