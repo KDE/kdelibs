@@ -325,6 +325,8 @@ QString Addressee::fullEmail( const QString &email ) const
 
 void Addressee::insertEmail( const QString &email, bool preferred )
 {
+  if (email.simplifyWhiteSpace().isEmpty())
+    return;
   detach();
 
   QStringList::Iterator it = mData->emails.find( email );
@@ -378,7 +380,8 @@ void Addressee::insertPhoneNumber( const PhoneNumber &phoneNumber )
       return;
     }
   }
-  mData->phoneNumbers.append( phoneNumber );
+  if (!phoneNumber.number().simplifyWhiteSpace().isEmpty())
+    mData->phoneNumbers.append( phoneNumber );
 }
 
 void Addressee::removePhoneNumber( const PhoneNumber &phoneNumber )
