@@ -2179,6 +2179,19 @@ void ForNode::processVarDecls(ExecState *exec)
 
 // ------------------------------ ForInNode ------------------------------------
 
+ForInNode::ForInNode(Node *l, Node *e, StatementNode *s)
+  : init(0L), lexpr(l), expr(e), statement(s), varDecl(0L)
+{
+}
+
+ForInNode::ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNode *s)
+  : ident(*i), init(in), expr(e), statement(s)
+{
+  // for( var foo = bar in baz )
+  varDecl = new VarDeclNode(&ident, init);
+  lexpr = new ResolveNode(&ident);
+}
+
 ForInNode::~ForInNode()
 {
 }
@@ -2194,6 +2207,8 @@ void ForInNode::ref()
     lexpr->ref();
   if ( init )
     init->ref();
+  if ( varDecl )
+    varDecl->ref();
 }
 
 bool ForInNode::deref()
@@ -2206,6 +2221,8 @@ bool ForInNode::deref()
     delete lexpr;
   if ( init && init->deref() )
     delete init;
+  if ( varDecl && varDecl->deref() )
+    delete varDecl;
   return Node::deref();
 }
 
@@ -2217,16 +2234,9 @@ Completion ForInNode::execute(ExecState *exec)
   Completion c;
   List propList;
 
-  // This should be done in the constructor
-  if (!lexpr) { // for( var foo = bar in baz )
-    VarDeclNode *vd = 0;
-    vd = new VarDeclNode(&ident, init);
-    vd->evaluate(exec);
-    delete vd;
+  if ( varDecl ) {
+    varDecl->evaluate(exec);
     KJS_CHECKEXCEPTION
-
-    lexpr = new ResolveNode(&ident);
-    lexpr->ref();  // this is a side-effect of doing it in execute()!
   }
 
   e = expr->evaluate(exec);

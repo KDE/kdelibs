@@ -721,10 +721,8 @@ namespace KJS {
 
   class ForInNode : public StatementNode {
   public:
-    ForInNode(Node *l, Node *e, StatementNode *s) :
-      init(0L), lexpr(l), expr(e), statement(s) {}
-    ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNode *s)
-      : ident(*i), init(in), lexpr(0L), expr(e), statement(s) {}
+    ForInNode(Node *l, Node *e, StatementNode *s);
+    ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNode *s);
     virtual void ref();
     virtual bool deref();
     virtual ~ForInNode();
@@ -734,6 +732,7 @@ namespace KJS {
     UString ident;
     AssignExprNode *init;
     Node *lexpr, *expr;
+    VarDeclNode *varDecl;
     StatementNode *statement;
   };
 
