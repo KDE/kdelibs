@@ -417,14 +417,15 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
       return res;
     }
     /* TODO: use radix */
-    int i = 0;
-    sscanf(str.value().ascii(), "%d", &i);
-    res = Number(i);
+    // Can't use toULong(), we want to accept floating point values too
+    double value = str.value().toDouble();
+    if ( isNaN(value) )
+        res = Number(NaN);
+    else
+        res = Number(static_cast<long>(value)); // remove floating-point part
   } else if (id == ParseFloat) {
     String str = args[0].toString(exec);
-    double d = 0.0;
-    sscanf(str.value().ascii(), "%lf", &d);
-    res = Number(d);
+    res = Number(str.value().toDouble());
   } else if (id == IsNaN) {
     res = Boolean(isNaN(args[0].toNumber(exec)));
   } else if (id == IsFinite) {
