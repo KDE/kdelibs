@@ -21,6 +21,7 @@
 
 #include "kidna.h"
 
+#include <qstringlist.h>
 #include <kdebug.h>
 
 #include "ltdl.h"
@@ -65,6 +66,22 @@ static void KIDNA_load_lib()
    KIDNA_lib_load_failed = false; // Succes
 }
 
+static QStringList *KIDNA_idnDomains = 0;
+
+static bool idnSupportForHost(const QString &host)
+{
+   if (!KIDNA_idnDomains)
+   {
+      const char *kde_use_idn = getenv("KDE_USE_IDN");
+      if (!kde_use_idn)
+         kde_use_idn = "at:ch:cn:de:dk:kr:jp:li:no:se:tw";
+      KIDNA_idnDomains = new QStringList(QStringList::split(':', QString::fromLatin1(kde_use_idn).lower()));
+   }
+   
+   QString tld = host.mid(host.findRev('.')+1).lower();
+   return KIDNA_idnDomains->contains(tld);
+}
+
 QCString KIDNA::toAsciiCString(const QString &idna)
 {
    int l = idna.length();
@@ -86,7 +103,7 @@ QCString KIDNA::toAsciiCString(const QString &idna)
       KIDNA_load_lib();
    }
 
-   if (KIDNA_lib_load_failed)
+   if (KIDNA_lib_load_failed || !idnSupportForHost(idna))
    {
       return 0; // Can't convert
    }
@@ -132,7 +149,7 @@ QString KIDNA::toAscii(const QString &idna)
       KIDNA_load_lib();
    }
 
-   if (KIDNA_lib_load_failed)
+   if (KIDNA_lib_load_failed || !idnSupportForHost(idna))
    {
       return QString::null; // Can't convert
    }
@@ -164,7 +181,7 @@ QString KIDNA::toUnicode(const QString &idna)
       KIDNA_load_lib();
    }
 
-   if (KIDNA_lib_load_failed)
+   if (KIDNA_lib_load_failed || !idnSupportForHost(idna))
    {
       return idna.lower(); // Return as is
    }
