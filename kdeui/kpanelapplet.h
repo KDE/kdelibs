@@ -187,6 +187,7 @@ public:
      * called \<appletname\>\<instanceid\>rc in the users local KDE directory.
      **/
     KConfig* config() const { return _config; }
+    KSharedConfig::Ptr sharedConfig() const;
 
     /**
      * @return Type indicating the applet's type.

@@ -33,6 +33,7 @@ public:
   KPanelAppletPrivate() : customMenu(0) {}
 
   const QPopupMenu* customMenu;
+  KSharedConfig::Ptr sharedConfig;
 };
 
 KPanelApplet::KPanelApplet(const QString& configFile, Type type,
@@ -53,12 +54,12 @@ KPanelApplet::KPanelApplet(const QString& configFile, Type type,
   }
   setBackgroundOrigin( AncestorOrigin );
 
-  _config = new KConfig(configFile, kapp && kapp->config()->isImmutable());
+  d->sharedConfig = KSharedConfig::openConfig(configFile, kapp && kapp->config()->isImmutable());
+  _config = d->sharedConfig;
 }
 
 KPanelApplet::~KPanelApplet()
 {
-  delete _config;
   delete d;
 }
 
@@ -126,6 +127,11 @@ const QPopupMenu* KPanelApplet::customMenu() const
 void KPanelApplet::setCustomMenu(const QPopupMenu* menu)
 {
     d->customMenu = menu;
+}
+
+KSharedConfig::Ptr KPanelApplet::sharedConfig() const
+{
+    return d->sharedConfig;
 }
 
 void KPanelApplet::virtual_hook( int, void* )
