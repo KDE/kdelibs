@@ -181,6 +181,7 @@
       <l:template name="indexdiv" text="%t"/>
       <l:template name="itemizedlist" text="%t"/>
       <l:template name="legalnotice" text="%t"/>
+      <l:template name="listitem" text=""/>
       <l:template name="lot" text="%t"/>
       <l:template name="msg" text="%t"/>
       <l:template name="msgexplan" text="%t"/>
@@ -214,7 +215,9 @@
       <l:template name="warning" text="%t"/>
    </l:context>
 
-   <l:context name="section-title">
+   <l:context name="title-unnumbered">
+      <l:template name="appendix" text="%t"/>
+      <l:template name="chapter" text="%t"/>
       <l:template name="sect1" text="%t"/>
       <l:template name="sect2" text="%t"/>
       <l:template name="sect3" text="%t"/>
@@ -224,7 +227,9 @@
       <l:template name="simplesect" text="%t"/>
    </l:context>
 
-   <l:context name="section-title-numbered">
+   <l:context name="title-numbered">
+      <l:template name="appendix" text="Dodatek %n. %t"/>
+      <l:template name="chapter" text="Poglavje %n. %t"/>
       <l:template name="sect1" text="%n. %t"/>
       <l:template name="sect2" text="%n. %t"/>
       <l:template name="sect3" text="%n. %t"/>
@@ -286,6 +291,7 @@
       <l:template name="figure" text="Slika %n. %t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="index" text="%t"/>
+      <l:template name="listitem" text="%n"/>
       <l:template name="part" text="Del %n. %t"/>
       <l:template name="preface" text="%t"/>
       <l:template name="question" text="V: %n"/>

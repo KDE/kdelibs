@@ -3,69 +3,7 @@
 		version="1.0"
                 exclude-result-prefixes="doc">
 
-<xsl:param name="html.ext" select="'.html'"/>
-<doc:param name="html.ext" xmlns="">
-<refpurpose>Extension for chunked files</refpurpose>
-<refdescription>
-<para>The extension identified by <parameter>html.ext</parameter> will
-be used as the filename extension for chunks created by this stylesheet.
-</para>
-</refdescription>
-</doc:param>
-
-<xsl:param name="root.filename" select="'index'"/>
-<doc:param name="root.filename" xmlns="">
-<refpurpose>Filename for the root chunk</refpurpose>
-<refdescription>
-<para>The <parameter>root.filename</parameter> is the base filename for
-the chunk created for the root of each document processed.
-</para>
-</refdescription>
-</doc:param>
-
-<xsl:param name="base.dir" select="''"/>
-<doc:param name="base.dir" xmlns="">
-<refpurpose>Output directory for chunks</refpurpose>
-<refdescription>
-<para>If specified, the <literal>base.dir</literal> identifies
-the output directory for chunks. (If not specified, the output directory
-is system dependent.)</para>
-</refdescription>
-</doc:param>
-
-<xsl:param name="chunk.sections" select="'1'"/>
-<doc:param name="chunk.sections" xmlns="">
-<refpurpose>Create chunks for top-level sections in components?</refpurpose>
-<refdescription>
-<para>If non-zero, chunks will be created for top-level
-<sgmltag>sect1</sgmltag> and <sgmltag>section</sgmltag> elements in
-each component.
-</para>
-</refdescription>
-</doc:param>
-
-<xsl:param name="chunk.first.sections" select="'0'"/>
-<doc:param name="chunk.first.sections" xmlns="">
-<refpurpose>Create a chunk for the first top-level section in each component?</refpurpose>
-<refdescription>
-<para>If non-zero, a chunk will be created for the first top-level
-<sgmltag>sect1</sgmltag> or <sgmltag>section</sgmltag> elements in
-each component. Otherwise, that section will be part of the chunk for
-its parent.
-</para>
-</refdescription>
-</doc:param>
-
-<xsl:param name="chunk.datafile" select="'.chunks'"/>
-<doc:param name="chunk.datafile" xmlns="">
-<refpurpose>Name of the temporary file used to hold chunking data</refpurpose>
-<refdescription>
-<para>Chunking is now a two-step process. The
-<parameter>chunk.datafile</parameter> is the name of the file used to
-hold the chunking data.
-</para>
-</refdescription>
-</doc:param>
+<xsl:import href="docbook.xsl"/>
 
 <!-- ==================================================================== -->
 <!-- What's a chunk?
@@ -412,8 +350,8 @@ hold the chunking data.
   <xsl:variable name="next-id"
                 select="$chunk/following-sibling::chunk[1]/@id"/>
 
-  <xsl:variable name="prev" select="id($prev-id)"/>
-  <xsl:variable name="next" select="id($next-id)"/>
+  <xsl:variable name="prev" select="key('id',$prev-id)"/>
+  <xsl:variable name="next" select="key('id',$next-id)"/>
 
   <xsl:variable name="ischunk">
     <xsl:call-template name="chunk"/>
@@ -540,32 +478,17 @@ hold the chunking data.
   <xsl:call-template name="process-chunk"/>
 </xsl:template>
 
-<xsl:template match="sect1
-                     |/section
-                     |section[local-name(parent::*) != 'section']">
+<xsl:template match="sect1|sect2|sect3|sect4|sect5|section">
+  <xsl:variable name="ischunk">
+    <xsl:call-template name="chunk"/>
+  </xsl:variable>
+
   <xsl:choose>
-    <xsl:when test=". = /section">
+    <xsl:when test="$ischunk != 0">
       <xsl:call-template name="process-chunk"/>
-    </xsl:when>
-    <xsl:when test="$chunk.sections = 0">
-      <xsl:apply-imports/>
-    </xsl:when>
-    <xsl:when test="ancestor::partintro">
-      <xsl:apply-imports/>
-    </xsl:when>
-    <xsl:when test="$chunk.first.sections = 0">
-      <xsl:choose>
-        <xsl:when test="count(preceding-sibling::section) &gt; 0
-                        or count(preceding-sibling::sect1) &gt; 0">
-          <xsl:call-template name="process-chunk"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:apply-imports/>
-        </xsl:otherwise>
-      </xsl:choose>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:call-template name="process-chunk"/>
+      <xsl:apply-imports/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -587,7 +510,7 @@ hold the chunking data.
   <xsl:choose>
     <xsl:when test="$rootid != ''">
       <xsl:choose>
-        <xsl:when test="count(id($rootid)) = 0">
+        <xsl:when test="count(key('id',$rootid)) = 0">
           <xsl:message terminate="yes">
             <xsl:text>ID '</xsl:text>
             <xsl:value-of select="$rootid"/>
@@ -595,7 +518,7 @@ hold the chunking data.
           </xsl:message>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:apply-templates select="id($rootid)"/>
+          <xsl:apply-templates select="key('id',$rootid)"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>

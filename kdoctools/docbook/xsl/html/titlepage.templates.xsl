@@ -934,6 +934,43 @@
 </div>
 </xsl:template>
 
+<xsl:template name="refentry.titlepage.recto">
+</xsl:template>
+
+<xsl:template name="refentry.titlepage.verso">
+</xsl:template>
+
+<xsl:template name="refentry.titlepage.separator">
+</xsl:template>
+
+<xsl:template name="refentry.titlepage.before.recto">
+</xsl:template>
+
+<xsl:template name="refentry.titlepage.before.verso">
+</xsl:template>
+
+<xsl:template name="refentry.titlepage">
+  <div class="titlepage">
+    <xsl:call-template name="refentry.titlepage.before.recto"/>
+    <xsl:call-template name="refentry.titlepage.recto"/>
+    <xsl:call-template name="refentry.titlepage.before.verso"/>
+    <xsl:call-template name="refentry.titlepage.verso"/>
+    <xsl:call-template name="refentry.titlepage.separator"/>
+  </div>
+</xsl:template>
+
+<xsl:template match="*" mode="refentry.titlepage.recto.mode">
+  <!-- if an element isn't found in this mode, -->
+  <!-- try the generic titlepage.mode -->
+  <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
+<xsl:template match="*" mode="refentry.titlepage.verso.mode">
+  <!-- if an element isn't found in this mode, -->
+  <!-- try the generic titlepage.mode -->
+  <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
 <xsl:template name="dedication.titlepage.recto">
   <div xsl:use-attribute-sets="dedication.titlepage.recto.style">
 <xsl:call-template name="component.title">

@@ -50,30 +50,6 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 
 <!-- ==================================================================== -->
 
-<xsl:param name="ebnf.table.bgcolor">#F5DCB3</xsl:param>
-
-<doc:param name="ebnf.table.bgcolor" xmlns="">
-<refpurpose>Background color for EBNF tables</refpurpose>
-<refdescription>
-<para>Sets the background color for EBNF tables. No <sgmltag>bgcolor</sgmltag>
-attribute is output if <varname>ebnf.table.bgcolor</varname> is set to
-the null string. The default value matches the value used in recent
-online versions of the W3C's XML Spec productions.</para>
-</refdescription>
-</doc:param>
-
-<xsl:param name="ebnf.table.border">1</xsl:param>
-
-<doc:param name="ebnf.table.border" xmlns="">
-<refpurpose>Selects border on EBNF tables</refpurpose>
-<refdescription>
-<para>Selects the border on EBNF tables. If non-zero, the tables have
-borders, otherwise they don't.</para>
-</refdescription>
-</doc:param>
-
-<!-- ==================================================================== -->
-
 <xsl:template match="productionset">
   <table width="100%" cellpadding="5">
     <xsl:if test="$ebnf.table.bgcolor != ''">
@@ -170,7 +146,7 @@ borders, otherwise they don't.</para>
 </xsl:template>
 
 <xsl:template match="productionrecap">
-  <xsl:variable name="targets" select="id(@linkend)"/>
+  <xsl:variable name="targets" select="key('id',@linkend)"/>
   <xsl:variable name="target" select="$targets[1]"/>
 
   <xsl:if test="count($targets)=0">
@@ -242,7 +218,7 @@ borders, otherwise they don't.</para>
   <xsl:variable name="href">
     <xsl:choose>
       <xsl:when test="$linkend != ''">
-	<xsl:variable name="targets" select="id($linkend)"/>
+	<xsl:variable name="targets" select="key('id',$linkend)"/>
 	<xsl:variable name="target" select="$targets[1]"/>
 	<xsl:call-template name="href.target">
 	  <xsl:with-param name="object" select="$target"/>
@@ -262,7 +238,7 @@ borders, otherwise they don't.</para>
       <xsl:otherwise>
 	<xsl:choose>
 	  <xsl:when test="$linkend != ''">
-	    <xsl:variable name="targets" select="id($linkend)"/>
+	    <xsl:variable name="targets" select="key('id',$linkend)"/>
 	    <xsl:variable name="target" select="$targets[1]"/>
 	    <xsl:apply-templates select="$target/lhs"/>
 	  </xsl:when>
@@ -297,7 +273,7 @@ borders, otherwise they don't.</para>
   </xsl:call-template>
 
   <xsl:variable name="href">
-    <xsl:variable name="targets" select="id(@linkend)"/>
+    <xsl:variable name="targets" select="key('id',@linkend)"/>
     <xsl:variable name="target" select="$targets[1]"/>
     <xsl:call-template name="href.target">
       <xsl:with-param name="object" select="$target"/>
@@ -312,7 +288,7 @@ borders, otherwise they don't.</para>
       <xsl:text>: </xsl:text>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:variable name="targets" select="id(@linkend)"/>
+      <xsl:variable name="targets" select="key('id',@linkend)"/>
       <xsl:variable name="target" select="$targets[1]"/>
       <xsl:if test="$target/@role">
 	<xsl:value-of select="$target/@role"/>
@@ -322,7 +298,7 @@ borders, otherwise they don't.</para>
   </xsl:choose>
 
   <a href="{$href}">
-    <xsl:variable name="targets" select="id(@linkend)"/>
+    <xsl:variable name="targets" select="key('id',@linkend)"/>
     <xsl:variable name="target" select="$targets[1]"/>
     <xsl:apply-templates select="$target" mode="title.markup"/>
   </a>

@@ -30,6 +30,7 @@
 <xsl:include href="../common/subtitles.xsl"/>
 <xsl:include href="../common/gentext.xsl"/>
 <xsl:include href="autotoc.xsl"/>
+<xsl:include href="autoidx.xsl"/>
 <xsl:include href="lists.xsl"/>
 <xsl:include href="callout.xsl"/>
 <xsl:include href="verbatim.xsl"/>
@@ -59,6 +60,11 @@
 <xsl:include href="titlepage.templates.xsl"/>
 <xsl:include href="pi.xsl"/>
 <xsl:include href="ebnf.xsl"/>
+<xsl:include href="chunker.xsl"/>
+
+<!-- ==================================================================== -->
+
+<xsl:key name="id" match="*" use="@id"/>
 
 <!-- ==================================================================== -->
 
@@ -177,7 +183,7 @@
   <xsl:choose>
     <xsl:when test="$rootid != ''">
       <xsl:choose>
-        <xsl:when test="count(id($rootid)) = 0">
+        <xsl:when test="count(key('id',$rootid)) = 0">
           <xsl:message terminate="yes">
             <xsl:text>ID '</xsl:text>
             <xsl:value-of select="$rootid"/>
@@ -185,12 +191,18 @@
           </xsl:message>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:apply-templates select="id($rootid)" mode="process.root"/>
+          <xsl:apply-templates select="key('id',$rootid)" mode="process.root"/>
+          <xsl:if test="$tex.math.in.alt != ''">
+            <xsl:apply-templates select="key('id',$rootid)" mode="collect.tex.math"/>
+          </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
     <xsl:otherwise>
       <xsl:apply-templates select="/" mode="process.root"/>
+      <xsl:if test="$tex.math.in.alt != ''">
+        <xsl:apply-templates select="/" mode="collect.tex.math"/>
+      </xsl:if>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>

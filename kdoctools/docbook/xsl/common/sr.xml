@@ -11,8 +11,8 @@
    <l:gentext key="answer" text="O:"/>
    <l:gentext key="Appendix" text="Dodatak"/>
    <l:gentext key="appendix" text="dodatak"/>
-   <l:gentext key="Article" text="\&#268;lanak"/>
-   <l:gentext key="article" text="\&#268;lanak"/>
+   <l:gentext key="Article" text="&#268;lanak"/>
+   <l:gentext key="article" text="&#268;lanak"/>
    <l:gentext key="Bibliography" text="Literatura"/>
    <l:gentext key="bibliography" text="Literatura"/>
    <l:gentext key="Book" text="Knjiga"/>
@@ -24,33 +24,33 @@
    <l:gentext key="chapter" text="poglavlje"/>
    <l:gentext key="Colophon" text="Kolofon"/>
    <l:gentext key="colophon" text="Kolofon"/>
-   <l:gentext key="Copyright" text="Pravna za\&#353;tita"/>
-   <l:gentext key="copyright" text="Pravna za\&#353;tita"/>
+   <l:gentext key="Copyright" text="Pravna za&#353;tita"/>
+   <l:gentext key="copyright" text="Pravna za&#353;tita"/>
    <l:gentext key="Dedication" text="Posveta"/>
    <l:gentext key="dedication" text="Posveta"/>
    <l:gentext key="Edition" text="Izdanje"/>
    <l:gentext key="edition" text="Izdanje"/>
-   <l:gentext key="Equation" text="Jedna\&#269;ina"/>
-   <l:gentext key="equation" text="Jedna\&#269;ina"/>
+   <l:gentext key="Equation" text="Jedna&#269;ina"/>
+   <l:gentext key="equation" text="Jedna&#269;ina"/>
    <l:gentext key="Example" text="Primer"/>
    <l:gentext key="example" text="Primer"/>
    <l:gentext key="Figure" text="Slika"/>
    <l:gentext key="figure" text="Slika"/>
-   <l:gentext key="Glossary" text="Re\&#269;nik"/>
-   <l:gentext key="glossary" text="Re\&#269;nik"/>
+   <l:gentext key="Glossary" text="Re&#269;nik"/>
+   <l:gentext key="glossary" text="Re&#269;nik"/>
    <l:gentext key="GlossSee" text="Vidi"/>
    <l:gentext key="glosssee" text="Vidi"/>
-   <l:gentext key="GlossSeeAlso" text="Vidi tako\&#273;e"/>
-   <l:gentext key="glossseealso" text="Vidi tako\&#273;e"/>
-   <l:gentext key="IMPORTANT" text="VA\&#381;NO"/>
-   <l:gentext key="Important" text="Va\&#382;no"/>
-   <l:gentext key="important" text="Va\&#382;no"/>
+   <l:gentext key="GlossSeeAlso" text="Vidi tako&#273;e"/>
+   <l:gentext key="glossseealso" text="Vidi tako&#273;e"/>
+   <l:gentext key="IMPORTANT" text="VA&#381;NO"/>
+   <l:gentext key="Important" text="Va&#382;no"/>
+   <l:gentext key="important" text="Va&#382;no"/>
    <l:gentext key="Index" text="Indeks"/>
    <l:gentext key="index" text="Indeks"/>
    <l:gentext key="ISBN" text="ISBN"/>
    <l:gentext key="isbn" text="ISBN"/>
-   <l:gentext key="LegalNotice" text="Pravno obave\&#353;tenje"/>
-   <l:gentext key="legalnotice" text="Pravno obave\&#353;tenje"/>
+   <l:gentext key="LegalNotice" text="Pravno obave&#353;tenje"/>
+   <l:gentext key="legalnotice" text="Pravno obave&#353;tenje"/>
    <l:gentext key="MsgAud" text="MsgAud"/>
    <l:gentext key="msgaud" text="MsgAud"/>
    <l:gentext key="MsgLevel" text="Nivo"/>
@@ -88,9 +88,9 @@
    <l:gentext key="section" text="sekcija"/>
    <l:gentext key="see" text="vidi"/>
    <l:gentext key="See" text="vidi"/>
-   <l:gentext key="Seealso" text="Vidi tako\&#273;e"/>
-   <l:gentext key="seealso" text="vidi tako\&#273;e"/>
-   <l:gentext key="SeeAlso" text="vidi tako\&#273;e"/>
+   <l:gentext key="Seealso" text="Vidi tako&#273;e"/>
+   <l:gentext key="seealso" text="vidi tako&#273;e"/>
+   <l:gentext key="SeeAlso" text="vidi tako&#273;e"/>
    <l:gentext key="set" text="Postavi"/>
    <l:gentext key="Set" text="Postavi"/>
    <l:gentext key="SetIndex" text="Postavi indeks"/>
@@ -109,14 +109,14 @@
    <l:gentext key="warning" text="Upozorenje"/>
    <l:gentext key="and" text="i"/>
    <l:gentext key="by" text="od"/>
-   <l:gentext key="Edited" text="Ure\&#273;eno"/>
-   <l:gentext key="edited" text="Ure\&#273;eno"/>
-   <l:gentext key="Editedby" text="Ure\&#273;eno od"/>
-   <l:gentext key="editedby" text="Ure\&#273;eno od"/>
+   <l:gentext key="Edited" text="Ure&#273;eno"/>
+   <l:gentext key="edited" text="Ure&#273;eno"/>
+   <l:gentext key="Editedby" text="Ure&#273;eno od"/>
+   <l:gentext key="editedby" text="Ure&#273;eno od"/>
    <l:gentext key="in" text="u"/>
    <l:gentext key="lastlistcomma" text=","/>
    <l:gentext key="listcomma" text=","/>
-   <l:gentext key="nonexistantelement" text="nepostoje\&#263;i element"/>
+   <l:gentext key="nonexistantelement" text="nepostoje&#263;i element"/>
    <l:gentext key="notes" text="Notes"/>
    <l:gentext key="Notes" text="Notes"/>
    <l:gentext key="Pgs" text="Str."/>
@@ -125,13 +125,13 @@
    <l:gentext key="revisedby" text="Revised by: "/>
    <l:gentext key="TableNotes" text="Notes"/>
    <l:gentext key="tablenotes" text="Notes"/>
-   <l:gentext key="TableofContents" text="Sadr\&#382;aj"/>
-   <l:gentext key="tableofcontents" text="Sadr\&#382;aj"/>
-   <l:gentext key="unexpectedelementname" text="Neo\&#269;ekivano ime elementa"/>
-   <l:gentext key="unsupported" text="nepodr\&#382;ano"/>
+   <l:gentext key="TableofContents" text="Sadr&#382;aj"/>
+   <l:gentext key="tableofcontents" text="Sadr&#382;aj"/>
+   <l:gentext key="unexpectedelementname" text="Neo&#269;ekivano ime elementa"/>
+   <l:gentext key="unsupported" text="nepodr&#382;ano"/>
    <l:gentext key="xrefto" text="xref na"/>
-   <l:gentext key="listofequations" text="Spisak jedna\&#269;ina"/>
-   <l:gentext key="ListofEquations" text="Spisak jedna\&#269;ina"/>
+   <l:gentext key="listofequations" text="Spisak jedna&#269;ina"/>
+   <l:gentext key="ListofEquations" text="Spisak jedna&#269;ina"/>
    <l:gentext key="ListofExamples" text="Spisak primera"/>
    <l:gentext key="listofexamples" text="Spisak primera"/>
    <l:gentext key="ListofFigures" text="Spisak slika"/>
@@ -140,7 +140,7 @@
    <l:gentext key="ListofTables" text="Spisak tabela"/>
    <l:gentext key="ListofUnknown" text="Spisak nepoznanica"/>
    <l:gentext key="listofunknown" text="Spisak nepoznanica"/>
-   <l:gentext key="nav-home" text="Ku\&#263;i"/>
+   <l:gentext key="nav-home" text="Ku&#263;i"/>
    <l:gentext key="nav-next" text="Napred"/>
    <l:gentext key="nav-next-sibling" text="Brzo napred"/>
    <l:gentext key="nav-prev" text="Nazad"/>
@@ -170,7 +170,7 @@
       <l:template name="chapter" text="Poglavlje %n. %t"/>
       <l:template name="colophon" text="%t"/>
       <l:template name="dedication" text="%t"/>
-      <l:template name="equation" text="Jedna\&#269;ina %n. %t"/>
+      <l:template name="equation" text="Jedna&#269;ina %n. %t"/>
       <l:template name="example" text="Primer %n. %t"/>
       <l:template name="figure" text="Slika %n. %t"/>
       <l:template name="formalpara" text="%t"/>
@@ -181,6 +181,7 @@
       <l:template name="indexdiv" text="%t"/>
       <l:template name="itemizedlist" text="%t"/>
       <l:template name="legalnotice" text="%t"/>
+      <l:template name="listitem" text=""/>
       <l:template name="lot" text="%t"/>
       <l:template name="msg" text="%t"/>
       <l:template name="msgexplan" text="%t"/>
@@ -214,7 +215,9 @@
       <l:template name="warning" text="%t"/>
    </l:context>
 
-   <l:context name="section-title">
+   <l:context name="title-unnumbered">
+      <l:template name="appendix" text="%t"/>
+      <l:template name="chapter" text="%t"/>
       <l:template name="sect1" text="%t"/>
       <l:template name="sect2" text="%t"/>
       <l:template name="sect3" text="%t"/>
@@ -224,7 +227,9 @@
       <l:template name="simplesect" text="%t"/>
    </l:context>
 
-   <l:context name="section-title-numbered">
+   <l:context name="title-numbered">
+      <l:template name="appendix" text="Dodatak %n. %t"/>
+      <l:template name="chapter" text="Poglavlje %n. %t"/>
       <l:template name="sect1" text="%n. %t"/>
       <l:template name="sect2" text="%n. %t"/>
       <l:template name="sect3" text="%n. %t"/>
@@ -286,6 +291,7 @@
       <l:template name="figure" text="Slika %n. %t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="index" text="%t"/>
+      <l:template name="listitem" text="%n"/>
       <l:template name="part" text="Deo %n. %t"/>
       <l:template name="preface" text="%t"/>
       <l:template name="reference" text="%t"/>
@@ -322,7 +328,7 @@
 
    <l:context name="glossary">
       <l:template name="see" text="Vidi "/>
-      <l:template name="seealso" text="Vidi tako\&#273;e "/>
+      <l:template name="seealso" text="Vidi tako&#273;e "/>
    </l:context>
 
    <l:context name="msgset">

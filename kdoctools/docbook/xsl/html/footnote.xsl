@@ -44,7 +44,7 @@
 </xsl:template>
 
 <xsl:template match="footnoteref">
-  <xsl:variable name="targets" select="id(@linkend)"/>
+  <xsl:variable name="targets" select="key('id',@linkend)"/>
   <xsl:variable name="footnote" select="$targets[1]"/>
   <xsl:variable name="href">
     <xsl:text>#ftn.</xsl:text>
@@ -66,6 +66,9 @@
     <xsl:when test="ancestor::table or ancestor::informaltable">
       <xsl:number level="any" from="table|informaltable" format="a"/>
     </xsl:when>
+    <xsl:when test="ancestor::refentry">
+      <xsl:number level="any" from="refentry" format="1"/>
+    </xsl:when>
     <xsl:otherwise>
       <xsl:number level="any" format="1"/>
     </xsl:otherwise>
@@ -74,7 +77,7 @@
 
 <!-- ==================================================================== -->
 
-<xsl:template match="footnote/para[1]|footnote/simpara[1]">
+<xsl:template match="footnote/para[1]|footnote/simpara[1]" priority="2">
   <!-- this only works if the first thing in a footnote is a para, -->
   <!-- which is ok, because it usually is. -->
   <xsl:variable name="name">

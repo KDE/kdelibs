@@ -9,6 +9,7 @@
 <!ENTITY en SYSTEM "en.xml">
 <!ENTITY es SYSTEM "es.xml">
 <!ENTITY et SYSTEM "et.xml">
+<!ENTITY eu SYSTEM "eu.xml">
 <!ENTITY fi SYSTEM "fi.xml">
 <!ENTITY fr SYSTEM "fr.xml">
 <!ENTITY hu SYSTEM "hu.xml">
@@ -17,8 +18,8 @@
 <!ENTITY ja SYSTEM "ja.xml">
 <!ENTITY ko SYSTEM "ko.xml">
 <!ENTITY nl SYSTEM "nl.xml">
-<!ENTITY no SYSTEM "no.xml">
 <!ENTITY nn SYSTEM "nn.xml">
+<!ENTITY no SYSTEM "no.xml">
 <!ENTITY pl SYSTEM "pl.xml">
 <!ENTITY pt SYSTEM "pt.xml">
 <!ENTITY pt_br SYSTEM "pt_br.xml">
@@ -29,6 +30,7 @@
 <!ENTITY sr SYSTEM "sr.xml">
 <!ENTITY sv SYSTEM "sv.xml">
 <!ENTITY tr SYSTEM "tr.xml">
+<!ENTITY uk SYSTEM "uk.xml">
 <!ENTITY xh SYSTEM "xh.xml">
 <!ENTITY zh_cn SYSTEM "zh_cn.xml">
 <!ENTITY zh_tw SYSTEM "zh_tw.xml">
@@ -43,6 +45,7 @@
 &en;
 &es;
 &et;
+&eu;
 &fi;
 &fr;
 &hu;
@@ -51,8 +54,8 @@
 &ja;
 &ko;
 &nl;
-&no;
 &nn;
+&no;
 &pl;
 &pt;
 &pt_br;
@@ -63,6 +66,7 @@
 &sr;
 &sv;
 &tr;
+&uk;
 &xh;
 &zh_cn;
 &zh_tw;

@@ -422,10 +422,18 @@ Defaults to the context node.</para>
   <xsl:param name="node" select="."/>
 
   <xsl:choose>
+    <!-- EXPERIMENTAL: the personname element is a specialcase -->
+    <xsl:when test="$node/personname">
+      <xsl:call-template name="person.name">
+        <xsl:with-param name="node" select="$node/personname"/>
+      </xsl:call-template>
+    </xsl:when>
+
     <!-- handle corpauthor as a special case...-->
     <xsl:when test="name($node)='corpauthor'">
       <xsl:apply-templates select="$node"/>
     </xsl:when>
+
     <xsl:otherwise>
       <xsl:variable name="h_nl" select="$node//honorific[1]"/>
       <xsl:variable name="f_nl" select="$node//firstname[1]"/>
@@ -440,31 +448,67 @@ Defaults to the context node.</para>
       <xsl:variable name="has_s" select="$s_nl"/>
       <xsl:variable name="has_l" select="$l_nl"/>
 
-      <xsl:if test="$has_h">
-        <xsl:value-of select="$h_nl"/>.
-      </xsl:if>
+      <xsl:choose>
+        <xsl:when test="$node/@role = 'family-given'">
+          <!-- The family-given style applies a convention for identifying given -->
+          <!-- and family names in locales where it may be ambiguous -->
+          <xsl:if test="$has_h">
+            <xsl:value-of select="$h_nl"/>
+            <xsl:value-of select="$punct.honorific"/>
+          </xsl:if>
 
-      <xsl:if test="$has_f">
-        <xsl:if test="$has_h"><xsl:text> </xsl:text></xsl:if>
-        <xsl:value-of select="$f_nl"/>
-      </xsl:if>
+          <xsl:if test="$has_s">
+            <xsl:if test="$has_h">
+              <xsl:text> </xsl:text>
+            </xsl:if>
+            <xsl:value-of select="$s_nl"/>
+          </xsl:if>
 
-      <xsl:if test="$has_o">
-        <xsl:if test="$has_h or $has_f"><xsl:text> </xsl:text></xsl:if>
-        <xsl:value-of select="$o_nl"/>
-      </xsl:if>
+          <xsl:if test="$has_o">
+            <xsl:if test="$has_h or $has_f"><xsl:text> </xsl:text></xsl:if>
+            <xsl:value-of select="$o_nl"/>
+          </xsl:if>
 
-      <xsl:if test="$has_s">
-        <xsl:if test="$has_h or $has_f or $has_o">
-          <xsl:text> </xsl:text>
-        </xsl:if>
-        <xsl:value-of select="$s_nl"/>
-      </xsl:if>
+          <xsl:if test="$has_f">
+            <xsl:if test="$has_h or $has_s or $has_o"><xsl:text> </xsl:text></xsl:if>
+            <xsl:value-of select="$f_nl"/>
+          </xsl:if>
 
-      <xsl:if test="$has_l">
-        <xsl:text>, </xsl:text>
-        <xsl:value-of select="$l_nl"/>
-      </xsl:if>
+          <xsl:if test="$has_l">
+            <xsl:text>, </xsl:text>
+            <xsl:value-of select="$l_nl"/>
+          </xsl:if>
+
+          <xsl:text> [FAMILY Given]</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:if test="$has_h">
+            <xsl:value-of select="$h_nl"/>.
+          </xsl:if>
+
+          <xsl:if test="$has_f">
+            <xsl:if test="$has_h"><xsl:text> </xsl:text></xsl:if>
+            <xsl:value-of select="$f_nl"/>
+          </xsl:if>
+
+          <xsl:if test="$has_o">
+            <xsl:if test="$has_h or $has_f"><xsl:text> </xsl:text></xsl:if>
+            <xsl:value-of select="$o_nl"/>
+          </xsl:if>
+
+          <xsl:if test="$has_s">
+            <xsl:if test="$has_h or $has_f or $has_o">
+              <xsl:text> </xsl:text>
+            </xsl:if>
+            <xsl:value-of select="$s_nl"/>
+          </xsl:if>
+
+          <xsl:if test="$has_l">
+            <xsl:text>, </xsl:text>
+            <xsl:value-of select="$l_nl"/>
+          </xsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template> <!-- person.name -->
@@ -741,7 +785,7 @@ of media objects is that the first acceptable graphic should be used.
           <xsl:text>0</xsl:text>
         </xsl:when>
 	<!-- The first textobject is a reasonable fallback -->
-        <xsl:when test="name($object)='textobject'">
+        <xsl:when test="name($object)='textobject' and $object[not(@role) or @role!='tex']">
           <xsl:text>1</xsl:text>
         </xsl:when>
 	<!-- If there's only one object, use it -->
@@ -936,7 +980,7 @@ the ID is not unique.</para>
 <xsl:template name="check.id.unique">
   <xsl:param name="linkend"></xsl:param>
   <xsl:if test="$linkend != ''">
-    <xsl:variable name="targets" select="id($linkend)"/>
+    <xsl:variable name="targets" select="key('id',$linkend)"/>
     <xsl:variable name="target" select="$targets[1]"/>
 
     <xsl:if test="count($targets)=0">
@@ -977,7 +1021,7 @@ pointed to by the link is one of the elements listed in
   <xsl:param name="linkend"></xsl:param>
   <xsl:param name="element-list"></xsl:param>
   <xsl:if test="$linkend != ''">
-    <xsl:variable name="targets" select="id($linkend)"/>
+    <xsl:variable name="targets" select="key('id',$linkend)"/>
     <xsl:variable name="target" select="$targets[1]"/>
 
     <xsl:if test="count($target) &gt; 0">
@@ -1090,6 +1134,45 @@ pointed to by the link is one of the elements listed in
         </xsl:when>
         <xsl:otherwise>
           <xsl:call-template name="next.numeration"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ====================================================================== -->
+<!-- ItemizedList "Numeration" -->
+
+<xsl:template name="next.itemsymbol">
+  <xsl:param name="itemsymbol" select="'default'"/>
+  <xsl:choose>
+    <!-- Change this list if you want to change the order of symbols -->
+    <xsl:when test="$itemsymbol = 'disc'">round</xsl:when>
+    <xsl:when test="$itemsymbol = 'round'">square</xsl:when>
+    <xsl:otherwise>disc</xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="list.itemsymbol">
+  <xsl:param name="node" select="."/>
+
+  <xsl:choose>
+    <xsl:when test="$node/@mark">
+      <xsl:value-of select="$node/@mark"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="$node/ancestor::itemizedlist">
+          <xsl:call-template name="next.itemsymbol">
+            <xsl:with-param name="itemsymbol">
+              <xsl:call-template name="list.itemsymbol">
+                <xsl:with-param name="node" select="$node/ancestor::itemizedlist[1]"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="next.itemsymbol"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:otherwise>

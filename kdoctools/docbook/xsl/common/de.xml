@@ -146,10 +146,10 @@
    <l:gentext key="nav-prev" text="Zur&#252;ck"/>
    <l:gentext key="nav-prev-sibling" text="Schnell zur&#252;ck"/>
    <l:gentext key="nav-up" text="Nach oben"/>
-   <l:dingbat key="startquote" text="&#8220;"/>
-   <l:dingbat key="endquote" text="&#8221;"/>
-   <l:dingbat key="nestedstartquote" text="&#8216;"/>
-   <l:dingbat key="nestedendquote" text="&#8217;"/>
+   <l:dingbat key="startquote" text="&#8222;"/>
+   <l:dingbat key="endquote" text="&#8220;"/>
+   <l:dingbat key="nestedstartquote" text="&#8218;"/>
+   <l:dingbat key="nestedendquote" text="&#8216;"/>
    <l:dingbat key="bullet" text="&#8226;"/>
 
    <l:context name="title">
@@ -181,6 +181,7 @@
       <l:template name="indexdiv" text="%t"/>
       <l:template name="itemizedlist" text="%t"/>
       <l:template name="legalnotice" text="%t"/>
+      <l:template name="listitem" text=""/>
       <l:template name="lot" text="%t"/>
       <l:template name="msg" text="%t"/>
       <l:template name="msgexplan" text="%t"/>
@@ -198,6 +199,7 @@
       <l:template name="qandadiv" text="%t"/>
       <l:template name="qandaset" text="%t"/>
       <l:template name="question" text="F: %n"/>
+      <l:template name="refentry" text="%t"/>
       <l:template name="reference" text="%t"/>
       <l:template name="refsect1" text="%t"/>
       <l:template name="refsect2" text="%t"/>
@@ -216,7 +218,9 @@
       <l:template name="warning" text="%t"/>
    </l:context>
 
-   <l:context name="section-title">
+   <l:context name="title-unnumbered">
+      <l:template name="appendix" text="%t"/>
+      <l:template name="chapter" text="%t"/>
       <l:template name="sect1" text="%t"/>
       <l:template name="sect2" text="%t"/>
       <l:template name="sect3" text="%t"/>
@@ -226,7 +230,9 @@
       <l:template name="simplesect" text="%t"/>
    </l:context>
 
-   <l:context name="section-title-numbered">
+   <l:context name="title-numbered">
+      <l:template name="appendix" text="Anhang %n. %t"/>
+      <l:template name="chapter" text="Kapitel %n. %t"/>
       <l:template name="sect1" text="%n. %t"/>
       <l:template name="sect2" text="%n. %t"/>
       <l:template name="sect3" text="%n. %t"/>
@@ -288,8 +294,10 @@
       <l:template name="figure" text="Abbildung %n. %t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="index" text="%t"/>
+      <l:template name="listitem" text="%n"/>
       <l:template name="part" text="Teil %n. %t"/>
       <l:template name="preface" text="%t"/>
+      <l:template name="question" text="F: %n"/>
       <l:template name="reference" text="%t"/>
       <l:template name="set" text="%t"/>
       <l:template name="setindex" text="%t"/>
@@ -297,13 +305,13 @@
    </l:context>
 
    <l:context name="section-xref">
-      <l:template name="sect1" text="&#8220;%t&#8221;"/>
-      <l:template name="sect2" text="&#8220;%t&#8221;"/>
-      <l:template name="sect3" text="&#8220;%t&#8221;"/>
-      <l:template name="sect4" text="&#8220;%t&#8221;"/>
-      <l:template name="sect5" text="&#8220;%t&#8221;"/>
-      <l:template name="section" text="&#8220;%t&#8221;"/>
-      <l:template name="simplesect" text="&#8220;%t&#8221;"/>
+      <l:template name="sect1" text="&#8222;%t&#8220;"/>
+      <l:template name="sect2" text="&#8222;%t&#8220;"/>
+      <l:template name="sect3" text="&#8222;%t&#8220;"/>
+      <l:template name="sect4" text="&#8222;%t&#8220;"/>
+      <l:template name="sect5" text="&#8222;%t&#8220;"/>
+      <l:template name="section" text="&#8222;%t&#8220;"/>
+      <l:template name="simplesect" text="&#8222;%t&#8220;"/>
    </l:context>
 
    <l:context name="section-xref-numbered">
@@ -313,7 +321,7 @@
       <l:template name="sect4" text="Abschnitt %n"/>
       <l:template name="sect5" text="Abschnitt %n"/>
       <l:template name="section" text="Abschnitt %n"/>
-      <l:template name="simplesect" text="&#8220;%t&#8221;"/>
+      <l:template name="simplesect" text="&#8222;%t&#8220;"/>
    </l:context>
 
    <l:context name="authorgroup">

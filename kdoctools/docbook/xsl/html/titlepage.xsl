@@ -32,6 +32,9 @@
 <xsl:attribute-set name="reference.titlepage.recto.style"/>
 <xsl:attribute-set name="reference.titlepage.verso.style"/>
 
+<xsl:attribute-set name="refentry.titlepage.recto.style"/>
+<xsl:attribute-set name="refentry.titlepage.verso.style"/>
+
 <xsl:attribute-set name="dedication.titlepage.recto.style"/>
 <xsl:attribute-set name="dedication.titlepage.verso.style"/>
 
@@ -133,7 +136,34 @@
 </xsl:template>
 
 <xsl:template match="address" mode="titlepage.mode">
-  <xsl:apply-templates select="."/>
+  <xsl:param name="suppress-numbers" select="'0'"/>
+
+  <xsl:variable name="rtf">
+    <xsl:apply-templates mode="titlepage.mode"/>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="$suppress-numbers = '0'
+                    and @linenumbering = 'numbered'
+                    and $use.extensions != '0'
+                    and $linenumbering.extension != '0'">
+      <div class="{name(.)}">
+        <p>
+          <xsl:call-template name="number.rtf.lines">
+            <xsl:with-param name="rtf" select="$rtf"/>
+          </xsl:call-template>
+        </p>
+      </div>
+    </xsl:when>
+
+    <xsl:otherwise>
+      <div class="{name(.)}">
+        <p>
+          <xsl:apply-templates mode="titlepage.mode"/>
+        </p>
+      </div>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="affiliation" mode="titlepage.mode">
@@ -261,6 +291,10 @@
 </xsl:template>
 
 <xsl:template match="holder" mode="titlepage.mode">
+  <xsl:apply-templates/><xsl:text>, </xsl:text>
+</xsl:template>
+
+<xsl:template match="holder[position()=last()]" mode="titlepage.mode">
   <xsl:apply-templates/>
 </xsl:template>
 
@@ -364,9 +398,47 @@
 </xsl:template>
 
 <xsl:template match="legalnotice " mode="titlepage.mode">
-  <div class="{local-name(.)}">
-    <xsl:apply-templates mode="titlepage.mode"/>
-  </div>
+  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
+  <xsl:choose>
+    <xsl:when test="$generate.legalnotice.link != 0">
+      <xsl:variable name="filename">
+        <xsl:call-template name="make-relative-filename">
+          <xsl:with-param name="base.dir" select="$base.dir"/>
+          <xsl:with-param name="base.name" select="concat('ln-',$id,$html.ext)"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="title">
+        <xsl:apply-templates select="." mode="title.markup"/>
+      </xsl:variable>
+
+      <a href="{$filename}">
+        <xsl:copy-of select="$title"/>
+      </a>
+
+      <xsl:call-template name="write.chunk">
+        <xsl:with-param name="filename" select="$filename"/>
+        <xsl:with-param name="content">
+          <html>
+            <head>
+              <title><xsl:value-of select="$title"/></title>
+            </head>
+            <body>
+              <xsl:call-template name="body.attributes"/>
+              <div class="{local-name(.)}">
+                <xsl:apply-templates mode="titlepage.mode"/>
+              </div>
+            </body>
+          </html>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <div class="{local-name(.)}">
+        <xsl:apply-templates mode="titlepage.mode"/>
+      </div>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="legalnotice/title" mode="titlepage.mode">

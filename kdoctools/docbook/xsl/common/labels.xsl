@@ -160,8 +160,7 @@ element label.</para>
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:if test="($section.label.includes.component.label != 0
-                or /article)
+  <xsl:if test="$section.label.includes.component.label != 0
                 and $parent.is.component != 0">
     <xsl:variable name="parent.label">
       <xsl:apply-templates select=".." mode="label.markup"/>
@@ -412,6 +411,11 @@ element label.</para>
         <xsl:apply-templates select="$lparent" mode="label.markup"/>
         <xsl:apply-templates select="$lparent" mode="intralabel.punctuation"/>
       </xsl:if>
+      <xsl:if test="ancestor::qandadiv">
+        <xsl:apply-templates select="ancestor::qandadiv[1]" mode="label.markup"/>
+        <xsl:apply-templates select="ancestor::qandadiv[1]"
+                             mode="intralabel.punctuation"/>
+      </xsl:if>
     </xsl:if>
   </xsl:variable>
 
@@ -465,7 +469,9 @@ element label.</para>
 <xsl:template match="figure|table|example|equation|procedure"
               mode="label.markup">
   <xsl:variable name="pchap"
-                select="ancestor::chapter|ancestor::appendix"/>
+                select="ancestor::chapter
+                        |ancestor::appendix
+                        |ancestor::article[ancestor::book]"/>
 
   <xsl:variable name="prefix">
     <xsl:if test="count($pchap) &gt; 0">

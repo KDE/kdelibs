@@ -72,6 +72,7 @@
   <!-- handle them all in one place.                             -->
   <xsl:param name="tag" select="'img'"/>
   <xsl:param name="alt"/>
+  <xsl:param name="longdesc"/>
 
   <xsl:variable name="filename">
     <xsl:choose>
@@ -115,7 +116,6 @@
     <xsl:attribute name="src">
       <xsl:value-of select="$filename"/>
     </xsl:attribute>
-
     <xsl:if test="$align != ''">
       <xsl:attribute name="align">
         <xsl:value-of select="$align"/>
@@ -136,6 +136,11 @@
         <xsl:value-of select="$alt"/>
       </xsl:attribute>
     </xsl:if>
+    <xsl:if test="$longdesc != ''">
+      <xsl:attribute name="longdesc">
+        <xsl:value-of select="$longdesc"/>
+      </xsl:attribute>
+    </xsl:if>
   </xsl:element>
 </xsl:template>
 
@@ -149,7 +154,6 @@
 </xsl:template>
 
 <xsl:template match="inlinegraphic">
-  <xsl:variable name="vendor" select="system-property('xsl:vendor')"/>
   <xsl:variable name="filename">
     <xsl:choose>
       <xsl:when test="@entityref">
@@ -171,16 +175,15 @@
         <xsl:when test="$use.extensions != '0'
                         and $textinsert.extension != '0'">
           <xsl:choose>
-            <xsl:when test="contains($vendor, 'SAXON')">
+            <xsl:when test="element-available('stext:insertfile')">
               <stext:insertfile href="{$filename}"/>
             </xsl:when>
-            <xsl:when test="contains($vendor, 'Apache Software Foundation')">
+            <xsl:when test="element-available('xtext:insertfile')">
               <xtext:insertfile href="{$filename}"/>
             </xsl:when>
             <xsl:otherwise>
               <xsl:message terminate="yes">
-                <xsl:text>Don't know how to insert files with </xsl:text>
-                <xsl:value-of select="$vendor"/>
+                <xsl:text>No insertfile extension available.</xsl:text>
               </xsl:message>
             </xsl:otherwise>
           </xsl:choose>
@@ -239,7 +242,6 @@
 </xsl:template>
 
 <xsl:template match="imagedata">
-  <xsl:variable name="vendor" select="system-property('xsl:vendor')"/>
   <xsl:variable name="filename">
     <xsl:call-template name="mediaobject.filename">
       <xsl:with-param name="object" select=".."/>
@@ -252,16 +254,15 @@
         <xsl:when test="$use.extensions != '0'
                         and $textinsert.extension != '0'">
           <xsl:choose>
-            <xsl:when test="contains($vendor, 'SAXON')">
+            <xsl:when test="element-available('stext:insertfile')">
               <stext:insertfile href="{$filename}"/>
             </xsl:when>
-            <xsl:when test="contains($vendor, 'Apache Software Foundation')">
+            <xsl:when test="element-available('xtext:insertfile')">
               <xtext:insertfile href="{$filename}"/>
             </xsl:when>
             <xsl:otherwise>
               <xsl:message terminate="yes">
-                <xsl:text>Don't know how to insert files with </xsl:text>
-                <xsl:value-of select="$vendor"/>
+                <xsl:text>No insertfile extension available.</xsl:text>
               </xsl:message>
             </xsl:otherwise>
           </xsl:choose>
@@ -273,13 +274,100 @@
       </xsl:choose>
     </xsl:when>
     <xsl:otherwise>
+      <xsl:variable name="longdesc.uri">
+        <xsl:call-template name="longdesc.uri">
+          <xsl:with-param name="mediaobject"
+                          select="ancestor::imageobject/parent::*"/>
+        </xsl:call-template>
+      </xsl:variable>
+
       <xsl:call-template name="process.image">
         <xsl:with-param name="alt">
-          <xsl:apply-templates select="(../../textobject/phrase)[1]"/>
+          <xsl:apply-templates select="(../../textobject[not(@role) or @role!='tex']/phrase)[1]"/>
+        </xsl:with-param>
+        <xsl:with-param name="longdesc">
+          <xsl:call-template name="write.longdesc">
+            <xsl:with-param name="mediaobject"
+                            select="ancestor::imageobject/parent::*"/>
+          </xsl:call-template>
         </xsl:with-param>
       </xsl:call-template>
+
+      <xsl:if test="$html.longdesc != 0 and $html.longdesc.link != 0
+                    and ancestor::imageobject/parent::*/textobject[not(phrase)]">
+        <xsl:call-template name="longdesc.link">
+          <xsl:with-param name="longdesc.uri" select="$longdesc.uri"/>
+        </xsl:call-template>
+      </xsl:if>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<!-- ==================================================================== -->
+
+<xsl:template name="longdesc.uri">
+  <xsl:param name="mediaobject" select="."/>
+
+  <xsl:if test="$html.longdesc">
+    <xsl:if test="$mediaobject/textobject[not(phrase)]">
+      <xsl:variable name="image-id">
+        <xsl:call-template name="object.id">
+          <xsl:with-param name="object" select="$mediaobject"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:variable name="filename">
+        <xsl:call-template name="make-relative-filename">
+          <xsl:with-param name="base.dir" select="$base.dir"/>
+          <xsl:with-param name="base.name"
+                          select="concat('ld-',$image-id,$html.ext)"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:value-of select="$filename"/>
+    </xsl:if>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="write.longdesc">
+  <xsl:param name="mediaobject" select="."/>
+  <xsl:if test="$html.longdesc != 0 and $mediaobject/textobject[not(phrase)]">
+    <xsl:variable name="filename">
+      <xsl:call-template name="longdesc.uri">
+        <xsl:with-param name="mediaobject" select="$mediaobject"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:value-of select="$filename"/>
+
+    <xsl:call-template name="write.chunk">
+      <xsl:with-param name="filename" select="$filename"/>
+      <xsl:with-param name="content">
+        <html>
+          <head>
+            <title>Long Description</title>
+          </head>
+          <body>
+            <xsl:call-template name="body.attributes"/>
+            <xsl:for-each select="$mediaobject/textobject[not(phrase)]">
+              <xsl:apply-templates select="./*"/>
+            </xsl:for-each>
+          </body>
+        </html>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="longdesc.link">
+  <xsl:param name="longdesc.uri" select="''"/>
+  <div class="longdesc-link" align="right">
+    <br clear="all"/>
+    <span style="font-size: 8pt;">
+      <xsl:text>[</xsl:text>
+      <a href="{$longdesc.uri}" target="longdesc">D</a>
+      <xsl:text>]</xsl:text>
+    </span>
+  </div>
 </xsl:template>
 
 <!-- ==================================================================== -->

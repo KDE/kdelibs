@@ -18,7 +18,7 @@ title of the element. This does not include the label.
 </doc:mode>
 
 <xsl:template match="*" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:choose>
     <xsl:when test="title">
       <xsl:apply-templates select="title[1]" mode="title.markup">
@@ -41,12 +41,9 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="title" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:choose>
     <xsl:when test="$allow-anchors != 0">
-      <xsl:if test="@id">
-        <a name="{@id}"/>
-      </xsl:if>
       <xsl:apply-templates/>
     </xsl:when>
     <xsl:otherwise>
@@ -56,7 +53,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="set" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:apply-templates select="(setinfo/title|title)[1]"
                        mode="title.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
@@ -64,7 +61,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="book" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:apply-templates select="(bookinfo/title|title)[1]"
                        mode="title.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
@@ -72,7 +69,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="part" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:apply-templates select="(partinfo/title|docinfo/title|title)[1]"
                        mode="title.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
@@ -80,7 +77,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="preface|chapter|appendix" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
 
 <!--
   <xsl:message>
@@ -101,7 +98,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="dedication" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:choose>
     <xsl:when test="title">
       <xsl:apply-templates select="title" mode="title.markup">
@@ -117,7 +114,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="colophon" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:choose>
     <xsl:when test="title">
       <xsl:apply-templates select="title" mode="title.markup">
@@ -133,7 +130,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="article" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:variable name="title" select="(artheader/title
                                       |articleinfo/title
                                       |title)[1]"/>
@@ -144,7 +141,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="reference" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:apply-templates select="(referenceinfo/title|docinfo/title|title)[1]"
                        mode="title.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
@@ -152,7 +149,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="refentry" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:variable name="refmeta" select=".//refmeta"/>
   <xsl:variable name="refentrytitle" select="$refmeta//refentrytitle"/>
   <xsl:variable name="refnamediv" select=".//refnamediv"/>
@@ -182,7 +179,7 @@ title of the element. This does not include the label.
                      |refsect1|refsect2|refsect3
                      |simplesect"
               mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:variable name="title" select="(sectioninfo/title
                                       |sect1info/title
                                       |sect2info/title
@@ -204,7 +201,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="bibliography" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:variable name="title" select="(bibliographyinfo/title|title)[1]"/>
   <xsl:choose>
     <xsl:when test="$title">
@@ -221,7 +218,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="glossary" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:variable name="title" select="(glossaryinfo/title|title)[1]"/>
   <xsl:choose>
     <xsl:when test="$title">
@@ -238,7 +235,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="index" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:variable name="title" select="(indexinfo/title|title)[1]"/>
   <xsl:choose>
     <xsl:when test="$title">
@@ -255,21 +252,21 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="figure|table|example|equation" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:apply-templates select="title" mode="title.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
   </xsl:apply-templates>
 </xsl:template>
 
 <xsl:template match="procedure" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:apply-templates select="title" mode="title.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
   </xsl:apply-templates>
 </xsl:template>
 
 <xsl:template match="abstract" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:choose>
     <xsl:when test="title">
       <xsl:apply-templates select="title" mode="title.markup">
@@ -285,7 +282,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="caution|tip|warning|important|note" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:variable name="title" select="title[1]"/>
   <xsl:choose>
     <xsl:when test="$title">
@@ -325,7 +322,7 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="legalnotice" mode="title.markup">
-  <xsl:param name="allow-anchors" select="'0'"/>
+  <xsl:param name="allow-anchors" select="0"/>
   <xsl:choose>
     <xsl:when test="title">
       <xsl:apply-templates select="title" mode="title.markup">
@@ -343,7 +340,7 @@ title of the element. This does not include the label.
 <!-- ============================================================ -->
 
 <xsl:template match="*" mode="no.anchor.mode">
-  <xsl:apply-templates select="."/>
+  <xsl:apply-templates mode="no.anchor.mode"/>
 </xsl:template>
 
 <xsl:template match="footnote" mode="no.anchor.mode">

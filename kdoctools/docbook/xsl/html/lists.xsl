@@ -15,12 +15,16 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="itemizedlist">
+  <xsl:variable name="itemsymbol">
+    <xsl:call-template name="list.itemsymbol"/>
+  </xsl:variable>
+
   <div class="{name(.)}">
     <xsl:call-template name="anchor"/>
     <xsl:if test="title">
       <xsl:apply-templates select="title"/>
     </xsl:if>
-    <ul>
+    <ul type="{$itemsymbol}">
       <xsl:if test="@spacing='compact'">
         <xsl:attribute name="compact">
           <xsl:value-of select="@spacing"/>
@@ -33,6 +37,60 @@
 
 <xsl:template match="itemizedlist/title">
   <p><b><xsl:apply-templates/></b></p>
+</xsl:template>
+
+<xsl:template match="itemizedlist/listitem">
+  <xsl:variable name="mark" select="../@mark"/>
+  <xsl:variable name="override" select="@override"/>
+
+  <xsl:variable name="usemark">
+    <xsl:choose>
+      <xsl:when test="$override != ''">
+	<xsl:value-of select="$override"/>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="$mark"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="cssmark">
+    <xsl:choose>
+      <xsl:when test="$usemark = 'bullet'">disc</xsl:when>
+      <xsl:when test="$usemark = 'box'">square</xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="$usemark"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <li>
+    <xsl:if test="$css.decoration = '1' and $cssmark != ''">
+      <xsl:attribute name="style">
+	<xsl:text>list-style-type: </xsl:text>
+	<xsl:value-of select="$cssmark"/>
+      </xsl:attribute>
+    </xsl:if>
+
+    <!-- we can't just drop the anchor in since some browsers (Opera)
+         get confused about line breaks if we do. So if the first child
+         is a para, assume the para will put in the anchor. Otherwise,
+         put the anchor in anyway. -->
+    <xsl:if test="local-name(child::*[1]) != 'para'">
+      <xsl:call-template name="anchor"/>
+    </xsl:if>
+
+    <xsl:choose>
+      <xsl:when test="$show.revisionflag and @revisionflag">
+	<div class="{@revisionflag}">
+	  <xsl:apply-templates/>
+	</div>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </li>
 </xsl:template>
 
 <xsl:template name="orderedlist-starting-number">
@@ -120,51 +178,11 @@
   <p><b><xsl:apply-templates/></b></p>
 </xsl:template>
 
-<xsl:template match="variablelist">
-  <div class="{name(.)}">
-    <xsl:call-template name="anchor"/>
-    <xsl:if test="title">
-      <xsl:apply-templates select="title"/>
-    </xsl:if>
-    <dl>
-    <xsl:apply-templates select="varlistentry"/>
-    </dl>
-  </div>
-</xsl:template>
-
-<xsl:template match="variablelist/title">
-  <p><b><xsl:apply-templates/></b></p>
-</xsl:template>
-
-<xsl:template match="listitem">
-  <xsl:variable name="mark" select="ancestor-or-self::*/@mark"/>
-  <xsl:variable name="override" select="@override"/>
-
-  <xsl:variable name="usemark">
-    <xsl:choose>
-      <xsl:when test="$override != ''">
-	<xsl:value-of select="$override"/>
-      </xsl:when>
-      <xsl:otherwise>
-	<xsl:value-of select="$mark"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-  <xsl:variable name="cssmark">
-    <xsl:choose>
-      <xsl:when test="$usemark = 'bullet'">disc</xsl:when>
-      <xsl:when test="$usemark = 'box'">square</xsl:when>
-      <xsl:otherwise>
-	<xsl:value-of select="$usemark"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-
+<xsl:template match="orderedlist/listitem">
   <li>
-    <xsl:if test="$css.decoration = '1' and $cssmark != ''">
-      <xsl:attribute name="style">
-	<xsl:text>list-style-type: </xsl:text>
-	<xsl:value-of select="$cssmark"/>
+    <xsl:if test="@override">
+      <xsl:attribute name="value">
+        <xsl:value-of select="@override"/>
       </xsl:attribute>
     </xsl:if>
 
@@ -187,6 +205,97 @@
       </xsl:otherwise>
     </xsl:choose>
   </li>
+</xsl:template>
+
+<xsl:template match="variablelist">
+  <xsl:variable name="pi-presentation">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'list-presentation'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="presentation">
+    <xsl:choose>
+      <xsl:when test="$pi-presentation != ''">
+        <xsl:value-of select="$pi-presentation"/>
+      </xsl:when>
+      <xsl:when test="$variablelist.as.table != 0">
+        <xsl:value-of select="'table'"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="'list'"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="list-width">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'list-width'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="term-width">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'term-width'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="table-summary">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'table-summary'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <div class="{name(.)}">
+    <xsl:call-template name="anchor"/>
+    <xsl:if test="title">
+      <xsl:apply-templates select="title"/>
+    </xsl:if>
+
+    <xsl:choose>
+      <xsl:when test="$presentation = 'table'">
+        <table border="0">
+          <xsl:if test="$list-width != ''">
+            <xsl:attribute name="width">
+              <xsl:value-of select="$list-width"/>
+            </xsl:attribute>
+          </xsl:if>
+          <xsl:if test="$table-summary != ''">
+            <xsl:attribute name="summary">
+              <xsl:value-of select="$table-summary"/>
+            </xsl:attribute>
+          </xsl:if>
+          <col align="left">
+            <xsl:if test="$term-width != ''">
+              <xsl:attribute name="width">
+                <xsl:value-of select="$term-width"/>
+              </xsl:attribute>
+            </xsl:if>
+          </col>
+          <tbody>
+            <xsl:apply-templates select="varlistentry" mode="varlist-table"/>
+          </tbody>
+        </table>
+      </xsl:when>
+      <xsl:otherwise>
+        <dl>
+          <xsl:apply-templates select="varlistentry"/>
+        </dl>
+      </xsl:otherwise>
+    </xsl:choose>
+  </div>
+</xsl:template>
+
+<xsl:template match="variablelist/title">
+  <p><b><xsl:apply-templates/></b></p>
 </xsl:template>
 
 <xsl:template match="listitem" mode="xref">
@@ -220,6 +329,58 @@
   <dd>
     <xsl:apply-templates select="listitem"/>
   </dd>
+</xsl:template>
+
+<xsl:template match="varlistentry" mode="varlist-table">
+  <xsl:variable name="presentation">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="../processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'term-presentation'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="separator">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="../processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'term-separator'"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <tr>
+    <td>
+      <xsl:call-template name="anchor"/>
+      <xsl:choose>
+        <xsl:when test="$presentation = 'bold'">
+          <b>
+            <xsl:apply-templates select="term"/>
+            <xsl:value-of select="$separator"/>
+          </b>
+        </xsl:when>
+        <xsl:when test="$presentation = 'italic'">
+          <i>
+            <xsl:apply-templates select="term"/>
+            <xsl:value-of select="$separator"/>
+          </i>
+        </xsl:when>
+        <xsl:when test="$presentation = 'bold-italic'">
+          <b>
+            <i>
+              <xsl:apply-templates select="term"/>
+              <xsl:value-of select="$separator"/>
+            </i>
+          </b>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="term"/>
+          <xsl:value-of select="$separator"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </td>
+    <td>
+      <xsl:apply-templates select="listitem"/>
+    </td>
+  </tr>
 </xsl:template>
 
 <xsl:template match="varlistentry/term">
@@ -445,12 +606,22 @@
       <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
     <xsl:apply-templates select="*[local-name()!='step']"/>
-    <ol>
-      <xsl:attribute name="type">
-        <xsl:value-of select="substring($procedure.step.numeration.formats,1,1)"/>
-      </xsl:attribute>
-      <xsl:apply-templates select="step"/>
-    </ol>
+
+    <xsl:choose>
+      <xsl:when test="count(step) = 1">
+        <ul>
+          <xsl:apply-templates select="step"/>
+        </ul>
+      </xsl:when>
+      <xsl:otherwise>
+        <ol>
+          <xsl:attribute name="type">
+            <xsl:value-of select="substring($procedure.step.numeration.formats,1,1)"/>
+          </xsl:attribute>
+          <xsl:apply-templates select="step"/>
+        </ol>
+      </xsl:otherwise>
+    </xsl:choose>
   </div>
 </xsl:template>
 
@@ -491,8 +662,30 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="segmentedlist">
+  <xsl:variable name="presentation">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'list-presentation'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
   <xsl:call-template name="anchor"/>
-  <xsl:apply-templates/>
+
+  <xsl:choose>
+    <xsl:when test="$presentation = 'table'">
+      <xsl:apply-templates select="." mode="seglist-table"/>
+    </xsl:when>
+    <xsl:when test="$presentation = 'list'">
+      <xsl:apply-templates/>
+    </xsl:when>
+    <xsl:when test="$segmentedlist.as.table != 0">
+      <xsl:apply-templates select="." mode="seglist-table"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="segmentedlist/title">
@@ -529,6 +722,60 @@
     </b>
     <xsl:apply-templates/>
   </p>
+</xsl:template>
+
+<xsl:template match="segmentedlist" mode="seglist-table">
+  <xsl:variable name="table-summary">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'table-summary'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="list-width">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'list-width'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:apply-templates select="title" mode="seglist-table"/>
+  <table border="0">
+    <xsl:if test="$list-width != ''">
+      <xsl:attribute name="width">
+        <xsl:value-of select="$list-width"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="$table-summary != ''">
+      <xsl:attribute name="summary">
+        <xsl:value-of select="$table-summary"/>
+      </xsl:attribute>
+    </xsl:if>
+    <thead>
+      <tr>
+        <xsl:apply-templates select="segtitle" mode="seglist-table"/>
+      </tr>
+    </thead>
+    <tbody>
+      <xsl:apply-templates select="seglistitem" mode="seglist-table"/>
+    </tbody>
+  </table>
+</xsl:template>
+
+<xsl:template match="segtitle" mode="seglist-table">
+  <th><xsl:apply-templates/></th>
+</xsl:template>
+
+<xsl:template match="seglistitem" mode="seglist-table">
+  <tr>
+    <xsl:apply-templates mode="seglist-table"/>
+  </tr>
+</xsl:template>
+
+<xsl:template match="seg" mode="seglist-table">
+  <td><xsl:apply-templates/></td>
 </xsl:template>
 
 <!-- ==================================================================== -->
@@ -615,7 +862,7 @@
 
 <xsl:template name="callout.arearef">
   <xsl:param name="arearef"></xsl:param>
-  <xsl:variable name="targets" select="id($arearef)"/>
+  <xsl:variable name="targets" select="key('id',$arearef)"/>
   <xsl:variable name="target" select="$targets[1]"/>
 
   <xsl:call-template name="check.id.unique">
