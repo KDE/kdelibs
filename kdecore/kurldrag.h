@@ -89,7 +89,8 @@ public:
 
   /**
    * Convenience method that decodes the contents of @p e
-   * into a list of KURLs.
+   * into a list of KURLs. Decoding will fail if atleast one decoded value
+   * is not a valid KURL.
    * @param e the mime source
    * @param urls the list of urls will be written here
    * @return true if successful, false otherwise
@@ -98,7 +99,8 @@ public:
 
   /**
    * Convenience method that decodes the contents of @p e
-   * into a list of KURLs and a set of metadata.
+   * into a list of KURLs and a set of metadata. Decoding will fail if 
+   * atleast one decoded value is not a valid KURL.
    * You should be using this one, if possible.
    * @param e the mime source
    * @param urls the list of urls will be written here
@@ -123,6 +125,7 @@ public:
   /**
    * Convenience method that decodes the contents of @p e
    * into a list of KURLs for Qt versions without a MIME clipboard.
+   * Decoding will fail if atleast one value in the list is not a valid KURL.
    */
   static bool decode( QStringList const &e, KURL::List &uris );
 #endif
