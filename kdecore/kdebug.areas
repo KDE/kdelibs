@@ -127,6 +127,7 @@
 7022        kurifilter
 7023        kurifilter (plugins)
 7024        kio (UIServer)
+7025        kpac
 
 # 71xx        are for kioslaves
 7101        kio_file
