@@ -64,8 +64,8 @@ namespace KJS {
   class RegExpObjectImp : public InternalFunctionImp {
   public:
     RegExpObjectImp(ExecState *exec,
-                    RegExpPrototypeImp *regProto,
-                    FunctionPrototypeImp *funcProto);
+                    FunctionPrototypeImp *funcProto,
+                    RegExpPrototypeImp *regProto);
     virtual ~RegExpObjectImp();
     virtual bool implementsConstruct() const;
     virtual Object construct(ExecState *exec, const List &args);

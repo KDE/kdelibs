@@ -1,3 +1,11 @@
+2002-06-15  Harri Porten  <porten@kde.org>
+
+	* added the KJS_MAX_STACK macro that sets a limit to the function
+	call stack depth (unless set to -1).
+	* regexp_object.cpp: made RegExp.prototype visible
+	* adjusted length property of slit and split to what the spec says
+	* some conversions and new calls less
+
 2002-06-08  Harri Porten  <porten@kde.org>
 
 	* string_object.cpp: fixed the leaks introduced by the previous

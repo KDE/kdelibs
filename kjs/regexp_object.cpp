@@ -149,8 +149,9 @@ RegExpImp::~RegExpImp()
 // ------------------------------ RegExpObjectImp ------------------------------
 
 RegExpObjectImp::RegExpObjectImp(ExecState *exec,
-                                 RegExpPrototypeImp *regProto,
-                                 FunctionPrototypeImp *funcProto)
+                                 FunctionPrototypeImp *funcProto,
+                                 RegExpPrototypeImp *regProto)
+
   : InternalFunctionImp(funcProto), lastOvector(0L), lastNrSubPatterns(0)
 {
   Value protect(this);
@@ -192,7 +193,7 @@ Object RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result) c
   return arr;
 }
 
-Value RegExpObjectImp::get(ExecState *, const UString &p) const
+Value RegExpObjectImp::get(ExecState *exec, const UString &p) const
 {
   if (p[0] == '$' && lastOvector)
   {
@@ -208,7 +209,7 @@ Value RegExpObjectImp::get(ExecState *, const UString &p) const
       return String("");
     }
   }
-  return Undefined();
+  return InternalFunctionImp::get(exec, p);
 }
 
 bool RegExpObjectImp::implementsConstruct() const

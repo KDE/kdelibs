@@ -57,8 +57,8 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
   match			StringProtoFuncImp::Match	DontEnum|Function	1
   replace		StringProtoFuncImp::Replace	DontEnum|Function	2
   search		StringProtoFuncImp::Search	DontEnum|Function	1
-  slice			StringProtoFuncImp::Slice	DontEnum|Function	0
-  split			StringProtoFuncImp::Split	DontEnum|Function	1
+  slice			StringProtoFuncImp::Slice	DontEnum|Function	2
+  split			StringProtoFuncImp::Split	DontEnum|Function	2
   substr		StringProtoFuncImp::Substr	DontEnum|Function	2
   substring		StringProtoFuncImp::Substring	DontEnum|Function	2
   toLowerCase		StringProtoFuncImp::ToLowerCase	DontEnum|Function	0
