@@ -145,8 +145,8 @@ KDE_InterceptXMapRequest()
   char    errBuf[1024];
 
   IceConn     iceConn;
-  IcePointer  context;
-  IcePointer  somethingToPassToProtoSetup;
+  IcePointer  context = 0;
+  IcePointer  somethingToPassToProtoSetup = 0;
 
   struct DCOPMsg * pMsgPtr = 0;
 
