@@ -272,6 +272,7 @@ public:
 
 		// Collect parent node's attributes
 		QPtrList<QDomNamedNodeMap> applyList;
+		applyList.setAutoDelete(true);
 
 		QDomNode shape = node.parentNode();
 		for(; !shape.isNull() ; shape = shape.parentNode())
