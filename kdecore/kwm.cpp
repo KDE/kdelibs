@@ -287,7 +287,7 @@ void KWM::setMiniIcon(Window w, const QPixmap &pm){
   *p = pm;
   setDoubleProperty(w, a, (long) p->handle(), 
 		    (long) (p->mask()?p->mask()->handle():None));
-  // delete p;
+  delete p;
 }
 
 void KWM::setIcon(Window w, const QPixmap &pm){
