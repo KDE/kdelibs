@@ -195,6 +195,7 @@ void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
   
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
+    setSelected( item, false );
     emit executed( item );
     emit executed( item, pos );
   }
