@@ -41,5 +41,6 @@ ksycocatest_SOURCES = ksycocatest.cpp
 getalltest_SOURCES = getalltest.cpp
 kruntest_SOURCES = kruntest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
+kopenwithtest_LDADD = $(LIB_KFILE)
 kdirwatchtest_SOURCES = kdirwatchtest.cpp kdirwatchtest.h
 
