@@ -21,7 +21,7 @@ $(BUILDDIR)/build-stamp:
 	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
 	cd $(BUILDDIR) ;\
 	$$PWD/../configure $(configkde) \
-	--libdir=/$(kde_libdir) --includedir=/$(kde_includedir) 
+	--libdir=$(kde_libdir) --includedir=$(kde_includedir) 
 
 	make -C $(BUILDDIR)
 
@@ -73,16 +73,16 @@ binary-arch:  build
 	install -d debian/tmp/usr/share/applnk
 	install -d debian/tmp/etc/pam.d
 	make -C $(BUILDDIR) DESTDIR=`pwd`/debian/tmp/ install
-	debianrc=debian/tmp/$(kde_confdir)/system.kdeglobals ;\
+	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
-	echo "dir_config=/$(kde_confdir)" >> $$debianrc ;\
-	echo "dir_html=/$(kde_htmldir)" >> $$debianrc ;\
-	echo "dir_apps=/$(kde_appsdir)" >> $$debianrc 
-	cp debian/tmp/$(kde_confdir)/system.kdeglobals debian/tmp/etc/kderc
+	echo "dir_config=/etc/kde2" >> $$debianrc ;\
+	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
+	echo "dir_apps=/usr/share/applnk" >> $$debianrc 
+	cp debian/tmp/etc/kde2/system.kdeglobals debian/tmp/etc/kderc
 	perl -w admin/debianrules kdelibs3
 	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
-	for i in `find debian/tmp/$(kde_bindir) | sed -e 's#^debian/tmp/$(kde_bindir)/##'  | grep -v "debian/tmp"`; do \
+	for i in `find debian/tmp/usr/bin | sed -e 's#^debian/tmp/usr/bin/##'  | grep -v "debian/tmp"`; do \
 	  echo "$$i.1" >> debian/undocumented ; \
 	done
 	for i in `cat debian/undocumented.in | grep -v "#"`; do \
@@ -91,7 +91,7 @@ binary-arch:  build
 	dh_installdocs
 # libraries not starting with lib are modules
 	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
-	dh_movefiles -pkdelibs3-dev $$list $(kde_includedir) $(kde_libdir)/lib*.a
+	dh_movefiles -pkdelibs3-dev $$list usr/include usr/lib/lib*.a
 	dh_installchangelogs
 	dh_undocumented
 	dh_strip
@@ -108,11 +108,9 @@ binary-arch:  build
 	dh_installdeb
 	dh_shlibdeps 
 	dh_gencontrol
-	cd debian/tmp && find ./$(kde_confdir) -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
-	echo "/etc/pam.d/kde" >> debian/tmp/DEBIAN/conffiles
+	cd debian/tmp && find ./etc -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
 	chmod 644 debian/tmp/DEBIAN/conffiles
 	dh_md5sums
-	perl -w admin/debianrules update
 	dh_builddeb -pkdelibs3-dev
 	dh_builddeb -pkdelibs3
 

@@ -9,6 +9,20 @@ case "$1" in
     install)
     ;;
     upgrade)
+      if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
+        if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
+          rm -rf /usr/share/applnk > /dev/null 2>&1
+          ln -s /etc/kde2/applnk /usr/share/applnk >/dev/null 2>&1
+        else
+          mv /usr/share/applnk /etc/kde2/applnk >/dev/null 2>&1
+          ln -s /etc/kde2/applnk /usr/share/applnk >/dev/null 2>&1
+        fi
+      else
+        if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
+          mv /usr/share/applnk /etc/kde2/applnk >/dev/null 2>&1
+          ln -s /etc/kde2/applnk /usr/share/applnk >/dev/null 2>&1
+        fi
+      fi
     ;;
 
     abort-upgrade)
