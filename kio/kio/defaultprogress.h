@@ -23,9 +23,10 @@
 #include <kio/global.h>
 
 #include <kprogress.h>
-#include <ksqueezedtextlabel.h>
 
 #include "progressbase.h"
+
+class KLineEdit;
 
 namespace KIO {
 
@@ -118,8 +119,8 @@ protected:
   /// @since 3.1
   void checkDestination( const KURL& dest);
 
-  KSqueezedTextLabel* sourceLabel;
-  KSqueezedTextLabel* destLabel;
+  KLineEdit* sourceEdit;
+  KLineEdit* destEdit;
   QLabel* progressLabel;
   QLabel* destInvite;
   QLabel* speedLabel;

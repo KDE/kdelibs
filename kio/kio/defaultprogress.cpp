@@ -33,6 +33,7 @@
 #include <kpushbutton.h>
 #include <kstandarddirs.h>
 #include <kstdguiitem.h>
+#include <klineedit.h>
 #include <kwin.h>
 
 #include "jobclasses.h"
@@ -94,14 +95,16 @@ void DefaultProgress::init()
   // filenames or action name
   grid->addWidget(new QLabel(i18n("Source:"), this), 0, 0);
 
-  sourceLabel = new KSqueezedTextLabel(this);
-  grid->addWidget(sourceLabel, 0, 2);
+  sourceEdit = new KLineEdit(this);
+  sourceEdit->setReadOnly (true);
+  grid->addWidget(sourceEdit, 0, 2);
 
   destInvite = new QLabel(i18n("Destination:"), this);
   grid->addWidget(destInvite, 1, 0);
 
-  destLabel = new KSqueezedTextLabel(this);
-  grid->addWidget(destLabel, 1, 2);
+  destEdit = new KLineEdit(this);
+  destEdit->setReadOnly (true);
+  grid->addWidget(destEdit, 1, 2);
 
   m_pProgressBar = new KProgress(this);
   topLayout->addWidget( m_pProgressBar );
@@ -203,7 +206,7 @@ void DefaultProgress::showTotals()
     if ( m_iTotalDirs > 1 )
       // that we have a singular to translate looks weired but is only logical
       tmps = i18n("%n directory", "%n directories", m_iTotalDirs) + "   ";
-    tmps += i18n("%n file", "%n files", m_iTotalFiles);
+    tmps += i18n("%n file", "%n files", m_iTotalFiles);    
     progressLabel->setText( tmps );
   }
 }
@@ -292,10 +295,12 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
     d->noCaptionYet = false;
   }
   mode = Copy;
-  sourceLabel->setText(from.prettyURL());
+  sourceEdit->setSqueezedText(from.prettyURL());
+  sourceEdit->home (false);
   setDestVisible( true );
   checkDestination( to );
-  destLabel->setText(to.prettyURL());
+  destEdit->setSqueezedText(to.prettyURL());
+  destEdit->home (false);
 }
 
 
@@ -306,10 +311,12 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
     d->noCaptionYet = false;
   }
   mode = Move;
-  sourceLabel->setText(from.prettyURL());
+  sourceEdit->setSqueezedText(from.prettyURL());
+  sourceEdit->home (false);
   setDestVisible( true );
   checkDestination( to );
-  destLabel->setText(to.prettyURL());
+  destEdit->setSqueezedText(to.prettyURL());
+  destEdit->home (false);
 }
 
 
@@ -320,7 +327,8 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
     d->noCaptionYet = false;
   }
   mode = Create;
-  sourceLabel->setText(dir.prettyURL());
+  sourceEdit->setSqueezedText(dir.prettyURL());
+  sourceEdit->home (false);
   setDestVisible( false );
 }
 
@@ -332,7 +340,8 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
     d->noCaptionYet = false;
   }
   mode = Delete;
-  sourceLabel->setText(url.prettyURL());
+  sourceEdit->setSqueezedText(url.prettyURL());
+  sourceEdit->home (false);
   setDestVisible( false );
 }
 
@@ -342,28 +351,32 @@ void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
     setCaption(i18n("Loading Progress"));
     d->noCaptionYet = false;
   }
-  sourceLabel->setText(url.prettyURL());
+  sourceEdit->setSqueezedText(url.prettyURL());
+  sourceEdit->home (false);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Examining File Progress"));
-  sourceLabel->setText(url.prettyURL());
+  sourceEdit->setSqueezedText(url.prettyURL());
+  sourceEdit->home (false);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
 {
   setCaption(i18n("Mounting %1").arg(dev));
-  sourceLabel->setText(point);
+  sourceEdit->setSqueezedText(point);
+  sourceEdit->home (false);
   setDestVisible( false );
 }
 
 void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
 {
   setCaption(i18n("Unmounting"));
-  sourceLabel->setText(point);
+  sourceEdit->setSqueezedText(point);
+  sourceEdit->home (false);
   setDestVisible( false );
 }
 
@@ -378,7 +391,7 @@ void DefaultProgress::slotCanResume( KIO::Job*, KIO::filesize_t resume )
 
 void DefaultProgress::setDestVisible( bool visible )
 {
-  // We can't hide the destInvite/destLabel labels,
+  // We can't hide the destInvite/destEdit labels,
   // because it screws up the QGridLayout.
   if (visible)
   {
@@ -387,7 +400,7 @@ void DefaultProgress::setDestVisible( bool visible )
   else
   {
     destInvite->setText( QString::null );
-    destLabel->setText( QString::null );
+    destEdit->setText( QString::null );
   }
 }
 
