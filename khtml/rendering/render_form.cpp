@@ -94,7 +94,7 @@ void RenderFormElement::updateFromElement()
     QColor backgroundColor = style()->backgroundColor();
 
     if ( color.isValid() || backgroundColor.isValid() ) {
-        QPalette pal(m_widget->palette());
+        QPalette pal(QApplication::palette(m_widget));
 
         int contrast_ = KGlobalSettings::contrast();
         int highlightVal = 100 + (2*contrast_+4)*16/10;
