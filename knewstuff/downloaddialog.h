@@ -64,16 +64,18 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
       @param engine a pre-built engine object, or NULL if the download
                     dialog should create an engine on its own
       @param parent the parent window
+      @param caption the dialog caption
     */
-    DownloadDialog(Engine *engine, QWidget *parent = 0, const QString& caption = QString::null);
+    DownloadDialog(Engine *engine, QWidget *parent, const QString& caption);
 
     /**
       Alternative constructor.
       Always uses an internal engine.
 
       @param parent the parent window
+      @param caption the dialog caption
     */
-    DownloadDialog(QWidget *parent = 0, const QString& caption = QString::null);
+    DownloadDialog(QWidget *parent, const QString& caption);
 
     /**
       Destructor.
@@ -122,8 +124,39 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
       @see load()
 
       @param type a data type such as "korganizer/calendar"
+      @param caption the dialog caption
     */
-    static void open(const QString& type, const QString& caption = QString::null);
+    static void open(const QString& type, const QString& caption);
+
+    /**
+      Constructor.
+
+      @param engine a pre-built engine object, or NULL if the download
+                    dialog should create an engine on its own
+      @param parent the parent window
+    */
+    DownloadDialog(Engine *engine, QWidget *parent = 0);
+    // ### KDE 4.0: remove and make caption/parent argument optional
+
+    /**
+      Alternative constructor.
+      Always uses an internal engine.
+
+      @param parent the parent window
+    */
+    DownloadDialog(QWidget *parent = 0);
+    // ### KDE 4.0: remove and make caption/parent argument optional
+
+    /**
+      Opens the download dialog.
+      This is a convenience method which automatically sets up the dialog.
+      @see setType()
+      @see load()
+
+      @param type a data type such as "korganizer/calendar"
+    */
+    static void open(const QString& type);
+    // ### KDE 4.0: remove and make caption/parent argument optional
 
   public slots:
     /**

@@ -46,6 +46,30 @@
 
 using namespace KNS;
 
+// BEGIN deprecated for KDE 4
+DownloadDialog::DownloadDialog(Engine *engine, QWidget *)
+: KDialogBase(KDialogBase::IconList, i18n("Get Hot New Stuff"),
+  KDialogBase::Close, KDialogBase::Close)
+{
+  init(engine);
+}
+
+DownloadDialog::DownloadDialog(QWidget *)
+: KDialogBase(KDialogBase::IconList, i18n("Get Hot New Stuff"),
+  KDialogBase::Close, KDialogBase::Close)
+{
+  init(0);
+}
+
+void DownloadDialog::open(const QString& type)
+{
+  DownloadDialog d;
+  d.setType(type);
+  d.load();
+  d.exec();
+}
+// END deprecated for KDE 4
+
 DownloadDialog::DownloadDialog(Engine *engine, QWidget *, const QString& caption)
 : KDialogBase(KDialogBase::IconList, (caption.isNull() ? i18n("Get Hot New Stuff") : caption),
   KDialogBase::Close, KDialogBase::Close)
