@@ -158,7 +158,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
     return Number(clipped.width());
   }
   default:
-    kdWarning() << "Screen::getValueProperty unhandled token " << token << endl;
+    kdWarning(6070) << "Screen::getValueProperty unhandled token " << token << endl;
     return Undefined();
   }
 }
@@ -1313,6 +1313,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       funcArgs->removeFirst(); // all args after 2 go to the function
       funcArgs->removeFirst();
 #endif
+      kdWarning(6070) << "setTimeout(more than 2 args) is not fully implemented!" << endl;
       int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
       return Number(r);
     }
@@ -1466,7 +1467,7 @@ WindowQObject::WindowQObject(Window *w)
   //kdDebug(6070) << "WindowQObject::WindowQObject " << this << endl;
   part = parent->m_part;
   if ( !part )
-      kdWarning() << "null part in " << k_funcinfo << endl;
+      kdWarning(6070) << "null part in " << k_funcinfo << endl;
   else
       connect( part, SIGNAL( destroyed() ),
                this, SLOT( parentDestroyed() ) );
@@ -1493,7 +1494,7 @@ void WindowQObject::parentDestroyed()
 
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
 {
-  //kdDebug(6070) << "WindowQObject::installTimeout " << this << " " << handler.ascii() << endl;
+  //kdDebug(6070) << "WindowQObject::installTimeout " << this << " " << handler.ascii() << " milliseconds=" << t << endl;
   if (t < 16) t = 16;
   int id = startTimer(t);
   ScheduledAction *action = new ScheduledAction(handler.qstring(),singleShot);
@@ -1829,7 +1830,7 @@ Value History::getValueProperty(ExecState *, int token) const
     return Number( length.toUInt() );
   }
   default:
-    kdWarning() << "Unhandled token in History::getValueProperty : " << token << endl;
+    kdWarning(6070) << "Unhandled token in History::getValueProperty : " << token << endl;
     return Value();
   }
 }
