@@ -455,6 +455,7 @@ const char * const packages[] = {
 "konqueror/nspluginscan",
 "konqueror/nspluginviewer",
 "konqueror/reaktivate",
+"konqueror/servicemenus",
 "konqueror/sidebar",
 "konqueror/tabbing",
 "konqueror/webarchiverplugin",
