@@ -590,14 +590,17 @@ QString KFileItem::getToolTipText()
 
   QStringList keys;
   
-  tip = "<nobr><table cellspacing=0 cellpadding=0><tr>"
-        "<th colspan=2><center><b>";
+  tip = "<table cellspacing=0 cellpadding=0>"
+         "<tr>"
+          "<th colspan=2>"
+           "<center>"
+            "<b>";
 
   // if we got no or empty info, show a default tip
   if ( !info || (keys = info->preferredKeys()) .isEmpty() )
   {
     kdDebug() << "Found no meta info" << endl;
-    tip  += m_url.fileName() + "</center></b></th></tr>";
+    tip  += QStyleSheet::escape(m_url.fileName()) + "</center></b></th></tr>";
 
     tip += "<tr><td>" + i18n("Type:") + "</td><td>";
         
@@ -627,7 +630,7 @@ QString KFileItem::getToolTipText()
     else
       tip += QStyleSheet::escape(item->value().toString());
       
-    tip += "</b></center></th></tr>";
+    tip += "</center></b></th></tr>";
     
     // now the rest
     QStringList::Iterator it = keys.begin();
@@ -676,7 +679,7 @@ QString KFileItem::getToolTipText()
 
       }
     }
-    tip += "</table></nobr>";
+    tip += "</table>";
   }
   return tip;
 }
