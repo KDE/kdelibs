@@ -1588,7 +1588,12 @@ void HTMLSelectElementImpl::init()
 void HTMLSelectElementImpl::attach()
 {
     assert(!attached());
-    m_render = new RenderSelect(this);
+    assert(parentNode());
+    assert(!renderer());
+
+    if (parentNode()->renderer())
+        m_render = new RenderSelect(this);
+
     HTMLGenericFormElementImpl::attach();
 }
 
