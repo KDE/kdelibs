@@ -717,7 +717,7 @@ int TCPSlaveBase::verifyCertificate()
 
       //  - cache the results
       d->cc->addCertificate(pc, cp, permacache);
-      d->cc->saveToDisk();    // So that other slaves can get at it.
+      // don't do this: d->cc->saveToDisk(); 
       // FIXME: we should be able to notify other slaves of this here.
     } else {    // Child frame
       //  - Read from cache and see if there is a policy for this
