@@ -751,4 +751,4 @@
 0 	string		%TGIF		application/x-tgif	
 
 0 	string		#FIG		application/x-xfig
-0	string		#LyX 1		application/x-lyx
+0	string		#LyX\ 1		application/x-lyx
