@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001 Michael Häckel <Michael@Haeckel.Net>
+   Copyright (C) 2001-2002 Michael Häckel <haeckel@kde.org>
    $Id$
  
    This library is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ class QStrIList;
  * DIGEST-MD5 (RFC 2831) authentication are supported.
  * PLAIN and LOGIN do only use encoding and not encryption.
  *
- * @author Michael Häckel <Michael@Haeckel.Net>
+ * @author Michael Häckel <haeckel@kde.org>
  * @version $Id$
  */
 
