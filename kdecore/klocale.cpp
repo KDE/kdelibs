@@ -269,6 +269,8 @@ void KLocale::initFormat(KConfig *config)
   _thousandsSeparator = config->readEntry(QString::fromLatin1("ThousandsSeparator"));
   if (_thousandsSeparator.isNull())
     _thousandsSeparator = entry.readEntry(QString::fromLatin1("ThousandsSeparator"), QString::fromLatin1(","));
+  _thousandsSeparator.replace( QRegExp(QString::fromLatin1("$0")),
+				       QString::null );
 
   _positiveSign = config->readEntry(QString::fromLatin1("PositiveSign"));
   if (_positiveSign.isNull())
@@ -292,6 +294,8 @@ void KLocale::initFormat(KConfig *config)
   _monetaryThousandsSeparator = config->readEntry(QString::fromLatin1("MonetaryThousendSeparator"));
   if (_monetaryThousandsSeparator.isNull())
     _monetaryThousandsSeparator = entry.readEntry(QString::fromLatin1("MonetaryThousandsSeparator"), QString::fromLatin1(","));
+  _monetaryThousandsSeparator.replace(QRegExp(QString::fromLatin1("$0")),
+				      QString::null);
 
   _fracDigits = config->readNumEntry(QString::fromLatin1("FractDigits"), -1);
   if (_fracDigits == -1)
