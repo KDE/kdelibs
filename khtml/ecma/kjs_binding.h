@@ -142,8 +142,6 @@ namespace KJS {
    */
   Value getString(DOM::DOMString s);
 
-  bool originCheck(const KURL &kurl1, const KURL &url2);
-
   /**
    * Convery a KJS value into a QVariant
    */

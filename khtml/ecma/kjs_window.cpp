@@ -354,12 +354,14 @@ Value Window::get(ExecState *exec, const UString &p) const
           m_part->end();
         }
         Value val = getDOMNode(exec,m_part->document());
+#if 0 // not needed anymore
         // Cache the value. This also prevents the GC from deleting the document
         // while the window exists (important if the users sets properties on it).
         const_cast<Window*>(this)->ObjectImp::put( exec, UString("document"), val, Internal );
         // ## This is a hack. The whole cache should be in here, or in ScriptInterpreter,
         // so that dynamic properties are remembered. But then, which cache to clear up
         // in the object dtor will be a headache.
+#endif
         return val;
       }
       else
@@ -793,10 +795,47 @@ void Window::scheduleClose()
 
 bool Window::isSafeScript(ExecState *exec) const
 {
-  KHTMLPart *act = static_cast<KJS::ScriptInterpreter *>( exec->interpreter() )->part();
-  if (!act)
-    kdDebug(6070) << "Window::isSafeScript: KJS::Global::current().extra() is 0L!" << endl;
-  return act && originCheck(m_part->url(), act->url());
+  KHTMLPart *activePart = static_cast<KJS::ScriptInterpreter *>( exec->interpreter() )->part();
+  if (!activePart) {
+    kdDebug(6070) << "Window::isSafeScript: current interpreter's part is 0L!" << endl;
+    return false;
+  }
+  if ( activePart == m_part ) // Not calling from another frame, no problem.
+    return true;
+
+  // First check that protocol, user and password match.
+  KURL kurl1 = m_part->url();
+  KURL kurl2 = activePart->url();
+  if ( !kurl1.isEmpty() && !kurl2.isEmpty() && // ok if one is empty
+    ( kurl1.protocol() != kurl2.protocol() ||
+      //kurl1.port() != kurl2.port() || // commented out, to fix www.live365.com (uses ports 80 and 89)
+      kurl1.user() != kurl2.user() ||
+      kurl1.pass() != kurl2.pass() ) )
+  {
+    kdDebug(6070) << "Window::isSafeScript: DENIED! " << kurl1.url() << " <-> " << kurl2.url() << endl;
+    return false;
+  }
+
+  if ( m_part->document().isNull() )
+    return true; // allow to access a window that was just created (e.g. with window.open("about:blank"))
+
+  DOM::HTMLDocument thisDocument = m_part->htmlDocument();
+  if ( thisDocument.isNull() ) {
+    kdDebug(6070) << "Window::isSafeScript: trying to access an XML document !?" << endl;
+    return false;
+  }
+
+  DOM::HTMLDocument actDocument = activePart->htmlDocument();
+  if ( actDocument.isNull() ) {
+    kdDebug(6070) << "Window::isSafeScript: active part has no document!" << endl;
+    return false;
+  }
+  DOM::DOMString actDomain = actDocument.domain();
+  DOM::DOMString thisDomain = thisDocument.domain();
+  //kdDebug(6070) << "current domain:" << actDomain.string() << ", frame domain:" << thisDomain.string() << endl;
+  if ( actDomain == thisDomain )
+    return true;
+  kdWarning(6070) << "Javascript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
 }
 
 void Window::setListener(ExecState *exec, int eventId, Value func)

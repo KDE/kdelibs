@@ -244,29 +244,6 @@ Value KJS::getString(DOM::DOMString s)
     return String(s);
 }
 
-bool KJS::originCheck(const KURL &kurl1, const KURL &kurl2)
-{
-  if ( kurl1.protocol().find( "javascript", 0, false ) == 0 ||
-       kurl2.protocol().find( "javascript", 0, false ) == 0 )
-    return true;
-  if ( kurl1.isEmpty() || kurl2.isEmpty() )
-    return true;
-
-  // ## See documentation for document.domain at http://developer.netscape.com/docs/manuals/js/client/jsref/document.htm
-  // Seems comparing hosts isn't correct, we should compare the value of the two "document.domain".
-  if (kurl1.protocol() == kurl2.protocol() &&
-      kurl1.host() == kurl2.host() &&
-      //kurl1.port() == kurl2.port() && // commented out, to fix www.live365.com (uses ports 80 and 89)
-      kurl1.user() == kurl2.user() &&
-      kurl1.pass() == kurl2.pass())
-    return true;
-  else
-  {
-    kdDebug(6070) << "KJS::originCheck DENIED! " << kurl1.url() << " <-> " << kurl2.url() << endl;
-    return false;
-  }
-}
-
 QVariant KJS::ValueToVariant(ExecState* exec, const Value &val) {
   QVariant res;
   switch (val.type()) {
