@@ -2505,7 +2505,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
   bool comment = false; // Within comment
   bool firstChar = false; // Beginning of comment either /* or */
   bool space = true;    // Last token was space
-  bool curlyBracket = true; // Within curlyBrackets -> lower	
+  int curlyBracket = 0; // Within curlyBrackets -> lower	
   hasInlinedDecl = false; // reset the inlined decl. flag
 
   const QChar *ch = str.unicode();
@@ -2532,11 +2532,11 @@ QString StyleBaseImpl::preprocess(const QString &str)
       processed += QChar(' '); // Adding a space after this token
       space = true;
     } else if ( !comment && !dq && !sq && *ch == '{') {
-      curlyBracket = true;
+      ++curlyBracket;
       processed += *ch;
       space = true;  // Explictly true
     } else if ( !comment && !dq && !sq && *ch == '}') {
-      curlyBracket = false;
+      --curlyBracket;
       processed += *ch;
       processed += QChar(' '); // Adding a space after this token
       space = true;    
@@ -2554,7 +2554,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
 	  comment = true;
 	} else {
 	  processed += '/';
-	  if (curlyBracket) {
+	  if (curlyBracket > 0) {
 	    processed += ch->lower();
 	  } else {
 	    processed += *ch;
@@ -2591,7 +2591,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
       if (ch->isSpace()) {
 	processed += QChar(' '); // Normalize whitespace
       } else {
-	if (curlyBracket) {
+	if (curlyBracket > 0) {
 	  processed += ch->lower();
 	} else {
 	  processed += *ch;
