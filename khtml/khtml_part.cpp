@@ -1747,9 +1747,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   HTMLElementImpl *a = static_cast<HTMLElementImpl *>(n);
   a->getUpperLeftCorner(x, y);
   d->m_view->setContentsPos(x-50, y-50);
-  // get rid of activation highlight
-  // ### fix me
-  d->m_view->viewport()->repaint();
+
   return true;
 }
 
@@ -3672,6 +3670,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
                QPainter p(view()->viewport());
                p.setPen( QPen(o->style()->color(), 0, DotLine));
                p.drawRect(vx-1,vy-1, o->width()+2,o->height()+2);
+               QTimer::singleShot(100, d->m_view->viewport(), SLOT(update()));
            }
        }
      }
