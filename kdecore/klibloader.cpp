@@ -57,6 +57,7 @@ void KLibFactory::destroyMocClasses() const
 	       right thing. */
 	    while (objectDict->remove(*n)) ;
 	}
+	kdDebug(150) << "KLibFactory: done removing meta classes" << endl;
     }
 }
 
@@ -164,8 +165,10 @@ void KLibrary::slotObjectDestroyed()
                this, SLOT( slotTimeout() ) );
     }
 
-    m_timer->start( 1000*60, true );
-    //m_timer->start( 1000*10, true );
+    // as long as it's not stable make the timeout short, for debugging
+    // pleasure (matz)
+    //m_timer->start( 1000*60, true );
+    m_timer->start( 1000*10, true );
   }
 }
 
