@@ -193,7 +193,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 									QPainter *p,
 									const QRect &r,
 									const QColorGroup &cg,
-									SFlags flags = Style_Default,
+									SFlags flags,
 									const QStyleOption& opt ) const
 {
 	bool down = flags & Style_Down;
