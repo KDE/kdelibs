@@ -29,6 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qtextstream.h>
+#include <qimage.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -43,6 +44,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kstandarddirs.h>
 #include <kstdguiitem.h>
 #include <ktextbrowser.h>
+#include <kiconeffect.h>
+#include <kglobalsettings.h>
 
 #include "ktip.h"
 
@@ -127,6 +130,29 @@ KTipDialog *KTipDialog::_instance = 0;
 KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
   : KDialog(parent, name)
 {
+    /**
+     * Parent is 0L when TipDialog is used as a mainWidget. This should
+     * be the case only in ktip, so let's use the ktip layout.
+     */
+    bool isTipDialog = (parent != 0);
+ 
+	QImage img;
+	
+    if (!isTipDialog)
+    {
+	img = QImage(locate("data", "kdewizard/pics/wizard_small.png"));
+	// colorize and check to figure the correct color
+	KIconEffect::colorize(img, KGlobalSettings::activeTitleColor(), 1.0);
+	QRgb colPixel( img.pixel(0,0) );
+
+	_blendedColor = QColor(qRed(colPixel),qGreen(colPixel),qBlue(colPixel));
+    }
+    else
+	_blendedColor = KGlobalSettings::activeTitleColor();
+
+    _baseColor = KGlobalSettings::alternateBackgroundColor();
+    _textColor = KGlobalSettings::textColor();
+	
     _database = db;
 
     setCaption(i18n("Tip of the Day"));
@@ -134,25 +160,19 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
     QVBoxLayout *vbox = new QVBoxLayout(this, marginHint(), spacingHint());
 
-    /**
-     * Parent is 0L when TipDialog is used as a mainWidget. This should
-     * be the case only in ktip, so let's use the ktip layout.
-     */
-    bool isTipDialog = (parent != 0);
-
-    if (isTipDialog)
+   if (isTipDialog)
     {
 	QHBoxLayout *pl = new QHBoxLayout(vbox, 0, 0);
 
 	QLabel *bulb = new QLabel(this);
-        bulb->setPixmap(locate("data", "kdeui/pics/ktip-bulb.png"));
+	bulb->setPixmap(locate("data", "kdeui/pics/ktip-bulb.png"));
 	pl->addWidget(bulb);
 
-        QLabel *titlePane = new QLabel(this);
+	QLabel *titlePane = new QLabel(this);
 	titlePane->setBackgroundPixmap(locate("data", "kdeui/pics/ktip-background.png"));
-        titlePane->setText(i18n("Did you know...?\n"));
-	titlePane->setFont(QFont(KGlobalSettings::generalFont().family(), 20,  QFont::Bold));
-        titlePane->setAlignment(QLabel::AlignCenter);
+	titlePane->setText(i18n("Did you know...?\n"));
+	titlePane->setFont(QFont(KGlobalSettings::generalFont().family(), 20, QFont::Bold));
+	titlePane->setAlignment(QLabel::AlignCenter);
 	pl->addWidget(titlePane, 100);
     }
 
@@ -163,17 +183,29 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
     QHBox *tl = new QHBox(hbox);
     tl->setMargin(7);
-    tl->setBackgroundColor(QColor(49, 121, 172));
+    tl->setBackgroundColor(_blendedColor);
 
     QHBox *topLeft = new QHBox(tl);
     topLeft->setMargin(15);
-    QColor bgColor(213, 222, 238);
-    topLeft->setBackgroundColor(bgColor);
+    topLeft->setBackgroundColor(_baseColor);
 
     _tipText = new KTextBrowser(topLeft);
-    _tipText->mimeSourceFactory()->addFilePath(KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
+    
+    _tipText->mimeSourceFactory()->addFilePath(
+	KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
     _tipText->setFrameStyle(QFrame::NoFrame | QFrame::Plain);
     _tipText->setHScrollBarMode(QScrollView::AlwaysOff);
+    _tipText->setLinkUnderline(false);
+
+    QStyleSheet *sheet = _tipText->styleSheet();
+    QStyleSheetItem *item = sheet->item("a");
+    item->setFontWeight(QFont::Bold);
+    _tipText->setStyleSheet(sheet);
+    QPalette pal = _tipText->palette();
+    pal.setColor( QPalette::Active, QColorGroup::Link, _blendedColor );
+    pal.setColor( QPalette::Inactive, QColorGroup::Link, _blendedColor );
+    _tipText->setPalette(pal);
+
     QStringList icons = KGlobal::dirs()->resourceDirs("icon");
     QStringList::Iterator it;
     for (it = icons.begin(); it != icons.end(); ++it)
@@ -181,16 +213,16 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
     if (!isTipDialog)
     {
-        QLabel *l = new QLabel(hbox);
-	l->setPixmap(locate("data", "kdewizard/pics/wizard_small.png"));
-        l->setBackgroundColor(QColor(49, 121, 172));
+	QLabel *l = new QLabel(hbox);
+	l->setPixmap(img);
+	l->setBackgroundColor(_blendedColor);
 	l->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 
 	resize(550, 230);
         QSize sh = size();
 	QRect rect = KApplication::desktop()->screenGeometry();
         move(rect.x() + (rect.width() - sh.width())/2,
-		rect.y() + (rect.height() - sh.height())/2);
+	rect.y() + (rect.height() - sh.height())/2);
     }
 
     KSeparator* sep = new KSeparator( KSeparator::HLine, this);
@@ -254,13 +286,20 @@ void KTipDialog::showTip(QWidget *parent,const QString &tipFile, bool force)
 void KTipDialog::prevTip()
 {
     _database->prevTip();
-    _tipText->setText(QString::fromLatin1("<qt text=\"%1\" bgcolor=\"%2\">%3</qt>").arg(QColor(0, 0, 0).name()).arg(QColor(213, 222, 238).name()).arg(i18n(_database->tip().utf8())));
+    _tipText->setText(QString::fromLatin1(
+	 "<qt text=\"%1\" bgcolor=\"%2\">%3</qt>")
+	 .arg(_textColor.name())
+	 .arg(_baseColor.name())
+	 .arg(i18n(_database->tip().utf8())));
 }
 
 void KTipDialog::nextTip()
 {
     _database->nextTip();
-    _tipText->setText(QString::fromLatin1("<qt text=\"%1\" bgcolor=\"%2\">%3</qt>").arg(QColor(0, 0, 0).name()).arg(QColor(213, 222, 238).name()).arg(i18n(_database->tip().utf8())));
+    _tipText->setText(QString::fromLatin1("<qt text=\"%1\" bgcolor=\"%2\">%3</qt>")
+			.arg(_textColor.name())
+			.arg(_baseColor.name())
+			.arg(i18n(_database->tip().utf8())));
 }
 
 void KTipDialog::showOnStart(bool on)

@@ -161,6 +161,8 @@ private:
     KTipDialogPrivate *d;
 
     static KTipDialog *_instance;
+
+	QColor _baseColor, _blendedColor, _textColor;
 };
 
 #endif
