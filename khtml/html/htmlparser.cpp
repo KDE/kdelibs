@@ -350,12 +350,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         HTMLElementImpl *e;
         bool handled = false;
 
-	// never create anonymous objects just to hold a space.
-        if ( id == ID_TEXT &&
-             static_cast<TextImpl *>(n)->string()->l == 1 &&
-             static_cast<TextImpl *>(n)->string()->s[0] == ' ' )
-            return false;
-
         // switch according to the element to insert
         switch(id)
         {
