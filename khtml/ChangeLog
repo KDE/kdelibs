@@ -1,5 +1,11 @@
 2003-10-21  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_box.cpp (repaint): revert commit which introduced another
+	4 bytes overhead. No need to waste memory here. 
+
+	* rendering/render_object.cpp (setStyle): schedule repaint on old object
+	when the new outline is going to be thinner.
+
 	* rendering/render_form.cpp (RenderCustomButton): Remove.
 
 	* rendering/render_replaced.cpp (RenderReplaced::checkSelectionPoint): Remove.

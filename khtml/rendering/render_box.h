@@ -157,12 +157,6 @@ protected:
      */
     short m_maxWidth;
 
-    /*
-     *  The transitional width of the overlap that must be added when repainting
-     *  to account for surrounding outlines
-     */
-    short m_overlapWidth;
-
     // Cached normal flow values for absolute positioned elements with static left/top values.
     short m_staticX;
     int m_staticY;

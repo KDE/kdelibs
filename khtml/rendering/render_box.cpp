@@ -63,7 +63,6 @@ RenderBox::RenderBox(DOM::NodeImpl* node)
     m_marginRight = 0;
     m_staticX = 0;
     m_staticY = 0;
-    m_overlapWidth = 0;
 
     m_layer = 0;
 }
@@ -505,20 +504,17 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
 void RenderBox::repaint(bool immediate)
 {
     int ow = style() ? style()->outlineWidth() : 0;
-    int olw = kMax(m_overlapWidth, (short)ow);
     if( isInline() && !isReplaced() )
     {
 	RenderObject* p = parent();
 	while( p && p->isInline() && !p->isReplaced() )
 	    p = p->parent();
-        p->repaintRectangle( -olw, -olw, p->overflowWidth()+olw*2, p->overflowHeight()+olw*2, immediate);
+        p->repaintRectangle( -ow, -ow, p->overflowWidth()+ow*2, p->overflowHeight()+ow*2, immediate);
     }
     else
     {
-        repaintRectangle( -olw, -olw, overflowWidth()+olw*2, overflowHeight()+olw*2, immediate);
+        repaintRectangle( -ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2, immediate);
     }
-    if( m_overlapWidth != ow )
-	m_overlapWidth = ow;
 }
 
 void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
