@@ -22,12 +22,20 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <sys/time.h>
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>		// Needed on some systems.
+#endif
+
 #include <assert.h>
 #include <kdebug.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
-#include <sys/time.h>
 
 #include <qfile.h>
 
@@ -93,7 +101,6 @@ void SlaveBase::dispatchLoop()
 		QByteArray data;
                 if ( appconn->read(&cmd, data) != -1 )
                 {
-		  kdDebug(7019) << "app said " << cmd << endl;
                   if (cmd == CMD_SLAVE_CONNECT)
                   {
                      QString app_socket;

@@ -25,6 +25,9 @@
 #include <sys/types.h>
 #include <sys/signal.h>
 #include <sys/time.h>
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>		// Needed on some systems.
+#endif
 
 #include <assert.h>
 #include <errno.h>
