@@ -22,12 +22,30 @@ class QFont;
 class KGlobal
 {
 public:
-        static KApplication	*kApp();
+
+	/**
+	 *  Retrieves the application object.
+	 */
+	static KApplication	*kApp();
+
+	/**
+	 *  Retrieves the application standard dirs object.
+	 */
         static KStandardDirs	*dirs();
 	
+	/**
+         *  Retrieves the general config object.
+	 */
 	static KConfig		*config();
+
+        /**
+	 *  Retrieves the instance config object.
+         */
 	static KConfig		*instanceConfig();
 	
+	/**
+	 *  Retrieves an iconloader object.
+	 */
 	static KIconLoader	*iconLoader();
 
 	static KLocale		*locale();
@@ -37,8 +55,15 @@ public:
 	static QFont            fixedFont();
 
         static  int             dndEventDelay();
-		
+	
+	/**
+	 *  Constructor.
+	 */	
 	KGlobal();
+
+        /**
+         *  Constructor.
+         */
 	KGlobal( const KGlobal& );
 
 	static 	KApplication	*_kapp;
