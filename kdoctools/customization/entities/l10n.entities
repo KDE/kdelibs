@@ -240,9 +240,9 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
-<!ENTITY % Brasilian-Portuguese "IGNORE">
+<!ENTITY % Brazilian-Portuguese "IGNORE">
 <![%Brasilian-Portuguese;[
-<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Brasilian-Portuguese Documentation V1.0//PTBR"
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Brazilian-Portuguese Documentation V1.0//PTBR"
            "../pt-BR/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
