@@ -322,9 +322,7 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
         relation = sel->relation;
     }
     usedDynamicStates |= selectorState;
-    if ( ( (selectorState & StyleSelector::Hover) && !(dynamicState & StyleSelector::Hover) ) ||
-	 ( (selectorState & StyleSelector::Focus) && !(dynamicState & StyleSelector::Focus) ) ||
-	 ( (selectorState & StyleSelector::Active) && !(dynamicState & StyleSelector::Active) ) )
+    if ((selectorState & dynamicState) != selectorState)
 	return false;
     return true;
 }
