@@ -75,7 +75,7 @@ public:
      * @li Large  - 64x64 pixels
      * @li Default - the global setting or Medium if it doesn't exist
      **/
-    typedef enum { Small, Medium, Large, Default } Size;
+    enum Size { Small = 0, Medium, Large, Default };
 
   /**
    * Constructor. Adds some application specific paths to lookup
