@@ -98,7 +98,6 @@ public class KJASProtocolHandler
 
             KJASAppletContext context = new KJASAppletContext( contextID );
             contexts.put( contextID, context );
-            Main.showConsole();
         } else
         if( cmd_code_value == DestroyContextCode )
         {
@@ -111,8 +110,6 @@ public class KJASProtocolHandler
             {
                 context.destroy();
                 contexts.remove( contextID );
-                if( contexts.size() == 0 )
-                    Main.hideConsole();
             }
         } else
         if( cmd_code_value == CreateAppletCode )

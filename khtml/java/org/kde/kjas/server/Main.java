@@ -83,18 +83,6 @@ public class Main
         t.printStackTrace();
     }
 
-    public static void showConsole()
-    {
-        if( show_console )
-            console.setVisible( true );
-    }
-
-    public static void hideConsole()
-    {
-        if( show_console );
-            console.setVisible( false );
-    }
-
 
     /**************************************************************************
      * Main- create the command loop
@@ -108,6 +96,9 @@ public class Main
             System.err.println( "\t\tPlease use Java version 1.2 or higher." );
             return;
         }
+
+        if( show_console )
+            console.setVisible( true );
 
         protocol.commandLoop();
     }
