@@ -711,6 +711,12 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
 
 
+bool TCPSlaveBase::usingTLS() const
+{
+    return d->usingTLS;
+}
+
+// ### remove this for KDE4 (misses const):
 bool TCPSlaveBase::usingTLS()
 {
     return d->usingTLS;

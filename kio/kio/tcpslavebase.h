@@ -176,6 +176,25 @@ protected:
                         bool sendError = true );
 
     /**
+     * Are we using SSL?
+     *
+     * @return if so, true is returned.
+     *         if not, true isn't returned.
+     * @since 3.2
+     */
+    bool usingSSL() const { return m_bIsSSL; }
+
+    /**
+     * Are we using TLS?
+     *
+     * @return if so, true is returned.
+     *         if not, true isn't returned.
+     * @since 3.2
+     */
+    bool usingTLS() const;
+
+    /**
+     * @obsolete kept for binary compatibility
      * Are we using TLS?
      *
      * @return if so, true is returned.
