@@ -91,7 +91,9 @@ void CPUUsage::check()
 	if(cpu_time > 0 && real_time > 0) // there may be wraparounds
 	{
 #ifdef USE_SOLARIS
+#ifdef __GNUC__
 #warning fixme - the CPU usage test does not work under solaris
+#endif
 		d->usage=0.25;
 #else
 		d->usage = cpu_time / real_time;
