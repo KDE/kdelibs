@@ -190,7 +190,7 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 
   char tmpbuf[1024];   // 1kb temporary buffer for peeking
   *data = 0;
-  int clen = 0;
+  ssize_t clen = 0;
   char *buf = data;
   int rc = 0;
 
@@ -287,6 +287,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
                                   unsigned int _port,
                                   bool sendError )
 {
+#ifdef Q_OS_UNIX
     unsigned short int p;
     KExtendedSocket ks;
 
@@ -381,6 +382,9 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     }
 
     return true;
+#else //!Q_OS_UNIX
+    return false;
+#endif Q_OS_UNIX
 }
 
 void TCPSlaveBase::closeDescriptor()

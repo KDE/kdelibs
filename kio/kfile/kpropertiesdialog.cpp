@@ -1027,7 +1027,7 @@ void KFilePropsPlugin::slotEditFileType()
 {
   QString keditfiletype = QString::fromLatin1("keditfiletype");
   KRun::runCommand( keditfiletype
-                    + " --parent " + QString::number( properties->topLevelWidget()->winId())
+                    + " --parent " + QString::number( (ulong)properties->topLevelWidget()->winId())
                     + " " + KProcess::quote(d->mimeType),
                     keditfiletype, keditfiletype /*unused*/);
 }
@@ -1632,6 +1632,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   if (user != 0L)
     strUser = user->pw_name;
 
+#ifdef Q_OS_UNIX
   setgrent();
   for (i=0; ((ge = getgrent()) != 0L) && (i < maxEntries); i++)
   {
@@ -1652,6 +1653,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     }
   }
   endgrent();
+#endif //Q_OS_UNIX
 
   /* add the effective Group to the list .. */
   ge = getgrgid (getegid());

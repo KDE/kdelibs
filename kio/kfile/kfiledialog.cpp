@@ -473,8 +473,8 @@ void KFileDialog::slotOk()
                 }
                 else { // d->url is not a directory,
                     // maybe we are in File(s) | Directory mode
-                    if ( mode() & KFile::File == KFile::File ||
-                        mode() & KFile::Files == KFile::Files )
+                    if ( (mode() & KFile::File) == KFile::File ||
+                        (mode() & KFile::Files) == KFile::Files )
                         done = false;
                 }
             }
@@ -1752,7 +1752,7 @@ void KFileDialog::setOperationMode( OperationMode mode )
     else if ( mode == Saving )
        d->okButton->setGuiItem( KStdGuiItem::save() );
     else
-       d->okButton->setGuiItem( KStdGuiItem::KStdGuiItem::ok() );
+       d->okButton->setGuiItem( KStdGuiItem::ok() );
     updateLocationWhatsThis ();
     updateAutoSelectExtension ();
 }
