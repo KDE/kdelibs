@@ -88,6 +88,7 @@ main (int   argc,
     }
   else if (strcmp (arg, "file-test") == 0)
     {
+#if 0
       gchar *file = pshift ();
       
       g_print ("file test for \"%s\":\n", file);
@@ -96,6 +97,7 @@ main (int   argc,
       g_print ("  is_dir    : %u\n", g_file_test (file, G_FILE_TEST_IS_DIR));
       g_print ("  is_exec   : %u\n", g_file_test (file, G_FILE_TEST_IS_EXECUTABLE));
       g_print ("  exists    : %u\n", g_file_test (file, G_FILE_TEST_EXISTS));
+#endif
     }
   else if (strcmp (arg, "rf") == 0)
     {
