@@ -81,6 +81,10 @@ Document::Document(bool create) : Node()
 	impl = 0;
 }
 
+Document::Document(const Document &other) : Node(other)
+{
+}
+
 Document::Document(DocumentImpl *i) : Node(i)
 {
 }
