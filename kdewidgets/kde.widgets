@@ -108,6 +108,11 @@ Group=Views (KDE)
 ToolTip=Line Edit (KDE)
 Group=Input (KDE)
 
+[KListViewSearchLine]
+ToolTip=ListView Search Line (KDE)
+Group=Input (KDE)
+ConstructorArgs=(parent, 0, name)
+
 [KPasswordEdit]
 IncludeFile=kpassdlg.h
 ToolTip=Safe Password LineEdit (KDE)
