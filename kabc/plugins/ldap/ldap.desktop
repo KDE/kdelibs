@@ -1,7 +1,6 @@
 [Misc]
 Encoding=UTF-8
 Name=LDAP
-Name[de]=LDAP
 
 [Plugin]
 Type=ldap
