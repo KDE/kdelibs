@@ -367,7 +367,7 @@ QString Job::errorString()
 #define ENDMNTENT endmntent
 #define STRUCT_MNTENT struct mntent *
 #define STRUCT_SETMNTENT FILE *
-#define GETMNTENT(file, var) ((var = getmntent(file)) != NULL)
+#define GETMNTENT(file, var) ((var = getmntent(file)) != 0)
 #define MOUNTPOINT(var) var->mnt_dir
 #define MOUNTTYPE(var) var->mnt_type
 #define FSNAME(var) var->mnt_fsname
@@ -376,7 +376,7 @@ QString Job::errorString()
 #define ENDMNTENT(x) /* nope */
 #define STRUCT_MNTENT struct fstab *
 #define STRUCT_SETMNTENT int
-#define GETMNTENT(file, var) ((var=getfsent()) != NULL)
+#define GETMNTENT(file, var) ((var=getfsent()) != 0)
 #define MOUNTPOINT(var) var->fs_file
 #define MOUNTTYPE(var) var->fs_vfstype
 #define FSNAME(var) var->fs_spec
@@ -472,7 +472,7 @@ bool probably_slow_mounted(const QString& filename)
     memset(realname, 0, MAXPATHLEN);
 
     /* If the path contains symlinks, get the real name */
-    if (realpath(QFile::encodeName(filename), realname) == NULL) {
+    if (realpath(QFile::encodeName(filename), realname) == 0) {
 	if (filename.length() >= sizeof(realname))
 	    return false;
 	strcpy(realname, QFile::encodeName(filename));
@@ -480,7 +480,7 @@ bool probably_slow_mounted(const QString& filename)
 
     /* Get the list of mounted file systems */
 
-    if ((mtab = SETMNTENT(MNTTAB, "r")) == NULL) {
+    if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
 	perror("setmntent");
 	return false;
     }
