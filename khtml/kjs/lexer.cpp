@@ -401,7 +401,13 @@ int KJSLexer::matchPunctuator(unsigned short c1, unsigned short c2,
   if (c1 == '>' && c2 == '>' && c3 == '>' && c4 == '=') {
     shift(4);
     return URSHIFTEQUAL;
-  } else if (c1 == '>' && c2 == '>' && c3 == '>') {
+  } else if (c1 == '=' && c2 == '=' && c3 == '=') {
+    shift(3);
+    return STREQ;
+  } else if (c1 == '!' && c2 == '=' && c3 == '=') {
+    shift(3);
+    return STRNEQ;
+   } else if (c1 == '>' && c2 == '>' && c3 == '>') {
     shift(3);
     return URSHIFT;
   } else if (c1 == '<' && c2 == '<' && c3 == '=') {
@@ -613,7 +619,12 @@ struct KJSLexer::keyword KJSLexer::keytable[] = {
   { "false",     FALSETOKEN },
   // keywords
   { "break",     BREAK },
+  { "case",      CASE },
+  { "catch",     CATCH },
+  { "default",   DEFAULT },
+  { "finally",   FINALLY },
   { "for",       FOR },
+  { "instanceof",INSTANCEOF },
   { "new",       NEW },
   { "var",       VAR },
   { "continue",  CONTINUE },
@@ -623,16 +634,19 @@ struct KJSLexer::keyword KJSLexer::keytable[] = {
   { "delete",    DELETE },
   { "if",        IF },
   { "this",      THIS },
+  { "do",        DO },
   { "while",     WHILE },
   { "else",      ELSE },
   { "in",        IN },
+  { "switch",    SWITCH },
+  { "throw",     THROW },
+  { "try",       TRY },
   { "typeof",    TYPEOF },
   { "with",      WITH },
   // reserved for future use
   { "abstract",  RESERVED },
   { "boolean",   RESERVED },
   { "byte",      RESERVED },
-  { "case",      RESERVED },
   { "char",      RESERVED },
   { "const",     RESERVED },
   { "debugger",  RESERVED },
@@ -658,18 +672,11 @@ struct KJSLexer::keyword KJSLexer::keytable[] = {
   { "throws",    RESERVED },
   { "transient", RESERVED },
   { "volatile",  RESERVED },
-  { "catch",     RESERVED },
-  { "default",   RESERVED },
   { "extends",   RESERVED },
-  { "switch",    RESERVED },
   { "class",     RESERVED },
-  { "do",        RESERVED },
-  { "finally",   RESERVED },
-  { "throw",     RESERVED },
   { "const",     RESERVED },
   { "enum",      RESERVED },
   { "import",    RESERVED },
-  { "try",       RESERVED },
   // extension for debugging purposes
   { "debug",     DEBUG },
   { 0,             0      }

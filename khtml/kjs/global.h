@@ -55,7 +55,7 @@ namespace KJS {
 
   enum Hint { NoneHint, StringHint, NumberHint };
 
-  enum Compl { Normal, Break, Continue, ReturnValue };
+  enum Compl { Normal, Break, Continue, ReturnValue, Throw };
 
   enum CodeType { GlobalCode,
 		  EvalCode,
@@ -66,6 +66,8 @@ namespace KJS {
   enum Operator { OpEqual,
 		  OpEqEq,
 		  OpNotEq,
+		  OpStrEq,
+		  OpStrNEq,
 		  OpPlusEq,
 		  OpMinusEq,
 		  OpMultEq,
@@ -87,7 +89,9 @@ namespace KJS {
 		  OpBitOr,
 		  OpLShift,
 		  OpRShift,
-		  OpURShift
+		  OpURShift,
+		  OpIn,
+		  OpInstanceOf
   };
 
   enum FunctionAttribute { ImplicitNone, ImplicitThis, ImplicitParents };

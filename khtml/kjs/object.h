@@ -98,6 +98,7 @@ public:
   // internal value
   bool bVal() { assert(type()==Boolean); return val.b; }
   double dVal()  { assert(type()==Number); return val.d; }
+  int intVal() const { assert(type()==Number); return (int) val.d; }
   const UString sVal()  { assert(type()==String); return *(val.s); }
   Compl cVal() { assert(type()==Completion); return val.c; }
   bool isValueCompletion() { assert(type()==Completion); return (complVal); }
@@ -132,6 +133,7 @@ protected:
   // completion:
 protected:
   KJSO *complVal;
+  CString target;
 };
 
 class Ptr {
@@ -306,6 +308,8 @@ class KJSCompletion : public KJSO {
 public:
   KJSCompletion(Compl c, KJSO *v = 0L)
     { val.c = c; complVal = v ? v->ref() : 0L; }
+  KJSCompletion(Compl c, KJSO *v, const CString &t)
+    { val.c = c; complVal = v ? v->ref() : 0L; target = t; }
   virtual ~KJSCompletion() { if (complVal) complVal->deref(); }
   Type type() const { return Completion; }
 };

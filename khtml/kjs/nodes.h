@@ -411,6 +411,15 @@ private:
   StatementNode *statement1, *statement2;
 };
 
+class DoWhileNode : public StatementNode {
+public:
+  DoWhileNode(StatementNode *s, Node *e) : statement(s), expr(e) {}
+  KJSO *evaluate();
+private:
+  StatementNode *statement;
+  Node *expr;
+};
+
 class WhileNode : public StatementNode {
 public:
   WhileNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
@@ -446,12 +455,20 @@ private:
 
 class ContinueNode : public StatementNode {
 public:
+  ContinueNode() { }
+  ContinueNode(const CString &i) : ident(i) { }
   KJSO *evaluate();
+private:
+  CString ident;
 };
 
 class BreakNode : public StatementNode {
 public:
+  BreakNode() { }
+  BreakNode(const CString &i) : ident(i) { }
   KJSO *evaluate();
+private:
+  CString ident;
 };
 
 
@@ -470,6 +487,86 @@ public:
 private:
   Node *expr;
   StatementNode *stat;
+};
+
+class CaseClauseNode: public Node {
+public:
+  CaseClauseNode(Node *e, StatListNode *l) : expr(e), list(l) { }
+  KJSO *evaluate();
+  KJSO *evalStatements();
+private:
+  Node *expr;
+  StatListNode *list;
+};
+
+class ClauseListNode : public Node {
+public:
+  ClauseListNode(CaseClauseNode *c) : cl(c), nx(0L) { }
+  ClauseListNode* append(CaseClauseNode *c);
+  KJSO *evaluate() { /* should never be called */ return 0L; }
+  CaseClauseNode *clause() const { return cl; }
+  ClauseListNode *next() const { return nx; }
+private:
+  CaseClauseNode *cl;
+  ClauseListNode *nx;
+};
+
+class CaseBlockNode: public Node {
+public:
+  CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d, ClauseListNode *l2)
+    : list1(l1), def(d), list2(l2) { }
+  KJSO *evaluate() { /* should never be called */ return 0L; }
+  KJSO *evalBlock(KJSO *input);
+private:
+  ClauseListNode *list1;
+  CaseClauseNode *def;
+  ClauseListNode *list2;
+};
+
+class SwitchNode : public StatementNode {
+public:
+  SwitchNode(Node *e, CaseBlockNode *b) : expr(e), block(b) { }
+  KJSO *evaluate();
+private:
+  Node *expr;
+  CaseBlockNode *block;
+};
+
+class LabelNode : public StatementNode {
+public:
+  LabelNode(const CString &l, StatementNode *s) : label(l), stat(s) { }
+  KJSO *evaluate();
+private:
+  CString label;
+  StatementNode *stat;
+};
+
+class ThrowNode : public StatementNode {
+public:
+  ThrowNode(Node *e) : expr(e) {}
+  KJSO *evaluate();
+private:
+  Node *expr;
+};
+
+class CatchNode : public Node {
+public:
+  CatchNode() {}
+  KJSO *evaluate();
+};
+
+class FinallyNode : public Node {
+public:
+  FinallyNode(StatementNode *b) : block(b) {}
+  KJSO *evaluate();
+private:
+  StatementNode *block;
+};
+
+class TryNode : public StatementNode {
+public:
+  TryNode() {}
+  KJSO *evaluate();
 };
 
 class ParameterNode : public Node {

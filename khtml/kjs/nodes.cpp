@@ -715,6 +715,24 @@ KJSO *IfNode::evaluate()
 }
 
 // ECMA 12.6.1
+KJSO *DoWhileNode::evaluate()
+{
+  Ptr b, be, bv, s;
+  KJSO *value = 0L;
+
+  do {
+    s = statement->evaluate();
+    assert(s->isA(Completion));
+    /* TODO */
+    be = expr->evaluate();
+    bv = be->getValue();
+    b = toBoolean(bv);
+  } while (b->bVal());
+    
+  return new KJSCompletion(Normal, value);
+}
+
+// ECMA 12.6.2
 KJSO *WhileNode::evaluate()
 {
   Ptr b, be, bv, e;
@@ -779,6 +797,146 @@ KJSO *WithNode::evaluate()
   KJScript::context()->popScope();
 
   return res->ref();
+}
+
+// ECMA 12.11
+ClauseListNode* ClauseListNode::append(CaseClauseNode *c)
+{
+  ClauseListNode *l = this;
+  while (l->nx)
+    l = l->nx;
+  l->nx = new ClauseListNode(c);
+
+  return this;
+}
+
+// ECMA 12.11
+KJSO *SwitchNode::evaluate()
+{
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  Ptr res = block->evalBlock(v);
+
+  return res->ref();
+}
+
+// ECMA 12.11
+KJSO *CaseBlockNode::evalBlock(KJSO *input)
+{
+  Ptr v, res;
+  ClauseListNode *a = list1, *b = list2;
+  CaseClauseNode *clause;
+
+  if (a) {
+    while (a) {
+      clause = a->clause();
+      a = a->next();
+      v = clause->evaluate();
+      if (equal(input, v)) {
+	res = clause->evalStatements();
+	if (res->cVal() != Normal)
+	  return res->ref();
+	if (a) {
+	  res = a->clause()->evalStatements();
+	  if (res->cVal() != Normal)
+	    return res->ref();
+	}
+	break;
+      }
+    }
+  } else {
+    while (b) {
+      clause = b->clause();
+      v = clause->evaluate();
+      if (equal(input, v)) {
+	res = clause->evalStatements();
+	if (res->cVal() != Normal)
+	  return res->ref();
+	break;
+      }
+      b = b->next();
+    }
+  }
+  // default clause
+  if (def) {
+    res = def->evalStatements();
+    if (res->cVal() != Normal)
+      return res->ref();
+  }
+
+  while (b) {
+    clause = b->clause();
+    v = clause->evaluate();
+    if (equal(input, v)) {
+      res = clause->evalStatements();
+      if (res->cVal() != Normal)
+	return res->ref();
+      break;
+    }
+    b = b->next();
+  }
+
+  return new KJSCompletion(Normal);
+}
+
+// ECMA 12.11
+KJSO *CaseClauseNode::evaluate()
+{
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  
+  return v->ref();
+}
+
+// ECMA 12.11
+KJSO *CaseClauseNode::evalStatements()
+{
+  KJSO *res;
+
+  if (list)
+    res = list->evaluate();
+  else
+    res = new KJSUndefined();
+
+  return res;
+}
+
+// ECMA 12.12
+KJSO *LabelNode::evaluate()
+{
+  Ptr e;
+
+  e = stat->evaluate();
+  /* TODO */
+
+  return new KJSCompletion(Normal);
+}
+
+// ECMA 12.13
+KJSO *ThrowNode::evaluate()
+{
+  /* TODO */
+  return 0L;
+}
+
+// ECMA 12.14
+KJSO *TryNode::evaluate()
+{
+  /* TODO */
+  return 0L;
+}
+
+// ECMA 12.14
+KJSO *CatchNode::evaluate()
+{
+  /* TODO */
+  return 0L;
+}
+
+// ECMA 12.14
+KJSO *FinallyNode::evaluate()
+{
+  return block->evaluate();
 }
 
 // ECMA 13

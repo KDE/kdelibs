@@ -36,6 +36,7 @@ using namespace KJS;
   double              dval;
   CString             *cstr;
   UString             *ustr;
+  void                *rxp; /* TODO */
   Node                *node;
   StatementNode       *stat;
   ParameterNode       *param;
@@ -49,6 +50,9 @@ using namespace KJS;
   ArgumentListNode    *alist;
   VarDeclNode         *decl;
   VarDeclListNode     *vlist;
+  CaseBlockNode       *cblk;
+  ClauseListNode      *clist;
+  CaseClauseNode      *ccl;
   Operator            op;
 }
 
@@ -63,18 +67,21 @@ using namespace KJS;
 /* literals */
 %token NULLTOKEN TRUETOKEN FALSETOKEN
 %token STRING DECIMAL INTEGER
+%token REGEXP
 
 /* keywords */
-%token BREAK FOR NEW VAR CONTINUE
+%token BREAK CASE DEFAULT FOR NEW VAR CONTINUE
 %token FUNCTION RETURN VOID DELETE
-%token IF THIS WHILE ELSE IN TYPEOF
-%token WITH RESERVED
+%token IF THIS DO WHILE ELSE IN INSTANCEOF TYPEOF
+%token SWITCH WITH RESERVED
+%token THROW TRY CATCH FINALLY
 
 /* for debugging purposes */
 %token DEBUG
 
 /* punctuators */
 %token EQEQ NE                     /* == and != */
+%token STREQ STRNEQ                /* === and !== */
 %token LE GE                       /* < and > */
 %token OR AND                      /* || and && */
 %token PLUSPLUS MINUSMINUS         /* ++ and --  */
@@ -92,6 +99,7 @@ using namespace KJS;
 %token <dval> DOUBLE
 %token <ustr> STRING
 %token <cstr> IDENT
+%token <rxp>  REGEXP
 
 /* non-terminal types */
 %type <node>  Literal PrimaryExpr Expr MemberExpr NewExpr CallExpr
@@ -103,11 +111,14 @@ using namespace KJS;
 %type <node>  ConditionalExpr AssignmentExpr
 %type <node>  ExprOpt
 %type <node>  CallExpr
+%type <node>  Catch Finally
 
 %type <stat>  Statement Block
 %type <stat>  VariableStatement EmptyStatement ExprStatement
 %type <stat>  IfStatement IterationStatement ContinueStatement
 %type <stat>  BreakStatement ReturnStatement WithStatement
+%type <stat>  SwitchStatement LabelledStatement
+%type <stat>  ThrowStatement TryStatement
 
 %type <slist> StatementList
 %type <init>  Initializer
@@ -121,6 +132,9 @@ using namespace KJS;
 %type <alist> ArgumentList 
 %type <vlist> VariableDeclarationList
 %type <decl>  VariableDeclaration
+%type <cblk>  CaseBlock
+%type <ccl>   CaseClause DefaultClause
+%type <clist> CaseClauses  CaseClausesOpt 
 
 %%
 
@@ -131,6 +145,7 @@ Literal:
   | INTEGER                        { $$ = new NumberNode($1); }
   | DOUBLE                         { $$ = new NumberNode($1); }
   | STRING                         { $$ = new StringNode($1); delete $1; }
+  | REGEXP                         { $$ = new NullNode(); /* TODO */ }
 ;
 
 PrimaryExpr:
@@ -225,12 +240,16 @@ RelationalExpr:
                            { $$ = new RelationalNode($1, OpLessEq, $3); }
   | RelationalExpr GE ShiftExpr
                            { $$ = new RelationalNode($1, OpGreaterEq, $3); }
+  | RelationalExpr INSTANCEOF ShiftExpr
+                           { $$ = new RelationalNode($1, OpInstanceOf, $3); }
 ;
 
 EqualityExpr:
     RelationalExpr
   | EqualityExpr EQEQ RelationalExpr   { $$ = new EqualNode($1, OpEqEq, $3); }
   | EqualityExpr NE RelationalExpr     { $$ = new EqualNode($1, OpNotEq, $3); }
+  | EqualityExpr STREQ RelationalExpr  { $$ = new EqualNode($1, OpStrEq, $3); }
+  | EqualityExpr STRNEQ RelationalExpr { $$ = new EqualNode($1, OpStrNEq, $3);}
 ;
 
 BitwiseANDExpr:
@@ -303,6 +322,10 @@ Statement:
   | BreakStatement
   | ReturnStatement
   | WithStatement
+  | SwitchStatement
+  | LabelledStatement
+  | ThrowStatement
+  | TryStatement
   | DEBUG '(' Expr ')'             { $$ = new DebugNode($3); }
 ;
 
@@ -350,7 +373,8 @@ IfStatement: /* shift/reduce conflict due to dangling else */
 ;
 
 IterationStatement:
-    WHILE '(' Expr ')' Statement   { $$ = new WhileNode($3, $5); }
+    DO Statement WHILE '(' Expr ')' { $$ = new DoWhileNode($2, $5); }
+  | WHILE '(' Expr ')' Statement   { $$ = new WhileNode($3, $5); }
   | FOR '(' ExprOpt ';' ExprOpt ';' ExprOpt ')'
             Statement              { $$ = new ForNode($3, $5, $7, $9); }
   | FOR '(' VAR VariableDeclarationList ';' ExprOpt ';' ExprOpt ')'
@@ -372,10 +396,12 @@ ExprOpt:
 
 ContinueStatement:
     CONTINUE ';'                   { $$ = new ContinueNode(); }
+  | CONTINUE IDENT ';'             { $$ = new ContinueNode($2); delete $2; }
 ;
 
 BreakStatement:
     BREAK ';'                      { $$ = new BreakNode(); }
+  | BREAK IDENT ';'                { $$ = new BreakNode($2); delete $2; }
 ;
 
 ReturnStatement:       /* TODO: no LineTerminator here */
@@ -385,6 +411,58 @@ ReturnStatement:       /* TODO: no LineTerminator here */
 
 WithStatement:
     WITH '(' Expr ')' Statement    { $$ = new WithNode($3, $5); }
+;
+
+SwitchStatement:
+    SWITCH '(' Expr ')' CaseBlock  { $$ = new SwitchNode($3, $5); }
+;
+
+CaseBlock:
+    '{' CaseClausesOpt '}'         { $$ = new CaseBlockNode($2, 0L, 0L); }
+  | '{' CaseClausesOpt DefaultClause CaseClausesOpt '}'
+                                   { $$ = new CaseBlockNode($2, $3, $4); }
+;
+
+CaseClausesOpt:
+    /* nothing */                  { $$ = 0L; }
+  | CaseClauses
+;
+
+CaseClauses:
+    CaseClause                     { $$ = new ClauseListNode($1); }
+  | CaseClauses CaseClause         { $$ = $1->append($2); }
+;
+
+CaseClause:
+    CASE Expr ':'                  { $$ = new CaseClauseNode($2, 0L); }
+  | CASE Expr ':' StatementList    { $$ = new CaseClauseNode($2, $4); }
+;
+
+DefaultClause:
+    DEFAULT ':'                    { $$ = new CaseClauseNode(0L, 0L);; }
+  | DEFAULT ':' StatementList      { $$ = new CaseClauseNode(0L, $3); }
+;
+
+LabelledStatement:
+    IDENT ':' Statement            { $$ = new LabelNode($1, $3); delete $1; }
+;
+
+ThrowStatement:
+    THROW Expr ';'                 { $$ = new ThrowNode($2); }
+;
+
+TryStatement:
+    TRY Block Catch                { $$ = new TryNode(); /* TODO */ } 
+  | TRY Block Finally              { $$ = new TryNode(); /* TODO */ } 
+  | TRY Block Catch Finally        { $$ = new TryNode(); /* TODO */ } 
+;
+
+Catch:
+    CATCH '(' IDENT ')' Block      { $$ = new CatchNode(); /* TODO */ }
+;
+
+Finally:
+    FINALLY Block                  { $$ = new FinallyNode($2); } 
 ;
 
 FunctionDeclaration:

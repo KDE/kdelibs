@@ -3,6 +3,7 @@ typedef union {
   double              dval;
   CString             *cstr;
   UString             *ustr;
+  void                *rxp; /* TODO */
   Node                *node;
   StatementNode       *stat;
   ParameterNode       *param;
@@ -16,6 +17,9 @@ typedef union {
   ArgumentListNode    *alist;
   VarDeclNode         *decl;
   VarDeclListNode     *vlist;
+  CaseBlockNode       *cblk;
+  ClauseListNode      *clist;
+  CaseClauseNode      *ccl;
   Operator            op;
 } YYSTYPE;
 #define	LF	258
@@ -25,49 +29,60 @@ typedef union {
 #define	STRING	262
 #define	DECIMAL	263
 #define	INTEGER	264
-#define	BREAK	265
-#define	FOR	266
-#define	NEW	267
-#define	VAR	268
-#define	CONTINUE	269
-#define	FUNCTION	270
-#define	RETURN	271
-#define	VOID	272
-#define	DELETE	273
-#define	IF	274
-#define	THIS	275
-#define	WHILE	276
-#define	ELSE	277
-#define	IN	278
-#define	TYPEOF	279
-#define	WITH	280
-#define	RESERVED	281
-#define	DEBUG	282
-#define	ALERT	283
-#define	EQEQ	284
-#define	NE	285
-#define	LE	286
-#define	GE	287
-#define	OR	288
-#define	AND	289
-#define	PLUSPLUS	290
-#define	MINUSMINUS	291
-#define	LSHIFT	292
-#define	RSHIFT	293
-#define	URSHIFT	294
-#define	PLUSEQUAL	295
-#define	MINUSEQUAL	296
-#define	MULTEQUAL	297
-#define	DIVEQUAL	298
-#define	LSHIFTEQUAL	299
-#define	RSHIFTEQUAL	300
-#define	URSHIFTEQUAL	301
-#define	ANDEQUAL	302
-#define	MODEQUAL	303
-#define	XOREQUAL	304
-#define	OREQUAL	305
-#define	DOUBLE	306
-#define	IDENT	307
+#define	REGEXP	265
+#define	BREAK	266
+#define	CASE	267
+#define	DEFAULT	268
+#define	FOR	269
+#define	NEW	270
+#define	VAR	271
+#define	CONTINUE	272
+#define	FUNCTION	273
+#define	RETURN	274
+#define	VOID	275
+#define	DELETE	276
+#define	IF	277
+#define	THIS	278
+#define	DO	279
+#define	WHILE	280
+#define	ELSE	281
+#define	IN	282
+#define	INSTANCEOF	283
+#define	TYPEOF	284
+#define	SWITCH	285
+#define	WITH	286
+#define	RESERVED	287
+#define	THROW	288
+#define	TRY	289
+#define	CATCH	290
+#define	FINALLY	291
+#define	DEBUG	292
+#define	EQEQ	293
+#define	NE	294
+#define	STREQ	295
+#define	STRNEQ	296
+#define	LE	297
+#define	GE	298
+#define	OR	299
+#define	AND	300
+#define	PLUSPLUS	301
+#define	MINUSMINUS	302
+#define	LSHIFT	303
+#define	RSHIFT	304
+#define	URSHIFT	305
+#define	PLUSEQUAL	306
+#define	MINUSEQUAL	307
+#define	MULTEQUAL	308
+#define	DIVEQUAL	309
+#define	LSHIFTEQUAL	310
+#define	RSHIFTEQUAL	311
+#define	URSHIFTEQUAL	312
+#define	ANDEQUAL	313
+#define	MODEQUAL	314
+#define	XOREQUAL	315
+#define	OREQUAL	316
+#define	DOUBLE	317
+#define	IDENT	318
 
 
 extern YYSTYPE kjsyylval;
