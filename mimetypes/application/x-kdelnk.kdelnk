@@ -1,7 +1,0 @@
-# KDE Config File
-[KDE Desktop Entry]
-Comment=KDE config file
-Icon=kmailion.xpm
-Type=MimeType
-MimeType=application/x-kdelnk
-Patterns=;

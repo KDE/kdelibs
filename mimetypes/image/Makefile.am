@@ -1,5 +1,6 @@
 
-data_DATA = jpeg.kdelnk tiff.kdelnk x-xpm.kdelnk x-xbm.kdelnk png.kdelnk gif.kdelnk fax-g3.kdelnk cgm.kdelnk
+data_DATA = jpeg.desktop tiff.desktop x-xpm.desktop x-xbm.desktop \
+	png.desktop gif.desktop fax-g3.desktop cgm.desktop
 
 datadir = $(kde_mimedir)/image
 

@@ -1,12 +1,11 @@
 
-data_DATA = x-dvi.kdelnk x-tex-gf.kdelnk gzip.kdelnk \
-	x-object.kdelnk x-tex-pk.kdelnk pdf.kdelnk \
-	x-tar.kdelnk x-trash.kdelnk x-zip.kdelnk \
-	x-core.kdelnk x-font.kdelnk x-java.kdelnk \
-	postscript.kdelnk octet-stream.kdelnk \
-	x-shellscript.kdelnk x-kdelnk.kdelnk \
-	x-executable.kdelnk x-ar.kdelnk x-lha.kdelnk x-tbz.kdelnk \
-	x-desktop.desktop
+data_DATA = x-dvi.desktop x-tex-gf.desktop gzip.desktop \
+	x-object.desktop x-tex-pk.desktop pdf.desktop \
+	x-tar.desktop x-trash.desktop x-zip.desktop \
+	x-core.desktop x-font.desktop x-java.desktop \
+	postscript.desktop octet-stream.desktop \
+	x-shellscript.desktop x-desktop.desktop \
+	x-executable.desktop x-ar.desktop x-lha.desktop x-tbz.desktop
 
 datadir = $(kde_mimedir)/application
 

@@ -1,5 +1,4 @@
-# KDE Config File
-[KDE Desktop Entry]
+[Desktop Entry]
 MimeType=application/x-gzip
 Comment=Gzip file
 DefaultApp=ark

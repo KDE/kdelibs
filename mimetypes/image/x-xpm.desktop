@@ -1,7 +1,6 @@
-# KDE Config File
-[KDE Desktop Entry]
+[Desktop Entry]
 Type=MimeType
 Mimetype=image/x-xpm
 Icon=image.xpm
 Patterns=*.xpm;*.XPM;
-Comment=X pixmaps
+Comment=X Pixmaps

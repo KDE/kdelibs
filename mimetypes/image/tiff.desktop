@@ -1,7 +1,6 @@
-# KDE Config File
-[KDE Desktop Entry]
+[Desktop Entry]
 Type=MimeType
 MimeType=image/tiff
 Icon=image.xpm
 Patterns=*.tif;*.TIF;*.TIFF;*.tiff;
-Comment=TIFF Image
+Comment=TIFF Images

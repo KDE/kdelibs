@@ -1,5 +1,4 @@
-# KDE Config File
-[KDE Desktop Entry]
+[Desktop Entry]
 MimeType=audio/x-mp3
 Comment=MPEG Sound file
 DefaultApp=kmpg

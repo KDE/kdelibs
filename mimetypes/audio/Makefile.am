@@ -1,5 +1,5 @@
 
-data_DATA = x-wav.kdelnk x-mod.kdelnk x-midi.kdelnk x-mp3.kdelnk
+data_DATA = x-wav.desktop x-mod.desktop x-midi.desktop x-mp3.desktop
 datadir = $(kde_mimedir)/audio
 
 EXTRA_DIST = $(data_DATA)
