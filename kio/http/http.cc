@@ -451,14 +451,22 @@ void HTTPProtocol::post( const KURL& url)
 
 ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 {
+  int bytes_sent = 0;
   int n;
 keeptrying:
   if ( (n = Write(buf, nbytes)) != static_cast<int>(nbytes) )
   {
     if (n == -1 && ((errno == EINTR) || (errno == EAGAIN)))
       goto keeptrying;
+    if (n == -1)
+      return -1;
+    nbytes -= n;
+    buf += n;
+    bytes_sent += n;
+    if (nbytes > 0)
+      goto keeptrying;    
   }
-  return n;
+  return bytes_sent;
 }
 
 char *HTTPProtocol::gets (char *s, int size)
@@ -1659,9 +1667,8 @@ bool HTTPProtocol::readHeader()
 
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
-  if( locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
-      m_request.method == HTTP_HEAD) &&
-      m_request.url.filename() != "favicon.ico" )
+  if (locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
+      m_request.method == HTTP_HEAD))
   {
     kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
     mimeType( m_strMimeType );
