@@ -12,3 +12,6 @@ libltdlc_la_LIBADD = $(LIBADD_DL)
 ltdl.lo: $(srcdir)/ltdl.h $(top_builddir)/config.h
 
 apidox:
+
+.PHONY: apidox
+

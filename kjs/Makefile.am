@@ -106,3 +106,6 @@ testkjs_LDADD = libkjs.la
 
 DOXYGEN_REFERENCES = kdecore
 include ../admin/Doxyfile.am
+
+.PHONY: parser
+
