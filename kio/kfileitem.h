@@ -227,7 +227,7 @@ public:
    * Returns the currently known mimetype of the file item.
    * This will not try to determine the mimetype if unknown.
    */
-  KMimeType::Ptr mimeTypePtr() { return m_pMimeType; }
+  KMimeType::Ptr mimeTypePtr() const { return m_pMimeType; }
 
   bool isMimeTypeKnown() const;
   /**
