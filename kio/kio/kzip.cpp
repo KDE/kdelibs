@@ -405,13 +405,18 @@ bool KZip::openArchive( int mode )
 	    ParseFileInfo *pfi = new ParseFileInfo();
 	    pfi_map.insert(filename.data(), pfi);
 
-	    // read and parse extra field
+	    // read and parse the beginning of the extra field,
+	    // skip rest of extra field in case it is too long
+	    unsigned int extraFieldEnd = dev->at() + extralen;
 	    pfi->extralen = extralen;
 	    int handledextralen = QMIN(extralen, (int)sizeof buffer);
 	    n = dev->readBlock(buffer, handledextralen);
 	    // no error msg necessary as we deliberately truncate the extra field
 	    if (!parseExtraField(buffer, handledextralen, true, *pfi))
 	        return false;
+	    
+	    // jump to end of extra field
+	    dev->at( extraFieldEnd );
 
 	    // we have to take care of the 'general purpose bit flag'.
             // if bit 3 is set, the header doesn't contain the length of
