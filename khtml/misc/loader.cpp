@@ -477,19 +477,6 @@ void CachedImage::deref( CachedObjectClient *c )
 #define BGMINWIDTH      32
 #define BGMINHEIGHT     32
 
-namespace khtml {
-
-class KHTMLPixmap : public QPixmap
-{
-public:
-#ifdef Q_WS_X11
-    bool hasAlphaImage() const { return data->alphapm; }
-#else
-    bool hasAlphaImage() const { return false; }
-#endif
-};
-
-} // namespace khtml
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
@@ -519,7 +506,28 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         if ( r.height() < BGMINHEIGHT )
             h = ((BGMINHEIGHT / s.height())+1) * s.height();
     }
-    if ( !static_cast<const KHTMLPixmap*>( &r )->hasAlphaImage() &&
+
+#ifdef Q_WS_X11
+    if ( r.hasAlphaChannel() && 
+         ((w != r.width()) || (h != r.height())) )
+    {
+        bg = new QPixmap(w, h);
+        //Tile horizontally on the first stripe
+        for (int x = 0; x < w; x += r.width())
+            copyBlt(bg, x, 0, &r, 0, 0, r.width(), r.height());
+        
+        //Copy first stripe down
+        for (int y = r.height(); y < h; y += r.height())
+            copyBlt(bg, 0, y, bg, 0, 0, w, r.height());
+        
+        return *bg;
+    }
+#endif    
+    
+    if ( 
+#ifdef Q_WS_X11    
+        !r.hasAlphaChannel() &&
+#endif
         ( (w != r.width()) || (h != r.height()) || (isvalid && r.mask())) )
     {
         QPixmap pix = r;
@@ -529,6 +537,8 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
             QPainter p(bg);
             if(isvalid) p.fillRect(0, 0, w, r.height(), newc);
             p.drawTiledPixmap(0, 0, w, r.height(), pix);
+            p.end();
+
             if(!isvalid && pix.mask())
             {
                 // unfortunately our anti-transparency trick doesn't work here
