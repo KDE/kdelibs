@@ -92,7 +92,7 @@ class KSpeechSink : virtual public DCOPObject {
          * @param seq            Sequence number of the text.
          * @see getTextCount
          */
-        virtual ASYNC sentenceStarted(const QCString&, const uint, const uint) { };
+        virtual ASYNC sentenceStarted(const QCString&, uint, uint) { };
         /**
          * This signal is emitted when a sentence has finished speaking.
          * @param appId          DCOP application ID of the application that queued the text.
@@ -100,14 +100,14 @@ class KSpeechSink : virtual public DCOPObject {
          * @param seq            Sequence number of the text.
          * @see getTextCount
          */        
-        virtual ASYNC sentenceFinished(const QCString&, const uint, const uint) { };
+        virtual ASYNC sentenceFinished(const QCString&, uint, uint) { };
         
         /**
          * This signal is emitted whenever a new text job is added to the queue.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textSet(const QCString&, const uint) { };
+        virtual ASYNC textSet(const QCString&, uint) { };
     
         /**
         * This signal is emitted whenever a new part is appended to a text job.
@@ -116,14 +116,14 @@ class KSpeechSink : virtual public DCOPObject {
         * @param partNum        Part number of the new part.  Parts are numbered starting
         *                       at 1.
         */
-        virtual ASYNC textAppended(const QCString&, const uint, const int) { };
+        virtual ASYNC textAppended(const QCString&, uint, int) { };
         
         /**
          * This signal is emitted whenever speaking of a text job begins.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textStarted(const QCString&, const uint) { };
+        virtual ASYNC textStarted(const QCString&, uint) { };
         /**
          * This signal is emitted whenever a text job is finished.  The job has
          * been marked for deletion from the queue and will be deleted when another
@@ -133,32 +133,32 @@ class KSpeechSink : virtual public DCOPObject {
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textFinished(const QCString&, const uint) { };
+        virtual ASYNC textFinished(const QCString&, uint) { };
         /**
          * This signal is emitted whenever a speaking text job stops speaking.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textStopped(const QCString&, const uint) { };
+        virtual ASYNC textStopped(const QCString&, uint) { };
         /**
          * This signal is emitted whenever a speaking text job is paused.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textPaused(const QCString&, const uint) { };
+        virtual ASYNC textPaused(const QCString&, uint) { };
         /**
          * This signal is emitted when a text job, that was previously paused, resumes speaking.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textResumed(const QCString&, const uint) { };
+        virtual ASYNC textResumed(const QCString&, uint) { };
         /**
          * This signal is emitted whenever a text job is deleted from the queue.
          * The job is no longer in the queue when this signal is emitted.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
-        virtual ASYNC textRemoved(const QCString&, const uint) { };
+        virtual ASYNC textRemoved(const QCString&, uint) { };
 };
 
 #endif // _KSPEECHSINK_H_
