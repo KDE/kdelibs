@@ -11,11 +11,11 @@
 #ifndef KIMG_RGB_H
 #define KIMG_RGB_H
 
-#include <qimage.h>
 #include <qmap.h>
 #include <qptrvector.h>
 
 
+class QImage;
 class QImageIO;
 
 extern "C" {
