@@ -43,6 +43,12 @@ public:
   virtual bool openURL( const QString &url ) = 0;
   virtual QString url() const = 0;
 
+signals:
+  // hosting apps will want to know when the process of loading the data is finished, so that they can access the data when everything is loaded
+  void started();
+  void completed();
+  void canceled( const QString &errMsg );
+
 };
 
 class KReadWritePart : public KReadOnlyPart
