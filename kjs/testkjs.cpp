@@ -21,6 +21,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "value.h"
 #include "object.h"
@@ -39,6 +40,20 @@ public:
 Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
+  return Undefined();
+}
+
+class VersionFunctionImp : public ObjectImp {
+public:
+  VersionFunctionImp() : ObjectImp() {}
+  virtual bool implementsCall() const { return true; }
+  virtual Value call(ExecState *exec, Object &thisObj, const List &args);
+};
+
+Value VersionFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+{
+  // We need this function for compatibility with the Mozilla JS tests but for now
+  // we don't actually do any version-specific handling
   return Undefined();
 }
 
@@ -62,15 +77,19 @@ int main(int argc, char **argv)
     // create interpreter
     Interpreter interp(global);
     // add debug() function
-    global.put(interp.globalExec(),"debug", Object(new TestFunctionImp()));
+    global.put(interp.globalExec(), UString("debug"), Object(new TestFunctionImp()));
     // add "print" for compatibility with the mozilla js shell
-    global.put(interp.globalExec(),"print", Object(new TestFunctionImp()));
+    global.put(interp.globalExec(), UString("print"), Object(new TestFunctionImp()));
+    // add "version" for compatibility with the mozilla js shell 
+    global.put(interp.globalExec(), UString("version"), Object(new VersionFunctionImp()));
 
     const int BufferSize = 200000;
     char code[BufferSize];
 
     for (int i = 1; i < argc; i++) {
       const char *file = argv[i];
+      if (strcmp(file, "-f") == 0)
+	continue;
       FILE *f = fopen(file, "r");
       if (!f) {
         fprintf(stderr, "Error opening %s.\n", file);
@@ -92,7 +111,7 @@ int main(int argc, char **argv)
         char *msg = exVal.toString(exec).ascii();
         int lineno = -1;
         if (exVal.type() == ObjectType) {
-          Value lineVal = Object::dynamicCast(exVal).get(exec,"line");
+          Value lineVal = Object::dynamicCast(exVal).get(exec,UString("line"));
           if (lineVal.type() == NumberType)
             lineno = int(lineVal.toNumber(exec));
         }
@@ -116,5 +135,5 @@ int main(int argc, char **argv)
 #ifdef KJS_DEBUG_MEM
   Interpreter::finalCheck();
 #endif
-  return ret ? 0 : 1;
+  return ret ? 0 : 3;
 }
