@@ -148,7 +148,8 @@ void KFormulaEdit::redraw(int all)
     for(i = QMIN(cursorPos, selectStart);
 	i <= QMAX(cursorPos, selectStart); i++) {
 
-      if(formText[i] && strchr("@(|/", formText[i])) {
+      if(i < (int)formText.length() &&
+	 formText[i] && strchr("@(|/", formText[i])) {
 	if(tmp.isNull()) {
 	  tmp = info[i].where->getLastRect();
 	}
@@ -163,7 +164,8 @@ void KFormulaEdit::redraw(int all)
 	else {
 	  tmp = tmp.unite(getCursorPos(i));
 	}
-	if(formText[i] == SLASH) { //we need its height
+	if(i < (int)formText.length() && formText[i] == SLASH) {
+	  //we need its height
 	  tmp = tmp.unite(QRect(tmp.x(), info[i].where->getLastRect().y(),
 				1, info[i].where->getLastRect().height()));
 	}
@@ -245,11 +247,13 @@ int KFormulaEdit::isValidCursorPos(int pos)
 
 int KFormulaEdit::deleteAtCursor()
 {
-  int maxpos = formText.length(); //easier to type "maxpos"
+  int maxpos = formText.length() - 1; //easier to type "maxpos"
   int ncpos = cursorPos; //this stores the position at which
                         //the actual deletion will be made
                         //so if we alter it, we don't have to change
                         //cursorPos.
+
+  if(cursorPos > maxpos) return 0;
 
   //If we are just deleting part of a literal (or +-*), do it and go away.
   if(!formText[cursorPos] || !strchr("{}^_(/@|", formText[cursorPos])) {
@@ -273,7 +277,7 @@ int KFormulaEdit::deleteAtCursor()
      (char)formText[cursorPos - 2] &&
      strchr("^_(@/|", formText[cursorPos - 2])) 
     ncpos -= 2;
-  else if(cursorPos > 0 && cursorPos < maxpos &&
+  else if(cursorPos > 0 && cursorPos <= maxpos &&
 	  formText[cursorPos] == '{' && (char)formText[cursorPos - 1] &&
 	  strchr("^_(@/|", formText[cursorPos - 1]))
     ncpos--;
@@ -286,7 +290,7 @@ int KFormulaEdit::deleteAtCursor()
   //the right operand grouped (exponents and subscripts).
   //It also checks whether the group is empty before deleting.
   if(formText[ncpos] && strchr("^_", formText[ncpos]) &&
-     ncpos < maxpos - 2 &&
+     ncpos <= maxpos - 2 &&
      formText[ncpos + 1] == '{' && formText[ncpos + 2] == '}') {
     formText.remove(ncpos, 3);
     cursorPos = ncpos;
@@ -305,7 +309,7 @@ int KFormulaEdit::deleteAtCursor()
 
   //The following removes the division operator and leaves the
   //numerator intact.
-  if(ncpos < maxpos - 2 && formText[ncpos + 2] == '}' &&
+  if(ncpos <= maxpos - 2 && formText[ncpos + 2] == '}' &&
      formText[ncpos + 1] == '{') {
     if(ncpos <= 1) return 0;
     if(formText[ncpos] == '/') {
@@ -360,7 +364,7 @@ void KFormulaEdit::computeCache()
   //if it's ALL_DIRTY, at the first step we simply change each
   //individual cache slot to dirty and leave.
   if(cacheState == ALL_DIRTY) {
-    cursorCache.resize(formText.size());
+    cursorCache.resize(formText.length() + 1);
     for(i = 0; i < (int)cursorCache.size(); i++) {
       cursorCache[i].dirty = 1;
     }
@@ -401,7 +405,7 @@ int KFormulaEdit::posAtPoint(QPoint p)
   mindist = 99999999; //They don't make screens that big (yet).
   mini = cursorPos;
 
-  for(i = 0; i < (int)formText.size(); i++) {
+  for(i = 0; i <= (int)formText.length(); i++) {
     if(!isValidCursorPos(i)) continue;
     tmp = getCursorPos(i).center() - p;
     dist = tmp.x() * tmp.x() + tmp.y() * tmp.y();
@@ -463,8 +467,8 @@ void KFormulaEdit::expandSelection()
     //expand selection to the left.
     while(i <= (int)formText.length() &&
 	  (i < cursorPos || level != 0 || !isValidCursorPos(i))) {
-      if(formText[i] == '{') level++;
-      if(formText[i] == '}') level--;
+      if(i < (int)formText.length() && formText[i] == '{') level++;
+      if(i < (int)formText.length() && formText[i] == '}') level--;
       if(level == -1) {
 	while(selectStart > 0 &&
 	      (level < 0 || !isValidCursorPos(selectStart))) {
@@ -486,8 +490,10 @@ void KFormulaEdit::expandSelection()
       if(level == -1) {
 	while(selectStart <= (int)formText.length() &&
 	      (level < 0 || !isValidCursorPos(selectStart))) {
-	  if(formText[selectStart] == '{') level--;
-	  if(formText[selectStart] == '}') level++;
+	  if(selectStart < (int)formText.length() && 
+	     formText[selectStart] == '{') level--;
+	  if(selectStart < (int)formText.length() &&
+	     formText[selectStart] == '}') level++;
 	  selectStart++;
 	}
       }
@@ -592,7 +598,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
     if(!textSelected || shift) { //if we are not removing a selection
       //move right to the next valid cursor position.
-      while(cursorPos < (int)formText.size() - 1 &&
+      while(cursorPos < (int)formText.length() &&
 	    !isValidCursorPos(++cursorPos));
       
       if(oldc != cursorPos) {
@@ -650,12 +656,12 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
   if(e->key() == Key_End ||
      (e->state() & ControlButton && e->key() == Key_E)) {
-    if(cursorPos < (int)formText.size() - 1) {
+    if(cursorPos < (int)formText.length()) {
       if(shift && !textSelected) {
 	textSelected = 1;
 	selectStartOrig = selectStart = cursorPos;
       }
-      cursorPos = formText.size() - 1;
+      cursorPos = formText.length();
       CURSOR_RESET
     }
     if(textSelected) {
@@ -712,7 +718,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       return;
     }
 
-    if(cursorPos >= (int)formText.size() - 1) return;
+    if(cursorPos >= (int)formText.length()) return;
 
     if(deleteAtCursor()) {
       MODIFIED
@@ -756,7 +762,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
     //Paste: just insert it into cursorPos, deleting any selected text.
     if(e->key() == Key_V) {
-      if(clipText.size() > 0) {
+      if(clipText.length() > 0) {
 	if(textSelected) {
 	  formText.remove(QMIN(selectStart, cursorPos),
 			  QMAX(selectStart - cursorPos, \
@@ -864,7 +870,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	    //be here).
 	  }
 	  formText.insert(i + 1, '{');
-	
+	  
 	  cursorPos += 2;
 	}
 	textSelected = 0;
