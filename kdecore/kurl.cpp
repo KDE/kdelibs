@@ -214,6 +214,10 @@ isRelativeURL(const QString &_url)
   if ((slashPos != -1) && (colonPos > slashPos))
       return true; // We have a ':' but it comes after a '/' so it is a relative URL
 
+  int questionPos = _url.find('?');
+  if ((questionPos != -1) && (colonPos > questionPos))
+      return true; // We have a ':' but it comes after a '?' so it is a relative URL
+
   return false; // It's not a relative URL.
 }
 
