@@ -732,7 +732,7 @@ static void handle_launcher_request(int sock = -1)
    free(request_data);
 }
 
-static void handle_requests()
+static void handle_requests(pid_t waitForPid)
 {
    int max_sock = d.wrapper;
    if (d.launcher_pid && (d.launcher[0] > max_sock))
@@ -759,6 +759,8 @@ static void handle_requests()
         if (exit_pid > 0)
         {
            fprintf(stderr, "kdeinit: PID %d terminated.\n", exit_pid);
+           if (waitForPid && (exit_pid == waitForPid))
+              return;
            if (d.launcher_pid)
            {
               klauncher_header request_header;
@@ -1019,13 +1021,16 @@ int main(int argc, char **argv, char **envp)
       WaitPid(pid);
    }
 
+   X11fd = initXconnection();
+
    for(i = 1; i < argc; i++)
    {
       if (safe_argv[i][0] == '+')
       {
          pid = launch( 1, safe_argv[i]+1, 0);
          fprintf(stderr, "Launched: %s, pid = %d result = %d\n", safe_argv[i]+1, pid, d.result);
-         WaitPid(pid);
+//         WaitPid(pid);
+         handle_requests(pid);
       }
       else if (safe_argv[i][0] == '-')
       {
@@ -1057,9 +1062,8 @@ int main(int argc, char **argv, char **envp)
    if (fork() > 0) // Go into background
        exit(0);
 
-   X11fd = initXconnection();
 
-   handle_requests();
+   handle_requests(0);
 
    return 0;
 }
