@@ -55,7 +55,7 @@
       	    	    	    text-align: inherit;
                             background-color: inherit; /* ### hack */
 			 }
-      TABLE[align="center"] { margin-left: auto; margin-right: auto }                         
+      TABLE[align="center"] { margin-left: auto; margin-right: auto }
       TD[align="center"] > * { margin-left: auto; margin-right: auto; text-align: justify; }
       TD[align="right"] > * { margin-left: auto; margin-right: 0px; text-align: right; }
       TD[align="left"] > * { margin-left: 0px; margin-right: auto; text-align: left; }
@@ -97,6 +97,9 @@
       OL, UL, DIR,
       MENU, DD        { margin-left: 40px }
       OL              { list-style-type: decimal }
+      UL              { list-style-type: disc }
+      UL UL           { list-style-type: circle }
+      UL UL UL        { list-style-type: square }
       OL UL, UL OL,
       UL UL, OL OL    { margin-top: 0; margin-bottom: 0 }
       LI > P          { margin-top: 0; margin-bottom: 0 }
