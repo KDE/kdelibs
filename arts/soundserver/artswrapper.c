@@ -14,13 +14,6 @@
 
 #include "config.h"
 
-void rt_error()
-{
-  	fprintf(stderr," This means that this program will likely not be able\n");
-  	fprintf(stderr," to produce acceptable sound (without clicks and breaks).");
-	fprintf(stderr,"\n\n");
-}
-
 #ifdef HAVE_REALTIME_SCHED
 #include <sched.h>
 
@@ -44,12 +37,12 @@ void adjust_priority()
 		{
 			printf(">> running as realtime process now (priority %ld)\n",
 																	priority);
+			putenv("STARTED_THROUGH_ARTSWRAPPER=1");
 		}
 		else
 		{
-			fprintf(stderr,"\nWARNING: Can't get realtime priority ");
-			fprintf(stderr," (try running as root)!\n");
-			rt_error();
+			/* can't set realtime priority */
+			putenv("STARTED_THROUGH_ARTSWRAPPER=2");
 		}
 	}
 }
@@ -65,9 +58,8 @@ void adjust_priority()
 		prio = getpriority(PRIO_PROCESS,getpid());
 	}
 
-  	fprintf(stderr,
-		"\nWARNING: Your system doesn't support realtime scheduling.\n");
-	rt_error();
+	/* no system support for realtime priority */
+	putenv("STARTED_THROUGH_ARTSWRAPPER=3");
 
 	if(prio > -10) {
 		printf(">> synthesizer priority is %d (which is unacceptable,",prio);
@@ -94,7 +86,7 @@ int main(int argc, char **argv)
 
 	adjust_priority();
 
-	/* drop root priviliges if running setuid root
+	/* drop root privileges if running setuid root
 	   (due to realtime priority stuff) */
 	if (geteuid() != getuid()) 
 	{
@@ -108,8 +100,15 @@ int main(int argc, char **argv)
 	if(argc == 0)
 		return 1;
 
-	putenv("STARTED_THROUGH_ARTSWRAPPER=1");
-
+/*
+ * Real-time status is passed to artsd via the environment variable
+ * STARTED_THROUGH_ARTSWRAPPER. It has one of the following values:
+ *
+ * unset - not running as real-time
+ * 1     - running as real-time
+ * 2     - no privileges to set real-time scheduling
+ * 3     - no support for real-time scheduling
+ */
 	argv[0] = EXECUTE;
 	execv(EXECUTE,argv);
 	perror(EXECUTE);

@@ -276,6 +276,23 @@ int main(int argc, char **argv)
 		if(!publishReferences(server,audioManager,false)) return 1;
 	}
 
+	/* warn if there was a problem with artswrapper */
+	char *wrapper = getenv("STARTED_THROUGH_ARTSWRAPPER");
+	if (wrapper && !strcmp(wrapper, "2"))
+		arts_warning(
+			"Can't set real-time scheduling priority.\n"
+			"You need to run artswrapper as root or\n"
+			"setuid root. This means that you will\n"
+			"likely not be able to produce acceptable\n"
+			"sound (i.e. without clicks and breaks).");
+
+	if (wrapper && !strcmp(wrapper, "3"))
+		arts_warning(
+			"This system has no support for real-time\n"
+			"scheduling priority. This means that you\n"
+			"will likely not be able to produce acceptable\n"
+			"sound (i.e. without clicks and breaks).");
+
 	dispatcher.run();
 	return 0;
 }
