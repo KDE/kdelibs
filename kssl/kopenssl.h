@@ -613,11 +613,6 @@ public:
    /*
     *
     */
-   int X509_check_purpose(X509 *x, int id, int ca);
-
-   /*
-    *
-    */
    PKCS7 *PKCS7_new(void);
 
    /*
@@ -665,6 +660,30 @@ public:
     */
    STACK_OF(X509_INFO) *PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_INFO) *sk,
 		           pem_password_cb *cb, void *u);
+
+   /*
+    * Get the number of purposes available
+    */
+   int X509_PURPOSE_get_count();
+
+
+   /*
+    * Get the ID of a purpose
+    */
+   int X509_PURPOSE_get_id(X509_PURPOSE *);
+
+
+   /*
+    * Check the existence of purpose id "id" in x.  for CA, set ca = 1, else 0
+    */
+   int X509_check_purpose(X509 *x, int id, int ca);
+
+
+   /*
+    * Get the purpose with index #idx
+    */
+   X509_PURPOSE * X509_PURPOSE_get0(int idx);
+
 
 
 #endif

@@ -123,7 +123,6 @@ static int (*K_X509_add_ext)(X509*, X509_EXTENSION*, int) = NULL;
 static void *(*K_X509_get_ext_d2i)(X509*, int, int*, int*) = NULL;
 static char *(*K_i2s_ASN1_OCTET_STRING)(X509V3_EXT_METHOD*, ASN1_OCTET_STRING*) = NULL;
 static int (*K_ASN1_BIT_STRING_get_bit)(ASN1_BIT_STRING*, int) = NULL;
-static int (*K_X509_check_purpose)(X509*, int, int) = NULL;
 static PKCS7 *(*K_PKCS7_new)() = NULL;
 static void (*K_PKCS7_free)(PKCS7*) = NULL;
 static void (*K_PKCS7_content_free)(PKCS7*) = NULL;
@@ -136,6 +135,10 @@ static STACK_OF(X509_NAME) *(*K_SSL_load_client_CA_file)(const char*) = NULL;
 static STACK_OF(X509_INFO) *(*K_PEM_X509_INFO_read)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void*) = NULL;
 static char *(*K_ASN1_d2i_fp)(char *(*)(),char *(*)(),FILE*,unsigned char**) = NULL;
 static X509 *(*K_X509_new)() = NULL;
+static int (*K_X509_PURPOSE_get_count)() = NULL;
+static int (*K_X509_PURPOSE_get_id)(X509_PURPOSE *) = NULL;
+static int (*K_X509_check_purpose)(X509*,int,int) = NULL;
+static X509_PURPOSE* (*K_X509_PURPOSE_get0)(int) = NULL;
 #endif
 };
 
@@ -335,7 +338,6 @@ KConfig *cfg;
       K_X509_get_ext_d2i = (void* (*)(X509*,int,int*,int*)) _cryptoLib->symbol("X509_get_ext_d2i");
       K_i2s_ASN1_OCTET_STRING = (char *(*)(X509V3_EXT_METHOD*,ASN1_OCTET_STRING*)) _cryptoLib->symbol("i2s_ASN1_OCTET_STRING");
       K_ASN1_BIT_STRING_get_bit = (int (*)(ASN1_BIT_STRING*,int)) _cryptoLib->symbol("ASN1_BIT_STRING_get_bit");
-      K_X509_check_purpose = (int (*)(X509*, int, int)) _cryptoLib->symbol("X509_check_purpose");
       K_PKCS7_new = (PKCS7 *(*)()) _cryptoLib->symbol("PKCS7_new");
       K_PKCS7_free = (void (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_free");
       K_PKCS7_content_free = (void (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_content_free");
@@ -347,6 +349,10 @@ KConfig *cfg;
       K_PEM_X509_INFO_read = (STACK_OF(X509_INFO) *(*)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void *)) _cryptoLib->symbol("PEM_X509_INFO_read");
       K_ASN1_d2i_fp = (char *(*)(char *(*)(),char *(*)(),FILE*,unsigned char**)) _cryptoLib->symbol("ASN1_d2i_fp");
       K_X509_new = (X509 *(*)()) _cryptoLib->symbol("X509_new");
+      K_X509_PURPOSE_get_count = (int (*)()) _cryptoLib->symbol("X509_PURPOSE_get_count");
+      K_X509_PURPOSE_get_id = (int (*)(X509_PURPOSE *)) _cryptoLib->symbol("X509_PURPOSE_get_id");
+      K_X509_check_purpose = (int (*)(X509*,int,int)) _cryptoLib->symbol("X509_check_purpose");
+      K_X509_PURPOSE_get0 = (X509_PURPOSE *(*)(int)) _cryptoLib->symbol("X509_PURPOSE_get0");
 #endif
    }
 
@@ -977,12 +983,6 @@ int KOpenSSLProxy::ASN1_BIT_STRING_get_bit(ASN1_BIT_STRING *a, int n) {
 }
 
 
-int KOpenSSLProxy::X509_check_purpose(X509 *x, int id, int ca) {
-   if (K_X509_check_purpose) return (K_X509_check_purpose)(x,id,ca);
-   else return -1;
-}
-
-
 PKCS7 *KOpenSSLProxy::PKCS7_new(void) {
    if (K_PKCS7_new) return (K_PKCS7_new)();
    else return NULL;
@@ -1068,6 +1068,30 @@ int KOpenSSLProxy::RAND_load_file(const char *filename, long max_bytes) {
 int KOpenSSLProxy::RAND_write_file(const char *filename) {
    if (K_RAND_write_file) return (K_RAND_write_file)(filename);
    else return -1;
+}
+
+
+int KOpenSSLProxy::X509_PURPOSE_get_count() {
+   if (K_X509_PURPOSE_get_count) return (K_X509_PURPOSE_get_count)();
+   else return -1;
+}
+
+
+int KOpenSSLProxy::X509_PURPOSE_get_id(X509_PURPOSE *p) {
+   if (K_X509_PURPOSE_get_id) return (K_X509_PURPOSE_get_id)(p);
+   else return -1;
+}
+
+
+int KOpenSSLProxy::X509_check_purpose(X509 *x, int id, int ca) {
+   if (K_X509_check_purpose) return (K_X509_check_purpose)(x, id, ca);
+   else return -1;
+}
+
+
+X509_PURPOSE *KOpenSSLProxy::X509_PURPOSE_get0(int idx) {
+   if (K_X509_PURPOSE_get0) return (K_X509_PURPOSE_get0)(idx);
+   else return NULL;
 }
 
 
