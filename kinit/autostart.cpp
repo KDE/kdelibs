@@ -50,6 +50,11 @@ AutoStart::AutoStart()
   KGlobal::dirs()->addResourceType("autostart", "share/autostart");
 }
 
+AutoStart::~AutoStart()
+{
+	delete m_startList;
+}
+
 void
 AutoStart::setPhase(int phase)
 {

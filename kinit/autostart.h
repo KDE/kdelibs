@@ -28,6 +28,7 @@ class AutoStart
 {
 public:
   AutoStart();
+  ~AutoStart();
     
   void loadAutoStartList();
   QString startService();
