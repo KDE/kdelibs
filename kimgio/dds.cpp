@@ -421,10 +421,10 @@ namespace {	// Private.
 				color_array[2].b = (color_array[0].b + color_array[1].b) / 2;
 				color_array[2].a = 0xFF;
 
-				// magenta to indicate transparent color.
-				color_array[3].r = color_array[2].r;
-				color_array[3].g = color_array[2].g;
-				color_array[3].b = color_array[2].b;
+				// Set all camponents to black to match DXT specs.
+				color_array[3].r = 0x00; // color_array[2].r;
+				color_array[3].g = 0x00; // color_array[2].g;
+				color_array[3].b = 0x00; // color_array[2].b;
 				color_array[3].a = 0x00;
 			}
 		}
