@@ -1,4 +1,4 @@
-if test -z "$LIB_DNSSD"; then
+if test "$have_libdns_sd" = "no"; then
   echo ""
   echo "You're missing Apple mDNSResponder 85 or later, therefore"
   echo "dnssd will be compiled as stub, without any real functionality."

@@ -8,7 +8,11 @@ save_dnssdtest_LDFLAGS="$LDFLAGS"
 save_dnssdtest_CPPFLAGS="$CPPFLAGS"
 LDFLAGS="$all_libraries $LDFLAGS"
 CPPFLAGS="$CPPFLAGS $all_includes"
-LIBS="-ldns_sd"
+case $host_os in
+  darwin*) LIBS="" ;;
+  *) LIBS="-ldns_sd" ;;
+esac
+have_libdns_sd="no"
 AC_TRY_LINK(	[
 			#include <dns_sd.h>
 		],[
@@ -16,7 +20,11 @@ AC_TRY_LINK(	[
 			TXTRecordDeallocate( (TXTRecordRef*) 0);
 		],[
 			AC_DEFINE(HAVE_DNSSD,1,[Define if dns-sd is available])
-                        LIB_DNSSD="-ldns_sd"
+			case $host_os in
+				darwin*) LIB_DNSSD="" ;;
+				*) LIB_DNSSD="-ldns_sd" ;;
+			esac
+			have_libdns_sd="yes"
 			AC_MSG_RESULT(yes)
 		],[
 			AC_MSG_RESULT(no)
@@ -27,5 +35,5 @@ LDFLAGS=$save_dnssdtest_LDFLAGS
 LIBS=$save_dnssdtest_LIBS
 fi
 AC_SUBST(LIB_DNSSD)
-AM_CONDITIONAL(HAVE_DNSSD, test -n "$LIB_DNSSD")
+AM_CONDITIONAL(HAVE_DNSSD, test "$have_libdns_sd" = "yes")
 
