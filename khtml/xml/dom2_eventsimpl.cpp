@@ -214,6 +214,8 @@ EventImpl::EventId EventImpl::typeToId(DOMString type)
 	return RESIZE_EVENT;
     else if (type == "scroll")
 	return SCROLL_EVENT;
+    // ignore: KHTML_DBLCLICK_EVENT
+    // ignore: KHTML_CLICK_EVENT
     return UNKNOWN_EVENT;
 }
 
@@ -276,6 +278,8 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
 	    return "resize";
 	case SCROLL_EVENT:
 	    return "scroll";
+	// ignore: KHTML_DBLCLICK_EVENT
+	// ignore: KHTML_CLICK_EVENT
 	default:
 	    return 0;
 	    break;
@@ -598,11 +602,10 @@ bool RegisteredEventListener::operator==(const RegisteredEventListener &other)
 
 // -----------------------------------------------------------------------------
 
-HTMLEventListener::HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool _doubleClickOnly)
+HTMLEventListener::HTMLEventListener(KHTMLPart *_part, QString _scriptCode)
 {
     m_part = _part;
     m_scriptCode = _scriptCode;
-    m_doubleClickOnly = _doubleClickOnly;
 }
 
 HTMLEventListener::~HTMLEventListener()
@@ -613,10 +616,6 @@ void HTMLEventListener::handleEvent(Event &evt)
 {
     // ### make event information available to script somehow?
     // See DOM2 Events section 1.3.2
-
-    if (m_doubleClickOnly &&
-	evt.handle() && evt.handle()->isUIEvent() && (static_cast<UIEventImpl*>(evt.handle())->detail() % 2 != 0))
-	return; // single or odd-numbered click
 
     // If the script returns false, we prevent default actions (e.g. submitting a form)
     // ### is this correct for everything?

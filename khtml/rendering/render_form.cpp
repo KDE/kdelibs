@@ -125,7 +125,7 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
         QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
         m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEUP_EVENT,m_clickCount);
 
-        if(!m_isDoubleClick && (m_pressPos - e2.pos()).manhattanLength() <= QApplication::startDragDistance()) {
+        if((m_pressPos - e2.pos()).manhattanLength() <= QApplication::startDragDistance()) {
             // DOM2 Events section 1.6.2 says that a click is if the mouse was pressed
             // and released in the "same screen location"
             // As people usually can't click on the same pixel, we're a bit tolerant here
@@ -137,6 +137,9 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
                 m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
             }
         }
+	// special case for HTML click & ondblclick handler
+	m_element->dispatchMouseEvent(&e2,m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,m_clickCount);
+	
         m_isDoubleClick = false;
     }
     break;

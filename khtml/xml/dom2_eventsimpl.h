@@ -71,7 +71,10 @@ public:
 	FOCUS_EVENT,
 	BLUR_EVENT,
 	RESIZE_EVENT,
-	SCROLL_EVENT
+	SCROLL_EVENT,
+	// khtml events (not part of DOM)
+	KHTML_DBLCLICK_EVENT, // for html ondblclick
+	KHTML_CLICK_EVENT // for html onclick
     };
 
     EventImpl();
@@ -262,15 +265,13 @@ public:
 
 class HTMLEventListener : public EventListener {
 public:
-    HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool _doubleClickOnly = false);
+    HTMLEventListener(KHTMLPart *_part, QString _scriptCode);
     virtual ~HTMLEventListener();
     virtual void handleEvent(Event &evt);
     virtual DOMString eventListenerType();
-    bool doubleClickOnly() { return m_doubleClickOnly; }
 protected:
     QString m_scriptCode;
     KHTMLPart *m_part;
-    bool m_doubleClickOnly;
 };
 
 }; //namespace

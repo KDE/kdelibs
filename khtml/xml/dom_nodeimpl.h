@@ -255,7 +255,7 @@ public:
     virtual void removeEventListener(int id, EventListener *listener, bool useCapture);
     virtual void removeEventListener(const DOMString &type, EventListener *listener,
 				     bool useCapture,int &exceptioncode);
-    virtual void removeHTMLEventListener(int id, bool doubleClickOnly = false);
+    virtual void removeHTMLEventListener(int id);
 
     virtual bool dispatchEvent(EventImpl *evt, int &exceptioncode);
     virtual bool dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg);

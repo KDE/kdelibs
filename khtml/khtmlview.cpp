@@ -96,6 +96,7 @@ public:
 	clickX = -1;
 	clickY = -1;
 	clickCount = 0;
+	isDoubleClick = false;
     }
 
     QPainter *tp;
@@ -117,6 +118,7 @@ public:
     KSimpleConfig *formCompletions;
 
     int clickX, clickY, clickCount;
+    bool isDoubleClick;
 };
 
 
@@ -325,6 +327,8 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
         topView()->setFrameSelected(this);
     }*/
 
+    d->isDoubleClick = false;
+
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
     m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
 
@@ -355,6 +359,8 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     //kdDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
+    d->isDoubleClick = true;
+
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick );
     m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
 
@@ -370,6 +376,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 	d->clickY = ym;
     }
     dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,true);
+
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed();
 
@@ -985,6 +992,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 						0,screenX,screenY,clientX,clientY,
 						ctrlKey,altKey,shiftKey,metaKey,
 						button,oldUnder);
+	
 	me->ref();
 	targetNode->dispatchEvent(me,exceptioncode);
 	me->deref();
@@ -992,8 +1000,12 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	    oldUnder->deref();
     }
 
+    MouseEventImpl *me;
+
+
+
     // send the actual event
-    MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
+    me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
 					    true,cancelable,m_part->xmlDocImpl()->defaultView(),
 					    detail,screenX,screenY,clientX,clientY,
 					    ctrlKey,altKey,shiftKey,metaKey,
@@ -1001,6 +1013,20 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     me->ref();
     targetNode->dispatchEvent(me,exceptioncode);
     me->deref();
+
+    // special case for HTML click & ondblclick handler
+    if (eventId == EventImpl::CLICK_EVENT) {
+	me = new MouseEventImpl(d->isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,
+				true,cancelable,m_part->xmlDocImpl()->defaultView(),
+				detail,screenX,screenY,clientX,clientY,
+				ctrlKey,altKey,shiftKey,metaKey,
+				button,0);
+	
+	
+	me->ref();
+	targetNode->dispatchEvent(me,exceptioncode);
+	me->deref();	
+    }
 }
 
 

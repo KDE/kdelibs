@@ -96,12 +96,12 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 	break;
 // standard events
     case ATTR_ONCLICK:
-        removeHTMLEventListener(EventImpl::CLICK_EVENT);
-        addEventListener(EventImpl::CLICK_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        removeHTMLEventListener(EventImpl::KHTML_CLICK_EVENT);
+        addEventListener(EventImpl::KHTML_CLICK_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
 	break;
     case ATTR_ONDBLCLICK:
-        removeHTMLEventListener(EventImpl::CLICK_EVENT,true);
-        addEventListener(EventImpl::CLICK_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string(),true),false);
+        removeHTMLEventListener(EventImpl::KHTML_DBLCLICK_EVENT);
+        addEventListener(EventImpl::KHTML_DBLCLICK_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
 	break;
     case ATTR_ONMOUSEDOWN:
         removeHTMLEventListener(EventImpl::MOUSEDOWN_EVENT);

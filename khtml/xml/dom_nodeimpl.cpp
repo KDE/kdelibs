@@ -388,7 +388,7 @@ void NodeImpl::removeEventListener(const DOMString &type, EventListener *listene
     removeEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
 }
 
-void NodeImpl::removeHTMLEventListener(int id, bool doubleClickOnly)
+void NodeImpl::removeHTMLEventListener(int id)
 {
     if (!m_regdListeners) // nothing to remove
         return;
@@ -396,8 +396,7 @@ void NodeImpl::removeHTMLEventListener(int id, bool doubleClickOnly)
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "HTMLEventListener" &&
-            static_cast<HTMLEventListener*>(it.current()->listener)->doubleClickOnly() == doubleClickOnly) {
+            it.current()->listener->eventListenerType() == "HTMLEventListener") {
             m_regdListeners->removeRef(it.current());
             return;
         }
@@ -456,6 +455,8 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
     it.toFirst();
     for (; it.current(); ++it)
 	it.current()->deref(); // this may delete us
+	
+    getDocument()->updateRendering();
     	
     return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
 }
