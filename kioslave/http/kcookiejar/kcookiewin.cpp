@@ -160,6 +160,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     bbLay->setSpacing( KDialog::spacingHint() );
     QPushButton* btn = new QPushButton( i18n("&Accept"), bbox );
     btn->setDefault( true );
+    btn->setFocus();
     connect( btn, SIGNAL(clicked()), SLOT(accept()) );
     bbLay->addWidget( btn );
     btn = new QPushButton( i18n("&Reject"), bbox );
