@@ -641,6 +641,10 @@ void RenderPartObject::updateWidget()
 
       params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
       params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( o->getAttribute(ATTR_CODEBASE).string() ) );
+      if (!o->getAttribute(ATTR_WIDTH).isEmpty())
+          params.append( QString::fromLatin1("WIDTH=\"%1\"").arg( o->getAttribute(ATTR_WIDTH).string() ) );
+      if (!o->getAttribute(ATTR_HEIGHT).isEmpty())
+          params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( o->getAttribute(ATTR_HEIGHT).string() ) );
 
       if ( !embed )
       {
