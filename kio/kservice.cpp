@@ -91,6 +91,7 @@ KService::init( KDesktopFile *config )
 
   // In case Try Exec is set, check if the application is available
   if (!config->tryExec()) {
+      m_bDeleted = true;
       m_bValid = false;
       return;
   }
