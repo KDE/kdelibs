@@ -216,10 +216,6 @@
 			</And>
 		</Include>
 		<Menu>
-			<Name>Terminal</Name>
-			<Directory>kde-internet-terminal.directory</Directory>
-		</Menu>
-		<Menu>
 			<Name>More</Name>
 			<Directory>kde-more.directory</Directory>
 			<Include>
@@ -239,6 +235,10 @@
 			<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
+		<Menu>
+		  <Name>Terminal</Name>
+		  <Directory>kde-internet-terminal.directory</Directory>
+		</Menu>
 		<Menu>
 			<Name>More</Name>
 			<Directory>kde-more.directory</Directory>
