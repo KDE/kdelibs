@@ -15,6 +15,8 @@
 #   2 = shell (stderr)
 #   3 = syslog
 #   4 = off
+#   5 = application dependant. if application doesnt support this (the usual
+#       case) this is equal to 4 (off).
 #
 # For file output you can give a filename by *Filename=<file>
 # otherwise kdebug.dbg in the current directory is used.
