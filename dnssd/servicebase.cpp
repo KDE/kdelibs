@@ -95,6 +95,9 @@ const QMap<QString,QString>& ServiceBase::textData() const
 	return m_textData;
 }
 
+void ServiceBase::virtual_hook(int, void*)
+{}
+
 QDataStream & operator<< (QDataStream & s, const ServiceBase & a)
 {
 	s << a.m_serviceName << a.m_type << a.m_domain << a.m_hostName << Q_INT16(a.m_port) << a.m_textData;
