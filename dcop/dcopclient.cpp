@@ -47,6 +47,8 @@ extern "C" {
 #include <X11/ICE/ICEproto.h>
 }
 
+template class QList<DCOPObjectProxy>;
+
 class DCOPClientPrivate
 {
 public:
