@@ -805,9 +805,12 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
     if (!m_render)
 	return false;
     RenderObject *o = m_render;
-    o->absolutePosition( xPos, yPos );
+    xPos = yPos = 0;
     if ( !isInline() )
+    {
+        o->absolutePosition( xPos, yPos );
 	return true;
+    }
 
     // find the next text/image child, to get a position
     while(o) {
@@ -824,7 +827,8 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
 	    }
 	    o = next;
 	}
-	if(o->isText() || o->isReplaced()) {
+	if((o->isText() && !o->isBR()) || o->isReplaced()) {
+	    o->container()->absolutePosition( xPos, yPos );
 	    if (o->isText())
 		xPos += static_cast<RenderText *>(o)->minXPos();
 	    else
@@ -842,9 +846,10 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
 	return false;
 
     RenderObject *o = m_render;
-    o->absolutePosition( xPos, yPos );
+    xPos = yPos = 0;
     if (!isInline())
     {
+	o->absolutePosition( xPos, yPos );
 	xPos += o->width();
 	yPos += o->height();
 	return true;
@@ -865,6 +870,7 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
 	    o = prev;
 	}
 	if(o->isText() || o->isReplaced()) {
+	    o->container()->absolutePosition(xPos, yPos);
 	    if (o->isText())
 		xPos += static_cast<RenderText *>(o)->minXPos() + o->width();
 	    else
