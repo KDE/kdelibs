@@ -198,6 +198,8 @@ void KSystemTray::maybeQuit()
         return;
     }
 
+    emit quitSelected();
+
     // KDE4: stop closing the parent widget? it results in complex application code
     //       instead make applications connect to the quitSelected() signal
 
@@ -209,8 +211,6 @@ void KSystemTray::maybeQuit()
     {
         qApp->closeAllWindows();
     }
-
-    emit quitSelected();
 }
 
 void KSystemTray::toggleActive()
