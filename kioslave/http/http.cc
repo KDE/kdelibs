@@ -143,7 +143,7 @@ HTTPProtocol::~HTTPProtocol()
 
 void HTTPProtocol::reparseConfiguration()
 {
-  kdDebug(7113) << "(" << m_pid << ") Reparse Configuration!" << endl;
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::reparseConfiguration" << endl;
 
   m_strProxyRealm = QString::null;
   m_strProxyAuthorization = QString::null;
@@ -214,10 +214,14 @@ void HTTPProtocol::resetSessionSettings()
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
+  
   kdDebug(7113) << "(" << m_pid << ") Window Id = " << m_request.window << endl;
+  kdDebug(7113) << "(" << m_pid << ") ssl_was_in_use = "
+                << metaData ("ssl_was_in_use") << endl;
 
-  bool sendReferrer = config()->readBoolEntry("SendReferrer", true);
-  if ( sendReferrer )
+  if ( config()->readBoolEntry("SendReferrer", true) &&
+       (m_protocol == "https" || m_protocol == "webdavs" ||
+        metaData ("ssl_was_in_use") != "TRUE" ) )
      m_request.referrer = metaData("referrer");
   else
      m_request.referrer = QString::null;
@@ -336,7 +340,10 @@ void HTTPProtocol::setHost( const QString& host, int port,
 
 bool HTTPProtocol::checkRequestURL( const KURL& u )
 {
+  kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::checkRequestURL:  " << u.url() << endl;
+  
   m_request.url = u;
+  
   if (m_request.hostname.isEmpty())
   {
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
@@ -359,6 +366,7 @@ bool HTTPProtocol::checkRequestURL( const KURL& u )
 
 void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 {
+  kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::retrieveContent " << endl;
   if ( !retrieveHeader( false ) )
   {
     if ( m_bError )
@@ -386,6 +394,7 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
 {
+  kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::retrieveHeader " << endl;
   while ( 1 )
   {
     if (!httpOpen())
@@ -1919,7 +1928,7 @@ bool HTTPProtocol::httpOpen()
   httpCheckConnection();  
 
   // Determine if this is a POST or GET method
-  switch ( m_request.method)
+  switch (m_request.method)
   {
   case HTTP_GET:
       header = "GET ";
@@ -2008,6 +2017,9 @@ bool HTTPProtocol::httpOpen()
       davData = true;
       m_request.bCachedWrite = false;
       break;
+  case HTTP_UNKNOWN:
+      error (ERR_UNSUPPORTED_ACTION, QString::null);
+      return false;
   }
 
   if ( !m_bIsTunneled && m_bNeedTunnel )
@@ -2054,13 +2066,13 @@ bool HTTPProtocol::httpOpen()
       else
          u.setProtocol( m_protocol );
 
-			// For all protocols other than the once handled by this io-slave
-			// append the username.  This fixes a long standing bug of ftp io-slave
-			// logging in anonymously in proxied connections even when the username
-			// is explicitly specified.
-			if (m_protocol != "http" && m_protocol != "https" &&
-					!m_state.user.isEmpty())
-				u.setUser (m_state.user);				
+      // For all protocols other than the once handled by this io-slave
+      // append the username.  This fixes a long standing bug of ftp io-slave
+      // logging in anonymously in proxied connections even when the username
+      // is explicitly specified.
+      if (m_protocol != "http" && m_protocol != "https" &&
+          !m_state.user.isEmpty())
+        u.setUser (m_state.user);
 
       u.setHost( m_state.hostname );
       if (m_state.port != m_iDefaultPort)
@@ -3512,7 +3524,7 @@ void HTTPProtocol::httpClose( bool keepAlive )
         ::unlink( QFile::encodeName(filename) );
      }
   }
-
+  
   // Only allow persistent connections for GET requests.
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from

@@ -67,26 +67,59 @@ public:
   //                  DAV_COPY, DAV_MOVE, DAV_LOCK, DAV_UNLOCK, DAV_SEARCH };
 
   /** State of the current Connection **/
-  typedef struct
+  struct HTTPState
   {
+    HTTPState ()
+    {
+      port = 0;
+      doProxy = false;
+    }
+    
     QString hostname;
     short unsigned int port;
     QString user;
     QString passwd;
     bool  doProxy;
-  } HTTPState;
+  };
 
   /** DAV-specific request elements for the current connection **/
-  typedef struct
+  struct DAVRequest
   {
+    DAVRequest ()
+    {
+      overwrite = false;
+      depth = 0;
+    }
+    
     QString desturl;
     bool overwrite;
     int depth;
-  } DAVRequest;
+  };
 
   /** The request for the current connection **/
-  typedef struct
+  struct HTTPRequest
   {
+    HTTPRequest () 
+    {
+      port = 0;
+      method = KIO::HTTP_UNKNOWN;
+      offset = 0;
+      doProxy = false;
+      allowCompressedPage = false;
+      disablePassDlg = false;
+      bNoAuth = false;
+      bUseCache = false;
+      bCachedRead = false;
+      bCachedWrite = false;
+      fcache = 0;
+      bMustRevalidate = false;
+      cacheExpireDateOffset = 0;
+      bErrorPage = false;
+      bUseCookiejar = false;
+      expireDate = 0;
+      creationDate = 0;      
+    }
+    
     QString hostname;
     short unsigned int port;
     QString user;
@@ -131,9 +164,9 @@ public:
     // Cookie flags
     bool bUseCookiejar;
     enum { CookiesAuto, CookiesManual, CookiesNone } cookieMode;
-  } HTTPRequest;
+  };
 
-  typedef struct
+  struct DigestAuthInfo
   {
     QCString nc;
     QCString qop;
@@ -146,7 +179,7 @@ public:
     QStrList digestURI;
     QCString algorithm;
     QCString entityBody;
-  } DigestAuthInfo;
+  };
 
 //---------------------- Re-implemented methods ----------------
   virtual void setHost(const QString& host, int port, const QString& user,
