@@ -338,13 +338,9 @@ bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *ho
 int HTTPProtocol::openStream() {
 #ifdef DO_SSL
   if (m_bUseSSL) {
-    fprintf(stderr,"Calling set_fd\n");
-    fflush(stderr);
     SSL_set_fd(hand, m_sock);
-    fprintf(stderr, "%u,%d\n", m_sock, SSL_connect(hand));
-    fflush(stderr);
-    fprintf(stderr, "err:%d\n",ERR_get_error());
-    fflush(stderr);
+    if (SSL_connect(hand)== -1)
+      return false;
     return true;
   }
 #endif
@@ -369,17 +365,13 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   ssize_t ret;
 #ifdef DO_SSL
   if (m_bUseSSL) {
-    fprintf(stderr, "SSL used\n");
-    fflush(stderr);
     ret=SSL_read(hand, b, nbytes);
     if (ret==0) m_bEOF=true;
-    if (m_bEOF) {fprintf(stderr,"GOT EOF!\n");fflush(stderr);}
     return ret;
   }
 #endif
   ret=fread(b, 1, nbytes, m_fsocket);
   if (!ret) m_bEOF=feof(m_fsocket);
-  if (m_bEOF) {fprintf(stderr,"GOT EOF!\n");fflush(stderr);}
   return ret;
 }
 
@@ -393,13 +385,16 @@ bool HTTPProtocol::eof()
 bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
 {
   int do_proxy, port = _url.port(), len=1;
-  char c_buffer[64], f_buffer[1024], *ret=0;
+  char c_buffer[64], f_buffer[1024];
   bool unauthorized = false;
 
   if ( port == -1 ) {
+#ifdef DO_SSL
     if (strncasecmp(_url.protocol(), "https", 5)==0)
       port = DEFAULT_HTTPS_PORT;
-    else if ((strncasecmp(_url.protocol(), "http", 4)==0) || (strncasecmp(_url.protocol(), "httpf", 5)==0))
+    else
+#endif
+    if ((strncasecmp(_url.protocol(), "http", 4)==0) || (strncasecmp(_url.protocol(), "httpf", 5)==0))
 	    port = DEFAULT_HTTP_PORT;
 
     else {
@@ -408,10 +403,11 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
       port=80;
     }
   }
-  fprintf(stderr,"Protocol is: %s:%d\n", _url.protocol(), port);
-  fflush(stderr);
+
+#ifdef DO_SSL
   if (strncasecmp(_url.protocol(), "https", 5)==0)
     m_bUseSSL=true;
+#endif
 
   m_sock = ::socket(PF_INET,SOCK_STREAM,0);
   if ( m_sock < 0 )  {
@@ -562,7 +558,7 @@ repeat2:
   // however at least extensions should be checked
   m_strMimeType = "text/html";
 
-  while( len && ( ret = read( f_buffer, 1024) ) ) { 
+  while( len && (read( f_buffer, 1024) ) ) { 
     len = strlen( f_buffer );
     while( len && (f_buffer[ len-1 ] == '\n' || f_buffer[ len-1 ] == '\r') )
       f_buffer[ --len ] = 0;
@@ -571,7 +567,7 @@ repeat2:
     if ( strncmp( f_buffer, "Accept-Ranges: none", 19 ) == 0 )
       m_bCanResume = false;
     
-    
+
     else if ( strncmp( f_buffer, "Content-length: ", 16 ) == 0 || strncmp( f_buffer, "Content-Length: ", 16 ) == 0 )
       m_iSize = atol( f_buffer + 16 );
     else if ( strncmp( f_buffer, "Content-Type: ", 14 ) == 0 || strncmp( f_buffer, "Content-type: ", 14 ) == 0 ) {
@@ -777,12 +773,15 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.032899");
+  QString user_agent("Konqueror/1.9.032899.2");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
 #ifdef DO_GZIP
   user_agent+="; Supports gzip encoding";
+#endif
+#ifdef DO_SSL
+  user_agent+="; Supports SSL/HTTPS";
 #endif
   return user_agent.data();
 }
