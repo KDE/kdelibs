@@ -23,6 +23,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.17  1998/03/08 22:08:49  wuebben
+    Bernd: adjusted the size of kfontdialog for localization
+
     Revision 1.16  1998/01/21 15:06:57  jacek
     Added real KCharsets support
 
@@ -248,12 +251,6 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 			    ,11*YOFFSET - COMBO_ADJUST +60 ,
 			     COMBOWIDTH,COMBO_BOX_HEIGHT);
 
-  KCharsets *charsets=KApplication::getKApplication()->getCharsets();
-
-  QStrList lst=charsets->displayable(selFont.family());
-  for(const char * chset=lst.first();chset;chset=lst.next())
-      charset_combo->insertItem( chset );
-  charset_combo->insertItem( "any" );
 
   charset_combo->setInsertionPolicy(QComboBox::NoInsertion);
   connect( charset_combo, SIGNAL(activated(const char *)),
@@ -359,12 +356,17 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   if(family_combo->count() != 0){
     this->setFont(QFont(family_combo->text(0),12,QFont::Normal));
   }
-
+  
+  // Create displayable charsets list
+  KCharsets *charsets=KApplication::getKApplication()->getCharsets();
+  QStrList lst=charsets->displayable(selFont.family());
+  for(const char * chset=lst.first();chset;chset=lst.next())
+      charset_combo->insertItem( chset );
+  charset_combo->insertItem( "any" );
   
   setColors();
   connect(KApplication::getKApplication(),SIGNAL(kdisplayPaletteChanged()),
 	  this,SLOT(setColors()));
-
 }
 
 
