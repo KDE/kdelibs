@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>KDebug</title>
+  </head>
+
+  <body bgcolor="ffffff">
+    <h1>What is KDebug</h1>
+	KDebug is a system of macros and functions that makes using
+	diagnostic messages in your code more efficient. You can give a
+	message one out of four severity level and an area. You can choose
+	at runtime where diagnostic messages should go and which of them
+	should be printed at all.
+
+	<h1>How to use KDebug in your code</h1>
+	<h2>The macro KDEBUG</h2>	
+	Using KDebug is very simple. All you have to do is to
+	<code>#include &lt;kdebug.h&gt;</code> at the beginning of every
+	source file in which you want to use diagnostic messages and
+	output the messages by calling the macro
+	<code>KDEBUG</code>. This macro expects three parameters. The
+	first is the severity level. Use one of the following constants:
+	<ul>
+	  <li><code>KDEBUG_INFO</code></li>
+	  <li><code>KDEBUG_WARN</code></li>
+	  <li><code>KDEBUG_ERROR</code></li>
+	  <li><code>KDEBUG_FATAL</code></li>
+	</ul>
+	The second parameter is the area. An area is a part of KDE that
+	you define yourself. You can then at runtime choose from which
+	areas diagnostic messages should be printed. Please see the file
+	kdelibs/kdecore/kdebugareas.txt for a list of already allocated
+	area ranges. Choose an area within the range allocated for your
+	application. If your application is not yet in here and you have
+	CVS access, you can allocate a range for your application here,
+	otherweise just <a href="mailto:kalle@kde.org">mail me</a>. It is
+	probably a good idea to define symbolic constants for the areas
+	you want to use, but this is completely up to you.
+	The third parameter, finally, is the text you want to
+	output. KDebug automatically prepends the logical application name
+	if you output to a file, to stderr or to syslog. A newline is
+	always appended, you need not (and should not) use one yourself.
+
+	If you need parameters, you can use one of the macros KDEBUG1,
+	..., KDEBUG9. These allow for one to nine additional
+	arguments. The syntax is exactly the same as with printf, i.e. you
+	have to include format specifiers in your message which get
+	replaced by the additional parameters. An example:
+
+	<pre><code>KDEBUG3( KDEBUG_INFO, kmail_composer, "Message no. %d to %s has %d bytes", 
+	 message_no, aMessage.to(), aMessage.length() );</code></pre>
+
+	<h2>KASSERT</h2>
+	There are also the macros KASSERT, KASSERT1, ..., KASSERT9 which
+	work just like their KDEBUG-counterparts, except that they have an
+	additional bool as their first parameter. Only if this evaluates
+	to <code>false</code> will the message be output.
+
+	Note: You should not use neither KDEBUG nor KASSERT before the
+	KApplication object is constructed.
+	Note 2: KDebug provides no means for internationalization because
+	it is meant strictly for developers only. If you want to inform
+	the user about an errorneous condition (like "this file is not
+	writable"), use KMsgBox.
+
+	<h2>Compiler switches</h2>
+	You do not need any special compiler switches in order to use
+	KDebug. But when you ship your product (this mainly applies to
+	people who create distributions like .rpm or .deb packages), you
+	should compile with the switch <code>-DNDEBUG</code>. This will
+	simply remove all the debugging code from your application and
+	make it smaller and faster (e.g. it uses 256K less non-shareable
+	memory). 
+
+	<h1>How to manage diagnostic messages at runtime</h1>
+	You can press Ctrl-Shift-F12 in every KApplication at any time,
+	and the "Debug Settings"-Dialog will appear. Here you can define
+	separately for every severity level what should be done with the
+	diagnostic messages of that level. The following settings are
+	available:
+	<ul>
+	  <li>Output: In this Combobox, you can choose where the messages
+	  should be output. The choices are: "File", "Message Box",
+	  "Shell" (meaning stderr) and "syslog". Please do not direct
+	  fatal messages to syslog unless you are the system administrator
+	  yourself. The default is "Message Box".</li>
+	  <li>File: This is only meaningful when you have chosen "File" as
+	  the output and provides the name of that file (which is
+	  interpreted relatively to the current directory). The default is
+	  kdebug.dbg.</li>
+	  <li>Area: The areas which should only be output. Every message
+	  that is not mentioned here will simply not be output (unless
+	  this field remains empty which is the default and means that all
+	  messages should be output). Your can enter several areas
+	  seperated by commas here, and you can also use area ranges with
+	  the syntax start-end. Thus a valid entry could be:
+	  117,214-289,356-359,221. Please do not use whitespace.</li>
+	</ul>
+
+	Apart from this, you can also tick the checkbox "Abort on fatal
+	errors". In this case, if a diagnostic message with the severity
+	level "KDEBUG_FATAL" is output, the application aborts with
+	a SIGABRT after outputting the message.
+
+	When you close the dialog with OK, your entries apply immediately
+	and saved in your application's configuration file. Please note
+	that these settings are specific for one singular application!
+	When you press cancel, your entries are discarded and the old ones
+	are restored.
+
+	<h1>But I need more features!</h1>
+	Well, simply tell me about them. If it makes any sense, chances are
+	that I will implement them, because I want KDebug to be as useful
+	as possible for KDE application and library developers.
+
+	<hr>
+    <address><a href="mailto:kalle@kde.org">Kalle Dalheimer</a></address>
+<!-- Created: Thu Jul 24 23:25:53 CEST 1997 -->
+<!-- hhmts start -->
+Last modified: Sat Sep 13 11:56:01 CEST 1997
+<!-- hhmts end -->
+  </body>
+</html>
