@@ -6,6 +6,7 @@
 
 
 Motivation and Background:
+--------------------------
 
 The motivation behind building a protocol like DCOP was simple.  For
 the past year, we have been attempting to enable interprocess
@@ -32,6 +33,7 @@ call a function on the remote application to create a new window,
 rather than starting a new process.
 
 Implementation:
+---------------
 
 DCOP is a simple IPC/RPC mechanism built to operate over sockets.
 Either unix domain sockets or tcp/ip sockets are supported. DCOP is
@@ -42,6 +44,7 @@ it is extremely lightweight, enabling it to be linked into all KDE
 applications with low overhead.
 
 Model:
+------
 
 The model is simple.  Each application using DCOP is a client.  They
 communicate to each other through a DCOP server, which functions like
@@ -62,6 +65,7 @@ by hand that normally the compiler or CORBA take care of
 automatically, but it is not a lot of work.
 
 Establishing the Connection:
+----------------------------
 
 KApplication has gained a method called "KApplication::dcopClient()"
 which returns a pointer to a DCOPClient instance.  The first time this
@@ -110,6 +114,7 @@ call DCOPClient::registerAs() with the new name.
 
 
 Sending Data to a Remote Application:
+-------------------------------------
 
 To actually communicate, you have one of two choices.  You may either
 call the "send" or the "call" method.  Both methods require three
@@ -159,6 +164,7 @@ else {
 
 
 Receiving Data via DCOP:
+------------------------
 
 (this section subject to change)
 
@@ -195,6 +201,8 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
   }
 }
 
+Conclusion:
+-----------
 
 Hopefully this document will get you well on your way into the world
 of inter-process communication with KDE!  Please direct all comments
