@@ -42,6 +42,9 @@
 #include <stdlib.h>
 
 #include <qdatetime.h>
+#include <qfile.h>
+#include <qdatastream.h>
+#include <qtextstream.h>
 #include "kapp.h"
 #include "ktempfile.h"
 
@@ -51,15 +54,34 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
    bAutoDelete = false;
    mFd = -1;
    mStream = 0;
+   mFile = 0;
+   mTextStream = 0;
+   mDataStream = 0;
    mError = 0;
    bOpen = false;
-   int maxTries = 3;
    if (fileExtension.isEmpty())
       fileExtension = ".tmp";
    if (filePrefix.isEmpty())
       filePrefix = "/tmp/kde";
+   (void) create(filePrefix, fileExtension, mode);
+}
 
+KTempFile::KTempFile(bool)
+{
+   bAutoDelete = false;
+   mFd = -1;
+   mStream = 0;
+   mFile = 0;
+   mTextStream = 0;
+   mDataStream = 0;
+   mError = 0;
+   bOpen = false;
+}
 
+bool   
+KTempFile::create(const QString &filePrefix, const QString &fileExtension,
+		  int mode)
+{
 #ifdef __FreeBSD__
    mTmpName = filePrefix+QString("XXXX")+fileExtension;
    char *mktmpName = (char *)malloc(mTmpName.length());
@@ -68,11 +90,17 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
    if (mFd == -1) {
             mError = errno;
             mTmpName = QString::null;
-            return;
+            free(mktmpName);
+            return false;
    }
-   mTmpName = mktmpName; free(mktmpName);
+   mTmpName = mktmpName; 
+   free(mktmpName);
+   fchmod( mFd, mode); // Fix the mode
 #else
+   // The following is not guranteed to work correctly on NFS
+   // In that case we depend on a good random number
    srand( QTime::currentTime().msecsTo(QTime()));
+   int maxTries = 3;
    int tries = 0;
    do {
       tries++;
@@ -85,7 +113,7 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
          {
             mError = errno;
             mTmpName = QString::null;
-            return;
+            return false;
          }
       }
       else 
@@ -94,7 +122,7 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
          {
             mError = EACCES;
             mTmpName = QString::null;
-            return;
+            return false;
          }
       }
    }
@@ -106,7 +134,7 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
 
    // Set uid/gid (neccesary for SUID programs)
    chown(mTmpName.ascii(), getuid(), getgid());
-   return;
+   return true;
 }
 
 KTempFile::~KTempFile()
@@ -148,6 +176,38 @@ KTempFile::fstream()
    return mStream;
 }
 
+QFile *
+KTempFile::file()
+{
+   if (mFile) return mFile;
+   (void) fstream(); // Initialize mStream
+
+   mFile = new QFile();
+   mFile->setName( name() );
+   mFile->open(IO_WriteOnly, mStream);
+   return mFile;
+}
+
+QTextStream *
+KTempFile::textStream()
+{
+   if (mTextStream) return mTextStream;
+
+   (void) file(); // Initialize mFile
+   mTextStream = new QTextStream( mFile );
+   return mTextStream;
+}
+
+QDataStream *
+KTempFile::dataStream()
+{
+   if (mDataStream) return mDataStream;
+
+   (void) file(); // Initialize mFile
+   mDataStream = new QDataStream( mFile );
+   return mDataStream;
+}
+
 void
 KTempFile::unlink()
 {
@@ -159,6 +219,10 @@ bool
 KTempFile::close()
 {
    int result = 0;
+   delete mTextStream; mTextStream = 0;
+   delete mDataStream; mDataStream = 0;
+   delete mFile; mFile = 0;
+
    if (mStream)
    {
       result = fclose(mStream);

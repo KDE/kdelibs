@@ -41,40 +41,18 @@
 #include "ksavefile.h"
 
 KSaveFile::KSaveFile(const QString &filename, int mode)
+ : mTempFile(true) 
 {
-   mFd = -1;
-   mStream = 0;
-   mError = 0;
-   bOpen = false;
-   int maxTries = 3;
    if (!checkAccess(filename, W_OK)) 
    {
-      mError = EACCES;
+      mTempFile.setError(EACCES);
       return;
    }
-    
-   srand( QTime::currentTime().msecsTo(QTime()));
-   int tries = 0;
-   do {
-      tries++;
-      mTmpName = filename+QString(".%1.new").arg(rand());
-      mFd = open(mTmpName.ascii(), O_WRONLY|O_CREAT|O_EXCL, mode);
 
-      if ((mFd <= 0) && (tries >= maxTries))
-      {
-         mError = errno;
-         return;
-      }
+   if (mTempFile.create(filename, ".new", mode))
+   {
+      mFileName = filename; // Set filename upon success
    }
-   while( mFd <= 0);
-
-   // Success!
-   bOpen = true;
-
-   // Set uid/gid (neccesary for SUID programs)
-   chown(mTmpName.ascii(), getuid(), getgid());
-
-   mFileName = filename;
    return;
 }
 
@@ -83,94 +61,34 @@ KSaveFile::~KSaveFile()
    close();
 }
 
-int
-KSaveFile::status()
-{
-   return mError;
-}
-
 QString 
 KSaveFile::name()
 {
    return mFileName;
 }
 
-int 
-KSaveFile::handle()
-{
-   return mFd;
-}
-
-FILE *
-KSaveFile::fstream()
-{
-   if (mStream) return mStream;
-   if (mFd < 0) return 0;
-
-   // Create a stream
-   mStream = fdopen(mFd, "w");
-   if (!mStream)
-     mError = errno;
-
-   return mStream;
-}
-
 void
 KSaveFile::abort()
 {
-   if (mStream)
-   {
-      fclose(mStream);
-      mStream = 0;
-      mFd = -1;
-   }
-   if (mFd >= 0)
-   {
-      ::close(mFd);
-      mFd = -1;
-   }
-   if (bOpen)
-   {
-      unlink( mTmpName.ascii());
-      bOpen = false;
-   }
+   mTempFile.unlink();
+   mTempFile.close();
 }
 
 bool
 KSaveFile::close()
 {
-   int result = 0;
-   if (mStream)
+   if (mTempFile.close())
    {
-      result = fclose(mStream);
-      mStream = 0;
-      mFd = -1;
-   }
-   if (mFd >= 0)
-   {
-      result = ::close(mFd);
-      mFd = -1;
-   }
-
-   if (result != 0)
-      mError = errno;
-
-   if (!bOpen)
-      return true;    // File is already closed.
-
-   if ( result == 0 )
-   {
-      result = rename( mTmpName.ascii(), mFileName.ascii());
+      int result = rename( mTempFile.name().ascii(), mFileName.ascii());
       if ( result == 0 )
       {
-         bOpen = false;
          return true; // Success!
       }
-      mError = errno;
+      mTempFile.setError(errno);
    }
     
    // Something went wrong, make sure to delete the interim file.
-   unlink(mTmpName.ascii());
+   mTempFile.unlink();
    return false;
 }
 

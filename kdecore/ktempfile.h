@@ -24,11 +24,17 @@
 #include <stdio.h>
 #include <errno.h>
 
+class QFile;
+class QTextStream;
+class QDataStream;
+class KSaveFile;
+
 /**
  * The KTempFile class creates and opens a unique file for temporary use.
  */
 class KTempFile
 {
+   friend KSaveFile;
 public:
    /**
     * Create a temporary file with the name:
@@ -40,6 +46,7 @@ public:
    KTempFile(QString filePrefix=QString::null, 
              QString fileExtension=QString::null, 
              int mode = 0600 );
+
 
    /**
     * The destructor closes the file.
@@ -76,9 +83,24 @@ public:
    int handle();
    
    /**
-    * A FILE* stream open for writing to the file
+    * @return FILE* stream open for writing to the file
     **/
    FILE *fstream();
+
+   /**
+    * @return QTextStream open for writing to the file
+    **/
+   QTextStream *textStream();
+
+   /**
+    * @return QDataStream open for writing to the file
+    **/
+   QDataStream *dataStream();
+
+   /**
+    * A QFile open for writing to the file
+    **/
+   QFile *file();
 
    /**
     * Unlinks the file from the directory. The file is
@@ -92,11 +114,29 @@ public:
     * See status() for details about errors.
     **/
    bool close();
+
+protected:
+   /**
+    * Constructor used by KSaveFile
+    **/
+   KTempFile(bool);
+
+   /**
+    * @internal
+    * Create function used internally by KTempFile and KSaveFile
+    **/
+   bool create(const QString &filePrefix, 
+               const QString &fileExtension, int mode);
+
+   void setError(int error) { mError = error; }
 private:
    int mError;
    QString mTmpName;
    int mFd;
    FILE *mStream;
+   QFile *mFile;
+   QTextStream *mTextStream;
+   QDataStream *mDataStream;
    bool bOpen;
    bool bAutoDelete;
 };

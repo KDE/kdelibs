@@ -23,7 +23,7 @@
 #include <qstring.h>
 #include <stdio.h>
 #include <errno.h>
-
+#include <ktempfile.h>
 
 /**
  * The KSaveFile class has been made to write out changes to an existing
@@ -56,7 +56,8 @@ public:
     * You may check the status after closing the file to verify that
     * the file has indeed been written correctly.
     **/
-   int status();
+   int status()
+   	{ return mTempFile.status(); }
 
    /**
     * The name of the file as passed to the constructor.
@@ -66,12 +67,32 @@ public:
    /**
     * An integer file descriptor open for writing to the file 
     **/
-   int handle();
+   int handle()	
+   	{ return mTempFile.handle(); }
    
    /**
     * A FILE* stream open for writing to the file
     **/
-   FILE *fstream();
+   FILE *fstream()
+   	{ return mTempFile.fstream(); }
+
+   /**
+    * A QFile* open for writing to the file
+    **/
+   QFile *file()
+   	{ return mTempFile.file(); }
+
+   /**
+    * A QTextStream* open for writing to the file
+    **/
+   QTextStream *textStream() 
+   	{ return mTempFile.textStream(); }
+
+   /**
+    * A QDataStream* open for writing to the file
+    **/
+   QDataStream *dataStream()
+   	{ return mTempFile.dataStream(); }
 
    /**
     * Aborts the write operation and removes any intermediate files 
@@ -86,12 +107,8 @@ public:
     **/
    bool close();
 private:
-   int mError;
    QString mFileName;
-   QString mTmpName;
-   int mFd;
-   FILE *mStream;
-   bool bOpen;
+   KTempFile mTempFile;
 };
 
 #endif
