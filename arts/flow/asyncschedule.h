@@ -62,7 +62,7 @@ protected:
 	GenericAsyncStream *stream;
 	FlowSystemSender sender;
 	Notification gotPacketNotification;
-	list<GenericDataPacket *> sent;
+	std::list<GenericDataPacket *> sent;
 	long _receiveHandlerID;
 
 public:
@@ -86,7 +86,7 @@ class ASyncPort :public Port, public GenericDataChannel {
 protected:
 	long notifyID;
 	std::vector<Notification> subscribers;
-	list<GenericDataPacket *> sent;
+	std::list<GenericDataPacket *> sent;
 
 	GenericAsyncStream *stream;
 	FlowSystemSender sender;
