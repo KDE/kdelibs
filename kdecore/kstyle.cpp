@@ -193,7 +193,7 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
 void KStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup &g, QBrush *fill)
 {
-    QBrush brush = fill ? *fill : g.brush(QColorGroup::Button);
+    QBrush brush = fill ? *fill : g.brush(QColorGroup::Background);
     qDrawWinPanel(p, x, y, w, h, g, false, fill ? fill : &brush);
 }
 
@@ -225,7 +225,7 @@ void KStyle::getKProgressBackground(const QColorGroup &g, QBrush &bg)
 void KStyle::drawOPToolBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, QBrush *fill)
 {
-    QBrush brush = fill ? *fill : g.brush(QColorGroup::Button);
+    QBrush brush = fill ? *fill : g.brush(QColorGroup::Background);
     qDrawWinPanel(p, x, y, w, h, g, false, fill ? fill : &brush);
 }
 
