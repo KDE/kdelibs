@@ -37,6 +37,8 @@ using namespace DOM;
 #include <qcursor.h>
 #include <qnamespace.h>
 
+#include <kapp.h>
+
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc, KHTMLWidget *v)
     : HTMLBlockElementImpl(doc), HTMLImageRequester()
 {
@@ -126,6 +128,7 @@ HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
     marginWidth = -1;
     marginHeight = -1;
     scrolling = QScrollView::Auto;
+    noresize = false;
 }
 
 HTMLFrameElementImpl::~HTMLFrameElementImpl()
@@ -142,31 +145,16 @@ ushort HTMLFrameElementImpl::id() const
     return ID_FRAME;
 }
 
-bool HTMLFrameElementImpl::noResize() const
-{
-    // ###
-    return false;
-}
-
-void HTMLFrameElementImpl::setNoResize( bool )
-{
-}
-
 void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 {
     switch(attr->id)
     {
-	// ### remove opening the view and url from here!
     case ATTR_SRC:
-    {
 	url = attr->value();
 	break;
-    }
     case ATTR_NAME:
-    {
 	name = attr->value();
 	break;
-    }
     case ATTR_FRAMEBORDER:
 	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
 	    frameBorder = false;
@@ -178,7 +166,7 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 	marginHeight = attr->val()->toInt();
 	break;
     case ATTR_NORESIZE:
-	// ####
+	noresize = true;
 	break;
     case ATTR_SCROLLING:
 	if( strcasecmp( attr->value(), "auto" ) == 0 )
@@ -242,7 +230,7 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
     view->setHScrollBarMode(scrolling);
     if(marginWidth != -1) view->setMarginWidth(marginWidth);
     if(marginHeight != -1) view->setMarginHeight(marginHeight);
-    
+
     view->show();
     printf("adding frame\n");
 
@@ -263,16 +251,21 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
     rowHeight = 0;
     colWidth = 0;
 
-    rowResize = 0;
-    colResize = 0;
-
     // default value for rows and cols...
     rows = 0;
     cols = 0;
+    totalRows = 1;
+    totalCols = 1;
 
     frameborder = true;
-    border = 2;
+    border = 4;
     noresize = false;
+
+    resizing = false;
+    hSplit = -1;
+    vSplit = -1;
+    hSplitVar = 0;
+    vSplitVar = 0;
 
     view = 0;
 
@@ -281,8 +274,11 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
-    if(rowHeight) delete rowHeight;
-    if(colWidth) delete colWidth;
+    if(rowHeight) delete [] rowHeight;
+    if(colWidth) delete [] colWidth;
+
+    if(vSplitVar) delete [] vSplitVar;
+    if(hSplitVar) delete [] hSplitVar;
 }
 
 const DOMString HTMLFrameSetElementImpl::nodeName() const
@@ -301,9 +297,11 @@ void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
     {
     case ATTR_ROWS:
 	rows = attr->val()->toLengthList();
+	totalRows = rows->count();
 	break;
     case ATTR_COLS:
 	cols = attr->val()->toLengthList();
+	totalCols = cols->count();
 	break;
     case ATTR_FRAMEBORDER:
 	if(attr->value() == "0" || strcasecmp( attr->value(), "no" ) == 0 )
@@ -332,19 +330,14 @@ void HTMLFrameSetElementImpl::layout(bool deep)
     if(_parent->id() == ID_HTML && view)
 	descent = view->clipper()->height();
 
-    int totalRows = 1;
-    if(rows)
-	totalRows = rows->count();
-    int totalCols = 1;
-    if(cols)
-	totalCols = cols->count();
     ascent = 0;
 
-    // ### get the right value here!!!
     int remainingWidth = width - (totalCols-1)*border;
     if(remainingWidth<0) remainingWidth=0;
     int remainingHeight = descent - (totalRows-1)*border;
     if(remainingHeight<0) remainingHeight=0;
+    int widthAvailable = remainingWidth;
+    int heightAvailable = remainingHeight;
 
     if(rowHeight) delete [] rowHeight;
     if(colWidth) delete [] colWidth;
@@ -365,7 +358,7 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 	    printf("setting row %d\n", i);
 	    if(rows->at(i)->type == Fixed || rows->at(i)->type == Percent)
 	    {
-		rowHeight[i] = rows->at(i)->width(descent);
+		rowHeight[i] = rows->at(i)->width(heightAvailable);
 		printf("setting row height to %d\n", rowHeight[i]);
 		remainingHeight -= rowHeight[i];
 	    }
@@ -379,7 +372,7 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 	if(remainingHeight < 0) remainingHeight = 0;
 
 	if ( !totalRelative && rowsRelative )
-	  remainingRelativeWidth = remainingWidth/rowsRelative;
+	  remainingRelativeWidth = remainingHeight/rowsRelative;
 	
 	for(i = 0; i< totalRows; i++)
 	 {
@@ -406,7 +399,7 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 	{
 	    if(cols->at(i)->type == Fixed || cols->at(i)->type == Percent)
 	    {
-		colWidth[i] = cols->at(i)->width(width);
+		colWidth[i] = cols->at(i)->width(widthAvailable);
 		remainingWidth -= colWidth[i];
 	    }
 	    else if(cols->at(i)->type == Relative)
@@ -437,6 +430,63 @@ void HTMLFrameSetElementImpl::layout(bool deep)
     else
 	colWidth[0] = width;
 
+
+    positionFrames(deep);
+
+    NodeImpl *child = _first;
+    if(!child) return;
+
+    if(!hSplitVar && !vSplitVar)
+    {
+	printf("calculationg fixed Splitters\n");
+	if(!vSplitVar && totalCols > 1)
+	{
+	    vSplitVar = new bool[totalCols];
+	    for(int i = 0; i < totalCols; i++) vSplitVar[i] = true;
+	}
+	if(!hSplitVar && totalRows > 1)
+	{
+	    hSplitVar = new bool[totalRows];
+	    for(int i = 0; i < totalRows; i++) hSplitVar[i] = true;
+	}
+	
+	for(int r = 0; r < totalRows; r++)
+	{
+	    for(int c = 0; c < totalCols; c++)
+	    {
+		bool fixed = false;
+		if(child->id() == ID_FRAMESET)
+		    fixed = (static_cast<HTMLFrameSetElementImpl *>(child))->noResize();
+		else if(child->id() == ID_FRAME)
+		    fixed = (static_cast<HTMLFrameElementImpl *>(child))->noResize();
+
+		if(fixed)
+		{
+		    printf("found fixed cell %d/%d!\n", r, c);
+		    if(totalCols > 1)
+		    {
+			if(c>0) vSplitVar[c-1] = false;
+			vSplitVar[c] = false;
+		    }
+		    if(totalRows > 1)
+		    {
+			if(r>0) hSplitVar[r-1] = false;
+			hSplitVar[r] = false;
+		    }
+		    child = child->nextSibling();
+		    if(!child) goto end2;
+		}		
+		else
+		    printf("not fixed: %d/%d!\n", r, c);
+	    }
+	}
+    }
+ end2:
+    setLayouted();
+}
+
+void HTMLFrameSetElementImpl::positionFrames(bool deep)
+{
     int r;
     int c;
     NodeImpl *child = _first;
@@ -458,13 +508,10 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 		e->layout();
 	    xPos += colWidth[c] + border;
 	    child = child->nextSibling();
-	    if(!child) goto end;
+	    if(!child) return;
 	}
 	yPos += rowHeight[r] + border;
     }
-
- end:
-    setLayouted();
 }
 
 void HTMLFrameSetElementImpl::attach(KHTMLWidget *w)
@@ -508,6 +555,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 {
     _x-=_tx;
     _y-=_ty;
+    printf("mouseEvent\n");
 
     NodeImpl *child = _first;
     while(child)
@@ -519,53 +567,89 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 
     if(noresize) return true;
 
-    if(type == MouseMove)
+    if(!resizing && type == MouseMove || type == MousePress)
     {
-	int horiz = -1;
-	int vert = -1;
+	printf("mouseEvent:check\n");
 	
-	int totalRows = 1;
-	if(rows)
-	    totalRows = rows->count();
-	int totalCols = 1;
-	if(cols)
-	    totalCols = cols->count();
+	hSplit = -1;
+	vSplit = -1;
+	bool resizePossible = true;
 
 	// check if we're over a horizontal or vertical boundary
-	int pos = 0;
-	for(int c = 0; c < totalCols; c++)
+	int pos = colWidth[0];
+	for(int c = 1; c < totalCols; c++)
 	{
-	    pos += colWidth[c];
 	    if(_x >= pos && _x <= pos+border)
 	    {
-		horiz = c;
+		if(vSplitVar && vSplitVar[c-1] == true) vSplit = c-1;
+		printf("vsplit!\n");
 		break;
 	    }
-	    pos += border;
+	    pos += colWidth[c] + border;
 	}
-	pos = 0;
-	for(int r = 0; r < totalRows; r++)
+	pos = rowHeight[0];
+	for(int r = 1; r < totalRows; r++)
 	{
-	    pos += rowHeight[r];
 	    if( _y >= pos && _y <= pos+border)
 	    {
-		vert = r;
+		if(hSplitVar && hSplitVar[r-1] == true) hSplit = r-1;
+		printf("hsplitvar = %p\n", hSplitVar);
+		printf("hsplit!\n");
 		break;
 	    }
-	    pos += border;
+	    pos += rowHeight[r] + border;
+	}
+	printf("%d/%d\n", hSplit, vSplit);
+
+	QCursor cursor;
+	if(hSplit != -1 && vSplit != -1)
+	{
+	    cursor = Qt::sizeAllCursor;
+	}
+	else if( vSplit != -1 )
+	{
+	    cursor = Qt::splitHCursor;
+	}	
+	else if( hSplit != -1 )
+	{
+	    cursor = Qt::splitVCursor;
 	}
 
-	if(horiz != -1 && vert != -1)
-	    view->setCursor(Qt::sizeAllCursor);
-	else if( horiz != -1 )
-	    view->setCursor(Qt::splitHCursor);
-	else if( vert != -1 )
-	    view->setCursor(Qt::splitVCursor);
-	
+	if(type == MousePress)
+	{
+	    resizing = true;
+	    KApplication::setOverrideCursor(cursor);
+	    vSplitPos = _x;
+	    hSplitPos = _y;
+	}
+	else
+	    view->setCursor(cursor);
     }
 
-}
+    // ### need to draw a nice movin indicator for the resize.
+    // ### check the resize is not going out of bounds.
+    if(resizing && type == MouseRelease)
+    {
+	resizing = false;
+	KApplication::restoreOverrideCursor();
 
+	if(hSplit)
+	{
+	    printf("split xpos=%d\n", _x);
+	    int delta = vSplitPos - _x;
+	    colWidth[vSplit] -= delta;
+	    colWidth[vSplit+1] += delta;
+	}	
+	if(vSplit)
+	{
+	    printf("split ypos=%d\n", _y);
+	    int delta = hSplitPos - _y;
+	    rowHeight[hSplit] -= delta;
+	    rowHeight[hSplit+1] += delta;
+	}
+	positionFrames(true);
+    }
+}
 // -------------------------------------------------------------------------
 
 HTMLHeadElementImpl::HTMLHeadElementImpl(DocumentImpl *doc)

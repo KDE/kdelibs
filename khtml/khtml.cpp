@@ -905,7 +905,7 @@ void KHTMLWidget::layout()
 
 	int w = width() - SCROLLBARWIDTH - 2*marginWidth();
 
-	if(w < _width-5 || w > _width + 10)
+	if(w < _width-5 || w > _width + 5)
 	{
 	    printf("layouting document\n");
 

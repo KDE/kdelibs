@@ -199,15 +199,17 @@ void HTMLFrameElement::setName( const DOMString &value )
 
 bool HTMLFrameElement::noResize() const
 {
+    // ###
     if(!impl) return 0;
-    return ((HTMLFrameElementImpl *)impl)->noResize();
+    //return ((HTMLFrameElementImpl *)impl)->noResize();
+    return 0;
 }
 
 void HTMLFrameElement::setNoResize( bool _noResize )
 {
     // ### fix the attribute too...
-    if(impl)
-        ((HTMLFrameElementImpl *)impl)->setNoResize( _noResize );
+    //if(impl)
+    //    ((HTMLFrameElementImpl *)impl)->setNoResize( _noResize );
 }
 
 DOMString HTMLFrameElement::scrolling() const

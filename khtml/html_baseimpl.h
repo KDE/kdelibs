@@ -77,9 +77,6 @@ public:
 
     virtual tagStatus startTag() { return FRAMEStartTag; }
     virtual tagStatus endTag() { return FRAMEEndTag; }
-    bool noResize() const;
-
-    void setNoResize( bool );
 
     virtual void parseAttribute(Attribute *);
     virtual void layout(bool);
@@ -87,6 +84,8 @@ public:
     virtual bool isInline() { return false; }
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
+
+    bool noResize() { return noresize; }
 
 protected:
     DOMString url;
@@ -97,6 +96,7 @@ protected:
     bool frameBorder;
     int marginWidth;
     int marginHeight;
+    bool noresize;
     QScrollView::ScrollBarMode scrolling;
 };
 
@@ -128,14 +128,18 @@ public:
 		     int _tx, int _ty, DOMString &url);
 
     bool frameBorder() { return frameborder; }
+    bool noResize() { return noresize; }
 
 protected:
+    void positionFrames(bool);
+
+    
     QList<Length> *rows;
     QList<Length> *cols;
     int *rowHeight;
     int *colWidth;
-    bool *rowResize;
-    bool *colResize;
+    int totalRows;
+    int totalCols;
 
     // mozilla and other's use this in the frameset, although it's not standard html4
     bool frameborder;
@@ -143,6 +147,14 @@ protected:
     bool noresize;
 
     KHTMLWidget *view;
+
+    bool resizing;  // is the user resizing currently
+    int hSplit;     // the split currently resized
+    int vSplit;
+    int hSplitPos;
+    int vSplitPos;
+    bool *hSplitVar; // is this split variable?
+    bool *vSplitVar;
 };
 
 // -------------------------------------------------------------------------
