@@ -70,7 +70,7 @@ using namespace KJS;
   if (Collector::outOfMemory()) \
     return List(); // will be picked up by KJS_CHECKEXCEPTION
 
-#ifndef NDEBUG
+#ifdef KJS_DEBUG_MEM
 std::list<Node *> Node::s_nodes;
 #endif
 // ------------------------------ Node -----------------------------------------
@@ -79,20 +79,19 @@ Node::Node()
 {
   line = Lexer::curr()->lineNo();
   refcount = 0;
-#ifndef NDEBUG
+#ifdef KJS_DEBUG_MEM
   s_nodes.push_back( this );
 #endif
 }
 
 Node::~Node()
 {
-#ifndef NDEBUG
+#ifdef KJS_DEBUG_MEM
   s_nodes.remove( this );
 #endif
 }
 
-#ifndef NDEBUG
-#ifndef QWS
+#ifdef KJS_DEBUG_MEM
 void Node::finalCheck()
 {
   fprintf( stderr, "Node::finalCheck(): list count       : %d\n", s_nodes.size() );
@@ -100,7 +99,6 @@ void Node::finalCheck()
   for ( uint i = 0; it != s_nodes.end() ; ++it, ++i )
     fprintf( stderr, "[%d] Still having node %p (%s) (refcount %d)\n", i, (void*)*it, typeid( **it ).name(), (*it)->refcount );
 }
-#endif
 #endif
 
 Value Node::throwError(ExecState *exec, ErrorType e, const char *msg)

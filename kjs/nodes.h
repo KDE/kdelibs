@@ -85,7 +85,8 @@ namespace KJS {
     virtual bool deref() { return (!--refcount); }
 #endif
 
-#ifndef NDEBUG
+
+#ifdef KJS_DEBUG_MEM
     static void finalCheck();
 #endif
   protected:
@@ -94,7 +95,7 @@ namespace KJS {
     unsigned int refcount;
     virtual int sourceId() const { return -1; }
   private:
-#ifndef NDEBUG
+#ifdef KJS_DEBUG_MEM
     // List of all nodes, for debugging purposes. Don't remove!
     static std::list<Node *> s_nodes;
 #endif

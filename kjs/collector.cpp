@@ -254,8 +254,7 @@ bool Collector::collect()
   return deleted;
 }
 
-#ifndef NDEBUG
-#ifndef QWS
+#ifdef KJS_DEBUG_MEM
 void Collector::finalCheck()
 {
   CollectorBlock *block = root;
@@ -274,5 +273,4 @@ void Collector::finalCheck()
     block = block->next;
   }
 }
-#endif
 #endif

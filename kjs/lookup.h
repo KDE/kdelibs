@@ -187,7 +187,7 @@ namespace KJS {
       return thisObj->ParentImp::get(exec, propertyName);
 
     if (entry->attr & Function)
-      fprintf(stderr, "Function bit set! Shouldn't happen in lookupGetValue!\n" );
+      fprintf(stderr, "Function bit set! Shouldn't happen in lookupGetValue! propertyName was %s\n", propertyName.ascii() );
     return thisObj->getValue(exec, entry->value);
   }
 
