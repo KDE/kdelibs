@@ -115,7 +115,7 @@ KDirWatch::KDirWatch (int _freq)
 KDirWatch::~KDirWatch()
 {
   d->timer->stop();
-  //  delete timer; timer was created with 'this' as parent!
+  //  delete d->timer; timer was created with 'this' as parent!
 
 #ifdef HAVE_FAM
   if (d->use_fam) {
@@ -123,7 +123,6 @@ KDirWatch::~KDirWatch()
     kdDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
-  delete d->timer;
   delete d; d = 0;
 }
 
