@@ -47,7 +47,7 @@ class KCModuleProxy : public QWidget
 		KInstance * instance() const;
 		bool changed() const;
 		KCModule * realModule() const;
-    KCModuleInfo moduleInfo() const;
+    const KCModuleInfo & moduleInfo() const;
 
 	signals:
 		void changed( bool );

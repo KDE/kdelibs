@@ -149,7 +149,7 @@ KCModule * KCModuleProxy::realModule() const
 	return d->kcm;
 }
 
-KCModuleInfo KCModuleProxy::moduleInfo() const
+const KCModuleInfo & KCModuleProxy::moduleInfo() const
 {
   return d->modinfo;
 }
