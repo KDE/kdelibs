@@ -324,7 +324,7 @@ void KListView::slotSettingsChanged(int category)
 void KListView::slotAutoSelect()
 {
   // check that the item still exists
-  if( index( d->pCurrentItem ) == -1 )
+  if( itemIndex( d->pCurrentItem ) == -1 )
     return;
 
   if (!isActiveWindow())
@@ -1199,7 +1199,7 @@ KListView::SelectionModeExt KListView::selectionModeExt () const
   return d->selectionMode;
 }
 
-int KListView::index( const QListViewItem *item ) const
+int KListView::itemIndex( const QListViewItem *item ) const
 {
     if ( !item )
 	return -1;

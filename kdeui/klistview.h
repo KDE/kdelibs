@@ -219,7 +219,7 @@ public:
    * @param item doesn't exist in this list view. This function takes 
    * all items into account not only the visible ones. 
    */
-  int index( const QListViewItem *item ) const;
+  int itemIndex( const QListViewItem *item ) const;
 
 signals:
 
