@@ -285,13 +285,13 @@ class DCOPClient : public QObject
   static QCString normalizeFunctionSignature( const QCString& fun );
 
 
-  /*
+    /**
    * Retrieve the @p appId of the last application that talked to us.
    */
   QCString senderId() const;
 
 
-    /*
+    /**
      * Install object @p objId as application-wide default object.
      *
      * All app-wide messages that have not been processed by the dcopclient
@@ -299,7 +299,7 @@ class DCOPClient : public QObject
      */
     void setDefaultObject( const QCString& objId );
 
-    /*
+    /**
      * Retrieve the current default object or an empty string if no object is
      * installed as default object.
      *
