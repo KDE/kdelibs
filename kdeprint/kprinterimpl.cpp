@@ -79,7 +79,7 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 				p->setErrorMessage(i18n("Cannot copy multiple files into one file."));
 				return false;
 			}
-			else if (system(QString::fromLatin1("%1 %2 %3").arg((flag?"mv":"cp")).arg(f[0]).arg(p->outputFileName()).latin1()) != 0)
+			else if (system(QString::fromLatin1("%1 '%2' '%3'").arg((flag?"mv":"cp")).arg(QFile::encodeName(f[0])).arg(QFile::encodeName(p->outputFileName())).latin1()) != 0)
 			{
 				p->setErrorMessage(i18n("Cannot save print file. Check that you have write access to it."));
 				return false;
