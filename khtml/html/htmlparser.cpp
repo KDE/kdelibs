@@ -26,8 +26,6 @@
 // KDE HTML Widget -- HTML Parser
 //#define PARSER_DEBUG
 
-#include "html/htmlparser.h"
-
 #include "dom/dom_exception.h"
 
 #include "html/html_baseimpl.h"
@@ -53,6 +51,7 @@
 
 #include "rendering/render_object.h"
 
+#include "html/htmlparser.h"
 #include <kdebug.h>
 #include <klocale.h>
 
@@ -111,7 +110,8 @@ public:
  *    element or ignore the tag.
  *
  */
-KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
+KHTMLParser::KHTMLParser
+( KHTMLView *_parent, DocumentPtr *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
 #if SPEED_DEBUG > 0

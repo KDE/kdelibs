@@ -29,10 +29,6 @@
 #ifndef HTMLTOKENIZER_H
 #define HTMLTOKENIZER_H
 
-class KCharsets;
-class StringTokenizer;
-class HTMLTokenizer;
-
 #include <qstring.h>
 #include <qobject.h>
 #include <qptrqueue.h>
@@ -45,7 +41,7 @@ class HTMLTokenizer;
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
 
-class KHTMLParser;
+class KCharsets;
 class KHTMLView;
 
 namespace DOM {
@@ -55,7 +51,7 @@ namespace DOM {
 
 namespace khtml {
     class CachedScript;
-
+    class KHTMLParser;
 
     /**
      * @internal
@@ -112,14 +108,13 @@ namespace khtml {
         ushort id;
         bool flat;
     };
-};
 
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
 
 //-----------------------------------------------------------------------------
 
-class HTMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
+class HTMLTokenizer : public Tokenizer, public CachedObjectClient
 {
 public:
     HTMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
@@ -341,6 +336,8 @@ protected:
 
     KHTMLView *view;
 };
+
+}; // namespace
 
 #endif // HTMLTOKENIZER
 

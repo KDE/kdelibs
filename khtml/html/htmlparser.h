@@ -55,13 +55,11 @@ namespace DOM {
     class HTMLMapElementImpl;
     class HTMLHeadElementImpl;
     class DocumentFragmentImpl;
-}
-
-namespace khtml {
-    class Token;
 };
 
-class KHTMLParser;
+namespace khtml {
+
+class Token;
 
 /**
  * The parser for html. It receives a stream of tokens from the HTMLTokenizer, and
@@ -77,7 +75,7 @@ public:
     /**
      * parses one token delivered by the tokenizer
      */
-    void parseToken(khtml::Token *_t);
+    void parseToken(Token *_t);
 
     /**
      * resets the parser
@@ -100,9 +98,9 @@ protected:
     /*
      * generate an element from the token
      */
-    DOM::NodeImpl *getElement(khtml::Token *);
+    DOM::NodeImpl *getElement(Token *);
 
-    void processCloseTag(khtml::Token *);
+    void processCloseTag(Token *);
 
     bool insertNode(DOM::NodeImpl *n, bool flat = false);
 
@@ -145,7 +143,7 @@ protected:
      * html from the stone age
      */
     DOM::NodeImpl *isindex;
-    DOM::NodeImpl *handleIsindex( khtml::Token *t );
+    DOM::NodeImpl *handleIsindex( Token *t );
 
     /*
      * inserts the stupid isIndex element.
@@ -175,6 +173,8 @@ protected:
     QTime qt;
 #endif
 };
+
+}; // namespace khtml
 
 #endif // HTMLPARSER_H
 
