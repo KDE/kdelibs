@@ -118,7 +118,13 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "command") {
 	    writeLine(m_Command);
 	} else if (line == "path") {
-	    writeLine(getenv("PATH"));
+	    QCString path = getenv("PATH");
+	    if (m_User == "root") 
+		if (!path.isEmpty())
+		    path = "/sbin:/usr/sbin:" + path;
+		else
+		    path = "/sbin:/usr/sbin";
+	    writeLine(path);
 	} else if (line == "user") {
 	    writeLine(m_User);
 	} else if (line == "priority") {
