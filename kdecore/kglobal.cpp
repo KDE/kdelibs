@@ -101,7 +101,11 @@ KCharsets *KGlobal::charsets()
     return _charsets;
 }
 
-
+void KGlobal::setActiveInstance(KInstance *i)
+{
+	 _activeInstance = i;
+	 qDebug("active Instance %p %s", i, (i ? i->instanceName().data() : "no instance"));
+}
 
 /**
  * Create a static QString
@@ -200,7 +204,7 @@ static void kglobal_freeAll()
     KGlobal::_stringDict = 0;
     KGlobal::deleteStaticDeleters();
     // so that we don't hold a reference and see memory leaks :/
-    KGlobal::_activeInstance = 0;
+    KGlobal::setActiveInstance(0);
 }
 
 static bool addedFreeAll = false;

@@ -30,7 +30,7 @@ class KInstance;
 class KStringDict;
 class KStaticDeleterBase;
 class KStaticDeleterList;
-
+#include <kinstance.h>
 
 /**
  * Access to the KDE global objects.
@@ -110,6 +110,9 @@ public:
      * application, such as a KParts application).
      * Don't use this - it's mainly for KAboutDialog and KBugReport.
      */
+    static void setActiveInstance(KInstance *d);
+    static KInstance *activeInstance() { return _activeInstance; }
+
     static  KInstance           *_activeInstance;
 };
 
