@@ -120,6 +120,10 @@ void KAutoConfigDialog::settingsChangedSlot(){
   emit (settingsChanged(name()));
 }
 
+void KAutoConfigDialog::setCaption(const QString &caption){
+  kdialogbase->setCaption(caption);
+}
+
 void KAutoConfigDialog::show(bool track){
   if(!d->shown){
     kdialogbase->enableButton(KDialogBase::Default, kautoconfig->retrieveSettings(track));
