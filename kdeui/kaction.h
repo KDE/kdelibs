@@ -598,7 +598,7 @@ public:
      * know what you are doing.
      *
      * @param text The text that will be displayed.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
@@ -606,7 +606,7 @@ public:
 
     /**
      *  @param text The text that will be displayed.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -618,7 +618,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -628,7 +628,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -638,7 +638,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -650,7 +650,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -682,7 +682,7 @@ public:
      *  @param widget The GUI element to display this action.
      *  @param index  The index of the item.
      */
-    virtual int plug( QWidget*, int index = -1 );
+    virtual int plug( QWidget* widget, int index = -1 );
 
     /**
      *  Returns the actual state of the action.
@@ -739,7 +739,7 @@ public:
      * know what you are doing.
      *
      * @param text The text that will be displayed.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
@@ -747,7 +747,7 @@ public:
 
     /**
      *  @param text The text that will be displayed.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -759,7 +759,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -769,7 +769,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -779,7 +779,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -791,7 +791,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -844,7 +844,7 @@ public:
      * know what you are doing.
      *
      * @param text The text that will be displayed.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
@@ -852,7 +852,7 @@ public:
 
     /**
      *  @param text The text that will be displayed.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -864,7 +864,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -874,7 +874,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -884,7 +884,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -896,7 +896,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -1043,7 +1043,7 @@ public:
      * know what you are doing.
      *
      * @param text The text that will be displayed.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
@@ -1052,7 +1052,7 @@ public:
 
     /**
      *  @param text The text that will be displayed.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -1064,7 +1064,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -1074,7 +1074,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -1084,7 +1084,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -1097,7 +1097,7 @@ public:
     /**
      *  @param text The text that will be displayed.
      *  @param pix The dynamically loaded icon that goes with this action.
-     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param cut The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
      *  @param slot The SLOT to invoke to execute this action.
      *  @param parent This action's parent.
@@ -1154,7 +1154,7 @@ class KRecentFilesAction : public KListAction  // TODO public KSelectAction
 public:
   /**
    *  @param text The text that will be displayed.
-   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
@@ -1165,7 +1165,7 @@ public:
 
   /**
    *  @param text The text that will be displayed.
-   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
    *  @param slot The SLOT to invoke when a URL is selected.
    *  Its signature is of the form slotURLSelected( const KURL & ).
@@ -1181,7 +1181,7 @@ public:
   /**
    *  @param text The text that will be displayed.
    *  @param pix The icons that go with this action.
-   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
@@ -1193,7 +1193,7 @@ public:
   /**
    *  @param text The text that will be displayed.
    *  @param pix The dynamically loaded icon that goes with this action.
-   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param parent This action's parent.
    *  @param name An internal name for this action.
    *  @param maxItems The maximum number of files to display
@@ -1205,7 +1205,7 @@ public:
   /**
    *  @param text The text that will be displayed.
    *  @param pix The icons that go with this action.
-   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
    *  @param slot The SLOT to invoke when a URL is selected.
    *  Its signature is of the form slotURLSelected( const KURL & ).
@@ -1221,7 +1221,7 @@ public:
   /**
    *  @param text The text that will be displayed.
    *  @param pix The dynamically loaded icon that goes with this action.
-   *  @param accel The corresponding keyboard accelerator (shortcut).
+   *  @param cut The corresponding keyboard accelerator (shortcut).
    *  @param receiver The SLOT's parent.
    *  @param slot The SLOT to invoke when a URL is selected.
    *  Its signature is of the form slotURLSelected( const KURL & ).
@@ -1509,7 +1509,7 @@ public:
      *
      * @param text The text that will be displayed.
      * @param icon The icon to display.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
@@ -1521,11 +1521,11 @@ public:
      * a slot connected to the action, parent and name.
      *
      * If you do not want or have a keyboard accelerator, set the
-     * @p accel param to 0.
+     * @p cut param to 0.
      *
      * @param text The text that will be displayed.
      * @param icon The icon to display.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param receiver The SLOT's owner.
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
@@ -1541,10 +1541,10 @@ public:
      * icon are taken from the KGuiItem.
      *
      * If you do not want or have a keyboard accelerator, set the
-     * @p accel param to 0.
+     * @p cut param to 0.
      *
      * @param item The text and icon that will be displayed.
-     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard accelerator (shortcut).
      * @param receiver The SLOT's owner.
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
