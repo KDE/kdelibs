@@ -38,19 +38,17 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./misc/libkhtmlmisc.la ./dom/libkhtmldom.la $(LIBKJAVA) \
 	../kio/libkio.la \
 	$(top_builddir)/kparts/libkparts.la \
-	$(top_builddir)/kfile/libkfile.la \
-	$(top_builddir)/kssl/libkssl.la \
 	$(top_builddir)/kdeprint/libkdeprint.la 
 
 libkhtmlimage_la_SOURCES = khtmlimage.cpp
 libkhtmlimage_la_LDFLAGS = $(KDE_PLUGIN) $(all_libraries)
 libkhtmlimage_la_LIBADD = libkhtml.la
 
-INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
+INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
-	-I$(top_srcdir)/kfile -I$(top_srcdir)/libltdl \
-	-I$(top_srcdir)/kssl -I$(top_srcdir)/kdeprint \
+	-I$(top_srcdir)/libltdl \
+	-I$(top_srcdir)/kio/kssl -I$(top_srcdir)/kdeprint \
 	-I$(top_srcdir)/interfaces \
 	-I$(top_srcdir)/interfaces/kregexpeditor \
 	-I$(top_srcdir) $(all_includes)
