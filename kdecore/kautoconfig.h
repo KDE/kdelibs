@@ -17,11 +17,13 @@ class QWidget;
  *
  * When told to retrieve settings (@ref retrieveSettings()) KAutoConfig 
  * will traverse the specified widgets building a list of all known widgets
- * that haven't been marked to be ignored.  If a setting is marked immutable
- * the value is loaded and the widget is disabled.
+ * that have a name and havn't been marked to be ignored.
+ * If a setting is marked immutable the value is loaded and the widget is
+ * disabled.
  *
  * The name of the widget determines the name of the setting.  The initial
  * value of the widget also is the default value when the widget is reset.
+ * If the widget does not have a name then it is ignored.
  *
  * When @ref saveSettings() or @ref resetSettings() is called KAutoConfig
  * goes through the list of known widgets and performs the operation on each
@@ -122,7 +124,8 @@ public:
   /**
    * Ignore the specified child widget when performing an action.  Doesn't
    * effect widgets that were added with @ref addWidget() only their children.
-   * @param widget - Pointer to the widget that should be ignored.  
+   * @param widget - Pointer to the widget that should be ignored.
+   * Note: Widgets that don't have a name are ignored automatically.
    **/ 
   void ignoreSubWidget( QWidget *widget );
 

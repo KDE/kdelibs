@@ -308,7 +308,8 @@ bool KAutoConfig::parseChildren(const QWidget *widget,
       continue;
 
     bool parseTheChildren = true;
-    if( d->ignoreTheseWidgets[childWidget->className()] == 0){
+    if( d->ignoreTheseWidgets[childWidget->className()] == 0 &&  
+	childWidget->name(0) != NULL ){
       QVariant defaultSetting = propertyMap->property(childWidget);
       if(defaultSetting.isValid()){
         parseTheChildren = false;
