@@ -57,7 +57,7 @@ namespace KJS {
     ComplType complType() const { return comp; }
     Value value() const { return val; }
     Identifier target() const { return tar; }
-    bool isValueCompletion() const { return !val.isNull(); }
+    bool isValueCompletion() const { return val.isValid(); }
   private:
     ComplType comp;
     Value val;
