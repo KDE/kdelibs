@@ -72,10 +72,10 @@ cvs-local:
 	rm -f acinclude.m4 && \
 	cat ../admin/libtool.m4.in > acinclude.m4 && \
 	cat ltdl.m4 >> acinclude.m4 && \
-	aclocal && \
-	autoheader && \
-	automake --gnits --add-missing && \
-	autoconf
+	$(ACLOCAL) && \
+	$(AUTOHEADER) && \
+	$(AUTOMAKE) --gnits --add-missing && \
+	$(AUTOCONF)
 
 cvs-dist-local:
 	cd libltdl && automake --gnits --add-missing -i &&  autoconf
