@@ -470,7 +470,7 @@ void KFileDialog::accept()
     saveRecentFiles( KGlobal::config() );
     delete c;
 
-    KDialogBase::accept();
+    KDialogBase::slotOk();
 }
 
 
