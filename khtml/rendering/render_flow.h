@@ -170,6 +170,7 @@ private:
     bool m_childrenInline : 1;
     bool m_haveAnonymous  : 1;
     bool m_pre            : 1;
+    bool firstLine 	: 1; // used in inline layouting
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
 };
 

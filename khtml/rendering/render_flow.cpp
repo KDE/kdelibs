@@ -641,6 +641,13 @@ RenderFlow::leftMargin(int y) const
 {
     int left = 0;
 
+    if ( firstLine && m_style->direction() == LTR ) {
+	int cw=0;
+	if (style()->width().isPercent())
+	    cw = containingBlock()->contentWidth();
+	left += m_style->textIndent().minWidth(cw);
+    }
+    
     if(m_style->hasBorder())
 	left = borderLeft();
     if(m_style->hasPadding())
@@ -667,6 +674,13 @@ RenderFlow::rightMargin(int y) const
 {
     int right = m_width;
 
+    if ( firstLine && m_style->direction() == RTL ) {
+	int cw=0;
+	if (style()->width().isPercent())
+	    cw = containingBlock()->contentWidth();
+	right += m_style->textIndent().minWidth(cw);
+    }
+    
     if(m_style->hasBorder())
 	right -= borderRight();
     if(m_style->hasPadding())
@@ -693,7 +707,6 @@ RenderFlow::lineWidth(int y) const
 {
 //    kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightMargin(y) - leftMargin(y) << endl;
     return rightMargin(y) - leftMargin(y);
-
 }
 
 int

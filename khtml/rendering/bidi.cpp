@@ -815,7 +815,8 @@ void RenderFlow::layoutInlineChildren()
 	BidiIterator start(this);
 	BidiIterator end(this);
 	BidiContext *embed = startEmbed;
-	
+
+	firstLine = true;
 	while( !end.atEnd() ) {
 	    start = end;
 	    if( start.current() == QChar('\n') ) {
@@ -836,6 +837,7 @@ void RenderFlow::layoutInlineChildren()
 		embed = bidiReorderLine(status, start, end, embed);
 	    newLine();
 	    ++end;
+	    firstLine = false;
 	}
 	startEmbed->deref();
 	//embed->deref();
