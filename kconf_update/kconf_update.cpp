@@ -131,6 +131,8 @@ KonfUpdate::KonfUpdate()
    }
    else
    {
+      if (config->readBoolEntry("autoUpdateDisabled", false))
+         return;
       updateFiles = findUpdateFiles(true);
    }
 
@@ -142,6 +144,7 @@ KonfUpdate::KonfUpdate()
       updateFile(file);
    }
 
+   config->setGroup(QString::null);
    if (!config->readBoolEntry("updateInfoAdded", false))
    {
        config->writeEntry("updateInfoAdded", true);
