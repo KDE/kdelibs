@@ -1329,7 +1329,7 @@ bool CSSParser::parseShape( int propId, bool important )
     Value *value = valueList->current();
     ValueList *args = value->function->args;
     QString fname = qString( value->function->name ).lower();
-    qDebug( "parseShape: fname: %d", fname.latin1() );
+    //qDebug( "parseShape: fname: %d", fname.latin1() );
     if ( fname != "rect(" || !args )
         return false;
 
