@@ -58,6 +58,8 @@ public:
     virtual void applyChanges(bool top=true, bool force=true);
     virtual void recalcStyle();
 
+    bool isServerMap() const;
+
 protected:
     bool ismap;
 

@@ -2545,6 +2545,29 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     return;
   }
 
+  if ( !d->m_bMousePressed && url.length() && innerNode.elementId() == ID_IMG )
+  {
+    HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
+    if ( i && i->isServerMap() )
+    {
+      khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
+      if(r)
+      {
+        int absx, absy, vx, vy;
+        r->absolutePosition(absx, absy);
+        view()->contentsToViewport( absx, absy, vx, vy );
+
+        int x(_mouse->x() - vx), y(_mouse->y() - vy);
+
+        QString target;
+        QString surl = splitUrlTarget(url.string(), &target);
+        d->m_overURL = surl + QString("?%1,%2").arg(x).arg(y);
+        overURL( d->m_overURL, target );
+        return;
+      }
+    }
+  }
+
   if ( !d->m_bMousePressed && url.length() )
   {
     QString target;
@@ -2648,6 +2671,22 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
        QRect r ( vx, vy, firstSlave->m_width, firstSlave->m_height );
        kdDebug( 6000 ) << " x=" << r.x() << " y=" << r.y() << " width=" << r.width() << " height=" << r.height() << endl;
        KIconEffect::visualActivate( view()->viewport(), r );
+     }
+     else if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG ) {
+       HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
+       if ( i && i->isServerMap() )
+       {
+         khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
+         if(r)
+         {
+           int absx, absy, vx, vy;
+           r->absolutePosition(absx, absy);
+           view()->contentsToViewport( absx, absy, vx, vy );
+
+           int x(_mouse->x() - vx), y(_mouse->y() - vy);
+           url += QString("?%1,%2").arg(x).arg(y);
+         }
+       }
      }
 
      urlSelected( url, _mouse->button(), _mouse->state(), target );

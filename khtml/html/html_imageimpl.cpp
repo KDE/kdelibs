@@ -205,6 +205,13 @@ void HTMLImageElementImpl::recalcStyle()
 	                  static_cast<HTMLDocumentImpl *>(document)->docLoader());
 }
 
+bool HTMLImageElementImpl::isServerMap() const
+{
+  if ( ismap && !usemap.length() )
+    return true;
+  else
+    return false;
+}
 
 // -------------------------------------------------------------------------
 
