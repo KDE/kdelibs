@@ -20,5 +20,4 @@
 <ToolBar>
  <Action name="shell_quit"/>
 </ToolBar>
-<Part/>
 </kpartgui>

@@ -21,6 +21,7 @@ KPartManager::~KPartManager()
 
 bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
 {
+  /*
   if ( ev->type() == QEvent::FocusIn )
   {
     qDebug("Focus Event");
@@ -43,6 +44,7 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
 
     return FALSE;
   }   
+  */
 
   if ( ev->type() != QEvent::MouseButtonPress &&
        ev->type() != QEvent::MouseButtonDblClick )

@@ -54,11 +54,19 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement,
   QDomElement servantElement = shellElement;
   KXMLGUIServant *servant = m_shellServant;
 
+  QStringList shellElementChildNames;
+
   if ( servantElement.isNull() )
   {
     qDebug( "switch to part servant" );
     servantElement = partElement;
     servant = m_partServant;
+  }
+  else
+  {
+    QDomElement e = shellElement.firstChild().toElement();
+    for (; !e.isNull(); e = e.nextSibling().toElement() )
+      shellElementChildNames.append( e.tagName() );
   }
 
   QDomElement e = servantElement.firstChild().toElement();
@@ -100,6 +108,21 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &shellElement,
     }
   
   }  
+
+  if ( shellElementChildNames.count() > 0 && !parent )
+  {
+    QDomElement e = partElement.firstChild().toElement();
+    for (; !e.isNull(); e = e.nextSibling().toElement() )
+      if ( !shellElementChildNames.contains( e.tagName() ) )
+      {
+	QWidget *container = m_builder->createContainer( 0, e );
+
+	if ( !container )
+	  return;
+
+	buildRecursive( QDomElement(), e );
+      }
+  }
 
 }
 
