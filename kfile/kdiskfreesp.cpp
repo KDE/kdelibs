@@ -32,8 +32,8 @@
 
 #include "kdiskfreesp.moc"
 
-#define DF_COMMAND    "df"
-#define DF_ARGS       "-k"
+#define DF_COMMAND    "LANG=C exec df -k"
+// #define DF_ARGS       "-k"
 #define NO_FS_TYPE    true
 
 #define BLANK ' '
@@ -45,7 +45,7 @@
 KDiskFreeSp::KDiskFreeSp(QObject *parent, const char *name)
     : QObject(parent,name)
 {
-    dfProc = new KProcess(); Q_CHECK_PTR(dfProc);
+    dfProc = new KShellProcess(); Q_CHECK_PTR(dfProc);
     connect( dfProc, SIGNAL(receivedStdout(KProcess *, char *, int) ),
              this, SLOT (receivedDFStdErrOut(KProcess *, char *, int)) );
     connect(dfProc,SIGNAL(processExited(KProcess *) ),
@@ -82,7 +82,7 @@ int KDiskFreeSp::readDF( const QString & mountPoint )
   m_mountPoint = mountPoint;
   dfStringErrOut=""; // yet no data received
   dfProc->clearArguments();
-  (*dfProc) << QString::fromLocal8Bit(DF_COMMAND) << QString::fromLocal8Bit(DF_ARGS);
+  (*dfProc) << QString::fromLocal8Bit(DF_COMMAND); // << QString::fromLocal8Bit(DF_ARGS);
   if (!dfProc->start( KProcess::NotifyOnExit, KProcess::AllOutput ))
      kdError() << "could not execute ["<< DF_COMMAND << "]" << endl;;
   return 1;
