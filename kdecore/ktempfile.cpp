@@ -205,6 +205,12 @@ KTempFile::unlink()
    mTmpName = QString::null;
 }
 
+#if defined(_POSIX_SYNCHRONIZED_IO) && _POSIX_SYNCHRONIZED_IO > 0
+#define FDATASYNC fdatasync
+#else
+#define FDATASYNC fsync
+#endif
+
 bool
 KTempFile::close()
 {
@@ -215,15 +221,24 @@ KTempFile::close()
 
    if (mStream)
    {
+      fflush(mStream); // We need to flush first otherwise fsync may not have our data
+   
       result = ferror(mStream);
       if (result)
          mError = ENOSPC; // Assume disk full.
+         
+      result = FDATASYNC(mFd);
+      if (result)
+      {
+         qWarning("KTempFile: Error trying to sync %s: %s", mTmpName.latin1(), strerror(errno));
+         mError = errno;
+      }
 
       result = fclose(mStream);
       mStream = 0;
       mFd = -1;
       if (result != 0) {
-         qWarning("KTempFile: Error trying to closing %s: %s", mTmpName.latin1(), strerror(errno));
+         qWarning("KTempFile: Error trying to close %s: %s", mTmpName.latin1(), strerror(errno));
          mError = errno;
       }
    }
@@ -231,6 +246,13 @@ KTempFile::close()
 
    if (mFd >= 0)
    {
+      result = FDATASYNC(mFd);
+      if (result)
+      {
+         qWarning("KTempFile: Error trying to sync %s: %s", mTmpName.latin1(), strerror(errno));
+         mError = errno;
+      }
+
       result = ::close(mFd);
       mFd = -1;
       if (result != 0) {
@@ -242,4 +264,6 @@ KTempFile::close()
    bOpen = false;
    return (mError == 0);
 }
+
+#undef FDATASYNC
 
