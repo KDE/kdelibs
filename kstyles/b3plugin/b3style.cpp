@@ -124,17 +124,18 @@ void B3Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
           drawSBArrow( p, UpArrow,
                        activeControl == SubLine, subB.x()+5, subB.y()+3,
                        subB.width()-10, subB.height()-7, g, !maxed);
-
-        drawSBButton(p, subB3, g);
-        if (horiz)
-          drawSBArrow( p, LeftArrow,
-                       activeControl == SubLine, subB3.x()+3, subB3.y()+4,
-                       subB3.width()-7, subB3.height()-10, g, !maxed);
-        else
-          drawSBArrow( p, UpArrow,
-                       activeControl == SubLine, subB3.x()+5, subB3.y()+3,
-                       subB3.width()-10, subB3.height()-7, g, !maxed);
-
+        if ( len > (buttonDim * 4) )
+        {
+            drawSBButton(p, subB3, g);
+            if (horiz)
+              drawSBArrow( p, LeftArrow,
+                           activeControl == SubLine, subB3.x()+3, subB3.y()+4,
+                           subB3.width()-7, subB3.height()-10, g, !maxed);
+            else
+              drawSBArrow( p, UpArrow,
+                           activeControl == SubLine, subB3.x()+5, subB3.y()+3,
+                           subB3.width()-10, subB3.height()-7, g, !maxed);
+        }
     }
     if(controls & AddPage){
         if(addPageR.width()){
@@ -282,6 +283,42 @@ void B3Style::drawSBArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
                           bool enabled, const QBrush *fill)
 {
     drawArrow(p, type, down, x, y, w, h, g, enabled, fill);
+}
+
+void B3Style::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
+                                  int &sliderMax, int &sliderLength,
+                                  int &buttonDim)
+{
+
+    int maxLength;
+    int b = 0;
+    bool horiz = sb->orientation() == QScrollBar::Horizontal;
+    int length = horiz ? sb->width()  : sb->height();
+    int extent = horiz ? sb->height() : sb->width();
+
+    if ( length > ( extent - b*2 - 1 )*2 + b*2  )
+	buttonDim = extent - b*2;
+    else
+	buttonDim = ( length - b*2 )/2 - 1;
+
+    sliderMin = b + buttonDim;
+    if (length < (buttonDim * 4) )
+      maxLength  = length - b*2 - buttonDim*2;
+    else
+      maxLength  = length - b*2 - buttonDim*3;
+
+    if ( sb->maxValue() == sb->minValue() ) {
+	sliderLength = maxLength;
+    } else {
+	sliderLength = (sb->pageStep()*maxLength)/
+			(sb->maxValue()-sb->minValue()+sb->pageStep());
+	uint range = sb->maxValue()-sb->minValue();
+	if ( sliderLength < 9 || range > INT_MAX/2 )
+	    sliderLength = 9;
+	if ( sliderLength > maxLength )
+	    sliderLength = maxLength;
+    }
+    sliderMax = sliderMin + maxLength - sliderLength;
 }
 
 void B3Style::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,

@@ -45,6 +45,10 @@ public:
     virtual ~B3Style();
     void drawScrollBarControls(QPainter*,  const QScrollBar*, int sliderStart,
                                uint controls, uint activeControl );
+    void scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
+                          int &sliderMax, int &sliderLength,
+                          int &buttonDim);
+
     void drawArrow(QPainter *p, Qt::ArrowType type, bool down,
                    int x, int y, int w, int h, const QColorGroup &g,
                    bool enabled=true, const QBrush *fill = 0);
