@@ -342,6 +342,8 @@ void AudioSubSystem::handleIO(int type)
 
 		int len = ::write(audio_fd,fragment_buffer,fragment_size);
 		assert(len == fragment_size);
+		// TODO: find out why the assertion len == fragment_size fails on
+		// SBLive! is this an invalid assumption?
 	}
 
 	assert((type & ioExcept) == 0);
