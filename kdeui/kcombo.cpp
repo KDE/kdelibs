@@ -21,11 +21,7 @@ void KCombo::setText( const QString& text)
 	set_text_called = true;
 	insertItem(text, 0);
     } else {
-        // changeItem(text, 0);
-
-        // HACK to fix a bug in Qt : QListBox::removeItem is not properly implemented
-        // and this breaks changeItem. Bug reported to TT. David.
-        Q_CHILD(this, QLineEdit, "combo edit")->setText( text );
+        changeItem(text, 0);
     }
 }
 
