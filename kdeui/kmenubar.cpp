@@ -88,7 +88,7 @@ void KMenuBar::setTopLevelMenu(bool top_level)
       KWin::setOnAllDesktops( winId(), true );
       KWin::setState( winId(), NET::StaysOnTop );
 #endif
-      setFrameStyle( StyledPanel | Raised );
+      setFrameStyle( MenuBarPanel );
       installEventFilter( parentWidget()->topLevelWidget() );
       if ( wasVisible )
           show();
@@ -168,10 +168,10 @@ void KMenuBar::show()
 void KMenuBar::showEvent( QShowEvent* )
 {
     if ( d->topLevel ) {
-        QRect area = QApplication::desktop()->geometry();
-        setGeometry(area.left(), -frameWidth()-2, area.width(), heightForWidth( area.width() ) );
+        QRect area = QApplication::desktop()->screenGeometry();
+        setGeometry(area.left(), area.top(), area.width(), heightForWidth( area.width() ) );
 #ifndef Q_WS_QWS //FIXME
-        KWin::setStrut( winId(), 0, 0, height() - frameWidth() - 2, 0 );
+        KWin::setStrut( winId(), 0, 0, height(), 0 );
 #endif
     }
 }
