@@ -1653,7 +1653,7 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   if ( !userCaption.isEmpty() ) {
       // Add the application name if:
       // User asked for it, it's not a duplication  and the app name (caption()) is not empty
-      if ( withAppName && !caption().isNull() && userCaption != caption()  )
+      if ( withAppName && !caption().isNull() && !userCaption.endsWith(caption())  )
 	  s += QString::fromUtf8(" - ") + caption();
   }
 
