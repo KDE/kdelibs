@@ -21,11 +21,10 @@ khtmlw has been replaced with khtml.
 //////////////////////////////////////////////////////////////////////
 // * KIntegerLine, KIntLineEdit
 
-KIntegerLine has been renamed to KIntLineEdit. The new header file is called
-kintlineedit.h. If you were using the former KIntLineEdit from keditcl.h no
-changes should be necessary at all. It is recommended to switch to the new
-include file, though.
-
+  KIntegerLine has been renamed to KIntLineEdit. The new header file
+  is called kintlineedit.h. If you were using the former KIntLineEdit
+  from keditcl.h no changes should be necessary at all. It is
+  recommended to switch to the new include file, though.
 
 //////////////////////////////////////////////////////////////////////
 // * KLocale
@@ -66,6 +65,21 @@ include file, though.
 
   These classes have been dropped. Use the Qt DND interface instead.
   A good starting point may be the Qt Drag and Drop Tutorial.
+
+//////////////////////////////////////////////////////////////////////
+// * KConfigBase, KConfig, KSimpleConfig
+
+  These classes have been largely reimplemented.  The external API
+  remains mostly the same, with the single notable change that
+  the groupIterator and entryIterator methods have been removed and
+  instead replaced my groupList (which returns a QStringList of groups)
+  and entryMap(const QString &group) (which returns a QMap of entries
+  in the specified group).  This is due to internal changes in KConfig
+  which would make providing iterators possibly rather difficult.
+
+  Much more extensive documentation on the KConfig and friends API can
+  be found in the kdoc generated documentation from the header files.
+
 
 //////////////////////////////////////////////////////////////////////
 // * libkfm has disappeared
