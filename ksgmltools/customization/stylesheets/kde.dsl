@@ -1,16 +1,6 @@
-<!DOCTYPE STYLE-SHEET PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN" [
-  <!ENTITY % loc-ents PUBLIC "-//KDE//ENTITIES KDE Localisation Style Sheet Entities//EN">
-  %loc-ents;
-  <!ENTITY dbmss-html PUBLIC "-//Norman Walsh//DOCUMENT DocBook HTML Stylesheet//EN" CDATA DSSSL>
-  <!ENTITY dbmss-print PUBLIC "-//Norman Walsh//DOCUMENT DocBook Print Stylesheet//EN" CDATA DSSSL>
-  <!ENTITY kde-localisation SYSTEM "kde-l10n.dsl" -- in namespace of language entities -->
-  <!ENTITY kde-html-faq.dsl SYSTEM "kde-faq.dsl">
-  <!ENTITY kde-html-navig.dsl SYSTEM "kde-navig.dsl">
-  <!ENTITY kde-html-anchor.dsl SYSTEM "kde-anchor.dsl">
-]>
-<!-- KDE Style Sheet                                                        -->
-<!--
-    This style sheet is an extension to the DocBook HTML Stylesheet.
+<!DOCTYPE STYLE-SHEET PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN"
+  --
+    This style sheet is an extension to the DocBook Modular Stylesheets.
 
     Copyright (C) 1999-2000 Frederik Fouvry
 
@@ -31,16 +21,26 @@
     It has been taken over from the KDE style sheet of René Beutler
     <rbeutler@g26.ethz.ch>, but many modifications were made.  Send
     suggestions, comments, etc. to Frederik Fouvry
-    <fouvry@sfs.nphil.uni-tuebingen.de>. 
-
+    <fouvry@sfs.nphil.uni-tuebingen.de>.
+  -- [
+  <!ENTITY % loc-ents PUBLIC "-//KDE//ENTITIES KDE Localisation Style Sheet Entities//EN">
+  %loc-ents;
+  <!ENTITY dbmss-html PUBLIC "-//Norman Walsh//DOCUMENT DocBook HTML Stylesheet//EN" CDATA DSSSL>
+  <!ENTITY dbmss-print PUBLIC "-//Norman Walsh//DOCUMENT DocBook Print Stylesheet//EN" CDATA DSSSL>
+  <!ENTITY kde-localisation SYSTEM "kde-l10n.dsl" -- in namespace of language entities -->
+  <!ENTITY kde-html-faq.dsl SYSTEM "kde-faq.dsl">
+  <!ENTITY kde-html-navig.dsl SYSTEM "kde-navig.dsl">
+  <!ENTITY kde-html-anchor.dsl SYSTEM "kde-anchor.dsl">
+]>
+<!--
     USAGE
 
     DSSSL
 
     There is information on how to call this dsl with jade in the
     style-specification-bodies.  Normally, the style sheets are identified
-    with the following syntax: <DSSSL file>#<style-specification ID>, 
-    e.g. kde.dsl#kde-docbook-html-book.  The settings of the USEd 
+    with the following syntax: <DSSSL file>#<style-specification ID>,
+    e.g. kde.dsl#kde-docbook-html-book.  The settings of the USEd
     style-specifications are inherited.
 
     For documentation of the functions and variables, and what you can
@@ -63,6 +63,21 @@
       ]>
 
     and use kde.cat as the catalogue file.
+
+    STRUCTURE
+    
+    KDE-DOCBOOK 		 uses KDE localisations
+    KDE-DOCBOOK-PRINT 		 uses KDE-DOCBOOK DOCBOOK-PRINT
+    KDE-DOCBOOK-TEX 		 uses KDE-DOCBOOK-PRINT
+    KDE-DOCBOOK-TEX-BOOK 	 uses KDE-DOCBOOK-TEX
+    KDE-DOCBOOK-HTML 		 uses KDE-DOCBOOK DOCBOOK-HTML
+    KDE-DOCBOOK-HTML-BOOK 	 uses KDE-DOCBOOK-HTML
+    KDE-DOCBOOK-HTML-ARTICLE	 uses KDE-DOCBOOK-HTML
+    HTML 			 = KDE-DOCBOOK-HTML-BOOK
+    PRINT 			 uses KDE-DOCBOOK-TEX
+    TEX 			 = KDE-DOCBOOK-TEX
+    DEFAULT-HTML 		 = DOCBOOK-HTML
+    DEFAULT-PRINT 		 = DOCBOOK-PRINT
 
 -->
 
@@ -164,21 +179,6 @@
 ;; printing isn't working very well yet
 ;; Call: jade -d kde.dsl#kde-docbook-print
 
-; These should not be put in the general style sheet, because
-; defaults are different from HTML
-(define %graphic-default-extension% "eps")
-(define %graphic-extensions%            ;; default value + png - gif
-  '("jpg" "jpeg" "tif" "tiff" "eps" "epsf" "png"))
-(define preferred-mediaobject-extensions
-  (list "jpeg" "jpg" "png" "avi" "mpg" "mpeg" "qt"))
-(define acceptable-mediaobject-extensions
-  (list "bmp"))                         ;; default value - gif
-(define preferred-mediaobject-notations
-  (list "JPG" "JPEG" "linespecific"))   ;; is PNG a notation?
-(define acceptable-mediaobject-notations
-  (list "BMP"))                         ;; default value - gif
-
-
 ; These are candidates to move to the general section
 ; Can also be set as -V image-library
 (define image-library #f)
@@ -200,6 +200,27 @@
 ; Localised? - to country
 (define %paper-type% "A4")
 
+(define %hyphenation% #t)
+
+   </STYLE-SPECIFICATION-BODY>
+  </STYLE-SPECIFICATION>
+
+  <STYLE-SPECIFICATION ID="KDE-DOCBOOK-TEX" USE="KDE-DOCBOOK-PRINT">
+    <STYLE-SPECIFICATION-BODY>
+;;======================================================================
+;; Print Book parameters
+;; Call: jade -d kde.dsl#kde-docbook-tex
+(define tex-backend #t)
+
+; These should not be put in the general style sheet, because
+; defaults are different from HTML and other printing backends
+(define %graphic-default-extension% "eps")
+(define %graphic-extensions% (list "eps" "epsf"))
+(define preferred-mediaobject-extensions (list "eps"))
+(define acceptable-mediaobject-extensions '())
+(define preferred-mediaobject-notations (list  "EPS"))
+(define acceptable-mediaobject-notations (list "EPS" "linespecific"))
+
 ;; Adds the KDE logo to printed versions (thanks to Éric Bischoff)
 ;; From: print/dbcompon.dsl
 ;; It is probably too forceful, but it's a beginning
@@ -209,14 +230,14 @@
     entity-system-id: "logotp3.eps"
     notation-system-id: "EPS"))
 
-   </STYLE-SPECIFICATION-BODY>
+    </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 
-  <STYLE-SPECIFICATION ID="KDE-DOCBOOK-PRINT-BOOK" USE="KDE-DOCBOOK-PRINT">
+  <STYLE-SPECIFICATION ID="KDE-DOCBOOK-TEX-BOOK" USE="KDE-DOCBOOK-TEX">
     <STYLE-SPECIFICATION-BODY>
 ;;======================================================================
 ;; Print Book parameters
-;; Call: jade -d kde.dsl#kde-docbook-print-book
+;; Call: jade -d kde.dsl#kde-docbook-tex-book
 
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
@@ -228,9 +249,9 @@
 ;; user configurable settings in the html style sheet
 ;; Call: jade -d kde.dsl#kde-docbook-html
 
-;; Any departure from a file that is not dbparam.dsl, should be 
-;; *extensively* documented, so that from reading the ChangeLog in the 
-;; DocBook modular style sheets, it can be determined what should change in 
+;; Any departure from a file that is not dbparam.dsl, should be
+;; *extensively* documented, so that from reading the ChangeLog in the
+;; DocBook modular style sheets, it can be determined what should change in
 ;; the KDE style files.
 
 ; === File names ===
@@ -248,6 +269,14 @@
 (define %graphic-default-extension% "png")
 (define %graphic-extensions%            ;; default value + png - gif
   '("jpg" "jpeg" "tif" "tiff" "eps" "epsf" "png"))
+(define preferred-mediaobject-extensions
+  (list "png" "jpg" "jpeg"))
+(define acceptable-mediaobject-extensions         ;; default value - gif + preferred
+  (list "bmp" "eps" "epsf" "avi" "mpg" "mpeg" "qt"))
+(define preferred-mediaobject-notations
+  (list "PNG" "JPG" "JPEG"))
+(define acceptable-mediaobject-notations
+  (list "EPS" "BMP" "linespecific")) ;; default value - gif + preferred
 
 (define %html-use-lang-in-filename% #f) ;; But could be very useful for l10n!
                                         ;; And HTTP Content-negotiation ...
@@ -261,7 +290,7 @@
 ;; Origin: html/dbhtml.dsl
 ;; How:    replaced %html-header-tags%
 ;;         by (append %html-header-tags% (kde-gentext-html-header-tags))
-;;         added META KEYWORDS element (with comma-separated keywords), 
+;;         added META KEYWORDS element (with comma-separated keywords),
 ;;         derived from the original META KEYWORD element, which is still left in.
 ;; Why:    keeps any default values
 ;;         not sure search engines like many KEYWORD elements ...
@@ -270,7 +299,7 @@
 ;;            - if the keyword calculation changes
 ;;            - the order of %html-header-tags% and kde-gentext-html-header-tags
 ;;              is important (see HTML specification)!
-(define ($user-html-header$ #!optional 
+(define ($user-html-header$ #!optional
 			    (home (empty-node-list))
 			    (up (empty-node-list))
 			    (prev (empty-node-list))
@@ -293,11 +322,12 @@
       (("zh_cn") (error "L10N ERROR: use zh-CN instead of zh_CN"))
       (("zh_cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh_CN.GB2312"))
       (("zh-cn.gb2312") (error "L10N ERROR: use zh-CN instead of zh-CN.GB2312"))
+      (("zh_tw") (error "L10N ERROR: use zh-TW instead of zh_TW"))
       (("zh_tw.big5") (error "L10N ERROR: use zh-TW instead of zh_TW.BIG5"))
       (("zh-tw.big5") (error "L10N ERROR: use zh-TW instead of zh-TW.BIG5"))
       (else (empty-sosofo)))
     ; == derived from dbhtml.dsl $standard-html-headers$
-    (let ((nl (select-elements (descendants (info-element)) 
+    (let ((nl (select-elements (descendants (info-element))
 			       (normalize "keyword"))))
       (if (node-list-empty? nl)
 	  (empty-sosofo)
@@ -310,7 +340,7 @@
 			     (let loop ((nl1 (node-list-rest nl)))
 			       (if (node-list-empty? nl1)
 				   ""
-				   (string-append ", " 
+				   (string-append ", "
 						  (data (node-list-first nl1))
 						  (loop (node-list-rest nl1)))))))))))
     ))
@@ -383,7 +413,7 @@
 	     (equal? (gi nd) (normalize "important"))
 	     (equal? (gi nd) (normalize "caution"))
 	     (equal? (gi nd) (normalize "warning")))
-	 (string-append %admon-graphics-path% 
+	 (string-append %admon-graphics-path%
 			(case-fold-down (gi nd))
 			"." %graphic-default-extension%))
 	(else (error (string-append (gi nd) " is not an admonition.")))))
@@ -398,8 +428,8 @@
 ;(define %generate-legalnotice-link% #t) ;; works only if COPYRIGHT is present as well
 ;(define ($legalnotice-link-file$ legalnotice)
 ;  "http://www.kde.org/licence/gpl.html") ; works only if there are no other legal notices around!
-; OTHERCREDIT can work, it just hasn't been done properly (see dbttlpg.dsl 
-; under articles): all that needs to be done is treating it as author; 
+; OTHERCREDIT can work, it just hasn't been done properly (see dbttlpg.dsl
+; under articles): all that needs to be done is treating it as author;
 ; CONTRIB does not work therefore, but that also needs an extension
 (define html-index #f) ; #f is default - #t generates the file html-index-filename
                        ; currently HTML.index; can be set to #t on the command line
@@ -433,12 +463,12 @@
 
 ;; Thanks to David Mason (Gnome Documentation Project) for pointing out this variable
 ;; Origin: html/dbttlpg.dsl
-;; How:    Added values we want in KDE: authorblurb, releaseinfo, date/pubdate, 
+;; How:    Added values we want in KDE: authorblurb, releaseinfo, date/pubdate,
 ;;         no revhistory
 ;;         Not prepended because we want to keep %titlepage-in-info-order% #f
 ;; Why:    to get author non-institutional e-mail address (in authorblurb)
 ;;         NOTE: authorblurb will be replaced in DocBook 4.0,
-;; Watch out: - if (define (book-titlepage-recto-elements) ...) is modified 
+;; Watch out: - if (define (book-titlepage-recto-elements) ...) is modified
 ;;              in html/docbook.dsl
 ;;            - %title-page-in-info-order% is modified (dbparam.dsl)
 (define (book-titlepage-recto-elements)
@@ -483,7 +513,7 @@
 &kde-html-faq.dsl;
 
 ; only for meant for long faqs!
-(define %qanda-inherit-numeration% 
+(define %qanda-inherit-numeration%
   ;; PURP Should numbered questions inherit the surrounding numeration?
   ;; If true, question numbers are prefixed with the surrounding
   ;; component or section number. Has no effect unless
@@ -502,7 +532,7 @@
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 
-  <STYLE-SPECIFICATION ID="PRINT" USE="KDE-DOCBOOK-PRINT">
+  <STYLE-SPECIFICATION ID="PRINT" USE="KDE-DOCBOOK-TEX">
     <STYLE-SPECIFICATION-BODY>
 ;;======================================================================
 ;; Makes #print an alias for #kde-docbook-print (for use with Cygnus)
@@ -511,10 +541,19 @@
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 
+  <STYLE-SPECIFICATION ID="TEX" USE="KDE-DOCBOOK-TEX">
+    <STYLE-SPECIFICATION-BODY>
+;;======================================================================
+;; Makes #print an alias for #kde-docbook-tex
+;; Call: jade -d kde.dsl#tex
+
+    </STYLE-SPECIFICATION-BODY>
+  </STYLE-SPECIFICATION>
+
   <STYLE-SPECIFICATION ID="DEFAULT-HTML" USE="DOCBOOK-HTML">
     <STYLE-SPECIFICATION-BODY>
 ;;======================================================================
-;; Calls the uncustomised DocBook Modular Style Sheet for HTML 
+;; Calls the uncustomised DocBook Modular Style Sheet for HTML
 ;; Call: jade -d kde.dsl#default-html
 ;; Keep body empty
     </STYLE-SPECIFICATION-BODY>
