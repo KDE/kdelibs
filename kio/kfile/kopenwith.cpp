@@ -46,6 +46,7 @@
 #include <kmimemagic.h>
 #include <krun.h>
 #include <kstandarddirs.h>
+#include <kstringhandler.h>
 #include <kuserprofile.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
@@ -277,7 +278,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
 {
-  QString caption = _urls.first().prettyURL();
+  QString caption = KStringHandler::csqueeze( _urls.first().prettyURL() );
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
   setCaption(caption);
