@@ -36,6 +36,9 @@
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 
+// Dispose slaves after being idle for SLAVE_MAX_IDLE minutes
+#define SLAVE_MAX_IDLE	10	
+
 using namespace KIO;
 
 template class QList<KLaunchRequest>;
@@ -47,7 +50,7 @@ IdleSlave::IdleSlave(KSocket *socket)
    mConn.connect(this, SLOT(gotInput()));
    mConn.send( CMD_SLAVE_STATUS );
    mPid = 0;
-   // Timeout!
+   mBirthDate = time(0);
 }
 
 void
@@ -114,6 +117,12 @@ IdleSlave::match(const QString &protocol, const QString &host, bool connected)
    return true;
 }
 
+int 
+IdleSlave::age(time_t now)
+{
+   return (int) difftime(now, mBirthDate);
+}
+
 KLauncher::KLauncher(int _kdeinitSocket)
   : KUniqueApplication( false, false ), // No Styles, No GUI
     kdeinitSocket(_kdeinitSocket)
@@ -128,6 +137,8 @@ KLauncher::KLauncher(int _kdeinitSocket)
    mPoolSocket = new KServerSocket(mPoolSocketName);
    connect(mPoolSocket, SIGNAL(accepted( KSocket *)),
            SLOT(acceptSlave(KSocket *)));
+
+   connect(&mTimer, SIGNAL(timeout()), SLOT(idleTimeout()));
 
    kdeinitNotifier = new QSocketNotifier(kdeinitSocket, QSocketNotifier::Read);
    connect(kdeinitNotifier, SIGNAL( activated( int )),
@@ -149,7 +160,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       QCString name;
       QValueList<QCString> arg_list;      
       stream >> name >> arg_list;
-fprintf(stderr, "KLauncher: Got exec_blind('%s', ...)\n", name.data());
+      kdDebug(7016) << "KLauncher: Got exec_blind('" << name << "', ...)" << endl;
       exec_blind( name, arg_list);
       return true;
    }   
@@ -168,17 +179,17 @@ fprintf(stderr, "KLauncher: Got exec_blind('%s', ...)\n", name.data());
       bool finished;
       if (fun == "start_service_by_name(QString,QString)")
       {
-fprintf(stderr, "KLauncher: Got start_service_by_name('%s', ...)\n", serviceName.data());
+         kdDebug(7016) << "KLauncher: Got start_service_by_name('" << serviceName << "', ...)" << endl;
          finished = start_service_by_name(serviceName, filename);
       }
       else if (fun == "start_service_by_desktop_path(QString,QString)")
       {
-fprintf(stderr, "KLauncher: Got start_service_by_desktop_path('%s', ...)\n", serviceName.data());
+         kdDebug(7016) << "KLauncher: Got start_service_by_desktop_path('" << serviceName << "', ...)" << endl;
          finished = start_service_by_desktop_path(serviceName, filename);
       }
       else 
       {
-fprintf(stderr, "KLauncher: Got start_service_by_desktop_name('%s', ...)\n", serviceName.data());
+         kdDebug(7016) << "KLauncher: Got start_service_by_desktop_name('" << serviceName << "', ...)" << endl;
          finished = start_service_by_desktop_name(serviceName, filename);
       }
       if (!finished)
@@ -196,7 +207,7 @@ fprintf(stderr, "KLauncher: Got start_service_by_desktop_name('%s', ...)\n", ser
       QString host;
       QString app_socket;
       stream >> protocol >> host >> app_socket;
-fprintf(stderr, "requestSlave %s %s\n", debugString(protocol), debugString(host));
+      kdDebug(7016) << "requestSlave " << protocol << " "<< host << endl;
       replyType = "QString";
       QString error;
       pid_t pid = requestSlave(protocol, host, app_socket, error);
@@ -208,7 +219,7 @@ fprintf(stderr, "requestSlave %s %s\n", debugString(protocol), debugString(host)
    {
       return true;
    }
-fprintf(stderr, "KLauncher: Got unknown DCOP function '%s'\n", fun.data());   
+   kdDebug(7016) << "Got unknown DCOP function: " << fun << endl;
    return false;
 }
 
@@ -243,20 +254,19 @@ KLauncher::slotKInitData(int)
 {
    klauncher_header request_header;
    QByteArray requestData;
-   fprintf(stderr, "KLauncher: Data from KInit!\n");
+   kdDebug(7016) << "Data from KInit!" << endl;
    int result = read_socket(kdeinitSocket, (char *) &request_header, 
                             sizeof( request_header));
    if (result == -1)
    {
-      fprintf(stderr, "KLauncher: KInit communication error! Commiting suicide!\n");
+      kdDebug(7016) << "KLauncher: KInit communication error! Commiting suicide!" << endl;
       ::exit(255);
    }
    requestData.resize(request_header.arg_length);
    result = read_socket(kdeinitSocket, (char *) requestData.data(), 
                         request_header.arg_length);
 
-   fprintf(stderr, "KLauncher: Got notification (%ld) from KInit\n", 
-	request_header.cmd);
+   kdDebug(7016) << "Got notification (" << request_header.cmd << ") from KInit" << endl; 
    if (request_header.cmd == LAUNCHER_DIED)
    {
      long *request_data;
@@ -269,18 +279,15 @@ KLauncher::slotKInitData(int)
      long *request_data;
      request_data = (long *) requestData.data();
      lastRequest->pid = (pid_t) (*request_data);
-     fprintf(stderr, "KLauncher: %s (pid %d) up and running.\n", 
-               lastRequest->name.data(), lastRequest->pid);
+     kdDebug(7016) << lastRequest->name << " (pid " << lastRequest->pid <<
+        ") up and running." << endl;    
      switch(lastRequest->dcop_service_type)
      {
        case KService::DCOP_None:
-     fprintf(stderr, "KLauncher: DCOP_None, ready.\n");
          lastRequest->status = KLaunchRequest::Running;
          break;
 
        case KService::DCOP_Unique:
-     fprintf(stderr, "KLauncher: DCOP_Unique, waiting for '%s' to register.\n", 
-		lastRequest->dcop_name.data());
          lastRequest->status = KLaunchRequest::Launching;
          break;
 
@@ -289,8 +296,6 @@ KLauncher::slotKInitData(int)
          QCString pidStr;
          pidStr.setNum(lastRequest->pid);
          lastRequest->dcop_name = lastRequest->name + "-" + pidStr;
-     fprintf(stderr, "KLauncher: DCOP_Multi, waiting for '%s' to register.\n", 
-		lastRequest->dcop_name.data());
          break;
      }
      lastRequest = 0;
@@ -303,8 +308,8 @@ KLauncher::slotKInitData(int)
      return; 
    }
    
-   fprintf(stderr, "KLauncher: Unexpected command from KInit (%ld)\n", 
-	   request_header.cmd);
+   kdDebug(7016) << "Unexpected command from KInit (" << request_header.cmd
+                 << ")" << endl;
 }
 
 void
@@ -341,9 +346,11 @@ KLauncher::slotAppRegistered(const QCString &appId)
 void 
 KLauncher::requestDone(KLaunchRequest *request)
 {
-   fprintf(stderr, "KLauncher: Request done [ name = '%s' , status ='%s' ]\n",
- 	   request->name.data(), 
-           request->status == KLaunchRequest::Running ? "running" : "error");
+
+   kdDebug(7016) << "Request done [ name = '" << request->name <<
+           "' , status ='" <<  
+           QString((request->status == KLaunchRequest::Running) ? "running" : "error") <<
+           "' ]" << endl;
    if (request->status == KLaunchRequest::Running)
    {
       DCOPresult.result = 0;
@@ -372,8 +379,8 @@ KLauncher::requestDone(KLaunchRequest *request)
 void 
 KLauncher::requestStart(KLaunchRequest *request)
 {
-   fprintf(stderr, "KLauncher: Request start [ name = '%s' ]\n",
- 	   request->name.data());
+   kdDebug(7016) << "Request start [ name = '" << request->name <<
+           "' ]" << endl;
    requestList.append( request );
    // Send request to kdeinit.
    klauncher_header request_header;
@@ -401,7 +408,6 @@ KLauncher::requestStart(KLaunchRequest *request)
       strcpy(p, (*it).data());
       p += strlen(p) + 1;
    }
-fprintf(stderr, "args = %d arg_length = %d\n", request->arg_list.count()+1, length);
    
    request_header.cmd = LAUNCHER_EXEC;
    request_header.arg_length = length;
@@ -709,7 +715,7 @@ KLauncher::requestSlave(const QString &protocol,
        return slave->pid();
     }
 
-    kdDebug(7016) << "requestSlave( " << protocol << ", " << host << ", " << app_socket << ")\n";
+    kdDebug(7016) << "requestSlave( " << protocol << ", " << host << ", " << app_socket << ")" << endl;
 
     QCString name = QCString("kio_") + protocol.ascii();
     QCString arg1 = protocol.ascii();
@@ -731,7 +737,7 @@ KLauncher::requestSlave(const QString &protocol,
     requestStart(request);
     pid_t pid = request->pid;
 
-    kdDebug(7016) << "Slave launched, pid = " << pid << "\n";
+    kdDebug(7016) << "Slave launched, pid = " << pid << endl;
 
     // We don't care about this request any longer.... 
     requestDone(request);
@@ -747,6 +753,11 @@ KLauncher::acceptSlave(KSocket *slaveSocket)
     // Send it a SLAVE_STATUS command.
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
+    if (!mTimer.isActive())
+    {
+       kdDebug(7016) << "SlavePool: starting idle timer" << endl;       
+       mTimer.start(1000*60);
+    }
 }
 
 void
@@ -755,6 +766,27 @@ KLauncher::slotSlaveGone()
     kdDebug(7016) << "SlavePool: slotSlaveGone(...)" << endl;
     IdleSlave *slave = (IdleSlave *) sender();
     mSlaveList.removeRef(slave);
+    if ((mSlaveList.count() == 0) && (mTimer.isActive()))
+    {
+       kdDebug(7016) << "SlavePool: stopping idle timer" << endl;
+       mTimer.stop();
+    }
+}
+
+void
+KLauncher::idleTimeout()
+{
+    kdDebug(7016) << "SlavePool: idle, slave list count: " << mSlaveList.count() << endl;
+    time_t now = time(0);
+    IdleSlave *slave;
+    for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
+    {
+        if (slave->age(now) > 60*SLAVE_MAX_IDLE)
+        {
+           kdDebug(7016) << "SlavePool: killing idle slave" << endl;
+           delete slave;
+        }
+    }
 }
 
 #include "klauncher.moc"

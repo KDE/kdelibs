@@ -22,10 +22,12 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <qsocketnotifier.h>
 #include <qlist.h>
+#include <qtimer.h>
 
 #include <dcopclient.h>
 #include <kio/connection.h>
@@ -42,6 +44,7 @@ public:
    bool match( const QString &protocol, const QString &host, bool connected);
    void connect( const QString &app_socket);
    pid_t pid() { return mPid;}
+   int age(time_t now);
 
 protected slots:
    void gotInput();      
@@ -52,6 +55,7 @@ protected:
    QString mHost;
    bool mConnected;
    pid_t mPid;
+   time_t mBirthDate;
 };
 
 class KLaunchRequest
@@ -112,6 +116,7 @@ public slots:
    void slotAppRegistered(const QCString &appId);
    void acceptSlave( KSocket *);
    void slotSlaveGone();
+   void idleTimeout();
 
 protected:
    QList<KLaunchRequest> requestList;
@@ -122,5 +127,6 @@ protected:
    QString mPoolSocketName;                         
    KServerSocket *mPoolSocket;
    QList<IdleSlave> mSlaveList;
+   QTimer mTimer;
 };
 #endif
