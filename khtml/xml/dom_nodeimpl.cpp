@@ -699,8 +699,6 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 
-    newChild->setParsing();
-
     // just add it...
     newChild->setParent(this);
 

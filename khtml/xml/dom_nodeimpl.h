@@ -158,7 +158,7 @@ public:
     enum SpecialFlags {
 	Layouted    = 0x0001,
         /*          = 0x0002,*/
-	Parsing     = 0x0004,
+	/*          = 0x0004,*/
 	MinMaxKnown = 0x0008,
 	HasEvents   = 0x0010,
 	HasID       = 0x0020,
@@ -171,7 +171,6 @@ public:
 	Changed     = 0x1000
     };
     bool layouted()    { return (flags & Layouted);    }
-    bool parsing()     { return (flags & Parsing);     }
     bool minMaxKnown() { return (flags & MinMaxKnown); }
     bool hasEvents()   { return (flags & HasEvents);   }
     bool hasID()       { return (flags & HasID);       }
@@ -184,8 +183,6 @@ public:
     bool changed()     { return (flags & Changed);     }
     void setLayouted(bool b=true)
 	{ b ? flags|=Layouted : flags&=~Layouted; }
-    void setParsing(bool b=true)
-	{ b ? flags|=Parsing : flags&=~Parsing; }
     void setMinMaxKnown(bool b=true)
 	{ b ? flags|=MinMaxKnown : flags&=~MinMaxKnown; }
     void setHasEvents(bool b=true)
