@@ -494,7 +494,7 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 	sz = p->icons[j].size.width * p->icons[j].size.height;
 	s = sz * sizeof(long);
 
-	if ( i + s - 1 > bufsize ) {
+	if ( i + s - 1 > bufsize || sz == 0 || sz > 1024 * 1024 ) {
 	    break;
 	}
 
