@@ -49,6 +49,7 @@
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
+#include <dcopclient.h>
 #include <qlist.h>
 #include <qsessionmanager.h>
 #include <qtranslator.h>
@@ -213,6 +214,8 @@ void KApplication::init()
   installEventFilter( this );
 
   pSessionConfig = 0L;
+  pDCOPClient = new DCOPClient(name());
+  pDCOPClient->attach(); // attach to DCOP server.
   bSessionManagement = true;
 
   // register a communication window for desktop changes (Matthias)
@@ -225,6 +228,11 @@ void KApplication::init()
   }
 
   captionLayout = CaptionAppLast;
+}
+
+DCOPClient *KApplication::dcopClient() const
+{
+  return pDCOPClient;
 }
 
 KConfig* KApplication::sessionConfig() {
@@ -571,6 +579,9 @@ KApplication::~KApplication()
   delete smw;
 
   KGlobal::freeAll();
+
+  // close down IPC
+  delete pDCOPClient;
 
   // Carefully shut down the process controller: It is very likely
   // that we receive a SIGCHLD while the destructor is running

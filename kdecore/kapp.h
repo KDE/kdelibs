@@ -32,6 +32,7 @@ class KConfig;
 class KCharsets;
 class KStyle;
 class QTDispatcher;
+class DCOPClient;
 
 typedef unsigned long Atom;
 
@@ -153,6 +154,11 @@ public:
      */
   void saveState( QSessionManager& sm );
 
+
+  /**
+   * Returns a pointer to an DCOPClient for the application.
+   */
+  DCOPClient *dcopClient() const;
 
   /**
    * Get the standard help menu.
@@ -318,6 +324,7 @@ protected slots:
 private:
   KApplicationPrivate* pAppData;
   KConfig* pSessionConfig; //instance specific application config object
+  DCOPClient *pDCOPClient; // instance specific application communication client
   QString aCaption; // the name for the window title
   QString aAppAboutString; // The text for the about box
   QString aDummyString2; // do not touch
@@ -475,6 +482,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.106  1999/10/09 00:08:27  kalle
+// The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
+//
 // Revision 1.105  1999/10/08 22:49:15  bero
 // - Replace KTopLevelWidget with KTMainWindow where it's still used
 // - Disable ktopwidget.h
