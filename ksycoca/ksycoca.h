@@ -44,6 +44,10 @@ public:
 
    virtual ~KSycoca();
 
+   /**
+    * @internal - called by factories in read-only mode
+    * This is how factories get a stream to an entry
+    */
    static QDataStream *findEntry(int offset, KSycocaType &type);
    /**
     * @internal - called by factories in read-only mode
@@ -51,6 +55,7 @@ public:
    static QDataStream *registerFactory( KSycocaFactoryId id);
 
    /**
+    * @internal
     * @return true if building (i.e. if a KBuildSycoca);
     */
    static bool isBuilding();

@@ -408,7 +408,7 @@ KSycocaDict::save(QDataStream &str)
          else
             tmpid = (Q_INT32) -hashTable[i].duplicate_offset; // Negative ID
          str << tmpid;
-         kdebug( KDEBUG_INFO, 7011, QString("Hash table : %1").arg(tmpid,8,16) );
+         //kdebug( KDEBUG_INFO, 7011, QString("Hash table : %1").arg(tmpid,8,16) );
       }
       kdebug( KDEBUG_INFO, 7011, QString("End of Hash Table, offset = %1").arg(str.device()->at(),8,16) );
 
@@ -428,8 +428,8 @@ KSycocaDict::save(QDataStream &str)
             {
                str << (Q_INT32) dup->payload->offset(); // Positive ID
                str << dup->key;                         // Key (QString)
-               kdebug(KDEBUG_INFO, 7011, QString(">> %1 %2")
-                      .arg(dup->payload->offset(),8,16).arg(dup->key));
+               //kdebug(KDEBUG_INFO, 7011, QString(">> %1 %2")
+               //       .arg(dup->payload->offset(),8,16).arg(dup->key));
             }
             str << (Q_INT32) 0;               // End of list marker (0)
          }

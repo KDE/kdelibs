@@ -187,17 +187,18 @@ public:
    */
   virtual QStringList propertyNames() const;
 
+  /**
+   * @return true if the service is valid (e.g. name is not empty)
+   */
   bool isValid() const { return m_bValid; }
 
   /**
-   * Internal function.
-   *
+   * @internal
    * Load the service from a stream. Use the streaming operators instead.
    */
   virtual void load( QDataStream& );
   /**
-   * Internal function.
-   *
+   * @internal
    * Save the service to a stream. Use the streaming operators instead.
    */
   virtual void save( QDataStream& );
@@ -207,11 +208,6 @@ public:
    *         unknown.
    */
   static KService* service( const QString& _name );
-
-  /**
-   * @return the whole list of services. Useful to display them.
-   */
-  static KService* parseService( const QString& _file, KSimpleConfig &config );
 
   /**
    * @return the whole list of services. Useful for being able to

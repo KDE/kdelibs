@@ -89,6 +89,9 @@ public:
    */
   static KServiceTypeProfile* serviceTypeProfile( const QString& _servicetype );
 
+  /**
+   * @return the offers associated with a given servicetype
+   */
   static OfferList offers( const QString& _servicetype );
 
   static const QList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }

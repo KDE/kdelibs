@@ -1,0 +1,37 @@
+
+Format of the sycoca database file
+==================================
+
+List of factories
+ | * Factory id, Factory offset
+ | * Factory id, Factory offset
+ | * ...
+ | * 0
+
+For each factory
+ | * offset of the dict
+ | KSycocaEntries
+ | | * entry type
+ | | Entry
+ | | | entry-dependent information
+ | | ...
+ | |
+ | Dict
+ | | * hashtable size
+ | | Hash list
+ | | | * .  (?)
+ | | | * .  (?)
+ | | Hash table
+ | | | * id (positive = entry offset)
+ | | | * id (negative = - offset in duplicates list )
+ | | | * 0 if no entry for that hash value
+ | | Table of duplicates
+ | | |  * entry offset, key
+ | | |  * entry offset, key
+ | 
+
+And then, TODO :
+
+UserProfile
+| will be a hash table for
+| * servicetype -> service offset
