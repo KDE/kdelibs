@@ -38,9 +38,9 @@ include_HEADERS = kde.pot
 
 messages:
 	dirs=`find . -type d ! -name kwrite | grep -v CVS`  ;\
-	find $$dirs -name "*.cpp" -print > files ;\
-	find $$dirs -name "*.cc" -print >> files ;\
-	$(EXTRACTRC) `find $$dirs -name "*.rc"` > rc.cpp	;\
+	find $$dirs -maxdepth 1 -name "*.cpp" -print > files ;\
+	find $$dirs -maxdepth 1 -name "*.cc" -print >> files ;\
+	$(EXTRACTRC) `find $$dirs -maxdepth 1 -name "*.rc"` > rc.cpp	;\
 	: > kde.pot ;\
 	$(XGETTEXT) -x qt-messages.pot rc.cpp `cat files` && cat messages.po qt-messages.pot > $(podir)/kdelibs.pot;
 	$(XGETTEXT) common_texts.cpp -o kde.pot
