@@ -99,6 +99,13 @@ int main(int argc, char **argv)
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
+    QStringList filter;
+    filter << "text/plain" << "text/html" << "image/png";
+    dlg.setMimeFilter( filter );
+//    KMimeType::List types;
+//    types.append( KMimeType::mimeType( "text/plain" ) );
+//    types.append( KMimeType::mimeType( "text/html" ) );
+//    dlg.setFilterMimeType( "Filetypes:", types, types.first() );
 	dlg.setMode( (KFile::Mode) (KFile::Files | KFile::Directory | KFile::ExistingOnly | KFile::LocalOnly) );
 	if ( dlg.exec() == QDialog::Accepted ) {
 	    KURL::List list = dlg.selectedURLs();

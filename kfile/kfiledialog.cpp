@@ -131,8 +131,8 @@ struct KFileDialogPrivate
 
     KURL::List urlList; //the list of selected urls
 
-    KMimeType::Ptr defaultType; // the default mimetype to save as
-    KMimeType::List mimetypes; //the list of possible mimetypes to save as
+    QString defaultType; // the default mimetype to save as
+    QStringList mimetypes; //the list of possible mimetypes to save as
 
     // indicates if the location edit should be kept or cleared when changing
     // directories
@@ -360,6 +360,16 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     ops->clearHistory();
 }
 
+KFileDialog::~KFileDialog()
+{
+    hide();
+    delete bookmarks;
+    delete d->boxLayout; // we can't delete a widget being managed by a layout,
+    d->boxLayout = 0;    // so we delete the layout before (Qt bug to be fixed)
+    delete ops;
+    delete d;
+}
+
 void KFileDialog::setLocationLabel(const QString& text)
 {
     d->locationLabel->setText(text);
@@ -368,7 +378,8 @@ void KFileDialog::setLocationLabel(const QString& text)
 void KFileDialog::setFilter(const QString& filter)
 {
     filterWidget->setFilter(filter);
-    ops->setNameFilter(filterWidget->currentFilter());
+    ops->fileReader()->clearMimeFilter();
+    ops->fileReader()->setNameFilter(filterWidget->currentFilter());
 }
 
 QString KFileDialog::currentFilter() const
@@ -376,33 +387,48 @@ QString KFileDialog::currentFilter() const
     return filterWidget->currentFilter();
 }
 
+// deprecated
 void KFileDialog::setFilterMimeType(const QString &label,
         const KMimeType::List &types, const KMimeType::Ptr &defaultType)
 {
-    d->mimetypes = types;
-    d->defaultType = defaultType;
+    d->mimetypes.clear();
     d->filterLabel->setText(label);
 
-    QString filter = i18n("*|Default (%1)").arg(defaultType->comment());
+    KMimeType::List::ConstIterator it;
+    for( it = types.begin(); it != types.end(); ++it)
+        d->mimetypes.append( (*it)->name() );
 
-    for(KMimeType::List::ConstIterator it = types.begin();
-        it != types.end();
-        ++it)
-    {
-        KMimeType::Ptr type = *it;
-        filter = filter + '\n' + type->patterns().join(QString::fromLatin1(" "))+'|'+type->comment();
-    }
-
-    setFilter(filter);
+    setMimeFilter( d->mimetypes, defaultType->name() );
 }
 
+void KFileDialog::setMimeFilter( const QStringList& mimeTypes, 
+                                 const QString& defaultType )
+{
+    d->defaultType = defaultType;
+    d->mimetypes = mimeTypes;
+    filterWidget->setMimeFilter( mimeTypes );
+    
+    QStringList types = mimeTypes;
+    types.append( QString::fromLatin1( "inode/directory" ));
+    ops->fileReader()->setNameFilter( QString::null );
+    ops->fileReader()->setMimeFilter( types );
+}
+
+void KFileDialog::clearFilter()
+{
+    d->mimetypes.clear();
+    filterWidget->setFilter( QString::null );
+    ops->fileReader()->clearMimeFilter();
+    ops->fileReader()->setNameFilter( QString::null );
+}
+    
 KMimeType::Ptr KFileDialog::currentFilterMimeType()
 {
     int i = filterWidget->currentItem()-1;
 
     if ((i >= 0) && (i < (int) d->mimetypes.count()))
-       return d->mimetypes[i];
-    return d->defaultType;
+        return KMimeType::mimeType( d->mimetypes[i] );
+    return KMimeType::mimeType( d->defaultType );
 }
 
 void KFileDialog::setPreviewWidget(const QWidget *w) {
@@ -792,21 +818,22 @@ void KFileDialog::initGUI()
     setTabOrder(d->pathCombo, ops);
 }
 
-KFileDialog::~KFileDialog()
+void KFileDialog::slotFilterChanged()
 {
-    hide();
-    delete bookmarks;
-    delete d->boxLayout; // we can't delete a widget being managed by a layout,
-    d->boxLayout = 0;    // so we delete the layout before (Qt bug to be fixed)
-    delete ops;
-    delete d;
-}
+    QString filter = filterWidget->currentFilter();
 
-void KFileDialog::slotFilterChanged() // SLOT
-{
-    ops->setNameFilter(filterWidget->currentFilter());
+    if ( filter.contains( '/' ) ) {
+        ops->fileReader()->setNameFilter( QString::null );
+        ops->fileReader()->setMimeFilter( filter + 
+                                      QString::fromLatin1(" inode/directory"));
+    }
+    else {
+        ops->fileReader()->clearMimeFilter();
+        ops->fileReader()->setNameFilter( filter );
+    }
+
     ops->rereadDir();
-    emit filterChanged(filterWidget->currentFilter());
+    emit filterChanged( filter );
 }
 
 

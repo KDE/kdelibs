@@ -42,7 +42,8 @@ class KFileReader;
 class QWidgetStack;
 class KProgress;
 
-class KDirOperator : public QWidget {
+class KDirOperator : public QWidget 
+{
     Q_OBJECT
 
  public:
@@ -247,7 +248,7 @@ class KDirOperator : public QWidget {
 
     /**
      * When going up in the directory hierarchy, KDirOperator can highlight
-     * the directory that was just left. 
+     * the directory that was just left.
      *
      * I.e. when you go from /home/gis/src to /home/gis, the item "src" will
      * be made the current item.
@@ -255,15 +256,15 @@ class KDirOperator : public QWidget {
      * Default is off.
      */
     void setEnableDirHighlighting( bool enable );
-    
+
     /**
      * @returns whether the last directory will be made the current item
      * when going up in the directory hierarchy.
-     * 
+     *
      * Default is false.
      */
     bool dirHighlighting() const;
-    
+
 protected:
     void setFileReader( KFileReader *reader );
     void resizeEvent( QResizeEvent * );

@@ -23,6 +23,7 @@
 #include <qstringlist.h>
 
 #include <kcombobox.h>
+#include <kmimetype.h>
 
 class KFileFilter : public KComboBox
 {
@@ -33,7 +34,15 @@ class KFileFilter : public KComboBox
     ~KFileFilter();
 
     void setFilter(const QString& filter);
+
+    /**
+     * @returns the current filter, either something like "*.cpp *.h"
+     * or the current mimetype, like "text/html", or a list of those, like
+     " "text/html text/plain image/png", all separated with one space.
+     */
     QString currentFilter() const;
+
+    void setMimeFilter( const QStringList& types );
 
  protected:
     QStringList filters;

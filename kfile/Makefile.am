@@ -17,8 +17,6 @@
 #    Boston, MA 02111-1307, USA.
 
 
-AM_CPPFLAGS = -DQT_NO_CAST_ASCII
-
 INCLUDES= -I$(top_srcdir) -I$(srcdir)/../libltdl/ -I$(top_srcdir)/kio -I$(top_builddir)/kio $(all_includes)
 
 lib_LTLIBRARIES  = libkfile.la
@@ -47,7 +45,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 EXTRA_DIST = NOTES
 
 libkfile_la_LDFLAGS = -no-undefined -version-info 3:0
-libkfile_la_LIBADD =  $(top_builddir)/kio/libksycoca.la
+libkfile_la_LIBADD =  $(LIB_KSYCOCA)
 
 servicetype_DATA = kpropsdlgplugin.desktop
 servicetypedir = $(kde_servicetypesdir)

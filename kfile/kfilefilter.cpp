@@ -36,6 +36,7 @@ KFileFilter::~KFileFilter()
 
 void KFileFilter::setFilter(const QString& filter)
 {
+    clear();
     filters.clear();
 
     if (!filter.isEmpty()) {
@@ -50,7 +51,6 @@ void KFileFilter::setFilter(const QString& filter)
     } else
 	filters.append(i18n("*|All Files"));
 
-    clear();
     QStringList::ConstIterator it;
     for (it = filters.begin(); it != filters.end(); it++) {
 	int tab = (*it).find('|');
@@ -62,14 +62,43 @@ void KFileFilter::setFilter(const QString& filter)
 QString KFileFilter::currentFilter() const
 {
     QString f = currentText();
-    if (f == text(currentItem()))
+    if (f == text(currentItem())) {
 	f = *filters.at(currentItem());
+        int mime = f.contains( '/' );
+        if ( mime > 0 ) // we have a mimetype as filter
+            return f;
+    }
 
     int tab = f.find('|');
     if (tab < 0)
 	return f;
     else
 	return f.left(tab);
+}
+
+void KFileFilter::setMimeFilter( const QStringList& types )
+{
+    clear();
+    filters.clear();
+    QString delim = QString::fromLatin1(", ");
+
+    QString allComments, allTypes;
+    for(QStringList::ConstIterator it = types.begin(); it != types.end(); ++it)
+    {
+        if ( it != types.begin() ) {
+            allComments += delim;
+            allTypes += ' ';
+        }
+
+        KMimeType::Ptr type = KMimeType::mimeType( *it );
+        filters.append( type->name() );
+        allTypes += type->name();
+        allComments += type->comment();
+        insertItem( type->comment() );
+    }
+
+    insertItem( allComments, 0 );
+    filters.prepend( allTypes );
 }
 
 #include "kfilefilter.moc"

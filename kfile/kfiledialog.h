@@ -83,14 +83,14 @@ public:
       * Construct a file dialog.
       *
       * @param startDir This can either be
-      *         @li The URL of the directory to start in. 
+      *         @li The URL of the directory to start in.
       *         @li @ref QString::null to start in the current working
       *		    directory, or the last directory where a file has been
-      *		    selected. 
+      *		    selected.
       *         @li ':<keyword>' to start in the directory last used
       *             by a filedialog in the same application that specified
       *             the same keyword.
-      *         @li '::<keyword' to start in the direcotry last used 
+      *         @li '::<keyword' to start in the direcotry last used
       *             by a filedialog in any application that specified the
       *             same keyword.
       *
@@ -211,6 +211,7 @@ public:
      * @param defaultType the default mimetype to use as output format.
      *
      * Do not use in conjunction with @ref setFilter()
+     * @deprecated
      */
     void setFilterMimeType(const QString &label, const KMimeType::List &types, const KMimeType::Ptr &defaultType);
 
@@ -223,6 +224,22 @@ public:
      * @see setFilterMimeType()
      */
     KMimeType::Ptr currentFilterMimeType();
+
+    /**
+     * Set the filter up to specify the output type.
+     *
+     * @param types a list of mimetypes that can be used as output format
+     * @param defaultType the default mimetype to use as output format, if any.
+     *
+     * Do not use in conjunction with @ref setFilter()
+     */
+    void setMimeFilter( const QStringList& types,
+                        const QString& defaultType = QString::null );
+
+    /**
+     *  Clears any mime- or namefilter. Does not reload the directory.
+     */
+    void clearFilter();
 
     /**
      * @deprecated
@@ -245,7 +262,7 @@ public:
      *
      * @param w The widget to be used for the preview.
      */
-   void setPreviewWidget(const KPreviewWidgetBase *w); 
+   void setPreviewWidget(const KPreviewWidgetBase *w);
 
     /**
      * Create a modal file dialog and return the selected
@@ -255,14 +272,14 @@ public:
      * this method the user must select an existing filename.
      *
      * @param startDir This can either be
-     *         @li The URL of the directory to start in. 
+     *         @li The URL of the directory to start in.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
-     *		    selected. 
+     *		    selected.
      *         @li ':<keyword>' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used 
+     *         @li '::<keyword' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -283,14 +300,14 @@ public:
      * this method the user must select an existing filename.
      *
      * @param startDir This can either be
-     *         @li The URL of the directory to start in. 
+     *         @li The URL of the directory to start in.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
-     *		    selected. 
+     *		    selected.
      *         @li ':<keyword>' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used 
+     *         @li '::<keyword' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -310,14 +327,14 @@ public:
      * this method the user must select an existing URL.
      *
      * @param startDir This can either be
-     *         @li The URL of the directory to start in. 
+     *         @li The URL of the directory to start in.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
-     *		    selected. 
+     *		    selected.
      *         @li ':<keyword>' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used 
+     *         @li '::<keyword' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -338,14 +355,14 @@ public:
      * this method the user must select an existing filename.
      *
      * @param startDir This can either be
-     *         @li The URL of the directory to start in. 
+     *         @li The URL of the directory to start in.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
-     *		    selected. 
+     *		    selected.
      *         @li ':<keyword>' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used 
+     *         @li '::<keyword' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -365,14 +382,14 @@ public:
      * method the user need not select an existing filename.
      *
      * @param startDir This can either be
-     *         @li The URL of the directory to start in. 
+     *         @li The URL of the directory to start in.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
-     *		    selected. 
+     *		    selected.
      *         @li ':<keyword>' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used 
+     *         @li '::<keyword' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -392,14 +409,14 @@ public:
      * method the user need not select an existing filename.
      *
      * @param startDir This can either be
-     *         @li The URL of the directory to start in. 
+     *         @li The URL of the directory to start in.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
-     *		    selected. 
+     *		    selected.
      *         @li ':<keyword>' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used 
+     *         @li '::<keyword' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -418,14 +435,14 @@ public:
      * method the user need not select an existing directory.
      *
      * @param startDir This can either be
-     *         @li The URL of the directory to start in. 
+     *         @li The URL of the directory to start in.
      *         @li @ref QString::null to start in the current working
      *		    directory, or the last directory where a file has been
-     *		    selected. 
+     *		    selected.
      *         @li ':<keyword>' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used 
+     *         @li '::<keyword' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
