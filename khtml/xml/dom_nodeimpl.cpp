@@ -24,6 +24,7 @@
 
 #include "dom_node.h"
 #include "dom_exception.h"
+#include "htmlattrs.h"
 
 #include "dom_elementimpl.h"
 #include "dom_docimpl.h"
