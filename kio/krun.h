@@ -18,6 +18,24 @@ class KService;
 #include <qtimer.h>
 #include <qstrlist.h>
 
+/**
+ * Implements a generic runner, i.e. the 'exec' functionality of KDE
+ * It can execute any kdelnk, as well as any file, using default binding (service)
+ * or another bound service.
+ *
+ * IMPORTANT : to use this class, you must do 
+ * the following registry initialisation (in main() for instance)
+ * <pre>
+ * #include <kregistry.h>
+ * #include <kregfactories.h> 
+ *
+ *   KRegistry registry;
+ *   registry.addFactory( new KMimeTypeFactory );
+ *   registry.addFactory( new KServiceFactory );
+ *   registry.load();
+ * </pre>
+
+ */
 class KRun : public QObject
 {
   Q_OBJECT

@@ -16,6 +16,20 @@
 
 class KMimeTypeFactory;
 
+/**
+ * Represents a mime type.
+ *
+ * IMPORTANT : to use the public static methods of this class, you must do 
+ * the following registry initialisation (in main() for instance)
+ * <pre>
+ * #include <kregistry.h>
+ * #include <kregfactories.h> 
+ *
+ *   KRegistry registry;
+ *   registry.addFactory( new KMimeTypeFactory );
+ *   registry.load();
+ * </pre>
+ */
 class KMimeType
 {
   friend KMimeTypeFactory;
@@ -72,23 +86,35 @@ public:
   static KMimeType* findByURL( KURL& _url, mode_t _mode = 0, bool _is_local_file = false, bool _fast_mode = false );
 
   /**
-   * Called by the main function after the registry parsed all mimetype
-   * config files. This function makes sure that vital mime types are installed.
-   */
-  static void check();
-  
-  /**
    * Get all the mimetypes dict. Useful for showing the list of available mimetypes.
    */
   static QDict<KMimeType> * allTypes() { return s_mapTypes; }
 
 protected:
-  static void errorMissingMimeType( const char *_type );
-  static void scanMimeTypes( const char* _path );
   /**
-   * Called by the main function
+   * Signal a missing mime type
+   */
+  static void errorMissingMimeType( const char *_type );
+  /**
+   * Old method, not used anymore
+   */
+  static void scanMimeTypes( const char* _path );
+
+  /**
+   * Check for static variables initialised. Called by constructor
+   * and by check().
    */
   static void initStatic();
+  /**
+   * Called after the registry parsed all mimetype config files.
+   * This function makes sure that vital mime types are installed.
+   * It must be called by all public static methods
+   */
+  static void check();
+  /**
+   * True if check for vital mime types has been done
+   */
+  static bool s_bChecked;
 
   QString m_strMimeType;
   QString m_strIcon;

@@ -96,7 +96,7 @@ KRegEntry* KMimeTypeFactory::create( KRegistry* _reg, const char *_file, KSimple
 
 KMimeType* KMimeTypeFactory::createMimeType( const char *_file, KSimpleConfig &_cfg )
 {
-  debug( "Parsing %s", _file );
+  // debug( "Parsing %s", _file );
   
   // Get a ';' separated list of all pattern
   QString pats = _cfg.readEntry( "Patterns" );
@@ -238,7 +238,7 @@ KRegEntry* KServiceFactory::create( KRegistry* _reg, const char *_file, KSimpleC
 
 KService* KServiceFactory::createService( const char *_file, KSimpleConfig &_cfg )
 {
-  debug( "Parsing %s", _file );
+  // debug( "Parsing %s", _file );
   
   return KService::parseService( _file, _cfg );
 }

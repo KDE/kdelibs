@@ -21,6 +21,7 @@
 
 QDict<KMimeType>* KMimeType::s_mapTypes = 0L;
 KMimeType* KMimeType::s_pDefaultType = 0L;
+bool KMimeType::s_bChecked = false;
 
 void KMimeType::initStatic()
 {
@@ -42,9 +43,13 @@ void KMimeType::initStatic()
 
 void KMimeType::check()
 {
+  if ( s_bChecked )
+    return;
   initStatic();
 
   kdebug( KDEBUG_INFO, 7009, "================== %d MTs ==========", s_mapTypes->count() );
+
+  s_bChecked = true; // must be done before building mimetypes
   
   // Try to find the default type
   if ( ( s_pDefaultType = KMimeType::find( "application/octet-stream" ) ) == 0L )
@@ -84,8 +89,6 @@ void KMimeType::check()
 
 void KMimeType::errorMissingMimeType( const char *_type )
 {
-  initStatic();
-
   QString tmp = i18n( "Could not find mime type\n" );
   tmp += _type;
     
@@ -107,6 +110,7 @@ void KMimeType::errorMissingMimeType( const char *_type )
   s_mapTypes->insert( _type, e );
 }
 
+///////// Old method, never called ////////////
 void KMimeType::scanMimeTypes( const char* _path )
 {   
   initStatic();
@@ -194,7 +198,7 @@ void KMimeType::scanMimeTypes( const char* _path )
 
 KMimeType* KMimeType::find( const char *_name )
 {
-  initStatic();
+  check();
 
   assert( s_mapTypes );
 
@@ -207,7 +211,7 @@ KMimeType* KMimeType::find( const char *_name )
 
 KMimeType* KMimeType::findByURL( KURL& _url, mode_t _mode, bool _is_local_file, bool _fast_mode )
 {
-  initStatic();
+  check();
 
   if ( !_fast_mode && !_is_local_file && _url.isLocalFile() )
     _is_local_file = true;

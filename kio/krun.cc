@@ -332,8 +332,8 @@ void KRun::init()
     }
 
     KMimeType* mime = KMimeType::findByURL( url, m_mode, m_bIsLocalFile );
-    kdebug( KDEBUG_INFO, 7010, "MIME TYPE is %s", mime->mimeType() );
     assert( mime );
+    kdebug( KDEBUG_INFO, 7010, "MIME TYPE is %s", mime->mimeType() );
     foundMimeType( mime->mimeType() );
     return;
   }

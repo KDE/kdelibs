@@ -10,6 +10,20 @@
 
 class KServiceTypeProfile;
 
+/** Represents a service, i.e. an application bound to one or several mimetypes
+ * as written in its kdelnk file.
+ *
+ * IMPORTANT : to use the public static methods of this class, you must do 
+ * the following registry initialisation (in main() for instance)
+ * <pre>
+ * #include <kregistry.h>
+ * #include <kregfactories.h> 
+ *
+ *   KRegistry registry;
+ *   registry.addFactory( new KServiceFactory );
+ *   registry.load();
+ * </pre>
+ */
 class KService
 {
 public:
