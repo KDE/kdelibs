@@ -294,6 +294,8 @@ class AddressBook : public QObject
 
   protected:
     void deleteRemovedAddressees();
+    void setStandardResource( Resource * );
+    Resource *standardResource();
 
   private:
     struct AddressBookData;

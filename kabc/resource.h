@@ -105,16 +105,6 @@ public:
   virtual void removeAddressee( const Addressee& addr );
 
   /**
-   * Mark the resource as standard resource.
-   */
-  virtual void setStandard( bool value );
-
-  /**
-   * Returns, if the resource is the standard resource.
-   */
-  virtual bool standard() const;
-
-  /**
    * Mark the resource to read-only.
    */
   virtual void setReadOnly( bool value );
@@ -158,7 +148,6 @@ private:
   AddressBook *mAddressBook;
   bool mReadOnly;
   bool mFastResource;
-  bool mStandard;
   QString mName;
 };
 

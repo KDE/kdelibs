@@ -105,10 +105,13 @@ void StdAddressBook::init( bool onlyFastResources )
     resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
     resource->setName( config.readEntry( "ResourceName" ).latin1() );
 
-    if ( stdKey == (*it) )
-      resource->setStandard( true );
+    if ( !addResource( resource ) ) {
+      delete resource;
+      continue;
+    }
 
-    if ( !addResource( resource ) ) delete resource;
+    if ( stdKey == (*it) )
+      setStandardResource( resource );
   }
 
   QPtrList<Resource> list = resources();

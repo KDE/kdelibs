@@ -36,6 +36,7 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
   KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
 
   setCaption( i18n( "Resource Configuration" ) );
+  resize( 250, 240 );
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this, marginHint(), spacingHint() );
     

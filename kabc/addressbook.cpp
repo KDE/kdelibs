@@ -44,6 +44,7 @@ struct AddressBook::AddressBookData
   Field::List mAllFields;
   QPtrList<Resource> mResources;
   ErrorHandler *mErrorHandler;
+  Resource *mStandardResource;
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -196,11 +197,13 @@ AddressBook::AddressBook()
   d = new AddressBookData;
   d->mResources.setAutoDelete( true );
   d->mErrorHandler = 0;
+  d->mStandardResource = 0;
 }
 
 AddressBook::~AddressBook()
 {
   d->mResources.clear();
+  d->mStandardResource = 0;
   delete d->mErrorHandler;
   delete d;
 }
@@ -289,29 +292,6 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
 
 void AddressBook::insertAddressee( const Addressee &a )
 {
-
-  Resource *resource = 0;
-  if ( a.resource() == 0 ) {
-    // since this addressee does not belong to a resource we have
-    // to find one for it :)
-    for ( Resource *res = d->mResources.first(); res; res = d->mResources.next() ) {
-      if ( res->standard() && !res->readOnly() ) {
-        resource = res;
-        break;
-      }
-    }
-
-    if ( !resource ) {
-      // there is no standard resource, we will use the first writeable
-      for ( Resource *res = d->mResources.first(); res; res = d->mResources.next() ) {
-        if ( !res->readOnly() ) {
-          resource = res;
-          break;
-        }
-      }
-    }
-  }
-
   Addressee::List::Iterator it;
   for ( it = d->mAddressees.begin(); it != d->mAddressees.end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
@@ -322,7 +302,7 @@ void AddressBook::insertAddressee( const Addressee &a )
 
       (*it) = a;
       if ( (*it).resource() == 0 )
-        (*it).setResource( resource );
+        (*it).setResource( standardResource() );
 
       if ( changed ) {
         (*it).setRevision( QDateTime::currentDateTime() );
@@ -334,7 +314,7 @@ void AddressBook::insertAddressee( const Addressee &a )
   d->mAddressees.append( a );
   Addressee& addr = lastAddressee();
   if ( addr.resource() == 0 )
-    addr.setResource( resource );
+    addr.setResource( standardResource() );
   addr.setChanged( true );
 }
 
@@ -512,6 +492,9 @@ bool AddressBook::addResource( Resource *resource )
 
 bool AddressBook::removeResource( Resource *resource )
 {
+  if ( resource == standardResource() )
+    setStandardResource( 0 );
+
   return d->mResources.remove( resource );
 }
 
@@ -589,4 +572,14 @@ void AddressBook::deleteRemovedAddressees()
 Addressee &AddressBook::lastAddressee()
 {
   return d->mAddressees.last();
+}
+
+void AddressBook::setStandardResource( Resource *resource )
+{
+  d->mStandardResource = resource;
+}
+
+Resource *AddressBook::standardResource()
+{
+  return d->mStandardResource;
 }

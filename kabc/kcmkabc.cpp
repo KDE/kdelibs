@@ -39,7 +39,7 @@
 #include "resourcefactory.h"
 #include "stdaddressbook.h"
 
-class ConfigViewItem : public QListViewItem
+class ConfigViewItem : public QCheckListItem
 {
 public:
   ConfigViewItem( QListView *parent, QString name, QString type,
@@ -47,11 +47,7 @@ public:
 
   void setStandard( bool value )
   {
-    if ( value )
-      setText( 2, i18n( "yes" ) );
-    else
-      setText( 2, "" );
-
+    setText( 2, ( value ? i18n( "yes" ) : "" ) );
     isStandard = value;
   }
 
@@ -59,15 +55,19 @@ public:
 
   QString key;
   QString type;
+  bool readOnly;
 
 private:
   bool isStandard;
 };
 
 ConfigViewItem::ConfigViewItem( QListView *parent, QString name,
-    QString type, QString identifier)
-  : QListViewItem( parent, name, type, identifier )
+    QString type, QString )
+  : QCheckListItem( parent, name, CheckBox )
 {
+  isStandard = false;
+  readOnly = false;
+  setText( 1, type );
 }
 
 ConfigPage::ConfigPage( QWidget *parent, const char *name )
@@ -109,7 +109,6 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
   mainLayout->addWidget( groupBox );
 
   connect( mListView, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
-  connect( mListView, SIGNAL(doubleClicked(QListViewItem*)), this, SLOT(slotEdit()) );
 
   config = 0;
   mLastItem = 0;
@@ -119,17 +118,21 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
 
 void ConfigPage::load()
 {
-  QStringList keys;
-
   delete config;
   config = new KConfig( "kabcrc" );
 
   config->setGroup( "General" );
-  keys = config->readListEntry( "ResourceKeys" );
-  QString stdKey = config->readEntry( "Standard" );
+
+  QStringList keys = config->readListEntry( "ResourceKeys" );
+  uint numActiveKeys = keys.count();
+  keys += config->readListEntry( "PassiveResourceKeys" );
+
+  QString standardKey = config->readEntry( "Standard" );
 
   mListView->clear();
 
+  uint counter = 0;
+  bool haveStandardResource = false;
   for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
     config->setGroup( "Resource_" + (*it) );
     ConfigViewItem *item = new ConfigViewItem( mListView, 
@@ -138,35 +141,61 @@ void ConfigPage::load()
 
     item->key = (*it);
     item->type = config->readEntry( "ResourceType" );
-    if ( stdKey == (*it) )
+    item->readOnly = config->readBoolEntry( "ResourceIsReadOnly" );
+    if ( standardKey == (*it) ) {
       item->setStandard( true );
+      haveStandardResource = true;
+    }
+
+    item->setOn( counter < numActiveKeys );
+
+    counter++;
   }
 
   if ( mListView->childCount() == 0 ) {
     defaults();
     config->sync();
-  } else
+  } else {
+    if ( !haveStandardResource )
+      KMessageBox::error( this, i18n( "There is no standard resource! Please select one." ) );
+
     emit changed( false );
+  }
 }
 
 void ConfigPage::save()
 {
-  QStringList keys;
+  QStringList activeKeys;
+  QStringList passiveKeys;
+  QString standardKey;
 
   config->setGroup( "General" );
 
   QListViewItem *item = mListView->firstChild();
   while ( item != 0 ) {
     ConfigViewItem *configItem = dynamic_cast<ConfigViewItem*>( item );
-    if ( configItem->standard() )
-      config->writeEntry( "Standard", configItem->key );
-    keys.append( configItem->key );
+
+    // check if standard resource
+    if ( configItem->standard() && !configItem->readOnly && configItem->isOn() )
+      standardKey = configItem->key;
+
+    // check if active or passive resource
+    if ( ( (QCheckListItem*)item )->isOn() )
+      activeKeys.append( configItem->key );
+    else
+      passiveKeys.append( configItem->key );
+
     item = item->itemBelow();
   }
 
-  config->writeEntry( "ResourceKeys", keys );
+  config->writeEntry( "ResourceKeys", activeKeys );
+  config->writeEntry( "PassiveResourceKeys", passiveKeys );
+  config->writeEntry( "Standard", standardKey );
 
   config->sync();
+
+  if ( standardKey.isEmpty() )
+    KMessageBox::error( this, i18n( "There is no valid standard resource! Please select one which is neither read-only nor inactive." ) );
 
   emit changed( false );
 }
@@ -201,6 +230,7 @@ void ConfigPage::defaults()
   item->key = key;
   item->type = type;
   item->setStandard(true);
+  item->setOn( true );
 
   mLastItem = item;
 
@@ -235,7 +265,28 @@ void ConfigPage::slotAdd()
     ConfigViewItem *item = new ConfigViewItem( mListView, dlg.resourceName(), type );
     item->key = key;
     item->type = type;
+    item->readOnly = dlg.readOnly();
+    item->setOn( true );
+
     mLastItem = item;
+
+    // if there are only read-only resources we'll set this resource
+    // as standard resource
+    if ( !item->readOnly ) {
+      bool onlyReadOnly = true;
+      QListViewItem *it = mListView->firstChild();
+      while ( it != 0 ) {
+        ConfigViewItem *confIt = dynamic_cast<ConfigViewItem*>( it );
+        if ( !confIt->readOnly && confIt != item )
+          onlyReadOnly = false;
+
+        it = it->itemBelow();
+      }
+
+      if ( onlyReadOnly )
+        item->setStandard( true );
+    }
+
     emit changed( true );
   } else {
     config->deleteGroup( "Resource_" + key );
@@ -245,9 +296,17 @@ void ConfigPage::slotAdd()
 void ConfigPage::slotRemove()
 {
   QListViewItem *item = mListView->currentItem();
-  QString key = dynamic_cast<ConfigViewItem*>( item )->key;
+  ConfigViewItem *confItem = dynamic_cast<ConfigViewItem*>( item );
 
-  config->deleteGroup( "Resource_" + key );
+  if ( !confItem )
+    return;
+
+  if ( confItem->standard() ) {
+    if ( KMessageBox::warningYesNo( this, i18n( "Do you really want to delete your standard resource?" ) ) == KMessageBox::Cancel )
+      return;
+  }
+
+  config->deleteGroup( "Resource_" + confItem->key );
 
   if ( item == mLastItem )
     mLastItem = 0;
@@ -284,6 +343,13 @@ void ConfigPage::slotEdit()
 
     configItem->setText( 0, dlg.resourceName() );
     configItem->setText( 1, type );
+    configItem->readOnly = dlg.readOnly();
+
+    if ( configItem->standard() && configItem->readOnly ) {
+      KMessageBox::error( this, i18n( "You can't use a read only resource as standard!" ) );
+      configItem->setStandard( false );
+    }
+
     emit changed( true );
   }
 }
@@ -386,6 +452,16 @@ void ConfigPage::slotStandard()
   ConfigViewItem *item = dynamic_cast<ConfigViewItem*>( mListView->currentItem() );
   if ( !item )
     return;
+
+  if ( item->readOnly ) {
+    KMessageBox::error( this, i18n( "You can't use a read only resource as standard!" ) );
+    return;
+  }
+
+  if ( !item->isOn() ) {
+    KMessageBox::error( this, i18n( "You can't use a inactive resource as standard!" ) );
+    return;
+  }
 
   QListViewItem *it = mListView->firstChild();
   while ( it != 0 ) {
