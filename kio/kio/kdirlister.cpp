@@ -34,6 +34,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kstaticdeleter.h>
+#include <kdebugclasses.h>
 
 #include <assert.h>
 
@@ -88,9 +89,13 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
 #ifdef DEBUG_CACHE
   printDebug();
 #endif
-  kdDebug(7004) << k_funcinfo << lister << " url=" << _url.prettyURL()
+  kdDebug(7004) << k_funcinfo << lister << " url=" << _url
                 << " keep=" << _keep << " reload=" << _reload << endl;
-
+  /*if ( !_keep ) {
+    for ( KURL::List::Iterator it = lister->d->lstDirs.begin();
+          it != lister->d->lstDirs.end(); ++it )
+          kdDebug(7004) << " Dir for this lister:" << (*it) << endl;
+  }*/
   if ( !_keep )
   {
     // stop any running jobs for lister
@@ -128,7 +133,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
 
     if ( itemU )
     {
-      kdDebug(7004) << "listDir: Entry already in use: " << _url.prettyURL() << endl;
+      kdDebug(7004) << "listDir: Entry already in use: " << _url << endl;
 
       bool oldState = lister->d->complete;
       lister->d->complete = false;
@@ -157,7 +162,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     }
     else if ( !_reload && (itemC = itemsCached.take( _url.url() )) )
     {
-      kdDebug(7004) << "listDir: Entry in cache: " << _url.prettyURL() << endl;
+      kdDebug(7004) << "listDir: Entry in cache: " << _url << endl;
 
       Q_ASSERT( itemC->complete );
       Q_ASSERT( itemC->count == 0 );
@@ -190,7 +195,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     }
     else  // dir not in cache or _reload is true
     {
-      kdDebug(7004) << "listDir: Entry not in cache or reloaded: " << _url.prettyURL() << endl;
+      kdDebug(7004) << "listDir: Entry not in cache or reloaded: " << _url << endl;
 
       QPtrList<KDirLister> *list = new QPtrList<KDirLister>;
       list->append( lister );
@@ -241,7 +246,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
   }
   else
   {
-    kdDebug(7004) << k_funcinfo << "Entry currently being listed: " << _url.prettyURL() << endl;
+    kdDebug(7004) << k_funcinfo << "Entry currently being listed: " << _url << endl;
 
     emit lister->started( _url );
 
@@ -250,8 +255,10 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     urlsCurrentlyListed[_url.url()]->append( lister );
 
     QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator it = jobs.begin();
+    //kdDebug(7004) << "KDirListerCache::listDir " << jobs.count() << " jobs" << endl;
     while ( it != jobs.end() )
     {
+      //kdDebug(7004) << "KDirListerCache::listDir looking at job for " << it.key()->url() << endl;
       if ( it.key()->url() == _url )
         break;
 
@@ -292,7 +299,10 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
 
 void KDirListerCache::stop( KDirLister *lister )
 {
-  kdDebug(7004) << k_funcinfo << lister << endl;
+#ifdef DEBUG_CACHE
+  printDebug();
+#endif
+  kdDebug(7004) << k_funcinfo << "lister: " << lister << endl;
   bool stopped = false;
 
   QDictIterator< QPtrList<KDirLister> > it( urlsCurrentlyListed );
@@ -303,7 +313,9 @@ void KDirListerCache::stop( KDirLister *lister )
       // lister is listing url
       QString url = it.currentKey();
 
-      it.current()->removeRef( lister );
+      //kdDebug(7004) << k_funcinfo << " found lister in list - for " << url << endl;
+      bool ret = it.current()->removeRef( lister );
+      Q_ASSERT(ret);
       lister->d->numJobs--;
 
       // move lister to urlsCurrentlyHeld
@@ -319,6 +331,7 @@ void KDirListerCache::stop( KDirLister *lister )
 
       emit lister->canceled( KURL( url ) );
 
+      //kdDebug(7004) << "KDirListerCache::stop(lister) remaining list: " << it.current()->count() << " listers" << endl;
       // find and kill the job
       if ( it.current()->isEmpty() )
       {
@@ -344,12 +357,14 @@ void KDirListerCache::stop( KDirLister *lister )
 
 void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
 {
-  KURL _url( _u.url(-1) );
+  QString urlStr( _u.url(-1) );
+  KURL _url( urlStr );
 
   // TODO: consider to stop all the "child jobs" of _url as well
-  kdDebug(7004) << k_funcinfo << lister << " url=" << _url.prettyURL() << endl;
+  kdDebug(7004) << k_funcinfo << lister << " url=" << _url << endl;
 
-  QPtrList<KDirLister> *listers = urlsCurrentlyListed[_url.url()];
+  kdDebug(7004) << "removing listed from urlsCurrentlyListed" << endl;
+  QPtrList<KDirLister> *listers = urlsCurrentlyListed[urlStr];
   if ( !listers || !listers->removeRef( lister ) )
     return;
 
@@ -359,7 +374,7 @@ void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
   {
     holders = new QPtrList<KDirLister>;
     holders->append( lister );
-    urlsCurrentlyHeld.insert( _url.url(), holders );
+    urlsCurrentlyHeld.insert( urlStr, holders );
   }
   else
     holders->append( lister );
@@ -369,8 +384,8 @@ void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
 
   if ( listers->isEmpty() )   // kill the job
   {
-    urlsCurrentlyListed.remove( _url.url() );
-    killJob( _url.url() );
+    urlsCurrentlyListed.remove( urlStr );
+    killJob( urlStr );
   }
 
   if ( lister->d->numJobs == 0 )
@@ -415,7 +430,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 
 void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
 {
-  kdDebug(7004) << k_funcinfo << lister << " url: " << url.prettyURL() << endl;
+  kdDebug(7004) << k_funcinfo << lister << " url: " << url << endl;
 
   forgetDirInternal( lister, url );
 
@@ -425,12 +440,13 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
 
 void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
 {
-  kdDebug() << k_funcinfo << url.prettyURL() << endl;
-  QPtrList<KDirLister> *listers = urlsCurrentlyHeld[url.url()];
-  Q_ASSERT( listers );
-  listers->removeRef( lister );
+  kdDebug(7004) << k_funcinfo << "lister=" << lister << " url=" << url << endl;
+  QString urlStr = url.url();
+  QPtrList<KDirLister> *holders = urlsCurrentlyHeld[urlStr];
+  Q_ASSERT( holders );
+  holders->removeRef( lister );
 
-  DirItem *item = itemsInUse[url.url()];
+  DirItem *item = itemsInUse[urlStr];
 
   Q_ASSERT( item );
   Q_ASSERT( item->count );
@@ -445,47 +461,50 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
   }
 
   if ( item->count == 0 )
-    Q_ASSERT( listers->isEmpty() );
+    Q_ASSERT( holders->isEmpty() );
 
-  // item not in use anymore -> move into cache if complete
-  if ( listers->isEmpty() )
+  if ( holders->isEmpty() )
   {
-    urlsCurrentlyHeld.remove( url.url() ); // this deletes listers!
-    itemsInUse.remove( url.url() );
-
-    // this job is a running update
-    if ( killJob( url.url() ) )
+    urlsCurrentlyHeld.remove( urlStr ); // this deletes the (empty) holders list
+    if ( !urlsCurrentlyListed[urlStr] )
     {
-      kdDebug(7004) << k_funcinfo << "Killing update job for " << url.url() << endl;
+      // item not in use anymore -> move into cache if complete
+      itemsInUse.remove( urlStr );
 
-      lister->d->numJobs--;
-
-      emit lister->canceled( url );
-      if ( lister->d->numJobs == 0 )
+      // this job is a running update - DF: or a normal listing!
+      if ( killJob( urlStr ) )
       {
-        lister->d->complete = true;
-        emit lister->canceled();
-      }
-    }
+        kdDebug(7004) << k_funcinfo << "Killing update job for " << urlStr << endl;
 
-    if ( item->complete )
-    {
-      kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url.prettyURL() << endl;
-      itemsCached.insert( url.url(), item ); // TODO: may return false!!
+        lister->d->numJobs--;
+
+        emit lister->canceled( url );
+        if ( lister->d->numJobs == 0 )
+        {
+          lister->d->complete = true;
+          emit lister->canceled();
+        }
+      }
+
+      if ( item->complete )
+      {
+        kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url << endl;
+        itemsCached.insert( urlStr, item ); // TODO: may return false!!
+      }
+      else
+        delete item;
     }
-    else
-      delete item;
   }
 }
 
 void KDirListerCache::updateDirectory( const KURL& _dir )
 {
-  kdDebug(7004) << k_funcinfo << _dir.prettyURL() << endl;
+  kdDebug(7004) << k_funcinfo << _dir << endl;
 
   QString urlStr = _dir.url(-1);
   if ( !itemsInUse[urlStr] )
   {
-    kdDebug(7004) << k_funcinfo << "updateDirectory aborted, " << _dir.prettyURL() << " not in use!" << endl;
+    kdDebug(7004) << k_funcinfo << "updateDirectory aborted, " << _dir << " not in use!" << endl;
     return;
   }
 
@@ -521,7 +540,7 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
   connect( job, SIGNAL( result( KIO::Job * ) ),
            this, SLOT( slotUpdateResult( KIO::Job * ) ) );
 
-  kdDebug(7004) << k_funcinfo << "update started in " << _dir.prettyURL() << endl;
+  kdDebug(7004) << k_funcinfo << "update started in " << _dir << endl;
 
   if ( !killed && holders )
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
@@ -602,7 +621,7 @@ KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
 
 void KDirListerCache::FilesAdded( const KURL &dir )
 {
-  kdDebug(7004) << "FilesAdded " << dir.prettyURL() << endl;
+  kdDebug(7004) << "FilesAdded " << dir << endl;
   updateDirectory( dir );
 }
 
@@ -1343,15 +1362,26 @@ void KDirListerCache::printDebug()
   QDictIterator< QPtrList<KDirLister> > it( urlsCurrentlyHeld );
   for ( ; it.current() ; ++it )
   {
-    kdDebug(7004) << "   " << it.currentKey() << "  " << it.current()->count() << " listers." << endl;
+    QString list;
+    for ( QPtrListIterator<KDirLister> listit( *it.current() ); listit.current(); ++listit )
+      list += " 0x" + QString::number( (long)listit.current(), 16 );
+    kdDebug(7004) << "   " << it.currentKey() << "  " << it.current()->count() << " listers: " << list << endl;
   }
 
   kdDebug(7004) << "urlsCurrentlyListed: " << endl;
   QDictIterator< QPtrList<KDirLister> > it2( urlsCurrentlyListed );
   for ( ; it2.current() ; ++it2 )
   {
-    kdDebug(7004) << "   " << it2.currentKey() << "  " << it2.current()->count() << " listers." << endl;
+    QString list;
+    for ( QPtrListIterator<KDirLister> listit( *it2.current() ); listit.current(); ++listit )
+      list += " 0x" + QString::number( (long)listit.current(), 16 );
+    kdDebug(7004) << "   " << it2.currentKey() << "  " << it2.current()->count() << " listers: " << list << endl;
   }
+
+  QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator jit = jobs.begin();
+  kdDebug(7004) << "Jobs: " << endl;
+  for ( ; jit != jobs.end() ; ++jit )
+    kdDebug(7004) << "   " << jit.key() << " listing " << jit.key()->url().prettyURL() << ": " << (*jit).count() << " entries." << endl;
 
   kdDebug(7004) << "Items in cache: " << endl;
   QCacheIterator<DirItem> itc( itemsCached );
