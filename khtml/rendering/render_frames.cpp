@@ -856,6 +856,9 @@ void RenderPartObject::layout( )
 {
     if ( layouted() ) return;
 
+    // minimum height
+    m_height = 0;
+
     calcWidth();
     calcHeight();
 
