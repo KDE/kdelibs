@@ -66,7 +66,7 @@ public:
     DOMString data() const { return str; }
 
     virtual void checkCharDataOperation( const unsigned long offset, int &exceptioncode );
-                    
+
     virtual long minOffset() const;
     virtual long maxOffset() const;
 

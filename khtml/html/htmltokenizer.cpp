@@ -393,7 +393,6 @@ void HTMLTokenizer::scriptHandler()
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
             cs->ref(this);
-
         }
         else if (currentScriptSrc.isEmpty() && view && javascript ) {
             if ( !m_executingScript )
@@ -416,9 +415,9 @@ void HTMLTokenizer::scriptHandler()
         newStr += pendingSrc;
         setSrc(newStr);
         pendingSrc = QString::null;
-    }
-    else if ( !prependingSrc.isEmpty() )
+    } else if ( !prependingSrc.isEmpty() ) {
         write( prependingSrc, false );
+    }
 }
 
 void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptURL,
@@ -1647,6 +1646,11 @@ void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
             // access any members.
         }
     }
+}
+
+bool HTMLTokenizer::isWaitingForScripts() const
+{
+    return cachedScript.count();
 }
 
 void HTMLTokenizer::setSrc(const QString& source)

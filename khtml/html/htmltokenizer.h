@@ -169,6 +169,8 @@ protected:
 
     // from CachedObjectClient
     void notifyFinished(khtml::CachedObject *finishedObj);
+
+    virtual bool isWaitingForScripts() const;
 protected:
     // Internal buffers
     ///////////////////
