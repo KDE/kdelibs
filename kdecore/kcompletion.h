@@ -188,7 +188,7 @@ public:
 
 
     /**
-     * Sets the completion mode to Auto/Manual (see @ref KCompletion 
+     * Sets the completion mode to Auto/Manual (see @ref KCompletion
      * documentation), Shell or None.
      * If you don't set the mode explicitly, the global default value
      * KGlobalSettings::completionMode() is used.
@@ -250,8 +250,9 @@ public:
      * Enables playing a sound when
      * @li @ref makeCompletion() can't find a match
      * @li there is a partial completion
+     * @li @ref nextMatch() or @ref previousMatch() hit the last possible
+     *     match -> rotation
      *
-     * Sounds are only played in shell-completion mode. Default is enabled
      * @see #disableSounds
      * @see #isSoundEnabled
      */
@@ -395,7 +396,8 @@ private:
 						const QString& beginning,
 						QStringList *matches ) const;
 
-    void 		doBeep();
+    enum 		BeepMode { NoMatch, PartialMatch, Rotation };
+    void 		doBeep( BeepMode );
 
     QStringList         myMatches;
     KGlobalSettings::Completion myCompletionMode;

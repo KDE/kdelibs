@@ -20,6 +20,9 @@
 
 #include <kapp.h>
 #include <kdebug.h>
+#include <klocale.h>
+#include <knotifyclient.h>
+
 #include "kcompletion.h"
 
 
@@ -110,7 +113,7 @@ QString KCompletion::makeCompletion( const QString& string )
     if ( myCompletionMode == KGlobalSettings::CompletionNone )
         return QString::null;
 
-    kdDebug(250) << "KCompletion: completing: " << debugString( string ) << endl;
+    kdDebug(0) << "KCompletion: completing: " << debugString( string ) << endl;
 
     myMatches.clear();
     myRotationIndex = 0;
@@ -134,7 +137,7 @@ QString KCompletion::makeCompletion( const QString& string )
     myCurrentMatch = completion;
 
     if ( !string.isEmpty() ) { // only emit match when string != ""
-	debug("KCompletion: Match: %s", debugString( completion ));
+	kdDebug(0) << "KCompletion: Match: " << completion;
 
 	postProcessMatch( &completion );
         emit match( completion );
@@ -143,7 +146,7 @@ QString KCompletion::makeCompletion( const QString& string )
         postProcessMatch( &completion );
 
     if ( completion.isNull() )
-        doBeep();
+        doBeep( NoMatch );
 
     return completion;
 }
@@ -177,7 +180,7 @@ QString KCompletion::nextMatch()
     myLastMatch = myMatches[ myRotationIndex++ ];
 
     if ( myRotationIndex == myMatches.count() -1 )
-	doBeep(); // indicate last matching item -> rotating
+	doBeep( Rotation ); // indicate last matching item -> rotating
 
     else if ( myRotationIndex == myMatches.count() )
 	myRotationIndex = 0;
@@ -207,7 +210,7 @@ QString KCompletion::previousMatch()
 
     myLastMatch = myMatches[ myRotationIndex ];
     if ( myRotationIndex == 1 )
-	doBeep(); // indicate first item -> rotating
+	doBeep( Rotation ); // indicate first item -> rotating
 
     else if ( myRotationIndex == 0 )
 	myRotationIndex = myMatches.count();
@@ -269,7 +272,7 @@ QString KCompletion::findCompletion( const QString& string )
 	}
 
 	else
-	    doBeep(); // partial match -> beep
+	    doBeep( PartialMatch ); // partial match -> beep
     }
 
     return completion;
@@ -278,7 +281,7 @@ QString KCompletion::findCompletion( const QString& string )
 
 const QStringList& KCompletion::findAllCompletions( const QString& string )
 {
-    kdDebug(250) << "*** finding all completions for " << string << endl;
+    kdDebug(0) << "*** finding all completions for " << string << endl;
     myMatches.clear();
     myRotationIndex = 0;
 
@@ -364,12 +367,35 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 }
 
 
-void KCompletion::doBeep()
+void KCompletion::doBeep( BeepMode mode )
 {
-    if ( myBeep &&
-	 (myCompletionMode == KGlobalSettings::CompletionShell ||
-	  myCompletionMode == KGlobalSettings::CompletionMan) )
-        kapp->beep();
+    if ( !myBeep )
+	return;
+
+    QString text, event;
+    
+    switch ( mode ) {
+    case Rotation:
+	event = QString::fromLatin1("KCompletion: rotation");
+	text = i18n("You reached the end of the list\nof matching items\n");
+	break;
+    case PartialMatch:
+	if ( myCompletionMode == KGlobalSettings::CompletionShell ) {
+	    event = QString::fromLatin1("KCompletion: partial match");
+	    text = i18n("The completion is ambiguous, more than one\n match is available.\n");
+	}
+	break;
+    case NoMatch:
+	if ( myCompletionMode == KGlobalSettings::CompletionShell ||
+	     myCompletionMode == KGlobalSettings::CompletionMan ) {
+	    event = QString::fromLatin1("KCompletion: no match");
+	    text = i18n("There is no matching item available.\n");
+	}
+	break;
+    }
+
+    if ( !text.isEmpty() )
+	KNotifyClient::event( event, text );
 }
 
 /////////////////////////////////
