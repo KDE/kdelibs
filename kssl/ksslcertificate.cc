@@ -29,6 +29,7 @@
 
 #include <kstddirs.h>
 #include <kmdcodec.h>
+#include <qdatetime.h>
 
 #include <sys/types.h>
 
@@ -372,6 +373,24 @@ QString KSSLCertificate::getNotAfter() const {
 return ASN1_UTCTIME_QString(X509_get_notAfter(d->m_cert));
 #else
 return QString::null;
+#endif
+}
+
+
+QDateTime KSSLCertificate::getQDTNotBefore() const {
+#ifdef HAVE_SSL
+return ASN1_UTCTIME_QDateTime(X509_get_notBefore(d->m_cert), NULL);
+#else
+return QDateTime::currentDateTime();
+#endif
+}
+
+
+QDateTime KSSLCertificate::getQDTNotAfter() const {
+#ifdef HAVE_SSL
+return ASN1_UTCTIME_QDateTime(X509_get_notAfter(d->m_cert), NULL);
+#else
+return QDateTime::currentDateTime();
 #endif
 }
 

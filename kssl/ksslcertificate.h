@@ -39,6 +39,7 @@ class QString;
 class QCString;
 class KSSL;
 class KSSLCertificatePrivate;
+class QDateTime;
 
 typedef struct x509_st X509;
 
@@ -68,6 +69,8 @@ public:
   QString getIssuer() const;
   QString getNotBefore() const;
   QString getNotAfter() const;
+  QDateTime getQDTNotBefore() const;
+  QDateTime getQDTNotAfter() const;
   // getSerialNumber() const;      <-- it's an ASN1Integer.  Yum.
   // getSignatureType() const;
   // get public key ??
