@@ -18,7 +18,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 // --------------------------------------------------------------------------
 
@@ -342,6 +341,28 @@ long HTMLImageElement::width() const
 void HTMLImageElement::setWidth( long value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, QString::number(value));
+}
+
+long HTMLImageElement::x() const
+{
+    if (impl && impl->renderer()) {
+        int x = 0;
+        int y = 0;
+        impl->renderer()->absolutePosition(x,y);
+        return x;
+    }
+    return 0;
+}
+
+long HTMLImageElement::y() const
+{
+    if (impl && impl->renderer()) {
+        int x = 0;
+        int y = 0;
+        impl->renderer()->absolutePosition(x,y);
+        return y;
+    }
+    return 0;
 }
 
 // --------------------------------------------------------------------------

@@ -25,7 +25,6 @@
  * Technology , Institut National de Recherche en Informatique et en
  * Automatique , Keio University ). All Rights Reserved.
  *
- * $Id$
  */
 #ifndef HTML_IMAGE_H
 #define HTML_IMAGE_H
@@ -370,6 +369,11 @@ public:
      */
     void setWidth( long );
 
+    /**
+     * Nonstandard extension to DOM::ImgElement
+     */
+    long x() const;
+    long y() const;
 };
 
 // --------------------------------------------------------------------------
