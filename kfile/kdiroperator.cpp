@@ -160,12 +160,12 @@ void KDirOperator::setPreviewWidget(const QWidget *w) {
 
 int KDirOperator::numDirs() const
 {
-    return fileView->numDirs();
+    return fileView ? fileView->numDirs() : 0;
 }
 
 int KDirOperator::numFiles() const
 {
-    return fileView->numFiles();
+    return fileView ? fileView->numFiles() : 0;
 }
 
 void KDirOperator::slotDetailedView()
