@@ -112,7 +112,7 @@ public:
      OUTPUT_AMP_SEQUENCES=2,
      AMP_SEQUENCES=INPUT_AMP_SEQUENCES|OUTPUT_AMP_SEQUENCES,
      UNKNOWN_TO_ASCII=4,
-     UNKNOWN_TO_QUESTION_MARKS=0,
+     UNKNOWN_TO_QUESTION_MARKS=0
    };
 /**
 * Constructor. Start conversion to displayable charset
