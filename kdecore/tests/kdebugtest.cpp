@@ -1,9 +1,16 @@
 #include <kdebug.h>
+#include <qwidget.h>
 #include <kinstance.h>
 #include <iostream.h>
+#include <qapp.h>
 
-int main()
+class TestWidget : public QWidget
 {
+  Q_OBJECT
+public:
+  TestWidget(QWidget* parent, const char* name)
+    : QWidget(parent, name)
+  {
     kdDebug().form("mytest %s", "hello") << endl;
     QString test = "%20C this is a string";
     kdDebug(150) << test << endl;
@@ -21,5 +28,24 @@ int main()
     kdDebug() << s << endl;
     kDebugError(1202,"Error !!!");
     kDebugError("Error with no area");
-    return 0;
+    
+    kdDebug() << "Printing a null QWidget pointer: " << (QWidget*)0 << endl;
+  }
+  void resizeEvent(QResizeEvent*)
+  {
+    kdDebug() << this << endl;
+  }    
+};
+
+int main(int argc, char** argv)
+{
+  QApplication app(argc, argv);
+  TestWidget widget(0, "NoNameWidget");
+  widget.setGeometry(45, 54, 120, 80);
+  widget.show();
+  app.setMainWidget(&widget);
+  app.exec();
+  return 0;
 }
+
+#include "kdebugtest.moc" // needed for classname

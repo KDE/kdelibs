@@ -21,6 +21,7 @@
 #define _KDEBUG_H_ "$Id$"
 
 #include <qstring.h>
+#include <qwidget.h>
 
 /**
   * kDebug provides and advanced mechanism for displaying debugging
@@ -153,7 +154,10 @@ class kdbgstream {
 	return (*f)(*this);
     }
     kdbgstream &form(const char *format, ...);
-
+    /** Operator to print out basic information about a QWidget.
+     *  Output of class names only works if the class uses Q_OBJECT
+     *  and links a moc file. */ 
+    kdbgstream& operator << (QWidget* widget);
  private:
     QString output;
     unsigned int area, level;
@@ -174,6 +178,7 @@ class kndbgstream {
     kndbgstream &operator<<(const QCString& ) { return *this; }
     kndbgstream &operator<<(const char *) { return *this; }
     kndbgstream& operator<<(KNDBGFUNC) { return *this; }
+    kndbgstream& operator << (QWidget*) { return *this; }
     kndbgstream &form(const char *, ...) { return *this; }
 };
 

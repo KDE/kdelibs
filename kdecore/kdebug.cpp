@@ -439,3 +439,39 @@ kdbgstream::~kdbgstream() {
 	*this << "\n";
     }
 }
+
+kdbgstream& kdbgstream::operator << (QWidget* widget)
+{
+  QString string, temp;
+  // -----
+  if(widget==0)
+    {
+      string=(QString)"[Null pointer]";
+    } else {
+      temp.setNum((ulong)widget, 16);
+      string=(QString)"["+widget->className()+" pointer "
+	+ "(0x" + temp + ")";
+      if(widget->name(0)==0)
+	{
+	  string += " to unnamed widget, ";
+	} else {
+	  string += (QString)" to widget " + widget->name() + ", ";
+	}
+      string += "geometry="
+	+ QString().setNum(widget->width())
+	+ "x"+QString().setNum(widget->height())
+	+ "+"+QString().setNum(widget->x())
+	+ "+"+QString().setNum(widget->y())
+	+ "]";
+    }
+  if (!print)
+    {
+      return *this;
+    }
+  output += string;
+  if (output.at(output.length() -1 ) == '\n')
+    {
+      flush();
+    }
+  return *this;
+}
