@@ -145,7 +145,7 @@ namespace KStdAction
 		Preferences, ConfigureToolbars,
 
 		// Help Menu
-		Help, HelpContents, WhatsThis, TipofDay, ReportBug, AboutApp, AboutKDE,
+		Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE, TipofDay,
 
 		// Another settings menu item
 		ConfigureNotifications
