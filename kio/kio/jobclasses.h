@@ -135,7 +135,7 @@ namespace KIO {
          * @param reqUrl the request URL that generated this error message
          * @param method the method that generated this error message
          * (unimplemented)
-         * @return the following strings: caption, error + description, 
+         * @return the following strings: caption, error + description,
 	 *         causes+solutions
          */
         QStringList detailedErrorStrings(const KURL *reqUrl = 0L,
@@ -421,7 +421,7 @@ namespace KIO {
         /**
          * Set the processed size, does not emit processedSize
          * @since 3.2
-         */   
+         */
         void setProcessedSize(KIO::filesize_t size);
 
         /**
@@ -429,7 +429,7 @@ namespace KIO {
          * Some extra storage space for jobs that don't have their own
          * private d pointer.
          */
-        enum { EF_TransferJobAsync    = (1 << 0), 
+        enum { EF_TransferJobAsync    = (1 << 0),
                EF_TransferJobNeedData = (1 << 1),
                EF_TransferJobDataSent = (1 << 2) };
         int &extraFlags();
@@ -527,7 +527,7 @@ namespace KIO {
         /**
          * Forward signal from the slave
          * Can also be called by the parent job, when it knows the size.
-	 * @param size the total size 
+	 * @param size the total size
          */
         void slotTotalSize( KIO::filesize_t data_size );
 
@@ -564,7 +564,7 @@ namespace KIO {
          */
         void slotProcessedSize( KIO::filesize_t data_size );
         /**
-         * Forward signal from the slave. 
+         * Forward signal from the slave.
 	 * @param bytes_per_second the speed in bytes/s
 	 * @see speed()
          */
@@ -622,7 +622,7 @@ namespace KIO {
 	 */
         StatJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
-        /** 
+        /**
 	 * A stat() can have two meanings. Either we want to read from this URL,
          * or to check if we can write to it. First case is "source", second is "dest".
          * It is necessary to know what the StatJob is for, to tune the kioslave's behaviour
@@ -705,7 +705,7 @@ namespace KIO {
 
     public:
        /**
-	* Do not create a TransferJob. Use KIO::get() or KIO::put() 
+	* Do not create a TransferJob. Use KIO::get() or KIO::put()
 	* instead.
 	* @param url the url to get or put
 	* @param command the command to issue
@@ -743,30 +743,30 @@ namespace KIO {
         void resume();
 
         /**
-         * Flow control. 
+         * Flow control.
 	 * @return true if the job is suspended
          */
 	bool isSuspended() const { return m_suspended; }
 
 
         /**
-	 * Checks whether we got an error page. This currently only happens 
+	 * Checks whether we got an error page. This currently only happens
 	 * with HTTP urls. Call this from your slot connected to result().
 	 *
          * @return true if we got an (HTML) error page from the server
-         * instead of what we asked for. 
+         * instead of what we asked for.
          */
         bool isErrorPage() const { return m_errorPage; }
 
         /**
          * Enable the async data mode.
-         * When async data is enabled, data should be provided to the job by 
-         * calling sendAsyncData() instead of returning data in the 
+         * When async data is enabled, data should be provided to the job by
+         * calling sendAsyncData() instead of returning data in the
          * dataReq() signal.
          * @since 3.2
          */
         void setAsyncDataEnabled(bool enabled);
-        
+
         /**
          * Provide data to the job when async data is enabled.
          * Should be called exactly once after receiving a dataReq signal
@@ -776,14 +776,14 @@ namespace KIO {
         void sendAsyncData(const QByteArray &data);
 
         /**
-         * When enabled, the job reports the amount of data that has been sent, 
+         * When enabled, the job reports the amount of data that has been sent,
          * instead of the amount of data that that has been received.
          * @see slotProcessedSize
          * @see slotSpeed
-         * @since 3.2 
+         * @since 3.2
          */
         void setReportDataSent(bool enabled);
-        
+
         /**
          *  Returns whether the job reports the amount of data that has been
          *  sent (true), or whether the job reports the amount of data that
@@ -791,17 +791,18 @@ namespace KIO {
          * @since 3.2
          */
         bool reportDataSent();
-        
+
     signals:
         /**
          * Data from the slave has arrived.
-	 * @param job the job that emitted this signal
+         * @param job the job that emitted this signal
          * @param data data received from the slave.
+         *
          * End of data (EOD) has been reached if data.size() == 0, however, you
-         * should not be certain of data.size() ever happening and just use signal
-         * result()
-		 */
-        void data( KIO::Job *job, const QByteArray &data);
+         * should not be certain of data.size() == 0 ever happening (e.g. in case
+         * of an error), so you should rely on result() instead.
+         */
+        void data( KIO::Job *job, const QByteArray &data );
 
         /**
          * Request for data.
@@ -814,7 +815,7 @@ namespace KIO {
          * @param data buffer to fill with data to send to the
          * slave. An empty buffer indicates end of data. (EOD)
          */
-        void dataReq( KIO::Job *job, QByteArray &data);
+        void dataReq( KIO::Job *job, QByteArray &data );
 
         /**
          * Signals a redirection.
@@ -906,7 +907,7 @@ namespace KIO {
 
 	/**
 	 * Get an additional file.
-	 * 
+	 *
 	 * @param id the id of the file
 	 * @param url the url of the file to get
 	 * @param metaData the meta data for this request
@@ -976,7 +977,7 @@ namespace KIO {
 
     public:
        /**
-	* Do not create a MimetypeJob directly. Use KIO::mimetype() 
+	* Do not create a MimetypeJob directly. Use KIO::mimetype()
 	* instead.
 	* @param url the url to get
 	* @param command the command to issue
@@ -1018,7 +1019,7 @@ namespace KIO {
 
     public:
 	/**
-	* Do not create a FileCopyJob directly. Use KIO::file_move() 
+	* Do not create a FileCopyJob directly. Use KIO::file_move()
 	* or KIO::file_copy() instead.
 	* @param src the source URL
 	* @param dest the destination URL
@@ -1078,7 +1079,7 @@ namespace KIO {
         /**
          * Forward signal from subjob
 	 * @param job the job that emitted this signal
-	 * @param size the total size 
+	 * @param size the total size
          */
         void slotTotalSize( KIO::Job *job, KIO::filesize_t size );
         /**
@@ -1123,7 +1124,7 @@ namespace KIO {
 
     /**
      * A ListJob is allows you to get the get the content of a directory.
-     * Don't create the job directly, but use KIO::listRecursive() or 
+     * Don't create the job directly, but use KIO::listRecursive() or
      * KIO::listDir() instead.
      * @see KIO::listRecursive()
      * @see KIO::listDir()
@@ -1137,7 +1138,7 @@ namespace KIO {
 	* KIO::listRecursive() instead.
 	* @param url the url of the directory
 	* @param showProgressInfo true to show progress information to the user
-	* @param recursive true to get the data recursively from child directories, 
+	* @param recursive true to get the data recursively from child directories,
 	*        false to get only the content of the specified dir
 	* @param prefix the prefix of the files, or QString::null for no prefix
 	* @param includeHidden true to include hidden files (those starting with '.')
@@ -1218,7 +1219,7 @@ namespace KIO {
 
     /**
      * CopyJob is used to move, copy or symlink files and directories.
-     * Don't create the job directly, but use KIO::copy(), 
+     * Don't create the job directly, but use KIO::copy(),
      * KIO::move(), KIO::link() and friends.
      *
      * @see KIO::copy()
@@ -1238,13 +1239,13 @@ namespace KIO {
         enum CopyMode{ Copy, Move, Link };
 
 	/**
-	 * Do not create a CopyJob directly. Use KIO::copy(), 
+	 * Do not create a CopyJob directly. Use KIO::copy(),
 	 * KIO::move(), KIO::link() and friends instead.
 	 *
 	 * @param src the list of source URLs
 	 * @param dest the destination URL
 	 * @param mode specifies whether the job should copy, move or link
-	 * @param asMethod if true, behaves like KIO::copyAs(), 
+	 * @param asMethod if true, behaves like KIO::copyAs(),
 	 * KIO::moveAs() or KIO::linkAs()
 	 * @param showProgressInfo true to show progress information to the user
 	 * @see KIO::copy()
@@ -1274,35 +1275,35 @@ namespace KIO {
 	 * Emitted when the total number of files is known.
 	 * @param job the job that emitted this signal
 	 * @param files the total number of files
-	 */ 
+	 */
         void totalFiles( KIO::Job *job, unsigned long files );
         /**
 	 * Emitted when the toal number of direcotries is known.
 	 * @param job the job that emitted this signal
 	 * @param dirs the total number of directories
-	 */ 
+	 */
         void totalDirs( KIO::Job *job, unsigned long dirs );
 
         /**
 	 * Emitted when it is known which files / directories are going
-	 * to be created. Note that this may still change e.g. when 
+	 * to be created. Note that this may still change e.g. when
 	 * existing files with the same name are discovered.
 	 * @param job the job that emitted this signal
 	 * @param files a list of items that are about to be created.
-	 */ 
+	 */
         void aboutToCreate( KIO::Job *job, const QValueList<KIO::CopyInfo> &files);
 
         /**
 	 * Sends the number of processed files.
 	 * @param job the job that emitted this signal
 	 * @param files the number of processed files
-	 */ 
+	 */
         void processedFiles( KIO::Job *job, unsigned long files );
         /**
 	 * Sends the number of processed directories.
 	 * @param job the job that emitted this signal
 	 * @param dirs the number of processed dirs
-	 */ 
+	 */
         void processedDirs( KIO::Job *job, unsigned long dirs );
 
         /**
@@ -1393,7 +1394,7 @@ namespace KIO {
         void slotProcessedSize( KIO::Job*, KIO::filesize_t data_size );
         /**
          * Forward signal from subjob
-	 * @param size the total size 
+	 * @param size the total size
          */
         void slotTotalSize( KIO::Job*, KIO::filesize_t size );
 
@@ -1449,7 +1450,7 @@ namespace KIO {
 
     public:
 	/**
-	 * Do not create a DeleteJob directly. Use KIO::del() 
+	 * Do not create a DeleteJob directly. Use KIO::del()
 	 * instead.
 	 *
 	 * @param src the list of URLs to delete
@@ -1471,34 +1472,34 @@ namespace KIO {
 	 * Emitted when the total number of files is known.
 	 * @param job the job that emitted this signal
 	 * @param files the total number of files
-	 */ 
+	 */
         void totalFiles( KIO::Job *job, unsigned long files );
         /**
 	 * Emitted when the toal number of direcotries is known.
 	 * @param job the job that emitted this signal
 	 * @param dirs the total number of directories
-	 */ 
+	 */
         void totalDirs( KIO::Job *job, unsigned long dirs );
 
         /**
 	 * Sends the number of processed files.
 	 * @param job the job that emitted this signal
 	 * @param files the number of processed files
-	 */ 
+	 */
         void processedFiles( KIO::Job *job, unsigned long files );
         /**
 	 * Sends the number of processed directories.
 	 * @param job the job that emitted this signal
 	 * @param dirs the number of processed dirs
-	 */ 
+	 */
         void processedDirs( KIO::Job *job, unsigned long dirs );
 
         /**
 	 * Sends the URL of the file that is currently being deleted.
 	 * @param job the job that emitted this signal
-	 * @param file the URL of the file or directory that is being 
+	 * @param file the URL of the file or directory that is being
 	 *        deleted
-	 */ 
+	 */
         void deleting( KIO::Job *, const KURL& file );
 
     protected slots:
