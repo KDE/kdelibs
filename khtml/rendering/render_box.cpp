@@ -270,7 +270,7 @@ void RenderBox::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     paintBackground(paintInfo.p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder()) {
-        paintBorder(paintInfo.p, _tx, _ty, paintInfo.r.width(), paintInfo.r.height(), style());
+        paintBorder(paintInfo.p, _tx, _ty, w, h, style());
     }
 }
 
