@@ -1,0 +1,5 @@
+Proxy Auto Configuration is a means to use a JavaScript function to
+determine the proxy to use based on the requested URL.
+It is described in detail here:
+http://home.netscape.com/eng/mozilla/2.0/relnotes/demo/proxy-live.html
+
