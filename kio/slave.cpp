@@ -131,7 +131,7 @@ void Slave::gotInput()
         kdDebug(7002) << "slave died (2) pid = " << m_pid << endl;
         // Tell the scheduler about the problem.
         emit slaveDied(this);
-        kdDebug(7002) << "slave died (3) pid = " << m_pid << endl;
+        // After the above signal we're dead!!
     }
 }
 
