@@ -139,7 +139,7 @@ private:
   class KPopupFramePrivate;
   KPopupFramePrivate *d;
 
-  virtual void close() { QFrame::close(); }
+  virtual bool close(bool alsoDelete) { return QFrame::close(alsoDelete); }
 };
 
 /**
