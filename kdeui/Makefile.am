@@ -19,7 +19,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= -I$(top_srcdir)/kdecore/qk $(all_includes)
+INCLUDES= -I$(top_srcdir)/kdecore/qk $(all_includes) -I$(top_srcdir)/dcop
 EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker
 
 CXXFLAGS := $(CXXFLAGS) @NOREPO@
