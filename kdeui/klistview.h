@@ -860,6 +860,8 @@ protected slots:
    */
   void slotAutoSelect();
 
+  void slotDragExpand(); 
+
   /**
    * Reacts to header changes in full width mode
    * @internal

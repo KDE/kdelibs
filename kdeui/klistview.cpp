@@ -115,6 +115,10 @@ public:
   QTimer autoSelect;
   int autoSelectDelay;
 
+  QTimer dragExpand;
+  QListViewItem* dragOverItem;
+  QPoint dragOverPoint;
+  
   QPoint startDragPos;
   int dragDelay;
 
@@ -408,6 +412,8 @@ KListView::KListView( QWidget *parent, const char *name )
 
   connect(&d->autoSelect, SIGNAL( timeout() ),
                   this, SLOT( slotAutoSelect() ) );
+  connect(&d->dragExpand, SIGNAL( timeout() ),
+                  this, SLOT( slotDragExpand() ) );
 
   // context menu handling
   if (d->showContextMenusOnPress)
@@ -855,6 +861,7 @@ void KListView::contentsDropEvent(QDropEvent* e)
 {
   cleanDropVisualizer();
   cleanItemHighlighter();
+  d->dragExpand.stop();
 
   if (acceptDrag (e))
   {
@@ -933,6 +940,17 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
     //Clean up the view
 
     findDrop(event->pos(), d->parentItemDrop, d->afterItemDrop);
+    QPoint vp = contentsToViewport( event->pos() ); 
+    QListViewItem *item = isExecuteArea( vp ) ? itemAt( vp ) : 0L;
+    
+    if ( item != d->dragOverItem )
+    {
+      d->dragExpand.stop();
+      d->dragOverItem = item;
+      d->dragOverPoint = vp;
+      if ( d->dragOverItem && d->dragOverItem->isExpandable() && !d->dragOverItem->isOpen() )
+        d->dragExpand.start( QApplication::startDragTime(), true );
+    }
     if (dropVisualizer())
     {
       QRect tmpRect = drawDropVisualizer(0, d->parentItemDrop, d->afterItemDrop);
@@ -958,8 +976,15 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
       event->ignore();
 }
 
+void KListView::slotDragExpand()
+{
+  if ( itemAt( d->dragOverPoint ) == d->dragOverItem )
+    d->dragOverItem->setOpen( true );
+}
+
 void KListView::contentsDragLeaveEvent (QDragLeaveEvent*)
 {
+  d->dragExpand.stop();
   cleanDropVisualizer();
   cleanItemHighlighter();
 }
