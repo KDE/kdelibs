@@ -1162,6 +1162,7 @@ class KDialogBase : public KDialog
      * @param id Integer identifier of the button.
      * @return The action button or 0 if the button does not exists.
      *
+     * FIXME KDE 4: Return the actual KPushButton instead of QPushButton (Martijn)
      */
     QPushButton *actionButton( ButtonCode id );
 
