@@ -564,14 +564,18 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 		case PE_ScrollBarAddLine:
 		{
-			Keramik::CenteredPainter painter( Keramik::ScrollBarPainter::name( flags & Style_Horizontal ) + "-arrow2" );
+			QString name( "-arrow2" );
+			if ( flags & Style_Down ) name += "-pressed";
+			Keramik::CenteredPainter painter( Keramik::ScrollBarPainter::name( flags & Style_Horizontal ) + name );
 			painter.draw( p, x, y, w, h );
 			break;
 		}
 
 		case PE_ScrollBarSubLine:
 		{
-			Keramik::CenteredPainter painter( Keramik::ScrollBarPainter::name( flags & Style_Horizontal ) + "-arrow1" );
+			QString name( "-arrow1" );
+			if ( flags & Style_Down ) name += "-pressed";
+			Keramik::CenteredPainter painter( Keramik::ScrollBarPainter::name( flags & Style_Horizontal ) + name );
 			painter.draw( p, x, y, w, h );
 			break;
 		}
@@ -1351,7 +1355,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				QString name( "spinbox" );
 				if ( active & SC_SpinWidgetUp ) name += "-pressed-up";
 				else if ( active & SC_SpinWidgetDown ) name += "-pressed-down";
-				Keramik::CenteredPainter( name ).draw( p, br );
+				Keramik::ScaledPainter( name ).draw( p, br );
 			}
 
 			if ( controls & SC_SpinWidgetFrame )
@@ -1372,7 +1376,8 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			addline = querySubControlMetrics( control, widget, SC_ScrollBarAddLine, opt );
 
 			if ( controls & SC_ScrollBarSubLine )
-				drawPrimitive( PE_ScrollBarSubLine, p, subline, cg, flags );
+				drawPrimitive( PE_ScrollBarSubLine, p, subline, cg,
+				               flags | ( ( active & SC_ScrollBarSubLine ) ? Style_Down : 0 ) );
 
 			QRect sliderClip = slider;
 			if ( horizontal )
@@ -1407,8 +1412,26 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			}
 			p->setClipping( false );
 
-			if ( controls & ( SC_ScrollBarSubLine | SC_ScrollBarAddLine ))
+			if ( controls & ( SC_ScrollBarSubLine | SC_ScrollBarAddLine ) )
+			{
 				drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags );
+				if ( active & SC_ScrollBarSubLine )
+				{
+					if ( horizontal )
+						p->setClipRect( QRect( addline.x(), addline.y(), addline.width() / 2, addline.height() ) );
+					else
+						p->setClipRect( QRect( addline.x(), addline.y(), addline.width(), addline.height() / 2 ) );
+					drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags | Style_Down );
+				}
+				else if ( active & SC_ScrollBarAddLine )
+				{
+					if ( horizontal )
+						p->setClipRect( QRect( addline.x() + addline.width() / 2, addline.y(), addline.width() / 2, addline.height() ) );
+					else
+						p->setClipRect( QRect( addline.x(), addline.y() + addline.height() / 2, addline.width(), addline.height() / 2 ) );
+					drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags | Style_Down );
+				}
+			}
 
 			break;
 		}
