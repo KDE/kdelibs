@@ -272,7 +272,7 @@ char *UString::ascii() const
 UString &UString::operator=(const char *c)
 {
   release();
-  int l = strlen(c);
+  int l = c ? strlen(c) : 0;
   UChar *d = new UChar[l];
   for (int i = 0; i < l; i++)
     d[i].lo = c[i];

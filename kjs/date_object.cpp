@@ -205,6 +205,8 @@ KJSO DatePrototype::get(const UString &p) const
     id = DateProtoFunc::GetTime;
   else if (p == "getFullYear" || p == "getUTCFullYear")
     id = DateProtoFunc::GetFullYear;
+  else if (p == "toGMTString")
+    id = DateProtoFunc::ToGMTString;
   else if (p == "getMonth" || p == "getUTCMonth")
     id = DateProtoFunc::GetMonth;
   else if (p == "getDate" || p == "getUTCDate")
@@ -253,17 +255,19 @@ DateProtoFunc::DateProtoFunc(int i, bool u) : id(i), utc(u)
 {
 }
 
-Completion DateProtoFunc::execute(const List &)
+Completion DateProtoFunc::execute(const List &args)
 {
   KJSO result;
   UString s;
-  const int bufsize=50;
+  const int bufsize=100;
   char timebuffer[bufsize];
   char *oldlocale = setlocale(LC_TIME,NULL);
   Object thisObj = Object::dynamicCast(thisValue());
   KJSO v = thisObj.internalValue();
   double milli = v.toNumber().value();
   time_t tv = (time_t) floor(milli / 1000.0);
+  int ms = int(milli - tv * 1000.0);
+
   struct tm *t;
   if (utc)
     t = gmtime(&tv);
@@ -277,11 +281,15 @@ Completion DateProtoFunc::execute(const List &)
     break;
   case ToDateString:
   case ToTimeString:
+  case ToGMTString:
     setlocale(LC_TIME,"C");
     if (id == DateProtoFunc::ToDateString) {
       strftime(timebuffer, bufsize, "%x",t);
-    } else {
+    } else if (id == DateProtoFunc::ToTimeString) {
       strftime(timebuffer, bufsize, "%X",t);
+    } else {
+      t = gmtime(&tv);
+      strftime(timebuffer, bufsize, "%a, %d-%b-%y %H:%M:%S %Z", t);
     }
     setlocale(LC_TIME,oldlocale);
     result = String(timebuffer);
@@ -346,16 +354,36 @@ Completion DateProtoFunc::execute(const List &)
 #endif
     break;
   case SetTime:
-  case SetMilliSeconds:
-  case SetSeconds:
-  case SetMinutes:
-  case SetHours:
-  case SetDate:
-  case SetMonth:
-  case SetFullYear:
-    /* TODO */
     result = Undefined();
     break;
+  case SetMilliSeconds:
+    ms = args[0].toInt32();
+    break;
+  case SetSeconds:
+    t->tm_sec = args[0].toInt32();
+    break;
+  case SetMinutes:
+    t->tm_min = args[0].toInt32();
+    break;
+  case SetHours:
+    t->tm_hour = args[0].toInt32();
+    break;
+  case SetDate:
+    t->tm_mday = args[0].toInt32();
+    break;
+  case SetMonth:
+    t->tm_mon = args[0].toInt32();
+    break;
+  case SetFullYear:
+    t->tm_year = args[0].toInt32() - 1900;
+    break;
+  }
+
+  if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
+      id == SetMinutes || id == SetHours || id == SetDate ||
+      id == SetMonth || id == SetFullYear ) {
+    result = Number(mktime(t) * 1000.0 + ms);
+    thisObj.setInternalValue(result);
   }
 
   return Completion(Normal, result);

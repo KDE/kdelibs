@@ -354,7 +354,7 @@ int Lexer::lex()
   fprintf(stderr, "%s ", buffer8);
 #endif
 
-  double dval;
+  double dval = 0;
   if (state == Number) {
     dval = strtod(buffer8, 0L);
   } else if (state == Hex) { // scan hex numbers
