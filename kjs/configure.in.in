@@ -20,9 +20,10 @@ AC_DEFUN(AC_CHECK_PCREPOSIX,
   AC_CACHE_VAL(ac_cv_have_pcreposix,
   [
     ac_save_libs="$LIBS"
-    if pcre-config --libs >/dev/null 2>&1; then
-        LIBS=`pcre-config --libs --libs-posix`
-        CPPFLAGS="$CPPFLAGS `pcre-config --cflags`"
+    KDE_FIND_PATH(pcre-config, PCRE_CONFIG, [${prefix}/bin /usr/local/bin /opt/local/bin], [PCRE_CONFIG="" ])
+    if test -n "$PCRE_CONFIG" && $PCRE_CONFIG --libs >/dev/null 2>&1; then
+        LIBS=`$PCRE_CONFIG --libs --libs-posix`
+        CPPFLAGS="$CPPFLAGS `$PCRE_CONFIG --cflags`"
     else
         LIBS="-lpcre -lpcreposix"
     fi
