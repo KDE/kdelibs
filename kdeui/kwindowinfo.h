@@ -115,6 +115,7 @@ protected:
      */
     virtual void display( const QString &text, const QPixmap &pix );
 
+protected slots:
     /**
      * Saves the window title and icon.
      */
