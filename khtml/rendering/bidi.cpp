@@ -973,7 +973,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 	}
     }
     if ( start.atEnd() )
-	return start;
+        return start;
 
     BidiIterator lBreak = start;
 
@@ -1100,7 +1100,9 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
             if(!w && m_height < fb && width < lineWidth(fb)) {
                 m_height = fb;
                 width = lineWidth(m_height);
-		//kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
+#ifdef DEBUG_LINEBREAKS
+                kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
+#endif
             }
 	    if( !w && w + tmpW > width+1 && (o != start.obj || (unsigned) pos != start.pos) ) {
 		// getting below floats wasn't enough...
@@ -1118,7 +1120,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
                 else
                     lBreak.pos = pos;
             }
-            return lBreak;
+            break;
         }
 
         last = o;
@@ -1126,7 +1128,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
         pos = 0;
     }
 
-#if 0
+#ifdef DEBUG_LINEBREAKS
     kdDebug( 6041 ) << "end of par, width = " << width << " linewidth = " << w + tmpW << endl;
 #endif
     if( w + tmpW <= width ) {
@@ -1137,7 +1139,6 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
  end:
 
     if( lBreak == start && !lBreak.obj->isBR() ) {
-        //kdDebug( 6041 ) << "lBreak == start, adding...." << endl;
         // we just add as much as possible
         if ( m_pre ) {
             if(pos != 0) {
