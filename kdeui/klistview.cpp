@@ -28,6 +28,10 @@
 #include <kipc.h>
 #include <kdebug.h>
 
+#define private public
+#include <qlistview.h>
+#undef private
+
 #include "klistview.h"
 #include "klistviewlineedit.h"
 
@@ -59,6 +63,8 @@ public:
   bool dragEnabled;
   bool autoOpen;
   bool dropVisualizer;
+  bool dropHighlighter;
+  bool createChildren;
 
   int toolTipColumn;
 };
@@ -132,6 +138,9 @@ KListView::KListView( QWidget *parent, const char *name )
 		d->dragEnabled=false;
 		d->autoOpen=true;
 		d->toolTipColumn=0;
+		d->dropVisualizer=true;
+		d->dropHighlighter=true;
+		d->createChildren=true;
 		connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
 	}
 
@@ -448,7 +457,9 @@ void KListView::dropEvent(QDropEvent* event)
 {
     QListView::dropEvent(event);
     cleanRect();
-    QListViewItem *afterme=findDrop(event->pos());
+    QListViewItem *afterme;
+    QListViewItem *parent;
+    findDrop(event->pos(), parent, afterme);
 	
     if (event->source()==viewport()) // Moving an item
 	{
@@ -458,7 +469,7 @@ void KListView::dropEvent(QDropEvent* event)
 			{
 				if (!i->isSelected())
 					continue;
-				moveItem(i, 0, afterme);
+				moveItem(i, parent, afterme);
 				afterme=i;
 			}		
 		}	
@@ -481,7 +492,9 @@ void KListView::dragMoveEvent(QDragMoveEvent *event)
 	if (!event->isAccepted()) return;
 
 	//Clean up the view
-	QListViewItem *afterme=findDrop(event->pos());
+	QListViewItem *afterme;
+	QListViewItem *parent;
+	findDrop(event->pos(), parent, afterme);
 
 	if (dropVisualizer())
 	{
@@ -522,20 +535,18 @@ void KListView::viewportPaintEvent(QPaintEvent *event)
 	d->invalidateRect=0;
 }
 
-QListViewItem* KListView::findDrop(const QPoint &_p)
+void KListView::findDrop(const QPoint &_p, QListViewItem *&parent, QListViewItem *&after) const
 {
-	
 	QPoint p(_p);
 	// Move the point if the header is shown
 	if (header()->isVisible())
 		p.setY(p.y()-header()->height());
 	
     // Get the position to put it in
-    QListViewItem *afterme=0;
     QListViewItem *atpos(itemAt(p));
 	
     if (!atpos) // put it at the end
-		afterme=lastItem();
+		after=lastItem();
     else
 	{ // get the one closer to me..
 	  // That is, the space between two listviewitems
@@ -545,12 +556,11 @@ QListViewItem* KListView::findDrop(const QPoint &_p)
 		int topY=mapFromGlobal(itemRect(atpos).topLeft()).y();
 		
 		if ((dropY-topY)<itemHeight/2)
-			afterme=atpos->itemAbove();	
+			after=atpos->itemAbove();	
 		else
-			afterme=atpos;
+			after=atpos;
 	}
-
-    return afterme;
+	parent=0;
 }
 
 
@@ -673,9 +683,9 @@ void KListView::dragEnterEvent(QDragEnterEvent *event)
 		event->accept(event->source()==viewport());
 }
 
-QRect KListView::drawDropVisualizer(QPainter *painter, int depth, QListViewItem *after)
+QRect KListView::drawDropVisualizer(QPainter *painter, QListViewItem */*parent*/, QListViewItem *after)
 {
-	QRect rect(depth*treeStepSize(), itemRect(after).bottom(), width(), 2);
+	QRect rect(treeStepSize(), itemRect(after).bottom(), width(), 2);
 
 	if (painter)
 	{	
@@ -684,6 +694,11 @@ QRect KListView::drawDropVisualizer(QPainter *painter, int depth, QListViewItem 
 		painter->drawRect(rect);
 	}
 	return rect;
+}
+
+QRect KListView::drawItemHighlighter(QPainter */*painter*/, QListViewItem */*item*/)
+{
+	return QRect(0,0,0,0);
 }
 
 void KListView::rename(QListViewItem *item, int c)
@@ -723,23 +738,23 @@ void KListView::doToolTip(QListViewItem *item)
 {
 	doToolTip(item, toolTipColumn());
 }
-/*
-Charles vs. Peter:
-
-> > As for tooltips, IMHO The Windows Way (tm) isn't too bad: tooltips are
-> > automatically displayed when an item doesn't fit on screen (i.e. when the
-> > listview has got a horizontal scrollbar)...
-> The Windows Way (tm) isn't bad at all, so I guess I can implement it, but only
-> for the first column.
-
-How about making that column configurable? Imagine having an icon in
-column one, no use to show a tooltip for that...
-*/
 
 void KListView::doToolTip(QListViewItem */*item*/, int /*column*/)
 {
 
 }
+
+
+void KListView::setCreateChildren(bool b)
+{
+	d->createChildren=b;
+}
+
+bool KListView::createChildren() const
+{
+	return d->createChildren;
+}
+
 
 int KListView::toolTipColumn() const
 {
@@ -749,6 +764,16 @@ int KListView::toolTipColumn() const
 void KListView::setToolTipColumn(int column)
 {
 	d->toolTipColumn=column;
+}
+
+void KListView::setDropHighlighter(bool b)
+{
+	d->dropHighlighter=b;
+}
+
+bool KListView::dropHighlighter() const
+{
+	return d->dropHighlighter;
 }
 
 bool KListView::showToolTip(QListViewItem *item, const QPoint &, int column) const

@@ -19,9 +19,7 @@
 #ifndef KLISTVIEW_H
 #define KLISTVIEW_H
 
-#define private public
 #include <qlistview.h>
-#undef private
 
 #include <qlist.h>
 
@@ -71,6 +69,8 @@ public:
   bool getRenameableColumn(int column) const;
   bool dropVisualizer() const;
   int toolTipColumn() const;
+  bool createChildren() const;
+  bool dropHighlighter() const;
 
 signals:
 
@@ -136,6 +136,15 @@ public slots:
   virtual void setAutoOpen(bool b);
   virtual void setDropVisualizer(bool b);
   virtual void setToolTipColumn(int column);
+  /**
+   * Highlight a parent if I drop into it's children
+   **/
+  virtual void setDropHighlighter(bool b);
+
+  /**
+   * should I _ever_ allow creating children via dnd?
+   **/
+  virtual void setCreateChildren(bool b);
 
   /**
    * show a tooltip for the item. just calls doToolTip(item, toolTipColumn());
@@ -188,8 +197,15 @@ protected:
 
   /**
    * paint the drag line.  if painter is null, don't try to :)
+   * return the rectangle painted to
    **/
-  virtual QRect drawDropVisualizer(QPainter *painter, int depth, QListViewItem *after);	
+  virtual QRect drawDropVisualizer(QPainter *painter, QListViewItem *parent, QListViewItem *after);	
+
+  /**
+   * Highlight @arg item.  painter may be null
+   * return the rect drawn to
+   **/
+  virtual QRect drawItemHighlighter(QPainter *painter, QListViewItem *item);
 
   virtual void startDrag();
 
@@ -203,9 +219,9 @@ private:
    **/
   void cleanRect();
   /**
-   * Where is the nearest QListViewItem that I'm going to drop after?
+   * Where is the nearest QListViewItem that I'm going to drop?
    **/
-  QListViewItem* findDrop(const QPoint &p);
+  void findDrop(const QPoint &_p, QListViewItem *&parent, QListViewItem *&after) const;
 
 private:
   class KListViewPrivate;
