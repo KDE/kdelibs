@@ -251,6 +251,12 @@ void KHTMLParser::parseToken(Token *t)
         popOneBlock();
     }
 
+    // sometimes flat doesn't make sense
+    switch(t->id) {
+    case ID_OPTION:
+        t->flat = false;
+    }
+
     if ( !insertNode(n, t->flat) ) {
         // we couldn't insert the node...
 #ifdef PARSER_DEBUG
