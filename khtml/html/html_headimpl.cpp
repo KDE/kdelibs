@@ -77,7 +77,7 @@ void HTMLBaseElementImpl::removedFromDocument()
 
     // Since the document doesn't have a base element...
     // (This will break in the case of multiple base elements, but that's not valid anyway (?))
-    getDocument()->setBaseURL( QString::null );
+    getDocument()->setBaseURL( KURL() );
     getDocument()->setBaseTarget( QString::null );
 }
 
@@ -87,7 +87,7 @@ void HTMLBaseElementImpl::process()
 	return;
 
     if(!m_href.isEmpty() && getDocument()->view())
-	getDocument()->setBaseURL( KURL( getDocument()->view()->part()->url(), m_href.string() ).url() );
+	getDocument()->setBaseURL( KURL( getDocument()->view()->part()->url(), m_href.string() ) );
 
     if(!m_target.isEmpty())
 	getDocument()->setBaseTarget( m_target.string() );
@@ -151,7 +151,7 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
             if (isLoading())
                 break;
             if (!m_sheet && !m_isDisabled) {
-                process(); 
+                process();
                 if (isLoading() && m_alternate)
                     getDocument()->addPendingSheet();
                 m_alternate = false;
