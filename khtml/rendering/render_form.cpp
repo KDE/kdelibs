@@ -221,6 +221,7 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
 {
     QCheckBox* b = new QCheckBox(view->viewport());
     b->setAutoMask(true);
+    b->setBackgroundColor(element->style()->backgroundColor());
     b->setMouseTracking(true);
     setQWidget(b, false);
     b->installEventFilter(this);
@@ -247,6 +248,7 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
     QRadioButton* b = new QRadioButton(view->viewport());
     b->setAutoMask(true);
     b->setMouseTracking(true);
+    b->setBackgroundColor(element->style()->backgroundColor());
     setQWidget(b, false);
     b->installEventFilter(this);
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
@@ -284,6 +286,7 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
     setQWidget(p, false);
     p->setMouseTracking(true);
     p->installEventFilter(this);
+    p->setBackgroundColor(element->style()->backgroundColor());
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
@@ -385,6 +388,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 {
     LineEditWidget *edit = new LineEditWidget(view->viewport());
     edit->installEventFilter(this);
+    edit->setBackgroundColor(element->style()->backgroundColor());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
@@ -492,6 +496,8 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     m_edit = new LineEditWidget(w);
 
     m_edit->installEventFilter(this);
+    m_edit->setBackgroundColor(element->style()->backgroundColor());
+
     connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(m_edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
