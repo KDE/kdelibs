@@ -1,4 +1,5 @@
 - VERSION-INFO for modules?
+- md5auth isn't initialized properly in conjunction with ARTS_SERVER
 
 ## MCOP Core Infrastructure
 
