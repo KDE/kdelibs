@@ -1423,12 +1423,11 @@ void KToolBar::hide()
         QMainWindow::ToolBarDock dock;
         ( (QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, d->realIndex, d->realNl, d->realOffset );
         //kdDebug(220) << "KToolBar::hide " << name() << " realNl set to " << d->realNl << endl;
-        d->hasRealPos = TRUE;
         ( (QMainWindow*)parentWidget() )->moveToolBar( this, QMainWindow::Unmanaged );
-        if ( dock != QMainWindow::Unmanaged )
+        if ( dock != QMainWindow::Unmanaged ) {
+            d->hasRealPos = TRUE;
             d->realPos = dock;
-        else
-            ;// (bugfix of F@lk for kdevelop-2.0) old code was: d->realPos = QMainWindow::Top;
+        }
     }
     QToolBar::hide();
 }
