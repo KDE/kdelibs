@@ -129,14 +129,12 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     return String(thisObj.internalValue().toString(exec));
   }
 
-  UString s2;
   Number n, m;
   UString u, u2, u3;
   int pos, p0, i;
   double d = 0.0, d2;
 
-  Value tv = thisObj;
-  UString s = tv.toString(exec);
+  UString s = thisObj.toString(exec);
 
   int len = s.size();
   Value a0 = args[0];
@@ -168,16 +166,16 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     result = Number(d);
     break;
   case IndexOf:
-    s2 = a0.toString(exec);
+    u2 = a0.toString(exec);
     if (a1.type() == UndefinedType)
       pos = 0;
     else
       pos = a1.toInteger(exec);
-    d = s.find(s2, pos);
+    d = s.find(u2, pos);
     result = Number(d);
     break;
   case LastIndexOf:
-    s2 = a0.toString(exec);
+    u2 = a0.toString(exec);
     d = a1.toNumber(exec);
     if (a1.type() == UndefinedType || KJS::isNaN(d) || KJS::isPosInf(d))
       pos = len;
@@ -185,7 +183,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       pos = a1.toInteger(exec);
     if (pos < 0)
       pos = 0;
-    d = s.rfind(s2, pos);
+    d = s.rfind(u2, pos);
     result = Number(d);
     break;
   case Match:
@@ -193,24 +191,22 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     u = s;
     RegExp* reg = 0;
     if (a0.isA(ObjectType) && a0.toObject(exec).inherits(&RegExpImp::info))
-      {
-        //s2 = a0.get("source").toString();     // this loses the flags
-        RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject(exec).imp() );
-        reg = imp->regExp();
-      }
+    {
+      RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject(exec).imp() );
+      reg = imp->regExp();
+    }
     else if (a0.isA(StringType))
-      {
-        //s2 = a0.toString();
-        reg = new RegExp(a0.toString(exec), RegExp::None);
-      }
+    {
+      reg = new RegExp(a0.toString(exec), RegExp::None);
+    }
     else
-      {
+    {
 #ifndef NDEBUG
-        printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
+      printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
 #endif
-        result = Undefined(); // No idea what to do here
-        break;
-      }
+      result = Undefined(); // No idea what to do here
+      break;
+    }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp( reg, u );
     {
@@ -234,24 +230,39 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     // TODO: this is just a hack to get the most common cases going
     u = s;
     if (a0.type() == ObjectType && a0.toObject(exec).inherits(&RegExpImp::info)) {
-      s2 = Object::dynamicCast(a0).get(exec,"source").toString(exec);
-      RegExp reg(s2);
+      RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject(exec).imp() );
+      RegExp *reg = imp->regExp();
+      bool global = false;
+      Value tmp = imp->get(exec,"global");
+      if (tmp.type() != UndefinedType && tmp.toBoolean(exec) == true)
+        global = true;
+
       RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
-      int **ovector = regExpObj->registerRegexp( &reg, u );
-      UString mstr = reg.match(u, -1, &pos, ovector);
-      len = mstr.size();
-    } else {
-      s2 = a0.toString(exec);
-      u2 = s2;
+      int **ovector = regExpObj->registerRegexp( reg, u );
+      int lastIndex = 0;
+      u3 = a1.toString(exec); // replacement string
+      do {
+        UString mstr = reg->match(u, lastIndex, &pos, ovector);
+        len = mstr.size();
+        lastIndex = pos + u3.size();
+        if ( pos != -1 )
+          u = u.substr(0, pos) + u3 + u.substr(pos + len);
+        //fprintf(stderr,"pos=%d,len=%d,lastIndex=%d,u=%s\n",pos,len,lastIndex,u.ascii());
+      } while ( global && pos != -1 );
+
+      result = String(u);
+    } else { // First arg is a string
+      u2 = a0.toString(exec);
       pos = u.find(u2);
       len = u2.size();
-    }
-    if (pos == -1)
+      // Do the replacement
+      if (pos == -1)
         result = String(s);
-    else {
+      else {
         u3 = u.substr(0, pos) + a1.toString(exec) +
              u.substr(pos + len);
         result = String(u3);
+      }
     }
     break;
   case Slice: // http://developer.netscape.com/docs/manuals/js/client/jsref/string.htm#1194366

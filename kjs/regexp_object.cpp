@@ -89,7 +89,7 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
   case Test: // shouldn't Test use RegExp::test() ?
     s = args[0].toString(exec);
     length = s.value().size();
-    lastIndex = thisObj.get(exec,"lastIndex");
+    lastIndex = thisObj.get(exec,"lastIndex"); /// ### what is this for ? It's never set. Is it part of the spec ?
     i = lastIndex.isNull() ? 0 : lastIndex.toInt32(exec);
     tmp = thisObj.get(exec,"global");
     if (tmp.toBoolean(exec) == false)

@@ -97,7 +97,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
     i = 0;
 
   if (i > s.size() || s.isNull() ||
-      pcre_exec(pcregex, NULL, buffer.c_str(), buffer.size() - i, i,
+      pcre_exec(pcregex, NULL, buffer.c_str(), buffer.size(), i,
 		0, ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH) {
 
     if (pos)
