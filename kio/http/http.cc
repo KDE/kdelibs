@@ -2199,7 +2199,7 @@ bool HTTPProtocol::readBody( )
     }
 
     if (m_sContentMD5.left(f) != enc_digest) {
-      kdDebug(7103) << "MD5 checksum mismatch : got " << debugString(m_sContentMD5.left(f)) << " , calculated " << enc_digest << endl;
+      kdDebug(7103) << "MD5 checksum mismatch : got " << m_sContentMD5.left(f) << " , calculated " << enc_digest << endl;
 //      error(ERR_CHECKSUM_MISMATCH, m_state.url.url());
     } else {
       kdDebug(7103) << "MD5 checksum present, and hey it matched what I calculated." << endl;
