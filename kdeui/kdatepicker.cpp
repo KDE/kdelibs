@@ -33,6 +33,7 @@
 #include "kdatepicker.h"
 #include <kglobal.h>
 #include <kapplication.h>
+#include <kdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <ktoolbar.h>
@@ -54,7 +55,6 @@ public:
 
     void fillWeeksCombo(const QDate &date);
 
-    KToolBar *tb;
     QToolButton *closeButton;
     QComboBox *selectWeek;
     QToolButton *todayButton;
@@ -109,17 +109,34 @@ void KDatePicker::init( const QDate &dt )
 {
   d = new KDatePickerPrivate();
 
-  d->tb = new KToolBar(this);
+  QBoxLayout * topLayout = new QVBoxLayout(this);
 
-  yearBackward = new QToolButton(d->tb);
-  monthBackward = new QToolButton(d->tb);
-  selectMonth = new QToolButton(d->tb);
-  selectYear = new QToolButton(d->tb);
-  monthForward = new QToolButton(d->tb);
-  yearForward = new QToolButton(d->tb);
-  QWidget *dummy = new QWidget(d->tb);
-  dummy->setName("kde toolbar widget");
-  d->tb->setStretchableWidget(dummy);
+  d->navigationLayout = new QHBoxLayout(topLayout);
+  d->navigationLayout->addStretch();
+  yearBackward = new QToolButton(this);
+  yearBackward->setAutoRaise(true);
+  d->navigationLayout->addWidget(yearBackward);
+  monthBackward = new QToolButton(this);
+  monthBackward ->setAutoRaise(true);
+  d->navigationLayout->addWidget(monthBackward);
+  d->navigationLayout->addSpacing(KDialog::spacingHint());
+
+  selectMonth = new QToolButton(this);
+  selectMonth ->setAutoRaise(true);
+  d->navigationLayout->addWidget(selectMonth);
+  selectYear = new QToolButton(this);
+  selectYear->setToggleButton(true);
+  selectYear->setAutoRaise(true);
+  d->navigationLayout->addWidget(selectYear);
+  d->navigationLayout->addSpacing(KDialog::spacingHint());
+
+  monthForward = new QToolButton(this);
+  monthForward ->setAutoRaise(true);
+  d->navigationLayout->addWidget(monthForward);
+  yearForward = new QToolButton(this);
+  yearForward ->setAutoRaise(true);
+  d->navigationLayout->addWidget(yearForward);
+  d->navigationLayout->addStretch();
 
   line = new KLineEdit(this);
   val = new KDateValidator(this);
@@ -170,14 +187,10 @@ void KDatePicker::init( const QDate &dt )
   connect(d->selectWeek, SIGNAL(activated(int)), SLOT(weekSelected(int)));
   connect(d->todayButton, SIGNAL(clicked()), SLOT(todayButtonClicked()));
   connect(selectMonth, SIGNAL(clicked()), SLOT(selectMonthClicked()));
-  connect(selectYear, SIGNAL(clicked()), SLOT(selectYearClicked()));
+  connect(selectYear, SIGNAL(toggled(bool)), SLOT(selectYearClicked()));
   connect(line, SIGNAL(returnPressed()), SLOT(lineEnterPressed()));
   table->setFocus();
 
-  QBoxLayout * topLayout = new QVBoxLayout(this);
-
-  d->navigationLayout = new QHBoxLayout(topLayout);
-  d->navigationLayout->addWidget(d->tb);
 
   topLayout->addWidget(table);
 
@@ -361,6 +374,11 @@ KDatePicker::selectYearClicked()
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
+  if (selectYear->state() == QButton::Off)
+  {
+    return;
+  }
+
   int year;
   KPopupFrame* popup = new KPopupFrame(this);
   KDateInternalYearSelector* picker = new KDateInternalYearSelector(popup);
@@ -484,7 +502,10 @@ KDatePicker::setCloseButton( bool enable )
         return;
 
     if ( enable ) {
-        d->closeButton = new QToolButton( d->tb );
+        d->closeButton = new QToolButton( this );
+        d->closeButton->setAutoRaise(true);
+        d->navigationLayout->addSpacing(KDialog::spacingHint());
+        d->navigationLayout->addWidget(d->closeButton);
         QToolTip::add(d->closeButton, i18n("Close"));
         d->closeButton->setPixmap( SmallIcon("remove") );
         connect( d->closeButton, SIGNAL( clicked() ),
