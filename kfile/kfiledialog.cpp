@@ -99,10 +99,6 @@ struct KFileDialogPrivate
     // we need this to determine what has changed in the location bar
     QString completionHack;
 
-    // indicates, if the status bar should be shown.
-    // Initialized by "ShowStatusLine"
-    bool showStatusLine;
-
     // now following all kind of widgets, that I need to rebuild
     // the geometry managment
     QBoxLayout *boxLayout;
@@ -121,24 +117,31 @@ struct KFileDialogPrivate
 
     QPtrList<KIO::StatJob> statJobs;
 
-    // an indicator that we're currently in a completion operation
-    // we need to lock some slots for this
-    bool completionLock;
-
     KURL::List urlList; //the list of selected urls
 
     QStringList mimetypes; //the list of possible mimetypes to save as
 
+    // indicates, if the status bar should be shown.
+    // Initialized by "ShowStatusLine"
+    bool showStatusLine :1;
+
     // indicates if the location edit should be kept or cleared when changing
     // directories
-    bool keepLocation;
+    bool keepLocation :1;
 
     // the KDirOperators view is set in KFileDialog::show(), so to avoid
     // setting it again and again, we have this nice little boolean :)
-    bool hasView;
+    bool hasView :1;
 
+    // do we show the speedbar for the fist time?
+    bool initializeSpeedbar :1;
+    
+    // an indicator that we're currently in a completion operation
+    // we need to lock some slots for this
+    bool completionLock :1;
+
+    bool hasDefaultFilter :1; // necessary for the operationMode
     KFileDialog::OperationMode operationMode;
-    bool hasDefaultFilter; // necessary for the operationMode
 
     // The file class used for KRecentDirs
     QString fileClass;
@@ -172,7 +175,9 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     KConfig *config = KGlobal::config();
     KConfigGroupSaver cs( config, ConfigGroup );
-    if ( config->readBoolEntry( "Set speedbar defaults", true ) ) {
+    d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults", 
+                                                   true );
+    if ( d->initializeSpeedbar ) {
         KURL u;
         u.setPath( KGlobalSettings::desktopPath() );
         d->urlBar->insertItem( u, i18n("Desktop"), false );
@@ -414,21 +419,20 @@ KFileDialog::~KFileDialog()
 {
     hide();
 
-    KConfig *config = KGlobal::config();
-    KConfigGroupSaver cs( config, ConfigGroup );
-    config->writeEntry( "Set speedbar defaults", false );
-    d->urlBar->writeConfig( config, "KFileDialog Speedbar" );
+    if ( d->initializeSpeedbar ) {
+        KSimpleConfig c( "kdeglobals" );
+        c.setGroup( ConfigGroup );
+        c.writeEntry( "Set speedbar defaults", false );
+    }
+    
+    d->urlBar->writeConfig( KGlobal::config(), "KFileDialog Speedbar" );
+    KGlobal::config()->sync();
 
     delete bookmarks;
     delete d->boxLayout; // we can't delete a widget being managed by a layout,
     d->boxLayout = 0;    // so we delete the layout before (Qt bug to be fixed)
     delete ops;
     delete d;
-
-    // some apps seem to either do a rollback() (improbable) or not clean up
-    // properly, so this config object is neither deleted nor synced. So we
-    // have to do this ourselves.
-    config->sync();
 }
 
 void KFileDialog::setLocationLabel(const QString& text)

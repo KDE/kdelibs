@@ -24,9 +24,9 @@
 #include <qlabel.h>
 #include <qpainter.h>
 #include <qpixmap.h>
+#include <qregexp.h>
 #include <qtimer.h>
 #include <qtooltip.h>
-#include <qregexp.h>
 
 #include <kaction.h>
 #include <kapplication.h>
