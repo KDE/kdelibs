@@ -184,10 +184,17 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     }
 
     // Cookie path match check
-    if( !path.isEmpty() && !path.startsWith(mPath) )
-        return false; // Path of URL does not start with cookie-path
+    if (path.isEmpty())
+        return true;
 
-    return true;
+    // According to the netscape spec both http://www.acme.com/foobar and
+    // http://www.acme.com/foo/bar match http://www.acme.com/foo
+    // According to RFC2109 only http://www.acme.com/foo/bar matches
+    if( path.startsWith(mPath) &&
+        ((mProtocolVersion == 0) || (path == mPath) || (path[mPath.length()] == '/')) )
+        return true; // Path of URL starts with cookie-path
+
+    return false;
 }
 
 // KHttpCookieList
