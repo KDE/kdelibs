@@ -1725,7 +1725,7 @@ bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 bool KDirLister::doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const
 {
   for ( QPtrListIterator<QRegExp> it( filters ); it.current(); ++it )
-    if ( it.current()->exactMatch( name ) != -1 )
+    if ( it.current()->exactMatch( name ) )
       return true;
 
   return false;
