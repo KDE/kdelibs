@@ -158,7 +158,9 @@ DOMString findDefAttrHTML(ushort id);
 #define BRStartTag REQUIRED
 #define BREndTag FORBIDDEN
 #define BODYStartTag OPTIONAL
-#define BODYEndTag OPTIONAL
+#define BODYEndTag REQUIRED           // is OPTIONAL, but since it's only 
+                                      // allowed once in the document, this 
+                                      // takes care of having two of them
 #define ADDRESSStartTag REQUIRED
 #define ADDRESSEndTag REQUIRED
 #define DIVStartTag REQUIRED
@@ -288,7 +290,10 @@ DOMString findDefAttrHTML(ushort id);
 #define NOSCRIPTStartTag REQUIRED
 #define NOSCRIPTEndTag REQUIRED
 #define HTMLStartTag OPTIONAL
-#define HTMLEndTag OPTIONAL
+#define HTMLEndTag REQUIRED           // is OPTIONAL, but since it's only 
+                                      // allowed once in the document, this 
+                                      // takes care of having two of them
+
 
 } //namespace DOM
 #endif

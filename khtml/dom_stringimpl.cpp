@@ -93,7 +93,7 @@ static Length parseLength(QChar *s, unsigned int l)
 	else
 	    return Length(QConstString(s, l-1).string().toInt(), Relative);
     }
-    
+
     int v = QConstString(s, l).string().toInt();
     if(v)
 	return Length(v, Fixed);
@@ -121,14 +121,12 @@ QList<Length> *DOMStringImpl::toLengthList() const
     list->setAutoDelete(true);
     while((pos2 = str.find(',', pos)) != -1)
     {
-	Length *l = new Length(parseLength(s+pos, pos2-pos));
-	printf("got length %d, type=%d\n", l->value, l->type);
+	Length *l = new Length(parseLength(str.unicode()+pos, pos2-pos));
 	list->append(l);
 	pos = pos2+1;
     }
 
-    Length *l = new Length(parseLength(s+pos, str.length()-pos));
-    printf("got length %d, type=%d\n", l->value, l->type);
+    Length *l = new Length(parseLength(str.unicode()+pos, str.length()-pos));
     list->append(l);
 
     return list;

@@ -716,6 +716,8 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		    // end of attribute
 		    Attribute a;
 		    a.id = *buffer;
+		    // remove trailing spaces
+		    while(*(dest-1) == ' ' && dest>buffer+1) dest--;
 		    if(a.id)		    {
 			a.setValue(buffer+1, dest-buffer-1);
 			currToken->attrs.add(a);

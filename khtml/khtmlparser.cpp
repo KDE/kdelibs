@@ -356,6 +356,17 @@ void KHTMLParser::insertNode(NodeImpl *n)
 
 	switch(n->id())
 	{
+	    // head elements in the body should be ignored.
+	case ID_HTML:
+	case ID_BODY:
+	case ID_TITLE:
+	case ID_BASE:
+	case ID_STYLE:
+	case ID_META:
+	case ID_LINK:
+	    // SCRIPT and OBJECT are allowd in the body.
+	    if(inBody) throw exception;
+	    break;
 	case ID_LI:
 	    e = new HTMLUListElementImpl(document);
 	    insertNode(e);
@@ -383,6 +394,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		break;
 	    default:
 		e = new HTMLBodyElementImpl(document, HTMLWidget);
+		inBody = true;
 		insertNode(e);
 		break;
 	    }
@@ -479,6 +491,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_BODY:
 	popBlock(ID_HEAD);
 	n = new HTMLBodyElementImpl(document, HTMLWidget);
+	inBody = true;
 	break;
 
 // head elements
