@@ -173,6 +173,9 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
   list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
   if ( list.length() )
     return true;
+  list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_APPLET, propertyName.string() );
+  if ( list.length() )
+    return true;
   if ( view && view->part() )
   {
     KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
