@@ -686,7 +686,7 @@ public:
    * via window.status
    */
   QString jsStatusBarText() const;
- 
+
   /**
    * Called by KJS.
    * Returns the DefaultStatusBarText assigned
@@ -764,7 +764,7 @@ protected:
   /**
    * @internal
    */
-  virtual void overURL( const QString &url, const QString &target ); // ### KDE 3.0: make private
+  virtual void overURL( const QString &url, const QString &target ); // ### KDE 3.0: make private (merge)
 
   /**
    * @internal
@@ -948,6 +948,7 @@ protected:
 private:
   void startAutoScroll();
   void stopAutoScroll();
+  void overURL( const QString &url, const QString &target, bool shiftPressed );
 
   void init( KHTMLView *view, GUIProfile prof );
 

@@ -268,11 +268,12 @@ public:
           m_ssl_good_from,
           m_ssl_good_until;
 
-  bool m_bComplete;
-  bool m_bParsing;
-  bool m_bReloading;
-  bool m_haveEncoding;
-  bool m_haveCharset;
+  bool m_bComplete:1;
+  bool m_bParsing:1;
+  bool m_bReloading:1;
+  bool m_haveEncoding:1;
+  bool m_haveCharset:1;
+  bool m_bHTTPRefresh:1;
 
   KURL m_workingURL;
   KURL m_baseURL;
@@ -281,7 +282,6 @@ public:
   QTimer m_redirectionTimer;
   int m_delayRedirect;
   QString m_redirectURL;
-  bool m_bHTTPRefresh;
 
   KAction *m_paViewDocument;
   KAction *m_paViewFrame;
@@ -300,9 +300,6 @@ public:
   KAction *m_paDebugRenderTree;
 
   KParts::PartManager *m_manager;
-
-  bool m_bClearing;
-  bool m_bCleared;
 
   DOM::DOMString m_userSheet;
   DOM::DOMString m_userSheetUrl;
@@ -323,10 +320,15 @@ public:
   long m_startOffset;
   DOM::Node m_selectionEnd;
   long m_endOffset;
-  bool m_startBeforeEnd;
   QString m_overURL;
-  bool m_bDnd;
-    bool m_bFirstData;
+  bool m_startBeforeEnd:1;
+  bool m_bDnd:1;
+  bool m_bFirstData:1;
+  bool m_bClearing:1;
+  bool m_bCleared:1;
+
+  bool m_focusNodeRestored:1;
+  int m_focusNodeNumber;
 
   QPoint m_dragStartPos;
 
@@ -351,9 +353,6 @@ public:
 
   //QGuardedPtr<KParts::Part> m_activeFrame;
   KParts::Part * m_activeFrame;
-
-  int m_focusNodeNumber;
-  bool m_focusNodeRestored;
 };
 
 namespace khtml {
@@ -673,7 +672,7 @@ bool KHTMLPart::openURL( const KURL &url )
      d->m_kjsStatusBarText = QString::null;
      d->m_kjsDefaultStatusBarText = QString::null;
   }
-  
+
   // set the javascript flags according to the current url
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
@@ -820,6 +819,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
+  kdDebug(6050) << "KHTMLPart::executeScript " << script << endl;
   KJSProxy *proxy = jScript();
 
   if (!proxy)
@@ -828,6 +828,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   QVariant ret = proxy->evaluate( script.unicode(), script.length(), n );
   d->m_doc->updateRendering();
 
+  kdDebug(6050) << "KHTMLPart::executeScript - done" << endl;
   return ret;
 }
 
@@ -1951,162 +1952,165 @@ void KHTMLPart::setSelection( const DOM::Range &r )
 			   d->m_selectionEnd.handle(),d->m_endOffset);
 }
 
-void KHTMLPart::overURL( const QString &url, const QString &target )
+// TODO merge with other overURL (BCI)
+void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPressed )
 {
-  if( d->m_kjsStatusBarText.isEmpty() )
+  if( d->m_kjsStatusBarText.isEmpty() || shiftPressed )
+  {
+    overURL( url, target );
+  }
+  else
   {
     emit onURL( url );
-
-      if ( url.isEmpty() )
-      {
-        emit setStatusBarText(url);
-        return;
-      }
-
-       if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 )
-       {
-         emit setStatusBarText( url.mid( url.find( "javascript:", 0, false ) ) );
-         return;
-       }
-
-
-      KURL u = completeURL( url );
-      QString com;
-
-    //   if ( KHTMLFactory::vLinks()->contains( u ) )
-    //       kdDebug( 6000 ) << "Ah, " << u.prettyURL() << " has been visited some time ago" << endl;
-
-      KMimeType::Ptr typ = KMimeType::findByURL( u );
-    
-      if ( typ )
-        com = typ->comment( u, false );
-    
-      if ( u.isMalformed() )
-      {
-        emit setStatusBarText(u.prettyURL());
-        return;
-      }
-
-      if ( u.isLocalFile() )
-      {
-        // TODO : use KIO::stat() and create a KFileItem out of its result,
-       // to use KFileItem::statusBarText()
-        QCString path = QFile::encodeName( u.path() );
-    
-        struct stat buff;
-        stat( path.data(), &buff );
-    
-        struct stat lbuff;
-        lstat( path.data(), &lbuff );
-    
-        QString text = u.url();
-        QString text2 = text;
-    
-        if (S_ISLNK( lbuff.st_mode ) )
-        {
-          QString tmp;
-          if ( com.isNull() )
-            tmp = i18n( "Symbolic Link");
-          else
-            tmp = i18n("%1 (Link)").arg(com);
-          char buff_two[1024];
-          text += " -> ";
-          int n = readlink ( path.data(), buff_two, 1022);
-          if (n == -1)
-          {
-            text2 += "  ";
-	    text2 += tmp;
-    	    emit setStatusBarText(text2);
-            return;
-	  }
-          buff_two[n] = 0;
-    
-	  text += buff_two;
-          text += "  ";
-	  text += tmp;
-        }
-	else if ( S_ISREG( buff.st_mode ) )
-        {
-          if (buff.st_size < 1024)
-	    text = i18n("%2 (%1 bytes)").arg((long) buff.st_size).arg(text2); // always put the URL last, in case it contains '%'
-          else
-          {
-            float d = (float) buff.st_size/1024.0;
-            text = i18n("%1 (%2 K)").arg(text2).arg(KGlobal::locale()->formatNumber(d, 2)); // was %.2f
-          }
-          text += "  ";
-          text += com;
-	}
-        else if ( S_ISDIR( buff.st_mode ) )
-	{
-          text += "  ";
-	  text += com;
-        }
-        else
-        {
-          text += "  ";
-          text += com;
-        }
-        emit setStatusBarText(text);
-      }
-      else
-      {
-        QString extra;
-        if (target == QString::fromLatin1("_blank"))
-        {
-           extra = i18n(" (In new window)");
-        }
-        else if (!target.isEmpty() &&
-                 (target != QString::fromLatin1("_top")) &&
-	         (target != QString::fromLatin1("_self")) &&
-                 (target != QString::fromLatin1("_parent")))
-        {
-	   extra = i18n(" (In other frame)");
-        }
-    
-	if (u.protocol() == "mailto") {
-          QString mailtoMsg = i18n("E-Mail to: ") + KURL::decode_string(u.path());
-	  QStringList queries = QStringList::split('&', u.query().mid(1));
-          for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
-	    if ((*it).startsWith("subject="))
-    		mailtoMsg += i18n(" - Subject: ") + KURL::decode_string((*it).mid(8));
-            else
-            if ((*it).startsWith("cc="))
-                mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
-	    else
-    	    if ((*it).startsWith("bcc="))
-    		mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-	  mailtoMsg = "<img src=" + locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")) + "> " + mailtoMsg;
-          emit setStatusBarText(mailtoMsg);
-        } else
-        if (u.protocol() == "http") {
-          DOM::Node hrefNode = nodeUnderMouse().parentNode();
-          while (hrefNode.nodeName().string() != "A" && !hrefNode.isNull())
-            hrefNode = hrefNode.parentNode();
-    
-          // Is this check neccessary at all? (Frerich)
-          if (!hrefNode.isNull()) {
-            DOM::Node hreflangNode = hrefNode.attributes().getNamedItem("HREFLANG");
-            if (!hreflangNode.isNull()) {
-              QString countryCode = hreflangNode.nodeValue().string().lower();
-              // Map the language code to an appropriate country code.
-              if (countryCode == "en")
-                countryCode = "gb";
-              QString flagImg = "<img src=" + locate("locale", QString::fromLatin1("l10n/") + countryCode + QString::fromLatin1("/flag.png")) + "> ";
-    	     emit setStatusBarText( flagImg + u.prettyURL() + extra );
-            } else
-    	      emit setStatusBarText(u.prettyURL() + extra);
-	 } else 
-		emit setStatusBarText(u.prettyURL() + extra);
-         }
-         emit setStatusBarText(u.prettyURL() + extra);
-       }
- }
- else
- {
     emit setStatusBarText( d->m_kjsStatusBarText );
     d->m_kjsStatusBarText = QString::null;
- }
+  }
+}
+
+void KHTMLPart::overURL( const QString &url, const QString &target )
+{
+  emit onURL( url );
+
+  if ( url.isEmpty() )
+  {
+    emit setStatusBarText(url);
+    return;
+  }
+
+  if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 )
+  {
+    emit setStatusBarText( url.mid( url.find( "javascript:", 0, false ) ) );
+    return;
+  }
+
+  KURL u = completeURL( url );
+  QString com;
+
+  KMimeType::Ptr typ = KMimeType::findByURL( u );
+
+  if ( typ )
+    com = typ->comment( u, false );
+
+  if ( u.isMalformed() )
+  {
+    emit setStatusBarText(u.prettyURL());
+    return;
+  }
+
+  if ( u.isLocalFile() )
+  {
+    // TODO : use KIO::stat() and create a KFileItem out of its result,
+    // to use KFileItem::statusBarText()
+    QCString path = QFile::encodeName( u.path() );
+
+    struct stat buff;
+    stat( path.data(), &buff );
+
+    struct stat lbuff;
+    lstat( path.data(), &lbuff );
+
+    QString text = u.url();
+    QString text2 = text;
+
+    if (S_ISLNK( lbuff.st_mode ) )
+    {
+      QString tmp;
+      if ( com.isNull() )
+        tmp = i18n( "Symbolic Link");
+      else
+        tmp = i18n("%1 (Link)").arg(com);
+      char buff_two[1024];
+      text += " -> ";
+      int n = readlink ( path.data(), buff_two, 1022);
+      if (n == -1)
+      {
+        text2 += "  ";
+        text2 += tmp;
+        emit setStatusBarText(text2);
+        return;
+      }
+      buff_two[n] = 0;
+
+      text += buff_two;
+      text += "  ";
+      text += tmp;
+    }
+    else if ( S_ISREG( buff.st_mode ) )
+    {
+      if (buff.st_size < 1024)
+        text = i18n("%2 (%1 bytes)").arg((long) buff.st_size).arg(text2); // always put the URL last, in case it contains '%'
+      else
+      {
+        float d = (float) buff.st_size/1024.0;
+        text = i18n("%1 (%2 K)").arg(text2).arg(KGlobal::locale()->formatNumber(d, 2)); // was %.2f
+      }
+      text += "  ";
+      text += com;
+    }
+    else if ( S_ISDIR( buff.st_mode ) )
+    {
+      text += "  ";
+      text += com;
+    }
+    else
+    {
+      text += "  ";
+      text += com;
+    }
+    emit setStatusBarText(text);
+  }
+  else
+  {
+    QString extra;
+    if (target == QString::fromLatin1("_blank"))
+    {
+      extra = i18n(" (In new window)");
+    }
+    else if (!target.isEmpty() &&
+             (target != QString::fromLatin1("_top")) &&
+             (target != QString::fromLatin1("_self")) &&
+             (target != QString::fromLatin1("_parent")))
+    {
+      extra = i18n(" (In other frame)");
+    }
+
+    if (u.protocol() == "mailto") {
+      QString mailtoMsg = i18n("E-Mail to: ") + KURL::decode_string(u.path());
+      QStringList queries = QStringList::split('&', u.query().mid(1));
+      for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
+        if ((*it).startsWith("subject="))
+          mailtoMsg += i18n(" - Subject: ") + KURL::decode_string((*it).mid(8));
+        else
+          if ((*it).startsWith("cc="))
+            mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
+          else
+    	    if ((*it).startsWith("bcc="))
+              mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
+      mailtoMsg = "<img src=" + locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")) + "> " + mailtoMsg;
+      emit setStatusBarText(mailtoMsg);
+    } else
+      if (u.protocol() == "http") {
+        DOM::Node hrefNode = nodeUnderMouse().parentNode();
+        while (hrefNode.nodeName().string() != "A" && !hrefNode.isNull())
+          hrefNode = hrefNode.parentNode();
+
+        // Is this check neccessary at all? (Frerich)
+        if (!hrefNode.isNull()) {
+          DOM::Node hreflangNode = hrefNode.attributes().getNamedItem("HREFLANG");
+          if (!hreflangNode.isNull()) {
+            QString countryCode = hreflangNode.nodeValue().string().lower();
+            // Map the language code to an appropriate country code.
+            if (countryCode == "en")
+              countryCode = "gb";
+            QString flagImg = "<img src=" + locate("locale", QString::fromLatin1("l10n/") + countryCode + QString::fromLatin1("/flag.png")) + "> ";
+            emit setStatusBarText( flagImg + u.prettyURL() + extra );
+          } else
+            emit setStatusBarText(u.prettyURL() + extra);
+        } else
+          emit setStatusBarText(u.prettyURL() + extra);
+      }
+    emit setStatusBarText(u.prettyURL() + extra);
+  }
 }
 
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target )
@@ -3443,67 +3447,59 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   QString target;
   QString surl = splitUrlTarget(url.string(), &target);
 
-  if ( d->m_kjsDefaultStatusBarText.isEmpty() )
+  // Not clicked -> mouse over stuff
+  if ( !d->m_bMousePressed )
   {
-    if ( !d->m_bMousePressed && url.length() && !innerNode.isNull() && innerNode.elementId() == ID_IMG )
+    // The mouse is over something
+    if ( url.length() )
     {
-      HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
-      if ( i && i->isServerMap() )
+      bool shiftPressed = ( _mouse->state() & ShiftButton );
+
+      // Image map
+      if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG )
       {
-        khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
-        if(r)
+        HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
+        if ( i && i->isServerMap() )
         {
-          int absx, absy, vx, vy;
-          r->absolutePosition(absx, absy);
-          view()->contentsToViewport( absx, absy, vx, vy );
-  
-          int x(_mouse->x() - vx), y(_mouse->y() - vy);
-  
-          d->m_overURL = surl + QString("?%1,%2").arg(x).arg(y);
-          overURL( d->m_overURL, target );
-          return;
+          khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
+          if(r)
+          {
+            int absx, absy, vx, vy;
+            r->absolutePosition(absx, absy);
+            view()->contentsToViewport( absx, absy, vx, vy );
+
+            int x(_mouse->x() - vx), y(_mouse->y() - vy);
+
+            d->m_overURL = surl + QString("?%1,%2").arg(x).arg(y);
+            overURL( d->m_overURL, target, shiftPressed );
+            return;
+          }
         }
       }
-    }
 
-    if ( !d->m_bMousePressed && url.length() )
-    { 
+      // normal link
       QString target;
       QString surl = splitUrlTarget(url.string(), &target);
-      if ( d->m_overURL.isEmpty() )
+      if ( d->m_overURL.isEmpty() || d->m_overURL != surl )
       {
         d->m_overURL = surl;
-        overURL( d->m_overURL, target );
+        overURL( d->m_overURL, target, shiftPressed );
       }
-      else if ( d->m_overURL != surl )
-      {
-        d->m_overURL = surl;
-        overURL( d->m_overURL, target );
-      }
-      return;
     }
-    else if( d->m_overURL.length() && !url.length() )
+    else  // Not over a link...
     {
-      overURL( QString::null, QString::null );
-      d->m_overURL = "";
+      if( !d->m_overURL.isEmpty() ) // and we were over a link  -> reset to "default statusbar text"
+      {
+        d->m_overURL = QString::null;
+        emit onURL( QString::null );
+        // Default statusbar text can be set from javascript. Otherwise it's empty.
+        emit setStatusBarText( d->m_kjsDefaultStatusBarText );
+      }
     }
   }
   else
-  {
-    if ( surl.isEmpty() )
-     emit setStatusBarText( d->m_kjsDefaultStatusBarText );
-    else
-    {
-     if( !d->m_kjsStatusBarText.isEmpty() )
-     {
-	emit setStatusBarText( d->m_kjsStatusBarText );
-        d->m_kjsStatusBarText = QString::null;
-     }
-    }
-  }
-
-  // selection stuff
-  if( d->m_bMousePressed && !innerNode.isNull() /* && innerNode.nodeType() == DOM::Node::TEXT_NODE */ ) {
+      // selection stuff
+      if( d->m_bMousePressed && !innerNode.isNull() ) {
         int offset;
         DOM::Node node;
         //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
@@ -3562,7 +3558,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
                                  d->m_selectionStart.handle(),d->m_startOffset);
         }
 
-    }
+      }
 }
 
 void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
