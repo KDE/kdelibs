@@ -46,10 +46,10 @@ class KIconEffect;
  *
  * The standard groups are defined below.
  *
- * @li Desktop: Icons in the iconview of konqueror, kdesktop and similar apps.
- * @li Toolbar: Icons in toolbars.
- * @li MainToolbar: Icons in the main toolbars.
- * @li Small: Various small (typical 16x16) places: titlebars, listviews and
+ * @li KIcon::Desktop: Icons in the iconview of konqueror, kdesktop and similar apps.
+ * @li KIcon::Toolbar: Icons in toolbars.
+ * @li KIcon::MainToolbar: Icons in the main toolbars.
+ * @li KIcon::Small: Various small (typical 16x16) places: titlebars, listviews and
  * menu entries.
  *
  * The icons are stored on disk in an icon theme or in a standalone
