@@ -72,7 +72,8 @@ class KKeyChooser : public QWidget
 	KKeyChooser( QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
 	/**
 	 * \overload
- 	 * @param coll the KActionCollection to configure
+ 	 * @param parent parent widget
+	 * @param coll the KActionCollection to configure
 	 */
 	KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts = true );

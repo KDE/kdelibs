@@ -53,13 +53,15 @@ class KNumInput : public QWidget
 public:
     /**
      * Default constructor
-     *
+     * @param parent If parent is 0, the new widget becomes a top-level window. If parent is another widget, this widget becomes a child window inside parent. The new widget is deleted when its parent is deleted. 
+     * @param name The name is sent to the QObject constructor.
      */
     KNumInput(QWidget* parent=0, const char* name=0);
 
     /**
      * @param below A pointer to another KNumInput.
-     *
+     * @param parent parent widget
+     * @param name name of the widget
      */
     KNumInput(KNumInput* below, QWidget* parent=0, const char* name=0);
     ~KNumInput();

@@ -56,6 +56,7 @@ public:
    * @param parent This button's parent
    * @param name   This button's internal name
    * @param txt    This button's text (in a tooltip or otherwise)
+   * @param _instance the instance to use for this button
    */
   KToolBarButton(const QString& icon, int id, QWidget *parent,
                  const char *name=0L, const QString &txt=QString::null,

@@ -64,6 +64,7 @@ class KXMLGUIBuilder
    * @param element The element from the DOM tree describing the
    *                container (use it to access container specified
    *                attributes or child elements)
+   * @param id The id to be used for this container
    */
   virtual QWidget *createContainer( QWidget *parent, int index,
           const QDomElement &element, int &id );

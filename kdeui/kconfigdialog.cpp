@@ -38,11 +38,11 @@ class KConfigDialog::KConfigDialogPrivate
 
 public:
   KConfigDialogPrivate(KDialogBase::DialogType t) 
-  : shown(false), type(t), mgr(0) { }
+  : shown(false), type(t), manager(0) { }
 
   bool shown;
   KDialogBase::DialogType type;
-  KConfigDialogManager *mgr;
+  KConfigDialogManager *manager;
 };
 
 KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
@@ -64,22 +64,22 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
     setName(genericName);
   }
 
-  d->mgr = new KConfigDialogManager(this, config);
+  d->manager = new KConfigDialogManager(this, config);
 
   // TODO: Emit settingsChanged signal from slot to guarantee sequence
-  connect(d->mgr, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
-  connect(d->mgr, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
-  connect(d->mgr, SIGNAL(widgetModified()), this, SLOT(updateButtons()));
+  connect(d->manager, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
+  connect(d->manager, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
+  connect(d->manager, SIGNAL(widgetModified()), this, SLOT(updateButtons()));
 
   connect(this, SIGNAL(okClicked()), this, SLOT(updateSettings()));
-  connect(this, SIGNAL(okClicked()), d->mgr, SLOT(updateSettings()));
+  connect(this, SIGNAL(okClicked()), d->manager, SLOT(updateSettings()));
 
   connect(this, SIGNAL(applyClicked()), this, SLOT(updateSettings()));
-  connect(this, SIGNAL(applyClicked()), d->mgr, SLOT(updateSettings()));
+  connect(this, SIGNAL(applyClicked()), d->manager, SLOT(updateSettings()));
   connect(this, SIGNAL(applyClicked()), this, SLOT(updateButtons()));
 
   connect(this, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
-  connect(this, SIGNAL(defaultClicked()), d->mgr, SLOT(updateWidgetsDefault()));
+  connect(this, SIGNAL(defaultClicked()), d->manager, SLOT(updateWidgetsDefault()));
   connect(this, SIGNAL(defaultClicked()), this, SLOT(updateButtons()));
 
   enableButton(Apply, false);
@@ -134,7 +134,7 @@ void KConfigDialog::addPage(QWidget *page,
       kdDebug(240) << "KConfigDialog::addpage: unknown type.";
   }
   if(manage)
-    d->mgr->addWidget(page);
+    d->manager->addWidget(page);
 }
 
 KConfigDialog* KConfigDialog::exists(const char* name)
@@ -155,8 +155,8 @@ void KConfigDialog::updateButtons()
   static bool only_once = false;
   if (only_once) return;
   only_once = true;
-  enableButton(Apply, d->mgr->hasChanged() || hasChanged());
-  enableButton(Default, !(d->mgr->isDefault() && isDefault()));
+  enableButton(Apply, d->manager->hasChanged() || hasChanged());
+  enableButton(Default, !(d->manager->isDefault() && isDefault()));
   emit widgetModified();
   only_once = false;
 }
@@ -171,9 +171,9 @@ void KConfigDialog::settingsChangedSlot()
 void KConfigDialog::show()
 {
   updateWidgets();
-  d->mgr->updateWidgets();
-  enableButton(Apply, d->mgr->hasChanged() || hasChanged());
-  enableButton(Default, !(d->mgr->isDefault() && isDefault()));
+  d->manager->updateWidgets();
+  enableButton(Apply, d->manager->hasChanged() || hasChanged());
+  enableButton(Default, !(d->manager->isDefault() && isDefault()));
   d->shown = true;
   KDialogBase::show();
 }
