@@ -108,9 +108,9 @@ public:
     * Constructs a read-only or rather select-only combo box with a parent object
     * and a name.
     *
-    * @param @p parent the parent object of this widget
-    * @param @p name the name of this widget
-    * @param @p hsig determines if this widget automatically handles the signals internally.
+    * @param parent the parent object of this widget
+    * @param name the name of this widget
+    * @param hsig determines if this widget automatically handles the signals internally.
     */
     KComboBox( QWidget *parent=0, const char *name=0, bool hsig = true );
 
@@ -118,10 +118,10 @@ public:
     * Constructs a "read-write" or "read-only" combo box depending on the value of
     * the first argument( bool rw ) with a parent, a name.
     *
-    * @param @p string text to be shown in the edit widget
-    * @param @p parent the parent object of this widget
-    * @param @p name the name of this widget
-    * @param @p hsig determines if this widget automatically handles the signals internally.
+    * @param string text to be shown in the edit widget
+    * @param parent the parent object of this widget
+    * @param name the name of this widget
+    * @param hsig determines if this widget automatically handles the signals internally.
     */
     KComboBox( bool rw, QWidget *parent=0, const char *name=0, bool hsig = true );
 
@@ -146,7 +146,7 @@ public:
     * If true, the completion mode will be set to automatic.
     * Otherwise, it is defaulted to the gloabl setting.
     *
-    * @param @p autocomplete flag to enable/disable automatic completion mode.
+    * @param autocomplete flag to enable/disable automatic completion mode.
     */
     virtual void setAutoCompletion( bool autocomplete );
 
@@ -172,10 +172,10 @@ public:
     * This is done to allow you to share a single completion object across
     * multiple widgets.
     *
-    * @param a @ref KCompletion or a derived child object.
-    * @param @p autoDelete if true, delete the completion object on destruction.
+    * @param obj a @ref KCompletion or a derived child object.
+    * @param autoDelete if true, delete the completion object on destruction.
     */
-    void setCompletionObject( KCompletion*, bool autoDelete = false );
+    void setCompletionObject( KCompletion *obj, bool autoDelete = false );
 
     /**
     * Returns a pointer to the current completion object.
@@ -200,7 +200,7 @@ public:
     * If the argument is set to true, the completion object is deleted when
     * this widget's destructor is called.
     *
-    * @param @p autoDelete if set to true the completion object is deleted on exit.
+    * @param autoDelete if set to true the completion object is deleted on exit.
     */
     void setDeleteCompletionObject( bool autoDelete = false ) { m_bAutoDelCompObj = autoDelete; }
 
@@ -230,7 +230,7 @@ public:
     * this method does NOT delete the comlpetion object if one has already been
     * created.  See also @ref setHandleCompletion and @ref setHandleCompletion.
     *
-    * @param @p emit if true emits completion signal.
+    * @param emit if true emits completion signal.
     */
     void setEnableCompletionSignal( bool enable ) { m_bEmitCompletion = enable; }
 
@@ -255,7 +255,7 @@ public:
     * Note that calling this function does not hinder you from connecting and
     * hence receiving the completion signals externally.
     *
-    * @param @p complete when true enables this widget to handle completion.
+    * @param complete when true enables this widget to handle completion.
     */
     void setHandleCompletion( bool complete = false );
 
@@ -271,7 +271,7 @@ public:
     * Note that calling this function does not hinder you from connecting and
     * hence receiving the rotation signals externally.
     *
-    * @param @p autoHandle when true handle rotation signals internally.
+    * @param autoHandle when true handle rotation signals internally.
     */
     void setHandleRotation( bool rotate = false );
 
@@ -339,7 +339,7 @@ public:
     * returns false if @p rDnkey is negative or the supplied key-binding
     * conflicts with either @ref completion or @ref rotateUp keys.
     *
-    * @param @p rDnkey the key-binding to use for rotating up in a list.
+    * @param rDnkey the key-binding to use for rotating up in a list.
     * @return @p true if key-binding can successfully be set.
     */
     bool setRotateDownKey( int rDnKey = 0 );
@@ -354,7 +354,7 @@ public:
     * returns false if @p rUpkey is negative or the supplied key-binding
     * conflicts with either @ref completion or @ref rotateDown keys.
     *
-    * @param @p rUpkey the key-binding to use for rotating down in a list.
+    * @param rUpkey the key-binding to use for rotating down in a list.
     * @return @p true if key-binding can successfully be set.
     */
     bool setRotateUpKey( int rUpKey = 0 );
@@ -373,7 +373,7 @@ public:
     * @ref completion or @ref rotateDown keys, this function will return false.
     * Also note that this method always returns false if the widget is not editable.
     *
-    * @param @p ckey Key binding to use for completion.  Default is 0.
+    * @param ckey Key binding to use for completion.  Default is 0.
     * @return @p true if key-binding can be successfully set.
     */
     bool setCompletionKey( int ckey = 0 );
@@ -442,8 +442,8 @@ public:
     * function with the second argument set to "false" if you do not want that item to be
     * inserted.
     *
-    * @param @p showMenu if true, shows the context menu.
-    * @param @p showModeChanger if true, shows the mode changer item in popup menu.
+    * @param showMenu if true, shows the context menu.
+    * @param showModeChanger if true, shows the mode changer item in popup menu.
     */
     virtual void setEnableContextMenu( bool showMenu = false, bool showChanger = false );
 
