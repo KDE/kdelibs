@@ -31,10 +31,12 @@ Comment[ro]=B3/Modificarea B2
 Comment[ru]=B3/Измененная B2
 Comment[sk]=B3/Zmeniť na B2
 Comment[sl]=B3/Spremenjena različica B2
+Comment[sr]=B3 Modifikacija B2 stila
 Comment[sv]=B3/ändrad variant av B2
 Comment[ta]=B3/Á¡üÈ¢Â¨Áì¸Àð¼ B2
 Comment[tr]=B3/B2'nin değiştirilmiş hali
 Comment[uk]=B3 - модифікація B2
 Comment[zh_CN.GB2312]=B3/修改的 B2
+Comment[zh_TW.Big5]=B3/B2 的修改版
 [KDE]
 widgetStyle=b3style.la

@@ -8,6 +8,7 @@
 #include <qwidget.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
+#include <qbitmap.h>
 #include <limits.h>
 
 class KStepStyle : public KStyle
@@ -97,6 +98,9 @@ protected:
 private:
     QColorGroup nextGrp;
     QPalette oldPopupPal;
+    QBitmap arrowLightBmp;
+    QBitmap arrowDarkBmp;
+    QBitmap arrowMidBmp;
 };
 
 #endif
