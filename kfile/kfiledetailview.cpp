@@ -1,6 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
    Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
+                 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -70,12 +71,8 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     connect( this, SIGNAL( doubleClicked(QListViewItem *, const QPoint&, int)),
 	     SLOT( slotDoubleClicked( QListViewItem *) ) );
 
-
-    //    connect( this, SIGNAL( currentChanged( QListViewItem *) ),
-    //	     this, SLOT( highlighted( QListViewItem *)	) );
-    //    connect( this, SIGNAL( executed(QListViewItem *) ),
-    //	     SLOT( highlighted( QListViewItem *) ) );
-    connect( this, SIGNAL(rightButtonPressed ( QListViewItem *, const QPoint &, int )),
+    connect( this, SIGNAL(rightButtonPressed( QListViewItem *, const QPoint &,
+					      int )),
 	     this, SLOT( rightButtonPressed ( QListViewItem * )));
 
     KFile::SelectionMode sm = KFileView::selectionMode();
@@ -101,7 +98,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 		 SLOT( slotSelectionChanged() ));
     else
 	connect( this, SIGNAL( selectionChanged( QListViewItem * ) ),
-		 SLOT( slotSelectionChanged( QListViewItem * ) ));
+		 SLOT( highlighted( QListViewItem * ) ));
 
     setSorting( sorting() );
 }
@@ -188,10 +185,12 @@ void KFileDetailView::highlighted( QListViewItem *item )
 {
     if ( !item )
 	return;
+
     const KFileViewItem *fi = ( (KFileListViewItem*)item )->fileInfo();
     if ( fi )
 	highlight( const_cast<KFileViewItem*>( fi ) );
 }
+
 
 void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
 {
@@ -220,16 +219,16 @@ void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
 	connect( this, SIGNAL( selectionChanged() ),
 		 SLOT( slotSelectionChanged() ));
     else
-	connect( this, SIGNAL( selectionChanged( QListViewItem * ) ),
-		 SLOT( slotSelectionChanged( QListViewItem * ) ));
+	connect( this, SIGNAL( selectionChanged( QListViewItem * )),
+		 SLOT( highlighted( QListViewItem * )));
 }
 
 bool KFileDetailView::isSelected( const KFileViewItem *i ) const
 {
     if ( !i )
 	return false;
+
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
-    if ( !item ) kdDebug() << "**** RED ALERT , " << i->name() << " has no ListViewItem" << endl;
     return (item && item->isSelected());
 }
 
@@ -359,12 +358,7 @@ void KFileDetailView::ensureItemVisible( const KFileViewItem *i )
 // we're in multiselection mode
 void KFileDetailView::slotSelectionChanged()
 {
-    kdDebug() << "void KFileDetailView::slotSelectionChanged()" << endl;
-}
-
-void KFileDetailView::slotSelectionChanged( QListViewItem * )
-{
-    kdDebug() << "void KFileDetailView::slotSelectionChanged( QListViewItem *item )" << endl;
+    highlight( 0L );
 }
 
 #include "kfiledetailview.moc"

@@ -1,6 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
    Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
+                 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -66,11 +67,6 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     connect( this, SIGNAL( doubleClicked(QIconViewItem *, const QPoint&) ),
 	     SLOT( slotDoubleClicked( QIconViewItem *) ) );
 
-    connect( this, SIGNAL( executed(QIconViewItem *) ),
-	     SLOT( highlighted( QIconViewItem *) ) );
-    connect( this, SIGNAL( currentChanged( QIconViewItem *) ),
-	     this, SLOT( highlighted( QIconViewItem *)	) );
-
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
 	     this, SLOT( showToolTip( QIconViewItem * ) ) );
     connect( this, SIGNAL( onViewport() ),
@@ -78,7 +74,8 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     connect( this, SIGNAL( rightButtonPressed( QIconViewItem*, const QPoint&)),
 	     SLOT( slotRightButtonPressed( QIconViewItem* ) ) );
 
-    switch ( KFileView::selectionMode() ) {
+    KFile::SelectionMode sm = KFileView::selectionMode();
+    switch ( sm ) {
     case KFile::Multi:
 	QIconView::setSelectionMode( QIconView::Multi );
 	break;
@@ -93,6 +90,13 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	QIconView::setSelectionMode( QIconView::Single );
 	break;
     }
+
+    if ( sm == KFile::Multi || sm == KFile::Extended )
+	connect( this, SIGNAL( selectionChanged() ),
+		 SLOT( slotSelectionChanged() ));
+    else
+	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
+		 SLOT( highlighted( QIconViewItem * )));
 }
 
 void KFileIconView::removeToolTip()
@@ -183,18 +187,18 @@ void KFileIconView::slotDoubleClicked( QIconViewItem *item )
 	return;
     const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
     if ( fi )
-	select( const_cast<KFileViewItem*>( fi ) );
+	select( fi );
 }
 
 void KFileIconView::selected( QIconViewItem *item )
 {
     if ( !item )
 	return;
-    
+
     if ( KGlobalSettings::singleClick() ) {
 	const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
-	    select( const_cast<KFileViewItem*>( fi ) );
+	    select( fi );
     }
 }
 
@@ -204,11 +208,14 @@ void KFileIconView::highlighted( QIconViewItem *item )
 	return;
     const KFileViewItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
     if ( fi )
-	highlight( const_cast<KFileViewItem*>( fi ) );
+	highlight( fi );
 }
 
 void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
 {
+    disconnect( this, SIGNAL( selectionChanged() ));
+    disconnect( this, SIGNAL( selectionChanged( QIconViewItem * )));
+
     KFileView::setSelectionMode( sm );
     switch ( KFileView::selectionMode() ) {
     case KFile::Multi:
@@ -225,6 +232,13 @@ void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
 	QIconView::setSelectionMode( QIconView::Single );
 	break;
     }
+
+    if ( sm == KFile::Multi || sm == KFile::Extended )
+	connect( this, SIGNAL( selectionChanged() ),
+		 SLOT( slotSelectionChanged() ));
+    else
+	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
+		 SLOT( highlighted( QIconViewItem * )));
 }
 
 bool KFileIconView::isSelected( const KFileViewItem *i ) const
@@ -241,7 +255,7 @@ void KFileIconView::updateView( bool b )
 	KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
 	if ( item ) {
 	    do {
-		item ->setPixmap( const_cast<KFileViewItem*>(item->fileInfo())->pixmap( myIconSize ) );
+		item ->setPixmap( (item->fileInfo())->pixmap( myIconSize ) );
 		item = static_cast<KFileIconViewItem *>(item->nextItem());
 	    } while ( item != 0L );
 	}
@@ -274,5 +288,9 @@ void KFileIconView::ensureItemVisible( const KFileViewItem *i )
 }
 
 
+void KFileIconView::slotSelectionChanged()
+{
+    highlight( 0L );
+}
 
 #include "kfileiconview.moc"

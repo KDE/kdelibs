@@ -367,6 +367,14 @@ signals:
     void fileHighlighted(const QString&);
 
     /**
+     * Emitted when the user hilights one or more files in multiselection mode.
+     * Note: @ref fileHighlighted or @ref fileSelected are NOT emitted in
+     * multiselection mode. You may use selectedItems() to ask for the current
+     * highlighted items.
+     */
+    void selectionChanged();
+
+    /**
       * Emitted when the allowable history operations change.
       */
     void historyUpdate(bool, bool);
@@ -418,7 +426,7 @@ protected:
      * called when an item is highlighted/selected in multiselection mode.
      * handles setting the locationEdit.
      */
-    void multiSelectionChanged(const KFileViewItem *);
+    void multiSelectionChanged();
 
     /**
      * Reads configuration and applies it (size, recent directories, ...)

@@ -510,40 +510,54 @@ void KFileDialog::accept()
 
 void KFileDialog::fileHighlighted(const KFileViewItem *i)
 {
-    if (i->isDir())
+    if (i && i->isDir())
         return;
-    kdDebug() << "** highlighted **" << endl;
-    d->url = i->url();
-    if ( (ops->mode() & KFile::Files) == KFile::Files )
-	multiSelectionChanged( i );
-    else
+
+
+    if ( (ops->mode() & KFile::Files) != KFile::Files ) {
+	if ( !i )
+	    return;
+	
+	d->url = i->url();
+
 	if ( !d->completionLock ) {
 	    locationEdit->setCurrentItem( 0 );
 	    locationEdit->setEditText( i->name() );
 	}
-    emit fileHighlighted(d->url.url());
+	emit fileHighlighted(d->url.url());
+    }
+
+    else {
+	multiSelectionChanged();
+	emit selectionChanged();
+    }
 }
 
 void KFileDialog::fileSelected(const KFileViewItem *i)
 {
-    if (i->isDir())
+    if (i && i->isDir())
         return;
-    d->url = i->url();
-    if ( (ops->mode() & KFile::Files) == KFile::Files )
-	multiSelectionChanged( i );
-    else {
+
+    if ( (ops->mode() & KFile::Files) != KFile::Files ) {
+	if ( !i )
+	    return;
+	
+	d->url = i->url();
 	locationEdit->setCurrentItem( 0 );
 	locationEdit->setEditText( i->name() );
+	emit fileSelected(d->url.url());
     }
-
-    emit fileSelected(d->url.url());
+    else {
+	multiSelectionChanged();
+	emit selectionChanged();
+    }
     slotOk();
 }
 
 
 // I know it's slow to always iterate thru the whole filelist
 // (ops->selectedItems()), but what can we do?
-void KFileDialog::multiSelectionChanged(const KFileViewItem *)
+void KFileDialog::multiSelectionChanged()
 {
     if ( d->completionLock ) // FIXME: completion with multiselection?
 	return;

@@ -78,7 +78,7 @@ int main(int argc, char **argv)
         KURL u = KFileDialog::getSaveURL();
 //          QString(QDir::homeDirPath() + QString::fromLatin1("/testfile")),
 //          QString::null, 0L);
-        name1 = u.url();  
+        name1 = u.url();
     }
     else{
 	KFileDialog dlg(QString::null,

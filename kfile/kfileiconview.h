@@ -88,6 +88,7 @@ private slots:
     void removeToolTip();
     void slotRightButtonPressed( QIconViewItem * );
     void slotDoubleClicked( QIconViewItem * );
+    void slotSelectionChanged();
 
 private:
     QLabel *toolTip;

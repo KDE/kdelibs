@@ -46,6 +46,11 @@ public:
 
 signals:
     void dirActivated(const KFileViewItem*);
+
+    /**
+     * the item maybe be 0L, indicating that we're in multiselection mode and
+     * the selection has changed.
+     */
     void fileHighlighted(const KFileViewItem*);
     void fileSelected(const KFileViewItem*);
     void activatedMenu( const KFileViewItem *i );
@@ -290,19 +295,19 @@ public:
      * Every view has to decide when to call select( item ) when a file was
      * single-clicked, based on @ref onlyDoubleClickSelectsFiles().
      */
-    void setOnlyDoubleClickSelectsFiles( bool enable ) { 
-	myOnlyDoubleClickSelectsFiles = enable; 
+    void setOnlyDoubleClickSelectsFiles( bool enable ) {
+	myOnlyDoubleClickSelectsFiles = enable;
     }
-    
+
     /**
      * @returns whether files (not directories) should only be select()ed by
      * double-clicks.
      * @see #setOnlyDoubleClickSelectsFiles
      */
-    bool onlyDoubleClickSelectsFiles() const { 
+    bool onlyDoubleClickSelectsFiles() const {
 	return myOnlyDoubleClickSelectsFiles;
     }
-    
+
 protected:
 
     /**

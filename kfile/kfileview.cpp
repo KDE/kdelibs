@@ -440,7 +440,7 @@ const KFileViewItemList * KFileView::selectedItems() const
 	KFileViewItem *item = 0L;
 	for (item = myFirstItem; item; item = item->next()) {
 	    if ( isSelected( item ) )
-		selectedList->append( item ), kdDebug() << "** selected: " << item->name() << endl;
+		selectedList->append( item );
 	}
     }
 
