@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "kbookmarkmenu.h"
+#include "kbookmarktree.h"
 #include "kbookmarkimporter.h"
 
 #include <qstring.h>
@@ -430,7 +431,7 @@ void KBookmarkMenu::slotAddBookmark()
     parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
 
   } else {
-    BookmarkEditDialog *dlg = new BookmarkEditDialog(title, url);
+    BookmarkEditDialog *dlg = new BookmarkEditDialog( title, url, m_pManager );
     int ret = dlg->exec();
 
     if (ret != KDialogBase::Accepted) {
@@ -438,7 +439,7 @@ void KBookmarkMenu::slotAddBookmark()
       return;
     }
 
-    parentBookmark.addBookmark( m_pManager, dlg->ed1->text(), dlg->ed2->text() );
+    parentBookmark.addBookmark( m_pManager, dlg->m_ed1->text(), dlg->m_ed2->text() );
     delete dlg;
   }
 
@@ -535,44 +536,26 @@ void KBookmarkMenuNSImporter::endFolder()
   mstack.pop();
 }
 
-BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, 
+BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, KBookmarkManager *mgr,
                                        QWidget * parent, const char * name)
     : KDialogBase(parent, name, true, "", Ok|Cancel, Ok, true)
 {
   m_pMain = new QWidget(this);
   setMainWidget(m_pMain);
 
-  // add new horiz layout
+  QBoxLayout *vert = new QVBoxLayout(m_pMain);
 
-  // m_pListView = new KListView();
-  // add m_pListView to horiz layout
-  // and a single example item
+  m_ed1 = new KLineEdit(m_pMain);
+  m_ed1->setText(title);
+  vert->addWidget(m_ed1);
 
-  m_pGrid = new QGridLayout(m_pMain, 2, 2, 10, 0);
-  m_pGrid->addColSpacing(1, 10);
+  m_ed2 = new KLineEdit(m_pMain);
+  m_ed2->setText(url);
+  vert->addWidget(m_ed2);
 
-  ed1 = new KLineEdit(m_pMain);
-  ed1->setText(title);
-  m_pGrid->addWidget(ed1, 0, 1, AlignRight);
-  ed2 = new KLineEdit(m_pMain);
-  ed2->setText(url);
-  m_pGrid->addWidget(ed2, 1, 1, AlignRight);
-
-  QLabel *lbl;
-  lbl = new QLabel(m_pMain);
-  lbl->setAlignment(AlignLeft|AlignVCenter);
-  lbl->setText("Title:");
-  lbl->setFixedSize(lbl->sizeHint());
-  m_pGrid->addWidget(lbl, 0, 0, AlignLeft);
-
-  m_pGrid->addRowSpacing(8, 10);
-  lbl = new QLabel(m_pMain);
-  lbl->setAlignment(AlignLeft|AlignVCenter);
-  lbl->setText("Url:");
-  lbl->setFixedSize(lbl->sizeHint());
-  m_pGrid->addWidget(lbl, 1, 0, AlignLeft);
-
-  // add m_pGrid to the horiz layout;
+  m_folderTree = KBookmarkFolderTree::createTree(mgr, m_pMain, name);
+  m_folderTree->setMinimumSize(100,100);
+  vert->addWidget(m_folderTree);
 }
 
 BookmarkEditDialog::~BookmarkEditDialog() 
@@ -585,20 +568,8 @@ void BookmarkEditDialog::slotOk()
 }
 
 void BookmarkEditDialog::slotCancel()
-
 { 
   reject();
 } 
-
-void BookmarkEditDialog::drawRoot()
-{
-#if 0
-  m_pListView->clear();
-  KBookmarkGroup root = s_pManager->root();
-  KEBListViewItem * rootItem = new KEBListViewItem( m_pListView, root );
-  fillGroup( rootItem, root );
-  rootItem->QListViewItem::setOpen(true);
-#endif
-}
 
 #include "kbookmarkmenu.moc"

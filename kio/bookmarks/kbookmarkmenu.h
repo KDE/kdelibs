@@ -34,6 +34,8 @@
 
 class QString;
 class QGridLayout;
+class QPopupMenu;
+class QListView;
 class KLineEdit;
 class KBookmark;
 class KBookmarkGroup;
@@ -43,7 +45,6 @@ class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 class KPopupMenu;
-class QPopupMenu;
 
 namespace KIO { class Job; }
 
@@ -190,19 +191,17 @@ protected:
     KBookmarkManager* m_pManager;
 };
 
-class KBookmarkFolderTree;
-
 class BookmarkEditDialog
     : public KDialogBase
 {
     Q_OBJECT
 
 public:
-    BookmarkEditDialog(QString title, QString url, QWidget *parent=0, const char *name=0);
+    BookmarkEditDialog(QString, QString, KBookmarkManager *, QWidget * = 0, const char * = 0);
     virtual ~BookmarkEditDialog();
 
-    KLineEdit *ed1;
-    KLineEdit *ed2;
+    KLineEdit *m_ed1;
+    KLineEdit *m_ed2;
 
 protected slots:
     void slotOk();
@@ -213,7 +212,7 @@ private:
 
     QGridLayout *m_pGrid;
     QWidget *m_pMain;
-    KBookmarkFolderTree *m_folderTree;
+    QListView *m_folderTree;
 };
 
 #endif

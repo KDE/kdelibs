@@ -57,15 +57,24 @@
 
 #include <kiconloader.h>
 
-KBookmarkFolderTree::KBookmarkFolderTree( QWidget* parent, const char* name )
-{
-#if 0
-  m_pListView->clear();
-  KBookmarkGroup root = s_pManager->root();
-  KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( m_pListView, root );
+static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group );
+
+QListView* KBookmarkFolderTree::createTree( 
+  KBookmarkManager* mgr, QWidget* parent, const char* name 
+) {
+  QListView *listview = new QListView( parent, name );
+  listview->setRootIsDecorated( true );
+  listview->addColumn( i18n("Bookmark"), 300 );
+  listview->addColumn( i18n("URL"), 300 );
+  listview->setSorting( -1, false );
+  // listview()->setSelectionModeExt(KListView::Extended);
+  listview->setAllColumnsShowFocus( true );
+  listview->clear();
+  KBookmarkGroup root = mgr->root();
+  KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
   fillGroup( rootItem, root );
-  rootItem->QListViewItem::setOpen(true);
-#endif
+  rootItem->QListViewItem::setOpen( true );
+  return listview;
 }
 
 // toplevel item

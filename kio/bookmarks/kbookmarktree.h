@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -48,19 +48,17 @@ class QListView;
 
 class KBookmarkFolderTreeItem : public QListViewItem
 {
-  public:
-    KBookmarkFolderTreeItem(QListView *parent, const KBookmark & group );
-    KBookmarkFolderTreeItem(KBookmarkFolderTreeItem *parent, QListViewItem *after, const KBookmarkGroup & gp );
-  private:
-    KBookmark m_bookmark;
+public:
+  KBookmarkFolderTreeItem( QListView *, const KBookmark & );
+  KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *, QListViewItem *, const KBookmarkGroup & );
+private:
+  KBookmark m_bookmark;
 };
 
 class KBookmarkFolderTree
 {
 public:
-    KBookmarkFolderTree(QWidget *parent=0, const char *name=0);
-private:
-    QListView *m_listview;
+   static QListView* createTree( KBookmarkManager *, QWidget * = 0, const char * = 0 );
 };
 
 #endif
