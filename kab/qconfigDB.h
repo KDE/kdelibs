@@ -213,7 +213,7 @@ public:
    *  no such conversion is needed.
    *  \a key is the key to search for, \value is a reference to the object
    *  the value for the key is assigned to. */
-  bool get(const QCString&, QString&);
+  bool get(const QCString&, QString&) const;
   /** Insert a UNICODE string value for the given key. 
    *  If force is true, an existing value for this key will be overridden.
    *  The method returns false if the key exists and \a force is false. */

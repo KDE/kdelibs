@@ -702,7 +702,7 @@ KeyValueMap::insert(const QCString& key, const QString& value, bool force)
 }
 
 bool
-KeyValueMap::get(const QCString& key, QString& value)
+KeyValueMap::get(const QCString& key, QString& value) const
 {
   register bool GUARD; GUARD=false;
   // ###########################################################################
