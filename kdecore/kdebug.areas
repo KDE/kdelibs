@@ -155,8 +155,10 @@
 9006        kdevelop (cvs interface)
 9007        kdevelop (cpp support)
 9008        kdevelop (gcc options)
-9009        kdevelop (projectview)
-9020        kdevelop (kdeprojectspace)
+9010        kdevelop (appwizard)
+9011        kdevelop (python)
+9012        kdevelop (debugger)
+9020        kdevelop (project)
 
 # toys and games
 10000        amor
