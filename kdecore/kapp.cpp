@@ -235,8 +235,7 @@ DCOPClient *KApplication::dcopClient()
     return pDCOPClient;
 
   // create an instance specific DCOP client object
-  pDCOPClient = new DCOPClient(name());
-  pDCOPClient->attach(); // attach to DCOP server.
+  pDCOPClient = new DCOPClient();
 
   return pDCOPClient;
 }
