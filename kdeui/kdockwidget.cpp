@@ -529,10 +529,12 @@ void KDockWidget::setPixmap(const QPixmap& pixmap) {
 	if (dtg)
 		dtg->changeTab(this,pixmap,dtg->tabLabel(this));
 	 QWidget *contWid=parentDockContainer();
-         if (contWid)
-         	dynamic_cast<KDockContainer*>(contWid)->setPixmap(this,pixmap);
-
-
+         if (contWid) {
+         	KDockContainer *itslikerocketscience = dynamic_cast<KDockContainer*>(contWid);
+                if (itslikerocketscience) {
+                        itslikerocketscience->setPixmap(this,pixmap);
+                }
+         }
 }
 
 const QPixmap& KDockWidget::pixmap() const {
@@ -549,7 +551,10 @@ KDockWidget::~KDockWidget()
   }
 
   if (latestKDockContainer()) {
-    dynamic_cast<KDockContainer*>(latestKDockContainer())->removeWidget(this);
+    KDockContainer *amazingthatwedontcrashnow = dynamic_cast<KDockContainer*>(latestKDockContainer());
+    if (amazingthatwedontcrashnow) {
+      amazingthatwedontcrashnow->removeWidget(this);
+    }
   }
   emit iMBeingClosed();
   if (manager->d) manager->d->containerDocks.remove(this);
@@ -1347,12 +1352,14 @@ void KDockWidget::undock()
   bool undockedFromContainer=false;
   if (d->container)
   {
-//  		  kdDebug()<<"undocked from dockcontainer"<<endl;
-  		  undockedFromContainer=true;
-		  KDockContainer* dc = dynamic_cast<KDockContainer*>(d->container.operator->());
+//	  kdDebug()<<"undocked from dockcontainer"<<endl;
+	  undockedFromContainer=true;
+	  KDockContainer* dc = dynamic_cast<KDockContainer*>(d->container.operator->());
+	  if (dc) {
 		  dc->undockWidget(this);
 		  formerBrotherDockWidget=dc->parentDockWidget();
-		  applyToWidget( 0L );
+	  }
+	  applyToWidget( 0L );
   }
    if (!undockedFromContainer) {
 /*********************************************************************************************/
@@ -1506,7 +1513,10 @@ void KDockWidget::makeDockVisible()
   }
   if (parentDockContainer()) {
     QWidget *contWid=parentDockContainer();
-	dynamic_cast<KDockContainer*>(contWid)->showWidget(this);
+    KDockContainer *lookmanohands = dynamic_cast<KDockContainer*>(contWid);
+    if (lookmanohands) {
+      lookmanohands->showWidget(this);
+    }
   }
   if ( isVisible() ) return;
 
@@ -2351,7 +2361,9 @@ void KDockManager::writeConfig( KConfig* c, QString group )
   for (QObjectListIt it(d->containerDocks);it.current();++it)
   {
   	KDockContainer* dc = dynamic_cast<KDockContainer*>(((KDockWidget*)it.current())->widget);
-  	dc->prepareSave(nList);
+	if (dc) {
+		dc->prepareSave(nList);
+	}
   }
 //  kdDebug()<<QString("new list size: %1").arg(nList.count())<<endl;
 
@@ -2363,7 +2375,12 @@ void KDockManager::writeConfig( KConfig* c, QString group )
     if ( obj->header ){
       obj->header->saveConfig( c );
     }
-    if (obj->d->isContainer) dynamic_cast<KDockContainer*>(obj->widget)->save(c,group);
+    if (obj->d->isContainer) {
+       KDockContainer* wowthisissodifficult = dynamic_cast<KDockContainer*>(obj->widget);
+       if (wowthisissodifficult) {
+          wowthisissodifficult->save(c,group);
+       }
+    }
 /*************************************************************************************************/
     if ( obj->isGroup ){
       if ( (findList.find( obj->firstName ) != findList.end()) && (findList.find( obj->lastName ) != findList.end() )){
@@ -2847,7 +2864,7 @@ void KDockArea::resizeEvent(QResizeEvent *rsize)
 //    	QPtrList<QObject> list(children());
 //       QObject *obj=((QPtrList<QObject*>)children())->at(i);
 	QObject *obj=children()->getFirst();
-       if (split=dynamic_cast<KDockSplitter*>(obj))
+       if (split = dynamic_cast<KDockSplitter*>(obj))
        {
           split->setGeometry( QRect(QPoint(0,0), size() ));
 //	  break;
