@@ -50,6 +50,7 @@ class KZipFilter : public QIODevice
 
 public:
     KZipFilter(const QString& filename);
+    KZipFilter(QIODevice * dev);
 
     bool open(int);
     void close();
