@@ -1184,7 +1184,7 @@ void KFileDialog::enterURL( const KURL& url)
 
 void KFileDialog::enterURL( const QString& url )
 {
-    setURL( url );
+    setURL( KURL::fromPathOrURL( KURLCompletion::replacedPath( url, true, true )) );
 }
 
 void KFileDialog::toolbarCallback(int) // SLOT
