@@ -228,6 +228,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     makeCompletion( txt );  // handle when requested...
                 e->accept();
             }
+            else if (!len && d->completionBox && d->completionBox->isVisible())
+                d->completionBox->hide();
+
             return;
         }
 
@@ -342,7 +345,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
             subMenu->insertItem( i18n("Default"), Default );
         }
     }
-    // ### do we need really need this?
+    // ### do we really need this?
     emit aboutToShowContextMenu( popup );
 
     return popup;
