@@ -22,16 +22,17 @@
 #ifndef kfile_tree_branch_h
 #define kfile_tree_branch_h
 
+#include <qdict.h>
 #include <qlistview.h>
+
 #include <kfileitem.h>
 #include <kio/global.h>
 #include <kdirlister.h>
 #include <kio/job.h>
-#include <qdict.h>
+#include <kfiletreeviewitem.h>
 
 class KURL;
 class KFileTreeView;
-class KFileTreeViewItem;
 
 
 /**
@@ -106,12 +107,12 @@ signals:
    void populateFinished( KFileTreeViewItem * );
 
    /**
-    * emitted with every new or updated @ref KFileTreeViewItem that was found
-    * in a branch. Note that this signal is emitted very often and may slow
+    * emitted with a list of new or updated @ref KFileTreeViewItem which were
+    * found in a branch. Note that this signal is emitted very often and may slow
     * down the performance of the treeview !
     */
-   void newKFileTreeViewItem( KFileTreeViewItem* );
-   
+   void newTreeViewItems( KFileTreeBranch*, const KFileTreeViewItemList& );
+
 private slots:
    void addItems( const KFileItemList& );
    void slCompleted();

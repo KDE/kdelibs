@@ -56,10 +56,10 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
    m_currParent= m_root;
 
    connect( this, SIGNAL( newItems(const KFileItemList&)),
-	    this,     SLOT  ( addItems( const KFileItemList& )));
+	    this, SLOT  ( addItems( const KFileItemList& )));
 
    connect( this, SIGNAL( completed()),
-	    this,     SLOT(slCompleted()));
+	    this,   SLOT(slCompleted()));
 
    connect( this, SIGNAL( started( const KURL& )),
 	    this,   SLOT( slotListerStarted( const KURL& )));
@@ -107,15 +107,23 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
    KFileItemListIterator it( list );
    kdDebug(1201) << "Adding items !" << endl;
    KFileItem *currItem;
-
+   KFileTreeViewItemList treeViewItList;
    
    
    while ( m_currParent && (currItem = it.current()) != 0 )
    {
-      KFileTreeViewItem *newKFTVI = new KFileTreeViewItem( m_currParent,
-                                                           currItem,
-                                                           this);
-      currItem->setExtraData( this, newKFTVI );
+      /* Only create a new KFileTreeViewItem if it does not yet exist */
+      KFileTreeViewItem *newKFTVI =
+	 static_cast<KFileTreeViewItem *>(currItem->extraData( this ));
+
+      if( ! newKFTVI )
+      {
+	 newKFTVI = new KFileTreeViewItem( m_currParent,
+					   currItem,
+					   this);
+      
+	 currItem->setExtraData( this, newKFTVI );
+      }
 
       /* Now try to find out if there are children for dirs in the treeview */
       /* This stats a directory on the local file system and checks the */
@@ -147,8 +155,11 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
       }
       ++it;
 
-      emit( newKFileTreeViewItem( newKFTVI ));
+      treeViewItList.append( newKFTVI );
    }
+      
+   emit( newTreeViewItems( this, treeViewItList ));
+   
 }
 
 
