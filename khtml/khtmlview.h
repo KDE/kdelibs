@@ -165,13 +165,6 @@ public:
     //    bool followsLinks();
 
     /**
-     * should images be loaded automatically? Default is true.
-     * (not implemented at the moment)
-     */
-    //    void enableImages( bool enable );
-    //bool imagesEnabled() const;
-
-    /**
      * Enable disable Java. Default is disabled.
      */
     //    void enableJava( bool enable );

@@ -28,6 +28,8 @@
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 
+#include <qregexp.h>
+
 class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;
 class KJSProxy;
@@ -81,6 +83,15 @@ public:
 
   void enableJava( bool enable );
   bool javaEnabled() const;
+
+  /**
+   * should images be loaded automatically? Default is true.
+   * (not implemented at the moment)
+   */
+  //void autoloadImages( bool enable );
+  //bool autoloadImages() const;
+
+
 
   virtual void begin( const KURL &url, int xOffset = 0, int yOffset = 0 );
   virtual void write( const char *str, int len );
@@ -182,6 +193,35 @@ public:
    * (convenience function, just cals htmlWidget->urlCursor() )
    */
   const QCursor& urlCursor();
+
+  /**
+   * Initiate a text search.
+   */
+  void findTextBegin();
+
+  /**
+   * Find the next occurrance of the expression.
+   */
+  bool findTextNext( const QRegExp &exp );
+
+  /**
+   * Selects all text between ( _x1, _y1 ) and ( _x2, y2 ).  The selection
+   * area selects text line by line, NOT by bounding rectangle.
+   */
+  virtual void selectText( int _x1, int _y1, int _x2, int _y2 );
+
+  /**
+   * Get the text the user has marked.
+   */
+  virtual QString selectedText();
+
+  /**
+   * Has the user selected any text?  Call @ref #selectedText to
+   * retrieve the selected text.
+   *
+   * @return true if there is text selected.
+   */
+  bool isTextSelected() const { return false; }
 
   KParts::PartManager *partManager();
 

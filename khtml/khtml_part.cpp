@@ -691,6 +691,57 @@ const QCursor &KHTMLPart::urlCursor()
   return d->m_widget->urlCursor();
 }
 
+void KHTMLPart::findTextBegin()
+{
+#if 0
+    findPos = -1;
+    findNode = 0;
+#endif
+}
+
+bool KHTMLPart::findTextNext( const QRegExp &exp )
+{
+#if 0
+    if(!findNode) findNode = document->body();
+
+    if(findNode->id() == ID_FRAMESET) return false;
+
+    while(1)
+    {
+	if(findNode->id() == ID_TEXT)
+	{
+	    DOMStringImpl *t = (static_cast<TextImpl *>(findNode))->string();
+	    QConstString s(t->s, t->l);
+	    findPos = s.string().find(exp, findPos+1);
+	    if(findPos != -1)
+	    {
+		int x = 0, y = 0;
+		findNode->renderer()->absolutePosition(x, y);
+		setContentsPos(x-50, y-50);
+	    }
+	}
+	findPos = -1;
+	NodeImpl *next = findNode->firstChild();
+	if(!next) next = findNode->nextSibling();
+	if(!next) next = findNode->parentNode();
+    }
+    return false;
+#endif
+}
+
+
+QString KHTMLPart::selectedText()
+{
+    // ###
+    return QString::null;
+}
+
+void KHTMLPart::selectText( int _x1, int _y1, int _x2, int _y2 )
+{
+    // ###
+}
+
+
 void KHTMLPart::overURL( const QString &url )
 {
   emit onURL( url );
@@ -1286,7 +1337,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
   {
     emit started( 0L );
-    
+
     FrameIt fIt = d->m_frames.begin();
     FrameIt fEnd = d->m_frames.end();
 
@@ -1317,7 +1368,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 	  child->m_part->openURL( *fURLIt );
       }
     }
-    
+
     emit completed();
   }
   else
