@@ -225,7 +225,7 @@ QStringList KImageIO::mimeTypes( Mode _mode )
   
   if( _mode == Reading )
   {
-    mimeList.append( "image/jpg" );
+    mimeList.append( "image/jpeg" );
   }
   else
   {
@@ -234,13 +234,13 @@ QStringList KImageIO::mimeTypes( Mode _mode )
     #endif
   }
 
-  mimeList.append( "image/bmp" );
+  mimeList.append( "image/x-bmp" );
   
   mimeList.append( "image/tiff" );
   
-  mimeList.append( "image/xpm" );
+  mimeList.append( "image/x-xpm" );
 
-  mimeList.append( "image/xbm" );
+  mimeList.append( "image/x-xbm" );
 
   return mimeList;
 }
