@@ -367,6 +367,8 @@ void AutoTableLayout::recalcColumn( int effCol )
 	    RenderTableCell *last = 0;
 	    for ( int i = 0; i < numRows; i++ ) {
 		RenderTableCell *cell = section->cellAt( i,  effCol );
+		if ( cell == (RenderTableCell *)-1 )
+		    continue;
 		if ( cell && cell->colSpan() == 1 ) {
 		    if ( !cell->minMaxKnown() )
 			cell->calcMinMaxWidth();
@@ -567,7 +569,7 @@ int AutoTableLayout::calcEffectiveWidth()
 
     for ( unsigned int i = 0; i < spanCells.size(); i++ ) {
 	RenderTableCell *cell = spanCells[i];
-	if ( !cell )
+	if ( !cell || cell == (RenderTableCell *)-1 )
 	    break;
 	int span = cell->colSpan();
 
@@ -726,7 +728,7 @@ int AutoTableLayout::calcEffectiveWidth()
 */
 void AutoTableLayout::insertSpanCell( RenderTableCell *cell )
 {
-    if ( !cell || cell->colSpan() == 1 )
+    if ( !cell || cell == (RenderTableCell *)-1 || cell->colSpan() == 1 )
 	return;
 
 //     qDebug("inserting span cell %p with span %d", cell, cell->colSpan() );
