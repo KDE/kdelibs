@@ -46,7 +46,7 @@ class KMimeType : public KServiceType
 
 public:
   typedef KSharedPtr<KMimeType> Ptr;
-  typedef QValueList<KMimeType::Ptr> List;
+  typedef QValueList<Ptr> List;
   /**
    * Constructor.  You may pass in arguments to create a mimetype with
    * specific properties
@@ -129,7 +129,7 @@ public:
    * VERY IMPORTANT : don't store the result in a KMimeType * !
    * @see KServiceType::serviceType
    */
-  static KMimeType::Ptr mimeType( const QString& _name );
+  static Ptr mimeType( const QString& _name );
   /** 
    * This function looks at mode_t first. If that does not help it
    * looks at the extension.  This is ok for FTP, FILE, TAR and
@@ -154,7 +154,7 @@ public:
    *        mimetype. 0L is NEVER returned. 
    * VERY IMPORTANT : don't store the result in a KMimeType * !
    */
-  static KMimeType::Ptr findByURL( const KURL& _url, mode_t _mode = 0,
+  static Ptr findByURL( const KURL& _url, mode_t _mode = 0,
 			       bool _is_local_file = false, bool _fast_mode = false );
 
   /** 
@@ -162,7 +162,7 @@ public:
    * available mimetypes.  The returned dict contains a subset of the
    * entries returned by @ref KServiceType::serviceTypes 
    */
-  static KMimeType::List allMimeTypes();
+  static List allMimeTypes();
 
 protected:
   /**
@@ -182,7 +182,7 @@ protected:
 
   QStringList m_lstPatterns;
   
-  static KMimeType::Ptr s_pDefaultType;
+  static Ptr s_pDefaultType;
 };
 
 /**
@@ -285,4 +285,3 @@ public:
 };
 
 #endif
-
