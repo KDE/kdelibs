@@ -175,7 +175,8 @@ an alternative help->contents action)
 
 - Merge KPIM::ClickLineEdit with KLineEdit
 
-- Merge all K*Label classes into one that offers all the features such as ellipsis (this time for center, middle and right in order to allow for sqeezing the text), links and selectable text with a consistant API.
+- Merge all K*Label classes into one that offers all the features such as ellipsis (this time for center, middle and right in order to allow for sqeezing the text), 
+links and selectable text with a consistant API.
 
 - Make sure all GUI classes adopt well to palette changes.
 
@@ -195,4 +196,6 @@ an alternative help->contents action)
 
 - Move KIO::findDeviceMountPoint, findPathMoundPoint, probably_slow_mounted, and testFileSystemFlag to KMountPoint,
   to merge that code.
+
+- Refactor the kio/bookmarks code so we don't need to use the static d-pointer trick anymore.
 
