@@ -30,8 +30,9 @@
 #include "kservice.h"
 #include "ksycoca.h"
 
-struct KServiceGroup::Private
+class KServiceGroup::Private
 {
+public:
   Private() { m_bNoDisplay = false; }
   bool m_bNoDisplay;
 };
