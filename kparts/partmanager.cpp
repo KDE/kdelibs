@@ -54,7 +54,7 @@ PartManager::PartManager( QWidget * parent, const char * name )
 
 PartManager::~PartManager()
 {
-  setActivePart( 0L );
+  // core dumps ... setActivePart( 0L );
   qApp->removeEventFilter( this );
   delete d;
 }
