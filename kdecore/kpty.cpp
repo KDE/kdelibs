@@ -290,7 +290,7 @@ bool KPty::open()
   unlockpt(d->masterFd);
 #endif
 
-  d->slaveFd = ::open(d->ttyName.data(), O_RDWR);
+  d->slaveFd = ::open(d->ttyName.data(), O_RDWR | O_NOCTTY);
   if (d->slaveFd < 0)
   {
     kdWarning(175) << "Can't open slave pseudo teletype" << endl;
