@@ -260,8 +260,9 @@ void KTopLevelWidget::updateRects()
         if (kmenubar && kmenubar->isVisible())   // (gulp)
             if (kmenubar->menuBarPos() == KMenuBar::Top)      // !? This beer isn't cold!
             {
-                kmenubar->setGeometry(0, 0, w, kmenubar->height());
-                t+=kmenubar->height();
+		int mh = kmenubar->heightForWidth(w);
+                kmenubar->setGeometry(0, 0, w, mh);
+                t += mh;
             }
 
         // Top toolbars
@@ -324,8 +325,9 @@ void KTopLevelWidget::updateRects()
         if (kmenubar && kmenubar->isVisible())
             if (kmenubar->menuBarPos() == KMenuBar::Bottom)
             {
-                kmenubar->setGeometry(0, h+b, w, kmenubar->height());
-                b+=kmenubar->height();
+		int mh = kmenubar->heightForWidth(w);
+                kmenubar->setGeometry(0, h+b, w, mh);
+                b+=mh;
             }
         h+=b;
         
@@ -353,8 +355,9 @@ void KTopLevelWidget::updateRects()
         if (kmenubar && kmenubar->isVisible())
             if (kmenubar->menuBarPos() == KMenuBar::Top)
             {
-                kmenubar->setGeometry(0, 0, w, kmenubar->height());
-                t+=kmenubar->height();
+		int mh = kmenubar->heightForWidth(w);
+                kmenubar->setGeometry(0, 0, w, mh);
+                t += mh;
             }
 
         // top toolbars

@@ -88,6 +88,11 @@ static QPixmap* miniGo = 0;
   handle->raise();
 int KMenuBar::idAt( int index )
 {
+  return menu->idAt( index );
+    return menu->heightForWidth( max_width - 9);
+
+int KMenuBar::heightForWidth ( int max_width ) const
+{
   return menu->heightForWidth( max_width - 9);
   if (position == Floating) // What now?
    {

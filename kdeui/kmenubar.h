@@ -111,7 +111,9 @@ class KMenuBar : public QFrame
    void changeItem(const char *text, int id);
    void setItemChecked(int id , bool flag);
    void setItemEnabled(int id, bool flag);
-   
+
+   int heightForWidth ( int max_width ) const; 
+   virtual void setItemEnabled(int id, bool flag);
    int heightForWidth ( int max_width ) const;
 
    void setFlat (bool);
