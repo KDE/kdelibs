@@ -120,14 +120,6 @@ QString HelpProtocol::lookupFile(const QString &fname,
 	}
         else
 	{
-            result = langLookup("khelpcenter/index.html");
-            if (!result.isEmpty())
-	    {
-                redirection(KURL("help:/khelpcenter/index.html"));
-                redirect = true;
-                return QString::null;
-	    }
-
             notFound();
             return QString::null;
 	}
