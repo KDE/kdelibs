@@ -311,7 +311,7 @@ public:
     };
 
     // KDE4 move to WindowTypeMask
-    enum { AllTypesMask = -1LU };
+    enum { AllTypesMask = (ulong)-1LU };
 
     /**
      * Returns true if the given window type matches the mask given
