@@ -40,7 +40,9 @@ using namespace KJS;
 #define KJS_BREAKPOINT if (!hitStatement(script,context)) return Completion(Normal);
 #define KJS_ABORTPOINT if (abortStatement(script,context)) return Completion(Normal);
 
+#ifndef NDEBUG
 std::list<Node *> Node::s_nodes;
+#endif
 
 // ------------------------------ Node -----------------------------------------
 
