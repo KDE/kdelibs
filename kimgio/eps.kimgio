@@ -24,6 +24,7 @@ Name[sr]=Учаурена PostScript слика
 Name[sv]=Inkapslad Postscript-bild
 Name[tr]=Encapsulated PostScript Görüntüsü
 Name[wa]=Imådje PostScript ecapsulêye
+Name[xx]=xxEncapsulated PostScript Imagexx
 Name[zh_CN]=封装后的 Postscript 图像
 Read=true
 Write=true

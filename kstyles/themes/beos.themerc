@@ -3,6 +3,7 @@ Name=BeOS
 Name[af]=Beos
 Name[id]=Beos
 Name[th]=ระบบปฏิบัติการ BeOS
+Name[xx]=xxBeOSxx
 Comment=Unthemed BeOS-like style
 Comment[be]=Стыль падобны на BeOS (бяз тэм)
 Comment[ca]=Estil del tipus BeOS sense temes
@@ -20,6 +21,7 @@ Comment[sr]=Стил без теме који личи на BeOS
 Comment[sv]=Otemad Beos-liknande stil
 Comment[tr]=BeOS benzeri temasız stil
 Comment[wa]=Tinme rishonnant al rivnance do sistinme BeOS
+Comment[xx]=xxUnthemed BeOS-like stylexx
 Comment[zh_CN]=无主题的类似 Beos 的风格
 [KDE]
 widgetStyle=beosstyle.la

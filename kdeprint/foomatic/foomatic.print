@@ -7,5 +7,6 @@ Comment[cy]=Foomatic (CUPS, LPRng, PDQ)
 Comment[eo]=Presprogramo "Foomatic" (CUPS, LPRng, PDQ)
 Comment[fa]=Foomatic (CUPS،LPRng،PDQ)
 Comment[sv]=Foomatic (Cups, LPRng, PDQ)
+Comment[xx]=xxFoomatic (CUPS, LPRng, PDQ)xx
 DetectUris=exec:/foomatic-configure,config:/foomatic/
 DetectPrecedence=0

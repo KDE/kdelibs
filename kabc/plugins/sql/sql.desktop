@@ -3,6 +3,7 @@ Encoding=UTF-8
 Name=SQL
 Name[af]=Sql
 Name[ss]=I-SQL
+Name[xx]=xxSQLxx
 
 [Plugin]
 Type=sql
