@@ -435,6 +435,10 @@ const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
 ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 {
   put("arguments", new ArgumentsObject(f, args), DontDelete);
+  /* TODO: this is here to get myFunc.arguments and myFunc.a1 going.
+     I can't see this described in the spec but it's possible in browsers. */
+  if (!f->name().isNull())
+    put(f->name(), this);
 }
 
 ExecutionStack::ExecutionStack()
@@ -446,7 +450,7 @@ ExecutionStack* ExecutionStack::push()
 {
   ExecutionStack *s = new ExecutionStack();
   s->prev = this;
-  
+
   return s;
 }
 
@@ -454,7 +458,7 @@ ExecutionStack* ExecutionStack::pop()
 {
   ExecutionStack *s = prev;
   delete this;
-  
+
   return s;
 }
 
@@ -497,7 +501,7 @@ KJScriptImp::~KJScriptImp()
 
   delete stack;
   stack = 0L;
-  
+
   KJScriptImp::curr = 0L;
   // are we the last of our kind ? Free global stuff.
   if (instances == 1)
@@ -510,7 +514,7 @@ void KJScriptImp::globalInit()
   UndefinedImp::staticUndefined = new UndefinedImp();
   NullImp::staticNull = new NullImp();
   BooleanImp::staticTrue = new BooleanImp(true);
-  BooleanImp::staticFalse = new BooleanImp(false);  
+  BooleanImp::staticFalse = new BooleanImp(false);
 }
 
 void KJScriptImp::globalClear()
@@ -518,7 +522,7 @@ void KJScriptImp::globalClear()
   UndefinedImp::staticUndefined = 0L;
   NullImp::staticNull = 0L;
   BooleanImp::staticTrue = 0L;
-  BooleanImp::staticFalse = 0L;  
+  BooleanImp::staticFalse = 0L;
 }
 
 void KJScriptImp::mark()
@@ -692,7 +696,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     stack = stack->pop();
     assert(stack);
   }
-  
+
   return !errType;
 }
 
