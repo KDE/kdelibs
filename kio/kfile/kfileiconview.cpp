@@ -315,8 +315,8 @@ void KFileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    KIconView* kview = static_cast<KIconView*>( this );
-    KFileIconViewItem *item = new KFileIconViewItem( kview, i );
+    QIconView* qview = static_cast<QIconView*>( this );
+    KFileIconViewItem *item = new KFileIconViewItem( qview, i );
     initItem( item, i, true );
 
     if ( !i->isMimeTypeKnown() )
