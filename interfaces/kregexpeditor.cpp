@@ -20,7 +20,7 @@ KRegExpEditor* KRegExpEditor::createEditor( QWidget* parent, const char* name )
   KService::Ptr service = *offers.begin();
   
   KLibFactory *factory = KLibLoader::self()->factory( service->library().latin1() );
-  ASSERT( factory );
+  Q_ASSERT( factory );
   
   QObject *obj = factory->create( parent, name, "KRegExpEditor" );
   return dynamic_cast<KRegExpEditor *>( obj );
