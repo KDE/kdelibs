@@ -684,7 +684,7 @@ void FileCopyJob::slotResult( KIO::Job *job)
       m_copyJob = 0;
       if (m_move)
       {
-         m_delJob = file_delete( m_src, false ); // Delete source
+         m_delJob = file_delete( m_src, false/*no GUI*/ ); // Delete source
          addSubjob(m_delJob);
       }
    }
@@ -707,7 +707,7 @@ void FileCopyJob::slotResult( KIO::Job *job)
       }
       if (m_move)
       {
-         m_delJob = file_delete( m_src, false ); // Delete source
+         m_delJob = file_delete( m_src, false/*no GUI*/ ); // Delete source
          addSubjob(m_delJob);
       }
    }
@@ -1564,7 +1564,7 @@ void CopyJob::copyNextFile()
             {
                 if (m_move)
                 {
-                    newjob = KIO::del( (*it).uSource );
+                    newjob = KIO::del( (*it).uSource, false /*shred*/, false /*no GUI*/ );
                 }
                 else
                 {
@@ -1582,13 +1582,13 @@ void CopyJob::copyNextFile()
             }
         } else if (m_move) // Moving a file
         {
-            newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false );
+            newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug() << "CopyJob::copyNextFile : Moving " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit moving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
         {
-            newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false );
+            newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             kdDebug() << "CopyJob::copyNextFile : Copying " << (*it).uSource.url() << " to " << (*it).uDest.url() << endl;
 	    emit copying( this, (*it).uSource, (*it).uDest );
         }
@@ -1865,7 +1865,7 @@ void DeleteJob::deleteNextFile()
         } else
         {
             // Normal deletion
-            job = KIO::file_delete( *it, false );
+            job = KIO::file_delete( *it, false /*no GUI*/);
 	    emit deleting( this, *it );
         }
         if ( isLink ) symlinks.remove(it);
@@ -1980,7 +1980,7 @@ void DeleteJob::slotResult( Job *job )
                 else
                 {
                    // Normal deletion
-                   SimpleJob *job = KIO::file_delete(url, false);
+                   SimpleJob *job = KIO::file_delete(url, false/*no GUI*/);
                    addSubjob( job );
                 }
             }
