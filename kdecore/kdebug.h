@@ -383,6 +383,14 @@ class kdbgstream {
     kdbgstream& operator << ( const QVariant& variant );
 
     /**
+     * Prints the given value.
+     * @param data the byte array to print
+     * @return this stream
+     * @since 3.3
+     */
+    kdbgstream& operator << ( const QByteArray& data );
+
+    /**
      * Prints the given value
      * @param list the list to print
      * @return this stream
@@ -561,6 +569,7 @@ class kndbgstream {
     kndbgstream& operator<<( const QPen & ) { return *this; }
     kndbgstream& operator<<( const QBrush & ) { return *this; }
     kndbgstream& operator<<( const QVariant & ) { return *this; }
+    kndbgstream& operator<<( const QByteArray & ) { return *this; }
 
     template <class T>
     kndbgstream& operator<<( const QValueList<T> & ) { return *this; }

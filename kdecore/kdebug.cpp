@@ -533,6 +533,20 @@ kdbgstream& kdbgstream::operator<<( const QVariant& v) {
     return *this;
 }
 
+kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
+    if (!print) return *this;
+    output += '[';
+    unsigned int i = 0;
+    for ( ;; ) {
+        output += QString::number( data[i], 16 ).rightJustify(2, '0');
+        if ( ++i == data.size() )
+            break;
+        output += ' ';
+    }
+    output += ']';
+    return *this;
+}
+
 QString kdBacktrace(int levels)
 {
     QString s;

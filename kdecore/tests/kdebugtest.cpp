@@ -16,6 +16,8 @@ public:
     kdDebug().form("mytest %s", "hello") << endl;
     QString test = "%20C this is a string";
     kdDebug(150) << test << endl;
+    QCString cstr = test.latin1();
+    kdDebug(150) << test << endl;
     QChar ch = 'a';
     kdDebug() << "QChar a: " << ch << endl;
     ch = '\r';
@@ -64,6 +66,15 @@ public:
     kdDebug() << "Variant: " << v << endl;
     v = QPen( Qt::red );
     kdDebug() << "Variant: " << v << endl;
+
+    QByteArray data( 6 );
+    data[0] = 42;
+    data[1] = 'H';
+    data[2] = 'e';
+    data[3] = 'l';
+    data[4] = 'l';
+    data[5] = 'o';
+    kdDebug() << data << endl;
   }
   void resizeEvent(QResizeEvent*)
   {
