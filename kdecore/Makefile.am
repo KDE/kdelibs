@@ -39,7 +39,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
 	kchartables.cpp kstring.cpp
 
-libkdecore_la_LDFLAGS = -version-info 0:90 
+libkdecore_la_LDFLAGS = -version-info 0:91
 libkdecore_la_LIBADD = 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
