@@ -95,9 +95,11 @@ public:
    *        manually added using addKAutoConfigWidget(...).  Usefull in cases
    *        where a dialog only has widgets that arn't of the default type.
    */ 
-  KAutoConfig(QObject *parent=0, const char *name=0,
-	      KConfig *kconfig = KGlobal::config());	
+  KAutoConfig(KConfig *kconfig = KGlobal::config(),
+		 QObject *parent=0, const char *name=0);	
   
+  KAutoConfig(QObject *parent=0, const char *name=0);
+
   /**
    * Destructor.
    */

@@ -34,24 +34,31 @@ public:
   QMap<QWidget*, QVariant> defaultValues;
   // Widgets to not get properties on (QLabel etc)
   QAsciiDict<int> ignoreTheseWidgets;
+
+  void init(){
+    ignoreTheseWidgets.insert("QLabel", new int(1));		 
+    ignoreTheseWidgets.insert("QFrame", new int(2));
+    ignoreTheseWidgets.insert("QGroupBox", new int(3));
+    ignoreTheseWidgets.setAutoDelete(true);
+  
+    static bool defaultKDEPropertyMapInstalled = false;
+    if ( !defaultKDEPropertyMapInstalled && kapp ) {
+      kapp->installKDEPropertyMap();
+      defaultKDEPropertyMapInstalled = true;
+    }
+  }
 };
 
-KAutoConfig::KAutoConfig(QObject *parent, const char *name,
-		         KConfig *kconfig) :
+KAutoConfig::KAutoConfig(KConfig *kconfig, QObject *parent, const char *name) :
 			 QObject(parent, name), config(kconfig) {
-  
-  static bool defaultKDEPropertyMapInstalled = false;
-  if ( !defaultKDEPropertyMapInstalled && kapp ) {
-    kapp->installKDEPropertyMap();
-    defaultKDEPropertyMapInstalled = true;
-  }
-  
   d = new KAutoConfigPrivate();
-  
-  d->ignoreTheseWidgets.insert("QLabel", new int(1));		 
-  d->ignoreTheseWidgets.insert("QFrame", new int(2));
-  d->ignoreTheseWidgets.insert("QGroupBox", new int(3));
-  d->ignoreTheseWidgets.setAutoDelete(true);
+  d->init();  
+};
+
+KAutoConfig::KAutoConfig(QObject *parent, const char *name) :
+			 QObject(parent, name), config(KGlobal::config()) {
+  d = new KAutoConfigPrivate();
+  d->init();
 };
 
 KAutoConfig::~KAutoConfig(){
