@@ -2183,7 +2183,7 @@ bool HTTPProtocol::httpOpen()
  */
 bool HTTPProtocol::readHeader()
 {
-
+  m_bRedirect = false;
   // Check
   if (m_bCachedRead)
   {
@@ -2912,6 +2912,7 @@ bool HTTPProtocol::readHeader()
       error(ERR_ACCESS_DENIED, u.url());
       return false;
     }
+    m_bRedirect = true;
 
     if (!m_request.id.isEmpty())
     {
@@ -3681,8 +3682,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
         // If a broken server does not send the mime-type,
         // we try to id it from the content before dealing
         // with the content itself.
-        if ( m_strMimeType.isEmpty() && !( m_responseCode >= 300 &&
-                                          m_responseCode <=399) )
+        if ( m_strMimeType.isEmpty() && !m_bRedirect &&
+             !( m_responseCode >= 300 && m_responseCode <=399) )
         {
           kdDebug(7113) << "(" << m_pid << ") Determining mime-type from content..." << endl;
           int old_size = mimeTypeBuffer.size();
