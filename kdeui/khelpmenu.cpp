@@ -125,7 +125,7 @@ void KHelpMenu::aboutKDE( void )
       "<A HREF=\"http://bugs.kde.org/\">http://bugs.kde.org/</A> to "
       "report bugs.<br><br>"
       "If you have a suggestion for improvement then you are welcome to visit "
-      "<A HREF=\"http://whislist.kde.org/\">http://wishlist.kde.org/</A> and "
+      "<A HREF=\"http://wishlist.kde.org/\">http://wishlist.kde.org/</A> and "
       "register your wish." );
 
     const QString text3 = i18n(""
