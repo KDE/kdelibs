@@ -60,12 +60,14 @@ struct URLArgsPrivate
 {
     URLArgsPrivate() {
       doPost = false;
+      redirectedRequest = false;
       lockHistory = false;
       newTab = false;
     }
     QString contentType; // for POST
     QMap<QString, QString> metaData;
     bool doPost;
+    bool redirectedRequest;
     bool lockHistory;
     bool newTab;
 };
@@ -128,6 +130,18 @@ void URLArgs::setContentType( const QString & contentType )
   if (!d)
     d = new URLArgsPrivate;
   d->contentType = contentType;
+}
+
+void URLArgs::setRedirectedRequest( bool redirected )
+{
+  if (!d)
+     d = new URLArgsPrivate;
+  d->redirectedRequest = redirected;
+}
+
+bool URLArgs::redirectedRequest () const
+{
+  return d ? d->redirectedRequest : false;
 }
 
 QString URLArgs::contentType() const

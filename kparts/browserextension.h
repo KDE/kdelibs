@@ -142,6 +142,16 @@ struct URLArgs
    */
   bool trustedSource;
 
+  /**
+   * @internal Do not use.
+   */
+  bool redirectedRequest () const;
+
+  /**
+   * @internal Do not use.
+   */
+  void setRedirectedRequest(bool redirected);
+
   URLArgsPrivate *d;
 };
 

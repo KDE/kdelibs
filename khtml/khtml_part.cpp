@@ -384,7 +384,7 @@ bool KHTMLPart::openURL( const KURL &url )
       HTMLDocumentImpl* htmlDoc = static_cast<HTMLDocumentImpl*>(d->m_doc);
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
-  if ( !isFrameSet &&
+  if ( !isFrameSet && !args.redirectedRequest() &&
        urlcmp( url.url(), m_url.url(), true, true ) &&
        url.hasRef() && !args.doPost() && !args.reload )
   {
@@ -1775,6 +1775,9 @@ void KHTMLPart::slotRedirect()
   {
     args.reload = true;
   }
+
+  // Indicate that this request is due to a redirection.
+  args.setRedirectedRequest(true);
 
   args.setLockHistory( d->m_redirectLockHistory );
   // _self: make sure we don't use any <base target=>'s
