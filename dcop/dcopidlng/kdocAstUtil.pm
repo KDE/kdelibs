@@ -731,31 +731,14 @@ sub heritage
 		my @heritage;
 
 		while( 1 ) {
-				push @heritage, $node->{astNodeName};
+			push @heritage, $node->{astNodeName};
 
-				last unless defined $node->{Parent};
-				$node = $node->{Parent};
-				last unless defined $node->{Parent};
+			last unless defined $node->{Parent};
+			$node = $node->{Parent};
+			last unless defined $node->{Parent};
 		}
 
 		return reverse @heritage;
-}
-
-sub refHeritage
-{
-		my $node = shift;
-		my @heritage;
-
-		while( 1 ) {
-				push @heritage, $node;
-
-				last unless defined $node->{Parent};
-				$node = $node->{Parent};
-				last unless defined $node->{Parent};
-		}
-
-		return reverse @heritage;
-
 }
 
 

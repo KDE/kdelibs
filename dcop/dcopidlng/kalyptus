@@ -1,4 +1,5 @@
 #!/usr/bin/perl -I/Users/duke/src/kde/kdebindings/kalyptus
+# -*- indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-
 
 # KDOC -- C++ and CORBA IDL interface documentation tool.
 # Sirtaj Singh Kang <taj@kde.org>, Jan 1999.
@@ -21,14 +22,14 @@ use kdocAstUtil;
 use kdocParseDoc;
 
 use vars qw/ %rootNodes $declNodeType @includes_list %options @formats_wanted $allow_k_dcop_accessors
-        @includeclasses $includeclasses $skipInternal %defines $defines $match_qt_defines
-	$libdir $libname $outputdir @libs $parse_global_space $striphpath $doPrivate $readstdin
+	$skipInternal %defines $defines $match_qt_defines
+	$libname $outputdir $parse_global_space $striphpath $doPrivate $readstdin
 	$Version $quiet $debug $debuggen $parseonly $currentfile $cSourceNode $exe
 	%formats %flagnames @allowed_k_dcop_accesors $allowed_k_dcop_accesors_re $rootNode 
 	@classStack $cNode $globalSpaceClassName
 	$lastLine $docNode @includes $cpp $defcppcmd $cppcmd $docincluded
-	$inExtern %stats %definitions @inputqueue @codeqobject /;
-     
+	$inExtern $inNamespace %stats %definitions @inputqueue @codeqobject /;
+
 ## globals
 
 %rootNodes = ();			# root nodes for each file type
@@ -40,14 +41,11 @@ $declNodeType = undef;			# last declaration type
 
 %options = ();				# hash of options (set getopt below)
 @formats_wanted = ();
-$libdir = $ENV{KDOCLIBS};
+
 $libname = "";
 $outputdir = ".";
-@libs = ();				# list of includes
-$striphpath = 0;
 
-@includeclasses = ();                     # names of classes to include
-$includeclasses = "";
+$striphpath = 0;
 
 $doPrivate = 0;
 $Version = "0.9";
@@ -83,10 +81,7 @@ private:
 CODE
 
 # Supported formats
-%formats = ( "java" => "kalyptusCxxToJava", "c" => "kalyptusCxxToC",
-	"objc" => "kalyptusCxxToObjc", "dcopidl" => "kalyptusCxxToDcopIDL",
-	"smoke" => "kalyptusCxxToSmoke", "csharp" => "kalyptusCxxToCSharp",
-        "ECMA" => "kalyptusCxxToECMA", "swig" => "kalyptusCxxToSwig" );
+%formats = ( "dcopidl" => "kalyptusCxxToDcopIDL" );
 
 # these are for expansion of method flags
 %flagnames = ( v => 'virtual', 's' => 'static', p => 'pure',
@@ -95,7 +90,7 @@ CODE
 
 @allowed_k_dcop_accesors = qw(k_dcop k_dcop_hidden k_dcop_signals);
 $allowed_k_dcop_accesors_re = join("|", @allowed_k_dcop_accesors);
-        
+
 %definitions = {
     _STYLE_CDE => '',
     _STYLE_MOTIF => '',
@@ -148,7 +143,6 @@ GetOptions( \%options,
 	"skip-deprecated|e",
 	"document-all|a",
 	"compress|z",
-        "no-cache",      # do not create $HOME/.kalyptus cache
 	# HTML options
 	"html-cols=i",
 	"html-logo=s",
@@ -157,12 +151,8 @@ GetOptions( \%options,
 	"outputdir|d=s", \$outputdir,
 	"stdin|i",	\$readstdin,
 	"name|n=s",	\$libname,
-	"help|h", 	\&show_usage,
 	"version|v|V", 	\&show_version,
 	"private|p",	\$doPrivate,
-	"libdir|L=s",	\$libdir,
-	"xref|l=s",	\@libs,
-	"classes|c=s",    \@includeclasses,
 	"globspace",	\$parse_global_space,
 	"allow_k_dcop_accessors", \$allow_k_dcop_accessors,
 
@@ -188,12 +178,6 @@ if ( $cppcmd eq "" ) {
 }
 else {
 	$cpp = 1;
-}
-
-if ($#includeclasses>=0)
-{
-    $includeclasses = join (" ", @includeclasses);
-    print "Using Classes: $includeclasses\n" unless $quiet;
 }
 
 if ( $#includes >= 0 && !$cpp ) {
@@ -255,15 +239,9 @@ else
 
 checkFileArgs();
 
-# work out libdir. This is created by kdocLib:writeDoc when
-# required.
-$libdir = $ENV{HOME}."/.kalyptus" unless $libdir ne "";
-
-
 ######
 ###### main program
 ######
-	readLibraries();
 	parseFiles();
 
 	if ( $parseonly ) {
@@ -272,7 +250,6 @@ $libdir = $ENV{HOME}."/.kalyptus" unless $libdir ne "";
 	}
 	else {
 		writeDocumentation();
-		writeLibrary() unless $libname eq "";
 	}
 
 	kdocAstUtil::printDebugStats() if $debug;
@@ -293,20 +270,6 @@ sub checkFileArgs
 		foreach my $file ( split( /\s+/, $_ ) ) {
 			push @ARGV, $file;
 		}
-	}
-}
-
-sub readLibraries
-{
-	return if $#libs < 0;
-
-	require kdocLib;
-	foreach my $lib ( @libs ) {
-		print "$exe: reading lib: $lib\n" unless $quiet;
-
-		my $relpath = exists $options{url} ? 
-			$options{url} : $outputdir;
-		kdocLib::readLibrary( \&getRoot, $lib, $libdir, $relpath );
 	}
 }
 
@@ -356,6 +319,7 @@ sub parseFiles
 		@classStack = ();
 		$cNode = $rootNode;
 		$inExtern = 0;
+		$inNamespace = 0;
 
 		# parse
 		my $k = undef;
@@ -386,23 +350,10 @@ sub writeDocumentation
 			require $pack.".pm";
 
 			print STDERR "Generating bindings for $format ",
-				          "language...\n" unless $quiet;
+						 "language...\n" if $debug;
 
 			my $f = "$pack\::writeDoc";
 			&$f( $libname, $node, $outputdir, \%options );
-		}
-	}
-}
-
-sub writeLibrary
-{
-	if( $libname ne "" and !exists $options{'no-cache'} ) {
-		require kdocLib;
-		foreach my $lang ( keys %rootNodes ) {
-			my $node = $rootNodes{ $lang };
-			kdocLib::writeDoc( $libname, $node, $lang, $libdir,
-					$outputdir, $options{url},
-					exists $options{compress} ? 1 : 0 );
 		}
 	}
 }
@@ -475,14 +426,15 @@ LOOP:
 #			);
 #
 
-		next if ( $p =~ /^\s*Q_ENUMS/           # ignore Q_ENUMS
-                        || $p =~ /^\s*Q_PROPERTY/       # and Q_PROPERTY
-                        || $p =~ /^\s*Q_OVERRIDE/       # and Q_OVERRIDE
-                        || $p =~ /^\s*Q_SETS/
-                        || $p =~ /^\s*Q_DUMMY_COMPARISON_OPERATOR/
-                        || $p =~ /^\s*K_SYCOCATYPE/     # and K_SYCOCA stuff
-                        || $p =~ /^\s*K_SYCOCAFACTORY/  #
-                        || $p =~ /^\s*KSVG_/            # and KSVG stuff ;)
+		next if ( $p =~ /^\s*Q_ENUMS/			# ignore Q_ENUMS
+						|| $p =~ /^\s*Q_PROPERTY/		# and Q_PROPERTY
+						|| $p =~ /^\s*Q_OVERRIDE/		# and Q_OVERRIDE
+						|| $p =~ /^\s*Q_SETS/
+						|| $p =~ /^\s*Q_DUMMY_COMPARISON_OPERATOR/
+						|| $p =~ /^\s*K_SYCOCATYPE/		# and K_SYCOCA stuff
+						|| $p =~ /^\s*K_SYCOCAFACTORY/	#
+						|| $p =~ /^\s*KSVG_/			# and KSVG stuff ;)
+						|| $p =~ /^\s*KDOM_/
 			);
 
 		push @includes_list, $1 if $p =~ /^#include\s+<?(.*?)>?\s*$/;
@@ -630,10 +582,10 @@ sub readDecl
 		$declNodeType = "a";
 		return $l;
 	}
-        elsif ( $l =~ /K_DCOP/ ) {
+	elsif ( $l =~ /K_DCOP/ ) {
 		$declNodeType = "k";
 		return $l;
-        }
+	}
 	elsif ( $l =~ m#^\s*/\*\*# ) {	# doc comment
 		$declNodeType = "c";
 		return $l;
@@ -710,9 +662,9 @@ sub identifyDecl
 	elsif ( $declNodeType eq "a" ) {
 		newAccess( $decl );
 	}
-        elsif ( $declNodeType eq "k" ) {
-	        $cNode->AddProp( "DcopExported", 1 );
-        }
+	elsif ( $declNodeType eq "k" ) {
+		$cNode->AddProp( "DcopExported", 1 );
+	}
 
 	# Typedef struct/class
 	elsif ( $decl =~ /^\s*typedef
@@ -736,7 +688,7 @@ sub identifyDecl
 
 	# Typedef
 	elsif ( $decl =~ /^\s*typedef\s+
-			(?:typename\s+)?        # `typename' keyword
+			(?:typename\s+)?    # `typename' keyword
 			(.*?\s*[\*&]?)		# type
 			\s+([-\w_\:]+)		# name
 			\s*((?:\[[-\w_\:<>\s]*\])*)	# array
@@ -758,29 +710,29 @@ sub identifyDecl
 	# Class/Struct
 	elsif ( $decl =~ /^\s*((?:template\s*<.*>)?)      # 1 template
 					\s*(class|struct|union|namespace) # 2 struct type
-					(?:\s*Q[A-Z_]*EXPORT[A-Z_]*)?
+					\s*([A-Z_]*EXPORT[A-Z_]*)?		  # 3 export
 					(?:\s*Q_PACKED)?
 					(?:\s*Q_REFCOUNT)?
-					\s+([\w_]+                        # 3 name
+					\s+([\w_]+						  # 4 name
 							(?:<[\w_ :,]+?>)?		  # maybe explicit template
-									#    (eat chars between <> non-hungry)
-							(?:::[\w_]+)*                 #   maybe nested
+									#	 (eat chars between <> non-hungry)
+							(?:::[\w_]+)*				  #	  maybe nested
 					   )
-					(.*?)                             # 4 inheritance
-					([;{])/xs ) {                     # 5 rest
+					([^\(]*?)						  # 5 inheritance
+					([;{])/xs ) {					  # 6 rest
 
-		print "Class: [$1]\n\t[$2]\n\t[$3]\n\t[$4]\n\t[$5]\n" if $debug;
-		my ( $tmpl, $ntype, $name, $rest, $endtag ) =
-			( $1, $2, $3, $4, $5 );
+		print "Class: => [$1]\n\t[$2]\n\t[$3]\n\t[$4]\n\t[$5]\n\t[$6]\n" if $debug;
+		my ( $tmpl, $ntype, $export, $name, $rest, $endtag ) =
+			( $1, $2, $3, $4, $5, $6 );
 
-		if ($includeclasses)
-		{
-		    if (! ($includeclasses =~ /$name/) )
-		    {
-			return 1;
-			
-		    }
+		if ($ntype eq 'namespace') {
+			if ($decl =~ /}/) {
+				return 0;
+			}
+			# Set a flag to indicate we're in a multi-line namespace declaration
+			$inNamespace = 1;
 		}
+
 
 		my @inherits = ();
 
@@ -792,7 +744,7 @@ sub identifyDecl
 			@inherits = parseInheritance( $rest );
 		}
 
-		$newNode = newClass( $tmpl, $ntype, 
+		$newNode = newClass( $tmpl, $ntype, $export,
 			$name, $endtag, @inherits );
 	}
 	# IDL compound node
@@ -819,11 +771,12 @@ sub identifyDecl
 		$newNode = newIDLstruct( $type, $name, $fwd, $complete, @in );
 	}
 	# Method
-	elsif ( $decl =~ /^\s*([^=]+?(?:operator\s*(?:\(\)|.?=)\s*)?) # ret+nm
-		\( (.*?) \)		# parameters
-		\s*((?:const)?)\s*
-		\s*((?:=\s*0(?:L?))?)\s*	# Pureness. is "0L" allowed?
-		\s*[;{]+/xs ) {	# rest
+	elsif ( $decl =~ /^\s*(?:(?:class|struct)\s*)?([^=]+?(?:operator\s*(?:\(\)|.?=)\s*)?) # ret+nm
+					  \( (.*?) \)		# parameters
+					  \s*((?:const)?)\s*
+					  (?:throw\s*\(.*?\))?
+					  \s*((?:=\s*0(?:L?))?)\s*	# Pureness. is "0L" allowed?
+					  \s*[;{]+/xs ) {	# rest
 
 		my $tpn = $1; # type + name
 		my $params = $2;
@@ -876,6 +829,8 @@ sub identifyDecl
 		my $arr  = $3;
 		my $val	 = $4;
 		my $end	 = $5;
+
+		$type =~ s/\s+/ /g;
 
 		if ( $type !~ /^friend\s+class\s*/ ) {
 			print "Var: [$name] type: [$type$arr] val: [$val]\n" 
@@ -931,11 +886,11 @@ sub identifyDecl
 		$skipBlock = 1 if $end eq '{';
 	}
 	# end of an "extern" block
-	elsif ( $decl =~ /^\s*}\s*$/ ) {
+	elsif ( $decl =~ /^\s*}\s*$/ && $inExtern ) {
 		$inExtern = 0;
 	}
 	# end of an in-block declaration
-	elsif ( $decl =~ /^\s*}\s*(.*?)\s*;\s*$/ ) {
+	elsif ( $decl =~ /^\s*}\s*(.*?)\s*;\s*$/ || ($decl =~ /^\s*}\s*$/ && $inNamespace) ) {
 
 		if ( $cNode->{astNodeName} eq "--" ) {
 			# structure typedefs should have no name preassigned.
@@ -948,6 +903,11 @@ sub identifyDecl
 			my $siblings = $cNode->{Parent}->{KidHash};
 			undef $siblings->{"--"};
 			$siblings->{ $1 } = $cNode;
+		}
+
+		# C++ namespaces end with a '}', and not '};' like classes
+		if ($decl =~ /^\s*}\s*$/ ) {
+			$inNamespace = 0;
 		}
 
 		if ( $#classStack < 0 ) {
@@ -1060,6 +1020,7 @@ sub initEnum
 	($name = $end) if $name eq "" && $end ne "";
 
 	$params =~ s#\s+# #sg; # no newlines
+	$params =~ s#\s*/\*([^\*]/|\*[^/]|[^\*/])*\*/##g; # strip out comments
 	$params = $1 if $params =~ /^\s*{?(.*)}/;
 	print "$name params: [$params]\n" if $debug;
 
@@ -1125,7 +1086,7 @@ sub newIDLstruct
 
 =head2 newClass
 
-	Parameters: tmplArgs, cNodeType, name, endTag, @inheritlist
+	Parameters: tmplArgs, cNodeType, export, name, endTag, @inheritlist
 
 	Handles a class declaration (also fwd decls).
 
@@ -1133,13 +1094,21 @@ sub newIDLstruct
 
 sub newClass
 {
-	my( $tmplArgs, $cNodeType, $name, $endTag ) = @_;
+	my( $tmplArgs, $cNodeType, $export, $name, $endTag ) = @_;
 
 	my $access = "private";
 	$access = "public" if $cNodeType ne "class";
 
 	# try to find an exisiting node, or create a new one
-	my $oldnode = kdocAstUtil::findRef( $cNode, $name );
+    # We need to make the fully-qualified-name otherwise findRef will look
+	# for that classname in the global namespace
+    # testcase: class Foo; namespace Bar { class Foo { ... } }
+    my @parents;
+	push @parents, kdocAstUtil::heritage($cNode) if (defined $cNode->{Parent});
+	push @parents, $name;
+	my $fullyQualifiedName = join "::", @parents;
+    print "looking for $fullyQualifiedName\n" if($debug);
+	my $oldnode = kdocAstUtil::findRef( $cNode, $fullyQualifiedName );
 	my $node = defined $oldnode ? $oldnode : Ast::New( $name );
 
 	if ( $endTag ne "{" ) {
@@ -1148,6 +1117,7 @@ sub newClass
 			# new forward node
 			$node->AddProp( "NodeType", "Forward" );
 			$node->AddProp( "KidAccess", $access );
+			print "newClass: Attaching $node->{astNodeName} to $cNode->{astNodeName}\n" if $debug;
 			kdocAstUtil::attachChild( $cNode, $node );
 		}
 		return $node;
@@ -1161,16 +1131,24 @@ sub newClass
 	$node->AddProp( "Compound", 1 );
 	$node->AddProp( "Source", $cSourceNode );
 
+	if ($cNodeType eq 'namespace') {
+		$node->AddPropList( "Sources", $cSourceNode );
+	}
+
 	$node->AddProp( "KidAccess", $access );
+	$node->AddProp( "Export", $export ) unless $export eq "";
 	$node->AddProp( "Tmpl", $tmplArgs ) unless $tmplArgs eq "";
 
 	if ( !defined $oldnode ) {
+		print "newClass: Attaching $node->{astNodeName} to $cNode->{astNodeName}\n" if $debug;
 		kdocAstUtil::attachChild( $cNode, $node );
+	} else {
+		print "newClass: Already found $node->{astNodeName} in $cNode->{astNodeName}\n" if $debug;
 	}
 
 	# inheritance
 
-	foreach my $ances ( splice (@_, 4) ) {
+	foreach my $ances ( splice (@_, 5) ) {
 		my $type = "";
 		my $name = $ances;
 		my $intmpl = undef;
@@ -1212,7 +1190,7 @@ WORD:
 	}
 
 	# new current node
-	print "newClass: Pushing $cNode->{astNodeName}\n" if $debug;
+	print "newClass: Pushing $cNode->{astNodeName}, new current node is $node->{astNodeName}\n" if $debug;
 	push ( @classStack, $cNode );
 	$cNode = $node;
 
@@ -1353,8 +1331,6 @@ sub newMethod
 	return undef if ( $retType =~ /^friend\s+/ || $retType =~ /^friend\s+class\s+/ );
 
 	my $isGlobalSpace = 0;
-	my $nameWasChanged = 0;
-	my $origName;
 
 	if( $name =~ /^\s*(.*?)\s*::\s*(.*?)\s*$/ ) {
 		# Fully qualified method name.
@@ -1394,9 +1370,6 @@ sub newMethod
 	}
 	# TODO  fix for $retType =~ /template<.*?>/
 	elsif( $parse_global_space && $parent->{NodeType} eq "root" && $name !~ /\s*qt_/ && $retType !~ /template\s*<.*?>/ ) {
-            $origName = $name;
-           # $name =~ s/^q([A-Z])([a-z]+)/$nameWasChanged++, lc($1).$2/e; # too much troubles (eg. qGLVersion, qRed vs. Qt::red )
-            $name =~ s/^\s*operator(.*)$/$nameWasChanged++, "$1"/e;
 	    $class = $globalSpaceClassName; # FIXME - sanitize the naming system?
 	    $isGlobalSpace = 1;
 
@@ -1410,12 +1383,14 @@ sub newMethod
 		$opsNode->AddProp( "KidAccess", "public" );
 		kdocAstUtil::attachChild( $cNode, $opsNode );
 	    }
-            unless( $theSourceNode == $cSourceNode ) {
-                $theSourceNode = $cSourceNode;
-                $opsNode->AddPropList( "Sources", $theSourceNode ); # sources are scattered across Qt
-            }
+		# Add a special 'Source' property for methods in global space
+		$cNode->AddProp( "Source", $theSourceNode );
+		unless( $theSourceNode == $cSourceNode ) {
+			$theSourceNode = $cSourceNode;
+			$opsNode->AddPropList( "Sources", $theSourceNode ); # sources are scattered across Qt
+		}
 	    $parent = $opsNode;
-	} 
+	}
 
 	# flags
 
@@ -1446,7 +1421,7 @@ sub newMethod
 		exists $parent->{Forward} ? "(forward)\n" :"\n";
 	}
 
-        # NB, these are =~, so make sure they are listed in correct order
+	# NB, these are =~, so make sure they are listed in correct order
 	if ( $parent->{KidAccess} =~ /slot/ ) {
 		$flags .= "l";
 	}
@@ -1468,6 +1443,8 @@ sub newMethod
 	$retType =~ s/extern\s+//;
 	$retType =~ s/^\s*//g;
 	$retType =~ s/\s*$//g;
+	$retType =~ s/^class\s/ /;  # Remove redundant class forward decln's
+	$retType =~ s/<class\s/</;
 
 	# node
 	
@@ -1479,10 +1456,6 @@ sub newMethod
 	makeParamList( $node, $params, 0 ); # Adds the ParamList property containing the list of param nodes
 
 	$parent->AddProp( "Pure", 1 ) if $pure;
-
-	if ($nameWasChanged) {
-	    $node->AddProp( "OriginalName", $origName );
-	}
 
 	kdocAstUtil::attachChild( $parent, $node );
 	return $node;
@@ -1507,18 +1480,19 @@ sub newMethod
 
 	For enum values, ArgType is unset, ArgName is the name, DefaultValue its value.
 
-	Author: David Faure <david@mandrakesoft.com>
+	Author: David Faure <faure@kde.org>
 =cut
 
 sub makeParamList($$$)
 {
 	my ( $methodNode, $params, $isEnum ) = @_;
 	$params =~ s/\s+/ /g; # normalize multiple spaces/tabs into a single one
-	$params =~ s/\s*([,\*\&])\s*/$1 /g; # normalize spaces before and after *, & and ','
+	$params =~ s/\s*([\*\&])\s*/$1 /g; # normalize spaces before and after *, &
+	$params =~ s/\s*(,)([^'\s])\s*/$1 $2/g; # And after ',', but not if inside single quotes
 	$params =~ s/^\s*void\s*$//; # foo(void) ==> foo()
 	$params =~ s/^\s*$//;
 	# Make sure the property always exists, makes iteration over it easier
-        $methodNode->AddProp( "ParamList", [] );
+	$methodNode->AddProp( "ParamList", [] );
 
 	my @args = kdocUtil::splitUnnested( ',', $params);
 
@@ -1529,24 +1503,31 @@ sub makeParamList($$$)
 		my $defaultparam;
 		$arg =~ s/\s*([^\s].*[^\s])\s*/$1/; # stripWhiteSpace
 		$arg =~ s/(\w+)\[\]/\* $1/; # Turn [] array into *
+		$arg =~ s/^class //; # Remove any redundant 'class' forward decln's
 
-		# The RE below reads as: = ( string constant or char
+		# The RE below reads as: = ( string constant or char or cast to numeric literal
 		# or some word/number, with optional bitwise shifts, OR'ed or +'ed flags, and/or function call ).
-		if ( $arg =~ s/\s*=\s*(("[^\"]*")|(\'.\')|(([-\w:~]*)\s*([<>\|\+-]*\s*\w*\s*)*(\([^(]*\))?))// ) {
+		if ( $arg =~ s/\s*=\s*(("[^\"]*")|\([^)]*\)\s*[\+-]?\s*[0-9]+|(\'.\')|(([-\w:~]*)\s*([<>\|\+-]*\s*[\w._]*\s*)*(\([^(]*\))?))// ) {
 			$defaultparam = $1;
+		}
+
+		if (defined $defaultparam && $isEnum) {
+			# Remove any casts in enum values, for example this in kfileitem.h:
+			#  'enum { Unknown = (mode_t) - 1 };'
+			$defaultparam =~ s/\([^\)]+\)(.*[0-9].*)/$1/;
 		}
 
 		# Separate arg type from arg name, if the latter is specified
 		if ( $arg =~ /(.*)\s+([\w_]+)\s*$/ || $arg =~ /(.*)\(\s*\*\s([\w_]+)\)\s*\((.*)\)\s*$/ ) {
-                    if ( defined $3 ) { # function pointer
-                        $argType = $1."(*)($3)";
-                        $argName = $2;
-                    } else {
-		        $argType = $1;
-		        $argName = $2;
-                    }
+			if ( defined $3 ) { # function pointer
+				$argType = $1."(*)($3)";
+				$argName = $2;
+			} else {
+				$argType = $1;
+				$argName = $2;
+			}
 		} else { # unnamed arg - or enum value
-		    $argType = $arg if (!$isEnum);
+			$argType = $arg if (!$isEnum);
 		    $argName = $arg if ($isEnum);
 		}
 		$argId++;
@@ -1557,7 +1538,7 @@ sub makeParamList($$$)
 		$node->AddProp( "ArgName", $argName ) if (defined $argName);
 		$node->AddProp( "DefaultValue", $defaultparam ) if (defined $defaultparam);
 		$methodNode->AddPropList( "ParamList", $node );
-		print STDERR "ArgType: $argType ArgName: $argName\n" if ($debug);
+		#print STDERR "ArgType: $argType ArgName: $argName\n" if ($debug);
 	}
 }
 
@@ -1622,24 +1603,6 @@ sub newVar
 
 
 
-=head2 show_usage
-
-	Display usage information and quit.
-
-=cut
-
-sub show_usage
-{
-print<<EOF;
-usage:
-	$exe [options] [-f format] [-d outdir] [-n name] files... [-llib..]
-
-See the man page kdoc[1] for more info.
-EOF
-	exit 1;
-}
-
-
 =head2 show_version
 
 	Display short version information and quit.
@@ -1650,5 +1613,3 @@ sub show_version
 {
 	die "$exe: $Version (c) Sirtaj S. Kang <taj\@kde.org>\n";
 }
-
-
