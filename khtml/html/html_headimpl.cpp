@@ -374,6 +374,7 @@ NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
 
     if(m_sheet) m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this);
+    m_sheet->ref();
     m_sheet->parseString(text);
 
     sheetLoaded();

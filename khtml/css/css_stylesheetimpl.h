@@ -66,7 +66,6 @@ public:
     void setDisabled( bool );
 
     DOM::NodeImpl *ownerNode() const;
-    khtml::CachedCSSStyleSheet *cachedParent() const { return m_cache; }
     StyleSheetImpl *parentStyleSheet() const;
     DOM::DOMString href() const;
     DOM::DOMString title() const;
@@ -74,11 +73,10 @@ public:
 
 protected:
     DOM::NodeImpl *m_parentNode;
-    khtml::CachedCSSStyleSheet *m_cache;
-    bool m_disabled;
     DOM::DOMString m_strHref;
     DOM::DOMString m_strTitle;
     MediaListImpl *m_media;
+    bool m_disabled;
 };
 
 class CSSStyleSheetImpl : public StyleSheetImpl
@@ -87,7 +85,6 @@ public:
     CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOM::DOMString href = 0);
     CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOM::DOMString href = 0);
     CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOM::DOMString href  = 0);
-    CSSStyleSheetImpl(khtml::CachedCSSStyleSheet *cached, DOM::DOMString href  = 0);
     // clone from a cached version of the sheet
     CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig);
     CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig);

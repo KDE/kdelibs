@@ -419,8 +419,8 @@ RangeImpl *DocumentImpl::createRange()
     return new RangeImpl(this);
 }
 
-NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *, unsigned long whatToShow,
-                                    NodeFilterImpl *filter, bool entityReferenceExpansion)
+NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *, unsigned long /*whatToShow*/,
+						   NodeFilterImpl */*filter*/, bool /*entityReferenceExpansion*/)
 {
  // ###
     return new NodeIteratorImpl;

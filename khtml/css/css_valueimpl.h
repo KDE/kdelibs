@@ -149,6 +149,8 @@ public:
 
     virtual ~CSSPrimitiveValueImpl();
 
+    void cleanup();
+    
     unsigned short primitiveType() const;
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }

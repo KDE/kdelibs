@@ -54,6 +54,7 @@ HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
 {
+    if(m_styleSheet) m_styleSheet->deref();    
 }
 
 const DOMString HTMLBodyElementImpl::nodeName() const
@@ -103,8 +104,11 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_LINK:
     {
-kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
- if(!m_styleSheet) m_styleSheet = new CSSStyleSheetImpl(this);
+	kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
+	if(!m_styleSheet) { 
+	    m_styleSheet = new CSSStyleSheetImpl(this);
+	    m_styleSheet->ref();    
+	}
 	QString aStr = "a:link { color: " + attr->value().string() + "; }";
 	m_styleSheet->parseString(aStr);
 	m_styleSheet->setNonCSSHints();
@@ -112,7 +116,10 @@ kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
     }
     case ATTR_VLINK:
     {
-	if(!m_styleSheet) m_styleSheet = new CSSStyleSheetImpl(this);
+	if(!m_styleSheet) {
+	    m_styleSheet = new CSSStyleSheetImpl(this);
+	    m_styleSheet->ref();
+	}
 	QString aStr = "a:vlink { color: " + attr->value().string() + "; }";
 	m_styleSheet->parseString(aStr);
 	m_styleSheet->setNonCSSHints();

@@ -33,6 +33,7 @@ namespace DOM {
     class HTMLDocumentImpl;
     class StyleSheetImpl;
     class CSSStyleRuleImpl;
+    class CSSStyleSheetImpl;
     class CSSSelector;
     class CSSStyleDeclarationImpl;
     class CSSProperty;
@@ -95,11 +96,14 @@ namespace khtml
 	
 	static void loadDefaultStyle(const KHTMLSettings *s = 0);
 	static void setUserStyle(DOM::StyleSheetImpl *sheet);
-
+	static void clear();
+	
 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e);
 	
     protected:
+	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static CSSStyleSelectorList *defaultStyle;
+	static DOM::CSSStyleSheetImpl *userSheet;
 	static CSSStyleSelectorList *userStyle;
 	CSSStyleSelectorList *authorStyle;
     };

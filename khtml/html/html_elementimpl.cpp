@@ -64,6 +64,10 @@ HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
 
 HTMLElementImpl::~HTMLElementImpl()
 {
+//     if ( m_styleDecls ) {
+// 	m_styleDecls->setParent( 0 );
+// 	m_styleDecls->deref();
+//     }
     delete m_styleDecls;
     //kdDebug( 6030 ) << "Element destructor: this=" << nodeName().string() << endl;
 }
@@ -259,36 +263,36 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
+static inline CSSStyleDeclarationImpl *createDecl( DocumentImpl *document )
+{
+    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+    CSSStyleDeclarationImpl *m_styleDecls = new CSSStyleDeclarationImpl(0);
+    m_styleDecls->setParent(doc->elementSheet());
+    m_styleDecls->ref();
+    return m_styleDecls;
+}
 
 void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString &value, bool important, bool nonCSSHint)
 {
-    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-    if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
-    m_styleDecls->setParent(doc->elementSheet());
+    if(!m_styleDecls) m_styleDecls = createDecl( document );
     m_styleDecls->setProperty(property, value, important, nonCSSHint);
 }
 
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
-    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-    if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
-    m_styleDecls->setParent(doc->elementSheet());
+    if(!m_styleDecls) m_styleDecls = createDecl( document );
     m_styleDecls->setProperty(id, value, important, nonCSSHint);
 }
 
 void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
-    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-    if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
-    m_styleDecls->setParent(doc->elementSheet());
+    if(!m_styleDecls) m_styleDecls = createDecl( document );
     m_styleDecls->setLengthProperty(id, value, important, nonCSSHint);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)
 {
-    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-    if(!m_styleDecls) m_styleDecls = new CSSStyleDeclarationImpl(0);
-    m_styleDecls->setParent(doc->elementSheet());
+    if(!m_styleDecls) m_styleDecls = createDecl( document );
     m_styleDecls->setProperty(property);
 }
 

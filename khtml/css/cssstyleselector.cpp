@@ -62,6 +62,8 @@ using namespace DOM;
 
 CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::userStyle = 0;
+CSSStyleSheetImpl *CSSStyleSelector::defaultSheet = 0;
+CSSStyleSheetImpl *CSSStyleSelector::userSheet = 0;
 
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited };
 static PseudoState pseudoState;
@@ -155,13 +157,25 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     }
     DOMString str(style);
 
-    // ### memory leak!
-    DOM::CSSStyleSheetImpl *sheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
-    sheet->parseString( str );
+    defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
+    defaultSheet->parseString( str );
 
     defaultStyle = new CSSStyleSelectorList();
-    defaultStyle->append(sheet);
+    defaultStyle->append(defaultSheet);
 }
+
+void CSSStyleSelector::clear()
+{
+    delete defaultStyle;
+    delete userStyle;
+    delete defaultSheet;
+    delete userSheet;
+    defaultStyle = 0;
+    userStyle = 0;
+    defaultSheet = 0;
+    userSheet = 0;
+}
+
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 {

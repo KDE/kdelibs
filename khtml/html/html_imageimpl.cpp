@@ -218,6 +218,12 @@ bool HTMLImageElementImpl::isServerMap() const
 
 QMap<QString,HTMLMapElementImpl*> *HTMLMapElementImpl::mapMap = 0;
 
+void HTMLMapElementImpl::clear()
+{
+    delete mapMap;
+    mapMap = 0;
+}
+
 HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
     if(!mapMap) mapMap = new QMap<QString, HTMLMapElementImpl *>();

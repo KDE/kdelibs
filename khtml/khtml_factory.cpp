@@ -22,11 +22,17 @@
 #include "khtml_part.h"
 #include "khtml_settings.h"
 
+#include "css/cssstyleselector.h"
+#include "html/html_imageimpl.h"
+#include "rendering/render_style.h"
+
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <klocale.h>
 
 #include <assert.h>
+
+#include <kdebug.h>
 
 extern "C"
 {
@@ -87,6 +93,12 @@ KHTMLFactory::~KHTMLFactory()
         s_settings = 0;
         s_parts = 0;
         s_vlinks = 0;
+
+	kdDebug() << "KHTMLFactory::~KHTMLFactory" << endl; 
+	// clean up static data
+	khtml::CSSStyleSelector::clear();
+	DOM::HTMLMapElementImpl::clear();
+	khtml::RenderStyle::cleanup();
     }
     else
         deref();

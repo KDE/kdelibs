@@ -396,7 +396,7 @@ CachedImage::~CachedImage()
 void CachedImage::ref( CachedObjectClient *c )
 {
 #ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "CachedImage::ref() " << endl;
+    kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") " << endl;
 #endif
 
     // make sure we don't get it twice...
@@ -414,7 +414,7 @@ void CachedImage::ref( CachedObjectClient *c )
 void CachedImage::deref( CachedObjectClient *c )
 {
 #ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "CachedImage::deref() " << endl;
+    kdDebug( 6060 ) << this << " CachedImage::deref(" << c << ") " << endl;
 #endif
     m_clients.remove( c );
     if(m && m_clients.isEmpty() && m->running())
@@ -530,16 +530,6 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 
 void CachedImage::movieUpdated( const QRect& r )
 {
-
-#if QT_VERSION ==  220
-// #ifdef __GNUC__
-// #warning EVIL QT 2.2.0 HACK REMOVE THIS
-// #endif
-    // evil hack to workaround png decoder bugs in Qt 2.2.0 release
-    QRect& vrect = const_cast<QRect&>(m->getValidRect());
-    vrect = vrect.unite(r);
-#endif
-
 #ifdef CACHE_DEBUG
     qDebug("movie updated %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
            m->framePixmap().size().width(), m->framePixmap().size().height());
@@ -551,7 +541,7 @@ void CachedImage::movieUpdated( const QRect& r )
 void CachedImage::movieStatus(int status)
 {
 #ifdef CACHE_DEBUG
-    qDebug("movieStatus(%d)", status);
+    //qDebug("movieStatus(%d)", status);
 #endif
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
@@ -602,9 +592,9 @@ void CachedImage::movieStatus(int status)
         }
 
 #ifdef CACHE_DEBUG
-        QRect r(valid_rect());
-        qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
-               pixmap().size().width(), pixmap().size().height());
+//        QRect r(valid_rect());
+//        qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
+//               pixmap().size().width(), pixmap().size().height());
 #endif
             do_notify(pixmap(), valid_rect());
     }
@@ -629,7 +619,7 @@ void CachedImage::clear()
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
 #ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
+    //kdDebug( 6060 ) << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
 #endif
     if ( !typeChecked )
     {
@@ -661,13 +651,13 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         if(typeChecked && !formatType)
         {
 #ifdef CACHE_DEBUG
-            kdDebug(6060) << "CachedImage::data(): reloading as pixmap:" << endl;
+            //kdDebug(6060) << "CachedImage::data(): reloading as pixmap:" << endl;
 #endif
             p = new QPixmap( _buffer.buffer() );
             // set size of image.
             m_size = p->width() * p->height() * p->depth() / 8;
 #ifdef CACHE_DEBUG
-            kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
+            //kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
 #endif
                 if(p->isNull())
                     do_notify(*p, QRect(0, 0, 16, 16)); // ### load "broken image" icon
@@ -683,7 +673,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 void CachedImage::error( int /*err*/, const char */*text*/ )
 {
 #ifdef CACHE_DEBUG
-    kdDebug(6060) << "CahcedImage::error" << endl;
+    //kdDebug(6060) << "CahcedImage::error" << endl;
 #endif
 
     clear();
@@ -731,6 +721,7 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMS
             CachedObject *existing = Cache::cache->find(fullURL);
             if (existing)
                 Cache::removeCacheEntry(existing);
+	    reloadedURLs.append(fullURL);
             return Cache::requestImage(url,baseUrl,true);
         }
     }
@@ -746,6 +737,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
             CachedObject *existing = Cache::cache->find(fullURL);
             if (existing)
                 Cache::removeCacheEntry(existing);
+	    reloadedURLs.append(fullURL);
             return Cache::requestStyleSheet(url,baseUrl,true);
         }
     }
@@ -761,6 +753,7 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const DOM::DO
             CachedObject *existing = Cache::cache->find(fullURL);
             if (existing)
                 Cache::removeCacheEntry(existing);
+	    reloadedURLs.append(fullURL);
             return Cache::requestScript(url,baseUrl,true);
         }
     }
@@ -800,7 +793,7 @@ void Loader::servePendingRequests()
   Request *req = m_requestsPending.take(0);
 
 #ifdef CACHE_DEBUG
-  kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
+  //kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
   KIO::TransferJob* job = KIO::get( req->object->url().string(), req->object->reload(), false /*no GUI*/);
@@ -830,7 +823,7 @@ void Loader::slotFinished( KIO::Job* job )
     r->object->data(r->m_buffer, true);
 
 #ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
+  //kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 #endif
 
   emit requestDone( r->m_baseURL, r->object );
@@ -843,7 +836,7 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
 {
     Request *r = m_requestsLoading[job];
     if(!r) {
-        qDebug("got data for unknown request!");
+        kdDebug( 6060 ) << "got data for unknown request!" << endl;
         return;
     }
 
@@ -1116,7 +1109,7 @@ void Cache::flush()
     init();
 
 #ifdef CACHE_DEBUG
-    statistics();
+    //statistics();
     kdDebug( 6060 ) << "Cache: flush()" << endl;
 #endif
     if( actSize < maxSize ) return;
@@ -1135,7 +1128,7 @@ void Cache::flush()
     }
 
 #ifdef CACHE_DEBUG
-    statistics();
+    //statistics();
 #endif
 }
 

@@ -31,6 +31,9 @@
 #include "dom/dom_exception.h"
 #include <stdio.h>
 #include <khtml_factory.h>
+#include <css/cssstyleselector.h>
+#include <html/html_imageimpl.h>
+#include <rendering/render_style.h>
 
 int main(int argc, char *argv[])
 {
@@ -72,7 +75,10 @@ int main(int argc, char *argv[])
     delete doc;
 
     khtml::Cache::clear();
-
+    khtml::CSSStyleSelector::clear();
+    DOM::HTMLMapElementImpl::clear();
+    khtml::RenderStyle::cleanup();
+    
     delete fac;
     return ret;
 }

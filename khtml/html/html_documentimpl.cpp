@@ -67,6 +67,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     m_loadingSheet = false;
 
     m_elemSheet=0;
+    m_sheet = 0;
     m_docLoader = new DocLoader();
 
     visuallyOrdered = false;
@@ -87,6 +88,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     m_loadingSheet = false;
 
     m_elemSheet=0;
+    m_sheet = 0;
     m_docLoader = new DocLoader();
 
     visuallyOrdered = false;
@@ -94,8 +96,13 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
 {
-//    kdDebug( 6090 ) << "HTMLDocumentImpl destructor this = " << this << endl;
+    kdDebug( 6090 ) << "HTMLDocumentImpl destructor this = " << this << endl;
     delete m_docLoader;
+    kdDebug() << "HTMLDocumentImpl::~HTMLDocumentImpl sheet = " << m_elemSheet << endl; 
+     if (m_elemSheet )
+ 	m_elemSheet->deref();
+
+     delete m_sheet;
 }
 
 DOMString HTMLDocumentImpl::referrer() const
@@ -491,8 +498,10 @@ void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMSt
 
 CSSStyleSheetImpl* HTMLDocumentImpl::elementSheet()
 {
-    if (!m_elemSheet)
+    if (!m_elemSheet) {
         m_elemSheet = new CSSStyleSheetImpl(this, baseURL());
+	m_elemSheet->ref();
+    }
     return m_elemSheet;
 }
 

@@ -97,6 +97,7 @@ namespace khtml
 	    m_size = 0;
 	    m_free = false;
 	    m_reload = _reload;
+	    m_request = 0;
 	}
 	virtual ~CachedObject() {}
 

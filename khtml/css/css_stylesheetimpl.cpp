@@ -61,7 +61,6 @@ StyleSheetImpl::StyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href)
     m_disabled = false;
     m_media = 0;
     m_strHref = href;
-    m_cache = 0;
 }
 
 StyleSheetImpl::StyleSheetImpl(StyleBaseImpl *owner, DOMString href)
@@ -71,17 +70,6 @@ StyleSheetImpl::StyleSheetImpl(StyleBaseImpl *owner, DOMString href)
     m_media = 0;
     m_parentNode = 0;
     m_strHref = href;
-    m_cache = 0;
-}
-
-StyleSheetImpl::StyleSheetImpl(CachedCSSStyleSheet *cache, DOMString href)
-    : StyleListImpl()
-{
-    m_disabled = false;
-    m_media = 0;
-    m_parentNode = 0;
-    m_strHref = href;
-    m_cache = cache;
 }
 
 StyleSheetImpl::~StyleSheetImpl()
@@ -91,7 +79,7 @@ StyleSheetImpl::~StyleSheetImpl()
 
 bool StyleSheetImpl::deleteMe()
 {
-    if(!m_parent && !m_parentNode && _ref <= 0) return true;
+    if(!m_parent && _ref <= 0) return true;
     return false;
 }
 
@@ -160,13 +148,6 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     m_docLoader = 0;
 }
 
-CSSStyleSheetImpl::CSSStyleSheetImpl(CachedCSSStyleSheet *cached, DOM::DOMString href)
-    : StyleSheetImpl(cached, href)
-{
-    m_lstChildren = new QList<StyleBaseImpl>;
-    m_docLoader = 0;
-}
-
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
     : StyleSheetImpl(parentNode, orig->m_strHref)
 {
@@ -175,7 +156,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
     for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
     {
 	m_lstChildren->append(rule);
-	rule->ref();
+	rule->setParent(this);
     }
     DocumentImpl *ownerDoc = static_cast<DocumentImpl*>(parentNode->nodeType() == Node::DOCUMENT_NODE ? parentNode : parentNode->ownerDocument());
     if (ownerDoc->isHTMLDocument())
@@ -192,7 +173,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
     for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
     {
 	m_lstChildren->append(rule);
-	rule->ref();
+	rule->setParent(this);
     }
     m_docLoader = 0;
 }
@@ -200,7 +181,6 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
 CSSStyleSheetImpl::~CSSStyleSheetImpl()
 {
     // m_lstChildren is deleted in StyleListImpl
-    delete m_docLoader;
 }
 
 CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const
@@ -261,7 +241,7 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string)
         if(rule)
 	{
 	   m_lstChildren->append(rule);
-	   rule->ref();
+	   rule->setParent(this);
 	}
     }
     return true;

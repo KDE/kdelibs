@@ -152,6 +152,7 @@ public:
 
     static HTMLMapElementImpl* getMap(const DOMString& url_);
 
+    static void clear();
 private:
 
     QString name;

@@ -241,7 +241,10 @@ CSSStyleRuleImpl::CSSStyleRuleImpl(StyleBaseImpl *parent)
 
 CSSStyleRuleImpl::~CSSStyleRuleImpl()
 {
-    if(m_style) m_style->deref();
+    if(m_style) {
+	m_style->setParent( 0 );
+	m_style->deref();
+    }
     delete m_selector;
 }
 

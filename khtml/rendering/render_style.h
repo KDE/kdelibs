@@ -490,6 +490,9 @@ enum EDisplay {
 
 class RenderStyle
 {
+public:
+    static void cleanup();
+    
 protected:
 
     EDisplay _display : 5;
@@ -527,6 +530,7 @@ protected:
 
     static RenderStyle* _default;
 
+       
 // non-inherited attributes
     DataRef<StyleBoxData> box;
     DataRef<StyleVisualData> visual;

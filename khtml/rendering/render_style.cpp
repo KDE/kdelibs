@@ -278,3 +278,11 @@ RenderStyle::inheritFrom(RenderStyle* from)
 RenderStyle* RenderStyle::_default = 0;
 int RenderStyle::counter = 0;
 int SharedData::counter = 0;
+
+void RenderStyle::cleanup()
+{
+    delete _default;
+    _default = 0;
+    counter = 0;
+    SharedData::counter = 0;
+}

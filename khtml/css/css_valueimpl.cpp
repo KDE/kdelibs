@@ -180,7 +180,10 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     props->setAutoDelete(false);
 
     unsigned int i = 0;
-    if(!m_lstValues) m_lstValues = new QList<CSSProperty>;
+    if(!m_lstValues) {
+	m_lstValues = new QList<CSSProperty>;
+	m_lstValues->setAutoDelete( true );
+    }
     while(i < props->count())
     {
 	//kdDebug( 6080 ) << "setting property" << endl;
@@ -380,7 +383,14 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const QColor &color)
 
 CSSPrimitiveValueImpl::~CSSPrimitiveValueImpl()
 {
-    if(m_type < CSSPrimitiveValue::CSS_STRING || m_type == CSSPrimitiveValue::CSS_IDENT)
+    cleanup();
+}
+
+void CSSPrimitiveValueImpl::cleanup()
+{
+    if(m_type == CSSPrimitiveValue::CSS_RGBCOLOR)
+	delete m_value.rgbcolor;
+    else if(m_type < CSSPrimitiveValue::CSS_STRING || m_type == CSSPrimitiveValue::CSS_IDENT)
     { }
     else if(m_type < CSSPrimitiveValue::CSS_COUNTER)
 	if(m_value.string) m_value.string->deref();
@@ -388,9 +398,8 @@ CSSPrimitiveValueImpl::~CSSPrimitiveValueImpl()
 	delete m_value.counter;
     else if(m_type == CSSPrimitiveValue::CSS_RECT)
 	delete m_value.rect;
-    else if(m_type == CSSPrimitiveValue::CSS_RGBCOLOR)
-	delete m_value.rgbcolor;
-}
+    m_type = 0;
+}    
 
 unsigned short CSSPrimitiveValueImpl::primitiveType() const
 {
@@ -399,6 +408,7 @@ unsigned short CSSPrimitiveValueImpl::primitiveType() const
 
 void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatValue )
 {
+    cleanup();
     // ### check if property supports this type
     if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw CSSException(CSSException::SYNTAX_ERR);
     //if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw DOMException(DOMException::INVALID_ACCESS_ERR);
@@ -415,6 +425,7 @@ float CSSPrimitiveValueImpl::getFloatValue( unsigned short unitType )
 
 void CSSPrimitiveValueImpl::setStringValue( unsigned short stringType, const DOMString &stringValue )
 {
+    cleanup();
     //if(m_type < CSSPrimitiveValue::CSS_STRING) throw DOMException(DOMException::INVALID_ACCESS_ERR);
     //if(m_type > CSSPrimitiveValue::CSS_ATTR) throw DOMException(DOMException::INVALID_ACCESS_ERR);
     if(m_type < CSSPrimitiveValue::CSS_STRING) throw CSSException(CSSException::SYNTAX_ERR);
