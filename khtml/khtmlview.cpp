@@ -626,7 +626,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()) {
         if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
+	{
             _ke->accept();
+	    return;
+	}
     }
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
