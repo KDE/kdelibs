@@ -66,6 +66,10 @@ static KDirWatchPrivate* dwp_self = 0;
 
 #ifdef HAVE_DNOTIFY
 
+#include <sys/utsname.h>
+
+static int dnotify_signal = 0;
+
 /* DNOTIFY signal handler
  *
  * As this is called asynchronously, only a flag is set and
@@ -153,21 +157,36 @@ KDirWatchPrivate::KDirWatchPrivate()
 
 #ifdef HAVE_DNOTIFY
   supports_dnotify = true; // not guilty until proven guilty
-  available += ", DNotify";
+  struct utsname uts;
+  int major, minor, patch;
+  if (uname(&uts) < 0)
+    supports_dnotify = false; // *shrug*
+  else if (sscanf(uts.release, "%d.%d.%d", &major, &minor, &patch) != 3)
+    supports_dnotify = false; // *shrug*
+  else if( major * 1000000 + minor * 1000 + patch < 2004018 ) { // <2.4.18
+    kdDebug(7001) << "Can't use DNotify, Linux kernel too old" << endl;
+    supports_dnotify = false; 
+  }
 
-  pipe(mPipe);
-  mSn = new QSocketNotifier( mPipe[0], QSocketNotifier::Read, this);
-  connect(mSn, SIGNAL(activated(int)), this, SLOT(slotActivated()));
-  connect(&mTimer, SIGNAL(timeout()), this, SLOT(slotRescan()));
-  struct sigaction act;
-  act.sa_sigaction = KDirWatchPrivate::dnotify_handler;
-  sigemptyset(&act.sa_mask);
-  act.sa_flags = SA_SIGINFO;
+  if( supports_dnotify ) {
+    available += ", DNotify";
+
+    pipe(mPipe);
+    mSn = new QSocketNotifier( mPipe[0], QSocketNotifier::Read, this);
+    connect(mSn, SIGNAL(activated(int)), this, SLOT(slotActivated()));
+    connect(&mTimer, SIGNAL(timeout()), this, SLOT(slotRescan()));
+    struct sigaction act;
+    act.sa_sigaction = KDirWatchPrivate::dnotify_handler;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = SA_SIGINFO;
 #ifdef SA_RESTART
-  act.sa_flags |= SA_RESTART;
+    act.sa_flags |= SA_RESTART;
 #endif
-  sigaction(SIGRTMIN, &act, NULL);
+    if( dnotify_signal == 0 )
+        dnotify_signal = SIGRTMIN + 8;
+    sigaction(dnotify_signal, &act, NULL);
 #endif
+  }
 
   kdDebug(7001) << "Available methods: " << available << endl;
 }
@@ -382,7 +401,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
       for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next())
 	if (!dep->isDir) { mask |= DN_MODIFY|DN_ATTRIB; break; }
 
-      if(fcntl(fd, F_SETSIG, SIGRTMIN) < 0 ||
+      if(fcntl(fd, F_SETSIG, dnotify_signal) < 0 ||
 	 fcntl(fd, F_NOTIFY, mask) < 0) {
 
 	kdDebug(7001) << "Not using Linux Directory Notifications."
