@@ -57,6 +57,7 @@
 6060	khtml (cache)
 6070	khtml (jscript)
 6080	khtml (css)
+6090	khtml (memory)
 
 # libkio
 7001	kio (KDirWatch)
