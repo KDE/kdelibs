@@ -3,7 +3,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; version 2 
+    License as published by the Free Software Foundation; version 2
     of the License.
 
     This library is distributed in the hope that it will be useful,
@@ -46,12 +46,12 @@ public:
    * Button types.
    **/
  enum ButtonCode
- { 
-   Ok = 1, 
-   Cancel = 2, 
-   Yes = 3, 
-   No = 4, 
-   Continue = 5 
+ {
+   Ok = 1,
+   Cancel = 2,
+   Yes = 3,
+   No = 4,
+   Continue = 5
  };
 
  enum DialogType
@@ -66,7 +66,7 @@ public:
    Error = 8,
    QuestionYesNoCancel = 9
  };
- 
+
  /**
   * @li Notify Emit a KNotifyClient event (Not yet implemented)
   * @li AllowLink The message may contain links.
@@ -76,7 +76,7 @@ public:
    Notify = 1,
    AllowLink = 2
  };
-                                            
+
  /**
   * Display a simple "question" dialog.
   *
@@ -214,18 +214,18 @@ public:
   *
   * The default button is "No". Pressing "Esc" selects "No".
   */
- static int warningYesNo(QWidget *parent, 
+ static int warningYesNo(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString::null,
-                         const KGuiItem &buttonYes = KStdGuiItem::yes(),  
-                         const KGuiItem &buttonNo = KStdGuiItem::no(), 
+                         const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                         const KGuiItem &buttonNo = KStdGuiItem::no(),
                          const QString &dontAskAgainName = QString::null,
                          int options = Notify);
 
  /**
   * Display a "warning" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an 
+  * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string.
@@ -263,8 +263,8 @@ public:
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string.
-  * @param strlist List of strings to be written in the listbox. If the 
-  *                list is empty, it doesn't show any listbox, working 
+  * @param strlist List of strings to be written in the listbox. If the
+  *                list is empty, it doesn't show any listbox, working
   *                as warningContinueCancel.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
@@ -274,12 +274,12 @@ public:
   *                The string is used to lookup and store the setting
   *                in the applications config file.
   *                The setting is stored in the "Notification Messages" group.
-  *                   
+  *
   * @param options  see @ref OptionsType
   *
   * The second button always has the text "Cancel".
   *
-  * @return  @p Continue is returned if the Continue-button is pressed. 
+  * @return  @p Continue is returned if the Continue-button is pressed.
   *          @p Cancel is returned if the Cancel-button is pressed.
   *
   * To be used for questions like "You are about to Print. Are you sure?"
@@ -287,7 +287,7 @@ public:
   *
   * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
   */
- static int warningContinueCancelList(QWidget *parent, 
+ static int warningContinueCancelList(QWidget *parent,
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString::null,
@@ -299,15 +299,15 @@ public:
  /**
   * Display a Yes/No/Cancel "warning" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an 
+  * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
-  * @param buttonYes The text for the first button. 
+  * @param buttonYes The text for the first button.
   *                  The default is i18n("&Yes").
-  * @param buttonNo  The text for the second button. 
+  * @param buttonNo  The text for the second button.
   *                  The default is i18n("&No").
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further questions can be turned off. If turned off
@@ -350,19 +350,19 @@ public:
   *
   * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
-  * 
+  *
   * If your program detects the action specified by the user is somehow
   * not allowed, this should never be reported with error(). Use sorry()
-  * instead to explain to the user that this action is not allowed. 
+  * instead to explain to the user that this action is not allowed.
   *
   * The default button is "&OK". Pressing "Esc" selects the OK-button.
   *
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
-  
-  static void error(QWidget *parent, 
+
+  static void error(QWidget *parent,
                     const QString &text,
-                    const QString &caption = QString::null, 
+                    const QString &caption = QString::null,
                     int options = Notify);
 
  /**
@@ -394,12 +394,12 @@ public:
   static void detailedError(QWidget *parent,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null, 
+                    const QString &caption = QString::null,
                     int options = Notify);
 
   /**
    * Like @ref detailedError
-   * 
+   *
    * This function will return immediately, the messagebox will be shown
    * once the application enters an event loop and no other messagebox
    * is being shown.
@@ -454,7 +454,7 @@ public:
   * Either your program messed up and asks for understanding
   * or your user did something stupid.
   *
-  * To be used for small problems like 
+  * To be used for small problems like
   * "Sorry, I can't find the file you specified."
   *
   * And then @p details can contain something like
@@ -466,17 +466,17 @@ public:
   *
   * NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
-  
-  static void detailedSorry(QWidget *parent, 
+
+  static void detailedSorry(QWidget *parent,
                     const QString &text,
                     const QString &details,
-                    const QString &caption = QString::null, 
+                    const QString &caption = QString::null,
                     int options = Notify);
 
  /**
   * Display an "Information" dialog.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an 
+  * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string.
@@ -498,11 +498,11 @@ public:
   *
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
-   
-  static void information(QWidget *parent, 
-                          const QString &text, 
+
+  static void information(QWidget *parent,
+                          const QString &text,
                           const QString &caption = QString::null,
-                          const QString &dontShowAgainName = QString::null, 
+                          const QString &dontShowAgainName = QString::null,
                           int options = Notify);
 
   /**
@@ -532,7 +532,7 @@ public:
    */
   static void about(QWidget *parent,
 		    const QString& text,
-		    const QString& caption = QString::null, 
+		    const QString& caption = QString::null,
                     int options = Notify);
 
     /**
@@ -551,7 +551,7 @@ public:
      * @param options  see @ref OptionsType
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
-     * @return a button code, as defined in KMessageBox, or 0 on communication error.
+     * @return a button code, as defined in KMessageBox.
      */
     static int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString::null,
