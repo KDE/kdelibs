@@ -227,7 +227,7 @@ void KTabBar::setTabColor( int id, const QColor& color )
     QTab *t = tab( id );
     if ( t ) {
         mTabColors.insert( id, color );
-        repaint( t->rect() );
+        repaint( t->rect(), false );
     }
 }
 
