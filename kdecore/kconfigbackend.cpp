@@ -352,7 +352,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   if (rConfigFile.status() != 0)
      return bEntriesLeft;
 
-  QTextStream pStream( rConfigFile.fstream(), IO_WriteOnly );
+  QTextStream *pStream = rConfigFile.textStream();
 
   // write back -- start with the default group
   KEntryMapConstIterator aWriteIt;
@@ -362,12 +362,12 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 	  if ( (*aWriteIt).bNLS &&
 	       aWriteIt.key().key.right(1) != "]")
 	      // not yet localized, but should be
-	      pStream << aWriteIt.key().key << '['
+	      (*pStream) << aWriteIt.key().key << '['
 		       << pConfig->locale() << ']' << "="
 		       << stringToPrintable( (*aWriteIt).aValue) << '\n';
 	  else
 	      // need not be localized or already is
-	      pStream << aWriteIt.key().key << "="
+	      (*pStream) << aWriteIt.key().key << "="
 		       << stringToPrintable( (*aWriteIt).aValue) << '\n';
       }
   } // for loop
@@ -381,7 +381,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
     
     if ( currentGroup != aWriteIt.key().group ) {
 	currentGroup = aWriteIt.key().group;
-	pStream << '[' << aWriteIt.key().group << ']' << '\n';
+	(*pStream) << '[' << aWriteIt.key().group << ']' << '\n';
     }
 
     if (aWriteIt.key().key.isEmpty()) {
@@ -391,12 +391,12 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
       if ( (*aWriteIt).bNLS &&
 	  aWriteIt.key().key.right(1) != "]")
 	// not yet localized, but should be
-	pStream << aWriteIt.key().key << '['
+	(*pStream) << aWriteIt.key().key << '['
 		 << pConfig->locale() << ']' << "="
 		 << stringToPrintable( (*aWriteIt).aValue) << '\n';
       else
 	// need not be localized or already is
-	pStream << aWriteIt.key().key << "="
+	(*pStream) << aWriteIt.key().key << "="
 		 << stringToPrintable( (*aWriteIt).aValue) << '\n';
     }
   } // for loop
