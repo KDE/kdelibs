@@ -19,14 +19,17 @@
 // $Id$
 //
 // $Log$
-// Revision 1.8  1998/01/15 13:22:30  kalle
-// Read-only mode for KSimpleConfig
+// Revision 1.9  1998/01/18 13:39:46  jacek
+// Changes KCharsets*:
 // Added KCharset class - small changes in interface. I hope it is all source
-// Revision 1.7  1998/01/11 13:41:42  kalle
-// Write tag line for MIME detection even in KSimpleConfig
+//                        and binary compatible. Some applications may now ask to recompile them,
+// 		       but no changes should be neccessary.
 // Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
-// Revision 1.6  1997/12/18 20:51:34  kalle
-// Some patches by Alex and me
+// And some other changes.
+//
+// Revision 1.1.1.4  1997/12/13 12:57:13  jacek
+// Imported sources from KDE CVS
+//
 // Revision 1.1.1.3  1997/12/11 07:19:14  jacek
 // Imported sources from KDE CVS
 //

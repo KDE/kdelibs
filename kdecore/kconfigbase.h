@@ -19,14 +19,14 @@
 // $Id$
 //
 // $Log$
-// Revision 1.7  1998/01/09 08:06:47  kalle
-// KConfigGroupSaver
+// Revision 1.8  1998/01/18 13:39:11  jacek
+// Changes KCharsets*:
 // Added KCharset class - small changes in interface. I hope it is all source
-// Revision 1.6  1997/12/12 14:46:03  denis
-// Reverting to lower case true/false
+//                        and binary compatible. Some applications may now ask to recompile them,
+// 		       but no changes should be neccessary.
 // Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
-// Revision 1.5  1997/12/12 14:33:46  denis
-// replaced true by TRUE and false by FALSE
+// And some other changes.
+//
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // Imported sources from KDE CVS
 //
@@ -84,7 +84,7 @@
 *	from the beginning of a configuration file to the first group
 *	declaration belong to a special group called the default group. 
 *
-* @version $Id$
+*	If there is a $ character in a entry, KConfig tries to expand
 *	environment variable and uses its value instead of its name. You
 *	can avoid this feature by having two consecutive $ characters in
 *	your config file which get expanded to one.
@@ -428,7 +428,7 @@ public:
   *
   * In order to facilitate this task, you can use
   * KConfigGroupSaver. Simply construct such an object ON THE STACK
-  * @version $Id$
+  * when you want to switch to a new group. Then, when the object goes
   * out of scope, the group will automatically be restored. If you
   * want to use several different groups within a function or method,
   * you can still use KConfigGroupSaver: Simply enclose all work with

@@ -28,8 +28,8 @@
 #include <ksimpleconfig.h>
 #include <qregexp.h>
 
-KCharsetConverterData::KCharsetConverterData(const char * inputCharset
-                       ,const char * outputCharset,int flags){
+KCharsetConverterData::KCharsetConverterData(const KCharsetEntry * inputCharset
+                       ,const KCharsetEntry * outputCharset,int flags){
 
   kchdebug("Creating converter...");
   inAmps=( (flags&KCharsetConverter::INPUT_AMP_SEQUENCES)!=0 );
@@ -39,7 +39,7 @@ KCharsetConverterData::KCharsetConverterData(const char * inputCharset
   kchdebug("done");				   
 }
 
-KCharsetConverterData::KCharsetConverterData(const char * inputCharset
+KCharsetConverterData::KCharsetConverterData(const KCharsetEntry * inputCharset
                                              ,int flags){
 
   kchdebug("Creating converter...");
@@ -55,19 +55,19 @@ KCharsetConverterData::~KCharsetConverterData(){
   if (convFromUniDict) delete convFromUniDict;
 }
 
-bool KCharsetConverterData::initialize(const char * inputCharset
-				      ,const char * outputCharset){
+bool KCharsetConverterData::initialize(const KCharsetEntry * inputCharset
+				      ,const KCharsetEntry * outputCharset){
 					   
   convTable=0;
   convToUniDict=0;
   convFromUniDict=0;
-  input=kcharsetsData->charsetEntry(inputCharset);
+  input=inputCharset;
   if (!input) {
     kchdebug("Couldn't set input charset to %s\n",inputCharset);
     return FALSE;
   }  
   if (outputCharset==0) output=kcharsetsData->conversionHint(input);
-  else output=kcharsetsData->charsetEntry(outputCharset);
+  else output=outputCharset;
   if (!output) {
     kchdebug("Couldn't set output charset to %s\n",outputCharset);
     return FALSE;
@@ -767,16 +767,14 @@ int i;
   if (*seq=='&') { seq++; len=1; }
   else len=0;
   
-/*  const char *semicolon=strchr(seq,';');
-  
-  if (semicolon) len+=semicolon-seq;
-  else len=-1;*/
-
 //  kchdebug("Sequence: '%s'\n",(const char *)QString(seq,(len>0)?len:20));
   
   if (*seq=='#'){
-     unsigned num=atoi(seq+1);
+     char *endptr;
+     unsigned num=strtol(seq+1,&endptr,10);
      kchdebug("Number: '%u'\n",num);
+     if (*endptr==';') len+=endptr-seq+1;
+     else len+=endptr-seq;
      return num;
   }   
   else
@@ -784,7 +782,7 @@ int i;
       KCharTags tag=tags[i];
       int l=strlen(tag.tag);
       if ( strncmp(seq,tag.tag,l)==0 ){
-        if (seq[l]==';' && tag.tag[l-1]!=';') len=l+1;
+        if (seq[l]==';' && tag.tag[l-1]!=';') len+=l+1;
 	else len+=l;
         return tag.code;	  
       }

@@ -19,11 +19,17 @@
 /* $Id$
  *
  * $Log$
- * Revision 1.11  1997/12/12 14:40:12  denis
- * Reverting to false :-)
+ * Revision 1.12  1998/01/18 13:37:37  jacek
+ * Changes KCharsets*:
  * Added KCharset class - small changes in interface. I hope it is all source
- * Revision 1.10  1997/12/12 14:36:22  denis
- * false to FALSE
+ *                        and binary compatible. Some applications may now ask to recompile them,
+ * 		       but no changes should be neccessary.
+ * Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
+ * And some other changes.
+ *
+ * Revision 1.1.1.4  1997/12/13 12:57:09  jacek
+ * Imported sources from KDE CVS
+ *
  * Revision 1.1.1.3  1997/12/11 07:19:09  jacek
  * Imported sources from KDE CVS
  *
@@ -130,7 +136,7 @@
 #define Dnd_X_Precision 2
 #define Dnd_Y_Precision 2
 
-* @version $Id$
+#define kapp KApplication::getKApplication()
 
 /**
 * Icon for KDE Drag 'n Drop. This is the widget that is moved
@@ -171,7 +177,7 @@ protected:
 *
 * You can create a DropZone for every widget. When the user makes a 
 * drop over this widget, the KDNDDropZone takes over control.
-* @version $Id$
+*
 * The KDE drag and drop classes are based on the Offix Drag and Drop
 * protocol, but are not compatible with it yet.
 *
@@ -367,7 +373,7 @@ protected:
   QStrList urlList;    
 };
 
-* @version $Id$
+/** 
 * A widget for drag support.
 *
 * If you require only drop support you dont need this widget, you just need

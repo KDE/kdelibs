@@ -21,8 +21,17 @@
  * $Id$
  *
  * $Log$
- * Revision 1.10  1997/12/18 01:56:25  torben
- * Torben: Secure string operations. Use instead of QString::sprintf
+ * Revision 1.11  1998/01/18 13:40:24  jacek
+ * Changes KCharsets*:
+ * Added KCharset class - small changes in interface. I hope it is all source
+ *                        and binary compatible. Some applications may now ask to recompile them,
+ * 		       but no changes should be neccessary.
+ * Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
+ * And some other changes.
+ *
+ * Revision 1.1.1.4  1997/12/13 12:57:14  jacek
+ * Imported sources from KDE CVS
+ *
  * Revision 1.1.1.3  1997/12/11 07:19:15  jacek
  * Imported sources from KDE CVS
  *
@@ -101,7 +110,7 @@
 #ifdef HAVE_CONFIG_H
 #endif
 
- * @version $Id$
+#include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/un.h>
 #include <netinet/in.h> 
@@ -216,7 +225,7 @@ protected:
      * This indicates that it is not connected.
      */
     int sock;
- * @version $Id$
+
     int domain;
   
     QSocketNotifier *readNotifier;

@@ -21,7 +21,7 @@
 #ifndef _CHARSETSDATA_H
 #define _CHARSETSDATA_H
 
-// #define KCH_DEBUG
+#define KCH_DEBUG
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -85,14 +85,15 @@ friend class KCharsets;
    bool createFromUnicodeTable();
    const char * convert(const char *str,KCharsetConversionResult &r
                        ,unsigned *pUnicode);
+   bool initialize(const KCharsetEntry* inputCharset,
+                   const KCharsetEntry * outputCharset);
 public:
-   KCharsetConverterData(const char * inputCharset
-                         ,const char * outputCharset
+   KCharsetConverterData(const KCharsetEntry * inputCharset
+                         ,const KCharsetEntry * outputCharset
                          ,int flags);
-   KCharsetConverterData(const char * inputCharset
+   KCharsetConverterData(const KCharsetEntry * inputCharset
                          ,int flags);
    ~KCharsetConverterData();
-   bool initialize(const char * inputCharset,const char * outputCharset);
    void convert(const char *str,KCharsetConversionResult &r);
    void convert(const char *str,QList<KCharsetConversionResult> &r);
    const KCharsetConversionResult & convert(unsigned code);

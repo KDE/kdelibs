@@ -27,8 +27,34 @@
 
 #include <qfont.h>
 
-class KCharset;
 class KCharsetEntry;
+class KCharsetsData;
+
+class KCharset{
+friend class KCharsets;
+public:
+  KCharset(const KCharsetEntry *);
+  KCharset(const char *);
+  KCharset(const QString);
+  KCharset(QFont::CharSet);
+  const char *name();
+  operator const char *(){ return name(); }
+  bool isDisplayable();
+  bool isDisplayable(const char *);
+  bool isAvailable(){ if (!entry) return FALSE; else return TRUE; }
+  bool ok(){ if (!entry) return FALSE; else return TRUE; }
+  bool isRegistered();
+  QFont &setQFont(QFont& fnt);
+  QFont::CharSet qtCharset();
+  int bits();
+  operator const KCharsetEntry *();
+  
+private:
+   const KCharsetEntry *entry;
+   static KCharsetsData *data;
+   static KCharsets *charsets;
+};
+
 
 /**
 *  A class representing result of charset conversion.
@@ -64,7 +90,7 @@ public:
 /**
 * Gives charset of translated string
 */
-   const char * charset()const;
+   KCharset charset()const;
    
 /**
 * Returns font, that can be used to display converted string
@@ -121,7 +147,7 @@ public:
 * @param flags conversion flags.
 *           
 */
-   KCharsetConverter(const char * inputCharset
+   KCharsetConverter(KCharset inputCharset
 		     ,int flags=UNKNOWN_TO_QUESTION_MARKS);
 /**
 * Constructor. Start conversion between two charsets
@@ -131,8 +157,8 @@ public:
 * @param flags conversion flags. @ref KCharsetConverter
 *
 */
-   KCharsetConverter(const char * inputCharset
-                     ,const char *outputCharset
+   KCharsetConverter(KCharset inputCharset
+                     ,KCharset outputCharset
 		     ,int flags=UNKNOWN_TO_QUESTION_MARKS);
 /**
 * Destructor.
@@ -197,6 +223,13 @@ public:
 */
    const KCharsetConversionResult & convertTag(const char *tag);
    const KCharsetConversionResult & convertTag(const char *tag,int &l);
+ #ifdef KCHARSETS_CPP
+   KCharsetConverter(const char * inputCharset
+		     ,int flags=UNKNOWN_TO_QUESTION_MARKS);
+   KCharsetConverter(const char * inputCharset
+                     ,const char *outputCharset
+		     ,int flags=UNKNOWN_TO_QUESTION_MARKS);
+#endif		     
 };
     
 /**
@@ -234,14 +267,14 @@ public:
    * @return default charset
    * @see #setDefault
    */
-  QString defaultCharset()const;
+  KCharset defaultCh()const;
   
   /**
    * Sets default charset
    *
    * @param ch charset to be set as default
    */
-  bool setDefault(const char *ch);
+  bool setDefault(KCharset ch);
   
   /**
    * Returns available charsets list
@@ -297,7 +330,7 @@ public:
    * @return TRUE if the charset is available
    * @see available
    */
-  bool isAvailable(const char* charset);
+  bool isAvailable(KCharset charset);
   
   /**
    * Is the charset displayable in given font family
@@ -307,7 +340,7 @@ public:
    * @return TRUE if the charset is displayable
    * @see displayable
    */
-  bool isDisplayable(const char* charset,const char *face);
+  bool isDisplayable(KCharset charset,const char *face);
    
   /**
    * Is the charset displayable in given font family
@@ -316,7 +349,7 @@ public:
    * @return TRUE if the charset is displayable
    * @see displayable
    */
-  bool isDisplayable(const char* charset);
+  bool isDisplayable(KCharset charset);
  
   /**
    * Is the charset registered
@@ -325,7 +358,7 @@ public:
    * @return TRUE if the charset is registered
    * @see registered
    */
-  bool isRegistered(const char* charset);
+  bool isRegistered(KCharset charset);
 
   /**
    * Retruns data bits needed to represent character in charset
@@ -336,7 +369,7 @@ public:
    * @param charset charset name
    * @return bits count
    */
-  int bits(const char * charset);
+  int bits(KCharset charset);
 
   /**
    * Returns Qt charset identifier
@@ -344,7 +377,7 @@ public:
    * @param charset charset name
    * @return Qt charset identifier
    */
-  QFont::CharSet qtCharset(const char * charset);
+  QFont::CharSet qtCharset(KCharset charset);
 
   /**
    * Returns Qt charset identifier for default font
@@ -363,7 +396,7 @@ public:
    * @param charset charset name
    * @return the same font object
    */
-  QFont &setQFont(QFont &fnt,const char *charset);
+  QFont &setQFont(QFont &fnt,KCharset charset);
   
   /**
    * Sets QFont object to default charsets
@@ -413,6 +446,44 @@ public:
    */
    const KCharsetConversionResult & convertTag(const char *tag);
    const KCharsetConversionResult & convertTag(const char *tag,int &len);
+  
+// Obsolete methods definition for binary compability
+  QString defaultCharset()const;
+#ifdef KCHARSETS_CPP
+  
+  QFont &setQFont(QFont &fnt,const char *charset){
+    warning("KCharsets::setQFont(Qfont,const char *) called. Recompile the application.");
+    return setQFont(fnt,KCharset(charset));
+  }
+  QFont::CharSet qtCharset(const char * charset){
+    warning("KCharsets::qtCharset(const char *) called. Recompile the application. You may use KCharset::qtCharset insteed.");
+    return KCharset(charset).qtCharset();
+  }
+  bool setDefault(const char *ch){
+    warning("KCharsets::setDefault(const char *) called. Recompile the application.");
+    return setDefault(KCharset(ch));    
+  }
+  bool isAvailable(const char* charset){
+    warning("KCharsets::isAvailable(const char *) called. Recompile the application. You may use KCharset::isAvailable() insteed");
+    return KCharset(charset).isAvailable();
+  }
+  bool isDisplayable(const char* charset,const char *face){
+    warning("KCharsets::isDisplayable(const char *,const char *) called. Recompile the application. You may use KCharset::isDisplayable(const char *) insteed");
+    return KCharset(charset).isDisplayable(face);
+  }
+  bool isDisplayable(const char* charset){
+    warning("KCharsets::isDisplayable(const char *) called. Recompile the application. You may use KCharset::isDisplayable() insteed");
+    return KCharset(charset).isDisplayable();
+  }
+  bool isRegistered(const char* charset){
+    warning("KCharsets::isRegistered(const char *) called. Recompile the application. You may use KCharset::isRegistered() insteed");
+    return KCharset(charset).isRegistered();
+  }
+  int bits(const char * charset){
+    warning("KCharsets::bits(const char *) called. Recompile the application. You may use KCharset::bits() insteed");
+    return KCharset(charset).bits();
+  }
+#endif  
 };
 
 #endif

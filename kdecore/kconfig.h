@@ -19,11 +19,14 @@
 // $Id$
 //
 // $Log$
-// Revision 1.5  1997/12/12 14:46:01  denis
-// Reverting to lower case true/false
+// Revision 1.6  1998/01/18 13:38:52  jacek
+// Changes KCharsets*:
 // Added KCharset class - small changes in interface. I hope it is all source
-// Revision 1.4  1997/12/12 14:33:45  denis
-// replaced true by TRUE and false by FALSE
+//                        and binary compatible. Some applications may now ask to recompile them,
+// 		       but no changes should be neccessary.
+// Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
+// And some other changes.
+//
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // Imported sources from KDE CVS
 //
@@ -52,7 +55,7 @@
 #include <config.h>
 #endif
 
-* @version $Id$
+#include <kconfigbase.h>
 
 /** 
 * KDE Configuration entries

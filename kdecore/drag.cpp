@@ -20,6 +20,18 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.17  1998/01/18 13:37:26  jacek
+ * Changes KCharsets*:
+ * Added KCharset class - small changes in interface. I hope it is all source
+ *                        and binary compatible. Some applications may now ask to recompile them,
+ * 		       but no changes should be neccessary.
+ * Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
+ * And some other changes.
+ *
+ * Revision 1.1.1.4  1997/12/13 12:57:09  jacek
+ * Imported sources from KDE CVS
+ *
+ * Revision 1.1.1.3  1997/12/11 07:19:09  jacek
  * Imported sources from KDE CVS
  *
  * Revision 1.1.1.2  1997/12/10 07:08:28  jacek
