@@ -369,9 +369,14 @@ void KMFactory::slot_configChanged()
 	printConfig()->rollback();
 	UNLOAD_OBJECT(m_printconfig);
 	printConfig();
-	// notify all object about the change
+
+	// notify all registered objects about the coming reload
 	QPtrListIterator<KPReloadObject>	it(m_objects);
 	for (;it.current();++it)
+		it.current()->aboutToReload();
+
+	// notify all object about the change
+	for (it.toFirst(); it.current();++it)
 		it.current()->configChanged();
 }
 
