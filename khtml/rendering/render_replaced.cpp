@@ -309,7 +309,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 //                 KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
 //                 if ( ext )  ext->editableWidgetBlurred( m_widget );
 //             }
-//             handleFocusOut();
+            handleFocusOut();
         }
         break;
     case QEvent::FocusIn:

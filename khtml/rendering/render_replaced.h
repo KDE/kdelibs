@@ -86,6 +86,7 @@ public slots:
     void slotWidgetDestructed();
 
 protected:
+    virtual void handleFocusOut() {}
     bool eventFilter(QObject* /*o*/, QEvent* e);
     void setQWidget(QWidget *widget);
     void resizeWidget( QWidget *widget, int w, int h );
