@@ -1234,7 +1234,7 @@ QImage& KImageEffect::contrast(QImage &img, int c)
             if(b + c <= 255)
                 b += c;
         }
-        data[i] = QRgb(r, g, b);
+        data[i] = qRgb(r, g, b);
     }
     return(img);
 }
