@@ -597,6 +597,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
+    } else if ( d->complete && static_cast<RenderCanvas*>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
+        // an external update request happens while we have a layout scheduled
+        unscheduleRelayout();
+        layout();
     }
 
     if (d->painting) {
