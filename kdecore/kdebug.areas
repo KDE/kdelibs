@@ -97,6 +97,7 @@
 5600    gofai
 5700        kabc
 5710        kabc/vcard
+5800        libkcal
 
 # libkhtml
 6000        khtml
