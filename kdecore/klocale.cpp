@@ -92,8 +92,6 @@ KLocale::KLocale( const char *_catalogue )
     k_bindtextdomain ( catalogue , directory);
     k_bindtextdomain ( SYSTEM_MESSAGES,  directory);
 
-    enabled = 1;
-
     if (pLocale == NULL)
 	pLocale = this;
 }
@@ -107,15 +105,14 @@ KLocale::~KLocale()
 
 const char *KLocale::translate(const char *msgid)
 {
-    if (!enabled)
-      return msgid;
+
 
     char *text = k_dcgettext( catalogue, msgid, lang.data() );
 
     if (text == msgid) // just compare the pointers
-	return k_dcgettext( SYSTEM_MESSAGES, msgid, lang.data() );
-    else
-	return text;
+	text = k_dcgettext( SYSTEM_MESSAGES, msgid, lang.data() );
+   
+    return text;
 }
 
 QString KLocale::directory() 
