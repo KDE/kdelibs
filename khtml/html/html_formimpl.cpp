@@ -446,8 +446,9 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
     for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
         if (it.current()->id() == ID_INPUT) {
             HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl*>(it.current());
-            if (current->inputType() == HTMLInputElementImpl::PASSWORD ||
-                    current->inputType() == HTMLInputElementImpl::TEXT &&
+            if ((current->inputType() == HTMLInputElementImpl::PASSWORD ||
+                    current->inputType() == HTMLInputElementImpl::TEXT) &&
+                    !current->readOnly() &&
                     map.contains(current->name().string())) {
                 current->setValue(map[current->name().string()]);
                 last = current;
@@ -504,8 +505,9 @@ void HTMLFormElementImpl::gatherWalletData()
         for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
             if (it.current()->id() == ID_INPUT)  {
                 HTMLInputElementImpl* const c = static_cast<HTMLInputElementImpl*> (it.current());
-                if (c->inputType() == HTMLInputElementImpl::TEXT ||
-                        c->inputType() == HTMLInputElementImpl::PASSWORD)  {
+                if ((c->inputType() == HTMLInputElementImpl::TEXT ||
+                        c->inputType() == HTMLInputElementImpl::PASSWORD) &&
+                        !c->readOnly())  {
                     m_walletMap.insert(c->name().string(), c->value().string());
                     if (c->inputType() == HTMLInputElementImpl::PASSWORD &&
                             !c->value().isEmpty())
