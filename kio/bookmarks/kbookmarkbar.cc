@@ -220,19 +220,18 @@ void KBookmarkBar::slotBookmarkSelected()
 
 static KToolBar* sepToolBar = 0;
 static int sepId = -9999; // fixme with define for num?
-static int sepIndex;
 
 static void removeTempSep()
 {
     if (sepToolBar) {
         sepToolBar->removeItemDelayed(sepId);
-        sepToolBar = 0;
+        sepToolBar = 0; // needed?
     }
 }
 
-static bool findDestAction(QPoint pos, QPtrList<KAction> actions, KAction* &a)
+static bool doFunkySepThing(QPoint pos, QPtrList<KAction> actions, KAction* &a)
 {
-    kdDebug(7043) << "pos() == " << pos << endl;
+    static int sepIndex;
     bool found = false;
 
     KToolBarButton* b; 
@@ -259,9 +258,6 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions, KAction* &a)
         index = ttb->itemIndex(b->id());
         QRect r = b->geometry();
 
-        kdDebug(7043) << "found " << b << " at " << r << " with index " << index << endl;
-        kdDebug(7043) << "id was == " << b->id() << endl;
-
         // if in 0th position or in second half of button then we are done
         if (pos.x() > ((r.left() + r.right())/2) || index == 0)
         {
@@ -276,32 +272,33 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions, KAction* &a)
     {
         found = false;
         goto failure_exit;
+        /*
+        kdDebug(7043) << ttb << endl;
+        kdDebug(7043) << ttb->count()-1 << endl;
+        kdDebug(7043) << ttb->idAt(ttb->count()-1) << endl;
+        kdDebug(7043) << ttb->getButton(ttb->idAt(ttb->count()-1)) << endl;
+        kdDebug(7043) << ttb->getButton(ttb->idAt(ttb->count()-1))->geometry().topLeft().x() << endl;
+        if (pos.x() > ttb->getButton(ttb->idAt(ttb->count()-1))->geometry().topLeft().x());
+        {
+            found = false;
+            goto failure_exit;
+        }
+        // past the last button, lets just position at end
+        kdDebug(7043) << "jumping to last one" << endl;
+        index = ttb->count() - 1;
+        */
     }
 
     id = ttb->idAt(index);
 
-    // don't drop on our own seperator
-    // drop after it, i.e, go back again
-    if (id == -9999) // fixme with define for num?
-    {
-        index++;
-        found = false;
-        goto failure_exit;
-    }
-
-    kdDebug(7043) << "id for prev index == " << id << endl;
-
     // search for the button at the given index
     b = ttb->getButton(id);
     Q_ASSERT(id == b->id());
-    it.toFirst();
-    kdDebug(7043) << "searching for id == " << id << endl;
     found = false;
-    for (; (*it); ++it )
+    for (it.toFirst(); (*it); ++it )
         if (found = (*it)->isPlugged(ttb, id), found)
             break;
     Q_ASSERT(found);
-    kdDebug(7043) << "new index = " << index << endl;
 
     index = ttb->itemIndex(id);
 
@@ -310,7 +307,7 @@ okay_exit:
     sepIndex = index + 1;
 
 failure_exit:
-    sepIndex = ttb->insertLineSeparator(sepIndex, sepId);
+    ttb->insertLineSeparator(sepIndex, sepId);
     return found;
 }
 
@@ -353,7 +350,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         if (!KBookmarkDrag::canDecode( dme ))
             return false;
-        if (findDestAction(dme->pos(), dptr()->m_actions, a))
+        if (doFunkySepThing(dme->pos(), dptr()->m_actions, a))
             dme->accept();
     }
     return false;
