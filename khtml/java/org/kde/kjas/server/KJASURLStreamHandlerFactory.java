@@ -30,10 +30,14 @@ import java.security.*;
 
 class KIOConnection
 {
+    final static int NOT_CONNECTED = 0;
+    final static int CONNECT_WAIT = 1;
+    final static int CONNECTED = 2;
+
     final static int DATA = 0;
     final static int FINISHED = 1;
     final static int ERRORCODE = 2;
-    final static int CONNECTED = 6;
+    final static int CONNECT = 6;
     final static int REQUESTDATA = 7;
 
     final static int STOP = 0;
@@ -47,10 +51,9 @@ class KIOConnection
         KIOConnection job = (KIOConnection) jobs.get(jobid);
         if (job == null)
             Main.info("KIO KJASHttpURLConnection gone (timedout/closed)");
-        else if (job.setData(code, data) > 0) {
-            try {
-                Thread.sleep(1); // yield doesn't seem to work ..
-            } catch (InterruptedException ioex) {}
+        else {
+            job.setData(code, data);
+            Thread.yield();
         }
     }
 
@@ -119,8 +122,7 @@ class KIOConnection
     }
 
     protected URL url;
-    private Thread thread = null;                 // for interrupting a wait
-    protected boolean connected = false;
+    protected int connect_status = 0;
     protected String jobid = null;                // connection id with KIO 
     protected LinkedList data = new LinkedList(); // not thread safe
     protected int errorcode = 0;
@@ -138,19 +140,19 @@ class KIOConnection
         url = u;
     }
     protected void checkConnected() throws IOException {
-        if (!connected)
+        if (connect_status != CONNECTED)
             throw new IOException("not connected");
     }
     protected boolean haveError() {
         return errorcode != 0;
     }
-    synchronized int setData(int code, byte [] d) {
+    synchronized void setData(int code, byte [] d) {
         if (removed) {     // job could be removed after entering the monitor
             Main.info("KIO KJASHttpURLConnection gone (timedout/closed)");
-            return 0;
+            return;
         }
-        if (errorcode == -1) // connect is waiting
-            errorcode = 0;
+        if (connect_status == CONNECT_WAIT)
+            connect_status = CONNECTED;
         switch (code) {
             case FINISHED:
                 if (d != null && d.length > 0)
@@ -175,8 +177,8 @@ class KIOConnection
                 errorcode = Integer.parseInt(codestr);
                 Main.debug ("KIO ERRORECODE(" + jobid + ") " + errorcode);
                 break;
-            case CONNECTED:
-                Main.debug ("KIO CONNECTED(" + jobid + ") ");
+            case CONNECT:
+                Main.debug ("KIO CONNECT(" + jobid + ") ");
                 request_data = true;
                 errorcode = 0;
                 break;
@@ -186,7 +188,6 @@ class KIOConnection
                 break;
         }
         notifyAll();
-        return data.size();
     }
 
     private synchronized boolean getData(boolean mayblock) throws IOException {
@@ -217,13 +218,11 @@ class KIOConnection
         }
         if (!mayblock)
             return false;
-        thread = Thread.currentThread();
         try {
             wait();
         } catch (InterruptedException ie) {
             return false;
         }
-        thread = null;
         return getData(false);
     }
     synchronized protected int inAvailable() throws IOException {
@@ -245,12 +244,11 @@ class KIOConnection
         if (!request_data && !force) return;
         if (data.size() == 0) return;
         if (force && !request_data) {
-            thread = Thread.currentThread();
             try {
                 wait(10000);
             } catch (InterruptedException ie) {
+                return;
             }
-            thread = null;
             if (!request_data) {
                 Main.debug ("KIO sendData(" + jobid + ") timeout");
                 data.clear();
@@ -276,40 +274,37 @@ class KIOConnection
         Main.protocol.sendPutData(jobid, buf, 0, total);
     }
     synchronized void connect(boolean doInput) throws IOException {
-        if (connected)
+        if (connect_status == CONNECTED)
             return; // javadocs: call is ignored
 	//(new Exception()).printStackTrace();
         Main.debug ("KIO connect " + url);
-        errorcode = -1;
+        errorcode = 0;
+        finished = in_eof = removed = false;
         jobid = String.valueOf(id++);
         jobs.put(jobid, this);
-        removed = false;
         if (doInput)
             Main.protocol.sendGetURLDataCmd(jobid, url.toExternalForm());
         else
             Main.protocol.sendPutURLDataCmd(jobid, url.toExternalForm());
-        thread = Thread.currentThread();
+        connect_status = CONNECT_WAIT;
         try {
             wait(20000);
         } catch (InterruptedException ie) {
             errorcode = -1;
         }
-        thread = null;
-        if (errorcode != -1) {
-            connected = true;
-            if (!haveError()) {
-                if (doInput)
-                    in = new KJASInputStream();
-                else
-                    out = new KJASOutputStream();
-                Main.debug ("KIO connect(" + jobid + ") " + url);
-                return;
-            }
+        boolean isconnected = (connect_status == CONNECTED);
+        if (isconnected && !haveError()) {
+            if (doInput)
+                in = new KJASInputStream();
+            else
+                out = new KJASOutputStream();
+            Main.debug ("KIO connect(" + jobid + ") " + url);
+            return;
         }
+        connect_status = NOT_CONNECTED;
         jobs.remove(jobid);
         removed = true;
-        if (connected) {
-            connected = false;
+        if (isconnected) {
             if (!finished)
                 Main.protocol.sendDataCmd(jobid, STOP);
             Main.debug ("KIO connect error " + url);
@@ -318,8 +313,8 @@ class KIOConnection
         Main.debug ("KIO connect timeout " + url);
         throw new SocketTimeoutException("connection failed (timeout)");
     }
-    void disconnect() {
-        if (!connected)
+    synchronized void disconnect() {
+        if (connect_status == NOT_CONNECTED)
             return;
         Main.debug ("KIO disconnect " + jobid);
 	//(new Exception()).printStackTrace();
@@ -328,7 +323,7 @@ class KIOConnection
                 out.flush();
             } catch (IOException iox) {}
         }
-        connected = false;
+        connect_status = NOT_CONNECTED;
         out = null;
         in = null;
         if (!finished) {
@@ -336,11 +331,7 @@ class KIOConnection
             jobs.remove(jobid);
             removed = true;
         }
-        if (thread != null) {  // some thread still waiting
-            try {
-                thread.interrupt();
-            } catch (SecurityException sex) {}
-        }
+        notifyAll();
     }
     InputStream getInputStream() throws IOException {
         Main.debug ("KIO getInputStream(" + jobid + ") " + url);
@@ -369,7 +360,7 @@ final class KIOHttpConnection extends KIOConnection
     protected boolean haveError() {
         return responseCode != 404 && (responseCode < 0 || responseCode >= 400);
     }
-    public synchronized int setData(int code, byte [] d) {
+    public synchronized void setData(int code, byte [] d) {
         switch (code) {
             case HEADERS:
                 StringTokenizer tokenizer = new StringTokenizer(new String(d), "\n");
@@ -396,7 +387,7 @@ final class KIOHttpConnection extends KIOConnection
                 }
                 break;
         }
-        return super.setData(code, d);
+        super.setData(code, d);
     }
 }
 
