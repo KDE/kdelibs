@@ -20,7 +20,9 @@
 /*
    activities:
    -----------
-   03/2001 - 02/2001       : maintained and enhanced by Falk Brettschneider <falk@kdevelop.org>
+   05/2001 -               : useful patches, bugfixes by Christoph Cullmann <crossfire@babylon2k.de>,
+                             Joseph Wenninger <jowenn@bigfoot.com> and  Falk Brettschneider
+   03/2001 - 05/2001       : maintained and enhanced by Falk Brettschneider <falk@kdevelop.org>
    03/2000                 : class documentation added by Falk Brettschneider <gigafalk@yahoo.com>
    10/1999 - 03/2000       : programmed by Max Judin <novaprint@mtu-net.ru>
 
@@ -34,6 +36,9 @@
    - KDockWidget                   - IMPORTANT CLASS: the one and only dockwidget class
    - KDockManager                  - helper class
    - KDockMainWindow               - IMPORTANT CLASS: a special KMainWindow that can have dockwidgets
+   - KDockArea                     - like KDockMainWindow but inherits just QWidget
+   
+   IMPORTANT Note: This file compiles also in Qt-only mode by using the NO_KDE2 precompiler definition!
 */
 
 #define _JOWENN_EXPERIMENTAL_
@@ -91,7 +96,6 @@ typedef QList<QWidget> WidgetList;
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class KDockWidgetAbstractHeader : public QFrame
 {
@@ -338,8 +342,9 @@ private:
  * ...
  * KDockWidget* dock = 0L;
  * dock = mainWidget->createDockWidget( "Any window caption", nicePixmap, 0L, i18n("window caption")); // 0L==no parent
- * QWidget actualWidget( dock);
- * dock->setWidget( actualWidget);
+ * QWidget* actualWidget = new QWidget( dock);
+ * dock->setWidget( actualWidget); // embed it
+ * dock->setToolTipString(i18n("That's me")); // available when appearing as tab page
  * ...
  * </PRE>
  *
@@ -1027,11 +1032,15 @@ private:
  * {
  *   ...
  *   KDockWidget* mainDock;
- *   mainDock = createDockWidget( "Falk's MainDockWidget", mainPixmap);
+ *   mainDock = createDockWidget( "Falk's MainDockWidget", mainPixmap, 0L, "main_dock_widget");
  *   AnyContentsWidget* cw = new AnyContentsWidget( mainDock);
  *   mainDock->setWidget( cw);
- *   setView( mainDock);
- *   setMainDockWidget( mainDock);
+ *   // allow others to dock to the 4 sides
+ *   mainDock->setDockSite(KDockWidget::DockCorner);
+ *   // forbit docking abilities of mainDock itself
+ *   mainDock->setEnableDocking(KDockWidget::DockNone);
+ *   setView( mainDock); // central widget in a KDE mainwindow
+ *   setMainDockWidget( mainDock); // master dockwidget
  *   ...
  *   KDockWidget* dockLeft;
  *   dockLeft = createDockWidget( "Intially left one", anyOtherPixmap, 0L, i18n("The left dockwidget"));

@@ -20,6 +20,10 @@
 /*
    activities:
    -----------
+   05/2000                   : bufixes, patches by Christoph Cullmann <crossfire@babylon2k.de>,
+                               Joseph Wenninger <jowenn@bigfoot.com> and Falk Brettschneider
+   03/2000 - 04/2000         : bugfixes, patches by Falk Brettschneider
+   03/2000                   : now maintained by Falk Brettschneider <falk@kdevelop.org>
    03/2000                   : class documentation added by Falk Brettschneider <gigafalk@yahoo.com>
    10/1999 - 05/2000         : programmed by Max Judin <novaprint@mtu-net.ru>
    3/2000 - 5/2000           : patches and bugfixes by Falk Brettschneider <gigafalk@yahoo.com>
@@ -29,6 +33,8 @@
    - KDockTabBar           - minor class (but the actual tab bar)
    - KDockTabCtl           - helper class for a tab-bar mode of centered docked KDockWidgets
    - KDockTabBarPainter    - minor class (paints the tab header)
+   
+   IMPORTANT Note: This file compiles also in Qt-only mode by using the NO_KDE2 precompiler definition!
 */
 
 #ifndef KDOCKTABCTL_H

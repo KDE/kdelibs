@@ -15,6 +15,11 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+
+/*
+   IMPORTANT Note: This file compiles also in Qt-only mode by using the NO_KDE2 precompiler definition
+*/
+
 #ifndef KDOCKWIDGET_PRIVATE_H
 #define KDOCKWIDGET_PRIVATE_H
 
@@ -32,7 +37,6 @@ class QFrame;
  * @internal
  *
  * @author Max Judin.
- * @version $Id$
 */
 class KDockSplitter : public QWidget
 {
