@@ -147,6 +147,36 @@ of a kind like midi0, midi1, ..., then only the 0-version is listed here):
    the hosts that interact know each other by name (i.e. make sure that
    they have resolvable names or are in /etc/hosts).
 <p>
+   This should be all you need to do. Anyway, here are a few more internals
+   which may help you if things don't work at once.
+<p>
+   The aRts sound server process "artsd" should only run one host, the
+   one with the soundcard, where the sound should be played.
+   It can be started automatically on login by KDE (if you configure that
+   in kcontrol), or manually using something like:
+
+<pre>artsd -n -F 5 -S 8192</pre>
+<p>
+   (the -n parameter is for network transparency, while the others configure
+   latency).
+
+<p>
+Your .mcoprc file should have this entry for GlobalComm:
+<pre>GlobalComm=Arts::X11GlobalComm</pre>
+<p>
+
+   for network transparency to work, on all machines involved. This is what
+   KDE will put there if you enable "X11 server for security information"
+   there.
+<p>
+   Finally, in any KDE version in the 2.0.x series, there is a bug which
+   applies if you don't have a domainname set. Clients of artsd try to
+   find where to connect to via the &lt;hostname&gt;.&lt;domainname&gt;
+   combination. If your domainname is empty, it will try to connect
+   &lt;hostname&gt;. &lt;- note the dot is too much. Adding an entry
+   like this to /etc/hosts (i.e. orion. if your hostname is orion) works
+   around the problem.
+<p>
 <b>Can I debug it if it doesn't work?</b>
 <p>
    Yes, if you have the source. go to kdelibs/arts/examples, make check
