@@ -200,10 +200,7 @@ public:
   bool createChildren() const;
 
   /**
-   * For future expansions.
-   *
-   * Do not use.
-   * @deprecated
+   * @return true if drawing of the drop-highlighter has been enabled.
    */
   bool dropHighlighter() const;
 
@@ -477,10 +474,9 @@ public slots:
   virtual void setTooltipColumn(int column);
 
   /**
-   * For future expansion.
-   *
-   * Do not use.
-   * @deprecated
+   * Enable/Disable the drawing of a drop-highlighter
+   * (a rectangle around the item under the mouse cursor).
+   * It is disabled by default.
    */
   virtual void setDropHighlighter(bool b);
 
@@ -667,13 +663,10 @@ protected:
   virtual QRect drawDropVisualizer (QPainter *p, QListViewItem *parent, QListViewItem *after);
 
   /**
-   * For future expansion.
+   * Paint the drag rectangle. If painter is null, don't try to :)
    *
-   * Do not use.
    *
-   * Highlight @p item.  painter may be null
-   * return the rect drawn to
-   * @deprecated
+   * @return the rectangle that you painted to.
    */
   virtual QRect drawItemHighlighter(QPainter *painter, QListViewItem *item);
 
@@ -718,17 +711,16 @@ protected slots:
 
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
   void doneEditing(QListViewItem *item, int row);
+
   /**
    * Repaint the rect where I was drawing the drop line.
    */
   void cleanDropVisualizer();
+
   /**
-   * For future expansion.
-   *
-   * Do not use.
-   * @deprecated
+   * Repaint the rect where I was drawing the drop rectangle.
    */
-  void cleanItemHighlighter ();
+  void cleanItemHighlighter();
 
   /**
    * Emit the @ref contextMenu signal. This slot is for mouse actions.

@@ -81,6 +81,7 @@ public:
       dragEnabled (false),
       autoOpen (true),
       dropVisualizer (true),
+      dropHighlighter (false),
       createChildren (true),
       pressedOnSelected (false),
       wasShiftEvent (false),
@@ -138,6 +139,7 @@ public:
 
   QRect mOldDropVisualizer;
   int mDropVisualizerWidth;
+  QRect mOldDropHighlighter;
   QListViewItem *afterItemDrop;
   QListViewItem *parentItemDrop;
 
@@ -257,6 +259,8 @@ KListView::KListView( QWidget *parent, const char *name )
 
   connect (this, SIGNAL(contentsMoving(int,int)),
                    this, SLOT(cleanDropVisualizer()));
+  connect (this, SIGNAL(contentsMoving(int,int)),
+                   this, SLOT(cleanItemHighlighter()));
 
   slotSettingsChanged(KApplication::SETTINGS_MOUSE);
   connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
@@ -508,6 +512,7 @@ void KListView::focusInEvent( QFocusEvent *fe )
 void KListView::focusOutEvent( QFocusEvent *fe )
 {
   cleanDropVisualizer();
+  cleanItemHighlighter();
 
   d->autoSelect.stop();
 
@@ -669,6 +674,7 @@ void KListView::slotMouseButtonClicked( int btn, QListViewItem *item, const QPoi
 void KListView::contentsDropEvent(QDropEvent* e)
 {
   cleanDropVisualizer();
+  cleanItemHighlighter();
 
   if (acceptDrag (e))
   {
@@ -714,7 +720,7 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
 		emit aboutToMove();
 		hasMoved=true;
 	}
-	
+
     moveItem(i, parent, afterme);
 
     // ###### This should include the new parent !!! -> KDE 3.0
@@ -757,6 +763,16 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
         viewport()->repaint(tmpRect);
       }
     }
+    if (dropHighlighter())
+    {
+      QRect tmpRect = drawItemHighlighter(0, d->afterItemDrop);
+      if (tmpRect != d->mOldDropHighlighter)
+      {
+        cleanItemHighlighter();
+        d->mOldDropHighlighter=tmpRect;
+        viewport()->repaint(tmpRect);
+      }
+    }
   }
   else
       event->ignore();
@@ -765,6 +781,7 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
 void KListView::contentsDragLeaveEvent (QDragLeaveEvent*)
 {
   cleanDropVisualizer();
+  cleanItemHighlighter();
 }
 
 void KListView::cleanDropVisualizer()
@@ -1026,14 +1043,29 @@ QRect KListView::drawDropVisualizer(QPainter *p, QListViewItem *parent,
     return insertmarker;
 }
 
-QRect KListView::drawItemHighlighter(QPainter */*painter*/, QListViewItem */*item*/)
+QRect KListView::drawItemHighlighter(QPainter *painter, QListViewItem *item)
 {
-  return QRect(0,0,0,0);
+  QRect r;
+
+  if (item)
+  {
+    r = itemRect(item);
+    r.setLeft(r.left()+(item->depth()+1)*treeStepSize());
+    if (painter)
+      style().drawFocusRect(painter, r, colorGroup(), &colorGroup().highlight(), true);
+  }
+
+  return r;
 }
 
 void KListView::cleanItemHighlighter ()
 {
-  // FIXME
+  if (d->mOldDropHighlighter.isValid())
+  {
+    QRect rect=d->mOldDropHighlighter;
+    d->mOldDropHighlighter = QRect();
+    viewport()->repaint(rect, true);
+  }
 }
 
 void KListView::rename(QListViewItem *item, int c)
@@ -1581,9 +1613,15 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
     {
       QPainter painter(viewport());
 
-      if (e->rect().intersects(d->mOldDropVisualizer))
-          // This is where we actually draw the drop-visualizer
-          painter.fillRect(d->mOldDropVisualizer, Dense4Pattern);
+      // This is where we actually draw the drop-visualizer
+      painter.fillRect(d->mOldDropVisualizer, Dense4Pattern);
+    }
+  if (d->mOldDropHighlighter.isValid() && e->rect().intersects(d->mOldDropHighlighter))
+    {
+      QPainter painter(viewport());
+
+      // This is where we actually draw the drop-highlighter
+      style().drawFocusRect(&painter, d->mOldDropHighlighter, colorGroup(), 0, true);
     }
 }
 
