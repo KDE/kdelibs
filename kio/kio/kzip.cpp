@@ -396,6 +396,8 @@ bool KZip::openArchive( int mode )
 
     for (;;) // repeat until 'end of entries' signature is reached
     {
+kdDebug(7040) << "loop starts" << endl;
+kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
         n = dev->readBlock( buffer, 4 );
 
         if (n < 4)
@@ -406,11 +408,16 @@ bool KZip::openArchive( int mode )
         }
 
         if ( !memcmp( buffer, "PK\5\6", 4 ) ) // 'end of entries'
-            break;
-
-        if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
         {
-            dev->at( dev->at() + 2 ); // skip 'version needed to extract'
+	    kdDebug(7040) << "PK56 found end of archive" << endl;
+	    break;
+	}
+        
+	if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
+        {
+	    kdDebug(7040) << "PK34 found local file header" << endl;
+            // can this fail ???
+	    dev->at( dev->at() + 2 ); // skip 'version needed to extract'
 
 	    // read static header stuff
             n = dev->readBlock( buffer, 24 );
@@ -427,6 +434,13 @@ bool KZip::openArchive( int mode )
 	    			| (uchar)buffer[18] << 16 | (uchar)buffer[19] << 24;
 	    int namelen = (uchar)buffer[20] | (uchar)buffer[21] << 8;
 	    int extralen = (uchar)buffer[22] | (uchar)buffer[23] << 8;
+	    
+	    kdDebug(7040) << "general purpose bit flag: " << gpf << endl;
+	    kdDebug(7040) << "compressed size: " << compr_size << endl;
+	    kdDebug(7040) << "uncompressed size: " << uncomp_size << endl;
+	    kdDebug(7040) << "namelen: " << namelen << endl;
+	    kdDebug(7040) << "extralen: " << extralen << endl;
+	    kdDebug(7040) << "archive size: " << dev->size() << endl;
 
 	    // read filename
 	    QCString filename(namelen + 1);
@@ -442,16 +456,24 @@ bool KZip::openArchive( int mode )
 	    // read and parse extra field
 	    pfi->extralen = extralen;
 	    int handledextralen = QMIN(extralen, (int)sizeof buffer);
+	    
+	    kdDebug(7040) << "handledextralen: " << handledextralen << endl;
+	    
 	    n = dev->readBlock(buffer, handledextralen);
 	    // no error msg necessary as we deliberately truncate the extra field
 	    if (!parseExtraField(buffer, handledextralen, true, *pfi))
+	    {
+	        kdWarning(7040) << "Invalid ZIP File. Broken ExtraField." << endl;
 	        return false;
-
+	    }
 	    // we have to take care of the 'general purpose bit flag'.
             // if bit 3 is set, the header doesn't contain the length of
             // the file and we look for the signature 'PK\7\8'.
             if ( gpf & 8 )
             {
+	    	// here we have to read through the compressed data to find
+		// the next PKxx
+	        kdDebug(7040) << "trying to seek for next PK78" << endl;
                 bool foundSignature = false;
 
                 while (!foundSignature)
@@ -473,21 +495,37 @@ bool KZip::openArchive( int mode )
                         return false;
                     }
 
-                    if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
+                    // we have to detect three magic tokens here:
+		    // PK34 for the next local header in case there is no data descriptor
+		    // PK12 for the central header in case there is no data descriptor
+		    // PK78 for the data descriptor in case it is following the compressed data
+		    
+		    if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
                     {
                         foundSignature = true;
                         dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
                     }
+		    
+		    if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
+		         || ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
+                    {
+                        foundSignature = true;
+                        dev->at( dev->at() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
+                    }
+		    
                 }
             }
             else
             {
+	    	// here we skip the compressed data and jump to the next header
+	        kdDebug(7040) << "general purpose bit flag indicates, that local file header contains valid size" << endl;
 		// check if this could be a symbolic link
 		if (compression_mode == NoCompression
 	    		&& uncomp_size <= max_path_len
 			&& uncomp_size > 0) {
 		    // read content and store it
 		    pfi->guessed_symlink.resize(uncomp_size + 1);
+       	            kdDebug(7040) << "guessed symlink size: " << uncomp_size << endl;
 		    n = dev->readBlock(pfi->guessed_symlink.data(), uncomp_size);
 		    if (n < uncomp_size) {
 			kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#5)" << endl;
@@ -495,16 +533,76 @@ bool KZip::openArchive( int mode )
 		    }
 		} else {
 
-                    dev->at( dev->at() + compr_size );
+	            if ( compr_size > dev->size() )
+		    {
+		    	// here we cannot trust the compressed size, so scan through the compressed
+			// data to find the next header
+			bool foundSignature = false;
+	
+			while (!foundSignature)
+			{
+				n = dev->readBlock( buffer, 1 );
+				if (n < 1)
+				{
+					kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#2)" << endl;
+					return false;
+				}
+		
+				if ( buffer[0] != 'P' )
+					continue;
+		
+				n = dev->readBlock( buffer, 3 );
+				if (n < 3)
+				{
+					kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#3)" << endl;
+					return false;
+				}
+		
+				// we have to detect three magic tokens here:
+				// PK34 for the next local header in case there is no data descriptor
+				// PK12 for the central header in case there is no data descriptor
+				// PK78 for the data descriptor in case it is following the compressed data
+				
+				if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
+				{
+					foundSignature = true;
+					dev->at( dev->at() + 12 ); // skip the 'data_descriptor'
+				}
+				
+				if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
+					|| ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
+				{
+					foundSignature = true;
+					dev->at( dev->at() - 4 ); 
+					// go back 4 bytes, so that the magic bytes can be found
+					// in the next cycle...
+				}
+			}
+		    }
+		    else
+		    {
+// 			kdDebug(7040) << "before interesting dev->at(): " << dev->at() << endl;
+			bool success;
+			success = dev->at( dev->at() + compr_size ); // can this fail ???
+/*			kdDebug(7040) << "after interesting dev->at(): " << dev->at() << endl;
+			if ( success )
+				kdDebug(7040) << "dev->at was successful... " << endl;
+			else
+				kdDebug(7040) << "dev->at failed... " << endl;*/
+		    }
+		    
 		}
-                // here we calculate the length of the file in the zip
+
+// not needed any more
+/*                // here we calculate the length of the file in the zip
                 // with headers and jump to the next header.
                 uint skip = compr_size + namelen + extralen;
-                offset += 30 + skip;
+                offset += 30 + skip;*/
             }
         }
         else if ( !memcmp( buffer, "PK\1\2", 4 ) ) // central block
         {
+	    kdDebug(7040) << "PK12 found central block" << endl;
 
             // so we reached the central header at the end of the zip file
 		    // here we get all interesting data out of the central header
