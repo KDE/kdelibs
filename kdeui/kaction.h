@@ -371,6 +371,7 @@ public:
     virtual bool isPlugged( const QWidget *container, const QWidget *_representative ) const;
 
     QWidget* container( int index );
+    int itemId( int index ) const;
     QWidget* representative( int index ) const;
     int containerCount() const;
 
@@ -483,7 +484,6 @@ protected slots:
 protected:
     KToolBar* toolBar( int index ) const;
     QPopupMenu* popupMenu( int index ) const;
-    int menuId( int index ) const;
     void removeContainer( int index );
     int findContainer( const QWidget* widget ) const;
 
@@ -500,6 +500,10 @@ protected:
     virtual void setStatusText( int id, const QString &text );
     virtual void setWhatsThis( int id, const QString& text );
 
+    /**
+       * for backwards compatibility. depreceated!
+       */
+    int menuId( int i ) { return itemId( i ); }
 signals:
     void activated();
     void enabled( bool );

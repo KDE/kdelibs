@@ -235,7 +235,7 @@ bool KAction::isPlugged( const QWidget *container, int id ) const
   if ( i == -1 )
     return false;
 
-  if ( menuId( i ) != id )
+  if ( itemId( i ) != id )
     return false;
 
   return true;
@@ -278,9 +278,9 @@ void KAction::setAccel( int i, int a )
 {
   QWidget* w = container( i );
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->setAccel( a, menuId( i ) );
+    static_cast<QPopupMenu*>(w)->setAccel( a, itemId( i ) );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->setAccel( a, menuId( i ) );
+    static_cast<QMenuBar*>(w)->setAccel( a, itemId( i ) );
 }
 
 int KAction::accel() const
@@ -433,7 +433,7 @@ void KAction::unplug( QWidget *w )
     int i = findContainer( menu );
     if ( i != -1 )
     {
-      menu->removeItem( menuId( i ) );
+      menu->removeItem( itemId( i ) );
       removeContainer( i );
       if ( p )
         p->disconnectHighlight( menu, this );
@@ -447,7 +447,7 @@ void KAction::unplug( QWidget *w )
 
     if ( idx != -1 )
     {
-      bar->removeItem( menuId( idx ) );
+      bar->removeItem( itemId( idx ) );
       removeContainer( idx );
       if ( p )
         p->disconnectHighlight( bar, this );
@@ -499,11 +499,11 @@ void KAction::setEnabled( int i, bool e )
     QWidget *w = container( i );
 
     if ( w->inherits("QPopupMenu") )
-      static_cast<QPopupMenu*>(w)->setItemEnabled( menuId( i ), e );
+      static_cast<QPopupMenu*>(w)->setItemEnabled( itemId( i ), e );
     else if ( w->inherits("QMenuBar") )
-      static_cast<QMenuBar*>(w)->setItemEnabled( menuId( i ), e );
+      static_cast<QMenuBar*>(w)->setItemEnabled( itemId( i ), e );
     else if ( w->inherits( "KToolBar" ) )
-      static_cast<KToolBar*>(w)->setItemEnabled( menuId( i ), e );
+      static_cast<KToolBar*>(w)->setItemEnabled( itemId( i ), e );
 }
 
 void KAction::setText( const QString& text )
@@ -530,12 +530,12 @@ void KAction::setText( int i, const QString &text )
   QWidget *w = container( i );
 
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->changeItem( menuId( i ), text );
+    static_cast<QPopupMenu*>(w)->changeItem( itemId( i ), text );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->changeItem( menuId( i ), text );	
+    static_cast<QMenuBar*>(w)->changeItem( itemId( i ), text );	
   else if ( w->inherits( "KToolBar" ) )
   {
-    QWidget *button = static_cast<KToolBar *>(w)->getWidget( menuId( i ) );
+    QWidget *button = static_cast<KToolBar *>(w)->getWidget( itemId( i ) );
     if ( button->inherits( "KToolBarButton" ) )
       static_cast<KToolBarButton *>(button)->setText( text );
   }
@@ -584,7 +584,7 @@ void KAction::setIcon( int id, const QString &icon )
   QWidget* w = container( id );
 
   if ( w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>(w)->setButtonIcon( menuId( id ), icon );
+    static_cast<KToolBar *>(w)->setButtonIcon( itemId( id ), icon );
 }
 
 QString KAction::icon() const
@@ -607,11 +607,11 @@ void KAction::setIconSet( int id, const QIconSet& iconset )
   QWidget *w = container( id );
 
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->changeItem( menuId( id ), iconset, d->m_text );
+    static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), iconset, d->m_text );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->changeItem( menuId( id ), iconset, d->m_text );
+    static_cast<QMenuBar*>(w)->changeItem( itemId( id ), iconset, d->m_text );
   else if ( w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>(w)->setButtonPixmap( menuId( id ), iconset.pixmap() );
+    static_cast<KToolBar *>(w)->setButtonPixmap( itemId( id ), iconset.pixmap() );
 }
 
 QIconSet KAction::iconSet() const
@@ -638,14 +638,14 @@ void KAction::setWhatsThis( int i, const QString& text )
   QPopupMenu* pm = popupMenu( i );
   if ( pm )
   {
-    pm->setWhatsThis( menuId( i ), text );
+    pm->setWhatsThis( itemId( i ), text );
     return;
   }
 
   KToolBar *tb = toolBar( i );
   if ( tb )
   {
-    QWidget *w = tb->getButton( menuId( i ) );
+    QWidget *w = tb->getButton( itemId( i ) );
     QWhatsThis::remove( w );
     QWhatsThis::add( w, text );
     return;
@@ -690,7 +690,7 @@ QWidget* KAction::representative( int index ) const
   return d->m_containers[ index ].m_representative;
 }
 
-int KAction::menuId( int index ) const
+int KAction::itemId( int index ) const
 {
   return d->m_containers[ index ].m_id;
 }
@@ -886,15 +886,15 @@ int KToggleAction::plug( QWidget* widget, int index )
 
   if ( widget->inherits("QPopupMenu") )
   {
-    int id = menuId( _index );
+    int id = itemId( _index );
 
     popupMenu( _index )->setItemChecked( id, d->m_checked );
     popupMenu( _index )->setFont(KGlobalSettings::menuFont());
   } else if ( widget->inherits( "KToolBar" ) ) {
     KToolBar *bar = static_cast<KToolBar *>( widget );
 
-    bar->setToggle( menuId( _index ), TRUE );
-    bar->setButton( menuId( _index ), isChecked() );
+    bar->setToggle( itemId( _index ), TRUE );
+    bar->setButton( itemId( _index ), isChecked() );
   }
 
   return _index;
@@ -936,14 +936,14 @@ void KToggleAction::setChecked( int id, bool checked )
   QWidget *w = container( id );
 
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->setItemChecked( menuId( id ), checked );
+    static_cast<QPopupMenu*>(w)->setItemChecked( itemId( id ), checked );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->setItemChecked( menuId( id ), checked );
+    static_cast<QMenuBar*>(w)->setItemChecked( itemId( id ), checked );
   else if ( w->inherits( "KToolBar" ) )
   {
-    QWidget* r = static_cast<KToolBar*>( w )->getButton( menuId( id ) );
+    QWidget* r = static_cast<KToolBar*>( w )->getButton( itemId( id ) );
     if ( r->inherits( "KToolBarButton" ) )
-      static_cast<KToolBar*>( w )->setButton( menuId( id ), checked );
+      static_cast<KToolBar*>( w )->setButton( itemId( id ), checked );
   }
 }
 
@@ -1239,7 +1239,7 @@ void KSelectAction::setCurrentItem( int id, int index )
 {
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
-    QWidget* r = static_cast<KToolBar*>( w )->getWidget( menuId( id ) );
+    QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *b = static_cast<QComboBox*>( r );
       b->setCurrentItem( index );
@@ -1256,7 +1256,7 @@ void KSelectAction::setComboWidth( int id, int width )
 {
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
-    QWidget* r = static_cast<KToolBar*>( w )->getWidget( menuId( id ) );
+    QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *b = static_cast<QComboBox*>( r );
       b->resize( width, b->height() );
@@ -1268,7 +1268,7 @@ void KSelectAction::setItems( int id, const QStringList& lst )
 {
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
-    QWidget* r = static_cast<KToolBar*>( w )->getWidget( menuId( id ) );
+    QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *b = static_cast<QComboBox*>( r );
       b->clear();
@@ -1347,7 +1347,7 @@ void KSelectAction::clear( int id )
 {
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
-    QWidget* r = static_cast<KToolBar*>( w )->getWidget( menuId( id ) );
+    QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *b = static_cast<QComboBox*>( r );
       b->clear();
@@ -1840,7 +1840,7 @@ int KFontAction::plug( QWidget *w, int index )
   int container = KSelectAction::plug( w, index );
 
   if ( container != -1 && w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>( w )->getCombo( menuId( container ) )->setAutoCompletion( TRUE );
+    static_cast<KToolBar *>( w )->getCombo( itemId( container ) )->setAutoCompletion( TRUE );
 
   return container;
 }
@@ -2162,7 +2162,7 @@ void KActionMenu::unplug( QWidget* widget )
     int i = findContainer( bar );
     if ( i != -1 )
     {
-      bar->removeItem( menuId( i ) );
+      bar->removeItem( itemId( i ) );
       removeContainer( i );
     }
   }
@@ -2174,7 +2174,7 @@ void KActionMenu::unplug( QWidget* widget )
 
     if ( idx != -1 )
     {
-      bar->removeItem( menuId( idx ) );
+      bar->removeItem( itemId( idx ) );
       removeContainer( idx );
     }
 
@@ -2186,7 +2186,7 @@ void KActionMenu::unplug( QWidget* widget )
     int i = findContainer( bar );
     if ( i != -1 )
     {
-      bar->removeItem( menuId( i ) );
+      bar->removeItem( itemId( i ) );
       removeContainer( i );
     }
 
@@ -2213,7 +2213,7 @@ void KActionMenu::setText( int id, const QString& text )
 
   if ( w->inherits( "KToolBar" ) )
   {
-    QWidget *button = static_cast<KToolBar *>( w )->getWidget( menuId( id ) );
+    QWidget *button = static_cast<KToolBar *>( w )->getWidget( itemId( id ) );
     if ( button->inherits( "KToolBarButton" ) )
      static_cast<KToolBarButton *>( button )->setText( text );
   }
@@ -2227,7 +2227,7 @@ void KActionMenu::setIconSet( int id, const QIconSet& iconSet )
   QWidget *w = container( id );
 
   if ( w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>( w )->setButtonPixmap( menuId( id ), iconSet.pixmap() );
+    static_cast<KToolBar *>( w )->setButtonPixmap( itemId( id ), iconSet.pixmap() );
 
   KAction::setIconSet( id, iconSet );
 }
@@ -2290,7 +2290,7 @@ void KActionSeparator::unplug( QWidget *widget )
     int i = findContainer( menu );
     if ( i != -1 )
     {
-      menu->removeItem( menuId( i ) );
+      menu->removeItem( itemId( i ) );
       removeContainer( i );
     }
   }
@@ -2302,7 +2302,7 @@ void KActionSeparator::unplug( QWidget *widget )
 
     if ( i != -1 )
     {
-      menuBar->removeItem( menuId( i ) );
+      menuBar->removeItem( itemId( i ) );
       removeContainer( i );
     }
     return;
@@ -2315,7 +2315,7 @@ void KActionSeparator::unplug( QWidget *widget )
 
     if ( i != -1 )
     {
-      toolBar->removeItem( menuId( i ) );
+      toolBar->removeItem( itemId( i ) );
       removeContainer( i );
     }
     return;
