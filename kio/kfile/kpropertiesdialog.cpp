@@ -957,7 +957,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l = new QLabel(i18n("Points to:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    l = new QLabel(item->linkDest(), d->m_frame );
+    l = new KSqueezedTextLabel(item->linkDest(), d->m_frame );
     grid->addWidget(l, curRow++, 2);
   }
 
