@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 
+#include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
 
@@ -19,7 +20,7 @@ extern "C" {
 #endif
 
 #include "kio/tcpslavebase.h"
-#include "ksock.h"
+#include "kextsock.h"
 
 using namespace KIO;
 
@@ -109,11 +110,12 @@ unsigned short int TCPSlaveBase::GetPort(unsigned short int _port)
 bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 {
 	unsigned short int port;
-	ksockaddr_in server_name;
-
-	memset(&server_name, 0, sizeof(server_name));
+	KExtendedSocket ks;
 
 	port = GetPort(_port);
+
+#if 0
+	memset(&server_name, 0, sizeof(server_name));
 
 	m_iSock = ::socket(PF_INET, SOCK_STREAM, 0);
 	if (m_iSock == -1) return false;
@@ -130,6 +132,21 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 		CloseDescriptor();
 		return false;
 	}
+#else
+
+	ks.setAddress(host, port);
+	if (ks.connect() < 0)
+	  {
+	    if (ks.status() == IO_LookupError)
+	      error( ERR_UNKNOWN_HOST, host);
+	    else
+	      error( ERR_COULD_NOT_CONNECT, host);
+	    return false;
+	  }
+	m_iSock = ks.fd();
+	ks.release();		// KExtendedSocket no longer applicable
+#endif
+	
 
 	// Since we want to use stdio on the socket,
 	// we must fdopen it to get a file pointer,
