@@ -437,6 +437,8 @@ public:
 	QValueList<KURL*> list_urls;
 
 	KURLCompletion::DirLister *dir_lister;
+  
+  bool onlyLocalProto;
 
 	// urlCompletion() in Auto/Popup mode?
 	bool url_auto_completion;
@@ -507,16 +509,16 @@ void KURLCompletion::init()
 	d->replace_env = true;
 	d->last_no_hidden = false;
 	d->last_compl_type = 0;
-
 	d->list_job = 0L;
-
+	d->mode = KURLCompletion::FileCompletion;
+  
 	// Read settings
 	KConfig *c = KGlobal::config();
 	KConfigGroupSaver cgs( c, "URLCompletion" );
 
 	d->url_auto_completion = c->readBoolEntry("alwaysAutoComplete", true);
 	d->popup_append_slash = c->readBoolEntry("popupAppendSlash", true);
-	d->mode = static_cast<Mode>(c->readNumEntry("Mode", KURLCompletion::FileCompletion));
+	d->onlyLocalProto = c->readBoolEntry("LocalProtocolsOnly", false);
 }
 
 void KURLCompletion::setDir(const QString &dir)
@@ -616,7 +618,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 
 		// All other...
 		//
-		if ( (d->mode != LocalPathCompletion) && urlCompletion( url, &match ) )
+		if ( urlCompletion( url, &match ) )
 			return match;
 	}
 
@@ -965,6 +967,8 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 {
 	//kdDebug() << "urlCompletion: url = " << url.kurl()->prettyURL() << endl;
+	if (d->onlyLocalProto && KProtocolInfo::protocolClass(url.protocol()) != ":local")
+		return false;
 
 	// Use d->cwd as base url in case url is not absolute
 	KURL url_cwd = KURL( d->cwd );

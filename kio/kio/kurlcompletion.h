@@ -50,9 +50,8 @@ public:
 	 * @li FileCompletion - all files with full path or in dir(), URLs
 	 * are listed using KIO.
 	 * @li DirCompletion - Same as FileCompletion but only returns directories.
-	 * @li LocalPathCompletion - Same as FileCompletion but only for local urls (file:/).
 	 */
-	enum Mode { ExeCompletion=1, FileCompletion, DirCompletion, LocalPathCompletion };
+	enum Mode { ExeCompletion=1, FileCompletion, DirCompletion };
 
 	/**
 	 * Constructs a KURLCompletion object in FileCompletion mode.
