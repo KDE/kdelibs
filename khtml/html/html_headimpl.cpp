@@ -263,8 +263,8 @@ void HTMLMetaElementImpl::attach()
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
     {
         // get delay and url
-        QString str = _content.string();
-        int pos = str.find(QRegExp("[;,]"));
+        QString str = _content.string().stripWhiteSpace();
+        int pos = str.find(QRegExp("[;, \t]"));
         if (pos == -1) // There can be no url (David)
         {
             bool ok = false;
