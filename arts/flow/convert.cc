@@ -213,11 +213,9 @@ unsigned long uni_convert_stereo_2float(
 	float allSamples = (fromLen*8) / (fromChannels * fromBits);
 
 	// how many samples are remaining?
-	float fHaveSamples = allSamples - startposition;
+	//    subtract one due to interpolation and another against rounding errors
+	float fHaveSamples = allSamples - startposition - 2.0;
 	fHaveSamples /= speed;
-
-	fHaveSamples -= 2.0;	// one due to interpolation and another against
-							// rounding errors
 
 	// convert do "how many samples to do"?
 	if(fHaveSamples > 0)
