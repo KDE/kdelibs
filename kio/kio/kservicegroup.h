@@ -157,6 +157,12 @@ public:
    * @since 3.2
    */
   QStringList suppressGenericNames() const;
+
+  /**
+   * @internal
+   * Sets information related to the layout of services in this group.
+   */
+  void setLayoutInfo(const QStringList &layout);
    
   /**
    * @internal
@@ -174,8 +180,10 @@ public:
    * ServiceGroup.
    * @param sorted true to sort items
    * @param excludeNoDisplay true to include items marked "NoDisplay"
+   * @param allowSeparators true to allow separator items to be included
    * @return the list of entried
    */
+  List entries(bool sorted, bool excludeNoDisplay, bool allowSeparators /* =false */);
   virtual List entries(bool sorted, bool excludeNoDisplay);
 
   /**
@@ -255,4 +263,28 @@ private:
   class Private;
   Private* d;
 };
+
+class KServiceSeparator : public KSycocaEntry
+{
+  K_SYCOCATYPE( KST_KServiceSeparator, KSycocaEntry )
+
+public:
+  typedef KSharedPtr<KServiceSeparator> Ptr;
+public:
+  /**
+   * Construct a service separator
+   * @since 3.2
+   */
+  KServiceSeparator();
+
+  bool isValid() const { return true; }
+  
+  // Dummy
+  virtual QString name() const { return "separator"; }
+  // Dummy
+  virtual void load( QDataStream& ) { };
+  // Dummy
+  virtual void save( QDataStream& ) { };
+};
+
 #endif

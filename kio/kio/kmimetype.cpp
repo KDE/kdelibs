@@ -266,6 +266,11 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   return mimeType( result->mimeType() );
 }
 
+KMimeType::Ptr KMimeType::diagnoseFileName(const QString &fileName, QString &pattern)
+{
+  return KServiceTypeFactory::self()->findFromPattern( fileName, &pattern );
+}
+
 KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode, bool fast_mode )
 {
     KURL u;

@@ -424,6 +424,13 @@ public:
    */
   bool is( const QString& mimeTypeName ) const;
 
+  /**
+   * @internal
+   * Determines the mimetype of file based on it's name and returns the
+   * matching pattern if any.
+   */
+  static KMimeType::Ptr diagnoseFileName(const QString &file, QString &pattern);
+
 protected:
   void loadInternal( QDataStream& );
   void init( KDesktopFile * );

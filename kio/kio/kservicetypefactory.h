@@ -72,8 +72,9 @@ public:
 
   /**
    * Find a mimetype from a filename (using the pattern list)
+   * @param match if provided, returns the pattern that matched.
    */
-  KMimeType * findFromPattern(const QString &_filename);
+  KMimeType * findFromPattern(const QString &_filename, QString *match = 0);
 
   /**
    * @return all mimetypes

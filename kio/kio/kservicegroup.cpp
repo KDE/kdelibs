@@ -70,7 +70,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   d->m_bNoDisplay = config.readBoolEntry( "NoDisplay", false );
   m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
   d->suppressGenericNames = config.readListEntry( "X-KDE-SuppressGenericNames" );
-  d->sortOrder = config.readListEntry("SortOrder");
+//  d->sortOrder = config.readListEntry("SortOrder");
 
   // Fill in defaults.
   if (m_strCaption.isEmpty())
@@ -219,6 +219,20 @@ KServiceGroup::entries(bool sort)
 KServiceGroup::List
 KServiceGroup::entries(bool sort, bool excludeNoDisplay)
 {
+   return entries(sort, excludeNoDisplay, false);
+}
+
+static void addItem(KServiceGroup::List &sorted, const KSycocaEntry::Ptr &p, bool &addSeparator)
+{
+   if (addSeparator && !sorted.isEmpty())
+      sorted.append(new KServiceSeparator());
+   sorted.append(p);
+   addSeparator = false;
+}
+
+KServiceGroup::List
+KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators)
+{
     KServiceGroup *group = this;
 
     // If the entries haven't been loaded yet, we have to reload ourselves
@@ -237,7 +251,6 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
     if (!sort)
         return group->m_serviceList;
 
-
     // Sort the list alphabetically, according to locale.
     // Groups come first, then services.
 
@@ -246,11 +259,17 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
     for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
     {
         KSycocaEntry *p = (*it);
+	bool noDisplay = p->isType(KST_KServiceGroup) ?
+                                   static_cast<KServiceGroup *>(p)->noDisplay() :
+                                   static_cast<KService *>(p)->noDisplay();
+        if (excludeNoDisplay && noDisplay)
+           continue;
         // Choose the right list
         KSortableValueList<SPtr,QCString> & list = p->isType(KST_KServiceGroup) ? glist : slist;
         QString name = p->isType(KST_KServiceGroup) ?
                                    static_cast<KServiceGroup *>(p)->caption() :
                                    p->name();
+                                                                      
         QCString key( name.length() * 4 + 1 );
         // strxfrm() crashes on Solaris
 #ifndef USE_SOLARIS
@@ -276,71 +295,163 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay)
     slist.sort();
     glist.sort();
 
-    List lsort;
-    for(KSortableValueList<SPtr,QCString>::ConstIterator it = glist.begin(); it != glist.end(); ++it)
+    if (d->sortOrder.isEmpty())
     {
-        if (excludeNoDisplay)
-        {
-           KServiceGroup *serviceGroup = (KServiceGroup *)((KSycocaEntry *)((*it).value()));
-           if (serviceGroup->noDisplay())
-              continue;
-        }
-        lsort.append((*it).value());
+       d->sortOrder << ":M";
+       d->sortOrder << ":F";
     }
-    for(KSortableValueList<SPtr,QCString>::ConstIterator it = slist.begin(); it != slist.end(); ++it)
-    {
-        if (excludeNoDisplay)
-        {
-           KService *service = (KService *)((KSycocaEntry *)((*it).value()));
-           if (service->noDisplay())
-              continue;
-        }
-        lsort.append((*it).value());
-    }
-
-    // honor the SortOrder Key
 
     QString rp = relPath();
     if(rp == "/") rp = QString::null;
 
-    if (d->sortOrder.isEmpty())
-        return lsort;
-
-    //kdDebug() << "Honouring sort order " << d->sortOrder.join(",") << endl;
-
-    // Iterate through the sort spec list. If we find an entry that matches one
-    // in the original list, take it out of the original list and add it to the
-    // sorted list. Finally, add all entries that are still in the original list
-    // to the end of the sorted list.
-
-    List sorted;
-    List orig = lsort;
-
+    // Iterate through the sort spec list.
+    // If an entry gets mentioned explicitly, we remove it from the sorted list
     for (QStringList::ConstIterator it(d->sortOrder.begin()); it != d->sortOrder.end(); ++it)
     {
-        QString stripedString = (*it).stripWhiteSpace();
-        //kdDebug() << "order has : " << *it << endl;
-        for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
-            {
-                QString entry = (*sit)->entryPath();
-                // Groups have a trailing slash, we need to remove it first
-                if ( entry[entry.length()-1] == '/' )
-                   entry.truncate(entry.length()-1);
-                //kdDebug() << "Comparing to : " << entry.mid(entry.findRev('/')+1) << endl;
-                if ( stripedString == entry.mid(entry.findRev('/')+1))
-                    {
-                        //kdDebug() << "Appending to sorted : " << *it << endl;
-                        sorted.append(*sit);
-                        orig.remove(sit);
-                        break;
-                    }
-            }
+        const QString &item = *it;
+        if (item.isEmpty()) continue;
+        if (item[0] == '/')
+        {
+          QString groupPath = rp + item.mid(1) + "/";
+           // Remove entry from sorted list of services.
+          for(KSortableValueList<SPtr,QCString>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
+          {
+             KServiceGroup *group = (KServiceGroup *)((KSycocaEntry *)((*it2).value()));
+             if (group->relPath() == groupPath)
+             {
+                glist.remove(it2);
+                break;
+             }
+          }
+        }
+        else if (item[0] != ':')
+        {
+           // Remove entry from sorted list of services.
+           // TODO: Remove item from sortOrder-list if not found
+           // TODO: This prevents duplicates
+          for(KSortableValueList<SPtr,QCString>::Iterator it2 = slist.begin(); it2 != slist.end(); ++it2)
+          {
+             KService *service = (KService *)((KSycocaEntry *)((*it2).value()));
+             if (service->menuId() == item)
+             {
+                slist.remove(it2);
+                break;
+             }
+          }
+        }
     }
 
-    for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
-        sorted.append(*sit);
+    List sorted;
+
+    bool needSeparator = false;
+    // Iterate through the sort spec list.
+    // Add the entries to the list according to the sort spec.
+    for (QStringList::ConstIterator it(d->sortOrder.begin()); it != d->sortOrder.end(); ++it)
+    {
+        const QString &item = *it;
+        if (item.isEmpty()) continue;
+        if (item[0] == ':')
+        {
+          // Special condition...
+          if (item == ":S")
+          {
+             if (allowSeparators)
+                needSeparator = true;
+          }
+          else if (item == ":M")
+          {
+            // Add sorted list of sub-menus
+            for(KSortableValueList<SPtr,QCString>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
+            {
+              addItem(sorted, (*it2).value(), needSeparator);
+            }
+          }
+          else if (item == ":F")
+          {
+            // Add sorted list of services
+            for(KSortableValueList<SPtr,QCString>::Iterator it2 = slist.begin(); it2 != slist.end(); ++it2)
+            {
+              addItem(sorted, (*it2).value(), needSeparator);
+            }
+          }
+          else if (item == ":A")
+          {
+            // Add sorted lists of services and submenus
+            KSortableValueList<SPtr,QCString>::Iterator it_s = slist.begin();
+            KSortableValueList<SPtr,QCString>::Iterator it_g = glist.begin();
+            
+            while(true)
+            {
+               if (it_s == slist.end())
+               {
+                  if (it_g == glist.end())
+                     break; // Done
+                     
+                  // Insert remaining sub-menu
+                  addItem(sorted, (*it_g).value(), needSeparator);
+                  it_g++;
+               }
+               else if (it_g == glist.end())
+               {
+                  // Insert remaining service
+                  addItem(sorted, (*it_s).value(), needSeparator);
+                  it_s++;
+               }
+               else if ((*it_g).index() < (*it_s).index())
+               {
+                  // Insert sub-menu first
+                  addItem(sorted, (*it_g).value(), needSeparator);
+                  it_g++;
+               }
+               else
+               {
+                  // Insert service first
+                  addItem(sorted, (*it_s).value(), needSeparator);
+                  it_s++;
+               }
+            }
+          }
+        }
+        else if (item[0] == '/')
+        {
+          QString groupPath = rp + item.mid(1) + "/";
+
+          for (List::ConstIterator it2(group->m_serviceList.begin()); it2 != group->m_serviceList.end(); ++it2)
+          {
+            if (!(*it2)->isType(KST_KServiceGroup))
+               continue;
+            KServiceGroup *group = (KServiceGroup *)((KSycocaEntry *)(*it2));
+            if (group->relPath() == groupPath)
+            {
+               if (!excludeNoDisplay || !group->noDisplay())
+                  addItem(sorted, (*it2), needSeparator);
+               break;
+            }
+          }
+        }
+        else
+        {
+          for (List::ConstIterator it2(group->m_serviceList.begin()); it2 != group->m_serviceList.end(); ++it2)
+          {
+            if (!(*it2)->isType(KST_KService))
+               continue;
+            KService *service = (KService *)((KSycocaEntry *)(*it2));
+            if (service->menuId() == item)
+            {
+               if (!excludeNoDisplay || !service->noDisplay())
+                  addItem(sorted, (*it2), needSeparator);
+               break;
+            }
+          }
+        }
+    }
 
     return sorted;
+}
+
+void KServiceGroup::setLayoutInfo(const QStringList &layout)
+{
+    d->sortOrder = layout;
 }
 
 KServiceGroup::Ptr
@@ -377,3 +488,9 @@ KServiceGroup::directoryEntryPath() const
 
 void KServiceGroup::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }
+
+
+KServiceSeparator::KServiceSeparator( )
+ : KSycocaEntry("separator")
+{
+}

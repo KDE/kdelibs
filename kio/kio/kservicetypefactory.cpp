@@ -110,7 +110,7 @@ QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
    return QVariant::Invalid;
 }
 
-KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
+KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QString *match)
 {
    // Assume we're NOT building a database
    if (!m_str) return 0;
@@ -155,6 +155,8 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
             (*str) >> matchingOffset;
             // don't return newServiceType - there may be an "other" pattern that
             // matches best this file, like *.tar.bz
+            if (match)
+                *match = "*."+pattern;
             break; // but get out of the fast patterns
          }
          else
@@ -191,6 +193,8 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
       if ( KStringHandler::matchFileName( _filename, *it ) )
       {
          matchingOffset = *it_offset;
+         if (match)
+            *match = *it;
          break;
       }
    }
