@@ -119,7 +119,9 @@ int main( int argc, char** argv )
       return 1;
     }
     // Generate long filenames of each possible length bigger than 98...
-    for (int i = 98; i < 500 ; i++ )
+    // Also exceed 512 byte block size limit to see how well the ././@LongLink
+    // implementation fares
+    for (int i = 98; i < 514 ; i++ )
     {
       QString str, num;
       str.fill( 'a', i-10 );
@@ -127,8 +129,8 @@ int main( int argc, char** argv )
       num = num.rightJustify( 10, '0' );
       tar.writeFile( str+num, "testu", "testg", 3, "hum" );
     }
-    // Result of this test : it fails at 482 (instead of 154 previously).
-    // Ok, I think we can do with that :)
+    // Result of this test : works perfectly now (failed at 482 formerly and
+    // before that at 154).
     tar.close();
     printf("Now run 'tar tvzf %s'\n", argv[2]);
     return 0;
