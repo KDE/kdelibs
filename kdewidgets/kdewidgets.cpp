@@ -489,7 +489,7 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 	if (key == "KTimeWidget")
 		return new KTimeWidget(parent, name);
 	if (key == "KURLComboRequester")
-		return new KURLRequester(new KComboBox(true), parent, name);
+		return new KURLComboRequester(parent, name);
 	if (key == "KURLLabel")
 		return new KURLLabel("KURLLabel", QString::null, parent, name);
 	if (key == "KURLRequester")

@@ -161,9 +161,7 @@ Group=Display (KDE)
 
 [KURLComboRequester]
 ToolTip=URL Requester (KDE)
-ImplClass=KURLRequester
 WhatsThis=A widget holding a combobox and a pushbutton. A "file open" dialog opened when clicking on the pushbutton
-ConstructorArgs=(new KComboBox(true), parent, name)
 IncludeFile=kurlrequester.h
 Group=Input (KDE)
 
