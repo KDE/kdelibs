@@ -117,8 +117,8 @@ KService::init( KDesktopFile *config )
     return;
   }
 
-  m_strIcon = config->readEntry( "Icon", "unknown.png" );
-  m_bTerminal = (config->readEntry( "Terminal" ) == "1");
+  m_strIcon = config->readEntry( "Icon", "unknown" );
+  m_bTerminal = (config->readBoolEntry( "Terminal" ));
   m_strTerminalOptions = config->readEntry( "TerminalOptions" );
   m_strPath = config->readEntry( "Path" );
   m_strComment = config->readEntry( "Comment" );
