@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.2  1999/08/18 22:40:29  ettrich
+    shortcut to get the current desktop faster
+
     Revision 1.1  1999/08/16 20:31:07  ettrich
     Easier access to the window manager with KWinModule.
     This makes the former KWMModuleApplication obsolete.
@@ -221,7 +224,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 
     else if (a == module_win_lower){
 	windowsSorted.remove(w);
-	windowsSorted.insert(0, w);
+	windowsSorted.prepend(w);
 	emit module->windowLower(w);
     }
 
