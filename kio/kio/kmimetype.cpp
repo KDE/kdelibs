@@ -782,6 +782,15 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
   if ( !cfg.hasKey( "Actions" ) )
     return result;
 
+  if ( cfg.hasKey( "TryExec" ) )
+  {
+      QString tryexec = cfg.readEntry( "TryExec" );
+      QString exe =  KStandardDirs::findExe( tryexec );
+      if (exe.isEmpty()) {
+          return result;
+      }
+  }
+
   QStringList keys = cfg.readListEntry( "Actions", ';' ); //the desktop standard defines ";" as separator!
 
   if ( keys.count() == 0 )
