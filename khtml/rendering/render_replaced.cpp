@@ -54,20 +54,20 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 
     if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
-    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);    
-        
-    // overflow: hidden    
+    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+
+    // overflow: hidden
     // save old clip region, set a new one
     QRegion oldClip;
     if (style()->overflow()==OHIDDEN)
     {
         if (p->hasClipping())
-            oldClip = p->clipRegion();        
-        calcClip(p, _tx, _ty, oldClip);   
-    }    
-    
+            oldClip = p->clipRegion();
+        calcClip(p, _tx, _ty, oldClip);
+    }
+
     printObject(p, _x, _y, _w, _h, _tx, _ty);
-    
+
     // overflow: hidden
     // restore clip region
     if (style()->overflow()==OHIDDEN)
@@ -75,8 +75,8 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
         if (oldClip.isNull())
             p->setClipping(false);
         else
-            p->setClipRegion(oldClip);        
-    }     
+            p->setClipRegion(oldClip);
+    }
 }
 
 short RenderReplaced::calcReplacedWidth(bool* ieHack) const
@@ -270,7 +270,8 @@ void RenderWidget::printObject(QPainter *, int, int, int, int, int _tx, int _ty)
 {
     // ### this does not get called if a form element moves of the screen, so
     // the widget stays in it's old place!
-    if(!(m_widget && m_view) || !isVisible()) return;
+    if(!(m_widget && m_view) ) return;
+    if ( !isVisible()) { m_widget->hide(); return; }
 
     // add offset for relative positioning
     if(isRelPositioned())
