@@ -88,7 +88,10 @@ public:
    KService::DCOPServiceType_t dcop_service_type;
    bool autoStart;
    QString errorMsg;
+#ifdef Q_WS_X11
    QCString startup_id; // "" is the default, "0" for none
+   QCString startup_dpy; // Display to send startup notification to.
+#endif
    QValueList<QCString> envs; // env. variables to be app's environment
 };
 
@@ -155,7 +158,7 @@ protected:
 
    void queueRequest(KLaunchRequest *);
    
-   QCString send_service_startup_info( KService::Ptr service, const QCString& startup_id,
+   void send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QCString& startup_id,
        const QValueList<QCString> &envs );
 
 public slots:
@@ -184,5 +187,8 @@ protected:
    bool bProcessingQueue;
    AutoStart mAutoStart;
    QCString mSlaveDebug;
+#ifdef Q_WS_X11
+   Display *mCached_dpy;
+#endif
 };
 #endif

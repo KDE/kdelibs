@@ -153,6 +153,9 @@ KLauncher::KLauncher(int _kdeinitSocket)
   : KUniqueApplication( false, false ), // No Styles, No GUI
     kdeinitSocket(_kdeinitSocket)
 {
+#ifdef Q_WS_X11
+   mCached_dpy = NULL;
+#endif
    requestList.setAutoDelete(true);
    mSlaveWaitRequest.setAutoDelete(true);
    dcopClient()->setNotifications( true );
@@ -197,6 +200,10 @@ KLauncher::~KLauncher()
       QCString filename = QFile::encodeName(mPoolSocketName);
       unlink(filename.data());
    }
+#ifdef Q_WS_X11
+   if( mCached_dpy != NULL )
+       XCloseDisplay( mCached_dpy );
+#endif
 }
 
 void
@@ -589,7 +596,29 @@ KLauncher::requestDone(KLaunchRequest *request)
       if (!request->errorMsg.isEmpty())
          DCOPresult.error += ":\n" + request->errorMsg;
       DCOPresult.pid = 0;
+
+#ifdef Q_WS_X11
+      if (!request->startup_dpy.isEmpty())
+      {
+         Display* dpy = NULL;
+         if( (mCached_dpy != NULL) &&
+              (request->startup_dpy == XDisplayString( mCached_dpy )))
+            dpy = mCached_dpy;
+         if( dpy == NULL )
+            dpy = XOpenDisplay( request->startup_dpy );
+         if( dpy )
+         {
+            KStartupInfoId id;
+            id.initId( request->startup_id );
+            KStartupInfo::sendFinishX( dpy, id );
+            if( mCached_dpy != dpy && mCached_dpy != NULL )
+               XCloseDisplay( mCached_dpy );
+            mCached_dpy = dpy;
+         }
+      }
+#endif
    }
+
    if (request->autoStart)
    {
       mAutoTimer.start(0, true);
@@ -703,7 +732,7 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
    else
       service = KService::serviceByDesktopName(name);
    if (service != NULL)
-       request->startup_id = send_service_startup_info( service,
+       send_service_startup_info( request,  service,
            startup_id, QValueList< QCString >());
    else
        request->startup_id = "0"; // no .desktop file, no startup info
@@ -828,7 +857,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    request->pid = 0;
    request->transaction = 0;
    request->envs = envs;
-   request->startup_id = send_service_startup_info( service, startup_id, envs );
+   send_service_startup_info( request, service, startup_id, envs );
 
    // Request will be handled later.
    if (!blind && !autoStart)
@@ -839,30 +868,30 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    return true;
 }
 
-QCString
-KLauncher::send_service_startup_info( KService::Ptr service, const QCString& startup_id,
+void
+KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QCString& startup_id,
     const QValueList<QCString> &envs )
 {
 #ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
+    request->startup_id = "0";
     if( startup_id == "0" )
-        return "0";
+        return;
     QCString wmclass;
     if( service->property( "X-KDE-StartupNotify" ).isValid())
     {
         if( !service->property( "X-KDE-StartupNotify" ).toBool())
-            return "0";
+            return;
         wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
     }
     else // non-compliant app ( .desktop file )
     {
         if( service->type() != "Application" )
-            return "0";
+            return;
         else
             wmclass = "0";
     }
     KStartupInfoId id;
     id.initId( startup_id );
-    static Display* cached_dpy = NULL;
     const char* dpy_str = NULL;
     for( QValueList<QCString>::ConstIterator it = envs.begin();
          it != envs.end();
@@ -870,13 +899,17 @@ KLauncher::send_service_startup_info( KService::Ptr service, const QCString& sta
         if( strncmp( *it, "DISPLAY=", 8 ) == 0 )
             dpy_str = static_cast< const char* >( *it ) + 8;
     Display* dpy = NULL;
-    if( dpy_str != NULL && cached_dpy != NULL
-        && qstrcmp( dpy_str, XDisplayString( cached_dpy )) == 0 )
-        dpy = cached_dpy;
+    if( dpy_str != NULL && mCached_dpy != NULL
+        && qstrcmp( dpy_str, XDisplayString( mCached_dpy )) == 0 )
+        dpy = mCached_dpy;
     if( dpy == NULL )
         dpy = XOpenDisplay( dpy_str );
+    request->startup_id = id.id();
     if( dpy == NULL )
-        return id.id();
+        return;
+
+    request->startup_dpy = dpy_str;
+
     KStartupInfoData data;
     data.setName( service->name());
     data.setIcon( service->icon());
@@ -884,12 +917,12 @@ KLauncher::send_service_startup_info( KService::Ptr service, const QCString& sta
         data.setWMClass( wmclass );
     // the rest will be sent by kdeinit
     KStartupInfo::sendStartupX( dpy, id, data );
-    if( cached_dpy != dpy && cached_dpy != NULL )
-        XCloseDisplay( cached_dpy );
-    cached_dpy = dpy;
-    return id.id();
+    if( mCached_dpy != dpy && mCached_dpy != NULL )
+        XCloseDisplay( mCached_dpy );
+    mCached_dpy = dpy;
+    return;
 #else
-    return 0;
+    return;
 #endif
 }
 
