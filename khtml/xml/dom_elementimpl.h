@@ -113,6 +113,7 @@ public:
     // DOM methods & attributes for Attr
     bool specified() const { return m_specified; }
     ElementImpl* ownerElement() const { return m_element; }
+    void setOwnerElement( ElementImpl* impl ) { m_element = impl; }
     AttributeImpl* attrImpl() const { return m_attribute; }
 
     //DOMString value() const;

@@ -25,6 +25,7 @@
 #include "xml/dom_docimpl.h"
 #include "xml/dom_elementimpl.h"
 #include "html/html_formimpl.h"
+#include <kdebug.h>
 
 using namespace DOM;
 
@@ -174,13 +175,15 @@ Attr Element::setAttributeNode( const Attr &newAttr )
 
 Attr Element::removeAttributeNode( const Attr &oldAttr )
 {
-    if (!impl || oldAttr.isNull() || oldAttr.ownerElement() != *this)
+    if (!impl || oldAttr.isNull() || oldAttr.ownerElement().handle() != impl)
         throw DOMException(DOMException::NOT_FOUND_ERR);
     if (impl->getDocument() != oldAttr.handle()->getDocument())
         throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
 
     int exceptioncode = 0;
-    Attr r = static_cast<ElementImpl*>(impl)->attributes(true)->removeNamedItem(oldAttr.handle()->id(), exceptioncode);
+
+    NodeImpl::Id id = static_cast<AttrImpl *>(oldAttr.handle())->attrImpl()->id();
+    Attr r = static_cast<ElementImpl*>(impl)->attributes(true)->removeNamedItem(id, exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
     return r;
@@ -269,15 +272,12 @@ Attr Element::setAttributeNodeNS( const Attr &newAttr )
 {
     if (!impl || newAttr.isNull())
         throw DOMException(DOMException::NOT_FOUND_ERR);
-    if (impl->getDocument() != newAttr.handle()->getDocument())
-        throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
-    if (!newAttr.ownerElement().isNull())
-        throw DOMException(DOMException::INUSE_ATTRIBUTE_ERR);
 
     int exceptioncode = 0;
     Attr r = static_cast<ElementImpl*>(impl)->attributes(false)->setNamedItem(newAttr.handle(), exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
+    static_cast<AttrImpl *>(newAttr.handle())->setOwnerElement( static_cast<ElementImpl*>(impl) );
     return r;
 }
 
