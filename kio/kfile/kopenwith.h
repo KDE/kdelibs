@@ -153,6 +153,7 @@ protected:
 
 /* ------------------------------------------------------------------------- */
 
+#ifndef KDE_NO_COMPAT
 /**
  * This class handles the displayOpenWithDialog call, made by KRun
  * when it has no idea what to do with a URL.
@@ -175,9 +176,8 @@ public:
    * @returns true if the operation succeeded
    */
   virtual bool displayOpenWithDialog( const KURL::List& urls );
-    // TODO (BCI) : add optionnal mimetype parameter
 };
-
+#endif
 
 
 /* ------------------------------------------------------------------------- */

@@ -636,6 +636,7 @@ void KOpenWithDlg::accept()
 
 ///////////////
 
+#ifndef KDE_NO_COMPAT
 bool KFileOpenWithHandler::displayOpenWithDialog( const KURL::List& urls )
 {
     KOpenWithDlg l( urls, i18n("Open With:"), QString::null, 0L );
@@ -650,6 +651,7 @@ bool KFileOpenWithHandler::displayOpenWithDialog( const KURL::List& urls )
     }
     return false;
 }
+#endif
 
 #include "kopenwith.moc"
 
