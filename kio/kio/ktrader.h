@@ -123,7 +123,7 @@ public:
      * keywords are AND, OR, NOT, IN, and EXIST.. all used in an
      * almost spoken-word form.  An example is:
      * <PRE>
-     * (Type == 'Service') and (('KPart::ReadOnlyPart in 'ServiceType') or (exist Exec))
+     * (Type == 'Service') and (('KParts/ReadOnlyPart' in ServiceTypes) or (exist Exec))
      * </PRE>
      *
      * The keys used in the query (Type, ServiceType, Exec) are all
