@@ -39,7 +39,7 @@
 #include <kstandarddirs.h>
 #include <ktabctl.h>
 
-static const int DEBUGAREA = 1000;
+static const int DEBUGAREA = 297;
 
 class KPluginInfo::KPluginInfoPrivate
 {
