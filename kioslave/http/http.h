@@ -1,3 +1,5 @@
+// $Id$
+
 #ifndef __http_h__
 #define __http_h__
 
@@ -68,10 +70,28 @@ protected:
   void decodeGzip();
 
   int openStream();
+
+  /**
+    * A "smart" wrapper around write that will use SSL_write or
+    * write(2) depending on whether you've got an SSL connection or not.
+    * The only shortcomming is that it uses the "global" file handles and
+    * soforth.  So you can't really use this on individual files/sockets.
+    */
   ssize_t write (const void *buf, size_t nbytes);
+
+  /**
+    * A "smart" wrapper around read that will use SSL_read or
+    * read(2) depending on whether you've got an SSL connection or not.
+    */
   ssize_t read (void *b, size_t nbytes);
+
   char *gets (char *str, int size);
+
+  /**
+    * An SSLified feof().
+    */
   bool eof ();
+
   bool m_bEOF;
 
   /**
