@@ -1809,7 +1809,7 @@ QStringList KLocale::languagesTwoAlpha() const
 
   QStringList result;
 
-  KConfig config(QString::fromLatin1("language.codes"), false, true);
+  KConfig config(QString::fromLatin1("language.codes"), true, false);
   config.setGroup("TwoLetterCodes");
 
   for ( QStringList::ConstIterator it = origList.begin();
