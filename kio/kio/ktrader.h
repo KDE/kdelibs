@@ -49,7 +49,7 @@
  * then will use @ref KRun::run() to invoke the application.  In "trader-speak",
  * this looks like so:
  * <PRE>
- * KTrader::OfferList offers = KTrader::self()->query("text/plain", "Type == 'Application'");
+ * KTrader::OfferList offers = KTrader::self()->query("text/html", "Type == 'Application'");
  * KService::Ptr ptr = offers.first();
  * KURL::List lst;
  * lst.append("http://www.kde.org/index.html");
