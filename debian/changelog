@@ -3,6 +3,7 @@ kdelibs (4:2.2.0-0.1beta1-2) unstable; urgency=low
   * synce with upstream
   * more https related fixes
   * Fix shlibs
+  * Fix build issues with new libxml2-dev (Closes: #106766)
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 27 Jul 2001 12:18:00 -0700
 
