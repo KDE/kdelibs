@@ -164,10 +164,8 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
     int s = buffer.size();
 
     if ( s >= 3 &&
-         d[0] == 0xef && d[1] == 0xbb && d[2] == 0xbf) {
-        qDebug( "*** detected UTF8!!!" );
+         d[0] == 0xef && d[1] == 0xbb && d[2] == 0xbf)
          return QTextCodec::codecForMib( 106 ); // UTF-8
-    }
 
     if ( s >= 2 && ((d[0] == 0xff && d[1] == 0xfe) ||
                     (d[0] == 0xfe && d[1] == 0xff)))
@@ -246,7 +244,6 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
 
     QTextCodec* c = codecForBuffer( m_charset, buffer.buffer() );
     QString data = c->toUnicode( buffer.buffer().data(), m_size );
-    qDebug( "data is >%s<", data.latin1() );
     // workaround Qt bugs
     m_sheet = data[0] == QChar::byteOrderMark ? DOMString(data.mid( 1 ) ) : DOMString(data);
     m_loading = false;
