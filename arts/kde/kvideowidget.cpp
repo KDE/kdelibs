@@ -13,6 +13,9 @@
 #endif
 
 #include <time.h>
+#ifdef HAVE_USLEEP
+#include <unistd.h>
+#endif
 #include <qaccel.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -61,9 +64,13 @@ static void releaseWinId( Window window )
 	sendEvent( window, VPO_RELEASE_WINDOW );
 
 	// Do not consume 100% CPU (wait 50ms)
+#	ifdef HAVE_USLEEP
+	usleep(50000);
+#	else
 	ts.tv_sec  = 0;
 	ts.tv_nsec = 50000000;
 	nanosleep( &ts, NULL );
+#	endif
     }
 }
 
