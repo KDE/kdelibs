@@ -186,7 +186,7 @@ protected:
 
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
-  void doneEditing();
+  void doneEditing(QListViewItem *item, int row);
 
 private:
   /**

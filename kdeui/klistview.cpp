@@ -116,10 +116,12 @@ void KListViewLineEdit::terminate()
 {
 	item->setText(col, text());
 	hide();
+	int c=col;
+	QListViewItem *i=item;
 	col=0;
 	item=0;
 	releaseMouse();
-	emit done();
+	emit done(i,c);
 }
 
 void KListViewLineEdit::focusOutEvent(QFocusEvent *)
@@ -136,7 +138,7 @@ KListView::KListView( QWidget *parent, const char *name )
 		d->pressPos=0;
 		d->startDragPos=0;
 		d->editor=new KListViewLineEdit(this);
-		connect(d->editor, SIGNAL(done()), this, SLOT(doneEditing()));
+		connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
 	}
 
 	setAcceptDrops(true);
@@ -679,9 +681,10 @@ void KListView::setRenameableRow(int row, bool yesno)
 		d->renameable.remove(row);
 }
 
-void KListView::doneEditing()
+void KListView::doneEditing(QListViewItem *item, int row)
 {
-
+	emit itemRenamed(item, item->text(row), row);
+	emit itemRenamed(item);
 }
 
 

@@ -33,7 +33,7 @@ public:
 	~KListViewLineEdit();
 	
 signals:
-	void done();
+	void done(QListViewItem*, int);
 	
 public slots:
 	void terminate();
