@@ -19,6 +19,7 @@
 #include <kdebug.h>
 #include <kapp.h>
 #include <qfile.h>
+#include <ksimpleconfig.h>
 #include <kstddirs.h>
 #include <assert.h>
 
@@ -392,13 +393,70 @@ static struct names {
 	}
 };
 
+/**
+ * Configuration for the utime() problem.
+ * Here's the problem:
+ * By looking into a file to determine its mimetype, we change its "last access"
+ * time (atime) and this can have side effects, like files in /tmp never being
+ * cleaned up because of that. So in temp directories, we restore the atime.
+ * Since this changes the ctime (last change of attributes), we don't do that
+ * anywhere else, because that breaks archiving programs, that check the ctime.
+ * Hence this class, to configure the directories where the atime should be restored.
+ */
+class KMimeMagicUtimeConf
+{
+public:
+    KMimeMagicUtimeConf()
+    {
+        tmpDirs << QString::fromLatin1("/tmp"); // default value
+
+        // The trick is that we also don't want the user to override globally set
+        // directories. So we have to misuse KStandardDirs :}
+        QStringList confDirs = KGlobal::dirs()->resourceDirs( "config" );
+        if ( !confDirs.isEmpty() )
+        {
+            QString globalConf = confDirs.last() + "kmimemagicrc";
+            if ( QFile::exists( globalConf ) )
+            {
+                KSimpleConfig cfg( globalConf );
+                cfg.setGroup( "Settings" );
+                tmpDirs = cfg.readListEntry( "atimeDirs" );
+            }
+            if ( confDirs.count() > 1 )
+            {
+                QString localConf = confDirs.first() + "kmimemagicrc";
+                if ( QFile::exists( localConf ) )
+                {
+                    KSimpleConfig cfg( localConf );
+                    cfg.setGroup( "Settings" );
+                    tmpDirs += cfg.readListEntry( "atimeDirs" );
+                }
+            }
+        }
+#if 0
+        // debug code
+        for ( QStringList::Iterator it = tmpDirs.begin() ; it != tmpDirs.end() ; ++it )
+            kdDebug() << " atimeDir: " << *it << endl;
+#endif
+    }
+
+    bool restoreAccessTime( const QString & file ) const
+    {
+        QString dir = file.left( file.findRev( '/' ) );
+        bool res = tmpDirs.contains( dir );
+        //kdDebug(7018) << "restoreAccessTime " << file << " dir=" << dir << " result=" << res << endl;
+        return res;
+    }
+    QStringList tmpDirs;
+};
+
 /* current config */
-typedef struct config_rec {
-	QString magicfile;        /* where magic be found      */
+struct config_rec {
+	QString magicfile;      /* where magic be found      */
 	struct magic *magic,    /* head of magic config list */
 	*last;
-} config_rec;
-
+        KMimeMagicUtimeConf * utimeConf;
+};
 
 #if (MIME_MAGIC_DEBUG_TABLE > 1)
 static void
@@ -433,7 +491,7 @@ test_table()
 int KMimeMagic::parse_line(char *line, int *rule, int lineno)
 {
 	int ws_offset;
-	
+
 	/* delete newline */
 	if (line[0]) {
 		line[strlen(line) - 1] = '\0';
@@ -443,7 +501,7 @@ int KMimeMagic::parse_line(char *line, int *rule, int lineno)
 	while (line[ws_offset] && isspace(line[ws_offset])) {
 		ws_offset++;
 	}
-	
+
 	/* skip blank lines */
 	if (line[ws_offset] == 0) {
 		return 0;
@@ -451,7 +509,7 @@ int KMimeMagic::parse_line(char *line, int *rule, int lineno)
 	/* comment, do not parse */
 	if (line[ws_offset] == '#')
 		return 0;
-	
+
 	/* if we get here, we're going to use it so count it */
 	(*rule)++;
 
@@ -717,7 +775,7 @@ int KMimeMagic::parse(char *l, int lineno)
 		++l;
 		m->mask = signextend(m, strtol(l, &l, 0));
 	} else
-		m->mask = ~0L;
+		m->mask = (unsigned long) ~0L;
 	EATAB;
 
 	switch (*l) {
@@ -1238,22 +1296,22 @@ KMimeMagic::finishResult()
  * fixed-size buffer to begin processing the contents.
  */
 void
-KMimeMagic::process(const char * fn)
+KMimeMagic::process(const QString & fn)
 {
 	int fd = 0;
 	unsigned char buf[HOWMANY + 1];	/* one extra for terminating '\0' */
-	struct utimbuf utbuf;
 	struct stat sb;
 	int nbytes = 0;         /* number of bytes read from a datafile */
+        QCString fileName = QFile::encodeName( fn );
 
 	/*
 	 * first try judging the file based on its filesystem status
 	 */
-	if (fsmagic(fn, &sb) != 0) {
+	if (fsmagic(fileName, &sb) != 0) {
 		//resultBuf += "\n";
 		return;
 	}
-	if ((fd = open(fn, O_RDONLY)) < 0) {
+	if ((fd = open(fileName, O_RDONLY)) < 0) {
 		/* We can't open it, but we were able to stat it. */
 		/*
 		 * if (sb.st_mode & 0002) addResult("writable, ");
@@ -1279,14 +1337,18 @@ KMimeMagic::process(const char * fn)
 		tryit(buf, nbytes);
 	}
 
-	/*
-	 * Try to restore access, modification times if read it.
-	 * This changes the "change" time (ctime), but we can't do anything
-	 * about that.
-	 */
-	utbuf.actime = sb.st_atime;
-	utbuf.modtime = sb.st_mtime;
-	(void) utime(fn, &utbuf);       /* we don't care if this fails */
+        if ( conf->utimeConf && conf->utimeConf->restoreAccessTime( fn ) )
+        {
+            /*
+             * Try to restore access, modification times if read it.
+             * This changes the "change" time (ctime), but we can't do anything
+             * about that.
+             */
+            struct utimbuf utbuf;
+            utbuf.actime = sb.st_atime;
+            utbuf.modtime = sb.st_mtime;
+            (void) utime(fileName, &utbuf);
+        }
 	(void) close(fd);
 }
 
@@ -1370,7 +1432,7 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 				} else {
 					char *tmp;
 					char buf2[BUFSIZ + BUFSIZ + 4];
-					
+
 					strcpy(buf2, fn);
 					if ((tmp = strrchr(buf2, '/')) == NULL) {
 						tmp = buf; /* in current dir */
@@ -1388,7 +1450,7 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 						strcpy(buf, tmp);
 				}
 				if (followLinks)
-					process(buf);
+					process( QFile::decodeName( buf ) );
 				else
 					resultBuf = MIME_INODE_LINK;
 				return 1;
@@ -1852,6 +1914,7 @@ KMimeMagic::KMimeMagic(const QString & _configfile)
 	followLinks = FALSE;
 
 	conf->magicfile = _configfile;
+        conf->utimeConf = 0L; // created on demand
 	/* on the first time through we read the magic file */
 	result = apprentice();
 	if (result == -1)
@@ -1875,10 +1938,10 @@ KMimeMagic::~KMimeMagic()
 			p = p->next;
 			free(q);
 		}
+                delete conf->utimeConf;
 		delete conf;
 	}
-	if (magicResult)
-		delete magicResult;
+        delete magicResult;
 }
 
 bool
@@ -1936,7 +1999,7 @@ KMimeMagic::findBufferType(const QByteArray &array)
 	  magicResult = new KMimeMagicResult();
 	magicResult->setInvalid();
 	accuracy = 100;
-	
+
 	int nbytes = array.size();
 
         if (nbytes > HOWMANY)
@@ -1993,8 +2056,11 @@ KMimeMagicResult* KMimeMagic::findFileType(const QString & fn)
 	magicResult->setInvalid();
 	accuracy = 100;
 
+        if ( !conf->utimeConf )
+            conf->utimeConf = new KMimeMagicUtimeConf();
+
         /* process it based on the file contents */
-        process(QFile::encodeName(fn).data());
+        process( fn );
 
         /* if we have any results, put them in the request structure */
         //finishResult();

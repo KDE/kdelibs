@@ -38,7 +38,7 @@ class KMimeMagic; // see below (read this one first)
  * Returned by @ref KMimeMagic @p find...Type methods.
  *
  * It contains the mimetype and the encoding of
- * the file or buffer read. 
+ * the file or buffer read.
  */
 class KMimeMagicResult
 {
@@ -83,9 +83,16 @@ protected:
  * Unless specified otherwise, @ref KMimeMagic uses
  * $KDEDIR/share/mimelnk/magic for this purpose.
  *
+ * To make KMimeMagic restore the 'atime' of a file after it opened it,
+ * add its directory in kmimemagicrc like:
+ * [Settings]
+ * atimeDirs=/tmp,/var/tmp,/home/dfaure/tmp
+ * This isn't done by default because it changes the 'ctime'.
+ * See kmimemagic.cpp for a full discussion on this issue.
+ *
  * The basic usage of @ref KMimeMagic is :
  * @li Get a pointer to it, using @ref KMimeMagic::self().
- * @li Use it for any file or buffer you want, using one of the three 
+ * @li Use it for any file or buffer you want, using one of the three
  * @p find...Type() methods.
  *
  * The result is contained in the class @ref KMimeMagicResult.
@@ -190,14 +197,14 @@ private:
    * If true, follow symlinks.
    */
   bool followLinks;
-	
+
   /**
    * The current result buffer during inspection.
    */
   QString resultBuf;
 
   int finishResult();
-  void process(const char *);
+  void process(const QString &);
   void tryit(unsigned char *, int);
   int fsmagic(const char *, struct stat *);
   int match(unsigned char *, int);
@@ -208,7 +215,7 @@ private:
   int ascmagic(unsigned char *, int);
   int textmagic(unsigned char *, int);
 
-  struct config_rec *conf;
+  struct config_rec *conf; // this is also our "d pointer"
   int accuracy;
 };
 
