@@ -52,9 +52,7 @@ Connection::Connection()
     notifier = 0;
     receiver = 0;
     member = 0;
-    queueonly = false;
     m_suspended = false;
-    unqueuedTasks = 0;
 }
 
 Connection::~Connection()
@@ -90,7 +88,7 @@ void Connection::close()
 
 void Connection::send(int cmd, const QByteArray& data)
 {
-    if (!inited() || queueonly || tasks.count() > 0) {
+    if (!inited() || tasks.count() > 0) {
 	Task *task = new Task();
 	task->cmd = cmd;
 	task->data = data;
@@ -98,39 +96,20 @@ void Connection::send(int cmd, const QByteArray& data)
     } else {
 	sendnow( cmd, data );
     }
-
-    if (inited() && tasks.count() > 0 && !queueonly)
-	QTimer::singleShot(100, this, SLOT(dequeue()));
-}
-
-void Connection::queueOnly(bool queue) {
-    unqueuedTasks = tasks.count();
-    queueonly = queue;
-    dequeue();
 }
 
 void Connection::dequeue()
 {
-    if (tasks.count() == 0  || !inited() || (queueonly && unqueuedTasks == 0))
+    if (!inited())
 	return;
 
-    tasks.first();
-    Task *task = tasks.take();
-    sendnow( task->cmd, task->data );
-    delete task;
-
-    if (queueonly)
-	unqueuedTasks--;
-
-    if (tasks.count() > 0 && (!queueonly || unqueuedTasks > 0))
-	QTimer::singleShot(100, this, SLOT(dequeue()));
-}
-
-
-void Connection::init(int _fd_in, int fd_out)
-{
-    fd_in = _fd_in;
-    f_out = fdopen( fd_out, "wb" );
+    while (tasks.count())
+    {
+       tasks.first();
+       Task *task = tasks.take();
+       sendnow( task->cmd, task->data );
+       delete task;
+    }
 }
 
 void Connection::init(KSocket *sock)

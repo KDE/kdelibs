@@ -40,8 +40,8 @@ namespace KIO {
     /**
      * This class provides a simple means for IPC between two applications
      * via a pipe.
-     * It handles a queue of commands to be sent, and has a internal signal
-     * called after a command has been sent, to send the next one (FIFO).
+     * It handles a queue of commands to be sent which makes it possible to
+     * queue data before an actual connection has been established.
      */
     class Connection : public QObject
     {
@@ -56,8 +56,6 @@ namespace KIO {
 	
 	int fd_from() const { return fd_in; }
         int fd_to() const { return fileno( f_out ); }
-	
-	void init(int fd_in, int fd_out);
 	
 	bool inited() const { return (fd_in != -1) && (f_out != 0); }
 	
@@ -90,8 +88,6 @@ namespace KIO {
          */
         bool suspended() const { return m_suspended; }
 
-	void queueOnly(bool queue);
-
     protected slots:
         void dequeue();
 	
@@ -99,19 +95,13 @@ namespace KIO {
 	
 	
     private:
-	bool queueonly;
 	int fd_in;
 	FILE *f_out;
 	KSocket *socket;
 	QSocketNotifier *notifier;
 	QObject *receiver;
 	const char *member;
-#if QT_VERSION < 300
-	QList<Task> tasks;
-#else
 	QPtrList<Task> tasks;
-#endif
-	int unqueuedTasks;
         bool m_suspended;
     };
 

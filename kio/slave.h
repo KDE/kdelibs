@@ -137,8 +137,6 @@ namespace KIO {
 
         static Slave* holdSlave( const QString &protocol, const KURL& url );
 
-	void queueOnly(bool queue) { slaveconn.queueOnly(queue); }
-
         void suspend();
         void resume();
         void hold(const KURL &url);
