@@ -184,11 +184,11 @@ QStringList libpaths, libnamesc, libnamess;
       void *x;
       x = _sslLib->symbol("SSL_library_init");
       if (x) ((int (*)())x)();
-      _sslLib->symbol("OpenSSL_add_all_algorithms");
+      x = _cryptoLib->symbol("OpenSSL_add_all_algorithms");
       if (x) ((void (*)())x)();
-      _sslLib->symbol("OpenSSL_add_all_ciphers");
+      x = _cryptoLib->symbol("OpenSSL_add_all_ciphers");
       if (x) ((void (*)())x)();
-      _sslLib->symbol("OpenSSL_add_all_digests");
+      x = _cryptoLib->symbol("OpenSSL_add_all_digests");
       if (x) ((void (*)())x)();
    }
 
@@ -196,7 +196,8 @@ QStringList libpaths, libnamesc, libnamess;
 
 
 KOpenSSLProxy::~KOpenSSLProxy() {
-
+   delete _sslLib;
+   delete _cryptoLib;
 }
 
 
