@@ -291,13 +291,14 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     coll->action( "forward" )->plug( toolbar );
     coll->action( "home" )->plug( toolbar );
     coll->action( "reload" )->plug( toolbar );
-    KAccel * accel = new KAccel(this);
+    // This is unnecessary, because the actions are already plugged into a KAccel -- ellis
+    /*KAccel * accel = new KAccel(this);
     coll->action( "up" )->plugAccel( accel );
     coll->action( "back" )->plugAccel( accel );
     coll->action( "forward" )->plugAccel( accel );
     coll->action( "home" )->plugAccel( accel );
     coll->action( "reload" )->plugAccel( accel );
-    coll->action( "delete" )->plugAccel( accel );
+    coll->action( "delete" )->plugAccel( accel );*/
 
     bookmarks = new KFileBookmarkManager();
     Q_CHECK_PTR( bookmarks );
@@ -340,8 +341,8 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     coll->action( "short view" )->plug( toolbar );
     coll->action( "detailed view" )->plug( toolbar );
-    coll->action( "short view" )->plugAccel( accel );
-    coll->action( "detailed view" )->plugAccel( accel );
+    //coll->action( "short view" )->plugAccel( accel );
+    //coll->action( "detailed view" )->plugAccel( accel );
 
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));
