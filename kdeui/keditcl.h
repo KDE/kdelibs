@@ -194,8 +194,11 @@ public:
 
     /**
      * Save text from the edit widget to a text stream.
+     * If @p softWrap is false soft line wrappings are replaced with line-feeds
+     * If @p softWrap is true soft line wrappings are ignored.
      **/
-    void saveText(QTextStream *);
+    void saveText(QTextStream *, bool softWrap);
+    void saveText(QTextStream *); // KDE 4.0: remove
 
     /**
      *  Let the user select a font and set the font of the textwidget to that

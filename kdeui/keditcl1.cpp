@@ -222,14 +222,21 @@ KEdit::cleanWhiteSpace()
    setFocus();
 }
 
+
 void
 KEdit::saveText(QTextStream *stream)
+{
+   saveText(stream, false);
+}
+
+void
+KEdit::saveText(QTextStream *stream, bool softWrap)
 {
    int line_count = numLines()-1;
    if (line_count < 0)
       return;
    
-   if (wordWrap() == NoWrap)
+   if (softWrap || (wordWrap() == NoWrap))
    {
       for(int i = 0; i < line_count; i++)
       {
