@@ -28,8 +28,6 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#define FTP_BUFSIZ 1024
-
 #include <qcstring.h>
 #include <qstring.h>
 
@@ -51,13 +49,17 @@ struct FtpEntry
   time_t date;
 };
 
-struct netbuf
-{
-  char *cput,*cget;
-  int handle;
-  int cavail,cleft;
-  char buf[FTP_BUFSIZ];
-};
+/**
+  * This is the physical size of rspbuf. BUT: only the 1st RESP_BUFFER_SIZE
+  * characters are used to store a server reply. If the server reply is 
+  * longer, it gets silently truncated!
+  */
+#define  RESP_BUFFER_SIZE  1024
+/**
+  * Max number of chars returned from ftpReadline(). If the server
+  * sends more all chars until the next new-line are discarded.
+  */
+#define  RESP_READ_LIMIT    256
 
 class Ftp : public KIO::SlaveBase
 {
@@ -104,26 +106,30 @@ private:
   // emit error on error (they are highlevel methods).
 
   /**
+   * loginMode for ftpOpenConnection
+   */
+  enum {
+    loginDefered,
+    loginExplicit,
+    loginImplicit
+  };
+  
+  /**
    * Connect and login to the FTP server.
    *
-   * If login is set to false, this function will not attempt
-   * to login to the server.
+   * @param loginMode controls if login info should be sent<br>
+   *  loginDefered  - must not be logged on, no login info is sent<br>
+   *  loginExplicit - must not be logged on, login info is sent<br>
+   *  loginImplicit - login info is sent if not logged on
    *
-   * @param login if true send login info to the FTP server.
+   * @return true on success (a login failure would return false).
    */
-  void ftpOpenConnection ( bool login = true );
+  bool ftpOpenConnection (int loginMode);
 
   /**
    * Executes any auto login macro's as specified in a .netrc file.
    */
   void ftpAutoLoginMacro ();
-
-  /**
-   * Called by openConnection. It opens the control connection to the ftp server.
-   *
-   * @return true on success.
-   */
-  bool connect( const QString & host, unsigned short int port = 0 );
 
   /**
    * Called by openConnection. It logs us in.
@@ -222,11 +228,16 @@ private:
   bool ftpRename( const QString & src, const QString & dst, bool overwrite );
 
   /**
-   * read a line of text
+   * Called by openConnection. It opens the control connection to the ftp server.
    *
-   * return -1 on error, bytecount otherwise
+   * @return true on success.
    */
-  int ftpReadline( char *buf, int max, netbuf *ctl );
+  bool openControl( const QString & host, unsigned short int port );
+
+  /**
+    * closes the socket holding the control connection (see openControl)
+    */
+  void closeControl();
 
   /**
    * read a response from the server, into rspbuf
@@ -246,16 +257,13 @@ private: // data members
    * This is the data connection socket from which we read the data.
    */
   int sData;
-  /**
-   * The control stream socket
-   */
-  int sControl;
+  
   /**
    * The server socket for a data connection. This is needed since the
    * ftp server must open a connection to us.
    */
   int sDatal;
-
+    
   QString m_host;
   unsigned short int m_port;
   QString m_user;
@@ -266,11 +274,26 @@ private: // data members
   QString m_initialPath;
   KURL m_proxyURL;
 
-  netbuf *nControl;
-  char rspbuf[256];
-
+  /**
+   * readresp fills this buffer with data read from ksControl
+   */
+  char rspbuf[RESP_BUFFER_SIZE  ];
+  
+  /**
+   * the number of bytes in the current response line
+   */
+  int m_iRespLine;
+  
+  /**
+   * the number of bytes in the response buffer (includes m_iRespLine)
+   */
+  int m_iRespBuff;
+  
+  /**
+   * true if logged on (ksControl should also be non-NULL)
+   */
   bool m_bLoggedOn;
-  bool m_bFtpStarted;
+  
   bool m_bPasv;
   bool m_bUseProxy;
   bool m_bPersistent;
@@ -287,6 +310,10 @@ private: // data members
     pasvUnknown = 0x20
   };
   int m_extControl;
+  
+  /**
+   * control connection socket, only set if openControl() succeeded
+   */
   KExtendedSocket *ksControl;
 
 };
