@@ -39,15 +39,17 @@
 
 void KXBELBookmarkImporterImpl::parse() 
 {
+  //kdDebug() << "KXBELBookmarkImporterImpl::parse()" << endl;
   KBookmarkManager *manager = KBookmarkManager::managerForFile(m_fileName);
   KBookmarkGroup root = manager->root();
   traverse(root);
-  // FIXME erm. this well, crashes!!!
-  // delete manager;
+  // FIXME delete it!
+  // delete manager; 
 }
 
 void KXBELBookmarkImporterImpl::visit(const KBookmark &bk) 
 {
+  //kdDebug() << "KXBELBookmarkImporterImpl::visit" << endl;
   if (bk.isSeparator()) 
     emit newSeparator();
   else 
@@ -56,11 +58,13 @@ void KXBELBookmarkImporterImpl::visit(const KBookmark &bk)
 
 void KXBELBookmarkImporterImpl::visitEnter(const KBookmarkGroup &grp)
 {
+  //kdDebug() << "KXBELBookmarkImporterImpl::visitEnter" << endl;
   emit newFolder(grp.fullText(), false, "");
 }
    
 void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
 {
+  //kdDebug() << "KXBELBookmarkImporterImpl::visitLeave" << endl;
   emit endFolder();
 }
 
