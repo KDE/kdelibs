@@ -84,6 +84,7 @@ binary-arch:  build
 	install -d debian/tmp/etc/pam.d
 	install -d debian/tmp/etc/kde2
 	install -d debian/tmp/usr/share/lintian/overrides
+	install -d debian/libarts-alsa/usr/share/lintian/overrides
 	install -d debian/libarts-alsa/usr/share/man/man1
 	make DESTDIR=`pwd`/debian/tmp/ install
 	make -C arts/ clean
