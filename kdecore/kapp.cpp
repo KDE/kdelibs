@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.76  1997/11/27 20:21:20  kulow
+// safer deletion of theKProcessController by Johannes Sixt.
+// Read the comments for details
 //
 // Revision 1.75  1997/11/21 11:22:29  kulow
 // make a deep copy of kdedir before returning it. I still don't get it,
@@ -517,7 +520,7 @@ void KApplication::init()
   DndEnterProtocol = XInternAtom( display, "DndEnterProtocol", False );    
   DndLeaveProtocol = XInternAtom( display, "DndLeaveProtocol", False );    
   DndRootProtocol = XInternAtom( display, "DndRootProtocol", False );    
-void KApplication::enableSessionManagement(bool userdefined = False){
+  lastEnteredDropZone = 0L;
   dropZones.setAutoDelete( FALSE );
 
   // initialize file search paths
