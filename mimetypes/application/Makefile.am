@@ -19,7 +19,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-truetype-font.desktop msexcel2.desktop \
 	x-shockwave-flash.desktop x-designer.desktop x-linguist.desktop \
 	x-ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
-	pgp-signature.desktop pgp-encrypted.desktop \
+	x-pkcs7-signature.desktop pgp-signature.desktop pgp-encrypted.desktop \
 	x-mswrite.desktop
 
 datadir = $(kde_mimedir)/application

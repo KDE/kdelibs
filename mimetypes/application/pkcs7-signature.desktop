@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-pkcs7-signature
+Icon=signature
+Patterns=
+Comment=Detached S/MIME signature
+Comment[xx]=xx
