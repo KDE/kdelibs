@@ -69,7 +69,7 @@ if test -z $x_libraries; then
   X_LDFLAGS=""
   x_libraries="."; dnl better than nothing :-)
  else
-  X_LDFLAGS="-I$x_libraries"
+  X_LDFLAGS="-L$x_libraries"
 fi
 
 AC_SUBST(X_INCLUDES)
@@ -149,7 +149,7 @@ fi
 if test "$qt_libraries" = "$x_libraries"; then
  QT_LDFLAGS=""
 else
- QT_LDLFLAGS="-I$qt_libraries"
+ QT_LDLFLAGS="-L$qt_libraries"
  all_libraries="$all_libraries $QT_LDLFLAGS"
 fi
 
@@ -232,7 +232,7 @@ fi
 if test "$kde_libraries" = "$x_libraries" || test "$kde_libraries" = "$qt_libraries" ; then
  KDE_LDFLAGS=""
 else
- KDE_LDFLAGS="-I$kde_libraries"
+ KDE_LDFLAGS="-L$kde_libraries"
  all_libraries="$all_libraries $KDE_LDFLAGS"
 fi
 
