@@ -567,127 +567,75 @@ void KXMLGUIClient::unplugActionList( const QString &name )
   d->m_factory->unplugActionList( this, name );
 }
 
-class InternalXMLConsumer : public QXMLConsumer
+class InternalXMLConsumer : public QSAXDefaultHandler
 {
 public:
-  InternalXMLConsumer() 
+  InternalXMLConsumer()
   {
   }
   virtual ~InternalXMLConsumer() {}
 
-  virtual bool tagStart( const QString& name )
-  {
-    static QString tagKPartGUI = QString::fromLatin1( "kpartgui" );
-    if ( name.lower() != tagKPartGUI )
-      return false;
-    return true;
-  } 
-  virtual bool tagEnd( const QString& )
-  {
-    // we are only interested in the very first tag
-    return false;
-  }
-  virtual bool attrib( const QString& name, const QString& value )
+//  virtual bool startElement( const QString& name )
+  virtual bool startElement( const QString &, const QString &, const QString &qName, const QSAXAttributes &atts )
   {
     static QString attrVersion = QString::fromLatin1( "version" );
-    if ( name.lower() == attrVersion )
-    {
-      version = value;
-      return false; //ABORT ASAP
-    }
-    return true;
-  }
-  virtual bool text( const QString& )
-  {
-    return false;
-  }
-  virtual bool cdata( const QString& )
-  {
-    return false;
-  }
-  virtual bool entityRef( const QString& )
-  {
-    return true; // one never knows
-  }
-  virtual bool processingInstruction( const QString&, const QString& )
-  {
-    return true;
-  }
-  virtual bool doctype( const QString& )
-  {
-    return true; // ### we might check for kpartgui...
-  }
-  virtual bool doctypeExtern( const QString&, const QString& )
-  {
-    return true;
-  }
-  // virtual bool parameterEntityRef( const QString& name ) = 0;
-  virtual bool element( const QString& )
-  {
-    return true;
-  }
-  virtual bool attlist( const QString& )
-  {
-    return true;
-  }
-  virtual bool parameterEntity( const QString&, const QString&, const QString& )
-  {
-    return true;
-  }
-  virtual bool parameterEntity( const QString&, const QString& )
-  {
-    return true;
-  }
-  virtual bool entity( const QString&, const QString&, const QString&, const QString& )
-  {
-    return true;
-  }
-  virtual bool entity( const QString&, const QString& )
-  {
-    return true;
-  }
-  virtual bool notation( const QString&, const QString&, const QString& )
-  {
-    return true;
-  }
-  virtual void parseError( int, int, int )
-  {
-    // error? ;-)
-  }
-  virtual bool finished()
-  {
-    return false; // never reached, but one never knows ;-)
-  }
+    static QString tagKPartGUI = QString::fromLatin1( "kpartgui" );
+    if ( qName.lower() != tagKPartGUI )
+      return false;
 
+    for ( int i = 0; i < atts.length(); i++ )
+      if ( atts.qName( i ).lower() == attrVersion )
+      {
+        version = atts.value(i);
+	return false;
+      }
+    
+    return false;
+  }
+  virtual bool endElement( const QString &, const QString &, const QString & )
+  {
+    return false;
+  }
   QString version;
 };
 
 QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &doc )
 {
   QString filter  = QString::fromLatin1( QCString( instance()->instanceName() ) + "/" ) + fileName;
-  
+
   QStringList allFiles = instance()->dirs()->findAllResources( "data", filter );
-  
+
   QMap<QString,QString> allDocuments;
-  
+
   QStringList::ConstIterator it = allFiles.begin();
   QStringList::ConstIterator end = allFiles.end();
   for (; it != end; ++it )
   {
-    QString data = KXMLGUIFactory::readConfigFile( *it ); 
+    QString data = KXMLGUIFactory::readConfigFile( *it );
     allDocuments.insert( *it, data );
   }
-  
+
   QMap<QString,QString>::ConstIterator best = allDocuments.end();
   uint bestVersion = 0;
-  
+
   QMap<QString,QString>::ConstIterator docIt = allDocuments.begin();
   QMap<QString,QString>::ConstIterator docEnd = allDocuments.end();
   for (; docIt != docEnd; ++docIt )
   {
     InternalXMLConsumer consumer;
-    QXMLSimpleParser parser;
-    parser.parse( docIt.data(), &consumer );
+    
+    QXMLSimpleReader reader;
+    
+    QSAXInputSource source;
+    source.setData( docIt.data() );
+    
+    reader.setContentHandler( &consumer );
+    reader.setErrorHandler( &consumer );
+    reader.setFeature( "http://xml.org/sax/features/namespaces", FALSE );
+    reader.setFeature( "http://xml.org/sax/features/namespace-prefixes", TRUE );
+    
+    QXMLSimpleReader parser;
+    reader.parse( source );
     QString versionStr = consumer.version;
     if ( versionStr.isEmpty() )
       continue;
@@ -696,14 +644,14 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
     uint version = versionStr.toUInt( &ok );
     if ( !ok )
       continue;
-    
+
     if ( version > bestVersion )
     {
       best = docIt;
       bestVersion = version;
     }
   }
-  
+
   if ( best != docEnd )
   {
     if ( best != allDocuments.begin() )
@@ -721,6 +669,6 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
     doc = QString::null;
     return ( *allFiles.begin() );
   }
-    
+
   return QString::null;
 }
