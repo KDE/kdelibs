@@ -168,7 +168,7 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 	if (d->gvpart_)
 		l0->addWidget(d->gvpart_->widget());
 	
-	resize(600, 500);
+	resize(855, 500);
 	setCaption(i18n("Print Preview"));
 }
 
