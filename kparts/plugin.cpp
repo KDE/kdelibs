@@ -55,8 +55,6 @@ Plugin::Plugin( QObject* parent, const char* name )
 
 Plugin::~Plugin()
 {
-    if ( factory() )
-        factory()->removeClient( this );
     delete d;
 }
 
@@ -138,6 +136,12 @@ void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
 
 void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance *instance )
 {
+   // Check if 'parent' already has plugins, don't do anything then
+   // This is mostly because KDE-3.0 didn't load plugins for KParts::MainWindow
+   // (bug!). It does now in KDE-3.1 but apps might still call loadPlugins manually.
+   if ( hasPlugins( parent ) )
+      return;
+
    QValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
    QValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
    for (; pIt != pEnd; ++pIt )
@@ -161,7 +165,7 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 
 void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos )
 {
-   loadPlugins(parent, pluginInfos, 0); 
+   loadPlugins(parent, pluginInfos, 0);
 }
 
 // static
@@ -189,6 +193,14 @@ QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
   delete plugins;
 
   return objects;
+}
+
+bool Plugin::hasPlugins( QObject* parent )
+{
+  QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
+  bool ret = plugins && !plugins->isEmpty();
+  delete plugins;
+  return ret;
 }
 
 void Plugin::setInstance( KInstance *instance )

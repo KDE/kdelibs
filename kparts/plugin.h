@@ -95,7 +95,7 @@ public:
     /**
      * Returns a list of plugin objects loaded for @p parent. This
      * functions basically calls the @ref queryList method of @ref
-     * QObject to retrieve the list of child objects inheriting 
+     * QObject to retrieve the list of child objects inheriting
      * KParts::Plugin .
      **/
     static QPtrList<Plugin> pluginObjects( QObject *parent );
@@ -117,6 +117,7 @@ protected:
     virtual void setInstance( KInstance *instance );
 
 private:
+    static bool hasPlugins( QObject* parent );
     class PluginPrivate;
     PluginPrivate *d;
 };
