@@ -64,49 +64,33 @@ KTipDatabase::KTipDatabase(const QString &_tipFile)
 // text as done here.
 void KTipDatabase::loadTips(const QString &tipFile)
 {
-  QString fname;
+    QString fileName = locate("data", tipFile);
 
-  fname = locate("data", tipFile);
-
-  if (fname.isEmpty())
-    return ;
-
-  tips.clear();
-
-  QFile f(fname);
-  if (f.open(IO_ReadOnly))
+    if (fileName.isEmpty())
     {
-      QTextStream ts(&f);
-
-      QString line, tag, tip;
-      bool inTip = false;
-      while (!ts.eof())
-        {
-          line = ts.readLine();
-          tag = line.stripWhiteSpace().lower();
-
-          if (tag == "<html>")
-            {
-              inTip = true;
-              tip = QString::null;
-              continue;
-            }
-
-          if (inTip)
-            {
-              if (tag == "</html>")
-                {
-                  tips.append(tip);
-                  inTip = false;
-                }
-              else
-                tip.append(line).append("\n");
-            }
-
-        }
-
-      f.close();
+	kdDebug() << "can't find '" << tipFile.latin1() << "' in standard dirs" << endl;
+        return;
     }
+
+    QFile file(fileName);
+    if (!file.open(IO_ReadOnly))
+    {
+	kdDebug() << "can't open '" << fileName.latin1() << "' for reading" << endl;
+	return;
+    }
+
+    tips.clear();
+
+    QString content = file.readAll();
+
+    int pos = -1;
+    while ((pos = content.find("<html>", pos + 1, false)) != -1)
+    {
+	QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6);
+	tips.append(tip);
+    }
+
+    file.close();    
 }
 
 
