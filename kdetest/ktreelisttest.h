@@ -75,4 +75,4 @@ private slots:
 };
 
 
-#endif  OUTLINE_H
+#endif 

@@ -19,6 +19,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.20  1999/05/19 20:41:20  kulow
+ * make it compile
+ *
  * Revision 1.19  1999/03/01 23:33:59  kulow
  * CVS_SILENT ported to Qt 2.0
  *
@@ -361,9 +364,9 @@ int main( int argc, char **argv )
   bool bRecoverFile = false;
   QString pRecoverFile = kapp->checkRecoverFile( "/home/kalle/text/mytext.txt", bRecoverFile );
   if( bRecoverFile )
-	fprintf( stderr, "Recover file exists and is at %s\n", pRecoverFile );
+	fprintf( stderr, "Recover file exists and is at %s\n", pRecoverFile.ascii());
   else
-	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );
+	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile.ascii() );
 
   KSimpleConfig sc( _PATH_TMP"/sc.cfg" );
 	/*
