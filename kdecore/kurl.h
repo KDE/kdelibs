@@ -95,7 +95,7 @@ public:
    * Constructor allowing relative URLs.
    *
    * @param _baseurl The base url.
-   * @param _rel_url A relative or absolute URL. 
+   * @param _rel_url A relative or absolute URL.
    * If this is an absolute URL then @p _baseurl will be ignored.
    * If this is a relative URL it will be combined with @p _baseurl.
    * @param encoding_hint Reserved, should be 0.
@@ -425,6 +425,12 @@ public:
    * ignore trailing '/' characters.
    */
   bool cmp( const KURL &u, bool ignore_trailing = false ) const;
+
+  /**
+   * @return true if this url is a parent of @p u (or the same URL as @p u)
+   * For instance, ftp://host/dir/ is a parent of ftp://host/dir/subdir/subsubdir/.
+   */
+  bool isParentOf( const KURL& u ) const;
 
   /**
    * Splits nested URLs like tar:/kdebase#gzip:/decompress#file:/home/weis/kde.tgz.

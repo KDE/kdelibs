@@ -682,7 +682,6 @@ bool KURL::operator==( const KURL& _u ) const
        m_strPath_encoded == _u.m_strPath_encoded &&
        m_strQuery_encoded == _u.m_strQuery_encoded &&
        m_strRef_encoded == _u.m_strRef_encoded &&
-       m_bIsMalformed == _u.m_bIsMalformed &&
        m_iPort == _u.m_iPort )
     return true;
 
@@ -697,6 +696,9 @@ bool KURL::operator==( const QString& _u ) const
 
 bool KURL::cmp( const KURL &_u, bool _ignore_trailing ) const
 {
+  if ( isMalformed() || _u.isMalformed() )
+    return false;
+
   if ( _ignore_trailing )
   {
     QString path1 = path(1);
@@ -710,7 +712,6 @@ bool KURL::cmp( const KURL &_u, bool _ignore_trailing ) const
 	 m_strHost == _u.m_strHost &&
 	 m_strQuery_encoded == _u.m_strQuery_encoded &&
 	 m_strRef_encoded == _u.m_strRef_encoded &&
-	 m_bIsMalformed == _u.m_bIsMalformed &&
 	 m_iPort == _u.m_iPort )
       return true;
 
@@ -718,6 +719,39 @@ bool KURL::cmp( const KURL &_u, bool _ignore_trailing ) const
   }
 
   return ( *this == _u );
+}
+
+bool KURL::isParentOf( const KURL& _u ) const
+{
+  if ( isMalformed() || _u.isMalformed() )
+    return false;
+
+  if ( m_strProtocol == _u.m_strProtocol &&
+       m_strUser == _u.m_strUser &&
+       m_strPass == _u.m_strPass &&
+       m_strHost == _u.m_strHost &&
+       m_strQuery_encoded == _u.m_strQuery_encoded &&
+       m_strRef_encoded == _u.m_strRef_encoded &&
+       m_iPort == _u.m_iPort )
+  {
+    QDir dir1( m_strPath );
+    QDir dir2( _u.path() );
+
+    QString p1( dir1.canonicalPath() );
+    QString p2( dir2.canonicalPath() );
+    if ( p1.isEmpty() )
+      p1 = m_strPath;
+    if ( p2.isEmpty() )
+      p2 = _u.path();
+
+    //kdDebug(126) << "p1=" << p1 << endl;
+    //kdDebug(126) << "p2=" << p2 << endl;
+    //kdDebug(126) << "p1.length()=" << p1.length() << endl;
+    //kdDebug(126) << "p2.left(!$)=" << p2.left( p1.length() ) << endl;
+    if ( p1 == p2.left( p1.length() ) )
+      return true;
+  }
+  return false;
 }
 
 void KURL::setFileName( const QString& _txt )
