@@ -22,6 +22,7 @@
 #include "kapp.h"
 #include "klocale.h"
 #include <kwin.h>
+#include <kiconloader.h>
 
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
@@ -45,11 +46,11 @@ void KSystemTray::showEvent( QShowEvent * )
 	menu->insertSeparator();
 	if ( parentWidget() ) {
 	    minimizeRestoreId = menu->insertItem(i18n("Minimize"), this, SLOT( toggleMinimizeRestore() ) );
-	    menu->insertItem(i18n("Quit"), parentWidget(), SLOT(close() ) );
+	    menu->insertItem(BarIcon("exit"), i18n("&Quit"), parentWidget(), SLOT(close() ) );
 	}
 	else {
 	    minimizeRestoreId = -1;
-	    menu->insertItem(i18n("Quit"), qApp, SLOT(closeAllWindows() ) );
+	    menu->insertItem(BarIcon("exit"), i18n("&Quit"), qApp, SLOT(closeAllWindows() ) );
 	}
 	hasQuit = 1;
     }
