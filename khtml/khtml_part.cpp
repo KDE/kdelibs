@@ -3176,15 +3176,6 @@ bool KHTMLPart::event( QEvent *event )
   return false;
 }
 
-int KHTMLPart::findSelectionNode( DOM::Node innerNode, DOM::Node &newNode, khtml::MousePressEvent *event )
-{
-    int offset = 0;
-    innerNode.handle()->findSelectionNode( event->x(), event->y(),
-					   event->nodeAbsX(), event->nodeAbsY(),
-					   newNode, offset );
-    return offset;
-}
-
 void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 {
   DOM::DOMString url = event->url();
@@ -3208,8 +3199,11 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     {
       if ( !innerNode.isNull() )
       {
-        DOM::Node node;
-        int offset = findSelectionNode( innerNode, node, event );
+	  int offset;
+	  DOM::Node node;
+	  innerNode.handle()->findSelectionNode( event->x(), event->y(),
+					    event->nodeAbsX(), event->nodeAbsY(),
+						 node, offset );
 
         // When this stuff is finished, this should never happen.
         // But currently....
