@@ -389,6 +389,18 @@ protected:
     void disconnectSlave();
 
     /**
+     * internal function that slaves use to see if there is any cached
+     * authentication entries
+     */
+    bool checkCachedAuthentication(QString& user, QString& passwd, int& auth_type, QString& valid_path, const QString& realm);
+
+    /**
+     * internal function to store authentication entries
+     */
+    void cacheAuthentication(const KURL& url, const QString& user,
+                             const QString& password, int auth_type);
+
+    /**
      * Name of the protocol supported by this slave
      */
     QCString mProtocol;

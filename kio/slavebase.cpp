@@ -39,6 +39,7 @@
 
 #include <ksock.h>
 #include <kcrash.h>
+#include <kdesu/client.h>
 
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
@@ -529,3 +530,57 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     }
 }
 
+bool SlaveBase::checkCachedAuthentication(QString& user, QString& passwd, int& auth_type, QString& valid_path, const QString& realm)
+{
+    // no matter what, make sure our return types are either defined
+    // or are null... nothing undefined
+    user       = QString::null;
+    passwd     = QString::null;
+    auth_type  = 0;
+    valid_path = QString::null;
+
+    if( realm.isNull() )
+        return false;
+
+    KDEsuClient client;
+    if( client.ping() == - 1 )
+        return false;
+
+    user = QString::fromUtf8( client.getVar( (realm + "-user").utf8() ) );
+    passwd = QString::fromUtf8( client.getVar( (realm + "-pass").utf8() ) );
+    valid_path = QString::fromUtf8( client.getVar( (realm + "-path").utf8() ) );
+
+    QCString auth = client.getVar( (realm + "-auth").utf8() );
+    auth_type = auth.isNull() ? 0 : auth.toInt();
+
+    kdDebug(7007) << "Got cached info: key=" << realm << ", user=" << user << ", password=" << passwd << ", path=" << valid_path << endl;			
+
+    return true;
+}
+
+void SlaveBase::cacheAuthentication(const KURL& url, const QString& user, const QString& password, int auth_type)
+{
+    KDEsuClient client;
+
+    int success = client.ping();
+    if (success == -1)
+        success = client.startServer();
+
+    if (success == -1)
+        return;
+
+    QString key(url.host());
+    QString path;
+    if (url.path().isNull())
+      path = "/";
+    else
+      path = url.directory();
+
+    kdDebug(7007) << "Caching: key=" << key << ", user=" << user << ", password=" << password << ", path=" << path << endl;			
+    QCString auth;
+    auth.setNum(auth_type);
+    client.setVar( (key + "-user").utf8(), user.utf8() );
+    client.setVar( (key + "-pass").utf8(), password.utf8() );
+    client.setVar( (key + "-auth").utf8(), auth );
+    client.setVar( (key + "-path").utf8(), path.utf8() );
+}

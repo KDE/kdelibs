@@ -35,6 +35,7 @@
 
 #include <string>
 #include <kconfig.h>
+#include <kdesu/client.h>
 
 #ifdef DO_SSL
 #include <openssl/ssl.h>
@@ -531,7 +532,7 @@ void HTTPProtocol::http_checkConnection()
   if (m_sock)
   {
      bool closeDown = false;
-     kdDebug(7103) << "http_open: connection still active (" << getpid() << ")" << endl;
+     kdDebug(7103) << "http_checkConnection: connection still active (" << getpid() << ")" << endl;
      if (!m_state.do_proxy && !m_request.do_proxy)
      {
         if (m_state.hostname != m_request.hostname)
@@ -637,7 +638,7 @@ static bool waitForHeader( int sock, int maxTimeout )
 bool
 HTTPProtocol::http_openConnection()
 {
-    kdDebug(7103) << "http_open: making new connection (" << getpid() << ")" << endl;
+    kdDebug(7103) << "http_openConnection: making new connection (" << getpid() << ")" << endl;
     m_bKeepAlive = false;
     m_sock = ::socket(PF_INET,SOCK_STREAM,0);
     if (m_sock < 0) {
@@ -651,7 +652,7 @@ HTTPProtocol::http_openConnection()
 
     // do we still want a proxy after all that?
     if( m_state.do_proxy ) {
-      kdDebug(7103) << "http_open " << m_strProxyHost << " " << m_strProxyPort << endl;
+      kdDebug(7103) << "http_openConnection " << m_strProxyHost << " " << m_strProxyPort << endl;
       // yep... open up a connection to the proxy instead of our host
       if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
         error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
@@ -880,13 +881,57 @@ bool HTTPProtocol::http_open()
     header += m_request.user_headers;
   }
 
+  int auth_type;
+  QString user, password;
+  // we now try to determine if we have any saved authentication
+  // credentials.  this can be done two ways; either this particular
+  // process has a saved username and password in the state OR this
+  // process has just started and we check if it is cached.
+  if (!m_state.passwd.isNull() && !m_state.user.isNull())
+  {
+    kdDebug(7103) << "(" << getpid() << ") Saved state authentication: m_state.user = " << m_state.user << ", m_state.passwd = " << m_state.passwd << endl;
+    user     = m_state.user;
+    password = m_state.passwd;
+  }
+  else
+  {
+    kdDebug(7103) << "(" << getpid() << ")  Checking cached authentication" << endl;
+    // we have just started... check if we are in a "state" of
+    // authentication and didn't even know it
+    QString realm;
+    if (m_strRealm.isNull())
+      realm = m_request.url.host();
+    else
+      realm = m_strRealm + "@" + m_request.url.host();
+
+    QString valid_path;
+    checkCachedAuthentication(user, password, auth_type, valid_path, realm);
+    if (valid_path.isNull())
+      valid_path = "/";
+
+    // now we make sure that the current path is a valid one
+    QString path(m_request.url.directory());
+    if (valid_path != path.left(valid_path.length())) {
+      user     = QString::null;
+      password = QString::null;
+      Authentication = AUTH_None;
+    }
+    else
+    {
+      Authentication = (HTTP_AUTH)auth_type;
+      m_state.user   = user;
+      m_state.passwd = password;
+    }
+  }
+  kdDebug(7103) << "(" << getpid() << "): Cached auth for realm " << m_strRealm << ": user= " << user << ", pass= " << password << ", auth_type = " << auth_type << endl;
+
   // check if we need to login
-  if (!m_state.passwd.isNull() || !m_state.user.isNull()) {
+  if (!password.isNull() || !user.isNull()) {
     if (Authentication == AUTH_Basic || Authentication == AUTH_None) {
-      header += create_basic_auth("Authorization", m_state.user, m_state.passwd);
+      header += create_basic_auth("Authorization", user, password);
     } else if (Authentication == AUTH_Digest) {
-      header += create_digest_auth("Authorization", m_state.user,
-				  m_state.passwd, m_strAuthString);
+      header += create_digest_auth("Authorization", user, password,
+                                   m_strAuthString);
     }
     header+="\r\n";
   }
@@ -1262,6 +1307,8 @@ bool HTTPProtocol::readHeader()
       error(ERR_ACCESS_DENIED, m_state.hostname);
       return false;
     }
+    else
+      cacheAuthentication(m_request.url, m_request.user, m_request.passwd, (int)Authentication);
 
     if ( !http_open())
       return false;
