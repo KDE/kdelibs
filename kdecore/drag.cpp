@@ -20,6 +20,10 @@
  * $Id$
  * 
  * $Log$
+ * Imported sources from KDE CVS
+ *
+ * Revision 1.1.1.2  1997/12/10 07:08:28  jacek
+ * Imported sources from KDE CVS
  *
  * Revision 1.1.1.1  1997/12/09 22:02:45  jacek
  * Imported sorces fromkde
@@ -201,7 +205,7 @@ void KDNDDropZone::enter( char *_data, int _size, int _type, int _x, int _y )
 
 void KDNDDropZone::leave()
 {
-	free( dndData );
+  emit dropLeave( this );
 }
 
 KDNDDropZone::~KDNDDropZone()
@@ -382,7 +386,7 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 	      Event.xclient.data.l[4]         = p.y();
 
               // Switch to "friendly" error handler.
-	  delete dndData;
+              if (oldErrorHandler == 0L)
 	          oldErrorHandler = XSetErrorHandler(myErrorHandler);
 	      printf("1\n");
 	      XSendEvent( kapp->getDisplay(), dndLastWindow, True, NoEventMask, &Event );	
@@ -483,14 +487,14 @@ void KDNDWidget::rootDropEvent( int _x, int _y )
   oldErrorHandler = 0L;
   printf("Done\n");
   
-	delete dndData;
+  // Clean up.
   rootDropEvent();
 }
 
 void KDNDWidget::rootDropEvent()
 {
   if ( dndIcon != 0L )
-	free( dndData );
+	delete dndIcon;
   dndIcon = 0L;
   
   if ( dndData != 0L )
