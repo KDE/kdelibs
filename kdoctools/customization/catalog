@@ -76,6 +76,7 @@ PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
 PUBLIC "-//KDE//DOCUMENT Artistic License//EN"
        "entities/artistic-license.html"
 
+CATALOG af/catalog
 CATALOG ca/catalog
 CATALOG cs/catalog
 CATALOG da/catalog
