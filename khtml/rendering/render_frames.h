@@ -82,7 +82,7 @@ private:
   bool m_resizing;
 };
 
-class RenderPart : public RenderWidget
+class RenderPart : public khtml::RenderWidget
 {
     Q_OBJECT
 public:
@@ -105,7 +105,7 @@ public:
     virtual void partLoadingErrorNotify();
 };
 
-class RenderFrame : public RenderPart
+class RenderFrame : public khtml::RenderPart
 {
     Q_OBJECT
 public:
@@ -123,7 +123,7 @@ private:
 };
 
 // I can hardly call the class RenderObject ;-)
-class RenderPartObject : public RenderPart
+class RenderPartObject : public khtml::RenderPart
 {
     Q_OBJECT
 public:
@@ -139,10 +139,9 @@ public:
     DOM::HTMLElementImpl *m_obj;
 
     virtual void partLoadingErrorNotify();
-
+    
 public slots:
     void slotViewCleared();
-    void slotWidgetDestructed();
 };
 
 };

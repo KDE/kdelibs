@@ -891,10 +891,4 @@ void RenderPartObject::slotViewCleared()
   }
 }
 
-void RenderPartObject::slotWidgetDestructed()
-{
-    RenderPart::slotWidgetDestructed();
-}
-
-
 #include "render_frames.moc"
