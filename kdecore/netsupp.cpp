@@ -176,7 +176,7 @@ static int check_ipv6_stack()
  */
 
 int kde_getaddrinfo(const char *name, const char *service,
-		    const struct addrinfo* hint,
+		    struct addrinfo* hint,
 		    struct addrinfo** result)
 {
 #if KDE_IPV6_LOOKUP_MODE != 0
