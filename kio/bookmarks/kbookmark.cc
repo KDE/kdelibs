@@ -173,10 +173,10 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & te
     KBookmark bk(elem);
 
     if (emitSignal)
-        emit mgr->notifier().addedBookmark( 
-                                 mgr->path(), url.url(), 
+        emit mgr->notifier().addedBookmark(
+                                 mgr->path(), url.url(),
                                  text, bk.address(), icon );
-    
+
     return bk;
 }
 
@@ -351,13 +351,13 @@ static QDomText get_or_create_text(QDomNode node)
 
 void KBookmark::updateAccessMetadata()
 {
-    kdDebug(7043) << "KBookmark::updateAccessMetadata " << address() << url().url() << endl;
+    kdDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyURL() << endl;
 
     QDomNode subnode = cd_or_create(internalElement(), "info");
     subnode = cd_or_create(subnode, "metadata");
 
     uint timet = QDateTime::currentDateTime().toTime_t();
-     
+
     QDomNode item = cd_or_create(subnode, "time_added");
     QDomText domtext = get_or_create_text(item);
     if (domtext.data().isEmpty()) 
