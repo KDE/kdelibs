@@ -20,6 +20,7 @@
 #include "kxmlcommandselector.h"
 #include "kxmlcommand.h"
 #include "kxmlcommanddlg.h"
+#include "kdeprintcheck.h"
 
 #include <qcombobox.h>
 #include <kpushbutton.h>
@@ -37,13 +38,14 @@
 #include <kguiitem.h>
 #include <kactivelabel.h>
 #include <kdatetbl.h>
+#include <kdialogbase.h>
 
 extern "C"
 {
 	QString select_command( QWidget* parent )
 	{
 		KDialogBase dlg( parent, 0, true, i18n( "Select Command" ), KDialogBase::Ok|KDialogBase::Cancel );
-		KXmlCommandSelector *xmlSel = new KXmlCommandSelector( false, &dlg );
+		KXmlCommandSelector *xmlSel = new KXmlCommandSelector( false, &dlg, "CommandSelector", &dlg );
 		dlg.setMainWidget( xmlSel );
 		if ( dlg.exec() )
 			return xmlSel->command();
@@ -51,7 +53,7 @@ extern "C"
 	}
 }
 
-KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const char *name)
+KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const char *name, KDialogBase *dlg)
 : QWidget(parent, name)
 {
 	m_cmd = new QComboBox(this);
@@ -88,6 +90,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_add, SLOT(setEnabled(bool)));
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_edit, SLOT(setEnabled(bool)));
 		connect(m_usefilter, SIGNAL(toggled(bool)), m_shortinfo, SLOT(setEnabled(bool)));
+		connect( m_usefilter, SIGNAL( toggled( bool ) ), SLOT( slotXmlCommandToggled( bool ) ) );
 		m_usefilter->setChecked(true);
 		m_usefilter->setChecked(false);
 		//setFocusProxy(m_line);
@@ -123,6 +126,9 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const 
 	l3->addWidget(m_add);
 	l3->addWidget(m_edit);
 
+	if ( dlg )
+		connect( this, SIGNAL( commandValid( bool ) ), dlg, SLOT( enableButtonOK( bool ) ) );
+
 	loadCommands();
 }
 
@@ -146,7 +152,7 @@ void KXmlCommandSelector::loadCommands()
 	int	index = m_cmdlist.findIndex(thisCmd);
 	if (index != -1)
 		m_cmd->setCurrentItem(index);
-	if (m_cmd->currentItem() != -1)
+	if (m_cmd->currentItem() != -1 && m_cmd->isEnabled())
 		slotCommandSelected(m_cmd->currentItem());
 }
 
@@ -170,7 +176,7 @@ void KXmlCommandSelector::setCommand(const QString& cmd)
 		m_line->setText((index == -1 ? cmd : QString::null));
 	if (index != -1)
 		m_cmd->setCurrentItem(index);
-	if (m_cmd->currentItem() != -1)
+	if (m_cmd->currentItem() != -1 && m_cmd->isEnabled())
 		slotCommandSelected(m_cmd->currentItem());
 }
 
@@ -235,25 +241,46 @@ void KXmlCommandSelector::slotBrowse()
 
 void KXmlCommandSelector::slotCommandSelected(int ID)
 {
-	KXmlCommand	*xmlCmd = KXmlCommandManager::self()->loadCommand(m_cmdlist[ID]);
+	KXmlCommand	*xmlCmd = KXmlCommandManager::self()->loadCommand(m_cmdlist[ID], true);
 	if (xmlCmd)
 	{
-		QString	msg(QString::fromLocal8Bit("(ID = %1, %2 = ").arg(xmlCmd->name()).arg(i18n("output")));
-		if (KXmlCommandManager::self()->checkCommand(xmlCmd->name(), KXmlCommandManager::None, KXmlCommandManager::Basic))
+		QString msg;
+		if ( xmlCmd->isValid() && KdeprintChecker::check( xmlCmd->requirements() ) )
 		{
-			if (xmlCmd->mimeType() == "all/all")
-				msg.append(i18n("undefined"));
+			msg = QString::fromLocal8Bit("(ID = %1, %2 = ").arg(xmlCmd->name()).arg(i18n("output"));
+			if (KXmlCommandManager::self()->checkCommand(xmlCmd->name(), KXmlCommandManager::None, KXmlCommandManager::Basic))
+			{
+				if (xmlCmd->mimeType() == "all/all")
+					msg.append(i18n("undefined"));
+				else
+					msg.append(xmlCmd->mimeType());
+			}
 			else
-				msg.append(xmlCmd->mimeType());
+				msg.append(i18n("not allowed"));
+			msg.append(")");
+			emit commandValid( true );
 		}
 		else
-			msg.append(i18n("not allowed"));
-		msg.append(")");
+		{
+			msg = "<font color=\"red\">" + i18n( "(Unavailable: requirements not satisfied)" ) + "</font>";
+			emit commandValid( false );
+		}
 		m_shortinfo->setText(msg);
 		m_help = xmlCmd->comment();
 		m_helpbtn->setEnabled( !m_help.isEmpty() );
 	}
 	delete xmlCmd;
+}
+
+void KXmlCommandSelector::slotXmlCommandToggled( bool on )
+{
+	if ( on )
+		slotCommandSelected( m_cmd->currentItem() );
+	else
+	{
+		emit commandValid( true );
+		m_shortinfo->setText( QString::null );
+	}
 }
 
 void KXmlCommandSelector::slotHelpCommand()

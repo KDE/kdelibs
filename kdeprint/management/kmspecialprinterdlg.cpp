@@ -63,7 +63,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 
 	sep->setFixedHeight(10);
 	QGroupBox	*m_gb = new QGroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
-	m_command = new KXmlCommandSelector(true, m_gb);
+	m_command = new KXmlCommandSelector(true, m_gb, "CommandSelector", this);
 	QGroupBox	*m_gb2 = new QGroupBox(0, Qt::Horizontal, i18n("Output File Settings"), dummy);
 	m_usefile = new QCheckBox(i18n("Always use &file-extention:"), m_gb2);
 	m_extension = new QLineEdit(m_gb2);

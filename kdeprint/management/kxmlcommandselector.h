@@ -28,12 +28,13 @@ class QLineEdit;
 class QCheckBox;
 class QLabel;
 class QPushButton;
+class KDialogBase;
 
 class KXmlCommandSelector : public QWidget
 {
 	Q_OBJECT
 public:
-	KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, const char *name = 0);
+	KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, const char *name = 0, KDialogBase *dlg = 0);
 
 	void setCommand(const QString&);
 	QString command() const;
@@ -47,6 +48,10 @@ protected slots:
 	void slotBrowse();
 	void slotCommandSelected(int);
 	void slotHelpCommand();
+	void slotXmlCommandToggled( bool );
+
+signals:
+	void commandValid( bool );
 
 private:
 	QComboBox	*m_cmd;
