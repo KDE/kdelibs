@@ -434,3 +434,5 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     and modified the GUI to reflect this
   * general: removed the KMManager::configure(), obsoleted by the complete
     options dialog being shown
+  * kicker extension: extension of the menu plugin to allow access to the
+    server configuration tool as well as the "kprinter" utility.
