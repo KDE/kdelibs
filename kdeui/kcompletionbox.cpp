@@ -112,7 +112,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 		    home();
 		    ev->accept();
 		    return true;
-		    
+		
 		case Key_End:
 		    end();
 		    ev->accept();
@@ -222,8 +222,6 @@ void KCompletionBox::up()
 {
     if ( currentItem() > 0 )
         setCurrentItem( currentItem() - 1 );
-    else
-        setCurrentItem( (int)count()-1 );
 }
 
 void KCompletionBox::pageDown()
