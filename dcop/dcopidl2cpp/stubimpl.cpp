@@ -48,6 +48,8 @@ int isIntType( const QString& t)
       || (t == "short int")
       || (t == "char")
       || (t == "signed char")
+      || (t == "uint")
+      || (t == "ulong")
       || (t == "unsigned char"))
     return 1;
   return 0;
