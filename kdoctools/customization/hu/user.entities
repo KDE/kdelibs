@@ -6,5 +6,20 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button"> <!-- please translate, both the entity name and the corresponding text -->
-<!ENTITY MMB    "<mousebutton>middle</mousebutton> mouse button"> <!-- please translate, both the entity name and the corresponding text -->
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY cdrom	'<hardware>CD-ROM-meghajtó</hardware>'>
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY eg     "<abbrev>pl.</abbrev>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY etc    "<abbrev>stb.</abbrev>">
+<!ENTITY FAQ	'<acronym>GY.I.K.</acronym>'>
+<!ENTITY ie     "<abbrev>azaz</abbrev>">
+<!ENTITY infocenter	"<application>Információközpont</application>">
+<!ENTITY kcontrolcenter	"<application>&kde; vezérlőközpont</application>">
+<!ENTITY LMB    "<mousebutton>bal</mousebutton> egérgomb">
+<!ENTITY MMB    "<mousebutton>középső</mousebutton> egérgomb">
+<!ENTITY OS	"operációs rendszer"><!-- <acronym>OS</acronym>-->
+<!ENTITY RMB    "<mousebutton>jobb</mousebutton> egérgomb">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
