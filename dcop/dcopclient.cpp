@@ -358,7 +358,6 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	}
 	d->serverAddr = qstrdup( dcopSrv.latin1() );
     }
-    qDebug("DCOPClient::attachInternal to serverAddr '%s'", d->serverAddr );
 
     if ((d->iceConn = IceOpenConnection((char*)d->serverAddr,
 					(IcePointer) this, False, d->majorOpcode,
