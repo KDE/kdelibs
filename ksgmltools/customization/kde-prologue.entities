@@ -1,0 +1,91 @@
+<!--
+    Application-variable general entities for the KDE documentation
+    
+    Copyright (C) 1999-2000 Frederik Fouvry
+     
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+     
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+    
+    Send suggestions, comments, etc. to Frederik Fouvry
+    <fouvry@sfs.nphil.uni-tuebingen.de>.
+
+
+    USAGE
+
+    Refer to this file as
+
+      "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
+
+    For instance:
+
+     <!DOCTYPE Book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
+      <!ENTITY kmouse "<application>KMouse</application>">
+      <!ENTITY kappname "&kmouse;">
+      <!ENTITY % ents "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
+      %ents;
+     ]>
+
+    (This example is the smallest possible.)  Call this file in the
+    *SGML prologue* of your document.  If you don't set kappname, it
+    will use the default text "this application".
+
+    Like kde-genent.entities it defines a set of general entities.
+    The difference with kde-genent.entities is that these texts vary
+    with the *application name* (and with *nothing* else).  To that
+    effect, they use an entity &kappname;.  Completely invariant texts
+    go in kde-genent.entities.  Please send requests to the
+    kde-docbook list.
+
+    The entities available for modification are the following (do NOT
+    change any others!):
+
+    . kappname
+    . FDLIS (% - if "INCLUDE", set also FDLISTitles)
+    . FDLFCT (% - if "INCLUDE", set also FDLFCTTitles)
+    . FDLBCT (% - if "INCLUDE", set also FDLBCTTitles)
+
+    (% indicates parameter entities whose value should be "INCLUDE" if
+    set).  The others are general entities.  The ones that begin with
+    `FDL' should be set according to the guidelines in the GNU Free
+    Documentation License.
+
+    Calling these definitions as indicated above will make the
+    following entities available for use in the text:
+    . &license-links; (not yet)
+    . &help-menu; (not yet)
+    . &FDLNotice;
+-->
+
+<!-- ============================================================= -->
+<!--		    Extensions to the DocBook DTD		   -->
+<!-- ============================================================= -->
+
+<!ENTITY kappname "this application" -- a vaguely sensible default -->
+
+<!-- The following entities should only use &kappname; in their 
+     text                                                          -->
+
+<!-- Licence links -->
+<!ENTITY license-links      SYSTEM
+  "common/license-links.docbook"                    -- level: para -->
+
+<!-- Help menu -->
+<!ENTITY help-menu          SYSTEM
+  "common/help-menu.docbook"                           -- level: ? -->
+
+<!-- FDL notice; -->
+<!ENTITY % FDLNotice        PUBLIC
+  "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"             >
+%FDLNotice;
+                             <!-- the level of &FDLNotice; is para -->
