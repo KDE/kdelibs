@@ -28,6 +28,9 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <klocale.h>
+#include <kstddirs.h>
+
+#include <stdlib.h>
 
 /*****************
  * Utility class *
@@ -136,10 +139,39 @@ KMPrinter* createPrinter(const QMap<QString,QString>& entry)
 	return printer;
 }
 
+// this function support LPRng piping feature, it defaults to
+// /etc/printcap in any other cases (basic support)
+QString getPrintcapFileName()
+{
+	// check if LPRng system
+	QString	printcap("/etc/printcap");
+	QFile	f("/etc/lpd.conf");
+	if (f.exists() && f.open(IO_ReadOnly))
+	{
+		QTextStream	t(&f);
+		QString		line;
+		while (!t.eof())
+		{
+			line = t.readLine().stripWhiteSpace();
+			if (line.startsWith("printcap_path="))
+			{
+				QString	pcentry = line.mid(14).stripWhiteSpace();
+				if (pcentry[0] == '|')
+				{ // printcap through pipe
+					printcap = locateLocal("tmp","printcap");
+					::system(QString::fromLatin1("%1 > %2").arg(pcentry.mid(1)).arg(printcap).local8Bit());
+				}
+				break;
+			}
+		}
+	}
+	return printcap;
+}
+
 // "/etc/printcap" file parsing (Linux/LPR)
 void KMLpdUnixManager::parseEtcPrintcap()
 {
-	QFile	f("/etc/printcap");
+	QFile	f(getPrintcapFileName());
 	if (f.exists() && f.open(IO_ReadOnly))
 	{
 		KTextBuffer	t(&f);
