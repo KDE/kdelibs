@@ -1117,7 +1117,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     searchStopper = textareaEnd;
                     searchStopperLen = 10;
                     textarea = true;
-                    discard = LFDiscard;
+                    discard = NoneDiscard;
                     parseSpecial(src);
                 }
                 break;

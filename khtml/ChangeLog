@@ -1,3 +1,7 @@
+2003-12-02  Stephan Kulow  <coolo@kde.org>
+
+	* html/htmltokenizer.cpp: do not discard any line feed from parsing textareas
+
 2003-11-29  Dirk Mueller  <mueller@kde.org>
 
 	* css/cssstyleselector.cpp: add indigo/crimson colorhandling as it is not in X11's rgb
