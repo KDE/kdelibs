@@ -11,6 +11,8 @@
 #define __KIMAGE_EFFECT_H
 
 class QImage;
+class QSize;
+class QColor;
 
 /**
  * This class includes various @ref QImage based graphical effects. 
@@ -118,6 +120,12 @@ public:
      */
     static bool blend(const QImage & upper, const QImage & lower, QImage & output);
 // Not yet...    static bool blend(const QImage & image1, const QImage & image2, QImage & output, const QRect & destRect);
+
+    /**
+     * Blend an image into another one, using alpha in the expected way and
+     * over coordinates @p x and @p y with respect to the lower image.
+     */
+    static bool blend(int x, int y, const QImage & upper, const QImage & lower, QImage & output);
 
     /**
      * Modifies the intensity of a pixmap's RGB channel component.

@@ -1695,3 +1695,69 @@ bool KImageEffect::blend(
 
 #endif
 
+bool KImageEffect::blend(
+    int x, int y,
+    const QImage & upper, 
+    const QImage & lower, 
+    QImage & output
+)
+{
+  if (
+      upper.width() + x > lower.width()  ||
+      upper.height() + y > lower.height() ||
+      upper.depth() != 32             ||
+      lower.depth() != 32
+  )
+    return false;
+// XXX clipping !!!
+
+  output = lower.copy();
+
+  register uchar *i, *o;
+  register int a;
+  register int col, coli;
+  register int w = upper.width();
+  int row = upper.height() - 1;
+
+  do {
+
+    i = upper.scanLine(row);
+    o = output.scanLine(row+y);
+
+    coli = w << 2;
+    col = (w+x) << 2;
+    --col; --coli;
+
+    do {
+
+      while (!(a = i[coli]) && (coli != 3)) {
+        --coli; --coli; --coli; --coli;
+        --col; --col; --col; --col;
+      }
+
+      --col; 
+      --coli; 
+      o[col] += ((i[coli] - o[col]) * a) >> 8;
+
+      --col;
+      --coli; 
+      o[col] += ((i[coli] - o[col]) * a) >> 8;
+
+      --col;
+      --coli; 
+      o[col] += ((i[coli] - o[col]) * a) >> 8;
+
+      --col;
+    } while (coli--);
+
+  } while (row--);
+
+  return true;
+}
+/*bool KImageEffect::blend(const QPixmap & upper, const QPixmap & lower, QPixmap & output)
+{
+   QImage outputImage;
+   blend(upper.convertToImage(), lower.convertToImage(), outputImage);
+   output.convertFromImage(outputImage);
+}*/
+
