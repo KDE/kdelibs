@@ -29,7 +29,7 @@
 #include <qintcache.h>
 #include <qstring.h>
 
-#define WIDGETS 30
+#define WIDGETS 32
 
 /**
  * This class adds simple time management to KPixmap for use in flushing
@@ -188,7 +188,7 @@ public:
      ExIndicatorOff, ComboBox, ScrollBarSlider, Bevel, ToolButton,
      ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter, CheckMark,
      MenuItemOn, MenuItemOff, MenuBar, ArrowUp, ArrowDown, ArrowLeft,
-     ArrowRight, ProgressBar, ProgressBg};
+     ArrowRight, ProgressBar, ProgressBg, ActiveTab, InactiveTab};
     /**
      * The scaling type specified by the KConfig file.
      *
@@ -295,6 +295,8 @@ public:
      * True if rounded slider grooves are requested.
      */
     bool roundSlider() const;
+    bool activeTabLine() const;
+    bool inactiveTabLine() const;
     /**
      * Returns the current uncached pixmap for the given widget. This will
      * usually be either the last scaled or gradient pixmap if those have
@@ -373,15 +375,13 @@ private:
     ArrowStyle arrowStyle;
     ShadeStyle shading;
     int defaultFrame;
-    int btnXShift;
-    int btnYShift;
+    int btnXShift, btnYShift;
     int sliderLen;
     int splitterWidth;
     int focus3DOffset;
     bool smallGroove;
-    bool roundedButton;
-    bool roundedCombo;
-    bool roundedSlider;
+    bool roundedButton, roundedCombo, roundedSlider;
+    bool aTabLine, iTabLine;
     bool focus3D;
     KThemeCache *cache;
     int cacheSize;
@@ -574,6 +574,16 @@ inline bool KThemeBase::roundComboBox() const
 inline bool KThemeBase::roundSlider() const
 {
     return(roundedSlider);
+}
+
+inline bool KThemeBase::activeTabLine() const
+{
+    return(aTabLine);
+}
+
+inline bool KThemeBase::inactiveTabLine() const
+{
+    return(iTabLine);
 }
 
 #endif

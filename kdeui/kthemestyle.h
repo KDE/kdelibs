@@ -272,7 +272,9 @@ public:
     virtual void drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, QBrush *fill);
     virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
-
+    virtual void tabbarMetrics(const QTabBar*, int&, int&, int&);
+    virtual void drawTab(QPainter*, const QTabBar*, QTab*, bool selected);    
+	virtual void drawTabMask(QPainter*, const QTabBar*, QTab*, bool selected);
 protected:
     QPalette oldPalette;
 };

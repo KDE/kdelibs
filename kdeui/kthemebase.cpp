@@ -35,23 +35,25 @@ static const char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 "Bevel", "ToolButton", "ScrollBarButton", "BarHandle", "ToolBar",
 "ScrollBarDeco", "ComboDeco", "Splitter", "CheckMark", "MenuItemOn",
 "MenuItemOff", "MenuBar", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
-"ProgressBar", "ProgressBackground"};
+"ProgressBar", "ProgressBackground", "ActiveTab", "InactiveTab"};
 
 // Used only internally for handling non-widget option keys. These are needed
 // because they get iterated through in a couple of places and it allows the
 // use of small for loops.
 
-#define OPTIONS 18
+#define OPTIONS 20
 
 static const char *optionEntries[]={"SButtonType", "ArrowType", "ComboDeco",
 "ShadeStyle", "RoundButton", "RoundCombo", "RoundSlider", "FrameWidth",
 "ButtonXShift", "ButtonYShift", "SliderLength", "SplitterHandle", "Name",
-"Description", "CacheSize", "SmallSliderGroove", "3DFocus", "FocusOffset"};
+"Description", "CacheSize", "SmallSliderGroove", "3DFocus", "FocusOffset",
+"ActiveTabLine", "InactiveTabLine"};
 
 enum OptionLabel{OptSButtonType=0, OptArrowType, OptComboDeco, OptShadeStyle,
 OptRoundButton, OptRoundCombo, OptRoundSlider, OptFrameWidth, OptButtonXShift,
 OptButtonYShift, OptSliderLength, OptSplitterHandle, OptName, OptDescription,
-OptCacheSize, OptSmallGroove, Opt3DFocus, OptFocusOffset};
+OptCacheSize, OptSmallGroove, Opt3DFocus, OptFocusOffset, OptATabLine,
+OptITabLine};
 
 #define WGROUPS 10
 
@@ -134,6 +136,10 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
         readBoolEntry(optionEntries[OptRoundSlider], false);
     focus3D = config.
         readBoolEntry(optionEntries[Opt3DFocus], false);
+    aTabLine = config.
+        readBoolEntry(optionEntries[OptATabLine], false);
+    iTabLine = config.
+        readBoolEntry(optionEntries[OptITabLine], false);
     focus3DOffset = config.
         readNumEntry(optionEntries[OptFocusOffset], 0);
     defaultFrame = config.
