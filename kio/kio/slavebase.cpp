@@ -104,13 +104,15 @@ public:
     bool resume:1;
     bool needSendCanResume:1;
     bool multipleAuthCaching:1;
+    bool onHold:1;
     MetaData configData;
     SlaveBaseConfig *config;
     KURL onHoldUrl;
-    bool onHold;
 
     struct timeval last_tv;
-    KIO::filesize_t processed_size;
+//    KIO::filesize_t processed_size;
+    KIO::filesize_t totalSize;
+    KIO::filesize_t sentListEntries;
 };
 
 };
@@ -186,8 +188,9 @@ SlaveBase::SlaveBase( const QCString &protocol,
     d->onHold = false;
     d->last_tv.tv_sec = 0;
     d->last_tv.tv_usec = 0;
-    d->processed_size = 0;
-
+//    d->processed_size = 0;
+    d->totalSize=0;
+    d->sentListEntries=0;
     connectSlave(mAppSocket);
 }
 
@@ -323,6 +326,10 @@ void SlaveBase::error( int _errid, const QString &_text )
     KIO_DATA << _errid << _text;
 
     m_pConnection->send( MSG_ERROR, data );
+    //reset
+    listEntryCurrentSize = 100;
+    d->sentListEntries=0;
+    d->totalSize=0;
 }
 
 void SlaveBase::connected()
@@ -339,6 +346,8 @@ void SlaveBase::finished()
 
     // reset
     listEntryCurrentSize = 100;
+    d->sentListEntries=0;
+    d->totalSize=0;
 }
 
 void SlaveBase::needSubURLData()
@@ -365,6 +374,13 @@ void SlaveBase::totalSize( KIO::filesize_t _bytes )
 {
     KIO_DATA << KIO_FILESIZE_T(_bytes);
     m_pConnection->send( INF_TOTAL_SIZE, data );
+    //this one is usually called before the first item is listed in listDir()
+    struct timeval tp;
+    gettimeofday(&tp, 0);
+    listEntry_sec = tp.tv_sec;
+    listEntry_usec = tp.tv_usec;
+    d->totalSize=_bytes;
+    d->sentListEntries=0;
 }
 
 void SlaveBase::processedSize( KIO::filesize_t _bytes )
@@ -389,7 +405,7 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
 	    d->last_tv.tv_usec = tv.tv_usec;
 	}
     }
-    d->processed_size = _bytes;
+//    d->processed_size = _bytes;
 }
 
 void SlaveBase::processedPercent( float /* percent */ )
@@ -506,40 +522,44 @@ void SlaveBase::statEntry( const UDSEntry& entry )
 
 void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 {
-    static struct timeval tp;
-    static const int maximum_updatetime = 300;
-    static const int minimum_updatetime = 100;
+   static struct timeval tp;
+   static const int maximum_updatetime = 300;
+   static const int minimum_updatetime = 100;
 
-    if (!_ready) {
-    pendingListEntries.append(entry);
+   if (!_ready) {
+      pendingListEntries.append(entry);
 
-    if (pendingListEntries.count() > listEntryCurrentSize) {
+      if (pendingListEntries.count() > listEntryCurrentSize) {
+         gettimeofday(&tp, 0);
 
-            gettimeofday(&tp, 0);
+         long diff = ((tp.tv_sec - listEntry_sec) * 1000000 +
+                      tp.tv_usec - listEntry_usec) / 1000;
+         if (diff==0) diff=1;
 
-            long diff = ((tp.tv_sec - listEntry_sec) * 1000000 +
-                         tp.tv_usec - listEntry_usec) / 1000;
+         if (diff > maximum_updatetime) {
+            listEntryCurrentSize = listEntryCurrentSize * 3 / 4;
+            _ready = true;
+         }
+//if we can send all list entries of this dir which have not yet been sent
+//within maximum_updatetime, then make listEntryCurrentSize big enough for all of them
+         else if (((pendingListEntries.count()*maximum_updatetime)/diff) > (d->totalSize-d->sentListEntries))
+            listEntryCurrentSize=d->totalSize-d->sentListEntries+1;
+//if we are below minimum_updatetime, estimate how much we will get within
+//maximum_updatetime
+         else if (diff < minimum_updatetime)
+            listEntryCurrentSize = (pendingListEntries.count() * maximum_updatetime) / diff;
+         else
+            _ready=true;
+      }
+   }
+   if (_ready) { // may happen when we started with !ready
+      listEntries( pendingListEntries );
+      pendingListEntries.clear();
 
-            if (diff > maximum_updatetime) {
-                listEntryCurrentSize = listEntryCurrentSize * 3 / 4;
-                _ready = true;
-            } else if (diff < minimum_updatetime) {
-                listEntryCurrentSize = listEntryCurrentSize * 5 / 4;
-            } else {
-                _ready = true;
-            }
-        }
-    }
-
-    if (_ready) { // may happen when we started with !ready
-    gettimeofday(&tp, 0);
-    listEntry_sec = tp.tv_sec;
-    listEntry_usec = tp.tv_usec;
-
-    listEntries( pendingListEntries );
-    pendingListEntries.clear();
-
-    }
+      gettimeofday(&tp, 0);
+      listEntry_sec = tp.tv_sec;
+      listEntry_usec = tp.tv_usec;
+   }
 }
 
 void SlaveBase::listEntries( const UDSEntryList& list )
@@ -550,6 +570,7 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     for (; it != end; ++it)
       stream << *it;
     m_pConnection->send( MSG_LIST_ENTRIES, data);
+    d->sentListEntries+=(uint)list.count();
 }
 
 void SlaveBase::sendAuthenticationKey( const QCString& key,
