@@ -867,7 +867,7 @@ void KJanusWidget::addButtonBelowList( const QString & text, QObject * recv, con
 {
   if( ( mFace == TreeList || mFace == IconList ) && d->mListFrame )
   {
-    QPushButton * button = new QPushButton( text, d->mListFrame );
+    QPushButton * button = new QPushButton( text, d->mListFrame, "KJanusWidget::buttonBelowList" );
     connect( button, SIGNAL( clicked() ), recv, slot );
   }
 }
@@ -876,7 +876,7 @@ void KJanusWidget::addButtonBelowList( const KGuiItem & item, QObject * recv, co
 {
   if( ( mFace == TreeList || mFace == IconList ) && d->mListFrame )
   {
-    KPushButton * button = new KPushButton( item, d->mListFrame );
+    KPushButton * button = new KPushButton( item, d->mListFrame, "KJanusWidget::buttonBelowList" );
     connect( button, SIGNAL( clicked() ), recv, slot );
   }
 }
