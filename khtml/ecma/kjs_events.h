@@ -29,7 +29,7 @@ namespace KJS {
   public:
     JSEventListener(KJSO _listener);
     virtual ~JSEventListener();
-    virtual void handleEvent(const DOM::Event &evt);
+    virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
     KJSO listenerObj() { return listener; }
   protected:

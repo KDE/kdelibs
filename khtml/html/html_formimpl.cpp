@@ -38,6 +38,7 @@
 #include "css/cssproperties.h"
 #include "css/csshelper.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom2_eventsimpl.h"
 
 #include "rendering/render_form.h"
 
@@ -309,12 +310,8 @@ void HTMLFormElementImpl::prepareSubmit()
 {
     if(!view) return;
 
-    DOMString script = getAttribute(ATTR_ONSUBMIT);
-    if (!script.isNull() && view->part()->jScriptEnabled()) {
-        QVariant ret = view->part()->executeScript(Node(this), script.string());
-	if (ret.type() == QVariant::Bool && ret.toBool() == false)
-            return; // don't submit if script returns false
-    }
+    if (!dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true))
+	return; // don't submit if preventDefault() called
 
     submit();
 }
@@ -358,10 +355,8 @@ void HTMLFormElementImpl::prepareReset()
     kdDebug( 6030 ) << "reset pressed!" << endl;
 #endif
 
-    DOMString script = getAttribute(ATTR_ONRESET);
-    if (!script.isNull() && view->part()->jScriptEnabled())
-	view->part()->executeScript(Node(this), script.string());
-
+    dispatchHTMLEvent(EventImpl::RESET_EVENT,true,false);
+	
     reset();
 }
 
@@ -402,6 +397,14 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ACCEPT:
         // ignore this one for the moment...
+        break;
+    case ATTR_ONSUBMIT:
+        removeHTMLEventListener(EventImpl::SUBMIT_EVENT);
+        addEventListener(EventImpl::SUBMIT_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    case ATTR_ONRESET:
+        removeHTMLEventListener(EventImpl::RESET_EVENT);
+        addEventListener(EventImpl::RESET_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -525,33 +528,24 @@ void HTMLGenericFormElementImpl::detach()
 
 void HTMLGenericFormElementImpl::onBlur()
 {
-    DOMString script = getAttribute(ATTR_ONBLUR);
-    if (!script.isEmpty() && view->part()->jScriptEnabled())
-        view->part()->executeScript(Node(this), script.string());
+    dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
 }
 
 void HTMLGenericFormElementImpl::onFocus()
 {
     // ###:-| this is called from JS _and_ from event handlers.
     // Split into two functions (BIC)
-    ownerDocument()->setFocusNode(this);
-    DOMString script = getAttribute(ATTR_ONFOCUS);
-    if (!script.isEmpty() && view->part()->jScriptEnabled())
-        view->part()->executeScript(Node(this), script.string());
+    dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
 }
 
 void HTMLGenericFormElementImpl::onSelect()
 {
-    DOMString script = getAttribute(ATTR_ONSELECT);
-    if (!script.isEmpty() && view->part()->jScriptEnabled())
-        view->part()->executeScript(Node(this), script.string());
+    dispatchHTMLEvent(EventImpl::SELECT_EVENT,true,false);
 }
 
 void HTMLGenericFormElementImpl::onChange()
 {
-    DOMString script = getAttribute(ATTR_ONCHANGE);
-    if (!script.isEmpty() && view->part()->jScriptEnabled())
-        view->part()->executeScript(Node(this), script.string());
+    dispatchHTMLEvent(EventImpl::CHANGE_EVENT,true,false);
 }
 
 void HTMLGenericFormElementImpl::setFocus(bool received)
@@ -559,14 +553,15 @@ void HTMLGenericFormElementImpl::setFocus(bool received)
     if (received)
     {
 	if(m_render)
-	    static_cast<RenderFormElement*>(m_render)->focus();
+	    static_cast<RenderFormElement*>(m_render)->focus(); // will call onFocus()
 	onFocus();
     }
     else
     {
 	if(m_render)
-	    static_cast<RenderFormElement*>(m_render)->blur();
-	onBlur();
+	    static_cast<RenderFormElement*>(m_render)->blur(); // will call onBlur()
+	else
+	    onBlur();
     }
 }
 
@@ -631,9 +626,14 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
         m_currValue = m_value.string();
         break;
     case ATTR_ACCESSKEY:
+	break;
     case ATTR_ONFOCUS:
+        removeHTMLEventListener(EventImpl::FOCUS_EVENT);
+        addEventListener(EventImpl::FOCUS_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     case ATTR_ONBLUR:
-        // ignore for the moment
+        removeHTMLEventListener(EventImpl::BLUR_EVENT);
+        addEventListener(EventImpl::BLUR_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -882,7 +882,22 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_HEIGHT:
         addCSSLength(CSS_PROP_HEIGHT, attr->value() );
         break;
-
+    case ATTR_ONFOCUS:
+        removeHTMLEventListener(EventImpl::FOCUS_EVENT);
+        addEventListener(EventImpl::FOCUS_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    case ATTR_ONBLUR:
+        removeHTMLEventListener(EventImpl::BLUR_EVENT);
+        addEventListener(EventImpl::BLUR_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    case ATTR_ONSELECT:
+        removeHTMLEventListener(EventImpl::SELECT_EVENT);
+        addEventListener(EventImpl::SELECT_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    case ATTR_ONCHANGE:
+        removeHTMLEventListener(EventImpl::CHANGE_EVENT);
+        addEventListener(EventImpl::CHANGE_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -1202,6 +1217,23 @@ ushort HTMLLabelElementImpl::id() const
     return ID_LABEL;
 }
 
+void HTMLLabelElementImpl::parseAttribute(AttrImpl *attr)
+{
+    switch(attr->attrId)
+    {
+    case ATTR_ONFOCUS:
+        removeHTMLEventListener(EventImpl::FOCUS_EVENT);
+        addEventListener(EventImpl::FOCUS_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    case ATTR_ONBLUR:
+        removeHTMLEventListener(EventImpl::BLUR_EVENT);
+        addEventListener(EventImpl::BLUR_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    default:
+        HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
 ElementImpl *HTMLLabelElementImpl::formElement()
 {
     DOMString formElementId = getAttribute(ATTR_FOR);
@@ -1433,10 +1465,16 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
         // ### ignore for the moment
         break;
     case ATTR_ONFOCUS:
+        removeHTMLEventListener(EventImpl::FOCUS_EVENT);
+        addEventListener(EventImpl::FOCUS_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     case ATTR_ONBLUR:
-    case ATTR_ONSELECT:
+        removeHTMLEventListener(EventImpl::BLUR_EVENT);
+        addEventListener(EventImpl::BLUR_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     case ATTR_ONCHANGE:
-        // ###
+        removeHTMLEventListener(EventImpl::CHANGE_EVENT);
+        addEventListener(EventImpl::CHANGE_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -1824,10 +1862,20 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
         // ignore for the moment
         break;
     case ATTR_ONFOCUS:
+        removeHTMLEventListener(EventImpl::FOCUS_EVENT);
+        addEventListener(EventImpl::FOCUS_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     case ATTR_ONBLUR:
+        removeHTMLEventListener(EventImpl::BLUR_EVENT);
+        addEventListener(EventImpl::BLUR_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     case ATTR_ONSELECT:
+        removeHTMLEventListener(EventImpl::SELECT_EVENT);
+        addEventListener(EventImpl::SELECT_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     case ATTR_ONCHANGE:
-        // no need to parse
+        removeHTMLEventListener(EventImpl::CHANGE_EVENT);
+        addEventListener(EventImpl::CHANGE_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);

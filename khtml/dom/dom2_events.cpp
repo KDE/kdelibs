@@ -39,7 +39,7 @@ EventListener::~EventListener()
 {
 }
 
-void EventListener::handleEvent(const Event &/*evt*/)
+void EventListener::handleEvent(Event &/*evt*/)
 {
 }
 

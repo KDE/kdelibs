@@ -15,6 +15,8 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *  $Id$
  */
 
 #include "kjs_events.h"
@@ -41,7 +43,7 @@ JSEventListener::~JSEventListener()
     jsEventListeners.removeRef(this);
 }
 
-void JSEventListener::handleEvent(const DOM::Event &evt)
+void JSEventListener::handleEvent(DOM::Event &evt)
 {
   if (listener.implementsCall()) {
     List args;

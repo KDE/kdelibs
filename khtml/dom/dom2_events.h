@@ -73,7 +73,7 @@ public:
      * used in determining the event's flow and default action.
      *
      */
-    virtual void handleEvent(const Event &evt);
+    virtual void handleEvent(Event &evt);
 
     /**
      * @internal

@@ -326,6 +326,8 @@ public:
     virtual tagStatus startTag() const { return LABELStartTag; }
     virtual tagStatus endTag() const { return LABELEndTag; }
 
+    virtual void parseAttribute(AttrImpl *attr);
+
     /**
      * the form element this label is associated to.
      */

@@ -1330,7 +1330,7 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
 	    m_focusNode->setFocus(false);
 	}
 	m_focusNode = n;
-	kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
+	//kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
 	if (n)
 	    n->setFocus();
     }

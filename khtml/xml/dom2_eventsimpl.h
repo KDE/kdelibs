@@ -264,7 +264,7 @@ class HTMLEventListener : public EventListener {
 public:
     HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool _doubleClickOnly = false);
     virtual ~HTMLEventListener();
-    virtual void handleEvent(const Event &evt);
+    virtual void handleEvent(Event &evt);
     virtual DOMString eventListenerType();
     bool doubleClickOnly() { return m_doubleClickOnly; }
 protected:

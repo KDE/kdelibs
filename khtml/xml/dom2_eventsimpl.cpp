@@ -135,7 +135,8 @@ void EventImpl::stopPropagation()
 
 void EventImpl::preventDefault()
 {
-    m_defaultPrevented = true;
+    if (m_cancelable)
+	m_defaultPrevented = true;
 }
 
 void EventImpl::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool cancelableArg)
@@ -606,7 +607,7 @@ HTMLEventListener::~HTMLEventListener()
 {
 }
 
-void HTMLEventListener::handleEvent(const Event &evt)
+void HTMLEventListener::handleEvent(Event &evt)
 {
     // ### make event information available to script somehow?
     // See DOM2 Events section 1.3.2
@@ -615,8 +616,13 @@ void HTMLEventListener::handleEvent(const Event &evt)
 	evt.handle() && evt.handle()->isUIEvent() && (static_cast<UIEventImpl*>(evt.handle())->detail() % 2 != 0))
 	return; // single or odd-numbered click
 
+    // If the script returns false, we prevent default actions (e.g. submitting a form)
+    // ### is this correct for everything?
     // ### should evt.target() be used as the this value instead?
-    m_part->executeScript(evt.currentTarget(),m_scriptCode);
+    QVariant ret = m_part->executeScript(evt.currentTarget(),m_scriptCode);
+    if (ret.type() == QVariant::Bool && ret.toBool() == false)
+	evt.preventDefault();
+
 }
 
 DOMString HTMLEventListener::eventListenerType()

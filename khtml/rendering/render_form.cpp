@@ -37,6 +37,7 @@
 #include "dom_nodeimpl.h"
 #include "dom_textimpl.h"
 #include "dom_docimpl.h"
+#include "dom2_eventsimpl.h"
 
 #include "html/html_formimpl.h"
 #include "html/html_documentimpl.h"
@@ -110,12 +111,15 @@ void RenderFormElement::focus()
 
 void RenderFormElement::slotBlurred()
 {
-    m_element->onBlur();
+    m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
+//    m_element->onBlur();
 }
 
 void RenderFormElement::slotFocused()
 {
-    m_element->onFocus();
+    m_element->ownerDocument()->setFocusNode(m_element);
+//    m_element->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
+//    m_element->onFocus();
 }
 
 void RenderFormElement::slotSelected()

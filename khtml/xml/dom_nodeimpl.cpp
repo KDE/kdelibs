@@ -456,8 +456,9 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
     int exceptioncode;
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->ref();
-    dispatchEvent(evt,exceptioncode);
+    bool r = dispatchEvent(evt,exceptioncode);
     evt->deref();
+    return r;
 }
 
 void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
@@ -467,9 +468,10 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
 
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     bool found = false;
+    Event ev = evt;
     for (; it.current() && !found; ++it)
 	if (it.current()->id == evt->id() && it.current()->useCapture == useCapture)
-	    it.current()->listener->handleEvent(evt);
+	    it.current()->listener->handleEvent(ev);
 }
 
 //--------------------------------------------------------------------
