@@ -210,6 +210,7 @@
 7119        kio_help
 7120        kio_sftp
 7121        kio_nfs
+7122        kio_sieve
 
 # kdesdk
 8100        kompare
