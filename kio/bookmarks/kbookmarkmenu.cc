@@ -166,17 +166,25 @@ void KBookmarkMenu::slotAboutToShow()
 
 QString KBookmarkMenu::s_highlightedAddress;
 QString KBookmarkMenu::s_highlightedImportType;
+QString KBookmarkMenu::s_highlightedImportLocation;
 
 void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
   if (action->isA("KBookmarkActionMenu") || action->isA("KBookmarkAction")) 
+  {
     s_highlightedAddress = action->property("address").toString();
-
+  }
   else if (action->isA("KImportedBookmarksActionMenu"))
+  {
     s_highlightedImportType = action->property("type").toString();
-
+    s_highlightedImportLocation = action->property("location").toString();
+  }
   else 
+  {
     s_highlightedAddress = QString::null;
+    s_highlightedImportType = QString::null;
+    s_highlightedImportLocation = QString::null;
+  }
 }
 
 bool KBookmarkMenu::invalid( int val )
@@ -421,7 +429,10 @@ void KBookmarkMenu::fillBookmarkMenu()
        }
 
        KActionMenu * actionMenu = 
-          new KActionMenu( menuName, (*it), m_actionCollection, 0L );
+          new KImportedBookmarksActionMenu( menuName, (*it), m_actionCollection, 0L );
+       actionMenu->setProperty( "type", (*it) );
+       actionMenu->setProperty( "location", info.second );
+
        actionMenu->plug( m_parentMenu );
        m_actions.append( actionMenu );
 
@@ -597,7 +608,7 @@ void KBookmarkMenu::slotNSLoad()
   m_parentMenu->disconnect(SIGNAL(aboutToShow()));
 
   KBookmarkMenuNSImporter importer( m_pManager, this, m_actionCollection );
-  importer.openNSBookmarks();
+  importer.openBookmarks(s_highlightedImportLocation, s_highlightedImportType);
 }
 
 // -----------------------------------------------------------------------------

@@ -51,11 +51,15 @@ class KPopupMenu;
 class KImportedBookmarksActionMenu : public KActionMenu {
   Q_OBJECT
   Q_PROPERTY( QString type READ getType WRITE setType )
+  Q_PROPERTY( QString location READ getLocation WRITE setLocation )
 public:
   const QString getType() const { return m_type; }
   void setType(const QString &type) { m_type = type; }
+  const QString getLocation() const { return m_location; }
+  void setLocation(const QString &location) { m_location = location; }
 private:
   QString m_type;
+  QString m_location;
 public:
   KImportedBookmarksActionMenu( 
     const QString &text, const QString& sIconName,
