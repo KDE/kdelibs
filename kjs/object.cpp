@@ -188,7 +188,7 @@ Number KJSO::toNumber() const
 double KJSO::round() const
 {
   if (isA(UndefinedType)) /* TODO: see below */
-    return 0.0;       
+    return 0.0;
   Number n = toNumber();
   if (n.value() == 0.0)   /* TODO: -0, NaN, Inf */
     return 0.0;
@@ -316,12 +316,12 @@ ErrorType KJSO::putValue(const KJSO& v)
   // here we catch attempts to set a value belonging to one interpreter
   // into another
   /* TODO */
-#if 0  
+#if 0
   fprintf(stderr, "KJSO::putValue(%p) coll.curr %p base: %p value: %p\n",
 	  v.imp(), Collector::current(),
 	  o.imp()->internal,
 	  v.imp()->internal);
-#endif  
+#endif
   if (o.imp()->internal != v.imp()->internal) {
     //    fprintf(stderr, "DETECTED CROSS-INSTANCE ASSIGNMENT\n");
     ((Collector*)o.imp()->internal)->share((void*)v.imp());
@@ -471,7 +471,7 @@ Object Object::create(Class c, const KJSO& val)
   Object obj = Object();
   obj.setClass(c);
   obj.setInternalValue(val);
-  
+
   UString p = "[[";
   switch (c) {
   case UndefClass:
@@ -634,7 +634,7 @@ KJSO Imp::get(const UString &p) const
 
   if (!proto)
     return Undefined();
-  
+
   return proto->get(p);
 }
 
@@ -896,6 +896,12 @@ void ObjectImp::mark(Imp*)
 
 HostImp::~HostImp() { }
 
+Boolean HostImp::toBoolean() const
+{
+  return Boolean(true);
+}
+
+
 const TypeInfo HostImp::info = { "HostObject", HostType, 0, 0, 0 };
 
 Object Error::createObject(ErrorType e, const char *m, int l)
@@ -922,7 +928,7 @@ Object Error::createObject(ErrorType e, const char *m, int l)
       { URIError, I18N_NOOP("URI error") },
       { (ErrorType)0, 0 }
   };
-  
+
   const char *estr = I18N_NOOP("Unknown error");
   const ErrorStruct *estruct = errtab;
   while (estruct->e) {
@@ -938,8 +944,8 @@ Object Error::createObject(ErrorType e, const char *m, int l)
       fprintf(stderr, "JS: %s at line %d.\n", estr, l);
   else
       fprintf(stderr, "JS: %s.\n", estr);
-#endif  
-  
+#endif
+
   return err;
 }
 

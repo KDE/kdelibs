@@ -426,8 +426,8 @@ namespace KJS {
     void putArrayElement(const UString &p, const KJSO& v);
 
     /**
-     * Get the property names for this object. To be used by for .. in loops 
-     * @return The (pointer to the) first element of a PropList, to be deleted 
+     * Get the property names for this object. To be used by for .. in loops
+     * @return The (pointer to the) first element of a PropList, to be deleted
      * by the caller, or 0 if there are no enumerable properties
      */
     PropList *getPropList(PropList *first = 0L, PropList *last = 0L) const;
@@ -502,6 +502,9 @@ namespace KJS {
   public:
     virtual ~HostImp();
     virtual const TypeInfo* typeInfo() const { return &info; }
+
+    virtual Boolean toBoolean() const;
+
     static const TypeInfo info;
   };
 
@@ -578,7 +581,7 @@ namespace KJS {
      * @param e Type of error.
      * @param m Optional error message.
      * @param l Optional line number.
-     */ 
+     */
     static KJSO create(ErrorType e, const char *m = 0, int l = -1);
     /**
      * Same as above except the different return type (which is not casted
