@@ -155,6 +155,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     for(int i = 0; i < (int)propsToApply->count(); i++)
 	applyRule(style, propsToApply->at(i)->prop, e);
+	
+    delete propsToApply;
 
     return style;
 }

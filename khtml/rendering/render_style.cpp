@@ -130,13 +130,13 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     box = other.box;
     text = other.text;
     visual = other.visual;
-    background = other.background;
-    list = other.list;
-    table = other.table;
+    background = other.background;    
     surround = other.surround;
     text = other.text;
     
-    _display = INLINE;
+    list = other.list;
+    table = other.table;
+    _display = other._display;
 }
 
 RenderStyle::RenderStyle(const RenderStyle* inheritParent)
