@@ -822,7 +822,7 @@ class KDialogBase : public KDialog
     * save the dialogs size dependant on the screen dimension either to the
     * global or application config file.
     *
-    * @param The group to which the dialogs size is saved. @see configDialogSize
+    * @param The group to which the dialogs size is saved. See @ref configDialogSize
     * to read the size.
     * @param global Set to true if the entry should go to the global config rather
     *        than to the applications config. Default is false.
