@@ -140,6 +140,7 @@ const char *packages[] = {
 "kdf",
 "kdm",
 "kdmdesktop",
+"kdoc",
 "kdvi",
 "kedit",
 "keditbookmarks",
