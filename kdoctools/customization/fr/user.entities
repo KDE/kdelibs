@@ -56,6 +56,9 @@
 <!ENTITY traducteurNilsSergioFernandez    '<othercredit role="translator"><firstname>Nils Sergio</firstname><surname>Fernández Rønningen</surname><affiliation><address><email></email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurNilsSergioFernandez     '<othercredit role="reviewer"><firstname>Nils Sergio</firstname><surname>Fernández Rønningen</surname><affiliation><address><email></email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurJeanJacquesFreulon    '<othercredit role="translator"><firstname>Jean-Jacques</firstname><surname>Freulon</surname><affiliation><address><email>jeanjacques.freulon@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurJeanJacquesFreulon     '<othercredit role="reviewer"><firstname>Jean-Jacques</firstname><surname>Freulon</surname><affiliation><address><email>jeanjacques.freulon@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurLudovicGrossard    '<othercredit role="translator"><firstname>Ludovic</firstname><surname>Grossard</surname><affiliation><address><email>guilbertph@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurLudovicGrossard     '<othercredit role="reviewer"><firstname>Ludovic</firstname><surname>Grossard</surname><affiliation><address><email>guilbertph@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -110,6 +113,7 @@
 <!ENTITY PhillipDucharme   'Phillip Ducharme <email>philip.ducharme@hermes.usherb.ca</email>'>
 <:ENTITY HeleneDuwelzRebert 'Hélène Duwelz-Rebert <email>helened@herbalife.com</email>'>
 <!ENTITY NilsSergioFernandez 'Nils Sergio Fernandez Rønningen <email>nilsfernandez@yahoo.fr</email>'>
+<!ENTITY JeanJacquesFreulon  'Jean-Jacques Freulon <email>jeanjacques.freulon@free.fr</email>'>
 <!ENTITY LudovicGrossard   'Ludovic Grossard <email>grossard@kde.org</email>'>
 <!ENTITY PhilippeGuilbert  'Philippe Guilbert <email>guilbertph@wanadoo.fr</email>'>
 <!ENTITY RobertJacolin     'Robert Jacolin <email>rjacolin@ifrance.com</email>'>
