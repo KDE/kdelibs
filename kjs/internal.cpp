@@ -477,7 +477,9 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
   assert(progNode);
   KJSO res = progNode->evaluate();
   recursion--;
-
+  
+  bool retVal = true;
+  
   if (context->hadError()) {
     /* TODO */
     errType = 99;
@@ -486,10 +488,17 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
   } else {
     errType = 0;
     errMsg = "";
+
+    // catch return value
+    if (res.isA(CompletionType)) {
+      Completion *com = static_cast<Completion*>(&res);
+      if (com->isValueCompletion())
+	retVal = com->value().toBoolean().value();
+    }
   }
 
   if (progNode)
     progNode->deleteStatements();
 
-  return (errType == 0);
+  return ((errType == 0) && retVal);
 }
