@@ -57,6 +57,8 @@
 
 #define SCROLLBARWIDTH 16
 
+#define PAINT_BUFFER_HEIGHT 150
+
 QList<KHTMLWidget> *KHTMLWidget::lstViews = 0L;
 
 using namespace DOM;
@@ -999,33 +1001,39 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
         
 #if 1
     if (paintBuffer==0)
-            paintBuffer=new QPixmap(width()+100,height()+100);
-    else if ( paintBuffer->width() < width() 
-            || paintBuffer->height() < height()
-            || paintBuffer->width() > width()+200 
-            || paintBuffer->height() > height()+200 )
+            paintBuffer=new QPixmap(width()+100,PAINT_BUFFER_HEIGHT);
+    else if ( paintBuffer->width() < width() )
     {
         delete paintBuffer;
-        paintBuffer = new QPixmap(width()+100,height()+100);            
+        paintBuffer = new QPixmap(width()+100,PAINT_BUFFER_HEIGHT);            
     }
 //    paintBuffer->fill(defaultSettings->bgColor);
-        
-    QPainter* tp = new QPainter;
-    tp->begin( paintBuffer );
-    tp->translate(-clipx,-clipy);
-    
 
-    // ### fix this for frames...
     QTime qt;
     qt.start();
-    body->print(tp, clipx, clipy, clipw, cliph, 0, 0);
-    printf("TIME: print() dt=%d\n",qt.elapsed());
-    
-    tp->end();
-    delete tp;
-    
-    p->drawPixmap(clipx,clipy,*paintBuffer,0,0,clipw,cliph);
+        
+    int py=0;
+    while (py < cliph)
+    {
+	QPainter* tp = new QPainter;
+	tp->begin( paintBuffer );
+	tp->translate(-clipx,-clipy-py);
 
+    	int ph = cliph<PAINT_BUFFER_HEIGHT ? cliph : PAINT_BUFFER_HEIGHT;	
+
+	// ### fix this for frames...
+
+	body->print(tp, clipx, clipy+py, clipw, ph, 0, 0);
+
+	tp->end();
+	delete tp;
+
+	p->drawPixmap(clipx,clipy+py,*paintBuffer,0,0,clipw,ph);
+	
+	py += PAINT_BUFFER_HEIGHT;
+    }
+    
+    printf("TIME: print() dt=%d\n",qt.elapsed());
 #else
     QBrush b(defaultSettings->bgColor);
     p->fillRect(clipx, clipy, clipw, cliph, b);
