@@ -3276,7 +3276,7 @@ void KateDocument::selectLine( const KateTextCursor& cursor )
   if (!(config()->configFlags() & KateDocument::cfKeepSelection))
     clearSelection ();
 
-  setSelection (cursor.line(), 0, cursor.line()/*+1, 0*/, m_buffer->plainLine(cursor.line())->length() );
+  setSelection (cursor.line(), 0, cursor.line()+1, 0 );
 }
 
 void KateDocument::selectLength( const KateTextCursor& cursor, int length )
@@ -4342,28 +4342,51 @@ void KateDocument::slotModifiedOnDisk( Kate::View *v )
   {
     m_isasking = 1;
 
-    int exitval = ( v && v->hasFocus() ? 0 : -1 );
-
-    switch ( KMessageBox::warningYesNoCancel( widget(),
-                reasonedMOHString() + "\n\n" + i18n("What do you want to do?"),
-                i18n("File Was Modified on Disk"),
-                i18n("&Reload File"), i18n("&Ignore Changes")) )
+    if ( m_modOnHdReason == 3 ) // deleted
     {
-      case KMessageBox::Yes: // "reload file"
-        m_modOnHd = false; // trick reloadFile() to not ask again
-        emit modifiedOnDisc( this, false, 0 );
-        reloadFile();
-        m_isasking = 0;
-        break;
+      switch ( KMessageBox::warningYesNoCancel( widget(),
+               reasonedMOHString() + "\n\n" + i18n("What do you want to do?"),
+               i18n("File Was Deleted on Disk"),
+               i18n("&Save As..."), i18n("&Ignore Changes")) )
+      {
+        case KMessageBox::Yes: // "save file"
+          m_modOnHd = false; // trick save() to not ask again
+          emit modifiedOnDisc( this, false, 0 );
+          saveAs();
+          m_isasking = 0;
+          break;
 
-      case KMessageBox::No:  // "ignore changes"
-        m_modOnHd = false;
-        emit modifiedOnDisc( this, false, 0 );
-        m_isasking = 0;
-        break;
+          case KMessageBox::No:  // "ignore changes"
+            m_modOnHd = false;
+            emit modifiedOnDisc( this, false, 0 );
+            m_isasking = 0;
+            break;
 
-      default:               // cancel: ignore next focus event
-        m_isasking = -1;
+            default:               // cancel: ignore next focus event
+              m_isasking = -1;
+      }
+    } else {
+      switch ( KMessageBox::warningYesNoCancel( widget(),
+               reasonedMOHString() + "\n\n" + i18n("What do you want to do?"),
+               i18n("File Was Modified on Disk"),
+               i18n("&Reload File"), i18n("&Ignore Changes")) )
+      {
+        case KMessageBox::Yes: // "reload file"
+          m_modOnHd = false; // trick reloadFile() to not ask again
+          emit modifiedOnDisc( this, false, 0 );
+          reloadFile();
+          m_isasking = 0;
+          break;
+
+          case KMessageBox::No:  // "ignore changes"
+            m_modOnHd = false;
+            emit modifiedOnDisc( this, false, 0 );
+            m_isasking = 0;
+            break;
+
+            default:               // cancel: ignore next focus event
+              m_isasking = -1;
+      }
     }
   }
 }
