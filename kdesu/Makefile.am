@@ -12,6 +12,3 @@ kdesu_HEADERS = defaults.h client.h process.h pty.h kcookie.h su.h ssh.h stub.h
 
 bin_PROGRAMS = kdesu_stub
 kdesu_stub_SOURCES = kdesu_stub.c
-
-blahdir = $(kde_datadir)/kdesu/icons
-blah_ICON = blah2
