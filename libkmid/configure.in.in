@@ -20,38 +20,6 @@ dnl libkmid's specific checks
 #  DO_NOT_COMPILE="$DO_NOT_COMPILE libkmid"
 #fi
 
-#AC_ARG_ENABLE(alsa, 
-#[  --enable-alsa    Turn on alsa support], 
-#[case "${enableval}" in 
-#yes) alsa=true ;; 
-#no)  alsa=false ;; 
-#*) AC_MSG_ERROR(bad value ${enableval} for --enable-alsa) ;; 
-#esac],[alsa=false]) 
-
-#if test "$arts_with_alsa" = "yes"; then
-#AC_DEFUN(AC_CHECK_LIBASOUND,
-#[
-#  ac_ldflags_save="$LDFLAGS"
-#  LDFLAGS="$all_libraries $LDFLAGS"
-#  AC_CHECK_HEADER(sys/asoundlib.h,
-#  [
-#    AC_CHECK_LIB(asound,snd_seq_create_simple_port,[
-#      alsa=true
-#      LIBASOUND="-lasound"
-#      AC_DEFINE(HAVE_LIBASOUND, 1,
-#        [Define if you have libasound (required for alsa support)])
-#    ], [
-#      alsa=false
-#    ])
-#  ])
-#  AC_SUBST(LIBASOUND)
-#  LDFLAGS="$ac_ldflags_save"
-#])
-#AC_CHECK_LIBASOUND
-
-#fi
-#AC_SUBST(LIBASOUND)
-
 #AC_MSG_CHECKING([for OSS support])
 #AC_CACHE_VAL(ac_cv_header_soundcard_h,
 #[
@@ -70,9 +38,92 @@ dnl libkmid's specific checks
 #])
 
 
-
-#AM_CONDITIONAL(HAVE_ALSA, test x$alsa = xtrue) 
-
 AC_CHECK_HEADERS(sys/soundcard.h machine/soundcard.h linux/awe_voice.h awe_voice.h /usr/src/sys/i386/isa/sound/awe_voice.h /usr/src/sys/gnu/i386/isa/sound/awe_voice.h)  
 
+dnl check for ALSA audio support
+
+kde_with_alsa=yes
+AC_ARG_WITH(alsa, [  --with-alsa             enable libKMid ALSA support],
+[kde_with_alsa=$withval])
+
+if test "$kde_with_alsa" = "yes"; then
+AC_DEFUN([AC_CHECK_LIBASOUND],
+[
+  ac_ldflags_save="$LDFLAGS"
+  LDFLAGS="$all_libraries $LDFLAGS"
+  kde_has_asoundlib=no
+
+  AC_CHECK_HEADERS([ sys/asoundlib.h alsa/asoundlib.h ],
+  [
+    kde_has_asoundlib=yes
+  ])
+
+  dnl trial and error version check for ALSA 0.5.x / ALSA 0.9.x
+  AC_LANG_SAVE
+  AC_LANG_C
+  if test "x$kde_has_asoundlib" = "xyes"; then
+    AC_TRY_COMPILE([
+      #include "confdefs.h"
+      #ifdef HAVE_SYS_ASOUNDLIB_H
+      #include <sys/asoundlib.h>
+      #endif
+      #ifdef HAVE_ALSA_ASOUNDLIB_H
+      #include <alsa/asoundlib.h>
+      #endif
+    ],[
+      #if (SND_LIB_MAJOR == 0) && (SND_LIB_MINOR == 9)
+        /* we have ALSA 0.9.x */
+      #else
+        #error not ALSA 0.9.x
+      #endif
+    ],
+    kde_has_alsa_0_9=yes,
+    kde_has_alsa_0_9=no)
+  fi
+
+  if test "x$kde_has_asoundlib" = "xyes"; then
+    AC_TRY_COMPILE([
+      #include "confdefs.h"
+      #ifdef HAVE_SYS_ASOUNDLIB_H
+      #include <sys/asoundlib.h>
+      #endif
+      #ifdef HAVE_ALSA_ASOUNDLIB_H
+      #include <alsa/asoundlib.h>
+      #endif
+    ],[
+    #if (SND_LIB_MAJOR == 0) && (SND_LIB_MINOR == 5)
+      /* we have ALSA 0.5.x */
+    #else
+      #error not ALSA 0.5.x
+    #endif
+    ],
+    kde_has_alsa_0_5=yes,
+    kde_has_alsa_0_5=no)
+  fi
+  AC_LANG_RESTORE
+
+  if test "x$kde_has_asoundlib" = "xyes"; then
+    AC_CHECK_LIB(asound,snd_seq_create_simple_port,[
+      if test "x$kde_has_alsa_0_5" = "xyes"; then
+        LIBASOUND="-lasound"
+        AC_DEFINE(HAVE_LIBASOUND, 1,
+        [Define if you have libasound.so.1 (required for ALSA 0.5.x support)])
+      fi
+      if test "x$kde_has_alsa_0_9" = "xyes"; then
+        LIBASOUND="-lasound"
+        AC_DEFINE(HAVE_LIBASOUND2, 1,
+          [Define if you have libasound.so.2 (required for ALSA 0.9.x support)])
+        AC_CHECK_LIB(asound,snd_pcm_resume,[
+          AC_DEFINE(HAVE_SND_PCM_RESUME, 1,
+            [Define if libasound has snd_pcm_resume()])])
+      fi
+    ])
+  fi
+  AC_SUBST(LIBASOUND)
+  LDFLAGS="$ac_ldflags_save"
+])
+AC_CHECK_LIBASOUND
+fi
+
+AC_SUBST(LIBASOUND)
 
