@@ -314,12 +314,12 @@ void Test::mouseMiddleClick(QWidget *w)
 
 void Test::movedTab(int from, int to)
 {
-printf("reorder Tab from %d to %d\n",from,to);
   IntList::iterator it;
   QString label = mWidget->label(from);
   QString tabtooltip = mWidget->tabToolTip( mWidget->page(from) );
   QIconSet tabiconset = mWidget->tabIconSet( mWidget->page(from) );
   QWidget* page = mWidget->page(from);
+  bool current = (page == mWidget->currentPage() );
   QColor color = mWidget->tabColor( mWidget->page(from) );
 
   it = mList.at( from );
@@ -328,9 +328,11 @@ printf("reorder Tab from %d to %d\n",from,to);
 
   it = mList.at( to );
   mList.insert(it, mWidget->insertChangeableTab( label, to, page ) );
+  page = mWidget->page(to);
   mWidget->changeTab( mList[to], tabiconset, label );
   mWidget->setTabToolTip( page, tabtooltip );
   mWidget->changeTab( mList[to], color );
+  if (current) mWidget->showPage( page );
 }
 
 void Test::timerDone()
