@@ -54,7 +54,7 @@ double metronomeTempoToTempo(ulong x)
 int uncompressFile(const char *gzname, char *tmpname)
   // Returns 0 if OK, 1 if error (tmpname not set)
 {
-  QString cmd("gzip -dc " + KProcess::quote(gzname));
+  QString cmd("gzip -dc " + KShellProcess::quote(gzname));
   FILE *infile = popen( QFile::encodeName(cmd).data(), "r");
   if (infile==NULL) {
     fprintf(stderr,"ERROR : popen failed : %s\n",QFile::encodeName(cmd).data());
