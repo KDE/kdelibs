@@ -238,8 +238,7 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_SRC:
-        url = khtml::parseURL(attr->val());
-        setLocation(url);
+        setLocation(khtml::parseURL(attr->val()));
         break;
     case ATTR_ID:
     case ATTR_NAME:
@@ -340,6 +339,11 @@ void HTMLFrameElementImpl::attach()
 
 void HTMLFrameElementImpl::setLocation( const DOMString& str )
 {
+    if ( url == str )
+        return;
+
+    url = str;
+
     if( !attached() )
         return;
 
