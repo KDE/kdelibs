@@ -100,8 +100,23 @@ public:
 
    /**
     * Returns the full path and name of the file.
+    *
+    * Note that in most circumstances the file needs to be closed 
+    * before you use it by name. 
+    *
+    * In particular, if another process or software part needs to write data 
+    * to the file, the file should be closed before doing so. Otherwise the 
+    * act of closing the file later on may cause the file to get truncated to a 
+    * zero-size, resulting in an unexpected loss of the data.
+    *
+    * In some cases there is only interest in the filename itself but where the
+    * actual presence of a file with such name is a problem. In that case the
+    * file should first be both closed and unlinked. Such usage is not recommended
+    * since it may lead to the kind of symlink vulnerabilities that the KTempFile 
+    * design attempts to prevent.
+    *
     * @return The name of the file, or QString::null if opening the
-    *         file has failed or the file has been unlinked
+    *         file has failed or the file has been unlinked already.
     **/
    QString name() const;
    
