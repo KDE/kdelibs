@@ -21,8 +21,6 @@
 #include <qdatastream.h>
 #include <qstring.h>
 
-#include <kdebug.h>
-
 #include "agent.h"
 #include "key.h"
 #include "picture.h"
@@ -232,7 +230,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     // URL
     card.addLine( VCardLine( "url", (*addrIt).url().url() ) );
 
-    // VERSION    
+    // VERSION
     if ( version == VCard::v2_1 )
       card.addLine( VCardLine( "version", "2.1" ) );
     if ( version == VCard::v3_0 )
@@ -258,9 +256,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 Addressee::List VCardTool::parseVCards( const QString& vcard )
 {
   Addressee::List addrList;
-
   VCard::List vCardList = VCardParser::parseVCards( vcard );
-
   VCard::List::Iterator cardIt;
   for ( cardIt = vCardList.begin(); cardIt != vCardList.end(); ++cardIt ) {
     Addressee addr;
@@ -338,7 +334,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // GEO
         if ( (*lineIt).identifier() == "geo" ) {
           Geo geo;
-          
+
           QStringList geoParts = QStringList::split( ';', (*lineIt).value().asString(), true );
           geo.setLatitude( geoParts[0].toFloat() );
           geo.setLongitude( geoParts[1].toFloat() );
@@ -421,7 +417,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
         // ROLE
         if ( (*lineIt).identifier() == "role" )
           addr.setRole( (*lineIt).value().asString() );
-        
+
         // SORT-STRING
         if ( (*lineIt).identifier() == "sort-string" )
           addr.setSortString( (*lineIt).value().asString() );
@@ -484,8 +480,9 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
       }
     }
+
     addrList.append( addr );
-  }  
+  }
 
   return addrList;
 }
@@ -517,7 +514,7 @@ QDateTime VCardTool::parseDateTime( const QString &str )
 QString VCardTool::createDateTime( const QDateTime &dateTime )
 {
   QString str;
-  
+
   if ( dateTime.date().isValid() ) {
     str.sprintf( "%4d-%02d-%02d", dateTime.date().year(), dateTime.date().month(),
                  dateTime.date().day() );
@@ -546,7 +543,7 @@ Picture VCardTool::parsePicture( const VCardLine &line )
 
   if ( params.contains( "type" ) )
     pic.setType( line.parameter( "type" ) );
-        
+
   return pic;
 }
 
@@ -586,7 +583,7 @@ Sound VCardTool::parseSound( const VCardLine &line )
 /* TODO: support sound types
   if ( params.contains( "type" ) )
     snd.setType( line.parameter( "type" ) );
-*/      
+*/
 
   return snd;
 }

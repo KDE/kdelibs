@@ -22,6 +22,9 @@
 #define VCARD_H
 
 #include "vcardline.h"
+#include <qmap.h>
+#include <qstringlist.h>
+#include <qvaluelist.h>
 
 class VCard
 {
@@ -32,7 +35,7 @@ class VCard
 
     VCard();
     ~VCard();
-    
+
     /**
      * Removes all lines from the vCard.
      */
@@ -63,14 +66,14 @@ class VCard
      * Set the version of the vCard.
      */
     void setVersion( Version version );
-    
+
     /**
      * Returns the version of this vCard.
      */
     Version version() const;
 
   private:
-    QMap<QString, VCardLine::List> mLineMap;
+    QMap< QString, VCardLine::List > mLineMap;
 };
 
 #endif

@@ -21,9 +21,11 @@
 #ifndef VCARDLINE_H
 #define VCARDLINE_H
 
-#include <qstring.h>
 #include <qstringlist.h>
+#include <qvaluelist.h>
 #include <qvariant.h>
+#include <qmap.h>
+#include <qstring.h>
 
 class VCardLine
 {
@@ -33,6 +35,8 @@ class VCardLine
     VCardLine();
     VCardLine( const QString &identifier );
     VCardLine( const QString &identifier, const QVariant &value );
+    VCardLine( const VCardLine& line );
+    VCardLine& operator=( const VCardLine& line );
 
     ~VCardLine();
 
@@ -79,7 +83,7 @@ class VCardLine
     QString parameter( const QString& param ) const;
 
   private:
-    QMap< QString, QValueList<QString> > mParamMap;
+    QMap< QString, QStringList > mParamMap;
     QString mIdentifier;
     QVariant mValue;
 };

@@ -69,6 +69,9 @@ VCard::List VCardParser::parseVCards( const QString& text )
         if ( params.count() > 1 ) { // find all parameters
           for ( uint i = 1; i < params.count(); ++i ) {
             QStringList pair = QStringList::split( '=', params[i] );
+            if ( pair.size() == 1 ) {
+                pair.prepend( "type" );
+            }
             if ( pair[1].contains( ',' ) ) { // parameter in type=x,y,z format
               QStringList args = QStringList::split( ',', pair[ 1 ] );
               for ( uint j = 0; j < args.count(); ++j )
@@ -141,7 +144,7 @@ QString VCardParser::createVCards( const VCard::List& list )
       for ( lineIt = lines.begin(); lineIt != lines.end(); ++lineIt ) {
         if ( !(*lineIt).value().asString().isEmpty() ) {
           QString textLine;
-          
+
           textLine.append( (*lineIt).identifier().upper() );
 
           QStringList params = (*lineIt).parameterList();
@@ -179,7 +182,7 @@ QString VCardParser::createVCards( const VCard::List& list )
         }
       }
     }
-    
+
     text.append( "END:VCARD\r\n" );
     text.append( "\r\n" );
   }
