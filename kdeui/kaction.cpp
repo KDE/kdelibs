@@ -617,7 +617,7 @@ KListAction::KListAction( const QString& text, int accel,
                             QObject* parent, const char* name )
     : KSelectAction( text, accel, parent, name )
 {
-    connect( this, SIGNAL(activate()), receiver, slot );
+    connect( this, SIGNAL(activated(int)), receiver, slot );
     m_current = 0;
 }
 
@@ -634,7 +634,7 @@ KListAction::KListAction( const QString& text, const QIconSet& pix,
 			                const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-    connect( this, SIGNAL(activate()), receiver, slot );
+    connect( this, SIGNAL(activated(int)), receiver, slot );
     m_current = 0;
 }
 
@@ -651,7 +651,6 @@ void KListAction::setCurrentItem( int index )
     emit QAction::activated();
     emit activated( currentItem() );
     emit activated( currentText() );
-    emit activate();
 }
 
 QString KListAction::currentText()
