@@ -145,6 +145,17 @@ KMimeTypeList * KServiceTypeFactory::allMimeTypes()
    return list;
 }
 
+bool KServiceTypeFactory::checkMimeTypes()
+{
+   QDataStream *str = KSycoca::registerFactory( factoryId() );
+   // Read the dict offset - will serve as an end point for the list of entries
+   Q_INT32 sycocaDictOffset;
+   (*str) >> sycocaDictOffset;
+   // There are mimetypes/servicetypes if the dict offset is
+   // not right now in the file
+   return (str->device()->at() < sycocaDictOffset);
+}
+
 KServiceType * KServiceTypeFactory::createServiceType(int offset)
 {
    KServiceType *newEntry = 0;

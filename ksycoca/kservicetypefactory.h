@@ -66,10 +66,16 @@ public:
   KServiceType *findServiceTypeByName( const QString &_name);
 
   /**
-   * Return all mimetypes
+   * @return all mimetypes
    * Slow and memory consuming, avoid using
    */
   KMimeTypeList * allMimeTypes();
+  
+  /**
+   * @return true if at least one mimetype is present
+   * Safety test
+   */
+  bool checkMimeTypes();
 
   /**
    * @return the unique servicetype factory, creating it if necessary

@@ -35,7 +35,10 @@ KSycoca::KSycoca()
    QFile *database = new QFile(path);
    if (!database->open( IO_ReadOnly ))
    {
-     fprintf(stderr, "Error can't open database!\n");
+     // No database file
+     // TODO launch kded here, using KProcess, and upon completion
+     // retry again (but not more than once)
+     fprintf(stderr, "Error can't open database! Run kded !\n");
      exit(-1);
    }
    str = new QDataStream(database);

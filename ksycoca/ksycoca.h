@@ -27,6 +27,7 @@ class KSycocaFactory;
 class KSycocaFactoryList;
 
 /**
+ * @internal
  * Read-only SYstem COnfiguration CAche
  */
 class KSycoca : public QObject
