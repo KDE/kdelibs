@@ -142,8 +142,10 @@ AC_SUBST(LIBUTIL)
 AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBICE)
 
-LIB_KPARTS='$(top_builddir)/kparts/libkparts.la'
-AC_SUBST(LIB_KPARTS)
+AC_SUBST(LIB_KDECORE, '$(top_builddir)/kdecore/libkdecore.la')
+AC_SUBST(LIB_KDEUI, '$(top_builddir)/kdeui/libkdeui.la')
+AC_SUBST(LIB_KIO, '$(top_builddir)/kio/libkio.la')
+AC_SUBST(LIB_KPARTS, '$(top_builddir)/kparts/libkparts.la')
 
 AC_SUBST(EXTRA_SUBDIRS)
 
@@ -178,15 +180,11 @@ if test "$want_mitshm" = "yes" -a "$have_mitshm" = "yes"; then
   AC_DEFINE(HAVE_MITSHM,1,[Define if you want MIT-SHM support])
 fi
 
-ICE_SUBDIR=ICE
-ICE_RLIB=ICE/libkICE.la
-AC_SUBST(ICE_SUBDIR)
-AC_SUBST(ICE_RLIB)
+AC_SUBST(ICE_SUBDIR, 'ICE')
+AC_SUBST(ICE_RLIB, 'ICE/libkICE.la')
 
-DCOPIDL='$(top_builddir)/dcop/dcopidl/dcopidl'
-DCOPIDL2CPP='$(top_builddir)/dcop/dcopidl2cpp/dcopidl2cpp'
-AC_SUBST(DCOPIDL)
-AC_SUBST(DCOPIDL2CPP)
+AC_SUBST(DCOPIDL, '$(top_builddir)/dcop/dcopidl/dcopidl')
+AC_SUBST(DCOPIDL2CPP, '$(top_builddir)/dcop/dcopidl2cpp/dcopidl2cpp')
 
 ac_save_LIBS="$LIBS"
 LIBS="$LIBS $X_LDFLAGS -lICE"
