@@ -697,7 +697,10 @@ void RenderPartObject::updateWidget()
         url = o->url;
         serviceType = o->serviceType;
         if(serviceType.isEmpty() || serviceType.isNull()) {
-           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) serviceType = "application/x-shockwave-flash";
+           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) 
+	       serviceType = "application/x-shockwave-flash";
+           else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"))) 
+	       serviceType = "audio/x-pn-realaudio-plugin";
 
            // add more plugins here
         }
