@@ -882,11 +882,13 @@ void HTMLTableElementImpl::calcSingleColMinMax(int c, ColInfo* col)
     	    {
 	    	baseWidth = predefinedWidth.minWidth(availableWidth);
 		smin = baseWidth * col->value / pt;
+//		printf("perc40 rel %d %d\n",baseWidth,smin);
     	    } else {
 	    	baseWidth = fixedColMinTotal;
 		smin = baseWidth * col->value / (pt - col->value);
+//		printf("perc40 %d\n",baseWidth);
 	    }			    
-	    smin = MIN(smin, (tw-fixedColMinTotal ) * col->value / pt );
+	    //smin = MIN(smin, (tw-fixedColMinTotal-col->min) * col->value / pt );
     	    smin = MAX(col->min, smin);
 	    smax = smin;	    
 	}
@@ -957,6 +959,8 @@ void HTMLTableElementImpl::calcColMinMax()
 	// get the absolute minimum. this is used later when doing 
 	// percent/relative columns.
     	int m = col->min;
+	if (col->type == Percent)
+	    continue;
 	if (col->type == Fixed)
 	    m = MAX(m,col->value);
     	fixedColMinTotal += m;
