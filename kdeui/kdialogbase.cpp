@@ -915,12 +915,7 @@ void KDialogBase::setButtonOKText( const QString &text,
 
 void KDialogBase::setButtonOK( const KGuiItem &item /* = KStdGuiItem::ok() */ )
 {
-  KPushButton *pb = static_cast<KPushButton *>( actionButton( Ok ) );
-  if( pb == 0 )
-    return;
-
-  pb->setGuiItem( item );
-  d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
+  setButtonGuiItem( Ok, item );
 }
 
 
@@ -950,12 +945,7 @@ void KDialogBase::setButtonApplyText( const QString &text,
 
 void KDialogBase::setButtonApply( const KGuiItem &item /* = KStdGuiItem::apply() */ )
 {
-  KPushButton *pb = static_cast<KPushButton *>( actionButton( Apply ) );
-  if( pb == 0 )
-    return;
-
-  pb->setGuiItem( item );
-  d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
+  setButtonGuiItem( Apply, item );
 }
 
 
@@ -979,7 +969,12 @@ void KDialogBase::setButtonCancelText( const QString& text,
 
 void KDialogBase::setButtonCancel( const KGuiItem &item /* = KStdGuiItem::cancel() */ )
 {
-  KPushButton *pb = static_cast<KPushButton *>( actionButton( Cancel ) );
+  setButtonGuiItem( Cancel, item );
+}
+
+void KDialogBase::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
+{
+  KPushButton *pb = static_cast<KPushButton *>( actionButton( id ) );
   if( pb == 0 )
     return;
 

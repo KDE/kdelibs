@@ -1000,6 +1000,19 @@ class KDialogBase : public KDialog
      */
     void setButtonWhatsThis( ButtonCode id, const QString &text );
 
+    /**
+     * Sets the KGuiItem directly for the button instead of using 3 methods to
+     * set the text, tooltip and whatsthis strings. This also allows to set an
+     * icon for the button which is otherwise not possible for the extra 
+     * buttons beside Ok, Cancel and Apply.
+     *
+     * @param id The button identifier.
+     * @param item The KGuiItem for the button.
+     *
+     * @since 3.3
+     */
+
+    void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
 
     /**
      * This function has only effect in TreeList mode.
