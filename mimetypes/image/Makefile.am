@@ -6,7 +6,7 @@ mimetypeimagedata_DATA = jpeg.desktop tiff.desktop x-xpm.desktop x-xbm.desktop \
     x-xfig.desktop x-portable-bitmap.desktop x-portable-greymap.desktop \
     x-portable-pixmap.desktop x-pcx.desktop x-targa.desktop jp2.desktop \
     x-vnd.trolltech.qpicture.desktop x-vnd.adobe.photoshop.desktop \
-    x-xcursor.desktop pjpeg.desktop x-djvu.desktop
+    x-xcursor.desktop pjpeg.desktop
 
 mimetypeimagedatadir = $(kde_mimedir)/image
 
