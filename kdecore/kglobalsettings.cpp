@@ -681,8 +681,7 @@ bool KGlobalSettings::showFilePreview(const KURL &url)
 {
     KConfigGroup g(KGlobal::config(), "PreviewSettings");
     QString protocol = url.protocol();
-    QString protocolClass = KProtocolInfo::protocolClass(protocol);
-    bool defaultSetting = ( protocolClass == ":local" && protocol != "audiocd" );
+    bool defaultSetting = KProtocolInfo::showFilePreview( protocol );
     return g.readBoolEntry(protocol, defaultSetting );
 }
 

@@ -421,6 +421,18 @@ public:
    */
   static QString protocolClass( const QString& protocol );
 
+  /**
+   * Returns whether file previews should be shown for the specified protocol.
+   *
+   * This corresponds to the "ShowPreviews=" field in the protocol description file.
+   *
+   * By default previews are shown if protocolClass is :local.
+   *
+   * @param protocol the protocol to check
+   * @return true if previews should be shown by default, false otherwise
+   * @since 3.2
+   */
+  static bool showFilePreview( const QString& protocol );
 
 public:
   // Internal functions:

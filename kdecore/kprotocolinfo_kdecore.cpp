@@ -33,6 +33,7 @@ public:
   QString docPath;
   QString protClass;
   KProtocolInfo::ExtraFieldList extraFields;
+  bool showPreviews;
 };
 
 //
@@ -98,6 +99,8 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   for( ; it != extraNames.end() && typeit != extraTypes.end(); ++it, ++typeit ) {
       d->extraFields.append( ExtraField( *it, *typeit ) );
   }
+
+  d->showPreviews = config.readBoolEntry( "ShowPreviews", d->protClass == ":local" );
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
@@ -121,7 +124,7 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
           i_supportsMoving, i_determineMimetypeFromExtension,
-          i_canCopyFromFile, i_canCopyToFile;
+          i_canCopyFromFile, i_canCopyToFile, i_showPreviews;
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
         >> i_determineMimetypeFromExtension
         >> m_icon
@@ -132,7 +135,7 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_supportsDeleting >> i_supportsLinking
         >> i_supportsMoving
         >> i_canCopyFromFile >> i_canCopyToFile
-        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass >> d->extraFields;
+        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass >> d->extraFields >> i_showPreviews;
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -147,6 +150,7 @@ KProtocolInfo::load( QDataStream& _str)
    m_canCopyFromFile = (i_canCopyFromFile != 0);
    m_canCopyToFile = (i_canCopyToFile != 0);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
+   d->showPreviews = (i_showPreviews != 0);
 }
 
 void
@@ -160,7 +164,7 @@ KProtocolInfo::save( QDataStream& _str)
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
           i_supportsMoving, i_determineMimetypeFromExtension,
-          i_canCopyFromFile, i_canCopyToFile;
+          i_canCopyFromFile, i_canCopyToFile, i_showPreviews;
 
    i_inputType = (Q_INT32) m_inputType;
    i_outputType = (Q_INT32) m_outputType;
@@ -176,7 +180,7 @@ KProtocolInfo::save( QDataStream& _str)
    i_canCopyFromFile = m_canCopyFromFile ? 1 : 0;
    i_canCopyToFile = m_canCopyToFile ? 1 : 0;
    i_determineMimetypeFromExtension = m_determineMimetypeFromExtension ? 1 : 0;
-
+   i_showPreviews = d->showPreviews ? 1 : 0;
 
    _str << m_name << m_exec << m_listing << m_defaultMimetype
         << i_determineMimetypeFromExtension
@@ -188,7 +192,7 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsDeleting << i_supportsLinking
         << i_supportsMoving
         << i_canCopyFromFile << i_canCopyToFile
-        << m_config << m_maxSlaves << d->docPath << d->protClass << d->extraFields;
+        << m_config << m_maxSlaves << d->docPath << d->protClass << d->extraFields << i_showPreviews;
 }
 
 
@@ -422,6 +426,15 @@ QString KProtocolInfo::protocolClass( const QString& _protocol )
     return QString::null;
 
   return prot->d->protClass;
+}
+
+bool KProtocolInfo::showFilePreview( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+    return false;
+
+  return prot->d->showPreviews;
 }
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {

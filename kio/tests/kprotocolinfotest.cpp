@@ -1,5 +1,6 @@
 #include <kprotocolinfo.h>
 #include <kapplication.h>
+#include <kglobalsettings.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
@@ -21,5 +22,9 @@ int main(int argc, char **argv) {
     KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
     for ( ; extraFieldsIt != extraFields.end() ; ++extraFieldsIt )
         kdDebug() << (*extraFieldsIt).name << " " << (*extraFieldsIt).type << endl;
+
+    assert( KProtocolInfo::showFilePreview( "file" ) == true );
+    assert( KProtocolInfo::showFilePreview( "audiocd" ) == false );
+    assert( KGlobalSettings::showFilePreview( "audiocd:/" ) == false );
     return 0;
 }
