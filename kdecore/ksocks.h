@@ -19,7 +19,6 @@
 #define _KSOCKS_H_
 
 #include <qstringlist.h>
-#include <ksockaddr.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <kstaticdeleter.h>
@@ -29,6 +28,8 @@ class KSocksPrivate;
 class KLibrary;
 class KConfigBase;
 struct sockaddr;
+
+typedef unsigned ksocklen_t;
 
 
 /**
