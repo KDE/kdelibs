@@ -183,7 +183,7 @@ public:
    * Constructor
    * @since 3.2
    */
-  KProcess( QObject* parent );
+  KProcess( QObject* parent, const char *name = 0 );
 
   /**
    * Constructor
