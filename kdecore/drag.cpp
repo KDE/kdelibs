@@ -2,6 +2,11 @@
  * $Id$
  * 
  * $Log$
+ *
+ * Revision 1.8  1997/07/31 19:52:31  kalle
+ * Root-drop bug hopefully fixed (courtesy of Fritz Elfert of ISDN4Linux fame)
+ *
+ * Revision 1.7  1997/05/09 15:10:10  kulow
  * Coolo: patched ltconfig for FreeBSD
  * removed some stupid warnings
  *
@@ -23,6 +28,11 @@
  * merged changes from 0.52
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# endif
 #include <X11/Xos.h>
 Window debugWin = 0;
 #ifdef HAVE_X11_EXTENSTIONS_SHAPE_H
