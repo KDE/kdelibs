@@ -96,7 +96,9 @@ dnl ensure that the user has aRts-0.7.1 installed
 dnl
 
 dnl Check for artsc-config
-AC_PATH_PROG(ARTSC_CONFIG, artsc-config, no)
+dnl no need to, AC_BASE_PATH_KDE does it for us already (see also
+dnl comment below for mcopidl)
+dnl AC_PATH_PROG(ARTSCCONFIG, artsc-config, no)
 
 ARTS_WANT_VERSION=0.7.1
 ARTS_HAVE_VERSION=none
@@ -107,9 +109,9 @@ AC_MSG_CHECKING(for aRts-$ARTS_WANT_VERSION)
 
 ARTS_OK=no
 
-if test "x$ARTSC_CONFIG" != "xno"; then
-	ARTS_HAVE_VERSION=`$ARTSC_CONFIG --arts-version`
-	ARTS_HAVE_PREFIX=`$ARTSC_CONFIG --arts-prefix`
+if test "x$ARTSCCONFIG" != "xno"; then
+	ARTS_HAVE_VERSION=`$ARTSCCONFIG --arts-version`
+	ARTS_HAVE_PREFIX=`$ARTSCCONFIG --arts-prefix`
 fi
 
 if test "x$ARTS_HAVE_VERSION" = "x$ARTS_WANT_VERSION"; then
@@ -135,7 +137,7 @@ module, compile and install it with the same prefix as KDE, and then retry to
 build kdelibs. Sorry for any inconvenience caused by this move.
 
 (found
- * artsc-config: $ARTSC_CONFIG
+ * artsc-config: $ARTSCCONFIG
  * kdelibs prefix: $prefix
  * aRts prefix: $ARTS_HAVE_PREFIX
  * aRts version: $ARTS_HAVE_VERSION (required: $ARTS_WANT_VERSION)
@@ -143,5 +145,7 @@ build kdelibs. Sorry for any inconvenience caused by this move.
 ])
 fi
 
-AC_PATH_PROG(MCOPIDL, mcopidl, no)
-AC_SUBST(MCOPIDL)
+dnl AC_BASE_PATH_KDE already checks for mcopidl, and it does it the
+dnl right way using KDE_FIND_PATH
+dnl AC_PATH_PROG(MCOPIDL, mcopidl, no)
+dnl AC_SUBST(MCOPIDL)
