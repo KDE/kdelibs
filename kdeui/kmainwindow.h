@@ -420,6 +420,20 @@ public:
      * KMainWindow-inherited class constructor, and it will take care
      * of restoring and saving automatically. Make sure you call this
      * _after all_ your *bars have been created.
+     *
+     * To make sure that KMainWindow propertly obtains the default
+     * size of the window you should do the following:
+     * - Remove hard coded resize() calls in the constructor or main, they
+     *   should be removed in favor of letting the automatic resizing
+     *   determine the default window size.  Hard coded window sizes will
+     *   be wrong for users that have big fonts, use different styles,
+     *   long/small translations, large toolbars, and other factors.
+     * - Put the setAutoSaveSettings ( or setupGUI() ) call after all widgets
+     *   have been created and placed inside the main window (i.e. for 99% of
+     *   apps setCentralWidget()) 
+     * - Widgets that inherit from QWidget (like game boards) should overload 
+     *   "virtual QSize sizeHint() const;" to specify a default size rather
+     *   than letting QWidget::adjust use the default size of 0x0. 
      */
     void setAutoSaveSettings( const QString & groupName = QString::fromLatin1("MainWindow"),
                               bool saveWindowSize = true );
@@ -544,14 +558,11 @@ public:
          * auto-saves (and loads) the toolbar/menubar/statusbar settings and
          * window size using the default name.  @see setAutoSaveSettings
          * 
-         * If you must call resize() with an initial size make sure to do it
-         * <b>before</b> setupGUI() or else the size wont be saved properly
-         * and whatever is saved will be ignored.
-         *
-         * Typically you want to let the default size be determined by
+         * Typically you want to let the default window size be determined by
          * the widgets size hints. Make sure that setupGUI() is called after
          * all the widgets are created ( including setCentralWidget ) so the
-         * default size's will be correct. 
+         * default size's will be correct. @see setAutoSaveSettings for
+         * more information on this topic.
          */
         Save = 8,
 
