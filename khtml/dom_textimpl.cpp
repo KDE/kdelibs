@@ -200,6 +200,13 @@ void TextImpl::calcMinMaxWidth()
 	    currMinWidth = 0;
 	    currMaxWidth += fm.width(c);
 	}
+	else if( c == QChar('-'))
+	{
+	    currMinWidth += fm.width(c);
+	    if(currMinWidth > minWidth) minWidth = currMinWidth;
+	    currMinWidth = 0;
+    	    currMaxWidth += fm.width(c);	    
+	}
 	else if( c == QChar('\n'))
 	{
 	    if(currMinWidth > minWidth) minWidth = currMinWidth;

@@ -109,6 +109,8 @@ void HTMLElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
     }
 }
 
+static QChar nbsp = KGlobal::charsets()->fromEntity("nbsp");
+
 void HTMLElementImpl::calcMinMaxWidth()
 {
 #ifdef DEBUG_LAYOUT
@@ -120,19 +122,88 @@ void HTMLElementImpl::calcMinMaxWidth()
     minWidth = 0;
     maxWidth = 0;
 
+    int inlineMax=0;
+    int inlineMin=0;    
+    
+    bool noBreak=false;        
+
     NodeImpl *child = firstChild();
     while(child != 0)
     {
-	int w = child->getMinWidth();
-	if(minWidth < w) minWidth = w;
-	w = child->getMaxWidth();
-	if(maxWidth < w) maxWidth = w;
+	if((child->isInline() || child->isFloating() ) &&
+	    !( child->id()==ID_BR || child->id()==ID_P))  // any more?
+	{
+	    // we have to take care about nbsp's, and places were
+	    // we can't break between two inline objects...
+	    // But for the moment, this will do...
+	    
+	    // mostly done -antti
+	    
+
+	    if (child->isTextNode())
+	    {	    
+	    	bool hasNbsp=false;
+	    	TextImpl* t = static_cast<TextImpl*>(child);
+		if (t->data()[0]==nbsp) //inline starts with nbsp
+		{
+		    inlineMin+=child->getMinWidth();
+		    inlineMax+=child->getMaxWidth();
+		    hasNbsp=true;
+		} 
+		if (hasNbsp && t->data()[t->length()-1]==nbsp)
+		{   	    	    	//inline starts and ends with nbsp
+		    noBreak=true;
+		}
+		else if (t->data()[t->length()-1]==nbsp)
+		{   	    	    	//inline only ends with nbsp
+		    int w = child->getMinWidth();
+		    if(inlineMin < w) inlineMin = w;
+		    w = child->getMaxWidth();
+		    inlineMax += w;
+		    noBreak=true;
+		    hasNbsp=true;
+		}
+		if (hasNbsp)
+		{
+		    child=child->nextSibling();
+		    hasNbsp=false;		    
+		    continue;
+		}
+	    }
+	    if (noBreak)
+	    {
+	    	inlineMin+=child->getMinWidth();
+		inlineMax+=child->getMaxWidth();
+		noBreak=false;
+	    }
+	    else	    
+	    {
+		int w = child->getMinWidth();
+		if(inlineMin < w) inlineMin = w;
+		w = child->getMaxWidth();
+		inlineMax += w;	
+		
+	    }	    
+	}
+	else
+	{
+	    int w = child->getMinWidth();
+	    if(minWidth < w) minWidth = w;
+	    w = child->getMaxWidth();
+	    if(maxWidth < w) maxWidth = w;
+
+    	    if(minWidth < inlineMin) minWidth = inlineMin;
+	    if(maxWidth < inlineMax) maxWidth = inlineMax;
+	    inlineMin=0;
+            inlineMax=0;
+	    
+	    noBreak=false;
+	}
 	child = child->nextSibling();
     }
+    if(minWidth < inlineMin) minWidth = inlineMin;
+    if(maxWidth < inlineMax) maxWidth = inlineMax;
     if(maxWidth < minWidth) maxWidth = minWidth;
-
-    //if(availableWidth && minWidth > availableWidth)
-    //	if(_parent) _parent->updateSize();
 }
 
 bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
@@ -1057,6 +1128,14 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 			startOfLine = false;
 			breakPosFound = true;
 		    }
+		    else if(!pre && (*text)[testPos] == QChar('-'))
+		    {
+			// we found the position of a possible line break
+			endNode = testNode;
+			endPos = testPos+1;
+			startOfLine = false;
+			breakPosFound = true;
+		    }
 		    else if((*text)[testPos] == QChar('\n'))
 		    {
 #ifdef PAR_DEBUG
@@ -1263,7 +1342,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		else
 		{
 #ifdef PAR_DEBUG
-		    printf("%d,%d\n",startPos,endPos);
+		    printf("startPos=%d,endPos=%d\n",startPos,endPos);
 #endif
 		    if (endPos==-1)
 		    {
@@ -1470,57 +1549,6 @@ NodeImpl *HTMLBlockElementImpl::addChild(NodeImpl *newChild)
     }
 
     return newChild;
-}
-
-void HTMLBlockElementImpl::calcMinMaxWidth()
-{
-#ifdef DEBUG_LAYOUT
-    printf("%s(BlockElement)::calcMinMaxWidth() known=%d\n", nodeName().string().ascii(), minMaxKnown());
-#endif
-
-    if(minMaxKnown()) return;
-
-    minWidth = 0;
-    maxWidth = 0;
-
-    int inlineMax=0;
-
-    NodeImpl *child = firstChild();
-    while(child != 0)
-    {
-	if((child->isInline() || child->isFloating() ) &&
-	    !( child->id()==ID_BR || child->id()==ID_P))  // any more?
-	{
-	    // we have to take care about nbsp's, and places were
-	    // we can't break between two inline objects...
-	    // But for the moment, this will do...
-	
-	    // Nghhhh... hunted this one long time
-	    // really important to get this right for table layouting -antti
-	    	
-	    int w = child->getMinWidth();
-	    if(minWidth < w) minWidth = w;
-	    w = child->getMaxWidth();
-	    inlineMax += w;	
-
-	}
-	else
-	{
-	    int w = child->getMinWidth();
-	    if(minWidth < w) minWidth = w;
-	    w = child->getMaxWidth();
-	    if(maxWidth < w) maxWidth = w;
-	    if(maxWidth < inlineMax) maxWidth = inlineMax;
-            inlineMax=0;
-	}
-	child = child->nextSibling();
-    }
-     if(maxWidth < inlineMax) maxWidth = inlineMax;
-    if(maxWidth < minWidth) maxWidth = minWidth;
-
-//    if(availableWidth && minWidth > availableWidth)
-//	if(_parent) _parent->updateSize();
-
 }
 
 

@@ -202,7 +202,6 @@ public:
     virtual void printObject( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
 
-    virtual void calcMinMaxWidth();
     virtual void layout( bool deep = false );
 
     virtual NodeImpl *addChild(NodeImpl *newChild);

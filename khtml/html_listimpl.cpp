@@ -504,7 +504,11 @@ void HTMLDListElementImpl::layout(bool deep)
     {
 	if(child->id() == ID_DT)
 	{
-	    child = calcParagraph(child);
+	    child->setYPos(descent);
+	    if(deep)
+		child->layout(deep);
+	    descent += child->getHeight();
+	    child = child->nextSibling();
 	}
 	else if(child->id() == ID_DD)
 	{

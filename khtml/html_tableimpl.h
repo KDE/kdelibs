@@ -462,11 +462,7 @@ public:
 			int tx, int ty);
     void setRowHeight(int h) { rowHeight = h; }
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType t,
-			     int _tx, int _ty, DOMString &url)
-	{
-	    return HTMLBlockElementImpl::mouseEvent(_x, _y, button, t,
-						    _tx, _ty, url);
-	}
+			     int _tx, int _ty, DOMString &url);
 
     virtual void layout(bool deep = false);
 

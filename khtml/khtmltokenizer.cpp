@@ -5,6 +5,7 @@
               (C) 1997 Torben Weis (weis@kde.org)
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 1999 Lars Knoll (knoll@kde.org)
+	      (C) 1999 Antti Koivisto (koivisto@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -412,10 +413,30 @@ void HTMLTokenizer::parseEntity(HTMLStringIt &src, bool start)
 	{
 	    QConstString cStr(entityBuffer, entityPos);
 	    QChar res = charsets->fromEntity(cStr.string());
+	    
+	    printf("ENTITY %d, %c\n",res.unicode(), res.latin1());
 	
 	    if (tag && src[0] != ';' ) {
 		// Don't translate entities in tags with a missing ';'
 		res = QChar::null;
+	    }
+	    
+	    // Partial support for MS Windows Latin-1 extensions
+	    // full list http://www.bbsinc.com/iso8859.html
+	    // There may be better equivelants  
+	    if ( res != QChar::null ) {
+	    	switch (res.unicode())
+		{
+		    case 0x91: res = '\''; break;
+		    case 0x92: res = '\''; break;
+		    case 0x93: res = '"'; break;
+		    case 0x94: res = '"'; break;
+		    case 0x95: res = 0xb7; break;
+		    case 0x96: res = '-'; break;
+	    	    case 0x97: res = '-'; break;
+		    case 0x98: res = '~'; break;
+		    default: break;
+	    	}
 	    }
 
 	    if ( res != QChar::null ) {

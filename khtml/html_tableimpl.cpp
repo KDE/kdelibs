@@ -2173,6 +2173,39 @@ int HTMLTableCellElementImpl::getHeight()
     return MAX(predefinedHeight.minWidth(0),ascent+descent);
 }
 
+bool  HTMLTableCellElementImpl::mouseEvent( int _x, int _y, int button,
+					    MouseEventType type,
+					    int _tx, int _ty, DOMString &url)
+{
+    // vertical alignment
+    int hh = rowHeight-table->cellPadding()*2;
+    
+    int vdelta=0;
+    VAlign va = vAlign();
+    switch (va)
+    {
+    case Baseline: 
+    	if (firstChild()) 
+    	    vdelta = table->getBaseline(row()) - firstChild()->getYPos();
+	break;
+    case VNone:
+    case VCenter:
+    	vdelta=(hh-descent)/2;
+	break;
+    case Bottom:
+    	vdelta=(hh-descent);
+	break;
+    case Top:
+    	break;
+    }
+    
+    _ty+=vdelta;
+    
+    return HTMLBlockElementImpl::
+    	mouseEvent(_x, _y, button, type, _tx, _ty, url);
+
+}					    
+
 // -------------------------------------------------------------------------
 
 HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentImpl *doc, ushort i)
