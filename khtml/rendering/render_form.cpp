@@ -24,7 +24,6 @@
  */
 
 #include <kdebug.h>
-
 #include <kurl.h>
 #include <klocale.h>
 #include <kfiledialog.h>
@@ -224,8 +223,7 @@ QString RenderSubmitButton::defaultLabel() {
 
 // -------------------------------------------------------------------------------
 
-RenderImageButton::RenderImageButton(QScrollView *view,
-				     HTMLInputElementImpl *element)
+RenderImageButton::RenderImageButton(HTMLInputElementImpl *element)
     : RenderImage()
 {
     m_element = element;
@@ -744,38 +742,30 @@ void RenderSelect::reset()
     }
 }
 
-QCString RenderSelect::encoding()
+bool RenderSelect::encoding(khtml::encodingList& encoding)
 {
-    // ### move this to HTMLSelectElementImpl
-    QCString encoding = "";
-    DOMString m_name = m_element->name();
+    bool successful = false;
 
-    if(m_name.isEmpty() || m_element->disabled()) return encoding;
-
-    QCString prefix;
-    if ( m_element->form()->enctype() == "application/x-www-form-urlencoded" )
-    {
-        prefix = m_element->encodeString( m_name.string() );
-        prefix += '=';
-    }
     if (m_listBox) {
         KListBox* w = static_cast<KListBox*>(m_widget);
         uint i;
-        bool first = true;
-        for (i = 0; i < w->count(); i++) {
+        for (i = 0; i < w->count(); i++)
+        {
 	    HTMLOptionElementImpl* p = listOptions[i];
-            if (w->isSelected(i) && p) {
-                if(p->value().isNull()) {
+            if (w->isSelected(i) && p)
+            {
+                if(p->value().isNull())
+                {
                     if(w->item(i))
-                        encoding += prefix + m_element->encodeString(w->item(i)->text());
+                    {
+                        encoding += w->item(i)->text().local8Bit();
+                        successful = true;
+                    }
                 }
                 else
-                    encoding += prefix + m_element->encodeString(p->value().string());
-
-                if (first)
                 {
-                    first = false;
-                    prefix = '&' + prefix;
+                    encoding += p->value().string().local8Bit();
+                    successful = true;
                 }
             }
         }
@@ -786,13 +776,19 @@ QCString RenderSelect::encoding()
 	HTMLOptionElementImpl* p = listOptions[w->currentItem()];
 	if (p) {
 	    if(p->value().isNull())
-		encoding += prefix + m_element->encodeString(w->currentText());
+            {
+		encoding += w->currentText().local8Bit();
+                successful = true;
+            }
 	    else
-		encoding += prefix + m_element->encodeString(p->value().string());
+            {
+		encoding += p->value().string().local8Bit();
+                successful = true;
+            }
 	}
     }
 
-    return encoding;
+    return successful;
 }
 
 

@@ -235,7 +235,7 @@ protected:
 class RenderImageButton : public RenderImage
 {
 public:
-    RenderImageButton(QScrollView *view, HTMLInputElementImpl *element);
+    RenderImageButton(HTMLInputElementImpl *element);
     virtual ~RenderImageButton();
 
     virtual const char *renderName() const { return "RenderImageButton"; }
@@ -416,7 +416,7 @@ public:
     virtual void close( );
 
     virtual void reset();
-    virtual QCString encoding();
+    bool encoding(khtml::encodingList& encoding);
 
     virtual QString state();
     virtual void restoreState(const QString &);

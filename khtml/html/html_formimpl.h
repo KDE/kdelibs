@@ -29,6 +29,7 @@
 #include "html_element.h"
 
 #include <qlist.h>
+#include <qvaluelist.h>
 
 class KHTMLView;
 
@@ -37,6 +38,8 @@ namespace khtml
     class RenderFormElement;
     class RenderTextArea;
     class RenderSelect;
+
+    typedef class QValueList<QByteArray> encodingList;
 }
 
 namespace DOM {
@@ -63,10 +66,10 @@ public:
 
     QByteArray formData( );
 
-    DOMString enctype() const { return _enctype; }
+    DOMString enctype() const { return m_enctype; }
     void setEnctype( const DOMString & );
 
-    DOMString boundary() const { return _boundary; }
+    DOMString boundary() const { return m_boundary; }
     void setBoundary( const DOMString & );
 
     virtual void parseAttribute(AttrImpl *attr);
@@ -82,6 +85,7 @@ public:
 
     void registerFormElement(HTMLGenericFormElementImpl *);
     void removeFormElement(HTMLGenericFormElementImpl *);
+
     /*
 
      * state() and restoreState() are complimentary functions.
@@ -92,12 +96,14 @@ public:
 protected:
     DOMString url;
     DOMString target;
-    DOMString _enctype;
-    DOMString _boundary;
-    bool post;
-    bool multipart;
+    DOMString m_enctype;
+    DOMString m_boundary;
+    bool m_post;
+    bool m_multipart;
     KHTMLView *view;
     QList<HTMLGenericFormElementImpl> formElements;
+
+    static QCString encodeByteArray( const QByteArray& e );
 };
 
 // -------------------------------------------------------------------------
@@ -140,9 +146,9 @@ public:
     /*
      * override in derived classes to get the encoded name=value pair
      * for submitting
+     * return true for a successful control (see 17.13.2)
      */
-    virtual QCString encoding() { return ""; }
-    QCString encodeString( QString e );
+    virtual bool encoding(khtml::encodingList&) { return false; }
 
 protected:
     HTMLFormElementImpl *getForm() const;
@@ -264,7 +270,7 @@ public:
 
     virtual void attach(KHTMLView *w);
 
-    virtual QCString encoding();
+    virtual bool encoding(khtml::encodingList&);
     typeEnum inputType() { return _type; }
     virtual void saveDefaults();
     virtual void reset();
@@ -363,7 +369,7 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach(KHTMLView *w);
-    virtual QCString encoding();
+    virtual bool encoding(khtml::encodingList&);
 
 protected:
     int m_size;
@@ -464,7 +470,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);
-    virtual QCString encoding();
+    virtual bool encoding(khtml::encodingList&);
     virtual void reset();
     DOMString value() { return m_value; }
     void setValue(DOMString _value);
