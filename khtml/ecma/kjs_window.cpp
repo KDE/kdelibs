@@ -26,7 +26,7 @@
 #include <qapplication.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
-#include <klineeditdlg.h>
+#include <kinputdialog.h>
 #include <klocale.h>
 #include <kparts/browserinterface.h>
 #include <kwin.h>
@@ -1251,11 +1251,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     part->xmlDocImpl()->updateRendering();
     bool ok;
     if (args.size() >= 2)
-      str2 = KLineEditDlg::getText(i18n("Prompt"),
+      str2 = KInputDialog::getText(i18n("Prompt"),
                                    QStyleSheet::convertFromPlainText(str),
                                    args[1].toString(exec).qstring(), &ok);
     else
-      str2 = KLineEditDlg::getText(i18n("Prompt"),
+      str2 = KInputDialog::getText(i18n("Prompt"),
                                    QStyleSheet::convertFromPlainText(str),
                                    QString::null, &ok);
     if ( ok )

@@ -32,25 +32,20 @@
 #include <kurldrag.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <klineeditdlg.h>
+#include <kinputdialog.h>
 #include <kmessagebox.h>
 #include <ktempfile.h>
 
 static KURL getNewFileName(const KURL &u)
 {
-  KLineEditDlg l( i18n("Filename for clipboard content:"), "", 0L );
-  int x = l.exec();
-  if ( !x ) 
+  bool ok;
+  QString file = KInputDialog::getText( QString::null,
+      i18n( "Filename for clipboard content:" ), QString::null, &ok );
+  if ( !ok ) 
      return KURL();
 
-  QString url = l.text();
-  if ( url.isEmpty() ) {
-      KMessageBox::error( 0L, i18n("You did not enter a filename"));
-      return KURL();
-  }
-
   KURL myurl(u);
-  myurl.addPath( l.text() );
+  myurl.addPath( file );
 
   if (KIO::NetAccess::exists(myurl, false))
   {
