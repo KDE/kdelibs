@@ -133,7 +133,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
 #ifndef QT_NO_WHATSTHIS
     QWhatsThis::add( rb, i18n("Select this option to accept/reject all cookies from "
                               "this site. Choosing this option will add a new policy for "
-                              "the site this cookie originated from.  This policy will be "
+                              "the site this cookie originated from. This policy will be "
                               "permanent until you manually change it from the Control Center "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
 #endif

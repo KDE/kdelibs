@@ -160,7 +160,7 @@ inline static QCString fixUpfromUnicode(const QTextCodec* codec, const QString& 
 void HTMLFormElementImpl::i18nData()
 {
     QString foo1 = i18n( "You're about to send data to the Internet "
-                         "via an unencrypted connection.  It might be possible "
+                         "via an unencrypted connection. It might be possible "
                          "for others to see this information.\n"
                          "Do you want to continue?");
     QString foo2 = i18n("KDE Web browser");

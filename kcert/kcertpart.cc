@@ -455,7 +455,7 @@ QCString pass;
     _p12 = KSSLPKCS12::loadCertFile(m_file, QString(pass));
 
     if (!_p12) {
-      rc = KMessageBox::warningYesNo(_frame, i18n("The certificate file could not be loaded.  Try a different password?"), i18n("Certificate Import"));
+      rc = KMessageBox::warningYesNo(_frame, i18n("The certificate file could not be loaded. Try a different password?"), i18n("Certificate Import"));
       if (rc == KMessageBox::Yes) continue;
       break;
     }
@@ -685,7 +685,7 @@ if (_p12) {
   KSimpleConfig cfg("ksslcertificates", false);
 
   if (cfg.hasGroup(_p12->getCertificate()->getSubject())) {
-     QString msg = _curName + "\n" + i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?");
+     QString msg = _curName + "\n" + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
      int rc= KMessageBox::warningYesNo(_frame, msg, i18n("Certificate Import"));
      if (rc == KMessageBox::No) {
         return;
@@ -701,7 +701,7 @@ if (_p12) {
 } else if (_ca) {
   KConfig cfg("ksslcalist", true, false);
   if (cfg.hasGroup(_ca->getSubject())) {
-     QString msg = _curName + "\n" + i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?");
+     QString msg = _curName + "\n" + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
      int rc= KMessageBox::warningYesNo(_frame, msg, i18n("Certificate Import"));
      if (rc == KMessageBox::No) {
         return;

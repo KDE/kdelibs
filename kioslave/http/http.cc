@@ -1966,7 +1966,7 @@ bool HTTPProtocol::httpOpen()
   else if ( davData )
     res = sendBody( true );
 
-  infoMessage( i18n( "<b>%1</b> contacted.  "
+  infoMessage( i18n( "<b>%1</b> contacted. "
                      "Waiting for reply..." ).arg( m_request.hostname ) );
   return res;
 }

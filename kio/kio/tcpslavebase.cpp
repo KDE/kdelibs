@@ -304,7 +304,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
       if (kss.warnOnLeave()) {
       int result = messageBox( WarningContinueCancel,
                                      i18n("You are about to leave secure "
-                                          "mode.  Transmissions will no "
+                                          "mode. Transmissions will no "
                                           "longer be encrypted.\nThis "
                                           "means that a third party could "
                                           "observe your data in transit."),
@@ -646,7 +646,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
         if (!pkcs) {
               int rc = messageBox(WarningYesNo, i18n("Couldn't open the "
-                                                     "certificate.  Try a "
+                                                     "certificate. Try a "
                                                      "new password?"),
                                                 i18n("SSL"));
               if (rc == KMessageBox::No) break;
@@ -886,7 +886,7 @@ int TCPSlaveBase::verifyCertificate()
              setMetaData("ssl_action", "accept");
            } else {   // fail
              result = messageBox(WarningYesNo,
-                                 i18n("You have indicated that you wish to accept this certificate, but it is not issued to the server who is presenting it.  Do you wish to continue loading?"),
+                                 i18n("You have indicated that you wish to accept this certificate, but it is not issued to the server who is presenting it. Do you wish to continue loading?"),
                                  i18n("Server Authentication"));
              if (result == KMessageBox::Yes) {
                rc = 1;
@@ -897,7 +897,7 @@ int TCPSlaveBase::verifyCertificate()
              }
            }
         } else if (cp == KSSLCertificateCache::Reject) {      // fail
-          messageBox(Information, i18n("SSL certificate is being rejected as requested.  You can disable this in the KDE control center."),
+          messageBox(Information, i18n("SSL certificate is being rejected as requested. You can disable this in the KDE control center."),
                                   i18n("Server Authentication"));
           rc = -1;
           setMetaData("ssl_action", "reject");
@@ -960,7 +960,7 @@ int TCPSlaveBase::verifyCertificate()
      int result;
      do {
                 result = messageBox( WarningYesNo, i18n("You are about to "
-                                                        "enter secure mode.  "
+                                                        "enter secure mode. "
                                                         "All transmissions "
                                                         "will be encrypted "
                                                         "unless otherwise "
@@ -968,7 +968,7 @@ int TCPSlaveBase::verifyCertificate()
                                                         "that no third party "
                                                         "will be able to "
                                                         "easily observe your "
-                                                        " data in transfer."),
+                                                        "data in transfer."),
                                                    i18n("Security information"),
                                                    i18n("Display SSL "
                                                         "Information"),
