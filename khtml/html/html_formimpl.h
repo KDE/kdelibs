@@ -25,7 +25,7 @@
 #define HTML_FORMIMPL_H
 
 #include "html_elementimpl.h"
-#include "dtd.h"
+//#include "dtd.h"
 #include "html_element.h"
 
 #include <qlist.h>

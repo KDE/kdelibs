@@ -28,10 +28,7 @@
  * we ignore the deprecated compact attribute. Netscape does so too...
  */
 
-#include "dtd.h"
 #include "html_elementimpl.h"
-
-#include "khtmllayout.h"
 
 namespace DOM
 {
@@ -51,7 +48,7 @@ public:
     virtual tagStatus endTag() { return ULEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
-    
+
     virtual void attach(KHTMLView *);
 };
 
@@ -68,7 +65,7 @@ public:
 
     virtual tagStatus startTag() { return DIRStartTag; }
     virtual tagStatus endTag() { return DIREndTag; }
-    
+
     virtual void attach(KHTMLView *);
 };
 
@@ -85,7 +82,7 @@ public:
 
     virtual tagStatus startTag() { return MENUStartTag; }
     virtual tagStatus endTag() { return MENUEndTag; }
-    
+
     virtual void attach(KHTMLView *);
 };
 
@@ -107,7 +104,7 @@ public:
     void setStart( long );
 
     virtual void parseAttribute(AttrImpl *);
-    
+
     virtual void attach(KHTMLView *);
 };
 

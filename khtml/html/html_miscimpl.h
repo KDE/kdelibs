@@ -24,9 +24,8 @@
 #ifndef HTML_MISCIMPL_H
 #define HTML_MISCIMPL_H
 
-#include "dtd.h"
 #include "html_elementimpl.h"
-#include "dom_misc.h"
+//#include "dom_misc.h"
 
 namespace DOM {
 

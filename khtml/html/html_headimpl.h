@@ -24,7 +24,6 @@
 #ifndef HTML_HEADIMPL_H
 #define HTML_HEADIMPL_H
 
-#include "dtd.h"
 #include "html_elementimpl.h"
 
 class KHTMLView;

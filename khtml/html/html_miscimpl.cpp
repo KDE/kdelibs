@@ -22,12 +22,8 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
-
-#include "dom_string.h"
-
 #include "html_miscimpl.h"
-#include "dom_node.h"
-#include "htmlhashes.h"
+
 #include "htmlhashes.h"
 using namespace DOM;
 
@@ -341,7 +337,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 	    NodeImpl *retval = 0;
 	    if(deep && current->firstChild())
 		retval = getNamedItem(current->firstChild(), attr_id, name);
-	    if(retval) 
+	    if(retval)
 	    {	
 		kdDebug( 6030 ) << "got a return value " << retval << endl;
 		return retval;

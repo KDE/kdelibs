@@ -26,28 +26,12 @@
  */
 #include "html_tableimpl.h"
 
-#include <qlist.h>
-#include <qstack.h>
-#include <qbrush.h>
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <qpalette.h>
-#include <qdrawutil.h>
-
-#include "dom_string.h"
-#include "dom_nodeimpl.h"
 #include "dom_exception.h"
-#include "dom_textimpl.h"
-
-#include "html_misc.h"
-#include "html_element.h"
-#include "html_table.h"
 #include "html_documentimpl.h"
 using namespace DOM;
 
 #include "htmlhashes.h"
 
-#include "misc/helper.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
 
@@ -55,12 +39,6 @@ using namespace DOM;
 using namespace khtml;
 
 #include <kdebug.h>
-#include <assert.h>
-
-using namespace khtml;
-
-
-// #define DEBUG_DRAW_BORDER 1
 
 HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
   : HTMLElementImpl(doc)

@@ -21,21 +21,13 @@
  *
  * $Id$
  */
-#define INDENT 20
-#define LISTSEP 5
-
-#include <qpainter.h>
-#include <qcolor.h>
-#include <qnamespace.h>
-
 #include "html_listimpl.h"
+
 using namespace DOM;
 
 #include "css/cssproperties.h"
 #include "rendering/render_list.h"
 #include "misc/htmlhashes.h"
-
-#include <kdebug.h>
 
 using namespace khtml;
 

@@ -33,8 +33,6 @@
 #include "htmltokenizer.h"
 #include "htmlhashes.h"
 
-#include "dom_exception.h"
-#include "html_headimpl.h"
 #include "html_imageimpl.h"
 
 #include <kdebug.h>

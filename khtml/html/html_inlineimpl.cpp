@@ -23,28 +23,18 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
+#include "html_inlineimpl.h"
 
-#include <qfontinfo.h>
-#include <qstack.h>
-#include <qregexp.h>
+#include "html_documentimpl.h"
+using namespace DOM;
 
 #include <kdebug.h>
-
-#include "khtmlview.h"
-#include "khtml_part.h"
-
-#include "dom_textimpl.h"
-#include "dom_string.h"
-#include "html_inline.h"
-#include "html_inlineimpl.h"
-using namespace DOM;
 
 #include "htmlhashes.h"
 #include "css/cssproperties.h"
 #include "css/cssstyleselector.h"
 
 #include "rendering/render_br.h"
-#include "rendering/render_frames.h"
 
 using namespace khtml;
 

@@ -24,9 +24,10 @@
 #ifndef HTML_OBJECTIMPL_H
 #define HTML_OBJECTIMPL_H
 
-#include <qstringlist.h>
 #include "html_elementimpl.h"
-#include "misc/khtmllayout.h"
+
+#include <qstringlist.h>
+//#include "misc/khtmllayout.h"
 
 class KHTMLView;
 class DOM::DOMStringImpl;

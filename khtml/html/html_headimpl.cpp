@@ -22,11 +22,10 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
+#include "html_headimpl.h"
 
 #include "dom_string.h"
 #include "dom_textimpl.h"
-#include "html_headimpl.h"
-#include "html_form.h"
 #include "html_documentimpl.h"
 using namespace DOM;
 
@@ -40,8 +39,8 @@ using namespace DOM;
 #include "css/css_stylesheetimpl.h"
 using namespace khtml;
 
-#include <qfile.h>
-#include <qtextstream.h>
+//#include <qfile.h>
+//#include <qtextstream.h>
 
 #include <kurl.h>
 

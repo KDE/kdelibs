@@ -36,9 +36,6 @@
 
 #include <kdebug.h>
 #include <kmimetype.h>
-#include <netaccess.h>
-
-#include <iostream.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -810,7 +807,7 @@ DOMString HTMLSelectElementImpl::type() const
 
 long HTMLSelectElementImpl::selectedIndex() const
 {
-    cerr << "HTMLSelectElementImpl::selectedIndex(): m_selectedIndex = " << m_selectedIndex << endl;
+    kdDebug(6040) << "HTMLSelectElementImpl::selectedIndex(): m_selectedIndex = " << m_selectedIndex << endl;
     return m_selectedIndex;
 }
 

@@ -21,12 +21,10 @@
  *
  * $Id$
  */
+#include "html_objectimpl.h"
 
 #include "khtml_part.h"
-#include "html_objectimpl.h"
-#include "dom_nodeimpl.h"
 #include "dom_string.h"
-#include "htmlhashes.h"
 #include "htmlhashes.h"
 #include "khtmlview.h"
 #include <qstring.h>
@@ -201,10 +199,10 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
-  
+
   // export parameter
   param.append( attr->name().string() + "=\"" + val + "\"" );
-  
+
   switch ( attr->attrId )
   {
      case ATTR_TYPE:
@@ -271,7 +269,7 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
 
    m_style = document->styleSelector()->styleForElement( this );
    if ( _parent->id()!=ID_OBJECT )
-   {           
+   {
       RenderPartObject *p = new RenderPartObject( w, this );
       m_render = p;
       m_render->setStyle(m_style);

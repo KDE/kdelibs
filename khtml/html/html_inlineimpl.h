@@ -25,8 +25,6 @@
 #ifndef HTML_INLINEIMPL_H
 #define HTML_INLINEIMPL_H
 
-#include "dtd.h"
-#include "html_elementimpl.h"
 #include "html_imageimpl.h"
 
 namespace DOM {

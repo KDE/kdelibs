@@ -24,12 +24,11 @@
 #ifndef HTML_IMAGEIMPL_H
 #define HTML_IMAGEIMPL_H
 
-#include "dtd.h"
 #include "html_elementimpl.h"
-#include "html_documentimpl.h"
 
-#include <qmap.h>
-#include <qpixmap.h>
+#include <qregion.h>
+
+template<class C,class D> class QMap;
 
 namespace DOM {
 

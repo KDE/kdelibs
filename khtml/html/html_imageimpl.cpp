@@ -23,32 +23,21 @@
  */
 #include "html_imageimpl.h"
 
-#include <qpixmap.h>
-#include <qdrawutil.h>
-#include <qpalette.h>
-#include <qstack.h>
-
 #include "htmlhashes.h"
-
-#include "html_image.h"
-#include "dom_string.h"
-#include "dom_nodeimpl.h"
-#include "html_documentimpl.h"
-
 #include "khtmlview.h"
 
 #include <kdebug.h>
 
-#include <iostream>
-
 #include "rendering/render_image.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
-#include <iostream.h>
+#include "html_documentimpl.h"
+
 #include <qstring.h>
-#include <qlist.h>
 #include <qpoint.h>
 #include <qregion.h>
+#include <qstack.h>
+#include <qmap.h>
 
 #include <stdlib.h>
 

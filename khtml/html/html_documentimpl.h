@@ -25,11 +25,12 @@
 #ifndef HTML_DOCUMENTIMPL_H
 #define HTML_DOCUMENTIMPL_H
 
-#include "dtd.h"
+//#include "dtd.h"
 #include "dom_docimpl.h"
+#include <qobject.h>
 #include "misc/loader_client.h"
 
-#include "html_baseimpl.h"
+//#include "html_baseimpl.h"
 
 class KHTMLParser;
 class HTMLTokenizer;
@@ -41,16 +42,16 @@ namespace khtml {
 
 namespace DOM {
 
-class StyleSheetImpl;
-class HTMLCollection;
-class NodeList;
-class Element;
-class HTMLElement;
-
-class DOMString;
-
-class StyleSheetListImpl;
-
+    class StyleSheetImpl;
+    class HTMLCollection;
+    class NodeList;
+    class Element;
+    class HTMLElement;
+    class HTMLElementImpl;
+    class DOMString;
+    class StyleSheetListImpl;
+    class CSSStyleSheetImpl;
+    
 class HTMLDocumentImpl : public QObject, public khtml::CachedObjectClient, public DocumentImpl
 {
     Q_OBJECT
