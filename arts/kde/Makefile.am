@@ -1,5 +1,5 @@
 INCLUDES = -I$(includedir)/arts \
-           -I$(top_builddir)/arts/kde/lib \
+           -I$(top_builddir)/arts/kde \
            -I$(top_srcdir) $(all_includes)
 	
 lib_LTLIBRARIES = libartskde.la
