@@ -428,7 +428,7 @@ bool KStringHandler::matchFilename( const QString& _filename, const QString& _pa
 }
 
   QStringList
-perlSplit(const QString & sep, const QString & s, uint max)
+KStringHandler::perlSplit(const QString & sep, const QString & s, uint max)
 {
   bool ignoreMax = 0 == max;
 
@@ -454,7 +454,7 @@ perlSplit(const QString & sep, const QString & s, uint max)
 }
 
   QStringList 
-perlSplit(const QChar & sep, const QString & s, uint max)
+KStringHandler::perlSplit(const QChar & sep, const QString & s, uint max)
 {
   bool ignoreMax = 0 == max;
 
@@ -480,7 +480,7 @@ perlSplit(const QChar & sep, const QString & s, uint max)
 }
 
   QStringList
-perlSplit(const QRegExp & sep, const QString & s, uint max)
+KStringHandler::perlSplit(const QRegExp & sep, const QString & s, uint max)
 {
   bool ignoreMax = 0 == max;
 
