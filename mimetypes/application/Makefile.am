@@ -18,7 +18,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-applixword.desktop x-applixspread.desktop x-applixgraphics.desktop \
 	msexcel2.desktop xhtml+xml.desktop \
 	x-shockwave-flash.desktop x-designer.desktop x-linguist.desktop \
-	x-ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
+	ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
 	pkcs7-signature.desktop pgp-signature.desktop pgp-encrypted.desktop \
 	pgp-keys.desktop \
 	x-mswrite.desktop illustrator.desktop x-abiword.desktop \
@@ -47,5 +47,6 @@ install-data-local: uninstall.desktop
 	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-applix.desktop
 	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-oowriter.desktop
 	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-ooimpress.desktop
+	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(mimetypeapplicationdatadir)/x-ogg.desktop
 
 EXTRA_DIST = $(mimetypeapplicationdata_DATA)
