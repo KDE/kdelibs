@@ -41,12 +41,12 @@ KDialogBaseTile *KDialogBase::mTile = 0;
 
 KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  const QString &caption, int buttonMask, 
-			  int defaultButton, bool separator, 
+			  ButtonCode defaultButton, bool separator, 
 			  const QString &user1, const QString &user2,
 			  const QString &user3 )
   :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder),
    mMainWidget(0), mJanus(0), mActionSep(0), mIsActivated(false),
-   mShowTile(false), mResizeMode(ResizeMinimum)
+   mShowTile(false), mMessageBoxMode(false), mResizeMode(ResizeMinimum)
 {
   setCaption( caption );
 
@@ -60,13 +60,13 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 
 
 KDialogBase::KDialogBase( int dialogFace, const QString &caption, 
-			  int buttonMask, int defaultButton, QWidget *parent, 
-			  const char *name, bool modal, bool separator,
-			  const QString &user1, const QString &user2,
-			  const QString &user3 )
+			  int buttonMask, ButtonCode defaultButton, 
+			  QWidget *parent, const char *name, bool modal, 
+			  bool separator, const QString &user1, 
+			  const QString &user2, const QString &user3 )
   :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder ),
    mMainWidget(0), mJanus(0), mActionSep(0), mIsActivated(false),
-   mShowTile(false), mResizeMode(ResizeMinimum)
+   mShowTile(false), mMessageBoxMode(false), mResizeMode(ResizeMinimum)
 {
   setCaption( caption );
 
@@ -82,21 +82,36 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 }
 
 
+KDialogBase::KDialogBase( const QString &caption, int buttonMask, 
+			  ButtonCode defaultButton, ButtonCode escapeButton, 
+			  QWidget *parent, const char *name, bool modal, 
+			  bool separator, const QString &yes,
+			  const QString &no, const QString &cancel )
+  :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder ),
+   mMainWidget(0), mJanus(0), mActionSep(0), mIsActivated(false),
+   mShowTile(false), mMessageBoxMode(true), mEscapeButton(escapeButton),
+   mResizeMode(ResizeFixed)
+{
+  setCaption( caption );
+
+  makeRelay();
+  makeUrlBox();
+  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+
+  enableButtonSeparator( separator );
+
+  buttonMask &= Yes|No|Cancel;
+
+  makeButtonBox( buttonMask, defaultButton, no, yes, QString::null );
+  setButtonCancelText( cancel );
+}
+
+
+
 KDialogBase::~KDialogBase( void )
 {
 }
 
-
-void KDialogBase::cleanup( void )
-{
-  //
-  // Should this slot be connected to QApplication::aboutToQuit() so that
-  // we can remove any background pixmaps that is used? This is only
-  // useful for dialogs that have parent == 0 because the others will
-  // be destroyed before aboutToQuit() is activated.
-  //
-
-}
 
 
 void KDialogBase::makeRelay( void )
@@ -253,93 +268,97 @@ void KDialogBase::setUrlBoxGeometry( void )
 
 
 
-
-void KDialogBase::makeButtonBox( int buttonMask, int defaultButton,
-				 const QString &user1,const QString &user2,
+void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
+				 const QString &user1, const QString &user2,
 				 const QString &user3 )
 {
-  //if( (buttonMask & (Cancel|Close)) == 0 ) { buttonMask |= Cancel; }
   if( buttonMask & Cancel ) { buttonMask &= ~Close; }
   if( buttonMask & Apply ) { buttonMask &= ~Try; }
+
+  if( mMessageBoxMode == false )
+  {
+    mEscapeButton = (buttonMask&Cancel) ? Cancel : Close;
+  }
 
   mButton.box = new QWidget( this );
 
   mButton.mask = buttonMask;
   if( mButton.mask & Help )
   {
-    mButton.help = new QPushButton( i18n("&Help"), mButton.box );
-    if( defaultButton == Help ) setButtonFocus( mButton.help, true, true );
-    connect(mButton.help,SIGNAL(clicked()),SLOT(slotHelp()));
-    mButton.append(mButton.help);
+    QPushButton *pb = mButton.append( Help, i18n("&Help") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotHelp()) );
   }
   if( mButton.mask & Default )
   {
-    mButton.def = new QPushButton( i18n("&Default"), mButton.box );
-    if( defaultButton == Default ) setButtonFocus( mButton.def, true, true );
-    connect(mButton.def,SIGNAL(clicked()),SLOT(slotDefault()));
-    mButton.append(mButton.def);
+    QPushButton *pb = mButton.append( Default, i18n("&Default") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotDefault()) );
   }
   if( mButton.mask & User3 )
   {
-    mButton.user3 = new QPushButton( user3, mButton.box );
-    if( defaultButton == User3 ) setButtonFocus( mButton.user3, true, true );
-    connect(mButton.user3,SIGNAL(clicked()),SLOT(slotUser3()));
-    mButton.append(mButton.user3);
+    QPushButton *pb = mButton.append( User3, user3 );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotUser3()) );
   }
   if( mButton.mask & User2 )
   {
-    mButton.user2 = new QPushButton( user2, mButton.box );
-    if( defaultButton == User2 ) setButtonFocus( mButton.user2, true, true );
-    connect(mButton.user2,SIGNAL(clicked()),SLOT(slotUser2()));
-    mButton.append(mButton.user2);
+    QPushButton *pb = mButton.append( User2, user2 );
+    if( mMessageBoxMode == true )
+    { 
+      connect( pb, SIGNAL(clicked()), this, SLOT(slotYes()) );
+    }
+    else
+    {
+      connect( pb, SIGNAL(clicked()), this, SLOT(slotUser2()) );
+    }
   }
   if( mButton.mask & User1 )
   {
-    mButton.user1 = new QPushButton( user1, mButton.box );
-    if( defaultButton == User1 ) setButtonFocus( mButton.user1, true, true );
-    connect(mButton.user1,SIGNAL(clicked()),SLOT(slotUser1()));
-    mButton.append(mButton.user1);
+    QPushButton *pb = mButton.append( User1, user1 );
+    if( mMessageBoxMode == true )
+    { 
+      connect( pb, SIGNAL(clicked()), this, SLOT(slotNo()) );
+    }
+    else
+    {
+      connect( pb, SIGNAL(clicked()), this, SLOT(slotUser1()) );
+    }
   }
-
   if( mButton.mask & Ok )
   {
-    mButton.ok = new QPushButton( i18n("&OK"), mButton.box );
-    if( defaultButton == Ok ) setButtonFocus( mButton.ok, true, true );
-    connect(mButton.ok,SIGNAL(clicked()),SLOT(slotOk()));
-    mButton.append(mButton.ok);
+    QPushButton *pb = mButton.append( Ok, i18n("&OK") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotOk()) );
   }
   if( mButton.mask & Apply )
   {
-    mButton.apply = new QPushButton( i18n("&Apply"), mButton.box );
-    if( defaultButton == Apply ) setButtonFocus( mButton.apply, true, true );
-    connect(mButton.apply,SIGNAL(clicked()),SLOT(slotApply()));
-    connect(mButton.apply,SIGNAL(clicked()),SLOT(applyPressed()));
-    mButton.append(mButton.apply);
+    QPushButton *pb = mButton.append( Apply, i18n("&Append") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotApply()) );
+    connect( pb, SIGNAL(clicked()), this, SLOT(applyPressed()) );
   }
   if( mButton.mask & Try )
   {
-    mButton._try = new QPushButton( i18n("&Try"), mButton.box );
-    if( defaultButton == Try ) setButtonFocus( mButton._try, true, true );
-    connect(mButton._try,SIGNAL(clicked()),SLOT(slotTry()));
-    mButton.append(mButton._try);
+    QPushButton *pb = mButton.append( Try, i18n("&Try") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotTry()) );
   }
   if( mButton.mask & Cancel )
   {
-    mButton.cancel = new QPushButton( i18n("&Cancel"), mButton.box );
-    if( defaultButton == Cancel ) setButtonFocus( mButton.cancel, true, true);
-    connect(mButton.cancel,SIGNAL(clicked()),SLOT(slotCancel()));
-    mButton.append(mButton.cancel);
+    QPushButton *pb = mButton.append( Cancel, i18n("&Cancel") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotCancel()) );
   }
   if( mButton.mask & Close )
   {
-    mButton.close = new QPushButton( i18n("&Close"), mButton.box );
-    if( defaultButton == Close ) setButtonFocus( mButton.close, true, true );
-    connect(mButton.close,SIGNAL(clicked()),SLOT(slotClose()));
-    mButton.append(mButton.close);
+    QPushButton *pb = mButton.append( Close, i18n("&Close") );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotClose()) );
+  }
+  
+  QPushButton *pb = getButton( defaultButton );
+  if( pb != 0 )
+  {
+    setButtonFocus( pb, true, true );
   }
 
   setButtonStyle( ActionStyle0 );
 }
+
+
 
 
 
@@ -366,204 +385,136 @@ void KDialogBase::setButtonStyle( int style )
   QHBoxLayout *hbox = new QHBoxLayout( mButton.box, 0, spacingHint() );
   hbox->addSpacing( marginHint() ); // always
 
+
+  if( mMessageBoxMode == true )
+  {
+    hbox->addStretch(1);
+  }
+
   int numButton = 0;
   for( uint i=0; i<8; i++ )
   {
-    if( i>0 && (layout[i-1]&Stretch) /*&& numButton>0*/ )
+    if( i>0 && (layout[i-1]&Stretch) && mMessageBoxMode == false )
     {
       hbox->addStretch(1);
     }
 
     if( mButton.mask & Help & layout[i] )
     {
-      hbox->addWidget( mButton.help ); numButton++;
+      hbox->addWidget( getButton( Help ) ); numButton++;
     }
     else if( mButton.mask & Default & layout[i] )
     {
-      hbox->addWidget( mButton.def ); numButton++;
+      hbox->addWidget( getButton( Default ) ); numButton++;
     }
     else if( mButton.mask & User3 & layout[i] )
     {
-      hbox->addWidget( mButton.user3 ); numButton++;
+      hbox->addWidget( getButton( User3 ) ); numButton++;
     }
     else if( mButton.mask & User2 & layout[i] )
     {
-      hbox->addWidget( mButton.user2 ); numButton++;
+      hbox->addWidget( getButton( User2 ) ); numButton++;
     }
     else if( mButton.mask & User1 & layout[i] )
     {
-      hbox->addWidget( mButton.user1 ); numButton++;
+      hbox->addWidget( getButton( User1 ) ); numButton++;
     }
     else if( mButton.mask & Ok & layout[i] )
     {
-      hbox->addWidget( mButton.ok ); numButton++;
+      hbox->addWidget( getButton( Ok ) ); numButton++;
     }
     else if( mButton.mask & Apply & layout[i] )
     {
-      hbox->addWidget( mButton.apply ); numButton++;
+      hbox->addWidget( getButton( Apply ) ); numButton++;
     }
     else if( mButton.mask & Try & layout[i] )
     {
-      hbox->addWidget( mButton._try ); numButton++;
+      hbox->addWidget( getButton( Try ) ); numButton++;
     } 
     else if( mButton.mask & Cancel & layout[i] )
     {
-      hbox->addWidget( mButton.cancel ); numButton++;
+      hbox->addWidget( getButton( Cancel ) ); numButton++;
     }
     else if( mButton.mask & Close & layout[i] )
     {
-      hbox->addWidget( mButton.close ); numButton++;
+      hbox->addWidget( getButton( Close ) ); numButton++;
     }
+    else
+    {
+      continue;
+    }
+
+    if( mMessageBoxMode == true )
+    {
+      hbox->addStretch(1);
+    }
+
   }
 
   hbox->addSpacing( marginHint() ); // always
-  //hbox->activate();
   mButton.resize( true, marginHint(), spacingHint() );
 }
 
 
-
-void KDialogBase::enableButton( int flag, bool state )
+QPushButton *KDialogBase::getButton( ButtonCode id )
 {
-  if( mButton.mask & Help & flag )
+  return( mButton.button(id) );
+}
+
+
+void KDialogBase::enableButton( ButtonCode id, bool state )
+{
+  QPushButton *pb = getButton( id );
+  if( pb != 0 )
   {
-    mButton.help->setEnabled( state );
-  }
-  if( mButton.mask & Default & flag )
-  {
-    mButton.def->setEnabled( state );
-  }
-  if( mButton.mask & User3 & flag )
-  {
-    mButton.user3->setEnabled( state );
-  }
-  if( mButton.mask & User2 & flag )
-  {
-    mButton.user2->setEnabled( state );
-  }
-  if( mButton.mask & User1 & flag )
-  {
-    mButton.user1->setEnabled( state );
-  }
-  if( mButton.mask & Ok & flag )
-  {
-    mButton.ok->setEnabled( state );
-  }
-  if( mButton.mask & Apply & flag )
-  {
-    mButton.apply->setEnabled( state );
-  }
-  if( mButton.mask & Try & flag )
-  {
-    mButton._try->setEnabled( state );
-  }
-  if( mButton.mask & Cancel & flag )
-  {
-   mButton.cancel->setEnabled( state ); 
-  }
-  if( mButton.mask & Close & flag )
-  {
-   mButton.close->setEnabled( state ); 
+    pb->setEnabled( state );
   }
 }
 
 
 void KDialogBase::enableButtonOK( bool state )
 {
-  if( mButton.mask & Ok )
-  {
-    mButton.ok->setEnabled( state );
-  }
+  enableButton( Ok, state );
 }
 
 
 void KDialogBase::enableButtonApply( bool state )
 {
-  if( mButton.mask & Apply )
-  {
-    mButton.apply->setEnabled( state );
-  }
+  enableButton( Apply, state );
 }
 
 
 void KDialogBase::enableButtonCancel( bool state )
 {
-  if( mButton.mask & Cancel )
-  {
-   mButton.cancel->setEnabled( state ); 
-  }
+  enableButton( Cancel, state );
 }
 
 
-void KDialogBase::showButton( int flag, bool state )
+void KDialogBase::showButton( ButtonCode id, bool state )
 {
-  if( mButton.mask & Help & flag )
+  QPushButton *pb = getButton( id );
+  if( pb != 0 )
   {
-    state ? mButton.help->show() : mButton.help->hide();
-  }
-  if( mButton.mask & Default & flag )
-  {
-    state ? mButton.def->show() : mButton.def->hide();
-  }
-  if( mButton.mask & User3 & flag )
-  {
-    state ? mButton.user3->show() : mButton.user3->hide();
-  }
-  if( mButton.mask & User2 & flag )
-  {
-    state ? mButton.user2->show() : mButton.user2->hide();
-  }
-  if( mButton.mask & User1 & flag )
-  {
-    state ? mButton.user1->show() : mButton.user1->hide();
-  }
-  if( mButton.mask & Ok & flag )
-  {
-    state ? mButton.ok->show() : mButton.ok->hide();
-  }
-  if( mButton.mask & Apply & flag )
-  {
-    state ? mButton.apply->show() : mButton.apply->hide();
-  }
-  if( mButton.mask & Try & flag )
-  {
-    state ? mButton._try->show() : mButton._try->hide();
-  }
-  if( mButton.mask & Cancel & flag )
-  {
-    state ? mButton.cancel->show() : mButton.cancel->hide();
-  }
-  if( mButton.mask & Close & flag )
-  {
-    state ? mButton.close->show() : mButton.close->hide();
+    state ? pb->show() : pb->hide();
   }
 }
 
 
 void KDialogBase::showButtonOK( bool state )
 {
-  if( mButton.mask & Ok )
-  {
-    state ? mButton.ok->show() : mButton.ok->hide();
-  }
+  showButton( Ok, state );
 }
 
 
 void KDialogBase::showButtonApply( bool state )
 {
-  if( mButton.mask & Apply )
-  {
-    state ? mButton.apply->show() : mButton.apply->hide();
-  }
+  showButton( Apply, state );
 }
 
 
-void KDialogBase::showButtonCancel(bool state)
+void KDialogBase::showButtonCancel( bool state )
 {
-  if( mButton.mask & Cancel )
-  {
-    state ? mButton.cancel->show() : mButton.cancel->hide();
-  }
+  showButton( Cancel, state );
 }
 
 
@@ -571,7 +522,8 @@ void KDialogBase::setButtonOKText( const QString &text,
 				   const QString &tooltip,
 				   const QString &quickhelp )
 {
-  if( (mButton.mask & Ok) == 0 )
+  QPushButton *pb = getButton( Ok );
+  if( pb == 0 )
   {
     return;
   }
@@ -580,9 +532,9 @@ void KDialogBase::setButtonOKText( const QString &text,
     "If you press the <b>OK</b> button, all changes\n"
     "you made will be used to proceed.");
 
-  mButton.ok->setText( text == "" ? i18n("&OK") : text );
-  QToolTip::add( mButton.ok, tooltip=="" ? i18n("Accept settings") : tooltip );
-  QWhatsThis::add( mButton.ok, quickhelp=="" ? whatsThis : quickhelp );
+  pb->setText( text == "" ? i18n("&OK") : text );
+  QToolTip::add( pb, tooltip=="" ? i18n("Accept settings") : tooltip );
+  QWhatsThis::add( pb, quickhelp == "" ? whatsThis : quickhelp );
 }
 
 
@@ -591,7 +543,8 @@ void KDialogBase::setButtonApplyText( const QString &text,
 				      const QString &tooltip,
 				      const QString &quickhelp )
 {
-  if( (mButton.mask & Apply) == 0 )
+  QPushButton *pb = getButton( Apply );
+  if( pb == 0 )
   {
     return;
   }
@@ -602,9 +555,9 @@ void KDialogBase::setButtonApplyText( const QString &text,
     "will not be closed."
     "Use this to try different settings. ");
 
-  mButton.apply->setText( text == "" ? i18n("&Apply") : text );
-  QToolTip::add( mButton.apply, tooltip== "" ? i18n("Apply settings"):tooltip);
-  QWhatsThis::add( mButton.apply, quickhelp == "" ? whatsThis : quickhelp );
+  pb->setText( text == "" ? i18n("&Apply") : text );
+  QToolTip::add( pb, tooltip == "" ? i18n("Apply settings") : tooltip );
+  QWhatsThis::add( pb, quickhelp == "" ? whatsThis : quickhelp );
 }
 
 
@@ -612,7 +565,8 @@ void KDialogBase::setButtonCancelText( const QString& text,
 				       const QString& tooltip, 
 				       const QString& quickhelp )
 {
-  if( (mButton.mask & Cancel) == 0 )
+  QPushButton *pb = getButton( Cancel );
+  if( pb == 0 )
   {
     return;
   }
@@ -624,24 +578,46 @@ void KDialogBase::setButtonCancelText( const QString& text,
     "The program will be in the state before\n"
     "opening the dialog.");
 
-  mButton.cancel->setText( text=="" ? i18n("&Cancel") : text );
-  QToolTip::add(mButton.cancel,tooltip=="" ? i18n("Cancel settings"):tooltip);
-  QWhatsThis::add( mButton.cancel, quickhelp == "" ? whatsThis : quickhelp );
+  pb->setText( text == "" ? i18n("&Cancel") : text );
+  QToolTip::add( pb, tooltip == "" ? i18n("Cancel settings") : tooltip);
+  QWhatsThis::add( pb, quickhelp == "" ? whatsThis : quickhelp );
 }
 
+
+void KDialogBase::setButtonText( ButtonCode id, const QString &text )
+{
+  QPushButton *pb = getButton( id );
+  if( pb != 0 )
+  {
+    pb->setText( text );
+  }
+}
+
+
+void KDialogBase::setButtonTip( ButtonCode id, const QString &text )
+{
+  QPushButton *pb = getButton( id );
+  if( pb != 0 )
+  {
+    QToolTip::add( pb, text );
+  }
+}
+
+
+void KDialogBase::setButtonWhatsThis( ButtonCode id, const QString &text )
+{
+  QPushButton *pb = getButton( id );
+  if( pb != 0 )
+  {
+    QWhatsThis::add( pb, text );
+  }
+}
 
 
 void KDialogBase::setButtonFocus( QPushButton *p,bool isDefault, bool isFocus )
 { 
-   p->setDefault( isDefault );
-   if( isFocus == true )
-   {
-     p->setFocus();
-   }
-   else
-   {
-     p->clearFocus();
-   }
+  p->setDefault( isDefault );
+  isFocus ? p->setFocus() : p->clearFocus();
 }
 
 
@@ -702,10 +678,24 @@ void KDialogBase::slotUser1( void )
 }
 
 
+void KDialogBase::slotYes( void ) 
+{
+  emit yesClicked();
+  done( Yes );
+}
+
+
+void KDialogBase::slotNo( void )
+{
+  emit noClicked();
+  done( No );
+}
+
+
 void KDialogBase::slotCancel( void ) 
 {
   emit cancelClicked();
-  reject();
+  done( mMessageBoxMode == true ? Cancel : Rejected );
 }
 
 
@@ -861,11 +851,11 @@ void KDialogBase::setResizeMode( int mode )
   initializeGeometry();
 }
 
+
 void KDialogBase::setInitialSizeStep( const QSize &initialSizeStep )
 {
   mInitialSizeStep = initialSizeStep;
 }
-
 
 
 void KDialogBase::updateSize( void )
@@ -885,7 +875,6 @@ void KDialogBase::updateSize( void )
     resize( minimumSize() );
   }
 }
-
 
 
 void KDialogBase::updateGeometry( void )
@@ -1010,27 +999,24 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
   {
     if( e->key() == Key_F1 )
     {
-      if( mButton.mask & Help )
+      QPushButton *pb = getButton( Help );
+      if( pb != 0 )
       {
-	mButton.help->animateClick();
+	pb->animateClick();
 	e->accept();
 	return;
       }
     }
     if( e->key() == Key_Escape )
     {
-      if( mButton.mask & Cancel )
+      QPushButton *pb = getButton( mEscapeButton );
+      if( pb != 0 )
       {
-	mButton.cancel->animateClick();
+	pb->animateClick();
 	e->accept();
 	return;
       }
-      if( mButton.mask & Close )
-      {
-	mButton.close->animateClick();
-	e->accept();
-	return;
-      }
+
     }
   }
 
@@ -1082,7 +1068,6 @@ void KDialogBase::updateBackground( void )
 }
 
 
-
 void KDialogBase::showTile( bool state )
 {
   mShowTile = state;
@@ -1113,6 +1098,15 @@ void KDialogBase::emitBackgroundChanged( void )
 
 
 
+KDialogBaseButton::KDialogBaseButton( const QString &text, int key,
+				      QWidget *parent,  const char *name )
+  : QPushButton( text, parent, name )
+{
+  mKey = key;
+}
+
+
+
 
 KDialogBaseTile::KDialogBaseTile( QObject *parent, const char *name )
   : QObject( parent, name )
@@ -1120,10 +1114,12 @@ KDialogBaseTile::KDialogBaseTile( QObject *parent, const char *name )
   mPixmap = 0;
 }
 
+
 KDialogBaseTile::~KDialogBaseTile( void )
 {
   cleanup();
 }
+
 
 void KDialogBaseTile::set( const QPixmap *pix )
 {
@@ -1151,6 +1147,7 @@ const QPixmap *KDialogBaseTile::get( void ) const
 {
   return( mPixmap );
 }
+
 
 void KDialogBaseTile::cleanup( void )
 {
