@@ -502,7 +502,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   QString foo3 = i18n("Stop Animated Images");
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
-  d->m_paUseStylesheet = new KSelectAction( QString::fromLatin1( "&Use Stylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
+  d->m_paUseStylesheet = new KSelectAction( i18n( "&Use Stylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   encodings.prepend( i18n( "Auto" ) );
   d->m_paSetEncoding->setItems( encodings );
