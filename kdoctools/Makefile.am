@@ -1,5 +1,5 @@
 
-INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir) -I$(top_srcdir)/kio/gzip -I$(top_srcdir)/kio/bzip2 $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS) $(all_includes)
+INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir) -I$(top_srcdir)/kio/gzip -I$(top_srcdir)/kio/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
 LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
 AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
 
