@@ -76,40 +76,46 @@ namespace KJS {
     public:
         Plugins() {};
         virtual KJSO get(const UString &p) const;
-
+        virtual const TypeInfo* typeInfo() const { return &info; }
+        static const TypeInfo info;
     private:
     };
+    const TypeInfo Plugins::info = { "Plugins", HostType, 0, 0, 0 };
 
 
     class MimeTypes : public PluginBase {
     public:
-        MimeTypes() {};
+        MimeTypes() { };
         virtual KJSO get(const UString &p) const;
-
+        virtual const TypeInfo* typeInfo() const { return &info; }
+        static const TypeInfo info;
     private:
     };
+    const TypeInfo MimeTypes::info = { "MimeTypes", HostType, 0, 0, 0 };
 
 
     class Plugin : public HostImp {
     public:
         Plugin( PluginBase::PluginInfo *info ) { m_info = info; };
         virtual KJSO get(const UString &p) const;
-
+        virtual const TypeInfo* typeInfo() const { return &info; }
+        static const TypeInfo info;
     private:
         PluginBase::PluginInfo *m_info;
     };
+    const TypeInfo Plugin::info = { "Plugin", HostType, 0, 0, 0 };
 
 
     class MimeType : public HostImp {
     public:
         MimeType( PluginBase::MimeTypeInfo *info ) { m_info = info; };
-
         virtual KJSO get(const UString &p) const;
-
+        virtual const TypeInfo* typeInfo() const { return &info; }
+        static const TypeInfo info;
     private:
         PluginBase::MimeTypeInfo *m_info;
     };
-
+    const TypeInfo MimeType::info = { "MimeType", HostType, 0, 0, 0 };
 
     class PluginsFunc : public DOMFunction {
     public:
@@ -169,7 +175,7 @@ KJSO Navigator::get(const UString &p) const
   } else if (p == "mimeTypes") {
       return KJSO(new MimeTypes());
   } else
-    return Undefined();
+    return HostImp::get(p);
 }
 
 
@@ -268,7 +274,7 @@ KJSO Plugins::get(const UString &p) const
         }
     }
 
-    return Undefined();
+    return PluginBase::get(p);
 }
 
 /*******************************************************************/
@@ -295,7 +301,7 @@ KJSO MimeTypes::get(const UString &p) const
         }
     }
 
-    return Undefined();
+    return PluginBase::get(p);
 }
 
 
@@ -333,7 +339,7 @@ KJSO Plugin::get(const UString &p) const
 
     }
 
-    return Undefined();
+    return HostImp::get(p);
 }
 
 
@@ -351,7 +357,7 @@ KJSO MimeType::get(const UString &p) const
     else if ( p=="enabledPlugin" )
         return KJSO( new Plugin( m_info->plugin ) );
 
-    return Undefined();
+    return HostImp::get(p);
 }
 
 
