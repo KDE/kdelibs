@@ -215,7 +215,7 @@ QStringList KIconTheme::queryIcons(int size, int context)
 	if ((context != KIcon::Any) && (context != dir->context()))
 	    continue;
 	dw = abs(dir->size() - size);
-	if (dw >= QMIN(5,delta))
+	if (dw >= QMIN(7,delta))
 	    continue;
 	delta = dw;
 	best = dir;
@@ -243,7 +243,7 @@ KIcon KIconTheme::iconPath(QString name, int size, int match)
 	} else
 	{
 	    dw = abs(dir->size() - size);
-	    if (dw >= QMIN(5,delta))
+	    if (dw >= QMIN(7,delta))
 		continue;
 	}
 
