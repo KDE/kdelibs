@@ -185,8 +185,8 @@ They hinder if the developers are just buried in an avanche of bug reports.
 They spend hours figuring out which bug reports are valid and which non,
 which bug reports are due to bugs or due to installation problems.
 
-The can be a tremendous help to notify developers on problems in areas that
-they normally don't access (e.g. KDE on AIX) to.
+They can be a tremendous help to notify developers on problems in areas that
+they normally don't have access (e.g. KDE on AIX) to.
 
 So, here are some tips on bug reporting:
 
@@ -199,9 +199,9 @@ So, here are some tips on bug reporting:
   if there is a newer version of kdelibs available. Reporting bugs for
   older, deprecated versions usually don't get that much attention :-)
 
-* Also the chance is high that another one experienced your problem. Spend
-  some time on http://bugs.kde.org to find out if your problem has already
-  been reported.
+* Also the chance is high that another one experienced your problem. The
+  bug report wizard at http://bugs.kde.org will help you to find out if your
+  problem has already been reported.
 
 * The best bug report for a project based on voluentary work is of course a
   bugfix patch. :-)
@@ -212,4 +212,4 @@ More info
 http://www.kde.org is a good starting point for info on KDE. If you are a
 developer, you may also point your browser to http://developer.kde.org.
 There is a plethora of mailing lists available, you can gain an overview
-quickly by looking at http://list.kde.org.
+quickly by looking at http://lists.kde.org.
