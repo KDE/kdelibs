@@ -82,10 +82,6 @@ public:
     virtual void setWidth( int width ) { m_width = width; }
     virtual void setHeight( int height ) { m_height = height; }
 
-    // for table cells
-    virtual short baselineOffset() const;
-
-    virtual short verticalPositionHint() const;
     virtual int lineHeight() const;
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);

@@ -49,9 +49,9 @@ public:
 
     virtual int height() const { return 0; }
 
-    // from BiDiObject
     // height of the contents (without paddings, margins and borders)
     virtual int lineHeight() const;
+    virtual short baselinePosition() const;
 
     // overrides
     virtual void calcMinMaxWidth() {}

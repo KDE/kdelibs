@@ -39,10 +39,7 @@ RenderBR::~RenderBR()
 
 short RenderBR::verticalPositionHint() const
 {
-    if (previousSibling() && !previousSibling()->isBR() && !previousSibling()->isFloating())
-        return 0;
-    else
-        return RenderText::verticalPositionHint();
+    return 0;
 }
 
 void RenderBR::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
@@ -74,4 +71,9 @@ void RenderBR::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
 int RenderBR::lineHeight() const
 {
     return 0;//style()->lineHeight().width( QFontMetrics(style()->font()).height() );
+}
+
+short RenderBR::baselinePosition() const
+{
+    return 0;
 }

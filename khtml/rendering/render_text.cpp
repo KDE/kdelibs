@@ -765,6 +765,13 @@ int RenderText::lineHeight() const
     return m_lineHeight;
 }
 
+// #### fix for printpainter and :first-line needed
+short RenderText::baselinePosition() const
+{
+    return metrics().ascent();
+}
+
+#if 0
 short RenderText::baselineOffset() const
 {
     if ( printpainter ) {
@@ -773,15 +780,7 @@ short RenderText::baselineOffset() const
     }
     return (m_lineHeight - fm->height())/2 + fm->ascent();
 }
-
-short RenderText::verticalPositionHint() const
-{
-    if ( printpainter ) {
-	QFontMetrics _fm = metrics();
-	return (m_lineHeight - _fm.height())/2 + _fm.ascent();
-    }
-    return (m_lineHeight - fm->height())/2 + fm->ascent();
-}
+#endif
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
 {
@@ -827,7 +826,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 #endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
-                                 baselineOffset(),
+                                 baselinePosition(),
                                  width, reverse, firstLine);
 
     if(m_lines.count() == m_lines.size())

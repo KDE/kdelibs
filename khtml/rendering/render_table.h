@@ -266,7 +266,6 @@ public:
 
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
-    virtual short baselineOffset() const { return 0; }
     virtual int lineHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
@@ -301,7 +300,6 @@ public:
 
     // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
-    virtual short baselineOffset() const { return 0; }
     virtual int lineHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
@@ -376,6 +374,8 @@ public:
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
 
+    virtual short baselinePosition() const;
+    
 protected:
     RenderTable *m_table;
 
@@ -420,9 +420,7 @@ public:
 
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 
-    // from BiDiObject, just define to be empty
     virtual unsigned int width(int, int) const { return 0;}
-    virtual short baselineOffset() const { return 0; }
     virtual int lineHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}

@@ -311,27 +311,6 @@ void RenderImage::setAlt(DOM::DOMString text)
     alt = text;
 }
 
-short RenderImage::baselineOffset() const
-{
-    switch(style()->verticalAlign())
-    {
-    case BASELINE:
-    case SUB:
-    case SUPER:
-    case BOTTOM:
-        return contentHeight();
-    case TOP:
-        return 0;
-    case TEXT_TOP:
-        return fontMetrics(style()->font()).ascent();
-    case MIDDLE:
-        return contentHeight()/2;
-    case TEXT_BOTTOM:
-        return contentHeight()-fontMetrics(style()->font()).descent();
-    }
-    return 0;
-}
-
 int RenderImage::lineHeight() const
 {
     return height();

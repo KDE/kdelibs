@@ -965,38 +965,6 @@ RenderFlow::clearFloats()
     }
 }
 
-
-short RenderFlow::baselineOffset() const
-{
-    switch(style()->verticalAlign())
-    {
-    case BASELINE:
-        {
-        int r = 0;
-        if (firstChild())
-            r = firstChild()->yPos() + firstChild()->baselineOffset();
-//kdDebug( 6040 ) << "aligned to baseline " << r << endl;
-        return r;
-        }
-    case SUB:
-        // ###
-    case SUPER:
-        // ###
-    case TOP:
-        return 0;
-    case TEXT_TOP:
-        return fontMetrics(style()->font()).ascent();
-    case MIDDLE:
-        return contentHeight()/2;
-    case BOTTOM:
-        return contentHeight();
-    case TEXT_BOTTOM:
-        return contentHeight() - fontMetrics(style()->font()).descent();
-    }
-    return 0;
-}
-
-
 void RenderFlow::calcMinMaxWidth()
 {
 #ifdef DEBUG_LAYOUT

@@ -57,8 +57,6 @@ public:
 
     virtual void printObject(QPainter *p, int x, int y, int w, int h, int tx, int ty);
 
-    virtual short verticalPositionHint() const;
-
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
 

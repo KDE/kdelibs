@@ -448,57 +448,6 @@ void RenderBox::position(int x, int y, int, int, int, bool, bool)
     //m_width = width;
 }
 
-short RenderBox::verticalPositionHint() const
-{
-    switch(style()->verticalAlign())
-    {
-    case BASELINE:
-        //kdDebug( 6040 ) << "aligned to baseline" << endl;
-        return contentHeight();
-    case SUB:
-        // ###
-    case SUPER:
-        // ###
-    case TOP:
-        return PositionTop;
-    case TEXT_TOP:
-        return fontMetrics(style()->font()).ascent();
-    case MIDDLE:
-        return contentHeight()/2;
-    case BOTTOM:
-        return PositionBottom;
-    case TEXT_BOTTOM:
-        return fontMetrics(style()->font()).descent();
-    }
-    return 0;
-}
-
-
-short RenderBox::baselineOffset() const
-{
-    switch(style()->verticalAlign())
-    {
-    case BASELINE:
-//      kdDebug( 6040 ) << "aligned to baseline" << endl;
-        return m_height;
-    case SUB:
-        // ###
-    case SUPER:
-        // ###
-    case TOP:
-        return -1000;
-    case TEXT_TOP:
-        return fontMetrics(style()->font()).ascent();
-    case MIDDLE:
-        return -fontMetrics(style()->font()).width('x')/2;
-    case BOTTOM:
-        return 1000;
-    case TEXT_BOTTOM:
-        return fontMetrics(style()->font()).descent();
-    }
-    return 0;
-}
-
 int RenderBox::lineHeight() const
 {
     return contentHeight();

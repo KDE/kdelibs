@@ -420,14 +420,9 @@ void RenderListMarker::calcMinMaxWidth()
     m_maxWidth = m_width;
 }
 
-short RenderListMarker::baselineOffset() const
-{
-    return fontMetrics(style()->font()).ascent();
-}
-
 short RenderListMarker::verticalPositionHint() const
 {
-    return fontMetrics(style()->font()).ascent();
+    return 0;
 }
 
 void RenderListMarker::calcWidth()

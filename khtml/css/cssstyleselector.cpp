@@ -1775,6 +1775,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 l = Length( computeLength(primitiveValue, style, paintDeviceMetrics), Fixed );
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 l = Length( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE) , Percent );
+
 	    style->setVerticalAlign( LENGTH );
 	    style->setVerticalAlignLength( l );
 	}    
@@ -1969,8 +1970,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(primitiveValue->getIdent())
         {
             style->setTextAlign( (ETextAlign) (primitiveValue->getIdent() - CSS_VAL_LEFT) );
-            return;
         }
+	return;
     }
 // rect
     case CSS_PROP_CLIP:

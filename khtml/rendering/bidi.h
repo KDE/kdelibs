@@ -50,10 +50,10 @@ namespace khtml {
     };
 
     struct BidiRun {
-	BidiRun(int _start, int _stop, RenderObject *_obj, BidiContext *context, QChar::Direction dir) {
-	    start = _start;
-	    stop = _stop;
-	    obj = _obj;
+	BidiRun(int _start, int _stop, RenderObject *_obj, BidiContext *context, QChar::Direction dir)
+	    :  vertical( 0 ), baseline( 0 ), height( 0 ), width( 0 ),
+	       start( _start ), stop( _stop ), obj( _obj )
+	{
 	    if(dir == QChar::DirON) dir = context->dir;
 
 	    level = context->level;
@@ -68,10 +68,12 @@ namespace khtml {
 		else if( dir == QChar::DirAN )
 		    level += 2;
 	    }
-
-	    yOffset = 0;
-	    width = 0;
 	}
+
+	short vertical;
+	short baseline;
+	short height;
+	int width;
 
 	int start;
 	int stop;
@@ -79,8 +81,6 @@ namespace khtml {
 
 	// explicit + implicit levels here
 	uchar level;
-	int yOffset;
-	int width;
     };
 
     // an iterator which goes through a BidiParagraph

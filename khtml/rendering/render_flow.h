@@ -77,8 +77,6 @@ public:
 
     virtual void specialHandler(RenderObject */*special*/);
 
-    virtual short baselineOffset() const;
-
     virtual unsigned short lineWidth(int y) const;
 
     virtual int lowestPosition() const;

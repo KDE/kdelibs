@@ -127,32 +127,6 @@ void RenderWidget::printObject(QPainter *, int, int, int, int, int _tx, int _ty)
     m_widget->show();
 }
 
-short RenderWidget::verticalPositionHint() const
-{
-    assert(!deleted);
-    switch(style()->verticalAlign())
-    {
-    case BASELINE:
-        //kdDebug( 6040 ) << "aligned to baseline" << endl;
-        return (m_height - fontMetrics(style()->font()).descent());
-    case SUB:
-        // ###
-    case SUPER:
-        // ###
-    case TOP:
-        return PositionTop;
-    case TEXT_TOP:
-        return fontMetrics(style()->font()).ascent();
-    case MIDDLE:
-        return -fontMetrics(style()->font()).width('x')/2;
-    case BOTTOM:
-        return PositionBottom;
-    case TEXT_BOTTOM:
-        return fontMetrics(style()->font()).descent();
-    }
-    return 0;
-}
-
 void RenderWidget::placeWidget(int xPos, int yPos)
 {
     // add offset for relative positioning

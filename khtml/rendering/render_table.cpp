@@ -1270,7 +1270,7 @@ void RenderTable::calcRowHeight(int r)
         if (va == BASELINE || va == TEXT_BOTTOM || va == TEXT_TOP
             || va == SUPER || va == SUB)
         {
-            int b=cell->baselineOffset();
+            int b=cell->baselinePosition();
 
             if (b>baseline)
                 baseline=b;
@@ -1438,7 +1438,7 @@ void RenderTable::layoutRow(int r, int yoff)
         case TEXT_TOP:
         case TEXT_BOTTOM:
         case BASELINE:
-            te = getBaseline(r) - cell->baselineOffset() ;
+            te = getBaseline(r) - cell->baselinePosition() ;
             break;
         case TOP:
             te = 0;
@@ -1805,11 +1805,26 @@ bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
     return ret;
 }
 
+short RenderTableCell::baselinePosition() const
+{
+    return 0;
+}
+
+
 void RenderTableCell::setStyle( RenderStyle *style )
 {
     RenderFlow::setStyle( style );
     setSpecialObjects(true);
 }
+
+#ifdef BOX_DEBUG
+static void outlineBox(QPainter *p, int _tx, int _ty, int w, int h)
+{
+    p->setPen(QPen(QColor("yellow"), 3, Qt::DotLine));
+    p->setBrush( Qt::NoBrush );
+    p->drawRect(_tx, _ty, w, h );
+}
+#endif
 
 void RenderTableCell::print(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
@@ -1830,7 +1845,12 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
         || (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
+    
+#ifdef BOX_DEBUG
+    ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
+#endif    
 }
+
 
 void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty)

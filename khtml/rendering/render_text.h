@@ -150,9 +150,9 @@ public:
     virtual short width() const;
     virtual int height() const;
 
-    // from BiDiObject
     // height of the contents (without paddings, margins and borders)
     virtual int lineHeight() const;
+    virtual short baselinePosition() const;
 
     // overrides
     virtual void calcMinMaxWidth();
@@ -165,9 +165,6 @@ public:
 
     virtual int xPos() const;
     virtual int yPos() const;
-
-    virtual short baselineOffset() const;
-    virtual short verticalPositionHint() const;
 
     bool firstLine() const { return hasFirstLine; }
     bool hasReturn() const { return m_hasReturn; }

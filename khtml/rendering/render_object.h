@@ -157,9 +157,14 @@ public:
     void setReplaced(bool b=true) { m_replaced = b; }
     void setContainsWidget(bool b=true) { m_containsWidget = b; }
 
-    virtual short baselineOffset() const { return 0; }
-    virtual short verticalPositionHint() const { return 0; }
-
+    // for discussion of lineHeight see CSS2 spec
+    virtual int lineHeight() const;
+    // for the vertical-align property of inline elements
+    // the difference between this objects baseline position and the lines baseline position.
+    virtual short verticalPositionHint() const;
+    // the offset of baseline from the top of the object.
+    virtual short baselinePosition() const;
+    
     /**
      * Print the object and it's children, but only if it fits in the
      * rectangle given by x,y,w,h. (tx|ty) is parents position.
@@ -402,8 +407,6 @@ public:
     virtual bool containsSpecial() { return false; }
     virtual bool hasOverhangingFloats() { return false; }
 
-    // for discussion of lineHeight see CSS2 spec
-    virtual int lineHeight() const { return 0; }
     // helper function for layoutInlineChildren to position the
     // children RenderObjects
     virtual void position(int, int, int, int, int, bool, bool) {}
@@ -483,8 +486,8 @@ private:
 
 
 enum VerticalPositionHint {
-    PositionTop = -1,
-    PositionBottom = -2
+    PositionTop = -0x4000,
+    PositionBottom = 0x4000
 };
 
 }; //namespace

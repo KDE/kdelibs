@@ -705,3 +705,50 @@ void RenderObject::invalidateLayout()
 }
 
 
+short RenderObject::verticalPositionHint() const
+{
+    EVerticalAlign va = style()->verticalAlign();
+    if ( va == TOP )
+	return PositionTop;
+    if ( va == BOTTOM )
+	return PositionBottom;
+    if ( va == LENGTH ) {
+	return -style()->verticalAlignLength().width( lineHeight() );
+    }
+    if ( !parent()->isInline() ) 
+	return 0;
+    int vpos = parent()->verticalPositionHint();
+    // ### don't allow elements nested inside text-top to have a different valignment. it completely fucks up the
+    // algorithm.
+    if ( va == BASELINE || vpos & 0x4000 ) 
+	return vpos;
+    QFont f = parent()->style()->font();
+    
+    if ( va == SUB )
+	vpos += f.pixelSize()/5;
+    else if ( va == SUPER )
+	vpos -= f.pixelSize()/5;
+    else if ( va == TEXT_TOP )
+	vpos += -parent()->baselinePosition() + baselinePosition();
+    else if ( MIDDLE ) {
+	QRect b = QFontMetrics(f).boundingRect('x');
+	vpos += -b.height()/2 - contentHeight()/2 + baselinePosition();
+    } else if ( va == TEXT_BOTTOM )
+        vpos += parent()->contentHeight() - parent()->baselinePosition()
+		+ contentHeight() - baselinePosition();
+    return vpos;
+}
+
+
+int RenderObject::lineHeight() const
+{
+    if ( isReplaced() )
+	return intrinsicHeight();
+    // ### optimise and don't ignore :first-line
+    return style()->lineHeight().width(QFontMetrics(style()->font()).height());
+}
+
+short RenderObject::baselinePosition() const
+{
+    return contentHeight();
+}
