@@ -392,7 +392,6 @@ QFont KGlobalSettings::taskbarFont()
     _taskbarFont->setPointSize(11);
     _taskbarFont->setStyleHint(QFont::SansSerif);
 
-    KConfig *c = KGlobal::config();
     KConfigGroup g( KGlobal::config(), "General" );
     *_taskbarFont = g.readFontEntry("taskbarFont", _taskbarFont);
 
