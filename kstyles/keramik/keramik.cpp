@@ -973,7 +973,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			if ( button->isMenuButton() )
 			{
 				int dx = pixelMetric( PM_MenuButtonIndicator, widget );
-				drawPrimitive( PE_ArrowDown, p, QRect(x + w - dx - 2, y + 2, dx, h - 4),
+				drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - dx - 8, y + 2, dx, h - 4), r ),
 							   cg, flags, opt );
 				w -= dx;
 			}
