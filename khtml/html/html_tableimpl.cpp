@@ -1,3 +1,4 @@
+
 /**
  * This file is part of the DOM implementation for KDE.
  *
@@ -33,6 +34,8 @@
 using namespace DOM;
 
 #include "htmlhashes.h"
+#include "khtmlview.h"
+#include "khtml_part.h"
 
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
@@ -310,7 +313,9 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     {
         if (!attr->value().isEmpty()) {
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-            QString url = Cache::completeURL(khtml::parseURL(attr->value() ).string(), doc->baseURL()).url();
+            QString url = khtml::parseURL( attr->value() ).string();
+            if ( doc->view() )
+                url = doc->view()->part()->completeURL( url ).url();
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         }
         else
@@ -421,7 +426,9 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     {
         if (attr->val()) {
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-            QString url = Cache::completeURL(khtml::parseURL( attr->val() ).string(), doc->baseURL()).url();
+            QString url = khtml::parseURL( attr->value() ).string();
+            if ( doc->view() )
+                url = doc->view()->part()->completeURL( url ).url();
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         }
         else
