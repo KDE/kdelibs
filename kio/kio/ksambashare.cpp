@@ -1,0 +1,202 @@
+/* This file is part of the KDE project
+   Copyright (c) 2004 Jan Schaefer <j_schaef@informatik.uni-kl.de>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
+
+#include <qdict.h>
+#include <qfile.h>
+#include <qtextstream.h>
+
+#include <kdirwatch.h>
+#include <kstaticdeleter.h>
+#include <kdebug.h>
+#include <kconfig.h>
+
+#include "ksambashare.h"
+
+class KSambaSharePrivate
+{
+public:
+  KSambaSharePrivate();
+  
+  bool readSmbConf();
+  bool findSmbConf();
+  
+  QDict<bool> sharedPaths;
+  QString smbConf;
+};
+
+KSambaSharePrivate::KSambaSharePrivate() 
+{
+  if (findSmbConf())
+      readSmbConf();
+}  
+
+/**
+ * Try to find the samba config file path
+ * First tries the kconfig, then checks
+ * several well-known paths
+ * @return wether a smb.conf was found.
+ **/
+bool KSambaSharePrivate::findSmbConf() {
+  KConfig config("ksambashare");
+  config.setGroup("General");
+  smbConf = config.readPathEntry("smb.conf");
+
+  if ( QFile::exists(smbConf) )
+    return true;
+
+  if ( QFile::exists("/etc/samba/smb.conf") )
+    smbConf = "/etc/samba/smb.conf";
+  else
+  if ( QFile::exists("/etc/smb.conf") )
+    smbConf = "/etc/smb.conf";
+  else
+  if ( QFile::exists("/usr/local/samba/lib/smb.conf") )
+    smbConf = "/usr/local/samba/lib/smb.conf";
+  else
+  if ( QFile::exists("/usr/samba/lib/smb.conf") )
+    smbConf = "/usr/samba/lib/smb.conf";
+  else {
+    kdDebug(7000) << "KSambaShare: Could not found smb.conf!" << endl;
+    return false;
+  }
+      
+  config.writeEntry("smb.conf",smbConf);
+  return true;
+}
+
+/**
+ * Reads all path= entries from the smb.conf file
+ * and fills the sharedPaths dict with the values
+ */
+bool KSambaSharePrivate::readSmbConf() {
+  QFile f(smbConf);
+
+  kdDebug(7000) << "KSambaShare::readSmbConf " << smbConf << endl;
+  
+  if (!f.open(IO_ReadOnly)) {
+    kdError() << "KSambaShare: Could not open " << smbConf << endl;
+    return false;
+  }
+  
+  sharedPaths.clear();
+
+  QTextStream s(&f);
+
+  bool continuedLine = false; // is true if the line before ended with a backslash
+  QString completeLine;
+
+  while (!s.eof())
+  {
+    QString currentLine = s.readLine().stripWhiteSpace();
+
+    if (continuedLine) {
+      completeLine += currentLine;
+      continuedLine = false;
+    }      
+    else
+      completeLine = currentLine;
+
+    // is the line continued in the next line ?
+    if ( completeLine[completeLine.length()-1] == '\\' )
+    {
+      continuedLine = true;
+      // remove the ending backslash
+      completeLine.truncate( completeLine.length()-1 ); 
+      continue;
+    }
+    
+    // comments or empty lines
+    if (completeLine.isEmpty() ||
+        '#' == completeLine[0] ||
+        ';' == completeLine[0])
+    {
+      continue;
+    }
+
+    // parameter
+    int i = completeLine.find('=');
+
+    if (i>-1)
+    {
+      QString name = completeLine.left(i).stripWhiteSpace().lower();
+      QString value = completeLine.mid(i+1).stripWhiteSpace();
+
+      if (name == KGlobal::staticQString("path")) {
+        // Handle quotation marks
+        if ( value[0] == '"' )
+          value.remove(0,1);
+         
+        if ( value[value.length()-1] == '"' )
+          value.truncate(value.length()-1);        
+        
+        // Normalize path
+        if ( value[value.length()-1] != '/' )
+             value += '/';
+             
+        bool b = true;             
+        sharedPaths.insert(value,&b);
+        kdDebug(7000) << "KSambaShare: Found path: " << value << endl;
+      }
+    }
+  }
+
+  f.close();
+
+  return true;  
+
+}
+
+KSambaShare::KSambaShare() {
+  d = new KSambaSharePrivate();
+  if (QFile::exists(d->smbConf)) {
+    KDirWatch::self()->addFile(d->smbConf);
+    connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
+   	        SLOT(slotFileChange(const QString&)));
+  } 
+}
+
+KSambaShare::~KSambaShare() {
+  delete d;
+}
+
+
+bool KSambaShare::isDirectoryShared( const QString & path ) {
+  QString fixedPath = path;
+  if ( path[path.length()-1] != '/' )
+       fixedPath += '/';
+  
+  return d->sharedPaths.find(fixedPath) > 0;
+}
+
+void KSambaShare::slotFileChange( const QString & path ) {
+  if (path == d->smbConf)
+     d->readSmbConf();
+}
+
+KSambaShare* KSambaShare::_instance = 0L; 
+static KStaticDeleter<KSambaShare> ksdSambaShare;
+
+KSambaShare* KSambaShare::instance() {
+  if (! _instance ) 
+      _instance = ksdSambaShare.setObject(_instance, new KSambaShare());
+      
+  return _instance;      
+}
+
+#include "ksambashare.moc"
+
