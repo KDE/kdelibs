@@ -361,16 +361,22 @@ bool KAccelBase::updateConnections()
 
 		// If this key is requested by more than one action,
 		if( i < rgKeys.size() - 1 && spec == rgKeys[i+1].spec ) {
+			kdDebug(125) << "spec = " << spec.toString()
+				<< " action1 = " << info.pAction->name()
+				<< " action2 = " << m_rgActions.actionPtr( rgKeys[i+1].iAction )->name()
+				<< endl;
 			// If multiple actions requesting this key
 			//  have the same priority as the first,
-			if( info.iVariation == rgKeys[i+1].iVari
-			    && info.iSeq == rgKeys[i+1].iSeq ) {
+			//  OR the sequence is multi-key.
+			if( (info.iVariation == rgKeys[i+1].iVari
+			     && info.iSeq == rgKeys[i+1].iSeq)
+			    || info.pAction->shortcut().seq(info.iSeq).count() > 1 ) {
 				// Remove connection to single action if there is one
 				KAccelAction* pAction = actionPtr( spec );
 				if( pAction ) {
 					m_mapKeyToAction.remove( spec );
 					disconnectKey( *pAction, spec );
-					pAction->incConnections();
+					pAction->decConnections();
 				}
 				// Indicate that no single action is associated with this key.
 				info.pAction = 0;
