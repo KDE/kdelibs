@@ -100,7 +100,7 @@ ac_cv_realtime_sched=yes,
 ac_cv_realtime_sched=no)
 ])
 AC_MSG_RESULT($ac_cv_realtime_sched)
-if eval "test \"`echo `$ac_cv_realtime_sched\" = yes"; then
+if eval "test \"`echo $ac_cv_realtime_sched`\" = yes"; then
   AC_DEFINE(HAVE_REALTIME_SCHED,1,
         [Define if your system supports realtime scheduling])
 fi
