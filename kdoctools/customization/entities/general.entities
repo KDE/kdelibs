@@ -142,10 +142,12 @@
 <!ENTITY HotSync '<trademark class="registered">HotSync</trademark>'>
 <!ENTITY HP	'<trademark class="registered">HP</trademark>'>
 <!ENTITY HP-UX	'<trademark class="registered">HP-UX</trademark>'>
+<!ENTITY HTML 	'<acronym>HTML</acronym>'>
 <!ENTITY HTTP	"<acronym>HTTP</acronym>">
 <!ENTITY IRIX	'<trademark class="registered">IRIX</trademark>'>
 <!ENTITY Java	"<trademark>Java</trademark>">
 <!ENTITY Jini	"<trademark>Jini</trademark>">
+<!ENTITY juk	"<application>JuK</application>">
 <!ENTITY kaboodle	"<application>Kaboodle</application>">
 <!ENTITY kaddressbook	"<application>KAddressBook</application>">
 <!ENTITY kalarm	"<application>KAlarm</application>">
@@ -238,6 +240,7 @@
 <!ENTITY kodometer	"<application>KOdometer</application>">
 <!ENTITY koffice	"<application>KOffice</application>">
 <!ENTITY kolf	"<application>Kolf</application>">
+<!ENTITY kolourpaint	"<application>Kolourpaint</application>">
 <!ENTITY kompare	"<application>Kompare</application>">
 <!ENTITY koncd	"<application>KOnCD</application>">
 <!ENTITY konqueror	"<application>Konqueror</application>">
