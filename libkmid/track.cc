@@ -52,6 +52,7 @@ MidiTrack::MidiTrack(FILE *file,int tpcn,int Id)
   currentpos=0;
   size=0;
   data=0L;
+  tempo=1000000;
   if (feof(file)) 
   {
     clear();

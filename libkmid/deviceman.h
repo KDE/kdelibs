@@ -144,6 +144,12 @@ class DeviceManager
 
     /**
      * @internal
+     * True if the user is running ALSA. False if (s)he's using OSS
+     */
+    bool alsa;
+
+    /**
+     * @internal
      */
     void seqbuf_dump (void);
 
@@ -152,6 +158,10 @@ class DeviceManager
      */
     void seqbuf_clean (void);
 
+    /**
+     * @internal
+     */
+    void checkAlsa (void);
   public:
     /**
      * Constructor. It just initializes internal variables, before playing any
@@ -233,6 +243,11 @@ class DeviceManager
      * @see MidiOut::initDev()
      */
     void initDev        (void);
+
+    /**
+     * Returns true if it's running ALSA and false if OSS is being run
+     */
+    int usingAlsa(void) { return alsa; };
 
     /**
      * Sends a Note On MIDI event.
@@ -333,12 +348,13 @@ class DeviceManager
     /**
      * Sets the tempo which will be used to convert between ticks and milliseconds.  
      */
-    void tmrSetTempo(int v);
+     void tmrSetTempo(int v);
 
     /**
      * Starts the timer. You should call tmrStart before using @ref #wait()
      */
-    void tmrStart(void);
+    void tmrStart(long int tpcn);
+//    void tmrStart(void);
 
     /**
      * Stops the timer. This will be called by @ref #closeDev() before closing the device
@@ -465,7 +481,7 @@ class DeviceManager
      * the parameter has a value out of the valid range ( 0 to @ref midiPorts() +
      * @ref synthDevices() ) it returns an empty string.
      */
-    char *name(int i);
+    const char *name(int i);
 
     /**
      * Returns the type of device the @p i-th device is , in a user-friendly string.

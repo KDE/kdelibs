@@ -256,17 +256,17 @@ class MidiOut
   };
 
 #ifdef HANDLETIMEINDEVICES
-  void wait        (double ticks);
-  void tmrSetTempo (int v);
-  void tmrStart    ();
-  void tmrStop     ();
-  void tmrContinue ();
+  virtual void wait        (double ticks);
+  virtual void tmrSetTempo (int v);
+  virtual void tmrStart    (long int tpcn);
+  virtual void tmrStop     ();
+  virtual void tmrContinue ();
   /**
    * @internal
    * If i==1 syncronizes by cleaning the buffer instead of sending it (in fact,
    * this is what syncronizing really means :-) )
    */
-  void sync        (int i=0);  
+  virtual void sync        (int i=0);  
 #endif
 
   /**

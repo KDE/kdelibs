@@ -33,12 +33,26 @@
 #include "synthout.h"
 #include "fmout.h"
 #include "gusout.h"
+#include "alsaout.h"
 #include "midimapper.h"
 #include "midispec.h"
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+#ifdef HAVE_LIBASOUND
+#define ALSA_SUPPORT
+#endif
+
+#ifdef ALSA_SUPPORT
+#include <sys/asoundlib.h>
+#include <linux/asequencer.h>
+#endif
 
 //#define DEVICEMANDEBUG
 //#define GENERAL_DEBUG_MESSAGES
@@ -76,6 +90,7 @@ DeviceManager::DeviceManager(int def)
   default_dev=def;
   initialized=0;
   _ok=1;
+  alsa=false;
   device = NULL;
 #ifdef HANDLETIMEINDEVICES
   rate=100;
@@ -119,97 +134,158 @@ int DeviceManager::checkInit(void)
   return 0;
 }
 
-/*
-   midiOut *DeviceManager::chntodev(int chn)
-   {
-     return device[chn2dev[chn]];
-   };
- */
+void DeviceManager::checkAlsa(void)
+{
+#ifdef HAVE_SYS_STAT_H
+  struct stat buf;
+  stat("/proc/asound", &buf);
+  if (S_ISDIR(buf.st_mode))
+  {
+    alsa=true;
+    printf("ALSA\n");
+  } else 
+  {
+    alsa=false;  
+    printf("!ALSA\n");
+  };
+#else
+#warning "ALSA won't be found at runtime"
+#endif
+}
 
 int DeviceManager::initManager(void)
 {
-  seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
-  if (seqfd==-1)
-  {
-    printf("ERROR: Couldn't open /dev/sequencer to get some information\n");
-    _ok=0;
-    return -1;
-  };
-  n_synths=0;
-  n_midi=0;
-  ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&n_synths);
-  ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&n_midi);
-  n_total=n_midi+n_synths;
-  if (n_midi==0) 
-  {
-    printf("ERROR: There's no midi port\n");
-    /* This could be a problem if the user don't have a synth neither,
-       but not having any of both things is unusual */
-    //    _ok=0;
-    //    return 1;
-  }
+  checkAlsa();
 
-  device=new MidiOut*[n_total];
-  midiinfo=new midi_info[n_midi];
-  synthinfo=new synth_info[n_synths];
-
-  int i;
-  for (i=0;i<n_midi;i++)
+  if (!alsa)  // We are using OSS
   {
-    midiinfo[i].device=i;
-    if (ioctl(seqfd,SNDCTL_MIDI_INFO,&midiinfo[i])!=-1)
+    seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
+    if (seqfd==-1)
     {
+      printf("ERROR: Couldn't open /dev/sequencer to get some information\n");
+      _ok=0;
+      return -1;
+    };
+    n_synths=0;
+    n_midi=0;
+    ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&n_synths);
+    ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&n_midi);
+    n_total=n_midi+n_synths;
+
+
+    if (n_midi==0) 
+    {
+      printf("ERROR: There's no midi port\n");
+      /* This could be a problem if the user don't have a synth neither,
+	 but not having any of both things is unusual */
+      //    _ok=0;
+      //    return 1;
+    }
+
+    device=new MidiOut*[n_total];
+    midiinfo=new midi_info[n_midi];
+    synthinfo=new synth_info[n_synths];
+
+    int i;
+    for (i=0;i<n_midi;i++)
+    {
+      midiinfo[i].device=i;
+      if (ioctl(seqfd,SNDCTL_MIDI_INFO,&midiinfo[i])!=-1)
+      {
 #ifdef GENERAL_DEBUG_MESSAGES
-      printf("----\n");
-      printf("Device : %d\n",i);
-      printf("Name : %s\n",midiinfo[i].name);
-      printf("Device type : %d\n",midiinfo[i].dev_type);
+	printf("----\n");
+	printf("Device : %d\n",i);
+	printf("Name : %s\n",midiinfo[i].name);
+	printf("Device type : %d\n",midiinfo[i].dev_type);
 #endif
-    }
-    device[i]=new MidiOut(i);
-  }
-
-  for (i=0;i<n_synths;i++)
-  {
-    synthinfo[i].device=i;
-    if (ioctl(seqfd,SNDCTL_SYNTH_INFO,&synthinfo[i])!=-1)
-    {
-#ifdef GENERAL_DEBUG_MESSAGES  
-      printf("----\n");
-      printf("Device : %d\n",i);
-      printf("Name : %s\n",synthinfo[i].name);
-      switch (synthinfo[i].synth_type)
-      {
-	case (SYNTH_TYPE_FM) : printf("FM\n");break;
-	case (SYNTH_TYPE_SAMPLE) : printf("Sample\n");break;
-	case (SYNTH_TYPE_MIDI) : printf("Midi\n");break;
-	default : printf("default type\n");break;
-      };
-      switch (synthinfo[i].synth_subtype)
-      {
-	case (FM_TYPE_ADLIB) : printf("Adlib\n");break;
-	case (FM_TYPE_OPL3) : printf("Opl3\n");break;
-	case (MIDI_TYPE_MPU401) : printf("Mpu-401\n");break;
-	case (SAMPLE_TYPE_GUS) : printf("Gus\n");break;
-	default : printf("default subtype\n");break;
       }
-#endif
-      if (synthinfo[i].synth_type==SYNTH_TYPE_FM) 
-	device[i+n_midi]=new FMOut(i,synthinfo[i].nr_voices);
-      else if ((synthinfo[i].synth_type==SYNTH_TYPE_SAMPLE)&&
-	  (synthinfo[i].synth_subtype==SAMPLE_TYPE_GUS))
-	device[i+n_midi]=new GUSOut(i,synthinfo[i].nr_voices);
-      else
-	device[i+n_midi]=new SynthOut(i);
+      device[i]=new MidiOut(i);
     }
+
+    for (i=0;i<n_synths;i++)
+    {
+      synthinfo[i].device=i;
+      if (ioctl(seqfd,SNDCTL_SYNTH_INFO,&synthinfo[i])!=-1)
+      {
+#ifdef GENERAL_DEBUG_MESSAGES  
+	printf("----\n");
+	printf("Device : %d\n",i);
+	printf("Name : %s\n",synthinfo[i].name);
+	switch (synthinfo[i].synth_type)
+	{
+	  case (SYNTH_TYPE_FM) : printf("FM\n");break;
+	  case (SYNTH_TYPE_SAMPLE) : printf("Sample\n");break;
+	  case (SYNTH_TYPE_MIDI) : printf("Midi\n");break;
+	  default : printf("default type\n");break;
+	};
+	switch (synthinfo[i].synth_subtype)
+	{
+	  case (FM_TYPE_ADLIB) : printf("Adlib\n");break;
+	  case (FM_TYPE_OPL3) : printf("Opl3\n");break;
+	  case (MIDI_TYPE_MPU401) : printf("Mpu-401\n");break;
+	  case (SAMPLE_TYPE_GUS) : printf("Gus\n");break;
+	  default : printf("default subtype\n");break;
+	}
+#endif
+	if (synthinfo[i].synth_type==SYNTH_TYPE_FM) 
+	  device[i+n_midi]=new FMOut(i,synthinfo[i].nr_voices);
+	else if ((synthinfo[i].synth_type==SYNTH_TYPE_SAMPLE)&&
+	    (synthinfo[i].synth_subtype==SAMPLE_TYPE_GUS))
+	  device[i+n_midi]=new GUSOut(i,synthinfo[i].nr_voices);
+	else
+	  device[i+n_midi]=new SynthOut(i);
+      }
+    }
+
+    close(seqfd);
+
   }
+  else
+  {  // We are using ALSA
+#ifdef ALSA_SUPPORT
+    snd_seq_client_info_t clienti;
+    snd_seq_port_info_t porti;
+    int  client;
+    int  port;
 
-  close(seqfd);
+    snd_seq_t *handle;
+    snd_seq_open(&handle, SND_SEQ_OPEN);
 
-  //#ifdef AT_HOME
-  //MidiMapper *map=new MidiMapper("/opt/kde/share/apps/kmid/maps/yamaha790.map");
-  //device[0]->useMapper(map);
-  //#endif
+    snd_seq_system_info_t info;
+    snd_seq_system_info(handle, &info);
+
+    n_total=0;
+    n_midi=0;
+    n_synths=0;
+    device=new MidiOut*[info.clients*info.ports];
+    unsigned int k=SND_SEQ_PORT_CAP_SUBS_WRITE | SND_SEQ_PORT_CAP_WRITE ;
+    for (client=0 ; client<info.clients ; client++)
+    {
+      snd_seq_get_any_client_info(handle, client, &clienti);
+      for (port=0 ; port<clienti.num_ports ; port++)
+      {
+	snd_seq_get_any_port_info(handle, client, port, &porti);
+	if (( porti.capability & k ) == k)
+	{
+	  device[n_midi]=new AlsaOut(n_midi,client, port, clienti.name, porti.name);
+	  n_midi++;
+	};
+      }
+    }
+    n_total=n_midi; 
+
+    snd_seq_close(handle);
+#else
+
+    // Note: Please don't add i18n for the text below, thanks :)
+
+    fprintf(stderr,"Sorry, this KMid version was compiled without \n");
+    fprintf(stderr,"ALSA support but you're using ALSA . \n");
+    fprintf(stderr,"Please compile KMid for yourself or tell the people\n");
+    fprintf(stderr,"at your Linux distribution to compile it themselves\n");
+#endif  
+
+  }
 
   initialized=1;
 
@@ -225,24 +301,29 @@ void DeviceManager::openDev(void)
     return;
   }
   _ok=1;
-  seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
-  if (seqfd==-1)
+
+  if (!alsa)
   {
-    printf("Couldn't open the /dev/sequencer device\n");
-    _ok=0;
-    return;
-  }
-  _seqbufptr = 0;
-  ioctl(seqfd,SNDCTL_SEQ_RESET);
-  //ioctl(seqfd,SNDCTL_SEQ_PANIC);
+    seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
+    if (seqfd==-1)
+    {
+      printf("Couldn't open the /dev/sequencer device\n");
+      _ok=0;
+      return;
+    }
+    _seqbufptr = 0;
+    ioctl(seqfd,SNDCTL_SEQ_RESET);
+    //ioctl(seqfd,SNDCTL_SEQ_PANIC);
 
 #ifndef HANDLETIMEINDEVICES
-  rate=0;
-  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
-  if ((r==-1)||(rate<=0)) rate=HZ;
+    rate=0;
+    int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&rate);
+    if ((r==-1)||(rate<=0)) rate=HZ;
 
-  convertrate=1000/rate;
+    convertrate=1000/rate;
 #endif
+  }
+  else seqfd=0L; // ALSA
 
   DEBUGPRINTF("Opening devices : ");
   for (int i=0;i<n_total;i++) 
@@ -255,18 +336,22 @@ void DeviceManager::openDev(void)
   if (_ok==0)
   {
     for (int i=0;i<n_total;i++) device[i]->closeDev();
-    printf("DeviceMan :: ERROR : Closing devices\n");
+    DEBUGPRINTF("DeviceMan :: ERROR : Closing devices\n");
     return;
   }
 
-#ifdef DEVICEMANDEBUG
-  printf("Devices opened\n");
-  printf("rate: %d\n",rate);
-#endif
+  DEBUGPRINTF("Devices opened\n");
 }
 
 void DeviceManager::closeDev(void)
 {
+  if (alsa)
+  {
+   if (device!=NULL) for (int i=0;i<n_total;i++) 
+       device[i]->closeDev();
+   return;
+  }
+
   if (seqfd==-1) return;
 #ifndef HANDLETIMEINDEVICES
   tmrStop();
@@ -343,6 +428,10 @@ void DeviceManager::sysEx          ( uchar *data,ulong size)
 
 void DeviceManager::wait (double ticks)
 {
+#ifdef ALSA_SUPPORT
+  if (alsa) { ((AlsaOut *)device[default_dev])->wait(ticks); return; };
+#endif
+
   unsigned long int t=(unsigned long int)(ticks/convertrate);
   if (lastwaittime==t) return;
   lastwaittime=t;
@@ -353,17 +442,26 @@ void DeviceManager::wait (double ticks)
   SEQ_WAIT_TIME(t);
   SEQ_DUMPBUF();
 #endif
+
 }
 
+//void DeviceManager::tmrSetTempo(int v)
 void DeviceManager::tmrSetTempo(int v)
 {
-  //device[default_dev]->tmrSetTempo(v);
+#ifdef ALSA_SUPPORT
+  if (alsa) { ((AlsaOut *)device[default_dev])->tmrSetTempo(v); return; }
+#endif
+
   SEQ_SET_TEMPO(v);
   SEQ_DUMPBUF();
 }
 
-void DeviceManager::tmrStart(void)
+void DeviceManager::tmrStart(long int tpcn)
 {
+#ifdef ALSA_SUPPORT
+  if (alsa) { ((AlsaOut *)device[default_dev])->tmrStart(tpcn); return; }
+#endif
+
 #ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrStart();
 #else
@@ -384,6 +482,10 @@ void DeviceManager::tmrStart(void)
 
 void DeviceManager::tmrStop(void)
 {
+#ifdef ALSA_SUPPORT
+  if (alsa) { ((AlsaOut *)device[default_dev])->tmrStop(); return; }
+#endif
+
 #ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrStop();
 #else
@@ -403,6 +505,9 @@ void DeviceManager::tmrStop(void)
 
 void DeviceManager::tmrContinue(void)
 {
+#ifdef ALSA_SUPPORT
+  if (alsa) { ((AlsaOut *)device[default_dev])->tmrContinue(); return; }
+#endif
 #ifdef HANDLETIMEINDEVICES
   device[default_dev]->tmrContinue();
 #else
@@ -421,6 +526,10 @@ void DeviceManager::tmrContinue(void)
 
 void DeviceManager::sync(bool f)
 {
+#ifdef ALSA_SUPPORT
+  if (alsa) { ((AlsaOut *)device[default_dev])->sync(f); return ; };
+#endif
+
 #ifdef HANDLETIMEINDEVICES
   device[default_dev]->sync(f);
 #else
@@ -445,58 +554,73 @@ void DeviceManager::sync(bool f)
 
 void DeviceManager::seqbuf_dump (void)
 {
-  if (_seqbufptr)
+  if (!alsa)
   {
-    int r=0;
-    unsigned char *sb=_seqbuf;
-    int w=_seqbufptr;
-    r=write (seqfd, _seqbuf, _seqbufptr);
-#ifdef DEVICEMANDEBUG
-    printf("%d == %d\n",r,w);
-    printf("%d\n",(errno==EAGAIN)? 1 : 0);
-#endif
-    while (((r == -1)&&(errno==EAGAIN))||(r != w))
+    if (_seqbufptr)
     {
-      if ((r==-1)&&(errno==EAGAIN))
-      {
-	usleep(1);
-      }
-      else if ((r>0)&&(r!=w))
-      {
-	w-=r;
-	sb+=r;
-      }
-      r=write (seqfd, sb, w);
+      int r=0;
+      unsigned char *sb=_seqbuf;
+      int w=_seqbufptr;
+      r=write (seqfd, _seqbuf, _seqbufptr);
 #ifdef DEVICEMANDEBUG
       printf("%d == %d\n",r,w);
       printf("%d\n",(errno==EAGAIN)? 1 : 0);
 #endif
+      while (((r == -1)&&(errno==EAGAIN))||(r != w))
+      {
+	if ((r==-1)&&(errno==EAGAIN))
+	{
+	  usleep(1);
+	}
+	else if ((r>0)&&(r!=w))
+	{
+	  w-=r;
+	  sb+=r;
+	}
+	r=write (seqfd, sb, w);
+#ifdef DEVICEMANDEBUG
+	printf("%d == %d\n",r,w);
+	printf("%d\n",(errno==EAGAIN)? 1 : 0);
+#endif
+      }
     }
+    /*
+     *   if (_seqbufptr)
+     *       if (write (seqfd, _seqbuf, _seqbufptr) == -1)
+     *       {
+     *           printf("Error writing to /dev/sequencer in deviceManager::seqbuf_dump\n");
+     *           perror ("write /dev/sequencer in seqbuf_dump\n");
+     *           exit (-1);
+     *       }
+     */
+    _seqbufptr = 0;
   }
-  /*
-   *   if (_seqbufptr)
-   *       if (write (seqfd, _seqbuf, _seqbufptr) == -1)
-   *       {
-   *           printf("Error writing to /dev/sequencer in deviceManager::seqbuf_dump\n");
-   *           perror ("write /dev/sequencer in seqbuf_dump\n");
-   *           exit (-1);
-   *       }
-   */
-  _seqbufptr = 0;
 }
 
 void DeviceManager::seqbuf_clean(void)
 {
-  _seqbufptr=0;
+#ifdef ALSA_SUPPORT
+  if (alsa)
+    ((AlsaOut *)device[default_dev])->seqbuf_clean();
+  else
+#endif
+    _seqbufptr=0;
 }
 
 
-char *DeviceManager::name(int i)
+const char *DeviceManager::name(int i)
 {
   if (checkInit()<0) {_ok = 0; return NULL;}
 
-  if (i<n_midi) return midiinfo[i].name; 
-  if (i<n_midi+n_synths) return synthinfo[i-n_midi].name;
+  if (alsa)
+  {
+    if (i<n_midi) return device[i]->deviceName(); 
+  } 
+  else
+  {
+    if (i<n_midi) return midiinfo[i].name; 
+    if (i<n_midi+n_synths) return synthinfo[i-n_midi].name;
+  };
   return (char *)"";
 }
 
@@ -504,20 +628,26 @@ const char *DeviceManager::type(int i)
 {
   if (checkInit()<0) {_ok = 0; return NULL;}
 
-  if (i<n_midi) 
+  if (alsa)
   {
-    return "External Midi Port"; 
+    if (i<n_midi) return "ALSA device";
   }
-  if (i<n_midi+n_synths) 
+  else
   {
-    switch (synthinfo[i-n_midi].synth_subtype)
+    if (i<n_midi) 
     {
-      case (FM_TYPE_ADLIB) : return "Adlib";break;
-      case (FM_TYPE_OPL3) : return "FM";break;
-      case (MIDI_TYPE_MPU401) : return "MPU 401";break;
-      case (SAMPLE_TYPE_GUS) : return "GUS";break;
+      return "External Midi Port"; 
     }
-    return "";
+    if (i<n_midi+n_synths) 
+    {
+      switch (synthinfo[i-n_midi].synth_subtype)
+      {
+        case (FM_TYPE_ADLIB) : return "Adlib";break;
+        case (FM_TYPE_OPL3) : return "FM";break;
+        case (MIDI_TYPE_MPU401) : return "MPU 401";break;
+        case (SAMPLE_TYPE_GUS) : return "GUS";break;
+      }
+    }
   }
   return "";
 }

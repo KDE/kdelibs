@@ -9,12 +9,12 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-
+ 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
+                                                            
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -296,9 +296,9 @@ void MidiPlayer::parseSpecialEvents(void)
     {
       if (tracks[trk]->absMsOfNextEvent()<minTime)
       {
-	minTrk=trk;
-	minTime=tracks[minTrk]->absMsOfNextEvent();
-	parsing=1;
+        minTrk=trk;
+        minTime=tracks[minTrk]->absMsOfNextEvent();
+        parsing=1;
       }
       trk++;
     }
@@ -311,118 +311,118 @@ void MidiPlayer::parseSpecialEvents(void)
 #endif
     }
     else
-    {	
+    {
       // mspass=(ulong)(minTime-prevms);
       trk=0;
       while (trk<info->ntracks)
       {
-	tracks[trk]->currentMs(minTime);
-	trk++;
-      }
+        tracks[trk]->currentMs(minTime);
+        trk++;
+      }     
     }
     trk=minTrk;
     tracks[trk]->readEvent(ev);
     switch (ev->command)
     {
       case (MIDI_NOTEON) :
-	if (ev->vel==0) na->add((ulong)minTime,ev->chn,0, ev->note);
-	else na->add((ulong)minTime,ev->chn,1,ev->note);
-	break;
-      case (MIDI_NOTEOFF) : 
-	na->add((ulong)minTime,ev->chn,0, ev->note);
-	break;
+        if (ev->vel==0) na->add((ulong)minTime,ev->chn,0, ev->note);
+        else na->add((ulong)minTime,ev->chn,1,ev->note);
+        break;
+      case (MIDI_NOTEOFF) :
+        na->add((ulong)minTime,ev->chn,0, ev->note);
+        break;
       case (MIDI_PGM_CHANGE) :
-	na->add((ulong)minTime,ev->chn, 2,ev->patch);
-	break;
+        na->add((ulong)minTime,ev->chn, 2,ev->patch);
+        break;
       case (MIDI_SYSTEM_PREFIX) :
-	{
-	  if ((ev->command|ev->chn)==META_EVENT)
-	  {
-	    switch (ev->d1)
-	    {
-	      case (1) :
-	      case (5) :
-		{
-		  if (pspev!=NULL)
-		  {
-		    pspev->absmilliseconds=(ulong)minTime;
-		    pspev->type=ev->d1;
-		    pspev->id=spev_id++;
+        {
+          if ((ev->command|ev->chn)==META_EVENT)
+          {
+            switch (ev->d1)
+            {
+              case (1) :
+              case (5) :
+                {
+                  if (pspev!=NULL)
+                  {
+                    pspev->absmilliseconds=(ulong)minTime;
+                    pspev->type=ev->d1;
+                    pspev->id=spev_id++;
 #ifdef PLAYERDEBUG
-		    printf("ev->length %ld\n",ev->length);
-
+                    printf("ev->length %ld\n",ev->length);
+ 
 #endif
-		    strncpy(pspev->text,(char *)ev->data,
-			(ev->length>1024)? (1023) : (ev->length) );
-		    pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
+                    strncpy(pspev->text,(char *)ev->data,
+                        (ev->length>1024)? (1023) : (ev->length) );
+                    pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
 #ifdef PLAYERDEBUG
-		    printf("(%s)(%s)\n",pspev->text,lasttext);
+                    printf("(%s)(%s)\n",pspev->text,lasttext);
 #endif
 #ifdef REMOVEDUPSTRINGS
-		    if ((strcmp(pspev->text,lasttext)!=0)||(pspev->absmilliseconds!=lasttexttime)||(pspev->type!=lasttexttype))
-		    {
-		      lasttexttime=pspev->absmilliseconds;
-		      lasttexttype=pspev->type;
-		      strcpy(lasttext,pspev->text);
+                    if ((strcmp(pspev->text,lasttext)!=0)||(pspev->absmilliseconds!=lasttexttime)||(pspev->type!=lasttexttype))
+                    {
+                      lasttexttime=pspev->absmilliseconds;
+                      lasttexttype=pspev->type;
+                      strcpy(lasttext,pspev->text);
 #endif
-		      pspev->next=new SpecialEvent;
+                      pspev->next=new SpecialEvent;
 #ifdef PLAYERDEBUG
-		      if (pspev->next==NULL) printf("pspev->next=NULL\n");
+                      if (pspev->next==NULL) printf("pspev->next=NULL\n");
 #endif
-		      pspev=pspev->next;
+                      pspev=pspev->next;
 #ifdef REMOVEDUPSTRINGS
-		    }
+                    }
 #endif
-		  }
-		}
-		break;
-	      case (ME_SET_TEMPO) :
-		{
-		  if (pspev!=NULL)
-		  {
-		    pspev->absmilliseconds=(ulong)minTime;
-		    pspev->type=3;
-		    pspev->id=spev_id++;
-		    tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])) * ctl->ratioTempo);
-		    pspev->tempo=tempo;
-		    if (firsttempo==0) firsttempo=tempo;
-		    for (j=0;j<info->ntracks;j++)
-		    {
-		      tracks[j]->changeTempo(tempo);
-		    }
-		    pspev->next=new SpecialEvent;
-		    pspev=pspev->next;
-		  }
-		}
-		break;
-	      case (ME_TIME_SIGNATURE) :
-		{
-		  if (pspev!=NULL)
-		  {
-		    pspev->absmilliseconds=(ulong)minTime;
-		    pspev->type=6;
-		    pspev->id=spev_id++;
-		    pspev->num=ev->d2;
-		    pspev->den=ev->d3;
-		    pspev->next=new SpecialEvent;
-		    pspev=pspev->next;
-		  }
-		}
-		break;
-	    }
-	  }
-	}
-	break;
+                  }
+                }
+                break;
+              case (ME_SET_TEMPO) :
+                {
+                  if (pspev!=NULL)
+                  {
+                    pspev->absmilliseconds=(ulong)minTime;
+                    pspev->type=3;
+                    pspev->id=spev_id++;
+                    tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])) * ctl->ratioTempo);
+                    pspev->tempo=tempo;
+                    if (firsttempo==0) firsttempo=tempo;
+                    for (j=0;j<info->ntracks;j++)
+                    {
+                      tracks[j]->changeTempo(tempo);
+                    }
+                    pspev->next=new SpecialEvent;
+                    pspev=pspev->next;
+                  }
+                }
+                break;
+              case (ME_TIME_SIGNATURE) :
+                {
+                  if (pspev!=NULL)
+                  {
+                    pspev->absmilliseconds=(ulong)minTime;
+                    pspev->type=6;
+                    pspev->id=spev_id++;
+                    pspev->num=ev->d2;
+                    pspev->den=ev->d3;
+                    pspev->next=new SpecialEvent;
+                    pspev=pspev->next;
+                  }
+                }
+                break;
+            }
+          }
+        }
+        break;
     }
   }
-
+ 
   delete ev;
   pspev->type=0;
   pspev->absmilliseconds=(ulong)prevms;
   pspev->next=NULL;
   if (firsttempo==0) firsttempo=tempo;
   ctl->tempo=firsttempo;
-
+ 
   //writeSPEV();
   for (int i=0;i<info->ntracks;i++)
   {
@@ -523,6 +523,7 @@ void MidiPlayer::play(bool calloutput,void output(void))
 #ifdef PLAYERDEBUG
   printf("Playing...\n");
 #endif
+  
   midi->openDev();
   if (midi->ok()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
   midi->setVolumePercentage(ctl->volumepercentage);
@@ -542,7 +543,7 @@ void MidiPlayer::play(bool calloutput,void output(void))
     tracks[i]->changeTempo(tempo);
   }
 
-  midi->tmrStart();
+  midi->tmrStart(info->ticksPerCuarterNote);
   MidiEvent *ev=new MidiEvent;
   ctl->ev=ev;
   ctl->ticksTotal=info->ticksTotal;
@@ -574,7 +575,7 @@ void MidiPlayer::play(bool calloutput,void output(void))
     minTime=ctl->gotomsec;
     prevms=(ulong)minTime;
     midi->openDev();
-    midi->tmrStart();
+    midi->tmrStart(info->ticksPerCuarterNote);
     diffTime=ctl->gotomsec;
     midistat->sendData(midi,ctl->gm);
     delete midistat;
@@ -720,10 +721,10 @@ void MidiPlayer::play(bool calloutput,void output(void))
 	      ctl->SPEVplayed++;
 	      tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]))*ctl->ratioTempo);
 #ifdef PLAYERDEBUG
-	      printf("Tempo : %ld %g (ratio : %g)\n",tempo,tempoToMetronomeTempo(tempo),ctl->ratioTempo);
+              printf("Tempo : %ld %g (ratio : %g)\n",tempo,tempoToMetronomeTempo(tempo),ctl->ratioTempo);
 #endif
-	      midi->tmrSetTempo((int)tempoToMetronomeTempo(tempo));
-	      ctl->tempo=tempo;
+              midi->tmrSetTempo((int)tempoToMetronomeTempo(tempo));
+              ctl->tempo=tempo;       
 	      for (j=0;j<info->ntracks;j++)
 	      {
 		tracks[j]->changeTempo(tempo);

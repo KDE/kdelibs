@@ -55,5 +55,6 @@
 #define KMID_FM            3
 #define KMID_GUS           4
 #define KMID_AWE           5  //For future class aweOut
+#define KMID_ALSA          6
 
 #endif
