@@ -182,6 +182,12 @@ void KAcceleratorManagerPrivate::Item::addChild(Item *item)
 
 void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
+    if (!widget)
+    {
+        kdDebug(125) << "null pointer given to manage" << endl;
+        return;
+    }
+
     if (dynamic_cast<QPopupMenu*>(widget))
     {
         // create a popup accel manager that can deal with dynamic menus
