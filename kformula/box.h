@@ -37,6 +37,9 @@
 //UNUSED_OFFSET is only used in this file.
 #define UNUSED_OFFSET  1000
 
+//temporary workaround:
+#define QChar(__x) QChar((int)(__x))
+
 struct charinfo;
 
 //each BoxType must be equal to the character that represents it in
