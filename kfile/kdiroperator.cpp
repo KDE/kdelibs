@@ -1101,11 +1101,11 @@ void KDirOperator::setupActions()
     actionMenu = new KActionMenu( i18n("Menu"), this, "popupMenu" );
 
     upAction = KStdAction::up( this, SLOT( cdUp() ), this, "up" );
-    upAction->setText( i18n("Parent directory") );
+    upAction->setText( i18n("Parent Directory") );
     backAction = KStdAction::back( this, SLOT( back() ), this, "back" );
     forwardAction = KStdAction::forward(this, SLOT(forward()), this,"forward");
     homeAction = KStdAction::home( this, SLOT( home() ), this, "home" );
-    homeAction->setText(i18n("Home directory"));
+    homeAction->setText(i18n("Home Directory"));
     reloadAction =KStdAction::redisplay(this,SLOT(rereadDir()),this, "reload");
     actionSeparator = new KActionSeparator( this, "separator" );
     mkdirAction = new KAction( i18n("New Directory..."), 0,
@@ -1139,9 +1139,9 @@ void KDirOperator::setupActions()
     bySizeAction->setExclusiveGroup( sortGroup );
 
 
-    dirsFirstAction = new KToggleAction( i18n("Directories first"), 0,
+    dirsFirstAction = new KToggleAction( i18n("Directories First"), 0,
                                          this, "dirs first");
-    caseInsensitiveAction = new KToggleAction(i18n("Case insensitive"), 0,
+    caseInsensitiveAction = new KToggleAction(i18n("Case Insensitive"), 0,
                                               this, "case insensitive" );
 
     connect( dirsFirstAction, SIGNAL( toggled( bool ) ),
@@ -1160,7 +1160,7 @@ void KDirOperator::setupActions()
 
     showHiddenAction = new KToggleAction( i18n("Show Hidden Files"), 0,
                                           this, "show hidden" );
-    KRadioAction *singleAction = new KRadioAction( i18n("Single view"), 0,
+    KRadioAction *singleAction = new KRadioAction( i18n("Single View"), 0,
                                                    this,
                                                    SLOT( slotSingleView() ),
                                                    this, "single" );
