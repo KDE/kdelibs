@@ -1311,7 +1311,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
 	    QChar *str = t->text();
             if (style()->whiteSpace() == NOWRAP || t->style()->whiteSpace() == NOWRAP) {
                 tmpW += t->maxWidth();
-                pos = len;
+                pos = strlen;
                 len = 0;
             } else {
                 const Font *f = t->htmlFont( m_firstLine );

@@ -1,3 +1,8 @@
+2003-11-24  David Faure  <faure@kde.org>
+
+	* rendering/bidi.cpp: Fixed infinite loop with <nobr> due to findNextLineBreak
+	going back (wrong variable used). #66867, #68598 and their duplicates.
+
 2003-11-24  Stephan Kulow  <coolo@kde.org>
 
 	* css/cssparser.cpp (parseFontFamily): handle invalid font families like
