@@ -58,7 +58,7 @@
      * Constructor.
      * 
      * @param group Config file group.
-     * @param name Config file key.
+     * @param key Config file key.
      */
     KConfigSkeletonItem(const QString & group, const QString & key)
       :mGroup(group),mKey(key), mIsImmutable(true)

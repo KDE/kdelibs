@@ -356,7 +356,7 @@ public:
 	/** 
 	 * Returns a QStringList list of pathnames in the system path.
 	 *
-	 * @param pathstr The path which will be searched. If this is
+	 * @param pstr  The path which will be searched. If this is
 	 * 		null (default), the $PATH environment variable will
 	 *		be searched.
 	 *

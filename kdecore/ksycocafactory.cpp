@@ -197,6 +197,6 @@ KSycocaEntry::List KSycocaFactory::allEntries()
    return list;
 }
 
-void KSycocaFactory::virtual_hook( int, void* )
+void KSycocaFactory::virtual_hook( int id, void* data)
 { /*BASE::virtual_hook( id, data );*/ }
 
