@@ -139,7 +139,7 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
             {
                 //kdDebug(7043) << "KBookmarkDrag::decode url=" << (*uit).url() << endl;
                 bookmarks.append( KBookmark::standaloneBookmark( 
-                                        (*uit).fileName(), (*uit) ));
+                                        (*uit).prettyURL(), (*uit) ));
             }
             return bookmarks;
         }
