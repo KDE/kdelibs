@@ -80,7 +80,6 @@ public:
    QPtrList <DCOPRequest> requestList;
    bool processingRequest;
    bool firstInstance;
-   QCString asn_id;
 };
 
 void
@@ -166,6 +165,7 @@ KUniqueApplication::start()
            delete dc;	// Clean up DCOP commmunication
            ::write(fd[1], &result, 1);
            ::close(fd[1]);
+#if 0
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifdef Q_WS_X11
            // say we're up and running ( probably no new window will appear )
@@ -184,6 +184,7 @@ KUniqueApplication::start()
                }
            }
 #else //FIXME(E): implement
+#endif
 #endif
            return false;
         }
@@ -384,9 +385,12 @@ KUniqueApplication::processDelayed()
        QDataStream ds(request->data, IO_ReadOnly);
        KCmdLineArgs::loadAppArgs(ds);
        if( !ds.atEnd()) // backwards compatibility
-           ds >> d->asn_id;
+       {
+           QCString asn_id;
+           ds >> asn_id;
+           setStartupId( asn_id );
+       }
        int exitCode = newInstance();
-       d->asn_id = QCString();
        QDataStream rs(replyData, IO_WriteOnly);
        rs << exitCode;
        replyType = "int";
@@ -413,12 +417,13 @@ int KUniqueApplication::newInstance()
       mainWidget()->show();
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
       long activate = true;
-      if( !d->asn_id.isEmpty())
+      if( !startupId().isEmpty() && startupId() != "0" )
       {
           NETRootInfo i( qt_xdisplay(), NET::Supported );
           if( i.isSupported( NET::WM2StartupId ))
           {
-              KStartupInfo::setWindowStartupId( mainWidget()->winId(), d->asn_id );
+              KStartupInfo::setWindowStartupId( mainWidget()->winId(), startupId());
+              KStartupInfo::handleAutoAppStartedSending();
               activate = false; // WM will take care of it
           }
       }

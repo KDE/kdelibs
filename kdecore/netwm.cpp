@@ -258,9 +258,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_PID",
 	    "_NET_WM_USER_TIME",
 	    "_NET_WM_HANDLED_ICONS",
-            "_KDE_STARTUP_ID",
- // SELI HACK
-//            "_NET_STARTUP_ID",
+            "_NET_STARTUP_ID",
             "_NET_AM_ALLOWED_ACTIONS",
 	    "_NET_WM_PING",
 
@@ -3102,8 +3100,7 @@ void NETWinInfo::setStartupId(const char* id) {
 
     if(p->startup_id) delete[] p->startup_id;
     p->startup_id = nstrdup(id);
-    XChangeProperty(p->display, p->window, net_startup_id, XA_STRING, 8,
-// SELI HACK
+    XChangeProperty(p->display, p->window, net_startup_id, UTF8_STRING, 8,
         PropModeReplace, reinterpret_cast< unsigned char* >( p->startup_id ),
         strlen( p->startup_id ));
 }
@@ -3787,8 +3784,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         delete[] p->startup_id;
         p->startup_id = NULL;
 	if (XGetWindowProperty(p->display, p->window, net_startup_id, 0l,
-			       MAX_PROP_SIZE, False, XA_STRING, &type_ret,
-// SELI FOCUS HACK
+			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {

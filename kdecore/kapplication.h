@@ -1031,6 +1031,7 @@ private slots:
   void dcopFailure(const QString &);
   void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
+  void checkAppStartedSlot();
 
 private:
   QString sessionConfigName() const;

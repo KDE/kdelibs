@@ -2,7 +2,7 @@
 
  $Id$
 
- Copyright (C) 2001 Lubos Lunak        <l.lunak@kde.org>
+ Copyright (C) 2001-2003 Lubos Lunak        <l.lunak@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -49,7 +49,7 @@ class KStartupInfoPrivate;
  *
  * You usually don't need to use this class for sending the notification
  * information, as KDE libraries should do this when an application is
- * started ( e.g. KRun class ).
+ * started (e.g. KRun class).
  *
  * For receiving the startup notification info, create an instance and connect
  * to its slots. It will automatically detect started applications and when
@@ -66,12 +66,41 @@ class KStartupInfo
     {
     Q_OBJECT
     public:
+        /**
+         * By default, the startup notification is ended for the application
+         * after it shows its first toplevel window. If you app e.g. has
+         * several toplevel windows after its startup, you can disable
+         * the automatic handling, and call appStarted() manually after
+         * all toplevel windows have been shown.
+         * @since 3.2
+         */
+        static void disableAutoAppStartedSending( bool disable = true );
+
+        /**
+         * Manual notification that the application has started.
+         * If you do not map a (toplevel) window, then startup
+         * notification will not disappear for the application
+         * until a timeout. You can use this as an alternative
+         * method in this case.
+         */
+        static void appStarted();
+
+        /**
+         * If your application shows temporarily some window during its startup,
+         * for example a dialog, and only after closing it shows the main window,
+         * startup notification would normally be shown while the dialog is visible.
+         * To temporarily suspend and resume the notification, use this function.
+         * Note that this is cumulative, i.e. after suspending twice, you have to
+         * resume twice.
+         * @since 3.2
+         */
+        static void silenceStartup( bool silence );
+
 	enum {
 	    CleanOnCantDetect		= 1 << 0,
 	    DisableKWinModule		= 1 << 1,
 	    AnnounceSilenceChanges	= 1 << 2
 	    };
-	
 	/**
 	 * Creates an instance that will receive the startup notifications.
 	 * The various flags passed may be
@@ -80,7 +109,7 @@ class KStartupInfo
 	 *     the startup protocol are removed
 	 * @li DisableKWinModule - KWinModule, which is normally used to detect
 	 *     new windows, is disabled. With this flag, checkStartup() must be
-	 *     called in order to check newly mapped windows
+	 *     called in order to check newly mapped windows.
 	 * @li AnnounceSilenceChanges - normally, startup notifications are
 	 *     "removed" when they're silenced, and "recreated" when they're resumed.
 	 *     With this flag, the change is normally announced with gotStartupChange().
@@ -107,7 +136,8 @@ class KStartupInfo
 	/**
 	 * Sends given notification data about started application
 	 * with the given startup identification. If no notification for this identification
-	 * exists yet, it is created, otherwise it's updated.
+	 * exists yet, it is created, otherwise it's updated. Note that the name field
+         * in data is required.
 	 * 
 	 * @param id the id of the application
 	 * @param data the application's data
@@ -119,7 +149,8 @@ class KStartupInfo
 
 	/**
 	 * Like sendStartup , uses dpy instead of qt_x11display() for sending the info.
-	 * @param dpy the display of the application.
+	 * @param dpy the display of the application. Note that the name field
+         * in data is required.
 	 * @param id the id of the application
 	 * @param data the application's data
 	 * @return true if successful, false otherwise
@@ -194,14 +225,6 @@ class KStartupInfo
 	 * Unsets the startup notification environment variable.
 	 */
         static void resetStartupEnv();
-        /**
-         * Manual notification that the application has started.
-         * If you do not map a (toplevel) window, then startup
-         * notification will not disappear for the application
-         * until a timeout. You can use this as an alternative
-         * method in this case.
-         */
-        static void appStarted();
 	/**
 	 * @li NoMatch    - the window doesn't match any existing startup notification
 	 * @li Match      - the window matches an existing startup notification
@@ -210,17 +233,14 @@ class KStartupInfo
 	 */
         enum startup_t { NoMatch, Match, CantDetect };
 	/**
-	 * Checks if the given windows matches any existing startup notification. If yes,
-	 * the startup notification is removed. Prevents emitting gotRemoveStartup()
-         * for the window if the window matches.
+	 * Checks if the given windows matches any existing startup notification.
 	 * @param w the window id to check
 	 * @return the result of the operation
 	 */
         startup_t checkStartup( WId w );
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
-	 * if yes, returns the identification in id, and removes the startup notification.
-         * Prevents emitting gotRemoveStartup() for the window if the window matches.
+	 * if yes, returns the identification in id.
 	 * @param w the window id to check
 	 * @param id if found, the id of the startup notification will be written here
 	 * @return the result of the operation
@@ -228,9 +248,7 @@ class KStartupInfo
         startup_t checkStartup( WId w, KStartupInfoId& id );
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
-	 * if yes, returns the notification data in data, and removes the startup
-	 * notification. Prevents emitting gotRemoveStartup() for the window
-         * if the window matches.
+	 * if yes, returns the notification data in data.
 	 * @param w the window id to check
 	 * @param data if found, the data of the startup notification will be written here
 	 * @return the result of the operation
@@ -238,9 +256,7 @@ class KStartupInfo
         startup_t checkStartup( WId w, KStartupInfoData& data );
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
-	 * if yes, returns the identification in id and notification data in data,
-	 * and removes the startup notification. Prevents emitting gotRemoveStartup()
-         * for the window if the window matches.
+	 * if yes, returns the identification in id and notification data in data.
 	 * @param w the window id to check
 	 * @param id if found, the id of the startup notification will be written here
 	 * @param data if found, the data of the startup notification will be written here
@@ -264,14 +280,18 @@ class KStartupInfo
 	 * @return the startup notification id. Can be null if not found.
 	 */
         static QCString windowStartupId( WId w );
+        /**
+         * @internal
+         */
+        static void handleAutoAppStartedSending();
 	/**
 	 * @internal
 	 */
         class Data;
     signals:
 	/**
-	 * Emitted when a new startup notification is created ( i.e. a new application is
-	 * being started ).
+	 * Emitted when a new startup notification is created (i.e. a new application is
+	 * being started).
 	 * @param id the notification identification
 	 * @param data the notification data
 	 */
@@ -283,8 +303,8 @@ class KStartupInfo
 	 */
         void gotStartupChange( const KStartupInfoId& id, const KStartupInfoData& data );
 	/**
-	 * Emitted when a startup notification is removed ( either because it was detected
-	 * that the application is ready or because of a timeout ).
+	 * Emitted when a startup notification is removed (either because it was detected
+	 * that the application is ready or because of a timeout).
 	 * @param id the notification identification
 	 * @param data the notification data
 	 */
@@ -307,17 +327,18 @@ class KStartupInfo
         void remove_startup_info_internal( const KStartupInfoId& id_P );
         void remove_startup_pids( const KStartupInfoId& id, const KStartupInfoData& data );
         void remove_startup_pids( const KStartupInfoData& data );
-        startup_t check_startup_internal( WId w, KStartupInfoId* id, KStartupInfoData* data,
-            bool remove );
+        startup_t check_startup_internal( WId w, KStartupInfoId* id, KStartupInfoData* data );
         bool find_id( const QCString& id_P, KStartupInfoId* id_O,
-            KStartupInfoData* data_O, bool remove );
+            KStartupInfoData* data_O );
         bool find_pid( pid_t pid_P, const QCString& hostname, KStartupInfoId* id_O,
-            KStartupInfoData* data_O, bool remove );
+            KStartupInfoData* data_O );
         bool find_wclass( QCString res_name_P, QCString res_class_P,
-            KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove );
+            KStartupInfoId* id_O, KStartupInfoData* data_O );
         static QCString get_window_hostname( WId w_P );
         void startups_cleanup_internal( bool age_P );
         void clean_all_noncompliant();
+        static QString check_required_startup_fields( const QString& msg,
+            const KStartupInfoData& data, int screen );
         bool clean_on_cantdetect_; // KDE4 remove unused
         unsigned int timeout;
         KStartupInfoPrivate* d;
@@ -419,22 +440,42 @@ class KStartupInfoData
 	 */
         const QString& bin() const;
 	/**
-	 * Sets the name for the notification ( e.g. 'Control Center' )
+	 * Sets the name for the notification (e.g. 'Control Center')
 	 */
         void setName( const QString& name );
 	/**
-	 * Returns the name of the startup notification, or if it's not available,
-	 * the binary name.
-	 * @return the name of the startup notification, or the binary name
-	 *         if not available
+	 * Returns the name of the startup notification. If it's not available,
+         * it tries to use other information (binary name).
+	 * @return the name of the startup notification
 	 */
         const QString& findName() const;
 	/**
 	 * Returns the name of the startup notification, or empty if not available.
-	 * @return the name of the startup notificaiton, or an empty string
+	 * @return the name of the startup notification, or an empty string
 	 *         if not set.
 	 */
         const QString& name() const;
+	/**
+	 * Sets the description for the notification (e.g. 'Launching Control Center').
+         * I.e. name() describes what is being started, while description() is
+         * the actual action performed by the starting.
+         * @since 3.2
+	 */
+        void setDescription( const QString& descr );
+	/**
+	 * Returns the description of the startup notification. If it's not available,
+         * it returns name().
+	 * @return the description of the startup notification
+         * @since 3.2
+	 */
+        const QString& findDescription() const;
+	/**
+	 * Returns the name of the startup notification, or empty if not available.
+	 * @return the name of the startup notificaiton, or an empty string
+	 *         if not set.
+         * @since 3.2
+	 */
+        const QString& description() const;
 	/**
 	 * Sets the icon for the startup notification ( e.g. 'kcontrol' )
 	 * @param icon the name of the icon
@@ -544,6 +585,17 @@ class KStartupInfoData
          * is set.
          */
         unsigned long timestamp() const;
+        
+        /**
+         * The X11 screen on which the startup notification is happening, -1 if unknown.
+         */
+        int screen() const;
+        
+        /**
+         * Sets the X11 screen on which the startup notification should happen.
+         * This is usually not necessary to set, as it's set by default to qt_xscreen().
+         */
+        void setScreen( int screen );
 
 	/**
 	 * Updates the notification data from the given data. Some data, such as the desktop

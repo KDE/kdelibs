@@ -1035,6 +1035,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     KStartupInfoData data;
     data.setName( service->name());
     data.setIcon( service->icon());
+    data.setDescription( i18n( "Launching %1" ).arg( service->name()));
     if( !wmclass.isEmpty())
         data.setWMClass( wmclass );
     // the rest will be sent by kdeinit

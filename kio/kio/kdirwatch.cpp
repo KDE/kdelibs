@@ -223,7 +223,8 @@ KDirWatchPrivate::KDirWatchPrivate()
     // Install the signal handler only once
     if ( dnotify_signal == 0 )
     {
-       dnotify_signal = SIGRTMIN + 8;
+//       dnotify_signal = SIGRTMIN + 8;
+        dnotify_signal = 40;
 
        struct sigaction act;
        act.sa_sigaction = KDirWatchPrivate::dnotify_handler;

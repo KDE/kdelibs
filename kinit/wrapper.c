@@ -425,7 +425,7 @@ int main(int argc, char **argv)
    
    if( !wrapper )
    {
-       startup_id = getenv( "KDE_STARTUP_ENV" );
+       startup_id = getenv( "DESKTOP_STARTUP_ID" );
        if( startup_id == NULL )
            startup_id = "";
        size += strlen( startup_id ) + 1;

@@ -192,6 +192,7 @@ public:
 	checkAccelerators( 0 ),
 	overrideStyle( QString::null ),
 	startup_id( "0" ),
+        app_started_timer( NULL ),
 	m_KAppDCOPInterface( 0L ),
 	session_save( false ),
         oldXErrorHandler( NULL ),
@@ -216,6 +217,7 @@ public:
   QString overrideStyle;
   QString geometry_arg;
   QCString startup_id;
+  QTimer* app_started_timer;
   KAppDCOPInterface *m_KAppDCOPInterface;
   bool session_save;
   int (*oldXErrorHandler)(Display*,XErrorEvent*);
@@ -489,9 +491,27 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 	if( w->isTopLevel() && w->winId() != 0 )
             XDeleteProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time );
     }
+    if( event->type() == QEvent::Show && receiver->isWidgetType())
+    {
+	QWidget* w = static_cast< QWidget* >( receiver );
+        if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !event->spontaneous())
+        {
+            if( d->app_started_timer == NULL )
+            {
+                d->app_started_timer = new QTimer( this );
+                connect( d->app_started_timer, SIGNAL( timeout()), SLOT( checkAppStartedSlot()));
+            }
+            if( !d->app_started_timer->isActive())
+                d->app_started_timer->start( 0, true );
+        }
+    }
     return QApplication::notify(receiver, event);
 }
 
+void KApplication::checkAppStartedSlot()
+{
+    KStartupInfo::handleAutoAppStartedSending();
+}
 
 // the help class for session management communication
 static QPtrList<KSessionManaged>* sessionClients()

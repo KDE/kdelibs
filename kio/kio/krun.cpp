@@ -509,6 +509,7 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
       data.setHostname();
       data.setBin( bin );
       data.setName( execName.isEmpty() ? service->name() : execName );
+      data.setDescription( i18n( "Launching %1" ).arg( data.name()));
       data.setIcon( iconName.isEmpty() ? service->icon() : iconName );
       if( !wmclass.isEmpty())
           data.setWMClass( wmclass );

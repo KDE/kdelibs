@@ -2,7 +2,7 @@
 
  $Id$
 
- Copyright (C) 2001 Lubos Lunak        <l.lunak@kde.org>
+ Copyright (C) 2001-2003 Lubos Lunak        <l.lunak@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -45,6 +45,7 @@ class KXMessagesPrivate;
  * @author Lubos Lunak <l.lunak@kde.org>
  * @version $Id$
  */
+// KDE4 - make this internal for KStartupInfo only?
 class KXMessages
     : public QWidget
     {
@@ -56,9 +57,16 @@ class KXMessages
 	 * @param accept_broadcast if non-NULL, all broadcast messages with 
 	 *                         this message type will be received.
 	 * @param parent the parent of this widget
+         * @param obsolete always set to false (needed for backwards compatibility
+         *                 with KDE3.1 and older)
 	 */
-	// CHECKME accept_broadcast == NULL is useless now
+        KXMessages( const char* accept_broadcast, QWidget* parent, bool obsolete );
+        /**
+         * @deprecated
+         * This method is equivalent to the other constructor with obsolete = true.
+         */
         KXMessages( const char* accept_broadcast = NULL, QWidget* parent = NULL );
+
         virtual ~KXMessages();
 	/**
 	 * Sends the given message with the given message type only to given
@@ -67,12 +75,29 @@ class KXMessages
          * @param w X11 handle for the destination window
 	 * @param msg_type the type of the message
 	 * @param message the message itself
+         * @param obsolete always set to false (needed for backwards compatibility
+         *                 with KDE3.1 and older)
+	 */
+        void sendMessage( WId w, const char* msg_type, const QString& message,
+            bool obsolete );
+	/**
+         * @deprecated
+         * This method is equivalent to sendMessage() with obsolete = true.
 	 */
         void sendMessage( WId w, const char* msg_type, const QString& message );
 	/**
 	 * Broadcasts the given message with the given message type.
 	 * @param msg_type the type of the message
 	 * @param message the message itself
+         * @param screen X11 screen to use, -1 for the default
+         * @param obsolete always set to false (needed for backwards compatibility
+         *                 with KDE3.1 and older)
+	 */
+        void broadcastMessage( const char* msg_type, const QString& message,
+            int screen, bool obsolete );
+	/**
+         * @deprecated
+         * This method is equivalent to broadcastMessage() with obsolete = true.
 	 */
         void broadcastMessage( const char* msg_type, const QString& message );
 
@@ -85,7 +110,15 @@ class KXMessages
          * @param w X11 handle for the destination window
 	 * @param msg_type the type of the message
 	 * @param message the message itself
+         * @param obsolete always set to false (needed for backwards compatibility
+         *                 with KDE3.1 and older)
 	 * @return false when an error occurred, true otherwise
+	 */
+        static bool sendMessageX( Display* disp, WId w, const char* msg_type,
+            const QString& message, bool obsolete );
+	/**
+         * @deprecated
+         * This method is equivalent to sendMessageX() with obsolete = true.
 	 */
         static bool sendMessageX( Display* disp, WId w, const char* msg_type,
             const QString& message );
@@ -97,7 +130,16 @@ class KXMessages
 	 *             qt_x11display()
 	 * @param msg_type the type of the message
 	 * @param message the message itself
+         * @param screen X11 screen to use, -1 for the default
+         * @param obsolete always set to false (needed for backwards compatibility
+         *                 with KDE3.1 and older)
 	 * @return false when an error occurred, true otherwise
+	 */
+        static bool broadcastMessageX( Display* disp, const char* msg_type,
+            const QString& message, int screen, bool obsolete );
+	/**
+         * @deprecated
+         * This method is equivalent to broadcastMessageX() with obsolete = true.
 	 */
         static bool broadcastMessageX( Display* disp, const char* msg_type,
             const QString& message );
@@ -114,11 +156,11 @@ class KXMessages
         virtual bool x11Event( XEvent* ev );
     private:
         static void send_message_internal( WId w_P, const QString& msg_P, long mask_P,
-            Display* disp, Atom atom_P, Window handle_P );
+            Display* disp, Atom atom1_P, Atom atom2_P, Window handle_P );
         QWidget* handle;
-        Atom cached_atom;
-        QCString cached_atom_name;
-        Atom accept_atom;
+        Atom accept_atom2;
+        QCString cached_atom_name_; // KDE4 unused
+        Atom accept_atom1;
         QMap< WId, QCString > incoming_messages;
         KXMessagesPrivate* d;
     };
