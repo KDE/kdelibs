@@ -728,7 +728,7 @@ HTTPProtocol::http_openConnection()
       // WARNING: ugly hack alert!  We don't want to use the SSL routines
       //          for this code so we have to disabled it temporarily.
       bool useSSLSaved = m_bUseSSL;   m_bUseSSL = false;
-      bool sendOk = (write(proxyconheader.latin1(), proxyconheader.length()) 
+      bool sendOk = (write(proxyconheader.latin1(), proxyconheader.length())
                            == (ssize_t) proxyconheader.length());
       char buffer[513];
       if (!sendOk) {
@@ -3111,5 +3111,5 @@ void HTTPProtocol::reparseConfiguration()
     (*c) = QString::fromLatin1("en");
   m_strLanguages = languageList.join( " " );
   kdDebug(7103) << "Languages list set to " << m_strLanguages << endl;
-  m_strCharsets = QString::fromLatin1("utf-8 ") + KGlobal::locale()->charset();
+  m_strCharsets = KGlobal::locale()->charset() + QString::fromLatin1(",*,utf-8");
 }
