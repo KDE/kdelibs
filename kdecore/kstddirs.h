@@ -84,7 +84,7 @@ public:
 	 * This adds another search dir to front of the fsstnd list.
 	 * @li when compiling kdelibs, the prefix is added to this.
 	 * @li when compiling a separate app, kapp adds the new prefix
-	 * @li additional dirs may be loaded from $HOME/.kderc (?)
+	 * @li additional dirs may be loaded from share/config/kdeglobals (?)
 	 *
 	 * @param tosave specifies whether the dir will be saved to kderc.
 	 * Any hardcoded dirs should not be saved, so kapp would make this

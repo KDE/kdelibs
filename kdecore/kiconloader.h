@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.31  1999/06/03 09:21:32  ssk
+   Added arg to loadInternal to ignore cache if requested.
+   Updated reloadIcon to use it.
+
    Revision 1.30  1999/05/26 18:02:14  kulow
    David is right when he says addIcons is overkill. Removed the function
    again and renamed the old function setDir to changeDirs as this is what
@@ -118,7 +122,7 @@ class KConfig;
 	
 	Some large/ directories are added to the search path for special
 	apps that support large icons (kpanel, kfm) or for all apps
-	depending on the settings in ~/.kderc
+	depending on the settings in ~/.kde/share/config/kdeglobals
 
 	Extra directories can be added, see @ref insertDirectory.
 

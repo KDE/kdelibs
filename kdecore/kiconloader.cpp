@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.44  1999/06/03 09:21:32  ssk
+   Added arg to loadInternal to ignore cache if requested.
+   Updated reloadIcon to use it.
+
    Revision 1.43  1999/06/03 09:07:50  reggie
    made it compiling with recent Qt (there is no operator-> for QValueListIterator anymore)
 
@@ -107,7 +111,7 @@ void KIconLoader::initPath()
     key = "kpanel";
   if (kapp->name() == "kfm")
     key = "kfm";
-  KConfig config; // with no filenames given, it will read only ~/.kderc
+  KConfig config; // with no filenames given, it will read only global config 
   config.setGroup("KDE");
   QString setting = config.readEntry( key + "IconStyle", "Normal" );
   //debug("App is %s - setting is %s", kapp->name(), setting.data());

@@ -45,10 +45,10 @@ static const char* globalConfigFileNames[] =
   // !!! If you add/remove pathnames here, update CONFIGFILECOUNT a few lines
   // below!!!
   "/etc/kderc",
-  KDEDIR"/share/config/kderc",
-  "/usr/lib/KDE/system.kderc",
-  "/usr/local/lib/KDE/system.kderc",
-  "~/.kderc",
+  KDEDIR"/share/config/kdeglobals",
+  "/usr/lib/KDE/system.kdeglobals",
+  "/usr/local/lib/KDE/system.kdeglobals",
+  "~/.kde/share/config/kdeglobals",
 };
 
 const int CONFIGFILECOUNT = 5; // number of entries in globalConfigFileNames[]
