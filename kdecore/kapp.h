@@ -24,7 +24,7 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.90 Beta >= 20000517"
+#define KDE_VERSION_STRING "1.90 Beta >= 20000531"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 2
@@ -276,12 +276,12 @@ public:
    *                    application. If empty the current name() is
    *                    used
    */
-  void invokeHelp( const QString& anchor = QString::null, 
+  void invokeHelp( const QString& anchor = QString::null,
 		   const QString& appname = QString::null ) const;
 
   /**
    * Invoke the khelpcenter HTML help viewer from HTML sources.
-   *    
+   *
    * @param aFilename  The filename that is to be loaded. Its
    *                   location is computed automatically
    *                   according to the KFSSTND.  If @p aFilename
@@ -753,6 +753,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.155  2000/05/24 08:24:35  kulow
+// fixes kdelibs and kdebase, the rest has to work with grep invokeHTMLHelp :)
+//
 // Revision 1.154  2000/05/24 08:18:17  kulow
 // adding default parameter for topic
 //
