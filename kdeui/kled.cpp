@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  1999/03/01 23:34:49  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.5  1999/02/19 08:52:42  habenich
  * ID und LOG tags included
  *
@@ -37,49 +40,50 @@
 
 #include <qpainter.h>
 #include <qcolor.h>
+#include <kpixmapeffect.h>
 #include "kled.h"
-#include "kled.h" // whats this use for ?? (jha)
 
-const QRgb
-  KLed::lightcolor[]={ 0x00FFFF, 0x00A5FF, 0x0000FF, 0x00FF00, 0xFF0000 },
-  KLed::darkcolor[] ={ 0x00B0B0, 0x0064A2, 0x000080, 0x008000, 0x800000 };
-
-KLed::KLed(Color ledcolor, QWidget *parent, const char *name)
+KLed::KLed(const QColor& col, QWidget *parent, const char *name)
   : QWidget( parent, name),
-    led_state( On ),
-    led_color( ledcolor ),
-    led_look( round )
+    led_state(On),
+    led_look(round)
 {
-  current_color=(led_state ? lightcolor[led_color] : darkcolor[led_color]);
+  setColor(col);
+  setShape(Circular);
 }
 
-KLed::KLed(KLed::Color ledcolor, KLed::State state, KLed::Look look, QWidget *parent, const char *name )
-  : QWidget( parent, name),
-    led_state( state ),
-    led_color( ledcolor ),
-    led_look( look )
+KLed::KLed(const QColor& col, KLed::State state, 
+	   KLed::Look look, KLed::Shape shape, QWidget *parent, const char *name )
+  : QWidget(parent, name),
+    led_state(state),
+    led_look(look)
 {
-  current_color=(led_state ? lightcolor[led_color] : darkcolor[led_color]);
+  setShape(shape);
+  setColor(col);
 }
 
 void
 KLed::paintEvent(QPaintEvent *)
 {
-#ifdef PAINT_BENCH
-  const int rounds = 1000;
-  QTime t;
-  t.start();
-  for (int i=0; i<rounds; i++) 
-#endif
-  switch (led_look) {
-  case flat  : paintflat(); break;
-  case round : paintround(); break;
-  case sunken: paintsunken(); break;
-  }
-#ifdef PAINT_BENCH
-  int ready = t.elapsed();
-  debug("elapsed: %d msec. for %d rounds", ready, rounds);
-#endif
+  switch(led_shape)
+    {
+    case Rectangular:
+      paintrect();
+      break;
+    case Circular:
+      switch (led_look) 
+	{
+	case flat  : 
+	  paintflat(); 
+	  break;
+	case round : 
+	  paintround(); 
+	  break;
+	case sunken: 
+	  paintsunken(); 
+	  break;
+	}
+    }
 }
 
 void
@@ -94,9 +98,8 @@ KLed::paintflat()
   else if (h > w)
     h = w;
 
-  //  QRect ring1(x,y,w,h);
   QColor c;
-
+  
   // draw light grey upper left circle
   c.setRgb(0xCFCFCF);
   p.setPen(c);
@@ -125,7 +128,7 @@ KLed::paintflat()
   w-=2; h-=2;
   x++; y++;
   // draw the flat led grounding
-  c.setRgb(current_color);
+  c=current_color;
   p.setPen(c);
   p.setBrush(c);
   p.drawPie(x,y,w,h,0,5760);
@@ -135,75 +138,18 @@ void
 KLed::paintround()
 {
   QPainter p(this);
+  KPixmap pix;
   int x=this->x(), y=this->y(), w=width(), h=height();
-
-  // round the ellipse 
-  if (w > h)
-    w = h;
-  else if (h > w)
-    h = w;
-
-  //  QRect ring1(x,y,w,h);
   QColor c;
-
-  // draw light grey upper left circle
-  c.setRgb(0xCFCFCF);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 45*16, 180*16);
-  p.drawArc(x,y,w,h, 45*16, -180*16);
-
-  // draw white upper left circle
-  c.setRgb(0xFFFFFF);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 90*16, 90*16);
-  p.drawArc(x,y,w,h, 0, -90*16);
-
-  // draw dark grey lower right circle
-  c.setRgb(0xA0A0A0);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 45*16, -180*16);
-  p.drawArc(x,y,w,h, 45*16, 180*16);
-
-  // draw black lower right circle
-  c.setRgb(0x000000);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 0, -90*16);
-  p.drawArc(x,y,w,h, 90*16, 90*16);
-
-  // make led smaller for shading
-  w-=2; h-=2;
-  x++; y++;
-  // draw the flat led grounding
-  c.setRgb(current_color);
-  p.setPen(c);
-  p.setBrush(c);
-  p.drawPie(x,y,w,h,0,5760);
-
-  // shrink the light on 2/3 the size
-  // x := x+ ( w - w*2/3)/2
-  x+=w/6;
-  y+=w/6;
-  // w := w*2/3
-  w*=2;
-  w/=3;
-  h=w;
-  
-  // now draw the bright spot on the led
-  int light_quote = (100*3/w)+100;
-  while (w) {
-    c = c.light(light_quote);
-    p.setPen( c );
-    p.drawEllipse(x,y,w,h);
-    w--; h--;
-    if (!w)
-      break;
-    p.drawEllipse(x,y,w,h);
-    w--; h--;
-    if (!w)
-      break;
-    p.drawEllipse(x,y,w,h);
-    x++; y++; w--;h--;
-  }
+  QRgb rgb=led_color.rgb();
+  // -----
+  c.setRgb(qRed(led_color.rgb())/2, qGreen(led_color.rgb())/2, qBlue(led_color.rgb())/2);
+  if(led_state==On)
+    {
+      KPixmapEffect::gradient(pix, led_color, c, KPixmapEffect::EllipticGradient, 2^24);
+    } else {
+      KPixmapEffect::gradient(pix, c, led_color, KPixmapEffect::EllipticGradient, 2^24);
+    }
 }
 
 
@@ -276,7 +222,7 @@ KLed::paintsunken()
   p.drawArc(ring3, (-45+ARC_WHITE_RING3)*16, -2*ARC_WHITE_RING3*16);
 
   // draw the flat led grounding
-  c.setRgb(current_color);
+  c=current_color;
   p.setPen(c);
   p.setBrush(c);
   p.drawPie(x,y,w,h,0,5760);
@@ -307,5 +253,125 @@ KLed::paintsunken()
     x++; y++; w--;h--;
   }
 }
+
+void 
+KLed::paintrect()
+{
+  QPainter painter(this);
+  QBrush lightBrush(led_color);
+  QBrush darkBrush(led_color.dark());
+  QPen pen(led_color.dark());
+  int w=width();
+  int h=height();
+  // -----
+  switch(led_shape) 
+    {
+    case On:
+      painter.setBrush(lightBrush);
+      painter.drawRect(0, 0, w, h);
+      break;
+    case Off:
+      painter.setBrush(darkBrush);
+      painter.drawRect(0, 0, w, h);
+      painter.setPen(pen);
+      painter.drawLine(0, 0, w, 0);
+      painter.drawLine(0, h-1, w, h-1);
+      // Draw verticals
+      int i;
+      for(i=0; i < w; i+= 4 /* dx */)
+	painter.drawLine(i, 1, i, h-1);
+      break;
+      //  default:
+      //    fprintf(stderr, "KLedLamp: INVALID State (%d)\n", s);
+    } 
+}
+
+KLed::State
+KLed::state() const
+{ 
+  return led_state; 
+}
+
+const QColor
+KLed::color() const
+{ 
+  return led_color; 
+}
+
+KLed::Look
+KLed::look() const
+{ 
+  return led_look; 
+}
+
+void
+KLed::setState( State state )
+{
+  if (led_state != state) 
+    {
+      led_state = state;
+      setColor(led_color);
+    }
+}
+
+void
+KLed::toggleState()
+{
+  led_state = (State)!led_state;
+  // setColor(led_color);
+  setColor(led_state==On ? Qt::green : Qt::darkGreen);
+}
+
+void
+KLed::setShape(KLed::Shape s)
+{
+  if(led_shape!=s)
+    {
+      led_shape=s;
+      repaint(false);
+    }
+}
+
+void
+KLed::setColor(const QColor& col)
+{ 
+  if(led_color!=col) 
+    {
+      led_color=col;
+      current_color=led_state 
+	? led_color.light() 
+	: led_color.dark();
+      update(); 
+    }
+}
+
+void
+KLed::setLook( Look look )
+{
+  if(led_look!=look) 
+    {
+      led_look = look;
+      update();
+    }
+}
+
+void
+KLed::toggle()
+{ 
+  toggleState(); 
+}
+
+void
+KLed::on()
+{ 
+  setState(On); 
+}
+
+void
+KLed::off()
+{ 
+  setState(Off); 
+}
+
 #include "kled.moc"
 
