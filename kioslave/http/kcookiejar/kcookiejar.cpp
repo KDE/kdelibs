@@ -768,7 +768,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     }
 
     // RFC2965 cookies come last so that they override netscape cookies.
-    while( (lastCookie = cookieList2.take(0)) )
+    while( !cookieList2.isEmpty() && (lastCookie = cookieList2.take(0)) )
        cookieList.append(lastCookie);
 
     return cookieList;
