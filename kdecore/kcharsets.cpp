@@ -70,11 +70,11 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "tscii",
     "utf-8",
     "utf-16",
-	"iso-8859-11",
+    "iso-8859-11",
 #if QT_VERSION == 221
-	"koi8u",
+    "koi8u",
 #endif
-	"Any"
+    "Any"
 };
 
 // these can contain wildcard characters. Needed for fontset matching (CJK fonts)
@@ -107,11 +107,11 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "tscii-0",
     "utf8",
     "utf16",
-	"tis620-*",
+    "tis620-*",
 #if QT_VERSION == 221
-	"koi8-u",
+    "koi8-u",
 #endif
-	""  // this will always return true...
+    ""  // this will always return true...
 };
 
 static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
@@ -142,11 +142,11 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::TSCII,
     QFont::Unicode,
     QFont::Unicode,
-	QFont::ISO_8859_11,
+    QFont::ISO_8859_11,
 #if QT_VERSION == 221
-	QFont::KOI8U,
+    QFont::KOI8U,
 #endif
-	QFont::AnyCharSet
+    QFont::AnyCharSet
 };
 
 
@@ -204,12 +204,13 @@ void KCharsetsPrivate::getAvailableCharsets()
 	    //kdDebug() << "KCharsetsPrivate::getAvailableCharsets " << *ch << " " << charsets->xNameToID( *ch ) << endl;
 	    QCString cs = (*ch).latin1();
 	    QFont::CharSet qcs = xNameToID( cs );
-	    if( !availableCharsets->contains( qcs ) ) {
-		QValueList<QCString> strList;
-		strList.append( family );
-		availableCharsets->insert( qcs, strList );
-	    } else
-		((*availableCharsets)[qcs]).append(family);
+            if ( qcs != QFont::AnyCharSet )
+	      if( !availableCharsets->contains( qcs ) ) {
+		  QValueList<QCString> strList;
+		  strList.append( family );
+		  availableCharsets->insert( qcs, strList );
+	      } else
+		  ((*availableCharsets)[qcs]).append(family);
 	}
     }
 
