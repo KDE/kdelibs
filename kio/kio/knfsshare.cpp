@@ -132,6 +132,9 @@ bool KNFSSharePrivate::readExportsFile() {
       
     } else { // no quotation marks
       int i = completeLine.find(' ');
+      if (i == -1)
+          i = completeLine.find('\t');
+          
       if (i == -1) 
         path = completeLine;
       else 
