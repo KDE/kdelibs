@@ -204,7 +204,7 @@ private:
   FtpEntry * ftpReadDir();
   // used by ftpReadDir
   FtpEntry * ftpParseDir( char* buffer );
-  void createUDSEntry( FtpEntry * e, KIO::UDSEntry & entry );
+  void createUDSEntry( const QString & filename, FtpEntry * e, KIO::UDSEntry & entry );
 
   bool ftpRename( const QString & src, const QString & dst, bool overwrite );
 

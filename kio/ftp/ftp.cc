@@ -797,12 +797,12 @@ void Ftp::chmod( const QString & path, int permissions )
     finished();
 }
 
-void Ftp::createUDSEntry( FtpEntry * e, UDSEntry & entry )
+void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & entry )
 {
   assert(entry.count() == 0); // by contract :-)
   UDSAtom atom;
   atom.m_uds = UDS_NAME;
-  atom.m_str = e->name;
+  atom.m_str = filename;
   entry.append( atom );
 
   atom.m_uds = UDS_FILE_TYPE;
@@ -887,6 +887,7 @@ void Ftp::stat( const QString & path )
   KURL tempurl( path );
   QString listarg = tempurl.directory();
   QString search = tempurl.filename();
+  QString filename = tempurl.filename();
 
   // Try cwd into it, if it works it's a dir (and then we'll use dir in the parent directory)
   // if it doesn't work, it's a file (and then we'll use dir filename)
@@ -926,7 +927,7 @@ void Ftp::stat( const QString & path )
     if ( !bFound && ( search == e->name ) ) {
       bFound = true;
       UDSEntry entry;
-      createUDSEntry( e, entry );
+      createUDSEntry( filename, e, entry );
       statEntry( entry );
     }
 
@@ -982,7 +983,7 @@ void Ftp::listDir( const QString & _path )
         kDebugInfo( 7102, "is a dir" );
     }
     entry.clear();
-    createUDSEntry( e, entry );
+    createUDSEntry( e->name, e, entry );
     listEntry( entry, false );
   }
   listEntry( entry, true ); // ready
