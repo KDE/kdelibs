@@ -221,11 +221,29 @@ signals:
 
   /**
    * Emit this to make the browser show a standard popup menu
+   * at the point @p global for the files @p items.
+   * The GUI described by @p client is being merged with the popupmenu of the host
+   */
+  void popupMenu( KXMLGUIClient *client, const QPoint &global, const KonqFileItemList &items );
+
+  /**
+   * Emit this to make the browser show a standard popup menu
    * at the point @p global for the given @p url. Give as much information
    * about this URL as possible, like the @p mimeType and the file type
    * (@p mode: S_IFREG, S_IFDIR...)
    */
   void popupMenu( const QPoint &global, const KURL &url,
+                  const QString &mimeType, mode_t mode = -1 );
+
+  /**
+   * Emit this to make the browser show a standard popup menu
+   * at the point @p global for the given @p url. Give as much information
+   * about this URL as possible, like the @p mimeType and the file type
+   * (@p mode: S_IFREG, S_IFDIR...)
+   * The GUI described by @p client is being merged with the popupmenu of the host
+   */
+  void popupMenu( KXMLGUIClient *client,
+                  const QPoint &global, const KURL &url,
                   const QString &mimeType, mode_t mode = -1 );
 
   void selectionInfo( const KonqFileItemList &items );
