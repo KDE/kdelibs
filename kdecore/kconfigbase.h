@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.19  1999/04/08 01:39:44  torben
+// Torben: Corrected API and docu
+//
 // Revision 1.18  1999/04/04 16:14:17  dfaure
 // Small fix for non-existent values in config file.
 // Testing if (!aValue) when aValue is a QString doesn't make much sense...
@@ -100,6 +103,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qstrlist.h>
+#include <qstringlist.h>
 
 // KDE includes
 #include <kconfigdata.h>
@@ -255,12 +259,25 @@ public:
   /**
    * Read a list of strings.
    *
+   * @deprecated
+   *
    * @param pKey The key to search for
    * @param list In this object, the read list will be returned.
    * @param sep  The list separator (default ",")
    * @return The number of entries in the list.
    */
   int readListEntry( const QString& pKey, QStrList &list,
+		     char sep = ',' ) const;
+
+  /**
+   * Read a list of strings.
+   *
+   * @param pKey The key to search for
+   * @param list In this object, the read list will be returned.
+   * @param sep  The list separator (default ",")
+   * @return The number of entries in the list.
+   */
+  int readListEntry( const QString& pKey, QStringList &list,
 		     char sep = ',' ) const;
 
   /**

@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.44  1999/04/08 01:39:42  torben
+// Torben: Corrected API and docu
+//
 // Revision 1.43  1999/04/04 16:14:15  dfaure
 // Small fix for non-existent values in config file.
 // Testing if (!aValue) when aValue is a QString doesn't make much sense...
@@ -441,8 +444,7 @@ QString KConfigBase::readEntry( const QString& pKey,
   return aValue;
 }
 
-int KConfigBase::readListEntry( const QString& pKey, QStrList &list,  
-								char sep  ) const
+int KConfigBase::readListEntry( const QString& pKey, QStrList &list, char sep ) const
 {
   if( !hasKey( pKey ) )
     return 0;
@@ -475,6 +477,38 @@ int KConfigBase::readListEntry( const QString& pKey, QStrList &list,
   return list.count();
 }
 
+int KConfigBase::readListEntry( const QString& pKey, QStringList &list, char sep ) const
+{
+  if( !hasKey( pKey ) )
+    return 0;
+  QString str_list, value;
+  str_list = readEntry( pKey );
+  if( str_list.isEmpty() )
+    return 0; 
+  list.clear();
+  int i;
+  value = "";
+  int len = str_list.length();
+  for( i = 0; i < len; i++ )
+    {
+      if( str_list[i] != sep && str_list[i] != '\\' )
+	{
+	  value += str_list[i];
+	  continue;
+	}
+      if( str_list[i] == '\\' )
+	{
+	  i++;
+	  value += str_list[i];
+	  continue;
+	}
+      list.append( value );
+      value.truncate(0);
+    }
+  if ( str_list[len-1] != sep )
+    list.append( value );
+  return list.count();
+}
 
 int KConfigBase::readNumEntry( const QString& pKey, int nDefault) const
 {
