@@ -1170,7 +1170,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
 		&& m_part->xmlDocImpl()->focusNode()->contentEditable())) {
 //kdDebug(6200) << "editable/navigable" << endl;
-	    if ( ke->state() & ControlButton ) {
+	    if ( (ke->state() & ControlButton) || (ke->state() & ShiftButton) ) {
 		switch ( ke->key() ) {
 		case Key_Left:
 		case Key_Right:
