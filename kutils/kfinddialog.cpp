@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <assert.h>
+#include <qwhatsthis.h>
 
 #include <kregexpeditorinterface.h>
 #include <kparts/componentfactory.h>
@@ -240,6 +241,39 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
                     i18n("<qt>If you press the <b>Find</b> button, the text you entered "
                          "above is searched for within the document.</qt>")));
     }
+
+    // QWhatsthis texts
+    QWhatsThis::add ( m_find, i18n(
+            "Enter a pattern to search for, or select a previous pattern from "
+            "the list.") );
+    QWhatsThis::add ( m_regExp, i18n(
+            "If enabled, search for a regular expression.") );
+    QWhatsThis::add ( m_regExpItem, i18n(
+            "Click here to edit your regular expression using a graphical editor.") );
+    QWhatsThis::add ( m_replace, i18n(
+            "Enter a replacement string, or select a previous one from the list.") );
+    QWhatsThis::add( m_backRef, i18n(
+            "<qt>If enabled, any occurrence of <code><b>\\N</b></code>, where "
+            "<code><b>N</b></code> is a integer number, will be replaced with "
+            "the corresponding capture (\"parenthesized substring\") from the "
+            "pattern.<p>To include (a literal <code><b>\\N</b></code> in your "
+            "replacement, put an extra backslash in front of it, like "
+            "<code><b>\\\\N</b></code>.</qt>") );
+    QWhatsThis::add ( m_backRefItem, i18n(
+            "Click for a menu of available captures.") );
+    QWhatsThis::add ( m_wholeWordsOnly, i18n(
+            "Require word boundaries in both ends of a match to succeed.") );
+    QWhatsThis::add ( m_fromCursor, i18n(
+            "Start searching at the current cursor location rather than at the top.") );
+    QWhatsThis::add ( m_selectedText, i18n(
+            "Only search within the current selection.") );
+    QWhatsThis::add ( m_caseSensitive, i18n(
+            "Perform a case sensitive search: entering the pattern "
+            "'Joe' will not match 'joe' or 'JOE', only 'Joe'.") );
+    QWhatsThis::add ( m_findBackwards, i18n(
+            "Search backwards.") );
+    QWhatsThis::add ( m_promptOnReplace, i18n(
+            "Ask before replacing each match found.") );
 }
 
 void KFindDialog::textSearchChanged( const QString & text)
