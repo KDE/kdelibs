@@ -205,6 +205,7 @@ public:
 
 
   bool actionRestrictions : 1;
+  bool guiEnabled : 1;
   /**
    * This counter indicates when to exit the application.
    * It starts at 1, is decremented in KMainWindow when the last window is closed, but
@@ -682,6 +683,7 @@ public:
 
 void KApplication::init(bool GUIenabled)
 {
+  d->guiEnabled = GUIenabled;
   if ((getuid() != geteuid()) ||
       (getgid() != getegid()))
   {
@@ -2731,6 +2733,11 @@ void KApplication::sigpipeHandler(int)
 
     // Do nothing.
     errno = saved_errno;
+}
+
+bool KApplication::guiEnabled()
+{
+    return kapp && kapp->d->guiEnabled;
 }
 
 void KApplication::virtual_hook( int id, void* data )
