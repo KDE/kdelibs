@@ -49,6 +49,12 @@
      of two letters, it must be an ISO 3166a2 country tag (so Nynorsk
      cannot be indicated by no-NY or no-ny).
      Official site for ISO 639-*: http://lcweb.loc.gov/standards/iso639-2/
+
+     Just one note in case you wondered why I don't follow: zh_CN.GB2312
+     and the like.  Simple: it's not a standard (see e.g.
+     http://language.perl.com/newdocs/pod/perllocale.html), and there are
+     PILES of variations on the theme.  Not what I want.  And anyway, 
+     personally, I speak a language, not a locale.
  -->
 <!ENTITY % lang.attrib
         --Lang: Indicator of language in which element is written, for
