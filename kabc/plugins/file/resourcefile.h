@@ -38,7 +38,7 @@ class ResourceConfigWidget;
 /**
   @internal
 */
-class ResourceFile : public QObject, public Resource
+class ResourceFile : public Resource
 {
   Q_OBJECT
 

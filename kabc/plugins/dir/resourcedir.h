@@ -17,7 +17,7 @@ class FormatPlugin;
 /**
   @internal
 */
-class ResourceDir : public QObject, public Resource
+class ResourceDir : public Resource
 {
   Q_OBJECT
 

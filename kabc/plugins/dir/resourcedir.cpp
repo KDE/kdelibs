@@ -26,16 +26,25 @@
 
 using namespace KABC;
 
+class DirFactory : public KRES::PluginFactory
+{
+  public:
+    KRES::Resource *resource( const KConfig *config )
+    {
+      return new ResourceDir( config );
+    }
+
+    KRES::ConfigWidget *configWidget( QWidget *parent )
+    {
+      return new ResourceDirConfig( parent, "ResourceDirConfig" );
+    }
+};
+
 extern "C"
 {
-  KRES::ConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue( "kabc_dir" );
-    return new ResourceDirConfig( parent, "ResourceDirConfig" );
-  }
-
-  Resource *resource( const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue( "kabc_dir" );
-    return new ResourceDir( config );
+  void *init_kabc_dir()
+  {
+    return ( new DirFactory() );
   }
 }
 

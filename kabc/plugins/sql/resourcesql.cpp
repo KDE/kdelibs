@@ -34,12 +34,10 @@ using namespace KABC;
 extern "C"
 {
   ResourceConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue("kabc_sql");
     return new ResourceSqlConfig( parent, "ResourceSqlConfig" );
   }
 
   Resource *resource( AddressBook *ab, const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue("kabc_sql");
     return new ResourceSql( ab, config );
   }
 }

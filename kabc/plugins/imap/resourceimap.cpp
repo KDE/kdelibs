@@ -35,11 +35,25 @@
 #include <kmessagebox.h>
 using namespace KABC;
 
+class IMAPFactory : public KRES::PluginFactory
+{
+  public:
+    KRES::Resource *resource( const KConfig *config )
+    {
+      return new ResourceIMAP( config );
+    }
+
+    KRES::ConfigWidget *configWidget( QWidget* )
+    {
+      return 0;
+    }
+};
+
 extern "C"
 {
-  Resource *resource( const KConfig* config ) {
-    KGlobal::locale()->insertCatalogue( "kabc_imap" );
-    return new ResourceIMAP( config );
+  void *init_kabc_imap()
+  {
+    return ( new IMAPFactory() );
   }
 }
 

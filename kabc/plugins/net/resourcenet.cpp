@@ -35,18 +35,28 @@
 
 using namespace KABC;
 
+class NetFactory : public KRES::PluginFactory
+{
+  public:
+    KRES::Resource *resource( const KConfig *config )
+    {
+      return new ResourceNet( config );
+    }
+
+    KRES::ConfigWidget *configWidget( QWidget *parent )
+    {
+      return new ResourceNetConfig( parent, "ResourceNetConfig" );
+    }
+};
+
 extern "C"
 {
-  KRES::ConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue( "kabc_net" );
-    return new ResourceNetConfig( parent, "ResourceNetConfig" );
-  }
-
-  Resource *resource( const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue( "kabc_net" );
-    return new ResourceNet( config );
+  void *init_kabc_net()
+  {
+    return ( new NetFactory() );
   }
 }
+
 
 ResourceNet::ResourceNet( const KConfig *config )
     : Resource( config ), mFormat( 0 )
@@ -101,12 +111,7 @@ Ticket *ResourceNet::requestSaveTicket()
 
 bool ResourceNet::doOpen()
 {
-  bool ok = KIO::NetAccess::download( mUrl, mTempFile );
-
-  if ( !ok )
-    qDebug( "Error: %s", KIO::NetAccess::lastErrorString().latin1() );
-
-  return ok;
+  return KIO::NetAccess::download( mUrl, mTempFile );
 }
 
 void ResourceNet::doClose()

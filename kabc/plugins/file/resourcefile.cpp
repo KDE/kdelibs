@@ -21,21 +21,31 @@
 
 using namespace KABC;
 
+class FileFactory : public KRES::PluginFactory
+{
+  public:
+    KRES::Resource *resource( const KConfig *config )
+    {
+      return new ResourceFile( config );
+    }
+
+    KRES::ConfigWidget *configWidget( QWidget *parent )
+    {
+      return new ResourceFileConfig( parent, "ResourceFileConfig" );
+    }
+};
+
 extern "C"
 {
-  KRES::ConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue( "kabc_file" );
-    return new ResourceFileConfig( parent, "ResourceFileConfig" );
-  }
-
-  Resource *resource( const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue( "kabc_file" );
-    return new ResourceFile( config );
+  void *init_kabc_file()
+  {
+    return ( new FileFactory() );
   }
 }
 
+
 ResourceFile::ResourceFile( const KConfig *config )
-    : Resource( config ), mFormat( 0 )
+  : Resource( config ), mFormat( 0 )
 {
   QString fileName, formatName;
 
@@ -48,7 +58,6 @@ ResourceFile::ResourceFile( const KConfig *config )
   }
 
   init( fileName, formatName );
-
 }
 
 ResourceFile::ResourceFile( const QString &fileName,

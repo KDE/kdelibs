@@ -1,7 +1,4 @@
 [Desktop Entry]
-Type=Service
-
-[Misc]
 Encoding=UTF-8
 Name=Directory
 Name[af]=Gids
@@ -24,6 +21,7 @@ Name[fa]=شاخه
 Name[fi]=Hakemisto
 Name[fo]=Fíluskrá
 Name[fr]=Dossier
+Name[ga]=Comhadlann
 Name[gl]=Directorio
 Name[he]=ספריה
 Name[hr]=Direktorij
@@ -35,6 +33,7 @@ Name[ko]=자료방
 Name[lt]=Katalogas
 Name[lv]=Direktorijs
 Name[mk]=Папка
+Name[mn]=Лавлах
 Name[mt]=Direttorju
 Name[nb]=Katalog
 Name[nl]=Map
@@ -63,7 +62,8 @@ Name[xh]=Ulawulo
 Name[zh_CN]=目录
 Name[zh_TW]=目錄
 Name[zu]=Uhlu lwamafayela
-
-[Plugin]
-Type=dir
 X-KDE-Library=kabc_dir
+Type=Service
+ServiceTypes=KResources/Plugin
+X-KDE-ResourceFamily=contact
+X-KDE-ResourceType=dir

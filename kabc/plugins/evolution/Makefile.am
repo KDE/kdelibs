@@ -16,6 +16,5 @@ METASOURCES = AUTO
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kabc_evolution.pot
 
-linkdir		= $(kde_datadir)/kresources/contact
-link_DATA	= evolution.desktop
-EXTRA_DIST	= $(link_DATA)
+servicedir = $(kdeservicesdir)/kresources/kabc
+service_DATA = evolution.desktop

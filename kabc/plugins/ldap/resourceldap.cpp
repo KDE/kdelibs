@@ -30,20 +30,30 @@
 
 using namespace KABC;
 
+class LDAPFactory : public KRES::PluginFactory
+{
+  public:
+    KRES::Resource *resource( const KConfig *config )
+    {
+      return new ResourceLDAP( config );
+    }
+
+    KRES::ConfigWidget *configWidget( QWidget *parent )
+    {
+      return new ResourceLDAPConfig( parent, "ResourceLDAPConfig" );
+    }
+};
+
 extern "C"
 {
-  KRES::ConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue( "kabc_ldap" );
-    return new ResourceLDAPConfig( parent, "ResourceLDAPConfig" );
-  }
-
-  Resource *resource( const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue( "kabc_ldap" );
-    return new ResourceLDAP( config );
+  void *init_kabc_ldap()
+  {
+    return ( new LDAPFactory() );
   }
 }
 
 void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value );
+
 
 ResourceLDAP::ResourceLDAP( const KConfig *config )
   : Resource( config ), mPort( 389 ), mLdap( 0 )

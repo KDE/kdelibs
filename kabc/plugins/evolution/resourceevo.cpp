@@ -14,11 +14,26 @@
 using namespace Evolution;
 using namespace KABC;
 
-extern "C"{
-    Resource* resource( const KConfig* conf ) {
-        KGlobal::locale()->insertCatalogue("kabc_evo");
-        return new ResourceEvolution( conf );
+class EvolutionFactory : public KRES::PluginFactory
+{
+  public:
+    KRES::Resource *resource( const KConfig *config )
+    {
+      return new ResourceEvolution( config );
     }
+
+    KRES::ConfigWidget *configWidget( QWidget *parent )
+    {
+      return 0;
+    }
+};
+
+extern "C"
+{
+  void *init_kabc_evo()
+  {
+    return ( new EvolutionFactory() );
+  }
 }
 
 ResourceEvolution::ResourceEvolution( const KConfig* conf )

@@ -1,4 +1,4 @@
-[Misc]
+[Desktop Entry]
 Encoding=UTF-8
 Name=Network
 Name[ar]=الشبكة
@@ -18,6 +18,7 @@ Name[eu]=Sarea
 Name[fa]=شبکه
 Name[fi]=Verkko
 Name[fr]=Réseau
+Name[ga]=Gréasán
 Name[gl]=Rede
 Name[he]=רשת
 Name[hr]=Mreža
@@ -39,6 +40,7 @@ Name[pt]=Rede
 Name[pt_BR]=Rede
 Name[ro]=Reţea
 Name[ru]=Сеть
+Name[se]=Fierbmi
 Name[sk]=Sieť
 Name[sl]=Omrežje
 Name[sr]=Mreža
@@ -55,7 +57,8 @@ Name[xh]=Umsebenzi womnatha
 Name[zh_CN]=网络
 Name[zh_TW]=網路
 Name[zu]=Umsebenzi wokuxhumana okusakazekile
-
-[Plugin]
-Type=net
 X-KDE-Library=kabc_net
+Type=Service
+ServiceTypes=KResources/Plugin
+X-KDE-ResourceFamily=contact
+X-KDE-ResourceType=net
