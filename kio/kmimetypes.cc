@@ -589,7 +589,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
   if ( !_url.isLocalFile() )
     return result;
 
-  KSimpleConfig cfg( _url.path(), true );
+  KSimpleConfig cfg( _url.path( 1 ) + _url.filename(), true );
   cfg.setDesktopGroup();
   QString type = cfg.readEntry( "Type" );
   if ( type.isEmpty() )
@@ -640,30 +640,36 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
     return result;
 
   KSimpleConfig cfg( _url.path(), true );
+  
+  if ( !cfg.hasGroup( "Menu" ) )
+    return result;
+  
   cfg.setGroup( "Menu" );
 
-  QStrList keys;
-  if ( cfg.readListEntry( "Menus", keys ) <= 0 )
+  QStringList keys = cfg.readListEntry( "Menus" );
+  
+  if ( keys.count() == 0 )
     return result;
 
-  const char *k;
-  for( k = keys.first(); k != 0L; k = keys.next() )
+  QStringList::ConstIterator it = keys.begin();
+  QStringList::ConstIterator end = keys.end();
+  for ( ; it != end; ++it )
   {
-    kdebug( KDEBUG_INFO, 7009, "CURRENT KEY = %s", k );
+    kdebug( KDEBUG_INFO, 7009, "CURRENT KEY = %s", (*it).ascii() );
 
-    QStrList lst;
-    if ( cfg.readListEntry( k, lst ) == 3 )
+    QStringList lst = cfg.readListEntry( *it );
+    if ( lst.count() == 3 )
     {
       Service s;
-      s.m_strName = lst.at(0);
-      s.m_strIcon = lst.at(1);
-      s.m_strExec = lst.at(2);
+      s.m_strName = *lst.at(0);
+      s.m_strIcon = *lst.at(1);
+      s.m_strExec = *lst.at(2);
       s.m_type = ST_USER_DEFINED;
       result.append( s );
     }
     else
     {
-      QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( k );
+      QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( *it );
       QMessageBox::critical( 0L, i18n("Error"), tmp, i18n("OK" ) );
     }
   }

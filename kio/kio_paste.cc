@@ -22,7 +22,9 @@
 bool isClipboardEmpty()
 {
   QStringList urls;
-  if ( QUriDrag::decodeToUnicodeUris( QApplication::clipboard()->data(), urls ) ){
+  QMimeSource *data = QApplication::clipboard()->data();
+  
+  if ( QUriDrag::canDecode( data ) && QUriDrag::decodeToUnicodeUris( data, urls ) ){
     if ( urls.count() == 0 )
       return true;
     return false;
@@ -41,7 +43,7 @@ void pasteClipboard( const char *_dest_url )
   QMimeSource *data = QApplication::clipboard()->data();
   
   QStringList urls;
-  if ( QUriDrag::decodeToUnicodeUris( data, urls ) ) {
+  if ( QUriDrag::canDecode( data ) && QUriDrag::decodeToUnicodeUris( data, urls ) ) {
     if ( urls.count() == 0 ) {
       QMessageBox::critical( 0L, i18n("Error"), i18n("The clipboard is empty"), i18n("OK") );
       return;
