@@ -34,8 +34,13 @@
 #include <kparts/statusbarextension.h>
 #include <kparts/browserextension.h>
 #include <kwallet.h>
-#include <qtimer.h>
 
+#include <qguardedptr.h>
+#include <qmap.h>
+#include <qtimer.h>
+#include <qvaluelist.h>
+
+#include "html/html_formimpl.h"
 #include "khtml_run.h"
 #include "khtml_factory.h"
 #include "khtml_events.h"
@@ -118,6 +123,53 @@ typedef KHTMLFrameList::ConstIterator ConstFrameIt;
 typedef KHTMLFrameList::Iterator FrameIt;
 
 static int khtml_part_dcop_counter = 0;
+
+
+class KHTMLWalletQueue : public QObject
+{
+  Q_OBJECT
+  public:
+    KHTMLWalletQueue(QObject *parent) : QObject(parent) {
+      wallet = 0L;
+    }
+
+    virtual ~KHTMLWalletQueue() {
+      delete wallet;
+      wallet = 0L;
+    }
+
+    KWallet::Wallet *wallet;
+    typedef QPair<DOM::HTMLFormElementImpl*, QGuardedPtr<DOM::DocumentImpl> > Caller;
+    typedef QValueList<Caller> CallerList;
+    CallerList callers;
+    QValueList<QPair<QString, QMap<QString, QString> > > savers;
+
+  signals:
+    void walletOpened(KWallet::Wallet*);
+
+  public slots:
+    void walletOpened(bool success) {
+      if (!success) {
+        delete wallet;
+        wallet = 0L;
+      }
+      emit walletOpened(wallet);
+      if (wallet) {
+        for (CallerList::Iterator i = callers.begin(); i != callers.end(); ++i) {
+          if ((*i).first && (*i).second) {
+            (*i).first->walletOpened(wallet);
+          }
+        }
+        wallet->setFolder(KWallet::Wallet::FormDataFolder());
+        for (QValueList<QPair<QString, QMap<QString, QString> > >::Iterator i = savers.begin(); i != savers.end(); ++i) {
+          wallet->writeMap((*i).first, (*i).second);
+        }
+      }
+      callers.clear();
+      savers.clear();
+      wallet = 0L; // gave it away
+    }
+};
 
 class KHTMLPartPrivate
 {
@@ -221,6 +273,7 @@ public:
     m_statusBarUALabel = 0L;
     m_statusBarJSErrorLabel = 0L;
     m_userStyleSheetLastModified = 0;
+    m_wq = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -482,6 +535,8 @@ public:
   }
 
   time_t m_userStyleSheetLastModified;
+
+  KHTMLWalletQueue *m_wq;
 };
 
 #endif

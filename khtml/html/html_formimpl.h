@@ -52,6 +52,10 @@ namespace khtml
     typedef QValueList<QCString> encodingList;
 }
 
+namespace KWallet {
+    class Wallet;
+}
+
 namespace DOM {
 
 class HTMLFormElement;
@@ -78,6 +82,7 @@ public:
 
     bool autoComplete() const { return m_autocomplete; }
     void doAutoFill();
+    void walletOpened(KWallet::Wallet *w);
 
     virtual void parseAttribute(AttributeImpl *attr);
 

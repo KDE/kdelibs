@@ -1458,6 +1458,8 @@ private slots:
    */
   void restoreScrollPosition();
 
+  void walletOpened(KWallet::Wallet*);
+
 private:
 
   KJSErrorDlg *jsErrorExtension();
@@ -1476,7 +1478,11 @@ private:
 
   bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
-  KWallet::Wallet* wallet();
+  KWallet::Wallet* wallet() KDE_DEPRECATED;
+
+  void openWallet(DOM::HTMLFormElementImpl*);
+  void saveToWallet(const QString& key, const QMap<QString,QString>& data);
+  void dequeueWallet(DOM::HTMLFormElementImpl*);
 
   /**
    * @internal

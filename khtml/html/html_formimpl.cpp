@@ -85,6 +85,9 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc, bool implicit)
 
 HTMLFormElementImpl::~HTMLFormElementImpl()
 {
+    if (getDocument()) {
+        getDocument()->view()->part()->dequeueWallet(this);
+    }
     QPtrListIterator<HTMLGenericFormElementImpl> it(formElements);
     for (; it.current(); ++it)
         it.current()->m_form = 0;
@@ -418,30 +421,33 @@ void HTMLFormElementImpl::doAutoFill()
 
     if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(),
                                          KWallet::Wallet::FormDataFolder(),
-                                         key) )
+                                         key))
         return;
 
     // assert(view())
-    KWallet::Wallet* const w = getDocument()->view()->part()->wallet();
+    getDocument()->view()->part()->openWallet(this);
+}
 
-    if (w) {
-        if (!w->hasFolder(KWallet::Wallet::FormDataFolder())) {
-            if (!w->createFolder(KWallet::Wallet::FormDataFolder()))
-                return; // failed
-        }
-        w->setFolder(KWallet::Wallet::FormDataFolder());
-        QMap<QString, QString> map;
-        if (w->readMap(key, map))
-            return; // failed, abort
 
-        for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
-            if (it.current()->id() == ID_INPUT) {
-                HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl*>(it.current());
-                if (current->inputType() == HTMLInputElementImpl::PASSWORD ||
+void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
+    assert(w);
+    const QString key = calculateAutoFillKey(*this);
+    if (!w->hasFolder(KWallet::Wallet::FormDataFolder())) {
+        if (!w->createFolder(KWallet::Wallet::FormDataFolder()))
+            return; // failed
+    }
+    w->setFolder(KWallet::Wallet::FormDataFolder());
+    QMap<QString, QString> map;
+    if (w->readMap(key, map))
+        return; // failed, abort
+
+    for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
+        if (it.current()->id() == ID_INPUT) {
+            HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl*>(it.current());
+            if (current->inputType() == HTMLInputElementImpl::PASSWORD ||
                     current->inputType() == HTMLInputElementImpl::TEXT &&
                     map.contains(current->name().string()))
-                    current->setValue(map[current->name().string()]);
-            }
+                current->setValue(map[current->name().string()]);
         }
     }
 }
