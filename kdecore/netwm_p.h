@@ -139,6 +139,7 @@ struct NETWinInfoPrivate {
     unsigned long allowed_actions;
 
     unsigned long properties[ 2 ];
+    bool has_net_support;
 
     int ref;
 };

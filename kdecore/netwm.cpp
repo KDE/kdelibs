@@ -2507,6 +2507,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->transient_for = None;
     p->window_group = None;
     p->allowed_actions = 0;
+    p->has_net_support = false;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2564,6 +2565,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->transient_for = None;
     p->window_group = None;
     p->allowed_actions = 0;
+    p->has_net_support = false;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -3633,6 +3635,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
     if (dirty & WMWindowType) {
 	p->types.reset();
 	p->types[ 0 ] = Unknown;
+        p->has_net_support = false;
 	if (XGetWindowProperty(p->display, p->window, net_wm_window_type, 0l, 2048l,
 			       False, XA_ATOM, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
@@ -3643,6 +3646,8 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		fprintf(stderr, "NETWinInfo::update: getting window type (%ld)\n",
 			nitems_ret);
 #endif
+
+                p->has_net_support = true;
 
 		unsigned long count = 0;
 		long *types = (long *) data_ret;
@@ -3965,6 +3970,10 @@ const char* NETWinInfo::startupId() const {
 
 unsigned long NETWinInfo::allowedActions() const {
     return p->allowed_actions;
+}
+
+bool NETWinInfo::hasNETSupport() const {
+    return p->has_net_support;
 }
 
 Window NETWinInfo::transientFor() const {

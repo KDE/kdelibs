@@ -855,6 +855,16 @@ public:
     const NETWinInfo &operator=(const NETWinInfo &wintinfo);
 
     /**
+       Returns true if the window has any window type set, even if the type
+       itself is not known to this implementation. Presence of a window type
+       as specified by the NETWM spec is considered as the window supporting
+       this specification.
+       @since 3.2
+       @return true if the window has support for the NETWM spec
+    **/
+    bool hasNETSupport() const;
+
+    /**
        Returns the properties argument passed to the constructor.
        The size is the maximum array size the constructor accepts.
 
