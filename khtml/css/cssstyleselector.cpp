@@ -252,7 +252,7 @@ static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 	bool swapped = FALSE;
         CSSOrderedProperty **y = e+1;
 	CSSOrderedProperty **x = e;
-        CSSOrderedProperty **swappedPos;
+        CSSOrderedProperty **swappedPos = 0;
 	do {
 	    if ( !((**(--x)) < (**(--y))) ) {
 		swapped = TRUE;
@@ -2193,7 +2193,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         float toPix = paintDeviceMetrics->logicalDpiY()/72.;
         if (toPix  < 96./72.) toPix = 96./72.;
 
-        int minFontSize = settings->minFontSize() * toPix;
+        int minFontSize = int(settings->minFontSize() * toPix);
 
         if(parentNode) {
             oldSize = parentStyle->font().pixelSize();
