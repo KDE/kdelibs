@@ -1,0 +1,4 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KTextEditor/Document
+Comment=Embeddable Text Editor Component
