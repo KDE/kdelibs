@@ -31,7 +31,7 @@
 #include <qpalette.h>
 #include <qpainter.h>
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 
 #include "rendering/render_style.h"
@@ -68,7 +68,7 @@ void RenderImage::setStyle(RenderStyle* _style)
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
     setInline( style()->display()==INLINE );
-    
+
     if (style()->contentObject())
     {
         if (image) image->deref(this);

@@ -460,12 +460,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 
     const QPixmap &r = pixmap();
 
-    if (r.isNull()) {
-        return r;
-    }
-
-    return r;
-
+    if (r.isNull()) return r;
 
     // no error indication for background images
     if(errorOccured) return *Cache::nullPixmap;

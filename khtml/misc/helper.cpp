@@ -29,7 +29,7 @@
 #include <qlist.h>
 #include <khtmllayout.h>
 #include <kstaticdeleter.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <kconfig.h>
 #include <qtooltip.h>
 

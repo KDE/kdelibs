@@ -27,7 +27,6 @@
 #include <kurl.h>
 #include <klocale.h>
 #include <kfiledialog.h>
-#include <kapp.h>
 #include <kcompletionbox.h>
 #include <kcursor.h>
 

@@ -89,7 +89,7 @@ void RenderHR::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _
         break;
     }
 
-    kdDebug(6040) << "tx = " << xp << " ty=" << _ty << " m_width = " << m_width << " length = " << m_length << " m_height: " << m_height <<  endl;
+//    kdDebug(6040) << "tx = " << xp << " ty=" << _ty << " m_width = " << m_width << " length = " << m_length << " m_height: " << m_height <<  endl;
 
     printBorder(p, xp, _ty, m_length, m_height, style());
 
@@ -112,14 +112,12 @@ void RenderHR::layout()
 {
     if ( layouted() ) return;
 
-    kdDebug(6040) << "RenderHR::layout!" << endl;
-
     calcWidth();
     calcHeight();
 
-    kdDebug(6040) << "minWidth: " << m_minWidth <<
-        " maxWidth: " << m_maxWidth << " width: " << m_width << 
-        " height: " << m_height << endl;
+//     kdDebug(6040) << "minWidth: " << m_minWidth <<
+//         " maxWidth: " << m_maxWidth << " width: " << m_width <<
+//         " height: " << m_height << endl;
 
     //  setLayouted();
 }

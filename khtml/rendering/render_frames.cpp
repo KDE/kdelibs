@@ -33,7 +33,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include <kapp.h>
+#include <kapplication.h>
 #include <kdebug.h>
 
 #include <qlabel.h>
@@ -509,7 +509,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       m_hSplitPos = _y;
     }
     else
-      static_cast<KHTMLView *>(m_view)->setCursor(cursor);
+      m_view->viewport()->setCursor(cursor);
 
   }
 

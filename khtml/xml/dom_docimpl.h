@@ -26,8 +26,8 @@
 #include "dom_nodeimpl.h"
 #include "dom2_traversalimpl.h"
 
-#include <qlist.h>
 #include <qstringlist.h>
+#include <qlist.h>
 #include <qobject.h>
 #include <qdict.h>
 #include <qmap.h>
