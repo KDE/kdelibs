@@ -59,6 +59,20 @@ typedef QValueList<KAction *> KActionPtrList;
 
 /**
  * A managed set of KAction objects.
+ * 
+ * If you set the tooltips on KActions and want the tooltip to show in statusbar
+ * (recommended) then you will need to connect a couple of the actionclass signals
+ * to the toolbar.
+ * The easiest way of doing this is in your KMainWindow subclass, where you create
+ * a statusbar, do:
+ *
+ * \code
+ * actionCollection()->setHighlightingEnabled(true);  
+ * connect(actionCollection(), SIGNAL( actionStatusText( const QString & ) ),
+ *           statusBar(), SLOT( message( const QString & ) ) );
+ * connect(actionCollection(), SIGNAL( clearStatusText() ),
+ *           statusBar(), SLOT( clear() ) );
+ * \endcode
  */
 class KDEUI_EXPORT KActionCollection : public QObject
 {
@@ -193,8 +207,12 @@ public:
    */
   const QString& xmlFile() const;
 
+  //TODO FOR KDE4 make this default true
   /**
    * Enable highlighting notification for specific KActions.
+   * This is false by default, so, by default, the highlighting
+   * signals will not be emitted.
+   * 
    * @see connectHighlight()
    * @see disconnectHighlight()
    * @see actionHighlighted()
@@ -214,6 +232,9 @@ public:
 
   /**
    * Call this function if you want to receive a signal whenever a KAction is highlighted in a menu or a toolbar.
+   * This is only needed if you do not add this action to this container.
+   * You will generally not need to call this function.
+   * 
    * @param container A container in which the KAction is plugged (must inherit QPopupMenu or KToolBar)
    * @param action The action you are interested in
    * @see disconnectHighlight()
@@ -225,6 +246,9 @@ public:
   void connectHighlight( QWidget *container, KAction *action );
   /**
    * Disconnect highlight notifications for a particular pair of contianer and action.
+   * This is only needed if you do not add this action to this container.
+   * You will generally not need to call this function.
+   * 
    * @param container A container in which the KAction is plugged (must inherit QPopupMenu or KToolBar)
    * @param action The action you are interested in
    * @see connectHighlight()
@@ -245,6 +269,7 @@ signals:
   void removed( KAction* );
 
   /** Emitted when "action" is highlighted.
+   *  This is only emitted if you have setHighlightingEnabled()
    * @see connectHighlight()
    * @see disconnectHighlight()
    * @see actionHighlighted()
@@ -253,6 +278,7 @@ signals:
    */
   void actionHighlighted( KAction *action );
   /** Emitted when "action" is highlighed or loses highlighting.
+   *  This is only emitted if you have setHighlightingEnabled()
    * @see connectHighlight()
    * @see disconnectHighlight()
    * @see actionHighlighted()
@@ -260,8 +286,21 @@ signals:
    * @see highlightingEnabled()
    */
   void actionHighlighted( KAction *action, bool highlight );
-
+  /** Emitted when an action is highlighted, with text
+   *  being the tooltip for the action.
+   *  This is only emitted if you have setHighlightingEnabled()
+   *  
+   *  This is useful to connect to KStatusBar::message().  See
+   *  this class overview for more information.
+   *  
+   * @see setHighlightingEnabled()
+   */
   void actionStatusText( const QString &text );
+  /** Emitted when an action loses highlighting.
+   *  This is only emitted if you have setHighlightingEnabled()
+   *  
+   * @see setHighlightingEnabled()
+   */
   void clearStatusText();
 
 private:

@@ -369,8 +369,13 @@ public:
     /**
      * Returns a pointer to the status bar.
      *
-     *  If there is no
-     * status bar yet one will be created.
+     * If there is no status bar yet, one will be created.
+     *
+     * Note that tooltips for kactions in actionCollection() are not
+     * automatically connected to this statusBar.
+     * See the KActionCollection documentation for more details.
+     *
+     * @see KActionCollection
      */
     KStatusBar *statusBar();
 

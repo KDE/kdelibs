@@ -517,6 +517,14 @@ public slots:
      * This will be used as a tooltip for a toolbar button, as a
      * statusbar help-text for a menu item, and it also appears
      * in the toolbar editor, to describe the action.
+     *
+     * For the tooltip to show up on the statusbar you will need to connect
+     * a couple of the actionclass signals to the toolbar.
+     * The easiest way of doing this is in your main window class, when you create
+     * a statusbar.  See the KActionCollection class for more details.
+     *
+     * @see KActionCollection
+     *
      */
     virtual void setToolTip( const QString& );
 
