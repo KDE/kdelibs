@@ -1,5 +1,6 @@
 [Misc]
 Name=HighContrast
+Name[bn]=হাই কনট্রাস্ট
 Name[ca]=Contrast alt
 Name[cs]=Vysoký kontrast
 Name[da]=Høj kontrast
@@ -46,6 +47,7 @@ Comment[lt]=Stilius, kuris labai tinka didelio kontrasto spalvų schemoms
 Comment[nb]=En stil som passer bra sammen med høy-konrast-temaer
 Comment[nl]=Een stijl die goed werkt met hoog contrast kleurenschema's
 Comment[nn]=Ein stil som fungerer bra når fargeoppsettet har høg kontrast
+Comment[pa]= ਇੱਕ ਸ਼ੈਲੀ, ਜੋ ਕਿ ਗੂੜੀ ਰੰਗ ਸਕੀਮ ਨਾਲ ਵਧੀਆ ਕੰਮ ਕਰਦੀ ਹੈ
 Comment[pl]=Styl, który działa dobrze z motywami kolorów o wysokim kontraście
 Comment[pt]=Um estilo que funciona bem com esquemas de cores de alto contraste
 Comment[pt_BR]=Um estilo que funciona bem com esquemas de cor de alto contraste
