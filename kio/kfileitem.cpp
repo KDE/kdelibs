@@ -45,6 +45,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   m_pMimeType( 0 ),
   m_bMarked( false )
 {
+  bool UDS_URL_seen = false;
   // extract the mode and the filename from the KIO::UDS Entry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ ) {
@@ -72,6 +73,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
       break;
 
     case KIO::UDS_URL:
+      UDS_URL_seen = true;
       m_url = KURL((*it).m_str);
       break;
 
@@ -84,7 +86,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
       break;
   }
   }
-  if ( _urlIsDirectory && !m_strText.isEmpty() )
+  if ( _urlIsDirectory && !UDS_URL_seen && !m_strText.isEmpty() )
       m_url.addPath( m_strText );
   init( _determineMimeTypeOnDemand );
 }
