@@ -173,6 +173,7 @@ char **xstrsep(char *str)
     return list;
 }
 
+#define BUFSIZE	8192
 
 /**
  * The main program
@@ -180,7 +181,7 @@ char **xstrsep(char *str)
 
 int main()
 {
-    char buf[1024];
+    char buf[BUFSIZE+1];
     char command[200], xauthority[200], iceauthority[200];
     char **host, **auth, *fname;
     int i/*, res, sycoca*/, prio;
@@ -194,7 +195,7 @@ int main()
     {
 	printf("%s\n", params[i].name);
 	fflush(stdout);
-	if (fgets(buf, 500, stdin) == 0L) 
+	if (fgets(buf, BUFSIZE, stdin) == 0L) 
 	{
 	    printf("end\n"); fflush(stdout);
 	    perror("kdesu_stub: fgets()");
