@@ -85,6 +85,7 @@ extern "C" {
 #include <kglobal.h>
 #include <kcompletion.h>
 #include <klineedit.h>
+#include <kseparator.h>
 #include <klibloader.h>
 #include <ktrader.h>
 
@@ -755,11 +756,11 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   grid->addWidget(nameArea, curRow++, 2);
 
-  QLabel *l = new QLabel( d->m_frame );
-  l->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-  grid->addMultiCellWidget(l, curRow, curRow, 0, 2);
+  KSeparator* sep = new KSeparator( KSeparator::HLine, d->m_frame);
+  grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
   ++curRow;
 
+  QLabel *l;
   if ( !mimeComment.isEmpty() )
   {
     l = new QLabel(i18n("Type:"), d->m_frame );
@@ -838,9 +839,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if (!d->bMultiple) // Dates for multiple don't make much sense...
   {
-    l = new QLabel( d->m_frame );
-    l->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-    grid->addMultiCellWidget(l, curRow, curRow, 0, 2);
+    sep = new KSeparator( KSeparator::HLine, d->m_frame);
+    grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
     ++curRow;
 
     grid = new QGridLayout(0, 3); // unknown # of rows
@@ -2361,10 +2361,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   fstype = new KLineEdit( d->m_frame, "LineEdit_fstype" );
   layout->addWidget(fstype, 3, 1);
 
-  QFrame *frame = new QFrame( d->m_frame );
-  frame->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-  layout->addMultiCellWidget(frame, 4, 4, 0, 2);
-
+  KSeparator* sep = new KSeparator( KSeparator::HLine, d->m_frame);
+  layout->addMultiCellWidget(sep, 4, 4, 0, 2);
 
   unmounted = new KIconButton( d->m_frame );
   unmounted->setFixedSize(50, 50);
