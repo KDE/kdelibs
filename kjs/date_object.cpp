@@ -45,7 +45,9 @@ namespace KJS {
 	   GetFullYear, GetMonth, GetDate, GetDay, GetHours, GetMinutes,
 	   GetSeconds, GetMilliSeconds, GetTimezoneOffset, SetTime,
 	   SetMilliSeconds, SetSeconds, SetMinutes, SetHours, SetDate,
-	   SetMonth, SetFullYear };
+	   SetMonth, SetFullYear,
+	   // non-normative properties (Appendix B)
+	   GetYear, SetYear, toGMTString };
   private:
     int id;
     bool utc;
@@ -218,6 +220,9 @@ KJSO DatePrototype::get(const UString &p) const
     id = DateProtoFunc::SetMonth;
   else if (p == "setFullYear" || p == "setUTCFullYear")
     id = DateProtoFunc::SetFullYear;
+  // non-normative
+  else if (p == "getYear")
+    id = DateProtoFunc::GetYear;
   else
     return Undefined();
 
@@ -265,6 +270,9 @@ Completion DateProtoFunc::execute(const List &)
       result = Number(milli);
     else
       result = Error::create(TypeError);
+    break;
+  case GetYear:
+    result = Number(t->tm_year);
     break;
   case GetFullYear:
     result = Number(1900 + t->tm_year);
