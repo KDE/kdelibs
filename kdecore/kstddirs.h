@@ -197,6 +197,21 @@ public:
 	QString findResource( const char *type,
 			      const QString& filename ) const;
 
+        /**
+         * Returns a number that identifies this version of the resource.
+         * When a change is made to the resource this number will change.
+         * 
+	 * @param type The type of the wanted resource
+	 * @param filename A relative filename of the resource.
+	 * @param deep If true, all resources are taken into account
+	 *        otherwise only the one returned by findResource().
+	 *
+	 * @return A number identifying the current version of the
+	 *          resource.
+	 */
+	Q_UINT32 calcResourceHash( const char *type,
+			      const QString& filename, bool deep) const;
+
 	/**
 	 * Try to find all directories whose names consist of the
 	 * specified type and a relative path. So would

@@ -164,6 +164,44 @@ for (QStringList::ConstIterator pit = prefixes.begin();
     else return dir + filename;
 }
 
+static Q_UINT32 updateHash(const QString &file, Q_UINT32 hash)
+{
+    QCString cFile = QFile::encodeName(file);
+    struct stat buff;
+    if ((access(cFile, R_OK) == 0) && 
+        (stat( cFile, &buff ) == 0) &&
+        (S_ISREG( buff.st_mode ))) 
+    {
+       hash = hash + (Q_UINT32) buff.st_ctime;
+    }
+    return hash;
+}
+
+Q_UINT32 KStandardDirs::calcResourceHash( const char *type,
+			      const QString& filename, bool deep) const
+{
+    Q_UINT32 hash = 0;
+
+    if (filename.at(0) == '/')
+    {
+        // absolute dirs are absolute dirs, right? :-/
+	return updateHash(filename, hash); 
+    }
+
+    QStringList candidates = resourceDirs(type);
+    QString fullPath;
+
+    for (QStringList::ConstIterator it = candidates.begin();
+	 it != candidates.end(); it++)
+    {
+        hash = updateHash(*it + filename, hash);
+        if (!deep && hash)
+           return hash;
+    }
+    return hash;
+}
+
+
 QStringList KStandardDirs::findDirs( const char *type,
                                      const QString& reldir ) const
 {
