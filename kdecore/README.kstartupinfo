@@ -55,7 +55,7 @@ X-KDE-WMClass=<string>
             - either if its windows is correctly detected using the default
                 WMClass value ( the name of the binary )
             - or if a window is mapped that is not recognized ( doesn't have
-                neither KDE_STARTUP_ID nor NETWM_PID property  /*CHECKME*/ ),
+                neither _KDE_STARTUP_ID nor _NET_WM_PID property /*CHECKME*/),
                 it's assumed this window belongs to the started app;
                 the start-on-desktop feature won't work then too
     - if not set, it defaults to the binary name of the app ( ok for most apps,
@@ -140,7 +140,7 @@ they wouldn't be very happy with DCOP.
 KDE_STARTUP_ENV is added to it's environment, and it's set to unique
 identifier of its startup notification, or "0" for disabled ASN.
 Ideally, the application should read it, and set a window property
-called KDE_STARTUP_ID ( type XA_STRING ) at least on its first mapped
+called _KDE_STARTUP_ID ( type XA_STRING ) at least on its first mapped
 toplevel window to this value. It should also unset it, so it doesn't get
 propagated to other applications started from it. It should also
 update the ASN info when necessary, e.g. when KUniqueApplication
@@ -148,7 +148,7 @@ forks into background, it sends the PID change. That's how compliant
 applications should work, and this support for ASN should be provided
 by toolkits. All KDE application should be compliant by now, since
 kdelibs do all the necessary things. The KDE_STARTUP_ENV variable
-is read and unset in KApplication constructor, and KDE_STARTUP_ID
+is read and unset in KApplication constructor, and _KDE_STARTUP_ID
 is set on every toplevel window in KApplication::setTopWidget().
  However, majority of applications aren't compliant now, and even
 if I succeed making this thing a standard ( part of NETWM_SPEC
@@ -158,10 +158,10 @@ the ASN for its value will usually timeout, and when the app starts
 a new application, this ASN identification value will get reused without
 problems. The other problem is detecting, which newly mapped windows
 belong to which starting application. If a newly mapped window doesn't
-have KDE_STARTUP_ID property, the code tries to read its NETWM_PID
+have _KDE_STARTUP_ID property, the code tries to read its _NET_WM_PID
 property, and if it's set, it tries to match it ( together with
 WM_CLIENT_MACHINE ) with PIDs of all ASN infos. And if the window
-doesn't have even the NETWM_PID property, WM_CLASS property is used
+doesn't have even the _NET_WM_PID property, WM_CLASS property is used
 then. It's usually set to two strings, and at least one of them is
 usually the binary name of the application, so it's converted
 to lowercase and compared. For applications, where such comparison

@@ -63,8 +63,8 @@ DEALINGS IN THE SOFTWARE.
 #define None 0
 #endif
 
-static const char* const KDE_STARTUP_INFO = "KDE_STARTUP_INFO";
-static const char* const KDE_STARTUP_ID = "KDE_STARTUP_ID";
+static const char* const KDE_STARTUP_INFO = "_KDE_STARTUP_INFO";
+static const char* const KDE_STARTUP_ID = "_KDE_STARTUP_ID";
 // KDE_STARTUP_ENV is used also in kinit/wrapper.c
 static const char* const KDE_STARTUP_ENV = "KDE_STARTUP_ENV";
 
