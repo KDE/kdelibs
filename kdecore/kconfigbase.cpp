@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.18  1998/02/03 18:52:03  kulow
+// added a static_cast
+//
 // Revision 1.17  1998/01/25 22:20:44  kulow
 // applied patch by Kalle
 //
@@ -345,41 +348,63 @@ QFont KConfigBase::readFontEntry( const char* pKey,
 	{
 	  // find first part (font family)
 	  int nIndex = aValue.find( ',' );
-	  if( nIndex == -1 )
-		return aRetFont;
+	  if( nIndex == -1 ){
+	    if( pDefault )
+	      aRetFont = *pDefault;
+	    return aRetFont;
+	  }
 	  aRetFont.setFamily( aValue.left( nIndex ) );
 	  
 	  // find second part (point size)
 	  int nOldIndex = nIndex;
 	  nIndex = aValue.find( ',', nOldIndex+1 );
-	  if( nIndex == -1 )
-		return aRetFont;
+	  if( nIndex == -1 ){
+	    if( pDefault )
+	      aRetFont = *pDefault;
+	    return aRetFont;
+	  }
+
 	  aRetFont.setPointSize( aValue.mid( nOldIndex+1, 
-										 nIndex-nOldIndex-1 ).toInt() );
+			       	 nIndex-nOldIndex-1 ).toInt() );
 
 	  // find third part (style hint)
 	  nOldIndex = nIndex;
 	  nIndex = aValue.find( ',', nOldIndex+1 );
-	  if( nIndex == -1 )
-		return aRetFont;
+
+	  if( nIndex == -1 ){
+	    if( pDefault )
+	      aRetFont = *pDefault;
+	    return aRetFont;
+	  }
+
 	  aRetFont.setStyleHint( (QFont::StyleHint)aValue.mid( nOldIndex+1, 
 													nIndex-nOldIndex-1 ).toUInt() );
 
 	  // find fourth part (char set)
 	  nOldIndex = nIndex;
 	  nIndex = aValue.find( ',', nOldIndex+1 );
-	  if( nIndex == -1 )
-		return aRetFont;
+
+	  if( nIndex == -1 ){
+	    if( pDefault )
+	      aRetFont = *pDefault;
+	    return aRetFont;
+	  }
+
 	  aRetFont.setCharSet( (QFont::CharSet)aValue.mid( nOldIndex+1, 
-									   nIndex-nOldIndex-1 ).toUInt() );
+				   nIndex-nOldIndex-1 ).toUInt() );
 
 	  // find fifth part (weight)
 	  nOldIndex = nIndex;
 	  nIndex = aValue.find( ',', nOldIndex+1 );
-	  if( nIndex == -1 )
-		return aRetFont;
+
+	  if( nIndex == -1 ){
+	    if( pDefault )
+	      aRetFont = *pDefault;
+	    return aRetFont;
+	  }
+
 	  aRetFont.setWeight( aValue.mid( nOldIndex+1,
-									  nIndex-nOldIndex-1 ).toUInt() );
+    		       		  nIndex-nOldIndex-1 ).toUInt() );
 
 	  // find sixth part (font bits)
 	  uint nFontBits = aValue.right( aValue.length()-nIndex-1 ).toUInt();
@@ -394,8 +419,10 @@ QFont KConfigBase::readFontEntry( const char* pKey,
 	  if( nFontBits & 0x20 )
 		aRetFont.setRawMode( true );
 	}
-  else if( pDefault )
+  else {
+    if( pDefault )
 	aRetFont = *pDefault;
+  }
 
   return aRetFont;
 }
@@ -408,30 +435,45 @@ QColor KConfigBase::readColorEntry( const char* pKey,
   int nRed = 0, nGreen = 0, nBlue = 0;
 
   QString aValue = readEntry( pKey );
-  if( !aValue.isNull() )
-	{
-bool bOK;
-	  // find first part (red)
-	  int nIndex = aValue.find( ',' );
-	  if( nIndex == -1 )
-		return aRetColor;
-	  nRed = aValue.left( nIndex ).toInt( &bOK );
-	  
-	  // find second part (green)
-	  int nOldIndex = nIndex;
-	  nIndex = aValue.find( ',', nOldIndex+1 );
-	  if( nIndex == -1 )
-		return aRetColor;
-	  nGreen = aValue.mid( nOldIndex+1,
-						   nIndex-nOldIndex-1 ).toInt( &bOK );
+  if( !aValue.isEmpty() )
+    {
+      bool bOK;
+      
+      // find first part (red)
+      int nIndex = aValue.find( ',' );
+      
+      if( nIndex == -1 ){
+	// return a sensible default -- Bernd
+	if( pDefault )
+	  aRetColor = *pDefault;
+	return aRetColor;
+      }
+    
+      nRed = aValue.left( nIndex ).toInt( &bOK );
+      
+      // find second part (green)
+      int nOldIndex = nIndex;
+      nIndex = aValue.find( ',', nOldIndex+1 );
 
-	  // find third part (blue)
-	  nBlue = aValue.right( aValue.length()-nIndex-1 ).toInt( &bOK );
-
-	  aRetColor.setRgb( nRed, nGreen, nBlue );
-	}
-  else if( pDefault )
-	aRetColor = *pDefault;
+      if( nIndex == -1 ){
+	// return a sensible default -- Bernd
+	if( pDefault )
+	  aRetColor = *pDefault;
+	return aRetColor;
+      }
+      nGreen = aValue.mid( nOldIndex+1,
+			   nIndex-nOldIndex-1 ).toInt( &bOK );
+      
+      // find third part (blue)
+      nBlue = aValue.right( aValue.length()-nIndex-1 ).toInt( &bOK );
+      
+      aRetColor.setRgb( nRed, nGreen, nBlue );
+    }
+  else {
+    
+    if( pDefault )
+      aRetColor = *pDefault;
+  }
 
   return aRetColor;
 }
