@@ -33,18 +33,18 @@ PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"
        "dtd/kdex.dtd"
 -- --
 PUBLIC "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V1.0//EN"
-       "dtd/kdex-rdbhier2.elements"
+       "dtd/rdbhier2.elements"
 PUBLIC "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN"
-       "dtd/kdex-rdbpool.elements"
+       "dtd/rdbpool.elements"
 PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
-       "entities/kdex-genent.entities"
+       "entities/general.entities"
 PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
-       "dtd/kdex-modifications.elements"
+       "dtd/modifications.elements"
 
 		      -- General KDE Entities --
 
 PUBLIC "-//KDE//ENTITIES DocBook XML Localisation Entity Declarations V2.0//EN"
-       "entities/kdex-l10n.entities"
+       "entities/l10n.entities"
 
 		     -- Various external files --
 
