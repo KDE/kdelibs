@@ -1335,7 +1335,7 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
             childDockWidgetList->append( curdw );
             findChildDockWidget( curdw, childDockWidgetList );
 
-            d->oldDragRect = QRect();
+            //d->oldDragRect = QRect(); should fix rectangle not erased problem
             d->dragRect = QRect(curdw->geometry());
             QPoint p = curdw->mapToGlobal(QPoint(0,0));
             d->dragRect.moveTopLeft(p);
