@@ -18,6 +18,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <qvector.h>
 #include <dom_string.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -27,39 +28,111 @@
 #include <kjs/function.h>
 #include <kjs/operations.h>
 #include <kurl.h>
+#include <kstddirs.h>
+#include <kglobal.h>
+#include <kconfig.h>
+#include <kdebug.h>
+
 #include <kio/kprotocolmanager.h>
 #include "kjs_navigator.h"
 #include "khtml_part.h"
 
-#include <kstddirs.h>
-#include <kglobal.h>
-#include <kconfig.h>
 
 using namespace KJS;
 
 namespace KJS {
 
-  class Plugins : public HostImp {
-  public:
-    //  KConfig *nsplugConf;
-    Plugins() { }
-    virtual KJSO get(const UString &p) const;
-  };
+    class PluginBase : public HostImp {
+    public:
+        PluginBase();
+        virtual ~PluginBase();
 
-  class PluginsFunc : public DOMFunction {
-  public:
-    PluginsFunc() { };
-    Completion tryExecute(const List &);
-  };
+        struct MimeTypeInfo;
+        struct PluginInfo;
 
-  class NavigatorFunc : public InternalFunctionImp {
-  public:
-    NavigatorFunc(KHTMLPart *p) : part(p) { }
-    Completion execute(const List &);
-  private:
-  KHTMLPart *part;
-  };
+        struct MimeTypeInfo {
+            QString type;
+            QString desc;
+            QString suffixes;
+            PluginInfo *plugin;
+        };
+
+        struct PluginInfo {
+            QString name;
+            QString file;
+            QString desc;
+            QList<MimeTypeInfo> mimes;
+        };
+
+        static QList<PluginInfo> *plugins;
+        static QList<MimeTypeInfo> *mimes;
+
+    private:
+        static int m_refCount;
+    };
+
+
+    class Plugins : public PluginBase {
+    public:
+        Plugins() {};
+        virtual KJSO get(const UString &p) const;
+
+    private:
+    };
+
+
+    class MimeTypes : public PluginBase {
+    public:
+        MimeTypes() {};
+        virtual KJSO get(const UString &p) const;
+
+    private:
+    };
+
+
+    class Plugin : public HostImp {
+    public:
+        Plugin( PluginBase::PluginInfo *info ) { m_info = info; };
+        virtual KJSO get(const UString &p) const;
+
+    private:
+        PluginBase::PluginInfo *m_info;
+    };
+
+
+    class MimeType : public HostImp {
+    public:
+        MimeType( PluginBase::MimeTypeInfo *info ) { m_info = info; };
+
+        virtual KJSO get(const UString &p) const;
+
+    private:
+        PluginBase::MimeTypeInfo *m_info;
+    };
+
+
+    class PluginsFunc : public DOMFunction {
+    public:
+        PluginsFunc() { };
+        Completion tryExecute(const List &);
+    };
+
+
+    class NavigatorFunc : public InternalFunctionImp {
+    public:
+        NavigatorFunc(KHTMLPart *p) : part(p) { }
+        Completion execute(const List &);
+
+    private:
+        KHTMLPart *part;
+    };
 };
+
+
+QList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
+QList<PluginBase::MimeTypeInfo> *KJS::PluginBase::mimes = 0;
+int KJS::PluginBase::m_refCount = 0;
+
 
 KJSO Navigator::get(const UString &p) const
 {
@@ -73,10 +146,10 @@ KJSO Navigator::get(const UString &p) const
   else if (p == "appName") {
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
     if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
-	userAgent.find(QString::fromLatin1("compatible")) == -1)
+        userAgent.find(QString::fromLatin1("compatible")) == -1)
       return String("Netscape");
     if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
-	userAgent.find(QString::fromLatin1("MSIE")) >= 0)
+        userAgent.find(QString::fromLatin1("MSIE")) >= 0)
       return String("Microsoft Internet Explorer");
     return String("Konqueror");
   } else if (p == "appVersion"){
@@ -90,30 +163,203 @@ KJSO Navigator::get(const UString &p) const
     // danimo: yet another evil hack, but necessary to spoof some sites...
     return String((userAgent.find(QString::fromLatin1("Win"),0,false)==-1) ?
            QString::fromLatin1("X11") : QString::fromLatin1("Win32"));
-  } else if (p == "plugins")
-    return KJSO(new Plugins());
-  else
+  } else if (p == "plugins") {
+      return KJSO(new Plugins());
+  } else if (p == "mimetypes") {
+      kdDebug() << "navigator.plugins" << endl;
+      return KJSO(new MimeTypes());
+  } else
     return Undefined();
 }
 
+
+/*******************************************************************/
+
+PluginBase::PluginBase()
+{
+    if ( !plugins ) {
+        plugins = new QList<PluginInfo>;
+        mimes = new QList<MimeTypeInfo>;
+        plugins->setAutoDelete( true );
+        mimes->setAutoDelete( true );
+
+        // read configuration
+        KConfig c(KGlobal::dirs()->saveLocation("data","nsplugins")+"/pluginsinfo");
+        unsigned num = (unsigned int)c.readNumEntry("number");
+        kdDebug() << "plugins.length = " << num << endl;
+        for ( unsigned n=0; n<num; n++ ) {
+
+            c.setGroup( QString::number(n) );
+            PluginInfo *plugin = new PluginInfo;
+
+            plugin->name = c.readEntry("name");
+            plugin->file = c.readEntry("file");
+            plugin->desc = c.readEntry("description");
+
+            plugins->append( plugin );
+
+            // get mime types from string
+            QStringList types = QStringList::split( ';', c.readEntry("mime") );
+            QStringList::Iterator type;
+            for ( type=types.begin(); type!=types.end(); ++type ) {
+
+                // get mime information
+                MimeTypeInfo *mime = new MimeTypeInfo;
+                QStringList tokens = QStringList::split(':', *type, TRUE);
+                QStringList::Iterator token;
+
+                token = tokens.begin();
+                mime->type = (*token).lower();
+                ++token;
+
+                mime->suffixes = *token;
+                ++token;
+
+                mime->desc = *token;
+                ++token;
+
+                mime->plugin = plugin;
+
+                mimes->append( mime );
+                plugin->mimes.append( mime );
+            }
+        }
+    }
+
+    m_refCount++;
+}
+
+PluginBase::~PluginBase()
+{
+    m_refCount--;
+    if ( m_refCount==0 ) {
+        delete plugins;
+        delete mimes;
+        plugins = 0;
+        mimes = 0;
+    }
+}
+
+
+/*******************************************************************/
+
+
 KJSO Plugins::get(const UString &p) const
 {
+    kdDebug() << "Plugins::get " << p.qstring() << endl;
 
-  KConfig *nspluginConf = new KConfig(KGlobal::dirs()->saveLocation("data","nsplugins")+"/pluginsinfo");
-  
-  if (p == "refresh")
-    return Function(new PluginsFunc());
-  if (p == "length"){
-    return Number(nspluginConf->readNumEntry("number"));
-  }
+    if (p == "refresh")
+        return Function(new PluginsFunc());
+    else if( p=="length" )
+        return Number(plugins->count());
+    else {
 
-  return Undefined();
+        // plugins[#]
+        bool ok;
+        unsigned int i = p.toULong(&ok);
+        if( ok && i<plugins->count() )
+            return KJSO( new Plugin( plugins->at(i) ) );
+
+        // plugin[name]
+        for ( PluginInfo *pl = plugins->first(); pl!=0; pl = plugins->next() ) {
+            if ( pl->name==p )
+                return KJSO( new Plugin( pl ) );
+        }
+    }
+
+    return Undefined();
 }
+
+/*******************************************************************/
+
+
+KJSO MimeTypes::get(const UString &p) const
+{
+    kdDebug() << "Mimetypes::get " << p.qstring() << endl;
+
+    if( p=="length" )
+        return Number( mimes->count() );
+    else {
+
+        // mimeTypes[#]
+        bool ok;
+        unsigned int i = p.toULong(&ok);
+        if( ok && i<mimes->count() )
+            return KJSO( new MimeType( mimes->at(i) ) );
+
+        // plugin[name]
+        for ( MimeTypeInfo *m=mimes->first(); m!=0; m=mimes->next() ) {
+            if ( m->type==p )
+                return KJSO( new MimeType( m ) );
+        }
+    }
+
+    return Undefined();
+}
+
+
+/************************************************************************/
+
+
+KJSO Plugin::get(const UString &p) const
+{
+    kdDebug() << "Plugin::get " << p.qstring() << endl;
+
+    if ( p=="name" )
+        return String( m_info->name );
+    else if ( p=="filename" )
+        return String( m_info->file );
+    else if ( p=="description" )
+        return String( m_info->desc );
+    else if ( p=="length" ) {
+        unsigned num = m_info->mimes.count();
+        kdDebug() << "plugin.length = " << num << endl;
+        return Number(num);
+    } else {
+
+        // plugin[#]
+        bool ok;
+        unsigned int i = p.toULong(&ok);
+        if( ok && i<m_info->mimes.count() )
+            return KJSO( new MimeType( m_info->mimes.at(i) ) );
+
+        // plugin["name"]
+        for ( PluginBase::MimeTypeInfo *m=m_info->mimes.first();
+              m!=0; m=m_info->mimes.next() ) {
+            if ( m->type==p )
+                return KJSO( new MimeType( m ) );
+        }
+
+    }
+
+    return Undefined();
+}
+
+
+/*****************************************************************************/
+
+
+KJSO MimeType::get(const UString &p) const
+{
+    kdDebug() <<"MimeType::get " << p.qstring() << endl;
+    if ( p=="type" )
+        return String( m_info->type );
+    else if ( p=="suffixes" )
+        return String( m_info->suffixes );
+    else if ( p=="description" )
+        return String( m_info->desc );
+    else if ( p=="enabledPlugin" )
+        return KJSO( new Plugin( m_info->plugin ) );
+
+    return Undefined();
+}
+
 
 Completion PluginsFunc::tryExecute(const List &)
 {
   return Completion(Normal, Undefined());
 }
+
 
 Completion NavigatorFunc::execute(const List &)
 {
