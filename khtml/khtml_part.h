@@ -887,6 +887,14 @@ private slots:
   /**
    * @internal
    */
+  void slotChildCompleted( bool );  
+  /**
+   * @internal
+   */
+  void slotParentCompleted( bool );
+  /**
+   * @internal
+   */
   void slotChildURLRequest( const KURL &url, const KParts::URLArgs &args );
 
   void slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* obj);

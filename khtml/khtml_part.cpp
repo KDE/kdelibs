@@ -193,6 +193,8 @@ public:
     m_submitForm = 0;
     m_delayRedirect = 0;
 
+    m_bPendingChildRedirection = false;
+
     // inherit security settings from parent
     if(parent && parent->inherits("KHTMLPart"))
     {
@@ -385,6 +387,8 @@ public:
   KParts::Part * m_activeFrame;
   QGuardedPtr<KHTMLPart> m_opener;
   bool m_openedByJS;
+
+  bool m_bPendingChildRedirection;
 };
 
 namespace khtml {
@@ -763,6 +767,8 @@ bool KHTMLPart::closeURL()
   for (; it != end; ++it )
     if ( !( *it ).m_part.isNull() )
       ( *it ).m_part->closeURL();
+      
+  d->m_bPendingChildRedirection = false;
 
   // Stop any started redirections as well!! (DA)
   if ( d && d->m_redirectionTimer.isActive() )
@@ -1671,17 +1677,28 @@ void KHTMLPart::checkCompleted()
         }
       }
   }
-
-  if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
-      d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+  
+  // check that the view has not been moved by the user
+  if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 )
+      d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset,
+                                 d->m_extension->urlArgs().yOffset );
 
   if ( !d->m_redirectURL.isEmpty() )
   {
-    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    // Do not start redirection for frames here! That action is
+    // deferred until the parent emits a completed signal.
+    if ( parentPart() == 0 )
+      d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    
     emit completed( true );
   }
   else
-    emit completed();
+  {
+    if ( d->m_bPendingChildRedirection )
+      emit completed ( true );
+    else
+      emit completed();
+  }
 
   if (!parentPart())
       emit setStatusBarText(i18n("Done."));
@@ -2712,8 +2729,12 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
                this, SLOT( slotChildStarted( KIO::Job *) ) );
       connect( part, SIGNAL( completed() ),
                this, SLOT( slotChildCompleted() ) );
+      connect( part, SIGNAL( completed(bool) ),
+               this, SLOT( slotChildCompleted(bool) ) );
       connect( part, SIGNAL( setStatusBarText( const QString & ) ),
                this, SIGNAL( setStatusBarText( const QString & ) ) );
+      connect( this, SIGNAL( completed(bool) ),
+               part, SLOT( slotParentCompleted(bool) ) );
     }
 
     child->m_extension = KParts::BrowserExtension::childObject( part );
@@ -3023,6 +3044,15 @@ void KHTMLPart::popupMenu( const QString &url )
   emit popupMenu(url, QCursor::pos());
 }
 
+void KHTMLPart::slotParentCompleted( bool )
+{
+  if ( !d->m_redirectURL.isEmpty() && !d->m_redirectionTimer.isActive() )
+  {
+    // kdDebug(6050) << this << ": Child redirection -> " << d->m_redirectURL << endl;
+    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+  }
+}
+
 void KHTMLPart::slotChildStarted( KIO::Job *job )
 {
   khtml::ChildFrame *child = frame( sender() );
@@ -3047,12 +3077,20 @@ void KHTMLPart::slotChildStarted( KIO::Job *job )
 
 void KHTMLPart::slotChildCompleted()
 {
+  slotChildCompleted( false );
+}
+
+void KHTMLPart::slotChildCompleted( bool complete )
+{
   khtml::ChildFrame *child = frame( sender() );
 
   assert( child );
 
   child->m_bCompleted = true;
   child->m_args = KParts::URLArgs();
+
+  if ( parentPart() == 0 )
+    d->m_bPendingChildRedirection = (d->m_bPendingChildRedirection || complete);
 
   checkCompleted();
 }
