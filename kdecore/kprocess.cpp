@@ -612,20 +612,29 @@ int KProcess::commSetupDoneC()
 
   if (communication & Stdin)
     ok &= dup2(in[0],  STDIN_FILENO) != -1;
-  else
-    ok &= dup2( open( "/dev/null", O_RDONLY ), STDIN_FILENO ) != -1;
+  else {
+    int null_fd = open( "/dev/null", O_RDONLY );
+    ok &= dup2( null_fd, STDIN_FILENO ) != -1;
+    close( null_fd );
+  }
   if (communication & Stdout) {
     ok &= dup2(out[1], STDOUT_FILENO) != -1;
     ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
   }
-  else
-    ok &= dup2( open( "/dev/null", O_WRONLY ), STDOUT_FILENO ) != -1;
+  else {
+    int null_fd = open( "/dev/null", O_WRONLY );
+    ok &= dup2( null_fd, STDOUT_FILENO ) != -1;
+    close( null_fd );
+  }
   if (communication & Stderr) {
     ok &= dup2(err[1], STDERR_FILENO) != -1;
     ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&so), sizeof(so));
   }
-  else
-    ok &= dup2( open( "/dev/null", O_WRONLY ), STDERR_FILENO ) != -1;
+  else {
+    int null_fd = open( "/dev/null", O_WRONLY );
+    ok &= dup2( null_fd, STDERR_FILENO ) != -1;
+    close( null_fd );
+  }
   return ok;
 }
 
