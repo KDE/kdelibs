@@ -276,6 +276,8 @@ public:
     // The corresponding closing element has been parsed. ### remove me
     virtual void close() { }
 
+    virtual int availableHeight() const { return 0; }
+
     // does a query on the rendertree and finds the innernode
     // and overURL for the given position
     // if readonly == false, it will recalc hover styles accordingly

@@ -73,7 +73,7 @@ public:
     virtual void setHeight( int height ) { m_height = height; }
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
-    
+
     virtual int lowestPosition() const;
     virtual int rightmostPosition() const;
 
@@ -90,6 +90,8 @@ public:
 
     virtual short calcReplacedWidth(bool* ieHack=0) const;
     virtual int   calcReplacedHeight() const;
+
+    virtual int availableHeight() const;
 
     void calcVerticalMargins();
 

@@ -253,7 +253,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         }
 
 
-//         kdDebug() << "cy="<<cy<< " ch="<<ch << " clipy=" << clipy << " cliph=" << cliph << " sx="<<sx << " sy="<<sy << endl;
+        //kdDebug() << "cy="<<cy<< " ch="<<ch << " clipy=" << clipy << " cliph=" << cliph << " sx="<<sx << " sy="<<sy << endl;
 	int diff = clipy - cy;
 	if ( diff > 0 ) {
 	    cy += diff;
@@ -262,7 +262,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 	    ch -= diff;
 	}
 	ch = QMIN( ch, clipy + cliph - cy );
-// 	kdDebug() << "clip="<<cx << " cy="<<cy<< " cw="<<cw << " ch="<<ch << " sx="<<sx << " sy="<<sy << endl;
+ 	//kdDebug() << "clip="<<cx << " cy="<<cy<< " cw="<<cw << " ch="<<ch << " sx="<<sx << " sy="<<sy << endl;
 
         if (cw>0 && ch>0)
             p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
@@ -546,7 +546,7 @@ void RenderBox::calcHeight()
     else
     {
         Length h;
-        if ( isReplaced() )
+        if ( isReplaced() && !isFlow() )
             h = Length( calcReplacedHeight(), Fixed );
         else
             h = style()->height();
@@ -645,11 +645,15 @@ int RenderBox::calcReplacedHeight() const
                 cb = cb->containingBlock();
 
 	    Length h = cb->style()->height();
-	    qDebug("calcReplacedHeight: cb->styleHeight = %d/%d, height=%d", h.value, h.type, cb->height() );
-            if ( h.isFixed() )
-                height = h.minWidth( h.value );
-            else
-                height = intrinsicHeight();
+//	    qDebug("calcReplacedHeight: cb->styleHeight = %d/%d, height=%d", h.value, h.type, cb->height() );
+            height = h.minWidth(availableHeight());
+
+//             if ( h.isFixed() )
+//                 height = h.minWidth( h.value );
+//             else
+//                 height = intrinsicHeight();
+//            qDebug("availableHeight: %d, height: %d",
+//                   availableHeight(), height);
         }
     }
     break;
@@ -661,6 +665,22 @@ int RenderBox::calcReplacedHeight() const
     };
 
     return height;
+}
+
+int RenderBox::availableHeight() const
+{
+    Length h = style()->height();
+
+    if (h.isFixed())
+        return h.value;
+
+    if (isRoot())
+        return root()->view()->visibleHeight();
+
+    if (h.isPercent())
+        return h.width(containingBlock()->availableHeight());
+
+    return containingBlock()->availableHeight();
 }
 
 void RenderBox::calcVerticalMargins()
