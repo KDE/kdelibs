@@ -164,7 +164,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
             if ( serviceList.find( (*it)->desktopEntryPath() ) == serviceList.end() )
             {
                 bool allow = (*it)->allowAsDefault();
-                KServiceOffer o( (*it), (*it)->initialPreference(), allow );
+                KServiceOffer o( (*it), (*it)->initialPreferenceForMimeType(_servicetype), allow );
                 offers.append( o );
                 //kdDebug(7014) << "Appending offer " << (*it)->name() << " initial preference=" << (*it)->initialPreference() << " allow-as-default=" << allow << endl;
             }

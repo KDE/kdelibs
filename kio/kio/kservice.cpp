@@ -344,11 +344,15 @@ bool KService::hasServiceType( const QString& _servicetype ) const
   if ( mimePtr && mimePtr == KMimeType::defaultMimeTypePtr() )
       mimePtr = 0;
 
+  bool isNumber;
   // For each service type we are associated with, if it doesn't
   // match then we try its parent service types.
   QStringList::ConstIterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
+      (*it).toInt(&isNumber);
+      if (isNumber)
+         continue;
       //kdDebug(7012) << "    has " << (*it) << endl;
       KServiceType::Ptr ptr = KServiceType::serviceType( *it );
       if ( ptr && ptr->inherits( _servicetype ) )
@@ -361,6 +365,66 @@ bool KService::hasServiceType( const QString& _servicetype ) const
           return true;
   }
   return false;
+}
+
+int KService::initialPreferenceForMimeType( const QString& mimeType ) const
+{
+  if (!m_bValid) return 0; // safety test
+
+  bool isNumber;
+
+  // For each service type we are associated with
+  QStringList::ConstIterator it = m_lstServiceTypes.begin();
+  for( ; it != m_lstServiceTypes.end(); ++it )
+  {
+      (*it).toInt(&isNumber);
+      if (isNumber)
+         continue;
+      //kdDebug(7012) << "    has " << (*it) << endl;
+      KServiceType::Ptr ptr = KServiceType::serviceType( *it );
+      if ( !ptr || !ptr->inherits( mimeType ) )
+          continue;
+
+      int initalPreference = m_initialPreference;
+      ++it;
+      if (it != m_lstServiceTypes.end())
+      {
+         int i = (*it).toInt(&isNumber);
+         if (isNumber)
+            initalPreference = i;
+      }
+      return initalPreference;
+  }
+
+  KMimeType::Ptr mimePtr = KMimeType::mimeType( mimeType );
+  if ( mimePtr && mimePtr == KMimeType::defaultMimeTypePtr() )
+      mimePtr = 0;
+
+  // Try its parent service types.
+  it = m_lstServiceTypes.begin();
+  for( ; it != m_lstServiceTypes.end(); ++it )
+  {
+      (*it).toInt(&isNumber);
+      if (isNumber)
+         continue;
+
+      // The mimetype inheritance ("is also") works the other way.
+      // e.g. if we're looking for a handler for mimePtr==smb-workgroup
+      // then a handler for inode/directory is ok.
+      if ( !mimePtr || !mimePtr->is( *it ) )
+          continue;
+
+      int initalPreference = m_initialPreference;
+      ++it;
+      if (it != m_lstServiceTypes.end())
+      {
+         int i = (*it).toInt(&isNumber);
+         if (isNumber)
+            initalPreference = i;
+      }
+      return initalPreference;
+  }
+  return 0;
 }
 
 class KServiceReadProperty : public KConfigBase
