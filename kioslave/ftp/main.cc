@@ -1508,8 +1508,6 @@ void FtpProtocol::slotListDir( const char *_url )
 
   ftp.closedir();
 
-  kdebug( KDEBUG_INFO, 7102, "============= COMPLETED LIST 2 ============" );
-
   m_cmd = CMD_NONE;
 
   finished();

@@ -268,7 +268,7 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
 
 
 /*
- * ftpOpen - connect to remote server
+ * ftpConnect2 - connect to remote server
  *
  * return 1 if connected, 0 if not
  */
@@ -1127,7 +1127,8 @@ bool Ftp::closedir()
 {
   if( dirfile )
   {
-    ftpCloseDir();
+    if ( !ftpCloseDir() )
+      return false;
     fclose( dirfile );
     dirfile = NULL;
 
@@ -1139,14 +1140,8 @@ bool Ftp::closedir()
 
 bool Ftp::ftpCloseDir()
 {
-  kdebug(KDEBUG_INFO, 7102, "... closing (ftpCloseDir)");
-
-  if (! ftpCloseCommand() ) {
-    kdebug(KDEBUG_INFO, 7102, "Error on closing socket");
-    return false;
-  }
-
-  return readresp('2');
+  // Same as ftpClose()
+  return ftpClose();
 }
 
 
@@ -1217,11 +1212,11 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 
 bool Ftp::ftpClose()
 {
-  kdebug(KDEBUG_INFO, 7102, "... closing (ftpClose)");
+  kdebug(KDEBUG_INFO, 7102, "... closing");
 
   // first close, then read response ( should be 226 )
 
-  bool tmp = ftpCloseCommand();
+  bool tmp = ftpCloseCommand();// returns always true :-)
 
   if ( !readresp( '2' ) ) {
       kdebug(KDEBUG_INFO, 7102, "Did not get transfer complete message");
