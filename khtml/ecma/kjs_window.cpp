@@ -857,7 +857,7 @@ void Window::clear( ExecState *exec )
 void Window::setCurrentEvent( DOM::Event *evt )
 {
   m_evt = evt;
-  //kdDebug(6070) << "Window(part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
+  //kdDebug(6070) << "Window " << this << " (part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
 }
 
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -980,10 +980,9 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       KURL url;
       if (!str.isEmpty())
       {
-        //#36296 shows that it's not the "thisObject"'s URL that's used, but the one from the interpreter
-        //url = part->htmlDocument().completeURL(str).string();
-        KHTMLPart *callingPart = static_cast<KJS::ScriptInterpreter *>( exec->interpreter() )->part();
-        url = callingPart->htmlDocument().completeURL(str).string();
+        KHTMLPart* p = Window::retrieveActive(exec)->m_part;
+        if ( p )
+          url = p->htmlDocument().completeURL(str).string();
       }
 
       KParts::URLArgs uargs;
