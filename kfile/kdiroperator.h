@@ -557,22 +557,10 @@ protected slots:
     void resetCursor();
 
     /**
-     * @internal
-     */
-    // ### make private
-    void readNextMimeType();
-
-    /**
      * Called after @ref setURL() to load the directory, update the history,
      * etc.
      */
     void pathChanged();
-
-    /**
-     * @internal
-     */
-    // ### remove for KDE 3
-    void filterChanged();
 
     /**
      * Adds a new list of KFileItems to the view
@@ -646,12 +634,6 @@ protected slots:
     }
 
     /**
-     * @p internal
-     */
-    // ### make private
-    void deleteOldView();
-
-    /**
      * Tries to make the given @p match as current item in the view and emits
      * completion( match )
      */
@@ -675,6 +657,16 @@ signals:
     void fileSelected(const KFileViewItem*);
 
 private:
+    /**
+     * @p internal
+     */
+    void deleteOldView();
+
+    /**
+     * @internal
+     */
+    void readNextMimeType();
+
     /**
      * Contains all URLs you can reach with the back button.
      */

@@ -1026,16 +1026,6 @@ void KDirOperator::selectFile(const KFileViewItem *item)
     emit fileSelected( item );
 }
 
-
-void KDirOperator::filterChanged()
-{
-    pendingMimeTypes.clear();
-    fileView->clear();
-    myCompletion.clear();
-    myDirCompletion.clear();
-    dir->listDirectory();
-}
-
 void KDirOperator::setCurrentItem( const QString& filename )
 {
     const KFileViewItem *item = 0L;
