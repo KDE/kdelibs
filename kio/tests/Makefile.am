@@ -24,7 +24,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest \
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
-                 previewtest kionetrctest kdcopcheck
+                 previewtest kionetrctest kdcopcheck metatest
 
 METASOURCES = AUTO
 
@@ -57,8 +57,20 @@ kscantest_SOURCES = kscantest.cpp
 kdirlistertest_SOURCES = kdirlistertest.cpp kdirlistertest.h
 previewtest_SOURCES = previewtest.cpp previewtest.h
 ktartest_SOURCES = ktartest.cpp
+metatest_SOURCES = metatest.cpp
 
 #Needs kfile, so commented out
 #kopenwithtest_SOURCES = kopenwithtest.cpp
 #kopenwithtest_LDADD = $(LIB_KFILE)
 
+INCLUDES=  -I$(srcdir)/.. $(all_includes)
+METASOURCES = AUTO
+
+# kfile meta stuff
+kde_module_LTLIBRARIES = dummymeta.la
+dummymeta_la_SOURCES = dummymeta.cpp
+dummymeta_la_LIBADD = $(LIB_KSYCOCA)
+dummymeta_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+
+services_DATA = dummymeta.desktop
+servicesdir = $(kde_servicesdir)

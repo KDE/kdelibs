@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Service
+Name=Dummy Meta
+ServiceTypes=KFilePlugin
+X-KDE-Library=dummymeta
+MimeType=text/plain
+PreferredItems=Author,Title,Date
