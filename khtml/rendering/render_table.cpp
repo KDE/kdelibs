@@ -1605,6 +1605,7 @@ RenderTableCell::RenderTableCell()
   m_table = 0;
   rowimpl = 0;
   m_printSpecial=true;
+  _topExtra = 0;
 }
 
 RenderTableCell::~RenderTableCell()
