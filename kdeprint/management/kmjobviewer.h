@@ -68,12 +68,13 @@ protected slots:
 	void slotShowCompleted(bool);
 	void slotRefresh();
 	void slotClose();
+	void slotShowMoveMenu();
+	void slotShowPrinterMenu();
 
 protected:
 	void init();
 	void updateJobs();
 	void initActions();
-	void initPrinterActions();
 	JobItem* findItem(const QString& uri);
 	void jobSelection(QPtrList<KMJob>& l);
 	void send(int cmd, const QString& name, const QString& arg = QString::null);
@@ -86,6 +87,8 @@ protected:
 	void triggerRefresh();
 	void addToManager();
 	void removeFromManager();
+	void buildPrinterMenu(QPopupMenu *menu, bool use_all = false);
+	void updateCaption();
 
 private:
 	KListView		*m_view;
