@@ -257,6 +257,11 @@ void Kded::crashHandler(int)
 {
    DCOPClient::emergencyClose();
    system("kded");
+qWarning("Last DCOP call before KDED crash was from application '%s'\n"
+         "to object '%s', function '%s'.", 
+         DCOPClient::postMortemSender(), 
+         DCOPClient::postMortemObject(),
+         DCOPClient::postMortemFunction());
 }
 
 void Kded::installCrashHandler()
