@@ -895,6 +895,14 @@ void KTMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     // just in case we are rebuilding, let's remove our old client
     guiFactory()->removeClient( this );
 
+    // make sure to have an empty GUI
+    if ( kmenubar )
+      kmenubar->clear();
+    
+    toolbars.setAutoDelete( true );
+    toolbars.clear();
+    toolbars.setAutoDelete( false );
+    
     // we always want a help menu
     if (d->m_helpMenu == 0)
         d->m_helpMenu = new KHelpMenu(this, instance()->aboutData(), true,
@@ -920,7 +928,33 @@ void KTMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
 
     // try and get back *some* of our memory
     if ( _conserveMemory )
+    {
+      // before freeing the memory allocated by the DOM document we also
+      // free all memory allocated internally in the KXMLGUIFactory for
+      // the menubar and the toolbars . This however implies that we
+      // have to take care of deleting those widgets ourselves. For
+      // destruction this is no problem, but when rebuilding we have
+      // to take care of that (and we want to rebuild the GUI when
+      // using stuff like the toolbar editor ).
+      // In addition we have to take care of not removing containers
+      // like popupmenus, defined in the XML document.
+      // this code should probably go into a separate method in KTMainWindow.
+      // there's just one problem: I'm bad in finding names ;-) , so
+      // I skipped this ;-)
+    
+      QDomDocument doc = domDocument();
+
+      QDomElement e = doc.documentElement().firstChild().toElement();
+      for (; !e.isNull(); e = e.nextSibling().toElement() )
+      {
+        if ( e.tagName().lower() == QString::fromLatin1( "toolbar" ) )
+	  d->m_factory->resetContainer( e.attribute( "name" ) );
+	else if ( e.tagName().lower() == QString::fromLatin1( "menubar" ) )
+	  d->m_factory->resetContainer( e.tagName(), true );
+      }
+
       conserveMemory();
+    }
 
     setUpdatesEnabled( true );
 

@@ -186,7 +186,7 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
     // strange to it
     base = d->m_doc.documentElement();
 
-    dump_xml(base.toElement());
+    //    dump_xml(base.toElement());
 
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )

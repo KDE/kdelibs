@@ -103,14 +103,35 @@ class KXMLGUIFactory
   QWidget *container( const QString &containerName, KXMLGUIClient *client );
 
   /**
+   * Use this method to get access to a container widget with the name specified with @p containerName
+   * and which is owned by the @p client. The container name is specified with a "name" attribute in the
+   * XML document.
+   *
+   * @param useTagName Specify whether the compare the specified name with the name attribute or the tag name.
+   *
+   * This method may return 0L if no container with the given name exists or is not owned by the client.
+   */
+  QWidget *container( const QString &containerName, KXMLGUIClient *client, bool useTagName ); // BCI: merge with useTagName = false
+
+  /**
    * Use this method to free all memory allocated by the KXMLGUIFactory. This deletes the internal node
    * tree and therefore resets the internal state of the class. Please note that the actual GUI is
-   * NOT touched at all, meaning no containers are being deleted nor any actions unplugged. That is
+   * NOT touched at all, meaning no containers are deleted nor any actions unplugged. That is
    * something you have to do on your own. So use this method only if you know what you are doing :-)
    *
    * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all inserted clients)
    */
   void reset();
+
+  /**
+   * Use this method to free all memory allocated by the KXMLGUIFActory for a specific container, including
+   * all child containers and actions. This deletes the internal node subtree for the specified container. The
+   * actual GUI is not touched, no containers are deleted or any actions unplugged. Use this method only if you
+   * know what you are doing :-)
+   *
+   * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all clients of the container)
+   */
+  void resetContainer( const QString &containerName, bool useTagName = false );
 
  private:
 
@@ -126,7 +147,9 @@ class KXMLGUIFactory
 
   KXMLGUIContainerNode *findContainerNode( KXMLGUIContainerNode *parentNode, QWidget *container );
 
-  QWidget *findRecursive( KXMLGUIContainerNode *node );
+  KXMLGUIContainerNode *findContainer( KXMLGUIContainerNode *node, const QString &name, bool tag );
+
+  QWidget *findRecursive( KXMLGUIContainerNode *node, bool tag );
 
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id, KXMLGUIBuilder **builder );
 

@@ -339,10 +339,15 @@ QValueList<KXMLGUIClient*> KXMLGUIFactory::clients() const
 
 QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient *client )
 {
+  return container( containerName, client, false );
+}
+
+QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient *client, bool useTagName )
+{
   d->m_containerName = containerName;
   m_client = client;
 
-  QWidget *result = findRecursive( d->m_rootNode );
+  QWidget *result = findRecursive( d->m_rootNode, useTagName );
 
   m_client = 0L;
   d->m_containerName = QString::null;
@@ -355,6 +360,25 @@ void KXMLGUIFactory::reset()
   resetInternal( d->m_rootNode );
 
   d->m_rootNode->children.clear();
+}
+
+void KXMLGUIFactory::resetContainer( const QString &containerName, bool useTagName )
+{
+  if ( containerName.isEmpty() )
+    return;
+
+  KXMLGUIContainerNode *container = findContainer( d->m_rootNode, containerName, useTagName );
+
+  if ( !container )
+    return;
+
+  KXMLGUIContainerNode *parent = container->parent;
+  if ( !parent )
+    return;
+
+  //  resetInternal( container );
+
+  parent->children.removeRef( container );
 }
 
 void KXMLGUIFactory::resetInternal( KXMLGUIContainerNode *node )
@@ -770,15 +794,34 @@ KXMLGUIContainerNode *KXMLGUIFactory::findContainerNode( KXMLGUIContainerNode *p
   return 0L;
 }
 
-QWidget *KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node )
+KXMLGUIContainerNode *KXMLGUIFactory::findContainer( KXMLGUIContainerNode *node, const QString &name, bool tag )
 {
-  if ( node->name == d->m_containerName && node->client == m_client )
+  if ( ( tag && node->tagName == name ) ||
+       ( !tag && node->name == name ) )
+    return node;
+
+  QListIterator<KXMLGUIContainerNode> it( node->children );
+  for (; it.current(); ++it )
+  {
+    KXMLGUIContainerNode *res = findContainer( it.current(), name, tag );
+    if ( res )
+      return res;
+  }
+
+  return 0;
+}
+
+QWidget *KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, bool tag )
+{
+  if ( ( ( !tag && node->name == d->m_containerName ) ||
+         ( tag && node->tagName == d->m_containerName ) ) &&
+       ( !m_client || node->client == m_client ) )
     return node->container;
 
   QListIterator<KXMLGUIContainerNode> it( node->children );
   for (; it.current(); ++it )
   {
-    QWidget *cont = findRecursive( it.current() );
+    QWidget *cont = findRecursive( it.current(), tag );
     if ( cont )
       return cont;
   }
