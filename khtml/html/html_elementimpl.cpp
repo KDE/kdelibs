@@ -70,6 +70,9 @@ void HTMLElementImpl::mouseEventHandler( MouseEvent *ev, bool inside )
     KHTMLView *view = (KHTMLView *) static_cast<HTMLDocumentImpl *>(document)->view();
     if(!view) return;
 
+    if (m_render->style() && m_render->style()->visiblity() == HIDDEN)
+        return;
+
     int id = 0;
     bool click = false;
 

@@ -622,6 +622,8 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLButtonElementImpl::mouseEventHandler( MouseEvent *ev, bool /*inside*/)
 {
+    if (m_render->style() && m_render->style()->visiblity() == khtml::HIDDEN)
+        return;
     if (m_type != BUTTON && (ev->type == MouseClick) || (ev->type == MouseRelease)) {
         m_clicked = true;
 
@@ -1124,12 +1126,14 @@ bool HTMLInputElementImpl::mouseEvent( int _x, int _y,
 {
     bool wasPressed = pressed();
     bool ret = HTMLGenericFormElementImpl::mouseEvent(_x,_y,_tx,_ty,ev);
-    if (m_type == IMAGE && (ev->type == MouseClick || ((ev->type == MouseRelease) && wasPressed))) {
-        xPos = _x - _tx - m_render->xPos();
-        yPos = _y - _ty - m_render->yPos();
-        m_clicked = true;
-        if(m_form) m_form->prepareSubmit();
-        return true;
+    if  ( ! (m_render->style() && m_render->style()->visiblity() == khtml::HIDDEN) ) {
+        if (m_type == IMAGE && (ev->type == MouseClick || ((ev->type == MouseRelease) && wasPressed))) {
+            xPos = _x - _tx - m_render->xPos();
+            yPos = _y - _ty - m_render->yPos();
+            m_clicked = true;
+            if(m_form) m_form->prepareSubmit();
+            return true;
+        }
     }
     return ret;
 }

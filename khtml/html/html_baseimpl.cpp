@@ -412,6 +412,8 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y,
       kdDebug( 6030 ) << "ugh, not layouted or not attached?!" << endl;
       return true;
     }
+    if ( (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
+      return true;
 
     return static_cast<khtml::RenderFrameSet *>(m_render)->userResize( _x, _y, ev->type );
 }
