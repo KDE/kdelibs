@@ -460,9 +460,21 @@ test -n "$QTDIR" && qt_incdirs="$QTDIR/include $QTDIR $qt_incdirs"
 AC_FIND_FILE(qmovie.h, $qt_incdirs, qt_incdir)
 ac_qt_includes=$qt_incdir
 
-qt_libdirs="$ac_qt_libraries /usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/X11R6/lib /usr/lib $x_libraries $QTLIB"
+if test ! "$ac_qt_libraries" = "NO"; then
+  qt_libdirs="$ac_qt_libraries"
+fi
+
+qt_libdirs="$qt_libdirs /usr/lib/qt/lib /usr/X11R6/lib /usr/lib /usr/local/qt/lib /usr/lib/qt $x_libraries $QTLIB"
 test -n "$QTDIR" && qt_libdirs="$QTDIR/lib $QTDIR $qt_libdirs"
-AC_FIND_FILE(libqt.so libqt.so.1.30 libqt.so.1.31 libqt.so.1 libqt.a libqt.sl, $qt_libdirs, qt_libdir)
+
+test=NONE
+qt_libdir=NONE
+for dir in $qt_libdirs; do
+  try="ls -1 $dir/libqt*"
+  if test=`eval $try 2> /dev/null`; then qt_libdir=$dir; break; else echo "tried $dir" >&AC_FD_CC ; fi
+done
+
+dnl AC_FIND_FILE(libqt.so libqt.so.1.30 libqt.so.1.31 libqt.so.1 libqt.a libqt.sl, $qt_libdirs, qt_libdir)
 ac_qt_libraries=$qt_libdir
 
 ac_cxxflags_safe=$CXXFLAGS
@@ -1522,12 +1534,9 @@ AC_DEFUN(AC_HAVE_GL,
  
  dnl Should test for PAM (Pluggable Authentication Modules)
  AC_DEFUN(AC_PATH_PAM_DIRECT,
- [test -z "$pam_direct_test_library" && pam_direct_test_library=pam
- test -z "$pam_direct_test_library" && pam_direct_test_library=pam_misc
- test -z "$pam_direct_test_library" && pam_direct_test_library=dl
- test -z "$pam_direct_test_function" && pam_direct_test_function=pam_start
+ [
+ test -z "$pam_direct_test_library" && pam_direct_test_library=pam
  test -z "$pam_direct_test_include" && pam_direct_test_include=security/pam_appl.h
- test -z "$pam_direct_test_include" && pam_direct_test_include=security/pam_misc.h
  
    for ac_dir in               \
                                \
@@ -1548,11 +1557,6 @@ AC_DEFUN(AC_HAVE_GL,
      fi
    done
  
- # Check for the libraries.
- # See if we find them without any special options.
- # Do not add to $LIBS permanently.
- ac_save_LIBS="$LIBS"
- LIBS="-l$pam_direct_test_library $LIBS"
  # First see if replacing the include by lib works.
  for ac_dir in `echo "$ac_pam_includes" | sed s/include/lib/` \
                            \
@@ -1572,15 +1576,16 @@ AC_DEFUN(AC_HAVE_GL,
      fi
    done
  done
- LIBS="$ac_save_LIBS"
 ])
 
 AC_DEFUN(AC_PATH_PAM,
  [AC_REQUIRE_CPP()dnl
- 
- pam_includes=NONE
- pam_libraries=NONE
- 
+
+  kde_save_LIBS=$LIBS
+  LIBS="$LIBS -ldl"
+  AC_CHECK_LIB(pam_misc, main, [PAM_MISC_LIB="-lpam_misc"])
+  LIBS="$kde_save_LIBS"
+
  AC_MSG_CHECKING(for PAM)
  AC_ARG_WITH(pam, [  --with-pam              disable Pluggable Authentication Modules],
   [
@@ -1592,39 +1597,51 @@ AC_DEFUN(AC_PATH_PAM,
   ], no_pam=yes
  )
 
- if test "x$pam_includes" != xNONE && test "x$pam_libraries" != xNONE; then
-     no_pam=
-   else
+ if test ! "$no_pam" = yes; then
+
  AC_CACHE_VAL(ac_cv_path_pam,
- [# One or both of these vars are not set, and there is no cached value.
- no_pam=yes
+ [
+ ac_pam_includes=NONE
+ ac_pam_libraries=NONE
+ if test -z "$pam_libraries"; then
+   pam_libraries=NONE
+ fi
+ if test -z "$pam_includes"; then
+   pam_includes=NONE
+ fi
+
  AC_PATH_PAM_DIRECT
  
- if test "$no_pam" = yes; then
-   ac_cv_path_pam="no_pam=yes"
+ test "x$pam_includes" = xNONE && pam_includes=$ac_pam_includes
+ test "x$pam_libraries" = xNONE && pam_libraries=$ac_pam_libraries
+ 
+ if test ! "x$pam_includes" = xNONE && test ! "x$pam_libraries" = xNONE; then
+   ac_pam_libs="-lpam $PAM_MISC_LIB -ldl"
+   ac_cv_path_pam="no_pam= ac_pam_includes=$ac_pam_includes ac_pam_libraries=$ac_pam_libraries ac_pam_libs=\"$ac_pam_libs\""
  else
-   ac_cv_path_pam="no_pam= ac_pam_includes=$ac_pam_includes ac_pam_libraries=$ac_pam_libraries"
- fi])dnl
+   ac_cv_path_pam="no_pam=yes"
  fi
+ ])
+
  eval "$ac_cv_path_pam"
  
+ fi
+
  if test "$no_pam" = yes; then
    AC_MSG_RESULT(no)
  else
    AC_DEFINE(HAVE_PAM)
-   PAMLIBS="-lpam -lpam_misc -ldl"
+   PAMLIBS=$ac_pam_libs
    test "x$pam_includes" = xNONE && pam_includes=$ac_pam_includes
    test "x$pam_libraries" = xNONE && pam_libraries=$ac_pam_libraries
-   ac_cv_path_pam="no_pam= ac_pam_includes=$pam_includes ac_pam_libraries=$pam_libraries"
    AC_MSG_RESULT([libraries $pam_libraries, headers $pam_includes])
  fi
  
  if test "x$pam_libraries" != x && test "x$pam_libraries" != xNONE ; then
- 	PAMLDFLAGS=":$pam_libraries"
-   PAMLIBPATHS="-L$pam_libraries"
+     PAMLIBPATHS="-L$pam_libraries"
  fi
  if test "x$pam_includes" != x && test "x$pam_includes" != xNONE ; then
-   PAMINC="-I$pam_includes"
+     PAMINC="-I$pam_includes"
  fi
  
  AC_SUBST(PAMINC)
