@@ -119,6 +119,9 @@ private:
     bool m_doingsubmit : 1;
     bool m_inreset : 1;
     bool m_malformed : 1;
+    bool m_haveTextarea : 1; // for wallet storage
+    bool m_havePassword : 1; // for wallet storage
+    QMap<QString, QString> m_walletMap; // for wallet storage
 };
 
 // -------------------------------------------------------------------------
