@@ -197,9 +197,9 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" your need by using the button and/or editing the line on the right."
 					        " </qt>" );
 
-	QString whatsThisOutputFileLineedit = i18n(" <qt<b>Output File Name and Path:</b>> Edit this line to create a "
-						" path and filename that suits"
-						" your needs.. (Only available if you \"Print to File\")"
+	QString whatsThisOutputFileLineedit = i18n(" <qt><b>Output File Name and Path:</b> Edit this line to create a "
+						" path and filename that suits your needs." 
+						" (Button and Lineedit field are only available if you \"Print to File\")"
 					        " </qt>" );
 
 	QString whatsThisOutputFileButton = i18n(" <qt><b>Browse Directories button:<b> This button calls "

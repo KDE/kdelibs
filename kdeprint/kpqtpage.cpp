@@ -71,7 +71,8 @@ void KPQtPage::init()
 			" <b>Selection of color mode:</b> You can choose between 2 options: "
 			" <ul><li><b>Color</b> and</li> "
                         " <li><b>Grayscale</b></li></ul> "
-			" <b>Note:</b> This selection field may be grayed out and made inactive, if KDEPrint can not retrieve "
+			" <b>Note:</b> This selection field may be grayed out and made inactive. "
+			" This happens if KDEPrint can not retrieve "
 			" enough information about your print file. In this case the embedded color- or grayscale information "
 			" of your printfile, and the default handling of the printer take precedence. "
 			" </qt>" );
@@ -129,7 +130,7 @@ void KPQtPage::init()
 
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
-          QWhatsThis::add(m_orientpix, whatsThisColorModeOtPageLabel);
+          QWhatsThis::add(m_orientpix, whatsThisOrientationOtPageLabel);
 
 	QRadioButton	*m_color = new QRadioButton(i18n("Colo&r"), m_colorbox);
           QWhatsThis::add(m_color, whatsThisColorModeOtPageLabel);
