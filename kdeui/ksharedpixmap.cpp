@@ -86,7 +86,7 @@ void KSharedPixmap::init()
 }
 
 
-bool KSharedPixmap::isAvailable(QString name)
+bool KSharedPixmap::isAvailable(const QString & name) const
 {
     QString str = QString("KDESHPIXMAP:%1").arg(name);
     Atom sel = XInternAtom(qt_xdisplay(), str.latin1(), true);
@@ -96,7 +96,7 @@ bool KSharedPixmap::isAvailable(QString name)
 }
 
 
-bool KSharedPixmap::loadFromShared(QString name, QRect rect)
+bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
 {
     if (d->selection != None)
 	// already active

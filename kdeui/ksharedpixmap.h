@@ -78,7 +78,7 @@ public:
      * @return True if the shared pixmap exists and loading has started
      * successfully, false otherwise.
      */
-    bool loadFromShared(QString name, QRect rect=QRect());
+    bool loadFromShared(const QString & name, const QRect & rect=QRect());
 
     /**
      * Check whether a shared pixmap is available.
@@ -86,7 +86,7 @@ public:
      * @param name The shared pixmap name.
      * @return True if the shared pixmap is available, false otherwise.
      */
-    bool isAvailable(QString name);
+    bool isAvailable(const QString & name) const;
 
 signals:
     /** 
@@ -100,7 +100,7 @@ protected:
     bool x11Event(XEvent *);
     
 private:
-    bool copy(QString id, QRect rect);
+    bool copy(const QString & id, const QRect & rect);
     void init();
 
     KSharedPixmapPrivate *d;
