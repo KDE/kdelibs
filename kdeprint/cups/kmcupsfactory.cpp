@@ -34,7 +34,7 @@ extern "C"
 	{
 		return new KCupsFactory;
 	}
-};
+}
 
 KCupsFactory::KCupsFactory(QObject *parent, const char *name)
 : KLibFactory(parent,name)
