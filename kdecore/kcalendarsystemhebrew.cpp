@@ -33,115 +33,112 @@ int dysiz(int y);
 class hdate
 {
 public:
-	int hd_day;
-	int hd_mon;
-	int hd_year;
-	int hd_dw;
-	int hd_flg;
+  int hd_day;
+  int hd_mon;
+  int hd_year;
+  int hd_dw;
+  int hd_flg;
 };
 
 /*
- | compute general date structure from hebrew date
+ * compute general date structure from hebrew date
  */
-class hdate *
-gdate(int y, int m, int d)
+static class hdate * gdate(int y, int m, int d)
 {
-	static class hdate h;
-	int s;
+  static class hdate h;
+  int s;
 
-	y -= 3744;
-	s = dysiz(y);
-	d += s;
-	s = dysiz(y+1)-s;		/* length of year */
-	d += (59*(m-1)+1)/2;	/* regular months */
-	/* special cases */
-	if(s%10>4 && m>2)	/* long Heshvan */
-		d++;
-	if(s%10<4 && m>3)	/* short Kislev */
-		d--;
-	if(s>365 && m>6)	/* leap year */
-		d += 30;
-	d -= 6002;
-	if(!jflg) {	/* compute century */
-		y = (d+36525)*4/146097-1;
-		d -= y/4*146097+(y%4)*36524;
-		y *= 100;
-	} else {
-		d += 2;
-		y = 0;
-	}
-	/* compute year */
-	s = (d+366)*4/1461-1;
-	d -= s/4*1461+(s%4)*365;
-	y += s;
-	/* compute month */
-	m = (d+245)*12/367-7;
-	d -= m*367/12-30;
-	if(++m >= 12) {
-		m -= 12;
-		y++;
-	}
-	h.hd_day = d;
-	h.hd_mon = m;
-	h.hd_year = y;
-	return(&h);
+  y -= 3744;
+  s = dysiz(y);
+  d += s;
+  s = dysiz(y + 1) - s;    /* length of year */
+  d += (59 * (m - 1) + 1) / 2;  /* regular months */
+  /* special cases */
+  if (s % 10 > 4 && m > 2)  /* long Heshvan */
+    d++;
+  if (s % 10 < 4 && m > 3)  /* short Kislev */
+    d--;
+  if (s > 365 && m > 6)  /* leap year */
+    d += 30;
+  d -= 6002;
+  if (!jflg) {  /* compute century */
+    y = (d + 36525) * 4 / 146097 - 1;
+    d -= y / 4 * 146097 + (y % 4) * 36524;
+    y *= 100;
+  } else {
+    d += 2;
+    y = 0;
+  }
+  /* compute year */
+  s = (d + 366)*4/1461-1;
+  d -= s/4*1461 + (s % 4)*365;
+  y += s;
+  /* compute month */
+  m = (d + 245)*12/367-7;
+  d -= m*367/12-30;
+  if (++m >= 12) {
+    m -= 12;
+    y++;
+  }
+  h.hd_day = d;
+  h.hd_mon = m;
+  h.hd_year = y;
+  return(&h);
 }
 
-
 /*
- | compute date structure from no. of days since 1 Tishrei 3744
+ * compute date structure from no. of days since 1 Tishrei 3744
  */
-class hdate *
-hdate(int y, int m, int d)
+static class hdate * hdate(int y, int m, int d)
 {
-	static class hdate h;
-	int s;
+  static class hdate h;
+  int s;
 
-	if((m -= 2) <= 0) {
-		m += 12;
-		y--;
-	}
-	/* no. of days, Julian calendar */
-	d += 365*y+y/4+367*m/12+5968;
-	/* Gregorian calendar */
-	if(!jflg)
-		d -= y/100-y/400-2;
-	h.hd_dw = (d+1)%7;
+  if ((m -= 2) <= 0) {
+    m += 12;
+    y--;
+  }
+  /* no. of days, Julian calendar */
+  d += 365*y + y/4 + 367*m/12 + 5968;
+  /* Gregorian calendar */
+  if (!jflg)
+    d -= y/100-y/400-2;
+  h.hd_dw = (d + 1) % 7;
 
-	/* compute the year */
-	y += 16;
-	s = dysiz(y);
-	m = dysiz(y+1);
-	while(d >= m) {	/* computed year was underestimated */
-		s = m;
-		y++;
-		m = dysiz(y+1);
-	}
-	d -= s;
-	s = m-s;	/* size of current year */
-	y += 3744;
+  /* compute the year */
+  y += 16;
+  s = dysiz(y);
+  m = dysiz(y + 1);
+  while(d >= m) {  /* computed year was underestimated */
+    s = m;
+    y++;
+    m = dysiz(y + 1);
+  }
+  d -= s;
+  s = m-s;  /* size of current year */
+  y += 3744;
 
-	h.hd_flg = s%10-4;
+  h.hd_flg = s % 10-4;
 
-	/* compute day and month */
-	if(d >= s-236) {	/* last 8 months are regular */
-		d -= s-236;
-		m = d*2/59;
-		d -= (m*59+1)/2;
-		m += 4;
-		if(s>365 && m<=5)	/* Adar of Meuberet */
-			m += 8;
-	} else {
-		/* first 4 months have 117-119 days */
-		s = 114+s%10;
-		m = d*4/s;
-		d -= (m*s+3)/4;
-	}
+  /* compute day and month */
+  if (d >= s-236) {  /* last 8 months are regular */
+    d -= s-236;
+    m = d*2/59;
+    d -= (m*59 + 1)/2;
+    m += 4;
+    if (s > 365 && m <= 5)  /* Adar of Meuberet */
+      m += 8;
+  } else {
+    /* first 4 months have 117-119 days */
+    s = 114 + s % 10;
+    m = d * 4 / s;
+    d -= (m * s + 3) / 4;
+  }
 
-	h.hd_day = d;
-	h.hd_mon = m;
-	h.hd_year = y;
-	return(&h);
+  h.hd_day = d;
+  h.hd_mon = m;
+  h.hd_year = y;
+  return(&h);
 }
 
 /* constants, in 1/18th of minute */
@@ -151,43 +148,46 @@ hdate(int y, int m, int d)
 #define M(h,p) ((h)*HOUR+p)
 #define MONTH (DAY+M(12,793))
 
-/* no. of days in y years */
-int dysiz(int y)
+/**
+ * @internal
+ * no. of days in y years
+ */
+static int dysiz(int y)
 {
-	int m, nm, dw, s, l;
+  int m, nm, dw, s, l;
 
-	l = y*7+1;	/* no. of leap months */
-	m = y*12+l/19;	/* total no. of months */
-	l %= 19;
-	nm = m*MONTH+M(1+6,779); /* molad new year 3744 (16BC) + 6 hours */
-	s = m*28+nm/DAY-2;
+  l = y * 7 + 1;  // no. of leap months
+  m = y*12+l/19;  // total no. of months
+  l %= 19;
+  nm = m*MONTH+M(1+6,779); // molad new year 3744 (16BC) + 6 hours
+  s = m*28+nm/DAY-2;
 
-	nm %= WEEK;
-	dw = nm/DAY;
-	nm %= DAY;
+  nm %= WEEK;
+  dw = nm/DAY;
+  nm %= DAY;
 
-	/* special cases of Molad Zaken */
-	if(l < 12 && dw==3 && nm>=M(9+6,204) ||
-	 l < 7 && dw==2 && nm>=M(15+6,589))
-		s++,dw++;
-	/* ADU */
-	if(dw == 1 || dw == 4 || dw == 6)
-		s++;
-	return s;
+  // special cases of Molad Zaken
+  if (l < 12 && dw == 3 && nm >= M(9 + 6,204) ||
+   l < 7 && dw == 2 && nm>=M(15+6,589))
+    s++,dw++;
+  /* ADU */
+  if (dw == 1 || dw == 4 || dw == 6)
+    s++;
+  return s;
 }
 
-
-// OK
+// Ok
 KCalendarSystemHebrew::KCalendarSystemHebrew(const KLocale * locale)
   : KCalendarSystem(locale)
 {
 }
 
-// OK
+// Ok
 KCalendarSystemHebrew::~KCalendarSystemHebrew()
 {
 }
 
+// Ok
 class hdate * toHebrew(const QDate & date)
 {
   class hdate *sd;
@@ -201,19 +201,25 @@ int KCalendarSystemHebrew::year(const QDate& date) const
   return sd->hd_year;
 }
 
-// ### Fixme
+// Ok
 int KCalendarSystemHebrew::monthsInYear( const QDate & date ) const
 {
+  if ((((7 * year(date)) + 1)  %  19) < 7)
+    return 13;
+  else
+    return 12;
 }
 
 // ### Fixme
 int KCalendarSystemHebrew::weeksInYear(int year) const
 {
+  return 51;
 }
 
 // ### Fixme
 int KCalendarSystemHebrew::weekNumber(const QDate& date, int * yearNum) const
 {
+  return date.weekNumber(yearNum);
 }
 
 // Ok
@@ -233,12 +239,48 @@ QString KCalendarSystemHebrew::monthNamePossessive(const QDate& date,
 // ### Fixme
 QString KCalendarSystemHebrew::monthName(int month, bool shortName) const
 {
+  switch(month)
+  {
+  case 1:
+    return locale()->translate("Tishrey");
+  case 2:
+    return locale()->translate("Heshvan");
+  case 3:
+    return locale()->translate("Kislev");
+  case 4:
+    return locale()->translate("Tevet");
+  case 5:
+    return locale()->translate("Shvat");
+  case 6:
+    return locale()->translate("Adar");
+  case 7:
+    return locale()->translate("Nisan");
+  case 8:
+    return locale()->translate("Iyar");
+  case 9:
+    return locale()->translate("Sivan");
+  case 10:
+    return locale()->translate("Tamuz");
+  case 11:
+    return locale()->translate("Av");
+  case 12:
+    return locale()->translate("Elul");
+  case 13:
+    return locale()->translate("Adar I");
+  case 14:
+    return locale()->translate("Adar II");
+  default:
+    break;
+  }
+
+  return QString::null;
 }
 
 // ### Fixme
 QString KCalendarSystemHebrew::monthNamePossessive(int month,
                                                   bool shortName) const
 {
+  return "of " + monthNamePossessive(month, shortName);
 }
 
 bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
@@ -254,6 +296,7 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
 // ### Fixme
 QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
 {
+  return QString("day  % 1 of week").arg(day);
 }
 
 // Ok
@@ -282,27 +325,19 @@ int KCalendarSystemHebrew::dayOfYear(const QDate & date) const
   return first.daysTo(date) + 1;
 }
 
-// Ok
+// ### Fixme
 int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
 {
-  class hdate *sd = toHebrew(date);
-  return hndays(sd->hd_mon, sd->hd_year);
+  if ( true != false ) 
+    return 29;
+  else
+    return 30;
 }
 
 // ### Fixme
 int KCalendarSystemHebrew::hndays(int mon, int year) const
 {
-  class hdate fd, ld;
-  int nd = 666;
-  fd = *gdate(year, mon, 1);
-  ld = *gdate(year, mon + 1, 1);
-  ld = *caldate(julianday(ld.hd_year, ld.hd_mon, ld.hd_day, 0.0) - 1.0);
-  if (fd.mon == ld.mon)
-    nd = ld.day - fd.day + 1;
-  else
-    nd = ndays(fd.hd_mon, fd.hd_year) - fd.hd_day + ld.hd_day + 1;
-
-  return nd;
+  return 29;
 }
 
 // Ok
@@ -339,7 +374,7 @@ int KCalendarSystemHebrew::month(const QDate& date) const
   return sd->hd_mon;
 }
 
-// Not sure
+// ### Not sure
 int KCalendarSystemHebrew::daysInYear(const QDate & date) const
 {
   QDate first, last;
@@ -377,9 +412,8 @@ QDate KCalendarSystemHebrew::addMonths( const QDate & date, int nmonths ) const
   --m; // this only works if we start counting at zero
   m += nmonths;
   y += m / 12;
-  m %= 12;
+  m  %= 12;
   ++m;
-
 
   setYMD( result, y, m, day(date) );
 
