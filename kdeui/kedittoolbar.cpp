@@ -67,12 +67,14 @@ public:
   XmlData()
   {
     m_isModified = false;
+    m_actionCollection = 0;
   }
 
   QString      m_xmlFile;
   QDomDocument m_document;
   XmlType      m_type;
   bool         m_isModified;
+  KActionCollection* m_actionCollection;
 
   ToolbarList  m_barList;
 };
@@ -189,7 +191,7 @@ public:
     return QDomElement();
   }
 
-  QValueList<KAction*> m_actionList;
+  //QValueList<KAction*> m_actionList;
   KActionCollection* m_collection;
   KInstance         *m_instance;
 
@@ -358,9 +360,7 @@ KEditToolbarWidget::~KEditToolbarWidget()
 void KEditToolbarWidget::initNonKPart(KActionCollection *collection,
                                       const QString& file, bool global)
 {
-  // let's not forget the stuff that's not xml specific
-  //d->m_collection = *collection;
-  d->m_actionList = collection->actions();
+  //d->m_actionList = collection->actions();
 
   // handle the merging
   if (global)
@@ -379,15 +379,17 @@ void KEditToolbarWidget::initNonKPart(KActionCollection *collection,
   elem = local.m_document.documentElement().toElement();
   KXMLGUIFactory::removeDOMComments( elem );
   local.m_barList = d->findToolbars(elem);
+  local.m_actionCollection = collection;
   d->m_xmlFiles.append(local);
 
-  // then, the merged one
+  // then, the merged one (ui_standards + local xml)
   XmlData merge;
   merge.m_xmlFile  = QString::null;
   merge.m_type     = XmlData::Merged;
   merge.m_document = domDocument();
   elem = merge.m_document.documentElement().toElement();
   merge.m_barList  = d->findToolbars(elem);
+  merge.m_actionCollection = collection;
   d->m_xmlFiles.append(merge);
 
   // okay, that done, we concern ourselves with the GUI aspects
@@ -422,9 +424,10 @@ void KEditToolbarWidget::initKPart(KXMLGUIFactory* factory)
     elem = data.m_document.documentElement().toElement();
     KXMLGUIFactory::removeDOMComments( elem );
     data.m_barList = d->findToolbars(elem);
+    data.m_actionCollection = client->actionCollection();
     d->m_xmlFiles.append(data);
 
-    d->m_actionList += client->actionCollection()->actions();
+    //d->m_actionList += client->actionCollection()->actions();
   }
 
   // okay, that done, we concern ourselves with the GUI aspects
@@ -699,6 +702,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   m_upAction->setEnabled(false);
   m_downAction->setEnabled(false);
 
+  // We'll use this action collection
+  KActionCollection* actionCollection = d->m_currentXmlData.m_actionCollection;
+
   // store the names of our active actions
   QMap<QString, bool> active_list;
 
@@ -737,10 +743,12 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
       continue;
     }
 
-    // iterate through all of our actions
-    for (unsigned int i = 0;  i < d->m_actionList.count(); i++)
+    // iterate through this client's actions
+    // This used to iterate through _all_ actions, but we don't support
+    // putting any action into any client...
+    for (unsigned int i = 0;  i < actionCollection->count(); i++)
     {
-      KAction *action = d->m_actionList[i];
+      KAction *action = actionCollection->action( i );
 
       // do we have a match?
       if (it.attribute( attrName ) == action->name())
@@ -761,9 +769,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   }
 
   // go through the rest of the collection
-  for (int i = d->m_actionList.count() - 1; i > -1; --i)
+  for (int i = actionCollection->count() - 1; i > -1; --i)
   {
-    KAction *action = d->m_actionList[i];
+    KAction *action = actionCollection->action( i );
 
     // skip our active ones
     if (active_list.contains(action->name()))
@@ -1133,22 +1141,14 @@ void KEditToolbarWidget::slotChangeIcon()
   QString icon = line;
   item->setPixmap(0, BarIcon(icon, 16));
 
-  // Very much like the beginning of updateLocal
-  XmlDataList::Iterator xit = d->m_xmlFiles.begin();
-  for ( ; xit != d->m_xmlFiles.end(); ++xit)
-  {
-    if ( (*xit).m_type == XmlData::Merged )
-      continue;
+  d->m_currentXmlData.m_isModified = true;
 
-    (*xit).m_isModified = true;
-
-    // Get hold of ActionProperties tag
-    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( (*xit).m_document );
-    // Find or create an element for this action
-    QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
-    Q_ASSERT( !act_elem.isNull() );
-    act_elem.setAttribute( "icon", icon );
-  }
+  // Get hold of ActionProperties tag
+  QDomElement elem = KXMLGUIFactory::actionPropertiesElement( d->m_currentXmlData.m_document );
+  // Find or create an element for this action
+  QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
+  Q_ASSERT( !act_elem.isNull() );
+  act_elem.setAttribute( "icon", icon );
 }
 
 void KEditToolbar::virtual_hook( int id, void* data )
