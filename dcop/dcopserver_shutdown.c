@@ -138,10 +138,10 @@ static void cleanupDCOP(int dont_kill_dcop)
    getDCOPFile(dcop_file, dcop_file_old, 2048);
    if (strlen(dcop_file) == 0)
       return;
-   unlink(dcop_file_old);
 
    f = fopen(dcop_file, "r");
    unlink(dcop_file); /* Clean up .DCOPserver file */
+   unlink(dcop_file_old);
    if (!f)
       return;
 
