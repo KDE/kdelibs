@@ -74,14 +74,14 @@ parseFunc KHTMLWidget::parseFuncArray[26] = {
 };
 
 
-KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name )
+KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     : KDNDWidget( parent, name ), tempStrings( TRUE )
 {
     jsEnvironment = 0L;      
-    leftBorder = 10;
-    rightBorder = 20;
-    topBorder = 10;
-    bottomBorder = 10;
+    leftBorder = LEFT_BORDER;
+    rightBorder = RIGHT_BORDER;
+    topBorder = TOP_BORDER;
+    bottomBorder = BOTTOM_BORDER;
     setBackgroundColor( lightGray );
     x_offset = 0;
     y_offset = 0;
@@ -375,7 +375,11 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
     //	gotoAnchor( pressedURL.data() + 1 );
     // else
     if ( _mouse->button() != RightButton )
+	{
 	   	emit URLSelected( pressedURL.data(), _mouse->button(), pressedTarget.data() );
+		// required for backward compatability
+	   	emit URLSelected( pressedURL.data(), _mouse->button() );
+	}
 }
 
 void KHTMLWidget::dragEndEvent()
@@ -2451,6 +2455,7 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
     _clue->append( vc );
     vc->setVAlign( valign );
     vc->setHAlign( halign );
+	flow = NULL;
     str = parseBody( vc, end );
 
     vc = new HTMLClueV( 0, 0, 10, 0 ); // fixed width

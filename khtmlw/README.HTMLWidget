@@ -450,6 +450,13 @@ Version 0.8.2 - Martin
      <a
      href="http://www.kde.org">KDE</a>
 
+Version 0.8.2a - Martin
+
+ Minor changes to make this version compatable with the version in the
+ stable libraries.
+
+ Added #define KHTMLW_VERSION 820 in html.h
+
 Last change
-8.7.97 Martin Jones
+9.7.97 Martin Jones
 

@@ -1,6 +1,8 @@
 #ifndef HTML_H
 #define HTML_H
 
+#define KHTMLW_VERSION  820
+
 #include <qpainter.h>
 #include <qstrlist.h>
 #include <qpixmap.h>
@@ -20,9 +22,11 @@ class KHTMLWidget;
 #include "htmlview.h"
 #include "jscript.h"
 
-// Borders between widgets frame and displayed text
-// #define LEFT_BORDER 10
-// #define RIGHT_BORDER 20
+// Default borders between widgets frame and displayed text
+#define LEFT_BORDER 10
+#define RIGHT_BORDER 20
+#define TOP_BORDER 10
+#define BOTTOM_BORDER 10
 
 class KHTMLWidget;
 
@@ -32,7 +36,10 @@ class KHTMLWidget : public KDNDWidget
 {
     Q_OBJECT
 public:
-    KHTMLWidget( QWidget *parent = 0L, const char *name = 0L );
+	// pixdir should not be used - it is provided only for backward
+	// compatability.
+    KHTMLWidget( QWidget *parent = 0L, const char *name = 0L,
+		const char *pixdir = 0L );
     virtual ~KHTMLWidget();
 
     // we don't want global palette changes affecting us
