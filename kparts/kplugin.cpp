@@ -79,9 +79,13 @@ const QValueList<QDomDocument> Plugin::pluginDocuments( const KInstance * instan
   return docs;
 }
 
-void Plugin::loadPlugins( QObject *parent, const KInstance * instance )
+void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
 {
-   const QValueList<QDomDocument> docs = pluginDocuments( instance );
+  loadPlugins( parent, pluginDocuments( instance ) ); 
+} 
+
+void Plugin::loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs )
+{
    QValueList<QDomDocument>::ConstIterator pIt = docs.begin();
    QValueList<QDomDocument>::ConstIterator pEnd = docs.end();
    for (; pIt != pEnd; ++pIt )

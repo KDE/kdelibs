@@ -44,6 +44,8 @@ public:
      */
     static void loadPlugins( QObject *parent, const KInstance * instance );
 
+    static void loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs );
+
     static QValueList<XMLGUIServant *> pluginServants( QObject *parent );
 
 protected:
