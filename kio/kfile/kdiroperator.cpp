@@ -740,6 +740,8 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view ) {
         else
             v = createView( combi, KFile::Detail );
 
+        v->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
+
         if (combi)
             combi->setRight( v );
 
