@@ -40,26 +40,38 @@ public:
 	void updatePrinter(KMPrinter *p);
 	bool isClass() const	{ return m_isclass; }
 
+protected:
+	void init(KMPrinter *p = 0);
+
 private:
 	int	m_state;
 	bool	m_isclass;
 };
 
 KMListViewItem::KMListViewItem(QListView *parent, const QString& txt)
-: QListViewItem(parent,txt), m_state(0)
+: QListViewItem(parent,txt)
 {
+	init();
 }
 
 KMListViewItem::KMListViewItem(QListViewItem *parent, const QString& txt)
-: QListViewItem(parent,txt), m_state(0)
+: QListViewItem(parent,txt)
 {
+	init();
 }
 
 KMListViewItem::KMListViewItem(QListViewItem *parent, KMPrinter *p)
 : QListViewItem(parent)
 {
+	init(p);
+}
+
+void KMListViewItem::init(KMPrinter *p)
+{
 	m_state = 0;
-	updatePrinter(p);
+	if (p)
+		updatePrinter(p);
+	setSelectable(depth() == 2);
 }
 
 void KMListViewItem::updatePrinter(KMPrinter *p)
@@ -71,9 +83,11 @@ void KMListViewItem::updatePrinter(KMPrinter *p)
 		int	st(p->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay);
 		m_state = ((p->isHardDefault() ? 0x1 : 0x0) | (p->ownSoftDefault() ? 0x2 : 0x0) | (p->isValid() ? 0x4 : 0x0));
 		update = (oldstate != m_state);
-		if (p->name() != text(0))
-			setText(0, p->name());
+		QString	name = (p->isVirtual() ? p->instanceName() : p->name());
+		if (name != text(0))
+			setText(0, name);
 		setPixmap(0, SmallIcon(p->pixmap(), 0, st));
+		m_isclass = p->isClass();
 	}
 	setDiscarded(false);
 	if (update)
@@ -140,11 +154,29 @@ KMListViewItem* KMListView::findItem(KMPrinter *p)
 	if (p)
 	{
 		QPtrListIterator<KMListViewItem>	it(m_items);
+		bool	isVirtual(p->isVirtual()), isClass(p->isClass());
 		for (;it.current();++it)
-			if (it.current()->text(0) == p->name()
-			    && it.current()->isClass() == p->isClass())
-				return it.current();
+			if (isVirtual)
+			{
+				if (it.current()->depth() == 3 && it.current()->text(0) == p->instanceName()
+						&& it.current()->parent()->text(0) == p->printerName())
+					return it.current();
+			}
+			else
+			{
+				if (it.current()->isClass() == isClass && it.current()->text(0) == p->name())
+					return it.current();
+			}
 	}
+	return 0;
+}
+
+KMListViewItem* KMListView::findItem(const QString& prname)
+{
+	QPtrListIterator<KMListViewItem>	it(m_items);
+	for (; it.current(); ++it)
+		if (it.current()->depth() == 2 && it.current()->text(0) == prname)
+			return it.current();
 	return 0;
 }
 
@@ -162,12 +194,19 @@ void KMListView::setPrinterList(QPtrList<KMPrinter> *list)
 		KMListViewItem			*item (0);
 		for (;it.current();++it)
 		{
-                        if (!it.current()->instanceName().isEmpty())
-                                continue;
 			item = findItem(it.current());
 			if (!item)
 			{
-				item = new KMListViewItem((it.current()->isSpecial() ? m_specials : (it.current()->isClass(false) ? m_classes : m_printers)),it.current());
+				if (it.current()->isVirtual())
+				{
+					KMListViewItem	*pItem = findItem(it.current()->printerName());
+					if (!pItem)
+						continue;
+					item = new KMListViewItem(pItem, it.current());
+					pItem->setOpen(true);
+				}
+				else
+					item = new KMListViewItem((it.current()->isSpecial() ? m_specials : (it.current()->isClass(false) ? m_classes : m_printers)),it.current());
 				m_items.append(item);
 				changed = true;
 			}
@@ -176,13 +215,22 @@ void KMListView::setPrinterList(QPtrList<KMPrinter> *list)
 		}
 	}
 
+	QPtrList<KMListViewItem>	deleteList;
+	deleteList.setAutoDelete(true);
 	for (uint i=0; i<m_items.count(); i++)
 		if (m_items.at(i)->isDiscarded())
 		{
-			delete m_items.take(i);
+			// instance items are put in front of the list
+			// so that they are destroyed first
+			KMListViewItem	*item = m_items.take(i);
+			if (item->depth() == 2)
+				deleteList.append(item);
+			else
+				deleteList.prepend(item);
 			i--;
 			changed = true;
 		}
+	deleteList.clear();
 
 	if (changed) sort();
 	emit selectionChanged();
@@ -191,7 +239,7 @@ void KMListView::setPrinterList(QPtrList<KMPrinter> *list)
 void KMListView::slotSelectionChanged()
 {
 	KMListViewItem	*item = static_cast<KMListViewItem*>(currentItem());
-	emit printerSelected((item && !item->isDiscarded() ? item->text(0) : QString::null));
+	emit printerSelected((item && !item->isDiscarded() && item->depth() == 2 ? item->text(0) : QString::null));
 }
 
 void KMListView::setPrinter(const QString& prname)

@@ -51,6 +51,7 @@ protected slots:
 
 protected:
 	KMListViewItem* findItem(KMPrinter*);
+	KMListViewItem* findItem(const QString&);
 
 private:
 	QPtrList<KMListViewItem>	m_items;

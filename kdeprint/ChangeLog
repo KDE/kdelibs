@@ -554,3 +554,8 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * CUPS: added a generic job tagging mechanism in the form of an additional
     tab in the print dialog. It contain a 2-columns table where custom tags
     can be added. Read-only in job editing mode (hope to change that soon).
+
+03/04/2002 Michael Goffioul <goffioul@imec.be>
+  * manager: show instances as children of the real printer in the tree view.
+    No instance management is possible from the tree view itself. The user
+    still has to use the "Instances" tab.
