@@ -31,7 +31,6 @@
 #include <klocale.h>
 
 #include <qapplication.h>
-#include <kapplication.h>
 #include <qevent.h>
 
 class KJavaEmbedPrivate
@@ -521,10 +520,6 @@ void KJavaEmbed::embed( WId w )
             unsigned long cnt = 0;
             unsigned long max = 1000;
             for (cnt = 0; !wstate_withdrawn(window) && cnt < max; cnt++) {
-                KApplication *app = KApplication::kApplication();
-                if (app) { 
-                    app->processEvents();
-                }
 #if HAVE_USLEEP
                 usleep(1000); // 1 ms 
 #endif
