@@ -72,6 +72,8 @@
 #include "file.h"
 #include <limits.h>
 #include <kprocess.h>
+#include <kmountpoint.h>
+#include <kstandarddirs.h>
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
@@ -1118,7 +1120,11 @@ void FileProtocol::special( const QByteArray &data)
 	bool ro = ( iRo != 0 );
 
 	kdDebug(7101) << "MOUNTING fstype=" << fstype << " dev=" << dev << " point=" << point << " ro=" << ro << endl;
-	mount( ro, fstype.ascii(), dev, point );
+	bool ok = pmount( dev );
+	if (ok)
+	    finished();
+	else
+	    mount( ro, fstype.ascii(), dev, point );
 
       }
       break;
@@ -1126,7 +1132,11 @@ void FileProtocol::special( const QByteArray &data)
       {
 	QString point;
 	stream >> point;
-	unmount( point );
+	bool ok = pumount( point );
+	if (ok)
+	    finished();
+	else
+	    unmount( point );
       }
       break;
 
@@ -1418,6 +1428,73 @@ void FileProtocol::unmount( const QString& _point )
 	finished();
     else
         error( KIO::ERR_COULD_NOT_UNMOUNT, err );
+}
+
+/*************************************
+ *
+ * pmount handling
+ *
+ *************************************/
+
+bool FileProtocol::pmount(const QString &dev)
+{
+    QString epath = getenv("PATH");
+    QString path = QString::fromLatin1("/sbin:/bin");
+    if (!epath.isEmpty())
+        path += ":" + epath;
+    QString pmountProg = KGlobal::dirs()->findExe("pmount", path);
+
+    if (pmountProg.isEmpty())
+        pmountProg = "pmount";
+
+    QCString buffer;
+    buffer.sprintf( "%s %s", pmountProg.latin1(),
+                    QFile::encodeName(KProcess::quote(dev)).data() );
+
+    int res = system( buffer.data() );
+
+    return res==0;
+}
+
+bool FileProtocol::pumount(const QString &point)
+{
+    QString real_point = KStandardDirs::realPath(point);
+		
+    KMountPoint::List mtab = KMountPoint::currentMountPoints();
+
+    KMountPoint::List::iterator it = mtab.begin();
+    KMountPoint::List::iterator end = mtab.end();
+
+    QString dev;
+	
+    for (; it!=end; ++it)
+    {
+        QString tmp = (*it)->mountedFrom();
+        QString mp = (*it)->mountPoint();
+        mp = KStandardDirs::realPath(mp);
+
+        if (mp==real_point)
+            dev = KStandardDirs::realPath(tmp);
+    }
+
+    if (dev.isEmpty()) return false;
+
+    QString epath = getenv("PATH");
+    QString path = QString::fromLatin1("/sbin:/bin");
+    if (!epath.isEmpty())
+        path += ":" + epath;
+    QString pumountProg = KGlobal::dirs()->findExe("pumount", path);
+
+    if (pumountProg.isEmpty())
+        pumountProg = "pumount";
+
+    QCString buffer;
+    buffer.sprintf( "%s %s", pumountProg.latin1(),
+                    QFile::encodeName(KProcess::quote(dev)).data() );
+
+    int res = system( buffer.data() );
+
+    return res==0;
 }
 
 /*************************************
