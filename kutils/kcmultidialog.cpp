@@ -35,7 +35,7 @@
 #include "kcmoduleloader.h"
 
 KCMultiDialog::KCMultiDialog(const QString& baseGroup, QWidget *parent, const char *name, bool modal)
-  : KDialogBase(IconList, i18n("Settings"), Help | Default |Cancel | Apply | Ok, Ok,
+  : KDialogBase(IconList, i18n("Configure"), Help | Default |Cancel | Apply | Ok, Ok,
                 parent, name, modal, true), d(0L)
 {
     enableButton(Apply, false);
