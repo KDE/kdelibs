@@ -30,15 +30,14 @@ class KDockTabBarPainter;
 struct KDockTabCtl_Private;
 struct KDockTabBar_Private;
 
-/***********************************************************************/
-/*                    KDockTabBar class                                */
-/*                                                                     */
-/***********************************************************************/
-class KDockTabBar: public QWidget
+class KDockTabBar : public QWidget
 {
   Q_OBJECT
-friend KDockTabBarPainter;
+  
+  friend KDockTabBarPainter;
+
 public:
+  
   KDockTabBar( QWidget * parent = 0, const char * name = 0 );
   ~KDockTabBar();
 
@@ -47,6 +46,7 @@ public:
     TAB_TOP,
     TAB_RIGHT
   };
+
   void setTabPos( TabPos );
 
   int insertTab( const QString &label, int id = -1 );
@@ -111,91 +111,94 @@ private:
   bool iconShow;
 };
 
-class KDockTabBarPainter: public QWidget
+class KDockTabBarPainter : public QWidget
 {
   Q_OBJECT
-friend KDockTabBar;
+  friend KDockTabBar;
+
 private:
-  KDockTabBarPainter( KDockTabBar * parent );
+  
+  KDockTabBarPainter( KDockTabBar* parent );
   ~KDockTabBarPainter();
 
   void drawBuffer();
+  
   int findBarByPos( int x, int y );
   QPixmap* buffer;
   int mousePressTab;
   int delta;
 
 protected:
+  
   virtual void mousePressEvent ( QMouseEvent * );
+  
   virtual void mouseReleaseEvent ( QMouseEvent * );
 
   virtual void resizeEvent( QResizeEvent * );
+  
   virtual void paintEvent( QPaintEvent * );
 };
 
-/***********************************************************************/
-/*                    KDockTabCtl class                                */
-/*                                                                     */
-/***********************************************************************/
 class KDockTabCtl : public QWidget
 {
   Q_OBJECT
+  
 public:
+  
   KDockTabCtl( QWidget *parent = 0, const char *name = 0 );
   ~KDockTabCtl();
 
   void setTabPos( KDockTabBar::TabPos );
+  
   KDockTabBar::TabPos getTabPos(){ return tabPos; }
 
   int insertPage( QWidget *, const QString &label, int id = -1 );
 
-/***********************************************************************/
   void setPageCaption( QWidget*, const QString & );
 
-  /*! This is an overloaded member function, provided for convenience.
+  /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   void setPageCaption( int id, const QString &caption ){ setPageCaption( page(id), caption ); }
 
   QString pageCaption( QWidget* );
 
-  /*! This is an overloaded member function, provided for convenience.
+  /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   QString pageCaption( int id ){ return pageCaption( page(id) ); }
-/***********************************************************************/
+  
   void setPixmap( QWidget* , const QPixmap &pix );
 
-  /*! This is an overloaded member function, provided for convenience.
+  /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   void setPixmap( int id, const QPixmap &pix ){ setPixmap( page(id), pix ); }
 
-/***********************************************************************/
   void setTabTextColor( QWidget*, const QColor &color );
 
-  /*! This is an overloaded member function, provided for convenience.
+  /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   void setTabTextColor( int id, const QColor &color ){ setTabTextColor( page(id), color ); }
 
   const QColor& tabTextColor( QWidget* );
 
-  /*! This is an overloaded member function, provided for convenience.
+  /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   const QColor& tabTextColor( int id ){ return tabTextColor( page(id) ); }
-/***********************************************************************/
+  
   bool isPageEnabled( QWidget* );
 
-  /*! This is an overloaded member function, provided for convenience.
+  /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   bool isPageEnabled( int id ){ return isPageEnabled( page(id) ); }
 
   void setPageEnabled( QWidget*, bool );
 
-  /*! This is an overloaded member function, provided for convenience.
+  /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   void setPageEnabled( int id, bool enabled  ){ setPageEnabled( page(id), enabled ); }
@@ -206,7 +209,7 @@ public:
 
   void removePage( QWidget* );
 
-  /*! This is an overloaded member function, provided for convenience.
+  /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
   void removePage( int id ){ removePage( page(id) ); }
