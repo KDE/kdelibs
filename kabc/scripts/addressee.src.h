@@ -193,7 +193,7 @@ class Addressee
 
     /**
       Return key, which matches the given type.
-      If @param type == Key::Custom you can specify a string
+      If @p type == Key::Custom you can specify a string
       that should match. If you leave the string empty, the first
       key with a custom value is returned.
      */
@@ -206,7 +206,7 @@ class Addressee
 
     /**
       Return list of keys with a special type.
-      If @param type == Key::Custom you can specify a string
+      If @p type == Key::Custom you can specify a string
       that should match. If you leave the string empty, all custom
       keys will be returned.
      */
