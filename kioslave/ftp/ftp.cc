@@ -1,0 +1,1148 @@
+#include "ftp.h"
+
+#include <errno.h>
+#include <assert.h>
+
+#include <kio_interface.h>
+
+#include <iostream.h>
+
+#define FTP_LOGIN "anonymous"
+#define FTP_PASSWD "kfm-user@kde.org"
+
+const char* strnextchr( const char * p , char c );
+bool open_PassDlg( const char *_head, string& _user, string& _pass );
+
+
+Ftp::Ftp()
+{
+  dirfile = 0L;
+  sControl = sData = sDatal = 0;
+  ftplib_debug = 9;
+  m_error = 0;
+  m_errorText = "";
+  m_bLoggedOn = false;
+  m_bPersistent = false;
+}
+
+
+Ftp::~Ftp()
+{
+  ftpDisconnect();
+}
+
+
+/*
+ * read a line of text
+ *
+ * return -1 on error or bytecount
+ */
+int Ftp::readline(char *buf,int max,netbuf *ctl)
+{
+  int x,retval = 0;
+  char *end;
+  int eof = 0;
+
+  if ( max == 0 )
+    return 0;
+  do
+  {
+    if (ctl->cavail > 0)
+    {
+      x = (max >= ctl->cavail) ? ctl->cavail : max-1;
+      end = (char*)memccpy(buf,ctl->cget,'\n',x);
+      if (end != NULL)
+	x = end - buf;
+      retval += x;
+      buf += x;
+      *buf = '\0';
+      max -= x;
+      ctl->cget += x;
+      ctl->cavail -= x;
+      if (end != NULL)
+	break;
+    }
+    if (max == 1)
+    {
+      *buf = '\0';
+      break;
+    }
+    if (ctl->cput == ctl->cget)
+    {
+      ctl->cput = ctl->cget = ctl->buf;
+      ctl->cavail = 0;
+      ctl->cleft = FTP_BUFSIZ;
+    }
+    if (eof)
+    {
+      if (retval == 0)
+	retval = -1;
+      break;
+    }
+    if ((x = ::read(ctl->handle,ctl->cput,ctl->cleft)) == -1)
+    {
+      perror("read");
+      retval = -1;
+      break;
+    }
+    if (x == 0)
+      eof = 1;
+    ctl->cleft -= x;
+    ctl->cavail += x;
+    ctl->cput += x;
+  }
+  while (1);
+
+  return retval;
+}
+
+
+/*
+ * read a response from the server
+ *
+ * return 0 if first char doesn't match
+ * return 1 if first char matches
+ */
+bool Ftp::readresp(char c)
+{
+  char match[5];
+  if ( readline( rspbuf, 256, nControl ) == -1 )
+  {
+    if ( ftplib_debug > 1)
+      fprintf( stderr,"Could not read\n" );
+    m_error = ERR_COULD_NOT_READ;
+    m_errorText = "";
+    return false;
+  }
+  if ( ftplib_debug > 1)
+    fprintf(stderr,"resp> %s",rspbuf);
+  if ( rspbuf[3] == '-' )
+  {
+    strncpy( match, rspbuf, 3 );
+    match[3] = ' ';
+    match[4] = '\0';
+    do
+    {
+      if ( readline( rspbuf, 256, nControl ) == -1 )
+      {
+	m_error = ERR_COULD_NOT_READ;
+	m_errorText = "";
+	return false;
+      }
+      if ( ftplib_debug > 1)
+	fprintf(stderr,"%s",rspbuf);
+    }
+    while ( strncmp( rspbuf, match, 4 ) );
+  }
+    	
+  if ( rspbuf[0] == c )
+    return true;
+  
+  return false;
+}
+
+
+/*
+ * disconnect from remote
+ */
+void Ftp::ftpDisconnect()
+{
+  if ( m_bPersistent )
+    return;
+
+  if ( m_bLoggedOn )
+  {    
+    if( sControl != 0 )
+    {
+      ftpSendCmd( "quit", '2' );
+      free( nControl );
+      ::close( sControl );
+      sControl = 0;
+    }
+  }
+
+  m_bLoggedOn = false;
+}
+
+
+bool Ftp::ftpConnect( K2URL& _url )
+{
+  string dummy;
+  return ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), dummy );
+}  
+
+
+/**
+ * login on remote host
+ */
+bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, string& _path )
+{
+  m_bPersistent = false; // ProtocolManager::self()->isPersistent();
+
+  if ( m_bLoggedOn && m_bPersistent ) {
+    // this should check whether there is still opened data connection.
+    // is it enough ?  Should we check also the control connection ?
+    if ( ftpOpenDataConnection() )
+      return true;
+  } else
+    assert( !m_bLoggedOn );
+  
+  _path = "";
+  
+  if ( !ftpConnect2( _host ) )
+  {
+    if ( !m_error )
+    {
+      m_error = ERR_COULD_NOT_CONNECT;
+      m_errorText = _host;
+    }
+    return false;
+  }
+
+  string user;
+  string passwd;
+  
+  if( _user && strlen( _user ) > 0 )
+  {
+    user = _user;
+    if ( _pass && strlen( _pass ) > 0 )
+      passwd = _pass;
+    else
+      passwd = "";
+  }
+  else
+  {
+    user = FTP_LOGIN;
+    passwd = FTP_PASSWD;
+  }
+
+  if ( ftplib_debug > 2 )
+    fprintf( stderr, "Connected ....\n" );
+
+  string redirect = "";
+  m_bLoggedOn = ftpLogin( user.c_str(), passwd.c_str(), &redirect );
+  if ( !m_bLoggedOn )
+  {    
+    if ( ftplib_debug > 2 )
+      fprintf( stderr, "Could not login\n" );
+
+    m_error = ERR_COULD_NOT_LOGIN;
+    m_errorText = _host;
+    return false;
+  }
+
+  // We could login and got a redirect ?
+  if ( !redirect.empty() )
+  {
+    if ( redirect[ redirect.size() - 1 ] != '/' )
+      redirect += "/";
+    _path = redirect;
+    
+    if ( ftplib_debug > 2 )
+      fprintf( stderr, "REDIRECTION '%s'\n",redirect.c_str());
+  }
+  
+  m_bLoggedOn = true;
+  return true;
+}
+
+
+/*
+ * ftpOpen - connect to remote server
+ *
+ * return 1 if connected, 0 if not
+ */
+bool Ftp::ftpConnect2( const char *host, int _port )
+{
+  struct sockaddr_in sin;
+  struct hostent *phe;
+  struct servent *pse;
+  int on = 1;
+
+  m_host = "";
+  
+  memset( &sin, 0, sizeof( sin ) );
+  sin.sin_family = AF_INET;
+
+  if ( _port == -1 && ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
+    _port = 21;
+  else if ( _port == -1 )
+    sin.sin_port = pse->s_port;
+
+  if ( ( phe = gethostbyname( host ) ) == NULL )
+  {
+    m_error = ERR_UNKNOWN_HOST;
+    m_errorText = host;
+    return false;
+  }
+
+  memcpy((char *)&sin.sin_addr, phe->h_addr, phe->h_length);
+  sControl = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
+  if ( sControl == 0 )
+  {
+    m_error = ERR_COULD_NOT_CREATE_SOCKET;
+    m_errorText = host;
+  }
+  if ( setsockopt( sControl, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on) ) == -1 )
+  {
+    ::close( sControl );
+    m_error = ERR_COULD_NOT_CREATE_SOCKET;
+    m_errorText = host;
+  }
+
+  if ( ::connect(sControl, (struct sockaddr *)&sin, sizeof(sin)) == -1)
+  {
+    ::close( sControl );
+    m_error = ERR_COULD_NOT_CONNECT;
+    m_errorText = host;
+    return false;
+  }
+  
+  nControl = (netbuf*)calloc(1,sizeof(netbuf));
+  if (nControl == NULL)
+  {
+    ::close( sControl );
+    m_error = ERR_OUT_OF_MEMORY;
+    m_errorText = "";
+    return false;
+  }
+  nControl->handle = sControl;
+
+  if ( readresp( '2' ) == 0 )
+  {
+    ::close( sControl );
+    free( nControl );
+    return false;
+  }
+
+  m_host = host;
+  
+  return true;
+}
+
+
+/*
+ * ftpLogin - log in to remote server
+ *
+ * return 1 if logged in, 0 otherwise
+ */
+bool Ftp::ftpLogin( const char *_user, const char *_pass, string *_redirect )
+{
+  assert( !m_bLoggedOn );
+  
+  string user = _user;
+  string pass = _pass;
+
+  if ( !user.empty() )
+  {    
+    string tempbuf = "user ";
+    tempbuf += user;
+
+    rspbuf[0] = '\0';
+
+    if ( !ftpSendCmd( tempbuf.c_str(), '3' ) )
+    {
+      if ( ftplib_debug > 2 )
+	fprintf( stderr, "1> %s\n", rspbuf );
+      
+      if ( rspbuf[0] == '2' )
+	return true; /* no password required */
+      return false;
+    }     
+
+    if ( pass.empty() )
+    {
+      string tmp;
+      tmp = user;
+      tmp += "@";
+      tmp += m_host;
+      
+      if ( !open_PassDlg( tmp.c_str(), user, pass ) )
+	return false;
+    }
+    cerr << "New pass is '" << pass << "'" << endl;
+    
+    tempbuf = "pass ";
+    tempbuf += pass;
+    
+    if ( !ftpSendCmd( tempbuf.c_str(), '2' ) )
+    {
+      cerr << "Wrong password" << endl;
+      return false;
+    }
+  }
+  
+  cerr << "Login ok" << endl;
+  
+  // Not interested in the current working directory ? => return with success
+  if ( _redirect == 0L )
+    return true;
+
+  cerr << "Searching for pwd" << endl;
+  
+  // Get the current working directory
+  string tempbuf = "pwd";
+  if ( !ftpSendCmd( tempbuf.c_str(), '2' ) )
+    return false;
+
+  if ( ftplib_debug > 2 )
+    fprintf( stderr, "2> %s\n", rspbuf );
+  
+  char *p = rspbuf;
+  while ( isdigit( *p ) ) p++;
+  while ( *p == ' ' || *p == '\t' ) p++;
+  if ( *p != '"' )
+    return true;
+  char *p2 = strchr( p + 1, '"' );
+  if ( p2 == 0L )
+    return true;
+  *p2 = 0;
+  *_redirect = p + 1;
+  return true;
+}
+
+
+/*
+ * ftpSendCmd - send a command and wait for expected response
+ *
+ * return 1 if proper response received, 0 otherwise
+ */
+bool Ftp::ftpSendCmd( const char *cmd, char expresp )
+{
+  assert( sControl > 0 );
+  
+  string buf = cmd;
+  buf += "\r\n";
+  
+  if ( ftplib_debug > 2 )
+    fprintf( stderr, "%s\n", cmd );
+
+  if ( ::write( sControl, buf.c_str(), buf.size() ) <= 0 )
+  {
+    m_error = ERR_COULD_NOT_WRITE;
+    m_errorText = "";
+    return false;
+  }    
+
+  return readresp( expresp );
+}
+
+
+/*
+ * ftpOpenDataConnection - set up date connection
+ *
+ * return 1 if successful, 0 otherwise
+ */
+bool Ftp::ftpOpenDataConnection()
+{
+  assert( m_bLoggedOn );
+
+  union
+  {
+    struct sockaddr sa;
+    struct sockaddr_in in;
+  } sin;
+
+  struct linger lng = { 0, 0 };
+  ksize_t l;
+  char buf[64];
+  int on = 1;
+
+  l = sizeof(sin);
+  if ( getsockname( sControl, &sin.sa, &l ) < 0 )
+    return false;
+  sDatal = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
+  if ( sDatal == 0 )
+  {
+    m_error = ERR_COULD_NOT_CREATE_SOCKET;
+    m_errorText = "";
+    return false;
+  }
+  if ( setsockopt( sDatal, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on) ) == -1 )
+  {
+    ::close( sDatal );
+    m_error = ERR_COULD_NOT_CREATE_SOCKET;
+    m_errorText = "";
+    return false;
+  }
+  if ( setsockopt( sDatal, SOL_SOCKET, SO_LINGER, (char*)&lng, sizeof(lng) ) == -1 )
+  {
+    ::close( sDatal );
+    m_error = ERR_COULD_NOT_CREATE_SOCKET;
+    m_errorText = "";
+    return false;
+  }
+
+  sin.in.sin_port = 0;
+  if ( bind( sDatal, &sin.sa, sizeof(sin) ) == -1 )
+  {
+    ::close( sDatal );
+    sDatal = 0;
+    m_error = ERR_COULD_NOT_BIND;
+    m_errorText = m_host;
+    return false;
+  }
+  
+  if ( listen( sDatal, 1 ) < 0 )
+  {
+    m_error = ERR_COULD_NOT_LISTEN;
+    m_errorText = m_host;
+    ::close( sDatal );
+    sDatal = 0;
+    return 0;
+  }
+
+  if ( getsockname( sDatal, &sin.sa, &l ) < 0 )
+    return false;
+
+  sprintf(buf,"port %d,%d,%d,%d,%d,%d",
+	  (unsigned char)sin.sa.sa_data[2],(unsigned char)sin.sa.sa_data[3],
+	  (unsigned char)sin.sa.sa_data[4],(unsigned char)sin.sa.sa_data[5],
+	  (unsigned char)sin.sa.sa_data[0],(unsigned char)sin.sa.sa_data[1]);
+  
+  return ftpSendCmd( buf, '2' );
+}
+
+
+/*
+ * accept_connect - wait for incoming connection
+ *
+ * return -2 on error or timeout
+ * otherwise returns socket descriptor
+ */
+int Ftp::ftpAcceptConnect(void)
+{
+  struct sockaddr addr;
+  int sData;
+  ksize_t l;
+  fd_set mask;
+
+  FD_ZERO(&mask);
+  FD_SET(sDatal,&mask);
+
+  if (select( sDatal + 1, &mask, NULL, NULL, 0L) == 0)
+  {
+    ::close( sDatal );
+    return -2;
+  }
+
+  l = sizeof(addr);
+  if ( ( sData = accept( sDatal, &addr, &l ) ) > 0 )
+    return sData;
+
+  ::close( sDatal );
+  return -2;
+}
+
+
+bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode )
+{
+  string buf;
+
+  buf = "type ";
+  char buf2[2] = {0,0};
+  buf2[0] = _mode;
+  buf += buf2;
+  
+  if ( !ftpSendCmd( buf.c_str(), '2' ) )
+  {  
+    m_error = ERR_COULD_NOT_CONNECT;
+    m_errorText = "";
+    return false;
+  }  
+  if ( !ftpOpenDataConnection() )
+  {  
+    m_error = ERR_COULD_NOT_CONNECT;
+    m_errorText = "";
+    return false;
+  }
+ 
+  string tmp;
+    
+  // Special hack for the list command. We try to change to this
+  // directory first to see whether it really is a directory.
+  if ( strcmp( _command, "list" ) == 0 )
+  {
+    assert( _path != 0L );
+
+    tmp = "cwd ";
+    tmp += _path;
+      
+    if ( !ftpSendCmd( tmp.c_str(), '2' ) )
+    {
+      if ( !m_error && rspbuf[0] == '5' )
+      {
+	m_error = ERR_IS_FILE;
+	m_errorText = _path;
+      }
+      else if ( !m_error )
+      {
+        m_error = ERR_DOES_NOT_EXIST;
+	m_errorText = _path;
+      }
+      return false;
+    }
+  }
+  
+  tmp = _command;
+  if ( _path != 0L )
+  {      
+    tmp += " ";
+    tmp += _path;
+  }
+      
+  if ( !ftpSendCmd( tmp.c_str(), '1' ) )
+    // We can not give any error code here since the error depends on the command
+    return false;
+
+  if ( ( sData = ftpAcceptConnect() ) < 0 )
+  {
+    if ( !m_error )
+    {
+      m_error = ERR_COULD_NOT_ACCEPT;
+      m_errorText = "";
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
+bool Ftp::ftpCloseCommand()
+{
+  /** readresp('2') ?? gibt an ob Transmission erfolgreich war! **/
+  if( sData != 0 )
+  {
+    shutdown( sData, 2 );
+    ::close( sData );
+    sData = 0;
+  }
+
+  if( sDatal != 0 )
+  {
+    ::close( sDatal );
+    sDatal = 0;
+  }
+  return true;
+}
+
+
+/*
+ * ftpMkdir - create a directory at server
+ *
+ * return 1 if successful, 0 otherwise
+ */
+bool Ftp::ftpMkdir( const char *path )
+{
+  assert( m_bLoggedOn );
+
+  string buf = "mkd ";
+  buf += path;
+  
+  return ftpSendCmd( buf.c_str() , '2' );
+}
+
+
+/*
+ * ftpChdir - change path at remote
+ *
+ * return 1 if successful, 0 otherwise
+ */
+bool Ftp::ftpChdir( const char *path)
+{
+  assert( m_bLoggedOn );
+
+  string buf = "cwd ";
+  buf += path;
+  
+  return ftpSendCmd( buf.c_str(), '2' );
+}
+
+
+bool Ftp::ftpRmdir( const char *path)
+{
+  assert( m_bLoggedOn );
+
+  string buf = "rmd ";
+  buf += path;
+  
+  return ftpSendCmd( buf.c_str() ,'2' );
+}
+
+
+/*
+ * ftpRename - rename a file at remote
+ *
+ * return 1 if successful, 0 otherwise
+ */
+bool Ftp::ftpRename( const char *src, const char *dst)
+{
+  assert( m_bLoggedOn );
+
+  string cmd;
+  cmd = "RNFR ";
+  cmd += src;
+  if ( !ftpSendCmd( cmd.c_str(), '3') )
+    return false;
+  cmd = "RNTO ";
+  cmd += dst;
+  if ( !ftpSendCmd( cmd.c_str() ,'2' ) )
+    return false;
+  return true;
+}
+
+
+/*
+ * ftpDelete - delete a file at remote
+ *
+ * return 1 if successful, 0 otherwise
+ */
+bool Ftp::ftpDelete( const char *fnm )
+{
+  assert( m_bLoggedOn );
+
+  string cmd = "DELE ";
+  cmd += fnm;
+  return ftpSendCmd( cmd.c_str(), '2' );
+}
+
+
+FtpEntry* Ftp::stat( K2URL& _url )
+{ 
+  string redirect;
+  
+  if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
+    // The error is already set => we just return
+    return 0L;
+
+  K2URL url( _url );
+  if ( !redirect.empty() && !_url.hasPath() )
+  {    
+    url.setPath( redirect.c_str() );
+  }
+  
+  FtpEntry* e = ftpStat( _url );
+
+  ftpDisconnect();
+  
+  return e;
+}
+
+
+FtpEntry* Ftp::ftpStat( K2URL& _url )
+{
+  static FtpEntry fe;
+
+  string path = _url.directory();
+
+  if ( path == "" || path == "/" )
+  {
+    fe.access = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+    fe.type = S_IFDIR;
+    fe.link = "";
+    fe.name = "";
+    fe.owner = "root";
+    fe.group = "root";
+    fe.date = 0;
+    fe.size = 0;
+    return &fe;
+  }
+  
+  if( !ftpOpenCommand( "list", path.c_str(), 'A' ) )
+  {
+    cerr << "COULD NOT LIST" << endl;
+    return 0L;
+  }
+  
+  dirfile = fdopen( sData, "r" );
+  if( !dirfile )
+    return 0L;
+
+  cerr << "Starting of list was ok" << endl;
+
+  string search = _url.filename();
+  assert( search != "" && search != "/" );
+  
+  bool found = false;
+  FtpEntry *e;
+  while( ( e = readdir() ) && !found )
+  {
+    if ( error() )
+    {
+      cerr << "FAILED: Read " << error() << " " << errorText() << endl;
+      return 0L;
+    }
+
+    if ( search == e->name )
+    {
+      found = true;
+      fe = *e;
+    }
+    
+    cerr << "$#" << e->name << endl;
+  }
+
+  if ( !ftpCloseDir() )
+    return 0L;
+  
+  if ( !found )
+    return 0L;
+
+  return &fe;
+}
+
+
+bool Ftp::opendir( K2URL &_url )
+{
+  string path( _url.path(-1) );
+  bool haspath = _url.hasPath();
+  string redirect;
+  
+  if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
+    // The error is already set => we just return
+    return false;
+
+  // Did we get a redirect and did not we specify a path ourselfs ?
+  if ( path != redirect && !haspath )
+    redirection( _url.url().c_str() );
+  else
+    redirect = path;
+
+  cerr << "hunting for path '" << redirect << "' now" << endl;
+
+  K2URL url( _url );
+  url.setPath( redirect.c_str() );
+
+  return ftpOpenDir( url );
+}
+
+
+bool Ftp::ftpOpenDir( K2URL& _url )
+{
+  string path( _url.path(-1) );
+
+  if( !ftpOpenCommand( "list", path.c_str(), 'A' ) )
+  {
+    cerr << "COULD NOT LIST " << error() << " " << errorText() << endl;
+    return false;
+  }
+  
+  dirfile = fdopen( sData, "r" );
+  if( !dirfile )
+    return false;
+
+  cerr << "Starting of list was ok" << endl;
+  
+  return true;
+}
+
+
+FtpEntry *Ftp::readdir()
+{
+  char buffer[1024];
+    
+  while( fgets( buffer, 1024, dirfile ) != 0 )
+  {
+    FtpEntry* e = ftpParseDir( buffer );
+    if ( e )
+      return e;
+  }
+
+  return 0L;
+}
+
+
+FtpEntry* Ftp::ftpParseDir( char* buffer )
+{
+  string tmp;
+  
+  static FtpEntry de;
+  const char *p_access, *p_junk, *p_owner, *p_group;
+  const char *p_size, *p_date_1, *p_date_2, *p_date_3, *p_name;
+  if ((p_access = strtok(buffer," ")) != 0)
+    if ((p_junk = strtok(NULL," ")) != 0)
+      if ((p_owner = strtok(NULL," ")) != 0)
+	if ((p_group = strtok(NULL," ")) != 0)
+	  if ((p_size = strtok(NULL," ")) != 0)
+	  {
+	    // A special hack for "/dev". A listing may look like this:
+	    // crw-rw-rw-   1 root     root       1,   5 Jun 29  1997 zero
+	    // So we just ignore the number in front of the ",". Ok, its a hack :-)
+	    if ( strchr( p_size, ',' ) != 0L )
+	      if ((p_size = strtok(NULL," ")) == 0)
+		return 0L;
+	    if ((p_date_1 = strtok(NULL," ")) != 0)
+	      if ((p_date_2 = strtok(NULL," ")) != 0)
+		if ((p_date_3 = strtok(NULL," ")) != 0)
+		  if ((p_name = strtok(NULL,"\r\n")) != 0)
+		  {
+		    if ( p_access[0] == 'l' )
+		    {
+		      tmp = p_name;
+		      int i = tmp.rfind( " -> " );
+		      if ( i != -1 )
+		      {
+			de.link = p_name + i + 4;  
+			tmp.erase( i );
+			p_name = tmp.c_str();
+		      }
+		      else
+			de.link = "";
+		    }
+		    else
+		      de.link = "";
+
+		    de.access = 0;
+		    de.type = 0;
+		    if ( p_access[0] == 'd' )
+		      de.type = S_IFDIR;
+		    else if ( p_access[0] == 's' )
+		      de.type = S_IFSOCK;
+		    else if ( p_access[0] == 'b' )
+		      de.type = S_IFBLK;
+		    else if ( p_access[0] == 'c' )
+		      de.type = S_IFCHR;
+		    else if ( p_access[0] == 'l' )
+		      de.type = S_IFLNK;
+		  
+		    if ( p_access[1] == 'r' )
+		      de.access |= S_IRUSR;
+		    if ( p_access[2] == 'w' )
+		      de.access |= S_IWUSR;
+		    if ( p_access[3] == 'x' )
+		      de.access |= S_IXUSR;
+		    if ( p_access[4] == 'r' )
+		      de.access |= S_IRGRP;
+		    if ( p_access[5] == 'w' )
+		      de.access |= S_IWGRP;
+		    if ( p_access[6] == 'x' )
+		      de.access |= S_IXGRP;
+		    if ( p_access[7] == 'r' )
+		      de.access |= S_IROTH;
+		    if ( p_access[8] == 'w' )
+		      de.access |= S_IWOTH;
+		    if ( p_access[9] == 'x' )
+		      de.access |= S_IXOTH; 
+
+		    de.owner	= p_owner;
+		    de.group	= p_group;
+		    de.size	= atoi(p_size);
+		    // string tmp( p_name );
+		    de.name	= p_name; /* tmp.stripWhiteSpace(); */
+		    // TODO: de.date.sprintf( "%s %s %s", p_date_1, p_date_2, p_date_3 );
+		    return( &de );
+		  }
+	  }
+  return 0L;
+}
+
+
+bool Ftp::closedir()
+{
+  if( dirfile )
+  {
+    ftpCloseDir();
+    fclose( dirfile );
+    dirfile = NULL;
+
+    ftpDisconnect();
+  }
+  return true;
+}
+
+
+bool Ftp::ftpCloseDir()
+{
+  cerr << "... closing" << endl;
+  
+  if ( !readresp( '2' ) )
+  {
+    cerr << "Did not get transfer complete message" << endl;
+    return false;
+  }
+  
+  return ftpCloseCommand();
+}
+
+
+bool Ftp::open( K2URL& _url, Ftp::Mode mode )
+{
+  string redirect;
+
+  if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
+    // The error is already set => just quit
+    return false;
+
+  return ftpOpen( _url, mode );
+}
+
+
+bool Ftp::ftpOpen( K2URL& _url, Ftp::Mode mode, unsigned long offset )
+{
+  if( mode & READ ) {
+    ftpSize( _url.path(),'I'); // try to find the size of the file
+
+    if ( !ftpOpenCommand( "retr", _url.path(), 'I' ) ) {
+      if ( ! m_error )
+	{
+	  m_error = ERR_DOES_NOT_EXIST;
+	  m_errorText = _url.url();
+	}
+      return false;
+    }
+    
+    // Read the size from the response string
+    if ( strlen( rspbuf ) > 4 && m_size == 0 ) {
+      // char *p = strchr( rspbuf, '(' );
+      // Patch from Alessandro Mirone <alex@greco2.polytechnique.fr>
+      const char *p = rspbuf;
+      const char *oldp = 0L;
+      while ( *( p = strnextchr( p , '(' ) ) == '(' )
+      {
+	oldp = p;
+	p++;
+      }
+      p = oldp;
+      // end patch
+
+      m_bytesLeft = m_size;
+      return true;
+    }
+  }
+  else if( mode & WRITE ) {
+    if( !ftpOpenCommand( "stor", _url.path(), 'I' ) ) {
+      if ( !m_error )
+	{
+	  m_error = ERR_COULD_NOT_WRITE;
+	  m_errorText = _url.url();
+	}
+      return false;
+    }
+    
+    return true;
+  }
+  
+  // Never reached
+  assert( 0 );
+}
+
+
+bool Ftp::ftpClose()
+{
+  ftpCloseCommand();
+  
+  return true;
+}
+
+
+bool Ftp::ftpResume( unsigned long offset )
+{
+  char buf[100];
+  sprintf(buf, "rest %ld", offset);
+  if ( !ftpSendCmd( buf, '3' ) ) {
+    m_error = ERR_CANNOT_RESUME;
+    return false;
+  }
+
+  return true;
+}
+
+
+/** Use the SIZE command to get the file size. David.
+    Warning : the size depends on the transfer mode, hence the second arg. */
+bool Ftp::ftpSize( const char *path, char mode)
+{
+  char buf[100];
+  sprintf( buf, "type %c", mode );
+  if ( !ftpSendCmd( buf, '2' ) )
+    {
+      m_error = ERR_COULD_NOT_CONNECT;
+      m_errorText = "";
+      return false;
+    }
+
+  sprintf( buf, "SIZE %s", path );
+  if (!ftpSendCmd(buf,'2')) {
+    m_size = 0;
+    return false;
+  }
+  
+  m_size = atol(rspbuf+4); // skip leading "213 " (response code)
+  
+  return true;
+}
+
+
+bool Ftp::close()
+{
+  ftpCloseCommand();
+
+  ftpDisconnect();
+  
+  return true;
+}
+
+
+size_t Ftp::size()
+{
+  return m_size;
+}
+
+
+bool Ftp::atEOF()
+{
+  return( m_bytesLeft <= 0 );
+}
+
+
+size_t Ftp::read(void *buffer, long len)
+{
+  size_t n = ::read( sData, buffer, len );
+  m_bytesLeft -= n;
+  return n;
+}
+
+
+size_t Ftp::write(void *buffer, long len)
+{
+  return( ::write( sData,buffer,len ) );
+}
+
+
+bool Ftp::mkdir( K2URL& _url )
+{
+  string redirect;
+
+  if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
+    return false;
+  
+  bool res = ftpMkdir( _url.path() );
+
+  ftpDisconnect();
+
+  if ( !res )
+  {
+    if ( !m_error )
+    {
+      m_error = ERR_COULD_NOT_MKDIR;
+      m_errorText = _url.url();
+    }
+    return false;
+  }
+  
+  return true;
+}
+
+
+// Patch from Alessandro Mirone <alex@greco2.polytechnique.fr>
+// Little helper function
+const char* strnextchr( const char * p , char c )
+{
+  while( *p != c && *p != 0L )
+  {
+    p++;
+  }
+  return p;
+}         
+// end patch
