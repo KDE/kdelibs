@@ -89,6 +89,15 @@ void KBuildSycoca::build()
 
 void KBuildSycoca::recreate()
 {
+  QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca.building";
+  QFile *database = new QFile(path);
+  if (!database->open( IO_ReadWrite ))
+  {
+    fprintf(stderr, "Error can't open database!\n");
+    exit(-1);
+  }
+  str = new QDataStream(database);
+
   kdebug(KDEBUG_INFO, 7020, "Recreating ksycoca file");
      
   // It is very important to build the servicetype one first
@@ -376,6 +385,8 @@ void KBuildSycoca::save()
    QIODevice *device = str->device();
    assert( device );
    device->close();
+   delete str;
+   str = 0L;
 
    // Make public the database we just built
    QString from = KGlobal::dirs()->saveLocation("config") + "ksycoca.building";

@@ -63,14 +63,6 @@ KSycoca::KSycoca() : DCOPObject("ksycoca")
 // Read-write constructor - only for KBuildSycoca
 KSycoca::KSycoca( bool /* dummy */ ) // and not really a dcop object
 {
-   QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca.building";
-   QFile *database = new QFile(path);
-   if (!database->open( IO_ReadWrite ))
-   {
-      fprintf(stderr, "Error can't open database!\n");
-      exit(-1);
-   }
-   str = new QDataStream(database);
    m_lstFactories = new KSycocaFactoryList();
    m_lstFactories->setAutoDelete( true );
    _self = this;
