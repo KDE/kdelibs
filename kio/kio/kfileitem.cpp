@@ -606,6 +606,7 @@ QString KFileItem::getToolTipText(int maxcount)
       if ( item.isValid() )
       {
         QString s = item.string();
+        if (s.length() > 50) s = s.left(47) + "...";
         if ( !s.isEmpty() )
         {
           count++;
