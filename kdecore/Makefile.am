@@ -86,10 +86,12 @@ install-data-local: charsets.config
 	$(INSTALL_DATA) $(srcdir)/40.colors "$(DESTDIR)$(kde_confdir)/colors/40 Colors"
 	$(INSTALL_DATA) $(srcdir)/Web.colors $(kde_confdir)/colors/Web
 	$(INSTALL_DATA) $(srcdir)/Royal.colors $(kde_confdir)/colors/Royal
+
+install-data-hook:
 	# For compatibility with KDE 2.1 (remove in 3.0)
-	-rm -f $(includedir)/kio/kmdcodec.h
-	-mkdir $(includedir)/kio
-	$(LN_S) $(includedir)/kmdcodec.h $(includedir)/kio/kmdcodec.h
+	-rm -f $(DESTDIR)$(includedir)/kio/kmdcodec.h
+	$(mkinstalldirs) $(includedir)/kio
+	$(LN_S) ../kmdcodec.h $(DESTDIR)$(includedir)/kio/kmdcodec.h
 
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
