@@ -33,8 +33,10 @@
 
 
 DefaultProgress::DefaultProgress( bool showNow )
-  : ProgressBase( 0 ) {
-
+  : ProgressBase( 0 ),
+  m_iTotalSize(0), m_iTotalFiles(0), m_iTotalDirs(0),
+  m_iProcessedSize(0), m_iProcessedDirs(0), m_iProcessedFiles(0)
+{
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
                                             KDialog::spacingHint() );
   topLayout->addStrut( 360 );   // makes dlg at least that wide
