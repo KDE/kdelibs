@@ -36,7 +36,7 @@ catalog errors I'd rather stay away from (they're easy to fix though).
     For instance:
 
       <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
-                     "docbookx.dtd">
+                     "kdex.dtd">
 
     and use catalog as the catalogue file.
 
