@@ -19,19 +19,23 @@ private:
     QString classArgs;
     QPtrList<QByteArray> BufferList;
     QMap<QString, QString> systemProps;
+    bool processKilled;
 };
 
 KJavaProcess::KJavaProcess()
 {
     d = new KJavaProcessPrivate;
     d->BufferList.setAutoDelete( true );
-
+    d->processKilled = false;
+    
     javaProcess = new KProcess();
 
     connect( javaProcess, SIGNAL( wroteStdin( KProcess * ) ),
              this, SLOT( slotWroteData() ) );
     connect( javaProcess, SIGNAL( receivedStdout( int, int& ) ),
              this, SLOT( slotReceivedData(int, int&) ) );
+    connect( javaProcess, SIGNAL( processExited (KProcess *) ),
+             this, SLOT( slotExited (KProcess *) ) );
 
     d->jvmPath = "java";
     d->mainClass = "-help";
@@ -220,6 +224,7 @@ void KJavaProcess::slotWroteData( )
 
 bool KJavaProcess::invokeJVM()
 {
+    
     *javaProcess << d->jvmPath;
 
     if( !d->classPath.isEmpty() )
@@ -280,6 +285,7 @@ bool KJavaProcess::invokeJVM()
 
 void KJavaProcess::killJVM()
 {
+   d->processKilled = true;
    javaProcess->kill();
 }
 
@@ -322,5 +328,16 @@ void KJavaProcess::slotReceivedData( int fd, int& )
     delete[] msg;
 }
 
+void KJavaProcess::slotExited( KProcess *process )
+{
+  if (process && process == javaProcess) {
+    int status = -1;
+    if (!d->processKilled) {
+     status = javaProcess->exitStatus();
+    }
+    kdDebug(6100) << "jvm exited with status " << status << endl; 
+    emit exited(status);
+  }
+}
 
 #include "kjavaprocess.moc"

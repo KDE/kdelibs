@@ -131,6 +131,10 @@ protected slots:
      * command to the AppletServer
      */
     void slotReceivedData( int, int& );
+    /**
+     * This slot is called when the Java Process exited.
+     */
+    void slotExited( KProcess *process );
 
 protected:
     virtual bool invokeJVM();
@@ -145,6 +149,7 @@ protected:
 
 signals:
     void received( const QByteArray& );
+    void exited( int status );
 
 private:
     KJavaProcessPrivate *d;
