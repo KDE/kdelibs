@@ -1,7 +1,7 @@
 if test -z "$LIB_DNSSD"; then
   echo ""
   echo "You're missing Apple mDNSResponder 85 or later, therefore"
-  echo "dnssd cannot be compiled."
+  echo "dnssd will be compiled as stub, without any real functionality."
   echo "If you want it, you should install mDNSResponder first."
   echo "See dnssd/INSTALL for details"
   echo ""
