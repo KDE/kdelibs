@@ -56,8 +56,12 @@ class QPopupMenu;
  *
  * @li auto-completion always returns a complete item as match.
  *     When more than one matching items are available, it will deliver just
- *     the first (depending on sorting order) item. Iterating over all matches is
- *     possible via @ref nextMatch() and @ref previousMatch().
+ *     the first (depending on sorting order) item. Iterating over all matches
+ *     is possible via @ref nextMatch() and @ref previousMatch().
+ *
+ * @li popup-completion works in the same way, the only difference being that
+ *     the completed items are not put into the edit-widget, but into a
+ *     separate popup-box.
  *
  * @li manual completion works the same way as auto-completion, the
  *     subtle difference is, that it isn't invoked automatically while the user
@@ -351,7 +355,7 @@ public slots:
      * Does the same as @ref setItems(), but does not call @ref clear() before.
      */
     void insertItems( const QStringList& items );
-    
+
     /**
      * Sets the list of items available for completion. Removes all previous
      * items.
@@ -647,6 +651,8 @@ public:
     *   @li CompletionShell: Mimics the completion feature
     *                        found in typcial *nix shell
     *                        enviornments.
+    *   @li CompletionPopup: Shows all available completions at once,
+    *                        in a listbox popping up.
     */
     virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
@@ -719,7 +725,7 @@ public:
     * call this method.
     */
     void useGlobalKeyBindings();
-    
+
     /*
     * A pure virtual function that must be implemented by
     * all inheriting classes.
@@ -729,6 +735,8 @@ public:
     * is mostly relevant when the completion mode is set to
     * CompletionAuto and CompletionManual modes. See
     * @ref KCompletionBase::setCompletedText.
+    * Does nothing in CompletionPopup mode, as all available
+    * matches will be shown in the popup.
     *
     * @param text the completed text to be set in the widget.
     */

@@ -104,9 +104,9 @@ KGlobalSettings::Completion KGlobalSettings::completionMode()
     KConfigGroupSaver cgs( c, "General" );
     completion = c->readNumEntry("completionMode", -1);
     if ((completion < (int) CompletionNone) ||
-        (completion > (int) CompletionShell))
+        (completion > (int) CompletionPopup))
       {
-        completion = (int) CompletionAuto; // Default
+        completion = (int) CompletionPopup; // Default
       }
   return (Completion) completion;
 }

@@ -146,9 +146,12 @@ class KGlobalSettings
      *                          the completion using the completion key as in CompletionEOL
      *         CompletionShell: Attempts to mimic the completion feature found in
      *                          typical *nix shell enviornments.
+     *         CompletionPopup: automatic completion, but the matches are not
+     *                          put into the edit-widget, but into a popup box.
      **/
 
-    enum Completion { CompletionNone=1, CompletionAuto, CompletionMan, CompletionShell };
+    enum Completion { CompletionNone=1, CompletionAuto, CompletionMan, 
+		      CompletionShell, CompletionPopup };
 
     static Completion completionMode();
 

@@ -154,7 +154,8 @@ QString KCompletion::makeCompletion( const QString& string )
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
-    if ( myCompletionMode == KGlobalSettings::CompletionShell &&
+    if ( (myCompletionMode == KGlobalSettings::CompletionShell ||
+	  myCompletionMode == KGlobalSettings::CompletionMan) &&
 	 string == myLastString ) {
         myMatches = findAllCompletions( string );
 	postProcessMatches( &myMatches );
@@ -292,7 +293,8 @@ QString KCompletion::findCompletion( const QString& string )
 	myHasMultipleMatches = true;
 	
 	if ( myCompletionMode == KGlobalSettings::CompletionAuto ||
-	     myCompletionMode == KGlobalSettings::CompletionMan ) {
+	     myCompletionMode == KGlobalSettings::CompletionPopup ) {
+	    // myCompletionMode == KGlobalSettings::CompletionMan ) {
 
 	    myRotationIndex = 1;
 	    if (myOrder != Weighted) {
@@ -447,13 +449,15 @@ void KCompletion::doBeep( BeepMode mode )
 	text = i18n("You reached the end of the list\nof matching items.\n");
 	break;
     case PartialMatch:
-	if ( myCompletionMode == KGlobalSettings::CompletionShell ) {
+	if ( myCompletionMode == KGlobalSettings::CompletionShell ||
+	     myCompletionMode == KGlobalSettings::CompletionMan ) {
 	    event = QString::fromLatin1("Textcompletion: partial match");
 	    text = i18n("The completion is ambiguous, more than one\nmatch is available.\n");
 	}
 	break;
     case NoMatch:
 	if ( myCompletionMode == KGlobalSettings::CompletionShell ||
+	     myCompletionMode == KGlobalSettings::CompletionPopup ||
 	     myCompletionMode == KGlobalSettings::CompletionMan ) {
 	    event = QString::fromLatin1("Textcompletion: no match");
 	    text = i18n("There is no matching item available.\n");
