@@ -146,6 +146,10 @@ int main(int argc, char **argv) {
     QCString home = getenv("HOME");
     filter( "$KDEDIR/include", kdedir+"/include", KURIFilterData::LOCAL_DIR );
     filter( "$HOME/.kde/share", home+"/.kde/share", KURIFilterData::LOCAL_DIR );
+    // local test, don't commit
+    filter( "/tmp/a+plus", "/tmp/a+plus", KURIFilterData::LOCAL_DIR );
+    // BR 27788 - note that you need this dir to exist for this test to work
+    filter( "$HOME/.kde/share/apps/kword/templates/Text oriented", home+"/.kde/share/apps/kword/templates/Text oriented", KURIFilterData::LOCAL_DIR );
     filter( "$HOME/$KDEDIR/kdebase/kcontrol/ebrowsing", 0, KURIFilterData::ERROR );
     filter( "$1/$2/$3", "http://www.google.com/search?q=$1/$2/$3&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );  // can be used as bogus or valid test. Currently triggers default search, i.e. google
     filter( "$$$$", "http://www.google.com/search?q=$$$$&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL ); // worst case scenarios.
@@ -159,9 +163,11 @@ int main(int argc, char **argv) {
 
     // Search Engine tests
     filter( "gg:foo bar", "http://www.google.com/search?q=foo%20bar&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
+    // BR ...
+    filter( "gg:C++", "http://www.google.com/search?q=C%2B%2B&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "ya:foo bar was here", 0, -1 ); // this triggers default search, i.e. google
     filter( "gg:www.kde.org", "http://www.google.com/search?q=www.kde.org&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
-    filter( "av:+rock +sample", "http://www.altavista.com/cgi-bin/query?pg=q&kl=XX&stype=stext&q=+rock%20+sample", KURIFilterData::NET_PROTOCOL );
+    filter( "av:+rock +sample", "http://www.altavista.com/cgi-bin/query?pg=q&kl=XX&stype=stext&q=%2Brock%20%2Bsample", KURIFilterData::NET_PROTOCOL );
 
     filter( "about:", "about:konqueror", KURIFilterData::NET_PROTOCOL ); // cf kshorturifilter
 
