@@ -798,7 +798,10 @@ public:
 
   /**
    * Use this to as main catalogue for *all* KLocales, if not the appname
-   * will be used.
+   * will be used. This function is best to be the very first instruction
+   * in your program's main function as it only has an effect before the
+   * first KLocale object is created (and this is in common KDE applications
+   * quite early)
    *
    * @param catalogue Catalogue to override all other main catalogues.
    */
