@@ -263,7 +263,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     // (IE does that). Hard to do with findFrame :}
     KHTMLPart *kp = view->part()->findFrame( propertyName.qstring() );
     if (kp)
-      return Value(Window::retrieve(kp));
+      return Window::retrieve(kp);
   }
 
   const HashEntry* entry = Lookup::findEntry(&HTMLDocumentTable, propertyName);
