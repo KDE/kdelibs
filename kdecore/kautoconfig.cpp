@@ -191,14 +191,14 @@ bool KAutoConfig::saveSettings() {
       ++it;
       QVariant defaultValue = d->defaultValues[groupWidget];
       QVariant currentValue = propertyMap->property(groupWidget);
-      QVariant savedValue = config->readPropertyEntry(groupWidget->name(),
-		      defaultValue);
 
-      if(currentValue == defaultValue && savedValue != currentValue){
+      if(!config->hasDefault(groupWidget->name()) && currentValue == defaultValue){
         config->revertToDefault(groupWidget->name());
         widgetChanged = true;
       }
       else{
+        QVariant savedValue = config->readPropertyEntry(groupWidget->name(),
+                                                             defaultValue);
         if(savedValue != currentValue){
           config->writeEntry(groupWidget->name(), currentValue);
           widgetChanged = true;
