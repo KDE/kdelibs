@@ -29,8 +29,7 @@
 #include <kurl.h>
 #include <kmimetype.h>
 #include <kio/global.h>
-
-class KFileMetaInfo;
+#include <kfilemetainfo.h>
 
 /**
  * A KFileItem is a generic class to handle a file, local or remote.
@@ -369,7 +368,8 @@ public:
    * Returns the metainfo of this item. If @p autoget is true, it will
    * automatically be created
    */
-  const KFileMetaInfo & metaInfo(bool autoget = true) const;
+  const KFileMetaInfo & metaInfo(bool autoget = true,
+                                 int what = KFileMetaInfo::Fastest) const;
       
   /**
    * Somewhat like an assignment operator, but more explicit.

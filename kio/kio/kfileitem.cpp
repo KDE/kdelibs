@@ -580,7 +580,6 @@ QString KFileItem::getToolTipText(int maxcount)
   // we can return QString::null if no tool tip should be shown
   QString tip;
   
-  QStringList keys;
   
   KFileMetaInfo info = metaInfo();
 
@@ -592,7 +591,7 @@ QString KFileItem::getToolTipText(int maxcount)
              "<nobr>";
 
   // if we got no or empty info, show a default tip
-  if ( !info.isValid() || (keys = info.preferredKeys()) .isEmpty() )
+  if ( !info.isValid() || info.isEmpty() )
   {
     //kdDebug() << "Found no meta info" << endl;
 
@@ -626,7 +625,8 @@ QString KFileItem::getToolTipText(int maxcount)
   else
   {
     // first the title in bold and centered
-    KFileMetaInfoItem item;
+      QStringList keys = info.preferredKeys();
+      KFileMetaInfoItem item;
     
     // if we don't find a title, show the file name instead
     if ( (item = info.item("Title")).isValid() && !(item.value().toString().isEmpty()))
@@ -676,7 +676,9 @@ QString KFileItem::getToolTipText(int maxcount)
             break;
           }
           default:
-            s = value.toString();
+            if (value.canCast(QVariant::String))
+                s = value.toString();
+            else s = QString();
             break;
         }
 
@@ -825,7 +827,7 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
     d->metaInfo = info;
 }
 
-const KFileMetaInfo & KFileItem::metaInfo(bool autoget) const
+const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 {
     if ( autoget && !d->metaInfo.isValid() && m_url.isLocalFile() )
     {
