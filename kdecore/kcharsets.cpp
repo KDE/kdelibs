@@ -36,7 +36,11 @@
 
 template class QList<QFont::CharSet>;
 
+#if QT_VERSION >= 224
+#define CHARSETS_COUNT 32
+#else
 #define CHARSETS_COUNT 30
+#endif
 
 static const char * const charsetsStr[CHARSETS_COUNT] = {
     "unicode",
@@ -56,6 +60,11 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "iso-8859-14",
     "iso-8859-15",
     "koi8r",
+    "koi8u",
+#if QT_VERSION >= 224
+    "cp1251",
+    "pt154",
+#endif
     "eucjp",
     "euckr",
     "set-th-th",
@@ -67,7 +76,6 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "utf-8",
     "utf-16",
     "iso-8859-11",
-    "koi8u",
     "Any"
 };
 
@@ -91,6 +99,11 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "iso8859-14",
     "iso8859-15",
     "koi8-r",
+    "koi8-u",
+#if QT_VERSION >= 224
+    "microsoft-cp1251",
+    "paratype-cp154",
+#endif
     "jisx0208.1983-0",
     "ksc5601.1987-0",
     "tis620.2533-1",
@@ -102,7 +115,6 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "utf8",
     "utf16",
     "tis620-0",
-    "koi8-u",
     ""  // this will always return true...
         // adjust xNameToId if you remove this
 };
@@ -125,6 +137,11 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::ISO_8859_14,
     QFont::ISO_8859_15,
     QFont::KOI8R,
+    QFont::KOI8U,
+#if QT_VERSION >= 224
+    QFont::CP_1251,
+    QFont::PT_154,
+#endif
     QFont::Set_Ja,
     QFont::Set_Ko,
     QFont::Set_Th_TH,
@@ -136,7 +153,6 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
     QFont::Unicode,
     QFont::Unicode,
     QFont::ISO_8859_11,
-    QFont::KOI8U,
     QFont::AnyCharSet
 };
 
@@ -582,6 +598,12 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
         return "cns11643.1986-*";
     case QFont::Set_Big5:
 	return "big5-0";
+#if QT_VERSION >= 224
+    case QFont::CP_1251:
+	return "microsoft-cp1251";
+    case QFont::PT_154:
+	return "paratype-cp154";
+#endif
     case QFont::AnyCharSet:
     default:
         break;
