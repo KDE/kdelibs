@@ -85,22 +85,14 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     KCompletionBase::setCompletionMode( mode );
 }
 
-void KLineEdit::aboutToShowMenu()
-{
-    if( m_bShowModeChanger && m_pCompObj != 0 && m_iCompletionID == -1 )
-    {
-        insertCompletionMenu( this, SLOT( showCompletionMenu() ), m_pContextMenu, m_pContextMenu->count()-1 );
-    }
-}
-
 void KLineEdit::rotateText( const QString& input )
 {
     if( input.length() == 0 )
         return;
 
-    if( m_pCompObj != 0 )
+    if( completionObject() != 0 )
     {
-        if( m_iCompletionMode == KGlobalSettings::CompletionShell )
+        if( completionMode() == KGlobalSettings::CompletionShell )
         {
             setText( input );
         }
@@ -112,39 +104,22 @@ void KLineEdit::rotateText( const QString& input )
     }
 }
 
-void KLineEdit::iterateUpInList()
-{
-    if( m_pCompObj != 0 )
-    {
-        rotateText( m_pCompObj->previousMatch() );
-    }
-}
-
-void KLineEdit::iterateDownInList()
-{
-    if( m_pCompObj != 0 )
-    {
-        rotateText(  m_pCompObj->nextMatch() );
-    }
-}
-
 void KLineEdit::makeCompletion( const QString& text )
 {
-    if( m_pCompObj != 0 )
+    if( completionObject() != 0 )
     {
-        QString match = m_pCompObj->makeCompletion( text );
+        QString match = completionObject()->makeCompletion( text );
         // If no match or the same match, simply return
         // without completing.
         if( match.length() == 0 || match == text )
             return;
 
-        if( m_iCompletionMode == KGlobalSettings::CompletionShell )
+        if( completionMode() == KGlobalSettings::CompletionShell )
         {
             setText( match );
         }
         else
         {
-            debug ( "Matching : %s\nFound Match : %s", text.latin1(), match.latin1() );
             int pos = cursorPosition();
             validateAndSet( match, pos, pos, match.length() );
         }
@@ -153,13 +128,13 @@ void KLineEdit::makeCompletion( const QString& text )
 
 void KLineEdit::connectSignals( bool handle ) const
 {
-    if( handle && !m_bHandleSignals )
+    if( handle && !handleSignals() )
     {
         connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
         connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
     }
-    else if( !handle && m_bHandleSignals )
+    else if( !handle && handleSignals() )
     {
         disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
         disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
@@ -175,15 +150,18 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
     // propagated up-stream.  This is also consistent with
     // KLineEdit.
     if( ev->key() == Qt::Key_Return || ev->key() == Qt::Key_Enter )
-        emit returnPressed( displayText() );
-    // Filter key-events if EchoMode is normal
-    if( echoMode() == QLineEdit::Normal &&
-        m_iCompletionMode != KGlobalSettings::CompletionNone )
     {
-        if( m_iCompletionMode == KGlobalSettings::CompletionAuto )
+        emit returnPressed( displayText() );
+    }
+    // Filter key-events if EchoMode is normal & completion mode is not set to CompletionNone
+    else if( echoMode() == QLineEdit::Normal && completionMode() != KGlobalSettings::CompletionNone )
+    {
+        bool fireSignals = emitSignals();
+        KGlobalSettings::Completion mode = completionMode();
+        if( mode == KGlobalSettings::CompletionAuto )
         {
             QString keycode = ev->text();
-            if( !keycode.isNull() && keycode.unicode()->isPrint() && m_bEmitSignals )
+            if( !keycode.isNull() && keycode.unicode()->isPrint() && fireSignals )
             {
                 QLineEdit::keyPressEvent ( ev );
                 emit completion( text() );
@@ -192,11 +170,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
         }
         // Handles completion.
         int len = text().length();
-        int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)	: m_iCompletionKey;
-        if( KStdAccel::isEqual( ev, key ) && m_bEmitSignals &&
-            ( m_iCompletionMode == KGlobalSettings::CompletionMan ||
-            (m_iCompletionMode == KGlobalSettings::CompletionShell &&
-            len != 0 && len == cursorPosition()) ) )
+        KCompletion* comp = completionObject();
+        int key = ( completionKey() == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)	: completionKey();
+        if( KStdAccel::isEqual( ev, key ) && fireSignals &&
+            ( mode == KGlobalSettings::CompletionMan && (comp != 0 && comp->lastMatch() == displayText()) ) ||
+            ( mode == KGlobalSettings::CompletionShell && len != 0 && len == cursorPosition() ) )
         {
             // Emit completion if the completion mode is NOT
             // CompletionAuto and if the mode is CompletionShell,
@@ -205,15 +183,15 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
             return;
         }
         // Handles rotateUp.
-		key = ( m_iRotateUpKey == 0 ) ? KStdAccel::key(KStdAccel::RotateUp)	: m_iRotateUpKey;
-        if( KStdAccel::isEqual( ev, key ) && m_bEmitSignals )
+	key = ( rotateUpKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : rotateUpKey();
+        if( KStdAccel::isEqual( ev, key ) && fireSignals )
         {
             emit rotateUp ();
             return;
         }
         // Handles rotateDown.
-		key = ( m_iRotateDnKey == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : m_iRotateDnKey;
-        if( KStdAccel::isEqual( ev, key ) && m_bEmitSignals)
+	key = ( rotateDownKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : rotateDownKey();
+        if( KStdAccel::isEqual( ev, key ) && fireSignals)
         {
             emit rotateDown();
             return;

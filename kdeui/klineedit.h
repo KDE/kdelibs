@@ -253,7 +253,7 @@ public slots:
     * if there is no completion object or the completion object
     * does not contain a next match.
     */
-    virtual void iterateUpInList();
+    virtual void iterateUpInList() { rotateText( completionObject()->previousMatch() ); }
 
     /*
     * Iterates in the down (next match) direction through the
@@ -265,7 +265,7 @@ public slots:
     * is taken if there is no completion object or the completion
     * object does not contain a next match.
     */
-    virtual void iterateDownInList();
+    virtual void iterateDownInList() { rotateText(  completionObject()->nextMatch() ); }
 
 protected slots:
 
@@ -296,7 +296,7 @@ protected slots:
     * @ref KCompletionBase::insetCompeltionMenu, is
     * defined by the KCompletionBase.
     */
-    virtual void aboutToShowMenu();
+    virtual void aboutToShowMenu() { insertCompletionMenu( this, SLOT( showCompletionMenu() ), m_pContextMenu, m_pContextMenu->count()-1 ); }
 
     /**
     * Completes the remaining text with a matching one from

@@ -181,7 +181,7 @@ public:
     *
     * @return true when completion mode is automatic.
     */
-    bool autoCompletion() const { return m_iCompletionMode == KGlobalSettings::CompletionAuto; }
+    bool autoCompletion() const { return completionMode() == KGlobalSettings::CompletionAuto; }
 
     /**
     * Enables or disables the popup (context) menu.
@@ -274,7 +274,7 @@ public slots:
     * no completion object or the completion object does not contain
     * a next match.
     */
-    virtual void iterateUpInList();
+    virtual void iterateUpInList() { rotateText( completionObject()->previousMatch() ); }
 
     /**
     * Iterates in the down (next match) direction through the
@@ -286,7 +286,7 @@ public slots:
     * no completion object or the completion object does not contain
     * a next match.
     */
-    virtual void iterateDownInList();
+    virtual void iterateDownInList() { rotateText( completionObject()->nextMatch() ); }
 
 protected slots:
 
@@ -317,7 +317,7 @@ protected slots:
     * @ref KCompletionBase::insetCompeltionMenu, is
     * defined by the KCompletionBase.
     */
-    virtual void aboutToShowMenu();
+    virtual void aboutToShowMenu() { insertCompletionMenu( this, SLOT( showCompletionMenu() ), m_pContextMenu, m_pContextMenu->count() - 1 ); }
 
     /**
     * Deals with highlighting the seleted item when
@@ -366,21 +366,16 @@ protected:
     *
     * See @ref QComboBox::mousePressEvent.
     */
-    virtual void mousePressEvent( QMouseEvent* );
+    virtual bool eventFilter( QObject *, QEvent * );
 
 private :
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
     bool m_bEnableMenu;
-    // Flag that indicates whether we show/hide the mode
-    // changer item in the context menu.
-    bool m_bShowModeChanger;
-
     // Pointer to the line editor.
     QLineEdit* m_pEdit;
     // Context Menu items.
     QPopupMenu *m_pContextMenu;
 
 };
-
 #endif
