@@ -87,6 +87,8 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
   connect( d->ui->m_suggestions, SIGNAL(selectionChanged(QListViewItem*)),
            SLOT(slotSelectionChanged(QListViewItem*)) );
 
+  connect( d->ui->m_suggestions, SIGNAL( doubleClicked ( QListViewItem *, const QPoint &, int ) ),
+           SLOT( replace() ) );
   d->spellConfig = new KSpellConfig( 0, 0 ,0, false );
   d->spellConfig->fillDicts( d->ui->m_language );
   connect( d->ui->m_language, SIGNAL(activated(int)),
