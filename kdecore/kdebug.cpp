@@ -242,11 +242,12 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
           }
         case 2: // Shell
           {
-		  FILE *output;
-		  if (nPriority == LOG_INFO)
-              output = stdout;
-		  else
-			  output = stderr;				
+              FILE *output;
+              /* we used to use stdout for debug
+              if (nPriority == LOG_INFO)
+                  output = stderr;
+              else */
+                  output = stderr;				
 	      if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
 	      fputs(  data, output);
 	      break;
