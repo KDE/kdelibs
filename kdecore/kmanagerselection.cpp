@@ -41,16 +41,14 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 #include <qobject.h>
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // FIXME(E)
+#ifdef Q_WS_X11 // FIXME(E)
 
 #include "kmanagerselection.h"
 
 #include <kdebug.h>
 #include <qwidget.h>
 #include <kapplication.h>
-#include <kxerrorhandler.h> // schroder
+#include <kxerrorhandler.h>
 #include <X11/Xatom.h>
 
 class KSelectionOwnerPrivate

@@ -28,12 +28,9 @@ DEALINGS IN THE SOFTWARE.
 #define __KMANAGERSELECTION_H
 
 #include <qobject.h>
+#ifdef Q_WS_X11 // FIXME(E)
 
-#include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // FIXME(E)
-
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h>
 
 class KSelectionOwnerPrivate;
 
