@@ -34,7 +34,7 @@ namespace KJS {
     Value getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { AppCodeName, AppName, AppVersion, Language, UserAgent, Platform,
+    enum { AppCodeName, AppName, AppVersion, Language, UserAgent, UserLanguage, Platform,
            _Plugins, _MimeTypes, Product, Vendor, CookieEnabled, JavaEnabled };
     KHTMLPart *part() const { return m_part; }
   private:

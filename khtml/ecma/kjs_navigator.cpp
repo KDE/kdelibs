@@ -134,6 +134,7 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
   appVersion	Navigator::AppVersion	DontDelete|ReadOnly
   language	Navigator::Language	DontDelete|ReadOnly
   userAgent	Navigator::UserAgent	DontDelete|ReadOnly
+  userLanguage	Navigator::UserLanguage	DontDelete|ReadOnly
   platform	Navigator::Platform	DontDelete|ReadOnly
   plugins	Navigator::_Plugins	DontDelete|ReadOnly
   mimeTypes	Navigator::_MimeTypes	DontDelete|ReadOnly
@@ -187,6 +188,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
   case Vendor:
     return String("KDE");
   case Language:
+  case UserLanguage:
     return String(KGlobal::locale()->language() == "C" ?
                   QString::fromLatin1("en") : KGlobal::locale()->language());
   case UserAgent:

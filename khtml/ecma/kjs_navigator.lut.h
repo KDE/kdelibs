@@ -13,16 +13,17 @@ const struct HashEntry NavigatorTableEntries[] = {
    { "vendor", Navigator::Vendor, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "appCodeName", Navigator::AppCodeName, DontDelete|ReadOnly, 0, &NavigatorTableEntries[11] },
-   { "cookieEnabled", Navigator::CookieEnabled, DontDelete|ReadOnly, 0, 0 },
+   { "userLanguage", Navigator::UserLanguage, DontDelete|ReadOnly, 0, &NavigatorTableEntries[16] },
    { 0, 0, 0, 0, 0 },
    { "product", Navigator::Product, DontDelete|ReadOnly, 0, 0 },
    { "appVersion", Navigator::AppVersion, DontDelete|ReadOnly, 0, &NavigatorTableEntries[12] },
    { "userAgent", Navigator::UserAgent, DontDelete|ReadOnly, 0, 0 },
    { "platform", Navigator::Platform, DontDelete|ReadOnly, 0, &NavigatorTableEntries[14] },
    { "plugins", Navigator::_Plugins, DontDelete|ReadOnly, 0, &NavigatorTableEntries[15] },
-   { "mimeTypes", Navigator::_MimeTypes, DontDelete|ReadOnly, 0, 0 }
+   { "mimeTypes", Navigator::_MimeTypes, DontDelete|ReadOnly, 0, 0 },
+   { "cookieEnabled", Navigator::CookieEnabled, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable NavigatorTable = { 2, 16, NavigatorTableEntries, 11 };
+const struct HashTable NavigatorTable = { 2, 17, NavigatorTableEntries, 11 };
 
 }; // namespace
