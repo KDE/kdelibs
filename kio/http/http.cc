@@ -1998,7 +1998,7 @@ void HTTPProtocol::decodeGzip()
   QByteArray ar;
 
   char tmp_buf[1024], *filename=strdup("/tmp/kio_http.XXXXXX");
-  unsigned long len;
+  signed long len;
   int fd;
 
 
@@ -2014,6 +2014,7 @@ void HTTPProtocol::decodeGzip()
   // And then reads it back in with gzread so it'll
   // decompress on the fly.
   while ( (len=gzread(gzf, tmp_buf, 1024))>0){
+    if (len < 0) break; // -1 is error
     int old_len=ar.size();
     ar.resize(ar.size()+len);
     memcpy(ar.data()+old_len, tmp_buf, len);
