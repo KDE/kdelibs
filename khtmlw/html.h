@@ -1602,6 +1602,4 @@ protected:
 
 };
 
-extern QCursor handCursor;
-
 #endif // HTML
