@@ -2150,11 +2150,11 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    const char* token = stringTok->nextToken();
 	    if ( strncasecmp( token, "clear=", 6 ) == 0 )
 	    {
-		if ( strncasecmp( token+6, "left", 4 ) == 0 )
+		if ( strcasecmp( token+6, "left" ) == 0 )
 		    clear = HTMLVSpace::Left;
-		else if ( strncasecmp( token+6, "right", 5 ) == 0 )
+		else if ( strcasecmp( token+6, "right" ) == 0 )
 		    clear = HTMLVSpace::Right;
-		else if ( strncasecmp( token+6, "all", 3 ) == 0 )
+		else if ( strcasecmp( token+6, "all" ) == 0 )
 		    clear = HTMLVSpace::All;
             }
 	}
@@ -2276,7 +2276,7 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 		    divAlign = HTMLClue::Right;
 		else if ( strcasecmp( token + 6, "center" ) == 0 )
 		    divAlign = HTMLClue::HCenter;
-		else
+		else if ( strcasecmp( token + 6, "left" ) == 0 )
 		    divAlign = HTMLClue::Left;
 	    }
 	}
@@ -2639,6 +2639,8 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 					align = HTMLClue::HCenter;
 				else if ( strcasecmp( token + 6, "right" ) == 0 )
 					align = HTMLClue::Right;
+				else if ( strcasecmp( token + 6, "left" ) == 0 )
+					align = HTMLClue::Left;
 			}
 		}
 		// Start a new flow box
@@ -2715,11 +2717,11 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 			const char* token = stringTok->nextToken();
 			if ( strncasecmp( token, "align=", 6 ) == 0 )
 			{
-				if ( strncasecmp( token + 6, "left", 4 ) == 0 )
+				if ( strcasecmp( token + 6, "left" ) == 0 )
 					align = HTMLRule::Left;
-				else if ( strncasecmp( token + 6, "right", 5 ) == 0 )
+				else if ( strcasecmp( token + 6, "right" ) == 0 )
 					align = HTMLRule::Right;
-				else
+				else if ( strcasecmp( token + 6, "center" ) == 0 )
 					align = HTMLRule::HCenter;
 			}
 			else if ( strncasecmp( token, "size=", 5 ) == 0 )
@@ -3229,11 +3231,11 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 			const char* token = stringTok->nextToken();
 			if ( strncasecmp( token, "align=", 6 ) == 0 )
 			{
-				if ( strcasecmp( token + 6, "center" ) == 0 )
+				if ( strcasecmp( token + 6, "center") == 0 )
 					align = HTMLClue::HCenter;
-				else if ( strcasecmp( token + 6, "right" ) == 0 )
+				else if ( strcasecmp( token + 6, "right") == 0 )
 					align = HTMLClue::Right;
-				else if ( strcasecmp( token + 6, "left" ) == 0 )
+				else if ( strcasecmp( token + 6, "left") == 0 )
 					align = HTMLClue::Left;
 			}
 		}
@@ -3561,9 +3563,9 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 	}
 	else if ( strncasecmp( token, "align=", 6 ) == 0 )
 	{
-	    if ( strncasecmp( token + 6, "left", 4 ) == 0 )
+	    if ( strcasecmp( token + 6, "left" ) == 0 )
 		gridHAlign = HTMLClue::Left;
-	    else if ( strncasecmp( token + 6, "right", 5 ) == 0 )
+	    else if ( strcasecmp( token + 6, "right" ) == 0 )
 		gridHAlign = HTMLClue::Right;
 	}
     }
@@ -3724,11 +3726,11 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			}
 			else if ( strncasecmp( token, "align=", 6 ) == 0)
 			{
-			    if ( strncasecmp( token+6, "left", 4 ) == 0)
+			    if ( strcasecmp( token+6, "left" ) == 0)
 				rowhalign = HTMLClue::Left;
-			    else if ( strncasecmp( token+6, "right", 5 ) == 0)
+			    else if ( strcasecmp( token+6, "right" ) == 0)
 				rowhalign = HTMLClue::Right;
-			    else
+			    else if ( strcasecmp( token+6, "center" ) == 0)
 				rowhalign = HTMLClue::HCenter;
 			}
 			else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
@@ -3804,11 +3806,11 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 			}
 			else if ( strncasecmp( token, "align=", 6 ) == 0)
 			{
-			    if ( strncasecmp( token+6, "center", 6 ) == 0)
+			    if ( strcasecmp( token+6, "center" ) == 0)
 				divAlign = HTMLClue::HCenter;
-			    else if ( strncasecmp( token+6, "right", 5 ) == 0)
+			    else if ( strcasecmp( token+6, "right" ) == 0)
 				divAlign = HTMLClue::Right;
-			    else
+			    else if ( strcasecmp( token+6, "left" ) == 0)
 				divAlign = HTMLClue::Left;
 			}
 			else if ( strncasecmp( token, "width=", 6 ) == 0 )
