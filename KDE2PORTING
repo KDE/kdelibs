@@ -134,6 +134,17 @@ must have created a KApplication object before the methods can be used.
 		KIconLoader *loader = KGlobal::iconLoader();
 
 ////////////////////////////////////////////////////////////////////////
+// * KIconLoader
+
+KIconLoader in 1.1 used to mix icons for applications and for toolbars.
+This has changed, so you may notice that your application doesn't find
+the right icons. loadIcon (used by ICON) returns only toolbar icons.
+If you need icons for applications, use loadApplicationIcon or 
+loadApplicationMiniIcon. loadMiniIcon has been removed as it did the
+same as loadApplicationMiniIcon.
+
+////////////////////////////////////////////////////////////////////////
 // * KDialog
 
 KDialog is no longer defined in kwizard.h. Include kdialog.h instead.
+
