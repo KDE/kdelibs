@@ -60,7 +60,7 @@ public:
                                     MouseEvent *ev );
 
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
-    
+
 protected:
     CSSStyleSheetImpl *m_styleSheet;
     bool m_bgSet;
@@ -99,7 +99,7 @@ protected:
     int marginWidth;
     int marginHeight;
     QScrollView::ScrollBarMode scrolling;
-    
+
     bool frameBorder : 1;
     bool frameBorderSet : 1;
     bool noresize : 1;
@@ -136,6 +136,8 @@ public:
     int border() const { return m_border; }
     virtual void detach();
 
+    virtual void applyChanges(bool = true, bool = true);
+
 protected:
     QList<khtml::Length> *m_rows;
     QList<khtml::Length> *m_cols;
@@ -144,7 +146,7 @@ protected:
     int m_totalRows;
     int m_totalCols;
     int m_border;
-    
+
     bool frameborder : 1;
     bool frameBorderSet : 1;
     bool noresize : 1;

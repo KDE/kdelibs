@@ -22,7 +22,7 @@
  *
  * $Id$
  */
-#define DEBUG_LAYOUT
+//#define DEBUG_LAYOUT
 
 #include "render_frames.h"
 #include "html_baseimpl.h"
@@ -52,8 +52,7 @@
 using namespace khtml;
 using namespace DOM;
 
-RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
-                                QPtrList<khtml::Length> *rows, QPtrList<khtml::Length> *cols )
+RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *view )
     : RenderBox()
 {
   // init RenderObject attributes
@@ -61,17 +60,18 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *vi
 
   m_frameset = frameSet;
 
-  m_rows = rows;
-  m_cols = cols;
-
   // another one for bad html
   // handle <frameset cols="*" rows="100, ...">
-  if ( m_rows && m_cols ) {
+  if ( m_frameset->m_rows && m_frameset->m_cols ) {
       // lets see if one of them is relative
-      if ( m_rows->count() == 1 && m_rows->at( 0 )->isRelative() )
-            m_rows = 0;
-      if ( m_cols->count() == 1 && m_cols->at( 0 )->isRelative() )
-          m_cols = 0;
+      if ( m_frameset->m_rows->count() == 1 && m_frameset->m_rows->at( 0 )->isRelative() ) {
+          delete m_frameset->m_rows;
+          m_frameset->m_rows = 0;
+      }
+      if ( m_frameset->m_cols->count() == 1 && m_frameset->m_cols->at( 0 )->isRelative() ) {
+          delete m_frameset->m_cols;
+          m_frameset->m_cols = 0;
+      }
   }
 
   m_rowHeight = 0;
@@ -134,21 +134,21 @@ void RenderFrameSet::layout( )
     int colsPercent = 0;
     int remainingRelativeWidth = 0;
 
-    if(m_rows)
+    if(m_frameset->m_rows)
     {
 	// another one for bad html. If all rows have a fixed width, convert the numbers to percentages.
 	bool allFixed = true;
 	int totalFixed = 0;
 	for(i = 0; i< m_frameset->totalRows(); i++) {
-	    if(!(m_rows->at(i)->type == Fixed))
+	    if(!(m_frameset->m_rows->at(i)->type == Fixed))
 		allFixed = false;
 	    else
-		totalFixed += m_rows->at(i)->value;
+		totalFixed += m_frameset->m_rows->at(i)->value;
 	}
 	if ( allFixed && totalFixed ) {
 	    for(i = 0; i< m_frameset->totalRows(); i++) {
-		m_rows->at(i)->type = Percent;
-		m_rows->at(i)->value = m_rows->at(i)->value *100 / totalFixed;
+	 	m_frameset->m_rows->at(i)->type = Percent;
+		m_frameset->m_rows->at(i)->value = m_frameset->m_rows->at(i)->value *100 / totalFixed;
 	    }
 	}
 
@@ -158,25 +158,25 @@ void RenderFrameSet::layout( )
 
         for(i = 0; i< m_frameset->totalRows(); i++)
         {
-             if(m_rows->at(i)->type == Fixed)
+             if(m_frameset->m_rows->at(i)->type == Fixed)
             {
-                m_rowHeight[i] = QMAX(m_rows->at(i)->width(heightAvailable), 14);
+                m_rowHeight[i] = QMAX(m_frameset->m_rows->at(i)->width(heightAvailable), 14);
                 if( m_rowHeight[i] > remainingHeight )
                     m_rowHeight[i] = remainingHeight;
                  remainingHeight -= m_rowHeight[i];
             }
-            else if(m_rows->at(i)->type == Relative)
+            else if(m_frameset->m_rows->at(i)->type == Relative)
             {
-                totalRelative += m_rows->at(i)->value;
+                totalRelative += m_frameset->m_rows->at(i)->value;
                 rowsRelative++;
             }
         }
 
         for(i = 0; i< m_frameset->totalRows(); i++)
         {
-             if(m_rows->at(i)->type == Percent)
+             if(m_frameset->m_rows->at(i)->type == Percent)
             {
-                m_rowHeight[i] = QMAX(m_rows->at(i)->width(heightAvailable), 14);
+                m_rowHeight[i] = QMAX(m_frameset->m_rows->at(i)->width(heightAvailable), 14);
                 if( m_rowHeight[i] > remainingHeight )
                     m_rowHeight[i] = remainingHeight;
                  remainingHeight -= m_rowHeight[i];
@@ -192,10 +192,10 @@ void RenderFrameSet::layout( )
 
         for(i = 0; i< m_frameset->totalRows(); i++)
          {
-            if(m_rows->at(i)->type == Relative)
+            if(m_frameset->m_rows->at(i)->type == Relative)
             {
                 if ( totalRelative )
-                  m_rowHeight[i] = m_rows->at(i)->value*remainingHeight/totalRelative;
+                  m_rowHeight[i] = m_frameset->m_rows->at(i)->value*remainingHeight/totalRelative;
                 else
                   m_rowHeight[i] = remainingRelativeWidth;
                 remainingHeight -= m_rowHeight[i];
@@ -211,7 +211,7 @@ void RenderFrameSet::layout( )
             if ( rowsPercent )
                 rows = rowsPercent;
             for(i = 0; i< m_frameset->totalRows(); i++) {
-                if( !rowsPercent || m_rows->at(i)->type == Percent ) {
+                if( !rowsPercent || m_frameset->m_rows->at(i)->type == Percent ) {
                     int toAdd = remainingHeight/rows;
                     rows--;
                     m_rowHeight[i] += toAdd;
@@ -223,22 +223,22 @@ void RenderFrameSet::layout( )
     else
         m_rowHeight[0] = m_height;
 
-    if(m_cols)
+    if(m_frameset->m_cols)
     {
 	// another one for bad html. If all cols have a fixed width, convert the numbers to percentages.
 	// also reproduces IE and NS behaviour.
 	bool allFixed = true;
 	int totalFixed = 0;
 	for(i = 0; i< m_frameset->totalCols(); i++) {
-	    if(!(m_cols->at(i)->type == Fixed))
+	    if(!(m_frameset->m_cols->at(i)->type == Fixed))
 		allFixed = false;
 	    else
-		totalFixed += m_cols->at(i)->value;
+		totalFixed += m_frameset->m_cols->at(i)->value;
 	}
 	if ( allFixed && totalFixed) {
 	    for(i = 0; i< m_frameset->totalCols(); i++) {
-		m_cols->at(i)->type = Percent;
-		m_cols->at(i)->value = m_cols->at(i)->value * 100 / totalFixed;
+		m_frameset->m_cols->at(i)->type = Percent;
+		m_frameset->m_cols->at(i)->value = m_frameset->m_cols->at(i)->value * 100 / totalFixed;
 	    }
 	}
 
@@ -251,25 +251,25 @@ void RenderFrameSet::layout( )
 
         for(i = 0; i< m_frameset->totalCols(); i++)
         {
-            if (m_cols->at(i)->type == Fixed)
+            if (m_frameset->m_cols->at(i)->type == Fixed)
             {
-                m_colWidth[i] = QMAX(m_cols->at(i)->width(widthAvailable), 14);
+                m_colWidth[i] = QMAX(m_frameset->m_cols->at(i)->width(widthAvailable), 14);
                 if( m_colWidth[i] > remainingWidth )
                     m_colWidth[i] = remainingWidth;
                 remainingWidth -= m_colWidth[i];
             }
-            else if(m_cols->at(i)->type == Relative)
+            else if(m_frameset->m_cols->at(i)->type == Relative)
             {
-                totalRelative += m_cols->at(i)->value;
+                totalRelative += m_frameset->m_cols->at(i)->value;
                 colsRelative++;
             }
         }
 
         for(i = 0; i< m_frameset->totalCols(); i++)
         {
-            if(m_cols->at(i)->type == Percent)
+            if(m_frameset->m_cols->at(i)->type == Percent)
             {
-                m_colWidth[i] = QMAX(m_cols->at(i)->width(widthAvailable), 14);
+                m_colWidth[i] = QMAX(m_frameset->m_cols->at(i)->width(widthAvailable), 14);
                 if( m_colWidth[i] > remainingWidth )
                     m_colWidth[i] = remainingWidth;
                 remainingWidth -= m_colWidth[i];
@@ -284,10 +284,10 @@ void RenderFrameSet::layout( )
 
         for(i = 0; i < m_frameset->totalCols(); i++)
         {
-            if(m_cols->at(i)->type == Relative)
+            if(m_frameset->m_cols->at(i)->type == Relative)
             {
                 if ( totalRelative )
-                  m_colWidth[i] = m_cols->at(i)->value*remainingWidth/totalRelative;
+                  m_colWidth[i] = m_frameset->m_cols->at(i)->value*remainingWidth/totalRelative;
                 else
                   m_colWidth[i] = remainingRelativeWidth;
                 remainingWidth -= m_colWidth[i];
@@ -303,7 +303,7 @@ void RenderFrameSet::layout( )
             if ( colsPercent )
                 cols = colsPercent;
             for(i = 0; i< m_frameset->totalCols(); i++) {
-                if( !colsPercent || m_cols->at(i)->type == Percent ) {
+                if( !colsPercent || m_frameset->m_cols->at(i)->type == Percent ) {
                     int toAdd = remainingWidth/cols;
                     cols--;
                     m_colWidth[i] += toAdd;

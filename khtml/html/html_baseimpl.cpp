@@ -385,12 +385,22 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ROWS:
+        delete m_rows;
         m_rows = attr->val()->toLengthList();
         m_totalRows = m_rows->count();
+        setChanged();
+        // ### nasty - usual change handling is not enough FIXIT!
+        if (m_render)
+            m_render->layout();
         break;
     case ATTR_COLS:
+        delete m_cols;
         m_cols = attr->val()->toLengthList();
         m_totalCols = m_cols->count();
+        setChanged();
+        // ### nasty - usual change handling is not enough FIXIT!
+        if (m_render)
+            m_render->layout();
         break;
     case ATTR_FRAMEBORDER:
         // false or "no" or "0"..
@@ -446,7 +456,7 @@ void HTMLFrameSetElementImpl::attach()
     if ( !r )
       return;
 
-    khtml::RenderFrameSet *renderFrameSet = new khtml::RenderFrameSet( this, w, m_rows, m_cols );
+    khtml::RenderFrameSet *renderFrameSet = new khtml::RenderFrameSet( this, w );
     m_render = renderFrameSet;
     m_render->setStyle(m_style);
     r->addChild( m_render, nextRenderer() );
@@ -513,6 +523,16 @@ void HTMLFrameSetElementImpl::detach()
     HTMLElementImpl::detach();
     // ### send the event when we actually get removed from the doc instead of here
     dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+}
+
+void HTMLFrameSetElementImpl::applyChanges(bool top, bool force)
+{
+    if (changed() && m_render) {
+        m_render->setLayouted(false);
+        m_render->layout();
+        setChanged(false);
+    }
+    HTMLElementImpl::applyChanges(top,force);
 }
 
 
