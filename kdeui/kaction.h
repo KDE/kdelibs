@@ -205,7 +205,9 @@ public:
      * set the @p accel param to 0.
      *
      * This is the most common KAction used when you do not have a
-     * corresponding icon.
+     * corresponding icon (note that it won't appear in the current version
+     * of the "Edit ToolBar" dialog, because an action needs an icon to be
+     * plugged in a toolbar...).
      *
      * @param text The text that will be displayed.
      * @param accel The corresponding keyboard accelerator (shortcut).
@@ -297,6 +299,8 @@ public:
 
     /**
      * Construct a null action.
+     * This is not recommended since all actions should have a text,
+     * for the "Edit ToolBar" dialog. So don't forget to call setText later :)
      *
      * @param parent This action's parent.
      * @param name An internal name for this action.
@@ -1307,11 +1311,28 @@ public:
     /**
        If set to true, this action will create a delayed popup menu
        when plugged in a KToolbar. Otherwise it creates a normal popup.
-       Default: delayed.
+       Default: NOT delayed (was a bug in KDE 2.0, that the default was delayed).
     */
     void setDelayed(bool _delayed);
-    // If you want to use a popup in a toolbar, and not in a menu, you might
-    // as well have a look at KToolBarPopupAction
+    // This method doesn't really make sense, in fact. If you have a KActionMenu
+    // then you can't click on the "main" action, in a menu, so it should NOT
+    // be delayed.
+    // If you want to be able to click on the main action, use KToolBarPopupAction.
+
+    /**
+     * Returns true if this action creates a sticky popup menu.
+     * See @ref setStickyMenu.
+     */
+    bool stickyMenu() const;
+    /**
+     * If set to true, this action will create a sticky popup menu
+     * when plugged in a KToolbar.
+     * "Sticky", means it's visible until a selection is made or the mouse is
+     * clicked elsewhere. This feature allows you to make a selection without
+     * having to press and hold down the mouse while making a selection.
+     * Default: sticky.
+     */
+    void setStickyMenu(bool sticky);
 
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );

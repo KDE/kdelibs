@@ -383,7 +383,7 @@ QString KAction::statusText() const
 int KAction::plug( QWidget *w, int index )
 {
   if (w == 0) {
-	kdDebug() << "KAction::plug called with 0 argument\n";
+	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
   }
 
@@ -920,7 +920,7 @@ int KToggleAction::plug( QWidget* widget, int index )
 {
   if ( !widget->inherits("QPopupMenu") && !widget->inherits("KToolBar") )
   {
-    kdDebug() << "Can not plug KToggleAction in " << widget->className() << endl;
+    kdWarning() << "Can not plug KToggleAction in " << widget->className() << endl;
     return -1;
   }
 
@@ -1219,7 +1219,7 @@ void KSelectAction::changeItem( int index, const QString& text )
 {
   if ( index < 0 || index >= (int)d->m_list.count() )
   {
-    kdDebug() << "KSelectAction::changeItem Index out of scope" << endl;
+    kdWarning() << "KSelectAction::changeItem Index out of scope" << endl;
     return;
   }
 
@@ -1380,7 +1380,7 @@ int KSelectAction::plug( QWidget *widget, int index )
     return containerCount() - 1;
   }
 
-  kdDebug() << "Can not plug KAction in " << widget->className() << endl;
+  kdWarning() << "Can not plug KAction in " << widget->className() << endl;
   return -1;
 }
 
@@ -1989,7 +1989,7 @@ void KFontSizeAction::setFontSize( int size )
     }
 
     if ( size < 1 || size > 128 ) {
-        kdDebug() << "KFontSizeAction: Size " << size << " is out of range" << endl;
+        kdWarning() << "KFontSizeAction: Size " << size << " is out of range" << endl;
         return;
     }
 
@@ -2043,7 +2043,7 @@ void KFontSizeAction::slotActivated( const QString& size )
 
   if ( size.toInt() < 1 || size.toInt() > 128 )
   {
-    kdDebug() << "KFontSizeAction: Size " << size << " is out of range" << endl;
+    kdWarning() << "KFontSizeAction: Size " << size << " is out of range" << endl;
     return;
   }
 
@@ -2058,7 +2058,8 @@ public:
   KActionMenuPrivate()
   {
     m_popup = new KPopupMenu(0L,"KActionMenu::KActionMenuPrivate");
-    m_delayed = true;
+    m_delayed = false; // true doesn't really makes sense for a KActionMenu (main action not selectable in a menu anyway)
+    m_stickyMenu = true;
   }
   ~KActionMenuPrivate()
   {
@@ -2066,6 +2067,7 @@ public:
   }
   KPopupMenu *m_popup;
   bool m_delayed;
+  bool m_stickyMenu;
 };
 
 KActionMenu::KActionMenu( QObject* parent, const char* name )
@@ -2128,6 +2130,14 @@ bool KActionMenu::delayed() const {
 
 void KActionMenu::setDelayed(bool _delayed) {
     d->m_delayed = _delayed;
+}
+
+bool KActionMenu::stickyMenu() const {
+    return d->m_stickyMenu;
+}
+
+void KActionMenu::setStickyMenu(bool sticky) {
+    d->m_stickyMenu = sticky;
 }
 
 int KActionMenu::plug( QWidget* widget, int index )
@@ -2194,9 +2204,9 @@ int KActionMenu::plug( QWidget* widget, int index )
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
     if (delayed()) {
-        bar->setDelayedPopup( id_, popupMenu() );
+        bar->setDelayedPopup( id_, popupMenu(), stickyMenu() );
     } else {
-        bar->getButton(id_)->setPopup(popupMenu());
+        bar->getButton(id_)->setPopup(popupMenu(), stickyMenu() );
     }
 
     return containerCount() - 1;
@@ -2364,7 +2374,7 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
     if (delayed()) {
         bar->setDelayedPopup( id_, popupMenu(), stickyMenu() );
     } else {
-        bar->getButton(id_)->setPopup(popupMenu());
+        bar->getButton(id_)->setPopup(popupMenu(), stickyMenu());
     }
 
     return containerCount() - 1;

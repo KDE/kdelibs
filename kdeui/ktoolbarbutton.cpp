@@ -35,6 +35,7 @@
 #include <qpopupmenu.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <kstyle.h>
 #include <kglobalsettings.h>
@@ -362,7 +363,13 @@ void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
 
 void KToolBarButton::setPopup(QPopupMenu *p)
 {
+  setPopup(p,false);
+}
+
+void KToolBarButton::setPopup(QPopupMenu *p, bool toggle)
+{
   d->m_popup = p;
+  d->m_isToggle  = toggle;
   p->installEventFilter(this);
 }
 
@@ -374,7 +381,6 @@ QPopupMenu *KToolBarButton::popup()
 void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool toggle )
 {
   d->m_isPopup   = true;
-  d->m_isToggle  = toggle;
 
   if (!d->m_delayTimer)
   {
@@ -383,7 +389,7 @@ void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool toggle )
            this,             SLOT(slotDelayTimeout()));
   }
 
-  setPopup(p);
+  setPopup(p, toggle);
 }
 
 void KToolBarButton::leaveEvent(QEvent *)

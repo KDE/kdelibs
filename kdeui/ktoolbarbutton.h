@@ -218,6 +218,11 @@ public:
   void setPopup (QPopupMenu *p);
 
   /**
+   * See @ref setDelayedPopup for a description of toggle
+   */
+  void setPopup (QPopupMenu *p, bool toggle); // BCI
+
+  /**
    * Gives this button a delayed popup menu.
    *
    * This function allows you to add a delayed popup menu to the button.
