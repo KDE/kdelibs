@@ -46,10 +46,13 @@ KCompletion::~KCompletion()
 
 void KCompletion::setItems( const QStringList& items )
 {
-    myMatches.clear();
-    myRotationIndex = 0;
-    myLastString = QString::null;
+    clear();
+    insertItems( items );
+}
 
+
+void KCompletion::insertItems( const QStringList& items )
+{
     bool weighted = (myOrder == Weighted);
     QStringList::ConstIterator it;
     for ( it = items.begin(); it != items.end(); ++it )

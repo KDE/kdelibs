@@ -347,6 +347,12 @@ public slots:
     }
 
     /**
+     * Inserts @p items into the list of possible completions.
+     * Does the same as @ref setItems(), but does not call @ref clear() before.
+     */
+    void insertItems( const QStringList& items );
+    
+    /**
      * Sets the list of items available for completion. Removes all previous
      * items.
      *
