@@ -226,6 +226,8 @@ private:
   // put some dicts here... Well we need a dict id<->dialog box probably, anyway.
   void killJob( QCString observerAppId, int progressId );
 
+  bool m_bShowList;
+
   static int s_jobId;
 };
 

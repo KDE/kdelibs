@@ -561,7 +561,9 @@ void UIServer::slotUpdate() {
   statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( totalSpeed ) ),
 			   ID_TOTAL_SPEED);
 
-  show();
+  if ( m_bShowList ) {
+    show();
+  }
 }
 
 
@@ -583,16 +585,19 @@ void UIServer::slotSelection() {
 }
 
 
-// TODO : read and write settings
 void UIServer::readSettings() {
   KConfig config("uiserverrc");
   config.setGroup( "UIServer" );
+
+  m_bShowList = config.readBoolEntry( "ShowList", false );
 }
 
 
 void UIServer::writeSettings() {
   KConfig config("uiserverrc");
   config.setGroup( "UIServer" );
+
+  // TODO : write settings ?
 }
 
 
