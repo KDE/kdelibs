@@ -170,13 +170,13 @@ bool RenderRoot::absolutePosition(int &xPos, int &yPos, bool f)
 }
 
 void RenderRoot::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
-		       RenderObject::PaintPhase paintPhase)
+		       PaintAction paintPhase)
 {
     paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 }
 
 void RenderRoot::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
-			     int _tx, int _ty,  RenderObject::PaintPhase paintPhase)
+			     int _tx, int _ty,  PaintAction paintPhase)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
@@ -186,7 +186,7 @@ void RenderRoot::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
         relativePositionOffset(_tx, _ty);
 
     // 1. paint background, borders etc
-    if(paintPhase == BACKGROUND_PHASE && shouldPaintBackgroundOrBorder() && !isInline())
+    if(paintPhase == PaintActionBackground && shouldPaintBackgroundOrBorder() && !isInline())
         paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. paint contents
@@ -247,13 +247,14 @@ void RenderRoot::close()
 
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 {
-    // Check we got valid renderobjects. www.msnbc.com and clicking around, to find the case where this happened.
+    // Check we got valid renderobjects. www.msnbc.com and clicking
+    // around, to find the case where this happened.
     if ( !s || !e )
     {
         kdWarning(6040) << "RenderRoot::setSelection() called with start=" << s << " end=" << e << endl;
         return;
     }
-    //kdDebug( 6040 ) << "RenderRoot::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
+//     kdDebug( 6040 ) << "RenderRoot::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
 
     while (s->firstChild())
         s = s->firstChild();
@@ -372,17 +373,39 @@ int RenderRoot::docHeight() const
         h = m_height;
     else
         h = 0;
-
+#if 1
     RenderObject *fc = firstChild();
     if(fc) {
-        int dh = fc->height() + fc->marginTop() + fc->marginBottom();
+        int dh = fc->overflowHeight() + fc->marginTop() + fc->marginBottom();
         int lowestPos = firstChild()->lowestPosition();
         if( lowestPos > dh )
             dh = lowestPos;
         if( dh > h )
             h = dh;
     }
-    h = QMAX( h, m_layer->height() );
+#endif
+
+    RenderLayer *layer = m_layer;
+    int y = 0;
+    while ( layer ) {
+	h = QMAX( h, layer->yPos() + layer->height() );
+	h = QMAX( h, layer->xPos() + layer->renderer()->overflowHeight() );
+	if ( layer->firstChild() ) {
+	    y += layer->yPos();
+	    layer = layer->firstChild();
+	} else if ( layer->nextSibling() )
+	    layer = layer->nextSibling();
+	else {
+	    while ( layer ) {
+		layer = layer->parent();
+		y -= layer->yPos();
+		if ( layer && layer->nextSibling() ) {
+		    layer = layer->nextSibling();
+		    break;
+		}
+	    }
+	}
+    }
     return h;
 }
 
@@ -394,15 +417,38 @@ int RenderRoot::docWidth() const
     else
         w = 0;
 
+#if 1
     RenderObject *fc = firstChild();
     if(fc) {
-        int dw = fc->width() + fc->marginLeft() + fc->marginRight();
+        int dw = fc->overflowWidth() + fc->marginLeft() + fc->marginRight();
         int rightmostPos = fc->rightmostPosition();
         if( rightmostPos > dw )
             dw = rightmostPos;
         if( dw > w )
             w = dw;
     }
-    w = QMAX( w, m_layer->width() );
+#endif
+
+    RenderLayer *layer = m_layer;
+    int x = 0;
+    while ( layer ) {
+	w = QMAX( w, layer->xPos() + layer->width() );
+	w = QMAX( w, layer->xPos() + layer->renderer()->overflowWidth() );
+	if ( layer->firstChild() ) {
+	    x += layer->xPos();
+	    layer = layer->firstChild();
+	} else if ( layer->nextSibling() )
+	    layer = layer->nextSibling();
+	else {
+	    while ( layer ) {
+		layer = layer->parent();
+		x -= layer->xPos();
+		if ( layer && layer->nextSibling() ) {
+		    layer = layer->nextSibling();
+		    break;
+		}
+	    }
+	}
+    }
     return w;
 }

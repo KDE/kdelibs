@@ -49,9 +49,9 @@ public:
     // list-style-position: inside
 
     virtual void paint(QPainter *p, int x, int y, int w, int h,
-                           int xoff, int yoff, RenderObject::PaintPhase paintPhase);
+                           int xoff, int yoff, PaintAction);
     virtual void paintObject(QPainter *p, int x, int y, int w, int h,
-                             int xoff, int yoff, RenderObject::PaintPhase paintPhase);
+                             int xoff, int yoff, PaintAction paintPhase);
     virtual void layout( );
     virtual void calcMinMaxWidth();
 

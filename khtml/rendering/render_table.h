@@ -96,7 +96,7 @@ public:
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, RenderObject::PaintPhase paintPhase);
+                        int tx, int ty, PaintAction paintPhase);
     virtual void layout();
     virtual void calcMinMaxWidth();
     virtual void close();
@@ -228,7 +228,7 @@ public:
     }
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, RenderObject::PaintPhase paintPhase);
+                        int tx, int ty, PaintAction paintPhase);
 
     int numRows() const { return grid.size(); }
     int getBaseline(int row) {return grid[row].baseLine;}
@@ -325,7 +325,7 @@ public:
     void setCellBottomExtra(int p) { _bottomExtra = p; }
 
     virtual void paint( QPainter* p, int x, int y,
-                        int w, int h, int tx, int ty, RenderObject::PaintPhase paintPhase);
+                        int w, int h, int tx, int ty, PaintAction paintPhase);
 
     virtual void close();
 

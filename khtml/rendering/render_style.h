@@ -489,9 +489,9 @@ protected:
     // inherit
     struct InheritedFlags {
     // 32 bit inherited, don't add to the struct, or the operator will break.
-	bool operator==( const InheritedFlags &other ) const 
+	bool operator==( const InheritedFlags &other ) const
         {    return _iflags ==other._iflags;    }
-	bool operator!=( const InheritedFlags &other ) const 
+	bool operator!=( const InheritedFlags &other ) const
         {    return _iflags != other._iflags;   }
 
         union {
@@ -522,9 +522,9 @@ protected:
 // don't inherit
     struct NonInheritedFlags {
     // 32 bit non-inherited, don't add to the struct, or the operator will break.
-	bool operator==( const NonInheritedFlags &other ) const 
+	bool operator==( const NonInheritedFlags &other ) const
         {   return _niflags == other._niflags;    }
-	bool operator!=( const NonInheritedFlags &other ) const 
+	bool operator!=( const NonInheritedFlags &other ) const
         {   return _niflags != other._niflags;    }
 
         union {
@@ -541,8 +541,8 @@ protected:
                 bool _flowAroundFloats :1;
 
                 PseudoId _styleType : 3;
-                bool _hasHover : 1;
-                bool _hasActive : 1;
+		bool _affectedByHover : 1;
+		bool _affectedByActive : 1;
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
                int _unused : 1;
@@ -604,8 +604,8 @@ protected:
 	noninherited_flags.f._table_layout = TAUTO;
 	noninherited_flags.f._flowAroundFloats=false;
 	noninherited_flags.f._styleType = NOPSEUDO;
-	noninherited_flags.f._hasHover = false;
-	noninherited_flags.f._hasActive = false;
+	noninherited_flags.f._affectedByHover = false;
+	noninherited_flags.f._affectedByActive = false;
 	noninherited_flags.f._hasClip = false;
 	noninherited_flags.f._unicodeBidi = UBNormal;
         noninherited_flags.f._unused = 0;
@@ -628,11 +628,11 @@ public:
     RenderStyle* addPseudoStyle(PseudoId pi);
     void removePseudoStyle(PseudoId pi);
 
-    bool hasHover() const { return  noninherited_flags.f._hasHover; }
-    bool hasActive() const { return  noninherited_flags.f._hasActive; }
+    bool affectedByHoverRules() const { return  noninherited_flags.f._affectedByHover; }
+    bool affectedByActiveRules() const { return  noninherited_flags.f._affectedByActive; }
 
-    void setHasHover() {  noninherited_flags.f._hasHover = true; }
-    void setHasActive() {  noninherited_flags.f._hasActive = true; }
+    void setAffectedByHoverRules(bool b) {  noninherited_flags.f._affectedByHover = b; }
+    void setAffectedByActiveRules(bool b) {  noninherited_flags.f._affectedByActive = b; }
 
     bool operator==(const RenderStyle& other) const;
     bool        isFloating() const { return !(noninherited_flags.f._floating == FNONE); }

@@ -55,9 +55,9 @@ public:
     virtual void repaint();
     virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
     virtual void paint( QPainter *, int x, int y, int w, int h, int tx, int ty,
-			RenderObject::PaintPhase paintPhase);
+			PaintAction paintPhase);
     void paintObject(QPainter *p, int _x, int _y,
-                     int _w, int _h, int _tx, int _ty, RenderObject::PaintPhase paintPhase);
+                     int _w, int _h, int _tx, int _ty, PaintAction paintPhase);
 
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();

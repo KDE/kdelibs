@@ -44,7 +44,7 @@ public:
 
     virtual void setStyle(RenderStyle *style);
     virtual void paint(QPainter *p, int _x, int _y, int _w, int _h,
-                       int _tx, int _ty, RenderObject::PaintPhase paintPhase);
+                       int _tx, int _ty, PaintAction paintPhase);
 
     virtual void close();
 

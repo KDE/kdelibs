@@ -46,7 +46,7 @@ public:
 
     virtual bool isRendered() const { return true; }
 
-    virtual void paintObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty, RenderObject::PaintPhase );
+    virtual void paintObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty, PaintAction );
 
     virtual void layout();
 

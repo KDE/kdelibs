@@ -153,8 +153,8 @@ void TextSlave::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 
 FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineHeight)
 {
-//     kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
-//                   << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
+//      kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+//                    << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
     offset = 0;
 
     if ( _y < _ty + m_y )
@@ -352,7 +352,7 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
     return s;
 }
 
-bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _ty)
+bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 {
     assert(parent());
 
@@ -379,13 +379,32 @@ bool RenderText::nodeAtPoint(NodeInfo& /*info*/, int _x, int _y, int _tx, int _t
 
     setMouseInside(inside);
 
+    // #### ported over from Safari. Can this happen at all? (lars)
+    if (inside && element()) {
+        if (info.innerNode() && info.innerNode()->renderer() &&
+            !info.innerNode()->renderer()->isInline()) {
+            // Within the same layer, inlines are ALWAYS fully above blocks.  Change inner node.
+            info.setInnerNode(element());
+
+            // Clear everything else.
+            info.setInnerNonSharedNode(0);
+            info.setURLElement(0);
+        }
+
+        if (!info.innerNode())
+            info.setInnerNode(element());
+
+        if(!info.innerNonSharedNode())
+            info.setInnerNonSharedNode(element());
+    }
+
     return inside;
 }
 
 FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset)
 {
-//     kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
-//                   << " _tx=" << _tx << " _ty=" << _ty << endl;
+//      kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+//                    << " _tx=" << _tx << " _ty=" << _ty << endl;
     TextSlave *lastPointAfterInline=0;
 
     for(unsigned int si = 0; si < m_lines.count(); si++)
@@ -502,7 +521,7 @@ int RenderText::rightmostPosition() const
 }
 
 void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
-                      int tx, int ty, RenderObject::PaintPhase)
+                      int tx, int ty, PaintAction)
 {
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
@@ -649,9 +668,9 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 }
 
 void RenderText::paint( QPainter *p, int x, int y, int w, int h,
-                      int tx, int ty, RenderObject::PaintPhase paintPhase)
+                      int tx, int ty, PaintAction paintPhase)
 {
-    if (paintPhase != FOREGROUND_PHASE || style()->visibility() != VISIBLE) 
+    if (paintPhase != PaintActionForeground || style()->visibility() != VISIBLE)
         return;
 
     int s = m_lines.count() - 1;

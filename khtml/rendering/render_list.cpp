@@ -230,15 +230,15 @@ void RenderListMarker::setStyle(RenderStyle *s)
 
 
 void RenderListMarker::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                             int _tx, int _ty, RenderObject::PaintPhase paintPhase)
+                             int _tx, int _ty, PaintAction paintPhase)
 {
     paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 }
 
 void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
-				   int _tx, int _ty, RenderObject::PaintPhase paintPhase)
+				   int _tx, int _ty, PaintAction paintPhase)
 {
-    if (paintPhase != FOREGROUND_PHASE || style()->visibility() != VISIBLE) 
+    if (paintPhase != PaintActionForeground || style()->visibility() != VISIBLE)
         return;
 
 #ifdef DEBUG_LAYOUT

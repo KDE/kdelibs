@@ -348,7 +348,7 @@ void RenderTable::setCellWidths()
 }
 
 void RenderTable::paint( QPainter *p, int _x, int _y, int _w, int _h,
-			 int _tx, int _ty, RenderObject::PaintPhase paintPhase)
+			 int _tx, int _ty, PaintAction paintPhase)
 {
 
     if(!layouted()) return;
@@ -374,7 +374,7 @@ void RenderTable::paint( QPainter *p, int _x, int _y, int _w, int _h,
     kdDebug( 6040 ) << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
 #endif
 
-    if(paintPhase == BACKGROUND_PHASE && style()->visibility() == VISIBLE)
+    if(paintPhase == PaintActionBackground && style()->visibility() == VISIBLE)
 	paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     RenderObject *child = firstChild();
@@ -1084,7 +1084,7 @@ int RenderTableSection::layoutRows( int toAdd )
 
 
 void RenderTableSection::paint( QPainter *p, int x, int y, int w, int h,
-				int tx, int ty, RenderObject::PaintPhase paintPhase)
+				int tx, int ty, PaintAction paintPhase)
 {
     unsigned int totalRows = grid.size();
     unsigned int totalCols = table()->columns.size();
@@ -1417,7 +1417,7 @@ static void outlineBox(QPainter *p, int _tx, int _ty, int w, int h)
 #endif
 
 void RenderTableCell::paint(QPainter *p, int _x, int _y, int _w, int _h,
-			    int _tx, int _ty, RenderObject::PaintPhase paintPhase)
+			    int _tx, int _ty, PaintAction paintPhase)
 {
 
 #ifdef TABLE_PRINT

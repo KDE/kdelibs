@@ -225,18 +225,18 @@ void RenderObject::relativePositionOffset(int &tx, int &ty) const
     }
 }
 
-void RenderObject::appendLayers(RenderLayer* parentLayer)
+void RenderObject::addLayers(RenderLayer* parentLayer, RenderLayer* beforeChild)
 {
     if (!parentLayer)
         return;
 
     if (layer()) {
-        parentLayer->addChild(layer());
+        parentLayer->addChild(layer(), beforeChild);
         return;
     }
 
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
-        curr->appendLayers(parentLayer);
+        curr->addLayers(parentLayer, beforeChild);
 }
 
 void RenderObject::removeLayers(RenderLayer* parentLayer)
@@ -251,6 +251,61 @@ void RenderObject::removeLayers(RenderLayer* parentLayer)
 
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
         curr->removeLayers(parentLayer);
+}
+
+void RenderObject::moveLayers(RenderLayer* oldParent, RenderLayer* newParent)
+{
+    if (!newParent)
+        return;
+
+    if (layer()) {
+        if (oldParent)
+            oldParent->removeChild(layer());
+        newParent->addChild(layer());
+        return;
+    }
+
+    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
+        curr->moveLayers(oldParent, newParent);
+}
+
+RenderLayer* RenderObject::findNextLayer(RenderLayer* parentLayer, RenderObject* startPoint,
+                                         bool checkParent)
+{
+    // Error check the parent layer passed in.  If it's null, we can't find anything.
+    if (!parentLayer)
+        return 0;
+
+    // Step 1: Descend into our siblings trying to find the next layer.  If we do find
+    // a layer, and if its parent layer matches our desired parent layer, then we have
+    // a match.
+    for (RenderObject* curr = startPoint ? startPoint->nextSibling() : firstChild();
+         curr; curr = curr->nextSibling()) {
+        RenderLayer* nextLayer = curr->findNextLayer(parentLayer, 0, false);
+        if (nextLayer) {
+            if (nextLayer->parent() == parentLayer)
+                return nextLayer;
+            return 0;
+        }
+    }
+
+    // Step 2: If our layer is the desired parent layer, then we're finished.  We didn't
+    // find anything.
+    RenderLayer* ourLayer = layer();
+    if (parentLayer == ourLayer)
+        return 0;
+
+    // Step 3: If we have a layer, then return that layer.  It will be checked against
+    // the desired parent layer in the for loop above.
+    if (ourLayer)
+        return ourLayer;
+
+    // Step 4: If |checkParent| is set, climb up to our parent and check its siblings that
+    // follow us to see if we can locate a layer.
+    if (checkParent && parent())
+        return parent()->findNextLayer(parentLayer, this, true);
+
+    return 0;
 }
 
 RenderLayer* RenderObject::enclosingLayer()
@@ -328,11 +383,12 @@ void RenderObject::setLayouted(bool b)
         RenderObject *o = m_parent;
         RenderObject *root = this;
 
-        // If an attempt is made to
-        // setLayouted(false) an object inside a clipped (overflow:hidden) object, we
-        // have to make sure to repaint only the clipped rectangle.
-        // We do this by passing an argument to scheduleRelayout.  This hint really
-        // shouldn't be needed, and it's unfortunate that it is necessary.  -dwh
+        // If an attempt is made to setLayouted(false) an object
+        // inside a clipped (overflow:hidden) object, we have to make
+        // sure to repaint only the clipped rectangle.  We do this by
+        // passing an argument to scheduleRelayout.  This hint really
+        // shouldn't be needed, and it's unfortunate that it is
+        // necessary.  -dwh
 
         RenderObject* clippedObj =
             (style()->overflow() == OHIDDEN && !isText()) ? this : 0;
@@ -345,9 +401,6 @@ void RenderObject::setLayouted(bool b)
             o = o->m_parent;
         }
 
-        //this clipping stuff looks braindamaged...
-        //anyway, it needs new scheduleRelayout() too
-        //root->scheduleRelayout(clippedObj);
         root->scheduleRelayout(true);
     }
 }
@@ -705,7 +758,7 @@ void RenderObject::paintOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 }
 
 void RenderObject::paint( QPainter *p, int x, int y, int w, int h, int tx, int ty,
-			  RenderObject::PaintPhase paintPhase )
+			  PaintAction paintPhase )
 {
     paintObject(p, x, y, w, h, tx, ty, paintPhase);
 }
@@ -1062,6 +1115,19 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
     return SelectionPointAfter;
 }
 
+void RenderObject::setHoverAndActive(NodeInfo& info, bool oldinside, bool inside)
+{
+    DOM::NodeImpl* elt = element();
+    if (elt) {
+        bool oldactive = elt->active();
+        if (oldactive != (inside && info.active()))
+            elt->setActive(inside && info.active());
+        if ((oldinside != mouseInside() && style()->affectedByHoverRules()) ||
+            (oldactive != elt->active() && style()->affectedByActiveRules()))
+            elt->setChanged();
+    }
+}
+
 bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 {
     int tx = _tx + xPos();
@@ -1114,14 +1180,10 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
         // lets see if we need a new style
         bool oldinside = mouseInside();
         setMouseInside(inside && inner);
-        if (element()) {
-            bool oldactive = element()->active();
-            if (oldactive != (inside && info.active() && element() == info.innerNode()))
-                element()->setActive(inside && info.active() && element() == info.innerNode());
-            if ( ((oldinside != mouseInside()) && style()->hasHover()) ||
-                 ((oldactive != element()->active()) && style()->hasActive()))
-                element()->setChanged();
-        }
+
+	setHoverAndActive(info, oldinside, inside);
+        if (!isInline() && continuation())
+            continuation()->setHoverAndActive(info, oldinside, inside);
     }
 
     return inside;

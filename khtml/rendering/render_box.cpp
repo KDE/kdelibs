@@ -81,8 +81,16 @@ void RenderBox::setStyle(RenderStyle *_style)
                 setRelPositioned(true);
     }
 
-    if (!isTableCell() && (isPositioned() || isRelPositioned()) && !m_layer)
-        m_layer = new (renderArena()) RenderLayer(this);
+    if (requiresLayer()) {
+        if (!m_layer) {
+            m_layer = new (renderArena()) RenderLayer(this);
+            m_layer->insertOnlyThisLayer();
+        }
+    }
+    else if (m_layer && !isHtml() && !isRoot()) {
+        m_layer->removeOnlyThisLayer();
+        m_layer = 0;
+    }
 }
 
 RenderBox::~RenderBox()
@@ -153,7 +161,7 @@ void RenderBox::setHeight( int height )
 // --------------------- painting stuff -------------------------------
 
 void RenderBox::paint(QPainter *p, int _x, int _y, int _w, int _h,
-                                  int _tx, int _ty, RenderObject::PaintPhase paintPhase)
+                                  int _tx, int _ty, PaintAction paintPhase)
 {
     _tx += m_x;
     _ty += m_y;
@@ -430,13 +438,15 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
     x += m_x;
     y += m_y;
 
-    // Apply the relative position offset when invalidating a rectangle.  The layer
-    // is translated, but the render box isn't, so we need to do this to get the
-    // right dirty rect.
+    // Apply the relative position offset when invalidating a
+    // rectangle.  The layer is translated, but the render box isn't,
+    // so we need to do this to get the right dirty rect.
     if (isRelPositioned())
         relativePositionOffset(x,y);
 
     if (style()->position()==FIXED) f=true;
+
+
     // kdDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) o->repaintRectangle(x, y, w, h, f);
@@ -976,11 +986,17 @@ void RenderBox::calcAbsoluteVertical()
 
 int RenderBox::lowestPosition() const
 {
-    return m_height + marginBottom();
+    int bottom = m_height + marginBottom();
+    if ( m_layer )
+	bottom = QMAX( bottom, m_layer->height() );
+    return bottom;
 }
 
 int RenderBox::rightmostPosition() const
 {
+    int right = m_width;
+    if ( m_layer )
+	right = QMAX( right, m_layer->width() );
     return m_width;
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2002 Apple Computer, Inc.
+ * Copyright (C) 2003 Apple Computer, Inc.
  *
  * Portions are Copyright (C) 1998 Netscape Communications Corporation.
  *
@@ -100,10 +100,8 @@ void RenderLayer::updateLayerPosition()
 
     setPos(x,y);
 
-    if (m_object->overflowWidth() > m_object->width())
-        setWidth(m_object->overflowWidth());
-    if (m_object->overflowHeight() > m_object->height())
-        setHeight(m_object->overflowHeight());
+    setWidth(m_object->overflowWidth());
+    setHeight(m_object->overflowHeight());
 }
 
 RenderLayer*
@@ -144,17 +142,22 @@ void RenderLayer::detach(RenderArena* renderArena)
     renderArena->free(*(size_t *)this, this);
 }
 
-void RenderLayer::addChild(RenderLayer *child)
+void RenderLayer::addChild(RenderLayer *child, RenderLayer* beforeChild)
 {
-    if (!firstChild()) {
-        setFirstChild(child);
-        setLastChild(child);
-    } else {
-        RenderLayer* last = lastChild();
-        setLastChild(child);
-        child->setPreviousSibling(last);
-        last->setNextSibling(child);
+    RenderLayer* prevSibling = beforeChild ? beforeChild->previousSibling() : lastChild();
+    if (prevSibling) {
+        child->setPreviousSibling(prevSibling);
+        prevSibling->setNextSibling(child);
     }
+    else
+        setFirstChild(child);
+
+    if (beforeChild) {
+        beforeChild->setPreviousSibling(child);
+        child->setNextSibling(beforeChild);
+    }
+    else
+        setLastChild(child);
 
     child->setParent(this);
 }
@@ -177,6 +180,44 @@ RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
     oldChild->setParent(0);
 
     return oldChild;
+}
+
+void RenderLayer::removeOnlyThisLayer()
+{
+    if (!m_parent)
+        return;
+
+    // Remove us from the parent.
+    RenderLayer* parent = m_parent;
+    RenderLayer* nextSib = nextSibling();
+    parent->removeChild(this);
+
+    // Now walk our kids and reattach them to our parent.
+    RenderLayer* current = m_first;
+    while (current) {
+        RenderLayer* next = current->nextSibling();
+        removeChild(current);
+        parent->addChild(current, nextSib);
+        current = next;
+    }
+
+    detach(renderer()->renderArena());
+}
+
+void RenderLayer::insertOnlyThisLayer()
+{
+    if (!m_parent && renderer()->parent()) {
+        // We need to connect ourselves when our renderer() has a parent.
+        // Find our enclosingLayer and add ourselves.
+        RenderLayer* parentLayer = renderer()->parent()->enclosingLayer();
+        if (parentLayer)
+            parentLayer->addChild(this,
+                                  renderer()->parent()->findNextLayer(parentLayer, renderer()));
+    }
+
+    // Remove all descendant layers from the hierarchy and add them to the new position.
+    for (RenderObject* curr = renderer()->firstChild(); curr; curr = curr->nextSibling())
+        curr->moveLayers(m_parent, this);
 }
 
 void
@@ -210,17 +251,16 @@ RenderLayer::convertToLayerCoords(RenderLayer* ancestorLayer, int& x, int& y)
 }
 
 void
-RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
+RenderLayer::paint(QPainter *p, int x, int y, int w, int h, bool selectionOnly)
 {
     // Create the z-tree of layers that should be displayed.
-    QRect damageRect = QRect(x,y,w,h);
-    int serial = 0;
-    RenderLayer::RenderZTreeNode* node = constructZTree(damageRect, damageRect, this, serial);
+    QRect damageRect(x,y,w,h);
+    RenderZTreeNode* node = constructZTree(damageRect, damageRect, this);
     if (!node)
         return;
 
     // Flatten the tree into a back-to-front list for painting.
-    QPtrVector<RenderLayer::RenderLayerElement> layerList;
+    QPtrVector<RenderLayerElement> layerList;
     constructLayerList(node, &layerList);
 
     // Walk the list and paint each layer, adding in the appropriate offset.
@@ -229,7 +269,7 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
 
     uint count = layerList.count();
     for (uint i = 0; i < count; i++) {
-        RenderLayer::RenderLayerElement* elt = layerList.at(i);
+        RenderLayerElement* elt = layerList.at(i);
 
         // Elements add in their own positions as a translation factor.  This forces
         // us to subtract that out, so that when it's added back in, we get the right
@@ -249,6 +289,10 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
 
                 // Now apply the clip rect.
                 QRect clippedRect = p->xForm(currRect);
+#ifdef APPLE_CHANGES
+                p->save();
+                p->addClip(clippedRect);
+#else
                 QRegion creg(clippedRect);
                 QRegion old = p->clipRegion();
                 if (!old.isNull())
@@ -256,6 +300,7 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
 
                 p->save();
                 p->setClipRegion(creg);
+#endif
             }
 
             // A clip is in effect.  The clip is never allowed to clip our render object's
@@ -275,6 +320,10 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
 
                 // Now apply the clip rect.
                 QRect clippedRect = p->xForm(currRect);
+#ifdef APPLE_CHANGES
+                p->save();
+                p->addClip(clippedRect);
+#else
                 QRegion creg(clippedRect);
                 QRegion old = p->clipRegion();
                 if (!old.isNull())
@@ -282,23 +331,29 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
 
                 p->save();
                 p->setClipRegion(creg);
+#endif
             }
         }
 
-// 	qDebug("layer %p: painting layer %p, zindex %d (auto=%d)", this,
-// 	       elt->layer->renderer(), elt->layer->zIndex(),  elt->layer->hasAutoZIndex() );
-        elt->layer->renderer()->paint(p, x, y, w, h,
-                                      elt->absBounds.x() - elt->layer->renderer()->xPos(),
-                                      elt->absBounds.y() - elt->layer->renderer()->yPos(),
-                                      RenderObject::BACKGROUND_PHASE);
-        elt->layer->renderer()->paint(p, x, y, w, h,
-                                      elt->absBounds.x() - elt->layer->renderer()->xPos(),
-                                      elt->absBounds.y() - elt->layer->renderer()->yPos(),
-                                      RenderObject::FLOAT_PHASE);
-        elt->layer->renderer()->paint(p, x, y, w, h,
-                                      elt->absBounds.x() - elt->layer->renderer()->xPos(),
-                                      elt->absBounds.y() - elt->layer->renderer()->yPos(),
-                                      RenderObject::FOREGROUND_PHASE);
+        if (selectionOnly) {
+            elt->layer->renderer()->paint(p, x, y, w, h,
+                                          elt->absBounds.x() - elt->layer->renderer()->xPos(),
+                                          elt->absBounds.y() - elt->layer->renderer()->yPos(),
+                                          PaintActionSelection);
+        } else {
+            elt->layer->renderer()->paint(p, x, y, w, h,
+                                        elt->absBounds.x() - elt->layer->renderer()->xPos(),
+                                        elt->absBounds.y() - elt->layer->renderer()->yPos(),
+                                        PaintActionBackground);
+            elt->layer->renderer()->paint(p, x, y, w, h,
+                                        elt->absBounds.x() - elt->layer->renderer()->xPos(),
+                                        elt->absBounds.y() - elt->layer->renderer()->yPos(),
+                                        PaintActionFloat);
+            elt->layer->renderer()->paint(p, x, y, w, h,
+                                        elt->absBounds.x() - elt->layer->renderer()->xPos(),
+                                        elt->absBounds.y() - elt->layer->renderer()->yPos(),
+                                        PaintActionForeground);
+        }
     }
 
     if (currRect != paintRect)
@@ -307,58 +362,107 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
     node->detach(renderer()->renderArena());
 }
 
+void
+RenderLayer::clearOtherLayersHoverActiveState()
+{
+    if (!m_parent)
+        return;
+
+    for (RenderLayer* curr = m_parent->firstChild(); curr; curr = curr->nextSibling()) {
+        if (curr == this)
+            continue;
+        curr->clearHoverAndActiveState(curr->renderer());
+    }
+
+    m_parent->clearOtherLayersHoverActiveState();
+}
+
+void
+RenderLayer::clearHoverAndActiveState(RenderObject* obj)
+{
+    if (!obj->mouseInside())
+        return;
+
+    obj->setMouseInside(false);
+    if (obj->element()) {
+        obj->element()->setActive(false);
+        if (obj->style()->affectedByHoverRules() || obj->style()->affectedByActiveRules())
+            obj->element()->setChanged(true);
+    }
+
+    for (RenderObject* child = obj->firstChild(); child; child = child->nextSibling())
+        if (child->mouseInside())
+            clearHoverAndActiveState(child);
+}
+
 bool
 RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
 {
     bool inside = false;
+    RenderLayer* insideLayer = 0;
     QRect damageRect(m_x, m_y, m_width, m_height);
-    int serial = 0;
-    RenderLayer::RenderZTreeNode* node = constructZTree(damageRect, damageRect, this, serial, true, x, y);
+    RenderZTreeNode* node = constructZTree(damageRect, damageRect, this, true, x, y);
     if (!node)
         return false;
 
     // Flatten the tree into a back-to-front list for painting.
-    QPtrVector<RenderLayer::RenderLayerElement> layerList;
+    QPtrVector<RenderLayerElement> layerList;
     constructLayerList(node, &layerList);
 
     // Walk the list and test each layer, adding in the appropriate offset.
     uint count = layerList.count();
     for (int i = count-1; i >= 0; i--) {
-        RenderLayer::RenderLayerElement* elt = layerList.at(i);
+        RenderLayerElement* elt = layerList.at(i);
 
-        // Elements add in their own positions as a translation factor.  This forces
-        // us to subtract that out, so that when it's added back in, we get the right
-        // bounds.  This is really disgusting (that paint only sets up the right paint
+        // Elements add in their own positions as a translation
+        // factor.  This forces us to subtract that out, so that when
+        // it's added back in, we get the right bounds.  This is
+        // really disgusting (that paint only sets up the right paint
         // position after you call into it). -dwh
-        //printf("Painting layer at %d %d\n", elt->absBounds.x(), elt->absBounds.y());
+
+	//printf("Painting // layer at %d %d\n", elt->absBounds.x(), elt->absBounds.y());
 
         inside = elt->layer->renderer()->nodeAtPoint(info, x, y,
                                       elt->absBounds.x() - elt->layer->renderer()->xPos(),
                                       elt->absBounds.y() - elt->layer->renderer()->yPos());
-        if (inside)
+        if (inside) {
+            insideLayer = elt->layer;
             break;
+        }
     }
     node->detach(renderer()->renderArena());
+
+    if (insideLayer) {
+        // Clear out the other layers' hover/active state
+        insideLayer->clearOtherLayersHoverActiveState();
+
+        // Now clear out our descendant layers
+        for (RenderLayer* child = insideLayer->firstChild();
+             child; child = child->nextSibling())
+            child->clearHoverAndActiveState(child->renderer());
+    }
 
     return inside;
 }
 
 RenderLayer::RenderZTreeNode*
 RenderLayer::constructZTree(QRect overflowClipRect, QRect posClipRect,
-                            RenderLayer* rootLayer, int &serial,
+                            RenderLayer* rootLayer,
                             bool eventProcessing, int xMousePos, int yMousePos)
 {
     // The arena we use for allocating our temporary ztree elements.
     RenderArena* renderArena = renderer()->renderArena();
 
     // This variable stores the result we will hand back.
-    RenderLayer::RenderZTreeNode* returnNode = 0;
+    RenderZTreeNode* returnNode = 0;
 
+    // FIXME: A child render object or layer could override visibility.  Don't remove this
+    // optimization though until nodeAtPoint is patched as well.
+    //
     // If a layer isn't visible, then none of its child layers are visible either.
     // Don't build this branch of the z-tree, since these layers should not be painted.
-// #### The lines below are wrong according to the CSS2.1 specs. Lars
-//     if (renderer()->style()->visibility() != VISIBLE)
-//         return 0;
+    if (renderer()->style()->visibility() != VISIBLE)
+        return 0;
 
     // Compute this layer's absolute position, so that we can compare it with our
     // damage rect and avoid repainting the layer if it falls outside that rect.
@@ -415,7 +519,7 @@ RenderLayer::constructZTree(QRect overflowClipRect, QRect posClipRect,
             continue; // Ignore negative z-indices in this first pass.
 
         RenderZTreeNode* childNode = child->constructZTree(overflowClipRect, posClipRect,
-                                                           rootLayer, serial, eventProcessing,
+                                                           rootLayer, eventProcessing,
                                                            xMousePos, yMousePos);
         if (childNode) {
             // Put the new node into the tree at the front of the parent's list.
@@ -437,10 +541,9 @@ RenderLayer::constructZTree(QRect overflowClipRect, QRect posClipRect,
         (renderer()->isInline() && !renderer()->isReplaced()) ||
         (eventProcessing && damageRect.contains(xMousePos,yMousePos)) ||
         (!eventProcessing && layerBounds.intersects(damageRect))) {
-        RenderLayerElement* layerElt =
-	    new (renderArena) RenderLayerElement(this, serial++, layerBounds,
-						 damageRect, clipRectToApply,
-						 clipOriginator, x, y);
+        RenderLayerElement* layerElt = new (renderArena) RenderLayerElement(this, layerBounds,
+                                                              damageRect, clipRectToApply,
+                                                              clipOriginator, x, y);
         if (returnNode->child) {
             RenderZTreeNode* leaf = new (renderArena) RenderZTreeNode(layerElt);
             leaf->next = returnNode->child;
@@ -462,7 +565,7 @@ RenderLayer::constructZTree(QRect overflowClipRect, QRect posClipRect,
             continue; // Ignore non-negative z-indices in this second pass.
 
         RenderZTreeNode* childNode = child->constructZTree(overflowClipRect, posClipRect,
-                                                           rootLayer, serial, eventProcessing,
+                                                           rootLayer, eventProcessing,
                                                            xMousePos, yMousePos);
         if (childNode) {
             // Deal with the case where all our children views had negative z-indices.
@@ -484,10 +587,10 @@ RenderLayer::constructZTree(QRect overflowClipRect, QRect posClipRect,
 }
 
 void
-RenderLayer::constructLayerList(RenderZTreeNode* ztree, QPtrVector<RenderLayer::RenderLayerElement>* result)
+RenderLayer::constructLayerList(RenderZTreeNode* ztree, QPtrVector<RenderLayerElement>* result)
 {
     // This merge buffer is just a temporary used during computation as we do merge sorting.
-    QPtrVector<RenderLayer::RenderLayerElement> mergeBuffer;
+    QPtrVector<RenderLayerElement> mergeBuffer;
     ztree->constructLayerList(&mergeBuffer, result);
 }
 
@@ -543,7 +646,7 @@ static void sortByZOrder(QPtrVector<RenderLayer::RenderLayerElement>* buffer,
         elt2 = buffer->at(i2);
 
         while (i1 < mid || i2 < end) {
-            if (i1 < mid && (i2 == end || elt->zindex <= elt2->zindex )) {
+            if (i1 < mid && (i2 == end || elt->zindex <= elt2->zindex)) {
                 mergeBuffer->insert(mergeBuffer->count(), elt);
                 i1++;
                 if (i1 < mid)
@@ -598,7 +701,7 @@ void RenderLayer::RenderZTreeNode::constructLayerList(QPtrVector<RenderLayerElem
     // Now set all of the elements' z-indices to match the parent's explicit z-index, so that
     // they will be layered properly in the ancestor layer's stacking context.
     for (uint i = startIndex; i < endIndex; i++) {
-        RenderLayer::RenderLayerElement* elt = buffer->at(i);
+        RenderLayerElement* elt = buffer->at(i);
         elt->zindex = explicitZIndex;
     }
 }
@@ -670,3 +773,15 @@ void RenderLayer::RenderZTreeNode::detach(RenderArena* renderArena)
     renderArena->free(*(size_t *)this, this);
 }
 
+QPtrVector<RenderLayer::RenderLayerElement> RenderLayer::elementList(RenderZTreeNode *&node)
+{
+    QPtrVector<RenderLayerElement> list;
+
+    QRect damageRect(m_x, m_y, m_width, m_height);
+    node = constructZTree(damageRect, damageRect, this);
+    if (node) {
+        constructLayerList(node, &list);
+    }
+
+    return list;
+}

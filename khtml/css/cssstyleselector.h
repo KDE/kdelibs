@@ -126,7 +126,7 @@ namespace khtml
 	static void loadDefaultStyle(const KHTMLSettings *s = 0);
 	static void clear();
 
-	RenderStyle *styleForElement(DOM::ElementImpl *e, int state = None );
+	RenderStyle *styleForElement(DOM::ElementImpl *e);
 
         QValueList<int> fontSizes() const { return m_fontSizes; }
 	QValueList<int> fixedFontSizes() const { return m_fixedFontSizes; }
@@ -211,10 +211,7 @@ public:
 	unsigned int pseudoPropsSize;
 
 
-	int dynamicState;
 	RenderStyle::PseudoId dynamicPseudo;
-	int usedDynamicStates;
-	int selectorDynamicState;
 
 	RenderStyle *style;
 	RenderStyle *parentStyle;

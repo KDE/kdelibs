@@ -74,11 +74,16 @@ public:
     // overrides RenderObject
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, RenderObject::PaintPhase paintPhase);
+                        int tx, int ty, PaintAction paintPhase);
     virtual void paintObject( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty, RenderObject::PaintPhase paintPhase);
+                        int tx, int ty, PaintAction paintPhase);
     void paintFloats( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
+
+    virtual bool requiresLayer() {
+	return (isPositioned() || isRelPositioned() ||
+		style()->overflow()==OHIDDEN) && !isTableCell();
+    }
 
     virtual void layout( );
 

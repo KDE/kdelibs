@@ -55,9 +55,9 @@ RenderReplaced::RenderReplaced(DOM::NodeImpl* node)
 }
 
 void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
-                            int _tx, int _ty, RenderObject::PaintPhase paintPhase)
+                            int _tx, int _ty, PaintAction paintPhase)
 {
-    if (paintPhase != FOREGROUND_PHASE)
+    if (paintPhase != PaintActionForeground)
         return;
 
     // not visible or nont even once layouted?
@@ -68,7 +68,7 @@ void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
 
     if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
-    if(shouldPaintBackgroundOrBorder()) 
+    if(shouldPaintBackgroundOrBorder())
         paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
@@ -325,9 +325,9 @@ void RenderWidget::setStyle(RenderStyle *_style)
 }
 
 void RenderWidget::paintObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty,
-			       RenderObject::PaintPhase paintPhase)
+			       PaintAction paintPhase)
 {
-    if (!m_widget || !m_view || paintPhase != FOREGROUND_PHASE)
+    if (!m_widget || !m_view || paintPhase != PaintActionForeground)
 	return;
 
     if (style()->visibility() != VISIBLE) {

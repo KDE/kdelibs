@@ -53,6 +53,22 @@ class KHTMLView;
 #define KHTMLAssert( x )
 #endif
 
+/*
+ *	The painting of a layer occurs in three distinct phases.  Each phase involves
+ *	a recursive descent into the layer's render objects. The first phase is the background phase.
+ *	The backgrounds and borders of all blocks are painted.  Inlines are not painted at all.
+ *	Floats must paint above block backgrounds but entirely below inline content that can overlap them.
+ *	In the foreground phase, all inlines are fully painted.  Inline replaced elements will get all
+ *	three phases invoked on them during this phase.
+ */
+
+typedef enum {
+    PaintActionBackground = 0,
+    PaintActionFloat,
+    PaintActionForeground,
+    PaintActionSelection
+} PaintAction;
+
 namespace DOM {
     class HTMLAreaElementImpl;
     class DOMString;
@@ -92,8 +108,15 @@ public:
 
     virtual RenderLayer* layer() const { return 0; }
     RenderLayer* enclosingLayer();
-    void appendLayers(RenderLayer* parentLayer);
+    void addLayers(RenderLayer* parentLayer, RenderLayer* beforeChild=0);
     void removeLayers(RenderLayer* parentLayer);
+    void moveLayers(RenderLayer* oldParent, RenderLayer* newParent);
+    RenderLayer* findNextLayer(RenderLayer* parentLayer, RenderObject* startPoint,
+                               bool checkParent=true);
+    virtual void positionChildLayers() { }
+    virtual bool requiresLayer() {
+	return (isPositioned() || isRelPositioned()) && !isTableCell();
+    }
 
     // ### rename to overflowClipRect and clipRect
     virtual QRect getOverflowClipRect(int /*tx*/, int /*ty*/)
@@ -239,38 +262,16 @@ public:
     // the offset of baseline from the top of the object.
     virtual short baselinePosition( bool firstLine ) const;
 
-
-    enum PaintPhase {
-	// The painting of a layer occurs in three distinct phases.
-	// Each phase involves a recursive descent into the layer's
-	// render objects.
-
-	// The first phase is the background phase.  The backgrounds
-	// and borders of all blocks are painted.  Inlines are not
-	// painted at all.
-	BACKGROUND_PHASE,
-
-	// Floats must paint above block backgrounds but entirely
-	// below inline content that can overlap them.
-	FLOAT_PHASE,
-
-	// In the foreground phase, all inlines are fully painted.
-	// Inline replaced elements will get all three phases invoked
-	// on them during this phase.
-	FOREGROUND_PHASE
-    };
-
-
     /*
      * Print the object and its children, clipped by (x|y|w|h).
      * (tx|ty) is the calculated position of the parent
      */
     virtual void paint( QPainter *p, int x, int y, int w, int h, int tx, int ty,
-			PaintPhase phase);
+			PaintAction phase);
 
     virtual void paintObject( QPainter* /*p*/, int /*x*/, int /*y*/,
 			      int /*w*/, int /*h*/, int /*tx*/, int /*ty*/,
-			      RenderObject::PaintPhase) {}
+			      PaintAction) {}
     void paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
     void paintOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
 
@@ -361,6 +362,7 @@ public:
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*&, int & offset );
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
+    void setHoverAndActive(NodeInfo& info, bool oldinside, bool inside);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);

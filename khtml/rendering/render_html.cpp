@@ -50,7 +50,7 @@ void RenderHtml::setStyle(RenderStyle *style)
 }
 
 void RenderHtml::paint(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty,
-		       RenderObject::PaintPhase paintPhase)
+		       PaintAction paintPhase)
 {
     _tx += m_x;
     _ty += m_y;

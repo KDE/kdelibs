@@ -512,15 +512,7 @@ void ElementImpl::recalcStyle( StyleChange change )
         EDisplay oldDisplay = _style ? _style->display() : NONE;
         EPosition oldPosition = _style ? _style->position() : STATIC;
 
-        int dynamicState = StyleSelector::None;
-        if ( m_render && m_render->mouseInside() )
-            dynamicState |= StyleSelector::Hover;
-        if ( m_focused )
-            dynamicState |= StyleSelector::Focus;
-        if ( m_active )
-            dynamicState |= StyleSelector::Active;
-
-        RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this, dynamicState);
+        RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this);
         newStyle->ref();
         StyleChange ch = diff( _style, newStyle );
         if ( ch != NoChange ) {
