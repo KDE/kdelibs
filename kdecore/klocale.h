@@ -587,6 +587,7 @@ public:
    *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a QDate
+   * @since 3.2
    */
   QDate readDate(const QString &str, ReadDateFlags flags, bool *ok = 0) const;
 
@@ -619,6 +620,7 @@ public:
    *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a QTime
+   * @since 3.2
    */
   QTime readTime(const QString &str, ReadTimeFlags flags, bool *ok = 0) const;
 
