@@ -28,6 +28,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /* _PATH_KMEM should be defined in <paths.h> */
 #ifndef _PATH_KMEM
