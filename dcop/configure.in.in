@@ -1,2 +1,7 @@
-dnl don't remove
-dnl AC_OUTPUT(dcop/dcop-path.h)
+dcop_prefix=${prefix}
+if test "${exec_prefix}" != NONE; then
+     dcop_prefix=${exec_prefix}
+fi
+
+AC_DEFINE_UNQUOTED(DCOP_PATH, ["${dcop_prefix}/bin"], [Define where your dcop binary is])
+AC_CONFIG_HEADERS([dcop/dcop-path.h])

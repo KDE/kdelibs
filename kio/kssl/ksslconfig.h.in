@@ -21,6 +21,6 @@
 #ifndef KSSLCONFIG_H
 #define KSSLCONFIG_H
 
-@DO_WE_HAVE_SSL@
+#undef KSSL_HAVE_SSL 
 
 #endif
