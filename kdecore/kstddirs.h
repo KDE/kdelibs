@@ -79,6 +79,8 @@ class KStandardDirsPrivate;
 * @li lib - Libraries.
 * @li locale - Translation files for @ref KLocale.
 * @li mime - Mime types.
+* @li module - Module (dynamically loaded library).
+* @li locale - Translation files for @ref KLocale.
 * @li services - Services.
 * @li servicetypes - Service types.
 * @li sound - Application sounds.
