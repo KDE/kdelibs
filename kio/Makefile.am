@@ -118,6 +118,9 @@ kmailservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 kmailprotocol_DATA = kmailservice.protocol
 kmailprotocoldir = $(kde_servicesdir)
 
+knewsprotocol_DATA = knewsservice.protocol
+knewsprotocoldir = $(kde_servicesdir)
+
 parser: $(parserfiles)
 	cd $(srcdir) ;\
 	flex lex.l && mv lex.yy.c lex.c ;\
