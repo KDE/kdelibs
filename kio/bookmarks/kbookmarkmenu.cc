@@ -81,6 +81,34 @@ static bool isAdvanced()
   return (*s_advanced);
 }
 
+/*
+   change the kbookmarkbar to have a "toolbar items"
+   only mode. this could be via a new importer of
+   the style described above, or via a impl that 
+   uses kbookmark(group)iterator and creates a 
+   temp bookkmarkmanager - which leads to the fact
+   that normal xml includes can be done via a simple
+   dom -> signals conversion.
+
+   remove the tbcache file when its not
+   even used, i.e, only when the kbookmarkbar
+   is the user
+   
+   make the keditbookmarks prefs persistant
+   and make a simple include selector using
+   for example kautoconfig
+
+   make a proper editor dialog for bookmarks         
+   with name and all that crap and allow
+   the removal of all the columns from the
+   keditbookmarks view. give the option for
+   having a always on editor in main window.
+
+   kcm - type of bookmarks menu (safari or old style)
+   which menus to include
+   not enough for a kcm, therefore, keditbookmarks?
+*/
+
 /********************************************************************
  *
  * KBookmarkMenu
