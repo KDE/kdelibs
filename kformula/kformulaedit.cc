@@ -25,6 +25,7 @@
 #include <qdrawutil.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <qregexp.h>
 
 //initialize the static clipboard
 QString KFormulaEdit::clipText;
@@ -124,6 +125,7 @@ QSize KFormulaEdit::sizeHint()
 	       QMAX(form->size().width(), 350),
 	       QMAX(form->size().height(), 200)
 	       );
+	       
 }
 
 //---------------------------SIZE POLICY--------------------------
@@ -167,11 +169,12 @@ void KFormulaEdit::redraw(int all)
     return;
   }
 
+  //kdebug(KDEBUG_INFO, 0, "%s", QString(formText).insert(cursorPos, '$').ascii()); 
+  //kdebug(KDEBUG_INFO, 0, "%s", uglyForm().ascii()); 
+
   p.begin(&pm);
   p.setFont(font());
   p.fillRect(0, 0, pm.width(), pm.height(), backgroundColor());
-
-  //kdebug(KDEBUG_INFO, 0, "%s", QString(formText).insert(cursorPos, '$').ascii()); 
 
   form->setPos(pm.width() / 2, pm.height() / 2);
   form->redraw(p);
@@ -236,9 +239,81 @@ void KFormulaEdit::redraw(int all)
   repaint(FALSE);
 }
 
+//------------------------UGLY FORM-----------------------
+//returns a C-like form for the formula.
+QString KFormulaEdit::uglyForm() const
+{
+  int i;
+
+  KASSERT(restricted, KDEBUG_WARN, 0, "Called uglyForm on a formula that's not restricted.  God knows what might happen.");
+
+  if(formText.isNull()) return QString("");
+
+  QString ugly = formText;
+
+  //look for roots
+  i = ugly.find(QChar(SQRT));
+  while(i != -1) {
+    if(ugly[i - 2] == L_GROUP) { // we have a square root
+      ugly.remove(i - 2, 3);
+      ugly.insert(i - 2, "sqrt"); // {}@{...}  -->  sqrt{...}
+    }
+    else { // we have an nth root.  What to do?
+      kdebug(KDEBUG_WARN, 0, "What do you want to do about nth roots?");
+      //for now remove the root sign just to keep the conversion alive
+      ugly.remove(i, 1);
+    }
+
+    i = ugly.find(QChar(SQRT), i);
+  }
+  
+  //look for brackets
+  i = ugly.find(QChar(BRACKET));
+  while(i != -1) {
+    i -= 2;
+    ugly.remove(i, 3);  // {}[{...}  -->  {...}
+    
+    ugly[ KFormula::findMatch(ugly, i) ] = ']';
+    ugly[i] = '[';  // {...}  -->  [...]
+
+    i = ugly.find(QChar(BRACKET), i + 1); // find next parentheses
+  }
+
+  //do all other replacements.
+  QRegExp r;
+
+  r = QString(L_GROUP) + R_GROUP + QChar(PAREN); //parentheses
+  ugly.replace(r, "");  // {}({...} --> {...}
+
+  r = QString(L_GROUP) + R_GROUP + QChar(ABS); // absolute value
+  ugly.replace(r, "abs"); // {}|{...} --> abs{...}
+
+  for(i = 0; i < (int)ugly.length(); i++) {
+    if(ugly[i] == QChar(POWER)) ugly[i] = '^';
+    else if(ugly[i] == QChar(SUB)) ugly[i] = '_';
+    else if(ugly[i] == QChar(DIVIDE)) ugly[i] = '/';
+    else if(ugly[i] == QChar(SLASH)) ugly[i] = '/';
+    else if(ugly[i] == L_GROUP) ugly[i] = '(';
+    else if(ugly[i] == R_GROUP) ugly[i] = ')';
+  }
+
+  return ugly;
+}
+
+//-----------------------SET UGLY FORM----------------------
+//tries to take an ugly form and make it into a kformulaedit string
+//not done yet.
+void KFormulaEdit::setUglyForm(QString ugly)
+{
+  //int i;
+  //search for absolute value:
+
+}
+
+
 //-----------------------IS IN STRING-----------------------
 //checks if str contains formText[pos].  For readability.
-int KFormulaEdit::isInString(int pos, const QString &str)
+int KFormulaEdit::isInString(int pos, const QString &str) const
 {
   return pos >= 0 && pos < (int)formText.length() &&
     str.contains(formText[pos]);
@@ -1281,7 +1356,7 @@ void KFormulaEdit::insertChar(QChar c)
   if(restricted) { // we need to limit to only those things
                    // which can be evaluated.
     if(!isalnum((char)c) && !isspace((char)c) && (char)c != '.' &&
-       !(KFormula::eval()).contains(c)) return;
+       !(KFormula::eval()).contains(c) && (extraChars.isNull() || !extraChars.contains(c))) return;
   }
 
   if(!(KFormula::loc() + KFormula::delim() + QChar(DIVIDE) +

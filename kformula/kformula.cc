@@ -43,8 +43,8 @@ void KFormula::initStrings(void)
   BIGOP = new QString();
   EVAL = new QString();
   
-  *SPECIAL += (QChar('{'));
-  *SPECIAL += (QChar('}'));
+  *SPECIAL += (L_GROUP);
+  *SPECIAL += (R_GROUP);
   *SPECIAL += (QChar(PLUS));
   *SPECIAL += (QChar(MINUS));
   *SPECIAL += (QChar(TIMES));
@@ -102,6 +102,44 @@ void KFormula::initStrings(void)
   *EVAL += (QChar(ABS));
   *EVAL += (QChar(SQRT));
 }
+
+//-----------------------------FIND MATCH--------------------------
+//static--finds the matching L_GROUP or R_GROUP
+int KFormula::findMatch(QString s, int pos)
+{
+  int level = 0;
+
+  if(pos < 0 || pos >= (int)s.length()) return -1;
+
+  if(s[pos] == L_GROUP) { // look for the matching R_GROUP to the right
+    while(pos < (int)s.length()) {
+      if(s[pos] == L_GROUP) level++;
+      if(s[pos] == R_GROUP) level--;
+
+      if(level == 0) return pos;
+
+      pos++;
+    }
+
+    return -1;
+  }
+  
+  if(s[pos] == R_GROUP) { // find the L_GROUP to the left
+    while(pos >= 0) {
+      if(s[pos] == L_GROUP) level--;
+      if(s[pos] == R_GROUP) level++;
+
+      if(level == 0) return pos;
+
+      pos--;
+    }
+
+    return -1;
+  }
+
+  return -1;
+}
+
 
 //This class stores and displays the formula
 

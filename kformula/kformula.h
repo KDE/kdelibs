@@ -100,6 +100,8 @@ public:
   static QString delim() { initStrings(); return *DELIM; }
   static QString bigop() { initStrings(); return *BIGOP; }
   static QString eval() { initStrings(); return *EVAL; }
+  static int findMatch(QString s, int pos); // find the matching brace
+
 };
 
 

@@ -67,7 +67,7 @@ enum BoxType {
   SLASH = '/',
   MATRIX = 'm' + UNUSED_OFFSET,
   SEPARATOR = '&' + UNUSED_OFFSET, // separator for matrices
-  ABOVE = '[' + UNUSED_OFFSET, //something useless
+  ABOVE = ')' + UNUSED_OFFSET, //something useless
   BELOW = ']' + UNUSED_OFFSET,
   SYMBOL = 's' + UNUSED_OFFSET, // whatever
   // char for keeping track of cursor position in undo/redo:
