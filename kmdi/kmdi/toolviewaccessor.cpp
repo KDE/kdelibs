@@ -63,22 +63,20 @@ ToolViewAccessor::ToolViewAccessor( KMDI::MainWindow *parent, QWidget *widgetToW
 			d->widgetContainer->setToolTipString(tabToolTip);
 		}
 	}
-	//mdiMainFrm->m_pToolViews->insert(d->widget,this);
-	if (mdiMainFrm->m_mdiGUIClient)
-		mdiMainFrm->m_mdiGUIClient->addToolView(this);
-	else kdDebug(760)<<"mdiMainFrm->m_mdiGUIClient == 0 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<endl;
 
+  //mdiMainFrm->m_toolViews.insert(d->widget,this);
+	mdiMainFrm->m_guiClient->addToolView(this);
 	d->widget->installEventFilter(this);
 }
 
-ToolViewAccessor::ToolViewAccessor( KMDI::MainWindow *parent) {
+ToolViewAccessor::ToolViewAccessor( KMDI::MainWindow *parent) : QObject(parent) {
 	mdiMainFrm=parent;
 	d=new KMdiToolViewAccessorPrivate();
 }
 
 ToolViewAccessor::~ToolViewAccessor() {
-	if (mdiMainFrm->m_pToolViews)
-		mdiMainFrm->m_pToolViews->remove(d->widget);
+  if (mdiMainFrm->m_toolViews)
+  mdiMainFrm->m_toolViews->remove(d->widget);
 	delete d;
 
 }
@@ -137,10 +135,8 @@ void ToolViewAccessor::setWidgetToWrap(QWidget *widgetToWrap, const QString& tab
 		}
 	}
 	tmp->setWidget(widgetToWrap);
-	mdiMainFrm->m_pToolViews->insert(widgetToWrap,this);
-	if (mdiMainFrm->m_mdiGUIClient)
-		mdiMainFrm->m_mdiGUIClient->addToolView(this);
-	else kdDebug(760)<<"mdiMainFrm->m_mdiGUIClient == 0 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<endl;
+	mdiMainFrm->m_toolViews->insert(widgetToWrap,this);
+	mdiMainFrm->m_guiClient->addToolView(this);
 
 	d->widget->installEventFilter(this);
 }
@@ -177,14 +173,14 @@ void ToolViewAccessor::place(KDockWidget::DockPosition pos, QWidget* pTargetWnd 
 
         // Should we dock to ourself?
         bool DockToOurself = false;
-        if (mdiMainFrm->m_pDockbaseAreaOfDocumentViews) {
-            if (pTargetWnd == mdiMainFrm->m_pDockbaseAreaOfDocumentViews->getWidget()) {
+        if (mdiMainFrm->getMainDockWidget()) {
+            if (pTargetWnd == mdiMainFrm->getMainDockWidget()->getWidget()) {
                 DockToOurself = true;
-                pTargetDock = mdiMainFrm->m_pDockbaseAreaOfDocumentViews;
+                pTargetDock = mdiMainFrm->getMainDockWidget();
             }
-            else if (pTargetWnd == mdiMainFrm->m_pDockbaseAreaOfDocumentViews) {
+            else if (pTargetWnd == mdiMainFrm->getMainDockWidget()) {
                 DockToOurself = true;
-                pTargetDock = mdiMainFrm->m_pDockbaseAreaOfDocumentViews;
+                pTargetDock = mdiMainFrm->getMainDockWidget();
             }
         }
         // this is not inheriting QWidget*, its plain impossible that this condition is true

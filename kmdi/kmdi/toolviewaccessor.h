@@ -30,7 +30,7 @@
 #include <kdockwidget.h>
 
 namespace KMDIPrivate {
-   class KMDIGUIClient;
+   class GUIClient;
 }
 
 class KMdiToolViewAccessorPrivate;
@@ -44,7 +44,7 @@ class ToolViewAccessor : public QObject
    Q_OBJECT
 
    friend class KMDI::MainWindow;
-   friend class KMDIPrivate::KMDIGUIClient;
+   friend class KMDIPrivate::GUIClient;
 
 private:
    /**

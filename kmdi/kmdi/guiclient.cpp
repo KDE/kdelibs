@@ -102,7 +102,7 @@ void ToggleToolViewAction::slotWidgetDestroyed()
 }
 
 
-KMDIGUIClient::KMDIGUIClient(KMDI::MainWindow* mdiMainFrm,bool showMDIModeAction, const char* name): QObject( mdiMainFrm,name ),
+GUIClient::GUIClient(KMDI::MainWindow* mdiMainFrm,const char* name): QObject( mdiMainFrm,name ),
 KXMLGUIClient( mdiMainFrm )
 {
    m_mdiMainFrm=mdiMainFrm;
@@ -146,7 +146,7 @@ KXMLGUIClient( mdiMainFrm )
     actionCollection()->readShortcutSettings( "Shortcuts", kapp->config() );
 }
 
-KMDIGUIClient::~KMDIGUIClient()
+GUIClient::~GUIClient()
 {
 
 //     actionCollection()->writeShortcutSettings( "KMDI Shortcuts", kapp->config() );
@@ -159,7 +159,7 @@ KMDIGUIClient::~KMDIGUIClient()
     m_documentViewActions.clear();
 }
 
-void KMDIGUIClient::setupActions()
+void GUIClient::setupActions()
 {
     if ( !factory() || !m_mdiMainFrm )
         return;
@@ -191,14 +191,14 @@ void KMDIGUIClient::setupActions()
       addList.append(m_toolMenu);
       addList.append(m_gotoToolDockMenu);
       if (m_mdiModeAction) addList.append(m_mdiModeAction);
-      kdDebug(760)<<"KMDIGUIClient::setupActions: plugActionList"<<endl;
+      kdDebug(760)<<"GUIClient::setupActions: plugActionList"<<endl;
       plugActionList( actionListName, addList );
 
 //    connectToActionContainers();
 }
 
-void KMDIGUIClient::addToolView(KMDI::ToolViewAccessor* mtva) {
-	kdDebug(760)<<"*****void KMDIGUIClient::addToolView(KMDI::ToolViewAccessor* mtva)*****"<<endl;
+void GUIClient::addToolView(KMDI::ToolViewAccessor* mtva) {
+	kdDebug(760)<<"*****void GUIClient::addToolView(KMDI::ToolViewAccessor* mtva)*****"<<endl;
 //	kdDebug()<<"name: "<<mtva->wrappedWidget()->name()<<endl;
 	QString aname = QString("kmdi_toolview_") + mtva->wrappedWidget()->name();
 
@@ -224,14 +224,14 @@ void KMDIGUIClient::addToolView(KMDI::ToolViewAccessor* mtva) {
 	setupActions();
 }
 
-void KMDIGUIClient::actionDeleted(QObject* a) {
+void GUIClient::actionDeleted(QObject* a) {
 	m_toolViewActions.remove(static_cast<KAction*>(a));
 /*	if (!m_toolMenu.isNull()) m_toolMenu->remove(static_cast<KAction*>(a));*/
 	setupActions();
 }
 
 
-void KMDIGUIClient::clientAdded( KXMLGUIClient *client )
+void GUIClient::clientAdded( KXMLGUIClient *client )
 {
     if ( client == this )
         setupActions();

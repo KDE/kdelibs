@@ -42,87 +42,50 @@
 
 #include <kmdi/global.h>
 
-class QTimer;
 class QPopupMenu;
 class QMenuBar;
 
 #include <kmdi/toolviewaccessor.h>
 
 namespace KMDIPrivate {
-  class KMDIGUIClient;
+  class MainWindowPrivate;
+  class GUIClient;
 }
 
 class KMdiDockContainer;
-class MainWindowPrivate;
 
 namespace KMDI
 {
 
 class MainWindow : public KParts::DockMainWindow
 {
-   Q_OBJECT
+  Q_OBJECT
 
-   friend class KMDI::ToolViewAccessor;
+  friend class KMDI::ToolViewAccessor;
 
-// attributes
-protected:
-   QMap<QWidget*,KMDI::ToolViewAccessor*> *m_pToolViews;
-   QPopupMenu              *m_pWindowPopup;
-   QPopupMenu              *m_pTaskBarPopup;
-   QPopupMenu              *m_pDockMenu;
-   QPopupMenu              *m_pMdiModeMenu;
-   QPopupMenu              *m_pPlacingMenu;
+  public:
+    /**
+     * Constructor.
+     */
+    MainWindow ( QWidget* parentWidget, const char* name = "", WFlags flags = WType_TopLevel | WDestructiveClose);
 
-   QPoint                  m_undockPositioningOffset;
-   bool                    m_bMaximizedChildFrmMode;
-   bool                    m_bSDIApplication;
-   KDockWidget*         m_pDockbaseAreaOfDocumentViews;
-   bool                    m_bClearingOfWindowMenuBlocked;
+    /**
+     * Destructor.
+     */
+    virtual ~MainWindow ();
 
-   QTimer*                 m_pDragEndTimer;
+  private:
+    /**
+     * setup the sidebars for the toolviews
+     * and other internals to get them working
+     */
+    void setupToolViews ();
 
-   KDockWidget*         m_leftContainer;
-   KDockWidget*         m_rightContainer;
-   KDockWidget*         m_topContainer;
-   KDockWidget*         m_bottomContainer;
-
-
-private:
-   MainWindowPrivate*     d;
-   KMDIPrivate::KMDIGUIClient*     m_mdiGUIClient;
-   bool m_managedDockPositionMode;
-
-// methods
-public:
-   /**
-   * Constructor.
-   */
-   MainWindow( QWidget* parentWidget, const char* name = "", WFlags flags = WType_TopLevel | WDestructiveClose);
-
-   /**
-   * Destructor.
-   */
-   virtual ~MainWindow();
-
-   void setStandardMDIMenuEnabled(bool showModeMenu=true);
-
-   void setManagedDockPositionModeEnabled(bool enabled);
-
-   /**
-   * Returns whether this MDI child view is under MDI control (using addWindow() ) or not.
-   */
-   enum ExistsAs {DocumentView,ToolView,AnyView};
-
-   /**
-   * Sets an offset value that is used on detachWindow() . The undocked window
-   * is visually moved on the desktop by this offset.
-   */
-   virtual void setUndockPositioningOffset( QPoint offset) { m_undockPositioningOffset = offset; };
-
-   /**
-   * Do nothing when in Toplevel mode
-   */
-   virtual void setMinimumSize( int minw, int minh);
+    /**
+     * setup the menuentries
+     * must be done AFTER setupToolViews ()
+     */
+    void setupGUIClient ();
 
 public slots:
    /**
@@ -150,17 +113,7 @@ public slots:
     */
    void setToolviewStyle(int flags);
 
-private:
-   void setupToolViewsForIDEALMode();
-   void setupTabbedDocumentViewSpace();
-
 protected:
-   /**
-   * prevents fillWindowMenu() from m_pWindowMenu->clear(). You have to care for it by yourself.
-   * This is useful if you want to add some actions in your overridden fillWindowMenu() method.
-   */
-   void blockClearingOfWindowMenu( bool bBlocked) { m_bClearingOfWindowMenuBlocked = bBlocked; };
-
    void findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
    void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
 
@@ -200,6 +153,18 @@ signals:
     void toggleLeft();
     void toggleRight();
     void toggleBottom();
+
+  private:
+    KMDIPrivate::MainWindowPrivate *d;
+    KMDIPrivate::GUIClient *m_guiClient;
+
+  protected:
+    QMap <QWidget*, KMDI::ToolViewAccessor*> *m_toolViews;
+
+    KDockWidget*         m_leftContainer;
+    KDockWidget*         m_rightContainer;
+    KDockWidget*         m_topContainer;
+    KDockWidget*         m_bottomContainer;
 };
 
 }

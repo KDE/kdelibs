@@ -7,7 +7,7 @@ libkmdi2_la_LIBADD  = $(LIB_KPARTS) $(top_builddir)/kutils/libkutils.la
 libkmdi2_la_SOURCES = mainwindow.cpp dockcontainer.cpp toolviewaccessor.cpp guiclient.cpp tabwidget.cpp
 
 kmdiincludedir = $(includedir)/kmdi
-kmdiinclude_HEADERS = global.h mainwindow.h toolviewaccessor.h
+kmdiinclude_HEADERS = global.h mainwindow.h toolviewaccessor.h tabwidget.h
 
 METASOURCES = AUTO
 

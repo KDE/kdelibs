@@ -37,13 +37,13 @@ class KDockWidget;
 
 namespace KMDIPrivate {
 
-class KMDIGUIClient : public QObject,
+class GUIClient : public QObject,
                        public KXMLGUIClient
 {
     Q_OBJECT
 public:
-    KMDIGUIClient( KMDI::MainWindow *mdiMainFrm, bool showMDIModeAction, const char *name = 0 );
-    virtual ~KMDIGUIClient();
+    GUIClient( KMDI::MainWindow *mdiMainFrm, const char *name = 0 );
+    virtual ~GUIClient();
 
     void addToolView(KMDI::ToolViewAccessor*);
 
@@ -58,8 +58,8 @@ signals:
     void toggleBottom();
 
 private:
-    class KMDIGUIClientPrivate;
-    KMDIGUIClientPrivate *d;
+    class GUIClientPrivate;
+    GUIClientPrivate *d;
 
     QGuardedPtr<KMDI::MainWindow> m_mdiMainFrm;
     QPtrList<KAction> m_toolViewActions;
@@ -71,7 +71,6 @@ private:
 
     KActionMenu *m_gotoToolDockMenu;
 };
-
 
 class ToggleToolViewAction:public KToggleAction
 {
@@ -90,7 +89,6 @@ protected slots:
         void anDWChanged();
         void slotWidgetDestroyed();
 };
-
 
 }
 

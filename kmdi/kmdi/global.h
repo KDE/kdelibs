@@ -40,45 +40,6 @@
 */
 namespace KMDI
 {
-   /** extent Qt events
-      @see QCustomEvent, QEvent::User
-      \code
-      bool B_MyWidget::event( QEvent* e) {
-         if( e->type() == QEvent::Type(QEvent::User + int(KMDI::EV_Move))) {
-            ...
-         }
-         ...
-      }
-      \endcode
-   */
-   enum EventType {
-      EV_Move=1,
-      EV_DragBegin,
-      EV_DragEnd,
-      EV_ResizeBegin,
-      EV_ResizeEnd
-   };
-
-   /**
-   * During KMdiMainFrm::addWindow the enum AddWindowFlags is used to determine how the view is initialy being added to the MDI system
-   */
-   enum AddWindowFlags {
-      /**
-      * standard is: show normal, attached, visible, document view (not toolview). Maximize, Minimize, Hide adds
-      * appropriately. Detach adds a view that appears toplevel, ToolWindow adds the view as tool view.
-      * That means it is stay-on-top and toplevel. UseKMdiSizeHint should use the restore geometry of the
-      * latest current top childframe but is not supported yet.
-      */
-      StandardAdd = 0,
-      Maximize    = 1,
-      Minimize    = 2,
-      Hide        = 4,
-      Detach      = 8,
-      ToolWindow  = 16,
-      UseKMdiSizeHint = 32,
-      AddWindowFlags = 0xff
-   };
-
    enum TabWidgetVisibility {
       AlwaysShowTabs         = 0,
       ShowWhenMoreThanOneTab = 1,
