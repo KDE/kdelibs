@@ -720,9 +720,9 @@ public:
 
     /**
      * This method implements the logic to determine the user's default directory
-     * to be listed. E.g. the documents direcory, home directory or a recently 
+     * to be listed. E.g. the documents direcory, home directory or a recently
      * used directory.
-     * @param startDir A url/directory, to be used. May use the ':' and '::' syntax 
+     * @param startDir A url/directory, to be used. May use the ':' and '::' syntax
      *        as documented in the @ref KFileDialog() constructor.
      * @param recentDirClass If the ':' or '::' syntax is used, recentDirClass
      *        will contain the string to be used later for @ref KRecentDir::dir()
@@ -871,6 +871,7 @@ protected slots:
 private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
+    static void initStatic();
 
 protected:
     KDirOperator *ops;

@@ -695,7 +695,9 @@ void KFileDialog::multiSelectionChanged()
 
 void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* widget)
 {
+    initStatic();
     d = new KFileDialogPrivate();
+    
     d->boxLayout = 0;
     d->keepLocation = false;
     d->operationMode = Opening;
@@ -760,11 +762,6 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                                  text );
 
     u.setPath( "/tmp" );
-
-    if (!lastDirectory)
-    {
-        lastDirectory = ldd.setObject(new KURL());
-    }
 
     d->url = getStartURL( startDir, d->fileClass );
     d->selection = d->url.url();
@@ -1833,9 +1830,20 @@ int KFileDialog::pathComboIndex()
 }
 
 // static
+void KFileDialog::initStatic()
+{
+    if ( lastDirectory )
+        return;
+
+    lastDirectory = ldd.setObject(new KURL());
+}
+
+// static
 KURL KFileDialog::getStartURL( const QString& startDir,
                                QString& recentDirClass )
 {
+    initStatic();
+    
     recentDirClass = QString::null;
     KURL ret;
 
