@@ -447,10 +447,57 @@ void KCryptoConfig::defaults()
   mWarnOnMixed->setChecked(true);
 
 #ifdef HAVE_SSL
-  for (unsigned int i = 0; i < SSLv2Box->count(); i++)
-    SSLv2Box->setSelected(i, true);
-  for (unsigned int i = 0; i < SSLv3Box->count(); i++)
-    SSLv3Box->setSelected(i, true);
+    // This is very complicated on purpose.  We don't want to make
+    // ciphers < 40 bit a default selection.  This is very unsafe and
+    // I have already witnessed OpenSSL negotiate a 0 bit connection
+    // on me after tracing the https ioslave on a suspicion.
+SSL_CTX *ctx;
+SSL *ssl;
+SSL_METHOD *meth;
+int j, k;
+ 
+  meth = SSLv2_client_method();
+  OpenSSL_add_ssl_algorithms();
+  ctx = SSL_CTX_new(meth);
+  if (ctx == NULL) return;
+ 
+  ssl = SSL_new(ctx);
+  if (!ssl) return;
+
+  for (unsigned int i = 0; i < SSLv2Box->count(); i++) {
+    SSL_CIPHER *sc;
+    sc = (meth->get_cipher)(i);
+    if (!sc) break;
+    k = SSL_CIPHER_get_bits(sc, &j);
+    if (k < 40)
+      SSLv2Box->setSelected(i, false);
+    else SSLv2Box->setSelected(i, true);
+  }
+
+  if (ctx) SSL_CTX_free(ctx);
+  if (ssl) SSL_free(ssl);
+
+  // repeate for v3 method
+  meth = SSLv3_client_method();
+  OpenSSL_add_ssl_algorithms();
+  ctx = SSL_CTX_new(meth);
+  if (ctx == NULL) return;
+ 
+  ssl = SSL_new(ctx);
+  if (!ssl) return;
+
+  for (unsigned int i = 0; i < SSLv3Box->count(); i++) {
+    SSL_CIPHER *sc;
+    sc = (meth->get_cipher)(i);
+    if (!sc) break;
+    k = SSL_CIPHER_get_bits(sc, &j);
+    if (k < 40)
+      SSLv3Box->setSelected(i, false);
+    else SSLv3Box->setSelected(i, true);
+  }
+
+  if (ctx) SSL_CTX_free(ctx);
+  if (ssl) SSL_free(ssl);
 #endif
 
   emit changed(true);
