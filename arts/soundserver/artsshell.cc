@@ -82,7 +82,7 @@ bool quiet = false;
 
 
 // Display command usage and exit
-int usage()
+void usage()
 {
 	cerr <<
 "usage: artsshell [options] <command> [command-options]\n\
