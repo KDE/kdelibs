@@ -2109,6 +2109,7 @@ void HTMLTableCellElementImpl::parseAttribute(Attribute *attr)
 	break;
     case ATTR_COLSPAN:
 	cSpan = attr->val()->toInt();
+	if(cSpan < 1) cSpan = 1; // fix for GNOME websites... ;-)
 	break;
     case ATTR_NOWRAP:
 	nWrap = true;
