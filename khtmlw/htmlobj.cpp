@@ -1309,58 +1309,27 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 
     printf("********* IMAGE %s ******\n",_filename );
     
-    if ( _filename[0] != '/' )
+    KURL kurl( _filename );
+    if ( kurl.isMalformed() )
     {
-	KURL kurl( _filename );
-	if ( kurl.isMalformed() )
-	{
-	  warning("Malformed URL '%s'\n", _filename );
-	  return;
-	}
+      warning("Malformed URL '%s'\n", _filename );
+      return;
+    }
 	
-	if ( strcmp( kurl.protocol(), "file" ) == 0 )
-	{
-	    pixmap = HTMLImage::findImage( kurl.path() );
-	    if ( pixmap == 0 )
-	    {
-// We cannot use QMovie here, because we will load thumbnails which
-// are not in GIF format!
-
-//#ifdef USE_QMOVIE
-//		if ( strstr( kurl.path(), ".gif" ) != 0 )
-//		{
-//		    movie = new QMovie( kurl.path(), 8192 );
-//		    movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
-//		}
-//		else
-//		{
-//#endif
-		    pixmap = new QPixmap();
-		    pixmap->load( kurl.path() );	    
-//#ifdef USE_QMOVIE
-//		}
-//#endif
-		cached = false;
-	    }
-	}
-	else 
-	{
-	    imageURL = _filename;
-	    bComplete = false;
-	    synchron = TRUE;
-	    htmlWidget->requestFile( this, imageURL.data() );
-	    synchron = FALSE;
-	}
+    if ( !kurl.isLocalFile() )
+    {
+      imageURL = _filename;
+      bComplete = false;
+      synchron = TRUE;
+      htmlWidget->requestFile( this, imageURL.data() );
+      synchron = FALSE;
     }
     else
     {
-	pixmap = HTMLImage::findImage( _filename );
-	if ( pixmap == 0 )
-	{
-	    pixmap = new QPixmap();
-	    pixmap->load( _filename );
-	    cached = false;
-	}
+      // the file is onl the local hard disk
+      synchron = true;
+      fileLoaded( kurl.path() );
+      synchron =false;
     }
 
     // Is the image available ?
@@ -1371,8 +1340,6 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	if ( !predefinedHeight )
 	    ascent = 32;
     }
-    else
-	init();
 }
 
 void HTMLImage::init()
@@ -1475,6 +1442,9 @@ bool HTMLImage::fileLoaded( const char* _url, QBuffer& _buffer )
   {
     movie = new QMovie( _buffer.buffer() );
     movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
+#if QT_VERSION <= 141
+    movie->connectStatus( this, SLOT( statusChanged( int ) ) );
+#endif
   }
   else
   {
@@ -1537,12 +1507,15 @@ void HTMLImage::fileLoaded( const char *_filename )
       fread( p, 1, size, f );
       fclose( f );
       QByteArray arr;
-      arr.duplicate( p, size );
-      delete p;
+      arr.assign( p, size );
       movie = new QMovie( arr, 8192 );
       // End Workaround
 	// movie = new QMovie( _filename, 8192 );
       movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
+#if QT_VERSION <= 141
+      // workaround for another bug...
+      movie->connectStatus( this, SLOT( statusChanged( int ) ) );
+#endif    
     }
     else
     {
@@ -1730,7 +1703,16 @@ void HTMLImage::movieUpdated( const QRect & )
 	    return;
 	}
     }
+    
     htmlWidget->paintSingleObject( this );
+#endif
+}
+
+// workaround for a bug in QMovie...
+void HTMLImage::statusChanged( int status)
+{
+#ifdef USE_QMOVIE
+  if( status < 0 ) movie->pause();
 #endif
 }
 

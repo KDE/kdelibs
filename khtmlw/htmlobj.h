@@ -618,6 +618,7 @@ public:
 
 protected slots:
     void movieUpdated( const QRect &rect );
+    void statusChanged( int );
 
 protected:
 
