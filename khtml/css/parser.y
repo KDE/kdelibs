@@ -356,6 +356,10 @@ media_list:
     /* empty */ {
 	$$ = 0;
     }
+    | medium {
+	$$ = new MediaListImpl();
+	$$->appendMedium( domString($1) );
+    }
     | media_list ',' maybe_space medium {
 	$$ = $1;
 	if ( !$$ ) $$ = new MediaListImpl();

@@ -602,7 +602,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	    ElementImpl *elem = static_cast<ElementImpl *>(n);
 	    // a selector is invalid if something follows :first-xxx
 	    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
-                qDebug("failing, dynamicPseudo: %d", dynamicPseudo);
+                //qDebug("failing, dynamicPseudo: %d", dynamicPseudo);
 		return;
 	    }
 	    if(!checkOneSelector(sel, elem)) return;
