@@ -23,11 +23,8 @@
  */
 // -------------------------------------------------------------------------
 #include "html_headimpl.h"
-
-#include "dom_string.h"
 #include "dom_textimpl.h"
 #include "html_documentimpl.h"
-using namespace DOM;
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -72,7 +69,7 @@ void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_HREF:
-      _href = attr->value();
+      _href = khtml::parseURL(attr->value());
       break;
     case ATTR_TARGET:
       _target = attr->value();
@@ -156,7 +153,7 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_REL:
         m_rel = attr->value(); break;
     case ATTR_HREF:
-        m_url = attr->value(); break;
+        m_url = khtml::parseURL(attr->value()); break;
     case ATTR_TYPE:
         m_type = attr->value(); break;
     case ATTR_MEDIA:
