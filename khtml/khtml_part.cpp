@@ -5355,7 +5355,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       pix = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
     }
 
-    KURLDrag* urlDrag = new KURLDrag( u, d->m_view->viewport() );
+    KURLDrag* urlDrag = new KURLDrag( u, 0 );
     if ( !d->m_referrer.isEmpty() )
       urlDrag->metaData()["referrer"] = d->m_referrer;
 
