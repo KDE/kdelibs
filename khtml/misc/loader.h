@@ -386,7 +386,6 @@ namespace khtml
 
     public:
 	Loader();
-	~Loader();
 
 	void load(DocLoader* dl, CachedObject *object, bool incremental = true);
 

@@ -545,6 +545,8 @@ void CachedImage::deref( CachedObjectClient *c )
 #define BGMINWIDTH      32
 #define BGMINHEIGHT     32
 
+namespace khtml {
+
 class KHTMLPixmap : public QPixmap
 {
 public:
@@ -554,6 +556,8 @@ public:
     bool hasAlphaImage() const { return false; }
 #endif
 };
+
+} // namespace khtml
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
@@ -928,6 +932,7 @@ DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
 
 DocLoader::~DocLoader()
 {
+    Cache::loader()->cancelRequests( this );
     Cache::docloader->remove( this );
 }
 
@@ -1065,10 +1070,6 @@ Loader::Loader() : QObject()
 {
     m_requestsPending.setAutoDelete( true );
     m_requestsLoading.setAutoDelete( true );
-}
-
-Loader::~Loader()
-{
 }
 
 void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
