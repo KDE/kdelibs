@@ -20,7 +20,9 @@
 
 
 #include "kcertpart.h"
+#include <kparts/factory.h>
 #include <kinstance.h>
+#include <kaboutdata.h>
 #include <qframe.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -38,7 +40,7 @@
 #include <kseparator.h>
 #include <qmultilinedit.h>
 
-
+KDE_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
 
 
 KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
@@ -318,6 +320,10 @@ KShellProcess p;
   p.start(KProcess::DontCare);
 }
 
+KAboutData *KCertPart::createAboutData()
+{
+    return new KAboutData("KCertPart", I18N_NOOP("KDE Certificate Part"), "1.0");
+}
 
 #include "kcertpart.moc"
 

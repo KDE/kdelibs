@@ -36,7 +36,7 @@ class KSSLPKCS12;
 class KSSLCertificate;
 class QTabWidget;
 class QMultiLineEdit;
-
+class KAboutData;
 
 
 class KCertPart : public KParts::ReadWritePart {
@@ -48,6 +48,7 @@ public:
 
   virtual void setReadWrite(bool rw);
 
+  static KAboutData *createAboutData();
 
 protected slots:
   void slotChain(int c);
