@@ -153,7 +153,7 @@ protected:
    * Returns true if the specified group is known.
    *
    * @param group The group to search for.
-   * @returns @p true if the group exists.
+   * @returns true if the group exists.
    */
   virtual bool internalHasGroup(const QCString &group) const;
 

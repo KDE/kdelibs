@@ -158,15 +158,14 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the given type.
    *
+   * Note that only the following QVariant types are allowed : String,
+   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
+   * Double, DateTime and Date.
    * @deprecated
    *
    * @param pKey The key to search for.
    * @return An invalid QVariant if the key was not found or if the
    * read value cannot be converted to the given QVariant::Type.
-   *
-   * Note that only the following QVariant types are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, DateTime and Date.
    */
   QVariant readPropertyEntry( const QString& pKey, QVariant::Type ) const;
 
@@ -174,15 +173,15 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the given type.
    *
+   * Note that only the following QVariant types are allowed : String,
+   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
+   * Double, DateTime and Date.
+   *
    * @deprecated
    *
    * @param pKey The key to search for.
    * @return An invalid QVariant if the key was not found or if the
    * read value cannot be converted to the given QVariant::Type.
-   *
-   * Note that only the following QVariant types are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, DateTime and Date.
    */
   QVariant readPropertyEntry( const char *pKey, QVariant::Type ) const;
 
@@ -190,15 +189,15 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the type of the given default value.
    *
+   * Note that only the following QVariant types are allowed : String,
+   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
+   * Double, DateTime and Date.
+   *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found or
    * if the read value cannot be converted to the QVariant::Type.
    * @return The value for the key or the default value if the key was not
    *         found.
-   *
-   * Note that only the following QVariant types are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, DateTime and Date.
    */
   QVariant readPropertyEntry( const QString& pKey,
                               const QVariant &adefault) const;
@@ -207,15 +206,15 @@ public:
    * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the type of the given default value.
    *
+   * Note that only the following QVariant types are allowed : String,
+   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
+   * Double, DateTime and Date.
+   *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found or
    * if the read value cannot be converted to the QVariant::Type.
    * @return The value for the key or the default value if the key was not
    *         found.
-   *
-   * Note that only the following QVariant types are allowed : String,
-   * StringList, List, Font, Point, Rect, Size, Color, Int, UInt, Bool,
-   * Double, DateTime and Date.
    */
   QVariant readPropertyEntry( const char *pKey,
                               const QVariant &aDefault) const;
@@ -1475,7 +1474,7 @@ public:
    * method and implement storage-specific behavior, as well as
    * calling the @ref KConfigBase::rollback() explicitly in the initializer.
    *
-   * @param bDeep If @p true, the dirty flags of all entries are cleared,
+   * @param bDeep If true, the dirty flags of all entries are cleared,
    *        as well as the global dirty flag.
    */
   virtual void rollback( bool bDeep = true );
@@ -1497,14 +1496,14 @@ public:
 
   /**
    * Checks whether the config file has any dirty (modified) entries.
-   * @return @p true if the config file has any dirty (modified) entries.
+   * @return true if the config file has any dirty (modified) entries.
    */
   bool isDirty() const { return bDirty; }
 
   /**
    * Sets the config object's read-only status.
    *
-   * @param _ro If @p true, the config object will not write out any
+   * @param _ro If true, the config object will not write out any
    *        changes to disk even if it is destroyed or @ref sync() is called.
    *
    */

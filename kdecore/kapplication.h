@@ -274,16 +274,15 @@ public:
   /**
    * Asks the session manager to shut the session down.
    *
+   * Using @p confirm == ShutdownConfirmYes or @p sdtype != ShutdownTypeDefault or
+   * @p sdmode != ShutdownModeDefault causes the use of ksmserver's DCOP
+   * interface. The remaining two combinations use the standard XSMP and
+   * will work with any session manager compliant with it.
+   *
    * @param confirm Whether to ask the user if he really wants to log out.
    *   @ref ShutdownConfirm
    * @param sdtype The action to take after logging out. @ref ShutdownType
    * @param sdmode If/When the action should be taken. @ref ShutdownMode
-   *
-   * Using confirm == ShutdownConfirmYes or sdtype != ShutdownTypeDefault or
-   * sdmode != ShutdownModeDefault causes the use of ksmserver's DCOP
-   * interface. The remaining two combinations use the standard XSMP and
-   * will work with any session manager compliant with it.
-   *
    * @return true on sucess, false if the session manager could not be
    * contacted.
    */

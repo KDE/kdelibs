@@ -281,12 +281,11 @@ public:
 
   /**
    * Resolves "." and ".." components in path.
+   * Some servers seem not to like the removal of extra '/'
+   * even though it is against the specification in RFC 2396.
    *
    * @param cleanDirSeparator if true, occurrances of consecutive
    * directory separators (e.g. /foo//bar) are cleaned up as well.
-   *
-   * Some servers seem not to like the removal of extra '/'
-   * even though it is against the specification in RFC 2396.
    */
   void cleanPath(bool cleanDirSeparator = true);
 
@@ -322,7 +321,6 @@ public:
 
   /**
    * Returns the encoded path and the query.
-   * @return The concatenation if the encoded path , '?' and the encoded query.
    *
    * @param _trailing May be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
@@ -335,6 +333,8 @@ public:
    * @param _no_empty_path If set to true then an empty path is substituted by "/".
    * @param encoding_hint MIB of desired encoding of URL.
    *             @see QTextCodec::mibEnum()
+   * @return The concatenation if the encoded path , '?' and the encoded query.
+   *
    */
   QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false, int encoding_hint = 0) const;
 
@@ -372,9 +372,9 @@ public:
 
   /**
    * Checks whether the URL has a reference part.
-   * @return @p true if the URL has a reference part. In a URL like
+   * @return true if the URL has a reference part. In a URL like
    *         http://www.kde.org/kdebase.tar#tar:/README it would
-   *         return @p true, too.
+   *         return true, too.
    */
   bool hasRef() const { return !m_strRef_encoded.isNull(); }
 
@@ -405,14 +405,14 @@ public:
 
   /**
    * Checks whether there is a HTML reference.
-   * @return @p true if the URL has an HTML-style reference.
+   * @return true if the URL has an HTML-style reference.
    * @see htmlRef()
    */
   bool hasHTMLRef() const;
 
   /**
    * Checks whether the URL is well formed.
-   * @return @p false if the URL is malformed. This function does @em not test
+   * @return false if the URL is malformed. This function does @em not test
    *         whether sub URLs are well-formed, too.
    */
   bool isValid() const  { return !m_bIsMalformed; }
@@ -423,7 +423,7 @@ public:
 
   /**
    * Checks whether the file is local.
-   * @return @p true if the file is a plain local file and has no filter protocols
+   * @return true if the file is a plain local file and has no filter protocols
    *         attached to it.
    */
   bool isLocalFile() const;
@@ -447,7 +447,7 @@ public:
   /**
    * Checks whether the URL has any sub URLs. See @ref #split()
    * for examples for sub URLs.
-   * @return @p true if the file has at least one sub URL.
+   * @return true if the file has at least one sub URL.
    * @see #split
    */
   bool hasSubURL() const;
@@ -522,14 +522,14 @@ public:
 
   /**
    * Returns the directory of the path.
-   * @return The directory part of the current path. Everything between the last and the second last '/'
-   *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
-   *         <tt>file:/hallo/torben</tt> would return "hallo/". The returned string is decoded. QString::null is returned when there is no path.
    * @param _strip_trailing_slash_from_result tells whether the returned result should end with '/' or not.
    *                                          If the path is empty or just "/" then this flag has no effect.
    * @param _ignore_trailing_slash_in_path means that <tt>file:/hallo/torben</tt> and
    *                                       <tt>file:/hallo/torben/"</tt> would both return <tt>/hallo/</tt>
    *                                       or <tt>/hallo</tt> depending on the other flag
+   * @return The directory part of the current path. Everything between the last and the second last '/'
+   *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
+   *         <tt>file:/hallo/torben</tt> would return "hallo/". The returned string is decoded. QString::null is returned when there is no path.
    */
   QString directory( bool _strip_trailing_slash_from_result = true,
 		     bool _ignore_trailing_slash_in_path = true ) const;
@@ -653,9 +653,9 @@ public:
    * The idea behind this is that browsers, for example, only look at the first URL while
    * the rest is not of interest to them.
    *
-   * @return An empty list on error or the list of split URLs.
    *
    * @param _url The URL that has to be split.
+   * @return An empty list on error or the list of split URLs.
    * @see #hasSubURL
    */
   static List split( const QString& _url );
@@ -778,7 +778,7 @@ bool urlcmp( const QString& _url1, const QString& _url2 );
  * That means no malformed URL equals anything else.
  *
  * @param _ignore_trailing Described in @ref KURL::cmp
- * @param _ignore_ref If @p true, disables comparison of HTML-style references.
+ * @param _ignore_ref If true, disables comparison of HTML-style references.
  */
 bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref );
 

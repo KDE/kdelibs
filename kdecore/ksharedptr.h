@@ -40,34 +40,34 @@ class KShared {
 public:
    /**
     * Standard constructor.  This will initialize the reference count
-    * on this object to 0
+    * on this object to 0.
     */
    KShared() : count(0) { }
 
    /**
     * Copy constructor.  This will @em not actually copy the objects
-    * but it will initialize the reference count on this object to 0
+    * but it will initialize the reference count on this object to 0.
     */
    KShared( const KShared & ) : count(0) { }
 
    /**
-    * Overloaded assignment operator
+    * Overloaded assignment operator.
     */
    KShared &operator=(const KShared & ) { return *this; }
 
    /**
-    * Increases the reference count by one
+    * Increases the reference count by one.
     */
    void _KShared_ref() const { count++; }
 
    /**
     * Releases a reference (decreases the reference count by one).  If
-    * the count goes to 0, this object will delete itself
+    * the count goes to 0, this object will delete itself.
     */
    void _KShared_unref() const { if (!--count) delete this; }
 
    /**
-    * Return the current number of references held
+    * Return the current number of references held.
     *
     * @return Number of references
     */
@@ -81,7 +81,7 @@ private:
 
 /**
  * Can be used to control the lifetime of an object that has derived
- * @ref KShared. As long a someone holds a KSharedPtr on some KShared
+ * @ref KShared. As long a someone holds a KSharedPtr on some @ref KShared
  * object it won't become deleted but is deleted once its reference
  * count is 0.  This struct emulates C++ pointers perfectly. So just
  * use it like a simple C++ pointer.
@@ -96,13 +96,29 @@ template< class T >
 struct KSharedPtr
 {
 public:
+/**
+ * Creates a null pointer.
+ */
   KSharedPtr()
     : ptr(0) { }
+  /**
+   * Creates a new pointer.
+   * @param the pointer
+   */
   KSharedPtr( T* t )
     : ptr(t) { if ( ptr ) ptr->_KShared_ref(); }
+
+  /**
+   * Copies a pointer.
+   * @param the pointer to copy
+   */
   KSharedPtr( const KSharedPtr& p )
     : ptr(p.ptr) { if ( ptr ) ptr->_KShared_ref(); }
 
+  /**
+   * Unreferences the object that this pointer points to. If it was
+   * the last reference, the object will be deleted.
+   */
   ~KSharedPtr() { if ( ptr ) ptr->_KShared_unref(); }
 
   KSharedPtr<T>& operator= ( const KSharedPtr<T>& p ) {
@@ -126,7 +142,16 @@ public:
   bool operator!() const { return ( ptr == 0 ); }
   operator T*() const { return ptr; }
 
+  /**
+   * Returns the pointer.
+   * @return the pointer
+   */
   T* data() { return ptr; }
+
+  /**
+   * Returns the pointer.
+   * @return the pointer
+   */
   const T* data() const { return ptr; }
 
   const T& operator*() const { return *ptr; }
@@ -134,6 +159,10 @@ public:
   const T* operator->() const { return ptr; }
   T* operator->() { return ptr; }
 
+  /**
+   * Returns the number of references.
+   * @return the number of references
+   */
   int count() const { return ptr->_KShared_count(); } // for debugging purposes
 private:
   T* ptr;

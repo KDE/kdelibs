@@ -283,13 +283,13 @@ public:
    * Stop the process (by sending it a signal).
    *
    * @param signo	The signal to send. The default is SIGTERM.
-   * @return @p true if the signal was delivered successfully.
+   * @return true if the signal was delivered successfully.
   */
   virtual bool kill(int signo = SIGTERM);
 
   /**
    * Checks whether the process is running.
-   * @return @p true if the process is (still) considered to be running
+   * @return true if the process is (still) considered to be running
   */
   bool isRunning() const;
 
@@ -322,7 +322,7 @@ public:
   void resume();
 
   /**
-   * @return @p true if the process has already finished and has exited
+   * @return true if the process has already finished and has exited
    *  "voluntarily", ie: it has not been killed by a signal.
    *
    * Note that you should check @ref KProcess::exitStatus() to determine
@@ -335,7 +335,7 @@ public:
    *
    * Please use
    * @ref KProcess::normalExit() to check whether the process has exited
-   * cleanly (i.e., @ref KProcess::normalExit() returns @p true) before calling
+   * cleanly (i.e., @ref KProcess::normalExit() returns true) before calling
    * this function because if the process did not exit normally,
    * it does not have a valid exit status.
    * @return the exit status of the process
@@ -376,7 +376,7 @@ public:
    * This causes the stdin file descriptor of the child process to be
    * closed indicating an "EOF" to the child.
    *
-   * @return @p false if no communication to the process's stdin
+   * @return false if no communication to the process's stdin
    *  had been specified in the call to @ref start().
   */
   bool closeStdin();
@@ -385,7 +385,7 @@ public:
    * This causes the stdout file descriptor of the child process to be
    * closed.
    *
-   * @return @p false if no communication to the process's stdout
+   * @return false if no communication to the process's stdout
    *  had been specified in the call to @ref start().
   */
   bool closeStdout();
@@ -394,7 +394,7 @@ public:
    * This causes the stderr file descriptor of the child process to be
    * closed.
    *
-   * @return @p false if no communication to the process's stderr
+   * @return false if no communication to the process's stderr
    *  had been specified in the call to @ref start().
   */
   bool closeStderr();
@@ -409,7 +409,7 @@ public:
    * Controls whether the started process should drop any
    * setuid/segid privileges or whether it should keep them
    *
-   * The default is @p false : drop privileges
+   * The default is false : drop privileges
    * @param true to keep the privileges
    */
   void setRunPrivileged(bool keepPrivileges);
@@ -531,12 +531,12 @@ signals:
    * these signals, the respective communication link (stdout/stderr)
    * has to be turned on in @ref start().
    *
+   * You should copy the information contained in @p buffer to your private
+   * data structures before returning from this slot.
+   *
    * @param proc a pointer to the process that has received the data
    * @param buffer The data received.
    * @param buflen The number of bytes that are available.
-   *
-   * You should copy the information contained in @p buffer to your private
-   * data structures before returning from this slot.
   */
   void receivedStderr(KProcess *proc, char *buffer, int buflen);
 
