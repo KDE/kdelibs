@@ -121,7 +121,7 @@ class Wallet : public QObject, public DCOPObject {
 		 *  allow your application to open the wallet, and may be
 		 *  prompted for a password.
 		 *  @param name The name of the wallet to open.
-		 *  @param async If Asynchronous, the call will return
+		 *  @param ot    If Asynchronous, the call will return
 		 *               immediately with a non-null pointer to an
 		 *               invalid wallet.  You must immediately connect
 		 *               the walletOpened() signal to a slot so that
@@ -165,6 +165,7 @@ class Wallet : public QObject, public DCOPObject {
 		 *  Request to the wallet service to change the password of
 		 *  the wallet @p name.
 		 *  @param name The the wallet to change the password of.
+		 *  @param w The window id to associate any dialogs with.
 		 */
 		static void changePassword(const QString& name, WId w = 0);
 
@@ -198,6 +199,7 @@ class Wallet : public QObject, public DCOPObject {
 		/**
 		 *  Request to the wallet service to change the password of
 		 *  the current wallet.
+		 *  @param w The window id to associate any dialogs with.
 		 */
 		virtual void requestChangePassword(WId w = 0);
 
@@ -209,6 +211,7 @@ class Wallet : public QObject, public DCOPObject {
 
 		/**
 		 *  Determine if the folder @p f exists in the wallet.
+		 *  @param f the name of the folder to check for
 		 *  @return Returns true if the folder exists in the wallet.
 		 */
 		virtual bool hasFolder(const QString& f);
@@ -217,18 +220,21 @@ class Wallet : public QObject, public DCOPObject {
 		 *  Set the current working folder to @p f.  The folder must
 		 *  exist, or this call will fail.  Create a folder with
 		 *  createFolder().
+		 *  @param f the name of the folder to make the working folder
 		 *  @return Returns true if the folder was successfully set.
 		 */
 		virtual bool setFolder(const QString& f);
 
 		/**
 		 *  Remove the folder @p f and all its entries from the wallet.
+		 *  @param f the name of the folder to remove
 		 *  @return Returns true if the folder was successfully removed.
 		 */
 		virtual bool removeFolder(const QString& f);
 
 		/**
 		 *  Created the folder @p f.
+		 *  @param f the name of the folder to create
 		 *  @return Returns true if the folder was successfully created.
 		 */
 		virtual bool createFolder(const QString& f);
@@ -365,7 +371,8 @@ class Wallet : public QObject, public DCOPObject {
 		 *  @return Returns true if the key does NOT exist in the
 		 *  wallet, or the folder or wallet does not exist.
 		 */
-		static bool keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key);
+		static bool keyDoesNotExist(const QString& wallet, const QString& folder, 
+					    const QString& key);
 
 	signals:
 		/**
