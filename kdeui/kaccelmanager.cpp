@@ -47,40 +47,6 @@
 
  *********************************************************************/
 
-class Item;
-
-typedef QPtrList<Item> ItemList;
-
-class Item
-{
-public:
-
-  Item() : m_widget(0), m_children(0), m_index(-1) {};
-  ~Item();
-
-  void addChild(Item *item);
-
-  QWidget       *m_widget;
-  KAccelString  m_content;
-  ItemList      *m_children;
-  int           m_index;
-
-};
-
-
-Item::~Item()
-{
-  delete m_children;
-}
-
-
-void Item::addChild(Item *item)
-{
-  if (!m_children)
-    m_children = new ItemList;
-
-  m_children->append(item);
-}
 
 
 /*********************************************************************
@@ -101,6 +67,8 @@ public:
 
 
 private:
+  class Item;
+  typedef QPtrList<Item> ItemList;
 
   static void traverseChildren(QWidget *widget, Item *item);
 
@@ -110,8 +78,38 @@ private:
 
   static void calculateAccelerators(Item *item, QString &used);
 
+
+  class Item
+  {
+  public:
+
+    Item() : m_widget(0), m_children(0), m_index(-1) {};
+    ~Item();
+
+    void addChild(Item *item);
+
+    QWidget       *m_widget;
+    KAccelString  m_content;
+    ItemList      *m_children;
+    int           m_index;
+
+  };
 };
 
+
+KAcceleratorManagerPrivate::Item::~Item()
+{
+  delete m_children;
+}
+
+
+void KAcceleratorManagerPrivate::Item::addChild(Item *item)
+{
+    if (!m_children)
+      m_children = new ItemList;
+
+    m_children->append(item);
+}
 
 void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
