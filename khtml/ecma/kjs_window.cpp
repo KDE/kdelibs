@@ -1154,6 +1154,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
 ScheduledAction::ScheduledAction(Object _func, List _args, bool _singleShot)
 {
+  //kdDebug(6070) << "ScheduledAction::ScheduledAction(isFunction) " << this << endl;
   func = _func;
   args = _args;
   isFunction = true;
@@ -1162,6 +1163,7 @@ ScheduledAction::ScheduledAction(Object _func, List _args, bool _singleShot)
 
 ScheduledAction::ScheduledAction(QString _code, bool _singleShot)
 {
+  //kdDebug(6070) << "ScheduledAction::ScheduledAction(!isFunction) " << this << endl;
   //func = 0;
   //args = 0;
   code = _code;
@@ -1171,6 +1173,7 @@ ScheduledAction::ScheduledAction(QString _code, bool _singleShot)
 
 void ScheduledAction::execute(Window *window)
 {
+  //kdDebug(6070) << "ScheduledAction::execute " << this << endl;
   if (isFunction) {
     if (func.implementsCall()) {
       // #### check this
@@ -1192,9 +1195,7 @@ void ScheduledAction::execute(Window *window)
 
 ScheduledAction::~ScheduledAction()
 {
-  // args is a value now
-  //if (isFunction)
-  //  delete args;
+  //kdDebug(6070) << "ScheduledAction::~ScheduledAction " << this << endl;
 }
 
 ////////////////////// WindowQObject ////////////////////////
@@ -1202,6 +1203,7 @@ ScheduledAction::~ScheduledAction()
 WindowQObject::WindowQObject(Window *w)
   : parent(w)
 {
+  //kdDebug(6070) << "WindowQObject::WindowQObject " << this << endl;
   part = parent->m_part;
   connect( parent->m_part, SIGNAL( destroyed() ),
            this, SLOT( parentDestroyed() ) );
@@ -1209,24 +1211,30 @@ WindowQObject::WindowQObject(Window *w)
 
 WindowQObject::~WindowQObject()
 {
-  killTimers();
+  //kdDebug(6070) << "WindowQObject::~WindowQObject " << this << endl;
+  parentDestroyed(); // reuse same code
 }
 
 void WindowQObject::parentDestroyed()
 {
+  //kdDebug(6070) << "WindowQObject::parentDestroyed " << this << " we have " << scheduledActions.count() << " actions in the map" << endl;
   killTimers();
   QMapIterator<int,ScheduledAction*> it;
   for (it = scheduledActions.begin(); it != scheduledActions.end(); ++it) {
-    //ScheduledAction *action = *it;
-    scheduledActions.remove(it);
-    //    ### delete action;
+    ScheduledAction *action = *it;
+    //kdDebug(6070) << "WindowQObject::parentDestroyed deleting action " << action << endl;
+    delete action;
   }
+  scheduledActions.clear();
 }
 
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
 {
+  //kdDebug(6070) << "WindowQObject::installTimeout " << this << " " << handler.ascii() << endl;
   int id = startTimer(t);
-  scheduledActions.insert(id, new ScheduledAction(handler.qstring(),singleShot));
+  ScheduledAction *action = new ScheduledAction(handler.qstring(),singleShot);
+  scheduledActions.insert(id, action);
+  //kdDebug(6070) << this << " got id=" << id << " action=" << action << " - now having " << scheduledActions.count() << " actions"<<endl;
   return id;
 }
 
@@ -1240,30 +1248,39 @@ int WindowQObject::installTimeout(const Value &func, List args, int t, bool sing
 
 void WindowQObject::clearTimeout(int timerId, bool delAction)
 {
+  //kdDebug(6070) << "WindowQObject::clearTimeout " << this << " timerId=" << timerId << " delAction=" << delAction << endl;
   killTimer(timerId);
   if (delAction) {
     QMapIterator<int,ScheduledAction*> it = scheduledActions.find(timerId);
     if (it != scheduledActions.end()) {
-      //ScheduledAction *action = *it;
+      ScheduledAction *action = *it;
       scheduledActions.remove(it);
-      //      delete action;
+      delete action;
     }
   }
 }
 
 void WindowQObject::timerEvent(QTimerEvent *e)
 {
-  ScheduledAction *action = scheduledActions[e->timerId()];
+  QMapIterator<int,ScheduledAction*> it = scheduledActions.find(e->timerId());
+  if (it != scheduledActions.end()) {
+    ScheduledAction *action = *it;
+    //kdDebug(6070) << "WindowQObject::timerEvent " << this << " action=" << action << " singleShot:" << action->singleShot << endl;
 
-  // remove single shots installed by setTimeout()
-  if (action->singleShot)
-    clearTimeout(e->timerId(),false);
+    // remove single shots installed by setTimeout()
+    if (action->singleShot)
+    {
+      clearTimeout(e->timerId(),false);
+      scheduledActions.remove(it);
+    }
+    if (!parent->part().isNull())
+      action->execute(parent);
 
-  if (!parent->part().isNull())
-    action->execute(parent);
-
-  //  if (action->singleShot)
-  //    delete action; // already cleared by now
+    if (action->singleShot)
+      delete action;
+  } else
+    kdWarning(6070) << "WindowQObject::timerEvent this=" << this << " timer " << e->timerId()
+                    << " not found (" << scheduledActions.count() << " actions in map)" << endl;
 }
 
 void WindowQObject::timeoutClose()
