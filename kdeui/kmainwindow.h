@@ -22,7 +22,7 @@
 #ifndef KMAINWINDOW_H
 #define KMAINWINDOW_H
 
-#include "kxmlgui.h"
+#include "kxmlguifactory.h"
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 #include <qmainwindow.h>

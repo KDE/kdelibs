@@ -33,7 +33,7 @@
 #include <kicontheme.h>
 #include <kiconloader.h>
 #include <kinstance.h>
-#include <kxmlgui.h>
+#include <kxmlguifactory.h>
 #include <kseparator.h>
 #include <kconfig.h>
 #include <klistview.h>

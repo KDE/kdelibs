@@ -18,7 +18,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kxmlgui.h"
+#include "kxmlguifactory.h"
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 
@@ -1337,4 +1337,4 @@ void KXMLGUIFactory::unplugActionListRecursive( KXMLGUIContainerNode *node )
         unplugActionListRecursive( childIt.current() );
 }
 
-#include "kxmlgui.moc"
+#include "kxmlguifactory.moc"

@@ -34,7 +34,7 @@
 #include <klocale.h>
 #include <kglobalaccel.h>
 #include <kmessagebox.h>
-#include <kxmlgui.h>
+#include <kxmlguifactory.h>
 #include <kdebug.h>
 #include "kkeydialog.h"
 

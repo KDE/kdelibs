@@ -18,7 +18,7 @@
 */
 
 #include "kxmlguiclient.h"
-#include "kxmlgui.h"
+#include "kxmlguifactory.h"
 #include "kxmlguibuilder.h"
 
 #include <qdir.h>
