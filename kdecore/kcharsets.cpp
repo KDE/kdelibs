@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Lars Knoll (knoll@mpi-hd.mpg.de)
+    Copyright (C) 1999 Lars Knoll (knoll@kde.org)
     $Id$
 
     This library is free software; you can redistribute it and/or
@@ -274,14 +274,32 @@ QStringList KCharsets::availableCharsetNames(QString family)
     return chList;
 }
 
-QFont KCharsets::fontForChar( const QChar &, const QFont &f ) const
+QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
 {
     QFontInfo fi(f);
+    QFont f = _f;
 
     // unicode can display any char...
     if (fi.charSet() == QFont::Unicode) return f;
 
     // here comes the work...
+    // we look at the range the char is in, and try charsets which can
+    // map the char...
+    int uc = c.unicode();
+
+    if( uc < 0xff ) // 8859-1
+	setQFont( f, QFont::Latin1 );
+    else if ( uc > 0x0400 && uc < 0x0460 )
+	setQFont( f, QFont::Latin5 );
+    else if ( uc > 0x0600 && uc < 0x0660 )
+	setQFont( f, QFont::Latin6 );
+    else if ( uc > 0x0380 && uc < 0x03e0 )
+	setQFont( f, QFont::Latin7 );
+    else if ( uc >= 0x05d0 && uc < 0x05f0 )
+	setQFont( f, QFont::Latin8 );
+    else if ( hasUnicode( f ) ) // don't know, let's try Unicode
+	setQFont( f, QFont::Unicode );
+
     return f;
 }
 

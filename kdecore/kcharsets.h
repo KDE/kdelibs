@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Lars Knoll (knoll@mpi-hd.mpg.de)
+    Copyright (C) 1999 Lars Knoll (knoll@kde.org)
     $Id$
 
     This library is free software; you can redistribute it and/or
