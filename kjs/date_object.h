@@ -36,9 +36,11 @@ namespace KJS {
    */
   class DatePrototypeImp : public ObjectImp {
   public:
-    DatePrototypeImp(ExecState *exec,
-                     ObjectPrototypeImp *objectProto,
-                     FunctionPrototypeImp *funcProto);
+    DatePrototypeImp(ExecState *exec, ObjectPrototypeImp *objectProto);
+    Value get(ExecState *exec, const UString &p) const;
+    Value getValue(ExecState *exec, int token) const;
+    virtual const ClassInfo *classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
   /**
@@ -49,8 +51,7 @@ namespace KJS {
    */
   class DateProtoFuncImp : public InternalFunctionImp {
   public:
-    DateProtoFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto,
-                     int i, bool u, int len);
+    DateProtoFuncImp(ExecState *exec, int i, int len);
 
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);

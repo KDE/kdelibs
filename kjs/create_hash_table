@@ -35,7 +35,7 @@ while (<IN>) {
       @attrs = ();
       @params = ();
       $inside = 0;
-    } elsif (/^(\w+)\s*([\w\:]+)\s*([\w\|]*)\s*(\w*)\s*$/ && $inside) {
+    } elsif (/^(\w+)\s*([\w\:-]+)\s*([\w\|]*)\s*(\w*)\s*$/ && $inside) {
       push(@keys, $1);
       push(@values, $2);
       push(@attrs, length($3) > 0 ? $3 : "0");

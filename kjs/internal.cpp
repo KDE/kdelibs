@@ -804,7 +804,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
   b_BooleanPrototype = booleanProto;
   NumberPrototypeImp *numberProto = new NumberPrototypeImp(globExec,objProto,funcProto);
   b_NumberPrototype = numberProto;
-  DatePrototypeImp *dateProto = new DatePrototypeImp(globExec,objProto,funcProto);
+  DatePrototypeImp *dateProto = new DatePrototypeImp(globExec,objProto);
   b_DatePrototype = dateProto;
   RegExpPrototypeImp *regexpProto = new RegExpPrototypeImp(globExec,objProto,funcProto);
   b_RegExpPrototype = regexpProto;

@@ -55,7 +55,8 @@ hashtables:
 	cd $(srcdir); \
 	./create_hash_table keywords.table > lexer.lut.h; \
 	./create_hash_table array_object.cpp > array_object.lut.h; \
-	./create_hash_table math_object.cpp > math_object.lut.h
+	./create_hash_table math_object.cpp > math_object.lut.h; \
+	./create_hash_table date_object.cpp > date_object.lut.h
 
 ## test program (in one program for easier profiling/memory debugging)
 EXTRA_PROGRAMS = testkjs_static

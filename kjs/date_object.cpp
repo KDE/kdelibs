@@ -48,81 +48,101 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <locale.h>
 
 #include "date_object.h"
 #include "error_object.h"
+
+#include "date_object.lut.h"
 
 using namespace KJS;
 
 
 // ------------------------------ DatePrototypeImp -----------------------------
 
+const ClassInfo DatePrototypeImp::info = {"DatePrototype", 0, &dateTable, 0};
+
+/* Source for date_object.lut.h
+   We use a negative ID to denote the "UTC" variant.
+@begin dateTable 47
+  toString		DateProtoFuncImp::ToString		DontEnum|DontDelete|ReadOnly|Function	0
+  toUTCString		-DateProtoFuncImp::ToString		DontEnum|DontDelete|ReadOnly|Function	0
+  toDateString		DateProtoFuncImp::ToDateString		DontEnum|DontDelete|ReadOnly|Function	0
+  toTimeString		DateProtoFuncImp::ToTimeString		DontEnum|DontDelete|ReadOnly|Function	0
+  toLocaleString	DateProtoFuncImp::ToLocaleString	DontEnum|DontDelete|ReadOnly|Function	0
+  toLocaleDateString	DateProtoFuncImp::ToLocaleDateString	DontEnum|DontDelete|ReadOnly|Function	0
+  toLocaleTimeString	DateProtoFuncImp::ToLocaleTimeString	DontEnum|DontDelete|ReadOnly|Function	0
+  valueOf		DateProtoFuncImp::ValueOf		DontEnum|DontDelete|ReadOnly|Function	0
+  getTime		DateProtoFuncImp::GetTime		DontEnum|DontDelete|ReadOnly|Function	0
+  getFullYear		DateProtoFuncImp::GetFullYear		DontEnum|DontDelete|ReadOnly|Function	0
+  getUTCFullYear	-DateProtoFuncImp::GetFullYear		DontEnum|DontDelete|ReadOnly|Function	0
+  toGMTString		DateProtoFuncImp::ToGMTString		DontEnum|DontDelete|ReadOnly|Function	0
+  getMonth		DateProtoFuncImp::GetMonth		DontEnum|DontDelete|ReadOnly|Function	0
+  getUTCMonth		-DateProtoFuncImp::GetMonth		DontEnum|DontDelete|ReadOnly|Function	0
+  getDate		DateProtoFuncImp::GetDate		DontEnum|DontDelete|ReadOnly|Function	0
+  getUTCDate		-DateProtoFuncImp::GetDate		DontEnum|DontDelete|ReadOnly|Function	0
+  getDay		DateProtoFuncImp::GetDay		DontEnum|DontDelete|ReadOnly|Function	0
+  getUTCDay		-DateProtoFuncImp::GetDay		DontEnum|DontDelete|ReadOnly|Function	0
+  getHours		DateProtoFuncImp::GetHours		DontEnum|DontDelete|ReadOnly|Function	0
+  getUTCHours		-DateProtoFuncImp::GetHours		DontEnum|DontDelete|ReadOnly|Function	0
+  getMinutes		DateProtoFuncImp::GetMinutes		DontEnum|DontDelete|ReadOnly|Function	0
+  getUTCMinutes		-DateProtoFuncImp::GetMinutes		DontEnum|DontDelete|ReadOnly|Function	0
+  getSeconds		DateProtoFuncImp::GetSeconds		DontEnum|DontDelete|ReadOnly|Function	0
+  getUTCSeconds		-DateProtoFuncImp::GetSeconds		DontEnum|DontDelete|ReadOnly|Function	0
+  getMilliseconds	DateProtoFuncImp::GetMilliSeconds	DontEnum|DontDelete|ReadOnly|Function	0
+  getUTCMilliseconds	-DateProtoFuncImp::GetMilliSeconds	DontEnum|DontDelete|ReadOnly|Function	0
+  getTimezoneOffset	DateProtoFuncImp::GetTimezoneOffset	DontEnum|DontDelete|ReadOnly|Function	0
+  setTime		DateProtoFuncImp::SetTime		DontEnum|DontDelete|ReadOnly|Function	1
+  setMilliseconds	DateProtoFuncImp::SetMilliSeconds	DontEnum|DontDelete|ReadOnly|Function	1
+  setUTCMilliseconds	-DateProtoFuncImp::SetMilliSeconds	DontEnum|DontDelete|ReadOnly|Function	1
+  setSeconds		DateProtoFuncImp::SetSeconds		DontEnum|DontDelete|ReadOnly|Function	2
+  setUTCSeconds		-DateProtoFuncImp::SetSeconds		DontEnum|DontDelete|ReadOnly|Function	2
+  setMinutes		DateProtoFuncImp::SetMinutes		DontEnum|DontDelete|ReadOnly|Function	3
+  setUTCMinutes		-DateProtoFuncImp::SetMinutes		DontEnum|DontDelete|ReadOnly|Function	3
+  setHours		DateProtoFuncImp::SetHours		DontEnum|DontDelete|ReadOnly|Function	4
+  setUTCHours		-DateProtoFuncImp::SetHours		DontEnum|DontDelete|ReadOnly|Function	4
+  setDate		DateProtoFuncImp::SetDate		DontEnum|DontDelete|ReadOnly|Function	1
+  setUTCDate		-DateProtoFuncImp::SetDate		DontEnum|DontDelete|ReadOnly|Function	1
+  setMonth		DateProtoFuncImp::SetMonth		DontEnum|DontDelete|ReadOnly|Function	2
+  setUTCMonth		-DateProtoFuncImp::SetMonth		DontEnum|DontDelete|ReadOnly|Function	2
+  setFullYear		DateProtoFuncImp::SetFullYear		DontEnum|DontDelete|ReadOnly|Function	3
+  setUTCFullYear	-DateProtoFuncImp::SetFullYear		DontEnum|DontDelete|ReadOnly|Function	3
+  setYear		DateProtoFuncImp::SetYear		DontEnum|DontDelete|ReadOnly|Function	1
+  getYear		DateProtoFuncImp::GetYear		DontEnum|DontDelete|ReadOnly|Function	0
+  toGMTString		DateProtoFuncImp::ToGMTString		DontEnum|DontDelete|ReadOnly|Function	0
+@end
+*/
 // ECMA 15.9.4
 
-DatePrototypeImp::DatePrototypeImp(ExecState *exec,
-                                   ObjectPrototypeImp *objectProto,
-                                   FunctionPrototypeImp *funcProto)
+DatePrototypeImp::DatePrototypeImp(ExecState *,
+                                   ObjectPrototypeImp *objectProto)
   : ObjectImp(objectProto)
 {
   Value protect(this);
   setInternalValue(Number(NaN));
+  // The constructor will be added later, after DateObjectImp has been built
+}
 
-  // The constructor will be added later in DateObject's constructor
+Value DatePrototypeImp::get(ExecState *exec, const UString &propertyName) const
+{
+  return lookupOrCreate<DateProtoFuncImp, DatePrototypeImp, ObjectImp>( exec, propertyName, &dateTable, this );
+}
 
-  put(exec,"toString",           new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToString,false,           0), DontEnum);
-  put(exec,"toUTCString",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToString,true,            0), DontEnum);
-  put(exec,"toDateString",       new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToDateString,false,       0), DontEnum);
-  put(exec,"toTimeString",       new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToTimeString,false,       0), DontEnum);
-  put(exec,"toLocaleString",     new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToLocaleString,false,     0), DontEnum);
-  put(exec,"toLocaleDateString", new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToLocaleDateString,false, 0), DontEnum);
-  put(exec,"toLocaleTimeString", new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToLocaleTimeString,false, 0), DontEnum);
-  put(exec,"valueOf",            new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ValueOf,false,            0), DontEnum);
-  put(exec,"getTime",            new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetTime,false,            0), DontEnum);
-  put(exec,"getFullYear",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetFullYear,false,        0), DontEnum);
-  put(exec,"getUTCFullYear",     new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetFullYear,true,         0), DontEnum);
-  put(exec,"toGMTString",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToGMTString,false,        0), DontEnum);
-  put(exec,"getMonth",           new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetMonth,false,           0), DontEnum);
-  put(exec,"getUTCMonth",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetMonth,true,            0), DontEnum);
-  put(exec,"getDate",            new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetDate,false,            0), DontEnum);
-  put(exec,"getUTCDate",         new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetDate,true,             0), DontEnum);
-  put(exec,"getDay",             new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetDay,false,             0), DontEnum);
-  put(exec,"getUTCDay",          new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetDay,true,              0), DontEnum);
-  put(exec,"getHours",           new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetHours,false,           0), DontEnum);
-  put(exec,"getUTCHours",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetHours,true,            0), DontEnum);
-  put(exec,"getMinutes",         new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetMinutes,false,         0), DontEnum);
-  put(exec,"getUTCMinutes",      new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetMinutes,true,          0), DontEnum);
-  put(exec,"getSeconds",         new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetSeconds,false,         0), DontEnum);
-  put(exec,"getUTCSeconds",      new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetSeconds,true,          0), DontEnum);
-  put(exec,"getMilliseconds",    new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetMilliSeconds,false,    0), DontEnum);
-  put(exec,"getUTCMilliseconds", new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetMilliSeconds,true,     0), DontEnum);
-  put(exec,"getTimezoneOffset",  new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetTimezoneOffset,false,  0), DontEnum);
-  put(exec,"setTime",            new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetTime,false,            1), DontEnum);
-  put(exec,"setMilliseconds",    new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetMilliSeconds,false,    1), DontEnum);
-  put(exec,"setUTCMilliseconds", new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetMilliSeconds,true,     1), DontEnum);
-  put(exec,"setSeconds",         new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetSeconds,false,         2), DontEnum);
-  put(exec,"setUTCSeconds",      new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetSeconds,true,          2), DontEnum);
-  put(exec,"setMinutes",         new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetMinutes,false,         3), DontEnum);
-  put(exec,"setUTCMinutes",      new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetMinutes,true,          3), DontEnum);
-  put(exec,"setHours",           new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetHours,false,           4), DontEnum);
-  put(exec,"setUTCHours",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetHours,true,            4), DontEnum);
-  put(exec,"setDate",            new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetDate,false,            1), DontEnum);
-  put(exec,"setUTCDate",         new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetDate,true,             1), DontEnum);
-  put(exec,"setMonth",           new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetMonth,false,           2), DontEnum);
-  put(exec,"setUTCMonth",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetMonth,true,            2), DontEnum);
-  put(exec,"setFullYear",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetFullYear,false,        3), DontEnum);
-  put(exec,"setUTCFullYear",     new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetFullYear,true,         3), DontEnum);
-  put(exec,"setYear",            new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::SetYear,false,            1), DontEnum);
-  // non-normative
-  put(exec,"getYear",            new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::GetYear,false,            0), DontEnum);
-  put(exec,"toGMTString",        new DateProtoFuncImp(exec,funcProto,DateProtoFuncImp::ToGMTString,false,        0), DontEnum);
+Value DatePrototypeImp::getValue(ExecState *, int) const
+{
+  // Can't be called, all properties in the hashtable have the Function bit
+  fprintf( stderr, "DatePrototypeImp::getValue called - impossible\n" );
+  return Null();
 }
 
 // ------------------------------ DateProtoFuncImp -----------------------------
 
-DateProtoFuncImp::DateProtoFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto,
-                                   int i, bool u, int len)
-  : InternalFunctionImp(funcProto), id(i), utc(u)
+DateProtoFuncImp::DateProtoFuncImp(ExecState *exec, int i, int len)
+  : InternalFunctionImp(
+    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+    ), id(abs(i)), utc(i<0)
+  // We use a negative ID to denote the "UTC" variant.
 {
   Value protect(this);
   put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
@@ -223,7 +243,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     result = Number(t->tm_sec);
     break;
   case GetMilliSeconds:
-    result = Undefined();
+    result = Number(ms);
     break;
   case GetTimezoneOffset:
 #if defined BSD || defined(__APPLE__)
