@@ -145,11 +145,11 @@ bool KGlobalAccelPrivate::grabKey( KKeySequence key, bool bGrab )
 	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
 	//  the irrelevant bits are always ignored and we can just make one XGrabKey
 	//  call per accelerator? -- ellis
+	QString sDebug = QString("\tcode: 0x%1 state: 0x%2 | ").arg(keyCodeX,0,16).arg(keyModX,0,16);
 	uint keyModMaskX = ~g_keyModMaskXOnOrOff;
 	for( uint irrelevantBitsMask = 0; irrelevantBitsMask <= 0xff; irrelevantBitsMask++ ) {
 		if( (irrelevantBitsMask & keyModMaskX) == 0 ) {
-			kdDebug(125) << QString( "code: 0x%1 state: 0x%2 | 0x%3\n" )
-					.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 ).arg( irrelevantBitsMask, 0, 16 );
+			sDebug += QString("0x%3, ").arg(irrelevantBitsMask, 0, 16);
 			if( bGrab ) {
 				XGrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask,
 					qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
@@ -167,6 +167,7 @@ bool KGlobalAccelPrivate::grabKey( KKeySequence key, bool bGrab )
 				XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
 		}
 	}
+	kdDebug(125) << sDebug << endl;
 
 	XSync( qt_xdisplay(), 0 );
 	XSetErrorHandler( savedErrorHandler );
@@ -237,7 +238,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 		return false;
 	} else {
 		QRegExp rexPassIndex( "([ ]*int[ ]*)" );
-		QRegExp rexPassInfo( "(.*QString.*)" );
+		QRegExp rexPassInfo( " QString" );
 		QRegExp rexIndex( " ([0-9]+)$" );
 		// If the slot to be called accepts an integer index
 		//  and an index is present at the end of the action's name,
