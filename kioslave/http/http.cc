@@ -33,7 +33,7 @@ void sig_handler2( int );
 extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
   char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *_realm, 
-			    const char *_nonce, const char *_domain);
+			    const char *_nonce, const char *_domain, const char *_opaque);
 };
 
 
@@ -251,7 +251,7 @@ char* base64_encode_line( const char *s )
 }
 
 char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *_realm,
-			  const char *_nonce, const char *_domain)
+			  const char *_nonce, const char *_domain, const char *_opaque)
 {
   char *wwwauth, *t2;
   QString t1;
@@ -272,7 +272,7 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
 
   t1 += "uri=\"";
   t1 += _domain;
-  t1 += "\"";
+  t1 += "\", ";
 
 #ifdef DO_MD5
   HASHHEX HA1;
@@ -282,10 +282,14 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
   DigestCalcHA1("md5", user, _realm, passwd, _nonce, 0, HA1);
   DigestCalcResponse(HA1, _nonce,szNonceCount, 0, "", "GET", _domain, HA2, Response);
 
-  t1 += ", response=\"";
+  t1 += "response=\"";
   t1 += Response;
-  t1 += "\"";
+  t1 += "\", ";
 #endif
+
+  t1 += "opaque=\"";
+  t1 += _opaque;
+  t1 += "\" ";
 
   t1 += "\r\n";
   wwwauth = strdup(t1.data());
@@ -507,7 +511,7 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
       command += create_basic_auth("Authorization", _url.user(), _url.pass());
     }
     else if (Authentication == AUTH_Digest) {
-      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), realm.c_str(), nonce.c_str(), domain.c_str());
+      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), realm.c_str(), nonce.c_str(), domain.c_str(), opaque.c_str());
     }
     command+="\r\n";
   }
@@ -628,6 +632,10 @@ debug( "kio_http : Header: %s", buffer );
 	  while( p[i] != '"' ) i++;
 	  realm.assign( p, i );
 	  fprintf(stderr,"REALM is: %s\n", realm.c_str());
+	} else if (strncmp(p, "opaque=\"", 8)==0) {
+	  p+= 8;
+	  while( p[i] != '"' ) i++;
+	  opaque.assign(p, i);
 	} else if (strncmp(p, "nonce=\"", 7)==0) {
 	  p += 7;
 	  while( p[i] != '"' ) i++;
@@ -638,6 +646,10 @@ debug( "kio_http : Header: %s", buffer );
 	  domain.assign( p, i );
 	} else if (strncmp(p, "algorith=\"", 10) == 0) {
 	  p += 10;
+	  while (p[i] != '"' ) i++;
+	  algorith.assign(p, i);
+	} else if (strncmp(p, "algorithm=\"", 11)==0) {
+	  p += 11;
 	  while (p[i] != '"' ) i++;
 	  algorith.assign(p, i);
 	}
@@ -653,14 +665,14 @@ debug( "kio_http : Header: %s", buffer );
 	// If multiple encodings have been applied to an entity, the transfer-
 	// codings MUST be listed in the order in which they were applied.
 	QString tEncoding = buffer+19;
-	if (tEncoding == "chunked") {
+	if (tEncoding.lower() == "chunked") {
 	  m_qTransferEncodings.push("chunked");
 	  // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
 	  m_iSize = 0;
-	} else if (tEncoding == "gzip") {
+	} else if (tEncoding.lower() == "gzip") {
 	  m_qTransferEncodings.push("gzip");
 	  m_iSize = 0;
-	} else if (tEncoding == "identity") {
+	} else if (tEncoding.lower() == "identity") {
 	  continue;  // Identy is the same as no encoding.. AFAIK
 	} else {
 	  fprintf(stderr, "Unknown encoding, or multiple encodings encountered.  Please write code.\n");
@@ -669,14 +681,14 @@ debug( "kio_http : Header: %s", buffer );
 	}
       } else if (strncasecmp(buffer, "Content-Encoding: ", 18) == 0) {
 	QString tEncoding = buffer+18;
-	if (tEncoding == "chunked") {
+	if (tEncoding.lower() == "chunked") {
 	  m_qContentEncodings.push("chunked");
 	  // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
 	  m_iSize = 0;
-	} else if (tEncoding == "gzip") {
+	} else if (tEncoding.lower() == "gzip") {
 	  m_qContentEncodings.push("gzip");
 	  m_iSize = 0;
-	} else if (tEncoding == "identity") {
+	} else if (tEncoding.lower() == "identity") {
 	  continue;  // Identy is the same as no encoding.. AFAIK
 	} else {
 	  fprintf(stderr, "Unknown encoding, or multiple encodings encountered.  Please write code.\n");

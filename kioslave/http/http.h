@@ -31,7 +31,7 @@ public:
   enum HTTP_REV {HTTP_Unknown, HTTP_10, HTTP_11};
   enum HTTP_AUTH {AUTH_None, AUTH_Basic, AUTH_Digest, AUTH_Need};
 
-  string realm, nonce, domain, algorith;
+  string realm, nonce, domain, algorith, opaque;
   enum HTTP_REV HTTP;
   enum HTTP_AUTH Authentication;
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
