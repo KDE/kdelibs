@@ -647,7 +647,7 @@ RenderFlow::leftMargin(int y) const
 	    cw = containingBlock()->contentWidth();
 	left += m_style->textIndent().minWidth(cw);
     }
-    
+
     if(m_style->hasBorder())
 	left = borderLeft();
     if(m_style->hasPadding())
@@ -680,7 +680,7 @@ RenderFlow::rightMargin(int y) const
 	    cw = containingBlock()->contentWidth();
 	right += m_style->textIndent().minWidth(cw);
     }
-    
+
     if(m_style->hasBorder())
 	right -= borderRight();
     if(m_style->hasPadding())

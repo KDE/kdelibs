@@ -79,13 +79,16 @@ RenderListItem::RenderListItem()
 void RenderListItem::setStyle(RenderStyle *style)
 {
     RenderFlow::setStyle(style);
-    if(!m_marker) {
-	RenderStyle *newStyle = new RenderStyle(style);
+    RenderStyle *newStyle = new RenderStyle(style);
+       if(newStyle->direction() == LTR)
+           newStyle->setFloating(FLEFT);
+       else
+           newStyle->setFloating(FRIGHT);                                      
+       if(!m_marker) {
 	m_marker = new RenderListMarker();
 	m_marker->setStyle(newStyle);
 	addChild(m_marker);
     } else {
-	RenderStyle *newStyle = new RenderStyle(style);
 	m_marker->setStyle(newStyle);
     }
 }
@@ -290,7 +293,7 @@ void RenderListMarker::layout()
 	return;
     }
 
-    m_height = QFontMetrics(m_style->font()).height();
+    m_height = 0;
 }
 
 void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
