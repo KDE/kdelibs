@@ -140,10 +140,10 @@ void KRun::shellQuote( QString &_str )
     // Credits to Walter, says Bernd G. :)
     if (_str.isEmpty()) // Don't create an explicit empty parameter
         return;
-    QString res = "'";
-    res += _str.replace(QRegExp("'"), "'\"'\"'");
-    res += "'";
-    _str = res;
+    QString q("'");
+    _str.replace(q, "'\\''");
+    _str.prepend(q);
+    _str.append(q);
 }
 
 static QStringList breakup(const QString &exec, bool *need_shell = 0)
