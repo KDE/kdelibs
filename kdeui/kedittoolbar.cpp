@@ -43,6 +43,9 @@
 #include <qfile.h>
 #include <kdebug.h>
 
+#define LINESEPARATORSTRING i18n("--- line separator ---")
+#define SEPARATORSTRING i18n("--- separator ---")
+
 static void dump_xml(const QDomDocument& doc)
 {
     QString str;
@@ -648,6 +651,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   static const QString &tagMerge     = KGlobal::staticQString( "Merge" );
   static const QString &tagActionList= KGlobal::staticQString( "ActionList" );
   static const QString &attrName     = KGlobal::staticQString( "name" );
+  static const QString &attrLineSeparator = KGlobal::staticQString( "lineSeparator" );
 
   int     sep_num = 0;
   QString sep_name("separator_%1");
@@ -670,7 +674,11 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     if (it.tagName() == tagSeparator)
     {
       ToolbarItem *act = new ToolbarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString::null);
-      act->setText(1, "-----");
+      bool isLineSep = ( it.attribute(attrLineSeparator, "false").lower() == QString::fromLatin1("true") );
+      if(isLineSep)
+        act->setText(1, LINESEPARATORSTRING);
+      else
+        act->setText(1, SEPARATORSTRING);
       it.setAttribute( attrName, act->internalName() );
       continue;
     }
@@ -735,9 +743,11 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
         act->setPixmap(0, action->iconSet(KIcon::Toolbar).pixmap());
   }
 
-  // finally, add a default separator to the inactive list
+  // finally, add default separators to the inactive list
   ToolbarItem *act = new ToolbarItem(m_inactiveList, tagSeparator, sep_name.arg(sep_num++), QString::null);
-  act->setText(1, "-----");
+  act->setText(1, LINESEPARATORSTRING);
+  act = new ToolbarItem(m_inactiveList, tagSeparator, sep_name.arg(sep_num++), QString::null);
+  act->setText(1, SEPARATORSTRING);
 }
 
 KActionCollection *KEditToolbarWidget::actionCollection() const
@@ -842,6 +852,7 @@ void KEditToolbarWidget::slotInsertButton()
   static const QString &tagAction    = KGlobal::staticQString( "Action" );
   static const QString &tagSeparator = KGlobal::staticQString( "Separator" );
   static const QString &attrName     = KGlobal::staticQString( "name" );
+  static const QString &attrLineSeparator = KGlobal::staticQString( "lineSeparator" );
 
   // we're modified, so let this change
   emit enableOk(true);
@@ -850,9 +861,12 @@ void KEditToolbarWidget::slotInsertButton()
 
   QDomElement new_item;
   // let's handle the separator specially
-  if (item->text(1) == "-----")
+  if (item->text(1) == LINESEPARATORSTRING) {
     new_item = domDocument().createElement(tagSeparator);
-  else
+    new_item.setAttribute(attrLineSeparator, "true");
+  } else if (item->text(1) == SEPARATORSTRING) {
+    new_item = domDocument().createElement(tagSeparator);
+  } else
     new_item = domDocument().createElement(tagAction);
   new_item.setAttribute(attrName, item->internalName());
 
