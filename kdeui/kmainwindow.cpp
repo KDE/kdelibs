@@ -981,7 +981,7 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
 void KMainWindow::finalizeGUI( KXMLGUIClient *client )
-{ return KXMLGUIBuilder::finalizeGUI( client ); }
+{ KXMLGUIBuilder::finalizeGUI( client ); }
 
 void KMainWindow::virtual_hook( int id, void* data )
 { KXMLGUIBuilder::virtual_hook( id, data );
