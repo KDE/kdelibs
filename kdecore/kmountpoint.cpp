@@ -299,6 +299,8 @@ QPtrList<KMountPoint> KMountPoint::currentMountPoints(int infoNeeded)
                if (mp->m_mountedFrom.startsWith("/"))
                   mp->m_device = KStandardDirs::realPath(mp->m_mountedFrom);
             }
+            
+            result.append(mp);
 
             /* goto the next vmount structure: */
             vm = (struct vmount *)((char *)vm + vm->vmt_length);
