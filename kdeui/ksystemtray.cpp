@@ -79,9 +79,6 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
 
     if (parentWidget())
     {
-        // KDE4: stop closing the parent widget? it results in complex application code
-        //       instead make applications connect to the quitSelected() signal
-        connect(this, SIGNAL(quitSelected()), parentWidget(), SLOT(close()));
         new KAction(i18n("Minimize"), KShortcut(),
                     this, SLOT( minimizeRestoreAction() ),
                     d->actionCollection, "minimizeRestore");
@@ -200,6 +197,9 @@ void KSystemTray::maybeQuit()
     {
         return;
     }
+
+    // KDE4: stop closing the parent widget? it results in complex application code
+    //       instead make applications connect to the quitSelected() signal
 
     if (parentWidget())
     {
