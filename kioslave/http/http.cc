@@ -2134,7 +2134,7 @@ bool HTTPProtocol::httpOpen()
 
     // Set content type of webdav data
     if (davData)
-      davHeader += "Content-Type: text/xml;\r\ncharset=utf-8\r\n";
+      davHeader += "Content-Type: text/xml; charset=utf-8\r\n";
   
     // add extra header elements for WebDAV
     if ( !davHeader.isNull() )
