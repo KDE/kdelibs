@@ -93,6 +93,28 @@ class KPluginInfo
 		virtual ~KPluginInfo();
 
 		/**
+		 * @return A list of KPluginInfo objects constructed from a list of
+		 * KService objects. If you get a trader offer of the plugins you want
+		 * to use you can just pass them to this function.
+		 */
+		static QValueList<KPluginInfo> fromServices( const KService::List & services );
+
+		/**
+		 * @return A list of KPluginInfo objects constructed from a list of
+		 * filenames. If you make a lookup using, for example,
+		 * KStandardDirs::findAllResources() you pass the list of files to this
+		 * function.
+		 */
+		static QValueList<KPluginInfo> fromFiles( const QStringList & files );
+
+		/**
+		 * @return A list of KPluginInfo objects for the KParts plugins of an
+		 * instance. You only need the name of the instance not a pointer to the
+		 * KInstance object.
+		 */
+		static QValueList<KPluginInfo> fromKPartsInstanceName( const QString & );
+
+		/**
 		 * @return Whether the plugin should be hidden.
 		 */
 		bool isHidden() const;
@@ -125,18 +147,12 @@ class KPluginInfo
 		bool pluginEnabledByDefault() const;
 
 		/**
-		 * Set the default value, whether the plugin is enabled or not.
-		 *
-		 * @see pluginEnabledByDefault()
-		 */
-		void setPluginEnabledByDefault( bool );
-
-		/**
 		 * @return The string associated with the @p key.
 		 *
 		 * @see operator[]
 		 */
-		const QString & property( const QString & key ) const { return m_propertymap[ key ]; }
+		const QString & property( const QString & key ) const
+			{ return m_propertymap[ key ]; }
 
 		/**
 		 * This is the same as @ref property(). It is provided for convenience.
@@ -145,12 +161,13 @@ class KPluginInfo
 		 *
 		 * @see property()
 		 */
-		const QString & operator[]( const QString & key ) const { return property( key ); }
+		const QString & operator[]( const QString & key ) const
+			{ return property( key ); }
 
 		/**
 		 * @return The user visible name of the plugin.
 		 */
-		const QString & name() const 
+		const QString & name() const
 			{ return m_propertymap[ QString::fromLatin1("Name") ]; }
 
 		/**

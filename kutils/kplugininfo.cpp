@@ -22,6 +22,8 @@
 #include <ktrader.h>
 #include <kdebug.h>
 #include <kconfigbase.h>
+#include <kglobal.h>
+#include <kstandarddirs.h>
 
 class KPluginInfo::KPluginInfoPrivate
 {
@@ -129,6 +131,32 @@ KPluginInfo::~KPluginInfo()
 	delete d;
 }
 
+QValueList<KPluginInfo> KPluginInfo::fromServices( const KService::List & services )
+{
+	QValueList<KPluginInfo> infolist;
+	for( KService::List::ConstIterator it = services.begin();
+			it != services.end(); ++it )
+	{
+		infolist += KPluginInfo( ( *it )->desktopEntryPath() );
+	}
+	return infolist;
+}
+
+QValueList<KPluginInfo> KPluginInfo::fromFiles( const QStringList & files )
+{
+	QValueList<KPluginInfo> infolist;
+	for( QStringList::ConstIterator it = files.begin(); it != files.end(); ++it )
+		infolist += KPluginInfo( *it );
+	return infolist;
+}
+
+QValueList<KPluginInfo> KPluginInfo::fromKPartsInstanceName( const QString & name )
+{
+	QStringList files = KGlobal::dirs()->findAllResources( "data", name +
+			"/kpartplugins/*.desktop", true, false );
+	return fromFiles( files );
+}
+
 bool KPluginInfo::isHidden() const
 {
 	return d->hidden;
@@ -150,12 +178,6 @@ bool KPluginInfo::pluginEnabledByDefault() const
 {
 	kdDebug( 702 ) << k_funcinfo << endl;
 	return d->enabledbydefault;
-}
-
-void KPluginInfo::setPluginEnabledByDefault( bool enabled )
-{
-	kdDebug( 702 ) << k_funcinfo << endl;
-	d->enabledbydefault = enabled;
 }
 
 const QString & KPluginInfo::specfile() const
