@@ -60,14 +60,24 @@ public:
         return item( key );
     }
 
+    /**
+     * Convenience function.
+     */
+    QVariant value( const QString& key ) {
+        KFileMetaInfoItem *i = item( key );
+        if ( i )
+            return i->value();
+        return QVariant();
+    }
+    
     virtual QStringList supportedKeys() const = 0;
     virtual QStringList preferredKeys() const;
     virtual bool supportsVariableKeys() const;
-    
+
     virtual void applyChanges();
 
     const KURL& url() const { return m_url; }
-    
+
     /**
      * Creates a validator for this item. Make sure to supply a proper parent
      * argument or delete the item yourself.
@@ -79,7 +89,7 @@ protected:
 
 private:
     KURL m_url;
-    
+
 };
 
 

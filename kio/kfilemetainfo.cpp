@@ -27,6 +27,9 @@ KFileMetaInfoItem::~KFileMetaInfoItem()
     
 void KFileMetaInfoItem::setValue( const QVariant& value )
 {
+    if ( !isEditable() )
+        return;
+
     m_dirty = (value != m_value);
     m_value = value;
 }
@@ -39,7 +42,6 @@ void KFileMetaInfoItem::setValue( const QVariant& value )
 
 KFileMetaInfo::KFileMetaInfo( const KURL& url )
     : m_url( url )
-    
 {
 }
 
