@@ -785,7 +785,7 @@ private slots:
     void slotToggleIgnoreCase();
 
     void slotStarted();
-    void slotProgress( unsigned long );
+    void slotProgress( int );
     void slotShowProgress();
     void slotIOFinished();
     void slotRedirected( const KURL& );

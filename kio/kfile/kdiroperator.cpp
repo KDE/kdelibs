@@ -937,8 +937,8 @@ void KDirOperator::setDirLister( KDirLister *lister )
 
     dir->setAutoUpdate( true );
 
-    connect( dir, SIGNAL( percent( unsigned long )),
-             SLOT( slotProgress( unsigned long ) ));
+    connect( dir, SIGNAL( percent( int )),
+             SLOT( slotProgress( int ) ));
     connect( dir, SIGNAL(started( const KURL& )), SLOT(slotStarted()));
     connect( dir, SIGNAL(newItems(const KFileItemList &)),
              SLOT(insertNewFiles(const KFileItemList &)));
@@ -1381,7 +1381,7 @@ void KDirOperator::slotShowProgress()
     QApplication::flushX();
 }
 
-void KDirOperator::slotProgress( unsigned long percent )
+void KDirOperator::slotProgress( int percent )
 {
     progress->setProgress( percent );
     // we have to redraw this in as fast as possible
