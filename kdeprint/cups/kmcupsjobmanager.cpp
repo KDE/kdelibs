@@ -38,7 +38,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 
-KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name)
+KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMJobManager(parent,name)
 {
 }

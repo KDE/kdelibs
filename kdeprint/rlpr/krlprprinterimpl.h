@@ -27,7 +27,7 @@ class KProcess;
 class KRlprPrinterImpl : public KPrinterImpl
 {
 public:
-	KRlprPrinterImpl(QObject *parent = 0, const char *name = 0);
+	KRlprPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/);
 	~KRlprPrinterImpl();
 
 	bool setupCommand(QString&, KPrinter*);

@@ -28,7 +28,7 @@ class KMPrinter;
 class KMFoomaticManager : public KMManager
 {
 public:
-	KMFoomaticManager(QObject *parent = 0, const char *name = 0);
+	KMFoomaticManager(QObject *parent, const char *name, const QStringList & /*args*/);
 	virtual ~KMFoomaticManager();
 
 	DrMain* loadPrinterDriver(KMPrinter *p, bool config = false);

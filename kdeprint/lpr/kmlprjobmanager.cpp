@@ -27,7 +27,7 @@
 #include <qptrlist.h>
 #include <klocale.h>
 
-KMLprJobManager::KMLprJobManager(QObject *parent, const char *name)
+KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMJobManager(parent, name)
 {
 	m_lpqhelper = new LpqHelper(this, "LpqHelper");

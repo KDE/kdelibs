@@ -16,7 +16,7 @@ kdeprint_cups_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 kdeprint_cups_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_management.la $(LIB_KIO) $(LIB_CUPS) $(top_builddir)/kdecore/libkdefakes.la
 kdeprint_cups_la_METASOURCES = AUTO
 
-noinst_HEADERS = cupsinfos.h ipprequest.h kmcupsfactory.h kmcupsjobmanager.h kmcupsmanager.h kmcupsuimanager.h \
+noinst_HEADERS = cupsinfos.h ipprequest.h kmcupsjobmanager.h kmcupsmanager.h kmcupsuimanager.h \
 		 kmpropbanners.h kmwbanners.h kmwipp.h kmwippselect.h kcupsprinterimpl.h \
 		 kmcupsconfigwidget.h kmconfigcups.h kmconfigcupsdir.h kmwippprinter.h kmwfax.h kmwquota.h \
 		 kmpropquota.h kmwusers.h kmpropusers.h kpschedulepage.h imagepreview.h imageposition.h \

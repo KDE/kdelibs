@@ -28,7 +28,7 @@
 
 #include <unistd.h>
 
-KMFoomaticManager::KMFoomaticManager(QObject *parent, const char *name)
+KMFoomaticManager::KMFoomaticManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMManager(parent,name)
 {
 	setHasManagement(getuid() == 0);

@@ -17,36 +17,12 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "kmextfactory.h"
 #include "kmextmanager.h"
 #include "kmextuimanager.h"
 #include "kextprinterimpl.h"
 
-extern "C"
-{
-	void* init_kdeprint_ext()
-	{
-		return new KExtFactory;
-	}
-}
+#include <kgenericfactory.h>
 
-KExtFactory::KExtFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
-{
-}
+typedef K_TYPELIST_3( KMExtManager, KMExtUiManager, KExtPrinterImpl ) Products;
+K_EXPORT_COMPONENT_FACTORY( kdeprint_ext, KGenericFactory< Products > )
 
-KExtFactory::~KExtFactory()
-{
-}
-
-QObject* KExtFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
-{
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMExtManager(parent,name);
-	else if (strcmp(classname,"KMUiManager") == 0)
-		return new KMExtUiManager(parent,name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KExtPrinterImpl(parent,name);
-	else
-		return NULL;
-}

@@ -9,8 +9,7 @@ kdeprint_foomatic_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undef
 kdeprint_foomatic_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_management.la
 kdeprint_foomatic_la_METASOURCES = AUTO
 
-noinst_HEADERS = kmfoomaticfactory.h \
-		 kmfoomaticmanager.h \
+noinst_HEADERS = kmfoomaticmanager.h \
 		 kfoomaticprinterimpl.h
 
 bin_PROGRAMS = make_driver_db_foomatic

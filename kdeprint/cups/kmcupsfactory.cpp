@@ -19,43 +19,14 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "kmcupsfactory.h"
 #include "kmcupsmanager.h"
 #include "kmcupsjobmanager.h"
 #include "kmcupsuimanager.h"
 #include "kcupsprinterimpl.h"
 
 #include <kglobal.h>
-#include <klocale.h>
+#include <kgenericfactory.h>
 
-extern "C"
-{
-	void* init_kdeprint_cups()
-	{
-		return new KCupsFactory;
-	}
-}
+typedef K_TYPELIST_4( KMCupsManager, KMCupsJobManager, KMCupsUiManager, KCupsPrinterImpl ) Products;
+K_EXPORT_COMPONENT_FACTORY( kdeprint_cups, KGenericFactory< Products >( "ppdtranslations" ) )
 
-KCupsFactory::KCupsFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
-{
-	KGlobal::locale()->insertCatalogue("ppdtranslations");
-}
-
-KCupsFactory::~KCupsFactory()
-{
-}
-
-QObject* KCupsFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
-{
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMCupsManager(parent,name);
-	else if (strcmp(classname,"KMJobManager") == 0)
-		return new KMCupsJobManager(parent,name);
-	else if (strcmp(classname,"KMUiManager") == 0)
-		return new KMCupsUiManager(parent,name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KCupsPrinterImpl(parent,name);
-	else
-		return NULL;
-}

@@ -27,7 +27,7 @@
 #include <klocale.h>
 #include <kmacroexpander.h>
 
-KLpdUnixPrinterImpl::KLpdUnixPrinterImpl(QObject *parent, const char *name)
+KLpdUnixPrinterImpl::KLpdUnixPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
 : KPrinterImpl(parent,name)
 {
 }

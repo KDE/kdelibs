@@ -42,7 +42,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-KMLprManager::KMLprManager(QObject *parent, const char *name)
+KMLprManager::KMLprManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMManager(parent,name)
 {
 	m_handlers.setAutoDelete(true);

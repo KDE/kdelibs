@@ -15,7 +15,7 @@ kdeprint_lpr_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_managem
 kdeprint_lpr_la_METASOURCES = AUTO
 
 noinst_HEADERS = printcapreader.h \
-		 matichandler.h klprfactory.h kmlprmanager.h \
+		 matichandler.h kmlprmanager.h \
 		 kmlpruimanager.h lpchelper.h lpqhelper.h \
 		 kmlprjobmanager.h matichelper.h klprprinterimpl.h \
 		 kmconfiglpr.h apshandler.h \

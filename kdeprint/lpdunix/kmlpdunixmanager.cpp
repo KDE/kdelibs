@@ -389,7 +389,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 
 //*********************************************************************************************************
 
-KMLpdUnixManager::KMLpdUnixManager(QObject *parent, const char *name)
+KMLpdUnixManager::KMLpdUnixManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMManager(parent,name)
 {
 	m_loaded = false;

@@ -29,7 +29,7 @@ class KProcess;
 class KLpdUnixPrinterImpl : public KPrinterImpl
 {
 public:
-	KLpdUnixPrinterImpl(QObject *parent = 0, const char *name = 0);
+	KLpdUnixPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/);
 	~KLpdUnixPrinterImpl();
 
 	bool setupCommand(QString&, KPrinter*);

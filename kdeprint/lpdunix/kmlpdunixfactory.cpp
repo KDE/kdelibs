@@ -19,36 +19,13 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "kmlpdunixfactory.h"
 #include "kmlpdunixmanager.h"
 #include "kmlpdunixuimanager.h"
 #include "klpdunixprinterimpl.h"
 
-extern "C"
-{
-	void* init_kdeprint_lpdunix()
-	{
-		return new KLpdUnixFactory;
-	}
-}
+#include <kgenericfactory.h>
 
-KLpdUnixFactory::KLpdUnixFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
-{
-}
+typedef K_TYPELIST_3( KMLpdUnixManager, KLpdUnixPrinterImpl, KMLpdUnixUiManager ) Products;
+K_EXPORT_COMPONENT_FACTORY( kdeprint_lpdunix, KGenericFactory< Products > )
 
-KLpdUnixFactory::~KLpdUnixFactory()
-{
-}
 
-QObject* KLpdUnixFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
-{
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMLpdUnixManager(parent,name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KLpdUnixPrinterImpl(parent,name);
-	else if (strcmp(classname,"KMUiManager") == 0)
-		return new KMLpdUnixUiManager(parent,name);
-	else
-		return NULL;
-}

@@ -23,7 +23,7 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 
-KFoomaticPrinterImpl::KFoomaticPrinterImpl(QObject *parent, const char *name)
+KFoomaticPrinterImpl::KFoomaticPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
 : KPrinterImpl(parent,name)
 {
 }

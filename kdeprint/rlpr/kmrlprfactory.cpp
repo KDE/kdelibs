@@ -17,36 +17,12 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include "kmrlprfactory.h"
 #include "kmrlprmanager.h"
 #include "kmrlpruimanager.h"
 #include "krlprprinterimpl.h"
 
-extern "C"
-{
-	void* init_kdeprint_rlpr()
-	{
-		return new KRlprFactory;
-	}
-}
+#include <kgenericfactory.h>
 
-KRlprFactory::KRlprFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
-{
-}
+typedef K_TYPELIST_3( KMRlprManager, KMRlprUiManager, KRlprPrinterImpl ) Products;
+K_EXPORT_COMPONENT_FACTORY( kdeprint_rlpr, KGenericFactory< Products > )
 
-KRlprFactory::~KRlprFactory()
-{
-}
-
-QObject* KRlprFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
-{
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMRlprManager(parent,name);
-	else if (strcmp(classname,"KMUiManager") == 0)
-		return new KMRlprUiManager(parent,name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KRlprPrinterImpl(parent,name);
-	else
-		return NULL;
-}

@@ -36,7 +36,7 @@ class KMLprManager : public KMManager
 {
 	Q_OBJECT
 public:
-	KMLprManager(QObject *parent = 0, const char *name = 0);
+	KMLprManager(QObject *parent, const char *name, const QStringList & /*args*/);
 
 	bool completePrinter(KMPrinter*);
 	bool completePrinterShort(KMPrinter*);

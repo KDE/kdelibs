@@ -27,7 +27,7 @@
 class KMRlprManager : public KMManager
 {
 public:
-	KMRlprManager(QObject *parent = 0, const char *name = 0);
+	KMRlprManager(QObject *parent, const char *name, const QStringList & /*args*/);
 	~KMRlprManager();
 
 	bool createPrinter(KMPrinter*);

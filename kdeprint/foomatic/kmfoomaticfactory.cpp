@@ -21,29 +21,7 @@
 #include "kmfoomaticmanager.h"
 #include "kfoomaticprinterimpl.h"
 
-extern "C"
-{
-	void* init_kdeprint_foomatic()
-	{
-		return new KMFoomaticFactory;
-	}
-};
+#include <kgenericfactory.h>
+typedef K_TYPELIST_2( KMFoomaticManager, KFoomaticPrinterImpl ) Products;
+K_EXPORT_COMPONENT_FACTORY( kdeprint_foomatic, KGenericFactory< Products > )
 
-KMFoomaticFactory::KMFoomaticFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
-{
-}
-
-KMFoomaticFactory::~KMFoomaticFactory()
-{
-}
-
-QObject* KMFoomaticFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
-{
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMFoomaticManager(parent, name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KFoomaticPrinterImpl(parent,name);
-	else
-		return NULL;
-}

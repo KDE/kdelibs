@@ -25,7 +25,7 @@
 class KFoomaticPrinterImpl : public KPrinterImpl
 {
 public:
-	KFoomaticPrinterImpl(QObject *parent = 0, const char *name = 0);
+	KFoomaticPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/);
 	~KFoomaticPrinterImpl();
 
 	bool setupCommand(QString&, KPrinter*);

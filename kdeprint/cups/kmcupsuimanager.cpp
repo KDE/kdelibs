@@ -60,7 +60,7 @@
 #include <kdebug.h>
 #include <kaction.h>
 
-KMCupsUiManager::KMCupsUiManager(QObject *parent, const char *name)
+KMCupsUiManager::KMCupsUiManager(QObject *parent, const char *name, const QStringList & /*args*/)
 : KMUiManager(parent,name)
 {
 }

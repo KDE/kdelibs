@@ -25,7 +25,7 @@
 class KExtPrinterImpl : public KPrinterImpl
 {
 public:
-	KExtPrinterImpl(QObject *parent = 0, const char *name = 0);
+	KExtPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/);
 	~KExtPrinterImpl();
 
 	void preparePrinting(KPrinter*);

@@ -27,7 +27,7 @@
 class KMExtManager : public KMManager
 {
 public:
-	KMExtManager(QObject *parent = 0, const char *name = 0);
+	KMExtManager(QObject *parent, const char *name, const QStringList & /*args*/);
 	~KMExtManager();
 
 protected:
