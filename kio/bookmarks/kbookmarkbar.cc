@@ -43,7 +43,7 @@ public:
     bool m_readOnly;
     KBookmarkManager* m_filteredMgr;
 };
-QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
+template<> QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
 
 #define dptr() KBookmarkBarPrivate::d(this)
 

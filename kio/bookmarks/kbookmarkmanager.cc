@@ -45,7 +45,7 @@ public:
     QString m_editorCaption;
     bool m_browserEditor;
 };
-QPtrDict<KBookmarkManagerPrivate>* dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate>::d_ptr = 0;
+template<> QPtrDict<KBookmarkManagerPrivate>* dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate>::d_ptr = 0;
 
 #define dptr() KBookmarkManagerPrivate::d(this)
 
