@@ -33,7 +33,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kwindowtest klinetest kstatusbartest 	\
 		kprocesstest kbuttonboxtest ksimpleconfigtest \
 		kledtest kcontainertest klocaletest krulertest \
-		kwizardtest kquickhelptest kurltest kformulatest \
+		kwizardtest kurltest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
 		kopenwithtest kaboutdialogtest kgradienttest \
 		kunbalancedgrdtest kcolortest
@@ -77,7 +77,6 @@ kopenwithtest_LDADD = $(LIB_KIO)
 kpopuptest_SOURCES = kpopuptest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp
 kprogresstest_SOURCES = kprogresstest.cpp
-kquickhelptest_SOURCES = kquickhelptest.cpp
 krulertest_SOURCES = krulertest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
