@@ -1115,7 +1115,6 @@ QPixmap KApplication::miniIcon() const
 
 KApplication::~KApplication()
 {
-qWarning("~Kapp: cleanup in the library loader: destruct all factories and unload the libraries (Simon)");
   KLibLoader::cleanUp();
   KGlobal::deleteStaticDeleters();
 
