@@ -11,6 +11,8 @@
 #include <qcolor.h>
 #include <qfile.h>
 #include <qwmatrix.h>
+#include <qimage.h>
+#include <qpixmap.h>
 
 #include "xview.h"
 
