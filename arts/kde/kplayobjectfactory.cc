@@ -24,6 +24,8 @@
 #include "artskde.h"
 #include "kplayobjectfactory.h"
 
+#include <qfile.h>
+
 using namespace std;
 
 KPlayObjectFactory::KPlayObjectFactory(Arts::SoundServerV2 server)
@@ -55,7 +57,7 @@ KPlayObject *KPlayObjectFactory::createPlayObject(const KURL& url, const QString
 			return new KPlayObject(m_server.createPlayObjectForStream(instream, string("audio/x-mp3"), createBUS), true);
 		}
 		else
-			return new KPlayObject(m_server.createPlayObjectForURL(string(url.path().latin1()), string(mimetype.latin1()), createBUS), false);
+			return new KPlayObject(m_server.createPlayObjectForURL(string(QFile::encodeName(url.path())), string(mimetype.latin1()), createBUS), false);
 	}
 	else
 		return new KPlayObject();
