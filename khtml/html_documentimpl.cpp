@@ -299,6 +299,7 @@ void HTMLDocumentImpl::layout( bool deep )
 	if(deep)
 	    _first->layout(deep);
 	height = _first->getHeight();
+	width =  _first->getWidth();
     }
 }
 

@@ -981,6 +981,9 @@ void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 
     printf("resizeEvent\n");
     layout();
+
+    if(document && document->body())
+	resizeContents(document->getWidth(), document->getHeight());
     QScrollView::resizeEvent(event);
 
     //emit resized( event->size() );

@@ -151,7 +151,7 @@ void HTMLBodyElementImpl::print( QPainter *p, int x, int y, int w, int h,
     {
     	int pmX = x % bgPixmap->width();
 	int pmY = y % bgPixmap->height();
-	p->drawTiledPixmap(x,y,w,h,*bgPixmap,pmX,pmY);    
+	p->drawTiledPixmap(x,y,w,h,*bgPixmap,pmX,pmY);
     }
     else
     	p->fillRect(x,y,w,h,style()->bgcolor);
@@ -809,5 +809,43 @@ void HTMLHtmlElementImpl::layout(bool deep)
 void HTMLHtmlElementImpl::attach(KHTMLWidget *w)
 {
     view = w;
+}
+
+void HTMLHtmlElementImpl::setAvailableWidth(int w)
+{
+#ifdef DEBUG_LAYOUT
+    printf("%s(Element)::setAvailableWidth(%d)\n", nodeName().string().ascii(), w);
+#endif
+
+    if (w != -1 && w != availableWidth)
+    	setLayouted(false);
+
+    if(w != -1) availableWidth = w;
+
+    NodeImpl *child = firstChild();
+    minWidth = 0;
+    while(child != 0)
+    {
+    	if (child->getMinWidth() > minWidth)
+	    minWidth = child->getMinWidth();
+	child = child->nextSibling();
+    }
+    if(minWidth > availableWidth)
+	availableWidth = minWidth;
+	
+	
+    child = firstChild();
+    while(child != 0)
+    {
+    	if (child->getMinWidth() > availableWidth)
+	{
+	    printf("ERROR: %d too narrow availableWidth=%d minWidth=%d\n",
+		   id(), availableWidth, child->getMinWidth());
+	    calcMinMaxWidth();
+	    setLayouted(false);
+	}
+	child->setAvailableWidth(availableWidth);
+	child = child->nextSibling();
+    }
 }
 
