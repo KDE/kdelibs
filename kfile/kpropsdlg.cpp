@@ -1581,14 +1581,11 @@ KApplicationPropsPage::KApplicationPropsPage( KPropertiesDialog *_props )
   commentStr = config.readEntry( QString::fromLatin1("Comment") );
   extensions = config.readListEntry( QString::fromLatin1("MimeType") );
   nameStr = config.readEntry( QString::fromLatin1("Name") );
-  // Use the file name if no name is specified
   if ( nameStr.isEmpty() ) {
-    nameStr = _props->kurl().filename();
-    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
-      nameStr.truncate( nameStr.length() - 8 );
-    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
-      nameStr.truncate( nameStr.length() - 7 );
-    //KURL::decodeURL( nameStr );
+    // We'll use the file name if no name is specified
+    // because we _need_ a Name for a valid file.
+    // But let's do it in apply, not here, so that we pick up the right name.
+    setDirty();
   }
 
   if ( !commentStr.isNull() )
@@ -1669,7 +1666,16 @@ void KApplicationPropsPage::applyChanges()
     extensions.append( extensionsList->text( i ) );
 
   config.writeEntry( QString::fromLatin1("MimeType"), extensions );
-  config.writeEntry( QString::fromLatin1("Name"), nameEdit->text(), true, false, true );
+  QString nameStr = nameEdit->text();
+  if ( nameStr.isEmpty() )
+  {
+    nameStr = properties->kurl().filename();
+    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
+      nameStr.truncate( nameStr.length() - 8 );
+    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
+      nameStr.truncate( nameStr.length() - 7 );
+  }
+  config.writeEntry( QString::fromLatin1("Name"), nameStr, true, false, true );
 
   config.sync();
   f.close();
