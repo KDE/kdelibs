@@ -363,29 +363,32 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
     QCString tempbuf = "user ";
     tempbuf += m_user;
 
+    bool needPass = true;
     rspbuf[0] = '\0';
 
     if ( !ftpSendCmd( tempbuf, '3' ) ) {
       kdDebug(7102) << "1> " << rspbuf << endl;
 
       if ( rspbuf[0] == '2' )
-        return true; /* no password required */
+        needPass = false; /* no password required */
     }
 
-    kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
-    if ( m_pass.isEmpty() ) {
-      QString tmp = m_user + "@" + m_host;
-      if ( !openPassDlg( tmp, m_user, m_pass ) ) ;
-      // return false;
-    }
-    kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
-
-    tempbuf = "pass ";
-    tempbuf += m_pass;
-
-    if ( !ftpSendCmd( tempbuf, '2' ) ) {
-      kdDebug(7102) << "Wrong password" << endl;
-      return false;
+    if (needPass) {
+      kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
+      if ( m_pass.isEmpty() ) {
+        QString tmp = m_user + "@" + m_host;
+        if ( !openPassDlg( tmp, m_user, m_pass ) ) ;
+        // return false;
+      }
+      kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
+  
+      tempbuf = "pass ";
+      tempbuf += m_pass;
+  
+      if ( !ftpSendCmd( tempbuf, '2' ) ) {
+        kdDebug(7102) << "Wrong password" << endl;
+        return false;
+      }
     }
   }
 
