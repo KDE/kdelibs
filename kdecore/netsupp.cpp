@@ -689,7 +689,7 @@ static void findport(unsigned short port, char *serv, size_t servlen, int flags)
   snprintf(serv, servlen, "%u", ntohs(port));
 }
 
-int getnameinfo(const struct sockaddr *sa, socklen_t salen,
+int getnameinfo(const struct sockaddr *sa, ksocklen_t salen,
 		char *host, size_t hostlen, char *serv, size_t servlen,
 		int flags)
 {
