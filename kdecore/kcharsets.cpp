@@ -302,6 +302,8 @@ static struct Builtin
     { "pt-154", "pt 154" },
     { "x-winsami2", "winsami2" },
     { "x-mac-roman", "apple roman" },
+    { "macintosh", "apple roman" },
+    { "mac", "apple roman" },
     { 0, 0 }};
 
 // some different names for the encodings defined in the charmaps files.
