@@ -25,6 +25,12 @@
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
 //
+// Changes:
+//
+// March 2nd, 1998: Changed parameter list for KShellProcess:
+//   Arguments are now placed in a single string so that
+//   <shell> -c <commandstring> is passed to the shell
+//   to make the use of "operator<<" consistent with KProcess
 
 #include "kprocess.h"
 #define _MAY_INCLUDE_KPROCESSCONTROLLER_
@@ -509,8 +515,8 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 {
   uint i;
   uint n = arguments.count();
-  char **arglist;
-
+  const char *arglist[4];
+  QString cmd;
 
   if (runs || (0 == n)) {
 	return FALSE;  // cannot start a process that is already running
@@ -527,15 +533,19 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
     return FALSE;
   }
 
-  arglist = (char **)malloc( (n+3)*sizeof(char *));
-  CHECK_PTR(arglist);
+  // CC: Changed the way the parameter was built up
+  // CC: Arglist for KShellProcess is now always:
+  // CC: <shell> -c <command>
 
   arglist[0] = shell;
   arglist[1] = "-c";
 
-  for (i=0; i < n; i++)
-    arglist[i+2] = arguments.at(i);
-  arglist[n+2]= 0;
+  for (i=0; i < n; i++) {
+    cmd += arguments.at(i);
+    cmd += " "; // CC: to separate the arguments
+  }
+  arglist[2] = cmd;
+  arglist[3] = 0;
 
   if (!setupCommunication(comm))
     debug("Could not setup Communication!");
