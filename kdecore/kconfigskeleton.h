@@ -320,9 +320,6 @@ public:
     void setProperty(const QVariant & p);
     QVariant property() const;
 
-  protected:
-    QString endecryptStr(const QString & aStr);
-
   private:
     Type mType;
   };

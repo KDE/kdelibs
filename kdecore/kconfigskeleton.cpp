@@ -28,6 +28,8 @@
 #include <kglobalsettings.h>
 #include <kdebug.h>
 
+#include "kstringhandler.h"
+
 #include "kconfigskeleton.h"
 
 void KConfigSkeletonItem::readImmutability( KConfig *config )
@@ -55,7 +57,7 @@ void KConfigSkeleton::ItemString::writeConfig( KConfig *config )
     else if ( mType == Path )
       config->writePathEntry( mName, mReference );
     else if ( mType == Password )
-      config->writeEntry( mName, endecryptStr( mReference ) );
+      config->writeEntry( mName, KStringHandler::obscure( mReference ) );
     else
       config->writeEntry( mName, mReference );
   }
@@ -72,8 +74,9 @@ void KConfigSkeleton::ItemString::readConfig( KConfig *config )
   }
   else if ( mType == Password ) 
   {
-    QString value = config->readEntry( mName, endecryptStr( mDefault ) );
-    mReference = endecryptStr( value );
+    QString value = config->readEntry( mName,
+                                       KStringHandler::obscure( mDefault ) );
+    mReference = KStringHandler::obscure( value );
   }
   else
   {
@@ -93,16 +96,6 @@ void KConfigSkeleton::ItemString::setProperty(const QVariant & p)
 QVariant KConfigSkeleton::ItemString::property() const
 {
   return QVariant(mReference);
-}
-
-QString KConfigSkeleton::ItemString::endecryptStr( const QString &aStr )
-{
-  QString result;
-  for ( uint i = 0; i < aStr.length(); i++ )
-  {
-    result += (aStr[i].unicode() < 0x20) ? aStr[i] : QChar(0x1001F - aStr[i].unicode());
-  }
-  return result;
 }
 
 
