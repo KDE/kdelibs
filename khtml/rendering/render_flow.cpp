@@ -493,9 +493,13 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
                 prevFlow=0;
         }
 
+	// #### ugly and hacky, as we calculate width twice, but works for now.
+	// really need to fix this after 3.1
+	int owidth = child->width();
 	child->calcWidth();
-
         int chPos = xPos + child->marginLeft();
+	child->setWidth( owidth );
+
         if(style()->direction() == LTR) {
             // html blocks flow around floats
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
