@@ -24,7 +24,7 @@
 // -------------------------------------------------------------------------
 //#define DEBUG
 //#define DEBUG_LAYOUT
-//#define BOX_DEBUG
+#define BOX_DEBUG
 
 
 #include "dom_string.h"
@@ -262,6 +262,8 @@ void RenderFlow::layout()
 
     layoutSpecialObjects();
 
+    //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl; 
+    
     setLayouted();
 }
 

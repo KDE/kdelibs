@@ -269,29 +269,37 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
 void RenderBox::printBorder(QPainter *p, int _tx, int _ty, int w, int h)
 {
+    int bottom = _ty + h;
+    int right = _tx + w;
+    if(m_style->borderRightWidth() %2 )
+	right -= 1;
+    if(m_style->borderBottomWidth() %2 )
+	bottom -= 1;
+    
+    
     QColor c;
     if(m_style->borderTopStyle() != BNONE) {
         c = m_style->borderTopColor();
         if(!c.isValid()) c = m_style->color();
-        drawBorder(p, _tx, _ty, _tx + w, _ty, m_style->borderTopWidth(),
+        drawBorder(p, _tx, _ty, right, _ty, m_style->borderTopWidth(),
                    BSTop, c, m_style->borderTopStyle());
     }
     if(m_style->borderBottomStyle() != BNONE) {
         c = m_style->borderBottomColor();
         if(!c.isValid()) c = m_style->color();
-        drawBorder(p, _tx, _ty + h, _tx + w, _ty + h, m_style->borderBottomWidth(),
+        drawBorder(p, _tx, bottom, right, bottom, m_style->borderBottomWidth(),
                    BSBottom, c, m_style->borderBottomStyle());
     }
     if(m_style->borderLeftStyle() != BNONE) {
         c = m_style->borderLeftColor();
         if(!c.isValid()) c = m_style->color();
-        drawBorder(p, _tx, _ty, _tx, _ty + h, m_style->borderLeftWidth(),
+        drawBorder(p, _tx, _ty, _tx, bottom, m_style->borderLeftWidth(),
                    BSLeft, c, m_style->borderLeftStyle());
     }
     if(m_style->borderRightStyle() != BNONE) {
         c = m_style->borderRightColor();
         if(!c.isValid()) c = m_style->color();
-        drawBorder(p, _tx + w, _ty, _tx + w, _ty + h, m_style->borderRightWidth(),
+        drawBorder(p, right, _ty, right, bottom, m_style->borderRightWidth(),
                    BSRight, c, m_style->borderRightStyle());
     }
 }

@@ -370,7 +370,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         break;
     }
 
-    int half = width/2;
+    int half = (width)/2;
 
     switch(s)
     {
