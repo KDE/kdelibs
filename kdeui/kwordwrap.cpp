@@ -19,18 +19,28 @@
 #include "kwordwrap.h"
 #include <qpainter.h>
 
+class KWordWrapPrivate {
+public:
+  QRect m_constrainingRect;
+};
+
+KWordWrap::KWordWrap(const QRect & r) {
+    d = new KWordWrapPrivate;
+    d->m_constrainingRect = r;
+}
+
 KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags*/, const QString & str, int len )
 {
+    KWordWrap* kw = new KWordWrap( r );
     // The wordwrap algorithm
     // The variable names and the global shape of the algorithm are inspired
     // from QTextFormatterBreakWords::format().
     //kdDebug() << "KWordWrap::formatText " << str << " r=" << r.x() << "," << r.y() << " " << r.width() << "x" << r.height() << endl;
-    KWordWrap* kw = new KWordWrap;
+    int height = fm.height();
     if ( len == -1 )
         kw->m_text = str;
     else
         kw->m_text = str.left( len );
-    int height = fm.height();
     if ( len == -1 )
         len = str.length();
     int lastBreak = -1;
@@ -39,6 +49,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     int y = 0;
     int w = r.width();
     int textwidth = 0;
+
     for ( int i = 0 ; i < len; ++i )
     {
         QChar c = str[i];
@@ -91,6 +102,10 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     return kw;
 }
 
+KWordWrap::~KWordWrap() {
+    delete d;
+}
+
 QString KWordWrap::wrappedString() const
 {
     // We use the calculated break positions to insert '\n' into the string
@@ -122,6 +137,44 @@ QString KWordWrap::truncatedString( bool dots ) const
     return ts;
 }
 
+static QColor mixColors(double p1, QColor c1, QColor c2) {
+  return QColor(int(c1.red() * p1 + c2.red() * (1.0-p1)),
+                int(c1.green() * p1 + c2.green() * (1.0-p1)),
+		int(c1.blue() * p1 + c2.blue() * (1.0-p1)));
+}
+
+void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
+                                   const QString &t) {
+    QFontMetrics fm = p->fontMetrics();
+    QColor bgColor = p->backgroundColor();
+    QColor textColor = p->pen().color();
+
+    if ( ( fm.boundingRect( t ).width() > maxW ) && ( t.length() > 1 ) ) {
+        unsigned int tl = 0;
+        int w = 0;
+        while ( tl < t.length() ) {
+            w += fm.charWidth( t, tl );
+            if ( w >= maxW )
+                break;
+            tl++;
+        }
+
+        if (tl > 3) {
+            p->drawText( x, y, t.left( tl - 3 ) );
+            x += fm.width( t.left( tl - 3 ) );
+        }
+        int n = QMIN( tl, 3);
+        for (int i = 0; i < n; i++) {
+            p->setPen( mixColors( 0.70 - i * 0.25, textColor, bgColor ) );
+            QString s( t.at( tl - n + i ) );
+            p->drawText( x, y, s );
+            x += fm.width( s );
+        }
+    }
+    else
+        p->drawText( x, y, t );
+}
+
 void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) const
 {
     //kdDebug() << "KWordWrap::drawText text=" << wrappedString() << " x=" << textX << " y=" << textY << endl;
@@ -136,6 +189,10 @@ void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) c
     QValueList<int>::ConstIterator itw = m_lineWidths.begin();
     for ( ; it != m_breakPositions.end() ; ++it, ++itw )
     {
+        // if this is the last line, leave the loop
+        if ( (d->m_constrainingRect.height() >= 0) &&
+	     ((y + 2 * height) > d->m_constrainingRect.height()) )
+	    break;
         int end = (*it);
         int x = textX;
         if ( flags & Qt::AlignHCenter )
@@ -152,6 +209,17 @@ void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) c
         x += ( maxwidth - *itw ) / 2;
     else if ( flags & Qt::AlignRight )
         x += maxwidth - *itw;
-    painter->drawText( x, textY + y + ascent, m_text.mid( start ) );
+    if ( (d->m_constrainingRect.height() < 0) ||
+         ((y + height) <= d->m_constrainingRect.height()) ) {
+	if ( it == m_breakPositions.end() )
+            painter->drawText( x, textY + y + ascent, m_text.mid( start ) );
+	else if (flags & FadeOut)
+	    drawFadeoutText( painter, x, textY + y + ascent,
+	                     d->m_constrainingRect.width() - x + textX,
+			     m_text.mid( start ) );
+	else
+            painter->drawText( x, textY + y + ascent,
+	                       m_text.mid( start, (*it) - start + 1 ) );
+    }
 }
 

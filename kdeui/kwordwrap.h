@@ -41,11 +41,18 @@ class KWordWrap
 {
 public:
     /**
+     * Use this flag in @ref drawText() if you want to fade out the text if it does
+     * not fit into the constraining rectangle.
+     */
+     static const int FadeOut = 0x10000000;
+
+    /**
      * Main method for wrapping text.
      *
      * @param fm Font metrics, for the chosen font. Better cache it, creating a QFontMetrics is expensive.
-     * @param r Constraining rectangle. Only the width matters.
-     * @param flags - currently unused.
+     * @param r Constraining rectangle. Only the width and height matter. With
+     *          negative height the complete text will be rendered
+     * @param flags currently unused
      * @param str The text to be wrapped.
      * @param len Length of text to wrap (default is -1 for all).
      * @return a KWordWrap instance. The caller is responsible for storing and deleting the result.
@@ -75,11 +82,38 @@ public:
 
     /**
      * Draw the text that has been previously wrapped, at position x,y.
-     * Flags are for alignment, e.g. AlignHCenter. Default is AlignAuto.
+     * Flags are for alignment, e.g. @ref Qt::AlignHCenter. Default is
+     * @ref Qt::AlignAuto.
+     * @param painter the QPainter to use.
+     * @param x the horizontal position of the text
+     * @param y the vertical position of the text
+     * @param flags the ORed text alignment flags from the @ref Qt namespace,
+     *              ORed with @ref FadeOut if you want the text to fade out if it
+     *              does not fit (the @p painter's background must be set
+     *              accordingly)
      */
     void drawText( QPainter *painter, int x, int y, int flags = Qt::AlignAuto ) const;
 
+    /**
+     * Destructor.
+     */
+    ~KWordWrap();
+
+    /**
+     * Draws the string @p t at the given coordinates, if it does not
+     * @p fit into @p maxW the text will be faded out.
+     * @param p the painter to use. Must have set the pen for the text
+     *        color and the background for the color to fade out
+     * @param x the horizontal position of the text
+     * @param y the vertical position of the text
+     * @param maxW the maximum width of the text (including the fade-out
+     *             effect)
+     * @param t the text to draw
+     */
+    static void drawFadeoutText( QPainter *p, int x, int y, int maxW,
+                                 const QString &t );
 private:
+    KWordWrap( const QRect & r );
     QValueList<int> m_breakPositions;
     QValueList<int> m_lineWidths;
     QRect m_boundingRect;
