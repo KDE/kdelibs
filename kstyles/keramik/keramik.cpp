@@ -1767,18 +1767,18 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 
 			if (controls == SC_All)
 			{
+			    buf = new QPixmap( r.width(), r.height() );
+			    br.setX(0);
+			    br.setY(0);
+			    p2 = new QPainter(buf);
+					
 				//Double-buffer only when we are in the slower full-blend mode
 				if (widget->parent() &&
 						( widget->parent()->inherits("QToolBar")|| !qstrcmp(widget->parent()->name(), kdeToolbarWidget) ) )
 				{
-					buf = new QPixmap( r.width(), r.height() );
-					br.setX(0);
-					br.setY(0);
-					p2 = new QPainter(buf);
-					
 					//Ensure that we have clipping on, and have a sane base.
 					//If need be, Qt will shrink us to the paint region.
-					p->setClipping(TRUE);
+					p->setClipping(true);
 					p->setClipRect(r);
 					toolbarMode = true;
 				}
