@@ -115,9 +115,9 @@ using namespace khtml;
         map["menutext"] = globalConfig->readColorEntry( "foreground", &cg.background());
 
 	// Item(s) selected in a control.
-        map["highlight"] = globalConfig->readColorEntry( "background", &cg.background()).light(110);
+        map["highlight"] = globalConfig->readColorEntry( "selectBackground", &cg.highlight());
         // Text of item(s) selected in a control.
-	map["highlighttext"] = globalConfig->readColorEntry( "foreground", &cg.background());
+	map["highlighttext"] = globalConfig->readColorEntry( "selectForeground", &cg.highlightedText());
 
 	// Background color of multiple document interface.
         map["appworkspace"] = globalConfig->readColorEntry( "background", &cg.text());
