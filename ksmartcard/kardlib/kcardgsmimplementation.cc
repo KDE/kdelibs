@@ -19,6 +19,7 @@
  */ 
 
 #include "kcardgsmimplementation.h"
+#include "kcardreader.h"
 
 KCardGsmImplementation::KCardGsmImplementation(KCardReader * reader)
   :KCardImplementation (reader){
@@ -30,6 +31,14 @@ KCardGsmImplementation::KCardGsmImplementation(KCardReader * reader)
 KCardGsmImplementation::~KCardGsmImplementation(){
 }
 
+
+int KCardGsmImplementation::selectFile (const QString fileID){
+	QString result;
+	QString selectGSMfile("A0A40002");
+	selectGSMfile+=fileID;
+	int rc = _kcardreader->doCommand(selectGSMfile,result);
+	if (rc) return rc;
+}
 
 int KCardGsmImplementation::readTransparentFile (QString & fileContent){
 

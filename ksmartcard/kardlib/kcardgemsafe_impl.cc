@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001 Fernando Llobregat < >
+ * Copyright (C) 2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,34 +18,27 @@
  * Boston, MA 02111-1307, USA.
  */ 
 
-#include "kcardfactory.h"
-#include "kpcsc.h"
-#include "kcardgsmimplementation.h"
-
-KCardImplementation * KCardFactory::getCard (KCardReader * selReader, 
-					     KCardType selcardType, 
-					     KCardATR atr){
-
-  switch (selcardType){
+#include "kcardgemsafe_impl.h"
+#include "kcardreader.h"
 
 
-  case KCardGSMType:
-
-    return new KCardGsmImplementation (selReader);
-    break;
+KCardGemSafeImplementation::KCardGemSafeImplementation(KCardReader * reader)
+  :KCardImplementation (reader){
 
 
-  case KCardProcessorType:
-
-    break;
-
-  default:
-    return 0;
-
-  }
+}
 
 
+KCardGemSafeImplementation::~KCardGemSafeImplementation(){
+}
 
+
+int KCardGemSafeImplementation::selectFile (const QString fileID){
+	QString result;
+	QString selectfile("00A4xxxxxx");
+	selectfile += fileID;
+	int rc = _kcardreader->doCommand(selectfile,result);
+	if (rc) return rc;
 }
 
 

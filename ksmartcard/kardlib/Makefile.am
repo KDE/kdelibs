@@ -8,6 +8,7 @@ include_HEADERS = kcardreader.h \
 		  kpcsc.h \
 		  kcardfactory.h \
 	          kcardimplementation.h \
+		  kcardgemsafe_impl.cc \
 	          kcardgsmimplementation.h
 
 noinst_HEADERS = 
@@ -18,6 +19,7 @@ libksmartcard_la_SOURCES = \
 				kcardreader.cc \
 				kcardfactory.cc \
 				kcardimplementation.cc \
+				kcardgemsafe_impl.cc \
 				kcardgsmimplementation.cc
 
 

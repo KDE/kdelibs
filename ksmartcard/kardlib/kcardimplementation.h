@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2001 Fernando Llobregat < >
+ * Copyright (C) 2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,6 +24,10 @@
 #define _KCARDIMPLEMENTATION_H
 
 #include <qstring.h>
+#include <kpcsc.h>
+
+#define KCARD_TYPE_UNKNOWN "Unknown"
+
 
 class KCardReader;
 
@@ -34,8 +39,14 @@ class KCardImplementation {
   KCardImplementation (KCardReader *);
   virtual ~KCardImplementation();
 
-  virtual int selectFile (const QString &);
+  virtual int selectFile(const QString);
+  virtual int selectDirectory(const QString);
+  virtual KCardCommand getCardSerialNumber();
 
+  virtual const QString& getType() const;
+  virtual const QString& getSubType() const;
+  virtual const QString& getSubSubType() const;
+  
  private:
 
   class KCardImplementationPrivate;
@@ -44,6 +55,7 @@ class KCardImplementation {
  protected:
 
   KCardReader * _kcardreader;
+  QString _type, _subType, _subSubType;
 };
 
 #endif

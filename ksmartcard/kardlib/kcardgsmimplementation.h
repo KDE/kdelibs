@@ -18,6 +18,10 @@
  * Boston, MA 02111-1307, USA.
  */ 
 
+
+#ifndef __KCARD_GSM_TYPE_H
+#define __KCARD_GSM_TYPE_H
+
 #include <qstringlist.h>
 
 #include "kcardimplementation.h"
@@ -30,6 +34,7 @@ class KCardGsmImplementation:public KCardImplementation{
   KCardGsmImplementation (KCardReader *);
   ~KCardGsmImplementation();
 
+  int selectFile(const QString);
   int readTransparentFile   (QString &);
   int readTransparentFile   (QString &, unsigned char offset, unsigned char length);
   int updateTransparentFile (QString &, unsigned char offset, unsigned char length);
@@ -53,3 +58,6 @@ class KCardGsmImplementation:public KCardImplementation{
   KCardGSMImplementationPrivate *d;
 
 };
+
+#endif
+

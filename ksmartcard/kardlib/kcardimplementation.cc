@@ -25,25 +25,41 @@
 KCardImplementation::KCardImplementation( KCardReader * selectedReader){
 
   _kcardreader = selectedReader;
-
-
-}
-
-KCardImplementation::~KCardImplementation( ){
+  _type = KCARD_TYPE_UNKNOWN;
+  _subType = KCARD_TYPE_UNKNOWN;
+  _subSubType = KCARD_TYPE_UNKNOWN;
 
 }
 
 
-int KCardImplementation::selectFile (const QString & fileID){
-
-  //For the moment i send a select command with the GSM format, anyway i will
-  //overload the class in the KGSMCardImplementation
-  QString result;
-  QString selectGSMfile("A0A40002");
-  selectGSMfile+=fileID;
-  int rc = _kcardreader->doCommand(selectGSMfile,result);
-  if (rc) return rc;
-
-  
-  
+KCardImplementation::~KCardImplementation() {
 }
+
+
+int KCardImplementation::selectFile(const QString) {
+return -1;
+}
+
+int KCardImplementation::selectDirectory(const QString) {
+return -1;
+}
+
+KCardCommand KCardImplementation::getCardSerialNumber() {
+return KCardCommand();
+}
+
+
+const QString& KCardImplementation::getType() const {
+	return _type;
+}
+
+const QString& KCardImplementation::getSubType() const {
+	return _subType;
+}
+
+const QString& KCardImplementation::getSubSubType() const {
+	return _subSubType;
+}
+
+
+
