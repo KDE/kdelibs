@@ -8,7 +8,7 @@
 
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
-<!ENTITY cdrom  '<hardware>CD-ROM-drev</hardware>'>
+<!ENTITY cdrom  '<hardware>cd-rom</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
 <!ENTITY eg     "<abbrev>f.eks.</abbrev>">
