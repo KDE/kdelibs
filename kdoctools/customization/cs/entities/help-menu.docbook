@@ -6,7 +6,7 @@
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenuitem>&kappname; Handbook</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Invokes the KDE Help system</action> starting at the
