@@ -65,7 +65,9 @@ void KServiceTypeProfile::initStatic()
     if ( pService ) {
       QString application = pService->name();
       QString type = config.readEntry( "ServiceType" );
-      QString type2 = config.readEntry( "GenericServiceType", "Application" );
+      QString type2 = config.readEntry( "GenericServiceType" );
+      if (type2.isEmpty()) // compat code
+          type2 = (pService->type() == "Application") ? "Application" : "KParts/ReadOnlyPart";
       int pref = config.readNumEntry( "Preference" );
 
       if ( !type.isEmpty() && pref >= 0 )
@@ -77,7 +79,7 @@ void KServiceTypeProfile::initStatic()
           p = new KServiceTypeProfile( type, type2 );
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
-        //kdDebug(7010) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << " with preference " << pref << endl;
+        kdDebug(7010) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << " with preference " << pref << endl;
         p->addService( application, pref, allow );
       }
     }
@@ -93,46 +95,60 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
 //static
 KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype, const QString& _genericServiceType )
 {
-  OfferList offers;
+    OfferList offers;
+    kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
 
-  kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
-  KServiceTypeProfile* profile = serviceTypeProfile( _servicetype, _genericServiceType );
-  if ( profile )
-  {
-    kdDebug(7010) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
-    return profile->offers();
-  }
-  // Try the other way round, order is not like size, it doesn't matter.
-  profile = serviceTypeProfile( _genericServiceType, _servicetype );
-  if ( profile )
-  {
-    kdDebug(7010) << "Found profile after switching, returning " << profile->offers().count() << " offers" << endl;
-    return profile->offers();
-  }
+    if ( _genericServiceType.isEmpty() )
+    {
+        initStatic();
+        // We want all profiles for servicetype, if we have profiles.
+        QListIterator<KServiceTypeProfile> it( *s_lstProfiles );
+        for( ; it.current(); ++it )
+            if ( it.current()->serviceType().startsWith( _servicetype + HACK_ST_SEPARATOR ) )
+            {
+                offers += it.current()->offers();
+            }
+        if ( !offers.isEmpty() )
+            return offers;
+    }
 
-  KService::List list = KServiceType::offers( _servicetype );
-  kdDebug(7010) << "No profile, using KServiceType::offers, result: " << list.count() << " offers" << endl;
-  QValueListIterator<KService::Ptr> it = list.begin();
-  for( ; it != list.end(); ++it )
-  {
-      if (_genericServiceType.isEmpty() /*no constraint*/ || (*it)->hasServiceType( _genericServiceType ))
-      {
-          bool allow = (*it)->allowAsDefault();
-          KServiceOffer o( (*it), (*it)->initialPreference(), allow );
-          offers.append( o );
-          kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
-      }
-  }
+    KServiceTypeProfile* profile = serviceTypeProfile( _servicetype, _genericServiceType );
+    if ( profile )
+    {
+        kdDebug(7010) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
+        return profile->offers();
+    }
+    // Try the other way round, order is not like size, it doesn't matter.
+    profile = serviceTypeProfile( _genericServiceType, _servicetype );
+    if ( profile )
+    {
+        kdDebug(7010) << "Found profile after switching, returning " << profile->offers().count() << " offers" << endl;
+        return profile->offers();
+    }
 
-  qBubbleSort( offers );
+    KService::List list = KServiceType::offers( _servicetype );
+    kdDebug(7010) << "No profile, using KServiceType::offers, result: " << list.count() << " offers" << endl;
+    QValueListIterator<KService::Ptr> it = list.begin();
+    for( ; it != list.end(); ++it )
+    {
+        if (_genericServiceType.isEmpty() /*no constraint*/ || (*it)->hasServiceType( _genericServiceType ))
+        {
+            bool allow = (*it)->allowAsDefault();
+            KServiceOffer o( (*it), (*it)->initialPreference(), allow );
+            offers.append( o );
+            kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
+        }
+    }
 
-  // debug code, comment if you wish but don't remove.
-  kdDebug(7010) << "Sorted list:" << endl;
-  OfferList::Iterator itOff = offers.begin();
-  for( ; itOff != offers.end(); ++itOff )
-    kdDebug(7010) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
+    qBubbleSort( offers );
 
-  return offers;
+    // debug code, comment if you wish but don't remove.
+    kdDebug(7010) << "Sorted list:" << endl;
+    OfferList::Iterator itOff = offers.begin();
+    for( ; itOff != offers.end(); ++itOff )
+        kdDebug(7010) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
+
+    return offers;
 }
 
 KServiceTypeProfile::KServiceTypeProfile( const QString& _servicetype, const QString& _genericServiceType )
@@ -209,7 +225,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
   int posHack = m_strServiceType.find( HACK_ST_SEPARATOR );
   QString serviceType = m_strServiceType.left( posHack );
   QString genericServiceType = m_strServiceType.mid( posHack + strlen(HACK_ST_SEPARATOR) );
-  //kdDebug(7010) << "KServiceTypeProfile::offers serviceType=" << serviceType << " genericServiceType=" << genericServiceType << endl;
+  kdDebug(7010) << "KServiceTypeProfile::offers serviceType=" << serviceType << " genericServiceType=" << genericServiceType << endl;
   KService::List list = KServiceType::offers( serviceType );
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
