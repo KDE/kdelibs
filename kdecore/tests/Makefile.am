@@ -23,7 +23,7 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
-	kdebugtest
+	kdebugtest ksocktest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h 
 
@@ -45,6 +45,8 @@ kprocesstest_SOURCES = kprocesstest.cpp
 kprocesstest_LDADD = $(LIB_KDECORE)
 kuniqueapptest_SOURCES = kuniqueapptest.cpp
 kuniqueapptest_LDADD = $(LIB_KDECORE)
+ksocktest_SOURCES = ksocktest.cpp
+ksocktest_LDADD = $(LIB_KDECORE)
 ktempfiletest_SOURCES = ktempfiletest.cpp
 ktempfiletest_LDADD = $(LIB_KDECORE)
 krandomsequencetest_SOURCES = krandomsequencetest.cpp
