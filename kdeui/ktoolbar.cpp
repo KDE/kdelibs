@@ -1209,8 +1209,9 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 }
 
 
-void KToolBar::paintEvent(QPaintEvent *)
+void KToolBar::paintEvent(QPaintEvent *e)
 {
+#if QT_VERSION < 300
     QColorGroup g = QWidget::colorGroup();
     QPainter paint;
     paint.begin( this );
@@ -1304,6 +1305,9 @@ void KToolBar::paintEvent(QPaintEvent *)
     qDrawShadePanel(&paint, 0, 0, width(), height(), g , false, 1);
 
     paint.end();
+#else
+    QToolBar::paintEvent( e );
+#endif
 }
 
 void KToolBar::rebuildLayout()
