@@ -35,9 +35,12 @@
 #include "dom_string.h"
 #include "html_documentimpl.h"
 
+#include "khtml.h"
+
 #include <stdio.h>
 
 #include <iostream>
+
 
 using namespace DOM;
 
@@ -288,8 +291,13 @@ void HTMLImageElementImpl::calcMinMaxWidth()
 	minWidth = width;
 	break;
     case Percent:
-	width = predefinedWidth.value*availableWidth/100;
-	minWidth = width;
+    	{
+	int nwidth = predefinedWidth.value*availableWidth/100;
+	if (nwidth!=width)
+	    resizeCache.resize(0,0);
+	width=nwidth;
+	minWidth = 32;	
+	}
 	break;
     default:
 	// we still don't know the width...
@@ -310,10 +318,6 @@ void HTMLImageElementImpl::calcMinMaxWidth()
 	}
     }
     maxWidth = minWidth;
-
-
-//    if(availableWidth && minWidth > availableWidth)
-//	if(_parent) _parent->updateSize();
 }
 
 void HTMLImageElementImpl::layout(bool)
@@ -333,7 +337,16 @@ void HTMLImageElementImpl::layout(bool)
 	break;
     case Percent:
 	// ### is this correct????
-	imgHeight = predefinedHeight.value*width/100;
+	{
+	KHTMLWidget *htmlwidget =  
+	    static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
+	int hh = predefinedHeight.value*htmlwidget->height()/100;	
+	if (imgHeight != hh)
+	{
+	    resizeCache.resize(0,0);
+	    imgHeight = hh;	
+	}
+	}
 	break;
     default:
 	// we still don't know the height...
