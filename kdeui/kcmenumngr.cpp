@@ -25,6 +25,9 @@
 #include "kconfig.h"
 #include <kaccel.h>
 
+#undef KeyPress
+#undef None
+
 template class QPtrDict<QPopupMenu>;
 
 KContextMenuManager* KContextMenuManager::manager = 0;

@@ -26,10 +26,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qstringlist.h>
 #include <dcopclient.h>
 
-static int get_seq_id()
+static int panelmenu_get_seq_id()
 {
-    static int seq_no = -2;
-    return seq_no--;
+    static int panelmenu_seq_no = -2;
+    return panelmenu_seq_no--;
 }
 
 
@@ -86,7 +86,7 @@ PanelMenu::~PanelMenu()
 int PanelMenu::insertItem(const QPixmap &icon, const QString &text, int id )
 {
     if ( id < 0 )
-	id = get_seq_id();
+	id = panelmenu_get_seq_id();
     DCOPClient *client = kapp->dcopClient();
     QByteArray sendData;
     QDataStream stream(sendData, IO_WriteOnly);
@@ -98,7 +98,7 @@ int PanelMenu::insertItem(const QPixmap &icon, const QString &text, int id )
 int PanelMenu::insertItem(const QString &text, int id )
 {
     if ( id < 0 )
-	id = get_seq_id();
+	id = panelmenu_get_seq_id();
     DCOPClient *client = kapp->dcopClient();
     QByteArray sendData;
     QDataStream stream(sendData, IO_WriteOnly);
