@@ -112,7 +112,7 @@ void KColorButton::mouseReleaseEvent( QMouseEvent *e )
 {
   QPushButton::mouseReleaseEvent(e);
   if (!dragFlag) {
-    if (KColorDialog::getColor( col ) == QDialog::Rejected )
+    if (KColorDialog::getColor( col, this ) == QDialog::Rejected )
       return;
     repaint( false );
     emit changed( col );
