@@ -156,8 +156,6 @@ Completion StringProtoFunc::execute(const List &args)
   UString u, u2, u3;
   int pos, p0, i;
   double d, d2;
-  List emptyList;
-
 
   KJSO tv = thisValue();
   String s = tv.toString();

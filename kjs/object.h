@@ -197,7 +197,12 @@ namespace KJS {
      * @return True if object is of type t or a derived from such a type.
      */
     bool derivedFrom(const char *s) const;
-
+    /**
+     * Examine the inheritance structure of this object.
+     * @param t Type of the base class
+     * @return True if object is of type t or a derived from such a type.
+     */
+    bool derivedFrom(Type t) const;
     /**
      * @return Conversion to primitive type (Undefined, Boolean, Number
      * or String)

@@ -54,9 +54,11 @@ namespace KJS {
     virtual void put(const UString &p, const KJSO& v);
     Imp *filter;
     void *extraData;
+    virtual const TypeInfo* typeInfo() const { return &info; }
   private:
     class GlobalInternal;
     GlobalInternal *internal;
+    static const TypeInfo info;
   };
 
 };
@@ -72,6 +74,8 @@ public:
 private:
   int id;
 };
+
+const TypeInfo GlobalImp::info = { "global", ObjectType, &ObjectImp::info, 0, 0 };
 
 Global::Global()
   : Object(0L)
@@ -161,6 +165,7 @@ GlobalImp::GlobalImp()
 
   objProto.get("toString").setPrototype(funcProto);
   objProto.get("valueOf").setPrototype(funcProto);
+  setPrototype(objProto);
 
   put("[[Object.prototype]]", objProto);
   put("[[Function.prototype]]", funcProto);

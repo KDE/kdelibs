@@ -31,6 +31,8 @@ namespace KJS {
     enum { Euler, Ln2, Ln10, Log2E, Log10E, Pi, Sqrt1_2, Sqrt2,
 	   Abs, ACos, ASin, ATan, ATan2, Ceil, Cos, Pow,
 	   Exp, Floor, Log, Max, Min, Random, Round, Sin, Sqrt, Tan };
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   class MathFunc : public InternalFunctionImp {

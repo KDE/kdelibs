@@ -25,10 +25,14 @@
 #include "operations.h"
 #include "math_object.h"
 #include "lookup.h"
+#include "object.h"
 
 using namespace KJS;
 
-Math::Math(const Object &objProto) : ObjectImp(BooleanClass)
+const TypeInfo Math::info = { "Math", ObjectType,
+			      &ObjectImp::info, 0, 0 };
+
+Math::Math(const Object &objProto) : ObjectImp(ObjectClass)
 {
   // ECMA 15.8
   setPrototype(objProto);

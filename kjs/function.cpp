@@ -52,14 +52,14 @@ namespace KJS {
 };
 
 FunctionImp::FunctionImp()
-  : ObjectImp(/*TODO*/BooleanClass), param(0L)
+  : ObjectImp(FunctionClass), param(0L)
 {
   argStack = 0;
   put("arguments",Null(),ReadOnly|DontDelete|DontEnum);
 }
 
 FunctionImp::FunctionImp(const UString &n)
-  : ObjectImp(/*TODO*/BooleanClass), ident(n), param(0L)
+  : ObjectImp(FunctionClass), ident(n), param(0L)
 {
   argStack = 0;
   put("arguments",Null(),ReadOnly|DontDelete|DontEnum);
@@ -366,7 +366,7 @@ Object Constructor::construct(const List &args)
 Constructor Constructor::dynamicCast(const KJSO &obj)
 {
   // return null object on type mismatch
-  if (!obj.isA(ConstructorType))
+  if (!obj.derivedFrom(ConstructorType))
     return Constructor(0L);
 
   return Constructor(obj.imp());

@@ -181,6 +181,19 @@ bool KJSO::derivedFrom(const char *s) const
   return false;
 }
 
+bool KJSO::derivedFrom(Type t) const
+{
+  assert(rep);
+  const TypeInfo *info = rep->typeInfo();
+  while (info) {
+    if (info->type == t)
+      return true;
+    info = info->base;
+  }
+
+  return false;
+}
+
 KJSO KJSO::toPrimitive(Type preferred) const
 {
   assert(rep);
@@ -551,7 +564,7 @@ Object Object::create(Class c, const KJSO& val, const Object& p)
 Object Object::dynamicCast(const KJSO &obj)
 {
   // return null object on type mismatch
-  if (!obj.isA(ObjectType))
+  if (!obj.derivedFrom(ObjectType))
     return Object(0L);
 
   return Object(obj.imp());
