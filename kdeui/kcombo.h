@@ -1,70 +1,106 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1997 Sven Radej (sven.radej@iname.com)
+#ifndef _KCOMBO_H_
+#define _KCOMBO_H_
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+#include <qframe.h>
+#include <qpopmenu.h>
+#include <qlined.h>
+#include <qlistbox.h>
+#include <qstrlist.h>
+#include <qcombo.h>	// some other parts of kdeui expect this to be included :(
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
+#include <kdebug.h> // change to quotes? (#include "kdebug.h"?)
+#include <klined.h> //   "    "   "
 
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
-// Idea was taken from filentry.h
-// fileentry.h is part of KFM II, by Torben Weis
+// Author:	Steve Dodd <dirk@loth.demon.co.uk>
+// 111197:	full QComboBox interface, though some of it is not yet implemented.
+//			completion / rotation support added, yees!
+// 031297:	added completion() and rotation() signals as well
+// 061297:	setCurrentItem() now doesn't emit signals
+//			setInsertionPolicy() works, but we now have a bug which causes some
+//			signals to be emitted twice - am working on it.
+// 071297:	multiple signal emission problem solved; the lined also now displays
+//			the first item in the listbox to start with.
 
-#ifndef _KCOMBO_H
-#define _KCOMBO_H
-
-#include <qcombo.h>
-
-/** A new combobox for the KDE project.
-  */
-class KCombo : public QComboBox
-{
-  Q_OBJECT
+class KCombo : public QFrame {
+	Q_OBJECT;
 
 public:
-  /**
-    *
-    * Kcombo is normal writable or readonly ComboBox with two
-    * more signals @ref completion (Ctrl-D pressed) and @ref rotation
-    * (Ctrl-S pressed).
-    * @short KDE combo-box Widget
-    * @author sven.radej@iname.com
-    */
-   
-  KCombo ( bool _rw, QWidget *_parent, const char *name );
-  ~KCombo ();
+	KCombo( QWidget* parent = NULL, const char* name = NULL, WFlags f = 0 );
+	KCombo( bool readWrite, QWidget* parent = NULL, const char* name = NULL, WFlags f = 0 );
+	virtual ~KCombo();
 
-  /**
-    * This puts cursor at and of string. When using out of toolbar,
-    * call this in your slot connected to signal @ref completion
-    * or @ref rotation
-    */
-   
-   void cursorAtEnd();
+	// public functions special to KCombo
 
- signals:
+	void setLabelFlags( int textFlags ) { tf = textFlags; };
+	int labelFlags() const { return tf; };
+	void cursorAtEnd();
 
-     /**
-      * Connect to this signal to receive Ctrl-D
-      */
-    void completion ();
+	// public functions like QCombo
 
-    /**
-     * Connect to this signal to receive Ctrl-S
-     */
-    void rotation ();
+	enum Policy { NoInsertion, AtTop, AtCurrent, AtBottom, AfterCurrent, BeforeCurrent };
+	
+	int count() const;
+	void insertItem( const char* text, int index = -1 );
+	void insertItem( const QPixmap& pixmap, int index = -1 );
+	void insertStrList( const QStrList* list, int index = -1 );
+	void insertStrList( const char** strings, int numStrings = -1, int index = -1 );
+	void removeItem( int index );
+	void clear();
+	const char* text( int index ) const;
+	const char* currentText() const;
+	const QPixmap* pixmap( int index ) const;
+	void changeItem( const char* text, int index );
+	void changeItem( const QPixmap& pixmap, int index );
+	void setCurrentItem( int index ) { select( index ); };
+	int currentItem() const { return selected; };
+	bool autoResize() const;
+	void setAutoResize( bool enable );
+	int sizeLimit() const { return sizeLimitLines; };
+	void setSizeLimit( int lines );
+	void setMaxCount( int max );
+	int maxCount() const;
+	void setInsertionPolicy( Policy policy );
+	Policy insertionPolicy() const { return policy; };
+	void setValidator( QValidator* v ) { if( lined ) lined->setValidator( v ); };
+	QValidator* validator() const { if( lined ) return lined->validator(); return NULL; };
 
- protected:
-   bool eventFilter (QObject *, QEvent *);
- };
+signals:
+	void activated( int index );
+	void activated( const char* text );
+	void highlighted( int index );
+	void highlighted( const char* text );
+	void completion();
+	void rotation();
+	
+public slots:
+	void clearValidator() { setValidator( NULL ); };
 
-#endif
+protected slots:
+	virtual void complete();
+	virtual void rotate();
+	void select( int item );
+	void selectHide( int item );
+	void selectQuiet( int item );
+	void selectTyped();
+
+protected:
+	virtual void drawContents( QPainter* paint );
+	virtual void resizeEvent( QResizeEvent* );
+	virtual void mousePressEvent( QMouseEvent* ) { drop(); };
+	virtual void keyPressEvent( QKeyEvent* e );
+	virtual bool eventFilter( QObject* o, QEvent* e );
+	void drop();
+
+	QRect boxRect;		// rectangle of Motif 1.x selector box thingy
+	QRect textRect;		// current item's text rectangle
+	int	tf;				// text flags for current item
+	QPopupMenu* popup;	// popup->menu for list of options
+	int selected;		// currently selected item
+	KLined* lined;		// editor for R/W Motif 2.x combos
+	QListBox* listBox;	// list box for all Motif 2.x combos
+	int sizeLimitLines;	// size of list box in lines
+	Policy policy;		// insertion policy
+
+};
+
+#endif // _KCOMBO_H_
