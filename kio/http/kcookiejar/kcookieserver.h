@@ -61,13 +61,11 @@ k_dcop:
 
 public:
   bool cookiesPending(const QString &url);
-  void addCookies(const QString &url, const QCString &cookieHeader, long windowId, bool useDOMFormat);
+  void addCookies(const QString &url, const QCString &cookieHeader,
+                  long windowId, bool useDOMFormat);
   void checkCookies(KHttpCookie *cookie, bool queue);
 
 public slots:
-  /**
-   * Save the cookiejar.
-   */
   void slotSave();
 
 protected:
@@ -79,7 +77,7 @@ protected:
 
 private:
   virtual int newInstance(QValueList<QCString>) { return 0; }
-  bool cookieMatches(KHttpCookie*, QString, QString, QString);
+  bool cookieMatches(KHttpCookie*, QString, QString, QString, QString);
   void putCookie(QStringList*, KHttpCookie*, const QValueList<int>*);
   void saveCookieJar();
 };
