@@ -195,6 +195,17 @@ int KWalletD::open(const QString& wallet, uint wId) {
 
 	_transactions.remove(xact);
 
+	if (rc < 0) {
+		// Kill off multiple requests from the same client on a failure
+		for (KWalletTransaction *x = _transactions.first(); x; /**/) {
+			if (appid == x->appid && x->tType == KWalletTransaction::Open && x->wallet == wallet && x->wId == wId) {
+				KWalletTransaction *tmp = x;
+				x = _transactions.next();
+				_transactions.removeRef(tmp);
+			}
+		}
+	}
+
 	processTransactions();
 
 	return rc;
