@@ -334,7 +334,9 @@ public:
      * setMode( mode );
      * </pre>
      * You need an explicit cast, which looks a little ugly, but is unavoidable
-     * without using (even uglier) #defines
+     * without using (even uglier) #defines. Please not that's at the moment
+     * not possible to select multiple files and directories <em>simultaneously</em>.
+     * It's possible to select one file or directory at once, though.
      * @see mode()
      */
     void setMode( KFile::Mode m );
