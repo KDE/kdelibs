@@ -121,10 +121,10 @@ public:
 
 signals:
     /**
-      Emitted when quit is selected in the menu. If you want to perform any other
-      action than to close the main application window please connect to this signal.
-      * @since 3.1
-    */
+     * Emitted when quit is selected in the menu. If you want to perform any other
+     * action than to close the main application window please connect to this signal.
+     * @since 3.1
+     */
     void quitSelected();
 
 public slots:
