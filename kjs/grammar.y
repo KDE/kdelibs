@@ -443,16 +443,28 @@ ExprOpt:
 ContinueStatement:
     CONTINUE ';'                   { $$ = new ContinueNode(); }
   | CONTINUE IDENT ';'             { $$ = new ContinueNode($2); delete $2; }
+  | CONTINUE IDENT error           { if (automatic()) {
+                                       $$ = new ContinueNode($2); delete $2;
+                                     } else
+				       YYABORT; }
 ;
 
 BreakStatement:
     BREAK ';'                      { $$ = new BreakNode(); }
   | BREAK IDENT ';'                { $$ = new BreakNode($2); delete $2; }
+  | BREAK IDENT error              { if (automatic()) {
+                                       $$ = new BreakNode($2); delete $2;
+                                     } else
+				       YYABORT; }
 ;
 
 ReturnStatement:
     RETURN ';'                     { $$ = new ReturnNode(0L); }
   | RETURN Expr ';'                { $$ = new ReturnNode($2); }
+  | RETURN Expr error              { if (automatic())
+                                       $$ = new ReturnNode($2);
+                                     else
+				       YYABORT; }
 ;
 
 WithStatement:
