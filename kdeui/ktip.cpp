@@ -65,13 +65,18 @@ KTipDatabase::KTipDatabase(const QString &_tipFile)
 
 KTipDatabase::KTipDatabase( const QStringList& tipsFiles )
 {
-   if ( tipsFiles.isEmpty() )
-   { 
-       kdDebug() << "No tip files passed!" << endl;
-       return;
+   if ( tipsFiles.isEmpty() || ( ( tipsFiles.count() == 1 ) && tipsFiles.first().isEmpty() ) )
+   {
+       addTips(QString::fromLatin1(KGlobal::instance()->aboutData()->appName()) + "/tips");
    }
-    for (QStringList::ConstIterator it = tipsFiles.begin(); it != tipsFiles.end(); ++it)
-         addTips( *it );
+   else
+   {
+       for (QStringList::ConstIterator it = tipsFiles.begin(); it != tipsFiles.end(); ++it)
+           addTips( *it );
+   }
+    if (!mTips.isEmpty())
+	mCurrent = kapp->random() % mTips.count();
+
 }
 
 void KTipDatabase::loadTips(const QString &tipFile)
@@ -299,6 +304,11 @@ void KTipDialog::showTip(const QString &tipFile, bool force)
 
 void KTipDialog::showTip(QWidget *parent, const QString &tipFile, bool force)
 {
+  showTip( parent, QStringList(tipFile), force );
+}
+
+void KTipDialog::showTip(QWidget *parent, const QStringList &tipFiles, bool force)
+{
     const bool runOnStart = KConfigGroup(kapp->config(), "TipOfDay")
                                         .readBoolEntry("RunOnStart", true);
 
@@ -306,7 +316,7 @@ void KTipDialog::showTip(QWidget *parent, const QString &tipFile, bool force)
 	    return;
 
     if (!mInstance)
-	mInstance = new KTipDialog(new KTipDatabase(tipFile), parent);
+	mInstance = new KTipDialog(new KTipDatabase(tipFiles), parent);
     else
 	// The application might have changed the RunOnStart option in its own
 	// configuration dialog, so we should update the checkbox.

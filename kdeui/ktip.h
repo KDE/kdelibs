@@ -138,6 +138,19 @@ public:
     static void showTip(QWidget *parent, const QString &tipFile = QString::null, bool force=false);
 
     /**
+     * Shows a tip
+     *
+     * This method behaves essentially as the one above, but expects a list of tips
+     *
+     * @param parent Parent widget of TipDialog.
+     * @param tipFiles A List of tip files. Each has be relative to the "data"
+     *                resource of KStandardDirs
+     * @param force If true, the dialog is show, even when the users
+     *              disabled it.
+     */
+    static void showTip(QWidget *parent, const QStringList &tipFiles, bool force=false);
+
+    /**
      * Shows a tip.
      *
      * This methods calls showTip() with the applications main window as parent.
