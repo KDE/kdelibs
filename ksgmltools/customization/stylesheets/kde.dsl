@@ -414,7 +414,7 @@
 
 ; === Navigation ===
 (define %header-navigation% #f)
-(define %footer-navigation% #f)
+(define %footer-navigation% #t)
 (define %gentext-nav-use-tables% #f)
 (define %gentext-nav-tblwidth% "50%") ; only effective if %gentext-nav-use-tables% is #t
 
