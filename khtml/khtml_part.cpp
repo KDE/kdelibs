@@ -2884,6 +2884,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    * other places.
    */
 
+  // This causes crashes... needs to be fixed.
+#if 0
   if (u.protocol().left(5) != "https") {
 	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
@@ -2917,6 +2919,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       }
     }
   }
+#endif
 
   // End form security checks
   //
