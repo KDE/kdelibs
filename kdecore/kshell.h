@@ -26,6 +26,7 @@
 
 /**
  * Provides some basic POSIX shell and bash functionality.
+ * @see KStringHandler
  */
 namespace KShell {
 
@@ -112,7 +113,7 @@ namespace KShell {
      *
      * @param argv an array of c strings to quote and join.
      *  The strings are expected to be in local-8-bit encoding.
-     * @param argc maximal number of strings in @argv. if not supplied,
+     * @param argc maximal number of strings in @p argv. if not supplied,
      *  @p argv must be null-terminated.
      * @return a command suitable for shell execution
      */
