@@ -1,8 +1,0 @@
-This needs a makefile.  I'm not sure how to write
-one that will be portable, hoping that some kind
-soul will write one for me.  Only kformulaedit.h
-needs to be moc'ed.
-I will be making updates soon.
-
-    -Ilya Baran
-    ibaran@acs.bu.edu

@@ -19,6 +19,8 @@ int operator==(struct charinfo a, struct charinfo b);
 //this class is for parsing and storing the actual boxes that
 //make up a formula
 
+#define L_GROUP QChar('{')
+#define R_GROUP QChar('}')
 #define L_BRACE_UNSEEN QChar(129)
 #define R_BRACE_UNSEEN QChar(130)
 

@@ -16,8 +16,8 @@ QString KFormulaEdit::clipText;
 #define ALL_CLEAN 2
 
 //easier.
-#define IS_LGROUP(x) ((x) == '{' || (x) == L_BRACE_UNSEEN)
-#define IS_RGROUP(x) ((x) == '}' || (x) == R_BRACE_UNSEEN)
+#define IS_LGROUP(x) ((x) == L_GROUP || (x) == L_BRACE_UNSEEN)
+#define IS_RGROUP(x) ((x) == R_GROUP || (x) == R_BRACE_UNSEEN)
 
 //  The widget works by having an internal string which the user
 //  unwittingly edits.  This string is re-parsed into a formula
@@ -169,10 +169,18 @@ void KFormulaEdit::redraw(int all)
 	else {
 	  tmp = tmp.unite(getCursorPos(i));
 	}
-	if(isInString(i, QString(QChar(SLASH)))) {
+	if(i < QMAX(cursorPos, selectStart) && //actually inside the selection
+	   isInString(i, QString(QChar(SLASH)))) {
 	  //we need its height
-	  tmp = tmp.unite(QRect(tmp.x(), info[i].where->getLastRect().y(),
-				1, info[i].where->getLastRect().height()));
+	  box *b = info[i].where;
+
+	  while(b->getType() != SLASH) {
+	    if(b->getParent() != NULL) b = b->getParent();
+	    else break;
+	  }
+	  
+	  tmp = tmp.unite(QRect(tmp.x(), b->getLastRect().y(),
+				1, b->getLastRect().height()));
 	}
       }
     }
@@ -243,15 +251,16 @@ int KFormulaEdit::isValidCursorPos(int pos)
   if(formText[pos - 1] == L_BRACE_UNSEEN) return 0;
   if(formText[pos] == R_BRACE_UNSEEN) return 0;
 
-  if(formText[pos] == '{' && isInString(pos - 1, KFormula::delim() +
-					KFormula::loc() + QChar(SQRT) +
-					QChar(DIVIDE))) return 0;
-  
-  if(formText[pos - 1] == '}' && isInString(pos, KFormula::delim() +
-					    QChar(SQRT) + QString("[]") +
+  if(formText[pos] == L_GROUP && isInString(pos - 1, KFormula::delim() +
+					    KFormula::loc() + QChar(SQRT) +
 					    QChar(DIVIDE))) return 0;
+  
+  if(formText[pos - 1] == R_GROUP && isInString(pos, KFormula::delim() +
+						QChar(SQRT) + QChar(ABOVE) +
+						QChar(BELOW) +
+						QChar(DIVIDE))) return 0;
 
-  if(formText[pos] == '}' && isInString(pos + 1, KFormula::delim()))
+  if(formText[pos] == R_GROUP && isInString(pos + 1, KFormula::delim()))
     return 0;
 
   return 1;
@@ -291,7 +300,7 @@ int KFormulaEdit::deleteAtCursor()
   //if we happen to be in a right group, this shifts cursor position from
   //"{}/{$}" to "{}$/{}" with $ representing ncpos.  Notice that
   //this may be an invalid cursor position but that doesn't matter.
-  if(cursorPos > 1 && formText[cursorPos] == '}' &&
+  if(cursorPos > 1 && formText[cursorPos] == R_GROUP &&
      isInString(cursorPos - 2, KFormula::delim() + KFormula::loc() +
 		QChar(SQRT) + QChar(DIVIDE)))
     ncpos -= 2;
@@ -878,33 +887,33 @@ void KFormulaEdit::insertChar(QChar c)
     //if user entered a '/' (DIVIDE) then insert curly braces after it
     //and surround some previous text with curly braces.  Example:
     //"1+2^{3}$" -> (user types '/') -> "1+{2^{3}}/{$}".
-    if(c == DIVIDE || c == QChar('[') || c == QChar(']')) {
+    if(c == DIVIDE || c == QChar(ABOVE) || c == QChar(BELOW)) {
       int i, level;
       
       //if there is selected text, put curly braces around that so
       //that the entire selection is the numerator:
       if(textSelected) {
-	formText.insert(QMAX(selectStart, cursorPos), '}');
-	formText.insert(QMIN(selectStart, cursorPos), '{');
+	formText.insert(QMAX(selectStart, cursorPos), R_GROUP);
+	formText.insert(QMIN(selectStart, cursorPos), L_GROUP);
 	cursorPos = QMAX(selectStart, cursorPos) + 2;
       }
       
       formText.insert(cursorPos, c); //insert the slash
       cursorPos++;
       
-      formText.insert(cursorPos, '{');
+      formText.insert(cursorPos, L_GROUP);
       cursorPos++;
-      formText.insert(cursorPos, '}');
+      formText.insert(cursorPos, R_GROUP);
 
       //if there is no selection we identify the numerator:
       if(!textSelected) {
-	formText.insert(cursorPos - 2, '}');
+	formText.insert(cursorPos - 2, R_GROUP);
 	
 	level = 0;
 	
 	for(i = cursorPos - 3; i >= 0; i--) {
-	  if(formText[i] == '}') level++;
-	  if(formText[i] == '{') level--;
+	  if(formText[i] == R_GROUP) level++;
+	  if(formText[i] == L_GROUP) level--;
 	  if(level < 0) break;
 	  if(level == 0 && isInString(i, KFormula::intext())) break;
 	  //the "+-#=<>" are all operators with lower precedence than
@@ -912,7 +921,7 @@ void KFormulaEdit::insertChar(QChar c)
 	  //the numerator (unless they are selected but then we wouldn't
 	  //be here).
 	}
-	formText.insert(i + 1, '{');
+	formText.insert(i + 1, L_GROUP);
 	
 	cursorPos += 2;
       }
@@ -928,9 +937,9 @@ void KFormulaEdit::insertChar(QChar c)
       textSelected = 0;
       formText.insert(cursorPos, c);
       cursorPos++;
-      formText.insert(cursorPos, '{');
+      formText.insert(cursorPos, L_GROUP);
       cursorPos++;
-      formText.insert(cursorPos, '}');
+      formText.insert(cursorPos, R_GROUP);
     }
     
     //these guys need an explicit group preceding, but it's
@@ -940,20 +949,20 @@ void KFormulaEdit::insertChar(QChar c)
       if(!textSelected) {
 	formText.insert(cursorPos, c);
 	cursorPos++;
-	formText.insert(cursorPos - 1, '{');
+	formText.insert(cursorPos - 1, L_GROUP);
 	cursorPos++;
-	formText.insert(cursorPos - 1, '}');
+	formText.insert(cursorPos - 1, R_GROUP);
 	cursorPos++;
-	formText.insert(cursorPos, '{');
+	formText.insert(cursorPos, L_GROUP);
 	cursorPos++;
-	formText.insert(cursorPos, '}');
+	formText.insert(cursorPos, R_GROUP);
       }
       else { //the entire selection ends up as the right operand.
-	formText.insert(QMAX(cursorPos, selectStart), '}');
-	formText.insert(QMIN(cursorPos, selectStart), '{');
+	formText.insert(QMAX(cursorPos, selectStart), R_GROUP);
+	formText.insert(QMIN(cursorPos, selectStart), L_GROUP);
 	formText.insert(QMIN(cursorPos, selectStart), c);
-	formText.insert(QMIN(cursorPos, selectStart), '}');
-	formText.insert(QMIN(cursorPos, selectStart), '{');
+	formText.insert(QMIN(cursorPos, selectStart), R_GROUP);
+	formText.insert(QMIN(cursorPos, selectStart), L_GROUP);
 	cursorPos = QMAX(cursorPos, selectStart) + 5;
 	textSelected = 0;
       }

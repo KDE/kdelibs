@@ -199,11 +199,14 @@ void box::calculate(QPainter &p, int setFontsize)
       tmp2 = b2->getRect();
       
       relx += tmp1.right() + SPACE;
-      b2x += -tmp2.left() + tmp1.right() + SPACE * 2 +
+      b2x += -tmp2.left() + tmp1.right() + SPACE * 3 +
 	QMAX(tmp1.height(), tmp2.height()) / 2;
       tmp2.moveBy(b2x, 0);
 
       rect = tmp1.unite(tmp2);
+
+      rect.setRect(rect.x(), rect.y() - SPACE,
+		   rect.width(), rect.height() + SPACE * 2);
 
       break;
 
@@ -301,9 +304,9 @@ void box::calculate(QPainter &p, int setFontsize)
       rect = b2->getRect();
       rect.setRect(rect.x(), QMIN(rect.top(), -rect.bottom()),
 		   rect.width(), QMAX(-rect.top(), rect.bottom()) * 2);
-      b2x += fontsize / 3 + rect.height() / 10;
-      rect.setRect(rect.x(), rect.y() - b2x,
-		   rect.width() + b2x * 2, rect.height() + b2x * 2);
+      b2x += fontsize / 4 + rect.height() / 10;
+      rect.setRect(rect.x(), rect.y() - b2x * 3 / 4,
+		   rect.width() + b2x * 2, rect.height() + b2x * 3 / 2);
 
       break;
 

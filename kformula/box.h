@@ -67,7 +67,8 @@ public:
   void setText(QString newText);
   void calculate(QPainter &p, int setFontsize = -1);
   QRect getRect() { return rect; }
-  char getType() { return type; }
+  int getType() { return type; }
+  box *getParent() { return parent; }
   QString getText() { return text; }
   void draw(QPainter &p, int x, int y);
 

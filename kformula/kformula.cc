@@ -81,6 +81,7 @@ void KFormula::setPos(int x, int y)
 //recursively output a string that, when parsed, results in the
 //formula.  Pretty self-explanatory.
 //it's not used anywhere now, but it might be useful.
+//it will need to be fixed before it's used
 
 QString KFormula::unparse(box *b)
 {
@@ -153,8 +154,8 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
 
   //make "unseen" braces into regular ones:
   for(i = 0; i < (int)text.length(); i++) {
-    if(text[i] == L_BRACE_UNSEEN) text[i] = QChar('{');
-    if(text[i] == R_BRACE_UNSEEN) text[i] = QChar('}');
+    if(text[i] == L_BRACE_UNSEEN) text[i] = QChar(L_GROUP);
+    if(text[i] == R_BRACE_UNSEEN) text[i] = QChar(R_GROUP);
   }
 
   //search for implicit concatenation:
@@ -165,8 +166,8 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     {
       j = i + 1;
       if(j > (int)text.length() - 1) continue;
-      if(text[j] != '{' && text[i] != '}') continue;
-      if(text[i] == '}' && text[j] == '{') {
+      if(text[j] != L_GROUP && text[i] != R_GROUP) continue;
+      if(text[i] == R_GROUP && text[j] == L_GROUP) {
 	text.insert(j, CAT);
 	INSERTED(j);
       }
@@ -244,16 +245,16 @@ void KFormula::parenthesize(QString &temp, int i, QArray<charinfo> *info)
 
   //search for the left end of the left group
   for(j = i; j >= 0; j--) {
-    if(temp[j] == '}') level++;
-    if(temp[j] == '{') level--;
+    if(temp[j] == R_GROUP) level++;
+    if(temp[j] == L_GROUP) level--;
     if(level < 0) {
-      temp.insert(j + 1, '{');
+      temp.insert(j + 1, L_GROUP);
       INSERTED(j + 1);
       i++;
       break;
     }
     if(j == 0) {
-      temp.insert(j, '{');
+      temp.insert(j, L_GROUP);
       INSERTED(j);
       i++;
       break;
@@ -261,26 +262,26 @@ void KFormula::parenthesize(QString &temp, int i, QArray<charinfo> *info)
   }
   //insert the right brace of the left group and the left brace of the
   //right group:
-  temp.insert(i, '}');
+  temp.insert(i, R_GROUP);
   INSERTED(i); i++;
-  temp.insert(i + 1, '{');
+  temp.insert(i + 1, L_GROUP);
   INSERTED(i + 1); i++;
   level = 0;
 
   //now search for the right end of the right group
   for(j = i + 1; j <= (int)temp.length(); j++) {
-    if(j < (int)temp.length() && temp[j] == '{') level++;
-    if(j < (int)temp.length() && temp[j] == '}') level--;
+    if(j < (int)temp.length() && temp[j] == L_GROUP) level++;
+    if(j < (int)temp.length() && temp[j] == R_GROUP) level--;
 
     if(level < 0) {
-      temp.insert(j, '}');
+      temp.insert(j, R_GROUP);
       INSERTED(j);
       i++;
       break;
     }
 
     if(j == (int)temp.length()) {
-      temp.insert(j, '}');
+      temp.insert(j, R_GROUP);
       INSERTED(j);
       i++;
       break;
@@ -317,7 +318,7 @@ box * KFormula::makeBoxes(QString str, int offset,
     return boxes[boxes.size() - 1];
   }
 
-  if(str[0] != '{') { //we have a literal--make a TEXT box:
+  if(str[0] != L_GROUP) { //we have a literal--make a TEXT box:
     boxes.resize(boxes.size() + 1);
     boxes[boxes.size() - 1] = new box(str.left(maxlen));
 
@@ -336,8 +337,8 @@ box * KFormula::makeBoxes(QString str, int offset,
 
   //find toplevel:  in "{{x}*{y}}+{3}" toplevel = 9, the +
   for(i = 0; i < maxlen; i++) {
-    if(str[i] == '{') level++;
-    if(str[i] == '}') level--;
+    if(str[i] == L_GROUP) level++;
+    if(str[i] == R_GROUP) level--;
 
     if(level == 0 && i < maxlen - 1) {
       toplevel = i + 1;
