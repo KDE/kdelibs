@@ -40,7 +40,7 @@ void (*emergencySaveFunction) (int);
 void
 setEmergencySaveFunction (void (*saveFunction) (int))
 {
-  if (saveFunction == KDE_SAVE_NONE)
+  if ((kdesignal_t)saveFunction == KDE_SAVE_NONE)
     {
       emergencySaveFunction = KDE_SAVE_NONE;
     }
