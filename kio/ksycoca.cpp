@@ -31,6 +31,7 @@
 #include <dcopclient.h>
 #include <kglobal.h>
 #include <kdebug.h>
+#include <kprocess.h>
 #include <kstddirs.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -73,7 +74,7 @@ bool KSycoca::openDatabase( bool ignoreErrors )
    {
      m_sycoca_size = database->size();
 #ifdef HAVE_MMAP
-     m_sycoca_mmap = (const char *) mmap(0, m_sycoca_size, 
+     m_sycoca_mmap = (const char *) mmap(0, m_sycoca_size,
 				PROT_READ, MAP_SHARED,
 				database->handle(), 0);
      if (!m_sycoca_mmap)
@@ -91,7 +92,7 @@ bool KSycoca::openDatabase( bool ignoreErrors )
         buffer->open(IO_ReadWrite);
         m_str = new QDataStream( buffer);
      }
-#endif   
+#endif
      bNoDatabase = false;
    }
    else
@@ -239,7 +240,9 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
 {
    if (!checkVersion(false))
    {
-      system("kdeinit");
+      KProcess proc;
+      proc << locate("exe","kdeinit");
+      proc.start( KProcess::Block );
       checkVersion();
    }
    Q_INT32 aId;
