@@ -153,7 +153,7 @@ public:
     virtual QString state() { return QString::null; }
 
     virtual void attach(KHTMLView *w);
-    virtual void detach(); 
+    virtual void detach();
 
 protected: // member variables
 

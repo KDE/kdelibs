@@ -41,6 +41,11 @@ DOMStringImpl::DOMStringImpl(QChar *str, uint len)
     s = str, l = len;
 }
 
+DOMStringImpl::~DOMStringImpl() 
+{ 
+    if(s) delete [] s; 
+}
+
 void DOMStringImpl::append(DOMStringImpl *str)
 {
     if(str && str->l != 0)
@@ -91,7 +96,7 @@ void DOMStringImpl::remove(uint pos, int len)
   if(pos >= l ) return;
   if(pos+len > l)
     len = l - pos;
-  
+
   uint newLen = l-len;
   QChar *c = QT_ALLOC_QCHAR_VEC(newLen);
   memcpy(c, s, pos*sizeof(QChar));
@@ -108,7 +113,7 @@ DOMStringImpl *DOMStringImpl::split(uint pos)
   uint newLen = l-pos;
   QChar *c = QT_ALLOC_QCHAR_VEC(newLen);
   memcpy(c, s+pos, newLen*sizeof(QChar));
-  
+
   truncate(pos);
   return new DOMStringImpl(c, newLen);
 }
@@ -141,7 +146,8 @@ static Length parseLength(QChar *s, unsigned int l)
         //  42.2%, but not 42.22%
         // we ignore the non-integer part for speed/space reasons
         int i = QConstString(s, l).string().findRev('.');
-        if(i >= 0 && i<l-1)  l = i + 1;
+        if ( i >= 0 && i < (int)l-1 ) 
+	    l = i + 1;
 
 	return Length(QConstString(s, l-1).string().toInt(), Percent);
     }

@@ -94,7 +94,7 @@ QByteArray HTMLFormElementImpl::formData()
     RenderFormElement *current = formElements.first();
     for( ; current; current = formElements.next() )
     {
-	kdDebug( 6030 ) << "getting data from " << current << " name = " << current->name().string() << " type = " << current->type() << endl;
+	kdDebug( 6030 ) << "getting data from " << current << " name = " << current->name().string() << " type = " << (int) current->type() << endl;
 
         if( current->type() == RenderFormElement::HiddenButton || current->isEnabled() ) {
             QCString enc(current->encoding());

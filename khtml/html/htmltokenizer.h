@@ -45,17 +45,17 @@ class StringTokenizer;
 class HTMLTokenizer;
 
 #include <qstring.h>
+#include <qobject.h>
 
 #include "stringit.h"
-#include "htmltoken.h"
-#include "htmlparser.h"
-#include "loader.h"
+#include "loader_client.h"
 
 class KHTMLParser;
 class KHTMLView;
 
 namespace khtml {
     class CachedScript;
+    class Token;
 }
 
 // The count of spaces used for each tab.
@@ -210,7 +210,7 @@ protected:
 
     // Are we in a <textarea> ... </textarea> block
     bool textarea;
-    
+
     // Used to store the code of a srcipting sequence
     QChar *scriptCode;
     // Size of the script sequenze stored in @ref #scriptCode
@@ -240,7 +240,7 @@ protected:
     khtml::CachedScript *cachedScript;
 
     QString scriptOutput;
-    
+
     QChar entityBuffer[10];
     uint entityPos;
 

@@ -27,6 +27,7 @@
 #include "khtml_part.h"
 #include "khtml_settings.h"
 #include "misc/htmlattrs.h"
+#include "misc/loader.h"
 
 #include "htmlparser.h"
 #include "htmltokenizer.h"
@@ -144,7 +145,7 @@ HTMLElementImpl *HTMLDocumentImpl::html()
 }
 
 
-void HTMLDocumentImpl::setBody(const HTMLElement &_body)
+void HTMLDocumentImpl::setBody(const HTMLElement &/*_body*/)
 {
     // ###
 }
@@ -483,6 +484,8 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
 
-
-
+void HTMLDocumentImpl::setReloading()
+{
+    m_docLoader->reloading = true;
+}
 

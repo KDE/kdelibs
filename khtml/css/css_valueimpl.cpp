@@ -29,6 +29,8 @@
 #include "dom_string.h"
 #include "dom_stringimpl.h"
 
+#include "misc/loader.h"
+
 #include <kdebug.h>
 
 #include "cssvalues.h"

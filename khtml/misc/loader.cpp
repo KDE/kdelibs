@@ -42,6 +42,7 @@
 #include <qasyncimageio.h>
 #include <qpainter.h>
 #include <qbitmap.h>
+#include <qmovie.h>
 
 #include <kio/job.h>
 #include <kdebug.h>

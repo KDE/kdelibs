@@ -64,20 +64,20 @@ void RenderImage::setPixmap( const QPixmap &p, CachedObject *o, bool *manualUpda
 	RenderReplaced::setPixmap(p, o);
 
     // Image dimensions have been changed, recalculate layout
-    //kdDebug( 6040 ) << "Image: setPixmap" << endl;
+    kdDebug( 6040 ) << "Image: setPixmap" << endl;
     if(p.width() != pixmap.width() || p.height() != pixmap.height())
     {	
-//    	kdDebug( 6040 ) << "Image: newSize" << p.width() << endl;
+    	kdDebug( 6040 ) << "Image: newSize" << p.width() << endl;
 	pixmap = p;
 	setLayouted(false);
 	setMinMaxKnown(false);
 	layout();
 	// the updateSize() call should trigger a repaint too
-        if (manualUpdate) 
+        if (manualUpdate)
         {
            *manualUpdate = true;
-        } 
-        else 
+        }
+        else
         {
            updateSize();	
 	   repaintRectangle(0, 0, m_width, m_height); //should not be needed!
@@ -308,7 +308,7 @@ void RenderImage::setAlt(DOM::DOMString text)
 
 short RenderImage::baselineOffset() const
 {
-    switch(vAlign())
+    switch(m_style->verticalAlign())
     {
     case BASELINE:
     case SUB:

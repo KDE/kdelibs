@@ -27,18 +27,7 @@
 #ifndef HTML_TABLEIMPL_H
 #define HTML_TABLEIMPL_H
 
-#include <qcolor.h>
-#include <qvector.h>
-#include <qdatetime.h>
-#include <qpixmap.h>
-
-#include "dtd.h"
 #include "html_elementimpl.h"
-#include "misc/loader.h"
-
-#include <stdio.h>
-
-#include "rendering/render_style.h"
 
 namespace DOM {
 

@@ -27,13 +27,17 @@
 
 #include "dtd.h"
 #include "dom_docimpl.h"
-#include "misc/loader.h"
+#include "misc/loader_client.h"
 
 #include "html_baseimpl.h"
 
 class KHTMLParser;
 class HTMLTokenizer;
 class KHTMLView;
+
+namespace khtml {
+    class DocLoader;
+};
 
 namespace DOM {
 
@@ -109,7 +113,7 @@ public:
     CSSStyleSheetImpl* elementSheet();
 
     khtml::DocLoader *docLoader() { return m_docLoader; }
-    void setReloading() { m_docLoader->reloading = true; }
+    void setReloading();
     virtual bool childAllowed( NodeImpl *newChild );
 
 signals:
@@ -127,7 +131,7 @@ protected:
     HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
     DOMString url;
-    
+
     StyleSheetImpl *m_sheet;
     bool m_loadingSheet;
 

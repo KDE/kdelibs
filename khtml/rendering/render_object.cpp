@@ -22,13 +22,15 @@
  * $Id$
  */
 
-#include "dom_nodeimpl.h"
 #include "render_object.h"
+
+#include "dom_nodeimpl.h"
 #include "render_box.h"
 #include "render_flow.h"
 #include "render_style.h"
 #include "render_table.h"
 #include "render_list.h"
+#include "render_style.h"
 
 #include <kdebug.h>
 #include <qnamespace.h>
@@ -264,16 +266,16 @@ RenderObject *RenderObject::containingBlock() const
     if(isTableCell()) {
 	return static_cast<const RenderTableCell *>(this)->table();
     }
-    
+
     RenderObject *o = parent();
     if(m_style->position() == FIXED) {
 	// ### containing block is viewport
     }
     else if(m_style->position() == ABSOLUTE) {
-	while (o && o->style()->position() == STATIC && !o->isRoot()) 
+	while (o && o->style()->position() == STATIC && !o->isRoot())
 	    o = o->parent();
     } else {
-	while(o && o->style()->display() == INLINE) 
+	while(o && o->style()->display() == INLINE)
 	    o = o->parent();
     }
     // this is just to make sure we return a valid element.

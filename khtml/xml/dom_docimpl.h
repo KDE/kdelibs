@@ -24,7 +24,6 @@
 #define _DOM_DocumentImpl_h_
 
 #include "dom_nodeimpl.h"
-#include "dom_string.h"
 
 #include <qlist.h>
 #include <qstringlist.h>

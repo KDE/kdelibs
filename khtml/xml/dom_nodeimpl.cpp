@@ -23,9 +23,7 @@
 #include "dom_nodeimpl.h"
 
 #include "dom_node.h"
-#include "dom_element.h"
 #include "dom_exception.h"
-#include "dom_string.h"
 
 #include "dom_elementimpl.h"
 #include "dom_docimpl.h"
@@ -33,7 +31,6 @@
 #include <kdebug.h>
 
 #include "rendering/render_object.h"
-#include <qstring.h>
 #include <qrect.h>
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
@@ -214,7 +211,7 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
         if( nodeType() == Node::ELEMENT_NODE )
         {
             int lattrs = 0;
-            ElementImpl *el = (ElementImpl*)this;
+            ElementImpl *el = static_cast<ElementImpl *>(this);
             AttrImpl *attr;
             NamedNodeMapImpl *attrs = static_cast<NamedNodeMapImpl*>(el->attributes());
             unsigned long lmap = attrs->length();

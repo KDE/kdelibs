@@ -36,8 +36,11 @@
 
 #include "htmltokenizer.h"
 #include "htmltoken.h"
+#include "misc/loader.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "htmlparser.h"
+#include "htmltoken.h"
 #include "html_documentimpl.h"
 #include "dtd.h"
 #include "htmlhashes.h"

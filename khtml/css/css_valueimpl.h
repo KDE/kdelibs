@@ -24,12 +24,15 @@
 #define _CSS_css_valueimpl_h_
 
 #include <css_value.h>
-//#include <css_stylesheetimpl.h>
 #include "dom_string.h"
 #include "cssparser.h"
-#include "misc/loader.h"
+#include "misc/loader_client.h"
 
 #include <qintdict.h>
+
+namespace khtml {
+    class CachedImage;
+};
 
 namespace DOM {
 

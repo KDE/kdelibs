@@ -136,8 +136,8 @@ int RenderBox::contentHeight() const
 QSize RenderBox::contentOffset() const
 {
     // ###
-    int xOff = 0;
-    int yOff = 0;
+    //int xOff = 0;
+    //int yOff = 0;
     return QSize(0, 0);
 }
 
@@ -368,7 +368,7 @@ void RenderBox::position(int x, int y, int, int, int, bool)
 
 short RenderBox::verticalPositionHint() const
 {
-    switch(vAlign())
+    switch(m_style->verticalAlign())
     {
     case BASELINE:
 	//kdDebug( 6040 ) << "aligned to baseline" << endl;
@@ -394,7 +394,7 @@ short RenderBox::verticalPositionHint() const
 
 short RenderBox::baselineOffset() const
 {
-    switch(vAlign())
+    switch(m_style->verticalAlign())
     {
     case BASELINE:
 //	kdDebug( 6040 ) << "aligned to baseline" << endl;
@@ -452,13 +452,13 @@ void RenderBox::relativePositionOffset(int &tx, int &ty)
 	tx -= m_style->right().width(containingBlockWidth());
     if(!m_style->top().isVariable())
     {
-    	if (!m_style->top().isPercent() 
+    	if (!m_style->top().isPercent()
 	    	|| containingBlock()->style()->height().isFixed())
 	    ty += m_style->top().width(containingBlockHeight());
     }
     else if(!m_style->bottom().isVariable())
     {
-    	if (!m_style->bottom().isPercent() 
+    	if (!m_style->bottom().isPercent()
 	    	|| containingBlock()->style()->height().isFixed())
 	    ty -= m_style->bottom().width(containingBlockHeight());
     }
@@ -563,7 +563,7 @@ void RenderBox::calcAbsoluteVertical()
     if (m_height<h)
     	m_height = h;
 
-    
+
 
     m_y = t + marginTop() +
     	containingBlock()->paddingTop() + containingBlock()->borderTop();

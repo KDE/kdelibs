@@ -1104,7 +1104,7 @@ void RenderTable::calcRowHeight(int r)
 	    continue;
 	if ( c < totalCols - 1 && cell == cells[r][c+1] )
 	    continue;
-	if ( r < totalRows - 1 && cells[r+1][c] == cell )
+	if ( r < (int)totalRows - 1 && cells[r+1][c] == cell )
 	    continue;
 
 	if ( ( indx = r - cell->rowSpan() + 1 ) < 0 )
@@ -1121,7 +1121,7 @@ void RenderTable::calcRowHeight(int r)
 	    rowHeights[r+1] = rowPos;
 
 	// find out the baseline
-	EVerticalAlign va = cell->vAlign();
+	EVerticalAlign va = cell->style()->verticalAlign();
 	if (va == BASELINE || va == TEXT_BOTTOM || va == TEXT_TOP
 	    || va == SUPER || va == SUB)
 	{
@@ -1151,7 +1151,7 @@ void RenderTable::calcRowHeight(int r)
 	rowHeights[r+1] = rowHeights[r];
 	
     // html tables with percent height are relative to view
-    if (r+1==totalRows)
+    if (r+1 == (int)totalRows)
     {
     	Length h = style()->height();
 	int th=0;
@@ -1238,7 +1238,7 @@ void RenderTable::layoutRow(int r)
             continue;
 	if ( c < totalCols - 1 && cell == cells[r][c+1] )
 	    continue;
-	if ( r < totalRows - 1 && cell == cells[r+1][c] )
+	if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
 	    continue;
 	
 	cell->layout(true);
@@ -1255,7 +1255,7 @@ void RenderTable::layoutRow(int r)
             continue;
 	if ( c < totalCols - 1 && cell == cells[r][c+1] )
 	    continue;
-	if ( r < totalRows - 1 && cell == cells[r+1][c] )
+	if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
 	    continue;
 
 	if ( ( indx = c-cell->colSpan()+1 ) < 0 )
@@ -1268,7 +1268,7 @@ void RenderTable::layoutRow(int r)
 	rHeight = rowHeights[r+1] - rowHeights[rindx] -
 	    spacing;
 
-	EVerticalAlign va = cell->vAlign();
+	EVerticalAlign va = cell->style()->verticalAlign();
 	int te=0;
 	switch (va)
 	{
@@ -1322,7 +1322,7 @@ void RenderTable::refreshRow(int r)
             continue;
 	if ( c < totalCols - 1 && cell == cells[r][c+1] )
 	    continue;
-	if ( r < totalRows - 1 && cell == cells[r+1][c] )
+	if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
 	    continue;
 	
 	cell->calcMinMaxWidth();

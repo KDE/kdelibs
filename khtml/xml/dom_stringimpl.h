@@ -26,7 +26,9 @@
 #include <qstring.h>
 #include <dom_misc.h>
 #include <khtmllayout.h>
-#include <qlist.h>
+
+template<class type> class QList; 
+class QChar;
 
 namespace DOM {
 
@@ -35,16 +37,16 @@ class DOMStringImpl : public DomShared
 protected:
     DOMStringImpl() { s = 0, l = 0; }
 public:
-    DOMStringImpl(QChar *str, uint len);
-    virtual ~DOMStringImpl() { if(s) delete [] s; }
+    DOMStringImpl(QChar *str, unsigned int len);
+    virtual ~DOMStringImpl();
 
     void append(DOMStringImpl *str);
-    void insert(DOMStringImpl *str, uint pos);
+    void insert(DOMStringImpl *str, unsigned int pos);
     void truncate(int len);
-    void remove(uint pos, int len=1);
-    DOMStringImpl *split(uint pos);
+    void remove(unsigned int pos, int len=1);
+    DOMStringImpl *split(unsigned int pos);
     DOMStringImpl *copy() const;
-    DOMStringImpl *substring(uint pos, uint len);
+    DOMStringImpl *substring(unsigned int pos, unsigned int len);
 
     const QChar &operator [] (int pos)
 	{ return *(s+pos); }
@@ -53,7 +55,7 @@ public:
     int toInt() const;
     QList<khtml::Length> *toLengthList() const;
 
-    uint l;
+    unsigned int l;
     QChar *s;
 };
 

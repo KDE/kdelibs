@@ -98,7 +98,7 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
 short RenderWidget::verticalPositionHint() const
 {
     assert(!deleted);
-    switch(vAlign())
+    switch(m_style->verticalAlign())
     {
     case BASELINE:
 	//kdDebug( 6040 ) << "aligned to baseline" << endl;

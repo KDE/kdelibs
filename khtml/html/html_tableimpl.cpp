@@ -24,6 +24,7 @@
  *
  * $Id$
  */
+#include "html_tableimpl.h"
 
 #include <qlist.h>
 #include <qstack.h>
@@ -41,7 +42,6 @@
 #include "html_misc.h"
 #include "html_element.h"
 #include "html_table.h"
-#include "html_tableimpl.h"
 #include "html_documentimpl.h"
 using namespace DOM;
 

@@ -35,8 +35,10 @@
 #include "dom_exception.h"
 #include "dom_nodeimpl.h"
 #include "html_documentimpl.h"
+#include "misc/loader.h"
 
 #include <kdebug.h>
+
 
 using namespace DOM;
 using namespace khtml;

@@ -50,6 +50,8 @@
 #include <qpoint.h>
 #include <qregion.h>
 
+#include <stdlib.h>
+
 using namespace DOM;
 using namespace khtml;
 

@@ -30,9 +30,7 @@
 
 #include "css/cssstyleselector.h"
 #include "rendering/render_object.h"
-#include "rendering/render_style.h"
 #include "misc/htmlhashes.h"
-#include <iostream.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -471,7 +469,7 @@ void ElementImpl::attach(KHTMLView *w)
     NodeBaseImpl::attach(w);
 }
 
-void ElementImpl::detach() 
+void ElementImpl::detach()
 {
     if(m_render) m_render->deref();
     m_render = 0;

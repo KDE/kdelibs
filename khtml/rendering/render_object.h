@@ -24,21 +24,17 @@
 #ifndef render_object_h
 #define render_object_h
 
-#include "dom_misc.h"
-#include "dom_nodeimpl.h"
-
 #include <qcolor.h>
 #include <qsize.h>
 #include <qrect.h>
 
+#include "xml/dom_nodeimpl.h"
+#include "misc/khtmllayout.h"
+#include "misc/loader_client.h"
+
 #include "render_style.h"
 
-#include "misc/khtmllayout.h"
-#include "misc/loader.h"
-
 #include "bidi.h"
-
-#include <stdio.h>
 
 class QPainter;
 class QPixmap;
@@ -48,11 +44,11 @@ class KHTMLView;
 namespace DOM {
     class DOMString;
     class NodeImpl;
-    enum ActivationState;
 };
 
 namespace khtml {
 
+    class RenderStyle;
     class RenderTable;
     class CachedObject;
 
@@ -296,9 +292,6 @@ public:
     virtual short maxWidth() const { return 0; }
     virtual void setMinWidth(short) { }
     virtual void setMaxWidth(short) { }
-
-    virtual EVerticalAlign vAlign() const { return m_style->verticalAlign(); }
-    virtual ETextAlign hAlign() const { return m_style->textAlign(); }
 
     virtual RenderStyle* style() const { return m_style; }
 

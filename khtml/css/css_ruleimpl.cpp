@@ -27,6 +27,8 @@
 #include "css_valueimpl.h"
 #include "cssparser.h"
 
+#include "misc/loader.h"
+
 #include "dom_exception.h"
 #include "dom_string.h"
 using namespace DOM;

@@ -24,11 +24,8 @@
 #ifndef _DOM_NodeImpl_h_
 #define _DOM_NodeImpl_h_
 
-
 #include "dom/dom_misc.h"
-#include "dom/dom_node.h"
 #include "dom/dom_string.h"
-#include <qstring.h>
 
 class QPainter;
 class KHTMLView;
@@ -41,7 +38,6 @@ namespace khtml {
 
 namespace DOM {
 
-class DOMString;
 class NodeListImpl;
 class NamedNodeMapImpl;
 class DocumentImpl;
@@ -231,7 +227,7 @@ public:
     virtual void applyChanges(bool top = true, bool force = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
     virtual QRect getRect();
-    
+
     void setKeyboardFocus(ActivationState b=ActivationPassive);
 
 protected:

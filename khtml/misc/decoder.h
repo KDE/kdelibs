@@ -23,7 +23,8 @@
 #ifndef KHTMLDECODER_H
 #define KHTMLDECODER_H
 
-#include <qtextcodec.h>
+#include <qstring.h>
+class QTextCodec;
 
 namespace khtml {
 /**

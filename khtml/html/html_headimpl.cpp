@@ -34,6 +34,8 @@ using namespace DOM;
 #include "khtml_part.h"
 #include "htmlhashes.h"
 
+#include "misc/loader.h"
+
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 using namespace khtml;

@@ -23,7 +23,6 @@
 
 #include "dom_string.h"
 #include "dom_stringimpl.h"
-#include <qstring.h>
 using namespace DOM;
 
 

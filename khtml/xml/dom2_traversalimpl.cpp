@@ -34,6 +34,7 @@ NodeIteratorImpl::NodeIteratorImpl()
 }
 
 NodeIteratorImpl::NodeIteratorImpl(const NodeIteratorImpl &other)
+    : DomShared(other)
 {
   referenceNode = other.referenceNode;
   rootNode = other.rootNode;
@@ -313,7 +314,7 @@ NodeFilterImpl::~NodeFilterImpl()
 {
 }
 
-short NodeFilterImpl::acceptNode(const Node &n)
+short NodeFilterImpl::acceptNode(const Node &)
 {
     return NodeFilter::FILTER_ACCEPT;
 }

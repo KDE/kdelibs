@@ -920,7 +920,7 @@ RenderFlow::clearFloats()
 
 short RenderFlow::baselineOffset() const
 {
-    switch(vAlign())
+    switch(m_style->verticalAlign())
     {
     case BASELINE:
     	{	

@@ -24,7 +24,6 @@
 #define _DOM_DOMString_h_
 
 #include <qstring.h>
-#include <stdlib.h>
 
 namespace khtml {
     class Attribute;

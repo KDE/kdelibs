@@ -27,7 +27,11 @@
 //#include <css_stylesheetimpl.h>
 #include <css_rule.h>
 #include "cssparser.h"
-#include "misc/loader.h"
+#include "misc/loader_client.h"
+
+namespace khtml {
+    class CachedCSSStyleSheet;
+};
 
 namespace DOM {
 

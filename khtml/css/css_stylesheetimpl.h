@@ -28,7 +28,12 @@
 #include <dom_string.h>
 
 #include "cssparser.h"
-#include "misc/loader.h"
+#include "misc/loader_client.h"
+
+namespace khtml {
+    class CachedCSSStyleSheet;
+    class DocLoader;
+};
 
 namespace DOM {
 

@@ -736,7 +736,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
   emit d->m_extension->enableAction( "print", true );
-  
+
   d->m_bParsing = true;
 }
 
@@ -764,7 +764,7 @@ void KHTMLPart::write( const char *str, int len )
       const QTextCodec *c = d->m_decoder->codec();
       kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
       d->m_settings->setCharset( KGlobal::charsets()->charsetForEncoding(c->name()) );
-      kdDebug(6005) << "charset is " << d->m_settings->charset() << endl;
+      kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
       d->m_doc->applyChanges(true, true);
       d->m_haveEncoding = true;
   }

@@ -26,7 +26,6 @@
 
 #include "dtd.h"
 #include "html_elementimpl.h"
-#include "misc/loader.h"
 #include "html_documentimpl.h"
 
 #include <qmap.h>

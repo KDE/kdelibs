@@ -24,17 +24,21 @@
 #ifndef _khtml_loader_h
 #define _khtml_loader_h
 
+#include "loader_client.h"
+
 #include <qlist.h>
+#include <qobject.h>
 #include <qptrdict.h>
 #include <qdict.h>
 #include <qpixmap.h>
-#include <qmovie.h>
 #include <qbuffer.h>
 #include <qstringlist.h>
 
 #include <kurl.h>
 
 #include <dom/dom_string.h>
+
+class QMovie;
 
 namespace KIO {
   class Job;
@@ -50,20 +54,6 @@ namespace khtml
 {
     class CachedObject;
     class Request;
-
-    /**
-     * @internal
-     *
-     * a client who wants to load stylesheets, images or scripts from the web has to
-     * inherit from this class and overload one of the 3 functions
-     */
-    class CachedObjectClient
-    {
-    public:
-	virtual void setPixmap(const QPixmap &, CachedObject *, bool * = 0) {}
-	virtual void setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
-	virtual void notifyFinished(CachedObject */*finishedObj*/) {}
-    };
 
     /**
      * @internal
