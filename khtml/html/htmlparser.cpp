@@ -625,7 +625,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
             switch(id)
             {
             case ID_COMMENT:
-                break;
+		case ID_FONT:
             case ID_COL:
             case ID_COLGROUP:
             case ID_P:
@@ -641,7 +641,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
             switch(id)
             {
             case ID_COMMENT:
-                break;
+		case ID_FONT:
             case ID_COL:
             case ID_COLGROUP:
             case ID_P:
