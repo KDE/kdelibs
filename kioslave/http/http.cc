@@ -70,8 +70,12 @@
 #include "http.h"
 
 #ifdef HAVE_LIBGSSAPI
+#ifdef GSSAPI_MIT
+#include <gssapi/gssapi.h>
+#else
 #include <gssapi.h>
-#endif
+#endif /* GSSAPI_MIT */
+#endif /* HAVE_LIBGSSAPI */
 
 using namespace KIO;
 

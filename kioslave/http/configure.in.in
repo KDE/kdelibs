@@ -31,6 +31,11 @@ if test "x$with_gssapi" = "xCHECK" ; then
     gssapi_incdir="$GSSAPI_INCS"
     gssapi_libdir="$GSSAPI_LIBS"
     with_gssapi=FOUND
+    if "$KRB5_CONFIG --vendor" | grep "Massachusetts" > /dev/null; then
+      gssapi_flavor=MIT
+    else
+      gssapi_flavor=HEIMDAL
+    fi
   else
     search_incs="$kde_includes /usr/include /usr/local/include"
     AC_FIND_FILE(gssapi.h, $search_incs, gssapi_incdir)
@@ -50,6 +55,7 @@ if test "x$with_gssapi" = "xCHECK" ; then
           fi
           GSSAPI_LIBS="${GSSAPI_LIBS}-lgssapi -lkrb5 -lasn1 -lcrypto -lroken -lcrypt ${LIBRESOLV}"
           with_gssapi=FOUND
+          gssapi_flavor=HEIMDAL
           break
         fi
       done
@@ -79,7 +85,16 @@ NOTFOUND) AC_MSG_RESULT(searched but not found) ;;
         GSSAPI_RPATH="-R ${GSSAPI_ROOT}/lib"
       fi
     fi
-    GSSAPI_LIBS="${GSSAPI_LIBS}-lgssapi -lkrb5 -lasn1 -lcrypto -lroken -lcrypt ${LIBRESOLV}"
+    if test -f ${GSSAPI_ROOT}/include/gssapi/gssapi.h ; then
+      gssapi_flavor=MIT
+      GSSAPI_LIBS="${GSSAPI_LIBS}-lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err ${LIBRESOLV}"
+    else
+      gssapi_flavor=HEIMDAL
+      GSSAPI_LIBS="${GSSAPI_LIBS}-lgssapi -lkrb5 -lasn1 -lcrypto -lroken -lcrypt ${LIBRESOLV}"
+    fi
+  fi
+  if test "x$gssapi_flavor" = "xMIT" ; then
+    AC_DEFINE_UNQUOTED(GSSAPI_MIT, 1, [Define if you have the MIT Kerberos libraries])
   fi
   AC_DEFINE_UNQUOTED(HAVE_LIBGSSAPI, 1, [Define if you have GSSAPI libraries])
   AC_MSG_RESULT($msg)
