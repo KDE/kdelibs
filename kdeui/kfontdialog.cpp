@@ -83,6 +83,7 @@ class KFontChooser::KFontChooserPrivate
 {
 public:
     KFontChooserPrivate() { m_color = Qt::black; }
+    QLabel *charsetLabel;
     QColor m_color;
 };
 
@@ -185,9 +186,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 	   SLOT(size_chosen_slot(const QString&)) );
 
   row ++;
-  charsetLabel = new QLabel( page, "charsetLabel");
-  charsetLabel->setText(i18n("Character set:"));
-  gridLayout->addWidget(charsetLabel, 3, 0, AlignRight);
+  d->charsetLabel = new QLabel( page, "charsetLabel");
+  d->charsetLabel->setText(i18n("Character set:"));
+  gridLayout->addWidget(d->charsetLabel, 3, 0, AlignRight);
   charsetsCombo = new QComboBox(true, page, "charsetsCombo");
   gridLayout->addMultiCellWidget(charsetsCombo, 3, 3, 1, 2);
   charsetsCombo->setInsertionPolicy(QComboBox::NoInsertion);
@@ -278,7 +279,7 @@ void KFontChooser::enableColumn( int column, bool state )
   }
   if( column & CharsetList )
   {
-    charsetLabel->setEnabled(state);
+    d->charsetLabel->setEnabled(state);
     charsetsCombo->setEnabled(state);
   }
 }
@@ -576,6 +577,10 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.62  2001/05/22 13:05:26  faure
+* There was no objection, so I'm committing the patch for changing the color
+* of the text in the preview.
+*
 * Revision 1.61  2001/04/11 14:50:21  haeckel
 * Add the ability to disable the charset combo.
 *

@@ -218,7 +218,6 @@ private:
   QLabel       *familyLabel;
   QLabel       *styleLabel;
   QLabel       *sizeLabel;
-  QLabel       *charsetLabel;
   KListBox     *familyListBox;
   KListBox     *styleListBox;
   KListBox     *sizeListBox;
