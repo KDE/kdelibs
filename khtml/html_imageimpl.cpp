@@ -598,7 +598,7 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     }
     if (region.contains(QPoint(x_,y_)))
     {
-    	cout << "region hit, url " << QConstString(href->s, href->l).string() << endl;
+        //cout << "region hit, url " << QConstString(href->s, href->l).string() << endl;
     	inside = true;
 	if(target && href)
 	{
@@ -616,13 +616,13 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
 {
     QRegion region;
-    cout << "getting region" << endl;
+    //cout << "getting region" << endl;
     if (!coords)
     	return region;
 
     if (shape==Poly)
     {
-    	cout << " poly " << endl;	
+        //cout << " poly " << endl;	
 	bool xcoord=true;
 	int xx = 0, yy = 0; // shut up egcs...
 	int i=0;
@@ -646,7 +646,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
     }
     else if (shape==Rect && coords->count()>=4)
     {
-    	cout << " rect " << endl;
+        //cout << " rect " << endl;
     	int x0 = coords->at(0)->minWidth(width_);
 	int y0 = coords->at(1)->minWidth(height_);
 	int x1 = coords->at(2)->minWidth(width_);
@@ -655,7 +655,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
     }
     else if (shape==Circle && coords->count()>=3)
     {
-    	cout << " circle " << endl;
+    	//cout << " circle " << endl;
     	int cx = coords->at(0)->minWidth(width_);
 	int cy = coords->at(1)->minWidth(height_);
 	int r1 = coords->at(2)->minWidth(width_);
