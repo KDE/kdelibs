@@ -1,0 +1,5 @@
+[Misc]
+Name=Qt Motif Plus
+Comment=Built-in enhanced Motif style
+[KDE]
+widgetStyle=MotifPlus

@@ -1,0 +1,5 @@
+[Misc]
+Name=Qt SGI
+Comment=Built-in SGI style
+[KDE]
+widgetStyle=Qt SGI
