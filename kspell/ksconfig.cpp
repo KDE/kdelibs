@@ -13,6 +13,7 @@
 #include "ksconfig.h"
 
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
+	: QWidget(0, 0)
 {  
   setNoRootAffix (_ksc.noRootAffix());
   setRunTogether (_ksc.runTogether());

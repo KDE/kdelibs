@@ -415,8 +415,8 @@ protected:
 
 private:
   // Disabled copy constructor and operator=
-  KTabListBox (const KTabListBox &) {}
-  KTabListBox& operator= (const KTabListBox&) { return *this; }
+  KTabListBox (const KTabListBox &);
+  KTabListBox& operator= (const KTabListBox&);
 };
 
 

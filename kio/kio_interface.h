@@ -242,57 +242,57 @@ public:
   // Commands
   ///////////
 
-  virtual void slotGet( const char *_url ) { };
-  virtual void slotGetSize( const char *_url ) { };
-  virtual void slotPut( const char *_url, int _mode,
-			bool _overwrite, bool _resume, int _size) { };
-  virtual void slotCopy( const char* _source, const char *_dest ) { };
-  virtual void slotCopy( list<string>& _source, const char *_dest ) { };
-  virtual void slotMove( const char *_source, const char *_dest ) { };
-  virtual void slotMove( list<string>& _source, const char *_dest ) { };
-  virtual void slotDel( const char *_url ) { };
-  virtual void slotDel( list<string>& _source ) { };
-  virtual void slotListDir( const char *_url ) { };
-  virtual void slotMkdir( const char *_url, int _mode ) { };
-  virtual void slotTestDir( const char *_url ) { };
+  virtual void slotGet( const char * ) { };
+  virtual void slotGetSize( const char * ) { };
+  virtual void slotPut( const char *, int ,
+			bool , bool , int ) { };
+  virtual void slotCopy( const char* , const char * ) { };
+  virtual void slotCopy( list<string>&, const char * ) { };
+  virtual void slotMove( const char *, const char * ) { };
+  virtual void slotMove( list<string>& , const char *) { };
+  virtual void slotDel( const char * ) { };
+  virtual void slotDel( list<string>& ) { };
+  virtual void slotListDir( const char * ) { };
+  virtual void slotMkdir( const char *, int ) { };
+  virtual void slotTestDir( const char * ) { };
 
-  virtual void slotUnmount( const char *_point ) { };
-  virtual void slotMount( bool _ro, const char *_fstype, const char* _dev, const char *_point ) { };
+  virtual void slotUnmount( const char * ) { };
+  virtual void slotMount( bool, const char *, const char* , const char *) { };
   
   ///////////
   // Messages
   ///////////
 
-  virtual void slotData( void *, int _len ) { };
+  virtual void slotData( void *, int ) { };
   virtual void slotDataEnd() { };
-  virtual void slotError( int _errid, const char *_text ) { };
+  virtual void slotError( int , const char * ) { };
   virtual void slotReady() { };
   virtual void slotFinished() { };
-  virtual void slotListEntry( const UDSEntry& _entry ) { };
+  virtual void slotListEntry( const UDSEntry& ) { };
   virtual void slotIsDirectory() { };
   virtual void slotIsFile() { };
-  virtual void slotRenamed( const char* _new ) { };
-  virtual void slotCanResume( bool _resume ) { };
+  virtual void slotRenamed( const char* ) { };
+  virtual void slotCanResume( bool ) { };
   
   ///////////
   // Infos
   ///////////
 
-  virtual void slotTotalSize( unsigned long _bytes ) { }
-  virtual void slotTotalFiles( unsigned long _files ) { }
-  virtual void slotTotalDirs( unsigned long _dirs ) { }
-  virtual void slotProcessedSize( unsigned long _bytes ) { }
-  virtual void slotProcessedFiles( unsigned long _files ) { }
-  virtual void slotProcessedDirs( unsigned long _dirs ) { }
-  virtual void slotScanningDir( const char *_dir ) { }
-  virtual void slotSpeed( unsigned long _bytes_per_second ) { }
-  virtual void slotCopyingFile( const char *_from, const char *_to ) { }
-  virtual void slotMakingDir( const char *_file ) { }
-  virtual void slotRedirection( const char *_url ) { };
+  virtual void slotTotalSize( unsigned long ) { }
+  virtual void slotTotalFiles( unsigned long ) { }
+  virtual void slotTotalDirs( unsigned long ) { }
+  virtual void slotProcessedSize( unsigned long ) { }
+  virtual void slotProcessedFiles( unsigned long ) { }
+  virtual void slotProcessedDirs( unsigned long ) { }
+  virtual void slotScanningDir( const char * ) { }
+  virtual void slotSpeed( unsigned long ) { }
+  virtual void slotCopyingFile( const char *, const char *) { }
+  virtual void slotMakingDir( const char * ) { }
+  virtual void slotRedirection( const char * ) { };
   virtual void slotErrorPage() { };
-  virtual void slotMimeType( const char *_type ) { };
-  virtual void slotGettingFile( const char *_url ) { };
-  virtual void slotDeletingFile( const char *_url ) { };
+  virtual void slotMimeType( const char * ) { };
+  virtual void slotGettingFile( const char * ) { };
+  virtual void slotDeletingFile( const char * ) { };
 
   ///////////
   // Dispatching

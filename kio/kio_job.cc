@@ -240,7 +240,7 @@ void KIOJob::iconifyListGUI( bool _mode ) {
 }
 
 
-void KIOJob::dockListGUI( bool _mode ) { // !!!
+void KIOJob::dockListGUI( bool ) { // !!!
   if ( !m_pListProgressDlg )
     return;
   
