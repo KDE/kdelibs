@@ -32,9 +32,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class KPanelMenuPrivate;
 
 /**
+ * @short Base class to build dynamically loaded menu entries for the K-menu, or the panel.
+ *
  * This class allows to build menu entries that will be dynamically added either to
  * the K-menu, or to the panel as a normal button. These dynamic menus are located
- * in shared libraries that will be loaded at runtime by Kicker (the KDE panel).
+ * in shared libraries that will be loaded at runtime by Kicker (the %KDE panel).
  *
  * To build such a menu, you have to inherit this class and implement the pure virtual
  * functions #initialize() and slotExec(). You also have to provide a factory
@@ -46,8 +48,7 @@ class KPanelMenuPrivate;
  * library name without any extension). This desktop file has to be installed in
  * $KDEDIR/share/apps/kicker/menuext/.
  *
- * @short Base class to build dynamically loaded menu entries for the K-menu, or the panel.
- * @author The kicker maintainer, Michael Goffioul <kdeprint@swing.be>
+ * @author The kicker maintainers, Michael Goffioul <kdeprint@swing.be>
  */
 class KDEUI_EXPORT KPanelMenu : public KPopupMenu
 {
