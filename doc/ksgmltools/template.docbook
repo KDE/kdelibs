@@ -523,7 +523,7 @@ Translations done by:
 
 <!-- Determine which license your application is licensed under, and delete all the remaining licenses below:
 
-(NOTE:  All documentation will be licensed under the FDL, reguardless of what license the documentation uses) -->
+(NOTE:  All documentation will be licensed under the FDL, reguardless of what license the application uses) -->
 
 &gpllicense-links;        <!-- GPL License -->
 &bsdlicense-links;        <!-- BSD License -->
