@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.111  1998/09/21 18:33:30  bieker
+// Use paths.h if we can.
+//
 // Revision 1.110  1998/09/10 23:47:29  markus
 // //$markus: replaced NULL with 0L in aboutKDE(). This caused trouble on
 // the netwinder.
@@ -309,7 +312,7 @@ KCharsets* KApplication::pCharsets = 0L;
 
 KApplication* KApplication::KApp = 0L;
 QStrList* KApplication::pSearchPaths;
-extern bool bAreaCalculated;
+//extern bool bAreaCalculated;
 
 static int kde_xio_errhandler( Display * )
 {
@@ -654,7 +657,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 			  pConfig->writeEntry( "FatalShow", pDialog->fatalShow() );
 			  pConfig->writeEntry( "AbortFatal", pDialog->abortFatal() );
 
-			  bAreaCalculated = false;
+			  //bAreaCalculated = false;
 			}
 		  else
 			{
