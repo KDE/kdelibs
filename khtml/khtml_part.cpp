@@ -510,8 +510,12 @@ bool KHTMLPart::openURL( const KURL &url )
 
   d->m_bComplete = false;
 
+  // Tell the slave where we come from (SSL or not)
   d->m_job->addMetaData( "ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   d->m_ssl_in_use = false;
+  // Tell the slave that this is about loading the main page, so activate warnings
+  d->m_job->addMetaData( "ssl_activate_warnings", "TRUE" );
+  kdDebug() << "ACTIVATING SSL WARNINGS" << endl;
 
   d->m_workingURL = url;
 
@@ -789,6 +793,11 @@ DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 {
   return d->m_doc;
 }
+
+/*bool KHTMLPart::isSSLInUse() const
+{
+  return d->m_ssl_in_use;
+}*/
 
 void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 {
