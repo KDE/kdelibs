@@ -30,7 +30,7 @@ CounterNode::CounterNode(RenderObject *o)
       m_value(0), m_count(0), m_parent(0), m_previous(0), m_next(0),
       m_renderer(o) {}
 
-CounterNode::~CounterNode() {};
+CounterNode::~CounterNode() {}
 
 void CounterNode::insertAfter ( CounterNode *, CounterNode *)
 {
@@ -89,7 +89,7 @@ void CounterNode::setParentDirty ()
 }
 
 CounterReset::CounterReset(RenderObject *o) : CounterNode(o), m_total(0), m_first(0), m_last(0) {}
-CounterReset::~CounterReset() {};
+CounterReset::~CounterReset() {}
 
 void CounterReset::insertAfter ( CounterNode *newChild, CounterNode *refChild )
 {
