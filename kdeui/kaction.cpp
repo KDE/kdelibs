@@ -31,6 +31,8 @@
 
 #include <X11/Xlib.h>
 
+#include <kiconloader.h>
+
 static void get_fonts( QStringList &lst )
 {
     int numFonts;
@@ -95,28 +97,71 @@ int get_toolbutton_id()
     return toolbutton_no--;
 }
 
+class KActionPrivate
+{
+public:
+  KActionPrivate()
+  {
+    m_iconName = QString::null;
+  }
+  ~KActionPrivate()
+  {
+  }
+  QString m_iconName;
+};
+
 KAction::KAction( const QString& text, int accel, QObject* parent, const char* name )
  : QAction( text, accel, parent, name ), kaccel(0)
-{}
+{
+  d = new KActionPrivate;
+}
 
 KAction::KAction( const QString& text, int accel,
 	           const QObject* receiver, const char* slot, QObject* parent, const char* name )
  : QAction( text, accel, receiver, slot, parent, name ), kaccel(0)
-{}
+{
+  d = new KActionPrivate;
+}
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
                     QObject* parent, const char* name )
  : QAction( text, pix, accel, parent, name ), kaccel(0)
-{}
+{
+  d = new KActionPrivate;
+}
+
+KAction::KAction( const QString& text, const QString& pix, int accel,
+                    QObject* parent, const char* name )
+ : QAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name ), kaccel(0)
+{
+  d = new KActionPrivate;
+}
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 	            const QObject* receiver, const char* slot, QObject* parent, const char* name )
  : QAction( text, pix, accel, receiver, slot, parent, name ), kaccel(0)
-{}
+{
+  d = new KActionPrivate;
+}
+
+KAction::KAction( const QString& text, const QString& pix, int accel,
+	            const QObject* receiver, const char* slot, QObject* parent, const char* name )
+ : QAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name ), kaccel(0)
+{
+  d = new KActionPrivate;
+  d->m_iconName = pix;
+}
 
 KAction::KAction( QObject* parent, const char* name )
  : QAction( parent, name ), kaccel(0)
-{}
+{
+  d = new KActionPrivate;
+}
+
+KAction::~KAction()
+{
+  delete d; d = 0;
+}
 
 int KAction::plug( QWidget *w, int index )
 {
@@ -125,8 +170,18 @@ int KAction::plug( QWidget *w, int index )
     KToolBar *bar = (KToolBar *)w;
 
     int id_ = get_toolbutton_id();
-    bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
+    if ( d->m_iconName == QString::null )
+    {
+      bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
 		       isEnabled(), plainText(), index );
+    }
+    else
+    {
+      bar->insertButton( d->m_iconName, id_, SIGNAL( clicked() ), this,
+                         SLOT( slotActivated() ), isEnabled(), plainText(),
+                         index );
+    }
+
 
     addContainer( bar, id_ );
 
@@ -134,7 +189,7 @@ int KAction::plug( QWidget *w, int index )
 
     return containerCount() - 1;
   }
-
+ 
   return QAction::plug( w, index );
 }
 
@@ -211,6 +266,11 @@ void KAction::setText( int i, const QString &text )
    QAction::setText( i, text );
 } 
 
+void KAction::setIcon( const QString &icon )
+{
+  d->m_iconName = icon;
+}
+
 void KAction::setIconSet( const QIconSet &iconSet )
 {
   QAction::setIconSet( iconSet ); 
@@ -276,9 +336,27 @@ KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int acce
     locked2 = FALSE;
 }
 
+KToggleAction::KToggleAction( const QString& text, const QString& pix, int accel,
+	       QObject* parent, const char* name )
+    : QToggleAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+{
+    locked = FALSE;
+    checked = FALSE;
+    locked2 = FALSE;
+}
+
 KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int accel,
 			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QToggleAction( text, pix, accel, receiver, slot, parent, name )
+{
+    locked = FALSE;
+    checked = FALSE;
+    locked2 = FALSE;
+}
+
+KToggleAction::KToggleAction( const QString& text, const QString& pix, int accel,
+			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
+    : QToggleAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
 {
     locked = FALSE;
     checked = FALSE;
@@ -450,9 +528,21 @@ KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, int accel,
 {
 }
 
+KRadioAction::KRadioAction( const QString& text, const QString& pix, int accel,
+	                    QObject* parent, const char* name )
+: KToggleAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+{
+}
+
 KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, int accel,
 			    const QObject* receiver, const char* slot, QObject* parent, const char* name )
 : KToggleAction( text, pix, accel, receiver, slot, parent, name )
+{
+}
+
+KRadioAction::KRadioAction( const QString& text, const QString& pix, int accel,
+			    const QObject* receiver, const char* slot, QObject* parent, const char* name )
+: KToggleAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
 {
 }
 
@@ -492,10 +582,26 @@ KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int acce
     m_lock = false;
 }
 
+KSelectAction::KSelectAction( const QString& text, const QString& pix, int accel,
+			      QObject* parent, const char* name )
+    : QSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+{
+    m_lock = false;
+}
+
 KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
 			      const QObject* receiver, const char* slot, QObject* parent,
 			      const char* name )
     : QSelectAction( text, pix, accel, receiver, slot, parent, name )
+{
+    connect( this, SIGNAL( activate() ), receiver, slot );
+    m_lock = false;
+}
+
+KSelectAction::KSelectAction( const QString& text, const QString& pix, int accel,
+			      const QObject* receiver, const char* slot, QObject* parent,
+			      const char* name )
+    : QSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
 {
     connect( this, SIGNAL( activate() ), receiver, slot );
     m_lock = false;
@@ -667,11 +773,28 @@ KListAction::KListAction( const QString& text, const QIconSet& pix,
     m_current = 0;
 }
 
+KListAction::KListAction( const QString& text, const QString& pix,
+                            int accel, QObject* parent, const char* name )
+    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+{
+    m_current = 0;
+}
+
 KListAction::KListAction( const QString& text, const QIconSet& pix,
                             int accel, const QObject* receiver,
                             const char* slot, QObject* parent,
 			                const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+{
+    connect( this, SIGNAL(activated(int)), receiver, slot );
+    m_current = 0;
+}
+
+KListAction::KListAction( const QString& text, const QString& pix,
+                            int accel, const QObject* receiver,
+                            const char* slot, QObject* parent,
+			                const char* name )
+    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
 {
     connect( this, SIGNAL(activated(int)), receiver, slot );
     m_current = 0;
@@ -731,6 +854,15 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
     setEditable( TRUE );
 }
 
+KFontAction::KFontAction( const QString& text, const QString& pix, int accel,
+	       QObject* parent, const char* name )
+    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+{
+    get_fonts( fonts );
+    QSelectAction::setItems( fonts );
+    setEditable( TRUE );
+}
+
 KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
 			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
@@ -739,6 +871,16 @@ KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
     QSelectAction::setItems( fonts );
     setEditable( TRUE );
 }
+
+KFontAction::KFontAction( const QString& text, const QString& pix, int accel,
+			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
+    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
+{
+    get_fonts( fonts );
+    QSelectAction::setItems( fonts );
+    setEditable( TRUE );
+}
+
 
 KFontAction::KFontAction( QObject* parent, const char* name )
     : KSelectAction( parent, name )
@@ -787,10 +929,25 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int 
     init();
 }
 
+KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix, int accel,
+				  QObject* parent, const char* name )
+    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, parent, name )
+{
+    init();
+}
+
 KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
 				  const QObject* receiver, const char* slot, QObject* parent,
 				  const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+{
+    init();
+}
+
+KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix, int accel,
+				  const QObject* receiver, const char* slot, QObject* parent,
+				  const char* name )
+    : KSelectAction( text, BarIcon(pix, KIconLoader::Small), accel, receiver, slot, parent, name )
 {
     init();
 }

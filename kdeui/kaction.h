@@ -27,6 +27,15 @@
 #include <kstdaccel.h>
 
 class KAccel;
+class KActionPrivate;
+class KToggleActionPrivate;
+class KRadioActionPrivate;
+class KSelectActionPrivate;
+class KListActionPrivate;
+class KFontActionPrivate;
+class KFontSizeActionPrivate;
+class KActionMenuPrivate;
+class KActionSeparatorPrivate;
 
 /**
  * The KAction class (and derived and super classes) provide a way to
@@ -164,8 +173,8 @@ public:
      * Construct an action with text, icon, and a potential keyboard
      * accelerator.
      *
-     *  This Action cannot execute any command.  Use this
-     * only if you really know what you are doing.
+     * This Action cannot execute any command.  Use this only if you
+     * really know what you are doing.
      *
      * @param text The text that will be displayed.
      * @param pix The icons that go with this action.
@@ -177,12 +186,28 @@ public:
 	     QObject* parent = 0, const char* name = 0 );
 
     /**
+     * Construct an action with text, automatically loaded icon, and a
+     * potential keyboard accelerator.
+     *
+     * This Action cannot execute any command.  Use this only if you
+     * really know what you are doing.
+     *
+     * @param text The text that will be displayed.
+     * @param pix The icons that go with this action.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KAction( const QString& text, const QString& pix, int accel = 0,
+	     QObject* parent = 0, const char* name = 0 );
+
+    /**
      * Construct an action with text, icon, potential keyboard
      * accelerator, and a SLOT to call when this action is invoked by
      * the user.
      *
-     *   If you do not want or have a keyboard accelerator,
-     * set the @p accel param to 0.
+     * If you do not want or have a keyboard accelerator, set the
+     * @p accel param to 0.
      *
      * This is the other common KAction used.  Use it when you
      * @bf do have a corresponding icon.
@@ -199,12 +224,41 @@ public:
 	     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
+     * Construct an action with text, icon, potential keyboard
+     * accelerator, and a SLOT to call when this action is invoked by
+     * the user.  The icon is loaded on demand later based on where it
+     * is plugged in.
+     *
+     * If you do not want or have a keyboard accelerator, set the
+     * @p accel param to 0.
+     *
+     * This is the other common KAction used.  Use it when you
+     * @bf do have a corresponding icon.
+     *
+     * @param text The text that will be displayed.
+     * @param pix The icon to display.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param receiver The SLOT's parent.
+     * @param slot The SLOT to invoke to execute this action.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KAction( const QString& text, const QString& pix, int accel,
+	     const QObject* receiver, const char* slot, QObject* parent,
+         const char* name = 0 );
+
+    /**
      * Construct a null action.
      *
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
     KAction( QObject* parent = 0, const char* name = 0 );
+
+    /**
+     * Standard destructor
+     */
+    virtual ~KAction();
 
     /**
      * "Plug" or insert this action into a given widget.
@@ -244,18 +298,21 @@ public:
     virtual void setAccel(int a);
     virtual void setEnabled(bool enable);
     virtual void setIconSet( const QIconSet &iconSet );
+    virtual void setIcon( const QString& icon );
 	
- protected slots:
+protected slots:
 	virtual void slotDestroyed();
 	virtual void slotKeycodeChanged();
 	
- protected:
+protected:
     virtual void setText(int i, const QString &text);
     virtual void setEnabled(int i, bool enable);
     virtual void setIconSet(int i, const QIconSet &iconSet);
 
- private:
+private:
 	KAccel  *kaccel;
+
+    KActionPrivate *d;
 };
 
 /**
@@ -306,6 +363,16 @@ public:
 
     /**
      *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KToggleAction( const QString& text, const QString& pix, int accel = 0,
+                   QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
      *  @param accel The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
@@ -315,6 +382,19 @@ public:
      */
     KToggleAction( const QString& text, const QIconSet& pix, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KToggleAction( const QString& text, const QString& pix, int accel,
+                   const QObject* receiver, const char* slot,
+                   QObject* parent, const char* name = 0 );
 
     /**
      *  @param parent This action's parent.
@@ -361,6 +441,8 @@ protected:
 
     bool locked, locked2;
     bool checked;
+
+    KToggleActionPrivate *d;
 };
 
 class KRadioAction : public KToggleAction
@@ -402,6 +484,16 @@ public:
 
     /**
      *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KRadioAction( const QString& text, const QString& pix, int accel = 0,
+                  QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
      *  @param accel The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
@@ -413,6 +505,19 @@ public:
 		  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
+     *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KRadioAction( const QString& text, const QString& pix, int accel,
+                  const QObject* receiver, const char* slot,
+                  QObject* parent, const char* name = 0 );
+
+    /**
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
@@ -420,6 +525,9 @@ public:
 
 protected:
     virtual void slotActivated();
+
+private:
+    KRadioActionPrivate *d;
 };
 
 /**
@@ -474,6 +582,16 @@ public:
 
     /**
      *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KSelectAction( const QString& text, const QString& pix, int accel = 0,
+                   QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
      *  @param accel The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
@@ -483,6 +601,19 @@ public:
      */
     KSelectAction( const QString& text, const QIconSet& pix, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KSelectAction( const QString& text, const QString& pix, int accel,
+                   const QObject* receiver, const char* slot,
+                   QObject* parent, const char* name = 0 );
 
     /**
      *  @param parent This action's parent.
@@ -530,8 +661,9 @@ protected:
     virtual void clear( int id );
 
 private:
-
     bool m_lock;
+
+    KSelectActionPrivate *d;
 };
 
 class KListAction : public KSelectAction
@@ -574,6 +706,16 @@ public:
 
     /**
      *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KListAction( const QString& text, const QString& pix, int accel = 0,
+	              QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
      *  @param accel The corresponding keyboard accelerator (shortcut).
      *  @param receiver The SLOT's parent.
@@ -582,6 +724,19 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QIconSet& pix, int accel,
+		          const QObject* receiver, const char* slot, QObject* parent,
+                  const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KListAction( const QString& text, const QString& pix, int accel,
 		          const QObject* receiver, const char* slot, QObject* parent,
                   const char* name = 0 );
 
@@ -603,6 +758,7 @@ public:
 
 private:
     int m_current;
+    KListActionPrivate *d;
 };
 
 class KFontAction : public KSelectAction
@@ -610,13 +766,22 @@ class KFontAction : public KSelectAction
     Q_OBJECT
 
 public:
-    KFontAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+    KFontAction( const QString& text, int accel = 0, QObject* parent = 0,
+                 const char* name = 0 );
     KFontAction( const QString& text, int accel,
-		 const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                 const QObject* receiver, const char* slot, QObject* parent,
+                 const char* name = 0 );
     KFontAction( const QString& text, const QIconSet& pix, int accel = 0,
-		 QObject* parent = 0, const char* name = 0 );
+                 QObject* parent = 0, const char* name = 0 );
+    KFontAction( const QString& text, const QString& pix, int accel = 0,
+                 QObject* parent = 0, const char* name = 0 );
     KFontAction( const QString& text, const QIconSet& pix, int accel,
-		 const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                 const QObject* receiver, const char* slot, QObject* parent,
+                 const char* name = 0 );
+    KFontAction( const QString& text, const QString& pix, int accel,
+                 const QObject* receiver, const char* slot, QObject* parent,
+                 const char* name = 0 );
+
     KFontAction( QObject* parent = 0, const char* name = 0 );
 
     void setFont( const QString &family );
@@ -627,8 +792,8 @@ public:
     int plug( QWidget*, int index = -1 );
 
 private:
-
     QStringList fonts;
+    KFontActionPrivate *d;
 };
 
 class KFontSizeAction : public KSelectAction
@@ -636,13 +801,20 @@ class KFontSizeAction : public KSelectAction
     Q_OBJECT
 
 public:
-    KFontSizeAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
-    KFontSizeAction( const QString& text, int accel,
-		     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    KFontSizeAction( const QString& text, int accel = 0, QObject* parent = 0,
+                     const char* name = 0 );
+    KFontSizeAction( const QString& text, int accel, const QObject* receiver,
+                     const char* slot, QObject* parent, const char* name = 0 );
     KFontSizeAction( const QString& text, const QIconSet& pix, int accel = 0,
-		     QObject* parent = 0, const char* name = 0 );
+                     QObject* parent = 0, const char* name = 0 );
+    KFontSizeAction( const QString& text, const QString& pix, int accel = 0,
+                     QObject* parent = 0, const char* name = 0 );
     KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
-		     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                     const QObject* receiver, const char* slot,
+                     QObject* parent, const char* name = 0 );
+    KFontSizeAction( const QString& text, const QString& pix, int accel,
+                     const QObject* receiver, const char* slot,
+                     QObject* parent, const char* name = 0 );
     KFontSizeAction( QObject* parent = 0, const char* name = 0 );
 
     void setFontSize( int size );
@@ -660,14 +832,19 @@ private:
 
     bool m_lock;
 
+    KFontSizeActionPrivate *d;
 };
 
 class KActionMenu : public QActionMenu
 {
   Q_OBJECT
 public:
-    KActionMenu( const QString& text, QObject* parent = 0, const char* name = 0 );
-    KActionMenu( const QString& text, const QIconSet& icon, QObject* parent = 0, const char* name = 0 );
+    KActionMenu( const QString& text, QObject* parent = 0,
+                 const char* name = 0 );
+    KActionMenu( const QString& text, const QIconSet& icon,
+                 QObject* parent = 0, const char* name = 0 );
+    KActionMenu( const QString& text, const QString& icon,
+                 QObject* parent = 0, const char* name = 0 );
     KActionMenu( QObject* parent = 0, const char* name = 0 );
 
     virtual int plug( QWidget* widget, int index = -1 );
@@ -679,6 +856,9 @@ protected:
     virtual void setText( int id, const QString& text );
 
     virtual void setIconSet( int id, const QIconSet& iconSet );
+
+private:
+    KActionMenuPrivate *d;
 };
 
 class KActionSeparator : public QActionSeparator
@@ -689,7 +869,9 @@ public:
 
     virtual int plug( QWidget*, int index = -1 );
     virtual void unplug( QWidget* );
-};
 
+private:
+    KActionSeparatorPrivate *d;
+};
 
 #endif
