@@ -42,6 +42,7 @@ int main()
   printf("\n* URL is %s\n",udir.url().data());
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
+  check("KURL::path()", udir.path(), "/home/dfaure/file.txt");
 
   KURL u2("/home/dfaure/");
   printf("\n* URL is %s\n",u2.url().data());
