@@ -76,19 +76,21 @@ ac_qt_includes=$qt_incdir
 qt_libdirs="/usr/lib/qt/lib /usr/local/qt/lib /usr/lib/qt /usr/lib $x_libraries"
 test -n "$QTDIR" && qt_libdirs="$QTDIR/lib $QTDIR $qt_libdirs"
 AC_FIND_FILE(libqt.so libqt.a libqt.sl, $qt_libdirs, qt_libdir)
-ac_qt_ltest "$ac_qt_libraries" = NO; then
+ac_qt_libraries=$qt_libdir
+ 
+if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
   ac_cv_have_qt="have_qt=no"
   ac_qt_notfound=""
   if test "$ac_qt_includes" = NO; then
     if test "$ac_qt_libraries" = NO; then
       ac_qt_notfound="(headers and libraries)";
-    else 
+    else
       ac_qt_notfound="(headers)";
     fi
   else
     ac_qt_notfound="(libraries)";
   fi
-  
+
   AC_MSG_ERROR([QT $ac_qt_notfound not found. Please check your installation! ]);
 else
   ac_cv_have_qt="have_qt=yes \
@@ -156,8 +158,7 @@ kde_libdirs="/usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/
 test -n "$KDEDIR" && kde_libdirs="$KDEDIR/lib $KDEDIR $kde_libdirs"
 AC_FIND_FILE(libkdecore.la, $kde_libdirs, kde_libdir)
 ac_kde_libraries=$kde_libdir
-
-if test "$ac_kde_includes" = NO || test "$ac_kde_libraries" = NO; then
+NO; then
   ac_cv_have_kde="have_kde=no"
 else
   ac_cv_have_kde="have_kde=yes \
@@ -246,7 +247,7 @@ $ac_aux_dir/ltconfig $libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
 ])
  
 
-
+cÌg•†√7X4‹'‚ à#îêà%ŸÌ#´∞”Éåèˇ&vÃ)dªEıV¶∑…·wcò∞˘Ã.ùÎ
 # Do all the work for Automake.  This macro actually does too much --
 # some checks are only needed if your package does certain things.
 # But this isn't really a big deal.
