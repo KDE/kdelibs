@@ -1,5 +1,5 @@
 #include "kfilterdev.h"
-#include "kcomprmanager.h"
+#include "kfilterbase.h"
 #include <qfile.h>
 #include <kdebug.h>
 #include <kinstance.h>
@@ -7,7 +7,7 @@
 void test_block( const QString & fileName )
 {
     QFile f(fileName);
-    KFilterBase * filter = KComprManager::self()->findFilterByFileName( fileName );
+    KFilterBase * filter = KFilterBase::findFilterByFileName( fileName );
     filter->setDevice( &f );
     KFilterDev dev(filter);
     dev.open( IO_ReadOnly );
@@ -32,7 +32,7 @@ void test_block( const QString & fileName )
 void test_getch( const QString & fileName )
 {
     QFile f(fileName);
-    KFilterBase * filter = KComprManager::self()->findFilterByFileName( fileName );
+    KFilterBase * filter = KFilterBase::findFilterByFileName( fileName );
     filter->setDevice( &f );
     KFilterDev dev(filter);
     dev.open( IO_ReadOnly );

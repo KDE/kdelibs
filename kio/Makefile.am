@@ -38,7 +38,7 @@ libksycoca_la_SOURCES = \
 	kservice.cpp kservicefactory.cpp \
 	kuserprofile.cpp kservicegroupfactory.cpp \
 	kdirwatch.cpp kurifilter.cpp \
-	kcomprmanager.cpp kfilterbase.cpp kfilterdev.cpp \
+	kfilterbase.cpp kfilterdev.cpp \
 	kshellcompletion.cpp kurlcompletion.cpp \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
@@ -53,7 +53,7 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	progressbase.h defaultprogress.h statusbarprogress.h \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
         kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
-	kcomprmanager.h kfilterbase.h kfilterdev.h
+	kfilterbase.h kfilterdev.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) 

@@ -20,6 +20,7 @@
 #define __kfilterbase__h
 
 #include <qobject.h>
+#include <qstring.h>
 class QIODevice;
 
 class KFilterBase : public QObject
@@ -44,6 +45,19 @@ public:
 
     enum Result { OK, END, ERROR };
     virtual Result uncompress() = 0;
+
+    /**
+     * Call this to create the appropriate filter for the file
+     * named @fileName.
+     */
+    static KFilterBase * findFilterByFileName( const QString & fileName );
+
+    /**
+     * Call this to create the appropriate filter for the mimetype
+     * @p mimeType. For instance application/x-gzip.
+     */
+    static KFilterBase * findFilterByMimeType( const QString & mimeType );
+
 protected:
     QIODevice * m_dev;
 };
