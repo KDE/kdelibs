@@ -1,6 +1,6 @@
 
 MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
-CXXFLAGS += -DEXTENSION_DIR='"$(kde_libraries)"'
+AM_CXXFLAGS = -DEXTENSION_DIR='"$(kde_libraries)"'
 ##
 lib_LTLIBRARIES = libmcop.la
 #
