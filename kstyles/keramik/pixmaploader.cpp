@@ -252,7 +252,6 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 		}
 	}
 	
-	
 	return img;
 }
 

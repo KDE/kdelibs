@@ -396,27 +396,21 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				Keramik::RectTilePainter(keramik_toolbar_clk).draw(p, r, cg.button(), cg.background());
 			}
 			else {
-				QPen oldPen = p->pen();
+				Keramik::GradientPainter::renderGradient( p,
+					QRect(0, 0, r.width(), r.height()),
+					Keramik::ColorUtil::lighten(cg.button(), 115), flags & Style_Horizontal, false );
 
-				// Outer frame (round style)
-				p->setPen(cg.shadow());
-				p->drawLine(x+1,y,x2-1,y);
-				p->drawLine(x,y+1,x,y2-1);
-				p->drawLine(x+1,y2,x2-1,y2);
-				p->drawLine(x2,y+1,x2,y2-1);
-
-				// Bevel
-				p->setPen(cg.light());
-				p->drawLine(x+1, y+1, x2-1, y+1);
-				p->drawLine(x+1, y+1, x+1, y2-1);
-				p->setPen(cg.mid());
+                                p->setPen(cg.button().light(70));
+				p->drawLine(x, y, x2-1, y);
+				p->drawLine(x, y, x, y2-1);
 				p->drawLine(x+2, y2-1, x2-1, y2-1);
-				p->drawLine(x2-1, y+2, x2-1, y2-1);
+				p->drawLine(x2-1, y+2, x2-1, y2-2);
 
-				p->fillRect(x+2, y+2, w-4, h-4, cg.button());
-
-				p->setPen( oldPen );
-				
+                                p->setPen(Keramik::ColorUtil::lighten(cg.button(), 115) );
+				p->drawLine(x+1, y+1, x2-1, y+1);
+				p->drawLine(x+1, y+1, x+1, y2);
+				p->drawLine(x, y2, x2, y2);
+				p->drawLine(x2, y, x2, y2);				
 			}
 			
 			break;
@@ -1449,9 +1443,34 @@ void KeramikStyle::drawControl( ControlElement element,
 
 			// Draw progress bar
 			if (progress > 0 || steps == 0) {
-				double pg = (steps == 0) ? 1.0 : progress / steps;
+				double pg = (steps == 0) ? 0.1 : progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
-	
+
+				if (steps == 0) { //Busy indicator
+				
+					if (width < 1) width = 1; //A busy indicator with width 0 is kind of useless
+					
+					int remWidth = cr.width() - width; //Never disappear completely
+					if (remWidth <= 0) remWidth = 1; //Do something non-crashy when too small...                                       
+					
+					int pstep =  int(progress) % ( 2 *  remWidth ); 
+					
+					if ( pstep > remWidth ) {
+						//Bounce about.. We're remWidth + some delta, we want to be remWidth - delta...                                           
+						// - ( (remWidth + some delta) - 2* remWidth )  = - (some deleta - remWidth) = remWidth - some delta..
+						pstep = - (pstep - 2 * remWidth );                                                                                      
+					}
+					
+					if (reverse)
+						Keramik::RowPainter(keramik_progressbar).draw(p, cr.x() + cr.width() - width - pstep, cr.y(), width, cr.height(),
+									 cg.highlight(), cg.background() );
+					else
+						Keramik::RowPainter(keramik_progressbar).draw(p, cr.x() + pstep, cr.y(), width, cr.height(),
+									cg.highlight(), cg.background() );
+									
+					return;                                       
+				}
+				
 
 				if (reverse)
 					Keramik::ProgressBarPainter(keramik_progressbar, reverse).draw( p, cr.x()+(cr.width()-width), cr.y(), width, cr.height(), cg.highlight(), cg.background());
@@ -1703,12 +1722,16 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				bflags |= Style_Down;
 			if (active & SC_ToolButtonMenu)
 				mflags |= Style_Down;
+				
+			if (onToolbar &&  static_cast<QToolBar*>(widget->parent())->orientation() == Qt::Horizontal)
+				bflags |= Style_Horizontal;
 
 			if (controls & SC_ToolButton)
 			{
 				// If we're pressed, on, or raised...
 				if (bflags & (Style_Down | Style_On | Style_Raised))
-					drawPrimitive(onToolbar ? PE_ButtonTool : PE_ButtonCommand, p, button, cg, bflags, opt);
+					drawPrimitive(onToolbar ? PE_ButtonTool : PE_ButtonCommand, p, button, cg,
+					 bflags, opt);
 
 				// Check whether to draw a background pixmap
 				else if ( toolbutton->parentWidget() &&
