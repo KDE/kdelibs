@@ -129,9 +129,12 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
   // http:/index.html AS A VALID SYNTAX FOR RELATIVE
   // URLS. ( RFC 2396 section 5.2 item # 3 )
   QString rUrl = _rel_url;
-  if ( _u.hasHost() && !rUrl.isNull() &&
+  if ( _u.hasHost() && rUrl.length() != 0 &&
+       rUrl.find( QRegExp("^[a-zA-Z][a-zA-Z0-9\\+\\.\\-]*:/?[a-zA-Z0-9%_!~'();:@&=$,\\?\\*\\+\\.\\-]") ) == 0 &&
        rUrl.find( _u.m_strProtocol, 0 , false ) == 0 )
-  	rUrl.remove( 0, rUrl.find( ':' ) + 1 );
+  {
+  		rUrl.remove( 0, rUrl.find( ':' ) + 1 );
+  }
 
   if ( rUrl[0] == '#' )
   {
