@@ -27,7 +27,7 @@ lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h \
-	kconfigbackend.h kapp.h kcharsets.h \
+	kconfigbackend.h kapp.h kuniqueapp.h kcharsets.h \
 	kurl.h ksock.h \
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwinmodule.h kwm.h krootprop.h kpixmap.h dither.h \
@@ -42,7 +42,7 @@ noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 libkdecore_la_SOURCES = libintl.cpp kstddirs.cpp  \
 	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
-	kconfigbackend.cpp kapp.cpp ksock.cpp\
+	kconfigbackend.cpp kapp.cpp kuniqueapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp \
 	fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwinmodule.cpp kwm.cpp krootprop.cpp kcharsets.cpp \

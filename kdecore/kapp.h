@@ -453,52 +453,6 @@ private:
   KApplication& operator=(const KApplication&);
 };
 
-#include <dcopobject.h>
-
-/**
- * KUniqueApplication provides a way of maintaining only a single
- * instance of a running application at a time.  If another instance
- * is started, it will determine (via DCOP) whether it is the first instance
- * or a second instance.  If it is a second instance, it will forward on
- * the information to the first instance and then quit.
- *
- * @see KApplication, DCOPObject
- * @author Preston Brown <pbrown@kde.org>
- */
-class KUniqueApplication : public KApplication, DCOPObject
-{
-  Q_OBJECT
-public:
-  /**
-   * Constructor. Parses command-line arguments.
-   *
-   */
-  KUniqueApplication( int& argc, char** argv,
-		      const QCString& rAppName = 0);
-  
-  /** Destructor */
-  virtual ~KUniqueApplication();
-  
-  /** 
-   * dispatch any incoming DCOP message for a new instance.  If
-   * it is not a request for a new instance, return false.
-   */
-  bool process(const QCString &fun, const QByteArray &data,
-	       QCString &replyType, QByteArray &reply);
-
-  /**
-   * create a new "instance" of the application.  Usually this
-   * will involve making some calls into the GUI portion of your
-   * application asking for a new window to be created, possibly with
-   * some data already loaded based on the arguments received.
-   *
-   * @params is the bundled up command line parameters that were passed
-   *          on the command line when the application request was initiated,
-   *          _after_ being processed by Qt's QApplication.
-   */
-  virtual void newInstance(QValueList<QCString> params);
-};
-
 
 /** Check, if a file may be accessed in a given mode.
  * This is a wrapper around the access() system call.
@@ -538,6 +492,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.113  1999/10/19 18:51:09  pbrown
+// KUniqueApplication class utilizing KApplication and a DCOPObject is
+// available.  It works. :)
+//
 // Revision 1.112  1999/10/19 10:55:00  jansen
 // Added "desk" argument to signal backgroundChanged().
 //
