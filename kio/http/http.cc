@@ -137,6 +137,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_protocol = protocol;
   m_bKeepAlive = false;
   m_bUseCache = true;
+  m_bBusy = false; 
   m_maxCacheAge = 0;
   m_fcache = 0;
   m_iSize = -1;
@@ -457,9 +458,15 @@ void HTTPProtocol::post( const KURL& url)
   retrieveContent();
 }
 
-void HTTPProtocol::multi_get(int n, QDataStream &stream)
+void HTTPProtocol::multiGet(const QByteArray &data)
 {
-  m_requestQueue.clear();
+  QDataStream stream(data, IO_ReadOnly);
+  Q_UINT32 n;
+  stream >> n;
+
+  kdDebug(7113) << "HTTPProtcool::multiGet n = " << n << endl;
+
+//  m_requestQueue.clear();
   for(int i = 0; i < n; i++)
   {
      KURL url;
@@ -486,12 +493,18 @@ void HTTPProtocol::multi_get(int n, QDataStream &stream)
      HTTPRequest *newRequest = new HTTPRequest(m_request);
      m_requestQueue.append(newRequest);
   }
-  while(!m_requestQueue.isEmpty())
+
+  if (!m_bBusy)
   {
-     HTTPRequest *request = m_requestQueue.take(0);
-     m_request = *request;
-     delete request;
-     retrieveContent();
+     m_bBusy = true;
+     while(!m_requestQueue.isEmpty())
+     {
+        HTTPRequest *request = m_requestQueue.take(0);
+        m_request = *request;
+        delete request;
+        retrieveContent();
+     }
+     m_bBusy = false;
   }
 }
 
@@ -1661,6 +1674,11 @@ bool HTTPProtocol::readHeader()
       return false;
     }
 
+    if (!m_request.id.isEmpty())
+    {
+       sendMetaData();
+    }
+
     kdDebug(7113) << "request.url: " << m_request.url.url() << endl
                   << "LocationStr: " << locationStr.data() << endl;
     kdDebug(7113) << "Requesting redirection to: " << u.url() << endl;
@@ -1784,6 +1802,12 @@ bool HTTPProtocol::readHeader()
      setMetaData("content-disposition", disposition);
   }
 
+  if (!m_lastModified.isEmpty())
+     setMetaData("modified", m_lastModified);
+
+  if (!mayCache)
+    setMetaData("no-cache", "true");
+
   // Let the app know about the mime-type iff this is not
   // a redirection and the mime-type string is not empty.
   if (locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
@@ -1796,11 +1820,6 @@ bool HTTPProtocol::readHeader()
   if (m_request.method == HTTP_HEAD)
      return true;
 
-  if (!m_lastModified.isEmpty())
-     setMetaData("modified", m_lastModified);
-
-  if (!mayCache)
-    setMetaData("no-cache", "true");
 
   // Do we want to cache this request?
   if ( m_bCachedWrite && !m_strMimeType.isEmpty() )
@@ -2003,12 +2022,6 @@ void HTTPProtocol::special( const QByteArray &data)
       cache_update( url, no_cache, expireDate );
       break;
     }
-    case 4: // Multi-get
-    {
-      Q_INT32 n;
-      stream >> n;
-      multi_get(n, stream);
-    } break;
     default:
       // Some command we don't understand.
       // Just ignore it, it may come from some future version of KDE.

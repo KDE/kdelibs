@@ -141,7 +141,7 @@ public:
   virtual void closeConnection(); // Forced close of connection
 
   void post( const KURL& url );
-  void multi_get(int n, QDataStream &stream);
+  void multiGet(const QByteArray &data);
   bool checkRequestURL( const KURL& );
   void cache_update( const KURL &url, bool no_cache, time_t expireDate);
 
@@ -309,6 +309,7 @@ protected:
   HTTPState m_state;
   HTTPRequest m_request;
   QPtrList<HTTPRequest> m_requestQueue;
+  bool m_bBusy; // Busy handling request queue.
 
   bool m_bEOF;
 
