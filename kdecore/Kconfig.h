@@ -1,6 +1,13 @@
 // $Id$
 //
 // $Log$
+// Revision 1.8  1997/06/29 18:26:34  kalle
+// 29.06.97:	KConfig reads and writes string lists
+// 			Torben's patches to ktoolbar.*, kurl.h
+//
+// 22.06.97:	KApplications save and restore position and size of their top
+// (unstable)	level widget.
+//
 // Revision 1.7  1997/05/13 05:48:59  kalle
 // Kalle: Default arguments for KConfig::read*Entry()
 // app-specific config files don't start with a dot
@@ -121,21 +128,29 @@
 
 class KConfigData;
 
-/** KDE configuration entries.
-    The KConfig class encapsulates all the configuration entries for
-	one application, independent of the configuration files they came
-	from. All configuration entries are of the form "key=value" and
-	belong to a certain group. A group can be specified in a
-	configuration file with "[GroupName]". All configuration entries
-	from the beginning of a configuration file to the first group
-	declaration belong to a special group called the default group. If
-	there is a $ character in a entry, KConfig tries to expand
-	environment variable and uses its value instead of its name. You
-	can avoid this feature by having two consecutive $ characters in
-	your config file which get expanded to one.
-@author Kalle Dalheimer <kalle@kde.org>
-@see KApplication::getConfig()
-  */
+/** 
+* KDE configuration entries.
+*
+*	The KConfig class encapsulates all the configuration entries for
+*	one application, independent of the configuration files they came
+*	from. 
+*
+*	All configuration entries are of the form "key=value" and
+*	belong to a certain group. A group can be specified in a
+*	configuration file with "[GroupName]". All configuration entries
+*	from the beginning of a configuration file to the first group
+*	declaration belong to a special group called the default group. 
+*
+*	If there is a $ character in a entry, KConfig tries to expand
+*	environment variable and uses its value instead of its name. You
+*	can avoid this feature by having two consecutive $ characters in
+*	your config file which get expanded to one.
+*
+* @author Kalle Dalheimer (kalle@kde.org)
+* @version $Id$
+* @see KApplication::getConfig
+* @short KDE Configuration Management class
+*/
 class KConfig
 {
 private:
@@ -154,123 +169,152 @@ friend class KApplication;
 protected:
 
 public:
-  /** Construct a KConfig object. Files searched will be all
-	standard config files and the file given by pStream (if pStream
-    != NULL ). The QFile associated with QTextStream already must be 
-    opened.
-	@param pStream Additional config file to search in besides the
-	standard ones.
-	*/
+/** 
+* Construct a KConfig object. 
+*
+* Files searched will be all standard config files and the file given by 
+* pStream (if pStream != NULL ). The QFile associated with QTextStream
+* already must be opened.
+*
+* @param pStream 	Additional config file to search in besides the
+*			standard ones.
+*/
   KConfig( QTextStream* pStream = NULL );
 
-  /** Destructor. Writes back any dirty configuration entries.
-   */
+/** 
+* Destructor. 
+*
+* Writes back any dirty configuration entries.
+*/
   ~KConfig();
 
-  /** Specify the group in which keys will be searched
-	  Switch back to the default group by passing an empty string.
-	  @param rGroup The name of the new group.
-   */
+/** 
+* Specify the group in which keys will be searched.
+*
+* Switch back to the default group by passing an empty string.
+*  @param rGroup The name of the new group.
+*/
   void setGroup( const QString& rGroup );
 
-  /** Retrieve the group where keys are currently searched in.
-	  @return The current group
-   */
+/** 
+* Retrieve the group where keys are currently searched in.
+*
+* @return The current group
+*/
   const QString& getGroup() const;
 
-  /// Methods to read and write config entries
-  /** These methods read and write config entries as Strings,
-	  Integers, Fonts and Colors.
-  */
-  //{
-  /// Read the value associated with rKey
-  /** Read the value of an entry specified by rKey in the current
-	  group
-	  @param rKey The key to search for.
-	  @param pDefault A default value returned if the key was not found.
-	  @return The value for this key or an empty string if no value
-	  was found.
-   */
+/**
+* Read the value of an entry specified by rKey in the current group
+*
+* @param rKey	The key to search for.
+* @param pDefault A default value returned if the key was not found.
+* @return The value for this key or an empty string if no value
+*	  was found.
+*/
   QString readEntry( const QString& rKey, 
 					 const QString* pDefault = NULL ) const;
 
-  /** Read a list of strings.
-	  @param rKey The key to search for
-	  @param list In this object, the read list will be returned.
-	  @param sep  The list separator (default ",")
-	  @return The number of entries in the list.
-	  */
+/**
+* Read a list of strings.
+*
+* @param rKey The key to search for
+* @param list In this object, the read list will be returned.
+* @param sep  The list separator (default ",")
+* @return The number of entries in the list.
+*/
   int readListEntry( const QString &rKey, QStrList &list,  
 					 char sep = ',' ) const;
 
-  /** Read a numerical value. Read the value of an entry specified by
-	  rKey in the current group  
-	  and interpret it numerically.
-	  @param rKey The key to search for.
-	  @param nDefault A default value returned if the key was not found.
-	  @return The value for this key or 0 if no value was found.
-	*/
+/**
+* Read a numerical value. 
+*
+* Read the value of an entry specified by rKey in the current group 
+* and interpret it numerically.
+*
+* @param rKey The key to search for.
+* @param nDefault A default value returned if the key was not found.
+* @return The value for this key or 0 if no value was found.
+*/
   int readNumEntry( const QString& rKey, int nDefault = 0 ) const;
 
-  /// Read a QFont
-  /** Read the value of an entry specified by rKey in the current
-	  group and interpret it numerically.
-	  @param rKey The key to search for.
-	  @param pDefault A default value returned if the key was not found.
-	  @return The value for this key or a default font if no value was found.
-	  */
+/** 
+* Read a QFont.
+*
+* Read the value of an entry specified by rKey in the current group 
+* and interpret it as a font object.
+*
+* @param rKey		The key to search for.
+* @param pDefault	A default value returned if the key was not found.
+* @return The value for this key or a default font if no value was found.
+*/
   QFont readFontEntry( const QString& rKey,
-					   const QFont* pDefault = NULL ) const;
+			const QFont* pDefault = NULL ) const;
 
-  /// Read a QColor
-  /** Read the value of an entry specified by rKey in the current
-	  group and interpret it as a color.
-	  @param rKey The key to search for.
-	  @param pDefault A default value returned if the key was not found.
-	  @return The value for this key or a default color if no value
-	  was found.
-	  */
-  QColor readColorEntry( const QString& rKey,
-						 const QColor* pDefault = NULL ) const;
+/** 
+* Read a QColor.
+*
+* Read the value of an entry specified by rKey in the current group 
+* and interpret it as a color.
+*
+* @param rKey		The key to search for.
+* @param pDefault	A default value returned if the key was not found.
+* @return The value for this key or a default color if no value
+* was found.
+*/
+  QColor readColorEntry( const QString& rKey, 
+  			const QColor* pDefault = NULL ) const;
 
-  /// Write the key/value pair
-  /** Write the key/value pair. This is stored to the most specific
-	  config file when destroying the config object or when calling
-	  Sync().
-	  @param rKey The key to write.
-	  @param rValue The value to write.
-	  @param bPersistent If bPersistent is false, the entry's dirty
-	  flag will not be set and thus the entry will not be written to
-	  disk at deletion time.
-	  @return The old value for this key. If this key did not
+/** Write the key/value pair. 
+*
+* This is stored to the most specific config file when destroying the
+* config object or when calling Sync().
+*
+*  @param rKey		The key to write.
+*  @param rValue	The value to write.
+*  @param bPersistent	If bPersistent is false, the entry's dirty
+*			flag will not be set and thus the entry will 
+*			not be written to disk at deletion time.
+* @return The old value for this key. If this key did not
 	  exist, a NULL string is returned.	  
    */
   QString writeEntry( const QString& rKey, const QString& rValue,
 					  bool bPersistent = true );
 
-  /// for const char*
-  /** Same as above, but for const char*
-	  @param rKey The key to write.
-	  @param rValue The value to write.
-	  @param bPersistent If bPersistent is false, the entry's dirty
-	  flag will not be set and thus the entry will not be written to
-	  disk at deletion time.
-	  @return The old value for this key. If this key did not
-	  exist, a NULL string is returned.	  
-  */
+/** 
+* writeEntry() overridden to accept a const char * argument.
+*
+* This is stored to the most specific config file when destroying the
+* config object or when calling Sync().
+*
+* @param rKey		The key to write.
+* @param rValue		The value to write.
+* @param bPersistent	If bPersistent is false, the entry's dirty
+*			flag will not be set and thus the entry will
+*			not be written to disk at deletion time.
+* @return The old value for this key. If this key did not exist, 
+*	  a NULL string is returned.	  
+*
+* @see #writeEntry
+*/
   QString writeEntry( const QString& rKey, const char* pValue,
 					  bool bPersistent = true )
 	{ return writeEntry( rKey, QString( pValue ), bPersistent ); }
 
-  /** Same as above, but writes a list of strings. Note: The old value
-	  is _not_ returned here!
-	  @param rKey The key to write
-	  @param list The list to write
-	  @param sep  The list separator
-	  @param bPersistent If bPersistent is false, the entry's dirty
-	  flag will not be set and thus the entry will not be written to
-	  disk at deletion time.
-	  */
+/** 
+* writeEntry() overriden to accept a list of strings.
+*
+* Note: Unlike the other writeEntry() functions, the old value is 
+* _not_ returned here!
+*
+* @param rKey		The key to write
+* @param list		The list to write
+* @param sep		The list separator
+* @param bPersistent	If bPersistent is false, the entry's dirty flag 
+*			will not be set and thus the entry will not be 
+*			written to disk at deletion time.
+*
+* @see #writeEntry
+*/
   void writeEntry ( const QString &rKey, QStrList &list, char sep = ',',
 					bool bPersistent = true );
 

@@ -1,6 +1,11 @@
 /* $Id$
  *
  * $Log$
+ *
+ * Revision 1.1.1.1  1997/12/09 22:02:45  jacek
+ * Imported sorces fromkde
+ *
+ * Revision 1.9  1997/10/16 11:14:26  torben
  * Kalle: Copyright headers
  * kdoctoolbar removed
  *
@@ -61,312 +66,447 @@
 
 #include<X11/X.h>
  *
-// From Offix
-//@Man: DND Types
-//@{
-/** Usually we drag URLs around. Every type of data must have
+ * Drag and Drop for KDE
  * Torben Weis <weis@stud.uni-frankfurt.de>
  *
  */
-/// ???
+
 #ifndef DRAG_H
-/// ???
+#define DRAG_H
 
-/// Raw data
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-/// Dont use that any more
+#endif
 
-/// Dont use that any more
+#include <qapp.h> // for the TrueColor problem
 #include <qwidget.h>
-/// ASCII Text
+#include <qpixmap.h>
 #include <qstrlist.h>
-/// Dont use that any more
+#include <X11/X.h>
 
-/// Dont use that any more
+/* Usually we drag URLs around. Every type of data must have
   a unique ID so that the receiver can decide wether he wants to
-/// Dont use that any more
+  accept the drop or not.
   */
-/// For Offix internal use only
+// ???
 #define DndNotDnd       -1
-/// An URL
+// ???
 #define DndUnknown      0
-//@}
 // Raw data
 #define DndRawData      1
 // Dont use that any more
 #define DndFile         2
 // Dont use that any more
 #define DndFiles        3
-/// Icon for KDE Drag 'n Drop
 // ASCII Text
-  Icon for KDE Drag 'n Drop. This is the widget that is moved
-  around during DND.
-  */
+#define DndText         4
+// Dont use that any more
+#define DndDir          5
+// Dont use that any more
+#define DndLink         6
+* @version $Id$
+#define DndExe          7
 // For Offix internal use only
 #define DndEND          8
-  Q_OBJECT
+  Q_OBJECT;
 #define DndURL          128
-  /// Constructor
-  /**
-   Creates an Icon with the specified pixma. _x and _y are the upper
-   left corner in global coordinates.
-   p*/
+
+#define Dnd_X_Precision 2
+#define Dnd_Y_Precision 2
+
+* @version $Id$
 
 /**
-  /// Destructor
-  /** Destructor */
+* Icon for KDE Drag 'n Drop. This is the widget that is moved
+* around during DND.
+*
 * @short Icon for KDE Drag 'n Drop
 * @author Torben Weis (weis@kde.org)
 * @version $Id$
 */
 class KDNDIcon : public QWidget
 {
-  /// The pixmap displayed.
+  Q_OBJECT
+public:
+
 /**
 * Creates an Icon with the specified pixmap. _x and _y are the upper
 * left corner in global coordinates.
-/// Drop zone for KDE Drag 'n Drop
 */
-  Drop zone for KDE Drag 'n Drop. You can create a DropZone
-  for every widget. When the user makes a drop over this widget,
-  the KDNDDropZone takes over control.
-  */
+  KDNDIcon( QPixmap &pixmap , int _x, int _y );
+
+/** 
+* Destructor 
+*/
+  virtual ~KDNDIcon();
+    
+protected:
+  virtual void paintEvent( QPaintEvent * );
+  virtual void resizeEvent( QResizeEvent * );
+  
+/**
+* @version $Id$
+*/
   QPixmap pixmap;
 };
-  Q_OBJECT
+  Q_OBJECT;
 /**
 * Drop zone for KDE Drag n Drop. 
-  /// Constructor
-  /** Create a DropZone for the widget _parent. Accept all drops
-   of the type _type. _type may be DndURL for exampple.
-   */
+*
+* You can create a DropZone for every widget. When the user makes a 
+* drop over this widget, the KDNDDropZone takes over control.
+* @version $Id$
+* The KDE drag and drop classes are based on the Offix Drag and Drop
+* protocol, but are not compatible with it yet.
+*
 * Currently used types are: DndText, DndURL.
 *
-  /// Destructor 
-  /** Destructor */
+* @short Drop zone for KDE Drag n Drop.
+* @author Torben Weis (weis@kde.org)
+* @version $Id$
 */
 class KDNDDropZone : public QObject
-  /// Drop stuff
-  /** When a drop occures, this function is called. _data is the
+{
   Q_OBJECT
 
 public:
+/** 
+* Create a DropZone for the widget _parent.
+*
+* @param _parent	The parent of this dropzone, usually the widget
+*			for which you wish to receive drop events.
+* @param _type		The type of Drop events to accept, eg DndURL.
+*/
+  KDNDDropZone( QWidget* _parent, int _type );
+
+/** 
 * Destructor 
 */
-  /// Enter the drop zone
-  /** The user is dragging an icon around and just entered the
-   drop zone or he is still in the drop zone but moved the mouse.
+  virtual ~KDNDDropZone();
+
+/** When a drop occurs, this function is called. _data is the
+   dropped data, _size its size, _type for example DndURL and
+   _x and _y are the global coordinates of the drop.
    */
+
+/**
+* This function is called when a drop event occurs.
+*
+* @param _data		A pointer to the dropped data.
+* @param _size		The length of the data dropped.
+* @param _type		The type of the data, eg DndURL means a URL was
+*			dropped.
 * @param _x,_y		The global coordinates of the drop.
 */
-  /// Leave the drop zone
-  /** The dragging mouse left the DropZone. */
+  virtual void drop( char *_data, int _size, int _type, int _x, int _y );
+
+/**
+* This function is called when an icon is being dragged over this
 * drop zone.
 *
-  /// Gets a list of all URLs in the 'data'.
-  /**
-    Many times, th dropped data is of the type DndURL. In this
-    case this function splits up the ( perhaps ) multiple URLs
-    in 'data' and returns a list of them. This list is only valid,
-    as long as no XEvent is dispatched because if the DropZone receives
-    a new drop event, the contents of this list will change.
-    */
+* Note that the icon may never have left the drop zone; the user may
+* be dragging it around withing this zone and this function would still
+* be called.
+*
+* @param _data		A pointer to the dragged data.
+* @param _size		The length of the data dragged.
+* @param _type		The type of the data, eg DndURL means a URL is
 *			being dragged.
 * @param _x,_y		The global coordinates of the drag.
-  /// Get the DnD data
-  /** Get the DnD data */
+*/
+  virtual void enter( char *_data, int _size, int _type, int _x, int _y );
+
+/**
+* This function is called when the icon being dragged has left
 * this drop zone.
 */
-  /// Get the DND data size
-  /** Get the DND data size */
+  virtual void leave();
+
+/**
+* Decode the dropped data into a list of URLs. This should only be called
+* if the dropped data was of type DndURL.
 *
 * Note that the contents of this list are only valid till the next
-  /// Get the DND data type
-  /** Get the DND data type */
+* drop event.
+*/
+  virtual QStrList & getURLList();
+    
+/** 
 * Get dropped data.
 *
-  /// Get the mouse position.
-  /** Get the mouse position at which the item was dropped. */
+* @return A pointer to the dropped data.
+*/
+  virtual const char* getData() { return dndData; }
+
+/** 
+* Get dropped data length.
 *
+* @return the length of the data that was dropped.
+*/
+  virtual int getDataSize() { return dndSize; }
+
+/** 
+* Get drop data type.
 *
-  /// Get the mouse position.
-  /** Get the mouse position at which the item was dropped. */
 * @return the type of the data dropped.
-  /// Get the acceptance type
-  /** Get the acceptance type */
+*/
+  virtual int getDataType() { return dndType; }
+
+/** 
+* Get the mouse position at which the item was dropped. 
 *
 * @return the X coordinate at which the item was dropped.
-  /// Decide whether to accept this data in this drop zone
-  /** Decide whether to accept this data in this drop zone */
+* @see #getMouseY
+*/
+  virtual int getMouseX() { return dndX; }
+/** 
+* Get the mouse position at which the item was dropped. 
+*
 * @return the Y coordinate at which the item was dropped.
 * @see #getMouseX
 */
-  /// Return the QWidget associated with this drop zone.
-  /** Return the QWidget associated with this drop zone. */
+  virtual int getMouseY() { return dndY; }
+
+/** 
+* The types of dropped data this drop zone will accept.
+*
 * @return the types of drops accepted.
 */
-  //@Man: signals
-  //@{
   virtual int getAcceptType() { return acceptType; }
-  /// Drop has happened.
-  /** Drop has happened */
+
+/**
+* Tests whether this data type will be accepted.
+*
+* @param _type	the data type to be tested.
+* @return TRUE if this type will be accepted, FALSE otherwise.
 */
   virtual bool accepts( int _type ) 
-  /// Drop zone was entered. 
-  /** Drop zone was entered or mouse moved in DropZone. */
+  { return (( acceptType & _type ) == _type); }
+
+/**
 * Get the parent widget.
 *
-  /// Drop zone was left.
-  /** Drop zone was left. */
+* @return the parent widget for which this object is monitoring drops.
+*/
+  QWidget* getWidget();
 
-  //@}
 signals:
 
-  /// fills 'urlList' with the URLs in 'dndData'.
-  /**
-    Works only if 'dndType' is DndURL.
-    */
+/** 
+* Emitted when a drop has occurred.
+* 
+* The zone into which the drop has occurred is passed as a parameter.
 */
   void dropAction( KDNDDropZone* );
-  /// The widget to which this DropZone is bound
+
+/** 
+* Emitted when an icon is dragged into and inside this drop zone.
 */
   void dropEnter( KDNDDropZone* );
-  /// The data of the last drop.
-  /**
-    Only valid during a call to 'dropAction'
-    */
-  void dropLeave( KDNDDropZone* );
+
 /** 
+* Emitted when an icon is dragged out of this drop zone.
 */
-  int dndX, dndY;
-  /// Tells which kind of data is accepted.
+  void dropLeave( KDNDDropZone* );
+
+protected:
+/** 
+* Fills 'urlList' with the URLs in 'dndData'.
+* Works only if 'dndType' is DndURL.
+*/
+  void parseURLList();
+    
+/**
+* The parent widget being monitored.
+*/
+  QWidget *widget;
+  
+/**
+* Last drop data.
+* Only valid during a call to 'dropAction'
+*/
   char *dndData;
 /**
-  /// If 'dndType' is URL, then all URLs in 'dndData' are stored here.
+*/
+  int dndSize;
+/**
 */
   int dndType;
 /**
-/// Widget that allows DnD.
-/** When you want to support drag you must use this widget.
- You dont need this if you just want to receive drops.
- */
+* Drop/drag X position.
+*/
+  int dndX;
+/**
+* Drop/drag Y position.
+*/
+  int dndY;
+/**
+* @version $Id$
+*/
   int acceptType;
 
 /**
 * If 'dndType' is URL, then all URLs in 'dndData' are stored here.
-  /// Constructor.
-  /** Constructor. */
+*/
+  QStrList urlList;    
+};
 
 * @version $Id$
 * A widget for drag support.
 *
-  /// Destructor.
-  /** Destructor. */
+* If you require only drop support you dont need this widget, you just need
+* KDndDropZone.
+  { drag = false; dndData = 0L; dndIcon = 0L; }
 * @short A widget for drag support.
 * @author Torben Weis (weis@kde.org)
-  /// Starts a drag
-  /** 
-    _icon is the Icon that the user can drag around. _data is the data, _size its size in
-    bytes, _type for example DndURL and _dx and _dy are the difference between the
-    icons upper left corner and the mouse pointer. For example when the user clicks the
-    mouse over the middle of a pixmap, _dx and _dy would be ' - pixmap.width() / 2 '
-    and ' - pixmap.height() / 2 '. This is just provided for look and feel.
-    Call this function when you noticed that the user wants to drag something
-    around. Usually this is called from dndMouseMoveEvent. _data is copied into
-    a buffer, sou you dont need to worry about this pointer being valid any more.
-    */
-    virtual void startDrag( KDNDIcon *_icon, char *_data, int _size, int _type, int _dx, int _dy );
+  { drag = FALSE; dndData = 0L; dndIcon = 0L; }
+*/
+class KDNDWidget : public QWidget
+{
+  Q_OBJECT
+public:
+/** 
+* Constructor. 
+*/
+    KDNDWidget( QWidget *parent=0, const char *name=0, WFlags f=0 ) : 
+	  QWidget( parent, name, f ) 
+  { drag = false; dndData = 0L; dndIcon = 0L; }
+
+/** 
+* Destructor. 
+*/
+  virtual ~KDNDWidget();
+
+/** 
+* Start a drag.
 *
 * Call this function when you notice that the user wants to drag something 
-  /// Find a root window
-  /**
-    Finds the root window belonging to the global point p.
-    */
+* around, usually from a dndMouseMoveEvent.
+*
+* @param _icon	The icon that the user can drag around. 
 * @param _data	A pointer to the data being dragged. A deep copy is
 *		made of this data, so you don't need to maintain its
-  /// Do not overload
+*		value after you call this function.
+* @param _size	The length of the data pointed to by _data.
+* @param _type	The type of the data that is being dragged, eg DndURL.
+* @param _dx,_dy The difference between the icons upper left corner and 
+*		the mouse pointer. For example when the user clicks the 
+*		mouse over the middle of a pixmap, _dx and _dy would be 
+*		' - pixmap.width() / 2 ' and ' - pixmap.height() / 2 '. 
 *		This is just provided for look and feel.
-  /// Do not overload
+*/
+    virtual void startDrag( KDNDIcon *_icon, char *_data, int _size, 
+    			int _type, int _dx, int _dy );
+
+protected:
+/**
+* Finds the root window belonging to the global point p.
+*/
   virtual Window KDNDWidget::findRootWindow( QPoint & p );
   
-  /// A root drop occured.
-  /**
-    At the point (_x|_y) the user dropped the icon. If there is
-    now window below this point, this function is called.
-    Usually it emits a XEvent, so that every application gets
-    informed about this. This function is only called if the drag
-    started in this widget. See KApplication for details on receiving
-    root drop events.
-    */
+/** 
 * This function MUST be called by your implementation if you overload it.
-  /// Clean Up
-  /** 
-    If you must overload rootDropEvent(...) call this function at the
-    end to do some clean up.
-    */
+*
+* In nearly all cases, you probably mean to call dndMouseMoveEvent().
+*
+* @see #dndMouseMoveEvent
+*/
+  virtual void mouseMoveEvent( QMouseEvent * );
+
+/** 
+* This function MUST be called by your implementation if you overload it.
+*
+* In nearly all cases, you probably mean to call dndMouseReleaseEvent().
+*
+* @see #dndMouseReleaseEvent
+*/
+  virtual void mouseReleaseEvent( QMouseEvent * );
+  
 /**
 * A root drop occurred.
-  /// Called when a drag ended.
-  /**
-    This function is only called if the drag started in this widget.
-    Overload it to do your own clean up.
-    */
+*
+* At the point (_x,_y) the user dropped the icon. If there is now window 
+* below this point, this function is called.  Usually it emits a XEvent, 
+* so that every application gets informed about this. This function is 
+* only called if the drag started in this widget. 
+*
 * See KApplication for details on receiving root drop events.
 */
-  /// Your mouse move event function
-  /**
-    Overload tis instead of mouseMoveEvent. Ususally drags are started in
-    this functions. A implementation might look like this:
+  virtual void rootDropEvent( int _x, int _y );
 
-    void KFileView::dndMouseMoveEvent( QMouseEvent * _mouse )
-    {
-    // 'pressed' is set in mousePressedEvent(...)
-    if ( !pressed )
-	return;
-    
-    int x = _mouse->pos().x();
-    int y = _mouse->pos().y();
+/** 
+* Perform internal housekeeping after a root drop event.
+*
+* If you must overload rootDropEvent(...), call this function at the
+* end to do some clean up.
+*/
+  virtual void rootDropEvent();
+  
+/** 
+* Called when a drag is ended.
+*
+* This function is only called if the drag started in this widget.
+* Overload it to do your own clean up.
+*/
+  virtual void dragEndEvent() { }
 
-    if ( abs( x - press_x ) > Dnd_X_Precision || abs( y - press_y ) > Dnd_Y_Precision )
-    {
-        QString data = "Transfer me";
-	QPoint p = mapToGlobal( _mouse->pos() );
-	QPixmap pixmap = typ->getPixmap( filename );
-	int dx = - pixmap.width() / 2;
-	int dy = - pixmap.height() / 2;
-
-	startDrag( new KDNDIcon( pixmap, p.x() + dx, p.y() + dy ), data.data(), data.length(), DndText, dx, dy );
-    }
-    else
-    {
-      Do something different
-    }
-
-    The function is only called if the mouse movement was not part of a
-    drag process.
-    */
+/**
+* Overload this instead of mouseMoveEvent. 
+* Ususally drags are started in
+*    this functions. A implementation might look like this:
+*
+* <pre>
+* void KFileView::dndMouseMoveEvent( QMouseEvent * _mouse )
 *    {
-  /// Your mouse release event function
-  /**
-    Usually you will only set 'pressed' ( see dndMouseMoveEvent) to FALSE here.
-    The function is only called if the release event had nothing to do with
-    DND.
-    */
+*    // 'pressed' is set in mousePressedEvent(...)
+*    if ( !pressed )
+*	return;
+*    
+*    int x = _mouse->pos().x();
+*    int y = _mouse->pos().y();
+*
+*    if ( abs( x - press_x ) > Dnd_X_Precision || abs( y - press_y ) > Dnd_Y_Precision )
+*    {
+*        QString data = "Transfer me";
+*	QPoint p = mapToGlobal( _mouse->pos() );
+*	QPixmap pixmap = typ->getPixmap( filename );
+*	int dx = - pixmap.width() / 2;
+*	int dy = - pixmap.height() / 2;
+*
+*	startDrag( new KDNDIcon( pixmap, p.x() + dx, p.y() + dy ), data.data(), data.length(), DndText, dx, dy );
 *    }
 *    else
-  /// Are we just doing DND ?
+*    {
+*      Do something different
+*    }
 * </pre>
-  /// The data that is currently dragged.
-*/
 *
+*    The function is only called if the mouse movement was not part of a
+*    drag process.
 */
-  /// The offset we got from 'startDrag'
+  virtual void dndMouseMoveEvent( QMouseEvent * ) { }    
+/** 
+* Your mouse release event function.
+*
+* Usually you will only set 'pressed' ( see dndMouseMoveEvent) to FALSE here.
+* The function is only called if the release event had nothing to do with
+* DND.
+*/
+  virtual void dndMouseReleaseEvent( QMouseEvent * ) { }
+  
+/**
 * Are we just doing DND ?
-  /// The offset we got from 'startDrag'
+*/
+  bool drag;
+/**
 * The data that is currently dragged.
-  /// The icon we are moving around
+*/
+  char *dndData;
+/**
 * data size
-  /// The last window we entered with the mouse pointer.
+*/
+  int dndSize;
+/**
 * data type
 */
   int dndType;

@@ -25,6 +25,12 @@ struct KKeyEntry {
 	QDict<KKeyConnectEntry> *pConnectDict;
 };
 
+/**
+*  A function/accelerator pair, used internally by KKeyConfig.
+*
+* @short A function/accelerator pair, used internally by KKeyConfig.
+* @version $Id$
+*/
 class KKeyWidgetEntry : public QObject
 {
  Q_OBJECT
@@ -48,7 +54,11 @@ class KKeyWidgetEntry : public QObject
 	void widgetDestroyed();
 };
 
-
+/**
+* A widget for configuration of function/accelerator assignments.
+* @short A widget for configuration of function/accelerator assignments.
+* @version $Id$
+*/
 class KKeyConfigure : public QDialog
 {
  Q_OBJECT

@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
+// Source imported
+//
 // Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
 // Sources imported
 //
@@ -62,6 +65,12 @@ struct KEntryDictEntry
 typedef QDict<KEntryDictEntry> KEntryDict;
 typedef QDict<KEntryDict> KGroupDict;
 
+/**
+* Configuration data manager, used internally by KConfig.
+* @short Configuration data manager, used internally by KConfig.
+* @version $Id$
+* @author Matthias Kalle Dalheimer (kalle@kde.org)
+*/
 class KConfigData
 {
 friend class KConfig;

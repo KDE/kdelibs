@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Torben: Secure string operations. Use instead of QString::sprintf
+ *
+ * Revision 1.9  1997/10/21 20:44:53  kulow
  * removed all NULLs and replaced it with 0L or "".
  * There are some left in mediatool, but this is not C++
  *
@@ -68,8 +71,8 @@
  * Revision 1.4  1997/01/15 20:34:14  kalle
  * merged changes from 0.52
  *
-/** A normal Internet socket.
-* You can connect this socket to any internet address. 
+ * Revision 1.3  1996/12/07 22:23:07  kalle
+ * autoconf, documentation
  *
  * Revision 1.2  1996/12/07 18:32:00  kalle
  * RCS header
@@ -82,72 +85,88 @@
 * on this identifier. 
 *  
 * @version $Id$
+* had no success.
 *
 * @author Torben Weis <weis@uni-frankfurt.de>
 * @version $Id$
   Q_OBJECT;
 */
  * @version $Id$
-/** Create a KSocket with the provided file descriptor.
+#include <sys/types.h>
+  Q_OBJECT
 #include <netinet/in.h> 
 
   KSocket( int _sock ) { sock = _sock; readNotifier = 0L; writeNotifier = 0L; }
 * Create a KSocket with the provided file descriptor.
-/** Create a socket and connect to a host.
-*
+* @param _sock	the file descriptor to use.
+*/
   KSocket( int _sock ) { sock = _sock; readNotifier = 0L; writeNotifier = 0L; }
 
 /** 
 * Create a socket and connect to a host.
 * @param _host	the remote host to which to connect.
-/** Destructor.
-* Closes the socket if it is still open.
+* @param _port	the port on the remote host.
+*/
   KSocket( const char *_host, unsigned short int _port );
 
 /** 
-/** Returns a file descriptor for this socket.
+* Destructor. Closes the socket if it is still open.
+*/
   ~KSocket();
   int socket() { return sock; }
 /** 
-/** Enable the socket for reading.
+* Returns a file descriptor for this socket.
+*/
+  int socket() const { return sock; }
   
 /** 
 * Enable the socket for reading.
 *
 * If you enable read mode, the socket will emit the signal
 * readEvent whenever there is something to read out of this
-/** Enable the socket for writing.
+* socket.
+*/
+  void enableRead( bool );
 
 /** 
 * Enable the socket for writing.
 *
 * If you enable write mode, the socket will emit the signal
-/// Return address.
+* writeEvent whenever the socket is ready for writing.
+*/
+  void enableWrite( bool );
   long getAddr();
 /**
 * Return address.
-/** Data has arrived for reading.
+*/
+  unsigned long getAddr();
+  
   signals:
 /** 
 * Data has arrived for reading.
 *
 * This signal will only be raised if enableRead( TRUE ) was called
-/** Socket is ready for writing.
+* first.
+*/
+  void readEvent( KSocket * );
 
 /** 
 * Socket is ready for writing.
 *
 * This signal will only be raised if enableWrite( TRUE ) was called
-/** Raised when the connection is broken.
+* first.
+*/
   void writeEvent( KSocket * );
 
 /** 
 * Raised when the connection is broken.
-/** Connected to the writeNotifier.
+*/
+  void closeEvent( KSocket * );
   
  public slots:
 /** 
-/** Connected to the readNotifier.
+* Connected to the writeNotifier.
+*/
  void slotWrite( int );
 
 /** 
@@ -168,7 +187,8 @@
   int sock;
   
   QSocketNotifier *readNotifier;
-/**KServerSocket: Listen on a port.
+  QSocketNotifier *writeNotifier;
+     * Connected to the writeNotifier.
      */
     void slotWrite( int );
     
@@ -180,37 +200,43 @@
 * always connect to this signal. If you dont the ServerSocket will
 * create new KSocket's and no one will delete them!
 * @version $Id$
+* If socket() is -1 or less the socket was not created properly.
 *
 * @author Torben Weis <weis@stud.uni-frankfurt.de>
 * @version $Id$
   Q_OBJECT;
     int sock;
-/** Constructor.
+ * @version $Id$
+    int domain;
   Q_OBJECT
     QSocketNotifier *readNotifier;
 /**
 * Constructor.
-/** Destructor.
-* Closes the socket if it was not already closed.
+* @param _port	the port number to monitor for incoming connections.
+*/
   KServerSocket( int _port );
 
 /** 
-/** Get the file descriptor assoziated with the socket.
+* Destructor. Closes the socket if it was not already closed.
+*/
   ~KServerSocket();
   int socket() { return sock; }
 /** 
-/** Returns the port number which is being monitored.
+* Get the file descriptor assoziated with the socket.
+*/
   int socket() const { return sock; }
   int getPort();
 /** 
-/// The address.
+* Returns the port number which is being monitored.
+*/
+  unsigned short getPort();
   long getAddr();
 /** 
 * The address.
-/** Called when someone connected to our port.
+*/
+  unsigned long getAddr();
      * Creates a UNIX domain server socket.
      */
-  //@}
 /** 
 * Called when someone connected to our port.
 */
@@ -221,11 +247,13 @@
 * It is your task to delete the KSocket if it is no longer needed.
 */
   void accepted( KSocket* );
-/** Notifies us when there is something to read on the port.
+
+    /** 
   bool init( short unsigned int );
      */
 /** 
-/** The file descriptor for this socket. sock may be -1.
+* Notifies us when there is something to read on the port.
+*/
   QSocketNotifier *notifier;
   
 /** 
