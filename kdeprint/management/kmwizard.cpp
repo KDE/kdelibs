@@ -47,6 +47,7 @@
 #include "kmwlpd.h"
 #include "kmwfile.h"
 #include "kmwsmb.h"
+#include "kmwlocal.h"
 
 KMWizard::KMWizard(QWidget *parent, const char *name)
 : QDialog(parent,name,true)
@@ -108,6 +109,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	addPage(new KMWLpd(this));
 	addPage(new KMWFile(this));
 	addPage(new KMWSmb(this));
+	addPage(new KMWLocal(this));
 
 	// add other pages
 	KMFactory::self()->uiManager()->setupWizard(this);
