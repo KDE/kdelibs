@@ -55,7 +55,7 @@ public:
         { _value->ref(); };
     ~AttributeImpl() {
         if (_prefix) _prefix->deref();
-        _value->deref();
+        if (_value) _value->deref();
         // assert : _impl == 0
     }
 

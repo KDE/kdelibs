@@ -416,12 +416,15 @@ protected:
     bool m_mouseInside : 1;
     bool m_attached : 1;
     bool m_changed : 1;
+
     bool m_hasChangedChild : 1;
     bool m_inDocument : 1;
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
     bool m_active : 1;
     bool m_styleElement : 1; // contains stylesheet text
+
+    // 2 bits unused
 };
 
 // this is the full Node Implementation with parents and children.
