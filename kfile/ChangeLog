@@ -1,3 +1,9 @@
+Fri Feb 18 23:35:04 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfilefilter.cpp (eventFilter): 
+	intercept Key_Return and Key_Enter in the filter-combo and emit
+	filterChanged instead of letting the dialog close
+
 Thu Feb 17 19:09:54 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfiledialog.{cpp,h} (KDirComboBox): 

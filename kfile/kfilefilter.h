@@ -7,7 +7,7 @@
 
 class QStrList;
 
-class KFileFilter : public QComboBox 
+class KFileFilter : public QComboBox
 {
     Q_OBJECT
 
@@ -20,6 +20,9 @@ class KFileFilter : public QComboBox
 
  protected:
     QStringList filters;
+    QLineEdit *edit;
+    
+    virtual bool eventFilter( QObject *, QEvent * );
 
  protected slots:
     void changed(const QString &);
