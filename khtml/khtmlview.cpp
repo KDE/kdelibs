@@ -3,6 +3,7 @@
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
  *                     1999 Lars Knoll <knoll@kde.org>
  *                     1999 Antti Koivisto <koivisto@kde.org>
+ *                     2000 Dirk Mueller <mueller@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -49,7 +50,7 @@
 #include <kimageio.h>
 #include <kdebug.h>
 
-#define PAINT_BUFFER_HEIGHT 150
+#define PAINT_BUFFER_HEIGHT 64
 
 template class QList<KHTMLView>;
 
@@ -168,8 +169,8 @@ void KHTMLView::clear()
         QScrollView::setVScrollBarMode(AlwaysOn);
     else
         QScrollView::setVScrollBarMode(d->vmode);
-    QScrollView::setHScrollBarMode(d->hmode);    
-    
+    QScrollView::setHScrollBarMode(d->hmode);
+
     resizeContents(visibleWidth(), visibleHeight());
     viewport()->erase();
 
@@ -225,8 +226,6 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     int py=0;
     while (py < eh) {
         int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
-
-        // ### fix this for frames...
         d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
         m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
 
@@ -513,7 +512,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 bool KHTMLView::focusNextPrevChild( bool next )
 {
     //    return (gotoLink(next) || QScrollView::focusNextPrevChild( next ));
-  
+
     if (!gotoLink(next))
       {
 	  bool retval = QScrollView::focusNextPrevChild( next );
@@ -582,7 +581,7 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     int borderX, borderY;
 
     borderX = borderY = 30;
-    
+
     // is ypos of target above upper border?
     if (y < contentsY() + borderY)
 	{
@@ -668,7 +667,7 @@ bool KHTMLView::gotoLink(bool forward)
 	if (m && m!=d->currentNode && m->tabIndex()==currentTabIndex)
 	    n = m;
     }
-    
+
     if (!n)
     {
 	//there is none, so we look for a different item in the whole document.
@@ -854,14 +853,14 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
 	  KHTMLView * actView = lstViews->current();
 	  if (!actView || !this)
 	      kdFatal(6000)<<"no object / subject\n";
-	  
+
 	  if (actView != this)
 	  {
 	      if (actView->d->currentNode && actView->d->currentNode!=n)
 		  actView->d->currentNode->blur();
 	      actView->d->currentNode = 0;
 	  }
-	  
+
       }
   }
 
@@ -883,12 +882,12 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
 /* not BC
 void KHTMLView::dragEnterEvent( QDragEnterEvent *e )
 {
-  if ( e->provides( "text/uri-list" ) ) 
+  if ( e->provides( "text/uri-list" ) )
   {
       KURL::List m_lstDragURLs;
       bool ok = KURLDrag::decode( e, m_lstDragURLs );
-      if( ok 
-          && ! m_lstDragURLs.first().prettyURL().contains("javascript:", false) 
+      if( ok
+          && ! m_lstDragURLs.first().prettyURL().contains("javascript:", false)
           && e->source() != viewport() ) 	// don't accept on this window, only on others
       {
           e->acceptAction();

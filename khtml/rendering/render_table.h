@@ -103,14 +103,12 @@ public:
     void addColInfo(int _startCol, int _colSpan,
                     int _minSize, int _maxSize, khtml::Length _width,
                     RenderTableCell* _cell);
-    
+
     void recalcColInfos();
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void print( QPainter *, int x, int y, int w, int h,
-                        int tx, int ty);
-    virtual void printBorders( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
     virtual void layout();
     virtual void calcMinMaxWidth();
@@ -126,7 +124,7 @@ public:
 
     virtual int borderTopExtra();
     virtual int borderBottomExtra();
-    
+
     void closeRow();
 
 public:
@@ -310,7 +308,7 @@ public:
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}
-    
+
     virtual void close();
 
     virtual void setTable(RenderTable *t) { table = t; }

@@ -41,16 +41,15 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
     //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
-
     QColor c;
     if( parent()->style()->backgroundColor().isValid() )
 	c =  m_style->backgroundColor();
     CachedImage *bg = 0;
     if( parent() ->backgroundImage() )
 	bg = m_bgImage;
-    
+
     int w = width();
-    int h = height() + borderTopExtra() + borderBottomExtra();	
+    int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
 
     int my = QMAX(_ty,_y);
@@ -63,7 +62,7 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
     printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
 
     if(m_style->hasBorder())
-	printBorder( p, _tx, _ty, w, h );
+	printBorder( p, _tx, _ty, w, h, m_style );
 
 }
 

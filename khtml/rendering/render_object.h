@@ -120,7 +120,7 @@ public:
      * positioned elements
      */
     RenderObject *container() const;
-    
+
     void setContainsPositioned(bool p);
 
     void setLayouted(bool b=true) { m_layouted = b; }
@@ -134,9 +134,7 @@ public:
      * Print the object and it's children, but only if it fits in the
      * rectangle given by x,y,w,h. (tx|ty) is parents position.
      */
-    virtual void print( QPainter *p, int x, int y,
-                        int w, int h, int tx, int ty)
-    { printObject(p, x, y, w, h, tx, ty); }
+    virtual void print( QPainter *p, int x, int y, int w, int h, int tx, int ty);
 
     /**
      * assumes (_tx/_ty) point to the upper left corner of the object
@@ -145,6 +143,10 @@ public:
     virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
                         int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
 
+    /**
+     * prints the the Box decoration borders
+     */
+    void printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
 
     /**
      * This function calculates the minimum & maximum width that the object
@@ -306,7 +308,7 @@ public:
         BSTop, BSBottom, BSLeft, BSRight
     };
     void drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width, BorderSide s,
-                    const QColor &c, EBorderStyle style);
+                    QColor c, EBorderStyle style, bool sb1, bool sb2);
 
     virtual void setTable(RenderTable*) {};
 

@@ -45,7 +45,7 @@ public:
     virtual ushort id() const;
 
     void attach(KHTMLView *w);
-    
+
     virtual tagStatus startTag() { return BLOCKQUOTEStartTag; }
     virtual tagStatus endTag() { return BLOCKQUOTEEndTag; }
 };
@@ -86,13 +86,8 @@ public:
 
     virtual tagStatus startTag() { return HRStartTag; }
     virtual tagStatus endTag() { return HREndTag; }
-    
+
     virtual void attach(KHTMLView *);
-protected:
-    khtml::Length length;
-    bool shade;
-    int size;
-    khtml::ETextAlign halign;
 };
 
 // -------------------------------------------------------------------------

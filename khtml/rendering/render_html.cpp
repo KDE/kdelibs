@@ -23,14 +23,16 @@
 #include "render_html.h"
 
 #include <qpainter.h>
+#include <qscrollview.h>
 
 #include <kdebug.h>
 
 using namespace khtml;
 
-RenderHtml::RenderHtml()
+RenderHtml::RenderHtml(QScrollView* view)
     : RenderFlow()
 {
+    m_view = view;
 }
 
 RenderHtml::~RenderHtml()
@@ -65,6 +67,8 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 	    c = firstChild()->style()->backgroundColor();
 	if( !bg )
 	    bg = firstChild()->backgroundImage();
+        if( !c.isValid() )
+            c = m_view->palette().normal().color(QColorGroup::Base);
     }
 
     int w = width();
@@ -86,14 +90,12 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
     if (by<_y)
     	mh= QMAX(0,bh-(_y-by));
     else
-    	mh = QMIN(_h,h);
-
-    //kdDebug() << "my=" << my << " mh=" << mh <<" by=" << by << " height = " << bh << endl;
+    	mh = _h; // special case for root element
 
     printBackground(p, c, bg, my, mh, bx, by, bw, bh);
 
     if(m_style->hasBorder())
-	printBorder( p, _tx, _ty, w, h );
+	printBorder( p, _tx, _ty, w, h, m_style );
 }
 
 void RenderHtml::repaint()

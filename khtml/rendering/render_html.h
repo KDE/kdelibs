@@ -25,12 +25,14 @@
 
 #include "render_flow.h"
 
+class QScrollView;
+
 namespace khtml {
 
     class RenderHtml : public RenderFlow
     {
     public:
-	RenderHtml();
+	RenderHtml(QScrollView* view);
 	virtual ~RenderHtml();
 
 	virtual const char *renderName() const { return "RenderHtml"; }
@@ -44,7 +46,8 @@ namespace khtml {
     protected:
 	virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 					 int _w, int _h, int _tx, int _ty);
-
+    private:
+        QScrollView* m_view;
     };
 };
 #endif

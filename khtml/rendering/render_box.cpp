@@ -213,7 +213,7 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     printBackground(p, m_style->backgroundColor(), m_bgImage, my, mh, _tx, _ty, w, h);
 
     if(m_style->hasBorder())
-        printBorder(p, _tx, _ty, w, h);
+        printBorder(p, _tx, _ty, w, h, m_style);
 }
 
 void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
@@ -230,41 +230,27 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         int sy = 0;
 
         //hacky stuff
-        RenderStyle* my_style = m_style;
+        RenderStyle* sptr = m_style;
         if ( isHtml() && firstChild() && !m_bgImage )
-            my_style = firstChild()->style();
+            sptr = firstChild()->style();
 
 	int cx = _tx;
 	int cy = clipy;
 	int cw = w;
-	int ch = cliph;
+	int ch = h;
 
         // CSS2 chapter 14.2.1
-        int pw = m_width - my_style->borderRightWidth() - my_style->borderLeftWidth();
-        int ph = m_height - my_style->borderTopWidth() - my_style->borderBottomWidth();
-        switch(my_style->backgroundRepeat()) {
-        case NO_REPEAT:
+        int pw = m_width - sptr->borderRightWidth() - sptr->borderLeftWidth();
+        int ph = m_height - sptr->borderTopWidth() - sptr->borderBottomWidth();
+        EBackgroundRepeat bgr = sptr->backgroundRepeat();
+        if(bgr == NO_REPEAT || bgr == REPEAT_Y)
             cw = QMIN(bg->pixmap_size().width(), w);
-	    cx = _tx + my_style->backgroundXPosition().minWidth(pw)
-                 - my_style->backgroundXPosition().minWidth(cw);
-            /* nobreak */
-        case REPEAT_X:
+        if(bgr == NO_REPEAT || bgr == REPEAT_X)
             ch = QMIN(bg->pixmap_size().height(), h);
-	    cy = _ty + my_style->backgroundYPosition().minWidth(ph)
-                 - my_style->backgroundYPosition().minWidth(ch);
-            break;
-        case REPEAT_Y:
-            cw = QMIN(bg->pixmap_size().width(), w);
-	    cx = _tx + my_style->backgroundXPosition().minWidth(pw)
-                 - my_style->backgroundXPosition().minWidth(cw);
-        case REPEAT:
-            // make sure that the pixmap is tiled correctly
-            // because we clip the tiling to the visible area (for speed reasons)
-            if(bg->pixmap_size().height() && my_style->backgroundAttachment())
-                sy = (clipy - _ty) % bg->pixmap_size().height();
-            break;
-        }
-        if(  !my_style->backgroundAttachment() ) {
+
+        cx = _tx + sptr->backgroundXPosition().minWidth(pw) - sptr->backgroundXPosition().minWidth(cw);
+        cy = _ty + sptr->backgroundYPosition().minWidth(ph) - sptr->backgroundYPosition().minWidth(ch);
+        if( !sptr->backgroundAttachment() ) {
             QRect r = viewRect();
             //kdDebug(0) << "fixed background r.y=" << r.y() << endl;
 	    if( isHtml() ) {
@@ -274,44 +260,16 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             sx = cx - r.x();
             sy = cy - r.y();
         }
-	p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
+        else
+            // make sure that the pixmap is tiled correctly
+            // because we clip the tiling to the visible area (for speed reasons)
+            if(bg->pixmap_size().height() && sptr->backgroundAttachment());
+
+        //        sy = (clipy - _ty) % bg->pixmap_size().height();
+
+	p->drawTiledPixmap(cx, _ty, cw, ch, bg->tiled_pixmap(c), sx, sy);
     }
 }
-
-void RenderBox::printBorder(QPainter *p, int _tx, int _ty, int w, int h)
-{
-    int bottom = _ty + h;
-    int right = _tx + w;
-    right -= (m_style->borderRightWidth() & 1);
-    bottom -= (m_style->borderBottomWidth() & 1);
-
-    QColor c;
-    if(m_style->borderTopStyle() != BNONE) {
-        c = m_style->borderTopColor();
-        if(!c.isValid()) c = m_style->color();
-        drawBorder(p, _tx, _ty, right, _ty, m_style->borderTopWidth(),
-                   BSTop, c, m_style->borderTopStyle());
-    }
-    if(m_style->borderBottomStyle() != BNONE) {
-        c = m_style->borderBottomColor();
-        if(!c.isValid()) c = m_style->color();
-        drawBorder(p, _tx, bottom, right, bottom, m_style->borderBottomWidth(),
-                   BSBottom, c, m_style->borderBottomStyle());
-    }
-    if(m_style->borderLeftStyle() != BNONE) {
-        c = m_style->borderLeftColor();
-        if(!c.isValid()) c = m_style->color();
-        drawBorder(p, _tx, _ty, _tx, bottom, m_style->borderLeftWidth(),
-                   BSLeft, c, m_style->borderLeftStyle());
-    }
-    if(m_style->borderRightStyle() != BNONE) {
-        c = m_style->borderRightColor();
-        if(!c.isValid()) c = m_style->color();
-        drawBorder(p, right, _ty, right, bottom, m_style->borderRightWidth(),
-                   BSRight, c, m_style->borderRightStyle());
-    }
-}
-
 
 void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
 {

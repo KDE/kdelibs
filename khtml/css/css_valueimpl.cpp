@@ -51,7 +51,7 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QList<CSSP
 
 CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
 {
-    if(m_lstValues) delete m_lstValues;
+    delete m_lstValues;
 }
 
 DOMString CSSStyleDeclarationImpl::getPropertyValue( const DOMString &propertyName )
@@ -199,10 +199,10 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
 						bool important, bool nonCSSHint)
 {
     setProperty( id, value, important, nonCSSHint);
-#if 0 // ### FIXME after 2.0    
+#if 0 // ### FIXME after 2.0
     if(!value.unicode() || value.length() == 0)
 	return;
-    
+
     if(!m_lstValues)
     {
 	m_lstValues = new QList<CSSProperty>;
@@ -228,7 +228,7 @@ void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
     prop->setValue(v);
     prop->m_bImportant = important;
     prop->nonCSSHint = nonCSSHint;
-    
+
     m_lstValues->append(prop);
 #endif
 }
@@ -292,9 +292,9 @@ void CSSValueImpl::setCssText(DOM::DOMString /*str*/)
     // ###
 }
 
-DOM::DOMString CSSInheritedValueImpl::cssText() const 
-{ 
-    return DOMString("inherited"); 
+DOM::DOMString CSSInheritedValueImpl::cssText() const
+{
+    return DOMString("inherited");
 }
 // ----------------------------------------------------------------------------------------
 
@@ -399,7 +399,7 @@ void CSSPrimitiveValueImpl::cleanup()
     else if(m_type == CSSPrimitiveValue::CSS_RECT)
 	delete m_value.rect;
     m_type = 0;
-}    
+}
 
 unsigned short CSSPrimitiveValueImpl::primitiveType() const
 {

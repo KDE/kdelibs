@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -125,29 +126,19 @@ RenderObject::~RenderObject()
 {
     if(m_bgImage) m_bgImage->deref(this);
 
-    //kdDebug( 6090 ) << "RenderObject::~RenderObject this=" << this << endl;
-    // previous and next node may still reference this!!!
-    // hope this fix is fine...
-
     if (m_parent)
-    {
         //have parent, take care of the tree integrity
-
         m_parent->removeChild(this);
 
-    } //if not, it is mass a deletion, just kill everyone
-
+    //if not, it is mass a deletion, just kill everyone
     RenderObject *n;
     RenderObject *next;
-
     for( n = m_first; n != 0; n = next )
     {
         n->setParent(0); //zero the parent
         next = n->nextSibling();
         delete n;
     }
-
-
 }
 
 
@@ -347,45 +338,209 @@ QSize RenderObject::size() const
     return QSize(0, 0);
 }
 
-void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width, BorderSide s, const QColor &c, EBorderStyle style)
+void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width,
+                              BorderSide s, QColor c, EBorderStyle style, bool sb1, bool sb2)
 {
+    if(style == DOUBLE && width < 3)
+        style = SOLID;
+
+    int half = width/2;
     switch(style)
     {
     case BNONE:
     case BHIDDEN:
+        // should not happen
         return;
     case DOTTED:
-        p->setPen(QPen(c, width, Qt::DotLine));
-        break;
+        p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DotLine));
+        /* nobreak; */
     case DASHED:
-        p->setPen(QPen(c, width, Qt::DashLine));
+        if(style == DASHED)
+            p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DashLine));
+
+        switch(s)
+        {
+        case BSTop:
+            y1 += half; y2 += half;   break;
+        case BSBottom:
+            y1 -= half; y2 -= half;   break;
+        case BSLeft:
+            x1 += half; x2 += half;
+            y1 += width; y2 -= width; break;
+        case BSRight:
+            x1 -= half; x2 -= half;
+            y2 -= width; y1 += width; break;
+        }
+
+        p->drawLine(x1, y1, x2, y2);
         break;
+
     case DOUBLE:
-    case GROOVE:
-    case RIDGE:
-    case INSET:
-    case OUTSET:
-        // ### don't treat them as solid
-    case SOLID:
-        p->setPen(QPen(c, width, Qt::SolidLine));
+    {
+        p->setPen(Qt::NoPen);
+        p->setBrush(c);
+
+        int w = width/3;
+        switch(s)
+        {
+        case BSTop:
+            p->drawRect(x1, y1, x2-x1, w);
+            p->drawRect(x1+(sb1 ? 0 : width), y1+width-w, x2-x1-(sb1 ? 0 : width)-(sb2 ? 0 : width), width-2*w);
+            break;
+        case BSBottom:
+            p->drawRect(x1, y1-w, x2-x1, w);
+            p->drawRect(x1+(sb1 ? 0 : width-w), y1-width, x2-x1-(sb1 ? 0 : width-w)-(sb2 ? 0 : width-w), width-2*w);
+            break;
+        case BSLeft:
+            p->drawRect(x1, y1, w, y2-y1);
+            p->drawRect(x1+width-w, y1+width-w, width-2*w, y2-y1-2*width+2*w);
+            break;
+        case BSRight:
+            p->drawRect(x1-w, y1, w, y2-y1);
+            p->drawRect(x1-width, y1+width-w, width-2*w, y2-y1-2*width+2*w);
+            break;
+        }
+
         break;
     }
-
-    int half = (width)/2;
-
-    switch(s)
-    {
-    case BSTop:
-        y1 += half; y2 += half; break;
-    case BSBottom:
-        y1 -= half; y2 -= half; break;
-    case BSLeft:
-        x1 += half; x2 += half; break;
-    case BSRight:
-        x1 -= half; x2 -= half; break;
+    case GROOVE:
+        // could be more efficient. but maybe current code is already faster than
+        // drawing two small rectangles?
+        // disadvantage is that current edges doesn't look right because of reverse
+        // drawing order
+        drawBorder(p, x1, y1, x2, y2, width, s, c, INSET, sb1, sb2);
+        drawBorder(p, x1, y1, x2, y2, half, s, c, OUTSET, sb1, sb2);
+        break;
+    case RIDGE:
+        drawBorder(p, x1, y1, x2, y2, width, s, c, OUTSET, sb1, sb2);
+        drawBorder(p, x1, y1, x2, y2, half, s, c, INSET, sb1, sb2);
+        break;
+    case INSET:
+        if(style == INSET) {
+            if(s == BSTop || s == BSLeft) {
+                c = c.dark();
+                sb2 = true;
+            }
+            else
+                sb1 = true;
+        }
+        /* nobreak; */
+    case OUTSET:
+        if(style == OUTSET) {
+            if(s == BSBottom || s == BSRight)
+                c = c.dark();
+            sb2 = (s == BSBottom || s == BSRight);
+            sb1 = !(s == BSBottom || s == BSRight);
+        }
+        /* nobreak; */
+    case SOLID:
+        // ###: make this shitty code faster (Dirk)
+        // use convex polygon drawing (40% faster)
+        // only draw expensive edges if its actually visible (colors / visibility different, see sb1 / sb2)
+        QPointArray tri(3);
+        p->setPen(Qt::NoPen);
+        p->setBrush(c);
+        switch(s) {
+        case BSTop:
+            if(width) {
+//                if(sb1) {
+                    tri.setPoints(3, x1, y1, x1+width, y1, x1+width, y1+width);
+                    p->drawPolygon(tri);
+//                }
+//                if(sb2) {
+                    tri.setPoints(3, x2-width, y2, x2, y2, x2-width, y2+width);
+                    p->drawPolygon(tri);
+//                }
+            }
+            p->drawRect(x1+(sb1 ? width : 0), y1, x2-x1-(sb1 ? width : 0)-(sb2 ? width : 0), width);
+            break;
+        case BSBottom:
+            if(width)
+            {
+//                if(sb1)
+//                {
+                    tri.setPoints(3, x1, y1, x1+width, y1, x1+width, y1-width);
+                    p->drawPolygon(tri);
+//                }
+//                 if(sb2)
+//                 {
+                    tri.setPoints(3, x2-width, y2-width, x2-width, y2, x2, y2);
+                    p->drawPolygon(tri);
+//                }
+            }
+            p->drawRect(x1+width, y1-width, x2-x1-2*width, width);
+            break;
+        break;
+        case BSLeft:
+            if(width)
+            {
+//                 if(sb1)
+//                 {
+                    tri.setPoints(3, x1, y1, x1, y1+width, x1+width, y1+width);
+                    p->drawPolygon(tri);
+//                 }
+//                 if(sb2)
+//                 {
+                    tri.setPoints(3, x2, y2-width, x2, y2, x2+width, y2-width);
+                    p->drawPolygon(tri);
+//                }
+            }
+            p->drawRect(x1, y1+width, width, y2-y1-2*width);
+            break;
+        case BSRight:
+            if(width)
+            {
+//                 if(sb1)
+//                 {
+                    tri.setPoints(3, x1, y1, x1, y1+width, x1-width, y1+width);
+                    p->drawPolygon(tri);
+//                 }
+//                 if(sb2)
+//                 {
+                    tri.setPoints(3, x2, y2, x2, y2-width, x2-width, y2-width);
+                    p->drawPolygon(tri);
+//                 }
+            }
+            p->drawRect(x1-width, y1+width, width, y2-y1-2*width);
+            break;
+        }
+        break;
     }
+}
 
-    p->drawLine(x1, y1, x2, y2);
+void RenderObject::printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)
+{
+    int bottom = _ty + h;
+    int right  = _tx + w;
+    const QColor& tc = style->borderTopColor().isValid() ? style->borderTopColor() : style->color();
+    const QColor& lc = style->borderLeftColor().isValid() ? style->borderLeftColor() : style->color();
+    const QColor& rc = style->borderRightColor().isValid() ? style->borderRightColor() : style->color();
+    const QColor& bc = style->borderBottomColor().isValid() ? style->borderBottomColor() : style->color();
+    bool render_t = style->borderTopStyle() != BNONE && style->borderTopStyle() != BHIDDEN;
+    bool render_l = style->borderLeftStyle() != BNONE && style->borderLeftStyle() != BHIDDEN && begin;
+    bool render_r = style->borderRightStyle() != BNONE && style->borderRightStyle() != BHIDDEN && end;
+    bool render_b = style->borderBottomStyle() != BNONE && style->borderBottomStyle() != BHIDDEN;
+
+    if(render_r)
+        drawBorder(p, right, _ty, right, bottom, style->borderRightWidth(), BSRight, rc,
+                   style->borderRightStyle(), render_t && tc != rc, render_b && bc != rc);
+
+    if(render_b)
+        drawBorder(p, _tx, _ty, _tx, bottom, style->borderLeftWidth(), BSLeft, bc,
+                   style->borderLeftStyle(), render_l && lc != bc, render_r && rc != bc);
+
+    if(render_l)
+        drawBorder(p, _tx, bottom, right, bottom, style->borderBottomWidth(), BSBottom, lc,
+                   style->borderBottomStyle(), render_t && tc != lc, render_b && bc != lc);
+
+    if(render_t)
+        drawBorder(p, _tx, _ty, right, _ty, style->borderTopWidth(), BSTop, tc,
+                   style->borderTopStyle(), render_l && lc != tc, render_r && rc != tc);
+}
+
+void RenderObject::print( QPainter *p, int x, int y, int w, int h, int tx, int ty)
+{
+    printObject(p, x, y, w, h, tx, ty);
 }
 
 void RenderObject::repaintRectangle(int x, int y, int w, int h)
@@ -456,15 +611,15 @@ void RenderObject::setStyle(RenderStyle *style)
 	m_bgImage = m_style->backgroundImage();
 	if(m_bgImage) m_bgImage->ref(this);
     }
-    
+
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
         m_printSpecial = true;
     else
 	m_printSpecial = false;
-    
+
     if( m_style->visiblity() == HIDDEN || m_style->visiblity() == COLLAPSE )
 	m_visible = false;
-    
+
     setMinMaxKnown(false);
     setLayouted(false);
 }
@@ -573,7 +728,7 @@ RenderObject *RenderObject::container() const
     return o;
 }
 
-RenderObject *RenderObject::root() const 
+RenderObject *RenderObject::root() const
 {
     RenderObject *o = m_parent;
     while( o && !o->isRoot() )

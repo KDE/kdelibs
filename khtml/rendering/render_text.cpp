@@ -119,21 +119,21 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
 {
     _tx += x;
     _ty += y;
-    
-    bool parentInline = p->parent()->isInline();    
+
+    bool parentInline = p->parent()->isInline();
 
     //kdDebug( 6040 ) << "renderBox::printDecorations()" << endl;
-    
+
     RenderStyle* pseudo=0;
     RenderStyle *style = p->style();
-    if (firstLine && 
+    if (firstLine &&
         (pseudo=style->getPseudoStyle(RenderStyle::FIRST_LINE)))
     {
         style = pseudo;
-    }                
-    
+    }
+
     if (parentInline)
-        _ty -= p->paddingTop() + p->borderTop();    
+        _ty -= p->paddingTop() + p->borderTop();
 
     int width = m_width;
     if(begin && parentInline)
@@ -154,39 +154,8 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
     }
 
     if(style->hasBorder())
-    {
-        int h = m_height + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
-
-        if(style->borderTopStyle() != BNONE)
-        {
-            c = style->borderTopColor();
-            if(!c.isValid()) c = style->color();
-            p->drawBorder(pt, _tx, _ty, _tx + width, _ty, style->borderTopWidth(),
-                       RenderObject::BSTop, c, style->borderTopStyle());
-        }
-        if(style->borderBottomStyle() != BNONE)
-        {
-            c = style->borderBottomColor();
-            if(!c.isValid()) c = style->color();
-            p->drawBorder(pt, _tx, _ty + h, _tx + width, _ty + h, style->borderBottomWidth(),
-                       RenderObject::BSBottom, c, style->borderBottomStyle());
-        }
-        // ### has to be changed for RTL
-        if(style->borderLeftStyle() != BNONE && (begin))
-        {
-            c = style->borderLeftColor();
-            if(!c.isValid()) c = style->color();
-            p->drawBorder(pt, _tx, _ty, _tx, _ty + h, style->borderLeftWidth(),
-                       RenderObject::BSLeft, c, style->borderLeftStyle());
-        }
-        if(style->borderRightStyle() != BNONE && end)
-        {
-            c = style->borderRightColor();
-            if(!c.isValid()) c = style->color();
-            p->drawBorder(pt, _tx + width, _ty, _tx + width, _ty + h, style->borderRightWidth(),
-                       RenderObject::BSRight, c, style->borderRightStyle());
-        }
-    }
+        p->printBorder(pt, _tx, _ty, width, m_height + p->paddingTop() + p->paddingBottom() +
+                       p->borderTop() + p->borderBottom(), style, begin, end);
 
 #ifdef BIDI_DEBUG
     int h = m_height + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
@@ -383,12 +352,12 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     TextSlave *s = m_first;
 
     //kdDebug( 6040 ) << "Text::printObject(2)" << endl;
-    
+
     RenderStyle* pseudoStyle = m_style->getPseudoStyle(RenderStyle::FIRST_LINE);
 
     bool start = true;
 #ifndef BIDI_DEBUG
-    if(m_printSpecial && 
+    if(m_printSpecial &&
         (m_parent->isInline() || pseudoStyle))
 #endif
     {
@@ -397,7 +366,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         {
             if (pseudoStyle && !s->firstLine)
                 break;
-            
+
             bool end = false;
             if(!s->next()) end = true;
             if(s->checkVerticalPoint(y, ty, h))

@@ -30,8 +30,6 @@
 #include "css/cssproperties.h"
 #include "misc/htmlhashes.h"
 
-#include "rendering/render_hr.h"
-
 using namespace khtml;
 using namespace DOM;
 
@@ -99,11 +97,9 @@ void HTMLDivElementImpl::parseAttribute(AttrImpl *attr)
 
 // -------------------------------------------------------------------------
 
-HTMLHRElementImpl::HTMLHRElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLHRElementImpl::HTMLHRElementImpl(DocumentImpl *doc)
+    : HTMLElementImpl(doc)
 {
-    halign = CENTER;
-    shade = TRUE;
-    size=1;
 }
 
 HTMLHRElementImpl::~HTMLHRElementImpl()
@@ -127,14 +123,28 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_ALIGN:
 	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
     case ATTR_SIZE:
-	size = attr->value().toInt();		
+    {
+        DOMString s = attr->value();
+        if(s.toInt() < 2)
+        {
+            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0", false);
+            addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, "1", false);
+        }
+        else
+            addCSSProperty(CSS_PROP_BORDER_WIDTH, s, false);
 	break;
+    }
     case ATTR_WIDTH:
-	length = attr->value().implementation()->toLength();	
 	addCSSProperty(CSS_PROP_WIDTH, attr->value(), false);
 	break;
     case ATTR_NOSHADE:
-	shade = FALSE;
+        addCSSProperty(CSS_PROP_BORDER_STYLE, "solid", false);
+        // ###
+        addCSSProperty(CSS_PROP_BORDER_COLOR, "black", false);
+        break;
+    case ATTR_COLOR:
+        addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value(), false);
+        break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -142,18 +152,7 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLHRElementImpl::attach(KHTMLView *w)
 {
-    m_style = document->styleSelector()->styleForElement(this);
-    khtml::RenderObject *r = _parent->renderer();
-    if(r)
-    {
-	RenderHR *renderHr = new RenderHR();
-	renderHr->setStyle(m_style);
-	renderHr->setRulerWidth(size);
-	renderHr->setShade(shade);
-	m_render = renderHr;
-	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
-    }
-    NodeBaseImpl::attach( w );
+    HTMLElementImpl::attach(w);
 }
 
 // -------------------------------------------------------------------------
