@@ -28,4 +28,4 @@ dcop_send_signal(
   int data_length
 );
 
-#endif // __dcopc_h__
+#endif /* __dcopc_h__ */
