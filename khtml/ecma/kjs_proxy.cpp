@@ -194,6 +194,7 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
   }
   else if (enabled && !KJSDebugWin::instance()) {
     KJSDebugWin::createInstance();
+    initScript();
     KJSDebugWin::instance()->attach(m_script);
   }
 #endif
