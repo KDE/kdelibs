@@ -47,18 +47,18 @@ void KLedLamp::drawContents(QPainter *painter)
   switch(s) {
   case On:
     painter->setBrush(lightBrush);
-	painter->drawRect(1,1,width-2, height-2);
+	painter->drawRect(1,1,QFrame::width()-2, QFrame::height()-2);
     break;
   case Off:
     painter->setBrush(darkBrush);
-	painter->drawRect(1,1,width-2, height-2);
+	painter->drawRect(1,1,QFrame::width()-2, QFrame::height()-2);
     painter->setPen(pen);
-	painter->drawLine(2,2,width-2, 2);
-	painter->drawLine(2,height-2,width-2,height-2);
+	painter->drawLine(2,2,QFrame::width()-2, 2);
+	painter->drawLine(2,QFrame::height()-2,QFrame::width()-2,QFrame::height()-2);
 	// Draw verticals
     int i;
-	for (i= 2; i < width-1; i+= dx)
-	   painter->drawLine(i,2,i,height-2);
+	for (i= 2; i < QFrame::width()-1; i+= dx)
+	   painter->drawLine(i,2,i,QFrame::height()-2);
     break;
 	//  default:
 	//    fprintf(stderr, "KLedLamp: INVALID State (%d)\n", s);
