@@ -447,7 +447,7 @@ void KStyle::drawPrimitive( PrimitiveElement pe,
 		QWidget *widget, *parent;
 
 		if (p && p->device()->devType() == QInternal::Widget) {
-			widget = dynamic_cast<QWidget*>(p->device());
+			widget = static_cast<QWidget*>(p->device());
 			parent = widget->parentWidget();
 		} else
 			return;		// Don't paint on non-widgets
@@ -1622,9 +1622,6 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 {
 	if ( d->useFilledFrameWorkaround )
 	{
-		QMenuBar* menubar = dynamic_cast<QMenuBar*>(object);
-		QToolBar* toolbar = dynamic_cast<QToolBar*>(object);
-
 		// Make the QMenuBar/QToolBar paintEvent() cover a larger area to 
 		// ensure that the filled frame contents are properly painted.
 		// We essentially modify the paintEvent's rect to include the
@@ -1632,9 +1629,15 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 		// This is nasty, but I see no other way to properly repaint 
 		// filled frames in all QMenuBars and QToolBars.
 		// -- Karol.
-		if ( menubar || toolbar ) 
+		if (event->type() == QEvent::Paint) 
 		{
-			if (event->type() == QEvent::Paint) 
+			QMenuBar* menubar = 0;
+			QToolBar* toolbar = 0;
+			if (object->inherits("QMenuBar"))
+				menubar = static_cast<QMenuBar*>(object);
+			else if (object->inherits("QToolBar"))
+				toolbar = static_cast<QToolBar*>(object);
+			if ( menubar || toolbar ) 
 			{
 				bool horizontal = true;
 				QPaintEvent* pe = (QPaintEvent*)event;
