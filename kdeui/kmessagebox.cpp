@@ -205,9 +205,8 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
                           const QString &caption,
                           const QString &buttonYes,
                           const QString &buttonNo,
-                          const QString &buttonCancel,
                           const QString &dontAskAgainName,
-                          bool notify)
+                          bool /*notify*/)
 {
     KConfig *config = 0;
     QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
@@ -231,7 +230,7 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
                        KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
                        KDialogBase::Yes, KDialogBase::Cancel,
                        parent, "questionYesNoCancel", true, true,
-                       buttonYes, buttonNo, buttonCancel);
+                       buttonYes, buttonNo);
 
     bool checkboxResult;
     int result = createKMessageBox(dialog, QMessageBox::Information
@@ -641,7 +640,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
     return;
 }
 
-int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo, const QString &buttonCancel )
+int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
 {
     switch (type) {
         case QuestionYesNo:
@@ -649,7 +648,7 @@ int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, con
                                                text, caption, buttonYes, buttonNo );
         case QuestionYesNoCancel:
             return KMessageBox::questionYesNoCancel( parent,
-                                               text, caption, buttonYes, buttonNo, buttonCancel );
+                                               text, caption, buttonYes, buttonNo );
         case WarningYesNo:
             return KMessageBox::warningYesNo( parent,
                                               text, caption, buttonYes, buttonNo );

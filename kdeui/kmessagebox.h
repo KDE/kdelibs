@@ -86,8 +86,6 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button.
   *                  The default is i18n("&No").
-  * @param buttonCancel The text for the third button.
-                        The default is i18n("&Cancel").
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -98,9 +96,10 @@ public:
   *          if the No-button is pressed.
   *
   * To be used for questions like "Do you want to discard the message or save it for later?",
-	*
   *
   * The default button is "Yes". Pressing "Esc" selects "Cancel".
+  *
+  * NOTE: The cancel button will always have the i18n'ed text '&Cancel'.
   */
 
   static int questionYesNoCancel(QWidget *parent,
@@ -108,7 +107,6 @@ public:
                           const QString &caption = QString::null,
                           const QString &buttonYes = QString::null,
                           const QString &buttonNo = QString::null,
-                          const QString &buttonCancel = QString::null,
                           const QString &dontAskAgainName = QString::null,
                           bool notify=true);
 
@@ -511,8 +509,7 @@ public:
     static int messageBox( QWidget *parent, int type, const QString &text,
                     const QString &caption = QString::null,
                     const QString &buttonYes = QString::null,
-                    const QString &buttonNo = QString::null,
-                    const QString &buttonCancel = QString::null);
+                    const QString &buttonNo = QString::null);
 
     /*
      * Like @ref messageBox
