@@ -127,6 +127,12 @@ KLauncher::KLauncher(int _kdeinitSocket)
            this, SLOT( slotAppRegistered( const QCString &)));
 
    KTempFile domainname(QString::null, QString::fromLatin1(".slave-socket"));
+   if (domainname.status() != 0)
+   {
+      // Sever error!
+      qDebug("KLauncher: Fatal error, can't create tempfile!");
+      ::exit(1);
+   }
    mPoolSocketName = domainname.name();
    mPoolSocket = new KServerSocket(QFile::encodeName(mPoolSocketName));
    connect(mPoolSocket, SIGNAL(accepted( KSocket *)),
@@ -419,8 +425,8 @@ KLauncher::requestDone(KLaunchRequest *request)
       stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error << DCOPresult.pid;
       dcopClient()->endTransaction( request->transaction,
                                     replyType, replyData);
-      requestList.removeRef( request );
    }
+   requestList.removeRef( request );
 }
 
 void
@@ -481,7 +487,6 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
    requestStart(request);
    // We don't care about this request any longer....
    requestDone(request);
-   requestList.removeRef( request );
 }
 
 
@@ -651,7 +656,6 @@ KLauncher::slotDequeue()
             request->status = KLaunchRequest::Running;
             // Request handled.
             requestDone( request );
-            requestList.removeRef( request );
             continue;
          }
       }
@@ -662,7 +666,6 @@ KLauncher::slotDequeue()
       {
          // Request handled.
          requestDone( request );
-         requestList.removeRef( request );
          continue;
       }
    } while(requestQueue.count());
@@ -868,7 +871,6 @@ KLauncher::requestSlave(const QString &protocol,
 
     // We don't care about this request any longer....
     requestDone(request);
-    requestList.removeRef( request );
     return pid;
 }
 
