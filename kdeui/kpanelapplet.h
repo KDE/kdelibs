@@ -139,7 +139,7 @@ public:
    *
    * The width you return is granted.
    **/
-  virtual int widthForHeight(int height) { return height; }
+  virtual int widthForHeight(int height) const { return height; }
 
   /**
    * @return A suggested height for a given width.
@@ -160,7 +160,7 @@ public:
    *
    * The height you return is granted.
    **/
-  virtual int heightForWidth(int width) { return width; }
+  virtual int heightForWidth(int width) const { return width; }
 
   /**
    * Is called when the user selects "About" from the applets RMB menu.
@@ -198,19 +198,19 @@ public:
    * For normal applets this config object will write to a instance specific config file
    * called <appletmame><instanceid>rc in the users local KDE directory.
    **/
-  KConfig* config() { return _config; }
+  KConfig* config() const { return _config; }
 
   /**
    * @return Type indicating the applet's type.
    * @ref Type
    **/
-  Type type() { return _type; }
+  Type type() const { return _type; }
 
   /**
    * @return int indicating the supported RMB menu actions.
    * @ref Action
    **/
-  int actions(){ return _actions; }
+  int actions() const { return _actions; }
 
  signals:
   /**
