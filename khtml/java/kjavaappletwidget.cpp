@@ -1,12 +1,12 @@
-#include "kjavaappletwidget.moc"
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+
+//#include <X11/Xlib.h>
+//#include <X11/Xutil.h>
+
+#include "kjavaappletwidget.h"
+
 #include <qtimer.h>
 #include <kwinmodule.h>
 #include <kwin.h>
-#include <netwm.h>
-
-#include <unistd.h>
 
 // For future expansion
 struct KJavaAppletWidgetPrivate
@@ -16,11 +16,11 @@ struct KJavaAppletWidgetPrivate
 
 static unsigned int count = 0;
 
-KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
-                                      QWidget *parent, const char *name )
+KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
+                                      QWidget* parent, const char* name )
    : QXEmbed( parent, name )
 {
-   applet = new KJavaApplet( context );
+   applet = new KJavaApplet( this, context );
    CHECK_PTR( applet );
 
    kwm = new KWinModule( this );
@@ -48,7 +48,7 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
 {
    KJavaAppletContext *context = KJavaAppletContext::getDefaultContext();
 
-   applet = new KJavaApplet( context );
+   applet = new KJavaApplet( this, context );
    CHECK_PTR( applet );
 
    kwm = new KWinModule( this );
@@ -60,8 +60,6 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
 
 KJavaAppletWidget::~KJavaAppletWidget()
 {
-    XUnmapWindow( qt_xdisplay(), embeddedWinId() );
-
     delete applet;
 }
 
@@ -163,10 +161,9 @@ void KJavaAppletWidget::stop()
 void KJavaAppletWidget::setWindow( WId w )
 {
     //make sure that this window has the right name, if so, embed it...
-    XTextProperty titleProperty;
-    XGetWMName( qt_xdisplay(), w, &titleProperty );
+    KWin::Info w_info = KWin::info( w );
 
-    if ( swallowTitle == QString::fromLatin1((char*)titleProperty.value))
+    if ( swallowTitle == w_info.name )
     {
         // disconnect from KWM events
         disconnect( kwm, SIGNAL( windowAdded( WId ) ),
@@ -187,4 +184,4 @@ void KJavaAppletWidget::resize( int w, int h)
     applet->setSize( QSize(w, h) );
 }
 
-
+#include "kjavaappletwidget.moc"
