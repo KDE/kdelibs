@@ -1,6 +1,7 @@
 #include "kformulaedit.h"
 #include "kformula.h"
 #include "box.h"
+#include "MatrixDialog.h"
 #include <qkeycode.h>
 #include <stdio.h>
 
@@ -20,7 +21,7 @@ QString KFormulaEdit::clipText;
 #define IS_RGROUP(x) ((x) == R_GROUP || (x) == R_BRACE_UNSEEN)
 
 //  The widget works by having an internal string which the user
-//  unwittingly edits.  This string is re-parsed into a formula
+//  unwittingly edits.  This string is re-parsed into a KFormula
 //  object whenever it is changed.  The cursorCache is for computing
 //  cursor positions in idle time because it is slow for larger formulas.
 //  For some reason, strchr(anything, '\0') returns 1 (perhaps it counts
@@ -46,7 +47,7 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name, WFlags f) :
   textSelected = 0;
   undo.setAutoDelete(TRUE); //delete strings as soon as we're done with 'em
   redo.setAutoDelete(TRUE);
-  setFont(QFont("times", 19)); //just default
+  setFont(QFont("charter", DEFAULT_FONT_SIZE)); //just default
   clipText.sprintf("");
 
   formText.sprintf("");
@@ -199,7 +200,8 @@ void KFormulaEdit::redraw(int all)
 //checks if str contains formText[pos].  For readability.
 int KFormulaEdit::isInString(int pos, const QString &str)
 {
-  return pos < (int)formText.length() && str.contains(formText[pos]);
+  return pos >= 0 && pos < (int)formText.length() &&
+    str.contains(formText[pos]);
 }
 
 //-----------------------GET CURSOR POS----------------------
@@ -231,6 +233,7 @@ void KFormulaEdit::paintEvent(QPaintEvent *)
     QRect r;
     QPainter p(this);
     r = getCursorPos(cursorPos);
+
     p.drawLine(r.left(), r.top(), r.left(), r.bottom());
     p.drawLine(r.left() - 2, r.top(), r.left() + 2, r.top());
     p.drawLine(r.left() - 2, r.bottom(), r.left() + 2, r.bottom());
@@ -252,6 +255,15 @@ int KFormulaEdit::isValidCursorPos(int pos)
 
   if(formText[pos - 1] == L_BRACE_UNSEEN) return 0;
   if(formText[pos] == R_BRACE_UNSEEN) return 0;
+
+  //forbidden zones of matrices:
+  if(isInString(pos - 1, QChar(SEPARATOR)) ||
+     isInString(pos, QChar(SEPARATOR)) ||
+     isInString(pos, QChar(MATRIX)) ||
+     isInString(pos - 1, QChar(MATRIX)) ||
+     isInString(pos - 2, QChar(MATRIX)) ||
+     isInString(pos + 1, QChar(MATRIX)) ||
+     isInString(pos + 4, QChar(MATRIX))) return 0;
 
   if(formText[pos] == L_GROUP && isInString(pos - 1, KFormula::delim() +
 					    KFormula::loc() + QChar(SQRT) +
@@ -586,19 +598,19 @@ void KFormulaEdit::toggleCursor()
 //MODIFIED reparses the string, resets the cursor, invalidates the
 //cache, adds an undo step, and removes all redo.
 #define MODIFIED { form->parse(formText, &info); CURSOR_RESET \
-  cacheState = ALL_DIRTY; undo.push(new QString(oldText)); \
+  cacheState = ALL_DIRTY; undo.push( &((new QString(oldText))-> \
+				     insert(oldc, QChar(CURSOR))) ); \
   while(redo.remove()); }
 
 void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 {
   int shift = (e->state() & ShiftButton); //easier to type "shift"
   QString oldText = formText; // for undo
+  int oldc = cursorPos; // also for undo mostly
 
   //LEFT ARROW:
 
   if(e->key() == Key_Left) {
-    int oldc = cursorPos;
-
     if(!textSelected || shift) { //if we are not removing a selection
       //move left to the next valid cursor position.
       while(cursorPos > 0 && !isValidCursorPos(--cursorPos));
@@ -631,8 +643,6 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
   //RIGHT ARROW:
 
   if(e->key() == Key_Right) {
-    int oldc = cursorPos;
-
     if(!textSelected || shift) { //if we are not removing a selection
       //move right to the next valid cursor position.
       while(cursorPos < (int)formText.length() &&
@@ -819,16 +829,21 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       //pop the undo stack and push the current string onto redo.
       if(!undo.isEmpty()) {
 	if(textSelected) textSelected = 0;
-	redo.push(new QString(oldText));
+	redo.push(&((new QString(oldText))->
+		    insert(oldc, QChar(CURSOR))));
 	formText = *undo.top(); //we don't want it deleted
 	                        //until a shallow copy is made--
 	                        //so we don't pop right away.
 	undo.pop();
+	
+	//now extract the cursor:
+	cursorPos = formText.find(QChar(CURSOR));
+	formText.remove(cursorPos, 1);
+
 	form->parse(formText, &info); //can't use MODIFIED
 	cacheState = ALL_DIRTY;
 	if(cursorPos == (int)oldText.length() ||
 	   cursorPos > (int)formText.length()) cursorPos = formText.length();
-	else while(!isValidCursorPos(cursorPos)) cursorPos++;
 	redraw();
       }
       return;
@@ -838,14 +853,22 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       //same thing as undo but backwards
       if(!redo.isEmpty()) {
 	if(textSelected) textSelected = 0;
-	undo.push(new QString(oldText));
+
+	undo.push(&((new QString(oldText))->
+		  insert(oldc, QChar(CURSOR))));
+
 	formText = *redo.top();
+
 	redo.pop();
+
+	//now extract the cursor:
+	cursorPos = formText.find(QChar(CURSOR));
+	formText.remove(cursorPos, 1);
+
 	form->parse(formText, &info);
 	cacheState = ALL_DIRTY;
 	if(cursorPos == (int)oldText.length() ||
 	   cursorPos > (int)formText.length()) cursorPos = formText.length();
-	else while(!isValidCursorPos(cursorPos)) cursorPos++;
 	redraw();
       }
       return;	
@@ -908,6 +931,10 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       insertChar(QChar(ARROW));
       break;
       
+    case Key_3: // the matrix--insertChar handles the dialog
+      insertChar(QChar(MATRIX));
+      break;
+      
     }
 
     MODIFIED
@@ -927,7 +954,7 @@ void KFormulaEdit::insertChar(QChar c)
 {
 
   if(!(KFormula::loc() + KFormula::delim() + QChar(DIVIDE) +
-       QChar(SQRT) + KFormula::bigop()).contains(c)) {
+       QChar(SQRT) + QChar(MATRIX) + KFormula::bigop()).contains(c)) {
     // "/^_@(|" are chars that need groups
 
     if(textSelected) {
@@ -944,6 +971,46 @@ void KFormulaEdit::insertChar(QChar c)
     //if user entered a '/' (DIVIDE) then insert curly braces after it
     //and surround some previous text with curly braces.  Example:
     //"1+2^{3}$" -> (user types '/') -> "1+{2^{3}}/{$}".
+
+    if(c == QChar(MATRIX)) {
+      MatrixDialog m(this);
+
+      if(m.exec()) {
+	int i, newcpos;
+
+	if(textSelected) { //remove selected text
+	  formText.remove(QMIN(selectStart, cursorPos),
+			  QMAX(selectStart - cursorPos, \
+			       cursorPos - selectStart));
+	  cursorPos = QMIN(selectStart, cursorPos);
+	  textSelected = 0;
+	}
+
+	// insert {w&h}#{{}&{}&{}&...{}&}
+
+	formText.insert(cursorPos++, L_GROUP);
+	formText.insert(cursorPos++, QChar(m.w));
+	formText.insert(cursorPos++, QChar(SEPARATOR));
+	formText.insert(cursorPos++, QChar(m.h));
+	formText.insert(cursorPos++, R_GROUP);
+	formText.insert(cursorPos++, QChar(MATRIX));
+	formText.insert(cursorPos++, L_GROUP);
+
+	newcpos = cursorPos + 1;
+
+	for(i = 0; i < m.w * m.h; i++) {
+	  formText.insert(cursorPos++, L_GROUP);
+	  if(m.zeroFill) formText.insert(cursorPos++, '0');
+	  formText.insert(cursorPos++, R_GROUP);
+	  formText.insert(cursorPos++, QChar(SEPARATOR));
+	}
+
+	formText.insert(cursorPos++, R_GROUP);
+
+	cursorPos = newcpos;
+
+      }
+    }
 
     if(KFormula::bigop().contains(c)) { // we need to add limits
       if(textSelected) {

@@ -2,10 +2,14 @@
 #include "kformula.h"
 #include <stdio.h>
 
-#define DEFAULT_FONT_SIZE 20
-
 //----------------------CONSTRUCTORS AND DESTRUCTORS------------
 //most things they initialize get changed before they are used anyway.
+
+box::box()
+{
+  b1 = b2 = parent = NULL;
+  relx = rely = 0;
+}
 
 box::box(int setNum)
 {
@@ -184,7 +188,7 @@ void box::calculate(QPainter &p, int setFontsize)
 
       //basically same thing as +-=<> but since it will be a dot,
       //we make room differently
-#define DOTSIZE 4
+#define DOTSIZE (fontsize / 5)
     case TIMES:
       b1->calculate(p, fontsize);
       b2->calculate(p, fontsize);
@@ -192,8 +196,6 @@ void box::calculate(QPainter &p, int setFontsize)
       
       tmp1 = QRect(1, -DOTSIZE / 2, DOTSIZE + 1, DOTSIZE);
       relx += rect.right() + SPACE + 1; //where the dot will be drawn.
-      rely -= fm.height() / 2 - DOTSIZE - 1 +
-	fm.boundingRect("+").center().y();
       tmp1.moveBy(relx, rely);
       rect = rect.unite(tmp1);
       b2x += -b2->getRect().left() + rect.right() + SPACE;

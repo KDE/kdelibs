@@ -5,7 +5,9 @@
 #include <qstring.h>
 #include <qfont.h>
 
+#define DEFAULT_FONT_SIZE 25
 #define MIN_FONT_SIZE  10
+
 //pixels for spacing:
 #define SPACE          (4)
 
@@ -22,7 +24,7 @@ enum BoxType {
   MINUS = '-',
   TIMES = '*',
   DIVIDE = '\\',
-  POWER = '^' + 200, //just a text to see if it works
+  POWER = '^' + 200, //just a test to see if it works
   SQRT = '@' + 200,
   TEXT = 't',
   CAT = '#' + 200,
@@ -33,10 +35,12 @@ enum BoxType {
   LESS = '<',
   ABS = '|',
   SLASH = '/',
-  MATRIX = 649,
+  MATRIX = 'm' + 200,
+  SEPARATOR = '&' + 200, // separator for matrices
   ABOVE = 650, //something useless
   BELOW = 651,
-  SYMBOL = 652
+  SYMBOL = 652,
+  CURSOR = 653 // for keeping track of cursor position in undo/redo
 };
 
 enum SymbolType {
@@ -52,8 +56,9 @@ enum SymbolType {
 
 class box {
 friend class KFormula;
+friend class matrixbox;
 
-private:
+protected:
   int type; //the box type
   QString text; //if a TEXT box, the text
   QFont lastFont; //the last font used
@@ -74,6 +79,7 @@ private:
   static void drawSymbol(QPainter &p, SymbolType s, int size, int x, int y);
 
 public:
+  box();
   box(int setNum);
   box(QString setText);
   box(BoxType setType, box * setB1 = NULL, box * setB2 = NULL);
@@ -88,7 +94,7 @@ public:
   QString getText() { return text; }
   virtual void draw(QPainter &p, int x, int y);
 
-  QRect getCursorPos(charinfo i, int x, int y);
+  virtual QRect getCursorPos(charinfo i, int x, int y);
   QRect getLastRect();
 };
 

@@ -1,5 +1,6 @@
 #include "kformula.h"
 #include "box.h"
+#include "matrixbox.h"
 #include <stdio.h>
 
 //initialize the static members:
@@ -38,6 +39,8 @@ void KFormula::initStrings(void)
   *SPECIAL += (QChar(BELOW));
   *SPECIAL += (QChar(L_GROUP));
   *SPECIAL += (QChar(R_GROUP));
+  *SPECIAL += (QChar(MATRIX));
+  *SPECIAL += (QChar(SEPARATOR));
 
   *INTEXT += (QChar(PLUS));
   *INTEXT += (QChar(MINUS));
@@ -210,6 +213,7 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     if(text[i] == QChar(R_BRACE_UNSEEN)) text[i] = QChar(R_GROUP);
   }
 
+
   //isolate all symbols from text:
   for(i = 0; i < (int)text.length(); i++)
     {
@@ -257,7 +261,7 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     parenthesize(text, i, info);
     i++;
   }
-  
+
   //addition and subtraction
   for(i = (int)text.length() - 1; i >= 0; i--) {
     if(text[i] != QChar(PLUS) && text[i] != QChar(MINUS)) continue;
@@ -430,17 +434,53 @@ box * KFormula::makeBoxes(QString str, int offset,
   if(toplevel == -1) return makeBoxes(str.mid(1), offset + 1,
 				      maxlen - 2, info);
 
-  //this stores the returned pointer so we don't add it to the
-  //boxes array until all the children have been added.
-  box *tmpbox;
+  if(str[toplevel] == QChar(MATRIX)) { // we have a matrix!
+    int w, h, level, startpos = 0;
 
-  tmpbox = new box((BoxType)(str[toplevel].unicode()), //that's the operator.
-	    makeBoxes(str, offset, toplevel, info),
-	    makeBoxes(str.mid(toplevel + 1), offset + toplevel + 1,
-		       maxlen - toplevel - 1, info));
+    //it looks like this: {w&h}M{{a}&{b}&{x}&...&{y}}
+    w = str[toplevel - 4].unicode();
+    h = str[toplevel - 2].unicode();
 
-  boxes.resize(boxes.size() + 1);
-  boxes[boxes.size() - 1] = tmpbox;
+    matrixbox *tmpbox;
+
+    tmpbox = new matrixbox(w, h);
+
+    level = 0;
+
+    for(i = toplevel + 2; i < maxlen - 1; i++) { // now add the elements
+      if(str[i] == L_GROUP) {
+	if(level == 0) startpos = i; // we start a new element
+	level++;
+	continue;
+      }
+      if(str[i] == R_GROUP) {
+	level--;
+      }
+
+      if(level == 0 && str[i] == QChar(SEPARATOR)) {
+	// we add the element
+	tmpbox->addElem(makeBoxes(str.mid(startpos + 1),
+				  offset + startpos + 1, i - startpos - 2,
+				  info));
+      }
+    }
+
+    boxes.resize(boxes.size() + 1);
+    boxes[boxes.size() - 1] = tmpbox;
+  }
+  else { //we don't have a matrix
+    //this stores the returned pointer so we don't add it to the
+    //boxes array until all the children have been added.
+    box *tmpbox;
+
+    tmpbox = new box((BoxType)(str[toplevel].unicode()), //that's the operator.
+		     makeBoxes(str, offset, toplevel, info),
+		     makeBoxes(str.mid(toplevel + 1), offset + toplevel + 1,
+			       maxlen - toplevel - 1, info));
+
+    boxes.resize(boxes.size() + 1);
+    boxes[boxes.size() - 1] = tmpbox;
+  }
 
   if(info) {
     for(i = 0; i < (int)info->size(); i++) {
