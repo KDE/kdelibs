@@ -22,14 +22,11 @@
 #include <qfile.h>
 #include <qcolor.h>
 #include <qimage.h>
-#include <qregexp.h>
 #include <qwmatrix.h>
 
-#include <kdebug.h>
 #include <kmdcodec.h>
 
 #include <zlib.h>
-#include <math.h>
 
 #include "ksvgiconpainter.h"
 #include "ksvgiconengine.h"

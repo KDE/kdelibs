@@ -31,17 +31,14 @@
 
 #include <kdebug.h>
 
-#include <libart_lgpl/art_svp.h>
-#include <libart_lgpl/art_rgb.h>
 #include <libart_lgpl/art_rgba.h>
+#include <libart_lgpl/art_bpath.h>
 #include <libart_lgpl/art_vpath.h>
 #include <libart_lgpl/art_vpath_dash.h>
-#include <libart_lgpl/art_bpath.h>
 #include <libart_lgpl/art_affine.h>
-#include <libart_lgpl/art_svp_ops.h>
-#include <libart_lgpl/art_svp_vpath.h>
 #include <libart_lgpl/art_render_svp.h>
-#include <libart_lgpl/art_vpath_bpath.h>
+#include <libart_lgpl/art_svp.h>
+#include <libart_lgpl/art_svp_vpath.h>
 #include <libart_lgpl/art_svp_intersect.h>
 #include <libart_lgpl/art_svp_vpath_stroke.h>
 
