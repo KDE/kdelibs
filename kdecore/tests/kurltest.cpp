@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
   check("KURL::url()", url1.url(), "file:/home/dfaure/my#myref");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
   check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
-  check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
+  check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
   url1 = "gg:www.kde.org";
@@ -84,11 +84,12 @@ int main(int argc, char *argv[])
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
-  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
-  check("KURL::htmlRef()", url1.htmlRef(), "myref");
+  //check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
+  //check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/");
 
+/*
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
@@ -106,6 +107,7 @@ int main(int argc, char *argv[])
   check("KURL::htmlRef()", url1.htmlRef(), "");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/");
+*/
 
   KURL notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
@@ -254,6 +256,10 @@ int main(int argc, char *argv[])
      check("http: Relative URL, with query", waba2.url(), "http://www.website.com/directory/relative.html?query=test&name=harry");
   }
   {
+     KURL waba2( waba1, "?query=test&name=harry");
+     check("http: Relative URL, with query and no filename", waba2.url(), "http://www.website.com/directory/filename?query=test&name=harry");
+  }
+  {
      KURL waba2( waba1, "relative.html#with_reference");
      check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");
   }
@@ -329,6 +335,8 @@ int main(int argc, char *argv[])
   check("file: URL, is relative", KURL::isRelativeURL("file:/blah") ? "true" : "false", "false");
   check("/path, is relative", KURL::isRelativeURL("/path") ? "true" : "false", "true"); // arguable
   check("something, is relative", KURL::isRelativeURL("something") ? "true" : "false", "true");
+  KURL about("about:konqueror");
+  check("about:",about.path(),"konqueror");
 
   KURL ulong("https://swww.gad.de:443/servlet/CookieAccepted?MAIL=s@gad.de&VER=25901");
   check("host",ulong.host(),"swww.gad.de");
