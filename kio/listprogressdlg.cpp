@@ -257,14 +257,14 @@ KIOListView::~KIOListView() {
 
 
 void KIOListView::readConfig() {
-  KConfig* config = new KConfig("kioslaverc");
+  KConfig config("kioslaverc");
 
   // read listview geometry properties
-  config->setGroup( "ListProgress" );
+  config.setGroup( "ListProgress" );
   for ( int i = 0; i < NUM_COLS; i++ ) {
     QString tmps;
     tmps.sprintf( "Col%d", i );
-    setColumnWidth( i, config->readNumEntry( tmps, defaultColumnWidth[i] ) );
+    setColumnWidth( i, config.readNumEntry( tmps, defaultColumnWidth[i] ) );
   }
 }
 
