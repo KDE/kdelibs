@@ -28,7 +28,7 @@
 
 using namespace KABC;
 
-bool matchBinaryPattern( int value, int pattern, int max );
+static bool matchBinaryPattern( int value, int pattern, int max );
 
 struct Addressee::AddresseeData : public KShared
 {
