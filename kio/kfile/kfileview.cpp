@@ -140,7 +140,6 @@ void KFileView::addItemList(const KFileItemList& list)
 
 void KFileView::insertItem( KFileItem *item )
 {
-    m_itemList.append( item );
 }
 
 void KFileView::setSorting(QDir::SortSpec new_sort)
@@ -268,8 +267,7 @@ void KFileView::setCurrentItem(const QString &filename )
 {
     if (!filename.isNull()) {
         KFileItem *item;
-	KFileItemListIterator it( m_itemList );
-        for ( ; (item = it.current()); ++it ) {
+        for ( (item = firstFileItem()); item; item = nextItem( item ) ) {
 	    if (item->name() == filename) {
                 setCurrentItem( item );
 		// sig->highlightFile( item ); // ### check if this is needed (emits signal)
@@ -283,6 +281,13 @@ void KFileView::setCurrentItem(const QString &filename )
 
 const KFileItemList * KFileView::items() const
 {
+    KFileItem *item = 0L;
+    
+    // only ever use m_itemList in this method!
+    m_itemList.clear();
+    for ( (item = firstFileItem()); item; item = nextItem( item ) )
+        m_itemList.append( item );
+    
     return &m_itemList;
 }
 
@@ -295,8 +300,7 @@ const KFileItemList * KFileView::selectedItems() const
     m_selectedList->clear();
 
     KFileItem *item;
-    KFileItemListIterator it( m_itemList );
-    for ( ; (item = it.current()); ++it ) {
+    for ( (item = firstFileItem()); item; item = nextItem( item ) ) {
         if ( isSelected( item ) )
             m_selectedList->append( item );
     }
@@ -309,17 +313,17 @@ void KFileView::selectAll()
     if (selection_mode == KFile::NoSelection || selection_mode== KFile::Single)
 	return;
 
-    KFileItemListIterator it( m_itemList );
-    for( ; it.current(); ++it )
-	setSelected( it.current(), true );
+    KFileItem *item = 0L;
+    for ( (item = firstFileItem()); item; item = nextItem( item ) )
+	setSelected( item, true );
 }
 
 
 void KFileView::invertSelection()
 {
-    KFileItemListIterator it( m_itemList );
-    for( ; it.current(); ++it )
-	setSelected( it.current(), !isSelected( it.current() ) );
+    KFileItem *item = 0L;
+    for ( (item = firstFileItem()); item; item = nextItem( item ) )
+	setSelected( item, !isSelected( item ) );
 }
 
 
@@ -343,7 +347,6 @@ void KFileView::removeItem( const KFileItem *item )
     if ( !item )
 	return;
 
-    m_itemList.removeRef( item );
     if ( m_selectedList )
 	m_selectedList->removeRef( item );
 }

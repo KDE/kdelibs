@@ -399,7 +399,10 @@ private:
     ViewMode view_mode;
     KFile::SelectionMode selection_mode;
 
-    KFileItemList m_itemList;
+    // never use! It's only guaranteed to contain valid items in the items()
+    // method!
+    mutable KFileItemList m_itemList;
+
     mutable KFileItemList *m_selectedList;
     bool myOnlyDoubleClickSelectsFiles;
 

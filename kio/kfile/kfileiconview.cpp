@@ -589,7 +589,7 @@ KFileItem * KFileIconView::nextItem( const KFileItem *fileItem ) const
 {
     if ( fileItem ) {
         KFileIconViewItem *item = viewItem( fileItem );
-        if ( item )
+        if ( item && item->nextItem() )
             return ((KFileIconViewItem*) item->nextItem())->fileInfo();
     }
     return 0L;
@@ -599,7 +599,7 @@ KFileItem * KFileIconView::prevItem( const KFileItem *fileItem ) const
 {
     if ( fileItem ) {
         KFileIconViewItem *item = viewItem( fileItem );
-        if ( item )
+        if ( item && item->prevItem() )
             return ((KFileIconViewItem*) item->prevItem())->fileInfo();
     }
     return 0L;

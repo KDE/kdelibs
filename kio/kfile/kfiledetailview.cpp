@@ -103,7 +103,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     setSorting( sorting() );
 
 
-    m_resolver = 
+    m_resolver =
         new KMimeTypeResolver<KFileListViewItem,KFileDetailView>( this );
 }
 
@@ -451,7 +451,7 @@ KFileItem * KFileDetailView::nextItem( const KFileItem *fileItem ) const
 {
     if ( fileItem ) {
         KFileListViewItem *item = viewItem( fileItem );
-        if ( item )
+        if ( item && item->itemBelow() )
             return ((KFileListViewItem*) item->itemBelow())->fileInfo();
         else
             return 0L;
@@ -464,7 +464,7 @@ KFileItem * KFileDetailView::prevItem( const KFileItem *fileItem ) const
 {
     if ( fileItem ) {
         KFileListViewItem *item = viewItem( fileItem );
-        if ( item )
+        if ( item && item->itemAbove() )
             return ((KFileListViewItem*) item->itemAbove())->fileInfo();
         else
             return 0L;
