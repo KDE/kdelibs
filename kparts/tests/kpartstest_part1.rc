@@ -11,5 +11,8 @@
   </Menu>
  </Menu>
 </MenuBar>
+<ToolBar name="Part1-ToolBar">
+ <Action name="p1_blah"/>
+</ToolBar>
 <StatusBar/>
 </kpartgui>
