@@ -374,6 +374,7 @@ public:
    *
    * @param protocol the protocol to check
    * @return the docpath of the protocol, or null if unknown
+   * @since 3.2
    */
   static QString docPath( const QString& protocol );
 
