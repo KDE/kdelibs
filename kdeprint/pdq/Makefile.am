@@ -1,5 +1,5 @@
 INCLUDES = -I.. $(all_includes)
-LIBVERSION = @LIBVERSION@
+LIBVERSION = 1:0
 
 ####### Files
 
