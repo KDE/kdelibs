@@ -30,6 +30,8 @@ class KFontStructList;
 class KGlobal;
 class KCharsetsPrivate;
 
+class QTextCodec;
+
 /**
  * Charset font and encoder/decoder handling.
  *
@@ -56,6 +58,12 @@ public:
     /** destructor */
     virtual ~KCharsets(){}
 
+    /**
+     * tries to find a QTextCodec to convert the given encoding from and to 
+     * Unicode
+     */
+    QTextCodec *codecForName(const QString &name) const;
+    
     /**
      * converts an entity to a character. The string must contain only the
      * entity without the trailing ';'.

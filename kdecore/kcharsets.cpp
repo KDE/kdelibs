@@ -24,10 +24,13 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kconfig.h>
 
 #include <qfontinfo.h>
 #include <X11/Xlib.h>
 #include <kdebug.h>
+
+#include <qtextcodec.h>
 
 template class QList<KFontStruct>;
 template class QList<QFont::CharSet>;
@@ -609,4 +612,59 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
 	i++;
     }
     return QFont::AnyCharSet;
+}
+
+
+QTextCodec *KCharsets::codecForName(const QString &n) const
+{
+    QString name = n.lower();
+    QTextCodec *codec = QTextCodec::codecForName(name.latin1());
+    
+    if(codec) 
+	return codec;
+    
+    KConfig conf( "charsets", true );
+    
+    // these codecs are built into Qt, but the name given for the codec is different,
+    // so QTextCodec did not recognise it.
+    conf.setGroup("builtin");
+
+    QString cname = conf.readEntry(name);
+    if(!cname.isEmpty() && !cname.isNull())
+	codec = QTextCodec::codecForName(cname.latin1());
+    
+    if(codec) return codec;
+
+    conf.setGroup("general");
+    QString dir = conf.readEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
+    dir += "/";
+
+    // these are codecs not included in Qt. They can be build up if the corresponding charmap
+    // is available in the charmap directory.
+    conf.setGroup("aliases");
+    
+    cname = conf.readEntry(name);
+    if(cname.isNull() || cname.isEmpty())
+	cname = name;
+    cname = cname.upper();
+    
+    codec = QTextCodec::loadCharmapFile(dir + cname);
+    
+    if(codec) 
+	return codec;
+    
+    // this also failed, the last resort is now to take some compatibility charmap
+    
+    conf.setGroup("conversionHints");
+    cname = cname.lower();
+    cname = conf.readEntry(cname);
+    
+    if(!cname.isEmpty() && !cname.isNull())
+	codec = QTextCodec::codecForName(cname.latin1());
+    
+    if(codec) 
+	return codec;
+
+    // could not assign a codec, let's return Latin1
+    return QTextCodec::codecForName("iso8859-1");
 }
