@@ -1098,7 +1098,7 @@ int DocumentImpl::findHighestTabIndex()
 
 HTMLElementImpl *DocumentImpl::findNextLink(HTMLElementImpl *cur, bool forward)
 {
-    int curTabIndex = (cur?cur->tabIndex():-1);
+    int curTabIndex = (cur?cur->tabIndex():(forward?-1:0));
 
     switch(curTabIndex)
     {
