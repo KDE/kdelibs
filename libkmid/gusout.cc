@@ -329,7 +329,7 @@ void GUSOut::setGUSPatchesDirectory(const char *dir)
     delete_GUS_patches_directory=1;
 }
 
-char *GUSOut::patchName(int pgm)
+const char *GUSOut::patchName(int pgm)
 {
   return GUS_voice_names[pgm];
 }

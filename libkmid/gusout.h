@@ -59,7 +59,7 @@ class GUSOut : public MidiOut
 
 
     void patchesLoadingOrder(int *patchesused,int *patchesordered);
-    char *patchName(int pgm);
+    const char *patchName(int pgm);
 
   public:
     /**
