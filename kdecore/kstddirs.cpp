@@ -247,9 +247,11 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 			 QStringList& relList,
 			 bool recursive, bool uniq)
 {
-    if (relpath.isNull())
-	return lookupDirectory(prefix, relPart, regexp, list, relList, recursive, uniq);
-
+    if (relpath.isNull()) {
+       lookupDirectory(prefix, relPart, regexp, list, 
+		       relList, recursive, uniq);
+       return;
+    }
     QString path;
     QString rest;
 
