@@ -69,8 +69,9 @@ void AudioSubSystemStart::shutdown()
 
 //--- AudioSubSystemPrivate data
 
-struct Arts::AudioSubSystemPrivate
+class Arts::AudioSubSystemPrivate
 {
+public:
 	int requestedFragmentCount;
 	int requestedFragmentSize;
 };
