@@ -106,14 +106,20 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
     fillBookmarkBar( toolbar );
 }
 
+#define CURRENT_TOOLBAR() ( \
+    dptr()->m_filteredMgr ? dptr()->m_filteredMgr->root()  \
+                          : m_pManager->toolbar() )
+
+#define CURRENT_MANAGER() ( \
+    dptr()->m_filteredMgr ? dptr()->m_filteredMgr  \
+                          : m_pManager )
+
 KBookmarkGroup KBookmarkBar::getToolbar() 
 {
     if ( KBookmarkSettings::self()->m_filteredtoolbar )
     {
-        QString fname = m_pManager->path() + ".ftbcache"; // never actually written to
         if ( !dptr()->m_filteredMgr ) {
-            QFile::remove( fname );
-            dptr()->m_filteredMgr = KBookmarkManager::managerForFile( fname, false );
+            dptr()->m_filteredMgr = KBookmarkManager::createTempManager();
         } else {
             KBookmarkGroup bkRoot = dptr()->m_filteredMgr->root();
             QValueList<KBookmark> bks;
@@ -129,9 +135,7 @@ KBookmarkGroup KBookmarkBar::getToolbar()
         filter.filter( m_pManager->root() );
     }
 
-    return dptr()->m_filteredMgr 
-         ? dptr()->m_filteredMgr->root() 
-         : m_pManager->toolbar();
+    return CURRENT_TOOLBAR();
 }
 
 KBookmarkBar::~KBookmarkBar()
@@ -218,7 +222,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             KGlobal::config()->setGroup( "Settings" );
             bool addEntriesBookmarkBar = KGlobal::config()->readBoolEntry("AddEntriesBookmarkBar",true);
 
-            KBookmarkMenu *menu = new KBookmarkMenu(m_pManager, m_pOwner, action->popupMenu(),
+            KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->popupMenu(),
                                                     m_actionCollection, false, addEntriesBookmarkBar,
                                                     bm.address());
             connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QPopupMenu * ) ), 
@@ -418,7 +422,8 @@ void KBookmarkBar::slotRMBActionCopyLocation( int val )
 
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
-    if (dptr()->m_readOnly || dptr()->m_filteredMgr)
+    if (dptr()->m_readOnly || dptr()->m_filteredMgr) // note, we assume m_pManager in various places, 
+                                                     // this shouldn't really be the case
         return false; // todo: make this limit the actions
 
     if ( (e->type() == QEvent::MouseButtonRelease) || (e->type() == QEvent::MouseButtonPress) ) // FIXME, which one?
