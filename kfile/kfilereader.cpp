@@ -23,7 +23,12 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#include <sys/time.h>
+#include <sys/types.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -41,19 +46,23 @@
 #include <mntent.h>
 #endif
 
-#include <sys/time.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <dirent.h>
-#include "kfilereader.h"
 #include <time.h>
-#include <qtimer.h>
 #include <stdlib.h>
+
+#ifdef HAVE_FSTAB_H
+#include <fstab.h>
+#endif
+
+#include <qapp.h>
+#include <qtimer.h>
+#include <qstringlist.h>
+#include <qpixmap.h>
+
+#include "kfilereader.h"
 #include <kio_job.h>
 #include <config-kfile.h>
-#include <qstringlist.h>
-#include <qapp.h>
-#include <qpixmap.h>
 #include <kdebug.h>
 
 template class QList<QRegExp>;
@@ -564,28 +573,29 @@ void KFileReader::setShowHiddenFiles(bool b)
 #define SETMNTENT setmntent
 #define ENDMNTENT endmntent
 #define STRUCT_MNTENT struct mntent *
+#define STRUCT_SETMNTENT FILE *
 #define GETMNTENT(file, var) ((var = getmntent(file)) != NULL)
 #define MOUNTPOINT(var) var->mnt_dir
 #define MOUNTTYPE(var) var->mnt_type
 #define FSNAME(var) var->mnt_fsname
-#else
-#ifdef BSD
-#define SETMNTENT(x, x) 1
-#define ENDMNTENT(x) /* nope */
+#elif defined(BSD)
+#define SETMNTENT(x, y) setfsent()
+#define ENDMNTENT(x) endfsent()
 #define STRUCT_MNTENT struct fstab *
+#define STRUCT_SETMNTENT int
 #define GETMNTENT(file, var) ((var=getfsent()) != NULL)
 #define MOUNTPOINT(var) var->fs_file
-#define MOUNTTYPE(var) var->fs_vftype
+#define MOUNTTYPE(var) var->fs_type
 #define FSNAME(var) var->fs_spec
 #else /* no setmntent and no BSD */
 #define SETMNTENT fopen
 #define ENDMNTENT fclose
 #define STRUCT_MNTENT struct mnttab
+#define STRUCT_SETMNTENT FILE *
 #define GETMNTENT(file, var) (getmntent(file, &var) == 0)
 #define MOUNTPOINT(var) var.mnt_mountp
 #define MOUNTTYPE(var) var.mnt_fstype
 #define FSNAME(var) var.mnt_special
-#endif
 #endif
 
 /**
@@ -593,7 +603,7 @@ void KFileReader::setShowHiddenFiles(bool b)
  **/
 bool KFileReader::probably_slow_mounted(const char *filename)
 {
-    FILE		*mtab;
+    STRUCT_SETMNTENT	mtab;
     char		realname[MAXPATHLEN];
     int		        length, max;
 
