@@ -232,6 +232,15 @@ Use QPopupMenu/KPopupMenu or the XML-UI method for building menus.
 		</table></li>
 </ul>
 
+<h4>KActionCollection</h4>
+<ul>
+	<li>When constructing a KActionCollection object, a pointer to the focus widget should be passed.</li>
+	<li>The insert(), remove(), and take() methods have been depricated.
+	If you wish to keep a list of actions, use the KActionPtrList container instead.
+	If you want to configure the shortcuts from multiple actions collections,
+	pass each collection to KKeyChooser or KKeyDialog via their insert() methods.</li>
+</ul>
+
 <H4>KAlphaPainter</H4>
 KAlphaPainter has been dropped, since Qt 3 has native support for
 hardware accelerated alpha blending.
