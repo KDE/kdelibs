@@ -2,8 +2,9 @@
 [KDE Desktop Entry]
 MimeType=text/x-moc
 Comment=Qt Meta Object Datei
+Comment[de]=Qt Meta Object Datei   
+Comment[nl]=Qt-metaobject bestand 
 DefaultApp=Kemacs
 Icon=unknown.xpm
 Type=MimeType
 Patterns=*.moc;
-Comment[de]=Qt Meta Object Datei

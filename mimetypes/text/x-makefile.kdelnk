@@ -2,8 +2,9 @@
 [KDE Desktop Entry]
 MimeType=text/x-makefile
 Comment=Makefile
+Comment[de]=Makefile  
+Comment[nl]=Makefile
 DefaultApp=Kemacs
 Icon=unknown.xpm
 Type=MimeType
 Patterns=Makefile*;
-Comment[de]=Makefile

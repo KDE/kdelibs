@@ -6,4 +6,4 @@ Patterns=core;core.*;
 MimeType=application/x-core
 Comment=Core dump
 Comment[de]=Speicherauszug
-
+Comment[nl]=Coredump  

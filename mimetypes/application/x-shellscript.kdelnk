@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Comment=shell script
 Comment[de]=Skript
+Comment[nl]=Shellscript 
 Icon=terminal.xpm
 Type=MimeType
 MimeType=application/x-shellscript

@@ -7,3 +7,4 @@ Patterns=*.ps;*.PS;*.eps;*.EPS;
 DefaultApp=kghostview
 Comment=PostScript Document
 Comment[de]=Postscript Dokument
+Comment[nl]=Postscript document
