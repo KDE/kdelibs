@@ -143,7 +143,6 @@ public:
     m_onlyLocalReferences = false;
 
     m_metaRefreshEnabled = true;
-    m_bHTTPRefresh = false;
 
     m_bFirstData = true;
     m_submitForm = 0;
@@ -256,7 +255,6 @@ public:
   bool m_bComplete:1;
   bool m_bLoadEventEmitted:1;
   bool m_haveEncoding:1;
-  bool m_bHTTPRefresh:1;
   bool m_onlyLocalReferences :1;
   bool m_redirectLockHistory:1;
 

@@ -953,7 +953,6 @@ void KHTMLPart::clear()
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
   d->m_redirectLockHistory = true;
-  d->m_bHTTPRefresh = false;
   d->m_bClearing = false;
   d->m_frameNameId = 1;
   d->m_bFirstData = true;
@@ -1070,47 +1069,8 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     // Support for http-refresh
     qData = d->m_job->queryMetaData("http-refresh");
-    if( !qData.isEmpty() && d->m_metaRefreshEnabled )
-    {
-      kdDebug(6050) << "HTTP Refresh Request: " << qData << endl;
-      int delay;
-      int pos = qData.find( ';' );
-      if ( pos == -1 )
-        pos = qData.find( ',' );
-
-      if( pos == -1 )
-      {
-        delay = qData.stripWhiteSpace().toInt();
-        scheduleRedirection( qData.toInt(), m_url.url());
-      }
-      else
-      {
-        int end_pos = qData.length();
-        delay = qData.left(pos).stripWhiteSpace().toInt();
-        while ( qData[++pos] == ' ' );
-        if ( qData.find( "url", pos, false ) == pos )
-        {
-          pos += 3;
-          while (qData[pos] == ' ' || qData[pos] == '=' )
-              pos++;
-          if ( qData[pos] == '"' )
-          {
-              pos++;
-              int index = end_pos-1;
-              while( index > pos )
-              {
-                if ( qData[index] == '"' )
-                    break;
-                index--;
-              }
-              if ( index > pos )
-                end_pos = index;
-          }
-        }
-        scheduleRedirection( delay, d->m_doc->completeURL( qData.mid( pos, end_pos ) ));
-      }
-      d->m_bHTTPRefresh = true;
-    }
+    if( !qData.isEmpty())
+      d->m_doc->processHttpEquiv("refresh", qData);
 
     // Support Content-Location per section 14.14 of RFC 2616.
     QString baseURL = d->m_job->queryMetaData ("content-location");
@@ -2633,12 +2593,6 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     return;
 
   args.frameName = target;
-
-  if ( d->m_bHTTPRefresh )
-  {
-    d->m_bHTTPRefresh = false;
-    args.metaData()["cache"] = "refresh";
-  }
 
   args.metaData().insert("main_frame_request",
                          parentPart() == 0 ? "TRUE":"FALSE");
