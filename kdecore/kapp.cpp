@@ -985,14 +985,12 @@ void KApplication::dcopFailure(const QString &msg)
   failureCount++;
   if (failureCount == 1)
   {
-     kdDebug() << "KApplication::dcopFailure " << getpid() << ", first failure -> trying to launch kdeinit" << endl;
      // Try to launch kdeinit.
      QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
      if (srv.isEmpty())
         srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KDEDIR+QString::fromLatin1("/bin"));
      if (srv.isEmpty())
         return;
-     kdDebug() << srv << endl;
      my_system(QFile::encodeName(srv));
      return;
   }
