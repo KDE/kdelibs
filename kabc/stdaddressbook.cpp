@@ -23,7 +23,6 @@
 
 #include "stdaddressbook.h"
 #include "resourcefile.h"
-#include "resourcesql.h"
 
 using namespace KABC;
 

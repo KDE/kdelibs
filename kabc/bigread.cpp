@@ -9,7 +9,9 @@
 #include "addressbook.h"
 #include "vcardformat.h"
 #include "resourcefile.h"
+#if 0
 #include "resourcesql.h"
+#endif
 
 using namespace KABC;
 
@@ -24,9 +26,11 @@ int main(int argc,char **argv)
    
   ResourceFile r( &ab, "my.kabc" );
   ab.addResource( &r );
-  
+
+#if 0  
   ResourceSql rsql( &ab, "root", "kde4ever", "localhost" );
   ab.addResource( &rsql );
+#endif
 
   struct tms start;
 

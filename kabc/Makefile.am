@@ -11,7 +11,7 @@ libkabc_la_SOURCES = \
   addressbook.cpp addressee.cpp phonenumber.cpp simpleformat.cpp \
   stdaddressbook.cpp vcardformat.cpp address.cpp geo.cpp timezone.cpp \
   vcardformatimpl.cpp addresseedialog.cpp distributionlist.cpp \
-  distributionlisteditor.cpp resource.cpp resourcefile.cpp resourcesql.cpp
+  distributionlisteditor.cpp resource.cpp resourcefile.cpp
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
@@ -51,7 +51,7 @@ bigwrite_SOURCES = bigwrite.cpp
 
 testdb_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testdb_LDADD = libkabc.la
-testdb_SOURCES = testdb.cpp
+testdb_SOURCES = testdb.cpp resourcesql.cpp
 
 autostart_DATA = kab2kabc.desktop
 autostartdir = $(prefix)/share/autostart
