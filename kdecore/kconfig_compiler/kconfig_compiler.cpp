@@ -325,15 +325,15 @@ QString paramString(const QString &group, const QStringList &parameters)
 
 int main( int argc, char **argv )
 {
-  KAboutData aboutData( "kconfig_compiler", I18N_NOOP("KConfig Compiler"), "0.1" );
+  KAboutData aboutData( "kconfig_compiler", I18N_NOOP("KDE .kcfg compiler"), "0.2",
+  	I18N_NOOP("KConfig Compiler") , KAboutData::License_LGPL );
   aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
   aboutData.addAuthor( "Waldo Bastian", 0, "bastian@kde.org" );
 
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 
-  KApplication::disableAutoDcopRegistration();
-  KApplication app( false, false );
+  KInstance app( &aboutData );
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
@@ -367,6 +367,7 @@ int main( int argc, char **argv )
   bool customAddons = codegenConfig.readBoolEntry("CustomAdditions");
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList includes = codegenConfig.readListEntry("IncludeFiles");
+  bool mutators = codegenConfig.readBoolEntry("Mutators");
   
   kdDebug() << "Input file: " << inputFilename << endl;
 
@@ -535,16 +536,19 @@ int main( int argc, char **argv )
     QString t = e->type();
 
     // Manipulator
-    h << "    /**" << endl;
-    h << "      Set " << e->label() << endl;
-    h << "    */" << endl;    
-    if (staticAccessors)
-      h << "    static" << endl;
-    h << "    void " << setFunction(n) << "( " << param( t ) << " v )" << endl;
-    h << "    {" << endl;
-    h << "      if (!" << This << "isImmutable( \"" << n << "\" ))" << endl;
-    h << "        " << This << varName(n) << " = v;" << endl;
-    h << "    }" << endl << endl;
+    if (mutators)
+    {
+      h << "    /**" << endl;
+      h << "      Set " << e->label() << endl;
+      h << "    */" << endl;    
+      if (staticAccessors)
+        h << "    static" << endl;
+      h << "    void " << setFunction(n) << "( " << param( t ) << " v )" << endl;
+      h << "    {" << endl;
+      h << "      if (!" << This << "isImmutable( \"" << n << "\" ))" << endl;
+      h << "        " << This << varName(n) << " = v;" << endl;
+      h << "    }" << endl << endl;
+    }
   
     // Accessor
     h << "    /**" << endl;
