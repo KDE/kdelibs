@@ -43,17 +43,18 @@ void KPopupMenu::paintCell(QPainter *p, int row, int col)
 {
     if (row != 0)
         QPopupMenu::paintCell(p, row, col);
-    else if (!row && col==1) {
+    else if ( ( (row == 0) && (col == 1) && (isCheckable()) ) || 
+		( (row == 0) && (col == 0) && (!isCheckable()) ) ) {
         int cellh = cellHeight(0);
         int cellw = cellWidth(0);
-        QColorGroup cg = colorGroup();
+        QColorGroup cg = this->colorGroup();
         
         p->setPen(cg.light());
 		p->drawText(6, 3, cellw, cellh-4, 
-					DontClip|AlignVCenter|ShowPrefix|SingleLine, text(0));
+			DontClip|AlignVCenter|ShowPrefix|SingleLine, text(0));
         p->setPen(cg.text());
 		p->drawText(5, 2, cellw, cellh-4, 
-					DontClip|AlignVCenter|ShowPrefix|SingleLine, text(0));
+			DontClip|AlignVCenter|ShowPrefix|SingleLine, text(0));
     }
 }
     
