@@ -161,8 +161,9 @@ namespace KIO {
      * @param src local files will result in symlinks,
      *            remote files will result in Type=Link .desktop files
      * @param dest destination, has to be a local file currently.
+     * @return true on success, false on failure
      */
-    void link( const KURL::List& src, const KURL& dest );
+    bool link( const KURL::List& src, const KURL& dest );
 
     /**
      * Lists the contents of @p url, which is assumed to be a directory.

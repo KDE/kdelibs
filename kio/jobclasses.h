@@ -371,6 +371,7 @@ namespace KIO {
     {
         KURL uSource;
         KURL uDest;
+        QString linkDest; // for symlinks only
         mode_t permissions;
         mode_t type;
         time_t mtime;
@@ -439,6 +440,7 @@ namespace KIO {
         enum { STATE_STATING, STATE_LISTING,
                STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
         KURL::List files;
+        KURL::List symlinks;
         KURL::List dirs;
         KURL::List m_srcList;
         bool m_shred;

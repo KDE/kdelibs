@@ -581,20 +581,20 @@ SimpleJob *KIO::file_delete( const KURL& src)
 
 //////////
 
-void KIO::link( const KURL::List &srcUrls, const KURL & destDir )
+bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 {
     kDebugInfo( 1202, "%s", QString("destDir = %1").arg(destDir.url()).ascii() );
     bool overwriteExistingFiles = false;
     if ( destDir.isMalformed() )
     {
 	KMessageBox::sorry( 0L, i18n( "Malformed URL\n%1" ).arg( destDir.url() ) );
-	return;
+	return false;
     }
     if ( !destDir.isLocalFile() )
     {
 	// I can only make links on the local file system.
 	KMessageBox::sorry( 0L, i18n( "Can only make links on local file system" ) );
-	return;
+	return false;
     }
     KURL::List::ConstIterator it = srcUrls.begin();
     for ( ; it != srcUrls.end() ; ++it )
@@ -603,7 +603,7 @@ void KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 	if ( srcUrl.isMalformed() )
 	{
 	    KMessageBox::sorry( 0L, i18n( "Malformed URL\n%1" ).arg( (*it).url() ) );
-	    return;
+	    return false;
 	}
 
 	// The destination URL is the destination dir + the filename
@@ -626,7 +626,7 @@ void KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 			if ( unlink( destUrl.path().local8Bit() ) != 0 )
 			{
 			    KMessageBox::sorry( 0L, i18n( "Could not overwrite\n%1"), destUrl.path() );
-			    return;
+			    return false;
 			}
 		    }
 		    else
@@ -634,7 +634,7 @@ void KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 			// Ask the user what to do
 			// TODO
 			KMessageBox::sorry( 0L, i18n( "Destination exists (real dialog box not implemented yet)\n%1"), destUrl.path() );
-			return;
+			return false;
 		    }
 		}
 		else
@@ -642,7 +642,7 @@ void KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 		    // Some error occured while we tried to symlink
 		    KMessageBox::sorry( 0L, i18n( "Failed to make symlink from \n%1\nto\n%2\n" ).
 					arg(srcUrl.url()).arg(destUrl.url()) );
-		    return;
+		    return false;
 		}
 	    } // else : no problem
 	}
@@ -675,10 +675,11 @@ void KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 	    else
 	    {
 		KMessageBox::sorry( 0L, i18n( "Could not write to\n%1").arg(destPath) );
-		return;
+		return false;
 	    }
 	}
     }
+    return true;
 }
 
 //////////
@@ -814,7 +815,6 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         UDSEntry::ConstIterator it2 = it.current()->begin();
         struct CopyInfo info;
         QString relName;
-        bool bLink = false;
         for( ; it2 != it.current()->end(); it2++ ) {
             switch ((*it2).m_uds) {
                 case UDS_NAME:
@@ -824,7 +824,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     info.type = (mode_t)((*it2).m_long);
                     break;
                 case UDS_LINK_DEST:
-                    bLink = !(*it2).m_str.isEmpty();
+                    info.linkDest = (*it2).m_str;
                     break;
                 case UDS_ACCESS:
                     info.permissions = (mode_t)((*it2).m_long);
@@ -846,15 +846,15 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
                 info.uSource.addPath( relName );
             info.uDest = m_currentDest;
-            if ( destinationState == DEST_IS_DIR )
+            // Append filename or dirname to destination URL, except for links
+            // (This is due to the way ::link is written. Alternatively,
+            // we could change that...)
+            if ( info.linkDest.isEmpty() && destinationState == DEST_IS_DIR )
                 info.uDest.addPath( relName );
-            if (!bLink)
-                if (S_ISDIR(info.type))
-                    dirs.append( info );
-                else
-                    files.append( info );
-            else // TODO
-                kDebugWarning(7007,"CopyJob: copying of symlinks is not yet supported !");
+            if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) )
+                dirs.append( info ); // Directories
+            else
+                files.append( info ); // Files and any symlinks
         }
     }
 }
@@ -969,16 +969,11 @@ void CopyJob::slotResultStating( Job *job )
     }
     else
     {
-        if (bLink) // TODO
-            kDebugWarning(7007,"CopyJob: copying of symlinks is not yet supported !");
-        else
-        {
-            kDebugInfo(7007," Source is a file ");
+        kDebugInfo(7007," Source is a file (or a symlink) ");
 
-            // Skip the "listing" stage and go directly copying the file
-            state = STATE_COPYING_FILES;
-            copyNextFile();
-        }
+        // Skip the "listing" stage and go directly copying the file
+        state = STATE_COPYING_FILES;
+        copyNextFile();
     }
 }
 
@@ -1324,12 +1319,37 @@ void CopyJob::copyNextFile()
                 bOverwrite = true;
 
         KIO::Job * newjob;
-        if (m_move)
+        if ( !(*it).linkDest.isEmpty() ) // Copying a symlink
+        {
+            KURL::List srcList;
+            // The "source" is in fact what the existing link points to
+            srcList.append( KURL( (*it).linkDest ) );
+            if ( KIO::link( srcList, (*it).uDest ) )
+            {
+                if (m_move)
+                {
+                    newjob = KIO::del( (*it).uSource );
+                }
+                else
+                {
+                    // Done with this one
+                    files.remove( it );
+                    copyNextFile();
+                    return;
+                }
+            } else
+            {
+                // Error - move to next file
+                files.remove( it );
+                copyNextFile();
+                return;
+            }
+        } else if (m_move) // Moving a file
         {
             newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false );
             kDebugInfo( "CopyJob::copyNextFile : Moving %s to %s", (*it).uSource.url().ascii(), (*it).uDest.url().ascii() );
         }
-        else
+        else // Copying a file
         {
             newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false );
             kDebugInfo( "CopyJob::copyNextFile : Copying %s to %s", (*it).uSource.url().ascii(), (*it).uDest.url().ascii() );
@@ -1449,7 +1469,9 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             KURL url = ((SimpleJob *)job)->url(); // assumed to be a dir
             url.addPath( relName );
             kDebugInfo(7007,"DeleteJob::slotEntries %s (%s)",relName.ascii(),url.url().ascii());
-            if ( bDir && !bLink ) // treat symlinks as files
+            if ( bLink )
+                symlinks.append( url );
+            else if ( bDir )
                 dirs.append( url );
             else
                 files.append( url );
@@ -1461,6 +1483,7 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 void DeleteJob::startNextJob()
 {
     files.clear();
+    symlinks.clear();
     dirs.clear();
     KURL::List::Iterator it = m_srcList.begin();
     if (it != m_srcList.end())
@@ -1480,25 +1503,31 @@ void DeleteJob::startNextJob()
 
 void DeleteJob::deleteNextFile()
 {
-    if ( !files.isEmpty() )
+    if ( !files.isEmpty() || !symlinks.isEmpty() )
     {
         // Take first file to delete out of list
         KURL::List::Iterator it = files.begin();
+        bool isLink = false;
+        if ( it == files.end() ) // No more files
+        {
+            it = symlinks.begin(); // Pick up a symlink to delete
+            isLink = true;
+        }
+        SimpleJob *job;
         // Use shredding ?
-        if ( m_shred && (*it).isLocalFile() )
+        if ( m_shred && (*it).isLocalFile() && !isLink )
         {
             // KShred your KTie
             KIO_ARGS << int(3) << (*it).path();
-            SimpleJob *job = KIO::special(KURL("file:/"), packedArgs);
-            files.remove(it);
-            addSubjob(job);
+            job = KIO::special(KURL("file:/"), packedArgs);
         } else 
         {
             // Normal deletion
-            SimpleJob *job = KIO::file_delete( *it );
-            files.remove(it);
-            addSubjob( job );
+            job = KIO::file_delete( *it );
         }
+        if ( isLink ) symlinks.remove(it);
+                 else files.remove(it);
+        addSubjob(job);
     } else
     {
         state = STATE_DELETING_DIRS;
@@ -1570,11 +1599,11 @@ void DeleteJob::slotResult( Job *job )
                 subjobs.remove( job );
                 assert( subjobs.isEmpty() );
 
-                kDebugInfo(7007," Target is a file ");
+                kDebugInfo(7007," Target is a file (or a symlink) ");
                 // Remove it
 
                 state = STATE_DELETING_FILES;                
-                if ( m_shred && url.isLocalFile() )
+                if ( m_shred && url.isLocalFile() && !bLink )
                 {
                     // KShred your KTie
                     KIO_ARGS << int(3) << url.path();
