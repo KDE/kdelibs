@@ -684,7 +684,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 
             fixUpChar(EntityChar);
 
-            if ( EntityChar != QChar::null ) {
+            if ( !EntityChar.isNull() ) {
                 checkBuffer();
                 // Just insert it
                 if (*src == ';')
