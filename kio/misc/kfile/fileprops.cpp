@@ -32,6 +32,8 @@
 #define KFILEVERSION "0.1"
 #define INDENT "\t"
 
+using namespace std;
+
 FileProps::FileProps( const char *argument, const QString& path )
     : m_argument( argument ),
       m_dirty( false )
