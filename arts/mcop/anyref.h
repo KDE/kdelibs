@@ -68,6 +68,7 @@ protected:
 		repLongSeq = 520,
 		repFloatSeq = 530,
 		repStringSeq = 540,
+		repBoolSeq = 550,
 		repAny = 1000			  /* may hold any type */
 	} rep;
 
@@ -104,6 +105,8 @@ public:
 										: AnyRefBase(&v,repFloatSeq) { };
 	AnyConstRef(const std::vector<std::string>& v)
 										: AnyRefBase(&v,repStringSeq) { };
+	AnyConstRef(const std::vector<bool>& v)
+										: AnyRefBase(&v,repBoolSeq) { };
 
 	AnyConstRef(const Any& value)		: AnyRefBase(&value,repAny) { };
 
@@ -129,6 +132,7 @@ public:
 	AnyRef(std::vector<long>& value)		: AnyRefBase(&value,repLongSeq) { };
 	AnyRef(std::vector<float>& value)		: AnyRefBase(&value,repFloatSeq) { };
 	AnyRef(std::vector<std::string>& value)	: AnyRefBase(&value,repStringSeq){};
+	AnyRef(std::vector<bool>& value)	: AnyRefBase(&value,repBoolSeq){};
 
 	AnyRef(Any& value)						: AnyRefBase(&value,repAny) { };
 

@@ -60,6 +60,7 @@ public:
 
 	bool readError();
 	void writeBool(bool b);
+	void writeBoolSeq(const std::vector<bool>& seq);
 	void writeByte(mcopbyte b);
 	void writeByteSeq(const std::vector<mcopbyte>& seq);
 	void writeLong(long l);
@@ -81,6 +82,7 @@ public:
 	void write(const std::vector<mcopbyte>& raw);
 
 	bool readBool();
+	void readBoolSeq(std::vector<bool>& result);
 	mcopbyte readByte();
 	void readByteSeq(std::vector<mcopbyte>& result);
 	long readLong();

@@ -72,6 +72,7 @@ string AnyRefBase::type() const
 	static const string tString("string");
 	static const string tsString("*string");
 	static const string tBool("bool");
+	static const string tsBool("*bool");
 
 	switch(rep)
 	{
@@ -92,6 +93,7 @@ string AnyRefBase::type() const
 		case repLongSeq:	return tsLong;
 		case repFloatSeq:	return tsFloat;
 		case repStringSeq:	return tsString;
+		case repBoolSeq:	return tsBool;
 
 		case repAny:		return ((Any *)data)->type;
 	}
@@ -144,6 +146,9 @@ void AnyRefBase::_write(Buffer *b) const
 		case repStringSeq:	b->writeStringSeq(*(vector<string> *)data);
 			break;
 
+		case repBoolSeq:	b->writeBoolSeq(*(vector<bool> *)data);
+			break;
+
 		case repAny:		b->write(((Any *)data)->value);
 			break;
 
@@ -191,6 +196,9 @@ void AnyRefBase::_read(Buffer *b) const
 			break;
 
 		case repStringSeq:	b->readStringSeq(*(vector<string> *)data);
+			break;
+
+		case repBoolSeq:	b->readBoolSeq(*(vector<bool> *)data);
 			break;
 
 		case repAny:	

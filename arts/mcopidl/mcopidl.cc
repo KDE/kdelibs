@@ -1528,7 +1528,7 @@ void doInterfacesHeader(FILE *header)
 
 			if((ad.flags & attributeAttribute) && (ad.flags & streamOut)
 			&& (ad.type == "byte" || ad.type == "float" || ad.type == "long"
-			||  ad.type == "string"
+			||  ad.type == "string" || ad.type == "boolean"
 			||  ad.type == "*byte" || ad.type == "*float" || ad.type == "*long"
 			||  ad.type == "*string"))
 			{
