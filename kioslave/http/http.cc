@@ -420,6 +420,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
           kdDebug(7113) << "(" << m_pid << ") Unset tunneling flag!" << endl;
           setEnableSSLTunnel( false );
           m_bIsTunneled = true;
+          m_bNeedTunnel = false;
           // Reset the CONNECT response code...
           m_responseCode = m_prevResponseCode;
           continue;
