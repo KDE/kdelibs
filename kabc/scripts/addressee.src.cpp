@@ -810,10 +810,12 @@ QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
 
 bool matchBinaryPattern( int value, int pattern, int max )
 {
-  if ( pattern == 0 && value != 0 )
-    return false;
-  else
-    return true;
+  if ( pattern == 0 ) {
+    if ( value != 0 )
+      return false;
+    else
+      return true;
+  }
 
   int counter = 0;
   while ( 1 ) {
