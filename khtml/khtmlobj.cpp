@@ -1368,6 +1368,8 @@ void HTMLImage::setPixmap( QPixmap *p )
     printf("KHTMLImage::setPixmap()\n");
     pixmap = p;
 
+//     printf("KHTMLImage::setPixmap(); width: %d, height: %d; lastWidth: %d, lastHeight: %d; URL: %s\n", 
+// 	pixmap->width(), pixmap->height(), lastWidth, lastHeight, imageURL.string().latin1());
     if (width == 0)
         return; // setMaxSize has not yet been called. Do nothing.
     printf("KHTMLImage::setPixmap() 1\n");
@@ -1392,7 +1394,7 @@ void HTMLImage::setPixmap( QPixmap *p )
         // Image dimensions have been changed, recalculate layout
 	htmlWidget->calcSize();
 	htmlWidget->calcAbsolutePos();
-	htmlWidget->scheduleUpdate( true );
+        htmlWidget->scheduleUpdate( true );
 	printf("KHTMLImage::setPixmap() paint scheduled\n");
     }
 }

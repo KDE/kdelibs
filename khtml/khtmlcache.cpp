@@ -33,15 +33,137 @@
 #include <qpixmap.h>
 #include <qmovie.h>
 #include <qdict.h>
+#include <qasyncimageio.h>
 
 #include <sys/stat.h>
 #include <unistd.h>
   
+/*!
+  This Class defines the DataSource for incremental loading of images.
+*/
+KHTMLImageSource::KHTMLImageSource(QIODevice* device, int buffer_size) :
+    buf_size(buffer_size),
+    buffer(new uchar[buf_size]),
+    iod(device),
+    rew(FALSE),
+    sendReady(TRUE),
+    pos(0),
+    eof(FALSE)
+{
+}
+
+/*!
+  Destroys the QIODeviceSource, deleting the QIODevice from which it was
+  constructed.
+*/
+KHTMLImageSource::~KHTMLImageSource()
+{
+    delete iod;
+    delete [] buffer;
+}
+
+/**
+ * Overload QDataSource::readyToSend() and returns the number
+ * of bytes ready to send if not eof instead of returning -1.
+*/
+int KHTMLImageSource::readyToSend()
+{
+  if ( !(iod->state() & IO_Open) )
+    {
+      if ( iod->size() == pos)
+	return -1;
+
+      // This indicates that the end of the buffer is the end 
+      // of the file.
+
+      iod->open( IO_ReadOnly );
+      eof = true;
+    }
+
+  if ( iod->status() != IO_Ok || !(iod->state() & IO_Open) )
+    return -1;
+
+  int n = QMIN((uint)buf_size, iod->size() - pos);
+  
+  // FIXME
+  // workaround for qt bug:
+  // the timer in QDataPump should be restarted even if we
+  // return 0 !
+  if ( !n && eof )
+    return -1;
+
+  if ( !n && !eof )
+    {
+      sendReady = false;
+      n = 1;
+    }
+
+  return n;
+}
+
+/*!
+  KHTMLImageSource's is rewindable.
+*/
+bool KHTMLImageSource::rewindable() const
+{
+    return TRUE;
+}
+
+/*!
+  Enables rewinding.  No special action is taken.
+*/
+void KHTMLImageSource::enableRewind(bool on)
+{
+    rew = on;
+}
+
+/*
+  Calls reset() on the QIODevice.
+*/
+void KHTMLImageSource::rewind()
+{
+  pos = 0;
+  if (!rew) {
+    QDataSource::rewind();
+  } else {
+    iod->reset();
+    ready();
+  }
+}
+
+/*!
+  Reads and sends a block of data.
+*/
+void KHTMLImageSource::sendTo(QDataSink* sink, int n)
+{
+  // FIXME
+  // workaround for qt bug:
+  // in readyToSend we return minimal 1
+  // so test if there is really something to send
+    if ( !sendReady )
+      {
+	sendReady = true;
+	return;
+      }
+    
+    int oldPos = iod->at(); // save old position
+
+    iod->at( pos );
+    iod->readBlock((char*)buffer, n);
+    sink->receive(buffer, n);
+    iod->at( oldPos ); // restore old position
+
+    pos += n;
+}
+
 KHTMLCachedImage::KHTMLCachedImage()
     : QObject()
 {
     p = 0;
     m = 0;
+    typeChecked = false;
+    incBuffer = 0;
+    formatType = 0;
     status = KHTMLCache::Unknown;
     size = 0;
 }
@@ -50,6 +172,8 @@ KHTMLCachedImage::~KHTMLCachedImage()
 {
     if( m ) delete m;
     if( p ) delete p;
+    if( incBuffer ) delete incBuffer;
+    if ( formatType ) delete formatType;
 }
 
 void 
@@ -68,10 +192,10 @@ KHTMLCachedImage::remove( HTMLObject *o )
     m->pause();
 }
 
-QPixmap *
+QPixmap*
 KHTMLCachedImage::pixmap() 
 {
-    return p;
+    return m ? (QPixmap*)&m->framePixmap() : p;
 }
 
 void
@@ -97,6 +221,15 @@ KHTMLCachedImage::clear()
 	delete p;
 	p = 0;
     }
+    if ( incBuffer ) {
+        delete incBuffer;
+	incBuffer = 0;
+    }
+    if ( formatType ) {
+      delete formatType;
+      formatType = 0;
+    }
+    typeChecked = false;
     size = 0;
 }
 
@@ -108,8 +241,7 @@ KHTMLCachedImage::load( QString _f )
     clear();
 
     // remove "file:" prefix
-    QString prefix("file:");
-    if(_f.find(prefix) == 0)
+    if(_f.find("file:") == 0)
 	_f = _f.mid(5);
 
     const char *_file = _f.ascii();
@@ -129,37 +261,31 @@ KHTMLCachedImage::load( QString _f )
     fclose( f );
     QByteArray arr;
     arr.assign( c, s );
+    
+    formatType = QImageDecoder::formatName( (const uchar*)arr.data(), arr.size());
 
-
-    if ( strncmp( c, "GIF89a", 6 ) == 0 )
-    {
-        // set width and height of image
-        width  = (uchar)c[6] + ((uchar)c[7]<<8);
-        height = (uchar)c[8] + ((uchar)c[9]<<8);
-
+    if ( formatType )
+      {
+	// set width and height of image
+	width  = (uchar)c[6] + ((uchar)c[7]<<8);
+	height = (uchar)c[8] + ((uchar)c[9]<<8);
+	
 	m = new QMovie( arr, 8192 );
 	m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
-#if QT_VERSION <= 141
-	// fix for a bug in QMovie
-	m->connectStatus( this, SLOT( statusChanged(int) ));
-#endif
-	p = new QPixmap(width, height);
 	gotFrame = false;
 	// well, this is the size of the compressed gif...
 	// ... but that's better than nothing
 	size = s;
-    }
+	delete formatType;
+      }
     else
-    {
+      {
 	p = new QPixmap();
 	p->loadFromData( arr );	    
-	if( p && ! p->isNull() )
-	{
-	  width = p->width();
-	  height = p->height();
-	  size = width * height * p->depth() / 8;
-	}
-    }
+	// set size of image. 
+	if( p != 0 && !p->isNull() )
+	    size = p->width() * p->height() * p->depth() / 8;
+      }
 
     computeStatus();
     notify();
@@ -169,38 +295,53 @@ bool
 KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 {
     printf("in KHTMLCache::data()\n");
-    // ######## FIXME
-    // no incremental loading for the moment
-    if( !eof ) return false;
+    if ( !typeChecked )
+      {
+	clear();
+	formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
+	typeChecked = true;
+      }
+    
+    if ( formatType )  // movie format exists
+      {
+	if ( !incBuffer )
+	  {
+	    incBuffer = new QBuffer();
+	    incBuffer->open(IO_ReadWrite);
+	    // write at least some data so that the decoder can 
+	    // determine the right format type
+	    incBuffer->writeBlock( _buffer.buffer(), _buffer.size()); 
+	    m = new QMovie( new KHTMLImageSource(incBuffer) );
+	    m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+	    gotFrame = false;
+	    size = _buffer.size();
+	    return false;
+	  }
 
-    clear();
+	int bufSize = incBuffer->size(),
+	    length = _buffer.size()-bufSize;
+	
+	if ( length > 0)
+	  {
+	    incBuffer->at(bufSize);
+	    incBuffer->writeBlock( &_buffer.buffer().at(bufSize), length);
+	  }
+      }
+    
+    if ( !eof )
+      return false;
 
-    char buffer[ 7 ];
-    buffer[0] = 0;
-    _buffer.open( IO_ReadOnly );
-    _buffer.readBlock( buffer, 6 );
-    _buffer.close();
-
-    if ( strcmp( buffer, "GIF89a" ) == 0 )
-    {
-	m = new QMovie( _buffer.buffer() );
-	m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
-#if QT_VERSION <= 141
-	m->connectStatus( this, SLOT( statusChanged(int) ));
-#endif
-	p = new QPixmap(width, height);
-	gotFrame = false;
-	size = _buffer.size();
-    }
-    else
-    {
+    if( !formatType )
+      {
 	p = new QPixmap();
 	p->loadFromData( _buffer.buffer() );	    
 	// set size of image. 
 	if( p && !p->isNull() )
-	    size = p->width() * p->height() * p->depth() / 8;
-    }
-
+	  size = p->width() * p->height() * p->depth() / 8;
+      }
+    else
+      incBuffer->close();
+      
     computeStatus();
     notify();
     // FIXME: only update, when needed
@@ -210,26 +351,39 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 void 
 KHTMLCachedImage::notify( HTMLObject *o )
 {
+  if ( m )
+    {
+      if(m->finished())
+	m->restart();
+      if(m->paused()) 
+	m->unpause();
+    }
+
     if( o )
     {
 	// sanity check...
 	if( clients.find( o ) == -1 )
 	    clients.append( o );
-	if( m )
-	{
-	    if(m->finished()) m->restart();
-	    if(m->paused()) m->unpause();
-	}
-	if ( p != 0 && !p->isNull() )
-	    o->setPixmap( p );
+
+	if ( m )
+	  o->setPixmap( (QPixmap*)&m->framePixmap() );
+	else if ( p != 0 && !p->isNull() )
+	  o->setPixmap( p );
+
 	return;
     }
 
     // notify all objects in our list...
-    if ( p == 0 || p->isNull() )
-	return;
-    for( o = clients.first(); o != 0L; o = clients.next() )
-	o->setPixmap( p );
+    QPixmap* pixmap = 0;
+
+    if ( m )
+      pixmap = (QPixmap*)&m->framePixmap();
+    else if ( p != 0 || !p->isNull() )
+      pixmap = p;
+
+    if ( pixmap )
+      for( o = clients.first(); o != 0L; o = clients.next() )
+	o->setPixmap( pixmap );
 }
 
 void 
@@ -237,24 +391,9 @@ KHTMLCachedImage::movieUpdated( const QRect & )
 {
     HTMLObject *o;
 
-    if( p ) delete p;
-    p = new QPixmap();
-    *p = m->framePixmap();
+    QPixmap* pixmap = (QPixmap*)&m->framePixmap();
     for( o = clients.first(); o != 0L; o = clients.next() )
-	o->pixmapChanged( p );
-}
-
-// the following function is a workaround for a bug in QMovie.
-// QMovie sometimes hangs, if it gets an image with data it can't read
-// correctly. Example is the file dochead.gif in the qt docs... <g>
-void
-KHTMLCachedImage::statusChanged(int status)
-{
-    if(status < 0) 
-    {
-	printf("ERROR: QMovie::status = %d\n", status);
-	m->pause();
-    }
+	o->pixmapChanged( pixmap );
 }
 
 // --------------------------------------------------------------------------
@@ -359,7 +498,8 @@ bool
 KHTMLCache::fileLoaded( QString _url, QBuffer & _buffer, bool eof )
 {
 #ifdef CACHE_DEBUG
-  printf("FileLoaded %s\n",_url.latin1());
+  if ( eof )
+    printf("FileLoaded %s\n",_url.latin1());
 #endif
 
     KHTMLCachedImage *im = cache->find(_url);

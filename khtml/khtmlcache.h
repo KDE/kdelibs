@@ -42,8 +42,53 @@ class QMovie;
 #include <qdict.h>
 #include <qobject.h>
 #include <qstringlist.h>
+#include <qasyncio.h>
 
 class KHTMLWidget;
+
+/**
+ * Defines the DataSource for incremental loading of images.
+ */
+class KHTMLImageSource : public QDataSource
+{
+  const int buf_size;
+  uchar *buffer;
+  QIODevice* iod;
+  bool rew;
+  bool sendReady;
+  bool eof;
+  int pos;
+
+ public:
+  KHTMLImageSource(QIODevice*, int bufsize=4096);
+  ~KHTMLImageSource();
+ 
+  /**
+   * Overload QDataSource::readyToSend() and returns the number
+   * of bytes ready to send if not eof instead of returning -1.
+   */
+  int readyToSend();
+
+  /*!
+    Reads and sends a block of data.
+  */
+  void sendTo(QDataSink*, int count);
+
+  /*!
+    KHTMLImageSource's is rewindable.
+  */
+  bool rewindable() const;
+
+  /*!
+    Enables rewinding.  No special action is taken.
+  */
+  void enableRewind(bool on);
+
+  /*
+    Calls reset() on the QIODevice.
+  */
+  void rewind();
+};
 
 /** 
  * contains one cached image
@@ -59,7 +104,7 @@ public:
     // just for convenience
     void append( HTMLObject *o ); 
     void remove( HTMLObject *o );
-    QPixmap *pixmap();
+    QPixmap* pixmap();
     int count() { return clients.count(); }
 
     /**
@@ -91,12 +136,7 @@ public slots:
      * gets called, whenever a QMovie changes frame
      */
     void movieUpdated( const QRect &rect );
-    /** 
-     * needed to work around a bug in QMovie
-     * should be unused for qt > 1.41
-     */
-    void statusChanged(int status);
-
+ 
 public:
     QPixmap *p;
     QMovie *m;
@@ -107,6 +147,16 @@ public:
     int status;
     int size;
     bool gotFrame;
+
+private:
+    // Buffer of the incremental loaded picture
+    QBuffer* incBuffer;
+
+    // Is the name of the movie format type
+    const char* formatType;
+
+    // Is set if movie format type ( incremental/animation) was checked
+    bool typeChecked;
 };
 
 class ImageList : public QStringList

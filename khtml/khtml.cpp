@@ -276,15 +276,15 @@ void KHTMLWidget::data( QString _url, const char *_data, int _len, bool _eof )
   if ( !p->m_buffer.isOpen() )
     p->m_buffer.open( IO_WriteOnly );
   p->m_buffer.writeBlock( _data, _len );
-  if ( _eof )
-  {    
-    p->m_buffer.close();
 
-    HTMLFileRequester* o;
-    for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
-      if ( o->fileLoaded( _url, p->m_buffer, true ) )
-	do_update = true;
-    
+  HTMLFileRequester* o;
+  for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
+    if ( o->fileLoaded( _url, p->m_buffer, _eof ) )
+      do_update = true;
+  
+  if ( _eof )
+    {    
+    p->m_buffer.close();
     mapPendingFiles.remove( _url );
   }
   else
