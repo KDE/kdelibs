@@ -73,8 +73,8 @@
  * o Easy to use: just add a line like this:
  *     QuickHelp::add(myWidget, "text text text");
  *
- * o Web-integration: hyperlinks to ftp:, http:, file:, info:, man: and mailto: 
- *   protokolls are available
+ * o Web-integration: hyperlinks to ftp:, http:, file:, info:, man: and 
+ *   mailto: protokolls are available
  * 
  *
  * 
