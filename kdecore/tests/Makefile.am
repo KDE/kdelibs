@@ -30,8 +30,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
 	kxerrorhandlertest startserviceby kstdacceltest
 
-check: kurltest kstdacceltest
-	./kurltest && ./kstdacceltest
+TESTS = kurltest kstdacceltest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h \
 		kipctest.h kprociotest.h
