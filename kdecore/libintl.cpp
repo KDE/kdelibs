@@ -86,7 +86,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 # include <sys/param.h>
 #endif
 
-#if defined HAVE_ARGZ_H
+#if defined(HAVE_ARGZ_H)
 #ifdef __BEGIN_DECLS
 #undef __BEGIN_DECLS
 #undef __END_DECLS
