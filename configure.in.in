@@ -256,4 +256,10 @@ AC_ARG_WITH(distribution,
 AC_DEFINE_UNQUOTED(KDE_DISTRIBUTION_TEXT, "$kde_distribution_text", [Distribution Text to append to OS])
 AC_MSG_RESULT($kde_distribution_text)
 
+dnl see if our Qt is more recent than beta5 ...
+CPPFLAGS_SAVE="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -I$QTDIR/include"
+AC_CHECK_HEADERS(private/qucomextra_p.h)
+CPPFLAGS="$CPPFLAGS_SAVE"
+
 DO_NOT_COMPILE="$DO_NOT_COMPILE kstyles"
