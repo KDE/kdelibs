@@ -288,7 +288,7 @@ void KIconDialog::init()
 
     QToolButton *clearSearch = new QToolButton(main);
     clearSearch->setTextLabel(i18n("Clear Search"), true);
-    clearSearch->setIconSet(SmallIconSet("locationbar_erase"));
+    clearSearch->setIconSet(SmallIconSet(QApplication::reverseLayout() ? "clear_left" :"locationbar_erase"));
     searchLayout->addWidget(clearSearch);
 
     QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
