@@ -19,6 +19,7 @@
 #define __kfilterdev_h
 
 #include <qiodevice.h>
+#include <qstring.h>
 
 class QFile;
 class KFilterBase;
@@ -26,6 +27,8 @@ class KFilterBase;
 /**
  * A class for reading and writing compressed data onto a device
  * (e.g. file, but other usages are possible, like a buffer or a socket)
+ *
+ * To simply read/write compressed files, @see deviceForFile.
  *
  * @author David Faure <faure@kde.org>
  */
@@ -35,12 +38,24 @@ public:
     /**
      * Create a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
      */
-    KFilterDev( KFilterBase * filter );
+    KFilterDev( KFilterBase * filter ); // BCI remove and add default value to 2nd constructor
+    /**
+     * Create a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
+     * Call this with autodeleteFilterBase so that the KFilterDev owns the KFilterBase.
+     */
+    KFilterDev( KFilterBase * filter, bool autodeleteFilterBase );
+
     virtual ~KFilterDev();
 
     virtual bool open( int mode );
     virtual void close();
     virtual void flush();
+
+    /**
+     * For writing gzip compressed files only:
+     * set the name of the original file, to be used in the gzip header.
+     */
+    void setOrigFileName( const QCString & fileName );
 
     // Not implemented
     virtual uint size() const;
@@ -65,8 +80,28 @@ public:
      * Call this to create the appropriate filter device for @p base
      * working on @p file . The returned QIODevice has to be deleted
      * after using.
+     * @deprecated. Use @ref deviceForFile instead.
      */
     static QIODevice* createFilterDevice(KFilterBase* base, QFile* file);
+
+
+    /**
+     * Return an i/o device that is able to read from @p fileName,
+     * whether it's compressed or not. Available compression filters
+     * (gzip/bzip2 etc.) will automatically be used.
+     *
+     * The compression filter to be used is determined from the @p fileName
+     * if @p mimetype is empty. Pass "application/x-gzip" or "application/x-bzip2"
+     * to force the corresponding decompression filter, if available.
+     *
+     * Warning: application/x-bzip2 may not be available.
+     * In that case a QFile opened on the compressed data will be returned !
+     * Use KFilterBase::findFilterByMimeType and code similar to what
+     * deviceForFile is doing, to better control what's happening.
+     *
+     * The returned QIODevice has to be deleted after using.
+     */
+    static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString::null );
 
 private:
     KFilterBase *filter;

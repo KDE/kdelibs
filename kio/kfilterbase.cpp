@@ -1,8 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
 
-#include "kfilterbase.h"
-
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -25,16 +23,29 @@
 #include <kdebug.h>
 
 KFilterBase::KFilterBase()
+    : m_dev( 0L ), m_bAutoDel( false )
 {
-
 }
 
+KFilterBase::~KFilterBase()
+{
+    if ( m_bAutoDel )
+        delete m_dev;
+}
+
+void KFilterBase::setDevice( QIODevice * dev, bool autodelete )
+{
+    m_dev = dev;
+    m_bAutoDel = autodelete;
+}
 
 KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 {
     KURL url;
     url.setPath( fileName );
+    kdDebug() << "KFilterBase::findFilterByFileName url=" << url.url() << endl;
     KMimeType::Ptr mime = KMimeType::findByURL( url );
+    kdDebug() << "KFilterBase::findFilterByFileName mime=" << mime->name() << endl;
     return findFilterByMimeType(mime->name());
 }
 

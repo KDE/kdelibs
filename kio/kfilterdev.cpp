@@ -27,12 +27,13 @@
 class KFilterDev::KFilterDevPrivate
 {
 public:
+    KFilterDevPrivate() : bNeedHeader(true), autoDeleteFilterBase(false) {}
     bool bNeedHeader;
-    QByteArray inputBuffer;
+    bool autoDeleteFilterBase;
+    QByteArray buffer; // Used as 'input buffer' when reading, as 'output buffer' when writing
     QCString ungetchBuffer;
+    QCString origFileName;
     KFilterBase::Result result;
-
-    //QByteArray outputBuffer;
 };
 
 KFilterDev::KFilterDev( KFilterBase * _filter )
@@ -45,13 +46,23 @@ KFilterDev::KFilterDev( KFilterBase * _filter )
     // but the Qt doc says "internal" ??.
 }
 
+KFilterDev::KFilterDev( KFilterBase * _filter, bool autoDeleteFilterBase )
+    : filter(_filter)
+{
+    assert(filter);
+    d = new KFilterDevPrivate;
+    d->autoDeleteFilterBase = autoDeleteFilterBase;
+}
+
 KFilterDev::~KFilterDev()
 {
+    if ( d->autoDeleteFilterBase )
+        delete filter;
     delete d;
 }
 
 //this one is static
-//we can make neither base nor file const, due to base->setDevice()
+// Cumbersome API. To be removed in KDE 3.0.
 QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
 {
    if (file==0)
@@ -59,20 +70,42 @@ QIODevice* KFilterDev::createFilterDevice(KFilterBase* base, QFile* file)
 
    //we don't need a filter
    if (base==0)
-      return new QFile(file->name());
+       return new QFile(file->name()); // A bit strange IMHO. We ask for a QFile but we create another one !?! (DF)
 
    base->setDevice(file);
    return new KFilterDev(base);
 };
 
+//static
+QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString & mimetype )
+{
+    QFile * f = new QFile( fileName );
+    KFilterBase * base = mimetype.isEmpty() ? KFilterBase::findFilterByFileName( fileName )
+                         : KFilterBase::findFilterByMimeType( mimetype );
+    if ( base )
+    {
+        base->setDevice(f, true);
+        return new KFilterDev(base, true);
+    }
+    return f;
+}
+
 bool KFilterDev::open( int mode )
 {
     kdDebug() << "KFilterDev::open " << mode << endl;
-    ASSERT( mode == IO_ReadOnly ); // for now
-    filter->init();
-    bool ret = filter->device()->open( mode );
-    d->ungetchBuffer.resize(0);
+    if ( mode == IO_ReadOnly )
+    {
+        d->buffer.resize(0);
+        d->ungetchBuffer.resize(0);
+    }
+    else
+    {
+        d->buffer.resize( 8*1024 );
+        filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
+    }
     d->bNeedHeader = true;
+    filter->init( mode );
+    bool ret = filter->device()->open( mode );
     d->result = KFilterBase::OK;
 
     if ( !ret )
@@ -84,15 +117,20 @@ bool KFilterDev::open( int mode )
 void KFilterDev::close()
 {
     kdDebug() << "KFilterDev::close" << endl;
+    if ( filter->mode() == IO_WriteOnly )
+        writeBlock( 0L, 0 ); // finish writing
+    kdDebug() << "KFilterDev::close. Calling terminate()." << endl;
 
-    filter->device()->close();
     filter->terminate();
+    kdDebug() << "KFilterDev::close. Terminate() done. Closing device." << endl;
+    filter->device()->close();
 }
 
 void KFilterDev::flush()
 {
     kdDebug() << "KFilterDev::flush" << endl;
     filter->device()->flush();
+    // Hmm, might not be enough...
 }
 
 uint KFilterDev::size() const
@@ -170,11 +208,11 @@ int KFilterDev::readBlock( char *data, uint maxlen )
         {
             // Not sure about the best size to set there.
             // For sure, it should be bigger than the header size (see comment in readHeader)
-            d->inputBuffer.resize( 8*1024 );
+            d->buffer.resize( 8*1024 );
             // Request data from underlying device
-            int size = filter->device()->readBlock( d->inputBuffer.data(),
-                                                    d->inputBuffer.size() );
-            filter->setInBuffer( d->inputBuffer.data(), size );
+            int size = filter->device()->readBlock( d->buffer.data(),
+                                                    d->buffer.size() );
+            filter->setInBuffer( d->buffer.data(), size );
             kdDebug() << "KFilterDev::readBlock got " << size << " bytes from device" << endl;
         }
         if (d->bNeedHeader)
@@ -219,11 +257,82 @@ int KFilterDev::readBlock( char *data, uint maxlen )
 
     return dataReceived;
 }
-int KFilterDev::writeBlock( const char *data, uint len )
+
+int KFilterDev::writeBlock( const char *data /*0 to finish*/, uint len )
 {
-    // not implemented
-    (void) data;
-    return len - len;
+    // If we had an error, return 0.
+    if ( d->result != KFilterBase::OK )
+        return 0;
+
+    bool finish = (data == 0L);
+    if (!finish)
+    {
+        filter->setInBuffer( data, len );
+        if (d->bNeedHeader)
+        {
+            (void)filter->writeHeader( d->origFileName );
+            d->bNeedHeader = false;
+        }
+    }
+
+    uint dataWritten = 0;
+    uint availIn = len;
+    while ( dataWritten < len || finish )
+    {
+
+        d->result = filter->compress( finish );
+
+        if (d->result == KFilterBase::ERROR)
+        {
+            kdDebug() << "KFilterDev: Error when compressing data" << endl;
+            // What to do ?
+            break;
+        }
+
+        // Wrote everything ?
+        if (filter->inBufferEmpty() || (d->result == KFilterBase::END))
+        {
+            // We got that much data since the last time we went here
+            uint wrote = availIn - filter->inBufferAvailable();
+
+            //kdDebug() << " Wrote everything for now. avail_in = " << filter->inBufferAvailable() << " result=" << d->result << " wrote=" << wrote << endl;
+
+            // Move on in the input buffer
+            data += wrote;
+            dataWritten += wrote;
+            ioIndex += wrote;
+
+            availIn = len - dataWritten;
+            kdDebug() << " KFilterDev::writeBlock availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << ioIndex << endl;
+            if ( availIn > 0 ) // Not sure this will ever happen
+                filter->setInBuffer( data, availIn );
+        }
+
+        if (filter->outBufferFull() || (d->result == KFilterBase::END))
+        {
+            kdDebug() << " KFilterDev::writeBlock writing to underlying. avail_out=" << filter->outBufferAvailable() << endl;
+            int towrite = d->buffer.size() - filter->outBufferAvailable();
+            if ( towrite > 0 )
+            {
+                // Write compressed data to underlying device
+                int size = filter->device()->writeBlock( d->buffer.data(), towrite );
+                if ( size != towrite )
+                    kdWarning() << "KFilterDev::writeBlock. Could only write " << size << " out of " << towrite << " bytes" << endl;
+                else
+                    kdDebug() << " KFilterDev::writeBlock wrote " << size << " bytes" << endl;
+            }
+            d->buffer.resize( 8*1024 );
+            filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
+            if (d->result == KFilterBase::END)
+            {
+                kdDebug() << " KFilterDev::writeBlock END" << endl;
+                ASSERT(finish); // hopefully we don't get end before finishing
+                break;
+            }
+        }
+    }
+
+    return dataWritten;
 }
 
 int KFilterDev::getch()
@@ -242,10 +351,12 @@ int KFilterDev::getch()
     return ret;
 }
 
-int KFilterDev::putch( int )
+int KFilterDev::putch( int c )
 {
     kdDebug() << "KFilterDev::putch" << endl;
-    return -1;
+    char buf[1];
+    buf[0] = c;
+    return writeBlock( buf, 1 ) == 1 ? c : -1;
 }
 
 int KFilterDev::ungetch( int ch )
@@ -259,3 +370,7 @@ int KFilterDev::ungetch( int ch )
     return ch;
 }
 
+void KFilterDev::setOrigFileName( const QCString & fileName )
+{
+    d->origFileName = fileName;
+}
