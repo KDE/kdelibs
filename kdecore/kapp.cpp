@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.42  1997/10/05 13:12:24  kalle
+// Coolos patch for creating the directories
+//
 // Revision 1.41  1997/10/05 12:52:40  kalle
 // Three new methods from Mark Donohoe
 //
@@ -573,6 +576,8 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
       else
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
       if (aMiniIconPixmap.isNull()){
+		if (argv[i+1][0] == '/')
+  unregisterMainWidget();
 
 		  aMiniIconPixmap = aIconPixmap;
 		else
@@ -1262,6 +1267,7 @@ void KApplication::unregisterMainWidget()
 	
     ID = (int) mainWidget()->winId();
     IDstr.sprintf("%x", ID);
+	IDstr.prepend("0x");
 	
     Atom type;
     int format;
@@ -1287,9 +1293,9 @@ void KApplication::unregisterMainWidget()
     if( ID ) {
       int i = s.find( IDstr );
       if ( i > 0 )
-        s.remove( i-3, IDstr.length()+3 ); // cut out comma too
+        s.remove( i-1, IDstr.length()+1 ); // cut out comma in front
       else if ( i == 0 )
-        s.remove( i-2, IDstr.length()+2 ); // just cut out the ID
+        s.remove( i, IDstr.length()+1 ); // cut out comma behind
     }
 	
     // write back to porperty
