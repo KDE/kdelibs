@@ -28,7 +28,8 @@ class QListViewItem;
  * This class makes it easy to add a search line for filtering the items in a
  * listview based on a simple text search.
  *
- * No changes to the application other than 
+ * No changes to the application other than instantiating this class with an
+ * appropriate KListView should be needed.
  */
 
 class KListViewSearchLine : public KLineEdit
@@ -36,7 +37,19 @@ class KListViewSearchLine : public KLineEdit
     Q_OBJECT
 
 public:
+
+    /**
+     * Constructs a KListViewSearchLine with \a listView being the KListView to
+     * be filtered.
+     *
+     * If \a listView is null then the widget will be disabled until a listview
+     * is set with setListView().
+     */
     KListViewSearchLine(QWidget *parent = 0, KListView *listView = 0, const char *name = 0);
+
+    /**
+     * Destroys the KListViewSearchLine.
+     */
     virtual ~KListViewSearchLine();
 
     /**
@@ -57,11 +70,15 @@ public:
     /**
      * If this is true (the default) then the parents of matched items will also
      * be shown.
+     *
+     * @see setKeepParentsVisible()
      */
     bool keepParentsVisible() const;
 
     /**
      * Returns the listview that is currently filtered by the search.
+     *
+     * @see setListView()
      */
     KListView *listView() const;
 
@@ -100,14 +117,31 @@ public slots:
     void setSearchColumns(const QValueList<int> &columns);
 
     /**
-     * Sets the KListView that 
+     * Sets the KListView that is filtered by this search line.  If \a lv is null
+     * then the widget will be disabled.
+     *
+     * @see listView()
      */
     void setListView(KListView *lv);
 
 protected:
+
+    /**
+     * Returns true if \a item matches the search \a s.  This will be evaluated
+     * based on the value of caseSensitive().  This can be overridden in
+     * subclasses to implement more complicated matching schemes.
+     */
     virtual bool itemMatches(const QListViewItem *item, const QString &s) const;
 
 private:
+
+    /**
+     * This is used recursively to evalute matching items.  It makes a recusive
+     * call to each sibling and also to all children.  In the case of an item
+     * with children it first places the current item on the "parent stack" before
+     * the recursive calls and pops it off after the call returns to build a stack
+     * of parents for each matched item.
+     */
     void checkItem(QListViewItem *item);
 
 private slots:
