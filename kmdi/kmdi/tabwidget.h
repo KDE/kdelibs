@@ -7,22 +7,25 @@
 //
 //----------------------------------------------------------------------------
 
-#ifndef _KMDI_DOCUMENT_VIEW_TAB_WIDGET_H_
-#define _KMDI_DOCUMENT_VIEW_TAB_WIDGET_H_
+#ifndef _KMDI_TABWIDGET_H_
+#define _KMDI_TABWIDGET_H_
 
 #include <ktabwidget.h>
 #include <kmdi/global.h>
 
 class KPopupMenu;
 
+namespace KMDI
+{
+
 //KDE4: Add a d pointer
-class KMdiDocumentViewTabWidget:
+class TabWidget :
  public KTabWidget
 {
 	Q_OBJECT
 public:
-	KMdiDocumentViewTabWidget(QWidget* parent, const char* name=0);
-	~KMdiDocumentViewTabWidget();
+	TabWidget(QWidget* parent, const char* name=0);
+	~TabWidget();
 
 	virtual void addTab ( QWidget * child, const QString & label );
 	virtual void addTab ( QWidget * child, const QIconSet & iconset, const QString & label );
@@ -45,6 +48,6 @@ private:
 	KMdi::TabWidgetVisibility m_visibility;
 };
 
-
+}
 
 #endif

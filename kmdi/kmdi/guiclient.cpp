@@ -32,9 +32,9 @@
 #include <kdebug.h>
 #include <kdockwidget.h>
 #include <kdeversion.h>
-#include "kmdimainfrm.h"
-#include "kmditoolviewaccessor.h"
-#include "kmditoolviewaccessor_p.h"
+#include "mainwindow.h"
+#include "toolviewaccessor.h"
+#include "toolviewaccessor_p.h"
 namespace
 {
     const char *actionListName = "show_kmdi_document_tool_view_actions";
@@ -57,7 +57,7 @@ using namespace KMDIPrivate;
 
 
 
-ToggleToolViewAction::ToggleToolViewAction( const QString& text, const KShortcut& cut,KDockWidget *dw, KMdiMainFrm *mdiMainFrm,
+ToggleToolViewAction::ToggleToolViewAction( const QString& text, const KShortcut& cut,KDockWidget *dw, KMDI::MainWindow *mdiMainFrm,
 	QObject* parent, const char* name )
         :KToggleAction(text,cut,parent,name),m_dw(dw),m_mdiMainFrm(mdiMainFrm)
 {
@@ -102,7 +102,7 @@ void ToggleToolViewAction::slotWidgetDestroyed()
 }
 
 
-KMDIGUIClient::KMDIGUIClient(KMdiMainFrm* mdiMainFrm,bool showMDIModeAction, const char* name): QObject( mdiMainFrm,name ),
+KMDIGUIClient::KMDIGUIClient(KMDI::MainWindow* mdiMainFrm,bool showMDIModeAction, const char* name): QObject( mdiMainFrm,name ),
 KXMLGUIClient( mdiMainFrm )
 {
    m_mdiMode=KMdi::ChildframeMode;

@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------
-//    filename             : kmdimainfrm.cpp
+//    filename             : MainWindow.cpp
 //----------------------------------------------------------------------------
 //    Project              : KDE MDI extension
 //
@@ -35,6 +35,8 @@
  */
 #include "config.h"
 
+#include "tabwidget.h"
+
 #include <assert.h>
 
 #include <qcursor.h>
@@ -66,49 +68,35 @@
 #include "mainwindow.h"
 #include "dockcontainer.h"
 #include "toolviewaccessor_p.h"
-#include "tabwidget.h"
+
 #include "guiclient.h"
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#ifndef NO_KDE
-#include <X11/X.h> // schroder
-#include <X11/Xlib.h> // schroder
-#endif
 
-#ifdef KeyRelease
-/* I hate the defines in the X11 header files. Get rid of one of them */
-#undef KeyRelease
-#endif
 
-#ifdef KeyPress
-/* I hate the defines in the X11 header files. Get rid of one of them */
-#undef KeyPress
-#endif
-#endif // Q_WS_X11 && ! K_WS_QTONLY
+KMdi::FrameDecor KMDI::MainWindow::m_frameDecoration = KMdi::KDELook;
 
-using namespace KParts;
+//KMdi::MdiMode MainWindow::m_mdiMode = KMdi::ChildframeMode;
 
-KMdi::FrameDecor KMdiMainFrm::m_frameDecoration = KMdi::KDELook;
-
-//KMdi::MdiMode KMdiMainFrm::m_mdiMode = KMdi::ChildframeMode;
-
-class KMdiMainFrmPrivate {
+class MainWindowPrivate {
 public:
-  KMdiMainFrmPrivate() {
+  MainWindowPrivate() {
     for (int i=0;i<4;i++) {
       activeDockPriority[i]=0;
       m_styleIDEAlMode = 0;
       m_toolviewStyle = 0;
     }
   }
-  ~KMdiMainFrmPrivate() {}
+  ~MainWindowPrivate() {}
   KMdiDockContainer* activeDockPriority[4];
   int m_styleIDEAlMode;
   int m_toolviewStyle;
 };
 
+namespace KMDI
+{
+
 //============ constructor ============//
-KMdiMainFrm::KMdiMainFrm(QWidget* parentWidget, const char* name, KMdi::MdiMode mdiMode,WFlags flags)
+MainWindow::MainWindow(QWidget* parentWidget, const char* name, WFlags flags)
 : KParts::DockMainWindow( parentWidget, name, flags)
    ,m_mdiMode(KMdi::UndefinedMode)
    ,m_pWindowPopup(0L)
@@ -140,12 +128,11 @@ KMdiMainFrm::KMdiMainFrm(QWidget* parentWidget, const char* name, KMdi::MdiMode 
    ,m_rightContainer(0)
    ,m_topContainer(0)
    ,m_bottomContainer(0)
-   ,d(new KMdiMainFrmPrivate())
+   ,d(new MainWindowPrivate())
    ,m_mdiGUIClient(0)
    ,m_managedDockPositionMode(false)
-   ,m_documentTabWidget(0)
 {
-  kdDebug()<<"=== KMdiMainFrm() ==="<<endl;
+  kdDebug()<<"=== MainWindow() ==="<<endl;
   // Create the local lists of windows
   m_pToolViews = new QMap<QWidget*,KMdiToolViewAccessor*>;
 
@@ -165,9 +152,6 @@ KMdiMainFrm::KMdiMainFrm(QWidget* parentWidget, const char* name, KMdi::MdiMode 
   setView(m_pDockbaseAreaOfDocumentViews);
   setMainDockWidget(m_pDockbaseAreaOfDocumentViews);
 
-  // Apply options for the MDI manager
-  applyOptions();
-
   m_pTaskBarPopup=new QPopupMenu( this, "taskbar_popup_menu");
   m_pWindowPopup=new QPopupMenu( this, "window_popup_menu");
 
@@ -183,12 +167,7 @@ KMdiMainFrm::KMdiMainFrm(QWidget* parentWidget, const char* name, KMdi::MdiMode 
 
   m_pPlacingMenu = new QPopupMenu( this, "placing_menu");
 
-  // the MDI view taskbar
-  createTaskBar();
 
-  // this is only a hack, but prevents us from crash because the buttons are otherwise
-  // not created before we switch the modes where we need them !!!
-  setMenuForSDIModeSysButtons(menuBar());
 
 
       switchToIDEAlMode();
@@ -199,7 +178,7 @@ KMdiMainFrm::KMdiMainFrm(QWidget* parentWidget, const char* name, KMdi::MdiMode 
   connect(m_pDragEndTimer, SIGNAL(timeout()), this, SLOT(dragEndTimeOut()));
 }
 
-void KMdiMainFrm::setStandardMDIMenuEnabled(bool showModeMenu) {
+void MainWindow::setStandardMDIMenuEnabled(bool showModeMenu) {
   m_mdiGUIClient=new KMDIPrivate::KMDIGUIClient(this,showModeMenu);
   connect(m_mdiGUIClient,SIGNAL(toggleTop()),this,SIGNAL(toggleTop()));
   connect(m_mdiGUIClient,SIGNAL(toggleLeft()),this,SIGNAL(toggleLeft()));
@@ -220,8 +199,8 @@ void KMdiMainFrm::setStandardMDIMenuEnabled(bool showModeMenu) {
   emit mdiModeHasBeenChangedTo(m_mdiMode);
 }
 
-//============ ~KMdiMainFrm ============//
-KMdiMainFrm::~KMdiMainFrm()
+//============ ~MainWindow ============//
+MainWindow::~MainWindow()
 {
   emit lastChildViewClosed();
   delete m_pToolViews;
@@ -246,17 +225,8 @@ KMdiMainFrm::~KMdiMainFrm()
   d=0;
 }
 
-//============ applyOptions ============//
-#ifdef __GNUC__
-#warning fixme
-#endif
-void KMdiMainFrm::applyOptions()
-{
-
-}
-
 //============ createMdiManager ============//
-void KMdiMainFrm::createMdiManager()
+void MainWindow::createMdiManager()
 {
   // dummy TODO
   /*KDockWidget *w = createDockWidget("muh", SmallIcon("view_tree"), this);
@@ -271,16 +241,7 @@ void KMdiMainFrm::createMdiManager()
   m_centralView->show();*/
 }
 
-//============ createTaskBar ==============//
-void KMdiMainFrm::createTaskBar()
-{
-}
-
-void KMdiMainFrm::slot_toggleTaskBar()
-{
-}
-
-void KMdiMainFrm::resizeEvent(QResizeEvent *e)
+void MainWindow::resizeEvent(QResizeEvent *e)
 {
   if( (m_mdiMode == KMdi::ToplevelMode) && !parentWidget())
     if( e->oldSize().height() != e->size().height()) {
@@ -293,32 +254,32 @@ void KMdiMainFrm::resizeEvent(QResizeEvent *e)
 
 //================ setMinimumSize ===============//
 
-void KMdiMainFrm::setMinimumSize( int minw, int minh)
+void MainWindow::setMinimumSize( int minw, int minh)
 {
   if( (m_mdiMode == KMdi::ToplevelMode) && !parentWidget())
     return;
   DockMainWindow::setMinimumSize( minw, minh);
 }
 
-KMdiToolViewAccessor *KMdiMainFrm::createToolWindow()
+KMdiToolViewAccessor *MainWindow::createToolWindow()
 {
   return new KMdiToolViewAccessor(this);
 }
 
 
-void KMdiMainFrm::deleteToolWindow( QWidget* pWnd) {
+void MainWindow::deleteToolWindow( QWidget* pWnd) {
   if (m_pToolViews->contains(pWnd)) {
     deleteToolWindow((*m_pToolViews)[pWnd]);
   }
 }
 
-void KMdiMainFrm::deleteToolWindow( KMdiToolViewAccessor *accessor) {
+void MainWindow::deleteToolWindow( KMdiToolViewAccessor *accessor) {
   if (!accessor) return;
   delete accessor;
 }
 
 //============ addWindow ============//
-KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos, QWidget* pTargetWnd, int percent, const QString& tabToolTip, const QString& tabCaption)
+KMdiToolViewAccessor *MainWindow::addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos, QWidget* pTargetWnd, int percent, const QString& tabToolTip, const QString& tabCaption)
 {
   QWidget *tvta=pWnd;
   KDockWidget* pDW = dockManager->getDockWidgetFromName(pWnd->name());
@@ -355,87 +316,8 @@ KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::Do
   return mtva;
 }
 
-void KMdiMainFrm::slotDocCurrentChanged(QWidget* pWidget)
-{
-
-}
-
-bool KMdiMainFrm::eventFilter(QObject * /*obj*/, QEvent *e )
-{
-#if 0
-  if( e->type() == QEvent::FocusIn) {
-    QFocusEvent* pFE = (QFocusEvent*) e;
-    if (pFE->reason() == QFocusEvent::ActiveWindow) {
-      if (m_pCurrentWindow && !m_pCurrentWindow->isHidden() && !m_pCurrentWindow->isAttached() && m_pMdi->topChild()) {
-        return true;   // eat the event
-      }
-    }
-    if (m_pMdi) {
-      static bool bFocusTCIsPending = false;
-      if (!bFocusTCIsPending) {
-        bFocusTCIsPending = true;
-        m_pMdi->focusTopChild();
-        bFocusTCIsPending = false;
-      }
-    }
-  } else if (e->type() == QEvent::KeyRelease) {
-    if (switching()) {
-      KAction *a = actionCollection()->action( "view_last_window" ) ;
-      if (a) {
-        const KShortcut cut( a->shortcut() );
-        const KKeySequence& seq = cut.seq( 0 );
-        const KKey& key = seq.key(0);
-        int modFlags = key.modFlags();
-        int state = ((QKeyEvent *)e)->state();
-        KKey key2( (QKeyEvent *)e );
-
-        /** these are quite some assumptions:
-         *   The key combination uses exactly one modifier key
-         *   The WIN button in KDE is the meta button in Qt
-         **/
-        if (state != ((QKeyEvent *)e)->stateAfter() &&
-            ((modFlags & KKey::CTRL) > 0) == ((state & Qt::ControlButton) > 0 ) &&
-            ((modFlags & KKey::ALT) > 0)  == ((state & Qt::AltButton) > 0)      &&
-            ((modFlags & KKey::WIN) > 0)  == ((state & Qt::MetaButton) > 0) )
-        {
-          activeWindow()->updateTimeStamp();
-          setSwitching(false);
-        }
-        return true;
-      } else {
-        kdDebug(9000) << "KAction( \"view_last_window\") not found." << endl;
-      }
-    }
-  }
-
-#endif
-  return false;  // standard event processing
-}
-
-/**
- * close all views
- */
-void KMdiMainFrm::closeAllViews()
-{
-}
-
-
-/**
- * iconify all views
- */
-void KMdiMainFrm::iconifyAllViews()
-{
-}
-
-/**
- * closes the view of the active (topchild) window
- */
-void KMdiMainFrm::closeActiveView()
-{
-}
-
 /** find the root dockwidgets and store their geometry */
-void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList)
+void MainWindow::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList, QValueList<QRect>* pPositionList)
 {
   if (!pRootDockWidgetList) return;
   if (!pPositionList) return;
@@ -502,7 +384,7 @@ void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList
   delete pObjList;
 }
 
-void KMdiMainFrm::setIDEAlModeStyle(int flags)
+void MainWindow::setIDEAlModeStyle(int flags)
 {
   d->m_styleIDEAlMode = flags; // see KMultiTabBar for the first 3 bits
   if (m_leftContainer) {
@@ -526,7 +408,7 @@ void KMdiMainFrm::setIDEAlModeStyle(int flags)
   }
 }
 
-void KMdiMainFrm::setToolviewStyle(int flag)
+void MainWindow::setToolviewStyle(int flag)
 {
   if (m_mdiMode == KMdi::IDEAlMode) {
     setIDEAlModeStyle(flag);
@@ -560,8 +442,8 @@ void KMdiMainFrm::setToolviewStyle(int flag)
     //workaround for the above FIXME to make switching to TextOnly mode work in IDEAl as well. Be sure that this version of switch* is called.
     if (m_mdiMode == KMdi::IDEAlMode && flag == KMdi::TextOnly)
     {
-   /*   KMdiMainFrm::switchToTabPageMode();
-      KMdiMainFrm::switchToIDEAlMode();*/ //TODO
+   /*   MainWindow::switchToTabPageMode();
+      MainWindow::switchToIDEAlMode();*/ //TODO
     } else
     {
       writeDockConfig();
@@ -573,7 +455,7 @@ void KMdiMainFrm::setToolviewStyle(int flag)
 /**
  * Docks all view windows (Windows-like)
  */
-void KMdiMainFrm::switchToIDEAlMode()
+void MainWindow::switchToIDEAlMode()
 {
   kdDebug(760)<<"SWITCHING TO IDEAL"<<endl;
 
@@ -590,7 +472,7 @@ void KMdiMainFrm::switchToIDEAlMode()
 }
 
 
-void KMdiMainFrm::dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container) {
+void MainWindow::dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container) {
   for ( KDockWidget *dw = widgetsToReparent.first(); dw;
       dw=widgetsToReparent.next()){
     dw->manualDock(container,KDockWidget::DockCenter,20);
@@ -598,7 +480,7 @@ void KMdiMainFrm::dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToRe
   }
 }
 
-void KMdiMainFrm::findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw) {
+void MainWindow::findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw) {
   KDockWidget *mainDock=getMainDockWidget();
   if (mainDock->parentDockTabGroup()) {
     mainDock=dynamic_cast<KDockWidget*>(mainDock->parentDockTabGroup()->parent());
@@ -628,7 +510,7 @@ void KMdiMainFrm::findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWid
 }
 
 
-void KMdiMainFrm::setupToolViewsForIDEALMode()
+void MainWindow::setupToolViewsForIDEALMode()
 {
   m_leftContainer = createDockWidget("KMdiDock::leftDock",SmallIcon("misc"),0L,"Left Dock");
   m_rightContainer = createDockWidget("KMdiDock::rightDock",SmallIcon("misc"),0L,"Right Dock");
@@ -722,7 +604,7 @@ void KMdiMainFrm::setupToolViewsForIDEALMode()
 
 
 
-void KMdiMainFrm::finishIDEAlMode(bool full)
+void MainWindow::finishIDEAlMode()
 {
   // if tabified, release all views from their docking covers
   if (m_mdiMode == KMdi::IDEAlMode) {
@@ -773,7 +655,7 @@ void KMdiMainFrm::finishIDEAlMode(bool full)
 
 }
 
-QStringList KMdiMainFrm::prepareIdealToTabs(KDockWidget* container) {
+QStringList MainWindow::prepareIdealToTabs(KDockWidget* container) {
   KDockContainer* pDW = dynamic_cast<KDockContainer*>(container->getWidget());
   QStringList widgetNames=((KMdiDockContainer*)pDW)->containedWidgets();
   for (QStringList::iterator it=widgetNames.begin();it!=widgetNames.end();++it) {
@@ -785,7 +667,7 @@ QStringList KMdiMainFrm::prepareIdealToTabs(KDockWidget* container) {
   return widgetNames;
 }
 
-void KMdiMainFrm::idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int size) {
+void MainWindow::idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int size) {
   Q_UNUSED(size)
 
   KDockWidget *mainDock=getMainDockWidget();
@@ -824,20 +706,7 @@ void KMdiMainFrm::idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidg
 
 }
 
-
-/**
- * redirect the signal for insertion of buttons to an own slot
- * that means: If the menubar (where the buttons should be inserted) is given,
- *             QextMDI can insert them automatically.
- *             Otherwise only signals can be emitted to tell the outside that
- *             someone must do this job itself.
- */
-void KMdiMainFrm::setMenuForSDIModeSysButtons( KMenuBar* pMenuBar)
-{
-
-}
-
-void KMdiMainFrm::setSysButtonsAtMenuPosition()
+void MainWindow::setSysButtonsAtMenuPosition()
 {
   if( m_pMainMenuBar == 0L)
     return;
@@ -871,61 +740,9 @@ void KMdiMainFrm::setSysButtonsAtMenuPosition()
   }
 }
 
-/** Activates the next open view */
-void KMdiMainFrm::activateNextWin()
-{
-
-}
-
-/** Activates the previous open view */
-void KMdiMainFrm::activatePrevWin()
-{
-
-}
-
-/** Activates the view we accessed the most time ago */
-void KMdiMainFrm::activateFirstWin()
-{
-
-}
-
-/** Activates the previously accessed view before this one was activated */
-void KMdiMainFrm::activateLastWin()
-{
-
-}
-
-/** Activates the view with a certain index (TabPage mode only) */
-void KMdiMainFrm::activateView(int index)
-{
-
-}
-
-/** turns the system buttons for maximize mode (SDI mode) on, and connects them with the current child frame */
-void KMdiMainFrm::setEnableMaximizedChildFrmMode(bool bEnable)
-{
-
-}
-
-/** Shows the view taskbar. This should be connected with your "View" menu. */
-bool KMdiMainFrm::isViewTaskBarOn()
-{
-  bool bOn = false;
-  return bOn;
-}
-
-/** Shows the view taskbar. This should be connected with your "View" menu. */
-void KMdiMainFrm::showViewTaskBar()
-{
-}
-
-/** Hides the view taskbar. This should be connected with your "View" menu. */
-void KMdiMainFrm::hideViewTaskBar()
-{
-}
 
 //=============== fillWindowMenu ===============//
-void KMdiMainFrm::fillWindowMenu()
+void MainWindow::fillWindowMenu()
 {
   bool bTabPageMode = false;
   if (m_mdiMode == KMdi::TabPageMode)
@@ -979,57 +796,12 @@ void KMdiMainFrm::fillWindowMenu()
   m_pWindowMenu->insertSeparator();
 }
 
-//================ windowMenuItemActivated ===============//
-
-void KMdiMainFrm::windowMenuItemActivated(int id)
-{
-
-}
-
-//================ dockMenuItemActivated ===============//
-
-void KMdiMainFrm::dockMenuItemActivated(int id)
-{
-}
-
-//================ popupWindowMenu ===============//
-
-void KMdiMainFrm::popupWindowMenu(QPoint p)
-{
-  if (!isFakingSDIApplication()) {
-    m_pWindowMenu->popup( p);
-  }
-}
-
-//================ dragEndTimeOut ===============//
-void KMdiMainFrm::dragEndTimeOut()
-{
-
-}
-
-//================ setFrameDecorOfAttachedViews ===============//
-
-void KMdiMainFrm::setFrameDecorOfAttachedViews( int frameDecor)
-{
-
-}
-
-void KMdiMainFrm::fakeSDIApplication()
-{
-  m_bSDIApplication = true;
-}
-
-void KMdiMainFrm::closeViewButtonPressed()
-{
-
-}
-
-void KMdiMainFrm::setManagedDockPositionModeEnabled(bool enabled)
+void MainWindow::setManagedDockPositionModeEnabled(bool enabled)
 {
   m_managedDockPositionMode=enabled;
 }
 
-void KMdiMainFrm::setActiveToolDock(KMdiDockContainer* td) {
+void MainWindow::setActiveToolDock(KMdiDockContainer* td) {
   if (td==d->activeDockPriority[0]) return;
   if (d->activeDockPriority[0]==0) {
     d->activeDockPriority[0]=td;
@@ -1046,7 +818,7 @@ void KMdiMainFrm::setActiveToolDock(KMdiDockContainer* td) {
   d->activeDockPriority[0]=td;
 }
 
-void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
+void MainWindow::removeFromActiveDockList(KMdiDockContainer* td) {
   for (int i=0;i<4;i++) {
     if (d->activeDockPriority[i]==td) {
       for (;i<3;i++)
@@ -1064,35 +836,18 @@ void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
    */
 }
 
-void KMdiMainFrm::prevToolViewInDock() {
+void MainWindow::prevToolViewInDock() {
   KMdiDockContainer* td=d->activeDockPriority[0];
   if (!td) return;
   td->prevToolView();
 }
 
-void KMdiMainFrm::nextToolViewInDock() {
+void MainWindow::nextToolViewInDock() {
   KMdiDockContainer* td=d->activeDockPriority[0];
   if (!td) return;
   td->nextToolView();
 }
 
-KMdi::TabWidgetVisibility KMdiMainFrm::tabWidgetVisibility()
-{
-  if ( m_documentTabWidget )
-    return m_documentTabWidget->tabWidgetVisibility();
-
-  return KMdi::NeverShowTabs;
-}
-
-void KMdiMainFrm::setTabWidgetVisibility( KMdi::TabWidgetVisibility visibility )
-{
-  if ( m_documentTabWidget )
-    m_documentTabWidget->setTabWidgetVisibility( visibility );
-}
-
-KTabWidget * KMdiMainFrm::tabWidget() const
-{
-  return m_documentTabWidget;
 }
 
 

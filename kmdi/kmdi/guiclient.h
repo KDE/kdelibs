@@ -29,7 +29,9 @@
 class KMainWindow;
 class KToolBar;
 class KMdiToolViewAccessor;
-class KMdiMainFrm;
+namespace KMDI {
+  class MainWindow;
+    }
 class KDockWidget;
 
 namespace KMDIPrivate {
@@ -39,7 +41,7 @@ class KMDIGUIClient : public QObject,
 {
     Q_OBJECT
 public:
-    KMDIGUIClient( KMdiMainFrm *mdiMainFrm, bool showMDIModeAction, const char *name = 0 );
+    KMDIGUIClient( KMDI::MainWindow *mdiMainFrm, bool showMDIModeAction, const char *name = 0 );
     virtual ~KMDIGUIClient();
 
     void addToolView(KMdiToolViewAccessor*);
@@ -61,7 +63,7 @@ private:
     KMDIGUIClientPrivate *d;
     KMdi::MdiMode m_mdiMode;
 
-    QGuardedPtr<KMdiMainFrm> m_mdiMainFrm;
+    QGuardedPtr<KMDI::MainWindow> m_mdiMainFrm;
     QPtrList<KAction> m_toolViewActions;
     QPtrList<KAction> m_documentViewActions;
 
@@ -77,14 +79,14 @@ class ToggleToolViewAction:public KToggleAction
 {
 Q_OBJECT
 public:
-        ToggleToolViewAction( const QString& text, const KShortcut& cut = KShortcut(),KDockWidget *dw=0,KMdiMainFrm *mdiMainFrm=0,
+        ToggleToolViewAction( const QString& text, const KShortcut& cut = KShortcut(),KDockWidget *dw=0,KMDI::MainWindow *mdiMainFrm=0,
 		QObject* parent = 0, const char* name = 0 );
 
         virtual ~ToggleToolViewAction();
 
 private:
         KDockWidget *m_dw;
-        KMdiMainFrm *m_mdiMainFrm;
+        KMDI::MainWindow *m_mdiMainFrm;
 protected slots:
         void slotToggled(bool);
         void anDWChanged();

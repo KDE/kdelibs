@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------
-//    filename             : kmdimainfrm.h
+//    filename             : MainWindow.h
 //----------------------------------------------------------------------------
 //    Project              : KDE MDI extension
 //
@@ -28,8 +28,8 @@
 //
 //----------------------------------------------------------------------------
 
-#ifndef _KMDIMAINFRM_H_
-#define _KMDIMAINFRM_H_
+#ifndef _KMDI_MAINWINDOW_H_
+#define _KMDI_MAINWINDOW_H_
 
 #include <kparts/dockmainwindow.h>
 #include <kmenubar.h>
@@ -46,7 +46,7 @@
 class QTimer;
 class QPopupMenu;
 class QMenuBar;
-#include "kmditoolviewaccessor.h"
+#include <kmdi/toolviewaccessor.h>
 
 class QToolButton;
 
@@ -55,137 +55,12 @@ namespace KMDIPrivate {
 }
 
 class KMdiDockContainer;
-class KMdiMainFrmPrivate;
+class MainWindowPrivate;
 
-/**
-  * @short Base class for all your special main frames.
-  *
-  * It contains the child frame area (QMainWindow's central widget) and a child view taskbar
-  * for switching the MDI views. Most methods are virtual functions for later overriding.
-  *
-  * Basically, this class provides functionality for docking/undocking view windows and
-  * manages the taskbar. Usually the programmer just need to know about this class and the child view class.
-  *
-  * Your program mainwidget should inherit KMdiMainFrm. Then usually you'll just need
-  * addWindow() and removeWindowFromMdi() to control the views.
-  *   \code
-  *   class MyMainWindow : public KMdiMainFrm
-  *   { .... };
-  *   ...
-  *   MyMainWindow mainframe;
-  *   qApp->setMainWidget(&mainframe);
-  *   mainframe->addWindow(view1); // put it under MDI control
-  *   mainframe->addWindow(view2);
-  *   \endcode
-  *
-  * Most public and protected methods of this class are for program calls of the actions
-  * the user could click.<br>
-  *
-  * Dynamic switching the MDI mode can be done via switchToChildframeMode(), switchToToplevelMode(),
-  * switchToTabPageMode() or fakeSDIApplication() or asked via mdiMode(), isFakingSDIApplication().
-  *
-  * This class provides already the "Window" menu needed in common MDI applications. Just
-  * insert it in your main menu:
-  * \code
-  * if (!isFakingSDIApplication()) {
-  *    menuBar()->insertItem( tr("&Window"), windowMenu());
-  * }
-  * \endcode
-  *
-  * Synchronize the positions of the MDI control buttons inserted in your mainmenu:
-  * \code
-  * void B_MainModuleWidget::initMenuBar()
-  * {
-  *   setMenuForSDIModeSysButtons( menuBar());
-  * ...
-  * void B_MainModuleWidget::resizeEvent ( QResizeEvent *e)
-  * {
-  *   KMdiMainFrm::resizeEvent( e);
-  *   setSysButtonsAtMenuPosition();
-  * }
-  * \endcode
-  *
-  * You can dynamically change the shape of the attached MDI views using setFrameDecorOfAttachedViews().
-  *
-  * Additionally, here's a hint how to restore the mainframe's settings from config file:
-  * \code
-  *
-  *    // restore MDI mode (toplevel, childframe, tabpage)
-  *    int mdiMode = config->readIntEntry( "mainmodule session", "MDI mode", KMdi::ChildframeMode);
-  *    switch (mdiMode) {
-  *    case KMdi::ToplevelMode:
-  *       {
-  *          int childFrmModeHt = config->readIntEntry( "mainmodule session", "Childframe mode height", desktop()->height() - 50);
-  *          mainframe->resize( m_pMdiMainFrm->width(), childFrmModeHt);
-  *          mainframe->switchToToplevelMode();
-  *       }
-  *       break;
-  *    case KMdi::ChildframeMode:
-  *       break;
-  *    case KMdi::TabPageMode:
-  *       {
-  *          int childFrmModeHt = m_pCfgFileManager->readIntEntry( "mainmodule session", "Childframe mode height", desktop()->height() - 50);
-  *          mainframe->resize( m_pMdiMainFrm->width(), childFrmModeHt);
-  *          mainframe->switchToTabPageMode();
-  *       }
-  *       break;
-  *    default:
-  *       break;
-  *    }
-  *
-  *    // restore a possible maximized Childframe mode
-  *    bool maxChildFrmMode = config->readBoolEntry( "mainmodule session", "maximized childframes", true);
-  *    mainframe->setEnableMaximizedChildFrmMode(maxChildFrmMode);
-  * \endcode
-  * The maximized-Childframe mode means that currently all views are maximized in Childframe mode's application desktop.
-  *
-  * This class provides placing algorithms in Childframe mode. Call tilePragma(), tileAnodine(), tileVertically(),
-  * cascadeWindows(), cascadeMaximized(), expandVertical(), expandHorizontal() for those actions.
-  *
-  * activateView(KMdiChildView*) and activateView(int index) set the appropriate MDI child view as the active
-  * one. It will be raised, gets an active MDI frame and gets the focus. Call activeView() to find out what the
-  * current MDI view is.
-  *
-  * Use detachWindow() and attachWindow() for docking the MDI views to desktop and back.
-  *
-  * Connect accels of your program with activatePrevWin(), activateNextWin() and activateView(int index).
-  *
-  * Note: KMdiChildViews can be added in 2 meanings: Either as a normal child view (usually containing
-  * user document views) or as a tool-view (usually containing status, info or control widgets).
-  * The tool-views can be added as floating dockwidgets or as stay-on-top desktop windows in tool style.
-  *
-  * Here's an example how you can suggest things for the adding of views to the MDI control via flags:
-  * \code
-  * m_mapOfMdiWidgets.insert( pWnd, mh);
-  * unsigned int mdiFlags = KMdi::StandardAdd;
-  * if( !bShow)
-  *    mdiFlags |= KMdi::Hide;
-  * if( !bAttach)
-  *    mdiFlags |= KMdi::Detach;
-  * if( bMinimize)
-  *    mdiFlags |= KMdi::Minimize;
-  * if( bToolWindow)
-  *    mdiFlags |= KMdi::ToolWindow;
-  * if (m_pMdiMainFrm->isFakingSDIApplication()) {
-  *    if (bAttach) { // fake an SDI app
-  *       mdiFlags |= KMdi::Maximize;
-  *    }
-  *    else {
-  *       m_pMdiMainFrm->addWindow( pWnd, QPoint(20, 20), KMdi::AddWindowFlags(mdiFlags));
-  *       return;
-  *    }
-  * }
-  * m_pMdiMainFrm->addWindow( pWnd, KMdi::AddWindowFlags(mdiFlags));
-  * \endcode
-  *
-  * Further note: Pay attention to the fact that when you click on the close button of MDI views that their
-  * close event should be redirected to closeWindow(). Otherwise the mainframe class will
-  * not get noticed about the deleted view and a dangling pointer will remain in the MDI control. The
-  * closeWindow() or the removeWindowFromMdi() method is for that issue. The difference is closeWindow()
-  * deletes the view object. So if your application wants to control that by itself, call removeWindowFromMdi()
-  * and call delete by yourself. See also KMdiChildView::closeEvent() for tat issue.
-  */
-class KMdiMainFrm : public KParts::DockMainWindow
+namespace KMDI
+{
+
+class MainWindow : public KParts::DockMainWindow
 {
    Q_OBJECT
 
@@ -234,41 +109,31 @@ protected:
 
 
 private:
-   KMdiMainFrmPrivate*     d;
+   MainWindowPrivate*     d;
    KMDIPrivate::KMDIGUIClient*     m_mdiGUIClient;
    bool m_managedDockPositionMode;
 
 // methods
 public:
-  QWidget *centralWidget () { return m_centralView; };
-
+   QWidget *centralWidget () { return m_centralView; };
 
    /**
    * Constructor.
    */
-   KMdiMainFrm( QWidget* parentWidget, const char* name = "", KMdi::MdiMode mdiMode=KMdi::ChildframeMode,WFlags flags = WType_TopLevel | WDestructiveClose);
+   MainWindow( QWidget* parentWidget, const char* name = "", WFlags flags = WType_TopLevel | WDestructiveClose);
    /**
    * Destructor.
    */
-   virtual ~KMdiMainFrm();
+   virtual ~MainWindow();
 
    void setStandardMDIMenuEnabled(bool showModeMenu=true);
 
    void setManagedDockPositionModeEnabled(bool enabled);
 
    /**
-   * Returns whether the application's MDI views are in maximized state or not.
-   */
-   bool isInMaximizedChildFrmMode() { return m_bMaximizedChildFrmMode; };
-   /**
    * Returns the MDI mode. This can be one of the enumerations KMdi::MdiMode.
    */
    KMdi::MdiMode mdiMode() { return m_mdiMode; };
-
-   /**
-   * Called in the constructor (forces a resize of all MDI views)
-   */
-   virtual void applyOptions();
 
    /**
    * Returns whether this MDI child view is under MDI control (using addWindow() ) or not.
@@ -302,33 +167,12 @@ public:
    * Returns the Childframe mode height of this. Makes only sense when in Toplevel mode.
    */
    int childFrameModeHeight() { return m_oldMainFrmHeight; };
-   /**
-   * Tells the MDI system a QMenu where it can insert buttons for
-   * the system menu, undock, minimize, restore actions.
-   * If no such menu is given, KMdi simply overlays the buttons
-   * at the upper right-hand side of the main widget.
-   */
-   virtual void setMenuForSDIModeSysButtons( KMenuBar* = 0);
 
   /**
    * @return the decoration of the window frame of docked (attached) MDI views
    */
    static int frameDecorOfAttachedViews() { return m_frameDecoration; };
-   /**
-   * An SDI application user interface is faked:
-   * @li an opened view is always maximized
-   * @li buttons for maximized childframe mode aren't inserted in the main menubar
-   * @li taskbar and windowmenu are not created/updated
-   */
-   void fakeSDIApplication();
-   /**
-   * @returns if we are faking an SDI application (fakeSDIApplication())
-   */
-   bool isFakingSDIApplication() const { return m_bSDIApplication; };
-   /**
-   *
-   */
-   virtual bool eventFilter(QObject *obj, QEvent *e );
+
    /**
    *
    */
@@ -352,33 +196,15 @@ public slots:
    KMdiToolViewAccessor *createToolWindow();
 
    /**
-   * Switches the KMdiTaskBar on and off.
-   */
-   virtual void slot_toggleTaskBar();
-
-   /**
-   * Close all views
-   */
-   virtual void closeAllViews();
-   /**
-   * Iconfiy all views
-   */
-   virtual void iconifyAllViews();
-   /**
-   * Closes the view of the active (topchild) window
-   */
-   virtual void closeActiveView();
-
-   /**
     * Docks all view windows. Toolviews use dockcontainers
     */
-   virtual void switchToIDEAlMode();
-   virtual void finishIDEAlMode(bool full=true);
+   void switchToIDEAlMode();
+   void finishIDEAlMode();
    /**
     * Sets the appearance of the IDEAl mode. See KMultiTabBar styles for the first 3 bits.
     * @deprecated use setToolviewStyle(int flags) instead
     */
-   void setIDEAlModeStyle(int flags) KDE_DEPRECATED;
+   void setIDEAlModeStyle(int flags);
    //KDE4: Get rid of the above.
    /**
     * Sets the appearance of the toolview tabs.
@@ -386,57 +212,15 @@ public slots:
     * @since 3.3
     */
    void setToolviewStyle(int flags);
-   /*
-   * @return if the view taskbar should be shown if there are MDI views
-   */
-   bool isViewTaskBarOn();
-   /**
-   * Shows the view taskbar. This should be connected with your "View" menu.
-   */
-   virtual void showViewTaskBar();
-   /**
-   * Hides the view taskbar. This should be connected with your "View" menu.
-   */
-   virtual void hideViewTaskBar();
+
    /**
    * Update of the window menu contents.
    */
    virtual void fillWindowMenu();
 
-
-   /**
-   * Sets the decoration of the window frame of docked (attached) MDI views
-   */
-   virtual void setFrameDecorOfAttachedViews( int frameDecor);
-   /**
-   * If in Childframe mode, we can switch between maximized or restored shown MDI views
-   */
-   virtual void setEnableMaximizedChildFrmMode(bool bEnable);
-   /**
-   * Activates the next open view
-   */
-   virtual void activateNextWin();
-   /**
-   * Activates the previous open view
-   */
-   virtual void activatePrevWin();
-   /**
-   * Activates the view first viewed concerning to the access time.
-   */
-   virtual void activateFirstWin();
-   /**
-   * Activates the view last viewed concerning to the access time.
-   */
-   virtual void activateLastWin();
-   /**
-   * Activates the view with the tab page index (TabPage mode only)
-   */
-   virtual void activateView(int index);
-
 private:
    void setupToolViewsForIDEALMode();
    void setupTabbedDocumentViewSpace();
-   class KMdiDocumentViewTabWidget * m_documentTabWidget;
 
 protected:
    /**
@@ -444,11 +228,7 @@ protected:
    */
    virtual void resizeEvent(QResizeEvent * );
    /**
-   * Creates a new MDI taskbar (showing the MDI views as taskbar entries) and shows it.
-   */
-   virtual void createTaskBar();
-   /**
-   * Creates the MDI view area and connects some signals and slots with the KMdiMainFrm widget.
+   * Creates the MDI view area and connects some signals and slots with the MainWindow widget.
    */
    virtual void createMdiManager();
    /**
@@ -462,42 +242,8 @@ protected:
    QStringList prepareIdealToTabs(KDockWidget* container);
    void idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int sizee);
 
-   /**
-   * Get tabwidget visibility
-   */
-   KMdi::TabWidgetVisibility tabWidgetVisibility();
-   /**
-   * Set tabwidget visibility
-   */
-   void setTabWidgetVisibility( KMdi::TabWidgetVisibility );
-   /**
-   * Returns the tabwidget used in IDEAl and Tabbed modes. Returns 0 in other modes.
-   */
-   class KTabWidget * tabWidget() const;
-
 
 protected slots: // Protected slots
-   /**
-   * Usually called when the user clicks an MDI view item in the "Window" menu.
-   */
-   void windowMenuItemActivated(int id);
-   /**
-   * Usually called when the user clicks an MDI view item in the sub-popup menu "Docking" of the "Window" menu.
-   */
-   void dockMenuItemActivated(int id);
-   /**
-   * Popups the "Window" menu. See also windowPopup() .
-   */
-   void popupWindowMenu(QPoint p);
-   /**
-   * The timer for main widget moving has elapsed -> send drag end to all concerned views.
-   */
-   void dragEndTimeOut();
-   /**
-   * internally used to handle click on view close button (TabPage mode, only)
-   */
-   void closeViewButtonPressed();
-
    signals:
    /**
    * Signals the last attached KMdiChildView has been closed
@@ -527,7 +273,7 @@ public slots:
 private slots:
    void setActiveToolDock(KMdiDockContainer*);
    void removeFromActiveDockList(KMdiDockContainer*);
-   void slotDocCurrentChanged(QWidget*);
+
 #define protected public
 signals:
 #undef protected
@@ -537,6 +283,8 @@ signals:
     void toggleBottom();
 };
 
-#endif //_KMDIMAINFRM_H_
+}
+
+#endif //_MainWindow_H_
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -30,7 +30,7 @@
 
 #include "toolviewaccessor_p.h"
 
-KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent, QWidget *widgetToWrap, const QString& tabToolTip, const QString& tabCaption)
+KMdiToolViewAccessor::KMdiToolViewAccessor( KMDI::MainWindow *parent, QWidget *widgetToWrap, const QString& tabToolTip, const QString& tabCaption)
 : QObject(parent)
 {
 	mdiMainFrm=parent;
@@ -68,7 +68,7 @@ KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent, QWidget *widget
 	d->widget->installEventFilter(this);
 }
 
-KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent) {
+KMdiToolViewAccessor::KMdiToolViewAccessor( KMDI::MainWindow *parent) {
 	mdiMainFrm=parent;
 	d=new KMdiToolViewAccessorPrivate();
 }

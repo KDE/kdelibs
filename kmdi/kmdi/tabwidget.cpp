@@ -13,7 +13,10 @@
 #include "tabwidget.h"
 #include "tabwidget.moc"
 
-KMdiDocumentViewTabWidget::KMdiDocumentViewTabWidget(QWidget* parent, const char* name):KTabWidget(parent,name)
+namespace KMDI
+{
+
+TabWidget::TabWidget(QWidget* parent, const char* name):KTabWidget(parent,name)
 {
 	m_visibility = KMdi::ShowWhenMoreThanOneTab;
 	tabBar()->hide();
@@ -21,67 +24,67 @@ KMdiDocumentViewTabWidget::KMdiDocumentViewTabWidget(QWidget* parent, const char
         connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
 }
 
-KMdiDocumentViewTabWidget::~KMdiDocumentViewTabWidget() {
+TabWidget::~TabWidget() {
 }
 
-void KMdiDocumentViewTabWidget::closeTab(QWidget* w) {
+void TabWidget::closeTab(QWidget* w) {
 	w->close();
 }
-void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QString & label ) {
+void TabWidget::addTab ( QWidget * child, const QString & label ) {
 	KTabWidget::addTab(child,label);
     showPage(child);
 	maybeShow();
 }
 
-void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label ) {
+void TabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label ) {
 	KTabWidget::addTab(child,iconset,label);
     showPage(child);
 	maybeShow();
 }
 
-void KMdiDocumentViewTabWidget::addTab ( QWidget * child, QTab * tab ) {
+void TabWidget::addTab ( QWidget * child, QTab * tab ) {
 	KTabWidget::addTab(child,tab);
     showPage(child);
 	maybeShow();
 }
 
-void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QString & label, int index) {
+void TabWidget::insertTab ( QWidget * child, const QString & label, int index) {
 	KTabWidget::insertTab(child,label,index);
     showPage(child);
 	maybeShow();
 	tabBar()->repaint();
 }
 
-void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index ) {
+void TabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index ) {
 	KTabWidget::insertTab(child,iconset,label,index);
     showPage(child);
 	maybeShow();
 	tabBar()->repaint();
 }
 
-void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, QTab * tab, int index) {
+void TabWidget::insertTab ( QWidget * child, QTab * tab, int index) {
 	KTabWidget::insertTab(child,tab,index);
     showPage(child);
 	maybeShow();
 	tabBar()->repaint();
 }
 
-void KMdiDocumentViewTabWidget::removePage ( QWidget * w ) {
+void TabWidget::removePage ( QWidget * w ) {
 	KTabWidget::removePage(w);
 	maybeShow();
 }
 
-void KMdiDocumentViewTabWidget::updateIconInView( QWidget *w, QPixmap icon )
+void TabWidget::updateIconInView( QWidget *w, QPixmap icon )
 {
     changeTab(w,icon,tabLabel(w));
 }
 
-void KMdiDocumentViewTabWidget::updateCaptionInView( QWidget *w, const QString &caption )
+void TabWidget::updateCaptionInView( QWidget *w, const QString &caption )
 {
     changeTab(w, caption);
 }
 
-void KMdiDocumentViewTabWidget::maybeShow()
+void TabWidget::maybeShow()
 {
 	if ( m_visibility == KMdi::AlwaysShowTabs )
 	{
@@ -114,15 +117,17 @@ void KMdiDocumentViewTabWidget::maybeShow()
 	}
 }
 
-void KMdiDocumentViewTabWidget::setTabWidgetVisibility( KMdi::TabWidgetVisibility visibility )
+void TabWidget::setTabWidgetVisibility( KMdi::TabWidgetVisibility visibility )
 {
 	m_visibility = visibility;
 	maybeShow();
 }
 
-KMdi::TabWidgetVisibility KMdiDocumentViewTabWidget::tabWidgetVisibility( )
+KMdi::TabWidgetVisibility TabWidget::tabWidgetVisibility( )
 {
 	return m_visibility;
+}
+
 }
 
 

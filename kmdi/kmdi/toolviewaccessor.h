@@ -18,8 +18,8 @@
 //    License, or (at your option) any later version.
 //
 //----------------------------------------------------------------------------
-#ifndef _KMDITOOLVIEWACCESSOR_H_
-#define _KMDITOOLVIEWACCESSOR_H_
+#ifndef _KMDI_TOOLVIEWACCESSOR_H_
+#define _KMDI_TOOLVIEWACCESSOR_H_
 
 #include <qwidget.h>
 #include <qpixmap.h>
@@ -33,24 +33,30 @@ namespace KMDIPrivate {
    class KMDIGUIClient;
 }
 
+class KMdiToolViewAccessorPrivate;
+
+namespace KMDI {
+  class MainWindow;
+}
+
 
 class KMdiToolViewAccessor : public QObject
 {
    Q_OBJECT
 
 
-   friend class KMdiMainFrm;
+       friend class KMDI::MainWindow;
    friend class KMDIPrivate::KMDIGUIClient;
 
 private:
    /**
-   * Internally used by KMdiMainFrm to store a temporary information that the method
+   * Internally used by KMDI::MainWindow to store a temporary information that the method
    * activate() is unnecessary and that it can by escaped.
    * This saves from unnecessary calls when activate is called directly.
    */
    bool m_bInterruptActivation;
    /**
-   * Internally used to prevent cycles between KMdiMainFrm::activateView() and KMdiChildView::activate().
+   * Internally used to prevent cycles between KMDI::MainWindow::activateView() and KMdiChildView::activate().
    */
    bool m_bMainframesActivateViewIsPending;
    /**
@@ -59,8 +65,8 @@ private:
    bool m_bFocusInEventIsPending;
 
 private:
-	KMdiToolViewAccessor( class KMdiMainFrm *parent , QWidget *widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
-	KMdiToolViewAccessor( class KMdiMainFrm *parent);
+	KMdiToolViewAccessor( KMDI::MainWindow *parent , QWidget *widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
+	KMdiToolViewAccessor( KMDI::MainWindow *parent);
 public:
 	~KMdiToolViewAccessor();
 	QWidget *wrapperWidget();
@@ -72,8 +78,8 @@ public slots:
 	void setWidgetToWrap(QWidget* widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
 	void hide();
 private:
-   class KMdiToolViewAccessorPrivate *d;
-   class KMdiMainFrm *mdiMainFrm;
+   KMdiToolViewAccessorPrivate *d;
+   KMDI::MainWindow *mdiMainFrm;
 
 protected:
 	bool eventFilter(QObject *o, QEvent *e);
