@@ -374,7 +374,6 @@ public:
     virtual int accel() const;
 
     virtual bool isEnabled() const;
-    virtual void setEnabled(bool enable);
 
     virtual void setGroup( const QString& );
     virtual QString group() const;
@@ -401,6 +400,9 @@ public:
      * Generate a toolbar button id. Made public for reimplementations.
      */
     static int getToolButtonID();
+
+public slots:
+    virtual void setEnabled(bool enable);
 
 protected slots:
     virtual void slotDestroyed();
