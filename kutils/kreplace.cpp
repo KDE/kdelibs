@@ -144,7 +144,7 @@ KFind::Result KReplace::replace()
                     // Display accurate initial string and replacement string, they can vary
                     QString matchedText = m_text.mid( m_index, m_matchedLength );
                     QString rep = matchedText;
-                    KReplace::replace(rep, m_replacement, 0, m_matchedLength);
+                    KReplace::replace(rep, m_replacement, 0, m_options, m_matchedLength);
                     dialog()->setLabel( matchedText, rep );
                     dialog()->show();
 
@@ -184,7 +184,7 @@ int KReplace::replace(QString &text, const QString &pattern, const QString &repl
     index = KFind::find(text, pattern, index, options, &matchedLength);
     if (index != -1)
     {
-        *replacedLength = replace(text, replacement, index, matchedLength);
+        *replacedLength = replace(text, replacement, index, options, matchedLength);
         if (options & KReplaceDialog::FindBackwards)
             index--;
         else
@@ -200,7 +200,7 @@ int KReplace::replace(QString &text, const QRegExp &pattern, const QString &repl
     index = KFind::find(text, pattern, index, options, &matchedLength);
     if (index != -1)
     {
-        *replacedLength = replace(text, replacement, index, matchedLength);
+        *replacedLength = replace(text, replacement, index, options, matchedLength);
         if (options & KReplaceDialog::FindBackwards)
             index--;
         else
@@ -209,11 +209,12 @@ int KReplace::replace(QString &text, const QRegExp &pattern, const QString &repl
     return index;
 }
 
-int KReplace::replace(QString &text, const QString &replacement, int index, int length)
+int KReplace::replace(QString &text, const QString &replacement, int index, long options, int length)
 {
-    // Backreferences: replace /0 with the right portion of 'text'
     QString rep = replacement;
-    rep.replace( QRegExp("/0"), text.mid( index, length ) );
+    // Backreferences: replace \0 with the right portion of 'text'
+    if ( options & KReplaceDialog::BackReference )
+        rep.replace( "\\0", text.mid( index, length ) );
     // Then replace rep into the text
     text.replace(index, length, rep);
     return rep.length();
@@ -252,7 +253,7 @@ void KReplace::slotReplace()
 
 void KReplace::doReplace()
 {
-    int replacedLength = KReplace::replace(m_text, m_replacement, m_index, m_matchedLength);
+    int replacedLength = KReplace::replace(m_text, m_replacement, m_index, m_options, m_matchedLength);
 
     // Tell the world about the replacement we made, in case someone wants to
     // highlight it.
@@ -263,8 +264,12 @@ void KReplace::doReplace()
     m_replacements++;
     if (m_options & KReplaceDialog::FindBackwards)
         m_index--;
-    else
+    else {
         m_index += replacedLength;
+        // when replacing the empty pattern, move on. See also kjs/regexp.cpp for how this should be done for regexps.
+        if ( m_pattern.isEmpty() )
+            ++m_index;
+    }
 #ifdef DEBUG_REPLACE
     kdDebug() << k_funcinfo << "after adjustement: m_index=" << m_index << endl;
 #endif

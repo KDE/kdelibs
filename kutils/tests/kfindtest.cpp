@@ -17,15 +17,32 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <assert.h>
+#include "../kfind.h"
+#include "../kfinddialog.h"
+#include "kfindtest.h"
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 
-#include "kfindtest.h"
-#include "../kfind.h"
-#include "../kfinddialog.h"
+#include <stdlib.h>
+#include <assert.h>
+
+static bool check(QString txt, QString a, QString b) // from kurltest
+{
+  if (a.isEmpty())
+     a = QString::null;
+  if (b.isEmpty())
+     b = QString::null;
+  if (a == b) {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+  }
+  else {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+    exit(1);
+  }
+  return true;
+}
 
 void KFindTest::changeText(uint line, const QString &text)
 {
@@ -174,7 +191,7 @@ int main(int argc, char **argv)
 	test->findNext();
 	test->findNext();
 
-	assert(test->hits().join("") == output1);
+	check("result", test->hits().join(""), output1);
 	test->clearHits();
 	kdDebug() << "PASSED" << endl;
 
@@ -196,7 +213,7 @@ int main(int argc, char **argv)
 	test->findNext("Free");
 	test->findNext("Software Foundation");
 
-	assert(test->hits().join("") == output2);
+	check("result", test->hits().join(""), output2);
 	test->clearHits();
 	kdDebug() << "PASSED" << endl;
 
@@ -223,7 +240,7 @@ int main(int argc, char **argv)
 	test->findNext("Free");
 	test->findNext("Software Foundation");
 
-	assert(test->hits().join("") == output3);
+	check("result", test->hits().join(""), output3);
 	test->clearHits();
 	kdDebug() << "PASSED" << endl;
 
