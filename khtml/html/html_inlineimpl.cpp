@@ -31,6 +31,7 @@ using namespace DOM;
 #include <kdebug.h>
 
 #include "htmlhashes.h"
+#include "css/csshelper.h"
 #include "css/cssproperties.h"
 #include "css/cssstyleselector.h"
 
