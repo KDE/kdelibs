@@ -149,15 +149,15 @@ AC_DEFUN(AC_CHECK_IOCTL_TYPE,
   AC_MSG_RESULT($ac_cv_ioctl_type)
   
 
-if test $ac_cv_ioctl_type = 1; then
+if test "$ac_cv_ioctl_type" = "1"; then
   AC_DEFINE(HAVE_IOCTL_INT_INT_DOTS,1,
 	      [Define if ioctl is declared as int ioctl(int d, int request,...)])
 fi
-if test $ac_cv_ioctl_type = 2; then
+if test "$ac_cv_ioctl_type" = "2"; then
   AC_DEFINE(HAVE_IOCTL_INT_ULONG_DOTS,2,
 	      [Define if ioctl is declared as int ioctl(int d, unsigned long request,...)])
 fi
-if test $ac_cv_ioctl_type = 3; then
+if test "$ac_cv_ioctl_type" = "3"; then
   AC_DEFINE(HAVE_IOCTL_INT_ULONGINT_DOTS,3,
 	      [Define if ioctl is declared as int ioctl(int d, unsigned long int request,...)])
 fi
