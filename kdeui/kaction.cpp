@@ -1148,7 +1148,7 @@ void KAction::slotButtonClicked( int, Qt::ButtonState state )
   // LeftButton is still connected to slotActivated directly,
   // and RightButton isn't really an activation
   if ( state & Qt::MidButton ) {
-      slotActivated();
+      emit activated();
   }
 }
 
