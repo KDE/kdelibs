@@ -50,7 +50,12 @@ KShred::KShred(QString fileName)
     }
     else
       fileSize = file->size();
-    totalBytes = 0;
+
+    totalBytes    = 0;
+    bytesWritten  = 0;
+    lastSignalled = 0;
+    tbpc          = 0;
+    fspc          = 0;
   }
 }
 
@@ -91,7 +96,8 @@ KShred::fillbyte(unsigned int byte)
     if (!writeData(buff, n))
       return false;
   }
-  file->flush();
+  if (!flush())
+    return false;
   return file->at(0);
 }
 
@@ -109,7 +115,8 @@ KShred::fillpattern(unsigned char *data, unsigned int size)
     if (!writeData(data, n))
       return false;
   }
-  file->flush();
+  if (!flush())
+    return false;
   return file->at(0);
 }
 
@@ -135,7 +142,8 @@ KShred::fillrandom()
     if (!writeData((unsigned char *) buff, n))
       return false;
   }
-  file->flush();
+  if (!flush())
+    return false;
   return file->at(0);
 }
 
@@ -156,10 +164,6 @@ KShred::shred(QString fileName)
 bool
 KShred::writeData(unsigned char *data, unsigned int size)
 {
-  static unsigned int bytesWritten  = 0;
-  static unsigned int lastSignalled = 0;
-  static unsigned int tbpc          = 0;
-  static unsigned int fspc          = 0;
   unsigned int ret                  = 0;
 
   // write 'data' of size 'size' to the file
@@ -174,7 +178,7 @@ KShred::writeData(unsigned char *data, unsigned int size)
       fspc = ((unsigned int) (fileSize / 100)) == 0 ? 1 : fileSize / 100;
     }
     bytesWritten += ret;
-    unsigned int pc = (uint) (bytesWritten / tbpc);
+    unsigned int pc = (unsigned int) (bytesWritten / tbpc);
     if (pc > lastSignalled)
     {
       emit processedSize((unsigned int) (fspc * pc));
@@ -182,6 +186,17 @@ KShred::writeData(unsigned char *data, unsigned int size)
     }
   }
   return ret == size;
+}
+
+
+bool
+KShred::flush()
+{
+  if (file == 0L)
+    return false;
+
+  file->flush();
+  return (fsync(file->handle()) == 0);
 }
 
 
@@ -197,8 +212,8 @@ bool
 KShred::shred()
 {
   unsigned char p[6][3] = {{'\222', '\111', '\044'}, {'\111', '\044', '\222'},
-                   {'\044', '\222', '\111'}, {'\155', '\266', '\333'},
-                   {'\266', '\333', '\155'}, {'\333', '\155', '\266'}};
+                           {'\044', '\222', '\111'}, {'\155', '\266', '\333'},
+                           {'\266', '\333', '\155'}, {'\333', '\155', '\266'}};
  
   kdDebug() << "KShred::shred" << endl;
 

@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <qstring.h>
 #include <qfile.h>
 #include <qobject.h>
@@ -124,6 +125,11 @@ class KShred : public QObject {
         bool writeData(unsigned char *data, unsigned int size);
 
 	/**
+	 * @internal flush the data to the file
+	 */
+        bool flush();
+
+	/**
 	 * @internal structure for the file information
 	 */
         QFile *file;
@@ -137,6 +143,11 @@ class KShred : public QObject {
 	 * @internal for keeping track of progress
 	 */
         unsigned int totalBytes;
+        unsigned int bytesWritten;
+        unsigned int lastSignalled;
+        unsigned int tbpc;
+        unsigned int fspc;
+
 };
 
 #endif
