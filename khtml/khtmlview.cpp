@@ -457,10 +457,10 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     QCursor c = KCursor::arrowCursor();
     if ( !mev.innerNode.isNull() && mev.innerNode.handle()->style() ) {
       khtml::RenderStyle* style = mev.innerNode.handle()->style();
-      if ((style->cursor() == CURSOR_AUTO) && (style->cursorImage()) 
+      if ((style->cursor() == CURSOR_AUTO) && (style->cursorImage())
 	    && !(style->cursorImage()->pixmap().isNull())) {
         /* First of all it works: Check out http://www.iam.unibe.ch/~schlpbch/cursor.html
-	* 
+	*
 	* But, I don't know what exactly we have to do here: rescale to 32*32, change to monochrome..
 	*/
     	//kdDebug( 6000 ) << "using custom cursor" << endl;
@@ -1064,7 +1064,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
 				          true,false,m_part->xmlDocImpl()->defaultView(),
 					  0);
-							
+
 	ue->ref();
 	targetNode->dispatchEvent(ue,exceptioncode);
 	ue->deref();
@@ -1099,7 +1099,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
 	    // send mouseover event to the new node
 	    if (targetNode) {
-	
+
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
 							0,screenX,screenY,clientX,clientY,
@@ -1144,5 +1144,14 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
 }
 
+void KHTMLView::viewportWheelEvent(QWheelEvent* e)
+{
+    if ( !verticalScrollBar()->isVisible() && m_part->parentPart() ) {
+        if ( m_part->parentPart()->view() )
+            m_part->parentPart()->view()->wheelEvent( e );
 
-
+        e->ignore();
+    }
+    else
+        QScrollView::viewportWheelEvent( e );
+}

@@ -200,6 +200,8 @@ protected:
      */
     virtual void viewportMouseReleaseEvent(QMouseEvent *);
 
+    virtual void viewportWheelEvent(QWheelEvent*);
+
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent( QKeyEvent *_ke );
 
