@@ -260,7 +260,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     allocator     = _allocator;
     if (formData)
     {
-        () formData->first();
+        formData->first();
     }
 
     leftBorder    = LEFT_BORDER;
