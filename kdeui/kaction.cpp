@@ -932,7 +932,7 @@ int KToggleAction::plug( QWidget* widget, int index )
   {
     int id = itemId( _index );
 
-    popupMenu( _index )->setItemChecked( id, d->m_checked );
+    static_cast<QPopupMenu*>(widget)->setItemChecked( id, d->m_checked );
   } else if ( widget->inherits( "KToolBar" ) ) {
     KToolBar *bar = static_cast<KToolBar *>( widget );
 
