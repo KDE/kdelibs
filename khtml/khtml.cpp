@@ -396,6 +396,8 @@ void KHTMLWidget::slotReloadFrames()
 
 void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int _yoffset, const char* /*_post_data*/ )
 {
+    
+    printf("openURL this=%p\n", this);
   // Check URL
   if ( KURL::split( _url ).isEmpty() )
   {
@@ -425,7 +427,15 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 
   m_bReload = _reload;
 
-  if ( !m_bReload && urlcmp( m_strWorkingURL, m_strURL, true, true ) )
+  // ### hack...
+  bool frameset = false;
+  if(document)
+  {
+      NodeImpl *body = document->body();
+      if(body && body->id() == ID_FRAMESET) frameset = true;
+  }
+  
+  if ( !m_bReload && !frameset && urlcmp( m_strWorkingURL, m_strURL, true, true ) )
   {
     KURL u( m_strWorkingURL );
 
@@ -452,7 +462,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 
   // ###
   connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
-  //connect( job, SIGNAL( sigRedirection( int, const char* ) ), this, SLOT( slotRedirection( int, const char* ) ) );
+  connect( job, SIGNAL( sigRedirection( int, const char* ) ), this, SLOT( slotRedirection( int, const char* ) ) );
   connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
   // connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
 
@@ -664,6 +674,8 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       return;
   }
 
+  // ### the started signals are just a hack to get history right...
+  
   if ( !target.isNull() && !target.isEmpty() && _button == LeftButton )
   {
       printf("searching target frame\n");
@@ -673,7 +685,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
 	  if ( !v )
 	      v = this;
 	  v->openURL( url );
-
+	  if(v->_parent) emit v->topView()->started( url );
 	  emit urlClicked( url, target, _button );
 	  return;
       }
@@ -694,6 +706,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       {
 	  openURL( url );
 	  emit urlClicked( url, target, _button );
+	  if(_parent) emit topView()->started( url );
 	  return;
       }
 
@@ -705,6 +718,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       {
 	  v->openURL( url );
 	  emit urlClicked( url, target, _button );
+	  if(v->_parent) emit v->topView()->started( url );
 	  return;
       }
       else
@@ -730,6 +744,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       }
 
       openURL( url );	
+      if(_parent) emit topView()->started( url );
   }
 }
 
@@ -1480,7 +1495,7 @@ void KHTMLWidget::saveState( QDataStream &stream )
     if(id  == ID_FRAMESET)
     {	
 	// did I already tell you I hate frames...
-	printf("------------------ saving frame --------------------------\n");
+	printf("------------------ saving frameset --------------------------\n");
 	stream << INFO_FRAMESET;
 	
 	NodeImpl *current = document->body()->firstChild();
@@ -1500,6 +1515,7 @@ void KHTMLWidget::saveState( QDataStream &stream )
 	    {
 		if(current->id() == ID_FRAME)
 		{
+		    printf("saving frame %p\n", current);
 		    stream << INFO_FRAME;
 		    HTMLFrameElementImpl *f = static_cast<HTMLFrameElementImpl *>(current);
 		    stream << f->view->frameName();
@@ -1520,6 +1536,7 @@ void KHTMLWidget::saveState( QDataStream &stream )
     }
     else if(id == ID_BODY)
     {
+	printf("-------- saving page 2 ---------\n");
 	stream << INFO_NONE;
     }
     else
@@ -1533,9 +1550,12 @@ void KHTMLWidget::restoreState( QDataStream &stream )
     stream >> u;
     stream >> x >> y;
     stream >> info; // do we have additional info?
-
+    
+    printf("restoring url=%s\n", u.ascii());
+    
     if(info == INFO_NONE)
     {
+	printf("------------------ restoring page ----------------------------\n");
 	openURL( u, false, x, y );
 	return;
     }
@@ -1551,12 +1571,17 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    stream >> name;
 
 	    KHTMLWidget *w = getFrame(name);
-	    if(!w) w = createFrame(viewport(), name);
+	    if(!w)
+	    {
+		printf("have to vreate the frame!!!\n");
+		w = createFrame(viewport(), name);
+	    }
 	    w->resize(500,100);
 	    w->restoreState(stream);
 	}
 
-	openURL(u, false, 0, 0);
+	if ( !urlcmp( u, m_strURL, true, true ) )
+	    openURL(u, false, 0, 0);
     }
 
     layout();

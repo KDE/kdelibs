@@ -239,6 +239,7 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
 	    if (script)
 	    {
 	        /* Parse scriptCode containing <script> info */
+		// ### use KHTMLWidget::executeScript...
 	        KJSWorld *jscript = view->jScript();
 		if(jscript) jscript->evaluate((KJS::UnicodeChar*)scriptCode, scriptCodeSize);
 	    }
@@ -704,6 +705,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 	    }
 	    case QuotedValue:
 	    {
+		// ### attributes like '&{blaa....};' are supposed to be treated as jscript.
 		if ( curChar == '&' )
 		{
 		    ++src;
