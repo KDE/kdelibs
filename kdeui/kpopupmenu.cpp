@@ -52,9 +52,7 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     }
 
     tmpStr = config->readEntry(QString::fromLatin1("Gradient"));
-    if(tmpStr.isEmpty() && QPixmap::defaultDepth() >= 15)
-        tmpStr = QString::fromLatin1("Diagonal");
-    else{
+    if(tmpStr.isEmpty()) {
         useGradient = false;
         return;
     }
@@ -172,7 +170,7 @@ QSize KPopupTitle::sizeHint() const
 }
 
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
-    : QPopupMenu(parent, name) 
+    : QPopupMenu(parent, name)
 {
 }
 
