@@ -113,17 +113,22 @@ public final class KJASAppletClassLoader
     private URL codeBaseURL;
     private Vector archives;
     private String dbgID;
+    private static int globalId = 0;
+    private int myId = 0;
     private KJASAppletContext appletContext = null;
     
     public KJASAppletClassLoader( URL[] urlList, URL _docBaseURL, URL _codeBaseURL)
     {
         super(urlList);
+        synchronized(KJASAppletClassLoader.class) {
+            myId = ++globalId;
+        }
         docBaseURL   = _docBaseURL;
         codeBaseURL  = _codeBaseURL;
         archives     = new Vector();
         
         appletContext   = null;
-        dbgID = "CL(" + codeBaseURL.toString() + "): ";
+        dbgID = "CL-" + myId + "(" + codeBaseURL.toString() + "): ";
     }
     
     protected void addURL(URL url) {
@@ -233,6 +238,11 @@ public final class KJASAppletClassLoader
         if( name.endsWith( ".class" ) )
         {
             fixed_name = name.substring( 0, name.lastIndexOf( ".class" ) );
+        }
+        else if( name.endsWith( ".java" ) )
+        {
+            // be smart, some applets specify code=XyzClass.java
+            fixed_name = name.substring( 0, name.lastIndexOf( ".java" ) );
         }
         Class cl = super.loadClass(fixed_name);
         Main.debug(dbgID + " returns class " + cl.getName());
