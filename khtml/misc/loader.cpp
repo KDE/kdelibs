@@ -161,6 +161,7 @@ void CachedCSSStyleSheet::deref(CachedObjectClient *c)
 {
     Cache::flush();
     m_clients.remove(c);
+
     if ( canDelete() && m_free )
       delete this;
 }
@@ -185,9 +186,10 @@ void CachedCSSStyleSheet::checkNotify()
     kdDebug( 6060 ) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
 #endif
 
-    CachedObjectClient *c;
-    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-        c->setStyleSheet( m_url, m_sheet );
+    // it() first increments, then returnes the current item.
+    // this avoids skipping an item when setStyleSheet deletes the "current" one.
+    for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)
+        it()->setStyleSheet( m_url, m_sheet );
 }
 
 
@@ -267,9 +269,8 @@ void CachedScript::checkNotify()
 {
     if(m_loading) return;
 
-    CachedObjectClient *c;
-    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-        c->notifyFinished(this);
+    for (QPtrListIterator<CachedObjectClient> it( m_clients); it.current();)
+        it()->notifyFinished(this);
 }
 
 
@@ -709,10 +710,8 @@ void CachedImage::movieStatus(int status)
                 monochrome = false;
             }
         }
-
-	CachedObjectClient *c;
-        for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-            c->notifyFinished(this);
+        for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)
+            it()->notifyFinished(this);
     }
 
 #if 0
@@ -1054,9 +1053,9 @@ void Loader::servePendingRequests()
       job->addMetaData("accept", req->object->accept());
   if ( req->m_docLoader )  {
       KURL r = req->m_docLoader->doc()->URL();
+      r.setQuery(QString::null);
       if ( r.protocol().startsWith( "http" ) && r.path().isEmpty() )
           r.setPath( "/" );
-
       job->addMetaData("referrer", r.url());
       QString domain = r.host();
       if (req->m_docLoader->doc()->isHTMLDocument())
@@ -1249,8 +1248,12 @@ void Cache::clear()
     statistics();
 #endif
     cache->setAutoDelete( true );
+
+#ifndef NDEBUG
     for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
         assert(it.current()->canDelete());
+#endif
+
     delete cache; cache = 0;
     delete lru;   lru = 0;
     delete nullPixmap; nullPixmap = 0;
@@ -1525,25 +1528,33 @@ void Cache::statistics()
     int size = 0;
     int msize = 0;
     int movie = 0;
+    int images = 0;
+    int scripts = 0;
     int stylesheets = 0;
     QDictIterator<CachedObject> it(*cache);
     for(it.toFirst(); it.current(); ++it)
     {
         o = it.current();
-        if(o->type() == CachedObject::Image)
+        switch(o->type()) {
+        case CachedObject::Image:
         {
             CachedImage *im = static_cast<CachedImage *>(o);
+            images++;
             if(im->m != 0)
             {
+                qDebug("found image with movie: %p", im);
+
                 movie++;
                 msize += im->size();
             }
+            break;
         }
-        else
-        {
-            if(o->type() == CachedObject::CSSStyleSheet)
-                stylesheets++;
-
+        case CachedObject::CSSStyleSheet:
+            stylesheets++;
+            break;
+        case CachedObject::Script:
+            scripts++;
+            break;
         }
         size += o->size();
     }
@@ -1552,8 +1563,9 @@ void Cache::statistics()
     kdDebug( 6060 ) << "------------------------- image cache statistics -------------------" << endl;
     kdDebug( 6060 ) << "Number of items in cache: " << cache->count() << endl;
     kdDebug( 6060 ) << "Number of items in lru  : " << lru->count() << endl;
-    kdDebug( 6060 ) << "Number of cached images: " << cache->count()-movie << endl;
+    kdDebug( 6060 ) << "Number of cached images: " << images << endl;
     kdDebug( 6060 ) << "Number of cached movies: " << movie << endl;
+    kdDebug( 6060 ) << "Number of cached scripts: " << scripts << endl;
     kdDebug( 6060 ) << "Number of cached stylesheets: " << stylesheets << endl;
     kdDebug( 6060 ) << "pixmaps:   allocated space approx. " << size << " kB" << endl;
     kdDebug( 6060 ) << "movies :   allocated space approx. " << msize/1024 << " kB" << endl;
