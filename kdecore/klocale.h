@@ -180,7 +180,7 @@ public:
    * @param plural the plural form of the word. Must contain a "%n" that will
    *               be replaced by the number @n, for example "%n files"
    * @param n the number
-   * @return the correct singular or plural for the selected language, 
+   * @return the correct singular or plural for the selected language,
    *         depending on n
    */
   QString translate( const char *singular, const char *plural,
@@ -680,7 +680,7 @@ public:
    * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
    * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
    * Everything else in the format string will be taken as is.
-   * For example, March 20th 1989 with the format "%y:%m:%d" results 
+   * For example, March 20th 1989 with the format "%y:%m:%d" results
    * in "89:03:20".
    *
    * @param format The new date format
@@ -701,7 +701,7 @@ public:
    * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
    * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
    * Everything else in the format string will be taken as is.
-   * For example, March 20th 1989 with the format "%y:%m:%d" results 
+   * For example, March 20th 1989 with the format "%y:%m:%d" results
    * in "89:03:20".
    *
    * @param format The new short date format
@@ -727,7 +727,7 @@ public:
    * @li %S with the seconds with 2 digits  (e.g. the minute of 07:02:09 is "09")
    * @li %p with pm or am (e.g. 17.00 is "pm", 05.00 is "am")
    * Everything else in the format string will be taken as is.
-   * For example, 5.23pm with the format "%H:%M" results 
+   * For example, 5.23pm with the format "%H:%M" results
    * in "17:23".
    *
    * @param format The new time format
@@ -742,13 +742,13 @@ public:
    * Changes how KLocale defines the first day in week.
    *
    * @param start True if Monday is the first day in the week
-   * @since 3.1
    */
   void setWeekStartsMonday(bool start); //### remove for KDE 4.0
   /**
    * Changes how KLocale defines the first day in week.
    *
    * @param day first day of the week (Monday=1..Sunday=7) as integer
+   * @since 3.1
    */
   void setWeekStartDay(int day);
   /**
@@ -907,7 +907,7 @@ public:
 
   /**
    * Sets the active catalog for translation lookup.
-   * @param catalogue The catalogue to activate.   
+   * @param catalogue The catalogue to activate.
    */
   void setActiveCatalogue(const QString &catalogue);
 
