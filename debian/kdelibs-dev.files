@@ -1,5 +1,6 @@
 usr/include/kde/*
 usr/share/doc/kdelibs-dev/dh-make/*
+usr/lib/libkscreensaver.so
 usr/lib/libkdeprint.so
 usr/lib/libkdeprint_management.so
 usr/lib/libkdefakes.so
