@@ -7,6 +7,7 @@ Name[fi]=Kylmät ionit
 Name[hu]=Fagyos ionok
 Name[ja]=コールドイオン
 Name[no]=Kalde ioner
+Name[no_NY]=Kalde ioner
 Name[ro]=Ioni reci
 Name[sl]=Mrzli ioni
 Comment=Cold Ions unthemed style
@@ -16,6 +17,7 @@ Comment[eo]=Stilo "Malvarmaj ionoj" neetosa
 Comment[fi]=Kylmät ionit teemoittamaton tyyli
 Comment[hu]=Fagyos ionok - téma nélküli stílus
 Comment[no]=Kalde ioner-stil uten tema
+Comment[no_NY]=Kalde ioner-stil uten tema
 Comment[ro]=Stil fără temă Ioni reci
 Comment[sl]=Netematski slog mrzlih ionov
 [KDE]
