@@ -166,6 +166,7 @@
 <!ENTITY kbiff	"<application>KBiff</application>">
 <!ENTITY kblackbox	"<application>KBlackbox</application>">
 <!ENTITY kbounce	"<application>KBounce</application>">
+<!ENTITY kbruch	"<application>KBruch</application>">
 <!ENTITY kbugbuster	"<application>kbugbuster</application>">
 <!ENTITY kcalc	"<application>KCalc</application>">
 <!ENTITY kcharselect	"<application>KCharSelect</application>">
@@ -204,6 +205,7 @@
 <!ENTITY khexedit	"<application>KHexEdit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
 <!ENTITY kiconedit	"<application>KIconEdit</application>">
+<!ENTITY kig	"<application>Kig</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kiten	"<application>Kiten</application>">
