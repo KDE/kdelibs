@@ -1858,14 +1858,27 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\t\t{\n");
 		fprintf(source,"\t\t\tresult = new %s_stub(conn,r.objectID);\n",
 										d.name.c_str());
-		// Type checking
-		fprintf(source,"\t\t\tif (!result->_isCompatibleWith(\"%s\")) {\n",
-			d.name.c_str());
-		fprintf(source,"\t\t\tresult->_release();\n");
-		fprintf(source,"\t\t\treturn 0;\n");
-		fprintf(source,"\t\t\t}\n");
 		fprintf(source,"\t\t\tif(needcopy) result->_copyRemote();\n");
 		fprintf(source,"\t\t\tresult->_useRemote();\n");
+
+		// Type checking
+		/*
+		 * One may wonder why we first claim that we want to use the object
+		 * using _useRemote, then check if we *can* to use it (if the
+		 * type is right), and finally, if we can't release it
+		 * again. 
+		 *
+		 * However, if we don't, we can't release it either, as we may not
+		 * release an object which we don't use. If we would not call release,
+		 * we would on the other hand create a *local* memory leak, as the
+		 * _stub wouldn't get removed.
+		 */
+		fprintf(source,"\t\t\tif (!result->_isCompatibleWith(\"%s\")) {\n",
+			d.name.c_str());
+		fprintf(source,"\t\t\t\tresult->_release();\n");
+		fprintf(source,"\t\t\t\treturn 0;\n");
+		fprintf(source,"\t\t\t}\n");
+
 		fprintf(source,"\t\t}\n");
 		fprintf(source,"\t}\n");
 		fprintf(source,"\treturn result;\n");

@@ -703,12 +703,12 @@ Arts::InterfaceRepo_base *Arts::InterfaceRepo_base::_fromReference(Arts::ObjectR
 		if(conn)
 		{
 			result = new Arts::InterfaceRepo_stub(conn,r.objectID);
-			if (!result->_isCompatibleWith("Arts::InterfaceRepo")) {
-			result->_release();
-			return 0;
-			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
+			if (!result->_isCompatibleWith("Arts::InterfaceRepo")) {
+				result->_release();
+				return 0;
+			}
 		}
 	}
 	return result;
@@ -913,12 +913,12 @@ Arts::FlowSystemSender_base *Arts::FlowSystemSender_base::_fromReference(Arts::O
 		if(conn)
 		{
 			result = new Arts::FlowSystemSender_stub(conn,r.objectID);
-			if (!result->_isCompatibleWith("Arts::FlowSystemSender")) {
-			result->_release();
-			return 0;
-			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
+			if (!result->_isCompatibleWith("Arts::FlowSystemSender")) {
+				result->_release();
+				return 0;
+			}
 		}
 	}
 	return result;
@@ -1032,12 +1032,12 @@ Arts::FlowSystemReceiver_base *Arts::FlowSystemReceiver_base::_fromReference(Art
 		if(conn)
 		{
 			result = new Arts::FlowSystemReceiver_stub(conn,r.objectID);
-			if (!result->_isCompatibleWith("Arts::FlowSystemReceiver")) {
-			result->_release();
-			return 0;
-			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
+			if (!result->_isCompatibleWith("Arts::FlowSystemReceiver")) {
+				result->_release();
+				return 0;
+			}
 		}
 	}
 	return result;
@@ -1158,12 +1158,12 @@ Arts::FlowSystem_base *Arts::FlowSystem_base::_fromReference(Arts::ObjectReferen
 		if(conn)
 		{
 			result = new Arts::FlowSystem_stub(conn,r.objectID);
-			if (!result->_isCompatibleWith("Arts::FlowSystem")) {
-			result->_release();
-			return 0;
-			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
+			if (!result->_isCompatibleWith("Arts::FlowSystem")) {
+				result->_release();
+				return 0;
+			}
 		}
 	}
 	return result;
@@ -1460,12 +1460,12 @@ Arts::GlobalComm_base *Arts::GlobalComm_base::_fromReference(Arts::ObjectReferen
 		if(conn)
 		{
 			result = new Arts::GlobalComm_stub(conn,r.objectID);
-			if (!result->_isCompatibleWith("Arts::GlobalComm")) {
-			result->_release();
-			return 0;
-			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
+			if (!result->_isCompatibleWith("Arts::GlobalComm")) {
+				result->_release();
+				return 0;
+			}
 		}
 	}
 	return result;
@@ -1646,12 +1646,12 @@ Arts::TmpGlobalComm_base *Arts::TmpGlobalComm_base::_fromReference(Arts::ObjectR
 		if(conn)
 		{
 			result = new Arts::TmpGlobalComm_stub(conn,r.objectID);
-			if (!result->_isCompatibleWith("Arts::TmpGlobalComm")) {
-			result->_release();
-			return 0;
-			}
 			if(needcopy) result->_copyRemote();
 			result->_useRemote();
+			if (!result->_isCompatibleWith("Arts::TmpGlobalComm")) {
+				result->_release();
+				return 0;
+			}
 		}
 	}
 	return result;
