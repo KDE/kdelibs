@@ -668,6 +668,7 @@ void KFileItem::assign( const KFileItem & item )
     m_bMimeTypeKnown = item.m_bMimeTypeKnown;
     m_guessedMimeType   = item.m_guessedMimeType;
     m_access            = item.m_access;
+    m_metaInfo          = item.m_metaInfo;
     for ( int i = 0; i < NumFlags; i++ )
         m_time[i] = item.m_time[i];
     m_size = item.m_size;
