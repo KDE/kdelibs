@@ -337,9 +337,20 @@ public:
     DockFullDocking = DockFullSite | DockDesktop
   }; 
 
-  /* if target is null  - dock move to desktop at position pos;
-   * check - only for internal uses;
-   * return result GroupDockWidget
+  /**
+   * This is a key method of this class! Use it to dock dockwidgets to another dockwidget at the right position within
+   * its @ref KDockMainWindow or a toplevel dockwidget.
+   * If the target is null, it will become a toplevel dockwidget at position pos;
+   * Note: docking to another dockwidget means exactly:
+   * A new parent dockwidget will be created, that replaces the target dockwidget and contains another single helper widget (tab widget or panner)
+   * which contains both dockwidgets, this and the target dockwidget. So consider parent<->child relationships change completely during such actions.
+   *
+   * @param  target the dockwidget to dock to
+   * @param  dockPos one of the DockPositions this is going to dock to
+   * @param  spliPos the split relation (in percent) between both dockwidgets, target and this
+   * @param  pos the dock position, mainly of interest for docking to the desktop (as toplevel dockwidget)
+   * @param  check only for internal use;
+   * @return result the group dockwidget that replaces the target dockwidget and will be grandparent of target and this
    */
   KDockWidget* manualDock( KDockWidget* target, DockPosition dockPos, int spliPos = 50, QPoint pos = QPoint(0,0), bool check = false );
 
@@ -450,9 +461,9 @@ signals:
    * Emits that another dockwidget is docking to this.
    *
    * @param dw the dockwidget that is docking to this
-   * @param the DockPosition where it wants to dock to
+   * @param dp the DockPosition where it wants to dock to
    */
-  void docking( KDockWidget* dw, KDockWidget::DockPosition );
+  void docking( KDockWidget* dw, KDockWidget::DockPosition dp);
   
   /**
    * Signals that the dock default position is set.
@@ -942,7 +953,7 @@ public:
    * This method calls the base class method. 
    * If the given widget inherits KDockWidget, applyToWidget(this) is called.
    * 
-   * @param - any widget that should become the main view
+   * @param _ any widget that should become the main view
    */
   void setView( QWidget* );
 
