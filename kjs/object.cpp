@@ -335,7 +335,7 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
 }
 
 // ECMA 8.6.2.3
-bool ObjectImp::canPut(ExecState *exec, const UString &propertyName) const
+bool ObjectImp::canPut(ExecState *, const UString &propertyName) const
 {
   PropertyMapNode *node = _prop->getNode(propertyName);
   if (node)
