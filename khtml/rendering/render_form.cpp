@@ -1162,6 +1162,7 @@ void RenderSelect::updateSelection()
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent)
 {
+    m_spell = 0L;
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QTextEdit::WidgetWidth);
         setHScrollBarMode( AlwaysOff );
@@ -1213,7 +1214,8 @@ QPopupMenu *TextAreaWidget::createPopupMenu( const QPoint &pos )
 
 void TextAreaWidget::slotCheckSpelling()
 {
-    (void) new KSpell( this, i18n( "Check Spelling" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true );
+    delete m_spell;
+    m_spell=new KSpell( this, i18n( "Check Spelling" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true );
 }
 
 void TextAreaWidget::slotSpellCheckReady( KSpell *s )
@@ -1226,6 +1228,12 @@ void TextAreaWidget::slotSpellCheckDone( const QString &s )
 {
     if( s != text() )
 	setText( s );
+}
+
+TextAreaWidget::~TextAreaWidget()
+{
+    delete m_spell;
+    m_spell=0L;
 }
 
 // -------------------------------------------------------------------------

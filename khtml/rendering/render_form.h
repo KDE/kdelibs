@@ -389,7 +389,7 @@ class TextAreaWidget : public KTextEdit
     Q_OBJECT
 public:
     TextAreaWidget(int wrap, QWidget* parent);
-
+    ~TextAreaWidget();
 protected:
     virtual bool event (QEvent *e );
     virtual QPopupMenu *createPopupMenu(const QPoint &pos);
@@ -398,6 +398,8 @@ protected slots:
     void slotCheckSpelling();
     void slotSpellCheckReady(KSpell *s);
     void slotSpellCheckDone(const QString &s);
+private:
+    KSpell *m_spell;
 };
 
 
