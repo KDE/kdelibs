@@ -820,7 +820,12 @@ int RenderFlow::rightmostPosition() const
         SpecialObject* r;
         QListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
-            int specialRight = r->node->xPos() + r->node->rightmostPosition();
+            int specialRight=0;
+            if ( r->type == SpecialObject::FloatLeft || r->type == SpecialObject::FloatRight ){
+                specialRight = r->left + r->node->rightmostPosition();
+            } else if ( r->type == SpecialObject::Positioned ) {
+                specialRight = r->node->xPos() + r->node->rightmostPosition();
+            }            
             if (specialRight > right)
 		        right = specialRight;
         }
