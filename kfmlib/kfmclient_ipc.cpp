@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "ipc.h"
+#include "kfmipc.h"
 #include "kfmclient_ipc.h"
 
 KfmIpc::KfmIpc( int _port )

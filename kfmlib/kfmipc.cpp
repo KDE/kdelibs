@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "ipc.h"
+#include "kfmipc.h"
 
 void write_int( int _fd, int _value )
 {

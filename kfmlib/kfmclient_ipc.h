@@ -8,7 +8,7 @@
 #include <ctype.h>
 #include <ksock.h>
 #include <qobject.h>
-#include "ipc.h"
+#include "kfmipc.h"
 
 class KfmIpc : public QObject
 {

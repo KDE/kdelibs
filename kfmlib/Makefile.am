@@ -9,9 +9,9 @@ CLEANFILES = $(BUILT_SOURCES)
 lib_LTLIBRARIES = libkfm.la
 libkfm_la_LDFLAGS = -version-info 0:1  -rpath $(libdir)
 
-libkfm_la_SOURCES = kfm.cpp kfmclient_ipc.cpp kfmclient_ipc2.cpp ipc.cpp
+libkfm_la_SOURCES = kfm.cpp kfmclient_ipc.cpp kfmclient_ipc2.cpp kfmipc.cpp
 BUILT_SOURCES = kfm.moc kfmclient_ipc.moc
-include_HEADERS = kfm.h kfmclient_ipc.h ipc.h
+include_HEADERS = kfm.h kfmclient_ipc.h kfmipc.h
 
 kfm.cpp: kfm.moc
 kfmclient_ipc.cpp: kfmclient_ipc.moc
