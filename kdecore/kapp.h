@@ -533,6 +533,7 @@ public:
    */
   void removeKipcEventMask(int id);
 
+public slots:
   /**
    * Tell KApplication about one more operation that should be finished
    * before the application exits. The standard behaviour is to exit on the
@@ -794,6 +795,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.204  2001/01/01 01:17:46  waba
+// Added kdeinitExecWait
+//
 // Revision 1.203  2000/12/17 04:10:26  mueller
 // we're post beta 1 now
 //
