@@ -185,10 +185,13 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         KConfig *configFile;
 	if ( d->events.contains( fromApp ) ) {
 	    eventsFile = d->events[fromApp];
-            configFile = d->configs[fromApp];
 	} else {
 	    eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
 	    d->events.insert( fromApp, eventsFile );
+        }
+        if ( d->configs.contains( fromApp) ) {
+            configFile = d->configs[fromApp];
+        } else {
 	    configFile=new KConfig(fromApp+".eventsrc",true,false);
 	    d->configs.insert( fromApp, configFile );
 	}
