@@ -355,6 +355,13 @@ void KMimeType::init( KDesktopFile * config )
   if ( config->hasKey( XKDEAutoEmbed ) )
     m_mapProps.insert( XKDEAutoEmbed, QVariant( config->readBoolEntry( XKDEAutoEmbed ), 0 ) );
 
+  QString XKDEText = QString::fromLatin1("X-KDE-text");
+  if ( config->hasKey( XKDEText ) )
+    m_mapProps.insert( XKDEText, config->readBoolEntry( XKDEText ) );
+
+  QString XKDEIsAlso = QString::fromLatin1("X-KDE-IsAlso");
+  if ( config->hasKey( XKDEIsAlso ) )
+    m_mapProps.insert( XKDEIsAlso, config->readEntry( XKDEIsAlso ) );
 }
 
 KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
