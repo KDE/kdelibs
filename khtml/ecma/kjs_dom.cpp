@@ -298,14 +298,8 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     case ScrollHeight:
       return rend ? static_cast<Value>( Number(rend->scrollHeight()) ) : Undefined();
     case ScrollLeft:
-      if ( v && node.handle() && node.handle()->id() == ID_BODY )
-        return Number(v->contentsX() );
-
       return Number( rend && rend->layer() ? rend->layer()->scrollXOffset() : 0 );
     case ScrollTop:
-      if ( v && node.handle() && node.handle()->id() == ID_BODY )
-        return Number(v->contentsY() );
-
       return Number( rend && rend->layer() ? rend->layer()->scrollYOffset() : 0 );
     }
   }
