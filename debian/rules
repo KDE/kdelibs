@@ -110,6 +110,10 @@ binary-arch:  build
 	for i in `ls debian/kdelibs3/usr/share/lintian/overrides/`; do \
 	  mv debian/kdelibs3/usr/share/lintian/overrides/$$i debian/kdelibs3/usr/share/lintian/overrides/`echo $$i | sed -e 's#.override##'`; \
 	done
+	for i in `find debian/ -type l -name "common"`; do \
+		rm $$i; \
+		ln -s ../common $$i ;\
+	done
 	debianrc=debian/kdelibs3/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
@@ -145,7 +149,7 @@ binary-arch:  build
 	chmod 4755 debian/libarts-alsa/usr/bin/artswrapper
 	dh_makeshlibs -a -V
 	dh_installdeb -a
-	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib -l`pwd`/debian/libarts/usr/lib -l`pwd`/debian/libkmid/usr/lib
+	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib
 	#to get rid of self-dependency
 	echo -n `cat debian/libarts.substvars` > debian/libarts-alsa.substvars
 	echo ", libasound1 (>= 0.5.5)" >> debian/libarts-alsa.substvars

@@ -1,8 +1,11 @@
 kdelibs (4:2.2-alpha1-1) unstable; urgency=low
  
   * New upstream alpha
-  * Reseting all overrides
- 
+  * Reseting all lintian overrides
+  * And lets list the bug fixes
+         None yet..have to figure them out
+  * Add flex to build-depends
+  
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Apr 2001 03:00:00 -0700
 
 kdelibs (4:2.1.1-7) unstable; urgency=low
