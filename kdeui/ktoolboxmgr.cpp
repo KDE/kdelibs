@@ -28,10 +28,13 @@
 #endif
 
 #include <ktoolboxmgr.h>
-
+#include <kwm.h>
 
  // $Id$
  // $Log$
+ // Revision 1.1  1998/04/28 09:16:18  radej
+ // Initial checkin
+ //
 
 
 KToolBoxManager::KToolBoxManager (QWidget *_widget, bool) : QObject ()
@@ -94,17 +97,21 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   dontmoveres=dontmove;
   hotspot_static = hot_static;
   
-  QPoint p(widget->x(), widget->y());
-  if (widget->parentWidget() != 0)
-    p=widget->parentWidget()->mapToGlobal(p);
+  //QPoint p(widget->x(), widget->y());
+  
+  QRect rr = KWM::geometry(widget->winId(), true);
+  QPoint p(rr.topLeft());
+
+  //if (widget->parentWidget() != 0)
+    //p=widget->parentWidget()->mapToGlobal(p);
 
   offX = QCursor::pos().x() - p.x();
   offY = QCursor::pos().y() - p.y();
   
   xp = p.x();
   yp = p.y();
-  w = widget->width();
-  h = widget->height();
+  w = rr.width();
+  h = rr.height();
 
   orig_w = w;
   orig_h = h;
@@ -213,17 +220,22 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
   dontmoveres=dontresize;
   mode = Resizing;
   
-  QPoint p(widget->x(), widget->y());
-  if (widget->parentWidget() != 0)
-    p=widget->parentWidget()->mapToGlobal(p);
+  //QPoint p(widget->x(), widget->y());
+  QRect rr = KWM::geometry(widget->winId(), true);
+  QPoint p(rr.topLeft());
+
+
+  
+  //if (widget->parentWidget() != 0)
+    //p=widget->parentWidget()->mapToGlobal(p);
 
   offX = QCursor::pos().x() - p.x();
   offY = QCursor::pos().y() - p.y();
   
   xp = p.x();
   yp = p.y();
-  w = widget->width();
-  h = widget->height();
+  w = rr.width();
+  h = rr.height();
 
   orig_w = w;
   orig_h = h;
