@@ -25,6 +25,7 @@
 #include <qobjectlist.h>
 #include <qmetaobject.h>
 #include <qstrlist.h>
+#include <qstylesheet.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -455,7 +456,7 @@ void BrowserExtension::pasteRequest()
     else if ( KURIFilter::self()->filterURI( filterData, "kuriikwsfilter" ) )
     {
         if ( KMessageBox::questionYesNo( m_part->widget(),
-		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>" ).arg( url ),
+		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ).arg( QStyleSheet::escape(url) ),
 		    i18n( "Internet Search" ), i18n( "&Search" ),
 		    i18n( "&Cancel" ), "MiddleClickSearch" ) == KMessageBox::Yes)
         slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
