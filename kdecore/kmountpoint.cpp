@@ -126,7 +126,6 @@ KMountPoint::~KMountPoint()
 QPtrList<KMountPoint> KMountPoint::possibleMountPoints(int infoNeeded)
 {
   QPtrList<KMountPoint> result;
-  result.setAutoDelete(true);
   
 #ifdef HAVE_SETMNTENT
    STRUCT_SETMNTENT fstab;
@@ -214,7 +213,6 @@ QPtrList<KMountPoint> KMountPoint::possibleMountPoints(int infoNeeded)
 QPtrList<KMountPoint> KMountPoint::currentMountPoints(int infoNeeded)
 {
   QPtrList<KMountPoint> result;
-  result.setAutoDelete(true);
 
 #ifdef HAVE_GETMNTINFO
 
