@@ -20,7 +20,7 @@
 #ifndef __open_with_h__
 #define __open_with_h__
 
-#include <qdialog.h>
+#include <kdialogbase.h>
 
 #include <kurl.h>
 #include <krun.h>
@@ -44,7 +44,7 @@ class QLabel;
  *
  * @author David Faure <faure@kde.org>
  */
-class KOpenWithDlg : public QDialog
+class KOpenWithDlg : public KDialogBase
 {
     Q_OBJECT
 public:
@@ -138,9 +138,7 @@ protected:
     QString qName, qServiceType;
     bool m_terminaldirty;
     QCheckBox   *terminal, *remember;
-    QPushButton *ok;
     QPushButton *clear;
-    QPushButton *cancel;
 
     KService::Ptr m_pService;
 

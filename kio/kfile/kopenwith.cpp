@@ -143,8 +143,10 @@ KApplicationTree::KApplicationTree( QWidget *parent )
 
     addDesktopGroup( QString::null );
 
-    connect( this, SIGNAL( currentChanged(QListViewItem*) ), SLOT( slotItemHighlighted(QListViewItem*) ) );
-    connect( this, SIGNAL( selectionChanged(QListViewItem*) ), SLOT( slotSelectionChanged(QListViewItem*) ) );
+    connect( this, SIGNAL( currentChanged(QListViewItem*) ), 
+            SLOT( slotItemHighlighted(QListViewItem*) ) );
+    connect( this, SIGNAL( selectionChanged(QListViewItem*) ), 
+            SLOT( slotSelectionChanged(QListViewItem*) ) );
 }
 
 // ----------------------------------------------------------------------
@@ -258,9 +260,9 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
  ***************************************************************/
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
-             :QDialog( parent, 0, true )
+             :KDialogBase( parent, 0L, true, i18n(  "Open With" ),
+              Ok|Cancel, Ok, true )
 {
-    setCaption( i18n( "Open With" ) );
     QString text;
     if( _urls.count() == 1 )
     {
@@ -277,7 +279,8 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
 
 KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
-    : QDialog( parent, 0L, true )
+             :KDialogBase( parent, 0L, true, QString::null,
+              Ok|Cancel, Ok, true )
 {
   QString caption = KStringHandler::csqueeze( _urls.first().prettyURL() );
   if (_urls.count() > 1)
@@ -289,7 +292,8 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, const QString&_text,
 
 KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
                             QWidget *parent)
-    : QDialog( parent, 0L, true )
+             :KDialogBase( parent, 0L, true, QString::null,
+              Ok|Cancel, Ok, true )
 {
   setCaption(i18n("Choose Application for %1").arg(serviceType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
@@ -319,19 +323,23 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   m_pTree = 0L;
   m_pService = 0L;
 
-  QBoxLayout* topLayout = new QVBoxLayout(this, KDialog::marginHint(),
-                                          KDialog::spacingHint());
-  label = new QLabel( _text , this );
+  QWidget *page = new QWidget( this );
+  setMainWidget( page );
+
+  QVBoxLayout* topLayout = new QVBoxLayout(page, 0, spacingHint());
+
+  label = new QLabel( _text , page );
   topLayout->addWidget(label);
 
-  QBoxLayout* l = new QHBoxLayout(topLayout);
+  QHBoxLayout* hbox = new QHBoxLayout(topLayout);
 
-  QToolButton *clearButton = new QToolButton( this );
-  clearButton->setIconSet( BarIcon( QString::fromLatin1( "locationbar_erase" ) ) );
+  QToolButton *clearButton = new QToolButton( page );
+  clearButton->setIconSet( BarIcon( "locationbar_erase" ) );
   clearButton->setFixedSize( clearButton->sizeHint() );
-  connect( clearButton, SIGNAL( pressed() ), this, SLOT( slotClear() ) );
-  l->addWidget( clearButton );
+  connect( clearButton, SIGNAL( pressed() ), SLOT( slotClear() ) );
   QToolTip::add( clearButton, i18n( "Clear input field" ) );
+
+  hbox->addWidget( clearButton );
 
   // init the history combo and insert it into the URL-Requester
   KHistoryCombo *combo = new KHistoryCombo();
@@ -343,61 +351,42 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   QStringList list = kc->readListEntry( QString::fromLatin1("History") );
   combo->setHistoryItems( list, true );
 
-  edit = new KURLRequester( combo, this );
+  edit = new KURLRequester( combo, page );
   edit->setURL( _value );
-  l->addWidget(edit);
+
+  hbox->addWidget(edit);
 
   if ( edit->comboBox() ) {
-      KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
-      edit->comboBox()->setCompletionObject( comp );
+    KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
+    edit->comboBox()->setCompletionObject( comp );
   }
 
   connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
   connect ( edit, SIGNAL(textChanged(const QString&)), SLOT(slotTextChanged()) );
 
-  m_pTree = new KApplicationTree( this );
+  m_pTree = new KApplicationTree( page );
   topLayout->addWidget(m_pTree);
 
   connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ),
-           this, SLOT( slotSelected( const QString&, const QString& ) ) );
+           SLOT( slotSelected( const QString&, const QString& ) ) );
   connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ),
-           this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
+           SLOT( slotHighlighted( const QString&, const QString& ) ) );
   connect( m_pTree, SIGNAL( doubleClicked(QListViewItem*) ),
-           this, SLOT( slotDbClick() ) );
+           SLOT( slotDbClick() ) );
 
-  terminal = new QCheckBox( i18n("Run in &terminal"), this );
-  connect(terminal, SIGNAL(toggled(bool)), this, SLOT(slotTerminalToggled(bool)));
+  terminal = new QCheckBox( i18n("Run in &terminal"), page );
+  connect(terminal, SIGNAL(toggled(bool)), SLOT(slotTerminalToggled(bool)));
 
   topLayout->addWidget(terminal);
 
   if (!qServiceType.isNull())
   {
-    remember = new QCheckBox(i18n("&Remember application association for this type of file"), this);
+    remember = new QCheckBox(i18n("&Remember application association for this type of file"), page);
     //    remember->setChecked(true);
     topLayout->addWidget(remember);
   }
   else
     remember = 0L;
-
-  // Use KButtonBox for the aligning pushbuttons nicely
-  KButtonBox* b = new KButtonBox(this);
-  /*
-  clear = b->addButton( i18n("C&lear") );
-  */
-  b->addStretch(2);
-  /*
-  connect( clear, SIGNAL(clicked()), SLOT(slotClear()) );
-  */
-
-  ok = b->addButton( i18n ("&OK") );
-  ok->setDefault(true);
-  connect( ok, SIGNAL(clicked()), SLOT(slotOK()) );
-
-  cancel = b->addButton( i18n("&Cancel") );
-  connect( cancel, SIGNAL(clicked()), SLOT(reject()) );
-
-  b->layout();
-  topLayout->addWidget(b);
 
   //edit->setText( _value );
   // This is what caused "can't click on items before clicking on Name header".
@@ -640,7 +629,7 @@ void KOpenWithDlg::accept()
         kc->sync();
     }
 
-    QDialog::accept();
+    KDialogBase::accept();
 }
 
 
@@ -649,7 +638,7 @@ void KOpenWithDlg::accept()
 #ifndef KDE_NO_COMPAT
 bool KFileOpenWithHandler::displayOpenWithDialog( const KURL::List& urls )
 {
-    KOpenWithDlg l( urls, i18n("Open With:"), QString::null, 0L );
+    KOpenWithDlg l( urls, i18n("Open with:"), QString::null, 0L );
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
