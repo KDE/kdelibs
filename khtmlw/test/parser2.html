@@ -1,0 +1,121 @@
+<html> <head> <title>Parser Test 2</title> </head>
+
+<body>
+<H1>Parser Test 2</H1>
+This is a regression test to see if all entities are handled correctly.<BR>
+<H2>Latin-1 entities</H2>
+Now follows a <B>Table</B> containing all chracters with values 160 - 255 (dec) as well as
+the &amp;amp, &amp;lt and &amp;gt entities. 
+<HR>
+
+<TABLE>
+<TR><TD bgcolor="#00CC00"><B>Entity</B></TD><TD bgcolor="#00CC00"><B>Value</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>Named</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>#val</B></TD><TD bgcolor="#00CC00"><B>-- Descripiption</B></TD></TR>
+<TR><TD>&amp;nbsp</TD><TD>&amp;#160</TD><TD>=</TD><TD>'&nbsp;'</TD><TD>=</TD><TD>'&#160;'</TD><TD>-- no-break space --</TD></TR>
+<TR><TD>&amp;iexcl</TD><TD>&amp;#161</TD><TD>=</TD><TD>'&iexcl;'</TD><TD>=</TD><TD>'&#161;'</TD><TD>-- inverted exclamation mark --</TD></TR>
+<TR><TD>&amp;cent</TD><TD>&amp;#162</TD><TD>=</TD><TD>'&cent;'</TD><TD>=</TD><TD>'&#162;'</TD><TD>-- cent sign --</TD></TR>
+<TR><TD>&amp;pound</TD><TD>&amp;#163</TD><TD>=</TD><TD>'&pound;'</TD><TD>=</TD><TD>'&#163;'</TD><TD>-- pound sterling sign --</TD></TR>
+<TR><TD>&amp;curren</TD><TD>&amp;#164</TD><TD>=</TD><TD>'&curren;'</TD><TD>=</TD><TD>'&#164;'</TD><TD>-- general currency sign --</TD></TR>
+<TR><TD>&amp;yen</TD><TD>&amp;#165</TD><TD>=</TD><TD>'&yen;'</TD><TD>=</TD><TD>'&#165;'</TD><TD>-- yen sign --</TD></TR>
+<TR><TD>&amp;brvbar</TD><TD>&amp;#166</TD><TD>=</TD><TD>'&brvbar;'</TD><TD>=</TD><TD>'&#166;'</TD><TD>-- broken (vertical) bar --</TD></TR>
+<TR><TD>&amp;sect</TD><TD>&amp;#167</TD><TD>=</TD><TD>'&sect;'</TD><TD>=</TD><TD>'&#167;'</TD><TD>-- section sign --</TD></TR>
+<TR><TD>&amp;uml</TD><TD>&amp;#168</TD><TD>=</TD><TD>'&uml;'</TD><TD>=</TD><TD>'&#168;'</TD><TD>-- umlaut (dieresis) --</TD></TR>
+<TR><TD>&amp;copy</TD><TD>&amp;#169</TD><TD>=</TD><TD>'&copy;'</TD><TD>=</TD><TD>'&#169;'</TD><TD>-- copyright sign --</TD></TR>
+<TR><TD>&amp;ordf</TD><TD>&amp;#170</TD><TD>=</TD><TD>'&ordf;'</TD><TD>=</TD><TD>'&#170;'</TD><TD>-- ordinal indicator, feminine --</TD></TR>
+<TR><TD>&amp;laquo</TD><TD>&amp;#171</TD><TD>=</TD><TD>'&laquo;'</TD><TD>=</TD><TD>'&#171;'</TD><TD>-- angle quotation mark, left --</TD></TR>
+<TR><TD>&amp;not</TD><TD>&amp;#172</TD><TD>=</TD><TD>'&not;'</TD><TD>=</TD><TD>'&#172;'</TD><TD>-- not sign --</TD></TR>
+<TR><TD>&amp;shy</TD><TD>&amp;#173</TD><TD>=</TD><TD>'&shy;'</TD><TD>=</TD><TD>'&#173;'</TD><TD>-- soft hyphen --</TD></TR>
+<TR><TD>&amp;reg</TD><TD>&amp;#174</TD><TD>=</TD><TD>'&reg;'</TD><TD>=</TD><TD>'&#174;'</TD><TD>-- registered sign --</TD></TR>
+<TR><TD>&amp;macr</TD><TD>&amp;#175</TD><TD>=</TD><TD>'&macr;'</TD><TD>=</TD><TD>'&#175;'</TD><TD>-- macron --</TD></TR>
+<TR><TD bgcolor="#00CC00"><B>Entity</B></TD><TD bgcolor="#00CC00"><B>Value</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>Named</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>#val</B></TD><TD bgcolor="#00CC00"><B>-- Descripiption</B></TD></TR>
+<TR><TD>&amp;deg</TD><TD>&amp;#176</TD><TD>=</TD><TD>'&deg;'</TD><TD>=</TD><TD>'&#176;'</TD><TD>-- degree sign --</TD></TR>
+<TR><TD>&amp;plusmn</TD><TD>&amp;#177</TD><TD>=</TD><TD>'&plusmn;'</TD><TD>=</TD><TD>'&#177;'</TD><TD>-- plus-or-minus sign --</TD></TR>
+<TR><TD>&amp;sup2</TD><TD>&amp;#178</TD><TD>=</TD><TD>'&sup2;'</TD><TD>=</TD><TD>'&#178;'</TD><TD>-- superscript two --</TD></TR>
+<TR><TD>&amp;sup3</TD><TD>&amp;#179</TD><TD>=</TD><TD>'&sup3;'</TD><TD>=</TD><TD>'&#179;'</TD><TD>-- superscript three --</TD></TR>
+<TR><TD>&amp;acute</TD><TD>&amp;#180</TD><TD>=</TD><TD>'&acute;'</TD><TD>=</TD><TD>'&#180;'</TD><TD>-- acute accent --</TD></TR>
+<TR><TD>&amp;micro</TD><TD>&amp;#181</TD><TD>=</TD><TD>'&micro;'</TD><TD>=</TD><TD>'&#181;'</TD><TD>-- micro sign --</TD></TR>
+<TR><TD>&amp;para</TD><TD>&amp;#182</TD><TD>=</TD><TD>'&para;'</TD><TD>=</TD><TD>'&#182;'</TD><TD>-- pilcrow (paragraph sign) --</TD></TR>
+<TR><TD>&amp;middot</TD><TD>&amp;#183</TD><TD>=</TD><TD>'&middot;'</TD><TD>=</TD><TD>'&#183;'</TD><TD>-- middle dot --</TD></TR>
+<TR><TD>&amp;cedil</TD><TD>&amp;#184</TD><TD>=</TD><TD>'&cedil;'</TD><TD>=</TD><TD>'&#184;'</TD><TD>-- cedilla --</TD></TR>
+<TR><TD>&amp;sup1</TD><TD>&amp;#185</TD><TD>=</TD><TD>'&sup1;'</TD><TD>=</TD><TD>'&#185;'</TD><TD>-- superscript one --</TD></TR>
+<TR><TD>&amp;ordm</TD><TD>&amp;#186</TD><TD>=</TD><TD>'&ordm;'</TD><TD>=</TD><TD>'&#186;'</TD><TD>-- ordinal indicator, masculine --</TD></TR>
+<TR><TD>&amp;raquo</TD><TD>&amp;#187</TD><TD>=</TD><TD>'&raquo;'</TD><TD>=</TD><TD>'&#187;'</TD><TD>-- angle quotation mark, right --</TD></TR>
+<TR><TD>&amp;frac14</TD><TD>&amp;#188</TD><TD>=</TD><TD>'&frac14;'</TD><TD>=</TD><TD>'&#188;'</TD><TD>-- fraction one-quarter --</TD></TR>
+<TR><TD>&amp;frac12</TD><TD>&amp;#189</TD><TD>=</TD><TD>'&frac12;'</TD><TD>=</TD><TD>'&#189;'</TD><TD>-- fraction one-half --</TD></TR>
+<TR><TD>&amp;frac34</TD><TD>&amp;#190</TD><TD>=</TD><TD>'&frac34;'</TD><TD>=</TD><TD>'&#190;'</TD><TD>-- fraction three-quarters --</TD></TR>
+<TR><TD>&amp;iquest</TD><TD>&amp;#191</TD><TD>=</TD><TD>'&iquest;'</TD><TD>=</TD><TD>'&#191;'</TD><TD>-- inverted question mark --</TD></TR>
+<TR><TD bgcolor="#00CC00"><B>Entity</B></TD><TD bgcolor="#00CC00"><B>Value</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>Named</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>#val</B></TD><TD bgcolor="#00CC00"><B>-- Descripiption</B></TD></TR>
+<TR><TD>&amp;Agrave</TD><TD>&amp;#192</TD><TD>=</TD><TD>'&Agrave;'</TD><TD>=</TD><TD>'&#192;'</TD><TD>-- capital A, grave accent --</TD></TR>
+<TR><TD>&amp;Aacute</TD><TD>&amp;#193</TD><TD>=</TD><TD>'&Aacute;'</TD><TD>=</TD><TD>'&#193;'</TD><TD>-- capital A, acute accent --</TD></TR>
+<TR><TD>&amp;Acirc</TD><TD>&amp;#194</TD><TD>=</TD><TD>'&Acirc;'</TD><TD>=</TD><TD>'&#194;'</TD><TD>-- capital A, circumflex accent --</TD></TR>
+<TR><TD>&amp;Atilde</TD><TD>&amp;#195</TD><TD>=</TD><TD>'&Atilde;'</TD><TD>=</TD><TD>'&#195;'</TD><TD>-- capital A, tilde --</TD></TR>
+<TR><TD>&amp;Auml</TD><TD>&amp;#196</TD><TD>=</TD><TD>'&Auml;'</TD><TD>=</TD><TD>'&#196;'</TD><TD>-- capital A, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;Aring</TD><TD>&amp;#197</TD><TD>=</TD><TD>'&Aring;'</TD><TD>=</TD><TD>'&#197;'</TD><TD>-- capital A, ring --</TD></TR>
+<TR><TD>&amp;AElig</TD><TD>&amp;#198</TD><TD>=</TD><TD>'&AElig;'</TD><TD>=</TD><TD>'&#198;'</TD><TD>-- capital AE diphthong (ligature) --</TD></TR>
+<TR><TD>&amp;Ccedil</TD><TD>&amp;#199</TD><TD>=</TD><TD>'&Ccedil;'</TD><TD>=</TD><TD>'&#199;'</TD><TD>-- capital C, cedilla --</TD></TR>
+<TR><TD>&amp;Egrave</TD><TD>&amp;#200</TD><TD>=</TD><TD>'&Egrave;'</TD><TD>=</TD><TD>'&#200;'</TD><TD>-- capital E, grave accent --</TD></TR>
+<TR><TD>&amp;Eacute</TD><TD>&amp;#201</TD><TD>=</TD><TD>'&Eacute;'</TD><TD>=</TD><TD>'&#201;'</TD><TD>-- capital E, acute accent --</TD></TR>
+<TR><TD>&amp;Ecirc</TD><TD>&amp;#202</TD><TD>=</TD><TD>'&Ecirc;'</TD><TD>=</TD><TD>'&#202;'</TD><TD>-- capital E, circumflex accent --</TD></TR>
+<TR><TD>&amp;Euml</TD><TD>&amp;#203</TD><TD>=</TD><TD>'&Euml;'</TD><TD>=</TD><TD>'&#203;'</TD><TD>-- capital E, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;Igrave</TD><TD>&amp;#204</TD><TD>=</TD><TD>'&Igrave;'</TD><TD>=</TD><TD>'&#204;'</TD><TD>-- capital I, grave accent --</TD></TR>
+<TR><TD>&amp;Iacute</TD><TD>&amp;#205</TD><TD>=</TD><TD>'&Iacute;'</TD><TD>=</TD><TD>'&#205;'</TD><TD>-- capital I, acute accent --</TD></TR>
+<TR><TD>&amp;Icirc</TD><TD>&amp;#206</TD><TD>=</TD><TD>'&Icirc;'</TD><TD>=</TD><TD>'&#206;'</TD><TD>-- capital I, circumflex accent --</TD></TR>
+<TR><TD>&amp;Iuml</TD><TD>&amp;#207</TD><TD>=</TD><TD>'&Iuml;'</TD><TD>=</TD><TD>'&#207;'</TD><TD>-- capital I, dieresis or umlaut mark --</TD></TR>
+<TR><TD bgcolor="#00CC00"><B>Entity</B></TD><TD bgcolor="#00CC00"><B>Value</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>Named</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>#val</B></TD><TD bgcolor="#00CC00"><B>-- Descripiption</B></TD></TR>
+<TR><TD>&amp;ETH</TD><TD>&amp;#208</TD><TD>=</TD><TD>'&ETH;'</TD><TD>=</TD><TD>'&#208;'</TD><TD>-- capital Eth, Icelandic --</TD></TR>
+<TR><TD>&amp;Ntilde</TD><TD>&amp;#209</TD><TD>=</TD><TD>'&Ntilde;'</TD><TD>=</TD><TD>'&#209;'</TD><TD>-- capital N, tilde --</TD></TR>
+<TR><TD>&amp;Ograve</TD><TD>&amp;#210</TD><TD>=</TD><TD>'&Ograve;'</TD><TD>=</TD><TD>'&#210;'</TD><TD>-- capital O, grave accent --</TD></TR>
+<TR><TD>&amp;Oacute</TD><TD>&amp;#211</TD><TD>=</TD><TD>'&Oacute;'</TD><TD>=</TD><TD>'&#211;'</TD><TD>-- capital O, acute accent --</TD></TR>
+<TR><TD>&amp;Ocirc</TD><TD>&amp;#212</TD><TD>=</TD><TD>'&Ocirc;'</TD><TD>=</TD><TD>'&#212;'</TD><TD>-- capital O, circumflex accent --</TD></TR>
+<TR><TD>&amp;Otilde</TD><TD>&amp;#213</TD><TD>=</TD><TD>'&Otilde;'</TD><TD>=</TD><TD>'&#213;'</TD><TD>-- capital O, tilde --</TD></TR>
+<TR><TD>&amp;Ouml</TD><TD>&amp;#214</TD><TD>=</TD><TD>'&Ouml;'</TD><TD>=</TD><TD>'&#214;'</TD><TD>-- capital O, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;times</TD><TD>&amp;#215</TD><TD>=</TD><TD>'&times;'</TD><TD>=</TD><TD>'&#215;'</TD><TD>-- multiply sign --</TD></TR>
+<TR><TD>&amp;Oslash</TD><TD>&amp;#216</TD><TD>=</TD><TD>'&Oslash;'</TD><TD>=</TD><TD>'&#216;'</TD><TD>-- capital O, slash --</TD></TR>
+<TR><TD>&amp;Ugrave</TD><TD>&amp;#217</TD><TD>=</TD><TD>'&Ugrave;'</TD><TD>=</TD><TD>'&#217;'</TD><TD>-- capital U, grave accent --</TD></TR>
+<TR><TD>&amp;Uacute</TD><TD>&amp;#218</TD><TD>=</TD><TD>'&Uacute;'</TD><TD>=</TD><TD>'&#218;'</TD><TD>-- capital U, acute accent --</TD></TR>
+<TR><TD>&amp;Ucirc</TD><TD>&amp;#219</TD><TD>=</TD><TD>'&Ucirc;'</TD><TD>=</TD><TD>'&#219;'</TD><TD>-- capital U, circumflex accent --</TD></TR>
+<TR><TD>&amp;Uuml</TD><TD>&amp;#220</TD><TD>=</TD><TD>'&Uuml;'</TD><TD>=</TD><TD>'&#220;'</TD><TD>-- capital U, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;Yacute</TD><TD>&amp;#221</TD><TD>=</TD><TD>'&Yacute;'</TD><TD>=</TD><TD>'&#221;'</TD><TD>-- capital Y, acute accent --</TD></TR>
+<TR><TD>&amp;THORN</TD><TD>&amp;#222</TD><TD>=</TD><TD>'&THORN;'</TD><TD>=</TD><TD>'&#222;'</TD><TD>-- capital THORN, Icelandic --</TD></TR>
+<TR><TD>&amp;szlig</TD><TD>&amp;#223</TD><TD>=</TD><TD>'&szlig;'</TD><TD>=</TD><TD>'&#223;'</TD><TD>-- small sharp s, German (sz ligature) --</TD></TR>
+<TR><TD bgcolor="#00CC00"><B>Entity</B></TD><TD bgcolor="#00CC00"><B>Value</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>Named</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>#val</B></TD><TD bgcolor="#00CC00"><B>-- Descripiption</B></TD></TR>
+<TR><TD>&amp;agrave</TD><TD>&amp;#224</TD><TD>=</TD><TD>'&agrave;'</TD><TD>=</TD><TD>'&#224;'</TD><TD>-- small a, grave accent --</TD></TR>
+<TR><TD>&amp;aacute</TD><TD>&amp;#225</TD><TD>=</TD><TD>'&aacute;'</TD><TD>=</TD><TD>'&#225;'</TD><TD>-- small a, acute accent --</TD></TR>
+<TR><TD>&amp;acirc</TD><TD>&amp;#226</TD><TD>=</TD><TD>'&acirc;'</TD><TD>=</TD><TD>'&#226;'</TD><TD>-- small a, circumflex accent --</TD></TR>
+<TR><TD>&amp;atilde</TD><TD>&amp;#227</TD><TD>=</TD><TD>'&atilde;'</TD><TD>=</TD><TD>'&#227;'</TD><TD>-- small a, tilde --</TD></TR>
+<TR><TD>&amp;auml</TD><TD>&amp;#228</TD><TD>=</TD><TD>'&auml;'</TD><TD>=</TD><TD>'&#228;'</TD><TD>-- small a, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;aring</TD><TD>&amp;#229</TD><TD>=</TD><TD>'&aring;'</TD><TD>=</TD><TD>'&#229;'</TD><TD>-- small a, ring --</TD></TR>
+<TR><TD>&amp;aelig</TD><TD>&amp;#230</TD><TD>=</TD><TD>'&aelig;'</TD><TD>=</TD><TD>'&#230;'</TD><TD>-- small ae diphthong (ligature) --</TD></TR>
+<TR><TD>&amp;ccedil</TD><TD>&amp;#231</TD><TD>=</TD><TD>'&ccedil;'</TD><TD>=</TD><TD>'&#231;'</TD><TD>-- small c, cedilla --</TD></TR>
+<TR><TD>&amp;egrave</TD><TD>&amp;#232</TD><TD>=</TD><TD>'&egrave;'</TD><TD>=</TD><TD>'&#232;'</TD><TD>-- small e, grave accent --</TD></TR>
+<TR><TD>&amp;eacute</TD><TD>&amp;#233</TD><TD>=</TD><TD>'&eacute;'</TD><TD>=</TD><TD>'&#233;'</TD><TD>-- small e, acute accent --</TD></TR>
+<TR><TD>&amp;ecirc</TD><TD>&amp;#234</TD><TD>=</TD><TD>'&ecirc;'</TD><TD>=</TD><TD>'&#234;'</TD><TD>-- small e, circumflex accent --</TD></TR>
+<TR><TD>&amp;euml</TD><TD>&amp;#235</TD><TD>=</TD><TD>'&euml;'</TD><TD>=</TD><TD>'&#235;'</TD><TD>-- small e, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;igrave</TD><TD>&amp;#236</TD><TD>=</TD><TD>'&igrave;'</TD><TD>=</TD><TD>'&#236;'</TD><TD>-- small i, grave accent --</TD></TR>
+<TR><TD>&amp;iacute</TD><TD>&amp;#237</TD><TD>=</TD><TD>'&iacute;'</TD><TD>=</TD><TD>'&#237;'</TD><TD>-- small i, acute accent --</TD></TR>
+<TR><TD>&amp;icirc</TD><TD>&amp;#238</TD><TD>=</TD><TD>'&icirc;'</TD><TD>=</TD><TD>'&#238;'</TD><TD>-- small i, circumflex accent --</TD></TR>
+<TR><TD>&amp;iuml</TD><TD>&amp;#239</TD><TD>=</TD><TD>'&iuml;'</TD><TD>=</TD><TD>'&#239;'</TD><TD>-- small i, dieresis or umlaut mark --</TD></TR>
+<TR><TD bgcolor="#00CC00"><B>Entity</B></TD><TD bgcolor="#00CC00"><B>Value</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>Named</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>#val</B></TD><TD bgcolor="#00CC00"><B>-- Descripiption</B></TD></TR>
+<TR><TD>&amp;eth</TD><TD>&amp;#240</TD><TD>=</TD><TD>'&eth;'</TD><TD>=</TD><TD>'&#240;'</TD><TD>-- small eth, Icelandic --</TD></TR>
+<TR><TD>&amp;ntilde</TD><TD>&amp;#241</TD><TD>=</TD><TD>'&ntilde;'</TD><TD>=</TD><TD>'&#241;'</TD><TD>-- small n, tilde --</TD></TR>
+<TR><TD>&amp;ograve</TD><TD>&amp;#242</TD><TD>=</TD><TD>'&ograve;'</TD><TD>=</TD><TD>'&#242;'</TD><TD>-- small o, grave accent --</TD></TR>
+<TR><TD>&amp;oacute</TD><TD>&amp;#243</TD><TD>=</TD><TD>'&oacute;'</TD><TD>=</TD><TD>'&#243;'</TD><TD>-- small o, acute accent --</TD></TR>
+<TR><TD>&amp;ocirc</TD><TD>&amp;#244</TD><TD>=</TD><TD>'&ocirc;'</TD><TD>=</TD><TD>'&#244;'</TD><TD>-- small o, circumflex accent --</TD></TR>
+<TR><TD>&amp;otilde</TD><TD>&amp;#245</TD><TD>=</TD><TD>'&otilde;'</TD><TD>=</TD><TD>'&#245;'</TD><TD>-- small o, tilde --</TD></TR>
+<TR><TD>&amp;ouml</TD><TD>&amp;#246</TD><TD>=</TD><TD>'&ouml;'</TD><TD>=</TD><TD>'&#246;'</TD><TD>-- small o, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;divide</TD><TD>&amp;#247</TD><TD>=</TD><TD>'&divide;'</TD><TD>=</TD><TD>'&#247;'</TD><TD>-- divide sign --</TD></TR>
+<TR><TD>&amp;oslash</TD><TD>&amp;#248</TD><TD>=</TD><TD>'&oslash;'</TD><TD>=</TD><TD>'&#248;'</TD><TD>-- small o, slash --</TD></TR>
+<TR><TD>&amp;ugrave</TD><TD>&amp;#249</TD><TD>=</TD><TD>'&ugrave;'</TD><TD>=</TD><TD>'&#249;'</TD><TD>-- small u, grave accent --</TD></TR>
+<TR><TD>&amp;uacute</TD><TD>&amp;#250</TD><TD>=</TD><TD>'&uacute;'</TD><TD>=</TD><TD>'&#250;'</TD><TD>-- small u, acute accent --</TD></TR>
+<TR><TD>&amp;ucirc</TD><TD>&amp;#251</TD><TD>=</TD><TD>'&ucirc;'</TD><TD>=</TD><TD>'&#251;'</TD><TD>-- small u, circumflex accent --</TD></TR>
+<TR><TD>&amp;uuml</TD><TD>&amp;#252</TD><TD>=</TD><TD>'&uuml;'</TD><TD>=</TD><TD>'&#252;'</TD><TD>-- small u, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;yacute</TD><TD>&amp;#253</TD><TD>=</TD><TD>'&yacute;'</TD><TD>=</TD><TD>'&#253;'</TD><TD>-- small y, acute accent --</TD></TR>
+<TR><TD>&amp;thorn</TD><TD>&amp;#254</TD><TD>=</TD><TD>'&thorn;'</TD><TD>=</TD><TD>'&#254;'</TD><TD>-- small thorn, Icelandic --</TD></TR>
+<TR><TD>&amp;yuml</TD><TD>&amp;#255</TD><TD>=</TD><TD>'&yuml;'</TD><TD>=</TD><TD>'&#255;'</TD><TD>-- small y, dieresis or umlaut mark --</TD></TR>
+<TR><TD>&amp;amp</TD><TD>&amp;#38</TD><TD>=</TD><TD>'&amp;'</TD><TD>=</TD><TD>'&#38;'</TD><TD>-- ampersand --</TD></TR>
+<TR><TD>&amp;lt</TD><TD>&amp;#60</TD><TD>=</TD><TD>'&lt;'</TD><TD>=</TD><TD>'&#60;'</TD><TD>-- less than --</TD></TR>
+<TR><TD>&amp;gt</TD><TD>&amp;#62</TD><TD>=</TD><TD>'&gt;'</TD><TD>=</TD><TD>'&#62;'</TD><TD>-- greater than --</TD></TR>
+<TR><TD bgcolor="#00CC00"><B>Entity</B></TD><TD bgcolor="#00CC00"><B>Value</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>Named</B></TD><TD bgcolor="#00CC00"> </TD><TD bgcolor="#00CC00"><B>#val</B></TD><TD bgcolor="#00CC00"><B>-- Descripiption</B></TD></TR>
+</TABLE>
+<HR>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<html> <head> <title>Parser Test 4</title> </head>
+
+<body>
+<H1>Parser Test 4</H1>
+This is a regression test to see if entities inserted within the regular flow of text are handled correctly.
+<H2>Ampersands added in the text flow.</H2>
+The following texts are placed into a table to force line-breaks.
+<HR>
+<TABLE width=150 border=2>
+<TR><TD>This is a test with a &amp; b and an ampersand in 
+between surrounded by spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=140 border=2>
+<TR><TD>This is a test with a &amp; b and an ampersand in 
+between surrounded by spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=130 border=2>
+<TR><TD>This is a test with a &amp; b and an ampersand in 
+between surrounded by spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=150 border=2>
+<TR><TD>This is a test with a&amp;b and an ampersand in 
+between without any spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=140 border=2>
+<TR><TD>This is a test with a&amp;b and an ampersand in 
+between without any spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=130 border=2>
+<TR><TD>This is a test with a&amp;b and an ampersand in 
+between without any spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<H2>Plus-minus added in the text flow.</H2>
+The following texts are placed into a table to force line-breaks.
+<HR>
+<TABLE width=150 border=2>
+<TR><TD>This is a test with a &plusmn; b and a plus-minus sign in 
+between surrounded by spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=140 border=2>
+<TR><TD>This is a test with a &plusmn; b and a plus-minus sign in 
+between surrounded by spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=130 border=2>
+<TR><TD>This is a test with a &plusmn; b and a plus-minus sign in 
+between surrounded by spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=150 border=2>
+<TR><TD>This is a test with a&plusmn;b and a plus-minus sign in 
+between without any spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=140 border=2>
+<TR><TD>This is a test with a&plusmn;b and a plus-minus sign in 
+between without any spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<TABLE width=130 border=2>
+<TR><TD>This is a test with a&plusmn;b and a plus-minus sign in 
+between without any spaces.
+</TD></TR>
+</TABLE>
+<HR>
+<H2>Tests with ';' added to the entities.</H2>
+<P>
+<P>
+This is normal text. Now follow three ampersands &amp;&amp;&amp; surrounded by spaces.<BR>
+This is normal text. Now follow three ampersands&amp;&amp;&amp;not surrounded by spaces.<BR>
+This is normal text. Now follow three A-umlauts &Auml;&Auml;&Auml; surrounded by spaces.<BR>
+This is normal text. Now follow three A-umlauts&Auml;&Auml;&Auml;not surrounded by spaces.<BR>
+<HR>
+<PRE>This is preformatted text. 
+Now follow three ampersands &amp;&amp;&amp; surrounded by spaces.</PRE>
+<HR>
+<PRE>This is preformatted text. 
+Now follow three ampersands&amp;&amp;&amp;not surrounded by spaces.</PRE>
+<HR>
+<PRE>This is preformatted text. 
+Now follow three A-umlauts &Auml;&Auml;&Auml; surrounded by spaces.</PRE>
+<HR>
+<PRE>This is preformatted text. 
+Now follow three A-umlauts&Auml;&Auml;&Auml;not surrounded by spaces.</PRE>
+<HR>
+<H2>Tests without ';' added to the entities.</H2>
+<P>
+<P>
+This is normal text. Now follow three ampersands &amp&amp&amp surrounded by spaces.<BR>
+This is normal text. Now follow three ampersands&amp&amp&ampnot surrounded by spaces.<BR>
+This is normal text. Now follow three A-umlauts &Auml&Auml&Auml surrounded by spaces.<BR>
+This is normal text. Now follow three A-umlauts&Auml&Auml&Aumlnot surrounded by spaces.<BR>
+<HR>
+<PRE>This is preformatted text. 
+Now follow three ampersands &amp&amp&amp surrounded by spaces.</PRE>
+<HR>
+<PRE>This is preformatted text. 
+Now follow three ampersands&amp&amp&ampnot surrounded by spaces.</PRE>
+<HR>
+<PRE>This is preformatted text. 
+Now follow three A-umlauts &Auml&Auml&Auml surrounded by spaces.</PRE>
+<HR>
+<PRE>This is preformatted text. 
+Now follow three A-umlauts&Auml&Auml&Aumlnot surrounded by spaces.</PRE>
+<HR>
+<H2>Tests with entities, spaces and tabs inside &lt;PRE&gt;</H2>
+<HR>
+<PRE>
+            3   7   1   5   9   3   7   1   5
+1   5   9   1   1   2   2   2   3   3   3   3
+	T	T	T	T	T
+<B>Bold</B>	TAB	&lt;B&gt;Bold&lt;/B&gt;
+&amp;amp	TAB	&amp;amp;amp
+&#38;#38	TAB	&amp;#38;#38
+&Auml;(Auml)	TAB	&amp;Auml;(Auml)
+&#196;(#196)	TAB	&amp;#196;(#196)
+&foo	TAB	&amp;foo
+&foo;	TAB	&amp;foo;
+</PRE>
+</body>
+</html>
