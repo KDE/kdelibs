@@ -18,11 +18,11 @@
 #include <qpoint.h>
 #include <qevent.h>
 #include <qimage.h>
+#include <qpixmap.h>
 
 #include <kapp.h>
 #include <klocale.h>
 #include <kwin.h>
-#include <kpixmap.h>
 #include <kimageeffect.h>
 #include <kpixmapeffect.h>
 #include <kmessagebox.h>
@@ -34,6 +34,13 @@
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+
+
+#ifdef __GNUC__
+#define ID __PRETTY_FUNCTION__ << ": "
+#else
+#define ID "KRootPixmap: "
+#endif
 
 
 KRootPixmap::KRootPixmap(QWidget *widget)
@@ -58,7 +65,8 @@ KRootPixmap::KRootPixmap(QWidget *widget)
 void KRootPixmap::start()
 {
     m_bActive = true;
-    repaint(true);
+    if (m_bInit)
+	repaint(true);
 }
 
 
@@ -83,37 +91,40 @@ void KRootPixmap::setFadeEffect(double fade, QColor color)
 
 bool KRootPixmap::eventFilter(QObject *, QEvent *event)
 {
+    // Initialise after the first paint event on the managed widget.
     if (!m_bInit && (event->type() == QEvent::Paint))
     {
 	m_bInit = true;
 	m_Desk = KWin::currentDesktop();
     }
+
     if (!m_bActive)
 	return false;
 	
-    switch (event->type()) {
+    switch (event->type()) 
+    {
     case QEvent::Resize:
     case QEvent::Move:
 	m_pTimer->start(100, true);
 	break;
 
     case QEvent::Paint:
-	repaint(false);
+	m_pTimer->start(0, true);
 	break;
 
     default:
 	break;
-
     }
 
     return false; // always continue processing
 }
 
-	
+
 void KRootPixmap::repaint()
 {
     repaint(false);
 }
+
 
 void KRootPixmap::repaint(bool force)
 {
@@ -122,13 +133,14 @@ void KRootPixmap::repaint(bool force)
     if (!force && (m_Rect == QRect(p1, p2)))
 	return;
 
+    // Due to northwest bit gravity, we don't need to do anything if the
+    // bottom right corner of the widget is moved inward.
+    // That said, konsole clears the background when it is resized, so
+    // we have to reset the background pixmap.
     if ((p1 == m_Rect.topLeft()) && (m_pWidget->width() < m_Rect.width()) &&
 	(m_pWidget->height() < m_Rect.height())
-       ) {
-	// Due to northwest bit gravity, we don't need to do anything if the
-	// bottom right corner of the widget is moved inward.
-	// That said, konsole clears the background when it is resized, so
-	// we have to reset the background pixmap.
+       ) 
+    {
 	m_pWidget->setBackgroundPixmap(*m_pPixmap);
 	return;
     }
@@ -137,7 +149,7 @@ void KRootPixmap::repaint(bool force)
 
     // KSharedPixmap will correctly generate a tile for us.
     if (!m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect))
-	kDebugWarning("loading of desktop background failed");
+	kdWarning(270) << ID << "loading of desktop background failed.\n";
 }
 
 
@@ -146,26 +158,30 @@ bool KRootPixmap::checkAvailable(bool show_warning)
     QString name = QString("DESKTOP%1").arg(KWin::currentDesktop());
     bool avail = m_pPixmap->isAvailable(name);
     if (!avail && show_warning)
+    {
 	KMessageBox::sorry(0L, 
 	    i18n("Cannot find the desktop background. Pseudo transparency\n"
 		 "cannot be used! To make the desktop background available,\n"
 		 "go to Preferences -> Display -> Advanced and enable\n"
 		 "the setting `Export background to shared Pixmap'"),
 	    i18n("Warning: Pseudo Transparency not Available"));
+    }
     return avail;
 }
 
 
 void KRootPixmap::slotDone(bool success)
 {
-    if (!success) {
-	kDebugWarning("loading of desktop background failed");
+    if (!success) 
+    {
+	kdWarning(270) << ID << "loading of desktop background failed.\n";
 	return;
     }
 
     QPixmap pm = *m_pPixmap;
 
-    if (m_Fade > 1e-6) {
+    if (m_Fade > 1e-6) 
+    {
 	KPixmapIO io;
 	QImage img = io.convertToImage(pm);
 	img = KImageEffect::fade(img, m_Fade, m_FadeColor);
@@ -178,6 +194,8 @@ void KRootPixmap::slotDone(bool success)
 
 void KRootPixmap::slotBackgroundChanged(int desk)
 {
+    if (!m_bInit || !m_bActive)
+	return;
     if (desk == m_Desk)
 	repaint(true);
 }

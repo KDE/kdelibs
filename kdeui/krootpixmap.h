@@ -3,7 +3,7 @@
  * $Id$
  *
  * This file is part of the KDE project, module kdesktop.
- * Copyright (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
+ * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  * 
  * You can Freely distribute this program under the GNU Library General 
  * Public License. See the file "COPYING.LIB" for the exact licensing terms.
@@ -32,6 +32,9 @@ class KRootPixmapData;
  * To create a transparent widget, construct a KRootPixmap and pass it a 
  * pointer to your widget. That's it! Moving, resizing and background changes 
  * are handled automatically.
+ *
+ * @author Geert Jansen <jansen@kde.org>
+ * @version $Id: $
  */
 class KRootPixmap: public QObject
 {
