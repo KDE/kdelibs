@@ -99,6 +99,7 @@ using namespace DOM;
 #include "khtmlpart_p.h"
 #include "kpopupmenu.h"
 #include "rendering/render_form.h"
+#include <kwin.h>
 
 namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
@@ -819,7 +820,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " << script << endl;
+  kdDebug(6070) << "KHTMLPart::executeScript caller='" << name() << "' node=" << n.nodeName().string().latin1() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " << script << endl;
 #endif
   KJSProxy *proxy = jScript();
 
@@ -1713,7 +1714,8 @@ void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
 
 void KHTMLPart::checkCompleted()
 {
-  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << (d->m_doc && d->m_doc->parsing()) << endl;
+  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() " << this << " " << name() << endl;
+  //kdDebug( 6050 ) << "                           parsing: " << (d->m_doc && d->m_doc->parsing()) << endl;
   //kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
 
   // restore the cursor position
@@ -1732,7 +1734,10 @@ void KHTMLPart::checkCompleted()
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it ) {
     if ( !(*it).m_bCompleted )
+    {
+      //kdDebug( 6050 ) << this << " is waiting for " << ( *it ).m_part << endl;
       return;
+    }
     // Check for frames with pending redirections
     if ( (*it).m_bPendingRedirection )
       bPendingChildRedirection = true;
@@ -1753,7 +1758,10 @@ void KHTMLPart::checkCompleted()
     requests = khtml::Cache::loader()->numRequests( d->m_doc->docLoader() );
 
   if ( requests > 0 )
+  {
+    //kdDebug(6050) << "still waiting for images/scripts from the loader - requests:" << requests << endl;
     return;
+  }
 
   // OK, completed.
   // Now do what should be done when we are really completed.
@@ -2087,49 +2095,51 @@ void KHTMLPart::findTextBegin()
   d->m_paFindNext->setEnabled( false ); // needs a 'find' first
 }
 
-bool KHTMLPart::initFindNode( bool selection, bool reverse )
+bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
 {
     if ( !d->m_doc )
         return false;
 
-    if(!d->m_findNode) {
-        if (d->m_doc->isHTMLDocument())
-            d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
-        else
-            d->m_findNode = d->m_doc;
-    }
+    DOM::NodeImpl* firstNode = 0L;
+    if (d->m_doc->isHTMLDocument())
+      firstNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
+    else
+      firstNode = d->m_doc;
 
-    if ( !d->m_findNode )
+    if ( !firstNode )
     {
-      kdDebug(6050) << k_funcinfo << "no findNode -> return false" << endl;
+      //kdDebug(6050) << k_funcinfo << "no first node (body or doc) -> return false" << endl;
       return false;
     }
-    if ( d->m_findNode->id() == ID_FRAMESET )
+    if ( firstNode->id() == ID_FRAMESET )
     {
-      kdDebug(6050) << k_funcinfo << "FRAMESET -> return false" << endl;
+      //kdDebug(6050) << k_funcinfo << "FRAMESET -> return false" << endl;
       return false;
     }
 
     if ( selection && hasSelection() )
     {
-      kdDebug(6050) << k_funcinfo << "using selection" << endl;
-      d->m_findNode = d->m_selectionStart.handle();
-      d->m_findPos = d->m_startOffset;
-      d->m_findNodeEnd = d->m_selectionEnd.handle();
-      d->m_findPosEnd = d->m_endOffset;
-      if ( reverse ) {
-        qSwap( d->m_findNode, d->m_findNodeEnd );
-        qSwap( d->m_findPos, d->m_findPosEnd );
+      //kdDebug(6050) << k_funcinfo << "using selection" << endl;
+      if ( !fromCursor )
+      {
+        d->m_findNode = reverse ? d->m_selectionEnd.handle() : d->m_selectionStart.handle();
+        d->m_findPos = reverse ? d->m_endOffset : d->m_startOffset;
       }
+      d->m_findNodeEnd = reverse ? d->m_selectionStart.handle() : d->m_selectionEnd.handle();
+      d->m_findPosEnd = reverse ? d->m_startOffset : d->m_endOffset;
     }
     else // whole document
     {
       //kdDebug(6050) << k_funcinfo << "whole doc" << endl;
-      d->m_findPos = 0;
-      d->m_findPosEnd = -1;
-      d->m_findNodeEnd = 0;
-      if ( reverse ) {
-        qSwap( d->m_findPos, d->m_findPosEnd );
+      if ( !fromCursor )
+      {
+        d->m_findNode = reverse ? 0 : firstNode;
+        d->m_findPos = reverse ? -1 : 0;
+      }
+      d->m_findNodeEnd = reverse ? firstNode : 0;
+      d->m_findPosEnd = reverse ? 0 : -1;
+      if ( d->m_findNode == 0 ) {
+        d->m_findNode = firstNode; // body or doc
         // Need to find out the really last object, to start from it
         while ( d->m_findNode->lastChild() )
           d->m_findNode = d->m_findNode->lastChild();
@@ -2141,7 +2151,7 @@ bool KHTMLPart::initFindNode( bool selection, bool reverse )
 // Old method (its API limits the available features - remove in KDE-4)
 bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp )
 {
-    if ( !initFindNode( false, !forward ) )
+    if ( !initFindNode( false, !forward, false ) )
       return false;
     while(1)
     {
@@ -2253,7 +2263,9 @@ void KHTMLPart::slotFindDone()
 
 void KHTMLPart::slotFindDialogDestroyed()
 {
-  // ### remove me
+  d->m_lastFindState.history = d->m_findDialog->findHistory();
+  d->m_findDialog->deleteLater();
+  d->m_findDialog = 0L;
 }
 
 void KHTMLPart::findText()
@@ -2262,49 +2274,47 @@ void KHTMLPart::findText()
   if ( !d->m_doc )
     return;
 
+  // Raise if already opened
+  if ( d->m_findDialog )
+  {
+    KWin::setActiveWindow( d->m_findDialog->winId() );
+    return;
+  }
+
   // The lineedit of the dialog would make khtml lose its selection, otherwise
 #ifndef QT_NO_CLIPBOARD
   disconnect( kapp->clipboard(), SIGNAL(selectionChanged()), this, SLOT(slotClearSelection()) );
 #endif
 
   // Now show the dialog in which the user can choose options.
-  KFindDialog optionsDialog( widget(), "khtmlfind" );
-  optionsDialog.setHasSelection( hasSelection() );
-  optionsDialog.setHasCursor( d->m_findNode != 0 );
+  d->m_findDialog = new KFindDialog( false /*non-modal*/, widget(), "khtmlfind" );
+  d->m_findDialog->setHasSelection( hasSelection() );
+  d->m_findDialog->setHasCursor( d->m_findNode != 0 );
   if ( d->m_findNode ) // has a cursor -> default to 'FromCursor'
     d->m_lastFindState.options |= KFindDialog::FromCursor;
 
   // TODO? optionsDialog.setPattern( d->m_lastFindState.text );
-  optionsDialog.setFindHistory( d->m_lastFindState.history );
-  optionsDialog.setOptions( d->m_lastFindState.options );
+  d->m_findDialog->setFindHistory( d->m_lastFindState.history );
+  d->m_findDialog->setOptions( d->m_lastFindState.options );
 
-  if ( optionsDialog.exec() != QDialog::Accepted )
-      return;
+  d->m_lastFindState.options = -1; // force update in findTextNext
+
+  d->m_findDialog->show();
+  connect( d->m_findDialog, SIGNAL(okClicked()), this, SLOT(slotFindNext()) );
+  connect( d->m_findDialog, SIGNAL(finished()), this, SLOT(slotFindDialogDestroyed()) );
 
 #ifndef QT_NO_CLIPBOARD
   connect( kapp->clipboard(), SIGNAL(selectionChanged()), SLOT(slotClearSelection()) );
 #endif
 
-  // Save for next time
-  //d->m_lastFindState.text = optionsDialog.pattern();
-  int options = optionsDialog.options();
-  d->m_lastFindState.options = options;
-  d->m_lastFindState.history = optionsDialog.findHistory();
-
   // Create the KFind object
   delete d->m_find;
-  d->m_find = new KFind( optionsDialog.pattern(), options, widget() );
+  d->m_find = new KFind( d->m_findDialog->pattern(), 0 /*options*/, widget() );
+  d->m_find->closeFindNextDialog(); // we use KFindDialog non-modal, so we don't want another dlg popping up
   connect(d->m_find, SIGNAL( highlight( const QString &, int, int ) ),
           this, SLOT( slotHighlight( const QString &, int, int ) ) );
-  connect(d->m_find, SIGNAL( findNext() ),
-          this, SLOT( slotFindNext() ) );
-
-  if ( options & KFindDialog::SelectedText )
-    Q_ASSERT( hasSelection() );
-
-  if ( (options & KFindDialog::FromCursor) == 0 )
-      (void) initFindNode( options & KFindDialog::SelectedText, options & KFindDialog::FindBackwards );
-  findTextNext();
+  //connect(d->m_find, SIGNAL( findNext() ),
+  //        this, SLOT( slotFindNext() ) );
 }
 
 // New method
@@ -2313,7 +2323,29 @@ void KHTMLPart::findTextNext()
   if (!d->m_find) // shouldn't be called before find is activated
 	return;
 
-  long options = d->m_find->options();
+  // Save for next time
+  //d->m_lastFindState.text = optionsDialog.pattern();
+  d->m_find->setPattern( d->m_findDialog->pattern() );
+  long options = d->m_findDialog->options();
+  if ( d->m_lastFindState.options != options )
+  {
+    d->m_find->setOptions( options );
+
+    if ( options & KFindDialog::SelectedText )
+      Q_ASSERT( hasSelection() );
+
+    long difference = d->m_lastFindState.options ^ options;
+    if ( difference & (KFindDialog::SelectedText | KFindDialog::FromCursor ) )
+    {
+        // Important options changed -> reset search range
+      (void) initFindNode( options & KFindDialog::SelectedText,
+                           options & KFindDialog::FindBackwards,
+                           options & KFindDialog::FromCursor );
+
+    }
+    d->m_lastFindState.options = options;
+  }
+
   KFind::Result res = KFind::NoMatch;
   khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
   khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
@@ -2376,7 +2408,7 @@ void KHTMLPart::findTextNext()
           if ( newLinePos != -1 )
             newLinePos += index;
           str += s;
-          //kdDebug(6050) << "StringPortion: " << index << "-" << index+s.length()-1 << " -> " << node << endl;
+          //kdDebug(6050) << "StringPortion: " << index << "-" << index+s.length()-1 << " -> " << lastNode << endl;
           d->m_stringPortions.append( KHTMLPartPrivate::StringPortion( index, lastNode ) );
         }
         // Compare obj and end _after_ we processed the 'end' node itself
@@ -2409,7 +2441,7 @@ void KHTMLPart::findTextNext()
     }
     if ( !d->m_find->needData() ) // happens if str was empty
     {
-      // Let KFind inspect the text fragment, and display a dialog if a match is found
+      // Let KFind inspect the text fragment, and emit highlighted if a match is found
       res = d->m_find->find();
     }
   } // end while
@@ -2419,23 +2451,23 @@ void KHTMLPart::findTextNext()
     if ( d->m_find->shouldRestart() )
     {
       //kdDebug(6050) << "Restarting" << endl;
-      initFindNode( false, options & KFindDialog::FindBackwards );
+      initFindNode( false, options & KFindDialog::FindBackwards, false );
       findTextNext();
     }
-    else // really done, close 'find next' dialog
+    else // really done
     {
       //kdDebug(6050) << "Finishing" << endl;
-      delete d->m_find;
-      d->m_find = 0L;
+      //delete d->m_find;
+      //d->m_find = 0L;
       slotClearSelection();
     }
   }
-  d->m_paFindNext->setEnabled( d->m_find != 0L  ); // true, except when completely done
+  //d->m_paFindNext->setEnabled( d->m_find != 0L  ); // true, except when completely done
 }
 
 void KHTMLPart::slotHighlight( const QString &text, int index, int length )
 {
-  kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
+  //kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
   QValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
   QValueList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
   // We stop at the first portion whose index is 'greater than', and then use the previous one
@@ -2456,6 +2488,7 @@ void KHTMLPart::slotHighlight( const QString &text, int index, int length )
   khtml::RenderLineEdit *parentLine = 0L;
   bool renderLineText =false;
 
+  QRect highlightedRect;
   bool renderAreaText =false;
   Q_ASSERT( obj );
   if ( obj )
@@ -2470,9 +2503,19 @@ void KHTMLPart::slotHighlight( const QString &text, int index, int length )
     if ( renderLineText )
       parentLine= static_cast<khtml::RenderLineEdit *>(obj);
     if ( !renderLineText )
-      if (static_cast<khtml::RenderText *>(node->renderer())
-          ->posOfChar(d->m_startOffset, x, y))
-        d->m_view->setContentsPos(x-50, y-50);
+      //if (static_cast<khtml::RenderText *>(node->renderer())
+      //    ->posOfChar(d->m_startOffset, x, y))
+      {
+        int dummy;
+        static_cast<khtml::RenderText *>(node->renderer())
+          ->cursorPos( d->m_startOffset, x, y, dummy ); // more precise than posOfChar
+        //kdDebug(6050) << "topleft: " << x << "," << y << endl;
+        if ( x != -1 || y != -1 )
+        {
+          d->m_view->setContentsPos(x-50, y-50);
+          highlightedRect.setTopLeft( d->m_view->mapToGlobal(QPoint(x, y)) );
+        }
+      }
   }
   // Now look for end node
   it = prev; // no need to start from beginning again
@@ -2508,8 +2551,29 @@ void KHTMLPart::slotHighlight( const QString &text, int index, int length )
   {
     d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
                             d->m_selectionEnd.handle(), d->m_endOffset );
+    if (d->m_selectionEnd.handle()->renderer() )
+    {
+      int x, y, height;
+      static_cast<khtml::RenderText *>(d->m_selectionEnd.handle()->renderer())
+          ->cursorPos( d->m_endOffset, x, y, height ); // more precise than posOfChar
+      //kdDebug(6050) << "bottomright: " << x << "," << y+height << endl;
+      if ( x != -1 || y != -1 )
+      {
+        // if ( static_cast<khtml::RenderText *>(d->m_selectionEnd.handle()->renderer())
+        //  ->posOfChar(d->m_endOffset-1, x, y))
+        highlightedRect.setBottomRight( d->m_view->mapToGlobal( QPoint(x, y+height) ) );
+      }
+    }
   }
   emitSelectionChanged();
+
+  // make the finddialog move away from the selected area
+  if ( d->m_findDialog && !highlightedRect.isNull() )
+  {
+    highlightedRect.moveBy( -d->m_view->contentsX(), -d->m_view->contentsY() );
+    //kdDebug(6050) << "avoiding " << highlightedRect << endl;
+    KDialog::avoidArea( d->m_findDialog, highlightedRect );
+  }
 }
 
 QString KHTMLPart::selectedText() const
@@ -2858,7 +2922,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     // ### ERROR HANDLING
     return;
 
-  //kdDebug( 6000 ) << "urlSelected: complete URL:" << cURL.url() << " target = " << target << endl;
+  kdDebug( 6000 ) << "urlSelected: complete URL:" << cURL.url() << " target = " << target << endl;
 
   if ( button == LeftButton && ( state & ShiftButton ) )
   {
@@ -2976,8 +3040,8 @@ void KHTMLPart::slotViewPageInfo()
   dlg->_url->setText(QString("<a href=\"%1\">%2</a>%3").arg(url().url()).arg(url().prettyURL()).arg(editStr));
   if (lastModified().isEmpty())
   {
-    dlg->_lastModified->hide(); 
-    dlg->_lmLabel->hide(); 
+    dlg->_lastModified->hide();
+    dlg->_lmLabel->hide();
   }
   else
     dlg->_lastModified->setText(lastModified());
@@ -3214,12 +3278,12 @@ KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::Rend
 bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
                               const QStringList &params, bool isIFrame )
 {
-//  kdDebug( 6050 ) << "childRequest( ..., " << url << ", " << frameName << " )" << endl;
+  //kdDebug( 6050 ) << this << " requestFrame( ..., " << url << ", " << frameName << " )" << endl;
   FrameIt it = d->m_frames.find( frameName );
   if ( it == d->m_frames.end() )
   {
     khtml::ChildFrame child;
-//    kdDebug( 6050 ) << "inserting new frame into frame map " << frameName << endl;
+    //kdDebug( 6050 ) << "inserting new frame into frame map " << frameName << endl;
     child.m_name = frameName;
     it = d->m_frames.append( child );
   }
@@ -3250,6 +3314,7 @@ QString KHTMLPart::requestFrameName()
 bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
                                const QStringList &params )
 {
+    kdDebug( 6005 ) << "KHTMLPart::requestObject " << this << " frame=" << frame << endl;
   khtml::ChildFrame child;
   QValueList<khtml::ChildFrame>::Iterator it = d->m_objects.append( child );
   (*it).m_frame = frame;
@@ -3264,10 +3329,13 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
 bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
 {
   if (!checkLinkSecurity(url))
+  {
+    kdDebug(6005) << this << " KHTMLPart::requestObject checkLinkSecurity refused" << endl;
     return false;
+  }
   if ( child->m_bPreloaded )
   {
-    // kdDebug(6005) << "KHTMLPart::requestObject preload" << endl;
+    kdDebug(6005) << "KHTMLPart::requestObject preload" << endl;
     if ( child->m_frame && child->m_part )
       child->m_frame->setWidget( child->m_part->widget() );
 
@@ -3315,6 +3383,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     args.serviceType = QString::fromLatin1( "text/html" );
 
   if ( args.serviceType.isEmpty() ) {
+    kdDebug() << "Running new KHTMLRun for " << this << " and child=" << child << endl;
     child->m_run = new KHTMLRun( this, child, url, child->m_args,
                                  child->m_type != khtml::ChildFrame::Frame );
     return false;
@@ -3821,6 +3890,7 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
   khtml::ChildFrame *child = frame( sender() );
 
   if ( child ) {
+    kdDebug() << this << "slotChildCompleted child=" << child << " m_frame=" << child->m_frame << endl;
     child->m_bCompleted = true;
     child->m_bPendingRedirection = pendingAction;
     child->m_args = KParts::URLArgs();
@@ -4325,6 +4395,9 @@ DOM::Node KHTMLPart::nodeUnderMouse() const
 void KHTMLPart::emitSelectionChanged()
 {
   emit d->m_extension->enableAction( "copy", hasSelection() );
+  if ( d->m_findDialog )
+       d->m_findDialog->setHasSelection( hasSelection() );
+
   emit d->m_extension->selectionInfo( selectedText() );
   emit selectionChanged();
 }
@@ -4554,6 +4627,7 @@ QPtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 
 bool KHTMLPart::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs )
 {
+    kdDebug( 6050 ) << this << "KHTMLPart::openURLInFrame " << url << endl;
   FrameIt it = d->m_frames.find( urlArgs.frameName );
 
   if ( it == d->m_frames.end() )
@@ -4797,7 +4871,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 #ifndef QT_NO_DRAGANDDROP
   if( d->m_bDnd && d->m_bMousePressed &&
       (!d->m_strSelectedURL.isEmpty() || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) ) {
-      if ( ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() <= KGlobalSettings::dndEventDelay() ) 
+      if ( ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() <= KGlobalSettings::dndEventDelay() )
         return;
       QPixmap p;
       QDragObject *drag = 0;
@@ -5224,7 +5298,7 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
 QVariant KHTMLPart::executeScript(QString filename, int baseLine, const DOM::Node &n, const QString &script)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "executeScript: filename=" << filename << " baseLine=" << baseLine << " script=" << script << endl;
+  kdDebug(6070) << "executeScript: caller='" << name() << "' filename=" << filename << " baseLine=" << baseLine << " script=" << script << endl;
 #endif
   KJSProxy *proxy = jScript();
 

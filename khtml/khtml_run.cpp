@@ -77,6 +77,9 @@ void KHTMLRun::handleError( KIO::Job *job )
 {
     if ( hideErrorDialog() ) {
         // pass an empty url and mimetype to indicate a loading error
+        // ### TODO: use an error:// URL to display some error inline instead.
+        // This is what IE does. When that's done, change the hideErrorDialog bool passed
+        // to KHTMLRun (from processObjectRequest) to "true" (inconditionnally).
         static_cast<KHTMLPart *>(m_part)->processObjectRequest( m_child, KURL(), QString::null );
         m_job = 0;
         m_bFault = true;

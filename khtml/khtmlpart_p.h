@@ -35,7 +35,6 @@
 #include <qtimer.h>
 
 #include "khtml_run.h"
-#include "../kutils/kfind.h"
 #include "khtml_factory.h"
 #include "khtml_events.h"
 #include "khtml_ext.h"
@@ -44,6 +43,8 @@
 #include "misc/decoder.h"
 #include "ecma/kjs_proxy.h"
 
+class KFind;
+class KFindDialog;
 class KPopupMenu;
 class KSelectAction;
 class KURLLabel;
@@ -132,6 +133,7 @@ public:
     m_haveEncoding = false;
     m_activeFrame = 0L;
     m_find = 0;
+    m_findDialog = 0;
     m_ssl_in_use = false;
 #ifndef Q_WS_QWS
     m_javaContext = 0;
@@ -388,6 +390,7 @@ public:
   QValueList<StringPortion> m_stringPortions;
 
   KFind *m_find;
+  KFindDialog *m_findDialog;
 
   struct findState
   {

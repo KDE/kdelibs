@@ -255,7 +255,7 @@ public:
    */
   KParts::BrowserExtension *browserExtension() const;
   KParts::LiveConnectExtension *liveConnectExtension( const khtml::RenderPart *) const;
-  
+
   /**
    * Returns a pointer to the HTML document's view.
    */
@@ -529,14 +529,14 @@ public:
   bool gotoAnchor( const QString &name );
 
   /**
-   * Go to the next anchor 
+   * Go to the next anchor
    *
    * This is useful to navigate from outside the navigator
    * @since 3.2
    */
   bool nextAnchor();
-  
-  /** 
+
+  /**
    * Go to previous anchor
    * @since 3.2
    */
@@ -1179,12 +1179,12 @@ private:
   void checkEmitLoadEvent();
   void emitLoadEvent();
 
-  bool initFindNode( bool selection, bool reverse );
+  bool initFindNode( bool selection, bool reverse, bool fromCursor );
   void findText();
   void findTextNext();
   void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
   khtml::Decoder *createDecoder();
-  
+
   /** @internal
    * generic zoom in
    */
