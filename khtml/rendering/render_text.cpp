@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2003 Apple Computer, Inc.
- *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -208,28 +208,30 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         p.end();
         QImage img = pixmap.convertToImage().convertDepth(32);
 
-        // blur map (optimization)
-        int bmapw = 2*thickness+1;
-        float *bmap = new float[bmapw*bmapw];
-        float md = thickness*thickness; // max-dist²
-        float strength = 1.0/(sqrt(thickness));
-        if (strength > 1.0) strength = 1.0;
-        for(int n=-thickness; n<thickness; n++) {
-            for(int m=-thickness; m<thickness; m++) {
-                float f, d = (m*m+n*n); // dist²
-                if (d > md)
-                    f = 0.0;
-                else {
-                    f = (1+md-d)/md;
-                    f = f*f*f*f; // square-root of distance
-                }
-                bmap[(m+thickness)+(n+thickness)*bmapw] = f*strength;;
-            }
+        int md = thickness*thickness; // max-dist²
+
+        // blur map (division cache)
+        float *bmap = (float*)alloca(sizeof(float)*(md+1));
+        for(int n=0; n<=md; n++) {
+            float f;
+            f = n/(float)(md+1);
+            f = 1.0 - f*f;
+            bmap[n] = f;
         }
 
+        float factor = 0.0; // maximal opacity-sum
+        for(int n=-thickness; n<=thickness; n++)
+            for(int m=-thickness; m<=thickness; m++) {
+                int d = n*n+m*m;
+                if (d<=md)
+                    factor += bmap[d];
+            }
+
+        factor = 1.0/factor;
+
         // alpha map
-        unsigned char* amap = new unsigned char[h*w];
-        memset(amap, 0, h*w);
+        float* amap = (float*)alloca(sizeof(float)*(h*w));
+        memset(amap, 0, h*w*(sizeof(float)));
         for(int j=thickness; j<h-thickness; j++) {
             for(int i=thickness; i<w-thickness; i++) {
                 QRgb col= img.pixel(i,j);
@@ -239,12 +241,12 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
                     g = (255-g)/(255-gray);
                 else
                     g = g/gray;
-                for(int n=-thickness; n<thickness; n++) {
-                    for(int m=-thickness; m<thickness; m++) {
-                        float f = bmap[(m+thickness)+(n+thickness)*bmapw];
-                        unsigned int anew = (unsigned int)(f*g*255);
-                        unsigned int aold = amap[(i+m)+(j+n)*w];
-                        if (aold < anew) amap[(i+m)+(j+n)*w] = anew;
+                for(int n=-thickness; n<=thickness; n++) {
+                    for(int m=-thickness; m<=thickness; m++) {
+                        int d = n*n+m*m;
+                        if (d>md) continue;
+                        float f = bmap[d];
+                        amap[(i+m)+(j+n)*w] += (g*f);
                     }
                 }
             }
@@ -258,11 +260,9 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
 
         for(int j=0; j<h; j++) {
             for(int i=0; i<w; i++) {
-                res.setPixel(i,j, qRgba(r,g,b,amap[i+j*w]));
+                res.setPixel(i,j, qRgba(r,g,b,(int)(amap[i+j*w]*factor*255.0)));
             }
         }
-        delete[] amap;
-        delete[] bmap;
 
         pt->drawImage(x-thickness, y-thickness, res, 0, 0, -1, -1, Qt::DiffuseAlphaDither | Qt::ColorOnly | Qt::PreferDither);
     }
