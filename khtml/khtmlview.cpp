@@ -157,9 +157,9 @@ void KHTMLView::clear()
 void KHTMLView::resizeEvent ( QResizeEvent * event )
 {
 //    kdDebug( 6000 ) << "resizeEvent" << endl;
-    
+
     QScrollView::resizeEvent(event);
-    
+
     layout();
 }
 
@@ -191,14 +191,14 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     if (eh<0)
     	eh = pe->rect().height();
 
-    QColor bgCol = KHTMLFactory::defaultHTMLSettings()->bgColor();
+    //    QColor bgCol = KHTMLFactory::defaultHTMLSettings()->bgColor();
 
     if(!body)
     {
 	QPainter p(viewport());
 
-	//	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
-	p.fillRect(r.x(), r.y(), ew, eh, bgCol );
+       	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
+	//	p.fillRect(r.x(), r.y(), ew, eh, bgCol );
 	return;
     }
 //    kdDebug( 6000 ) << "viewportPaintEvent x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
@@ -207,8 +207,8 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     {
         paintBuffer->resize(width(),PAINT_BUFFER_HEIGHT);
 	QPainter p(paintBuffer);
-	//	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
-	p.fillRect(r.x(), r.y(), ew, eh, bgCol );
+	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
+	//	p.fillRect(r.x(), r.y(), ew, eh, bgCol );
     }
 
 //    QTime qt;
@@ -225,8 +225,8 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 
 	// ### fix this for frames...
 
-	//	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
-	tp->fillRect(ex, ey+py, ew, ph, bgCol );
+       	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
+	//	tp->fillRect(ex, ey+py, ew, ph, bgCol );
 
 	m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
 
@@ -248,12 +248,12 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 void KHTMLView::layout(bool force)
 {
     //### take care of frmaes (hide scrollbars,...)
-    
-    
+
+
     if( m_part->docImpl() )
     {	
         DOM::HTMLDocumentImpl *document = m_part->docImpl();
-        
+
         khtml::RenderObject* root = document->renderer();
 
 	NodeImpl *body = document->body();
@@ -267,7 +267,7 @@ void KHTMLView::layout(bool force)
 	    return;
 	}
 
-        
+
 	int w = visibleWidth();
 	int h = visibleHeight();
 
@@ -280,17 +280,17 @@ void KHTMLView::layout(bool force)
 
 //	    QTime qt;
 //	    qt.start();
-                                   
+
 	    root->layout(true);
-            
+
             int rw = root->width()+root->marginLeft()+root->marginRight();
             int rh = root->height()+root->marginTop()+root->marginBottom();
-            
+
 	    resizeContents(rw, rh);
-            
+
 //	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
 
-	    viewport()->repaint(false);            
+	    viewport()->repaint(false);
 	}
 	else
 	{
@@ -302,7 +302,7 @@ void KHTMLView::layout(bool force)
     {
 	_width = width();
     }
-    
+
 }
 
 void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
