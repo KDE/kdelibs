@@ -1,3 +1,21 @@
+/*
+ *  Copyright (C) 2002, 2003 Stephan Kulow <coolo@kde.org>
+ *  Copyright (C) 2003       David Faure   <faure@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation;
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ */
 #include <kdebug.h>
 #include <kapplication.h>
 #include <time.h>
@@ -62,6 +80,7 @@ int main(int argc, char **argv) {
       url = "file:" + QDir::currentDirPath();
 
     kdDebug() << url.url() << " is probably " << (KIO::probably_slow_mounted(url.path()) ? "slow" : "normal") << " mounted\n";
+    kdDebug() << url.url() << " is " << (KIO::manually_mounted(url.path()) ? "manually" : "system") << " mounted\n";
     QString mp = KIO::findDeviceMountPoint(url.path());
     if (mp.isEmpty()) {
         kdDebug() << "no mount point for device " << url.url() << " found\n";

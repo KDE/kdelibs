@@ -28,6 +28,10 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
 		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest \
 		 kprotocolinfotest ksycocaupdatetest
 
+# Unfortunately some tests depend on the network settings, it seems
+#check: kurifiltertest
+	#./kurifiltertest
+
 bin_PROGRAMS = ktradertest
 
 METASOURCES = AUTO

@@ -1,3 +1,21 @@
+/*
+ *  Copyright (C) 2002, 2003 David Faure   <faure@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation;
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ */
+
 #include "kfilterdev.h"
 #include "kfilterbase.h"
 #include <unistd.h>
@@ -5,6 +23,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <kdebug.h>
+#include <kbufferediodevice.h>
 #include <kinstance.h>
 
 void test_block( const QString & fileName )
@@ -45,6 +64,22 @@ void test_block_write( const QString & fileName )
     delete dev;
 }
 
+void test_block_write_buffered( const QString & fileName )
+{
+    QIODevice * dev = KFilterDev::deviceForFile( fileName );
+    if (!dev) { kdWarning() << "dev=0" << endl; return; }
+    if ( !dev->open( IO_WriteOnly ) ) { kdWarning() << "open failed " << endl; return; }
+    KBufferedIODevice buf( dev, 100 /*for testing*/ );
+    QCString s("hello buffer\n");
+    for ( uint i = 0; i < 10000 ; ++i ) {
+        /*int ret =*/ buf.writeBlock( s, s.size()-1 );
+        //kdDebug() << "writeBlock ret=" << ret << endl;
+    }
+    buf.close();
+    dev->close();
+    delete dev;
+}
+
 void test_getch( const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
@@ -74,11 +109,13 @@ int main()
 
     char currentdir[PATH_MAX+1];
     getcwd( currentdir, PATH_MAX );
-    QString pathgz = QString(currentdir) + "/test.gz";
-    QString pathbz2 = QString(currentdir) + "/test.bz2";
+    QString pathgz = QFile::decodeName(currentdir) + "/test.gz";
+    QString pathbz2 = QFile::decodeName(currentdir) + "/test.bz2";
 
     kdDebug() << " -- test_block_write gzip -- " << endl;
     test_block_write(pathgz);
+    kdDebug() << " -- test_block_write buffered bzip2 -- " << endl;
+    test_block_write_buffered(pathbz2);
     kdDebug() << " -- test_block_write bzip2 -- " << endl;
     test_block_write(pathbz2);
 

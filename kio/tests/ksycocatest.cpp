@@ -1,3 +1,21 @@
+/*
+ *  Copyright (C) 2002, 2003 David Faure   <faure@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation;
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ */
+
 #include <kdebug.h>
 #include <kuserprofile.h>
 #include <ktrader.h>
@@ -50,6 +68,22 @@ void debug(const char *format, const char *txt)
 int main(int argc, char *argv[])
 {
    KApplication k(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
+
+   QCString instname = "kword";
+   QString desktopPath = QString::fromLatin1( "Office/%1.desktop" ).arg( instname );
+   qDebug( "Looking for %s", desktopPath.latin1() );
+   KService::Ptr service = KService::serviceByDesktopPath( desktopPath );
+   if ( service )
+       qDebug( "found: %s", service->desktopEntryPath().latin1() );
+   else
+       qDebug( "not found" );
+
+   qDebug( "Looking for desktop name = %s", instname.data() );
+   service = KService::serviceByDesktopName( instname );
+   if ( service )
+       qDebug( "found: %s", service->desktopEntryPath().latin1() );
+   else
+       qDebug( "not found" );
 
    debug("Trying to look for text/plain");
    KMimeType::Ptr s1 = KMimeType::mimeType("text/plain");
@@ -195,7 +229,7 @@ int main(int argc, char *argv[])
    mtl  = KMimeType::allMimeTypes( );
    assert( mtl.count() );
    debug(QString("Found %1 mime types.").arg(mtl.count()));
-   for(int i = 0; i < mtl.count(); i++)
+   for(int i = 0; i < (int)mtl.count(); i++)
    {
       debug(QString("Mime type %1: %2.").arg(i).arg(mtl[i]->name()));
    }
@@ -208,6 +242,9 @@ int main(int argc, char *argv[])
 
    KServiceGroup::Ptr root = KServiceGroup::root();
    KServiceGroup::List list = root->entries();
+   //KServiceGroup::Ptr topGroup = KServiceGroup::childGroup( "kview" );
+   //Q_ASSERT( topGroup );
+   //KServiceGroup::List list = topGroup->entries();
 
    KServiceGroup::Ptr first;
 
@@ -216,10 +253,11 @@ int main(int argc, char *argv[])
        it != list.end(); it++)
    {
       KSycocaEntry *p = (*it);
-      if (p->isType(KST_KService)) 
+      if (p->isType(KST_KService))
       {
          KService *service = static_cast<KService *>(p);
          debug(service->name());
+         debug(service->desktopEntryPath());
       }
       else if (p->isType(KST_KServiceGroup))
       {
@@ -241,7 +279,7 @@ int main(int argc, char *argv[])
        it != list.end(); it++)
    {
       KSycocaEntry *p = (*it);
-      if (p->isType(KST_KService)) 
+      if (p->isType(KST_KService))
       {
          KService *service = static_cast<KService *>(p);
          debug(QString("             %1").arg(service->name()));
@@ -294,7 +332,7 @@ int main(int argc, char *argv[])
        it != types.end(); ++it)
       debug(QString("    %1").arg((*it)));
 
-   
+
    QString rPattern = KImageIO::pattern( KImageIO::Reading );
    debug("Read pattern:\n%s", rPattern.ascii());
 
