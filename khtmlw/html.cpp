@@ -2614,18 +2614,18 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	    if ( strncasecmp( p, "href=", 5 ) == 0 )
 	    {
 		p += 5;
+		KURL u;
 		if ( *p == '#' )
 		{// reference
-		    KURL u( actualURL );
+		    u = KURL( actualURL );
 		    u.setReference( p + 1 );
-	            tmpurl = u.url();
 		}
 		else
 		{
-                    KURL u( baseURL, p );
-		    tmpurl = u.url();
+                    u = KURL( baseURL, p );
 		}		
 
+		tmpurl = u.url();
 		visited = URLVisited( tmpurl );
 	    }
 	    else if ( strncasecmp( p, "name=", 5 ) == 0 )
