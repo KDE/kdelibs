@@ -431,6 +431,7 @@ protected:
     bool m_bParsing;
     bool m_docChanged;
     bool m_styleSelectorDirty;
+    bool m_inStyleRecalc;
 
     DOMString m_title;
     int m_decoderMibEnum;
