@@ -14,6 +14,7 @@ kdelibs (4:2.2.2-1) unstable; urgency=low
   * Fix build with new libxml2 (Closes: #118638)
   * Include SSL support in main package
   * Update build-depends
+  * Fix overwrite issues (Closes: #118802)
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 08 Nov 2001 09:49:00 -0700
 
