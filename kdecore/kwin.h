@@ -27,6 +27,8 @@
 #include <qapplication.h>
 #include <qpixmap.h>
 
+#undef WithdrawnState
+
 /**
    The class KWin allows applications to get or modify window
    properties and to interact with the windowmanager.
