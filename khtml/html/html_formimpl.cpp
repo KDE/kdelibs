@@ -487,9 +487,9 @@ void HTMLFormElementImpl::submit(  )
                      "can then automatically restore the login information "
                      "next time you visit this site. Do you want to store "
                      "the information now?"),
-                i18n("Save passwords"),
+                i18n("Save Passwords"),
                 KStdGuiItem::yes(),
-                KGuiItem(i18n("Never for this site")))) == KMessageBox::Yes)  {
+                KGuiItem(i18n("Never for This Site")))) == KMessageBox::Yes)  {
             KWallet::Wallet* w = view->part()->wallet();
             if (w)  {
                 QString key = calculateAutoFillKey(*this);
