@@ -22,20 +22,20 @@ int main(int argc, char **argv)
     KApplication app;
 
     QString path_to_kdelibs = "/build/wynnw/kde-src";
-    
+
     KJavaAppletContext* context = new KJavaAppletContext();
-    KJavaAppletWidget *applet = new KJavaAppletWidget( context );
+    KJavaAppletWidget *a = new KJavaAppletWidget( context );
 
-    applet->show();
+    a->show();
 
-    applet->setBaseURL( "file:" + path_to_kdelibs + "/kdelibs/khtml/test/" );
-    applet->setAppletName( "Lake" );
-    applet->setAppletClass( "lake.class" );
-    applet->setParameter( "image", "konqi.gif" );
+    a->applet()->setBaseURL( "file:" + path_to_kdelibs + "/kdelibs/khtml/test/" );
+    a->applet()->setAppletName( "Lake" );
+    a->applet()->setAppletClass( "lake.class" );
+    a->applet()->setParameter( "image", "konqi.gif" );
 
-    applet->create();
-    applet->showApplet();
-    applet->start();
+    a->applet()->create();
+    a->showApplet();
+    a->applet()->start();
 
     app.exec();
 }
