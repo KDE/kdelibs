@@ -34,8 +34,8 @@ namespace KIO {
 
   class Job;
 
-  /**  
-   * Net Transparency, formerly provided by kfmlib, but now 
+  /**
+   * Net Transparency, formerly provided by kfmlib, but now
    * done with @ref KIO::Jobs.
    *
    * This class isn't meant to be used as a class but only as a simple
@@ -56,7 +56,7 @@ class NetAccess : public QObject
 public:
     /**
      * Download a file from an arbitrary URL (@p src) to a
-     * temporary file on the local filesystem (@p target). 
+     * temporary file on the local filesystem (@p target).
      *
      * If the argument
      * for @p target is an empty string, download will generate a
@@ -108,7 +108,7 @@ public:
     static void removeTempFile(const QString& name);
 
     /**
-     * Upload file @p src to URL @p target.  
+     * Upload file @p src to URL @p target.
      *
      * Both must be specified,
      * unlike @ref download.
@@ -200,6 +200,7 @@ private:
     bool delInternal(const KURL & url);
     bool mkdirInternal(const KURL & url, int permissions);
     QString mimetypeInternal(const KURL & url);
+    void enter_loop();
     QString m_mimetype;
     /** List of temporary files */
     static QStringList* tmpfiles;

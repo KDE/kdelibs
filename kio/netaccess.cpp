@@ -127,7 +127,7 @@ bool NetAccess::copyInternal(const KURL& src, const KURL& target, bool overwrite
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
-  qApp->enter_loop();
+  enter_loop();
   return bJobOK;
 }
 
@@ -137,7 +137,7 @@ bool NetAccess::statInternal( const KURL & url )
   KIO::Job * job = KIO::stat( url );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
-  qApp->enter_loop();
+  enter_loop();
   return bJobOK;
 }
 
@@ -147,7 +147,7 @@ bool NetAccess::delInternal( const KURL & url )
   KIO::Job * job = KIO::del( url );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
-  qApp->enter_loop();
+  enter_loop();
   return bJobOK;
 }
 
@@ -157,7 +157,7 @@ bool NetAccess::mkdirInternal( const KURL & url, int permissions )
   KIO::Job * job = KIO::mkdir( url, permissions );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
-  qApp->enter_loop();
+  enter_loop();
   return bJobOK;
 }
 
@@ -170,13 +170,25 @@ QString NetAccess::mimetypeInternal( const KURL & url )
            this, SLOT( slotResult (KIO::Job *) ) );
   connect( job, SIGNAL( mimetype (KIO::Job *, const QString &type) ),
            this, SLOT( slotMimetype (KIO::Job *, const QString &type) ) );
-  qApp->enter_loop();
+  enter_loop();
   return m_mimetype;
 }
 
 void NetAccess::slotMimetype( KIO::Job *, const QString & type  )
 {
   m_mimetype = type;
+}
+
+// If a troll sees this, he kills me
+void qt_enter_modal( QWidget *widget );
+void qt_leave_modal( QWidget *widget );
+
+void NetAccess::enter_loop()
+{
+  QWidget dummy(0,0,WType_Modal);
+  qt_enter_modal(&dummy);
+  qApp->enter_loop();
+  qt_leave_modal(&dummy);
 }
 
 void NetAccess::slotResult( KIO::Job * job )
