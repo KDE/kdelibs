@@ -108,10 +108,10 @@ class KAboutData
   public:
     enum LicenseKey
     {
-      License_GPL  = 1,
-      License_LGPL = 2,
-      License_BSD  = 3,
-      License_Artistic = 4
+      GPL  = 1,
+      LGPL = 2,
+      _BSD  = 3,
+      Artistic = 4
     };
 
   public:
