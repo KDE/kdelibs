@@ -667,8 +667,15 @@ int KAction::plug( QWidget *w, int index )
 	kdWarning(129) << "KAction::plug called with 0 argument\n";
  	return -1;
   }
-  if( !d->m_cut.isNull() && (!m_parentCollection || !m_parentCollection->kaccel()) )
+  
+#ifndef NDEBUG
+  KAccel* kaccel = kaccelCurrent();
+  // If there is a shortcut, but no KAccel available
+  if( !d->m_cut.isNull() && kaccel == 0 ) {
     kdWarning(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
+    kdDebug(129) << kdBacktrace() << endl;
+  }
+#endif
 
   // Check if action is permitted
   if (kapp && !kapp->authorizeKAction(name()))
@@ -3067,11 +3074,12 @@ KActionCollection::~KActionCollection()
 
 void KActionCollection::setWidget( QWidget* w )
 {
-  if ( d->m_actionDict.count() > 0 ) {
-    kdError(129) << "KActionCollection::setWidget(): must be called before any actions are added to collection!" << endl;
-    kdDebug(129) << kdBacktrace() << endl;
-  }
-  else if ( !d->m_widget ) {
+  //if ( d->m_actionDict.count() > 0 ) {
+  //  kdError(129) << "KActionCollection::setWidget(): must be called before any actions are added to collection!" << endl;
+  //  kdDebug(129) << kdBacktrace() << endl;
+  //}
+  //else 
+  if ( !d->m_widget ) {
     d->m_widget = w;
     d->m_kaccel = new KAccel( w, this, "KActionCollection-KAccel" );
   }
