@@ -277,7 +277,9 @@ implementer, and are not enforced by this standard.
 If no DefaultApp is specified for a particular MIME type, any one of
 the programs registered which claim to be able to handle the MIME type
 may become the default handler.  This behaviour is undefined and
-implementation-specific.
+implementation-specific. KDE doesn't use a DefaultApp anymore, but assigns
+a Preference number to each program, so that the highest number is the
+one chosen for handling the MIME type.
 
 
 5. Extending the format
