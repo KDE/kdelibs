@@ -34,7 +34,7 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
     width_max = 100;
     width_length = 0;
     width_array = new uint[width_max];
-    
+
     setLineWidth( 2 );
     setFrameStyle( Panel | Sunken );
     cellWidths = new int[1];
@@ -44,11 +44,11 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
     setCellHeight( fontMetrics().lineSpacing() + 5);
     setCellWidth(0);
     setTableFlags(Tbl_autoHScrollBar | Tbl_cutCellsV |
-		  Tbl_smoothHScrolling);
+		  Tbl_smoothHScrolling | Tbl_snapToGrid );
     curCol = curRow = 0;
     // QTableView::setNumCols(0);
     QTableView::setNumRows(1);
-    
+
     setBackgroundMode( PaletteBase );
     touched = false;
 }
@@ -83,38 +83,54 @@ void KFileSimpleView::highlightItem(unsigned int i)
 }
 
 void KFileSimpleView::highlightItem(int row, int col)
-{ 
+{
     debugC("highlightItem %d %d", row, col);
 
     if (col * rowsVisible + row  >= static_cast<int>(count()))
 	return;
 
+    bool oneColOnly = leftCell() == lastColVisible();
+    
     int cx;
     if (!colXPos ( col , &cx ))
 	cx = 0;
-    
+
     int edge = leftCell();              // find left edge
     if ( col < edge || cx < 0) {
-	edge = leftCell() - curCol + col;
+	edge = edge - curCol + col;
 	if (edge < 0)
 	    edge = 0;
 	setLeftCell( edge );
     }
 
     edge = lastColVisible();
-    if ( col >= edge )
-	setLeftCell( leftCell() + col - edge + 1);
+    
+    if ( col > edge ) {
+	if ( !oneColOnly )
+	    setLeftCell( leftCell() + col - edge + 1 );
+	else setLeftCell( col );
+    }
 
+    else if ( col == edge ) {
+	if ( curCol < col ) {
+	    setLeftCell( leftCell() + 1 );
+	}
+    }
+    
+    
     edge = topCell();
-    if ( row < edge )
+    if ( row < edge ) {
 	setTopCell( edge - 1 );
+    }
 
     edge = lastRowVisible();
-    if ( row >= edge )
+    if ( row >= edge ) {
+      if ( !oneColOnly )
 	setTopCell( topCell() + 1 );
+    }
 
-    if (curCol != static_cast<int>(col) || 
-	curRow != static_cast<int>(row)) 
+    if (curCol != static_cast<int>(col) ||
+	curRow != static_cast<int>(row))
     {
 	int oldRow = curRow;
 	int oldCol = curCol;
@@ -180,7 +196,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     case Key_Right:                         // Correspondingly...
 	if( newCol < numCols()-1 )
 	    newCol++;
-        else newRow = lastRowVisible();
+        else newRow = count() % numRows() - 1;
 	if (newCol * rowsVisible + oldRow >= static_cast<int>(count()))
 	    newRow = count() - rowsVisible * newCol - 1;
 	break;
@@ -207,7 +223,7 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 	break;
     case Key_Home:
         newRow = 0;
-        newCol = 0; 
+        newCol = 0;
         break;
     case Key_End:
         newRow = count() % numRows() - 1; // calc last item in last col
@@ -226,12 +242,12 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 
         if ( curCol + jump >= numCols() ) { // too far, just go to last col
           newCol = numCols() - 1;
-          newRow = lastItem; 
+          newRow = lastItem;
         } else {
-          newCol += jump; 
-          if ( newCol == numCols()-1 && curRow > lastItem ) 
+          newCol += jump;
+          if ( newCol == numCols()-1 && curRow > lastItem )
 	      newRow = lastItem;
-          else 
+          else
 	      newRow = curRow;
         }
         break;
@@ -240,9 +256,9 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 	select( curCol * rowsVisible + curRow );
 	return;
 	break;
-    default: 
+    default:
 	{
-	    if ((e->ascii() >= 'a' && e->ascii() <= 'z') || 
+	    if ((e->ascii() >= 'a' && e->ascii() <= 'z') ||
 		(e->ascii() >= 'A' && e->ascii() <= 'Z')) {
 		char tmp[2] = " ";
 		tmp[0] = e->ascii();
@@ -252,14 +268,14 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
 	    } else
 		e->ignore();
 	}
-	return;     
+	return;
     }
-   
+
     highlightItem( newRow, newCol );
-    
+
     if ( curRow != oldRow || curCol != oldCol )
 	highlight( curRow + curCol * rowsVisible );
-   
+
 }
 
 
@@ -267,7 +283,7 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 {
     if (numCols() * rowsVisible < static_cast<int>(count()))
         setNumCols(numCols() + 1);
-    
+
     if (i->isDir()) {
 	if (i->isReadable())
 	    pixmaps.insert(index, folder_pixmap);
@@ -279,7 +295,7 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 	else
 	    pixmaps.insert(index, locked_file);
     }
-    
+
     int curCol = index / rowsVisible;
 
     for (int j = curCol; j < numCols(); j++)
@@ -287,7 +303,7 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 
     uint size = fontMetrics().width( i->fileName() );
     insertArray(size, index);
-    
+
     return colIsVisible(curCol) || curCol < leftCell() ;
 }
 
@@ -297,14 +313,14 @@ int KFileSimpleView::cellWidth ( int col )
 	// debugC("not cached %d", col);
 	int offset = col * rowsVisible;
 	int width = 100;
-	for (int j = 0; offset + j < static_cast<int>(width_length) 
-		 && j < rowsVisible; j++) 
+	for (int j = 0; offset + j < static_cast<int>(width_length)
+		 && j < rowsVisible; j++)
 	    {
 		int w = width_array[offset + j];
 		if (width < w)
 		    width = w;
 	    }
-	cellWidths[col] = width + file_pixmap->width() + 9; 
+	cellWidths[col] = width + file_pixmap->width() + 9;
     }
     // debugC("cellWidth %d %d", col, cellWidths[col]);
     return cellWidths[col];
@@ -316,9 +332,9 @@ void KFileSimpleView::resizeEvent ( QResizeEvent *e )
     rowsVisible = viewHeight() / cellHeight();
     if (!rowIsVisible(rowsVisible))
 	rowsVisible--;
-    
+
     int cols;
-    if (rowsVisible <= 0) 
+    if (rowsVisible <= 0)
 	rowsVisible = 1;
     setNumRows(rowsVisible);
     cols = count() / rowsVisible + 1;
@@ -332,10 +348,10 @@ void KFileSimpleView::mousePressEvent( QMouseEvent* e )
     int oldCol = curCol;
     QPoint clickedPos = e->pos();               // extract pointer position
     curRow = findRow( clickedPos.y() );         // map to row; set current cell
-    
+
     if (curRow > static_cast<int>(rowsVisible))
 	curRow = rowsVisible;
-    
+
     curCol = findCol( clickedPos.x() );         // map to col; set current cell
 
     uint index = curCol * rowsVisible + curRow;
@@ -345,14 +361,14 @@ void KFileSimpleView::mousePressEvent( QMouseEvent* e )
 	curRow = oldRow;
 	return;
     }
-    
+
     if ( (curRow != oldRow)                     // if current cell has moved,
          || (curCol != oldCol) ) {
         updateCell( oldRow, oldCol );           // erase previous marking
         updateCell( curRow, curCol );           // show new current cell
     }
-    
-    if ( useSingle() && isDir(index)) 
+
+    if ( useSingle() && isDir(index))
 	select( index );
     else
 	highlight( index );
@@ -360,16 +376,16 @@ void KFileSimpleView::mousePressEvent( QMouseEvent* e )
 
 void KFileSimpleView::mouseDoubleClickEvent ( QMouseEvent *e )
 {
-    int oldRow = curRow;                        
+    int oldRow = curRow;
     int oldCol = curCol;
-    QPoint clickedPos = e->pos();               
-    curRow = findRow( clickedPos.y() );         
-    
+    QPoint clickedPos = e->pos();
+    curRow = findRow( clickedPos.y() );
+
     if (curRow > static_cast<int>(rowsVisible))
 	curRow = rowsVisible;
-    
-    curCol = findCol( clickedPos.x() );         
-    
+
+    curCol = findCol( clickedPos.x() );
+
     uint index = curCol * rowsVisible + curRow;
 
     if ( index >= count()) {
@@ -377,25 +393,25 @@ void KFileSimpleView::mouseDoubleClickEvent ( QMouseEvent *e )
 	curRow = oldRow;
 	return;
     }
-    
-    if ( (curRow != oldRow)                     
+
+    if ( (curRow != oldRow)
          || (curCol != oldCol) ) {
         updateCell( oldRow, oldCol );
         updateCell( curRow, curCol );
     }
     select( index );
 }
-    
+
 void KFileSimpleView::focusInEvent ( QFocusEvent * )
 {
     if (curRow < 0 || curCol < 0)
 	curRow = curCol = 0;
     updateCell( curRow, curCol );
-}  
+}
 
-void KFileSimpleView::focusOutEvent ( QFocusEvent * ) 
+void KFileSimpleView::focusOutEvent ( QFocusEvent * )
 {
-    updateCell( curRow, curCol );  
+    updateCell( curRow, curCol );
 }
 
 void KFileSimpleView::insertArray(uint item, uint pos)
@@ -420,12 +436,12 @@ void KFileSimpleView::insertArray(uint item, uint pos)
 	width_length++;
 	return;
     }
-    
+
     // faster repositioning (very fast :)
     memmove(width_array + pos+1,
 	    width_array + pos,
 	    (width_max - 1 - pos) * sizeof(uint));
-    
+
     width_array[pos] = item;
     width_length++;
 }
