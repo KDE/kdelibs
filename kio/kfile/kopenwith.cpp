@@ -484,7 +484,7 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 void KOpenWithDlg::slotTextChanged()
 {
-    kdDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
+    //kdDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
     // Forget about the service
     m_pService = 0L;
 }
@@ -511,6 +511,7 @@ void KOpenWithDlg::slotOK()
 
   QString serviceName;
   QString pathName;
+  QString initialServiceName;
   if (!m_pService) {
     // No service selected - check the command line
 
@@ -521,14 +522,17 @@ void KOpenWithDlg::slotOK()
       // TODO add a KMessageBox::error here after the end of the message freeze
       return;
     }
-    QString initialServiceName = serviceName;
+    initialServiceName = serviceName;
+    kdDebug(250) << "initialServiceName=" << initialServiceName << endl;
     int i = 1; // We have app, app-2, app-3... Looks better for the user.
     // Check if there's already a service by that name, with the same Exec line
     do {
+        kdDebug(250) << "looking for service " << serviceName << endl;
         KService::Ptr serv = KService::serviceByDesktopName( serviceName );
         bool ok = !serv; // ok if no such service yet
         // also ok if we find the exact same service (well, "kwrite" == "kwrite %U"
-        if ( serv && (
+        if ( serv &&
+             serv->type() == "Application" && ( // only apps
                  serv->exec() == fullExec ||
                  serv->exec() == fullExec + " %u" ||
                  serv->exec() == fullExec + " %U" ||
@@ -538,6 +542,7 @@ void KOpenWithDlg::slotOK()
         {
             ok = true;
             m_pService = serv;
+            kdDebug(250) << k_funcinfo << "OK, found identical service: " << serv->desktopEntryPath() << endl;
         }
         if (!ok) // service was found, but it was different -> keep looking
         {
@@ -557,6 +562,7 @@ void KOpenWithDlg::slotOK()
   {
     // Existing service selected
     serviceName = m_pService->name();
+    initialServiceName = serviceName;
     pathName = m_pService->desktopEntryPath();
   }
 
@@ -596,7 +602,7 @@ void KOpenWithDlg::slotOK()
 
   KDesktopFile desktop(path);
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  desktop.writeEntry(QString::fromLatin1("Name"), serviceName);
+  desktop.writeEntry(QString::fromLatin1("Name"), initialServiceName);
   desktop.writeEntry(QString::fromLatin1("Exec"), fullExec);
   desktop.writeEntry(QString::fromLatin1("InitialPreference"), maxPreference + 1);
   if (remember)
@@ -630,7 +636,7 @@ void KOpenWithDlg::slotOK()
   // rebuild the database
   QStringList args;
   args.append("--incremental");
-  KApplication::kdeinitExecWait( "kbuildsycoca", args );
+  KApplication::kdeinitExecWait( "kbuildsycoca", args ); /// ### what if it's already running?
 
   // get the new service pointer
   kdDebug(250) << "kbuildsycoca finished, looking for service " << pathName << endl;
