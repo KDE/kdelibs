@@ -16,7 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
 #include <qlabel.h>
@@ -25,6 +24,7 @@
 #include <qhbox.h>
 
 #include <kapplication.h>
+#include <klineedit.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kbuttonbox.h>
@@ -38,8 +38,8 @@ using namespace KIO;
 struct PasswordDialog::PasswordDialogPrivate
 {
     QGridLayout *layout;
-    QLineEdit* userEdit;
-    QLineEdit* passEdit;
+    KLineEdit* userEdit;
+    KLineEdit* passEdit;
     QLabel* prompt;
 
     bool keep;
@@ -103,7 +103,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     lbl->setFixedSize( lbl->sizeHint() );
     QHBox* hbox = new QHBox( main );
-    d->userEdit = new QLineEdit( hbox );
+    d->userEdit = new KLineEdit( hbox );
     lbl->setBuddy( d->userEdit );
     QSize s = d->userEdit->sizeHint();
     d->userEdit->setFixedHeight( s.height() );
@@ -120,7 +120,7 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
     lbl->setAlignment( Qt::AlignVCenter | Qt::AlignLeft );
     lbl->setFixedSize( lbl->sizeHint() );
     hbox = new QHBox( main );
-    d->passEdit = new QLineEdit( hbox );
+    d->passEdit = new KLineEdit( hbox );
     if ( cfg->readEntry("EchoMode", "OneStar") == "NoEcho" )
         d->passEdit->setEchoMode( QLineEdit::NoEcho );
     else
