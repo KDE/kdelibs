@@ -1262,10 +1262,9 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
    else
      url = QString("help:/%1").arg(filename);
 
-   QCString dcopService;
    QString error;
 
-   if (startServiceByDesktopName("khelpcenter", url, dcopService, error))
+   if (startServiceByDesktopName("khelpcenter", url, &error))
    {
       warning("Could not launch help:\n%s\n", error.local8Bit().data());
       return;
@@ -1275,11 +1274,11 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 
 void KApplication::invokeMailer(const QString &address,const QString &subject )
 {
-   QCString dcopService;
    QString error;
+
    QString mailClient( "kmail");
    //TODO: subject needs to be passed as well!! 
-   if (startServiceByDesktopName(mailClient, address, dcopService, error))
+   if (startServiceByDesktopName(mailClient, address, &error))
    {
       warning("Could not launch mail client:\n%s\n", error.local8Bit().data());
       return;
@@ -1289,10 +1288,9 @@ void KApplication::invokeMailer(const QString &address,const QString &subject )
 
 void KApplication::invokeBrowser( const QString &url )
 {
-   QCString dcopService;
    QString error;
 
-   if (startServiceByDesktopName("kfmclient", url, dcopService, error))
+   if (startServiceByDesktopName("kfmclient", url, &error))
    {
       warning("Could not launch browser:\n%s\n", error.local8Bit().data());
       return;
@@ -1324,14 +1322,15 @@ KApplication::launcher()
 
 static int
 startServiceInternal( const QCString &function,
-                      const QString& _name, const QString &URL,
-                      QCString &dcopService, QString &error )
+                      const QString& _name, const QStringList &URLs,
+                      QString *error, QCString *dcopService, int *pid )
 {
    typedef struct serviceResult
    {
       int result;
       QCString dcopName;
       QString error;
+      pid_t pid;
    };
 
    // Register app as able to send DCOP messages
@@ -1345,20 +1344,22 @@ startServiceInternal( const QCString &function,
    {
       if (!dcopClient->attach())
       {
-         error = i18n("Could not register with DCOP.\n");
+         if (error)
+            *error = i18n("Could not register with DCOP.\n");
          return -1;
       }
    }
    QByteArray params;
    QDataStream stream(params, IO_WriteOnly);
-   stream << _name << URL;
+   stream << _name << URLs;
    QCString replyType;
    QByteArray replyData;
    QCString _launcher = KApplication::launcher();
    if (!dcopClient->call(_launcher, _launcher,
 	function, params, replyType, replyData))
    {
-	error = i18n("KLauncher could not be reached via DCOP.\n");
+        if (error)
+	   *error = i18n("KLauncher could not be reached via DCOP.\n");
         if (!kapp)
            delete dcopClient;
         return -1;
@@ -1369,36 +1370,73 @@ startServiceInternal( const QCString &function,
    QDataStream stream2(replyData, IO_ReadOnly);
    serviceResult result;
    stream2 >> result.result >> result.dcopName >> result.error;
-   dcopService = result.dcopName;
-   error = result.error;
+   if (dcopService)
+      *dcopService = result.dcopName;
+   if (error)
+      *error = result.error;
+   if (pid)
+      *pid = result.pid;
    return result.result;
 }
 
 int
 KApplication::startServiceByName( const QString& _name, const QString &URL,
-                              QCString &dcopService, QString &error )
+                              QString *error, QCString *dcopService, int *pid )
+{
+   QStringList URLs;
+   URLs.append(URL);
+   return startServiceInternal(
+                      "start_service_by_name(QString,QStringList)",
+                      _name, URLs, error, dcopService, pid);
+}
+
+int
+KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
+                              QString *error, QCString *dcopService, int *pid )
 {
    return startServiceInternal(
-                      "start_service_by_name(QString,QString)",
-                      _name, URL, dcopService, error);
+                      "start_service_by_name(QString,QStringList)",
+                      _name, URLs, error, dcopService, pid);
 }
 
 int
 KApplication::startServiceByDesktopPath( const QString& _name, const QString &URL,
-                              QCString &dcopService, QString &error )
+                              QString *error, QCString *dcopService, int *pid )
+{
+   QStringList URLs;
+   URLs.append(URL);
+   return startServiceInternal(
+                      "start_service_by_desktop_path(QString,QStringList)",
+                      _name, URLs, error, dcopService, pid);
+}
+
+int
+KApplication::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
+                              QString *error, QCString *dcopService, int *pid )
 {
    return startServiceInternal(
-                      "start_service_by_desktop_path(QString,QString)",
-                      _name, URL, dcopService, error);
+                      "start_service_by_desktop_path(QString,QStringList)",
+                      _name, URLs, error, dcopService, pid);
 }
 
 int
 KApplication::startServiceByDesktopName( const QString& _name, const QString &URL,
-                              QCString &dcopService, QString &error )
+                              QString *error, QCString *dcopService, int *pid )
+{
+   QStringList URLs;
+   URLs.append(URL);
+   return startServiceInternal(
+                      "start_service_by_desktop_name(QString,QStringList)",
+                      _name, URLs, error, dcopService, pid);
+}
+
+int
+KApplication::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
+                              QString *error, QCString *dcopService, int *pid )
 {
    return startServiceInternal(
-                      "start_service_by_desktop_name(QString,QString)",
-                      _name, URL, dcopService, error);
+                      "start_service_by_desktop_name(QString,QStringList)",
+                      _name, URLs, error, dcopService, pid);
 }
 
 

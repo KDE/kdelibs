@@ -316,7 +316,10 @@ public:
    *         that occured.
    */
   static int startServiceByName( const QString& _name, const QString &URL,
-                                 QCString &dcopService, QString &error );
+		QString *error=0, QCString *dcopService=0, int *pid=0 );
+  static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
+		QString *error=0, QCString *dcopService=0, int *pid=0 );
+
   /**
    * Starts a service based on the desktop path of the service.
    * E.g. "Applications/konqueror.desktop" or "/home/user/bla/myfile.desktop"
@@ -330,8 +333,10 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  static int startServiceByDesktopPath( const QString& _name,
-              const QString &URL, QCString &dcopService, QString &error );
+  static int startServiceByDesktopPath( const QString& _name, const QString &URL, 
+		QString *error=0, QCString *dcopService=0, int *pid = 0 );
+  static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(), 
+		QString *error=0, QCString *dcopService=0, int *pid = 0 );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -342,12 +347,15 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
    *         this service is available. If empty, the service does
-   *         not provide DCOP services.
+   *         not provide DCOP services. iff a process was started, 'pid' 
+   *         contains its pid.
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
-  static int startServiceByDesktopName( const QString& _name,
-              const QString &URL, QCString &dcopService, QString &error );
+  static int startServiceByDesktopName( const QString& _name, const QString &URL, 
+		QString *error=0, QCString *dcopService=0, int *pid = 0 );
+  static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(), 
+  		QString *error=0, QCString *dcopService=0, int *pid = 0 );
 
   /**
    * Retrieve the current KDE style object if a plugin is in use,
@@ -715,6 +723,12 @@ public:
 #endif
 
 // $Log$
+// Revision 1.144  2000/04/27 10:48:30  elter
+// Add a global setting for popupmenu tear-off handles.
+// A tear-off handle is a special menu item, that - when selected - creates a copy of the menu. This "torn off" copy lives in a separate window. It contains the same choices as the original menu, with the exception of the tear-off handle.
+//
+// Binary compatible.
+//
 // Revision 1.143  2000/04/21 16:04:12  jansen
 // Adding a signal to KApplication for notification of icon changes.
 //
