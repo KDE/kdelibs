@@ -44,14 +44,15 @@
 #include <jsexec.h>
 
 // Token buffers are allocated in units of TOKEN_BUFFER_SIZE bytes.
-#define TOKEN_BUFFER_SIZE (32*1024)
+#define TOKEN_BUFFER_SIZE ((32*1024)-1)
 
 // String buffers are allocated in units of STRING_BUFFER_SIZE bytes.
-#define STRING_BUFFER_SIZE (32*1024)
+#define STRING_BUFFER_SIZE ((32*1024)-1)
 
 static const char *commentStart = "<!--";
 static const char *scriptEnd = "</script>";
 static const char *styleEnd = "</style>";
+static const char *listingEnd = "</listing>";
 
 //-----------------------------------------------------------------------------
 
@@ -86,6 +87,7 @@ HTMLTokenizer::HTMLTokenizer( )
     blocking.setAutoDelete( true );
     jsEnvironment = 0L;
     buffer = 0;
+    scriptCode = 0;
     reset();
 }
 
@@ -114,6 +116,10 @@ void HTMLTokenizer::reset()
     if ( buffer )
 	delete [] buffer;
     buffer = 0;
+
+    if ( scriptCode )
+    	delete [] scriptCode;
+    scriptCode = 0;
 }
 
 void HTMLTokenizer::begin()
@@ -128,6 +134,7 @@ void HTMLTokenizer::begin()
     discard = NoneDiscard;
     pre = false;
     prePos = 0;
+    listing = false;
     script = false;
     style = false;
     skipLF = false;
@@ -204,6 +211,96 @@ void HTMLTokenizer::addPending()
     pending = NonePending;
 }
 
+void HTMLTokenizer::addListing(const char *list)
+{
+    bool old_pre = pre;
+    // This function adds the listing 'list' as
+    // preformatted text-tokens to the token-collection
+    // thereby converting TABs.
+    pre = true;
+    prePos = 0;
+
+    while ( *list != 0 )
+    {
+	// do we need to enlarge the buffer?
+	if ( (dest - buffer) > size )
+	{
+	    char *newbuf = new char [ size + 1024 + 20 ];
+	    memcpy( newbuf, buffer, dest - buffer + 1 );
+	    dest = newbuf + ( dest - buffer );
+	    delete [] buffer;
+	    buffer = newbuf;
+	    size += 1024;
+	}
+	
+	if (skipLF && (*list != '\n'))
+	{
+	    skipLF = false;
+	}
+
+	if (skipLF)
+	{
+	    list++;
+	} 
+	else if (( *list == '\n' ) || ( *list == '\r' ))
+	{
+	    if (discard == LFDiscard) 
+	    {
+	        // Ignore this LF
+	    	discard = NoneDiscard; // We have discarded 1 LF
+	    }
+	    else
+	    {
+	        // Process this LF
+	        if (pending)
+	            addPending();
+	        pending = LFPending;
+	    }
+	    /* Check for MS-DOS CRLF sequence */
+	    if (*list == '\r')
+	    {
+		skipLF = true;
+	    }
+	    list++;
+	}
+	else if (( *list == ' ' ) || ( *list == '\t'))
+	{
+	    if (pending)
+	        addPending();
+	    if (*list == ' ')
+	        pending = SpacePending;
+	    else 
+	        pending = TabPending;
+	    list++;
+	}
+	else
+	{
+	    discard = NoneDiscard;
+	    if (pending)
+	    	addPending();
+
+	    prePos++;
+	    *dest++ = *list++;
+	}
+
+    }
+
+    if ((pending == SpacePending) || (pending == TabPending))
+    {
+	addPending();
+    }
+    pending = NonePending;
+    
+    if ( dest > buffer )
+    {
+        *dest = 0;
+        appendToken( buffer, dest-buffer );
+        dest = buffer;
+        prePos = 0;
+    }
+    pre = old_pre;    
+}
+
 void HTMLTokenizer::write( const char *str )
 {
     // If this pointer is not 0L then we allocated some memory to store HTML
@@ -224,7 +321,7 @@ void HTMLTokenizer::write( const char *str )
     while ( *src != 0 )
     {
 	// do we need to enlarge the buffer?
-	if ( dest - buffer > size )
+	if ( (dest - buffer) > size )
 	{
 	    char *newbuf = new char [ size + 1024 + 20 ];
 	    memcpy( newbuf, buffer, dest - buffer + 1 );
@@ -264,7 +361,7 @@ void HTMLTokenizer::write( const char *str )
 	// We are inside of the <script> or <style> tag. Look for the end tag
 	// which is either </script> or </style>,
 	// otherwise print out every received character
-	else if ( script || style )
+	else if ( script || style || listing)
 	{
 	    // Allocate memory to store the script. We will write maximal
 	    // 10 characers.
@@ -284,16 +381,24 @@ void HTMLTokenizer::write( const char *str )
 		scriptCode[ scriptCodeSize + 1 ] = 0;
 		if (script) 
 		{
-		    script = false;
 		    /* Parse scriptCode containing <script> info */
+		    /* Not implemented */
+		}
+		else if (style)
+		{
+		    /* Parse scriptCode containing <style> info */
 		    /* Not implemented */
 		}
 		else
 		{
-		    style = false;
-		    /* Parse scriptCode containing <style> info */
-		    /* Not implemented */
+		    //
+		    // Add scriptcode to the buffer
+		    addListing(scriptCode);
 		}
+		script = style = listing = false;
+		delete [] scriptCode;
+		scriptCode = 0;
+		    
 	    }
 	    // Find out wether we see a </script> tag without looking at
 	    // any other then the current character, since further characters
@@ -606,6 +711,15 @@ void HTMLTokenizer::write( const char *str )
 		scriptCodeSize = 0;
 		scriptCodeMaxSize = 1024;
 	    }
+	    else if ( strncmp( buffer+2, "listing", 7 ) == 0 )
+	    {
+		listing = true;
+                searchCount = 0;		
+                searchFor = listingEnd;		
+		scriptCode = new char[ 1024 ];
+		scriptCodeSize = 0;
+		scriptCodeMaxSize = 1024;
+	    }
 	    else if ( strncmp( buffer+2, "select", 6 ) == 0 )
 	    {
 		select = true;
@@ -639,7 +753,8 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    if ( tquote)
 	    {
-	    	*dest++ = *src; // Just add it
+	        if (discard == NoneDiscard)
+	            pending = SpacePending;
 	    }
 	    else if ( tag )
 	    {
@@ -687,7 +802,8 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    if ( tquote)
 	    {
-	    	*dest++ = *src; // Just add it
+	        if (discard == NoneDiscard)
+	            pending = SpacePending;
 	    }
 	    else if ( tag )
 	    {
@@ -719,8 +835,11 @@ void HTMLTokenizer::write( const char *str )
 		src++;
 		if ( *(dest-1) == '=' && !tquote )
 		{
+		    // according to HTML4 DTD, we can simplify
+		    // strings like "  my \nstring " to "my string"
+		    discard = SpaceDiscard; // ignore leading spaces
 		    pending = NonePending;
-		    tquote = true;
+ 		    tquote = true;
 		    *dest++ = '\"';
 		}
 		else if ( tquote )
@@ -847,7 +966,7 @@ void HTMLTokenizer::appendTokenBuffer( int min_size)
         // Wow! This surely is a big token...
         newBufSize += min_size; 
     }
-    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize ];
+    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize + 1];
     tokenBufferList.append( newBuffer);
     next = newBuffer->first();
     tokenBufferSizeRemaining = newBufSize;
@@ -867,7 +986,7 @@ void HTMLTokenizer::appendStringBuffer( int min_size)
         // Wow! This surely is a big string...
         newBufSize += min_size; 
     }
-    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize ];
+    HTMLTokenBuffer *newBuffer = (HTMLTokenBuffer *) new char [ newBufSize + 1];
     stringBufferList.append( newBuffer);
     nextString = newBuffer->first();
     stringBufferSizeRemaining = newBufSize;

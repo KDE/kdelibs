@@ -113,6 +113,8 @@ protected:
 
     void appendStringBuffer( int min_size);
     
+    void addListing(const char *list);
+    
 protected:
     // Internal buffers
     ///////////////////
@@ -200,6 +202,9 @@ protected:
     // Are we in a <select> ... </select> block
     bool select;
 
+	// Are we in a <listing> ... </listing> block
+	bool listing;
+
 	 // Are we in a &... character entity description?
 	 bool charEntity;
 
@@ -239,7 +244,7 @@ inline void HTMLTokenizer::appendToken( const char *t, int len )
     if ( len < 1 )
         return;
 
-    if (len > tokenBufferSizeRemaining)
+    if (len >= tokenBufferSizeRemaining)
     {
        // We need a new buffer
        appendTokenBuffer( len);
@@ -260,7 +265,7 @@ inline char *HTMLTokenizer::newString( const char *str, int len )
     if ( !len )
         len = strlen(str);
 
-    if (len > stringBufferSizeRemaining)
+    if (len >= stringBufferSizeRemaining)
     {
        // We need a new buffer
        appendStringBuffer( len);
