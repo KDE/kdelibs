@@ -1,5 +1,8 @@
 2004-01-25  Dirk Mueller  <mueller@kde.org>
 
+	* html/html_objectimpl.cpp (renderAlternative): give the alternative rendering
+	some time to avoid ugly deletion races.
+
 	* rendering/render_canvas.cpp (layout): don't recurse when printing (#72775).
 
 	* rendering/render_image.cpp (setPixmap): handle cases when
