@@ -613,7 +613,7 @@ Addressee::List AddressBook::findByCategory( const QString &category )
 
   KRES::Manager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
-    results += (*it)->findByEmail( category );
+    results += (*it)->findByCategory( category );
 
   return results;
 }
