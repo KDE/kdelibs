@@ -171,7 +171,7 @@ void KCertPart::setReadWrite(bool rw) {
 
 
 bool KCertPart::saveFile() {
-  QString certFile = KFileDialog::getSaveFileName();
+  QString certFile = KFileDialog::getSaveFileName(QString::null, "application/x-pkcs12");
   if (certFile.isEmpty())
     return false;
  
