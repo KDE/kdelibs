@@ -61,6 +61,9 @@ public:
     DOMString domain() const;
     DOMString URL() const { return url; }
     void setURL(DOMString _url) { url = _url; }
+
+    DOMString baseURL() const;
+    
     HTMLElementImpl *body();
 
     void open (  );
@@ -90,7 +93,7 @@ public:
     virtual void createSelector();
 
     bool headLoaded();
-    
+
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
 
@@ -103,7 +106,7 @@ public:
     CSSStyleSheetImpl* elementSheet();
 protected:
     void clear();
-    
+
 
     KHTMLParser *parser;
     HTMLTokenizer *tokenizer;
@@ -113,7 +116,7 @@ protected:
 
     StyleSheetImpl *m_sheet;
     bool m_loadingSheet;
-    
+
     CSSStyleSheetImpl *m_elemSheet;
 };
 

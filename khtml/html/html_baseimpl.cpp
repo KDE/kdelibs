@@ -70,7 +70,7 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
 
     case ATTR_BACKGROUND:
     {
-	KURL u = khtml::Cache::completeURL(attr->value(), static_cast<HTMLDocumentImpl *>(document)->URL());
+	KURL u = khtml::Cache::completeURL(attr->value(), static_cast<HTMLDocumentImpl *>(document)->baseURL());
         addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url(), false);
 	break;
     }

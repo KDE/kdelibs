@@ -98,6 +98,13 @@ DOMString HTMLDocumentImpl::domain() const
     return u.host();
 }
 
+DOMString HTMLDocumentImpl::baseURL() const
+{
+    if(!view()->part()->baseURL().isEmpty()) return view()->part()->baseURL().url();
+    return url;
+}
+
+
 HTMLElementImpl *HTMLDocumentImpl::body()
 {
     if(bodyElement) return bodyElement;

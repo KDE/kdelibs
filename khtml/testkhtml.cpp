@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     KHTMLPart *doc = new KHTMLPart;
     doc->widget()->resize(800,500);
 //    doc->widget()->resize(500,300);
-    doc->enableJScript(true);
+//    doc->enableJScript(true);
     doc->enableJava(true);
     doc->setCharset("unicode");
 

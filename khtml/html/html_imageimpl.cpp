@@ -183,7 +183,7 @@ void HTMLImageElementImpl::attach(KHTMLView *)
     {
 	RenderImage *renderImage = new RenderImage(m_style);
 	renderImage->setAlt(alt);
-	renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->URL());
+	renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL());
 	m_render = renderImage;
 	if(m_render) r->addChild(m_render);
 	
@@ -194,7 +194,7 @@ void HTMLImageElementImpl::applyChanges()
 {
     if(m_render) {
 	static_cast<RenderImage *>(m_render)
-	    ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->URL());
+	    ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL());
     }
     HTMLElementImpl::applyChanges();
 }

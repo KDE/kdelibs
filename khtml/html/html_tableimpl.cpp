@@ -283,7 +283,7 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
     case ATTR_BACKGROUND:
     {
 	HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-	DOMString url(Cache::completeURL(attr->value(), doc->URL()).url());
+	DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
 	addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url, false );
 	break;
     }
@@ -374,7 +374,7 @@ void HTMLTablePartElementImpl::parseAttribute(Attribute *attr)
     case ATTR_BACKGROUND:
     {
 	HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-	DOMString url(Cache::completeURL(attr->value(), doc->URL()).url());
+	DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
 	addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url, false );
 	break;
     }

@@ -86,7 +86,7 @@ public:
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
     virtual void createSelector();
 
-    KHTMLView *view() { return m_view; }
+    KHTMLView *view() const { return m_view; }
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
