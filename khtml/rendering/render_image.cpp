@@ -159,7 +159,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     }
 }
 
-void RenderImage::printObject(QPainter *p, int x, int y, int w, int h, int _tx, int _ty)
+void RenderImage::printObject(QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int _tx, int _ty)
 {
     // add offset for relative positioning
     if(isRelPositioned())
