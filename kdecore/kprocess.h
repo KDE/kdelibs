@@ -420,6 +420,27 @@ public:
   void setWorkingDirectory(const QString &dir);
 
   /**
+   * Specify whether to start the command via a shell or directly.
+   * The default is to start the command directly.
+   * If @p useShell is true @p shell will be used as shell, or
+   * if shell is empty, the standard shell is used.
+   * @p quote A flag indicating whether to quote the arguments.
+   *
+   * When using a shell, the caller should make sure that all filenames etc.
+   * are properly quoted when passed as argument.
+   * @see quote()
+   */
+  void setUseShell(bool useShell, const char *shell = 0);
+
+  /**
+   * This function can be used to quote an argument string such that
+   * the shell processes it properly. This is e. g. necessary for
+   * user-provided file names which may contain spaces or quotes.
+   * It also prevents expansion of wild cards and environment variables.
+   */
+  static QString quote(const QString &arg);
+
+  /**
    * Detaches KProcess from child process. All communication is closed.
    * No exit notification is emitted any more for the child process.
    * Deleting the KProcess will no longer kill the child process.
@@ -427,6 +448,8 @@ public:
    * child process.
    */
   void detach(); 
+
+
 
 signals:
 
@@ -683,6 +706,26 @@ protected:
 
 
 private:
+  /**
+   * Searches for a valid shell. 
+   * Here is the algorithm used for finding an executable shell:
+   *
+   *    @li Try the executable pointed to by the "SHELL" environment
+   *    variable with white spaces stripped off
+   *
+   *    @li If your process runs with uid != euid or gid != egid, a shell
+   *    not listed in /etc/shells will not used.
+   *
+   *    @li If no valid shell could be found, "/bin/sh" is used as a last resort.
+   */
+  QCString searchShell();
+
+  /**
+   * Used by @ref searchShell in order to find out whether the shell found
+   * is actually executable at all.
+   */
+  bool isExecutable(const QCString &filename);
+
   // Disallow assignment and copy-construction
   KProcess( const KProcess& );
   KProcess& operator= ( const KProcess& );
@@ -696,28 +739,10 @@ private:
 class KShellProcessPrivate;
 
 /**
-* This class is similar to @ref KProcess. The only difference is that
-* KShellProcess runs the specified executable through a UN*X shell so
-* that standard shell mechanisms like wild card matching, use of pipes
-* and environment variable expansion will work.
+* @obsolete
 *
-* For example, you could run commands like the following through
-* KShellProcess:
-*
-* <pre>
-*   ls ~/HOME/ *.lyx | sort | uniq |wc -l
-* </pre>
-*
-* KShellProcess tries really hard to find a valid executable shell. Here
-* is the algorithm used for finding an executable shell:
-*
-*    @li Try the executable pointed to by the "SHELL" environment
-*    variable with white spaces stripped off
-*
-*    @li If your process runs with uid != euid or gid != egid, a shell
-*    not listed in /etc/shells will not used.
-*
-*    @li If no valid shell could be found, "/bin/sh" is used as a last resort.
+* This class is obsolete. Use KProcess and KProcess::setUseShell(true)
+* instead.
 *
 *   @short A class derived from @ref KProcess to start child
 *   	processes through a shell.
@@ -734,8 +759,7 @@ public:
    * Constructor
    *
    * By specifying the name of a shell (like "/bin/bash") you can override
-   * the mechanism for finding a valid shell as described in the detailed
-   * description of this class.
+   * the mechanism for finding a valid shell as described in KProcess::searchShell()
    */
   KShellProcess(const char *shellname=0);
 
@@ -761,18 +785,6 @@ public:
   static QString quote(const QString &arg);
 
 private:
-
-  /**
-   * Searches for a valid shell. See the general description of this
-   * class for information on how the search is actually performed.
-   */
-  QCString searchShell();
-
-  /**
-   * Used by @ref searchShell in order to find out whether the shell found
-   * is actually executable at all.
-   */
-  bool isExecutable(const QCString &filename);
 
   QCString shell;
 

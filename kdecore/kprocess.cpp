@@ -77,8 +77,12 @@
 
 class KProcessPrivate {
 public:
+   KProcessPrivate() : useShell(false) { }
+
+   bool useShell;
    QMap<QString,QString> env;
    QString wd;
+   QCString shell;
 };
 
 
@@ -244,11 +248,33 @@ bool KProcess::start(RunMode runmode, Communication comm)
   run_mode = runmode;
   status = 0;
 
-  arglist = static_cast<char **>(malloc( (n+1)*sizeof(char *)));
-  Q_CHECK_PTR(arglist);
-  for (i=0; i < n; i++)
-    arglist[i] = arguments[i].data();
-  arglist[n]= 0;
+  QCString shellCmd;
+  if (d && d->useShell)
+  {
+      if (d->shell.isEmpty())
+      {
+          kdDebug() << "Could not find a valid shell\n" << endl;
+              return false;
+      }
+      
+      arglist = static_cast<char **>(malloc( (4)*sizeof(char *)));
+      for (i=0; i < n; i++) {
+          shellCmd += arguments[i];
+          shellCmd += " "; // CC: to separate the arguments
+      }
+
+      arglist[0] = d->shell.data();
+      arglist[1] = (char *) "-c";
+      arglist[2] = shellCmd.data();
+      arglist[3] = 0;
+  }
+  else
+  {
+      arglist = static_cast<char **>(malloc( (n+1)*sizeof(char *)));
+      for (i=0; i < n; i++)
+         arglist[i] = arguments[i].data();
+      arglist[n]= 0;
+  }
 
   if (!setupCommunication(comm))
       kdDebug() << "Could not setup Communication!\n";
@@ -364,6 +390,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
              KProcessController::theKProcessController->
                   slotDoHousekeeping(0);
           }
+          runs = FALSE;
           emit processExited(this);
         }
   }
@@ -791,148 +818,17 @@ void KProcess::commClose()
   }
 }
 
-
-
-
-///////////////////////////
-// CC: Class KShellProcess
-///////////////////////////
-
-KShellProcess::KShellProcess(const char *shellname):
-  KProcess()
+void KProcess::setUseShell(bool useShell, const char *shell)
 {
-  shell = shellname;
+  if (!d)
+    d = new KProcessPrivate;
+  d->useShell = useShell;
+  d->shell = shell;
+  if (d->shell.isEmpty())
+     d->shell = searchShell();
 }
 
-
-KShellProcess::~KShellProcess() {
-}
-
-bool KShellProcess::start(RunMode runmode, Communication comm)
-{
-  uint i;
-  uint n = arguments.count();
-  const char *arglist[4];
-  QCString cmd;
-
-  if (runs || (0 == n)) {
-        return false;  // cannot start a process that is already running
-        // or if no executable has been assigned
-  }
-
-  run_mode = runmode;
-  status = 0;
-
-  if (shell.isEmpty())
-    shell = searchShell();
-  if (shell.isEmpty()) {
-    kdDebug() << "Could not find a valid shell\n" << endl;
-    return false;
-  }
-
-  //TODO: Add proper quoting of arguments!
-
-  for (i=0; i < n; i++) {
-      cmd += arguments[i];
-      cmd += " "; // CC: to separate the arguments
-  }
-
-  if (!setupCommunication(comm))
-    kdDebug() << "Could not setup Communication!" << endl;
-
-  // We do this in the parent because if we do it in the child process
-  // gdb gets confused when the application runs from gdb.
-  uid_t uid = getuid();
-  gid_t gid = getgid();
-#ifdef HAVE_INITGROUPS
-  struct passwd *pw = getpwuid(uid);
-#endif
-
-  runs = true;
-
-  QApplication::flushX();
-
-  // WABA: Note that we use fork() and not vfork() because
-  // vfork() has unclear semantics and is not standardized.
-  pid_ = fork();
-
-  if (0 == pid_) {
-        if (!runPrivileged())
-        {
-           setgid(gid);
-#if defined( HAVE_INITGROUPS)
-	   if(pw)
-              initgroups(pw->pw_name, pw->pw_gid);
-#endif
-           setuid(uid);
-
-        }
-        // The child process
-        // CC: Changed the way the parameter was built up
-        // CC: Arglist for KShellProcess is now always:
-        // CC: <shell> -c <command>
-
-        arglist[0] = shell.data();
-        arglist[1] = "-c";
-        arglist[2] = cmd.data();
-        arglist[3] = 0;
-
-        if(!commSetupDoneC())
-          kdDebug() << "Could not finish comm setup in child!" << endl;
-          
-        setupEnvironment();
-
-        // Matthias
-        if (run_mode == DontCare)
-          setpgid(0,0);
-
-        // restore default SIGPIPE handler (Harri)
-        struct sigaction act;
-        sigemptyset(&(act.sa_mask));
-        sigaddset(&(act.sa_mask), SIGPIPE);
-        act.sa_handler = SIG_DFL;
-        act.sa_flags = 0;
-        sigaction(SIGPIPE, &act, 0L);
-
-        execvp(arglist[0], const_cast<char *const *>(arglist));
-        _exit(-1);
-
-  } else if (-1 == pid_) {
-        // forking failed
-
-        runs = false;
-        //      free(arglist);
-        pid_ = 0;
-        return false;
-
-  } else {
-        // the parent continues here
-
-        if (!commSetupDoneP())  // finish communication socket setup for the parent
-          kdDebug() << "Could not finish comm setup in parent!" << endl;
-
-        // Discard any data for stdin that might still be there
-        input_data = 0;
-
-        if (run_mode == Block) {
-          commClose();
-
-          // The SIGCHLD handler of the process controller will catch
-          // the exit and set the status
-          while(runs)
-          {
-             KProcessController::theKProcessController->
-                  slotDoHousekeeping(0);
-          }
-
-          runs = FALSE;
-          emit processExited(this);
-        }
-  }
-  return true;
-}
-
-QString KShellProcess::quote(const QString &arg)
+QString KProcess::quote(const QString &arg)
 {
     QString res = arg;
     res.replace(QRegExp(QString::fromLatin1("\'")),
@@ -942,7 +838,7 @@ QString KShellProcess::quote(const QString &arg)
     return res;
 }
 
-QCString KShellProcess::searchShell()
+QCString KProcess::searchShell()
 {
   QCString tmpShell = QCString(getenv("SHELL")).stripWhiteSpace();
   if (!isExecutable(tmpShell))
@@ -953,7 +849,7 @@ QCString KShellProcess::searchShell()
   return tmpShell;
 }
 
-bool KShellProcess::isExecutable(const QCString &filename)
+bool KProcess::isExecutable(const QCString &filename)
 {
   struct stat fileinfo;
 
@@ -986,6 +882,31 @@ bool KShellProcess::isExecutable(const QCString &filename)
 
 void KProcess::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+
+///////////////////////////
+// CC: Class KShellProcess
+///////////////////////////
+
+KShellProcess::KShellProcess(const char *shellname):
+  KProcess()
+{
+  setUseShell(true, shellname);
+}
+
+
+KShellProcess::~KShellProcess() {
+}
+
+QString KShellProcess::quote(const QString &arg)
+{
+    return KProcess::quote(arg);
+}
+
+bool KShellProcess::start(RunMode runmode, Communication comm)
+{
+  return KProcess::start(runmode, comm);
+}
 
 void KShellProcess::virtual_hook( int id, void* data )
 { KProcess::virtual_hook( id, data ); }
