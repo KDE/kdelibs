@@ -757,10 +757,19 @@ unsigned int RenderText::width( int from, int len, bool firstLine) const
 
 short RenderText::width() const
 {
-    int w = 0;
-    // as TextSlaves are supposed to be sorted from up to bottom, left to right..
-    if(m_lines.count())
-        w = m_lines[m_lines.count()-1]->m_x + m_lines[m_lines.count()-1]->m_width - m_lines[0]->m_x;
+    int w;
+    int minx = 100000000;
+    int maxx = 0;
+    // slooow
+    for(int si = 0; si < m_lines.count(); si++) {
+        TextSlave* s = m_lines[si];
+        if(s->m_x < minx)
+            minx = s->m_x;
+        if(s->m_x + s->m_width > maxx)
+            maxx = s->m_x + s->m_width;
+    }
+
+    w = QMAX(0, maxx-minx);
 
     if(m_parent->isInline())
     {
