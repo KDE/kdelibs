@@ -304,7 +304,7 @@ UString &UString::operator=(const char *c)
   int l = c ? strlen(c) : 0;
   UChar *d = new UChar[l];
   for (int i = 0; i < l; i++)
-    d[i].uc = c[i];
+    d[i].uc = (unsigned char) c[i];
   rep = Rep::create(d, l);
 
   return *this;
