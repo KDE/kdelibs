@@ -102,6 +102,7 @@ public:
     virtual ushort id() const;
 
     virtual khtml::RenderStyle *style() const;
+    virtual void setStyle(khtml::RenderStyle *style);
 
     virtual void attach();
     virtual void detach();
@@ -120,6 +121,7 @@ public:
 
 protected:
     virtual TextImpl *createNew(DOMStringImpl *_str);
+    khtml::RenderStyle *m_style;
 };
 
 // ----------------------------------------------------------------------------
