@@ -26,6 +26,7 @@
 #include <qwidget.h>
 
 class QLabel;
+class QListView;
 
 class LockWidget : public QWidget
 {
@@ -37,11 +38,14 @@ class LockWidget : public QWidget
   protected slots:
     void lock();
     void unlock();
+
+    void updateLockView();
     
   private:
     KABC::Lock *mLock;
 
     QLabel *mStatus;
+    QListView *mLockView;
 };
 
 #endif

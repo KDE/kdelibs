@@ -41,11 +41,16 @@ Lock::Lock( const QString &identifier )
   mIdentifier.replace( "/", "_" );
 }
 
+QString Lock::locksDir()
+{
+  return locateLocal( "data", "kabc/lock/" );
+}
+
 bool Lock::lock()
 {
   kdDebug(5700) << "Lock::lock()" << endl;
 
-  QString lockName = locateLocal( "data", "kabc/lock/" + mIdentifier + ".lock" );
+  QString lockName = locksDir() + mIdentifier + ".lock";
   kdDebug(5700) << "-- lock name: " << lockName << endl;
 
   if ( QFile::exists( lockName ) ) {  // check if it is a stale lock file
@@ -102,8 +107,7 @@ bool Lock::lock()
 
 bool Lock::unlock()
 {
-  QString lockName = locateLocal( "data",
-                                  "kabc/lock/" + mIdentifier + ".lock" );
+  QString lockName = locksDir() + mIdentifier + ".lock";
   QFile::remove( lockName );
   QFile::remove( mLockUniqueName );
   emit unlocked();

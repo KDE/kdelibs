@@ -54,6 +54,8 @@ class Lock : public QObject
 
     QString error() const;
 
+    static QString locksDir();
+
   signals:
     void locked();
     void unlocked();

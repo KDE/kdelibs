@@ -1,10 +1,3 @@
-#include "testlock.h"
-
-#include <kaboutdata.h>
-#include <kapplication.h>
-#include <kdebug.h>
-#include <klocale.h>
-#include <kcmdlineargs.h>
 /*
     This file is part of libkabc.
 
@@ -26,6 +19,15 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "testlock.h"
+
+#include <kaboutdata.h>
+#include <kapplication.h>
+#include <kdebug.h>
+#include <klocale.h>
+#include <kcmdlineargs.h>
+#include <kdirwatch.h>
+
 #include <kmessagebox.h>
 #include <kdialog.h>
 
@@ -33,8 +35,13 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
+#include <qlistview.h>
+#include <qdir.h>
 
 #include <iostream>
+
+#include <sys/types.h>
+#include <unistd.h>
 
 using namespace KABC;
 
@@ -45,6 +52,12 @@ LockWidget::LockWidget( const QString &identifier )
   QVBoxLayout *topLayout = new QVBoxLayout( this );
   topLayout->setMargin( KDialog::marginHint() );
   topLayout->setSpacing( KDialog::spacingHint() );
+
+  int pid = getpid();
+
+  QLabel *pidLabel = new QLabel( "Process ID: " + QString::number( pid ),
+                                 this );
+  topLayout->addWidget( pidLabel );
 
   QHBoxLayout *identifierLayout = new QHBoxLayout( topLayout );
   
@@ -65,14 +78,60 @@ LockWidget::LockWidget( const QString &identifier )
   topLayout->addWidget( button );
   connect( button, SIGNAL( clicked() ), SLOT( unlock() ) );
 
+  mLockView = new QListView( this );
+  topLayout->addWidget( mLockView );
+  mLockView->addColumn( "Lock File" );
+  mLockView->addColumn( "PID" );
+  mLockView->addColumn( "Locking App" );
+
+  updateLockView();
+
   button = new QPushButton( "Quit", this );
   topLayout->addWidget( button );
   connect( button, SIGNAL( clicked() ), SLOT( close() ) );
+  
+  KDirWatch *watch = KDirWatch::self();
+  connect( watch, SIGNAL( dirty( const QString & ) ),
+           SLOT( updateLockView() ) );
+  connect( watch, SIGNAL( created( const QString & ) ),
+           SLOT( updateLockView() ) );
+  connect( watch, SIGNAL( deleted( const QString & ) ),
+           SLOT( updateLockView() ) );
+  watch->addDir( Lock::locksDir() );
+  watch->startScan();
 }
 
 LockWidget::~LockWidget()
 {
   delete mLock;
+}
+
+void LockWidget::updateLockView()
+{
+  mLockView->clear();
+  
+  QDir dir( Lock::locksDir() );
+  
+  QStringList files = dir.entryList( "*.lock" );
+  
+  QStringList::ConstIterator it;
+  for( it = files.begin(); it != files.end(); ++it ) {
+    if ( *it == "." || *it == ".." ) continue;
+    
+    QString app;
+    int pid;
+    
+    QFile f( Lock::locksDir() + *it );
+    if ( !f.open( IO_ReadOnly ) ) {
+      kdWarning() << "Unable to open lock file '" << f.name() << "'" << endl; 
+    } else {
+      QDataStream t( &f );
+      t >> pid;
+      t >> app;
+    }
+    
+    new QListViewItem( mLockView, *it, QString::number( pid ), app );
+  }
 }
 
 void LockWidget::lock()
