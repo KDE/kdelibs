@@ -985,7 +985,7 @@ extern "C" int _KDE_IceTransNoListen(const char *protocol);
 #endif
 
 DCOPServer::DCOPServer(bool _only_local, bool _suicide)
-    : QObject(0,0), appIds(263), clients(263), currentClientNumber(0)
+    : QObject(0,0), appIds(263), currentClientNumber(0), clients(263) 
 {
     serverKey = 42;
 
