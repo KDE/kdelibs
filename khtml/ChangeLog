@@ -1,3 +1,12 @@
+2005-02-20  Germain Garand  <germain@ebooksfrance.org>
+
+        * html/html_formimpl.cpp (FocusHandleWidget::focusNextPrev): TextEdit
+        needs to use QWidget::focusNextPrevChild.
+        (defaultEventHandler): only handle key tab if it wasn't accepted by the widget (#58247)
+
+        * rendering/render_replaced.cpp (RenderWidget::handleEvent): return
+        something meaningful.
+
 2005-02-18  Germain Garand  <germain@ebooksfrance.org>
 
         scope: table percentage height, replaced element height calculation.

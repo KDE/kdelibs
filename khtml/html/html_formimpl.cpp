@@ -902,7 +902,8 @@ class FocusHandleWidget : public QWidget
 {
 public:
     void focusNextPrev(bool n) {
-	focusNextPrevChild(n);
+        if (!focusNextPrevChild(n) && inherits("QTextEdit"))
+            QWidget::focusNextPrevChild(n);
     }
 };
 
@@ -951,15 +952,21 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
             }
         }
 
-	if (evt->id() == EventImpl::KHTML_KEYPRESS_EVENT) {
-	    TextEventImpl* const k = static_cast<TextEventImpl *>(evt);
-	    const int key = k->qKeyEvent() ? k->qKeyEvent()->key() : 0;
-	    if (m_render && (key == Qt::Key_Tab || key == Qt::Key_BackTab)) {
-		QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
-		if (widget)
-		    static_cast<FocusHandleWidget *>(widget)
-			->focusNextPrev(key == Qt::Key_Tab);
-	    }
+	if (!evt->defaultHandled() && m_render && m_render->isWidget()) {
+	    // handle tabbing out, either from a single or repeated key event.
+	    // ### FIXME this is needlessly complicated by our internal KHTML_KEYPRESS_EVENT.
+	    // What is it good for? It should be renamed and only emitted in case of a repeat. -gg
+	    if ( evt->id() == EventImpl::KEYDOWN_EVENT || evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) {
+	        QKeyEvent* const k = static_cast<TextEventImpl *>(evt)->qKeyEvent();
+	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_BackTab) && 
+	             (evt->id() == EventImpl::KEYDOWN_EVENT || k->isAutoRepeat()) ) {
+		    QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
+		    if (widget)
+                        static_cast<FocusHandleWidget *>(widget)
+			    ->focusNextPrev(k->key() == Qt::Key_Tab);
+                    evt->setDefaultHandled();
+	        }
+            }
 	}
 
 

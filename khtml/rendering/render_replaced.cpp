@@ -678,6 +678,7 @@ void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
 
 bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
+    bool ret = false;
     switch(ev.id()) {
     case EventImpl::MOUSEDOWN_EVENT:
     case EventImpl::MOUSEUP_EVENT:
@@ -741,6 +742,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 //                   << " button=" << button << " state=" << state << endl;
         QMouseEvent e(type, p, button, state);
         static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+        ret = e.isAccepted();
         break;
     }
     case EventImpl::KEYDOWN_EVENT:
@@ -748,6 +750,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent();
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+        ret = ke->isAccepted();
         break;
     }
     case EventImpl::KHTML_KEYPRESS_EVENT: {
@@ -768,6 +771,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                                ke->text(), ke->isAutoRepeat(), ke->count() );
             static_cast<EventPropagator *>(m_widget)->sendEvent(&releaseEv);
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+            ret = ke->isAccepted();
         }
 
 	break;
@@ -786,7 +790,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     default:
         break;
     }
-    return true;
+    return ret;
 }
 
 void RenderWidget::deref()
