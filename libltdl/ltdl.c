@@ -206,13 +206,11 @@ strrchr(str, ch)
 
 #endif
 
-#if HAVE_LIBDL
+#if HAVE_DLFCN_H
 
 /* dynamic linking with dlopen/dlsym */
 
-#if HAVE_DLFCN_H
-# include <dlfcn.h>
-#endif
+#include <dlfcn.h>
 
 #ifdef RTLD_GLOBAL
 # define LTDL_GLOBAL	RTLD_GLOBAL
