@@ -33,7 +33,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kaccel.h kglobalaccel.h kprotocolmanager.h \
 	kregexp.h kstyle.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kglobal.h kglobalsettings.h ksharedptr.h kde_dmalloc.h \
-	kallocator.h kcrash.h \
+	kallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
@@ -45,7 +45,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp netwm.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
 	kconfigbackend.cpp kapp.cpp kuniqueapp.cpp ksock.cpp\
-	kprocess.cpp kprocctrl.cpp klocale.cpp \
+	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	fakes.cpp kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kstdaccel.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
 	kpixmap.cpp kckey.cpp kaccel.cpp kcrash.cpp\
