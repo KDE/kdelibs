@@ -908,9 +908,6 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
 bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode *node )
 {
-  QDomNodeList childElements = element.childNodes();
-  uint childElementCount = childElements.count();
-
   // process all child containers first
   QListIterator<KXMLGUIContainerNode> childIt( node->children );
   while ( childIt.current() )
@@ -918,12 +915,11 @@ bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode
     KXMLGUIContainerNode *childNode = childIt.current();
 
     // find the corresponding element in the DOM tree (which contains the saved container state)
-    QDomElement child;
+    QDomElement child, e;
     // ### slow
-    uint i = 0;
-    for (; i < childElementCount; ++i )
+    for ( e = element.firstChild().toElement(); !e.isNull(); 
+	  e = e.nextSibling().toElement() )
     {
-      QDomElement e = childElements.item( i ).toElement();
       if ( e.tagName() == childNode->tagName &&
            e.attribute( d->attrName ) == childNode->name )
       {
