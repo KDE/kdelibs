@@ -22,14 +22,14 @@ KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 noinst_LTLIBRARIES = libkhtmlmisc.la
 libkhtmlmisc_la_SOURCES = \
 	decoder.cpp    loader.cpp loader_jpeg.cpp \
-	htmlhashes.cpp helper.cpp 
+	htmlhashes.cpp helper.cpp arena.cpp
 libkhtmlmisc_la_LIBADD = $(LIBJPEG)
 
 libkhtmlmisc_la_METASOURCES = AUTO
 
 noinst_HEADERS = \
-	decoder.h      khtmllayout.h loader_jpeg.h loader.h \
-	stringit.h     htmlhashes.h    helper.h shared.h
+	decoder.h khtmllayout.h loader_jpeg.h loader.h \
+	stringit.h htmlhashes.h helper.h shared.h arena.h
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/dcop -I$(top_srcdir)/kio -I$(top_srcdir)/libltdl \
            -I$(top_srcdir)/khtml $(all_includes)
