@@ -100,7 +100,7 @@ private slots:
     void slotNextDirToList( KFileTreeViewItem *dirItem );
     void slotComboTextChanged( const QString& text );
     void slotContextMenu( KListView *, QListViewItem *, const QPoint & );
-    void slotShowHiddenFilesToggled();
+    void slotShowHiddenFoldersToggled();
 
 private:
     void readConfig( KConfig *config, const QString& group );
@@ -110,7 +110,7 @@ private:
 
     KFileTreeView *m_treeView;
     QPopupMenu *m_contextMenu;
-    KToggleAction *m_showHiddenFiles;
+    KToggleAction *m_showHiddenFolders;
     bool m_localOnly;
 
 protected:
