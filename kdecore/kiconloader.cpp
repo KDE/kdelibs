@@ -465,10 +465,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	group = 0;
     }
 
-    if (!absolutePath)
-    {
         static const QString &png_ext = KGlobal::staticQString(".png");
         static const QString &xpm_ext = KGlobal::staticQString(".xpm");
+    if (!absolutePath)
+    {
 
         if (!canReturnNull && name.isEmpty())
             name = str_unknown;
@@ -559,7 +559,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
         if (inCache)
             return pix;
 
-        img=new QImage(icon.path);
+        // Use the extension as the format. Works for XPM and PNG, which is all we support.
+        QString ext = icon.path.right(3).upper();
+        img = new QImage(icon.path, ext.latin1());
         if (img->isNull())
             return pix;
 
