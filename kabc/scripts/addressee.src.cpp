@@ -357,7 +357,7 @@ void Addressee::insertPhoneNumber( const PhoneNumber &phoneNumber )
       return;
     }
   }
-  if (!phoneNumber.number().simplifyWhiteSpace().isEmpty())
+  if ( !phoneNumber.number().simplifyWhiteSpace().isEmpty() )
     mData->phoneNumbers.append( phoneNumber );
 }
 
@@ -466,9 +466,11 @@ Key Addressee::key( int type, QString customTypeString ) const
   }
   return Key( QString(), type );
 }
-void Addressee::setKeys( const Key::List& list ) {
-    detach();
-    mData->keys = list;
+
+void Addressee::setKeys( const Key::List& list )
+{
+  detach();
+  mData->keys = list;
 }
 
 Key::List Addressee::keys() const
@@ -485,13 +487,13 @@ Key::List Addressee::keys( int type, QString customTypeString ) const
     if ( (*it).type() == type ) {
       if ( type == Key::Custom ) {
         if ( customTypeString.isEmpty() ) {
-          list.append(*it);
+          list.append( *it );
         } else {
           if ( (*it).customTypeString() == customTypeString )
-            list.append(*it);
+            list.append( *it );
         }
       } else {
-        list.append(*it);
+        list.append( *it );
       }
     }
   }
@@ -742,48 +744,40 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
   QString partA, partB, result;
   char endCh = '>';
 
-  startPos = rawEmail.find('<');
-  if (startPos < 0)
-  {
-    startPos = rawEmail.find('(');
+  startPos = rawEmail.find( '<' );
+  if ( startPos < 0 ) {
+    startPos = rawEmail.find( '(' );
     endCh = ')';
   }
-  if (startPos < 0)
-  {
+
+  if ( startPos < 0 ) {
     // We couldn't find any separators, so we assume the whole string
     // is the email address
     email = rawEmail;
     fullName = "";
-  }
-  else
-  {
+  } else {
     // We have a start position, try to find an end
-    endPos = rawEmail.find(endCh, startPos+1);
+    endPos = rawEmail.find( endCh, startPos + 1 );
 
-    if (endPos < 0)
-    {
+    if ( endPos < 0 ) {
       // We couldn't find the end of the email address. We can only
       // assume the entire string is the email address.
       email = rawEmail;
       fullName = "";
-    }
-    else
-    {
+    } else {
       // We have a start and end to the email address
 
       // Grab the name part
-      QString left = rawEmail.left(startPos).stripWhiteSpace();
+      QString left = rawEmail.left( startPos ).stripWhiteSpace();
       // grab the email part
-      QString right = rawEmail.mid(startPos+1, endPos-startPos-1).stripWhiteSpace();
+      QString right = rawEmail.mid( startPos + 1, endPos - startPos - 1 )
+                              .stripWhiteSpace();
 
       // Either "Name <email>" or "email (Name)"
-      if (endCh == '>')
-      {
+      if ( endCh == '>' ) {
         fullName = left;
         email = right;
-      }
-      else // endCh == ')'
-      {
+      } else { // endCh == ')'
         fullName = right;
         email = left;
       }
@@ -791,38 +785,38 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
       // Check that we do not have any extra characters on the end of the
       // strings
       len = fullName.length();
-      if (fullName[0]=='"' && fullName[len-1]=='"')
-        fullName = fullName.mid(1, len-2);
-      else if (fullName[0]=='(' && fullName[len-1]==')')
-        fullName = fullName.mid(1, len-2);
+      if ( fullName[ 0 ] == '"' && fullName[ len - 1 ] == '"' )
+        fullName = fullName.mid( 1, len - 2 );
+      else if ( fullName[ 0 ] == '(' && fullName[ len - 1 ] == ')' )
+        fullName = fullName.mid( 1, len - 2 );
 
-	  len = email.length();
-      if (email[0]=='<' && email[len-1]=='>')
-        email = email.mid(1, len-2);
+      len = email.length();
+      if ( email[ 0 ] == '<' && email[ len - 1 ] == '>' )
+        email = email.mid( 1, len - 2 );
     }
   }
 }
 
 void Addressee::setResource( Resource *resource )
 {
-    detach();
-    mData->resource = resource;
+  detach();
+  mData->resource = resource;
 }
 
 Resource *Addressee::resource() const
 {
-    return mData->resource;
+  return mData->resource;
 }
 
 void Addressee::setChanged( bool value )
 {
-    detach();
-    mData->changed = value;
+  detach();
+  mData->changed = value;
 }
 
 bool Addressee::changed() const
 {
-    return mData->changed;
+  return mData->changed;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
