@@ -22,10 +22,16 @@
 #ifndef KILEMETAINFO_H
 #define KILEMETAINFO_H
 
+/* Hack for HPUX: Namespace pollution
+   m_unit is a define in <sys/sysmacros.h> */
+#define m_unit outouftheway_m_unit
+
 #include <qdict.h>
 #include <qvariant.h>
 #include <qobject.h>
 #include <qstring.h>
+
+#undef m_unit
 
 class QValidator;
 class KFilePlugin;
