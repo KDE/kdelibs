@@ -264,7 +264,7 @@
 <!ENTITY kview	"<application>KView</application>">
 <!ENTITY kviewshell "<application>KViewshell</application>">
 <!ENTITY kvt	"<application>kvt</application>">
-<!ENTITY kworldwatch  "<application>KWorldWatch</application>">
+<!ENTITY kworldclock "<application>KWorldClock</application>">
 <!ENTITY kword "<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
 <!ENTITY kwin4	"<application>K Four Wins</application>">
@@ -319,3 +319,4 @@
 <!ENTITY ktop	"<application>KTop</application>">
 <!ENTITY kwm	"<application>kwm</application>">
 <!ENTITY kwmpager	"<application>kwmpager</application>">
+<!ENTITY kworldwatch  "<application>KWorldClock</application>">
