@@ -482,6 +482,7 @@ bool KPropsDlgPlugin::isDesktopFile( KFileItem * _item )
   FILE *f = fopen( QFile::encodeName(t), "r" );
   if ( f == 0L )
     return false;
+  fclose(f);
 
   // return true if desktop file
   return ( _item->mimetype() == QString::fromLatin1("application/x-desktop") );
