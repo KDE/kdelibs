@@ -292,8 +292,12 @@ HTMLObject* HTMLClue::checkPoint( int _x, int _y )
     HTMLObject *obj;
     HTMLObject *obj2;
 
-    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+    if ( (_x < x) || (_x > x + width) || 
+         (_y > y + descent) || (_y < y - ascent)
+       )
+    {
 	return 0L;
+    }
 
     for ( obj = head; obj != 0; obj = obj->next() )
     {
@@ -309,8 +313,12 @@ HTMLObject* HTMLClue::mouseEvent( int _x, int _y, int button, int state )
     HTMLObject *obj;
     HTMLObject *obj2;
 
-    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+    if ( (_x < x) || (_x > x + width) || 
+         (_y > y + descent) || (_y < y - ascent)
+       )
+    {
 	return 0;
+    }
 
     for ( obj = head; obj != 0; obj = obj->next() )
     {
@@ -475,7 +483,7 @@ int HTMLClue::findPageBreak( int _y )
 
 bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
-    if ( _y + _height < y - getAscent() || _y > y )
+    if ( (_y + _height < y - ascent) || (_y > y + descent) )
 	return false;
     
     HTMLObject *obj;
@@ -516,7 +524,7 @@ bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
     {
 	if ( !obj->isHAligned() )
 	{
-	    if ( obj->print( _painter, _x - x, _y - (y - getHeight()),
+	    if ( obj->print( _painter, _x - x, _y - (y - ascent),
 			_width, _height, _tx, _ty, toPrinter ) && toPrinter )
 	    return true;
 	}
@@ -536,7 +544,7 @@ void HTMLClue::print( QPainter *_painter, HTMLChain *_chain, int _x, int _y,
     if ( _chain->current() )
     {
 	_chain->current()->print( _painter, _chain, _x - x,
-		_y - (y - getHeight()), _width, _height, _tx, _ty );
+		_y - (y - ascent), _width, _height, _tx, _ty );
     }
 }
 
@@ -547,7 +555,7 @@ void HTMLClue::print( QPainter *_painter, int _tx, int _ty )
 
 void HTMLClue::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int _width, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getAscent() || _y > y )
+    if ( (_y + _height < y - ascent) || (_y > y + descent) )
 	return;
     
     HTMLObject *obj;
@@ -559,12 +567,12 @@ void HTMLClue::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int 
     {
 	if ( obj == _obj )
 	{
-	    obj->print( _painter, _x - x, _y - (y - getHeight()), _width,	
+	    obj->print( _painter, _x - x, _y - (y - ascent), _width,	
 		_height, _tx, _ty, false );
 	    return;
 	}
 	else
-	    obj->print( _painter, _obj, _x - x, _y - (y - getHeight()),
+	    obj->print( _painter, _obj, _x - x, _y - (y - ascent),
 		_width, _height, _tx, _ty );
     }
 }
@@ -621,8 +629,12 @@ HTMLObject* HTMLClueV::checkPoint( int _x, int _y )
     if ( ( obj2 = HTMLClue::checkPoint( _x, _y ) ) != 0L )
 	    return obj2;
 
-    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+    if ( (_x < x) || (_x > x + width) || 
+         (_y > y + descent) || (_y < y - ascent)
+       )
+    {
 	return 0L;
+    }
 
     HTMLClueAligned *clue;
     for ( clue = alignLeftList; clue != 0; clue = clue->nextClue() )
@@ -650,8 +662,12 @@ HTMLObject* HTMLClueV::mouseEvent( int _x, int _y, int button, int state )
     if ( ( obj2 = HTMLClue::mouseEvent( _x, _y, button, state ) ) != 0L )
 	    return obj2;
 
-    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+    if ( (_x < x) || (_x > x + width) || 
+         (_y > y + descent) || (_y < y - ascent) 
+       )
+    {
 	return 0;
+    }
 
     HTMLClueAligned *clue;
     for ( clue = alignLeftList; clue != 0; clue = clue->nextClue() )
@@ -764,7 +780,7 @@ bool HTMLClueV::print( QPainter *_painter, int _x, int _y, int _width, int _heig
     bool rv = HTMLClue::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
 
     // print aligned objects
-    if ( _y + _height < y - getAscent() || _y > y )
+    if ( (_y + _height < y - ascent) || (_y > y + descent) )
 	return rv;
     
     _tx += x;
@@ -1268,7 +1284,7 @@ bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
   bool rv = HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
   
   // print aligned objects
-  if ( _y + _height < y - getAscent() || _y > y )
+  if ( (_y + _height < y - ascent) || (_y > y + descent) )
     return rv;
   
   _tx += x;

@@ -65,8 +65,11 @@ bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter )
 {
 	if ( (_y + _height < y - getAscent() - padding) || 
-	     (_y > y + padding ))
+	     (_y > y + padding )
+	   )
+	{
             return false;
+        }
     
  	if ( bg.isValid() )
 	{
@@ -1373,8 +1376,12 @@ HTMLObject *HTMLTable::checkPoint( int _x, int _y )
     HTMLObject *obj;
     HTMLTableCell *cell;
 
-    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+    if ( (_x < x) || (_x > x + width) || 
+         (_y > y + descent) || (_y < y - ascent)
+       )
+    {
 	return 0L;
+    }
 
     for ( r = 0; r < totalRows; r++ )
     {
@@ -1402,8 +1409,12 @@ HTMLObject *HTMLTable::mouseEvent( int _x, int _y, int button, int state )
     HTMLObject *obj;
     HTMLTableCell *cell;
 
-    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+    if ( (_x < x) || (_x > x + width) || 
+         (_y > y + descent) || (_y < y - ascent)
+       )
+    {
 	return 0;
+    }
 
     for ( r = 0; r < totalRows; r++ )
     {
@@ -1736,7 +1747,7 @@ void HTMLTable::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
 
 bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
-    if ( _y + _height < y - getAscent() || _y > y )
+    if ( (_y + _height < y - ascent) || (_y > y + descent) )
 	return false;
 
     _tx += x;
@@ -1833,13 +1844,13 @@ void HTMLTable::print( QPainter *_painter, HTMLChain *_chain,int _x,
     if ( _chain->current() )
     {
 	_chain->current()->print( _painter, _chain, _x - x,
-	    _y - (y - getHeight()), _width, _height, _tx, _ty );
+	    _y - (y - ascent), _width, _height, _tx, _ty );
     }
 } 
 
 void HTMLTable::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int _width, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getAscent() || _y > y )
+    if ( (_y + _height < y - ascent) || (_y > y + descent) )
 	return;
 
     _tx += x;
