@@ -74,7 +74,7 @@ KJSO *KJS::toBoolean(KJSO *obj)
 // ECMA 9.3
 KJSO *KJS::toNumber(KJSO *obj)
 {
-  double d;
+  double d = 0;
   Ptr tmp, res;
 
   switch (obj->type())
@@ -202,7 +202,7 @@ KJSO *KJS::toString(KJSO *obj)
 // ECMA 9.9
 KJSO *KJS::toObject(KJSO *obj)
 {
-  KJSO *o;
+  KJSO *o = 0L;
 
   switch (obj->type())
     {
