@@ -36,7 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Daniel M. Duley <mosfet@kde.org>
  */
-class KPanelMenu : public QObject, DCOPObject
+class KPanelMenu : public QObject, public DCOPObject
 {
     Q_OBJECT
 public:
