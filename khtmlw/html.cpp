@@ -3901,6 +3901,8 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	}
 	else if ( *str == 'p' && ( *(str+1) == ' ' || *(str+1) == '>' ) )
 	{
+	        closeAnchor();
+		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		HTMLClue::HAlign align = divAlign;
 
 		stringTok->tokenize( str + 2, " >" );
@@ -3917,11 +3919,8 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 					align = HTMLClue::Left;
 			}
 		}
-		// html docs say one should ignore an empty <p> tag
 		if( align != divAlign )
 		{
-		    closeAnchor();
-		    vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		    if ( flow == 0 )
 			newFlow(_clue);
 		    flow->setHAlign( align );
@@ -4611,6 +4610,8 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 		    }
 		    else
 		    {
+			// ignore <p> and such at the beginning
+			vspace_inserted = true;
 		    	pushBlock( ID_TD, 3 );
 			str = parseBody( cell, endthtd );
 			popBlock( ID_TD, cell );
