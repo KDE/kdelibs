@@ -86,6 +86,8 @@ KProtocolInfoFactory::findProtocol(const QString &protocol)
 {
   if (!m_sycocaDict) return 0; // Error!
 
+  if (protocol == m_lastProtocol) return m_lastInfo;
+
   int offset;
 
   offset = m_sycocaDict->find_string( protocol );
@@ -100,6 +102,8 @@ KProtocolInfoFactory::findProtocol(const QString &protocol)
      delete info;
      info = 0; // Not found
   }
+  m_lastProtocol = protocol;
+  m_lastInfo = info;
   return info;
 }
 

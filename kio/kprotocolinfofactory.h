@@ -62,6 +62,9 @@ protected:
 //  void scanConfig( const QString& _dir );
 
   static KProtocolInfoFactory *_self;
+  
+  QString m_lastProtocol;
+  KProtocolInfo::Ptr m_lastInfo;
 };
 
 #endif
