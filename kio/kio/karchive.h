@@ -251,7 +251,7 @@ public:
      * @return the content of this file.
      * Call data() with care (only once per file), this data isn't cached.
      */
-    QByteArray data() const;
+    virtual QByteArray data() const;
 
     /**
      * This method returns QIODevice (internal class: KLimitedIODevice)
