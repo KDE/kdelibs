@@ -724,7 +724,7 @@ QString whatstr;
 
   // Accept for Web Site Signing, Email Signing, Code Signing
   caSite = new QCheckBox(i18n("Accept for site signing"), tabSSLCA);
-  caEmail = new QCheckBox(i18n("Accept for e-mail signing"), tabSSLCA);
+  caEmail = new QCheckBox(i18n("Accept for email signing"), tabSSLCA);
   caCode = new QCheckBox(i18n("Accept for code signing"), tabSSLCA);
   grid->addMultiCellWidget(caSite, 15, 15, 0, 4);
   connect(caSite, SIGNAL(clicked()), SLOT(slotCAChecked()));
