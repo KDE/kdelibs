@@ -2954,7 +2954,24 @@ bool HTTPProtocol::readHeader()
   }
 
   if (!expireDate)
-    expireDate = time(0) + DEFAULT_CACHE_EXPIRE;
+  {
+    time_t lastModifiedDate = 0;
+    if (!m_lastModified.isEmpty())
+       lastModifiedDate = KRFCDate::parseDate(m_lastModified);
+       
+    if (lastModifiedDate)
+    {
+       long diff = difftime(dateHeader, lastModifiedDate);
+       if (diff < 0)
+          expireDate = time(0) + 1;
+       else 
+          expireDate = time(0) + (diff / 10);
+    }
+    else
+    {
+       expireDate = time(0) + DEFAULT_CACHE_EXPIRE;
+    }
+  }
 
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
