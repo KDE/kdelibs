@@ -36,6 +36,7 @@
 
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+#include "css/csshelper.h"
 #include "xml/dom_textimpl.h"
 
 #include "rendering/render_form.h"
