@@ -2,6 +2,7 @@
   This file is part of the KDE libraries
   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
             (c) 1999 Mario Weilguni <mweilguni@sime.com>
+            (c) 2001 Lubos Lunak <l.lunak@kde.org>
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public

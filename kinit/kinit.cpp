@@ -2,6 +2,7 @@
  * This file is part of the KDE libraries
  * Copyright (c) 1999-2000 Waldo Bastian <bastian@kde.org>
  *           (c) 1999 Mario Weilguni <mweilguni@sime.com>
+ *           (c) 2001 Lubos Lunak <l.lunak@kde.org>
  *
  * $Id$
  *
@@ -82,6 +83,8 @@ extern char **environ;
 extern int lt_dlopen_flag;
 static int X11fd = -1;
 static Display *X11display = 0;
+static int X11_startup_notify_fd = -1;
+static Display *X11_startup_notify_display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
@@ -140,6 +143,10 @@ static void close_fds()
    if (X11fd >= 0)
    {
       close(X11fd);
+   }
+   if (X11_startup_notify_fd >= 0 && X11_startup_notify_fd != X11fd )
+   {
+      close(X11_startup_notify_fd);
    }
 
    signal(SIGCHLD, SIG_DFL);
@@ -200,23 +207,53 @@ static int get_current_desktop( Display* disp )
     return 0;
 }
 
-static void send_startup_info( KStartupInfoId& id, pid_t pid, const char* bin )
+// var has to be e.g. "DISPLAY=", i.e. with =
+const char* get_env_var( const char* var, int envc, const char* envs )
 {
-    Display*  disp = XOpenDisplay( NULL ); // we are a child, so we can't use X11display
-    if( disp == NULL )
+    if( envc > 0 )
+    { // get the var from envs
+        const char* env_l = envs;
+        int ln = strlen( var );
+        for (int i = 0;  i < envc; i++)
+        {
+            if( strncmp( env_l, var, ln ) == 0 )
+                return env_l + ln;
+            while(*env_l != 0) env_l++;
+                env_l++;
+        }
+    }
+    return NULL;
+}
+
+static void init_startup_info( KStartupInfoId& id, const char* bin,
+    int envc, const char* envs )
+{
+    const char* dpy = get_env_var( "DISPLAY=", envc, envs );
+    // this may be called in a child, so it can't use display open using X11display
+    // also needed for multihead
+    X11_startup_notify_display = XOpenDisplay( dpy );
+    if( X11_startup_notify_display == NULL )
         return;
-    int desktop = get_current_desktop( disp );
-#if 0
-    int screen_number = get_screen_number();
-#endif
+    X11_startup_notify_fd = XConnectionNumber( X11_startup_notify_display );
     KStartupInfoData data;
-    data.setBin( bin );
+    int desktop = get_current_desktop( X11_startup_notify_display );
     data.setDesktop( desktop );
+    data.setBin( bin );
+    KStartupInfo::sendStartupX( X11_startup_notify_display, id, data );
+    XFlush( X11_startup_notify_display );
+}
+
+static void complete_startup_info( KStartupInfoId& id, pid_t pid )
+{
+    if( X11_startup_notify_display == NULL )
+        return;
+    KStartupInfoData data;
     data.addPid( pid );
     data.setHostname();
-    // CHECKME add more
-    KStartupInfo::sendStartupX( disp, id, data );
-    XCloseDisplay( disp );
+    KStartupInfo::sendChangeX( X11_startup_notify_display, id, data );
+    XCloseDisplay( X11_startup_notify_display );
+    X11_startup_notify_display = NULL;
+    X11_startup_notify_fd = -1;
 }
 
 QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs, bool avoid_loops )
@@ -224,17 +261,9 @@ QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs,
      QStringList paths;
      if( envc > 0 ) /* use the passed environment */
      {
-         const char* env_l = envs;
-         for (int i = 0;  i < envc; i++)
-         {
-            if( strncmp( env_l, "PATH=", 5 ) == 0 )
-            {
-                paths = QStringList::split( QRegExp( "[:\b]" ), env_l + 5, true );
-                break; // -->
-            }    
-            while(*env_l != 0) env_l++;
-                env_l++;
-         }
+         const char* path = get_env_var( "PATH=", envc, envs );
+         if( path != NULL )
+             paths = QStringList::split( QRegExp( "[:\b]" ), path, true );
      }
      else
          paths = QStringList::split( QRegExp( "[:\b]" ), getenv( "PATH" ), true );
@@ -269,9 +298,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
   QCString name;
   QCString exec;
   
-  KStartupInfoId startup_id;
-  startup_id.initId( startup_id_str );
-
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
       * instead of calling 'main(argc, argv)',
@@ -312,6 +338,11 @@ static pid_t launch(int argc, const char *_name, const char *args,
   {
     argc = 1;
   }
+
+  KStartupInfoId startup_id;
+  startup_id.initId( startup_id_str );
+  if( !startup_id.none())
+      init_startup_info( startup_id, name, envc, envs );
 
   if (0 > pipe(d.fd))
   {
@@ -556,8 +587,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
         d.launcher_pid = d.fork;
      }
   }
-  if( d.fork && !startup_id.none())
-      send_startup_info( startup_id, d.fork, name );
+  if( !startup_id.none())
+      complete_startup_info( startup_id, d.fork );
   return d.fork;
 }
 
