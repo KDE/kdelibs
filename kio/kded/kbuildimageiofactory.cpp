@@ -51,7 +51,7 @@ KBuildImageIOFactory::createEntry( const QString& file, const char *resource )
    QString fullPath = locate( resource, file);
 
    // is it readable?
-   if (::access(QFile::encodeName(fullPath), R_OK))
+   if (!::access(QFile::encodeName(fullPath), R_OK))
        return 0;
 
    KImageIOFormat *format = new KImageIOFormat(fullPath);

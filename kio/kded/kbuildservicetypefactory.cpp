@@ -73,7 +73,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
      return 0;
 
   // is it readable?
-  if (::access(QFile::encodeName(file), R_OK))
+  if (!::access(QFile::encodeName(file), R_OK))
       return 0;
 
   KDesktopFile desktopFile(file, true, resource);
