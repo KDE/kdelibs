@@ -307,23 +307,9 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   if ( m_bLink )
       _state |= KIcon::LinkOverlay;
 
-  /*
-  struct passwd * user = getpwuid( geteuid() );
-  bool isMyFile = (QString::fromLocal8Bit(user->pw_name) == m_user);
-  // This gets ugly for the group....
-  // Maybe we want a static QString for the user and a static QStringList
-  // for the groups... then we need to handle the deletion properly...
-  */
-
-  // No read permission at all
-  if ( !(S_IRUSR & m_permissions) && !(S_IRGRP & m_permissions) && !(S_IROTH & m_permissions) )
-       _state |= KIcon::LockOverlay;
-
-  // Or if we can't read it [using access()] - not network transparent
-  else if ( m_bIsLocalURL
-       && !S_ISDIR( m_fileMode ) // Locked dirs have a special icon
-       && access( QFile::encodeName(m_url.path()), R_OK ) == -1 )
-       _state |= KIcon::LockOverlay;
+  if ( !S_ISDIR( m_fileMode ) // Locked dirs have a special icon
+       && !isReadable())
+     _state |= KIcon::LockOverlay;
 
   KMimeType::Ptr mime;
   // Use guessed mimetype if the main one is clueless
@@ -337,6 +323,27 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
       kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
 
   return p;
+}
+
+bool KFileItem::isReadable() const
+{
+  /*
+  struct passwd * user = getpwuid( geteuid() );
+  bool isMyFile = (QString::fromLocal8Bit(user->pw_name) == m_user);
+  // This gets ugly for the group....
+  // Maybe we want a static QString for the user and a static QStringList
+  // for the groups... then we need to handle the deletion properly...
+  */
+
+  // No read permission at all
+  if ( !(S_IRUSR & m_permissions) && !(S_IRGRP & m_permissions) && !(S_IROTH & m_permissions) )
+      return false;
+
+  // Or if we can't read it [using access()] - not network transparent
+  else if ( m_bIsLocalURL && access( QFile::encodeName(m_url.path()), R_OK ) == -1 )
+      return false;
+
+  return true;
 }
 
 
@@ -420,7 +427,6 @@ bool KFileItem::cmp( const KFileItem & item )
              && m_bLink == item.m_bLink
              && size() == item.size()
              && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME) );
-    // Should we check the access time as well ?
 }
 
 void KFileItem::assign( const KFileItem & item )

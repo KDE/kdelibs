@@ -143,6 +143,13 @@ public:
   bool isDir() const { return S_ISDIR(m_fileMode); }
 
   /**
+   * @returns true if the file can be read - more precisely,
+   * returns false if we know for sure it can't. In some cases
+   * (remote files), we may return true even though it can't be read.
+   */
+  bool isReadable() const;
+
+  /**
    * @return the link destination if isLink() == true
    */
   QString linkDest() const;
