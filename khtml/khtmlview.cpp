@@ -1154,14 +1154,15 @@ void KHTMLView::print(bool quick)
     // this only works on Unix - we assume 72dpi
     KPrinter *printer = new KPrinter(true, QPrinter::PrinterResolution);
     printer->addDialogPage(new KHTMLPrintSettings());
-    if(quick || printer->setup(this)) {
+    QString docname = m_part->xmlDocImpl()->URL();
+    if ( !docname.isEmpty() )
+        docname = KStringHandler::csqueeze(docname, 80);
+    if(quick || printer->setup(this, docname)) {
         viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer->setFullPage(false);
         printer->setCreator("KDE 3.0 HTML Library");
-        QString docname = m_part->xmlDocImpl()->URL();
-        if ( !docname.isEmpty() )
-	    printer->setDocName(KStringHandler::csqueeze(docname, 80));
+        printer->setDocName(docname);
 
         QPainter *p = new QPainter;
         p->begin( printer );
