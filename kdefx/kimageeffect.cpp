@@ -3769,6 +3769,8 @@ void KImageEffect::normalize(QImage &image)
 
     /* red */
     memset(&intensity, 0, sizeof(struct double_packet));
+    memset(&high, 0, sizeof(struct double_packet));
+    memset(&low, 0, sizeof(struct double_packet));
     for(high.red=255; high.red != 0; high.red--){
         intensity.red+=histogram[(unsigned char)high.red].red;
         if(intensity.red > threshold_intensity)
@@ -4825,7 +4827,7 @@ static void bumpmap_row( uint           *src,
             if (ndotl < 0)
                 shade = (int)( params->compensation * ambient );
             else {
-                shade = (int)( ndotl / sqrt(nx * nx + ny * ny + params->nz2) );
+                shade = (int)( ndotl / sqrt(double(nx * nx + ny * ny + params->nz2)) );
 
                 shade = (int)( shade + QMAX(0.0, (255 * params->compensation - shade)) *
                                ambient / 255 );
