@@ -1294,8 +1294,23 @@ KExecPropsPage::KExecPropsPage( KPropertiesDialog *_props )
   swallowTitleStr = config.readEntry( QString::fromLatin1("SwallowTitle") );
   termBool = config.readBoolEntry( QString::fromLatin1("Terminal") );
   termOptionsStr = config.readEntry( QString::fromLatin1("TerminalOptions") );
-  suidBool = config.readBoolEntry( QString::fromLatin1("X-KDE-SubstituteUID") );
-  suidUserStr = config.readEntry( QString::fromLatin1("X-KDE-Username") );
+
+  if (config.hasGroup( QString::fromLatin1( "Property::X-KDE-SubstituteUID" ) ))
+  {
+    config.setGroup( QString::fromLatin1( "Property::X-KDE-SubstituteUID" ) );
+    suidBool = config.readBoolEntry( QString::fromLatin1("Value") );
+  } else
+  {
+    suidBool = false;
+  }
+  if (config.hasGroup( QString::fromLatin1( "Property::X-KDE-Username" ) ))
+  {
+    config.setGroup( QString::fromLatin1( "Property::X-KDE-Username" ) );
+    suidUserStr = config.readEntry( QString::fromLatin1( "Value" ) );
+  } else
+  {
+    suidUserStr = QString::null;
+  }
 
   if ( !swallowExecStr.isNull() )
     swallowExecEdit->setText( swallowExecStr );
@@ -1401,8 +1416,12 @@ void KExecPropsPage::applyChanges()
   config.writeEntry( QString::fromLatin1("SwallowTitle"), swallowTitleEdit->text() );
   config.writeEntry( QString::fromLatin1("Terminal"), terminalCheck->isChecked() );
   config.writeEntry( QString::fromLatin1("TerminalOptions"), terminalEdit->text() );
-  config.writeEntry( QString::fromLatin1("X-KDE-SubstituteUID"), suidCheck->isChecked() );
-  config.writeEntry( QString::fromLatin1("X-KDE-Username"), suidEdit->text() );
+  config.setGroup( QString::fromLatin1("Property::X-KDE-SubstituteUID") );
+  config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("bool") );
+  config.writeEntry( QString::fromLatin1("Value"), suidCheck->isChecked() );
+  config.setGroup( QString::fromLatin1("Property::X-KDE-Username") );
+  config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("QString") );
+  config.writeEntry( QString::fromLatin1("Value"), suidEdit->text() );
 }
 
 
