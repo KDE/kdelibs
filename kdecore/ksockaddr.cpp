@@ -229,7 +229,7 @@ public:
     sin6.sin6_port = 0;
     sin6.sin6_flowinfo = 0;
 # ifdef HAVE_SOCKADDR_IN6_SCOPE_ID
-    sin6.sin6_scope_id = 0;	// FIXME! Check RFC for default value. Should be 0, but...
+    sin6.sin6_scope_id = 0;
 # endif
 # ifdef HAVE_SOCKADDR_SA_LEN
     sin6.sin6_len = sizeof(sin6);
@@ -717,7 +717,7 @@ bool KUnixSocketAddress::setAddress(sockaddr_un* _sun, ksocklen_t _size)
 
 bool KUnixSocketAddress::setAddress(QCString path)
 {
-  int newsize = offsetof(sockaddr_un, sun_path) + path.length();
+  unsigned newsize = offsetof(sockaddr_un, sun_path) + path.length();
 
   if (owndata && d->m_sun != NULL && datasize >= newsize)
     {
@@ -743,6 +743,7 @@ bool KUnixSocketAddress::setAddress(QCString path)
   d->m_sun->sun_family = AF_UNIX;
   strcpy(d->m_sun->sun_path, path);
   data = (sockaddr*)d->m_sun;
+  datasize = newsize;
 #ifdef HAVE_SOCKADDR_SA_LEN
   data->sa_len = newsize;
 #endif
