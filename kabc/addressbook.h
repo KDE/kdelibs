@@ -61,6 +61,7 @@ class AddressBook : public QObject
       	Iterator &operator=( const Iterator & );
         const Addressee &operator*() const;
         Addressee &operator*();
+        Addressee* operator->();
         Iterator &operator++();
         Iterator &operator++(int);
         Iterator &operator--();

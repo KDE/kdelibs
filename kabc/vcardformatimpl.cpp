@@ -308,7 +308,10 @@ void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )
 
   ContentLine cl;
   cl.setName( "X-" + txt.left( txt.find( ":" ) ).utf8() );
-  cl.setValue( new TextValue( txt.mid( txt.find( ":" ) + 1 ).utf8() ) );
+  QString value = txt.mid( txt.find( ":" ) + 1 );
+  if ( value.isEmpty() )
+    return;
+  cl.setValue( new TextValue( value.utf8() ) );
   v->add(cl);
 }
 

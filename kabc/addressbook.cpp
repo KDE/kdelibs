@@ -89,6 +89,11 @@ Addressee &AddressBook::Iterator::operator*()
   return *(d->mIt);
 }
 
+Addressee *AddressBook::Iterator::operator->()
+{
+  return &(*(d->mIt));
+}
+
 AddressBook::Iterator &AddressBook::Iterator::operator++()
 {
   (d->mIt)++;
