@@ -1164,7 +1164,7 @@ void KSpell::moveDlg (int x, int y)
 // --------------------------------------------------
 
 int
-KSpell::modalCheck( QString& text )
+KSpell::modalCheck( QString& text, KSpellConfig* _kcs )
 {
     modalreturn = 0;
     modaltext = text;
@@ -1175,7 +1175,7 @@ KSpell::modalCheck( QString& text )
 
     // kdDebug() << "KSpell1" << endl;
     KSpell* spell = new KSpell( 0L, i18n("Spell Checker"), 0 ,
-				0, 0, true, true );
+				0, _kcs, true, true );
     //modalWidgetHack->show();
     //qApp->enter_loop();
 
