@@ -555,7 +555,7 @@ void KHTMLWidget::data( HTMLURLRequestJob *job, const char *_data, int _len, boo
   if ( _eof )
     {
 	p->m_buffer.close();
-	m_lstURLRequestJobs.remove( job );
+	//m_lstURLRequestJobs.remove( job );
     }
   else
     return;

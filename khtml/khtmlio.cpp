@@ -91,7 +91,7 @@ HTMLURLRequestJob::~HTMLURLRequestJob()
   {
     KIOJob* job = KIOJob::find( m_jobId );
     if ( job )
-      job->kill();
+	job->kill();
     m_jobId = 0;
   }
   kdebug(0,1202,"Destructor 2");
@@ -101,10 +101,9 @@ void HTMLURLRequestJob::slotFinished( int /*_id*/ )
 {
   m_jobId = 0;
 
-  kdebug(0,1202,"BROWSER JOB FINISHED %s", m_req->m_strURL.ascii());
-  m_pBrowser->data( this, "", 0, true );
+  kdebug(0,1202,"BROWSER JOB FINISHED %s\n", m_req->m_strURL.ascii());
+  //m_pBrowser->data( this, "", 0, true );
   m_pBrowser->urlRequestFinished( this );
-  kdebug(0,1202,"Back");
 }
 
 void HTMLURLRequestJob::slotData( int /*_id*/, const char* _data, int _len )
