@@ -49,10 +49,10 @@ public:
 
     Attribute(int _id, DOMStringImpl *val)
 	{ id = _id, v = val; v->ref(); }
-    Attribute( const Attribute &other) 
-	{ 
-	    id = other.id; 
-	    v = other.v; 
+    Attribute( const Attribute &other)
+	{
+	    id = other.id;
+	    v = other.v;
 	    v->ref();
 	}
 
@@ -61,7 +61,7 @@ public:
 	    if(v) v->deref();
 	}
 
-    Attribute &operator = (const Attribute &other) { 
+    Attribute &operator = (const Attribute &other) {
 	id = other.id;
 	if(v == other.v) return *this;
 	if(v) v->deref();
@@ -70,7 +70,7 @@ public:
 	return *this;
     }
 
-    void setValue(QChar *_s, int _l) { 
+    void setValue(QChar *_s, int _l) {
 	if(v) v->deref();
 	QChar *c = new QChar[_l];
 	memcpy(c, _s, _l*sizeof(QChar));
@@ -103,6 +103,7 @@ protected:
 
 class AttributeList
 {
+
 public:
     AttributeList();
     AttributeList( Attribute *list, unsigned int length);
@@ -111,11 +112,11 @@ public:
 
     AttributeList &operator = (const AttributeList &other );
 
-    ushort id(uint index);
-    DOMString name(uint index);
-    DOMString value(uint index);
+    ushort id(uint index) const;
+    DOMString name(uint index) const;
+    DOMString value(uint index) const;
     DOMString valueForId(uint id)
-	{ 
+	{
 	    int i = find(id);
 	    if(i == 1) return 0;
 	    return value(i);
@@ -123,14 +124,14 @@ public:
     // adds the attribute. If it exists, replaces it.
     void add(const Attribute &attr);
 
-    unsigned int length();
+    unsigned int length() const;
 
     // returns -1 if not found
     int find(const DOMString &name);
     int find(ushort id);
 
-    DOMString operator [] (const DOMString &name); 
-    Attribute *operator [] (uint index); 
+    DOMString operator [] (const DOMString &name);
+    Attribute *operator [] (uint index);
 
     void remove(DOMString name);
     void remove(uint index);
@@ -139,7 +140,7 @@ protected:
     Attribute *_list;
     uint _len;
 };
-   
+
 
 class Token
 {

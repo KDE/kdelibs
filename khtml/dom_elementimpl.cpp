@@ -313,3 +313,26 @@ AttributeList *ElementImpl::defaultMap() const
     return 0;
 }
 
+QDataStream &DOM::operator<<( QDataStream &stream, const ElementImpl &e )
+{
+    int l = e.attributeMap.length();
+    stream << l;
+    for(int i = 0; i< l; i++)
+    {
+	stream << e.attributeMap.id(i);
+	stream << e.attributeMap.value(i).string();
+    }
+}
+
+QDataStream &DOM::operator>>( QDataStream &stream, ElementImpl &e )
+{
+    int l;
+    stream >> l;
+    for(int i = 0; i< l; i++)
+    {
+	ushort id;
+	QString v;
+	stream >> id >> v;
+	e.setAttribute(id, DOMString(v));
+    }    
+}

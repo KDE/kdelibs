@@ -23,6 +23,8 @@
 #ifndef _DOM_ELEMENTImpl_h_
 #define _DOM_ELEMENTImpl_h_
 
+#include <qdatastream.h>
+
 #include "dom_nodeimpl.h"
 #include "dom_string.h"
 #include "khtmltoken.h"
@@ -32,6 +34,10 @@ namespace DOM {
 
 class ElementImpl;
 class DocumentImpl;
+
+// These two operators save and restore the attributes of the element.
+QDataStream &operator<<( QDataStream &, const DOM::ElementImpl & );
+QDataStream &operator>>( QDataStream &, DOM::ElementImpl & );
 
 class AttrImpl : public NodeImpl
 {
@@ -78,6 +84,8 @@ protected:
 class ElementImpl : public NodeBaseImpl
 {
     friend class DocumentImpl;
+    friend QDataStream &operator<<( QDataStream &, const DOM::ElementImpl & );
+    friend QDataStream &operator>>( QDataStream &, DOM::ElementImpl & );
 
 public:
     ElementImpl(DocumentImpl *doc);
@@ -130,4 +138,5 @@ protected: // member variables
 };
 
 }; //namespace
+
 #endif

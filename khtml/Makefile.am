@@ -37,7 +37,7 @@ SUBDIRS = java kjs
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = dtd.cpp\
 	khtmltoken.cpp khtmltokenizer.cpp khtmlparser.cpp\
-	khtmlsavedpage.cpp khtmldecoder.cpp khtml.cpp khtmlio.cpp\
+	khtmldecoder.cpp khtml.cpp khtmlio.cpp\
 	khtmldata.cpp khtmltext.cpp \
 	khtmlstyle.cpp khtmlfont.cpp \
 	dom_doc.cpp dom_docimpl.cpp dom_element.cpp dom_elementimpl.cpp \
@@ -54,7 +54,7 @@ libkhtml_la_SOURCES = dtd.cpp\
 
 libkhtml_la_METASOURCES = AUTO
 
-include_HEADERS = khtml.h khtmlsavedpage.h khtmlio.h \
+include_HEADERS = khtml.h khtmlio.h \
 	dom_core.h dom_doc.h dom_element.h dom_exception.h \
 	dom_misc.h dom_node.h dom_string.h dom_text.h \
 	dom_xml.h \
@@ -63,7 +63,7 @@ include_HEADERS = khtml.h khtmlsavedpage.h khtmlio.h \
 	html_inline.h html_list.h html_misc.h html_table.h html_object.h
 
 noinst_HEADERS = khtmlparser.h khtmlfont.h khtmltoken.h \
-	khtmldata.h khtmlstyle.h khtmldecoder.cpp khtmlstring.h \
+	khtmldata.h khtmlsavedpage.h khtmlstyle.h khtmldecoder.cpp khtmlstring.h \
 	dom_docimpl.h dom_elementimpl.h dom_nodeimpl.h dom_stringimpl.h \
 	dom_textimpl.h html_baseimpl.h \
 	html_blockimpl.h html_documentimpl.h html_elementimpl.h \

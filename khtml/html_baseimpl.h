@@ -67,6 +67,7 @@ protected:
 
 class HTMLFrameElementImpl : public HTMLPositionedElementImpl
 {
+    friend class KHTMLWidget;
 public:
     HTMLFrameElementImpl(DocumentImpl *doc);
 
@@ -104,6 +105,7 @@ protected:
 
 class HTMLFrameSetElementImpl : public HTMLPositionedElementImpl
 {
+    friend class KHTMLWidget;
 public:
     HTMLFrameSetElementImpl(DocumentImpl *doc);
 

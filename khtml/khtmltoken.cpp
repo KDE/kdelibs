@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
@@ -121,19 +121,19 @@ AttributeList::~AttributeList()
 }
 
 
-ushort AttributeList::id(uint index)
+ushort AttributeList::id(uint index) const
 {
     return _list[index].id;
 }
 
-DOMString AttributeList::name(uint index)
+DOMString AttributeList::name(uint index) const
 {
     if(index >= _len) return 0;
 
     return _list[index].name();
 }
 
-DOMString AttributeList::value(uint index)
+DOMString AttributeList::value(uint index) const
 {
     if(index >= _len) return 0;
 
@@ -147,7 +147,7 @@ void AttributeList::add(const Attribute &a)
     if(index == -1)
     {
 	Attribute *nList = new Attribute [ _len+1 ];
-	if(_list) 
+	if(_list)
 	{
 	    int i = 0;
 	    while(i < (int)_len)
@@ -167,7 +167,7 @@ void AttributeList::add(const Attribute &a)
 	_list[index].setValue(a.val());
 }
 
-unsigned int AttributeList::length()
+unsigned int AttributeList::length() const
 {
     return _len;
 }
