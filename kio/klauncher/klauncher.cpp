@@ -67,7 +67,6 @@ IdleSlave::gotInput()
    }
    else if (cmd == MSG_SLAVE_ACK)
    {
-      kdDebug(7016) << "SlavePool: Slave is connecting to app." << endl;
       delete this;
    }
    else if (cmd != MSG_SLAVE_STATUS)
@@ -87,19 +86,12 @@ IdleSlave::gotInput()
       mConnected = (b != 0);
       mProtocol = protocol;
       mHost = host;
-      kdDebug(7016) << "SlavePool: SlaveStatus = "
-	<< mProtocol << " " << mHost << " " <<
-           (mConnected ? "Connected" : "Not connected") << endl;
    }
 }
 
 void
 IdleSlave::connect(const QString &app_socket)
 {
-   kdDebug(7016) << "SlavePool: New mission for slave:"
-	<< mProtocol << " " << mHost << " " <<
-	   (mConnected ? "Connected" : "Not connected") << endl;
-
    QByteArray data;
    QDataStream stream( data, IO_WriteOnly);
    stream << app_socket;
@@ -146,6 +138,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
            this, SLOT( slotKInitData( int )));
    kdeinitNotifier->setEnabled( true );
    lastRequest = 0;
+   bProcessingQueue = false;
 }
 
 
@@ -278,7 +271,6 @@ KLauncher::slotKInitData(int)
 {
    klauncher_header request_header;
    QByteArray requestData;
-   kdDebug(7016) << "Data from KInit!" << endl;
    int result = read_socket(kdeinitSocket, (char *) &request_header,
                             sizeof( request_header));
    if (result == -1)
@@ -290,7 +282,6 @@ KLauncher::slotKInitData(int)
    result = read_socket(kdeinitSocket, (char *) requestData.data(),
                         request_header.arg_length);
 
-   kdDebug(7016) << "Got notification (" << request_header.cmd << ") from KInit" << endl;
    if (request_header.cmd == LAUNCHER_DIED)
    {
      long *request_data;
@@ -370,11 +361,6 @@ KLauncher::slotAppRegistered(const QCString &appId)
 void
 KLauncher::requestDone(KLaunchRequest *request)
 {
-
-   kdDebug(7016) << "Request done [ name = '" << request->name <<
-           "' , status ='" <<
-           QString((request->status == KLaunchRequest::Running) ? "running" : "error") <<
-           "' ]" << endl;
    if (request->status == KLaunchRequest::Running)
    {
       DCOPresult.result = 0;
@@ -403,8 +389,6 @@ KLauncher::requestDone(KLaunchRequest *request)
 void
 KLauncher::requestStart(KLaunchRequest *request)
 {
-   kdDebug(7016) << "Request start [ name = '" << request->name <<
-           "' ]" << endl;
    requestList.append( request );
    // Send request to kdeinit.
    klauncher_header request_header;
@@ -551,34 +535,56 @@ KLauncher::start_service(KService::Ptr service, const QString &filename)
 
    request->pid = 0;
    request->transaction = 0;
-   // Are we already running?
-   if (request->dcop_service_type == KService::DCOP_Unique)
+
+   // Request will be handled later.
+   request->transaction = dcopClient()->beginTransaction();
+   queueRequest(request);
+   return true;
+}
+
+void
+KLauncher::queueRequest(KLaunchRequest *request)
+{
+   requestQueue.append( request );
+   if (!bProcessingQueue)
    {
-      if (dcopClient()->isApplicationRegistered(request->dcop_name))
+      bProcessingQueue = true;
+      QTimer::singleShot(0, this, SLOT( slotDequeue() ));
+   }
+}
+
+void
+KLauncher::slotDequeue()
+{
+   do {
+      KLaunchRequest *request = requestQueue.take(0);
+      // process request
+      if (request->dcop_service_type == KService::DCOP_Unique)
       {
-         // Yes, service is already running.
-         request->status = KLaunchRequest::Running;
+         if (dcopClient()->isApplicationRegistered(request->dcop_name))
+         {
+            // Yes, service is already running.
+            request->status = KLaunchRequest::Running;
+            // Request handled.
+            requestDone( request );
+            requestList.removeRef( request );
+            continue;   
+         }
+      }
+
+      request->status = KLaunchRequest::Launching;
+      requestStart(request);
+      if (request->status != KLaunchRequest::Launching)
+      {
          // Request handled.
          requestDone( request );
          requestList.removeRef( request );
-         return false;
+         continue;
       }
-   }
-
-   request->status = KLaunchRequest::Launching;
-   requestStart(request);
-   if (request->status == KLaunchRequest::Launching)
-   {
-      // Request will be handled later.
-      request->transaction = dcopClient()->beginTransaction();
-      return true;
-   }
-
-   // Request handled.
-   requestDone( request );
-   requestList.removeRef( request );
-   return false;
+   } while(requestQueue.count());
+   bProcessingQueue = false;
 }
+
 
 void
 KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
@@ -739,8 +745,6 @@ KLauncher::requestSlave(const QString &protocol,
        return slave->pid();
     }
 
-    kdDebug(7016) << "requestSlave( " << protocol << ", " << host << ", " << app_socket << ")" << endl;
-
     // TODO perhaps deal with our own cache (protocol->exec, filled on demand),
     // to save memory compared to KProtocolManager which stores everything in memory...
     // Problem is that the protocol name is in the file (protocol= field), so we
@@ -749,7 +753,6 @@ KLauncher::requestSlave(const QString &protocol,
     if ( name.isEmpty() ) {
         name = "kio_"; name += protocol.latin1(); // fallback
     }
-    kdDebug(7016) << "Request with name = " << name << endl;
     QCString arg1 = protocol.latin1();
     QCString arg2 = QFile::encodeName(mPoolSocketName);
     QCString arg3 = QFile::encodeName(app_socket);
@@ -780,14 +783,12 @@ KLauncher::requestSlave(const QString &protocol,
 void
 KLauncher::acceptSlave(KSocket *slaveSocket)
 {
-    kdDebug(7016) << "SlavePool: accepSlave(...)" << endl;
     IdleSlave *slave = new IdleSlave(slaveSocket);
     // Send it a SLAVE_STATUS command.
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
     if (!mTimer.isActive())
     {
-       kdDebug(7016) << "SlavePool: starting idle timer" << endl;
        mTimer.start(1000*60);
     }
 }
@@ -795,12 +796,10 @@ KLauncher::acceptSlave(KSocket *slaveSocket)
 void
 KLauncher::slotSlaveGone()
 {
-    kdDebug(7016) << "SlavePool: slotSlaveGone(...)" << endl;
     IdleSlave *slave = (IdleSlave *) sender();
     mSlaveList.removeRef(slave);
     if ((mSlaveList.count() == 0) && (mTimer.isActive()))
     {
-       kdDebug(7016) << "SlavePool: stopping idle timer" << endl;
        mTimer.stop();
     }
 }
@@ -808,14 +807,13 @@ KLauncher::slotSlaveGone()
 void
 KLauncher::idleTimeout()
 {
-//    kdDebug(7016) << "SlavePool: idle, slave list count: " << mSlaveList.count() << endl;
     time_t now = time(0);
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
     {
         if (slave->age(now) > 60*SLAVE_MAX_IDLE)
         {
-           kdDebug(7016) << "SlavePool: killing idle slave" << endl;
+           // killing idle slave
            delete slave;
         }
     }

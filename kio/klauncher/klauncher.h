@@ -112,7 +112,11 @@ protected:
    pid_t requestSlave(const QString &protocol, const QString &host,
                       const QString &app_socket, QString &error);
 
+
+   void queueRequest(KLaunchRequest *);
+   
 public slots:
+   void slotDequeue();
    void slotKInitData(int);
    void slotAppRegistered(const QCString &appId);
    void acceptSlave( KSocket *);
@@ -120,7 +124,8 @@ public slots:
    void idleTimeout();
 
 protected:
-   QList<KLaunchRequest> requestList;
+   QList<KLaunchRequest> requestList; // Requests being handled
+   QList<KLaunchRequest> requestQueue; // Requests waiting to being handled
    int kdeinitSocket;
    QSocketNotifier *kdeinitNotifier;
    serviceResult DCOPresult;
@@ -129,5 +134,6 @@ protected:
    KServerSocket *mPoolSocket;
    QList<IdleSlave> mSlaveList;
    QTimer mTimer;
+   bool bProcessingQueue;
 };
 #endif
