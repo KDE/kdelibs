@@ -219,7 +219,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_extension = new KHTMLPartBrowserExtension( this );
 
   d->m_paLoadImages = 0;
-  
+
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->enableJavaScript();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->enableJava();
 
@@ -244,7 +244,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   if ( !autoloadImages() )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
   */
-  
+
   connect( this, SIGNAL( completed() ),
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -418,13 +418,13 @@ void KHTMLPart::autoloadImages( bool enable )
 {
   if ( enable == khtml::Cache::autoloadImages() )
     return;
- 
+
   khtml::Cache::autoloadImages( enable );
-  
+
   KXMLGUIFactory *guiFactory = factory();
   if ( guiFactory )
     guiFactory->removeClient( this );
-  
+
   if ( enable )
   {
     if ( d->m_paLoadImages )
@@ -1238,13 +1238,11 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
 
     if ( child->m_extension )
     {
-      if ( child->m_bFrame )
-      {
-        connect( child->m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
-	         this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
-        connect( child->m_extension, SIGNAL( openURLNotify() ),
-	         d->m_extension, SIGNAL( openURLNotify() ) );
-      }
+      connect( child->m_extension, SIGNAL( openURLNotify() ),
+	       d->m_extension, SIGNAL( openURLNotify() ) );
+      
+      connect( child->m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
+	       this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
 
       connect( child->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
 	       d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
@@ -1474,7 +1472,8 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
     }
   }
 
-  requestObject( child, url, args );
+  if ( child )
+    requestObject( child, url, args );
 }
 
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
@@ -1761,14 +1760,14 @@ void KHTMLPart::slotLoadImages()
 
 void KHTMLPart::reparseConfiguration()
 {
-  KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings(); 
+  KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings();
   settings->init();
-  
+
   autoloadImages( settings->autoLoadImages() );
-  
+
   d->m_bJScriptEnabled = settings->enableJavaScript();
   d->m_bJavaEnabled = settings->enableJava();
-} 
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
