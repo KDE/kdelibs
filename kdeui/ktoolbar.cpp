@@ -248,7 +248,6 @@ void KToolBar::slotReadConfig()
 {
   // read in the global ('kdeglobals') config file
   KConfig *config = KGlobal::config();
-  QString group = config->group();
 
   static QString grpKDE     = QString::fromLatin1("KDE");
 
