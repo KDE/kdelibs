@@ -710,7 +710,7 @@ void KZip::virtual_hook( int id, void* data )
 {
     if ( id == VIRTUAL_WRITE_DATA ) {
         WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
-        params->retval = writeData( params->data, params->size );
+        params->retval = writeData_impl( params->data, params->size );
     } else {
         KArchive::virtual_hook( id, data );
     }
