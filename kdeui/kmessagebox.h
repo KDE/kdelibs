@@ -41,7 +41,7 @@ class KDialogBase;
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
-class KMessageBox
+class KDEUI_EXPORT KMessageBox
 {
 public:
   /**
