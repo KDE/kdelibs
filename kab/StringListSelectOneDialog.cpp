@@ -18,7 +18,7 @@ extern "C" {
 
 StringListSelectOneDialog::StringListSelectOneDialog(QWidget* parent,
 						     const char* name)
-  : DialogBase(parent, name),
+  : KDialogBase(parent, name),
     sizeIsFixed(false)
 {
   // ############################################################################
@@ -84,7 +84,7 @@ void StringListSelectOneDialog::initializeGeometry()
   cy=QMAX(comboStrings->sizeHint().height(), labelHeadline->sizeHint().height());
   cy=cy<<1;
   widget->setMinimumSize(cx, cy);
-  DialogBase::initializeGeometry();
+  KDialogBase::initializeGeometry();
   // ############################################################################
 }
 

@@ -176,7 +176,7 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   card->setBackground(path.c_str());
 
   QPixmap tmppix = BarIcon( QString( dlgBackground.c_str()));
-  DialogBase::setBackgroundTile( &tmppix );
+  KDialogBase::setBackgroundTile( &tmppix );
 
   // -----
   timer=new QTimer(this);

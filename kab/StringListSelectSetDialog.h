@@ -17,13 +17,13 @@
 #define StringListSelectSetDialog_included
 
 #include "stl_headers.h"
-#include <dialogbase.h>
+#include <kdialogbase.h>
 #include <qstring.h>
 #include <qstrlist.h> 
 
 class QListBox;
 
-class StringListSelectSetDialog : public DialogBase
+class StringListSelectSetDialog : public KDialogBase
 {
   // ############################################################################
   Q_OBJECT

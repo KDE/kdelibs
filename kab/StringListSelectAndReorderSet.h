@@ -24,7 +24,7 @@
 #include "StringListSelectAndReorderSetData.h"
 #include <qlist.h>
 #include <qsize.h>
-#include <dialogbase.h>
+#include <kdialogbase.h>
 
 class StringListSelectAndReorderSet // a widget!, see dialog class below
   : public StringListSelectAndReorderSetData
@@ -83,7 +83,7 @@ protected:
 // class name abbreviated...
 
 class StringListSAndRSetDialog
-  : public DialogBase
+  : public KDialogBase
 {
   // ############################################################################
   Q_OBJECT

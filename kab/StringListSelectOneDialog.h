@@ -20,7 +20,7 @@
 #ifndef StringListSelectOneDialog_included
 #define StringListSelectOneDialog_included
 
-#include <dialogbase.h>
+#include <kdialogbase.h>
 #include "stl_headers.h"
 #include <qstring.h>
 #include <qstrlist.h> 
@@ -31,7 +31,7 @@ class QComboBox;
 class QLabel;
 class QWidget;
 
-class StringListSelectOneDialog : public DialogBase
+class StringListSelectOneDialog : public KDialogBase
 {
   // ############################################################################
   Q_OBJECT

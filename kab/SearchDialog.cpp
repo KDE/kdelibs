@@ -41,7 +41,7 @@ const char* SearchDialog::Keys[]= {
 
 
 SearchDialog::SearchDialog(QWidget* parent, const char* name)
-  : DialogBase(parent, name),
+  : KDialogBase(parent, name),
     widget(0)
 {
   // ############################################################################

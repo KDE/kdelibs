@@ -14,11 +14,11 @@
 #ifndef SearchDialog_included
 #define SearchDialog_included
 
-#include <dialogbase.h>
+#include <kdialogbase.h>
 #include "SearchDialogMainWidget.h"
 #include "stl_headers.h"
 
-class SearchDialog : public DialogBase
+class SearchDialog : public KDialogBase
 {
   // ############################################################################
   Q_OBJECT

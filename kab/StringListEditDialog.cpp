@@ -7,7 +7,7 @@
 #include "debug.h"
 
 StringListEditDialog::StringListEditDialog(QWidget* parent, const char* name)
-  : DialogBase(parent, name)
+  : KDialogBase(parent, name)
 {
   // ############################################################################
   enableButtonApply(false);

@@ -7,13 +7,13 @@
 #include "stl_headers.h"
 #include <qlist.h>
 #include <qsize.h>
-#include <dialogbase.h>
+#include <kdialogbase.h>
 #include <qstrlist.h>
 
 class StringListEditWidget;
 
 class StringListEditDialog
-  : public DialogBase
+  : public KDialogBase
 {
   // ############################################################################
   Q_OBJECT

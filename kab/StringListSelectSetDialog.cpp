@@ -13,7 +13,7 @@ extern "C" {
 
 StringListSelectSetDialog::StringListSelectSetDialog
 (QWidget* parent, const char* name)
-  : DialogBase(parent, name)
+  : KDialogBase(parent, name)
 {
   // ############################################################################
   lbStrings=new QListBox(this);
@@ -45,7 +45,7 @@ void StringListSelectSetDialog::initializeGeometry()
       size.setWidth(lbStrings->fontMetrics().width("This is a long string."));
     }
   lbStrings->setMinimumSize(size);
-  DialogBase::initializeGeometry();
+  KDialogBase::initializeGeometry();
   // ############################################################################
 }
 

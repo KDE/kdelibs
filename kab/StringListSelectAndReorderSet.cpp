@@ -538,7 +538,7 @@ QSize StringListSelectAndReorderSet::sizeHint() const
 
 StringListSAndRSetDialog::StringListSAndRSetDialog
 (QWidget* parent, const char* text, bool modal)
-  : DialogBase(parent, text, modal),
+  : KDialogBase(parent, text, modal),
     sar(new StringListSelectAndReorderSet(this)),
     sizeIsFixed(false)
 {
