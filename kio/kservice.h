@@ -117,11 +117,23 @@ public:
    */
   QPixmap pixmap( KIconLoader::Size _size, QString * _path = 0L ) const;
   /**
+   * @return Run the service in a terminal?
+   */
+  bool terminal() const { return m_bTerminal; }
+  /**
    * @return any options associated with the terminal the service
    * runs in, if it requires a terminal.  The service must be a
    * tty-oriented program).
    */
   QString terminalOptions() const { return m_strTerminalOptions; }
+  /**
+   * @return If the service has to be run under a different uid.
+   */
+  bool substituteUid() const { return m_bSuid; }
+  /**
+   * @return The username as which the service has to be run.
+   */
+  QString username() const { return m_strUsername; }
 
   /**
    * @return the path to the location where the service desktop entry
@@ -282,11 +294,14 @@ private:
   QString m_strPath;
   QString m_strComment;
   QString m_strLibrary;
+  QString m_strUsername;
   int m_libraryMajor;
   int m_libraryMinor;
   QStringList m_lstLibraryDeps;
   QStringList m_lstServiceTypes;
   bool m_bAllowAsDefault;
+  bool m_bTerminal;
+  bool m_bSuid;
   QString m_strDesktopEntryPath;  
   QString m_strDesktopEntryName;  
   DCOPServiceType_t m_DCOPServiceType;

@@ -118,6 +118,7 @@ KService::init( KDesktopFile *config )
   }
 
   m_strIcon = config->readEntry( "Icon", "unknown.png" );
+  m_bTerminal = (config->readEntry( "Terminal" ) == "1");
   m_strTerminalOptions = config->readEntry( "TerminalOptions" );
   m_strPath = config->readEntry( "Path" );
   m_strComment = config->readEntry( "Comment" );
@@ -129,6 +130,8 @@ KService::init( KDesktopFile *config )
   m_lstServiceTypes = config->readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config->readListEntry( "MimeType", ';' );
+  m_bSuid = (config->readEntry( "X-KDE-SubstituteUID" ) == "1");
+  m_strUsername = config->readEntry( "X-KDE-Username" );
 
   QString dcopServiceType = config->readEntry("X-DCOP-ServiceType").lower();
   if (dcopServiceType == "unique")
@@ -192,17 +195,20 @@ QPixmap KService::pixmap( KIconLoader::Size _size, QString * _path ) const
 
 void KService::load( QDataStream& s )
 {
-  Q_INT8 b;
+  Q_INT8 def, term, suid;
   Q_INT8 dst;
 
   s >> m_strType >> m_strName >> m_strExec >> m_strIcon 
-    >> m_strTerminalOptions
-    >> m_strPath >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps
+    >> term >> m_strTerminalOptions
+    >> m_strPath >> m_strComment >> m_lstServiceTypes >> def >> m_mapProps
     >> m_strLibrary >> m_libraryMajor >> m_libraryMinor 
     >> dst
-    >> m_strDesktopEntryPath >> m_strDesktopEntryName;
+    >> m_strDesktopEntryPath >> m_strDesktopEntryName
+    >> suid >> m_strUsername;
 
-  m_bAllowAsDefault = b;
+  m_bAllowAsDefault = def;
+  m_bTerminal = term;
+  m_bSuid = suid;
   m_DCOPServiceType = (DCOPServiceType_t) dst;
 
   m_bValid = true;
@@ -211,17 +217,19 @@ void KService::load( QDataStream& s )
 void KService::save( QDataStream& s )
 {
   KSycocaEntry::save( s );
-  Q_INT8 b = m_bAllowAsDefault;
+  Q_INT8 def = m_bAllowAsDefault;
+  Q_INT8 term = m_bTerminal, suid = m_bSuid;
   Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
 
   // Warning adding/removing fields here involves a binary incompatible change - update version 
   // number in ksycoca.h
   s << m_strType << m_strName << m_strExec << m_strIcon 
-    << m_strTerminalOptions
-    << m_strPath << m_strComment << m_lstServiceTypes << b << m_mapProps
+    << term << m_strTerminalOptions
+    << m_strPath << m_strComment << m_lstServiceTypes << def << m_mapProps
     << m_strLibrary << m_libraryMajor << m_libraryMinor 
     << dst
-    << m_strDesktopEntryPath << m_strDesktopEntryName;
+    << m_strDesktopEntryPath << m_strDesktopEntryName
+    << suid << m_strUsername;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -248,6 +256,8 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_strExec );
   else if ( _name == "Icon" )
     return QVariant( m_strIcon );
+  else if ( _name == "Terminal" )
+    return QVariant( m_bTerminal );
   else if ( _name == "TerminalOptions" )
     return QVariant( m_strTerminalOptions );
   else if ( _name == "Path" )
@@ -266,6 +276,10 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_libraryMinor );
   else if ( _name == "LibraryDependencies" )
     return QVariant( m_lstLibraryDeps );
+  else if ( _name == "X-KDE-SubstituteUID" )
+    return QVariant( m_bSuid );
+  else if ( _name == "X-KDE-Username" )
+    return QVariant( m_strUsername );
 
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( it == m_mapProps.end() )
@@ -287,6 +301,7 @@ QStringList KService::propertyNames() const
   res.append( "Comment" );
   res.append( "Icon" );
   res.append( "Exec" );
+  res.append( "Terminal" );
   res.append( "TerminalOptions" );
   res.append( "Path" );
   res.append( "File" );
@@ -296,6 +311,8 @@ QStringList KService::propertyNames() const
   res.append( "LibraryMajor" );
   res.append( "LibraryMinor" );
   res.append( "LibraryDependencies" );
+  res.append( "X-KDE-SubstituteUID" );
+  res.append( "X-KDE-Username" );
 
   return res;
 }
