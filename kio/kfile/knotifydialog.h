@@ -120,8 +120,11 @@ namespace KNotify
         void selectItem( QListViewItem *item );
 
     public slots:
-        void clear();
-        void save();
+        virtual void clear();
+        virtual void save();
+        virtual void showAdvanced( bool show );
+        void toggleAdvanced();
+
 
     signals:
         void changed( bool hasChanges );

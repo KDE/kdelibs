@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>618</width>
-            <height>633</height>
+            <height>599</height>
         </rect>
     </property>
     <property name="caption">
@@ -305,6 +305,25 @@
                             </property>
                         </spacer>
                     </hbox>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>m_extension</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>4</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="text">
+                        <string>Less Options</string>
+                    </property>
+                    <property name="toggleButton">
+                        <bool>false</bool>
+                    </property>
                 </widget>
             </vbox>
         </widget>

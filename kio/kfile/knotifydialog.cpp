@@ -151,11 +151,55 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
              SLOT( openLogDialog( KURLRequester * )));
     connect( m_executePath, SIGNAL( openFileDialog( KURLRequester * )),
              SLOT( openExecDialog( KURLRequester * )));
+
+    connect( m_extension, SIGNAL( clicked() ), 
+             SLOT( toggleAdvanced()) );
+    
+    showAdvanced( false );
 }
 
 KNotifyWidget::~KNotifyWidget()
 {
 
+}
+
+void KNotifyWidget::toggleAdvanced()
+{
+    showAdvanced( m_logToFile->isHidden() );
+}
+
+void KNotifyWidget::showAdvanced( bool show )
+{
+    if ( show )
+    {
+        m_extension->setText( i18n("Fewer Op&tions") );
+        QToolTip::add( m_extension, i18n("Hide advanced options") );
+        
+        m_logToFile->show();
+        m_logfilePath->show();
+        m_execute->show();
+        m_executePath->show();
+        m_messageBox->show();
+        m_passivePopup->show();
+        m_stderr->show();
+
+        m_actionsBoxLayout->setSpacing( KDialog::spacingHint() );
+    }
+    else 
+    {
+        m_extension->setText( i18n("Advanced Op&tions") );
+        QToolTip::add( m_extension, i18n("Show advanced options") );
+
+        m_logToFile->hide();
+        m_logfilePath->hide();
+        m_execute->hide();
+        m_executePath->hide();
+        m_messageBox->hide();
+        m_passivePopup->hide();
+        m_stderr->hide();
+
+        m_actionsBoxLayout->setSpacing( 0 );
+    }
 }
 
 bool KNotifyWidget::addApplicationEvents( const QString& path )
@@ -251,49 +295,6 @@ void KNotifyWidget::updateWidgets( const Event& event )
 
     blockSignals( false );
 }
-
-/**
- * Clears the view and iterates over all apps, creating list-items
- */
-// void KNotifyWidget::fillView()
-// {
-//     bool save_updating = updating;
-//     updating = true;
-//     view->clear();
-//     bool soundsDisabled = true;
-
-//     QPixmap icon = SmallIcon("idea");
-
-//     ApplicationListIterator appIt ( m_apps );
-//     for ( ; appIt.current(); ++appIt )
-//     {
-//         const EventList& eventList = appIt.current()->eventList();
-//         EventListIterator it( eventList );
-
-//         for( ; it.current(); ++it )
-//         {
-//             if ( it.current()->presentation & KNotifyClient::Sound )
-//                 soundsDisabled = false;
-
-//             KNListViewItem *eItem = new KNListViewItem( view, it.current() );
-//             eItem->setPixmap( 0, icon );
-//         }
-
-//         updating = save_updating;
-//     }
-
-//     soundButton->disconnect(this);
-//     if ( soundsDisabled )
-//     {
-//         soundButton->setText( i18n("&Enable All Sounds") );
-//         connect(soundButton, SIGNAL(clicked()), this, SLOT(enableAllSounds()));
-//     }
-//     else
-//     {
-//         soundButton->setText( i18n("&Disable All Sounds") );
-//         connect(soundButton, SIGNAL(clicked()), this, SLOT(disableAllSounds()));
-//     }
-// }
 
 void KNotifyWidget::addToView( const EventList& events )
 {
@@ -613,6 +614,8 @@ void KNotifyWidget::enableAllSounds( const EventList& events )
 }
 */
 
+
+//////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
 
