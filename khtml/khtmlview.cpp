@@ -183,6 +183,7 @@ public:
 #ifndef KHTML_NO_CARET
         if (m_caretViewContext) {
           m_caretViewContext->caretMoved = false;
+	  m_caretViewContext->keyReleasePending = false;
         }/*end if*/
 #endif // KHTML_NO_CARET
     }
@@ -979,6 +980,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     if (m_part->isEditable() || m_part->isCaretMode()
         || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
 	    && m_part->xmlDocImpl()->focusNode()->contentEditable())) {
+      d->caretViewContext()->keyReleasePending = true;
       caretKeyPressEvent(_ke);
       return;
     }
@@ -1123,6 +1125,12 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
+    if (d->m_caretViewContext && d->m_caretViewContext->keyReleasePending) {
+        //caretKeyReleaseEvent(_ke);
+	d->m_caretViewContext->keyReleasePending = false;
+	return;
+    }
+
     // Send keyup event
     if ( dispatchKeyEvent( _ke ) )
     {

@@ -51,9 +51,12 @@ struct CaretViewContext {
      */
     int origX;
 
+    bool keyReleasePending;	// true if keypress under caret mode awaits
+    				// corresponding release event
     CaretViewContext() : freqTimerId(-1), x(0), y(0), width(1), height(16),
     	visible(true), displayed(false), caretMoved(false),
-	displayNonFocused(KHTMLPart::CaretInvisible), origX(0)
+	displayNonFocused(KHTMLPart::CaretInvisible), origX(0),
+	keyReleasePending(false)
     {}
 };
 
