@@ -19,8 +19,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-//#include <unistd.h>
-
 #include <qcstring.h>
 #include <qdatastream.h>
 
@@ -33,12 +31,13 @@
 KPanelApplet::KPanelApplet( QWidget* parent, const char* name  )
   : QWidget( parent, name)
   , DCOPObject()
-  , _stretch (false)
+  , _actions (0)
+  , _flags (0)
+  , _orient (Horizontal)
+  , _pos (Bottom)
 {
   QXEmbed::initialize();
 }
-
-KPanelApplet::~KPanelApplet() {}
 
 void KPanelApplet::init( int& /*argc*/, char ** /*argv*/ ) 
 {
@@ -73,16 +72,28 @@ void KPanelApplet::init( int& /*argc*/, char ** /*argv*/ )
   show();
 }
 
-void KPanelApplet::setStretch(bool s)
+void KPanelApplet::setFlags(int f)
 {
-  _stretch = s;
+  _flags = f;
   
   QByteArray data;
   QDataStream dataStream( data, IO_WriteOnly );
   dataStream << objId();
-  dataStream << static_cast<int>(_stretch);
+  dataStream << _flags;
   kapp->dcopClient()->send("kicker", "appletArea",
-                           "setStretch(QCString,int)", data);
+                           "setFlags(QCString,int)", data);
+}
+
+void KPanelApplet::setActions(int a)
+{
+  _actions = a;
+  
+  QByteArray data;
+  QDataStream dataStream( data, IO_WriteOnly );
+  dataStream << objId();
+  dataStream << _actions;
+  kapp->dcopClient()->send("kicker", "appletArea",
+                           "setActions(QCString,int)", data);
 }
 
 void KPanelApplet::updateLayout()
@@ -144,11 +155,40 @@ bool KPanelApplet::process(const QCString &fun, const QByteArray &data,
       removedFromPanel();
       return true;
     }
+  else if ( fun == "about()" )
+    {
+      about();
+      return true;
+    }
+  else if ( fun == "help()" )
+    {
+      help();
+      return true;
+    }
+  else if ( fun == "preferences()" )
+    {
+      preferences();
+      return true;
+    }
   else if ( fun == "restartCommand()" )
     {
       QDataStream reply( replyData, IO_WriteOnly );
       reply << QCString( kapp->argv()[0] );
       replyType = "QCString";
+      return true;
+    }
+  else if ( fun == "actions()" )
+    {
+      QDataStream reply( replyData, IO_WriteOnly );
+      reply << _actions;
+      replyType = "int";
+      return true;
+    }
+  else if ( fun == "flags()" )
+    {
+      QDataStream reply( replyData, IO_WriteOnly );
+      reply << _flags;
+      replyType = "int";
       return true;
     }
   return false;

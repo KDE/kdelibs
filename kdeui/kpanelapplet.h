@@ -41,6 +41,8 @@ class KPanelApplet : public QWidget, DCOPObject
 
  public:
 
+  enum Actions { About = 1, Help = 2, Preferences = 4 };
+  enum Flags { Stretch = 1, TopLevel = 2 };
   enum Position { Left = 0, Right, Top, Bottom };
 
   /**
@@ -51,7 +53,7 @@ class KPanelApplet : public QWidget, DCOPObject
   /**
    * Destructor
    **/
-  virtual ~KPanelApplet();
+  virtual ~KPanelApplet() {}
   
   /**
    * Initialize the applet according to the passed command line
@@ -63,19 +65,54 @@ class KPanelApplet : public QWidget, DCOPObject
   void init( int& argc, char ** argv );
   
   /**
-   * Set the applet to be fixed size or stretchable.
+   * Set the applet flags.
    *
+   * Supported flags:
+   *
+   * Stretch:
+   * --------
    * Most applets might want to have a fixed size.
    * Applets like a taskbar however can set the stretch flag to get
    * all space available on the panel between the two surrounding applets
    * and/or the panel borders.
+   *
+   * TopLevel:
+   * ---------
+   * Some applets do not want to dock into the panel but map toplevel windows only.
+   * A example is the kasbar applet.
+   *
+   * @see KPanelApplet::flags
    **/
-  void setStretch(bool s);
+  void setFlags(int f);
 
   /**
-   * @returns Bool indicating whether the applet is fixed size or stretchable.
+   * @returns int indicating the applet flags.
    **/
-  bool stretch() { return _stretch; }
+  bool flags() { return _flags; }
+
+  /**
+   * Set the RMB menu actions supported by the applet
+   *
+   * The panel supports 3 default actions besides 'Move' and 'Remove' in the
+   * applets RMB menu:
+   *
+   * About - Launch about dialog.
+   * Help - Show applet manual/help.
+   * Preferences - Launch preferences dialog.
+   *
+   * Not all of these make sense/are supported by all applets, so you
+   * can use this method to enable the actions supported by your applet.
+   *
+   * Example: setActions( About | Help | Preferences );
+   *
+   * @see KPanelApplet::actions
+   */
+  void setActions( int a);
+
+  /**
+   * @returns a int indicating the supported RMB menu actions.
+   **/
+  int actions() { return _actions; }
   
   /**
    * @returns A suggested width for a given height.
@@ -128,6 +165,30 @@ class KPanelApplet : public QWidget, DCOPObject
   virtual void removedFromPanel();
 
   /**
+   * Is called when 'About' is selcted from the applets RMB menu.
+   *
+   * There is no default implementation.
+   * Reimplement this to launch a about dialog in for your applet.
+   **/
+  virtual void about() {}
+
+  /**
+   * Is called when 'Help' is selcted from the applets RMB menu.
+   *
+   * There is no default implementation.
+   * Reimplement this to launch the applet-manual / help for your applet.
+   **/
+  virtual void help() {}
+
+  /**
+   * Is called when 'Preferences' is selcted from the applets RMB menu.
+   *
+   * There is no default implementation.
+   * Reimplement this to launch a preferences dialog for your applet.
+   **/
+  virtual void preferences() {}
+
+  /**
    * Notify the panel about a new applet layout.
    *
    * Call this to make the panel relayout all applets, when
@@ -160,9 +221,10 @@ class KPanelApplet : public QWidget, DCOPObject
   // dcop internal
   bool process(const QCString &fun, const QByteArray &data,
                QCString& replyType, QByteArray &replyData);
+
  private:
   KPanelAppletData *d;
-  bool _stretch;
+  int _actions, _flags;
   Orientation _orient;
   Position _pos;
 
