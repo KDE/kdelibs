@@ -23,7 +23,7 @@
 #include "ksycocadict.h"
 #include <qstringlist.h>
 #include <qdict.h>
-#include <kdebug.h>
+//#include <kdebug.h>
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
  : m_pathList(0), m_entryDict(0)
@@ -111,14 +111,14 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry)
    if (!m_sycocaDict) return; // Error!
 
    QString name = newEntry->name();
-   kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : adding entry %1").arg(name) );
+   //kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : adding entry %1").arg(name) );
    KSycocaEntry * oldEntry = (*m_entryDict)[ name ];
    // If there is any previous entry with the same name (e.g. local .desktop file)
    // don't do anything
    // This is because local dirs are parsed BEFORE global dirs.
    if ( oldEntry )
    {
-     kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : keeping old entry, and deleting new one") );
+     //kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : keeping old entry, and deleting new one") );
      delete newEntry;
    }
    else

@@ -225,7 +225,7 @@ KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
     kdebug( KDEBUG_WARN, 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
 }
 
-KMimeType::KMimeType( QDataStream& _str ) : KServiceType( _str )
+KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
 {
   load( _str, true ); // load our specific stuff
 }

@@ -19,6 +19,7 @@
 
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
+#include "kservicefactory.h"
 
 #include <assert.h>
 #include <qsmartptr.h>
@@ -75,7 +76,7 @@ KServiceType::KServiceType( const QString& _type, const QString& _icon, const QS
   m_bValid = !m_strName.isEmpty();
 }
 
-KServiceType::KServiceType( QDataStream& _str ) : KSycocaEntry( _str )
+KServiceType::KServiceType( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset )
 {
   load( _str);
 }
@@ -165,6 +166,12 @@ KServiceType*
 KServiceType::serviceType( const QString& _name )
 {
   return KServiceTypeFactory::findServiceTypeByName( _name );
+}
+
+KServiceList* KServiceType::offers( const QString& _servicetype )
+{
+  KServiceType * serv = KServiceTypeFactory::findServiceTypeByName( _servicetype );
+  return KServiceFactory::offers( serv->offset() );
 }
 
 /*

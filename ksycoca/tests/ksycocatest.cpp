@@ -34,11 +34,21 @@ main(int argc, char *argv[])
    
    debug("Querying userprofile for services associated with text/plain");
    KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers("text/plain");
+   debug("got %d offers", offers.count());
    KServiceTypeProfile::OfferList::Iterator it = offers.begin();
    for ( ; it != offers.end() ; it++ )
    {
      debug((*it).service()->name());
    }
 
+   debug("Querying userprofile for services associated with KOfficeFilter");
+   offers = KServiceTypeProfile::offers("KOfficeFilter");
+   debug("got %d offers", offers.count());
+   it = offers.begin();
+   for ( ; it != offers.end() ; it++ )
+   {
+     debug((*it).service()->name());
+   }
+   
    debug("done");
 }

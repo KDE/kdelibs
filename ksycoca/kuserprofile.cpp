@@ -18,6 +18,7 @@
 
 #include "kuserprofile.h"
 #include "kservice.h"
+#include "kservicetype.h"
 
 #include <kconfig.h>
 #include <kapp.h>
@@ -73,15 +74,12 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
   if ( profile )
     return profile->offers();
 
-  QListIterator<KService> it( KService::services() );
+  QListIterator<KService> it( *KServiceType::offers( _servicetype ) );
   for( ; it.current(); ++it )
   {
-    if ( it.current()->hasServiceType( _servicetype ) )
-    {
-      bool allow = it.current()->allowAsDefault();
-      KServiceOffer o( it.current(), 1, allow );
-      offers.append( o );
-    }
+    bool allow = it.current()->allowAsDefault();
+    KServiceOffer o( it.current(), 1, allow );
+    offers.append( o );
   }
 
   qBubbleSort( offers );

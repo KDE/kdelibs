@@ -65,17 +65,6 @@ protected:
   KServiceType *_findServiceTypeByName( const QString &_name);
   KServiceType *createServiceType(int offset);
 
-// Is this still usefull?
-  /*
-  void addEntryNotify( KServiceType *entry ) { emit entryAdded( entry ); } 
-  void removeEntryNotify( KServiceType *entry ) { emit entryRemoved( entry ); }
-  
-signals:
-  void entryAdded( KServiceType *entry );
-  void entryRemoved( KServiceType *entry );
-  */
-// End of usefull test
-  
 private:
   static KServiceTypeFactory *self;
 };

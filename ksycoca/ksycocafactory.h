@@ -53,6 +53,10 @@ public:
     * @return the position of the factory in the sycoca file
     */
    int offset() { return mOffset; }
+   /**
+    * @return the dict, for special use by KBuildSycoca
+    */
+   KSycocaEntryDict * entryDict() { return m_entryDict; }
 
    /**
     * Construct an entry from a config file.

@@ -56,10 +56,21 @@ class KMimeType : public KServiceType
   K_SYCOCATYPE( KST_KMimeType, KServiceType );
 
 public:
+  /**
+   * Constructor.  You may pass in arguments to create a mimetype with
+   * specific properties
+   */
   KMimeType( const QString& _type, const QString& _icon, 
 	     const QString& _comment, const QStringList& _patterns );
+  /**
+   * Construct a mimetype and take all informations from a @ref KSimpleConfig object.
+   */
   KMimeType( KSimpleConfig& _cfg );
-  KMimeType( QDataStream& _str );
+  /**
+   * @internal construct a service from a stream. 
+   * The stream must already be positionned at the correct offset
+   */
+  KMimeType( QDataStream& _str, int offset );
   virtual ~KMimeType();
   
   /**
@@ -180,6 +191,10 @@ protected:
   static KMimeType* s_pDefaultType;
 };
 
+/**
+ * @short mimetype for a folder (inode/directory)
+ * Handles locked folders, for instance.
+ */
 class KFolderType : public KMimeType
 {
   K_SYCOCATYPE( KST_KFolderType, KMimeType );
@@ -188,7 +203,7 @@ public:
   KFolderType( const QString& _type, const QString& _icon, const QString& _comment,
 	       const QStringList& _patterns );
   KFolderType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
-  KFolderType( QDataStream& _str ) : KMimeType( _str ) { }
+  KFolderType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KURL& _url, bool _is_local ) const;
@@ -196,6 +211,10 @@ public:
   virtual QString comment( const KURL& _url, bool _is_local ) const;
 };
 
+/**
+ * @short Mimetype for a .desktop file
+ * Handles mount/umount icon, and user-defined properties
+ */
 class KDEDesktopMimeType : public KMimeType
 {
   K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType );
@@ -214,7 +233,7 @@ public:
   KDEDesktopMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 		  const QStringList& _patterns );
   KDEDesktopMimeType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
-  KDEDesktopMimeType( QDataStream& _str ) : KMimeType( _str ) { }
+  KDEDesktopMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KURL& _url, bool _is_local ) const;
@@ -265,7 +284,7 @@ public:
   KExecMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 		 const QStringList& _patterns );
   KExecMimeType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
-  KExecMimeType( QDataStream& _str ) : KMimeType( _str ) { }
+  KExecMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 };
 
 #endif

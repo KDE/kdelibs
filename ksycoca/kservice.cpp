@@ -121,7 +121,7 @@ KService::KService( KSimpleConfig& config )
 
 }
 
-KService::KService( QDataStream& _str ) : KSycocaEntry( _str )
+KService::KService( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset )
 {
   load( _str );
 }

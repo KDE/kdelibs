@@ -53,7 +53,11 @@ public:
     * @internal - called by factories in read-only mode
     */
    static QDataStream *registerFactory( KSycocaFactoryId id);
-
+   /**
+    * @internal - returns stream to the offers index
+    */
+   static QDataStream *findOfferList();
+    
    /**
     * @internal
     * @return true if building (i.e. if a KBuildSycoca);
@@ -63,6 +67,7 @@ public:
 protected:
    QDataStream *_findEntry(int offset, KSycocaType &type);
    QDataStream *_registerFactory( KSycocaFactoryId id);
+   QDataStream *_findOfferList();
    virtual bool _isBuilding() { return false; }
 
 protected:

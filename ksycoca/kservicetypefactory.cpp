@@ -51,8 +51,8 @@ KServiceTypeFactory::createEntry(const QString &file)
   KSimpleConfig cfg( file, true);
   cfg.setDesktopGroup();
 
-  QString service = cfg.readEntry( "X-KDE-ServiceType" );
   QString mime = cfg.readEntry( "MimeType" );
+  QString service = cfg.readEntry( "X-KDE-ServiceType" );
 
   if ( mime.isEmpty() && service.isEmpty() )
   {
@@ -132,19 +132,19 @@ KServiceTypeFactory::createServiceType(int offset)
    switch(type)
    {
      case KST_KServiceType:
-        newEntry = new KServiceType(*str);
+        newEntry = new KServiceType(*str, offset);
         break;
      case KST_KMimeType:
-        newEntry = new KMimeType(*str);
+        newEntry = new KMimeType(*str, offset);
         break;
      case KST_KFolderType:
-        newEntry = new KFolderType(*str);
+        newEntry = new KFolderType(*str, offset);
         break;
      case KST_KDEDesktopMimeType:
-        newEntry = new KDEDesktopMimeType(*str);
+        newEntry = new KDEDesktopMimeType(*str, offset);
         break;
      case KST_KExecMimeType:
-        newEntry = new KExecMimeType(*str);
+        newEntry = new KExecMimeType(*str, offset);
         break;
 
      default:

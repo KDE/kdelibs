@@ -83,7 +83,7 @@ KSycoca::findEntry(int offset, KSycocaType &type)
 QDataStream *
 KSycoca::_findEntry(int offset, KSycocaType &type)
 {
-   kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_findEntry(%1,%2)").arg(offset,8,16).arg((int)type));
+   kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16));
    str->device()->at(offset);
    Q_INT32 aType;
    (*str) >> aType;
@@ -94,7 +94,7 @@ KSycoca::_findEntry(int offset, KSycocaType &type)
 
 //static
 QDataStream *
-KSycoca::registerFactory( KSycocaFactoryId id)
+KSycoca::registerFactory(KSycocaFactoryId id)
 {
    if (!self)
       self = new KSycoca();
@@ -102,7 +102,7 @@ KSycoca::registerFactory( KSycocaFactoryId id)
 }
 
 QDataStream *
-KSycoca::_registerFactory( KSycocaFactoryId id)
+KSycoca::_registerFactory(KSycocaFactoryId id)
 {
    str->device()->at(0);
    Q_INT32 aId;
@@ -125,6 +125,37 @@ fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
       }
    }
    return 0;
+}
+
+//static
+QDataStream *
+KSycoca::findOfferList()
+{
+   if (!self)
+      self = new KSycoca();
+   return self->_findOfferList();
+}
+
+QDataStream *
+KSycoca::_findOfferList()
+{
+   str->device()->at(0);
+   Q_INT32 aId;
+   Q_INT32 aOffset;
+   // skip factories offsets
+   while(true)
+   {
+      (*str) >> aId;
+      if ( aId )
+        (*str) >> aOffset;
+      else
+        break; // just read 0
+   }
+   (*str) >> aOffset; // Service type index offset
+   kdebug(KDEBUG_INFO, 7011, QString("servicetypeIndexOffset : %1").
+          arg(aOffset,8,16));
+   str->device()->at( aOffset );
+   return str;
 }
 
 //static

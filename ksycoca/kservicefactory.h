@@ -52,10 +52,19 @@ public:
    */
   virtual KSycocaEntry *createEntry(const QString &file);
 
-  static KService *findServiceByName( const QString &_name);
+  /**
+   * Find a service
+   */
+  static KService *findServiceByName( const QString &_name );
+
+  /**
+   * @return the services supporting the given service type
+   */
+  static KServiceList *offers( int serviceTypeOffset );
 
 protected:
   KService *_findServiceByName( const QString &_name);
+  KServiceList *_offers( int serviceTypeOffset );
   KService *createService(int offset);
 
 private:

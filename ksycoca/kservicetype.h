@@ -33,6 +33,8 @@
 
 #include <ksimpleconfig.h>
 
+class KServiceList;
+
 
 /**
  * A service type is the generic notion for a mimetype, a type of service
@@ -49,10 +51,21 @@ public:
   typedef KSharedPtr<KServiceType> Ptr;
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
+  /**
+   * Constructor.  You may pass in arguments to create a servicetype with
+   * specific properties
+   */
   KServiceType( const QString& _name, const QString& _icon, 
 		const QString& _comment );
+  /**
+   * Construct a service type and take all informations from a @ref KSimpleConfig object.
+   */
   KServiceType( KSimpleConfig& _cfg );
-  KServiceType( QDataStream& _str );
+  /**
+   * @internal construct a service from a stream. 
+   * The stream must already be positionned at the correct offset
+   */
+  KServiceType( QDataStream& _str, int offset );
   
   virtual ~KServiceType();
   
@@ -99,6 +112,14 @@ public:
    *         service type is unknown.  
    */
   static KServiceType* serviceType( const QString& _name );
+
+  /**
+   * @return all services supporting the given servicetype name
+   * This doesn't take care of the user profile.
+   * In fact it is used by the KServiceTypeProfile,
+   * which is the one you should use.
+   */
+  static KServiceList* offers( const QString& _servicetype );
 
   /** 
    * @return a list of all the supported servicetypes. Useful for 

@@ -19,9 +19,11 @@
 #include <qdir.h>
 
 #include "kbuildsycoca.h"
-#include "ksycocatype.h"
-#include "ksycocaentry.h"
-#include "ksycocafactory.h"
+
+#include <kservice.h>
+#include <ksycocatype.h>
+#include <ksycocaentry.h>
+#include <ksycocafactory.h>
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -171,6 +173,7 @@ KBuildSycoca::save()
    str->device()->at(0);
 
    KSycocaFactory * servicetypeFactory = 0L;
+   KSycocaFactory * serviceFactory = 0L;
    for(KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next())
@@ -180,6 +183,8 @@ KBuildSycoca::save()
       aId = factory->factoryId();
       if ( aId == KST_KServiceTypeFactory )
          servicetypeFactory = factory;
+      else if ( aId == KST_KServiceFactory )
+         serviceFactory = factory;
       aOffset = factory->offset();
       (*str) << aId;
       (*str) << aOffset;
@@ -198,9 +203,35 @@ KBuildSycoca::save()
    // Write servicetype index
    Q_INT32 servicetypeIndexOffset = str->device()->at();
 
-   // .. TODO
-   // for each entry in servicetypeFactory
-   // export associated services
+   if (!serviceFactory || !servicetypeFactory)
+     kdebug(KDEBUG_WARN, 7011, "Don't have the two mandatory factories. No servicetype index.");
+   else
+   {
+     // For each entry in servicetypeFactory
+     for(QDictIterator<KSycocaEntry> it ( *(servicetypeFactory->entryDict()) );
+         it.current(); 
+         ++it)
+     {
+       // export associated services
+       // This means looking for the service type in ALL services
+       // This is SLOW. But it used to be done in every app (in KServiceTypeProfile)
+       // Doing it here saves a lot of time to the clients
+       QString serviceType = it.current()->name();
+       for(QDictIterator<KSycocaEntry> itserv ( *(serviceFactory->entryDict()) );
+           itserv.current(); 
+           ++itserv)
+       {
+         if ( ((KService *)itserv.current())->hasServiceType( serviceType ) )
+         {
+           (*str) << (Q_INT32) it.current()->offset();
+           (*str) << (Q_INT32) itserv.current()->offset();
+           kdebug(KDEBUG_INFO, 7011, QString("<< %1 %2")
+                  .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
+         }
+       }
+     }
+     (*str) << (Q_INT32) 0;               // End of list marker (0)
+   }
    
    int endOfData = str->device()->at();
 
@@ -219,6 +250,8 @@ KBuildSycoca::save()
       (*str) << aOffset;
    }
    (*str) << (Q_INT32) 0; // No more factories.
+   kdebug(KDEBUG_INFO, 7011, QString("servicetypeIndexOffset : %1").
+          arg(servicetypeIndexOffset,8,16));
    (*str) << servicetypeIndexOffset;
 
    // Jump to end of database

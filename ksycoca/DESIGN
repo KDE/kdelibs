@@ -7,7 +7,7 @@ List of factories
  | * Factory id, Factory offset
  | * ...
  | * 0
- | * ServiceType-index offset
+ | * Offer-list offset
 
 For each factory
  | * offset of the dict
@@ -30,14 +30,12 @@ For each factory
  | | |  * entry offset, key
  | 
 
-And then, TODO :
-
-Index by servicetype
+Offer list
 | * servicetype offset, service offset
 | * servicetype offset, service offset
 | * servicetype offset, service offset
 | * servicetype offset, service offset
+| * 0
 This allows to quickly find services associated with a servicetype.
 It does NOT reflect the user profile, which is stored in profilerc and
 implemented in KServiceTypeProfile.
-

@@ -41,7 +41,7 @@ public:
    /**
     * Restores itself from a stream.
     */
-   KSycocaEntry( QDataStream &/*_str*/) : mOffset(0) { /* Nothing to do here */ }
+   KSycocaEntry( QDataStream &/*_str*/, int offset ) : mOffset( offset ) { /* Nothing to do here */ }
 
    /**
     * @return the name of this entry

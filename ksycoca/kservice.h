@@ -35,7 +35,7 @@
 
 /**
  * Represents a service, i.e. an application bound to one or several mimetypes
- * as written in its desktop entry file. A service may be a libary, too.
+ * as written in its desktop entry file. A service may be a library, too.
  *
  * @author Torben Weis <weis@kde.org>
  */
@@ -47,10 +47,9 @@ public:
   typedef KSharedPtr<KService> Ptr;
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
-  /*
+  /**
    * Constructor.  You may pass in arguments to create a service with
-   * specific properties, otherwise a null service will be constructed.
-   *
+   * specific properties
    */
   KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
             const QString& _icon, const QStringList& _lstServiceTypes,
@@ -58,29 +57,18 @@ public:
 	    const QString& _path = QString::null, const QString& _terminal = QString::null,
 	    const QString& _file = QString::null, const QString& _act_mode = QString::null,
 	    const QStringList& _repoids = QStringList(),
-	    const QString& _lib = QString::null, int _minor = 0, int _major = 0, const QStringList& _deps = QStringList());
-  /**
-   * Create an invalid service. This is only usefull in combination
-   * with the streaming operators if you want to load a service from
-   * a stream like done by the @ref #KRegistry.
-   *
-   * @see #isValid.
-   */
-  //KService();
+	    const QString& _lib = QString::null, int _minor = 0, int _major = 0, 
+            const QStringList& _deps = QStringList());
   /**
    * Construct a service and take all informations from a @ref KSimpleConfig object.
    */
   KService( KSimpleConfig& _cfg );
   /**
-   * Construct a service from a stream. That feature is used when dumping the complete
-   * @ref KRegistry in a single file and reading it afterwards.
+   * @internal construct a service from a stream. 
+   * The stream must already be positionned at the correct offset
    */
-  KService( QDataStream& _str );
+  KService( QDataStream& _str, int offset );
 
-  /**
-   * Destroys the service and automatically removes it from the
-   * list of known services.
-   */
   virtual ~KService();
 
   /**
@@ -193,12 +181,12 @@ public:
 
   /**
    * @internal
-   * Load the service from a stream. Use the streaming operators instead.
+   * Load the service from a stream.
    */
   virtual void load( QDataStream& );
   /**
    * @internal
-   * Save the service to a stream. Use the streaming operators instead.
+   * Save the service to a stream.
    */
   virtual void save( QDataStream& );
 

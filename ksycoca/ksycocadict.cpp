@@ -88,16 +88,16 @@ KSycocaDict::find_string(const QString &key )
 
    // Read hash-table data 
    uint hash = hashKey(key) % mHashTableSize;
-   kdebug(KDEBUG_INFO, 7011, QString("hash is %1").arg(hash));
+   //kdebug(KDEBUG_INFO, 7011, QString("hash is %1").arg(hash));
 
    uint off = mOffset+sizeof(Q_INT32)*hash;
-   kdebug(KDEBUG_INFO, 7011, QString("off is %1").arg(off,8,16));
+   //kdebug(KDEBUG_INFO, 7011, QString("off is %1").arg(off,8,16));
    mStr->device()->at( off );
 
    Q_INT32 offset;
    (*mStr) >> offset;
 
-   kdebug(KDEBUG_INFO, 7011, QString("offset is %1").arg(offset,8,16));
+   //kdebug(KDEBUG_INFO, 7011, QString("offset is %1").arg(offset,8,16));
    if (offset == 0)
       return 0;
 
@@ -404,7 +404,7 @@ KSycocaDict::save(QDataStream &str)
 
             kdebug(KDEBUG_INFO, 7011, 
                    QString("Duplicate lists: Offset = %1 list_size = %2")
-                           .arg(hashTable[i].duplicate_offset,1,16).arg(dups->count()));
+                           .arg(hashTable[i].duplicate_offset,8,16).arg(dups->count()));
 
             for(string_entry *dup = dups->first(); dup; dup=dups->next())
             {

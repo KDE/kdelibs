@@ -106,7 +106,7 @@ KServiceFactory::createService(int offset)
    switch(type)
    {
      case KST_KService:
-        newEntry = new KService(*str);
+        newEntry = new KService(*str, offset);
         break;
         
      default:
@@ -120,6 +120,48 @@ KServiceFactory::createService(int offset)
       newEntry = 0;
    }   
    return newEntry;
+}
+
+// static
+KServiceList *KServiceFactory::offers( int serviceTypeOffset )
+{
+   if (!self)
+      self = new KServiceFactory();
+   return self->_offers( serviceTypeOffset );   
+}
+
+KServiceList *KServiceFactory::_offers( int serviceTypeOffset )
+{
+  kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers ( %1 )").arg(serviceTypeOffset,8,16));
+  KServiceList * list = new KServiceList;
+  // Jump to offer list
+  QDataStream *str = KSycoca::findOfferList();
+  Q_INT32 aServiceTypeOffset;
+  Q_INT32 aServiceOffset;
+  // We might want to do a binary search instead of a linear search
+  // since servicetype offsets are sorted. Bah.
+  while (true)
+  {
+      (*str) >> aServiceTypeOffset;
+      if ( aServiceTypeOffset )
+      {
+        (*str) >> aServiceOffset;
+        if ( aServiceTypeOffset == serviceTypeOffset )
+        {
+          kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers : Found !"));
+          // Save stream position !
+          int savedPos = str->device()->at();
+          // Create Service
+          list->append( createService( aServiceOffset ) );
+          // Restore position
+          str->device()->at( savedPos );
+        } else if ( aServiceTypeOffset > (Q_INT32)serviceTypeOffset )
+          break; // too far
+      }
+      else
+        break; // 0 => end of list
+  }
+  return list;
 }
 
 KServiceFactory *KServiceFactory::self = 0;
