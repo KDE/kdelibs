@@ -103,8 +103,8 @@ then
 else
   AC_MSG_RESULT(problems)
   kde_have_all_paths=no
-  AC_MSG_ERROR([I can not run a little KDE program to test the environment.
-Look at config.log for details. If you are not able to fix them, please contact me.])
+  AC_MSG_ERROR([configure can not run a little KDE program to test the environment.
+Look at config.log for details. If you are not able to fix this, please contact Stephan Kulow <coolo@kde.org>.])
 fi
 
 rm -fr conftest*
