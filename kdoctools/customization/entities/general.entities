@@ -200,6 +200,7 @@
 <!ENTITY kfract	"<application>KFract</application>">
 <!ENTITY khangman	"<application>KHangMan</application>">
 <!ENTITY kgeo	"<application>KGeo</application>">
+<!ENTITY kget	"<application>KGet</application>">
 <!ENTITY kghostview	"<application>KGhostView</application>">
 <!ENTITY kgpgcertmanager "<application>KgpgCertManager</application>">
 <!ENTITY khelpcenter	"<application>KHelpCenter</application>">
@@ -369,6 +370,10 @@
 <!ENTITY XML	"<acronym>XML</acronym>">
 <!ENTITY XSL	"<acronym>XSL</acronym>">
 
+<!-- Defaults, do NOT add anything to this without checking with the docbook
+     team.  -->
+
+<!ENTITY package "This application isn't part of a KDE package">
 
 <!-- Deprecated, will be removed at a future time, do not use -->
 <!ENTITY brahms	"<application>Brahms</application>">
