@@ -439,19 +439,24 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_HTML:
 	case ID_BODY:
 	case ID_BASE:
-	case ID_STYLE:
 	case ID_META:
 	case ID_LINK:
 	    // SCRIPT and OBJECT are allowd in the body.
 	    if(inBody) throw exception;
 	    break;
+	case ID_STYLE:
+	    if(inBody)
+	    {
+		discard_until = ID_STYLE + ID_CLOSE_TAG;
+		throw exception;
+	    }
 	case ID_LI:
 	    e = new HTMLUListElementImpl(document);
 	    insertNode(e);
 	    insertNode(n);
 	    return;
 	    break;
-	
+
 	    // the following is a hack to move non rendered elements
 	    // outside of tables.
 	    // needed for broken constructs like <table><form ...><tr>....
