@@ -61,6 +61,24 @@
 #include "kcmoduleproxy.h"
 
 /*
+    QCheckListViewItem that holds a pointer to the KPluginInfo object.
+    Used in the tooltip code to access additional fields
+*/
+class KPluginInfoLVI : public QCheckListItem
+{
+public:
+    KPluginInfoLVI( KPluginInfo *pluginInfo, KListView *parent )
+    : QCheckListItem( parent, pluginInfo->name(), QCheckListItem::CheckBox ), m_pluginInfo( pluginInfo )
+    {
+    }
+
+    KPluginInfo * pluginInfo() { return m_pluginInfo; }
+
+private:
+    KPluginInfo *m_pluginInfo;
+};
+
+/*
 	Custom QToolTip for the list view.
 	The decision whether or not to show tooltips is taken in
 	maybeTip(). See also the QListView sources from Qt itself.
@@ -86,7 +104,7 @@ void KPluginListViewToolTip::maybeTip( const QPoint &pos )
     if ( !parentWidget() || !m_listView )
         return;
 
-    QListViewItem *item = m_listView->itemAt( pos );
+    KPluginInfoLVI *item = dynamic_cast<KPluginInfoLVI *>( m_listView->itemAt( pos ) );
     if ( !item )
         return;
 
@@ -94,8 +112,8 @@ void KPluginListViewToolTip::maybeTip( const QPoint &pos )
         "<tr><td><b>Description:</b></td><td>%1</td></tr>"
         "<tr><td><b>Author:</b></td><td>%2</td></tr>"
         "<tr><td><b>Version:</b></td><td>%3</td></tr>"
-        "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" ).arg( item->text( 1 ),
-        item->text( 2 ), item->text( 3 ), item->text( 4 ) );
+        "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" ).arg( item->pluginInfo()->comment(),
+        item->pluginInfo()->author(), item->pluginInfo()->version(), item->pluginInfo()->license() );
 
     //kdDebug( 702 ) << k_funcinfo << "Adding tooltip: itemRect: " << itemRect << ", tooltip:  " << toolTip << endl;
     tip( m_listView->itemRect( item ), toolTip );
@@ -213,8 +231,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
         if( !( *it )->isHidden() &&
                 ( category.isNull() || ( *it )->category() == category ) )
         {
-            QCheckListItem * item = new QCheckListItem( listview,
-                    ( *it )->name(), QCheckListItem::CheckBox );
+            QCheckListItem * item = new KPluginInfoLVI( *it, listview );
             if( ! ( *it )->icon().isEmpty() )
                 item->setPixmap( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
             item->setText( 1, ( *it )->comment() );
