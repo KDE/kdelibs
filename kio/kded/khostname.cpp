@@ -163,7 +163,8 @@ void KHostName::changeX()
 
 void KHostName::changeDcop()
 {
-   QCString fname = home+"/.DCOPserver_"+oldName+"_"+display;
+   QCString origFNameOld = DCOPClient::dcopServerFileOld(oldName);
+   QCString fname = DCOPClient::dcopServerFile(oldName);
    QCString origFName = fname;
    FILE *dcopFile = fopen(fname.data(), "r");
    if (!dcopFile)
@@ -197,7 +198,7 @@ void KHostName::changeDcop()
       }
       line1 = "local/"+newName+line1.mid(i);
       QCString newNetId = line1;
-      fname = home+"/.DCOPserver_"+newName+"_"+display;
+      fname = DCOPClient::dcopServerFile(newName);
       unlink(fname.data());
       dcopFile = fopen(fname.data(), "w");
       if (!dcopFile)
@@ -212,8 +213,9 @@ void KHostName::changeDcop()
       fputc('\n', dcopFile);
 
       fclose(dcopFile);
-      QCString link = home+"/.DCOPserver_"+newName;
-      symlink(fname.data(), link.data());   
+
+      QCString compatLink = DCOPClient::dcopServerFileOld(newName);
+      ::symlink(fname.data(), compatLink.data()); // Compatibility link
 
       // Update .ICEauthority
       QCString cmd = "iceauth list netid="+oldNetId;
@@ -261,8 +263,8 @@ void KHostName::changeDcop()
       QCString cmd = "iceauth remove netid="+oldNetId;
       system(cmd.data());
       unlink(origFName.data());
-      QCString link = home+"/.DCOPserver_"+oldName;
-      unlink(link.data());
+      origFName = DCOPClient::dcopServerFileOld(oldName); // Compatibility link
+      unlink(origFName.data());
    }
 }
 
