@@ -858,9 +858,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     discard = AllDiscard; // discard whitespaces after '='
                     ++src;
                 }
-                else if( curchar == '>' )
-                    tag = SearchEnd;
-                else // other chars indicate a new attribte
+                else // other chars indicate a new attribute or '>'
                 {
                     Attribute a;
                     a.id = *buffer;
@@ -881,7 +879,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     tquote = curchar == '\"' ? DoubleQuote : SingleQuote;
                     tag = QuotedValue;
                     ++src;
-                    discard = LFDiscard;
+                    discard = NoneDiscard;
                 } else {
                     tag = Value;
                     discard = AllDiscard;
@@ -896,8 +894,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 {
                     ++src;
                     discard = NoneDiscard;
-                    if (pending)
-                        addPending();
                     charEntity = true;
                     parseEntity(src, dest, true);
                     break;
@@ -914,7 +910,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         dest--; // remove trailing whitespaces
                     a.setValue(buffer+1, dest-buffer-1);
 #ifdef TOKEN_DEBUG
-                    kdDebug() << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
+                    kdDebug(6036) << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
 #endif
                     currToken->attrs.add(a);
 
@@ -926,9 +922,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     ++src;
                     break;
                 }
-                // eat LFs
-                if( pending && pending != LFPending ) addPending();
-                discard = LFDiscard;
+                discard = NoneDiscard;
 
                 *dest++ = src[0];
                 ++src;
@@ -944,10 +938,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     parseEntity(src, dest, true);
                     break;
                 }
-
-                // if discard==NoneDiscard at this point, it means
-                // that we passed an empty "" pair. bit hacky, but...
-                // helps with <tag attr=""otherattr="something">
                 if ( pending || curchar == '>')
                 {
                     // no quotes. Every space means end of value
@@ -956,7 +946,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     if(a.id==0) a.setName( attrName );
                     a.setValue(buffer+1, dest-buffer-1);
 #ifdef TOKEN_DEBUG
-                    kdDebug() << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
+                    kdDebug(6036) << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
 #endif
                     currToken->attrs.add(a);
 
@@ -988,37 +978,25 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if ( currToken->id == 0 ) //stop if tag is unknown
                 {
                     discard = NoneDiscard;
-                    // we really don't want to insert a null char into
-                    // the stream do we? (Dirk)
-                    // *dest = QChar::null;
                     return;
-                }
-
-                if(dest>buffer)
-                {
-                    // add the last attribute
-                    Attribute a;
-                    a.id = *buffer;
-                    if(a.id==0) a.setName( attrName );
-                    a.setValue(buffer+1, dest-buffer-1);
-                    currToken->attrs.add(a);
-                    dest = buffer;
                 }
                 uint tagID = currToken->id;
 #ifdef TOKEN_DEBUG
                 kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
-                bool beginTag = (tagID < ID_CLOSE_TAG);
-                if( beginTag && tagID != ID_IMG && tagID != ID_INPUT ) {
+                bool beginTag = tagID < ID_CLOSE_TAG;
+                if(!(pre || textarea || tagID == ID_PRE || tagID == ID_TEXTAREA)) {
                     // Ignore Space/LF's after a start tag
-                    discard = LFDiscard;
-                } else if (!beginTag) {
                     // Don't ignore CR/LF's after a close tag
-                    discard = NoneDiscard;
-                    tagID -= ID_CLOSE_TAG;
+                    discard = beginTag ? LFDiscard : NoneDiscard;
                 }
+                else
+                    discard = NoneDiscard;
 
-                if ( tagID == ID_SCRIPT  && beginTag ) {
+                if(!beginTag)
+                    tagID -= ID_CLOSE_TAG;
+
+                if ( beginTag && tagID == ID_SCRIPT ) {
                     int attrIndex = currToken->attrs.find(ATTR_SRC);
                     scriptSrc = (attrIndex == -1 ? (QString)"" : currToken->attrs[attrIndex]->value().string());
                     attrIndex = currToken->attrs.find(ATTR_LANGUAGE);
@@ -1045,14 +1023,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
                 processToken();
 
-                if(pre)
-                {
-                    // we have to take care to close the pre block in
-                    // case we encounter an unallowed element....
-                    if(!DOM::checkChild(ID_PRE, tagID)) {
-                        //kdDebug(0) << " not allowed in <pre> " << (int)tagID << endl;
-                        pre = false;
-                    }
+                // we have to take care to close the pre block in
+                // case we encounter an unallowed element....
+                if(pre && beginTag && !DOM::checkChild(ID_PRE, tagID)) {
+                    kdDebug(6036) << " not allowed in <pre> " << (int)tagID << endl;
+                    pre = false;
                 }
 
                 if ( tagID == ID_PRE )
