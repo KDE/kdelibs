@@ -55,6 +55,9 @@ struct _xsltTemplate {
     xmlNodePtr content;	/* the template replacement value */
     xmlNodePtr elem;	/* the source element */
 
+    int inheritedNsNr;  /* number of inherited namespaces */
+    xmlNsPtr *inheritedNs;/* inherited non-excluded namespaces */
+
     /* Profiling informations */
     int nbCalls;        /* the number of time the template was called */
     unsigned long time; /* the time spent in this template */
@@ -104,14 +107,13 @@ typedef struct _xsltTransformContext xsltTransformContext;
 typedef xsltTransformContext *xsltTransformContextPtr;
 
 /**
- * xsltStylePreComp:
+ * xsltElemPreComp:
  *
- * The in-memory structure corresponding to XSLT stylesheet constructs
- * precomputed data.
+ * The in-memory structure corresponding to element precomputed data,
+ * designed to be extended by extension implementors.
  */
-
-typedef struct _xsltStylePreComp xsltStylePreComp;
-typedef xsltStylePreComp *xsltStylePreCompPtr;
+typedef struct _xsltElemPreComp xsltElemPreComp;
+typedef xsltElemPreComp *xsltElemPreCompPtr;
 
 /**
  * xsltTransformFunction:
@@ -126,7 +128,7 @@ typedef xsltStylePreComp *xsltStylePreCompPtr;
 typedef void (*xsltTransformFunction) (xsltTransformContextPtr ctxt,
 	                               xmlNodePtr node,
 				       xmlNodePtr inst,
-			               xsltStylePreCompPtr comp);
+			               xsltElemPreCompPtr comp);
 
 typedef enum {
     XSLT_FUNC_COPY=1,
@@ -149,8 +151,33 @@ typedef enum {
     XSLT_FUNC_WITHPARAM,
     XSLT_FUNC_PARAM,
     XSLT_FUNC_VARIABLE,
-    XSLT_FUNC_WHEN
+    XSLT_FUNC_WHEN,
+    XSLT_FUNC_EXTENSION
 } xsltStyleType;
+
+/**
+ * xsltElemPreCompDeallocator:
+ * @comp:  the #xsltElemPreComp to free up
+ *
+ * Deallocates an #xsltElemPreComp structure
+ */
+typedef void (*xsltElemPreCompDeallocator) (xsltElemPreCompPtr comp);
+
+/**
+ * xsltElemPreComp:
+ *
+ * The in-memory structure corresponding to element precomputed data,
+ * designed to be extended by extension implementors.
+ */
+struct _xsltElemPreComp {
+    xsltElemPreCompPtr next;		/* chained list */
+    xsltStyleType type;			/* type of the element */
+    xsltTransformFunction func; 	/* handling function */
+    xmlNodePtr inst;			/* the instruction */
+
+    /* end of common part */
+    xsltElemPreCompDeallocator free;	/* the deallocator */
+};
 
 /**
  * xsltStylePreComp:
@@ -158,8 +185,10 @@ typedef enum {
  * The in-memory structure corresponding to XSLT stylesheet constructs
  * precomputed data.
  */
+typedef struct _xsltStylePreComp xsltStylePreComp;
+typedef xsltStylePreComp *xsltStylePreCompPtr;
 struct _xsltStylePreComp {
-    struct _xsltStylePreComp *next;/* chained list */
+    xsltElemPreCompPtr next;	/* chained list */
     xsltStyleType type;		/* type of the element */
     xsltTransformFunction func; /* handling function */
     xmlNodePtr inst;		/* the instruction */
@@ -310,7 +339,7 @@ struct _xsltStylesheet {
     /*
      * Precomputed blocks
      */
-    xsltStylePreCompPtr preComps;	/* list of precomputed blocks */
+    xsltElemPreCompPtr preComps;/* list of precomputed blocks */
     int warnings;		/* number of warnings found at compilation */
     int errors;			/* number of errors found at compilation */
 
@@ -318,6 +347,13 @@ struct _xsltStylesheet {
     xmlChar **exclPrefixTab;	/* array of excluded prefixes */
     int       exclPrefixNr;	/* number of excluded prefixes in scope */
     int       exclPrefixMax;	/* size of the array */
+
+    void     *_private;		/* user defined data */
+
+    /*
+     * Extensions
+     */
+    xmlHashTablePtr extInfos;	/* the extension data */
 };
 
 /*
@@ -389,6 +425,8 @@ struct _xsltTransformContext {
     int              profNr;		/* Nb of templates in the stack */
     int              profMax;		/* Size of the templtaes stack */
     long            *profTab;		/* the profile template stack */
+
+    void            *_private;		/* user defined data */
 };
 
 /**
@@ -433,6 +471,7 @@ xsltStylesheetPtr	xsltParseStylesheetProcess(xsltStylesheetPtr ret,
 void			xsltParseStylesheetOutput(xsltStylesheetPtr style,
 						  xmlNodePtr cur);
 xsltStylesheetPtr	xsltParseStylesheetDoc	(xmlDocPtr doc);
+xsltStylesheetPtr	xsltLoadStylesheetPI	(xmlDocPtr doc);
 void 			xsltNumberFormat	(xsltTransformContextPtr ctxt,
 						 xsltNumberDataPtr data,
 						 xmlNodePtr node);
@@ -440,6 +479,9 @@ xmlXPathError		 xsltFormatNumberConversion(xsltDecimalFormatPtr self,
 						 xmlChar *format,
 						 double number,
 						 xmlChar **result);
+
+void			xsltParseTemplateContent(xsltStylesheetPtr style,
+						 xmlNodePtr templ);
 
 #ifdef __cplusplus
 }

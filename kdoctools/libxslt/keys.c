@@ -75,6 +75,7 @@ xsltNewKeyDef(const xmlChar *name, const xmlChar *nameURI) {
 
     cur = (xsltKeyDefPtr) xmlMalloc(sizeof(xsltKeyDef));
     if (cur == NULL) {
+	xsltPrintErrorContext(NULL, NULL, NULL);
         xsltGenericError(xsltGenericErrorContext,
 		"xsltNewKeyDef : malloc failed\n");
 	return(NULL);
@@ -145,6 +146,7 @@ xsltNewKeyTable(const xmlChar *name, const xmlChar *nameURI) {
 
     cur = (xsltKeyTablePtr) xmlMalloc(sizeof(xsltKeyTable));
     if (cur == NULL) {
+	xsltPrintErrorContext(NULL, NULL, NULL);
         xsltGenericError(xsltGenericErrorContext,
 		"xsltNewKeyTable : malloc failed\n");
 	return(NULL);
@@ -256,6 +258,7 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
     }
     key->comp = xmlXPathCompile(pattern);
     if (key->comp == NULL) {
+	xsltPrintErrorContext(NULL, style, inst);
         xsltGenericError(xsltGenericErrorContext,
 		"xsl:key : XPath pattern compilation failed '%s'\n",
 		         pattern);
@@ -263,6 +266,7 @@ xsltAddKey(xsltStylesheetPtr style, const xmlChar *name,
     }
     key->usecomp = xmlXPathCompile(use);
     if (key->usecomp == NULL) {
+	xsltPrintErrorContext(NULL, style, inst);
         xsltGenericError(xsltGenericErrorContext,
 		"xsl:key : XPath pattern compilation failed '%s'\n",
 		         use);
@@ -387,6 +391,7 @@ xsltInitCtxtKey(xsltTransformContextPtr ctxt, xsltDocumentPtr doc,
 	xsltGenericDebug(xsltGenericDebugContext,
 	     "xsltInitCtxtKey: %s evaluation failed\n", keyd->match);
 #endif
+	ctxt->state = XSLT_STATE_STOPPED;
 	goto error;
     }
 
@@ -401,29 +406,31 @@ xsltInitCtxtKey(xsltTransformContextPtr ctxt, xsltDocumentPtr doc,
 	goto error;
 
     for (i = 0;i < nodelist->nodeNr;i++) {
-	ctxt->node = nodelist->nodeTab[i];
-	str = xsltEvalXPathString(ctxt, keyd->usecomp);
-	if (str != NULL) {
+	if (IS_XSLT_REAL_NODE(nodelist->nodeTab[i])) {
+	    ctxt->node = nodelist->nodeTab[i];
+	    str = xsltEvalXPathString(ctxt, keyd->usecomp);
+	    if (str != NULL) {
 #ifdef WITH_XSLT_DEBUG_KEYS
-	    xsltGenericDebug(xsltGenericDebugContext,
-		 "xsl:key : node associated to(%s,%s)\n",
-		             keyd->name, str);
+		xsltGenericDebug(xsltGenericDebugContext,
+		     "xsl:key : node associated to(%s,%s)\n",
+				 keyd->name, str);
 #endif
-	    keylist = xmlHashLookup(table->keys, str);
-	    if (keylist == NULL) {
-		keylist = xmlXPathNodeSetCreate(nodelist->nodeTab[i]);
-		xmlHashAddEntry(table->keys, str, keylist);
+		keylist = xmlHashLookup(table->keys, str);
+		if (keylist == NULL) {
+		    keylist = xmlXPathNodeSetCreate(nodelist->nodeTab[i]);
+		    xmlHashAddEntry(table->keys, str, keylist);
+		} else {
+		    xmlXPathNodeSetAdd(keylist, nodelist->nodeTab[i]);
+		}
+		nodelist->nodeTab[i]->_private = keyd;
+		xmlFree(str);
+#ifdef WITH_XSLT_DEBUG_KEYS
 	    } else {
-		xmlXPathNodeSetAdd(keylist, nodelist->nodeTab[i]);
-	    }
-	    nodelist->nodeTab[i]->_private = keyd;
-	    xmlFree(str);
-#ifdef WITH_XSLT_DEBUG_KEYS
-	} else {
-	    xsltGenericDebug(xsltGenericDebugContext,
-		 "xsl:key : use %s failed to return a string\n",
-		             keyd->use);
+		xsltGenericDebug(xsltGenericDebugContext,
+		     "xsl:key : use %s failed to return a string\n",
+				 keyd->use);
 #endif
+	    }
 	}
     }
 

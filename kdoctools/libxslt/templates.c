@@ -14,8 +14,9 @@
 #include <string.h>
 
 #include <libxml/xmlmemory.h>
-#include <libxml/tree.h>
+#include <libxml/globals.h>
 #include <libxml/xmlerror.h>
+#include <libxml/tree.h>
 #include <libxml/xpathInternals.h>
 #include <libxml/parserInternals.h>
 #include "xslt.h"
@@ -84,6 +85,7 @@ xsltEvalXPathPredicate(xsltTransformContextPtr ctxt, xmlXPathCompExprPtr comp,
 	xsltGenericDebug(xsltGenericDebugContext,
 	     "xsltEvalXPathPredicate: failed\n");
 #endif
+	ctxt->state = XSLT_STATE_STOPPED;
 	ret = 0;
     }
     ctxt->xpathCtxt->nsNr = oldNsNr;
@@ -135,10 +137,13 @@ xsltEvalXPathString(xsltTransformContextPtr ctxt, xmlXPathCompExprPtr comp) {
             ret = res->stringval;
 	    res->stringval = NULL;
 	} else {
+	    xsltPrintErrorContext(ctxt, NULL, NULL);
 	    xsltGenericError(xsltGenericErrorContext,
 		 "xpath : string() function didn't return a String\n");
 	}
 	xmlXPathFreeObject(res);
+    } else {
+	ctxt->state = XSLT_STATE_STOPPED;
     }
 #ifdef WITH_XSLT_DEBUG_TEMPLATES
     xsltGenericDebug(xsltGenericDebugContext,
