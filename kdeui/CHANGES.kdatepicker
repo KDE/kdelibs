@@ -1,0 +1,26 @@
+This file records changes made to the KDatePicker and KDateTable class.
+It is maintained by Mirko Sucker (mirko.sucker@unibw-hamburg.de).
+
+February 25 1998:
+The buttons that switch the month no more display "<--" and "-->" but 
+arrow bitmaps that look much nicer.
+
+March 17 1998:
+I added the two methods setDate(QDate) and QSize sizeHint() to 
+KDatePicker.
+
+March 27 1998:
+I added some documentation to the both header files and cleaned up 
+some code. No functional changes.
+
+April 13 1998:
+No changes, but Preston Bron tested the sources in korganizer without
+problems. I will send them to Kalle to check it in.
+
+May 28 1998:
+I got a patch from Andreas "highstick" Hochsteger, he added yearwise up 
+and down buttons. I was very happy as I intended to do the same, and 
+now he did. It looks good.
+
+last change: May 28 1998			Mirko Sucker.
+

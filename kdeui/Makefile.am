@@ -33,7 +33,8 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
 		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
 		kwmmapp.h kbuttonbox.h ktablistbox.h \
-		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h
+		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h	\
+		kdbtn.h knotebook.h ktabbar.h kwizard.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp kdatepik.cpp kdatetbl.cpp \
@@ -44,7 +45,8 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kintegerline.cpp kspinbox.cpp kcontrol.cpp \
 		kcolorbtn.cpp kiconloaderdialog.cpp kwmmapp.cpp	\
 		kbuttonbox.cpp ktablistbox.cpp knewpanner.cpp \
-		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp kled.cpp
+		keditcl1.cpp keditcl2.cpp ktoolboxmgr.cpp kled.cpp	\
+		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
@@ -55,7 +57,8 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kspinbox.moc kcolorbtn.moc \
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
 		ktablistbox.moc knewpanner.moc kcontrol.moc keditcl.moc \
-	  	ktoolboxmgr.moc kled.moc
+	  	ktoolboxmgr.moc kled.moc kdbtn.moc knotebook.moc kwizard.moc \
+		ktabbar.moc
 
 kledlamp.cpp:kledlamp.moc
 kledlamp.moc: kledlamp.h
@@ -194,6 +197,24 @@ ktoolboxmgr.cpp: ktoolboxmgr.moc
 ktoolboxmgr.moc: ktoolboxmgr.h
 	$(MOC) ktoolboxmgr.h -o ktoolboxmgr.moc
 
-data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm
+kdbtn.cpp: kdbtn.moc
+kdbtn.moc: kdbtn.h
+	$(MOC) kdbtn.h -o kdbtn.moc
+
+kwizard.cpp: kwizard.moc
+kwizard.moc: kwizard.h
+	$(MOC) kwizard.h -o kwizard.moc
+
+knotebook.cpp: knotebook.moc
+knotebook.moc: knotebook.h
+	$(MOC) knotebook.h -o knotebook.moc
+
+ktabbar.cpp: ktabbar.moc
+ktabbar.moc: ktabbar.h
+	$(MOC) ktabbar.h -o ktabbar.moc
+
+
+data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
+	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
 datadir = $(kde_datadir)/kde/pics
 
