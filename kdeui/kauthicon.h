@@ -65,9 +65,12 @@ signals:
 protected:
   QHBoxLayout *layout;
 
-  QLabel *lockBox, *lockLabel;
-  QPixmap lockPM, openLockPM;
-  QString lockText, openLockText;
+  QLabel *lockBox;
+  QLabel *lockLabel;
+  QPixmap lockPM;
+  QPixmap openLockPM;
+  QString lockText;
+  QString openLockText;
 };
 
 /* 

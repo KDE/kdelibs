@@ -136,7 +136,8 @@ protected:
    QSize qs;
    QSpinBox *spinbox;
    
-   int h_spacing, v_spacing;
+   int h_spacing;
+   int v_spacing;
    int label_align;
    int spin_frac;
    
