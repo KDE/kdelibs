@@ -69,8 +69,9 @@
 #include <qstrlist.h>
 
 #include <kurl.h>
-#include <kapp.h>
 #include <kimgio.h>
+#include <kstddirs.h>
+#include <kglobal.h>
 
 #include <X11/Xlib.h>
 
@@ -151,8 +152,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 
     setBackgroundColor( lightGray );
 
-    QString f = kapp->kde_datadir().copy();
-    f += "/khtmlw/pics/khtmlw_dnd.xpm";
+    QString f =  locate("data", "khtml/pics/khtml_dnd.xpm");
     dndDefaultPixmap.load( f.data() );
     
     kimgioRegister();

@@ -360,7 +360,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
 
   initMetaObject();
 
-  f = locate("data", "khtmlw/pics/khtmlw_dnd.xpm");
+  f = locate("data", "khtml/pics/khtml_dnd.xpm");
   dndDefaultPixmap.load(f);
 
   f = locate("toolbar", "up.xpm");
