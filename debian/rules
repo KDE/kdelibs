@@ -69,7 +69,7 @@ binary-arch:  build
 	   kde_confdir="`pwd`/debian/tmp/etc/kde" \
 	   kde_mimedir="`pwd`/debian/tmp/usr/share/mimelnk" \
 	   kde_toolbardir="`pwd`/debian/tmp/usr/share/toolbar" \
-	   kde_wallpaperdir="`pwd`/debian/tmp/usr/share/wallpaper" \
+	   kde_wallpaperdir="`pwd`/debian/tmp/usr/share/wallpapers" \
 	   kde_bindir="`pwd`/debian/tmp/usr/bin" \
 	   kde_partsdir="`pwd`/debian/tmp/usr/lib/parts" \
 	   kde_confdir="`pwd`/debian/tmp/etc/kde" \
