@@ -75,8 +75,6 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    m_str = 0;
    QString path = KGlobal::dirs()->saveLocation("tmp") + "ksycoca";
    //kdDebug(7011) << "Trying to open ksycoca from " << path << endl;
-   delete d->database;
-   d->database = 0L;
    QFile *database = new QFile(path);
    if (database->open( IO_ReadOnly ))
    {
@@ -106,6 +104,8 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    else
    {
      // No database file
+     delete database;
+     database = 0;
 
      bNoDatabase = true;
      if (!openDummyIfNotFound)
@@ -152,7 +152,6 @@ KSycoca * KSycoca::self()
 KSycoca::~KSycoca()
 {
    closeDatabase();
-   if (d->database != 0) delete d->database;
    delete d;
    _self = 0L;
 }
@@ -173,12 +172,14 @@ void KSycoca::closeDatabase()
       m_sycoca_mmap = 0;
    }
 #endif
-   if (device)
-      device->close();
 
    delete m_str;
+   m_str = 0;
    delete device;
-   m_str = 0L;
+   if (d->database != device)
+      delete d->database;
+   device = 0;
+   d->database = 0;
    // It is very important to delete all factories here
    // since they cache information about the database file
    delete m_lstFactories;
