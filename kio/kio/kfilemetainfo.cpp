@@ -20,6 +20,8 @@
  *  $Id$
  */
 
+#include <assert.h>
+
 #include <qshared.h>
 #include <qdict.h>
 
@@ -354,11 +356,13 @@ KFileMetaInfo::~KFileMetaInfo()
 
 QStringList KFileMetaInfo::supportedGroups() const
 {
+    assert(isValid());
     return d->mimeTypeInfo->supportedGroups();
 }
 
 QStringList KFileMetaInfo::supportedKeys() const
 {
+    assert(isValid());
     return d->mimeTypeInfo->supportedKeys();
 }
 
@@ -389,6 +393,7 @@ QStringList KFileMetaInfo::editableGroups() const
 
 QStringList KFileMetaInfo::preferredGroups() const
 {
+    assert(isValid());
     QStringList list = groups();
     QStringList newlist;
     QStringList preferred = d->mimeTypeInfo->preferredGroups();
@@ -436,6 +441,7 @@ KFileMetaInfoGroup KFileMetaInfo::group(const QString& key) const
 
 bool KFileMetaInfo::addGroup( const QString& name )
 {
+    assert(isValid());
     if ( d->mimeTypeInfo->supportedGroups().contains(name) &&
          ! d->groups.contains(name) )
     {
@@ -558,12 +564,14 @@ bool KFileMetaInfo::applyChanges()
 
 KFilePlugin * const KFileMetaInfo::plugin() const
 {
+    assert(isValid());
     KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
     return prov->plugin( d->mimeTypeInfo->mimeType() );
 }
 
 QString KFileMetaInfo::mimeType() const
 {
+    assert(isValid());
     return d->mimeTypeInfo->mimeType();
 }
 
@@ -610,6 +618,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
                                            const QString& preferredGroup,
                                            bool createGroup )
 {
+    assert(isValid());
     // try the preferred groups first
     if ( !preferredGroup.isEmpty() ) {
         QMapIterator<QString,KFileMetaInfoGroup> it =
@@ -674,6 +683,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
 KFileMetaInfoItem KFileMetaInfo::findEditableItem( KFileMetaInfoGroup& group,
                                                    const QString& key )
 {
+    assert(isValid());
     KFileMetaInfoItem item = group.addItem( key );
     if ( item.isValid() && item.isEditable() )
          return item;
@@ -686,6 +696,7 @@ KFileMetaInfoItem KFileMetaInfo::findEditableItem( KFileMetaInfoGroup& group,
 
 KFileMetaInfoGroup KFileMetaInfo::appendGroup(const QString& name)
 {
+    assert(isValid());
     if ( d->mimeTypeInfo->supportedGroups().contains(name) &&
          ! d->groups.contains(name) )
     {
@@ -1101,10 +1112,7 @@ bool KFileMetaInfoGroup::isEmpty() const
 
 QStringList KFileMetaInfoGroup::preferredKeys() const
 {
-    if (d == Data::makeNull())
-          kdWarning(7033) << "attempt to get the preferredKeys of "
-                              "an invalid metainfo group";
-
+    assert(isValid());
     QStringList list = keys();
     QStringList newlist;
     QStringList preferredKeys = d->mimeTypeInfo->preferredKeys();
@@ -1150,17 +1158,20 @@ QStringList KFileMetaInfoGroup::keys() const
 
 QString KFileMetaInfoGroup::translatedName() const
 {
+    assert(isValid());
     return d->mimeTypeInfo->groupInfo(d->name)->translatedName();
 }
 
 QStringList KFileMetaInfoGroup::supportedKeys() const
 {
-      return d->mimeTypeInfo->groupInfo(d->name)->supportedKeys();
+    assert(isValid());
+    return d->mimeTypeInfo->groupInfo(d->name)->supportedKeys();
 }
 
 bool KFileMetaInfoGroup::supportsVariableKeys() const
 {
-      return d->mimeTypeInfo->groupInfo(d->name)->supportsVariableKeys();
+    assert(isValid());
+    return d->mimeTypeInfo->groupInfo(d->name)->supportsVariableKeys();
 }
 
 bool KFileMetaInfoGroup::contains( const QString& key ) const
@@ -1195,6 +1206,7 @@ QString KFileMetaInfoGroup::name() const
 
 uint KFileMetaInfoGroup::attributes() const
 {
+    assert(isValid());
     return d->mimeTypeInfo->groupInfo(d->name)->attributes();
 }
 
@@ -1230,6 +1242,7 @@ void KFileMetaInfoGroup::deref()
 
 KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
 {
+    assert(isValid());
     QMapIterator<QString,KFileMetaInfoItem> it = d->items.find( key );
     if ( it != d->items.end() )
         return it.data();
@@ -1297,6 +1310,7 @@ QStringList KFileMetaInfoGroup::removedItems()
 KFileMetaInfoItem KFileMetaInfoGroup::appendItem(const QString& key,
                                                  const QVariant& value)
 {
+    assert(isValid());
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
     if ( !ginfo ) {
         kdWarning() << "Trying to append a Metadata item for a non-existant group:" << d->name << endl;
