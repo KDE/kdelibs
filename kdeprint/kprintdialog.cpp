@@ -411,7 +411,7 @@ void KPrintDialog::done(int result)
 					it.current()->getOptions(opts);
 				else
 				{
-					KMessageBox::error(this, msg.prepend("<qt>").append("/qt>"));
+					KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"));
 					return;
 				}
 			}
