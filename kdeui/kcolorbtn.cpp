@@ -22,6 +22,7 @@
 
 #include <qpainter.h>
 #include <qdrawutil.h>
+#include <qapplication.h>
 #include <kglobalsettings.h>
 #include "kcolordlg.h"
 #include "kcolorbtn.h"
@@ -48,22 +49,24 @@ void KColorButton::setColor( const QColor &c )
 
 void KColorButton::drawButtonLabel( QPainter *painter )
 {
-  int w = 5;
-  int e = 0;
+  QRect r = QApplication::style().buttonRect( 0, 0, width(), height() );
+  int l = r.x();
+  int t = r.y();
+  int w = r.width();
+  int h = r.height();
+  int b = 5;
   
   QColor lnCol = colorGroup().text();
   QColor fillCol = isEnabled() ? col : backgroundColor();
   
   if ( isDown() ) {
-    qDrawPlainRect( painter, w+1, w+1, width()-w*2-e, height()-w*2-e,
-		    lnCol, 1, 0 );
-    w++;
-    painter->fillRect( w+1, w+1, width()-w*2-e, height()-w*2-e, fillCol );
+    qDrawPlainRect( painter, l+b+1, t+b+1, w-b*2, h-b*2, lnCol, 1, 0 );
+    b++;
+    painter->fillRect( l+b+1, t+b+1, w-b*2, h-b*2, fillCol );
   } else {
-    qDrawPlainRect( painter, w, w, width()-w*2-e, height()-w*2-e,
-		    lnCol, 1, 0 );
-    w++;
-    painter->fillRect( w, w, width() - w*2-e, height() - w*2-e, fillCol );
+    qDrawPlainRect( painter, l+b, t+b, w-b*2, h-b*2, lnCol, 1, 0 );
+    b++;
+    painter->fillRect( l+b, t+b, w-b*2, h-b*2, fillCol );
   }
 }
 
