@@ -143,12 +143,14 @@ int track::currentMs(double ms)
 if (endoftrack==1) return 0;
 current_time=ms;
 //printf("CURR %g",current_time);
+#ifdef PEDANTIC_TRACK
 if (current_time>time_at_next_event) 
 	{
 	printf("ERROR : MS PASSED > WAIT MS\n");
 	exit(-1);
 	return 1;
 	};
+#endif
 return 0;
 };
 

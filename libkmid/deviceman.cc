@@ -104,11 +104,12 @@ if (initialized==0)
 return 0;
 };
 
-
+/*
 midiOut *DeviceManager::chntodev(int chn)
 {
 return device[chn2dev[chn]];
 };
+*/
 
 int DeviceManager::initManager(void)
 {

@@ -311,7 +311,7 @@ while (playing)
     ctl->millisecsPlayed=minTime;
     trk=0;
     minTrk=0;
-    maxTime=minTime + 2 /*minutes*/ * 60000L;
+    maxTime=minTime + 120000L /* milliseconds */;
     minTime=maxTime;
     while (trk<info->ntracks)
         {

@@ -46,6 +46,7 @@ int n_total; // n_midi+n_synths
     int			rate;
     double		convertrate; // A "constant" used to convert from
 				// milliseconds to the computer rate
+ 
 #endif
 int timerstarted; // Newest kernels don't want me to stop a timer that
 		// hasn't been started :-)
@@ -73,7 +74,7 @@ public:
 			// does nothing in other case. Returns 0 if initialized
 			// -1 if error 
 
-  midiOut *chntodev(int chn);
+  midiOut *chntodev(int chn) { return device[chn2dev[chn]]; };
   int OK(void);
 
 // The following funtion are here to emulate a midi, so that the DeviceManager

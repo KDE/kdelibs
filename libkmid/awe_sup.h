@@ -14,6 +14,9 @@
 #elif defined(HAVE__USR_SRC_SYS_I386_ISA_SOUND_AWE_VOICE_H)
 #include "/usr/src/sys/i386/isa/sound/awe_voice.h"
 #define HAVE_AWE32
+#elif defined(HAVE__USR_SRC_SYS_GNU_I386_ISA_SOUND_AWE_VOICE_H)
+#include "/usr/src/sys/gnu/i386/isa/sound/awe_voice.h"
+#define HAVE_AWE32
 #endif
 
 
