@@ -94,13 +94,13 @@ void KLocale::splitLocale(const QString& aStr,
 
     f = str.find('.');
     if (f >= 0) {
-	chrset = str.right(str.length() - f - 1);
+	chrset = str.mid(f + 1);
 	str.truncate(f);
     }
 
     f = str.find('_');
     if (f >= 0) {
-	country = str.right(str.length() - f - 1);
+	country = str.mid(f + 1);
 	str.truncate(f);
     }
 
