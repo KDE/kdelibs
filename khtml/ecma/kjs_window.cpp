@@ -814,6 +814,9 @@ void WindowQObject::timeoutClose()
 
 KJSO FrameArray::get(const UString &p) const
 {
+  if (part.isNull())
+    return Undefined();
+
   QList<KParts::ReadOnlyPart> frames = part->frames();
   int len = frames.count();
   if (p == "length")
