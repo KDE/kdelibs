@@ -87,7 +87,7 @@ public:
 	/** Returns the current playback position in the track.*/
 	virtual unsigned long position(void) const = 0;
 
-	/** Returns whether the curren track has a length.  Some streams are
+	/** Returns whether the current track has a length.  Some streams are
 	 * endless, and do not have one. */
 	virtual bool hasLength(void) const = 0;
 
@@ -126,7 +126,7 @@ signals:
 	void stateChanged(int);
 
 protected slots:
-	/** Implementers use this too control what users see as the current
+	/** Implementers use this to control what users see as the current
 	 * state.*/
 	void setState(int);
 
