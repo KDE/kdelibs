@@ -30,6 +30,8 @@
 #include "rendering/render_box.h"
 #include "rendering/render_replaced.h"
 #include "rendering/render_root.h"
+#include "misc/htmlhashes.h"
+#include "xml/dom_nodeimpl.h"
 
 #include <khtmlview.h>
 #include <kdebug.h>
@@ -588,14 +590,17 @@ short RenderBox::calcReplacedWidth(bool* ieHack) const
     }
     case Percent:
     {
+        RenderObject* p = parent();
+        while (p && !p->isTableCell()) p = p->parent();
+        bool doIEHack = !p;
         int cw = containingBlockWidth();
-        if ( cw )
+        if ( cw && doIEHack )
             width = w.minWidth( cw );
         else
             width = intrinsicWidth();
 
         if ( ieHack )
-            *ieHack = cw;
+            *ieHack = cw && doIEHack;
         break;
     }
     case Fixed:
@@ -626,11 +631,15 @@ int RenderBox::calcReplacedHeight() const
     break;
     case Percent:
     {
+        RenderObject* p = parent();
+        while (p && !p->isTableCell()) p = p->parent();
+        bool doIEHack = !p;
         RenderObject* cb = containingBlock();
-        if ( !cb->isTableCell() )
+        if ( !cb->isTableCell() && doIEHack)
             height = h.minWidth( cb->root()->view()->visibleHeight() );
         else {
-            cb = cb->containingBlock();
+            if (!doIEHack)
+                cb = cb->containingBlock();
 
             if ( cb->style()->height().isFixed() )
                 height = h.minWidth( cb->style()->height().value );
@@ -674,6 +683,7 @@ bool RenderBox::containsPoint(int _x, int _y, int _tx, int _ty)
     return ((_y >= _ty) && (_y < _ty + m_height) &&
 	    (_x >= _tx) && (_x < _tx + m_width));
 }
+
 
 void RenderBox::calcAbsoluteHorizontal()
 {
