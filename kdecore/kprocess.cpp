@@ -544,6 +544,9 @@ bool KProcess::start(RunMode runmode, Communication comm)
         // Discard any data for stdin that might still be there
         input_data = 0;
 
+        if (!commSetupDoneP())  // finish communication socket setup for the parent
+          kdDebug(175) << "Could not finish comm setup in parent!" << endl;
+
         // Check whether client could be started.
         if (fd[0] >= 0) for(;;)
         {
@@ -557,6 +560,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
                free(arglist);
                ::waitpid( pid_, 0, 0 );
                pid_ = 0;
+               commClose();
                return false;
            }
            if (n == -1)
@@ -568,9 +572,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
         }
         if (fd[0] >= 0)
            close(fd[0]);
-
-        if (!commSetupDoneP())  // finish communication socket setup for the parent
-          kdDebug(175) << "Could not finish comm setup in parent!" << endl;
 
         if (run_mode == Block) {
           commClose();
