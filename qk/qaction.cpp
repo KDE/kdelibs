@@ -289,7 +289,7 @@ void QAction::setAccel( int i, int a )
     QWidget* w = container( i );
     if ( w->inherits( "QPopupMenu" ) )
     {
-	qDebug("Setting ACCEL");
+//	qDebug("Setting ACCEL");
 	((QPopupMenu*)w)->setAccel( a, menuId( i ) );
     }
     else if ( w->inherits( "QMenuBar" ) )
