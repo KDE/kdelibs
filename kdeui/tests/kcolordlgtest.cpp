@@ -20,11 +20,13 @@
 #include <kapplication.h>
 #include "kcolordlg.h"
 #include <kconfig.h>
+#include <klocale.h>
 
 int main( int argc, char *argv[] )
 {
 	QColor color;
 
+	KLocale::setMainCatalogue("kdelibs");
 	QApplication::setColorMode( QApplication::CustomColors );
 	KApplication a( argc, argv, "KColorDialogTest" );
         KConfig aConfig;
