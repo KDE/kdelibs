@@ -30,6 +30,10 @@
 #include "dom/dom_element.h"
 #include "xml/dom_stringimpl.h"
 
+namespace khtml {
+    class CSSStyleSelector;
+}
+
 namespace DOM {
 
 class ElementImpl;
@@ -140,7 +144,7 @@ class ElementImpl : public NodeBaseImpl
     friend class NamedAttrMapImpl;
     friend class AttrImpl;
     friend class NodeImpl;
-
+    friend class khtml::CSSStyleSelector;
 public:
     ElementImpl(DocumentPtr *doc);
     ~ElementImpl();

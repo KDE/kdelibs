@@ -247,8 +247,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
-    if(e->styleRules())
-	addInlineDeclarations( e->styleRules(), propsToApply );
+    if(e->m_styleDecls)
+	addInlineDeclarations( e->m_styleDecls, propsToApply );
 
     propsToApply->sort();
     pseudoProps->sort();
