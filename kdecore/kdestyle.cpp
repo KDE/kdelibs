@@ -1281,9 +1281,9 @@ int KDEStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
 }
 
 void KDEStyle::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
-                                    const QColorGroup &g, QBrush *)
+                                    const QColorGroup &g, QBrush *fill)
 {
-    p->fillRect(x, y, w, h, g.brush(QColorGroup::Text));
+    p->fillRect(x, y, w, h, fill ? *fill : g.brush(QColorGroup::Text));
 }
 
 void KDEStyle::drawFocusRect(QPainter *p, const QRect &r,
