@@ -1203,8 +1203,6 @@ KColorDialog::slotWriteSettings()
   // Don't save anything if there is nothing new or nothing changed.
   if(palette != d->originalPalette)
     config->writeEntry("CurrentPalette", d->table->palette() );
-  else
-    config->revertToDefault("CurrentPalette");
   config->setGroup( oldgroup );
 }
 
