@@ -113,21 +113,22 @@
  * Universal Directory Service
  *
  ************/
-
-#define UDS_STRING 1
-#define UDS_LONG 2
-#define UDS_TIME ( 4 | UDS_LONG )
-#define UDS_SIZE ( 8 | UDS_LONG )
-#define UDS_USER ( 16 | UDS_STRING )
-#define UDS_GROUP ( 32 | UDS_STRING )
-#define UDS_NAME ( 64 | UDS_STRING )
-#define UDS_ACCESS ( 128 | UDS_LONG )
-#define UDS_MODIFICATION_TIME ( 256 | UDS_TIME )
-#define UDS_ACCESS_TIME ( 512 | UDS_TIME )
-#define UDS_CREATION_TIME ( 1024 | UDS_TIME )
-#define UDS_FILE_TYPE ( 2048 | UDS_LONG )
-#define UDS_LINK_DEST ( 4096 | UDS_STRING )
-#define UDS_URL ( 8192 | UDS_STRING )
+typedef unsigned int uds_t;
+#define UDS_STRING	((uds_t)1)
+#define UDS_LONG	((uds_t)2)
+#define UDS_TIME	((uds_t)( 4 | UDS_LONG ))
+#define UDS_SIZE	((uds_t)( 8 | UDS_LONG ))
+#define UDS_USER	((uds_t)( 16 | UDS_STRING ))
+#define UDS_GROUP	((uds_t)( 32 | UDS_STRING ))
+#define UDS_NAME	((uds_t)( 64 | UDS_STRING ))
+#define UDS_ACCESS	((uds_t)( 128 | UDS_LONG ))
+#define UDS_MODIFICATION_TIME	((uds_t)( 256 | UDS_TIME ))
+#define UDS_ACCESS_TIME		((uds_t)( 512 | UDS_TIME ))
+#define UDS_CREATION_TIME	((uds_t)( 1024 | UDS_TIME ))
+#define UDS_FILE_TYPE	((uds_t)( 2048 | UDS_LONG ))
+#define UDS_LINK_DEST	((uds_t)( 4096 | UDS_STRING ))
+#define UDS_URL		((uds_t)( 8192 | UDS_STRING ))
+#define UDS_MIME_TYPE	((uds_t)( 16384 | UDS_STRING ))
 
 struct UDSAtom
 {
@@ -139,7 +140,7 @@ struct UDSAtom
   /**
    * Holds one of the UDS_XXX constants
    */
-  unsigned long m_uds;
+  unsigned int m_uds;
 };
 
 typedef QValueList<UDSAtom> UDSEntry;
