@@ -236,6 +236,8 @@ KDateTable::mousePressEvent(QMouseEvent *e)
       kapp->beep();
       return;
     }
+
+  int dayoff = KGlobal::locale()->weekStartsMonday() ? 1 : 0;
   // -----
   int row, col, pos, temp;
   QPoint mouseCoord;
@@ -261,13 +263,13 @@ KDateTable::mousePressEvent(QMouseEvent *e)
   if(hasSelection)
     { // clear the old selected cell
       hasSelection=false;
-      temp=firstday+date.day()-1;
+      temp=firstday+date.day()-dayoff;
       updateCell(temp/7, temp%7, false);
     }
   hasSelection=true;
   updateCell(row, col, false);
-  // assert(QDate(date.year(), date.month(), pos-firstday+1).isValid());
-  setDate(QDate(date.year(), date.month(), pos-firstday+1));
+  // assert(QDate(date.year(), date.month(), pos-firstday+dayoff).isValid());
+  setDate(QDate(date.year(), date.month(), pos-firstday+dayoff));
   emit(tableClicked());
 }
 
