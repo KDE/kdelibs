@@ -24,6 +24,8 @@
 #include <qvaluelist.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
 /**
@@ -33,10 +35,10 @@ namespace KABC {
   a type. The following types are available, it's possible to use multiple types
  Types for a number by combining them through a logical or.
 */
-class PhoneNumber
+class KABC_EXPORT PhoneNumber
 {
-    friend QDataStream &operator<<( QDataStream &, const PhoneNumber & );
-    friend QDataStream &operator>>( QDataStream &, PhoneNumber & );
+    friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const PhoneNumber & );
+    friend KABC_EXPORT QDataStream &operator>>( QDataStream &, PhoneNumber & );
 
   public:
     typedef QValueList<PhoneNumber> List;
@@ -151,8 +153,8 @@ class PhoneNumber
     QString mNumber;
 };
 
-QDataStream &operator<<( QDataStream &, const PhoneNumber & );
-QDataStream &operator>>( QDataStream &, PhoneNumber & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const PhoneNumber & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, PhoneNumber & );
 
 }
 

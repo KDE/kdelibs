@@ -36,7 +36,7 @@ class DistributionListManager;
   associated with an address book entry. If the address book entry changes, the
   entry in the distribution list is automatically updated.
 */
-class DistributionList
+class KABC_EXPORT DistributionList
 {
   public:
     /**
@@ -119,7 +119,7 @@ class DistributionList
   This class represents a collection of distribution lists, which are associated
   with a given address book.
 */
-class DistributionListManager
+class KABC_EXPORT DistributionListManager
 {
   public:
     /**
@@ -186,7 +186,7 @@ class DistributionListManager
   \endcode
 */
 
-class DistributionListWatcher : public QObject
+class KABC_EXPORT DistributionListWatcher : public QObject
 {
   Q_OBJECT
 

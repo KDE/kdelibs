@@ -42,35 +42,35 @@ class Field;
 namespace SortingTraits
 {
 
-class Uid
+class KABC_EXPORT Uid
 {
   public:
     static bool eq( const Addressee &, const Addressee & );
     static bool lt( const Addressee &, const Addressee & );
 };
 
-class Name
+class KABC_EXPORT Name
 {
   public:
     static bool eq( const Addressee &, const Addressee & );
     static bool lt( const Addressee &, const Addressee & );
 };
 
-class FormattedName
+class KABC_EXPORT FormattedName
 {
   public:
     static bool eq( const Addressee &, const Addressee & );
     static bool lt( const Addressee &, const Addressee & );
 };
 
-class FamilyName // fallback to given name
+class KABC_EXPORT FamilyName // fallback to given name
 {
   public:
     static bool eq( const Addressee &, const Addressee & );
     static bool lt( const Addressee &, const Addressee & );
 };
 
-class GivenName  // fallback to family name
+class KABC_EXPORT GivenName  // fallback to family name
 {
   public:
     static bool eq( const Addressee &, const Addressee & );
@@ -107,7 +107,7 @@ typedef enum { Uid, Name, FormattedName, FamilyName, GivenName } SortingCriterio
  *
  * @author Jost Schenck jost@schenck.de
  */
-class AddresseeList : public QValueList<Addressee>
+class KABC_EXPORT AddresseeList : public QValueList<Addressee>
 {
   public:
     AddresseeList();

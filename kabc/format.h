@@ -22,6 +22,8 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
 class AddressBook;
@@ -29,7 +31,7 @@ class AddressBook;
 /**
   @deprecated use FormatPlugin instead
 */
-class KDE_DEPRECATED Format
+class KABC_EXPORT_DEPRECATED Format
 {
   public:
     /**

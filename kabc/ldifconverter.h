@@ -44,7 +44,7 @@ namespace KABC {
    * @param dt      The date & time value of the last modification (e.g. file modification time).
    * @since 3.2
    */
-  bool LDIFToAddressee( const QString &str, AddresseeList &addrList, QDateTime dt = QDateTime::currentDateTime() );
+  KABC_EXPORT bool LDIFToAddressee( const QString &str, AddresseeList &addrList, QDateTime dt = QDateTime::currentDateTime() );
 
   /**
    * Converts a list of addressees to a LDIF string.
@@ -53,7 +53,7 @@ namespace KABC {
    * @param str     The LDIF string.
    * @since 3.2
    */
-  bool addresseeToLDIF( const AddresseeList &addrList, QString &str );
+  KABC_EXPORT bool addresseeToLDIF( const AddresseeList &addrList, QString &str );
 
   /**
    * Converts an addressee to a LDIF string.
@@ -62,7 +62,7 @@ namespace KABC {
    * @param str     The LDIF string.
    * @since 3.2
    */
-  bool addresseeToLDIF( const Addressee &addr, QString &str );
+  KABC_EXPORT bool addresseeToLDIF( const Addressee &addr, QString &str );
 
   /**
    * @deprecated
@@ -76,21 +76,21 @@ namespace KABC {
    * @param allowEncode Set to false if you wish no encoding of the value.
    * @since 3.2
    */
-  QString makeLDIFfieldString( QString field, QString value, bool allowEncode = true ) KDE_DEPRECATED;
+  KABC_EXPORT QString makeLDIFfieldString( QString field, QString value, bool allowEncode = true ) KDE_DEPRECATED;
 
 
 
   /* internal functions - do not use !! */
   
   /** No need for this function anymore - use LDIF::splitLine() + evaluatePair() */
-  bool parseSingleLine( Addressee &a,
+  KABC_EXPORT bool parseSingleLine( Addressee &a,
 		Address &homeAddr, Address &workAddr, QString &line );
 
   /** No need for this function anymore - use LDIF::splitLine() */
-  bool splitLine( QString &line, QString &fieldname, QString &value);
+  KABC_EXPORT bool splitLine( QString &line, QString &fieldname, QString &value);
 
 
-  bool evaluatePair( Addressee &a, Address &homeAddr, Address &workAddr,
+  KABC_EXPORT bool evaluatePair( Addressee &a, Address &homeAddr, Address &workAddr,
 	QString &fieldname, QString &value );
 
   }

@@ -39,7 +39,7 @@ namespace KABC {
  */
 
 
-  class LDAPUrl : public KURL
+  class KABC_EXPORT LDAPUrl : public KURL
   {
   public:
 

@@ -36,7 +36,7 @@ class AddressBook;
 /**
   @deprecated use VCardFormatPlugin instead.
  */
-class KDE_DEPRECATED VCardFormatImpl
+class KABC_EXPORT_DEPRECATED VCardFormatImpl
 {
   public:
     bool load( Addressee &, QFile *file );

@@ -23,6 +23,8 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
 /**
@@ -30,10 +32,10 @@ namespace KABC {
  * 
  * This class stores information about a time zone.
  */
-class TimeZone
+class KABC_EXPORT TimeZone
 {
-  friend QDataStream &operator<<( QDataStream &, const TimeZone & );
-  friend QDataStream &operator>>( QDataStream &, TimeZone & );
+  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const TimeZone & );
+  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, TimeZone & );
 
 public:
 
@@ -80,8 +82,8 @@ private:
   bool mValid;
 };
 
-QDataStream &operator<<( QDataStream &, const TimeZone & );
-QDataStream &operator>>( QDataStream &, TimeZone & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const TimeZone & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, TimeZone & );
 
 }
 #endif

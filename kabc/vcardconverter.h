@@ -53,7 +53,7 @@ namespace KABC {
 
   \endcode
 */
-class VCardConverter
+class KABC_EXPORT VCardConverter
 {
   public:
 
@@ -143,7 +143,7 @@ class VCardConverter
   * @param dateTime date and time to be converted 
   * @since 3.2
   */
-QString dateToVCardString( const QDateTime &dateTime );
+KABC_EXPORT QString dateToVCardString( const QDateTime &dateTime );
 
 /**
   * Converts a QDate to a short date string as it is used in VCard and LDIF files.
@@ -151,7 +151,7 @@ QString dateToVCardString( const QDateTime &dateTime );
   * @param date date to be converted 
   * @since 3.2
   */
-QString dateToVCardString( const QDate &date );
+KABC_EXPORT QString dateToVCardString( const QDate &date );
 
 /**
   * Converts a date string as it is used in VCard and LDIF files to a QDateTime value.
@@ -160,7 +160,7 @@ QString dateToVCardString( const QDate &date );
   * @param dateString string representing the date and time.
   * @since 3.2
   */
-QDateTime VCardStringToDate( const QString &dateString );
+KABC_EXPORT QDateTime VCardStringToDate( const QString &dateString );
 
 }
 #endif

@@ -23,6 +23,8 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
 /**
@@ -30,10 +32,10 @@ namespace KABC {
   
   This class represents a geographic position.
 */
-class Geo
+class KABC_EXPORT Geo
 {
-    friend QDataStream &operator<<( QDataStream &, const Geo & );
-    friend QDataStream &operator>>( QDataStream &, Geo & );
+    friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Geo & );
+    friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Geo & );
 
   public:
     /**
@@ -91,8 +93,8 @@ class Geo
     bool mValidLong;
 };
 
-QDataStream &operator<<( QDataStream &, const Geo & );
-QDataStream &operator>>( QDataStream &, Geo & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const Geo & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, Geo & );
 
 }
 

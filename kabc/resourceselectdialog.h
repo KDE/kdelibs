@@ -36,7 +36,7 @@ class Resource;
 /**
   This class is @deprecated, use KRES::SelectDialog instead. 
  */
-class KDE_DEPRECATED ResourceSelectDialog : KDialog
+class KABC_EXPORT_DEPRECATED ResourceSelectDialog : KDialog
 {
   Q_OBJECT
 

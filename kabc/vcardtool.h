@@ -34,7 +34,7 @@ class Picture;
 class Secrecy;
 class Sound;
 
-class VCardTool
+class KABC_EXPORT VCardTool
 {
   public:
     VCardTool();

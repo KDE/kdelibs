@@ -25,6 +25,8 @@ class QDataStream;
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
 class Addressee;
@@ -35,7 +37,7 @@ class Addressee;
  * At the moment the vcard format does not support saving and loading
  * this entity.
  */
-class Agent
+class KABC_EXPORT Agent
 {
   friend QDataStream &operator<<( QDataStream &, const Agent & );
   friend QDataStream &operator>>( QDataStream &, Agent & );
@@ -119,8 +121,8 @@ private:
   int mIntern;
 };
 
-QDataStream &operator<<( QDataStream &, const Agent & );
-QDataStream &operator>>( QDataStream &, Agent & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const Agent & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, Agent & );
 
 }
 #endif

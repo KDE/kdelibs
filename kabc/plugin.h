@@ -23,9 +23,11 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
-class Plugin
+class KABC_EXPORT Plugin
 {
 public:
   Plugin();

@@ -46,7 +46,7 @@ typedef QMap<QString,LdapAttrValue > LdapAttrMap;
   * We mean it!
   *
   */
-class LdapObject
+class KABC_EXPORT LdapObject
 {
   public:
     LdapObject()
@@ -82,7 +82,7 @@ class LdapObject
   * We mean it!
   *
   */
-class LdapClient : public QObject
+class KABC_EXPORT LdapClient : public QObject
 {
   Q_OBJECT
 
@@ -204,7 +204,7 @@ typedef QValueList<LdapResult> LdapResultList;
   * We mean it!
   *
   */
-class LdapSearch : public QObject
+class KABC_EXPORT LdapSearch : public QObject
 {
   Q_OBJECT
 

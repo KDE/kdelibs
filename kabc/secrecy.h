@@ -23,12 +23,14 @@
 
 #include <qvaluelist.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
-class Secrecy
+class KABC_EXPORT Secrecy
 {
-    friend QDataStream &operator<<( QDataStream &, const Secrecy & );
-    friend QDataStream &operator>>( QDataStream &, Secrecy & );
+    friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Secrecy & );
+    friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Secrecy & );
 
 public:
   typedef QValueList<int> TypeList;  
@@ -90,6 +92,9 @@ public:
 private:
   int mType;
 };
+
+KABC_EXPORT QDataStream &KABC::operator<<( QDataStream &s, const Secrecy &secrecy );
+KABC_EXPORT QDataStream &KABC::operator>>( QDataStream &s, Secrecy &secrecy );
 
 }
 #endif

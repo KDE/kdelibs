@@ -23,15 +23,17 @@
 
 #include <qvaluelist.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
 /**
  * @short A class to store an encryption key.
  */
-class Key
+class KABC_EXPORT Key
 {
-  friend QDataStream &operator<<( QDataStream &, const Key & );
-  friend QDataStream &operator>>( QDataStream &, Key & );
+  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Key & );
+  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Key & );
 
 public:
   typedef QValueList<Key> List;
@@ -141,8 +143,8 @@ private:
   int mType;
 };
 
-QDataStream &operator<<( QDataStream &, const Key & );
-QDataStream &operator>>( QDataStream &, Key & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const Key & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, Key & );
 
 }
 #endif

@@ -52,7 +52,7 @@ class DistributionListManager;
   dlg->exec();
   \endcode
 */
-class DistributionListDialog : public KDialogBase
+class KABC_EXPORT DistributionListDialog : public KDialogBase
 {
     Q_OBJECT
 
@@ -80,7 +80,7 @@ class DistributionListDialog : public KDialogBase
 /**
   @short Helper class
 */
-class EmailSelector : public KDialogBase
+class KABC_EXPORT EmailSelector : public KDialogBase
 {
   public:
     EmailSelector( const QStringList &emails, const QString &current,
@@ -98,7 +98,7 @@ class EmailSelector : public KDialogBase
 /**
   @short Helper class
 */
-class DistributionListEditorWidget : public QWidget
+class KABC_EXPORT DistributionListEditorWidget : public QWidget
 {
     Q_OBJECT
 

@@ -24,12 +24,14 @@
 #include <qcstring.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
-class Sound
+class KABC_EXPORT Sound
 {
-  friend QDataStream &operator<<( QDataStream &, const Sound & );
-  friend QDataStream &operator>>( QDataStream &, Sound & );
+  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Sound & );
+  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Sound & );
 
 public:
 
@@ -109,8 +111,8 @@ private:
   int mIntern;
 };
 
-QDataStream &operator<<( QDataStream &, const Sound & );
-QDataStream &operator>>( QDataStream &, Sound & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const Sound & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, Sound & );
 
 }
 #endif

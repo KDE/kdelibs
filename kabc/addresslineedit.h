@@ -47,7 +47,7 @@ class LdapSearch;
  *
  * @see AddressLineEdit::enableCompletion()
  */
-class AddressLineEdit : public KLineEdit
+class KABC_EXPORT AddressLineEdit : public KLineEdit
 {
   Q_OBJECT
 public:

@@ -54,7 +54,7 @@ struct FormatInfo
  * }
  * \endcode
  */
-class FormatFactory
+class KABC_EXPORT FormatFactory
 {
   public:
     

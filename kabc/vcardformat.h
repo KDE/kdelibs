@@ -32,7 +32,7 @@ class VCardFormatImpl;
 /**
   @deprecated use VCardFormatPlugin instead.
  */
-class KDE_DEPRECATED VCardFormat : public Format {
+class KABC_EXPORT_DEPRECATED VCardFormat : public Format {
   public:
     VCardFormat();
     virtual ~VCardFormat();

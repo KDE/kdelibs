@@ -23,12 +23,14 @@
 
 #include <qimage.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
-class Picture
+class KABC_EXPORT Picture
 {
-  friend QDataStream &operator<<( QDataStream &, const Picture & );
-  friend QDataStream &operator>>( QDataStream &, Picture & );
+  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Picture & );
+  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Picture & );
 
 public:
 
@@ -119,8 +121,8 @@ private:
   int mIntern;
 };
 
-QDataStream &operator<<( QDataStream &, const Picture & );
-QDataStream &operator>>( QDataStream &, Picture & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const Picture & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, Picture & );
 
 }
 #endif

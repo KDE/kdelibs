@@ -34,7 +34,7 @@ class Addressee;
   This class implements the file format interface of address book entries for
   the vCard format.
 */
-class VCardFormatPlugin : public FormatPlugin
+class KABC_EXPORT VCardFormatPlugin : public FormatPlugin
 {
   public:
     VCardFormatPlugin();

@@ -40,12 +40,12 @@ class Ticket;
 
   This class provides access to a collection of address book entries.
  */
-class AddressBook : public QObject
+class KABC_EXPORT AddressBook : public QObject
 {
   Q_OBJECT
 
-  friend QDataStream &operator<<( QDataStream &, const AddressBook & );
-  friend QDataStream &operator>>( QDataStream &, AddressBook & );
+  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const AddressBook & );
+  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, AddressBook & );
   friend class StdAddressBook;
 
   public:
@@ -54,7 +54,7 @@ class AddressBook : public QObject
 
       This class provides an iterator for address book entries.
      */
-    class Iterator
+    class KABC_EXPORT Iterator
     {
       public:
         Iterator();
@@ -81,7 +81,7 @@ class AddressBook : public QObject
 
       This class provides a const iterator for address book entries.
      */
-    class ConstIterator
+    class KABC_EXPORT ConstIterator
     {
       public:
         ConstIterator();

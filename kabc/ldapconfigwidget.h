@@ -47,7 +47,7 @@ namespace KABC {
     It's KConfigXT compatible, using widget names starting with kcfg_
   */
 
-  class LdapConfigWidget : public QWidget
+  class KABC_EXPORT LdapConfigWidget : public QWidget
   {
     Q_OBJECT
     Q_PROPERTY( LCW_Flags flags READ flags WRITE setFlags )

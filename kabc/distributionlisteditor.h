@@ -33,7 +33,7 @@ namespace KABC {
 class AddressBook;
 class DistributionListManager;
 
-class EmailSelectDialog : public KDialogBase
+class KABC_EXPORT EmailSelectDialog : public KDialogBase
 {
   public:
     EmailSelectDialog( const QStringList &emails, const QString &current,

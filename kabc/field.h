@@ -30,7 +30,7 @@ class KConfig;
 
 namespace KABC {
 
-class Field
+class KABC_EXPORT Field
 {
   class FieldImpl;
   friend class FieldImpl;

@@ -24,6 +24,8 @@
 
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
 /**
@@ -33,7 +35,7 @@ namespace KABC {
   Use @p ConsoleErrorHandler or @p GuiErrorHandler in your
   application or provide your own ErrorHandler.
 */
-class ErrorHandler
+class KABC_EXPORT ErrorHandler
 {
   public:
     /**
@@ -45,7 +47,7 @@ class ErrorHandler
 /**
   This class prints the error messages to stderr via kdError().
 */
-class ConsoleErrorHandler : public ErrorHandler
+class KABC_EXPORT ConsoleErrorHandler : public ErrorHandler
 {
   public:
     virtual void error( const QString &msg );
@@ -57,7 +59,7 @@ class ConsoleErrorHandler : public ErrorHandler
 
   \deprecated Use GuiErrorHandler instead.
 */
-class GUIErrorHandler : public ErrorHandler
+class KABC_EXPORT GUIErrorHandler : public ErrorHandler
 {
   public:
     virtual void error( const QString &msg );
@@ -67,7 +69,7 @@ class GUIErrorHandler : public ErrorHandler
   This class shows messages boxes for every
   error message.
 */
-class GuiErrorHandler : public ErrorHandler
+class KABC_EXPORT GuiErrorHandler : public ErrorHandler
 {
   public:
     /**

@@ -33,7 +33,7 @@
 
 namespace KABC {
 
-class AddresseeHelper : public QObject, public DCOPObject
+class KABC_EXPORT AddresseeHelper : public QObject, public DCOPObject
 {
   K_DCOP
         

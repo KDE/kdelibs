@@ -24,13 +24,15 @@
 #include <qstring.h>
 #include <qobject.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
 /**
   This class provides locking functionality for a file, directory or an
   arbitrary string-represented resource.
 */
-class Lock : public QObject
+class KABC_EXPORT Lock : public QObject
 {
     Q_OBJECT
   public:

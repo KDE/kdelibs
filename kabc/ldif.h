@@ -25,6 +25,8 @@
 #include <qcstring.h>
 #include <qmemarray.h>
 
+#include <kdelibs_export.h>
+
 namespace KABC {
 
   /**
@@ -35,7 +37,7 @@ namespace KABC {
    * of changes which are to be applied to a directory. 
    */
 
-  class LDIF 
+  class KABC_EXPORT LDIF 
   {
   public:
 

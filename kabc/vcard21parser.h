@@ -139,7 +139,7 @@ class AddressBook;
 /**
   @deprecated use VCardConverter instead.
  */
-class KDE_DEPRECATED VCard21Parser
+class KABC_EXPORT_DEPRECATED VCard21Parser
 {
 public:
 
@@ -186,7 +186,7 @@ public:
 /**
  * @short Helper class
  */
-class VCardLineX
+class KABC_EXPORT VCardLineX
 {
 public:
   QString name;
@@ -199,7 +199,7 @@ public:
 /**
  * @short Helper class
  */
-class VCard21ParserImpl
+class KABC_EXPORT VCard21ParserImpl
 {
   friend class VCardLineX;
 
