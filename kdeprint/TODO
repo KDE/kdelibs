@@ -9,6 +9,31 @@ BUGS
 - Allow to view a set of specified printers in the job viewer
   (instead of "one or all").
 
+- LPRng: should create a PPD file for Foomatic and add the field
+  ppdfile=/etc/foomatic/<queue_name>.ppd to the printcap entry (for
+  use with gpr)
+
+- optimize PPD files parsing: don't parse the whole file, just
+  stop when you got everything.
+
+- kdeprintfax improvement related to Hylafax:
+	. -f %name doesn't make sense, it should be -f %email instead
+	. add -n to the default command
+	. think about possibility to schedule the fax sending using
+	  the -a <time> flag
+	. add the possibility to add fax numbers to the ab instead of
+	  simply saying there's no fax number
+
+- CUPS: RIPCache: Unlimited should be changed into 8m. Also add a combo
+  for the suffix such that any size can be set: [1,100] {k,m,g,t}
+
+- Help buttons for "kprinter" and the wizard
+
+- Printer properties: "Advanced" should be changed to something like
+  "Driver Settings"
+
+- Printer filtering mechanisms should be ORed and not ANDed
+
 
 WISHES
 ------

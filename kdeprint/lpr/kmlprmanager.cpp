@@ -53,7 +53,8 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 		KMManager::PrinterConfigure |
 		KMManager::PrinterTesting |
 		KMManager::PrinterCreation |
-		KMManager::PrinterRemoval
+		KMManager::PrinterRemoval |
+		KMManager::PrinterTesting
 	);
 
 	initHandlers();

@@ -436,3 +436,6 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     options dialog being shown
   * kicker extension: extension of the menu plugin to allow access to the
     server configuration tool as well as the "kprinter" utility.
+
+25/02/2002 Michael Goffioul <goffioul@imec.be>
+  * LPR: added printer testing support

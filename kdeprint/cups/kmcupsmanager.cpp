@@ -326,6 +326,8 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 
 bool KMCupsManager::testPrinter(KMPrinter *p)
 {
+	return KMManager::testPrinter(p);
+	/*
 	QString	testpage = testPage();
 	if (testpage.isEmpty())
 	{
@@ -346,6 +348,7 @@ bool KMCupsManager::testPrinter(KMPrinter *p)
 		return true;
 	reportIppError(&req);
 	return false;
+	*/
 }
 
 void KMCupsManager::listPrinters()

@@ -26,6 +26,7 @@
 #include "kmvirtualmanager.h"
 #include "kmspecialmanager.h"
 #include "printerfilter.h"
+#include "kprinter.h"
 
 #include <zlib.h>
 #include <qfile.h>
@@ -157,9 +158,21 @@ bool KMManager::setDefaultPrinter(const QString& name)
 	return (p ? setDefaultPrinter(p) : false);
 }
 
-bool KMManager::testPrinter(KMPrinter*)
+bool KMManager::testPrinter(KMPrinter *prt)
 {
-	return notImplemented();
+	// standard Test mechanism
+	QString	testpage = testPage();
+	if (testpage.isEmpty())
+	{
+		setErrorMsg(i18n("Unable to locate test page."));
+		return false;
+	}
+	KPrinter	pr;
+	pr.setPrinterName(prt->printerName());
+	pr.setSearchName(prt->name());
+	pr.setDocName("KDE Print Test");
+	return (pr.printFiles(testpage, false, false));
+	// return notImplemented();
 }
 
 KMPrinter* KMManager::findPrinter(const QString& name)

@@ -502,9 +502,9 @@ public:
 	 * options selected by the user in the print dialog, then send the filtered files to the printer
 	 * with the print options selected. This function is called automatically when calling
 	 * @ref QPainter::end() for a painter object constructed on KPrinter. In normal use, you don't need
-	 * this use this fucntion explicitely.
+	 * this use this function explicitely.
 	 */
-	bool printFiles(const QStringList& files, bool removeafter = false);
+	bool printFiles(const QStringList& files, bool removeafter = false, bool startviewer = true);
 
 	/**
 	 * Adds a customized page to the print dialog. The pages will appear in a tab widget in the

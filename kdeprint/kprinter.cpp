@@ -262,7 +262,7 @@ void KPrinter::translateQtOptions()
 		d->m_wrapper->setNumCopies(numCopies());
 }
 
-bool KPrinter::printFiles(const QStringList& l, bool flag)
+bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 {
 	QStringList	files(l);
 	bool		status(true);
@@ -310,7 +310,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 			}
 			else
 			{
-				if (!outputToFile())
+				if (!outputToFile() && startviewer)
 				{
 					QStringList args;
 					args << "-d";
