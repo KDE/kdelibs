@@ -985,8 +985,8 @@ void HTMLTable::addColsPrefWidthVar(int kol, int span, int tooAdd, int varCount)
 // min_width and pref_idth are calculated here
 void HTMLTable::calcColInfoI( void )
 {
-    unsigned int i, r, c;
-    int borderExtra = ( border == 0 ) ? 0 : 1;
+    unsigned int i;
+//    int borderExtra = ( border == 0 ) ? 0 : 1;
 
 #ifdef TABLE_DEBUG
 printf("START calcColInfoI() this = %p\n", this);
@@ -1145,7 +1145,6 @@ printf("START calcColInfoII() this = %p\n", this);
 	    HTMLTableCell *cell = cells[r][c];
 	    int            min_size;
 	    int            pref_size;
-	    int            cellPercent;
 	    ColType        col_type;
 
 	    if ( cell == 0 )
