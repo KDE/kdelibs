@@ -156,4 +156,24 @@ AC_CHECK_HEADERS(netinet/in.h,
   ]
 )
 
+AC_SUBST(KDE_IPV6_LOOKUP_MODE)
+AC_ARG_WITH(ipv6-lookup, 
+[  --with-ipv6-lookup=mode Set the mode for IPv6 lookups: yes, auto and no],
+[
+  AC_MSG_CHECKING([how we should treat IPv6 lookups])
+  if test "$withval" = yes -o "$withval" = always; then
+    AC_DEFINE(KDE_IPV6_LOOKUP_MODE, 0, [Lookup mode for IPv6 addresses: 0 for always, 1 for check and 2 for disabled])
+    AC_MSG_RESULT([always do the lookup])
+  elif test "$withval" = auto; then
+    AC_DEFINE(KDE_IPV6_LOOKUP_MODE, 1, [Lookup mode for IPv6 addresses: 0 for always, 1 for check and 2 for disabled])
+    AC_MSG_RESULT([check for IPv6 stack])
+  else
+    AC_DEFINE(KDE_IPV6_LOOKUP_MODE, 2, [Lookup mode for IPv6 addresses: 0 for always, 1 for check and 2 for disabled])
+    AC_MSG_RESULT([never do the lookup])
+  fi
+], [    
+  AC_DEFINE(KDE_IPV6_LOOKUP_MODE, 0, [Lookup mode for IPv6 addresses: 0 for always, 1 for check and 2 for disabled])
+])
+  
+
 dnl AC_OUTPUT(kdecore/kde-config.cpp)

@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <unistd.h>
 #include <arpa/inet.h>
 
 #include <qglobal.h>
@@ -126,6 +127,22 @@ make_unix(const char *name, const char *serv)
   return p;
 }
 
+#if KDE_IPV6_LOOKUP_MODE == 1
+// returns: 1 for IPv6 stack available, 2 for not available
+static int check_ipv6_stack()
+{
+# ifndef AF_INET6
+  return 1;			// how can we check?
+# else
+  int fd = ::socket(AF_INET6, SOCK_STREAM, 0);
+  ::close(fd);
+
+  // if fd was -1, then the call failed -- IPv6 not available
+  return fd == -1 ? 2 : 1;
+# endif
+}
+#endif
+
 
 #if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
 
@@ -159,11 +176,43 @@ make_unix(const char *name, const char *serv)
  */
 
 int kde_getaddrinfo(const char *name, const char *service,
-		    const struct addrinfo* hint,
+		    struct addrinfo* hint,
 		    struct addrinfo** result)
 {
+#if KDE_IPV6_LOOKUP_MODE != 0
+  bool changing_family = false;
+
+# if KDE_IPV6_LOOKUP_MODE == 1
+  // mode 1: do a check on whether we have an IPv6 stack
+  static int ipv6_stack = 0;	// 0: unknown, 1: yes, 2: no
+  if (ipv6_stack == 0)
+    ipv6_stack = check_ipv6_stack();
+
+  if (ipv6_stack == 2)
+    {
+# endif
+      // here we have modes 1 and 2 (no lookups)
+      // this is shared code
+      if (hint && hint->ai_family == AF_UNSPEC)
+	{
+	  changing_family = true;
+	  hint->ai_family = AF_INET;
+	}
+# if KDE_IPV6_LOOKUP_MODE == 1
+    }
+# endif
+#endif
+
   // do it fast!
   register int err = getaddrinfo(name, service, hint, result);
+
+#if KDE_IPV6_LOOKUP_MODE != 0
+  // We have to set it back the way it was because the calling function
+  // may want this to keep being the same
+  if (changing_family)		// changing_family is only true if hint is non-null
+    hint->ai_family = AF_UNSPEC;
+#endif
+
   if (err == 0)
     return err;
 
