@@ -33,7 +33,6 @@ Ftp::Ftp()
   m_bLoggedOn = false;
   m_bFtpStarted = false;
   m_bPersistent = true;
-  m_bEnablePASV = true;
 }
 
 
@@ -451,7 +450,7 @@ bool Ftp::ftpOpenPASVDataConnection()
     struct sockaddr sa;
     struct sockaddr_in in;
   } sin;
-  struct linger lng = { 0, 0 }; 
+  struct linger lng = { 1, 120 }; 
 
   m_bPasv = true;
   sDatal = socket( AF_INET, SOCK_STREAM, 0 );
@@ -491,6 +490,8 @@ bool Ftp::ftpOpenPASVDataConnection()
     return false;
   }
  
+  if ( setsockopt(sDatal, SOL_SOCKET,SO_KEEPALIVE, (char *) &on, (int) sizeof(on)) < 0 )
+    if ( ftplib_debug > 1 ) debug("Keepalive not allowed");
   if ( setsockopt(sDatal, SOL_SOCKET,SO_LINGER, (char *) &lng,(int) sizeof (lng)) < 0 )
     if ( ftplib_debug > 1 ) debug("Linger mode was not allowed.");
   return 1; 
@@ -518,7 +519,7 @@ bool Ftp::ftpOpenDataConnection()
 
   ////////////// First try PASV mode
   
-  if ( m_bEnablePASV && ftpOpenPASVDataConnection())
+  if (ftpOpenPASVDataConnection())
     return true;
 
   ////////////// Fallback : non-PASV mode
@@ -596,13 +597,13 @@ int Ftp::ftpAcceptConnect(void)
   FD_ZERO(&mask);
   FD_SET(sDatal,&mask);
 
+  if ( m_bPasv )
+    return sDatal;
   if ( select( sDatal + 1, &mask, NULL, NULL, 0L ) == 0)
   {
     ::close( sDatal );
     return -2;
   }
-  if ( m_bPasv )
-    return sDatal;
       
   l = sizeof(addr);
   if ( ( sData = accept( sDatal, &addr, &l ) ) > 0 )
