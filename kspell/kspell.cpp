@@ -375,19 +375,23 @@ bool
 KSpell::cleanFputsWord (QString s, bool appendCR)
 {
   QString qs(s);
-  bool firstchar = TRUE;
+  // bool firstchar = TRUE;
   bool empty = TRUE;
 
   for (unsigned int i=0; i<qs.length(); i++)
   {
     //we need some punctuation for ornaments
-    if (qs[i] != '\'' && qs[i] != '\"' && !qs[i].isLetter() &&
-      // permit hyphen when it's not at the beginning of the word 
-      (firstchar || qs[i] != '-')) {
+    if (qs[i] != '\'' && qs[i] != '\"' && !qs[i].isLetter() // &&
+  
+	// this works only with some dictionaries :-(
+    // permit hyphen when it's not at the beginning of the word 
+	//(firstchar || qs[i] != '-')
+
+	) {
 	qs.remove(i,1);
 	i--;
       } else {
-	firstchar = FALSE; 
+	//firstchar = FALSE; 
 	if (qs[i].isLetter()) empty=FALSE;
       }
   }
@@ -701,7 +705,13 @@ void KSpell::checkList3a (KProcIO *)
 
 		if (e==REPLACE)
 		  {
+		    // inform application
+		    dlgreplacement=word;
 		    emit corrected (orig, replacement(), lastpos);
+		    // replace in list
+		    wlIt--; // go back to misspelled word
+		    wordlist->insert (wlIt, replacement());
+		    wlIt = wordlist->remove (wlIt);
 		  }
 		else
 		  {
