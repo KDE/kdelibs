@@ -69,6 +69,7 @@
 #include "config-kfile.h"
 #include "kpreviewwidgetbase.h"
 
+#include <kdirselectdialog.h>
 #include <kfileview.h>
 #include <krecentdocument.h>
 #include <kfiledialog.h>
@@ -697,7 +698,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 {
     initStatic();
     d = new KFileDialogPrivate();
-    
+
     d->boxLayout = 0;
     d->keepLocation = false;
     d->operationMode = Opening;
@@ -1381,30 +1382,19 @@ KURL KFileDialog::getExistingURL(const QString& startDir,
                                        QWidget *parent,
                                        const QString& caption)
 {
-    KFileDialog dlg(startDir, QString::null, parent, "filedialog", true);
-    dlg.setMode(KFile::Directory | KFile::ExistingOnly);
-    // to get "All Directories" instead of "All Files" in the combo
-    dlg.setFilter( QString::null );
-    dlg.ops->clearHistory();
-    dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
-    dlg.exec();
-
-    return dlg.selectedURL();
+    return KDirSelectDialog::selectDirectory(startDir, false, parent, caption);
 }
 
 QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           QWidget *parent,
                                           const QString& caption)
 {
-    KFileDialog dlg(startDir, QString::null, parent, "filedialog", true);
-    dlg.setMode(KFile::Directory | KFile::LocalOnly | KFile::ExistingOnly);
-    // to get "All Directories" instead of "All Files" in the combo
-    dlg.setFilter( QString::null );
-    dlg.ops->clearHistory();
-    dlg.setCaption(caption.isNull() ? i18n("Select Directory") : caption);
-    dlg.exec();
+    KURL url = KDirSelectDialog::selectDirectory(startDir, true, parent, 
+                                                 caption);
+    if ( url.isValid() )
+        return url.path();
 
-    return dlg.selectedFile();
+    return QString::null;
 }
 
 KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
@@ -1843,7 +1833,7 @@ KURL KFileDialog::getStartURL( const QString& startDir,
                                QString& recentDirClass )
 {
     initStatic();
-    
+
     recentDirClass = QString::null;
     KURL ret;
 
