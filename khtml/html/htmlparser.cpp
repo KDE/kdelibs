@@ -442,8 +442,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 for (unsigned long l = 0; map && l < map->length(); ++l) {
                     NodeImpl::Id attrId = map->idAt(l);
                     DOMStringImpl *attrValue = map->valueAt(l);
-                    changed = !bmap->getValue(attrId);
+                    if ( !bmap->getValue(attrId) ) {
                     bmap->setValue(attrId,attrValue);
+                        changed = true;
+                    }
                 }
                 if ( changed )
                     doc()->recalcStyle( NodeImpl::Inherit );
