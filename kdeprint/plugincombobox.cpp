@@ -37,7 +37,7 @@ PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
 						" Operating System.) KDEPrint usually auto-detects the" 
                                                 " correct print subsystem by itself upon first startup."
 						" Most Linux distributions have \"CUPS\", the <em>Common"
-						" Unix Printing System</em>." 
+						" UNIX Printing System</em>." 
                                                 " </qt>" );
 
 	m_combo = new QComboBox(this, "PluginCombo");
