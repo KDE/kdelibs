@@ -54,7 +54,8 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	ktypelist.h ksortablevaluelist.h kdebugclasses.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
-	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdemacros.h
+	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdemacros.h \
+	kdelibs.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
@@ -72,11 +73,11 @@ vsnprintf_nonpic.c:  $(srcdir)/vsnprintf.c
 
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h netwm_p.h \
-	kglobalaccel_x11.h kkeyserver_x11.h \
+	kglobalaccel_x11.h kglobalaccel_win.h kkeyserver_x11.h kkeyserver.h \
 	kregpriv.h kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h kcalendarsystemjalali.h \
-	kprotocolinfofactory.h
+	kprotocolinfofactory.h kdelibs_win.h
 
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
