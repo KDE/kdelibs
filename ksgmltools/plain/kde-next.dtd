@@ -1,7 +1,8 @@
 <!--
     Document Type Definition for DocBook as used in the KDE documentation
-    
-    Copyright (C) 1999-2000 Frederik Fouvry
+    *WITHOUT ANY CUSTOMISATION*
+
+    Copyright (C) 2000 Frederik Fouvry
      
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -25,11 +26,13 @@
 
     Refer to this DTD as
 
-      "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
+      "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN"
 
+    Note that this is the same FPI as for the customised DTD (and should
+    remain so).
     For instance:
 
-      <!DOCTYPE Book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN">
 
     and use kde.cat as the catalogue file.
 -->
@@ -38,39 +41,7 @@
 <!-- ============================================================= -->
 <!--	      Modifications to the original DocBook DTD		   -->
 <!-- ============================================================= -->
-
-<!-- Added notation for images.
-     Request for update of DocBook has been filed (RFE #105)
-     and accepted.
- -->
-<!ENTITY % local.notation.class
-		       "| PNG"					     >
-<!NOTATION PNG		SYSTEM "PNG"				     >
-
-
-<!ENTITY % kde.compulsory.id "INCLUDE"				     >
-<!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE"		     >
-<!ENTITY % kde.compulsory.fpi "IGNORE"                               >
-<!-- Modifications in hierarchy
-     %rdbhier2; is called in the DocBook DTD
- -->
-<!ENTITY % rdbhier2	    PUBLIC
-  "-//KDE//ELEMENTS KDE DocBook Hierarchy Redeclarations 2 V1.0//EN" >
-<!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
-
-<!-- Modifications in pool
-     %rdbpool; is called in the DocBook DTD
- -->
-<!ENTITY % rdbpool	    PUBLIC
-  "-//KDE//ELEMENTS KDE DocBook Pool Redeclarations V1.0//EN"	     >
-<!ENTITY % dbpool.redecl.module "INCLUDE"			     >
-
-<!-- For better synopses (eg OO programming languages)		   
-     See http://nwalsh.com/docbook/edbsyn/index.html		   
-     Included in DocBook 4.0.                                      -->
-<!--ENTITY % edbsyn SYSTEM "edbsyn/edbsyn.dtd"			       >
-%edbsyn; -->
-
+<!-- None - it is meant to stay like this                          -->
 
 <!-- ============================================================= -->
 <!--			 Original DocBook DTD			   -->
@@ -84,7 +55,7 @@
 <!-- ============================================================= -->
 <!--		    Extensions to the DocBook DTD		   -->
 <!-- ============================================================= -->
-<!-- Defining extra general entities is allowed.                   -->
+<!-- Defining additional general entities is allowed.              -->
 
 <!ENTITY % kde.general.entities	PUBLIC
   "-//KDE//ENTITIES KDE DocBook General Entity Declarations V1.0//EN">

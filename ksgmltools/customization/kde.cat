@@ -23,10 +23,10 @@ Send suggestions, comments, etc. to Frederik Fouvry
 
 			    -- DocBook --
 
-PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN"
-       "kde-new.dtd"
 PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
        "kde.dtd"
+PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN"
+       "kde-next.dtd"
 PUBLIC "-//KDE//ELEMENTS KDE DocBook Hierarchy Redeclarations 2 V1.0//EN"
        "kde-rdbhier2.elements"
 PUBLIC "-//KDE//ELEMENTS KDE DocBook Pool Redeclarations V1.0//EN"

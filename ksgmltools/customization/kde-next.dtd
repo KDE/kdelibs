@@ -38,12 +38,15 @@
 <!-- ============================================================= -->
 <!--	      Modifications to the original DocBook DTD		   -->
 <!-- ============================================================= -->
+<!-- Declarations in this part should only *restrict* the DocBook 
+     DTD                                                           -->
 
 <!ENTITY % kde.compulsory.id "INCLUDE"				     >
 <!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE"		     >
 <!ENTITY % kde.compulsory.fpi "IGNORE"                               >
 <!-- Modifications in hierarchy
      %rdbhier2; is called in the DocBook DTD
+     NEEDS TO BE CHECKED ON CHANGES
  -->
 <!ENTITY % rdbhier2	    PUBLIC
   "-//KDE//ELEMENTS KDE DocBook Hierarchy Redeclarations 2 V1.0//EN" >
@@ -51,6 +54,7 @@
 
 <!-- Modifications in pool
      %rdbpool; is called in the DocBook DTD
+     NEEDS TO BE CHECKED ON CHANGES
  -->
 <!ENTITY % rdbpool	    PUBLIC
   "-//KDE//ELEMENTS KDE DocBook Pool Redeclarations V1.0//EN"	     >

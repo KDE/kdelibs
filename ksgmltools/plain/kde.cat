@@ -24,11 +24,8 @@ Send suggestions, comments, etc. to Frederik Fouvry
 -- DocBook --
 PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
        "kde.dtd"
-
--- DocBook 4.0 is still Beta
-PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.1//EN"
-       "kde.dtd"
---
+PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN"
+       "kde-next.dtd"
 
 -- Read the rest from the standard catalogue --
 CATALOG ../customization/kde.cat
