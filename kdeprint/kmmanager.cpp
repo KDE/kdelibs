@@ -226,7 +226,7 @@ KMPrinter* KMManager::defaultPrinter()
 QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
 	setErrorMsg(QString::null);
-	kdDebug(500) << "Getting printer list: " << reload << endl;
+	//kdDebug(500) << "Getting printer list: " << reload << endl;
 
 	if (reload || m_printers.count() == 0)
 	{
@@ -469,7 +469,7 @@ bool KMManager::removeSpecialPrinter(KMPrinter *p)
 }
 
 /* format of output:
-	URI0, Desc0, Printer0, URI1, Desc1, Printer1, ...
+	Class0, URI0, Desc0, Printer0, Class1, URI1, Desc1, Printer1, ...
 
   Defaults to 3 parallel printers
 */
@@ -477,7 +477,7 @@ QStringList KMManager::detectLocalPrinters()
 {
 	QStringList	list;
 	for (int i=0; i<3; i++)
-		list << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1").arg(i+1) << QString::null;
+		list << QString::null << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1").arg(i+1) << QString::null;
 	return list;
 }
 

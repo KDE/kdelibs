@@ -114,7 +114,7 @@ void KMWLocal::initPrinter(KMPrinter *printer)
 void KMWLocal::initialize()
 {
 	QStringList	list = KMFactory::self()->manager()->detectLocalPrinters();
-	if (list.isEmpty() || (list.count() % 3) != 0)
+	if (list.isEmpty() || (list.count() % 4) != 0)
 	{
 		KMessageBox::error(this, i18n("Unable to detect local ports."));
 		return;
@@ -122,6 +122,9 @@ void KMWLocal::initialize()
 	QListViewItem	*last[3] = {0, 0, 0};
 	for (QStringList::Iterator it=list.begin(); it!=list.end(); ++it)
 	{
+		// skip class
+		++it;
+
 		KURL	uri = *it;
 		QString	desc = *(++it), prot = uri.protocol();
 		QString	printer = *(++it);
