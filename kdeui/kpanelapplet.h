@@ -169,7 +169,7 @@ public:
      * On a vertical panel the applet width is fixed, the panel will
      * call heightForWidth(int width) with @p width
      * equal to 'the fixed applet width'
-     * when layint out the applets.
+     * when laying out the applets.
      *
      * The applet can now choose the other size component (height)
      * based on the given width.
@@ -182,10 +182,10 @@ public:
      * Always use this KConfig object to save/load your applets configuration.
      *
      * For unique applets this config object will write to a config file called
-     * \<appletname\>rc in the users local KDE directory.
+     * \<appletname\>rc in the user's local KDE directory.
      *
      * For normal applets this config object will write to a instance specific config file
-     * called \<appletname\>\<instanceid\>rc in the users local KDE directory.
+     * called \<appletname\>\<instanceid\>rc in the user's local KDE directory.
      **/
     KConfig* config() const { return _config; }
     KSharedConfig::Ptr sharedConfig() const;
