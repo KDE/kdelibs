@@ -76,21 +76,44 @@ public:
 
     /**
      * Load the plugin libraries from the directories appropriate
-     * to @p instance and make the Plugin objects children of @p parent .
+     * to @p instance and make the Plugin objects children of @p parent.
+     *
+     * It is recommended to use the last @ref loadPlugins method instead,
+     * to support enabling and disabling of plugins.
      */
     static void loadPlugins( QObject *parent, const KInstance * instance );
 
     /**
      * Load the plugin libraries specified by the list @p docs and make the
      * Plugin objects children of @p parent .
+     *
+     * It is recommended to use the last @ref loadPlugins method instead,
+     * to support enabling and disabling of plugins.
      */
     static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos );
 
     /**
-     * Load the plugin libraries specified by the list @p docs, make the
+     * Load the plugin libraries specified by the list @p pluginInfos, make the
      * Plugin objects children of @p parent, and use the given @p instance.
+     *
+     * It is recommended to use the last @ref loadPlugins method instead,
+     * to support enabling and disabling of plugins.
      */
     static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance * instance );
+
+    /**
+     * Load the plugin libraries for the given @p instance, make the
+     * Plugin objects children of @p parent, and insert the plugin as a child GUI client
+     * of @p parentGUIClient.
+     *
+     * This method uses the KConfig object of the given instance, to find out which
+     * plugins are enabled and which are disabled. What happens by default (i.e.
+     * for new plugins that are not in that config file) is controlled by
+     * @p enableNewPluginsByDefault.
+     *
+     * This method is automatically called by KParts::Plugin and by KParts::MainWindow.
+     */
+    static void loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault = true );
 
     /**
      * Returns a list of plugin objects loaded for @p parent. This
@@ -117,7 +140,7 @@ protected:
     virtual void setInstance( KInstance *instance );
 
 private:
-    static bool hasPlugins( QObject* parent );
+    static bool hasPlugin( QObject* parent, const QString& library );
     class PluginPrivate;
     PluginPrivate *d;
 };

@@ -56,6 +56,7 @@ class PartBasePrivate;
  */
 class PartBase : virtual public KXMLGUIClient
 {
+    friend class PartBasePrivate;
 public:
 
   /**
@@ -92,6 +93,17 @@ protected:
    * because it loads the i18n catalogues.
    */
   virtual void setInstance( KInstance *instance, bool loadPlugins );
+
+  enum PluginLoadingMode {
+    DoNotLoadPlugins = 0,
+    LoadPlugins = 1,         // load new plugins automatically
+    LoadPluginsIfEnabled = 2 // new plugins are disabled by default
+  };
+  /**
+   * For a KParts::Part: call this before setInstance.
+   * For a KParts::MainWindow: call this before createGUI.
+   */
+  void setPluginLoadingMode( PluginLoadingMode loadingMode );
 
 private:
     PartBasePrivate *d;

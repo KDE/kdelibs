@@ -55,10 +55,12 @@ class PartBasePrivate
 public:
   PartBasePrivate()
   {
+      m_pluginLoadingMode = PartBase::LoadPlugins;
   }
   ~PartBasePrivate()
   {
   }
+  bool m_pluginLoadingMode;
 };
 
 class PartPrivate
@@ -102,7 +104,7 @@ void PartBase::setInstance( KInstance *inst )
   setInstance( inst, true );
 }
 
-void PartBase::setInstance( KInstance *inst, bool loadPlugins )
+void PartBase::setInstance( KInstance *inst, bool bLoadPlugins )
 {
   KXMLGUIClient::setInstance( inst );
   KGlobal::locale()->insertCatalogue( inst->instanceName() );
@@ -110,8 +112,14 @@ void PartBase::setInstance( KInstance *inst, bool loadPlugins )
   KGlobal::dirs()->addResourceType( inst->instanceName() + "data",
                                     KStandardDirs::kde_default( "data" )
                                     + QString::fromLatin1( inst->instanceName() ) + '/' );
-  if ( loadPlugins )
-    Plugin::loadPlugins( m_obj, instance() );
+  if ( bLoadPlugins && d->m_pluginLoadingMode != DoNotLoadPlugins ) {
+    Plugin::loadPlugins( m_obj, this, instance(), d->m_pluginLoadingMode == LoadPlugins );
+  }
+}
+
+void PartBase::setPluginLoadingMode( PluginLoadingMode loadingMode )
+{
+    d->m_pluginLoadingMode = loadingMode;
 }
 
 Part::Part( QObject *parent, const char* name )

@@ -95,15 +95,6 @@ void MainWindow::createGUI( Part * part )
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );
 
-    plugins = Plugin::pluginObjects( d->m_activePart );
-    Plugin *plugin = plugins.last();
-    while ( plugin )
-    {
-      factory->removeClient( plugin );
-
-      plugin = plugins.prev();
-    }
-
     factory->removeClient( d->m_activePart );
 
     disconnect( d->m_activePart, SIGNAL( setWindowCaption( const QString & ) ),
@@ -114,7 +105,7 @@ void MainWindow::createGUI( Part * part )
 
   if ( !d->m_bShellGUIActivated )
   {
-    Plugin::loadPlugins( this, KGlobal::instance() );
+    Plugin::loadPlugins( this, this, KGlobal::instance(), true );
     createShellGUI();
     d->m_bShellGUIActivated = true;
   }
@@ -131,11 +122,6 @@ void MainWindow::createGUI( Part * part )
 
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
-
-    plugins = Plugin::pluginObjects( part );
-    QPtrListIterator<Plugin> pIt( plugins );
-    for (; pIt.current(); ++pIt )
-      factory->addClient( pIt.current() );
   }
 
   setUpdatesEnabled( true );
@@ -170,24 +156,11 @@ void MainWindow::createShellGUI( bool create )
         QApplication::sendEvent( this, &ev );
 
         guiFactory()->addClient( this );
-
-        QPtrList<Plugin> plugins = Plugin::pluginObjects( this );
-        QPtrListIterator<Plugin> pIt( plugins );
-        for (; pIt.current(); ++pIt )
-            guiFactory()->addClient( pIt.current() );
     }
     else
     {
         GUIActivateEvent ev( false );
         QApplication::sendEvent( this, &ev );
-
-        QPtrList<Plugin> plugins = Plugin::pluginObjects( this );
-        Plugin *plugin = plugins.last();
-        while ( plugin )
-        {
-            guiFactory()->removeClient( plugin );
-            plugin = plugins.prev();
-        }
 
         guiFactory()->removeClient( this );
     }

@@ -35,6 +35,7 @@
 #include <kdebug.h>
 #include <kxmlguifactory.h>
 #include <klocale.h>
+#include <kconfig.h>
 
 using namespace KParts;
 
@@ -44,6 +45,7 @@ public:
     PluginPrivate() : m_parentInstance( 0 ) {}
 
     const KInstance *m_parentInstance;
+    QString m_library; // filename of the library
 };
 
 Plugin::Plugin( QObject* parent, const char* name )
@@ -136,19 +138,13 @@ void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
 
 void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance *instance )
 {
-   // Check if 'parent' already has plugins, don't do anything then
-   // This is mostly because KDE-3.0 didn't load plugins for KParts::MainWindow
-   // (bug!). It does now in KDE-3.1 but apps might still call loadPlugins manually.
-   if ( hasPlugins( parent ) )
-      return;
-
    QValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
    QValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
    for (; pIt != pEnd; ++pIt )
    {
      QString library = (*pIt).m_document.documentElement().attribute( "library" );
 
-     if ( library.isEmpty() )
+     if ( library.isEmpty() || hasPlugin( parent, library ) )
        continue;
 
      Plugin *plugin = loadPlugin( parent, QFile::encodeName(library) );
@@ -158,6 +154,7 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
        plugin->d->m_parentInstance = instance;
        plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
        plugin->setDOMDocument( (*pIt).m_document );
+
      }
    }
 
@@ -171,7 +168,9 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 // static
 Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
 {
-    return ComponentFactory::createInstanceFromLibrary<Plugin>( libname, parent, libname );
+    Plugin* plugin = ComponentFactory::createInstanceFromLibrary<Plugin>( libname, parent, libname );
+    plugin->d->m_library = libname;
+    return plugin;
 }
 
 QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
@@ -184,10 +183,9 @@ QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
   QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
 
   QObjectListIt it( *plugins );
-  while( it.current() )
+  for ( ; it.current() ; ++it )
   {
     objects.append( static_cast<Plugin *>( it.current() ) );
-    ++it;
   }
 
   delete plugins;
@@ -195,12 +193,20 @@ QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
   return objects;
 }
 
-bool Plugin::hasPlugins( QObject* parent )
+bool Plugin::hasPlugin( QObject* parent, const QString& library )
 {
   QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
-  bool ret = plugins && !plugins->isEmpty();
+  QObjectListIt it( *plugins );
+  for ( ; it.current() ; ++it )
+  {
+      if ( static_cast<Plugin *>( it.current() )->d->m_library == library )
+      {
+          delete plugins;
+          return true;
+      }
+  }
   delete plugins;
-  return ret;
+  return false;
 }
 
 void Plugin::setInstance( KInstance *instance )
@@ -209,5 +215,35 @@ void Plugin::setInstance( KInstance *instance )
     KXMLGUIClient::setInstance( instance );
 }
 
+void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault )
+{
+    KConfigGroup cfgGroup( instance->config(), "KParts Plugins" );
+    QValueList<PluginInfo> plugins = pluginInfos( instance );
+    QValueList<PluginInfo>::ConstIterator pIt = plugins.begin();
+    QValueList<PluginInfo>::ConstIterator pEnd = plugins.end();
+    for (; pIt != pEnd; ++pIt )
+    {
+        QDomElement docElem = (*pIt).m_document.documentElement();
+        QString library = docElem.attribute( "library" );
+
+        if ( library.isEmpty() || hasPlugin( parent, library ) )
+            continue;
+
+        // Check configuration
+        QString name = docElem.attribute( "name" );
+        if ( !cfgGroup.readBoolEntry( name + "Enabled", enableNewPluginsByDefault ) )
+            continue;
+
+        Plugin *plugin = loadPlugin( parent, QFile::encodeName(library) );
+
+        if ( plugin )
+        {
+            plugin->d->m_parentInstance = instance;
+            plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
+            plugin->setDOMDocument( (*pIt).m_document );
+            parentGUIClient->insertChildClient( plugin );
+        }
+    }
+}
 
 #include "plugin.moc"
