@@ -137,8 +137,8 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     bbox->addStretch();
     m_button = bbox->addButton(m_showDetails ? i18n("&Details <<"):i18n("&Details >>"),
                                 this, SLOT(slotCookieDetails()), false );
-    QWhatsThis::add( m_button, i18n("Click this button to show/hide detailed "
-                                  "cookie information") );
+    QWhatsThis::add( m_button, i18n("Click this button to show or hide the detailed "
+				    "cookie information") );
     bbox->layout();
     vlayout->addWidget( bbox, 0, Qt::AlignCenter );
     setFixedSize( sizeHint() );
