@@ -38,6 +38,7 @@
 class QWidget;
 class QMultiLineEdit;
 class QScrollView;
+class QLineEdit;
 
 #include <qpixmap.h>
 
@@ -360,10 +361,10 @@ public:
 
 class RenderFileButton : public RenderFormElement
 {
-
+    Q_OBJECT
 public:
-    RenderFileButton(QScrollView *view,
-                HTMLFormElementImpl *form);
+    RenderFileButton(QScrollView *view, HTMLFormElementImpl *form, 
+                     int maxLen, int size);
     virtual ~RenderFileButton();
 
     virtual const char *renderName() const { return "RenderFileButton"; }
@@ -375,6 +376,20 @@ public:
     virtual Type type() { return File; }
 
     virtual void reset();
+
+    virtual void setValue(const DOMString &value);
+    virtual QString state();
+    virtual void restoreState(const QString &);
+
+public slots:	
+    virtual void slotClicked();
+    virtual void slotReturnPressed();
+
+protected:
+    bool m_clicked;
+    QLineEdit   *m_edit;
+    QPushButton *m_button;
+    int m_size;
 };
 
 

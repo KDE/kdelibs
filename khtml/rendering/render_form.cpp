@@ -30,6 +30,7 @@
 #include <kurl.h>
 #include <klocale.h>
 #include <klistbox.h>
+#include <kfiledialog.h>
 
 #include <qpushbutton.h>
 #include <qradiobutton.h>
@@ -38,6 +39,7 @@
 #include <qmultilineedit.h>
 #include <qcombobox.h>
 #include <qstack.h>
+#include <qlayout.h>
 
 #include "dom_nodeimpl.h"
 #include "dom_textimpl.h"
@@ -452,6 +454,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLFormElementImpl *form,
 			       int maxLen, int size, bool passwd)
     : RenderFormElement(view, form)
 {
+    kdDebug( 6030 ) << "RenderLineEdit::RenderLineEdit" << endl;
     QLineEdit *edit = new QLineEdit(view);
     connect(edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
 
@@ -548,36 +551,106 @@ RenderFieldset::~RenderFieldset()
 
 
 RenderFileButton::RenderFileButton(QScrollView *view,
-                         HTMLFormElementImpl* form)
+                         HTMLFormElementImpl* form, int maxLen, int size)
     : RenderFormElement(view, form)
 {
-    QLineEdit *edit = new QLineEdit(view);
+    QWidget *w = new QWidget(view->viewport());
+    QHBoxLayout *layout = new QHBoxLayout(w);
 
-    setQWidget(edit);
+    m_edit = new QLineEdit(w);
+    connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
+    m_button = new QPushButton(i18n("Browse..."), w);
+    connect(m_button, SIGNAL(clicked()), this, SLOT(slotClicked()));
+
+    if (maxLen > 0) m_edit->setMaxLength(maxLen);
+
+    layout->addWidget(m_edit);
+    layout->addWidget(m_button);
+
+    m_size = size;
+    setQWidget(w);
+
+    m_clicked = false;
 }
 
 RenderFileButton::~RenderFileButton()
 {
 }
 
+void RenderFileButton::slotClicked()
+{
+    m_clicked = true;
+    QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
+    setValue( DOMString(file_name) );
+}
+
 void RenderFileButton::layout( bool )
 {
-    QSize s(m_widget->sizeHint());
+    // this is largely taken from the RenderLineEdit layout
+    QFontMetrics fm( m_edit->font() );
+    QSize s;
+
+    int h = fm.height();
+    int w = fm.width( 'x' ) * (m_size > 0 ? m_size : 17);
+    w += m_button->sizeHint().width();
+
+    if ( m_edit->frame() ) {
+        h += 8;
+        if ( m_widget->style() == QWidget::WindowsStyle && h < 26 )
+            h = 22;
+        s = QSize( w + 8, h );
+    } else
+        s = QSize( w + 4, h + 4 );
+
+    m_edit->setReadOnly(m_readonly);
 
     m_height = s.height();
-    m_width = s.width();
+    m_width  = s.width();
 
     RenderFormElement::layout(false);
 }
 
+QString RenderFileButton::state()
+{
+    // Make sure the string is not empty!
+    return m_edit->text()+'.';
+}
+
+void RenderFileButton::restoreState(const QString &state)
+{
+    m_edit->setText(state.left(state.length()-1));
+}
+
 void RenderFileButton::reset()
 {
-    // ###
+    m_clicked = false;
+    setValue( DOMString(QString::null) );
+}
+
+void RenderFileButton::slotReturnPressed()
+{
+    m_form->maybeSubmit();
+}
+
+void RenderFileButton::setValue(const DOMString &value)
+{
+    m_value = value;
+    if(m_value != 0)
+        m_edit->setText(m_value.string());
+    else
+        m_edit->setText(QString::null);
 }
 
 QString RenderFileButton::encoding()
 {
     QString _encoding;
+    if ( m_clicked && !m_name.isEmpty())
+    {
+        _encoding = encodeString( m_name.string() );
+        _encoding += '=';
+        _encoding += encodeString( m_edit->text() );
+    }
+    m_clicked = false;
 
     return _encoding;
 }
