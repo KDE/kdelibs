@@ -641,11 +641,6 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     bool strictMode = !style()->htmlHacks();
 
     //kdDebug() << "RenderBlock::layoutBlockChildren " << prevMargin << endl;
-
-    // take care in case we inherited floats
-    if (child && floatBottom() > m_height)
-        child->setLayouted( false );
-
     //     QTime t;
     //     t.start();
 
@@ -796,6 +791,10 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             shouldCollapseChild = false;
             clearOccurred = true;
         }
+
+        // take care in case we inherited floats
+        if (floatBottom() > m_height)
+            child->setLayouted( false );
 
         child->calcVerticalMargins();
 
