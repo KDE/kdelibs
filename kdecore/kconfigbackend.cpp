@@ -562,8 +562,10 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
       continue;
 
     if ( currentGroup != aWriteIt.key().mGroup ) {
+	if (!currentGroup.isEmpty())
+	    fprintf(pStream, "\n");
 	currentGroup = aWriteIt.key().mGroup;
-        fprintf(pStream, "[%s]\n", aWriteIt.key().mGroup.data());
+	fprintf(pStream, "[%s]\n", aWriteIt.key().mGroup.data());
     }
 
     if (aWriteIt.key().mKey.isEmpty()) {
