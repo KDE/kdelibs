@@ -493,9 +493,6 @@ KLauncher::slotKDEInitData(int)
        case KService::DCOP_Multi:
        {
          lastRequest->status = KLaunchRequest::Launching;
-         QCString pidStr;
-         pidStr.setNum(lastRequest->pid);
-         lastRequest->dcop_name = lastRequest->name + "-" + pidStr;
          break;
        }
      }
@@ -539,12 +536,21 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
 void
 KLauncher::slotAppRegistered(const QCString &appId)
 {
+   const char *cAppId = appId.data();
+   if (!cAppId) return;
+
    KLaunchRequest *request = requestList.first();
    for(; request; request = requestList.next())
    {
-      if ((request->dcop_name == appId) &&
-          (request->status == KLaunchRequest::Launching))
+      const char *rAppId = request->dcop_name.data();
+      if (!rAppId) continue;
+
+      int l = strlen(rAppId);
+      if ((request->status == KLaunchRequest::Launching) &&
+          (strncmp(rAppId, cAppId, l) == 0) &&
+          ((cAppId[l] == '\0') || (cAppId[l] == '-')))
       {
+         request->dcop_name = appId;
          request->status = KLaunchRequest::Running;
          requestDone(request);
          return;
