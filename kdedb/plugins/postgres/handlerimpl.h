@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include <pgsql/libpq-fe.h>
+#include <libpq-fe.h>
 #include <kdb/handler.h>
 
 class HandlerImpl: public KDB::Handler {

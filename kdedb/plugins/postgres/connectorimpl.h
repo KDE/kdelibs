@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include <pgsql/libpq-fe.h>
+#include <libpq-fe.h>
 #include <kdb/connector.h>
 
 #include <qvaluelist.h>
