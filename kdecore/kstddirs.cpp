@@ -742,14 +742,14 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
     if (dir.at(len - 1) != '/')
         target += '/';
 
-    QString base("/");
+    QString base("");
     uint i = 1;
 
     while( i < len )
     {
         struct stat st;
         int pos = target.find('/', i);
-        base += target.mid(i, pos - i + 1);
+        base += target.mid(i - 1, pos - i + 1);
         // bail out if we encountered a problem
         if (stat(QFile::encodeName(base), &st) != 0)
         {
