@@ -409,13 +409,11 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     char    realpath_buffer[MAXPATHLEN];
     QCString realname;
 
+    realname = QFile::encodeName(filename);
     /* If the path contains symlinks, get the real name */
-    if (realpath(QFile::encodeName(filename), realpath_buffer) == 0)
-      // error, keep original path
-      realname = QFile::encodeName( filename );
-    else
+    if (realpath(realname, realpath_buffer) == 0)
       // succes, use result from realpath
-      realname = QFile::encodeName( realpath_buffer );
+      realname = realpath_buffer;
 
     //kdDebug( 7007 ) << "realname " << realname << endl;
 
@@ -443,7 +441,18 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     while (GETMNTENT(mtab, me))
     {
       //kdDebug( 7007 ) << "read " << FSNAME(me) << endl;
-      if ( realname == FSNAME(me) )
+
+      // There may be symbolic links into the /etc/mnttab
+      // So we have to find the real device name here as well!
+      QCString device_name = FSNAME(me);
+
+      // If the path contains symlinks, get
+      // the real name
+      if (realpath(device_name, realpath_buffer) != 0)
+          // succes, use result from realpath
+         device_name = realpath_buffer;
+
+      if (realname == device_name)
       {
           result = MOUNTPOINT(me);
           break;
