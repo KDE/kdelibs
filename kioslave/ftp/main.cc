@@ -1338,8 +1338,9 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
   while ( ( e = ftp.readdir() ) != 0L ) {
     kdebug( KDEBUG_INFO, 0, "#%s", e->name.ascii() );
     
-    if ( e->name == "." || e->name == ".." )
-      continue;
+    //Return those as well
+    //if ( e->name == "." || e->name == ".." )
+    //  continue;
     
     QString p2 = p;
     p2 += "/";
@@ -1350,7 +1351,7 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
     tmp += e->name;
 
     if ( !S_ISDIR( e->type ) ) {
-      kdebug( KDEBUG_INFO, 0, "ppending '%s' '%s'", p2.ascii(), tmp.ascii() );
+      kdebug( KDEBUG_INFO, 0, "Appending '%s' '%s'", p2.ascii(), tmp.ascii() );
       Copy c;
       c.m_strAbsSource = p2;
       c.m_strRelDest = tmp;
