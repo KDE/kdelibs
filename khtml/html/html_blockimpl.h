@@ -88,6 +88,8 @@ public:
     virtual tagStatus endTag() const { return HREndTag; }
 
     virtual void attach();
+protected:
+    bool noShade : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -101,8 +103,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    void parseAttribute(AttrImpl *token);
 
     virtual tagStatus startTag() const { return H1StartTag; }
     virtual tagStatus endTag() const { return H1EndTag; }
@@ -131,9 +131,6 @@ public:
 
     virtual tagStatus startTag() const { return PStartTag; }
     virtual tagStatus endTag() const { return PEndTag; }
-
-    virtual void parseAttribute(AttrImpl *);
-    void attach();
 };
 
 // -------------------------------------------------------------------------

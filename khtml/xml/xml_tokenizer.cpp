@@ -229,7 +229,7 @@ void XMLHandler::exitText()
     //                kdDebug() << sheet.string() << endl;
                     CSSStyleSheetImpl *styleSheet = new CSSStyleSheetImpl(m_doc->document());
                     styleSheet->parseString(sheet);
-                    m_doc->document()->updateStyleSheets();
+                    m_doc->document()->createSelector();
                 }
             }
         }

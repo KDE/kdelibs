@@ -123,7 +123,7 @@ public:
     NodeListImpl *getElementsByTagName ( const DOMString &tagname );
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
-    virtual void createSelector();
+    void createSelector();
 
     // Used to maintain list of all elements in the document
     // that want to save and restore state.
@@ -164,12 +164,12 @@ public:
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
 
-    virtual void open (  );
-    virtual void close (  );
-    virtual void write ( const DOMString &text );
-    virtual void write ( const QString &text );
-    virtual void writeln ( const DOMString &text );
-    virtual void finishParsing (  );
+    void open (  );
+    void close (  );
+    void write ( const DOMString &text );
+    void write ( const QString &text );
+    void writeln ( const DOMString &text );
+    void finishParsing (  );
     void clear();
     // moved from HTMLDocument in DOM2
     ElementImpl *getElementById ( const DOMString &elementId );
@@ -225,7 +225,6 @@ public:
     DOMStringImpl *elementName(unsigned short _id) const;
 
     StyleSheetListImpl* styleSheets();
-    void updateStyleSheets();
     
     ElementImpl *focusNode();
     void setFocusNode(ElementImpl *);

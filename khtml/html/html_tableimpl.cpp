@@ -596,12 +596,6 @@ void HTMLTableRowElementImpl::parseAttribute(AttrImpl *attr)
 {
     switch(attr->attrId)
     {
-    case ATTR_ALIGN:
-        if (attr->val())
-            addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
-        else
-            removeCSSProperty(CSS_PROP_TEXT_ALIGN);
-        break;
     case ATTR_VALIGN:
         if (attr->val())
             addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
@@ -674,12 +668,6 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
             addCSSLength(CSS_PROP_HEIGHT, attr->value());
         else
             removeCSSProperty(CSS_PROP_HEIGHT);
-        break;
-    case ATTR_ALIGN:
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
-        else
-            removeCSSProperty(CSS_PROP_TEXT_ALIGN);
         break;
     case ATTR_VALIGN:
         if (!attr->value().isEmpty())
@@ -794,12 +782,6 @@ void HTMLTableColElementImpl::parseAttribute(AttrImpl *attr)
             addCSSLength(CSS_PROP_WIDTH, attr->value());
         else
             removeCSSProperty(CSS_PROP_WIDTH);
-        break;
-    case ATTR_ALIGN:
-        if (!attr->value().isEmpty())
-            addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
-        else
-            removeCSSProperty(CSS_PROP_TEXT_ALIGN);
         break;
     case ATTR_VALIGN:
         if (!attr->value().isEmpty())

@@ -142,16 +142,14 @@ void HTMLLinkElementImpl::attach()
     }
     HTMLElementImpl::attach();
 
-    StyleSheetImpl *s = sheet();
-    if (s)
-	ownerDocument()->updateStyleSheets();
+    getDocument()->createSelector();
 }
 
 void HTMLLinkElementImpl::detach()
 {
-    StyleSheetImpl *s = sheet();
-    if (s)
-	ownerDocument()->updateStyleSheets();
+    if ( sheet() )
+        getDocument()->createSelector();
+
     HTMLElementImpl::detach();
 }
 
@@ -184,11 +182,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
     m_sheet->parseString(sheetStr);
     m_loading = false;
 
-    StyleSheetImpl *s = sheet();
-    if (s)
-	ownerDocument()->updateStyleSheets();
-
-    sheetLoaded();
+    if ( sheet() )  getDocument()->createSelector();
 }
 
 bool HTMLLinkElementImpl::isLoading() const
@@ -202,7 +196,7 @@ bool HTMLLinkElementImpl::isLoading() const
 
 void HTMLLinkElementImpl::sheetLoaded()
 {
-    ownerDocument()->updateStyleSheets();
+    getDocument()->createSelector();
 }
 
 StyleSheetImpl *HTMLLinkElementImpl::sheet() const
@@ -384,10 +378,9 @@ void HTMLStyleElementImpl::setChanged(bool b)
 {
     // TextImpl sets it's parent to be changed when appendData() or similar is called (hack)
     // ### make this work properly in all situations
-    if (b) {
+    if (b)
         reparseSheet();
-        sheetLoaded();
-    }
+
     HTMLElementImpl::setChanged(b);
 }
 
@@ -400,7 +393,7 @@ bool HTMLStyleElementImpl::isLoading() const
 
 void HTMLStyleElementImpl::sheetLoaded()
 {
-    ownerDocument()->updateStyleSheets();
+    getDocument()->createSelector();
 }
 
 void HTMLStyleElementImpl::reparseSheet()
@@ -421,20 +414,18 @@ void HTMLStyleElementImpl::reparseSheet()
     m_sheet = new CSSStyleSheetImpl(this);
     m_sheet->ref();
     m_sheet->parseString( text, (ownerDocument()->parseMode() == DocumentImpl::Strict) );
-    ownerDocument()->updateStyleSheets();
+    getDocument()->createSelector();
 }
 
 void HTMLStyleElementImpl::attach()
 {
-    if (m_sheet)
-	ownerDocument()->updateStyleSheets();
+    if (m_sheet) getDocument()->createSelector();
     HTMLElementImpl::attach();
 }
 
 void HTMLStyleElementImpl::detach()
 {
-    if (m_sheet)
-	ownerDocument()->updateStyleSheets();
+    if (m_sheet) getDocument()->createSelector();
     HTMLElementImpl::detach();
 }
 

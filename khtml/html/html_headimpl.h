@@ -88,7 +88,7 @@ public:
     // from CachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
     bool isLoading() const;
-    virtual void sheetLoaded();
+    void sheetLoaded();
 
 protected:
     khtml::CachedCSSStyleSheet *m_cachedSheet;
@@ -163,7 +163,7 @@ public:
     virtual void setChanged(bool b=true);
 
     bool isLoading() const;
-    virtual void sheetLoaded();
+    void sheetLoaded();
     void reparseSheet();
 
     virtual void attach();

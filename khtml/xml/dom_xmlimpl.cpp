@@ -346,7 +346,7 @@ void ProcessingInstructionImpl::checkStyleSheet()
 	    // ### make sure doc->baseURL() is not empty?
 	    // ### FIXME charset
 	    if (m_cachedSheet)
-		m_cachedSheet->deref(this);		
+		m_cachedSheet->deref(this);
 	    m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(href, ownerDocument()->baseURL(), QString::null);
 	    m_cachedSheet->ref( this );
 //        }
@@ -366,10 +366,11 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
     m_sheet = new CSSStyleSheetImpl(ownerDocument(), url);
     m_sheet->parseString(sheet);
     m_sheet->ref();
-    ownerDocument()->updateStyleSheets();
     if (m_cachedSheet)
 	m_cachedSheet->deref(this);
     m_cachedSheet = 0;
+
+    getDocument()->createSelector();
 }
 
 // -------------------------------------------------------------------------

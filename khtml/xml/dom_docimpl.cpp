@@ -465,12 +465,6 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     return n;
 }
 
-void DocumentImpl::createSelector()
-{
-    applyChanges();
-}
-
-
 // Used to maintain list of all forms in document
 QString DocumentImpl::registerElement(ElementImpl *e)
 {
@@ -1275,7 +1269,7 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
     return m_styleSheets;
 }
 
-void DocumentImpl::updateStyleSheets()
+void DocumentImpl::createSelector()
 {
     QList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
@@ -1290,7 +1284,7 @@ void DocumentImpl::updateStyleSheets()
 	    sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
     	else if (n->id() == ID_BODY)
 	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
-	
+
 	if (sheet) {
 	    sheet->ref();
 	    m_styleSheets->styleSheets.append(sheet);

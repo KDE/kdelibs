@@ -204,18 +204,6 @@ ushort HTMLHeadingElementImpl::id() const
     return _id;
 }
 
-void HTMLHeadingElementImpl::parseAttribute(AttrImpl *attr)
-{
-    switch(attr->attrId)
-    {
-    case ATTR_ALIGN:
-        addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
-        break;
-    default:
-        HTMLElementImpl::parseAttribute(attr);
-    }
-}
-
 // -------------------------------------------------------------------------
 
 HTMLParagraphElementImpl::HTMLParagraphElementImpl(DocumentPtr *doc)
@@ -235,23 +223,6 @@ const DOMString HTMLParagraphElementImpl::nodeName() const
 ushort HTMLParagraphElementImpl::id() const
 {
     return ID_P;
-}
-
-void HTMLParagraphElementImpl::parseAttribute(AttrImpl *attr)
-{
-    switch(attr->attrId)
-    {
-    case ATTR_ALIGN:
-        addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
-        break;
-    default:
-        HTMLElementImpl::parseAttribute(attr);
-    }
-}
-
-void HTMLParagraphElementImpl::attach()
-{
-    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -313,7 +284,7 @@ ushort HTMLLayerElementImpl::id() const
 void HTMLLayerElementImpl::parseAttribute(AttrImpl *attr)
 {
     HTMLElementImpl::parseAttribute(attr);
-    
+
     // layers are evil
 /*    int cssprop;
     bool page = false;

@@ -64,7 +64,6 @@ public:
                                     MouseEvent *ev );
 
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
-    virtual void detach();
 
 protected:
     CSSStyleSheetImpl *m_styleSheet;

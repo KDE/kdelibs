@@ -62,6 +62,16 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
     DOMString indexstring;
     switch( attr->attrId )
     {
+    case ATTR_ALIGN:
+        if (attr->val()) {
+            if ( strcasecmp(attr->value(), "middle" ) == 0 )
+                addCSSProperty( CSS_PROP_TEXT_ALIGN, "center" );
+            else
+                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
+        }
+        else
+            removeCSSProperty(CSS_PROP_TEXT_ALIGN);
+        break;
 // the core attributes...
     case ATTR_ID:
         // unique id
