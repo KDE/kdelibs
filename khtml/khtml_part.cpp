@@ -2629,6 +2629,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   }
 
   child->m_args.reload = d->m_bReloading;
+  // make sure the part has a way to find out about the mimetype.
+  // we actually set it in child->m_args in requestObject already,
+  // but it's useless if we had to use a KHTMLRun instance, as the
+  // point the run object is to find out exactly the mimetype.
+  child->m_args.serviceType = mimetype;
 
   child->m_bCompleted = false;
   if ( child->m_extension )
