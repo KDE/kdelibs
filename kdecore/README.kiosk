@@ -102,8 +102,9 @@ Example:
 chown root.root /home/user/.kde/share/config/kickerrc
 chmod 644 /home/user/.kde/share/config/kickerrc
 
-
-
+Note that this example is not fool-proof, the user can potentially still 
+rename either the root-owned kickerrc file or any of the directories in 
+the path to another name and create a new kickerrc _with_ write-access.
 
 KDE3 Kiosk Application API
 ==========================
