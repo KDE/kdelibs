@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.33  1998/04/28 09:17:49  radej
+// New moving and docking BINARY INCOMPATIBLE
+//
 
 #ifndef _KTOOLBAR_H
 #define _KTOOLBAR_H
@@ -720,5 +723,6 @@ private:
    bool highlight; // yes/no
    QSize szh;      // Size for sizeHint
    bool fixed_size; // do not change the toolbar size
+   bool transparent; // type of moving
 };
 #endif

@@ -446,6 +446,8 @@ void KToolBar::init()
   haveAutoSized=false;      // do we have autosized item - sven 220198
   connect (kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
   slotReadConfig();
+  // This code should be shared with the aequivalent in kmenubar!
+  mgr =0;
 }
 
 void KToolBar::slotReadConfig()
@@ -453,6 +455,7 @@ void KToolBar::slotReadConfig()
   int tsize;
   int _highlight;
   int icontext;
+  bool _transparent;
   
   KConfig *config = kapp->getConfig();
   QString group = config->group();
@@ -460,6 +463,7 @@ void KToolBar::slotReadConfig()
   icontext=config->readNumEntry("IconText", 0);
   tsize=config->readNumEntry("Size", 26);
   _highlight =config->readNumEntry("Highlighting", 1);
+  _transparent = config->readBoolEntry("TransparentMoving", true);
   config->setGroup(group);
 
   bool doUpdate=false;
@@ -480,6 +484,12 @@ void KToolBar::slotReadConfig()
   {
     highlight = _highlight;
     doUpdate=true;
+  }
+  if (position == Floating)
+  if (_transparent != transparent)
+  {
+    transparent= _transparent;
+    doUpdate=false;
   }
   
   if (doUpdate)
@@ -577,6 +587,7 @@ void KToolBar::layoutHorizontal ()
               yOffset += item_size;
               toolbarHeight += item_size;
             }
+           XMoveWindow(qt_xdisplay(), b->winId(), rightOffset, yOffset);
            b->move (rightOffset, yOffset);
          }
         else // Not right
@@ -612,11 +623,13 @@ void KToolBar::layoutHorizontal ()
            offset = 3+9+4;
            yOffset += item_size;
            toolbarHeight += item_size;
+           XMoveWindow(qt_xdisplay(), b->winId(), offset, yOffset);
            b->move( offset, yOffset );
            offset += b->width()+3;
          }
         else
          {
+           XMoveWindow(qt_xdisplay(), b->winId(), offset, yOffset);
            b->move( offset, yOffset );
            offset += b->width()+3;
            if (offset > toolbarWidth)
@@ -754,7 +767,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
             
         int  fat = 25; //ness
 
-        mgr = new KToolBoxManager(this);
+        mgr = new KToolBoxManager(this, transparent);
 
         mgr->addHotSpot(ox, oy, ow, fat);           // top
         mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
@@ -763,14 +776,20 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 
         movePos = position;
         connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
-        mgr->doMove(true, false, true);
+        if (transparent)
+          mgr->doMove(true, false, true);
+        else
+          mgr->doMove(true, false, false);
+        
+        if (transparent)
+        {
+          setBarPos (movePos);
 
-        setBarPos (movePos);
-        if (movePos == Floating)
-          move (mgr->x(), mgr->y());
-        if (!isVisible())
-          show();
-
+          if (movePos == Floating)
+            move (mgr->x(), mgr->y());
+          if (!isVisible())
+            show();
+        }
         delete mgr;
         mgr=0;
         debug ("KToolBar: moving done");
@@ -782,33 +801,66 @@ void KToolBar::slotHotSpot(int hs)
 {
   if (mgr == 0)
     return;
-  
-  switch (hs)
+  if (!transparent) // opaque
   {
-    case 0: //top
-      mgr->setGeometry(0);
-      movePos=Top;
-      break;
-      
-    case 1: //bottom
-      mgr->setGeometry(1);
-      movePos=Bottom;
-      break;
-      
-    case 2: //left
-      mgr->setGeometry(2);
-      movePos=Left;
-      break;
-      
-    case 3: //right
-      mgr->setGeometry(3);
-      movePos=Right;
-      break;
+    switch (hs)
+    {
+      case 0: //top
+        setBarPos(Top);
+        break;
 
-    case -1: // left all
-      mgr->setGeometry(mgr->mouseX(), mgr->mouseY(), width(), height());
-      movePos=Floating;
-      break;
+      case 1: //bottom
+        setBarPos(Bottom);
+        break;
+      
+      case 2: //left
+        setBarPos(Left);
+        break;
+      
+      case 3: //right
+        setBarPos(Right);
+        break;
+
+      case -1: // left all
+        setBarPos(Floating);
+        break;
+    }
+    if (position == Floating)
+      ;//mgr->setGeometry(QCursor::pos().x(), QCursor::pos().y(), width(), height());
+    else
+      mgr->setGeometry(x(), y(), width(), height());
+    if (!isVisible())
+      show();
+  }
+  else // transparent
+  {
+    switch (hs)
+    {
+      case 0: //top
+        mgr->setGeometry(0);
+        movePos=Top;
+        break;
+
+      case 1: //bottom
+        mgr->setGeometry(1);
+        movePos=Bottom;
+        break;
+
+      case 2: //left
+        mgr->setGeometry(2);
+        movePos=Left;
+        break;
+
+      case 3: //right
+        mgr->setGeometry(3);
+        movePos=Right;
+        break;
+
+      case -1: // left all
+        mgr->setGeometry(mgr->mouseX(), mgr->mouseY(), width(), height());
+        movePos=Floating;
+        break;
+    }
   }
 }
 void KToolBar::resizeEvent( QResizeEvent *)
@@ -1595,13 +1647,6 @@ void KToolBar::mouseMoveEvent(QMouseEvent* mev)
 
 void KToolBar::mouseReleaseEvent ( QMouseEvent * ){
   debug ("KToolBar: mouseRelease event");
-  if (mgr)
-  {
-    mgr->stop();
-    debug ("KToolBar: mover stooped");
-  }
-
-  //releaseMouse();
 }
 
 // sven
