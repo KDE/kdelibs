@@ -32,6 +32,7 @@ class KeyNameMap;
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qsize.h>
+#include <qvariant.h>
 
 /** The class KabKey is used to select entries out of the database file.
  *  In future, keys might become more complex. */
@@ -178,6 +179,7 @@ public:
     NoSuchFile, /**< A filename could not be found on the filesystem. */
     InternError, /**< A error in kab's internal logic occured. */
     OutOfRange, /**< An index value was out of the allowed range. */
+    NoSuchField, /**< You queried a field that does not exist. */ 
     NotImplemented /**< The requested operation is not implemented. */
   };
   /** Some predefined telephone types. More are possible, but these are
@@ -318,6 +320,10 @@ public:
 	  key. 
 	  @return false if key is not defined */
       static bool nameOfField(const char* key, QString& value);
+      /** Get a field by its field name. Field names are defined in
+	  @see Fields. Since there are different file types a field
+	  may be represented with, a QVariant is returned. */
+      ErrorCode get(const char* key, QVariant&);
       // ----- the following members represent the fields:
       /** The headline for this address. */
       QString headline; 
@@ -366,6 +372,10 @@ public:
 	key. 
 	@return false if key is not defined */
     static bool nameOfField(const char* key, QString& value);
+    /** Get a field by its field name. Field names are defined in
+	@see Fields. Since there are different file types a field
+	may be represented with, a QVariant is returned. */
+    ErrorCode get(const char* key, QVariant&);
     // members:
     // this parts are assumed to be unique for every entry:
     QString title; /**< The title of the person. */

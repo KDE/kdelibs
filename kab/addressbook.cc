@@ -1746,4 +1746,177 @@ Section* AddressBook::configurationSection()
     }
 }
 
+AddressBook::ErrorCode AddressBook::Entry::get(const char* fieldname, QVariant& field)
+{
+  // "title", "rank", "fn", "nameprefix", "firstname", "middlename", "lastname",
+  // "birthday", "comment", "talk", "emails", "keywords", "telephone",
+  // "urls", "user1", "user2", "user3", "user4", "custom"
+  int dummy=0;
+  // -----
+  if(fieldname==Fields[dummy++])
+    { // the title
+      field=title;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the rank
+      field=rank;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the formatted name
+      field=fn;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the nameprefix
+      field=nameprefix;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the firstname
+      field=firstname;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the middle name
+      field=middlename;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the last name
+      field=lastname;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the birthday
+      field=birthday.toString();
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the comment
+      field=comment;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the talk addresses
+      field=talk;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the email addresses
+      field=emails;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the keywords
+      field=keywords;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the telephones
+      field=telephone;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the urls
+      field=URLs;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the user field 1
+      field=user1;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the user field 2
+      field=user2;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the user field 3
+      field=user3;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the user field 4
+      field=user4;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the custom fields (app specific)
+      field=custom;
+      return NoError;
+    }
+  // ----- we did not find that field:
+  return NoSuchField;
+}
+
+AddressBook::ErrorCode AddressBook::Entry::Address::get(const char* fieldname, 
+						       QVariant& field)
+{
+  // "headline", "position", 
+  // "org", "orgunit", "orgsubunit",
+  // "deliverylabel", "address", "zip", "town", "country", "state"
+  int dummy=0;
+  // -----
+  if(fieldname==Fields[dummy++])
+    { // the headline
+      field=headline;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the position
+      field=position;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the organisation
+      field=org;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the organisational unit
+      field=orgUnit;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the organisational subunit
+      field=orgSubUnit;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the delivery label
+      field=deliveryLabel;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the address
+      field=address;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the zip code
+      field=zip;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the town
+      field=town;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the country
+      field=country;
+      return NoError;
+    }
+  if(fieldname==Fields[dummy++])
+    { // the state
+      field=state;
+      return NoError;
+    }
+  // ----- we did not find that field:
+  return NoSuchField;
+}
+
 #include "addressbook.moc"
