@@ -44,7 +44,7 @@ public:
 /*
  * compute general date structure from hebrew date
  */
-static class h_date * g_date(int y, int m, int d)
+static class h_date * hebrewToGregorian(int y, int m, int d)
 {
   static class h_date h;
   int s;
@@ -90,7 +90,7 @@ static class h_date * g_date(int y, int m, int d)
 /*
  * compute date structure from no. of days since 1 Tishrei 3744
  */
-static class h_date * h_date(int y, int m, int d)
+static class h_date * gregorianToHebrew(int y, int m, int d)
 {
   static class h_date h;
   int s;
@@ -215,7 +215,7 @@ KCalendarSystemHebrew::~KCalendarSystemHebrew()
 static class h_date * toHebrew(const QDate & date)
 {
   class h_date *sd;
-  sd = h_date(date.year(), date.month(), date.day());
+  sd = gregorianToHebrew(date.year(), date.month(), date.day());
   ++sd->hd_mon;
   ++sd->hd_day;
   return sd;
@@ -362,7 +362,7 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
   // range checks
   // ### Fixme
 
-  class h_date * gd = g_date( y, m, d );
+  class h_date * gd = hebrewToGregorian( y, m, d );
 
   return date.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 }
