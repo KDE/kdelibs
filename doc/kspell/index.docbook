@@ -1,10 +1,13 @@
 <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
- <!ENTITY kspell "<application>kspell</application>">
- <!ENTITY % addindex "IGNORE">
- <![ %addindex; [ <!ENTITY docindex SYSTEM "docindex.docbook"> ]]>
+  <!ENTITY kspell "&kspell;">
+  <!ENTITY % English "INCLUDE" -- change language only here -->
+  <!ENTITY % addindex "IGNORE">
+  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN">
+  %ents;
 ]>
 
-<book lang="en">
+<book lang="&language;">
+
 <bookinfo>
 <title>The KSpell Handbook</title>
 <authorgroup>
