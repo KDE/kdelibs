@@ -48,3 +48,11 @@ be used directly on it's own)
 Slightly altered version of the KDE stylesheet, used to generate the
 docs.kde.org website, among others.
 
+kde-man.xsl
+
+A stylesheet for generating *roff output (for manpages) from DocBook
+files. It's virtually the same as the original manpages/docbook.xsl file
+from the DocBook XSL package, except that the output file's name is
+hardcoded to 'manpage.troff', and the 'Writing manpage.troff' message
+is suppressed.
+
