@@ -1039,25 +1039,19 @@ void RenderText::calcMinMaxWidth()
     const Font *f = htmlFont( false );
     int wordSpacing = style()->wordSpacing();
     int len = str->l;
-    bool ignoringSpaces = false;
     bool isSpace = false;
-    bool isPre = style()->whiteSpace() == PRE;
     bool firstWord = true;
     bool firstLine = true;
     for(int i = 0; i < len; i++)
     {
         unsigned short c = str->s[i].unicode();
-        bool previousCharacterIsSpace = isSpace;
         bool isNewline = false;
 
+        // If line-breaks survive to here they are preserved
         if ( c == '\n' ) {
-            if ( isPre ) {
-                m_hasBreak = true;
-                isNewline = true;
-                isSpace = false;
-            }
-            else
-                isSpace = true;
+            m_hasBreak = true;
+            isNewline = true;
+            isSpace = false;
         } else
             isSpace = c == ' ';
 
@@ -1065,15 +1059,6 @@ void RenderText::calcMinMaxWidth()
             m_hasBeginWS = true;
         if ((isSpace || isNewline) && i == len-1)
             m_hasEndWS = true;
-
-        if (!ignoringSpaces && !isPre && previousCharacterIsSpace && isSpace)
-            ignoringSpaces = true;
-
-        if (ignoringSpaces && !isSpace)
-            ignoringSpaces = false;
-
-        if (ignoringSpaces)
-            continue;
 
         int wordlen = 0;
         while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) )
@@ -1107,7 +1092,7 @@ void RenderText::calcMinMaxWidth()
         else {
             // Nowrap can never be broken, so don't bother setting the
             // breakable character boolean. Pre can only be broken if we encounter a newline.
-            if (style()->whiteSpace() == NORMAL || isNewline)
+            if (style()->autoWrap() || isNewline)
                 m_hasBreakableChar = true;
 
             if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
@@ -1133,13 +1118,13 @@ void RenderText::calcMinMaxWidth()
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
 
-    if (style()->whiteSpace() != NORMAL)
+    if (!style()->autoWrap()) {
         m_minWidth = m_maxWidth;
-
-    if (isPre) {
-        if (firstLine)
-            m_beginMinWidth = m_maxWidth;
-        m_endMinWidth = currMaxWidth;
+        if (style()->preserveLF()) {
+            if (firstLine)
+                m_beginMinWidth = m_maxWidth;
+            m_endMinWidth = currMaxWidth;
+        }
     }
 
     setMinMaxKnown();
@@ -1194,6 +1179,7 @@ static DOMStringImpl* cleanString (DOMStringImpl *str, bool preserveLF, bool pre
         if (collapsing) {
             if (ch == ' ')
                 continue;
+            // We act on \r as we would on \n because CSS uses it to indicate new-line
             if (ch == '\n' || ch == '\r') {
                 collapsingLF = true;
                 continue;
