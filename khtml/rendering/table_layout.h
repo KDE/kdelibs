@@ -61,7 +61,7 @@ public:
 protected:
     int calcWidthArray( int tableWidth );
 
-    QMemArray<short> width;
+    QMemArray<Length> width;
 };
 
 // -------------------------------------------------------------------------

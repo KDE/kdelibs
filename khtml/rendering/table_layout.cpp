@@ -28,7 +28,7 @@
 
 using namespace khtml;
 
-//#define DEBUG_LAYOUT
+// #define DEBUG_LAYOUT
 
 /*
   The text below is from the CSS 2.1 specs.
@@ -97,7 +97,7 @@ int FixedTableLayout::calcWidthArray( int tableWidth )
     int cCol = 0;
     int nEffCols = table->numEffCols();
     width.resize( nEffCols );
-    width.fill( -1 );
+    width.fill( Length( Variable ) );
 
 #ifdef DEBUG_LAYOUT
     qDebug("FixedTableLayout::calcWidthArray( %d )", tableWidth );
@@ -115,45 +115,37 @@ int FixedTableLayout::calcWidthArray( int tableWidth )
 		Length w = col->style()->width();
 		if ( w.isVariable() )
 		    w = grpWidth;
-		if ( w.value > 32760 )
-		    w.value = 32760;
-		if ( w.value < 0 )
-		    w.value = 0;
-		int effWidth = -1;
-		if ( w.type == Fixed && w.value > 0 )
+		int effWidth = 0;
+		if ( w.type == Fixed && w.value > 0 ) {
                     effWidth = w.value;
-		else if ( w.type == Percent && w.value > 0 && tableWidth != 0 )
-		    effWidth = w.value*tableWidth/100;
-#ifdef DEBUG_LAYOUT
-		qDebug("    col element: effCol=%d, span=%d: %d",  cCol, span, effWidth);
-#endif
-		if ( effWidth != -1 ) {
-		    int usedSpan = 0;
-		    int i = 0;
-		    while ( usedSpan < span ) {
-			if( cCol + i >= nEffCols ) {
-			    table->appendColumn( span - usedSpan );
-			    nEffCols++;
-			    width.resize( nEffCols );
-			}
-			int eSpan = table->spanOfEffCol( cCol+i );
-			int w = effWidth*eSpan/span;
-			width[cCol+i] = w;
-			usedWidth += w;
-			usedSpan += eSpan;
-			i++;
-		    }
-		    cCol += i;
-		} else {
-		    int usedSpan = 0;
-		    int i = 0;
-		    while ( usedSpan < span ) {
-			Q_ASSERT( cCol + i < nEffCols );
-			usedSpan += table->spanOfEffCol( cCol );
-			i++;
-		    }
-		    cCol += i;
+		    effWidth = QMIN( effWidth, 32760 );
 		}
+#ifdef DEBUG_LAYOUT
+		qDebug("    col element: effCol=%d, span=%d: %d w=%d type=%d",
+		       cCol, span, effWidth,  w.value, w.type);
+#endif
+		int usedSpan = 0;
+		int i = 0;
+		while ( usedSpan < span ) {
+		    if( cCol + i >= nEffCols ) {
+			table->appendColumn( span - usedSpan );
+			nEffCols++;
+			width.resize( nEffCols );
+			width[nEffCols-1] = Length();
+		    }
+		    int eSpan = table->spanOfEffCol( cCol+i );
+		    if ( (w.type == Fixed || w.type == Percent) && w.value > 0 ) {
+			width[cCol+i] = Length( w.value * eSpan, w.type );
+			usedWidth += effWidth * eSpan;
+#ifdef DEBUG_LAYOUT
+			qDebug("    setting effCol %d (span=%d) to width %d(type=%d)",
+			       cCol+i, eSpan, width[cCol+i].value, width[cCol+i].type );
+#endif
+		    }
+		    usedSpan += eSpan;
+		    i++;
+		}
+		cCol += i;
 	    }
 	} else {
 	    break;
@@ -187,47 +179,37 @@ int FixedTableLayout::calcWidthArray( int tableWidth )
 		RenderTableCell *cell = static_cast<RenderTableCell *>(child);
 		Length w = cell->style()->width();
 		int span = cell->colSpan();
-		int effWidth = -1;
-		if ( w.type == Fixed && w.value > 0 )
-		    effWidth = w.value;
-		else if ( w.type == Percent && w.value > 0 && tableWidth != 0 )
-		    effWidth = w.value*tableWidth/100;
+		int effWidth = 0;
+		if ( (w.type == Fixed || w.type == Percent) && w.value > 0 ) {
+                    effWidth = w.value;
+		    effWidth = QMIN( effWidth, 32760 );
+		}
 #ifdef DEBUG_LAYOUT
 		qDebug("    table cell: effCol=%d, span=%d: %d",  cCol, span, effWidth);
 #endif
-		if ( effWidth != -1 ) {
-		    int usedSpan = 0;
-		    int i = 0;
-		    while ( usedSpan < span ) {
-			Q_ASSERT( cCol + i < nEffCols );
-			if ( width[cCol+i] == -1 ) {
-			    int eSpan = table->spanOfEffCol( cCol+i );
-			    int w = effWidth*eSpan/span;
-			    width[cCol+i] = w;
-			    usedWidth += w;
-			    usedSpan += eSpan;
+		int usedSpan = 0;
+		int i = 0;
+		while ( usedSpan < span ) {
+		    Q_ASSERT( cCol + i < nEffCols );
+		    int eSpan = table->spanOfEffCol( cCol+i );
+		    // only set if no col element has already set it.
+		    if ( width[cCol+i].type == Variable && w.type != Variable ) {
+			width[cCol+i] = Length( w.value*eSpan, w.type );
+			usedWidth += effWidth*eSpan;
 #ifdef DEBUG_LAYOUT
-			    qDebug("    giving %d px to effCol %d (span=%d)", width[cCol+i], cCol+i, eSpan);
+			qDebug("    setting effCol %d (span=%d) to width %d(type=%d)",
+			       cCol+i, eSpan, width[cCol+i].value, width[cCol+i].type );
 #endif
-			} else {
+		    }
 #ifdef DEBUG_LAYOUT
-			    qDebug("    width of col %d already defined (span=%d)", cCol, table->spanOfEffCol( cCol ) );
+		    else {
+			qDebug("    width of col %d already defined (span=%d)", cCol, table->spanOfEffCol( cCol ) );
+		    }
 #endif
-			    usedSpan += table->spanOfEffCol( cCol );
-			}
-			i++;
-		    }
-		    cCol += i;
-		} else {
-		    int usedSpan = 0;
-		    int i = 0;
-		    while ( usedSpan < span ) {
-			Q_ASSERT( cCol + i < nEffCols );
-			usedSpan += table->spanOfEffCol( cCol );
-			i++;
-		    }
-		    cCol += i;
+		    usedSpan += eSpan;
+		    i++;
 		}
+		cCol += i;
 	    } else {
 		Q_ASSERT( false );
 	    }
@@ -264,7 +246,7 @@ void FixedTableLayout::calcMinMaxWidth()
     if ( !tableWidth ) {
 	bool haveNonFixed = false;
 	for ( unsigned int i = 0; i < width.size(); i++ ) {
-	    if ( width[i] == -1 ) {
+	    if ( !(width[i].type == Fixed) ) {
 		haveNonFixed = true;
 		break;
 	    }
@@ -272,63 +254,88 @@ void FixedTableLayout::calcMinMaxWidth()
 	if ( haveNonFixed )
 	    table->m_maxWidth = 0x7fff;
     }
+#ifdef DEBUG_LAYOUT
+    qDebug("FixedTableLayout::calcMinMaxWidth: minWidth=%d, maxWidth=%d", table->m_minWidth, table->m_maxWidth );
+#endif
 }
 
 void FixedTableLayout::layout()
 {
-#ifdef DEBUG_LAYOUT
-    qDebug("FixedTableLayout::layout:");
-#endif
-
-    int w = table->width() - table->bordersAndSpacing();
-    // we know the table width by now.
-    int rest = w - calcWidthArray( w );
-
+    int tableWidth = table->width() - table->bordersAndSpacing();
+    int available = tableWidth;
     int nEffCols = table->numEffCols();
-
-
-    if ( rest > 0 ) {
-	// distribute equally over the columns
-	int nCols = 0;
-	int numVariable = 0;
-	for ( int i = 0; i < nEffCols; i++ ) {
-	    int span = table->spanOfEffCol( i );
-	    nCols += span;
-	    if ( width[i] == -1 )
-		numVariable += span;
-	}
 #ifdef DEBUG_LAYOUT
-	qDebug("distributing %d px over %d eff cols (nCols=%d, numVariable=%d)",  rest,  nEffCols, nCols, numVariable );
+    qDebug("FixedTableLayout::layout: tableWidth=%d, numEffCols=%d",  tableWidth, nEffCols);
 #endif
 
-	for ( int i = 0; i < nEffCols; i++ ) {
-	    if ( !numVariable ) {
-		int span = table->spanOfEffCol( i );
-		int add = rest*span/nCols;
-		width[i] += add;
-		rest -= add;
-		nCols -= span;
-	    } else if ( width[i] == -1 ) {
-		int span = table->spanOfEffCol( i );
-		int add = rest*span/numVariable;
-		width[i] = add;
-		rest -= add;
-		numVariable -= span;
-	    }
+
+    QMemArray<short> calcWidth;
+    calcWidth.resize( nEffCols );
+    calcWidth.fill( -1 );
+
+    // first assign  fixed width
+    for ( int i = 0; i < nEffCols; i++ ) {
+	if ( width[i].type == Fixed ) {
+	    calcWidth[i] = width[i].value;
+	    available -= width[i].value;
 	}
     }
 
+    // assign  percent width
+    if ( available > 0 ) {
+	int totalPercent = 0;
+	for ( int i = 0; i < nEffCols; i++ )
+	    if ( width[i].type == Percent )
+		totalPercent += width[i].value;
+
+	// calculate how much to distribute to percent cells.
+	int base = tableWidth * totalPercent / 100;
+	if ( base > available )
+	    base = available;
+	else
+	    totalPercent = 100;
+
+#ifdef DEBUG_LAYOUT
+    qDebug("FixedTableLayout::layout: assigning percent width, base=%d, totalPercent=%d", base, totalPercent);
+#endif
+        for ( int i = 0; available > 0 && i < nEffCols; i++ ) {
+            if ( width[i].type == Percent ) {
+                int w = base * width[i].value / totalPercent;
+                available -= w;
+                calcWidth[i] = w;
+            }
+        }
+    }
+
+    // assign  variable width
+    if ( available > 0 ) {
+	int totalVariable = 0;
+	for ( int i = 0; i < nEffCols; i++ )
+	    if ( width[i].type == Variable )
+		totalVariable++;
+
+        for ( int i = 0; available > 0 && i < nEffCols; i++ ) {
+            if ( width[i].type == Variable ) {
+                int w = available / totalVariable;
+                available -= w;
+                calcWidth[i] = w;
+		totalVariable--;
+            }
+        }
+    }
+
     for ( int i = 0; i < nEffCols; i++ )
-	if ( width[i] <= 0 )
-	    width[i] = 0; // IE gives min 1 px...
+	if ( calcWidth[i] <= 0 )
+	    calcWidth[i] = 0; // IE gives min 1 px...
 
     int pos = 0;
+    int spacing = table->cellSpacing();
     for ( int i = 0; i < nEffCols; i++ ) {
 #ifdef DEBUG_LAYOUT
-	qDebug("col %d: %d (width %d)", i, pos, width[i] );
+	qDebug("col %d: %d (width %d)", i, pos, calcWidth[i] );
 #endif
 	table->columnPos[i] = pos;
-	pos += width[i];
+	pos += calcWidth[i] + spacing;
     }
     table->columnPos[table->columnPos.size()-1] = pos;
 }
