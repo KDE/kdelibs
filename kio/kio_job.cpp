@@ -1026,7 +1026,7 @@ QString KIOJob::convertSize( unsigned long size )
     // Giga-byte
     if ( size >= 1073741824 )
     {
-        fsize = (float) size / (float) 1048576;
+        fsize = (float) size / (float) 1073741824;
         s = i18n( "%1 GB" ).arg( fsize, 0, 'f', 1 );
     }
     // Mega-byte
