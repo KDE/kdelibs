@@ -53,11 +53,16 @@ int main(int argc, char *argv[])
   KURL rel_url( baseURL, "/top//test/../test1/file.html" );
   check( "KURL::url()", rel_url.url(), "http://www.foo.bar/top//test1/file.html" );
 
+
   baseURL = "http://www.foo.bar/top//test2/file2.html";
   check( "KURL::url()", baseURL.url(), "http://www.foo.bar/top//test2/file2.html" );
 
   baseURL = "file:/usr/local/src/kde2/////kdelibs/kio";
   check( "KURL::url()", baseURL.url(), "file:/usr/local/src/kde2/////kdelibs/kio" );
+
+  baseURL = "http://www.foo.bar";
+  KURL rel_url2( baseURL, "mailto:bastian@kde.org" );
+  check( "KURL::url()", rel_url2.url(), "mailto:bastian@kde.org" );
 
   baseURL = "file:/usr/local/src/kde2/kdelibs/kio/";
   KURL url2( baseURL, "../../////kdebase/konqueror" );
