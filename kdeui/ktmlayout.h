@@ -31,6 +31,9 @@
 
 #include <ktoolbar.h>
 
+class KTMLayoutPrivate;
+class KTMLayoutIteratorPrivate;
+
 /**
  * KTMLayout is layout manager for KTMainWindow. It is customized
  * specifically for KTMainWindow's layout. You can use it for your own
@@ -59,7 +62,7 @@ public:
 	 */
 	KTMLayout()
 	{
-		topMenuBar = bottomMenuBar = statusBar = 0;
+		topMenuBar = bottomMenuBar = statusBar = indicatorWidget = 0;
 		mainItem = 0;
 	}
 	/**
@@ -150,6 +153,14 @@ public:
 	}
 
 	/**
+	 * Register the indicator widget. There can only be one.
+	 */
+	void addIndicatorWidget(QWidget* w)
+	{
+		indicatorWidget = w;
+	}
+
+	/**
 	 * This function can be used to limit the number of lines/columns that
 	 * are used by a single block of non-full-width toolbars. When the
 	 * specified limit is reached the remaining bars will extend outside
@@ -218,6 +229,7 @@ private:
 	 */
 	QWidget* topMenuBar;
 	QWidget* bottomMenuBar;
+    QWidget* indicatorWidget;
 
 	QList<QWidget> flatBars;
 
@@ -228,6 +240,8 @@ private:
 
 	QWidget* mainItem;
 	QWidget* statusBar;
+
+    KTMLayoutPrivate *d;
 };
 
 /**
@@ -263,6 +277,7 @@ public:
 private:
 	int idx;
 	QList<QLayoutItem> *list;
+    KTMLayoutIteratorPrivate *d;
 };
 
 #endif

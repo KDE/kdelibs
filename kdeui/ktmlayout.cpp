@@ -33,6 +33,7 @@ KTMLayout::KTMLayout(QWidget *parent, int border, int space,
 	QLayout(parent, border, space, name)
 {
 	topMenuBar = bottomMenuBar = statusBar = 0;
+    indicatorWidget = 0;
 	mainItem = 0;
 	maxWraps = (unsigned) -1;	// set to maximum value
 }
@@ -49,13 +50,33 @@ KTMLayout::setGeometry(const QRect& rect)
 
 	int currY = rect.y();
 
+    /* if neither the menubar nor the statusbar exist, then we have no
+     * place to display the indicator widget (yet). so hide it */
+    if (indicatorWidget && !topMenuBar && !statusBar)
+        indicatorWidget->hide();
+
 	/* position top menu bar */
 	if (topMenuBar)
 	{
 		int hfw = topMenuBar->heightForWidth(rect.width());
 		if (hfw == 0)
 			hfw = topMenuBar->height();
-		topMenuBar->setGeometry(rect.x(), currY, rect.width(), hfw);
+        int rect_width = rect.width();
+
+        /* position the indicator widget */
+        if (indicatorWidget)
+        {
+            if (indicatorWidget->height() > hfw)
+                hfw = indicatorWidget->height();
+
+            indicatorWidget->move(rect.width() - indicatorWidget->width(),
+                                  currY);
+            if (!indicatorWidget->isVisible())
+              indicatorWidget->show();
+            rect_width = rect.width() - indicatorWidget->width();
+        }
+
+		topMenuBar->setGeometry(rect.x(), currY, rect_width, hfw);
 		currY += hfw;
 	}
 
@@ -82,7 +103,24 @@ KTMLayout::setGeometry(const QRect& rect)
 		int hfw = statusBar->heightForWidth(rect.width());
 		if (hfw == 0)
 			hfw = statusBar->height();
-		statusBar->setGeometry(rect.x(), currY, rect.width(), hfw);
+        int rect_width = rect.width();
+
+        /* position the indicator widget */
+        if (indicatorWidget && !topMenuBar)
+        {
+            if (indicatorWidget->height() > hfw)
+                hfw = indicatorWidget->height();
+
+            indicatorWidget->move(rect.width() - indicatorWidget->width(),
+                                  currY);
+            if (!indicatorWidget->isVisible())
+              indicatorWidget->show();
+
+            rect_width = rect.width() - indicatorWidget->width();
+        }
+
+
+		statusBar->setGeometry(rect.x(), currY, rect_width, hfw);
 		currY += hfw;
 	}
 

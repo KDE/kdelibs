@@ -94,16 +94,19 @@ class KTMainWindowPrivate
 public:
   KTMainWindowPrivate()
   {
-    m_factory = 0L;
-    m_helpMenu = 0L;
+    m_factory   = 0L;
+    m_helpMenu  = 0L;
+    m_indicator = 0L;
   }
   ~KTMainWindowPrivate()
   {
     if (m_factory) delete m_factory;
     if (m_helpMenu) delete m_helpMenu;
+    if (m_indicator) delete m_indicator;
   }
   KXMLGUIFactory *m_factory;
   KHelpMenu *m_helpMenu;
+  QWidget *m_indicator;
 };
 
 static KTLWSessionManaged* ksm = 0;
@@ -323,6 +326,10 @@ void KTMainWindow::updateRects()
         if (kmenubar && kmenubar->isVisibleTo(this))
                 layoutMgr->addTopMenuBar(kmenubar);
 
+    /* add indicator widget */
+    if (d->m_indicator)
+        layoutMgr->addIndicatorWidget(d->m_indicator);
+
         /* add toolbars */
 	for (toolbars.first(); toolbars.current(); toolbars.next())
 		if (toolbars.current()->isVisibleTo(this))
@@ -412,23 +419,6 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
             entryList.append("Enabled");
         else
             entryList.append("Disabled");
-        /* switch (kmenubar->menuBarPos())
-        {
-            case KMenuBar::Flat:   //ignore
-            case KMenuBar::Top:
-                entryList.append("Top");
-                break;
-            case KMenuBar::Bottom:
-                entryList.append("Bottom");
-                break;
-            case KMenuBar::Floating:
-                entryList.append("Floating");
-                entryList.append(KWM::properties(kmenubar->winId()).ascii());
-                break;
-            case KMenuBar::FloatingSystem:
-                entryList.append("FloatingSystem");
-	  break;
-        }                                              */
         config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
         entryList.clear();
     }
@@ -511,7 +501,6 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
         i = config->readListEntry (QString::fromLatin1("MenuBar"), entryList, ';');
         if (i < 2)
         {
-            //debug ("KTWreadProps: bad number of kmenubar args");
             return FALSE;
         }
 	bool showmenubar = false;
@@ -520,24 +509,6 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 	  showmenubar = True;
         else
 	  kmenubar->hide();
-	/*
-        entry = entryList.next();
-        if (entry == QString::fromLatin1("Top"))
-            kmenubar->setMenuBarPos(KMenuBar::Top);
-        else if (entry == "Bottom")
-            kmenubar->setMenuBarPos(KMenuBar::Bottom);
-        else if (entry == "Floating")
-        {
-            kmenubar->setMenuBarPos(KMenuBar::Floating);
-            entry=entryList.next();
-            kmenubar->setGeometry(KWM::setProperties(kmenubar->winId(), entry));
-            showmenubar = true;
-        }
-        else if (entry == "FloatingSystem")
-	    {
-		kmenubar->setMenuBarPos(KMenuBar::FloatingSystem);
-		showmenubar = true;
-	    } */
         entryList.clear();
 	if (showmenubar)
 	  kmenubar->show();
@@ -713,10 +684,19 @@ KMenuBar *KTMainWindow::menuBar()
 void KTMainWindow::setMenu (KMenuBar *menubar)
 {
   kmenubar = menubar;
-  //connect ( kmenubar, SIGNAL( moved (menuPosition) ),
-  //          this, SLOT( updateRects() ) );
   connect (kmenubar, SIGNAL(destroyed ()), this, SLOT(menubarKilled ()));
   updateRects();
+}
+
+void KTMainWindow::setIndicatorWidget( QWidget *ind)
+{
+  d->m_indicator = ind;
+  updateRects();
+}
+
+QWidget *KTMainWindow::indicator()
+{
+  return d->m_indicator;
 }
 
 KToolBar *KTMainWindow::toolBar( int ID )
@@ -858,24 +838,36 @@ KXMLGUIFactory *KTMainWindow::guiFactory()
 
 void KTMainWindow::createGUI( const QString &xmlfile )
 {
+  // disabling the updates prevents unnecessary redraws
   setUpdatesEnabled( false );
 
+  // just in case we are rebuilding, let's remove our old client
+  guiFactory()->removeClient( this );
+
+  // we always want a help menu
   if (d->m_helpMenu == 0)
     d->m_helpMenu = new KHelpMenu(this, instance()->aboutData(), true,
                                   actionCollection());
+
+  // we always want to load in our global standards file
   setXMLFile( locate( "config", "ui/ui_standards.rc", instance() ) );
 
+  // now, merge in our local xml file.  if this is null, then that
+  // means that we will be only using the global file
   if ( !xmlfile.isNull() )
     setXMLFile( xmlfile, true );
-  else
-    setXML( QString::null, true );
+  {
+    QString auto_file(instance()->instanceName() + "ui.rc");
+    setXMLFile( auto_file, true );
+  }
 
+  // do the actual GUI building
   guiFactory()->addClient( this );
 
+  // try and get back *some* of our memory
   conserveMemory();
 
   setUpdatesEnabled( true );
-  updateRects();
 }
 
 #include "ktmainwindow.moc"

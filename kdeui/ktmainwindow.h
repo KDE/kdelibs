@@ -170,6 +170,22 @@ public:
     QWidget *view() const { return kmainwidget; }
 
     /**
+     * Set the given widget as the "indicator" widget found either in
+     * the menubar or the statusbar.  The widget may be any size...
+     * but keep in mind where it will be going.  A maximum size of
+     * 30x22 is recommended.
+     *
+     * @param indicator The widget to be displayed in the indicator space
+     */
+    void setIndicatorWidget( QWidget *indicator );
+
+    /**
+     * @return A pointer to the indicator widget or 0L if it doesn't
+     *         exist.
+     */
+    QWidget *indicator();
+
+    /**
      * Enable or disable the status bar.
      */
     void enableStatusBar( KStatusBar::BarStatus stat = KStatusBar::Toggle );
@@ -396,8 +412,11 @@ public:
     virtual KXMLGUIFactory *guiFactory();
 
     /**
-     * Create a GUI given a local XML file.  If xmlfile is NULL, then
-     * only the global (standard) XML file is used
+     * Create a GUI given a local XML file.  If @ref #xmlfile is NULL,
+     * then it will try to construct a local XML filename like
+     * appnameui.rc where 'appname' is your app's name.  If that file
+     * does not exist, then the XML UI code will only use the global
+     * (standard) XML file for the layout purposes.
      *
      * @param xmlfile The local xmlfile (relative or absolute)
      */
