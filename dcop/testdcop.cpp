@@ -60,7 +60,7 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
 
 int main(int argc, char **argv)
 {
-  KApplication app(argc, argv);
+  KApplication app(argc, argv, "testdcop");
 
   QCString replyType;
   QByteArray data, reply;
