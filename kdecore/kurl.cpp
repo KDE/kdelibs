@@ -834,13 +834,20 @@ bool KURL::isParentOf( const KURL& _u ) const
        m_strRef_encoded == _u.m_strRef_encoded &&
        m_iPort == _u.m_iPort )
   {
-    QString p1( QDir::cleanDirPath( path() )+'/' );
-    QString p2( QDir::cleanDirPath( _u.path() )+'/' );
+    if ( path().isEmpty() || _u.path().isEmpty() )
+        return false; // can't work with implicit paths
 
-    //kdDebug(126) << "p1=" << p1 << endl;
-    //kdDebug(126) << "p2=" << p2 << endl;
-    //kdDebug(126) << "p1.length()=" << p1.length() << endl;
-    //kdDebug(126) << "p2.left(!$)=" << p2.left( p1.length() ) << endl;
+    QString p1( QDir::cleanDirPath( path() ) );
+    if ( p1[p1.length()-1] != '/' )
+        p1 += '/';
+    QString p2( QDir::cleanDirPath( _u.path() ) );
+    if ( p2[p2.length()-1] != '/' )
+        p2 += '/';
+
+    kdDebug(126) << "p1=" << p1 << endl;
+    kdDebug(126) << "p2=" << p2 << endl;
+    kdDebug(126) << "p1.length()=" << p1.length() << endl;
+    kdDebug(126) << "p2.left(!$)=" << p2.left( p1.length() ) << endl;
     return p2.startsWith( p1 );
   }
   return false;
