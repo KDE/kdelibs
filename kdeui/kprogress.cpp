@@ -35,6 +35,7 @@
 #include "kprogress.h"
 
 #include <kapplication.h>
+#include <klocale.h>
 #include <kwin.h>
 
 KProgress::KProgress(QWidget *parent, const char *name, WFlags f)
@@ -349,22 +350,30 @@ void KProgressDialog::slotAutoActions(int percentage)
     if (percentage < 100)
     {
         setButtonCancelText(mCancelText);
+        return;
+    }
+
+    mShowTimer->stop();
+
+    if (mAutoReset)
+    {
+        mProgressBar->setProgress(0);
     }
     else
     {
-        if (mAutoReset)
+        setAllowCancel(true);
+        setButtonCancelText(i18n("&Close"));
+    }
+
+    if (mAutoClose)
+    {
+        if (mShown)
         {
-            mProgressBar->setProgress(0);
+            hide();
         }
         else
         {
-            setAllowCancel(true);
-            setButtonCancelText("&Close");
-        }
-
-        if (mAutoClose)
-        {
-            hide();
+            emit finished();
         }
     }
 }
