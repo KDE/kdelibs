@@ -83,9 +83,9 @@ QString KHTMLDecoder::decode(const char *data)
 		    char tmp[20];
 		    int len = 0;
 		    while (  
-			((*ptr >= 'a') && (*ptr <= 'z')) ||
-			((*ptr >= 'A') && (*ptr <= 'Z')) ||
-			((*ptr >= '0') && (*ptr <= '9'))
+			((*ptr >= 'a') && (*ptr <= 'z') ||
+			 (*ptr >= 'A') && (*ptr <= 'Z') ||
+			 (*ptr >= '0') && (*ptr <= '9'))
 			&& len < 19 ) 
 		    {
 			tmp[len] = tolower( *ptr );
