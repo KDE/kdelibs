@@ -6,6 +6,7 @@
 #include "jp2.h"
 
 #include <stdint.h>
+#include <ktempfile.h>
 #include <qcolor.h>
 #include <qfile.h>
 #include <qimage.h>
@@ -29,19 +30,46 @@ namespace {
 	jas_image_t*
 	read_image( const QImageIO* io )
 	{
-		// TODO: is there a way to read the image in chunks? Reading an
-		// unlimited amount of data at once doesn't sound too good...
-		QByteArray ba = io->ioDevice()->readAll();
-		jas_stream_t* in = jas_stream_memopen( ba.data(), ba.size() );
-		if( !in ) return 0;
+		jas_stream_t* in = 0;
+		// for QIODevice's other than QFile, a temp. file is used.
+		KTempFile* tempf = 0;
 
-		jas_image_t* image;
-		if( !(image = jas_image_decode( in, -1, 0 ) ) ) {
-			jas_stream_close( in );
+		QFile* qf = 0;
+		if( ( qf = dynamic_cast<QFile*>( io->ioDevice() ) ) ) {
+			// great, it's a QFile. Let's just take the filename.
+			in = jas_stream_fopen( QFile::encodeName( qf->name() ), "rb" );
+		} else {
+			// not a QFile. Copy the whole data to a temp. file.
+			tempf = new KTempFile();
+			if( tempf->status() != 0 ) {
+				delete tempf;
+				return 0;
+			} // if
+			tempf->setAutoDelete( true );
+			QFile* out = tempf->file();
+			// 4096 (=4k) is a common page size.
+			QByteArray b( 4096 );
+			Q_LONG size;
+			// 0 or -1 is EOF / error
+			while( ( size = io->ioDevice()->readBlock( b.data(), 4096 ) ) > 0 ) {
+				// in case of a write error, still give the decoder a try
+				if( ( out->writeBlock( b.data(), size ) ) == -1 ) break;
+			} // while
+			// flush everything out to disk
+			out->flush();
+
+			in = jas_stream_fopen( QFile::encodeName( tempf->name() ), "rb" );
+		} // else
+		if( !in ) {
+			delete tempf;
 			return 0;
 		} // if
-		jas_stream_close( in );
 
+		jas_image_t* image = jas_image_decode( in, -1, 0 );
+		jas_stream_close( in );
+		delete tempf;
+
+		// image may be 0, but that's Ok
 		return image;
 	} // read_image
 
@@ -149,6 +177,7 @@ namespace {
 
 		const uint width = jas_image_width( gs.image );
 		const uint height = jas_image_height( gs.image );
+
 		for( uint y = 0; y < height; ++y ) {
 			for( uint x = 0; x < width; ++x ) {
 				for( int k = 0; k < numcmpts; ++k ) {
@@ -217,7 +246,6 @@ kimgio_jp2_read( QImageIO* io )
 void
 kimgio_jp2_write( QImageIO* )
 {
-	// TODO
 } // kimgio_jp2_write
 
 #endif // HAVE_JASPER
