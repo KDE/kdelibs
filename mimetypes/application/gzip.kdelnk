@@ -4,7 +4,6 @@ MimeType=application/x-gzip
 Comment=Gzip file
 Comment[is_IS]=Þjöppuð skrá ( gzip )
 Comment[cs]=Soubor komprimovaný gzipem
-Comment[es]=Archivo comprimido con gzip
 Comment[fr]=Fichier compressé par gzip
 Comment[it]=File Compresso Gzip
 Comment[nl]=GZip bestand

@@ -8,7 +8,6 @@ DefaultApp=acroread
 Comment=Pdf Document
 Comment[is_IS]=Pdf skjal
 Comment[cs]=PDF dokument
-Comment[es]=Documento PDF
 Comment[it]=Documento PDF
 Comment[de]=PDF Dokument
 Comment[no]=PDF-dokument
@@ -22,3 +21,4 @@ Comment[pt_BR]=Arquivo PDF
 Comment[sk]=PDF dokument
 Comment[ro]=Document Нn format PDF
 Comment[ru]=Документ PDF
+
