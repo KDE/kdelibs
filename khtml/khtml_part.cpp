@@ -1107,7 +1107,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     emit setWindowCaption( i18n( "* Unknown *" ) );
 
   // ### proper detection of html or xml
-  if (m_url.url().right(3).lower() == "xml")
+  if (m_url.filename().right(4).lower() == ".xml")
     d->m_doc = new DocumentImpl( d->m_view );
   else
     d->m_doc = new HTMLDocumentImpl( d->m_view );
