@@ -32,6 +32,9 @@
 #ifdef HAVE_MITSHM
 #include <X11/extensions/XShm.h>
 #endif
+#ifdef __osf__
+extern "C" int XShmQueryExtension(Display *display);
+#endif
 
 // d pointer
 
