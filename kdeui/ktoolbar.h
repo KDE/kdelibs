@@ -388,25 +388,6 @@ public:
 
   /**
    * Inserts an animated widget.  A @ref KAnimWidget will be created
-   * internally using the icon list you provide.
-   * This will emit a signal (clicked()) whenever the
-   * animation widget is clicked.
-   *
-   * @see animatedWidget()
-   *
-   * @param id       The id for this toolbar item
-   * @param receiver The parent of your slot
-   * @param slot     The slot to receive the clicked() signal
-   * @param icons    A list of all icon names to use for the animation
-   * @param index    The item index
-   *
-   * @return The item index
-   */
-    int insertAnimatedWidget(int id, QObject *receiver, const char *slot,
-			     const QStringList& icons, int index = -1);
-
-  /**
-   * Inserts an animated widget.  A @ref KAnimWidget will be created
    * internally using the icon name you provide.
    * This will emit a signal (clicked()) whenever the
    * animation widget is clicked.

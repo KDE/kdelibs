@@ -74,23 +74,6 @@ public:
                QWidget *parent = 0L, const char *name = 0L );
 
   /**
-   * This is the constructor to use if you are using custom
-   * (non-standard) icons for the animation.  Pass along your list of
-   * icons to use for the animation and an optional size to load and
-   * you're set.  If you omit the size, the default size will be used.
-   *
-   * @param icons  The icons to use for the animation
-   * @param size   The size to load
-   *         You don't have to set it if the parent is a KToolBar; in this case
-   *         it will use the toolbar's size.
-   * @param parent The standard parent
-   * @param name   The standard internal name
-   */
-  KAnimWidget( const QStringList& icons,
-               int size = 0,
-               QWidget *parent = 0L, const char *name = 0L );
-
-  /**
    * Default constructor.  This will not do anything until you use
    * @ref setIcons() later.
    *
@@ -122,15 +105,6 @@ public:
   void setSize( int size );
 
   /**
-   * Sets the list of icons to use for the animation.  They will all be
-   * loaded using the @p MainBarIcon() function so make sure that they are
-   * toolbar icons... or at least loadable using @p MainBarIcon().
-   *
-   * @param icons The icons to use for the animation
-   */
-  void setIcons( const QStringList& icons );
-
-  /**
    * Sets the name of the animated icons to load.  This will use the
    * KIconLoader::loadAnimated method for the actual loading.
    *
@@ -146,6 +120,7 @@ protected:
   virtual void leaveEvent( QEvent *e );
   virtual void enterEvent( QEvent *e );
   virtual void hideEvent( QHideEvent *e);
+  virtual void showEvent( QShowEvent *e);
   virtual void mousePressEvent( QMouseEvent *e );
 
 protected slots:
@@ -153,8 +128,6 @@ protected slots:
   void updateIcons();
 
 private:
-  void loadRemainingIcons();
-
   class KAnimWidgetPrivate;
   KAnimWidgetPrivate *d;
 };

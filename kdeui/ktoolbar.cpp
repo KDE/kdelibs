@@ -421,20 +421,6 @@ int KToolBar::insertWidget(int id, int /*width*/, QWidget *widget, int index)
     return index;
 }
 
-
-int KToolBar::insertAnimatedWidget(int id, QObject *receiver, const char *slot,
-                                    const QStringList& icons, int index )
-{
-    KAnimWidget *anim = new KAnimWidget( icons, d->m_iconSize, this );
-    insertWidgetInternal( anim, index, id );
-
-    if ( receiver )
-        connect( anim, SIGNAL(clicked()), receiver, slot);
-
-    return index;
-
-}
-
 int KToolBar::insertAnimatedWidget(int id, QObject *receiver, const char *slot,
                                     const QString& icons, int index )
 {

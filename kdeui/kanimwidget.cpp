@@ -18,10 +18,10 @@
    Boston, MA 02111-1307, USA.
 */
 #include <kanimwidget.h>
-#include <qstringlist.h>
 #include <qpixmap.h>
 #include <qtimer.h>
 #include <qpainter.h>
+#include <qimage.h>
 #include <ktoolbar.h>
 #include <kdebug.h>
 #include <kiconloader.h>
@@ -29,20 +29,14 @@
 class KAnimWidget::KAnimWidgetPrivate
 {
 public:
-  KAnimWidgetPrivate()
-  {
-    size = -1;
-  }
-
-  QStringList            icons;
-  QString                icon_name;
-  QTimer                 timer;
-  int                    size;
-  bool                   loadingCompleted;
+  bool                   loadingCompleted : 1;
+  bool                   initDone         : 1;
+  int                    frames;
+  int                    current_frame;
   QPixmap                pixmap;
-
-  QValueList<QPixmap>           pixmaps;
-  QValueList<QPixmap>::Iterator iter;
+  QTimer                 timer;
+  QString                icon_name;
+  int                    size;
 };
 
 KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent,
@@ -57,22 +51,7 @@ KAnimWidget::KAnimWidget( const QString& icons, int size, QWidget *parent,
 
   d->loadingCompleted = false;
   d->size = size;
-  setIcons( icons );
-  setFrameStyle( StyledPanel | Sunken );
-}
-
-KAnimWidget::KAnimWidget( const QStringList& icons, int size,
-                          QWidget *parent, const char *name )
-  : QFrame( parent, name ),
-    d(new KAnimWidgetPrivate)
-{
-  connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
-
-  if (parent->inherits( "KToolBar" ))
-    connect(parent, SIGNAL(modechange()), this, SLOT(updateIcons()));
-
-  d->loadingCompleted = false;
-  d->size = size;
+  d->initDone = false;
   setIcons( icons );
   setFrameStyle( StyledPanel | Sunken );
 }
@@ -86,15 +65,13 @@ KAnimWidget::~KAnimWidget()
 
 void KAnimWidget::start()
 {
-  d->iter   = d->pixmaps.begin();
-  d->pixmap = *d->iter;
+  d->current_frame = 0;
   d->timer.start( 50 );
 }
 
 void KAnimWidget::stop()
 {
-  d->iter   = d->pixmaps.begin();
-  d->pixmap = *d->iter;
+  d->current_frame = 0;
   d->timer.stop();
   repaint();
 }
@@ -108,15 +85,6 @@ void KAnimWidget::setSize( int size )
   updateIcons();
 }
 
-void KAnimWidget::setIcons( const QStringList& icons )
-{
-  if ( d->icons == icons )
-    return;
-
-  d->icons = icons;
-  updateIcons();
-}
-
 void KAnimWidget::setIcons( const QString& icons )
 {
   if ( d->icon_name == icons )
@@ -124,6 +92,16 @@ void KAnimWidget::setIcons( const QString& icons )
 
   d->icon_name = icons;
   updateIcons();
+}
+
+void KAnimWidget::showEvent(QShowEvent* e)
+{
+  if (!d->initDone)
+  {
+     d->initDone = true;
+     updateIcons();
+  }
+  QFrame::showEvent(e);
 }
 
 void KAnimWidget::hideEvent(QHideEvent* e)
@@ -157,15 +135,10 @@ void KAnimWidget::slotTimerUpdate()
   if(!isVisible())
     return;
 
-  if(!d->loadingCompleted)
-    loadRemainingIcons();
+  d->current_frame++;
+  if (d->current_frame == d->frames)
+     d->current_frame = 0;
 
-  if ( d->iter == d->pixmaps.end() )
-    d->iter = d->pixmaps.begin();
-
-  d->pixmap = *d->iter;
-
-  ++d->iter;
   repaint(false);
 }
 
@@ -174,59 +147,39 @@ void KAnimWidget::drawContents( QPainter *p )
   if ( d->pixmap.isNull() )
     return;
 
-  QPixmap pm(QSize(this->width(), this->height()));
-  QPainter p2 (&pm);
-  int x, y;
-
-  pm.fill (p->backgroundColor());
-
-  if ( d->pixmap.width() != width() || d->pixmap.height() != height() )
-  {
-    x = (width()  - d->pixmap.width()) / 2;
-    y = (height() - d->pixmap.height()) / 2;
-  }
-  else
-  {
-    x = 0;
-    y = 0;
-  }
-
-  p2.drawPixmap(x, y, d->pixmap);
-  p->drawPixmap( 0, 0, pm);
+  int w = d->pixmap.width();
+  int h = w;
+  int x = (width()  - w) / 2;
+  int y = (height() - h) / 2;
+  p->drawPixmap(QPoint(x, y), d->pixmap, QRect(0, d->current_frame*h, w, h));
 }
 
 void KAnimWidget::updateIcons()
 {
+  if (!d->initDone)
+     return;
+
   if (parent()->inherits( "KToolBar" ))
     d->size = ((KToolBar*)parent())->iconSize();
+  if (!d->size)
+     d->size = KGlobal::iconLoader()->currentSize(KIcon::MainToolbar);
 
-  if (d->icon_name.isEmpty() == false)
-    d->icons = KGlobal::iconLoader()->loadAnimated(d->icon_name, KIcon::MainToolbar, d->size);
+  QString path = KGlobal::iconLoader()->iconPath(d->icon_name, -d->size);
+  QImage img(path);
+  
+  if (img.isNull())
+     return;
 
-  d->pixmaps.clear();
-  d->pixmaps.append( MainBarIcon( *d->icons.begin(), d->size ) );
-  d->loadingCompleted = false;
-  d->iter   = d->pixmaps.begin();
-  d->pixmap = *d->iter;
-
-  if ( d->pixmap.width() != (width()+2) || d->pixmap.height() != (height()+2) ) {
-    setFixedSize( d->pixmap.width()+2, d->pixmap.height()+2);
-    resize(d->pixmap.width()+2, d->pixmap.height()+2);
-  }
-
-  if( d->timer.isActive())
-    loadRemainingIcons();
-}
-
-void KAnimWidget::loadRemainingIcons()
-{
-  QStringList::Iterator it = d->icons.begin();
-  for( it++; it != d->icons.end(); ++it)
+  d->current_frame = 0;
+  d->frames = img.height() / img.width();
+  if (d->pixmap.width() != d->size)
   {
-    d->pixmaps.append( MainBarIcon( *it, d->size ) );
+     img = img.smoothScale(d->size, d->size*d->frames);     
   }
+  d->pixmap = img;
 
-  d->loadingCompleted = true;
+  setFixedSize( d->size+2, d->size+2 );
+  resize( d->size+2, d->size+2 );
 }
 
 #include "kanimwidget.moc"
