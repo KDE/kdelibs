@@ -1094,6 +1094,17 @@ void HTMLInputElementImpl::attach()
     }
 }
 
+void HTMLInputElementImpl::applyChanges(bool top, bool force)
+{
+    HTMLGenericFormElementImpl::applyChanges( top, force );
+    // ### perhaps not the most appropriate place for this.... here so it get's called after
+    // a script has executed - see also HTMLImageElementImpl::applyChanges
+    if (m_render && m_type == IMAGE) {
+        static_cast<RenderImageButton *>(m_render)
+            ->setImageUrl(m_src,
+                          static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
+    }
+}
 
 bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool multipart)
 {
@@ -1746,7 +1757,7 @@ void HTMLSelectElementImpl::reset()
             option->setSelected(selected);
         }
     }
-    if ( m_render ) 
+    if ( m_render )
         static_cast<RenderSelect*>(m_render)->setSelectionChanged(true);
     setChanged( true );
 }

@@ -282,7 +282,7 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach();
-
+    virtual void applyChanges(bool top=true, bool force=true);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
     typeEnum inputType() const { return m_type; }
@@ -367,13 +367,13 @@ public:
 
     long selectedIndex() const;
     void setSelectedIndex( long index );
-    
+
     virtual bool isEnumeratable() const { return true; }
 
     long length() const;
 
     long minWidth() const { return m_minwidth; }
-            
+
     long size() const { return m_size; }
 
     bool multiple() const { return m_multiple; }
@@ -443,7 +443,7 @@ class HTMLOptionElementImpl : public HTMLGenericFormElementImpl
 {
     friend class khtml::RenderSelect;
     friend class DOM::HTMLSelectElementImpl;
-    
+
 public:
     HTMLOptionElementImpl(DocumentPtr *doc);
     HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
