@@ -12,6 +12,7 @@ debian/tmp/usr/share/services
 debian/tmp/usr/share/servicetypes
 debian/tmp/usr/share/mimelnk/all
 debian/tmp/usr/share/mimelnk/application/illustrator.desktop
+debian/tmp/usr/share/mimelnk/application/mathml+xml.desktop
 debian/tmp/usr/share/mimelnk/application/msexcel2.desktop
 debian/tmp/usr/share/mimelnk/application/msexcel.desktop
 debian/tmp/usr/share/mimelnk/application/mspowerpoint.desktop
