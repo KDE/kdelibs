@@ -888,6 +888,7 @@ void KDirOperator::setupActions()
     actionMenu = new KActionMenu( i18n("Menu"), this, "popupMenu" );
 
     upAction = KStdAction::up( this, SLOT( cdUp() ), this, "up" );
+    upAction->setText( i18n("Parent directory") );
     backAction = KStdAction::back( this, SLOT( back() ), this, "back" );
     forwardAction = KStdAction::forward(this, SLOT(forward()), this,"forward");
     homeAction = KStdAction::home( this, SLOT( home() ), this, "home" );
