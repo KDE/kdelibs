@@ -887,6 +887,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(l, curRow, 0);
 
     QHBox *box = new QHBox(d->m_frame);
+    box->setSpacing(20);
     l = new QLabel(mimeComment, box );
 
 #ifdef Q_WS_X11
