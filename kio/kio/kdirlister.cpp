@@ -1497,17 +1497,14 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   QValueListIterator<KIO::UDSEntry> it = buf.begin();
   for ( ; it != buf.end(); ++it )
   {
-    QString name;
+    // Form the complete url
+    if ( !item )
+      item = new KFileItem( *it, jobUrl, delayedMimeTypes, true );
+    else
+      item->setUDSEntry( *it, jobUrl, delayedMimeTypes, true );
 
     // Find out about the name
-    KIO::UDSEntry::Iterator it2 = (*it).begin();
-    for ( ; it2 != (*it).end(); it2++ )
-      if ( (*it2).m_uds == KIO::UDS_NAME )
-      {
-        name = (*it2).m_str;
-        break;
-      }
-
+    QString name = item->name();
     Q_ASSERT( !name.isEmpty() );
 
     // we duplicate the check for dotdot here, to avoid iterating over
@@ -1521,7 +1518,8 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
       // there is no root item yet
       if ( !dir->rootItem )
       {
-        dir->rootItem = new KFileItem( *it, jobUrl, delayedMimeTypes, true  );
+        dir->rootItem = item;
+        item = 0;
 
         for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
           if ( !kdl->d->rootFileItem && kdl->d->url == jobUrl )
@@ -1531,17 +1529,8 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
       continue;
     }
 
-    // Form the complete url
-    if ( !item )
-      item = new KFileItem( *it, jobUrl, delayedMimeTypes, true );
-    else
-      item->setUDSEntry( *it, jobUrl, delayedMimeTypes, true );
-
-    QString url = item->url().url();
-    //kdDebug(7004) << "slotUpdateResult : look for " << url << endl;
-
     // Find this item
-    if ( (tmp = fileItems[url]) )
+    if ( (tmp = fileItems[item->url().url()]) )
     {
       tmp->mark();
 
