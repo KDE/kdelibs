@@ -326,7 +326,7 @@ void HTMLTokenizer::write( const char *str )
 	    else
 		scriptCode[ scriptCodeSize++ ] = *src++;
 	}
-	else if (charEntity)
+	else if (charEntity && !( tquote && tag ))
 	{
             unsigned long entityValue = 0;
 	    QString res = 0;

@@ -200,20 +200,11 @@ KHTMLCachedImage::movieUpdated( const QRect & )
 {
     HTMLObject *o;
 
-    if( !gotFrame )
-    {
-	if( p ) delete p;
-	p = new QPixmap();
-	*p = m->framePixmap();
-	for( o = clients.first(); o != 0L; o = clients.next() )
-	    o->pixmapChanged( p );
-    }
-    else
-    {
-	for( o = clients.first(); o != 0L; o = clients.next() )
-	    o->pixmapChanged();
-	gotFrame = true;
-    }
+    if( p ) delete p;
+    p = new QPixmap();
+    *p = m->framePixmap();
+    for( o = clients.first(); o != 0L; o = clients.next() )
+	o->pixmapChanged( p );
 }
 
 // the following function is a workaround for a bug in QMovie.

@@ -738,21 +738,6 @@ void HTMLTable::scaleColumns(unsigned int c_start, unsigned int c_end, int tooAd
             if ( r < totalRows - 1 && cells[r+1][c] == cell )
                 continue;
 
-            // Parse colspan-cells in each colomn!
-
-            if ( c < totalCols - 1 && cells[r][c+1] == cell )
-            {        
-                // Find the last cell
-                unsigned int c1 = c+2;
-                while ((c1 < totalCols) && (cells[r][c1] == cell))
-                    c1++;
-                               
-                minWidth = columnOpt[c1] - columnOpt[c1 + 1 - cell->colSpan()];
-            }
-            else
-            {        
-                minWidth = columnOpt[c+1] - columnOpt[c];
-            }           
             cellPercent = cell->getPercent();      
 
             if (cellPercent == UNDEFINED)

@@ -19,9 +19,9 @@
 
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = khtmlparser.cpp khtmljscript.cpp khtml.cpp khtmlobj.cpp khtmlfont.cpp khtmlformats.cpp khtmlform.cpp khtmltoken.cpp khtmlframe.cpp khtmlview.cpp khtmlclue.cpp debug.cpp khtmldata.cpp khtmltable.cpp khtmliter.cpp khtmlcache.cpp
+libkhtml_la_SOURCES = khtmlparser.cpp khtmljscript.cpp khtml.cpp khtmlobj.cpp khtmlfont.cpp khtmlform.cpp khtmltoken.cpp khtmlframe.cpp khtmlview.cpp khtmlclue.cpp debug.cpp khtmldata.cpp khtmltable.cpp khtmliter.cpp khtmlcache.cpp
 
-SRC_META = khtml.moc khtmlobj.moc khtmlform.moc khtmlframe.moc khtmlview.moc khtmlcache.moc
+SRC_META = khtml.moc khtmlform.moc khtmlframe.moc khtmlview.moc khtmlcache.moc
 khtml.cpp: khtml.moc
 khtmlobj.cpp: khtmlobj.moc
 khtmlform.cpp: khtmlform.moc
@@ -31,7 +31,7 @@ khtmlcache.cpp: khtmlcache.moc
 
 DISTCLEANFILES = $(SRC_META)
 include_HEADERS = khtml.h khtmlview.h
-noinst_HEADERS = khtmlchain.h khtmlformats.h khtmlparser.h khtmljscript.h khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlcache.h
+noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlcache.h
 libkhtml_la_LDFLAGS = -version-info 2:0
 
 data_DATA = khtml_dnd.xpm

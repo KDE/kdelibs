@@ -316,6 +316,11 @@ protected:
     bool strikeOut;
 
     /*
+     * is true if are between <noframes> and </noframes>
+     */
+    bool inNoframes;
+
+    /*
      * from <BASE TARGET="...">
      */
     const char *baseTarget;

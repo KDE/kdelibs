@@ -49,7 +49,7 @@
 #include <qdrawutil.h>
 #include <qregexp.h>
 
-#include "khtmlobj.moc"
+#include "khtmlobj.h"
 
 // Debug function
 void debugM( const char *msg , ...);
@@ -1383,7 +1383,7 @@ void HTMLImage::setPixmap( QPixmap *p )
 void HTMLImage::pixmapChanged(QPixmap *p)
 {
     if( p )
-	setPixmap( p);
+	setPixmap( p );
 }
 
 void HTMLImage::setOverlay( const char *_ol )

@@ -75,6 +75,8 @@ public:
   QList<HTMLObject> m_lstClients;
 };
 
+class SavedPage;
+
 /**
  * @short Basic HTML Widget.  Does not handle scrollbars or frames.
  *
@@ -551,18 +553,16 @@ public:
      */
     void calcAbsolutePos();
 
-    // Registers QImageIO handlers for JPEG and GIF
-    static void registerFormats();
 
-	/*
-	 * Set background image
-	 */
-	void setBGImage( const char *_url); 
+    /*
+     * Set background image
+     */
+    void setBGImage( const char *_url); 
 
-	/*
-	 * Set background color
-	 */
-	void setBGColor( const QColor &_bgColor); 
+    /*
+     * Set background color
+     */
+    void setBGColor( const QColor &_bgColor); 
 
     /**
      * @return a pointer to the @ref JSEnvironment instance used by this widget.
@@ -619,6 +619,18 @@ public:
 
     // Another option to feed image data into the HTML Widget
     void data( const char *_url, const char *_data, int _len, bool _eof );
+
+    /**
+     * Function used to save the current html-page into a struct
+     * This does only work, if the page has a valid URL, pages
+     * filled with the write() method are not saveable
+     */
+    SavedPage *saveYourself(SavedPage *p = 0);
+    /**
+     * restore a page previously saved with @ref saveYourself()
+     */
+    void restore(SavedPage *);
+
   
 signals:
     /**
@@ -763,6 +775,13 @@ signals:
 
     // signal that the HTML Widget has changed size
     void resized( const QSize &size );
+
+    /**
+     * signal is emitted, when an URL redirect 
+     * (<meta http-equiv="refresh" ...>) tag is encountered
+     * delay is the delay in seconds; 0 means immediate redirect,
+     */
+    void redirect(int delay, const char *url);
       
 public slots:
     /**
@@ -893,6 +912,13 @@ protected:
      * position form elements (widgets) on the page
      */
     void positionFormElements();
+
+    /*
+     * functions used internally for saving and restoring html pages
+     */
+    void buildFrameSet(SavedPage *p, QString *s);
+    void buildFrameTree(SavedPage *p, HTMLFrameSet *f);
+
 
     /*
      * This is the URL that the cursor is currently over

@@ -24,7 +24,7 @@
 // KDE HTML Widget -- Main Widget
 // $Id$
 
-//#define CLUE_DEBUG
+#define CLUE_DEBUG
 
 #ifdef GrayScale
 #undef GrayScale
@@ -49,6 +49,7 @@
 #include "khtmlframe.h"
 #include "khtmltable.h"
 #include "khtmlview.h"
+#include "khtmlpage.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -66,6 +67,7 @@
 #include <kurl.h>
 #include <kapp.h>
 #include <kcharsets.h>
+#include <kimgio.h>
 
 #include <X11/Xlib.h>
 
@@ -149,7 +151,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     f += "/khtmlw/pics/khtmlw_dnd.xpm";
     dndDefaultPixmap.load( f.data() );
     
-    registerFormats();
+    kimgioRegister();
 
     setMouseTracking( true );    
 
@@ -2632,6 +2634,178 @@ JSWindowObject* KHTMLWidget::getJSWindowObject()
 {
     return getJSEnvironment()->getJSWindowObject();
 }
-                                                            
+
+
+SavedPage *
+KHTMLWidget::saveYourself(SavedPage *p)
+{
+    if( !p )
+	p = new SavedPage();
+    if( bIsFrame && htmlView )
+    {
+	// we need to store the frame info
+	p->isFrame = true;
+	p->scrolling = htmlView->getScrolling();
+	p->frameborder = htmlView->getFrameBorder();
+	p->marginwidth = leftBorder;
+	p->marginheight = topBorder;
+	p->allowresize = htmlView->allowResize();
+    }
+    p->url = getDocumentURL().url();
+    p->xOffset = x_offset;
+    p->yOffset = y_offset;
+
+    if(isFrameSet() && !parser)
+	buildFrameTree(p, frameSet);
+
+    return p;
+}
+
+void
+KHTMLWidget::buildFrameTree(SavedPage *p, HTMLFrameSet *f)
+{
+    p->isFrameSet = true;
+    //ok... now we need to store the content of all frames...
+    p->frames = new QList<SavedPage>;
+    p->frames->setAutoDelete(true);
+    p->frameLayout = new FrameLayout;
+    p->frameLayout->rows = f->rows;
+    p->frameLayout->cols = f->cols;
+    p->frameLayout->frameBorder = f->frameBorder;
+    //FIXME
+    //p->title = title;
+    p->title = "";
+    
+    QWidget *w;
+    for( (w = f->widgetList.first()); w != 0;
+	 (w = f->widgetList.next()) )
+    {
+	if ( w->inherits( "KHTMLView" ) )
+	{
+	    KHTMLView *v = (KHTMLView*)w;
+		SavedPage *s = v->saveYourself();
+		p->frames->append( s );
+	}
+	else if(strcmp(w->className(),"HTMLFrameSet") == 0 )
+	{
+	    HTMLFrameSet *f = (HTMLFrameSet *)w;
+	    SavedPage *s = new SavedPage;
+	    buildFrameTree(s, f);
+	    p->frames->append( s );
+	}
+    }
+}
+ 
+void 
+KHTMLWidget::restore(SavedPage *p)
+{
+    if( !p->isFrameSet )
+    {
+	// the easy part...
+	if(htmlView)
+	{
+	    printf("restoring view\n");
+	    printf("framename = %s\n",p->frameName.data());
+	    printf("url = %s\n",p->url.data());
+	    htmlView->openURL( p->url );
+	    htmlView->setIsFrame( p->isFrame );
+	    if( p->isFrame )
+	    {
+		htmlView->setFrameName( p->frameName );
+		htmlView->setScrolling( p->scrolling );
+		htmlView->setAllowResize( p->allowresize );
+		htmlView->setFrameBorder( p->frameborder );
+		htmlView->setMarginWidth( p->marginwidth );
+		htmlView->setMarginHeight( p->marginheight );
+	    }
+	    htmlView->restorePosition(p->xOffset, p->yOffset);
+	}
+	else
+	{
+	    printf("NO VIEW!!!!\n");
+	    emit URLSelected( p->url, LeftButton, 0L );
+	}
+    }
+    else
+    {
+	// dirty hack, to get kfm to display the right url in the lineedit...
+	htmlView->openURL( "restored:" + p->url );
+
+	// we construct a html sequence, which represents the frameset to see
+	QString s = "<html><head><title>\n";
+	s += p->title;
+	s += "</title></head><body>\n";
+	buildFrameSet(p, &s);
+	s += "</body></html>\n";
+
+	printf("restoring frameset:\n%s\n", s.data());
+	begin();
+	parse();
+	write(s);
+	end();
+	
+	actualURL = p->url;
+	reference = actualURL.reference();
+	setBaseURL( p->url);
+    }
+    
+}
+
+void 
+KHTMLWidget::buildFrameSet(SavedPage *p, QString *s)
+{
+    QString tmp;
+
+    if(!p->isFrameSet) return;
+
+    QString aStr = "<frameset";
+    if(!p->frameLayout->rows.isEmpty())
+	aStr += " ROWS=\"" + p->frameLayout->rows + "\"";
+    if(!p->frameLayout->cols.isEmpty())
+	aStr += " COLS=\"" + p->frameLayout->cols + "\"";
+    tmp.sprintf(" FRAMEBORDER=%d",p->frameLayout->frameBorder);
+    aStr += tmp;
+    if(!p->frameLayout->allowResize)
+	aStr += " NORESIZE";
+    aStr += ">\n";
+    *s += aStr;
+
+    SavedPage *sp;
+    for( (sp = p->frames->first()); sp != 0; (sp = p->frames->next()) )
+    {
+	if(sp->isFrameSet) 
+	    buildFrameSet(sp, s);
+	else
+	{
+	    aStr = "<frame src=\"";
+	    aStr += sp->url;
+	    aStr += "\" name=\"";
+	    aStr += sp->frameName;
+	    aStr += "\">";
+	    // FIXME: other options...
+	    aStr += "\n";
+	    *s += aStr;
+	}
+    }    
+    *s += "</frameset>";
+}
+
+SavedPage::SavedPage()
+{
+    frameName = 0;
+    isFrame = false;
+    isFrameSet = false;
+    url = 0;
+    xOffset = yOffset = 0;
+    frameLayout = 0;
+    frames = 0;
+}
+
+SavedPage::~SavedPage()
+{
+    if( frameLayout ) delete frameLayout;
+    if( frames ) delete frames;
+}
+
 #include "khtml.moc"
 

@@ -174,6 +174,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     underline = false;
     strikeOut = false;
     weight = QFont::Normal;
+    inNoframes = false;
 
     colorStack.clear();
     colorStack.push( new QColor( settings->fontBaseColor ) );
@@ -472,6 +473,7 @@ void KHTMLParser::blockEndFrameSet( HTMLClue *_clue, HTMLStackElem *Elem)
 
 void KHTMLParser::blockEndForm( HTMLClue *_clue, HTMLStackElem *Elem)
 {
+    printf("in endForm\n");
     vspace_inserted = insertVSpace( _clue, vspace_inserted );
     flow = 0;
     form = 0;
@@ -695,6 +697,17 @@ const char* KHTMLParser::parseBody( HTMLClue *_clue, const char *_end[], bool to
     while ( ht->hasMoreTokens() )
     {
 	str = ht->nextToken();
+
+	// ignore stuff inbetween <noframes> and </noframes> if
+	// this has a htmlView
+	if(inNoframes)
+	{
+	    str++;
+	    if(strncmp( str, "</noframes", 10 ) == 0)
+		inNoframes = false;
+	    else
+		continue;
+	}
 
 	if ( *str == '\0' )
 	    continue;
@@ -1517,6 +1530,7 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
 	}
 	else if ( strncmp( str, "form", 4 ) == 0 )
 	{
+	    printf("Creating form\n");
 	    QString action = "";
 	    QString method = "GET";
 
@@ -1540,11 +1554,20 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
 	    HTMLWidget->addForm( form);
 
             vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	    pushBlock( ID_FORM, 2, &KHTMLParser::blockEndForm);
+	    // Lars: does not work, if forms extend over several
+	    // tablecells, and the form gets created in the first one.
+	    //pushBlock( ID_FORM, 2, &blockEndForm);
 	}
 	else if ( strncmp( str, "/form", 5 ) == 0 )
 	{
-	    popBlock( ID_FORM, _clue);
+	    if(form)
+	    {
+		vspace_inserted = insertVSpace( _clue, vspace_inserted );
+		flow = 0;
+		form = 0;
+	    }
+	    //Lars: see above
+	    //popBlock( ID_FORM, _clue);
 	}
 }
 
@@ -2028,31 +2051,48 @@ void KHTMLParser::parseM( HTMLClue *_clue, const char *str )
 				    setCharset(token+8);
 			}                         
 		    }
-#ifdef BROKEN
-		    //Lars: this is still buggy....
-		    else if(strcasecmp(httpequiv.data(),"refresh") == 0)
+		    if ( strcasecmp(httpequiv.data(), "refresh") == 0 )
 		    {
-			QString url;
-			int delay;
-			printf("content = %s\n",content.data());
-			stringTok->tokenize( content, " >;," );
-			const char* token = stringTok->nextToken();
-			sscanf(token,"%d", &delay);
+			stringTok->tokenize( content, " >;" );
+			QString t = stringTok->nextToken();
+			bool ok;
+			int delay = t.toInt( &ok );
+			QString url = HTMLWidget->actualURL.url();
+			if ( !ok ) delay = 0;
 			while ( stringTok->hasMoreTokens() )
 	   		{
-			    if ( strncasecmp( token, "url=", 4 ) == 0)
-				setCharset(token+4);
-			}                         
-			// FIXME: have to do something with the scanned input
-			HTMLWidget->URLSelected(url, LeftButton, 0 );
+			    const char* token = stringTok->nextToken();
+			    debugM("token: %s\n",token);
+			    if ( strncasecmp( token, "url=", 4 ) == 0 )
+			    {
+				token += 4;
+				if ( *token == '#' )
+				{// reference
+				    KURL u( HTMLWidget->actualURL );
+				    u.setReference( token + 1 );
+				    url = u.url();
+				}
+				else 
+				{
+				    KURL u( HTMLWidget->baseURL, token );
+				    url = u.url();
+				}
+			    }
+			}
+			// set up the redirect...
+			if(!( delay==0 && url == HTMLWidget->actualURL.url()))
+			   /*emit*/ HTMLWidget->redirect( delay, url );
 		    }
-#endif
 		} 
 	}
 }
 
-void KHTMLParser::parseN( HTMLClue *, const char * )
+//<noframes>        </noframes>
+void KHTMLParser::parseN( HTMLClue *, const char *str )
 {
+    // only ignore the stuff in noframes, if we have a htmlview
+    if( HTMLWidget->htmlView && strncmp( str, "noframes", 8 ) == 0)
+	inNoframes = true;	
 }
 
 // <ol>             </ol>           partial
@@ -2229,8 +2269,10 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 	else if ( strncmp(str, "select", 6 ) == 0)
 	{
 		if ( !form )
+		{
+		    printf("form missing\n");
 			return;
-
+		}
 		QString name = "";
 		int size = 0;
 		bool multi = false;
@@ -2551,9 +2593,11 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 {
     static const char *endthtd[] = { "</th", "</td", "</tr", "<th", "<td", "<tr", "</table", 0 };
     static const char *endcap[] = { "</caption>", "</table>", "<tr", "<td", "<th", 0 };    
+    static const char *endall[] = { "</caption>", "</table>", "<tr", "<td", "<th"," </th", "</td", "</tr", 0 };    
     const char* str = 0;
     bool firstRow = true;
     bool tableTag = true;
+    bool noCell = true;
     int padding = 1;
     int spacing = 2;
     int width = 0;
@@ -2737,12 +2781,25 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 		    break; // Get next token from 'ht'
 		}
 		
-		if (*str=='<' && *(str+1)=='t' && (*(str+2)=='d' ||
-			 *(str+2)=='h'))
+		if ( strncmp( str, "</table", 7 ) == 0 )
+		{
+		    closeAnchor();
+		    done = true;
+		    break;
+		}
+
+		// <td, <th, or we get something before the 
+		// first <td or <th. Lets put that into one row 
+		// of it's own... (Lars)
+		bool tableEntry = *str=='<' && *(str+1)=='t' && 
+		    (*(str+2)=='d' || *(str+2)=='h');
+		if ( tableEntry || noCell ) 
 		//		else if ( strncmp( str, "<td", 3 ) == 0 ||
 		//			strncmp( str, "<th", 3 ) == 0 )
 		{
+		    printf("making cell %d %d\n", tableEntry, noCell);
 		    bool heading = false;
+		    noCell = false;
 
 		    // if ( strncasecmp( str, "<th", 3 ) == 0 )
 		    if (*(str+2)=='h')
@@ -2769,6 +2826,8 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 			divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::Left :
 			    rowhalign);
 
+		    if(tableEntry)
+		    {
 		    stringTok->tokenize( str + 4, " >" );
 		    while ( stringTok->hasMoreTokens() )
 		    {
@@ -2825,6 +2884,7 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 				bgcolor.setNamedColor( token+8 );
 			}
 		    } // while (hasMoreTokens)
+		    } // if(tableEntry)
 
 		    HTMLTableCell *cell = new HTMLTableCell( percent, cellWidth,
 			rowSpan, colSpan, padding );
@@ -2841,6 +2901,17 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 			pushBlock( ID_TH, 3, &KHTMLParser::blockEndFont);
 		        str = parseBody( cell, endthtd );
                         popBlock( ID_TH, cell );
+		    }
+		    else if ( !tableEntry )
+		    {
+			// put all the junk between <table> and the first table
+			// tag into one row.
+		    	pushBlock( ID_TD, 3 );
+			parseOneToken( cell, str );
+			str = parseBody( cell, endall );
+			popBlock( ID_TD, cell );
+			table->endRow();
+			table->startRow();
 		    }
 		    else
 		    {
@@ -2877,13 +2948,6 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 		    }
 		}
 		
-		if ( strncmp( str, "</table", 7 ) == 0 )
-		{
-		    closeAnchor();
-		    done = true;
-		    break;
-		}
-
 		// Unknown or unhandled table-tag: ignore
 		break;
 #if 0
