@@ -91,8 +91,14 @@ void KDE::PlayObjectCreator::slotMimeType(const QString& mimetype)
 	if (mimetype_copy == "application/x-zerosize")
 		emit playObjectCreated(Arts::PlayObject::null());
 
-	emit playObjectCreated (
-		m_server.createPlayObjectForStream(
-		m_instream, std::string(mimetype_copy.latin1()), m_createBUS)
-		);
+	playObject = m_server.createPlayObjectForStream( 
+					m_instream,
+					std::string( mimetype_copy.latin1() ),
+					m_createBUS );
+	if ( playObject.isNull() ) {
+		m_instream.streamEnd();
+		emit playObjectCreated( Arts::PlayObject::null() );
+		return;
+	}
+	emit playObjectCreated( playObject );
 }

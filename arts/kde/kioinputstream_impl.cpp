@@ -41,9 +41,9 @@
 
 using namespace Arts;
 
-const unsigned int KIOInputStream_impl::PACKET_COUNT = 5;
+const unsigned int KIOInputStream_impl::PACKET_COUNT = 10;
 
-KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(1024)
+KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(2048)
 {
 	m_job = 0;
 	m_data = 0;
@@ -52,6 +52,7 @@ KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(1024)
 	m_packetBuffer = 16;
 	m_streamStarted = false;
 	m_streamSuspended = false;
+	m_streamPulled = false;
 }
 
 KIOInputStream_impl::~KIOInputStream_impl()
@@ -101,11 +102,13 @@ void KIOInputStream_impl::streamEnd()
 		QObject::disconnect(m_job, SIGNAL(mimetype(KIO::Job *, const QString &)),
 				 this, SLOT(slotScanMimeType(KIO::Job *, const QString &)));
 
+		if ( m_streamPulled )
+			outdata.endPull();
+
 		m_job->kill();
 		m_job = 0;
 	}	
 
-	outdata.endPull();
 	m_streamStarted = false;
 }
 
@@ -186,10 +189,11 @@ void KIOInputStream_impl::processQueue()
 
 	if (!m_firstBuffer) {
 		if(m_data.size() < (m_packetBuffer * m_packetSize * 2) ) {
-			kdDebug() << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize) - m_data.size()) << ")" << endl;
+			kdDebug() << "STREAMING: Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * m_packetSize * 2) - m_data.size()) << ")" << endl;
 			return;
 		} else {
 			m_firstBuffer = true;
+			m_streamPulled = true;
 			outdata.setPull(PACKET_COUNT, m_packetSize);
 		} 
 	}
