@@ -165,9 +165,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   QHBoxLayout *sizeLayout = new QHBoxLayout();
   if (diff) {
-     sizeCheckbox = new QCheckBox(page);
-     connect(sizeCheckbox, SIGNAL(toggled(bool)), SLOT(toggled_checkbox()));
-     sizeLayout->addWidget(sizeCheckbox, 0, Qt::AlignLeft);
+    sizeCheckbox = new QCheckBox(page);
+    connect(sizeCheckbox, SIGNAL(toggled(bool)), SLOT(toggled_checkbox()));
+    sizeLayout->addWidget(sizeCheckbox, 0, Qt::AlignLeft);
     QString sizeCBToolTipText =
       i18n("Change font size?");
     QString sizeCBWhatsThisText =
@@ -242,7 +242,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     sizeIsRelativeCheckBox = new QCheckBox( sizeIsRelativeCBText,
                                             page,
                                            "sizeIsRelativeCheckBox" );
-    sizeIsRelativeCheckBox->setTristate( true );
+    sizeIsRelativeCheckBox->setTristate( diff );
     QGridLayout *sizeLayout2 = new QGridLayout( 2,2, KDialog::spacingHint()/2, "sizeLayout2" );
     gridLayout->addLayout(sizeLayout2, row, 2);
     sizeLayout2->setColStretch( 1, 1 ); // to prevent text from eating the right border
@@ -766,6 +766,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.77  2001/12/16 01:10:54  khz
+* Changed sizeIsRelative parameter from *bool to *QButton::ToggleState (and converted the "relative" checkbox into a tri-state-checkbox accordingly) to ease interoperation with the new "diff" feature of KFontDialog.
+*
 * Revision 1.76  2001/12/14 23:48:23  khz
 * added initialization of  sizeIsRelativeCheckBox
 *
