@@ -238,8 +238,14 @@ String Window::toString() const
   return UString( "object Window" );
 }
 
-bool Window::hasProperty(const UString &p, bool recursive) const
+bool Window::hasProperty(const UString &/*p*/, bool /*recursive*/) const
 {
+  // emulate IE behaviour: it doesn't throw exceptions when undeclared
+  // variables are used. Returning true here will lead to get() returning
+  // 'undefined' in those cases.
+  return true;
+  
+#if 0  
   if (p == "closed")
     return true;
 
@@ -315,6 +321,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
   }
 
   return false;
+#endif  
 }
 
 KJSO Window::get(const UString &p) const
@@ -534,7 +541,8 @@ void Window::scheduleClose()
 
 bool Window::isSafeScript() const
 {
-  return originCheck(m_part->url().url(),KJS::Global::current().get("[[ScriptURL]]").toString().value().qstring());
+  KHTMLPart *act = (KHTMLPart*)KJS::Global::current().extra();
+  return act && originCheck(m_part->url(), act->url());
 }
 
 Completion WindowFunc::tryExecute(const List &args)

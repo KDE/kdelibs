@@ -85,9 +85,7 @@ namespace KJS {
 #endif
     KJS::Imp *global = script->globalObject();
 
-    // make "window" prefix implicit for shortcuts like alert()
     global->setPrototype(new Window(khtmlpart));
-    global->put("window", global);
 
     return script;
   }
@@ -107,9 +105,9 @@ namespace KJS {
 
     KJS::KJSO thisNode = n.isNull() ? KJSO() : getDOMNode(n);
 
-    KJS::Global::current().put("[[ScriptURL]]",String(khtmlpart->url().url()),DontEnum | DontDelete);
+    KJS::Global::current().setExtra(khtmlpart);
     bool ret = script->evaluate(thisNode, c, len);
-    KJS::Global::current().put("[[ScriptURL]]",Undefined(),DontEnum | DontDelete);
+    KJS::Global::current().setExtra(0L);
 
 #ifdef KJS_DEBUGGER
     kjs_html_debugger->setCode(QString::null);
@@ -161,10 +159,10 @@ namespace KJS {
   {
     if (functionObj.implementsCall()) {
       if (!inEvaluate)
-        KJS::Global::current().put("[[ScriptURL]]",String(khtmlpart->url().url()),DontEnum | DontDelete);
+	KJS::Global::current().setExtra(khtmlpart);
       functionObj.executeCall(thisVal,&args);
       if (!inEvaluate)
-        KJS::Global::current().put("[[ScriptURL]]",Undefined(),DontEnum | DontDelete);
+	KJS::Global::current().setExtra(0L);
     }
     return QVariant(); // ### return proper value
   }

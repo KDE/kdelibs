@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -194,12 +194,8 @@ KJSO KJS::getString(DOM::DOMString s)
     return String(s);
 }
 
-bool KJS::originCheck(const QString & url1, const QString & url2)
+bool KJS::originCheck(const KURL &kurl1, const KURL &kurl2)
 {
-  if ( url1 == url2 ) // avoid parsing if possible
-    return true;
-  KURL kurl1 = url1;
-  KURL kurl2 = url2;
   if (kurl1.protocol() == kurl2.protocol() &&
       kurl1.host() == kurl2.host() &&
       kurl1.port() == kurl2.port() &&
