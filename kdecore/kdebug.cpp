@@ -280,8 +280,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         }
 
   // check if we should abort
-  if( ( nLevel == KDEBUG_FATAL ) && debug_Config &&
-          ( debug_Config->readNumEntry( "AbortFatal", 1 ) ) )
+  if( ( nLevel == KDEBUG_FATAL )
+      && ( !debug_Config || debug_Config->readNumEntry( "AbortFatal", 1 ) ) )
         abort();
 }
 
