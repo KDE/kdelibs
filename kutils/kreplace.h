@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KOREPLACE_H
-#define KOREPLACE_H
+#ifndef KREPLACE_H
+#define KREPLACE_H
 
 #include "kfind.h"
 
