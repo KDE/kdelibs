@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000 Malte Starostik <malte.starostik@t-online.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,10 +37,11 @@
 #include "ksslx509map.h"
 #include <qlabel.h>
 
- 
+class QScrollView;
+
 class KSSLInfoDlg : public KDialog {
 
-  Q_OBJECT 
+  Q_OBJECT
 
 public:
   KSSLInfoDlg(bool secureConnection, QWidget *parent = 0, const char *name = 0);
@@ -49,32 +51,18 @@ public:
              const QString& ip, const QString& url,
              const QString& cipher, const QString& cipherdesc,
              const QString& sslversion, int usedbits, int bits);
- 
+
 private:
- 
-  class KSSLInfoDlgPrivate;
-  KSSLInfoDlgPrivate *d;
+  QScrollView *buildCertInfo(const QString &certName);
 
-  void interfaceNoSSL();
-  void interfaceSSLBlank();
-  void interfaceSSL();
-
-  bool m_secCon;
-  KSSLX509Map m_peer, m_issuer;
-  QString m_ip, m_url, m_cipher, m_cipherdesc, m_sslversion;
-  int m_usedbits, m_bits;
-  QLabel *m_lip, *m_lurl, *m_lcipher, *m_lcipherdesc,
-         *m_lsslversion, *m_lbits;
-  QLabel *m_lpO, *m_lpOU, *m_lpL, *m_lpCN, *m_lpST, *m_lpEMAIL,
-         *m_lpC, *m_liO, *m_liOU, *m_liL, *m_liCN, *m_liST, *m_liEMAIL,
-         *m_liC;
-
-
-protected:
-
+private:
+    class KSSLInfoDlgPrivate;
+    KSSLInfoDlgPrivate *d;
 
 private slots:
   void launchConfig();
+  void urlClicked(const QString &url);
+  void mailClicked(const QString &url);
 
 };
 
