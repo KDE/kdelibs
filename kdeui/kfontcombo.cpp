@@ -41,7 +41,7 @@ struct KFontComboPrivate
           lineSpacing(0)
     {
     };
-    
+
     bool bold : 1;
     bool italic : 1;
     bool underline : 1;
@@ -63,8 +63,8 @@ public:
     virtual int height(const QListBox *) const;
 
     void updateFont();
-    
-protected:    
+
+protected:
     virtual void paint(QPainter *p);
 
 private:
@@ -135,7 +135,7 @@ void KFontListItem::paint(QPainter *p)
 void KFontListItem::updateFont()
 {
     if (!m_font)
-        return;        
+        return;
 
     m_font->setBold(m_combo->d->bold);
     m_font->setItalic(m_combo->d->italic);
@@ -148,7 +148,7 @@ void KFontListItem::createFont()
 {
     if (m_font)
         return;
-        
+
     m_font = new QFont(m_fontName);
     QFontMetrics fm(*m_font);
     for (unsigned int i = 0; i < m_fontName.length(); ++i)
@@ -184,7 +184,7 @@ void KFontCombo::setFonts(const QStringList &fonts)
 }
 
 /*
- * Maintenance note: Keep in sync with KFontAction::setFont() 
+ * Maintenance note: Keep in sync with KFontAction::setFont()
  */
 void KFontCombo::setCurrentFont(const QString &family)
 {
@@ -200,10 +200,10 @@ void KFontCombo::setCurrentFont(const QString &family)
           return;
        }
     }
-    i = lowerName.find(" [");
-    if (i>-1)
+    int x = lowerName.find(" [");
+    if (x>-1)
     {
-       lowerName = lowerName.left(i);
+       lowerName = lowerName.left(x);
        for(int i = 0; i < c; i++)
        {
           if (text(i).lower() == lowerName)
@@ -213,7 +213,7 @@ void KFontCombo::setCurrentFont(const QString &family)
              return;
           }
        }
-    }    
+    }
 
     lowerName += " [";
     for(int i = 0; i < c; i++)
@@ -227,10 +227,10 @@ void KFontCombo::setCurrentFont(const QString &family)
     }
 }
 
-QString KFontCombo::currentFont() const 
-{ 
+QString KFontCombo::currentFont() const
+{
    if (d->modified)
-      return currentText(); 
+      return currentText();
    return d->defaultFamily;
 }
 
