@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/x-font-snf
+Icon=font_bitmap
+Patterns=*.snf;*.snf.Z;*.snf.gz;*.SNF;*.SNF.Z;*.SNF.gz
+Comment=SNF Bitmap Font

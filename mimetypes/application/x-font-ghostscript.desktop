@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/x-font-ghostscript
+Icon=font_ghostscript
+Patterns=*.gsf;*.GSF
+Comment=Ghostscript Font
