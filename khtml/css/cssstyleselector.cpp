@@ -95,7 +95,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 
     buildLists();
 
-    kdDebug() << "number of style sheets in document " << authorStyleSheets.count();
+    kdDebug() << "number of style sheets in document " << authorStyleSheets.count() << endl;
      kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 //     if ( userStyle )
 //     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
