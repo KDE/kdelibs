@@ -65,12 +65,11 @@ int main(int argc, char *argv[])
 		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
     doc->openURL( args->url(0) );
-    //DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
-    //dtv->show();
-    //dtv->setGeometry(0, 0, 360, 800);
+    DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
+    dtv->show();
+    dtv->setGeometry(0, 0, 360, 800);
 
     toplevel->setCentralWidget( doc->widget() );
-    //toplevel->setGeometry(366, 0, 640, 800);
     toplevel->resize( 640, 800);
     
     QDomDocument d = doc->domDocument();
