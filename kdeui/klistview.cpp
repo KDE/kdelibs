@@ -1370,15 +1370,13 @@ bool KListView::isRenameable (int col) const
   return d->renameable.contains(col);
 }
 
-void KListView::setRenameable (int col, bool yesno)
+void KListView::setRenameable (int col, bool renameable)
 {
   if (col>=header()->count()) return;
 
   d->renameable.remove(col);
-  if (yesno && d->renameable.find(col)==d->renameable.end())
+  if (renameable)
     d->renameable+=col;
-  else if (!yesno && d->renameable.find(col)!=d->renameable.end())
-    d->renameable.remove(col);
 }
 
 void KListView::doneEditing(QListViewItem *item, int row)
