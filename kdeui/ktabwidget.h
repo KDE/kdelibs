@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2003 Stephan Binner <binner@kde.org>
+    Copyright (C) 2003 Zack Rusin <zack@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,14 +34,18 @@ class KTabWidget : public QTabWidget
 public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
 
+    void setTabColor( QWidget *, const QColor& color );
+    void setTabColor( int id, const QColor& color );
+    QColor tabColor( QWidget * ) const;
+
 /*!
     If \a enable is TRUE, tab reordering with middle button will be enabled.
 
     Note that once enabled you shouldn't rely on previously queried
-    currentPageIndex(), indexOf( QWidget * ) or known tab ids anymore.
+    currentPageIndex() or indexOf( QWidget * ) values anymore.
 
-    You can connect to signal movedTab(int, int, int) which will notify
-    you from which to which index a tab moved and what its new id is.
+    You can connect to signal movedTab(int, int) which will notify
+    you from which index to which index a tab has been moved.
 */
     void setTabReorderingEnabled( bool enable );
     bool isTabReorderingEnabled() const;
@@ -49,14 +54,14 @@ protected slots:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
-    virtual void movedTab( int, int );
+    virtual void moveTab( int, int );
 
 signals:
     void tabbarContextMenu( const QPoint & );
     void receivedDropEvent( QDropEvent * );
     void receivedDropEvent( QWidget *, QDropEvent * );
     void dragInitiated( QWidget * );
-    void movedTab( int, int, int );
+    void movedTab( int, int );
 
     void contextMenu( QWidget *, const QPoint & );
     void mouseDoubleClick( QWidget * );

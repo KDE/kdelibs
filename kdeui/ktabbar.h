@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2003 Stephan Binner <binner@kde.org>
+    Copyright (C) 2003 Zack Rusin <zack@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,13 +32,19 @@ class KTabBar: public QTabBar
 public:
     KTabBar( QWidget* parent=0, const char* name=0 );
 
+    QColor tabColor( int ) const;
+    void setTabColor( int, const QColor& );
+
 signals:
     void contextMenu( QWidget *, const QPoint & );
     void mouseDoubleClick( QWidget * );
     void mouseMiddleClick( QWidget * );
     void dragInitiated( QWidget * );
     void receivedDropEvent( QWidget *, QDropEvent * );
-    void movedTab( int, int );
+    void moveTab( int, int );
+
+protected:
+    virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
 
 protected slots:
     virtual void mouseDoubleClickEvent(QMouseEvent *e);
@@ -50,6 +57,7 @@ protected slots:
 private:
     QPoint mDragStart;
     int    reorderStartTab,previousTabIndex;
+    QMap<int, QColor> tabColors;
 
     KTabBarPrivate * d;
 };

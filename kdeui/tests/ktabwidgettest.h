@@ -3,7 +3,6 @@
 
 #include <kiconloader.h>
 #include <qwidget.h>
-#include <qtimer.h>
 #include "../ktabwidget.h"
 #include <qlabel.h>
 #include <qpushbutton.h>
@@ -12,6 +11,7 @@
 #include <qvbox.h>
 #include <time.h>
 #include <qcheckbox.h>
+#include <qtoolbutton.h>
 
 class Test : public QVBox
 {
@@ -20,8 +20,6 @@ public:
   Test( QWidget* parent=0, const char *name =0 );
 
 private slots:
-  void timerDone();
-
   void addTab();
   void removeCurrentTab();
   void toggleLeftButton(bool);
@@ -40,7 +38,7 @@ private slots:
   void receivedDropEvent( QWidget *, QDropEvent * );
   void mouseDoubleClick(QWidget*);
   void mouseMiddleClick(QWidget*);
-  void movedTab( int, int, int );
+  void movedTab( int, int );
 
   void leftPopupActivated(int);
   void rightPopupActivated(int);
@@ -55,17 +53,14 @@ private:
   QCheckBox *     mRightButton;
   QCheckBox *     mTabsBottom;
 
+  QToolButton*    mLeftWidget;
+  QToolButton*    mRightWidget;
+
   QPopupMenu*     mLeftPopup;
   QPopupMenu*     mRightPopup;
   QPopupMenu*     mTabbarContextPopup;
   QPopupMenu*     mContextPopup;
   QWidget*        mContextWidget;
-
-  typedef QValueList<int> IntList;
-  IntList         mList;
-
-  QTimer         *mTimer;
-  bool            mRed;
 };
 
 

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2003 Stephan Binner <binner@kde.org>
+    Copyright (C) 2003 Zack Rusin <zack@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,16 +29,12 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
   setTabBar(m_pTabBar);
   setAcceptDrops(TRUE);
 
-  setCloseButtonsPixmap( SmallIcon( "fileclose" ) );
-  setLeftButtonPixmap( SmallIcon( "tab_new" ) );
-  setRightButtonPixmap( SmallIcon( "tab_remove" ) );
-
   connect(m_pTabBar, SIGNAL(contextMenu( QWidget *, const QPoint & )), this, SIGNAL(contextMenu( QWidget *, const QPoint & )));
   connect(m_pTabBar, SIGNAL(mouseDoubleClick( QWidget * )), this, SIGNAL(mouseDoubleClick( QWidget * )));
   connect(m_pTabBar, SIGNAL(mouseMiddleClick( QWidget * )), this, SIGNAL(mouseMiddleClick( QWidget * )));
   connect(m_pTabBar, SIGNAL(dragInitiated( QWidget * )), this, SIGNAL(dragInitiated( QWidget * )));
   connect(m_pTabBar, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )), this, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )));
-  connect(m_pTabBar, SIGNAL(movedTab( int, int )), this, SLOT(movedTab( int, int )));
+  connect(m_pTabBar, SIGNAL(moveTab( int, int )), this, SLOT(moveTab( int, int )));
 }
 
 bool KTabWidget::isTabReorderingEnabled() const
@@ -80,7 +77,7 @@ void KTabWidget::mousePressEvent( QMouseEvent *e )
   QTabWidget::mousePressEvent( e );
 }
 
-void KTabWidget::movedTab( int from, int to )
+void KTabWidget::moveTab( int from, int to )
 {
   QString tablabel = label( from );
   QWidget* w = page( from );
@@ -90,15 +87,15 @@ void KTabWidget::movedTab( int from, int to )
   bool current = (w == currentPage() );
   removePage( w );
 
-  int newId = insertChangeableTab( tablabel, to, w );
+  insertTab( w, tablabel, to );
   w = page( to );
-  changeTab( newId, tabiconset, tablabel );
+  changeTab( w, tabiconset, tablabel );
   setTabToolTip( w, tabtooltip );
-  changeTab( newId, color );
+  setTabColor( w, color );
   if ( current )
     showPage( w );
 
-  emit ( movedTab( from, to, newId ) );
+  emit ( movedTab( from, to ) );
 }
 
 bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
@@ -106,7 +103,7 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
   QPoint point(p);
   QSize size( m_pTabBar->sizeHint() );
   if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
-    if ( isLeftButton() )
+    if ( cornerWidget( TopLeft ) )
       point.setX( point.x()-size.height() );
     if ( tabPosition()==Bottom )
       point.setY( point.y()-( height()-size.height() ) );
@@ -115,6 +112,28 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
       return true;
   }
   return false;
+}
+
+void KTabWidget::setTabColor( QWidget *w, const QColor& color )
+{
+    QTab * t = m_pTabBar->tabAt( indexOf( w ) );
+
+    setTabColor( t->identifier(), color );
+}
+
+void KTabWidget::setTabColor( int id, const QColor& color )
+{
+    if ( id < 0 || ! m_pTabBar->tab( id ) )
+        return;
+
+    m_pTabBar->setTabColor( id, color );
+}
+
+QColor KTabWidget::tabColor( QWidget * w ) const
+{
+    QTab * t = m_pTabBar->tabAt( indexOf( w ) );
+
+    return m_pTabBar->tabColor( t->identifier() );
 }
 
 #include "ktabwidget.moc"

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2003 Stephan Binner <binner@kde.org>
+    Copyright (C) 2003 Zack Rusin <zack@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,6 +20,8 @@
 
 #include "ktabbar.h"
 #include "ktabwidget.h"
+#include <qpainter.h>
+#include <qstyle.h>
 #include <kglobalsettings.h>
 
 KTabBar::KTabBar( QWidget * parent, const char *name )
@@ -91,7 +94,7 @@ void KTabBar::mouseMoveEvent(QMouseEvent *e)
       if( tab!= 0L ) {
         int reorderStopTab = indexOf( tab->identifier() );
         if (reorderStartTab!=reorderStopTab && previousTabIndex!=reorderStopTab) {
-          emit( movedTab( reorderStartTab, reorderStopTab ) );
+          emit( moveTab( reorderStartTab, reorderStopTab ) );
           previousTabIndex=reorderStartTab;
           reorderStartTab=reorderStopTab;
           return;
@@ -144,6 +147,61 @@ void KTabBar::dropEvent( QDropEvent *e )
     return;
   }
   QTabBar::dropEvent( e );
+}
+
+void KTabBar::setTabColor( int id, const QColor& color )
+{
+    QTab * t = tab( id );
+    if ( t ) {
+        tabColors.insert( id, color );
+        repaint( t->rect() );
+    }
+}
+
+QColor KTabBar::tabColor( int id  ) const
+{
+    if ( tabColors.contains( id ) ) {
+        return tabColors[id];
+    }
+    return colorGroup().foreground();
+}
+
+void KTabBar::paintLabel( QPainter* p, const QRect& br,
+			  QTab* t, bool has_focus ) const
+{
+    QRect r = br;
+    bool selected = currentTab() == t->identifier();
+    if ( t->iconSet()) {
+	// the tab has an iconset, draw it in the right mode
+	QIconSet::Mode mode = (t->isEnabled() && isEnabled())
+	    ? QIconSet::Normal : QIconSet::Disabled;
+	if ( mode == QIconSet::Normal && has_focus )
+	    mode = QIconSet::Active;
+	QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, mode );
+	int pixw = pixmap.width();
+	int pixh = pixmap.height();
+	r.setLeft( r.left() + pixw + 4 );
+	r.setRight( r.right() + 2 );
+	// ### the pixmap shift should probably not be hardcoded..
+	p->drawPixmap( br.left() + 2 + ((selected == TRUE) ? 0 : 2),
+		       br.center().y()-pixh/2 + ((selected == TRUE) ? 0 : 2),
+		       pixmap );
+    }
+
+    QStyle::SFlags flags = QStyle::Style_Default;
+
+    if (isEnabled() && t->isEnabled())
+	flags |= QStyle::Style_Enabled;
+    if (has_focus)
+	flags |= QStyle::Style_HasFocus;
+
+    QColorGroup cg( colorGroup() );
+    if ( tabColors.contains( t->identifier() ) )
+        cg.setColor( QColorGroup::Foreground, tabColors[t->identifier()] );
+
+    style().drawControl( QStyle::CE_TabBarLabel, p, this, r,
+			 t->isEnabled() ? cg : palette().disabled(),
+			 flags, QStyleOption(t) );
 }
 
 #include "ktabbar.moc"
