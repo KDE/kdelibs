@@ -28,7 +28,6 @@
 #include <qpixmap.h>
 #include <X11/Xlib.h>
 
-#undef Bool
 #undef raise
 
 /**
