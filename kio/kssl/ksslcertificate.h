@@ -75,9 +75,7 @@ friend class KSSLCertChain;
 friend class KSSLPeerInfo;
 friend class KSSLPKCS12;
 friend class KSSLD;
-friend class KSMIMECertProxy;
-friend class KSMIMEInterface;
-friend class KSMIMECrypto;
+friend class KSMIMECryptoPrivate;
 
 
 public:

@@ -401,18 +401,40 @@ public:
     */
    void CRYPTO_free(void *x);
 
+   /*
+    *   BIO_new - create new BIO
+    */
+   BIO *BIO_new(BIO_METHOD *type);
+
+   /*
+    *   BIO methods - only one defined here yet
+    */
+   BIO_METHOD *BIO_s_mem(void);
 
    /*
     *   BIO_new_fp - nastiness called BIO - used to create BIO* from FILE*
     */
    BIO *BIO_new_fp(FILE *stream, int close_flag);
 
+   /*
+    *   BIO_new_mem_buf - read only BIO from memory region
+    */
+   BIO *BIO_new_mem_buf(void *buf, int len);
 
    /*
     *   BIO_free - nastiness called BIO - used to destroy BIO*
     */
    int BIO_free(BIO *a);
 
+   /*
+    *   BIO_ctrl - BIO control method
+    */
+   long BIO_ctrl(BIO *bp,int cmd,long larg,void *parg);
+
+   /*
+    *   BIO_write - equivalent to ::write for BIO
+    */
+   int BIO_write(BIO *b, const void *data, int len);
 
    /*
     *   PEM_write_bio_X509 - write a PEM encoded cert to a BIO*
@@ -682,13 +704,46 @@ public:
    /*
     *
     */
+   int i2d_PKCS7_bio(BIO *bp,PKCS7 *p7);
+
+   /*
+    *
+    */
+   PKCS7 *d2i_PKCS7_bio(BIO *bp,PKCS7 **p7);
+
+   /*
+    *
+    */
    PKCS7 *PKCS7_dup(PKCS7 *p7);
+
+   /*
+    *  Create a PKCS7 signature / signed message
+    */
+   PKCS7 *PKCS7_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
+		     BIO *data, int flags);
 
    /*
     *  Verify a PKCS7 signature.
     */
    int PKCS7_verify(PKCS7 *p7, STACK_OF(X509) *certs, X509_STORE *store,
                                               BIO *indata, BIO *out, int flags);
+
+   /*
+    *  Get signers of a verified PKCS7 signature
+    */
+   STACK_OF(X509) *PKCS7_get0_signers(PKCS7 *p7, STACK_OF(X509) *certs, int flags);
+
+   /*
+    *  PKCS7 encrypt message
+    */
+   PKCS7 *PKCS7_encrypt(STACK_OF(X509) *certs, BIO *in, EVP_CIPHER *cipher,
+			int flags);
+
+   /*
+    *  decrypt PKCS7 message
+    */
+   int PKCS7_decrypt(PKCS7 *p7, EVP_PKEY *pkey, X509 *cert, BIO *data, int flags);
+
 
    /*
     * Load a CA list file.
@@ -763,9 +818,18 @@ public:
    STACK *X509_get1_email(X509 *x);
    void X509_email_free(STACK *sk);
 
+   /* Ciphers needed for SMime */
+   EVP_CIPHER *EVP_des_ede3_cbc();
+   EVP_CIPHER *EVP_des_cbc();
+   EVP_CIPHER *EVP_rc2_cbc();
+   EVP_CIPHER *EVP_rc2_64_cbc();
+   EVP_CIPHER *EVP_rc2_40_cbc();
 
    /* clear the current error  - use this often*/
    void ERR_clear_error();
+
+   /* retrieve the latest error */
+   unsigned long ERR_get_error();
 
    /* Print the errors to this stream */
    void ERR_print_errors_fp(FILE *fp);

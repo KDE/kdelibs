@@ -87,8 +87,13 @@ static int (*K_X509_LOOKUP_ctrl)(X509_LOOKUP *, int, const char *, long, char **
 static void (*K_X509_STORE_CTX_init)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *) = 0L;
 static void (*K_CRYPTO_free)       (void *) = 0L;
 static X509* (*K_X509_dup)         (X509 *) = 0L;
+static BIO_METHOD *(*K_BIO_s_mem) (void) = 0L;
+static BIO* (*K_BIO_new) (BIO_METHOD *) = 0L;
 static BIO* (*K_BIO_new_fp)   (FILE *, int) = 0L;
+static BIO* (*K_BIO_new_mem_buf) (void *, int) = 0L;
 static int  (*K_BIO_free)           (BIO *) = 0L;
+static long (*K_BIO_ctrl) (BIO *,int,long,void *) = 0L;
+static int  (*K_BIO_write) (BIO *b, const void *data, int len) = 0L;
 static int (*K_PEM_ASN1_write_bio) (int (*)(),const char *,BIO *,char *,
                                    const EVP_CIPHER *,unsigned char *,int ,
                                             pem_password_cb *, void *) = 0L;
@@ -148,6 +153,8 @@ static int (*K_i2d_PKCS7)(PKCS7*, unsigned char**) = 0L;
 static PKCS7 *(*K_d2i_PKCS7)(PKCS7**, unsigned char**,long) = 0L;
 static int (*K_i2d_PKCS7_fp)(FILE*,PKCS7*) = 0L;
 static PKCS7* (*K_d2i_PKCS7_fp)(FILE*,PKCS7**) = 0L;
+static int (*K_i2d_PKCS7_bio)(BIO *bp,PKCS7 *p7) = 0L;
+static PKCS7 *(*K_d2i_PKCS7_bio)(BIO *bp,PKCS7 **p7) = 0L;
 static PKCS7* (*K_PKCS7_dup)(PKCS7*) = 0L;
 static STACK_OF(X509_NAME) *(*K_SSL_load_client_CA_file)(const char*) = 0L;
 static STACK_OF(X509_INFO) *(*K_PEM_X509_INFO_read)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void*) = 0L;
@@ -162,8 +169,13 @@ static int (*K_X509_REQ_set_pubkey)(X509_REQ*, EVP_PKEY*) = 0L;
 static RSA *(*K_RSA_generate_key)(int, unsigned long, void (*)(int,int,void *), void *) = 0L;
 static int (*K_i2d_X509_REQ_fp)(FILE*, X509_REQ*) = 0L;
 static void (*K_ERR_clear_error)() = 0L;
+static unsigned long (*K_ERR_get_error)() = 0L;
 static void (*K_ERR_print_errors_fp)(FILE*) = 0L;
+static PKCS7 *(*K_PKCS7_sign)(X509*, EVP_PKEY*, STACK_OF(X509)*, BIO*, int) = 0L;
 static int (*K_PKCS7_verify)(PKCS7*,STACK_OF(X509)*,X509_STORE*,BIO*,BIO*,int) = 0L;
+static STACK_OF(X509) *(*K_PKCS7_get0_signers)(PKCS7 *, STACK_OF(X509) *, int) = 0L;
+static PKCS7 *(*K_PKCS7_encrypt)(STACK_OF(X509) *, BIO *, EVP_CIPHER *, int) = 0L;
+static int (*K_PKCS7_decrypt)(PKCS7 *, EVP_PKEY *, X509 *, BIO *, int) = 0L;
 static SSL_SESSION* (*K_SSL_get1_session)(SSL*) = 0L;
 static void (*K_SSL_SESSION_free)(SSL_SESSION*) = 0L;
 static int (*K_SSL_set_session)(SSL*,SSL_SESSION*) = 0L;
@@ -171,6 +183,11 @@ static SSL_SESSION* (*K_d2i_SSL_SESSION)(SSL_SESSION**,unsigned char**, long) = 
 static int (*K_i2d_SSL_SESSION)(SSL_SESSION*,unsigned char**) = 0L;
 static STACK *(*K_X509_get1_email)(X509 *x) = 0L;
 static void (*K_X509_email_free)(STACK *sk) = 0L;
+static EVP_CIPHER *(*K_EVP_des_ede3_cbc)() = 0L;
+static EVP_CIPHER *(*K_EVP_des_cbc)() = 0L;
+static EVP_CIPHER *(*K_EVP_rc2_cbc)() = 0L;
+static EVP_CIPHER *(*K_EVP_rc2_64_cbc)() = 0L;
+static EVP_CIPHER *(*K_EVP_rc2_40_cbc)() = 0L;
 #endif
 };
 
@@ -353,8 +370,13 @@ KConfig *cfg;
       K_X509_LOOKUP_ctrl = (int (*)(X509_LOOKUP *, int, const char *, long, char **)) _cryptoLib->symbol("X509_LOOKUP_ctrl");
       K_X509_STORE_CTX_init = (void (*)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *)) _cryptoLib->symbol("X509_STORE_CTX_init");
       K_X509_dup = (X509* (*)(X509*)) _cryptoLib->symbol("X509_dup");
+      K_BIO_s_mem = (BIO_METHOD *(*) (void)) _cryptoLib->symbol("BIO_s_mem");
+      K_BIO_new = (BIO* (*)(BIO_METHOD *)) _cryptoLib->symbol("BIO_new");
       K_BIO_new_fp = (BIO* (*)(FILE*, int)) _cryptoLib->symbol("BIO_new_fp");
+      K_BIO_new_mem_buf = (BIO* (*)(void *, int)) _cryptoLib->symbol("BIO_new_mem_buf");
       K_BIO_free = (int (*)(BIO*)) _cryptoLib->symbol("BIO_free");
+      K_BIO_ctrl = (long (*) (BIO *,int,long,void *)) _cryptoLib->symbol("BIO_ctrl"); 
+      K_BIO_write = (int (*) (BIO *b, const void *data, int len)) _cryptoLib->symbol("BIO_write");
       K_PEM_ASN1_write_bio = (int (*)(int (*)(), const char *,BIO*, char*, const EVP_CIPHER *, unsigned char *, int, pem_password_cb *, void *)) _cryptoLib->symbol("PEM_ASN1_write_bio");
       K_X509_asn1_meth = (ASN1_METHOD* (*)(void)) _cryptoLib->symbol("X509_asn1_meth");
       K_ASN1_i2d_fp = (int (*)(int (*)(), FILE*, unsigned char *)) _cryptoLib->symbol("ASN1_i2d_fp");
@@ -406,10 +428,16 @@ KConfig *cfg;
       K_PKCS7_content_free = (void (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_content_free");
       K_i2d_PKCS7 = (int (*)(PKCS7*, unsigned char**)) _cryptoLib->symbol("i2d_PKCS7");
       K_i2d_PKCS7_fp = (int (*)(FILE*,PKCS7*)) _cryptoLib->symbol("i2d_PKCS7_fp");
+      K_i2d_PKCS7_bio = (int (*)(BIO *bp,PKCS7 *p7)) _cryptoLib->symbol("i2d_PKCS7_bio");
       K_d2i_PKCS7 = (PKCS7* (*)(PKCS7**,unsigned char**,long)) _cryptoLib->symbol("d2i_PKCS7");
       K_d2i_PKCS7_fp = (PKCS7 *(*)(FILE *,PKCS7**)) _cryptoLib->symbol("d2i_PKCS7_fp");
+      K_d2i_PKCS7_bio = (PKCS7 *(*)(BIO *bp,PKCS7 **p7)) _cryptoLib->symbol("d2i_PKCS7_bio");
       K_PKCS7_dup = (PKCS7* (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_dup");
+      K_PKCS7_sign = (PKCS7 *(*)(X509*, EVP_PKEY*, STACK_OF(X509)*, BIO*, int)) _cryptoLib->symbol("PKCS7_sign");
       K_PKCS7_verify = (int (*)(PKCS7*,STACK_OF(X509)*,X509_STORE*,BIO*,BIO*,int)) _cryptoLib->symbol("PKCS7_verify");
+      K_PKCS7_get0_signers = (STACK_OF(X509) *(*)(PKCS7 *, STACK_OF(X509) *, int)) _cryptoLib->symbol("PKCS7_get0_signers");
+      K_PKCS7_encrypt = (PKCS7* (*)(STACK_OF(X509) *, BIO *, EVP_CIPHER *, int)) _cryptoLib->symbol("PKCS7_encrypt");
+      K_PKCS7_decrypt = (int (*)(PKCS7 *, EVP_PKEY *, X509 *, BIO *, int)) _cryptoLib->symbol("PKCS7_decrypt");
       K_PEM_X509_INFO_read = (STACK_OF(X509_INFO) *(*)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void *)) _cryptoLib->symbol("PEM_X509_INFO_read");
       K_ASN1_d2i_fp = (char *(*)(char *(*)(),char *(*)(),FILE*,unsigned char**)) _cryptoLib->symbol("ASN1_d2i_fp");
       K_X509_new = (X509 *(*)()) _cryptoLib->symbol("X509_new");
@@ -422,10 +450,15 @@ KConfig *cfg;
       K_RSA_generate_key = (RSA* (*)(int, unsigned long, void (*)(int,int,void *), void *)) _cryptoLib->symbol("RSA_generate_key");
       K_i2d_X509_REQ_fp = (int (*)(FILE *, X509_REQ *)) _cryptoLib->symbol("i2d_X509_REQ_fp");
       K_ERR_clear_error = (void (*)()) _cryptoLib->symbol("ERR_clear_error");
+      K_ERR_get_error = (unsigned long (*)()) _cryptoLib->symbol("ERR_get_error");
       K_ERR_print_errors_fp = (void (*)(FILE*)) _cryptoLib->symbol("ERR_print_errors_fp");
       K_X509_get1_email = (STACK *(*)(X509 *x)) _cryptoLib->symbol("X509_get1_email");
       K_X509_email_free = (void (*)(STACK *sk)) _cryptoLib->symbol("X509_email_free");
-
+      K_EVP_des_ede3_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_des_ede3_cbc");
+      K_EVP_des_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_des_cbc");
+      K_EVP_rc2_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_rc2_cbc");
+      K_EVP_rc2_64_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_rc2_64_cbc");
+      K_EVP_rc2_40_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_rc2_40_cbc");
 #endif
    }
 
@@ -828,15 +861,45 @@ X509 *KOpenSSLProxy::X509_dup(X509 *x509) {
 }
 
 
+BIO *KOpenSSLProxy::BIO_new(BIO_METHOD *type) {
+    if (K_BIO_new) return (K_BIO_new)(type);
+    else return 0L;
+}
+
+
+BIO_METHOD *KOpenSSLProxy::BIO_s_mem(void) {
+    if (K_BIO_s_mem) return (K_BIO_s_mem)();
+    else return 0L;
+}
+
+
 BIO *KOpenSSLProxy::BIO_new_fp(FILE *stream, int close_flag) {
    if (K_BIO_new_fp) return (K_BIO_new_fp)(stream, close_flag);
    return 0L;
 }
 
 
+BIO *KOpenSSLProxy::BIO_new_mem_buf(void *buf, int len) {
+    if (K_BIO_new_mem_buf) return (K_BIO_new_mem_buf)(buf,len);
+    else return 0L;
+}
+
+
 int KOpenSSLProxy::BIO_free(BIO *a) {
    if (K_BIO_free) return (K_BIO_free)(a);
    return -1;
+}
+
+
+long KOpenSSLProxy::BIO_ctrl(BIO *bp,int cmd,long larg,void *parg) {
+    if (K_BIO_ctrl) return (K_BIO_ctrl)(bp,cmd,larg,parg);
+    else return 0; // failure return for BIO_ctrl is quite individual, maybe we should abort() instead
+}
+
+
+int KOpenSSLProxy::BIO_write(BIO *b, const void *data, int len) {
+    if (K_BIO_write) return (K_BIO_write)(b, data, len);
+    else return -1;
 }
 
 
@@ -1162,15 +1225,53 @@ PKCS7 *KOpenSSLProxy::d2i_PKCS7_fp(FILE *fp,PKCS7 **p7) {
 }
 
 
+int KOpenSSLProxy::i2d_PKCS7_bio(BIO *bp,PKCS7 *p7) {
+    if (K_i2d_PKCS7_bio) return (K_i2d_PKCS7_bio)(bp, p7);
+    else return -1;
+}
+
+
+PKCS7 *KOpenSSLProxy::d2i_PKCS7_bio(BIO *bp,PKCS7 **p7) {
+    if (K_d2i_PKCS7_bio) return (K_d2i_PKCS7_bio)(bp, p7);
+    else return 0L;
+}
+
+
 PKCS7 *KOpenSSLProxy::PKCS7_dup(PKCS7 *p7) {
    if (K_PKCS7_dup) return (K_PKCS7_dup)(p7);
    else return 0L;
 }
 
 
+PKCS7 *KOpenSSLProxy::PKCS7_sign(X509 *signcert, EVP_PKEY *pkey, STACK_OF(X509) *certs,
+				 BIO *data, int flags) {
+    if (K_PKCS7_sign) return (K_PKCS7_sign)(signcert,pkey,certs,data,flags);
+    else return 0L;
+}
+
+
 int KOpenSSLProxy::PKCS7_verify(PKCS7* p, STACK_OF(X509)* st, X509_STORE* s, BIO* in, BIO *out, int flags) {
    if (K_PKCS7_verify) return (K_PKCS7_verify)(p,st,s,in,out,flags);
-   else return -1;
+   else return 0;
+}
+
+
+STACK_OF(X509) *KOpenSSLProxy::PKCS7_get0_signers(PKCS7 *p7, STACK_OF(X509) *certs, int flags) {
+    if (K_PKCS7_get0_signers) return (K_PKCS7_get0_signers)(p7,certs,flags);
+    else return 0L;
+}
+
+
+PKCS7 *KOpenSSLProxy::PKCS7_encrypt(STACK_OF(X509) *certs, BIO *in, EVP_CIPHER *cipher,
+				    int flags) {
+    if (K_PKCS7_encrypt) return (K_PKCS7_encrypt)(certs,in,cipher,flags);
+    else return 0L;
+}
+
+
+int KOpenSSLProxy::PKCS7_decrypt(PKCS7 *p7, EVP_PKEY *pkey, X509 *cert, BIO *data, int flags) {
+    if (K_PKCS7_decrypt) return (K_PKCS7_decrypt)(p7,pkey,cert,data,flags);
+    else return 0;
 }
 
 
@@ -1263,9 +1364,33 @@ STACK *KOpenSSLProxy::X509_get1_email(X509 *x) {
    else return 0L;
 }
 
-
 void KOpenSSLProxy::X509_email_free(STACK *sk) {
    if (K_X509_email_free) (K_X509_email_free)(sk);
+}
+
+EVP_CIPHER *KOpenSSLProxy::EVP_des_ede3_cbc() {
+    if (K_EVP_des_ede3_cbc) return (K_EVP_des_ede3_cbc)();
+    else return 0L;
+}
+
+EVP_CIPHER *KOpenSSLProxy::EVP_des_cbc() {
+    if (K_EVP_des_cbc) return (K_EVP_des_cbc)();
+    else return 0L;
+}
+
+EVP_CIPHER *KOpenSSLProxy::EVP_rc2_cbc() {
+    if (K_EVP_rc2_cbc) return (K_EVP_rc2_cbc)();
+    else return 0L;
+}
+
+EVP_CIPHER *KOpenSSLProxy::EVP_rc2_64_cbc() {
+    if (K_EVP_rc2_64_cbc) return (K_EVP_rc2_64_cbc)();
+    else return 0L;
+}
+
+EVP_CIPHER *KOpenSSLProxy::EVP_rc2_40_cbc() {
+    if (K_EVP_rc2_40_cbc) return (K_EVP_rc2_40_cbc)();
+    else return 0L;
 }
 
 int KOpenSSLProxy::i2d_X509_REQ_fp(FILE *fp, X509_REQ *x) {
@@ -1276,6 +1401,12 @@ int KOpenSSLProxy::i2d_X509_REQ_fp(FILE *fp, X509_REQ *x) {
 
 void KOpenSSLProxy::ERR_clear_error() {
    if (K_ERR_clear_error) (K_ERR_clear_error)();
+}
+
+
+unsigned long KOpenSSLProxy::ERR_get_error() {
+    if (K_ERR_get_error) return (K_ERR_get_error)();
+    else return 0xffffffff;
 }
 
 

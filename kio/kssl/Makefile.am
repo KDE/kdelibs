@@ -33,7 +33,8 @@ include_HEADERS = \
 		ksslpemcallback.h	 \
 		ksslconfig.h		 \
 		ksslsession.h		 \
-		ksslx509map.h
+		ksslx509map.h		 \
+		ksmimecrypto.h
  
 
 libkssl_la_SOURCES	= \
@@ -59,7 +60,8 @@ libkssl_la_SOURCES	= \
 			ksslx509map.cc		  \
 			ksslsession.cc		  \
 			keygenwizard.ui		  \
-			keygenwizard2.ui
+			keygenwizard2.ui	  \
+			ksmimecrypto.cc
 
 SUBDIRS = kssl
 
