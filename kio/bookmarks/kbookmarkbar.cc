@@ -232,6 +232,7 @@ static void removeTempSep()
 static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
                            KToolBarButton* &b, KToolBar* &tb, KAction* &a, int &index)
 {
+    static int sepIndex;
     kdDebug(7043) << "pos() == " << pos << endl;
     bool found = false;
 
@@ -259,7 +260,10 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
 
         // if in 0th position or in second half of button then we are done
         if (pos.x() > ((r.left() + r.right())/2) || index == 0)
+        {
+            found = true;
             goto okay_exit;
+        }
      
         // else we jump to the previous index
         index--;
@@ -293,22 +297,26 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
         if (found = (*it)->isPlugged(ttb, id), found)
             break;
     Q_ASSERT(found);
-    tb = ttb;
-    a = (*it);
-    index = ttb->itemIndex(id);
     kdDebug(7043) << "new index = " << index << endl;
+
+    index = ttb->itemIndex(id);
 
 okay_exit:
     a = (*it);
     tb = ttb;
-    found = true;
+
+    // delete+insert the separator if moved
+    if (sepIndex != index+1 || !sepToolBar)
+    {
+        removeTempSep();
+        sepIndex = tb->insertLineSeparator(index + 1, sepId);
+    }
 
 failure_exit:
     return found;
 }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
-    static int sepIndex;
     static KToolBar* tb = 0;
     static KAction* a = 0;
     if ( e->type() == QEvent::DragLeave )
@@ -348,17 +356,10 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
         QDragMoveEvent *dme = (QDragMoveEvent*)e;
         KToolBarButton* b;
         int index;
-        if (KBookmarkDrag::canDecode( dme )
-         && findDestAction(dme->pos(), dptr()->m_actions, b, tb, a, index)
-        ) {
-            // delete+insert the separator if moved
-            if (sepIndex != index+1 || !sepToolBar)
-            {
-                removeTempSep();
-                sepIndex = tb->insertLineSeparator(index + 1, sepId);
-            }
+        if (!KBookmarkDrag::canDecode( dme ))
+            return false;
+        if (findDestAction(dme->pos(), dptr()->m_actions, b, tb, a, index))
             dme->accept();
-        }
     }
     return false;
 }
