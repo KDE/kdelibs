@@ -117,6 +117,9 @@ int main(int argc, char *argv[])
   s = "Title: %foo-%file-%url-%name-%";
   check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, smap), "Title: %n-filename.txt-http://www.kde.org/index.html-Restaurant \"Chew It\"-%");
 
+  s = "Title: %{file} %{url";
+  check( "KMacroExpander::expandMacros", s, KMacroExpander::expandMacros(s, smap), "Title: filename.txt %{url");
+
   MyCExpander mx1;
   s = "subst %m but not %n equ %%";
   s2 = s;
