@@ -35,7 +35,7 @@
  *  keys = new KAccel(this);
  *
  * filemenu = new KAccelMenu(keys);
- * filemenu->insItem(i18n("&Open"), "&Open", kp ,SLOT(fileOpen()), KAccel::Open);
+ * filemenu->insItem(i18n("&Open"), "&Open", kp ,SLOT(fileOpen()), KStdAccel::Open);
  * filemenu->insItem(i18n("Open &URL"), "Open &URL", kp, SLOT(fileOpenUrl()),"CTRL+X");
  *
  * keys->readSettings();
@@ -116,7 +116,7 @@ public:
    **/
   int insItem ( const QPixmap & pixmap, const char * text,
 		const char * action, const QObject * receiver,
-		const char * member, KAccel::StdAccel accel );
+ 	    const char * member, KStdAccel::StdAccel accel );
 
   /**
    *   Insert a menu item with a standard accelerator
@@ -131,7 +131,7 @@ public:
    **/
   int insItem ( const char * text,  const char * action,
 		const QObject * receiver,
-		const char * member, KAccel::StdAccel accel );
+		const char * member, KStdAccel::StdAccel accel );
 
   
 protected:

@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
               (C) 1999 Simon Hausmann <hausmann@kde.org>
+              (C) 2000 Nicolas Hadacek <haadcek@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,6 +26,7 @@
 #include <kmenubar.h>
 #include <qobjectlist.h>
 #include <kapp.h>
+#include <kaccel.h>
 #include <qtl.h>
 
 #include <X11/Xlib.h>
@@ -94,32 +96,27 @@ int get_toolbutton_id()
 }
 
 KAction::KAction( const QString& text, int accel, QObject* parent, const char* name )
- : QAction( text, accel, parent, name )
-{
-}
+ : QAction( text, accel, parent, name ), kaccel(0)
+{}
 
 KAction::KAction( const QString& text, int accel,
 	           const QObject* receiver, const char* slot, QObject* parent, const char* name )
- : QAction( text, accel, receiver, slot, parent, name )
-{
-}
+ : QAction( text, accel, receiver, slot, parent, name ), kaccel(0)
+{}
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
                     QObject* parent, const char* name )
- : QAction( text, pix, accel, parent, name )
-{
-}
+ : QAction( text, pix, accel, parent, name ), kaccel(0)
+{}
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
 	            const QObject* receiver, const char* slot, QObject* parent, const char* name )
- : QAction( text, pix, accel, receiver, slot, parent, name )
-{
-}
+ : QAction( text, pix, accel, receiver, slot, parent, name ), kaccel(0)
+{}
 
 KAction::KAction( QObject* parent, const char* name )
- : QAction( parent, name )
-{
-}
+ : QAction( parent, name ), kaccel(0)
+{}
 
 int KAction::plug( QWidget *w, int index )
 {
@@ -141,7 +138,6 @@ int KAction::plug( QWidget *w, int index )
   return QAction::plug( w, index );
 }
 
-
 void KAction::unplug( QWidget *w )
 {
   if ( w->inherits( "KToolBar" ) )
@@ -161,45 +157,92 @@ void KAction::unplug( QWidget *w )
   QAction::unplug( w );
 }
 
-void KAction::setEnabled( bool b )
+void KAction::plugAccel(KAccel *kacc, const QString &name, bool configurable)
 {
-  int len = containerCount();
+	ASSERT( kacc==0 );
+	kaccel = kacc;
+	actionName = name;
+	kaccel->insertItem(plainText(), name, accel(), configurable);
+	kaccel->connectItem(name, this, SLOT(slotActivated()));
+	connect(kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
+	connect(kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
+}
 
-  for ( int i = 0; i < len; i++ )
-  {
+void KAction::plugStdAccel(KAccel *kacc, KStdAccel::StdAccel accel)
+{
+	if (text().isNull()) setText(KStdAccel::description(accel));
+	setAccel(KStdAccel::key(accel));
+	plugAccel(kacc, KStdAccel::action(accel), false);
+}
+
+void KAction::unplugAccel()
+{
+	if ( kaccel==0 ) return;
+	kaccel->removeItem(actionName);
+}
+
+void KAction::setEnabled(bool enable)
+{
+	if (kaccel) kaccel->setItemEnabled(actionName, enable);
+	QAction::setEnabled(enable);
+}
+
+void KAction::setEnabled( int i, bool enable )
+{
     QWidget *w = container( i );
 
     if ( w->inherits( "KToolBar" ) )
-      ((KToolBar *)w)->setItemEnabled( menuId( i ), b );
+      ((KToolBar *)w)->setItemEnabled( menuId( i ), enable );
 
-  }
-
-  QAction::setEnabled( b );
+    QAction::setEnabled( i, enable );
 }
 
 void KAction::setText( const QString& text )
 {
-  //TODO?
-
-  QAction::setText( text );
+	//TODO?
+	if (kaccel) kaccel->setDescription(actionName, text);
+	QAction::setText( text );
 }
 
-
-void KAction::setIconSet( const QIconSet& iconSet )
+void KAction::setIconSet(const QIconSet &iconSet)
 {
-  int len = containerCount();
+	// it seems its needed (gcc dumbness ??)
+	QAction::setIconSet(iconSet);
+}
 
-  for ( int i = 0; i < len; i++ )
-  {
-    QWidget *w = container( i );
+void KAction::setIconSet( int id, const QIconSet& iconSet )
+{
+    QWidget *w = container( id );
 
     if ( w->inherits( "KToolBar" ) )
-      ((KToolBar *)w)->setButtonPixmap( menuId( i ), iconSet.pixmap() );
+      ((KToolBar *)w)->setButtonPixmap( menuId( id ), iconSet.pixmap() );
 
-  }
-
-  QAction::setIconSet( iconSet );
+	QAction::setIconSet( id, iconSet );
 }
+
+void KAction::setAccel(int a)
+{
+	if (kaccel) kaccel->updateItem(actionName, a);
+	QAction::setAccel(a);
+}
+
+void KAction::slotDestroyed()
+{
+	if (sender()==kaccel) kaccel = 0;
+	QAction::slotDestroyed();
+}
+
+void KAction::slotKeycodeChanged()
+{
+	QAction::setAccel(kaccel->currentKey(actionName));
+}
+
+bool KAction::isPlugged() const
+{
+	if (kaccel) return TRUE;
+	return QAction::isPlugged();
+}
+
 
 KToggleAction::KToggleAction( const QString& text, int accel, QObject* parent, const char* name )
     : QToggleAction( text, accel, parent, name )

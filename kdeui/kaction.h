@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
               (C) 1999 Simon Hausmann <hausmann@kde.org>
+              (C) 2000 Nicolas Hadacek <haadcek@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,6 +24,9 @@
 
 #include <qaction.h>
 #include <qfontdatabase.h>
+#include <kstdaccel.h>
+
+class KAccel;
 
 /**
  * The KAction class (and derived and super classes) provide a way to
@@ -80,8 +84,8 @@
  * Here is an example of enabling a "New [document]" action
  * <PRE>
  * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
-                             KStdAccel::openNew(), this, SLOT(fileNew()),
-                             this);
+								 KStdAccel::key(KStdAccel::New), this, SLOT(fileNew()),
+								 this);
  * </PRE>
  * This line creates our action.  It says that wherever this action is
  * displayed, it will use "&New" as the text, the standard icon, and
@@ -214,6 +218,10 @@ public:
      * @param w The GUI element to display this action
      */
     virtual int plug( QWidget *w, int index = -1 );
+	
+	virtual void plugAccel(KAccel *accel, const QString &actionName,
+						   bool configurable = true);
+	virtual void plugStdAccel(KAccel *accel, KStdAccel::StdAccel accel);
 
     /**
      * "Unplug" or remove this action from a given widget.  
@@ -229,29 +237,27 @@ public:
      * @param w Remove the action from this GUI element.
      */
     virtual void unplug( QWidget *w );
+	
+	virtual void unplugAccel();
+	
+	virtual bool isPlugged() const;
+	
+	virtual void setText(const QString &text);
+	virtual void setEnabled(bool enable);
+	virtual void setAccel(int a);
+	virtual void setIconSet(const QIconSet &iconSet);
 
-    /**
-     * This allows you to enable or disable @bf all instances of
-     * this action in all GUI elements.
-     *
-     * @param b @p true to enable, @p false to disable
-     */
-    virtual void setEnabled( bool b );
-
-    /**
-     * Set the text for this action.
-     *
-     * @param text The text.
-     */
-    virtual void setText( const QString& text );
-
-    /**
-     * Associate some icons with this action.
-     *
-     * @param iconSet The icons.
-     */
-    virtual void setIconSet( const QIconSet& iconSet );
-
+ protected slots:
+	virtual void slotDestroyed();
+	virtual void slotKeycodeChanged();
+	
+ protected:
+    virtual void setEnabled( int id, bool enable );
+    virtual void setIconSet( int id, const QIconSet& iconSet );
+	
+ private:
+	KAccel  *kaccel;
+    QString  actionName;
 };
 
 class KToggleAction : public QToggleAction

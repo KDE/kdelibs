@@ -73,7 +73,7 @@ QPopupMenu* KHelpMenu::menu( void )
     mMenu->insertItem( BarIcon( QString::fromLatin1("contents") ), 
 		       i18n( "&Contents" ),menuHelpContents );
     mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
-    mMenu->setAccel( KStdAccel::help(), menuHelpContents );
+    mMenu->setAccel( KStdAccel::key(KStdAccel::Help), menuHelpContents );
 
     if( mShowWhatsThis == true )
     {

@@ -383,7 +383,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
     {
         // Handles completion.
         int len = text().length();
-        int key = ( m_iCompletionKey == 0 ) ? KStdAccel::completion() : m_iCompletionKey;
+        int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)
+			: m_iCompletionKey;
         if( KStdAccel::isEqual( ev, key ) && m_bEmitCompletion &&
             ( m_iCompletionMode == KGlobal::CompletionMan ||
             (m_iCompletionMode == KGlobal::CompletionShell &&
@@ -397,7 +398,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
             return;
         }
         // Handles rotateUp.
-        key = ( m_iRotateUpKey == 0 ) ? KStdAccel::rotateUp() : m_iRotateUpKey;
+		key = ( m_iRotateUpKey == 0 ) ? KStdAccel::key(KStdAccel::RotateUp)
+			: m_iRotateUpKey;
         if( KStdAccel::isEqual( ev, key ) && m_bEmitRotation )
         {
             emit rotateUp ();
@@ -405,7 +407,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
             return;
         }
         // Handles rotateDown.
-        key = ( m_iRotateDnKey == 0 ) ? KStdAccel::rotateDown() : m_iRotateDnKey;
+		key = ( m_iRotateDnKey == 0 ) ? KStdAccel::key(KStdAccel::RotateDown)
+			: m_iRotateDnKey;
         if( KStdAccel::isEqual( ev, key ) && m_bEmitRotation)
         {
             emit rotateDown();

@@ -1,6 +1,6 @@
 /*
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
-    Copyright (C) 1997-1999 Nicolas Hadacek <hadacek@kde.org>
+    Copyright (C) 1997-2000 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -24,36 +24,27 @@
 #include <qpainter.h>
 #include <qapplication.h>
 #include <qdrawutil.h>
+#include <qpopupmenu.h>
 
+#include <kaccel.h>
+#include <kconfig.h>
 #include <kapp.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kdebug.h>
+#include <kckey.h>
 
-#include "kckey.h"
-
-#include "kaccel.h"
-#include <qpopupmenu.h>
-#include <kconfig.h>
-#include <qaccel.h>
-
-KAccel::KAccel( QWidget * parent, const char *name ):
-  aKeyDict(100, false){
+KAccel::KAccel( QWidget * parent, const char *name )
+: QAccel(parent, name), aKeyDict(100, false){
 	aAvailableId = 1;
 	bEnabled = true;
 	aGroup = "Keys";
 	bGlobal = false;
-	pAccel = new QAccel( parent, name );
-}
-
-KAccel::~KAccel()
-{
-  delete pAccel;
 }
 
 void KAccel::clear()
 {
-	pAccel->clear();
+	QAccel::clear();
 	aKeyDict.clear();
 }
 
@@ -61,8 +52,7 @@ void KAccel::connectItem( const QString& action,
 			  const QObject* receiver, const char *member,
 			  bool activate )
 {
-  if (action.isNull())
-    return;
+	if (action.isNull()) return;
     KKeyEntry *pEntry = aKeyDict[ action ];
 
 	if ( !pEntry ) {
@@ -76,26 +66,25 @@ void KAccel::connectItem( const QString& action,
 	pEntry->aAccelId = aAvailableId;
 	aAvailableId++;
 	
-        // Qt does strange things if a QAccel contains a accelerator
-        // with key code 0, so leave it out here.
-        if (pEntry->aCurrentKeyCode) {
-            pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-            pAccel->connectItem( pEntry->aAccelId, receiver, member );
-        }
+	// Qt does strange things if a QAccel contains a accelerator
+	// with key code 0, so leave it out here.
+	if (pEntry->aCurrentKeyCode) {
+		QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
+		QAccel::connectItem( pEntry->aAccelId, receiver, member );
+	}
 	
-	if ( !activate )
-	    setItemEnabled( action, false );
+	if ( !activate ) setItemEnabled( action, false );
 }
 
-void KAccel::connectItem( StdAccel accel,
+void KAccel::connectItem( KStdAccel::StdAccel accel,
 			  const QObject* receiver, const char *member,
 			  bool activate )
 {
-  QString action(stdAction(accel));
-  if (!action.isNull() && !aKeyDict[ action ]){
-    insertStdItem(accel);
-  }
-  connectItem(action, receiver, member, activate);
+	QString action(KStdAccel::action(accel));
+	if (!action.isNull() && !aKeyDict[ action ]){
+		insertStdItem(accel);
+	}
+	connectItem(action, receiver, member, activate);
 }
 
 uint KAccel::count() const
@@ -113,7 +102,18 @@ uint KAccel::currentKey( const QString& action ) const
 		return pEntry->aCurrentKeyCode;
 }
 
-QString  KAccel::description( const QString& action ) const {
+void KAccel::setDescription(const QString &action,
+							const QString &description)
+{
+	KKeyEntry *pEntry = aKeyDict[ action ];
+	
+	if ( !pEntry ) warning("KAccel: cannot set description"
+						   "for absent action %s", action.ascii());
+	else pEntry->descr = description;
+}
+
+QString KAccel::description( const QString& action ) const
+{
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
 	if ( !pEntry )
@@ -132,14 +132,14 @@ uint KAccel::defaultKey( const QString& action ) const
         return pEntry->aDefaultKeyCode;
 }
 
-void  KAccel::disconnectItem( const QString& action,
+void KAccel::disconnectItem( const QString& action,
 			      const QObject* receiver, const char *member )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
     if ( !pEntry )
 		return;
 	
-	pAccel->disconnectItem( pEntry->aAccelId, receiver, member );
+	QAccel::disconnectItem( pEntry->aAccelId, receiver, member );
 }
 
 QString KAccel::findKey( int key ) const
@@ -186,8 +186,6 @@ bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCo
 	return true;
 }
 
-	
-
 bool KAccel::insertItem( const QString& descr, const QString& action,
 			 const QString& keyCode, bool configurable )
 {
@@ -215,7 +213,6 @@ bool KAccel::insertItem( const QString& action, uint keyCode,
     return insertItem(action, action, keyCode, id, qmenu, configurable);
 }
 
-
 void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 	const QString& action )
 {
@@ -242,105 +239,16 @@ void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 	  menu->changeItem( s, id );
 }
 
-void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
-			       StdAccel accel ){
-  changeMenuAccel(menu, id, stdAction(accel));
+void KAccel::changeMenuAccel( QPopupMenu *menu, int id,
+							 KStdAccel::StdAccel accel )
+{
+	changeMenuAccel(menu, id, KStdAccel::action(accel));
 }
 
-
-bool KAccel::insertStdItem( StdAccel id, const QString& descr )
+bool KAccel::insertStdItem( KStdAccel::StdAccel id, const QString& descr )
 {
-	QString key, name;
-	switch( id ) {
-		case Open:
-			name=i18n("Open") ;
-			key = "Ctrl+O";
-			break;
-		case New:
-			name=i18n("New") ;
-			key = "Ctrl+N";
-			break;
-		case Close:
-			name=i18n("Close") ;
-			key = "Ctrl+W";
-			break;
-		case Save:
-			name=i18n("Save") ;
-			key = "Ctrl+S";
-			break;
-		case Print:
-			name=i18n("Print") ;
-			key = "Ctrl+P";
-			break;
-		case Quit:
-			name=i18n("Quit") ;
-			key = "Ctrl+Q";
-			break;
-		case Cut:
-			name=i18n("Cut") ;
-			key = "Ctrl+X";
-			break;
-		case Copy:
-			name=i18n("Copy") ;
-			key = "Ctrl+C";
-			break;
-		case Paste:
-			name=i18n("Paste") ;
-			key = "Ctrl+V";
-			break;
-		case Undo:
-			name=i18n("Undo") ;
-			key = "Ctrl+Z";
-			break;
-		case Redo:
-			name=i18n("Redo") ;
-			key = "Ctrl+Y";
-			break;
-		case Find:
-			name=i18n("Find") ;
-			key = "Ctrl+F";
-			break;
-		case Replace:
-			name=i18n("Replace") ;
-			key = "Ctrl+R";
-			break;
-		case Insert:
-			name=i18n("Insert") ;
-			key = "Ctrl+Insert";
-			break;
-		case Home:
-			name=i18n("Home") ;
-			key = "Ctrl+Home";
-			break;
-		case End:
-			name=i18n("End") ;
-			key = "Ctrl+End";
-			break;
-		case Prior:
-			name=i18n("Prior") ;
-			key = "Prior";
-			break;
-		case Next:
-			name=i18n("Next") ;
-			key = "Next";
-			break;
-		case AddBookmark:
-			name=i18n("Add Bookmark") ;
-			key = "Ctrl+B";
-			break;
-		case Help:
-			name=i18n("Help") ;
-			key = "F1";
-			break;
-        case TextCompletion:
-            name=i18n("Text Completion");
-            key = "Ctrl+E";
-            break;
-		default:
-			return false;
-			break;
-	}
-	return insertItem( descr.isNull()?name:descr, stdAction(id), key, false );
+	return insertItem(descr.isNull() ? KStdAccel::description(id) : descr,
+					  KStdAccel::action(id), KStdAccel::key(id), false );
 }
 
 bool KAccel::isEnabled() const
@@ -367,14 +275,14 @@ void KAccel::readSettings(KConfig* config)
 {
 	QString s;
 
-	KConfig *pConfig = config?config:KGlobal::config();
+	KConfig *pConfig = config ? config : KGlobal::config();
 	pConfig->setGroup( aGroup );
 	
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
 #define pE aKeyIt.current()
 	while ( pE ) {
-		s = pConfig->readEntry( aKeyIt.currentKey() );
+		s = pConfig->readEntry(aKeyIt.currentKey());
 		
 		if ( s.isNull() )
 			pE->aConfigKeyCode = pE->aDefaultKeyCode;
@@ -382,12 +290,13 @@ void KAccel::readSettings(KConfig* config)
 			pE->aConfigKeyCode = stringToKey( s );
 	
 		pE->aCurrentKeyCode = pE->aConfigKeyCode;
+		emit keycodeChanged();
 		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
-			pAccel->disconnectItem( pE->aAccelId, pE->receiver,
+			QAccel::disconnectItem( pE->aAccelId, pE->receiver,
 						pE->member );
-			pAccel->removeItem( pE->aAccelId );
-			pAccel->insertItem( pE->aCurrentKeyCode, pE->aAccelId );
-			pAccel->connectItem( pE->aAccelId, pE->receiver,
+		    QAccel::removeItem( pE->aAccelId );
+			QAccel::insertItem( pE->aCurrentKeyCode, pE->aAccelId );
+		    QAccel::connectItem( pE->aAccelId, pE->receiver,
 					     pE->member);
 		}
 		if ( pE->menu ) {
@@ -400,16 +309,15 @@ void KAccel::readSettings(KConfig* config)
 
 void KAccel::removeItem( const QString& action )
 {
-
     KKeyEntry *pEntry = aKeyDict[ action ];
 	
     if ( !pEntry )
 		return;
 	
 	if ( pEntry->aAccelId ) {
-		pAccel->disconnectItem( pEntry->aAccelId, pEntry->receiver,
+		QAccel::disconnectItem( pEntry->aAccelId, pEntry->receiver,
 					pEntry->member);
-		pAccel->removeItem( pEntry->aAccelId );
+		QAccel::removeItem( pEntry->aAccelId );
 	}
 	
 	aKeyDict.remove( action );
@@ -438,7 +346,7 @@ void KAccel::setItemEnabled( const QString& action, bool activate )
 		return;
 	}
 
-	pAccel->setItemEnabled( pEntry->aAccelId, activate );
+	QAccel::setItemEnabled( pEntry->aAccelId, activate );
 }
 
 bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
@@ -452,9 +360,9 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 	while( pE ) {
 		QString s;
 		if ( pE->aAccelId && pE->aCurrentKeyCode ) {
-			pAccel->disconnectItem( pE->aAccelId, pE->receiver,
+			QAccel::disconnectItem( pE->aAccelId, pE->receiver,
 						pE->member );
-			pAccel->removeItem( pE->aAccelId );
+			QAccel::removeItem( pE->aAccelId );
 		}
 		++*aKeyIt;
 	}
@@ -480,6 +388,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->aDefaultKeyCode = pE->aDefaultKeyCode;
 		// Note we write config key code to current key code !!
 		pEntry->aCurrentKeyCode = pE->aConfigKeyCode;
+		emit keycodeChanged();
 		pEntry->aConfigKeyCode = pE->aConfigKeyCode;
 		pEntry->bConfigurable = pE->bConfigurable;
 		pEntry->aAccelId = pE->aAccelId;
@@ -490,8 +399,8 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->menu = pE->menu; 
 		
 		if ( pEntry->aAccelId && pEntry->aCurrentKeyCode ) {
-			pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-			pAccel->connectItem( pEntry->aAccelId, pEntry->receiver,
+			QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
+			QAccel::connectItem( pEntry->aAccelId, pEntry->receiver,
 					     pEntry->member);
 		}
 		if ( pEntry->menu ) {
@@ -504,79 +413,6 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		
 	delete aKeyIt; // tanghus
 	return true;
-}
-
-QString KAccel::stdAction( StdAccel id ) {
-	QString action;
-	switch( id ) {
-		case Open:
-			action = "Open";
-			break;
-		case New:
-			action = "New";
-			break;
-		case Close:
-			action = "Close";
-			break;
-		case Save:
-			action = "Save";
-			break;
-		case Print:
-			action = "Print";
-			break;
-		case Quit:
-			action = "Quit";
-			break;
-		case Cut:
-			action = "Cut";
-			break;
-		case Copy:
-			action = "Copy";
-			break;
-		case Paste:
-			action = "Paste";
-			break;
-		case Undo:
-			action = "Undo";
-			break;
-		case Redo:
-			action = "Redo";
-			break;
-		case Find:
-			action = "Find";
-			break;
-		case Replace:
-			action = "Replace";
-			break;
-		case Insert:
-			action = "Insert";
-			break;
-		case Home:
-			action = "Home";
-			break;
-		case End:
-			action = "End";
-			break;
-		case Prior:
-			action = "Prior";
-			break;
-		case Next:
-			action = "Next";
-			break;
-		case AddBookmark:
-			action = "Add Bookmark";
-			break;
-		case Help:
-			action = "Help";
-			break;
-        case TextCompletion:
-            action = "TextCompletion";
-            break;
-		default:
-			return QString::null;
-			break;
-	}
-	return action;
 }
 
 void KAccel::setConfigGroup( const QString& group )
@@ -622,7 +458,7 @@ void KAccel::writeSettings(KConfig* config)
 	pConfig->sync();
 }
 
-bool KAccel::configurable( const char * action ) const
+bool KAccel::configurable( const QString &action ) const
 {
   KKeyEntry *pEntry = aKeyDict[ action ];
 
@@ -632,44 +468,41 @@ bool KAccel::configurable( const char * action ) const
     return pEntry->bConfigurable;
 }
 
-
- void KAccel::clearItem(const char *action)
+void KAccel::clearItem(const QString &action)
 {
-  if (action) {
     KKeyEntry *pEntry = aKeyDict[ action ];
     if (pEntry) {
       if ( pEntry->aAccelId  && pEntry->bConfigurable) {
-	pAccel->disconnectItem( pEntry->aAccelId, pEntry->receiver,
+		  QAccel::disconnectItem( pEntry->aAccelId, pEntry->receiver,
 				pEntry->member);
-	pAccel->removeItem( pEntry->aAccelId );
-	pEntry->aAccelId = 0;
-	pEntry->aCurrentKeyCode = 0;
-	if ( pEntry->menu ) {
-	  changeMenuAccel(pEntry->menu, pEntry->menuId, action);
-	}
+		  QAccel::removeItem( pEntry->aAccelId );
+		  pEntry->aAccelId = 0;
+		  pEntry->aCurrentKeyCode = 0;
+		  if ( pEntry->menu ) {
+			  changeMenuAccel(pEntry->menu, pEntry->menuId, action);
+		  }
       }
     }
-  }
 }
 
- bool KAccel::updateItem( const char * action, uint keyCode)
+ bool KAccel::updateItem( const QString &action, uint keyCode)
 {
   KKeyEntry *pEntry = aKeyDict[ action ];
   if (pEntry) {
-    pEntry->aCurrentKeyCode = keyCode;
     if ( pEntry->aAccelId ) {
-      pAccel->disconnectItem( pEntry->aAccelId, pEntry->receiver,
+		QAccel::disconnectItem( pEntry->aAccelId, pEntry->receiver,
 			      pEntry->member);
-      pAccel->removeItem( pEntry->aAccelId );
+		QAccel::removeItem( pEntry->aAccelId );
     } else {
       pEntry->aAccelId = aAvailableId;
       aAvailableId++;
     }
 
     pEntry->aCurrentKeyCode = keyCode;
+	emit keycodeChanged();
     if (pEntry->aCurrentKeyCode) {
-      pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-      pAccel->connectItem( pEntry->aAccelId, pEntry->receiver, pEntry->member );
+		QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
+		QAccel::connectItem( pEntry->aAccelId, pEntry->receiver, pEntry->member );
     }
     return true;
   } else

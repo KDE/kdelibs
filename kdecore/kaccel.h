@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Mark Donohoe <donohoe@kde.org>
-    Copyright (C) 1997-1999 Nicolas Hadacek <hadacek@kde.org>
+    Copyright (C) 1997-2000 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -24,7 +24,9 @@
 
 #include <qdict.h>
 #include <qstring.h>
-class QAccel;
+#include <qaccel.h>
+#include <kstdaccel.h>
+
 class QPopupMenu;
 class KConfig;
 class QObject;
@@ -96,27 +98,27 @@ struct KKeyEntry {
  * // Insert an action "Scroll Down" which is not associated with any key:
  * a->insertItem( i18n("Scroll down"), "Scroll Down", 0);
  * a->connectItem( "Scroll up", myWindow, SLOT( scrollUp() ) );
- * // a->insertStdItem( KAccel::Print ); //not necessary, since it
+ * // a->insertStdItem( KStdAccel::Print ); //not necessary, since it
  *	// is done automatially with the
  *	// connect below!
- * a->connectItem(KAccel::Print, myWindow, SLOT( printDoc() ) );
+ * a->connectItem(KStdAccel::Print, myWindow, SLOT( printDoc() ) );
  *
  * a->readSettings();
  *</pre>
  *
  * If a shortcut has a menu entry as well, you could insert them like
- * this. The example is again the @ref KAccel::Print from above.
+ * this. The example is again the @ref KStdAccel::Print from above.
  *
  * <pre>
  * int id;
  * id = popup->insertItem("&Print",this, SLOT(printDoc()));
- * a->changeMenuAccel(popup, id, KAccel::Print );
+ * a->changeMenuAccel(popup, id, KStdAccel::Print );
  * </pre>
  *
  * If you want a somewhat "exotic" name for your standard print action, like
  *   id = popup->insertItem(i18n("Print &Document"),this, SLOT(printDoc()));
  * it might be a good idea to insert the standard action before as
- *          a->insertStdItem( KAccel::Print, i18n("Print Document") )
+ *          a->insertStdItem( KStdAccel::Print, i18n("Print Document") )
  * as well, so that the user can easily find the corresponding function.
  *
  * This technique works for other actions as well.  Your "scroll up" function
@@ -134,25 +136,16 @@ struct KKeyEntry {
  * @short Configurable key binding support.
  * @version $Id$
  */
-class KAccel
+class KAccel : public QAccel
 {
+ Q_OBJECT	
+	
  public:
-  /**
-   * Standard actions.
-   **/
- 	enum StdAccel { Open=1, New, Close, Save, Print, Quit, Cut, Copy,
-		Paste, Undo, Redo, Find, Replace, Insert, Home, End, Prior,
-			Next, Help, FindNext, FindPrev, ZoomIn, ZoomOut, AddBookmark,
-			TextCompletion, RotateUpInList, RotateDownInList };
+	
 	/**
 	 * Create a KAccel object with a parent widget and a name.
 	 */
 	KAccel( QWidget * parent, const char *name = 0 );
-			
-	/**
-	 * Destroy the accelerator object.
-	 */
-	~KAccel();
 	
 	/**
 	 * Remove all accelerator items.
@@ -171,20 +164,20 @@ class KAccel
 	 *  enabled immediately.
 	 */
 	void connectItem( const QString& action,
-			  const QObject* receiver, const char *member,
-			  bool activate = true );
+					 const QObject* receiver, const char *member,
+					 bool activate = true );
 
     
-        /**
+	/**
 	 * Same as @ref connectItem() from above, but for standard
 	 * accelerators.
 	 *
 	 * If the standard accelerator was not inserted so far, it
 	 * will be inserted automatically.
 	 */
-	void connectItem( StdAccel accel,
-			  const QObject* receiver, const char *member,
-			  bool activate = true );
+	void connectItem( KStdAccel::StdAccel accel,
+					 const QObject* receiver, const char *member,
+					 bool activate = true );
 
 	/**
 	* Retrieve the number of accelerator items.
@@ -199,11 +192,12 @@ class KAccel
 	uint currentKey( const QString& action ) const;
 
 	/**
-         * Retrieve the description  of the accelerator item with the
+	 * Retrieve the description  of the accelerator item with the
 	 * action name @p action, or @ref QString::null if the action name cannot
 	 * be found. Useful for menus.
-         */
-        QString description( const QString& action ) const;
+	 */
+    QString description( const QString& action ) const;
+	void setDescription(const QString &action, const QString &description);
 
 	/**
 	* Retrieve the default key code of the accelerator item with
@@ -216,7 +210,7 @@ class KAccel
 	 * Disconnect an accelerator item from a function in another object.
 	 */
 	void disconnectItem( const QString& action,
-			     const QObject* receiver, const char *member );
+						const QObject* receiver, const char *member );
 	
 	/**
 	 * Rerieve the identifier of the accelerator item with the keycode @p key,
@@ -244,7 +238,7 @@ class KAccel
 	 *  @return @p true if successful.
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
-			uint defaultKeyCode, bool configurable = true );
+					uint defaultKeyCode, bool configurable = true );
 	
 	/**
 	 * Insert an accelerator item.
@@ -269,8 +263,8 @@ class KAccel
 	 *
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
-			uint defaultKeyCode, int id, QPopupMenu *qmenu, 
-			bool configurable = true );
+					uint defaultKeyCode, int id, QPopupMenu *qmenu, 
+					bool configurable = true );
 	
 	 /**
 	 * Insert an accelerator item.
@@ -294,8 +288,8 @@ class KAccel
 	 *
 	 */
 	bool insertItem( const QString& descr, const QString& action,
-			 const QString& defaultKeyCode,
-			 bool configurable = true );
+					const QString& defaultKeyCode,
+					bool configurable = true );
 	
 	 /**
 	 * Insert an accelerator item.
@@ -316,9 +310,9 @@ class KAccel
 	 *  @return @p true if successful.
 	 *
 	 */
-        bool insertItem( const QString& descr, const QString& action,
-                     const QString& defaultKeyCode,
-			 int id, QPopupMenu *qmenu, bool configurable = true );
+	bool insertItem( const QString& descr, const QString& action,
+					const QString& defaultKeyCode,
+					int id, QPopupMenu *qmenu, bool configurable = true );
 				
 	/**
 	 * Insert a standard accelerator item.
@@ -331,7 +325,7 @@ class KAccel
 	 * param descr You can optionally also assign a description to
 	 * the standard item which may be used a in a popup menu.
 	 */
-	bool insertStdItem( StdAccel id, const QString& descr = QString::null );
+	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null );
 
 
 	/**
@@ -379,10 +373,10 @@ class KAccel
 	 * Same as @ref changeMenuAccel() but for standard accelerators.
 	 */
 	void changeMenuAccel ( QPopupMenu *menu, int id,
-				 StdAccel accel );
+						  KStdAccel::StdAccel accel );
 
 	/**
-         * Set the dictionary of accelerator action names and @ref KKeyEntry
+	 * Set the dictionary of accelerator action names and @ref KKeyEntry
 	 * objects to @p nKeyDict.
 	 *
 	 * Note that only a shallow copy is made so
@@ -398,13 +392,13 @@ class KAccel
 	 */
 	QDict<KKeyEntry> keyDict();
 				
-        /**
+	/**
 	 * Read all key associations from @p config, or (if @p config
-         * is zero) from the application's configuration file
-         * @ref KGlobal::config().
+	 * is zero) from the application's configuration file
+	 * @ref KGlobal::config().
 	 *
 	 * The group in which the configuration is stored can be
-         * set with @ref setConfigGroup().
+	 * set with @ref setConfigGroup().
 	 */	
 	void readSettings(KConfig* config = 0);
 
@@ -415,12 +409,12 @@ class KAccel
 	 */	
 	void writeSettings(KConfig* config = 0);
 	
-        /**
-         * Set the group in the configuration file in which the
-         * accelerator settings are stored.
+	/**
+	 * Set the group in the configuration file in which the
+	 * accelerator settings are stored.
 	 *
 	 * By default, this is "Keys".
-         */
+	 */
 	void setConfigGroup( const QString& group );
 
 	/**
@@ -433,12 +427,12 @@ class KAccel
 	 * If @global is @true, KAccel writes to the global
 	 *  configurtion file, instead of the application configuration file.
 	 **/
-        void setConfigGlobal( bool global );
+	void setConfigGlobal( bool global );
 	/**
 	 * Will KAccel write to the global configuration file (instead of
 	 *  the appliation configuration file)?
 	 **/
-        bool configGlobal() const;
+	bool configGlobal() const;
 	
 	/**
 	 * Enable all accelerators if activate is @p true, or disable it if
@@ -464,58 +458,52 @@ class KAccel
 	 * Check whether a specific accelerator, @p action, is enabled.
 	 **/
 	bool isItemEnabled( const QString& action ) const;
-				
-	/**
-	 *	Retrieve a standard action name if @p id is one of
-	 *      the following: Open,
-	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
-	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help.
-	 *	The method returns @ref QString::null otherwise.
-	 */
-	static QString stdAction( StdAccel id );
 
 	/**
 	 * Returns @p true if keyentry can be modified.
 	 */
-	bool configurable( const char * action ) const;
+	bool configurable( const QString &action ) const;
 
 	/**
 	 *  Change the keycode for an accelerator.
 	 */
-	bool updateItem( const char * action, uint keyCode);
+	bool updateItem( const QString &action, uint keyCode);
 
 	/**
 	 *  Remove the keycode for an accelerator.
 	 **/
-	void clearItem(const char *action);
+	void clearItem(const QString &action);
 
 	/**
 	 *  Clear any pointers to a menu.
 	 **/
-        void removeDeletedMenu(QPopupMenu *menu);
+	void removeDeletedMenu(QPopupMenu *menu);
 	
-        /**
-         * Retrieve the key code corresponding to the string @p sKey or
+	/**
+	 * Retrieve the key code corresponding to the string @p sKey or
 	 * zero if the string
-         * is not recognized.
+	 * is not recognized.
 	 *
 	 * The string must be something like "Shift+A",
-         * "F1+Ctrl+Alt" or "Backspace" for example. That is, the string
+	 * "F1+Ctrl+Alt" or "Backspace" for example. That is, the string
 	 * must consist of a key name plus a combination of
 	 * the modifiers Shift, Ctrl and Alt.
 	 *
-         * N.B.: @p sKey must @bf not be @ref i18n()'d!
-         */	
-         static uint stringToKey( const QString& sKey );
-         /**
-          * Retrieve a string corresponding to the key code @p keyCode,
+	 * N.B.: @p sKey must @bf not be @ref i18n()'d!
+	 */	
+	static uint stringToKey( const QString& sKey );
+	
+	/**
+	 * Retrieve a string corresponding to the key code @p keyCode,
 	  * which is empty if
-          * @p keyCode is not recognized or zero.
-          */
-         static QString keyToString( uint keyCode, bool i18_n = false );
+	 * @p keyCode is not recognized or zero.
+	 */
+	static QString keyToString( uint keyCode, bool i18_n = false );
 
-protected:
- 	QAccel *pAccel;
+ signals:
+	void keycodeChanged();
+	
+ protected:
 	int aAvailableId;
 	QDict<KKeyEntry> aKeyDict;
 	bool bEnabled;

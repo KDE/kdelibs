@@ -78,7 +78,7 @@ int KAccelMenu::insItem (const char* text, const char * action,
 
 int KAccelMenu::insItem (const QPixmap & pixmap, const char * text,
 			 const char * action, const QObject * receiver,
-	      const char * member, KAccel::StdAccel accel )
+	      const char * member, KStdAccel::StdAccel accel )
 {
   keys->connectItem(accel, receiver, member);
   int id = insertItem(pixmap, text, receiver, member, 0, get_seq_id());
@@ -89,7 +89,7 @@ int KAccelMenu::insItem (const QPixmap & pixmap, const char * text,
 
 int KAccelMenu::insItem (const char * text, const char * action,
 				     const QObject * receiver,
-	      const char * member, KAccel::StdAccel accel )
+	      const char * member, KStdAccel::StdAccel accel )
 {
   keys->connectItem(accel, receiver, member);
   int id = insertItem(text, receiver, member, 0, get_seq_id());

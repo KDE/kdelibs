@@ -382,7 +382,8 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
             if( m_iCompletionMode != KGlobal::CompletionNone )
             {
                 // Handles completion.
-                int key = ( m_iCompletionKey == 0 ) ? KStdAccel::completion() : m_iCompletionKey;
+                int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)
+					: m_iCompletionKey;
                 if( KStdAccel::isEqual( e, key ) )
                 {
                     // Emit completion if the completion mode is NOT
@@ -397,14 +398,16 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
                     }
                 }
                 // Handles rotateUp.
-                key = ( m_iRotateUpKey == 0 ) ? KStdAccel::rotateUp() : m_iRotateUpKey;
+                key = ( m_iRotateUpKey == 0 ) ? KStdAccel::key(KStdAccel::RotateUp)
+					: m_iRotateUpKey;
                 if( KStdAccel::isEqual( e, key ) )
                 {
                     emit rotateUp ();
                     return true;
                 }
                 // Handles rotateDown.
-                key = ( m_iRotateDnKey == 0 ) ? KStdAccel::rotateDown() : m_iRotateDnKey;
+                key = ( m_iRotateDnKey == 0 ) ? KStdAccel::key(KStdAccel::RotateDown)
+					: m_iRotateDnKey;
                 if( KStdAccel::isEqual( e, key ) )
                 {
                     emit rotateDown();

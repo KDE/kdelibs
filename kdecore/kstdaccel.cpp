@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Stefan Taferner (taferner@alpin.or.at)
+    Copyright (C) 2000 Nicolas Hadacek (haadcek@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,189 +19,160 @@
 */
 
 #include "kstdaccel.h"
-#include "kapp.h"
-#include "kconfig.h"
-#include "kglobal.h"
 
-KStdAccel::KStdAccel()
-{
-}
+#include <kconfig.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kaccel.h>
 
-KStdAccel::~KStdAccel()
+uint KStdAccel::key(StdAccel id)
 {
-}
-
-uint KStdAccel::readKey(KAccel::StdAccel accel, uint defaultKey)
-{
-    KConfigGroupSaver saver ( KGlobal::config(), "Keys" ) ;
-    QString s = saver.config()->readEntry(KAccel::stdAction(accel));
+    KConfigGroupSaver saver(KGlobal::config(), "Keys");
+    QString s = saver.config()->readEntry(action(id));
     int v = KAccel::stringToKey(s);
-    return v?v:defaultKey;
+    return v ? v : defaultKey(id);
 }
 
-bool KStdAccel::isEqual( QKeyEvent* ev, int skey )
+bool KStdAccel::isEqual(QKeyEvent* ev, int skey)
 {
-    int key;
+    int key = ev->key();
     switch ( ev->state() )
     {
         case Qt::AltButton:
-            key = ev->key() + Qt::ALT;
+            key += Qt::ALT;
             break;
         case Qt::ControlButton:
-            key = ev->key() + Qt::CTRL;
+            key += Qt::CTRL;
             break;
         case Qt::ShiftButton:
-            key = ev->key() + Qt::SHIFT;
+            key +=  Qt::SHIFT;
             break;
         case (Qt::AltButton | Qt::ControlButton):
-            key = ev->key() + Qt::ALT + Qt::CTRL;
+            key += Qt::ALT + Qt::CTRL;
             break;
         case (Qt::AltButton | Qt::ShiftButton):
-            key = ev->key() + Qt::ALT + Qt::SHIFT;
+            key += Qt::ALT + Qt::SHIFT;
             break;
         case (Qt::ControlButton | Qt::ShiftButton):
-            key = ev->key() + Qt::CTRL + Qt::SHIFT;
+            key += Qt::CTRL + Qt::SHIFT;
             break;
-        default:
-            key = ev->key();
+	    default:
+		    break;
     }
     return (key == skey);
 }
 
-uint KStdAccel::open()
+QString KStdAccel::action(StdAccel id)
 {
-  return readKey(KAccel::Open, Qt::CTRL + Qt::Key_O);
+	switch (id) {
+	 case Open:             return "Open";
+	 case New:              return "New";
+	 case Close:	        return "Close";
+	 case Save:	            return "Save";
+	 case Print:	        return "Print";
+	 case Quit:             return "Quit";
+	 case Cut:	            return "Cut";
+	 case Copy:	            return "Copy";
+	 case Paste:	        return "Paste";
+	 case Undo:	            return "Undo";
+	 case Redo:	            return "Redo";
+	 case Find:	            return "Find";
+	 case FindNext:         return "FindNext";
+	 case FindPrev:         return "FindPrev";
+	 case Replace:          return "Replace";
+	 case ZoomIn:           return "ZoomIn";
+	 case ZoomOut:          return "ZoomOut";
+	 case Insert:           return "Insert";
+	 case Home:             return "Home";
+	 case End:	            return "End";
+	 case Prior:            return "Prior";
+	 case Next:             return "Next";
+	 case AddBookmark:      return "AddBookmark";
+	 case Help:             return "Help";
+	 case TextCompletion:   return "TextCompletion";
+	 case RotateUp:         return "RotateUp";
+	 case RotateDown:       return "RotateDown";
+	 case PopupMenuContext: return "PopupMenuContext";
+	 case WhatThis:         return "WhatThis";
+	 case Reload:           return "Reload";
+	 case NB_STD_ACCELS:    return QString::null;
+	}
+	return QString::null;
 }
 
-uint KStdAccel::openNew()
+uint KStdAccel::defaultKey(StdAccel id)
 {
-  return readKey(KAccel::New, Qt::CTRL+Qt::Key_N);
+	switch (id) {
+	 case Open:             return Qt::CTRL + Qt::Key_O;
+	 case New:              return Qt::CTRL + Qt::Key_N;
+	 case Close:	        return Qt::CTRL + Qt::Key_W;
+	 case Save:	            return Qt::CTRL + Qt::Key_S;
+	 case Print:	        return Qt::CTRL + Qt::Key_P;
+	 case Quit:             return Qt::CTRL + Qt::Key_Q;
+	 case Cut:	            return Qt::CTRL + Qt::Key_X;
+	 case Copy:	            return Qt::CTRL + Qt::Key_C;
+	 case Paste:	        return Qt::CTRL + Qt::Key_V;
+	 case Undo:	            return Qt::CTRL + Qt::Key_Z;
+	 case Redo:	            return Qt::SHIFT + Qt::CTRL + Qt::Key_Z;
+	 case Find:	            return Qt::CTRL + Qt::Key_F;
+	 case FindNext:         return Qt::Key_F3;
+	 case FindPrev:         return Qt::SHIFT + Qt::Key_F3;
+	 case Replace:          return Qt::CTRL + Qt::Key_R;
+	 case ZoomIn:           return Qt::CTRL + Qt::Key_Plus;
+	 case ZoomOut:          return Qt::CTRL + Qt::Key_Minus;
+	 case Insert:           return Qt::CTRL + Qt::Key_Insert;
+	 case Home:             return Qt::CTRL + Qt::Key_Home;
+	 case End:	            return Qt::CTRL + Qt::Key_End;
+	 case Prior:            return Qt::Key_Prior;
+	 case Next:             return Qt::Key_Next;
+	 case AddBookmark:      return Qt::CTRL + Qt::Key_B;
+	 case Help: 	        return Qt::Key_F1;
+	 case TextCompletion:   return Qt::CTRL + Qt::Key_E;
+	 case RotateUp:         return Qt::Key_Up;
+	 case RotateDown:       return Qt::Key_Down;
+	 case PopupMenuContext: return Qt::Key_Menu;
+	 case WhatThis:         return Qt::SHIFT + Qt::Key_F1;
+	 case Reload:           return Qt::Key_F5;
+	 case NB_STD_ACCELS:    return 0;
+	}
+	
+	return 0;
 }
 
-uint KStdAccel::close()
+QString KStdAccel::description(StdAccel id)
 {
-  return readKey(KAccel::Close, Qt::CTRL+Qt::Key_W);
-}
-
-uint KStdAccel::save()
-{
-  return readKey(KAccel::Save, Qt::CTRL+Qt::Key_S);
-}
-
-uint KStdAccel::print()
-{
-  return readKey(KAccel::Print, Qt::CTRL+Qt::Key_P);
-}
-
-uint KStdAccel::quit()
-{
-  return readKey(KAccel::Quit, Qt::CTRL+Qt::Key_Q);
-}
-
-uint KStdAccel::cut()
-{
-  return readKey(KAccel::Cut, Qt::CTRL+Qt::Key_X);
-}
-
-uint KStdAccel::copy()
-{
-  return readKey(KAccel::Copy, Qt::CTRL+Qt::Key_C);
-}
-
-uint KStdAccel::paste()
-{
-  return readKey(KAccel::Paste, Qt::CTRL+Qt::Key_V);
-}
-
-uint KStdAccel::undo()
-{
-  return readKey(KAccel::Undo, Qt::CTRL+Qt::Key_Z);
-}
-
-uint KStdAccel::redo()
-{
-  return readKey(KAccel::Redo, Qt::SHIFT+Qt::CTRL+Qt::Key_Z);
-}
-
-uint KStdAccel::find()
-{
-  return readKey(KAccel::Find, Qt::CTRL+Qt::Key_F);
-}
-
-uint KStdAccel::findNext()
-{
-  return readKey(KAccel::FindNext, Qt::Key_F3);
-}
-
-uint KStdAccel::findPrev()
-{
-  return readKey(KAccel::FindPrev, Qt::SHIFT+Qt::Key_F3);
-}
-
-uint KStdAccel::replace()
-{
-  return readKey(KAccel::Replace, Qt::CTRL+Qt::Key_R);
-}
-
-
-uint KStdAccel::zoomIn()
-{
-  return readKey(KAccel::ZoomIn, Qt::CTRL+Qt::Key_Plus);
-}
-
-
-uint KStdAccel::zoomOut()
-{
-  return readKey(KAccel::ZoomOut, Qt::CTRL+Qt::Key_Minus);
-}
-
-
-uint KStdAccel::insert()
-{
-  return readKey(KAccel::Insert, Qt::CTRL+Qt::Key_Insert);
-}
-
-uint KStdAccel::home()
-{
-  return readKey(KAccel::Home, Qt::CTRL+Qt::Key_Home);
-}
-
-uint KStdAccel::end()
-{
-  return readKey(KAccel::End, Qt::CTRL+Qt::Key_End);
-}
-
-uint KStdAccel::prior()
-{
-  return readKey(KAccel::Prior, Qt::Key_Prior);
-}
-
-uint KStdAccel::next()
-{
-  return readKey(KAccel::Next, Qt::Key_Next);
-}
-
-uint KStdAccel::addBookmark()
-{
-  return readKey(KAccel::AddBookmark, Qt::CTRL+Qt::Key_B);
-}
-
-uint KStdAccel::help()
-{
-  return readKey(KAccel::Help, Qt::Key_F1);
-}
-
-uint KStdAccel::completion()
-{
-  return readKey(KAccel::TextCompletion, Qt::CTRL+Qt::Key_E);
-}
-
-uint KStdAccel::rotateUp()
-{
-  return readKey(KAccel::RotateUpInList, Qt::Key_Up);
-}
-
-uint KStdAccel::rotateDown()
-{
-  return readKey(KAccel::RotateDownInList, Qt::Key_Down);
+	switch (id) {
+	 case Open:             return i18n("Open");
+	 case New:              return i18n("New");
+	 case Close:	        return i18n("Close");
+	 case Save:	            return i18n("Save");
+	 case Print:	        return i18n("Print");
+	 case Quit:             return i18n("Quit");
+	 case Cut:	            return i18n("Cut");
+	 case Copy:	            return i18n("Copy");
+	 case Paste:	        return i18n("Paste");
+	 case Undo:	            return i18n("Undo");
+	 case Redo:	            return i18n("Redo");
+	 case Find:	            return i18n("Find");
+	 case FindNext:         return i18n("Find Next");
+	 case FindPrev:         return i18n("Find Prev");
+	 case Replace:          return i18n("Replace");
+	 case ZoomIn:           return i18n("Zoom In");
+	 case ZoomOut:          return i18n("Zoom Out");
+	 case Insert:           return i18n("Insert");
+	 case Home:             return i18n("Home");
+	 case End:	            return i18n("End");
+	 case Prior:            return i18n("Prior");
+	 case Next:             return i18n("Next");
+	 case AddBookmark:      return i18n("Add Bookmark");
+	 case Help:             return i18n("Help");
+	 case TextCompletion:   return i18n("Text Completion");
+	 case RotateUp:         return i18n("Rotate Up");
+	 case RotateDown:       return i18n("Rotate Down");
+	 case PopupMenuContext: return i18n("Popup Menu Context");
+	 case WhatThis:         return i18n("What This");
+	 case Reload:           return i18n("Reload");
+	 case NB_STD_ACCELS:    return QString::null;
+	}
+	return QString::null;
 }
