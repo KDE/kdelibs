@@ -169,6 +169,7 @@ class KPopupMenu;
  */
 class KAction : public QObject
 {
+  friend class KActionCollection;
   Q_OBJECT
   Q_PROPERTY( int containerCount READ containerCount )
   Q_PROPERTY( QPixmap pixmap READ pixmap )

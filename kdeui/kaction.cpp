@@ -224,8 +224,8 @@ KAction::KAction( QObject* parent, const char* name )
 KAction::~KAction()
 {
     // ### Do we really need this? KActionCollection catches QChildEvent, no? (Simon)
-    //    if ( m_parentCollection )
-    //  m_parentCollection->take( this );
+    if ( m_parentCollection )
+      m_parentCollection->take( this );
 
     delete d; d = 0;
 }
@@ -1254,7 +1254,7 @@ int KSelectAction::currentItem() const
 void KSelectAction::setCurrentItem( int id, int index )
 {
   if ( index < 0 )
-	return;
+        return;
 
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
@@ -2154,7 +2154,7 @@ int KActionMenu::plug( QWidget* widget, int index )
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
     bar->setDelayedPopup( id_, popupMenu() );
-    
+
     return containerCount() - 1;
   }
   else if ( widget->inherits( "KMenuBar" ) )
@@ -2384,20 +2384,27 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 
 KActionCollection::~KActionCollection()
 {
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  for (; it.current(); ++it )
+      if ( it.current()->m_parentCollection == this )
+          it.current()->m_parentCollection = 0L;
+
   delete d; d = 0;
 }
 
 void KActionCollection::childEvent( QChildEvent* ev )
 {
   QObject::childEvent( ev );
+  /*
   if ( ev->removed() )
   {
     // We can not emit a removed signal here since the
     // actions destructor did already run :-(
     QCString n = ev->child()->name();
-    d->m_actionDict.remove( n );
-    d->m_keyMap.remove( n );
+    if ( d->m_actionDict.take( n ) != 0L )
+        d->m_keyMap.remove( n );
   }
+  */
 }
 
 void KActionCollection::insert( KAction* action )
