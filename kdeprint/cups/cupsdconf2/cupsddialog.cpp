@@ -225,10 +225,10 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 	{
 		QFileInfo	fi(fn);
 		if (!fi.exists() || !fi.isReadable() || !fi.isWritable())
-			errormsg = i18n("Internal error: file not readable/writable!");
+			errormsg = i18n("Internal error: file '%1' not readable/writable!").arg(fn);
 		// check file size
 		if (fi.size() == 0)
-			errormsg = i18n("Internal error: empty file!");
+			errormsg = i18n("Internal error: empty file '%1'!").arg(fn);
 	}
 
 	if (!errormsg.isEmpty())
