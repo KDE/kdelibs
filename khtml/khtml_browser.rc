@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="1">
+<kpartgui name="khtmlpart" version="2">
 <MenuBar>
  <Menu name="edit">
   <Action name="selectAll" />
@@ -19,6 +19,6 @@
 <ToolBar name="mainToolBar">
  <Action name="incFontSizes" />
  <Action name="decFontSizes" />
- <Action name="loadImages" />
+ <ActionList name="loadImages" />
 </ToolBar>
 </kpartgui>

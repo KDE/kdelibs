@@ -152,9 +152,9 @@ public:
   DOM::HTMLDocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
-  QStringList m_cachedHtml;  
+  QStringList m_cachedHtml;
     QString scheduledScript;
-    
+
   KJSProxy *m_jscript;
   KLibrary *m_kjs_lib;
   bool m_bJScriptEnabled;
@@ -341,11 +341,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paPrintFrame = new KAction( i18n( "Print Frame" ), "fileprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
 
   d->m_paSelectAll = KStdAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
-
-  /*
-    if ( !autoloadImages() )
-      d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
-  */
 
   connect( this, SIGNAL( completed() ),
            this, SLOT( updateActions() ) );
@@ -580,7 +575,7 @@ bool KHTMLPart::executeScript( const QString &script )
     return false;
 
   //kdDebug() << "executing " << script << endl;
-  
+
 
   bool ret = proxy->evaluate( script.unicode(), script.length(), Node() );
   d->m_doc->updateRendering();
@@ -601,7 +596,7 @@ bool KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
 bool KHTMLPart::scheduleScript( const QString &script )
 {
-    //kdDebug() << "KHTMLPart::scheduleScript "<< script << endl; 
+    //kdDebug() << "KHTMLPart::scheduleScript "<< script << endl;
     d->scheduledScript = script;
     return true;
 }
@@ -609,8 +604,8 @@ bool KHTMLPart::scheduleScript( const QString &script )
 bool KHTMLPart::executeScheduledScript()
 {
     if(d->scheduledScript.isEmpty() || d->scheduledScript.isNull() )
-	return false;
-    
+        return false;
+
     KJSProxy *proxy = jScript();
 
   if (!proxy)
@@ -642,9 +637,7 @@ void KHTMLPart::autoloadImages( bool enable )
 
   khtml::Cache::autoloadImages( enable );
 
-  KXMLGUIFactory *guiFactory = factory();
-  if ( guiFactory )
-    guiFactory->removeClient( this );
+  unplugActionList( "loadImages" );
 
   if ( enable )
   {
@@ -655,8 +648,12 @@ void KHTMLPart::autoloadImages( bool enable )
   else if ( !d->m_paLoadImages )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "mime-image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
-  if ( guiFactory )
-    guiFactory->addClient( this );
+  if ( d->m_paLoadImages )
+  {
+      QList<KAction> lst;
+      lst.append( d->m_paLoadImages );
+      plugActionList( "loadImages", lst );
+  }
 
 }
 
@@ -2310,8 +2307,8 @@ void KHTMLPart::updateFontSize( int add )
 
 void KHTMLPart::slotLoadImages()
 {
-  autoloadImages( false );
-  autoloadImages( true );
+  khtml::Cache::autoloadImages( !khtml::Cache::autoloadImages() );
+  khtml::Cache::autoloadImages( d->m_settings->autoLoadImages() );
 }
 
 void KHTMLPart::reparseConfiguration()
@@ -2691,6 +2688,13 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
   {
     emitSelectionChanged();
     emit d->m_extension->enableAction( "print", d->m_doc != 0 );
+
+    if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
+    {
+        QList<KAction> lst;
+        lst.append( d->m_paLoadImages );
+        plugActionList( "loadImages", lst );
+    }
   }
 }
 
