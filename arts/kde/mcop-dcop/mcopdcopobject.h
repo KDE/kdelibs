@@ -29,15 +29,54 @@ typedef QValueList<QCString> QCStringList;
 
 class MCOPDCOPObjectPrivate;
 
+class MCOPEntryInfo
+{
+public:
+	MCOPEntryInfo()
+	{ }
+	
+	~MCOPEntryInfo()
+	{ }
+
+	QCString functionType()
+	{ return m_functionType; }
+	
+	QCString functionName()
+	{ return m_functionName; }
+
+	QCString signature()
+	{ return m_signature; }
+	
+	QCStringList signatureList()
+	{ return m_signatureList; }
+	
+	void setFunctionType(QCString s)
+	{ m_functionType = s; }
+
+	void setFunctionName(QCString s)
+	{ m_functionName = s; }
+
+	void setSignature(QCString s)
+	{ m_signature = s; }
+
+	void setSignatureList(QCStringList s)
+	{ m_signatureList = s; }
+
+private:
+	QCString m_functionType, m_functionName, m_signature;
+	QCStringList m_signatureList;
+};
+
 class MCOPDCOPObject : public DCOPObject
 {
 public:
 	MCOPDCOPObject(QCString name);
 	~MCOPDCOPObject();
 
-	virtual QCStringList functions();
+	virtual bool processDynamic(const QCString &fun, const QByteArray &data, QCString &replyType, QByteArray &replyData);
+	virtual QCStringList functionsDynamic();
 
-	void addDynamicFunction(QCString value);
+	void addDynamicFunction(QCString value, MCOPEntryInfo *entry);
 	
 private:
     MCOPDCOPObjectPrivate *d;

@@ -77,7 +77,6 @@ bool SoundServer_impl::terminate() {
 	return true;
 }
 
-
 #ifndef __SUNPRO_CC
 /* See bottom of simplesoundserver_impl.cc for the reason this is here.  */
 REGISTER_IMPLEMENTATION(SoundServer_impl);

@@ -1,7 +1,6 @@
     /*
 
-    Copyright (C) 2000 Hans Meine
-                       hans@meine.de
+    Copyright (C) 2001 Nikolas Zimmermann <wildfox@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,23 +22,44 @@
 
     */
 
-#ifndef SOUNDSERVER_IMPL_H
-#define SOUNDSERVER_IMPL_H
+#define protected public
+#include "object.h"
+#undef protected
 
-#include "soundserver.h"
-#include "simplesoundserver_impl.h"
-#include "soundserver.h"
+#include "mcopinfo_impl.h"
+#include "dispatcher.h"
+#include "debug.h"
 
-namespace Arts {
+using namespace Arts;
 
-	class SoundServer_impl : virtual public SoundServer_skel,
-							 public SimpleSoundServer_impl
+long MCOPInfo_impl::objectCount()
+{
+	return Object_base::_objectCount();
+}
+
+Object MCOPInfo_impl::objectForNumber(long which)
+{
+	int counter = 0;
+	
+	if(which >= objectCount())
+		return Object::null();
+	
+	list<Object_skel *> objList = Dispatcher::the()->activeObjectPool().enumerate();
+	for(list<Object_skel *>::iterator it = objList.begin(); it != objList.end(); it++)
 	{
-		RealtimeStatus realtimeStatus();
-		long secondsUntilSuspend();
-		bool suspend();
-		bool terminate();
-	};
-};
+		if(counter == (int) which)
+		{
+			Object_base *base = *it;
+			base->_copy();
+			
+			return Object::_from_base(base);
+		}
+		
+		counter++;
+	}		
+}
 
-#endif /* VERBOSESOUNDSERVER_IMPL_H */
+#ifndef __SUNPRO_CC
+/* See bottom of simplesoundserver_impl.cc for the reason this is here.  */
+REGISTER_IMPLEMENTATION(MCOPInfo_impl);
+#endif

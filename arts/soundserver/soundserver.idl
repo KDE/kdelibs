@@ -1,5 +1,6 @@
 #include "artsflow.idl"
 #include "kmedia2.idl"
+#include "../mcop/core.idl"
 
 module Arts {
 
@@ -250,5 +251,15 @@ interface WavPlayObject : PlayObject, SynthModule
 	out audio stream left,right;
 };
 
+
+/**
+ * Publishs MCOP Information
+ */
+interface MCOPInfo
+{
+	long objectCount();
+
+	Object objectForNumber(long which);
+};
 
 };

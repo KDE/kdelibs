@@ -171,7 +171,8 @@ static void handleArgs(int argc, char **argv)
 }
 
 static bool publishReferences(SoundServerV2 server,
-							  AudioManager audioManager, bool silent)
+							  AudioManager audioManager,
+							  MCOPInfo mcopInfo, bool silent)
 {
 	ObjectManager *om = ObjectManager::the();
 	bool result;
@@ -180,7 +181,8 @@ static bool publishReferences(SoundServerV2 server,
 	    && om->addGlobalReference(server,"Arts_SoundServer")
 	    && om->addGlobalReference(server,"Arts_SimpleSoundServer")
         && om->addGlobalReference(server,"Arts_PlayObjectFactory")
-        && om->addGlobalReference(audioManager,"Arts_AudioManager");
+        && om->addGlobalReference(audioManager,"Arts_AudioManager")
+		&& om->addGlobalReference(mcopInfo,"Arts_MCOPInfo");
 	
 	if(!result && !silent)
 	{
@@ -193,7 +195,8 @@ static bool publishReferences(SoundServerV2 server,
 "       "<< MCOPUtils::createFilePath("Arts_SoundServer") << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_PlayObjectFactory") << endl <<
-"       "<< MCOPUtils::createFilePath("Arts_AudioManager") << endl << endl;
+"       "<< MCOPUtils::createFilePath("Arts_AudioManager") << endl <<
+"		"<< MCOPUtils::createFilePath("Arts_MCOPInfo") << endl << endl;
 	}
 	return result;
 }
@@ -225,6 +228,7 @@ static void cleanUnusedReferences()
 	i += cleanReference("Arts_SimpleSoundServer");
 	i += cleanReference("Arts_PlayObjectFactory");
 	i += cleanReference("Arts_AudioManager");
+	i += cleanReference("Arts_MCOPInfo");
 
 	if(i)
 		cerr << "... cleaned " <<i<< " unused mcop global references." << endl;
@@ -283,6 +287,7 @@ int main(int argc, char **argv)
 	/* start sound server implementation */
 	SoundServerV2 server;
 	AudioManager audioManager;
+	MCOPInfo mcopInfo;
 
 	if (cfgAutoSuspend)
 		server.autoSuspendSeconds(cfgAutoSuspend);
@@ -291,10 +296,10 @@ int main(int argc, char **argv)
 		server.bufferSizeMultiplier(cfgBuffers);
 
 	/* make global MCOP references available */
-	if(!publishReferences(server,audioManager,true))
+	if(!publishReferences(server,audioManager,mcopInfo,true))
 	{
 		cleanUnusedReferences();
-		if(!publishReferences(server,audioManager,false)) return 1;
+		if(!publishReferences(server,audioManager,mcopInfo,false)) return 1;
 	}
 
 	/* warn if there was a problem with artswrapper */

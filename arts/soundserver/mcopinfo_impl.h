@@ -1,7 +1,6 @@
     /*
 
-    Copyright (C) 2000 Hans Meine
-                       hans@meine.de
+    Copyright (C) 2001 Nikolas Zimmermann <wildfox@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,23 +22,18 @@
 
     */
 
-#ifndef SOUNDSERVER_IMPL_H
-#define SOUNDSERVER_IMPL_H
+#ifndef MCOPINFO_IMPL_H
+#define MCOPINFO_IMPL_H
 
 #include "soundserver.h"
-#include "simplesoundserver_impl.h"
-#include "soundserver.h"
 
-namespace Arts {
-
-	class SoundServer_impl : virtual public SoundServer_skel,
-							 public SimpleSoundServer_impl
+namespace Arts
+{
+	class MCOPInfo_impl: virtual public MCOPInfo_skel
 	{
-		RealtimeStatus realtimeStatus();
-		long secondsUntilSuspend();
-		bool suspend();
-		bool terminate();
+		long objectCount();
+		Object objectForNumber(long which);
 	};
 };
 
-#endif /* VERBOSESOUNDSERVER_IMPL_H */
+#endif

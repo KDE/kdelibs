@@ -27,6 +27,7 @@
 #include <qcstring.h>
 
 #include <kartsdispatcher.h>
+#include <soundserver.h>
 #include <dispatcher.h>
 #include <object.h>
 #include <core.h>
@@ -40,6 +41,9 @@ using namespace std;
 
 class KMCOPPrivate
 {
+public:
+	MCOPInfo mcopInfo; 
+	QPtrList<MCOPDCOPObject> list;
 };
 
 int main(int argc, char **argv)
@@ -73,6 +77,8 @@ int main(int argc, char **argv)
 KMCOP::KMCOP() : QObject(), DCOPObject("arts")
 {
     d = new KMCOPPrivate();
+	d->mcopInfo = Reference("global:Arts_MCOPInfo");
+	d->list.setAutoDelete(true);
 }
 
 KMCOP::~KMCOP()
@@ -82,44 +88,73 @@ KMCOP::~KMCOP()
 
 int KMCOP::objectCount()
 {
-	return Object_base::_objectCount();
+	return d->mcopInfo.objectCount();
 }
 
 void KMCOP::addInterfacesHackHackHack()
 {
-	list<Object_skel *> which = Dispatcher::the()->activeObjectPool().enumerate();
-	list<Object_skel *>::iterator i;
-	for(i = which.begin(); i != which.end(); i++)
+	for(int i = 0; i <= objectCount(); i++)
 	{
-		QCString interfaceName = ((*i)->_interfaceName()).c_str();
-		Arts::InterfaceRepo ifaceRepo = Dispatcher::the()->interfaceRepo();
-
-		MCOPDCOPObject *interface = new MCOPDCOPObject(interfaceName);
+		Arts::Object obj = d->mcopInfo.objectForNumber(i);
 		
-		InterfaceDef ifaceDef = ifaceRepo.queryInterface(string(interfaceName));
-		vector<MethodDef> ifaceMethods = ifaceDef.methods;
-	
-		vector<MethodDef>::iterator ifaceMethodsIterator;
-		for(ifaceMethodsIterator = ifaceMethods.begin(); ifaceMethodsIterator != ifaceMethods.end(); ifaceMethodsIterator++)
+		if(!obj.isNull())		
 		{
-			QCString function;
-			MethodDef currentMethod = *ifaceMethodsIterator;
-			vector<ParamDef> currentParameters = currentMethod.signature;
-			
-			function = QCString(currentMethod.type.c_str()) + QCString(" ") + QCString(currentMethod.name.c_str()) + QCString("(");
-			
-			vector<ParamDef>::iterator methodParametersIterator;
-			for(methodParametersIterator = currentParameters.begin(); methodParametersIterator != currentParameters.end(); methodParametersIterator++)
-			{
-				ParamDef parameter = *methodParametersIterator;
-				if(methodParametersIterator != currentParameters.begin())
-					function += QCString(", ");
-				function += QCString(parameter.type.c_str());
-			}
+			QCString interfaceName = obj._interfaceName().c_str();
 
-			function += QCString(")");
+			if(interfaceName != "Arts::TraderOffer")
+			{
+				Arts::InterfaceRepo ifaceRepo = Dispatcher::the()->interfaceRepo();
+
+				MCOPDCOPObject *interface = new MCOPDCOPObject(interfaceName);
+				d->list.append(interface);
 			
-			interface->addDynamicFunction(function);
+				InterfaceDef ifaceDef = ifaceRepo.queryInterface(string(interfaceName));
+				vector<MethodDef> ifaceMethods = ifaceDef.methods;
+
+				vector<MethodDef>::iterator ifaceMethodsIterator;
+				for(ifaceMethodsIterator = ifaceMethods.begin(); ifaceMethodsIterator != ifaceMethods.end(); ifaceMethodsIterator++)
+				{
+					QCString function, signature;
+
+					MCOPEntryInfo *entry = new MCOPEntryInfo();
+					
+					MethodDef currentMethod = *ifaceMethodsIterator;
+					vector<ParamDef> currentParameters = currentMethod.signature;
+
+					entry->setFunctionType(QCString(currentMethod.type.c_str()));
+					entry->setFunctionName(QCString(currentMethod.name.c_str()));
+					
+					function = entry->functionType() + QCString(" ") + entry->functionName() + QCString("(");
+					
+					signature = QCString("(");
+
+					QCStringList signatureList;
+					
+					vector<ParamDef>::iterator methodParametersIterator;
+					for(methodParametersIterator = currentParameters.begin(); methodParametersIterator != currentParameters.end(); methodParametersIterator++)
+					{
+						ParamDef parameter = *methodParametersIterator;
+						if(methodParametersIterator != currentParameters.begin())
+						{
+							function += QCString(", ");						
+							signature += QCString(",");
+						}
+						
+						function += QCString(parameter.type.c_str());
+						signature += QCString(parameter.type.c_str());
+
+						signatureList.append(QCString(parameter.type.c_str()));
+					}
+					
+					function += QCString(")");
+					signature += QCString(")");
+
+					entry->setSignature(signature);
+					entry->setSignatureList(signatureList);
+
+					interface->addDynamicFunction(function, entry);
+				}
+			}
 		}
 	}
 }

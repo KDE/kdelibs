@@ -16,12 +16,16 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <kdebug.h>
+
+#include <qmap.h>
+#include <qdatastream.h>
 #include "mcopdcopobject.h"
 
 class MCOPDCOPObjectPrivate
 {
 public:
-	QCStringList dynamicFunctions;
+	QMap<QCString, MCOPEntryInfo *> dynamicFunctions;
 };
 
 MCOPDCOPObject::MCOPDCOPObject(QCString name) : DCOPObject(name)
@@ -34,18 +38,53 @@ MCOPDCOPObject::~MCOPDCOPObject()
     delete d;
 }
 
-QCStringList MCOPDCOPObject::functions()
+QCStringList MCOPDCOPObject::functionsDynamic()
 {
-	QCStringList returnList = DCOPObject::functions();
+	QCStringList returnList;
 	
-	QCStringList::iterator it;
+	QMap<QCString, MCOPEntryInfo *>::iterator it;
 	for(it = d->dynamicFunctions.begin(); it != d->dynamicFunctions.end(); ++it)
-		returnList.push_back(*it);
+		returnList.append(it.key());
 	
 	return returnList;
 }
 
-void MCOPDCOPObject::addDynamicFunction(QCString value)
+bool MCOPDCOPObject::processDynamic(const QCString &fun, const QByteArray &data, QCString &replyType, QByteArray &replyData)
 {
-	d->dynamicFunctions.push_back(value);
+	QMap<QCString, MCOPEntryInfo *>::iterator it;
+	for(it = d->dynamicFunctions.begin(); it != d->dynamicFunctions.end(); ++it)
+	{
+		MCOPEntryInfo *entry = it.data();
+
+		if((entry->functionName() + entry->signature()) == fun)
+		{
+			QCString type = entry->functionType();
+
+			if(type == "void")
+				replyType = type;
+			else if(type == "string")
+			{
+				replyType = "QCString";
+				
+				QDataStream reply(replyData, IO_WriteOnly);
+				reply << "fooo!";
+			}
+			else if(type == "long")
+			{
+				replyType = type;
+				
+				QDataStream reply(replyData, IO_WriteOnly);
+				reply << "-1";
+			}
+			
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void MCOPDCOPObject::addDynamicFunction(QCString value, MCOPEntryInfo *entry)
+{
+	d->dynamicFunctions.insert(value, entry);
 }
