@@ -33,16 +33,34 @@ class KXMLGUIContainerNode;
 class KXMLGUIContainerClient;
 
 /**
- * @internal
- * The GUI merging engine, core part of KParts.
- * It is able to dynamically add or remove a "servant" without having to rebuild
- * the whole GUI from scratch. Its author says it's not "big thing or new
- * technology" but it really is.
+ * KXMLGUIFactory, together with @ref KXMLGUIClient objects, can be used to create
+ * a GUI of container widgets (like menus, toolbars, etc.) and container items
+ * (menu items, toolbar buttons, etc.) from an XML document and action objects.
+ *
+ * Each @ref KXMLGUIClient represents a part of the GUI, composed from containers and
+ * actions. KXMLGUIFactory takes care of building (with the help of a @ref KXMLGUIBuilder)
+ * and merging the GUI from an unlimited number of clients.
+ *
+ * Each client provides XML through a @ref QDomDocument and actions through a
+ * @ref KActionCollection . The XML document contains the rules for how to merge the
+ * GUI.
+ *
+ * KXMLGUIFactory processes the DOM tree provided by a client and plugs in the client's actions,
+ * according to the XML and the merging rules of previously inserted clients. Container widgets
+ * are built via a @ref KXMLGUIBuilder , which has to be provided with the KXMLGUIFactory constructor.
  */
 class KXMLGUIFactory
 {
  public:
+  /**
+   * Constructs a KXMLGUIFactory. The provided @p builder @ref KXMLGUIBuilder will be called
+   * for creating and removing container widgets, when clients are added/removed from the GUI.
+   */
   KXMLGUIFactory( KXMLGUIBuilder *builder );
+
+  /**
+   * Destructor
+   */
   ~KXMLGUIFactory();
 
   // XXX move to somewhere else? (Simon)
@@ -65,9 +83,29 @@ class KXMLGUIFactory
    */
   void removeClient( KXMLGUIClient *client );
 
+  /**
+   * Use this method to get access to a container widget with the name specified with @p containerName
+   * and which is owned by the @p client. The container name is specified with a "name" attribute in the
+   * XML document.
+   *
+   * This method may return 0L if no container with the given name exists or is not owned by the client.
+   */
   QWidget *container( const QString &containerName, KXMLGUIClient *client );
 
+  /**
+   * Use this method to free all memory allocated by the KXMLGUIFactory. This deletes the internal node
+   * tree and therefore resets the internal state of the class. Please note that the actual GUI is
+   * NOT touched at all, meaning no containers are being deleted nor any actions unplugged. That is 
+   * something you have to do on your own. So use this method only if you know what you are doing :-)
+   *
+   * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all inserted clients)
+   */
+  void reset();
+
  private:
+
+  void resetInternal( KXMLGUIContainerNode *node );
+
   void buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode );
   bool removeRecursive( KXMLGUIContainerNode *node );
 

@@ -175,7 +175,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   static QString tagAction = QString::fromLatin1( "action" );
   static QString attrName = QString::fromLatin1( "name" );
   static QString attrAccel = QString::fromLatin1( "accel" );
-  
+
   m_client = client;
 
   if ( client->factory() && client->factory() != this )
@@ -219,7 +219,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 	// readable accels please ;-)
 	if ( attr.name().lower() == attrAccel )
   	  propertyValue = QVariant( KAccel::stringToKey( attr.value() ) );
-	     
+	
         action->setProperty( attr.name().latin1() /* ???????? */, propertyValue );
       }
     }
@@ -278,6 +278,23 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
 
   return result;
 }
+
+void KXMLGUIFactory::reset()
+{
+  resetInternal( d->m_rootNode );
+  
+  d->m_rootNode->children.clear();    
+}
+
+void KXMLGUIFactory::resetInternal( KXMLGUIContainerNode *node )
+{
+  QListIterator<KXMLGUIContainerNode> childIt( node->children );
+  for (; childIt.current(); ++childIt )
+    resetInternal( childIt.current() );
+  
+  if ( node->client )
+    node->client->setFactory( 0L );
+} 
 
 void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode )
 {
