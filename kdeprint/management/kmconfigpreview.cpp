@@ -34,9 +34,9 @@ KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
 	setPageHeader(i18n("Preview settings"));
 	setPagePixmap("filefind");
 
-	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Preview program"), this);
+	QGroupBox *box = new QGroupBox(0, Qt::Vertical, i18n("Preview Program"), this);
 
-	m_useext = new QCheckBox(i18n("&Use external preview program:"), box);
+	m_useext = new QCheckBox(i18n("&Use external preview program"), box);
 	m_program = new KURLRequester(box);
 	QLabel	*lab = new QLabel(box);
 	lab->setText(i18n("You can use an external preview program (PS viewer) instead of the "

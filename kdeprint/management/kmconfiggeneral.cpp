@@ -43,7 +43,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	setPageHeader(i18n("General settings"));
 	setPagePixmap("fileprint");
 
-	QGroupBox	*m_timerbox = new QGroupBox(0, Qt::Vertical, i18n("Refresh print view (seconds)"), this);
+	QGroupBox	*m_timerbox = new QGroupBox(0, Qt::Vertical, i18n("Refresh Print View (seconds)"), this);
 	m_timer = new KIntNumInput(m_timerbox,"Timer");
 	m_timer->setRange(0,30);
 	m_timer->setSpecialValueText(i18n("Disabled"));
@@ -51,8 +51,8 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 			              "<b>KDE Print</b> components like the print manager "
 				      "and the job viewer."));
 
-	QGroupBox	*m_testpagebox = new QGroupBox(0, Qt::Vertical, i18n("Test page"), this);
-	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page:"), m_testpagebox, "TestPageCheck");
+	QGroupBox	*m_testpagebox = new QGroupBox(0, Qt::Vertical, i18n("Test Page"), this);
+	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page"), m_testpagebox, "TestPageCheck");
 	m_testpage = new KURLRequester(m_testpagebox,"TestPage");
 	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "filefind"), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));

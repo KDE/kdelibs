@@ -41,8 +41,8 @@ KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 	setPageHeader(i18n("Fonts settings"));
 	setPagePixmap("fonts");
 
-	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Fonts embedding"), this);
-	QGroupBox	*box2 = new QGroupBox(0, Qt::Vertical, i18n("Fonts path"), this);
+	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Fonts Embedding"), this);
+	QGroupBox	*box2 = new QGroupBox(0, Qt::Vertical, i18n("Fonts Path"), this);
 
 	m_embedfonts = new QCheckBox(i18n("&Embed fonts in PostScript data when printing"), box);
 	m_fontpath = new KListView(box2);
