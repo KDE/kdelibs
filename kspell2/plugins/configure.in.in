@@ -6,8 +6,8 @@
    if test -z "$ac_cv_header_aspell_h"; then
        echo ""
        echo "Your libaspell is too old or not installed, I couldn't find aspell.h."
-       echo "You must download aspell >= 0.50.2"
-       echo "See http://aspell.net/. Spell-checking disabled."
+       echo "You must download aspell >= 0.50.2, see http://aspell.net"
+       echo "Spell-checking with libaspell will not be available, only with ispell dicts."
        echo ""
    fi
 
