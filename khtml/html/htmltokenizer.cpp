@@ -1493,7 +1493,7 @@ void HTMLTokenizer::processToken()
         if ( currToken.complexText ) {
             // ### we do too much QString copying here, but better here than in RenderText...
             // anyway have to find a better solution in the long run (lars)
-            QString s = QConstString(buffer, dest-buffer).string();
+            QString s(buffer, dest-buffer);
             s.compose();
             currToken.text = new DOMStringImpl( s.unicode(), s.length() );
             currToken.text->ref();
@@ -1583,11 +1583,14 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 #endif
 //         pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
         setSrc(QString::null);
-	scriptExecution( scriptSource.string(), cachedScript->url().string() );
 
-        if (cachedScript)
-            cachedScript->deref(this);
+        // make sure we forget about the script before we execute the new one
+        // infinite recursion might happen otherwise
+        QString cachedScriptUrl( cachedScript->url().string() );
+        cachedScript->deref(this);
         cachedScript = 0;
+
+	scriptExecution( scriptSource.string(), cachedScriptUrl );
 
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
