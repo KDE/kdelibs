@@ -35,7 +35,7 @@
 #include <qfontdatabase.h>
 #include <qwhatsthis.h>
 #include <kiconloader.h>
-#include <kpopmenu.h>
+#include <kpopupmenu.h>
 #include <kglobalsettings.h>
 #include <kcombobox.h>
 #include <kdebug.h>
