@@ -408,6 +408,7 @@ protected:
 
 private:
   KService( const KService& ); // forbidden
+  KService& operator=(const KService&);
 
   QString m_strType;
   QString m_strName;
