@@ -220,7 +220,7 @@ static KAction* findPluggedAction(QPtrList<KAction> actions, KToolBar *tb, int i
  * @param atFirst bool reference, when true the position before the 
  *        returned action was dropped on
  */
-static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions, bool &atFirst)
+static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions, bool &atFirst, KBookmarkManager *mgr)
 {
     static int sepIndex;
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
@@ -261,6 +261,20 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
     a = findPluggedAction(actions, tb, b->id());
     Q_ASSERT(a);
     sepIndex = index + (atFirst ? 0 : 1);
+
+    Q_UNUSED(mgr);
+    /*
+    {
+        QString address = a->property("address").toString();
+        KBookmark bk = mgr->findByAddress( address );
+        if (bk.isGroup())
+        {
+            KBookmarkActionMenu *menu = dynamic_cast<KBookmarkActionMenu*>(a);
+            Q_ASSERT(menu);
+            menu->popup(tb->mapToGlobal(b->geometry().center()));
+        } 
+    }
+    */
 
 failure_exit:
     tb->insertLineSeparator(sepIndex, sepId);
@@ -308,7 +322,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
             return false;
         KAction *_a; 
         bool _atFirst;
-        _a = handleToolbarDragMoveEvent(dme->pos(), dptr()->m_actions, _atFirst);
+        _a = handleToolbarDragMoveEvent(dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
         if (_a)
         {
             a = _a;
