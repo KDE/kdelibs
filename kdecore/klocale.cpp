@@ -1,8 +1,9 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (c) 1997,2001 Stephan Kulow <coolo@kde.org>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1999-2001 Hans Petter Bieker <bieker@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -61,19 +62,10 @@ public:
 
 extern void qt_set_locale_codec( QTextCodec *codec );
 
-// ### HPB: Merge with the constructor below in KDE 3
-KLocale::KLocale( const QString & catalogue )
-  // #### HPB: Why is this needed??
-  : m_codec( 0 ),
-    d(new KLocalePrivate)
-{
-  KLocale( catalogue, true );
-}
-
 KLocale::KLocale( const QString & catalogue, bool useEnv )
-  : m_codec( 0 ),
-    d(new KLocalePrivate)
+  : m_codec( 0 )
 {
+  d = new KLocalePrivate;
   // make it the owner of the objecs in the list
   d->catalogues.setAutoDelete( true );
 
@@ -86,12 +78,11 @@ KLocale::KLocale( const QString & catalogue, bool useEnv )
   if (maincatalogue)
     mainCatalogue = QString::fromLatin1(maincatalogue);
 
-  if (mainCatalogue.isEmpty())
-    {
-      kdDebug(173) << "KLocale instance created called without valid "
-		   << "catalogue! Give an argument or call setMaintCatalogue "
-		   << "before init" << endl;
-    }
+  if (mainCatalogue.isEmpty()) {
+    kdDebug(173) << "KLocale instance created called without valid "
+                 << "catalogue! Give an argument or call setMaintCatalogue "
+                 << "before init" << endl;
+  }
   else
     d->catalogues.append( new KCatalogue( mainCatalogue ) );
 
@@ -607,7 +598,7 @@ QString KLocale::translate( const char *singular, const char *plural,
   // as copying QString is very fast, it looks slower as it is ;/
   QString r = translate_priv(newstring, 0);
   delete [] newstring;
-  
+
   if ( r.isEmpty() || useInternalLanguage() || d->plural_form == -1) {
     if ( n == 1 )
       return put_n_in( QString::fromUtf8( singular ),  n );
@@ -714,7 +705,7 @@ QString KLocale::translateQt( const char *index, const char *fallback) const
 		   << "Fix the program" << endl;
       return QString::null;
     }
-  
+
     if ( useInternalLanguage() )
       return QString::null;
 
@@ -819,7 +810,7 @@ QString KLocale::formatMoney(double num,
     ? currencySymbol()
     : symbol;
   if (precision < 0) precision = fracDigits();
-  
+
   // the number itself
   bool neg = num < 0;
   QString res = QString::number(neg?-num:num, 'f', precision);
@@ -982,7 +973,7 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
   bool neg = str.find(negativeSign()) == 0;
   if (neg)
     str.remove( 0, negativeSign().length() );
-  
+
   int pos = str.find(decimalSymbol());
   QString major;
   QString minior;
@@ -997,7 +988,7 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
   // Remove thousand separators
   while ( ( pos = major.find( thousandsSeparator() ) ) > 0 )
     major.remove( pos, thousandsSeparator().length() );
-  
+
   QString tot;
   if (neg) tot = '-';
   tot += major + '.' + minior;
@@ -1044,7 +1035,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
         }
     }
   if (neg) str = str.stripWhiteSpace();
-  
+
   // Finally try again for the currency symbol, if we didn't find
   // it already (because of the negative sign being in the way).
   if ( !currencyFound )
@@ -1056,7 +1047,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
 	  str = str.stripWhiteSpace();
         }
     }
-  
+
   // And parse the rest as a number
   pos = str.find(monetaryDecimalSymbol());
   QString major;
@@ -1128,7 +1119,7 @@ QDate KLocale::readDate(const QString &intstr, bool shortFormat) const
 	  goto error;
 	continue;
       }
-      
+
       // remove space at the begining
       if (str.length() > strpos && str.at(strpos).isSpace())
 	strpos++;
@@ -1162,17 +1153,17 @@ QDate KLocale::readDate(const QString &intstr, bool shortFormat) const
 	  day = readInt(str, strpos);
 	  if (day < 1 || day > 31)
 	    goto error;
-      
+
 	  break;
-      
+
 	case 'n':
 	case 'm':
 	  month = readInt(str, strpos);
 	  if (month < 1 || month > 12)
 	    goto error;
-	  
+
 	  break;
-      
+
 	case 'Y':
 	case 'y':
 	  year = readInt(str, strpos);
@@ -1182,7 +1173,7 @@ QDate KLocale::readDate(const QString &intstr, bool shortFormat) const
 	    if (year < 69) year += 100;
 	    year += 1900;
 	  }
-      
+
 	  break;
 	}
     }
@@ -1257,14 +1248,14 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
 	      }
 	  }
 	  break;
-      
+
 	case 'k':
 	case 'H':
 	  g_12h = false;
 	  hour = readInt(str, strpos);
 	  if (hour < 0 || hour > 23)
 	    goto error;
-      
+
 	  break;
 
 	case 'l':
@@ -1298,7 +1289,7 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
     }
 
   return QTime(hour, minute, second);
-  
+
  error:
   return QTime(-1, -1, -1); // return invalid date if it didn't work
 }
@@ -1448,13 +1439,12 @@ void KLocale::initInstance()
     return;
 
   KInstance *app = KGlobal::instance();
-  if (app)
-    {
-      KGlobal::_locale = new KLocale(app->instanceName());
+  if (app) {
+    KGlobal::_locale = new KLocale(app->instanceName());
 
-      // only do this for the global instance
-      qt_set_locale_codec(KGlobal::_locale->codecForEncoding());
-    }
+    // only do this for the global instance
+    qt_set_locale_codec(KGlobal::_locale->codecForEncoding());
+  }
   else
     kdDebug(173) << "no app name available using KLocale - nothing to do\n";
 }
@@ -1482,7 +1472,7 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
   for (it = search.begin(); it != search.end(); ++it)
     {
       kdDebug(173) << "Looking for help in: " << *it << endl;
-      
+
       QFileInfo info(*it);
       if (info.exists() && info.isFile() && info.isReadable())
 	return *it;
@@ -1546,7 +1536,7 @@ void KLocale::initEncoding(KConfig *config)
       kdWarning(173) << "encodingMib " << encodingMib
 		     << " is not known. using ISO 8859-1 instead." << endl;
       setEncoding(mibDefault);
-      // ### we should default to Qt's default, as thats always more 
+      // ### we should default to Qt's default, as thats always more
       // intelligent
     }
 

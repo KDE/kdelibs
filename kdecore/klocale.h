@@ -85,19 +85,7 @@ public:
    * @param catalogue The name of the main language file
    * @param useEnv True if we should use environment variables.
    */
-  KLocale( const QString& catalogue, bool useEnv );
-  /**
-   * Create a KLocale with the given catalogue name.
-   * The constructor looks for an entry Locale/Language in the
-   * configuration file.
-   * If nothing is set there, it looks for the environment variable
-   * $LANG. The format for LANG is de, if de (german) is your
-   * prefered language. If none of them can be find, the default (C)
-   * will be used.
-   *
-   * @param catalogue The name of the main language file
-   */
-  KLocale( const QString& catalogue = QString::null );
+  KLocale( const QString& catalogue, bool useEnv = true );
 
   /**
    * Destructor.
