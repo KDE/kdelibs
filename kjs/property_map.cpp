@@ -126,6 +126,7 @@ PropertyMap::PropertyMap()
 
 PropertyMap::~PropertyMap()
 {
+  clear();
 }
 
 void PropertyMap::put(const UString &name, ValueImp *value, int attr)
