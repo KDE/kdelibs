@@ -1,6 +1,7 @@
 
 kde_toolbar_DATA = add_point.png airbrush.png back.png blend.png bottom.png \
-	centrejust.png circle_select.png contents.png context_help.png \
+	centrejust.png circle_select.png close.png \
+	contents.png context_help.png \
 	delete.png down.png droplet.png dropper.png edit_point.png \
 	editcopy.png editcut.png editpaste.png eraser.png \
 	exclamation.png exit.png filefloppy.png filemail.png \
