@@ -2040,7 +2040,7 @@ void KCryptoConfig::offerImportToKMail( const QString& certFile )
        proc << "--import-certificate";
        proc << certFile;
        if ( !proc.start( KProcess::DontCare ) )
-           KMessageBox::error( this, i18n( "Couldn't execute kleopatra. You might have to install or update the kdepim package." ) );
+           KMessageBox::error( this, i18n( "Could not execute Kleopatra. You might have to install or update the kdepim package." ) );
    }
 }
 
