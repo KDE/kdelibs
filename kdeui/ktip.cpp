@@ -1,24 +1,24 @@
 /*****************************************************************
- 
+
 Copyright (c) 2000, 2001 Matthias Hoelzer-Kluepfel
- 
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
- 
+
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
- 
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
+
 ******************************************************************/
 
 
@@ -44,10 +44,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "ktip.h"
 
 
-KTipDatabase::KTipDatabase(QString tipFile)
+KTipDatabase::KTipDatabase(const QString &_tipFile)
 {
+  QString tipFile = _tipFile;
   if (tipFile.isEmpty())
-    tipFile = QString(KGlobal::instance()->aboutData()->appName()) + "/tips";
+    tipFile = QString::fromLatin1(KGlobal::instance()->aboutData()->appName()) + "/tips";
 
   loadTips(tipFile);
 
@@ -59,7 +60,7 @@ KTipDatabase::KTipDatabase(QString tipFile)
 // if you change something here, please update the script
 // preparetips, which depends on extracting exactly the same
 // text as done here.
-void KTipDatabase::loadTips(QString tipFile)
+void KTipDatabase::loadTips(const QString &tipFile)
 {
   QString fname;
 
@@ -127,9 +128,9 @@ void KTipDatabase::prevTip()
 }
 
 
-QString KTipDatabase::tip()
+QString KTipDatabase::tip() const
 {
-  return QString("<html>%1</html>").arg(i18n(tips[current].latin1()));
+  return QString::fromLatin1("<html>%1</html>").arg(i18n(tips[current].latin1()));
 }
 
 
@@ -152,7 +153,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
   QLabel *bulb = new QLabel(this);
   bulb->setPixmap(locate("data", "kdeui/pics/ktip-bulb.png"));
   hbox->addWidget(bulb);
- 
+
   QLabel *titlePane = new QLabel(this);
   titlePane->setBackgroundPixmap(locate("data", "kdeui/pics/ktip-background.png"));
   titlePane->setText(i18n("Did you know...?\n"));
@@ -165,7 +166,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
   QFrame *f = new QFrame(this);
   f->setFrameStyle(QFrame::Sunken|QFrame::HLine);
-  vbox->addWidget(f);  
+  vbox->addWidget(f);
 
   hbox = new QHBoxLayout(vbox);
 
@@ -183,14 +184,14 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
   connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
   connect(next, SIGNAL(clicked()), this, SLOT(nextTip()));
   connect(_tipOnStart, SIGNAL(toggled(bool)), this, SLOT(showOnStart(bool)));
-  
+
   KConfig *config = kapp->config();
   config->setGroup("TipOfDay");
   _tipOnStart->setChecked(config->readBoolEntry("RunOnStart", true));
 }
 
 
-void KTipDialog::showTip(QString tipFile, bool force)
+void KTipDialog::showTip(const QString &tipFile, bool force)
 {
   if (!force)
   {

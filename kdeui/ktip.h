@@ -1,24 +1,24 @@
 /*****************************************************************
- 
+
 Copyright (c) 2000,2001 Matthias Hoelzer-Kluepfel
- 
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
- 
+
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
- 
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
 AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
+
 ******************************************************************/
 
 #ifndef __K_TIP_H__
@@ -46,9 +46,9 @@ class KTextBrowser;
  *
  * Once the file is read in, you can access the tips to display
  * them in the tip of the day dialog.
- * 
+ *
  * @author Matthias Hoelzer-Kluepfel <mhk@caldera.de>
- * 
+ *
  */
 class KTipDatabase
 {
@@ -62,12 +62,12 @@ public:
    *
    * @param tipFile The name of the tips file.
    */
-  KTipDatabase(QString tipFile=QString::null);
+  KTipDatabase(const QString &tipFile=QString::null);
 
   /**
    * Returns the current tip.
    */
-  QString tip();
+  QString tip() const;
 
   /**
    * The next tip will become the current one.
@@ -82,12 +82,13 @@ public:
 
 private:
 
-  void loadTips(QString tipFile);
+  void loadTips(const QString &tipFile);
 
   QStringList tips;
 
   int current;
-
+  class KTipDatabasePrivate;
+  KTipDatabasePrivate *d;
 };
 
 
@@ -113,12 +114,12 @@ public:
    *
    * Note that you probably want an item in the help menu calling
    * this method with force=true.
-   * 
+   *
    * @param tipFile The name of the tip file.
-   * @param force If true, the dialog is show, even when the users 
+   * @param force If true, the dialog is show, even when the users
    *              disabled it.
    */
-  static void showTip(QString tipFile=QString::null, bool force=false);
+  static void showTip(const QString &tipFile=QString::null, bool force=false);
 
   /**
    * Toggle the start behaviour.
@@ -128,7 +129,7 @@ public:
    */
   static void setShowOnStart(bool show);
 
- 
+
 protected:
 
   KTipDialog(KTipDatabase *db, QWidget *parent=0, const char *name=0);
@@ -139,14 +140,17 @@ private slots:
   void nextTip();
   void showOnStart(bool);
 
-  
+
 private:
 
   KTipDatabase *_database;
 
   QCheckBox *_tipOnStart;
   KTextBrowser *_tipText;
-  
+
+  class KTipDialogPrivate;
+  KTipDialogPrivate *d;
+
   static KTipDialog *_instance;
 
 };
