@@ -95,6 +95,12 @@ class KDirOperator : public QWidget {
     KFileReader *fileReader() const { return dir; }
 
     /**
+     * @returns the progress widget, that is shown during directory listing.
+     * You can for example reparent() it to put it into a statusbar.
+     */
+    KProgress * progressBar() const;
+    
+    /**
      * Sets the listing/selection mode for the views, an OR'ed combination of
      * @li File
      * @li Directory
@@ -355,7 +361,7 @@ signals:
     void updateInformation(int files, int dirs);
     void completion(const QString&);
     void finishedLoading();
-    
+
     /**
      * Emitted whenever the current fileview is changed, either by an explicit
      * call to @ref setView() or by the user selecting a different view thru the

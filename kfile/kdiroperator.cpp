@@ -1115,7 +1115,9 @@ void KDirOperator::resizeEvent( QResizeEvent * )
 {
     if (fileView)
         fileView->widget()->resize( size() );
-    progress->move(2, height() - progress->height() -2);
+
+    if ( progress->parent() == this ) // might be reparented into a statusbar
+	progress->move(2, height() - progress->height() -2);
 }
 
 void KDirOperator::setOnlyDoubleClickSelectsFiles( bool enable )
@@ -1159,7 +1161,7 @@ void KDirOperator::slotProgress( KIO::Job * job, unsigned long percent )
 	QApplication::flushX();
 }
 
-// local files will be inserted in one big chunk
+
 void KDirOperator::slotIOFinished()
 {
     d->progressDelayTimer->stop();
@@ -1167,6 +1169,10 @@ void KDirOperator::slotIOFinished()
     progress->hide();
     emit finishedLoading();
     resetCursor();
+}
+
+KProgress * KDirOperator::progressBar() const {
+    return progress;
 }
 
 #include "kdiroperator.moc"
