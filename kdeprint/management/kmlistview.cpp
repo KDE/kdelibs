@@ -119,7 +119,7 @@ KMListView::KMListView(QWidget *parent, const char *name)
 	setLineWidth(1);
 	setSorting(0);
 
-	connect(this,SIGNAL(rightButtonClicked(QListViewItem*,const QPoint&,int)),SLOT(slotRightButtonClicked(QListViewItem*,const QPoint&,int)));
+	connect(this,SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)),SLOT(slotRightButtonClicked(QListViewItem*,const QPoint&,int)));
 	connect(this,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
 	connect(this,SIGNAL(onItem(QListViewItem*)),SLOT(slotOnItem(QListViewItem*)));
 	connect(this,SIGNAL(onViewport()),SLOT(slotOnViewport()));

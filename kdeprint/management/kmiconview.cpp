@@ -131,7 +131,7 @@ KMIconView::KMIconView(QWidget *parent, const char *name)
 	m_items.setAutoDelete(false);
 	setViewMode(KMIconView::Big);
 
-	connect(this,SIGNAL(rightButtonClicked(QIconViewItem*,const QPoint&)),SLOT(slotRightButtonClicked(QIconViewItem*,const QPoint&)));
+	connect(this,SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),SLOT(slotRightButtonClicked(QIconViewItem*,const QPoint&)));
 	connect(this,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
 }
 
