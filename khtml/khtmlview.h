@@ -236,7 +236,7 @@ private:
     void setMediaType( const QString &medium );
     QString mediaType() const;
 
-    bool scrollTo(const QRect &);
+    bool scrollTo(const QRect &, bool one_page = false);
 
     void focusNextPrevNode(bool next);
     bool handleAccessKey(const QKeyEvent* ev);
