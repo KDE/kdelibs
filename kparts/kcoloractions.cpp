@@ -15,7 +15,7 @@ KColorAction::KColorAction( const QString& text, int accel,
 }
 
 KColorAction::KColorAction( const QString& text, int accel,
-			    QObject* receiver, const char* slot, QObject* parent, 
+			    QObject* receiver, const char* slot, QObject* parent,
 			    const char* name )
     : KAction( text, accel, receiver, slot, parent, name )
 {
@@ -31,7 +31,7 @@ KColorAction::KColorAction( const QString& text, Type type, int accel,
 }
 
 KColorAction::KColorAction( const QString& text, Type type, int accel,
-			    QObject* receiver, const char* slot, QObject* parent, 
+			    QObject* receiver, const char* slot, QObject* parent,
 			    const char* name )
     : KAction( text, accel, receiver, slot, parent, name )
 {
@@ -49,7 +49,7 @@ void KColorAction::setColor( const QColor &c )
 {
     if ( c == col )
 	return;
-    
+
     col = c;
     createPixmap();
 }
@@ -58,12 +58,12 @@ QColor KColorAction::color() const
 {
     return col;
 }
-    
+
 void KColorAction::setType( Type t )
 {
     if ( t == typ )
 	return;
-    
+
     typ = t;
     createPixmap();
 }
@@ -72,7 +72,7 @@ KColorAction::Type KColorAction::type() const
 {
     return typ;
 }
-    
+
 void KColorAction::init()
 {
     col = Qt::black;
@@ -192,11 +192,12 @@ void KColorAction::createPixmap()
     setIconSet( QIconSet( pixmap ) );
 }
 
-KColorBar::KColorBar( const QValueList<QColor> &cols, 
+KColorBar::KColorBar( const QValueList<QColor> &cols,
 		      QWidget *parent, const char *name )
     : QWidget( parent, name ), colors( cols )
 {
-    setMinimumSize( colors.count() * 16 + 10, 20 );
+    setMinimumSize( 20, colors.count() * 16 + 10 );
+    setMaximumWidth( 20 );
     resize( minimumSize() );
     show();
 }
@@ -204,15 +205,15 @@ KColorBar::KColorBar( const QValueList<QColor> &cols,
 void KColorBar::mousePressEvent( QMouseEvent *e )
 {
     int index = -1;
-    int y = ( height() - 12 ) / 2;
-    int x = 5;
+    int x = ( width() - 12 ) / 2;
+    int y = 5;
     QValueList<QColor>::Iterator it = colors.begin();
     for ( int i = 0; it != colors.end(); ++it, ++i ) {
 	if ( QRect( x, y, 12, 12 ).contains( e->pos() ) )
 	    index = i;
-	x+= 16;
+	y += 16;
     }
-    
+
     if ( index != -1 && index < (int)colors.count() ) {
 	if ( e->button() == LeftButton )
 	    emit leftClicked( colors[ index ] );
@@ -225,18 +226,18 @@ void KColorBar::paintEvent( QPaintEvent * )
 {
     QPainter p;
     p.begin( this );
-    int y = ( height() - 12 ) / 2;
-    int x = 5;
+    int x = ( width() - 12 ) / 2;
+    int y = 5;
     QValueList<QColor>::Iterator it = colors.begin();
     for ( ; it != colors.end(); ++it ) {
 	qDrawShadePanel( &p, x, y, 12, 12, colorGroup(), TRUE );
 	p.fillRect( x + 1, y + 1, 10, 10, *it );
-	x+= 16;
+	y += 16;
     }
     p.end();
 }
 
-KColorBarAction::KColorBarAction( const QString &text, int accel, 
+KColorBarAction::KColorBarAction( const QString &text, int accel,
 				  QObject *r, const char *leftClickSlot_, const char *rightClickSlot_,
 				  const QValueList<QColor> &cols, QObject *parent, const char *name )
     : KAction( text, accel, parent, name ), colors( cols )
@@ -254,13 +255,13 @@ int KColorBarAction::plug( QWidget *widget )
 	b = new KColorBar( colors, widget, "" );
 	b->resize( 100, 25 );
 	b->show();
-	connect( b, SIGNAL( leftClicked( const QColor & ) ), 
+	connect( b, SIGNAL( leftClicked( const QColor & ) ),
 		 this, SIGNAL( leftClicked( const QColor & ) ) );
-	connect( b, SIGNAL( rightClicked( const QColor & ) ), 
+	connect( b, SIGNAL( rightClicked( const QColor & ) ),
 		 this, SIGNAL( rightClicked( const QColor & ) ) );
-	connect( b, SIGNAL( leftClicked( const QColor & ) ), 
+	connect( b, SIGNAL( leftClicked( const QColor & ) ),
 		 receiver, leftClickSlot );
-	connect( b, SIGNAL( rightClicked( const QColor & ) ), 
+	connect( b, SIGNAL( rightClicked( const QColor & ) ),
 		 receiver, rightClickSlot );
 
 	addContainer( bar, b );
@@ -274,13 +275,13 @@ int KColorBarAction::plug( QWidget *widget )
 	bar->insertWidget( -1, b->width(), b );
 	b->resize( 100, 25 );
 	b->show();
-	connect( b, SIGNAL( leftClicked( const QColor & ) ), 
+	connect( b, SIGNAL( leftClicked( const QColor & ) ),
 		 this, SIGNAL( leftClicked( const QColor & ) ) );
-	connect( b, SIGNAL( rightClicked( const QColor & ) ), 
+	connect( b, SIGNAL( rightClicked( const QColor & ) ),
 		 this, SIGNAL( rightClicked( const QColor & ) ) );
-	connect( b, SIGNAL( leftClicked( const QColor & ) ), 
+	connect( b, SIGNAL( leftClicked( const QColor & ) ),
 		 receiver, leftClickSlot );
-	connect( b, SIGNAL( rightClicked( const QColor & ) ), 
+	connect( b, SIGNAL( rightClicked( const QColor & ) ),
 		 receiver, rightClickSlot );
 
 	addContainer( bar, b );
