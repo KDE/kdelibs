@@ -26,7 +26,7 @@
 #include <kstringhandler.h>
 
 KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )
-: KEdFind( parent, name, false )
+: KEdFind( parent, name, false, true )
 {
 //  connect( this, SIGNAL( done() ),
 //           this, SLOT( slotDone() ) );
@@ -56,7 +56,7 @@ void KHTMLFind::slotSearch()
 
   bool forward = !get_direction();
 
-  if ( m_part->findTextNext( getText(), forward, case_sensitive() ) )
+  if ( m_part->findTextNext( getText(), forward, case_sensitive(), isRegExp() ) )
     m_found = true;
   else if ( m_found )
   {

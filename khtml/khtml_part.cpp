@@ -1931,7 +1931,7 @@ void KHTMLPart::findTextBegin()
   d->m_findNode = 0;
 }
 
-bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
+bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp )
 {
     if ( !d->m_doc )
         return false;
@@ -1953,75 +1953,19 @@ bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
         {
             DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
             QConstString s(t->s, t->l);
-            d->m_findPos = s.string().find(exp, d->m_findPos+1);
-            if(d->m_findPos != -1)
-            {
-                int x = 0, y = 0;
-                khtml::RenderText *text = static_cast<khtml::RenderText *>(d->m_findNode->renderer());
-                text->posOfChar(d->m_findPos, x, y);
-                d->m_view->setContentsPos(x-50, y-50);
-                return true;
+            
+            int matchLen = 0;
+            if ( isRegExp ) {
+              QRegExp matcher( str );
+              d->m_findPos = matcher.search(s.string(), d->m_findPos+1);
+              if ( d->m_findPos != -1 )
+                matchLen = matcher.matchedLength();
             }
-        }
-        d->m_findPos = -1;
-
-        NodeImpl *next;
-
-        if ( forward )
-        {
-          next = d->m_findNode->firstChild();
-
-          if(!next) next = d->m_findNode->nextSibling();
-          while(d->m_findNode && !next) {
-              d->m_findNode = d->m_findNode->parentNode();
-              if( d->m_findNode ) {
-                  next = d->m_findNode->nextSibling();
-              }
-          }
-        }
-        else
-        {
-          next = d->m_findNode->lastChild();
-
-          if (!next ) next = d->m_findNode->previousSibling();
-          while ( d->m_findNode && !next )
-          {
-            d->m_findNode = d->m_findNode->parentNode();
-            if( d->m_findNode )
-            {
-              next = d->m_findNode->previousSibling();
+            else {
+              d->m_findPos = s.string().find(str, d->m_findPos+1, caseSensitive);
+              matchLen = str.length();
             }
-          }
-        }
-
-        d->m_findNode = next;
-        if(!d->m_findNode) return false;
-    }
-}
-
-bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensitive )
-{
-    if ( !d->m_doc )
-        return false;
-
-    if(!d->m_findNode) {
-        if (d->m_doc->isHTMLDocument())
-            d->m_findNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
-        else
-            d->m_findNode = d->m_doc;
-    }
-
-    if ( !d->m_findNode ||
-         d->m_findNode->id() == ID_FRAMESET )
-      return false;
-
-    while(1)
-    {
-        if( (d->m_findNode->nodeType() == Node::TEXT_NODE || d->m_findNode->nodeType() == Node::CDATA_SECTION_NODE) && d->m_findNode->renderer() )
-        {
-            DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
-            QConstString s(t->s, t->l);
-            d->m_findPos = s.string().find(str, d->m_findPos+1, caseSensitive);
+            
             if(d->m_findPos != -1)
             {
                 int x = 0, y = 0;
@@ -2032,7 +1976,7 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
                 d->m_selectionStart = d->m_findNode;
                 d->m_startOffset = d->m_findPos;
                 d->m_selectionEnd = d->m_findNode;
-                d->m_endOffset = d->m_findPos + str.length();
+                d->m_endOffset = d->m_findPos + matchLen;
                 d->m_startBeforeEnd = true;
 
                 d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,

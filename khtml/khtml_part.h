@@ -535,14 +535,10 @@ public:
   void findTextBegin();
 
   /**
-   * Find the next occurrance of the expression.
+   * Find the next occurence of the string or expression.
+   * If isRegExp is true then str is converted to a QRegExp, and caseSensitive is ignored.
    */
-  bool findTextNext( const QRegExp &exp, bool forward );
-
-  /**
-   * Find the next occurence of the string.
-   */
-  bool findTextNext( const QString &str, bool forward, bool caseSensitive );
+  bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
 
   /**
    * Get the text the user has marked.
