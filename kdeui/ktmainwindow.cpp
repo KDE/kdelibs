@@ -830,7 +830,7 @@ void KTMainWindow::showAboutApplication( void )
 KXMLGUIFactory *KTMainWindow::guiFactory()
 {
     if ( !d->m_factory )
-	d->m_factory = new KXMLGUIFactory( this );
+        d->m_factory = new KXMLGUIFactory( this );
     return d->m_factory;
 }
 
@@ -839,13 +839,13 @@ void KTMainWindow::createGUI( const QString &xmlfile )
     // disabling the updates prevents unnecessary redraws
     setUpdatesEnabled( false );
 
-  // just in case we are rebuilding, let's remove our old client
+    // just in case we are rebuilding, let's remove our old client
     guiFactory()->removeClient( this );
 
     // we always want a help menu
     if (d->m_helpMenu == 0)
-	d->m_helpMenu = new KHelpMenu(this, instance()->aboutData(), true,
-				      actionCollection());
+        d->m_helpMenu = new KHelpMenu(this, instance()->aboutData(), true,
+                                      actionCollection());
 
     // we always want to load in our global standards file
     setXMLFile( locate( "config", "ui/ui_standards.rc", instance() ) );
@@ -853,11 +853,14 @@ void KTMainWindow::createGUI( const QString &xmlfile )
     // now, merge in our local xml file.  if this is null, then that
     // means that we will be only using the global file
     if ( !xmlfile.isNull() ) {
-	setXMLFile( xmlfile, true );
+        setXMLFile( xmlfile, true );
     } else {
-	QString auto_file(instance()->instanceName() + "ui.rc");
-	setXMLFile( auto_file, true );
+        QString auto_file(instance()->instanceName() + "ui.rc");
+        setXMLFile( auto_file, true );
     }
+
+    // make sure we don't have any state saved already
+    setContainerStates(QMap<QString,QByteArray>());
 
     // do the actual GUI building
     guiFactory()->addClient( this );
