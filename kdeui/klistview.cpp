@@ -82,6 +82,7 @@ public:
 
   QPoint startDragPos;
   bool validDrag;
+  int dragDelay;
 
   KListViewLineEdit *editor;
   QValueList<int> renameable;
@@ -177,6 +178,7 @@ KListView::KListView( QWidget *parent, const char *name )
 	d->contextMenuKey = KGlobalSettings::contextMenuKey ();
 	d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
 	d->validDrag = false;
+    d->dragDelay = KGlobalSettings::dndEventDelay();
 
 	connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
   }
@@ -265,13 +267,12 @@ void KListView::slotOnViewport()
 
 void KListView::slotSettingsChanged(int category)
 {
-//   if (category != KApplication::SETTINGS_MOUSE && category != KApplication::SETTINGS_POPUPMENU)
-// 	return;
   switch (category)
   {
   case KApplication::SETTINGS_MOUSE:
+    d->dragDelay =  KGlobalSettings::dndEventDelay();
     d->bUseSingle = KGlobalSettings::singleClick();
-	  
+
     disconnect(this, SIGNAL (mouseButtonClicked (int, QListViewItem*, const QPoint &, int)),
                this, SLOT (slotMouseButtonClicked (int, QListViewItem*, const QPoint &, int)));
 	  
@@ -300,7 +301,6 @@ void KListView::slotSettingsChanged(int category)
     break;
 	
   case KApplication::SETTINGS_POPUPMENU:
-    // context menu settings
     d->contextMenuKey = KGlobalSettings::contextMenuKey ();
     d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
 	  
@@ -491,8 +491,13 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
     }
   
   bool dragOn = dragEnabled();
-  if (dragOn &&
-      d->validDrag && (d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
+  QPoint newPos = e->pos();
+  if (dragOn && d->validDrag &&
+      (newPos.x() > d->startDragPos.x()+d->dragDelay ||
+       newPos.x() < d->startDragPos.x()-d->dragDelay ||
+       newPos.y() > d->startDragPos.y()+d->dragDelay ||
+       newPos.y() < d->startDragPos.y()-d->dragDelay))
+    //(d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
     {
       startDrag();
       d->startDragPos = QPoint();
