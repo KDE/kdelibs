@@ -45,6 +45,8 @@ class KDEUI_EXPORT KEditListBox : public QGroupBox
 {
    Q_OBJECT
 
+   Q_PROPERTY( QStringList items READ items WRITE setItems )
+
 public:
     /// @since 3.1
     class CustomEditor
@@ -198,6 +200,13 @@ public:
        * @returns a stringlist of all items in the listbox
        */
       QStringList items() const;
+
+      /**
+       * Clears the listbox and sets the contents to @p items
+       *
+       * @since 3.4
+       */
+      void setItems(const QStringList& items);
 
    signals:
       void changed();

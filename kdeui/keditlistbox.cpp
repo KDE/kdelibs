@@ -379,6 +379,12 @@ QStringList KEditListBox::items() const
     return list;
 }
 
+void KEditListBox::setItems(const QStringList& items)
+{
+  m_listBox->clear();
+  m_listBox->insertStringList(items, 0);
+}
+
 void KEditListBox::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
