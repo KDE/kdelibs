@@ -71,6 +71,9 @@ signals:
  *  specified time, or until you call the slot QStatusBar::clear(). See
  *  QStatusBar::message for details.
  *
+ *  It is useful to connect the KActionCollection signals to the
+ *  QStatusBar::message slots.
+ *
  *  KStatusBar inherits QStatusBar, you can freely use all QStatusBar
  *  methods.
  *
@@ -78,6 +81,8 @@ signals:
  *  (add) text.
  *
  *  @author Mark Donohoe (donohoe@kde.org) Maintained by Sven Radej <radej@kde.org>
+
+ *  @See KActionCollection
  */
 class KDEUI_EXPORT KStatusBar : public QStatusBar
 {
