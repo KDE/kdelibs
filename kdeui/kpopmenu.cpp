@@ -20,11 +20,13 @@
 
 #include "kpopmenu.h"
 
-#include <kapp.h>
 #include <kconfig.h>
+#include <kapp.h>
+#include <kipc.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kstddirs.h>
 
 KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
@@ -174,7 +176,38 @@ QSize KPopupTitle::sizeHint() const
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
-    ;
+    d = new KPopupMenuPrivate();
+    d->tearoffhandleid = -1;
+
+    slotSettingsChanged(KApplication::SETTINGS_POPUPMENU);
+    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+    kapp->addKipcEventMask( KIPC::SettingsChanged );
+}
+
+void KPopupMenu::slotSettingsChanged(int category)
+{
+  if (category != KApplication::SETTINGS_POPUPMENU) return;
+
+  // don't insert a tear off handle if we have no parent
+  if (!parentWidget()) return;
+
+  if (KGlobalSettings::insertTearOffHandle())
+    {
+      // do we already have a tear off handle?
+      if (d->tearoffhandleid != -1) return;
+      
+      // insert a tear off handle
+      d->tearoffhandleid = insertTearOffHandle(-1, 0);
+    }
+  else
+    {
+      // do we have a tear off handle?
+      if (d->tearoffhandleid == -1) return;
+
+      // remove the tear off handle
+      removeItem(d->tearoffhandleid);
+      d->tearoffhandleid = -1;
+    }
 }
 
 int KPopupMenu::insertTitle(const QString &text, int id, int index)

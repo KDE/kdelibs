@@ -79,6 +79,12 @@ protected:
     KPopupTitlePrivate *d;
 };
 
+class KPopupMenuPrivate
+{
+ public:
+  int tearoffhandleid;
+};
+
 /**
  * KPopupMenu is a class for menus with standard title items. It acts
  * identically to QPopupMenu, with the addition of insertTitle() and
@@ -135,11 +141,14 @@ public:
      * insertTitle and changeTitle instead.
      */
     void setTitle(const QString &title);
+
+protected slots:
+    void slotSettingsChanged(int);
+
 private:
     // For backwards compatibility
     QString lastTitle;
 
-    class KPopupMenuPrivate;
     KPopupMenuPrivate *d;
 };         
 
