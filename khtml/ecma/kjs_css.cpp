@@ -119,7 +119,6 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << jsNameToProp(propertyName) << endl;
 #endif
-  DOM::CSSStyleDeclaration styleDecl2 = styleDecl;
   DOM::DOMString p = jsNameToProp(propertyName);
   bool asNumber = false;
   // pixelTop returns "CSS Top" as number value in unit pixels
@@ -134,13 +133,15 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
     }
   }
 
-  DOM::CSSValue v = styleDecl2.getPropertyCSSValue(p);
-  if (!v.isNull()) {
-    if (asNumber && v.cssValueType() == DOM::CSSValue::CSS_PRIMITIVE_VALUE)
+  if (asNumber) {
+    DOM::CSSValue v = const_cast<DOM::CSSStyleDeclaration &>( styleDecl ).getPropertyCSSValue(p);
+    if ( !v.isNull() && v.cssValueType() == DOM::CSSValue::CSS_PRIMITIVE_VALUE)
       return Number(static_cast<DOM::CSSPrimitiveValue>(v).getFloatValue(DOM::CSSPrimitiveValue::CSS_PX));
-
-    return getString(v.cssText());
   }
+
+  DOM::DOMString str = const_cast<DOM::CSSStyleDeclaration &>( styleDecl ).getPropertyValue(p);
+  if (!str.isNull())
+    return String(str);
 
   // see if we know this css property, return empty then
   QCString prop = p.string().latin1();
@@ -489,6 +490,9 @@ const ClassInfo DOMCSSStyleSheet::info = { "CSSStyleSheet", 0, &DOMCSSStyleSheet
 @begin DOMCSSStyleSheetProtoTable 2
   insertRule	DOMCSSStyleSheet::InsertRule	DontDelete|Function 2
   deleteRule	DOMCSSStyleSheet::DeleteRule	DontDelete|Function 1
+# IE extensions
+  addRule	DOMCSSStyleSheet::AddRule	DontDelete|Function 3
+  removeRule	DOMCSSStyleSheet::RemoveRule	DontDelete|Function 1
 @end
 */
 DEFINE_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto)
@@ -516,21 +520,26 @@ Value DOMCSSStyleSheetProtoFunc::tryCall(ExecState *exec, Object &thisObj, const
 {
   KJS_CHECK_THIS( KJS::DOMCSSStyleSheet, thisObj );
   DOM::CSSStyleSheet styleSheet = static_cast<DOMCSSStyleSheet *>(thisObj.imp())->toCSSStyleSheet();
-  Value result;
-  UString str = args[0].toString(exec);
-  DOM::DOMString s = str.string();
 
   switch (id) {
     case DOMCSSStyleSheet::InsertRule:
-      result = Number(styleSheet.insertRule(args[0].toString(exec).string(),(long unsigned int)args[1].toInteger(exec)));
-      break;
+      return Number(styleSheet.insertRule(args[0].toString(exec).string(),(long unsigned int)args[1].toInteger(exec)));
     case DOMCSSStyleSheet::DeleteRule:
       styleSheet.deleteRule(args[0].toInteger(exec));
-      break;
+      return Undefined();
+    // IE extensions
+    case DOMCSSStyleSheet::AddRule: {
+      DOM::DOMString str = args[0].toString(exec).string() + " { " + args[1].toString(exec).string() + " } ";
+      return Number(styleSheet.insertRule(str,(long unsigned int)args[2].toInteger(exec)));
+    }
+    case DOMCSSStyleSheet::RemoveRule: {
+      int index = args.size() > 0 ? args[0].toInteger(exec) : 0 /*first one*/;
+      styleSheet.deleteRule(index);
+      return Undefined();
+    }
     default:
-      result = Undefined();
+      return Undefined();
   }
-  return result;
 }
 
 // -------------------------------------------------------------------------

@@ -119,12 +119,13 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry DOMCSSStyleSheetProtoTableEntries[] = {
-   { 0, 0, 0, 0, 0 },
+   { "removeRule", DOMCSSStyleSheet::RemoveRule, DontDelete|Function, 1, 0 },
    { "insertRule", DOMCSSStyleSheet::InsertRule, DontDelete|Function, 2, &DOMCSSStyleSheetProtoTableEntries[2] },
-   { "deleteRule", DOMCSSStyleSheet::DeleteRule, DontDelete|Function, 1, 0 }
+   { "deleteRule", DOMCSSStyleSheet::DeleteRule, DontDelete|Function, 1, &DOMCSSStyleSheetProtoTableEntries[3] },
+   { "addRule", DOMCSSStyleSheet::AddRule, DontDelete|Function, 3, 0 }
 };
 
-const struct HashTable DOMCSSStyleSheetProtoTable = { 2, 3, DOMCSSStyleSheetProtoTableEntries, 2 };
+const struct HashTable DOMCSSStyleSheetProtoTable = { 2, 4, DOMCSSStyleSheetProtoTableEntries, 2 };
 
 }; // namespace
 

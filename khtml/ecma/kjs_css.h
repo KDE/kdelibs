@@ -117,7 +117,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { OwnerRule, CssRules, Rules,
-           InsertRule, DeleteRule };
+           InsertRule, DeleteRule, AddRule, RemoveRule };
     DOM::CSSStyleSheet toCSSStyleSheet() const { return static_cast<DOM::CSSStyleSheet>(styleSheet); }
   };
 
