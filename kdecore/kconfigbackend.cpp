@@ -24,7 +24,6 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
-#include <qdatetime.h>
 
 #include <kapp.h>
 
@@ -32,23 +31,11 @@
 #include "kconfigbase.h"
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <ksavefile.h>
 
-#include <sys/types.h>
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>
-#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_TEST
-#include <test.h>
-#endif
-
-#include <stdlib.h>
 
 /* translate escaped escape sequences to their actual values. */
 static QString printableToString(const QString& s)
@@ -120,7 +107,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
     QStringList kdercs = KGlobal::dirs()->
       findAllResources("config", "kdeglobals");
 
-    if (!access("/etc/kderc", R_OK))
+    if (checkAccess("/etc/kderc", R_OK))
       kdercs += "/etc/kderc";
 
     kdercs += KGlobal::dirs()->
@@ -239,56 +226,6 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       pConfig->putData(aEntryKey, aEntry);
     }
   }
-}
-
-static FILE *interimFileStream;
-
-static bool openInterimFile(QFile &file, QString filename)
-{
-   int maxTries = 3;
-   if (!checkAccess(filename, W_OK)) 
-      return false;
-    
-   srand( QTime::currentTime().msecsTo(QTime()));
-   QString interimFilename;
-   int fd = -1;
-   int tries = 0;
-   do {
-      tries++;
-      interimFilename = filename+QString(".new%1").arg(rand());
-      fd = open(interimFilename.ascii(), O_WRONLY|O_CREAT|O_EXCL, 0666);
-
-      if ((fd <= 0) && (tries >= maxTries))
-         return false;
-   }
-   while( fd <= 0);
-
-   file.setName(interimFilename);
-
-   // We need to open a stream otherwise we use 1 system call for each byte writtten.
-   interimFileStream = fdopen(fd, "w");
-   file.open(IO_WriteOnly, interimFileStream);
-
-   // Set uid/gid (neccesary for SUID programs)
-   chown(interimFilename.ascii(), getuid(), getgid());
-   return true;
-}
-
-static bool closeInterimFile(QFile &file, QString filename)
-{
-   file.flush();
-   int result = fclose( interimFileStream );
-
-   if ( result == 0 )
-   {
-      result = rename( file.name().ascii(), filename.ascii());
-      if ( result == 0 )
-         return true; // Success!
-   }
-    
-   // Something went wrong, make sure to delete the interim file.
-   unlink(file.name().ascii());
-   return false;
 }
 
 void KConfigINIBackEnd::sync(bool bMerge)
@@ -410,12 +347,12 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   // OK now the temporary map should be full of ALL entries.
   // write it out to disk.
 
-  QFile rConfigFile;
+  KSaveFile rConfigFile( filename );
 
-  if (!openInterimFile(rConfigFile, filename))
+  if (rConfigFile.status() != 0)
      return bEntriesLeft;
 
-  QTextStream pStream( &rConfigFile );
+  QTextStream pStream( rConfigFile.fstream(), IO_WriteOnly );
 
   // write back -- start with the default group
   KEntryMapConstIterator aWriteIt;
@@ -464,7 +401,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
     }
   } // for loop
 
-  closeInterimFile(rConfigFile, filename);
+  rConfigFile.close();
 
   return bEntriesLeft;
 }
