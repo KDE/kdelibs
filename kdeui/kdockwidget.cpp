@@ -266,6 +266,25 @@ void KDockWidgetHeader::setTopLevel( bool isTopLevel )
   updateGeometry();
 }
 
+void KDockWidgetHeader::setDragPanel( KDockWidgetHeaderDrag* nd )
+{
+  if ( !nd ) return;
+
+  delete layout;
+  layout = new QHBoxLayout( this );
+  layout->setResizeMode( QLayout::Minimum );
+
+  delete drag;
+  drag = nd;
+
+  layout->addWidget( drag );
+  layout->addWidget( dockbackButton );
+  layout->addWidget( stayButton );
+  layout->addWidget( closeButton );
+  layout->activate();
+  drag->setFixedHeight( layout->minimumSize().height() );
+}
+
 void KDockWidgetHeader::slotStayClicked()
 {
   setDragEnabled(!stayButton->isOn());
@@ -301,7 +320,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 	,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
-  ,pix(0L)      // dead attribute
+  ,pix(new QPixmap(pixmap))
   ,prevSideDockPosBeforeDrag(DockNone)
 {
   d = new KDockWidgetPrivate();  // create private data
@@ -349,6 +368,7 @@ KDockWidget::~KDockWidget()
   }
   emit iMBeingClosed();
   manager->childDock->remove( this );
+  delete pix;
   delete d; // destroy private data
 }
 
@@ -419,6 +439,8 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 
   }
   updateHeader();
+
+  setIcon(*pix);
 }
 
 void KDockWidget::show()
@@ -623,10 +645,12 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     // if to dock not to the center of the target dockwidget,
     // dock to newDock
     KDockSplitter* panner = 0L;
-    if ( dockPos == KDockWidget::DockTop  || dockPos == KDockWidget::DockBottom ) panner = new KDockSplitter( newDock, "_dock_split_", Horizontal, spliPos );
-    if ( dockPos == KDockWidget::DockLeft || dockPos == KDockWidget::DockRight  ) panner = new KDockSplitter( newDock, "_dock_split_", Vertical , spliPos );
+    if ( dockPos == KDockWidget::DockTop  || dockPos == KDockWidget::DockBottom ) panner = new KDockSplitter( newDock, "_dock_split_", Horizontal, spliPos, manager->splitterHighResolution() );
+    if ( dockPos == KDockWidget::DockLeft || dockPos == KDockWidget::DockRight  ) panner = new KDockSplitter( newDock, "_dock_split_", Vertical , spliPos, manager->splitterHighResolution() );
     newDock->setWidget( panner );
 
+    panner->setOpaqueResize(manager->splitterOpaqueResize());
+    panner->setKeepSize(manager->splitterKeepSize());
     panner->setFocusPolicy( NoFocus );
     target->applyToWidget( panner );
     applyToWidget( panner );
@@ -965,12 +989,20 @@ public:
    * This flag stores the information if dragging is ready to start. Used between mousePress and mouseMove event.
    */
   bool readyToDrag;
+
+  bool splitterOpaqueResize;
+  bool splitterKeepSize;
+  bool splitterHighResolution;
 };
 
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 :QObject( 0, name )
 {
   d = new KDockManagerPrivate;
+  d->splitterOpaqueResize = false;
+  d->splitterKeepSize = false;
+  d->splitterHighResolution = false;
+
   main = mainWindow;
   main->installEventFilter( this );
 
@@ -1257,7 +1289,7 @@ void KDockManager::dragMove( KDockWidget* dw, QPoint pos )
     curPos = KDockWidget::DockCenter;
   	 if ( oldPos != curPos ) {
   	   d->dragRect.setRect( p.x()+2, p.y()+2, r.width()-4, r.height()-4 );
-    }  	
+    }
     return;
   }
 
@@ -1531,13 +1563,13 @@ void KDockManager::readConfig(QDomElement &base)
         activate();
         return;
     }
-    
+
     autoCreateDock = new QObjectList();
     autoCreateDock->setAutoDelete( true );
-    
+
     bool isMainVisible = main->isVisible();
     main->hide();
-    
+
     QObjectListIt it(*childDock);
     KDockWidget *obj1;
     while ( (obj1=(KDockWidget*)it.current()) ) {
@@ -1553,7 +1585,7 @@ void KDockManager::readConfig(QDomElement &base)
     QDomElement childEl = base.firstChild().toElement();
     while (!childEl.isNull() ) {
         KDockWidget *obj = 0;
-        
+
         if (childEl.tagName() == "splitGroup") {
             // Read a group
             QString name = stringEntry(childEl, "name");
@@ -1898,7 +1930,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       mvd->applyToWidget( main );
       mvd->show();
     }
-  
+
   }
   // delete all autocreate dock
   delete autoCreateDock;
@@ -1926,6 +1958,35 @@ KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
     autoCreateDock->append( autoCreate );
   }
 	return autoCreate;
+}
+void KDockManager::setSplitterOpaqueResize(bool b)
+{
+  d->splitterOpaqueResize = b;
+}
+
+bool KDockManager::splitterOpaqueResize() const
+{
+  return d->splitterOpaqueResize;
+}
+
+void KDockManager::setSplitterKeepSize(bool b)
+{
+  d->splitterKeepSize = b;
+}
+
+bool KDockManager::splitterKeepSize() const
+{
+  return d->splitterKeepSize;
+}
+
+void KDockManager::setSplitterHighResolution(bool b)
+{
+  d->splitterHighResolution = b;
+}
+
+bool KDockManager::splitterHighResolution() const
+{
+  return d->splitterHighResolution;
 }
 
 void KDockManager::slotMenuPopup()

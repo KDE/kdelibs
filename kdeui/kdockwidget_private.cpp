@@ -21,13 +21,16 @@
 #include <qpainter.h>
 #include <qcursor.h>
 
-KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos)
+KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos, bool highResolution)
 : QWidget(parent, name)
 {
   divider = 0L;
   child0 = 0L;
   child1 = 0L;
   orientation = orient;
+  mOpaqueResize = false;
+  mKeepSize = false;
+  mHighResolution = highResolution;
   setSeparatorPos( pos, false );
   initialised = false;
 }
@@ -85,8 +88,8 @@ void KDockSplitter::setupMinMaxSize()
     miny = (miny > 2) ? miny : 2;
     maxy = (maxy < 2000) ? maxy : 2000;
   }
-	setMinimumSize(minx, miny);
-	setMaximumSize(maxx, maxy);
+  setMinimumSize(minx, miny);
+  setMaximumSize(maxx, maxy);
 }
 
 void KDockSplitter::deactivate()
@@ -108,10 +111,21 @@ int KDockSplitter::separatorPos()
   return xpos;
 }
 
-void KDockSplitter::resizeEvent(QResizeEvent*)
+void KDockSplitter::resizeEvent(QResizeEvent *ev)
 {
   if (initialised){
-    int position = checkValue( (orientation == Vertical ? width() : height()) * xpos/100 );
+    int factor = (mHighResolution)? 10000:100;
+    // real resize event, recalculate xpos
+    if (ev && mKeepSize && isVisible()) {
+      if (orientation == Horizontal) {
+        if (ev->oldSize().height() != ev->size().height())
+          xpos = factor * checkValue( child0->height()+1 ) / height();
+      } else {
+        if (ev->oldSize().width() != ev->size().width())
+          xpos = factor * checkValue( child0->width()+1 ) / width();
+      }
+    }
+    int position = checkValue( (orientation == Vertical ? width() : height()) * xpos/factor );
     if (orientation == Horizontal){
       child0->setGeometry(0, 0, width(), position);
       child1->setGeometry(0, position+4, width(), height()-position-4);
@@ -139,7 +153,7 @@ int KDockSplitter::checkValue( int position )
         position = height() - (child1->minimumSize().height()) -4;
     }
   }
-   
+
   if (position < 0) position = 0;
 
   if ((orientation == Vertical) && (position > width()))
@@ -154,18 +168,31 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
 {
   QMouseEvent *mev;
   bool handled = false;
+  int factor = (mHighResolution)? 10000:100;
 
   switch (e->type()) {
     case QEvent::MouseMove:
       mev= (QMouseEvent*)e;
-      child0->setUpdatesEnabled(false);
-      child1->setUpdatesEnabled(false);
+      child0->setUpdatesEnabled(mOpaqueResize);
+      child1->setUpdatesEnabled(mOpaqueResize);
       if (orientation == Horizontal) {
-        int position = checkValue( divider->mapToParent(mev->pos()).y() );
-	divider->move( 0, position );
+        if (!mOpaqueResize) {
+          int position = checkValue( mapFromGlobal(mev->globalPos()).y() );
+          divider->move( 0, position );
+        } else {
+          xpos = factor * checkValue( mapFromGlobal(mev->globalPos()).y() ) / height();
+          resizeEvent(0);
+          divider->repaint(true);
+        }
       } else {
-        int position = checkValue( mapFromGlobal(QCursor::pos()).x() );
-	divider->move( position, 0 );
+        if (!mOpaqueResize) {
+          int position = checkValue( mapFromGlobal(QCursor::pos()).x() );
+          divider->move( position, 0 );
+        } else {
+          xpos = factor * checkValue( mapFromGlobal( mev->globalPos()).x() ) / width();
+          resizeEvent(0);
+          divider->repaint(true);
+        }
       }
       handled= true;
       break;
@@ -174,11 +201,11 @@ bool KDockSplitter::eventFilter(QObject *o, QEvent *e)
       child1->setUpdatesEnabled(true);
       mev= (QMouseEvent*)e;
       if (orientation == Horizontal){
-        xpos = 100* checkValue( divider->mapToParent(mev->pos()).y() ) / height();
+        xpos = factor* checkValue( mapFromGlobal(mev->globalPos()).y() ) / height();
         resizeEvent(0);
         divider->repaint(true);
       } else {
-        xpos = 100* checkValue( divider->mapToParent(mev->pos()).x() ) / width();
+        xpos = factor* checkValue( mapFromGlobal(mev->globalPos()).x() ) / width();
         resizeEvent(0);
         divider->repaint(true);
       }
@@ -222,6 +249,42 @@ void KDockSplitter::updateName()
   if ( p != 0L && p->inherits("KDockSplitter" ) )
     ((KDockSplitter*)p)->updateName();
 }
+
+void KDockSplitter::setOpaqueResize(bool b)
+{
+  mOpaqueResize = b;
+}
+
+bool KDockSplitter::opaqueResize() const
+{
+  return mOpaqueResize;
+}
+
+void KDockSplitter::setKeepSize(bool b)
+{
+  mKeepSize = b;
+}
+
+bool KDockSplitter::keepSize() const
+{
+  return mKeepSize;
+}
+
+void KDockSplitter::setHighResolution(bool b)
+{
+  if (mHighResolution) {
+    if (!b) xpos = xpos/100;
+  } else {
+    if (b) xpos = xpos*100;
+  }
+  mHighResolution = b;
+}
+
+bool KDockSplitter::highResolution() const
+{
+  return mHighResolution;
+}
+
 
 /*************************************************************************/
 KDockButton_Private::KDockButton_Private( QWidget *parent, const char * name )

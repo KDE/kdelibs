@@ -42,7 +42,7 @@ class KDockSplitter : public QWidget
 {
   Q_OBJECT
 public:
-  KDockSplitter(QWidget *parent= 0, const char *name= 0, Orientation orient= Vertical, int pos= 50);
+  KDockSplitter(QWidget *parent= 0, const char *name= 0, Orientation orient= Vertical, int pos= 50, bool highResolution=false);  
   virtual ~KDockSplitter(){};
 
   void activate(QWidget *c0, QWidget *c1 = 0L);
@@ -59,6 +59,15 @@ public:
   QWidget* getAnother( QWidget* );
   void updateName();
 
+  void setOpaqueResize(bool b=true);
+  bool opaqueResize() const;
+
+  void setKeepSize(bool b=true);
+  bool keepSize() const;
+
+  void setHighResolution(bool b=true);
+  bool highResolution() const;
+
 protected:
   int checkValue( int );
   virtual void resizeEvent(QResizeEvent *);
@@ -71,6 +80,7 @@ private:
   bool initialised;
   QFrame* divider;
   int xpos;
+  bool mOpaqueResize, mKeepSize, mHighResolution;
 };
 
 /**

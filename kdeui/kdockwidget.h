@@ -242,6 +242,13 @@ public:
    */
   virtual void setTopLevel( bool t);
 
+  /**
+   * Set the drag panel of this header.
+   *
+   * @param nd A pointer to the new drag panel
+   */
+  void setDragPanel( KDockWidgetHeaderDrag* nd );
+
   bool dragEnabled();
   void setDragEnabled(bool b);
 
@@ -416,7 +423,7 @@ public:
    *
    * @param  target The dockwidget to dock to
    * @param  dockPos One of the DockPositions this is going to dock to
-   * @param  spliPos The split relation (in percent) between both dockwidgets, target and this
+   * @param  spliPos The split relation (in percent, or percent*100 in high resolution) between both dockwidgets, target and this
    * @param  pos The dock position, mainly of interest for docking to the desktop (as toplevel dockwidget)
    * @param  check Only for internal use;
    * @param  tabIndex The position index of the tab widget (when in tab page mode), -1 (default) means append
@@ -528,7 +535,8 @@ public:
    */
   bool isDockBackPossible();
 
-  /** Set a string that is used for the label of the tab page when in tab page mode
+  /**
+   * Set a string that is used for the label of the tab page when in tab page mode
    * @param label The new tab page label.
    */
   void setTabPageLabel( const QString& label) { tabPageTitle = label; };
@@ -588,7 +596,7 @@ public slots:
   void undock();
 
 protected:
-  
+
   /**
    * @return the parent widget of this if it inherits class KDockTabGroup
    * Warning: This will be removed in KDE-3.0. Use parentDockTabGroup instead.
@@ -612,7 +620,7 @@ signals:
    * @param dp the DockPosition where it wants to dock to
    */
   void docking( KDockWidget* dw, KDockWidget::DockPosition dp);
-  
+
   /**
    * Signals that the dock default position is set.
    */
@@ -631,7 +639,7 @@ signals:
   /**
    * Signals that the widget processes a close event.
    */
-	void iMBeingClosed();
+  void iMBeingClosed();
   /**
    * Signals that the widget is undocked now.
    */
@@ -832,6 +840,42 @@ public:
    * @return the dockwidget that has got that internal QObject name
    */
   KDockWidget* getDockWidgetFromName( const QString& dockName );
+
+  /**
+   * Enables opaque resizing. Opaque resizing is initially turned off.
+   * Call this method before you create any dock widgets!   
+   */
+  void setSplitterOpaqueResize(bool b=true);
+
+  /**
+   * Returns TRUE if opaque resizing is enabled, FALSE otherwise.
+   */
+  bool splitterOpaqueResize() const;
+
+  /**
+   * Try to preserve the widget's size. Works like KeepSize resize mode
+   * of QSplitter. Off by default.
+   * Call this method before you create any dock widgets!
+   */
+  void setSplitterKeepSize(bool b=true);
+
+  /**
+   * Returns TRUE if the KeepSize is enabled, FALSE otherwise.
+   */
+  bool splitterKeepSize() const;
+
+  /**
+   * Operate the splitter with a higher resolution. Off by default.
+   * Call this method before you create any dock widgets!
+   * If high resolution is used all splitter position parameters
+   * are percent*100 instead of percent.
+   */
+  void setSplitterHighResolution(bool b=true);
+
+  /**
+   * Returns TRUE if the splitter uses the high resolution, FALSE otherwise.
+   */
+  bool splitterHighResolution() const;
 
 signals:
 
