@@ -90,6 +90,9 @@ AC_CACHE_CHECK([whether deplibs are loaded by dlopen],
 	hpux*|irix*)
 	  libltdl_cv_sys_dlopen_deplibs=yes
 	  ;;
+	osf*)
+	  libltdl_cv_sys_dlopen_deplibs=yes
+	  ;;
 	esac
 ])
 if test "$libltdl_cv_sys_dlopen_deplibs" != yes; then
