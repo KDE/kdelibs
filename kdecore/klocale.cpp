@@ -268,15 +268,12 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
          it != langlist.begin();
          --it )
   {
-    kdDebug() << "Current Language: " << *it << endl;
     if ( langlist.contains(*it) > 1 )
         it = langlist.remove( it );
   }
 
   langs = langlist.join(QString::fromLatin1(":"));
-  kdDebug() << "Languages: " << langs << endl;
   setEncodingLang(lang);
-  //kdDebug() << "KLocale::initLanguage setEncodingLang " << lang << endl;
 
   insertCatalogue( catalogue );
   insertCatalogue( QString::fromLatin1(SYSTEM_MESSAGES) );
