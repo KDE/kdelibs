@@ -428,9 +428,8 @@ public:
     KHistoryCombo( QWidget *parent = 0L, const char *name = 0L );
 
     /**
-     * Calls @ref clearHistory and sets @p items as the list of history and
-     * completion items. Might get truncated if it is longer than 
-     * @ref maxCount()
+     * Inserts @p items into the combobox. @p items might get
+     * truncated if it is longer than @ref maxCount()
      *
      * @see #historyItems
      */
@@ -439,7 +438,7 @@ public:
     }
 
     /**
-     * Calls @ref clearHistory and sets the list of history items. Might get
+     * Inserts @p items into the combobox. @p items might get
      * truncated if it is longer than @ref maxCount()
      *
      * Set @p setCompletionList to true, if you don't have a list of

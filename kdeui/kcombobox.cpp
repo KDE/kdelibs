@@ -406,8 +406,9 @@ KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
 void KHistoryCombo::setHistoryItems( QStringList items,
 				     bool setCompletionList )
 {
-    clearHistory();
+    KComboBox::clear();
 
+    // limit to maxCount()
     while ( (int) items.count() > maxCount() && !items.isEmpty() )
 	items.remove( items.begin() );
 
@@ -441,12 +442,12 @@ void KHistoryCombo::clearHistory()
 
 void KHistoryCombo::addToHistory( const QString& item )
 {
-    if ( item.isEmpty() || item == text(0) )
+    if ( item.isEmpty() || (count() > 0 && item == text(0) ))
 	return;
 
     int last;
     QString rmItem;
-    while ( count() >= maxCount() ) {
+    while ( count() >= maxCount() && count() > 0 ) {
 	// remove the last item, as long as we are longer than maxCount()
 	// remove the removed item from the completionObject if it isn't
 	// anymore available at all in the combobox.
