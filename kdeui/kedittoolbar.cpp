@@ -45,11 +45,11 @@
 #include <kpushbutton.h>
 #include <kprocio.h>
 
-static const char * const lineseparatorstring = I18N_NOOP("--- line separator ---"); 
-static const char * const separatorstring = I18N_NOOP("--- separator ---"); 
+static const char * const lineseparatorstring = I18N_NOOP("--- line separator ---");
+static const char * const separatorstring = I18N_NOOP("--- separator ---");
 
-#define LINESEPARATORSTRING i18n(lineseparatorstring) 
-#define SEPARATORSTRING i18n(separatorstring) 
+#define LINESEPARATORSTRING i18n(lineseparatorstring)
+#define SEPARATORSTRING i18n(separatorstring)
 
 static void dump_xml(const QDomDocument& doc)
 {
@@ -340,7 +340,7 @@ public:
   KActionCollection* m_collection;
   KInstance         *m_instance;
 
-  XmlData     m_currentXmlData;
+  XmlData*     m_currentXmlData;
   QDomElement m_currentToolbarElem;
 
   QString            m_xmlFile;
@@ -612,6 +612,7 @@ bool KEditToolbarWidget::save()
 
     dump_xml((*it).m_document);
 
+    kdDebug(240) << "Saving " << (*it).m_xmlFile << endl;
     // if we got this far, we might as well just save it
     KXMLGUIFactory::saveConfigFile((*it).m_document, (*it).m_xmlFile);
   }
@@ -870,7 +871,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   m_downAction->setEnabled(false);
 
   // We'll use this action collection
-  KActionCollection* actionCollection = d->m_currentXmlData.m_actionCollection;
+  KActionCollection* actionCollection = d->m_currentXmlData->m_actionCollection;
 
   // store the names of our active actions
   QMap<QString, bool> active_list;
@@ -982,7 +983,7 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
       if ( name == _text )
       {
         // save our current settings
-        d->m_currentXmlData     = (*xit);
+        d->m_currentXmlData     = & (*xit);
         d->m_currentToolbarElem = (*it);
 
         // load in our values
@@ -1284,7 +1285,7 @@ void KEditToolbarWidget::updateLocal(QDomElement& elem)
     if ( (*xit).m_type == XmlData::Shell ||
          (*xit).m_type == XmlData::Part )
     {
-      if ( d->m_currentXmlData.m_xmlFile == (*xit).m_xmlFile )
+      if ( d->m_currentXmlData->m_xmlFile == (*xit).m_xmlFile )
       {
         (*xit).m_isModified = true;
         return;
@@ -1358,10 +1359,12 @@ void KEditToolbarWidget::slotProcessExited( KProcess* )
   if(item){
     item->setPixmap(0, BarIcon(icon, 16));
 
-    d->m_currentXmlData.m_isModified = true;
+    Q_ASSERT( d->m_currentXmlData->m_type != XmlData::Merged );
+
+    d->m_currentXmlData->m_isModified = true;
 
     // Get hold of ActionProperties tag
-    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( d->m_currentXmlData.m_document );
+    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( d->m_currentXmlData->m_document );
     // Find or create an element for this action
     QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
     Q_ASSERT( !act_elem.isNull() );
@@ -1370,7 +1373,7 @@ void KEditToolbarWidget::slotProcessExited( KProcess* )
     // we're modified, so let this change
     emit enableOk(true);
   }
-  
+
   delete d->m_kdialogProcess;
   d->m_kdialogProcess = 0;
 }
