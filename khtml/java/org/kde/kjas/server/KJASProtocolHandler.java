@@ -379,28 +379,27 @@ public class KJASProtocolHandler
     public void sendDataCmd( String id, int cmd )
     {
         Main.info( "sendDataCmd(" + id + ") command = " + cmd );
-        String cmdstr = String.valueOf( cmd );
-        int length = id.length() + cmdstr.length() + 4;
-        char[] chars = new char[ length + 8 ];
-        char[] tmpchar = getPaddedLength( length );
+        byte [] cmd_bytes = String.valueOf( cmd ).getBytes();
+        int length = id.length() + cmd_bytes.length + 4;
+        byte [] bytes = new byte[ length + 8 ];
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) DataCommand;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) DataCommand;
+        bytes[index++] = sep;
 
-        tmpchar = id.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = id.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = cmdstr.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( cmd_bytes, 0, bytes, index, cmd_bytes.length );
+        index += cmd_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
     /**
     * sends put url request
@@ -463,52 +462,38 @@ public class KJASProtocolHandler
     * sends notification about the state of the applet.
     * @see org.kde.kjas.server.KJASAppletStub for valid states
     */
-    public void sendAppletStateNotification( 
-        String contextID, 
-        String appletID,
-        int state)
+    public void sendAppletStateNotification( String contextID, String appletID, int state )
     {
         Main.debug( "sendAppletStateNotification, contextID = " + contextID + ", appletID = " +
                     appletID + ", state=" + state );
 
-        String state_str = String.valueOf( state );
+        byte [] state_bytes = String.valueOf( state ).getBytes();
 
-        // message format:
-        // 8 bytes length
-        // 1 byte code
-        // 1 byte separator
-        // contextId.length bytes
-        // 1 byte separator
-        // appletID.length bytes
-        // 1 byte separator
-        // state_str.length bytes
-        // 1 byte separator
-        int length = contextID.length() + appletID.length() + state_str.length() + 5;
-        char[] chars = new char[ length + 8 ]; //for length of message
-        char[] tmpchar = getPaddedLength( length );
+        int length = contextID.length() + appletID.length() + state_bytes.length + 5;
+        byte [] bytes = new byte[ length + 8 ]; //for length of message
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) AppletStateNotificationCode;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) AppletStateNotificationCode;
+        bytes[index++] = sep;
 
-        tmpchar = contextID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = contextID.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = appletID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = appletID.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = state_str.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( state_bytes, 0, bytes, index, state_bytes.length );
+        index += state_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
  
     /**
@@ -614,7 +599,6 @@ public class KJASProtocolHandler
 
     public void sendShowStatusCmd( String contextID, String msg )
     {
-        // msg might contain unicode, so use byte[] here to get the lenght right
         Main.debug( "sendShowStatusCmd, contextID = " + contextID + " msg = " + msg );
 
         byte [] msg_bytes = msg.getBytes();
@@ -646,46 +630,43 @@ public class KJASProtocolHandler
         Main.debug( "sendResizeAppletCmd, contextID = " + contextID + ", appletID = " +
                     appletID + ", width = " + width + ", height = " + height );
 
-        String width_str = String.valueOf( width );
-        String height_str = String.valueOf( height );
+        byte [] width_bytes = String.valueOf( width ).getBytes();
+        byte [] height_bytes = String.valueOf( height ).getBytes();
 
         //length = length of args plus code, 4 seps, end
-        int length = contextID.length() + appletID.length() + width_str.length() +
-                     height_str.length() + 6;
-        char[] chars = new char[ length + 8 ]; //for length of message
-        char[] tmpchar = getPaddedLength( length );
+        int length = contextID.length() + appletID.length() + width_bytes.length +
+                     height_bytes.length + 6;
+        byte [] bytes = new byte[ length + 8 ]; //for length of message
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) ShowStatusCode;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) ShowStatusCode;
+        bytes[index++] = sep;
 
-        tmpchar = contextID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = contextID.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = appletID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = appletID.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = width_str.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( width_bytes, 0, bytes, index, width_bytes.length );
+        index += width_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = height_str.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( height_bytes, 0, bytes, index, height_bytes.length );
+        index += height_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
     public void sendJavaScriptEventCmd( String contextID, String appletID, int objid, String event, int [] types, String [] args )
     {
-        // args might contain unicode, so use byte[] here to get the lenght right
         Main.debug( "sendJavaScriptEventCmd, contextID = " + contextID + " event = " + event );
         String objstr = new String("" + objid);
         int length = contextID.length() + appletID.length() + event.length() + objstr.length() + 6;
@@ -741,7 +722,6 @@ public class KJASProtocolHandler
     }
     public void sendMemberValue( String contextID, int cmd, int ticketnr, int type, int rid, String value )
     {
-        // value might contain unicode, so use byte[] here to get the lenght right
         Main.debug( "sendMemberValue, contextID = " + contextID + " value = " + value + " type=" + type + " rid=" + rid );
 
         String strticket = String.valueOf( ticketnr );
@@ -823,34 +803,32 @@ public class KJASProtocolHandler
     {
         Main.debug("sendPutMember, contextID = " + contextID + " success = " + success);
 
-        String strret = new String(success ? "1" : "0");
-        String strticket = new String("" + ticketnr);
-        int length = contextID.length() + strret.length() + strticket.length() + 5;
-        char[] chars = new char[ length + 8 ]; //for length of message
-        char[] tmpchar = getPaddedLength( length );
+        byte [] ticket_bytes = String.valueOf( ticketnr ).getBytes();
+        byte [] ret_bytes = String.valueOf( success ? "1" : "0" ).getBytes();
+        int length = contextID.length() + ret_bytes.length + ticket_bytes.length + 5;
+        byte [] bytes = new byte[ length + 8 ]; //for length of message
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) PutMember;
-        chars[index++] = sep;
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) PutMember;
+        bytes[index++] = sep;
 
-        tmpchar = contextID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        tmp_bytes = contextID.getBytes();
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = strticket.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( ticket_bytes, 0, bytes, index, ticket_bytes.length );
+        index += ticket_bytes.length;
+        bytes[index++] = sep;
 
-        tmpchar = strret.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+        System.arraycopy( ret_bytes, 0, bytes, index, ret_bytes.length );
+        index += ret_bytes.length;
+        bytes[index++] = sep;
 
-        signals.print( chars );
+        signals.write( bytes, 0, bytes.length );
     }
     /**************************************************************
      *****  Utility functions for parsing commands ****************
@@ -869,35 +847,14 @@ public class KJASProtocolHandler
             return null;
     }
 
-    private char[] getPaddedLength( int length )
-    {
-        String length_str = String.valueOf( length );
-
-        int pads = 8 - length_str.length();
-        String space = new String( " " );
-        String rval = length_str;
-        for( int i = 0; i < pads; i++ )
-        {
-            rval = space.concat( rval );
-        }
-
-        if( rval.length() != 8 )
-        {
-           throw new IllegalArgumentException( "can't create string number of length = 8" );
-        }
-
-        return rval.toCharArray();
-    }
-
     private byte[] getPaddedLengthBytes( int length )
     {
         byte[] length_bytes = String.valueOf( length ).getBytes();
         if( length_bytes.length > 8 )
            throw new IllegalArgumentException( "can't create string number of length = 8" );
-        byte[] bytes = new byte[8];
+        byte [] bytes = { (byte) ' ', (byte) ' ', (byte) ' ', (byte) ' ',
+                          (byte) ' ', (byte) ' ', (byte) ' ', (byte) ' '};
         System.arraycopy( length_bytes, 0, bytes, 0, length_bytes.length );
-        for (int i = length_bytes.length; i < 8; i++)
-            bytes[i] = (byte) ' ';
         return bytes;
     }
     private int readPaddedLength( int string_size )
