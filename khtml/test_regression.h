@@ -128,13 +128,19 @@ public:
 
     enum OutputType { DOMTree, RenderTree };
     QString getPartOutput( OutputType type );
-    void getPartDOMOutput( QTextStream &outputStream );
+    void getPartDOMOutput( QTextStream &outputStream, KHTMLPart* part, uint indent );
+    void dumpRenderTree( QTextStream &outputStream, KHTMLPart* part );
     void testStaticFile(const QString& filename);
     void testJSFile(const QString& filename);
     bool checkOutput(const QString& againstFilename);
-    bool runTests(QString relPath = "", bool mustExist = false);
-    bool reportResult(bool passed, const QString & description = QString::null);
+    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4};
+    bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
+    bool reportResult( bool passed, const QString & description = QString::null, bool error = false );
     void createMissingDirs(QString path);
+
+    QPixmap outputPixmap();
+    bool pixmapsSame( const QImage &lhs, const QPixmap &rhs );
+    void doFailureReport( const QSize& baseSize, const QSize& outSize, const QString& baseDir,  const QString& test );
 
     KHTMLPart *m_part;
     QString m_baseDir;
@@ -145,11 +151,14 @@ public:
     QString m_currentTest;
 
     bool m_getOutput;
-    int m_passes;
-    int m_failures;
+    int m_passes_work;
+    int m_passes_fail;
+    int m_failures_work;
+    int m_failures_fail;
     int m_errors;
     bool saw_failure;
     bool ignore_errors;
+    int m_known_failures;
 
     static RegressionTest *curr;
 
