@@ -2412,16 +2412,6 @@ bool noneDef, noneHost;
   
 }
 
-/*
-extern "C"
-{
-  KCModule *create_crypto(QWidget *parent, const char *name)
-  {
-    KGlobal::locale()->insertCatalogue("kcmcrypto");
-    return new KCryptoConfig(parent, name);
-  };
-}
-*/
 #include "crypto.moc"
 
 
