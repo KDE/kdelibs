@@ -89,18 +89,27 @@ private:
  *
  *****************************************************************************/
 
+#if defined(_CC_MSVC_)
+// Disable useless MSVC++ warning:
+// 'items' : class 'QValueList<class QIconDrag::Item>' needs to have
+// dll-interface to be used by clients of class 'QIconDrag'
+#pragma warning(disable: 4251)
+#endif
+
 class Q_EXPORT QIconDrag : public QDragObject
 {
     Q_OBJECT
-    friend class QIconView;
-    friend class QIconViewPrivate;
+public:
+    QIconDrag( QWidget * dragSource, const char* name = 0 );
+    virtual ~QIconDrag();
+
+    void append( const QIconDragItem &item, const QRect &pr, const QRect &tr );
+
+    virtual const char* format( int i ) const;
+    static bool canDecode( QMimeSource* e );
+    virtual QByteArray encodedData( const char* mime ) const;
 
 private:
-#if !defined(_CC_EDG_)
-    struct Item;
-#endif
-    friend struct Item;
-
     struct IconDragItem
     {
 	IconDragItem();
@@ -128,24 +137,13 @@ private:
 #endif
     };
 
-public:
-    QIconDrag( QWidget * dragSource, const char* name = 0 );
-    virtual ~QIconDrag();
-
-    void append( const QIconDragItem &item, const QRect &pr, const QRect &tr );
-
-    virtual const char* format( int i ) const;
-    static bool canDecode( QMimeSource* e );
-    virtual QByteArray encodedData( const char* mime ) const;
-
-private:
-    static bool decode( QMimeSource* e, QValueList<Item> &lst );
-
     QValueList<Item> items;
+    static bool decode( QMimeSource* e, QValueList<Item> &lst );
     QChar endMark;
 
+    friend class QIconView;
+    friend class QIconViewPrivate;
 };
-
 
 /*****************************************************************************
  *
