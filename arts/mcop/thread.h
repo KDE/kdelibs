@@ -64,6 +64,13 @@ public:
 	virtual Thread_impl *createThread_impl(Thread *thread) = 0;
 	virtual ThreadCondition_impl *createThreadCondition_impl() = 0;
 	virtual ~SystemThreads();
+
+	/**
+	 * Returns the current thread handle into the thread identifier pointed
+	 * by id. The size of the area pointed by id is OS-specific. Usually, do
+	 * not use this function.
+	 */
+	virtual void getCurrentThread(void *id) = 0;
 };
 
 /**

@@ -102,8 +102,10 @@ gsl_arts_thread_create (gpointer (*func)(gpointer data),
 gpointer
 gsl_arts_thread_self ()
 {
-  gpointer self = (gpointer) pthread_self();
-  return self;
+  pthread_t id;
+
+  Arts::SystemThreads::the()->getCurrentThread(&id);
+  return (gpointer)id; /* assuming this -can- be casted */
 }
 
 void 

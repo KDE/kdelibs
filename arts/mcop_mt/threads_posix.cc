@@ -246,6 +246,10 @@ public:
 	Arts::ThreadCondition_impl *createThreadCondition_impl() {
 		return new ThreadCondition_impl();
 	}
+	void getCurrentThread(void *id) {
+		pthread_t *result = static_cast<pthread_t*>(id);
+		*result = pthread_self();
+	}
 };
 
 // set posix threads on startup

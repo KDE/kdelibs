@@ -21,6 +21,7 @@
     */
 
 #include "thread.h"
+#include <string.h>
 
 using namespace Arts;
 
@@ -104,6 +105,12 @@ public:
 	}
 	ThreadCondition_impl *createThreadCondition_impl() {
 		return new SystemThreadsNoThreadCondition_impl();
+	}
+	void getCurrentThread(void *id) {
+#define ARTS_SIZEOF_THREAD_ID 4 /* <- needs a configure check */
+		/* doesn't generate more than 256 distinct thread identifiers - but
+		 * that should be enough, considering we run no threads here */
+		memset(id,1+systemThreadsNoneLevel,ARTS_SIZEOF_THREAD_ID);
 	}
 };
 
