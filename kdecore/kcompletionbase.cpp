@@ -61,6 +61,9 @@ KCompletion* KCompletionBase::completionObject( bool hsig )
 
 void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
 {
+    if ( m_bAutoDelCompObj && compObj != m_pCompObj )
+	delete m_pCompObj;
+    
     m_pCompObj = compObj;
     // We emit rotation and completion signals
     // if completion object is not NULL.
