@@ -1,3 +1,8 @@
+2004-08-24  Leo Savernik  <l.savernik@aon.at>
+
+	* ecma/kjs_html.{cpp,h} (HTMLDocument):
+	Added Javascript-support for HTMLDocument.compatMode.
+
 2004-08-23  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_layer.{cpp,h} (Marquee): Added a stop method for
