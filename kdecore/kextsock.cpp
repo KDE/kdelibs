@@ -970,7 +970,8 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
   int err;
 
   // FIXME! What is the encoding?
-  err = getaddrinfo(host.isNull() ? NULL : host.utf8(), serv.isNull() ? NULL : serv.utf8(),
+  err = getaddrinfo(host.isNull() ? NULL : (const char*)host.utf8(), 
+		    serv.isNull() ? NULL : (const char*)serv.utf8(),
 		    &hint, res);
   return err;
 }
@@ -1031,7 +1032,7 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
 KSocketAddress *KExtendedSocket::localAddress(int fd)
 {
   sockaddr *sa = NULL;
-  socklen_t len = 0;
+  ksize_t len = 0;
 
   /* find out the socket length, in advance */
   if (getsockname(fd, sa, &len) == -1)
@@ -1058,7 +1059,7 @@ KSocketAddress *KExtendedSocket::peerAddress(int fd)
 {
 
   sockaddr *sa = NULL;
-  socklen_t len = 0;
+  ksize_t len = 0;
 
   /* find out the socket length, in advance */
   if (getpeername(fd, sa, &len) == -1)
