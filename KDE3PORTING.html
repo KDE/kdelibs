@@ -149,9 +149,9 @@ not be available.
 <ul>
 	<li> KAccel::insertItem() and KAccel::connectItem().
 <pre>
-	- kaccel-gt;insertItem( i18n("Scroll Up"), "Scroll Up", "Up" );
-	- kaccel-gt;connectItem( "Scroll Up", this, SLOT(scrollUp()) );
-	+ kaccel-gt;insert( "Scroll Up", i18n("Scroll Up"), QString::null,
+	- kaccel-&gt;insertItem( i18n("Scroll Up"), "Scroll Up", "Up" );
+	- kaccel-&gt;connectItem( "Scroll Up", this, SLOT(scrollUp()) );
+	+ kaccel-&gt;insert( "Scroll Up", i18n("Scroll Up"), QString::null,
 		Key_Up, this, SLOT(scrollUp()) );
 </pre>
 	Note that a What's This parameter is now a part of the insert function.
@@ -163,8 +163,8 @@ not be available.
 	can replace it.  Note, however, that this would be handled automatically
 	by using KAction instead.
 <pre>
-	- kaccel-gt;changeMenuAccel( menu, id, "file_open" );
-	+ menu-gt;setAccel( kaccel-gt;shortcut( "file_open" ).keyCodeQt(), id );
+	- kaccel-&gt;changeMenuAccel( menu, id, "file_open" );
+	+ menu-&gt;setAccel( kaccel-&gt;shortcut( "file_open" ).keyCodeQt(), id );
 </pre>
 	</li>
 </ul>
@@ -398,7 +398,7 @@ QString&) is not a slot anymore.
 <li>setProxyConfigScript( const QString&amp;  )
       </ul>
   </li>
-  <li>In order to support files &gt; 4Gb, the file size / file-offset argument 
+  <li>In order to support files &gt; 4Gb, the file size / file-offset argument
       in the signals totalSize, processedSize and canResume, which are used 
       by the io-slaves and passed along to jobs, has been changed from
       <b>unsigned long</b> to <b>KIO::filesize_t</b>.
