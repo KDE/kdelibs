@@ -316,10 +316,11 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     result = Number(ms);
     break;
   case GetTimezoneOffset:
-#if defined BSD || defined(__APPLE__)
-    result = Number(-(t->tm_gmtoff / 60) + (t->tm_isdst > 0 ? 60 : 0));
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
+    result = Number(-(t->tm_gmtoff / 60) );
 #else
 #  if defined(__BORLANDC__)
+// FIXME consider non one-hour DST change
 #error please add daylight savings offset here!
     result = Number(_timezone / 60 - (t->tm_isdst > 0 ? 60 : 0));
 #  else
@@ -599,8 +600,17 @@ Number KJS::makeTime(struct tm *t, int ms, bool utc)
 	time_t zero = 0;
 	struct tm t3;
        	localtime_r(&zero, &t3);
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
         utcOffset = t3.tm_gmtoff;
         t->tm_isdst = t3.tm_isdst;
+#else
+#  if defined(__BORLANDC__)
+        utcOffset = - _timezone;
+#  else
+        utcOffset = - timezone;
+#  endif
+        t->tm_isdst = 0;
+#endif
     } else {
 	utcOffset = 0;
 	t->tm_isdst = -1;
