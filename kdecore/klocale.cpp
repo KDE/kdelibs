@@ -1098,21 +1098,21 @@ static int readInt(const QString &str, uint &pos)
   return result;
 }
 
-QDate KLocale::readDate(const QString &intstr) const
+QDate KLocale::readDate(const QString &intstr, bool* ok) const
 {
   QDate date;
-  date = readDate(intstr, true);
+  date = readDate(intstr, true, ok);
   if (date.isValid()) return date;
-  return readDate(intstr, false);
+  return readDate(intstr, false, ok);
 }
 
-QDate KLocale::readDate(const QString &intstr, bool shortFormat) const
+QDate KLocale::readDate(const QString &intstr, bool shortFormat, bool* ok) const
 {
   QString fmt = (shortFormat ? dateFormatShort() : dateFormat()).simplifyWhiteSpace();
-  return readDate( intstr, fmt );
+  return readDate( intstr, fmt, ok );
 }
 
-QDate KLocale::readDate(const QString &intstr, const QString &fmt) const
+QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
   QString str = intstr.simplifyWhiteSpace().lower();
   int day = -1, month = -1;
@@ -1197,20 +1197,24 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt) const
     }
   //kdDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
   if ( year != -1 && month != -1 && day != -1 )
+  {
+    if (ok) *ok = true;
     return QDate(year, month, day);
+  }
  error:
+  if (ok) *ok = false;
   return QDate(); // invalid date
 }
 
-QTime KLocale::readTime(const QString &intstr) const
+QTime KLocale::readTime(const QString &intstr, bool *ok) const
 {
   QTime _time;
-  _time = readTime(intstr, true);
+  _time = readTime(intstr, true, ok);
   if (_time.isValid()) return _time;
-  return readTime(intstr, false);
+  return readTime(intstr, false, ok);
 }
 
-QTime KLocale::readTime(const QString &intstr, bool seconds) const
+QTime KLocale::readTime(const QString &intstr, bool seconds, bool *ok) const
 {
   QString str = intstr.simplifyWhiteSpace().lower();
   QString Format = timeFormat().simplifyWhiteSpace();
@@ -1308,9 +1312,11 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
       if (pm) hour += 12;
     }
 
+  if (ok) *ok = true;
   return QTime(hour, minute, second);
 
  error:
+  if (ok) *ok = false;
   return QTime(-1, -1, -1); // return invalid date if it didn't work
 }
 

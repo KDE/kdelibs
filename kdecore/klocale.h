@@ -479,33 +479,31 @@ public:
 
   /**
    * Converts a localized date string to a QDate.
-   * isValid() on the returning object will be false
-   * if the date entered was not valid.
-   *
-   * Note: This only works on short dates for the time beeing.
+   * The bool pointed by ok will be invalid if the date entered was not valid.
    *
    * @param str the string we want to convert.
+   * @param ok the boolean that is set to false if it's not a valid date.
    *
    * @return The string converted to a QDate
    */
-  QDate readDate(const QString &str) const;
+  QDate readDate(const QString &str, bool* ok = 0) const;
 
   /**
    * Converts a localized date string to a QDate, using the specified format.
    * You will usually not want to use this method.
    */
-  QDate readDate( const QString &intstr, const QString &fmt) const;
+  QDate readDate( const QString &intstr, const QString &fmt, bool* ok = 0) const;
 
   /**
    * Converts a localized time string to a QTime.
-   * isValid() on the returning object will be false
-   * if the time entered was not valid.
+   * The bool pointed by ok will be false if the time entered was not valid.
    *
    * @param str the string we want to convert.
+   * @param ok the boolean that is set to false if it's not a valid time.
    *
    * @return The string converted to a QTime
    */
-  QTime readTime(const QString &str) const;
+  QTime readTime(const QString &str, bool* ok = 0) const;
 
   /**
    * Returns the language used by this object. The domain AND the
@@ -870,12 +868,12 @@ private:
   /**
    * @internal function used by readTime(const QString &) const.
    */
-  QTime readTime(const QString &str, bool seconds) const;
+  QTime readTime(const QString &str, bool seconds, bool *ok) const;
 
   /**
    * @internal function used by readDate(const QString &) const.
    */
-  QDate readDate(const QString &str, bool shortFormat) const;
+  QDate readDate(const QString &str, bool shortFormat, bool *ok) const;
 
   /**
    * @internal Changes the file name of the catalogue to the correct
