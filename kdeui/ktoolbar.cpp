@@ -729,7 +729,7 @@ KToolBar::updateRects(bool res)
         mw = d->m_maxHorWidth;
       else if (width() > maximumSizeHint().width())
         mw = maximumSizeHint().width();
-    }  
+    }
     layoutHorizontal(mw);
     break;
   }
@@ -795,7 +795,7 @@ KToolBar::sizeHint() const
   default:
     break;
   }
-  
+
   return (QSize(min_width, min_height));
 }
 
@@ -837,7 +837,7 @@ KToolBar::maximumSizeHint() const
     break;
 
   case Left:
-  case Right:  
+  case Right:
     prefWidth = 0;
     prefHeight = 4 + 9 + 3;
 
@@ -885,7 +885,7 @@ KToolBar::sizePolicy() const
 
   case Left:
   case Right:
-    return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);  
+    return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
 
   default:
     return QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -896,7 +896,7 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 {
     if (!moving)
   return;
-    
+
   /* The toolbar handles are hightlighted when the mouse moves over
      * the handle. */
   if ((d->m_isHorizontal && (mev->x() < 0 || mev->x() > 9)) ||
@@ -921,7 +921,7 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
       repaint(false);
     }
   }
-    
+
   if (!buttonDownOnHandle)
     return;
   buttonDownOnHandle = FALSE;
@@ -1013,7 +1013,7 @@ void KToolBar::mouseReleaseEvent ( QMouseEvent *m)
     buttonDownOnHandle = FALSE;
     if (!moving)
   return;
-    
+
     if (mgr)
   mgr->stop();
     if ( d->m_position != Floating &&
@@ -1434,7 +1434,7 @@ int KToolBar::insertSeparator( int index )
     d->m_items->append( item );
   else
     d->m_items->insert( index, item );
-  
+
   if (d->m_position == Flat)
     item->hide();
   updateRects(true);
@@ -1457,7 +1457,7 @@ int KToolBar::insertLineSeparator( int index )
     d->m_items->append( item );
   else
     d->m_items->insert( index, item );
-  
+
   if (d->m_position == Flat)
     item->hide();
   updateRects(true);
@@ -1939,6 +1939,11 @@ void KToolBar::setFullWidth(bool flag)
   fullSizeMode = flag;
 }
 
+void KToolBar::setFullSize( bool flag )
+{
+  fullSizeMode = flag; 
+} 
+
 bool KToolBar::fullSize() const
 {
   return (fullSizeMode);
@@ -2012,7 +2017,7 @@ void KToolBar::setBarPos(BarPosition bpos)
   }
 }
 
-KToolBar::BarPosition KToolBar::barPos()
+KToolBar::BarPosition KToolBar::barPos() const
 {
   return d->m_position;
 }

@@ -46,8 +46,8 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
 
 KXMLGUIBuilder::~KXMLGUIBuilder()
 {
-  delete d; 
-} 
+  delete d;
+}
 
 QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
 {
@@ -56,12 +56,12 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   if ( element.tagName().lower() == "menubar" )
   {
     KMenuBar *bar;
-    
+
     if ( d->m_widget->inherits( "KTMainWindow" ) )
       bar = static_cast<KTMainWindow *>(d->m_widget)->menuBar();
     else
       bar = new KMenuBar( d->m_widget );
-    
+
     if ( !bar->isVisible() )
       bar->show();
     return bar;
@@ -120,11 +120,18 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     else if ( containerStateBuffer.size() > 0 )
     {
       QDataStream stream( containerStateBuffer, IO_ReadOnly );
+      QVariant iconText, barPos, fullSize;
+      stream >> iconText >> barPos >> fullSize;
+      bar->setProperty( "iconText", iconText );
+      bar->setProperty( "barPos", barPos );
+      bar->setProperty( "fullSize", fullSize );
+      /*
       Q_INT32 i;
       stream >> i;
       bar->setBarPos( (KToolBar::BarPosition)i );
       stream >> i;
       bar->setIconText( (KToolBar::IconText)i );
+      */
     }
 
     bar->show();
@@ -164,7 +171,8 @@ QByteArray KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent,
   else if ( container->inherits( "KToolBar" ) )
   {
     QDataStream stream( stateBuff, IO_WriteOnly );
-    stream << (int)((KToolBar *)container)->barPos() << (int)((KToolBar *)container)->iconText();
+    //    stream << (int)((KToolBar *)container)->barPos() << (int)((KToolBar *)container)->iconText();
+    stream << container->property( "iconText" ) << container->property( "barPos" ) << container->property( "fullSize" );
     delete (KToolBar *)container;
   }
   else if ( container->inherits( "KStatusBar" ) )

@@ -74,6 +74,11 @@ class KToolBar : public QFrame
   friend class KToolBarButton;
   friend class KToolBarRadioGroup;
 
+  Q_ENUMS( IconText BarPosition )
+  Q_PROPERTY( IconText iconText READ iconText WRITE setIconText )
+  Q_PROPERTY( BarPosition barPos READ barPos WRITE setBarPos )
+  Q_PROPERTY( bool fullSize READ fullSize WRITE setFullSize )
+
 public:
   /**
    * Possible positions for text.
@@ -119,7 +124,7 @@ public:
    * You should connect to one or more signals in
    * KToolBar: @ref clicked() , @ref pressed() , @ref released() ,
    * or @ref highlighted()  and
-   * if the button is a toggle button (@ref setToggle() ) @ref toggled() . 
+   * if the button is a toggle button (@ref setToggle() ) @ref toggled() .
    * Those
    * signals have @p id of a button that caused the signal.
    * If you want to bind a popup to button, see  @ref setButton().
@@ -153,7 +158,7 @@ public:
    * You should connect to one or more signals in
    * KToolBar: @ref clicked() , @ref pressed() , @ref released() ,
    * or @ref highlighted()  and
-   * if the button is a toggle button (@ref setToggle() ) @ref toggled() . 
+   * if the button is a toggle button (@ref setToggle() ) @ref toggled() .
    * Those
    * signals have @p id of a button that caused the signal.
    * If you want to bind a popup to button, see  @ref setButton().
@@ -549,7 +554,7 @@ public:
   void setItemAutoSized (int id, bool yes = true);
 
   /**
-   * Remove all items. 
+   * Remove all items.
    *
    * The toolbar is redrawn after it.
    */
@@ -612,7 +617,7 @@ public:
   /**
    * Retrieve position of toolbar.
    */
-  BarPosition barPos();
+  BarPosition barPos() const;
 
   /**
    * Show, hide, or toggle toolbar.
@@ -725,14 +730,14 @@ public:
   /**
    * Retrieve the preferred size.
    *
-   * This function is required for the Qt layout management to work. 
+   * This function is required for the Qt layout management to work.
    */
   virtual QSize sizeHint() const;
 
   /**
    * Retrieve the minimum size.
    *
-   * This function is required for the Qt layout management to work. 
+   * This function is required for the Qt layout management to work.
    */
   virtual QSize minimumSizeHint() const;
 
