@@ -27,10 +27,14 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qbutton.h>
+#include <qpushbutton.h>
 #include <qcombobox.h>
 #include <kmessagebox.h>
 #include <kpassdlg.h>
 #include <ksslall.h>
+#include <kfiledialog.h>
+#include <kprocess.h>
+
 
 
 KCertPart::KCertPart(QWidget *parent, const char *name) 
@@ -42,8 +46,8 @@ KCertPart::KCertPart(QWidget *parent, const char *name)
  _p12 = NULL;
 
  _frame = new QFrame(parent);
- grid = new QGridLayout(_frame, 9, 6, KDialog::marginHint(),
-                                      KDialog::spacingHint() );
+ grid = new QGridLayout(_frame, 10, 6, KDialog::marginHint(),
+                                       KDialog::spacingHint() );
  grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _frame), 0, 0, 0, 5);
  grid->addWidget(new QLabel(i18n("Chain:"), _frame), 1, 0);
  _chain = new QComboBox(_frame);
@@ -72,6 +76,21 @@ KCertPart::KCertPart(QWidget *parent, const char *name)
  _certState = new QLabel("", _frame);
  grid->addMultiCellWidget(_certState, 8, 8, 1, 5);
 
+ _launch = new QPushButton(i18n("&Crypto Manager..."), _frame);
+ _import = new QPushButton(i18n("&Import..."), _frame);
+ _save = new QPushButton(i18n("&Save..."), _frame);
+ _done = new QPushButton(i18n("&Done"), _frame);
+ grid->addMultiCellWidget(_launch, 9, 9, 0, 1);
+ grid->addWidget(_import, 9, 3);
+ grid->addWidget(_save, 9, 4);
+ grid->addWidget(_done, 9, 5);
+ connect(_launch, SIGNAL(clicked()), SLOT(slotLaunch()));
+ connect(_import, SIGNAL(clicked()), SLOT(slotImport()));
+ connect(_save, SIGNAL(clicked()), SLOT(slotSave()));
+ connect(_done, SIGNAL(clicked()), SLOT(slotDone()));
+ _import->setEnabled(false);
+ _save->setEnabled(false);
+
  setWidget(_frame);
  setReadWrite(true);
 }
@@ -82,14 +101,24 @@ if (_p12) delete _p12;
 }
 
 
-void KCertPart::setReadWrite(bool /*rw*/) {
-
+void KCertPart::setReadWrite(bool rw) {
+  _import->setEnabled(rw);
+  _save->setEnabled(rw);
+  ReadWritePart::setReadWrite(rw);
 }
 
 
 bool KCertPart::saveFile() {
+  QString certFile = KFileDialog::getSaveFileName();
+  if (certFile.isEmpty())
+    return false;
+ 
+  if (!_p12->toFile(certFile)) {
+    KMessageBox::sorry(_frame, i18n("Save failed."), i18n("Certificate Import"));
+    return false;
+  }
 
-return false;
+return true;
 }
 
 
@@ -137,6 +166,9 @@ QCString pass;
     _chain->setEnabled(false);
   }
 
+ _import->setEnabled(true);
+ _save->setEnabled(true);
+
 return true;
 }
 
@@ -175,6 +207,38 @@ void KCertPart::slotChain(int c) {
   }
 }
 
+
+void KCertPart::slotImport() {
+  KSimpleConfig cfg("ksslcertificates", false);
+  if (cfg.hasGroup(_p12->getCertificate()->getSubject())) {
+     int rc = KMessageBox::warningYesNo(_frame, i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?"), i18n("Certificate Import"));
+     if (rc == KMessageBox::No) {
+        return;
+     }
+  }
+  cfg.setGroup(_p12->getCertificate()->getSubject());
+  cfg.writeEntry("PKCS12Base64", _p12->toString());
+  cfg.writeEntry("Password", "");
+  cfg.sync();
+  KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
+}
+
+
+void KCertPart::slotSave() {
+  saveFile();
+}
+
+
+void KCertPart::slotDone() {
+  delete this;   // this doesn't seem to work
+}
+
+
+void KCertPart::slotLaunch() {
+KShellProcess p;
+  p << "kcmshell" << "crypto";
+  p.start(KProcess::DontCare);
+}
 
 
 #include "kcertpart.moc"

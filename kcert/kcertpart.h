@@ -47,6 +47,10 @@ public:
 
 protected slots:
   void slotChain(int c);
+  void slotImport();
+  void slotSave();
+  void slotDone();
+  void slotLaunch();
 
 protected:
 
@@ -60,7 +64,7 @@ protected:
   KSSLCertBox *_subject, *_issuer;
   KInstance *_instance;
   QComboBox *_chain;
-  QButton *_import, *_save, *_done;
+  QButton *_import, *_save, *_done, *_launch;
   KSSLPKCS12 *_p12;
 
 private:
