@@ -223,7 +223,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "DOMException" ||
       p == "frames" ||
       p == "history" ||
-      p == "event" || 
+    //  p == "event" || 
       p == "innerHeight" ||
       p == "innerWidth" ||
       p == "length" ||
@@ -321,8 +321,8 @@ KJSO Window::get(const UString &p) const
   else if (p == "history")
     return KJSO(history ? history :
 		(const_cast<Window*>(this)->history = new History(part)));
-  else if (p == "event")
-    return getDOMEvent(static_cast<DOM::Event>(part->view()->lastDOMMouseEvent()));
+ // else if (p == "event")
+//    return getDOMEvent(static_cast<DOM::Event>(part->view()->lastDOMMouseEvent()));
   else if (p == "innerHeight")
     return Number(part->view()->visibleHeight());
   else if (p == "innerWidth")

@@ -28,8 +28,6 @@
 // qt includes and classes
 #include <qscrollview.h>
 
-#include "xml/dom2_eventsimpl.h"
-
 template<class C> class QList;
 
 class QPainter;
@@ -172,8 +170,6 @@ public:
 
     static const QList<KHTMLView> *viewList() { return lstViews; }
 
-    DOM::MouseEventImpl *lastDOMMouseEvent() { return lastMouseEvent; }
-
 signals:
     void cleared();
 
@@ -255,8 +251,6 @@ private:
 
     int _marginWidth;
     int _marginHeight;
-
-    DOM::MouseEventImpl *lastMouseEvent;
 
     KHTMLPart *m_part;
     KHTMLViewPrivate *d;

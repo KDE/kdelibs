@@ -30,6 +30,7 @@
 #include "rendering/render_object.h"
 #include "rendering/render_root.h"
 #include "rendering/render_style.h"
+#include "xml/dom2_eventsimpl.h"
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
 #include "khtml_settings.h"
@@ -1093,8 +1094,6 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 		me->ref();
 		oldUnder->dispatchEvent(me,exceptioncode);
 		me->deref();
-
-		lastMouseEvent = me;
 	    }
 
 
@@ -1110,8 +1109,6 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 		me->ref();
 		targetNode->dispatchEvent(me,exceptioncode);
 		me->deref();
-	
-		lastMouseEvent = me;
 	    }
 
 	    if (oldUnder)
@@ -1130,8 +1127,6 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	targetNode->dispatchEvent(me,exceptioncode);
 	me->deref();
 
-	lastMouseEvent = me;
-
 	// special case for HTML click & ondblclick handler
 	if (eventId == EventImpl::CLICK_EVENT) {
 	    me = new MouseEventImpl(d->isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,
@@ -1144,8 +1139,6 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	    me->ref();
 	    targetNode->dispatchEvent(me,exceptioncode);
 	    me->deref();
-
-	    lastMouseEvent = me;
 	}
     }
 
