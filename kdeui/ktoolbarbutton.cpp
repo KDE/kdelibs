@@ -697,6 +697,10 @@ int KToolBarButton::iconTextMode() const
     return static_cast<int>( d->m_iconText );
 }
 
+int KToolBarButton::id() const
+{
+    return d->m_id;
+}
 
 // KToolBarButtonList
 KToolBarButtonList::KToolBarButtonList()

@@ -592,7 +592,7 @@ public:
    *
    * Example:
    * <pre>
-   * KLineEdit * lined = toolbar->getKTollBarLined(lined_id);
+   * KLineEdit * lined = toolbar->getKToolBarLined(lined_id);
    * </pre>
    * That way you can get access to other public methods
    * that @ref KLineEdit provides. @ref KLineEdit is the same thing
@@ -631,6 +631,8 @@ public:
    * you will probably have to call QToolBar::updateRects(true)
    * @see QWidget
    * @see updateRects()
+   * 
+   * KDE4: make this const!
    */
     QWidget *getWidget (int id);
 
@@ -672,6 +674,13 @@ public:
    * Show item.
    */
     void showItem (int id);
+
+    /**
+   * Returns the index of the given item.
+   *
+   * KDE4: make this const!
+   */
+    int itemIndex (int id);
 
     /**
    * Set toolbar to full parent size (default).

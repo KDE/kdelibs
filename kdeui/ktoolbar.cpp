@@ -754,6 +754,13 @@ void KToolBar::showItem (int id)
 }
 
 
+int KToolBar::itemIndex (int id)
+{
+    QWidget *w = getWidget(id);
+    return w ? widgets.findRef(w) : -1;
+}
+
+
 void KToolBar::setFullSize(bool flag )
 {
     setHorizontalStretchable( flag );

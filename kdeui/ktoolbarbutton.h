@@ -209,6 +209,12 @@ public:
   QPopupMenu *popup();
 
   /**
+   * Returns the button's id.
+   * @since 3.2
+   */
+  int id() const;
+
+  /**
    * Give this button a popup menu.  There will not be a delay when
    * you press the button.  Use @ref setDelayedPopup if you want that
    * behavior. 
