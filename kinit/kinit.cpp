@@ -62,6 +62,7 @@
 int waitForPid;
 int X11fd;
 static Display *X11display = 0;
+static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
 
@@ -199,9 +200,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
      d.handle = 0;
      if (lib.right(3) == ".la")
      {
-        KInstance instance( "kdeinit" ); // we need it for findLibrary, but it has to be destroyed
-                                         // asap, otherwise the app finds an existing global instance !
-        QString libpath = KLibLoader::findLibrary( lib );
+        QString libpath = KLibLoader::findLibrary( lib, s_instance );
         if ( !libpath.isEmpty())
         {
            d.handle = lt_dlopen( libpath.latin1() );
@@ -774,11 +773,9 @@ static void handle_requests(pid_t waitForPid)
 
 static void kdeinit_library_path()
 {
-   KInstance instance( "kdeinit" );
-
    QCString ltdl_library_path = getenv("LTDL_LIBRARY_PATH");
    QCString ld_library_path = getenv("LD_LIBRARY_PATH");
-   QStringList candidates = KGlobal::dirs()->resourceDirs("lib");
+   QStringList candidates = s_instance->dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end();
         it++)
@@ -816,7 +813,7 @@ static void kdeinit_library_path()
      exit(255);
    }
 
-   QCString socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(display)));
+   QCString socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(display), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "Aborting. Socket name will be too long.\n");
@@ -828,7 +825,6 @@ static void kdeinit_library_path()
 /*
 static void output_kmapnotify_path()
 {
-   KInstance instance( "kdeinit" );
    QStringList candidates = instance.dirs()->resourceDirs("lib");
 
    QCString output;
@@ -927,6 +923,11 @@ int main(int argc, char **argv, char **envp)
    /** Make process group leader (for shutting down children later) **/
    if(keep_running)
       setsid();
+
+   /** Create our instance **/
+   s_instance = new KInstance("kdeinit");
+   // Don't make it the global instance
+   KGlobal::_instance = 0L;
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
