@@ -2,6 +2,10 @@
 # This allows to leave the kDebug* calls in the code, but still have them
 # disabled for most users.
 
+# KTMainWindow debug info off
+[200]
+InfoOutput=4
+
 # KFile debug info off
 [250]
 InfoOutput=4
