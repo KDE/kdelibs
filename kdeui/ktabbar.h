@@ -24,7 +24,7 @@
 #include <qtabbar.h>
 
 class QTimer;
-class QToolButton;
+class QPushButton;
 class KTabBarPrivate;
 
 /**
@@ -82,7 +82,7 @@ private:
     int mReorderPreviousTab;
     QMap<int, QColor> mTabColors;
     QTab *mHoverCloseButtonTab;
-    QToolButton *mHoverCloseButton;
+    QPushButton *mHoverCloseButton;
     QTimer* mEnableCloseButtonTimer;
 
     bool mHoverCloseButtonEnabled;

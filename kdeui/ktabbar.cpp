@@ -22,7 +22,7 @@
 #include <qpainter.h>
 #include <qstyle.h>
 #include <qtimer.h>
-#include <qtoolbutton.h>
+#include <qpushbutton.h>
 
 #include <kglobalsettings.h>
 #include <kiconloader.h>
@@ -150,22 +150,22 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
         QTab *t = selectTab( e->pos() );
         if( t && t->iconSet() && t->isEnabled() ) {
             QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, QIconSet::Normal );
-            QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() );
+            QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() +4);
 
             int xoff = 0, yoff = 0;
             // The additional offsets were found by try and error, TODO: find the rational behind them
             if ( t == tab( currentTab() ) ) {
 #if QT_VERSION >= 0x030200
                 xoff = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this ) + 3;
-                yoff = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this ) - 2;
+                yoff = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this ) - 4;
 #else
                 xoff = 3;
-                yoff = -2;
+                yoff = -4;
 #endif
             }
             else {
                 xoff = 5;
-                yoff = 2;
+                yoff = 0;
             }
             rect.moveLeft( t->rect().left() + 2 + xoff );
             rect.moveTop( t->rect().center().y()-pixmap.height()/2 + yoff );
@@ -177,7 +177,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                     delete mHoverCloseButton;
                 }
 
-                mHoverCloseButton = new QToolButton( this );
+                mHoverCloseButton = new QPushButton( this );
                 mHoverCloseButton->setIconSet( SmallIcon( "fileclose" ) );
                 mHoverCloseButton->setGeometry( rect );
                 mHoverCloseButton->setEnabled(false);
