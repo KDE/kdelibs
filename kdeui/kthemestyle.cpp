@@ -495,36 +495,36 @@ QStyle::ScrollControl KThemeStyle::scrollBarPointOver(const QScrollBar *sb,
 
     if(scrollBarLayout() == SBOpposite){
         if (pos < sliderMin )
-            return SubLine;
+            return QStyle::SubLine;
         if (pos < sliderStart )
             return SubPage;
         if (pos < sliderStart + sliderLength )
-            return Slider;
+            return QStyle::Slider;
         if (pos < sliderMax + sliderLength )
-            return AddPage;
+            return QStyle::AddPage;
         return AddLine;
     }
     if(scrollBarLayout() == SBBottomLeft && sb->orientation() ==
        QScrollBar::Horizontal){
         if(pos <= buttonDim)
-            return(SubLine);
+            return(QStyle::SubLine);
         else if(pos <= buttonDim*2)
-            return(AddLine);
+            return(QStyle::AddLine);
         else if(pos < sliderStart)
-            return(SubPage);
+            return(QStyle::SubPage);
         else if(pos < sliderStart+sliderLength)
-            return(Slider);
+            return(QStyle::Slider);
         return(AddPage);
     }
     else{
         if (pos < sliderStart)
-            return SubPage;
+            return QStyle::SubPage;
         if (pos < sliderStart + sliderLength)
-            return Slider;
+            return QStyle::Slider;
         if (pos < sliderMax + sliderLength)
-            return AddPage;
+            return QStyle::AddPage;
         if (pos < sliderMax + sliderLength + buttonDim)
-            return SubLine;
+            return QStyle::SubLine;
         return AddLine;
     }
 }
