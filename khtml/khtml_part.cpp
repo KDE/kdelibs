@@ -556,7 +556,7 @@ KHTMLPart::~KHTMLPart()
     d->m_view->m_part = 0;
   }
 
-  delete d;
+  delete d; d = 0;
   KHTMLFactory::deregisterPart( this );
 }
 
@@ -970,17 +970,19 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
 
 void KHTMLPart::slotDebugDOMTree()
 {
+  if ( d->m_doc )
     d->m_doc->printTree();
 }
 
 void KHTMLPart::slotDebugRenderTree()
 {
+  if ( d->m_doc )
     d->m_doc->renderer()->printTree();
 }
 
 void KHTMLPart::autoloadImages( bool enable )
 {
-    setAutoloadImages( enable );
+  setAutoloadImages( enable );
 }
 
 void KHTMLPart::setAutoloadImages( bool enable )
@@ -2513,7 +2515,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     child->m_args.metaData()["referrer"] = m_url.url();
 
   if ( args.serviceType.isEmpty() ) {
-    child->m_run = new KHTMLRun( this, child, url, child->m_args, 
+    child->m_run = new KHTMLRun( this, child, url, child->m_args,
                                  child->m_type != khtml::ChildFrame::Frame );
     return false;
   } else {
