@@ -22,6 +22,9 @@
 #include <signal.h>
 #include <time.h>
 #include <unistd.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 #include <iostream.h>
 
 #include <qvaluelist.h>
@@ -256,7 +259,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
         // otherwise we can be in for a surprise on NFS.
         mode_t initialMode;
         if (_mode != -1)
-           initialMode = _mode | S_IWUSR;
+           initialMode = _mode | S_IWUSR | S_IRUSR;
         else
            initialMode = 0666;
 
@@ -264,7 +267,8 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
     }
 
     if ( fd < 0 ) {
-	kdDebug(7101) << "####################### COULD NOT WRITE " << debugString(dest) << endl;
+	kdDebug(7101) << "####################### COULD NOT WRITE " << debugString(dest) << _mode << endl;
+	kdDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")" << endl;
         if ( errno == EACCES ) {
             error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
         } else {
