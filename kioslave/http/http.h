@@ -33,7 +33,7 @@ public:
   string realm;
   enum HTTP_REV HTTP;
   enum HTTP_AUTH Authentication;
-  QStack<char> m_qEncodings;
+  QStack<char> m_qTransferEncodings, m_qContentEncodings;
   QByteArray big_buffer;
 
   virtual void slotGet( const char *_url );

@@ -200,7 +200,7 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   m_bIgnoreJobErrors = false;
   m_bIgnoreErrors = false;
   m_iSavedError = 0;
-  m_iSize = -1;
+  m_iSize = 0;
 
   m_bCanResume = true; // most of http servers support resuming ?
 
@@ -401,8 +401,8 @@ debug( "kio_http : Header: %s", buffer );
       m_bCanResume = false;
     
     
-    //else if ( strncmp( buffer, "Content-length: ", 16 ) == 0 || strncmp( buffer, "Content-Length: ", 16 ) == 0 )
-    //m_iSize = atol( buffer + 16 );
+    else if ( strncmp( buffer, "Content-length: ", 16 ) == 0 || strncmp( buffer, "Content-Length: ", 16 ) == 0 )
+      m_iSize = atol( buffer + 16 );
     else if ( strncmp( buffer, "Content-Type: ", 14 ) == 0 || strncmp( buffer, "Content-type: ", 14 ) == 0 )
     {
       // Jacek: We can't send mimeType signal now,
@@ -454,14 +454,32 @@ debug( "kio_http : Header: %s", buffer );
       realm.assign( p, i );
     } else if (HTTP == HTTP_11) {
       if ( strncasecmp( buffer, "Transfer-Encoding: ", 19) == 0) {
-
 	// If multiple encodings have been applied to an entity, the transfer-
 	// codings MUST be listed in the order in which they were applied.
 	QString tEncoding = buffer+19;
 	if (tEncoding == "chunked") {
-	  m_qEncodings.push("chunked");
+	  m_qTransferEncodings.push("chunked");
+	  // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
+	  m_iSize = 0;
 	} else if (tEncoding == "gzip") {
-	  m_qEncodings.push("gzip");
+	  m_qTransferEncodings.push("gzip");
+	  m_iSize = 0;
+	} else if (tEncoding == "identity") {
+	  continue;  // Identy is the same as no encoding.. AFAIK
+	} else {
+	  fprintf(stderr, "Unknown encoding, or multiple encodings encountered.  Please write code.\n");
+	  fflush(stderr);
+	  abort();
+	}
+      } else if (strncasecmp(buffer, "Content-Encoding: ", 18) == 0) {
+	QString tEncoding = buffer+18;
+	if (tEncoding == "chunked") {
+	  m_qContentEncodings.push("chunked");
+	  // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
+	  m_iSize = 0;
+	} else if (tEncoding == "gzip") {
+	  m_qContentEncodings.push("gzip");
+	  m_iSize = 0;
 	} else if (tEncoding == "identity") {
 	  continue;  // Identy is the same as no encoding.. AFAIK
 	} else {
@@ -534,7 +552,6 @@ void HTTPProtocol::slotGetSize( const char *_url )
   }
   
   totalSize( m_iSize );
-  //totalSize(-1);
   http_close();
 
   finished();
@@ -588,12 +605,15 @@ void HTTPProtocol::slotGet( const char *_url )
   
   char buffer[ 2048 ];
   long nbytes=0;
+  long sz =0;
+
   while (!feof(m_fsocket)) {
     nbytes = fread(buffer, 1, 2048, m_fsocket);
     if (nbytes > 0) {
-      if (m_qEncodings.isEmpty())
+      if (m_qTransferEncodings.isEmpty()) {
 	data(buffer, nbytes);
-      else {
+	sz+=nbytes;
+      } else {
 	old_len=big_buffer.size();
 	big_buffer.resize(old_len+nbytes);
 	memcpy(big_buffer.data()+old_len, buffer, nbytes);
@@ -609,10 +629,21 @@ void HTTPProtocol::slotGet( const char *_url )
   
   http_close();
 
-  size_t sz =0;
+
   if (!big_buffer.isNull()) {
-    while (!m_qEncodings.isEmpty()) {
-      const char *enc = m_qEncodings.pop();
+    const char *enc;
+    while (!m_qTransferEncodings.isEmpty()) {
+      enc = m_qTransferEncodings.pop();
+      if (!enc)
+	break;
+      if (strncasecmp(enc, "gzip", 4)==0)
+	decodeGzip();
+      else if (strncasecmp(enc, "chunked", 7)==0) {
+	decodeChunked();
+      }
+    }
+    while (!m_qContentEncodings.isEmpty()) {
+      enc = m_qContentEncodings.pop();
       if (!enc)
 	break;
       if (strncasecmp(enc, "gzip", 4)==0)
