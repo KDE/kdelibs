@@ -51,7 +51,9 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 
 khtmlimagepart_la_SOURCES = khtmlimage.cpp
 khtmlimagepart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)
-khtmlimagepart_la_LIBADD = libkhtml.la
+khtmlimagepart_la_LIBADD = ./html/libkhtmlhtml.la ./xml/libkhtmlxml.la  \
+	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
+	./misc/libkhtmlmisc.la libkhtml.la 
 
 INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
