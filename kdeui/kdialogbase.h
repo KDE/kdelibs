@@ -451,7 +451,7 @@ class KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    QFrame  *addPage( const QString &item,
+    QFrame  *addPage( const QString &itemName,
                       const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
