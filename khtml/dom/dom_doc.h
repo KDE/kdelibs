@@ -896,6 +896,8 @@ public:
      */
     DOMString completeURL(const DOMString& url);
 
+    DOMString toString() const;
+
     /**
      * not part of the DOM
      *

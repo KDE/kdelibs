@@ -64,6 +64,8 @@ public:
 
     virtual bool childTypeAllowed( unsigned short type );
 
+    virtual DOMString toString() const;
+
 protected:
     DOMStringImpl *m_publicId;
     DOMStringImpl *m_systemId;
@@ -89,6 +91,7 @@ public:
 
     virtual bool childTypeAllowed( unsigned short type );
 
+    virtual DOMString toString() const;
 protected:
     DOMStringImpl *m_entityName;
 };
@@ -150,6 +153,8 @@ public:
     void checkStyleSheet();
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
     virtual void setStyleSheet(CSSStyleSheetImpl* sheet);
+
+    virtual DOMString toString() const;
 
 protected:
     DOMStringImpl *m_target;

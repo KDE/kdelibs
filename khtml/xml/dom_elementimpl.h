@@ -88,6 +88,8 @@ public:
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl::Id id() const { return m_attrId; }
 
+    virtual DOMString toString() const;
+
     void setElement(ElementImpl *element);
     DOMStringImpl *val() { return m_value; }
 
@@ -196,12 +198,15 @@ public:
     void dispatchAttrRemovalEvent(NodeImpl::Id id, DOMStringImpl *value);
     void dispatchAttrAdditionEvent(NodeImpl::Id id, DOMStringImpl *value);
 
+    virtual DOMString toString() const;
+
     virtual bool contentEditable() const;
     void setContentEditable(bool enabled);
 
 protected:
     void createAttributeMap() const;
     void createDecl();
+    DOMString openTagStartToString() const;
     void finishCloneNode( ElementImpl *clone, bool deep );
 
 private:

@@ -207,6 +207,29 @@ bool AttrImpl::childTypeAllowed( unsigned short type )
     }
 }
 
+DOMString AttrImpl::toString() const
+{
+    DOMString result;
+
+    result += nodeName();
+
+    // FIXME: substitute entities for any instances of " or ' --
+    // maybe easier to just use text value and ignore existing
+    // entity refs?
+
+    if (firstChild() != NULL) {
+	result += "=\"";
+
+	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
+	    result += child->toString();
+	}
+
+	result += "\"";
+    }
+
+    return result;
+}
+
 void AttrImpl::setElement(ElementImpl *element)
 {
     m_element = element;
@@ -589,6 +612,58 @@ void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl *
    //int exceptioncode = 0;
    //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
    //attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
+}
+
+DOMString ElementImpl::openTagStartToString() const
+{
+    DOMString result = DOMString("<") + tagName();
+
+    NamedAttrMapImpl *attrMap = attributes(true);
+
+    if (attrMap) {
+	unsigned long numAttrs = attrMap->length();
+	for (unsigned long i = 0; i < numAttrs; i++) {
+	    result += " ";
+
+	    AttributeImpl *attribute = attrMap->attrAt(i);
+	    AttrImpl *attr = attribute->attr();
+
+	    if (attr) {
+		result += attr->toString();
+	    } else {
+		result += getDocument()->getName( NodeImpl::AttributeId, attribute->id());
+		if (!attribute->value().isNull()) {
+		    result += "=\"";
+		    // FIXME: substitute entities for any instances of " or '
+		    result += attribute->value();
+		    result += "\"";
+		}
+	    }
+	}
+    }
+
+    return result;
+}
+
+DOMString ElementImpl::toString() const
+{
+    DOMString result = openTagStartToString();
+
+    if (hasChildNodes()) {
+	result += ">";
+
+	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
+	    result += child->toString();
+	}
+
+	result += "</";
+	result += tagName();
+	result += ">";
+    } else {
+	result += " />";
+    }
+
+    return result;
 }
 
 bool ElementImpl::contentEditable() const {

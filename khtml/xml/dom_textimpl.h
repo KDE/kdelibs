@@ -96,6 +96,8 @@ public:
 
     virtual Id id() const;
     virtual bool childTypeAllowed( unsigned short type );
+
+    virtual DOMString toString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -125,6 +127,8 @@ public:
     virtual void recalcStyle( StyleChange = NoChange );
     virtual bool childTypeAllowed( unsigned short type );
 
+    virtual DOMString toString() const;
+
 protected:
     virtual TextImpl *createNew(DOMStringImpl *_str);
 };
@@ -147,6 +151,8 @@ public:
     // Other methods (not part of DOM)
 
     virtual bool childTypeAllowed( unsigned short type );
+
+    virtual DOMString toString() const;
 
 protected:
     virtual TextImpl *createNew(DOMStringImpl *_str);

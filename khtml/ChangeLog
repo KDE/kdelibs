@@ -1,4 +1,12 @@
 2004-06-09  Zack Rusin  <zack@kde.org>
+
+        * xml/dom_nodeimpl.h, xml/dom_xmlimpl.{h,cpp},
+        xml/dom_textimpl.{h,cpp}, xml/dom_elementimpl.{h,cpp},
+        xml/dom_docimpl.{h,cpp}, html/html_elementimpl.{h,cpp},
+        dom/dom_doc.{h,cpp} : Merging in toString method which serializes
+        the DOM tree back to a string
+
+2004-06-09  Zack Rusin  <zack@kde.org>
         
         * xml/xml_tokenizer.{h,cpp}: adding bool isWaitingForScripts()
         const method to tokenizer interface which should return true if

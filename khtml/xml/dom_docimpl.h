@@ -429,6 +429,8 @@ public:
 
     bool isURLAllowed(const QString& url) const;
 
+    DOMString toString() const;
+
 signals:
     void finishedParsing();
 
@@ -528,6 +530,8 @@ public:
 
     // Other methods (not part of DOM)
     virtual bool childTypeAllowed( unsigned short type );
+
+    virtual DOMString toString() const;
 };
 
 
@@ -558,6 +562,8 @@ public:
     void setName(const DOMString& n) { m_qualifiedName = n; }
     DOMImplementationImpl *implementation() const { return m_implementation; }
     void copyFrom(const DocumentTypeImpl&);
+
+    virtual DOMString toString() const;
 
 protected:
     DOMImplementationImpl *m_implementation;

@@ -621,6 +621,24 @@ void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
 	addCSSProperty( CSS_PROP_VERTICAL_ALIGN, propvalign );
 }
 
+DOMString HTMLElementImpl::toString() const
+{
+    if (!hasChildNodes()) {
+	DOMString result = openTagStartToString();
+	result += ">";
+
+	if (endTag[id()] == REQUIRED) {
+	    result += "</";
+	    result += tagName();
+	    result += ">";
+	}
+
+	return result;
+    }
+
+    return ElementImpl::toString();
+}
+
 // -------------------------------------------------------------------------
 HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentPtr *doc, ushort i)
     : HTMLElementImpl(doc)

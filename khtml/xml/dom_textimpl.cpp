@@ -287,6 +287,12 @@ bool CommentImpl::childTypeAllowed( unsigned short /*type*/ )
     return false;
 }
 
+DOMString CommentImpl::toString() const
+{
+    // FIXME: substitute entity references as needed!
+    return DOMString("<!--") + nodeValue() + "-->";
+}
+
 // ---------------------------------------------------------------------------
 
 TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
@@ -391,6 +397,12 @@ TextImpl *TextImpl::createNew(DOMStringImpl *_str)
     return new TextImpl(docPtr(),_str);
 }
 
+DOMString TextImpl::toString() const
+{
+    // FIXME: substitute entity references as needed!
+    return nodeValue();
+}
+
 // ---------------------------------------------------------------------------
 
 DOMString CDATASectionImpl::nodeName() const
@@ -419,6 +431,11 @@ TextImpl *CDATASectionImpl::createNew(DOMStringImpl *_str)
     return new CDATASectionImpl(docPtr(),_str);
 }
 
+DOMString CDATASectionImpl::toString() const
+{
+    // FIXME: substitute entity references as needed!
+    return DOMString("<![CDATA[") + nodeValue() + "]]>";
+}
 
 
 

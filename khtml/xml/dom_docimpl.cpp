@@ -2294,6 +2294,17 @@ void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
     m_decoderMibEnum = codec->mibEnum();
 }
 
+DOMString DocumentImpl::toString() const
+{
+    DOMString result;
+
+    for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
+	result += child->toString();
+    }
+
+    return result;
+}
+
 // ----------------------------------------------------------------------------
 
 DocumentFragmentImpl::DocumentFragmentImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
@@ -2330,6 +2341,17 @@ bool DocumentFragmentImpl::childTypeAllowed( unsigned short type )
         default:
             return false;
     }
+}
+
+DOMString DocumentFragmentImpl::toString() const
+{
+    DOMString result;
+
+    for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
+	result += child->toString();
+    }
+
+    return result;
 }
 
 NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep )
@@ -2373,6 +2395,33 @@ void DocumentTypeImpl::copyFrom(const DocumentTypeImpl& other)
     m_publicId = other.m_publicId;
     m_systemId = other.m_systemId;
     m_subset = other.m_subset;
+}
+
+DOMString DocumentTypeImpl::toString() const
+{
+    DOMString result = "<!DOCTYPE";
+    result += m_qualifiedName;
+    if (!m_publicId.isEmpty()) {
+	result += " PUBLIC \"";
+	result += m_publicId;
+	result += "\" \"";
+	result += m_systemId;
+	result += "\"";
+    } else if (!m_systemId.isEmpty()) {
+	result += " SYSTEM \"";
+	result += m_systemId;
+	result += "\"";
+    }
+
+    if (!m_subset.isEmpty()) {
+	result += " [";
+	result += m_subset;
+	result += "]";
+    }
+
+    result += ">";
+
+    return result;
 }
 
 DOMString DocumentTypeImpl::nodeName() const
