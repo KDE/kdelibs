@@ -240,8 +240,6 @@ void KHTMLView::init()
   resizeContents(visibleWidth(), visibleHeight());
 }
 
-QTime qt;
-
 void KHTMLView::clear()
 {
     viewport()->erase();
@@ -258,7 +256,6 @@ void KHTMLView::clear()
     else
         QScrollView::setVScrollBarMode(d->vmode);
     resizeContents(visibleWidth(), visibleHeight());
-     qt.start();    
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
@@ -353,7 +350,7 @@ void KHTMLView::layout(bool)
         //QTime qt;
         //qt.start();
             root->layout();
-            kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
+            //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     } else {
         _width = visibleWidth();
     }
