@@ -289,7 +289,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 
         char ch = src->latin1();
 
-        if ( (!script || tquote == NoQuote) && !escaped && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( (!script || tquote == NoQuote) && !escaped && !src.escaped() && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
         {
             ++src;
             searchCount = 0;
@@ -369,11 +369,11 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         {
             const QChar& cmp = *src;
             // be tolerant: skip spaces before the ">", i.e "</script >"
-            if (!escaped &&  cmp.isSpace() && searchFor[searchCount].latin1() == '>')
+            if (!escaped && !src.escaped() && cmp.isSpace() && searchFor[searchCount].latin1() == '>')
             {
                 ++src;
             }
-            else if (!escaped && searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
+            else if (!escaped && !src.escaped() && searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
             {
                 searchBuffer[ searchCount++ ] = cmp;
                 ++src;
@@ -399,7 +399,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             }
         }
         // Is this perhaps the start of the </script> or </style> tag?
-        else if ( !escaped && ( ch == '<' || ch == '-' ) )
+        else if ( !escaped && !src.escaped() && ( ch == '<' || ch == '-' ) )
         {
             searchCount = 1;
             searchBuffer[ 0 ] = *src;
@@ -407,14 +407,14 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
         else
         {
-            if (textarea && !escaped && ch == '&') {
+            if (textarea && !escaped && !src.escaped() && ch == '&') {
                 QChar *scriptCodeDest = scriptCode+scriptCodeSize;
                 ++src;
                 parseEntity(src,scriptCodeDest,true);
                 scriptCodeSize = scriptCodeDest-scriptCode;
             }
             else {
-                if ( !escaped ) {
+                if ( !escaped && !src.escaped() ) {
                     if(script && ch == '\"')
                         tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
                     else if(script && ch == '\'')
@@ -914,7 +914,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             while(src.length()) {
                 curchar = src->unicode();
                 if(curchar > ' ') {
-                    if(curchar == '\'' || curchar == '\"') {
+                    if(( curchar == '\'' || curchar == '\"' )) {
                         tquote = curchar == '\"' ? DoubleQuote : SingleQuote;
                         tag = QuotedValue;
                         ++src;
@@ -936,7 +936,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 checkBuffer();
 
                 curchar = src->unicode();
-                if(curchar <= '\'') {
+                if(curchar <= '\'' && !src.escaped()) {
                     // ### attributes like '&{blaa....};' are supposed to be treated as jscript.
                     if ( curchar == '&' )
                     {
@@ -990,7 +990,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             while(src.length()) {
                 checkBuffer();
                 curchar = src->unicode();
-                if(curchar <= '>') {
+                if(curchar <= '>' && !src.escaped()) {
                     // parse Entities
                     if ( curchar == '&' )
                     {
