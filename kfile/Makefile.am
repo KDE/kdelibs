@@ -19,8 +19,6 @@
 
 INCLUDES= -I../kdecore -I../kdeui -I../kfmlib $(QT_INCLUDES) $(X_INCLUDES)
 
-DISTCLEANFILES = $(BUILT_SOURCES)
-
 lib_LTLIBRARIES  = libkfile.la
 
 DISTCLEANFILES = bookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
