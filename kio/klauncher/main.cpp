@@ -37,7 +37,9 @@ start_launcher(int socket)
 
    KLauncher launcher(socket);
 
+#ifdef __USE_GNU 
 #warning Temporary hack to get KLocale initialised
+#endif
    (void)launcher.config();
 
    launcher.exec();
