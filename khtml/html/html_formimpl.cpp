@@ -1478,7 +1478,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 		        setChecked(m_type == RADIO ? true : !checked());
 		    click();
 		}
-	        // Tell the parent that we handle this key (keyup and keydown), even though only keyup activates (#70748)
+	        // Tell the parent that we handle this key (keyup and keydown), even though only keyup activates (#70478)
 	        evt->setDefaultHandled();
 	    }
         }
