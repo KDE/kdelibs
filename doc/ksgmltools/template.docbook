@@ -1,8 +1,10 @@
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
   <!ENTITY kapp "<application>Kapp</application>">
+  <!-- nothing below must be removed -->
   <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
   <!ENTITY % addindex "IGNORE">
-  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
+  <!ENTITY % English "INCLUDE" -- change language only here -->
+  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN">
   %ents;
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 
@@ -28,9 +30,9 @@ thanks ;-).
 
 <!-- ................................................................ -->
 
-<!-- The language must be changed in the <book> tag for translations. -->
+<!-- The language must NOT be changed. -->
 
-<book lang="en">
+<book lang="&language;">
 
 <!-- This header contains all of the meta-information for the document such
 as Authors, publish date, the abstract, and Keywords -->
@@ -54,6 +56,7 @@ as Authors, publish date, the abstract, and Keywords -->
 <year>1999-2000</year>
 <holder>George N. Ugnacious</holder>
 </copyright>
+<!-- Translators: put here the copyright notice of the translation -->
 <!-- Put here the FDL notice.  Read the explanation in fdl-notice.docbook 
      and in the FDL itself on how to use it. -->
 <legalnotice>&FDLNotice;</legalnotice>
@@ -62,7 +65,8 @@ as Authors, publish date, the abstract, and Keywords -->
 Don't forget to include this last date and this last revision number, we
 need them for translation coordination !
 Please respect the format of the date (DD/MM/YYYY) and of the version
-(Major.minor.lesser), it could be used by automation scripts -->
+(Major.minor.lesser), it could be used by automation scripts.
+Do NOT change these in the translation. -->
 
 <date>03/04/1999</date>
 <releaseinfo>1.01.00</releaseinfo>
@@ -461,7 +465,7 @@ application work. -->
 
 <para></para>
 
-<qandaset>
+<qandaset id="faqlist">
 <qandaentry>
 <question>
 <para>My Mouse doesn't work. How do I quit &kapp;?</para>
@@ -520,19 +524,22 @@ Translations done by:
 </itemizedlist>
 </para>
 
-<!-- Determine which license your application is licensed under, and delete all the remaining licenses below:
+&underFDL;               <!-- FDL: do not remove -->
 
-(NOTE:  All documentation will be licensed under the FDL, reguardless of what license the application uses) -->
+<!-- Determine which license your application is licensed under, 
+     and delete all the remaining licenses below:
 
-&gpllicense-links;        <!-- GPL License -->
-&bsdlicense-links;        <!-- BSD License -->
-&artisticlicense-links;   <!-- BSD Artistic License -->
-&x11license-links;        <!-- X11 License  -->
-&qpllicense-links;	  <!-- QPL License -->
+     (NOTE:  All documentation are licensed under the FDL, 
+     regardless of what license the application uses) -->
+
+&underGPL;        	 <!-- GPL License -->
+&underBSDLicense;        <!-- BSD License -->
+&underArtisticLicense;   <!-- BSD Artistic License -->
+&underX11License;        <!-- X11 License  -->
 
 </chapter>
 
-<![ %addindex; [ &kdedocindex; ]]>
+&kdedocindex;
 </book>
 <!--
 Local Variables:
