@@ -139,15 +139,12 @@ void MetaInfoJob::getMetaInfo()
 }
 
 
-void MetaInfoJob::slotMetaInfo(KIO::Job* , const QByteArray &data)
+void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
 {
     KFileMetaInfo info;
     QDataStream s(data, IO_ReadOnly);
 
     s >> info;
-
-    // every file should get a valid (but maybe empty) item
-    if (!info.isValid()) kdDebug(7007) << info.path() << " is not valid\n";
 
     d->currentItem->current()->setMetaInfo(info);
     emit gotMetaInfo(d->currentItem->current());
