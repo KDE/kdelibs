@@ -85,6 +85,7 @@ public:
   /**
    * Returns the location where changes for the .desktop file @p path
    * should be written to.
+   * @since 3.2
    */
   static QString locateLocal(const QString &path);
 
