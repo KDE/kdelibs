@@ -296,10 +296,10 @@ void KApplication::init()
 		  eConfigState = APPCONFIG_NONE;
 		}
 	  else
+		{
+		  // we succeeded to open an app-config file read-only
 		  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
 		  eConfigState = APPCONFIG_READONLY;
-  
-  pCharsets = new KCharsets();
 		}
 	}
   else
@@ -1061,11 +1061,12 @@ void KApplication::readSettings()
   windowColor.setNamedColor( str );
 
 	// this default is Qt black
-  str = config->readEntry( "Charset","iso-8859-1" );
-  if ( !str.isNull() ){
+  str = config->readEntry( "WindowTextColor", "#000000" ); 
+  windowTextColor.setNamedColor( str );
 
-	pCharsets->setQFont(generalFont);
-  }	
+  str = config->readEntry( "Contrast", "7" );
+  contrast = atoi( str );
+	
 	//	Read the font specification from config.
 	// 	Initialize fonts to default first or it won't work !!
 		

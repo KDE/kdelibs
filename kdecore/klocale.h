@@ -95,6 +95,13 @@ public:
     const QString& language() const { return lang; }
 
     /**
+      * Returns the charset name used by selected locale.
+      * Special file with charset name must be available
+      * "us-ascii" is default 
+      */
+    const QString& charset() const { return chset; }
+    
+    /**
       * Return the base directory, where you can find the language
       * specific things like messages.
       * Please note, that this function is unused currently and may
@@ -106,6 +113,7 @@ private:
     char *catalogue;
     QString lang;
     QIntDict<char> aliases;
+    QString chset;
 };
 
 #endif

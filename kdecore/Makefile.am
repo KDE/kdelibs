@@ -21,6 +21,7 @@ INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
 DISTCLEANFILES = $(BUILT_SOURCES)
 EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
+CONFIGDIR = $(kde_confdir)
 
 DEFS += -DTEST_KDEDIR        
 
@@ -57,6 +58,10 @@ kdebug.cpp: kdebugdialog.moc
 kconfigbase.cpp: kconfigbase.moc
 kconfig.cpp: kconfig.moc
 ksimpleconfig.cpp: ksimpleconfig.moc
+
+install-data-local:
+	$(mkinstalldirs) $(CONFIGDIR)
+	$(INSTALL_DATA) charsets.config $(CONFIGDIR)/charsets
 
 ckey.h : convert_key.c
 	$(CC) $(CFLAGS) convert_key.c -o convert_key

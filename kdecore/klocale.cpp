@@ -53,6 +53,7 @@ char *k_bindtextdomain (const char *__domainname,
 #include "klocale.h"
 #include <kapp.h>
 #include <kconfig.h>
+#include <kcharsets.h>
 
 #if !HAVE_LC_MESSAGES
 /* This value determines the behaviour of the gettext() and dgettext()
@@ -72,7 +73,7 @@ KLocale::KLocale( const char *_catalogue )
     /* Set locale via LC_ALL.  */
     setlocale (LC_ALL, "C");
 #endif
-    
+    chset="us-ascii";
     if ( ! _catalogue )
 	_catalogue = kapp->appName().data();
     
@@ -135,7 +136,17 @@ KLocale::KLocale( const char *_catalogue )
     /* Set the text message domain.  */
     k_bindtextdomain ( catalogue , directory);
     k_bindtextdomain ( SYSTEM_MESSAGES,  directory);
-    
+    QFile f(directory+"/"+lang+"/charset");   
+    if (f.exists() && f.open(IO_ReadOnly)){
+       char *buf=new char[256];
+       int l=f.readLine(buf,256);
+       if (l>0){
+          if (buf[l-1]=='\n') buf[l-1]=0;
+          if (KCharset(buf).ok()) chset=buf;
+       }
+       delete buf;
+       f.close();
+    }
 }
 
 KLocale::~KLocale()
