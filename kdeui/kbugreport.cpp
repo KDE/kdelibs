@@ -53,6 +53,8 @@ public:
     QString lastError;
     QString kde_version;
     QString appname;
+    QString os;
+    KURLLabel *webFormLabel;
 };
 
 KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
@@ -66,7 +68,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                  true // separator
                  )
 {
-    d = new KBugReportPrivate;
+  d = new KBugReportPrivate;
 
   // Use supplied aboutdata, otherwise the one from the active instance
   // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
@@ -76,6 +78,14 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                                  : KGlobal::instance()->aboutData() );
   m_process = 0;
   QWidget * parent = plainPage();
+  d->webFormLabel = 0;
+
+  if ( m_aboutData->bugAddress() == QString::fromLatin1("submit@bugs.kde.org") )
+  {
+    // This is a core KDE application -> redirect to the web form
+    d->webFormLabel = new KURLLabel( parent );
+  }
+
   QLabel * tmpLabel;
   QVBoxLayout * lay = new QVBoxLayout( parent, 0, spacingHint() );
 
@@ -83,36 +93,55 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->setColStretch( 1, 10 );
   glay->setColStretch( 2, 10 );
 
-  setButtonOKText(i18n("&Send"),
-                  i18n("Send bugreport."),
-                  i18n("Send this bugreport to the KDE buglist."));
-
   int row = 0;
 
-  // From
-  QString qwtstr = i18n( "Your e-mail address. If incorrect, use the Configure E-Mail button to change it" );
-  tmpLabel = new QLabel( i18n("From:"), parent );
-  glay->addWidget( tmpLabel, row,0 );
-  QWhatsThis::add( tmpLabel, qwtstr );
-  m_from = new QLabel( parent );
-  glay->addWidget( m_from, row, 1 );
-  QWhatsThis::add( m_from, qwtstr );
+  if ( !d->webFormLabel )
+  {
+    // From
+    QString qwtstr = i18n( "Your e-mail address. If incorrect, use the Configure E-Mail button to change it" );
+    tmpLabel = new QLabel( i18n("From:"), parent );
+    glay->addWidget( tmpLabel, row,0 );
+    QWhatsThis::add( tmpLabel, qwtstr );
+    m_from = new QLabel( parent );
+    glay->addWidget( m_from, row, 1 );
+    QWhatsThis::add( m_from, qwtstr );
 
-  // To
-  qwtstr = i18n( "The e-mail address, this bugreport is sent to." );
-  tmpLabel = new QLabel( i18n("To:"), parent );
-  glay->addWidget( tmpLabel, ++row,0 );
-  QWhatsThis::add( tmpLabel, qwtstr );
-  tmpLabel = new QLabel( m_aboutData->bugAddress(), parent );
-  glay->addWidget( tmpLabel, row, 1 );
-  QWhatsThis::add( tmpLabel, qwtstr );
+
+    // Configure email button
+    m_configureEmail = new QPushButton( i18n("Configure E-Mail..."),
+                                        parent );
+    connect( m_configureEmail, SIGNAL( clicked() ), this,
+             SLOT( slotConfigureEmail() ) );
+    glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
+
+    // To
+    qwtstr = i18n( "The e-mail address, this bugreport is sent to." );
+    tmpLabel = new QLabel( i18n("To:"), parent );
+    glay->addWidget( tmpLabel, ++row,0 );
+    QWhatsThis::add( tmpLabel, qwtstr );
+    tmpLabel = new QLabel( m_aboutData->bugAddress(), parent );
+    glay->addWidget( tmpLabel, row, 1 );
+    QWhatsThis::add( tmpLabel, qwtstr );
+
+    setButtonOKText(i18n("&Send"),
+                    i18n("Send bugreport."),
+                    i18n("Send this bugreport to the KDE buglist."));
+
+  }
+  else
+  {
+    m_configureEmail = 0;
+    m_from = 0;
+    showButtonOK( false );
+  }
 
   // Program name
-  qwtstr = i18n( "The application for which you wish to submit a bug report - if incorrect, please use the Report Bug menu item of the correct application" );
+  QString qwtstr = i18n( "The application for which you wish to submit a bug report - if incorrect, please use the Report Bug menu item of the correct application" );
   tmpLabel = new QLabel( i18n("Application: "), parent );
   glay->addWidget( tmpLabel, ++row, 0 );
   QWhatsThis::add( tmpLabel, qwtstr );
   d->appcombo = new KComboBox( false, parent, "app");
+  QWhatsThis::add( d->appcombo, qwtstr );
   d->appcombo->insertStrList(packages);
   connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
   d->appname = QString::fromLatin1( m_aboutData
@@ -150,9 +179,10 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
   tmpLabel = new QLabel(i18n("OS:"), parent);
   glay->addWidget( tmpLabel, ++row, 0 );
-  tmpLabel = new QLabel(QString::fromLatin1("%1 (%2)").
-                        arg(KDE_COMPILING_OS).
-                        arg(KDE_DISTRIBUTION_TEXT), parent);
+  d->os = QString::fromLatin1("%1 (%2)").
+          arg(KDE_COMPILING_OS).
+          arg(KDE_DISTRIBUTION_TEXT);
+  tmpLabel = new QLabel(d->os, parent);
   glay->addMultiCellWidget( tmpLabel, row, row, 1, 2 );
 
   tmpLabel = new QLabel(i18n("Compiler:"), parent);
@@ -160,94 +190,122 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   tmpLabel = new QLabel(QString::fromLatin1(KDE_COMPILER_VERSION), parent);
   glay->addMultiCellWidget( tmpLabel, row, row, 1, 2 );
 
-  // Configure email button
-  m_configureEmail = new QPushButton( i18n("Configure E-Mail..."),
-						  parent );
-  connect( m_configureEmail, SIGNAL( clicked() ), this,
-	   SLOT( slotConfigureEmail() ) );
-  glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
-
-  // Severity
-  m_bgSeverity = new QHButtonGroup( i18n("Se&verity"), parent );
-  const char * sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
-  const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("normal severity","Normal"), i18n("Wishlist"), i18n("Translation") };
-
-  for (int i = 0 ; i < 5 ; i++ )
+  if ( !d->webFormLabel )
   {
-    // Store the severity string as the name
-    QRadioButton *rb = new QRadioButton( sevTexts[i], m_bgSeverity, sevNames[i] );
-    if (i==2) rb->setChecked(true); // default : "normal"
+    // Severity
+    m_bgSeverity = new QHButtonGroup( i18n("Se&verity"), parent );
+    const char * sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
+    const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("normal severity","Normal"), i18n("Wishlist"), i18n("Translation") };
+
+    for (int i = 0 ; i < 5 ; i++ )
+    {
+      // Store the severity string as the name
+      QRadioButton *rb = new QRadioButton( sevTexts[i], m_bgSeverity, sevNames[i] );
+      if (i==2) rb->setChecked(true); // default : "normal"
+    }
+
+    lay->addWidget( m_bgSeverity );
+
+    // Subject
+    QHBoxLayout * hlay = new QHBoxLayout( lay );
+    tmpLabel = new QLabel( i18n("S&ubject : "), parent );
+    hlay->addWidget( tmpLabel );
+    m_subject = new QLineEdit( parent );
+    m_subject->setFocus();
+    tmpLabel->setBuddy(m_subject);
+    hlay->addWidget( m_subject );
+
+    QString text = i18n(""
+                        "Enter the text (in English if possible) that you wish to submit for the "
+                        "bug report.\n"
+                        "If you press \"Send\", a mail message will be sent to the maintainer of "
+                        "this program \n"
+                        "and to the KDE buglist.");
+    QLabel * label = new QLabel( parent, "label" );
+
+    /*
+      2000-01-15 Espen
+      Does not work (yet). The label has no well defined height so the
+      dialog can be resized so that the action buttons become obscured
+
+      QString text = i18n(""
+      "Enter the text (in English if possible) that you wish to submit for the "
+      "bug report. If you press \"Send\", a mail message will be sent to the "
+      "maintainer of this program and to the KDE buglist.");
+      QLabel * label = new QLabel( parent, "label" );
+      label->setTextFormat( RichText );
+    */
+
+    label->setText( text );
+    lay->addWidget( label );
+
+    // The multiline-edit
+    m_lineedit = new QMultiLineEdit( parent, "QMultiLineEdit" );
+    m_lineedit->setMinimumHeight( 180 ); // make it big
+    m_lineedit->setWordWrap(QMultiLineEdit::WidgetWidth);
+    lay->addWidget( m_lineedit, 10 /*stretch*/ );
+
+
+    hlay = new QHBoxLayout( lay, 0 );
+
+    text = i18n("Please check that the bug you are about to report is not already listed at ");
+    label = new QLabel( text, parent, "label");
+    hlay->addWidget( label, 0, AlignBottom );
+    hlay->addSpacing(1); // Looks better :)
+
+    text = "http://bugs.kde.org/";
+    KURLLabel *url = new KURLLabel( parent );
+    url->setText(text);
+    url->setURL(text);
+    connect( url, SIGNAL(leftClickedURL(const QString &)),
+             this, SLOT(slotUrlClicked(const QString &)));
+    hlay->addWidget( url, 0, AlignBottom );
+
+    hlay->addStretch( 10 );
+
+    // Necessary for vertical label and url alignment.
+    label->setFixedHeight( fontMetrics().lineSpacing() );
+    url->setFixedHeight( fontMetrics().lineSpacing());
+
+    slotSetFrom();
+  } else {
+    // Point to the web form
+
+    lay->addSpacing(20);
+    QString text = i18n("To submit a bug report, click on the link below.\n"
+                        "This will open a Web Browser window on http://bugs.kde.org where you'll find a form to fill in.");
+    QLabel * label = new QLabel( text, parent, "label");
+    lay->addWidget( label );
+    lay->addSpacing(20);
+
+    updateURL();
+    d->webFormLabel->setText( "http://bugs.kde.org/frontend/index.php" );
+    lay->addWidget( d->webFormLabel );
+    lay->addSpacing(20);
+
+    connect( d->webFormLabel, SIGNAL(leftClickedURL(const QString &)),
+             this, SLOT(slotUrlClicked(const QString &)));
   }
-
-  lay->addWidget( m_bgSeverity );
-
-  // Subject
-  QHBoxLayout * hlay = new QHBoxLayout( lay );
-  tmpLabel = new QLabel( i18n("S&ubject : "), parent );
-  hlay->addWidget( tmpLabel );
-  m_subject = new QLineEdit( parent );
-  m_subject->setFocus();
-  tmpLabel->setBuddy(m_subject);
-  hlay->addWidget( m_subject );
-
-  QString text = i18n(""
-    "Enter the text (in English if possible) that you wish to submit for the "
-    "bug report.\n"
-    "If you press \"Send\", a mail message will be sent to the maintainer of "
-    "this program \n"
-    "and to the KDE buglist.");
-  QLabel * label = new QLabel( parent, "label" );
-
-  /*
-    2000-01-15 Espen
-    Does not work (yet). The label has no well defined height so the
-    dialog can be resized so that the action buttons become obscured
-
-  QString text = i18n(""
-    "Enter the text (in English if possible) that you wish to submit for the "
-    "bug report. If you press \"Send\", a mail message will be sent to the "
-    "maintainer of this program and to the KDE buglist.");
-  QLabel * label = new QLabel( parent, "label" );
-  label->setTextFormat( RichText );
-  */
-
-  label->setText( text );
-  lay->addWidget( label );
-
-  // The multiline-edit
-  m_lineedit = new QMultiLineEdit( parent, "QMultiLineEdit" );
-  m_lineedit->setMinimumHeight( 180 ); // make it big
-  m_lineedit->setWordWrap(QMultiLineEdit::WidgetWidth);
-  lay->addWidget( m_lineedit, 10 /*stretch*/ );
-
-
-  hlay = new QHBoxLayout( lay, 0 );
-
-  text = i18n("Please check that the bug you are about to report is not already listed at ");
-  label = new QLabel( text, parent, "label");
-  hlay->addWidget( label, 0, AlignBottom );
-  hlay->addSpacing(1); // Looks better :)
-
-  text = "http://bugs.kde.org/";
-  KURLLabel *url = new KURLLabel( parent );
-  url->setText(text);
-  url->setURL(text);
-  connect( url, SIGNAL(leftClickedURL(const QString &)),
-	   this, SLOT(slotUrlClicked(const QString &)));
-  hlay->addWidget( url, 0, AlignBottom );
-
-  hlay->addStretch( 10 );
-
-  // Necessary for vertical label and url alignment.
-  label->setFixedHeight( fontMetrics().lineSpacing() );
-  url->setFixedHeight( fontMetrics().lineSpacing());
-
-  slotSetFrom();
 }
 
 KBugReport::~KBugReport()
 {
     delete d;
+}
+
+void KBugReport::updateURL()
+{
+    QString url = QString::fromLatin1("http://bugs.kde.org/frontend/index.php");
+    url += "?os=";
+    url += KURL::encode_string( d->os );
+    url += "&compiler=";
+    url += KURL::encode_string( QString::fromLatin1(KDE_COMPILER_VERSION) );
+    url += "&version=";
+    url += KURL::encode_string( m_strVersion );
+    url += "&package=";
+    url += KURL::encode_string( d->appcombo->currentText() );
+    url += "&kbugreport=1";
+    d->webFormLabel->setURL( url );
 }
 
 void KBugReport::appChanged(int i)
@@ -259,6 +317,8 @@ void KBugReport::appChanged(int i)
 
     m_strVersion += d->kde_version;
     m_version->setText(m_strVersion);
+    if ( d->webFormLabel )
+        updateURL();
 }
 
 void KBugReport::slotConfigureEmail()
@@ -357,7 +417,7 @@ void KBugReport::slotOk( void )
 
 void KBugReport::slotCancel()
 {
-  if( m_lineedit->edited() || m_subject->edited() )
+  if( !d->webFormLabel && ( m_lineedit->edited() || m_subject->edited() ) )
   {
     int rc = KMessageBox::warningYesNo( this,
              i18n( "Close and discard\nedited message?" ),

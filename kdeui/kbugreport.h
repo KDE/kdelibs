@@ -80,6 +80,7 @@ protected slots:
 
   // app combo changed
   void appChanged(int);
+  void updateURL();
 
 protected:
   QString text();
