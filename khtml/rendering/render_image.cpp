@@ -29,6 +29,7 @@
 #include <qdrawutil.h>
 #include <qpalette.h>
 
+#include <kapp.h>
 #include <kdebug.h>
 
 #include "rendering/render_style.h"
@@ -41,7 +42,7 @@ using namespace khtml;
 RenderImage::RenderImage()
     : RenderReplaced()
 {
-    bComplete = true;
+    berrorPic = false;
     setLayouted(false);
     setParsing(false);
     image = 0;
@@ -63,10 +64,10 @@ void RenderImage::setStyle(RenderStyle* style)
     m_inline = ( m_style->display()==INLINE );
 }
 
-void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
+void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate, bool brokenImage )
 {
     if(o != image) {
-        RenderReplaced::setPixmap(p, r, o);
+        RenderReplaced::setPixmap(p, r, o, manualUpdate, brokenImage);
         return;
     }
 
@@ -76,6 +77,13 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
         return;
     }
 
+    berrorPic = brokenImage;
+    if(brokenImage)
+    {
+        pixSize.setWidth(QMAX(p.width()+8, pixSize.width()));
+        pixSize.setHeight(QMAX(p.height()+8, pixSize.height()));
+    }
+
     // Image dimensions have been changed, recalculate layout
     if(o->pixmap_size() !=  pixSize)
     {
@@ -83,7 +91,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
 //               o->pixmap_size().width(), o->pixmap_size().height());
 
         pix = p;
-        pixSize = o->pixmap_size();
+        if(!brokenImage)
+            pixSize = o->pixmap_size();
         setLayouted(false);
         setMinMaxKnown(false);
         //kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
@@ -134,15 +143,19 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     int topPad = paddingTop();
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
-    if ( pix.isNull() )
+    if ( pix.isNull() || berrorPic)
     {
         if(cWidth > 0 && cHeight > 0)
         {
-            QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
-                                  Qt::black, Qt::white );
             //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
             qDrawShadePanel( p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
-                             colorGrp, true, 1 );
+                             KApplication::palette().inactive(), true, 1 );
+            if(berrorPic && !pix.isNull())
+            {
+                QRect r(pix.rect());
+                r = r.intersect(QRect(0, 0, cWidth-4, cHeight-4));
+                p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), pix, r );
+            }
             if(!alt.isEmpty())
             {
                 QString text = alt.string();
@@ -262,6 +275,7 @@ void RenderImage::layout()
 void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
     if(image) image->deref(this);
+    berrorPic = false;
     image = docLoader->requestImage(url, baseUrl);
     if(image) image->ref(this);
 }

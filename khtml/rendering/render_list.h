@@ -55,7 +55,7 @@ namespace khtml
         virtual short baselineOffset() const;
         virtual short verticalPositionHint() const;
 
-        virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate=0);
+        virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate, bool brokenImage);
 
         virtual void calcWidth();
 

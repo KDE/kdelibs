@@ -103,14 +103,14 @@ RenderListItem::~RenderListItem()
 void RenderListItem::calcListValue()
 {
     if( !m_marker ) return;
-    
+
     if(predefVal != -1)
         m_marker->val = predefVal;
     else if(!m_previous)
         m_marker->val = 1;
     else {
 	RenderObject *o = m_previous;
-	while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) ) 
+	while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) )
 	    o = o->previousSibling();
         if( o && o->isListItem() && o->style()->listStyleType() != LNONE ) {
             RenderListItem *item = static_cast<RenderListItem *>(o);
@@ -311,7 +311,7 @@ void RenderListMarker::layout()
     calcMinMaxWidth();
 }
 
-void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
+void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate, bool brokenImage )
 {
     if (manualUpdate && *manualUpdate)
     {
@@ -321,7 +321,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
     }
 
     if(o != listImage)
-        RenderBox::setPixmap(p, r, o);
+        RenderBox::setPixmap(p, r, o, 0, brokenImage);
 
     if(m_width != listImage->pixmap_size().width() || m_height != listImage->pixmap_size().height())
     {

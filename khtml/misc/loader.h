@@ -261,6 +261,7 @@ namespace khtml
 	// Is set if movie format type ( incremental/animation) was checked
 	bool typeChecked;
         bool isFullyTransparent;
+        bool errorOccured;
 
         friend class Cache;
     };
@@ -399,6 +400,7 @@ namespace khtml
 	static KURL completeURL(const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 
     	static QPixmap *nullPixmap;
+        static QPixmap *brokenPixmap;
 
         static void removeCacheEntry( CachedObject *object );
 

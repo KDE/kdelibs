@@ -23,7 +23,7 @@
     pages from the web. It has a memory cache for these objects.
 */
 
-//#undef CACHE_DEBUG
+#undef CACHE_DEBUG
 //#define CACHE_DEBUG
 
 #include "loader.h"
@@ -47,7 +47,9 @@
 #include <kio/jobclasses.h>
 #include <kglobal.h>
 #include <kimageio.h>
+#include <kiconloader.h>
 #include <kdebug.h>
+#include "khtml_factory.h"
 
 #include "css/css_stylesheetimpl.h"
 
@@ -377,6 +379,7 @@ CachedImage::CachedImage(const DOMString &url, const DOMString &baseURL, bool re
     bg = 0;
     typeChecked = false;
     isFullyTransparent = false;
+    errorOccured = false;
     formatType = 0;
     m_status = Unknown;
     m_size = 0;
@@ -405,7 +408,7 @@ void CachedImage::ref( CachedObjectClient *c )
 
     // for mouseovers, dynamic changes
     if( m_status != Pending && !valid_rect().isNull())
-        do_notify( pixmap(), valid_rect() );
+        do_notify( pixmap(), valid_rect());
 
     if( m )
         m->unpause();
@@ -466,6 +469,9 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 
 const QPixmap &CachedImage::pixmap( ) const
 {
+    if(errorOccured)
+        return *Cache::brokenPixmap;
+
     if(m)
     {
         if(m->framePixmap().size() != m->getValidRect().size() && m->getValidRect().size().isValid())
@@ -508,12 +514,13 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
     // get *really* slow
     QList<CachedObjectClient> updateList;
     CachedObjectClient *c;
+
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "found a client to update..." << endl;
 #endif
         bool manualUpdate = false; // set the pixmap, dont update yet.
-        c->setPixmap( p, r, this, &manualUpdate );
+        c->setPixmap( p, r, this, &manualUpdate, errorOccured );
         if (manualUpdate)
             updateList.append(c);
     }
@@ -523,7 +530,7 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
             // This is a terrible hack which does the same.
             // updateSize() does not exist in CachecObjectClient only
             // in RenderBox()
-            c->setPixmap( p, r, this, &manualUpdate );
+            c->setPixmap( p, r, this, &manualUpdate, errorOccured );
         }
 }
 
@@ -619,7 +626,7 @@ void CachedImage::clear()
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
 #ifdef CACHE_DEBUG
-    //kdDebug( 6060 ) << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
+    kdDebug( 6060 ) << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
 #endif
     if ( !typeChecked )
     {
@@ -649,15 +656,18 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         if(typeChecked && !formatType)
         {
 #ifdef CACHE_DEBUG
-            //kdDebug(6060) << "CachedImage::data(): reloading as pixmap:" << endl;
+            kdDebug(6060) << "CachedImage::data(): reloading as pixmap:" << endl;
 #endif
             p = new QPixmap( _buffer.buffer() );
             // set size of image.
 #ifdef CACHE_DEBUG
-            //kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
+            kdDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
 #endif
                 if(p->isNull())
-                    do_notify(*p, QRect(0, 0, 16, 16)); // ### load "broken image" icon
+                {
+                    errorOccured = true;
+                    do_notify(pixmap(), QRect(0, 0, 16, 16)); // load "broken image" icon
+                }
                 else
                     do_notify(*p, p->rect());
         }
@@ -672,11 +682,13 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 void CachedImage::error( int /*err*/, const char */*text*/ )
 {
 #ifdef CACHE_DEBUG
-    //kdDebug(6060) << "CahcedImage::error" << endl;
+    kdDebug(6060) << "CahcedImage::error" << endl;
 #endif
 
     clear();
     typeChecked = true;
+    errorOccured = true;
+    do_notify(pixmap(), QRect(0, 0, 16, 16));
 }
 
 
@@ -792,7 +804,7 @@ void Loader::servePendingRequests()
   Request *req = m_requestsPending.take(0);
 
 #ifdef CACHE_DEBUG
-  //kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
+  kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
   KIO::TransferJob* job = KIO::get( req->object->url().string(), req->object->reload(), false /*no GUI*/);
@@ -822,7 +834,7 @@ void Loader::slotFinished( KIO::Job* job )
     r->object->data(r->m_buffer, true);
 
 #ifdef CACHE_DEBUG
-  //kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
+  kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 #endif
 
   emit requestDone( r->m_baseURL, r->object );
@@ -926,6 +938,7 @@ int Cache::maxSize = DEFCACHESIZE;
 int Cache::flushCount = 0;
 
 QPixmap *Cache::nullPixmap = 0;
+QPixmap *Cache::brokenPixmap = 0;
 
 bool Cache::s_autoloadImages = true;
 
@@ -957,6 +970,9 @@ void Cache::init()
     if(!nullPixmap)
         nullPixmap = new QPixmap;
 
+    if(!brokenPixmap)
+        brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::FileSystem, 0, KIcon::DisabledState));
+
     if(!m_loader)
         m_loader = new Loader();
 }
@@ -972,6 +988,7 @@ void Cache::clear()
     delete cache; cache = 0;
     delete lru;   lru = 0;
     delete nullPixmap; nullPixmap = 0;
+    delete brokenPixmap; brokenPixmap = 0;
     delete m_loader;   m_loader = 0;
 }
 
@@ -1107,10 +1124,10 @@ CachedScript *Cache::requestScript( const DOM::DOMString &url, const DOM::DOMStr
 
 void Cache::flush(bool force)
 {
-    if (force) 
+    if (force)
        flushCount = 0;
     // Don't flush for every image.
-    if (!lru || (lru->count() < flushCount)) 
+    if (!lru || (lru->count() < flushCount))
        return;
 
     init();
@@ -1119,7 +1136,7 @@ void Cache::flush(bool force)
     //statistics();
     kdDebug( 6060 ) << "Cache: flush()" << endl;
 #endif
-    
+
     int cacheSize = 0;
 
     for ( QStringList::Iterator it = lru->fromLast(); it != lru->end(); )
@@ -1134,7 +1151,7 @@ void Cache::flush(bool force)
            if( !o->canDelete() || o->status() == CachedObject::Persistent )
                continue; // image is still used or cached permanently
 
-           if( cacheSize < maxSize ) 
+           if( cacheSize < maxSize )
                continue;
         }
 
