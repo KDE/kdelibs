@@ -1091,7 +1091,7 @@ void RenderFlow::calcMinMaxWidth()
             prevchild = child;
             child = next(child);
         }
-        if(m_minWidth < currentMin) m_minWidth = currentMin;
+        if(m_minWidth < inlineMin) m_minWidth = inlineMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
 //        kdDebug( 6040 ) << "m_maxWidth=" << m_maxWidth << endl;
     }
