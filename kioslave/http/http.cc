@@ -3478,6 +3478,7 @@ int HTTPProtocol::readChunked()
 
 int HTTPProtocol::readLimited()
 {
+  if (!m_iBytesLeft) return 0;
   m_bufReceive.resize(4096);
 
   int bytesReceived;
