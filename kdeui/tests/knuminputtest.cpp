@@ -67,8 +67,9 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
 
     d4 = new KDoubleNumInput(d3, 1e6, b2);
     d4->setLabel("math test: ", AlignVCenter | AlignLeft);
-    d4->setRange(-1e10, 1e10, 1);
-    d4->setFormat("%g");
+    d4->setRange(-1e8, 1e8, 100);
+    d4->setPrecision(3);
+//    d4->setFormat("%g");
 
     l->addWidget(b2);
 }
