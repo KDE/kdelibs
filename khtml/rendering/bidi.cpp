@@ -156,6 +156,7 @@ inline bool operator!=( const BidiIterator &it1, const BidiIterator &it2 )
     return false;
 }
 
+#if 0
 // the implementation, when objects are different is not efficient.
 // on the other hand, this case should be rare
 inline bool operator > ( const BidiIterator &it1, const BidiIterator &it2 )
@@ -185,6 +186,7 @@ inline bool operator < ( const BidiIterator &it1, const BidiIterator &it2 )
 {
     return (it2 > it1);
 }
+#endif
 
 // -------------------------------------------------------------------------------------------------
 
@@ -232,7 +234,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #if 1
     BidiIterator current = start;
     BidiIterator last = current;
-    while(current < end) {
+    while(current != end) {
 
         QChar::Direction dirCurrent;
         if(current.atEnd()) {
@@ -638,7 +640,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     eor = end;
 #endif
     
-    if(sor < eor)
+    if(sor != end)
         appendRun(runs, sor, eor, context, dir);
 
     BidiContext *endEmbed = context;
