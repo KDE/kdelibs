@@ -146,7 +146,7 @@ bool Ftp::readresp(char c)
     	
   if ( rspbuf[0] == c )
     return true;
-  
+
   return false;
 }
 
@@ -160,7 +160,7 @@ void Ftp::ftpDisconnect( bool really )
     return;
 
   if ( m_bLoggedOn || m_bFtpStarted )
-  {    
+  {
     if( sControl != 0 )
     {
       ftpSendCmd( "quit", '2' );
@@ -179,7 +179,7 @@ bool Ftp::ftpConnect( KURL& _url )
 {
   QString dummy;
   return ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), dummy );
-}  
+}
 
 
 /**
@@ -202,10 +202,10 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
     } else {
       assert( !m_bLoggedOn );
     }
-    
-  
+
+
   _path = "";
-  
+
   m_bFtpStarted = ftpConnect2( _host, _port );
 
   if ( !m_bFtpStarted ) {
@@ -253,12 +253,12 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
       redirect += "/";
     }
     _path = redirect;
-    
+
     if ( ftplib_debug > 2 ) {
       kdebug(KDEBUG_INFO, 7102, "REDIRECTION '%s'", redirect.ascii());
     }
   }
-  
+
   m_bLoggedOn = true;
   return true;
 }
@@ -276,7 +276,7 @@ bool Ftp::ftpConnect2( const char *host, unsigned short int _port )
   int on = 1;
 
   m_host = "";
-  
+
   memset( &sin, 0, sizeof( sin ) );
 
   if ( _port == 0 && ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
@@ -309,7 +309,7 @@ bool Ftp::ftpConnect2( const char *host, unsigned short int _port )
     m_errorText = host;
     return false;
   }
-  
+
   nControl = (netbuf*)calloc(1,sizeof(netbuf));
   if (nControl == NULL)
   {
@@ -328,7 +328,7 @@ bool Ftp::ftpConnect2( const char *host, unsigned short int _port )
   }
 
   m_host = host;
-  
+
   return true;
 }
 
@@ -345,7 +345,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
   QString user = _user;
   QString pass = _pass;
 
-  if ( !user.isEmpty() ) {    
+  if ( !user.isEmpty() ) {
     QCString tempbuf = "user ";
     tempbuf += user;
 
@@ -354,40 +354,40 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
     if ( !ftpSendCmd( tempbuf, '3' ) ) {
       if ( ftplib_debug > 2 )
 	kdebug(KDEBUG_INFO, 7102, "1> %s", rspbuf );
-      
+
       if ( rspbuf[0] == '2' )
 	return true; /* no password required */
       return false;
-    }     
+    }
 
     if ( pass.isEmpty() ) {
       QString tmp;
       tmp = user;
       tmp += "@";
       tmp += m_host;
-      
+
       if ( !open_PassDlg( tmp, user, pass ) )
 	return false;
     }
     kdebug( KDEBUG_INFO, 7102, "New pass is '%s'", pass.ascii());
-    
+
     tempbuf = "pass ";
     tempbuf += pass;
-    
+
     if ( !ftpSendCmd( tempbuf, '2' ) ) {
       kdebug(0, KDEBUG_INFO, "Wrong password");
       return false;
     }
   }
-  
+
   kdebug( KDEBUG_INFO, 7102, "Login ok");
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
   if( ftpSendCmd( "syst", '2' ) )
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
-      ftpSendCmd( "site dirstyle", '2' );                                                 
-  else 
+      ftpSendCmd( "site dirstyle", '2' );
+  else
     kdebug(KDEBUG_WARN, 0, "syst failed");
 
   // Not interested in the current working directory ? => return with success
@@ -402,7 +402,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
 
   if ( ftplib_debug > 2 )
     kdebug(KDEBUG_INFO, 7102, "2> %s", rspbuf );
-  
+
   char *p = rspbuf;
   while ( isdigit( *p ) ) p++;
   while ( *p == ' ' || *p == '\t' ) p++;
@@ -425,7 +425,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
 bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
 {
   assert( sControl > 0 );
-  
+
   QCString buf = cmd;
   buf += "\r\n";
 
@@ -436,7 +436,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
     m_error = ERR_COULD_NOT_WRITE;
     m_errorText = "";
     return false;
-  }    
+  }
 
   return readresp( expresp );
 }
@@ -457,7 +457,7 @@ bool Ftp::ftpOpenPASVDataConnection()
     struct sockaddr sa;
     struct sockaddr_in in;
   } sin;
-  struct linger lng = { 1, 120 }; 
+  struct linger lng = { 1, 120 };
 
   m_bPasv = true;
   sDatal = socket( AF_INET, SOCK_STREAM, 0 );
@@ -467,41 +467,41 @@ bool Ftp::ftpOpenPASVDataConnection()
     ::close( sDatal );
     return false;
   }
- 
+
   /* Let's PASsiVe*/
   if (!(ftpSendCmd("PASV",'2')))
   {
     ::close( sDatal );
     return false;
   }
- 
+
   if (sscanf(rspbuf, "%*[^(](%d,%d,%d,%d,%d,%d)",&i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6)
   {
     ::close( sDatal );
     return false;
   }
- 
+
   for (j=0; j<6; j++)
   {
     n[j] = (unsigned char) (i[j] & 0xff);
   }
- 
+
   memset( &sin,0, sizeof(sin) );
   sin.in.sin_family = AF_INET;
   memcpy( &sin.in.sin_addr, &n[0], (size_t) 4 );
   memcpy( &sin.in.sin_port, &n[4], (size_t) 2 );
-  
+
   if( ::connect( sDatal, &sin.sa, sizeof(sin) ) == -1)
   {
     ::close( sDatal );
     return false;
   }
- 
+
   if ( setsockopt(sDatal, SOL_SOCKET,SO_KEEPALIVE, (char *) &on, (int) sizeof(on)) < 0 )
     if ( ftplib_debug > 1 ) debug("Keepalive not allowed");
   if ( setsockopt(sDatal, SOL_SOCKET,SO_LINGER, (char *) &lng,(int) sizeof (lng)) < 0 )
     if ( ftplib_debug > 1 ) debug("Linger mode was not allowed.");
-  return 1; 
+  return 1;
 }
 
 /*
@@ -525,13 +525,13 @@ bool Ftp::ftpOpenDataConnection()
   int on = 1;
 
   ////////////// First try PASV mode
-  
+
   if (ftpOpenPASVDataConnection())
     return true;
 
   ////////////// Fallback : non-PASV mode
   m_bPasv = false;
-  
+
   l = sizeof(sin);
   if ( getsockname( sControl, &sin.sa, &l ) < 0 )
     return false;
@@ -566,7 +566,7 @@ bool Ftp::ftpOpenDataConnection()
     m_errorText = m_host;
     return false;
   }
-  
+
   if ( listen( sDatal, 1 ) < 0 )
   {
     m_error = ERR_COULD_NOT_LISTEN;
@@ -583,7 +583,7 @@ bool Ftp::ftpOpenDataConnection()
 	  (unsigned char)sin.sa.sa_data[2],(unsigned char)sin.sa.sa_data[3],
 	  (unsigned char)sin.sa.sa_data[4],(unsigned char)sin.sa.sa_data[5],
 	  (unsigned char)sin.sa.sa_data[0],(unsigned char)sin.sa.sa_data[1]);
-  
+
   return ftpSendCmd( buf, '2' );
 }
 
@@ -611,7 +611,7 @@ int Ftp::ftpAcceptConnect(void)
     ::close( sDatal );
     return -2;
   }
-      
+
   l = sizeof(addr);
   if ( ( sData = accept( sDatal, &addr, &l ) ) > 0 )
     return sData;
@@ -624,15 +624,15 @@ int Ftp::ftpAcceptConnect(void)
 bool Ftp::ftpPort()
 {
   string buf = "type A";
-  
+
   if ( !ftpSendCmd( buf.c_str(), '2' ) )
-  {  
+  {
     m_error = ERR_COULD_NOT_CONNECT;
     m_errorText = "";
     return false;
-  }  
+  }
   if ( !ftpOpenDataConnection() )
-  {  
+  {
     m_error = ERR_COULD_NOT_CONNECT;
     m_errorText = "";
     return false;
@@ -650,22 +650,22 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
   char buf2[2] = {0,0};
   buf2[0] = _mode;
   buf += buf2;
-  
+
   if ( !ftpSendCmd( buf.c_str(), '2' ) )
-  {  
-    m_error = ERR_COULD_NOT_CONNECT;
-    m_errorText = "";
-    return false;
-  }  
-  if ( !ftpOpenDataConnection() )
-  {  
+  {
     m_error = ERR_COULD_NOT_CONNECT;
     m_errorText = "";
     return false;
   }
- 
+  if ( !ftpOpenDataConnection() )
+  {
+    m_error = ERR_COULD_NOT_CONNECT;
+    m_errorText = "";
+    return false;
+  }
+
   string tmp;
-    
+
   // Special hack for the list command. We try to change to this
   // directory first to see whether it really is a directory.
   if ( strcmp( _command, "list" ) == 0 )
@@ -700,7 +700,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
 	}
     }
   }
-  
+
   tmp = _command;
 
   // only add path if it's not a list command
@@ -710,7 +710,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
     tmp += " ";
     tmp += _path;
   }
-      
+
   if ( !ftpSendCmd( tmp.c_str(), '1' ) ) {
     // We can not give any error code here since the error depends on the command
     return false;
@@ -759,7 +759,7 @@ bool Ftp::ftpMkdir( const char *path )
 
   string buf = "mkd ";
   buf += path;
-  
+
   return ftpSendCmd( buf.c_str() , '2' );
 }
 
@@ -775,7 +775,7 @@ bool Ftp::ftpChdir( const char *path)
 
   string buf = "cwd ";
   buf += path;
-  
+
   return ftpSendCmd( buf.c_str(), '2' );
 }
 
@@ -786,7 +786,7 @@ bool Ftp::ftpRmdir( const char *path)
 
   string buf = "rmd ";
   buf += path;
-  
+
   return ftpSendCmd( buf.c_str() ,'2' );
 }
 
@@ -855,15 +855,15 @@ bool Ftp::ftpChmod( const char *src, int mode )
 
 
 FtpEntry* Ftp::stat( KURL& _url )
-{ 
+{
   QString redirect;
-  
+
   if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
     // The error is already set => we just return
     return 0L;
 
   KURL url( _url );
-  if ( !redirect.isEmpty() && !_url.hasPath() ) { 
+  if ( !redirect.isEmpty() && !_url.hasPath() ) {
     url.setPath( redirect );
   }
 
@@ -909,7 +909,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
 
   QString search = _url.filename();
   assert( search != "" && search != "/" );
-  
+
   bool found = false;
   FtpEntry *e;
   while( ( e = readdir() ) ) //&& !found ) !!! fix - when not at and, don't read any response
@@ -923,7 +923,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
       found = true;
       fe = *e;
     }
-    
+
     kdebug(KDEBUG_INFO, 7102, "%s", e->name.ascii());
   }
 
@@ -970,7 +970,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
     kdebug(KDEBUG_ERROR, 0, "COULD NOT LIST %s %s", error(), errorText().ascii() );
     return false;
   }
-  
+
   dirfile = fdopen( sData, "r" );
   if( !dirfile )
     return false;
@@ -984,7 +984,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
 FtpEntry *Ftp::readdir()
 {
   char buffer[1024];
-    
+
   while( fgets( buffer, sizeof(buffer), dirfile ) != 0 ) {
     FtpEntry* e = ftpParseDir( buffer );
     if ( e )
@@ -1024,7 +1024,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 		      tmp = p_name;
 		      int i = tmp.findRev( " -> " );
 		      if ( i != -1 ) {
-			de.link = p_name + i + 4;  
+			de.link = p_name + i + 4;
 			tmp.truncate( i );
 			p_name = tmp;
 		      }
@@ -1049,7 +1049,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
         // links on ftp sites are often links to dirs, and we have no way to check that
         // let's do like Netscape : assume dirs (David)
         // we don't set S_IFLNK here.  de.link says it.
-		  
+		
 		    if ( p_access[1] == 'r' )
 		      de.access |= S_IRUSR;
 		    if ( p_access[2] == 'w' )
@@ -1067,14 +1067,59 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 		    if ( p_access[8] == 'w' )
 		      de.access |= S_IWOTH;
 		    if ( p_access[9] == 'x' )
-		      de.access |= S_IXOTH; 
+		      de.access |= S_IXOTH;
 
 		    de.owner	= p_owner;
 		    de.group	= p_group;
 		    de.size	= atoi(p_size);
-		    // string tmp( p_name );
+		    // QString tmp( p_name );
 		    de.name	= p_name; /* tmp.stripWhiteSpace(); */
-		    // TODO: de.date.sprintf( "%s %s %s", p_date_1, p_date_2, p_date_3 );
+
+                    // Parsing the date is somewhat tricky
+                    // Examples : "Oct  6 22:49", "May 13  1999"
+
+                    // First get current time - we need the current year
+                    time_t currentTime = time( 0L );
+                    struct tm * tmptr = gmtime( &currentTime );
+                    kdebug( KDEBUG_INFO, 7102, "Current time :%s", asctime( tmptr ) );
+                    // Reset time fields
+                    tmptr->tm_sec = 0;
+                    tmptr->tm_min = 0;
+                    tmptr->tm_hour = 0;
+                    // Get day number (always second field)
+                    tmptr->tm_mday = atoi( p_date_2 );
+                    // Get month from first field
+                    // NOTE : no, we don't want to use KLocale here
+                    // It seems all FTP servers use the English way
+                    static const char * s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                    for ( int c = 0 ; c < 12 ; c ++ )
+                      if ( !strcmp( p_date_1, s_months[c]) )
+                      {
+                        tmptr->tm_mon = c;
+                        break;
+                      }
+
+                    // Parse third field
+                    if ( strlen( p_date_3 ) == 4 ) // 4 digits, looks like a year
+                      tmptr->tm_year = atoi( p_date_3 ) - 1900;
+                    else
+                    {
+                      // otherwise, it's the current year,
+                      // and p_date_3 contains probably a time
+                      char * semicolon;
+                      if ( ( semicolon = strchr( p_date_3, ':' ) ) )
+                      {
+                        *semicolon = '\0';
+                        tmptr->tm_min = atoi( semicolon + 1 );
+                        tmptr->tm_hour = atoi( p_date_3 );
+                      }
+                      else
+                        kdebug( KDEBUG_WARN, 7102, "Can't parse third field %s", p_date_3 );
+                    }
+
+                    kdebug( KDEBUG_INFO, 7102, asctime( tmptr ) );
+                    de.date = mktime( tmptr );
 		    return( &de );
 		  }
 	  }
@@ -1135,7 +1180,7 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 	}
       return false;
     }
-    
+
     // Read the size from the response string
     if ( strlen( rspbuf ) > 4 && m_size == 0 ) {
       // char *p = strchr( rspbuf, '(' );
@@ -1164,10 +1209,10 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 	}
       return false;
     }
-    
+
     return true;
   }
-  
+
   // Never reached
   assert( 0 );
   return true;
@@ -1186,7 +1231,7 @@ bool Ftp::ftpClose()
       kdebug(KDEBUG_INFO, 7102, "Did not get transfer complete message");
       return false;
     }
-  
+
   return tmp;
 }
 
@@ -1234,7 +1279,7 @@ bool Ftp::close()
   ftpCloseCommand();
 
   ftpDisconnect();
-  
+
   return true;
 }
 
@@ -1271,7 +1316,7 @@ bool Ftp::mkdir( KURL& _url )
 
   if( !ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), redirect ) )
     return false;
-  
+
   bool res = ftpMkdir( _url.path() );
 
   ftpDisconnect();
@@ -1296,5 +1341,5 @@ const char* strnextchr( const char * p , char c )
     p++;
   }
   return p;
-}         
+}
 // end patch
