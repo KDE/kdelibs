@@ -170,14 +170,16 @@ void KFormulaEdit::redraw(int all)
 	  tmp = tmp.unite(getCursorPos(i));
 	}
 	if(i < QMAX(cursorPos, selectStart) && //actually inside the selection
-	   isInString(i, QString(QChar(SLASH)))) {
+	   (isInString(i, QString(QChar(SLASH))) ||
+	   formText[i].unicode() >= SYMBOL_ABOVE)) {
 	  //we need its height
 	  box *b = info[i].where;
 
-	  while(b->getType() != SLASH) {
-	    if(b->getParent() != NULL) b = b->getParent();
-	    else break;
-	  }
+	  if(formText[i].unicode() < SYMBOL_ABOVE) // if slash
+	    while(b->getType() != SLASH) {
+	      if(b->getParent() != NULL) b = b->getParent();
+	      else break;
+	    }
 	  
 	  tmp = tmp.unite(QRect(tmp.x(), b->getLastRect().y(),
 				1, b->getLastRect().height()));
@@ -283,7 +285,8 @@ int KFormulaEdit::deleteAtCursor()
 
   //If we are just deleting part of a literal (or +-*), do it and go away.
   if(!isInString(cursorPos, KFormula::delim() +
-		 KFormula::loc() + QString("{}/@"))) {
+		 KFormula::loc() + L_GROUP + R_GROUP +
+		 QChar(DIVIDE) + QChar(SQRT))) {
     formText.remove(cursorPos, 1);
     return 1;
   }
@@ -861,6 +864,48 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
     redraw();
     return;
   }
+
+  if(e->state() & ControlButton) {
+    switch(e->key()) {
+
+    case Key_BracketLeft:
+      insertChar(QChar(ABOVE));
+      break;
+
+    case Key_BracketRight:
+      insertChar(QChar(BELOW));
+      break;
+
+    case Key_Slash:
+      insertChar(QChar(DIVIDE));
+      break;
+
+    case Key_6:
+      insertChar(QChar(POWER));
+      break;
+
+    case Key_2:
+      insertChar(QChar(SQRT));
+      break;
+      
+    case Key_Minus:
+      insertChar(QChar(SUB));
+      break;
+
+    case Key_4:
+      insertChar(QChar(INTEGRAL));
+      break;
+
+    case Key_5:
+      insertChar(QChar(SUM));
+      break;
+    }
+
+    MODIFIED
+    redraw();
+    return;
+  }
+
   e->ignore(); //follow the rules...
 }
 
@@ -871,9 +916,11 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
 void KFormulaEdit::insertChar(QChar c)
 {
+
   if(!(KFormula::loc() + KFormula::delim() + QChar(DIVIDE) +
-       QChar(SQRT)).contains(c)) {
+       QChar(SQRT) + KFormula::bigop()).contains(c)) {
     // "/^_@(|" are chars that need groups
+
     if(textSelected) {
       formText.remove(QMIN(selectStart, cursorPos),
 		      QMAX(selectStart - cursorPos, \
@@ -882,14 +929,39 @@ void KFormulaEdit::insertChar(QChar c)
       textSelected = 0;
     }
     formText.insert(cursorPos++, c);
+
   }
   else { //if we need to auto insert curly braces
     //if user entered a '/' (DIVIDE) then insert curly braces after it
     //and surround some previous text with curly braces.  Example:
     //"1+2^{3}$" -> (user types '/') -> "1+{2^{3}}/{$}".
+
+    if(KFormula::bigop().contains(c)) { // we need to add limits
+      if(textSelected) {
+	formText.remove(QMIN(selectStart, cursorPos),
+			QMAX(selectStart - cursorPos, \
+			     cursorPos - selectStart));
+	cursorPos = QMIN(selectStart, cursorPos);
+	textSelected = 0;
+      }
+      //insert "{{c}]{$}}[{}#"
+      formText.insert(cursorPos++, L_GROUP);
+      formText.insert(cursorPos++, L_GROUP);
+      formText.insert(cursorPos++, c);
+      formText.insert(cursorPos++, R_GROUP);
+      formText.insert(cursorPos++, QChar(BELOW));
+      formText.insert(cursorPos++, L_GROUP);
+      formText.insert(cursorPos++, R_GROUP);
+      formText.insert(cursorPos++, R_GROUP);
+      formText.insert(cursorPos++, QChar(ABOVE));
+      formText.insert(cursorPos++, L_GROUP);
+      formText.insert(cursorPos++, R_GROUP);
+      cursorPos -= 5;
+    }
+
     if(c == DIVIDE || c == QChar(ABOVE) || c == QChar(BELOW)) {
       int i, level;
-      
+
       //if there is selected text, put curly braces around that so
       //that the entire selection is the numerator:
       if(textSelected) {
@@ -898,7 +970,7 @@ void KFormulaEdit::insertChar(QChar c)
 	cursorPos = QMAX(selectStart, cursorPos) + 2;
       }
       
-      formText.insert(cursorPos, c); //insert the slash
+      formText.insert(cursorPos, c); //insert the slash or whatever
       cursorPos++;
       
       formText.insert(cursorPos, L_GROUP);
@@ -915,6 +987,7 @@ void KFormulaEdit::insertChar(QChar c)
 	  if(formText[i] == R_GROUP) level++;
 	  if(formText[i] == L_GROUP) level--;
 	  if(level < 0) break;
+	  //figure out how to do precedence for bigop!
 	  if(level == 0 && isInString(i, KFormula::intext())) break;
 	  //the "+-#=<>" are all operators with lower precedence than
 	  //the divide.  if they are encoundered, they don't end up in
@@ -926,6 +999,7 @@ void KFormulaEdit::insertChar(QChar c)
 	cursorPos += 2;
       }
       textSelected = 0;
+
       return;
     }
     

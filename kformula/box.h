@@ -9,6 +9,10 @@
 //pixels for spacing:
 #define SPACE          (4)
 
+//symbols have values above this
+#define SYMBOL_ABOVE   20000
+
+
 struct charinfo;
 
 //each BoxType must be equal to the character that represents it in
@@ -17,20 +21,28 @@ enum BoxType {
   PLUS = '+',
   MINUS = '-',
   TIMES = '*',
-  DIVIDE = '/',
-  POWER = '^',
-  SQRT = '@',
+  DIVIDE = '\\',
+  POWER = '^' + 200, //just a text to see if it works
+  SQRT = '@' + 200,
   TEXT = 't',
-  CAT = '#',
-  SUB = '_',
+  CAT = '#' + 200,
+  SUB = '_' + 200,
   PAREN = '(',
   EQUAL = '=',
   MORE = '>',
   LESS = '<',
   ABS = '|',
-  SLASH = '\\',
-  ABOVE = '[', //something useless
-  BELOW = ']'
+  SLASH = '/',
+  ABOVE = 650, //something useless
+  BELOW = 651,
+  SYMBOL = 652
+};
+
+enum SymbolType {
+  INTEGRAL = SYMBOL_ABOVE, // symbols have values above that
+  SUM,
+  PRODUCT,
+  ARROW
 };
 
 //a box is a unit of a formula.
@@ -56,6 +68,9 @@ private:
 
   void makeDirty();
   void offset(int xoffs, int yoffs);
+
+  static QRect symbolRect(SymbolType s, int size);
+  static void drawSymbol(QPainter &p, SymbolType s, int size, int x, int y);
 
 public:
   box(int setNum);

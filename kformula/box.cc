@@ -126,8 +126,14 @@ void box::calculate(QPainter &p, int setFontsize)
 	//operators where the left box is optional don't get a little
 	//square drawn.  These are the -, the parentheses, the square
 	//root, and the absolute value.
-	if(parent && strchr("(-|@", parent->type) &&
-			    parent->b1 == this) {
+	if(parent && (KFormula::delim() +
+		      QChar(SQRT)).contains(QChar(parent->type)) &&
+	   parent->b1 == this) {
+	  rect.setX(0);
+	  rect.setWidth(1);
+	}
+	if(parent && (KFormula::intext() + QChar(CAT)).
+	   contains(QChar(parent->type))) {
 	  rect.setX(0);
 	  rect.setWidth(1);
 	}
@@ -137,6 +143,10 @@ void box::calculate(QPainter &p, int setFontsize)
       //if the box is not empty:
       rect = fm.boundingRect(text);
       rect.moveBy(0, -fm.boundingRect("+").center().y());
+      break;
+
+    case SYMBOL:
+      rect = symbolRect((SymbolType)(text[0].unicode()), fontsize);
       break;
       
       //all the operators which just get drawn along with the text:
@@ -149,7 +159,7 @@ void box::calculate(QPainter &p, int setFontsize)
       b1->calculate(p, fontsize);
       b2->calculate(p, fontsize);
       rect = b1->getRect();
-      tmp1 = fm.boundingRect( QChar( (char)type ) );
+      tmp1 = fm.boundingRect( QChar( type ) );
       relx += rect.right() + SPACE; //where the operator will be drawn
       rely += -fm.boundingRect("+").center().y();
       tmp1.moveBy(relx, rely);
@@ -364,7 +374,9 @@ void box::draw(QPainter &p, int x, int y)
 
   QRect tmp;
   int i;
-  char tmpstr[2] = " "; //a one-char string for operators
+  QString tmpstr; //a one-char string for operators
+  tmpstr.resize(2);
+  tmpstr[1] = 0;
 
 #if 0  // draw bounding boxes?
   p.setPen(QColor(255, 0, 0));
@@ -381,9 +393,13 @@ void box::draw(QPainter &p, int x, int y)
   switch(type) {
   case TEXT:
     if(text.length() == 0) { //empty
-      //left operands of "@(-|" are optional so the square isn't drawn.
-      if(parent && (strchr("@(-|", parent->type) &&
-		    parent->b1 == this)) break;
+      //left operands parentheses and square roots as well as
+      //all operands of intext operators are not displayed as boxes
+      if(parent && (KFormula::delim() +
+		    QChar(SQRT)).contains(QChar(parent->type)) &&
+	 parent->b1 == this) break;
+      if(parent && (KFormula::intext() + QChar(CAT)).
+	 contains(QChar(parent->type))) break;
       
       p.drawRect(x - SPACE, y + rect.center().y() - SPACE,
 		 SPACE * 2, SPACE * 2);
@@ -392,6 +408,10 @@ void box::draw(QPainter &p, int x, int y)
 
     //if not empty, draw the text (offset to the baseline).
     p.drawText(x, y - fm.boundingRect("+").center().y(), text);
+    break;
+
+  case SYMBOL:
+    drawSymbol(p, (SymbolType)(text[0].unicode()), fontsize, x, y);
     break;
 
   case PLUS:
@@ -574,8 +594,86 @@ QRect box::getCursorPos(charinfo i, int x, int y)
   return tmp;
 }
 
+//----------------------------static SYMBOL RECT--------------------
+//returns the bounding rectangle for a symbol
+QRect box::symbolRect(SymbolType s, int size)
+{
+  switch(s) {
+  case INTEGRAL:
+    size = size * 4 / 3;
+    return QRect(-size / 24, -size, size / 2 + size / 12, size * 2);
+    break;
 
+  case SUM:
+    size = size * 6 / 5;
+    return QRect(0, -size / 2, size, size);
+    break;
 
+  case PRODUCT:
+    break;
+
+  case ARROW:
+    break;
+  }
+
+  return QRect();
+}
+
+//----------------------------static DRAW SYMBOL---------------------
+void box::drawSymbol(QPainter &p, SymbolType s, int size, int x, int y)
+{
+  QPointArray a;
+
+  switch(s) {
+  case INTEGRAL:
+    size = size * 4 / 3;
+    a.setPoints(12,
+		size / 4 - size / 16, 0,           // 1
+		size / 4 + size / 16, -size + size / 16,       // 2
+		size / 2 - size / 16, -size,        // 3
+		size / 2 + size / 24, -size + size / 8,        // 4
+		size / 2 - size / 16, -size + size / 16, // 5
+		size / 4 + size / 12, -size + size / 8, // 6
+		size / 4 + size / 16, 0,           // 7
+		size / 4 - size / 16, size - size / 16,       // 8
+		size / 16, size,        // 9
+		-size / 24, size - size / 8,        // 10
+		size / 16, size - size / 16, // 11
+		size / 4 - size / 12, size - size / 8); // 12
+		
+    break;
+
+  case SUM:
+    size = size * 6 / 5;
+    a.setPoints(10,
+		size, -size / 2, // 1
+		0, -size / 2, // 2
+		size / 2, 0, // 3
+		0, size / 2, // 4
+		size, size / 2, // 5
+		size, size / 2 - size / 16, // 6
+		size / 8, size / 2 - size / 16, // 7
+		size / 2 + size / 16, 0, // 8
+		size / 8, -size / 2 + size / 16, // 9
+		size, -size / 2 + size / 16); // 10
+
+    break;
+
+  case PRODUCT:
+    break;
+
+  case ARROW:
+    break;
+  }
+
+  a.translate(x, y);
+
+  p.setBrush(Qt::black);
+  p.drawPolygon(a);
+  p.setBrush(Qt::NoBrush);
+
+  return;
+}
 
 
 
