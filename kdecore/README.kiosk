@@ -223,15 +223,18 @@ Other defined actions:
 
 shell_access 
         - defines whether a shell suitable for entering random commands 
-          may be started.
+          may be started. This also determines whether the "Run Command"
+          option (Alt-F2) accepts shell-commands or not.
 custom_config 
         - defines whether the --config command line option should be honored.
           The --config command line option can be used to circumvent 
           locked-down configuration files.
 logout
         - defines whether the user will be able to logout from KDE.
-screen_lock
+lock_screen
         - defines whether the user will be able to lock the screen.
+run_command
+        - defines whether the "Run Command" (Alt-F2) option is available.
 
 Another interesting question is what the exact scope of a certain action should
 be. Looking at the "custom .desktop files" action there are two ways to prevent
