@@ -200,6 +200,7 @@ public:
    * extract the name of the binary being run.
    * @param execLine the full command line
    * @param removePath if true, remove a (relative or absolute) path. E.g. /usr/bin/ls becomes ls.
+   * @since 3.1
    */
   static QString binaryName( const QString & execLine, bool removePath );
 
