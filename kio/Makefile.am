@@ -49,15 +49,17 @@ libkio_la_SOURCES = \
 
 METASOURCES = AUTO
 
+include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
+        kservicetype.h kmimetype.h kmimemagic.h kservice.h \
+        krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
+	ktar.h ktrader.h
+
 kioincludedir = $(includedir)/kio
-kioinclude_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
-	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
-        krun.h kdirwatch.h connection.h renamedlg.h \
+kioinclude_HEADERS = connection.h renamedlg.h \
         filter.h skipdlg.h slaveinterface.h \
-        global.h passdlg.h kautomount.h \
-        netaccess.h kuserprofile.h job.h \
-        paste.h openwith.h kuserpaths.h slavebase.h \
-        ktar.h ktrader.h
+        global.h passdlg.h netaccess.h job.h \
+        paste.h openwith.h slavebase.h
+
 # progressbase.h simpleprogressdlg.h
 # littleprogress_dlg.h listprogressdlg.h
 
