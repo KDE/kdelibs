@@ -80,6 +80,7 @@ public:
       editor (new KListViewLineEdit (listview)),
       itemsMovable (true),
       selectedBySimpleMove(false),
+      selectedUsingMouse(false),
       itemsRenameable (false),
       validDrag (false),
       dragEnabled (false),
@@ -124,6 +125,7 @@ public:
   bool bChangeCursorOverItem:1;
   bool itemsMovable:1;
   bool selectedBySimpleMove : 1;
+  bool selectedUsingMouse:1;
   bool itemsRenameable:1;
   bool validDrag:1;
   bool dragEnabled:1;
@@ -597,6 +599,7 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
   else if ((selectionModeExt()==Konqueror) && (d->selectedBySimpleMove))
   {
      d->selectedBySimpleMove=false;
+     d->selectedUsingMouse=true;
      if (currentItem()!=0)
      {
         currentItem()->setSelected(false);
@@ -1223,6 +1226,7 @@ void KListView::keyPressEvent (QKeyEvent* e)
 void KListView::selectCurrentItemAndEnableSelectedBySimpleMoveMode()
 {
    d->selectedBySimpleMove=true;
+   d->selectedUsingMouse=false;
    if (currentItem()!=0)
    {
       currentItem()->setSelected(true);
@@ -1267,7 +1271,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     for (QListViewItem *tmpItem=firstChild(); tmpItem!=0; tmpItem=tmpItem->nextSibling())
        if (tmpItem->isSelected()) selectedItems++;
 
-    if ((selectedItems==0)
+    if (((selectedItems==0) || ((selectedItems==1) && (d->selectedUsingMouse)))
         && (e_state==NoButton)
         && ((e->key()==Key_Down)
         || (e->key()==Key_Up)
@@ -1275,7 +1279,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
         || (e->key()==Key_Prior)
         || (e->key()==Key_Home)
         || (e->key()==Key_End)))
+    {
        d->selectedBySimpleMove=true;
+       d->selectedUsingMouse=false;
+    }
     else if (selectedItems>1)
        d->selectedBySimpleMove=false;
 
