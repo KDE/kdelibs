@@ -30,6 +30,7 @@
 #include <limits.h>
 #endif
 
+#include <qdir.h>
 #include <qfile.h>
 #include <qasciidict.h>
 #include <qstrlist.h>
@@ -46,6 +47,10 @@
 #define DISPLAY "DISPLAY"
 #elif defined(Q_WS_QWS)
 #define DISPLAY "QWS_DISPLAY"
+#endif
+
+#ifdef Q_WS_WIN
+#include <win32_utils.h>
 #endif
 
 template class QAsciiDict<QCString>;
@@ -179,6 +184,9 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
    parsed = false;
    mCwd = mCwdd.setObject(mCwd, new char [PATH_MAX+1], true);
    getcwd(mCwd, PATH_MAX);
+#ifdef Q_WS_WIN
+   win32_slashify(mCwd, PATH_MAX);
+#endif
    if (!noKApp)
       KApplication::addCmdLineOptions();
 }
@@ -1226,10 +1234,11 @@ KCmdLineArgs::url(int n) const
 
 KURL KCmdLineArgs::makeURL( const char *urlArg )
 {
-   if (*urlArg == '/')
+   QString _urlArg = QFile::decodeName( urlArg );
+   if (!QDir::isRelativePath(_urlArg))
    {
       KURL result;
-      result.setPath(QFile::decodeName( urlArg));
+      result.setPath(_urlArg);
       return result; // Absolute path.
    }
 
@@ -1237,7 +1246,7 @@ KURL KCmdLineArgs::makeURL( const char *urlArg )
      return KURL(QString::fromLocal8Bit(urlArg)); // Argument is a URL
 
    KURL result;
-   result.setPath( cwd()+"/"+QFile::decodeName( urlArg ));
+   result.setPath( cwd()+"/"+_urlArg );
    result.cleanPath();
    return result;  // Relative path
 }
