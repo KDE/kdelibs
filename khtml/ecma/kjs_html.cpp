@@ -2829,8 +2829,12 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLSelectCollection::tryPut " << propertyName.qstring() << endl;
 #endif
+  if ( propertyName == "selectedIndex" ) {
+    element.setSelectedIndex( value.toInteger( exec ) );
+    return;
+  }
   // resize ?
-  if (propertyName == "length") {
+  else if (propertyName == "length") {
     long newLen = value.toInteger(exec);
     long diff = element.length() - newLen;
 
