@@ -46,6 +46,8 @@ class Wallet : public QObject, public DCOPObject {
 		static QStringList walletList();
 
 		static bool isOpen(const QString& name);
+		static int closeWallet(const QString& name, bool force);
+		static int deleteWallet(const QString& name);
 
 		static Wallet* openWallet(const QString& name);
 

@@ -97,6 +97,26 @@ return rc;
 }
 
 
+int Wallet::closeWallet(const QString& name, bool force) {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("close", name, force);
+int rc = -1;
+	if (r.isValid()) {
+		r.get(rc);
+	}
+return -1;
+}
+
+
+int Wallet::deleteWallet(const QString& name) {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("deleteWallet", name);
+int rc = -1;
+	if (r.isValid()) {
+		r.get(rc);
+	}
+return -1;
+}
+
+
 Wallet *Wallet::openWallet(const QString& name) {
 DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
 	if (r.isValid()) {

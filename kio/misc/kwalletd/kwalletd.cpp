@@ -141,6 +141,19 @@ return rc;
 }
 
 
+int KWalletD::deleteWallet(const QString& wallet) {
+	QString path = KGlobal::dirs()->saveLocation("kwallet") + QDir::separator() + wallet + ".kwl";
+
+	if (QFile::exists(path)) {
+		close(wallet, true);
+		QFile::remove(path);
+		return 0;
+	}
+
+return -1;
+}
+
+
 int KWalletD::close(const QString& wallet, bool force) {
 int handle = -1;
 KWallet::Backend *w = 0L;

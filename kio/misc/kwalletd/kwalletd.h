@@ -48,6 +48,9 @@ class KWalletD : public KDEDModule {
 		virtual int close(const QString& wallet, bool force);
 		virtual int close(int handle, bool force);
 
+		// Physically deletes the wallet from disk.
+		virtual int deleteWallet(const QString& wallet);
+
 		// Returns true if the wallet is open
 		virtual bool isOpen(const QString& wallet) const;
 		virtual bool isOpen(int handle) const;
