@@ -300,7 +300,7 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             }
             break;
     }
-    return Completion(ReturnValue, result);
+    return result;
 }
 
 const UString KProxyFunc::dnsResolve(const UString &host) const
