@@ -58,7 +58,7 @@ QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
    _secs->setRange(0, 59, 1, false);
    grid->addWidget(_secs, 7, 5);
 
-   _ok = new QPushButton(i18n("&Ok"), this);
+   _ok = new QPushButton(i18n("&OK"), this);
    grid->addWidget(_ok, 8, 4);
    connect(_ok, SIGNAL(clicked()), SLOT(accept()));
 
