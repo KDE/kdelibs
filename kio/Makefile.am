@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl $(all_includes)
+INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_includes)
 
 SUBDIRS = . klauncher kded file http ftp tests
 
@@ -24,7 +24,7 @@ lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la libkmapnotify.la
 bin_PROGRAMS = kio_uiserver
 
 libkmapnotify_la_LDFLAGS = -version-info 3:0 $(all_libraries)
-libkmapnotify_la_LIBADD = -lICE $(LIBDL)
+libkmapnotify_la_LIBADD = $(top_builddir)/dcop/libDCOPC.la
 libkmapnotify_la_SOURCES = kmapnotify.c
 
 #libkioslave_la_LDFLAGS = -version-info 3:0
