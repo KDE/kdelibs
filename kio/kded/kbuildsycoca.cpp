@@ -280,7 +280,7 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
      QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
-     //kdebug(KDEBUG_INFO, 7011, QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()));
+     //kdebug(KDEBUG_INFO, 7011, "%s", QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()).latin1());
      (*str) << paddedPattern;
      (*str) << dict[(*it)]->offset();
      // Check size remains constant
@@ -292,7 +292,7 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
    it = otherPatterns.begin();
    for ( ; it != otherPatterns.end() ; ++it )
    {
-     //kdebug(KDEBUG_INFO, 7011, QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()));
+     //kdebug(KDEBUG_INFO, 7011, "%s", QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()).latin1());
      (*str) << (*it);
      (*str) << dict[(*it)]->offset();
    }
