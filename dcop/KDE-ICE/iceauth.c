@@ -34,6 +34,8 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICEutil.h"
 #include "KDE-ICE/globals.h"
 
+#include <sys/time.h>
+
 #if defined(X_NOT_STDC_ENV) && !defined(__EMX__)
 #define Time_t long
 extern Time_t time ();
@@ -67,24 +69,12 @@ int len;
     if ((auth = (char *) malloc (len + 1)) == NULL)
 	return (NULL);
 
-#ifdef ITIMER_REAL
     {
 	struct timeval  now;
-	X_GETTIMEOFDAY (&now);
+	gettimeofday(&now, 0);
 	ldata[0] = now.tv_sec;
 	ldata[1] = now.tv_usec;
     }
-#else
-    {
-#ifndef __EMX__
-#ifndef __osf__
-	long    time ();
-#endif
-#endif
-	ldata[0] = time ((long *) 0);
-	ldata[1] = getpid ();
-    }
-#endif
     seed = (ldata[0]) + (ldata[1] << 16);
     srand (seed);
     for (i = 0; i < len; i++)
