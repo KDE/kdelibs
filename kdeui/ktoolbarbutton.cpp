@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.3  1999/12/04 05:09:27  granroth
+// The three dots in icons or tooltips are just plain ugly...
+//
 // Revision 1.2  1999/10/31 19:44:47  bero
 // More template definitions for -frepo
 //
@@ -46,7 +49,7 @@
 #include <kglobal.h>
 #include <kstyle.h>
 
-template QIntDict<KToolBarButton>;
+template class QIntDict<KToolBarButton>;
 
 // Delay in ms before delayed popup pops up
 #define POPUP_DELAY 500

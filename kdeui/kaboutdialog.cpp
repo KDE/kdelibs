@@ -29,7 +29,7 @@
 #include <qpainter.h>
 #include <qrect.h>
 #include <qtabwidget.h>
-
+#include <iostream.h>
 
 #include <kapp.h>
 #include <kaboutdialog.h>
@@ -38,7 +38,7 @@
 #include <ktextbrowser.h>
 #include <kurllabel.h>
 
-template QArray<QWidget*>;
+template class QArray<QWidget*>;
 
 #define WORKTEXT_IDENTATION 16
 #define Grid 3
@@ -1284,7 +1284,7 @@ KAboutWidget::adjust()
 {
   // #################################################################
   int cx, cy, tempx;
-  list<KAboutContributor*>::iterator pos;
+  std::list<KAboutContributor*>::iterator pos;
   int maintWidth, maintHeight;
   QSize size;
   // -----
@@ -1395,7 +1395,7 @@ KAboutWidget::resizeEvent(QResizeEvent*)
 {
   // ############################################################################
   int x, y, cx, tempx, tempy;
-  list<KAboutContributor*>::iterator pos;
+  std::list<KAboutContributor*>::iterator pos;
   // -----
   x=0;
   // ----- set version label geometry:

@@ -450,4 +450,4 @@ QSize KContainerLayout::sizeHint() const
 
 #include "kcontainer.moc"
 
-template QList<KContainerLayout::KContainerLayoutItem>;
+template class QList<KContainerLayout::KContainerLayoutItem>;

@@ -910,7 +910,7 @@ void KEdGotoLine::resizeEvent(QResizeEvent *)
 
 void KEdGotoLine::focusInEvent( QFocusEvent *)
 {
-#warning fixme
+    // TODO fixme
     lineNum->setFocus();
 //    lineNum->selectAll();
 }

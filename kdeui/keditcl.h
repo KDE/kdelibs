@@ -26,7 +26,9 @@
 #ifndef __KEDIT_H__
 #define __KEDIT_H__
 
+#ifdef __GNUC__
 #warning This class (kdelibs/kdeui/keditcl.h) is going to be replaced with the one in kdeutils/kedit after KRASH.
+#endif
 
 #include <qpopupmenu.h>
 #include <qstrlist.h>

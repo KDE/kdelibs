@@ -15,7 +15,7 @@
 
 #include "kaccelmenu.h"
 
-template QIntDict<char>;
+template class QIntDict<char>;
 
 //////////////////////////////////////////////////////////////////////////////
 KAccelMenu::KAccelMenu(KAccel *k, QWidget * parent, const char * name ):

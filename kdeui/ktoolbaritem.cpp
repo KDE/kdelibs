@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.2  1999/10/31 19:44:47  bero
+// More template definitions for -frepo
+//
 // Revision 1.1  1999/09/21 11:03:53  waba
 // WABA: Clean up interface
 //
@@ -33,7 +36,7 @@
 
 #include "ktoolbaritem.h"
 
-template QList<KToolBarItem>;
+template class QList<KToolBarItem>;
 
 KToolBarItem::KToolBarItem (Item *_item, itemType _type, int _id,
                             bool _myItem)

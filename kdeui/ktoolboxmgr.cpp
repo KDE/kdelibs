@@ -30,10 +30,13 @@
 #include <ktoolboxmgr.h>
 #include <kwm.h>
 
-template QList<QRect>;
+template class QList<QRect>;
 
  // $Id$
  // $Log$
+ // Revision 1.17  1999/10/31 19:44:47  bero
+ // More template definitions for -frepo
+ //
  // Revision 1.16  1999/03/06 18:03:38  ettrich
  // the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
  // It has its own menu entry and reacts on simple LMP clicks.

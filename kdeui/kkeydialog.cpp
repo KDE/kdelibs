@@ -45,7 +45,7 @@
 
 #include "kkeydialog.h"
 
-template QDict<KKeyEntry>;
+template class QDict<KKeyEntry>;
 
 /*****************************************************************************/
 /* KSplitListItem                                                            */

@@ -176,7 +176,7 @@ class KAboutContributor : public QFrame
 
   public:
     KAboutContributor( QWidget *parent=0, const char *name=0,
-		       const QString &name=QString::null,
+		       const QString &username=QString::null,
 		       const QString &email=QString::null,
 		       const QString &url=QString::null,
 		       const QString &work=QString::null,
@@ -290,7 +290,7 @@ protected:
   /** Show the maintainer? */
   bool showMaintainer;
   /** A set of people who contributed to the application. */
-  list<KAboutContributor*> contributors;
+  std::list<KAboutContributor*> contributors;
   // #########################################################################
 };
 

@@ -43,7 +43,7 @@
 
 #include "kbuttonbox.h"
 
-template QList<KButtonBox::KButtonBoxItem>;
+template class QList<KButtonBox::KButtonBoxItem>;
 
 // taken from Qt source
 // Reggie: In Qt 1.4x we don't have additional width/height!

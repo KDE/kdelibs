@@ -55,7 +55,7 @@
 
 class KAccelMenu : public QPopupMenu
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
   /**
