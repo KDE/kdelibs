@@ -82,7 +82,7 @@ QCString KIDNA::toAsciiCString(const QString &idna)
       }
    }
    if (!needConversion)
-      return idna.latin1();
+      return idna.lower().latin1();
 
    if (!KIDNA_lib && !KIDNA_lib_load_failed)
    {
@@ -128,7 +128,7 @@ QString KIDNA::toAscii(const QString &idna)
       }
    }
    if (!needConversion)
-      return idna;
+      return idna.lower();
 
    if (!KIDNA_lib && !KIDNA_lib_load_failed)
    {
@@ -162,9 +162,6 @@ QString KIDNA::toAscii(const QString &idna)
 
 QString KIDNA::toUnicode(const QString &idna)
 {
-   if (idna.find("xn--", 0, false) == -1) // Case insensitive search
-      return idna; // Return as is, nothing to do
-
    if (!KIDNA_lib && !KIDNA_lib_load_failed)
    {
       KIDNA_load_lib();
@@ -172,7 +169,7 @@ QString KIDNA::toUnicode(const QString &idna)
 
    if (KIDNA_lib_load_failed)
    {
-      return idna; // Return as is
+      return idna.lower(); // Return as is
    }
    else 
    {
@@ -185,7 +182,7 @@ QString KIDNA::toUnicode(const QString &idna)
       }
       else
       {
-         return idna; // Return as is.
+         return idna.lower(); // Return as is.
       }
    }
 }
