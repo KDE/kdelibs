@@ -912,27 +912,34 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
     if (m_part->xmlDocImpl()) {
 	d->lastKeyNode = m_part->xmlDocImpl()->focusNode();
+	bool accepted = false; // need a seperate bool, Qt events are accepted by default
         if (d->lastKeyNode) {
 	    d->lastKeyNode->ref();
 	    // first send a keydown
 	    QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
 		      _ke->text(), false, _ke->count());
-            if (d->lastKeyNode->dispatchKeyEvent(&k))
+            if (d->lastKeyNode->dispatchKeyEvent(&k)) {
 		_ke->accept();
+		accepted = true;
+	    }
 	}
         if (!_ke->text().isNull() && m_part->xmlDocImpl()->getHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT)) {
             // If listener returned false, stop here. Otherwise handle standard keys (#60403).
-            if (!m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(_ke))
+            if (!m_part->xmlDocImpl()->documentElement()->dispatchKeyEvent(_ke)) {
                 _ke->accept();
+		accepted = true;
+	    }
         }
 	if (d->lastKeyNode && !_ke->isAutoRepeat()) {
 	    // IE sends the keyPress directly after the keyDown.
 	    QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
 		      _ke->text(), true, _ke->count());
-	    if (d->lastKeyNode->dispatchKeyEvent(&k))
+	    if (d->lastKeyNode->dispatchKeyEvent(&k)) {
 		_ke->accept();
+		accepted = true;
+	    }
 	}
-	if (_ke->isAccepted())
+	if (accepted)
 	    return;
     }
 
