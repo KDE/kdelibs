@@ -56,6 +56,15 @@ class KListView : public QListView
   Q_OBJECT
   Q_ENUMS( SelectionModeExt )
   Q_PROPERTY( bool fullWidth READ fullWidth WRITE setFullWidth )
+  Q_PROPERTY( bool itemsMovable READ itemsMovable WRITE setItemsMovable )
+  Q_PROPERTY( bool itemsRenameable READ itemsRenameable WRITE setItemsRenameable )
+  Q_PROPERTY( bool dragEnabled READ dragEnabled  WRITE  setDragEnabled )
+  Q_PROPERTY( bool autoOpen READ autoOpen WRITE setAutoOpen )
+  Q_PROPERTY( bool dropVisualizer READ dropVisualizer WRITE setDropVisualizer )
+  Q_PROPERTY( int tooltipColumn READ tooltipColumn WRITE  setTooltipColumn )
+  Q_PROPERTY( int dropVisualizerWidth READ dropVisualizerWidth WRITE  setDropVisualizerWidth )
+  Q_PROPERTY( QColor alternateBackground READ alternateBackground WRITE  setAlternateBackground )
+  
   Q_OVERRIDE( SelectionModeExt selectionMode READ selectionModeExt WRITE setSelectionModeExt )
 
 public:

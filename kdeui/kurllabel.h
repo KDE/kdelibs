@@ -64,8 +64,13 @@ class KURLLabel : public QLabel
 {
   Q_OBJECT
   Q_PROPERTY (QString url READ url WRITE setURL)
+  Q_PROPERTY (QString tipText READ tipText WRITE setTipText )
   Q_PROPERTY (QPixmap altPixmap READ altPixmap WRITE setAltPixmap)
-
+  Q_PROPERTY (bool glowEnabled READ isGlowEnabled WRITE setGlow )
+  Q_PROPERTY (bool floatEnabled READ isFloatEnabled WRITE setFloat )
+  Q_PROPERTY (bool useTips READ useTips WRITE setUseTips )
+  Q_PROPERTY (bool useCursor READ useCursor WRITE setUseCursor )
+ 
 public:
   /**
    * Default constructor.
