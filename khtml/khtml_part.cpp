@@ -2876,21 +2876,25 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
 }
 
-void KHTMLPart::popupMenu( const QString &url )
+void KHTMLPart::popupMenu( const QString &linkUrl )
 {
-  KURL completedURL( completeURL( url ) );
   KURL popupURL;
-  if ( !url.isEmpty() )
-    popupURL = completedURL;
+  KURL linkKURL;
+  if ( linkUrl.isEmpty() ) // click on background
+    popupURL = this->url();
+  else {               // click on link
+    popupURL = completeURL( linkUrl );
+    linkKURL = popupURL;
+  }
 
-  KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, popupURL );
+  KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKURL );
 
-  emit d->m_extension->popupMenu( client, QCursor::pos(), completedURL,
+  emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL,
                                   QString::fromLatin1( "text/html" ), S_IFREG /*always a file*/ );
 
   delete client;
 
-  emit popupMenu(url, QCursor::pos());
+  emit popupMenu(linkUrl, QCursor::pos());
 }
 
 void KHTMLPart::slotParentCompleted()
