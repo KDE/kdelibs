@@ -1,19 +1,39 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=GNU Gettext Message Catalog
+Comment[bg]=Каталог на съобщения за превод (GNU Gettext)
+Comment[ca]=Catàleg de missatges Gettext de GNU
+Comment[cs]=Katalog zpráv (Gettext)
+Comment[cy]=Catalog Llinynnau GNU Gettext
 Comment[da]=GNU Gettext beskedkatalog
+Comment[el]=GNU Gettext κατάλογος μηνυμάτων
 Comment[en_GB]=GNU Gettext Message Catalogue
 Comment[es]=Catálogo de mensajes de GNU Gettext
+Comment[et]=GNU Gettexti teadete kataloog
 Comment[eu]=GNU Gettext Mezu Katalogoa
+Comment[fa]=کاتالوگ پیام‌های GNU Gettext
+Comment[fi]=GNU Gettext -viestilista
+Comment[fr]=Catalogue de messages GNU Gettext
 Comment[ga]=Catalóg teachtaireachtaí GNU Gettext
 Comment[hu]=GNU Gettext üzenetfájl
+Comment[is]=GNU Þýðingarskrá
+Comment[nl]=GNU Gettext meldingencatalogus
+Comment[pt]=Catálogo de Mensagens do 'Gettext' da GNU
 Comment[pt_BR]=Catálogo de Mensagens GNU
+Comment[ru]=Каталог сообщений GNU Gettext
+Comment[sk]=Katalóg správ GNU Gettext
+Comment[sr]=GNU Gettext каталог порука
 Comment[sv]=GNU Gettext-meddelandekatalog
+Comment[tr]=GNU Gettext İleti Kataloğu
+Comment[uz]=GNU Gettext хабарлар каталоги
+Comment[wa]=Catalogue di messaedjes po GNU gettext
+Comment[xx]=xxGNU Gettext Message Catalogxx
 Comment[zh_CN]=GNU Gettext 消息编目
 Icon=gettext
 Type=MimeType
 MimeType=application/x-gettext
 Patterns=*.po;*.pot;
+X-KDE-PatternsAccuracy=80
 
 [Property::X-KDE-text]
 Type=bool
