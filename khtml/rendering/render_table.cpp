@@ -1272,32 +1272,6 @@ void RenderTable::calcRowHeight(int r)
 
     if ( rowHeights[r+1] < rowHeights[r] )
         rowHeights[r+1] = rowHeights[r];
-
-    // html tables with percent height are relative to view
-    if (r+1 == (int)totalRows)
-    {
-        Length h = style()->height();
-        int th=0;
-        if (h.isFixed())
-            th = h.value;
-        else if (h.isPercent())
-        {
-            Length ch = containingBlock()->style()->height();
-            RenderObject *containing = containingBlock();
-            if (ch.isFixed())
-                th = h.width(ch.value);
-            else if (containing->parent() && containing->parent()->parent()
-                     && containing->parent()->parent()->isRoot())
-            {
-                th = h.width(viewRect().height());
-                // not really, but this way the view height change
-                // gets propagated correctly
-                setContainsPositioned(true);
-            }
-        }
-        if (rowHeights[r+1]<th)
-            rowHeights[r+1]=th;
-    }
 }
 
 void RenderTable::layout()
@@ -1336,10 +1310,7 @@ void RenderTable::layout()
 
     // layout rows
 
-    for ( unsigned int r = 0; r < totalRows; r++ )
-    {
-        layoutRow(r,m_height);
-    }
+    layoutRows(m_height);
 
     m_height += rowHeights[totalRows];
     m_height += borderBottom();
@@ -1365,90 +1336,140 @@ void RenderTable::layout()
 }
 
 
-void RenderTable::layoutRow(int r, int yoff)
+void RenderTable::layoutRows(int yoff)
 {
     int rHeight;
     int indx, rindx;
 
-    for ( unsigned int c = 0; c < totalCols; c++ )
-    {
-        RenderTableCell *cell = cells[r][c];
-        if (!cell)
-            continue;
-        if ( c < totalCols - 1 && cell == cells[r][c+1] )
-            continue;
-        if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
-            continue;
+    for ( unsigned int r = 0; r < totalRows; r++ )
+    {    
+        for ( unsigned int c = 0; c < totalCols; c++ )
+        {
+            RenderTableCell *cell = cells[r][c];
+            if (!cell)
+                continue;
+            if ( c < totalCols - 1 && cell == cells[r][c+1] )
+                continue;
+            if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
+                continue;
 
-	cell->calcVerticalMargins();
-        cell->layout();
-        cell->setCellTopExtra(0);
-        cell->setCellBottomExtra(0);
+    	    cell->calcVerticalMargins();
+            cell->layout();
+            cell->setCellTopExtra(0);
+            cell->setCellBottomExtra(0);
+        }
+
+        calcRowHeight(r);
     }
+    
 
-    calcRowHeight(r);
-
-    for ( unsigned int c = 0; c < totalCols; c++ )
+    // html tables with percent height are relative to view
+    Length h = style()->height();
+    int th=0;
+    if (h.isFixed())
+        th = h.value;
+    else if (h.isPercent())
     {
-        RenderTableCell *cell = cells[r][c];
-        if (!cell)
-            continue;
-        if ( c < totalCols - 1 && cell == cells[r][c+1] )
-            continue;
-        if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
-            continue;
-
-        if ( ( indx = c-cell->colSpan()+1 ) < 0 )
-            indx = 0;
-
-        if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
-            rindx = 0;
-
-        //kdDebug( 6040 ) << "setting position " << r << "/" << indx << "-" << c << ": " << //columnPos[indx] + padding << "/" << rowHeights[rindx] << " " << endl;
-        rHeight = rowHeights[r+1] - rowHeights[rindx] -
-            spacing;
-
-        EVerticalAlign va = cell->style()->verticalAlign();
-        int te=0;
-        switch (va)
+        Length ch = containingBlock()->style()->height();
+        RenderObject *containing = containingBlock();
+        if (ch.isFixed())
+            th = h.width(ch.value);
+        else if (containing->parent() && containing->parent()->parent()
+                 && containing->parent()->parent()->isRoot())
         {
-        case SUB:
-        case SUPER:
-        case TEXT_TOP:
-        case TEXT_BOTTOM:
-        case BASELINE:
-            te = getBaseline(r) - cell->baselinePosition() ;
-            break;
-        case TOP:
-            te = 0;
-            break;
-        case MIDDLE:
-            te = (rHeight - cell->height())/2;
-            break;
-        case BOTTOM:
-            te = rHeight - cell->height();
-            break;
-        default:
-            break;
+            th = h.width(viewRect().height());
+            // not really, but this way the view height change
+            // gets propagated correctly
+            setContainsPositioned(true);
         }
-#ifdef DEBUG_LAYOUT
-        kdDebug( 6040 ) << "CELL te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
-#endif
-        cell->setCellTopExtra( te );
-        cell->setCellBottomExtra( rHeight - cell->height() - te);
-
-        if (style()->direction()==RTL)
+    }
+    if (th && totalRows)
+    {
+        int ax,ay;
+        absolutePosition(ax,ay);
+        th-=(totalRows+1)*spacing+ay;
+        int dh = th-rowHeights[totalRows];
+        if (dh>0)
         {
-            cell->setPos( columnPos[(int)totalCols]
-                - columnPos[(int)(indx+cell->colSpan())] + borderLeft(),
-                rowHeights[rindx]+yoff );
+            int tot=rowHeights[totalRows];
+            int add=0;
+            int prev=rowHeights[0];            
+            for ( unsigned int r = 0; r < totalRows; r++ )
+            {
+                //weight with the original height
+                add+=dh*(rowHeights[r+1]-prev)/tot;
+                prev=rowHeights[r+1];
+                rowHeights[r+1]+=add;
+            }
+            rowHeights[totalRows]=th;
         }
-        else
-            cell->setPos( columnPos[indx] + borderLeft(), rowHeights[rindx]+yoff );
+    }
+       
+    
+    for ( unsigned int r = 0; r < totalRows; r++ )
+    {
+        for ( unsigned int c = 0; c < totalCols; c++ )
+        {
+            RenderTableCell *cell = cells[r][c];
+            if (!cell)
+                continue;
+            if ( c < totalCols - 1 && cell == cells[r][c+1] )
+                continue;
+            if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
+                continue;
 
-        cell->setRowHeight(rHeight);
-        // ###
-        // cell->setHeight(cellHeight);
+            if ( ( indx = c-cell->colSpan()+1 ) < 0 )
+                indx = 0;
+
+            if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
+                rindx = 0;
+
+            //kdDebug( 6040 ) << "setting position " << r << "/" << indx << "-" << c << ": " << //columnPos[indx] + padding << "/" << rowHeights[rindx] << " " << endl;
+            rHeight = rowHeights[r+1] - rowHeights[rindx] -
+                spacing;
+
+            EVerticalAlign va = cell->style()->verticalAlign();
+            int te=0;
+            switch (va)
+            {
+            case SUB:
+            case SUPER:
+            case TEXT_TOP:
+            case TEXT_BOTTOM:
+            case BASELINE:
+                te = getBaseline(r) - cell->baselinePosition() ;
+                break;
+            case TOP:
+                te = 0;
+                break;
+            case MIDDLE:
+                te = (rHeight - cell->height())/2;
+                break;
+            case BOTTOM:
+                te = rHeight - cell->height();
+                break;
+            default:
+                break;
+            }
+    #ifdef DEBUG_LAYOUT
+            kdDebug( 6040 ) << "CELL te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
+    #endif
+            cell->setCellTopExtra( te );
+            cell->setCellBottomExtra( rHeight - cell->height() - te);
+
+            if (style()->direction()==RTL)
+            {
+                cell->setPos( columnPos[(int)totalCols]
+                    - columnPos[(int)(indx+cell->colSpan())] + borderLeft(),
+                    rowHeights[rindx]+yoff );
+            }
+            else
+                cell->setPos( columnPos[indx] + borderLeft(), rowHeights[rindx]+yoff );
+
+            cell->setRowHeight(rHeight);
+            // ###
+            // cell->setHeight(cellHeight);
+        }
     }
 }
 
