@@ -43,6 +43,7 @@
 #include <klistview.h>
 #include <kio/kmimemagic.h>
 #include <qmultilineedit.h>
+#include <qregexp.h>
 #include <kparts/browserextension.h>
 #include <kparts/browserinterface.h>
 #include <kio/kservicetypefactory.h>
@@ -55,9 +56,24 @@ KX509Item::KX509Item(KListViewItem *parent, KSSLCertificate *x) :
 {
 	cert = x;
 	if (x) {
-		setText(0, x->getSubject());
+		KSSLX509Map xm(x->getSubject());
+		QString OU = "OU";
+		QString CN = "CN";
+		OU = xm.getValue(OU);
+		CN = xm.getValue(CN);
+		OU.replace(QRegExp("\n.*"), "");
+		CN.replace(QRegExp("\n.*"), "");
+
+		if (OU.length() > 0)
+		  _prettyName = OU;
+		if (CN.length() > 0) {
+		  if (_prettyName.length() > 0)
+			  _prettyName += " - ";
+		  _prettyName += CN;
+		}
+		setText(0, _prettyName);
 	} else {
-		setText(0, i18n("Invalid!"));
+		setText(0, i18n("Invalid certificate!"));
 	}
 }
 
@@ -74,9 +90,14 @@ KPKCS12Item::KPKCS12Item(KListViewItem *parent, KSSLPKCS12 *x) :
 {
 	cert = x;
 	if (x) {
-		setText(0, x->getCertificate()->getSubject());
+		KSSLX509Map xm(x->getCertificate()->getSubject());
+		QString CN = "CN";
+		CN = xm.getValue(CN);
+		CN.replace(QRegExp("\n.*"), "");
+		_prettyName = CN;
+		setText(0, _prettyName);
 	} else {
-		setText(0, i18n("Invalid!"));
+		setText(0, i18n("Invalid certificate!"));
 	}
 }
 
@@ -112,6 +133,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
 
  _p12 = NULL;
  _ca = NULL;
+ _silentImport = false;
  d = new KCertPartPrivate;
  d->browserExtension = new KParts::BrowserExtension(this);
 
@@ -663,7 +685,8 @@ if (_p12) {
   KSimpleConfig cfg("ksslcertificates", false);
 
   if (cfg.hasGroup(_p12->getCertificate()->getSubject())) {
-     int rc = KMessageBox::warningYesNo(_frame, i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?"), i18n("Certificate Import"));
+     QString msg = _curName + "\n" + i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?");
+     int rc= KMessageBox::warningYesNo(_frame, msg, i18n("Certificate Import"));
      if (rc == KMessageBox::No) {
         return;
      }
@@ -673,11 +696,13 @@ if (_p12) {
   cfg.writeEntry("PKCS12Base64", _p12->toString());
   cfg.writeEntry("Password", "");
   cfg.sync();
+  if (!_silentImport)
   KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 } else if (_ca) {
   KConfig cfg("ksslcalist", true, false);
   if (cfg.hasGroup(_ca->getSubject())) {
-     int rc = KMessageBox::warningYesNo(_frame, i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?"), i18n("Certificate Import"));
+     QString msg = _curName + "\n" + i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?");
+     int rc= KMessageBox::warningYesNo(_frame, msg, i18n("Certificate Import"));
      if (rc == KMessageBox::No) {
         return;
      }
@@ -686,6 +711,7 @@ if (_p12) {
 		  _ca->x509V3Extensions().certTypeSSLCA(),
 		  _ca->x509V3Extensions().certTypeEmailCA(),
 		  _ca->x509V3Extensions().certTypeCodeCA());
+  if (!_silentImport)
   KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 }
 }
@@ -719,6 +745,7 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
 	_ca = dynamic_cast<KX509Item*>(x)->cert;
 	_import->setEnabled(true);
 	_save->setEnabled(true);
+	_curName = dynamic_cast<KX509Item*>(x)->_prettyName;
 	displayCACert(_ca);
   } else if (x && x->parent() == _parentP12) {
         _blankFrame->hide();
@@ -727,6 +754,7 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
 	_p12 = dynamic_cast<KPKCS12Item*>(x)->cert;
 	_import->setEnabled(true);
 	_save->setEnabled(true);
+	_curName = dynamic_cast<KPKCS12Item*>(x)->_prettyName;
 	displayPKCS12();
   } else {
         _pkcsFrame->hide();
@@ -734,12 +762,43 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
 	_blankFrame->show();
         _import->setEnabled(false);
         _save->setEnabled(false);
+	_curName = "";
   }
 }
 
 
 void KCertPart::slotImportAll() {
+KSSLPKCS12 *p12Save = _p12;
+KSSLCertificate *caSave = _ca;
+QString curNameSave = _curName;
 
+_p12 = NULL;
+_ca = NULL;
+_silentImport = true;
+
+for (KPKCS12Item *t = dynamic_cast<KPKCS12Item*>(_parentP12->firstChild()); 
+		                                                         t; 
+			   t = dynamic_cast<KPKCS12Item*>(t->nextSibling())) {
+	_p12 = t->cert;
+	_curName = t->_prettyName;
+	slotImport();
+}
+_p12 = NULL;
+
+for (KX509Item *t = dynamic_cast<KX509Item*>(_parentCA->firstChild()); 
+		                                                    t; 
+			t = dynamic_cast<KX509Item*>(t->nextSibling())) {
+	_ca = t->cert;
+	_curName = t->_prettyName;
+	slotImport();
+}
+_ca = NULL;
+
+_silentImport = false;
+_p12 = p12Save;
+_ca = caSave;
+_curName = curNameSave;
+  KMessageBox::information(_frame, i18n("Certificates have been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 }
 
 

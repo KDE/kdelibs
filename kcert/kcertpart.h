@@ -49,6 +49,7 @@ class KX509Item : public KListViewItem {
 		KX509Item(KListViewItem *parent, KSSLCertificate *x);
 		~KX509Item();
 	KSSLCertificate *cert;
+	QString _prettyName;
 };
 
 
@@ -57,6 +58,7 @@ class KPKCS12Item : public KListViewItem {
 		KPKCS12Item(KListViewItem *parent, KSSLPKCS12 *x);
 		~KPKCS12Item();
 	KSSLPKCS12 *cert;
+	QString _prettyName;
 };
 
 
@@ -118,6 +120,8 @@ protected:
   QTabWidget *_tabs;
   QGridLayout *_baseGrid;
   KSSLSigners *_signers;
+  bool _silentImport;
+  QString _curName;
 
 private:
   KCertPartPrivate *d;
