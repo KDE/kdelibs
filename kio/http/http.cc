@@ -1842,6 +1842,7 @@ void HTTPProtocol::stat(const KURL& url)
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = parseCacheControl(metaData("cache"));
+  m_request.window = metaData("window-id");
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -1885,6 +1886,7 @@ void HTTPProtocol::get( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = parseCacheControl(metaData("cache"));
+  m_request.window = metaData("window-id");
 
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
@@ -1914,6 +1916,7 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
   m_request.path = url.path();
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
+  m_request.window = metaData("window-id");
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -1940,6 +1943,7 @@ void HTTPProtocol::post( const KURL& url)
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Reload;
+  m_request.window = metaData("window-id");
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -1994,6 +1998,7 @@ void HTTPProtocol::mimetype( const KURL& url )
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Cache;
+  m_request.window = metaData("window-id");
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
@@ -2556,13 +2561,14 @@ void HTTPProtocol::error( int _err, const QString &_text )
 }
 
 void
-HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader)
+HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader )
 {
+   long windowId = m_request.window.toLong();
    QByteArray params;
    QDataStream stream(params, IO_WriteOnly);
-   stream << url << cookieHeader;
+   stream << url << cookieHeader << windowId;
    if (!m_dcopClient->send("kcookiejar", "kcookiejar",
-	"addCookies(QString, QCString)", params))
+	"addCookies(QString, QCString, long)", params))
    {
       kdWarning(7103) << "Can't communicate with cookiejar!" << endl;
    }

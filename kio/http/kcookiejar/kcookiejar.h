@@ -58,6 +58,7 @@ protected:
     QString mValue;
     time_t  mExpireDate;
     int     mProtocolVersion;
+    long    mWindowId;
 
     KHttpCookiePtr nextCookie;
 
@@ -76,6 +77,7 @@ public:
     QString path(void) { return mPath; }
     QString name(void) { return mName; }
     QString value(void) { return mValue; }
+    long    windowId(void) { return mWindowId; }
     void    fixDomain(const QString &domain) { mDomain = domain; }
     time_t  expireDate(void) { return mExpireDate; }
     int     protocolVersion(void) { return mProtocolVersion; }
@@ -160,7 +162,7 @@ public:
      * cookie_headers should be a concatenation of all lines of a HTTP-header
      * which start with "Set-Cookie". The lines should be separated by '\n's.
      */
-    KHttpCookiePtr makeCookies(const QString &_url, const QCString &cookie_headers);
+    KHttpCookiePtr makeCookies(const QString &_url, const QCString &cookie_headers, long windowId);
 
     /**
      * This function hands a KHttpCookie object over to the cookie jar.

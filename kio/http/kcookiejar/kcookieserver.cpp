@@ -142,14 +142,15 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         kdDebug(7104) << "result = " << res << endl;
         return true;
     }
-    else if (fun == "addCookies(QString,QCString)")
+    else if (fun == "addCookies(QString,QCString,long)")
     {
         QDataStream stream(data, IO_ReadOnly);
         QString arg1;
         QCString arg2;
-        stream >> arg1 >> arg2;
-        kdDebug(7104) << "got addCookies(" << arg1 << ", " << arg2.data() << ")" << endl;
-        addCookies(arg1, arg2);
+        long arg3;
+        stream >> arg1 >> arg2 >> arg3;
+        kdDebug(7104) << "got addCookies(" << arg1 << ", " << arg2.data() << ", " << arg3 << ")" << endl;
+        addCookies(arg1, arg2, arg3);
         replyType = "void";
         return true;
     }
@@ -188,9 +189,9 @@ KCookieServer::cookiesPending( const QString &url )
 }
 
 void
-KCookieServer::addCookies(const QString &url, const QCString &cookieHeader)
+KCookieServer::addCookies(const QString &url, const QCString &cookieHeader, long windowId)
 {
-    KHttpCookiePtr cookie = mCookieJar->makeCookies(url, cookieHeader);
+    KHttpCookiePtr cookie = mCookieJar->makeCookies(url, cookieHeader, windowId);
 
     if (mAdvicePending)
     {

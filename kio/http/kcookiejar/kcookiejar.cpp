@@ -434,7 +434,8 @@ bool KCookieJar::extractDomain(const QString &_url,
 // which start with "Set-Cookie". The lines should be separated by '\n's.
 //
 KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
-                                       const QCString &cookie_headers)
+                                       const QCString &cookie_headers,
+                                       long windowId)
 {
     KHttpCookiePtr cookieChain = 0;
     KHttpCookiePtr lastCookie = 0;
@@ -467,6 +468,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             // Default path = ""
             lastCookie = new KHttpCookie(fqdn, QString::null, QString::null,
                                      Name, Value );
+            lastCookie->mWindowId = windowId;
 
             // Insert cookie in chain
             lastCookie->nextCookie = cookieChain;

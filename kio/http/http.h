@@ -81,6 +81,7 @@ public:
 	unsigned long offset;
 	bool do_proxy;
 	KURL url;
+	QString window; // The window Id this request is related to.
   QString user_headers;
   } HTTPRequest;
 

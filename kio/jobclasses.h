@@ -28,6 +28,7 @@
 #include <qlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qguardedptr.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -119,6 +120,16 @@ namespace KIO {
          * @param parent the parent widget for the dialog box
          */
         void showErrorDialog( QWidget * parent = 0L );
+        
+        /**
+         * Associate this job with a window given by @p window
+         */
+        void setWindow(QWidget *window);
+        
+        /**
+         * Returns the window this job is associated with.
+         */
+        QWidget *window() const;
 
     signals:
         /**
@@ -223,6 +234,7 @@ namespace KIO {
         unsigned long m_percent;
         int m_progressId; // for uiserver
         QTimer *m_speedTimer;
+        QGuardedPtr<QWidget> m_window;
     };
 
     /**

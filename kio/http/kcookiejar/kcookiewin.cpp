@@ -39,6 +39,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qvbuttongroup.h>
 
 #include <qmessagebox.h>
+
+#include <X11/Xlib.h> // for XSetTransientForHint() 
         
 KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookiejar) :
     KDialogBase( i18n("Cookie Alert"), KDialogBase::Yes | KDialogBase::No,
@@ -49,6 +51,10 @@ KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookie
     cookie(_cookie)
 {
     KWin::setState( winId(), NET::StaysOnTop );
+    if (cookie->windowId())
+    {
+       XSetTransientForHint( x11Display(), winId(), cookie->windowId());
+    }
     QWidget *contents = new QWidget(this);
 
     QGridLayout *layout = new QGridLayout(contents, 5, 3, 

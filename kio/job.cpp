@@ -213,6 +213,16 @@ void Job::showErrorDialog( QWidget * parent )
       KMessageBox::error( parent, errorString() );
 }
 
+void Job::setWindow(QWidget *window)
+{
+  m_window = window;
+}
+
+QWidget *Job::window() const
+{
+  return m_window;
+}
+
 SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
                      bool showProgressInfo )
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
@@ -466,7 +476,7 @@ StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
 
 SimpleJob *KIO::http_update_cache( const KURL& url, bool no_cache, time_t expireDate)
 {
-    assert( url.protocol() == "http" );
+    assert( (url.protocol() == "http") || (url.protocol() == "https") );
     // Send http update_cache command (2)
     KIO_ARGS << (int)2 << url << no_cache << expireDate;
     SimpleJob * job = new SimpleJob( url, CMD_SPECIAL, packedArgs, false );
@@ -666,6 +676,12 @@ void TransferJob::start(Slave *slave)
        slave->resume();
     }
 
+    if (m_window)
+    {
+       QString id;
+       addMetaData("window-id", id.setNum(m_window->winId()));
+    }
+
     if (!m_outgoingMetaData.isEmpty())
     {
        KIO_ARGS << m_outgoingMetaData;
@@ -730,7 +746,7 @@ TransferJob *KIO::get( const KURL& url, bool reload, bool showProgressInfo )
 
 TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool showProgressInfo )
 {
-    assert( url.protocol() == "http" );
+    assert( (url.protocol() == "http") || (url.protocol() == "https" ));
     // Send http post command (1), decoded path and encoded query
     KIO_ARGS << (int)1 << url;
     TransferJob * job = new TransferJob( url, CMD_SPECIAL,
