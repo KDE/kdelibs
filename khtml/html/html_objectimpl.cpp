@@ -210,20 +210,22 @@ void HTMLObjectElementImpl::setTabIndex( long  )
 }
 
 void HTMLObjectElementImpl::parseAttribute(Attribute *attr)
-{
-  kdDebug() << "HTMLObjectElementImpl::parseAttribute" << endl;
-  DOM::DOMStringImpl *stringImpl;
+{ 
+  DOM::DOMStringImpl *stringImpl = attr->val();
+  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
   switch ( attr->id )
   {
     case ATTR_TYPE:
-      stringImpl = attr->val();
-      serviceType = QConstString( stringImpl->s, stringImpl->l ).string();
-      kdDebug() << "parsed servicetype attribute: " << serviceType << endl;
+      serviceType = val;
       break;
     case ATTR_DATA:
-      stringImpl = attr->val();
-      url = QConstString( stringImpl->s, stringImpl->l ).string();
-      kdDebug() << "parsed url attribute: " << url << endl;
+      url = val;
+      break;
+    case ATTR_WIDTH:
+      addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
+      break;
+    case ATTR_HEIGHT:
+      addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
       break;
     default:
       HTMLElementImpl::parseAttribute( attr );
@@ -232,7 +234,6 @@ void HTMLObjectElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLObjectElementImpl::attach(KHTMLView *w)
 {
-  kdDebug() << "HTMLObjectElementImpl::attach" << endl;
   if ( url.isEmpty() )
     return; //ooops (-:
 

@@ -454,7 +454,7 @@ RenderFrame::~RenderFrame()
 RenderPartObject::RenderPartObject( RenderStyle *style, QScrollView *view, DOM::HTMLObjectElementImpl *objElement )
 : RenderPart( style, view )
 {
-  m_obj = objElement; 
+  m_obj = objElement;
 }
 
 RenderPartObject::~RenderPartObject()
@@ -463,26 +463,27 @@ RenderPartObject::~RenderPartObject()
 
 void RenderPartObject::close()
 {
+/* 
   NodeImpl *child = m_obj->firstChild();
   while ( child )
   {
     if ( child->id() == ID_PARAM )
     {
       HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
-      
+
       if ( p->name() == "width" )
         m_width = p->value().toInt();
       else if ( p->name() == "height" )
         m_height = p->value().toInt();
     }
-  
+
     child = child->nextSibling();
   }
-  
+*/
   layout();
 
-  RenderPart::close(); 
-} 
+  RenderPart::close();
+}
 
 void RenderPartObject::setWidget( QWidget *w )
 {
@@ -493,15 +494,23 @@ void RenderPartObject::setWidget( QWidget *w )
     m_height = hint.height();
   }
 
-  RenderPart::setWidget( w ); 
-} 
+  RenderPart::setWidget( w );
+}
 
 bool RenderPartObject::isInline()
 {
   return true;
 }
 
-short RenderPartObject::minWidth()
+void RenderPartObject::setSize( int w, int h )
 {
-  return m_width; 
+  m_width = w;
+  m_height = h;
+  m_minWidth = m_maxWidth = w;
+} 
+
+void RenderPartObject::layout( bool )
+{
+  setSize( m_style->width().value, m_style->height().value ); 
+  RenderPart::layout();
 } 

@@ -123,9 +123,11 @@ public:
 
   virtual void setWidget( QWidget *widget );
 
-  virtual short minWidth();
-
   virtual bool isInline();
+
+  virtual void setSize( int w, int h );
+
+  virtual void layout( bool deep = true );
 
 private:
   DOM::HTMLObjectElementImpl *m_obj;
