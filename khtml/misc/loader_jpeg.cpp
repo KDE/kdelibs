@@ -34,7 +34,6 @@
 #endif
 #include "loader_jpeg.h"
 
-#include <assert.h>
 #include <stdio.h>
 #include <setjmp.h>
 #include <qdatetime.h>
@@ -318,6 +317,10 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
     if(state == startDecompress)
     {
         jsrc.do_progressive = jpeg_has_multiple_scans( &cinfo );
+
+#ifdef JPEG_DEBUG
+        qDebug( "**** DOPROGRESSIVE: %d",  jsrc.do_progressive );
+#endif
         if ( jsrc.do_progressive )
             cinfo.buffered_image = true;
         else
@@ -325,11 +328,13 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
         // setup image sizes
         jpeg_calc_output_dimensions( &cinfo );
 
-        assert( cinfo.out_color_space == JCS_RGB );
+        if ( cinfo.jpeg_color_space == JCS_GRAYSCALE ||
+             cinfo.jpeg_color_space == JCS_YCbCr )
+            cinfo.out_color_space = JCS_RGB;
+
         cinfo.do_fancy_upsampling = true;
         cinfo.do_block_smoothing = false;
         cinfo.quantize_colors = false;
-        assert( !cinfo.enable_2pass_quant );
         cinfo.dct_method = JDCT_FASTEST;
 
         // false: IO suspension
@@ -436,6 +441,8 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
                 jpeg_finish_output(&cinfo);
                 jsrc.final_pass = jpeg_input_complete(&cinfo);
                 jsrc.decoding_done = jsrc.final_pass && cinfo.input_scan_number == cinfo.output_scan_number;
+                if ( !jsrc.decoding_done )
+                    jsrc.change_rect =  QRect();
             }
             else
                 jsrc.decoding_done = true;
