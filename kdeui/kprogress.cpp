@@ -80,7 +80,7 @@ void KProgress::initialize()
 void KProgress::paletteChange()
 {
         QPalette p = kapp->palette();
-        QColorGroup &colorGroup = p.active();
+        const QColorGroup &colorGroup = p.active();
         if (!use_supplied_bar_color)
 	   bar_color = colorGroup.highlight();
 	bar_text_color = colorGroup.highlightedText();
