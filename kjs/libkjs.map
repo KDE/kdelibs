@@ -11,7 +11,7 @@
 	KJS::Lexer::*;
 	KJS::Parser::*;
 	KJS::Collector::*;
-	# used in khtml/ecma KJS::InterpreterImp::*;
+	KJS::InterpreterImp::*;
 	KJS::ListImp*;
 	*KJS::*InstanceImp*;
         KJS::CompletionImp*;
