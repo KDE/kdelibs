@@ -40,18 +40,32 @@
 #ifndef enable_final_users_suck
 #define enable_final_users_suck
 
-static bool *s_advanced = 0;
+class Settings {
+public:
+    bool m_advanced;
+    bool m_filteredtoolbar;
+    static Settings *s_self;
+    static void readSettings() {
+        KConfig config("kbookmarkrc", false, false);
+        config.setGroup("Bookmarks");
+        s_self->m_advanced = config.readBoolEntry("AdvancedAddBookmark", false);
+        s_self->m_filteredtoolbar = config.readBoolEntry("FilteredToolbar", false);
+    }
+    static Settings *self() {
+        if (!s_self)
+        {
+            s_self = new Settings;
+            readSettings();
+        }
+        return s_self;
+    }
+};
+
+Settings* Settings::s_self = 0;
 
 static bool isAdvanced()
 {
-  if (!s_advanced)
-  {
-    s_advanced = new bool;
-    KConfig config("kbookmarkrc", false, false);
-    config.setGroup("Bookmarks");
-    (*s_advanced) = config.readBoolEntry("AdvancedAddBookmark", false);
-  }
-  return (*s_advanced);
+  return Settings::self()->m_advanced;
 }
 
 #endif
@@ -80,11 +94,6 @@ private:
     KBookmarkGroup m_visibleStart;
 };
 
-static bool useFilteredToolbar(KBookmarkManager* mgr) 
-{
-    return false;
-}
-
 KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
                             KBookmarkOwner *_owner, KToolBar *_toolBar,
                             KActionCollection *coll,
@@ -107,7 +116,7 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
 
     dptr()->m_filteredMgr = 0;
 
-    if ( useFilteredToolbar(mgr) )
+    if ( Settings::self()->m_filteredtoolbar )
     {
         QString fname = mgr->path() + ".ftbcache";
         dptr()->m_filteredMgr = KBookmarkManager::managerForFile( fname, false );
@@ -391,18 +400,17 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
 }
 
 static bool showInToolbar( const KBookmark &bk ) {
-    // iff bk has the flag "showintoolbar"
-    return true; 
+    return (bk.internalElement().attributes().namedItem("showintoolbar").toAttr().value() == "yes"); 
 }
 
 void ToolbarFilter::visit( const KBookmark &bk ) {
-    kdDebug() << "visit(" << bk.text() << ")" << endl;
+    //kdDebug() << "visit(" << bk.text() << ")" << endl;
     if ( m_visible || showInToolbar(bk) )
         KXBELBookmarkImporterImpl::visit(bk);
 }
 
 void ToolbarFilter::visitEnter( const KBookmarkGroup &grp ) {
-    kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
+    //kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
     if ( !m_visible && showInToolbar(grp) )
     {
         m_visibleStart = grp;
@@ -413,7 +421,7 @@ void ToolbarFilter::visitEnter( const KBookmarkGroup &grp ) {
 }
 
 void ToolbarFilter::visitLeave( const KBookmarkGroup &grp ) {
-    kdDebug() << "visitLeave()" << endl;
+    //kdDebug() << "visitLeave()" << endl;
     if ( m_visible )
         KXBELBookmarkImporterImpl::visitLeave(grp);
     if ( m_visible && grp.address() == m_visibleStart.address() )
