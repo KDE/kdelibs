@@ -317,8 +317,8 @@ public:
 	 * @param unique If specified,  only return items which have
 	 *        unique suffixes - suppressing duplicated filenames.
 	 *
-	 * @return A list of directories matching the resource specified,
-	 *         or an empty list if the resource type is unknown.
+	 * @return List of all the files whose filename matches the 
+	 *         specified filter.
 	 */
 	QStringList findAllResources( const char *type,
 				       const QString& filter = QString::null,
@@ -344,8 +344,8 @@ public:
 	 * @param relPaths The list to store the relative paths into
 	 *        These can be used later to ::locate() the file
 	 *
-	 * @return A list of directories matching the resource specified,
-	 *         or an empty list if the resource type is unknown.
+	 * @return List of all the files whose filename matches the 
+	 *         specified filter.
 	 */
 	QStringList findAllResources( const char *type,
 				       const QString& filter,
