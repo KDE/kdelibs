@@ -50,12 +50,35 @@ class QDragObject;
 class KListView : public QListView
 {
   Q_OBJECT
-   
+
 public:
   /**
    * Possible selection modes.
    *
    * The first four correspond directly to @ref QListView::SelectionMode
+   * The Konqueror selection mode is defined as follow:
+       home: move to the first
+       end: move to the last
+       PgUp/PgDn: move one page up/down
+       up/down: move one item up/down
+       insert: toggle selection of current and move to the next
+       space: toggle selection of the current
+       SHIFT+CTRL+up: move to the previous item and toggle selection of this one
+       SHIFT+CTRL+down: toggle selection of the current item and move to the next
+       SHIFT+CTRL+end: toggle selection from (including) the current
+       item to (including) the last item
+       SHIFT+CTRL+home: toggle selection from (including) the current
+       item to the (including) the first item
+       SHIFT+CTRL+PgDn: toggle selection from (including) the current
+       item to (excluding) the item one page down
+       SHIFT+CTRL+PgUp: toggle selection from (excluding) the current
+       item to (including) the item one page up
+
+       the combinations work the same with SHIFT instead of CTRL, except
+       that if you start selecting something using SHIFT everything selected
+       before will be deselected first
+
+       This way e.g. SHIFT+up/PgUp then SHIFT+down/PgDn leaves no item selected
    */
   enum SelectionModeExt {
 	Single = QListView::Single,
@@ -72,7 +95,7 @@ public:
    * @ref QListView, as usual.
    */
   KListView (QWidget *parent = 0, const char *name = 0);
-  
+
   /**
    * Destructor.
    */
@@ -106,7 +129,7 @@ public:
 
   /**
    * For future expansions.
-   * 
+   *
    * Do not use.
    * @deprecated
    */
@@ -148,7 +171,7 @@ public:
 
   /**
    * For future expansions.
-   * 
+   *
    * Do not use.
    * @deprecated
    */
@@ -156,7 +179,7 @@ public:
 
   /**
    * For future expansions.
-   * 
+   *
    * Do not use.
    * @deprecated
    */
@@ -233,7 +256,7 @@ signals:
 
   /**
    * For future expansions.
-   * 
+   *
    * Do not use.
    * @deprecated
    */
@@ -292,7 +315,7 @@ public slots:
 
   /**
    * For future expansions.
-   * 
+   *
    * Do not use.
    * @deprecated
    */
@@ -337,7 +360,7 @@ public slots:
 
   /**
    * For future expansion.
-   * 
+   *
    * Do not use.
    * @deprecated
    * Highlight a parent if I drop into its children
@@ -346,7 +369,7 @@ public slots:
 
   /**
    * For future expansions.
-   * 
+   *
    * Do not use.
    * @deprecated
    */
@@ -516,7 +539,7 @@ protected:
   virtual QRect drawDropVisualizer (QPainter *p, QListViewItem *parent, QListViewItem *after);	
 
   /**
-   * For future expansion. 
+   * For future expansion.
    *
    * Do not use.
    *
