@@ -1590,7 +1590,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		value = khtml::parseURL(value);
             	parsedValue = new CSSImageValueImpl(value, baseUrl(), this);
 #ifdef CSS_DEBUG
-		kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseURL().string() << endl;
+		kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseUrl().string() << endl;
 #endif
 	      }
 	    }
