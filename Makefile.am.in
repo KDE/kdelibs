@@ -88,3 +88,21 @@ qtmessages:
 
 include admin/Doxyfile.am
 
+apidox-am-toplevel-yes: apidox-am-toplevel-kdelibs
+
+apidox-am-toplevel-kdelibs: $(top_builddir)/apidocs/qt/qt.tag
+
+$(top_builddir)/apidocs/qt/qt.tag:
+	echo "*** Creating a tag file for the Qt library:"; \
+	$(mkinstalldirs) $(top_builddir)/apidocs/qt; \
+	doxytag -t $(top_builddir)/apidocs/qt/qt.tag $(QTDOCDIR)
+
+install-data-local: install-apidox-kdelibs
+
+## install the tag file for the Qt documentation
+install-apidox-kdelibs:
+	if test -f $(top_builddir)/apidocs/qt/qt.tag; then \
+		$(mkinstalldirs) $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt ;\
+		echo $(INSTALL_DATA) $(top_builddir)/apidocs/qt/qt.tag $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt; \
+		$(INSTALL_DATA) $(top_builddir)/apidocs/qt/qt.tag $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt; \
+	fi
