@@ -41,6 +41,9 @@
 
 // $Id$
 // $Log$
+//     2) GUI config for the macStyle
+//     3) krootwm supports "hot" switching of macStyle (still small problems,
+// 	a restart of krootwm fixes them)
 //
 // Revision 1.54  1998/12/02 16:22:21  radej
 // sven: Flat menubar looks like flat toolbars in Motif style
@@ -302,9 +305,9 @@ void KMenuBar::slotReadConfig ()
   {
     // menu->setStyle(style()); TODO: port to real Styles
   
-  config->setGroup("Menubar");
+    if (position != Floating && position != FloatingSystem)
       menu->setFrameStyle(NoFrame);
-  if (config->readEntry("position") == "TopOfScreen")
+  }
 
   config->setGroup("KDE");//CT as Sven asked
   if (!standalone_menubar && macmode) //was not and now is
