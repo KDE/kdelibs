@@ -86,7 +86,6 @@ Architecture: any
 Section: libs
 Replaces: libkmid, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
 Depends: ${shlibs:Depends}
-Conflicts: libkmid
 Provides: libkmid
 Description: aRts Sound system (midi/kmedia support libraries with alsa)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
@@ -104,7 +103,7 @@ Section: libs
 Replaces: libarts
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
-Conflicts: suidmanager (<< 0.50), libarts
+Conflicts: suidmanager (<< 0.50)
 Provides: libarts
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
