@@ -28,6 +28,7 @@
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_object.h"
+#include "rendering/render_canvas.h"
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 
@@ -610,6 +611,12 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
         kdDebug() << "DOMMouseEvent::getValueProperty rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos << endl;
         x -= xPos;
         y -= yPos;
+      }
+      if ( rend->canvas() ) {
+        int cYPos, cXPos;
+        rend->canvas()->absolutePosition( cXPos,  cYPos,  true );
+        x += cXPos;
+        y += cYPos;
       }
     }
     return Number( token == OffsetX ? x : y );
