@@ -27,9 +27,8 @@
 
 * DocBook
 - write style checker
-+ ask NW about positioning of qandaset: for customisation (ID cannot be made
-  compulsory)
-+ Is qandaset isolation a bug?
+- redo the declarations following the example NW gave for qandasets
+  (that may simplify the redeclaration files a lot)
 
 * Other
 - make clear: indexterm use (so that index can be activated)
@@ -47,6 +46,16 @@
   done with an entity), eg in Translation howto
 - Write FPI script (for external references).
 + Fix make complaints in lang-conv (error: nothing to be done for all-am)
+- do license links properly after change by Lauri and Mike:
+  now the appropriate licenses are chosen by the documentation author.
+  Required: fixed text always to include the FDL (yes?), and rest is
+  parametrised.  The different files may or may not form paragraphs
+  for every license (to be decided).  Name revisions may be desirable.
+  The other alternative is to provide one text, and that licences are
+  included or excluded by parameter declarations in the prologue
+  (probably less clear for the authors).
+- decide on distinction notice and full licence (and adapt files 
+  accordingly)
 
 * TeX
 - diacritics have to be changed by a script.
