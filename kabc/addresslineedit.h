@@ -36,9 +36,9 @@ class LdapSearch;
 
 /**
  * A lineedit with LDAP and kabc completion
- * 
+ *
  * This lineedit is supposed to be used wherever the user types email addresses
- * and might want a completion. You can simply use it as a replacement for 
+ * and might want a completion. You can simply use it as a replacement for
  * @ref KLineEdit or @ref QLineEdit.
  *
  * You can enable or disable the lineedit at any time.
@@ -49,7 +49,7 @@ class AddressLineEdit : public KLineEdit
 {
   Q_OBJECT
 public:
-  AddressLineEdit(QWidget* parent, bool useCompletion = true, 
+  AddressLineEdit(QWidget* parent, bool useCompletion = true,
 		const char *name = 0L);
   virtual ~AddressLineEdit();
 
@@ -60,7 +60,6 @@ public:
   virtual void setFont( const QFont& );
 
 public slots:
-  void undo();
   /**
    * Set cursor to end of line.
    */
@@ -83,7 +82,6 @@ protected:
   virtual void insert(const QString &t);
   virtual void mouseReleaseEvent( QMouseEvent * e );
   void doCompletion(bool ctrlT);
-  void init();
 
 private slots:
   void slotCompletion() { doCompletion(false); }
@@ -92,6 +90,7 @@ private slots:
   void slotLDAPSearchData( const QStringList& );
 
 private:
+  void init();
   void startLoadingLDAPEntries();
   void stopLDAPLookup();
   QStringList addresses();

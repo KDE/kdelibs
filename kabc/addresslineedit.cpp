@@ -2,6 +2,8 @@
     This file is part of libkabc.
     Copyright (c) 2002 Helge Deller <deller@gmx.de>
 		  2002 Lubos Lunak <llunak@suse.cz>
+                  2001 Carsten Pfeiffer <pfeiffer@kde.org>
+                  2001 Waldo Bastian <bastian@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,8 +28,8 @@
 #include <qobject.h>
 #include <qptrlist.h>
 #include <qregexp.h>
-#include <qevent.h> 
-#include <qdragobject.h> 
+#include <qevent.h>
+#include <qdragobject.h>
 
 #include <kcompletionbox.h>
 #include <kstdaccel.h>
@@ -108,6 +110,9 @@ void AddressLineEdit::init()
       m_completionInitialized = true; // don't connect muliple times. That's
                                       // ugly, tho, better have completionBox()
                                       // virtual in KDE 4
+      // Why? This is only called once. Why should this be called more 
+      // than once? And why was this protected?
+      // And while I'm at it: who deletes all those static objects? (pfeiffer)
   }
 }
 
@@ -128,7 +133,7 @@ void AddressLineEdit::setFont( const QFont& font )
 void AddressLineEdit::keyPressEvent(QKeyEvent *e)
 {
     bool accept = false;
-    
+
     if (KStdAccel::shortcut(KStdAccel::SubstringCompletion).contains(KKey(e)))
     {
       doCompletion(true);
@@ -153,7 +158,7 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
 
     if( !accept )
         KLineEdit::keyPressEvent( e );
-    
+
     if( e->isAccepted())
     {
         if( m_useCompletion && s_LDAPTimer != NULL )
@@ -191,8 +196,21 @@ void AddressLineEdit::insert(const QString &t)
     if (newText.isEmpty())
        return;
 
-    // remove newlines in the to-be-pasted string:
+    // remove newlines in the to-be-pasted string as well as an eventual
+    // mailto: protocol
     newText.replace( QRegExp("\r?\n"), " " );
+    if ( newText.startsWith( "mailto:" ) )
+        newText.remove( 0, 7 );
+    else if (newText.contains(" at "))
+    {
+       // Anti-spam stuff
+       newText.replace( QRegExp(" at "), "@" );
+       newText.replace( QRegExp(" dot "), "." );
+    }
+    else if (newText.contains("(at)"))
+    {
+      newText.replace( QRegExp("\\s*\\(at\\)\\s*"), "@" );
+    }
 
     QString contents = text();
     int start_sel = 0;
@@ -223,21 +241,6 @@ void AddressLineEdit::insert(const QString &t)
        pos = eot+2;
     }
 
-    if (newText.startsWith("mailto:"))
-    {
-       KURL u(newText);
-       newText = u.path();
-    }
-    else if (newText.contains(" at "))
-    {
-       // Anti-spam stuff
-       newText.replace( QRegExp(" at "), "@" );
-       newText.replace( QRegExp(" dot "), "." );
-    }
-    else if (newText.contains("(at)"))
-    {
-      newText.replace( QRegExp("\\s*\\(at\\)\\s*"), "@" );
-    }
     contents = contents.left(pos)+newText+contents.mid(pos);
     setText(contents);
     setCursorPosition(pos+newText.length());
@@ -261,13 +264,6 @@ void AddressLineEdit::cursorAtEnd()
 void AddressLineEdit::enableCompletion(bool enable)
 {
   m_useCompletion = enable;
-}
-
-//-----------------------------------------------------------------------------
-void AddressLineEdit::undo()
-{
-    QKeyEvent k(QEvent::KeyPress, 90, 26, 16 ); // Ctrl-Z
-    keyPressEvent( &k );
 }
 
 //-----------------------------------------------------------------------------
@@ -485,16 +481,19 @@ QStringList AddressLineEdit::removeMailDupes( const QStringList& adrs )
 //-----------------------------------------------------------------------------
 void AddressLineEdit::dropEvent(QDropEvent *e)
 {
-  QStrList uriList;
-  if(QUriDrag::canDecode(e) && QUriDrag::decode( e, uriList ))
+  KURL::List uriList;
+  if(KURLDrag::canDecode(e) && KURLDrag::decode( e, uriList ))
   {
     QString ct = text();
-    for (QStrListIterator it(uriList); it; ++it)
+    KURL::List::Iterator it = uriList.begin();
+    for (; it != uriList.end(); ++it)
     {
       if (!ct.isEmpty()) ct.append(", ");
       KURL u(*it);
-      if (u.protocol() == "mailto") ct.append(QString::fromUtf8(u.path().latin1()));
-      else ct.append(QString::fromUtf8(*it));
+      if ((*it).protocol() == "mailto") 
+          ct.append( (*it).path() );
+      else 
+          ct.append( (*it).url() );
     }
     setText(ct);
   }
