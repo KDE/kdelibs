@@ -296,15 +296,24 @@ public final class KJASAppletStub
         if( app != null ) {
             synchronized (app) {
                 if (active) {
-                    stopApplet();
+                    try {
+                        stopApplet();
+                    } catch (Exception e) {
+                    }
                 }
-                app.destroy();
+                try {
+                    app.destroy();
+                } catch (Exception e) {
+                }
             }
             stateChange(DESTROYED);
         }
 
         if( runThread != null && runThread.isAlive() )
             Main.debug( "runThread is active when stub is dying" );
+        loader = null;
+        context = null;
+        app = null;
         frame.dispose();
     }
 
