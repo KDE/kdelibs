@@ -61,11 +61,13 @@ struct KSycocaPrivate {
         database = 0;
         readError = false;
         updateSig = 0;
+        autoRebuild = true;
     }
     QFile *database;
     QStringList changeList;
     QString language;
     bool readError;
+    bool autoRebuild;
     Q_UINT32 updateSig;
 };
 
@@ -402,8 +404,14 @@ void KSycoca::flagError()
       if (_self->d->readError)
          return;
       _self->d->readError = true;
-      system("kbuildsycoca"); // Rebuild the damned thing.
+      if (_self->d->autoRebuild)
+         system("kbuildsycoca"); // Rebuild the damned thing.
    }
+}
+
+void KSycoca::disableAutoRebuild()
+{
+   d->autoRebuild = false;
 }
 
 bool KSycoca::readError()

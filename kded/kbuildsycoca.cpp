@@ -568,6 +568,7 @@ int main(int argc, char **argv)
    bool incremental = args->isSet("incremental");
    if (incremental)
    {
+     KSycoca::self()->disableAutoRebuild(); // Don't deadlock
      QString current_kfsstnd = KGlobal::dirs()->kfsstnd_prefixes();
      QString ksycoca_kfsstnd = KSycoca::self()->kfsstnd_prefixes();
      QString current_language = KGlobal::locale()->language();
