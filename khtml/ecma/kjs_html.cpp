@@ -188,6 +188,42 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
   return DOMDocument::hasProperty(exec, propertyName);
 }
 
+/* Helper function object for KJS::HTMLDocument::tryGet(..) for determining
+ * the number of occurrences of xxxx as in document.xxxx.
+ * The order of the TagLength array is the order of preference.
+ */
+class NamedTagLengthDeterminer {
+public:
+  struct TagLength {
+    NodeImpl::Id id; unsigned long length; NodeImpl *last;
+  };
+  NamedTagLengthDeterminer(NodeImpl *s, const DOMString& n, TagLength *t, int l)
+    : name(n), tags(t), nrTags(l) {
+      determineNamedTagLength(s);
+  }
+private:
+  const DOMString& name;
+  TagLength *tags;
+  int nrTags;
+  void determineNamedTagLength(NodeImpl *start);
+
+};
+
+void NamedTagLengthDeterminer::determineNamedTagLength(NodeImpl *start) {
+  for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling())
+    if ( n->nodeType() == Node::ELEMENT_NODE ) {
+      for (int i = 0; i < nrTags; i++)
+        if (n->id() == tags[i].id &&
+            static_cast<ElementImpl *>(n)->getAttribute(ATTR_NAME) == name) {
+          tags[i].length++;
+          tags[i].last = n;   // cache this NodeImpl*
+          nrTags = i+1;       // forget about Tags with lower preference
+          break;
+        }
+      determineNamedTagLength(n);
+    }
+}
+
 Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
@@ -203,41 +239,21 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
 
   // Check for images with name==propertyName, return item or list if found
   // We don't use the images collection because it looks for id=p and name=p, we only want name=p
-  DOM::NodeList list( new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() ) );
-  int len = list.length();
-  if ( len == 1 ) {
-#ifdef KJS_VERBOSE
-    kdDebug(6070) << " returning one image" << endl;
-#endif
-    return getDOMNode( exec, list.item( 0 ) );
-  }
-  else if ( len > 1 )
-  {
-#ifdef KJS_VERBOSE
-    kdDebug(6070) << " returning a list of " << list.length() << " images" << endl;
-#endif
-    // Get all the items with the same name
-    return getDOMNodeList( exec, list );
-  }
-
   // Check for forms with name==propertyName, return item or list if found
   // Note that document.myform should only look at forms
-  list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
-  len = list.length();
-  if ( len == 1 ) {
-#ifdef KJS_VERBOSE
-    kdDebug(6070) << " returning one form" << endl;
-#endif
-    return getDOMNode( exec, list.item( 0 ) );
-  }
-  else if ( len > 1 )
-  {
-#ifdef KJS_VERBOSE
-    kdDebug(6070) << " returning a list of " << list.length() << " forms" << endl;
-#endif
-    // Get all the items with the same name
-    return getDOMNodeList( exec, list );
-  }
+  // Check for applets with name==propertyName, return item or list if found
+
+  NamedTagLengthDeterminer::TagLength tags[3] = {
+    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L} 
+  };
+  NamedTagLengthDeterminer(doc.handle(), propertyName.string(), tags, 3);
+  for (int i = 0; i < 3; i++)
+    if (tags[i].length > 0) {
+      if (tags[i].length == 1)
+        return getDOMNode(exec, tags[i].last);
+      // Get all the items with the same name
+      return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, propertyName.string())));
+    }
 
   // Check for frames/iframes with name==propertyName
   if ( view && view->part() )
@@ -248,15 +264,6 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     if (kp)
       return Value(Window::retrieve(kp));
   }
-
-  // Check for applets with name==propertyName, return item or list if found
-  list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_APPLET, propertyName.string() );
-  len = list.length();
-  if ( len == 1 )
-    return getDOMNode( exec, list.item( 0 ) );
-  else if ( len > 1 )
-    return getDOMNodeList( exec, list );
-
 
   const HashEntry* entry = Lookup::findEntry(&HTMLDocumentTable, propertyName);
   if (entry) {
