@@ -104,5 +104,4 @@ void ConfigWidget::setCorrectLanguage( const QStringList& langs)
     }
 }
 
-
 #include "configwidget.moc"
