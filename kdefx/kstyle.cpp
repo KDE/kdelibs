@@ -218,6 +218,15 @@ KStyle::~KStyle()
 }
 
 
+QString KStyle::defaultStyle()
+{
+	if (QPixmap::defaultDepth() > 8)
+	   return QString("keramik");
+	else
+	   return QString("light, 3rd revision");
+}
+
+
 void KStyle::polish( QWidget* widget )
 {
 	if ( d->useFilledFrameWorkaround )

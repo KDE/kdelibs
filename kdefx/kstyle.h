@@ -136,6 +136,11 @@ class KStyle: public QCommonStyle
 		~KStyle();
 
 		/**
+		 * Returns the default widget style depending on color depth.
+		 */
+		static QString defaultStyle();
+
+		/**
 		 * Modifies the scrollbar type used by the style.
 		 * 
 		 * This function is only provided for convenience. It allows
