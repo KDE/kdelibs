@@ -84,7 +84,7 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
         // if not append a (num) to it
         for(i=2; i < maxEntries+1 && QFile::exists(dStr + QString::fromLatin1(".desktop")); ++i)
 #warning HPB: this looks buggy
-            dStr.sprintf("%s[%d]", dStr.utf8(), i);
+            dStr.sprintf("%s[%d]", dStr.utf8().data(), i);
     }
     dStr += QString::fromLatin1(".desktop");
 
