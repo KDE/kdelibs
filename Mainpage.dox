@@ -58,6 +58,9 @@
 	* - <a href="arts/html/index.html"><b>arts</b></a>
         *   (<a href="arts/html/classes.html">classes</a>)\n
 	*   <i>KDE bindings for arts including knotify.</i>
+	* - <a href="knewstuff/html/index.html"><b>knewstuff</b></a>
+        *   (<a href="knewstuff/html/classes.html">classes</a>)\n
+	*   <i>Upload and download of application data.</i>
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
 	* and FAQs can be found at
