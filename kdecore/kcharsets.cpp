@@ -22,6 +22,8 @@
 #include "kentities.c"
 
 #include <kapp.h>
+#include <kglobal.h>
+#include <klocale.h>
 
 #include <qfontinfo.h>
 #include <X11/Xlib.h>
@@ -448,6 +450,11 @@ KFontStructList KCharsets::getFontList(KFontStruct mask)
     return lst;
 }
 
+QFont::CharSet KCharsets::charsetForLocale()
+{  
+    return nameToID(KGlobal::locale()->charset()); 
+}
+
 bool KCharsets::hasUnicode(QString family)
 {
     KFontStruct fs;
@@ -535,7 +542,6 @@ QFont::CharSet KCharsets::nameToID(QString name)
 
 QString KCharsets::name(const QFont &f)
 {
-    int i = 0;
     QFont::CharSet c = f.charSet();
 
     return name(c);

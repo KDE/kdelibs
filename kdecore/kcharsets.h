@@ -25,11 +25,9 @@
 #include <qstringlist.h>
 #include <qlist.h>
 
-#include <kglobal.h>
-#include <klocale.h>
-
 struct KFontStruct;
 class KFontStructList;
+class KGlobal;
 
 /**
  * @ref KCharsets is a small class for to help you solve some charset
@@ -136,8 +134,7 @@ public:
     /**
      * @returns the charset for the locale.
      */
-    QFont::CharSet charsetForLocale()
-	{  return nameToID(KGlobal::locale()->charset()); };
+    QFont::CharSet charsetForLocale();
 
     /**
      * does the given font family have a unicode encoding?
