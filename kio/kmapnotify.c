@@ -136,12 +136,7 @@ KDE_InterceptXMapRequest(Display * d, Window w)
 {
   /* Vars *****************************************************************/
 
-  Atom netMapNotify;
-  XTextProperty prop;
-  Status status;
-  char * pidString = 0L;
   char * envStr;
-
   lt_dlhandle libX11Handle;
 
   /* Init *****************************************************************/
@@ -153,11 +148,11 @@ KDE_InterceptXMapRequest(Display * d, Window w)
   envStr = getenv("KDE_DISABLE_KMAPNOTIFY");
   if (envStr)
     KDE_mapNotifyEnabled = !atoi(envStr);
-  
+
   envStr = getenv("KDE_APP_START_PID");
   if (envStr)
     KDE_appStartPid = atoi(envStr);
-  
+
   /* unsetenv is not available on all platforms... */
   putenv(strdup("LD_PRELOAD="));
   putenv(strdup("KDE_INITIAL_DESKTOP="));
@@ -226,7 +221,7 @@ KDE_SetInitialDesktop(Display *d, Window w) {
 
   a = KDE_XInternAtom(d, "_NET_WM_DESKTOP", False);
 
-  KDE_XChangeProperty(d, w, a, XA_CARDINAL, 32, PropModeReplace, 
+  KDE_XChangeProperty(d, w, a, XA_CARDINAL, 32, PropModeReplace,
     (unsigned char *)&net_desktop, 1);
 
 }
