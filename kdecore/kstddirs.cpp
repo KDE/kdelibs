@@ -48,7 +48,7 @@ KStandardDirs::~KStandardDirs()
 {
 }
 
-void KStandardDirs::addPrefix( QString dir, bool)
+void KStandardDirs::addPrefix( QString dir )
 {
     if (dir.isNull())
       return;
@@ -85,7 +85,7 @@ bool KStandardDirs::addResourceType( const QString& type,
 }
 
 bool KStandardDirs::addResourceDir( const QString& type,
-		     const QString& absdir, bool)
+		     const QString& absdir)
 {
     QStringList *paths = absolutes.find(type);
     if (!paths) {
@@ -132,25 +132,28 @@ QStringList KStandardDirs::findDirs( const QString& type,
 QString KStandardDirs::findResourceDir( const QString& type,
 					const QString& filename) const
 {
+#ifndef NDEBUG
     if (filename.isEmpty()) {
-        warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!", type.ascii());
-	return QString::null;
+      warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!", type.ascii());
+      return QString::null;
     }
+#endif
 
-printf("start search: type = %s filename = %s\n", 
-	type.ascii(), filename.ascii());
+    printf("start search: type = %s filename = %s\n", 
+	   type.ascii(), filename.ascii());
 
     QStringList candidates = getResourceDirs(type);
-    QFileInfo testfile;
+    const char *testfile;
+    struct stat buff;
     for (QStringList::ConstIterator it = candidates.begin();
-	 it != candidates.end(); it++) {
-	testfile.setFile(*it + filename);
-printf("test: filename = %s\n", 
-	testfile.filePath().ascii());
-	if (testfile.isFile())
-        {
-	    printf("Found!\n");
-	    return *it;
+	 it != candidates.end(); it++) 
+    {
+      testfile = (*it + filename).ascii();
+      debug("test: filename = %s", testfile);
+      if (access(testfile, R_OK) == 0 && stat( testfile, &buff ) == 0)
+	if ( S_ISREG( buff.st_mode )) {
+	  printf("Found!\n");
+	  return *it;
 	}
     }
     
@@ -160,38 +163,64 @@ printf("test: filename = %s\n",
     return QString::null;
 }
 
+static void lookupDirectory(const QString& path, const QRegExp &regexp, 
+			    QStringList& list, bool recursive)
+{
+  DIR *dp = opendir( QFile::encodeName(path));
+  if (!dp)
+    return;
+  
+  struct dirent *ep;
+  struct stat buff;
+
+  while( ( ep = readdir( dp ) ) != 0L )
+    {
+      QString fn( QFile::decodeName(ep->d_name));
+      if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
+	continue;
+
+      if (!recursive && regexp.match(fn))
+	continue; // No match
+
+      fn = path+"/"+fn;
+      if ( stat( fn, &buff ) != 0 ) {
+	printf("Error statting %s:", fn.ascii());
+	perror("");
+	continue; // Couldn't stat (Why not?)
+      }
+      if ( recursive ) {
+	if ( S_ISDIR( buff.st_mode ))
+	  lookupDirectory(fn, regexp, list, recursive);
+	if (regexp.match(fn))
+	  continue; // No match
+      }
+      if ( S_ISREG( buff.st_mode))
+	list.append( fn );	
+    }
+  closedir( dp );
+}
+
 QStringList KStandardDirs::findAllResources( const QString& type, 
 					     const QString& filter, 
 					     bool recursive) const
-{
-    QString filterPath;
-    QString filterFile;
-    assert(!recursive);
-    
+{    
     if (filter.at(0) == '/') // absolute paths we return
       return filter;
 
     QStringList list;
-
-
+    QString filterPath;
+    QString filterFile;
+    
     if (filter.length())
     {
        int slash = filter.findRev('/');
        if (!slash)
-       {
-           filterFile = filter;
-       }
-       else 
-       {
-           filterPath = filter.left(slash);
-           filterFile = filter.mid(slash+1);
+	 filterFile = filter;
+       else {
+	 filterPath = filter.left(slash);
+	 filterFile = filter.mid(slash+1);
        }
     }
-    QRegExp regExp(filterFile, true, true);
-    QString path;
-    DIR *dp = 0L;
-    struct dirent *ep;
-    struct stat buff;
     QStringList dirs;
     {
        QStringList candidates( getResourceDirs(type));
@@ -201,38 +230,14 @@ QStringList KStandardDirs::findAllResources( const QString& type,
           dirs.append( *it + filterPath);
        }
     }    
+    if (filterFile.isEmpty())
+      filterFile = "*";
+    QRegExp regExp(filterFile, true, true);
+
     for (QStringList::ConstIterator it = dirs.begin();
 	 it != dirs.end(); it++) 
-    {
-       path = *it;
-       dp = opendir( QFile::encodeName(path));
-       if (!dp)
-          continue; // directory doesn't exist          	
+      lookupDirectory(*it, regExp, list, recursive);
 
-       while( ( ep = readdir( dp ) ) != 0L )
-       {
-         QString fn( QFile::decodeName(ep->d_name));
-         if (!recursive && !filterFile.isEmpty() && regExp.match(fn))
-             continue; // No match
-         fn = path+"/"+fn;
-         if ( stat( fn, &buff ) != 0 )
-         {
-             printf("Error statting %s:", fn.ascii());
-             perror("");
-             continue; // Couldn't stat (Why not?)
-         }
-         if ( recursive )
-         {
-             if ( S_ISDIR( buff.st_mode ))
-                dirs.append(fn);
-             if (!filterFile.isEmpty() && regExp.match(fn))
-                continue; // No match
-         }
-         if ( S_ISREG( buff.st_mode))
-             list.append( fn );	
-      }
-      closedir( dp );
-    }
     return list;
 }
 

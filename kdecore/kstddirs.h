@@ -73,13 +73,11 @@ public:
 	 * This adds another search dir to front of the fsstnd list.
 	 * @li when compiling kdelibs, the prefix is added to this.
 	 * @li when compiling a separate app, kapp adds the new prefix
-	 * @li additional dirs may be loaded from share/config/kdeglobals (?)
+	 * @li additional dirs may be loaded from kdeglobals
 	 *
-	 * @param tosave specifies whether the dir will be saved to kderc.
-	 * Any hardcoded dirs should not be saved, so kapp would make this
-	 * false.
+	 * @param dir the directory to append relative paths to
 	 */
-	void addPrefix( QString dir, bool tosave = false );
+	void addPrefix( QString dir );
 
 
 	/*
@@ -109,12 +107,10 @@ public:
 	 * of this type.
 	 * @param absdir points to directory where to look for this specific
 	 * type. Non-existant directories may be saved but pruned.
-	 * @param tosave is same as with addPrefix.
 	 * 
 	 */
 	bool addResourceDir( const QString& type, 
-			     const QString& absdir, 
-			     bool tosave = false );
+			     const QString& absdir);
 
 	/**
 	 * Tries to find resource in the following order:
@@ -164,7 +160,7 @@ public:
 	 *        into subdirectories.
 	 * @param only accept filenames that fit to filter. The filter
 	 *        may consist of an optional directory and a QRexExp 
-	 *        wildcard expression. E.g. "images/*.jpg"
+	 *        wildcard expression. E.g. "images\*.jpg" 
 	 *        
 	 * @return a list of directories matching the resource specified.
 	 */
