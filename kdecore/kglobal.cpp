@@ -123,7 +123,7 @@ KGlobal::staticQString(const char *str)
 class KStringDict : public QDict<QString>
 {
 public:
-   KStringDict() : QDict<QString>() { };
+   KStringDict() : QDict<QString>(139) { };
 };
 
 /**
