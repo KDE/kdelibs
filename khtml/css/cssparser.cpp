@@ -1457,14 +1457,15 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 #endif
         } else {
 			const QString str(value.stripWhiteSpace()); // ### Optimize
-            if (str.left(4).lower() == "url(") {
+			// ### short term hack to fix background image
+            //if (str.left(4).lower() == "url(") {
 				DOMString value(curP, endP - curP);
 				value = khtml::parseURL(value);
             	parsedValue = new CSSImageValueImpl(value, baseUrl(), this);
 #ifdef CSS_DEBUG
             kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseUrl().string() << endl;
 #endif
-			}
+			//}
         }
         break;
     }
