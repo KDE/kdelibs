@@ -410,13 +410,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	switch(id)
 	{
 	case ID_COMMENT:
-	     break;
+	    break;
 	case ID_HEAD:
-	    if(inBody)
-	    {
-		discard_until = ID_HEAD + ID_CLOSE_TAG;
-		throw exception;
-	    }
+	    throw exception;
 	    break;
 	case ID_TITLE:
 	    if(inBody) discard_until = ID_TITLE + ID_CLOSE_TAG;
@@ -548,14 +544,26 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		handled = true;
 		break;
 	    default:
+		e = new HTMLBodyElementImpl(document);
+		inBody = true;
+		document->createSelector();
+		insertNode(e);
+		handled = true;
 		break;
 	    }
 	    break;
 	case ID_HEAD:
 	    // we can get here only if the element is not allowed in head.
-	    // don't insert it
+	    // This means the body starts here...
+	    popBlock(ID_HEAD);
+	    e = new HTMLBodyElementImpl(document);
+	    inBody = true;
+	    document->createSelector();
+	    insertNode(e);
+	    handled = true;
 	    break;
 	case ID_BODY:
+	    
 	    break;
 	case ID_TABLE:
 	    switch(id)
@@ -591,7 +599,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_TBODY:
 	    switch(id)
 	    {
-	    case ID_COMMENT: 
+	    case ID_COMMENT:
 		break;
 	    case ID_COL:
 	    case ID_COLGROUP:
