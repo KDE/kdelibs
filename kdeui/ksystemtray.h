@@ -18,6 +18,7 @@
 #ifndef KSYSTEMTRAY_H
 #define KSYSTEMTRAY_H
 
+#include <kglobal.h>
 #include <qlabel.h>
 
 class KActionCollection;
@@ -97,6 +98,16 @@ public:
        @since 3.1
     */
     KActionCollection* actionCollection();
+
+    /**
+     * Loads an icon @p icon using the icon loader class of the given instance @p instance.
+     * The icon is applied the panel effect as it should only be used to be shown in the
+     * system tray.
+     * It's commonly used in the form : systray->setPixmap( systray->loadIcon( "mysystray" ) );
+     *
+     * @since 3.2
+     */
+    static QPixmap loadIcon( const QString &icon, KInstance *instance=KGlobal::instance() );
 
    protected:
 

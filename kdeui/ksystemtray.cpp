@@ -27,6 +27,7 @@
 #include <kwin.h>
 #include <kwinmodule.h>
 #include <kiconloader.h>
+#include <kconfig.h>
 #include <qxembed.h>
 
 #include <qapplication.h>
@@ -268,6 +269,14 @@ void KSystemTray::minimizeRestore( bool restore )
 KActionCollection* KSystemTray::actionCollection()
 {
     return d->actionCollection;
+}
+    
+QPixmap KSystemTray::loadIcon( const QString &icon, KInstance *instance )
+{
+    KConfig *appCfg = kapp->config();
+    KConfigGroupSaver configSaver(appCfg, "System Tray");
+    int iconWidth = appCfg->readNumEntry("systrayIconWidth", 22);
+    return instance->iconLoader()->loadIcon( icon, KIcon::Panel, iconWidth );
 }
 
 void KSystemTray::virtual_hook( int, void* )
