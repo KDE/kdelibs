@@ -666,6 +666,20 @@ public:
    * Returns the selected part of the HTML.
    */
   DOM::Range selection() const;
+  
+  /**
+   * Returns the selected part of the HTML by returning the starting and end
+   * position.
+   *
+   * If there is no selection, both nodes and offsets are equal.
+   * @param startNode returns node selection starts in
+   * @param startOffset returns offset within starting node
+   * @param endNode returns node selection ends in
+   * @param endOffset returns offset within end node.
+   * @since 3.2
+   */
+  void selection(DOM::Node &startNode, long &startOffset,
+  		DOM::Node &endNode, long &endOffset) const;
 
   /**
    * Sets the current selection.

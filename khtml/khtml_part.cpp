@@ -2987,6 +2987,13 @@ DOM::Range KHTMLPart::selection() const
     return r;
 }
 
+void KHTMLPart::selection(DOM::Node &s, long &so, DOM::Node &e, long &eo) const
+{
+    s = d->m_selectionStart;
+    so = d->m_startOffset;
+    e = d->m_selectionEnd;
+    eo = d->m_endOffset;
+}
 
 void KHTMLPart::setSelection( const DOM::Range &r )
 {
