@@ -379,6 +379,12 @@ public:
      */
     bool initialGeometrySet() const;
 
+    /**
+     * @return the size the mainwindow should have so that the central 
+     * widget will be of @param size.
+     */
+    QSize sizeForCentralWidgetSize(QSize size);
+
 public slots:
     /**
      * Makes a KDE compliant caption.

@@ -25,6 +25,8 @@
 #include "kmainwindowiface.h"
 #include <qsessionmanager.h>
 #include <qobjectlist.h>
+#include <qstyle.h>
+#include <qlayout.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -34,7 +36,6 @@
 #include <khelpmenu.h>
 #include <kmenubar.h>
 #include <kstatusbar.h>
-#include <qlayout.h>
 
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -845,6 +846,42 @@ void KMainWindow::paintEvent( QPaintEvent * )
 {
     // do nothing
 }
+
+QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
+{
+    KToolBar *tb = toolBar(); 
+    if (!tb->isHidden()) {
+        switch( tb->barPos() )
+        {
+          case KToolBar::Top:
+          case KToolBar::Bottom:
+            size += QSize(0, tb->sizeHint().height());
+            break;
+          
+          case KToolBar::Left:
+          case KToolBar::Right:
+            size += QSize(toolBar()->sizeHint().width(), 0);
+            break;
+
+          case KToolBar::Flat:
+            size += QSize(0, 3+kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
+            break;
+
+          default:
+            break;
+        }
+    }
+    KMenuBar *mb = menuBar();
+    if (!mb->isHidden()) {
+        size += QSize(0,mb->heightForWidth(size.width()));
+    }
+    QStatusBar *sb = internalStatusBar();
+    if( sb && !sb->isHidden() )
+       size += QSize(0, sb->sizeHint().height());
+
+    return size;
+}
+
 
 
 #include "kmainwindow.moc"
