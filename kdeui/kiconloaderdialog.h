@@ -60,7 +60,7 @@ public:
     virtual ~KIconLoaderCanvas();
 
     void loadDir(QString dirname, QString filter);
-    QString getCurrent() { if ( !currentItem() ) return QString::null; return currentItem()->text(); }
+    QString getCurrent() { if ( !currentItem() ) return QString::null; return currentItem()->key(); }
     QString currentDir() { return dir_name; }
 
 signals:
@@ -70,7 +70,7 @@ signals:
     void startLoading( int steps );
     void progress( int p );
     void finished();
-    
+
 private slots:
     void slotLoadDir();
     void slotCurrentChanged( QIconViewItem *item ) {
@@ -160,7 +160,7 @@ protected slots:
     void hideProgressBar() {
 	progressBar->hide();
     }
-    
+
 protected:
     void init();
     virtual void resizeEvent( QResizeEvent *e );

@@ -57,7 +57,7 @@ KIconLoaderCanvas::~KIconLoaderCanvas()
     delete loadTimer;
 }
 
-void KIconLoaderCanvas::loadDir( QString dirname, QString filter_ ) 
+void KIconLoaderCanvas::loadDir( QString dirname, QString filter_ )
 {
     dir_name = dirname;
     filter = filter_;
@@ -69,7 +69,7 @@ void KIconLoaderCanvas::slotLoadDir()
     QDir d( dir_name );
     if( !filter.isEmpty() )
    	d.setNameFilter(filter);
-    
+
     if( d.exists() ) {
 	int i = 0;
 	QApplication::setOverrideCursor( waitCursor );
@@ -83,7 +83,7 @@ void KIconLoaderCanvas::slotLoadDir()
 	    new_xpm.load( dir_name + '/' + *it, 0, KPixmap::LowColor );
 	    if( new_xpm.isNull() )
 		continue;
-	    
+	
 	    if( new_xpm.width() > 60 || new_xpm.height() > 60 ) {
 		QWMatrix m;
 		float scale;
@@ -94,8 +94,10 @@ void KIconLoaderCanvas::slotLoadDir()
 		m.scale( scale, scale );
 		new_xpm = new_xpm.xForm(m);
 	    }
-	    
-	    QIconViewItem *item = new QIconViewItem( this, *it, QIconSet( new_xpm, QIconSet::Large ) ); 
+	
+	    QFileInfo fi( *it );
+	    QIconViewItem *item = new QIconViewItem( this, fi.baseName(), QIconSet( new_xpm, QIconSet::Large ) );
+	    item->setKey( *it );
 	    item->setRenameEnabled( FALSE );
 	    item->setDragEnabled( FALSE );
 	    item->setDropEnabled( FALSE );
@@ -133,14 +135,14 @@ void KIconLoaderDialog::init()
     int w = QMAX( ok->sizeHint().width(), cancel->sizeHint().width() );
     ok->resize( w, ok->sizeHint().height() );
     cancel->resize( w, cancel->sizeHint().height() );
-    
+
     cancel->move( width() - cancel->width() - 10, canvas->y() + canvas->height() + 10 );
     ok->move( width() - cancel->width() -  ok->width() - 15, cancel->y() );
 
     progressBar = new QProgressBar( this );
     progressBar->move( 10, cancel->y() );
     progressBar->resize( width() - 20 - ok->x(), progressBar->sizeHint().height() );
-    
+
     connect( ok, SIGNAL(clicked()), this, SLOT(accept()) );
     connect( cancel, SIGNAL(clicked()), this, SLOT(reject()) );
     connect( canvas, SIGNAL(nameChanged(const QString&)), l_name, SLOT(setText(const QString&)) );
@@ -155,7 +157,7 @@ void KIconLoaderDialog::init()
 	     this, SLOT( progress( int ) ) );
     connect( canvas, SIGNAL( finished () ),
 	     this, SLOT( hideProgressBar() ) );
-    
+
     resize( 470, 350 );
     setMinimumSize( 470, 250 );
 }
