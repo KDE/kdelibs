@@ -64,7 +64,7 @@ char *k_bindtextdomain (const char* __domainname,
 # define LC_MESSAGES (-1)
 #endif
  
-#define SYSTEM_MESSAGES "kde"
+#define SYSTEM_MESSAGES "kdelibs"
 
 static char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
                             "LC_TIME","LC_NUMERIC","LC_MONETARY",0};
