@@ -338,9 +338,20 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                 // images, forms and applets/objects/embeds with name='foo'.
                 if ( attr_id == ATTR_ID ||
                      (attr_id == ATTR_NAME &&
-                      ( e->id() == ID_IMG || e->id() == ID_FORM ||
-                        e->id() == ID_APPLET || e->id() == ID_OBJECT ||
-                        e->id() == ID_EMBED) ) )
+                      ( // see http://bugs.kde.org/86036 for references
+                          e->id() == ID_A ||
+                          e->id() == ID_APPLET ||
+                          e->id() == ID_BUTTON ||
+                          e->id() == ID_EMBED ||
+                          e->id() == ID_FORM ||
+                          e->id() == ID_IMG ||
+                          e->id() == ID_INPUT ||
+                          e->id() == ID_MAP ||
+			  e->id() == ID_META || 
+                          e->id() == ID_OBJECT ||
+                          e->id() == ID_SELECT ||
+                          e->id() == ID_TEXTAREA
+                          ) ) )
                     check = true;
                 break;
             case NODE_CHILDREN:

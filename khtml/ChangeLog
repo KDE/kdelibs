@@ -1,3 +1,8 @@
+2004-07-28  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_miscimpl.cpp (getNamedItem): more investigation on tags returned
+        by name attribute in document.all
+
 2004-07-28  Leo Savernik  <l.savernik@aon.at>
 
 	* khtmlview.{cpp,h} (KHTMLToolTip::maybeTip): Query <area> elements
