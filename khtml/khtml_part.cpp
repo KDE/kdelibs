@@ -2561,9 +2561,9 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   }
 
   KURL cURL = completeURL(url);
-  // special case for <a href="">
+  // special case for <a href="">  (IE removes filename, mozilla doesn't)
   if ( url.isEmpty() )
-    cURL.setFileName( url );
+    cURL.setFileName( url ); // removes filename
 
   if ( !cURL.isValid() )
     // ### ERROR HANDLING
@@ -3582,9 +3582,11 @@ khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
     return 0L;
 }
 
+//#define DEBUG_FINDFRAME
+
 KHTMLPart *KHTMLPart::findFrame( const QString &f )
 {
-#if 0
+#ifdef DEBUG_FINDFRAME
   kdDebug(6050) << "KHTMLPart::findFrame '" << f << "'" << endl;
   FrameIt it2 = d->m_frames.begin();
   FrameIt end = d->m_frames.end();
@@ -3595,19 +3597,23 @@ KHTMLPart *KHTMLPart::findFrame( const QString &f )
   ConstFrameIt it = d->m_frames.find( f );
   if ( it == d->m_frames.end() )
   {
-    //kdDebug(6050) << "KHTMLPart::findFrame frame " << f << " not found" << endl;
+#ifdef DEBUG_FINDFRAME
+    kdDebug(6050) << "KHTMLPart::findFrame frame " << f << " not found" << endl;
+#endif
     return 0L;
   }
   else {
     KParts::ReadOnlyPart *p = (*it).m_part;
     if ( p && p->inherits( "KHTMLPart" ))
     {
-      //kdDebug(6050) << "KHTMLPart::findFrame frame " << f << " is a KHTMLPart, ok" << endl;
+#ifdef DEBUG_FINDFRAME
+      kdDebug(6050) << "KHTMLPart::findFrame frame " << f << " is a KHTMLPart, ok" << endl;
+#endif
       return (KHTMLPart*)p;
     }
     else
     {
-#if 0
+#ifdef DEBUG_FINDFRAME
       if (p)
         kdWarning() << "KHTMLPart::findFrame frame " << f << " found but isn't a KHTMLPart ! " << p->className() << endl;
       else
