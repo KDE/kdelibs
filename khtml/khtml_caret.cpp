@@ -1937,7 +1937,10 @@ kdDebug(6200) << "box " << box << " b " << box->inlineBox() << " isText " << box
       }/*end if*/
     }/*end if*/
 
+#if 0
     bool adjacent = ebit.isAdjacent();
+#endif
+
 #if DEBUG_CARETMODE > 0
     kdDebug(6200) << "adjacent " << adjacent << " _peekNext " << _peekNext << " _peekNext->isInlineTextBox: " << (_peekNext ? _peekNext->isInlineTextBox() : false) << " !((*ebit)->isInlineTextBox): " << (*ebit ? !(*ebit)->isInlineTextBox() : true) << endl;
 #endif
