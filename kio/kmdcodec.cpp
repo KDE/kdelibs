@@ -1,6 +1,6 @@
 /*
    Copyright (C) 2000 Dawit Alemayehu <adawit@kde.org>
- 
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
@@ -23,8 +23,8 @@
    RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992,
    RSA Data Security, Inc. Created 1991. All rights reserved.
       
-   The encode/decode utilities in KCodecs were adapted from
-   Ronald Tschalär LGPL'ed HTTPClient java pacakge.
+   The encode/decode utilities in KCodecs were adapted with some
+   modification from Ronald Tschalär LGPL'ed HTTPClient java pacakge.
    Copyright (C) 1996-1999. 
 */
 
@@ -33,7 +33,7 @@
 
 #include <qstring.h>
 
-//#include <kdebug.h>
+#include <kdebug.h>
 #include "kmdcodec.h"
 
 // Constants for MD5Transform routine.
@@ -56,33 +56,31 @@
 #define S43 15
 #define S44 21
 
-static Q_UINT8 PADDING[64]=
+static const char Base64EncMap[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static char Base64DecMap[128] = 
 {
-  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-// Base64 encode/decode stuff
-static char Base64EncMap[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static char* Base64DecMap = new char[128] ;
-
-#if 0
-// uuencode/uudecode stuff
-static char UUEncMap[64] =
+static const char UUEncMap[] = "`!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";
+static char UUDecMap[128] =
 {
-  0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-  0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
-  0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-  0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
-  0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-  0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
-  0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
-  0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    
 };
-static char* UUDecMap = new char[128];
-#endif
 
 // ROTATE_LEFT rotates x left n bits.
 inline Q_UINT32 rotate_left  (Q_UINT32 x, Q_UINT32 n)
@@ -170,223 +168,222 @@ void decode (Q_UINT32 *output, Q_UINT8 *input, Q_UINT32 len)
 QString KCodecs::base64Encode( const QString& data )
 {
     if ( data.isEmpty() )
-	    return QString::null;
-    
+        return QString::null;
+
     int sidx = 0, didx = 0;
-	int len = data.length();
-	int out_len = ((len+2)/3)*4;
+    int len = data.length();
+    int out_len = ((len+2)/3)*4;
     char* out = new char[out_len];
     const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(data.latin1()));
 
-	// 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
-	for ( ; sidx < len-2; sidx += 3)
-	{
-	    out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
-	    out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
-					               (buf[sidx] << 4) & 077];
-	    out[didx++] = Base64EncMap[(buf[sidx+2] >> 6) & 003 |
-					               (buf[sidx+1] << 2) & 077];
-	    out[didx++] = Base64EncMap[buf[sidx+2] & 077];
-	}
-	
-	if (sidx < len)
-	{
-	    out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
-	    if (sidx < len-1)
-	    {
-		    out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
-					                   (buf[sidx] << 4) & 077];
-		    out[didx++] = Base64EncMap[(buf[sidx+1] << 2) & 077];
-	    }
-	    else
-		    out[didx++] = Base64EncMap[(buf[sidx] << 4) & 077];
-	}
+    // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
+    for ( ; sidx < len-2; sidx += 3)
+    {
+        out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
+        out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
+                                    (buf[sidx] << 4) & 077];
+        out[didx++] = Base64EncMap[(buf[sidx+2] >> 6) & 003 |
+                                   (buf[sidx+1] << 2) & 077];
+    out[didx++] = Base64EncMap[buf[sidx+2] & 077];
+    }
 
-	// Add padding
-	for ( ; didx < out_len; didx++)
-	    out[didx] = '=';
+    if (sidx < len)
+    {
+        out[didx++] = Base64EncMap[(buf[sidx] >> 2) & 077];
+        if (sidx < len-1)
+        {
+            out[didx++] = Base64EncMap[(buf[sidx+1] >> 4) & 017 |
+                                       (buf[sidx] << 4) & 077];
+            out[didx++] = Base64EncMap[(buf[sidx+1] << 2) & 077];
+        }
+        else
+            out[didx++] = Base64EncMap[(buf[sidx] << 4) & 077];
+    }
 
-	return QString(out);    
+    // Add padding
+    for ( ; didx < out_len; didx++)
+        out[didx] = '=';
+
+    return QString(out);
 }
 
 QString KBase64::base64Decode( const QString& data )
 {
     if ( data.isEmpty() )
-	    return QString::null;    
-	
-    int len = data.length();
-	int tail = len;    
-	int out_len = tail-len/4;	
-	int map_len = strlen(Base64EncMap);	
-	char* out = new char[out_len];
-    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(data.latin1())); 	
-	
-	while (buf[tail-1] == '=')  tail--;	
-	// Fill out the Decoding map    
-	for (int idx=0; idx < map_len; idx++)
-	    Base64DecMap[Base64EncMap[idx]] = idx;	
-	// ascii printable to 0-63 conversion
-	for (int idx = 0; idx < len; idx++)
-	    buf[idx] = Base64DecMap[buf[idx]];
-	// 4-byte to 3-byte conversion
-	int sidx=0, didx=0;
-	for ( ; didx < len-2; sidx += 4, didx += 3)
-	{
-	    out[didx] = (((buf[sidx] << 2) & 255) | ((buf[sidx+1] >> 4) & 003));
-	    out[didx+1] = (((buf[sidx+1] << 4) & 255) | ((buf[sidx+2] >> 2) & 017));
-	    out[didx+2] = (((buf[sidx+2] << 6) & 255) | (buf[sidx+3] & 077) );
-	}
-	if (didx < out_len)
-	    out[didx] = (((buf[sidx] << 2) & 255) | ((buf[sidx+1] >> 4) & 003));
-	if (++didx < out_len)
-	    out[didx] = (((buf[sidx+1] << 4) & 255) | ((buf[sidx+2] >> 2) & 017));
+        return QString::null;
 
-	return QString(out);
+    int len = data.length();
+    int tail = len;
+    int out_len = tail-len/4;
+    char* out = new char[out_len];
+    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(data.latin1()));
+
+    int map_len = strlen(Base64EncMap);
+    for (int idx=0; idx < map_len; idx++)
+        Base64DecMap[Base64EncMap[idx]] = idx;
+
+    while (buf[tail-1] == '=')  tail--;
+    // ascii printable to 0-63 conversion
+    for (int idx = 0; idx < len; idx++)
+        buf[idx] = Base64DecMap[buf[idx]];
+
+    // 4-byte to 3-byte conversion
+    int sidx=0, didx=0;
+    for ( ; didx < len-2; sidx += 4, didx += 3)
+    {
+        out[didx] = (((buf[sidx] << 2) & 255) | ((buf[sidx+1] >> 4) & 003));
+        out[didx+1] = (((buf[sidx+1] << 4) & 255) | ((buf[sidx+2] >> 2) & 017));
+        out[didx+2] = (((buf[sidx+2] << 6) & 255) | (buf[sidx+3] & 077) );
+    }
+    if (didx < out_len)
+        out[didx] = (((buf[sidx] << 2) & 255) | ((buf[sidx+1] >> 4) & 003));
+
+    if (++didx < out_len)
+        out[didx] = (((buf[sidx+1] << 4) & 255) | ((buf[sidx+2] >> 2) & 017));
+
+    return QString(out);
 }
-/*
+
 QString KCodecs::uuencode( const QString& data )
 {
     if( data.isEmpty() )
         return QString::null;
-	
-	int sidx=0, didx=0;
-	int line_len = 45;	// line length, in octets
-	int len = data.length();
-	
-	char nl[] = "\n";
-	int nl_len = strlen(nl);
-	char* out = new char[(len+2)/3*4 + ((len+line_len-1)/line_len)*(nl_len+1)];
+
+    int sidx=0, didx=0;
+    int line_len = 45;	// line length, in octets
+    int len = data.length();
+
+    char nl[] = "\n";
+    int nl_len = strlen(nl);
+    char* out = new char[(len+2)/3*4 + ((len+line_len-1)/line_len)*(nl_len+1)];
     const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(data.latin1()));
 
-	// split into lines, adding line-length and line terminator
-	for ( ; sidx+line_len < len; )
-	{
-	    // line length
-	    out[didx++] = UUEncMap[line_len];
+    // split into lines, adding line-length and line terminator
+    for ( ; sidx+line_len < len; )
+    {
+        // line length
+        out[didx++] = UUEncMap[line_len];
 
-	    // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
-	    for (int end = sidx+line_len; sidx < end; sidx += 3)
-	    {
-		    out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
-		    out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
-			                       (buf[sidx] << 4) & 077];
-		    out[didx++] = UUEncMap[(buf[sidx+2] >> 6) & 003 |
-			                       (buf[sidx+1] << 2) & 077];
-		    out[didx++] = UUEncMap[buf[sidx+2] & 077];
-	    }
+        // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
+        for (int end = sidx+line_len; sidx < end; sidx += 3)
+        {
+            out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
+            out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
+                                   (buf[sidx] << 4) & 077];
+            out[didx++] = UUEncMap[(buf[sidx+2] >> 6) & 003 |
+                                (buf[sidx+1] << 2) & 077];
+            out[didx++] = UUEncMap[buf[sidx+2] & 077];
+        }
 
-	    // line terminator
-	    for (int idx=0; idx < nl_len; idx++)
-		    out[didx++] = nl[idx];
-	}
-	// line length
-	out[didx++] = UUEncMap[len-sidx];
-
-	// 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
-	for (; sidx+2 < len; sidx += 3)
-	{
-	    out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
-	    out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
-					           (buf[sidx] << 4) & 077];
-	    out[didx++] = UUEncMap[(buf[sidx+2] >> 6) & 003 |
-					           (buf[sidx+1] << 2) & 077];
-	    out[didx++] = UUEncMap[buf[sidx+2] & 077];
-	}
-
-	if (sidx < len-1)
-	{
-	    out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
-	    out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
+        // line terminator
+        for (int idx=0; idx < nl_len; idx++)
+            out[didx++] = nl[idx];
+    }
+    // line length
+    out[didx++] = UUEncMap[len-sidx];
+    // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
+    for (; sidx+2 < len; sidx += 3)
+    {
+        out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
+        out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
                                (buf[sidx] << 4) & 077];
-	    out[didx++] = UUEncMap[(buf[sidx+1] << 2) & 077];
-	    out[didx++] = UUEncMap[0];
-	}
-	else if (sidx < len)
-	{
-	    out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
-	    out[didx++] = UUEncMap[(buf[sidx] << 4) & 077];
-	    out[didx++] = UUEncMap[0];
-	    out[didx++] = UUEncMap[0];
-	}
+        out[didx++] = UUEncMap[(buf[sidx+2] >> 6) & 003 |
+                               (buf[sidx+1] << 2) & 077];
+        out[didx++] = UUEncMap[buf[sidx+2] & 077];
+    }
 
-	// line terminator
-	for (int idx=0; idx<nl_len; idx++)
-	    out[didx++] = nl[idx];
+    if (sidx < len-1)
+    {
+        out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
+        out[didx++] = UUEncMap[(buf[sidx+1] >> 4) & 017 |
+                               (buf[sidx] << 4) & 077];
+        out[didx++] = UUEncMap[(buf[sidx+1] << 2) & 077];
+        out[didx++] = UUEncMap[0];
+    }
+    else if (sidx < len)
+    {
+        out[didx++] = UUEncMap[(buf[sidx] >> 2) & 077];
+        out[didx++] = UUEncMap[(buf[sidx] << 4) & 077];
+        out[didx++] = UUEncMap[0];
+        out[didx++] = UUEncMap[0];
+    }
 
-	// sanity check
-	int out_len = strlen(out); 
-	if ( didx !=  out_len )
-	    return QString("");
+    // line terminator
+    for (int idx=0; idx<nl_len; idx++)
+        out[didx++] = nl[idx];
 
-	return QString(out);
+    // sanity check
+    int out_len = strlen(out);
+    if ( didx !=  out_len )
+        return QString("");
+
+    return QString(out);
 }
 
 QString KCodecs::uudecode( const QString& data )
 {
     if( data.isEmpty() )
-	    return QString::null;
-	
-	int len = data.length();
-	Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(data.latin1()));    
+       return QString::null;
+
+    int sidx=0, didx=0;
+    int len = data.length();
+    char* out = new char[len/4*3];
+    Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(data.latin1()));
+
     int map_len = strlen(UUEncMap);
-	for (int idx=0; idx < map_len; idx++)
-	    UUDecMap[UUEncMap[idx]] = idx;
+    for (int idx=0; idx < map_len; idx++)
+        UUDecMap[UUEncMap[idx]] = idx;
 
-	int sidx=0, didx=0;
-	char* out = new char[len/4*3];
+    for (; sidx < len; )
+    {
+        // get line length (in number of encoded octets)
+        int line_len = UUDecMap[buf[sidx++]];
+        // ascii printable to 0-63 and 4-byte to 3-byte conversion
+        int end = didx+line_len;
+        for (; didx < end-2; sidx += 4)
+        {
+            char A = UUDecMap[buf[sidx]];
+            char B = UUDecMap[buf[sidx+1]];
+            char C = UUDecMap[buf[sidx+2]];
+            char D = UUDecMap[buf[sidx+3]];
+            out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
+            out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
+            out[didx++] = ( ((C << 6) & 255) | (D & 077) );
+        }
 
-	for (; sidx < len; )
-	{
-	    // get line length (in number of encoded octets)
-	    int line_len = UUDecMap[buf[sidx++]];
-	    // ascii printable to 0-63 and 4-byte to 3-byte conversion
-	    int end = didx+line_len;
-	    for (; didx < end-2; sidx += 4)
-	    {
-		    char A = UUDecMap[buf[sidx]];
-		    char B = UUDecMap[buf[sidx+1]];
-		    char C = UUDecMap[buf[sidx+2]];
-		    char D = UUDecMap[buf[sidx+3]];
-		    out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
-		    out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
-		    out[didx++] = ( ((C << 6) & 255) | (D & 077) );
-	    }
+        if (didx < end)
+        {
+            char A = UUDecMap[buf[sidx]];
+            char B = UUDecMap[buf[sidx+1]];
+            out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
+        }
 
-	    if (didx < end)
-	    {
-		    char A = UUDecMap[buf[sidx]];
-		    char B = UUDecMap[buf[sidx+1]];
-		    out[didx++] = ( ((A << 2) & 255) | ((B >> 4) & 003) );
-	    }
-	    
-		if (didx < end)
-	    {
-		    char B = UUDecMap[buf[sidx+1]];
-		    char C = UUDecMap[buf[sidx+2]];
-		    out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
-	    }
+        if (didx < end)
+        {
+            char B = UUDecMap[buf[sidx+1]];
+            char C = UUDecMap[buf[sidx+2]];
+            out[didx++] = ( ((B << 4) & 255) | ((C >> 2) & 017) );
+        }
 
-	    // skip padding
-	    while (sidx < len  &&
-		       buf[sidx] != '\n' && buf[sidx] != '\r')
-		    sidx++;
+        // skip padding
+        while (sidx < len  && buf[sidx] != '\n' && buf[sidx] != '\r')
+            sidx++;
 
-	    // skip end of line
-	    while (sidx < len  &&
-		   (buf[sidx] == '\n' || buf[sidx] == '\r'))
-		    sidx++;
-	}
-	
-	int out_len = strlen(out);
-	if ( didx > out_len  )
-	{
+        // skip end of line
+        while (sidx < len  && (buf[sidx] == '\n' || buf[sidx] == '\r'))
+            sidx++;
+    }
+
+    int out_len = strlen(out);
+    if ( didx > out_len  )
+    {
         char* tmp = new char[didx];
-		memcpy( tmp, out, sizeof(out) );
+        memcpy( tmp, out, sizeof(out) );
         out = tmp;
     }
-	return QString(out);
+    return QString(out);
 }
-*/
+
 /******************************** KMD5 ********************************/
 
 
@@ -483,17 +480,17 @@ void KMD5::update( FILE *file, bool closeFile )
     while ((len=fread(buffer, 1, 1024, file)))
         update(buffer, len);
     
-	// Check if we got to this point because
-	// we reached EOF or an error.
-	if ( !feof( file ) )
-	{
-	    m_error = ERR_CANNOT_READ_FILE;
-		return;
+    // Check if we got to this point because
+    // we reached EOF or an error.
+    if ( !feof( file ) )
+    {
+        m_error = ERR_CANNOT_READ_FILE;
+        return;
     }
-    
-	// Close the file iff the flag is set.
+
+    // Close the file iff the flag is set.
     if ( closeFile && fclose (file) )
-	    m_error = ERR_CANNOT_CLOSE_FILE;
+        m_error = ERR_CANNOT_CLOSE_FILE;
 }
 
 void KMD5::finalize ()
@@ -501,6 +498,13 @@ void KMD5::finalize ()
 
     Q_UINT8 bits[8];
     Q_UINT32 index, padLen;
+    static Q_UINT8 PADDING[64]=
+    {
+        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    };
 
     if (m_finalized)
     {

@@ -46,6 +46,7 @@ class QCString;
 class KCodecs
 {
 public:
+
     /**
      * This method encodes the given string using the unix uuencode
      * encoding.
@@ -62,7 +63,7 @@ public:
      * @param  data the data
      * @return the uuencoded <var>data</var>
      */
-//    static QString uuencode( const QString& data );
+    static QString uuencode( const QString& data );
 
     /**
      * This method decodes the given uuencoded string.
@@ -74,7 +75,7 @@ public:
      * @param  data the uuencode-encoded data.
      * @return the decoded @p data.
      */
-//	static QString uudecode( const QString& data );
+	static QString uudecode( const QString& data );
 
     /**
      * This method encodes the given string using the base64-encoding
@@ -94,10 +95,15 @@ public:
      * @return the decoded string.
      */
 	static QString base64Decode( const QString& data );
-	
-	// @deprecated. Use base64Encode instead.
+
+    /**	
+	 * @deprecated. Use base64Encode instead.
+	 */
 	static QString encodeString( const QString& data ) { return base64Encode(data); }
-	// @deprecated. Use base64Decode instead.
+
+	/**
+	 * @deprecated. Use base64Decode instead.
+	 */
 	static QString decodeString( const QString& data ) { return base64Decode(data); }
 
 private:
