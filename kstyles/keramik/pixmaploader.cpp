@@ -34,35 +34,24 @@ using namespace Keramik;
 PixmapLoader PixmapLoader::s_instance;
 
 PixmapLoader::PixmapLoader()
-	: m_cache( 193 ),
-	  m_colorize( false ),
-	  m_hue( -1 ),
-	  m_sat( 0 ),
-	  m_val( 228 )
+	: m_cache( 193 )
 { 
 	QPixmapCache::setCacheLimit( 128 );
 	m_cache.setAutoDelete( true );
 }
 
-void PixmapLoader::setColor( const QColor& color )
+void PixmapLoader::clear()
 {
-	bool colorize = color.isValid() && color.rgb() != qRgb( 228, 228, 228 );
-	if ( ( m_colorize = colorize ) )
-		color.hsv( &m_hue, &m_sat, &m_val );
-	else
-	{
-		m_hue = -1;
-		m_sat = 0;
-		m_val = 228;
-	}
-
 	m_cache.clear();
 	QPixmapCache::clear();
 }
 
-void PixmapLoader::colorize( QImage &img )
+void PixmapLoader::colorize( QImage &img, const QColor& color )
 {
-	if ( img.isNull() ) return;
+	if ( img.isNull() || color.rgb() == qRgb( 228, 228, 228 ) ) return;
+
+	int hue = -1, sat = 0, val = 228;
+	if ( color.isValid() ) color.hsv( &hue, &sat, &val );
 
 	img = img.copy();
 	register Q_UINT32* data = reinterpret_cast< Q_UINT32* >( img.bits() );
@@ -72,16 +61,20 @@ void PixmapLoader::colorize( QImage &img )
 		QColor c( *data );
 		int h, s, v;
 		c.hsv( &h, &s, &v );
-		if ( m_hue >= 0 && h >= 0 ) h = ( h - 216 + m_hue ) % 360;
-		if ( s ) s += m_sat / 2;
-		c.setHsv( h, QMIN( s, 255 ), QMIN( v * m_val / 228, 255 ) );
-		*data++ = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
+		if ( hue >= 0 && h >= 0 ) h = ( h - 216 + hue ) % 360;
+		if ( s ) s += sat / 2;
+		c.setHsv( h, QMIN( s, 255 ), QMIN( v * val / 228, 255 ) );
+		*data = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
+		data++;
 	}
 }
 
-void PixmapLoader::makeDisabled( QImage &img )
+void PixmapLoader::makeDisabled( QImage &img, const QColor& color )
 {
 	if ( img.isNull() ) return;
+
+	int hue = -1, sat = 0, val = 228;
+	if ( color.isValid() ) color.hsv( &hue, &sat, &val );
 
 	img = img.copy();
 	register Q_UINT32* data = reinterpret_cast< Q_UINT32* >( img.bits() );
@@ -91,16 +84,18 @@ void PixmapLoader::makeDisabled( QImage &img )
 		QColor c( *data );
 		int h, s, v;
 		c.hsv( &h, &s, &v );
-		if ( m_hue >= 0 && h >= 0 ) h = ( h - 216 + m_hue ) % 360;
-		if ( s ) s += m_sat / 5;
-		c.setHsv( h, QMIN( s, 255 ), QMIN( v * m_val / 255, 255 ) );
-		*data++ = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
+		if ( hue >= 0 && h >= 0 ) h = ( h - 216 + hue ) % 360;
+		if ( s ) s += sat / 5;
+		c.setHsv( h, QMIN( s, 255 ), QMIN( v * val / 255, 255 ) );
+		*data = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
+		data++;
 	}
 }
 
-QPixmap PixmapLoader::pixmap( const QString& name, bool disabled )
+QPixmap PixmapLoader::pixmap( const QCString& name, const QColor& color, bool disabled )
 {
-	QString cacheName = name;
+	QCString cacheName;
+	cacheName.sprintf( "%s-%.8x", name.data(), color.rgb() );
 	if ( disabled ) cacheName += "-disabled";
 	QPixmap result;
 	if ( QPixmapCache::find( cacheName, result ) )
@@ -110,9 +105,9 @@ QPixmap PixmapLoader::pixmap( const QString& name, bool disabled )
 	if ( !img ) {
 		img = new QImage( qembed_findImage( name ) );
 		if ( disabled )
-			makeDisabled( *img );
-		else if ( m_colorize )
-			colorize( *img );
+			makeDisabled( *img, color );
+		else
+			colorize( *img, color );
 		m_cache.insert( cacheName, img );
 	}
 	result.convertFromImage( *img );
@@ -120,24 +115,25 @@ QPixmap PixmapLoader::pixmap( const QString& name, bool disabled )
 	return result;
 }
 
-
-QPixmap PixmapLoader::scale( const QString& name, int width, int height, bool disabled )
+QPixmap PixmapLoader::scale( const QCString& name, int width, int height, const QColor& color, bool disabled )
 {
-	QString key = name + '-' + QString::number( width ) + '-' + QString::number( height );
+	QCString key;
+	key.sprintf( "%s-%.8x-%d-%d", name.data(), color.rgb(), width, height );
 	if ( disabled ) key += "-disabled";
 	QPixmap result;
 	if ( QPixmapCache::find( key, result  ) )
 		return result;
 
-	QString cacheName = name;
+	QCString cacheName;
+	cacheName.sprintf( "%s-%.8x", name.data(), color.rgb() );
 	if ( disabled ) cacheName += "-disabled";
 	QImage* img = m_cache[ cacheName ];
 	if ( !img ) {
 		img = new QImage( qembed_findImage( name ) );
 		if ( disabled )
-			makeDisabled( *img );
-		else if ( m_colorize )
-			colorize( *img );
+			makeDisabled( *img, color );
+		else
+			colorize( *img, color );
 		m_cache.insert( cacheName, img );
 	}
 
@@ -146,7 +142,12 @@ QPixmap PixmapLoader::scale( const QString& name, int width, int height, bool di
 	return result;
 }
 
-void TilePainter::draw( QPainter *p, int x, int y, int width, int height, bool disabled )
+QSize PixmapLoader::size( const QCString& name )
+{
+	return qembed_findImage( name ).size();
+}
+
+void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const QColor& color, bool disabled )
 {
 	unsigned int scaledColumns = 0, scaledRows = 0, lastScaledColumn = 0, lastScaledRow = 0;
 	int scaleWidth = width, scaleHeight = height;
@@ -157,14 +158,14 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, bool d
 			scaledColumns++;
 			lastScaledColumn = col;
 		}
-		else scaleWidth -= tile( col, 0, disabled ).width();
+		else scaleWidth -= tile( col, 0, color, disabled ).width();
 	for ( unsigned int row = 0; row < rows(); ++row )
 		if ( rowMode( row ) != Fixed )
 		{
 			scaledRows++;
 			lastScaledRow = row;
 		}
-		else scaleHeight -= tile( 0, row, disabled ).height();
+		else scaleHeight -= tile( 0, row, color, disabled ).height();
 	if ( scaleWidth < 0 ) scaleWidth = 0;
 	if ( scaleHeight < 0 ) scaleHeight = 0;
 
@@ -176,34 +177,34 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, bool d
 		if ( scaleWidth && !scaledColumns ) xpos += scaleWidth / 2;
 		int h = rowMode( row ) == Fixed ? 0 : scaleHeight / scaledRows;
 		if ( scaledRows && row == lastScaledRow ) h += scaleHeight - scaleHeight / scaledRows * scaledRows;
-		int realH = h ? h : tile( 0, row, disabled ).height();
+		int realH = h ? h : tile( 0, row, color, disabled ).height();
 		if ( rowMode( row ) == Tiled ) h = 0;
 
 		for ( unsigned int col = 0; col < columns(); ++col )
 		{
 			int w = columnMode( col ) == Fixed ? 0 : scaleWidth / scaledColumns;
 			if ( scaledColumns && col == lastScaledColumn ) w += scaleWidth - scaleWidth / scaledColumns * scaledColumns;
-			int realW = w ? w : tile( col, row, disabled ).width();
+			int realW = w ? w : tile( col, row, color, disabled ).width();
 			if ( columnMode( col ) == Tiled ) w = 0;
 
-			if ( !tile( col, row, disabled ).isNull() )
+			if ( !tile( col, row, color, disabled ).isNull() )
 				if ( w || h )
-					p->drawTiledPixmap( xpos, ypos, realW, realH, scale( col, row, w, h, disabled ) );
-				else p->drawTiledPixmap( xpos, ypos, realW, realH, tile( col, row, disabled ) );
+					p->drawTiledPixmap( xpos, ypos, realW, realH, scale( col, row, w, h, color, disabled ) );
+				else p->drawTiledPixmap( xpos, ypos, realW, realH, tile( col, row, color, disabled ) );
 			xpos += realW;
 		}
 		ypos += realH;
 	}
 }
 
-QString TilePainter::absTileName( unsigned int column, unsigned int row ) const
+QCString TilePainter::absTileName( unsigned int column, unsigned int row ) const
 {
-	QString name = tileName( column, row );
+	QCString name = tileName( column, row );
 	if ( name.isEmpty() ) return m_name;
 	return m_name + "-" + name;
 }
 
-RectTilePainter::RectTilePainter( const QString& name,
+RectTilePainter::RectTilePainter( const QCString& name,
                                   bool scaleH, bool scaleV,
                                   unsigned int columns, unsigned int rows )
 	: TilePainter( name ),
@@ -214,10 +215,10 @@ RectTilePainter::RectTilePainter( const QString& name,
 {
 }
 
-QString RectTilePainter::tileName( unsigned int column, unsigned int row ) const
+QCString RectTilePainter::tileName( unsigned int column, unsigned int row ) const
 {
-	static QString c = "lcr", r = "tcb";
-	return QString( r.mid( row, 1 ) + c.mid( column, 1 ) );
+	static QCString c = "lcr", r = "tcb";
+	return QCString( r.mid( row, 1 ) + c.mid( column, 1 ) );
 }
 
 TilePainter::TileMode RectTilePainter::columnMode( unsigned int column ) const
@@ -233,7 +234,7 @@ TilePainter::TileMode RectTilePainter::rowMode( unsigned int row ) const
 }
 
 ActiveTabPainter::ActiveTabPainter( bool bottom )
-	: RectTilePainter( QString( "tab-" ) + ( bottom ? "bottom-" : "top-" ) + "active" ),
+	: RectTilePainter( QCString( "tab-" ) + ( bottom ? "bottom-" : "top-" ) + "active" ),
 	  m_bottom( bottom )
 {
 }
@@ -244,7 +245,7 @@ TilePainter::TileMode ActiveTabPainter::rowMode( unsigned int row ) const
 	return ( row == 1 ) ? Scaled : Fixed;
 }
 
-QString ActiveTabPainter::tileName( unsigned int column, unsigned int row ) const
+QCString ActiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 {
 	if ( m_bottom )
 		return RectTilePainter::tileName( column, row + 1 );
@@ -252,7 +253,7 @@ QString ActiveTabPainter::tileName( unsigned int column, unsigned int row ) cons
 }
 
 InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
-	: RectTilePainter( QString( "tab-" ) + ( bottom ? "bottom-" : "top-" ) + "inactive" ),
+	: RectTilePainter( QCString( "tab-" ) + ( bottom ? "bottom-" : "top-" ) + "inactive" ),
 	  m_mode( mode ), m_bottom( bottom )
 {
 }
@@ -269,7 +270,7 @@ TilePainter::TileMode InactiveTabPainter::rowMode( unsigned int row ) const
 	return ( row == 1 ) ? Scaled : Fixed;
 }
 
-QString InactiveTabPainter::tileName( unsigned int column, unsigned int row ) const
+QCString InactiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 {
 	Mode check = QApplication::reverseLayout() ? Last : First;
 	if ( column == 0 && m_mode != check ) return "separator";
@@ -278,7 +279,7 @@ QString InactiveTabPainter::tileName( unsigned int column, unsigned int row ) co
 	return RectTilePainter::tileName( column, row );
 }
 
-ScrollBarPainter::ScrollBarPainter( const QString& type, int count, bool horizontal )
+ScrollBarPainter::ScrollBarPainter( const QCString& type, int count, bool horizontal )
 	: TilePainter( name( horizontal ) ),
 	  m_type( type ),
 	  m_count( count ),
@@ -286,9 +287,9 @@ ScrollBarPainter::ScrollBarPainter( const QString& type, int count, bool horizon
 {
 }
 
-QString ScrollBarPainter::name( bool horizontal )
+QCString ScrollBarPainter::name( bool horizontal )
 {
-	return QString( "scrollbar-" ) + ( horizontal ? "hbar" : "vbar" );
+	return QCString( "scrollbar-" ) + ( horizontal ? "hbar" : "vbar" );
 }
 
 TilePainter::TileMode ScrollBarPainter::columnMode( unsigned int column ) const
@@ -303,7 +304,7 @@ TilePainter::TileMode ScrollBarPainter::rowMode( unsigned int row ) const
 	return ( m_count == 2 ) ? Scaled : Tiled;
 }
 
-QString ScrollBarPainter::tileName( unsigned int column, unsigned int row ) const
+QCString ScrollBarPainter::tileName( unsigned int column, unsigned int row ) const
 {
 	unsigned int num = ( column ? column : row ) + 1;
 	if ( m_count == 5 )
@@ -311,7 +312,7 @@ QString ScrollBarPainter::tileName( unsigned int column, unsigned int row ) cons
 		else if ( num == 4 ) num = 2;
 		else if ( num == 5 ) num = 3;
 
-	return m_type + QString::number( num );
+	return m_type + QCString().setNum( num );
 }
 
 TilePainter::TileMode SpinBoxPainter::columnMode( unsigned int column ) const
@@ -319,9 +320,9 @@ TilePainter::TileMode SpinBoxPainter::columnMode( unsigned int column ) const
 	return column == 1 ? Scaled : Fixed;
 }
 
-QString SpinBoxPainter::tileName( unsigned int column, unsigned int ) const
+QCString SpinBoxPainter::tileName( unsigned int column, unsigned int ) const
 {
-	return QString::number( column + 1 );
+	return QCString().setNum( column + 1 );
 }
 
 // vim: ts=4 sw=4 noet
