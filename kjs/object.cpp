@@ -439,10 +439,7 @@ KJSO Object::internalValue()
 
 Object Object::create(Class c)
 {
-  Object obj = Object();
-  obj.setClass(c);
-
-  return obj;
+  return Object::create(c, KJSO());
 }
 
 // factory
