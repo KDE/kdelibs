@@ -12,3 +12,6 @@ Type=bool
 [PropertyDef::X-KDE-BrowserView-Builtin]
 Type=bool
 
+[PropertyDef::X-KDE-BrowserView-PassiveMode]
+Type=bool
+
