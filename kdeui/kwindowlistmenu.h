@@ -46,10 +46,6 @@ protected slots:
     void slotUnclutterWindows();
     void slotCascadeWindows();
 
-private slots:
-    void startActivateCurrentWindow();
-    void activateCurrentWindow();
-
 private:
     KWinModule*         kwin_module;
     QMap<int,WId>       map;
