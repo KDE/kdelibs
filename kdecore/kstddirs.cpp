@@ -55,7 +55,8 @@ template class QDict<QStringList>;
 static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
-			      "wallpaper", "lib", "pixmap", "templates", 0};
+			      "wallpaper", "lib", "pixmap", "templates", 
+                              "tmp", 0};
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -437,6 +438,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
     dirs = relatives.find(type);
     if (dirs)
     {
+      bool local = true;
       for (QStringList::ConstIterator pit = prefixes.begin();
 	   pit != prefixes.end();
            pit++)
@@ -445,9 +447,12 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 	     it != dirs->end(); ++it) {
 	  QString path = *pit + *it;
 	  testdir.setPath(path);
+          if (local && !testdir.exists())
+            makeDir(path, 0700);
 	  if (testdir.exists() && !candidates->contains(path))
 	    candidates->append(path);
 	}
+        local = false;
       }
     }
     dircache.insert(type, candidates);
