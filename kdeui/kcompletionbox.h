@@ -64,16 +64,6 @@ public:
 
     virtual QSize sizeHint() const;
 
-    /**
-     * Sets the text emitted if this box is closed without selecting an item.
-     *
-     * By default, a null string is emitted if the user presses cancel or
-     * clicks elsewhere to close this completion box widget.
-     *
-     * @see
-     */
-    void setCancelledText( const QString& );
-
 public slots:
     /**
      * @returns a list of all items currently in the box.
@@ -93,6 +83,14 @@ public slots:
      */
     virtual void popup();
 
+signals:
+    /**
+     * Emitted when an item was selected, contains the text of the selected
+     * item.
+     */
+    void activated( const QString& );
+
+public slots:
     /**
      * Move the selection one line down or select the first item if nothing is selected yet.
      */
@@ -123,37 +121,12 @@ public slots:
      */
     void end();
 
-    /** Re-implemented for internal reasons.  API is not affected. */
-    virtual void show();
-
-    /** Re-implemented for internal reasons.  API is not affected. */
-    virtual void hide();
-
-signals:
-    /**
-     * Emitted when an item was selected, contains the text of the selected
-     * item.
-     */
-    void activated( const QString& );
-
-    /**
-     * Emitted if this widget is closed by clicking outsite this widgets
-     * area or by presseing the escape key.
-     */
-    void userCancelled( const QString& );
-
 protected:
     /**
      * Reimplemented from KListBox to get events from the viewport (to hide
      * this widget on mouse-click, Escape-presses, etc.
      */
     virtual bool eventFilter( QObject *, QEvent * );
-
-    /**
-     * Invoked if the user choose to ignore the current selection and close
-     * this widget.
-     */
-    void cancelled();
 
 protected slots:
     /**
@@ -166,8 +139,7 @@ private slots:
     void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
 
 private:
-    class KCompletionBoxPrivate;
-    KCompletionBoxPrivate* d;
+    QWidget *m_parent; // necessary to set the focus back
 };
 
 

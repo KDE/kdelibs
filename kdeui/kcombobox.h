@@ -443,47 +443,47 @@ public slots:
 protected slots:
 
     /**
-     * @deprecated.  BC: Remove in KDE 3.0
-     */
+    * @deprecated.
+    */
     virtual void itemSelected( QListBoxItem* ) {};
 
     /**
-     * Completes text according to the completion mode.
-     *
-     * Note: this method is @p not invoked if the completion mode is
-     * set to CompletionNone.  Also if the mode is set to @p CompletionShell
-     * and multiple matches are found, this method will complete the
-     * text to the first match with a beep to inidicate that there are
-     * more matches.  Then any successive completion key event iterates
-     * through the remaining matches.  This way the rotation functionality
-     * is left to iterate through the list as usual.
-     */
+    * Completes text according to the completion mode.
+    *
+    * Note: this method is @p not invoked if the completion mode is
+    * set to CompletionNone.  Also if the mode is set to @p CompletionShell
+    * and multiple matches are found, this method will complete the
+    * text to the first match with a beep to inidicate that there are
+    * more matches.  Then any successive completion key event iterates
+    * through the remaining matches.  This way the rotation functionality
+    * is left to iterate through the list as usual.
+    */
     virtual void makeCompletion( const QString& );
 
     /**
-     * @deprecated.  BC: Remove in KDE 3.0
+     * @deprecated
      */
-    void slotAboutToShow(){};
+    void slotAboutToShow() {}
 
     /**
-     * @deprecated.  BC: Remove in KDE 3.0
+     * @deprecated
      */
-    void slotCancelled(){};
+    void slotCancelled() {}
 
 protected:
     /**
-     * @reimplemented
-     */
+    * @reimplemented
+    */
     virtual void keyPressEvent ( QKeyEvent* );
 
     /*
-     * This function simply sets the lineedit text and
-     * highlights the text appropriately if the boolean
-     * value is set to true.
-     *
-     * @param
-     * @param
-     */
+    * This function simply sets the lineedit text and
+    * highlights the text appropriately if the boolean
+    * value is set to true.
+    *
+    * @param
+    * @param
+    */
     virtual void setCompletedText( const QString& /* */, bool /*marked*/ );
 
     /**
@@ -519,14 +519,11 @@ private:
     QPopupMenu* contextMenuInternal();
     /** initializes the context menu */
     void initPopup();
-    /** hides the popup box if completion mode is set to Popup */
-    void hideCompletionBox();
 
-    // Flag that indicates whether the popup menu should be enabled.
     bool m_bEnableMenu;
 
     // Pointer to the line editor.
-    QGuardedPtr<QLineEdit> m_pEdit; // deprecated, don't use!
+    QGuardedPtr<QLineEdit> m_pEdit; // ### remove, don't use, use lineEdit()!
 
     // indicating if we should stop return-key events from propagating
     bool m_trapReturnKey;

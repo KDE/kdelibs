@@ -19,26 +19,18 @@
    Boston, MA 02111-1307, USA.
 */
 
+
+#include "kcompletionbox.h"
 #include <qapplication.h>
 #include <qevent.h>
 
-#include <kdebug.h>
 #include <knotifyclient.h>
 
-#include "kcompletionbox.h"
-
-class KCompletionBox::KCompletionBoxPrivate
-{
-public:
-    QWidget *m_parent; // necessary to set the focus back
-    QString cancelText;
-};
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
 {
-    d = new KCompletionBoxPrivate;
-    d->m_parent = parent;
+    m_parent = parent;
 
     setFocusPolicy( NoFocus );
     setColumnMode( 1 );
@@ -48,8 +40,8 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     setVScrollBarMode( Auto );
     setHScrollBarMode( AlwaysOff );
 
-    connect( this, SIGNAL( doubleClicked( QListBoxItem * ) ),
-             SLOT( slotActivated( QListBoxItem * ) ) );
+    connect( this, SIGNAL( doubleClicked( QListBoxItem * )),
+             SLOT( slotActivated( QListBoxItem * )) );
 
     installEventFilter( this );
 }
@@ -57,7 +49,6 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
 
 KCompletionBox::~KCompletionBox()
 {
-    delete d;
 }
 
 QStringList KCompletionBox::items() const
@@ -82,7 +73,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
 
-    if ( o == d->m_parent ) {
+    if ( o == m_parent ) {
         if ( isVisible() ) {
             if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
@@ -110,63 +101,76 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     pageDown();
                     ev->accept();
                     return true;
-/*
                 case Key_Home: {
-                    // shift/ctrl involved -> let our parent handle that!
-                    bool ours = (ev->state() == 0 && currentItem() != -1);
-                    if ( ours ) {
-                        home();
-                        ev->accept();
-                    }
-                    return ours;
-                }
+		    // shift/ctrl involved -> let our parent handle that!
+		    bool ours = (ev->state() == 0 && currentItem() != -1);
+		    if ( ours ) {
+			home();
+			ev->accept();
+		    }
+		    return ours;
+		}
                 case Key_End: {
-                    bool ours = (ev->state() == 0 && currentItem() != -1);
-                    if ( ours ) {
-                        end();
-                        ev->accept();
-                    }
+		    bool ours = (ev->state() == 0 && currentItem() != -1);
+		    if ( ours ) {
+			end();
+			ev->accept();
+		    }
                     return ours;
-                }
-*/
-                case Key_Escape:
-                    cancelled();
+		}
+                case  Key_Escape:
+                    hide();
                     ev->accept();
                     return true;
-                case Key_Enter:
-                case Key_Return:
-                    if ( ev->state() & ShiftButton ) {
-                        hide();
-                        ev->accept();  // Consume the Enter event
-                        return true;
-                    }
-                    break;
                 default:
                     break;
                 }
             }
-
-            // parent loses focus -> we hide
-            else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
-                      type == QEvent::Close || type == QEvent::Hide ||
+	
+	    // parent loses focus -> we hide
+	    else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
+		      type == QEvent::Close || type == QEvent::Hide ||
                       type == QEvent::Move ) {
-                cancelled();
-            }
+		hide();
+		return false;
+	    }
+
+            else if ( type == QEvent::Move && m_parent )
+                move( m_parent->mapToGlobal(QPoint(0, m_parent->height())));
+
+            else if ( type == QEvent::Resize )
+                resize( sizeHint() );
         }
-        return false;
+    }
+
+    else if ( o == this ) {
+        switch( type ) {
+        case QEvent::Show:
+            if ( m_parent ) {
+                move( m_parent->mapToGlobal( QPoint(0, m_parent->height())));
+		qApp->installEventFilter( this );
+            }
+            resize( sizeHint() );
+            break;
+        case QEvent::Hide:
+            if ( m_parent )
+		qApp->removeEventFilter( this );
+            break;
+        default:
+            break;
+	}
     }
 
     else { // any other object received an event while we're visible
         if ( (type == QEvent::MouseButtonPress && o->parent() != this) ||
-             (type == QEvent::Move && d->m_parent &&
-              o == d->m_parent->topLevelWidget() ) ) {
-                cancelled();
-                return false;
-        }
+             (type == QEvent::Move && m_parent &&
+              o == m_parent->topLevelWidget() ))
+            hide();                    // allow presses on the scrollbar
     }
 
     return KListBox::eventFilter( o, e );
 }
+
 
 void KCompletionBox::popup()
 {
@@ -187,7 +191,7 @@ QSize KCompletionBox::sizeHint() const
     int h = QMIN( 15 * ih, (int) count() * ih ) +1;
     h = QMAX( h, KListBox::minimumSizeHint().height() );
 
-    int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
+    int w = (m_parent) ? m_parent->width() : KListBox::minimumSizeHint().width();
     w = QMAX( KListBox::minimumSizeHint().width(), w );
     return QSize( w, h );
 }
@@ -226,36 +230,6 @@ void KCompletionBox::home()
 void KCompletionBox::end()
 {
     setCurrentItem( count() -1 );
-}
-
-void KCompletionBox::show()
-{
-    if ( d->m_parent ) {
-        move( d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) ));
-        qApp->installEventFilter( this );
-    }
-    resize( sizeHint() );
-    KListBox::show();
-}
-
-void KCompletionBox::hide()
-{
-    if ( d->m_parent )
-        qApp->removeEventFilter( this );
-    KListBox::hide();
-}
-
-void KCompletionBox::setCancelledText( const QString& text )
-{
-    d->cancelText = text;
-}
-
-void KCompletionBox::cancelled()
-{
-    if ( isVisible() )
-        hide();
-    emit userCancelled( d->cancelText );
-    d->cancelText = QString::null;
 }
 
 #include "kcompletionbox.moc"

@@ -363,14 +363,14 @@ protected slots:
     virtual void makeCompletion( const QString& );
 
     /**
-     * @deprecated.  Will be rmeoved in the next major release!
+     * @deprecated.  Will be removed in the next major release!
      */
-    void slotAboutToShow(){};
+    void slotAboutToShow() {}
 
     /**
-     * @deprecated.  Will be rmeoved in the next major release!
+     * @deprecated.  Will be removed in the next major release!
      */
-    void slotCancelled(){};
+    void slotCancelled() {}
 
 protected:
 
@@ -438,8 +438,6 @@ private:
     QPopupMenu* contextMenuInternal();
     /** initializes the context menu */
     void initPopup();
-    /** hides the popup box if completion mode is set to Popup */
-    void hideCompletionBox();
 
     bool m_bEnableMenu;
     class KLineEditPrivate;
