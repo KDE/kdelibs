@@ -142,13 +142,13 @@ static int openSocket()
   {
      if (!home_dir || !home_dir[0])
      {
-        fprintf(stderr, "Aborting. $HOME not set!");
-        exit(255);
+        fprintf(stderr, "Warning: $HOME not set!\n");
+        return -1;
      }
      if (strlen(home_dir) > (MAX_SOCK_FILE-100))
      {
-        fprintf(stderr, "Aborting. Home directory path too long!");
-        exit(255);
+        fprintf(stderr, "Warning: Home directory path too long!\n");
+        return -1;
      }
      kde_home++;
      strcat(sock_file, home_dir);
@@ -162,16 +162,16 @@ static int openSocket()
   strcat(sock_file, "/socket-");
   if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
   {
-     perror("Aborting. Could not determine hostname: ");
-     exit(255);
+     perror("Warning: Could not determine hostname: ");
+     return -1;
   }
 
   /* append $DISPLAY */
   display = getDisplay();
   if (strlen(sock_file)+strlen(display)+2 > MAX_SOCK_FILE)
   {
-     fprintf(stderr, "Aborting. Socket name will be too long.\n");
-     exit(255);
+     fprintf(stderr, "Warning: Socket name will be too long.\n");
+     return -1;
   }
   strcat(sock_file, "/kdeinit-");
   strcat(sock_file, display);
@@ -179,8 +179,8 @@ static int openSocket()
 
   if (strlen(sock_file) >= sizeof(server.sun_path))
   {
-     fprintf(stderr, "Aborting. Path of socketfile exceeds UNIX_PATH_MAX.\n");
-     exit(255);
+     fprintf(stderr, "Warning: Path of socketfile exceeds UNIX_PATH_MAX.\n");
+     return -1;
   }
 
   /*
@@ -189,8 +189,8 @@ static int openSocket()
   s = socket(PF_UNIX, SOCK_STREAM, 0);
   if (s < 0) 
   {
-     perror("socket() failed: ");
-     exit(255);
+     perror("Warning: socket() failed: ");
+     return -1;
   }
 
   server.sun_family = AF_UNIX;
@@ -198,9 +198,9 @@ static int openSocket()
   socklen = sizeof(server);
   if(connect(s, (struct sockaddr *)&server, socklen) == -1) 
   {
-     perror("connect() failed: ");
+     perror("Warning: connect() failed: ");
      close(s);
-     exit(255);
+     return -1;
   }
   return s;
 }
@@ -299,9 +299,9 @@ int main(int argc, char **argv)
    klauncher_header header;
    char *start, *p, *buffer;
    char cwd[8192];
-   const char *tty;
+   const char *tty = NULL;
    long avoid_loops = 0;
-   const char* startup_id;
+   const char* startup_id = NULL;
 
    long size = 0;
    int sock = openSocket();
@@ -324,6 +324,11 @@ int main(int argc, char **argv)
       kwrapper = 1;
    else if (strcmp(start, "kdeinit_shutdown") == 0)
    {
+      if( sock < 0 )
+      {
+          fprintf( stderr, "Error: Can't contact kdeinit!\n" );
+          exit( 255 );
+      }
       header.cmd = LAUNCHER_TERMINATE_KDE;
       header.arg_length = 0;
       write_socket(sock, (char *) &header, sizeof(header));
@@ -340,6 +345,13 @@ int main(int argc, char **argv)
          exit(255); /* usage should be documented somewhere ... */
       }
       start = argv[0];
+   }
+
+   if( sock < 0 ) /* couldn't contact kdeinit, start argv[ 0 ] directly */
+   {
+      execvp( argv[ 0 ], argv );
+      fprintf( stderr, "Error: Can't run %s !\n", argv[ 0 ] );
+      exit( 255 );
    }
    
    if( !wrapper && !ext_wrapper && !kwrapper )
@@ -386,8 +398,8 @@ int main(int argc, char **argv)
       if( kwrapper )
       {
           tty = ttyname(1);
-          if (!tty)
-             tty = "";
+          if (!tty || !ttyname(2))
+             tty = "/dev/null";
           size += strlen(tty)+1;
       }
    }
