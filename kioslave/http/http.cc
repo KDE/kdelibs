@@ -225,7 +225,7 @@ void HTTPProtocol::resetSessionSettings()
   {
       m_request.charsets = config()->readEntry( "Charsets",
                                            DEFAULT_FULL_CHARSET_HEADER );
-      if ( !m_request.charsets.isEmpty() )
+      if ( m_request.charsets.isEmpty() )
         m_request.charsets += DEFAULT_PARIAL_CHARSET_HEADER;
 
       m_request.languages = config()->readEntry( "Languages",
@@ -286,10 +286,12 @@ void HTTPProtocol::resetSessionSettings()
   m_remoteConnTimeout = connectTimeout();
   m_remoteRespTimeout = responseTimeout();
 
+  setMetaData("request-id", m_request.id);
+
+
   m_bCanResume = false;
   m_bUnauthorized = false;
   m_bIsTunneled = false;
-  setMetaData("request-id", m_request.id);
 }
 
 void HTTPProtocol::setHost( const QString& host, int port,
@@ -297,8 +299,8 @@ void HTTPProtocol::setHost( const QString& host, int port,
 {
   kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << host << endl;
   
+  // Reset the webdav-capable flags for this host
   if ( m_request.hostname != host )
-    // reset the webdav-capable flags for this host
     m_davHostOk = m_davHostUnsupported = false;
 
   m_request.hostname = host;
@@ -772,7 +774,7 @@ QString HTTPProtocol::davProcessLocks()
           bracketsOpen = true;
         } else
           response += " ";
-        
+
         if ( hasMetaData( QString("davLockNot%1").arg(i) ) )
           response += "Not ";
 
@@ -792,16 +794,21 @@ bool HTTPProtocol::davHostOk()
 {
   // cached?
   if ( m_davHostOk )
+  {
+    // Call a HTTP OPTIONS to find out if we're good...
+    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davHostOk: true" << endl;
     return true;
-  else if ( m_davHostUnsupported ) {
+  }
+  else if ( m_davHostUnsupported )
+  {
+    // Call a HTTP OPTIONS to find out if we're good...
+    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davHostOk: false" << endl;
     davError( -2 );
     return false;
   }
 
-  // call a HTTP OPTIONS to find out if we're good...
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davHostOk " << endl;
-
   m_request.method = HTTP_OPTIONS;
+
   // query the server's capabilities generally, not for a specific URL
   m_request.path = "*";
   m_request.query = QString::null;
@@ -813,13 +820,16 @@ bool HTTPProtocol::davHostOk()
 
   retrieveHeader( false );
 
-  if ( m_davVersions != QString::null ) {
+  if ( m_davVersions != QString::null )
+  {
     QStringList vers = QStringList::split( ',', m_davVersions );
     QString version;
 
-    for (QStringList::iterator it = vers.begin(); it != vers.end(); it++) {
+    for (QStringList::iterator it = vers.begin(); it != vers.end(); it++)
+    {
       uint verNo = (*it).toUInt();
-      if ( verNo > 0 && verNo < 3 ) {
+      if ( verNo > 0 && verNo < 3 )
+      {
         m_davHostOk = true;
         kdDebug(7113) << "Server supports DAV version " << verNo << "." << endl;
       }
@@ -881,6 +891,7 @@ void HTTPProtocol::get( const KURL& url )
   m_request.method = HTTP_GET;
   m_request.path = url.path();
   m_request.query = url.query();
+  
   QString tmp = metaData("cache");
   if (!tmp.isEmpty())
     m_request.cache = parseCacheControl(tmp);
@@ -2451,7 +2462,7 @@ bool HTTPProtocol::readHeader()
 
     // check for proxy-based authentication
     else if (strncasecmp(buf, "Proxy-Authenticate:", 19) == 0) {
-        configAuth(trimLead(buf + 19), true);
+      configAuth(trimLead(buf + 19), true);
     }
 
     // content?
@@ -2550,13 +2561,19 @@ bool HTTPProtocol::readHeader()
 
       // md5 signature
       else if (strncasecmp(buf, "Content-MD5:", 12) == 0) {
-        m_sContentMD5 = strdup(trimLead(buf + 12));
+        m_sContentMD5 = QString::fromLatin1(trimLead(buf + 12));
       }
 
       // *** Responses to the HTTP OPTIONS method follow
       // WebDAV capabilities
       else if (strncasecmp(buf, "DAV:", 4) == 0) {
-        m_davVersions = strdup(trimLead(buf + 4));
+        if (m_davVersions.isEmpty()) {
+          m_davVersions = QString::fromLatin1(trimLead(buf + 4));
+        }
+        else {
+          m_davVersions += ',';
+          m_davVersions += QString::fromLatin1(trimLead(buf + 4));
+        }
       }
       // *** Responses to the HTTP OPTIONS method finished
     }
@@ -2594,52 +2611,52 @@ bool HTTPProtocol::readHeader()
 
   // Fixup expire date for clock drift.
   if (expireDate && (expireDate <= dateHeader))
-     expireDate = 1; // Already expired.
+    expireDate = 1; // Already expired.
 
   // Convert max-age into expireDate (overriding previous set expireDate)
   if (maxAge == 0)
-     expireDate = 1; // Already expired.
+    expireDate = 1; // Already expired.
   else if (maxAge > 0)
   {
-     if (currentAge)
-        maxAge -= currentAge;
-     if (maxAge <=0)
-        maxAge = 0;
-     expireDate = time(0) + maxAge;
+    if (currentAge)
+      maxAge -= currentAge;
+    if (maxAge <=0)
+      maxAge = 0;
+    expireDate = time(0) + maxAge;
   }
 
   if (!expireDate)
-     expireDate = time(0) + DEFAULT_CACHE_EXPIRE;
+    expireDate = time(0) + DEFAULT_CACHE_EXPIRE;
 
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
   {
-     if ((m_cookieMode == CookiesAuto) && m_bUseCookiejar)
-     {
-        // Give cookies to the cookiejar.
-        addCookies( m_request.url.url(), cookieStr );
-     }
-     else if (m_cookieMode == CookiesManual)
-     {
-        // Pass cookie to application
-        setMetaData("setcookies", cookieStr);
-     }
+    if ((m_cookieMode == CookiesAuto) && m_bUseCookiejar)
+    {
+      // Give cookies to the cookiejar.
+      addCookies( m_request.url.url(), cookieStr );
+    }
+    else if (m_cookieMode == CookiesManual)
+    {
+      // Pass cookie to application
+      setMetaData("setcookies", cookieStr);
+    }
   }
 
   if (m_bMustRevalidate)
   {
-     m_bMustRevalidate = false; // Reset just in case.
-     if (cacheValidated)
-     {
-       // Yippie, we can use the cached version.
-       // Update the cache with new "Expire" headers.
-       fclose(m_fcache);
-       m_fcache = 0;
-       updateExpireDate( expireDate, true );
-       m_fcache = checkCacheEntry( ); // Re-read cache entry
-
-       if (m_fcache)
-       {
+    m_bMustRevalidate = false; // Reset just in case.
+    if (cacheValidated)
+    {
+      // Yippie, we can use the cached version.
+      // Update the cache with new "Expire" headers.
+      fclose(m_fcache);
+      m_fcache = 0;
+      updateExpireDate( expireDate, true );
+      m_fcache = checkCacheEntry( ); // Re-read cache entry
+      
+      if (m_fcache)
+      {
           m_bCachedRead = true;
           return readHeader(); // Read header again, but now from cache.
        }

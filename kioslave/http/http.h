@@ -380,11 +380,11 @@ protected:
   HTTPState m_state;
   HTTPRequest m_request;
   QPtrList<HTTPRequest> m_requestQueue;
-  bool m_bBusy; // Busy handling request queue.
-
-  bool m_bEOF;
 
   HTTP_REV m_HTTPrev;
+  
+  bool m_bBusy; // Busy handling request queue.
+  bool m_bEOF;
 
   int m_iSize; // Expected size of message
   long m_iBytesLeft; // # of bytes left to receive in this message.
@@ -399,9 +399,10 @@ protected:
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
   QString m_intData;
+  QString m_davVersions;
+
   bool m_davHostOk;
   bool m_davHostUnsupported;
-  QString m_davVersions;
 //----------
 
   // Holds the POST data so it won't get lost on if we
