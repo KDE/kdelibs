@@ -3205,8 +3205,8 @@ QString KHTMLPart::selectedText() const
   DOM::Node n = d->m_selectionStart;
   while(!n.isNull()) {
       if(n.nodeType() == DOM::Node::TEXT_NODE && n.handle()->renderer()) {
-        QString str = n.nodeValue().string().stripWhiteSpace();
-	if(!str.isEmpty()) {
+        QString str = n.nodeValue().string();
+	if(!str.stripWhiteSpace().isEmpty()) {
           if(seenTDTag) {
 	    text += "  ";
 	    seenTDTag = false;
