@@ -445,7 +445,7 @@ void KFontDialog::display_example(const QFont& font){
   QFontInfo info = example_label->fontInfo();
   actual_family_label_data->setText(info.family());
   
- QFont::CharSet charset=selFont.charSet();
+  string.setNum(info.pointSize());
   actual_size_label_data->setText(string);
 
   if (info.bold())
