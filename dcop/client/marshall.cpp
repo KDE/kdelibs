@@ -107,7 +107,7 @@ QCString demarshal( QDataStream &stream, const QString &type )
         int i;
         stream >> i;
         result.sprintf( "%d", i );
-    } else if ( type == "uint" )
+    } else if ( type == "uint" || type == "Q_UINT32" )
     {
         uint i;
         stream >> i;
@@ -127,6 +127,10 @@ QCString demarshal( QDataStream &stream, const QString &type )
         double d;
         stream >> d;
         result.sprintf( "%f", d );
+    } else if ( type == "Q_UINT64" ) {
+        Q_UINT64 i;
+        stream >> i;
+        result.sprintf( "%ld", i );
     } else if ( type == "bool" )
     {
         bool b;
@@ -271,6 +275,12 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	arg << s.toUInt();
     else if ( type == "unsigned int" )
 	arg << s.toUInt();
+    else if ( type == "Q_UINT32" )
+	arg << s.toUInt();
+    else if ( type == "Q_UINT64" ) {
+	QVariant qv = QVariant( s );
+	arg << qv.toULongLong();
+    }
     else if ( type == "long" )
 	arg << s.toLong();
     else if ( type == "long int" )
