@@ -7,12 +7,17 @@ As a start you should have a look at doc/porting.doc in the Qt package.
 khtmlw has been replaced with khtml. 
 - Includes of html.h and htmlview.h should be replaced with 
 khtml.h and khtmlview.h. 
-- It may also be necassery to include khtmlsavedpage.h, khtmlembed.h or
+- It may also be necessary to include khtmlsavedpage.h, khtmlembed.h or
 khtmlcache.h.
 - KHTMLWidget::setDefaultFontBase() has been replaced by setFontSizes().
 See khtml.h for more information. Examples of its use can be found in
 kdehelp/konqueror/kmail.
 - Don't forget to change the link-flags! (-lkhtml instead of -lkhtmlw)
 
+* KIntegerLine, KIntLineEdit
+KIntegerLine has been renamed to KIntLineEdit. The new header file is called
+kintlineedit.h. If you were using the former KIntLineEdit from keditcl.h no
+changes should be necessary at all. It is recommended to switch to the new
+include file, though.
 
 
