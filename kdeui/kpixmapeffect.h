@@ -15,8 +15,10 @@ public:
     /**
      * Draws a pyramid gradient from color ca to color cb.
      */
-    static void pyramidGradient(KPixmap &pixmap, const QColor &ca,
-                                const QColor &cb, int ncols=3);
+    enum Effect { PyramidGradient, RectangleGradient, ConicGradient };
+
+    static void apply(KPixmap &pixmap, const QColor &ca,
+                                const QColor &cb, Effect eff, int ncols=3);
 };
     
 
