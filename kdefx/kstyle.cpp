@@ -86,7 +86,7 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
 
 	if (highcolor && allowMenuTransparency) {
-		useMenuTransparency	= settings.readBoolEntry  ("/KStyle/Settings/UseMenuTransparency", true); 
+		useMenuTransparency	= settings.readBoolEntry  ("/KStyle/Settings/UseMenuTransparency", false); 
 		menuOpacity 		= settings.readDoubleEntry("/KStyle/Settings/MenuOpacity", 0.90);
 	} else
 		useMenuTransparency = false;
