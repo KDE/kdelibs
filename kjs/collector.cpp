@@ -24,9 +24,9 @@
 #include "value.h"
 #include "internal.h"
 
-#include <collector.h>
-#include <value.h>
-#include <internal.h>
+#include "collector.h"
+#include "value.h"
+#include "internal.h"
 
 #ifndef MAX
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -66,7 +66,7 @@ struct CollectorHeap {
   int numBlocks;
   int usedBlocks;
   int firstBlockWithPossibleSpace;
-  
+
   CollectorCell **oversizeCells;
   int numOversizeCells;
   int usedOversizeCells;
@@ -83,19 +83,19 @@ void* Collector::allocate(size_t s)
 {
   if (s == 0)
     return 0L;
-  
+
   // collect if needed
   if (++heap.numAllocationsSinceLastCollect >= ALLOCATIONS_PER_COLLECTION) {
     collect();
   }
-  
+
   if (s > (unsigned)CELL_SIZE) {
     // oversize allocator
     if (heap.usedOversizeCells == heap.numOversizeCells) {
       heap.numOversizeCells = MAX(MIN_ARRAY_SIZE, heap.numOversizeCells * GROWTH_FACTOR);
       heap.oversizeCells = (CollectorCell **)realloc(heap.oversizeCells, heap.numOversizeCells * sizeof(CollectorCell *));
     }
-    
+
     void *newCell = malloc(s);
     heap.oversizeCells[heap.usedOversizeCells] = (CollectorCell *)newCell;
     heap.usedOversizeCells++;
@@ -104,11 +104,11 @@ void* Collector::allocate(size_t s)
     ((ValueImp *)(newCell))->_flags = 0;
     return newCell;
   }
-  
+
   // slab allocator
-  
+
   CollectorBlock *targetBlock = NULL;
-  
+
   int i;
   for (i = heap.firstBlockWithPossibleSpace; i < heap.usedBlocks; i++) {
     if (heap.blocks[i]->usedCells < CELLS_PER_BLOCK) {
@@ -118,21 +118,21 @@ void* Collector::allocate(size_t s)
   }
 
   heap.firstBlockWithPossibleSpace = i;
-  
+
   if (targetBlock == NULL) {
     // didn't find one, need to allocate a new block
-    
+
     if (heap.usedBlocks == heap.numBlocks) {
       heap.numBlocks = MAX(MIN_ARRAY_SIZE, heap.numBlocks * GROWTH_FACTOR);
       heap.blocks = (CollectorBlock **)realloc(heap.blocks, heap.numBlocks * sizeof(CollectorBlock *));
     }
-    
+
     targetBlock = (CollectorBlock *)calloc(1, sizeof(CollectorBlock));
     targetBlock->freeList = targetBlock->cells;
     heap.blocks[heap.usedBlocks] = targetBlock;
     heap.usedBlocks++;
   }
-  
+
   // find a free spot in the block and detach it from the free list
   CollectorCell *newCell = targetBlock->freeList;
 
@@ -168,7 +168,7 @@ bool Collector::collect()
       scr = scr->next;
     } while (scr != InterpreterImp::s_hook);
   }
-  
+
   // mark any other objects that we wouldn't delete anyway
   for (int block = 0; block < heap.usedBlocks; block++) {
 
@@ -179,11 +179,11 @@ bool Collector::collect()
       if (minimumCellsToProcess < cell) {
 	goto skip_block_mark;
       }
-	
+
       ValueImp *imp = (ValueImp *)(curBlock->cells + cell);
 
       if (!(imp->_flags & ValueImp::VI_DESTRUCTED)) {
-	
+
 	if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
 	    ((imp->_flags & ValueImp::VI_GCALLOWED) == 0 || imp->refcount != 0)) {
 	  imp->mark();
@@ -194,7 +194,7 @@ bool Collector::collect()
     }
   skip_block_mark: ;
   }
-  
+
   for (int cell = 0; cell < heap.usedOversizeCells; cell++) {
     ValueImp *imp = (ValueImp *)heap.oversizeCells[cell];
     if ((imp->_flags & (ValueImp::VI_CREATED|ValueImp::VI_MARKED)) == ValueImp::VI_CREATED &&
@@ -204,7 +204,7 @@ bool Collector::collect()
   }
 
   // SWEEP: delete everything with a zero refcount (garbage) and unmark everything else
-  
+
   int emptyBlocks = 0;
 
   for (int block = 0; block < heap.usedBlocks; block++) {
@@ -254,24 +254,24 @@ bool Collector::collect()
 	block--; // Don't move forward a step in this case
 
 	if (heap.numBlocks > MIN_ARRAY_SIZE && heap.usedBlocks < heap.numBlocks / LOW_WATER_FACTOR) {
-	  heap.numBlocks = heap.numBlocks / GROWTH_FACTOR; 
+	  heap.numBlocks = heap.numBlocks / GROWTH_FACTOR;
 	  heap.blocks = (CollectorBlock **)realloc(heap.blocks, heap.numBlocks * sizeof(CollectorBlock *));
 	}
-      } 
+      }
     }
   }
 
   if (deleted) {
     heap.firstBlockWithPossibleSpace = 0;
   }
-  
+
   int cell = 0;
   while (cell < heap.usedOversizeCells) {
     ValueImp *imp = (ValueImp *)heap.oversizeCells[cell];
-    
-    if (!imp->refcount && 
+
+    if (!imp->refcount &&
 	imp->_flags == (ValueImp::VI_GCALLOWED | ValueImp::VI_CREATED)) {
-      
+
       imp->~ValueImp();
 #ifndef DEBUG_COLLECTOR
       free((void *)imp);
@@ -285,7 +285,7 @@ bool Collector::collect()
       heap.numLiveObjects--;
 
       if (heap.numOversizeCells > MIN_ARRAY_SIZE && heap.usedOversizeCells < heap.numOversizeCells / LOW_WATER_FACTOR) {
-	heap.numOversizeCells = heap.numOversizeCells / GROWTH_FACTOR; 
+	heap.numOversizeCells = heap.numOversizeCells / GROWTH_FACTOR;
 	heap.oversizeCells = (CollectorCell **)realloc(heap.oversizeCells, heap.numOversizeCells * sizeof(CollectorCell *));
       }
 
@@ -294,17 +294,17 @@ bool Collector::collect()
       cell++;
     }
   }
-  
+
   heap.numAllocationsSinceLastCollect = 0;
-  
+
   memoryFull = (heap.numLiveObjects >= KJS_MEM_LIMIT);
 
   return deleted;
 }
 
-int Collector::size() 
+int Collector::size()
 {
-  return heap.numLiveObjects; 
+  return heap.numLiveObjects;
 }
 
 #ifdef KJS_DEBUG_MEM

@@ -22,12 +22,12 @@
 #ifndef KJS_SCOPE_CHAIN_H
 #define KJS_SCOPE_CHAIN_H
 
-#include <global.h>
+#include <kjs/global.h>
 
 namespace KJS {
 
     class ObjectImp;
-    
+
 /**
 * A scope chain node.
 */
@@ -62,15 +62,15 @@ namespace KJS {
         void clear() { deref(); _node = 0; }
         void push(ObjectImp *);
         void pop();
-        
+
         void mark();
-        
+
     private:
         ScopeChainNode *_node;
-        
+
         void deref() { if (_node && --_node->refCount == 0) release(); }
         void ref() const;
-        
+
         void release();
     };
 
