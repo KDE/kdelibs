@@ -23,6 +23,7 @@
  */
 // -------------------------------------------------------------------------
 //#define DEBUG_LAYOUT
+//#define CLIP_DEBUG
 
 
 #include <qpainter.h>
@@ -35,6 +36,7 @@
 
 #include <khtmlview.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <assert.h>
 
 
@@ -328,7 +330,7 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty)
         creg = old.intersect(creg);
 
 #ifdef CLIP_DEBUG
-    kdDebug( 6040 ) << "setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<") tx="<<tx<<" ty="<<ty<<endl;
+    kdDebug( 6040 ) << renderName() << ":" << this << ": setting clip("<<clipx<<","<<clipy<<","<<clipw<<","<<cliph<<") tx="<<tx<<" ty="<<ty<<endl;
     p->setPen(QPen(Qt::red, 1, Qt::DotLine));
     p->setBrush( Qt::NoBrush );
     p->drawRect(clipx, clipy, clipw, cliph);
@@ -740,7 +742,7 @@ void RenderBox::calcAbsoluteHorizontal()
         mr = style()->marginRight().width(cw);
 
 
-//    printf("h1: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
+    //qDebug("h1: w=%d, l=%d, r=%d, ml=%d, mr=%d",w,l,r,ml,mr);
 
     int static_distance=0;
     if ((style()->direction()==LTR && (l==AUTO && r==AUTO ))
@@ -815,34 +817,26 @@ void RenderBox::calcAbsoluteHorizontal()
         if (mr==AUTO) mr = 0;
 
         //1. solve left & width.
-        if (l==AUTO && w==AUTO && r!=AUTO)
-        {
-            w = QMIN(m_maxWidth, cw - ( r + ml + mr + pab));
+        if (l==AUTO && w==AUTO && r!=AUTO) {
+            w = kMin( int ( m_maxWidth ), kMax(cw - ( r + ml + mr + pab), int ( m_minWidth ) ));
             l = cw - ( r + w + ml + mr + pab);
         }
         else
-
         //2. solve left & right. use static positioning.
-        if (l==AUTO && w!=AUTO && r==AUTO)
-        {
-            if (style()->direction()==RTL)
-            {
+        if (l==AUTO && w!=AUTO && r==AUTO) {
+            if (style()->direction()==RTL) {
                 r = static_distance;
                 l = cw - ( r + w + ml + mr + pab);
             }
-            else
-            {
+            else {
                 l = static_distance;
                 r = cw - ( l + w + ml + mr + pab);
             }
-
         }
         else
-
         //3. solve width & right.
-        if (l!=AUTO && w==AUTO && r==AUTO)
-        {
-            w = QMIN(m_maxWidth, cw - ( l + ml + mr + pab));
+        if (l!=AUTO && w==AUTO && r==AUTO) {
+            w = kMin(int ( m_maxWidth ), kMax( int ( m_minWidth ), cw - ( l + ml + mr + pab)));
             r = cw - ( l + w + ml + mr + pab);
         }
         else
@@ -867,7 +861,7 @@ void RenderBox::calcAbsoluteHorizontal()
     m_marginRight = mr;
     m_x = l + ml + containingBlock()->borderLeft();
 
-//    printf("h: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
+    //qDebug("h: w=%d, l=%d, r=%d, ml=%d, mr=%d",w,l,r,ml,mr);
 }
 
 
@@ -1014,7 +1008,7 @@ void RenderBox::calcAbsoluteVertical()
     m_marginBottom = mb;
     m_y = t + mt + containingBlock()->borderTop();
 
-//    printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
+    //printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
 
 }
 
