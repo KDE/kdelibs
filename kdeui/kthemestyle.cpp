@@ -46,13 +46,13 @@ void KThemeStyle::polish(QApplication *app)
       newPalette.setBrush(QPalette::Active, QColorGroup::Background,
                           bgBrush);
 
-      app->setPalette(newPalette);
+      app->setPalette(newPalette, true);
   }
 }
 
 void KThemeStyle::unPolish(QApplication *app)
 {
-    app->setPalette(oldPalette, TRUE);
+    app->setPalette(oldPalette, true);
 }
 
 void KThemeStyle::polish(QWidget *w)
