@@ -11,7 +11,7 @@ class QLabel;
     */
 class Test : public QWidget
 {
-  Q_OBJECT;
+  Q_OBJECT
   
 public:
   /**@name methods */

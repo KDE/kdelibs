@@ -17,7 +17,7 @@
 
 class Dummy : public QObject
 {
- Q_OBJECT;
+ Q_OBJECT
 
  public slots:
    void printMessage(KProcess *proc)

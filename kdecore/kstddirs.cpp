@@ -30,6 +30,8 @@
 #include "kdebug.h"
 #include "kinstance.h"
 
+template class QDict<QStringList>;
+
 static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "cgi", "config", "exe",

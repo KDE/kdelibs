@@ -2,16 +2,19 @@
 #include <stdio.h>
 #include <kprotocolmanager.h>
 #include <kapp.h>
+#include <stdlib.h>
+
 bool check(QString txt, QString a, QString b)
 {
   printf("%s : checking '%s' against expected value '%s'... ",
          txt.data(), a.data(), b.data());
-  if (a == b)
+  if (a == b) 
     printf("ok\n");
   else {
     printf("KO ! \n");
     exit(1);
   }
+  return true; 
 }
 
 int main(int argc, char *argv[]) 

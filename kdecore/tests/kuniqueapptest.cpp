@@ -20,6 +20,7 @@
 #include "kglobal.h"
 
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 class TestApp : public KUniqueApplication
