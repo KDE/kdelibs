@@ -149,7 +149,7 @@ public:
    * @param name the item name
    * @returns the pointer to the KFileItem
    **/
-  KFileItem* find( const QString& name );
+  KFileItem* findByName( const QString& name );
 
   /**
    * @returns the list of file items. The list may be incomplete if

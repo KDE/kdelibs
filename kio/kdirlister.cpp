@@ -407,7 +407,7 @@ KFileItem* KDirLister::find( const KURL& _url )
   return 0L;
 }
 
-KFileItem* KDirLister::find( const QString& name )
+KFileItem* KDirLister::findByName( const QString& name )
 {
   QListIterator<KFileItem> it = m_lstFileItems;
   for( ; it.current(); ++it )
