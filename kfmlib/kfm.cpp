@@ -321,10 +321,10 @@ void KFM::moveClient( const char *_src, const char *_dest )
 
 void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
 {
-    warning( "KFM call: selectRootIcons");
+    //warning( "KFM call: selectRootIcons");
     if ( !test() )
 	return;
-    warning( "KFM doing call");
+    //warning( "KFM doing call");
     
     ipc->selectRootIcons( _x, _y, _w, _h, _add );
 }
