@@ -43,7 +43,7 @@ public:
 	inline SubClass(const std::string& s) : mys(s) {}
 	inline SubClass(const char* c) : mys(c) {}
 	inline SubClass& operator=(const std::string& s) {mys=s; return *this;}
-	inline SubClass& operator=(const char*c) {mys=c; return *this}
+	inline SubClass& operator=(const char*c) {mys=c; return *this;}
 //	inline operator const std::string() const {return mys;}
 	inline const std::string& string() const {return mys;}
 };
