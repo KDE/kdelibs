@@ -1,4 +1,4 @@
-lib_LTLIBRARIES= kimg_eps.la kimg_xview.la kimg_krl.la \
+kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la kimg_krl.la \
 	         $(TIFF_MODULE) kimg_ico.la
 
 if HAVE_LIBTIFF
