@@ -37,6 +37,7 @@ Comment[mk]=Кутивче стил (без тема)
 Comment[nl]=themaloze Pillbox(Pillendoos)-stijl.
 Comment[no]=Pilleboks uten tema
 Comment[no_NY]=Pillbox-stil utan tema
+Comment[oc]=Estil sense tema Pillbox.
 Comment[pl]=Styl Pillbox, bez motywów
 Comment[pt_BR]=Estilo sem tema Pillbox
 Comment[pt]=Estilo caixa
@@ -49,6 +50,7 @@ Comment[sv]=Otemad bunker-stil.
 Comment[ta]=Pillbox ¯Õ¸ÕÅ¢øÄ¡¾ À¡½¢.
 Comment[tr]=Temasız Hap Kutusu stili
 Comment[uk]=Стиль 'маленька скринька' без теми
+Comment[zh_CN.GB2312]=Pillbox 无主题风格。
 Comment[zh_TW.Big5]=非主題式的確堡風格
 [KDE]
 widgetStyle=pillboxstyle.la
