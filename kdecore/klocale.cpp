@@ -1024,7 +1024,7 @@ QString i18n(const char* text) {
   if (instance)
      return instance->translate(text);
 #endif
-  return QString::fromLatin1(text);
+  return QString::fromUtf8(text);
 }
 
 void KLocale::initInstance() {
