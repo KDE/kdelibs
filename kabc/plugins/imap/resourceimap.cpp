@@ -65,8 +65,8 @@ bool ResourceIMAP::doOpen()
 {
   // Ensure that there is a kmail running
   QString error;
-  int result = KDCOPServiceStarter::self()->findServiceFor( "kmail", QString::null, QString::null, &error, &mAppId );
-  KMessageBox::sorry( 0, mAppId );
+  int result = KDCOPServiceStarter::self()->findServiceFor( "DCOP/ResourceBackend/IMAP", QString::null, QString::null, &error, &mAppId );
+  KMessageBox::sorry( 0, error );
   return ( result == 0 );
 }
 
@@ -98,7 +98,6 @@ Ticket * ResourceIMAP::requestSaveTicket()
 
 bool ResourceIMAP::load()
 {
-  qDebug( "+++ResourceIMAP::load()" );
   KTempFile tempFile( QString::null, ".vcf" );
   // For loading, send a DCOP call off to KMail
   DCOPClient* dcopClient = kapp->dcopClient();
