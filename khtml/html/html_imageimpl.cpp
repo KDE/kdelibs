@@ -115,7 +115,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
     switch (attr->attrId)
     {
     case ATTR_SRC:
-        imageURL = khtml::parseURL(attr->value());
+        m_imageURL = khtml::parseURL(attr->value());
         break;
     case ATTR_WIDTH:
         addCSSLength(CSS_PROP_WIDTH, attr->value());
@@ -194,7 +194,7 @@ void HTMLImageElementImpl::attach()
         renderImage->setAlt(alt);
         m_render = renderImage;
         if(m_render) r->addChild(m_render, nextRenderer());
-        renderImage->setImageUrl(imageURL,
+        renderImage->setImageUrl(m_imageURL,
                                  static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
 
     }
@@ -212,7 +212,7 @@ void HTMLImageElementImpl::applyChanges(bool top, bool force)
     // a script has executed
     if (m_render)
         static_cast<RenderImage *>(m_render)
-            ->setImageUrl(imageURL,
+            ->setImageUrl(m_imageURL,
                           static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
     setChanged(false);
 }

@@ -57,13 +57,15 @@ public:
     bool isServerMap() const { return ( ismap && !usemap.length() );  }
     QImage currentImage() const;
 
+    DOMString imageURL() const { return m_imageURL; }
+
 protected:
     bool ismap;
 
     /**
      * The URL of this image.
      */
-    DOMString imageURL;
+    DOMString m_imageURL;
 
     // text to display as long as the image isn't available
     DOMString alt;
