@@ -771,6 +771,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         } else
             flat = true;
         break;
+    case ID_KEYGEN:
+        n = new HTMLKeygenElementImpl(document, form);
+        break;
     case ID_LABEL:
         n = new HTMLLabelElementImpl(document);
         break;

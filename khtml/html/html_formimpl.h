@@ -414,6 +414,30 @@ protected:
     bool m_multiple : 1;
 };
 
+// -------------------------------------------------------------------------
+
+class HTMLKeygenElementImpl : public HTMLSelectElementImpl
+{
+public:
+    HTMLKeygenElementImpl(DocumentPtr *doc);
+    HTMLKeygenElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
+
+    virtual ushort id() const;
+
+    DOMString type() const;
+
+    long selectedIndex() const;
+    void setSelectedIndex( long index );
+
+    // ### this is just a rough guess
+    virtual bool isEnumeratable() const { return false; }
+
+    virtual void parseAttribute(AttrImpl *attr);
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
+
+private:
+    void init(DocumentPtr*);
+};
 
 // -------------------------------------------------------------------------
 

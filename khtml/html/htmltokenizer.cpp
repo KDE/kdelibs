@@ -1608,7 +1608,7 @@ void HTMLTokenizer::enlargeScriptBuffer(int len)
     scriptCodeMaxSize = newsize;
 }
 
-void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
+void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
 {
     assert(!cachedScript.isEmpty());
     bool finished = false;

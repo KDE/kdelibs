@@ -1817,6 +1817,63 @@ void HTMLSelectElementImpl::notifyOptionSelected(HTMLOptionElementImpl *selected
 
 // -------------------------------------------------------------------------
 
+HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc)
+    : HTMLSelectElementImpl(doc)
+{
+    init(doc);
+}
+
+HTMLKeygenElementImpl::HTMLKeygenElementImpl(DocumentPtr* doc, HTMLFormElementImpl* f)
+    : HTMLSelectElementImpl(doc, f)
+{
+    init(doc);
+}
+
+void HTMLKeygenElementImpl::init(DocumentPtr* doc)
+{
+    HTMLOptionElementImpl* o = new HTMLOptionElementImpl(doc, form());
+    addChild(o);
+    TextImpl* t = new TextImpl(doc, DOMString("christmas present"));
+    o->addChild(t);
+}
+
+
+ushort HTMLKeygenElementImpl::id() const
+{
+    return ID_KEYGEN;
+}
+
+void HTMLKeygenElementImpl::parseAttribute(AttrImpl* attr)
+{
+    switch(attr->attrId)
+    {
+    case ATTR_CHALLENGE:
+        break;
+    default:
+        // skip HTMLSelectElementImpl parsing!
+        HTMLGenericFormElementImpl::parseAttribute(attr);
+    }
+}
+
+bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
+{
+    bool successful = false;
+    QCString enc_name = fixUpfromUnicode(codec, name().string());
+
+    encoded_values += enc_name;
+
+    // pop up the fancy certificate creation dialog here
+
+    encoded_values += "deadbeef";
+
+    // in case the user wasn't too stupid and pressed <cancel>-button
+    successful = true;
+
+    return successful;
+}
+
+// -------------------------------------------------------------------------
+
 HTMLOptGroupElementImpl::HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
 {
