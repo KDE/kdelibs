@@ -154,8 +154,7 @@ void Window::put(const UString &p, const KJSO &v)
   } else if (p == "onload") {
     if (v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
-      // doesn't work yet
-      part->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
+      part->htmlDocument().body().setAttribute("onload", s);
     }
   } else
     Imp::put(p, v);
