@@ -5,13 +5,10 @@ lib_LTLIBRARIES = libkwalletclient.la
 
 libkwalletclient_la_LDFLAGS = $(KDE_RPATH) $(all_libraries) -version-info 1:0 -no-undefined
 libkwalletclient_la_LIBADD = $(LIB_QT) ../../dcop/libDCOP.la
-libkwalletclient_la_SOURCES =	kwalletentry.cc \
-				kwallet.skel \
+libkwalletclient_la_SOURCES =   kwallet.skel \
 				kwallet.cc
 
 libkwalletclient_la_METASOURCES = AUTO
 
 include_HEADERS = kwallet.h
-
-noinst_HEADERS = kwalletentry.h
 
