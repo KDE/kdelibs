@@ -544,7 +544,8 @@ int KAction::plug( QWidget *w, int index )
     if ( d->m_kaccel )
         updateShortcut( menu, id );
     else if ( !d->m_cut.isNull() )
-        kdWarning(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
+        // FIXME: make kdWarning() post 3.0
+        kdDebug(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
