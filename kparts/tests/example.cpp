@@ -10,9 +10,6 @@ Shell::Shell( KPart *part1, KPart *part2 )
   m_part1 = part1;
   m_part2 = part2;
 
-  insertChild( m_part1 );
-  insertChild( m_part2 );
-  
   m_manager = new KEmbedManager( this );
 
   connect( m_manager, SIGNAL( activePartChanged( KPart *, KPart * ) ),
