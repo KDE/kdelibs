@@ -107,29 +107,51 @@ public:
    */
   void showLabels(bool);
 
-    /**
-     * This gets the current position of the seperator in the current units.
-     */
-    int seperatorPos();
 
-    /**
-     * This sets the position of the seperator to the specified position. The position
-     * is specified in the currently selected units.
-     */
-    void setSeperatorPos(int pos);
+  /**
+   * @deprecated Use separatorPos() instead.
+   */
+  int seperatorPos();
 
-    /**
-     * This gets the current position of the seperator in absolute 
-     * (pixel) units.
-     */
-    int absSeperatorPos();
+  /**
+   * @deprecated Use setSeperatorPos() instead.
+   */
+  void setSeperatorPos(int pos);
 
-    /**
-     * This sets the position of the seperator to the specified position.
-     * The position is specified in absolute units (pixels) irrespective
-     * of the the currently selected units.
-     */
-    void setAbsSeperatorPos(int pos, bool do_resize = true);
+  /**
+   * @deprecated Use absSeperatorPos() instead.
+   */
+  int absSeperatorPos();
+
+  /**
+   * @deprecated Use setAbsSeperatorPos() instead.
+   */
+  void setAbsSeperatorPos(int pos, bool do_resize = true);
+
+  /**
+   * This gets the current position of the separator in the current
+   * units.
+   */
+  int separatorPos();
+
+  /**
+   * This sets the position of the seperator to the specified position.
+   * The position is specified in the currently selected units.
+   */
+  void setSeparatorPos(int pos);
+
+  /**
+   * This gets the current position of the separator in absolute 
+   * (pixel) units.
+   */
+  int absSeparatorPos();
+
+  /**
+   * This sets the position of the seperator to the specified position.
+   * The position is specified in absolute units (pixels) irrespective
+   * of the the currently selected units.
+   */
+  void setAbsSeparatorPos(int pos, bool do_resize = true);
 
     /**
      * Get the current units.
@@ -170,10 +192,11 @@ private:
   // Should we show labels?
   bool showlabels;
 
-    // The divider widget
-    QFrame *divider;
+  // The divider widget
+  QFrame *divider;
 
-    bool eventFilter(QObject *, QEvent *);
+  // Filter the events from the divider
+  bool eventFilter(QObject *, QEvent *);
 
     // The position in pixel units
     int position;

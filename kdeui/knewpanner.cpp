@@ -163,17 +163,45 @@ void KNewPanner::showLabels(bool newval)
      resizeEvent(0);
 }
 
-int KNewPanner::seperatorPos()
+int seperatorPos()
+{
+  fprintf(stderr,
+	  "seperatorPos() is deprecated, use separatorPos() insead.");
+  return separatorPos();
+}
+
+void setSeperatorPos(int pos)
+{
+  fprintf(stderr,
+	  "setSeparatorPos() is deprecated, use setSeparatorPos() insead.");
+  setSeparatorPos(pos);
+}
+
+int absSeperatorPos()
+{
+  fprintf(stderr,
+	  "absSeparatorPos() is deprecated, use absSeparatorPos() insead.");
+  return absSeparatorPos();
+}
+
+void setAbsSeperatorPos(int pos, bool do_resize)
+{
+  fprintf(stderr,
+	  "setAbsSeparatorPos() is deprecated, use setAbsSeparatorPos() insead.");
+  setAbsSeparatorPos(pos, do_resize);
+}
+
+int KNewPanner::separatorPos()
 {
   return position;
 }
 
-void KNewPanner::setSeperatorPos(int pos)
+void KNewPanner::setSeparatorPos(int pos)
 {
   position = pos;
 }
 
-void KNewPanner::setAbsSeperatorPos(int pos, bool do_resize)
+void KNewPanner::setAbsSeparatorPos(int pos, bool do_resize)
 {
     pos= checkValue(pos);
 
@@ -187,7 +215,7 @@ void KNewPanner::setAbsSeperatorPos(int pos, bool do_resize)
     }
 }
 
-int KNewPanner::absSeperatorPos()
+int KNewPanner::absSeparatorPos()
 {
     int value;
 
