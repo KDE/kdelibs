@@ -116,7 +116,7 @@ public:
   static KApplication* getKApplication() { return KApp; }
 
   /** Return the logical application name as set in the constructor.  */
-  const QString appName() const { return aAppName; }
+  QString appName() const { return aAppName; }
 
   /**
 	* Retrieve the application config object.
@@ -286,7 +286,7 @@ public:
    * The default for this directory is $KDEDIR/share/doc/HTML
    * @return the name of the directory
    */
-  static const QString kde_htmldir();
+  static QString kde_htmldir();
 
   /**
    * Returns the directory where KDE applications store their .desktop file
@@ -294,7 +294,7 @@ public:
    * The default for this directory is $KDEDIR/share/applnk
    * @return the name of the directory
    */
-  static const QString kde_appsdir();
+  static QString kde_appsdir();
 
   /**
    * Returns the directory where KDE icons are stored
@@ -302,7 +302,7 @@ public:
    * The default for this directory is $KDEDIR/share/icons
    * @return the name of the directory
    */
-  static const QString kde_icondir();
+  static QString kde_icondir();
 
   /** 	
    * Returns the directory where KDE applications store their specific data
@@ -310,7 +310,7 @@ public:
    * The default for this directory is $KDEDIR/share/apps
    * @return the name of the directory
    */
-  static const QString kde_datadir();
+  static QString kde_datadir();
 
   /**
    * Returns the directory where locale-specific information (like
@@ -319,7 +319,7 @@ public:
    * The default for this directory is $KDEDIR/share/locale
    * @return the name of the directory
    */
-  static const QString kde_localedir();
+  static QString kde_localedir();
 
   /**
    * Returns the directory where cgi scripts are stored
@@ -327,7 +327,7 @@ public:
    * The default for this directory is $KDEDIR/cgi-bin
    * @return the name of the directory
    */
-  static const QString kde_cgidir();
+  static QString kde_cgidir();
 
   /**
    * Returns the directory where sound data are stored.
@@ -338,7 +338,7 @@ public:
    *
    * @return the name of the directory
    */
-  static const QString kde_sounddir();
+  static QString kde_sounddir();
 
   /**
    * Returns the directory where toolbar icons are stored
@@ -346,7 +346,7 @@ public:
    * The default for this directory is $KDEDIR/share/toolbar
    * @return the name of the directory
    */
-  static const QString kde_toolbardir();
+  static QString kde_toolbardir();
 
   /**
    * Returns the directory where wallpapers are stored
@@ -354,7 +354,7 @@ public:
    * The default for this directory is $KDEDIR/share/wallpapers
    * @return the name of the directory
    */
-  static const QString kde_wallpaperdir();
+  static QString kde_wallpaperdir();
 
   /**
    * Returns the directory where executable programs are stored
@@ -362,7 +362,7 @@ public:
    * The default for this directory is $KDEDIR/bin
    * @return the name of the directory
    */
-  static const QString kde_bindir();
+  static QString kde_bindir();
 
   /**
    * Returns the directory where KParts are stored
@@ -370,7 +370,7 @@ public:
    * The default for this directory is $KDEDIR/parts
    * @return the name of the directory
    */
-  static const QString kde_partsdir();
+  static QString kde_partsdir();
 
   /**
    * Returns the directory where config files are stored
@@ -378,7 +378,7 @@ public:
    * The default for this directory is $KDEDIR/share/config
    * @return the name of the directory
    */
-  static const QString kde_configdir();
+  static QString kde_configdir();
 
 
  /**
@@ -387,7 +387,7 @@ public:
   * The default for this directory is $KDEDIR/share/mimelnk
   * @return the name of the directory
   */
-  static const QString kde_mimedir();
+  static QString kde_mimedir();
 
   /**
    * Get the local KDE base dir
@@ -434,7 +434,7 @@ public:
 	* "-caption", otherwise it will be equivalent to the name of the
 	* executable.
 	*/
-  const QString getCaption() const;
+  QString getCaption() const;
 
   /** Get a file name in order to make a temporary copy of your
 	* document.
@@ -444,7 +444,7 @@ public:
 	* @return A new filename for auto-saving. You have to free() this
 	* yourself, otherwise you have a memory leak!
 	*/
-  const QString tempSaveName( const QString& pFilename );
+  QString tempSaveName( const QString& pFilename );
 
   /** Check if there is an auto-save file for the document you want to
 	* open.
@@ -455,7 +455,7 @@ public:
 	* @return The full path of the file to open. You must free() this
 	* pointer yourself, otherwise you have a memory leak.
 	*/
-  const QString checkRecoverFile( const QString& pFilename, bool& bRecover );
+  QString checkRecoverFile( const QString& pFilename, bool& bRecover );
 
   /**
 	* Returns true if the KLocale object for this application has already
@@ -727,6 +727,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.73  1999/05/18 00:40:23  steffen
+// Implemented lazy getIcon/getMiniIcon. Otherwise the code to defer creation of the iconloader is worthless. We now have 46 less system calls (mainly access() and other filesystem stuff) at startup ;-)
+//
 // Revision 1.72  1999/05/06 10:37:12  kulow
 // I don't know why I spent several days removing headers from kapp.h when
 // the next commit adds one ;(

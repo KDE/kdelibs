@@ -959,7 +959,7 @@ QString KApplication::findFile( const QString& file )
 }
 
 
-const QString KApplication::getCaption() const
+QString KApplication::getCaption() const
 {
   if( !aCaption.isNull() )
 	return aCaption;
@@ -1265,7 +1265,7 @@ QString KApplication::kdedir()
 
 /* maybe we could read it out of a config file, but
    this can be added later */
-const QString KApplication::kde_htmldir()
+QString KApplication::kde_htmldir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1276,7 +1276,7 @@ const QString KApplication::kde_htmldir()
   return dir;
 }
 
-const QString KApplication::kde_appsdir()
+QString KApplication::kde_appsdir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1287,7 +1287,7 @@ const QString KApplication::kde_appsdir()
   return dir;
 }
 
-const QString KApplication::kde_icondir()
+QString KApplication::kde_icondir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1298,7 +1298,7 @@ const QString KApplication::kde_icondir()
   return dir;
 }
 
-const QString KApplication::kde_datadir()
+QString KApplication::kde_datadir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1309,7 +1309,7 @@ const QString KApplication::kde_datadir()
   return dir;
 }
 
-const QString KApplication::kde_localedir()
+QString KApplication::kde_localedir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1320,7 +1320,7 @@ const QString KApplication::kde_localedir()
   return dir;
 }
 
-const QString KApplication::kde_cgidir()
+QString KApplication::kde_cgidir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1331,7 +1331,7 @@ const QString KApplication::kde_cgidir()
   return dir;
 }
 
-const QString KApplication::kde_sounddir()
+QString KApplication::kde_sounddir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1342,7 +1342,7 @@ const QString KApplication::kde_sounddir()
   return dir;
 }
 
-const QString KApplication::kde_toolbardir()
+QString KApplication::kde_toolbardir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1353,7 +1353,7 @@ const QString KApplication::kde_toolbardir()
   return dir;
 }
 
-const QString KApplication::kde_wallpaperdir()
+QString KApplication::kde_wallpaperdir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1364,7 +1364,7 @@ const QString KApplication::kde_wallpaperdir()
   return dir;
 }
 
-const QString KApplication::kde_bindir()
+QString KApplication::kde_bindir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1375,7 +1375,7 @@ const QString KApplication::kde_bindir()
   return dir;
 }
 
-const QString KApplication::kde_partsdir()
+QString KApplication::kde_partsdir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1386,7 +1386,7 @@ const QString KApplication::kde_partsdir()
   return dir;
 }
 
-const QString KApplication::kde_configdir()
+QString KApplication::kde_configdir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1397,7 +1397,7 @@ const QString KApplication::kde_configdir()
   return dir;
 }
 
-const QString KApplication::kde_mimedir()
+QString KApplication::kde_mimedir()
 {
   static QString dir;
   if (dir.isNull()) {
@@ -1463,7 +1463,7 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
 }
 
 
-const QString KApplication::tempSaveName( const QString& pFilename )
+QString KApplication::tempSaveName( const QString& pFilename )
 {
   QString aFilename;
 
@@ -1491,7 +1491,7 @@ const QString KApplication::tempSaveName( const QString& pFilename )
 }
 
 
-const QString KApplication::checkRecoverFile( const QString& pFilename,
+QString KApplication::checkRecoverFile( const QString& pFilename,
         bool& bRecover )
 {
   QString aFilename;
