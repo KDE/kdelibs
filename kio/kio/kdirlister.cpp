@@ -1883,6 +1883,9 @@ bool KDirLister::matchesFilter( const KFileItem *item ) const
 bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 {
   Q_ASSERT( item );
+  // Don't lose time determining the mimetype if there is no filter
+  if ( d->mimeFilter.isEmpty() && d->mimeExcludeFilter.isEmpty() )
+      return true;
   return matchesMimeFilter( item->mimetype() );
 }
 
