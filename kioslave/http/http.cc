@@ -5380,7 +5380,7 @@ QString HTTPProtocol::createNegotiateAuth()
 QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 {
   uint len;
-  QString auth, user, passwd;
+  QString auth, user, domain, passwd;
   QCString strauth;
   QByteArray buf;
 
@@ -5400,6 +5400,11 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     strauth = m_strAuthorization.latin1();
     len = m_strAuthorization.length();
   }
+  if ( user.contains('\\') ) {
+    domain = user.section( '\\', 0, 0);
+    user = user.section( '\\', 1 );
+  }
+
   kdDebug(7113) << "(" << m_pid << ") NTLM length: " << len << endl;
   if ( user.isEmpty() || passwd.isEmpty() || len < 4 )
     return QString::null;
@@ -5409,7 +5414,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     // create a response
     QByteArray challenge;
     KCodecs::base64Decode( strauth.right( len - 5 ), challenge );
-    KNTLM::getAuth( buf, challenge, user, passwd, QString::null, QString::null, false, false );
+    KNTLM::getAuth( buf, challenge, user, passwd, domain, QString::null, false, false );
   }
   else
   {
