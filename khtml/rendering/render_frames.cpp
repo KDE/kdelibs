@@ -711,9 +711,11 @@ void RenderPartObject::updateWidget()
 // ugly..
 void RenderPartObject::close()
 {
+    RenderPart::close();
+
     if ( element()->id() != ID_IFRAME )
         updateWidget();
-    RenderPart::close();
+    // deleted here
 }
 
 

@@ -1,5 +1,8 @@
 2003-10-20  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_frames.cpp (close): reorder. updateWidget() might
+	delete this.
+
 	* html/html_formimpl.cpp (value): return the DOM "defaultValue" when we have
 	no renderer.
 	(encoding): submit textarea even if display=none (#49829)
