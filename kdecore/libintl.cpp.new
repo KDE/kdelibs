@@ -60,6 +60,26 @@ Cambridge, MA 02139, USA.  */
 #define LOCALE_ALIAS_PATH "/usr/share/local"
 #endif     
 
+#if defined(HAVE_ARGZ_H)
+#ifdef __BEGIN_DECLS
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#define __BEGIN_DECLS
+#define __END_DECLS
+#define _ARGZ_H_WORKAROUND_
+extern "C" {
+#endif
+# include <argz.h>
+#ifdef _ARGZ_H_WORKAROUND_
+}
+#endif
+#undef __BEGIN_DECLS
+#undef __END_DECLS
+#ifdef HAVE_SYS_CDEFS_H
+#include <sys/cdefs.h>
+#endif
+#endif
+
 #if defined STDC_HEADERS
 # include <stdlib.h>
 #endif
@@ -125,26 +145,6 @@ extern int errno;
 
 #if HAVE_LIMITS_H
 # include <limits.h>
-#endif
-
-#if defined(HAVE_ARGZ_H)
-#ifdef __BEGIN_DECLS
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-#define __BEGIN_DECLS
-#define __END_DECLS
-#define _ARGZ_H_WORKAROUND_
-extern "C" {
-#endif
-# include <argz.h>
-#ifdef _ARGZ_H_WORKAROUND_
-}
-#endif
-#undef __BEGIN_DECLS
-#undef __END_DECLS
-#ifdef HAVE_SYS_CDEFS_H
-#include <sys/cdefs.h>
-#endif
 #endif
 
 #if (defined HAVE_MMAP && defined HAVE_MUNMAP) 
