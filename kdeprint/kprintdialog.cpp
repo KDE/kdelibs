@@ -56,6 +56,7 @@
 #include <kconfig.h>
 #include <kguiitem.h>
 #include <kstdguiitem.h>
+#include <kapplication.h>
 
 #define	SHOWHIDE(widget,on)	if (on) widget->show(); else widget->hide();
 
@@ -133,6 +134,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_extbtn = new KPushButton(this);
 	QToolTip::add(d->m_extbtn, i18n("Show/Hide Advanced Options"));
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
+	QPushButton	*m_help = new KPushButton(KGuiItem(i18n("&Help"), "help"), this);
 
 	// layout creation
 	QVBoxLayout	*l1 = new QVBoxLayout(this, 10, 10);
@@ -147,6 +149,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l1->addLayout(l2);
 	l2->addWidget(d->m_extbtn,0);
 	l2->addWidget(d->m_options,0);
+	l2->addWidget(m_help,0);
 	l2->addStretch(1);
 	l2->addWidget(d->m_ok,0);
 	l2->addWidget(m_cancel,0);
@@ -194,6 +197,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(d->m_wizard,SIGNAL(clicked()),SLOT(slotWizard()));
 	connect(d->m_extbtn, SIGNAL(clicked()), SLOT(slotExtensionClicked()));
 	connect(d->m_filter, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
+	connect(m_help, SIGNAL(clicked()), SLOT(slotHelp()));
 
 	KConfig	*config = KGlobal::config();
 	config->setGroup("KPrinter Settings");
@@ -604,6 +608,11 @@ void KPrintDialog::slotToggleFilter(bool on)
 {
 	KMManager::self()->enableFilter(on);
 	initialize(d->m_printer);
+}
+
+void KPrintDialog::slotHelp()
+{
+	kapp->invokeHelp(QString::null, "kdeprint");
 }
 
 #include "kprintdialog.moc"
