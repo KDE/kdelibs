@@ -244,12 +244,12 @@ KDateTable::mousePressEvent(QMouseEvent *e)
       return;
     }
   pos=7*(row-1)+col+1;
-  if(pos<firstday)
+  if(pos+dayoff<=firstday)
     { // this day is in the previous month
       KNotifyClient::beep();
       return;
     }
-  if(firstday+numdays<=pos)
+  if(firstday+numdays<pos+dayoff)
     { // this date is in the next month
       KNotifyClient::beep();
       return;
