@@ -726,6 +726,11 @@ public:
 
   void setFlat (bool flag);
 
+  /**
+   * @return the number of items in the toolbar
+   */
+  int count();
+
 signals:
     /**
      * Emitted when button @p id is clicked.

@@ -1294,8 +1294,6 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
   else
     items->insert(_index, item);
   item-> resize (_size, item_size-2);
-  if (position == Flat)
-    item->move(100,100);       // Nasty hack : move item out of sight
   if (position != Flat)
     item->show();
   updateRects(true);
@@ -1823,7 +1821,7 @@ void KToolBar::setIconText(IconText icontext)
 KToolBar::IconText KToolBar::iconText() const
 {
   return icon_text;
-} 
+}
 
 bool KToolBar::enable(BarStatus stat)
 {
@@ -1879,8 +1877,8 @@ void KToolBar::setFlat (bool flag)
     //debug ("Flat");
     position = Flat;
     horizontal = false;
-    for (KToolBarItem *b = items->first(); b; b=items->next()) // Nasty hack:
-      b->move(100,100);       // move items out of sight
+    for (KToolBarItem *b = items->first(); b; b=items->next())
+      b->hide();       // move items out of sight
     enableFloating(false);
   }
   else //unflat
@@ -1888,11 +1886,17 @@ void KToolBar::setFlat (bool flag)
     context->changeItem (i18n("Flat"), CONTEXT_FLAT);
     //debug ("Unflat");
     setBarPos(lastPosition);
+    for (KToolBarItem *b = items->first(); b; b=items->next())
+      b->show();
     enableFloating(true);
   }
   emit moved(Flat); // KTM will block this->updateRects
   updateRects();
 }
 
-#include "ktoolbar.moc"
+int KToolBar::count()
+{
+  return items->count();
+}
 
+#include "ktoolbar.moc"
