@@ -931,85 +931,128 @@ int KThemeStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
     return(h);
 }
 
-void KThemeStyle::drawPopupMenuItem(QPainter *p, bool checkable, int /*maxpmw*/,
-                                    int tab, QMenuItem *mi, const QPalette &pal,
-                                    bool act, bool enabled, int x, int y, int w,
-                                    int h)
+// I changed the following method to be based from Qt's instead of my own
+// wacky code. Works much better now :P (mosfet)
+static const int motifItemFrame         = 2;    // menu item frame width
+static const int motifSepHeight         = 2;    // separator item height
+static const int motifItemHMargin       = 3;    // menu item hor text margin
+static const int motifItemVMargin       = 2;    // menu item ver text margin
+static const int motifArrowHMargin      = 6;    // arrow horizontal margin
+static const int motifTabSpacing        = 12;   // space between text and tab
+static const int motifCheckMarkHMargin  = 2;    // horiz. margins of check mark
+static const int windowsRightBorder     = 12;       // right border on windowsstatic const int windowsCheckMarkWidth = 12;       // checkmarks width on windows                                                                        
+
+void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
+                                     int tab, QMenuItem* mi,
+                                     const QPalette& pal, bool act,
+                                     bool enabled, int x, int y, int w, int h)
 {
-    WidgetType widget = act && enabled ? MenuItemOn : MenuItemOff;
-    int offset = decoWidth(widget);
-    int pWidth = QMAX(isPixmap(CheckMark) ? uncached(CheckMark)->width()+2 : 0 ,
-                      12);
-    int pOffset=0;
-    const QColorGroup cg = *colorGroup(!enabled ? pal.disabled() : act ?
-                                       pal.active() : pal.normal(),
-                                       widget);
-    if(mi->isSeparator()){
-        p->setPen(cg.dark());
-        p->drawLine(x, y, x+w, y);
-        p->setPen(cg.light());
-        p->drawLine(x, y+1, x+w, y+1);
-        return;
+    bool dis = !enabled;
+    const QColorGroup &g = dis ? *colorGroup(pal.normal(), MenuItemOff) :
+        *colorGroup(pal.normal(), MenuItemOn);
+    
+    QColorGroup itemg = dis ? *colorGroup(pal.disabled(), MenuItemOff)
+        : act ? *colorGroup(pal.active(), MenuItemOn)
+        : *colorGroup(pal.normal(), MenuItemOff);
+
+    if (checkable)
+        maxpmw = QMAX( maxpmw, 12 ); 
+    int checkcol = maxpmw;
+
+    if (mi->isSeparator()){
+        p->setPen(g.dark());
+	p->drawLine(x, y, x+w, y);
+	p->setPen(g.light());
+	p->drawLine(x, y+1, x+w, y+1);
+	return;
     }
-    drawBaseButton(p, x, y, w,  h, cg, act && enabled, false, widget);
-    /*
-    if(mi->isChecked()){
-        if (act && enabled){
-            qDrawShadePanel(p, x+offset, y+offset, pWidth, h-offset*2, cg,
-                            true, 1, &cg.brush(QColorGroup::Button));
-        }
-        else{
-            qDrawShadePanel(p, x+offset, y+offset, pWidth, h-offset*2, cg,
-                            true, 1, &cg.brush(QColorGroup::Midlight));
-        }
-    } */
-    if(mi->iconSet()){
-        QIconSet::Mode mode = enabled ? QIconSet::Normal : QIconSet::Disabled;
-        if (act && enabled )
+
+    drawBaseButton(p, x, y, w, h, g, act, false, act ? MenuItemOn :
+                   MenuItemOff);
+
+    if ( mi->iconSet() ) {
+	QIconSet::Mode mode = dis?QIconSet::Disabled:QIconSet::Normal;
+	if (act && !dis)
             mode = QIconSet::Active;
-        QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
+	QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
         int pixw = pixmap.width();
-        int pixh = pixmap.height();
-        QRect cr(x+offset+2, y+offset+2, pWidth, h-offset*2);
-        QRect pmr(0, 0, pixw, pixh );
-        pmr.moveCenter(cr.center());
-        p->setPen(cg.text());
-        p->drawPixmap(pmr.topLeft(), pixmap);
-        pOffset = 1;
+	int pixh = pixmap.height();
+	QRect cr(x, y, checkcol, h);
+	QRect pmr(0, 0, pixw, pixh);
+        pmr.moveCenter( cr.center() );
+        p->setPen(itemg.text());
+	p->drawPixmap(pmr.topLeft(), pixmap );
 
     }
-    else if(checkable && mi->isChecked()){
-        drawCheckMark(p, x+offset, y+offset, pWidth, h-offset*2, cg, act,
-                      !enabled);
-        pOffset = 1;
+    else if(checkable) {
+        int mw = checkcol + motifItemFrame;
+        int mh = h - 2*motifItemFrame;
+        if (mi->isChecked()){
+            drawCheckMark( p, x + motifItemFrame,
+                           y+motifItemFrame, mw, mh, itemg, act, dis );
+        }
     }
+
+    p->setPen(act ? g.highlightedText() : g.buttonText());
+
+    QColor discol;
+    if (dis) {
+        discol = itemg.text();
+        p->setPen(discol);
+    }
+
+    int xm = motifItemFrame + checkcol + motifItemHMargin;
 
     QString s = mi->text();
-    p->setPen(enabled ? cg.text() : cg.light());
-    if(!s.isNull()){
+    if (!s.isNull()) {
         int t = s.find( '\t' );
+        int m = motifItemVMargin;
         const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
-        if (t >= 0){
-            p->drawText(x+w-tab-offset, y+offset, tab, h-offset*2,
-                        text_flags, s.mid(t+1));
-        }
-        p->drawText(x+offset+pWidth+2, y+offset, w-pWidth-offset*2,
-                     h-offset*2, text_flags, s, t);
-    }
-    else if(mi->pixmap()){ // Not sure if this is correct...
+        if (t >= 0) {
+            if (dis && !act) {
+                p->setPen(g.light());
+		p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame+1,
+                            y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ));
+		p->setPen(discol);
+	    }
+	    p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame,
+                        y+m, tab, h-2*m, text_flags, s.mid( t+1 ));
+	}
+	if (dis && !act) {
+	    p->setPen(g.light());
+	    p->drawText(x+xm+1, y+m+1, w-xm+1, h-2*m, text_flags, s, t);
+	    p->setPen(discol);
+	}
+	p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
+    } else if (mi->pixmap()) {
         QPixmap *pixmap = mi->pixmap();
-        if (pixmap->depth() == 1)
-            p->setBackgroundMode(OpaqueMode );
-        p->drawPixmap( x+offset+2, y+offset+2, *pixmap );
-        if ( pixmap->depth() == 1 )
-            p->setBackgroundMode(TransparentMode);
+	if (pixmap->depth() == 1)
+            p->setBackgroundMode(OpaqueMode);
+	p->drawPixmap( x+xm, y+motifItemFrame, *pixmap);
+	if (pixmap->depth() == 1)
+	    p->setBackgroundMode(TransparentMode);
     }
-    if (mi->popup()){
-        int dim = h-10;
-        drawArrow(p, RightArrow, false, x+w-dim-offset-4,
-                  y+5, dim, dim, cg, mi->isEnabled());
+    if (mi->popup()) {
+        int dim = (h-2*motifItemFrame) / 2;
+	if (act) {
+	    if (!dis)
+		discol = white;
+            QColorGroup g2(discol, g.highlight(),
+                           white, white,
+                           dis ? discol : white,
+                           discol, white);
+	    drawArrow(p, RightArrow, FALSE,
+                      x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
+                      dim, dim, g2, TRUE);
+	} else {
+	    drawArrow(p, RightArrow,
+                      FALSE,
+                      x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
+                      dim, dim, g, mi->isEnabled() );
+        }
     }
 }
+
 
 void KThemeStyle::drawFocusRect(QPainter *p, const QRect &r,
                                 const QColorGroup &g, const QColor *c,
