@@ -30,6 +30,7 @@
 class LprHandler;
 class PrintcapEntry;
 class LpcHelper;
+class KPrinter;
 
 class KMLprManager : public KMManager
 {
@@ -45,11 +46,12 @@ public:
 	DrMain* loadFileDriver(const QString&);
 	bool createPrinter(KMPrinter*);
 	bool removePrinter(KMPrinter*);
-	
+
 	QString driverDbCreationProgram();
 	QString driverDirectory();
-	
+
 	LpcHelper* lpcHelper()	{ return m_lpchelper; }
+	QString printOptions(KPrinter*);
 
 protected:
 	void listPrinters();

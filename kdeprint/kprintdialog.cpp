@@ -423,7 +423,7 @@ void KPrintDialog::done(int result)
 		opts["kde-preview"] = (d->m_preview->isChecked() ? "1" : "0");
 		opts["kde-isspecial"] = (prt->isSpecial() ? "1" : "0");
 		opts["kde-special-command"] = prt->option("kde-special-command");
-
+		
 		// merge options with KMPrinter object options
 		QMap<QString,QString>	popts = (prt->isEdited() ? prt->editedOptions() : prt->defaultOptions());
 		for (QMap<QString,QString>::ConstIterator it=popts.begin(); it!=popts.end(); ++it)

@@ -25,6 +25,9 @@
 #include "kmmanager.h"
 #include "kmtimer.h"
 
+#include <kmessagebox.h>
+#include <klocale.h>
+
 KMPropWidget::KMPropWidget(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
@@ -44,6 +47,11 @@ void KMPropWidget::slotChange()
 {
 	KMTimer::self()->hold();
 	bool	value = requestChange();
+	if (!value)
+	{
+		KMessageBox::error(this, i18n("<qt>Unable to change printer properties. Error received from manager:<p>%1</p></qt>").arg(KMManager::self()->errorMsg()));
+		KMManager::self()->setErrorMsg(QString::null);
+	}
 	KMTimer::self()->release(value);
 }
 

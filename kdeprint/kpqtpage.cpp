@@ -32,6 +32,7 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #define ORIENT_PORTRAIT_ID	0
 #define ORIENT_LANDSCAPE_ID	1
@@ -279,7 +280,9 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		{
 			DrBase	*ch = opt->choices()->at(m_pagesize->currentItem());
 			if (ch && (incldef || ch->name() != opt->get("default")))
+			{
 				opts["PageSize"] = ch->name();
+			}
 		}
 	}
 	else

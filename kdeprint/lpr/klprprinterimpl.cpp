@@ -19,6 +19,7 @@
 
 #include "klprprinterimpl.h"
 #include "kprinter.h"
+#include "kmlprmanager.h"
 
 #include <kstandarddirs.h>
 #include <qfile.h>
@@ -41,7 +42,9 @@ bool KLprPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 		return false;
 
 	cmd = QString::fromLatin1("%1 -P %1").arg(m_exepath).arg(quote(printer->printerName()));
-	// something to do with options
+	QString	opts = static_cast<KMLprManager*>(KMManager::self())->printOptions(printer);
+	if (!opts.isEmpty())
+		cmd += (" " + opts);
 	return true;
 }
 

@@ -38,6 +38,8 @@ public:
 	DrMain* loadDbDriver(const QString&);
 	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
 	PrintcapEntry* createEntry(KMPrinter*);
+	bool removePrinter(KMPrinter*, PrintcapEntry*);
+	QString printOptions(KPrinter*);
 
 private:
 	MaticBlock* loadMaticData(const QString&);
@@ -47,6 +49,7 @@ private:
 
 private:
 	QString	m_exematicpath;
+	QString	m_ncpath, m_smbpath, m_rlprpath;
 };
 
 #endif

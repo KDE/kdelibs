@@ -105,3 +105,8 @@ bool LprHandler::removePrinter(KMPrinter*, PrintcapEntry*)
 {
 	return true;
 }
+
+QString LprHandler::printOptions(KPrinter*)
+{
+	return QString::null;
+}

@@ -25,6 +25,7 @@
 #include "driver.h"
 #include "kpipeprocess.h"
 #include "kmmanager.h"
+#include "kprinter.h"
 
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -43,6 +44,9 @@ MaticHandler::MaticHandler(KMManager *mgr)
 	QString	PATH = getenv("PATH");
 	PATH.append(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	m_exematicpath = KStandardDirs::findExe("lpdomatic", PATH);
+	m_ncpath = KStandardDirs::findExe("nc");
+	m_smbpath = KStandardDirs::findExe("smbclient");
+	m_rlprpath = KStandardDirs::findExe("rlpr");
 }
 
 bool MaticHandler::validate(PrintcapEntry *entry)
@@ -227,21 +231,21 @@ QString MaticHandler::createPostpipe(const KURL& url)
 	QString	str;
 	if (prot == "socket")
 	{
-		str += ("| " + KStandardDirs::findExe("nc"));
+		str += ("| " + m_ncpath);
 		str += (" " + url.host());
 		if (url.port() != 0)
 			str += (" " + QString::number(url.port()));
 	}
 	else if (prot == "lpd")
 	{
-		str += ("| " + KStandardDirs::findExe("rlpr") + " -q -h");
+		str += ("| " + m_rlprpath + " -q -h");
 		QString	h = url.host(), p = url.path().mid(1);
 		str += (" -P " + p + "\\@" + h);
 	}
 	else if (prot == "smb")
 	{
 		QStringList	p = QStringList::split('/', url.path(), false);
-		str += ("| (\\n echo \\\"print -\\\"\\n cat \\n) | " + KStandardDirs::findExe("smbclient"));
+		str += ("| (\\n echo \\\"print -\\\"\\n cat \\n) | " + m_smbpath);
 		QString	work, server, printer;
 		if (p.count() > 1)
 		{
@@ -268,11 +272,17 @@ QString MaticHandler::createPostpipe(const KURL& url)
 
 DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry)
 {
-	QString	filename = maticFile(entry);
+	// we need to use a copy of the driver, as the driver
+	// is not self-contained. If the printer is removed (when
+	// changing printer name), the template would be also removed
+	QString	origfilename = maticFile(entry);
+	QString	filename = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
+	::system(QFile::encodeName("cp " + origfilename + " " + filename));
 	DrMain	*driver = loadMaticDriver(filename);
 	if (driver)
 	{
 		driver->set("template", filename);
+		driver->set("temporary", "true");
 		return driver;
 	}
 	else
@@ -339,7 +349,8 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		QTextStream	tin(&inFile), tout(&tmpFile);
 		QString	line, optname;
 		int	p(-1), q(-1);
-		tout << "$postpipe = \"" << postpipe << "\";" << endl;
+		if (!postpipe.isEmpty())
+			tout << "$postpipe = \"" << postpipe << "\";" << endl;
 		while (!tin.atEnd())
 		{
 			line = tin.readLine();
@@ -381,9 +392,12 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 {
 	QString	prot = prt->device().protocol();
-	if (prot != "lpd" && prot != "smb" && prot != "socket" && prot != "parallel")
+	if ((prot != "lpd" || m_rlprpath.isEmpty()) &&
+		(prot != "socket" || m_ncpath.isEmpty()) &&
+		(prot != "smb" || m_smbpath.isEmpty()) &&
+		 prot != "parallel")
 	{
-		manager()->setErrorMsg(i18n("Unsupported backend."));
+		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
 		return NULL;
 	}
 	if (m_exematicpath.isEmpty())
@@ -399,5 +413,36 @@ PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 	entry->addField("lp", Field::String, (prot != "parallel" ? "/dev/null" : prt->device().path()));
 	entry->addField("if", Field::String, m_exematicpath);
 	entry->addField("af", Field::String, "/etc/foomatic/lpd/"+prt->printerName()+".lom");
+	if (!prt->description().isEmpty())
+		entry->aliases << prt->description();
 	return entry;
+}
+
+bool MaticHandler::removePrinter(KMPrinter *prt, PrintcapEntry *entry)
+{
+	// remove Foomatic driver
+	QString	af = entry->field("af");
+	if (af.isEmpty())
+		return true;
+	if (!QFile::remove(af))
+	{
+		manager()->setErrorMsg(i18n("Unable to remove driver file %1.").arg(af));
+		return false;
+	}
+	return true;
+}
+
+QString MaticHandler::printOptions(KPrinter *printer)
+{
+	QMap<QString,QString>	opts = printer->options();
+	QString	str;
+	for (QMap<QString,QString>::Iterator it=opts.begin(); it!=opts.end(); ++it)
+	{
+		if (it.key().startsWith("kde-") || it.key().startsWith("_kde"))
+			continue;
+		str += (" " + it.key() + "=" + (*it));
+	}
+	if (!str.isEmpty())
+		str.prepend("-J '").append("'");
+	return str;
 }

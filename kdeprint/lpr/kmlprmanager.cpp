@@ -30,6 +30,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kprinter.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -258,7 +259,7 @@ bool KMLprManager::savePrintcapFile()
 bool KMLprManager::createPrinter(KMPrinter *prt)
 {
 	// remove existing printcap entry
-	PrintcapEntry	*oldEntry = m_entries.take(prt->printerName());
+	PrintcapEntry	*oldEntry = m_entries.find(prt->printerName());
 
 	// look for the handler and re-create entry
 	LprHandler	*handler(0);
@@ -283,10 +284,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	// and there's an old entry (sometimes needed to keep the backend
 	// like in Foomatic)
 	if (!prt->driver() && oldEntry)
-		prt->setDriver(loadPrinterDriver(prt, true));
-
-	// now we can safely remove the old entry
-	delete oldEntry;
+		prt->setDriver(handler->loadDriver(prt, oldEntry));
 
 	QString	sd = LprSettings::self()->baseSpoolDir();
 	if (sd.isEmpty())
@@ -304,6 +302,8 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	PrintcapEntry	*entry = handler->createEntry(prt);
 	if (!entry)
 		return false;	// error should be set in the handler
+	// old entry can be removed now
+	m_entries.remove(prt->printerName());
 	entry->name = prt->printerName();
 	entry->addField("sh", Field::Boolean);
 	entry->addField("mx", Field::Integer, "0");
@@ -318,7 +318,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	{
 		if (prt->driver())
 		{
-			result = savePrinterDriver(prt, prt->driver());
+			result = handler->savePrinterDriver(prt, entry, prt->driver());
 		}
 	}
 	return result;
@@ -365,4 +365,17 @@ QString KMLprManager::driverDirectory()
 {
 	QString	dbDirs = "/usr/share/foomatic/db/source";
 	return dbDirs;
+}
+
+QString KMLprManager::printOptions(KPrinter *prt)
+{
+	KMPrinter	*mprt = findPrinter(prt->printerName());
+	QString	opts;
+	if (mprt)
+	{
+		LprHandler	*handler = findHandler(mprt);
+		if (handler)
+			return handler->printOptions(prt);
+	}
+	return QString::null;
 }

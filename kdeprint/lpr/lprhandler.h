@@ -26,6 +26,7 @@ class PrintcapEntry;
 class KMPrinter;
 class DrMain;
 class KMManager;
+class KPrinter;
 
 class LprHandler
 {
@@ -40,6 +41,7 @@ public:
 	virtual bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
 	virtual PrintcapEntry* createEntry(KMPrinter*);
 	virtual bool removePrinter(KMPrinter*, PrintcapEntry*);
+	virtual QString printOptions(KPrinter*);
 
 	QString name() const;
 	KMManager* manager() const;
