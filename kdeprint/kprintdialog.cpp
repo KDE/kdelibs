@@ -72,7 +72,8 @@ class KPrintDialog::KPrintDialogPrivate
 {
 public:
 	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
-	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard, *m_extbtn, *m_filter;
+	KPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_extbtn;
+	QPushButton	*m_wizard, *m_filter;
 	QCheckBox	*m_preview;
 	QLineEdit	*m_cmd;
 	TreeComboBox	*m_printers;
