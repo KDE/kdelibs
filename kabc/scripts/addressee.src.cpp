@@ -18,6 +18,9 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
+#include <qregexp.h>
+
 #include <ksharedptr.h>
 #include <kdebug.h>
 #include <kapplication.h>
@@ -305,7 +308,8 @@ QString Addressee::fullEmail( const QString &email ) const
   if ( realName().isEmpty() )
     text = e;
   else {
-    if ( realName().find( ',' ) != -1 )
+    QRegExp needQuotes( "[^ 0-9A-Za-z\\x0080-\\xFFFF]" );
+    if ( realName().find( needQuotes ) != -1 )
       text = "\"" + realName() + "\" <" + e + ">";
     else
       text = realName() + " <" + e + ">";
