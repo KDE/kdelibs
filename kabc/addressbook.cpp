@@ -724,8 +724,6 @@ bool AddressBook::removeResource( Resource *resource )
 
   resource->setAddressBook( 0 );
 
-  d->mManager->remove( resource );
-
   disconnect( resource, SIGNAL( loadingFinished( Resource* ) ),
               this, SLOT( resourceLoadingFinished( Resource* ) ) );
   disconnect( resource, SIGNAL( savingFinished( Resource* ) ),
@@ -735,6 +733,8 @@ bool AddressBook::removeResource( Resource *resource )
               this, SLOT( resourceLoadingError( Resource*, const QString& ) ) );
   disconnect( resource, SIGNAL( savingError( Resource*, const QString& ) ),
               this, SLOT( resourceLoadingError( Resource*, const QString& ) ) );
+
+  d->mManager->remove( resource );
 
   return true;
 }
