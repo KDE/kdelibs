@@ -237,7 +237,9 @@ int KPopupMenu::insertTitle(const QString &text, int id, int index)
 {
     KPopupTitle *titleItem = new KPopupTitle();
     titleItem->setTitle(text);
-    return(insertItem(titleItem, id, index));
+    int ret = insertItem(titleItem, id, index);
+    setItemEnabled(id, false);
+    return ret;
 }
 
 int KPopupMenu::insertTitle(const QPixmap &icon, const QString &text, int id,
@@ -245,7 +247,9 @@ int KPopupMenu::insertTitle(const QPixmap &icon, const QString &text, int id,
 {
     KPopupTitle *titleItem = new KPopupTitle();
     titleItem->setTitle(text, &icon);
-    return(insertItem(titleItem, id, index));
+    int ret = insertItem(titleItem, id, index);
+    setItemEnabled(id, false);
+    return ret;
 }
 
 void KPopupMenu::changeTitle(int id, const QString &text)

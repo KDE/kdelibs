@@ -1,4 +1,4 @@
-#include <qapplication.h>
+#include <kapplication.h>
 #include <qwidget.h>
 #include <qcursor.h>
 #include "kpopupmenu.h"
@@ -30,10 +30,10 @@ public:
 
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    KApplication app(argc, argv, "kpopupmenutest");
     DemoWidget w;
     app.setMainWidget(&w);
-    app.setFont(QFont("helvetica", 12, QFont::Bold), TRUE);
+    w.setFont(QFont("helvetica", 12, QFont::Bold), TRUE);
     w.show();
     return app.exec();
 }
