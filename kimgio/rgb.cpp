@@ -14,7 +14,8 @@
  *     mapmode != NORMAL (e.g. dithered); Images with 16 bit
  *     precision or more than 4 layers are stripped down.
  * writing:
- *     Run Length Encoded (RLE)
+ *     Run Length Encoded (RLE) or Verbatim (uncompressed)
+ *     (whichever is smaller)
  *
  * Please report if you come across rgb/rgba/sgi/bw files that aren't
  * recognized. Also report applications that can't deal with images
@@ -372,7 +373,7 @@ uint SGIImage::compact(uchar *d, uchar *s)
 }
 
 
-bool SGIImage::scanData(QImage& img)
+bool SGIImage::scanData(const QImage& img)
 {
 	Q_UINT32 *start = m_starttab;
 	QCString lineguard(m_xsize * 2);
@@ -440,14 +441,14 @@ void SGIImage::writeHeader()
 	kdDebug(399) << "Description: " << desc << endl;
 	desc.truncate(79);
 
-	char *id = "KDE kimgio";
+	char id[] = "KDE kimgio", *s = id;
 	for (i = 0; i < desc.length(); i++)
 		m_imagename[i] = desc.latin1()[i];
 	for (; i < 80; i++)
 		m_imagename[i] = '\0';
 	if (desc.length() < 68)
-		for (i = 69; *id; i++)
-			m_imagename[i] = *id++;
+		for (i = 69; *s; i++)
+			m_imagename[i] = *s++;
 
 	m_stream.writeRawBytes(m_imagename, 80);
 	m_stream << m_colormap;
@@ -460,6 +461,7 @@ void SGIImage::writeRle()
 {
 	uint i;
 	m_rle = 1;
+	kdDebug(399) << "writing RLE data" << endl;
 	writeHeader();
 
 	// write start table
@@ -476,13 +478,46 @@ void SGIImage::writeRle()
 }
 
 
-void SGIImage::writeVerbatim()
+void SGIImage::writeVerbatim(const QImage& img)
 {
 	m_rle = 0;
+	kdDebug(399) << "writing RLE data" << endl;
 	writeHeader();
 
-	for (uint i = 0; i < m_numrows; i++)
-		;//
+	QRgb *c;
+	unsigned x, y;
+
+	for (y = 0; y < m_ysize; y++) {
+		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+		for (x = 0; x < m_xsize; x++)
+			m_stream << Q_UINT8(qRed(*c++));
+	}
+
+	if (m_zsize == 1)
+		return;
+
+	if (m_zsize != 2) {
+		for (y = 0; y < m_ysize; y++) {
+			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+			for (x = 0; x < m_xsize; x++)
+				m_stream << Q_UINT8(qGreen(*c++));
+		}
+
+		for (y = 0; y < m_ysize; y++) {
+			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+			for (x = 0; x < m_xsize; x++)
+				m_stream << Q_UINT8(qBlue(*c++));
+		}
+
+		if (m_zsize == 3)
+			return;
+	}
+
+	for (y = 0; y < m_ysize; y++) {
+		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+		for (x = 0; x < m_xsize; x++)
+			m_stream << Q_UINT8(qAlpha(*c++));
+	}
 }
 
 
@@ -531,9 +566,9 @@ bool SGIImage::writeImage(QImage& img)
 	kdDebug(399) << "total savings: " << (verbatim_size - rle_size) << " bytes" << endl;
 	kdDebug(399) << "compression: " << (rle_size * 100.0 / verbatim_size) << '%' << endl;
 
-//	if (verbatim_size <= rle_size)
-//		writeVerbatim();
-//	else
+	if (verbatim_size <= rle_size)
+		writeVerbatim(img);
+	else
 		writeRle();
 	return true;
 }

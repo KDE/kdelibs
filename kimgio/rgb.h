@@ -85,8 +85,8 @@ private:
 
 	void writeHeader();
 	void writeRle();
-	void writeVerbatim();
-	bool scanData(QImage&);
+	void writeVerbatim(const QImage&);
+	bool scanData(const QImage&);
 	uint compact(uchar *, uchar *);
 	uchar intensity(uchar);
 };
