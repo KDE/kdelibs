@@ -3,7 +3,6 @@
 
 #include "kio_job.h"   
 
-#include <qstring.h>
 #include <qstrlist.h>
 #include <qdict.h>
 #include <qlist.h>

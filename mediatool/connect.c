@@ -18,7 +18,6 @@
 */
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>      /* To generate unique connection ids */
 #include <sys/ipc.h>
