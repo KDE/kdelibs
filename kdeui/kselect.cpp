@@ -141,7 +141,7 @@ void KXYSelector::wheelEvent( QWheelEvent *e )
 	emit valueChanged( xPos, yPos );
 }
 
-void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal )
+void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal ) const
 {
 	xVal = ( (maxX-minX) * (x-2) ) / ( width()-4 );
 	yVal = maxY - ( ( (maxY-minY) * (y-2) ) / ( height()-4 ) );

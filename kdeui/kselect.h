@@ -116,7 +116,7 @@ protected:
   /**
    * Converts a pixel position to its corresponding values.
    */
-  void valuesFromPosition( int x, int y, int& xVal, int& yVal ); 
+  void valuesFromPosition( int x, int y, int& xVal, int& yVal ) const;
 
 private:
   void setPosition( int xp, int yp );
