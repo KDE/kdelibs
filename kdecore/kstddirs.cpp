@@ -697,9 +697,9 @@ QString KStandardDirs::kde_default(const char *type) {
     if (!strcmp(type, "lib"))
 	return "lib/";
     if (!strcmp(type, "module"))
-	return "lib/kde/";
+	return "lib/kde3/";
     if (!strcmp(type, "qtplugins"))
-        return "lib/kde/plugins";
+        return "lib/kde3/plugins";
     qFatal("unknown resource type %s", type);
     return QString::null;
 }
