@@ -27,8 +27,8 @@
 
 // ### FIXME: get rid of setStyle calls...
 // ### cellpadding and spacing should be converted to Length
-#define TABLE_DEBUG
-#define DEBUG_LAYOUT
+//#define TABLE_DEBUG
+//#define DEBUG_LAYOUT
 
 #include <qlist.h>
 #include <qstack.h>
@@ -1201,11 +1201,18 @@ void HTMLTableElementImpl::calcRowHeights()
     int pad = padding/2;
 
     rowHeights.resize( totalRows+1 );
+    rowBaselines.resize( totalRows );
     rowHeights[0] = border + spacing + pad;
 
     for ( r = 0; r < totalRows; r++ )
     {
 	rowHeights[r+1] = 0;
+	
+	int baseline=0;
+	int highestBlCellBaseline=0;
+	int secVdelta=0;	
+	HTMLTableCellElementImpl *highestBlCell=0;
+
 	for ( c = 0; c < totalCols; c++ )
 	{
 	    if ( ( cell = cells[r][c] ) == 0 )
@@ -1223,7 +1230,50 @@ void HTMLTableElementImpl::calcRowHeights()
 
 	    if ( rowPos > rowHeights[r+1] )
 		rowHeights[r+1] = rowPos;
+		
+	    // find out the baseline
+	    if (cell->vAlign()==Baseline)
+	    {
+		NodeImpl* firstElem = cell->firstChild();	    	    
+		if (firstElem)
+		{
+		    int b=0;
+		    if (firstElem->isTextNode())
+		    {
+    			TextSlave* sl = static_cast<TextImpl*>(firstElem)->first;
+			if (sl)
+			    b = sl->y;   
+		    }
+		    else
+	    		b=firstElem->getYPos();
+
+		    if (b>baseline)
+			baseline=b;
+		    
+		    if ( highestBlCell==0 ||
+		    	cell->getHeight() > highestBlCell->getHeight())
+		    {		    		    	
+			if (highestBlCell)
+			{
+			    secVdelta = 
+			    	highestBlCell->getHeight() - padding - 
+    			    	(highestBlCellBaseline-rowHeights[ indx ]);
+			}
+			
+			highestBlCell=cell;
+			highestBlCellBaseline=b;			
+		    }
+		}
+	    }	    		
 	}
+	// increase rowheight if baseline requires
+	int vdelta = baseline-highestBlCellBaseline;
+	if (baseline && !vdelta && secVdelta)
+	    vdelta = secVdelta;
+	if (vdelta)
+	    rowHeights[r+1]+=vdelta;		    
+	if (baseline)
+	    rowBaselines[r]=baseline;
 
 	if ( rowHeights[r+1] < rowHeights[r] )
 	    rowHeights[r+1] = rowHeights[r];
@@ -1293,6 +1343,7 @@ void HTMLTableElementImpl::layout(bool deep)
     for ( unsigned int r = 0; r < totalRows; r++ )
     {
 	int cellHeight;
+	int baseline=0;
 
 	if ( tCaption )// && capAlign == HTMLClue::Top )
 	    descent += tCaption->getHeight();
@@ -1321,8 +1372,8 @@ void HTMLTableElementImpl::layout(bool deep)
 	    cell->setPos( columnPos[indx] + pad,
 			  rowHeights[rindx] );
 	    cell->setRowHeight(cellHeight);
-	    
-	    cell->calcVerticalAlignment();
+	    cell->calcVerticalAlignment(rowBaselines[r]);
+
 	}
     }
 #endif
@@ -1941,7 +1992,7 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
     }
 }
 
-void HTMLTableCellElementImpl::calcVerticalAlignment() 
+void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline) 
 {
     // reposition everything within the cell according to valign.
     // called after the cell has been layouted and rowheight is known.
@@ -1953,19 +2004,26 @@ void HTMLTableCellElementImpl::calcVerticalAlignment()
 
 //    printf("hh=%d, d=%d\n",hh,descent+ascent);
 
-    if (valign==Top || hh <= getHeight())
-    	return;
-    int vdelta;
+    NodeImpl *current = firstChild();
     
-    VAlign va = valign;
-    if (rowimpl && va==VNone)
-    	va = rowimpl->vAlign();
-    if (table && va==VNone)
-    	va = table->vAlign();
+    if (!current || valign==Top || hh <= getHeight())
+    	return;
+    int vdelta=0;
+    
+    VAlign va = vAlign();
     switch (va)
     {
-    case VNone:
     case Baseline:
+    	if (current->isTextNode())
+	{
+    	    TextSlave* sl = static_cast<TextImpl*>(current)->first;
+	    if (sl)
+	    	vdelta = baseline - sl->y ;	    
+	}
+	else
+    	    vdelta = baseline - current->getYPos();
+	break;
+    case VNone:
     case VCenter:
     	vdelta=(hh-descent)/2;
 	break;
@@ -1975,8 +2033,7 @@ void HTMLTableCellElementImpl::calcVerticalAlignment()
     }
     
     QStack<NodeImpl> nodeStack;
-
-    NodeImpl *current = firstChild();
+  
     while(1)
     {
 	if(!current)
@@ -2009,6 +2066,16 @@ void HTMLTableCellElementImpl::calcVerticalAlignment()
 	}
     }
 
+}
+
+VAlign HTMLTableCellElementImpl::vAlign()
+{
+    VAlign va = valign;
+    if (rowimpl && va==VNone)
+    	va = rowimpl->vAlign();
+    if (table && va==VNone)
+    	va = table->vAlign();
+    return va;    
 }
 
 // -------------------------------------------------------------------------

@@ -212,6 +212,7 @@ protected:
     QArray<LengthType> colType;
     QArray<int> colValue;
     QArray<int> rowHeights;
+    QArray<int> rowBaselines;
     QArray<int> actColWidth;
 
     unsigned int totalColInfos;
@@ -410,7 +411,9 @@ public:
 						    _tx, _ty, url);
 	} 
         
-    virtual void calcVerticalAlignment();
+    virtual void calcVerticalAlignment(int baseline);
+            
+    virtual VAlign vAlign();
    
 protected:
     int _row;
