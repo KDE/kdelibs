@@ -94,9 +94,7 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
     if(inside)
     {
 	// set the url
-	if(_url != 0)
-	    kdDebug( 6030 ) << "Error in Anchor::mouseEvent, nested url's!" << endl;
-	else if(target && href) {
+	if(_url == 0 && target && href) {
 	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
 	    _url = s;
 	}
