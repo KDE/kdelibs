@@ -378,12 +378,14 @@ bool KSSL::setClientCertificate(KSSLPKCS12 *pkcs) {
   if (!x || !k) return false;
 
   rc = d->kossl->SSL_CTX_use_certificate(d->m_ctx, x);
-  if (rc != 0) {
+  if (rc <= 0) {
+    kdDebug() << "KSSL - SSL_CTX_use_certificate failed.  rc = " << rc << endl;
     return false;
   }
 
   rc = d->kossl->SSL_CTX_use_PrivateKey(d->m_ctx, k);
-  if (rc != 0) {
+  if (rc <= 0) {
+    kdDebug() << "KSSL - SSL_CTX_use_PrivateKey failed.  rc = " << rc << endl;
     return false;
   }
 
