@@ -188,7 +188,7 @@ void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
       }
       else
       {
-         kdDebug() << "KServiceGroup: Unexpected object in list!" << endl;
+         kdWarning(250) << "KServiceGroup: Unexpected object in list!" << endl;
          continue;
       }
 
@@ -420,8 +420,10 @@ void KOpenWithDlg::slotClear()
 
 void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec )
 {
-    kdDebug(6000)<<"KOpenWithDlg::slotSelected\n";
-    edit->setURL( _exec );
+    kdDebug(250)<<"KOpenWithDlg::slotSelected"<<endl;
+    KService::Ptr pService = m_pService;
+    edit->setURL( _exec ); // calls slotTextChanged :(
+    m_pService = pService;
 }
 
 
@@ -429,7 +431,7 @@ void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec 
 
 void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 {
-    kdDebug(6000)<<"KOpenWithDlg::slotHighlighted\n";
+    kdDebug(250)<<"KOpenWithDlg::slotHighlighted"<<endl;
     qName = _name;
     m_pService = KService::serviceByName( qName );
     if (!m_terminaldirty)
@@ -444,6 +446,7 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 void KOpenWithDlg::slotTextChanged()
 {
+    kdDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
     // Forget about the service
     m_pService = 0L;
 }
@@ -486,7 +489,11 @@ void KOpenWithDlg::slotOK()
         m_pService = *it;
     }
     if (m_pService)
-      edit->setURL(m_pService->exec());
+    {
+      KService::Ptr pService = m_pService;
+      edit->setURL(m_pService->exec()); // calls slotTextChanged :(
+      m_pService = pService;
+    }
   }
 
   if (terminal->isChecked()) {
@@ -496,7 +503,7 @@ void KOpenWithDlg::slotOK()
 
     m_command += QString::fromLatin1(" -e ");
     m_command += edit->url();
-    kdDebug() << "Setting m_command to " << m_command << endl;
+    kdDebug(250) << "Setting m_command to " << m_command << endl;
   }
   if ( m_pService && terminal->isChecked() != m_pService->terminal() )
       m_pService = 0L; // It's not exactly this service we're running
@@ -571,7 +578,7 @@ void KOpenWithDlg::slotOK()
             retType, replyData);
 
   // get the new service pointer
-  kdDebug() << pathName << endl;
+  kdDebug(250) << pathName << endl;
   KSycoca::self()->notifyDatabaseChanged();
   m_pService = KService::serviceByDesktopPath( pathName );
   QApplication::restoreOverrideCursor();
@@ -616,6 +623,7 @@ bool KFileOpenWithHandler::displayOpenWithDialog( const KURL::List& urls )
       if ( !!service )
         return KRun::run( *service, urls );
 
+      kdDebug(250) << "No service set, running " << l.text() << endl;
       return KRun::run( l.text(), urls );
     }
     return false;
