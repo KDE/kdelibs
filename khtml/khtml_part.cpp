@@ -87,6 +87,7 @@ using namespace DOM;
 
 #include <kfileitem.h>
 #include <kurifilter.h>
+#include <kstatusbar.h>
 
 #include <qclipboard.h>
 #include <qfile.h>
@@ -171,6 +172,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_guiProfile = prof;
   d->m_extension = new KHTMLPartBrowserExtension( this );
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
+  d->m_statusBarExtension = new KParts::StatusBarExtension( this );
+  d->m_statusBarIconLabel = 0L;
 
   d->m_bSecurityInQuestion = false;
   d->m_paLoadImages = 0;
@@ -1119,6 +1122,36 @@ void KHTMLPart::slotInfoMessage(KIO::Job* kio_job, const QString& msg)
     setStatusBarText(msg, BarDefaultText);
 }
 
+void KHTMLPart::setPageSecurity( PageSecurity sec )
+{
+  if ( sec != NotCrypted && !d->m_statusBarIconLabel ) {
+    d->m_statusBarIconLabel = new QLabel( d->m_statusBarExtension->statusBar() );
+    d->m_statusBarIconLabel->setFixedHeight( instance()->iconLoader()->currentSize(KIcon::Small) );
+    d->m_statusBarIconLabel->setSizePolicy(QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
+    d->m_statusBarExtension->addStatusBarItem( d->m_statusBarIconLabel, 0, false );
+  }
+  QString iconName;
+  switch (sec)  {
+  case NotCrypted:
+    iconName = "decrypted";
+    if ( d->m_statusBarIconLabel )  {
+      d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarIconLabel );
+      delete d->m_statusBarIconLabel;
+      d->m_statusBarIconLabel = 0L;
+    }
+    break;
+  case Encrypted:
+    iconName = "encrypted";
+    break;
+  case Mixed:
+    iconName = "halfencrypted";
+    break;
+  }
+  d->m_paSecurity->setIcon( iconName );
+  if ( sec != NotCrypted )
+    d->m_statusBarIconLabel->setPixmap( SmallIcon( iconName, instance() ) );
+}
+
 void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 {
   assert ( d->m_job == kio_job );
@@ -1152,12 +1185,12 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     if (p && p->d->m_ssl_in_use != d->m_ssl_in_use) {
 	while (p->parentPart()) p = p->parentPart();
 
-	p->d->m_paSecurity->setIcon( "halfencrypted" );
+        p->setPageSecurity( Mixed );
         p->d->m_bSecurityInQuestion = true;
     }
     }
 
-    d->m_paSecurity->setIcon( d->m_ssl_in_use ? "encrypted" : "decrypted" );
+    setPageSecurity( d->m_ssl_in_use ? Encrypted : NotCrypted );
 
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
     d->m_ssl_parent_ip = d->m_job->queryMetaData("ssl_parent_ip");
@@ -3946,7 +3979,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
          >> d->m_ssl_parent_ip
          >> d->m_ssl_parent_cert;
 
-  d->m_paSecurity->setIcon( d->m_ssl_in_use ? "encrypted" : "decrypted" );
+  setPageSecurity( d->m_ssl_in_use ? Encrypted : NotCrypted );
 
   stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
          >> frameURLs >> frameStateBuffers;

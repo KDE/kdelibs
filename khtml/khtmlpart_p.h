@@ -30,6 +30,7 @@
 #include <kxmlguifactory.h>
 #include <kaction.h>
 #include <kparts/partmanager.h>
+#include <kparts/statusbarextension.h>
 #include <qtimer.h>
 
 #include "khtml_run.h"
@@ -43,7 +44,7 @@
 #include "java/kjavaappletcontext.h"
 #include "ecma/kjs_proxy.h"
 
-class KPopupMenu;;
+class KPopupMenu;
 class KSelectAction;
 
 namespace KIO
@@ -51,6 +52,10 @@ namespace KIO
   class Job;
   class TransferJob;
 };
+namespace KParts
+{
+  class StatusBarExtension;
+}
 
 namespace khtml
 {
@@ -184,6 +189,7 @@ public:
   ~KHTMLPartPrivate()
   {
     delete m_dcopobject;
+    delete m_statusBarExtension;
     delete m_extension;
     delete m_settings;
     delete m_jscript;
@@ -199,7 +205,9 @@ public:
 
   QGuardedPtr<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
+  KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
+  QLabel* m_statusBarIconLabel;
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
