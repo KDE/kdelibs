@@ -26,6 +26,7 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <assert.h>
+#include <kstringhandler.h>
 #include <qfile.h>
 
 KServiceTypeFactory::KServiceTypeFactory()
@@ -74,33 +75,6 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
      newServiceType = 0; // Not found
    }
    return newServiceType;
-}
-
-bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString& _pattern  )
-{
-  int len = _filename.length();
-  QCString pattern = QFile::encodeName( _pattern );
-  int pattern_len = pattern.length();
-  if (!pattern_len)
-     return false;
-
-  QCString filename = QFile::encodeName( _filename );
-
-  // Patterns like "Makefile*"
-  if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
-     if ( strncasecmp( filename.data(), pattern.data(), pattern_len - 1 ) == 0 )
-	return true;
-
-  // Patterns like "*~", "*.extension"
-  if ( pattern[ 0 ] == '*' && len + 1 >= pattern_len )
-  {
-     if ( strncasecmp( filename.data() + len - pattern_len + 1, pattern.data() + 1, pattern_len - 1 ) == 0 )
-	return true;
-     // TODO : Patterns like "*.*pk"
-  }
-
-  // Patterns like "Makefile"
-  return ( filename == pattern );
 }
 
 KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
@@ -166,7 +140,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
       if (pattern.isEmpty()) // end of list
           return (KMimeType *) newServiceType; // return what we got (0L or real one)
       (*str) >> mimetypeOffset;
-      if ( matchFilename( _filename, pattern ) )
+      if ( KStringHandler::matchFilename( _filename, pattern ) )
       {
          if (newServiceType) // we got one, but it's not good enough (like *.bz for a tar.bz file)
              delete newServiceType;

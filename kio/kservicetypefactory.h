@@ -92,15 +92,6 @@ public:
    */
   static KServiceTypeFactory * self();
 
-  /**
-   * Looks whether the given filename matches the given pattern
-   * @param _filename is the real decoded filename (or dirname
-   *        without trailing '/').
-   * @param _pattern is a pattern like *.txt, *.tar.gz, etc.
-   * Patterns with two asterisks like "*.*pk" are not supported yet.
-   */
-  static bool matchFilename( const QString& _filename, const QString& _pattern );
-
 protected:
   virtual KServiceType *createEntry(int offset);
 
