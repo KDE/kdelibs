@@ -182,3 +182,5 @@ i18n("key accelerator", "CapsLock");
 i18n("key accelerator", "NumLock");
 i18n("key accelerator", "ScrollLock");
 i18n("key accelerator", "Space");
+i18n("Main Toolbar");
+
