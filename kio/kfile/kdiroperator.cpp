@@ -962,7 +962,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 	    fileView->setCurrentItem( (KFileItem*) item );
 	    fileView->ensureItemVisible( (KFileItem*) item );
 	}
-	
+
 // 	if ( !item->isMimeTypeKnown() )
 // 	    pendingMimeTypes.append(static_cast<KFileItem*>(item));
 	++it;
@@ -1414,8 +1414,8 @@ void KDirOperator::slotViewActionAdded( KAction *action )
 {
     if ( viewActionMenu->popupMenu()->count() == 6 ) // need to add a separator
 	viewActionMenu->insert( d->viewActionSeparator );
-	
-    viewActionMenu->remove( action );
+
+    viewActionMenu->insert( action );
 }
 
 void KDirOperator::slotViewActionRemoved( KAction *action )
