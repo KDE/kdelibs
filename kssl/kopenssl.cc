@@ -116,6 +116,9 @@ _ok = false;
 QStringList libpaths, libnamesc, libnamess;
 KConfig *cfg;
 
+   _cryptoLib = NULL;
+   _sslLib = NULL;
+
    cfg = new KConfig("cryptodefaults", false, false);
    cfg->setGroup("OpenSSL");
    QString upath = cfg->readEntry("Path", "");
@@ -246,13 +249,15 @@ KConfig *cfg;
       // Initialize the library (once only!)
       void *x;
       x = _sslLib->symbol("SSL_library_init");
-      if (x) ((int (*)())x)();
-      x = _cryptoLib->symbol("OpenSSL_add_all_algorithms");
-      if (x) ((void (*)())x)();
-      x = _cryptoLib->symbol("OpenSSL_add_all_ciphers");
-      if (x) ((void (*)())x)();
-      x = _cryptoLib->symbol("OpenSSL_add_all_digests");
-      if (x) ((void (*)())x)();
+      if (_cryptoLib) {
+         if (x) ((int (*)())x)();
+         x = _cryptoLib->symbol("OpenSSL_add_all_algorithms");
+         if (x) ((void (*)())x)();
+         x = _cryptoLib->symbol("OpenSSL_add_all_ciphers");
+         if (x) ((void (*)())x)();
+         x = _cryptoLib->symbol("OpenSSL_add_all_digests");
+         if (x) ((void (*)())x)();
+      }
    }
 
 }
