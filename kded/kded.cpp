@@ -76,7 +76,7 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
 
 static void runKonfUpdate()
 {
-   KApplication::kdeinitExecWait( "kconf_update");
+   KApplication::kdeinitExecWait( "kconf_update", QStringList(), 0, 0, "0" /*no startup notification*/ );
 }
 
 static void runDontChangeHostname(const QCString &oldName, const QCString &newName)
