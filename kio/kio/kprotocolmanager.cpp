@@ -235,10 +235,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
      else
         u.setProtocol("https");
 
-     QString result = proxyForURL(u);
-     if (result.startsWith("http"))
-        result.replace(0, 4, "webdav");
-     return result;
+     return proxyForURL(u);
   }
 
   QString proxy;
@@ -321,7 +318,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
      KURL::List::Iterator it = list.fromLast();
      return slaveProtocol(*it, proxy);
   }
-    
+
   if (!d)
     d = new KProtocolManagerPrivate;
 
@@ -348,6 +345,17 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
            QString qno_proxy = noProxy.stripWhiteSpace().lower();
            const char *no_proxy = qno_proxy.latin1();
            isRevMatch = revmatch(host, no_proxy);
+
+           // If no match is found and the request url has a port
+           // number, try the combination of "host:port". This allows
+           // users to enter host:port in the No-proxy-For list.
+           if (!isRevMatch && url.port() > 0)
+           {
+              qhost += ':' + QString::number (url.port());
+              host = qhost.latin1();
+              isRevMatch = revmatch (host, no_proxy);
+           }
+
            // If the hostname does not contain a dot, check if
            // <local> is part of noProxy.
            if (!isRevMatch && host && (strchr(host, '.') == NULL))
@@ -356,20 +364,20 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
 
         if ( (!useRevProxy && !isRevMatch) || (useRevProxy && isRevMatch) )
         {
-           // Let's not assume all proxying is done through
-           // the http io-slave.  Instead attempt to determine
-           // the protocol to use from the proxy URL itself.
-           // If the proxy URL is then determined to be invalid,
-           // bypass it all together.
            d->url = proxy;
            if ( d->url.isValid() )
            {
-              d->protocol = d->url.protocol();
-              // HACK: This will be removed once kio_http
-              // gets ported over to TCPSlaveBase!!
-              if ( url.protocol() == QString::fromLatin1("https") &&
-                   d->protocol == QString::fromLatin1("http") )
-                d->protocol = url.protocol();
+              // The idea behind slave protocols is not applicable to http
+              // and webdav protocols.
+              QString protocol = url.protocol().lower();
+              if (protocol.startsWith("http") || protocol.startsWith("webdav"))
+                d->protocol = protocol;
+              else
+              {
+                d->protocol = d->url.protocol();
+                kdDebug () << "slaveProtocol: " << d->protocol << endl;
+              }
+
               d->url = url;
               d->proxy = proxy;
               return d->protocol;
