@@ -1004,7 +1004,11 @@ DCOPServer::DCOPServer(bool _only_local)
 	    // publish available transports.
 	    QCString fName = dcopServerFile();
 	    FILE *f;
-	    f = ::fopen(fName.data(), "w+");
+	    if(!(f = ::fopen(fName.data(), "w+"))) {
+	        fprintf (stderr, "Can not create file %s: %s\n", 
+			 fName.data(), ::strerror(errno));
+		exit(1);
+	    }
 	    char *idlist = IceComposeNetworkIdList(numTransports, listenObjs);
 	    if (idlist != 0) {
 	        fprintf(f, idlist);
