@@ -66,7 +66,11 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
     if( !htmlColors )
         htmlColors = hcsd.setObject( new HTMLColors );
 
+    int pos;
     QString name = _name.lower();
+    // remove white spaces for those broken websites out there :-(
+    while ( ( pos = name.find( ' ' ) ) != -1 )  name.remove( pos, 1 );
+
     int len = name.length();
     char ch = name[0].latin1();
 
