@@ -811,7 +811,7 @@ bool HTTPProtocol::davHostOk()
   // clear davVersions variable, which holds the response to the DAV: header
   m_davVersions = QString::null;
 
-  retrieveContent( true );
+  retrieveHeader( false );
 
   if ( m_davVersions != QString::null ) {
     QStringList vers = QStringList::split( ',', m_davVersions );
