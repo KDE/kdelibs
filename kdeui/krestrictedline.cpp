@@ -79,9 +79,4 @@ QString KRestrictedLine::validChars() const
 void KRestrictedLine::virtual_hook( int id, void* data )
 { KLineEdit::virtual_hook( id, data ); }
 
-void KRestrictedLine::invalidChar(int)
-{
-
-}
-
 #include "krestrictedline.moc"
