@@ -50,6 +50,18 @@ Engine::Engine( KNewStuff *newStuff, const QString &type,
   mNewStuffList.setAutoDelete( true );
 }
 
+Engine::Engine( KNewStuff *newStuff, const QString &type,
+                const QString &providerList, QWidget *parentWidget ) :
+                mParentWidget( parentWidget ), 
+		mDownloadDialog( 0 ), mUploadDialog( 0 ), 
+		mProviderDialog( 0 ), mUploadProvider( 0 ),
+                mProviderList( providerList ), mNewStuff( newStuff ),
+		mType( type )
+{
+  mProviderLoader = new ProviderLoader( mParentWidget );
+  mNewStuffList.setAutoDelete( true );
+}
+
 Engine::~Engine()
 {
   delete mProviderLoader;
@@ -65,7 +77,7 @@ void Engine::download()
   connect( mProviderLoader,
            SIGNAL( providersLoaded( Provider::List * ) ),
            SLOT( getMetaInformation( Provider::List * ) ) );
-  mProviderLoader->load( mType );
+  mProviderLoader->load( mType, mProviderList );
 }
 
 void Engine::getMetaInformation( Provider::List *providers )

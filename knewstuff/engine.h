@@ -60,6 +60,15 @@ class Engine : public QObject
       @param parentWidget the parent window
     */
     Engine( KNewStuff *newStuff, const QString &type, QWidget *parentWidget = 0 );
+    /**
+      Constructor.
+
+      @param newStuff a KNewStuff object
+      @param type the Hotstuff data type such as "korganizer/calendar"
+      @param providerList the URL of the provider list
+      @param parentWidget the parent window
+    */
+    Engine( KNewStuff *newStuff, const QString &type, const QString &providerList, QWidget *parentWidget = 0 );
 
     /**
       Destructor.
@@ -154,6 +163,7 @@ class Engine : public QObject
     QString mUploadMetaFile;
     QString mUploadFile;
     QString mPreviewFile;
+    QString mProviderList;
 
     KNewStuff *mNewStuff;
 

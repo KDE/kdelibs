@@ -177,8 +177,11 @@ class ProviderLoader : public QObject
      * specified type.
      *
      * @param type data type such as 'kdesktop/wallpaper'.
+     * @param providerList the URl to the list of providers; if empty
+     *    we first try the ProvidersUrl from KGlobal::config, then we
+     *    fall back to a hardcoded value.
      */
-    void load( const QString &type );
+    void load( const QString &type, const QString &providerList = QString::null );
 
   signals:
     /**

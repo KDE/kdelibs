@@ -65,6 +65,17 @@ class KNewStuff
                           engine
     */
     KNewStuff( const QString &type, QWidget *parentWidget = 0 );
+    
+    /**
+      Constructor.
+
+      @param type type of data to be handled, should be something like
+                  korganizer/calendar, kword/template, kdesktop/wallpaper
+      @param providerList the URL of the provider list
+      @param parentWidget parent widget of dialogs opened by the KNewStuff
+                          engine
+    */
+    KNewStuff( const QString &type, const QString &providerList, QWidget *parentWidget = 0 );
     virtual ~KNewStuff();
 
     /**

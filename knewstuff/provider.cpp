@@ -147,7 +147,7 @@ ProviderLoader::ProviderLoader( QWidget *parentWidget ) :
   mProviders.setAutoDelete( true );
 }
 
-void ProviderLoader::load( const QString &type )
+void ProviderLoader::load( const QString &type, const QString &providersList )
 {
   kdDebug(5850) << "ProviderLoader::load()" << endl;
 
@@ -157,7 +157,9 @@ void ProviderLoader::load( const QString &type )
   KConfig *cfg = KGlobal::config();
   cfg->setGroup("KNewStuff");
 
-  QString providersUrl = cfg->readEntry( "ProvidersUrl" );
+  QString providersUrl = providersList;
+  if( providersUrl.isEmpty() )
+  	providersUrl = cfg->readEntry( "ProvidersUrl" );
 
   if ( providersUrl.isEmpty() ) {
     // TODO: Replace the default by the real one.

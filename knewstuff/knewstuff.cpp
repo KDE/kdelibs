@@ -34,6 +34,11 @@ KNewStuff::KNewStuff( const QString &type, QWidget *parentWidget )
   mEngine = new Engine( this, type, parentWidget );
 }
 
+KNewStuff::KNewStuff( const QString &type, const QString &providerList, QWidget *parentWidget )
+{
+  mEngine = new Engine( this, type, providerList, parentWidget );
+}
+
 QString KNewStuff::type() const
 {
   return mEngine->type();
