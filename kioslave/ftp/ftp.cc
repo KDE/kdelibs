@@ -751,6 +751,14 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
 {
   assert(m_control != NULL);    // must have control connection socket
 
+  if ( cmd.find( '\r' ) != -1 || cmd.find( '\n' ) != -1)
+  {
+    kdWarning(7102) << "Invalid command received (contains CR or LF):"
+                    << cmd.data() << endl;
+    error( ERR_UNSUPPORTED_ACTION, m_host );
+    return false;
+  }
+
   // Don't print out the password...
   bool isPassCmd = (cmd.left(4).lower() == "pass");
   if ( !isPassCmd )
