@@ -120,7 +120,8 @@ QString HelpProtocol::lookupFile(const QString &fname,
 	}
         else
 	{
-            notFound();
+	    unicodeError( i18n("There is no documentation available for %1." ).arg(path) );
+	    finished();
             return QString::null;
 	}
     } else
@@ -135,12 +136,6 @@ void HelpProtocol::unicodeError( const QString &t )
    data(fromUnicode( QString(
         "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
         "%2</html>" ).arg( QTextCodec::codecForLocale()->name() ).arg( t ) ) );
-}
-
-void HelpProtocol::notFound()
-{
-    unicodeError( i18n("The requested help file could not be found. Check that you have installed the documentation." ) );
-    finished();
 }
 
 HelpProtocol *slave = 0;

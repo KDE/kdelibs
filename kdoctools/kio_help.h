@@ -37,7 +37,6 @@ private:
     QString lookupFile(const QString &fname, const QString &query,
                        bool &redirect);
 
-    void notFound();
     void unicodeError( const QString &t );
 
     QString mParsed;
