@@ -1755,8 +1755,6 @@ void DocumentImpl::recalcStyleSelector()
     m_styleSheets->styleSheets.clear();
     m_availableSheets.clear();
     NodeImpl *n;
-    StyleSheetImpl *defaultSheet = 0;
-    bool foundSheetUsed = false;
     for (n = this; n; n = n->traverseNextNode()) {
     	StyleSheetImpl *sheet = 0;
 
@@ -1800,27 +1798,21 @@ void DocumentImpl::recalcStyleSelector()
                     title = QString::null;
             }
             QString sheetUsed = view()->part()->d->m_sheetUsed;
-            if ( n->id() == ID_LINK )  // <LINK> element
+            if ( n->id() == ID_LINK )
                 sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-            else // <STYLE> element
+            else
+                // <STYLE> element
                 sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
 
             if ( !title.isEmpty() ) {
-                // The first sheet with a title is the default one
                 if ( sheetUsed.isEmpty() )
                     sheetUsed = view()->part()->d->m_sheetUsed = title;
-                if ( !defaultSheet )
-                    defaultSheet = sheet;
-
                 if ( !m_availableSheets.contains( title ) )
                     m_availableSheets.append( title );
 
-                if ( title == sheetUsed )
-                    foundSheetUsed = true;
-                else
-                    sheet = 0; // this stylesheet wasn't selected.
+                if ( title != sheetUsed )
+                    sheet = 0; // this stylesheet wasn't selected
             }
-
 	}
 	else if (n->id() == ID_BODY) {
             // <BODY> element (doesn't contain styles as such but vlink="..." and friends
@@ -1836,15 +1828,6 @@ void DocumentImpl::recalcStyleSelector()
         // can stop searching here.
         if (isHTMLDocument() && n->id() == ID_BODY)
             break;
-    }
-
-    // Select first (default) style sheet if we didn't find the sheetUsed.
-    // This happens when going from a page to another one, which doesn't have this sheet.
-    // ### If the order of the items in m_styleSheets->styleSheets matters, then we need to
-    // split the above into two loops, the first one to gather m_availableSheets ...
-    if ( !foundSheetUsed && defaultSheet ) {
-        defaultSheet->ref();
-        m_styleSheets->styleSheets.append(defaultSheet);
     }
 
     // De-reference all the stylesheets in the old list
