@@ -264,12 +264,14 @@ bool RenderFormElement::eventFilter(QObject* /*o*/, QEvent* e)
 void RenderFormElement::slotClicked()
 {
     if(isRenderButton()) {
+        ref();
         QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
 
         m_element->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
 
-	m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
-	m_isDoubleClick = false;
+        m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
+        m_isDoubleClick = false;
+        deref();
     }
 }
 
