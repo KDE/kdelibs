@@ -158,12 +158,14 @@ void srandom(unsigned int seed)
 #endif
 
 #ifndef HAVE_MKSTEMPS
-#include <kapp.h>
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #include <fcntl.h>
+#include <string.h>
+#include <strings.h>
+#include <stdlib.h>
 
 /* this is based on code taken from the GNU libc, distributed under the LGPL license */
 
@@ -195,7 +197,7 @@ int mkstemps (char* _template, int suffix_len)
 
   XXXXXX = &_template[len - 6 - suffix_len];
 
-  value = KApplication::random();
+  value = rand();
   for (count = 0; count < 256; ++count)
   {
       int v = value;

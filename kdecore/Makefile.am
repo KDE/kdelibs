@@ -21,7 +21,7 @@ INCLUDES = $(all_includes)
 
 SUBDIRS = . tests
 
-lib_LTLIBRARIES = libkdecore.la
+lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h kurl.h ksock.h kaboutdata.h kcmdlineargs.h \
@@ -38,6 +38,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h
 
+libkdefakes_la_SOURCES = fakes.c vsnprintf.c
+
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h 
 
 libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
@@ -45,12 +47,12 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
 	kconfigbackend.cpp kapp.cpp kuniqueapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
-	fakes.cpp kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
+	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kstdaccel.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
 	kpixmap.cpp kckey.cpp kaccel.cpp kcrash.cpp\
 	kurl.cpp kregexp.cpp \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
-	kallocator.cpp vsnprintf.c kmimesourcefactory.cpp \
+	kallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
@@ -60,7 +62,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 kcharset.cpp: kentities.c
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
-libkdecore_la_LIBADD = ../libltdl/libltdlc.la -lXext $(LIB_DCOP) $(LIB_DMALLOC) $(LIBRESOLV)
+libkdecore_la_LIBADD = libkdefakes.la ../libltdl/libltdlc.la -lXext $(LIB_DCOP) $(LIB_DMALLOC) $(LIBRESOLV)
 
 libkdecore_la_METASOURCES = AUTO
 
