@@ -185,6 +185,7 @@ setproctitle(const char *fmt, ...)
 #  if SPT_TYPE == SPT_SCO
 	off_t seek_off;
 	static int kmem = -1;
+#warning (rikkus) kmempid is declared as int, should be long
 	static int kmempid = -1;
 	struct user u;
 #  endif
