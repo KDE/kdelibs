@@ -860,12 +860,22 @@ void FileCopyJob::slotResult( KIO::Job *job)
          removeSubjob(job);
          return;
       }
-      if ((job == m_copyJob) && (job->error() == ERR_UNSUPPORTED_ACTION))
+      else if ((job == m_copyJob) && (job->error() == ERR_UNSUPPORTED_ACTION))
       {
          m_copyJob = 0;
          startDataPump();
          removeSubjob(job);
          return;
+      }
+      else if (job == m_getJob)
+      {
+        if (m_putJob)
+          m_putJob->kill();
+      }
+      else if (job == m_putJob)
+      {
+        if (m_getJob)
+          m_getJob->kill();
       }
       m_error = job->error();
       m_errorText = job->errorText();
