@@ -216,7 +216,7 @@ int execute(int argc, char *argv[])
 	int	i;
 	char	*c, *d;
 
-	// open output driver DB file
+	/* open output driver DB file */
 	if (argc < 2 || argc > 3)
 	{
 		fprintf(stderr, "usage: make_driver_db <db_directory> [output_filename]\n");
@@ -234,7 +234,7 @@ int execute(int argc, char *argv[])
 	else
 		dbFile = stdout;
 
-	// init parsing
+	/* init parsing */
 	c = argv[1];
 	do
 	{
@@ -250,7 +250,7 @@ int execute(int argc, char *argv[])
 	} while (d && *c);
 
 
-	// do actual parsing
+	/* do actual parsing */
 	fprintf(stdout, "%d\n", nfiles);
 	fflush(stdout);
 	for (i=0; i<nfiles; i++)
@@ -266,7 +266,7 @@ int execute(int argc, char *argv[])
 		fflush(stdout);
 	}
 
-	// free everything
+	/* free everything */
 	freeFiles();
 	freeHandlers();
 	if (dbFile != stdout)
