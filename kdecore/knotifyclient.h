@@ -113,18 +113,20 @@ namespace KNotifyClient
 	
     private:
 		static InstanceStack *instances();
-        InstancePrivate *d;
+		InstancePrivate *d;
 		static InstanceStack *s_instances;
     };
 
 
 	enum {
-		Default=-1,
-		None=0,
-		Sound=1,
-		Messagebox=2,
-		Logfile=4,
-		Stderr=8
+		Default = -1,
+		None = 0,
+		Sound = 1,
+		Messagebox = 2,
+		Logfile = 4,
+		Stderr = 8,
+		PassivePopup = 16,
+		Execute = 32
 	};
 	
 	enum {
