@@ -961,7 +961,7 @@ void KMdiChildFrm::doResize(bool captionOnly)
    }
 }
 
-bool hasParent(QObject* par, QObject* o) {
+static bool hasParent(QObject* par, QObject* o) {
 	while (o && o!=par)
 		o = o->parent();
 	return o==par;
