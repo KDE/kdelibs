@@ -11,6 +11,17 @@ if test "x$arts_audiolib_found" = "xno"; then
   all_tests=bad
 fi
 
+if test "x$have_ssl" != xyes; then
+  echo ""
+  echo "You're missing openSSL, or your version is too old (before 0.9.5a)."
+  echo "KDE won't be able to access secure websites without it, so you should"
+  echo "consider installing or upgrading it."
+  echo "Have a look at http://www.openssl.org, or find a binary package for"
+  echo "your platform."
+  echo ""
+  all_tests=bad
+fi
+
 if test "$all_tests" = "fine"; then
   echo ""
   echo "Good - your configure finished. Start make now"
