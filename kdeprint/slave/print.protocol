@@ -1,0 +1,6 @@
+[Protocol]
+exec=kio_print
+protocol=print
+input=none
+output=filesystem
+reading=true

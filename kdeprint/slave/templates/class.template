@@ -1,0 +1,57 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.77 [en] (X11; U; Linux 2.2.17-21mdk i686) [Netscape]">
+</head>
+<body>
+
+<h1>
+<u>Class informations</u></h1>
+
+<blockquote>
+<h2>
+%1</h2>
+</blockquote>
+
+<center><table BORDER WIDTH="75%" NOSAVE >
+<tr>
+<td>Type</td>
+
+<td>%1</td>
+</tr>
+
+<tr>
+<td>State</td>
+
+<td>%1</td>
+</tr>
+
+<tr NOSAVE>
+<td NOSAVE>Location</td>
+
+<td>%1</td>
+</tr>
+
+<tr>
+<td>Description</td>
+
+<td>%1</td>
+</tr>
+
+<tr>
+<td>URI</td>
+
+<td>%1</td>
+</tr>
+</table></center>
+
+<blockquote>
+<blockquote>
+<h3>
+Members</h3>
+%1</blockquote>
+</blockquote>
+
+</body>
+</html>
