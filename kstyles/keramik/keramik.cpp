@@ -244,8 +244,8 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 #define loader Keramik::PixmapLoader::the()
 
 KeramikStyle::KeramikStyle()
-	:KStyle( AllowMenuTransparency | FilledFrameWorkaround /*| DisableMenuBlend*/, ThreeButtonScrollBar ), maskMode(false),
-		toolbarBlendWidget(0), titleBarMode(None), flatMode(false), kickerMode(false)
+	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),
+		toolbarBlendWidget(0), titleBarMode(None), flatMode(false), customScrollMode(false), kickerMode(false)
 {
 	hoverWidget = 0;
 }
@@ -584,10 +584,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 			QColor col = cg.highlight();
 
-			if (cg.button() != QApplication::palette().active().button() )
-			{
+			if (customScrollMode)
 				col = cg.button();
-			}
 
 			if (!active)
 				Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, col, cg.background(), false, pmode() );
@@ -1695,6 +1693,12 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 		case CC_ScrollBar:
 		{
 			const QScrollBar* sb = static_cast< const QScrollBar* >( widget );
+			if (sb->parentWidget())
+			{
+				if (sb->parentWidget()->colorGroup().button() !=
+					sb->colorGroup().button())
+						customScrollMode = true;
+			}
 			bool horizontal = sb->orientation() == Horizontal;
 			QRect slider, subpage, addpage, subline, addline;
 			if ( sb->minValue() == sb->maxValue() ) flags &= ~Style_Enabled;
@@ -1752,6 +1756,8 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 					drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags | Style_Down );
 				}
 			}
+			
+			customScrollMode = false;
 
 
 			break;

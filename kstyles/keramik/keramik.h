@@ -137,6 +137,8 @@ protected:
 	mutable bool flatMode; //Set when calling PE_PushButton or PE_ButtonDefault
 	// on a flat button.
 
+	mutable bool customScrollMode; //Set when drawing scrollbars with custom colors.
+
 	
 	bool eventFilter( QObject* object, QEvent* event );
 	
