@@ -2079,6 +2079,7 @@ bool HTTPProtocol::httpOpen()
   {
      m_request.fcache = checkCacheEntry( );
 
+     bool bCacheOnly = (m_request.cache == KIO::CC_CacheOnly);
      bool bOffline = isOffline(m_request.doProxy ? m_proxyURL : m_request.url);
      if (bOffline && (m_request.cache != KIO::CC_Reload))
         m_request.cache = KIO::CC_CacheOnly;
@@ -2109,7 +2110,12 @@ bool HTTPProtocol::httpOpen()
         // Conditional cache hit. (Validate)
      }
 
-     if ((m_request.cache == CC_CacheOnly) || bOffline)
+     if (bCacheOnly)
+     {
+        error( ERR_DOES_NOT_EXIST, m_request.url.url() );
+        return false;
+     }
+     if (bOffline)
      {
         error( ERR_COULD_NOT_CONNECT, m_request.url.url() );
         return false;
