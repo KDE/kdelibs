@@ -1300,6 +1300,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
     if ( start.atEnd() )
         return start;
 
+    bool currentCharacterIsSpace = false;
+
     BidiIterator lBreak = start;
 
     RenderObject *o = start.obj;
@@ -1344,6 +1346,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
                 // proportional font, needs a bit more work.
                 int lastSpace = pos;
                 bool isPre = style()->whiteSpace() == PRE;
+                currentCharacterIsSpace = str[pos] == ' ' || (!isPre && str[pos] == '\n');
                 while(len) {
                     if( (isPre && str[pos] == '\n') ||
                         (!isPre && isBreakable( str, pos, strlen ) ) ) {
@@ -1408,10 +1411,45 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
 
              tmpW += o->width()+o->marginLeft()+o->marginRight()+inlineWidth(o);
 
+             currentCharacterIsSpace = false;
         } else
             KHTMLAssert( false );
 
-        if( w + tmpW > width+1 && style()->whiteSpace() == NORMAL ) {
+        RenderObject* next = Bidinext(start.par, o );
+        bool isNormal = o->style()->whiteSpace() == NORMAL;
+        bool checkForBreak = isNormal;
+        if (w && w + tmpW > width+1 && lBreak.obj && o->style()->whiteSpace() == NOWRAP)
+            checkForBreak = true;
+        else if (next && o->isText() && next->isText() && !next->isBR()) {
+            if (isNormal || (next->style()->whiteSpace() == NORMAL)) {
+                if (currentCharacterIsSpace)
+                    checkForBreak = true;
+                else {
+                    RenderText* nextText = static_cast<RenderText*>(next);
+                    int strlen = nextText->stringLength();
+                    QChar *str = nextText->text();
+                    if (strlen &&
+                        ((str[0].unicode() == ' ') ||
+                            (next->style()->whiteSpace() != PRE && str[0] == '\n')))
+                        // If the next item on the line is text, and if we did not end with
+                        // a space, then the next text run continues our word (and so it needs to
+                        // keep adding to |tmpW|.  Just update and continue.
+                        checkForBreak = true;
+                    else
+                        checkForBreak = false;
+
+                    bool canPlaceOnLine = (w + tmpW <= width+1) || !isNormal;
+                    if (canPlaceOnLine && checkForBreak) {
+                        w += tmpW;
+                        tmpW = 0;
+                        lBreak.obj = next;
+                        lBreak.pos = 0;
+                    }
+                }
+            }
+        }
+
+        if(checkForBreak && ( w + tmpW > width+1 ) ) {
 //             kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 //  	    kdDebug() << "start=" << start.obj << " current=" << o << endl;
 
@@ -1467,24 +1505,16 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
         // we just add as much as possible
         if ( m_pre )
             lBreak = pos ? Bidinext(start.par, o) : o;
-        else {
+        else if ( lBreak.obj ) {
             if ( last != o ) {
                 // better break between object boundaries than in the middle of a word
                 lBreak = o;
             } else {
-                int w = 0;
-                if( lBreak.obj->isText() )
-                    w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
-                else
-                    w += lBreak.obj->width();
-                while( lBreak.obj && w < width ) {
-                    ++lBreak;
-                    if( !lBreak.obj ) break;
-                    if( lBreak.obj->isText() )
-                        w += static_cast<RenderText *>(lBreak.obj)->width(lBreak.pos, 1);
-                    else
-                        w += lBreak.obj->width();
-                }
+                // Don't ever break in the middle of a word if we can help it.
+                // There's no room at all. We just have to be on this line,
+                // even though we'll spill out.
+                lBreak.obj = o;
+                lBreak.pos = pos;
             }
         }
     }
@@ -1492,6 +1522,15 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
     // make sure we consume at least one char/object.
     if( lBreak == start )
         ++lBreak;
+
+    // We might have made lBreak an iterator that points past the end
+    // of the object. Do this adjustment to make it point to the start
+    // of the next object instead to avoid confusing the rest of the
+    // code.
+    if (lBreak.pos > 0) {
+        lBreak.pos--;
+        ++lBreak;
+    }
 
 #ifdef DEBUG_LINEBREAKS
     kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << "/" << width << endl;
