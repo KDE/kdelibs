@@ -280,8 +280,10 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
     // if the new address is not empty, append it
     if ( !a.formattedName().isEmpty() || !a.name().isEmpty() || 
          !a.familyName().isEmpty() ) {
-      a.insertAddress( homeAddr );
-      a.insertAddress( workAddr );
+      if ( !homeAddr.isEmpty() )
+        a.insertAddress( homeAddr );
+      if ( !workAddr.isEmpty() )
+        a.insertAddress( workAddr );
       addrList.append( a );
     }
 
