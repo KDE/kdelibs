@@ -30,25 +30,24 @@
 #include <kmessagebox.h>
 #include <qtabwidget.h>
 #include <klocale.h>
+#include <kpushbutton.h>
+#include <kguiitem.h>
+#include <kguiitem.h>
 
 KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent, const char *name)
-: QTabDialog(parent,name,true), m_printer(p), m_driver(0), m_current(0)
+: KDialogBase(parent, name, true, QString::null, KDialogBase::Ok|KDialogBase::Cancel|KDialogBase::User1, KDialogBase::Ok, false, KGuiItem(i18n("&Save"), "filesave")),
+  m_printer(p), m_driver(0), m_current(0)
 {
 	m_pages.setAutoDelete(false);
-	setOkButton(i18n("&OK"));
-	setCancelButton(i18n("&Cancel"));
-	setDefaultButton(i18n("&Save"));
-	
+
 	// set a margin
-	QTabWidget	*tw = static_cast<QTabWidget*>(child(NULL, "QTabWidget"));
-	if (tw)
-		tw->setMargin(10);
+	m_tw = new QTabWidget(this);
+	m_tw->setMargin(10);
+	connect(m_tw,SIGNAL(currentChanged(QWidget*)),SLOT(slotCurrentChanged(QWidget*)));
+	setMainWidget(m_tw);
 
 	if (m_printer)
 		m_options = (m_printer->isEdited() ? m_printer->editedOptions() : m_printer->defaultOptions());
-
-	connect(this,SIGNAL(currentChanged(QWidget*)),SLOT(slotCurrentChanged(QWidget*)));
-	connect(this,SIGNAL(defaultButtonPressed()),SLOT(slotSaveClicked()));
 }
 
 KPrinterPropertyDialog::~KPrinterPropertyDialog()
@@ -65,7 +64,7 @@ void KPrinterPropertyDialog::slotCurrentChanged(QWidget *w)
 
 void KPrinterPropertyDialog::addPage(KPrintDialogPage *page)
 {
-	addTab(page,page->title());
+	m_tw->addTab(page,page->title());
 	m_pages.append(page);
 }
 
@@ -109,14 +108,14 @@ void KPrinterPropertyDialog::collectOptions(QMap<QString,QString>& opts, bool in
 		it.current()->getOptions(opts,incldef);
 }
 
-void KPrinterPropertyDialog::done(int result)
+void KPrinterPropertyDialog::slotOk()
 {
-	if (result == Accepted && !synchronize())
+	if (!synchronize())
 		return;
-	QTabDialog::done(result);
+	KDialogBase::slotOk();
 }
 
-void KPrinterPropertyDialog::slotSaveClicked()
+void KPrinterPropertyDialog::slotUser1()
 {
 	if (m_printer && synchronize())
 	{
@@ -127,6 +126,11 @@ void KPrinterPropertyDialog::slotSaveClicked()
 		m_printer->setEdited(false);
 		KMFactory::self()->virtualManager()->triggerSave();
 	}
+}
+
+void KPrinterPropertyDialog::enableSaveButton(bool state)
+{
+	showButton(KDialogBase::User1, state);
 }
 
 void KPrinterPropertyDialog::setupPrinter(KMPrinter *pr, QWidget *parent)

@@ -62,6 +62,7 @@ protected:
 	void enableOutputFile(bool on);
 	void setOutputFileExtension(const QString&);
 	void reload();
+	void configChanged();
 	void expandDialog(bool on = true);
 
 protected:

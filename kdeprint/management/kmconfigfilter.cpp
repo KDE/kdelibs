@@ -88,7 +88,7 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 void KMConfigFilter::loadConfig(KConfig *conf)
 {
 	conf->setGroup("Filter");
-	m_plist = conf->readListEntry("Printers");
+	QStringList	m_plist = conf->readListEntry("Printers");
 	QPtrListIterator<KMPrinter>	it(*(KMManager::self()->printerListComplete(false)));
 	for (; it.current(); ++it)
 	{
@@ -111,9 +111,6 @@ void KMConfigFilter::saveConfig(KConfig *conf)
 		plist << m_list2->text(i);
 	conf->writeEntry("Printers", plist);
 	conf->writeEntry("LocationRe", m_locationre->text());
-	// notify all other applications about filter change
-	if (plist != m_plist)
-		KMFactory::self()->reload(KMFactory::self()->printSystem(), true);
 }
 
 void KMConfigFilter::transfer(KListBox *from, KListBox *to)

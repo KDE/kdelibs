@@ -76,6 +76,12 @@ extern "C"
 		}
 		return flag;
 	}
+	
+	bool config_dialog(QWidget *parent)
+	{
+		KMConfigDialog	dlg(parent);
+		return dlg.exec();
+	}
 };
 
 KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
@@ -261,12 +267,10 @@ void KMMainView::slotTimer()
 	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	bool ok = m_manager->errorMsg().isEmpty();
 	m_printerview->setPrinterList(printerlist);
-kdDebug() << "error=" << !ok << ", first=" << m_first << endl;
 	if (!ok && m_first)
 	{
 		showErrorMsg(i18n("An error occurred while retrieving the printer list."));
 		m_first = false;
-kdDebug() << "message shown, first=" << m_first << endl;
 	}
 }
 
@@ -701,6 +705,11 @@ void KMMainView::slotToggleFilter(bool on)
 	KMTimer::self()->hold();
 	KMManager::self()->enableFilter(on);
 	KMTimer::self()->release(true);
+}
+
+void KMMainView::configChanged()
+{
+	slotRefresh();
 }
 
 #include "kmmainview.moc"

@@ -35,7 +35,7 @@
 
 #include <qgroupbox.h>
 #include <qcheckbox.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qtabwidget.h>
@@ -54,6 +54,8 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kconfig.h>
+#include <kguiitem.h>
+#include <kstdguiitem.h>
 
 #define	SHOWHIDE(widget,on)	if (on) widget->show(); else widget->hide();
 
@@ -98,9 +100,9 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QLabel	*m_locationlabel = new QLabel(i18n("Location:"), m_pbox);
 	QLabel	*m_commentlabel = new QLabel(i18n("Comment:"), m_pbox);
 	m_printerlabel->setBuddy(d->m_printers);
-	d->m_properties = new QPushButton(i18n("P&roperties..."), m_pbox);
-	d->m_options = new QPushButton(i18n("System Op&tions..."), this);
-	d->m_default = new QPushButton(i18n("Set as &Default"), m_pbox);
+	d->m_properties = new KPushButton(KGuiItem(i18n("P&roperties..."), "edit"), m_pbox);
+	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions..."), "kdeprint_configmgr"), this);
+	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint_defaultsoft"), m_pbox);
 	d->m_filter = new QPushButton(m_pbox);
 	d->m_filter->setPixmap(SmallIcon("filter"));
 	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
@@ -111,9 +113,9 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_wizard->setPixmap(SmallIcon("wizard"));
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	QToolTip::add(d->m_wizard, i18n("Add printer..."));
-	d->m_ok = new QPushButton(i18n("&Print"), this);
+	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "fileprint"), this);
 	d->m_ok->setDefault(true);
-	QPushButton	*m_cancel = new QPushButton(i18n("&Cancel"), this);
+	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
 	d->m_preview = new QCheckBox(i18n("Pre&view"), m_pbox);
 	d->m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
 	d->m_file = new KURLRequester(QDir::homeDirPath()+"/print.ps", m_pbox);
@@ -203,7 +205,7 @@ KPrintDialog::~KPrintDialog()
 	KConfig	*config = KGlobal::config();
 	config->setGroup("KPrinter Settings");
 	config->writeEntry("DialogReduced", d->m_reduced);
-	
+
 	delete d;
 }
 
@@ -212,7 +214,7 @@ void KPrintDialog::setFlags(int f)
 	SHOWHIDE(d->m_properties, (f & KMUiManager::Properties))
 	SHOWHIDE(d->m_default, (f & KMUiManager::Default))
 	SHOWHIDE(d->m_preview, (f & KMUiManager::Preview))
-	SHOWHIDE(d->m_options, (f & KMUiManager::Options))
+	//SHOWHIDE(d->m_options, (f & KMUiManager::Options))
 	bool	on = (f & KMUiManager::OutputToFile);
 	SHOWHIDE(d->m_filelabel, on)
 	SHOWHIDE(d->m_file, on)
@@ -307,6 +309,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 
 	if (plist)
 	{
+		QString	oldP = d->m_printers->currentText();
 		d->m_printers->clear();
 		QPtrListIterator<KMPrinter>	it(*plist);
 		int 	defsoft(-1), defhard(-1), defsearch(-1);
@@ -323,7 +326,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 				defsoft = d->m_printers->count()-1;
 			if (it.current()->isHardDefault())
 				defhard = d->m_printers->count()-1;
-			if (it.current()->name() == printer->searchName())
+			if (!oldP.isEmpty() && oldP == it.current()->name())
+				defsearch = d->m_printers->count()-1;
+			else if (defsearch == -1 && it.current()->name() == printer->searchName())
 				defsearch = d->m_printers->count()-1;
 		}
 		int	defindex = (defsearch != -1 ? defsearch : (defsoft != -1 ? defsoft : QMAX(defhard,0)));
@@ -476,8 +481,10 @@ bool KPrintDialog::checkOutputFile()
 
 void KPrintDialog::slotOptions()
 {
-	if (KMFactory::self()->manager()->configure(this))
+	if (KMManager::self()->invokeOptionsDialog(this))
 		initialize(d->m_printer);
+	//if (KMFactory::self()->manager()->configure(this))
+	//	initialize(d->m_printer);
 }
 
 void KPrintDialog::enableOutputFile(bool on)
@@ -542,6 +549,13 @@ void KPrintDialog::reload()
 	// other initializations
 	setFlags(KMFactory::self()->uiManager()->dialogFlags());
 	initialize(d->m_printer);
+}
+
+void KPrintDialog::configChanged()
+{
+	// simply update the printer list if filtering is enabled
+	if (d->m_filter->isOn())
+		initialize(d->m_printer);
 }
 
 void KPrintDialog::expandDialog(bool on)

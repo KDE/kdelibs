@@ -75,6 +75,7 @@ public:
 	QString printSystem();
 	QValueList<PluginInfo> pluginList();
 	PluginInfo pluginInfo(const QString& name);
+	void saveConfig();
 
 	void reload(const QString& syst, bool saveSyst = true);
 	void registerObject(KPReloadObject*);
@@ -92,6 +93,7 @@ public:
 
 k_dcop:
 	ASYNC pluginChanged(pid_t);
+	ASYNC configChanged();
 
 private:
 	void createManager();

@@ -30,6 +30,7 @@ public:
 protected:
 	virtual void reload() = 0;
 	virtual void aboutToReload() {}
+	virtual void configChanged() {}
 };
 
 #endif

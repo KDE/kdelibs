@@ -116,6 +116,7 @@ public:
 
 	// configuration functions
 	virtual bool configure(QWidget *parent = 0);
+	bool invokeOptionsDialog(QWidget *parent = 0);
 
 	// server functions
 	int serverOperationMask() const 	{ return m_serveroperationmask; }

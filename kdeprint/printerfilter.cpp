@@ -59,7 +59,6 @@ void PrinterFilter::setEnabled(bool on)
 
 bool PrinterFilter::filter(KMPrinter *prt)
 {
-	kdDebug() << "Filtering " << prt->printerName() << endl;
 	if (m_enabled)
 	{
 		if (!m_locationRe.isEmpty() && !m_locationRe.exactMatch(prt->location()))

@@ -87,6 +87,7 @@ protected:
 	void saveSettings();
 	void loadParameters();
 	void reload();
+	void configChanged();
 	void aboutToReload();
 	void loadPluginActions();
 	void removePluginActions();

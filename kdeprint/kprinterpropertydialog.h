@@ -22,15 +22,16 @@
 #ifndef KPRINTERPROPERTYDIALOG_H
 #define KPRINTERPROPERTYDIALOG_H
 
-#include <qtabdialog.h>
+#include <kdialogbase.h>
 #include <qptrlist.h>
 #include <qmap.h>
 
 class KMPrinter;
 class KPrintDialogPage;
 class DrMain;
+class QTabWidget;
 
-class KPrinterPropertyDialog : public QTabDialog
+class KPrinterPropertyDialog : public KDialogBase
 {
 	Q_OBJECT
 public:
@@ -43,6 +44,7 @@ public:
 	void addPage(KPrintDialogPage*);
 	void setOptions(const QMap<QString,QString>&);
 	void getOptions(QMap<QString,QString>&, bool = false);
+	void enableSaveButton(bool);
 
 	static void setupPrinter(KMPrinter *printer, QWidget *parent);
 
@@ -52,8 +54,8 @@ protected:
 
 protected slots:
 	void slotCurrentChanged(QWidget*);
-	void slotSaveClicked();
-	virtual void done(int);
+	void slotUser1();
+	void slotOk();
 
 protected:
 	KMPrinter		*m_printer;
@@ -61,6 +63,8 @@ protected:
 	QPtrList<KPrintDialogPage>	m_pages;
 	KPrintDialogPage	*m_current;
 	QMap<QString,QString>	m_options;
+	QTabWidget		*m_tw;
+	QPushButton		*m_save;
 };
 
 #endif

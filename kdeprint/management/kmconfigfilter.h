@@ -21,7 +21,6 @@
 #define KMCONFIGFILTER_H
 
 #include "kmconfigpage.h"
-#include <qstringlist.h>
 
 class KListBox;
 class QPushButton;
@@ -48,7 +47,6 @@ private:
 	KListBox	*m_list1, *m_list2;
 	QPushButton	*m_add, *m_remove;
 	QLineEdit	*m_locationre;
-	QStringList	m_plist;
 };
 
 #endif

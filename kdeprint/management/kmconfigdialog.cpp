@@ -33,7 +33,7 @@
 #include <kconfig.h>
 
 KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
-: KDialogBase(KDialogBase::IconList,i18n("KDE Print Manager Configuration"),KDialogBase::Ok|KDialogBase::Cancel,KDialogBase::Ok,parent,name)
+: KDialogBase(KDialogBase::IconList,i18n("KDE Print Configuration"),KDialogBase::Ok|KDialogBase::Cancel,KDialogBase::Ok,parent,name)
 {
 	m_pages.setAutoDelete(false);
 	addConfigPage(new KMConfigGeneral(this));
@@ -71,7 +71,7 @@ void KMConfigDialog::slotOk()
 	QPtrListIterator<KMConfigPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->saveConfig(conf);
-	conf->sync();
+	KMFactory::self()->saveConfig();
 
 	// close the dialog
 	KDialogBase::slotOk();

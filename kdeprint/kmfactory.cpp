@@ -97,6 +97,7 @@ KMFactory::KMFactory()
 
 	// create DCOP signal connection
 	connectDCOPSignal(0, 0, "pluginChanged(pid_t)", "pluginChanged(pid_t)", false);
+	connectDCOPSignal(0, 0, "configChanged()", "configChanged()", false);
 }
 
 KMFactory::~KMFactory()
@@ -356,13 +357,41 @@ void KMFactory::pluginChanged(pid_t pid)
 	// only do something if the notification comes from another process
 	if (pid != getpid())
 	{
-		// Unload config object
+		// Unload config object (avoid saving it)
+		printConfig()->rollback();
 		UNLOAD_OBJECT(m_printconfig);
 		// Then reload everything and notified registered objects.
 		// Do NOT re-save the new print system.
 		QString	syst = printSystem();
 		reload(syst, false);
 	}
+}
+
+void KMFactory::configChanged()
+{
+	kdDebug() << "KMFactory (" << getpid() << ") receiving DCOP signal configChanged()" << endl;
+	// unload/reload config object (make it non dirty to
+	// avoid saving it and overwriting the newly saved options
+	// in the other application)
+	printConfig()->rollback();
+	UNLOAD_OBJECT(m_printconfig);
+	printConfig();
+	// notify all object about the change
+	QPtrListIterator<KPReloadObject>	it(m_objects);
+	for (;it.current();++it)
+		it.current()->configChanged();
+}
+
+void KMFactory::saveConfig()
+{
+	KConfig	*conf = printConfig();
+	conf->sync();
+	kdDebug() << "KMFactory (" << getpid() << ") emitting DCOP signal configChanged()" << endl;
+	QByteArray	params;
+	emitDCOPSignal("configChanged()", params);
+	// normally, the self application should also receive the signal,
+	// anyway the config object has been updated "locally", so ne real
+	// need to reload the config file.
 }
 
 #include "kmfactory.moc"
