@@ -590,6 +590,9 @@ namespace KJS {
     void putDirect(const Identifier &propertyName, ValueImp *value, int attr = 0);
     void putDirect(const Identifier &propertyName, int value, int attr = 0);
 
+    // Used internally
+    void setFunctionName(const Identifier &propertyName);
+
   protected:
     PropertyMap _prop;
   private:

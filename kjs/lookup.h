@@ -138,11 +138,9 @@ namespace KJS {
       if (cachedVal)
         return Value(cachedVal);
 
-      Value val(new FuncImp(exec,token, params));
-
-      if (val.isA(ObjectType) && static_cast<ObjectImp*>(val.imp())->inherits(&InternalFunctionImp::info))
-        static_cast<InternalFunctionImp*>(val.imp())->setName(propertyName);
-
+      ObjectImp* func = new FuncImp( exec, token, params );
+      Value val( func );
+      func->setFunctionName( propertyName );
       ObjectImp *thatObj = const_cast<ObjectImp *>(thisObj);
       thatObj->ObjectImp::put(exec, propertyName, val, attr);
       return val;

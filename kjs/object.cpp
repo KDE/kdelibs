@@ -476,6 +476,12 @@ void ObjectImp::putDirect(const Identifier &propertyName, int value, int attr)
   _prop.put(propertyName, NumberImp::create(value), attr);
 }
 
+void ObjectImp::setFunctionName(const Identifier &propertyName)
+{
+  if (inherits(&InternalFunctionImp::info))
+    static_cast<InternalFunctionImp*>(this)->setName(propertyName);
+}
+
 // ------------------------------ Error ----------------------------------------
 
 const char * const errorNamesArr[] = {
