@@ -268,6 +268,14 @@ Dispatcher::~Dispatcher()
 			 << Type::_typeCount() << " types alive." << endl;
 	}
 
+	if(GenericDataPacket::_dataPacketCount())
+	{
+		cerr << "warning: leaving MCOP Dispatcher and still "
+			 << GenericDataPacket::_dataPacketCount()
+			 << " data packets alive." << endl;
+	}
+
+
 	/* private data pointer */
 	assert(d);
 	delete d;

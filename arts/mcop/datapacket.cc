@@ -25,6 +25,8 @@
 
 using namespace Arts;
 
+long GenericDataPacket::_staticDataPacketCount = 0;
+
 /**** specific DataPacket types ****/
 
 void FloatDataPacket::read(Buffer& stream)

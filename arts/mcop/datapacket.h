@@ -86,7 +86,14 @@ class GenericDataPacketPrivate;
 class GenericDataPacket {
 private:
 	GenericDataPacketPrivate *d;
+	static long _staticDataPacketCount;
+
 public:
+	/**
+	 * the amount of active data packets (memory leak debugging only)
+	 */
+	static long _dataPacketCount() { return _staticDataPacketCount; }
+
 	/**
 	 * the channel this datapacket belongs to
 	 */
@@ -137,14 +144,14 @@ public:
 
 	virtual ~GenericDataPacket()
 	{
-		//
+		_staticDataPacketCount--;
 	}
 
 protected:
 	GenericDataPacket(GenericDataChannel *channel)
 		:d(0),channel(channel),useCount(0)
 	{
-		//
+		_staticDataPacketCount++;
 	}
 };
 
