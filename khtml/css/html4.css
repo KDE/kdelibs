@@ -438,7 +438,6 @@ PLAINTEXT {
 	display: block;
 	font-family: monospace; 
 	white-space: pre; 
-        -konq-wrap-mode: -konq-none;
 }
       
 BIG { 
@@ -531,11 +530,11 @@ frame {
 
 nobr {
         display: block;
-        -konq-wrap-mode: -konq-none;
+        white-space: nowrap; 
 }
 
 wbr {
-        -konq-wrap-mode: -konq-normal;
+        white-space: normal;
 }
 
 /* noscript is handled internally, as it depends on the html settings */

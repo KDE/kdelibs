@@ -1261,7 +1261,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	      break;
 
 	  cleanup:
-	      qDebug(" rectangle parsing failed, i=%d", i);
+	      //qDebug(" rectangle parsing failed, i=%d", i);
 	      delete rect;
 	  }
 	  break;
@@ -1904,13 +1904,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  if (cssval->id==CSS_VAL__KONQ_NORMAL || cssval->id==CSS_VAL__KONQ_AROUND_FLOATS)
               parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	  break;
-      }
-      case CSS_PROP__KONQ_WRAP_MODE:
-      {
-	  if (cssval->id==CSS_VAL__KONQ_NORMAL || cssval->id==CSS_VAL__KONQ_NONE)
-              parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-
-          break;
       }
       /* shorthand properties */
       case CSS_PROP_BACKGROUND:

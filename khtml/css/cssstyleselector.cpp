@@ -167,7 +167,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 
     QString style = QString::fromLatin1( file.data() );
     if(s)
-	style += s->settingsToCSS();
+        style += s->settingsToCSS();
     DOMString str(style);
 
     defaultSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl * ) 0);
@@ -2026,11 +2026,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         int minFontSize = e->getDocument()->view()->part()->settings()->minFontSize();
 
         float toPix = 1.; // fallback
-        if ( !khtml::printpainter )
+//        if ( !khtml::printpainter )
             toPix = paintDeviceMetrics->logicalDpiY()/72.;
-        if ( !khtml::printpainter && toPix < 96./72. )
+//        if ( !khtml::printpainter && toPix < 96./72. )
+        if (toPix  < 96./72.)
             toPix = 96./72.;
 
+        qDebug("printpainter: %d toPix %5.3f", khtml::printpainter, toPix);
         QValueList<int> standardSizes = e->getDocument()->view()->part()->fontSizes();
         if(e->parentNode()) {
             oldSize = e->parentNode()->style()->font().pixelSize();
@@ -2381,13 +2383,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	style->setTextDecorationColor(style->color());
         break;
     }
-    case CSS_PROP__KONQ_WRAP_MODE:
-        if (!primitiveValue) return;
-        if (primitiveValue->getIdent()) {
-            style->setNoLineBreak(primitiveValue->getIdent() == CSS_VAL__KONQ_NONE);
-            return;
-        }
-        break;
     case CSS_PROP__KONQ_FLOW_MODE:
         if(value->cssValueType() == CSSValue::CSS_INHERIT)
         {
