@@ -208,6 +208,15 @@ bool KCharset::printable(int chr){
   return FALSE;
 }
 
+QString KCharset::xCharset(){
+
+  if (!entry) return 0;
+  if (strnicmp(entry->name,"iso-",4)==0){
+     return QString("iso")+QString(entry->name).mid(4,100);
+  }
+  return entry->name;
+}
+
 KCharsetConverter::KCharsetConverter(KCharset inputCharset
 				    ,int flags){
 				    

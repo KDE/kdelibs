@@ -30,29 +30,137 @@
 class KCharsetEntry;
 class KCharsetsData;
 
+/**
+*  A class representing a charset.
+*
+* @author Jacek Konieczny <jacus@zeus.polsl.gliwice.pl>
+* @version $Id$
+* @short KDE charset support class
+*/
 class KCharset{
 friend class KCharsets;
 public:
+ /**
+  * Default constructor
+  */
   KCharset(); 
-  KCharset(const KCharsetEntry *);
-  KCharset(const char *);
+ /**
+  * Prepares charset of given name
+  *
+  * @param name Name of the charset
+  */
+  KCharset(const char *name);
+ /**
+  * Prepares charset of given name
+  *
+  * @param name Name of the charset
+  */
   KCharset(const QString);
-  KCharset(QFont::CharSet);
+ /**
+  * Prepares charset from Qt's charset id
+  *
+  * @param id Qt's id of the charset
+  */
+  KCharset(QFont::CharSet id);
+ /**
+  * Gives name of the charset
+  *
+  * @return name of the charset
+  */
   const char *name()const;
+ /**
+  * For casting KCharset into string
+  *
+  * @return name of the charset
+  */
   operator const char *()const{ return name(); }
+ /**
+  * For casting KCharset into QString
+  *
+  * @return name of the charset
+  */
   operator QString()const{ return name(); }
+ /**
+  * Check if charset is displayable
+  *
+  * @return TRUE if it is displayable
+  */
   bool isDisplayable();
-  bool isDisplayable(const char *);
+ /**
+  * Check if charset is displayable using given font
+  *
+  * @param family name of the font
+  * @return TRUE if it is displayable
+  */
+  bool isDisplayable(const char *font);
+ /**
+  * Check if charset is defined for use with KDE (in charsets
+  * classes or in charsets config files)
+  *
+  * @return TRUE if it is available
+  */
   bool isAvailable()const{ if (!entry) return FALSE; else return TRUE; }
+ /**
+  * Check if charset is OK.
+  * In fact the same as @ref isAvailable
+  *
+  * @return TRUE if it is available
+  */
   bool ok()const{ if (!entry) return FALSE; else return TRUE; }
+ /**
+  * Check if charset is registered for use in mime messages.
+  * TRUE also for some not-yet-registered charsets (UTF-7 and UTF-8)
+  *
+  * @return TRUE if it is registered 
+  */
   bool isRegistered()const;
+ /**
+  * Set charset of QFont to this.
+  * Should be used instead of QFont::setCharSet()
+  *
+  * @param fnt Font we want set charset of
+  * @return The font after setting the charset 
+  */
   QFont &setQFont(QFont& fnt);
+ /**
+  * Get QT's id of charset.
+  * Qt has id defined only for ISO-8859-* charsets, so their
+  * charset functions should not be used
+  *
+  * @return The Qt font charset id
+  */
   QFont::CharSet qtCharset()const;
+ /**
+  * Get nuber of bits needed to represent a character.
+  * As for now only 8-bit characters are supported well
+  *
+  * @return Number of bits per character
+  */
   int bits()const;
-  operator const KCharsetEntry *()const;
+ /**
+  * check if character is printable in selected charset 
+  *
+  * @param chr Character to check
+  * @return TRUE if it is printable
+  */
   bool printable(int chr);
+ /**
+  * compares charsets 
+  *
+  * @param kch Character to compare to
+  * @return TRUE this and kch are the same charset
+  */
   bool operator ==(const KCharset& kch)const{ return entry==kch.entry; }
-  
+  QString xCharset();
+ 
+ /**
+  * For internal use only
+  */
+  KCharset(const KCharsetEntry *);
+ /**
+  * For internal use only
+  */
+  operator const KCharsetEntry *()const;
 private:
    const KCharsetEntry *entry;
    static KCharsetsData *data;
@@ -413,6 +521,12 @@ public:
    * @return charset name
    */
   const char * name(QFont::CharSet qtcharset);
+ /** 
+   * Returns charset of given charset identifier
+   *
+   * @param qtcharset Qt charset identifier
+   * @return charset object
+   */
   KCharset charset(QFont::CharSet qtcharset);
   
   /** 
@@ -421,7 +535,14 @@ public:
    * @param font QFont object
    * @return charset name
    */
-  const char * name(const QFont& font);   
+  const char * name(const QFont& font);
+  
+ /** 
+   * Returns charset of given QFont object
+   *
+   * @param font QFont object
+   * @return charset object
+   */
   KCharset charset(const QFont& font);   
 
   /**

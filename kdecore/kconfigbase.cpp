@@ -19,6 +19,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.28  1998/03/31 10:13:29  mark
+// MD: The Qt default font has rawMode set and KConfigBase::readFontEntry()
+// never turned this setting off. Fixed this oversight and added a little more
+// protection against future (unlikely) changes to the default font.
+//
 // Revision 1.27  1998/03/31 03:47:31  tibirna
 // CT little typo in readNumEntry ( = instead of == )
 //
@@ -123,6 +128,7 @@
 // KDE includes
 #include "kdebug.h"
 #include "kapp.h"
+#include "kcharsets.h"
 
 KConfigBase::KConfigBase()
 {
@@ -518,9 +524,21 @@ QFont KConfigBase::readFontEntry( const char* pKey,
 	      aRetFont = *pDefault;
 	    return aRetFont;
 	  }
-
-	  aRetFont.setCharSet( (QFont::CharSet)aValue.mid( nOldIndex+1, 
-				   nIndex-nOldIndex-1 ).toUInt() );
+         
+	 QString chStr=aValue.mid( nOldIndex+1, 
+				   nIndex-nOldIndex-1 );
+	 bool chOldEntry;			 
+	 QFont::CharSet chId=(QFont::CharSet)aValue.mid( nOldIndex+1, 
+				   nIndex-nOldIndex-1 ).toUInt(&chOldEntry);			   
+         if (chOldEntry)  
+	   aRetFont.setCharSet( chId );
+	 else if (kapp){
+           if (chStr=="default")
+              if( kapp->localeConstructed() ) 
+	          chStr=klocale->charset();
+	      else chStr="iso-8859-1"; 
+	   kapp->getCharsets()->setQFont(aRetFont,chStr);   
+	 }
 
 	  // find fifth part (weight)
 	  nOldIndex = nIndex;
@@ -873,6 +891,7 @@ const char* KConfigBase::writeEntry( const char* pKey, const QFont& rFont,
 									 bool bNLS )
 {
   QString aValue;
+  QString aCharset;
   UINT8 nFontBits = 0;
   // this mimics get_font_bits() from qfont.cpp
   if( rFont.italic() )
@@ -886,9 +905,13 @@ const char* KConfigBase::writeEntry( const char* pKey, const QFont& rFont,
   if( rFont.rawMode() )
 	nFontBits = nFontBits | 0x20;
 
-  aValue.sprintf( "%s,%d,%d,%d,%d,%d", rFont.family(), rFont.pointSize(),
-				  rFont.styleHint(), rFont.charSet(), rFont.weight(),
-				  nFontBits );
+  if (kapp){
+    aCharset=kapp->getCharsets()->name(rFont);
+  }
+  else aCharset="default";
+  aValue.sprintf( "%s,%d,%d,%s,%d,%d", rFont.family(), rFont.pointSize(),
+				  rFont.styleHint(), (const char *)aCharset,
+				  rFont.weight(), nFontBits );
 
   return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }

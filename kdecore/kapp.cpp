@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.100  1998/04/03 14:25:59  kulow
+// fixed a memory leak
+//
 // Revision 1.99  1998/03/27 17:27:31  mark
 // MD:
 // - Added call to setWinStyleHighlightColor()
@@ -1120,16 +1123,15 @@ void KApplication::readSettings()
   //  Read the font specification from config.
   //  Initialize fonts to default first or it won't work !!
 		
+  pCharsets->setDefault(klocale->charset());
   generalFont = QFont("helvetica", 12, QFont::Normal);
+  pCharsets->setQFont(generalFont);
   fixedFont = QFont("fixed", 12, QFont::Normal);
+  pCharsets->setQFont(fixedFont);
 
   config->setGroup( "General" );
   generalFont = config->readFontEntry( "font", &generalFont );
   fixedFont = config->readFontEntry( "fixedFont", &fixedFont );
-  
-  pCharsets->setDefault(klocale->charset());
-  pCharsets->setQFont(generalFont);
-  pCharsets->setQFont(fixedFont);
   
   // Finally, read GUI style from config.
 	
