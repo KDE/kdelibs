@@ -5,8 +5,8 @@ lib_LTLIBRARIES = libmediatool.la
 #
 MEDIATOOLVERSION=	0.0
 MEDIATOOLPATCH	 =	6
-
-libmediatool_la_SOURCES =	chunk.c eventcounter.c mediatypes.c tools.c \
+INCLUDES = -I../kdecore
+libmediatool_la_SOURCES = chunk.c eventcounter.c mediatypes.c tools.c \
 			connect.c filename.c playlist.c kaudio.cpp
 
 include_HEADERS= 	mediatool.h kaudio.h

@@ -68,7 +68,7 @@ AC_CHECK_BOOL
 AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions. 
-AC_CHECK_FUNCS(socket vsnprintf)
+AC_CHECK_FUNCS(socket vsnprintf usleep)
 AC_CHECK_SETENV
 
 AC_LANG_CPLUSPLUS
