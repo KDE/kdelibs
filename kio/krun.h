@@ -171,6 +171,11 @@ protected:
     pid_t pid);
 
   /**
+   * Extracts binary name from Exec command line
+   */
+  static QString binaryName( const QString & execLine );
+
+  /**
    * Quotes a string for the shell
    */
   static void shellQuote( QString &_str );

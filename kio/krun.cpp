@@ -91,8 +91,8 @@ void KRun::shellQuote( QString &_str )
 bool KRun::run( const KService& _service, const KURL::List& _urls )
 {
   kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
-  QString name = _service.name();
   QString miniicon = _service.icon();
+  QString exec = _service.exec();
   QString error;
   int /*pid_t*/ pid;
   // First try using startServiceByDesktopPath, since that one benefits from kdeinit.
@@ -100,12 +100,13 @@ bool KRun::run( const KService& _service, const KURL::List& _urls )
   {
     //kdDebug(7010) << "startServiceByDesktopPath worked fine!" << endl;
     // App-starting notification
-    clientStarted( name, miniicon, pid);
+    clientStarted( binaryName(exec), miniicon, pid);
     return true;
   }
   else
   {
     // Fall back on normal running
+    QString name = _service.name();
     QString icon = _service.icon();
     bool ret = run( _service.exec(), _urls, name, icon, miniicon );
     //kdDebug(7010) << "KRun::run returned " << ret << endl;
@@ -187,24 +188,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   while ( ( pos = exec.find( "%i" ) ) != -1 )
     exec.replace( pos, 2, icon );
 
-  // App starting notification stuff follows...
-
-  QString _bin_name = _exec;
-
-  // Remove parameters and/or trailing spaces.
-
-  int firstSpace = _bin_name.find(' ');
-
-  if (-1 != firstSpace)
-    _bin_name = _bin_name.left(firstSpace);
-
-  // Remove path.
-
-  int lastSlash = _bin_name.findRev('/');
-
-  _bin_name = _bin_name.mid(lastSlash + 1);
-
-  // End app starting notification stuff.
+  QString _bin_name = binaryName ( _exec );
 
   QString mini_icon = _mini_icon;
   shellQuote( mini_icon );
@@ -378,6 +362,24 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
 
     return retval;
   }
+}
+
+QString KRun::binaryName( const QString & execLine )
+{
+  QString _bin_name = execLine;
+
+  // Remove parameters and/or trailing spaces.
+
+  int firstSpace = _bin_name.find(' ');
+
+  if (-1 != firstSpace)
+    _bin_name = _bin_name.left(firstSpace);
+
+  // Remove path.
+
+  int lastSlash = _bin_name.findRev('/');
+
+  return _bin_name.mid(lastSlash + 1);
 }
 
 KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _auto_delete )
@@ -762,6 +764,7 @@ void KRun::clientStarted(
   pid_t pid
 )
 {
+  kdDebug(7010) << "clientStarted pid=" << (int)pid << endl;
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
   stream << execName << iconName << (int)pid;
