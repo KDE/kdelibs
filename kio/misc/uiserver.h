@@ -33,10 +33,68 @@
 #include <ksslcertdlg.h>
 
 class ListProgress;
+class KSqueezedTextLabel;
+class ProgressItem;
 
 namespace KIO {
   class Job;
   class DefaultProgress;
+};
+
+
+struct ListProgressColumnConfig
+{
+   QString title;
+   int index;
+   int width;
+   bool enabled;
+};
+
+/**
+* List view in the @ref #UIServer.
+* @internal
+*/
+class ListProgress : public KListView {
+
+  Q_OBJECT
+
+public:
+
+  ListProgress (QWidget *parent = 0, const char *name = 0 );
+
+  virtual ~ListProgress();
+
+  /**
+   * Field constants
+   */
+  enum ListProgressFields {
+    TB_OPERATION = 0,
+    TB_LOCAL_FILENAME = 1,
+    TB_RESUME = 2,
+    TB_COUNT = 3,     //lv_count
+    TB_PROGRESS = 4,  // lv_progress
+    TB_TOTAL = 5,
+    TB_SPEED = 6,
+    TB_REMAINING_TIME = 7,
+    TB_ADDRESS = 8,
+    TB_MAX = 9
+  };
+
+  friend class ProgressItem;
+
+protected slots:
+  void columnWidthChanged(int column);
+protected:
+
+  void writeConfig();
+  void readConfig();
+  void createColumns();
+
+  bool m_showHeader;
+  bool m_fixedColumnWidths;
+  ListProgressColumnConfig m_lpcc[TB_MAX];
+  //hack, alexxx
+  KSqueezedTextLabel *m_squeezer;
 };
 
 /**
@@ -89,6 +147,8 @@ public:
   unsigned long speed() { return m_iSpeed; }
   QTime remainingTime() { return m_remainingTime; }
 
+  const QString& fullLengthAddress() const {return m_fullLengthAddress;}
+  void setText(ListProgress::ListProgressFields field, const QString& text);
 public slots:
   void slotShowDefaultProgress();
   void slotToggleDefaultProgress();
@@ -124,50 +184,10 @@ protected:
   unsigned long m_iSpeed;
   QTime m_remainingTime;
   QTimer m_showTimer;
+  QString m_fullLengthAddress;
 };
 
-
-/**
-* List view in the @ref #UIServer.
-* @internal
-*/
-class ListProgress : public KListView {
-
-  Q_OBJECT
-
-public:
-
-  ListProgress (QWidget *parent = 0, const char *name = 0 );
-
-  virtual ~ListProgress();
-
-  /**
-   * Field constants
-   */
-  enum ListProgressFields {
-    TB_OPERATION = 0,
-    TB_LOCAL_FILENAME = 1,
-    TB_RESUME = 2,
-    TB_COUNT = 3,
-    TB_PROGRESS = 4,
-    TB_TOTAL = 5,
-    TB_SPEED = 6,
-    TB_REMAINING_TIME = 7,
-    TB_ADDRESS = 8
-  };
-
-  friend class ProgressItem;
-
-protected:
-
-  void readConfig();
-  void writeConfig();
-
-  // ListView IDs
-  int lv_operation, lv_filename, lv_resume, lv_count, lv_progress;
-  int lv_size, lv_speed, lv_remaining, lv_url;
-};
-
+class QResizeEvent;
 
 /**
  * It's purpose is to show progress of IO operations.
@@ -339,7 +359,8 @@ protected:
 
   ProgressItem* findItem( int id );
 
-  void closeEvent( QCloseEvent * );
+  virtual void resizeEvent(QResizeEvent* e);
+  virtual void closeEvent( QCloseEvent * );
 
   void setItemVisible( ProgressItem * item, bool visible );
 
@@ -350,12 +371,17 @@ protected:
   QString properties;
 
   void readSettings();
-
+  void writeSettings();
 private:
 
   void killJob( QCString observerAppId, int progressId );
 
+  int m_initWidth;
+  int m_initHeight;
   bool m_bShowList;
+  bool m_showStatusBar;
+  bool m_showToolBar;
+  bool m_keepListOpen;
 
   // true if there's a new job that hasn't been shown yet.
   bool m_bUpdateNewJob;

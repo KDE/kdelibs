@@ -19,8 +19,15 @@
 */
 // -*- mode: c++; c-basic-offset: 4 -*-
 
-#include <qregexp.h>
+#include <iostream.h>
 
+#include <qtimer.h>
+
+#include <qregexp.h>
+#include <qheader.h>
+#include <qevent.h>
+
+#include <ksqueezedtextlabel.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kuniqueapplication.h>
@@ -73,9 +80,6 @@ static const int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
                                     70,  // REMAINING_TIME
                                     450  // URL
 };
-
-// number of listview columns
-#define NUM_COLS  9
 
 ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString app_id, int job_id,
                             bool showDefault )
@@ -139,7 +143,9 @@ void ProgressItem::setTotalDirs( unsigned long dirs ) {
 void ProgressItem::setProcessedSize( KIO::filesize_t size ) {
   m_iProcessedSize = size;
 
-  setText( listProgress->lv_size, KIO::convertSize( size ) );
+//  if (listProgress->m_lpcc[ListProgress::TB_TOTAL].enabled)
+//     setText( listProgress->m_lpcc[ListProgress::TB_TOTAL].index, KIO::convertSize( size ) );
+  setText( ListProgress::TB_TOTAL, KIO::convertSize( size ) );
 
   defaultProgress->slotProcessedSize( 0, size );
 }
@@ -149,7 +155,9 @@ void ProgressItem::setProcessedFiles( unsigned long files ) {
   m_iProcessedFiles = files;
 
   QString tmps = i18n("%1 / %2").arg( m_iProcessedFiles ).arg( m_iTotalFiles );
-  setText( listProgress->lv_count, tmps );
+//  if (listProgress->m_lpcc[ListProgress::TB_COUNT].enabled)
+//     setText(listProgress->m_lpcc[ListProgress::TB_COUNT].index,tmps);
+  setText( ListProgress::TB_COUNT, tmps );
 
   defaultProgress->slotProcessedFiles( 0, m_iProcessedFiles );
 }
@@ -162,7 +170,9 @@ void ProgressItem::setProcessedDirs( unsigned long dirs ) {
 
 void ProgressItem::setPercent( unsigned long percent ) {
   QString tmps = i18n( "%1 % of %2 ").arg( percent ).arg( KIO::convertSize(m_iTotalSize));
-  setText( listProgress->lv_progress, tmps );
+//  if (listProgress->m_lpcc[ListProgress::TB_PROGRESS].enabled)
+//     setText(listProgress->m_lpcc[ListProgress::TB_PROGRESS].index,tmps);
+  setText( ListProgress::TB_PROGRESS, tmps );
 
   defaultProgress->slotPercent( 0, percent );
 }
@@ -171,7 +181,9 @@ void ProgressItem::setInfoMessage( const QString & msg ) {
   QString plainTextMsg(msg);
   plainTextMsg.replace( QRegExp( "</?b>" ), QString::null );
   plainTextMsg.replace( QRegExp( "<img.*>" ), QString::null );
-  setText( listProgress->lv_progress, plainTextMsg );
+//  if (listProgress->m_lpcc[ListProgress::TB_PROGRESS].enabled)
+//     setText(listProgress->m_lpcc[ListProgress::TB_PROGRESS].index,plainTextMsg);
+  setText( ListProgress::TB_PROGRESS, plainTextMsg );
 
   defaultProgress->slotInfoMessage( 0, msg );
 }
@@ -188,76 +200,146 @@ void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
     tmps = i18n( "%1/s").arg( KIO::convertSize( m_iSpeed ));
     tmps2 = m_remainingTime.toString();
   }
-  setText( listProgress->lv_speed, tmps );
-  setText( listProgress->lv_remaining, tmps2 );
+//  if (listProgress->m_lpcc[ListProgress::TB_SPEED].enabled)
+//     setText(listProgress->m_lpcc[ListProgress::TB_SPEED].index,tmps);
+  setText( ListProgress::TB_SPEED, tmps );
+//  if (listProgress->m_lpcc[ListProgress::TB_REMAINING_TIME].enabled)
+//     setText(listProgress->m_lpcc[ListProgress::TB_REMAINING_TIME].index,tmps2);
+  setText( ListProgress::TB_REMAINING_TIME, tmps2 );
 
   defaultProgress->slotSpeed( 0, m_iSpeed );
 }
 
 
 void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
-  setText( listProgress->lv_operation, i18n("Copying") );
-  setText( listProgress->lv_url, from.url() );
-  setText( listProgress->lv_filename, to.fileName() );
+//  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
+//     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Copying"));
+   setText( ListProgress::TB_OPERATION, i18n("Copying") );
+//  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
+//     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,from.url());
+   setText( ListProgress::TB_ADDRESS, from.url() );
+//  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
+//     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,to.fileName());
+   setText( ListProgress::TB_LOCAL_FILENAME, to.fileName() );
 
   defaultProgress->slotCopying( 0, from, to );
 }
 
 
 void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
-  setText( listProgress->lv_operation, i18n("Moving") );
-  setText( listProgress->lv_url, from.url() );
-  setText( listProgress->lv_filename, to.fileName() );
+/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Moving"));
+  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,from.url());
+  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,to.fileName());*/
+   setText( ListProgress::TB_OPERATION, i18n("Moving") );
+   setText( ListProgress::TB_ADDRESS, from.url() );
+   setText( ListProgress::TB_LOCAL_FILENAME, to.fileName() );
 
   defaultProgress->slotMoving( 0, from, to );
 }
 
 
 void ProgressItem::setCreatingDir( const KURL& dir ) {
-  setText( listProgress->lv_operation, i18n("Creating") );
-  setText( listProgress->lv_url, dir.url() );
-  setText( listProgress->lv_filename, dir.fileName() );
+/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Creating"));
+  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,dir.url());
+  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,dir.fileName());*/
+
+   setText( ListProgress::TB_OPERATION, i18n("Creating") );
+   setText( ListProgress::TB_ADDRESS, dir.url() );
+   setText( ListProgress::TB_LOCAL_FILENAME, dir.fileName() );
 
   defaultProgress->slotCreatingDir( 0, dir );
 }
 
 
 void ProgressItem::setDeleting( const KURL& url ) {
-  setText( listProgress->lv_operation, i18n("Deleting") );
-  setText( listProgress->lv_url, url.url() );
-  setText( listProgress->lv_filename, url.fileName() );
+/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Deleting"));
+  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,url.url());
+  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,url.fileName());*/
+   setText( ListProgress::TB_OPERATION, i18n("Deleting") );
+   setText( ListProgress::TB_ADDRESS, url.url() );
+   setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
 
   defaultProgress->slotDeleting( 0, url );
 }
 
 void ProgressItem::setTransferring( const KURL& url ) {
-  setText( listProgress->lv_operation, i18n("Loading") );
-  setText( listProgress->lv_url, url.url() );
-  setText( listProgress->lv_filename, url.fileName() );
+/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Loading"));
+  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,url.url());
+  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,url.fileName());*/
+   setText( ListProgress::TB_OPERATION, i18n("Loading") );
+   setText( ListProgress::TB_ADDRESS, url.url() );
+   setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
 
   defaultProgress->slotTransferring( 0, url );
 }
 
+void ProgressItem::setText(ListProgress::ListProgressFields field, const QString& text)
+{
+  if (listProgress->m_lpcc[field].enabled)
+  {
+     QString t=text;
+     if ((field==ListProgress::TB_ADDRESS) && (listProgress->m_fixedColumnWidths))
+//     if (((field==ListProgress::TB_LOCAL_FILENAME) || (field==ListProgress::TB_ADDRESS)) && (listProgress->m_fixedColumnWidths))
+     {
+        m_fullLengthAddress=text;
+        listProgress->m_squeezer->resize(listProgress->columnWidth(listProgress->m_lpcc[field].index),50);
+        listProgress->m_squeezer->setText(t);
+        t=listProgress->m_squeezer->text();
+     }
+     QListViewItem::setText(listProgress->m_lpcc[field].index,t);
+  }
+}
+
 void ProgressItem::setStating( const KURL& url ) {
-  setText( listProgress->lv_operation, i18n("Examining") );
-  setText( listProgress->lv_url, url.url() );
-  setText( listProgress->lv_filename, url.fileName() );
+/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Examining"));
+  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,url.url());
+  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,url.fileName());*/
+   setText( ListProgress::TB_OPERATION, i18n("Examining") );
+   setText( ListProgress::TB_ADDRESS, url.url() );
+   setText( ListProgress::TB_LOCAL_FILENAME, url.fileName() );
 
   defaultProgress->slotStating( 0, url );
 }
 
 void ProgressItem::setMounting( const QString& dev, const QString & point ) {
-  setText( listProgress->lv_operation, i18n("Mounting") );
-  setText( listProgress->lv_url, point ); // ?
-  setText( listProgress->lv_filename, dev ); // ?
+/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Mounting"));
+  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,point);
+  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,dev);*/
+   setText( ListProgress::TB_OPERATION, i18n("Mounting") );
+   setText( ListProgress::TB_ADDRESS, point ); // ?
+   setText( ListProgress::TB_LOCAL_FILENAME, dev ); // ?
 
   defaultProgress->slotMounting( 0, dev, point );
 }
 
 void ProgressItem::setUnmounting( const QString & point ) {
-  setText( listProgress->lv_operation, i18n("Unmounting") );
-  setText( listProgress->lv_url, point ); // ?
-  setText( listProgress->lv_filename, "" ); // ?
+/*  if (listProgress->m_lpcc[ListProgress::TB_OPERATION].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_OPERATION].index,i18n("Unmounting"));
+  if (listProgress->m_lpcc[ListProgress::TB_ADDRESS].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_ADDRESS].index,point);
+  if (listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].enabled)
+     setText(listProgress->m_lpcc[ListProgress::TB_LOCAL_FILENAME].index,"");*/
+   setText( ListProgress::TB_OPERATION, i18n("Unmounting") );
+   setText( ListProgress::TB_ADDRESS, point ); // ?
+   setText( ListProgress::TB_LOCAL_FILENAME, "" ); // ?
 
   defaultProgress->slotUnmounting( 0, point );
 }
@@ -334,27 +416,35 @@ void ProgressItem::updateVisibility()
 
 
 //-----------------------------------------------------------------------------
-
 ListProgress::ListProgress (QWidget *parent, const char *name)
-  : KListView (parent, name) {
+: KListView (parent, name)
+{
 
   // enable selection of more than one item
   setMultiSelection( true );
 
   setAllColumnsShowFocus( true );
 
-  lv_operation = addColumn( i18n("Operation") );
-  lv_filename = addColumn( i18n("Local Filename") );
-  //lv_resume = addColumn( i18n("Res.") );
-  lv_count = addColumn( i18n("Count") );
-  lv_progress = addColumn( i18n("%") );
-  //lv_total = addColumn( i18n("Total") );
-  lv_size = addColumn( i18n("Size") );
-  lv_speed = addColumn( i18n("Speed") );
-  lv_remaining = addColumn( i18n("Rem. Time") );
-  lv_url = addColumn( i18n("URL") );
-
+  m_lpcc[TB_OPERATION].title=i18n("Operation");
+  m_lpcc[TB_LOCAL_FILENAME].title=i18n("Local Filename");
+  m_lpcc[TB_RESUME].title=i18n("Res.");
+  m_lpcc[TB_COUNT].title=i18n("Count");
+  m_lpcc[TB_PROGRESS].title=i18n("%");
+  m_lpcc[TB_TOTAL].title=i18n("Size");
+  m_lpcc[TB_SPEED].title=i18n("Speed");
+  m_lpcc[TB_REMAINING_TIME].title=i18n("Rem. Time");
+  m_lpcc[TB_ADDRESS].title=i18n("URL");
   readConfig();
+
+  createColumns();
+
+  if (!m_showHeader)
+     header()->hide();
+
+  //used for squeezing the text in local file name and url
+  m_squeezer=new KSqueezedTextLabel(this);
+  m_squeezer->hide();
+  connect(header(),SIGNAL(sizeChange(int,int,int)),this,SLOT(columnWidthChanged(int)));
 }
 
 
@@ -362,32 +452,67 @@ ListProgress::~ListProgress() {
   writeConfig();
 }
 
+void ListProgress::createColumns()
+{
+   //remove all but the first column
+   for (int i=columns()-1; i>=0; i--)
+      removeColumn(i);
+
+   for (int i=0; i<TB_MAX; i++)
+   {
+      if (m_lpcc[i].enabled)
+      {
+         m_lpcc[i].index=addColumn(m_lpcc[i].title, m_fixedColumnWidths?m_lpcc[i].width:-1);
+         setColumnWidth(i, m_lpcc[i].width); //yes, this is required here, alexxx
+      }
+   }
+}
 
 void ListProgress::readConfig() {
   KConfig config("uiserverrc");
 
   // read listview geometry properties
   config.setGroup( "ProgressList" );
-  for ( int i = 0; i < NUM_COLS; i++ ) {
-    QString tmps;
-    tmps.sprintf( "Col%d", i );
-    setColumnWidth( i, config.readNumEntry( tmps, defaultColumnWidth[i] ) );
+  for ( int i = 0; i < TB_MAX; i++ ) {
+     QString tmps="Col"+QString::number(i);
+     m_lpcc[i].width=config.readNumEntry( tmps, 0);
+     if (m_lpcc[i].width==0) m_lpcc[i].width=defaultColumnWidth[i];
+
+     tmps="Enabled"+QString::number(i);
+     m_lpcc[i].enabled=config.readBoolEntry(tmps,true);
   }
+  m_showHeader=config.readBoolEntry("ShowListHeader",true);
+  m_fixedColumnWidths=config.readBoolEntry("FixedColumnWidths",false);
+
+  m_lpcc[TB_RESUME].enabled=false;
 }
 
+void ListProgress::columnWidthChanged(int column)
+{
+   //resqueeze if necessary
+   if ((m_lpcc[TB_ADDRESS].enabled) && (column==m_lpcc[TB_ADDRESS].index))
+   {
+      for (QListViewItem* lvi=firstChild(); lvi!=0; lvi=lvi->nextSibling())
+      {
+         ProgressItem *pi=(ProgressItem*)lvi;
+         pi->setText(TB_ADDRESS,pi->fullLengthAddress());
+      }
+   }
+   writeConfig();
+}
 
 void ListProgress::writeConfig() {
-  KConfig config("uiserverrc");
+   KConfig config("uiserverrc");
 
-  // write listview geometry properties
-  config.setGroup( "ProgressList" );
-  for ( int i = 0; i < NUM_COLS; i++ ) {
-    QString tmps;
-    tmps.sprintf( "Col%d", i );
-    config.writeEntry( tmps, columnWidth( i ) );
-  }
-
-  config.sync();
+   // write listview geometry properties
+   config.setGroup( "ProgressList" );
+   for ( int i = 0; i < TB_MAX; i++ ) {
+      m_lpcc[i].width=columnWidth(i);
+      QString tmps;
+      tmps.sprintf( "Col%d", i );
+      config.writeEntry( tmps, m_lpcc[i].width);
+   }
+   config.sync();
 }
 
 
@@ -429,10 +554,21 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
   m_bUpdateNewJob=false;
 
   setCaption(i18n("Progress Dialog"));
-  setMinimumSize( 350, 150 );
-  resize( 460, 150 );
+  setMinimumSize( 150, 50 );
+  resize( m_initWidth, m_initHeight);
 
-  hide();
+  if (m_showStatusBar==false)
+     statusBar()->hide();
+  if (m_showToolBar==false)
+     toolBar()->hide();
+
+/*  if ((m_bShowList) && (m_keepListOpen))
+  {
+     cerr<<"show() !"<<endl;
+     show();
+  }
+  else*/
+     hide();
 }
 
 
@@ -741,19 +877,19 @@ void UIServer::slotJobCanceled( ProgressItem *item ) {
 void UIServer::slotUpdate() {
   // don't do anything if we don't have any inserted progress item
   // or if they're all hidden
-  QListViewItemIterator lvit( listProgress );
-  bool visible = false;
-  for ( ; lvit.current(); ++lvit )
-    if ( ((ProgressItem*)lvit.current())->isVisible() ) {
-      visible = true;
-      break;
-    }
+   QListViewItemIterator lvit( listProgress );
+   bool visible = false;
+   for ( ; lvit.current(); ++lvit )
+      if ( ((ProgressItem*)lvit.current())->isVisible() ) {
+         visible = true;
+         break;
+      }
 
-  if ( !visible || !m_bShowList ) {
-    hide();
-    updateTimer->stop();
-    return;
-  }
+   if ( !visible || !m_bShowList ) {
+      if (!m_keepListOpen) hide();
+      updateTimer->stop();
+      return;
+   }
 
   // Calling show() is conditional, so that users can close the window
   // and it only pops up back when a new job is started
@@ -991,8 +1127,19 @@ int UIServer::open_SkipDlg( int id,
 void UIServer::readSettings() {
   KConfig config("uiserverrc");
   config.setGroup( "UIServer" );
-
+  m_showStatusBar=config.readBoolEntry("ShowStatusBar",true);
+  m_showToolBar=config.readBoolEntry("ShowToolBar",true);
+  m_keepListOpen=config.readBoolEntry("KeepListOpen",false);
+  m_initWidth=config.readNumEntry("InitialWidth",460);
+  m_initHeight=config.readNumEntry("InitialHeight",150);
   m_bShowList = config.readBoolEntry( "ShowList", false );
+}
+
+void UIServer::writeSettings() {
+  KConfig config("uiserverrc");
+  config.setGroup( "UIServer" );
+  config.writeEntry("InitialWidth",width());
+  config.writeEntry("InitialHeight",height());
 }
 
 
@@ -1009,6 +1156,12 @@ void UIServer::cancelCurrent() {
       return;
     }
   }
+}
+
+void UIServer::resizeEvent(QResizeEvent* e)
+{
+   KMainWindow::resizeEvent(e);
+   writeSettings();
 }
 
 //------------------------------------------------------------
@@ -1041,8 +1194,7 @@ int main(int argc, char **argv)
     app.disableSessionManagement();
     app.dcopClient()->setDaemonMode( true );
 
-    uiserver = new UIServer;
-
+    uiserver = new UIServer();
     app.setMainWidget( uiserver );
 
     return app.exec();
