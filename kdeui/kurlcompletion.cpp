@@ -134,7 +134,7 @@ void KURLCompletion::GetList (QString dir, QString & match)
 
 	possibilityList.clear();
 	
-	dp = opendir( qual_dir.data() );
+	dp = opendir( qual_dir.ascii() );
 	if ( dp == NULL )
 	{
 		QApplication::beep();
@@ -142,7 +142,6 @@ void KURLCompletion::GetList (QString dir, QString & match)
 		return;
 	}
 
-	int len = guess.length();
 	bool multiple = false;
 	bool anymatch = false;
 	QString max;
@@ -153,19 +152,19 @@ void KURLCompletion::GetList (QString dir, QString & match)
 		    strcmp (ep->d_name, "..") == 0)
 			continue;
 		
-		if ( strncmp( ep->d_name, guess.data(), len ) == 0L ) {
+		if ( QString::fromLatin1(ep->d_name).left(guess.length()) == guess ) {
 			possibilityList.inSort( ep->d_name );
 			
 			// More than one possibility ?
 			if ( anymatch )
 			{
 				// Find maximum overlapping
-				int i = 0;
-				while ( max.data() [i] != 0 && 
+				unsigned int i = 0;
+				while ( max.length() > i &&
 					ep->d_name [i] != 0 && 
-					max.data() [i] == ep->d_name[i] ) 
+					max.at(i) == ep->d_name[i] ) 
 					i++;
-				max = (i > 0) ? max.left(i).data() : "";
+				max = (i > 0) ? max.left(i) : QString("");
 				if (!multiple) {
 					QApplication::beep();
 					multiple = true;
@@ -202,10 +201,10 @@ bool KURLCompletion::is_fileurl (QString &url, bool &ambigous_beginning) const
 			      (url.left(1) != "/"));
 
         if ( starts_with_file )
-		url = url.data() + 5;
+		url.remove(0, 5); // remove "file:" from url
 	
 	// Get the currently entered full qualified path
-	if ( url.data()[ 0 ] != '/' )
+	if ( url.at( 0 ) != '/' )
 	{
 		QString dir = directory;
 		if ( dir.right(1) != "/" )
@@ -219,7 +218,7 @@ bool KURLCompletion::is_fileurl (QString &url, bool &ambigous_beginning) const
 bool KURLCompletion::CompleteDir (QString &dir)
 {
 	struct stat sbuff;
-	if (stat ( dir.data(), &sbuff) == 0 &&
+	if (stat ( dir.ascii(), &sbuff) == 0 &&
 	    S_ISDIR (sbuff.st_mode)) {
 		if (dir.right(1) != "/")
 			dir += "/";

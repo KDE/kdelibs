@@ -256,7 +256,7 @@ KThemeBase::KThemeBase(const QString &configFile)
     if(configFile == QString::null)
         config = KGlobal::config();
     else
-        config = new KConfig(configFile, configFile);
+        config = new KConfig(configFile, !configFile.isNull());
     KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_default("data") + "kstyle/pixmaps/");
     readConfig(Qt::WindowsStyle);
     cache = new KThemeCache(cacheSize);
