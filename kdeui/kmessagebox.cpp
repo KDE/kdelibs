@@ -80,7 +80,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     lay->addSpacing(15);
     // Enforce <p>text</p> otherwise the word-wrap doesn't work well 
     QString qt_text;
-    if ( text.find('<') == -1 )
+    if ( !text.isEmpty() && (text[0] != '<') )
     {
         QStringList lines = QStringList::split('\n', text);
         for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
