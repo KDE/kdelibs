@@ -37,7 +37,7 @@ class ScriptInfo;
 	class KScriptManager : public QObject, public KScriptClientInterface
 	{
 	Q_OBJECT
-	friend KScriptInterface;
+	friend class KScriptInterface;
 	public:
 		/**
 		*	Create a new instance of the script engine.
