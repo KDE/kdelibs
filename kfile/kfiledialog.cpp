@@ -326,10 +326,9 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                                   d->mainWidget);
 
     filterWidget = new KFileFilter(d->mainWidget, "KFileDialog::filterwidget");
-    filterWidget->setFilter(filter);
+    setFilter(filter);
     d->filterLabel->setBuddy(filterWidget);
     connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
-    ops->setNameFilter(filterWidget->currentFilter());
 
     // Get the config object
     KSimpleConfig *kc = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
@@ -376,6 +375,12 @@ void KFileDialog::setLocationLabel(const QString& text)
 
 void KFileDialog::setFilter(const QString& filter)
 {
+    if ( filter.contains( '/' )) { // mimetype filter!
+        QStringList filters = QStringList::split( filter, "/" );
+        setMimeFilter( filters );
+        return;
+    }
+    
     filterWidget->setFilter(filter);
     ops->fileReader()->clearMimeFilter();
     ops->fileReader()->setNameFilter(filterWidget->currentFilter());

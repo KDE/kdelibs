@@ -94,7 +94,8 @@ public:
       *             by a filedialog in any application that specified the
       *             same keyword.
       *
-      * @param filter A shell glob that specifies which files to display.
+      * @param filter A shell glob or a mime-type-filter that specifies 
+                      which files to display.
       * See @ref setFilter() for details on how to use this argument.
       *
       * @param acceptURLs If set to @p false, @ref KFileDialog will
@@ -187,7 +188,16 @@ public:
      * Note: The text to display is not parsed in any way. So, if you
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
-     * @see filterChanged()
+     *
+     * If the filter contains a '/', a mimetype-filter is assumed. You can 
+     * specify multiple mimetypes like this (separated with space):
+     *
+     * <pre>
+     * kfile->setFilter( "image/png text/html text/plain" );
+     * </pre>
+     *
+     * @see #filterChanged
+     * @see #setMimeFilter
      */
     void setFilter(const QString& filter);
 
