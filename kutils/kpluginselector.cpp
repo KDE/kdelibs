@@ -445,7 +445,6 @@ KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
 	d->widgetstack->setFrameStyle( QFrame::Panel | QFrame::Sunken );
 	d->widgetstack->setMinimumSize( 200, 200 );
 
-	splitter->setCollapsible( d->widgetstack, false );
 	splitter->setOpaqueResize( true );
 
 	QLabel * label = new QLabel( i18n( "Select a plugin to configure it" ),
@@ -525,18 +524,11 @@ QWidgetStack * KPluginSelector::widgetStack()
 inline void KPluginSelector::configPage( int id )
 {
 	if( id == 1 )
-	{
 		// no config page
-		d->widgetstack->setFrameStyle( QFrame::NoFrame );
-		d->widgetstack->setMinimumSize( 0, 0 );
-		d->widgetstack->setMaximumSize( 0, 0 );
-	}
+		d->widgetstack->hide();
 	else
-	{
-		d->widgetstack->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-		d->widgetstack->setMinimumSize( 200, 200 );
-		d->widgetstack->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
-	}
+		d->widgetstack->show();
+
 	d->widgetstack->raiseWidget( id );
 }
 
