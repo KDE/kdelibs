@@ -38,9 +38,9 @@ void setEmergencySaveFunction (void (*saveFunction)(int));
 void resetCrashRecursion (void);
 
 
-#define KDE_CRASH_DEFAULT  ((__sighandler_t)0x1000)
-#define KDE_CRASH_INTERNAL ((__sighandler_t)0x1001)
-#define KDE_SAVE_NONE      ((__sighandler_t)0x1002)
+#define KDE_CRASH_DEFAULT  ((void*)0x1000)
+#define KDE_CRASH_INTERNAL ((void*)0x1001)
+#define KDE_SAVE_NONE      ((void*)0x1002)
 
 struct kcrashargs {
  	char *argname;
