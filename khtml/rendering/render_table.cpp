@@ -200,9 +200,6 @@ void RenderTable::startRow()
 	row++;
     col = 0;
     if(row > totalRows) totalRows = row;
-
-    calcMinMaxWidth();
-    setAvailableWidth();
 }
 
 void RenderTable::addCell( RenderTableCell *cell )
@@ -1041,9 +1038,9 @@ int RenderTable::distributeMinWidth(int distrib, LengthType distType,
 
 
 
-void RenderTable::calcRowHeights()
+void RenderTable::calcRowHeight(int r)
 {
-    unsigned int r, c;
+    unsigned int c;
     int indx;//, borderExtra = border ? 1 : 0;
     RenderTableCell *cell;
 
@@ -1051,67 +1048,65 @@ void RenderTable::calcRowHeights()
     rowBaselines.resize( totalRows );
     rowHeights[0] =  spacing ; // + padding
 
-    for ( r = 0; r < totalRows; r++ )
+  //int oldheight = rowHeights[r+1] - rowHeights[r];
+    rowHeights[r+1] = 0;
+
+    int baseline=0;
+    int bdesc=0;
+    int ch;
+
+    for ( c = 0; c < totalCols; c++ )
     {
-      //int oldheight = rowHeights[r+1] - rowHeights[r];
-	rowHeights[r+1] = 0;
-	
-	int baseline=0;
-	int bdesc=0;
-	int ch;
+	if ( ( cell = cells[r][c] ) == 0 )
+	    continue;
+	if ( c < totalCols - 1 && cell == cells[r][c+1] )
+	    continue;
+	if ( r < totalRows - 1 && cells[r+1][c] == cell )
+	    continue;
 
-	for ( c = 0; c < totalCols; c++ )
+	if ( ( indx = r - cell->rowSpan() + 1 ) < 0 )
+	    indx = 0;
+
+	ch = cell->style()->height().width(0);
+	if ( cell->height() > ch)
+	    ch = cell->height();
+
+	int rowPos = rowHeights[ indx ] + ch +
+	     spacing ; // + padding
+
+	if ( rowPos > rowHeights[r+1] )
+	    rowHeights[r+1] = rowPos;
+
+	// find out the baseline
+	EVerticalAlign va = cell->vAlign();
+	if (va == BASELINE || va == TEXT_BOTTOM || va == TEXT_TOP
+	    || va == SUPER || va == SUB)
 	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
+	    int b=cell->baselineOffset();
 
-	    if ( ( indx = r - cell->rowSpan() + 1 ) < 0 )
-		indx = 0;
-		
-	    ch = cell->style()->height().width(0);
-	    if ( cell->height() > ch)
-	    	ch = cell->height();
+	    if (b>baseline)
+		baseline=b;
 
-	    int rowPos = rowHeights[ indx ] + ch +
-		 spacing ; // + padding
-
-	    if ( rowPos > rowHeights[r+1] )
-		rowHeights[r+1] = rowPos;
-
-	    // find out the baseline
-	    EVerticalAlign va = cell->vAlign();
-	    if (va == BASELINE || va == TEXT_BOTTOM || va == TEXT_TOP
-	    	|| va == SUPER || va == SUB)
-	    {
-		int b=cell->baselineOffset();
-
-		if (b>baseline)
-		    baseline=b;
-		
-		int td = rowHeights[ indx ] + ch - b;
-		if (td>bdesc)
-		    bdesc = td;
-	    }	    		
-	}
-	
-	//do we have baseline aligned elements?
-	if (baseline)
-	{
-	    // increase rowheight if baseline requires
-	    int bRowPos = baseline + bdesc  + spacing ; // + 2*padding
-    	    if (rowHeights[r+1]<bRowPos)
-	    	rowHeights[r+1]=bRowPos;
-		
-	    rowBaselines[r]=baseline;
-	}
-
-	if ( rowHeights[r+1] < rowHeights[r] )
-	    rowHeights[r+1] = rowHeights[r];
+	    int td = rowHeights[ indx ] + ch - b;
+	    if (td>bdesc)
+		bdesc = td;
+	}	    		
     }
+
+    //do we have baseline aligned elements?
+    if (baseline)
+    {
+	// increase rowheight if baseline requires
+	int bRowPos = baseline + bdesc  + spacing ; // + 2*padding
+    	if (rowHeights[r+1]<bRowPos)
+	    rowHeights[r+1]=bRowPos;
+
+	rowBaselines[r]=baseline;
+    }
+
+    if ( rowHeights[r+1] < rowHeights[r] )
+	rowHeights[r+1] = rowHeights[r];
+
 }
 
 void RenderTable::layout(bool deep)
@@ -1128,26 +1123,14 @@ void RenderTable::layout(bool deep)
     printf("%s(Table)::layout(%d) width=%d, layouted=%d\n",  renderName(), deep, width(),layouted());
 #endif
 
-//    QTime qt;
-//    qt.start();
-
-
 
     FOR_EACH_CELL( r, c, cell)
     {
 	cell->calcMinMaxWidth();
-	cell->setCellTopExtra(0);
-	cell->setCellBottomExtra(0);
-#ifdef DEBUG_LAYOUT
-	printf("CELL: %d\n",cell->style()->borderLeftWidth());
-#endif
     }
     END_FOR_EACH
 
-    calcColWidth();
     setAvailableWidth();
-
-//    printf("TIME calcColWidth() dt=%d\n",qt.elapsed());
 
     if(tCaption)
     {
@@ -1156,133 +1139,121 @@ void RenderTable::layout(bool deep)
 	    tCaption->layout(deep);
 	m_height += tCaption->height();
     }
-//    if(frame & Above) m_height += border;
-#if 0
-    if(head)
-    {
-	head->setYPos(m_height);
-	head->layout();
-	m_height += head->height();
-    }
-    m_height += spacing;
-    RenderObject *child = firstBody;
-    while( child != 0 )
-    {
-	child->setYPos(m_height);
-	child->layout();
-	m_height += child->height();
-	child = child->nextSibling();
-    }
-    m_height += spacing;
-    if(foot)
-    {
-	foot->setYPos(m_height);
- 	foot->layout();
-	m_height += foot->height();
-    }
-#else
 
-    if(deep)
-    {
-	FOR_EACH_CELL( r, c, cell)
-	    {
-		cell->layout(deep);
-	    }
-	END_FOR_EACH
-    }
-
-//    printf("TIME cell layout() dt=%d\n",qt.elapsed());
-
-    // We have the cell sizes now, so calculate the vertical positions
-    calcRowHeights();
-
-    // set cell positions
-    int indx;
+    // layout rows
+    
     for ( unsigned int r = 0; r < totalRows; r++ )
     {
-	int rHeight;
-
-	//if ( tCaption )// && capAlign == HTMLClue::Top )
-	//   m_height += tCaption->height();
-
-	for ( unsigned int c = 0; c < totalCols; c++ )
-	{
-            RenderTableCell *cell = cells[r][c];
-            if (!cell)
-                continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cell == cells[r+1][c] )
-		continue;
-
-	    if ( ( indx = c-cell->colSpan()+1 ) < 0 )
-		indx = 0;
-
-	    int rindx;
-	    if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
-		rindx = 0;
-
-	    //printf("setting position %d/%d-%d: %d/%d \n", r, indx, c,
-	    //columnPos[indx] + padding, rowHeights[rindx]);
-	    rHeight = rowHeights[r+1] - rowHeights[rindx] -
-		spacing;
-
-	    EVerticalAlign va = cell->vAlign();
-	    int te=0;
-	    switch (va)
-	    {
-	    case SUB:
-	    case SUPER:
-    	    case TEXT_TOP:	
-	    case TEXT_BOTTOM:	
-	    case BASELINE:
-    		te = getBaseline(r) - cell->baselineOffset() ;
-#ifdef DEBUG_LAYOUT
-		printf("CELL baseline %d\n", cell->baselineOffset());
-#endif
-		break;
-	    case TOP:
-	    	te = 0;
-#ifdef DEBUG_LAYOUT
-		printf("CELL top\n");
-#endif
-    	    	break;	
-	    case MIDDLE:
-		te = (rHeight - cell->height())/2;
-#ifdef DEBUG_LAYOUT
-		printf("CELL middle ch=%d\n", cell->height());
-#endif
-		break;
-	    case BOTTOM:
-#ifdef DEBUG_LAYOUT
-	    	printf("CELL bottom\n");
-#endif
-		te = rHeight - cell->height();
-		break;
-    	    default:
-    		break;
-	    }
-#ifdef DEBUG_LAYOUT
-	    printf("CELL te=%d, be=%d, rHeight=%d\n", te, rHeight - cell->height() - te, rHeight);
-#endif
-	    cell->setCellTopExtra( te );
-	    cell->setCellBottomExtra( rHeight - cell->height() - te);
-	
-	    cell->setPos( columnPos[indx] ,      //+ padding,
-			  rowHeights[rindx] );
-	    cell->setRowHeight(rHeight);
-	    // ###
-	    // cell->setHeight(cellHeight);
-	}
+    	layoutRow(r);
     }
-#endif
+
     m_height += rowHeights[totalRows];
-//    if(frame & Below) m_height += border;
 
     setLayouted();
 
-//    printf("TIME layout() end dt=%d\n",qt.elapsed());
+}
 
+
+void RenderTable::layoutRow(int r)
+{
+    int rHeight;
+    int indx, rindx;
+
+    for ( unsigned int c = 0; c < totalCols; c++ )
+    {
+        RenderTableCell *cell = cells[r][c];
+        if (!cell)
+            continue;
+	if ( c < totalCols - 1 && cell == cells[r][c+1] )
+	    continue;
+	if ( r < totalRows - 1 && cell == cells[r+1][c] )
+	    continue;
+	    
+	cell->layout(true);
+	cell->setCellTopExtra(0);
+	cell->setCellBottomExtra(0);	
+    }
+    
+    calcRowHeight(r);
+
+    for ( unsigned int c = 0; c < totalCols; c++ )
+    {
+        RenderTableCell *cell = cells[r][c];
+        if (!cell)
+            continue;
+	if ( c < totalCols - 1 && cell == cells[r][c+1] )
+	    continue;
+	if ( r < totalRows - 1 && cell == cells[r+1][c] )
+	    continue;
+
+	if ( ( indx = c-cell->colSpan()+1 ) < 0 )
+	    indx = 0;
+	
+	if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
+	    rindx = 0;
+
+	//printf("setting position %d/%d-%d: %d/%d \n", r, indx, c,
+	//columnPos[indx] + padding, rowHeights[rindx]);
+	rHeight = rowHeights[r+1] - rowHeights[rindx] -
+	    spacing;
+
+	EVerticalAlign va = cell->vAlign();
+	int te=0;
+	switch (va)
+	{
+	case SUB:
+	case SUPER:
+    	case TEXT_TOP:	
+	case TEXT_BOTTOM:	
+	case BASELINE:
+    	    te = getBaseline(r) - cell->baselineOffset() ;
+	    break;
+	case TOP:
+	    te = 0;
+    	    break;	
+	case MIDDLE:
+	    te = (rHeight - cell->height())/2;
+	    break;
+	case BOTTOM:
+	    te = rHeight - cell->height();
+	    break;
+    	default:
+    	    break;
+	}
+#ifdef DEBUG_LAYOUT
+	printf("CELL te=%d, be=%d, rHeight=%d\n", te, rHeight - cell->height() - te, rHeight);
+#endif
+	cell->setCellTopExtra( te );
+	cell->setCellBottomExtra( rHeight - cell->height() - te);
+
+	cell->setPos( columnPos[indx] ,      //+ padding,
+		      rowHeights[rindx] );
+	cell->setRowHeight(rHeight);
+	// ###
+	// cell->setHeight(cellHeight);
+    }
+}
+
+
+void RenderTable::refreshRow(int r)
+{
+    for ( unsigned int c = 0; c < totalCols; c++ )
+    {
+        RenderTableCell *cell = cells[r][c];
+        if (!cell)
+            continue;
+	if ( c < totalCols - 1 && cell == cells[r][c+1] )
+	    continue;
+	if ( r < totalRows - 1 && cell == cells[r+1][c] )
+	    continue;
+	    
+	cell->calcMinMaxWidth();
+    }    
+    
+    setAvailableWidth();
+    
+    layoutRow(r);
+    repaint();
 }
 
 void RenderTable::setAvailableWidth(int w)
@@ -1336,7 +1307,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
      printf("RenderTable::print(2) %d/%d (%d/%d)\n", _tx, _ty, _x, _y);
 #endif
      
-    if(!layouted()) return;
+//    if(!layouted()) return;
 
     printBoxDecorations(p, _tx, _ty);
 
@@ -1348,9 +1319,9 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     // draw the cells
     FOR_EACH_CELL(r, c, cell)
     {
-#ifdef DEBUG_LAYOUT
+//#ifdef DEBUG_LAYOUT
 	printf("printing cell %d/%d\n", r, c);
-#endif
+//#endif
         cell->print( p, _x, _y, _w, _h, _tx, _ty);
     }
     END_FOR_EACH
@@ -1391,6 +1362,7 @@ void RenderTable::close()
 
 void RenderTable::updateSize()
 {
+    printf("RenderTable::updateSize()\n");
     if (parsing())
     {
 	if (!updateTimer.isNull() && updateTimer.elapsed()<200)
@@ -1544,38 +1516,6 @@ void RenderTableRow::setRowIndex( long  )
 {
     // ###
 }
-
-#if 0
-RenderObject *RenderTableRow::insertCell( long index )
-{
-    RenderTableCell *c = new RenderTableCell(document, ID_TD);
-    c->setTable(this->table);
-
-    if(index < 1)
-    {
-	insertBefore(c, firstChild());
-	return c;
-    }
-
-    NodeListImpl *children = childNodes();
-    if(!children || (int)children->length() <= index)
-	appendChild(c);
-    else
-	insertBefore(c, children->item(index));
-    if(children) delete children;
-    return c;
-}
-
-void RenderTableRow::deleteCell( long index )
-{
-    if(index < 0) return;
-    NodeListImpl *children = childNodes();
-    if(children && (int)children->length() > index)
-	HTMLElementImpl::removeChild(children->item(index));
-    if(children) delete children;
-}
-
-#endif
 
 void RenderTableRow::addChild(RenderObject *child)
 {

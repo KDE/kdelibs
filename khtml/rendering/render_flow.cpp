@@ -759,7 +759,7 @@ void RenderFlow::close()
 	    m_height += paddingBottom();
 	calcMinMaxWidth();
     }
-    if(containingBlockWidth() < m_minWidth && m_parent)
+    //if(containingBlockWidth() < m_minWidth && m_parent)
     	containingBlock()->updateSize();
 
 #ifdef DEBUG_LAYOUT

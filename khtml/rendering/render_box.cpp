@@ -258,7 +258,7 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
 
 void RenderBox::updateSize()
 {
-    //printf("positionelement::updateSize()\n");
+//    printf("positionelement::updateSize()\n");
     int oldMin = m_minWidth;
     setLayouted(false);
     calcMinMaxWidth();

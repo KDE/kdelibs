@@ -58,7 +58,7 @@ void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 {
     x += m_x;
     y += m_y;
-    //printf("updating views contents (%d/%d) (%d/%d)\n", x,y,w,h);
+    printf("updating views contents (%d/%d) (%d/%d)\n", x,y,w,h);
     if (m_view) m_view->updateContents(x, y, w, h);
 }
 
@@ -74,3 +74,21 @@ void RenderRoot::repaintObject(RenderObject *o, int x, int y)
 
     if (m_view) m_view->paintElement(o, x, y);
 }
+
+void RenderRoot::updateSize()
+{
+//    printf("Root::updateSize()\n");
+    int oldMin = m_minWidth;
+    setLayouted(false);
+    calcMinMaxWidth();
+
+    int oldHeight = m_height;
+    layout(true);	
+    if(m_height != oldHeight)
+    {
+//    	printf("resizing %d,%d\n",m_width,m_height);
+    	m_view->resizeContents(m_width,m_height);
+	repaint();
+    }
+}
+

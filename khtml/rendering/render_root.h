@@ -44,6 +44,7 @@ public:
 
     virtual void calcWidth();
     virtual void absolutePosition(int &xPos, int&yPos);
+    virtual void updateSize();
 
     QScrollView *view();
 
