@@ -337,9 +337,17 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
         ProxyType type = proxyType();
         bool useRevProxy = ( (type == ManualProxy || type == EnvVarProxy) &&
                             useReverseProxy() );
-        bool isRevMatch = (!noProxy.isEmpty() &&
-                           revmatch(url.host().lower().latin1(),
-                                    noProxy.lower().latin1()));
+        bool isRevMatch = false;
+        if (!noProxy.isEmpty())
+        {
+           const char *host = url.host().lower().latin1();
+           const char *no_proxy = noProxy.lower().latin1();
+           isRevMatch = revmatch(host, no_proxy);
+           // If the hostname does not contain a dot, check if
+           // <local> is part of noProxy.
+           if (!isRevMatch && (strchr(host, '.') == NULL))
+              isRevMatch = revmatch("<local>", no_proxy);
+        }
         if ( (!useRevProxy && !isRevMatch) ||
              (useRevProxy && isRevMatch) )
         {
