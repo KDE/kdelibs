@@ -280,6 +280,11 @@ static int tokenize( QStringList& tokens, const QString& str,
 	return tokens.count();
 }
 
+QString KStandardDirs::kde_data_relative()
+{
+    return "share/apps/";
+}
+
 void KStandardDirs::addKDEDefaults() {
 
     QString kdedir = getenv("KDEDIR");
@@ -294,7 +299,7 @@ void KStandardDirs::addKDEDefaults() {
     addResourceType("mini", "share/icons/mini/");
     addResourceType("apps", "share/applnk/");
     addResourceType("sound", "share/sounds/");
-    addResourceType("data", "share/apps/");
+    addResourceType("data", kde_data_relative());
     addResourceType("locale", "share/locale/");
     addResourceType("services", "share/services/");
     addResourceType("servicetypes", "share/servicetypes/");

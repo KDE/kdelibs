@@ -32,6 +32,7 @@
 #include <klined.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kstddirs.h>
 
 //----------------------------------------------------------------------
 //---------------  KICONLOADERCANVAS   ---------------------------------
@@ -274,7 +275,7 @@ void KIconLoaderDialog::init()
   connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
   connect( cb_dirs, SIGNAL(activated(const QString&)), this, SLOT(dirChanged(const QString&)) );
-  changeDirs(icon_loader->getDirList());
+  changeDirs(KGlobal::dirs()->getResourceDirs("toolbar"));
 
   resize( 470, 350 );
   setMinimumSize( 470, 250 );

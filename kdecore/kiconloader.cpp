@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.46  1999/06/14 10:42:43  kulow
+   some more correct const char*ness
+
    Revision 1.45  1999/06/05 01:15:11  dmuell
    global configuration will now be searched in the following paths:
 
@@ -119,56 +122,44 @@ Load large icons in icons/large or pics/large if setting is 'large'.
 
 void KIconLoader::initPath()
 {
-  // DF ---- Large icons --------------
-  // set the key depending on the current application
-  // FIXME: This is not a very nice hack at all. The app should be
-  // able to specify its own key. (Taj)
-
-  QString key = "KDE";
-  if (kapp->name() == "kpanel")
-    key = "kpanel";
-  if (kapp->name() == "kfm")
-    key = "kfm";
-  KConfig config; // with no filenames given, it will read only global config 
-  config.setGroup("KDE");
-  QString setting = config.readEntry( key + "IconStyle", "Normal" );
-  //debug("App is %s - setting is %s", kapp->name(), setting.data());
-  // DF
-
-  // order is important! -- Bernd
-  // higher priority at the end
-
-  bool large = (setting == "Large" );
-
-  addPath( KApplication::kde_toolbardir() );
-
-  addPath( KApplication::localkdedir() + "/share/toolbar" );
-
-  if ( large )
-    KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
-
-  addPath( KApplication::kde_datadir() + "/"
-	   + kapp->name() + "/toolbar" );
-  addPath( KApplication::localkdedir() + "/share/apps/"
-	   + kapp->name() + "/toolbar" );
-  addPath( KApplication::kde_datadir() + "/"
-	   + kapp->name() + "/pics" );
-
-  if ( large )
-    addPath( KApplication::kde_datadir() + "/"
-	     + kapp->name() + "/pics/large" );
-
-  addPath( KApplication::localkdedir() + "/share/apps/"
-	   + kapp->name() + "/pics" );
-
-  if ( large )
-    addPath( KApplication::localkdedir() + "/share/apps/"
-	     + kapp->name() + "/pics/large" );
-
+    // DF ---- Large icons --------------
+    // set the key depending on the current application
+    // FIXME: This is not a very nice hack at all. The app should be
+    // able to specify its own key. (Taj)
+    
+    QString key = "KDE";
+    if (kapp->name() == "kpanel")
+	key = "kpanel";
+    if (kapp->name() == "kfm")
+	key = "kfm";
+    KConfig config; // with no filenames given, it will read only global config 
+    config.setGroup("KDE");
+    QString setting = config.readEntry( key + "IconStyle", "Normal" );
+    //debug("App is %s - setting is %s", kapp->name(), setting.data());
+    // DF
+    
+    // order is important! -- Bernd
+    // higher priority at the end
+    
+    bool large = (setting == "Large" );
+    
+    if ( large )
+	KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
+    
+    KGlobal::dirs()->addResourceType("toolbar", 
+				     KStandardDirs::kde_data_relative() + 
+				     kapp->name() + "/toolbar/");
+    
+    if ( large )
+	KGlobal::dirs()->addResourceType("toolbar", 
+					 KStandardDirs::kde_data_relative() + kapp->name() + "/pics/large");
+    KGlobal::dirs()->addResourceType("toolbar", 
+				     KStandardDirs::kde_data_relative() + "/pics/");
+    
 }
 
 KIconLoader::KIconLoader( KConfig *conf,
-		const QString &app_name, const QString &var_name )
+			  const QString &app_name, const QString &var_name )
 {
 
 	config = conf;
@@ -219,9 +210,9 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 	if the icon doesn't exist, anyway. And base apps should be ok now.
 	 */
 	if (result.isNull() && !canReturnNull) {
-		warning("%s : ERROR: couldn't find icon: %s",
-				kapp->name(), name.ascii() );
-		result = loadInternal("unknown.xpm", w, h);
+	    warning("%s : ERROR: couldn't find icon: %s",
+		    kapp->name(), name.ascii() );
+	    result = loadInternal("unknown.xpm", w, h);
 	}
 
 	return result;
@@ -253,31 +244,11 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 
 QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 {
-	QString full_path;
-	QFileInfo finfo;
-
-	if( name[0] == '/' ){
-		full_path = name;
-	}
-	else{
-		QStringList::Iterator it = pixmap_dirs.begin();
-
-		while ( it != pixmap_dirs.end() ){
-
-			full_path = *it;
-			full_path += '/';
-			full_path += name;
-			finfo.setFile( full_path );
-			if ( finfo.exists() )
-				break;
-			++it;
-		}
-		if ( (always_valid) && ( (*it).isNull()) ){
-			// Let's be recursive (but just once at most)
-			full_path = getIconPath( "unknown.xpm" , false);
-		}
-	}
-	return full_path;
+    QString full_path = locate("toolbar", name);
+    if (full_path.isNull() && always_valid)
+	full_path = locate("toolbar", "unknown.xpm");
+    
+    return full_path;
 }
 
 QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h,
@@ -311,31 +282,9 @@ QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h,
 	return pix;
 }
 
-bool KIconLoader::insertDirectory( int index, const QString& dir_name )
-{
-	if( index < 0 || (unsigned)index > pixmap_dirs.count() ) {
-		return false;
-
-	}
-
-	pixmap_dirs.insert( pixmap_dirs.at(index), dir_name );
-	return true;
-}
-
-
-
 void KIconLoader::addPath( QString path )
 {
-
-	QDir dir(path);
-
-	if (dir.exists()){
-		pixmap_dirs.insert( pixmap_dirs.begin(), path );
-	}
-	else{
-		//    fprintf(stderr,"Path %s doesn't exist\n",path.data());
-	}
-
+    KGlobal::dirs()->addResourceDir("toolbar", path);
 }
 
 void KIconLoader::flush( const QString& )

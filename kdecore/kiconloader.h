@@ -20,6 +20,24 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.32  1999/06/05 01:15:11  dmuell
+   global configuration will now be searched in the following paths:
+
+   KDEDIR/share/config/kdeglobals
+   /usr/lib/KDE/system.kdeglobals
+   /usr/local/lib/KDE/system.kdeglobals
+   ~/.kde/share/config/kdeglobals
+
+   it did it previously in
+
+   KDEDIR/share/config/kderc
+   /usr/lib/KDE/system.kderc
+   /usr/local/lib/KDE/system.kderc
+   ~/.kderc
+
+   Note: It's better not to use a "rc" suffix - there might be an
+   application that has that name.
+
    Revision 1.31  1999/06/03 09:21:32  ssk
    Added arg to loadInternal to ignore cache if requested.
    Updated reloadIcon to use it.
@@ -217,27 +235,6 @@ public:
   */
   QPixmap loadApplicationMiniIcon( const QString& name, int w = 0, int h = 0 );
 
-
-  /** 
-  	Insert a directory into icon search path.
-	@param index	The index in the search path at which to insert
-	the new directory.
-	@param dir_name	The directory to insert into the search path.
-	@return true on success, false on index out of range.
-
-  */
-
-  bool insertDirectory( int index, const QString& dir_name );
-  
-  /**
-   * Append a directory to the end of the search directory list.
-   */
-  bool appendDirectory( const QString& dir_name )
-  		{ pixmap_dirs.append( dir_name ); return true; }
-
-
-  QStringList getDirList() const { return pixmap_dirs; }
-
   /** 
 	Get the complete path for an icon name.
 
@@ -249,7 +246,7 @@ public:
 	@return the physical path to the named icon.
   */
   QString getIconPath( const QString& name, 
-  		bool always_valid=false);
+		       bool always_valid=false);
 
 
   /** 
@@ -262,14 +259,13 @@ public:
 protected:
 
   KConfig		*config;
-  QStringList           pixmap_dirs;
 
   /**
 	honourcache will check if the icon is contained in the cache before
 	trying to load it. 
   */
   QPixmap loadInternal( const QString& name, int w = 0, int h = 0,
-		bool honourcache = true );
+			bool honourcache = true );
 
 private:
   void initPath();

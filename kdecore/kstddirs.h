@@ -225,6 +225,8 @@ public:
 	 */
 	QStringList getResourceDirs(const QString& type) const;
 
+	static QString kde_data_relative();
+
  private:
 
 	QStringList prefixes;
