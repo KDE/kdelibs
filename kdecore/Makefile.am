@@ -31,7 +31,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kconfigbackend.h kapp.h kapplication.h kuniqueapp.h kuniqueapplication.h \
 	kcharsets.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
-	kwinmodule.h kwin.h krootprop.h kpixmap.h  \
+	kwinmodule.h kwin.h krootprop.h \
 	kkeysequence.h kkey_x11.h kaccelbase.h kshortcuts.h \
 	kaccel.h kglobalaccel.h kstdaccel.h kcatalogue.h \
 	kregexp.h kcompletion.h kstringhandler.h kstringhandler.h \
@@ -42,7 +42,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h ksockaddr.h kprocio.h kasyncio.h kbufferedio.h \
-	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h ksocks.h \
+	kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
 	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc ktypelist.h 
 
@@ -58,7 +58,6 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp  \
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
-	kpixmap.cpp \
 	kckey.cpp kkeysequence.cpp kkey_x11.cpp kkeysequence_emb.cpp \
 	kaccelbase.cpp kaccel.cpp kglobalaccel.cpp kglobalaccel_x11.cpp \
 	kstdaccel.cpp \
@@ -71,7 +70,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp  \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
 	kextsock.cpp ksockaddr.cpp netsupp.cpp kprocio.cpp kbufferedio.cpp \
-	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp \
+	kpixmapprovider.cpp kurldrag.cpp \
         kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
 	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp \
