@@ -23,6 +23,7 @@
  */
 // -------------------------------------------------------------------------
 #include "html_miscimpl.h"
+#include "html_formimpl.h"
 
 #include "htmlhashes.h"
 #include "dom_node.h"
