@@ -63,7 +63,7 @@ int KGlobalSettings::dndEventDelay()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, "General" );
-    return c->readNumEntry("DndDelay", 2);
+    return c->readNumEntry("StartDragDist", QApplication::startDragDistance());
 }
 
 bool KGlobalSettings::singleClick()
