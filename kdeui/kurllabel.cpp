@@ -157,9 +157,11 @@ void KURLLabel::setText(const QString& text)
 	 * in either order.
 	 */
 	QFont tmp_font = font();
-	tmp_font.setUnderline(m_underline);
-	setFont(tmp_font);
-
+	if ( !tmp_font.underline() ) {
+	    tmp_font.setUnderline(m_underline);
+	    setFont(tmp_font);
+	}
+	
 	/* set the palette to normal (at first)*/
 	setPalette(m_nsp);
 
@@ -319,7 +321,7 @@ void KURLLabel::mouseMoveEvent(QMouseEvent *event)
 	if (((event->x() > tx_min) && (event->x() < tx_max) &&
 	    (event->y() > ty_min) && (event->y() < ty_max)) ||
 	   ((event->x() > px_min) && (event->x() < px_max) &&
-	    (event->y() > py_min) && (event->y() < py_max))) 
+	    (event->y() > py_min) && (event->y() < py_max)))
 	{
 		/**
 		 * if we were not within the region before, then this is
@@ -417,7 +419,7 @@ void KURLLabel::m_leaveEvent()
 	/* if we are in "glow" mode, turn off the selected palette */
 	if (m_glow)
 		setPalette(m_nsp);
-} 
+}
 
 void KURLLabel::mousePressEvent(QMouseEvent *event)
 {
@@ -539,7 +541,7 @@ QRect KURLLabel::m_textRect() const
 			case Bottom:
 			case Top:
 				if (autoResize())
-					x_min = (pixmap_width > fm.width(m_text)) ? 
+					x_min = (pixmap_width > fm.width(m_text)) ?
 						         (pixmap_width - fm.width(m_text)) / 2 : 0;
 				else
 					x_min = (width() - fm.width(m_text)) / 2;
@@ -674,7 +676,7 @@ QRect KURLLabel::m_pixmapRect() const
 			case Bottom:
 			case Top:
 				if (autoResize())
-					x_min = m_pixmap.width() > text_width ? 
+					x_min = m_pixmap.width() > text_width ?
 					            0 : (text_width - m_pixmap.width()) / 2;
 				else
 					x_min = (width() - m_pixmap.width()) / 2;
@@ -805,7 +807,7 @@ void KURLLabel::drawContents(QPainter* p)
 void KURLLabel::setTransparentMode(bool state)
 {
 	m_transparent = state;
-	setBackgroundMode(state ? NoBackground : PaletteBackground); 
+	setBackgroundMode(state ? NoBackground : PaletteBackground);
 }
 
 void KURLLabel::paintEvent(QPaintEvent*)
