@@ -58,6 +58,7 @@
 #include <kapplication.h>
 #include <klocale.h>
 #include <kstartupinfo.h>
+#include <kdeversion.h>
 
 #include "ltdl.h"
 #include "klauncher_cmds.h"
@@ -529,12 +530,14 @@ static pid_t launch(int argc, const char *_name, const char *args,
      d.sym = lt_dlsym( d.handle, "kdemain");
      if (!d.sym )
      {
+#if ! KDE_IS_VERSION( 3, 90, 0 )
         d.sym = lt_dlsym( d.handle, "main");
+#endif
         if (!d.sym )
         {
            const char * ltdlError = lt_dlerror();
-           fprintf(stderr, "Could not find main: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
-           QString errorMsg = i18n("Could not find 'main' in '%1'.\n%2").arg(libpath)
+           fprintf(stderr, "Could not find kdemain: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
+           QString errorMsg = i18n("Could not find 'kdemain' in '%1'.\n%2").arg(libpath)
 		.arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
            exitWithErrorMsg(errorMsg);
         }
@@ -1341,6 +1344,12 @@ static int initXconnection()
    which is difficult.  Currently (KAI 4.0f) it only calls __call_ctors(void)
    (a C++ function), but if that changes we need to change our's too.
    (matz) */
+/*
+ Those 'unknown reasons' are C++ standard forbidding recursive calls to main()
+ or any means that would possibly allow that (e.g. taking address of main()).
+ The correct solution is not using main() as entry point for kdeinit modules,
+ but only kdemain().
+*/
 extern "C" void _main(void);
 extern "C" void __call_ctors__Fv(void);
 static int main_called = 0;
