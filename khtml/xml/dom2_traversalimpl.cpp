@@ -421,7 +421,7 @@ void TreeWalkerImpl::setExpandEntityReferences(bool value)
   expandEntityReferences = value;
 }
 
-void TreeWalkerImpl::setCurrentNode(/* const*/ Node n )
+void TreeWalkerImpl::setCurrentNode( const Node n )
 {
     if( !n.isNull() )
     {
