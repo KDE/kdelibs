@@ -170,9 +170,11 @@ ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
 
 #ifdef GUSOUTDEBUG
 printf("GUS Device %d opened (%d voices)\n",device,nvoices);
+#ifdef HANDLETIMEINDEVICES
 printf("Number of synth devices : %d\n",ndevs);
 printf("Number of midi ports : %d\n",nmidiports);
 printf("Rate : %d\n",rate);
+#endif
 #endif
 
 

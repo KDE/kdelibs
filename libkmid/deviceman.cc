@@ -505,12 +505,12 @@ return 0;
 };
 
 void DeviceManager::setVolumePercentage(int v)
-    {
+{
     if (device!=NULL)
-        {
+    {
         for (int i=0;i<n_total;i++)
-            {
+        {
             device[i]->setVolumePercentage(v);
-            };
         };
+    };
 };

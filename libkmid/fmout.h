@@ -62,7 +62,9 @@ public:
     virtual void chnController	( uchar chn, uchar ctl , uchar v ); 
 
     virtual void sysex		( uchar *data,ulong size);
+    virtual void setVolumePercentage    ( int i );
 
+    
 private:
 static char *FM_patches_directory;
 static int delete_FM_patches_directory;

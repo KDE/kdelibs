@@ -138,6 +138,8 @@ for (chn=0;chn<16;chn++)
     };
 
 if (opl==3) ioctl(seqfd, SNDCTL_FM_4OP_ENABLE, &device);
+SEQ_VOLUME_MODE(device,VOL_METHOD_LINEAR);
+
 for (int i = 0; i < nvoices; i++)
      {
      SEQ_CONTROL(device, i, SEQ_VOLMODE, VOL_METHOD_LINEAR);
@@ -255,10 +257,10 @@ if (vel==0)
        else
         SEQ_SET_PATCH(device,v ,p=Map->Patch(chn,chn_patch[chn])); 
     SEQ_BENDER(device, v, chn_bender[chn]);
-
+    
     SEQ_START_NOTE(device, v, note, vel);
-    SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chn_controller[chn][CTL_MAIN_VOLUME]);
-
+//    SEQ_CONTROL(device, v, CTL_MAIN_VOLUME, chn_controller[chn][CTL_MAIN_VOLUME]);
+    
     SEQ_CHN_PRESSURE(device, v , chn_pressure[chn]);
     };
 
@@ -370,6 +372,18 @@ FM_patches_directory=new char[strlen(dir)+1];
 strcpy(FM_patches_directory,dir);
 delete_FM_patches_directory=1;
 };
+
+void fmOut::setVolumePercentage    ( int i )
+{
+    volumepercentage=i;
+    int fd=open("/dev/mixer0",O_RDWR,0);
+    int a=i*255/100;
+    if (a>255) a=255;
+    a=(a<<8) | a;
+    if (ioctl(fd,MIXER_WRITE(SOUND_MIXER_SYNTH),&a)==-1) printf("ERROR writing to mixer\n");
+    close(fd);
+};
+
 
 char *fmOut::FM_patches_directory="/etc";
 int fmOut::delete_FM_patches_directory = 0;

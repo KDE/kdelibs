@@ -46,6 +46,8 @@ private:
     unsigned char	chn_pressure	[N_CHANNELS];
     unsigned char	chn_controller	[N_CHANNELS][N_CTL];
 
+    int                 chn_lastisvolumeev [N_CHANNELS];
+    
 public:
     midiStat();
     ~midiStat();

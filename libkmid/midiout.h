@@ -98,7 +98,7 @@ virtual    void chnController	( uchar chn, uchar ctl , uchar v );
 virtual    void sysex		( uchar *data,ulong size);
     void channelSilence		( uchar chn );
     void channelMute    	( uchar chn, int a );
-    void setVolumePercentage    ( int i ) {volumepercentage=i;};
+virtual    void setVolumePercentage    ( int i ) {volumepercentage=i;};
 
     
     int OK (void) 

@@ -77,7 +77,7 @@ struct PlayerController
 	volatile int	gm; // if 1 then song is GeneralMidi, if 0 then MT32
 
 	volatile int	volumepercentage ; //100 is no change, 50 halfs the
-				// volume and 200 doubles it.
+				// volume and 200 doubles it (if possible)
 
         volatile bool forcepgm[16];  // Force to use patch ... or not forced
         volatile int  pgm[16];       // Patch used at "this" moment

@@ -267,6 +267,7 @@ if ((ctl==11)||(ctl==7))
     v=(v*volumepercentage)/100;
     if (v>127) v=127;
     };
+
 SEQ_MIDIOUT(device, ctl);
 SEQ_MIDIOUT(device, v);
 
