@@ -46,14 +46,40 @@ DEALINGS IN THE SOFTWARE.
 #include "kmanagerselection.h"
 
 #include <kdebug.h>
+#include <qwidget.h>
+#include <kapplication.h>
 #include <X11/Xatom.h>
 
+class KSelectionOwnerPrivate
+    : public QWidget
+    {
+    public:
+        KSelectionOwnerPrivate( KSelectionOwner* owner );
+    protected:
+        virtual bool x11Event( XEvent* ev );
+    private:
+        KSelectionOwner* owner;
+    };
+    
+KSelectionOwnerPrivate::KSelectionOwnerPrivate( KSelectionOwner* owner_P )
+    :   owner( owner_P )
+    {
+    kapp->installX11EventFilter( this );
+    }
+    
+bool KSelectionOwnerPrivate::x11Event( XEvent* ev_P )
+    {
+    owner->filterEvent( ev_P );
+    return false;
+    }
+    
 KSelectionOwner::KSelectionOwner( Atom selection_P, int screen_P )
     :   selection( selection_P ),
         screen( screen_P >= 0 ? screen_P : DefaultScreen( qt_xdisplay())),
         window( None ),
         timestamp( CurrentTime ),
-        extra1( 0 ), extra2( 0 )
+        extra1( 0 ), extra2( 0 ),
+        d( new KSelectionOwnerPrivate( this ))
     {
     }
     
@@ -62,13 +88,15 @@ KSelectionOwner::KSelectionOwner( const char* selection_P, int screen_P )
         screen( screen_P >= 0 ? screen_P : DefaultScreen( qt_xdisplay())),
         window( None ),
         timestamp( CurrentTime ),
-        extra1( 0 ), extra2( 0 )
+        extra1( 0 ), extra2( 0 ),
+        d( new KSelectionOwnerPrivate( this ))
     {
     }
 
 KSelectionOwner::~KSelectionOwner()
     {
     release();
+    delete d;
     }
         
 bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
@@ -93,8 +121,6 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
     window = XCreateWindow( dpy, RootWindow( dpy, screen ), 0, 0, 1, 1, 
         0, CopyFromParent, InputOnly, CopyFromParent, CWOverrideRedirect, &attrs );
 //    kdDebug() << "Using owner window " << window << endl;
-    if( window == None )
-        return false;
     Atom tmp = XA_ATOM;
     XSelectInput( dpy, window, PropertyChangeMask );
     XChangeProperty( dpy, window, XA_ATOM, XA_ATOM, 32, PropModeReplace,
@@ -111,7 +137,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
 //        kdDebug() << "Failed to claim selection : " << new_owner << endl;
         XDestroyWindow( dpy, window );
         timestamp = CurrentTime;
-        return None;
+        return false;
         }
     if( prev_owner != None )
         {
@@ -319,10 +345,36 @@ Atom KSelectionOwner::xa_timestamp = None;
 // KSelectionWatcher
 //*******************************************
 
+
+class KSelectionWatcherPrivate
+    : public QWidget
+    {
+    public:
+        KSelectionWatcherPrivate( KSelectionWatcher* watcher );
+    protected:
+        virtual bool x11Event( XEvent* ev );
+    private:
+        KSelectionWatcher* watcher;
+    };
+    
+KSelectionWatcherPrivate::KSelectionWatcherPrivate( KSelectionWatcher* watcher_P )
+    :   watcher( watcher_P )
+    {
+    kapp->installX11EventFilter( this );
+    }
+    
+bool KSelectionWatcherPrivate::x11Event( XEvent* ev_P )
+    {
+    watcher->filterEvent( ev_P );
+    return false;
+    }
+    
+
 KSelectionWatcher::KSelectionWatcher( Atom selection_P, int screen_P )
     :   selection( selection_P ),
         screen( screen_P >= 0 ? screen_P : DefaultScreen( qt_xdisplay())),
-        selection_owner( None )
+        selection_owner( None ),
+        d( new KSelectionWatcherPrivate( this ))
     {
     init();
     }
@@ -330,11 +382,17 @@ KSelectionWatcher::KSelectionWatcher( Atom selection_P, int screen_P )
 KSelectionWatcher::KSelectionWatcher( const char* selection_P, int screen_P )
     :   selection( XInternAtom( qt_xdisplay(), selection_P, False )),
         screen( screen_P >= 0 ? screen_P : DefaultScreen( qt_xdisplay())),
-        selection_owner( None )
+        selection_owner( None ),
+        d( new KSelectionWatcherPrivate( this ))
     {
     init();
     }
 
+KSelectionWatcher::~KSelectionWatcher()
+    {
+    delete d;
+    }
+    
 void KSelectionWatcher::init()
     {
     if( manager_atom == None )
@@ -344,7 +402,6 @@ void KSelectionWatcher::init()
         XWindowAttributes attrs;
         XGetWindowAttributes( dpy, RootWindow( dpy, screen ), &attrs );
         long event_mask = attrs.your_event_mask;
-        // SELI co kdyz tohle udela nekdo taky? pak se zmrsi event mask
         // StructureNotifyMask on the root window is needed
         XSelectInput( dpy, RootWindow( dpy, screen ), event_mask | StructureNotifyMask );
         }
@@ -408,14 +465,22 @@ void KSelectionWatcher::filterEvent( XEvent* ev_P )
         {
         if( selection_owner == None || ev_P->xdestroywindow.window != selection_owner )
             return;
-        selection_owner = None;
-        emit lostOwner();
+        if( owner() == None )
+            emit lostOwner(); // it must be safe to delete 'this' in a slot
+        else
+            emit newOwner( selection_owner );
         return;
         }
     return;
     }
 
 Atom KSelectionWatcher::manager_atom = None;
+
+void KSelectionOwner::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KSelectionWatcher::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kmanagerselection.moc"
 #endif

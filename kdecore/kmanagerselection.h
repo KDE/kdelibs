@@ -32,6 +32,8 @@ DEALINGS IN THE SOFTWARE.
 
 #include <X11/Xlib.h>
 
+class KSelectionOwnerPrivate;
+
 // since 3.2
 class KSelectionOwner
     : public QObject
@@ -43,10 +45,9 @@ class KSelectionOwner
 	virtual ~KSelectionOwner();
         bool claim( bool force, bool force_kill = true );
         void release();
-        // internal
-	void filterEvent( XEvent* ev_P );
+	void filterEvent( XEvent* ev_P ); // internal
     signals:
-        void lostOwnership();
+        void lostOwnership(); // it's NOT safe to delete the instance in a slot
     protected:
         virtual bool genericReply( Atom target, Atom property, Window requestor );
         virtual void replyTargets( Atom property, Window requestor );
@@ -64,7 +65,13 @@ class KSelectionOwner
         static Atom xa_multiple;
         static Atom xa_targets;
         static Atom xa_timestamp;
+    protected:
+        virtual void virtual_hook( int id, void* data );
+    private:
+        KSelectionOwnerPrivate* d;
     };
+
+class KSelectionWatcherPrivate;
 
 // since 3.2
 class KSelectionWatcher
@@ -74,12 +81,12 @@ class KSelectionWatcher
     public:
         KSelectionWatcher( Atom selection_P, int screen_P = -1 );
         KSelectionWatcher( const char* selection_P, int screen_P = -1 );
+	virtual ~KSelectionWatcher();
         Window owner();
-        // internal
-        void filterEvent( XEvent* ev_P );
+        void filterEvent( XEvent* ev_P ); // internal
     signals:
         void newOwner( Window owner );
-        void lostOwner();
+        void lostOwner(); // it's safe to delete the instance in a slot
     private:
         void init();
         const Atom selection;
@@ -88,6 +95,10 @@ class KSelectionWatcher
         static Atom manager_atom;
         static bool no_error;
         static int err_handler( Display* dpy, XErrorEvent* ev );
+    protected:
+        virtual void virtual_hook( int id, void* data );
+    private:
+        KSelectionWatcherPrivate* d;
     };
 
 #endif
