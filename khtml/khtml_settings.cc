@@ -330,7 +330,7 @@ QString KHTMLSettings::settingsToCSS() const
 QString KHTMLSettings::lookupFont(const QFont::CharSet &charset, int i) const
 {
     QString font;
-    QStringList &fontList = fontsForCharset[charset];
+    const QStringList &fontList = fontsForCharset[charset];
     if (fontList.count() > i)
        font = fontList[i];
     if (font.isEmpty())
