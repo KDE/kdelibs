@@ -248,6 +248,7 @@ const char * const packages[] = {
 "kdevelop/file selector",
 "kdevelop/file tree",
 "kdevelop",
+"kdevelop/grep frontend",
 "kdevelop/javasupport",
 "kdevelop/kate integration",
 "kdevelop/kdevelop 2.x (obsolete)",
