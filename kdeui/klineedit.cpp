@@ -28,6 +28,7 @@
 #include <kstdaccel.h>
 #include <kpopupmenu.h>
 #include <kdebug.h>
+// #include <kcompletionbox.h>
 
 #include "klineedit.h"
 #include "klineedit.moc"
@@ -37,27 +38,34 @@ class KLineEdit::KLineEditPrivate
 {
 public:
     bool grabReturnKeyEvents;
+    //    KCompletionBox *completionBox;
 };
 
 
 KLineEdit::KLineEdit( const QString &string, QWidget *parent, const char *name )
-          : QLineEdit( string, parent, name )
+    : QLineEdit( string, parent, name )
 {
     init();
 }
 
 KLineEdit::KLineEdit( QWidget *parent, const char *name )
-          : QLineEdit( parent, name )
+    : QLineEdit( parent, name )
 {
     init();
 }
 
 KLineEdit::~KLineEdit ()
 {
+    //    delete d->completionBox;
+    delete d;
 }
 
 void KLineEdit::init()
 {
+    d = new KLineEditPrivate;
+    d->grabReturnKeyEvents = false;
+    //    d->completionBox = 0L;
+
     // Enable the context menu by default.
     setContextMenuEnabled( true );
 }
@@ -74,12 +82,21 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 
 void KLineEdit::setCompletedText( const QString& text, bool marked )
 {
+//     if ( completionMode() == KGlobalSettings::CompletionPopup &&
+// 	 d->completionBox ) {
+// 	d->completionBox->clear();
+// 	d->completionBox->insertStringList( comp->allMatches() );
+// 	d->completionBox->popup( this );
+// 	setFocus(); // let the user keep typing
+// 	return;
+//     }
+
     int pos = cursorPosition();
     setText( text );
     if( marked )
     {
         setSelection( pos, text.length() );
-	    setCursorPosition( pos );
+	setCursorPosition( pos );
     }
 }
 
@@ -117,6 +134,14 @@ void KLineEdit::makeCompletion( const QString& text )
        return;  // No completion object...
     }
 
+//     bool compPopup = (completionMode() == KGlobalSettings::CompletionPopup);
+
+//     if ( compPopup && !d->completionBox ) {
+// 	d->completionBox = new KCompletionBox( "completion box" );
+// 	connect( d->completionBox, SIGNAL( activated( const QString& )),
+// 		 SLOT( setText( const QString& )));
+//     }
+
     QString match = comp->makeCompletion( text );
 
     // If no match or the same match, simply return
@@ -124,16 +149,19 @@ void KLineEdit::makeCompletion( const QString& text )
     KGlobalSettings::Completion mode = completionMode();
     if( match.isNull() || match == text )
     {
+// 	if ( d->completionBox )
+// 	    d->completionBox->clear();
+	
     	// Put the cursor at the end when in semi-automatic
-	    // mode and completion is invoked with the same text.
+	// mode and completion is invoked with the same text.
     	if( mode == KGlobalSettings::CompletionMan )
-    	{
-	        end( false );
-    	}
+	    end( false );
+
         return;
     }
     bool marked = ( mode == KGlobalSettings::CompletionAuto ||
                     mode == KGlobalSettings::CompletionMan );
+
     setCompletedText( match, marked );
 }
 
@@ -144,6 +172,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         completionMode() != KGlobalSettings::CompletionNone )
     {
         KGlobalSettings::Completion mode = completionMode();
+//         if( mode == KGlobalSettings::CompletionAuto ||
+// 	    mode == KGlobalSettings::CompletionPopup )
         if( mode == KGlobalSettings::CompletionAuto )
         {
             QString keycode = e->text();
@@ -235,19 +265,19 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
             subMenu->insertItem( i18n("Automatic"), AutoCompletion );
             subMenu->setItemChecked( AutoCompletion, mode == KGlobalSettings::CompletionAuto );
             subMenu->insertItem( i18n("Semi-Automatic"), SemiAutoCompletion );
-            subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );        
+            subMenu->setItemChecked( SemiAutoCompletion, mode == KGlobalSettings::CompletionMan );
             if( mode != KGlobalSettings::completionMode() )
             {
                 subMenu->insertSeparator();
                 subMenu->insertItem( i18n("Default"), Default );
             }
-            popup->insertSeparator();                
+            popup->insertSeparator();
             popup->insertItem( i18n("Completion"), subMenu );
         }
         popup->insertSeparator();
         popup->insertItem( i18n( "Unselect" ), Unselect );
         popup->insertItem( i18n( "Select All" ), SelectAll );
-            
+
         bool flag = ( echoMode()==QLineEdit::Normal && !isReadOnly() );
         bool allMarked = ( markedText().length() == text().length() );
         popup->setItemEnabled( Cut, flag && hasMarkedText() );
@@ -256,7 +286,8 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         popup->setItemEnabled( Clear, flag && ( text().length() > 0) );
         popup->setItemEnabled( Unselect, hasMarkedText() );
         popup->setItemEnabled( SelectAll, flag && hasMarkedText() && !allMarked );
-            
+
+	KGlobalSettings::Completion oldMode = completionMode();
         int result = popup->exec( e->globalPos() );
         delete popup;
 
@@ -283,29 +314,42 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         else if( result == ShellCompletion )
             setCompletionMode( KGlobalSettings::CompletionShell );
 
+	if ( oldMode != completionMode() )
+	    emit completionModeChanged( completionMode() );
+	
         return;
     }
     QLineEdit::mousePressEvent( e );
 }
 
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
-{    
-    if ( o == this && ev->type() == QEvent::KeyPress )
-    {
-	QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-	if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
-	{
-	    // Emit both returnPressed(const QString&)
-	    // and returnPressed() signals            
-            emit returnPressed( displayText() );
-            if( d->grabReturnKeyEvents )
-            {
-                // Because we trap the event we have
-                // to emit this signal as well
-                // emit QLineEdit::returnPressed();
-                return true;
-            }
+{
+    if ( o == this ) {
+	if ( ev->type() == QEvent::KeyPress )
+        {
+	    QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+	    if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
+	    {
+// 		if ( d->completionBox )
+// 		    d->completionBox->hide();
+		
+		// Emit both returnPressed(const QString&)
+		// and returnPressed() signals
+		emit returnPressed( displayText() );
+		if( d->grabReturnKeyEvents )
+                {
+		    // Because we trap the event we have
+		    // to emit this signal as well
+		    // emit QLineEdit::returnPressed();
+		    return true;
+		}
+	    }
 	}
+
+// 	else if ( ev->type() == QEvent::FocusOut ) {
+// 	    if ( d->completionBox )
+// 		d->completionBox->hide();
+// 	}
     }
     return QLineEdit::eventFilter( o, ev );
 }

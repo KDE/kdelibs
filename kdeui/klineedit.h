@@ -261,6 +261,12 @@ signals:
     */
     void textRotation( KCompletionBase::KeyBindingType );
 
+    /**
+     * Emitted when the user changed the completion mode by using the
+     * popupmenu.
+     */
+    void completionModeChanged( KGlobalSettings::Completion );
+
 public slots:
 
     /**
