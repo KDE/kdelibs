@@ -106,7 +106,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ALIGN:
         if (attr->val()) {
             if ( strcasecmp(attr->value(), "middle" ) == 0 )
-                addCSSProperty( CSS_PROP_TEXT_ALIGN, "center" );
+                addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL_CENTER );
             else
                 addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
         }

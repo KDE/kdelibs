@@ -777,7 +777,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
             // no site actually relying on that detail (Dirk)
             if (static_cast<HTMLDocumentImpl*>(document->document())->body())
                 static_cast<HTMLDocumentImpl*>(document->document())->body()
-                    ->addCSSProperty(CSS_PROP_DISPLAY, "none");
+                    ->addCSSProperty(CSS_PROP_DISPLAY, CSS_VAL_NONE);
             inBody = false;
         }
         if ( (haveBody || haveContent || haveFrameSet) && current->id() == ID_HTML)

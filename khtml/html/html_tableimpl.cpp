@@ -763,7 +763,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         if (attr->val()) {
             if ( strcasecmp(attr->value(), "middle" ) == 0 ||
                 strcasecmp(attr->value(), "center" ) == 0 )
-                addCSSProperty( CSS_PROP_TEXT_ALIGN, "\\2d konq-center" );
+                addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL__KONQ_CENTER );
             else
                 addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
         }
@@ -788,7 +788,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_NOWRAP:
         if (attr->val() != 0)
-	    addCSSProperty(CSS_PROP_WHITE_SPACE, "\\2d konq-nowrap");
+	    addCSSProperty(CSS_PROP_WHITE_SPACE, CSS_VAL__KONQ_NOWRAP);
         else
 	    removeCSSProperty(CSS_PROP_WHITE_SPACE);
         break;

@@ -1097,7 +1097,7 @@ void HTMLInputElementImpl::attach()
     switch( m_type ) {
     case TEXT:
     case PASSWORD:
-        addCSSProperty(CSS_PROP_FONT_FAMILY,  "monospace");
+        addCSSProperty(CSS_PROP_FONT_FAMILY, CSS_VAL_MONOSPACE);
         /* nobreak */
     case ISINDEX:
     case FILE:
