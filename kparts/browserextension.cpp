@@ -444,7 +444,8 @@ void BrowserExtension::slotCompleted()
 
 void BrowserExtension::pasteRequest()
 {
-    QString url = QApplication::clipboard()->text("plain", QClipboard::Selection).stripWhiteSpace();
+    QCString plain( "plain" );
+    QString url = QApplication::clipboard()->text(plain, QClipboard::Selection).stripWhiteSpace();
     // Remove linefeeds and any whitespace surrounding it.
     url.remove(QRegExp("[\\ ]*\\n+[\\ ]*"));
 
