@@ -86,6 +86,8 @@ void box::makeDirty()
   dirty = 1;
 
   if(parent) parent->makeDirty();
+  if ( b1 ) b1->makeDirty();
+  if ( b2 ) b1->makeDirty();
 }
 
 //--------------------------------SET TEXT-----------------------

@@ -348,9 +348,12 @@ QSize KFormula::size()
 	       boxes[boxes.size() - 1]->getRect().height() + 8);
 }
 
-void KFormula::makeDirty() 
+void KFormula::makeDirty()
 {
-    boxes[boxes.size() - 1]->makeDirty();
+    if ( boxes.size() == 0 ) 
+	return;
+    for ( unsigned int i = 0; i < boxes.size(); ++i )
+	boxes[ i ]->makeDirty();
 }
 
 //--------------------------------REDRAW----------------------------
