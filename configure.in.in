@@ -186,7 +186,6 @@ AC_SUBST(LIB_KSYCOCA, '$(top_builddir)/kio/libkio.la')
 AC_SUBST(LIB_KHTML, '$(top_builddir)/khtml/libkhtml.la')
 AC_SUBST(LIB_KDEPRINT, '$(top_builddir)/kdeprint/libkdeprint.la')
 AC_SUBST(LIB_KPARTS, '$(top_builddir)/kparts/libkparts.la')
-AC_SUBST(LIB_KSPELL, '$(top_builddir)/kspell/libkspell.la')
 AC_SUBST(LIB_KIMGIO, '$(top_builddir)/kimgio/libkimgio.la')
 
 AC_SUBST(EXTRA_SUBDIRS)
