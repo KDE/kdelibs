@@ -23,7 +23,7 @@
  * QDialog *editorDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
  * if ( editorDialog ) {
  *   // kdeutils was installed, so the dialog was found fetch the editor interface
- *   KRegExpEditorInterface *editor = dynamic_cast<KRegExpEditorInterface *>( editorDialog );
+ *   KRegExpEditorInterface *editor = static_cast<KRegExpEditorInterface *>( editorDialog->qt_cast( "KRegExpEditorInterface" ) );
  *   Q_ASSERT( editor ); // This should not fail!
  *   
  *   // now use the editor.
@@ -51,7 +51,7 @@
  *     "KRegExpEditor/KRegExpEditor", QString::null, parent );
  * if ( editorWidget ) {
  *   // kdeutils was installed, so the widget was found fetch the editor interface
- *   KRegExpEditorInterface *editor = dynamic_cast<KRegExpEditorInterface *>( editorWidget );
+ *   KRegExpEditorInterface *editor = static_cast<KRegExpEditorInterface *>( editorWidget->qt_cast( "KRegExpEditorInterface" ) );
  *   Q_ASSERT( editor ); // This should not fail!
  *   
  *   // now use the editor.
