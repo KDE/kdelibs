@@ -21,25 +21,8 @@
  * $Id$
  *
  * $Log$
- * Revision 1.11  1998/01/18 13:40:24  jacek
- * Changes KCharsets*:
- * Added KCharset class - small changes in interface. I hope it is all source
- *                        and binary compatible. Some applications may now ask to recompile them,
- * 		       but no changes should be neccessary.
- * Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
- * And some other changes.
- *
- * Revision 1.1.1.4  1997/12/13 12:57:14  jacek
- * Imported sources from KDE CVS
- *
- * Revision 1.1.1.3  1997/12/11 07:19:15  jacek
- * Imported sources from KDE CVS
- *
- * Revision 1.1.1.2  1997/12/10 07:08:33  jacek
- * Imported sources from KDE CVS
- *
- * Revision 1.1.1.1  1997/12/09 22:02:46  jacek
- * Imported sorces fromkde
+ * Revision 1.14  1998/01/24 00:12:02  kulow
+ * added sys/socket.h
  *
  * Revision 1.13  1998/01/23 02:23:40  torben
  * Torben: Supports UNIX domain sockets now.
@@ -118,7 +101,7 @@
 #include <qsocknot.h>
 
 /** 
- * @version $Id$
+ * A TCP/IP client socket. You can connect this socket to any internet address. 
  *
  * The socket gives you three signals: When ready for reading/writing or 
  * if the connection is broken.  Using socket() you get a file descriptor
@@ -233,7 +216,7 @@ protected:
 };
 
 
- * @version $Id$
+/**
  * Monitor a port for incoming TCP/IP connections.
  *
  * You can use a KServerSocket to listen on a port for incoming

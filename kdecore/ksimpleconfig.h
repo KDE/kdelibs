@@ -19,25 +19,8 @@
 // $Id$
 //
 // $Log$
-// Revision 1.5  1998/01/18 13:40:01  jacek
-// Changes KCharsets*:
-// Added KCharset class - small changes in interface. I hope it is all source
-//                        and binary compatible. Some applications may now ask to recompile them,
-// 		       but no changes should be neccessary.
-// Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
-// And some other changes.
-//
-// Revision 1.1.1.4  1997/12/13 12:57:14  jacek
-// Imported sources from KDE CVS
-//
-// Revision 1.1.1.3  1997/12/11 07:19:14  jacek
-// Imported sources from KDE CVS
-//
-// Revision 1.1.1.2  1997/12/10 07:08:33  jacek
-// Imported sources from KDE CVS
-//
-// Revision 1.1.1.1  1997/12/09 22:02:46  jacek
-// Imported sorces fromkde
+// Revision 1.4  1998/01/15 13:22:31  kalle
+// Read-only mode for KSimpleConfig
 //
 // Revision 1.3  1997/10/16 11:15:02  torben
 // Kalle: Copyright headers

@@ -1,14 +1,14 @@
 // $Id$
 //
 // $Log$
-// Revision 1.6  1998/01/18 13:39:23  jacek
-// Changes KCharsets*:
-// Added KCharset class - small changes in interface. I hope it is all source
-//                        and binary compatible. Some applications may now ask to recompile them,
-// 		       but no changes should be neccessary.
-// Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
-// And some other changes.
+// Revision 1.5  1998/01/15 13:22:29  kalle
+// Read-only mode for KSimpleConfig
 //
+// Revision 1.4  1997/12/12 14:46:04  denis
+// Reverting to lower case true/false
+//
+// Revision 1.3  1997/12/12 14:33:48  denis
+// replaced true by TRUE and false by FALSE
 //
 // Revision 1.2  1997/10/10 19:24:11  kulow
 // removed mutable and replace const_cast with a more portable way.
