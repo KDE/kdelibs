@@ -7,6 +7,7 @@
 125	kdecore (KAccel)
 126	kdecore (KURL)
 127	kdecore (KProtocolManager)
+128	kdecore (KRegExp)
 150	kdecore (KLibLoader)
 160	kdecore (KNotifyClient)
 200	kdeui (KMainWindow)

@@ -22,10 +22,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include <iostream.h>
-
 #include "kregexp.h"
 #include "kregpriv.h"
+#include "kdebug.h"
 
 KRegExpPrivate::KRegExpPrivate()
 {
@@ -71,7 +70,7 @@ bool KRegExpPrivate::match( const char *_string )
 {
   if ( !m_bInit )
   {
-    cerr << "You must compile a pattern before you can try to match it" << endl;
+    kdDebug(128) << "You must compile a pattern before you can try to match it" << endl;
     assert( 0 );
   }
 
@@ -112,7 +111,7 @@ const char* KRegExpPrivate::group( int _grp )
 {
   if ( _grp < 0 || _grp >= 10 )
   {
-    cerr << "You may only use a group in the range of 0..9" << endl;
+    kdDebug(128) << "You may only use a group in the range of 0..9" << endl;
     assert( 0 );
   }
 
@@ -123,7 +122,7 @@ int KRegExpPrivate::groupStart( int _grp )
 {
   if ( _grp < 0 || _grp >= 10 )
   {
-    cerr << "You may only use a group in the range of 0..9" << endl;
+    kdDebug(128) << "You may only use a group in the range of 0..9" << endl;
     assert( 0 );
   }
 
@@ -134,7 +133,7 @@ int KRegExpPrivate::groupEnd( int _grp )
 {
   if ( _grp < 0 || _grp >= 10 )
   {
-    cerr << "You may only use a group in the range of 0..9" << endl;
+    kdDebug(128) << "You may only use a group in the range of 0..9" << endl;
     assert( 0 );
   }
 

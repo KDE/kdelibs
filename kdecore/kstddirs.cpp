@@ -28,7 +28,6 @@
 
 #include <stdlib.h>
 #include <assert.h>
-#include <iostream.h>
 #include <errno.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
