@@ -124,8 +124,8 @@ public:
 
 };
 
-SlaveBase *globalSlave=0;
-long SlaveBase::s_seqNr = 0;
+static SlaveBase *globalSlave;
+long SlaveBase::s_seqNr;
 
 static volatile bool slaveWriteError = false;
 
