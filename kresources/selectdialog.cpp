@@ -44,7 +44,7 @@ SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setMargin( marginHint() );
-    
+
   QGroupBox *groupBox = new QGroupBox( 2, Qt::Horizontal,  this );
   groupBox->setTitle( i18n( "Resources" ) );
 
@@ -77,6 +77,8 @@ SelectDialog::SelectDialog( QPtrList<Resource> list, QWidget *parent,
   mResourceId->setCurrentItem( 0 );
   connect( mResourceId, SIGNAL(returnPressed(QListBoxItem*)), 
            SLOT(accept()) );
+  connect( mResourceId, SIGNAL( executed( QListBoxItem* ) ),
+           SLOT( accept() ) );
 }
 
 Resource *SelectDialog::resource()
