@@ -55,7 +55,7 @@ protected:
      * default, it will use the KDE standard dirs to find and create the
      * correct location.  If you are using your own app-specific
      * bookmarks directory, you must instantiate this class with your
-     * own path <em>before</em> KBookmarkManager::self() is ever
+     * own path <em>before</em> KBookmarkManager::managerForFile() is ever
      * called.
      *
      * @param bookmarksFile full path to the bookmarks file,
@@ -135,7 +135,8 @@ public:
 
     /**
      * This static function will return an instance of the
-     * KBookmarkManager.  If you do not instantiate this class either
+     * KBookmarkManager, responsible for the given @p bookmarksFile.
+     * If you do not instantiate this class either
      * natively or in a derived class, then it will return an object
      * with the default behaviors.  If you wish to use different
      * behaviors, you <em>must</em> derive your own class and
@@ -148,7 +149,7 @@ public:
      * doesn't already exist, import bookmarks from desktop files
      * @return a pointer to an instance of the KBookmarkManager.
      */
-    static KBookmarkManager* self( const QString& bookmarksFile,
+    static KBookmarkManager* managerForFile( const QString& bookmarksFile,
                                    bool bImportDesktopFiles = true );
 
     /**

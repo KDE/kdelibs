@@ -37,7 +37,7 @@
 QPtrList<KBookmarkManager>* KBookmarkManager::s_pSelf = 0L;
 KStaticDeleter<QPtrList<KBookmarkManager> > sdbm;
 
-KBookmarkManager* KBookmarkManager::self( const QString& bookmarksFile, bool bImportDesktopFiles )
+KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, bool bImportDesktopFiles )
 {
     if ( !s_pSelf ) {
         sdbm.setObject( s_pSelf, new QPtrList<KBookmarkManager> );
