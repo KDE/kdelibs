@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/time.h>
-#include <kjs/collector.h>
 #include <assert.h>
 
 using namespace KJS;
@@ -89,7 +88,7 @@ KJSProxyImpl::~KJSProxyImpl()
     // This allows to delete the global-object properties, like all the protos
     static_cast<ObjectImp*>(m_script->globalObject().imp())->deleteAllProperties( m_script->globalExec() );
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
-    while (KJS::Collector::collect())
+    while (KJS::Interpreter::collect())
         ;
     //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
     delete m_script;
@@ -97,7 +96,7 @@ KJSProxyImpl::~KJSProxyImpl()
     // Garbage collect - as many times as necessary
     // (we could delete an object which was holding another object, so
     // the deref() will happen too late for deleting the impl of the 2nd object).
-    while (KJS::Collector::collect())
+    while (KJS::Interpreter::collect())
         ;
   }
 
@@ -191,7 +190,7 @@ void KJSProxyImpl::clear() {
 #ifdef KJS_DEBUGGER
     KJSDebugWin *debugWin = KJSDebugWin::instance();
     if (debugWin) {
-      if (debugWin->getExecState() && 
+      if (debugWin->getExecState() &&
           debugWin->getExecState()->interpreter() == m_script)
         debugWin->stop();
       debugWin->clear(m_script);

@@ -34,7 +34,6 @@
 #include <qstyle.h>
 #include <qobjectlist.h>
 
-#include <kjs/collector.h>
 #include "kjs_proxy.h"
 #include "kjs_window.h"
 #include "kjs_navigator.h"
@@ -990,7 +989,7 @@ void Window::clear( ExecState *exec )
   // Get rid of everything, those user vars could hold references to DOM nodes
   deleteAllProperties( exec );
   // Really delete those properties, so that the DOM nodes get deref'ed
-  while(KJS::Collector::collect())
+  while(KJS::Interpreter::collect())
       ;
   if (!m_part.isNull()) {
     KJSProxy* proxy = KJSProxy::proxy( m_part );
