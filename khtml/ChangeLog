@@ -29,6 +29,10 @@
 	* khtmlview.{cpp,h}: Accesskeys now activated when pressing & releasing 
 	the crtl key (#83053).
 
+2004-07-12 Jean-Baptiste Mardelle <bj@altern.org>
+	* html/html_formimpl.{h,cpp}: Make form labels clickable (#59489)
+	* khtmlview.cpp (focusNodeWithAccessKey): Make accesskeys work for labels
+	
 2004-07-12 Germain Garand <germain@ebooksfrance.org>
 
 	* ecma/kjs_navigator.{h,cpp} (getValueProperty):
