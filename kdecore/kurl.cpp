@@ -700,7 +700,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
   tmp = QString( buf + start, pos - start );
   //kdDebug(126)<<" setting encoded path&query to:"<<tmp<<endl;
-  setEncodedPathAndQuery( tmp, encoding_hint );
+  setEncodedPath( tmp, encoding_hint );
 
   if ( pos == len )
       goto NodeOk;
@@ -714,7 +714,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
   tmp = QString(buf + start, pos - start);
   if (delim=='#')
-      m_strQuery_encoded = tmp;
+      setQuery(tmp, encoding_hint);
   else
       m_strRef_encoded = tmp;
 
@@ -726,7 +726,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   if (delim == '#')
       m_strRef_encoded = tmp;
   else
-      m_strQuery_encoded = tmp;
+      setQuery(tmp, encoding_hint);
 
  NodeOk:
   //kdDebug(126)<<"parsing finished. m_strProtocol="<<m_strProtocol<<" m_strHost="<<m_strHost<<" m_strPath="<<m_strPath<<endl;
@@ -999,7 +999,7 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encod
 
 void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
 {
-    m_strPath_encoded = _txt;
+  m_strPath_encoded = _txt;
 
   bool keepEncoded;
   m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
@@ -1013,18 +1013,14 @@ void KURL::setEncodedPathAndQuery( const QString& _txt, int encoding_hint )
   int pos = _txt.find( '?' );
   if ( pos == -1 )
   {
-    m_strPath_encoded = _txt;
+    setEncodedPath(_txt, encoding_hint);
     m_strQuery_encoded = QString::null;
   }
   else
   {
-    m_strPath_encoded = _txt.left( pos );
-    m_strQuery_encoded = _txt.right(_txt.length() - pos - 1);
+    setEncodedPath(_txt.left( pos ), encoding_hint);
+    setQuery(_txt.right(_txt.length() - pos - 1), encoding_hint);
   }
-  bool keepEncoded;
-  m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
-  if (!keepEncoded)
-     m_strPath_encoded = QString::null;
 }
 
 QString KURL::path( int _trailing ) const
@@ -1480,14 +1476,49 @@ void KURL::setPath( const QString & path )
   m_strPath_encoded = QString::null;
 }
 
-void KURL::setQuery( const QString &_txt, int )
+void KURL::setQuery( const QString &_txt, int encoding_hint)
 {
    if (!_txt.length())
-       return;
+   {
+      m_strQuery_encoded = _txt;
+      return;
+   }
    if (_txt[0] =='?')
       m_strQuery_encoded = _txt.mid(1);
    else
       m_strQuery_encoded = _txt;
+
+   bool keepEncoded;
+   QString tmp = decode( m_strQuery_encoded, &keepEncoded, encoding_hint );
+   if (!keepEncoded)
+   {
+      int l = m_strQuery_encoded.length();
+      int i = 0;
+      QString result;
+      while (i < l)
+      {
+         int s = i;
+         // Re-encode. Break encoded string up in '&' and '=' parts and re-encode
+         // part by part.
+         while((i < l) && 
+               (m_strQuery_encoded[i] != '&') && 
+               (m_strQuery_encoded[i] != '='))
+            i++;
+         if (i > s)
+         {
+            tmp = m_strQuery_encoded.mid(s, i-s);
+            tmp = decode( tmp, 0, encoding_hint );
+            tmp = encode( tmp, false, encoding_hint);
+            result += tmp;
+         }
+         if (i < l)
+         {
+            result += m_strQuery_encoded[i];
+            i++;
+         }
+      }
+      m_strQuery_encoded = result;
+   }
 }
 
 QString KURL::query() const
