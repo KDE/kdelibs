@@ -187,9 +187,9 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	{
 	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
 	    if( id == ATTR_ONMOUSEOVER )
-		view->part()->scheduleScript( Node( this ), script.string() );
+		view->part()->scheduleScript( script.string() );
 	    else
-		view->part()->executeScript( script.string() );
+		view->part()->executeScript( Node( this ), script.string() );
 	}
     }
     setMouseInside(inside);
