@@ -10,13 +10,11 @@ int main ( int argc, char **argv)
     //make a central widget to contain the other widgets
     QWidget * w = new QWidget( );
     KLineEdit *l = new KLineEdit( w, "mylineedit" );
-    l->enableCompletion();
+    l->setHandleCompletion();
+    l->setHandleRotation(); // specify false
     // Shows of the value of the returnPressed signals with the QString argument.
     // We simply insert the entered items into the completion object.
     QObject::connect( l, SIGNAL( returnPressed( const QString& ) ), l->completionObject(), SLOT( addItem( const QString& ) ) );
-    // Un-comment the the code below to stop KLineEdit from handling rotation
-    // signals internally.
-    // l->setHandleRotationSignals( false );
     l->resize(500,30);
     l->setFocus();
     QPushButton * push = new QPushButton( "Exit", w );
