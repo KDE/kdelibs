@@ -1318,7 +1318,7 @@ bool HTTPProtocol::readHeader()
 
     // Cache management
     else if (strncasecmp(buffer, "Last-Modified:", 14) == 0) {
-      m_lastModified = trimLead(buffer+14);
+      m_lastModified = (QString::fromLatin1(trimLead(buffer+14))).stripWhiteSpace();
     }
 
     // whoops.. we received a warning
@@ -1330,19 +1330,19 @@ bool HTTPProtocol::readHeader()
 
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buffer, "Pragma:", 7) == 0) {
-      QCString pragma = QCString(trimLead(buffer+7)).lower();
+      QCString pragma = QCString(trimLead(buffer+7)).stripWhiteSpace().lower();
       if (pragma == "no-cache")
       {
          m_bCachedWrite = false; // Don't put in cache
          mayCache = false;
       }
     }
-	// The deprecated Refresh Response
-	else if (strncasecmp(buffer,"Refresh:", 8) == 0) {
-	    kdDebug(7113) << buffer << endl;
-		mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
-	    setMetaData( "http-refresh", trimLead(buffer+8) );
-	}
+    // The deprecated Refresh Response
+    else if (strncasecmp(buffer,"Refresh:", 8) == 0) {
+      kdDebug(7113) << buffer << endl;
+      mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
+      setMetaData( "http-refresh", (QString::fromLatin1(trimLead(buffer+8))).stripWhiteSpace() );
+    }
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
       if (strncmp(buffer+5, "1.0 ",4) == 0)
@@ -1460,7 +1460,7 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buffer, "Location:", 9) == 0 ) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
       if ( m_responseCode > 299 && m_responseCode < 400 )
-        locationStr = trimLead(buffer+9);
+        locationStr = QCString(trimLead(buffer+9)).stripWhiteSpace();
     }
 
     // Check for cookies
@@ -1840,7 +1840,7 @@ void HTTPProtocol::configAuth( const char *p, bool b )
     kdWarning(7103) << "Unsupported Authorization type requested : Negotiate" << endl;
     return;
   }
-  else if (strncasecmp( p, "MBS_PWD_COOKIE", 14 ) == 0) 
+  else if (strncasecmp( p, "MBS_PWD_COOKIE", 14 ) == 0)
   {
     // Found on http://www.webscription.net/baen/default.asp
     f = AUTH_Basic;
@@ -2460,7 +2460,7 @@ int HTTPProtocol::readChunked()
      }
 
      kdDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes" << endl;
-  
+
      if (m_iBytesLeft == 0)
      {
        // Last chunk.
@@ -2581,7 +2581,7 @@ bool HTTPProtocol::readBody( )
     m_iBytesLeft = m_iSize - sz;
   else
     m_iBytesLeft = -1;
-    
+
   if (m_bChunked)
     m_iBytesLeft = -1;
 
