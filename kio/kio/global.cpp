@@ -489,9 +489,6 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     "assistance." );
   QString sServeradmin = i18n( "Contact the administrator of the server "
     "for further assistance." );
-  if ( protocol == "http" )
-    sServeradmin += i18n( " This is typically done by emailing <a href=\"mailto"
-      ":webmaster@%1\">webmaster@%1</a>, ." ).arg( host );
   // FIXME active link to permissions dialog
   QString sAccess = i18n( "Check your access permissions on this resource." );
   QString cAccess = i18n( "Your access permissions may be inadequate to "
@@ -531,8 +528,6 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
   QString sTypo = i18n( "Double-check that you have entered the correct location "
     "and try again." );
   QString sNetwork = i18n( "Check your network connection status." );
-  QString sRoot = i18n( "If you understand the security implications, you "
-    "could start Konqueror as the system administrator (root user) if required." );
 
   switch( errorCode ) {
     case  KIO::ERR_CANNOT_OPEN_FOR_READING:
@@ -690,8 +685,6 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "none at all." )
         << i18n( "Your account may not have permission to access the "
         "specified resource." );
-        /*<< i18n( "On occasion this may be caused by an incorrectly configured "
-        "server, for example where a script does not have execution permissions." )*/
       solutions << i18n( "Retry the request and ensure your authentication details "
         "are entered correctly." ) << sSysadmin;
       if ( !isSlaveNetwork ) solutions << sServeradmin;
@@ -762,12 +755,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "This is a fairly technical error in which a required "
         "device for network communications (a socket) could not be created." );
       causes << i18n( "The network connection may be incorrectly configured, or "
-        "the network interface may not be enabled." )
-        << i18n( "You may not have permissions to create the device. This occurs "
-        "typically in UNIX environments where a user without system "
-        "administration privileges tries to open a port in the privileged range, "
-        "between port 1 and port 1024." );
-      solutions << sNetwork << sRoot << sSysadmin;
+        "the network interface may not be enabled." );
+      solutions << sNetwork << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_CONNECT:
@@ -879,12 +868,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "device for network communications (a socket) could not be established "
         "to listen for incoming network connections." );
       causes << i18n( "The network connection may be incorrectly configured, or "
-        "the network interface may not be enabled." )
-        << i18n( "You may not have permissions to create the device. This occurs "
-        "typically in UNIX environments where a user without system "
-        "administration privileges tries to open a port in the privileged range, "
-        "between port 1 and port 1024." );
-      solutions << sNetwork << sRoot << sSysadmin;
+        "the network interface may not be enabled." );
+      solutions << sNetwork << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_LISTEN:
@@ -894,12 +879,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         "device for network communications (a socket) could not be established "
         "to listen for incoming network connections." );
       causes << i18n( "The network connection may be incorrectly configured, or "
-        "the network interface may not be enabled." )
-        << i18n( "You may not have permissions to create the device. This occurs "
-        "typically in UNIX environments where a user without system "
-        "administration privileges tries to open a port in the privileged range, "
-        "between port 1 and port 1024." );
-      solutions << sNetwork << sRoot << sSysadmin;
+        "the network interface may not be enabled." );
+      solutions << sNetwork << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_ACCEPT:
@@ -909,7 +890,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       causes << i18n( "The network connection may be incorrectly configured, or "
         "the network interface may not be enabled." )
         << i18n( "You may not have permissions to accept the connection." );
-      solutions << sNetwork << sRoot << sSysadmin;
+      solutions << sNetwork << sSysadmin;
       break;
 
     case  KIO::ERR_COULD_NOT_LOGIN:
