@@ -24,6 +24,7 @@
 #include "kmprinter.h"
 
 #include <qlayout.h>
+#include <qregexp.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
 
@@ -99,7 +100,9 @@ void KMWBackend::updatePrinter(KMPrinter *p)
 	if (ID == KMWizard::Class) p->setType(KMPrinter::Class);
 	else p->setType(KMPrinter::Printer);
 	p->setOption("kde-backend",QString::number(ID));
-	p->setOption("kde-backend-description",m_buttons->selected()->text());
+	QString	s = m_buttons->selected()->text();
+	s.replace(QRegExp("&(?=\\w)"), QString::fromLatin1(""));
+	p->setOption("kde-backend-description",s);
 	setNextPage((m_map.contains(ID) ? m_map[ID] : KMWizard::Error));
 }
 
