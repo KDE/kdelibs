@@ -1158,24 +1158,6 @@ void KApplication::kdisplaySetPalette()
     int inlowlightVal = lowlightVal-25;
     if(inlowlightVal < 120)
         inlowlightVal = 120;
-    /*
-    QColorGroup inactivegrp(foreground, button.light(110),
-                            background.light(highlightVal),
-                            background.dark(inlowlightVal), background,
-                            foreground, highlightedText, base,
-                            background);*/
-    /*
-    QColorGroup disabledgrp( textColor, backgroundColor,
-                             backgroundColor.light(highlightVal),
-                             backgroundColor.dark(lowlightVal),
-                             backgroundColor.dark(120),
-                             backgroundColor.dark(120), windowColor );
-
-    QColorGroup colgrp( textColor, backgroundColor,
-                        backgroundColor.light(highlightVal),
-                        backgroundColor.dark(lowlightVal),
-                        backgroundColor.dark(120),
-                        textColor, windowColor );*/
 
     colgrp.setColor(QColorGroup::Highlight, highlight);
     colgrp.setColor(QColorGroup::HighlightedText, highlightedText);
@@ -1187,10 +1169,7 @@ void KApplication::kdisplaySetPalette()
     disabledgrp.setColor(QColorGroup::ButtonText, buttonText);
     disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
 
-    QPalette newPal;
-    newPal.setActive(colgrp);
-    newPal.setDisabled(disabledgrp);
-    newPal.setInactive(colgrp);
+    QPalette newPal(colgrp, disabledgrp, colgrp);
 /* 
     if(QPixmap::defaultDepth() > 8){
         QColorGroup iGrp(colgrp);
@@ -1215,7 +1194,7 @@ void KApplication::kdisplaySetPalette()
 	num = 2000;
     setCursorFlashTime(num);
 
-    style().polish(newPal);
+    //style().polish(newPal);
     emit kdisplayPaletteChanged();
     emit appearanceChanged();
 }
