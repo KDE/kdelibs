@@ -128,7 +128,7 @@ void KURLComboBox::setDefaults()
     itemMapper.clear();
 
     KURLComboItem *item;
-    for ( int id = 0; id < defaultList.count(); id++ ) {
+    for ( unsigned int id = 0; id < defaultList.count(); id++ ) {
         item = defaultList.at( id );
         insertURLItem( item );
     }
@@ -324,7 +324,7 @@ void KURLComboBox::updateItem( const KURLComboItem *item,
     // using an editable combobox, so we just remove and insert
     if ( isEditable() ) {
 	removeItem( index );
-	insertItem( pixmap, 
+	insertItem( pixmap,
 		    item->url.isLocalFile() ? item->url.path( myMode ) :
 		                              item->url.prettyURL( myMode ),
 		    index );

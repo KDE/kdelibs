@@ -354,7 +354,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     setSelection(d->url.url());
     ops->setView(KFile::Default);
-    
+
 
     ops->clearHistory();
 }
@@ -453,10 +453,10 @@ void KFileDialog::slotOk()
     // we can use our kfileitems, no need to parse anything
     if ( items && !locationEdit->lineEdit()->edited() &&
 	 !(items->isEmpty() && !dirOnly) ) {
-	
+
 	d->urlList.clear();
 	d->filenames = QString::null;
-	
+
 	if ( dirOnly ) {
 	    d->url = ops->url();
 	}
@@ -474,7 +474,7 @@ void KFileDialog::slotOk()
 		}
 	    }
 	}
-	
+
 	accept();
 	return;
     }
@@ -1049,7 +1049,7 @@ void KFileDialog::setSelection(const QString& url)
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
      */
-    KFileViewItem i(-1, -1, u, true );
+    KFileViewItem i((unsigned) -1, (unsigned)-1, u, true );
     //    KFileViewItem i(u.path());
     if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) )
         // trust isDir() only if the file is
