@@ -626,15 +626,6 @@ public:
    */
   QString prettyURL( int _trailing = 0) const;
 
-
-  /**
-   * Returns the URL as string, escaped for HTML.
-   * @return A human readable URL, with no non-necessary encodings/escaped
-   * characters which is html encoded for safe inclusion in html or
-   * rich text. Password will not be shown.
-   */
-  QString htmlURL() const;
-
   /**
    * Returns the URL as string, escaped for HTML.
    * Example:
@@ -645,7 +636,16 @@ public:
    * characters. Password will not be shown.
    */
   QString prettyURL( int _trailing, AdjustementFlags _flags) const;
-  // ### BIC: Merge the two above
+  // ### BIC: Merge the two above + spell it as "Adjustment"
+  
+  /**
+   * Returns the URL as string, escaped for HTML.
+   * @return A human readable URL, with no non-necessary encodings/escaped
+   * characters which is html encoded for safe inclusion in html or
+   * rich text. Password will not be shown.
+   */
+  QString htmlURL() const;
+
 
   /**
    * Test to see if the KURL is empty.
