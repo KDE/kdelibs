@@ -208,11 +208,6 @@ void KDEStyle::polish(QWidget *w)
         else
             w->setAutoMask(true);
     }
-    if(w->inherits("QTabBar")){
-        QFont tmpFont = w->font();
-        tmpFont.setBold(true);
-        w->setFont(tmpFont);
-    }
 
     // this needs updated draw routine that doesn't depend on being masked
     if(w->inherits("QComboBox"))
@@ -241,11 +236,6 @@ void KDEStyle::unPolish(QWidget *w)
 
     if(w->inherits("QPushButton")){
         w->removeEventFilter(this);
-    }
-    if(w->inherits("QTabBar")){
-        QFont tmpFont = w->font();
-        tmpFont.setBold(false);
-        w->setFont(tmpFont);
     }
 }
 
