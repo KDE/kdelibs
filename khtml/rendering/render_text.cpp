@@ -494,6 +494,7 @@ void RenderText::posOfChar(int chr, int &x, int &y)
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                       int tx, int ty)
 {
+    int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
     int d = style()->textDecoration();
     TextSlave f(0, y-ty);
@@ -621,7 +622,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             }
 #endif
 
-        } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h, m_lineHeight));
+        } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y-ow, ty, h, m_lineHeight));
 
         if(renderOutline)
 	  {
@@ -979,9 +980,9 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
   // left edge
   drawBorder(p,
 	     l - ow,
-	     t - (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : 1),
+	     t - (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : 0),
 	     l,
-	     b + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow -1 : 0),
+	     b + (nextline.isEmpty() || thisline.left() <= nextline.left() || nextline.right() <= thisline.left() ? ow : 0),
 	     BSLeft,
 	     oc, style()->color(), os,
 	     (lastline.isEmpty() || thisline.left() < lastline.left() || lastline.right() <= thisline.left() ? ow : -ow),
@@ -991,9 +992,9 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
   // right edge
   drawBorder(p,
 	     r,
-	     t - (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : 1),
+	     t - (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : 0),
 	     r + ow,
-	     b + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow - 1 : 0),
+	     b + (nextline.isEmpty() || nextline.right() <= thisline.right() || thisline.right() <= nextline.left() ? ow : 0),
 	     BSRight,
 	     oc, style()->color(), os,
 	     (lastline.isEmpty() || lastline.right() < thisline.right() || thisline.right() <= lastline.left() ? ow : -ow),
@@ -1036,9 +1037,9 @@ void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &last
 
   if (nextline.right() < thisline.right())
       drawBorder(p,
-		 QMAX(nextline.isValid()?tx+nextline.right()+2:-1000000 , l-ow-1),
+		 QMAX(nextline.isValid()?tx+nextline.right()+1:-1000000 , l-ow),
 		 b,
-		 r + ow + 1,
+		 r + ow,
 		 b + ow,
 		 BSBottom, oc, style()->color(), os,
 		 (nextline.isValid() && l-ow < tx+nextline.right()+1? -ow : ow),

@@ -249,12 +249,9 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             switch(s)
             {
             case BSBottom:
-	      y1++;
-	      y2++;
             case BSTop:
                 p->drawLine(x1, (y1+y2)/2, x2, (y1+y2)/2);
             case BSRight:
-	      x1++;
             case BSLeft:
                 p->drawLine((x1+x2)/2, y1, (x1+x2)/2, y2);
             }
