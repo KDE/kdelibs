@@ -619,7 +619,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
             entryList.append("Disabled");
         else
             entryList.append("Enabled");
-        
+
 	if(sb->isHidden())
 	  config->writeEntry(QString::fromLatin1("StatusBar"), entryList, ';');
 	else
@@ -633,7 +633,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
             entryList.append("Disabled");
         else
             entryList.append("Enabled");
-        
+
 	// By default we don't hide.
 	if(mb->isHidden())
 	  config->writeEntry(QString::fromLatin1("MenuBar"), entryList, ';');
@@ -758,31 +758,46 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
             mb->show();
     }
 
-    int n = 1; // Toolbar counter. toolbars are counted from 1,
-    KToolBar *toolbar;
-    QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
-
-    for ( ; it.current(); ++it) {
-        toolbar= it.current();
-        QString group;
-        if (!configGroup.isEmpty())
-        {
-           // Give a number to the toolbar, but prefer a name if there is one,
-           // because there's no real guarantee on the ordering of toolbars
-           group = (!::qstrcmp(toolbar->name(), "unnamed") ? QString::number(n) : QString(" ")+toolbar->name());
-           group.prepend(" Toolbar");
-           group.prepend(configGroup);
-        }
-        toolbar->applySettings(config, group);
-        n++;
-    }
-
-    finalizeGUI( true );
+    finalizeGUI( true, config, configGroup );
 }
 
 void KMainWindow::finalizeGUI( bool force )
 {
+    finalizeGUI( force, 0L );
+}
+
+void KMainWindow::finalizeGUI( bool force, KConfig* config, const QString &_configGroup )
+{
+    QString configGroup = _configGroup;
+
     //kdDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
+    if ( config == 0 && d->autoSaveSettings )
+    {
+        config = KGlobal::config();
+        configGroup = d->autoSaveGroup;
+    }
+
+    if ( config != 0 )
+    {
+        int n = 1; // Toolbar counter. toolbars are counted from 1,
+        KToolBar *toolbar;
+        QPtrListIterator<KToolBar> it( toolBarIterator() ); // must use own iterator
+
+        for ( ; it.current(); ++it) {
+            toolbar= it.current();
+            QString group;
+            if (!configGroup.isEmpty())
+            {
+               // Give a number to the toolbar, but prefer a name if there is one,
+               // because there's no real guarantee on the ordering of toolbars
+               group = (!::qstrcmp(toolbar->name(), "unnamed") ? QString::number(n) : QString(" ")+toolbar->name());
+               group.prepend(" Toolbar");
+               group.prepend(configGroup);
+            }
+            toolbar->applySettings(config, group);
+            n++;
+        }
+    }
     // The whole reason for this is that moveToolBar relies on the indexes
     // of the other toolbars, so in theory it should be called only once per
     // toolbar, but in increasing order of indexes.
@@ -882,7 +897,7 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     // Get notified when the user moves a toolbar around
     connect( this, SIGNAL( dockWindowPositionChanged( QDockWindow * ) ),
              this, SLOT( setSettingsDirty() ) );
-    
+
     // Get default values
     int scnum = QApplication::desktop()->screenNumber(parentWidget());
     QRect desk = QApplication::desktop()->screenGeometry(scnum);

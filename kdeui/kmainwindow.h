@@ -449,7 +449,7 @@ public:
     /// @since 3.1
     bool isStandardToolBarMenuEnabled() const;
 
-    
+
     /**
      * Sets whether KMainWindow should provide a menu that allows showing/hiding
      * of the statusbar ( using @ref KToggleStatusBarAction ).
@@ -459,9 +459,9 @@ public:
      *
      * Note that you should enable this feature before calling createGUI()
      * ( or similar ).
-     * 
+     *
      * If an application maintains the action on its own (i.e. never calls
-     * this function) a connection needs to be made to let KMainWindow 
+     * this function) a connection needs to be made to let KMainWindow
      * know when that status (hidden/shown) of the statusbar has changed.
      * For example:
      * connect(action, SIGNAL(activated()),
@@ -484,16 +484,21 @@ public:
     virtual void finalizeGUI( KXMLGUIClient *client );
 
     /**
-     * @internal
+     * @internal Remove in KDE 4.0
+     * @deprecated
      */
     void finalizeGUI( bool force );
+    /**
+     * @internal
+     */
+    void finalizeGUI( bool force, KConfig *cnf, const QString& configGroup = QString::null );
 
     /**
      * @return true if a -geometry argument was given on the command line,
      * and this is the first window created (the one on which this option applies)
      */
     bool initialGeometrySet() const;
-    
+
     /**
      * @internal
      * Used from Konqueror when reusing the main window.
@@ -608,7 +613,7 @@ protected:
      * @ref queryExit() running.
      */
     virtual void closeEvent ( QCloseEvent *);
-    
+
     // KDE4 This seems to be flawed to me. Either the app has only one
     // mainwindow, so queryClose() is enough, or if it can have more of them,
     // then the windows should take care of themselves, and queryExit()
