@@ -29,7 +29,6 @@
 #include <kdebug.h>
 #include <kdatepicker.h>
 #include <qpushbutton.h>
-#include <qdatetime.h>
 #include <knuminput.h>
 
 

@@ -35,7 +35,6 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <ksslall.h>
-#include <qcstring.h>
 
 
 KCertExport::KCertExport(QWidget *parent, const char *name) 
