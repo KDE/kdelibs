@@ -37,7 +37,7 @@ pics_DATA = aboutkde.png
 
 include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kpopmenu.h \
-		ktabctl.h kstatusbar.h \
+		ktabctl.h kstatusbar.h kimageeffect.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klined.h \
 		krestrictedline.h kcolorbtn.h kiconloaderdialog.h \
@@ -58,7 +58,7 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 # the order is predictated by the use of X11 header files
 libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kiconloaderdialog.cpp ktablistbox.cpp ktoolbar.cpp \
-		klined.cpp kprogress.cpp \
+		klined.cpp kprogress.cpp kimageeffect.cpp \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kpopmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktmainwindow.cpp \
