@@ -1,5 +1,17 @@
-Within KDE the following conventions are used for DSOs 
-(Dynamic Shared Objects):
+This document describes the naming convention for the various kinds 
+of DSOs (Dynamic Shared Objects).
+
+NOTE: Files of the format xxxx.la are libtool files that describe the
+actual DSO. The DSO itself is usually named xxxx.so or libxxxx.so.
+Some platforms require that the name of a DSO starts with "lib". On
+those platforms xxxx.la and libxxxx.la both generate DSOs with the
+same name "libxxxx.so". Since this leads to problems you should never
+use both "xxxx.la" and "libxxxx.la" as names for DSOs!! 
+
+*** Since <appname>.la is reserved for KDEInit loadable modules, it is 
+*** strongly recommended NEVER to use lib<appname>.la as the name of a 
+*** library.
+
 
 KDEInit Loadable Modules
 ========================
