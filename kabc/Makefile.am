@@ -28,11 +28,16 @@ kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kab2kabc_LDADD = libkabc.la ../kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
 
-check_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb kabcargl
+check_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
+  testaddressee kabcargl
 
 testkabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testkabc_LDADD = libkabc.la
 testkabc_SOURCES = testkabc.cpp
+
+testaddressee_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+testaddressee_LDADD = libkabc.la
+testaddressee_SOURCES = testaddressee.cpp
 
 testkabcdlg_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testkabcdlg_LDADD = libkabc.la
