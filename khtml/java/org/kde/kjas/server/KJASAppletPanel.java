@@ -19,7 +19,6 @@ import java.net.URL;
  */
 public class KJASAppletPanel extends javax.swing.JPanel implements StatusListener {
 
-	private Dimension size;
 	private Image img = null;
 	private boolean showStatusFlag = true;
 	private Font font;
@@ -28,26 +27,13 @@ public class KJASAppletPanel extends javax.swing.JPanel implements StatusListene
 	/**
 	 * Constructor for KJASAppletPanel.
 	 */
-	public KJASAppletPanel(Dimension _size) {
+	public KJASAppletPanel() {
 		super(new BorderLayout());
-		size = _size;
 		font = new Font("SansSerif", Font.PLAIN, 10);
 		URL url =
 			getClass().getClassLoader().getResource("images/animbean.gif");
 		img = getToolkit().createImage(url);
 		//setBackground(Color.white);
-	}
-
-	void setAppletSize(Dimension _size) {
-		size = _size;
-	}
-
-	public Dimension getPreferredSize() {
-		return size;
-	}
-
-	public Dimension getMinimumSize() {
-		return size;
 	}
 
 	void setApplet(Applet applet) {

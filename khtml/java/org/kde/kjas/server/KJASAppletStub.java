@@ -127,7 +127,7 @@ public final class KJASAppletStub
     }
     
     void createApplet() {
-        panel = new KJASAppletPanel( appletSize );
+        panel = new KJASAppletPanel();
         frame = new JFrame(windowName);
         // under certain circumstances, it may happen that the
         // applet is not embedded but shown in a separate window.
@@ -195,7 +195,7 @@ public final class KJASAppletStub
                 app.setVisible(false);
                 panel.setApplet( app );
                 
-                app.setSize(appletSize);
+                app.setSize(panel.getSize());
                                 
                 context.showStatus("Initializing Applet " + appletName + " ...");
                 
@@ -218,8 +218,7 @@ public final class KJASAppletStub
                 stateChange(INITIALIZED);
                 loader.removeStatusListener(panel);
                 app.setVisible(true);
-                app.setSize(appletSize);                
-                app.validate();
+                panel.validate();
                
                 context.showStatus("Starting Applet " + appletName + " ...");
                 // stop the loading... animation 
@@ -334,10 +333,6 @@ public final class KJASAppletStub
             return app;
     }
 
-    Dimension getAppletSize()
-    {
-        return appletSize;
-    }
     /**
     * get a parameter value given in the &lt;APPLET&gt; tag 
     * @param name the name of the parameter
@@ -377,7 +372,6 @@ public final class KJASAppletStub
                 Main.debug( "Applet #" + appletID + ": appletResize to : (" + width + ", " + height + ")" );
                 Main.protocol.sendResizeAppletCmd( context.getID(), appletID, width, height );
                 appletSize = new Dimension( width, height );
-                panel.setAppletSize( appletSize );
                 //pack();
             }
         }
