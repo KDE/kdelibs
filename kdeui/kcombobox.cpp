@@ -167,8 +167,10 @@ void KComboBox::makeCompletion( const QString& text )
         // If no match or the same text, simply return without completing.
         if( match.isNull() || match == text )
         {
- 	    if ( d->completionBox && match.isNull() )
+ 	    if ( d->completionBox && match.isNull() ) {
  		d->completionBox->clear();
+ 		d->completionBox->hide();
+	    }
 
 	    // Put the cursor at the end when in semi-automatic
 	    // mode and completion is invoked with the same text.
@@ -419,7 +421,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 	
 	    int k = e->key();
 	    if ( d->completionBox && d->completionBox->isVisible() ) {
-		if ( k == Key_Tab || k == Key_Down || k == Key_Up )
+		if ( k == Key_Tab || k == Key_Down )
 		    //	      e->state() & NoButton) )
 		{
 		    d->completionBox->setActiveWindow();
@@ -516,10 +518,13 @@ void KComboBox::setCompletedItems( const QStringList& items )
 	    d->completionBox->popup( this );
 	    setFocus(); // let the user keep on typing
 	}
+	else
+	    d->completionBox->hide();
     }
 
-    else { // fallback
-	setCompletedText( items.first() );
+    else {
+	if ( !items.isEmpty() ) // fallback
+	    setCompletedText( items.first() );
     }
 }
 

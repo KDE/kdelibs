@@ -20,6 +20,7 @@
 
 
 #include "kcompletionbox.h"
+#include <qapplication.h>
 
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
@@ -41,7 +42,7 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
 
     // highlight on mouseover
     connect( this, SIGNAL( onItem( QListBoxItem * )),
-	     SLOT( slotSetCurrentItem( QListBoxItem * )));
+ 	     SLOT( slotSetCurrentItem( QListBoxItem * )));
 
     installEventFilter( this );
 }
@@ -72,23 +73,35 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
 
+    // hide on keypresses on any other widgets besides our children
+    if ( o != this ) {
+	if ( type == QEvent::MouseButtonPress && o->isWidgetType() ) {
+	    QWidget *w = static_cast<QWidget *>( o );
+	    if ( w->topLevelWidget() != this ) {
+		hide();
+		return true;
+	    }
+	}
+	return KListBox::eventFilter( o, e );
+    }
+    
     switch( type ) {
-     case QEvent::MouseButtonPress:
- 	hide();
- 	break;
     case QEvent::Show:
-	grabMouse();
+	qApp->installEventFilter( this );
 	break;
     case QEvent::Hide:
-	releaseMouse();
+	qApp->removeEventFilter( this );
 	revertFocus();
 	break;
     case QEvent::KeyPress: {
  	QKeyEvent *ev = static_cast<QKeyEvent *>( e );
- 	if ( ev->key() == Key_Escape )
+ 	if ( ev->key() == Key_Escape ) {
  	    hide();
+	    return true;
+	}
 	else if ( ev->key() == Key_Up && currentItem() == 0 ) {
 	    revertFocus();
+	    return true;
 	}
 
 	break;
@@ -103,11 +116,24 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
 void KCompletionBox::popup( QWidget *relativeWidget )
 {
+    if ( count() == 0 ) {
+	hide();
+	return;
+    }
+
     QSize s = sizeHint();
-    resize( QMAX(s.width(), relativeWidget->width()), s.height() );
+    int ih = itemHeight();
+    int h = QMIN( 10 * ih, (int) count() * ih ) +1;
+    h = QMAX( h, minimumSizeHint().height() );
+    
+    resize( QMAX(s.width(), relativeWidget->width()), h );
     move( relativeWidget->mapToGlobal( QPoint(0, relativeWidget->height())) );
+
+    ensureCurrentVisible();
+    
     raise();
     show();
+    releaseKeyboard();
 }
 
 void KCompletionBox::revertFocus()

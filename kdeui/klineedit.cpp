@@ -4,6 +4,7 @@
    Copyright (c) 1999 Patrick Ward <PAT_WARD@HP-USA-om5.om.hp.com>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
+   Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -148,8 +149,10 @@ void KLineEdit::makeCompletion( const QString& text )
     KGlobalSettings::Completion mode = completionMode();
     if( match.isNull() || match == text )
     {
- 	if ( compPopup && match.isNull() )
+ 	if ( compPopup && match.isNull() ) {
  	    d->completionBox->clear();
+ 	    d->completionBox->hide();
+	}
 	
     	// Put the cursor at the end when in semi-automatic
 	// mode and completion is invoked with the same text.
@@ -343,7 +346,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 	
 	    int k = e->key();
 	    if ( d->completionBox && d->completionBox->isVisible() ) {
-		if ( k == Key_Tab || k == Key_Down || k == Key_Up )
+		if ( k == Key_Tab || k == Key_Down )
 		    //	      e->state() & NoButton) )
 		{
 		    d->completionBox->setActiveWindow();
@@ -414,15 +417,17 @@ void KLineEdit::setCompletedItems( const QStringList& items )
 	
 	d->completionBox->clear();
 	
-	if ( items.count() > 0 ) {
+	if ( !items.isEmpty() ) {
 	    d->completionBox->insertStringList( items );
 	    d->completionBox->popup( this );
+	    setFocus(); // let the user keep on typing
 	}
- 	setFocus(); // let the user keep on typing
+	else
+	    d->completionBox->hide();
     }
 
-    else { // fallback
-	if ( !items.isEmpty() )
+    else {
+	if ( !items.isEmpty() ) // fallback
 	    setCompletedText( items.first() );
     }
 }
