@@ -25,7 +25,6 @@ class QPoint;
 class QAction : public QObject
 {
     Q_OBJECT
-    Q_BUILDER( "A user action", "" )
 public:
     QAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
     QAction( const QString& text, int accel,
@@ -59,7 +58,6 @@ public:
     virtual QObject* component();
     virtual void setComponent( QObject* );
 
-q_properties:
     virtual void setText( const QString& text );
     virtual QString text() const;
 
@@ -84,7 +82,7 @@ q_properties:
 protected slots:
     virtual void slotDestroyed();
     virtual void slotActivated();
-    
+
 protected:
     QToolBar* toolBar( int index );
     QPopupMenu* popupMenu( int index );
@@ -102,7 +100,7 @@ protected:
     virtual void setText( int id, const QString& text );
     virtual void setIconSet( int id, const QIconSet& iconset );
     virtual void setWhatsThis( int id, const QString& text );
-    
+
 signals:
     void activated();
     void enabled( bool );
@@ -137,7 +135,6 @@ private:
 class QActionSeparator : public QAction
 {
     Q_OBJECT
-    Q_BUILDER( "", "" )
 public:
     QActionSeparator( QObject* parent = 0, const char* name = 0 );
     ~QActionSeparator();
@@ -149,7 +146,6 @@ public:
 class QActionMenu : public QAction
 {
     Q_OBJECT
-    Q_BUILDER( "A user action menu", "" )
 public:
     QActionMenu( const QString& text, QObject* parent = 0, const char* name = 0 );
     QActionMenu( const QString& text, const QIconSet& icon, QObject* parent = 0, const char* name = 0 );
@@ -194,7 +190,7 @@ public:
 
 protected:
     virtual void setChecked( int id, bool checked );
-    
+
 protected slots:
     void slotActivated();
 
@@ -307,7 +303,6 @@ private:
 class QActionCollection : public QObject
 {
     Q_OBJECT
-    Q_BUILDER( "A collection for actions", "" )
 public:
     QActionCollection( QObject* parent = 0, const char* name = 0 );
     ~QActionCollection();
@@ -341,7 +336,6 @@ private:
 class QActionWidget : public QWidget
 {
     Q_OBJECT
-    Q_BUILDER( "A widget for selecting actions", "" )
 public:
     QActionWidget( QWidget* parent = 0, const char* name = 0 );
     QActionWidget( QActionCollection*, QWidget* parent = 0, const char* name = 0 );

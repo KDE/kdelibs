@@ -14,6 +14,7 @@
 class QWidget;
 class QLayout;
 class QIODevice;
+class QTextStream;
 
 class QDOM_DocumentPrivate;
 class QDOM_DocumentTypePrivate;
@@ -33,7 +34,6 @@ class QDOM_CommentPrivate;
 class QDOM_CDATASectionPrivate;
 class QDOM_NamedNodeMapPrivate;
 class QDOM_ImplementationPrivate;
-class QTextStream;
 
 class QDomNodeList;
 class QDomElement;
@@ -66,6 +66,8 @@ public:
     bool operator!= ( const QDomImplementation& ) const;
 
     virtual bool hasFeature( const QString& feature, const QString& version );
+
+    bool isNull();
 
 private:
     QDomImplementation( QDOM_ImplementationPrivate* );
@@ -405,6 +407,7 @@ public:
     QPen toPen() const;
     QSize toSize() const;
     QPoint toPoint() const;
+#if 0
     QObject* toObject( QObject* parent = 0 ) const;
     QWidget* toWidget( QWidget* parent = 0 ) const;
     QLayout* toLayout( QWidget* parent ) const;
@@ -412,7 +415,7 @@ public:
 
     QVariant property( const QString& name, QVariant::Type ) const;
     void setProperty( const QString& name, const QVariant& prop );
-
+#endif
     QString text() const;
 
 private:

@@ -89,6 +89,12 @@ QXMLSimpleParser::~QXMLSimpleParser()
   delete d;
 }
 
+/*!
+  Processes an external parameter-entity. It first queries the consumer to see wether this
+  is ok.
+  
+  TODO: Get the parameter entities content ....
+*/
 bool QXMLSimpleParser::parameterEntity( const QString& name, const QString& publicId, const QString& systemId )
 {
   if ( d->consumer )
@@ -104,6 +110,11 @@ bool QXMLSimpleParser::parameterEntity( const QString& name, const QString& publ
   return TRUE;
 }
 
+/*!
+  Process an internal parameter-entity. It replaces all character references and all
+  parameter-entity references in \e value while creating the replacement text.
+  The replacement text is finally stored in the parsers internal data structure.
+*/
 bool QXMLSimpleParser::parameterEntity( const QString& name, const QString& value )
 {
   QString repl;
@@ -122,6 +133,10 @@ bool QXMLSimpleParser::parameterEntity( const QString& name, const QString& valu
   return TRUE;
 }
 
+/*!
+  This is called from within the parser if there is a %paramentity; somewhere.
+  It puts the replacement text in \e value.
+*/
 bool QXMLSimpleParser::paramEntityValue( const QString& name, QString* value )
 {
   QMap<QString,QXMLSimpleParserPrivate::ExternParamEntity>::Iterator it = d->externParamEntities.find( name );
@@ -207,6 +222,10 @@ bool QXMLSimpleParser::entityValue( const QString& name, QString* value )
   return TRUE;
 }
 
+/*!
+  Replaces all character references in \e and puts the result in \e text.
+  #### TODO Replace parameter-entities, too!
+*/
 bool QXMLSimpleParser::replaceCharRefs( const QString& x, QString* text )
 {
   *text = x;
@@ -255,6 +274,29 @@ bool QXMLSimpleParser::replaceCharRefs( const QString& x, QString* text )
       else
 	continue;
       text->replace( begin, pos - begin, value );
+      // Do not reparse!
+      pos = begin + value.length();
+    }
+    else if ( (*text)[pos] == '%' )
+    {
+      int begin = pos++;
+      int start = pos;
+
+      while( pos < len && (*text)[pos] != ';' )
+	++pos;
+      if ( pos == len )
+	return FALSE;
+      QString entity = text->mid( start, pos - start );
+      if ( entity.isEmpty() )
+	return FALSE;
+      ++pos;
+      
+      QString value;
+      if ( !paramEntityValue( entity, &value ) )
+	  return FALSE;
+
+      text->replace( begin, pos - begin, value );
+      // Do not reparse!
       pos = begin + value.length();
     }
     else
@@ -262,6 +304,97 @@ bool QXMLSimpleParser::replaceCharRefs( const QString& x, QString* text )
   }
 
   return TRUE;
+}
+
+/*!
+  Replaces character entities and intern/extern entities in the text
+  of an attribute.
+  
+  Returns -1 on success or the error position.
+*/
+int QXMLSimpleParser::replaceEntities( QString& text )
+{
+    int len = text.length();
+    int pos = 0;
+    while( pos < len )
+    {
+	if ( text[pos] == '&' )
+        {
+	    int begin = pos;
+	    ++pos;
+
+	    while( pos < len && text[pos] != ';' )
+		++pos;
+	    if ( pos == len )
+		return pos;
+
+	    bool simple_entity = TRUE;
+
+	    QString entity = text.mid( begin + 1, pos - begin - 1 );
+	    if ( entity.isEmpty() )
+		return pos;
+	    QString value;
+
+	    // Test for simple entities
+	    if ( entity == "amp" )
+		value = "&";
+	    else if ( entity == "lt" )
+		value = "<";
+	    else if ( entity == "gt" )
+		value = ">";
+	    else if ( entity == "quot" )
+		value = "\"";
+	    else if ( entity == "apos" )
+		value = "'";
+	    else if ( entity.length() >= 2 && entity[0] == '#' && entity[1] == 'x' )
+	    {
+		if ( entity.length() < 3 )
+		    return pos;
+		QString tmp = entity.mid( 2 );
+		bool ok;
+		uint i = tmp.toUInt( &ok, 16 );
+		if ( !ok )
+		    return pos;
+		value = QString( QChar( i ) );
+	    }
+	    else if ( entity[0] == '#' )
+	    {
+		if ( entity.length() < 2 )
+		    return pos;
+		QString tmp = entity.mid( 1 );
+		bool ok;
+		uint i = tmp.toUInt( &ok );
+		if ( !ok )
+		    return pos;
+		value = QString( QChar( i ) );
+	    }
+	    else
+	    {
+		// We will replace the &xxxxx; construct with
+		// the entities value and parse the replaced text, too.
+		// That is not the case for simple entities like &lt;
+		simple_entity = FALSE;
+		// This is a custom entity. The application has to know about ...
+		if ( !entityValue( entity, &value ) )
+		    return pos;
+	    }
+
+	    // Replace the &xxxxx; construct with the entities value
+	    ++pos;
+	    text.replace( begin, pos - begin, value );
+	    len += value.length();
+	    len -= ( pos - begin );
+	    pos = begin;
+
+	    // Skip replacement of simple entities like &lt;
+	    if ( simple_entity )
+		pos += value.length();
+	}
+	else
+	    ++pos;
+    }
+    
+    return -1;
 }
 
 /*!
@@ -276,6 +409,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
   // Remember the consumer
   d->consumer = consumer;
 
+  int errline = 1;
   int len = text.length();
   int pos = 0;
   int start = 0;
@@ -290,7 +424,8 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
   int include_counter = 0;
   int ignore_counter = 0;
   Type type;
-
+  int i;
+  
  Node1: // accepts
   if ( pos == len )
     goto Ok;
@@ -299,7 +434,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     pos++;
     goto Node2;
   }
-  start = pos++;
+  start = pos;
   goto Node20;
  Node2: // Tag
   if ( pos + 3 <= len && text[pos] == '!' && text[pos+1] == '-' && text[pos+2] == '-' )
@@ -359,7 +494,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
  Node4:
   if ( pos == len )
     goto Failed;
-  else if ( text[pos].isLetter() || text[pos] == '_' || text[pos] == ':' || text[pos] == '.' || text[pos] == '-' )
+  else if ( text[pos].isDigit() || text[pos].isLetter() || text[pos] == '_' || text[pos] == ':' || text[pos] == '.' || text[pos] == '-' )
   {
     ++pos;
     goto Node4;
@@ -477,7 +612,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     ++pos;
     goto Node7;
   }
-  else if ( text[pos].isLetter() || text[pos] == '_' || text[pos] == ':' || text[pos] == '.' || text[pos] == '-' )
+  else if ( text[pos].isDigit() || text[pos].isLetter() || text[pos] == '_' || text[pos] == ':' || text[pos] == '.' || text[pos] == '-' )
   {
     ++pos;
     goto Node6;
@@ -513,8 +648,9 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     ++pos;
     goto Node10;
   }
-  else if ( text[pos] == '"' )
+  else if ( text[pos] == '"' || text[pos] == '\'' )
   {
+    quote = text[pos];
     ++pos;
     goto Node9;
   }
@@ -524,14 +660,21 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
   if ( pos == len )
     goto Failed;
   start = pos;
-  if ( text[pos] == '"' )
+  if ( text[pos] == quote )
   {
     if ( consumer )
+      // The attribute we pass here is always empty.
       if ( !consumer->attrib( attrib, text.mid( start, pos - start ) ) )
 	return pos;
 
     pos++;
     goto Node12;
+  }
+  // XML spec does not allow that inside of
+  // an attributes value.
+  else if ( text[pos] == '<' )
+  {
+      goto Failed;
   }
   else
   {
@@ -546,8 +689,9 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     ++pos;
     goto Node10;
   }
-  else if ( text[pos] == '"' )
+  else if ( text[pos] == '"' || text[pos] == '\'' )
   {
+    quote = text[pos];
     ++pos;
     goto Node9;
   }
@@ -556,14 +700,22 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
  Node11:
   if ( pos == len )
     goto Failed;
-  else if ( text[pos] == '"' )
+  else if ( text[pos] == quote )
   {
-    if ( consumer )
-      if ( !consumer->attrib( attrib, text.mid( start, pos - start ) ) )
-	return pos;
-
-    pos++;
-    goto Node12;
+      // Replace the entities in the attributes, for example:
+      // "0 &lt; 2 is &ok;" -> "0 < 2 is Correct"
+      QString a = text.mid( start, pos - start );
+      int epos = replaceEntities( a );
+      if ( epos != -1 )
+      {
+	  pos += epos;
+	  goto Failed;
+      }
+      if ( consumer ) 
+	  if ( !consumer->attrib( attrib, a ) )
+	      return pos;
+      pos++;
+      goto Node12;
   }
   else
   {
@@ -656,37 +808,6 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     }
     goto Ok;
   }
-  else if ( pos + 7 < len && text[pos] == '[' && text[pos+1] == 'C' && text[pos+2] == 'D' && text[pos+3] == 'A' &&
-	    text[pos+4] == 'T' && text[pos+5] == 'A' && text[pos+6] == '[' )
-  {
-    if ( pos != start && consumer )
-    {
-      QString tmp = text.mid( start, pos - start );
-      tmp = tmp.simplifyWhiteSpace();
-      if ( !tmp.isEmpty() )
-	if ( !consumer->text( tmp ) )
-	  return pos;
-    }
-
-    pos += 7;
-    start = pos;
-    while( pos + 2 <= len && ( text[pos] != ']' || text[pos+1] != ']' ) )
-      ++pos;
-    if ( pos + 2 > len )
-      goto Failed;
-
-    if ( pos != start && consumer )
-    {
-      QString tmp = text.mid( start, pos - start );
-      if ( !tmp.isEmpty() )
-	if ( !consumer->text( tmp ) )
-	  return pos;
-    }
-
-    pos += 2;
-    start = pos;
-    goto Node20;
-  }
   else if ( text[pos] == '&' )
   {
     int begin = pos;
@@ -740,7 +861,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     else
     {
       // We will replace the &xxxxx; construct with
-      // the entities value and parse the replaces text, too.
+      // the entities value and parse the replaced text, too.
       // That is not the case for simple entities like &lt;
       simple_entity = FALSE;
       // This is a custom entity. The application has to know about ...
@@ -830,7 +951,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
  Node41:
   if ( pos == len )
     goto Failed;
-  if ( text[pos].isLetter() || text[pos] == '_' || text[pos] == ':' || text[pos] == '.' || text[pos] == '-' )
+  if ( text[pos].isDigit() || text[pos].isLetter() || text[pos] == '_' || text[pos] == ':' || text[pos] == '.' || text[pos] == '-' )
   {
     pos++;
     goto Node41;
@@ -881,7 +1002,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     goto Node1;
   }
   goto Failed;
- Node50: // Doctype
+ Node50: // Doctype and CDATA
   if ( pos == len )
     goto Failed;
   if ( pos + 7 < len && text[pos] == 'D' && text[pos+1] == 'O' && text[pos+2] == 'C' && text[pos+3] == 'T' &&
@@ -890,6 +1011,28 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     pos += 7;
     goto Node51;
   }
+  else if ( pos + 7 < len && text[pos] == '[' && text[pos+1] == 'C' && text[pos+2] == 'D' && text[pos+3] == 'A' &&
+	    text[pos+4] == 'T' && text[pos+5] == 'A' && text[pos+6] == '[' )
+  {
+    pos += 7;
+    start = pos;
+    while( pos + 3 <= len && ( text[pos] != ']' || text[pos+1] != ']' || text[pos+2] != '>' ) )
+      ++pos;
+    if ( pos + 3 > len )
+      goto Failed;
+
+    if ( pos != start && consumer )
+    {
+      QString tmp = text.mid( start, pos - start );
+      if ( !tmp.isEmpty() )
+	if ( !consumer->text( tmp ) )
+	  return pos;
+    }
+
+    pos += 3;
+    goto Node1;
+  }
+
   goto Failed;
  Node51:
   if ( pos == len )
@@ -933,7 +1076,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
     ++pos;
     goto Node54;
   }
-  if ( text[pos].isLetter() || text[pos] == ':' || text[pos] == '_' || text[pos] == '-' || text[pos] == '.' )
+  if ( text[pos].isDigit() || text[pos].isLetter() || text[pos] == ':' || text[pos] == '_' || text[pos] == '-' || text[pos] == '.' )
   {
     ++pos;
     goto Node53;
@@ -1478,7 +1621,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
  Node94:
   if ( pos == len )
     goto Failed;
-  if ( text[pos].isLetter() || text[pos] == ':' || text[pos] == '_' || text[pos] == '-' || text[pos] == '.' )
+  if ( text[pos].isDigit() || text[pos].isLetter() || text[pos] == ':' || text[pos] == '_' || text[pos] == '-' || text[pos] == '.' )
   {
     ++pos;
     goto Node94;
@@ -1525,7 +1668,7 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
  Node100: // Value entity
   if ( pos == len )
     goto Failed;
-  if ( text[pos].isLetter() || text[pos] == ':' || text[pos] == '_' || text[pos] == '-' || text[pos] == '.' )
+  if ( text[pos].isDigit() || text[pos].isLetter() || text[pos] == ':' || text[pos] == '_' || text[pos] == '-' || text[pos] == '.' )
   {
     ++pos;
     goto Node100;
@@ -1678,7 +1821,17 @@ int QXMLSimpleParser::parse( QString text, QXMLConsumer* consumer )
       return pos;
   return -1;
  Failed:
-  if ( consumer )
-    consumer->parseError( pos );
-  return pos;
+  {
+      int linestart = 0;
+      for( i = 0; i < pos; ++i )
+	  if ( text[i] == '\n' )
+          {
+	      errline++;
+	      linestart = i + 1;
+	  }
+
+      if ( consumer )
+	  consumer->parseError( pos, errline, pos - linestart );
+      return pos;
+  }
 }
