@@ -293,8 +293,10 @@ const char * MidiOut::deviceName(void) const
 
 void MidiOut::sync(int i)
 {
-  if (deviceType()==KMID_ALSA)  // XXX : sync should be virtual after next bic
+  if (deviceType()==KMID_ALSA) { // XXX : sync should be virtual after next bic
      reinterpret_cast<AlsaOut *>(this)->sync(i);
+     return;
+  }
   SEQ_DUMPBUF();
   printf("MidiOut::sync\n");
 }
