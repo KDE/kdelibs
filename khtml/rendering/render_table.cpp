@@ -665,22 +665,22 @@ void RenderTable::calcColMinMax()
     colMaxWidth.fill(0);		
 
     int availableWidth = containingBlockWidth();
-    
+
     int margin=0;
-        
+
     Length ml = style()->marginLeft();
     Length mr = style()->marginRight();
     if (ml.type==Fixed && mr.type==Fixed)
     {
-        margin = mr.value + ml.value; 
+        margin = mr.value + ml.value;
     }
     else if (ml.type == Fixed)
-        margin = ml.value;            
+        margin = ml.value;
     else if (mr.type == Fixed)
         margin = mr.value;
 
     if (margin<0) margin=0;
-    
+
     availableWidth -= margin;
     // PHASE 2, calculate simple minimums and maximums
 
@@ -851,25 +851,25 @@ void RenderTable::calcColMinMax()
     m_maxWidth += borderLeft() + borderRight();
     m_width += borderLeft() + borderRight();
 
-/*    kdDebug( 6040 ) << "TABLE width=" << m_width << 
+/*    kdDebug( 6040 ) << "TABLE width=" << m_width <<
                 " TABLE m_minWidth=" << m_minWidth <<
                 " TABLE m_maxWidth=" << m_maxWidth << endl;*/
-      
+
 
 //    setMinMaxKnown(true);
 
 
-    
+
     // ### HACK, implement anonymous table box
-    // ### copied from renderbox    
+    // ### copied from renderbox
 
     int cw = containingBlockWidth();
-    
+
     m_marginRight=0;
     m_marginLeft=0;
-    
+
     calcHorizontalMargins(ml,mr,cw);
-    
+
 
 }
 
@@ -877,9 +877,9 @@ void RenderTable::calcWidth()
 {
     Length ml = m_style->marginLeft();
     Length mr = m_style->marginRight();
-    int cw = containingBlockWidth();    
+    int cw = containingBlockWidth();
     m_marginLeft = ml.minWidth(cw);
-    m_marginRight = mr.minWidth(cw);    
+    m_marginRight = mr.minWidth(cw);
 }
 
 void RenderTable::calcColWidth(void)
@@ -900,7 +900,7 @@ void RenderTable::calcColWidth(void)
      */
 
     calcColMinMax();
-    
+
     /*
      * Set actColWidth[] to column minimums, it will
      * grow from there.
@@ -1262,9 +1262,13 @@ void RenderTable::layout(bool deep)
 
     m_height += rowHeights[totalRows];
     m_height += borderBottom();
-    
+
+    //kdDebug(0) << "table height: " << m_height << endl;
+
     calcHeight();
 
+    //kdDebug(0) << "table height: " << m_height << endl;
+    
     setLayouted();
 
 }
@@ -1623,7 +1627,7 @@ void RenderTableCell::calcMinMaxWidth()
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
 
-    RenderFlow::calcMinMaxWidth();    
+    RenderFlow::calcMinMaxWidth();
 
     if(nWrap && m_style->width().type!=Fixed) m_minWidth = m_maxWidth;
 
