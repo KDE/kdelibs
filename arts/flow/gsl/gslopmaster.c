@@ -25,6 +25,7 @@
 #include <string.h>
 #include <sys/poll.h>
 #include <sys/time.h>
+#include <fcntl.h>
 #include <errno.h>
 
 
