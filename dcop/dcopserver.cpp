@@ -27,6 +27,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#if (defined(__unix__) || defined(unix)) && !defined(USG)
+#ifdef __FreeBSD__
+#define HAS_MKSTEMP
+#endif
+#include <sys/param.h>
+#endif
 
 #include <qfile.h>
 #include <qtextstream.h>
