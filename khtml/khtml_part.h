@@ -580,7 +580,7 @@ public:
 
 signals:
   /**
-   * Eemitted if the cursor is moved over an URL.
+   * Emitted if the cursor is moved over an URL.
    */
   void onURL( const QString &url );
 

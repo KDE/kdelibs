@@ -1729,6 +1729,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
         else
         if ((*it).startsWith("bcc="))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
+      mailtoMsg = "<img src=" + locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")) + "> " + mailtoMsg;
       emit setStatusBarText(mailtoMsg);
 
     } else
@@ -1742,8 +1743,11 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
         DOM::Node hreflangNode = hrefNode.attributes().getNamedItem("HREFLANG");
         if (!hreflangNode.isNull()) {
           QString countryCode = hreflangNode.nodeValue().string().lower();
-          QPixmap flag(locate("locale", QString::fromLatin1("l10n/") + countryCode + QString::fromLatin1("/flag.png")));
-          emit setStatusBarText("[" + countryCode + "] "  + u.prettyURL() + extra);
+          // Map the language code to an appropriate country code.
+          if (countryCode == "en")
+            countryCode = "gb";
+          QString flagImg = "<img src=" + locate("locale", QString::fromLatin1("l10n/") + countryCode + QString::fromLatin1("/flag.png")) + "> ";
+          emit setStatusBarText(flagImg + u.prettyURL() + extra);
         } else
         emit setStatusBarText(u.prettyURL() + extra);
       } else
