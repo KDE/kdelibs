@@ -474,10 +474,10 @@ bool probably_slow_mounted(const QString& filename)
     memset(realname, 0, MAXPATHLEN);
 
     /* If the path contains symlinks, get the real name */
-    if (realpath(filename.ascii(), realname) == NULL) {
+    if (realpath(QFile::encodeName(filename), realname) == NULL) {
 	if (filename.length() >= sizeof(realname))
 	    return false;
-	strcpy(realname, filename.ascii());
+	strcpy(realname, QFile::encodeName(filename));
     }
 
     /* Get the list of mounted file systems */

@@ -23,6 +23,6 @@
 int KDirNotify::s_serial = 0;
 
 KDirNotify::KDirNotify()
-  :  DCOPObject( QString("KDirNotify-%1").arg(++s_serial).latin1() )
+  :  DCOPObject( QCString().sprintf("KDirNotify-%d", ++s_serial) )
 {
 }

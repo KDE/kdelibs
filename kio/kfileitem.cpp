@@ -279,7 +279,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
   QPixmap p = m_pMimeType->pixmap( m_url, KIcon::Desktop, _size, _state );
   if (p.isNull())
-    qWarning("Pixmap not found for mimetype %s",m_pMimeType->name().latin1());
+    kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
   return p;
 }
 

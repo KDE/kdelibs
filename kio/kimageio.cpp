@@ -25,6 +25,7 @@
 #include <kmimetype.h>
 #include <ksycocaentry.h>
 #include <ksycoca.h>
+#include <kdebug.h>
 
 #include <qimage.h>
 
@@ -96,8 +97,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
       lt_dlhandle libhandle = lt_dlopen(mLib.ascii());
       if (libhandle == 0) {
          iio->setStatus(1); // error
-         qWarning("KImageIOFormat::callLibFunc: couldn't dlopen %s (%s)",
-			mLib.ascii(), lt_dlerror());
+         kdDebug() << "KImageIOFormat::callLibFunc: couldn't dlopen " << mLib << "(" << lt_dlerror() << ")" << endl;
          return;
       }
       bLibLoaded = true;
@@ -109,7 +109,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
 
          if (func == NULL) {
             iio->setStatus(1); // error
-            qWarning("couln't find %s (%s)", funcName.ascii(), lt_dlerror());
+            kdWarning() << "couln't find " << funcName << " (" << lt_dlerror() << ")" << endl;
          }
          mReadFunc = (void (*)(QImageIO *))func;
       }
@@ -120,7 +120,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
 
          if (func == NULL) {
             iio->setStatus(1); // error
-            qWarning("couln't find %s (%s)", funcName.ascii(), lt_dlerror());
+            kdWarning() << "couln't find " << funcName << " (" << lt_dlerror() << ")" << endl;
          }
          mWriteFunc = (void (*)(QImageIO *))func;
       }

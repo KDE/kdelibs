@@ -413,16 +413,16 @@ void KTarBase::fillBuffer( char * buffer,
   strcpy( buffer + 0x74, "   144 ");
 
   // size
-  QString s;
-  s.setNum( size, 8 );
+  QCString s;
+  s.sprintf("%o", size); // OCT
   s = s.rightJustify( 11, ' ' );
-  strcpy( buffer + 0x7c, s.latin1() );
+  strcpy( buffer + 0x7c, s.data() );
   buffer[ 0x87 ] = ' '; // space-terminate (no null after)
 
   // Dummy time
-  s.setNum( time( 0 ), 8 );
+  s.sprintf("%o", time( 0 ) ); // OCT
   s = s.rightJustify( 11, ' ' );
-  strcpy( buffer + 0x88, s.latin1() );
+  strcpy( buffer + 0x88, s.data() );
   buffer[ 0x93 ] = ' '; // space-terminate (no null after)
 
   // spaces, replaced by the check sum later
@@ -457,9 +457,9 @@ void KTarBase::fillBuffer( char * buffer,
   int check = 32;
   for( uint j = 0; j < 0x200; ++j )
     check += buffer[j];
-  s.setNum( check, 8 );
+  s.sprintf("%o", check ); // OCT
   s = s.rightJustify( 7, ' ' );
-  strcpy( buffer + 0x94, s.latin1() );
+  strcpy( buffer + 0x94, s.data() );
 }
 
 ////////////////////////////////////////////////////////////////////////

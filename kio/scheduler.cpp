@@ -305,7 +305,7 @@ void Scheduler::slotSlaveStatus(pid_t pid, const QCString &protocol, const QStri
     Slave *slave = (Slave*)sender();
     kdDebug(7006) << "Slave = " << slave << " (PID = " << pid
                   << ") protocol = " << protocol.data() << " host = "
-                  << ( host.ascii() ? host.ascii() : "[None]" ) << " "
+                  << ( !host.isNull() ? host : QString::fromLatin1("[None]") ) << " "
                   << ( connected ? "Connected" : "Not connected" ) << endl;
 }
 #else

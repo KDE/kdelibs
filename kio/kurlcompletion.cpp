@@ -117,7 +117,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 	if ( pathPart.isNull() ) pathPart = QString("");
 	if ( filePart.isNull() ) filePart = QString("");
 
-	//kDebugInfo("  path '%s' file '%s'", pathPart.latin1(), filePart.latin1());
+	//kdDebug()"path '" << pathPart << "' file: " << filePart << endl;
 
 	// Check if we have the wanted list job running already
 	//
@@ -126,7 +126,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		&& qstrBeginEq( m_last_file_listed, filePart )
 		&& m_mode == m_last_mode )
 	{
-		//kDebugInfo("KURLCompletion: The wanted list job is already running");
+		//kdDebug() << "KURLCompletion: The wanted list job is already running" << endl;
 
 		// The right list job is already running => just change the
 		// text that will go to KCompletion
@@ -154,7 +154,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		&& filePart[0] == QChar('~') )
 	{
 
-		//kDebugInfo("User name completion : '%s'", filePart.latin1());
+		//kdDebug() << "User name completion: " << filePart << endl;
 	
 		m_prepend = "";
 		m_compl_text = file_hack + filePart;
@@ -207,7 +207,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 	//
 	else if ( m_replace_env && filePart[0] == QChar('$') ) {
 
-		//kDebugInfo("KURLCompletion: env completion (%s)", filePart.latin1());
+		//kdDebug() << "KURLCompletion: env completion: " << filePart << endl;
 
 		m_prepend = "";
 		m_compl_text = file_hack + pathPart + filePart;
@@ -257,12 +257,12 @@ QString KURLCompletion::makeCompletion(const QString &text)
 	//
 	if ( m_compl_text == QString::null ) {
 /*
-		kDebugInfo("0. pathPart = '%s'", pathPart.latin1());
-		kDebugInfo("0. filePart = '%s'", filePart.latin1());
-		kDebugInfo("0. last_path = '%s'", m_last_path_listed.latin1());
-		kDebugInfo("0. last_file = '%s'", m_last_file_listed.latin1());
-		kDebugInfo("0. last_mode = '%d'", m_last_mode);
-		kDebugInfo("0. last_type = '%d'", m_last_compl_type);
+		kdDebug() << "0. pathPart = " << pathPart << endl;
+		kdDebug() << "0. filePart = " << filePart << endl;
+		kdDebug() << "0. last_path = " << m_last_path_listed << endl;
+		kdDebug() << "0. last_file = " << m_last_file_listed << endl;
+		kdDebug() << "0. last_mode = " << m_last_mode << endl;
+		kdDebug() << "0. last_type = " << m_last_compl_type << endl;
 */
 		m_compl_text = file_hack + pathPart + filePart;
 		m_prepend = file_hack + pathPart;
@@ -301,9 +301,9 @@ QString KURLCompletion::makeCompletion(const QString &text)
 			pathPartExpanded = unescape( pathPartExpanded );
 			filePart = unescape( filePart );
 /*			
-			kDebugInfo("1. pathPartExpanded = '%s'", pathPartExpanded.latin1());
-			kDebugInfo("1. pathPart = '%s'", pathPart.latin1());
-			kDebugInfo("1. filePart = '%s'", filePart.latin1());
+			kdDebug() << "1. pathPartExpanded = " << pathPartExpanded << endl;
+			kdDebug() << "1. pathPart = " << pathPart << endl;
+			kdDebug() << "1. filePart = " << filePart << endl;
 */			
 			// Exe completion
 			//
@@ -369,7 +369,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 			for ( QStringList::Iterator it = m_dirs.begin();
 			      it != m_dirs.end(); it++ )
 			{
-				kDebugInfo("  '%s'", (*it).latin1());
+				kdDebug() << *it << endl;
 			}
 */
 			// Return the first match or QString::null (async. completion)
@@ -381,7 +381,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 
 	// Let KCompletion to do the rest of the work...
 	//
-	//kDebugInfo(" makeCompletion(%s) 1", m_compl_text.latin1());
+	//kdDebug() << "makeCompletion(" << m_compl_text << ") 1" << endl;
 	return KCompletion::makeCompletion( m_compl_text );
 }
 
@@ -395,8 +395,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
  */
 void KURLCompletion::postProcessMatch( QString *match )
 {
-	//kDebugInfo("KURLCompletion::postProcessMatch() -- in: '%s'",
-	//	match->latin1());
+	//kdDebug() "KURLCompletion::postProcessMatch() -- in: " << *match << endl;
 
 	if ( *match == QString::null )
 		return;
@@ -406,8 +405,7 @@ void KURLCompletion::postProcessMatch( QString *match )
 	else
 		quoteText( match, false, false ); // quote the whole text
 
-	//kDebugInfo("KURLCompletion::postProcessMatch() -- ut: '%s'",
-	//	match->latin1());
+	//kdDebug() << "KURLCompletion::postProcessMatch() -- ut: " << *match << endl;
 }
 
 void KURLCompletion::postProcessMatches( QStringList *matches )
@@ -506,7 +504,7 @@ void KURLCompletion::list(const QString& dir, const QString& filter,
 	    return;
 	}
 
-	//kDebugInfo("Listing dir: %s  filter = %s", dir.latin1(), filter.latin1());
+	//kdDebug() << "Listing dir: " << dir << "  filter = " << filter << endl;
 	
 	// Loop through all directory entries
 	while ( ( ep = readdir( dp ) ) != 0L ) {
@@ -515,14 +513,14 @@ void KURLCompletion::list(const QString& dir, const QString& filter,
 		
 		QString file = QFile::decodeName( ep->d_name );
 
-		//kDebugInfo("  list: '%s'", file.latin1() );
+		//kdDebug() << "list: " <<  file << endl;
 
 		if ( filter.isEmpty() || file.left(filter.length()) == filter ) {
 			QString full_path = dir + file;
 			
 			struct stat sbuff;
 	
-			//kDebugInfo("  list match: '%s'", full_path.latin1() );
+			//kdDebug() << "list match: " << full_path << endl;
 
 			if ( stat( QFile::encodeName(full_path), &sbuff ) == 0 ) {
 				// Verify executable
@@ -663,7 +661,7 @@ bool KURLCompletion::expandEnv( QString &text )
 		}
 	}
 
-	//kDebugInfo("Environment expanded: %s", text.latin1());
+	//kdDebug() << "Environment expanded: " << text << endl;
 	
 	return expanded;
 }
@@ -769,7 +767,7 @@ QString KURLCompletion::listDirectories()
 		// We won't come to slotIOFinished() for local listing
 		// so call makeCompletion here instead
 		//
-		//kDebugInfo("makeCompletion(%s) 2", m_compl_text.latin1());
+		//kdDebug() << "makeCompletion(" << m_compl_text << ") 2" << endl;
 
 		return KCompletion::makeCompletion( m_compl_text );
 
@@ -791,8 +789,7 @@ QString KURLCompletion::listDirectories()
 
 			m_current_url = new KURL( m_dirs.first() );
 
-			//kDebugInfo("listDirectories() -- dir = '%s'",
-			//	m_current_url->url().latin1());
+			//kdDebug() "listDirectories() -- dir = " << m_current_url->url() << endl;
 		
 			m_list_job = KIO::listDir( (*m_current_url) );
 
@@ -824,7 +821,7 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
     KIO::UDSEntryListConstIterator it = entries.begin();
     KIO::UDSEntryListConstIterator end = entries.end();
 	
-	//kDebugInfo("slotEntries() -- prepend = '%s'", m_prepend.latin1());
+	//kdDebug() << "slotEntries() -- prepend = " << m_prepend << endl;
 
 	// Iterate over all files
 	//
@@ -888,7 +885,7 @@ void KURLCompletion::slotIOFinished( KIO::Job * job )
 	else {
 		m_running = false;
 
-		//kDebugInfo("makeCompletion(%s) 3", m_compl_text.latin1());
+		//kdDebug() << "makeCompletion(" << m_compl_text << ") 3" << endl;
 
 		KCompletion::makeCompletion( m_compl_text );
 	}

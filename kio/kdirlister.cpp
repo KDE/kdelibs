@@ -478,15 +478,12 @@ void KDirLister::setNameFilter(const QString& nameFilter)
 {
     m_lstFilters.clear();
 
-    if ( !nameFilter.isEmpty() ) {
+    QStringList list = QStringList::split(' ', nameFilter);
+
+    for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
+    {
         // Split on white space
-        char *s = qstrdup(nameFilter.latin1());
-        char *g = strtok(s, " ");
-        while (g) {
-            m_lstFilters.append(new QRegExp(QString::fromLatin1(g), false, true ));
-            g = strtok(0, " ");
-        }
-        delete [] s;
+        m_lstFilters.append(new QRegExp(*it, false, true ));
     }
 }
 
