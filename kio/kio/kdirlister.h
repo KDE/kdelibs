@@ -302,6 +302,59 @@ public:
    */
   QWidget *mainWindow();
 
+  /**
+   * Used by @ref items() and @ref itemsForDir() to specify whether you want 
+   * all items for a directory or just the filtered ones.
+   */
+  enum WhichItems
+  {
+      AllItems = 0,
+      FilteredItems = 1
+  };
+
+  /**
+   * Returns the items listed for the current @ref url().
+   * This method will NOT start listing a directory, you should only call
+   * this when receiving the @ref finished() signal.
+   *
+   * The items in the @ref KFileItemList are references to the items used
+   * by KDirLister, so e.g. an item gets destroyed when the @ref deleteItem()
+   * signal is emitted.
+   *
+   * @param which specifies whether the returned list will contain all entries
+   *              or only the ones that passed the @ref nameFilter(),
+   *              @ref mimeFilter(), etc.
+   *              Note that the latter causes iteration over all the items,
+   *              filtering them. If this is too slow for you, use the
+   *              @ref newItems() signal, sending out filtered items in chunks.
+   * @return the items listed for the current @ref url().
+   * @since 3.1
+   */
+  KFileItemList items( WhichItems which = FilteredItems ) const;
+
+  /**
+   * Returns the items listed for the given @p dir.
+   * This method will NOT start listing @p dir, you should only call
+   * this when receiving the @ref finished() signal.
+   *
+   * The items in the @ref KFileItemList are references to the items used
+   * by KDirLister, so e.g. an item gets destroyed when the @ref deleteItem()
+   * signal is emitted.
+   *
+   * @param dir specifies the url for which the items should be returned. This
+   *            is only useful if you use KDirLister with multiple URLs
+   *            i.e. using bool keep = true in @ref openURL().
+   * @param which specifies whether the returned list will contain all entries
+   *              or only the ones that passed the nameFilter, mimeFilter, etc.
+   *              Note that the latter causes iteration over all the items,
+   *              filtering them. If this is too slow for you, use the
+   *              @ref newItems() signal, sending out filtered items in chunks.
+   * @return the items listed for the current @ref url().
+   * @since 3.1
+   */
+  KFileItemList itemsForDir( const KURL& dir,
+                             WhichItems which = FilteredItems ) const;
+
 signals:
   /**
    * Tell the view that we started to list _url. NOTE: this does _not_ imply that there

@@ -915,12 +915,12 @@ void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
 {
   Q_ASSERT( job );
   KURL oldUrl = static_cast<KIO::ListJob *>( job )->url();
-  
+
   // strip trailing slashes
   oldUrl.adjustPath(-1);
   KURL newUrl = url;
-  newUrl.adjustPath(-1);  
-  
+  newUrl.adjustPath(-1);
+
   kdDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << newUrl.prettyURL() << endl;
 
   // I don't think there can be dirItems that are childs of oldUrl.
@@ -2032,6 +2032,36 @@ void KDirLister::setMainWindow(QWidget *window)
 QWidget *KDirLister::mainWindow()
 {
   return d->window;
+}
+
+KFileItemList KDirLister::items( WhichItems which ) const
+{
+    return itemsForDir( url(), which );
+}
+
+KFileItemList KDirLister::itemsForDir( const KURL &dir, WhichItems which) const
+{
+    KFileItemList result;
+    KFileItemList *allItems = s_pCache->itemsForDir( dir );
+
+    if ( which == AllItems )
+        result = *allItems; // shallow copy
+        
+    else // only items passing the filters
+    {
+        for ( KFileItemListIterator kit( *allItems ); kit.current(); ++kit )
+        {
+            KFileItem *item = *kit;
+            bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) ||
+                                     !matchesFilter( item );
+            bool isMimeFilterMatch = !matchesMimeFilter( item );
+
+            if ( !isNameFilterMatch && !isMimeFilterMatch )
+                result.append( item );
+        }
+    }
+
+    return result;
 }
 
 // to keep BC changes
