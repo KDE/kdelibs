@@ -81,7 +81,7 @@ void BidiContext::deref() const
 
 // ---------------------------------------------------------------------
 
-static inline RenderObject *next(RenderObject *par, RenderObject *current)
+static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current)
 {
     RenderObject *next = 0;
     while(current != 0)
@@ -124,7 +124,7 @@ static RenderObject *first( RenderObject *par )
     RenderObject *o = par->firstChild();
 
     if(!o->isText() && !o->isBR() && !o->isReplaced() && !o->isFloating() && !o->isPositioned())
-        o = next( par, o );
+        o = Bidinext( par, o );
 
     return o;
 }
@@ -171,11 +171,11 @@ inline void BidiIterator::operator ++ ()
     if(obj->isText()) {
         pos++;
         if(pos >= obj->length()) {
-            obj = next( par, obj );
+            obj = Bidinext( par, obj );
             pos = 0;
         }
     } else {
-        obj = next( par, obj );
+        obj = Bidinext( par, obj );
         pos = 0;
     }
 }
@@ -232,7 +232,7 @@ static void appendRun()
             sruns->append( new BidiRun(start, obj->length(), obj, context, dir) );
         }
         start = 0;
-        obj = next( sor.par, obj );
+        obj = Bidinext( sor.par, obj );
     }
     if( obj && !obj->isHidden()) {
         //kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
@@ -874,7 +874,7 @@ void RenderFlow::layoutInlineChildren()
             }
             else if(o->isText())
                 static_cast<RenderText *>(o)->deleteSlaves();
-            o = next( this, o );
+            o = Bidinext( this, o );
         }
 
         BidiContext *startEmbed;
@@ -1112,7 +1112,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
                     lBreak.pos = 0;//last->length() - 1;
                 }
                 else if ( unsigned ( pos ) >= o->length() ) {
-                    lBreak.obj = next( start.par, o );
+                    lBreak.obj = Bidinext( start.par, o );
                     lBreak.pos = 0;
                 }
                 else
@@ -1122,7 +1122,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
         }
 
         last = o;
-        o = next( start.par, o );
+        o = Bidinext( start.par, o );
         pos = 0;
     }
 
