@@ -97,8 +97,9 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
     changedMap.insert("QCheckBox", SIGNAL(stateChanged(int)));
     changedMap.insert("QPushButton", SIGNAL(stateChanged(int)));
     changedMap.insert("QRadioButton", SIGNAL(stateChanged(int)));
-    //changedMap.insert("QComboBox", SIGNAL(activated (int)));
-    changedMap.insert("QComboBox", SIGNAL(textChanged(const QString &)));
+    changedMap.insert("QComboBox", SIGNAL(activated (int)));
+    //qsqlproperty map doesn't store the text, but the value...
+    //changedMap.insert("QComboBox", SIGNAL(textChanged(const QString &)));
     changedMap.insert("QDateEdit", SIGNAL(valueChanged(const QDate &)));
     changedMap.insert("QDateTimeEdit", SIGNAL(valueChanged(const QDateTime &)));
     changedMap.insert("QDial", SIGNAL(valueChanged (int)));
