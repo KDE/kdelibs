@@ -272,7 +272,7 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
       {
          int errcode;
          ksize_t len = sizeof(errcode);
-         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, &errcode, &len);
+         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, (void*)&errcode, &len);
          if ((ret == -1) || (errcode != 0))
          {
             ::close(sock);
