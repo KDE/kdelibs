@@ -492,6 +492,16 @@ void KListView::slotAutoSelect()
 #endif
 }
 
+void KListView::slotHeaderChanged()
+{
+  if (d->fullWidth && columns())
+  {
+    int w = 0;
+    for (int i = 0; i < columns() - 1; ++i) w += columnWidth(i);
+    setColumnWidth( columns() - 1, viewport()->width() - w - 1 );
+  }
+}
+
 void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 {
     if( isExecuteArea( viewport()->mapFromGlobal(pos) ) ) {
@@ -1678,15 +1688,36 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
 
 void KListView::setFullWidth()
 {
-  d->fullWidth = true;
-  header()->setResizeEnabled(false);
-  verticalScrollBar()->installEventFilter(this);
+  setFullWidth(true);
+}
+
+void KListView::setFullWidth(bool fullWidth)
+{
+  if ((d->fullWidth = fullWidth))
+  {
+    connect(header(), SIGNAL(sizeChange(int, int, int)),
+      SLOT(slotHeaderChanged()));
+    connect(header(), SIGNAL(indexChange(int, int, int)),
+      SLOT(slotHeaderChanged()));
+  }
+  else
+  {
+    disconnect(SIGNAL(sizeChange(int, int, int)), header(),
+      SLOT(slotHeaderChanged()));
+    disconnect(SIGNAL(indexChange(int, int, int)), header(),
+      SLOT(slotHeaderChanged()));
+  }
+  slotHeaderChanged();
+}
+
+bool KListView::fullWidth() const
+{
+  return d->fullWidth;
 }
 
 void KListView::viewportResizeEvent(QResizeEvent* e)
 {
-  if (d->fullWidth && columns())
-     setColumnWidth( 0, e->size().width() - 1 );
+  slotHeaderChanged();
   QListView::viewportResizeEvent(e);
 }
 

@@ -37,6 +37,7 @@
 class KColorCombo : public QComboBox
 {
 	Q_OBJECT
+	Q_PROPERTY( QColor color READ color WRITE setColor )
 public:
 	KColorCombo( QWidget *parent, const char *name = 0L );
 

@@ -53,6 +53,7 @@ class KConfig;
 class KListView : public QListView
 {
   Q_OBJECT
+  Q_PROPERTY( bool fullWidth READ fullWidth WRITE setFullWidth )
 
 public:
   /**
@@ -235,10 +236,17 @@ public:
   QListViewItem* itemAtIndex(int index);
 
   /**
-   * Let the column fit exactly all the available width.
-   * Single column listviews only.
+   * @deprecated
    */
   void setFullWidth();
+  /**
+   * Let the last column fit exactly all the available width.
+   */
+  void setFullWidth(bool fullWidth);
+  /**
+   * Returns whether the last column is set to fit the available width.
+   */
+  bool fullWidth() const;
 
   /**
    * sets the alternate background background color.
@@ -799,6 +807,12 @@ protected slots:
    * @internal
    */
   void slotAutoSelect();
+
+  /**
+   * Reacts to header changes in full width mode
+   * @internal
+   */
+  void slotHeaderChanged();
 
 protected:
   /**
