@@ -1160,7 +1160,10 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
     QMainWindow *mw = mainWindow();
     if ( mw->toolBarsMovable() && d->m_enableContext ) {
         if ( m->button() == RightButton ) {
+	    QGuardedPtr<KToolBar> guard( this );
             int i = contextMenu()->exec( m->globalPos(), 0 );
+	    // "Configure Toolbars" recreates toolbars, so we might not exist anymore.
+	    if ( guard )
             slotContextAboutToHide();
             switch ( i ) {
             case -1:
