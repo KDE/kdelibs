@@ -145,6 +145,29 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     //check to see if jvm_path is valid and set d->appletLabel accordingly
     p->setJVMPath( jvm_path );
 
+    // Prepare classpath variable
+    QString kjava_class = locate("data", "kjava/kjava.jar");
+    kdDebug(6100) << "kjava_class = " << kjava_class << endl;
+    if( kjava_class.isNull() ) // Should not happen
+        return;
+
+    QDir dir( kjava_class );
+    dir.cdUp();
+    kdDebug(6100) << "dir = " << dir.absPath() << endl;
+
+    QStringList entries = dir.entryList( "*.jar" );
+    kdDebug(6100) << "entries = " << entries.join( ":" ) << endl;
+
+    QString classes;
+    for( QStringList::Iterator it = entries.begin();
+         it != entries.end(); it++ )
+    {
+        classes += ":";
+        classes += dir.absFilePath( *it );
+    }
+    p->setClasspath( classes );
+
+    // Fix all the extra arguments
     QString extraArgs = config.readEntry( "JavaArgs", "" );
     p->setExtraArgs( extraArgs );
 
@@ -162,8 +185,6 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
                               "org.kde.kjas.server.KJASSecurityManager" );
     }
 
-    p->setMainClass( "org.kde.kjas.server.Main" );
-
     //check for http proxies...
     if( KProtocolManager::useProxy() )
     {
@@ -175,22 +196,8 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         p->setSystemProperty( "http.proxyPort", QString::number( url.port() ) );
     }
 
-    // Prepare classpath
-    QString kjava_classes = locate("data", "kjava/kjava-classes.zip");
-    if( kjava_classes.isNull() ) // Should not happen
-        return;
-
-    QString new_classpath = "CLASSPATH=" +  kjava_classes;
-
-    char *classpath = getenv("CLASSPATH");
-    if(classpath)
-    {
-        new_classpath += ":";
-        new_classpath += classpath;
-    }
-
-    // Need strdup() to prevent freeing the memory we provide to putenv
-    putenv( strdup(new_classpath.latin1()) );
+    //set the main class to run
+    p->setMainClass( "org.kde.kjas.server.Main" );
 }
 
 void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* context )

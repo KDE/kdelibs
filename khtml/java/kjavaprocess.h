@@ -47,7 +47,7 @@ public:
      * Used to specify the location of the JVM.
      */
     void setJVMPath( const QString& path );
-
+    void setClasspath( const QString& classpath );
     void setSystemProperty( const QString& name, const QString& value );
 
     /**

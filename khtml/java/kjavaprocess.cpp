@@ -14,6 +14,7 @@ friend class KJavaProcess;
 private:
     bool ok;
     QString jvmPath;
+    QString classPath;
     QString mainClass;
     QString extraArgs;
     QString classArgs;
@@ -79,6 +80,11 @@ void KJavaProcess::stopJava()
 void KJavaProcess::setJVMPath( const QString& path )
 {
    d->jvmPath = path;
+}
+
+void KJavaProcess::setClasspath( const QString& classpath )
+{
+    d->classPath = classpath;
 }
 
 void KJavaProcess::setSystemProperty( const QString& name,
@@ -183,17 +189,17 @@ void KJavaProcess::popBuffer()
     if( buf )
     {
 //        DEBUG stuff...
-	kdDebug(6100) << "Sending buffer to java, buffer = >>";
-        for( unsigned int i = 0; i < buf->size(); i++ )
-        {
-            if( buf->at(i) == (char)0 )
-                kdDebug(6100) << "<SEP>";
-            else if( buf->at(i) > 0 && buf->at(i) < 10 )
-                kdDebug(6100) << "<CMD " << (int) buf->at(i) << ">";
-            else
-                kdDebug(6100) << buf->at(i);
-        }
-        kdDebug(6100) << "<<" << endl;
+//	kdDebug(6100) << "Sending buffer to java, buffer = >>";
+//        for( unsigned int i = 0; i < buf->size(); i++ )
+//        {
+//            if( buf->at(i) == (char)0 )
+//                kdDebug(6100) << "<SEP>";
+//            else if( buf->at(i) > 0 && buf->at(i) < 10 )
+//                kdDebug(6100) << "<CMD " << (int) buf->at(i) << ">";
+//            else
+//                kdDebug(6100) << buf->at(i);
+//        }
+//        kdDebug(6100) << "<<" << endl;
 
         //write the data
         if ( !javaProcess->writeStdin( buf->data(),
@@ -219,6 +225,12 @@ void KJavaProcess::slotWroteData( )
 bool KJavaProcess::invokeJVM()
 {
     *javaProcess << d->jvmPath;
+
+    if( !d->classPath.isEmpty() )
+    {
+        *javaProcess << "-classpath";
+        *javaProcess << d->classPath;
+    }
 
     //set the system properties, iterate through the qmap of system properties
     for( QMap<QString,QString>::Iterator it = d->systemProps.begin();
