@@ -48,7 +48,19 @@ include file, though.
   and isLocaleInstantiated are now replaced by KGlobal::locale().
   This function won't create an instance on the fly.
 
+  it also doesn't hold a KiconLoader instance. As this also getIconLoader()
+  has been removed. Replace it getIconLoader()->loadIcon() with
+  ICON() or use KGlobal::iconLoader() instead of getIconLoader()
 
+  kde_*dir() have been removed as they require a unique toplevel directory
+  for all applications (KDEDIR). This concept doesn't exist in KDE 2.0
+  any more.
+
+  Replace code that uses kde_*dir() + filename with calls to
+  locate(filetype, filename) where filetype is what * used to be
+  the * in kde_*dir(). locate is defined as a macro to
+  KGlobal::dirs()->findResource and defined in kstddirs.h
+ 
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget
 
