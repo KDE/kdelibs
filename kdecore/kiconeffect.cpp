@@ -127,6 +127,7 @@ bool KIconEffect::hasEffect(int group, int state) const
 
 QString KIconEffect::fingerprint(int group, int state) const
 {
+    if ( group >= KIcon::LastGroup ) return "";
     QString cached = d->mKey[group][state];
     if (cached.isEmpty())
     {
