@@ -19,13 +19,13 @@
 #include <qbuttongroup.h>
 #include <qwidget.h>
 
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 
 #include "kio/job.h"
 #include "kio/global.h"
 #include "kio/statusbarprogress.h"
 
-class KioslaveTest : public KTMainWindow {
+class KioslaveTest : public KMainWindow {
   Q_OBJECT
 
 public:

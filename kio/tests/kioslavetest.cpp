@@ -25,7 +25,7 @@
 using namespace KIO;
 
 KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
-  : KTMainWindow("")
+  : KMainWindow(0, "")
 {
 
   job = 0L;
@@ -158,7 +158,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   topLayout->addWidget( close, 5 );
 
   main_widget->setMinimumSize( main_widget->sizeHint() );
-  setView( main_widget );
+  setCentralWidget( main_widget );
 }
 
 
@@ -189,9 +189,9 @@ void KioslaveTest::changeProgressMode( int id ) {
   progressMode = id;
 
   if ( progressMode == ProgressStatus ) {
-    enableStatusBar( KStatusBar::Show );
+    statusBar()->show();
   } else {
-    enableStatusBar( KStatusBar::Hide );
+    statusBar()->hide();
   }
 }
 
