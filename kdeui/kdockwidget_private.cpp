@@ -179,7 +179,7 @@ void KDockSplitter::setupMinMaxSize()
 
 void KDockSplitter::deactivate()
 {
-  if (divider) delete divider;
+  delete divider;
   divider = 0L;
   initialised= false;
 }
