@@ -3,7 +3,7 @@
 
 INCLUDES=	$(all_includes)
 LDFLAGS =       $(all_libraries) $(KDE_RPATH)
-LDADD	=	$(LIB_KIO) $(LIBZ)
+LDADD	=	$(LIB_KIO) $(LIBZ) $(LIBSSL)
 
 ####### Files
 
