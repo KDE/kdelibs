@@ -399,7 +399,10 @@ fi
 AC_DEFUN(AC_CHECK_GETDOMAINNAME,
 [
 AC_LANG_CPLUSPLUS
-
+save_CXXFLAGS=$CXXFLAGS
+if test "$GCC" = "yes"; then
+CXXFLAGS="$CXXFLAGS -pedantic-errors"
+fi
 AC_MSG_CHECKING(for getdomainname)
 AC_TRY_COMPILE([
 #include <stdlib.h>
@@ -415,6 +418,33 @@ AC_MSG_RESULT($ac_cv_func_getdomainname)
 if eval "test \"`echo `$ac_cv_func_getdomainname\" = yes"; then
   AC_DEFINE(HAVE_GETDOMAINNAME)
 fi
+CXXFLAGS=$save_CXXFLAGS
+])
+
+AC_DEFUN(AC_CHECK_GETHOSTNAME,
+[
+AC_LANG_CPLUSPLUS
+save_CXXFLAGS=$CXXFLAGS
+if test "$GCC" = "yes"; then
+CXXFLAGS="$CXXFLAGS -pedantic-errors"
+fi
+
+AC_MSG_CHECKING(for gethostname)
+AC_TRY_COMPILE([
+#include <stdlib.h>
+#include <unistd.h>
+],
+[
+char buffer[200];
+gethostname(buffer, 200);
+],
+ac_cv_func_gethostname=yes,
+ac_cv_func_gethostname=no)
+AC_MSG_RESULT($ac_cv_func_gethostname)
+if eval "test \"`echo `$ac_cv_func_gethostname\" = yes"; then
+  AC_DEFINE(HAVE_GETHOSTNAME)
+fi
+CXXFLAGS=$save_CXXFLAGS
 ])
 
 AC_DEFUN(AC_CHECK_USLEEP,
