@@ -2,6 +2,10 @@ This library is severely functionally challenged.
 
 This TODO happens to cover SSL in all of KDE though.
 
+- X509 parser needs to concatenate multiple tags (in particular /OU) 
+  to the same string using \n in between.  Gui may need updates for this
+  (ksslinfodlg)
+
 - We have to find a way to create the hashes in the CA root directory or
   certificate validation will not work by any means.
 
