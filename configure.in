@@ -194,10 +194,14 @@ AC_OUTPUT(Makefile \
 	kdeui/tests/Makefile \
 	kimgio/Makefile \
 	khtml/Makefile \
+	khtml/css/Makefile \
 	khtml/dom/Makefile \
+	khtml/html/Makefile \
 	khtml/java/Makefile \
 	khtml/kjs/Makefile \
 	khtml/misc/Makefile \
+	khtml/rendering/Makefile \
+	khtml/xml/Makefile \
 	kdetest/Makefile \
 	kfile/Makefile \
 	kio/Makefile \
