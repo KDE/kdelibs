@@ -114,7 +114,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     enableClipper(true);
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(NoBackground);
-    viewport()->setFocusProxy(this);
 
     KImageIO::registerFormats();
 
@@ -505,7 +504,6 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
     {
     case Key_Enter:
     case Key_Return:
-    case Key_Space:
         toggleActLink(true);
         return;
       break;
@@ -516,12 +514,21 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    kdDebug()<<"KHTMLView::focusNextPrevChild("<<(next?"forward":"backward")<<");\n";
-    if (!gotoLink(next))
-	m_part->overURL(QString(), 0);
-    else
+    if (!m_part->docImpl())
+	return false;
+    if (!m_part->docImpl()->body())
+	return false;
+    if (m_part->docImpl()->body()->id()==ID_FRAMESET)
+	return QScrollView::focusNextPrevChild( next );
+    if (gotoLink(next))
 	return true;
-    return  QScrollView::focusNextPrevChild( next );
+    m_part->overURL(QString(), 0);
+    if (!QWidget::focusNextPrevChild( next ))
+	return false;
+    if (focusWidget()==viewport())
+	return QWidget::focusNextPrevChild( next );
+    kdDebug()<<"KHTMLView: QScrollview set new FocusWidget to:"<<focusWidget()->name()<<endl;
+    return true;
 }
 
 void KHTMLView::doAutoScroll()
@@ -584,8 +591,8 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
 
     borderX = borderY = 30;
 
-    int curHeight = clipper()->height();
-    int curWidth = clipper()->width();
+    int curHeight = visibleHeight();
+    int curWidth = visibleWidth();
 
     if (ye-y>curHeight-borderY)
     {
@@ -623,11 +630,15 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     else
         deltax = 0;
 
-    if (false && !d->currentNode)
+
+#if 1
+    //enabled:  jump to the first node from the document's beginning
+    //disabled: scroll from the document's beginning to the first node
+    if (!d->currentNode)
     {
         scrollBy(deltax, deltay);
         d->currentNode = n;
-	kdDebug()<<"KHTMLView::gotoLink: new Node selected!"<<endl;
+	kdDebug()<<"KHTMLView::gotoLink: new Node at ("<<x<<"/"<<y<<") selected!"<<endl;
 	d->newNode = 0;
 	HTMLAreaElementImpl *anchor = 0;
 
@@ -638,7 +649,7 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
 	else m_part->overURL(QString(), 0);
         return true;
     }
-
+#endif
     int maxx = curWidth-borderX;
     int maxy = curHeight-borderY;
 
