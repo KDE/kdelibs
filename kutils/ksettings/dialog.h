@@ -68,7 +68,7 @@ namespace KSettings
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class Dialog : public QObject
+class KUTILS_EXPORT Dialog : public QObject
 {
     friend class PageNode;
     Q_OBJECT
