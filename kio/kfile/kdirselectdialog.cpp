@@ -24,6 +24,7 @@
 #include <qvaluestack.h>
 
 #include <kactionclasses.h>
+#include <kapplication.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kfiledialog.h>
@@ -61,6 +62,22 @@ public:
 
     bool comboLocked : 1;
 };
+
+static KURL rootUrl(const KURL &url)
+{
+    KURL root = url;
+    root.setPath( "/" );
+    
+    if (!kapp->authorizeURLAction("list", KURL(), root))
+    {
+        root = KURL::fromPathOrURL( QDir::homeDirPath() );
+        if (!kapp->authorizeURLAction("list", KURL(), root))
+        {
+            root = url;
+        }
+    }
+    return root;
+}
 
 KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
                                    QWidget *parent, const char *name,
@@ -106,8 +123,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     if ( localOnly && !d->startURL.isLocalFile() )
         d->startURL = KURL::fromPathOrURL( KGlobalSettings::documentPath() );
 
-    KURL root = d->startURL;
-    root.setPath( "/" );
+    KURL root = rootUrl(d->startURL);
 
     m_startDir = d->startURL.url();
 
@@ -142,8 +158,7 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
     if ( !url.isValid() )
         return;
 
-    KURL root = url;
-    root.setPath( "/" );
+    KURL root = rootUrl(url);
 
     d->startURL = url;
     if ( !d->branch ||
@@ -371,8 +386,7 @@ void KDirSelectDialog::slotShowHiddenFilesToggled()
     view()->removeBranch( d->branch );
     d->comboLocked = false;
 
-    KURL root = d->startURL;
-    root.setPath( "/" );
+    KURL root = rootUrl(d->startURL);
     d->branch = createBranch( root );
 
     setCurrentURL( currentURL );
