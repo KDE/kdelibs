@@ -1745,12 +1745,12 @@ void CopyJob::slotResultCreatingDirs( Job * job )
         if ( (m_conflictError == ERR_DIR_ALREADY_EXIST)
              || (m_conflictError == ERR_FILE_ALREADY_EXIST) )
         {
-            QString oldPath = ((SimpleJob*)job)->url().path( 1 );
+            KURL oldURL = ((SimpleJob*)job)->url();
             // Should we skip automatically ?
             if ( m_bAutoSkip ) {
                 // We dont want to copy files in this directory, so we put it on the skip list
-                m_skipList.append( oldPath );
-                skip( oldPath );
+                m_skipList.append( oldURL.path( 1 ) );
+                skip( oldURL );
                 dirs.remove( it ); // Move on to next dir
             } else if ( m_bOverwriteAll ) { // overwrite all => just skip
                 dirs.remove( it ); // Move on to next dir
@@ -2095,8 +2095,8 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             // fall through
         case R_SKIP:
             // Move on to next file
-            files.remove( it );
             skip( (*it).uSource );
+            files.remove( it );
             break;
        case R_OVERWRITE_ALL:
             m_bOverwriteAll = true;
