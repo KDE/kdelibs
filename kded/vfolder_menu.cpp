@@ -26,6 +26,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kservice.h>
+#include <kde_file.h>
 
 #include <qmap.h>
 #include <qfile.h>
@@ -913,7 +914,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
       return;
 
    struct dirent *ep;
-   struct stat buff;
+   KDE_struct_stat buff;
 
    QString _dot(".");
    QString _dotdot("..");
@@ -925,7 +926,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
          continue;
 
       QString pathfn = dir + fn;
-      if ( stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
+      if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
          continue; // Couldn't stat (e.g. no read permissions)
       }
       if ( S_ISDIR( buff.st_mode )) {
@@ -1021,7 +1022,7 @@ kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix 
       return;
 
    struct dirent *ep;
-   struct stat buff;
+   KDE_struct_stat buff;
 
    QString _dot(".");
    QString _dotdot("..");
@@ -1033,7 +1034,7 @@ kdDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix 
          continue;
 
       QString pathfn = dir + fn;
-      if ( stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
+      if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
          continue; // Couldn't stat (e.g. no read permissions)
       }
       if ( S_ISDIR( buff.st_mode )) {

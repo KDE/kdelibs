@@ -39,6 +39,7 @@
 #include <kaboutdata.h>
 #include <kstartupinfo.h>
 #include <kshell.h>
+#include <kde_file.h>
 
 
 #include "main.h"
@@ -182,8 +183,8 @@ void KIOExec::slotRunApp()
     QValueList<fileInfo>::Iterator it = fileList.begin();
     for ( ; it != fileList.end() ; ++it )
     {
-        struct stat buff;
-        (*it).time = stat( QFile::encodeName((*it).path), &buff ) ? 0 : buff.st_mtime;
+        KDE_struct_stat buff;
+        (*it).time = KDE_stat( QFile::encodeName((*it).path), &buff ) ? 0 : buff.st_mtime;
         KURL url;
         url.setPath((*it).path);
         list << url;
@@ -210,10 +211,10 @@ void KIOExec::slotRunApp()
     it = fileList.begin();
     for( ;it != fileList.end(); ++it )
     {
-        struct stat buff;
+        KDE_struct_stat buff;
         QString src = (*it).path;
         KURL dest = (*it).url;
-        if ( (stat( QFile::encodeName(src), &buff ) == 0) &&
+        if ( (KDE_stat( QFile::encodeName(src), &buff ) == 0) &&
              ((*it).time != buff.st_mtime) )
         {
             if ( tempfiles )

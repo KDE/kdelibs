@@ -35,6 +35,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kprocess.h>
+#include <kde_file.h>
 
 static KCmdLineOptions options[] = {
    { "+old", I18N_NOOP("Old hostname"), 0 },
@@ -287,9 +288,9 @@ void KHostName::changeStdDirs(const QCString &type)
    QCString oldDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(type).arg(oldName));
    QCString newDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(type).arg(newName));
 
-   struct stat st_buf;
+   KDE_struct_stat st_buf;
 
-   int result = lstat(oldDir.data(), &st_buf);
+   int result = KDE_lstat(oldDir.data(), &st_buf);
    if (result == 0)
    {
       if (S_ISLNK(st_buf.st_mode))

@@ -33,6 +33,7 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
+#include <kde_file.h>
 
 #include "client.h"
 
@@ -125,8 +126,8 @@ int KDEsuClient::connect()
     // If the socket was somehow not ours an attacker will be able
     // to delete it after we connect but shouldn't be able to
     // create a socket that is owned by us.
-    struct stat s;
-    if (lstat(sock, &s)!=0)
+    KDE_struct_stat s;
+    if (KDE_lstat(sock, &s)!=0)
     {
         kdWarning(900) << "stat failed (" << sock << ")" << endl;
 	close(sockfd); sockfd = -1;
@@ -404,8 +405,8 @@ bool KDEsuClient::isServerSGID()
     if (d->daemon.isEmpty())
        return false;
    
-    struct stat sbuf;
-    if (stat(QFile::encodeName(d->daemon), &sbuf) < 0)
+    KDE_struct_stat sbuf;
+    if (KDE_stat(QFile::encodeName(d->daemon), &sbuf) < 0)
     {
 	kdWarning(900) << k_lineinfo << "stat(): " << perror << "\n";
 	return false;
