@@ -254,7 +254,7 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		/** 
 		 * Bootstrap our presence data by polling all known apps
 		 */
-		void KIMProxy::pollAll( const QString &uid );
+		void pollAll( const QString &uid );
 		
 		/**
 		 * Update our records with the given data
