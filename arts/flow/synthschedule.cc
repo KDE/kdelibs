@@ -339,7 +339,9 @@ void StdScheduleNode::accessModule()
 
 	module = (SynthModule_base *)_object->_cast(Arts::SynthModule_base::_IID);
 	if(!module)
-		arts_warning("Only SynthModule derived classes should carry streams.");
+		arts_warning("Error using interface %s in the flowsystem: only objects"
+					 " implementing Arts::SynthModule should carry streams.",
+					 _object->_interfaceName().c_str());
 }
 
 StdScheduleNode::StdScheduleNode(Object_skel *object, StdFlowSystem *flowSystem) : ScheduleNode(object)
@@ -461,8 +463,8 @@ void StdScheduleNode::requireFlow()
 
 bool StdScheduleNode::suspendable()
 {
-	accessModule();
 	if(running) {
+		accessModule();
 		return (module->autoSuspend() != asNoSuspend);
 	}
 	// if its not running, who cares?
@@ -471,8 +473,8 @@ bool StdScheduleNode::suspendable()
 
 void StdScheduleNode::suspend()
 {
-	accessModule();
 	if(running) {
+		accessModule();
 		suspended = true;
 		if(module->autoSuspend() == asSuspendStop) stop();
 	}
@@ -480,8 +482,8 @@ void StdScheduleNode::suspend()
 
 void StdScheduleNode::restart()
 {
-	accessModule();
 	if(running == false && suspended == true) {
+		accessModule();
 		suspended = false;
 		if(module->autoSuspend() == asSuspendStop) start();
 	}
