@@ -99,8 +99,8 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "jisx0208.1983-0",
     "ksc5601.1987-0",
     "tis620.2533-1",
-    "gbk2312.1980-0",
-    "gbk2312.1980-0",
+    "gb2312.1980-0",
+    "gb2312.1980-0",
     "big5-0"
     "big5-0",
     "tscii-0",
