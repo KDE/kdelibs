@@ -292,6 +292,7 @@ public final class KJASAppletStub
             active = false;
             app.stop();
             stateChange(STOPPED);
+            frame.hide();
         }
     }
 

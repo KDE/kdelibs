@@ -268,7 +268,7 @@ bool KJavaApplet::isAlive() const {
    return (
         !d->failed 
         && d->state >= INSTANCIATED
-        && d->state < DESTROYED
+        && d->state < STOPPED
    ); 
 }
 

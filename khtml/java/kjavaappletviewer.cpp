@@ -284,7 +284,10 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
 }
 
 bool KJavaAppletViewer::closeURL () {
-    // TODO destroy applet/stop liveconnect calls/...
+    // TODO stop liveconnect calls/...
+    KJavaApplet * applet = m_view->applet ();
+    if (applet->isCreated ())
+        applet->stop ();
     return true;
 }
 
