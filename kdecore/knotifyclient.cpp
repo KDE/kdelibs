@@ -164,7 +164,10 @@ void KNotifyClient::beep(const QString& reason)
   {
     client->attach();
     if (!client->isAttached() || !client->isApplicationRegistered(daemonName))
-      return QApplication::beep();
+      {
+        QApplication::beep();
+        return;
+      }
   }
 
   KNotifyClient::event(KNotifyClient::notification, reason);

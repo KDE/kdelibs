@@ -113,8 +113,10 @@ void KCompletion::addItem( const QString& item, uint weight )
 
 void KCompletion::addWeightedItem( const QString& item )
 {
-    if ( myOrder != Weighted )
-	return addItem( item, 0 );
+    if ( myOrder != Weighted ) {
+	addItem( item, 0 );
+	return;
+    }
 
     uint len = item.length();
     uint weight = 0;
@@ -130,7 +132,8 @@ void KCompletion::addWeightedItem( const QString& item )
 	len = index; // only insert until the ':'
     }
 
-    return addItem( item.left( len ), weight );
+    addItem( item.left( len ), weight );
+    return;
 }
 
 
