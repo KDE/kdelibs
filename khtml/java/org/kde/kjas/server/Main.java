@@ -19,7 +19,7 @@ public class Main
     public  static final KJASProtocolHandler protocol;
     public  static final KJASConsole         console;
     private static final boolean             show_console;
-    public  static final boolean             debug;
+    public  static final boolean             Debug;
     public  static final boolean             log;
     private static boolean                   good_jdk = true;
 
@@ -29,9 +29,9 @@ public class Main
     static
     {
         if( System.getProperty( "kjas.debug" ) != null )
-            debug = true;
+            Debug = true;
         else
-            debug = false;
+            Debug = false;
 
         if( System.getProperty( "kjas.showConsole" ) != null )
             show_console = true;
@@ -66,7 +66,7 @@ public class Main
      **************************************************************************/
     public static void debug( String msg )
     {
-        if( debug )
+        if( Debug )
         {
             System.out.println( "KJAS: " + msg );
         }

@@ -69,6 +69,7 @@ public class KJASAppletClassLoader
             }
             catch ( MalformedURLException mue )
             {
+            	Main.kjas_err( "CL: Invalid Document Base = " + docBase, mue );
                 return;
             }
 
@@ -83,11 +84,13 @@ public class KJASAppletClassLoader
                 try
                 {
                     codeBaseURL = new URL( codeBase );
+                    Main.debug( "CL: codeBaseURL is codeBase" );
                 } catch( MalformedURLException mue )
                 {
                     try
                     {
                         codeBaseURL = new URL( docBaseURL, codeBase );
+                        Main.debug( "CL: codeBaseURL is docBaseURL + codeBase" );
                     } catch( MalformedURLException mue2 ) {}
                 }
             }
@@ -101,12 +104,26 @@ public class KJASAppletClassLoader
                 // It's got to be a directory.....
                 String file = docBaseURL.getFile();
                 if( file == null )
+                {
+                	Main.debug( "CL: codeBaseURL = docBaseURL with no modifications, no file part of URL" );
                     codeBaseURL = docBaseURL;
+                }
+                else
+                if( file.length() == 0 )
+                {
+	                Main.debug( "CL: codeBaseURL = docBaseURL with no modifications, no file part of URL" );
+                    codeBaseURL = docBaseURL;
+                }
                 else
                 if( file.endsWith( "/" ) )
+                {
+                	Main.debug( "CL: codeBaseURL = docBaseURL, with no modifications, file part ends with /" );
                     codeBaseURL = docBaseURL;
+                }
                 else
                 {
+                	Main.debug( "CL: codeBaseURL = docBaseURL with modifications, deleting up to last /" );
+
                     //delete up to the ending '/'
                     String urlString = docBaseURL.toString();
                     int dot_index = urlString.lastIndexOf( '/' );
@@ -115,7 +132,7 @@ public class KJASAppletClassLoader
                 }
             }
 
-            Main.debug( "codeBaseURL = " + codeBaseURL );
+            Main.debug( "CL: Finally, codeBaseURL = " + codeBaseURL );
         }catch( Exception e )
         {
             Main.debug( "KJASAppletClassLoader caught an exception: " + e );
@@ -171,6 +188,16 @@ public class KJASAppletClassLoader
      **************************************************************************/
     public Class loadClass( String name )
     {
+    	if( Main.Debug )
+    	{
+    		Main.debug( "CL: URL's to search are: " );
+    		URL[] urls = getURLs();
+    		for( int i = 0; i < urls.length; i++ )
+    		{
+    			Main.debug( "CL:    " + urls[i] );
+    		}
+    	}
+
         //We need to be able to handle foo.class, so strip off the suffix
         if( name.endsWith( ".class" ) )
         {
