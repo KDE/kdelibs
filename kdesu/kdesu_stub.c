@@ -79,8 +79,7 @@ struct param_struct params[] =
     { "user", 0L },
     { "priority", 0L },
     { "scheduler", 0L },
-    { "app_start_pid", 0L },
-    { "libmapnotify", 0L }
+    { "app_start_pid", 0L }
 };
 
 #define P_HEADER 0
@@ -96,8 +95,7 @@ struct param_struct params[] =
 #define P_PRIORITY 10
 #define P_SCHEDULER 11
 #define P_APP_START_PID 12
-#define P_LIBMAPNOTIFY 13
-#define P_LAST 14
+#define P_LAST 13
 
 /* Prototypes */
 char *xmalloc(size_t);
@@ -377,8 +375,7 @@ int main()
     } else 
     {
 	/* Child: exec command. */
-	sprintf(buf, "LD_PRELOAD=%s %s", params[P_LIBMAPNOTIFY].value,
-		params[P_COMMAND].value);
+	sprintf(buf, "%s", params[P_COMMAND].value);
 	execl("/bin/sh", "sh", "-c", buf, 0L);
 	perror("kdesu_stub: exec()");
 	_exit(1);
