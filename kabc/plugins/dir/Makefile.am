@@ -8,7 +8,8 @@ kde_module_LTLIBRARIES = kabc_dir.la
 kabc_dir_la_SOURCES = resourcedir.cpp resourcedirconfig.cpp
 
 kabc_dir_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN)
-kabc_dir_la_LIBADD	= ../../libkabc.la ../../../kdeui/libkdeui.la
+kabc_dir_la_LIBADD	= $(LIB_KABC)
+kabc_dir_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO

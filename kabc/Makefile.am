@@ -21,7 +21,7 @@ COMPILE_FIRST = addressee.h
 lib_LTLIBRARIES   = libkabc.la
 libkabc_la_COMPILE_FIRST = addressee.h
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
-libkabc_la_LIBADD  = vcard/libvcard.la vcardparser/libvcards.la ../kdeui/libkdeui.la ../kio/libkio.la \
+libkabc_la_LIBADD  = vcard/libvcard.la vcardparser/libvcards.la $(LIB_KIO) \
   ../kresources/libkresources.la
 
 libkabc_la_SOURCES = \
