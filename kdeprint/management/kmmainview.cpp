@@ -253,9 +253,10 @@ void KMMainView::slotRefresh()
 void KMMainView::slotTimer()
 {
 	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
-	if (!m_manager->errorMsg().isEmpty())
-		showErrorMsg(i18n("An error occured while retrieving the printer list."));
+	bool ok = m_manager->errorMsg().isEmpty();
 	m_printerview->setPrinterList(printerlist);
+	if (!ok)
+		showErrorMsg(i18n("An error occured while retrieving the printer list."));
 }
 
 void KMMainView::slotPrinterSelected(KMPrinter *p)
