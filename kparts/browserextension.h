@@ -322,7 +322,8 @@ public:
   enum { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
          ShowUp=0x0002, ShowReload=0x0004, ShowBookmark=0x0008,
          ShowCreateDirectory=0x0010, ShowTextSelectionItems=0x0020,
-         NoDeletion=0x0040 };
+         NoDeletion=0x0040 ///< @since 3.4
+       };
 
 
   /**
