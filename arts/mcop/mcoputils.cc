@@ -98,7 +98,7 @@ string MCOPUtils::getFullHostname()
 		 * always ends up being (none), which is certainly no valid
 		 * domainname
 		 */
-		if(strcmp(buffer,"(none)") != 0)
+		if(strcmp(buffer,"(none)") != 0 && strcmp(buffer,"") != 0)
 		{
 			result += ".";
 			result += buffer; 
