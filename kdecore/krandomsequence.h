@@ -50,14 +50,14 @@ public:
   /**
    * Get the next number from the pseudo-random sequence
    *
-   * @return a psuedo-random double value between [0,1>
+   * @return a psuedo-random double value between [0,1[
    */
   double getDouble(); 
   
   /**
    * Get the next number from the pseudo-random sequence
    *
-   * @return a pseudo-random integer value between [0, max>
+   * @return a pseudo-random integer value between [0, max[
    * with 0 < max <= 1.000.000
    */
   unsigned long getLong(unsigned long max); 
