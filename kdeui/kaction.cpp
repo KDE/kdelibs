@@ -1337,7 +1337,10 @@ int KSelectAction::plug( QWidget *widget, int index )
 
     QComboBox *cb = bar->getCombo( id_ );
     if ( cb )
+    {
       cb->setMinimumWidth( cb->sizeHint().width() );
+      cb->setInsertionPolicy( QComboBox::NoInsertion );
+    }
 
     addContainer( bar, id_ );
 
@@ -1402,8 +1405,10 @@ void KSelectAction::slotActivated( const QString &text )
   {
     QStringList lst = items();
     if(lst.contains(text)==0)
-        lst.append( text );
-    setItems( lst );
+    {
+      lst.append( text );
+      setItems( lst );
+    }
   }
 
   setCurrentItem( items().findIndex( text ) );
