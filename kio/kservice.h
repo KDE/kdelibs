@@ -256,6 +256,9 @@ public:
   virtual void save( QDataStream& );
 
   /**
+   * Find a service by name, i.e. the translated Name field. You should
+   * really not use this method, since the name is translated.
+   *
    * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
    * @em Very @em important: Don't store the result in a @ref KService * !
@@ -263,6 +266,11 @@ public:
   static Ptr serviceByName( const QString& _name );
 
   /**
+   * Find a service by its relative path to the applnk or services
+   * directory, for instance "Internet/konqbrowser.desktop". Better not use
+   * it for menu entries though, since the user can move them.
+   * It's ok to use it for services though (e.g. "http_cache_cleaner.desktop")
+   *
    * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
    * @em Very @em important: Don't store the result in a @ref KService * !
@@ -270,6 +278,14 @@ public:
   static Ptr serviceByDesktopPath( const QString& _name );
 
   /**
+   * Find a service by the name of its desktop file, not depending on
+   * its actual location (as long as it's under the applnk or service
+   * directories). For instance "konqbrowser" or "kcookiejar". Note that
+   * the ".desktop" extension is implicit.
+   *
+   * This is the recommended method (safe even if the user moves stuff)
+   * but note that it assumes that no two entries have the same filename.
+   *
    * Returns a pointer to the requested service or 0 if the service is
    *         unknown.
    * @em Very @em important: Don't store the result in a @ref KService * !
