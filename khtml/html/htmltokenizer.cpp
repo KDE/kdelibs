@@ -125,22 +125,6 @@ static const char titleEnd [] = "</title";
 \
                 case 0x9E: (x) = 0x017E; break; \
                 case 0x9F: (x) = 0x0178; break; \
-                /* This one should die */ \
-                case 0xb7: (x) = '*';    break; \
-                default: break; \
-                } \
-            } \
-            else { \
-                /* These should all die sooner rather than later */ \
-                switch( (x).unicode() ) { \
-                case 0x2013: (x) = '-'; break; \
-                case 0x2014: (x) = '-'; break; \
-                case 0x2018: (x) = '\''; break; \
-                case 0x2019: (x) = '\''; break; \
-                case 0x201c: (x) = '"'; break; \
-                case 0x201d: (x) = '"'; break; \
-                case 0x2022: (x) = '*'; break; \
-                case 0x2122: (x) = 0x2122; break; \
                 default: break; \
                 } \
             }
