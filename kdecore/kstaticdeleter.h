@@ -86,13 +86,13 @@ public:
 	return obj;
     }
     virtual void destructObject() {
+        if (globalReference)
+           *globalReference = 0;
 	if (array)
 	   delete [] deleteit;
 	else
 	   delete deleteit;
     	deleteit = 0;
-        if (globalReference)
-           *globalReference = 0;
     }
     virtual ~KStaticDeleter() {
     	KGlobal::unregisterStaticDeleter(this);
