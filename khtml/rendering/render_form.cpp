@@ -63,7 +63,6 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
     setInline(true);   // our object is Inline
 
     m_state = 0;
-    m_isDoubleClick = false;
 }
 
 RenderFormElement::~RenderFormElement()

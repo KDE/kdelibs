@@ -93,7 +93,6 @@ protected:
 
     QPoint m_mousePos;
     int m_state;
-    bool m_isDoubleClick;
 };
 
 // -------------------------------------------------------------------------
