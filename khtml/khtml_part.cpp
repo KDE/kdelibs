@@ -2529,6 +2529,7 @@ void KHTMLPart::slotFindDone()
 
 void KHTMLPart::slotFindDialogDestroyed()
 {
+  d->m_lastFindState.options = d->m_findDialog->options();
   d->m_lastFindState.history = d->m_findDialog->findHistory();
   d->m_findDialog->deleteLater();
   d->m_findDialog = 0L;
