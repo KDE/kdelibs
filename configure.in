@@ -253,5 +253,6 @@ AC_OUTPUT(Makefile \
 	kidl/Makefile \
 	kidl2cpp/Makefile \
 	kparts/Makefile \
+	interfaces/Makefile \
 	dcop/Makefile )
 

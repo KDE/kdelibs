@@ -22,9 +22,12 @@
 
 #include <qwidget.h>
 #include <qpoint.h>
-#include <kfileitem.h>
+#include <qlist.h>
 
 #include <kaction.h>
+
+class KFileItem;
+typedef QList<KFileItem> KFileItemList;
 
 class QString;
 
@@ -100,7 +103,7 @@ signals:
   void createNewWindow( const QString &url );
   void loadingProgress( int percent );
   void speedProgress( int bytesPerSecond );
-  void popupMenu( const QPoint &_global, KFileItemList _items );
+  void popupMenu( const QPoint &_global, const KFileItemList &_items );
   
 private:
   QValueList<ViewAction> m_actionCollection;
