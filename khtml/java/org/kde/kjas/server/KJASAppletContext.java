@@ -22,6 +22,10 @@ public class KJASAppletContext implements AppletContext
     private KJASAppletClassLoader loader;
     private boolean active;
 
+    // we need a mapping JS referenced Java objects
+    // for now, remember only the last one
+    private Object get_member_obj = null;
+
     private final static int JError    = 0;
     private final static int JBoolean  = 1;
     private final static int JFunction = 2;
@@ -301,6 +305,39 @@ public class KJASAppletContext implements AppletContext
         }
         return null;
     }
+    private int findMember(Class c, Object obj, String name, StringBuffer value)
+    {
+        if (c == null)
+            return JError;
+        try {
+            try {
+                Field field = c.getField(name);
+                Object fo = field.get(obj);
+                value.insert(0, fo.toString());
+                String type = field.getType().getName();
+                if (type.equals("boolean") || type.equals("java.lang.Boolean"))
+                    return JBoolean;
+                if (type.equals("int") || type.equals("long") || 
+                    type.equals("float") || type.equals("double") ||
+                    fo instanceof java.lang.Number)
+                    return JNumber;
+                if (type.equals("java.lang.String"))
+                    return JString;
+                get_member_obj = fo;
+                return JObject;
+            } catch (Exception ex) {
+                Method [] m = c.getDeclaredMethods();
+                for (int i = 0; i < m.length; i++)
+                    if (m[i].getName().equals(name)) {
+                        return JFunction;
+                    }
+                return findMember(c.getSuperclass(), obj, name, value);
+            }
+        } catch (Exception e) {
+            Main.debug("findMember throwed exception: " + e.toString());
+        }
+        return JError;
+    }
     public int getMember(String appletID, String name, StringBuffer value)
     {
         KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
@@ -308,31 +345,27 @@ public class KJASAppletContext implements AppletContext
             Main.debug( "could not get value of applet: " + appletID );
             return 0;
         }
-        try {
-            Applet applet = stub.getApplet();
-	    Class c = applet.getClass();
-            String type;
-            try { 
-                Field field = c.getField(name);
-                value.insert(0, field.get(applet).toString());
-                type = field.getType().getName();
-                Main.debug( "Get value of applet: " + value + " " + type );
-            } catch (Exception ex) {
-                Method [] m = c.getDeclaredMethods();
-                for (int i = 0; i < m.length; i++)
-                    if (m[i].getName().equals(name))
-                        return JFunction;
-                return JError;
-            }
-            if (type.equals("boolean") || type.equals("java.lang.Boolean"))
-                return JBoolean;
-            if (type.equals("int") || type.equals("java.lang.Integer"))
-                return JNumber;
-            return JString;
-        } catch (Exception e) {
-            Main.debug("getMember throwed exception: " + e.toString());
+        Main.debug("getMember: " + name);
+        Object obj;
+        int basename = name.lastIndexOf('.');
+        if (basename > -1) {
+            obj = get_member_obj;
+            name = name.substring(basename + 1);
+            Main.debug("getMember basename: " + name);
+        } else {
+            obj = stub.getApplet();
         }
-        return JError;
+        return findMember(obj.getClass(), obj, name, value);
+    }
+    private Method findMethod(Class c, String name, Class [] argcls) {
+        if (c == null)
+            return null;
+        try {
+            Method m = c.getDeclaredMethod(name, argcls);
+            return m;
+        } catch (Exception e) {
+            return findMethod(c.getSuperclass(), name, argcls);
+        }
     }
     public int callMember(String appletID, String name, StringBuffer value, java.util.List args)
     {
@@ -342,22 +375,31 @@ public class KJASAppletContext implements AppletContext
             return JError;
         }
         try {
-            Applet applet = stub.getApplet();
-	    Class c = applet.getClass();
+            Main.debug("callMember: " + name);
+            Object obj;
+            int basename = name.lastIndexOf('.');
+            if (basename > -1) {
+                obj = get_member_obj;
+                name = name.substring(basename + 1);
+                Main.debug("callMember basename: " + name);
+            } else {
+                obj = stub.getApplet();
+            }
+	    Class c = obj.getClass();
             String type;
             Class [] argcls = new Class[args.size()];
             for (int i = 0; i < args.size(); i++)
                 argcls[i] = name.getClass(); // String for now
-            Method m = c.getDeclaredMethod(name, argcls);
+            Method m = findMethod(c, name, argcls);
             Object [] argobj = new Object[args.size()];
             for (int i = 0; i < args.size(); i++)
                 argobj[i] = args.get(i); //for now
             type = m.getReturnType().getName();
-            Object retval =  m.invoke(applet, argobj);
+            Object retval =  m.invoke(obj, argobj);
             if (retval == null)
                 return JVoid; // void
             value.insert(0, retval.toString());
-            Main.debug( "Call value of applet: " + value + " " + type );
+            Main.debug( "Call value of object: " + value + " " + type );
             if (type.equals("boolean") || type.equals("java.lang.Boolean"))
                 return JBoolean;
             if (type.equals("int") || type.equals("java.lang.Integer"))
