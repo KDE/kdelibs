@@ -54,7 +54,7 @@ using namespace DOM;
 #include "rendering/render_table.h"
 using namespace khtml;
 
-#include <stdio.h>
+#include <kdebug.h>
 #include <assert.h>
 
 using namespace khtml;
@@ -195,7 +195,7 @@ void HTMLTableElementImpl::deleteRow( long /*index*/ )
 NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 {
 //#ifdef DEBUG_LAYOUT
-    printf("%s(Table)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
+    kdDebug(300) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
 //#endif
 
     switch(child->id())
@@ -520,7 +520,7 @@ void HTMLTableRowElementImpl::deleteCell( long index )
 NodeImpl *HTMLTableRowElementImpl::addChild(NodeImpl *child)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(TableRow)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
+    kdDebug(300) << nodeName().string() << "(TableRow)::addChild( " << child->nodeName().string() << " )" << endl;
 #endif
 
     NodeImpl *ret = HTMLElementImpl::addChild(child);
@@ -659,7 +659,7 @@ ushort HTMLTableColElementImpl::id() const
 NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(Table)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
+    kdDebug(300) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
 #endif
 
     switch(child->id())
@@ -670,7 +670,7 @@ NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
 	HTMLElementImpl::addChild(child);
 	HTMLTableColElementImpl* colel = static_cast<HTMLTableColElementImpl *>(child);
 	colel->setStartCol(_currentCol);
-//	printf("_currentCol=%d\n",_currentCol);
+//	kdDebug(300) << "_currentCol=" << _currentCol << endl;
 	_currentCol++;
 	return child;
     }
