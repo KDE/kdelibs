@@ -3872,8 +3872,8 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 
           d->m_selectionStart = node;
           d->m_startOffset = offset;
-//           kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
-//                         << " offset=" << d->m_startOffset << endl;
+          //kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
+          //               << " offset=" << d->m_startOffset << endl;
           d->m_selectionEnd = d->m_selectionStart;
           d->m_endOffset = d->m_startOffset;
           d->m_doc->clearSelection();
@@ -3901,8 +3901,49 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
   }
 }
 
-void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent * )
+void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event )
 {
+  QMouseEvent *_mouse = event->qmouseEvent();
+  if ( _mouse->button() == LeftButton )
+  {
+    d->m_bMousePressed = true;
+    DOM::Node innerNode = event->innerNode();
+    // Find selectionStart again, khtmlMouseReleaseEvent lost it
+    if ( !innerNode.isNull() && innerNode.handle()->renderer()) {
+      int offset = 0;
+      DOM::NodeImpl* node = 0;
+      innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
+                                                           event->absX()-innerNode.handle()->renderer()->xPos(),
+                                                           event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
+
+      if ( node )
+      {
+        // Extend selection to a complete word
+        int start = offset;
+        int end = start;
+        DOM::Node n = node;
+        if(n.nodeType() == DOM::Node::TEXT_NODE) {
+          QString str = n.nodeValue().string();
+          //kdDebug(6050) << " str=" << str << " offset=" << offset << endl;
+          while ( start > 0 && !str[start-1].isSpace() && !str[start-1].isPunct() )
+            start--;
+          int len = str.length();
+          while ( end < len-1 && !str[end].isSpace() && !str[end].isPunct() )
+            end++;
+
+          d->m_startOffset = start;
+          d->m_selectionEnd = d->m_selectionStart = n;
+          d->m_endOffset = end;
+          d->m_startBeforeEnd = true; // obviously
+          //kdDebug(6050) << " selecting from " << start << " to " << end << endl;
+          emitSelectionChanged();
+          d->m_doc
+            ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
+                           d->m_selectionEnd.handle(),d->m_endOffset);
+        }
+      }
+    }
+  }
 }
 
 void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
