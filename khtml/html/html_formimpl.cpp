@@ -846,7 +846,6 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
         if (m_render)
         {
             m_render->setStyle(m_style);
-            m_render->ref();
             kdDebug( 6030 ) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
             QString state = document->registerElement(this);
             if ( !state.isEmpty())
@@ -1232,7 +1231,6 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
         {
             m_render = f;
             m_render->setStyle(m_style);
-            m_render->ref();
             r->addChild(m_render, _next ? _next->renderer() : 0);
         }
     }
@@ -1617,7 +1615,6 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
         {
             m_render = f;
             m_render->setStyle(m_style);
-            m_render->ref();
             r->addChild(m_render, _next ? _next->renderer() : 0);
 
             QString state = document->registerElement(this);

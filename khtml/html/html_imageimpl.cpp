@@ -176,11 +176,10 @@ void HTMLImageElementImpl::attach(KHTMLView *w)
 	RenderImage *renderImage = new RenderImage();
 	renderImage->setStyle(m_style);
 	renderImage->setAlt(alt);
-	renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL(),
-	                         static_cast<HTMLDocumentImpl *>(document)->docLoader());
-	m_render = renderImage;
-	m_render->ref();
+	m_render = renderImage;	
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
+	renderImage->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL(),
+	                         static_cast<HTMLDocumentImpl *>(document)->docLoader());        
 	
     }
     NodeBaseImpl::attach( w );

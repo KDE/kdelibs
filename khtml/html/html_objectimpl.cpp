@@ -163,7 +163,6 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
   {
       m_render = f;
       m_render->setStyle(m_style);
-      m_render->ref();
       r->addChild(m_render, _next ? _next->renderer() : 0);
   }
   NodeBaseImpl::attach(_view);
@@ -274,7 +273,6 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
       RenderPartObject *p = new RenderPartObject( w, this );
       m_render = p;
       m_render->setStyle(m_style);
-      m_render->ref();
       r->addChild( m_render, _next ? _next->renderer() : 0 );
    } else
    {
@@ -352,7 +350,6 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
   RenderPartObject *p = new RenderPartObject( w, this );
   m_render = p;
   m_render->setStyle(m_style);
-  m_render->ref();
   r->addChild( m_render, _next ? _next->renderer() : 0 );
 
   NodeBaseImpl::attach( w );

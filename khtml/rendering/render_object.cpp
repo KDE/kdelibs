@@ -120,30 +120,33 @@ RenderObject::RenderObject()
 
 RenderObject::~RenderObject()
 {
+    if(m_bgImage) m_bgImage->deref(this);
+    
     //kdDebug( 6090 ) << "RenderObject::~RenderObject this=" << this << endl;
     // previous and next node may still reference this!!!
     // hope this fix is fine...
-    if(m_previous) m_previous->setNextSibling(0);
-    if(m_next) m_next->setPreviousSibling(0);
+    
+    if (m_parent)
+    {
+        //have parent, take care of the tree integrity
+                
+        m_parent->removeChild(this);
+    
+    } //if not, it is mass a deletion, just kill everyone
 
     RenderObject *n;
     RenderObject *next;
 
     for( n = m_first; n != 0; n = next )
     {
-	n->setParent(0);
+	n->setParent(0); //zero the parent
 	next = n->nextSibling();
-	if(n->deleteMe()) delete n;
+	delete n;
     }
 
-    if(m_bgImage) m_bgImage->deref(this);
+    
 }
 
-bool RenderObject::deleteMe()
-{
-    if(!m_parent && _ref <= 0) return true;
-    return false;
-}
 
 void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {

@@ -55,7 +55,6 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
 
 NodeImpl::~NodeImpl()
 {
-  if(m_render) m_render->deref();
   if (document)
     document->changedNodes.remove(this);
 }

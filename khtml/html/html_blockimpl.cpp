@@ -153,7 +153,6 @@ void HTMLHRElementImpl::attach(KHTMLView *w)
 	renderHr->setShade(shade);
 	m_render = renderHr;
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
-	m_render->ref();
     }
     NodeBaseImpl::attach( w );
 }

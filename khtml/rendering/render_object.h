@@ -49,7 +49,7 @@ namespace khtml {
     class RenderTable;
     class CachedObject;
 
-class RenderObject : public DOM::DomShared, public CachedObjectClient
+class RenderObject : public CachedObjectClient
 {
 public:
 
@@ -57,8 +57,6 @@ public:
     virtual ~RenderObject();
 
     static RenderObject *createObject(DOM::NodeImpl *node);
-
-    virtual bool deleteMe();
 
     DOM::ActivationState hasKeyboardFocus;
 

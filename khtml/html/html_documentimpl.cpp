@@ -333,7 +333,6 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
 
     m_render = new RenderRoot(w);
     m_render->setStyle(m_style);
-    m_render->ref();
 
     NodeBaseImpl::attach(w);
 }
@@ -354,8 +353,6 @@ void HTMLDocumentImpl::detach()
     kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
     m_view = 0;
 
-    if(m_render) m_render->deref();
-    m_render = 0;
     DocumentImpl::detach();
 }
 

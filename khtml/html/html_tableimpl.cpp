@@ -703,7 +703,6 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
     if(r)
     {
 	m_render = khtml::RenderObject::createObject(this);
-	m_render->ref();
 	if(m_render && m_render->style()->display() == TABLE_CELL)
 	{
 	    RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);

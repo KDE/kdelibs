@@ -452,7 +452,6 @@ void ElementImpl::attach(KHTMLView *w)
 	if(m_render)
 	{
 	    _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
-	    m_render->ref();
 	}
     }
 
@@ -460,14 +459,13 @@ void ElementImpl::attach(KHTMLView *w)
 }
 
 void ElementImpl::detach()
-{
-    if(m_render) {
-	if (m_render->parent())
-	    m_render->parent()->removeChild(m_render);
-	m_render->deref();
-    }
+{    
+    NodeBaseImpl::detach();    
+    
+    if(m_render)
+	delete m_render;
+    
     m_render = 0;
-    NodeBaseImpl::detach();
 }
 
 void ElementImpl::applyChanges(bool top, bool force)

@@ -145,7 +145,6 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
 
     m_render = new khtml::RenderBody();
     m_render->setStyle(m_style);
-    m_render->ref();
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     NodeBaseImpl::attach( w );
@@ -233,7 +232,6 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
     khtml::RenderFrame *renderFrame = new khtml::RenderFrame( w, this );
     m_render = renderFrame;
     m_render->setStyle(m_style);
-    m_render->ref();
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     // we need a unique name for every frame in the frameset. Hope that's unique enough.
@@ -336,7 +334,6 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
     khtml::RenderFrameSet *renderFrameSet = new khtml::RenderFrameSet( this, w, m_rows, m_cols );
     m_render = renderFrameSet;
     m_render->setStyle(m_style);
-    m_render->ref();
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     NodeBaseImpl::attach( w );
@@ -495,7 +492,6 @@ void HTMLHtmlElementImpl::attach(KHTMLView *w)
 
     m_render = new khtml::RenderHtml();
     m_render->setStyle(m_style);
-    m_render->ref();
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     NodeBaseImpl::attach( w );
@@ -582,7 +578,6 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
   khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, this );
   m_render = renderFrame;
   m_render->setStyle(m_style);
-  m_render->ref();
   r->addChild( m_render, _next ? _next->renderer() : 0 );
 
 
