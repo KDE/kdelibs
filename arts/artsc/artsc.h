@@ -123,12 +123,12 @@ typedef enum arts_parameter_t_enum arts_parameter_t;
  * @return 0 if everything is all right, an error code otherwise
  */
 
-int arts_init();
+int arts_init(void);
 
 /**
  * disconnects from the sound server and frees the aRts C API internals
  */
-void arts_free();
+void arts_free(void);
 
 /**
  * converts an error code to a human readable error message
