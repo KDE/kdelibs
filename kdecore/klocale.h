@@ -21,6 +21,7 @@
 
 #include <qintdict.h>
 #include <qstring.h>
+#include <qstrlist.h>
 
 /**
   *
@@ -102,15 +103,25 @@ public:
     const QString& charset() const { return chset; }
     
     /**
-      * Return the base directory, where you can find the language
+      * Returns the base directory, where you can find the language
       * specific things like messages.
       * Please note, that this function is unused currently and may
       * not work.
       */
     QString directory();
 
+    /**
+     * adds anther catalogue to search for translation lookup.
+     * This function is useful for extern libraries and/or code,
+     * that provides it's own messages.
+     * 
+     * If the catalogue does not exist for the chosen language,
+     * it will be ignored and C will be used.
+     **/
+    void insertCatalogue(const char *catalogue);
+
 private:
-    char *catalogue;
+    QStrList *catalogues;
     QString lang;
     QIntDict<char> aliases;
     QString chset;

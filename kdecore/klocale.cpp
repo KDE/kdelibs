@@ -66,24 +66,23 @@ char *k_bindtextdomain (const char *__domainname,
 
 #ifdef ENABLE_NLS
 
-KLocale::KLocale( const char *_catalogue ) 
+KLocale::KLocale( const char *catalogue )
 {
 #ifdef HAVE_SETLOCALE
     /* Set locale via LC_ALL according to environment variables  */
     setlocale (LC_ALL, "");
 #endif
     chset="us-ascii";
-    if ( ! _catalogue )
-	_catalogue = kapp->appName().data();
+    if ( ! catalogue )
+	catalogue = kapp->appName().data();
     
-    catalogue = new char[ strlen(_catalogue) + 12 ];
-    strcpy(catalogue, _catalogue);
+    catalogues = new QStrList(true);
+    catalogues->append(catalogue);
     
     QString languages;
     const char *g_lang = getenv("KDE_LANG");
     
     if (! g_lang ) {
-
 	if (kapp) {
 	    KConfig* config = kapp->getConfig();
 	    config->setGroup("Locale");
@@ -91,16 +90,16 @@ KLocale::KLocale( const char *_catalogue )
 	} else
 	    languages = "C";
     } else
-      languages = g_lang;
+	languages = g_lang;
     
 #ifdef HAVE_SETLOCALE
-// setlocale reads variables LC_* and LANG, and it may use aliasses,
-// so we don't have to do it
+    // setlocale reads variables LC_* and LANG, and it may use aliases,
+    // so we don't have to do it
     g_lang = setlocale(LC_MESSAGES,0);
 #else   
     g_lang = getenv("LANG");
 #endif
-
+    
     if (languages.isEmpty() || (languages == "C")) {
 	if (g_lang)
 	    languages = g_lang;
@@ -113,7 +112,7 @@ KLocale::KLocale( const char *_catalogue )
     QString directory = KApplication::kde_localedir();
     
     while (1) {
-	int f = languages.find(':');
+      int f = languages.find(':');
 	if (f > 0) {
 	    lang = languages.left(f);
 	    languages = languages.right(languages.length() - 
@@ -127,8 +126,9 @@ KLocale::KLocale( const char *_catalogue )
 	    break;
 	
 	while (!lang.isEmpty()) {
-		QDir d(directory + "/" +  lang + "/LC_MESSAGES");
-	    if (d.exists(QString(catalogue) + ".mo") && 
+	  QDir d(directory + "/" +  lang + "/LC_MESSAGES");
+	  
+	    if (d.exists(QString(catalogue) + ".mo") &&
 		d.exists(QString(SYSTEM_MESSAGES) + ".mo")) 
 		goto found; // my first time ;-)
 	    f = lang.findRev('_');
@@ -139,9 +139,8 @@ KLocale::KLocale( const char *_catalogue )
 	}
     }
  found:
-    /* Set the text message domain.  */
-    k_bindtextdomain ( catalogue , directory);
-    k_bindtextdomain ( SYSTEM_MESSAGES,  directory);
+    insertCatalogue( catalogue );
+    insertCatalogue( SYSTEM_MESSAGES );
     
     QFile f(directory+"/"+lang+"/charset");   
     if (f.exists() && f.open(IO_ReadOnly)){
@@ -156,24 +155,34 @@ KLocale::KLocale( const char *_catalogue )
     }
 }
 
+void KLocale::insertCatalogue( const char *catalogue )
+{
+    k_bindtextdomain ( catalogue , KApplication::kde_localedir() );
+    catalogues->append(catalogue);
+}
+
 KLocale::~KLocale()
 {
-    delete [] catalogue;
+    delete catalogues;
 }
 
 const char *KLocale::translate(const char *msgid)
 {
-    char *text = k_dcgettext( catalogue, msgid, lang);
+    const char *text = msgid;
+    for (const char *catalogue = catalogues->first(); catalogue; 
+	 catalogue = catalogues->next()) 
+    {
+	text = k_dcgettext( catalogue, msgid, lang);
+	if ( text != msgid) // we found it
+	    break;
+    }
 
-    if (text == msgid) // just compare the pointers
-	text = k_dcgettext( SYSTEM_MESSAGES, msgid, lang);
-   
     return text;
 }
 
 QString KLocale::directory() 
 {
-    return KApplication::kde_localedir() +  lang;
+    return KApplication::kde_localedir() +  "/" + lang;
 }
 
 void KLocale::aliasLocale( const char* text, long int index)
