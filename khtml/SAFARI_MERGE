@@ -72,6 +72,19 @@ Needs other stuff before it can be applied:
 # html
 ===========================================================================
 
+- dtd.cpp: changes regareding ID_TEXT, ID_FORM, A FONT and KONQBLOCK left out
+
+- html_formimpl.cpp/.h: many changes skipped. will need to integrate the
+  "activate first submit" button part. 
+
+- html_headimpl.cpp:  changes for FOUC in external style loading
+
+- html_image/html_form: name / id lookup cache skipped. want to do that
+  for all elements. 
+
+- html_miscimpl.cpp: case insensitive name / id matching
+
+- html_parser: reapplying of dropped attributes. reported to be obsolete
 
 ===========================================================================
 # misc
