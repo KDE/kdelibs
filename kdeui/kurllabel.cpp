@@ -5,7 +5,6 @@
  * Copyright (C) 1998 Kurt Granroth <granroth@kde.org>
  */
 #include "kurllabel.h"
-#include "kurllabel.h"
 
 #include <qtooltip.h>
 #include <kcursor.h>
