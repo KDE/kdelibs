@@ -105,6 +105,16 @@ void LdapClient::setBase( const QString& base )
   mBase = base;
 }
 
+void LdapClient::setBindDN( const QString& bindDN )
+{
+  mBindDN = bindDN;
+}
+
+void LdapClient::setPwdBindDN( const QString& pwdBindDN )
+{
+  mPwdBindDN = pwdBindDN;
+}
+
 void LdapClient::setAttrs( const QStringList& attrs )
 {
   mAttrs = attrs;
@@ -117,6 +127,14 @@ void LdapClient::startQuery( const QString& filter )
   if ( mScope.isEmpty() )
     mScope = "sub";
 
+  QString auth;
+  if ( !mBindDN.isEmpty() ) {
+    auth = mBindDN;
+    if ( !mPwdBindDN.isEmpty() )
+      auth += ":" + mPwdBindDN;
+    auth += "@";
+  }
+
   QString host = mHost;
   if ( !mPort.isEmpty() ) {
     host += ':';
@@ -124,9 +142,9 @@ void LdapClient::startQuery( const QString& filter )
   }
 
   if ( mAttrs.empty() ) {
-    query = QString("ldap://%1/%2?*?%3?(%4)").arg( host ).arg( mBase ).arg( mScope ).arg( filter );
+    query = QString("ldap://%1%2/%3?*?%4?(%5)").arg( auth ).arg( host ).arg( mBase ).arg( mScope ).arg( filter );
   } else {
-    query = QString("ldap://%1/%2?%3?%4?(%5)").arg( host ).arg( mBase )
+    query = QString("ldap://%1%2/%3?%4?%5?(%6)").arg( auth ).arg( host ).arg( mBase )
       .arg( mAttrs.join(",") ).arg( mScope ).arg( filter );
   }
   kdDebug(5700) << "Doing query" << query.latin1() << endl;
@@ -304,6 +322,14 @@ LdapSearch::LdapSearch()
       QString base = config.readEntry( QString( "SelectedBase%1" ).arg( j ), "" ).stripWhiteSpace();
       if ( !base.isEmpty() )
         ldapClient->setBase( base );
+
+      QString bindDN = config.readEntry( QString( "SelectedBind%1" ).arg( j ) ).stripWhiteSpace();
+      if ( !bindDN.isEmpty() )
+        ldapClient->setBindDN( bindDN );
+
+      QString pwdBindDN = config.readEntry( QString( "SelectedPwdBind%1" ).arg( j ) ).stripWhiteSpace();
+      if ( !pwdBindDN.isEmpty() )
+        ldapClient->setPwdBindDN( pwdBindDN );
 
       QStringList attrs;
       attrs << "cn" << "mail" << "givenname" << "sn";

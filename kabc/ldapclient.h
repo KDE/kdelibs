@@ -123,6 +123,18 @@ class LdapClient : public QObject
     void setBase( const QString& base );
     QString base() const { return mBase; }
 
+    /*!
+     * Set the bind DN 
+     */
+    void setBindDN( const QString& bindDN );
+    QString bindDN() const { return mBindDN; }
+
+    /*!
+     * Set the bind password DN 
+     */
+    void setPwdBindDN( const QString& pwdBindDN );
+    QString pwdBindDN() const { return mPwdBindDN; }
+
     /*! Set the attributes that should be
      * returned, or an empty list if
      * all attributes are wanted
@@ -155,6 +167,8 @@ class LdapClient : public QObject
     QString mHost;
     QString mPort;
     QString mBase;
+    QString mBindDN;
+    QString mPwdBindDN;
     QString mScope;
     QStringList mAttrs;
   
