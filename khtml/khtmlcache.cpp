@@ -160,7 +160,7 @@ KHTMLCachedImage::pixmap()
 void
 KHTMLCachedImage::computeStatus()
 {
-    if( size > MAXCACHEABLE && size > KHTMLCache::size()/MAXPERCENT )
+    if( size > MAXCACHEABLE || size > KHTMLCache::size()/MAXPERCENT )
     {
 	status = KHTMLCache::Uncacheable;
 	size = 0;
@@ -462,10 +462,13 @@ KHTMLCache::fileLoaded( QString _url, QBuffer & _buffer, bool eof )
   printf("Processing %s\n",_url.latin1());
 #endif
 
-    // convert file to pixmap or movie
-    return im->data( _buffer, eof );
-    if( eof )
-	actSize += im->size;
+  // convert file to pixmap or movie and store return state
+  bool state = im->data( _buffer, eof );
+
+  if( eof )
+    actSize += im->size;
+  
+  return state;
 }
 
 void 
@@ -607,14 +610,13 @@ KHTMLCache::statistics()
     for(it.toFirst(); it.current(); ++it)
     {
         im = it.current();
-	QPixmap *p = im->pixmap();
 	if(im->m != 0)
-	{
+	  {
 	    movie++;
 	    msize += im->size;
-	}
-	else if( p != 0 && !p->isNull())
-	    size += p->width()*p->height()*p->depth()/8;
+	  }
+	else
+	  size += im->size;
     }
     size /= 1024;
 
