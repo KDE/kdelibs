@@ -72,11 +72,11 @@ void RenderImage::setStyle(RenderStyle* _style)
     setOverhangingContents(style()->height().isPercent());
     setSpecialObjects(true);
 
-    if (style()->contentObject())
-    {
+    CachedObject* co = style()->contentObject();
+    if (co && image != co ) {
         if (image) image->deref(this);
         image = static_cast<CachedImage*>(style()->contentObject());
-        image->ref(this);
+        if (image) image->ref(this);
     }
 }
 
@@ -339,11 +339,10 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
 void RenderImage::updateFromElement()
 {
-    assert(element());
     CachedImage *new_image = element()->getDocument()->docLoader()->
                              requestImage(khtml::parseURL(element()->getAttribute(ATTR_SRC)));
 
-    if(new_image && new_image != image) {
+    if(new_image && new_image != image && (!style() || !style()->contentObject())) {
         loadEventSent = false;
         if(image) image->deref(this);
         image = new_image;

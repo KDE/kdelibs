@@ -92,7 +92,7 @@ inline bool operator==( const BidiIterator &it1, const BidiIterator &it2 )
     return true;
 }
 
-inline bool operator!=( const BidiIterator &it1, const BidiIterator &it2 ) 
+inline bool operator!=( const BidiIterator &it1, const BidiIterator &it2 )
 {
     if(it1.pos != it2.pos) return true;
     if(it1.obj != it2.obj) return true;
@@ -189,7 +189,7 @@ inline void BidiIterator::operator ++ ()
     if(!obj) return;
     if(obj->isText()) {
         pos++;
-        if(pos >= obj->length()) {
+        if(pos >= static_cast<RenderText *>(obj)->stringLength()) {
             obj = Bidinext( par, obj );
             pos = 0;
         }
@@ -205,18 +205,20 @@ inline bool BidiIterator::atEnd() const
     return false;
 }
 
-const QChar &BidiIterator::current() const
+static const QChar nbsp = QChar(0xA0);
+
+inline const QChar &BidiIterator::current() const
 {
-    static const QChar nbsp = QChar(0xA0);
     if( !obj || !obj->isText()) return nbsp; // non breaking space
     return static_cast<RenderText *>(obj)->text()[pos];
 }
 
-QChar::Direction BidiIterator::direction() const
+inline QChar::Direction BidiIterator::direction() const
 {
-    if(!obj || !obj->isText() || obj->length() <= 0) return QChar::DirON;
+    if(!obj || !obj->isText() ) return QChar::DirON;
+    
     RenderText *renderTxt = static_cast<RenderText *>( obj );
-    if ( pos >= renderTxt->length() )
+    if ( pos >= renderTxt->stringLength() )
         return QChar::DirON;
     return renderTxt->text()[pos].direction();
 }
@@ -229,7 +231,7 @@ static void appendRun()
 #if BIDI_DEBUG > 1
     kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
 #endif
-    
+
     bool b = adjustEmbeddding;
     adjustEmbeddding = false;
 
@@ -257,9 +259,9 @@ static void appendRun()
 
 static void embed( QChar::Direction d )
 {
-#if BIDI_DEBUG > 1    
+#if BIDI_DEBUG > 1
     qDebug("*** embed dir=%d emptyrun=%d", d, emptyRun );
-#endif    
+#endif
     bool b = adjustEmbeddding ;
     adjustEmbeddding = false;
     if ( d == QChar::DirPDF ) {
@@ -336,10 +338,10 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 	}
 	return;
     }
-#if BIDI_DEBUG > 1    
+#if BIDI_DEBUG > 1
     kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
 #endif
-    
+
     QPtrList<BidiRun> runs;
     runs.setAutoDelete(true);
     sruns = &runs;
@@ -348,7 +350,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 
     dir = QChar::DirON;
     emptyRun = true;
-    
+
     numSpaces = 0;
 
     current = start;
@@ -367,7 +369,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
         } else {
             dirCurrent = current.direction();
 	}
-	
+
 #ifndef QT_NO_UNICODETABLES
 
 #if BIDI_DEBUG > 1
@@ -398,7 +400,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
                 case QChar::DirAL:
                 case QChar::DirEN:
                 case QChar::DirAN:
-                    appendRun();	
+                    appendRun();
                     break;
                 case QChar::DirES:
                 case QChar::DirET:
@@ -686,7 +688,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     }
 
 #if BIDI_DEBUG > 0
-    kdDebug(6041) << "reached end of line current=" << current.obj << "/" << current.pos 
+    kdDebug(6041) << "reached end of line current=" << current.obj << "/" << current.pos
 		  << ", eor=" << eor.obj << "/" << eor.pos << endl;
 #endif
     if ( !emptyRun && sor != current ) {
@@ -927,7 +929,7 @@ void RenderFlow::layoutInlineChildren()
 #endif
 #if BIDI_DEBUG > 1 || defined( DEBUG_LINEBREAKS )
     kdDebug(6041) << " ------- bidi start " << this << " -------" << endl;
-#endif    
+#endif
     int toAdd = style()->borderBottomWidth();
     m_height = style()->borderTopWidth();
 
@@ -974,7 +976,7 @@ void RenderFlow::layoutInlineChildren()
         firstLine = true;
         while( !end.atEnd() ) {
             start = end;
-	    
+
             end = findNextLineBreak(start);
             if( start.atEnd() ) break;
 	    bidiReorderLine(start, end);
@@ -1002,7 +1004,7 @@ void RenderFlow::layoutInlineChildren()
 
 #if BIDI_DEBUG > 1
     kdDebug(6041) << " ------- bidi end " << this << " -------" << endl;
-#endif    
+#endif
     //kdDebug() << "RenderFlow::layoutInlineChildren time used " << qt.elapsed() << endl;
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
@@ -1093,7 +1095,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
             tmpW += o->width()+o->marginLeft()+o->marginRight();
         } else if ( o->isText() ) {
 	    RenderText *t = static_cast<RenderText *>(o);
-	    int strlen = t->length();
+	    int strlen = t->stringLength();
 	    int len = strlen - pos;
 	    QChar *str = t->text();
 #if 0
