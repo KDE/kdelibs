@@ -399,7 +399,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
-                i18n("Do you really want to delete these %n items?").arg( items.count() ),
+                i18n("translators: not called for n == 1", "Do you really want to delete these %n items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
                                                     i18n("Delete") );
