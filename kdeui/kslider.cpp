@@ -165,13 +165,13 @@ QPoint KSlider::calcArrowPos( int val )
   int diffMaxMin = checkWidth();	// sanity check, Christian Esken
 
   if ( orientation() == Vertical ) {
-    p.setY( height() - ( (height()-10) * ( val - minValue() )
-				  / diffMaxMin + 5 ) );
+    p.setY( height() - ( ((height()-10) * ( val - minValue() ))
+				  / diffMaxMin ) + 5 );
     p.setX( ARROW_LENGTH );
   }
   else {
-    p.setX( ( (width()-10) * ( val - minValue() )
-	      / diffMaxMin + 5 ) );
+    p.setX( ( ((width()-10) * ( val - minValue() ))
+	      / diffMaxMin) + 5  );
     p.setY( ARROW_LENGTH );
   }
   return p;
