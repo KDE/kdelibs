@@ -264,8 +264,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     if (codebase.isEmpty ())
         codebase = khtml_codebase;
 
-    if (width > 0 && height > 0)
+    if (width > 0 && height > 0) {
         m_view->resize (width, height);
+        applet->setSize( QSize( width, height ) );
+    }
     applet->setBaseURL (baseurl);
     // check codebase first
     KURL kbaseURL( baseurl );
