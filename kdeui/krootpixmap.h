@@ -101,7 +101,7 @@ public:
     /** @since 3.2
      * @return the fade color.
      */
-    const QColor &color() const { return m_FadeColor; }
+    QColor color() const { return m_FadeColor; }
 
     /** @since 3.2
      * @return the color opacity.
