@@ -225,12 +225,13 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
   else if (p == "all")
     return new HTMLDocFunction(doc, HTMLDocFunction::All);
-  else if (p == "layers")
-    return Undefined(); // We will not support that!
-  else if (p == "plugins")
-    return Undefined(); // ###
-  else if (p == "tags")
-    return Undefined(); // ###
+// potentially obsolete array properties
+//  else if (p == "layers")
+//    return Undefined();
+//  else if (p == "plugins")
+//    return Undefined();
+//  else if (p == "tags")
+//    return Undefined();
   else if (p == "cookie")
     return String(doc.cookie());
   else if (DOMDocument::hasProperty(p))	// expandos override functions
@@ -257,12 +258,13 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return String(body.link());
   else if (p == "vlinkColor")
     return String(body.vLink());
-  else if (p == "embeds")
-    return Undefined(); //###
-  else if (p == "ids")
-    return Undefined(); //###
-  else if (p == "lastModified")
-    return Undefined(); //###
+// potentially obsolete properties
+//  else if (p == "embeds")
+//    return Undefined(); 
+//  else if (p == "ids")
+//    return Undefined(); 
+//  else if (p == "lastModified")
+//    return Undefined();
   else if (p == "height")
     return Number(part->view() ? part->view()->visibleWidth() : 0);
   else if (p == "width")
