@@ -32,6 +32,7 @@
 
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 
 #include <math.h>
 #include <qpopupmenu.h>
