@@ -114,6 +114,12 @@ protected:
 
   /**
    * @internal
+   * Retrieve or create the root directory
+   */
+  KTarDirectory* rootDir();
+
+  /**
+   * @internal
    * Fills @p buffer for writing a file as required by the tar format
    * Has to be called LAST, since it does the checksum
    * (normally, only the name has to be filled in before)
@@ -363,9 +369,9 @@ private:
 /**
  * @deprecated
  * This class operates on a QDataStream, which is assumed to
- * be a normal tar archive (not gzipped). 
+ * be a normal tar archive (not gzipped).
  *
- * Obsolete. Do not use, backwards compatibility only. 
+ * Obsolete. Do not use, backwards compatibility only.
  * To be removed in KDE 3.0
  */
 class KTarData : public KTarBase

@@ -98,13 +98,7 @@ bool KTarBase::open( int mode )
       //struct stat buf;
       //stat( m_filename, &buf );
 
-    struct passwd* pw =  getpwuid( getuid() );
-    struct group* grp = getgrgid( getgid() );
-    QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
-    QString groupname = grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
-
-    //kdDebug() << "Making root dir " << endl;
-    d->rootDir = new KTarDirectory( this, QString::fromLatin1("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString::null );
+    d->rootDir = 0L;
 
     // read dir infos
     char buffer[ 0x200 ];
@@ -216,7 +210,17 @@ bool KTarBase::open( int mode )
         }
 
         if ( pos == -1 )
-          d->rootDir->addEntry( e );
+        {
+          if ( nm == "." ) // special case
+          {
+            ASSERT( !d->rootDir );
+            ASSERT( isdir );
+            if ( isdir )
+              d->rootDir = static_cast<KTarDirectory *>( e );
+          }
+          else
+            rootDir()->addEntry( e );
+        }
         else
         {
           // In some tar files we can find dir/./file => call cleanDirPath
@@ -237,12 +241,29 @@ bool KTarBase::open( int mode )
   return true;
 }
 
+KTarDirectory * KTarBase::rootDir()
+{
+  if ( !d->rootDir )
+  {
+    //kdDebug() << "Making root dir " << endl;
+    struct passwd* pw =  getpwuid( getuid() );
+    struct group* grp = getgrgid( getgid() );
+    QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
+    QString groupname = grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
+
+    d->rootDir = new KTarDirectory( this, QString::fromLatin1("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString::null );
+  }
+  return d->rootDir;
+}
 
 KTarDirectory * KTarBase::findOrCreate( const QString & path )
 {
   //kdDebug() << "KTarBase::findOrCreate " << path << endl;
-  if ( path == "" || path == "/" ) // root dir => found
-    return d->rootDir;
+  if ( path == "" || path == "/" || path == "." ) // root dir => found
+  {
+    //kdDebug() << "KTarBase::findOrCreate returning rootdir" << endl;
+    return rootDir();
+  }
   // Important note : for tar files containing absolute paths
   // (i.e. beginning with "/"), this means the leading "/" will
   // be removed (no KDirectory for it), which is exactly the way
@@ -250,9 +271,12 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
   // See also KTarDirectory::entry().
 
   // Already created ? => found
-  KTarEntry* ent = d->rootDir->entry( path );
+  KTarEntry* ent = rootDir()->entry( path );
   if ( ent && ent->isDirectory() )
+  {
+    //kdDebug() << "KTarBase::findOrCreate found it" << endl;
     return (KTarDirectory *) ent;
+  }
 
   // Otherwise go up and try again
   int pos = path.findRev( '/' );
@@ -260,7 +284,7 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
   QString dirname;
   if ( pos == -1 ) // no more slash => create in root dir
   {
-    parent =  d->rootDir;
+    parent =  rootDir();
     dirname = path;
   }
   else
@@ -593,13 +617,18 @@ int KTarGz::position()
 void KTarGz::prepareDevice( const QString & filename,
                             const QString & mimetype, bool forced )
 {
-  if(   "application/x-gzip" == mimetype
-     || "application/x-bzip2" == mimetype)
-      forced = true;
+  if( "application/x-tar" == mimetype )
+      setDevice( new QFile( filename ) );
+  else
+  {
+    if( "application/x-gzip" == mimetype
+       || "application/x-bzip2" == mimetype)
+        forced = true;
 
-  QIODevice *dev = KFilterDev::deviceForFile( filename, mimetype, forced );
-  if( 0 != dev )
-    setDevice( dev );
+    QIODevice *dev = KFilterDev::deviceForFile( filename, mimetype, forced );
+    if( dev )
+      setDevice( dev );
+  }
 }
 
 
