@@ -27,7 +27,7 @@
 #include <kcharsets.h>
 
 #include "kconfigbase.h"
-#include "kconfigbase.moc"
+#include "kconfigbackend.h"
 
 KConfigBase::KConfigBase()
   : backEnd(0L), bDirty(false), bLocaleInitialized(false), 
@@ -942,3 +942,20 @@ void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor,
 
   writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
+
+void KConfigBase::parseConfigFiles(void) 
+{ 
+    backEnd->parseConfigFiles(); 
+} 
+
+void KConfigBase::sync()
+{
+      if (isReadOnly())
+	   return;
+
+      backEnd->sync(true);
+      rollback();
+}  
+
+#include "kconfigbase.moc"
+

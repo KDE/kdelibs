@@ -84,8 +84,7 @@ public:
    */
   bool deleteGroup( const QString& pGroup, bool bDeep = true );
 
-  virtual void sync()
-    { if (isReadOnly()) return; backEnd->sync(false); rollback(); }
+  virtual void sync();
 
 private:
 

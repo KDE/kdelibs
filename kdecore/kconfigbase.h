@@ -22,6 +22,19 @@
 // $Id$
 //
 // $Log$
+// Revision 1.24  1999/05/23 21:59:06  pbrown
+// new kconfig system is in.  External API remains the same, but the in-memory
+// and on-disk formats have been abstracted.  KConfigBase now is an ADT with
+// pure virtual functions.  KConfig implements KConfigBase with a QMap-based
+// system, and a coarse cache which will kick the whole lot out of memory
+// after a scaled amount of inactivity.  The only backend that is implemented
+// right now is the INI-style backend we have had forever, but with this new
+// system, it will not be difficult to plug in a XML backend, a database
+// backend, or whatever we please, in the future.
+//
+// I have worked hard to fully document _everything_ in the API. KDoc should
+// provide nice documentation if you are interested.
+//
 
 #ifndef _KCONFIGBASE_H
 #define _KCONFIGBASE_H
@@ -32,9 +45,9 @@
 #include <qstrlist.h>
 #include <qstringlist.h>
 #include <qproperty.h>
+#include <qmap.h>
 
 #include "kconfigdata.h"
-#include "kconfigbackend.h"
 
 /**
  * Abstract base class for KDE configuration entries
@@ -690,8 +703,7 @@ public:
    *
    * @see #rollback, #isReadOnly
    */
-  virtual void sync() 
-    { if (isReadOnly()) return; backEnd->sync(true); rollback(); }
+  virtual void sync();
 
   /**
    * @returns true if the config file has any dirty (modified) entries.
@@ -771,7 +783,7 @@ protected:
    *
    * The actual parsing is done by the associated KConfigBackEnd.
    */
-  void parseConfigFiles(void) { backEnd->parseConfigFiles(); }
+  void parseConfigFiles(void);
 
   /**
    * Returns an map (tree) of the entries in the specified group.

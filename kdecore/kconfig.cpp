@@ -34,9 +34,10 @@
 #include <qfileinfo.h>
 
 #include <kapp.h>
+#include "kconfigbackend.h"
 
 #include "kconfig.h"
-#include "kconfig.moc"
+#include <qtimer.h>
 
 KConfig::KConfig( const QString& pGlobalFileName,
 		  const QString& pLocalFileName,
@@ -230,3 +231,6 @@ void KConfig::flushCache()
 
   cacheTimer->changeInterval(flushInterval * 1000);
 }
+
+#include "kconfig.moc"
+

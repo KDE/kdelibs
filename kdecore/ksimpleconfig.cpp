@@ -32,6 +32,7 @@
 #include <qfileinfo.h>
 
 #include <kapp.h>
+#include "kconfigbackend.h"
 
 #include "ksimpleconfig.h"
 #include "ksimpleconfig.moc"
@@ -123,3 +124,12 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
     // no such group
     return false;
 }
+
+void KSimpleConfig::sync()
+{
+   if (isReadOnly()) 
+       return; 
+   backEnd->sync(false); 
+   rollback(); 
+}   
+

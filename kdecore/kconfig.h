@@ -24,10 +24,10 @@
 #ifndef _KCONFIG_H
 #define _KCONFIG_H
 
-#include <qtimer.h>
-#include <qdatetime.h>
+class QTimer;
 
 #include "kconfigbase.h"
+#include <qdatetime.h>
 
 /** 
 * KDE Configuration entries
