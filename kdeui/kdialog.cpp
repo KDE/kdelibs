@@ -32,7 +32,6 @@ template class QList<QLayoutItem>;
 KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f)
 {
-  setFocusPolicy(QWidget::StrongFocus);
 }
 
 
