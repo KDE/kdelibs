@@ -108,6 +108,7 @@ KURL::detach()
     user_part.detach();
     passwd_part.detach();
     path_part_decoded.detach();
+    search_part.detach();
 }
 
 KURL::KURL() 
@@ -153,6 +154,7 @@ void KURL::parse( const char * _url )
     // defaults
     malformed = false;
     path_part_decoded = 0;
+    search_part = NULL;
     bNoPath = false;
 
     if ( _url[0] == '/' )
@@ -287,7 +289,19 @@ void KURL::parse( const char * _url )
 	ref_part = "";
     } 
 
-    cleanPath();
+    if (protocol_part == "http")
+    {
+        p = path_part.find('?');
+        if (p != -1)
+        {
+            search_part = path_part.mid( p + 1, path_part.length() );
+            path_part = path_part.left( p);
+        }
+    }
+    else
+    {
+      cleanPath();
+    }
     
     /* ip-schemepart, login, see RFC1738                   */
     /* Syntax [<user>[":"<password>]"@"]<host>[":"<port>]] */
@@ -355,11 +369,29 @@ const char* KURL::path() const
 	return "";
     else {
         KURL *that = const_cast<KURL*>(this);
-	if (that->path_part_decoded.isNull()) {
+        if (that->path_part_decoded.isNull()) {
 	    that->path_part_decoded = path_part.copy();
 	    KURL::decodeURL(that->path_part_decoded);
 	}
 	return path_part_decoded.data();
+    }
+}
+
+const char* KURL::httpPath() const
+{ 
+    if (path_part.isNull()) 
+	return "";
+    else {
+	return path_part.data();
+    }
+}
+
+const char* KURL::searchPart() const
+{ 
+    if (search_part.isNull()) 
+	return NULL;
+    else {
+	return search_part.data();
     }
 }
 
@@ -374,6 +406,11 @@ const char* KURL::protocol() const
 void KURL::setProtocol( const char* newProto) 
 { 
     protocol_part = newProto; 
+}
+
+void KURL::setSearchPart( const char* _searchPart) 
+{ 
+    search_part = _searchPart; 
 }
 
 const char* KURL::reference() const 
@@ -475,6 +512,9 @@ QString KURL::url() const
     
     if( !path_part.isEmpty() && hasPath() )
 	url += path_part; 
+
+    if( !search_part.isNull())
+    	url += "?" + search_part;
     
     if( !ref_part.isEmpty() )
 	url += "#" + ref_part;

@@ -147,6 +147,14 @@ public:
      */
     const char* path() const;
     
+    /** 
+     * This function returns the path-part of an URL and leaves it as is.
+     *
+     * For example, path() on "http://www.foo.org/bar/cgi%2Dbin?value=blue%3f" 
+     * returns "/bar/cgi%2Dbin".
+     */
+    const char* httpPath() const;
+    
     /**
      * If we parse for example ftp://weis@localhost then we dont have a path.
      * The URL means: enter the home directory of user weis, while
@@ -158,6 +166,13 @@ public:
      */
     bool hasPath() const { return !bNoPath; }
     
+    /**
+     * The search-part.
+     *
+     * @return the search-part, or NULL if no search-part was specified.
+     */
+    const char* searchPart() const;
+
     /** 
      * This function returns the reference. 
      *
@@ -262,6 +277,17 @@ public:
      * Set the password.
      */
     void setPassword( const char *password );
+
+    /**
+     * Set the search-part.
+     *
+     * The search part of an URL is the part behind the '?'.
+     * Example the URL "http://www.yahoo.com/search.cgi?country=netherland"
+     * has "country=netherland" as search-part
+     *
+     * If NULL is specified, the search-part is cleared.
+     */
+    void setSearchPart( const char *_searchPart );
     
     /** 
      * Set reference. 
@@ -345,6 +371,7 @@ protected:
     QString host_part;
     QString path_part;
     QString path_part_decoded;
+	 QString search_part;
     QString ref_part;
     // This variable is only valid after calling 'directory'.
     QString dir_part;
