@@ -456,7 +456,7 @@ bool KURL::operator==( const QString& _u ) const
   return ( *this == u );
 }
 
-bool KURL::cmp( KURL &_u, bool _ignore_trailing )
+bool KURL::cmp( const KURL &_u, bool _ignore_trailing )
 {
   if ( _ignore_trailing )
   {
@@ -959,7 +959,7 @@ KURL KURL::upURL( bool _zapRef ) const
   u.cd("..");
 
   // Did we change the directory ? => job done
-  if ( u.path() != old )
+  if ( ( u.path() != old ) && ( KProtocolManager::self().inputType( u.protocol() ) != KProtocolManager::T_STREAM ) )
   {
     if ( _zapRef )
       u.setHTMLRef( QString::null );

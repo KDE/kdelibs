@@ -331,7 +331,7 @@ public:
    *
    * @see path
    */
-  bool cmp( KURL &_u, bool _ignore_trailing = false );
+  bool cmp( const KURL &_u, bool _ignore_trailing = false );
 
   /**
    * Splits nested URLs like tar:/kdebase#gzip:/decompress#file:/home/weis/kde.tgz.
