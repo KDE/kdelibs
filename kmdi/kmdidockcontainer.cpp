@@ -455,6 +455,11 @@ void KMdiDockContainer::toggle() {
 		m_tb->setTab(oldtab,false);
 	    	tabClicked(oldtab);
 	} else {
+		kdDebug()<<"KMdiDockContainer::toggle(): raising tab"<<endl;
+		if (m_tb->tab(m_previousTab)==0) {
+			if (m_tb->tabs()->count()==0) return;
+			m_previousTab=m_tb->tabs()->getFirst()->id();
+		}
 		m_tb->setTab(m_previousTab,true);
 	    	tabClicked(m_previousTab);
 	}
