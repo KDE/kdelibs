@@ -13,7 +13,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *ev);
 private:
-    QImage image;
+    QImage image, original;
     KPixmap pixmap;
 };
 
