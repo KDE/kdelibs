@@ -58,6 +58,8 @@ public:
 
     virtual void attach(KHTMLView *w);
     
+    virtual DOMString toHTML(DOMString _string);
+
 protected:
     bool ismap;
 
@@ -106,6 +108,8 @@ public:
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
     	int button_, MouseEventType type_, DOMString& url_);
+
+    virtual DOMString toHTML(DOMString _string);
 
 protected:
 
