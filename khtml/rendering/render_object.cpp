@@ -96,7 +96,7 @@ RenderObject::RenderObject()
     m_layouted = false;
     m_minMaxKnown = false;
     m_recalcMinMax = true;
-    
+
     m_parent = 0;
     m_previous = 0;
     m_next = 0;
@@ -583,7 +583,7 @@ void RenderObject::selectionStartEnd(int& spos, int& epos)
 void RenderObject::setStyle(RenderStyle *style)
 {
     if (m_style == style)
-	return;
+        return;
 
     RenderStyle::Diff d = m_style ? m_style->diff( style ) : RenderStyle::Layout;
 //     qDebug("new style, diff=%d", d);
@@ -618,14 +618,10 @@ void RenderObject::setStyle(RenderStyle *style)
 	if(nb) nb->ref(this);
     }
 
-    if( m_style->backgroundColor().isValid() || m_style->hasBorder() || nb )
-        setSpecialObjects(true);
-    else
-        setSpecialObjects(false);
-
+    setSpecialObjects( m_style->backgroundColor().isValid() || m_style->hasBorder() || nb );
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
-    if ( d >= RenderStyle::Position ) {//  && m_parent ) { //this doesn't work when resetting from display=none
+    if ( d >= RenderStyle::Position ) {
 	setMinMaxKnown(false);
 	setLayouted(false);
     }
@@ -917,11 +913,7 @@ void RenderObject::recalcMinMaxWidths()
 
 void RenderObject::scheduleRelayout()
 {
-//     qDebug("scheduling relayout, isRoot=%d", isRoot() );
-    if ( !isRoot() ) {
-// 	qDebug("foo");
-	return;
-    }
+    if (!isRoot()) return;
     KHTMLView *view = static_cast<RenderRoot *>(this)->view();
     if ( view )
 	view->scheduleRelayout();

@@ -1438,6 +1438,8 @@ void RenderFlow::printTree(int indent) const
 {
     RenderBox::printTree(indent);
 
+    assert(!m_blockBidi);
+
     if(specialObjects)
     {
         QPtrListIterator<SpecialObject> it(*specialObjects);

@@ -323,40 +323,47 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     QApplication::sendEvent( m_part, &event );
 }
 
-void KHTMLView::layout(bool force)
+void KHTMLView::setMarginWidth(int w)
 {
-    //### take care of frmaes (hide scrollbars,...)
+    // make it update the rendering area when set
+    _marginWidth = w;
+}
+
+void KHTMLView::setMarginHeight(int h)
+{
+    // make it update the rendering area when set
+    _marginHeight = h;
+}
+
+void KHTMLView::layout()
+{
     if( m_part->xmlDocImpl() ) {
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
         khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
         if ( !root ) return;
 
-        if (document->isHTMLDocument()) {
-            NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
-            if(body && body->renderer() && body->id() == ID_FRAMESET) {
-                QScrollView::setVScrollBarMode(AlwaysOff);
-                QScrollView::setHScrollBarMode(AlwaysOff);
-                _width = visibleWidth();
-                body->renderer()->setLayouted(false);
-                body->renderer()->layout();
-                root->layout();
-                return;
-            }
-        }
+         if (document->isHTMLDocument()) {
+             NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
+             if(body && body->renderer() && body->id() == ID_FRAMESET) {
+                 QScrollView::setVScrollBarMode(AlwaysOff);
+                 QScrollView::setHScrollBarMode(AlwaysOff);
+                 body->renderer()->setLayouted(false);
+             }
+         }
 
         _height = visibleHeight();
         _width = visibleWidth();
 
         //QTime qt;
         //qt.start();
-        if (force) {
-            root->setMinMaxKnown(false);
-            root->setLayouted(false);
-            d->timerId = 42; //make sure we don't recurse into relayouts
-        }
-        if (!root->layouted())
-            root->layout();
+        root->setMinMaxKnown(false);
+        root->setLayouted(false);
+        // avoid recursing into relayouts because of scrollbar-flicker
+        int oldtimer = d->timerId;
+        d->timerId = true;
+        root->layout();
+        d->timerId = oldtimer;
         //kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     } else {
         _width = visibleWidth();
@@ -1117,7 +1124,7 @@ void KHTMLView::restoreScrollBar ( )
     QScrollView::setVScrollBarMode(d->vmode);
     if (visibleWidth() != ow)
     {
-        layout(true /* force */);
+        layout();
         updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
     d->prevScrollbarVisible = verticalScrollBar()->isVisible();

@@ -244,8 +244,8 @@ void RenderRoot::close()
 {
     setLayouted( false );
     if (m_view) {
-	m_view->layout(true);
-	m_view->repaintContents( 0, 0, m_view->visibleWidth(), m_view->visibleHeight(), FALSE );       //sync repaint!
+        m_view->layout();
+        m_view->repaintContents( 0, 0, m_view->visibleWidth(), m_view->visibleHeight(), FALSE );       //sync repaint!
     }
     //printTree();
 }

@@ -46,7 +46,6 @@ using namespace khtml;
 RenderImage::RenderImage(HTMLElementImpl *_element)
     : RenderReplaced()
 {
-    setSpecialObjects();
     image = 0;
     berrorPic = false;
     m_element = _element;
@@ -66,6 +65,8 @@ void RenderImage::setStyle(RenderStyle* _style)
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
     setInline( style()->display()==INLINE );
+    setOverhangingContents(style()->height().isPercent());
+    setSpecialObjects(true);
 
     if (style()->contentObject())
     {
@@ -296,7 +297,7 @@ void RenderImage::layout()
     if ( m_width != oldwidth || m_height != oldheight )
         resizeCache = QPixmap();
 
-    setLayouted(!style()->width().isPercent());
+    setLayouted(!style()->width().isPercent() && !style()->height().isPercent());
 }
 
 void RenderImage::setImageUrl(DOMString url, DocLoader *docLoader)

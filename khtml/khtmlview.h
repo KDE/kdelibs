@@ -38,6 +38,7 @@ namespace DOM {
     class HTMLTitleElementImpl;
     class HTMLGenericFormElementImpl;
     class HTMLFormElementImpl;
+    class HTMLAnchorElementImpl;
     class Range;
     class NodeImpl;
     class CSSProperty;
@@ -50,7 +51,8 @@ namespace khtml {
     class RenderLineEdit;
     class RenderPartObject;
     class RenderWidget;
-    void applyRule(RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
+    class CSSStyleSelector;
+    void applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 };
 
 class KHTMLPart;
@@ -67,13 +69,16 @@ class KHTMLView : public QScrollView
 
     friend class DOM::HTMLDocumentImpl;
     friend class DOM::HTMLTitleElementImpl;
-    friend class KHTMLPart;
-    friend class khtml::RenderRoot;
     friend class DOM::HTMLGenericFormElementImpl;
     friend class DOM::HTMLFormElementImpl;
+    friend class DOM::HTMLAnchorElementImpl;
+    friend class KHTMLPart;
+    friend class khtml::RenderRoot;
+    friend class khtml::RenderObject;
     friend class khtml::RenderLineEdit;
     friend class khtml::RenderPartObject;
     friend class khtml::RenderWidget;
+    friend class khtml::CSSStyleSelector;
     friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 
 public:
@@ -94,8 +99,7 @@ public:
     /**
      * Sets a margin in x direction.
      */
-    // ### BIC make this non-inline and make it update the rendering area when set
-    void setMarginWidth(int x) { _marginWidth = x; }
+    void setMarginWidth(int x);
 
     /**
      * Returns the margin width.
@@ -107,8 +111,7 @@ public:
     /*
      * Sets a margin in y direction.
      */
-    // ### BIC make this non-inline and make it update the rendering area when set
-    void setMarginHeight(int y) { _marginHeight = y; }
+    void setMarginHeight(int y);
 
     /**
      * Returns the margin height.
@@ -142,35 +145,6 @@ public:
      */
     void print();
 
-    /**
-     * Paints the HTML document to a QPainter.
-     * The document will be scaled to match the width of
-     * rc and clipped to fit in the height.
-     * yOff determines the vertical offset in the document to start with.
-     * more, if nonzero will be set to true if the documents extends
-     * beyond the rc or false if everything below yOff was painted.
-     **/
-    void paint(QPainter *p, const QRect &rc, int yOff = 0, bool *more = 0);
-
-    void layout(bool force = false);
-
-    /**
-     * Get/set the CSS Media Type.
-     *
-     * Media type is set to "screen" for on-screen rendering and "print"
-     * during printing. Other media types lack the proper support in the
-     * renderer and are not activated. The DOM tree and the parser itself,
-     * however, properly handle other media types. To make them actually work
-     * you only need to enable the media type in the view and if necessary
-     * add the media type dependent changes to the renderer.
-     */
-    void setMediaType( const QString &medium );
-    QString mediaType() const;
-
-    void resetCursor();
-    
-    void scheduleRelayout();
-
 signals:
     void cleared();
 
@@ -199,21 +173,46 @@ protected:
     void doAutoScroll();
 
     void timerEvent ( QTimerEvent * );
-    
+
 protected slots:
     void slotPaletteChanged();
     void slotScrollBarMoved();
 
 private:
+
+    void resetCursor();
+
+    void scheduleRelayout();
+
     /**
-     * move the view towards the given rectangle be up to one page.
-     * return true if reached.
+     * Paints the HTML document to a QPainter.
+     * The document will be scaled to match the width of
+     * rc and clipped to fit in the height.
+     * yOff determines the vertical offset in the document to start with.
+     * more, if nonzero will be set to true if the documents extends
+     * beyond the rc or false if everything below yOff was painted.
+     **/
+    void paint(QPainter *p, const QRect &rc, int yOff = 0, bool *more = 0);
+
+    /**
+     * Get/set the CSS Media Type.
+     *
+     * Media type is set to "screen" for on-screen rendering and "print"
+     * during printing. Other media types lack the proper support in the
+     * renderer and are not activated. The DOM tree and the parser itself,
+     * however, properly handle other media types. To make them actually work
+     * you only need to enable the media type in the view and if necessary
+     * add the media type dependent changes to the renderer.
      */
+    void setMediaType( const QString &medium );
+    QString mediaType() const;
+
     bool scrollTo(const QRect &);
 
     void focusNextPrevNode(bool next);
 
     void useSlowRepaints();
+    void layout();
 
     void setIgnoreWheelEvents(bool e);
 
