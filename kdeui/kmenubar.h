@@ -94,7 +94,7 @@ private slots:
     void selectionTimeout();
 private:
     void setTopLevelMenuInternal(bool top_level);
-    void checkResizingToParent( int& w, int& h );
+    void checkSize( int& w, int& h );
     static bool block_resize;
 protected:
     virtual void virtual_hook( int id, void* data );

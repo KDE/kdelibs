@@ -75,10 +75,11 @@ public:
     KMenuBarPrivate()
 	:   forcedTopLevel( false ),
 	    topLevel( false ),
-	    wasTopLevel( false )
+	    wasTopLevel( false ),
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-	    , selection( NULL )
+	    selection( NULL ),
 #endif
+            min_size( 0, 0 )
 	{
 	}
     ~KMenuBarPrivate()
@@ -98,6 +99,7 @@ public:
     KSelectionWatcher* selection;
 #endif
     QTimer selection_timer;
+    QSize min_size;
     static Atom makeSelectionAtom();
 };
 
@@ -199,6 +201,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       QMenuBar::setLineWidth( 0 );
       QMenuBar::setMargin( 0 );
       updateFallbackSize();
+      d->min_size = QSize( 0, 0 );
       if ( wasShown )
           show();
   } else
@@ -345,7 +348,7 @@ void KMenuBar::setGeometry( int x, int y, int w, int h )
 	QMenuBar::setGeometry( x, y, width(), height());
 	return;
     }
-    checkResizingToParent( w, h );
+    checkSize( w, h );
     if( geometry() != QRect( x, y, w, h ))
         QMenuBar::setGeometry( x, y, w, h );
 }
@@ -354,13 +357,13 @@ void KMenuBar::resize( int w, int h )
 {
     if( block_resize )
 	return;
-    checkResizingToParent( w, h );
+    checkSize( w, h );
     if( size() != QSize( w, h ))
         QMenuBar::resize( w, h );
 //    kdDebug() << "RS:" << w << ":" << h << ":" << width() << ":" << height() << ":" << minimumWidth() << ":" << minimumHeight() << endl;
 }
 
-void KMenuBar::checkResizingToParent( int& w, int& h )
+void KMenuBar::checkSize( int& w, int& h )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( !d->topLevel || d->selection->owner() == None )
@@ -377,6 +380,11 @@ void KMenuBar::checkResizingToParent( int& w, int& h )
 	h = s.height();
 	block_resize = false;
     }
+    // This is not done as setMinimumSize(), becase that would set the minimum
+    // size in WM_NORMAL_HINTS, and KWin would not allow changing to smaller size
+    // anymore
+    w = KMAX( w, d->min_size.width());
+    h = KMAX( h, d->min_size.height());
 }
 
 bool KMenuBar::x11Event( XEvent* ev )
@@ -389,7 +397,8 @@ bool KMenuBar::x11Event( XEvent* ev )
         // Forcing minimum size and blocking resizing to match parent size
         // in checkResizingToParent() seem to be the only way to make
         // KMenuBar keep the size it wants
-	setMinimumSize( ev->xclient.data.l[ 1 ], ev->xclient.data.l[ 2 ] );
+	d->min_size = QSize( ev->xclient.data.l[ 1 ], ev->xclient.data.l[ 2 ] );
+//        kdDebug() << "MINSIZE:" << d->min_size << endl;
         menuContentsChanged();
         resize( sizeHint());
 	return true;
