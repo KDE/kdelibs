@@ -16,6 +16,7 @@ static int registered = 0;
 
 #include <qdir.h>
 #include <kapp.h>
+#include <kstddirs.h>
 #include <qstring.h>
 #include <qregexp.h>
 
@@ -53,7 +54,7 @@ void kimgioRegister(void)
 	lt_dlinit();
 
 	// for the libraries that are installed in $KDEDIR/lib (kdesupport)
-	lt_dladdsearchdir((KApplication::kde_bindir() + "/../lib").ascii());
+	lt_dladdsearchdir( locate( "exe", "../lib" ).ascii() );
 /*
   Disabled by David, to fix compilation. No idea where this is defined - Stephan ?
 	int rindex = 0;
@@ -61,7 +62,7 @@ void kimgioRegister(void)
 	    lt_dladdsearchdir(kimgio_rpaths[rindex++]);
 */
 
-	QDir dir(KApplication::kde_bindir() + "/../lib", "kimg_*.la");
+	QDir dir( locate( "exe", "/../lib" ), "kimg_*.la" );
 
 	for (uint index = 0; index < dir.count(); index++) {
 	
