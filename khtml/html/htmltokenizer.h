@@ -204,14 +204,12 @@ protected:
     // Tokenizer flags
     //////////////////
     // are we in quotes within a html tag
-    typedef enum
+    enum
     {
         NoQuote = 0,
         SingleQuote,
         DoubleQuote
-    } HTMLQuote;
-
-    HTMLQuote tquote;
+    } tquote;
 
     enum
     {

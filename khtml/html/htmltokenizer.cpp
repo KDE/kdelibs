@@ -248,9 +248,6 @@ void HTMLTokenizer::addListing(DOMStringIt list)
     }
     pending = NonePending;
 #endif
-
-    currToken.text = new DOMStringImpl( buffer, dest-buffer);
-    currToken.text->ref();
     processToken();
     prePos = 0;
 
@@ -998,6 +995,11 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         a->setValue(DOMString(buffer+1, dest-buffer-1));
                         currToken.insertAttr(a);
                     }
+                    else {
+                        // hmm, suboptimal, but happens seldom
+                        delete a;
+                        a = 0;
+                    }
 
                     dest = buffer;
                     tag = SearchAttribute;
@@ -1557,8 +1559,10 @@ void HTMLTokenizer::processToken()
         if (currToken.id != ID_COMMENT)
             currToken.id = ID_TEXT;
     }
-    else if(!currToken.id)
+    else if(!currToken.id) {
+        currToken.reset();
         return;
+    }
 
     dest = buffer;
 
