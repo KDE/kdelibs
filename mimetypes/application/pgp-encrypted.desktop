@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/pgp-encrypted
+Icon=encrypted
+Patterns=
+Comment=PGP/MIME encrypted message
