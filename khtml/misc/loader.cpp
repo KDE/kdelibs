@@ -512,7 +512,7 @@ QSize CachedImage::pixmap_size() const
 
 QRect CachedImage::valid_rect() const
 {
-    return (m ? m->getValidRect() : ( p ? p->rect() : QRect()));
+    return m ? m->getValidRect() : ( p ? p->rect() : QRect());
 }
 
 
@@ -545,6 +545,16 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 
 void CachedImage::movieUpdated( const QRect& r )
 {
+
+#if QT_VERSION ==  220
+#ifdef __GNUC__
+#warning EVIL QT 2.2.0 HACK REMOVE THIS
+#endif
+    // evil hack to workaround png decoder bugs in Qt 2.2.0 release
+    QRect& vrect = const_cast<QRect&>(m->getValidRect());
+    vrect = vrect.unite(r);
+#endif
+
 #ifdef CACHE_DEBUG
     qDebug("movie updated %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
            m->framePixmap().size().width(), m->framePixmap().size().height());
@@ -556,7 +566,14 @@ void CachedImage::movieUpdated( const QRect& r )
 void CachedImage::movieStatus(int status)
 {
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
-        movieUpdated(valid_rect()); //wow, that's ugly!
+    {
+#ifdef CACHE_DEBUG
+        QRect r(valid_rect());
+        qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
+               m->framePixmap().size().width(), m->framePixmap().size().height());
+#endif
+        do_notify(m->framePixmap(), valid_rect());
+    }
 }
 
 void CachedImage::clear()
