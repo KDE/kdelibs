@@ -1005,7 +1005,7 @@ private:
 
   khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true );
 
-  bool checkLinkSecurity(const KURL &linkURL);
+  bool checkLinkSecurity(const KURL &linkURL,const QString &message = QString::null, const QString &button = QString::null);
 
   KJSProxy *jScript();
 
