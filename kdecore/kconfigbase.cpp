@@ -1802,6 +1802,11 @@ void KConfigGroup::deleteGroup(bool bGlobal)
   mMaster->deleteGroup(KConfigBase::group(), true, bGlobal);
 }
 
+bool KConfigGroup::groupIsImmutable() const
+{
+    return mMaster->groupIsImmutable(KConfigBase::group());
+}
+
 void KConfigGroup::setDirty(bool _bDirty)
 {
   mMaster->setDirty(_bDirty);

@@ -2124,6 +2124,14 @@ public:
     */
    void deleteGroup(bool bGlobal = false);
 
+   /**
+   * Checks whether it is possible to change this group.
+   * @return whether changes may be made to this group in this configuration
+   * file.
+   * @since 3.4
+   */
+  bool groupIsImmutable() const;
+
    // The following functions are reimplemented:
    virtual void setDirty(bool b);
    virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true);
