@@ -379,7 +379,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   topLayout->addWidget( d->fCArea, 1 );
 
   d->fCArea->setTitle( i18n("Shortcut for Selected Action") );
-  d->fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
+  d->fCArea->setFrameStyle( QFrame::GroupBoxPanel | QFrame::Plain );
 
   //
   // CHOOSE KEY GROUP LAYOUT MANAGER
