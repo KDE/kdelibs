@@ -26,8 +26,12 @@ CONFIGURE_ARGS=	"--prefix=$(PREFIX)" \
 		"--x-lib=$(X11BASE)/lib"
 CONFIGURE_ENV=	CXXFLAGS="$(CFLAGS)"
 
-#Since there's nothing to fetch, we might as well use a dummy target
+# Since there's nothing to fetch, we might as well use a dummy target
 do-fetch:
 		@true
+
+# This should clean the KDE target pretty well
+pre-clean:
+		cd $(WRKSRC);$(GMAKE) clean
 
 .include <bsd.port.mk>
