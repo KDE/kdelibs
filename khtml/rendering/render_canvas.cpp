@@ -263,7 +263,8 @@ void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, 
     QRect vr = viewRect();
     QRect ur(x, y, w, h);
 
-    if (m_view && ur.intersects(vr))
+    if (m_view && ur.intersects(vr)) {
+
         if (immediate)
 	// ### KWQ's updateContents has an additional parameter "now".
 	// It's not clear what the difference between updateContents(...,true)
@@ -271,6 +272,7 @@ void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, 
             m_view->updateContents(ur/*, true*/);
         else
             m_view->scheduleRepaint(x, y, w, h);
+    }
 }
 
 void RenderCanvas::repaint(bool immediate)
@@ -291,16 +293,6 @@ void RenderCanvas::repaint(bool immediate)
             m_view->scheduleRepaint(m_view->contentsX(), m_view->contentsY(),
                                     m_view->visibleWidth(), m_view->visibleHeight());
     }
-}
-
-void RenderCanvas::close()
-{
-    setLayouted( false );
-    if (m_view) {
-        m_view->layout();
-	repaint();
-    }
-    //printTree();
 }
 
 static QRect enclosingPositionedRect (RenderObject *n)
