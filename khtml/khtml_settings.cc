@@ -226,38 +226,62 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 }
 
 
-bool KHTMLSettings::isJavaEnabled( const QString& hostname )
+
+// Local typedef for the helper function below
+typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
+
+// Local helper for isJavaEnabled & isJavaScriptEnabled.
+static bool lookup_hostname_policy(const QString& hostname,
+                                   const PolicyMap& policy,
+                                   const bool default_retval)
 {
-  // First check whether there is a Domain-specific entry.
-  if( javaDomainPolicy.contains( hostname ) ) {
-        // yes, use it (unless dunno)
-        KJavaScriptAdvice adv = javaDomainPolicy[ hostname ];
-        if( adv == KJavaScriptReject )
-          return false;
-        else if( adv == KJavaScriptAccept )
-          return true;
+  if (hostname.isEmpty()) {
+    return default_retval;
   }
 
+  // First check whether there is a perfect match.
+  if( policy.contains( hostname ) ) {
+    // yes, use it (unless dunno)
+    KHTMLSettings::KJavaScriptAdvice adv = policy[ hostname ];
+    if( adv == KHTMLSettings::KJavaScriptReject ) {
+      return false;
+    } else if( adv == KHTMLSettings::KJavaScriptAccept ) {
+      return true;
+    }
+  }
+
+  // Now, check for partial match.  Chop host from the left until
+  // there's no dots left.
+  QString host_part = hostname;
+  int dot_idx = -1;
+  while( (dot_idx = host_part.find(QChar('.'))) >= 0 ) {
+    host_part.remove(0,dot_idx);
+    if( policy.contains( host_part ) ) {
+      KHTMLSettings::KJavaScriptAdvice adv = policy[ host_part ];
+      if( adv == KHTMLSettings::KJavaScriptReject ) {
+        return false;
+      } else if( adv == KHTMLSettings::KJavaScriptAccept ) {
+        return true;
+      }
+    }
+    // assert(host_part[0] == QChar('.'));
+    host_part.remove(0,1); // Chop off the dot.
+  }
+    
   // No domain-specific entry, or was dunno: use global setting
-  return m_bEnableJava;
+  return default_retval;
 }
 
+bool KHTMLSettings::isJavaEnabled( const QString& hostname )
+{
+  return lookup_hostname_policy(hostname, javaDomainPolicy, m_bEnableJava);
+}
 
 bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 {
-  // First check whether there is a Domain-specific entry.
-  if( javaScriptDomainPolicy.contains( hostname ) ) {
-        // yes, use it (unless dunno)
-        KJavaScriptAdvice adv = javaScriptDomainPolicy[ hostname ];
-        if( adv == KJavaScriptReject )
-          return false;
-        else if( adv == KJavaScriptAccept )
-          return true;
-  }
-
-  // No domain-specific entry, or was dunno: use global setting
-  return m_bEnableJavaScript;
+  return lookup_hostname_policy(hostname, javaScriptDomainPolicy, m_bEnableJavaScript);
 }
+
 
 bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )
 {
