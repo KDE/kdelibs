@@ -180,8 +180,8 @@ QCStringList DCOPObject::interfaces()
 QCStringList DCOPObject::functions()
 {
     QCStringList result = functionsDynamic();
-    result << "QCStringList interfaces()";
-    result << "QCStringList functions()";
+    result.prepend("QCStringList functions()");
+    result.prepend("QCStringList interfaces()");
     return result;
 }
 
