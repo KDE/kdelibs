@@ -32,92 +32,85 @@
 
 #include "kcrash.h"
 
-int CrashRecursionCounter; // If a crash occurs in our crash handler procedure, we can handle it :)
-void (*emergencySaveFunction)(int);
+int CrashRecursionCounter;	// If a crash occurs in our crash handler procedure, we can handle it :)
+void (*emergencySaveFunction) (int);
 
 // This function sets the function which should be called when the application crashes and the
 // application is asked to try to save its data.
-void setEmergencySaveFunction (void (*saveFunction)(int))
+void
+setEmergencySaveFunction (void (*saveFunction) (int))
 {
-	if (saveFunction == KDE_SAVE_NONE)
-	{
-  		emergencySaveFunction = KDE_SAVE_NONE;
-	}
+  if (saveFunction == KDE_SAVE_NONE)
+    {
+      emergencySaveFunction = KDE_SAVE_NONE;
+    }
 
-	emergencySaveFunction = saveFunction;
+  emergencySaveFunction = saveFunction;
 }
 
 
 // This function sets the function which should be responsible for the application crash handling.
 // Usually, this should be KDE_CRASH_INTERNAL.
 
-void setCrashHandler (void (*crashHandler)(int))
+void
+setCrashHandler (void (*crashHandler) (int))
 {
-	printf("Trying to install kcrash handler...\n");
+  printf ("Trying to install kcrash handler...\n");
 
-	if (crashHandler == KDE_CRASH_DEFAULT)
-	{
-		printf("Installing the system's default bug handler...");
-		signal (SIGSEGV, SIG_DFL);		
-		printf("done.\n");
-		return;
-	}
+  if (crashHandler == KDE_CRASH_DEFAULT)
+    {
+      printf ("Installing the system's default bug handler...");
+      signal (SIGSEGV, SIG_DFL);
+      printf ("done.\n");
+      return;
+    }
 
-	if (crashHandler == KDE_CRASH_INTERNAL)
-	{
-		printf("Installing the KDE internal crash handler...");
-		signal (SIGSEGV, defaultCrashHandler);
-		printf("done\n");
-		return;
-	}
+  if (crashHandler == KDE_CRASH_INTERNAL)
+    {
+      printf ("Installing the KDE internal crash handler...");
+      signal (SIGSEGV, defaultCrashHandler);
+      printf ("done\n");
+      return;
+    }
 
-	printf("Installing the application's crash handler...");
-	signal (SIGSEGV, crashHandler);
-	printf("done.\n");
+  printf ("Installing the application's crash handler...");
+  signal (SIGSEGV, crashHandler);
+  printf ("done.\n");
 }
 
-void resetCrashRecursion (void)
+void
+resetCrashRecursion (void)
 {
-	printf("Crash recursion set to zero.\n");
-	CrashRecursionCounter = 0;
+  printf ("Crash recursion set to zero.\n");
+  CrashRecursionCounter = 0;
 }
 
-void defaultCrashHandler (int signal)
+void
+defaultCrashHandler (int signal)
 {
-	// TODO: Add a nice function to collect all arguments
-	
-	struct kcrashargs *arguments;
-	
-	CrashRecursionCounter++;
-	
-	if (CrashRecursionCounter < 2)
+  // Handle possible recursions
+
+  CrashRecursionCounter++;
+
+  if (CrashRecursionCounter < 2)
+    {
+     
+      // Check if 
+      if (emergencySaveFunction != KDE_SAVE_NONE)
 	{
-		if (emergencySaveFunction != KDE_SAVE_NONE)
-		{
-				emergencySaveFunction(signal);
-		}
+	  emergencySaveFunction (signal);
 	}
-	
-	if (CrashRecursionCounter < 3)
-	{
-		arguments = new kcrashargs[2];
+    }
 
-		// At first, we need to get out the path and name of this executable
-		arguments[0].argname = new char(strlen("Application path"));
-		arguments[0].argvalue = new char(strlen("/usr/bin/test"));
-		arguments[1].argname = new char(strlen("Other data"));
-		arguments[1].argvalue = new char(strlen("Testdata"));
-	
-		strcpy(arguments[0].argname, "Application path");
-		strcpy(arguments[0].argname, "/usr/bin/test");	
-		strcpy(arguments[1].argname, "Other data");
-		strcpy(arguments[1].argname, "Testdata");	
+  if (CrashRecursionCounter < 3)
+    {
+      printf ("Would start dr. konqi here\n");
 
-		printf("Would start dr. konqi here\n");
+      execlp ("drkonqi", "drkonqi", "--fclass=SEGFAULT",
+	      "--messages=Application path\t/usr/bin/test\tOther data\ttestdata",
+	      NULL);
+    }
 
-		execlp("drkonqi", "drkonqi", "--fclass=SEGFAULT", "--messages=Application path\t/usr/bin/test\tOther data\ttestdata", NULL);
-	}
-	
-	printf("Unable to start dr. konqi\n");
-	exit(1);
+  printf ("Unable to start dr. konqi\n");
+  exit (1);
 }
