@@ -171,25 +171,27 @@
 <!ENTITY % bookinfo.element "IGNORE">
 <!ENTITY % kde.bookinfo.element "INCLUDE">
 <![ %kde.bookinfo.element; [
-<!-- One modification: ReleaseInfo and Date are compulsory.  Repetition 
-     is necessary to have free positioning among the other elements (and to 
-     make compliance with KDE docbook more flexible). -->
-<!ELEMENT BookInfo - - ((Graphic | MediaObject | LegalNotice 
-		| ModeSpec | SubjectSet | KeywordSet | ITermSet 
-		| %kde.bibliocomponent.mix; | BookBiblio)*,
-		((ReleaseInfo, (Graphic | MediaObject | LegalNotice 
-			| ModeSpec | SubjectSet | KeywordSet 
+<!-- Modification: ReleaseInfo, Date, Abstract and Keywordset are
+     compulsory.  Not all orders that could be valid are allowed (the
+     number increases factorial).  The current restrictions are quite
+     strict, and it is foreseen that they will be relaxed.  Date and 
+     ReleaseInfo must come together, as must Abstract and Keywordset.
+     Abstract and Keywordset must follow Date and ReleaseInfo when they
+     are used the first time.
+-->
+<!ELEMENT BookInfo - - ((Graphic | MediaObject | LegalNotice
+		        | ModeSpec | SubjectSet | ITermSet
+		        | %kde.bibliocomponent.mix; | BookBiblio)*,
+		        ((Date, ReleaseInfo) | (ReleaseInfo, Date)),
+                        (Graphic | MediaObject | LegalNotice
+			| ModeSpec | SubjectSet
 			| ITermSet | %kde.bibliocomponent.mix;
-			| ReleaseInfo | BookBiblio)*, Date) 
-		| (Date, (Graphic | MediaObject	| LegalNotice 
-			| ModeSpec | SubjectSet | KeywordSet 
-			| ITermSet | %kde.bibliocomponent.mix; | Date
 			| BookBiblio)*,
-			ReleaseInfo)),
-		(Graphic | MediaObject | LegalNotice | ModeSpec 
-		| SubjectSet | KeywordSet | ITermSet 
-		| %bibliocomponent.mix; | BookBiblio)*)
-		%beginpage.exclusion;>
+                        ((Abstract, Keywordset) | (Keywordset, Abstract)),
+		       (Graphic | MediaObject | LegalNotice | ModeSpec 
+		       | SubjectSet | ITermSet
+		       | %bibliocomponent.mix; | BookBiblio | Keywordset)*)
+		       %beginpage.exclusion;>
 <!--end of kde.bookinfo.element-->]]>
 <!--end of bookinfo.module-->]]>
 <!--end of book.content.module-->]]>
