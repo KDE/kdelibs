@@ -57,6 +57,9 @@ public:
     lstMimeFilteredItems = 0;
 
     changes = NONE;
+
+    lstFilters.setAutoDelete( true );
+    oldFilters.setAutoDelete( true );
   }
 
   /**

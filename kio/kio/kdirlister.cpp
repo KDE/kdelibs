@@ -1429,7 +1429,6 @@ KDirLister::~KDirLister()
   stop();
   s_pCache->forgetDirs( this );
 
-  d->lstFilters.clear();
   delete d;
 }
 
@@ -1647,9 +1646,14 @@ KFileItem* KDirLister::find( const KURL& _url ) const
 void KDirLister::setNameFilter( const QString& nameFilter )
 {
   if ( !(d->changes & NAME_FILTER) )
+  {
     d->oldFilters = d->lstFilters;
-
+    d->lstFilters.setAutoDelete( false );
+  }
+  
   d->lstFilters.clear();
+  d->lstFilters.setAutoDelete( true );
+  
   d->nameFilter = nameFilter;
 
   // Split on white space
