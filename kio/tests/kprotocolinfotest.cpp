@@ -1,4 +1,5 @@
 #include <kprotocolinfo.h>
+#include <kprotocolmanager.h>
 #include <kapplication.h>
 #include <kglobalsettings.h>
 #include <kcmdlineargs.h>
@@ -27,5 +28,9 @@ int main(int argc, char **argv) {
     assert( KProtocolInfo::showFilePreview( "file" ) == true );
     assert( KProtocolInfo::showFilePreview( "audiocd" ) == false );
     assert( KGlobalSettings::showFilePreview( "audiocd:/" ) == false );
+
+    QString proxy;
+    QString protocol = KProtocolManager::slaveProtocol( "http://bugs.kde.org", proxy );
+    assert( protocol == "http" );
     return 0;
 }
