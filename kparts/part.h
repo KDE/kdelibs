@@ -127,7 +127,7 @@ class Part : public QObject, public PartBase
 public:
 
     /**
-     *  Contructor.
+     *  Constructor.
      *
      *  @param parent Parent object of the part.
      *  @param name   QT-internal name of the part.
@@ -294,7 +294,7 @@ public:
 
 public slots:
   /**
-   * Only reimplement openURL if you don't want synchronous network transparency
+   * Only reimplement openURL if you don't want synchronous network transparency
    * Otherwise, reimplement @ref openFile() only .
    *
    * If you reimplement it, don't forget to set the caption, usually with
