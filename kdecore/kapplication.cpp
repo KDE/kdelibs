@@ -550,12 +550,11 @@ static QPtrList<KSessionManaged>* sessionClients()
 /*
   Auxiliary function to calculate a a session config name used for the
   instance specific config object.
-  Syntax:  "<appname>_<sessionId>"
+  Syntax:  "session/<appname>_<sessionId>"
  */
 static QString sessionConfigName()
 {
-  QString tmp = QString::fromLatin1(qApp->name());
-  return tmp + "_" + qApp->sessionId();
+  return QString("session/%1_%2").arg(qApp->name()).arg(qApp->sessionId());
 }
 
 #ifndef Q_WS_QWS
@@ -900,7 +899,7 @@ void KApplication::propagateSessionManager()
     while( (i = display.find(':')) >= 0)
        display[i] = '_';
 
-    fName += "-"+display;
+    fName += "_"+display;
     QCString smEnv = ::getenv("SESSION_MANAGER");
     bool check = smEnv.isEmpty();
     if ( !check && smModificationTime ) {
@@ -981,8 +980,7 @@ void KApplication::saveState( QSessionManager& sm )
         return; // no need to save the state.
     }
 
-    QString aLocalFileName = KGlobal::dirs()->saveLocation("config") +
-        sessionConfigName();
+    QString aLocalFileName = locateLocal("config", sessionConfigName());
 
     // remove former session config if still existing, we want a new and fresh one
     if ( pSessionConfig ) {
