@@ -1839,7 +1839,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		{
 			bool toolbarMode = false;
 			const QComboBox* cb = static_cast< const QComboBox* >( widget );
-			QPixmap * buf;
+			QPixmap * buf = 0;
 			QPainter* p2 = p;
 
 			QRect br = r;
