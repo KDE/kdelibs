@@ -47,6 +47,7 @@ class KSSL;
 class KSSLCertificatePrivate;
 class QDateTime;
 class KSSLCertChain;
+class KSSLX509V3;
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -119,6 +120,8 @@ public:
   inline friend int operator!=(KSSLCertificate &x, KSSLCertificate &y) 
                                                        { return !(x == y); }
   bool setCert(QString& cert);
+
+  KSSLX509V3& x509V3Extensions();
 
 private:
   KSSLCertificatePrivate *d;

@@ -94,6 +94,7 @@ bool KSSLPeerInfo::certMatchesAddress() {
      */
 
      for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
+	d->host->setPort(dynamic_cast<KInetSocketAddress*>(const_cast<KSocketAddress*>(x->address()))->port());  // HACK!!  Not good.
         if ((*x).address()->isEqual(d->host)) {
            return true;
         }

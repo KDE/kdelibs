@@ -61,6 +61,7 @@
 #include <kopenssl.h>
 #include <qcstring.h>
 #include <kdebug.h>
+#include "ksslx509v3.h"
 
 
 
@@ -83,6 +84,7 @@ public:
   #endif
   KOSSL *kossl;
   KSSLCertChain _chain;
+  KSSLX509V3 _extensions;
 };
 
 KSSLCertificate::KSSLCertificate() {
@@ -797,6 +799,10 @@ return false;
 }
 
 
+KSSLX509V3& KSSLCertificate::x509V3Extensions() {
+return d->_extensions;
+}
+
 
 QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
 QStringList qsl;
@@ -826,3 +832,6 @@ s >> cert >> qsl;
 
 return s;
 }
+
+
+
