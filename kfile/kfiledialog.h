@@ -667,7 +667,6 @@ protected:
     KFileFilterCombo *filterWidget;
 
     KFileBookmarkManager *bookmarks;
-    QStringList history; // FIXME: remove it, this is not used at all
 
     /**
      * adds a entry of the current directory. If disableUpdating is set
