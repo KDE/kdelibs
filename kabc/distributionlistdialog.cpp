@@ -53,6 +53,7 @@ DistributionListDialog::~DistributionListDialog()
 {
 }
 
+// TODO KDE4: Add d-pointer to EmailSelector, make sEmailMap a member variable
 static QMap<QWidget*,QString> *sEmailMap = 0;
 
 EmailSelector::EmailSelector( const QStringList &emails, const QString &current,
