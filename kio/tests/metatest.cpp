@@ -245,10 +245,10 @@ int main( int argc, char **argv )
     ov = args->getOption("removeitem");
     if (ov && !group.isNull())
     {
-        if (info[group][item].setValue(ov))
-            kdDebug() << "removeitem success\n";
-        else
-            kdDebug() << "removeitem failed\n";
+        info[group][item].remove();
+//            kdDebug() << "removeitem success\n";
+//        else
+//            kdDebug() << "removeitem failed\n";
     }
     
     
