@@ -110,6 +110,11 @@ void KCMultiDialog::addModule(const QString& path, bool withfallback)
 {
     kdDebug(1208) << "KCMultiDialog::addModule " << path << endl;
 
+    if (!KService::serviceByDesktopPath(path)) {
+      kdError() << "Desktop file '" << path << "' not found!" << endl;
+      return;
+    }
+
     KCModuleInfo info(path, _baseGroup);
 
     QHBox* page = 0;
