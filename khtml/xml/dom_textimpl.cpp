@@ -242,13 +242,11 @@ bool CommentImpl::childTypeAllowed( unsigned short /*type*/ )
 TextImpl::TextImpl(DocumentPtr *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {
-    m_style = 0;
 }
 
 TextImpl::TextImpl(DocumentPtr *doc)
     : CharacterDataImpl(doc)
 {
-    m_style = 0;
 }
 
 TextImpl::~TextImpl()
@@ -302,9 +300,9 @@ void TextImpl::attach()
 {
     if (!m_render) {
         RenderObject *r = _parent->renderer();
-        if( r ) {
+        if( r && style() ) {
 	    m_render = new RenderText(str);
-	    recalcStyle();
+	    m_render->setStyle( style() );
 	    r->addChild(m_render, _next ? _next->renderer() : 0);
         }
     }
@@ -331,19 +329,8 @@ void TextImpl::applyChanges(bool,bool force)
 
 khtml::RenderStyle *TextImpl::style() const
 {
-    return m_style;
+    return _parent ? _parent->style() : 0;
 }
-
-void TextImpl::setStyle(khtml::RenderStyle *style)
-{
-    RenderStyle *oldStyle = m_style;
-    m_style = style;
-    if (m_style)
-        m_style->ref();
-    if (oldStyle)
-        oldStyle->deref();
-}
-
 
 bool TextImpl::prepareMouseEvent( int _x, int _y,
                                   int _tx, int _ty,
@@ -406,13 +393,9 @@ NodeImpl *TextImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 
 void TextImpl::recalcStyle()
 {
-    if (!_parent || !_parent->style() )
+    if (!parentNode())
         return;
-    RenderStyle* style = new RenderStyle();
-    style->inheritFrom( _parent->style() );
-    setStyle( style );
-    if(m_render) 
-	m_render->setStyle( style );
+    if(m_render) m_render->setStyle(parentNode()->style());
 }
 
 // DOM Section 1.1.1
