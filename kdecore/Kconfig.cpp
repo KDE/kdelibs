@@ -1,6 +1,13 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.25  1997/09/04 19:48:36  kdecvs
+ * Coolo: if no real language available, use "C". This leads to a problem!
+ * 	Since we have currently no kpanel translation, you can not
+ * 	translate the applnk files. I would avise all applnk translaters
+ * 	to touch $KDEDIR/share/locale/$LANG/kpanel.mo to get translated
+ * 	app menus
+ *
  * Revision 1.24  1997/09/04 16:31:55  kdecvs
  * Coolo: I have introduced some dependecies, that I can't resolve.
  * 	Kalle knows about it.
@@ -272,17 +279,18 @@ void KConfig::parseConfigFiles()
 		continue;
       aConfigFile.open( IO_ReadOnly );
       QTextStream aStream( &aConfigFile );
-      parseOneConfigFile( &aStream ); 
+      parseOneConfigFile( &aStream, NULL, true ); 
 	  aConfigFile.close();
     }
   
   // Parse app-specific config file if available
   if( pData->pAppStream)
-    parseOneConfigFile( pData->pAppStream );
+    parseOneConfigFile( pData->pAppStream, NULL, false );
 }
 
 void KConfig::parseOneConfigFile( QTextStream* pStream, 
-				  QDict<KEntryDict>* pWriteBackDict )
+								  QDict<KEntryDict>* pWriteBackDict,
+								  bool bGlobal )
 {
   QString aCurrentLine;
   QString aCurrentGroup = "";
@@ -343,7 +351,8 @@ void KConfig::parseOneConfigFile( QTextStream* pStream,
 	  pEntry->aValue = 
 		aCurrentLine.right( aCurrentLine.length()-nEqualsPos-1 );
 	  pEntry->bDirty = false;
-
+	  pEntry->bGlobal = bGlobal;
+	  pEntry->bNLS = false;
 
       pCurrentGroupDict->insert( aCurrentLine.left( nEqualsPos ),
 								 pEntry );
@@ -578,7 +587,7 @@ bool bOK;
 
 
 QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
-							 bool bPersistent )
+							 bool bPersistent, bool bGlobal, bool bNLS )
 {
   QString aValue;
 
@@ -603,6 +612,8 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 	  // there already is such a key
 	  aValue = pEntryData->aValue; // save old key as return value
 	  pEntryData->aValue = rValue.copy() ; // set new value
+	  pEntryData->bGlobal = bGlobal;
+	  pEntryData->bNLS = bNLS;
 	  if( bPersistent )
 		pEntryData->bDirty = TRUE;
 	}
@@ -610,6 +621,8 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 	{
 	  // the key currently does not exist
 	  KEntryDictEntry* pEntry = new KEntryDictEntry;
+	  pEntry->bGlobal = bGlobal;
+	  pEntry->bNLS = bNLS;
 	  pEntry->aValue = rValue.copy();
 	  if( bPersistent )
 		pEntry->bDirty = TRUE;
@@ -625,7 +638,8 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 }
 
 void KConfig::writeEntry( const QString& rKey, QStrList& list, 
-						  char sep, bool bPersistent )
+						  char sep, bool bPersistent, bool bGlobal,
+						  bool bNLS )  
 {
   if( list.isEmpty() )
     {
@@ -646,22 +660,22 @@ void KConfig::writeEntry( const QString& rKey, QStrList& list,
     }
   if( str_list.right(1) == sep )
     str_list.truncate(str_list.length()-1);
-  writeEntry(rKey, str_list, bPersistent );
+  writeEntry(rKey, str_list, bPersistent, bGlobal, bNLS );
 }
 
 
 QString KConfig::writeEntry( const QString& rKey, int nValue,
-							 bool bPersistent )
+							 bool bPersistent, bool bGlobal, bool bNLS )
 {
   QString aValue;
 
   aValue.setNum( nValue );
 
-  return writeEntry( rKey, aValue, bPersistent );
+  return writeEntry( rKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
 QString KConfig::writeEntry( const QString& rKey, const QFont& rFont,
-							 bool bPersistent )
+							 bool bPersistent, bool bGlobal, bool bNLS )
 {
   QString aValue;
   UINT8 nFontBits = 0;
@@ -681,16 +695,16 @@ QString KConfig::writeEntry( const QString& rKey, const QFont& rFont,
 				  rFont.styleHint(), rFont.charSet(), rFont.weight(),
 				  nFontBits );
 
-  return writeEntry( rKey, aValue, bPersistent );
+  return writeEntry( rKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
 QString KConfig::writeEntry( const QString& rKey, const QColor& rColor,
-							 bool bPersistent )
+							 bool bPersistent, bool bGlobal, bool bNLS )
 {
   QString aValue;
   aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
 
-  return writeEntry( rKey, aValue, bPersistent );
+  return writeEntry( rKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
 
@@ -724,52 +738,61 @@ void KConfig::rollback( bool bDeep )
 void KConfig::sync()
 {
   // write-sync is only necessary if there are dirty entries
-  if( pData->bDirty ) {
-    // find out the file to write to (most specific writable file)
+  if( pData->bDirty ) 
+	{
+	  bool bEntriesLeft = false;
 
-    // try app-specific file first
-    if( pData->pAppStream ){
-	// is it writable?
-      if (pData->pAppStream->device()->isWritable() )
-	{
-	  writeConfigFile( *(QFile *)pData->pAppStream->device() );
-	  pData->pAppStream->device()->close();
-	  pData->pAppStream->device()->open( IO_ReadWrite );
-	}
-    }
-    else {
-      // try other files
-      for( int i = CONFIGFILECOUNT-1; i >= 0; i-- )
-	{
-	  QString aFileName = aConfigFileName[i];
-	  // replace a leading tilde with the home directory
-	  // is there a more portable way to find out the home directory?
-	  char* pHome = getenv( "HOME" );
-	  if( (aFileName[0] == '~') && pHome )
-	    aFileName.replace( 0, 1, pHome );
+	  // find out the file to write to (most specific writable file)
+	  // try app-specific file first
+	  if( pData->pAppStream )
+		{
+		  // is it writable?
+		  if (pData->pAppStream->device()->isWritable() )
+			{
+			  bEntriesLeft = writeConfigFile( *(QFile
+												*)pData->pAppStream->device(),
+											  false );   
+			  pData->pAppStream->device()->close();
+			  pData->pAppStream->device()->open( IO_ReadWrite );
+			}
+		}
+	  if( !pData->pAppStream || bEntriesLeft )
+		// if the app-specific file was not writable or there were
+		// global entries left to write
+		{
+		  // try other files
+		  for( int i = CONFIGFILECOUNT-1; i >= 0; i-- )
+			{
+			  QString aFileName = aConfigFileName[i];
+			  // replace a leading tilde with the home directory
+			  // is there a more portable way to find out the home directory?
+			  char* pHome = getenv( "HOME" );
+			  if( (aFileName[0] == '~') && pHome )
+				aFileName.replace( 0, 1, pHome );
 	  
-	  QFile aConfigFile( aFileName );
-	  QFileInfo aInfo( aConfigFile );
-	  if( ( aInfo.exists() && aInfo.isWritable() ) ||
-	      ( !aInfo.exists() && 
-		QFileInfo( aInfo.dirPath( true ) ).isWritable() ) )
-	    {
-	      aConfigFile.open( IO_ReadWrite );
-	      writeConfigFile( aConfigFile );
-	      break;
-	    }
+			  QFile aConfigFile( aFileName );
+			  QFileInfo aInfo( aConfigFile );
+			  if( ( aInfo.exists() && aInfo.isWritable() ) ||
+				  ( !aInfo.exists() && 
+					QFileInfo( aInfo.dirPath( true ) ).isWritable() ) )
+				{
+				  aConfigFile.open( IO_ReadWrite );
+				  writeConfigFile( aConfigFile, true );
+				  break;
+				}
+			}
+		}
 	}
-    }
-  }
 
   // no more dirty entries
   rollback();
-
 }
 
 
-void KConfig::writeConfigFile( QFile& rConfigFile )
+bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 {
+  bool bEntriesLeft = false;
+
   QTextStream* pStream = new QTextStream( &rConfigFile );
 
   // create a temporary dictionary that represents the file to be written
@@ -782,7 +805,7 @@ void KConfig::writeConfigFile( QFile& rConfigFile )
   aTempDict.insert( "<default>", pDefGroup );
   
   // fill the temporary structure with entries from the file
-  parseOneConfigFile( pStream, &aTempDict );
+  parseOneConfigFile( pStream, &aTempDict, bGlobal );
 
   // augment this structure with the dirty entries from the normal structure
   QDictIterator<KEntryDict> aIt( pData->aGroupDict );
@@ -798,33 +821,43 @@ void KConfig::writeConfigFile( QFile& rConfigFile )
 		{
 		  if( pCurrentEntry->bDirty )
 			{
-			  // enter the *aInnerIt.currentKey()/pCurrentEntry->aValue pair
-			  // into group *pCurrentGroup in aTempDict
-			  KEntryDict* pTempGroup;
-			  if( !( pTempGroup = aTempDict[ pCurrentGroup ] ) )
+			  // only write back entries that have the same
+			  // "globality" as the file
+			  if( pCurrentEntry->bGlobal == bGlobal )
 				{
-				  // group does not exist in aTempDict
-				  pTempGroup = new KEntryDict( 37, false );
-				  pTempGroup->setAutoDelete( true );
-				  aTempDict.insert( pCurrentGroup, pTempGroup );
+				  // enter the
+				  // *aInnerIt.currentKey()/pCurrentEntry->aValue pair
+				  // into group *pCurrentGroup in aTempDict
+				  KEntryDict* pTempGroup;
+				  if( !( pTempGroup = aTempDict[ pCurrentGroup ] ) )
+					{
+					  // group does not exist in aTempDict
+					  pTempGroup = new KEntryDict( 37, false );
+					  pTempGroup->setAutoDelete( true );
+					  aTempDict.insert( pCurrentGroup, pTempGroup );
+					}
+				  KEntryDictEntry* pNewEntry = new KEntryDictEntry();
+				  pNewEntry->aValue = pCurrentEntry->aValue;
+				  pNewEntry->bDirty = false;
+				  pNewEntry->bGlobal = pCurrentEntry->bGlobal;
+				  pNewEntry->bNLS = pCurrentEntry->bNLS;
+				  pTempGroup->replace( aInnerIt.currentKey(), 
+									   pNewEntry );
 				}
-			  KEntryDictEntry* pNewEntry = new KEntryDictEntry();
-			  pNewEntry->aValue = pCurrentEntry->aValue;
-			  pNewEntry->bDirty = FALSE;
-			  pTempGroup->replace( aInnerIt.currentKey(), 
-								   pNewEntry );
+			  else
+				// wrong "globality" - might have to be saved later
+				bEntriesLeft = true;
 			}
 		  ++aInnerIt;
 		}
 	  ++aIt;
 	}
-
   // truncate file
   delete pStream;
   rConfigFile.close();
   rConfigFile.open( IO_Truncate | IO_WriteOnly );
   pStream = new QTextStream( &rConfigFile );
-
+  
   // write a magic cookie for Fritz' mime magic
   *pStream << "# KDE Config File\n";
 
@@ -835,12 +868,20 @@ void KConfig::writeConfigFile( QFile& rConfigFile )
 	  QDictIterator<KEntryDictEntry> aWriteInnerIt( *pDefWriteGroup );
 	  while( aWriteInnerIt.current() )
 		{
-		  *pStream << aWriteInnerIt.currentKey() << "=" 
-			   << aWriteInnerIt.current()->aValue << '\n';
+		  if( aWriteInnerIt.current()->bNLS && 
+			  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
+			// not yet localized, but should be
+			*pStream << aWriteInnerIt.currentKey() << '[' 
+					 << pData->aLocaleString << ']' << "=" 
+					 << aWriteInnerIt.current()->aValue << '\n';
+		  else
+			// need not be localized or already is
+			*pStream << aWriteInnerIt.currentKey() << "=" 
+					 << aWriteInnerIt.current()->aValue << '\n';
 		  ++aWriteInnerIt;
 		}
 	}
-
+  
   QDictIterator<KEntryDict> aWriteIt( aTempDict );
   while( aWriteIt.current() )
 	{
@@ -851,19 +892,28 @@ void KConfig::writeConfigFile( QFile& rConfigFile )
 		  QDictIterator<KEntryDictEntry> aWriteInnerIt( *aWriteIt.current() );
 		  while( aWriteInnerIt.current() )
 			{
-			  *pStream << aWriteInnerIt.currentKey() 
-				   << "="
-				   << aWriteInnerIt.current()->aValue << '\n';
+			  if( aWriteInnerIt.current()->bNLS && 
+				  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
+				// not yet localized, but should be
+				*pStream << aWriteInnerIt.currentKey() << '[' 
+						 << pData->aLocaleString << ']' << "=" 
+						 << aWriteInnerIt.current()->aValue << '\n';
+			  else
+				// need not be localized or already is
+				*pStream << aWriteInnerIt.currentKey() << "="
+						 << aWriteInnerIt.current()->aValue << '\n';
 			  ++aWriteInnerIt;
 			}
 		}
 	  ++aWriteIt;
 	}
-
+  
   // clean up
   delete pStream;
   rConfigFile.close();
   rConfigFile.open( IO_ReadWrite );
+  
+  return bEntriesLeft;
 }
 
 bool KConfig::hasKey( const QString& rKey ) const

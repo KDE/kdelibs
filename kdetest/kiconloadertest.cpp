@@ -30,8 +30,6 @@
 #include <kiconloader.h>
 #include "kiconloadertestmain.h"
 
-KIconLoader *global_icon_loader;
-
 int main( int argc, char **argv )
 {
 debug ( "[kiconloader demo] started-------------------------" );
@@ -49,7 +47,6 @@ debug ( "[kiconloader demo] started-------------------------" );
        temp += "/lib/pics/toolbar";
        config->writeEntry("IconPath", temp);
      }
-  global_icon_loader = new KIconLoader( );
   MyMain demo;
   a.setMainWidget( (QWidget *) &demo );
   a.setRootDropZone( new KDNDDropZone( (QWidget *) &demo, DndNotDnd ) );

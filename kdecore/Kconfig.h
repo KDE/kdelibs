@@ -1,6 +1,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.11  1997/08/31 15:56:12  kdecvs
+// Kalle:
+// - Internationalized Config Entries
+// - Default-String in readEntry changed to const char*
+//
 // Revision 1.10  1997/08/05 14:24:38  ettrich
 // Matthias: Final solution to the sync() problem. Sync() doesn't reparse,
 //   but a new method reparseConfiguration() will fullfill this task.
@@ -168,8 +173,9 @@ private:
   KConfig& operator= ( const KConfig& rConfig );
 
   void parseConfigFiles();
-  void parseOneConfigFile( QTextStream*, KGroupDict* pGroup = NULL );
-  void writeConfigFile( QFile& );
+  void parseOneConfigFile( QTextStream*, KGroupDict* pGroup = NULL,
+						   bool bGlobal = false );
+  bool writeConfigFile( QFile&, bool bGlobal = false );
 
 friend class KApplication;
 
@@ -280,12 +286,16 @@ public:
 *  @param bPersistent	If bPersistent is false, the entry's dirty
 *			flag will not be set and thus the entry will 
 *			not be written to disk at deletion time.
-* @return The old value for this key. If this key did not
-	  exist, a NULL string is returned.	  
-   */
+*  @param bGlobal	If bGlobal is true, the pair is not saved to the
+*   application specific config file, but to the global ~/.kderc
+*  @param bNLS	If bNLS is true, the locale tag is added to the key
+*   when writing it back.
+*  @return The old value for this key. If this key did not
+*   exist, a NULL string is returned.	  
+*/
   QString writeEntry( const QString& rKey, const QString& rValue,
-					  bool bPersistent = true );
-
+					  bool bPersistent = true, bool bGlobal = false,
+					  bool bNLS = false );
 /** 
 * writeEntry() overridden to accept a const char * argument.
 *
@@ -297,14 +307,20 @@ public:
 * @param bPersistent	If bPersistent is false, the entry's dirty
 *			flag will not be set and thus the entry will
 *			not be written to disk at deletion time.
+* @param bGlobal	If bGlobal is true, the pair is not saved to the
+*  application specific config file, but to the global ~/.kderc
+* @param bNLS	If bNLS is true, the locale tag is added to the key
+*  when writing it back.
 * @return The old value for this key. If this key did not exist, 
 *	  a NULL string is returned.	  
 *
 * @see #writeEntry
 */
   QString writeEntry( const QString& rKey, const char* pValue,
-					  bool bPersistent = true )
-	{ return writeEntry( rKey, QString( pValue ), bPersistent ); }
+					  bool bPersistent = true, bool bGlobal = false,
+					  bool bNLS = false )
+	{ return writeEntry( rKey, QString( pValue ), bPersistent,
+						 bGlobal, bNLS ); }
 
 /** 
 * writeEntry() overriden to accept a list of strings.
@@ -318,51 +334,70 @@ public:
 * @param bPersistent	If bPersistent is false, the entry's dirty flag 
 *			will not be set and thus the entry will not be 
 *			written to disk at deletion time.
+* @param bGlobal	If bGlobal is true, the pair is not saved to the
+*  application specific config file, but to the global ~/.kderc
+* @param bNLS	If bNLS is true, the locale tag is added to the key
+*  when writing it back.
 *
 * @see #writeEntry
 */
   void writeEntry ( const QString &rKey, QStrList &list, char sep = ',',
-					bool bPersistent = true );
+					bool bPersistent = true, bool bGlobal = false,
+					bool bNLS = false ); 
 
+  /** Write the key value pair.
+	* Same as above, but write a numerical value.
+	* @param rKey The key to write.
+	* @param nValue The value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	* exist, a NULL string is returned.	  
+	*/
+  QString writeEntry( const QString& rKey, int nValue,
+					  bool bPersistent = true, bool bGlobal = false,
+					  bool bNLS = false ); 
 
-  /// Write the key value pair
-  /** Same as above, but write a numerical value.
-	  @param rKey The key to write.
-	  @param rValue The value to write.
-	  @param bPersistent If bPersistent is false, the entry's dirty
-	  flag will not be set and thus the entry will not be written to
-	  disk at deletion time.
-	  @return The old value for this key. If this key did not
-	  exist, a NULL string is returned.	  
-	  */
-  QString writeEntry( const QString& rKey, int rValue,
-					  bool bPersistent = true );
-
-  /// Write the key value pair
-  /** Same as above, but write a font
-	  @param rKey The key to write.
-	  @param rValue The value to write.
-	  @param bPersistent If bPersistent is false, the entry's dirty
-	  flag will not be set and thus the entry will not be written to
-	  disk at deletion time.
-	  @return The old value for this key. If this key did not
-	  exist, a NULL string is returned.	  
-	  */
+  /** Write the key value pair.
+	* Same as above, but write a font
+	* @param rKey The key to write.
+	* @param rValue The value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	* exist, a NULL string is returned.	  
+	*/
   QString writeEntry( const QString& rKey, const QFont& rFont, 
-					  bool bPersistent = true );
+					  bool bPersistent = true, bool bGlobal = false,
+					  bool bNLS = false );
 
-  /// Write the key value pair
-  /** Same as above, but write a color
-	  @param rKey The key to write.
-	  @param rValue The value to write.
-	  @param bPersistent If bPersistent is false, the entry's dirty
-	  flag will not be set and thus the entry will not be written to
-	  disk at deletion time.
-	  @return The old value for this key. If this key did not
-	  exist, a NULL string is returned.	  
-	  */
+  /** Write the key value pair.
+	* Same as above, but write a color
+	* @param rKey The key to write.
+	* @param rValue The value to write.
+	* @param bPersistent If bPersistent is false, the entry's dirty
+	* flag will not be set and thus the entry will not be written to
+	* disk at deletion time.
+	* @param bGlobal	If bGlobal is true, the pair is not saved to the
+	*  application specific config file, but to the global ~/.kderc
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
+	*  when writing it back.
+	* @return The old value for this key. If this key did not
+	*  exist, a NULL string is returned.	  
+	*/
   QString writeEntry( const QString& rKey, const QColor& rColor, 
-					  bool bPersistent = true );
+					  bool bPersistent = true, bool bGlobal = false,
+					  bool bNLS = false );
   //}
 
   /// Don't write dirty entries at destruction time.

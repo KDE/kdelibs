@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.4  1997/09/04 19:44:03  kdecvs
+// Coolo: corrected a comment. the language code is not two letters only
+//
 // Revision 1.3  1997/08/31 15:56:12  kdecvs
 // Kalle:
 // - Internationalized Config Entries
@@ -68,6 +71,8 @@ struct KEntryDictEntry
 {
   QString aValue;
   bool    bDirty; // must the entry be written back to disk?
+  bool    bGlobal; // entry should be written to the global config file
+  bool    bNLS;    // entry should be written with locale tag
 };
 
 typedef QDict<KEntryDictEntry> KEntryDict;

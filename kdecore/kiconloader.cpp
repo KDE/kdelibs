@@ -4,7 +4,7 @@
 //  kiconloader
 //
 //  Copyright (C) 1997 Christoph Neerfeld
-//  email:  Christoph.Neerfeld@mail.bonn.netsurf.de
+//  email:  Christoph.Neerfeld@bonn.netsurf.de
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@
 #include "kiconloader.h"
 #include "kiconloader.moc"
 	}
-KIconLoaderDialog* createKIconLoaderDialog();
-
 #include <klocale.h>
+#include <kapp.h>
+#define klocale KApplication::getKApplication()->getLocale()
 }
 //----------------------------------------------------------------------
 //---------------  KICONLOADER   ---------------------------------------
@@ -39,18 +39,15 @@ KIconLoaderDialog* createKIconLoaderDialog();
 QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h ){
 KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString &var_name )
 {
-  //debug( "KIconLoader( a, b, c ) is obsolete. Please use KIconloader()" );
-  pix_dialog = NULL;
-  caching = FALSE;
   config = conf;
   config->setGroup(app_name);
-  if( !readListConf( var_name, pixmap_dirs, ':' ) )
-    {
-      QString temp = KApplication::kdedir();
-      pixmap_dirs.append(temp + "/share/toolbar");       
-      pixmap_dirs.append(temp + "/share/apps/" + kapp->appName() + "/toolbar");
-      pixmap_dirs.append(temp + "/share/apps/" + kapp->appName() + "/pics");
-    }
+QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
+  config->readListEntry( var_name, pixmap_dirs, ':' );
+  QString temp = KApplication::kdedir();
+  pixmap_dirs.insert( 0, temp + "/share/toolbar" );
+  pixmap_dirs.insert( 1, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+  pixmap_dirs.insert( 2, temp + "/share/apps/" + kapp->appName() + "/pics" );
+  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/icons" );
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
   pixmap_list.setAutoDelete(TRUE);
@@ -58,17 +55,14 @@ KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString 
  
 KIconLoader::KIconLoader( )
 {
-  pix_dialog = NULL;
-  caching = FALSE;
   config = KApplication::getKApplication()->getConfig();
   config->setGroup("KDE Setup");
-  if( !readListConf( "IconPath", pixmap_dirs, ':' ) )
-    {
-      QString temp = KApplication::kdedir();
-      pixmap_dirs.append(temp + "/share/toolbar");
-      pixmap_dirs.append(temp + "/share/apps/" + kapp->appName() + "/toolbar");
-      pixmap_dirs.append(temp + "/share/apps/" + kapp->appName() + "/pics");
-    }
+  config->readListEntry( "IconPath", pixmap_dirs, ':' );
+  QString temp = KApplication::kdedir();
+  pixmap_dirs.insert( 0, temp + "/share/toolbar" );
+  pixmap_dirs.insert( 1, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+  pixmap_dirs.insert( 2, temp + "/share/apps/" + kapp->appName() + "/pics" );
+  pixmap_dirs.append( QDir::homeDirPath() + "/.kde/icons" );
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
   pixmap_list.setAutoDelete(TRUE);
@@ -91,32 +85,32 @@ QPixmap KIconLoader::loadIcon ( const QString &name )
       QFileInfo finfo;
       pix = new QPixmap;
       if( name.left(1) == '/' )
-		full_path = name;
+	full_path = name;
       else
-		{
-		  QStrListIterator it( pixmap_dirs );
-		  while ( it.current() )
-			{
-			  full_path = it.current();
-			  full_path += '/';
-			  full_path += name;
-			  finfo.setFile( full_path );
-			  if ( finfo.exists() )
-				break;
-			  ++it;
-			}
-		}
+	{
+	  QStrListIterator it( pixmap_dirs );
+	  while ( it.current() )
+	    {
+	      full_path = it.current();
+	      full_path += '/';
+	      full_path += name;
+	      finfo.setFile( full_path );
+	      if ( finfo.exists() )
+		break;
+	      ++it;
+	    }
+	}
       new_xpm.load( full_path );
       *pix = new_xpm;
       if( pix->isNull() )
-		{
-		  warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char *) name);
-		}
+	{
+	  warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char *) name);
+	}
       else
-		{
-		  name_list.append(name);
-		  pixmap_list.append(pix);
-		}
+	{
+	  name_list.append(name);
+	  pixmap_list.append(pix);
+	}
     }
   else
     {
@@ -124,43 +118,6 @@ QPixmap KIconLoader::loadIcon ( const QString &name )
     }
   return *pix;
 }
-
-
-// KIconLoader::selectIcon temporarily moved to kiconloaderui.cpp
-
-// KIconLoader::setCaching temporarily moved to kiconloaderui.cpp
-
-int KIconLoader::readListConf( QString key, QStrList &list, char sep )
-{
-  if( !config->hasKey( key ) )
-    return 0;
-  QString str_list, value;
-  str_list = config->readEntry(key);
-  if(str_list.isEmpty())
-    return 0;
-  list.clear();
-  int i;
-  int len = str_list.length();
-  for( i = 0; i < len; i++ )
-    {
-      if( str_list[i] != sep && str_list[i] != '\\' )
-        {
-          value += str_list[i];
-          continue;
-        }
-      if( str_list[i] == '\\' )
-        {
-          i++;
-          value += str_list[i];
-          continue;
-        }
-      list.append(value);
-      value.truncate(0);
-    }
-  list.append(value);
-  return list.count();
-}
-
 
 
 	warning( "KIconLoader::flush is deprecated." );

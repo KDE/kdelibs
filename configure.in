@@ -8,7 +8,7 @@ AC_CANONICAL_SYSTEM
 AC_ARG_PROGRAM
 
 dnl Automake doc recommends to do this only here. (Janos)
-AM_INIT_AUTOMAKE(kdelibs, 0.9) dnl searches for some needed programs
+AM_INIT_AUTOMAKE(kdelibs, 0.11) dnl searches for some needed programs
 
 dnl make $KDEDIR the default for the installation
 AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})

@@ -20,7 +20,7 @@ libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
 	klocale.cpp libintl.cpp setenv.cpp kiconloader.cpp
 
-libkdecore_la_LDFLAGS = -version-info 0:10 -rpath $(libdir) 
+libkdecore_la_LDFLAGS = -version-info 0:11 -rpath $(libdir) 
 
 BUILT_SOURCES = ksock.moc drag.moc kkeydata.moc kapp.moc kprocess.moc	\
 	kprocctrl.moc kiconloader.moc

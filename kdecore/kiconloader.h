@@ -4,7 +4,7 @@
 //  kiconloader
 //
 //  Copyright (C) 1997 Christoph Neerfeld
-//  email:  Christoph.Neerfeld@mail.bonn.netsurf.de
+//  email:  Christoph.Neerfeld@bonn.netsurf.de
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,16 +24,17 @@
 #ifndef KICONLOADER_H
 #define KICONLOADER_H
 
+#ifndef _KCONFIG_H
+#include <Kconfig.h>
+#endif
+
 #include <qapp.h>
 #include <qlist.h>
 #include <qpixmap.h>
 #include <qstrlist.h>
 #include <qstring.h>
 
-#include <kapp.h>
-
-class KIconLoaderDialog;
-
+/// Load icons from disk
 /**
    KIconLoader is a derived class from QObject.
    It supports loading of icons from disk. It puts the icon and its name
@@ -41,8 +42,6 @@ class KIconLoaderDialog;
    out of the list and not reread from disk.
    So you can call loadIcon() as many times as you wish and you don't have
    to take care about multiple copies of the icon in memory.
-   Another function of KIconLoader is selectIcon(). This function pops up
-   a modal dialog from which you may select the icons by picture not name.
 */
 class KIconLoader : public QObject
 {
@@ -94,41 +93,26 @@ public:
 	 as often as you like.
   */
   QPixmap loadIcon( const QString &name );
-
-  /// Select an icon from a modal choose dialog
+  /// Insert directory into searchpath
   /**
-	 This function pops up a modal dialog and lets you select an icon by its
-	 picture not name. The function returns a QPixmap object and the icons 
-	 name in 'name'
-	 if the user has selected an icon, or NULL if the user has pressed the 
-	 cancel button. So check the result before taking any action.
-	 The argument filter specifies a filter for the names of the icons to 
-	 display. For example "*" displays all icons and "mini*" displays only 
-	 those icons which names start with 'mini'.
+         This functions inserts a new directory into the searchpath at position index.
+	 It returns TRUE if successful, or FALSE if index is out of range.
+	 Note that the default searchpath looks like this:
+	 index 0:      $KDEDIR/share/toolbar
+	 index 1:      $KDEDIR/apps/<appName>/toolbar
+	 index 2:      $KDEDIR/apps/<appName>/pics
+	 index 3 to n: a list of directories in [KDE Setup]:IconPath=...
+	 index n+1:    $HOME/.kde/icons
   */
-  QPixmap selectIcon( QString &name, const QString &filter);
-
-  /// Turn caching on or off
-  /**
-	 Normally, KIconLoader will destroy the dialog after a call to
-	 selectIcon(). This may be undesirable if the user wants to change
-	 several icons, because loading of many icons takes its time.
-	 So it is a good idea to call setCaching(TRUE) before a call to
-	 selectIcon() and call setCaching(FALSE) if you know that the
-	 dialog is not needed any more. NOTE: This affects only the dialog
-	 and not the normal cache created by loadIcon(). 
-  */
-  void    setCaching( bool b );
+  bool insertDirectory( int index, const QString &dir_name ) {
+    return pixmap_dirs.insert( index, dir_name ); }
+  QStrList* getDirList() { return &pixmap_dirs; }
 
 protected:
-  int  readListConf  ( QString key, QStrList &list, char sep = ',' );
-
   KConfig           *config;
   QStrList           name_list;
   QStrList           pixmap_dirs;
   QList<QPixmap>     pixmap_list;
-  KIconLoaderDialog *pix_dialog;
-  bool               caching;
 };
 
 #endif // KICONLOADER_H
