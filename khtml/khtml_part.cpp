@@ -2459,6 +2459,8 @@ void KHTMLPart::findTextNext()
       //kdDebug(6050) << "Finishing" << endl;
       //delete d->m_find;
       //d->m_find = 0L;
+      initFindNode( false, options & KFindDialog::FindBackwards, false );
+      d->m_find->resetCounts();
       slotClearSelection();
     }
   }
@@ -5053,7 +5055,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   }
 #ifndef QT_NO_CLIPBOARD
   if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull()))
-     d->m_extension->pasteRequest(); 
+     d->m_extension->pasteRequest();
 #endif
 
 #ifndef KHTML_NO_SELECTION
