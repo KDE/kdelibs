@@ -445,7 +445,7 @@ class KDialogBase : public KDialog
      * Retrieve the empty page when the predefined layout is used in @p Plain
      * mode.
      *
-     * This widget must used as the toplevel widget of your dialog
+     * This widget must be used as the toplevel widget of your dialog
      * code.
      *
      * @return The widget or 0 if the predefined layout mode is not @p Plain
