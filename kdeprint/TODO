@@ -1,18 +1,18 @@
+BUGS
+----
+
+- backport LPR plugin problem with aliases to 2.2 branch
+
+
+
+WISHES
+------
+
 - Implement a generic banner behaviour: banners would be insrted
   as standard print file before and/or after the actual file. This
   would allow for KDE-specific banners and translated banners.
 
 - Possibility to specify a different input slot for first page???
-
-- change DCOP call of kdeprintd so that the command is a QStrList to
-  avoid quoting problems.
-
-- graphical configuration of basic print options:
-	- default paper size (-> integrated into l10n)
-	- default margins
-	- preview program (-> done in config dialog)
-
-- backport LPR plugin problem with aliases to 2.2 branch
 
 - add "Subject" or "Regarding" to kdeprintfax interface: look first
   if this is possible in efax and/or hylafax
