@@ -43,7 +43,8 @@
 
 #include <qapplication.h>
 
-class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate> {
+class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate> 
+{
 public:
     QPtrList<KAction> m_actions;
     bool m_readOnly;
@@ -63,12 +64,14 @@ public:
 };
 template<> QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
 
-KBookmarkBarPrivate* KBookmarkBar::dptr() const {
+KBookmarkBarPrivate* KBookmarkBar::dptr() const 
+{
     return KBookmarkBarPrivate::d( this );
 }
 
 // usage of KXBELBookmarkImporterImpl is just plain evil, but it reduces code dup. so...
-class ToolbarFilter : public KXBELBookmarkImporterImpl {
+class ToolbarFilter : public KXBELBookmarkImporterImpl 
+{
 public:
     ToolbarFilter() : m_visible(false) { ; }
     void filter( const KBookmarkGroup &grp ) { traverse(grp); }
@@ -153,11 +156,13 @@ void KBookmarkBar::slotBookmarksChanged( const QString & group )
 
     if ( tb.isNull() )
         return;
+
     if ( tb.address() == group || KBookmarkSettings::self()->m_filteredtoolbar )
     {
         clear();
         fillBookmarkBar( tb );
-    } else
+    } 
+    else
     {
         // Iterate recursively into child menus
         QPtrListIterator<KBookmarkMenu> it( m_lstSubMenus );
