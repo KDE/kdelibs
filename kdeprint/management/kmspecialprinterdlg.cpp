@@ -29,7 +29,6 @@
 #include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
-#include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qwhatsthis.h>
@@ -65,33 +64,17 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	sep->setFixedHeight(10);
 	QGroupBox	*m_gb = new QGroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
 	m_command = new KXmlCommandSelector(true, m_gb, "CommandSelector", this);
-
-	m_usefile_gb = new QGroupBox(0, Qt::Horizontal, i18n("&Enable Output File"), dummy);
-	m_usefile_gb->setCheckable (true);
-
-	m_mimetype = new QComboBox(m_usefile_gb);
-	KMimeType::List	list = KMimeType::allMimeTypes();
-	for (QValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
-	{
-		QString	mimetype = (*it)->name();
-		m_mimelist << mimetype;
-	}
-	m_mimelist.sort();
-	m_mimetype->insertStringList(m_mimelist);
-
-	QLabel	*m_mimetypelabel = new QLabel(i18n("&Format:"), m_usefile_gb);
-	m_mimetypelabel->setBuddy (m_mimetype);
-
-	m_extension = new QLineEdit(m_usefile_gb);
-
-	QLabel	*m_extensionlabel = new QLabel(i18n("Filename e&xtension:"), m_usefile_gb);
-	m_extensionlabel->setBuddy(m_extension);
+	QGroupBox	*m_gb2 = new QGroupBox(0, Qt::Horizontal, i18n("Output File Settings"), dummy);
+	m_usefile = new QCheckBox(i18n("Always use &file-extension:"), m_gb2);
+	m_extension = new QLineEdit(m_gb2);
+	connect(m_usefile, SIGNAL(toggled(bool)), m_extension, SLOT(setEnabled(bool)));
+	m_extension->setEnabled(false);
 
 	m_icon = new KIconButton(dummy);
 	m_icon->setIcon("fileprint");
 	m_icon->setFixedSize(QSize(48,48));
 
-	QWhatsThis::add(m_usefile_gb,
+	QWhatsThis::add(m_usefile,
 		i18n("<p>The command will use an output file. If checked, make sure the "
 		     "command contains an output tag.</p>"));
 	QWhatsThis::add(m_command,
@@ -105,12 +88,8 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 			 "<li><b>%out</b>: the output file (required if using an output file).</li>"
 			 "<li><b>%psl</b>: the paper size in lower case.</li>"
 			 "<li><b>%psu</b>: the paper size with the first letter in upper case.</li></ul>"));
-	QString mimetypeWhatsThis = i18n("<p>The default mimetype for the output file (e.g. application/postscript).</p>");
-	QWhatsThis::add(m_mimetypelabel, mimetypeWhatsThis);
-	QWhatsThis::add(m_mimetype, mimetypeWhatsThis);
-	QString extensionWhatsThis = i18n("<p>The default extension for the output file (e.g. ps, pdf, ps.gz).</p>");
-	QWhatsThis::add(m_extensionlabel, extensionWhatsThis);
-	QWhatsThis::add(m_extension, extensionWhatsThis);
+	QWhatsThis::add(m_extension,
+		i18n("<p>The default extension for the output file (<u>ex</u>: ps, pdf, ps.gz).</p>"));
 
 	// layout creation
 	QVBoxLayout	*l0 = new QVBoxLayout(dummy, 0, 10);
@@ -127,12 +106,10 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	l1->addWidget(m_location, 2, 2);
 	l0->addWidget(sep);
 	l0->addWidget(m_gb);
-	l0->addWidget(m_usefile_gb);
-	QGridLayout	*l6 = new QGridLayout(m_usefile_gb->layout(), 2, 2, 10);
-	l6->addWidget(m_mimetypelabel, 0, 0);
-	l6->addWidget(m_mimetype, 0, 1);
-	l6->addWidget(m_extensionlabel, 1, 0);
-	l6->addWidget(m_extension, 1, 1);
+	l0->addWidget(m_gb2);
+	QHBoxLayout	*l6 = new QHBoxLayout(m_gb2->layout(), 10);
+	l6->addWidget(m_usefile, 0);
+	l6->addWidget(m_extension, 1);
 
 	enableButton(Ok, !m_name->text().isEmpty());
 
@@ -160,7 +137,7 @@ bool KMSpecialPrinterDlg::checkSettings()
 	else
 		KXmlCommandManager::self()->checkCommand(m_command->command(),
 					KXmlCommandManager::Basic,
-					(m_usefile_gb->isChecked() ? KXmlCommandManager::Basic : KXmlCommandManager::None),
+					(m_usefile->isChecked() ? KXmlCommandManager::Basic : KXmlCommandManager::None),
 					&msg);
 
 	if (!msg.isEmpty())
@@ -174,9 +151,7 @@ void KMSpecialPrinterDlg::setPrinter(KMPrinter *printer)
 	if (printer && printer->isSpecial())
 	{
 		m_command->setCommand(printer->option("kde-special-command"));
-		m_usefile_gb->setChecked(printer->option("kde-special-file") == "1");
-		int	index = m_mimelist.findIndex(printer->option("kde-special-mimetype"));
-		m_mimetype->setCurrentItem(index == -1 ? 0 : index);
+		m_usefile->setChecked(printer->option("kde-special-file") == "1");
 		m_extension->setText(printer->option("kde-special-extension"));
 		m_name->setText(printer->name());
 		m_description->setText(printer->description());
@@ -196,13 +171,8 @@ KMPrinter* KMSpecialPrinterDlg::printer()
 	printer->setDescription(m_description->text());
 	printer->setLocation(m_location->text());
 	printer->setOption("kde-special-command",m_command->command());
-	printer->setOption("kde-special-file",(m_usefile_gb->isChecked() ? "1" : "0"));
-	if (m_usefile_gb->isChecked ())
-	{
-		if (m_mimetype->currentText() != "all/all")
-			printer->setOption("kde-special-mimetype", m_mimetype->currentText());
-		printer->setOption("kde-special-extension",m_extension->text());
-	}
+	printer->setOption("kde-special-file",(m_usefile->isChecked() ? "1" : "0"));
+	printer->setOption("kde-special-extension",m_extension->text());
 	printer->setType(KMPrinter::Special);
 	printer->setState(KMPrinter::Idle);
 	return printer;
