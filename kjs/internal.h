@@ -206,7 +206,7 @@ namespace KJS {
      */
     Reference2(const Value& v, const UString& p) : bs(v), prop(p) { }
 
-    bool isValid() const { return !bs.isNull() && !prop.isNull(); }
+    bool isValid() const { return bs.isValid() && !prop.isNull(); }
 
 
     // ECMA 8.7.1

@@ -89,7 +89,7 @@ namespace KJS {
      * Converts a Value into an Object. If the value's type is not ObjectType,
      * a null object will be returned (i.e. one with it's internal pointer set
      * to 0). If you do not know for sure whether the value is of type
-     * ObjectType, you should check the @ref isNull() methods afterwards before
+     * ObjectType, you should check the @ref isValid() methods afterwards before
      * calling any methods on the Object.
      *
      * @return The value converted to an object
