@@ -57,7 +57,7 @@ dummy.cpp:
 
 messages:
 	$(EXTRACTRC) `find . ../kioslave -name "*.rc" -o -name "*.ui"` > rc.cpp
-	$(XGETTEXT) `find . ../kioslave -name "*.cpp" -o -name "*.h"` -o $(podir)/kio.pot
+	$(XGETTEXT) `find . ../kioslave -name "*.cpp" -o -name "*.cc" -o -name "*.h"` -o $(podir)/kio.pot
 	rm -f rc.cpp
 
 DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui
