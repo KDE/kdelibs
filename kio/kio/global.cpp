@@ -1507,9 +1507,8 @@ QString KIO::findPathMountPoint( const QString & filename )
 
     /* If the path contains symlinks, get the real name */
     if (realpath(QFile::encodeName(filename), realname) == 0) {
-        if (filename.length() >= sizeof(realname))
+        if( strlcpy(realname, QFile::encodeName(filename),MAXPATHLEN)>=MAXPATHLEN)
             return QString::null;
-        strcpy(realname, QFile::encodeName(filename));
     }
 
     int max = 0;
@@ -1654,9 +1653,8 @@ bool KIO::probably_slow_mounted(const QString& filename)
 
     /* If the path contains symlinks, get the real name */
     if (realpath(QFile::encodeName(filename), realname) == 0) {
-        if (filename.length() >= sizeof(realname))
+        if( strlcpy(realname, QFile::encodeName(filename), MAXPATHLEN)>=MAXPATHLEN)
             return false;
-        strcpy(realname, QFile::encodeName(filename));
     }
 
     MountState isauto = Unseen, isslow = Unseen;
