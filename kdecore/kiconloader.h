@@ -20,6 +20,13 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.26  1999/05/23 17:04:52  kulow
+   let KGlobal create the IconLoader instance. Removed KApplication::getIconLoader.
+   Steffen's idea - just more consequent ;)
+
+   removing some little used kde_*dir functions. May break kdebase parts,
+   I'm compiling right now
+
    Revision 1.25  1999/05/09 23:58:34  pbrown
    was broken with QStringList.  fixed.
 
@@ -138,14 +145,6 @@ public:
 	@see loadIcon
   */
   QPixmap reloadIcon( const QString& name, int w = 0, int h = 0);
-  
-  /** 
-  	Load a mini icon from disk or cache.
-	Like loadIcon, but looks for "mini/name" first.
-
-	@see loadIcon
-  */
-  QPixmap loadMiniIcon( const QString& name , int w = 0, int h = 0 );
 
   /**
    * The loadApplication-Icon functions are similar to the 

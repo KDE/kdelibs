@@ -1207,17 +1207,6 @@ QString KApplication::kde_appsdir()
   return dir;
 }
 
-QString KApplication::kde_icondir()
-{
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_ICONDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
-}
-
 QString KApplication::kde_datadir()
 {
   static QString dir;

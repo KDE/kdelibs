@@ -20,6 +20,19 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.39  1999/05/23 21:59:06  pbrown
+   new kconfig system is in.  External API remains the same, but the in-memory
+   and on-disk formats have been abstracted.  KConfigBase now is an ADT with
+   pure virtual functions.  KConfig implements KConfigBase with a QMap-based
+   system, and a coarse cache which will kick the whole lot out of memory
+   after a scaled amount of inactivity.  The only backend that is implemented
+   right now is the INI-style backend we have had forever, but with this new
+   system, it will not be difficult to plug in a XML backend, a database
+   backend, or whatever we please, in the future.
+
+   I have worked hard to fully document _everything_ in the API. KDoc should
+   provide nice documentation if you are interested.
+
    Revision 1.38  1999/05/13 19:03:24  bieker
    More QStrings.
 
@@ -57,6 +70,8 @@ Load large icons in icons/large or pics/large if setting is 'large'.
 #include <klocale.h>
 #include <kapp.h>
 #include <kconfig.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 
 void KIconLoader::initPath()
 {
@@ -82,16 +97,11 @@ void KIconLoader::initPath()
   bool large = (setting == "Large" );
   
   addPath( KApplication::kde_toolbardir() );
-  addPath( KApplication::kde_icondir() );
-  
-  if ( large )
-    addPath( KApplication::kde_icondir() + "/large" );
   
   addPath( KApplication::localkdedir() + "/share/toolbar" ); 
-  addPath( KApplication::localkdedir() + "/share/icons" ); 
   
-  if ( large )
-    addPath( KApplication::localkdedir() + "/share/icons/large" );
+  if ( large ) 
+    KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
   
   addPath( KApplication::kde_datadir() + "/" 
 	   + kapp->appName() + "/toolbar" );
@@ -133,9 +143,6 @@ KIconLoader::KIconLoader( KConfig *conf,
 
 KIconLoader::KIconLoader()
 {
-
-
-
 	config = KApplication::getKApplication()->getConfig();
 	config->setGroup("KDE Setup");
 	QStringList list = config->readListEntry( "IconPath", ':' );
@@ -177,52 +184,17 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 }
 
 
-QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h ){
-	flush( name );
-
+QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h ) 
+{
+        flush( name );
+	
 	return loadInternal( name, w, h );
-}
-
-
-QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
-
-	QPixmap result;
-
-	if (name[0] != '/'){
-
-		result = loadInternal( (QString("mini/") + name), w, h);
-	}
-
-	if (result.isNull())
-		result = loadInternal(name, w, h);
-
-
-	/* 
-Stephan: See above
-if (result.isNull())
-warning(i18n("ERROR: couldn't find mini icon: %1").arg(name));
-
-	 */
-
-	return result;
 }
 
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 {
-
-	//  addPath(KApplication::kde_icondir());
-	//  addPath(KApplication::localkdedir() + "/share/icons" );
-
-	QPixmap result = loadIcon(name, w, h);
-
-	// this is trouble since you don't know whether the addPath was
-	// successful I simply added icon dir to the set of standard
-	// paths. I hope this will not give us too much of a performance
-	// hit. Other wise I will have to break binary compatibiliy
-	// -- Bernd
-
+        QPixmap result = loadIcon(locate("icon", name), w, h);
 	return result;
-
 }
 
 
@@ -230,19 +202,14 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 	int w, int h )
 {
 
-	//  addPath(KApplication::kde_icondir());
-	//  addPath(KApplication::localkdedir() + "/share/icons" );
-
-	QPixmap result = loadMiniIcon(name, w, h);
-
-	// this is trouble since you don't know whether the addPath was
-	// successful I simply added icon dir to the set of standard
-	// paths. I hope this will not give us too much of a performance
-	// hit. Other wise I will have to break binary compatibility
-	// -- Bernd
+        QPixmap result;
+	if (name[0] != '/')
+	    result = loadInternal(locate("icon", "mini/" + name), w, h);
+		
+	if (result.isNull())
+	    result = loadInternal(locate("icon", name), w, h);
 
 	return result;
-
 }
 
 QString KIconLoader::getIconPath( const QString& name, bool always_valid)
@@ -250,7 +217,7 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 	QString full_path;
 	QFileInfo finfo;
 
-	if( name[1] == '/' ){
+	if( name[0] == '/' ){
 		full_path = name;
 	}
 	else{

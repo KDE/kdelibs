@@ -275,14 +275,6 @@ public:
    */
   static QString kde_appsdir();
 
-  /**
-   * Returns the directory where KDE icons are stored
-   *
-   * The default for this directory is $KDEDIR/share/icons
-   * @return the name of the directory
-   */
-  static QString kde_icondir();
-
   /** 	
    * Returns the directory where KDE applications store their specific data
    *
@@ -652,6 +644,13 @@ private:
 #endif
 
 // $Log$
+// Revision 1.78  1999/05/23 17:04:51  kulow
+// let KGlobal create the IconLoader instance. Removed KApplication::getIconLoader.
+// Steffen's idea - just more consequent ;)
+//
+// removing some little used kde_*dir functions. May break kdebase parts,
+// I'm compiling right now
+//
 // Revision 1.77  1999/05/23 16:28:42  kulow
 // kde_localedir has been removed - first step on the way to KStdDirs.
 //

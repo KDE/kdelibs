@@ -25,6 +25,8 @@
 #include <kapp.h>
 #include <qpainter.h>
 #include <qlistbox.h>
+#include <kstddirs.h>
+#include <kglobal.h>
 
 class QPixmap;
 class QPainter;
@@ -66,18 +68,17 @@ KDirListBoxItem::KDirListBoxItem(const KFileInfo *i)
     : QListBoxItem() 
 {
     if (!folder_pixmap) // don't use IconLoader to always get the same icon
-	folder_pixmap = new QPixmap(KApplication::kde_icondir() + 
-				    "/mini/folder.xpm");
+      folder_pixmap = new QPixmap(locate("icon", "mini/folder.xpm"));
+				    
     if (!locked_folder)
-	locked_folder = new QPixmap(KApplication::kde_icondir() + 
-				    "/mini/lockedfolder.xpm");
+      locked_folder = new QPixmap(locate("icon", "mini/lockedfolder.xpm"));
     
     if (!file_pixmap)
-	file_pixmap = new QPixmap(KApplication::kde_icondir() +
-				  "/mini/unknown.xpm");
+      file_pixmap = new QPixmap(locate("icon", "mini/unknown.xpm"));
+				
     if (!locked_file)
-	locked_file = new QPixmap(KApplication::kde_icondir() +
-				  "/mini/locked.xpm");
+      locked_file = new QPixmap(locate("icon", "mini/locked.xpm"));
+     
     
     if (i->isDir())
       pm = (i->isReadable()) ? folder_pixmap : locked_folder;

@@ -24,6 +24,8 @@
 #include <kapp.h>
 #include "config-kfile.h"
 #include <stdlib.h>
+#include <kstddirs.h>
+#include <kglobal.h>
 
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted
@@ -48,21 +50,17 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 
     nameList = 0;
 
-    // don't use IconLoader to always get the same icon,
-    // it looks very strange, if the icons differ from application
-    // to application.
-    if (!folder_pixmap) 
-        folder_pixmap = new QPixmap(KApplication::kde_icondir() +
-                                    "/mini/folder.xpm"); 
+    if (!folder_pixmap) // don't use IconLoader to always get the same icon
+      folder_pixmap = new QPixmap(locate("icon", "mini/folder.xpm"));
+				    
     if (!locked_folder)
-        locked_folder = new QPixmap(KApplication::kde_icondir() +
-                                    "/mini/lockedfolder.xpm");
+      locked_folder = new QPixmap(locate("icon", "mini/lockedfolder.xpm"));
+    
     if (!file_pixmap)
-	file_pixmap = new QPixmap(KApplication::kde_icondir() +
-				  "/mini/unknown.xpm");
+      file_pixmap = new QPixmap(locate("icon", "mini/unknown.xpm"));
+				
     if (!locked_file)
-	locked_file = new QPixmap(KApplication::kde_icondir() +
-				  "/mini/locked.xpm");
+      locked_file = new QPixmap(locate("icon", "mini/locked.xpm"));
 
     sig = new KFileInfoContentsSignaler();
     filesNumber = 0;

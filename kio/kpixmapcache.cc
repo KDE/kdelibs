@@ -111,72 +111,33 @@ QPixmap* KPixmapCache::wallpaperPixmap( const char *_wallpaper )
 
 QPixmap* KPixmapCache::pixmap( const char *_pixmap, bool _mini )
 {
-  QString key = "";
-  if ( _mini )
-    key = "mini/";
-  key += _pixmap;
-  
-  QPixmap* pix = QPixmapCache::find( key );
+  QString file = pixmapFile(_pixmap, _mini);
+
+  QPixmap* pix = QPixmapCache::find( file );
   if ( pix )
     return pix;
-  
-  QString file = kapp->localkdedir().data();
-  file += "/share/icons/";
-  file += key;
   
   QPixmap p1;
   p1.load( file );
   if ( !p1.isNull() )
-  {
-    QPixmapCache::insert( key, p1 );
-    return QPixmapCache::find( key );
-  }
-
-  file = kapp->kde_icondir().data();
-  file += "/";
-  file += key;
+    QPixmapCache::insert( file, p1 );
   
-  p1.load( file );
-  if ( !p1.isNull() )
-  {
-    QPixmapCache::insert( key, p1 );
-    return QPixmapCache::find( key );
-  }
-
-  if ( strcmp( _pixmap, "unknown.xpm" ) == 0 )
-    return 0L;
-  
-  return defaultPixmap( _mini );
+  // there will always be an entry, as pixmapFile will return
+  // unknown.xpm if in doubt
+  return QPixmapCache::find( file );
 }
 
 QString KPixmapCache::pixmapFile( const char *_pixmap, bool _mini )
 {
-  QString key = "";
+  QString key;
   if ( _mini )
     key = "mini/";
   key += _pixmap;
+
+  QString file = locate("icon", key);
+  if (file.isNull())
+    return locate("icon", _mini ? "mini/unknown.xpm" : "unknown.xpm");
   
-  QString file = kapp->localkdedir().data();
-  file += "/share/icons/";
-  file += key;
-
-  struct stat buff;
-  if ( stat( file.ascii(), &buff ) != -1 )
-    return file;
-  
-  file = kapp->kde_icondir().data();
-  file += "/";
-  file += key;
-
-  if ( stat( file.ascii(), &buff ) != -1 )
-    return file;
-
-  file = kapp->kde_icondir().data();
-  file += "/";
-  if ( _mini )
-    file += "mini/";
-  file += "unknown.xpm";
-
   return file;
 }
 
