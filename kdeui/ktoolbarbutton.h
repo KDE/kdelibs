@@ -89,14 +89,9 @@ public:
    */
   ~KToolBarButton();
 
+#ifndef KDE_NO_COMPAT
   /**
-   * Enable/Disable this button
-   *
-   * @param enable Defaults to true
-   */
-  void setEnabled(bool enable = true);
-
-  /**
+   * @deprecated
    * Set the pixmap directly for this button.  This pixmap should be
    * the active one... the dimmed and disabled pixmaps are constructed
    * based on this one.  However, don't use this function unless you
@@ -104,22 +99,11 @@ public:
    *
    * @param pixmap The active pixmap
    */
+  // this one is from QButton, so #ifdef-ing it out doesn't break BC
   virtual void setPixmap(const QPixmap &pixmap);
 
   /**
-   * Set the pixmap directly for this button.  This pixmap should be
-   * the active one.. however, the disabled and default pixmaps will
-   * only be constructed if @ref #generate is true.  In any event,
-   * don't use this function unless you are positive that you don't
-   * want to use @ref setIcon.
-   *
-   * @param pixmap   The active pixmap
-   * @param generate If true, then the other pixmaps will be
-   *                 automatically generated using configurable effects
-   */
-  virtual void setPixmap(const QPixmap &pixmap, bool generate);
-
-  /**
+   * @deprecated
    * Force the button to use this pixmap as the default one rather
    * then generating it using effects.
    *
@@ -128,12 +112,14 @@ public:
   virtual void setDefaultPixmap(const QPixmap& pixmap);
 
   /**
+   * @deprecated
    * Force the button to use this pixmap when disabled one rather then
    * generating it using effects.
    *
    * @param pixmap The pixmap to use when disabled
    */
   virtual void setDisabledPixmap(const QPixmap& pixmap);
+#endif
 
   /**
    * Set the text for this button.  The text will be either used as a
@@ -153,7 +139,9 @@ public:
    */
   virtual void setIcon(const QString &icon);
 
+#ifndef KDE_NO_COMPAT
   /**
+   * @deprecated
    * Set the active icon for this button.  The pixmap itself is loaded
    * internally based on the icon size...  .. the disabled and default
    * pixmaps, however will only be constructed if @ref #generate is
@@ -163,9 +151,10 @@ public:
    * @param generate If true, then the other icons are automagically
    *                 generated from this one
    */
-  virtual void setIcon(const QString &icon, bool generate);
+  void setIcon(const QString &icon, bool /*generate*/ ) { setIcon( icon ); }
 
   /**
+   * @deprecated
    * Force the button to use this icon as the default one rather
    * then generating it using effects.
    *
@@ -174,6 +163,7 @@ public:
   virtual void setDefaultIcon(const QString& icon);
 
   /**
+   * @deprecated
    * Force the button to use this icon when disabled one rather then
    * generating it using effects.
    *
@@ -182,13 +172,14 @@ public:
   virtual void setDisabledIcon(const QString& icon);
 
   /**
+   * @deprecated
    * Set the pixmaps for this toolbar button from a QIconSet.
    * If you call this you don't need to call any of the other methods
    * that set icons or pixmaps.
    * @param iconset  The iconset to use
    */
   virtual void setIconSet( const QIconSet &iconset );
-
+#endif
 
   /**
    * Turn this button on or off
@@ -290,14 +281,7 @@ protected:
   QSize minimumSizeHint() const;
   QSize minimumSize() const;
 
-  void makeDefaultPixmap();
-  void makeDisabledPixmap();
-
 private:
-  QPixmap defaultPixmap;
-  QPixmap activePixmap;
-  QPixmap disabledPixmap;
-  virtual void setIcon(const QPixmap &p) { QButton::setIcon(p); }
   KToolBarButtonPrivate *d;
 
 

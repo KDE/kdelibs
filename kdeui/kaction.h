@@ -32,6 +32,7 @@
 #include <kguiitem.h>
 #include <kshortcut.h>
 #include <kstdaction.h>
+#include <kicontheme.h>
 
 class QMenuBar;
 class QPopupMenu;
@@ -168,7 +169,6 @@ class KAction : public QObject
   friend class KActionCollection;
   Q_OBJECT
   Q_PROPERTY( int containerCount READ containerCount )
-  Q_PROPERTY( QPixmap pixmap READ pixmap )
   Q_PROPERTY( QString plainText READ plainText )
   Q_PROPERTY( QString text READ text WRITE setText )
   Q_PROPERTY( QString shortcut READ shortcutText WRITE setShortcutText )
@@ -176,7 +176,6 @@ class KAction : public QObject
   Q_PROPERTY( QString group READ group WRITE setGroup )
   Q_PROPERTY( QString whatsThis READ whatsThis WRITE setWhatsThis )
   Q_PROPERTY( QString toolTip READ toolTip WRITE setToolTip )
-  Q_PROPERTY( QIconSet iconSet READ iconSet WRITE setIconSet )
   Q_PROPERTY( QString icon READ icon WRITE setIcon )
 public:
     /**
@@ -352,9 +351,10 @@ public:
     QWidget* representative( int index ) const;
     int containerCount() const;
 
-    virtual QPixmap pixmap() const;
-
-    virtual bool hasIconSet() const;
+    virtual bool hasIcon() const;
+#ifndef KDE_NO_COMPAT
+    bool hasIconSet() const { return hasIcon(); }
+#endif
     virtual QString plainText() const;
 
     /**
@@ -397,8 +397,11 @@ public:
      * Get the QIconSet from which the icons used to display this action will
      * be chosen.
      */
-    virtual QIconSet iconSet() const;
-
+    virtual QIconSet iconSet( KIcon::Group group, int size=0 ) const;
+#ifndef KDE_NO_COMPAT
+    QIconSet iconSet() const { return iconSet( KIcon::Small ); }
+#endif
+    
     virtual QString icon() const;
 
     KActionCollection *parentCollection() const;
@@ -481,15 +484,15 @@ protected:
     void addContainer( QWidget* parent, int id );
     void addContainer( QWidget* parent, QWidget* representative );
 
-    virtual void setShortcut( int i );
-    virtual void setShortcut( QPopupMenu* menu, int id );
-    virtual void setGroup( int id, const QString& grp );
-    virtual void setText(int i, const QString &text);
-    virtual void setEnabled(int i, bool enable);
-    virtual void setIconSet(int i, const QIconSet &iconSet);
-    virtual void setIcon( int i, const QString& icon );
-    virtual void setToolTip( int id, const QString& tt );
-    virtual void setWhatsThis( int i, const QString& text );
+    virtual void updateShortcut( int i );
+    virtual void updateShortcut( QPopupMenu* menu, int id );
+    virtual void updateGroup( int id );
+    virtual void updateText(int i );
+    virtual void updateEnabled(int i);
+    virtual void updateIconSet(int i);
+    virtual void updateIcon( int i);
+    virtual void updateToolTip( int id );
+    virtual void updateWhatsThis( int i );
 
     KActionCollection *m_parentCollection;
 
@@ -673,7 +676,7 @@ protected slots:
     virtual void slotActivated();
 
 protected:
-    virtual void setChecked( int id, bool checked );
+    virtual void updateChecked( int id );
 
 signals:
     void toggled( bool );
@@ -957,13 +960,13 @@ signals:
     void activated( const QString& text );
 
 protected:
-    virtual void setCurrentItem( int id, int index );
+    virtual void updateCurrentItem( int id );
 
-    virtual void setComboWidth( int id, int width );
+    virtual void updateComboWidth( int id );
 
-    virtual void setItems( int id, const QStringList &lst );
+    virtual void updateItems( int id );
 
-    virtual void clear( int id );
+    virtual void updateClear( int id );
 
 private:
     class KSelectActionPrivate;
@@ -1068,9 +1071,6 @@ public slots:
      *  @param index Index of the item (remember the first item is zero).
      */
     virtual void setCurrentItem( int index );
-
-    /// @internal
-    virtual void setCurrentItem(int a, int b) { KSelectAction::setCurrentItem(a, b); }
 
 private:
 
@@ -1187,12 +1187,12 @@ public:
    */
   virtual ~KRecentFilesAction();
 
-public slots:
   /**
    *  Returns the maximum of items in the recent files list.
    */
   uint maxItems() const;
 
+public slots:
   /**
    *  Sets the maximum of items in the recent files list.
    *  The default for this value is 10 set in the constructor.
@@ -1413,16 +1413,6 @@ public:
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
 
-public slots:
-    virtual void setEnabled( bool b );
-protected:
-    virtual void setText( int id, const QString& text );
-    virtual void setIconSet( int id, const QIconSet& iconSet );
-
-    /// @internal
-    virtual void setIconSet(const QIconSet &i) { KAction::setIconSet(i); }
-    /// @internal
-    virtual void setText(const QString& s) { KAction::setText(s); }
 private:
 
     class KActionMenuPrivate;

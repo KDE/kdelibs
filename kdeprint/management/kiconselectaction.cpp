@@ -101,13 +101,13 @@ int KIconSelectAction::plug(QWidget* widget, int index)
 	return value;
 }
 
-void KIconSelectAction::setCurrentItem(int id, int index)
+void KIconSelectAction::updateCurrentItem(int id)
 {
 	QWidget*	w = container(id);
 	if (w->inherits("KToolBar"))
-		static_cast<KToolBar*>(w)->getButton(itemId(id))->setIcon(d->m_iconlst[index]);
+		static_cast<KToolBar*>(w)->getButton(itemId(id))->setIcon(d->m_iconlst[currentItem()]);
 	else
-		KSelectAction::setCurrentItem(id, index);
+		KSelectAction::setCurrentItem(id);
 }
 
 void KIconSelectAction::setCurrentItem(int index)

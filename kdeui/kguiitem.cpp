@@ -35,7 +35,6 @@ public:
     {
         m_enabled = true;
         m_hasIcon = false;
-        m_iconLoaded = false;
     }
     
     KGuiItemPrivate( const KGuiItemPrivate &rhs )
@@ -52,7 +51,6 @@ public:
         m_whatsThis = rhs.m_whatsThis;
         m_statusText = rhs.m_statusText;
         m_enabled = rhs.m_enabled;
-        m_iconLoaded = rhs.m_iconLoaded;
         m_hasIcon = rhs.m_hasIcon;
 
         return *this;
@@ -67,7 +65,6 @@ public:
     QString m_iconName;
     QIconSet m_iconSet;
     bool m_hasIcon;
-    bool m_iconLoaded;
 };
 
 
@@ -129,21 +126,27 @@ QString KGuiItem::plainText() const {
   return stripped;
 }
 
-QIconSet KGuiItem::iconSet() const
+QIconSet KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) const
 {
     if( d->m_hasIcon )
     {
-        if( !d->m_iconLoaded )
+        if( !d->m_iconName.isEmpty())
         {
-            d->m_iconSet = SmallIconSet( d->m_iconName );
-            if( d->m_iconSet.isNull() )
-            {
-                d->m_hasIcon = false;
-                return QIconSet();
-            }
-            d->m_iconLoaded = true;
+// some caching here would(?) come handy
+            return instance->iconLoader()->loadIconSet( d->m_iconName, group, size );
+// here is a little problem that with delayed icon loading
+// we can't check if the icon really exists ... so what ...
+//            if( set.isNull() )
+//            {
+//                d->m_hasIcon = false;
+//                return QIconSet();
+//            }
+//            return set;
         }
-        return d->m_iconSet;
+        else
+        {
+            return d->m_iconSet;
+        }
     }
     else
         return QIconSet();
@@ -166,7 +169,7 @@ bool KGuiItem::isEnabled() const
     return d->m_enabled;
 }
 
-bool KGuiItem::hasIconSet() const
+bool KGuiItem::hasIcon() const
 {
     return d->m_hasIcon;
 }
@@ -178,11 +181,8 @@ void KGuiItem::setText( const QString &text ) {
 void KGuiItem::setIconSet( const QIconSet &iconset )
 {
     d->m_iconSet = iconset;
-// Why reset the icon name here? It breaks Konqueror's toolbar icons
-// (see KAction::setIcon and its call to setIconSet) (Simon)
-//    d->m_iconName = QString::null;
+    d->m_iconName = QString::null;
     d->m_hasIcon = !iconset.isNull();
-    d->m_iconLoaded = true;
 }
 
 void KGuiItem::setIconName( const QString &iconName )
@@ -190,7 +190,6 @@ void KGuiItem::setIconName( const QString &iconName )
     d->m_iconName = iconName;
     d->m_iconSet = QIconSet();
     d->m_hasIcon = !iconName.isEmpty();
-    d->m_iconLoaded = false;
 }
 
 void KGuiItem::setToolTip( const QString &toolTip) {

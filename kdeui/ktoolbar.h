@@ -282,6 +282,21 @@ public:
    * You can add custom popups which inherit @ref QPopupMenu to get popups
    * with tables, drawings etc. Just don't fiddle with events there.
    */
+    int insertButton(const QString& icon, int id, QPopupMenu *popup,
+		     bool enabled, const QString&_text, int index=-1);
+
+  /**
+   * Inserts a button with popupmenu.
+   *
+   * Button will have small
+   * triangle. You have to connect to popup's signals. The
+   * signals @ref KButton::pressed(), @ref KButton::released(),
+   * @ref KButton::clicked() or @ref KButton::doubleClicked() are @p not
+   * emmited by
+   * this button (see @ref setDelayedPopup() for that).
+   * You can add custom popups which inherit @ref QPopupMenu to get popups
+   * with tables, drawings etc. Just don't fiddle with events there.
+   */
     int insertButton(const QPixmap& pixmap, int id, QPopupMenu *popup,
 		     bool enabled, const QString&_text, int index=-1);
 
@@ -410,18 +425,18 @@ public:
     void setItemEnabled( int id, bool enabled );
 
   /**
-   * Sets button pixmap.
-   *
-   * Can be used while button is visible.
-   */
-    void setButtonPixmap( int id, const QPixmap& _pixmap );
-
-  /**
    * Sets the icon for a button.
    *
    * Can be used while button is visible.
    */
     void setButtonIcon( int id, const QString& _icon );
+
+  /**
+   * Sets button pixmap.
+   *
+   * Can be used while button is visible.
+   */
+    void setButtonPixmap( int id, const QPixmap& _pixmap );
 
   /**
    * Sets a button icon from a QIconSet.
@@ -442,7 +457,7 @@ public:
    * You will insert normal a button with connection (or use signals from
    * toolbar):
    * <pre>
-   * bar->insertButton(pixmap, id, const SIGNAL(clicked ()), this,
+   * bar->insertButton(icon, id, const SIGNAL(clicked ()), this,
    *                   SLOT (slotClick()), true, "click or wait for popup");
    * </pre> And then add a delayed popup:
    * <pre>

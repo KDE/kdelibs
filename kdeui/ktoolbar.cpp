@@ -283,6 +283,18 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, const char *signal,
 }
 
 
+int KToolBar::insertButton(const QString& icon, int id, QPopupMenu *popup,
+                            bool enabled, const QString &text, int index )
+{
+    KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text );
+    insertWidgetInternal( button, index, id );
+    button->setEnabled( enabled );
+    button->setPopup( popup );
+    doConnections( button );
+    return index;
+}
+
+
 int KToolBar::insertButton(const QPixmap& pixmap, int id, QPopupMenu *popup,
                             bool enabled, const QString &text, int index )
 {

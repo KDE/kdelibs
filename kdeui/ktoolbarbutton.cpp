@@ -72,9 +72,6 @@ public:
     m_delayTimer  = 0L;
     m_popup       = 0L;
 
-    m_disabledIconName = QString::null;
-    m_defaultIconName  = QString::null;
-
     m_instance = KGlobal::instance();
   }
   ~KToolBarButtonPrivate()
@@ -93,8 +90,6 @@ public:
   bool    m_isActive: 1;
 
   QString m_iconName;
-  QString m_disabledIconName;
-  QString m_defaultIconName;
 
   KToolBar *m_parent;
   KToolBar::IconText m_iconText;
@@ -176,7 +171,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   installEventFilter(this);
 
   // set our pixmap and do our initial setup
-  setPixmap(pixmap);
+  setIconSet( QIconSet( pixmap ));
   modeChange();
 }
 
@@ -196,14 +191,16 @@ void KToolBarButton::modeChange()
   d->m_iconSize = d->m_parent->iconSize();
   if (!d->m_iconName.isNull())
     setIcon(d->m_iconName);
-  if (!d->m_disabledIconName.isNull())
-    setDisabledIcon(d->m_disabledIconName);
-  if (!d->m_defaultIconName.isNull())
-    setDefaultIcon(d->m_defaultIconName);
 
   // we'll start with the size of our pixmap
-  int pix_width  = activePixmap.width();
-  int pix_height = activePixmap.height();
+  int pix_width  = d->m_iconSize;
+  if ( d->m_iconSize == 0 ) {
+      if (!strcmp(d->m_parent->name(), "mainToolBar"))
+          pix_width = IconSize( KIcon::MainToolbar );
+      else
+          pix_width = IconSize( KIcon::Toolbar );
+  }
+  int pix_height = pix_width;
 
   int text_height = 0;
   int text_width = 0;
@@ -260,12 +257,6 @@ void KToolBarButton::modeChange()
   updateGeometry();
 }
 
-void KToolBarButton::setEnabled( bool enabled )
-{
-  QButton::setEnabled( enabled );
-  QButton::setPixmap( (isEnabled() ? defaultPixmap : disabledPixmap) );
-}
-
 void KToolBarButton::setTextLabel( const QString& text, bool tipToo)
 {
   if (text.isNull())
@@ -287,93 +278,75 @@ void KToolBarButton::setText( const QString& text)
 
 void KToolBarButton::setIcon( const QString &icon )
 {
-  setIcon( icon, false );
-}
-
-void KToolBarButton::setIcon( const QString &icon, bool )
-{
   d->m_iconName = icon;
   d->m_iconSize = d->m_parent->iconSize();
   // QObject::name() return "const char *" instead of QString.
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
-  {
-    setPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::ActiveState, d->m_instance), false );
-    setDisabledPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DisabledState, d->m_instance) );
-    setDefaultPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DefaultState, d->m_instance) );
-  } else
-  {
-    setPixmap( BarIcon(icon, d->m_iconSize, KIcon::ActiveState, d->m_instance), false );
-    setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState, d->m_instance) );
-    setDefaultPixmap( BarIcon(icon, d->m_iconSize, KIcon::DefaultState, d->m_instance) );
-  }
+    QToolButton::setIconSet( d->m_instance->iconLoader()->loadIconSet(
+        d->m_iconName, KIcon::MainToolbar, d->m_iconSize ));
+  else
+    QToolButton::setIconSet( d->m_instance->iconLoader()->loadIconSet(
+        d->m_iconName, KIcon::Toolbar, d->m_iconSize ));
 }
 
 void KToolBarButton::setIconSet( const QIconSet &iconset )
 {
-    // TODO. Do the opposite. Port all this code to QIconSet.
-    setPixmap( iconset.pixmap( QIconSet::Automatic, QIconSet::Active ), false );
-    setDisabledPixmap( iconset.pixmap( QIconSet::Automatic, QIconSet::Disabled ) );
-    setDefaultPixmap( iconset.pixmap( QIconSet::Automatic, QIconSet::Normal ) );
+  QToolButton::setIconSet( iconset );
 }
 
-// obsolete?
-void KToolBarButton::setDisabledIcon( const QString &icon )
-{
-  d->m_disabledIconName = icon;
-  d->m_iconSize         = d->m_parent->iconSize();
-  if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    setDisabledPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DisabledState, d->m_instance) );
-  else
-    setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState, d->m_instance) );
-}
-
-// obsolete?
-void KToolBarButton::setDefaultIcon( const QString &icon )
-{
-  d->m_defaultIconName = icon;
-  d->m_iconSize        = d->m_parent->iconSize();
-  if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    setDefaultPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DefaultState, d->m_instance) );
-  else
-    setDefaultPixmap( BarIcon(icon, d->m_iconSize, KIcon::DefaultState, d->m_instance) );
-}
-
+// remove?
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
 {
-  setPixmap( pixmap, true );
-}
-
-void KToolBarButton::setPixmap( const QPixmap &pixmap, bool generate )
-{
-  activePixmap = pixmap;
-
-  if ( generate )
+  if( pixmap.isNull()) // called by QToolButton
   {
-    // These pixmaps are derived from the active one.
-    makeDefaultPixmap();
-    makeDisabledPixmap();
-  }
-  else
-  {
-    if (defaultPixmap.isNull())
-      defaultPixmap = activePixmap;
-    if (disabledPixmap.isNull())
-      disabledPixmap = activePixmap;
-  }
-
-  QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
+    QToolButton::setPixmap( pixmap );
+    return;
+  }    
+  QIconSet set = iconSet();
+  set.setPixmap( pixmap, QIconSet::Automatic, QIconSet::Active );
+  QToolButton::setIconSet( set );
 }
 
 void KToolBarButton::setDefaultPixmap( const QPixmap &pixmap )
 {
-  defaultPixmap = pixmap;
-  QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
+  QIconSet set = iconSet();
+  set.setPixmap( pixmap, QIconSet::Automatic, QIconSet::Normal );
+  QToolButton::setIconSet( set );
 }
 
 void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
 {
-  disabledPixmap = pixmap;
-  QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
+  QIconSet set = iconSet();
+  set.setPixmap( pixmap, QIconSet::Automatic, QIconSet::Disabled );
+  QToolButton::setIconSet( set );
+}
+
+void KToolBarButton::setDefaultIcon( const QString& icon )
+{
+  QIconSet set = iconSet();
+  QPixmap pm;
+  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+    pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
+        d->m_iconSize );
+  else
+    pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::Toolbar,
+        d->m_iconSize );
+  set.setPixmap( pm, QIconSet::Automatic, QIconSet::Normal );
+  QToolButton::setIconSet( set );
+}
+
+void KToolBarButton::setDisabledIcon( const QString& icon )
+{
+  QIconSet set = iconSet();
+  QPixmap pm;
+  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+    pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
+        d->m_iconSize );
+  else
+    pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::Toolbar,
+        d->m_iconSize );
+  set.setPixmap( pm, QIconSet::Automatic, QIconSet::Disabled );
+  QToolButton::setIconSet( set );
 }
 
 void KToolBarButton::setPopup(QPopupMenu *p, bool toggle)
@@ -406,7 +379,6 @@ void KToolBarButton::leaveEvent(QEvent *)
 {
   if( d->m_isRaised || d->m_isActive )
   {
-    QButton::setPixmap(isEnabled() ? defaultPixmap : disabledPixmap);
     d->m_isRaised = false;
     d->m_isActive = false;
     repaint(false);
@@ -424,15 +396,12 @@ void KToolBarButton::enterEvent(QEvent *)
   {
     if (isEnabled())
     {
-      QButton::setPixmap(activePixmap);
-
       d->m_isActive = true;
       if (!isToggleButton())
         d->m_isRaised = true;
     }
     else
     {
-      QButton::setPixmap(disabledPixmap);
       d->m_isRaised = false;
       d->m_isActive = false;
     }
@@ -529,37 +498,45 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   if (d->m_iconText == KToolBar::IconOnly) // icon only
   {
-    if (pixmap())
+    QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
+        d->m_isActive ? QIconSet::Active
+            : isEnabled() ? QIconSet::Normal : QIconSet::Disabled,
+        isOn() ? QIconSet::On : QIconSet::Off );
+    if( !pixmap.isNull())
     {
-      dx = ( width() - pixmap()->width() ) / 2;
-      dy = ( height() - pixmap()->height() ) / 2;
+      dx = ( width() - pixmap.width() ) / 2;
+      dy = ( height() - pixmap.height() ) / 2;
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, *pixmap() );
+      _painter->drawPixmap( dx, dy, pixmap );
     }
   }
   else if (d->m_iconText == KToolBar::IconTextRight) // icon and text (if any)
   {
-    if (pixmap())
+    QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
+        d->m_isActive ? QIconSet::Active
+            : isEnabled() ? QIconSet::Normal : QIconSet::Disabled,
+        isOn() ? QIconSet::On : QIconSet::Off );
+    if( !pixmap.isNull())
     {
       dx = 4;
-      dy = ( height() - pixmap()->height() ) / 2;
+      dy = ( height() - pixmap.height() ) / 2;
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, *pixmap() );
+      _painter->drawPixmap( dx, dy, pixmap );
     }
 
     if (!textLabel().isNull())
     {
       textFlags = AlignVCenter|AlignLeft;
-      if (pixmap())
-        dx = 4 + pixmap()->width() + 2;
+      if (!pixmap.isNull())
+        dx = 4 + pixmap.width() + 2;
       else
         dx = 4;
       dy = 0;
@@ -588,16 +565,20 @@ void KToolBarButton::drawButton( QPainter *_painter )
   }
   else if (d->m_iconText == KToolBar::IconTextBottom)
   {
-    if (pixmap())
+    QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
+        d->m_isActive ? QIconSet::Active
+            : isEnabled() ? QIconSet::Normal : QIconSet::Disabled,
+        isOn() ? QIconSet::On : QIconSet::Off );
+    if( !pixmap.isNull())
     {
-      dx = (width() - pixmap()->width()) / 2;
-      dy = (height() - fm.lineSpacing() - pixmap()->height()) / 2;
+      dx = (width() - pixmap.width()) / 2;
+      dy = (height() - fm.lineSpacing() - pixmap.height()) / 2;
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
       {
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, *pixmap() );
+      _painter->drawPixmap( dx, dy, pixmap );
     }
 
     if (!textLabel().isNull())
@@ -645,39 +626,9 @@ void KToolBarButton::paletteChange(const QPalette &)
 {
   if(!d->m_isSeparator)
   {
-    makeDisabledPixmap();
-    if ( !isEnabled() )
-      QButton::setPixmap( disabledPixmap );
-    else
-      QButton::setPixmap( defaultPixmap );
+    modeChange();
     repaint(false); // no need to delete it first therefore only false
   }
-}
-
-void KToolBarButton::makeDefaultPixmap()
-{
-  if (d->m_isSeparator)
-    return;
-
-  if (!strcmp(d->m_parent->name(), "mainToolBar"))
-      defaultPixmap = d->m_instance->iconLoader()->iconEffect()->apply(
-          activePixmap, KIcon::MainToolbar, KIcon::DefaultState );
-  else
-      defaultPixmap = d->m_instance->iconLoader()->iconEffect()->apply(
-          activePixmap, KIcon::Toolbar, KIcon::DefaultState );
-}
-
-void KToolBarButton::makeDisabledPixmap()
-{
-  if (d->m_isSeparator)
-    return;             // No pixmaps for separators
-
-  if (!strcmp(d->m_parent->name(), "mainToolBar"))
-      disabledPixmap = d->m_instance->iconLoader()->iconEffect()->apply(
-          activePixmap, KIcon::MainToolbar, KIcon::DisabledState );
-  else
-      disabledPixmap = d->m_instance->iconLoader()->iconEffect()->apply(
-          activePixmap, KIcon::Toolbar, KIcon::DisabledState );
 }
 
 void KToolBarButton::showMenu()
@@ -753,8 +704,8 @@ void KToolBarButton::slotToggled()
 void KToolBarButton::setNoStyle(bool no_style)
 {
     d->m_noStyle = no_style;
-
-    makeDefaultPixmap();
+    
+    modeChange();
     d->m_iconText = KToolBar::IconTextRight;
     repaint(false);
 }

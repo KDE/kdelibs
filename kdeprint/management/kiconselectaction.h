@@ -40,7 +40,7 @@ public slots:
 protected:
 	void createPopupMenu();
 	void updateIcons();
-	virtual void setCurrentItem(int id, int index);
+	virtual void updateCurrentItem(int id);
 
 private:
 	KIconSelectActionPrivate*	d;

@@ -26,6 +26,8 @@
 #include <qiconset.h>
 #include <qpixmap.h>
 #include <qvaluelist.h>
+#include <kicontheme.h>
+#include <kglobal.h>
 
 class KGuiItem
 {
@@ -48,12 +50,19 @@ public:
 
     QString text() const;
     QString plainText() const;
-    QIconSet iconSet() const;
+    QIconSet iconSet( KIcon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
+#ifndef KDE_NO_COMPAT
+    QIconSet iconSet() const { return iconSet( KIcon::Small ); }
+#endif
+
     QString iconName() const;
     QString toolTip() const;
     QString whatsThis() const;
     bool isEnabled() const;
-    bool hasIconSet() const;
+    bool hasIcon() const;
+#ifndef KDE_NO_COMPAT
+    bool hasIconSet() const { return hasIcon(); }
+#endif
 
     void setText( const QString &text );
     void setIconSet( const QIconSet &iconset );

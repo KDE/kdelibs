@@ -140,15 +140,6 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 	initPrivate( text, cut, receiver, slot );
 }
 
-KAction::KAction( const QString& text, const QIconSet& iconset, const KShortcut& cut,
-             const QObject* receiver, const char* slot,
-             KActionCollection* parent, const char* name )
-: QObject( parent, name )
-{
-	initPrivate( text, cut, receiver, slot );
-	setIconSet( iconset );
-}
-
 KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
 	const QObject* receiver, const char* slot,
 	KActionCollection* parent, const char* name )
@@ -156,6 +147,15 @@ KAction::KAction( const QString& text, const QString& sIconName, const KShortcut
 {
 	initPrivate( text, cut, receiver, slot );
 	d->setIconName( sIconName );
+}
+
+KAction::KAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+	const QObject* receiver, const char* slot,
+	KActionCollection* parent, const char* name )
+: QObject( parent, name )
+{
+	initPrivate( text, cut, receiver, slot );
+	d->setIconSet( pix );
 }
 
 KAction::KAction( const KGuiItem& item, const KShortcut& cut,
@@ -312,7 +312,7 @@ void KAction::setShortcut( const KShortcut& cut )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setShortcut( i );
+    updateShortcut( i );
 }
 
 void KAction::setAccel( int keyQt )
@@ -320,14 +320,14 @@ void KAction::setAccel( int keyQt )
   setShortcut( KShortcut(keyQt) );
 }
 
-void KAction::setShortcut( int i )
+void KAction::updateShortcut( int i )
 {
   int id = itemId( i );
 
   QWidget* w = container( i );
   if ( w->inherits( "QPopupMenu" ) ) {
     QPopupMenu* menu = static_cast<QPopupMenu*>(w);
-    setShortcut( menu, id );
+    updateShortcut( menu, id );
   }
   // FIXME: It may be that the following should only be done
   //  if d->m_kaccel == 0, otherwise we may be setting up
@@ -336,7 +336,7 @@ void KAction::setShortcut( int i )
     static_cast<QMenuBar*>(w)->setAccel( d->m_cut.keyCodeQt(), id );
 }
 
-void KAction::setShortcut( QPopupMenu* menu, int id )
+void KAction::updateShortcut( QPopupMenu* menu, int id )
 {
   // If the action has a KAccel object,
   //  show the string representation of its shortcut.
@@ -390,10 +390,10 @@ void KAction::setGroup( const QString& grp )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setGroup( i, grp );
+    updateGroup( i );
 }
 
-void KAction::setGroup( int, const QString& )
+void KAction::updateGroup( int )
 {
   // DO SOMETHING
 }
@@ -419,15 +419,15 @@ void KAction::setToolTip( const QString& tt )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setToolTip( i, tt );
+    updateToolTip( i );
 }
 
-void KAction::setToolTip( int i, const QString& tt )
+void KAction::updateToolTip( int i )
 {
   QWidget *w = container( i );
 
   if ( w->inherits( "KToolBar" ) )
-     QToolTip::add( static_cast<KToolBar*>(w)->getWidget( itemId( i ) ), tt );
+     QToolTip::add( static_cast<KToolBar*>(w)->getWidget( itemId( i ) ), d->toolTip() );
 }
 
 QString KAction::toolTip() const
@@ -456,10 +456,17 @@ int KAction::plug( QWidget *w, int index )
     // Don't insert shortcut into menu if it's already in a KAccel object.
     int keyQt = (d->m_kaccel) ? 0 : d->m_cut.keyCodeQt();
 
-    if ( d->hasIconSet() )
-        id = menu->insertItem( iconSet(), d->text(), this,//dsweet
-                               SLOT( slotActivated() ), keyQt,
-                               -1, index );
+    if ( d->hasIcon() )
+    {
+        KInstance *instance;
+        if ( m_parentCollection )
+          instance = m_parentCollection->instance();
+        else
+          instance = KGlobal::instance();
+        id = menu->insertItem( d->iconSet( KIcon::Small, 0, instance ), d->text(), this,//dsweet
+                                 SLOT( slotActivated() ), keyQt,
+                                 -1, index );
+    }
     else
         id = menu->insertItem( d->text(), this,
                                SLOT( slotActivated() ),  //dsweet
@@ -468,7 +475,7 @@ int KAction::plug( QWidget *w, int index )
     // If the shortcut is already in a KAccel object, then
     //  we need to set the menu item's shortcut text.
     if ( d->m_kaccel )
-        setShortcut( menu, id );
+        updateShortcut( menu, id );
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
@@ -491,26 +498,24 @@ int KAction::plug( QWidget *w, int index )
     KToolBar *bar = static_cast<KToolBar *>( w );
 
     int id_ = getToolButtonID();
-    if ( icon().isEmpty() && d->hasIconSet() )
+    KInstance *instance;
+    if ( m_parentCollection )
+      instance = m_parentCollection->instance();
+    else
+      instance = KGlobal::instance();
+
+    if ( icon().isEmpty() ) // old code using QIconSet directly
     {
       bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ),
                          d->isEnabled(), d->plainText(), index );
     }
     else
-    {
-      KInstance *instance;
-      if ( m_parentCollection )
-        instance = m_parentCollection->instance();
-      else
-        instance = KGlobal::instance();
-
       bar->insertButton( d->iconName(), id_, SIGNAL( clicked() ), this,
-                         SLOT( slotActivated() ), d->isEnabled(), d->plainText(),
-                         index, instance );
+                         SLOT( slotActivated() ),
+                         d->isEnabled(), d->plainText(), index, instance );
 
-      bar->getButton( id_ )->setName( QCString("toolbutton_")+name() );
-    }
+    bar->getButton( id_ )->setName( QCString("toolbutton_")+name() );
 
     if ( !d->whatsThis().isEmpty() )
         QWhatsThis::add( bar->getButton(id_), whatsThisWithIcon() );
@@ -625,21 +630,21 @@ void KAction::setEnabled(bool enable)
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setEnabled( i, enable );
+    updateEnabled( i );
 
   emit enabled( d->isEnabled() );
 }
 
-void KAction::setEnabled( int i, bool e )
+void KAction::updateEnabled( int i )
 {
     QWidget *w = container( i );
 
     if ( w->inherits("QPopupMenu") )
-      static_cast<QPopupMenu*>(w)->setItemEnabled( itemId( i ), e );
+      static_cast<QPopupMenu*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
     else if ( w->inherits("QMenuBar") )
-      static_cast<QMenuBar*>(w)->setItemEnabled( itemId( i ), e );
+      static_cast<QMenuBar*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
     else if ( w->inherits( "KToolBar" ) )
-      static_cast<KToolBar*>(w)->setItemEnabled( itemId( i ), e );
+      static_cast<KToolBar*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
 }
 
 void KAction::setConfigurable( bool b )
@@ -660,7 +665,7 @@ void KAction::setText( const QString& text )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setText( i, text );
+    updateText( i );
 
   /*if ( m_parentCollection )
   {
@@ -671,24 +676,19 @@ void KAction::setText( const QString& text )
   }*/
 }
 
-void KAction::setText( int i, const QString &text )
+void KAction::updateText( int i )
 {
   QWidget *w = container( i );
 
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->changeItem( itemId( i ), text );
+    static_cast<QPopupMenu*>(w)->changeItem( itemId( i ), d->text() );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->changeItem( itemId( i ), text );
+    static_cast<QMenuBar*>(w)->changeItem( itemId( i ), d->text() );
   else if ( w->inherits( "KToolBar" ) )
   {
     QWidget *button = static_cast<KToolBar *>(w)->getWidget( itemId( i ) );
-    if ( button->inherits( "KToolBarButton" ) ) {
-      QString stripped( text );
-      int pos;
-      while( ( pos = stripped.find( '&' ) ) != -1 )
-        stripped.replace( pos, 1, QString::null );
-      static_cast<KToolBarButton *>(button)->setText( stripped );
-    }
+    if ( button->inherits( "KToolBarButton" ) )
+      static_cast<KToolBarButton *>(button)->setText( d->plainText() );
   }
 }
 
@@ -706,27 +706,22 @@ void KAction::setIcon( const QString &icon )
 {
   d->setIconName( icon );
 
-  // We load the "Small" icon as the main one (for menu items)
-  // and we let setIcon( int, QString ) deal with toolbars
-  KInstance *instance;
-  if ( m_parentCollection )
-    instance = m_parentCollection->instance();
-  else
-    instance = KGlobal::instance();
-  setIconSet( SmallIconSet( icon, 16, instance ) );
-
   // now handle any toolbars
   int len = containerCount();
   for ( int i = 0; i < len; ++i )
-    setIcon( i, icon );
+    updateIcon( i );
 }
 
-void KAction::setIcon( int id, const QString &icon )
+void KAction::updateIcon( int id )
 {
   QWidget* w = container( id );
 
-  if ( w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>(w)->setButtonIcon( itemId( id ), icon );
+  if ( w->inherits( "QPopupMenu" ) )
+    static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), d->iconSet( KIcon::Small ), d->text() );
+  else if ( w->inherits( "QMenuBar" ) )
+    static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet( KIcon::Small ), d->text() );
+  else if ( w->inherits( "KToolBar" ) )
+    static_cast<KToolBar *>(w)->setButtonIcon( itemId( id ), d->iconName() );
 }
 
 QString KAction::icon() const
@@ -740,32 +735,35 @@ void KAction::setIconSet( const QIconSet &iconset )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setIconSet( i, iconset );
+    updateIconSet( i );
 }
 
-void KAction::setIconSet( int id, const QIconSet& iconset )
+
+void KAction::updateIconSet( int id )
 {
   QWidget *w = container( id );
 
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), iconset, d->text() );
+    static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->changeItem( itemId( id ), iconset, d->text() );
+    static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
   else if ( w->inherits( "KToolBar" ) )
   {
     if ( icon().isEmpty() && d->hasIconSet() ) // only if there is no named icon ( scales better )
-      static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), iconset );
+      static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), d->iconSet() );
+    else
+      static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), d->iconSet( KIcon::Small ) );
   }
 }
 
-QIconSet KAction::iconSet() const
+QIconSet KAction::iconSet( KIcon::Group group, int size ) const
 {
-   return d->iconSet();
+    return d->iconSet( group, size );
 }
 
-bool KAction::hasIconSet() const
+bool KAction::hasIcon() const
 {
-  return d->hasIconSet();
+  return d->hasIcon();
 }
 
 void KAction::setWhatsThis( const QString& text )
@@ -774,15 +772,15 @@ void KAction::setWhatsThis( const QString& text )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setWhatsThis( i, text );
+    updateWhatsThis( i );
 }
 
-void KAction::setWhatsThis( int i, const QString& text )
+void KAction::updateWhatsThis( int i )
 {
   QPopupMenu* pm = popupMenu( i );
   if ( pm )
   {
-    pm->setWhatsThis( itemId( i ), text );
+    pm->setWhatsThis( itemId( i ), d->whatsThis() );
     return;
   }
 
@@ -791,7 +789,7 @@ void KAction::setWhatsThis( int i, const QString& text )
   {
     QWidget *w = tb->getButton( itemId( i ) );
     QWhatsThis::remove( w );
-    QWhatsThis::add( w, text );
+    QWhatsThis::add( w, d->whatsThis() );
     return;
   }
 }
@@ -807,11 +805,6 @@ QString KAction::whatsThisWithIcon() const
     if (!d->iconName().isEmpty())
       return QString::fromLatin1("<img source=\"small|%1\"> %2").arg(d->iconName() ).arg(text);
     return text;
-}
-
-QPixmap KAction::pixmap() const
-{
-  return QPixmap(); //remove next friday
 }
 
 QWidget* KAction::container( int index ) const
@@ -1047,10 +1040,12 @@ void KToggleAction::setChecked( bool c )
   if ( c == d->m_checked )
     return;
 
+  d->m_checked = c;
+
   int len = containerCount();
 
   for( int i = 0; i < len; ++i )
-    setChecked( i, c );
+    updateChecked( i );
 
   if ( c && parent() && !exclusiveGroup().isEmpty() ) {
     const QObjectList *list = parent()->children();
@@ -1064,23 +1059,21 @@ void KToggleAction::setChecked( bool c )
       }
     }
   }
-
-  d->m_checked = c;
 }
 
-void KToggleAction::setChecked( int id, bool checked )
+void KToggleAction::updateChecked( int id )
 {
   QWidget *w = container( id );
 
   if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->setItemChecked( itemId( id ), checked );
+    static_cast<QPopupMenu*>(w)->setItemChecked( itemId( id ), d->m_checked );
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->setItemChecked( itemId( id ), checked );
+    static_cast<QMenuBar*>(w)->setItemChecked( itemId( id ), d->m_checked );
   else if ( w->inherits( "KToolBar" ) )
   {
     QWidget* r = static_cast<KToolBar*>( w )->getButton( itemId( id ) );
     if ( r->inherits( "KToolBarButton" ) )
-      static_cast<KToolBar*>( w )->setButton( itemId( id ), checked );
+      static_cast<KToolBar*>( w )->setButton( itemId( id ), d->m_checked );
   }
 }
 
@@ -1273,7 +1266,7 @@ void KSelectAction::setCurrentItem( int id )
     int len = containerCount();
 
     for( int i = 0; i < len; ++i )
-        setCurrentItem( i, id );
+        updateCurrentItem( i );
 
     //    emit KAction::activated();
     //    emit activated( currentItem() );
@@ -1290,7 +1283,7 @@ void KSelectAction::setComboWidth( int width )
   int len = containerCount();
 
   for( int i = 0; i < len; ++i )
-    setComboWidth( i, width );
+    updateComboWidth( i );
 
 }
 QPopupMenu* KSelectAction::popupMenu()
@@ -1371,7 +1364,7 @@ void KSelectAction::setItems( const QStringList &lst )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setItems( i, lst );
+    updateItems( i );
 
   // Disable if empty and not editable
   setEnabled ( lst.count() > 0 || d->m_edit );
@@ -1395,9 +1388,9 @@ int KSelectAction::currentItem() const
   return d->m_current;
 }
 
-void KSelectAction::setCurrentItem( int id, int index )
+void KSelectAction::updateCurrentItem( int id )
 {
-  if ( index < 0 )
+  if ( d->m_current < 0 )
         return;
 
   QWidget* w = container( id );
@@ -1405,7 +1398,7 @@ void KSelectAction::setCurrentItem( int id, int index )
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *b = static_cast<QComboBox*>( r );
-      b->setCurrentItem( index );
+      b->setCurrentItem( d->m_current );
     }
   }
 }
@@ -1415,29 +1408,29 @@ int KSelectAction::comboWidth() const
   return d->m_comboWidth;
 }
 
-void KSelectAction::setComboWidth( int id, int width )
+void KSelectAction::updateComboWidth( int id )
 {
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *cb = static_cast<QComboBox*>( r );
-      cb->setMaximumWidth( width );
+      cb->setMaximumWidth( d->m_comboWidth );
     }
   }
 }
 
-void KSelectAction::setItems( int id, const QStringList& lst )
+void KSelectAction::updateItems( int id )
 {
-	kdDebug(125) << "KAction::setItems( " << id << ", lst )" << endl; // remove -- ellis
+	kdDebug(125) << "KAction::updateItems( " << id << ", lst )" << endl; // remove -- ellis
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
     if ( r->inherits( "QComboBox" ) ) {
       QComboBox *cb = static_cast<QComboBox*>( r );
       cb->clear();
-      QStringList::ConstIterator it = lst.begin();
-      for( ; it != lst.end(); ++it )
+      QStringList::ConstIterator it = d->m_list.begin();
+      for( ; it != d->m_list.end(); ++it )
         cb->insertItem( *it );
       // Ok, this currently doesn't work due to a bug in QComboBox
       // (the sizehint is cached for ever and never recalculated)
@@ -1457,17 +1450,10 @@ int KSelectAction::plug( QWidget *widget, int index )
 
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
     int id;
-    if ( !pixmap().isNull() )
-    {
-      id = menu->insertItem( pixmap(), d->m_menu, -1, index );
-    }
+    if ( hasIconSet() )
+      id = menu->insertItem( iconSet(), text(), d->m_menu, -1, index );
     else
-    {
-      if ( hasIconSet() )
-        id = menu->insertItem( iconSet(), text(), d->m_menu, -1, index );
-      else
-        id = menu->insertItem( text(), d->m_menu, -1, index );
-    }
+      id = menu->insertItem( text(), d->m_menu, -1, index );
 
     if ( !isEnabled() )
         menu->setItemEnabled( id, false );
@@ -1503,7 +1489,7 @@ int KSelectAction::plug( QWidget *widget, int index )
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
-    setCurrentItem( containerCount() - 1, currentItem() );
+    updateCurrentItem( containerCount() - 1 );
 
     return containerCount() - 1;
   }
@@ -1519,10 +1505,10 @@ void KSelectAction::clear()
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    clear( i );
+    updateClear( i );
 }
 
-void KSelectAction::clear( int id )
+void KSelectAction::updateClear( int id )
 {
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
@@ -2072,7 +2058,7 @@ int KFontAction::plug( QWidget *w, int index )
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
-    setCurrentItem( containerCount() - 1, currentItem() );
+    updateCurrentItem( containerCount() - 1 );
 
     return containerCount() - 1;
   }
@@ -2322,15 +2308,10 @@ int KActionMenu::plug( QWidget* widget, int index )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
     int id;
-    if ( !pixmap().isNull() )
-      id = menu->insertItem( pixmap(), d->m_popup, -1, index );
+    if ( hasIconSet() )
+      id = menu->insertItem( iconSet(), text(), d->m_popup, -1, index );
     else
-    {
-      if ( hasIconSet() )
-        id = menu->insertItem( iconSet(), text(), d->m_popup, -1, index );
-      else
-        id = menu->insertItem( text(), d->m_popup, -1, index );
-    }
+      id = menu->insertItem( text(), d->m_popup, -1, index );
 
     if ( !isEnabled() )
         menu->setItemEnabled( id, false );
@@ -2425,36 +2406,6 @@ void KActionMenu::unplug( QWidget* widget )
   }
   else
     KAction::unplug( widget );
-}
-
-void KActionMenu::setEnabled( bool b )
-{
-  KAction::setEnabled( b );
-}
-
-void KActionMenu::setText( int id, const QString& text )
-{
-  QWidget *w = container( id );
-
-  if ( w->inherits( "KToolBar" ) )
-  {
-    QWidget *button = static_cast<KToolBar *>( w )->getWidget( itemId( id ) );
-    if ( button->inherits( "KToolBarButton" ) )
-     static_cast<KToolBarButton *>( button )->setText( text );
-  }
-
-  KAction::setText( id, text );
-}
-
-
-void KActionMenu::setIconSet( int id, const QIconSet& iconSet )
-{
-  QWidget *w = container( id );
-
-  if ( w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>( w )->setButtonPixmap( itemId( id ), iconSet.pixmap() );
-
-  KAction::setIconSet( id, iconSet );
 }
 
 ////////
