@@ -70,10 +70,10 @@ class Field;
   name() is the NAME type of RFC2426. It can be used as internal name for the
   data enty, but shouldn't be used for displaying the data to the user.
  */
-class Addressee
+class KABC_EXPORT Addressee
 {
-  friend QDataStream &operator<<( QDataStream &, const Addressee & );
-  friend QDataStream &operator>>( QDataStream &, Addressee & );
+  friend KABC_EXPORT QDataStream &operator<<( QDataStream &, const Addressee & );
+  friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Addressee & );
 
   public:
     typedef QValueList<Addressee> List;
@@ -382,8 +382,8 @@ class Addressee
     static KABC::Field *mSortField;
 };
 
-QDataStream &operator<<( QDataStream &, const Addressee & );
-QDataStream &operator>>( QDataStream &, Addressee & );
+KABC_EXPORT QDataStream &operator<<( QDataStream &, const Addressee & );
+KABC_EXPORT QDataStream &operator>>( QDataStream &, Addressee & );
 
 }
 
