@@ -142,7 +142,7 @@ void KMWDriverTest::slotTest()
 	if (KMFactory::self()->manager()->createPrinter(m_printer))
 	{
 		if (KMFactory::self()->manager()->testPrinter(m_printer))
-			KMessageBox::information(this,i18n("Test page successfully sent to printer. Wait until printing is complete, then click the OK button."));
+			KMessageBox::information(this,"<qt>"+i18n("Test page successfully sent to printer. Wait until printing is complete, then click the OK button."));
 		else
 			KMessageBox::error(this,"<qt>"+i18n("Unable to test printer: ")+KMFactory::self()->manager()->errorMsg()+"</qt>");
 		if (!KMFactory::self()->manager()->removePrinter(m_printer))
