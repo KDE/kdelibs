@@ -108,6 +108,19 @@ using namespace KJS;
 
 namespace KJS {
 
+static const struct HashEntry DOMNodeListProtoTableEntries[] = {
+   { "namedItem", DOMNodeList::NamedItem, DontDelete|Function, 1, 0 },
+   { "item", DOMNodeList::Item, DontDelete|Function, 1, 0 }
+};
+
+static const struct HashTable DOMNodeListProtoTable = { 2, 2, DOMNodeListProtoTableEntries, 2 };
+
+} // namespace
+
+using namespace KJS;
+
+namespace KJS {
+
 static const struct HashEntry DOMAttrTableEntries[] = {
    { "specified", DOMAttr::Specified, DontDelete|ReadOnly, 0, 0 },
    { "value", DOMAttr::ValueProperty, DontDelete|ReadOnly, 0, 0 },

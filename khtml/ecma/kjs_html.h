@@ -31,9 +31,9 @@
 #include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
 
-class HTMLElement;
-
 namespace KJS {
+
+  class HTMLElement;
 
   class HTMLDocument : public DOMDocument {
   public:

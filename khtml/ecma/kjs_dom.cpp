@@ -25,6 +25,7 @@
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "misc/htmltags.h" // ID_*
+#include "misc/htmlattrs.h" // ATTR_*
 #include "html/html_baseimpl.h"
 #include <kdebug.h>
 #include <khtml_part.h>
@@ -533,22 +534,34 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
 
 // -------------------------------------------------------------------------
 
+/*
+@begin DOMNodeListProtoTable 2
+  item		DOMNodeList::Item		DontDelete|Function 1
+# IE extension (IE treats DOMNodeList like an HTMLCollection)
+  namedItem	DOMNodeList::NamedItem		DontDelete|Function 1
+@end
+*/
+DEFINE_PROTOTYPE("DOMNodeList", DOMNodeListProto)
+IMPLEMENT_PROTOFUNC_DOM(DOMNodeListProtoFunc)
+IMPLEMENT_PROTOTYPE(DOMNodeListProto,DOMNodeListProtoFunc)
+
 const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 
 DOMNodeList::DOMNodeList(ExecState *exec, const DOM::NodeList& l)
- : DOMObject(exec->interpreter()->builtinObjectPrototype()), list(l) { }
+ : DOMObject(DOMNodeListProto::self(exec)), list(l) { }
 
 DOMNodeList::~DOMNodeList()
 {
   ScriptInterpreter::forgetDOMObject(list.handle());
 }
 
-// We have to implement hasProperty since we don't use a hashtable for 'length' and 'item'
+// We have to implement hasProperty since we don't use a hashtable for 'length'
 // ## this breaks "for (..in..)" though.
 bool DOMNodeList::hasProperty(ExecState *exec, const Identifier &p) const
 {
-  if (p == lengthPropertyName || p == "item")
+  if (p == lengthPropertyName)
     return true;
+  // ## missing: accept p if array index or item id...
   return ObjectImp::hasProperty(exec, p);
 }
 
@@ -557,37 +570,36 @@ Value DOMNodeList::tryGet(ExecState *exec, const Identifier &p) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMNodeList::tryGet " << p.ascii() << endl;
 #endif
+  if (p == lengthPropertyName)
+    return Number(list.length());
+
+  // Look in the prototype (for functions) before assuming it's an item's name
+  Object proto = Object::dynamicCast(prototype());
+  if (!proto.isNull() && proto.hasProperty(exec,p))
+    return proto.get(exec,p);
+
   Value result;
 
-  if (p == lengthPropertyName)
-    result = Number(list.length());
-  else if (p == "item") {
-    // No need for a complete hashtable for a single func, but we still want
-    // to use the caching feature of lookupOrCreateFunction.
-    result = lookupOrCreateFunction<DOMNodeListFunc>(exec, p, this, DOMNodeListFunc::Item, 1, DontDelete|Function);
-    //result = new DOMNodeListFunc(exec, DOMNodeListFunc::Item, 1);
-  }
+  // array index ?
+  bool ok;
+  long unsigned int idx = p.toULong(&ok);
+  if (ok)
+    result = getDOMNode(exec,list.item(idx));
   else {
-    // array index ?
-    bool ok;
-    long unsigned int idx = p.toULong(&ok);
-    if (ok)
-      result = getDOMNode(exec,list.item(idx));
-    else {
-      DOM::HTMLElement e;
-      unsigned long l = list.length();
-      bool found = false;
+    // Find by ID
+    DOM::HTMLElement e;
+    unsigned long l = list.length();
+    bool found = false;
 
-      for ( unsigned long i = 0; i < l; i++ )
-        if ( ( e = list.item( i ) ).id() == p.string() ) {
-          result = getDOMNode(exec, list.item( i ) );
-          found = true;
-          break;
-        }
+    for ( unsigned long i = 0; i < l; i++ )
+      if ( ( e = list.item( i ) ).id() == p.string() ) {
+        result = getDOMNode(exec, list.item( i ) );
+        found = true;
+        break;
+      }
 
-      if ( !found )
-        result = ObjectImp::get(exec, p);
-    }
+    if ( !found )
+      result = ObjectImp::get(exec, p);
   }
 
   return result;
@@ -622,23 +634,37 @@ Value DOMNodeList::tryCall(ExecState *exec, Object &, const List &args)
   return Undefined();
 }
 
-DOMNodeListFunc::DOMNodeListFunc(ExecState *exec, int i, int len)
-  : DOMFunction(), id(i)
-{
-  Value protect(this);
-  put(exec,lengthPropertyName,Number(len),DontDelete|ReadOnly|DontEnum);
-}
-
 // Not a prototype class currently, but should probably be converted to one
-Value DOMNodeListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMNodeListProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   KJS_CHECK_THIS( KJS::DOMNodeList, thisObj );
   DOM::NodeList list = static_cast<DOMNodeList *>(thisObj.imp())->nodeList();
-  Value result;
+  switch (id) {
+  case KJS::DOMNodeList::Item:
+    return getDOMNode(exec, list.item(args[0].toInt32(exec)));
+  case KJS::DOMNodeList::NamedItem:
+  {
+    // Not a real namedItem implementation like the one HTMLCollection has.
+    // This is only an IE extension...
+    DOM::HTMLElement e;
+    unsigned long len = list.length();
+    DOM::DOMString s = args[0].toString(exec).string();
 
-  if (id == Item)
-    result = getDOMNode(exec, list.item(args[0].toInt32(exec)));
-  return result;
+    for ( unsigned long i = 0; i < len; i++ )
+    {
+      e = list.item( i );
+      if ( !e.isNull() && (
+             e.id() == s || static_cast<ElementImpl *>(e.handle())->getAttribute(ATTR_NAME) == s )
+      )
+      {
+        return getDOMNode(exec, e );
+      }
+    }
+    return Null(); // see HTMLCollection::NamedItem implementation
+  }
+  default:
+    return Undefined();
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -1147,6 +1173,7 @@ bool DOMNamedNodeMap::hasProperty(ExecState *exec, const Identifier &p) const
 {
   if (p == lengthPropertyName)
     return true;
+  // ## missing? array index
   return DOMObject::hasProperty(exec, p);
 }
 

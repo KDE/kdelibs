@@ -85,18 +85,9 @@ namespace KJS {
     virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
     DOM::NodeList nodeList() const { return list; }
+    enum { Item, NamedItem };
   private:
     DOM::NodeList list;
-  };
-
-  class DOMNodeListFunc : public DOMFunction {
-    friend class DOMNodeList;
-  public:
-    DOMNodeListFunc(ExecState *exec, int id, int len);
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
-    enum { Item };
-  private:
-    int id;
   };
 
   class DOMDocument : public DOMNode {
