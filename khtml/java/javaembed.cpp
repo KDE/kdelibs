@@ -389,7 +389,6 @@ QString getX11EventName( XEvent* e )
 KJavaEmbed::KJavaEmbed( QWidget *parent, const char *name, WFlags f )
   : QWidget( parent, name, f )
 {
-    kdDebug(6100) << "new KJavaEmbed " << name << "WFlags=" << QString("%1").arg(f,0,16) << endl;
     d = new KJavaEmbedPrivate;
 
     setFocusPolicy( StrongFocus );
@@ -550,8 +549,7 @@ void KJavaEmbed::embed( WId w )
     //now resize it
     XResizeWindow( qt_xdisplay(), window, width(), height() );
     XMapRaised( qt_xdisplay(), window );
-    
-    setFocus();
+        
 }
 
 /*!\reimp
@@ -579,16 +577,46 @@ bool KJavaEmbed::x11Event( XEvent* e)
                 window = 0;
             }
             break;
-        case ConfigureRequest:
-            kdDebug(6100) 
-                << " send_event=" << e->xconfigurerequest.send_event 
-                << " x=" << e->xconfigurerequest.x 
-                << " y=" << e->xconfigurerequest.y 
-                << " w=" << e->xconfigurerequest.width
-                << " h=" << e->xconfigurerequest.height 
-                << " parent=" << e->xconfigurerequest.parent
-                << " above=" << e->xconfigurerequest.above
-                << endl;
+        case ConfigureRequest: {
+                unsigned vm = e->xconfigurerequest.value_mask;
+                QStringList vml;
+                if (vm & CWX)           vml.append("CWX");
+                if (vm & CWY)           vml.append("CWY");
+                if (vm & CWWidth)       vml.append("CWWidth");
+                if (vm & CWHeight)      vml.append("CWHeight");
+                if (vm & CWBorderWidth) vml.append("CWBorderWidth");
+                if (vm & CWSibling)     vml.append("CWSibling");
+                if (vm & CWStackMode)   vml.append("CWStackMode");
+                QString vms = vml.join("|");
+
+                kdDebug(6100) 
+                    << " send_event=" << e->xconfigurerequest.send_event 
+                    << " x=" << e->xconfigurerequest.x 
+                    << " y=" << e->xconfigurerequest.y 
+                    << " w=" << e->xconfigurerequest.width
+                    << " h=" << e->xconfigurerequest.height 
+                    << " parent=" << e->xconfigurerequest.parent
+                    << " above=" << e->xconfigurerequest.above
+                    << " value_mask=" << QString("0x%1=").arg(vm,0,16) << vms
+                    << endl;
+                if (e->xconfigurerequest.window == window && vm == (CWX|CWY)) {
+                    kdDebug(6100) << "*************** HACK: Sending Configure Notify ******************" << endl;
+                    XConfigureEvent c;
+                    c.type = ConfigureNotify;
+                    c.send_event = True;
+                    c.event = window;
+                    c.window = window;
+                    c.x = 0;
+                    c.y = 0;
+                    c.width = e->xconfigurerequest.width;
+                    c.height = e->xconfigurerequest.height;
+                    c.border_width = 0;
+                    c.above = None;
+                    c.override_redirect = 0;
+                    XSendEvent( qt_xdisplay(), c.event, TRUE, StructureNotifyMask, (XEvent*)&c );
+                    return true;
+                }
+             }
         default:
 	        break;
     }

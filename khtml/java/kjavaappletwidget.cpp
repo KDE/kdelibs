@@ -19,7 +19,7 @@ int KJavaAppletWidget::appletCount = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
                                       QWidget* parent, const char* name )
-   : EMBEDCLASS ( parent, name )
+   : EMBEDCLASS ( parent, name)
 {
     m_applet = new KJavaApplet( this, context );
     d        = new KJavaAppletWidgetPrivate;
@@ -30,7 +30,7 @@ KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
     d->tmplabel->setAlignment( Qt::AlignCenter | Qt::WordBreak );
     d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
     d->tmplabel->show();
-
+    
     m_swallowTitle.sprintf( "KJAS Applet - Ticket number %u", appletCount++ );
     m_applet->setWindowName( m_swallowTitle );
 }
@@ -43,7 +43,6 @@ KJavaAppletWidget::~KJavaAppletWidget()
 
 void KJavaAppletWidget::showApplet()
 {
-    kdDebug(6100) << "showApplet() " << m_swallowTitle << endl;
     connect( m_kwm, SIGNAL( windowAdded( WId ) ),
 	         this,  SLOT( setWindow( WId ) ) );
     // if the following line is commented out, applets show up earlier
@@ -59,13 +58,11 @@ void KJavaAppletWidget::setWindow( WId w )
 {
     //make sure that this window has the right name, if so, embed it...
     KWin::Info w_info = KWin::info( w );
-
     if ( m_swallowTitle == w_info.name ||
          m_swallowTitle == w_info.visibleName )
     {
         kdDebug(6100) << "swallowing our window: " << m_swallowTitle
                       << ", window id = " << w << endl;
-
         delete d->tmplabel;
         d->tmplabel = 0;
         
