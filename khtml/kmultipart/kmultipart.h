@@ -64,6 +64,7 @@ private slots:
     void slotPartCompleted();
 
 private:
+    KParts::BrowserExtension* m_extension;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
     bool m_isHTMLPart;
     KIO::Job* m_job;

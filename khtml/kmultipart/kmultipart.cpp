@@ -35,6 +35,8 @@
 typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part
 K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory );
 
+//#define DEBUG_PARSING
+
 class KLineParser
 {
 public:
@@ -95,7 +97,9 @@ KMultiPart::KMultiPart( QWidget *parentWidget, const char *widgetName,
     QVBox *box = new QVBox( parentWidget, widgetName );
     setWidget( box );
 
-    // We probably need our own browser extension, to get the urlArgs in openURL...
+    m_extension = new KParts::BrowserExtension( this );
+
+    // We probably need to use m_extension to get the urlArgs in openURL...
 
     m_part = 0L;
     m_job = 0L;
@@ -161,7 +165,9 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
         if ( m_lineParser->isLineComplete() )
         {
             QCString line = m_lineParser->currentLine();
+#ifdef DEBUG_PARSING
             kdDebug() << "[" << m_bParsingHeader << "] line='" << line << "'" << endl;
+#endif
             if ( m_bParsingHeader )
             {
                 if ( !line.isEmpty() )
@@ -171,7 +177,9 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 if ( m_boundary.isNull() )
                 {
                     if ( !line.isEmpty() ) {
+#ifdef DEBUG_PARSING
                         kdDebug() << "Boundary is " << line << endl;
+#endif
                         m_boundary = line;
                         m_boundaryLength = m_boundary.length();
                     }
@@ -187,20 +195,29 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 else if ( line.isEmpty() && m_bGotAnyHeader )
                 {
                     m_bParsingHeader = false;
+#ifdef DEBUG_PARSING
                     kdDebug() << "end of headers" << endl;
+#endif
                     startOfData();
                 }
-                else if ( !line.isEmpty() )
-                    kdWarning() << "Ignoring header " << line << endl;
+                // First header (when we know it from kio_http)
+                else if ( line == m_boundary )
+                    ; // nothing to do
+                else if ( !line.isEmpty() ) // this happens with e.g. Set-Cookie:
+                    kdDebug() << "Ignoring header " << line << endl;
             } else {
                 if ( !qstrncmp( line, m_boundary, m_boundaryLength ) )
                 {
+#ifdef DEBUG_PARSING
                     kdDebug() << "boundary found!" << endl;
+#endif
                     //kdDebug() << "after it is " << line.data() + m_boundaryLength << endl;
                     // Was it the very last boundary ?
                     if ( !qstrncmp( line.data() + m_boundaryLength, "--", 2 ) )
                     {
+#ifdef DEBUG_PARSING
                         kdDebug() << "Completed!" << endl;
+#endif
                         endOfData();
                         emit completed();
                     } else
@@ -244,13 +261,59 @@ void KMultiPart::setPart( const QString& mimeType )
 
     connect( m_part, SIGNAL( completed() ),
              this, SLOT( slotPartCompleted() ) );
-#if 0
-    connect( m_part->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
-             m_ext, SLOT( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
 
-    connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
-             m_ext, SIGNAL( enableAction( const char *, bool ) ) );
-#endif
+    KParts::BrowserExtension* childExtension = KParts::BrowserExtension::childObject( m_part );
+
+    if ( childExtension )
+    {
+
+        // Forward signals from the part's browser extension
+        // this is very related (but not exactly like) KHTMLPart::processObjectRequest
+
+        connect( childExtension, SIGNAL( openURLNotify() ),
+                 m_extension, SIGNAL( openURLNotify() ) );
+
+        connect( childExtension, SIGNAL( openURLRequestDelayed( const KURL &, const KParts::URLArgs & ) ),
+                 m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ) );
+
+        connect( childExtension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
+                 m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
+        connect( childExtension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs &, const KParts::WindowArgs &, KParts::ReadOnlyPart *& ) ),
+                 m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & , const KParts::WindowArgs &, KParts::ReadOnlyPart *&) ) );
+
+        connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
+                 m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
+        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ),
+                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
+        connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ),
+                 m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
+        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
+                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+
+        connect( childExtension, SIGNAL( infoMessage( const QString & ) ),
+                 m_extension, SIGNAL( infoMessage( const QString & ) ) );
+
+        childExtension->setBrowserInterface( m_extension->browserInterface() );
+
+        connect( childExtension, SIGNAL( enableAction( const char *, bool ) ),
+                 m_extension, SIGNAL( enableAction( const char *, bool ) ) );
+        connect( childExtension, SIGNAL( setLocationBarURL( const QString& ) ),
+                 m_extension, SIGNAL( setLocationBarURL( const QString& ) ) );
+        connect( childExtension, SIGNAL( setIconURL( const KURL& ) ),
+                 m_extension, SIGNAL( setIconURL( const KURL& ) ) );
+        connect( childExtension, SIGNAL( loadingProgress( int ) ),
+                 m_extension, SIGNAL( loadingProgress( int ) ) );
+        connect( childExtension, SIGNAL( speedProgress( int ) ),
+                 m_extension, SIGNAL( speedProgress( int ) ) );
+        connect( childExtension, SIGNAL( selectionInfo( const KFileItemList& ) ),
+                 m_extension, SIGNAL( selectionInfo( const KFileItemList& ) ) );
+        connect( childExtension, SIGNAL( selectionInfo( const QString& ) ),
+                 m_extension, SIGNAL( selectionInfo( const QString& ) ) );
+        connect( childExtension, SIGNAL( selectionInfo( const KURL::List& ) ),
+                 m_extension, SIGNAL( selectionInfo( const KURL::List& ) ) );
+        connect( childExtension, SIGNAL( mouseOverInfo( const KFileItem* ) ),
+                 m_extension, SIGNAL( mouseOverInfo( const KFileItem* ) ) );
+    }
 
     m_isHTMLPart = ( mimeType == "text/html" );
 }
