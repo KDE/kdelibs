@@ -141,7 +141,7 @@
 <!ENTITY kab	"<application>Kab</application>">
 <!ENTITY kab2	"<application>Kab2</application>">
 <!ENTITY kabalone	"<application>KAbalone</application>">
-<!ENTITY kaiman	"<application>Kaiman</application>">
+<!ENTITY kaddressbook "<application>KAddressbook</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY karm	"<application>KArm</application>">
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
@@ -247,6 +247,7 @@
 <!ENTITY ktalk  "<application>KTalk</application>">
 <!ENTITY ktalkd	"<application>KTalkd</application>">
 <!ENTITY kteatime "<application>KTeaTime</application>">
+<!ENTITY ktimemon "<application>KTimemon</application>">
 <!ENTITY ktip	"<application>Ktip</application>">
 <!ENTITY ktop	"<application>KTop</application>">
 <!ENTITY ktron	"<application>KTron</application>">
