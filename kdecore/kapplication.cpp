@@ -2110,6 +2110,9 @@ startServiceInternal( const QCString &function,
    if (qt_xdisplay()) {
        QCString dpystring(XDisplayString(qt_xdisplay()));
        envs.append( QCString("DISPLAY=") + dpystring );
+   } else if( getenv( "DISPLAY" )) {
+       QCString dpystring( getenv( "DISPLAY" ));
+       envs.append( QCString("DISPLAY=") + dpystring );
    }
 #endif
    stream << envs;
