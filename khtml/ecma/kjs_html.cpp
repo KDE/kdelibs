@@ -1887,6 +1887,24 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
                 << " thisTag=" << element.tagName().string()
                 << " str=" << str.string() << endl;
 #endif
+    // First look at dynamic properties
+  switch (element.elementId()) {
+    case ID_SELECT: {
+      DOM::HTMLSelectElement select = element;
+      bool ok;
+      uint u = propertyName.toULong(&ok);
+      if (ok) {
+        Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
+        if ( !coll.isNull() )
+          coll.put(exec,propertyName,value);
+        return;
+      }
+    }
+    break;
+  default:
+      break;
+  }
+
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
   const HashEntry* entry = Lookup::findEntry(table, propertyName);
   if (entry) {
