@@ -5833,14 +5833,14 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
     if (!message.isEmpty())
     {
 	    response = KMessageBox::warningContinueCancel( 0,
-							   message.arg(linkURL.url()),
+							   message.arg(linkURL.htmlURL()),
 							   i18n( "Security Warning" ),
 							   button);
     }
     else
     {
 	    KMessageBox::error( 0,
-				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.").arg(linkURL.url()),
+				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.").arg(linkURL.htmlURL()),
 				i18n( "Security Alert" ));
     }
 
