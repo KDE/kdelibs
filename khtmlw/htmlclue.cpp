@@ -25,7 +25,6 @@
 
 #include "htmlobj.h"
 #include "htmlclue.h"
-#include "ampseq.h"
 #include "html.h"
 
 #include <stdio.h>

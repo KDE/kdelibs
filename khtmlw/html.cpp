@@ -1532,7 +1532,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		      	char *str1=r->copy();
 		        HTMLFont f=*currentFont();
 			debugM("%s(%s)\n",str1,r->charset());
-			f.setCharset(*r);
+			f.setCharset(r->charset());
 	                const HTMLFont *fp = pFontManager->getFont( f );
 		       
 		   	if ( url || target )
@@ -1545,28 +1545,41 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		}
 		else{
 		  bool autoDelete;
+	          const HTMLFont *fp = currentFont();
 		  if (*str=='&'){ // we don't need converter for this
 		     char *buffer=new char(strlen(str)+2); // buffer will never
 		                                           // have to be longer
 		     int l;
 		     const char *str1;
+		     KCharsets *charsets=KApplication::getKApplication()
+		                                           ->getCharsets();
 		     debugM("Token: %s\n",str);
-                     str1=KApplication::getKApplication()->getCharsets()
-		                                          ->convertTag(str,l);
+		     const KCharsetConversionResult &r=charsets->convertTag(str,l);
+		     str1=r;					 
 	             debugM("Converted to: %s (length: %i)\n",str1,l);
-		     strcpy(buffer,str1);
-		     if (l) strcat(buffer,str+l);
-		     str=buffer;
-	             debugM("Result:%s\n",str);
-		     autoDelete=TRUE;
+		     if (str1 && l){
+		       HTMLFont f=*fp;
+		       if (r.charset().ok){
+		         debugM("Needed charset: %s\n",r.charset().name());
+		         f.setCharset(r.charset());
+			 debugM("Set font: %s\n",charsets->name(QFont(f)));
+	                 fp = pFontManager->getFont( f );
+			 debugM("Got font: %s\n",charsets->name(QFont(f)));
+		       }  
+		       strcpy(buffer,str1);
+		       strcat(buffer,str+l);
+		       str=buffer;
+	               debugM("Result:%s\n",str);
+		       autoDelete=TRUE;
+		     }  
 		  }
 		  else autoDelete=FALSE;
 		
 		  if ( url || target )
-		      flow->append( new HTMLLinkText( str, currentFont(), painter,
+		      flow->append( new HTMLLinkText( str, fp, painter,
 		  	 url, target,autoDelete ) );
 		  else
-		      flow->append( new HTMLText( str, currentFont(), painter,autoDelete ) );
+		      flow->append( new HTMLText( str, fp, painter,autoDelete ) );
 		}      
 	    }
 	}

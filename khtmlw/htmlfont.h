@@ -48,8 +48,8 @@ public:
 		{	font.setStrikeOut( s ); }
 	void setTextColor( const QColor &col )
 		{	textCol = col; }
-	void setCharset( const KCharsetConversionResult &ch )
-		{	ch.setQFont(font); chset=ch.charset(); }
+	void setCharset( const KCharset &ch )
+		{	 chset=ch; chset.setQFont(font);}
 	void setCharset( const char *ch );
 
 	const char *family() const
@@ -68,7 +68,7 @@ public:
 		{	return textCol; }
 	int size() const
 		{	return fsize; }
-	const QString charset () const
+	const KCharset charset () const
 	        {	return chset; }
 
 	const HTMLFont &operator=( const HTMLFont &f );
@@ -81,7 +81,7 @@ public:
 private:
 	QFont  font;
 	QColor textCol;
-	QString chset;
+	KCharset chset;
 	int    fsize;
 };
 
