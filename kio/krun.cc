@@ -58,8 +58,8 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
     return false;
   }
   
-  list<string> lst;
-  lst.push_back( _url );
+  QStrList lst;
+  lst.append( _url );
   // Choose the first service from the list and do the job
   return KRun::run( offers.front().m_pService, lst );
 }
@@ -77,7 +77,7 @@ void KRun::shellQuote( string &_str )
   _str += "'";
 }
 
-bool KRun::run( KService* _service, list<string>& _urls )
+bool KRun::run( KService* _service, QStrList& _urls )
 {
   QString icon = _service->icon();
   QString miniicon = _service->icon();
@@ -86,22 +86,22 @@ bool KRun::run( KService* _service, list<string>& _urls )
   return run( _service->exec(), _urls, name, icon, miniicon );
 }
 
-bool KRun::run( const char *_exec, list<string>& _urls, const char *_name, const char *_icon,
+bool KRun::run( const char *_exec, QStrList& _urls, const char *_name, const char *_icon,
 		  const char *_mini_icon, const char *_kdelnk_file )
 {
   bool b_local_files = true;
   
   string U = "",F = "",D = "",N = "";
   
-  list<string>::iterator it = _urls.begin();
-  for( ; it != _urls.end(); it++ )
+  const char* it = _urls.first();
+  for( ; it != 0L; it = _urls.next() )
   {
-    K2URL url( *it );
+    K2URL url( it );
     if ( url.isMalformed() )
     {
       string tmp = i18n( "Malformed URL" );
       tmp += "\n";
-      tmp += *it;
+      tmp += it;
       QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp.c_str(), i18n( "Ok" ) );
       return false;
     }
@@ -109,7 +109,7 @@ bool KRun::run( const char *_exec, list<string>& _urls, const char *_name, const
     if ( !url.isLocalFile() )
       b_local_files = false;
 
-    string tmp = *it;
+    string tmp = it;
     shellQuote( tmp );
     U += tmp;
     U += " ";
@@ -178,7 +178,7 @@ bool KRun::run( const char *_exec, list<string>& _urls, const char *_name, const
     return runOldApplication( _exec, _urls, b_allow_multiple );
   }
   
-  if ( b_allow_multiple || _urls.empty() )
+  if ( b_allow_multiple || _urls.isEmpty() )
   {	
     while ( ( pos = exec.find( "%f" )) != string::npos )
       exec.replace( pos, 2, "" );
@@ -201,11 +201,11 @@ bool KRun::run( const char *_exec, list<string>& _urls, const char *_name, const
     return run( exec.c_str() );
   }
   
-  it = _urls.begin();
-  for( ; it != _urls.end(); it++ )
+  it = _urls.first();
+  for( ; it != 0L; it = _urls.next() )
   {
     string e = exec;
-    K2URL url( *it );
+    K2URL url( it );
     assert( !url.isMalformed() );
     string f = url.path( -1 );
     shellQuote( f );
@@ -213,7 +213,7 @@ bool KRun::run( const char *_exec, list<string>& _urls, const char *_name, const
     shellQuote( d );
     string n = url.filename();
     shellQuote( n );
-    string u = *it;
+    string u = it;
     shellQuote( u );
    
     while ( ( pos = e.find( "%f" )) != string::npos )
@@ -242,7 +242,7 @@ bool KRun::run( const char *_cmd )
   return true;
 }
 
-bool KRun::runOldApplication( const char *_exec, list<string>& _urls, bool _allow_multiple )
+bool KRun::runOldApplication( const char *_exec, QStrList& _urls, bool _allow_multiple )
 {
   char **argv = 0L;
   
@@ -251,13 +251,13 @@ bool KRun::runOldApplication( const char *_exec, list<string>& _urls, bool _allo
   
   if ( _allow_multiple )
   {
-    argv = new char*[ _urls.size() + 3 ];
+    argv = new char*[ _urls.count() + 3 ];
     argv[ 0 ] = (char*)kfmexec.data();
 
     int i = 1;
-    list<string>::iterator it = _urls.begin();
-    for( ; it != _urls.end(); it++ )
-      argv[ i++ ] = (char*)it->c_str();
+    const char* s;
+    for( s = _urls.first(); s != 0L; s = _urls.next() )
+      argv[ i++ ] = (char*)s;
     argv[ i ] = 0;
       
     int pid;
@@ -269,12 +269,12 @@ bool KRun::runOldApplication( const char *_exec, list<string>& _urls, bool _allo
   }
   else
   {
-    list<string>::iterator it = _urls.begin();
-    for( ; it != _urls.end(); it++ )
+    const char* s;
+    for( s = _urls.first(); s != 0L; s = _urls.next() )
     {
       argv = new char*[ 3 ];
       argv[ 0 ] = (char*)kfmexec.data();
-      argv[ 1 ] = (char*)it->c_str();
+      argv[ 1 ] = (char*)s;
       argv[ 2 ] = 0;
       
       int pid;

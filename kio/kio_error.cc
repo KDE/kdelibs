@@ -42,7 +42,7 @@ QString kioErrorString( int _errid, const char *_errortext )
     case  ERR_IS_DIRECTORY:
       ksprintf( &result, i18n( "%s\n is a directory,\nbut a file was expected" ), _errortext );
       break;
-    case  ERR_MKDIR:
+    case  ERR_COULD_NOT_MKDIR:
       ksprintf( &result, i18n( "Could not make directory\n%s" ), _errortext );
       break;
     case  ERR_DOES_ALREADY_EXIST:

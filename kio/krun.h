@@ -10,6 +10,7 @@ class KService;
 
 #include <qobject.h>
 #include <qtimer.h>
+#include <qstrlist.h>
 
 class KRun : public QObject
 {
@@ -36,7 +37,7 @@ public:
   /**
    * Opens a list of URLs with a certain service.
    */
-  static bool run( KService* _service, list<string>& _urls );
+  static bool run( KService* _service, QStrList& _urls );
   /**
    * Opens a list of URLs with.
    *
@@ -45,8 +46,10 @@ public:
    * @param _icon is the icon which should be used by the application
    * @param _miniicon is the icon which should be used by the application
    */
-  static bool run( const char *_exec, list<string>& _urls, const char *_name = "",
+  static bool run( const char *_exec, QStrList& _urls, const char *_name = "",
 		   const char *_icon = "", const char *_mini_icon = "", const char *_kdelnk_file = "" );
+
+  static bool runOldApplication( const char *_exec, QStrList& _urls, bool _allow_multiple );
   
 signals:
   void finished();
@@ -105,7 +108,6 @@ protected:
    */
   static bool runURL( const char *_url, const char *_mimetype );
 
-  static bool runOldApplication( const char *_exec, list<string>& _urls, bool _allow_multiple );
   /**
    * Runs a shell command.
    *

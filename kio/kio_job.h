@@ -5,6 +5,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#include <qstrlist.h>
 
 #include <map>
 #include <list>
@@ -34,6 +35,7 @@ public:
   void enableGUI( bool _mode ) { m_bGUI = _mode; }
   
   virtual bool copy( list<string>& _source, const char *_dest );
+  virtual bool copy( QStrList& _source, const char *_dest );
   virtual bool get( const char *_url );
   virtual bool listDir( const char *_url );
   virtual bool testDir( const char *_url );

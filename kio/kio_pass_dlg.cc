@@ -108,7 +108,14 @@ bool open_PassDlg( const char *_head, string& _user, string& _pass )
   }
   
   KIOPassDlg dlg( 0L, 0L, true, 0, _head, _user.c_str(), _pass.c_str() );
-  return dlg.exec();
+  if ( dlg.exec() )
+  {
+    _user = dlg.user();
+    _pass = dlg.password();
+    return true;
+  }
+  else
+    return false;
 }
 
 #include "kio_pass_dlg.moc"

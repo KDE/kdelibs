@@ -161,6 +161,16 @@ bool KIOJob::unmount( const char *_point )
   return IOJob::unmount( _point );  
 }
 
+bool KIOJob::copy( QStrList& _source, const char *_dest )
+{
+  list<string> stlurls;
+  const char *s;
+  for( s = _source.first(); s != 0; s = _source.next() )
+    stlurls.push_back( s );
+
+  return copy( stlurls, _dest );
+}
+
 bool KIOJob::copy( list<string>& _source, const char *_dest )
 {
   assert( !m_pSlave );

@@ -59,7 +59,7 @@
 #define ERR_UNSUPPORTED_ACTION 8
 #define ERR_DOES_NOT_EXIST 9
 #define ERR_IS_DIRECTORY 10 // ... where a file was expected
-#define ERR_MKDIR 11
+#define ERR_COULD_NOT_MKDIR 11
 #define ERR_DOES_ALREADY_EXIST 12
 #define ERR_ACCESS_DENIED 13
 #define ERR_CANNOT_ENTER_DIRECTORY 14
@@ -80,6 +80,14 @@
 // The text argument is the protocol that the dead slave supported.
 // This means for example: file, ftp, http, ...
 #define ERR_SLAVE_DIED 29
+#define ERR_COULD_NOT_READ 30
+#define ERR_COULD_NOT_WRITE 31
+#define ERR_COULD_NOT_BIND 32
+#define ERR_COULD_NOT_LISTEN 33
+#define ERR_COULD_NOT_ACCEPT 34
+#define ERR_COULD_NOT_LOGIN 35
+#define ERR_OUT_OF_MEMORY 36
+#define ERR_COULD_NOT_STAT 37
 
 /************
  *

@@ -32,6 +32,18 @@ void KService::initStatic()
   KService::initServices( path.data() ); */
 }
 
+KService* KService::findByName( const char *_name )
+{
+  assert( s_lstServices );
+
+  KService *s;
+  for( s = s_lstServices->first(); s != 0L; s = s_lstServices->next() )
+    if ( strcmp( s->name(), _name ) == 0 )
+      return s;
+  
+  return 0L;
+}
+
 void KService::findServiceByServiceType( const char* _servicetype, list<Offer>& _result )
 {
   assert( s_lstServices );

@@ -119,7 +119,7 @@ again2:
   if ( n != len )
   {
     cerr << "Not enough data " << n << " instead of " << len << endl;
-    exit(4);
+    return 0L;
   }
 
   m_pBuffer[ n ] = 0;

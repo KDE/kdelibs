@@ -50,6 +50,8 @@ public:
    */
   static void findServiceByServiceType( const char* _servicetype, list<Offer>& _result );
 
+  static KService* findByName( const char *_name );
+  
   /**
    * @param _file is only used while displaying error messages.
    */
