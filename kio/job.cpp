@@ -1430,8 +1430,8 @@ void CopyJob::slotReport()
       }
       else if (m_mode==Link)
       {
-         m_observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
-         emit linking( this, m_currentSrcURL.path(), m_currentDestURL );
+         m_observer->slotLinking( this, m_currentSrcURL, m_currentDestURL );
+         emit linking( this, m_currentSrcURL, m_currentDestURL );
       }
       else
       {
