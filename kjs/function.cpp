@@ -158,6 +158,7 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
   if (dummyList)
     delete args;
 
+  put("arguments", Null());
   delete ctx;
   curr->setContext(save);
 

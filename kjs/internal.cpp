@@ -434,11 +434,12 @@ const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
 // ECMA 10.1.6
 ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 {
-  put("arguments", new ArgumentsObject(f, args), DontDelete);
+  ArgumentsObject *aobj = new ArgumentsObject(f, args);    
+  put("arguments", aobj, DontDelete);
   /* TODO: this is here to get myFunc.arguments and myFunc.a1 going.
      I can't see this described in the spec but it's possible in browsers. */
   if (!f->name().isNull())
-    put(f->name(), this);
+    f->put("arguments", aobj);      
 }
 
 ExecutionStack::ExecutionStack()
