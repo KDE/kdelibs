@@ -239,37 +239,26 @@ inline bool operator!=( const BidiIterator &it1, const BidiIterator &it2 )
 }
 
 static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current, BidiState &bidi,
-                                     bool skipInlines = true, bool* endOfInline = 0)
+                                     bool skipInlines = true)
 {
     RenderObject *next = 0;
-    bool oldEndOfInline = endOfInline ? *endOfInline : false;
-    if (endOfInline)
-        *endOfInline = false;
 
     while(current != 0)
     {
         //kdDebug( 6040 ) << "current = " << current << endl;
-        if (!oldEndOfInline && !current->isFloating() && !current->isReplaced() && !current->isPositioned()) {
+        if (!current->isFloating() && !current->isReplaced() && !current->isPositioned()) {
             next = current->firstChild();
             if ( next && adjustEmbedding ) {
                 EUnicodeBidi ub = next->style()->unicodeBidi();
                 if ( ub != UBNormal && !emptyRun ) {
                     EDirection dir = next->style()->direction();
-QChar::Direction d = ( ub == Embed ? ( dir == RTL ? QChar::DirRLE : QChar::DirLRE )
-                                   : ( dir == RTL ? QChar::DirRLO : QChar::DirLRO ) );
+                    QChar::Direction d = ( ub == Embed ? ( dir == RTL ? QChar::DirRLE : QChar::DirLRE )
+                                        : ( dir == RTL ? QChar::DirRLO : QChar::DirLRO ) );
                     embed( d, bidi );
                 }
             }
         }
         if (!next) {
-            if (!skipInlines && !oldEndOfInline && current->isInlineFlow())
-            {
-                next = current;
-                if (endOfInline)
-                    *endOfInline = true;
-                break;
-            }
-
             while (current && current != par) {
                 next = current->nextSibling();
                 if (next) break;
@@ -277,12 +266,6 @@ QChar::Direction d = ( ub == Embed ? ( dir == RTL ? QChar::DirRLE : QChar::DirLR
                     embed( QChar::DirPDF, bidi );
                 }
                 current = current->parent();
-                if (!skipInlines && current && current != par && current->isInlineFlow()) {
-                    next = current;
-                    if (endOfInline)
-                        *endOfInline = true;
-                    break;
-                }
             }
         }
 
@@ -1302,10 +1285,13 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
 
     if (firstChild()) {
         // layout replaced elements
-        bool endOfInline = false;
         RenderObject *o = first( this, bidi, false );
         while ( o ) {
-            if(o->isReplaced() || o->isFloating() || o->isPositioned()) {
+            if (o->isReplaced() || o->isFloating() || o->isPositioned()) {
+                // clear the placeHolderBox
+                if (o->isBox())
+                    static_cast<RenderBox*>(o)->RenderBox::deleteInlineBoxes();
+
                 //kdDebug(6041) << "layouting replaced or floating child" << endl;
                 if (relayoutChildren || o->style()->width().isPercent() || o->style()->height().isPercent())
                     o->setChildNeedsLayout(true, false);
@@ -1314,11 +1300,11 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
                 else
                     o->layoutIfNeeded();
             }
-            else if(o->isText() || (o->isInlineFlow() && !endOfInline)) {
+            else {
                 o->deleteInlineBoxes();
                 o->setNeedsLayout(false);
             }
-            o = Bidinext( this, o, bidi, false, &endOfInline);
+            o = Bidinext( this, o, bidi, false );
         }
 
         BidiContext *startEmbed;
