@@ -167,8 +167,8 @@ RenderObject* RenderObject::removeChildNode(RenderObject* )
 
 void RenderObject::removeChild(RenderObject *o )
 {
-    removeChildNode( o );
     setLayouted(false);
+    removeChildNode( o );
 }
 
 void RenderObject::appendChildNode(RenderObject*)

@@ -167,6 +167,11 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     setLayouted( false );
     setMinMaxKnown( false );
 
+    if ( isAnonymousBox() && !m_first ) {
+	// we are an empty anonymous box. There is no reason for us to continue living.
+	detach();
+    }
+
     return oldChild;
 }
 

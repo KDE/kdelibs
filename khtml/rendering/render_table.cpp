@@ -1142,13 +1142,16 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 
 void RenderTableSection::recalcCells()
 {
-    cCol = cRow = 0;
+    cCol = 0;
+    cRow = -1;
     clearGrid();
     grid.resize( 0 );
-    ensureRows( 1 );
 
     RenderObject *row = firstChild();
     while ( row ) {
+	cRow++;
+	cCol = 0;
+	ensureRows( cRow+1 );
 	RenderObject *cell = row->firstChild();
 	while ( cell ) {
 	    if ( cell->isTableCell() )
@@ -1156,10 +1159,6 @@ void RenderTableSection::recalcCells()
 	    cell = cell->nextSibling();
 	}
 	row = row->nextSibling();
-	cRow++;
-	cCol = 0;
-
-	ensureRows( cRow+1 );
     }
     needCellRecalc = false;
     setLayouted( false );
@@ -1228,27 +1227,20 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
     RenderTableCell *cell;
 
     if ( !child->isTableCell() ) {
-        if ( !beforeChild )
-            beforeChild = lastChild();
-        RenderTableCell *cell;
-        if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTableCell() )
-            cell = static_cast<RenderTableCell *>(beforeChild);
+	RenderObject *last = beforeChild;
+        if ( !last )
+            last = lastChild();
+        RenderTableCell *cell = 0;
+        if( last && last->isAnonymousBox() && last->isTableCell() )
+            cell = static_cast<RenderTableCell *>(last);
         else {
-	    RenderObject *lastBox = beforeChild;
-	    while ( lastBox && lastBox->parent()->isAnonymousBox() && !lastBox->isTableCell() )
-		lastBox = lastBox->parent();
-	    if ( lastBox && lastBox->isAnonymousBox() ) {
-		lastBox->addChild( child, beforeChild );
-		return;
-	    } else {
-//          kdDebug( 6040 ) << "creating anonymous table cell" << endl;
-		cell = new RenderTableCell(0 /* anonymous object */);
-		RenderStyle *newStyle = new RenderStyle();
-		newStyle->inheritFrom(style());
-		cell->setStyle(newStyle);
-		cell->setIsAnonymousBox(true);
-		addChild(cell, beforeChild);
-	    }
+	    kdDebug( 6040 ) << "creating anonymous table cell" << endl;
+	    cell = new RenderTableCell(0 /* anonymous object */);
+	    RenderStyle *newStyle = new RenderStyle();
+	    newStyle->inheritFrom(style());
+	    cell->setStyle(newStyle);
+	    cell->setIsAnonymousBox(true);
+	    addChild(cell, beforeChild);
         }
         cell->addChild(child);
 	child->setLayouted( false );
@@ -1261,7 +1253,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 
     RenderContainer::addChild(cell,beforeChild);
 
-    if ( (beforeChild || nextSibling()) && section() )
+    if ( ( beforeChild || nextSibling()) && section() )
 	section()->setNeedCellRecalc();
 }
 
