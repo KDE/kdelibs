@@ -1088,7 +1088,7 @@ void Ftp::stat( const KURL &url)
     listarg = path;
     search = path;
     // I committed a replace to '?', but that was MSDOS specific.
-    // Replacing with "\\ " could be an idea... However, it works as is on the 
+    // Replacing with "\\ " could be an idea... However, it works as is on the
     // sites I'm trying with, and I can't find the address of the site that
     // didn't work :(
     //listarg.replace(QRegExp(QString::fromLatin1(" ")),QString::fromLatin1("\\ "));
@@ -1697,11 +1697,6 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
         return;
       }
     } else if ( !overwrite && !resume ) {
-      /*
-        Waldo said we don't always know the size of what we're writing...
-      if ( m_size == _size ) {
-        error( ERR_DOES_ALREADY_EXIST_FULL, dest_orig );
-      } else */
       error( ERR_FILE_ALREADY_EXIST, dest_orig );
       return;
     } else if ( bMarkPartial ) { // when using mark partial, append .part extension
@@ -1711,6 +1706,8 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
         return;
       }
     }
+    // Don't chmod an existing file
+    permissions = -1;
   } else if ( ftpSize( dest_part, 'I' ) ) { // file with extension .part exists
     if ( m_size == 0 ) {  // delete files with zero size
       QCString cmd = "DELE ";
@@ -1721,12 +1718,6 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
         return;
       }
     } else if ( !overwrite && !resume ) {
-      /*
-        Waldo said we don't always know the size of what we're writing...
-      if ( m_size == _size ) {
-        error( ERR_DOES_ALREADY_EXIST_FULL, dest_orig );
-      } else
-      */
       error( ERR_FILE_ALREADY_EXIST, dest_orig );
       return;
     } else if ( !bMarkPartial ) { // when using mark partial, remove .part extension
