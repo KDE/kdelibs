@@ -829,7 +829,7 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
         _size = attr->val() ? attr->val()->toInt() : 20;
         break;
     case ATTR_SRC:
-        _src = attr->value();
+        _src = khtml::parseURL(attr->value());
         break;
     case ATTR_ALT:
     case ATTR_USEMAP:
@@ -921,7 +921,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
     if (m_render && _type == IMAGE) {
         static_cast<RenderImageButton*>
             (m_render)->setImageUrl(_src,
-                                    static_cast<HTMLDocumentImpl *>(document)->URL(),
+                                    static_cast<HTMLDocumentImpl *>(document)->baseURL(),
                                     static_cast<HTMLDocumentImpl *>(document)->docLoader());
 
     }
