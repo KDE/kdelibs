@@ -49,6 +49,7 @@ public:
     bool _useRootOnlyMsg;
     bool _hasOwnInstance;
     QPtrList<KConfigDialogManager> managers;
+    QString _quickHelp;
 
 };
 
@@ -158,6 +159,18 @@ KInstance *KCModule::instance() const
 {
     return d->_instance;
 }
+
+void KCModule::setQuickHelp( const QString& help )
+{
+    d->_quickHelp = help;
+    emit( quickHelpChanged() );
+}
+
+QString KCModule::quickHelp() const
+{
+    return d->_quickHelp;
+}
+
 
 void KCModule::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -170,7 +170,7 @@ public:
    *
    * @note make sure the quick help text gets translated (use i18n()).
    */
-  virtual QString quickHelp() const { return QString::null; };
+  virtual QString quickHelp() const;
 
   /**
    * This is generally only called for the KBugReport.
@@ -235,6 +235,11 @@ protected:
    * @param widget the widget to watch
    */
   KConfigDialogManager* addConfig( KConfigSkeleton *config, QWidget* widget );
+
+  /**
+   * Sets the quick help.
+   */
+  void setQuickHelp( const QString& help );
 
 signals:
 
