@@ -316,7 +316,7 @@ public:
     /**
      * Use this to determine if the user wants a 12 clock.
      *
-     * @return If the user wants 12h lock
+     * @return If the user wants 12h clock
      */
     bool use12Clock() const;
 
