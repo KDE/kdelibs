@@ -37,7 +37,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 
   if (!configFile.isEmpty())
   {
-     KConfig config( _relpath, true, false, "apps" );
+     KConfig config( _relpath+".directory", true, false, "apps" );
 
      config.setDesktopGroup();
 
