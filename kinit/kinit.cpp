@@ -921,17 +921,17 @@ int main(int argc, char **argv, char **envp)
    int keep_running = 1;
 
    /** Save arguments first... **/
-   d.argv = (char **) malloc( sizeof(char *) * argc);
+   char **safe_argv = (char **) malloc( sizeof(char *) * argc);
    for(i = 0; i < argc; i++)
    {
-      d.argv[i] = strcpy((char*)malloc(strlen(argv[i])+1), argv[i]);
-      if (strcmp(d.argv[i], "--no-dcop") == 0)
+      safe_argv[i] = strcpy((char*)malloc(strlen(argv[i])+1), argv[i]);
+      if (strcmp(safe_argv[i], "--no-dcop") == 0)
          launch_dcop = 0;
-      if (strcmp(d.argv[i], "--no-klauncher") == 0)
+      if (strcmp(safe_argv[i], "--no-klauncher") == 0)
          launch_klauncher = 0;
-      if (strcmp(d.argv[i], "--no-kded") == 0)
+      if (strcmp(safe_argv[i], "--no-kded") == 0)
          launch_kded = 0;
-      if (strcmp(d.argv[i], "--exit") == 0)
+      if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
    }
 
@@ -978,6 +978,19 @@ int main(int argc, char **argv, char **envp)
       WaitPid(pid);
    }
 
+   // Make sure to launch kdesktop before kded!
+   for(i = 1; i < argc; i++)
+   {
+      if (strcmp(safe_argv[i], "+kdesktop") == 0)
+      {
+         pid = launch( 1, "kdesktop", 0 );
+         printf("KDesktop: pid = %d result = %d\n", pid, d.result);
+         WaitPid(pid);
+         safe_argv[i][0] = '-'; // Make it an option so that it won't be launched a second time!
+         break;
+      }
+   }
+
    if (launch_kded)
    {
       pid = launch( 1, "kded", 0 );
@@ -987,29 +1000,29 @@ int main(int argc, char **argv, char **envp)
 
    for(i = 1; i < argc; i++)
    {
-      if (d.argv[i][0] == '+')
+      if (safe_argv[i][0] == '+')
       {
-         pid = launch( 1, d.argv[i]+1, 0);
-         printf("Launched: %s, pid = %d result = %d\n", d.argv[i]+1, pid, d.result);
+         pid = launch( 1, safe_argv[i]+1, 0);
+         printf("Launched: %s, pid = %d result = %d\n", safe_argv[i]+1, pid, d.result);
          WaitPid(pid);
       }
-      else if (d.argv[i][0] == '-')
+      else if (safe_argv[i][0] == '-')
       {
          // Ignore
       }
       else
       {
-         pid = launch( 1, d.argv[i], 0 );
-         printf("Launched: %s, pid = %d result = %d\n", d.argv[i], pid, d.result);
+         pid = launch( 1, safe_argv[i], 0 );
+         printf("Launched: %s, pid = %d result = %d\n", safe_argv[i], pid, d.result);
       }
    }
 
    /** Free arguments **/
    for(i = 0; i < argc; i++)
    {
-      free(d.argv[i]);
+      free(safe_argv[i]);
    }
-   free (d.argv);
+   free (safe_argv);
 
    kdeinit_setproctitle("Running...");
 
