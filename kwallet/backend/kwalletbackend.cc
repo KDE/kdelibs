@@ -234,8 +234,8 @@ int Backend::open(const QByteArray& password) {
 			return -2;   // error opening file
 		}
 		newfile.close();
-		sync(password);
 		_open = true;
+		sync(password);
 		return 1;          // new file opened, but OK
 	}
 
