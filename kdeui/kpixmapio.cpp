@@ -31,15 +31,6 @@
 #include <X11/extensions/XShm.h>
 #endif
 
-#undef ID // Needed for --enable-final, some sources define ID to be something
-          // different...
-
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "KPixmapIO: "
-#endif
-
 // d pointer
 
 struct KPixmapIOData 
@@ -91,7 +82,7 @@ KPixmapIO::KPixmapIO()
     }
     if (!m_bShm) 
     {
-	kdDebug(290) << ID << "MIT-SHM not available!\n";
+	kdDebug(290) << k_lineinfo << "MIT-SHM not available!\n";
 	return;
     }
 
@@ -142,11 +133,11 @@ KPixmapIO::KPixmapIO()
     else 
     {
 	m_bShm = false;
-	kdWarning(290) << "" << ID << ": Byte order not supported!" << endl;
-	kdWarning(290) << "" << ID << ": red = " << d->ximage->red_mask 
+	kdWarning(290) << "Byte order not supported!" << endl;
+	kdWarning(290) << "red = " << d->ximage->red_mask 
 		<< ", green = " << d->ximage->green_mask 
-		<< ", blue = " << d->ximage->blue_mask << "\n";
-	kdWarning(290) << "" << ID << ": Please report to <jansen@kde.org>\n";
+		<< ", blue = " << d->ximage->blue_mask << endl;
+	kdWarning(290) "Please report to <jansen@kde.org>\n";
     }
 #endif
 }

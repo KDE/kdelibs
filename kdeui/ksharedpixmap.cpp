@@ -27,14 +27,6 @@
 
 #include <X11/Xlib.h>
 
-
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "KSharedPixmap: "
-#endif
-
-
 /**
  * KSharedPixmap
  */
@@ -107,7 +99,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     if ((ev->target != pixmap) || (ev->property == None)) 
     {
-	kdWarning(270) << ID << "illegal selection notify event.\n";
+	kdWarning(270) << k_lineinfo << "illegal selection notify event.\n";
 	m_Selection = None;
 	emit done(false);
 	return true;
@@ -126,7 +118,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     if (nitems != 1) 
     {
-	kdWarning(270) << ID << "could not read property, nitems = " << nitems << "\n";
+	kdWarning(270) << k_lineinfo << "could not read property, nitems = " << nitems << "\n";
 	emit done(false);
 	return true;
     }

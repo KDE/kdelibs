@@ -30,8 +30,6 @@
 #include "ktoolbaritem.h"
 #include "ktoolbarbutton.h"
 
-#undef ID // Needed for --enable-final - some other sources #define ID
-
 /*************************************************************************
  *                          KToolBarRadioGroup                                  *
  *************************************************************************/

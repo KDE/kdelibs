@@ -35,14 +35,6 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-
-#ifdef __GNUC__
-#define ID __PRETTY_FUNCTION__ << ": "
-#else
-#define ID "KRootPixmap: "
-#endif
-
-
 KRootPixmap::KRootPixmap(QWidget *widget)
 {
     m_pWidget = widget;
@@ -149,7 +141,7 @@ void KRootPixmap::repaint(bool force)
 
     // KSharedPixmap will correctly generate a tile for us.
     if (!m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect))
-	kdWarning(270) << ID << "loading of desktop background failed.\n";
+	kdWarning(270) << k_lineinfo << "loading of desktop background failed.\n";
 }
 
 
@@ -174,7 +166,7 @@ void KRootPixmap::slotDone(bool success)
 {
     if (!success) 
     {
-	kdWarning(270) << ID << "loading of desktop background failed.\n";
+	kdWarning(270) << k_lineinfo << "loading of desktop background failed.\n";
 	return;
     }
 
