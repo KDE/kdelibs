@@ -355,7 +355,11 @@ void SimpleJob::slotFinished( )
         {
             KDirNotify_stub allDirNotify( "*", "KDirNotify*" );
             if ( m_command == CMD_MKDIR )
-                allDirNotify.FilesAdded( url().directory() );
+            {
+                KURL urlDir( url() );
+                urlDir.setPath( urlDir.directory() );
+                allDirNotify.FilesAdded( urlDir );
+            }
             else if ( m_command == CMD_RENAME )
             {
                 KURL src, dst;
@@ -365,13 +369,6 @@ void SimpleJob::slotFinished( )
                     allDirNotify.FileRenamed( src, dst );
             }
         }
-        /*
-        if ( m_command == CMD_MKDIR && !m_error )
-        {
-            KDirNotify_stub allDirNotify("*", "KDirNotify*");
-            allDirNotify.FilesAdded( url().directory() );
-        }
-        */
         emitResult();
     }
 }
@@ -1622,7 +1619,7 @@ void CopyJob::startNextJob()
         KURL url( m_dest );
         if ( destinationState != DEST_IS_DIR )
             url.setPath( url.directory() );
-        kdDebug(7007) << "KDirNotify'ing with m_dest=" << url.prettyURL() << endl;
+        kdDebug(7007) << "KDirNotify'ing FilesAdded " << url.prettyURL() << endl;
         allDirNotify.FilesAdded( url );
 
         if ( m_mode == Move && !m_srcListCopy.isEmpty() )
