@@ -39,6 +39,7 @@ class KURL;
 class KInstance;
 class KToolBar;
 class KActionCollection;
+class KPopupMenu;
 
 struct KKeyEntry;
 
@@ -1205,7 +1206,7 @@ public:
     virtual void insert( KAction*, int index = -1 );
     virtual void remove( KAction* );
 
-    QPopupMenu* popupMenu();
+    KPopupMenu* popupMenu();
     void popup( const QPoint& global );
 
     virtual int plug( QWidget* widget, int index = -1 );

@@ -20,7 +20,7 @@
 
 // Qt Headers
 #include <qintdict.h> 
-#include <qpopupmenu.h>
+#include <kpopmenu.h>
 
 class KAccelMenuPrivate;
 //////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ class KAccelMenuPrivate;
  *
  **/
 
-class KAccelMenu : public QPopupMenu
+class KAccelMenu : public KPopupMenu
 {
   Q_OBJECT
 

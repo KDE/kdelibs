@@ -34,6 +34,7 @@
 #include <qfontdatabase.h>
 #include <qwhatsthis.h>
 #include <kiconloader.h>
+#include <kpopmenu.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -2004,14 +2005,14 @@ class KActionMenu::KActionMenuPrivate
 public:
   KActionMenuPrivate()
   {
-    m_popup = new QPopupMenu;
+    m_popup = new KPopupMenu;
     m_popup->setFont(KGlobal::menuFont());
   }
   ~KActionMenuPrivate()
   {
     delete m_popup; m_popup = 0;
   }
-  QPopupMenu *m_popup;
+  KPopupMenu *m_popup;
 };
 
 KActionMenu::KActionMenu( QObject* parent, const char* name )
@@ -2051,7 +2052,7 @@ void KActionMenu::popup( const QPoint& global )
   popupMenu()->popup( global );
 }
 
-QPopupMenu* KActionMenu::popupMenu()
+KPopupMenu* KActionMenu::popupMenu()
 {
   return d->m_popup;
 }

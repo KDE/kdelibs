@@ -30,7 +30,7 @@ template class QIntDict<char>;
 
 //////////////////////////////////////////////////////////////////////////////
 KAccelMenu::KAccelMenu(KAccel *k, QWidget * parent, const char * name ):
-  QPopupMenu(parent,name)
+  KPopupMenu(parent,name)
 {
   keys = k;
   quote = FALSE;
@@ -206,7 +206,7 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
       }
     }
     if (!quote)
-      QPopupMenu::keyPressEvent(e);
+      KPopupMenu::keyPressEvent(e);
     quote = FALSE;
   }
 }
