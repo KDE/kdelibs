@@ -135,7 +135,7 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   const Address homeAddr = addr.address( Address::Home );
   const Address workAddr = addr.address( Address::Work );
 
-  ldif_out( t, "%1", QString( "dn: cn=%1,mail=%2\n" )
+  ldif_out( t, "dn: %1", QString( "cn=%1,mail=%2\n" )
             .arg( addr.formattedName().simplifyWhiteSpace() )
             .arg( addr.preferredEmail() ), false /*never encode!*/ );
   ldif_out( t, "givenname: %1\n", addr.givenName() );

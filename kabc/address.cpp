@@ -541,15 +541,16 @@ QString Address::countryToISO( const QString &cname )
 QString Address::ISOtoCountry( const QString &ISOname )
 {
   // get country name from ISO country code (e.g. "no" -> i18n("Norway"))
+  if (ISOname.simplifyWhiteSpace().isEmpty())
+	return QString::null;
+
   QString mapfile = KGlobal::dirs()->findResource( "data", 
           QString::fromLatin1( "kabc/countrytransl.map" ) );
 
-kdWarning() << "MAPFILE : " << mapfile << endl;
   QFile file( mapfile );
   if ( file.open( IO_ReadOnly ) ) {
     QTextStream s( &file );
     QString searchStr = "\t" + ISOname.simplifyWhiteSpace().lower();
-kdWarning() << "Suche : " << searchStr << endl;
     QString strbuf = s.readLine();
     int pos;
     while( !strbuf.isNull() ) {
