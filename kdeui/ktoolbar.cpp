@@ -131,7 +131,7 @@ public:
 /****************************** Tolbar **************************************/
 
 KToolBar::KToolBar(QWidget *parent, const char *name, bool _honor_mode)
-  : QFrame( parent, name )
+  : QFrame( parent, name ? name : "mainToolBar")
 {
   d = new KToolBarPrivate;
   d->m_honorStyle = _honor_mode;
@@ -568,6 +568,9 @@ void KToolBar::layoutHorizontal(int w)
   min_width = 4 + 9 + 3 + widest + 3;
   min_height = toolbarHeight;
   updateGeometry();
+
+  QToolTip::remove(this);
+  QToolTip::add(this, QRect(0, 0, 9, toolbarHeight), name());
 }
 
 int
@@ -759,6 +762,9 @@ KToolBar::layoutVertical(int h)
   toolbarWidth = min_width = xOffset + widest + 3;
   min_height = 4 + 9 + 3 + tallest + 3;
   updateGeometry();
+
+  QToolTip::remove(this);
+  QToolTip::add(this, QRect(0, 0, toolbarWidth, 9), name());
 }
 
 int
@@ -1001,18 +1007,15 @@ KToolBar::sizePolicy() const
 
 void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 {
-    if (!moving)
-  return;
+  if (!moving)
+    return;
 
-  // if we made it here, then our state has changed
-  d->m_stateChanged = true;
-
-  /* The toolbar handles are hightlighted when the mouse moves over
-     * the handle. */
+  /* The toolbar handles are highlighted when the mouse moves over
+   * the handle. */
   if ((d->m_isHorizontal && (mev->x() < 0 || mev->x() > 9)) ||
-    (!d->m_isHorizontal && (mev->y() < 0 || mev->y() > 9)))
+      (!d->m_isHorizontal && (mev->y() < 0 || mev->y() > 9)))
   {
-    /* Mouse is outside of the handle. If it's still hightlighed we have
+    /* Mouse is outside of the handle. If it's still highlighted we have
      * to de-highlight it. */
     if (mouseEntered)
     {
@@ -1047,13 +1050,13 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
     oh = rr.height();
 
     if (d->m_parent->inherits("KTMainWindow") && d->m_parent->parentWidget()) {
-	QRect mainView = ( (KTMainWindow*)d->m_parent )->mainViewGeometry();
-	QWidget* myWidget = d->m_parent->parentWidget();
-	QPoint xy = QPoint( mainView.left(), mainView.top() );
-	ox += myWidget->mapToGlobal( xy ).x();
-	oy += myWidget->mapToGlobal( xy ).y();
-	ow = mainView.width();
-	oh = mainView.height();
+      QRect mainView = ( (KTMainWindow*)d->m_parent )->mainViewGeometry();
+      QWidget* myWidget = d->m_parent->parentWidget();
+      QPoint xy = QPoint( mainView.left(), mainView.top() );
+      ox += myWidget->mapToGlobal( xy ).x();
+      oy += myWidget->mapToGlobal( xy ).y();
+      ow = mainView.width();
+      oh = mainView.height();
     }
     else if (d->m_parent->inherits("KTMainWindow"))
     {
@@ -1098,19 +1101,19 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
     else
     {
       /*
-        QList<KToolBarItem> ons;
-        for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
-        {
-        if (b->isEnabled())
-        ons.append(b);
-        b->setEnabled(false);
-        }
-      */
+         QList<KToolBarItem> ons;
+         for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
+         {
+         if (b->isEnabled())
+         ons.append(b);
+         b->setEnabled(false);
+         }
+       */
       mgr->doMove(true, false, false);
       /*
-        for (KToolBarItem *b = ons.first(); b; b=ons.next())
-        b->setEnabled(true);
-      */
+         for (KToolBarItem *b = ons.first(); b; b=ons.next())
+         b->setEnabled(true);
+       */
     }
     if (d->m_transparent)
     {
@@ -1122,6 +1125,11 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
         show();
     }
     mouseEntered = false;
+
+    // if we made it here, then our state has changed
+    d->m_stateChanged = true;
+    saveState();
+
     delete mgr;
     mgr=0;
     repaint (false);
@@ -1130,21 +1138,21 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 
 void KToolBar::mouseReleaseEvent ( QMouseEvent *m)
 {
-    buttonDownOnHandle = FALSE;
-    if (!moving)
-  return;
+  buttonDownOnHandle = FALSE;
+  if (!moving)
+    return;
 
-    if (mgr)
-  mgr->stop();
-    if ( d->m_position != Floating &&
-   ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9)) ) {
-  setFlat (d->m_position != Flat);
-    }
+  if (mgr)
+    mgr->stop();
+  if ( d->m_position != Floating &&
+      ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9)) ) {
+    setFlat (d->m_position != Flat);
+  }
 }
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-  buttonDownOnHandle |=   ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9));
+  buttonDownOnHandle |= ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9));
 
   if (moving)
     if (m->button() == RightButton)
@@ -1164,6 +1172,7 @@ void KToolBar::slotHotSpot(int hs)
 {
   if (mgr == 0)
     return;
+
   if (!d->m_transparent) // opaque
   {
     switch (hs)
@@ -2729,7 +2738,10 @@ void KToolBar::ContextCallback( int )
 
   // if the user selected anything, then the state has changed
   if (i > 0)
+  {
     d->m_stateChanged = true;
+    saveState();
+  }
 
   mouseEntered=false;
   repaint(false);
