@@ -1,0 +1,10 @@
+For the future, the following modifications need to be done:
+
+Currently there is a function :
+  virtual QString presenceString( const QString & uid ) = 0;
+This needs to be broken into:
+  virtual QString presenceString( const QString & uid ) = 0;
+  virtual QString presenceLongString( const QString & uid ) = 0;
+
+The former returning, say "Away", the latter returning the long away
+message.
