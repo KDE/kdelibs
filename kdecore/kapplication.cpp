@@ -2822,7 +2822,7 @@ uint KApplication::mouseState()
 void KApplication::installSigpipeHandler()
 {
     struct sigaction act;
-    act.sa_handler = sigpipeHandler;
+    act.sa_handler = SIG_IGN;
     sigemptyset( &act.sa_mask );
     act.sa_flags = 0;
     sigaction( SIGPIPE, &act, 0 );
