@@ -22,9 +22,9 @@
 #include <kurldrag.h>
 #include <kstringhandler.h>
 #include <kapplication.h>
-#include <kmessagebox.h>   
-#include <kstandarddirs.h> 
-#include <krun.h>          
+#include <kmessagebox.h>
+#include <kstandarddirs.h>
+#include <krun.h>
 
 #include "dom/dom_element.h"
 #include "misc/htmltags.h"
@@ -74,11 +74,8 @@ void KHTMLPartBrowserExtension::editableWidgetFocused( QWidget *widget )
         connect( QApplication::clipboard(), SIGNAL( dataChanged() ),
                  this, SLOT( updateEditActions() ) );
 
-        if ( m_editableFormWidget->inherits( "QLineEdit" ) )
-            connect( m_editableFormWidget, SIGNAL( textChanged( const QString & ) ),
-                     this, SLOT( updateEditActions() ) );
-        else if ( m_editableFormWidget->inherits( "QMultiLineEdit" ) )
-            connect( m_editableFormWidget, SIGNAL( textChanged() ),
+        if ( m_editableFormWidget->inherits( "QLineEdit" ) || m_editableFormWidget->inherits( "QTextEdit" ) )
+            connect( m_editableFormWidget, SIGNAL( selectionChanged() ),
                      this, SLOT( updateEditActions() ) );
 
         m_connectedToClipboard = true;
@@ -101,11 +98,8 @@ void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget *widget )
 
         if ( oldWidget )
         {
-            if ( oldWidget->inherits( "QLineEdit" ) )
-                disconnect( oldWidget, SIGNAL( textChanged( const QString & ) ),
-                            this, SLOT( updateEditActions() ) );
-            else if ( oldWidget->inherits( "QMultiLineEdit" ) )
-                disconnect( oldWidget, SIGNAL( textChanged() ),
+            if ( oldWidget->inherits( "QLineEdit" ) || oldWidget->inherits( "QTextEdit" ) )
+                disconnect( oldWidget, SIGNAL( selectionChanged() ),
                             this, SLOT( updateEditActions() ) );
         }
 
@@ -233,10 +227,13 @@ void KHTMLPartBrowserExtension::updateEditActions()
 
     bool hasSelection = false;
 
-    if ( m_editableFormWidget->inherits( "QLineEdit" ) )
+    if ( m_editableFormWidget->inherits( "QLineEdit" ) ) {
         hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
-    else if ( m_editableFormWidget->inherits( "khtml::TextAreaWidget" ) )
-        hasSelection = static_cast<khtml::TextAreaWidget *>( &(*m_editableFormWidget) )->hasSelectedText();
+    }
+    else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
+    {
+        hasSelection = static_cast<QTextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
+    }
 
     enableAction( "copy", hasSelection );
     enableAction( "cut", hasSelection );
@@ -247,8 +244,9 @@ void KHTMLPartBrowserExtension::extensionProxyActionEnabled( const char *action,
     // only forward enableAction calls for actions we actually do foward
     if ( strcmp( action, "cut" ) == 0 ||
          strcmp( action, "copy" ) == 0 ||
-         strcmp( action, "paste" ) == 0 )
+         strcmp( action, "paste" ) == 0 ) {
         enableAction( action, enable );
+    }
 }
 
 void KHTMLPartBrowserExtension::reparseConfiguration()
@@ -429,7 +427,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
     name = suggestedFilename;
   else if ( !url.fileName().isEmpty() )
     name = url.fileName();
-  
+
   KURL destURL;
   int query;
   do {
@@ -442,7 +440,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
           query = KMessageBox::warningContinueCancel( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ).arg( info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ) );
        }
    } while ( query == KMessageBox::Cancel );
-  
+
   if ( !destURL.isMalformed() )
     saveURL(url, destURL, metadata, cacheId);
 }
@@ -483,7 +481,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
         if(!saved)
         {
             // DownloadManager <-> konqueror integration
-            // find if the integration is enabled 
+            // find if the integration is enabled
             // the empty key  means no integration
             KConfig *cfg = new KConfig("konquerorrc", false, false);
             cfg->setGroup("HTML Settings");
@@ -514,7 +512,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                 job->setMetaData(metadata);
                 job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
                 job->setAutoErrorHandlingEnabled( true );
-            } 
+            }
             delete cfg;
         } //end if(!saved)
     }

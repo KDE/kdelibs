@@ -2354,12 +2354,14 @@ void KHTMLPart::setSelection( const DOM::Range &r )
 
 void KHTMLPart::slotClearSelection()
 {
+    bool hadSelection = hasSelection();
     d->m_selectionStart = 0;
     d->m_startOffset = 0;
     d->m_selectionEnd = 0;
     d->m_endOffset = 0;
     if ( d->m_doc ) d->m_doc->clearSelection();
-    emitSelectionChanged();
+    if ( hadSelection )
+      emitSelectionChanged();
 }
 
 void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPressed )
