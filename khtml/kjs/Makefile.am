@@ -31,7 +31,7 @@ noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
 	kjsstring.h grammar.h object_object.h function_object.h \
 	bool_object.h math_object.h array_object.h string_object.h
 
-libkjs_la_LDFLAGS = -version-info 1:0
+libkjs_la_LDFLAGS = -version-info 1:0 -no-undefined
 libkjs_la_LIBADD = -lm
 
 parser: $(srcdir)/grammar.y
