@@ -1,19 +1,21 @@
 #ifndef OFFICE_SHELL_H
 #define OFFICE_SHELL_H
 
-#include <qmainwindow.h>
 #include <qlist.h>
-#include <qtoolbar.h>
 #include <qaction.h>
+
+#include <ktmainwindow.h>
+#include <ktoolbar.h>
+#include <kmenubar.h>
 
 class QPopupMenu;
 class QString;
-class QStatusBar;
+class KStatusBar;
 
 class Part;
 class View;
 
-class Shell : public QMainWindow
+class Shell : public KTMainWindow
 {
     Q_OBJECT
 public:
@@ -49,10 +51,10 @@ public:
     void setSelectionPolicy( SelectionPolicy );
     SelectionPolicy selectionPolicy();
 
-    QStatusBar *createStatusBar();
+    KStatusBar *createStatusBar();
 
-    QToolBar *viewToolBar( const char *name );
-    QMenuBar *viewMenuBar( const char *name );
+    KToolBar *viewToolBar( const char *name );
+    KMenuBar *viewMenuBar( const char *name );
 
 protected:
     void createToolBars( const QDomElement& element );
@@ -65,7 +67,7 @@ protected:
      *
      * @ref #createToolBars
      */
-    QToolBar* createToolBar( const char* name = 0 );
+    KToolBar* createToolBar( const char* name = 0 );
 
     /**
      * This event filter detected focus changes. This is used
@@ -87,13 +89,13 @@ private:
 
     Part* m_rootPart;
 
-    QList<QToolBar> m_toolbars;
+    QList<KToolBar> m_toolbars;
 
     QActionCollection m_collection;
 
     SelectionPolicy m_policy;
 
-    QStatusBar *m_statusBar;
+    KStatusBar *m_statusBar;
 };
 
 #endif

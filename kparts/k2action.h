@@ -21,6 +21,10 @@ public:
 
     virtual void setEnabled( bool b );
 
+    virtual void setText( const QString& text );
+
+    virtual void setIconSet( const QIconSet& iconSet );
+
 };
 
 #endif

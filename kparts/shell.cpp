@@ -11,7 +11,7 @@
 #include <qstatusbar.h>
 
 Shell::Shell( QWidget* parent, const char* name )
-    : QMainWindow( parent, name ), m_collection( this )
+    : KTMainWindow( name ), m_collection( this )
 {
     m_toolbars.setAutoDelete( TRUE );
     m_rootPart = 0;
@@ -50,23 +50,26 @@ Shell::SelectionPolicy Shell::selectionPolicy()
     return m_policy;
 }
 
-QStatusBar *Shell::createStatusBar()
+KStatusBar *Shell::createStatusBar()
 {
   if ( m_statusBar )
     delete m_statusBar;
 
-  m_statusBar = new QStatusBar( this );
+  m_statusBar = new KStatusBar( this );
+
+  setStatusBar( m_statusBar );
+
   return m_statusBar;
 }
 
-QToolBar *Shell::viewToolBar( const char *name )
+KToolBar *Shell::viewToolBar( const char *name )
 {
-  return (QToolBar *)child( name, "QToolBar" );
+  return (KToolBar *)child( name, "KToolBar" );
 }
 
-QMenuBar *Shell::viewMenuBar( const char *name )
+KMenuBar *Shell::viewMenuBar( const char *name )
 {
-  return (QMenuBar *)child( name, "QMenuBar" );
+  return (KMenuBar *)child( name, "KMenuBar" );
 }
 
 Part* Shell::rootPart()
@@ -76,7 +79,7 @@ Part* Shell::rootPart()
 
 View* Shell::rootView()
 {
-    return (View*)centralWidget();
+    return (View *)view();
 }
 
 void Shell::setRootPart( Part* part )
@@ -91,7 +94,7 @@ void Shell::setRootPart( Part* part )
     if ( part )
     {
 	View* view = part->createView( this );
-	setCentralWidget( view );
+	setView( view );
 	view->show();
 	
 	setActiveView( view );
@@ -190,6 +193,7 @@ void Shell::setActiveView( View* view, Part* part )
     {
       delete m_statusBar;
       m_statusBar = 0;
+      setStatusBar( 0 );
     }
 
     if ( m_activeView )
@@ -233,14 +237,16 @@ void Shell::setActiveView( View* view, Part* part )
     }
 }
 
-QToolBar* Shell::createToolBar( const char* name )
+KToolBar* Shell::createToolBar( const char* name )
 {
-    QToolBar* bar = new QToolBar( this, name );
+    KToolBar* bar = new KToolBar( this, name );
     m_toolbars.append( bar );
+
+    addToolBar( bar );
 
     return bar;
 }
-#include <iostream.h>
+
 void Shell::createToolBars( const QDomElement& element )
 {
     QDomElement e = element.firstChild().toElement();
@@ -248,33 +254,16 @@ void Shell::createToolBars( const QDomElement& element )
     {
 	if ( e.tagName() == "ToolBar" )
         {
-	    QToolBar* bar = createToolBar( e.attribute("name") );
+	    KToolBar* bar = createToolBar( e.attribute("name") );
 
-            //EEEK, this is ugly! (Simon)
-            if ( e.attribute( "rightJustification" ).lower() == "true" )
-              setRightJustification( TRUE );
-            else
-              setRightJustification( FALSE );
-	
 	    QDomElement f = e.firstChild().toElement();
 	    for( ; !f.isNull(); f = f.nextSibling().toElement() )
 	    {
-
-                bool stretch = false;
-                if ( f.hasAttribute( "stretchwidget" ) &&
-                     f.attribute( "stretchwidget" ) == "true" )
-                  stretch = true;
-
-                QWidget *container = 0;
-
 		if ( f.tagName() == "Action" )
 	        {
 		    QAction* a = action( f.attribute("name") );
 		    if ( a )
-                    {
-			int idx = a->plug( bar );
-                        container = a->container( idx );
-                    }
+		      a->plug( bar );
 		}
 		else if ( f.tagName() == "PluginAction" )
                 {
@@ -285,10 +274,7 @@ void Shell::createToolBars( const QDomElement& element )
 		    {
 			QAction* a = plugin->action( f.attribute("name") );
 			if ( a )
-                        {
-			    int idx = a->plug( bar );
-                            QWidget *container = a->container( idx );
-                        }
+			    a->plug( bar );
 			else
 			    qDebug("Shell: Unknown plugin action %s", f.attribute("name").latin1() );
 		    }
@@ -297,11 +283,8 @@ void Shell::createToolBars( const QDomElement& element )
 		}
 		else if ( f.tagName() == "Separator" )
 	        {
-		    bar->addSeparator();
+		    bar->insertSeparator();
 		}
-
-               if ( container && stretch )
-                 bar->setStretchableWidget( container );
 
 	    }
 
@@ -343,11 +326,27 @@ void Shell::createMenuBar( const QDomElement& shell, const QDomElement& part )
 	    for( ; !f.isNull(); f = f.nextSibling().toElement() )
 		if ( !names.contains( f.attribute("name") ) )
 	        {
+		  if ( f.tagName() == "Menu" )
+		  {
 		    QPopupMenu* menu = createMenu( QDomElement(), f );
 		    QDomElement n = f.namedItem("text").toElement();
 		    QString name = n.text();
 	
 		    menuBar()->insertItem( name, menu );
+		  }
+		  else if ( f.tagName() == "Action" )
+		  {
+		    QAction *a = action( f.attribute( "name" ) );
+		    if ( a )
+		    {
+		      //Simon: now we're getting *rude*...
+		      
+		      QMenuBar *qbar = (QMenuBar *)menuBar()->child( 0L, "QMenuBar" );
+		      
+		      if ( qbar )
+		       a->plug( qbar );
+		    }
+		  }
 		}
     	}
     }
@@ -532,30 +531,30 @@ bool Shell::eventFilter( QObject* obj, QEvent* ev )
 	
 	    if ( o->inherits("View") )
 	    {
-		View* view = (View*)o;
-		if ( view->topLevelWidget() != this )
+		View* _view = (View*)o;
+		if ( _view->topLevelWidget() != this )
 		    return FALSE;
 		// Turn mouse coordinates into coordinates of the document
-		QPoint canvaspos( view->canvas()->mapFromGlobal( e->globalPos() ) );
-		canvaspos.rx() -= view->canvasXOffset();
-		canvaspos.ry() -= view->canvasYOffset();
-		Part* part = view->hitTest( canvaspos );
+		QPoint canvaspos( _view->canvas()->mapFromGlobal( e->globalPos() ) );
+		canvaspos.rx() -= _view->canvasXOffset();
+		canvaspos.ry() -= _view->canvasYOffset();
+		Part* part = _view->hitTest( canvaspos );
 		if ( !part )
 		    return FALSE;
 
 		// Double clicks always activate
 		if ( ev->type() == QEvent::MouseButtonDblClick )
 	        {
-		    setActiveView( view, part );
+		    setActiveView( _view, part );
 		    return TRUE;
 		}
 		
 		// If the view handles selection on its own ....
-		if ( view->doubleClickActivation() )
+		if ( _view->doubleClickActivation() )
 	        {
 		    // Click on the root view/part ?
-		    if ( rootPart() == part && centralWidget() == view )
-			setActiveView( view, part );
+		    if ( rootPart() == part && (View *)view() == _view )
+			setActiveView( _view, part );
 
 		    return FALSE;
 		}
@@ -567,29 +566,29 @@ bool Shell::eventFilter( QObject* obj, QEvent* ev )
     		    qDebug("Click view=%x  part=%x", (int)view, (int)part ); */
 
 		// The view/part is neither selected nor active ?
-		if ( ( m_selectedView != view || m_selectedPart != part ) &&
-		     ( m_activeView != view || m_activePart != part ) )
+		if ( ( m_selectedView != _view || m_selectedPart != part ) &&
+		     ( m_activeView != _view || m_activePart != part ) )
 	        {
 		    // Click on the root view/part ?
-		    if ( rootPart() == part && centralWidget() == view )
+		    if ( rootPart() == part && (View *)view() == _view )
 			// The root view/part is never selected -> activate it
-			setActiveView( view, part );
+			setActiveView( _view, part );
 		    else
-			setSelectedView( view, part );
+			setSelectedView( _view, part );
 		
 		    // Eat the event
 		    return TRUE;
 		}
 		// Is the view/part selected but not activated ?
-		else if ( m_selectedView == view && m_selectedPart == part )
+		else if ( m_selectedView == _view && m_selectedPart == part )
 	        {
-		    setActiveView( view, part );
+		    setActiveView( _view, part );
 		
 		    // Eat the event
 		    return TRUE;
 		}
 		// Is the view/part already active ?
-		else if ( m_activeView == view && m_activePart == part )
+		else if ( m_activeView == _view && m_activePart == part )
 	        {
 		    // Clear the selection
 		    setSelectedView( 0 );

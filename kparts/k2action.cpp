@@ -37,7 +37,7 @@ int K2Action::plug( QWidget *w )
   {
     KToolBar *bar = (KToolBar *)w;
 
-    int id = bar->insertButton( pixmap(), 0, SIGNAL( activated() ), this, SLOT( slotActivated() ),
+    int id = bar->insertButton( iconSet().pixmap(), 0, SIGNAL( activated() ), this, SLOT( slotActivated() ),
                                 isEnabled(), text() );
 
     addContainer( bar, id );
@@ -53,7 +53,7 @@ int K2Action::plug( QWidget *w )
 
 void K2Action::unplug( QWidget *w )
 {
-  if ( w->inherits( "KToolBar " ) )
+  if ( w->inherits( "KToolBar" ) )
   {
     KToolBar *bar = (KToolBar *)w;
 
@@ -71,12 +71,36 @@ void K2Action::setEnabled( bool b )
   {
     QWidget *w = container( i );
 
-    if ( w->inherits( "KToolBar " ) )
+    if ( w->inherits( "KToolBar" ) )
       ((KToolBar *)w)->setItemEnabled( menuId( i ), b );
 
   }
 
   QAction::setEnabled( b );
+}
+
+void K2Action::setText( const QString& text )
+{
+  //TODO?
+
+  QAction::setText( text );
+}
+
+
+void K2Action::setIconSet( const QIconSet& iconSet )
+{
+  int len = containerCount();
+
+  for ( int i = 0; i < len; i++ )
+  {
+    QWidget *w = container( i );
+
+    if ( w->inherits( "KToolBar" ) )
+      ((KToolBar *)w)->setButtonPixmap( menuId( i ), iconSet.pixmap() );
+
+  }
+
+  QAction::setIconSet( iconSet );
 }
 
 #include "k2action.moc"
