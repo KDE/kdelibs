@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+MimeType=text/rtf
+Comment=Rich Text Format
+DefaultApp=Kwrite
+Icon=txt.xpm
+Type=MimeType
+Patterns=*.rtf;*.RTF;
