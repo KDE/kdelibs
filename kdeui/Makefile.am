@@ -6,8 +6,7 @@
 MOC = @MOC@
 INCLUDES= @QT_INCLUDES@ @X_INCLUDES@ -I../kdecore
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
-CLEANFILES = *.moc
-SUFFIXES = .moc
+CLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -version-info 0:10  -rpath $(libdir)
@@ -34,7 +33,7 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
 		ktopwidget.moc kbutton.moc kslider.moc kiconloader.moc \
-		klined.moc kcombo.moc krestrictedline.cpp kintegerline.cpp \
+		klined.moc kcombo.moc krestrictedline.moc kintegerline.moc \
 		kspinbox.moc kdocktoolbar.moc kcolorbtn.moc
 
 kledlamp.cpp: kledlamp.moc
@@ -64,8 +63,84 @@ kspinbox.cpp: kspinbox.moc
 kdocktoolbar.cpp: kdocktoolbar.moc
 kcolorbtn.cpp: kcolorbtn.moc
 
+kledlamp.moc: kledlamp.h
+	$(MOC) kledlamp.h -o kledlamp.moc
+
+kprogress.moc: kprogress.h
+	$(MOC) kprogress.h -o kprogress.moc
+
+kpanner.moc: kpanner.h
+	$(MOC) kpanner.h -o kpanner.moc
+
+kcolordlg.moc: kcolordlg.h
+	$(MOC) kcolordlg.h -o kcolordlg.moc
+
+kselect.moc: kselect.h
+	$(MOC) kselect.h -o kselect.moc
+
+ktabctl.moc: ktabctl.h
+	$(MOC) ktabctl.h -o ktabctl.moc
+
+kdatepik.moc: kdatepik.h
+	$(MOC) kdatepik.h -o kdatepik.moc
+
+kmsgbox.moc: kmsgbox.h
+	$(MOC) kmsgbox.h -o kmsgbox.moc
+
+kpopmenu.moc: kpopmenu.h
+	$(MOC) kpopmenu.h -o kpopmenu.moc
+
+ktreelist.moc: ktreelist.h
+	$(MOC) ktreelist.h -o ktreelist.moc
+
+kdatetbl.moc: kdatetbl.h
+	$(MOC) kdatetbl.h -o kdatetbl.moc
+
+kfontdialog.moc: kfontdialog.h
+	$(MOC) kfontdialog.h -o kfontdialog.moc
+
+ktoolbar.moc: ktoolbar.h
+	$(MOC) ktoolbar.h -o ktoolbar.moc
+
+kstatusbar.moc: kstatusbar.h
+	$(MOC) kstatusbar.h -o kstatusbar.moc
+
+kmenubar.moc: kmenubar.h
+	$(MOC) kmenubar.h -o kmenubar.moc
+
+ktopwidget.moc: ktopwidget.h
+	$(MOC) ktopwidget.h -o ktopwidget.moc
+
+kbutton.moc: kbutton.h
+	$(MOC) kbutton.h -o kbutton.moc
+
+kslider.moc: kslider.h
+	$(MOC) kslider.h -o kslider.moc
+
+kiconloader.moc: kiconloader.h
+	$(MOC) kiconloader.h -o kiconloader.moc
+
+klined.moc: klined.h
+	$(MOC) klined.h -o klined.moc
+
+kcombo.moc: kcombo.h
+	$(MOC) kcombo.h -o kcombo.moc
+
+kintegerline.moc: kintegerline.h
+	$(MOC) kintegerline.h -o kintegerline.moc
+
+krestrictedline.moc: krestrictedline.h
+	$(MOC) krestrictedline.h -o krestrictedline.moc
+
+kspinbox.moc: kspinbox.h
+	$(MOC) kspinbox.h -o kspinbox.moc
+
+kdocktoolbar.moc: kdocktoolbar.h
+	$(MOC) kdocktoolbar.h -o kdocktoolbar.moc
+
+kcolorbtn.moc: kcolorbtn.h
+	$(MOC) kcolorbtn.h -o kcolorbtn.moc
+
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
 
-%.moc: %.h
-	$(MOC) $< -o $@
 

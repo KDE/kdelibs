@@ -15,10 +15,16 @@ libkhtmlw_la_LDFLAGS = -version-info 0:8 -rpath $(libdir)
 
 MOC = @MOC@
 INCLUDES = -I../kdecore -I../kdeui -I../jscript @all_includes@ 
-########## Meta objects ##########
 
-%.moc: %.h
-	$(MOC) $< -o $@
+html.moc: html.h
+	$(MOC) -o html.moc html.h 
 
-##################################
-# DO NOT DELETE
+htmlform.moc: htmlform.h
+	$(MOC) -o htmlform.moc htmlform.h 
+
+htmlframe.moc: htmlframe.h
+	$(MOC) -o htmlframe.moc htmlframe.h 
+
+htmlview.moc: htmlview.h
+	$(MOC) -o htmlview.moc htmlview.h 
+

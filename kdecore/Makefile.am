@@ -5,7 +5,7 @@
 
 MOC = @MOC@ 
 INCLUDES=@QT_INCLUDES@ @X_INCLUDES@
-CLEANFILES = *.moc
+CLEANFILES = $(BUILT_SOURCES)
 VERSION = @VERSION@
 EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
@@ -32,12 +32,26 @@ kapp.cpp: kapp.moc
 kprocess.cpp: kprocess.moc
 kprocctrl.cpp: kprocctrl.moc
 
-%.moc: %.h
-	$(MOC) $< -o $@
-
 ckey.h : convert_key.c
 	$(CC) $(CFLAGS) convert_key.c -o convert_key
 	./convert_key $(QTDIR)
 	cat ackey ckey > ckey.h
 	rm -f ackey ckey
 
+ksock.moc: ksock.h
+	$(MOC) ksock.h -o ksock.moc
+
+drag.moc: drag.h
+	$(MOC) drag.h -o drag.moc
+
+kkeydata.moc: kkeydata.h
+	$(MOC) kkeydata.h -o kkeydata.moc
+
+kapp.moc: kapp.h
+	$(MOC) kapp.h -o kapp.moc
+
+kprocess.moc: kprocess.h
+	$(MOC) kprocess.h -o kprocess.moc
+
+kprocctrl.moc: kprocctrl.h
+	$(MOC) kprocctrl.h -o kprocctrl.moc
