@@ -16,8 +16,8 @@
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
-<!ENTITY ed 	"é dizer"> <!-- English: &ie; -->
-<!ENTITY ie 	"é dizer"> 
+<!ENTITY ed 	"isto é"> <!-- English: &ie; -->
+<!ENTITY ie 	"isto é"> 
 <!ENTITY kcontrolcenter	"<application>Centro de Controlo &kde;</application>">
 <!ENTITY BER 	"botão <mousebutton>esquerdo</mousebutton> do rato">  <!-- English: &LMB; -->
 <!ENTITY LMB 	"botão <mousebutton>esquerdo</mousebutton> do rato">
@@ -27,7 +27,12 @@
 <!ENTITY RMB 	"botão <mousebutton>direito</mousebutton> do rato">
 <!ENTITY OS	"sistema operativo"><!-- <acronym>OS</acronym>-->
 <!ENTITY Shift	"<keycap>Shift</keycap>">
-
-
-
-
+<!ENTITY kicon  '<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>O ícone K do &kde;</title></objectinfo>
+ <imageobject><imagedata fileref="common/kmenu.png" format="PNG"/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+   </guiicon> icon'>
+<!ENTITY kmenu  "menu <guimenu>K</guimenu>">
+<!ENTITY kinfocenter "<application>Centro de Informação do KDE</application>" >
