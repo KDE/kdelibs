@@ -128,18 +128,18 @@ QFont KGlobal::fixedFont()
     return *_fixedFont;
 }
 
-QFont KGlobal::buttonFont()
+QFont KGlobal::toolBarFont()
 {
-    if(_buttonFont)
-        return *_buttonFont;
+    if(_toolBarFont)
+        return *_toolBarFont;
 
-    _buttonFont = new QFont("helvetica", 10, QFont::Normal);
-    charsets()->setQFont(*_buttonFont, charsets()->charsetForLocale());
+    _toolBarFont = new QFont("helvetica", 10, QFont::Normal);
+    charsets()->setQFont(*_toolBarFont, charsets()->charsetForLocale());
     KConfig *c = KGlobal::config();
     c->setGroup( QString::fromLatin1("General") );
-    *_buttonFont = c->readFontEntry(QString::fromLatin1("buttonFont"),
-                                    _buttonFont);
-    return *_buttonFont;
+    *_toolBarFont = c->readFontEntry(QString::fromLatin1("toolBarFont"),
+                                    _toolBarFont);
+    return *_toolBarFont;
 }
 
 int KGlobal::dndEventDelay()
@@ -221,4 +221,4 @@ KCharsets       *KGlobal::_charsets	= 0;
 
 QFont           *KGlobal::_generalFont  = 0;
 QFont           *KGlobal::_fixedFont    = 0;
-QFont           *KGlobal::_buttonFont   = 0;
+QFont           *KGlobal::_toolBarFont   = 0;
