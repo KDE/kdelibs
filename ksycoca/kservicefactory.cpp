@@ -108,18 +108,14 @@ KServiceFactory::createService(int offset)
      case KST_KService:
         newEntry = new KService(*str);
         break;
-
+        
      default:
-        QString tmp = i18n("KServiceFactory: unexpected object entry in KSycoca database (type = %1)\n");
-        debug(tmp.arg((int)type));
-        //KMessageBox::error( 0L, tmp.arg((int)type) );
+        kdebug( KDEBUG_ERROR, 7011, QString("KServiceFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) );
         break;
-   } 
+   }
    if (!newEntry->isValid())
    {
-      QString tmp = i18n("KServiceFactory: corrupt object in KSycoca database!\n");
-      debug(tmp);
-      //KMessageBox::error( 0L, tmp );
+      kdebug( KDEBUG_ERROR, 7011, "KServiceFactory: corrupt object in KSycoca database!\n");
       delete newEntry;
       newEntry = 0;
    }   

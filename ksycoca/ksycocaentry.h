@@ -40,7 +40,7 @@ public:
    /**
     * Restores itself from a stream.
     */
-   KSycocaEntry( QDataStream &_str) : mOffset(0) { load(_str); }
+   KSycocaEntry( QDataStream &/*_str*/) : mOffset(0) { /* Nothing to do here */ }
 
    /**
     * @return the name of this entry
@@ -51,21 +51,21 @@ public:
     * @return the position of the entry in the sycoca file
     */
    int offset() { return mOffset; }
-   /**
-    * Store the position of the entry in the sycoca file
-    */
-   void setOffset(int _offset) { mOffset = _offset; }
 
    /**
     * Save ourselves to the database. Don't forget to call the parent class
     * first if you override this function.
     */
-   virtual void save(QDataStream &) const;
+   virtual void save(QDataStream &s)
+     {
+       mOffset = s.device()->at(); // store position in member variable
+       s << (Q_INT32) sycocaType();
+     }
 
    /**
     * Load ourselves from the database. Don't call the parent class!
     */
-   virtual void load(QDataStream &);
+   virtual void load(QDataStream &) = 0L;
 
 private:
    int mOffset;

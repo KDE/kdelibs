@@ -121,7 +121,7 @@ KService::KService( KSimpleConfig& config )
 
 }
 
-KService::KService( QDataStream& _str )
+KService::KService( QDataStream& _str ) : KSycocaEntry( _str )
 {
   load( _str );
 }
@@ -142,8 +142,9 @@ void KService::load( QDataStream& s )
   m_bValid = true;
 }
 
-void KService::save( QDataStream& s ) const
+void KService::save( QDataStream& s )
 {
+  KSycocaEntry::save( s );
   Q_INT8 b = m_bAllowAsDefault;
 
   s << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions
@@ -241,17 +242,19 @@ QStringList KService::propertyNames() const
   return res;
 }
 
+/*
 QDataStream& operator>>( QDataStream& _str, KService& s )
 {
   s.load( _str );
   return _str;
 }
 
-QDataStream& operator<<( QDataStream& _str, const KService& s )
+QDataStream& operator<<( QDataStream& _str, KService& s )
 {
   s.save( _str );
   return _str;
 }
+*/
 
 const QList<KService>& KService::services()
 {

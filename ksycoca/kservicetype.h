@@ -88,7 +88,7 @@ public:
   /**
    * Save ourselves to the data stream. 
    */
-  virtual void save( QDataStream& ) const;
+  virtual void save( QDataStream& );
 
   /**
    * Load ourselves from the data stream. 
@@ -125,7 +125,7 @@ public:
    KServiceTypeList() { };
 };
 
-QDataStream& operator>>( QDataStream& _str, KServiceType& s );
-QDataStream& operator<<( QDataStream& _str, const KServiceType& s );
+//QDataStream& operator>>( QDataStream& _str, KServiceType& s );
+//QDataStream& operator<<( QDataStream& _str, KServiceType& s );
 
 #endif

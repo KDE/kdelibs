@@ -200,7 +200,7 @@ public:
    *
    * Save the service to a stream. Use the streaming operators instead.
    */
-  virtual void save( QDataStream& ) const;
+  virtual void save( QDataStream& );
 
   /**
    * @return a pointer to the requested service or 0 if the service is
@@ -249,7 +249,7 @@ public:
    KServiceList() { };
 };
 
-QDataStream& operator>>( QDataStream& _str, KService& s );
-QDataStream& operator<<( QDataStream& _str, const KService& s );
+//QDataStream& operator>>( QDataStream& _str, KService& s );
+//QDataStream& operator<<( QDataStream& _str, KService& s );
 
 #endif

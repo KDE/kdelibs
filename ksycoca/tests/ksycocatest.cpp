@@ -1,15 +1,13 @@
-#include <ksycoca.h>
-#include <kservicetypefactory.h>
-#include <kservicefactory.h>
+#include <kmimetype.h>
 
-#include <kapp.h>
+//#include <kapp.h>
 
 main(int argc, char *argv[])
 {
    // KApplication k(argc,argv); // KMessageBox needs KApp for makeStdCaption
 
    debug("Trying to look for text/plain");
-   KServiceType * s = KServiceTypeFactory::findServiceTypeByName("text/plain");
+   KMimeType * s = KMimeType::mimeType("text/plain");
    if ( s )
    {
      debug("Found it !");

@@ -27,7 +27,7 @@ libkio_la_LDFLAGS = -version-info 3:0
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = \
-	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp ksycocafactory.cpp \
+	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kmimemagic.cpp \
 	kservice.cpp kservicefactory.cpp \

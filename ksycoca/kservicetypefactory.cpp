@@ -134,18 +134,26 @@ KServiceTypeFactory::createServiceType(int offset)
      case KST_KServiceType:
         newEntry = new KServiceType(*str);
         break;
+     case KST_KMimeType:
+        newEntry = new KMimeType(*str);
+        break;
+     case KST_KFolderType:
+        newEntry = new KFolderType(*str);
+        break;
+     case KST_KDEDesktopMimeType:
+        newEntry = new KDEDesktopMimeType(*str);
+        break;
+     case KST_KExecMimeType:
+        newEntry = new KExecMimeType(*str);
+        break;
 
      default:
-        QString tmp = i18n("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)\n");
-        debug(tmp);
-        KMessageBox::error( 0L, tmp.arg((int)type) );
+        kdebug( KDEBUG_ERROR, 7011, QString("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) );
         break;
    } 
    if (!newEntry->isValid())
    {
-      QString tmp = i18n("KServiceTypeFactory: corrupt object in KSycoca database!\n");
-      debug(tmp);
-      KMessageBox::error( 0L, tmp );
+      kdebug( KDEBUG_ERROR, 7011, "KServiceTypeFactory: corrupt object in KSycoca database!\n");
       delete newEntry;
       newEntry = 0;
    }   

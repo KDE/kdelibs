@@ -75,7 +75,7 @@ KServiceType::KServiceType( const QString& _type, const QString& _icon, const QS
   m_bValid = !m_strName.isEmpty();
 }
 
-KServiceType::KServiceType( QDataStream& _str )
+KServiceType::KServiceType( QDataStream& _str ) : KSycocaEntry( _str )
 {
   load( _str);
 }
@@ -89,8 +89,9 @@ KServiceType::load( QDataStream& _str )
 }
 
 void 
-KServiceType::save( QDataStream& _str ) const
+KServiceType::save( QDataStream& _str )
 {
+  KSycocaEntry::save( _str );
   _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs << (Q_INT8)m_bValid;
 }
 
@@ -166,14 +167,16 @@ KServiceType::serviceType( const QString& _name )
   return KServiceTypeFactory::findServiceTypeByName( _name );
 }
 
+/*
 QDataStream& operator>>( QDataStream& _str, KServiceType& s )
 {
   s.load( _str );
   return _str;
 }
 
-QDataStream& operator<<( QDataStream& _str, const KServiceType& s )
+QDataStream& operator<<( QDataStream& _str, KServiceType& s )
 {
   s.save( _str );
   return _str;
 }
+*/

@@ -67,6 +67,7 @@ void KMimeType::check()
 
   // No Mime-Types installed ?
   // Lets do some rescue here.
+#warning TODO check if mimetypes count == 0
   /*
   if ( s_mapMimeTypes->count() <= 1 )
     KMessageBox::error( 0, i18n( "No mime types installed!" ) );
@@ -109,20 +110,12 @@ void KMimeType::errorMissingMimeType( const QString& _type )
     e = new KExecMimeType( _type, "unknown.xpm", "", dummy );
   else
     e = new KMimeType( _type, "unknown.xpm", "", dummy );
-
-  //  s_mapMimeTypes->insert( _type, e );
 }
 
 KMimeType* KMimeType::mimeType( const QString& _name )
 {
   KServiceType * mime = KServiceTypeFactory::findServiceTypeByName( _name );
     
-  /*
-  check();
-  assert( s_mapMimeTypes );
-  KMimeType* mime = (*s_mapMimeTypes)[ _name ];
-  */
-
   if ( !mime || !mime->isType( KST_KMimeType ) )
     return s_pDefaultType;
 
@@ -154,21 +147,21 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
     {
       QString path ( _url.path( 0 ) );
       if ( access( path.data(), R_OK ) == -1 )
-	return find( "inode/directory-locked" );
+	return mimeType( "inode/directory-locked" );
     }
-    return find( "inode/directory" );
+    return mimeType( "inode/directory" );
   }
   if ( S_ISCHR( _mode ) )
-    return find( "inode/chardevice" );
+    return mimeType( "inode/chardevice" );
   if ( S_ISBLK( _mode ) )
-    return find( "inode/blockdevice" );
+    return mimeType( "inode/blockdevice" );
   if ( S_ISFIFO( _mode ) )
-    return find( "inode/fifo" );
+    return mimeType( "inode/fifo" );
   if ( S_ISSOCK( _mode ) )
-    return find( "inode/socket" );
+    return mimeType( "inode/socket" );
   // KMimeMagic can do that better for local files
   if ( !_is_local_file && S_ISREG( _mode ) && ( _mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
-    return find( "application/x-executable" );
+    return mimeType( "application/x-executable" );
 
   QString path ( _url.path( 0 ) );
 
@@ -186,23 +179,23 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
       
       // Another filename binding, hardcoded, is .desktop:
       if ( path.right(8) == ".desktop" )
-	return find( "application/x-desktop" );
+	return mimeType( "application/x-desktop" );
       // Another filename binding, hardcoded, is .kdelnk;
       // this is preserved for backwards compatibility
       if ( path.right(7) == ".kdelnk" )
-	return find( "application/x-desktop" );
+	return mimeType( "application/x-desktop" );
     }
 
   if ( !_is_local_file || _fast_mode )
   {
     QString path = _url.path();
     if ( path.right(1) == "/" || path.isEmpty() )
-      return find( "inode/directory" );
+      return mimeType( "inode/directory" );
   }
 
   // No more chances for non local URLs
   if ( !_is_local_file || _fast_mode )
-    return find( "application/octet-stream" );
+    return mimeType( "application/octet-stream" );
 
   // Do some magic for local files
   kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.data() );
@@ -210,17 +203,16 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   // If we still did not find it, we must assume the default mime type
   if ( !result || !result->isValid() )  /* !result->mimeType() || result->mimeType()[0] == 0 ) */
-    return find( "application/octet-stream" );
+    return mimeType( "application/octet-stream" );
 
   // The mimemagic stuff was successful
-  return find( result->mimeType() );
+  return mimeType( result->mimeType() );
 }
 
 KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 		      const QStringList& _patterns )
   : KServiceType( _type, _icon, _comment )
 {
-  //s_mapMimeTypes->insert( _type, this );
   m_lstPatterns = _patterns;
 }
 
@@ -229,11 +221,7 @@ KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
   _cfg.setDesktopGroup();
   m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
 
-  if ( isValid() )
-  {
-    // kdebug( KDEBUG_INFO, 7009, "inserting mimetype in map for m_strName = '%s'", m_strName.ascii());
-    //s_mapMimeTypes->insert( m_strName, this );
-  } else
+  if ( !isValid() )
     kdebug( KDEBUG_WARN, 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
 }
 
@@ -244,25 +232,15 @@ KMimeType::KMimeType( QDataStream& _str ) : KServiceType( _str )
 
 void KMimeType::load( QDataStream& _str, bool _parentLoaded )
 {
-  /*
-  if ( !m_strName.isEmpty() )
-    s_mapMimeTypes->remove( m_strName );
-  */
-
   if ( !_parentLoaded )
     KServiceType::load( _str );
 
   // kdebug(KDEBUG_INFO, 7009, "KMimeType::load( QDataStream& ) : loading list of patterns");
   _str >> m_lstPatterns;
-
-  /*
-  if ( !m_strName.isEmpty() )
-    s_mapMimeTypes->insert( m_strName, this );
-  */
   // kdebug(KDEBUG_INFO, 7009, "KMimeType::load( QDataStream& ) : done");
 }
 
-void KMimeType::save( QDataStream& _str ) const
+void KMimeType::save( QDataStream& _str )
 {
   KServiceType::save( _str );
   _str << m_lstPatterns;
@@ -295,7 +273,6 @@ QStringList KMimeType::propertyNames() const
 
 KMimeType::~KMimeType()
 {
-  //s_mapMimeTypes->remove( m_strName );
 }
 
 bool KMimeType::matchFilename( const QString& _filename ) const

@@ -83,11 +83,12 @@ KSycoca::findEntry(int offset, KSycocaType &type)
 QDataStream *
 KSycoca::_findEntry(int offset, KSycocaType &type)
 {
-   kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_findEntry(%1,%2)").arg(offset).arg((int)type));
+   kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_findEntry(%1,%2)").arg(offset,8,16).arg((int)type));
    str->device()->at(offset);
    Q_INT32 aType;
    (*str) >> aType;
    type = (KSycocaType) aType;
+   kdebug( KDEBUG_INFO, 7011, QString("KSycoca::found type %1").arg(aType) );
    return str;
 }
 

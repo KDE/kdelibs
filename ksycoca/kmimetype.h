@@ -115,19 +115,11 @@ public:
   /**
    * Save the mimetype to a stream
    */
-  virtual void save( QDataStream& ) const;
+  virtual void save( QDataStream& );
 
   virtual PropertyPtr property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
   
-  /**
-   * @return a pointer to the mime type '_name' or a pointer to the default
-   *         mime type "application/octet-stream". 0L is NEVER returned.
-   *
-   * @deprecated 
-   * Use @ref #mimeType instead 
-   */
-  static KMimeType* find( const QString& _name ) { return mimeType( _name ); }
   /**
    * @return a pointer to the mime type '_name' or a pointer to the default
    *         mime type "application/octet-stream". 0L is NEVER returned.
@@ -174,7 +166,6 @@ protected:
   static void errorMissingMimeType( const QString& _type );
 
   /**
-   * Called after the registry parsed all mimetype config files.
    * This function makes sure that vital mime types are installed.
    * It must be called by all public static methods
    */
