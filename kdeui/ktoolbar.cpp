@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.85  1998/11/06 15:08:48  radej
+// sven: finished handles. Comments?
+//
 // Revision 1.84  1998/11/06 12:54:52  radej
 // Revision 1.86  1998/11/06 16:48:20  radej
 // sven: nicer docking, some bugfixes
@@ -241,6 +244,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
     enabledPixmap = pixmap;
   else
   {
+    // How about jumping to text mode if no pixmap? (sven)
     warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
     enabledPixmap.resize( item_size-4, item_size-4);
   }
@@ -339,9 +343,6 @@ void KToolBarButton::enterEvent(QEvent *)
 {
   if (highlight == 1)
   {
-//    if (isEnabled())
-//      setPixmap(iconSet->pixmap(iconSize, QIconSet::Active));
-    
     if (isToggleButton() == false)
       if (isEnabled())
         raised = true;
@@ -415,15 +416,8 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
   items.setAutoDelete(true);
 void KToolBarButton::drawButton( QPainter *_painter )
 {
-/*  if ( raised )
-  {
-    if ( style() == WindowsStyle )
-      qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
-    else
-      qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
-  }
   setMouseTracking(true);
-  else*/ if ( isDown() || isOn() )
+  if ( isDown() || isOn() )
   {
     if ( style() == WindowsStyle )
       qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
@@ -515,7 +509,8 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
     }
   }
-
+#warning What about Icontext=3
+  
   if (myPopup)
   {
     if (isEnabled())
@@ -547,7 +542,8 @@ void KToolBarButton::modeChange()
   myWidth = enabledPixmap.width();
   }
   QFont fnt;
-  
+    if (isVisible ())
+  //Jesus, I must have been drunk...
   if (toolBarButton) // I might be a menuBarButton
   {
     buttonFont.setFamily("Helvetica");
@@ -838,6 +834,9 @@ KToolBar::~KToolBar()
 int KToolBar::insertLineSeparator( int index )
 // what is that?! we do not need to recreate before
 // destroying.... (Matthias)
+	
+  // OK (sven)
+  
 //   if (position == Floating)
 //   {
 //     debug ("KToolBar destructor: about to recreate");
@@ -849,7 +848,10 @@ int KToolBar::insertLineSeparator( int index )
   // means, qt will delete them for us (Matthias)
   //for ( KToolBarItem *b = items.first(); b!=0L; b=items.next() )
   // items.remove();
+  //Uhh... I'm embaresd... (sven)
   
+  
+  // I would never guess that (sven)
   if (!QApplication::closingDown())
     delete context;
   
@@ -1103,17 +1105,40 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 
         mgr = new KToolBoxManager(this, transparent);
 
+        //Firt of all discover _your_ position
+
+        if (position == Top )
+          mgr->addHotSpot(geometry(), true);             // I'm on top
+        else
+          mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
+  
+        if (position == Bottom)
+          mgr->addHotSpot(geometry(), true);           // I'm on bottom
+        else
+          mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
+  
+        if (position == Left)
+          mgr->addHotSpot(geometry(), true);           // I'm on left
+        else
+          mgr->addHotSpot(ox, oy, fat, oh); // left
+
+        if (position == Right)
+          mgr->addHotSpot(geometry(), true);           // I'm on right
+        else
+          mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
+        /*
         mgr->addHotSpot(ox, oy, ow, fat);           // top
         mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
         mgr->addHotSpot(ox, oy+fat, fat, oh-2*fat); // left
         mgr->addHotSpot(ox+ow-fat, oy+fat, fat, oh-2*fat); //right
-
+        */
         movePos = position;
         connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
         if (transparent)
           mgr->doMove(true, false, true);
         else
         {
+          /*
           QList<KToolBarItem> ons;
           for (KToolBarItem *b = items.first(); b; b=items.next())
           {
@@ -1121,11 +1146,12 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
               ons.append(b);
             b->setEnabled(false);
           }
-              
+          */
           mgr->doMove(true, false, false);
-
+          /*
           for (KToolBarItem *b = ons.first(); b; b=ons.next())
             b->setEnabled(true);
+          */
         }
         if (transparent)
         {
@@ -1136,8 +1162,10 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
           if (!isVisible())
             show();
         }
+        mouseEntered = false;
         delete mgr;
         mgr=0;
+        repaint (false);
         //debug ("KToolBar: moving done");
       }
   }
@@ -1221,6 +1249,8 @@ void KToolBar::resizeEvent( QResizeEvent *)
 
 void KToolBar::paintEvent(QPaintEvent *)
 {
+  if (mgr)
+    return;
   //MD Lots of rewrite
   
   // This code should be shared with the aequivalent in kmenubar!
@@ -2097,12 +2127,17 @@ Mouse move and drag routines
 
 void KToolBar::leaveEvent (QEvent *)
 {
-    mouseEntered = false;
-    repaint();
+  if (mgr)
+    return;
+  mouseEntered = false;
+  repaint();
 }
 
 void KToolBar::mouseMoveEvent(QMouseEvent* mev)
 {
+  if (mgr)
+    return;
+  
   // Handle highlighting - sven 050198
   if (horizontal)
     if (mev->x() < 9)

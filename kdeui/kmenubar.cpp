@@ -40,6 +40,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.39  1998/11/06 16:48:21  radej
+// sven: nicer docking, some bugfixes
+//
 // Revision 1.38  1998/11/06 15:08:49  radej
 // sven: finished handles. Comments?
 //
@@ -92,7 +95,7 @@ _menuBar::_menuBar (QWidget *parent, const char *name)
    //setFrameStyle(NoFrame);
 	
    //MD (17-9-97)
-   setLineWidth(1);
+  setLineWidth(1);
  }
 
 _menuBar::~_menuBar ()
@@ -204,6 +207,7 @@ void KMenuBar::ContextCallback( int )
 
   resize( Parent->width(), menu->height());
   enableFloating (TRUE);
+  
   slotReadConfig();
 
   mgr =0;
@@ -320,6 +324,9 @@ void KMenuBar::closeEvent (QCloseEvent *e)
 void KMenuBar::leaveEvent (QEvent *e){
   QApplication::sendEvent(menu, e);
 }
+      Parent->removeEventFilter(this); //One time only
+      return false;
+  
   if (mgr)
     if (ev->type() == Event_MouseButtonPress)
 
@@ -365,6 +372,7 @@ void KMenuBar::leaveEvent (QEvent *e){
         }
         delete mgr;
         mgr=0;
+        handle->repaint(false);
         //debug ("KMenuBar: moving done");
       }
       return TRUE;
