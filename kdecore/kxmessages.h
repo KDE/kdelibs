@@ -27,13 +27,11 @@ DEALINGS IN THE SOFTWARE.
 #ifndef __KXMESSAGES_H
 #define __KXMESSAGES_H
 
-#include "config.h"
-
 #include <qwidget.h>
 #include <qcstring.h>
 #include <qmap.h>
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/X.h> // schroder
+#ifdef Q_WS_X11
+#include <X11/X.h>
 
 class QString;
 

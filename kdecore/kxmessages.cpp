@@ -24,15 +24,13 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
-#include "config.h"
 #include "kxmessages.h"
 
 #include <kapplication.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // FIXME(E): Figure out what parts we can/should emulate in QT/E
+#ifdef Q_WS_X11 // FIXME(E): Figure out what parts we can/should emulate in QT/E
 
-#include <X11/Xlib.h> // schroder
+#include <X11/Xlib.h>
 #include <kdebug.h>
 
 // for broadcasting
