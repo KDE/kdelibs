@@ -66,9 +66,9 @@ private:
   QGuardedPtr<KHTMLPart> part;
 };
 
-class Screen : public HostImp {
+class Screen : public ObjectImp {
 public:
-  Screen() { }
+  Screen() : ObjectImp( UndefClass ) { }
   KJSO get(const UString &p) const;
 private:
   KHTMLView *view;
