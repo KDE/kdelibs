@@ -32,7 +32,9 @@
 #include <assert.h>
 
 // We keep 12 pages in memory.
-#define EXPIRE_QUEUE_LENGTH 12
+#ifndef KHTML_PAGE_CACHE_SIZE
+#define KHTML_PAGE_CACHE_SIZE 12
+#endif
 
 class KHTMLPageCacheEntry
 {
@@ -140,7 +142,7 @@ KHTMLPageCache::createCacheEntry()
   KHTMLPageCacheEntry *entry = new KHTMLPageCacheEntry(d->newId);
   d->dict.insert(d->newId, entry);   
   d->expireQueue.append(entry);
-  if (d->expireQueue.count() > EXPIRE_QUEUE_LENGTH)
+  if (d->expireQueue.count() > KHTML_PAGE_CACHE_SIZE)
   {
      KHTMLPageCacheEntry *entry = d->expireQueue.take(0);
      d->dict.remove(entry->m_id); 
