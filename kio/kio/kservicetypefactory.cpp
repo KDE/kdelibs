@@ -192,10 +192,13 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
    {
       if ( KStringHandler::matchFileName( _filename, *it ) )
       {
-         matchingOffset = *it_offset;
-         if (match)
-            *match = *it;
-         break;
+         if ( !matchingOffset || !(*it).endsWith( "*" ) ) // *.html wins over Makefile.*
+         {
+             matchingOffset = *it_offset;
+             if (match)
+                *match = *it;
+             break;
+         }
       }
    }
 
