@@ -87,7 +87,7 @@ static void get_fonts( QStringList &lst )
     XFreeFontNames( fontNames_copy );
 }
 
-static int get_toolbutton_id()
+int get_toolbutton_id()
 {
     static int toolbutton_no = -2;
     return toolbutton_no--;
