@@ -997,27 +997,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			}
 
 			// Make the label indicate if the button is a default button or not
-			if ( button->isDefault() )
-			{
-				// Draw "fake" bold text  - this enables the font metrics to remain
-				// the same as computed in QPushButton::sizeHint(), but gives
-				// a reasonable bold effect.
-				int i;
-
-				// Text shadow
-				if (button->isEnabled()) // Don't draw double-shadow when disabled
-						drawItem( p, QRect(x+2, y+1, w, h), AlignCenter | ShowPrefix, 
-								button->colorGroup(), button->isEnabled(), button->pixmap(),
-								button->text(), -1,	
-								&button->colorGroup().mid() );
-
-				// Normal Text
-					drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, 
-							button->colorGroup(), button->isEnabled(), button->pixmap(),
-							button->text(), -1,
-							&button->colorGroup().buttonText() );
-			} else
-				drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
+			drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						&button->colorGroup().buttonText() );
 
