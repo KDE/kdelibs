@@ -175,11 +175,22 @@ void KWindowListMenu::init()
 
     insertSeparator();
 
-    for (d = 1; d <= nd; d++) {
-	if (nd > 1)
+    QValueList<KWin::WindowInfo> windows;
+    for (QValueList<WId>::ConstIterator it = kwin_module->windows().begin();
+         it != kwin_module->windows().end(); ++it) {
+         windows.append( KWin::windowInfo( *it, NET::WMDesktop ));
+    }
+    bool show_all_desktops_group = ( nd > 1 );
+    for (d = 1; d <= nd + (show_all_desktops_group ? 1 : 0); d++) {
+        bool on_all_desktops = ( d > nd );
+	if ( nd > 1 )
         {
-	    insertItem(new WindowListDesktopMenuItem(kwin_module->desktopName( d ), 
+            if( !on_all_desktops )
+	        insertItem(new WindowListDesktopMenuItem(kwin_module->desktopName( d ), 
                        font()), 1000 + d);
+            else
+                insertItem(new WindowListDesktopMenuItem(i18n("On All Desktops"),
+                        font()), 2000 );
         }
 
 	int items = 0;
@@ -190,13 +201,14 @@ void KWindowListMenu::init()
         NameSortedInfoList list;
         list.setAutoDelete(true);
 
-	for (QValueList<WId>::ConstIterator it = kwin_module->windows().begin();
-             it != kwin_module->windows().end(); ++it) {
-	    KWin::WindowInfo info = KWin::windowInfo( *it,
-                NET::WMDesktop | NET::WMVisibleName | NET::WMState | NET::XAWMState | NET::WMWindowType,
-                NET::WM2GroupLeader | NET::WM2TransientFor );
-	    if ((info.desktop() == d) || (d == cd && info.onAllDesktops()))
-                list.inSort(new KWin::WindowInfo(info));
+	for (QValueList<KWin::WindowInfo>::ConstIterator it = windows.begin();
+             it != windows.end(); ++it) {
+	    if (((*it).desktop() == d) || (on_all_desktops && (*it).onAllDesktops())
+                || (!show_all_desktops_group && (*it).onAllDesktops())) {
+	        list.inSort(new KWin::WindowInfo( (*it).win(),
+                    NET::WMVisibleName | NET::WMState | NET::XAWMState | NET::WMWindowType,
+                    NET::WM2GroupLeader | NET::WM2TransientFor ));
+            }
         }
 
         for (KWin::WindowInfo* info = list.first(); info!=0; info = list.next(), i++)
@@ -221,7 +233,7 @@ void KWindowListMenu::init()
                     setItemChecked(i, TRUE);
             }
         }
-        if (d < nd)
+        if (d < nd + (show_all_desktops_group ? 1 : 0))
             insertSeparator();
     }
 #endif
@@ -231,7 +243,9 @@ void KWindowListMenu::init()
 void KWindowListMenu::slotExec(int id)
 {
 #ifndef Q_WS_QWS //FIXME
-    if (id > 1000)
+    if (id == 2000)
+        ; // do nothing
+    else if (id > 1000)
         KWin::setCurrentDesktop(id - 1000);
     else if ( id >= 0 )
 	KWin::setActiveWindow(map[id]);
