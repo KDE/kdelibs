@@ -477,7 +477,7 @@ public:
   virtual int connect();
 
   /**
-   * Starts an asynchronous connect. This works exactly the same as @ref connect,
+   * Starts an asynchronous connect. This works exactly the same as #connect,
    * except that the connection result won't be returned. This function will
    * return either 0 on successful queueing of the connect or -1 on error. If
    * this function returns 0, then the connectionSuccess or the connectionFailed
@@ -507,7 +507,7 @@ public:
    * Closes the socket. If we have data still in the write buffer yet to be
    * sent, the socket won't be closed right now. It'll be closed after we managed
    * to send everything out.
-   * If you want to close the socket now, you may want to call @ref flush first,
+   * If you want to close the socket now, you may want to call #flush first,
    * and then @ref closeNow.
    */
   virtual void close();
@@ -807,7 +807,7 @@ public:
   static int resolve(sockaddr* sock, ksocklen_t len, QString& host, QString& port, int flags = 0);
 
   /**
-   * Same as above. @ref resolve.
+   * Same as above.
    */
   static int resolve(KSocketAddress* sock, QString& host, QString& port, int flags = 0);
 

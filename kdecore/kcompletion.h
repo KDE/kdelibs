@@ -167,7 +167,7 @@ public:
      *
      * If this is called twice or more often with the same string while no
      * items were added or removed in the meantime, all available completions
-     * will be emitted via the signal @ref #matches().
+     * will be emitted via the signal #matches().
      * This happens only in shell-completion-mode.
      *
      * @returns the matching item, or QString::null if there is no matching
@@ -487,8 +487,8 @@ protected:
 
     /**
      * This method is called before a list of all available completions is
-     * emitted via @ref #matches(). You can override this method to modify the
-     * found items before @ref match() or @ref #matches() are emitted.
+     * emitted via #matches. You can override this method to modify the
+     * found items before @ref match() or #matches are emitted.
      * Never delete that pointer!
      *
      * Default implementation does nothing.
@@ -498,8 +498,8 @@ protected:
 
     /**
      * This method is called before a list of all available completions is
-     * emitted via @ref matches. You can override this method to modify the
-     * found items before @ref match() or @ref #matches() are emitted.
+     * emitted via #matches. You can override this method to modify the
+     * found items before #match() or #matches() are emitted.
      * Never delete that pointer!
      *
      * Default implementation does nothing.

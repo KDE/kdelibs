@@ -32,7 +32,7 @@ class KConfig;
 class KStandardDirsPrivate;
 
 /**
-* @short Site-independent access to standard KDE directories.
+ * * @short Site-independent access to standard KDE directories.
 * @author Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
 * @version $Id$
 *
@@ -48,7 +48,7 @@ class KStandardDirsPrivate;
 * the application would make no assumption where this file is and
 * leave it up to @ref KStandardDirs::findResource("apps", "Home.desktop")
 * to apply this knowledge to return /opt/kde/share/applnk/Home.desktop
-* or locate("data", "kgame/background.jpg") to return
+* or ::locate("data", "kgame/background.jpg") to return
 * /opt/kde/share/apps/kgame/background.jpg
 *
 * The main idea behind KStandardDirs is that there are several
@@ -94,14 +94,14 @@ class KStandardDirsPrivate;
 * A type that is added by the class @ref KApplication if you use it, is
 * appdata. This one makes the use of the type data a bit easier as it
 * appends the name of the application.
-* So while you had to @ref locate("data", "appname/filename") so you can
-* also write @ref locate("appdata", "filename") if your KApplication instance
+* So while you had to ::locate("data", "appname/filename") so you can
+* also write ::locate("appdata", "filename") if your KApplication instance
 * is called "appname" (as set via KApplication's constructor or KAboutData, if
 * you use the global KStandardDirs object @ref KGlobal::dirs()).
 * Please note though that you cannot use the "appdata"
 * type if you intend to use it in an applet for Kicker because 'appname' would
 * be "Kicker" instead of the applet's name. Therefore, for applets, you've got
-* to work around this by using @ref locate("data", "appletname/filename").
+* to work around this by using ::locate("data", "appletname/filename").
 *
 * @sect KStandardDirs supports the following environment variables:
 *
@@ -165,7 +165,6 @@ public:
 	 */
 	bool addResourceType( const char *type,
 			      const QString& relativename );
-
 
 	/**
 	 * Adds absolute path at the end of the search path for
@@ -302,7 +301,7 @@ public:
 	 *        unique suffixes.
 	 * @param list Of relative paths for the given type.
 	 * @param relPaths The list to store the relative paths into
-	 *        These can be used later to @ref locate the file
+	 *        These can be used later to ::locate() the file
 	 *
 	 * @return A list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
@@ -423,7 +422,7 @@ public:
          * Converts an absolute path to a path relative to a certain
          * resource.
          *
-         * If "abs = locate(resource, rel)"
+         * If "abs = ::locate(resource, rel)"
          * then "rel = relativeLocation(resource, abs)" and vice versa.
          *
          * @param type The type of resource.
@@ -469,7 +468,7 @@ public:
 	 * @li lib - lib
 	 *
 	 * @returns Static default for the specified resource.  You
-	 *          should probably be using @ref locate() or @ref locateLocal()
+	 *          should probably be using locate() or locateLocal()
 	 *          instead.
 	 * @see locate()
 	 * @see locateLocal()
@@ -518,6 +517,8 @@ public:
 };
 
 /**
+ * \addtogroup locates Locate Functions
+ *  @{
  * On The Usage Of 'locate' and 'locateLocal'
  *
  * Typical KDE applications use resource files in one out of
@@ -527,15 +528,18 @@ public:
  *    default is supplied but the user can override this
  *    default in his local .kde directory:
  *
+ *    \code
  *    // Code example
  *    myFile = locate("appdata", "groups.lst");
  *    myData =  myReadGroups(myFile); // myFile may be null
+ *    \endcode
  *
  * 2) A resource file is read and written. If the user has no
  *    local version of the file the system default is used.
  *    The resource file is always written to the users local
  *    .kde directory.
  *
+ *    \code
  *    // Code example
  *    myFile = locate("appdata", "groups.lst")
  *    myData =  myReadGroups(myFile);
@@ -544,12 +548,14 @@ public:
  *    ...
  *    myFile = locateLocal("appdata", "groups.lst");
  *    myWriteGroups(myFile, myData);
+ *    \endcode
  *
  * 3) A resource file is read and written. No system default
  *    is used if the user has no local version of the file.
  *    The resource file is always written to the users local
  *    .kde directory.
  *
+ *    \code
  *    // Code example
  *    myFile = locateLocal("appdata", "groups.lst");
  *    myData =  myReadGroups(myFile);
@@ -558,16 +564,18 @@ public:
  *    ...
  *    myFile = locateLocal("appdata", "groups.lst");
  *    myWriteGroups(myFile, myData);
+ *    \endcode
  **/
 
 /*!
- *
+ * \relates KStandardDirs
  * This function is just for convenience. It simply calls
- *instance->dirs()-> \linkKStandardDirs::findResource() findResource(type, filename)\endlink .
+ *instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
  **/
 QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
 /*!
+ * \relates KStandardDirs
  * This function is much like locate. However it returns a
  * filename suitable for writing to. No check is made if the
  * specified filename actually exists. Missing directories
@@ -576,5 +584,7 @@ QString locate( const char *type, const QString& filename, const KInstance* inst
  *
  **/
 QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+
+/*! @} */
 
 #endif // SSK_KSTDDIRS_H
