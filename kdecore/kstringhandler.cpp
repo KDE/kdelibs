@@ -18,6 +18,7 @@
 */
 
 #include "kstringhandler.h"
+#include <qfile.h>
 
 QString KStringHandler::word( const QString &text , uint pos )
 {
@@ -250,7 +251,7 @@ QString KStringHandler::capwords( const QString &text )
         return tmp;
 
     QStringList list = split( text );
-    
+
     return join( capwords( split( text )));
 }
 
@@ -314,7 +315,7 @@ QString KStringHandler::ljust( const QString &text , uint width )
 {
     QString tmp = text;
     tmp = tmp.stripWhiteSpace(); // remove leading/trailing spaces
-    
+
     if ( tmp.length() >= width )
         return tmp;
 
@@ -328,7 +329,7 @@ QString KStringHandler::rjust( const QString &text , uint width )
 {
     QString tmp = text;
     tmp = tmp.stripWhiteSpace(); // remove leading/trailing spaces
-    
+
     if ( tmp.length() >= width )
         return tmp;
 
@@ -346,7 +347,7 @@ QString KStringHandler::center( const QString &text , uint width )
 
     QString tmp = text;
     tmp = tmp.stripWhiteSpace(); // remove leading/trailing spaces
-    
+
     if ( tmp.length() >= width )
         return tmp;
 
@@ -375,7 +376,7 @@ QString KStringHandler::join( const QStringList &list , const char *sep )
 
     if ( list.count() == 0 )
         return tmp;
-    
+
     QStringList::ConstIterator last = list.fromLast();
     // Add all items with a sep except the last one
     for ( QStringList::ConstIterator it = list.begin();
@@ -397,7 +398,7 @@ QString KStringHandler::join( const QStringList &list , const char *sep )
 QStringList KStringHandler::split( const QString &text , const char *sep )
 {
     QStringList tmp;
-    
+
     if ( text.isEmpty() )
         return tmp;
 
@@ -413,7 +414,7 @@ QStringList KStringHandler::split( const QString &text , const char *sep )
 
     // Append final word
     tmp.append( text.mid(old,text.length()) );
-    
+
     return tmp;
 }
 
@@ -444,4 +445,31 @@ QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
   else return str;
 }
 
+///// File name patterns (like *.txt)
 
+bool KStringHandler::matchFilename( const QString& _filename, const QString& _pattern  )
+{
+  int len = _filename.length();
+  QCString pattern = QFile::encodeName( _pattern );
+  int pattern_len = pattern.length();
+  if (!pattern_len)
+     return false;
+
+  QCString filename = QFile::encodeName( _filename );
+
+  // Patterns like "Makefile*"
+  if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
+     if ( strncasecmp( filename.data(), pattern.data(), pattern_len - 1 ) == 0 )
+	return true;
+
+  // Patterns like "*~", "*.extension"
+  if ( pattern[ 0 ] == '*' && len + 1 >= pattern_len )
+  {
+     if ( strncasecmp( filename.data() + len - pattern_len + 1, pattern.data() + 1, pattern_len - 1 ) == 0 )
+	return true;
+     // TODO : Patterns like "*.*pk"
+  }
+
+  // Patterns like "Makefile"
+  return ( filename == pattern );
+}

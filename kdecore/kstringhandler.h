@@ -44,7 +44,7 @@
  * python. See the @ref word and @ref remword functions for more detail.
  *
  * This class contains no data members of it own. All strings are cut
- * on the fly and returned as new qstrings/qstringlists. 
+ * on the fly and returned as new qstrings/qstringlists.
  *
  * Quick example on how to use:
  *
@@ -66,7 +66,7 @@
  */
 class KStringHandler
 {
-public: 
+public:
     /** Returns the nth word in the string if found
       * Returns a EMPTY (not null) string otherwise.
       * Note that the FIRST index is 0
@@ -157,11 +157,19 @@ public:
     /** Returns a new string built from the list */
     static QString        join( const QStringList &list , const char *sep = " " );
 
-   /** Substitute characters at the beginning/middle/end str by "...".  
+    /** Substitute characters at the beginning/middle/end str by "...".
      */
     static QString        lsqueeze( const QString & str, uint maxlen = 30 );
     static QString        csqueeze( const QString & str, uint maxlen = 30 );
     static QString        rsqueeze( const QString & str, uint maxlen = 30 );
-    
+
+    /**
+     * @return true if the given filename matches the given pattern
+     * @param filename is the real decoded filename (or dirname
+     *        without trailing '/').
+     * @param pattern is a pattern like *.txt, *.tar.gz, Makefile.*, etc.
+     * Patterns with two asterisks like "*.*pk" are not supported.
+     */
+    static bool matchFilename( const QString& filename, const QString& pattern );
 };
 #endif
