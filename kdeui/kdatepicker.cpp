@@ -314,14 +314,14 @@ KDatePicker::selectMonthClicked()
   QDate date = table->getDate();
   int i, month, months = calendar->monthsInYear(date);
 
-  QPopupMenu *popup = new QPopupMenu(selectMonth);
+  QPopupMenu popup(selectMonth);
 
   for (i = 1; i <= months; i++)
-    popup->insertItem(calendar->monthName(i, calendar->year(date)), i);
+    popup.insertItem(calendar->monthName(i, calendar->year(date)), i);
 
-  popup->setActiveItem(calendar->month(date) - 1);
+  popup.setActiveItem(calendar->month(date) - 1);
 
-  if ( (month = popup->exec(selectMonth->mapToGlobal(QPoint(0, 0)), calendar->month(date) - 1)) == -1 ) return;  // cancelled
+  if ( (month = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), calendar->month(date) - 1)) == -1 ) return;  // cancelled
 
   int day = calendar->day(date);
   // ----- construct a valid date in this month:
@@ -331,8 +331,6 @@ KDatePicker::selectMonthClicked()
                    QMIN(day, calendar->daysInMonth(date)));
   // ----- set this month
   setDate(date);
-
-  delete popup;
 }
 
 void
