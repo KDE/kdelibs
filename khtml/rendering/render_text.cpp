@@ -347,19 +347,27 @@ void RenderText::absolutePosition(int &xPos, int &yPos, bool)
 
 void RenderText::posOfChar(int chr, int &x, int &y)
 {
-    absolutePosition( x, y );
-    if( chr > str->l )
+    if (!m_parent)
+    {
+       x = -1;
+       y = -1;
+       return;
+    }
+    m_parent->absolutePosition( x, y, false );
+    if( chr > (int) str->l )
 	chr = str->l;
 
     TextSlave *s = m_first;
+    TextSlave *last = s;
     QChar *ch = str->s + chr;
-    while ( s && ch > s->m_text )
+    while ( s && ch >= s->m_text )
+    {
+        last = s;
 	s = s->next();
-
-    if ( s ) {
-	x += s->x;
-	y += s->y;
     }
+
+    x += last->x;
+    y += last->y;
 }
 
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
