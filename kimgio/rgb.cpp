@@ -552,8 +552,10 @@ bool SGIImage::writeImage(QImage& img)
 
 	// compressing a row with up to 11 pixels takes 11 or more bytes
 	// (start/length table: 8, smallest possible RLE packet: 3)
-	if (m_xsize <= 11)
-		return writeVerbatim(img);
+	if (m_xsize <= 11) {
+		writeVerbatim(img);
+		return true;
+	}
 
 	m_starttab = new Q_UINT32[m_numrows];
 	m_rlemap.setBaseOffset(512 + m_numrows * 2 * sizeof(Q_UINT32));
