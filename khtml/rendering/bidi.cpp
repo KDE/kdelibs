@@ -632,7 +632,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     // reverse any contiguous sequence of characters that are at that level or higher.
 
     // reversing is only done up to the lowest odd level
-    if(!levelLow%2) levelLow++;
+    if( !(levelLow%2) ) levelLow++;
 
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "reorderLine: lineLow = " << (uint)levelLow << ", lineHigh = " << (uint)levelHigh << endl;
