@@ -193,17 +193,7 @@ void KURLComboBox::setURL( const KURL& url )
     if ( url.isEmpty() )
         return;
 
-    if ( urlAdded ) {
-        itemList.removeLast();
-        urlAdded = false;
-    }
-
     blockSignals( true );
-    setDefaults();
-
-    QListIterator<KURLComboItem> it( itemList );
-    for( ; it.current(); ++it )
-        insertURLItem( it.current() );
 
     // check for duplicates
     QMap<int,const KURLComboItem*>::ConstIterator mit = itemMapper.begin();
@@ -221,6 +211,19 @@ void KURLComboBox::setURL( const KURL& url )
     }
 
     // not in the combo yet -> create a new item and insert it
+
+    // first remove the old item
+    if ( urlAdded ) {
+        itemList.removeLast();
+        urlAdded = false;
+    }
+    
+    setDefaults();
+
+    QListIterator<KURLComboItem> it( itemList );
+    for( ; it.current(); ++it )
+        insertURLItem( it.current() );
+
     KURLComboItem *item = new KURLComboItem;
     item->url = url;
     item->pixmap = getPixmap( url );
