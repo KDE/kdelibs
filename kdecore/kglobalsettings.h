@@ -29,6 +29,7 @@
 #define KDE_DEFAULT_LARGE_CURSOR false
 #define KDE_DEFAULT_VISUAL_ACTIVATE true
 #define KDE_DEFAULT_VISUAL_ACTIVATE_SPEED 50
+#define KDE_DEFAULT_WHEEL_ZOOM false
 
 /**
  * Access the KDE global configuration.
@@ -271,6 +272,17 @@ class KGlobalSettings
      * if the user wants KDE to run on all of them or just on the primary
      */
     static bool isMultiHead();
+
+    /**
+     * Typically, QScrollView derived classes can be scrolled fast by
+     * holding down the Ctrl-button during wheel-scrolling.
+     * But QTextEdit and derived classes perform zooming instead of fast
+     * scrolling.
+     *
+     * This value determines whether the user wants to zoom or scroll fast
+     * with Ctrl-wheelscroll.
+     */
+    static bool wheelMouseZooms();
 
 private:
     /**

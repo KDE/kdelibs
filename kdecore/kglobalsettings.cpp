@@ -378,7 +378,7 @@ QFont KGlobalSettings::largeFont(const QString &text)
     QStringList fam = db.families();
     if (_largeFont)
         fam.prepend(_largeFont->family());
-    for(QStringList::ConstIterator it = fam.begin(); 
+    for(QStringList::ConstIterator it = fam.begin();
         it != fam.end(); ++it)
     {
         if (db.isSmoothlyScalable(*it) && !db.isFixedPitch(*it))
@@ -577,4 +577,10 @@ bool KGlobalSettings::isMultiHead()
         return (multiHead.lower() == "true");
     }
     return false;
+}
+
+bool KGlobalSettings::wheelMouseZooms()
+{
+    KConfigGroup group( KGlobal::config(), "KDE" );
+    return group.readBoolEntry( "WheelMouseZooms", KDE_DEFAULT_WHEEL_ZOOM );
 }
