@@ -269,19 +269,30 @@ void KMJobViewer::slotSelectionChanged()
 	if (!m_manager) return;
 	int	acts = m_manager->actions();
 	int	state(-1);
+	int	thread(0);
 
 	QListIterator<JobItem>	it(m_items);
 	for (;it.current();++it)
 	{
 		if (it.current()->isSelected())
+		{
+			// check if threaded job. "thread" value will be:
+			//	0 -> no jobs
+			//	1 -> only thread jobs
+			//	2 -> only system jobs
+			//	3 -> thread and system jobs
+			if (it.current()->job()->type() == KMJob::Threaded) thread |= 0x1;
+			else thread |= 0x2;
+
 			if (state == -1) state = it.current()->job()->state();
 			else if (state != 0 && state != it.current()->job()->state()) state = 0;
+		}
 	}
 
-	actionCollection()->action("job_remove")->setEnabled((state >= 0) && (acts & KMJob::Remove));
-	actionCollection()->action("job_hold")->setEnabled((state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
-	actionCollection()->action("job_resume")->setEnabled((state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
-	actionCollection()->action("job_move")->setEnabled((state >= 0) && (acts & KMJob::Move));
+	actionCollection()->action("job_remove")->setEnabled((thread == 1) || ((state >= 0) && (acts & KMJob::Remove)));
+	actionCollection()->action("job_hold")->setEnabled((thread == 2) && (state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
+	actionCollection()->action("job_resume")->setEnabled((thread == 2) && (state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
+	actionCollection()->action("job_move")->setEnabled((thread == 2) && (state >= 0) && (acts & KMJob::Move));
 }
 
 void KMJobViewer::jobSelection(QList<KMJob>& l)

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -42,13 +42,17 @@ public:
 		Error    = 4,
 		Unknown  = 5
 	};
+	enum JobType {
+		System   = 0,
+		Threaded = 1
+	};
 
 	KMJob();
 	KMJob(const KMJob& j);
 
 	void copy(const KMJob& j);
-	static QString pixmap(int state);
-	static QString stateString(int state);
+	QString pixmap();
+	QString stateString();
 
 	// inline access functions
 	int id() const				{ return m_ID; }
@@ -65,6 +69,8 @@ public:
 	void setSize(int s)			{ m_size = s; }
 	const QString& uri() const		{ return m_uri; }
 	void setUri(const QString& s)		{ m_uri = s; }
+	int type() const			{ return m_type; }
+	void setType(int t)			{ m_type = t; }
 
 protected:
 	// normal members
@@ -74,6 +80,7 @@ protected:
 	QString	m_owner;
 	int	m_state;
 	int	m_size;
+	int	m_type;
 
 	// internal members
 	QString	m_uri;

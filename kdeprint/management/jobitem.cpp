@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -35,12 +35,12 @@ void JobItem::init(KMJob *job)
 	m_job = job;
 	if (m_job)
 	{
-		setPixmap(0,SmallIcon(KMJob::pixmap(m_job->state())));
+		setPixmap(0,SmallIcon(m_job->pixmap()));
 		setText(0,QString::number(m_job->id()));
 		setText(1,m_job->printer());
 		setText(2,m_job->name());
 		setText(3,m_job->owner());
-		setText(4,KMJob::stateString(m_job->state()));
+		setText(4,m_job->stateString());
 		setText(5,QString::number(m_job->size()));
 		m_ID = m_job->id();
 	}

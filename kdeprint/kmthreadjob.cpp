@@ -86,6 +86,7 @@ bool KMThreadJob::loadJobs()
 				job->setOwner(ll[3]);
 				job->setSize(ll[4].toInt());
 				job->setState(KMJob::Printing);
+				job->setType(KMJob::Threaded);
 				if (job->id() > 0 && checkJob(job->id()))
 					m_jobs.insert(job->id(),job);
 				else
@@ -107,10 +108,16 @@ KMJob* KMThreadJob::findJob(int ID)
 	return m_jobs.find(ID);
 }
 
-void KMThreadJob::removeJob(int ID)
+bool KMThreadJob::removeJob(int ID)
 {
-	m_jobs.remove(ID);
-	saveJobs();
+	if (!checkJob(ID) || kill((pid_t)ID, SIGTERM) == 0)
+	{
+		m_jobs.remove(ID);
+		saveJobs();
+		return true;
+	}
+	else
+		return false;
 }
 
 void KMThreadJob::createJob(int ID, const QString& printer, const QString& name, const QString& owner, int size)
@@ -122,6 +129,7 @@ void KMThreadJob::createJob(int ID, const QString& printer, const QString& name,
 	job->setName(name);
 	job->setOwner(owner);
 	job->setSize(size);
+	job->setType(KMJob::Threaded);
 	mth.createJob(job);
 }
 

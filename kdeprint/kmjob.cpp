@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,12 +24,12 @@
 #include <klocale.h>
 
 KMJob::KMJob()
-: KMObject(), m_ID(-1), m_state(KMJob::Error), m_size(0)
+: KMObject(), m_ID(-1), m_state(KMJob::Error), m_size(0), m_type(KMJob::System)
 {
 }
 
 KMJob::KMJob(const KMJob& j)
-: KMObject(), m_ID(-1), m_state(KMJob::Error), m_size(0)
+: KMObject(), m_ID(-1), m_state(KMJob::Error), m_size(0), m_type(KMJob::System)
 {
 	copy(j);
 }
@@ -43,14 +43,20 @@ void KMJob::copy(const KMJob& j)
 	m_state = j.m_state;
 	m_size = j.m_size;
 	m_uri = j.m_uri;
+	m_type = j.m_type;
 
 	setDiscarded(false);
 }
 
-QString KMJob::pixmap(int state)
+QString KMJob::pixmap()
 {
+	// special case
+	if (m_type == KMJob::Threaded)
+		return QString::fromLatin1("exec");
+
+	// normal case
 	QString	str("kdeprint_job");
-	switch (state)
+	switch (m_state)
 	{
 		case KMJob::Printing:
 			str.append("_process");
@@ -67,10 +73,10 @@ QString KMJob::pixmap(int state)
 	return str;
 }
 
-QString KMJob::stateString(int state)
+QString KMJob::stateString()
 {
 	QString	str;
-	switch (state)
+	switch (m_state)
 	{
 		case KMJob::Printing:
 			str = i18n("Processing...");

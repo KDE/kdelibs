@@ -94,9 +94,40 @@ bool KMJobManager::sendCommand(int ID, int action, const QString& arg)
 	return false;
 }
 
-bool KMJobManager::sendCommand(const QList<KMJob>&, int, const QString&)
+bool KMJobManager::sendCommand(const QList<KMJob>& jobs, int action, const QString& args)
+{
+	// split jobs in 2 classes
+	QList<KMJob>	csystem, cthread;
+	csystem.setAutoDelete(false);
+	cthread.setAutoDelete(false);
+	QListIterator<KMJob>	it(jobs);
+	for (;it.current();++it)
+		if (it.current()->type() == KMJob::Threaded) cthread.append(it.current());
+		else csystem.append(it.current());
+
+	// perform operation on both classes
+	if (cthread.count() > 0 && !sendCommandThreadJob(cthread, action, args))
+		return false;
+	if (csystem.count() > 0 && !sendCommandSystemJob(csystem, action, args))
+		return false;
+	return true;;
+}
+
+bool KMJobManager::sendCommandSystemJob(const QList<KMJob>&, int, const QString&)
 {
 	return false;
+}
+
+bool KMJobManager::sendCommandThreadJob(const QList<KMJob>& jobs, int action, const QString&)
+{
+	if (action != KMJob::Remove)
+		return false;
+
+	QListIterator<KMJob>	it(jobs);
+	bool	result(true);
+	for (;it.current() && result; ++it)
+		result = m_threadjob->removeJob(it.current()->id());
+	return result;
 }
 
 bool KMJobManager::listJobs()

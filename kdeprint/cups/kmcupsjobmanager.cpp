@@ -39,7 +39,7 @@ int KMCupsJobManager::actions()
 	return KMJob::All;
 }
 
-bool KMCupsJobManager::sendCommand(const QList<KMJob>& jobs, int action, const QString& argstr)
+bool KMCupsJobManager::sendCommandSystemJob(const QList<KMJob>& jobs, int action, const QString& argstr)
 {
 	IppRequest	req;
 	QString		uri;

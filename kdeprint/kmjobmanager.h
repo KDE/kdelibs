@@ -42,12 +42,12 @@ public:
 
 	KMJob* findJob(int ID);
 	bool sendCommand(int ID, int action, const QString& arg = QString::null);
+	bool sendCommand(const QList<KMJob>& jobs, int action, const QString& arg = QString::null);
 	const QList<KMJob>& jobList();
 	void addJob(KMJob*);
 	KMThreadJob* threadJob();
 
 	virtual int actions();
-	virtual bool sendCommand(const QList<KMJob>& jobs, int action, const QString& arg = QString::null);
 
 protected:
 	void discardAllJobs();
@@ -55,6 +55,8 @@ protected:
 
 protected:
 	virtual bool listJobs();
+	virtual bool sendCommandSystemJob(const QList<KMJob>& jobs, int action, const QString& arg = QString::null);
+	bool sendCommandThreadJob(const QList<KMJob>& jobs, int action, const QString& arg = QString::null);
 
 protected:
 	QList<KMJob>	m_jobs;

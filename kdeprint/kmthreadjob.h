@@ -33,7 +33,7 @@ public:
 	~KMThreadJob();
 
 	KMJob* findJob(int ID);
-	void removeJob(int ID);
+	bool removeJob(int ID);
 	void createJob(KMJob*);
 	void updateManager(KMJobManager*);
 
