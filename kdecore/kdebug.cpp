@@ -16,6 +16,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #include "kdebugdialog.h"
 #include "kdebugdialog.moc"
 #include "kdebug.h"
@@ -38,11 +39,6 @@ bool bAreaCalculated = false;
 QBitArray *pInfoArray = 0L, *pWarnArray = 0L,
   *pErrorArray = 0L, *pFatalArray = 0L;
 
-#ifdef KALLE_DOES_NOT_UNDERSTAND_WHY_THIS_CRASHES      
-static void recalculateAreaBits( QBitArray*, QString* );
-static void evalToken( QBitArray*, QString* );
-#endif
-
 void kdebug( ushort nLevel, ushort, 
                          const char* pFormat, ... )
 {
@@ -52,58 +48,6 @@ void kdebug( ushort nLevel, ushort,
   
   /* The QBitArrays should rather be application-static, but since
          some stupid platforms do not support that... */
-#ifdef KALLE_DOES_NOT_UNDERSTAND_WHY_THIS_CRASHES
-  if( !bAreaCalculated )
-        {
-          // check to see if we need to create the bit arrays first
-          static uint size = (uint)rint( pow( 2, (int)(sizeof( ushort ) * 8 )  ) );
-          if( !pInfoArray ) 
-                pInfoArray = new QBitArray( size );
-          if( !pWarnArray ) 
-                pWarnArray = new QBitArray( size );
-          if( !pErrorArray ) 
-                pErrorArray = new QBitArray( size );
-          if( !pFatalArray ) 
-                pFatalArray = new QBitArray( size );
-          
-          // (re)calculate the areas from their textual representations
-          pInfoArray->fill( false );
-          QString aInfoArea = kapp->getConfig()->readEntry( "InfoShow", "" );
-          recalculateAreaBits( pInfoArray, &aInfoArea );
-          pWarnArray->fill( false );
-          QString aWarnArea = kapp->getConfig()->readEntry( "WarnShow", "" );
-          recalculateAreaBits( pWarnArray, &aWarnArea );
-          pErrorArray->fill( false );
-          QString aErrorArea = kapp->getConfig()->readEntry( "ErrorShow", "" );
-          recalculateAreaBits( pErrorArray, &aErrorArea );
-          pFatalArray->fill( false );
-          QString aFatalArea = kapp->getConfig()->readEntry( "FatalShow", "" );
-          recalculateAreaBits( pFatalArray, &aFatalArea );
-          
-          bAreaCalculated = true;
-        }
-
-  // Check if this is in a desired area, bail out if not
-  switch( nLevel )
-        {
-        case KDEBUG_INFO:
-          if( !pInfoArray->testBit( nArea ) )
-                  return;
-          break;
-        case KDEBUG_WARN:
-          if( !pWarnArray->testBit( nArea ) )
-                return;
-          break;
-        case KDEBUG_FATAL:
-          if( !pFatalArray->testBit( nArea ) )
-                return;
-          break;
-        case KDEBUG_ERROR:
-        default:
-          if( !pErrorArray->testBit( nArea ) )
-                return;
-        };
-#endif
   va_list arguments; /* Handle variable arguments */
 
   /* Determine output */
@@ -403,51 +347,3 @@ void KDebugDialog::showHelp()
 {
   kapp->invokeHTMLHelp( "kdelib/kdebug.html", "" );
 }
-
-#ifdef KALLE_DOES_NOT_UNDERSTAND_WHY_THIS_CRASHES      
-void recalculateAreaBits( QBitArray* pArray, QString* pString )
-{
-  // string could be empty
-  if( pString->isEmpty() )
-        {
-          pArray->fill( true ); // all bits are set
-          return;
-        }
-
-  // isolate the tokens
-  uint pos = 0; uint newpos = 0;
-  while( ( newpos = pString->find( ',', pos, false ) ) != (uint)-1 )
-        {
-          QString aToken = pString->mid( pos, newpos-pos );
-          evalToken( pArray, &aToken );
-          pos = newpos+1;
-        };
-  
-  // there is probably the last part left
-  if( pos != pString->length() )
-        {
-          QString aLastToken = pString->right( pString->length() - pos );
-          evalToken( pArray, &aLastToken );
-        }
-}
-
-void evalToken( QBitArray* pArray, QString* pString )
-{
-  int dashpos = 0;
-  if( ( dashpos = pString->find( '-' ) ) != -1 )
-        {
-          // range of areas
-          QString aLeft = pString->mid( 0, dashpos );
-          QString aRight = pString->mid( dashpos+1, pString->length()-1 );
-          for( uint i = aLeft.toUInt(); i <= aRight.toUInt(); i++ )
-                {
-                  pArray->setBit( i );
-                }
-        }
-  else
-        {
-          // single area
-          pArray->setBit( pString->toUInt() );
-        }
-}
-#endif
