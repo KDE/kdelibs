@@ -76,7 +76,7 @@ StdAddressBook *StdAddressBook::self( bool asynchronous )
 }
 
 StdAddressBook::StdAddressBook()
-  : AddressBook( "kabcrc" )
+  : AddressBook( "" )
 {
   kdDebug(5700) << "StdAddressBook::StdAddressBook()" << endl;
 
@@ -84,7 +84,7 @@ StdAddressBook::StdAddressBook()
 }
 
 StdAddressBook::StdAddressBook( bool asynchronous )
-  : AddressBook( "kabcrc" )
+  : AddressBook( "" )
 {
   kdDebug(5700) << "StdAddressBook::StdAddressBook( bool )" << endl;
 

@@ -307,9 +307,14 @@ AddressBook::AddressBook( const QString &config )
 {
   d = new AddressBookData;
   d->mErrorHandler = 0;
-  d->mConfig = new KConfig( config );
+  if ( config.isEmpty() )
+    d->mConfig = 0;
+  else
+    d->mConfig = new KConfig( config );
   d->mManager = new KRES::Manager<Resource>( "contact" );
   d->mManager->readConfig( d->mConfig );
+  d->end.d->mResources = QValueList<Resource*>();
+  d->end.d->mCurrRes = -1;
 }
 
 AddressBook::~AddressBook()
