@@ -525,10 +525,10 @@ void HTMLHtmlElementImpl::attach()
     assert(parentNode());
     assert(parentNode()->renderer());
     
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     // ignore display: none
     m_render = new RenderHtml(this);
-    m_render->setStyle(_style);
+    m_render->setStyle(style);
     parentNode()->renderer()->addChild(m_render, nextRenderer());
     NodeBaseImpl::attach();
 }
@@ -585,15 +585,15 @@ void HTMLIFrameElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-    _style->ref();
+    RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
+    style->ref();
     if (isURLAllowed(url.string()) &&
-        parentNode()->renderer() && _style->display() != NONE) {
+        parentNode()->renderer() && style->display() != NONE) {
         m_render = new RenderPartObject(this);
-        m_render->setStyle(_style);
+        m_render->setStyle(style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
-    _style->deref();
+    style->deref();
 
     NodeBaseImpl::attach();
 
