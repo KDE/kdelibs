@@ -368,23 +368,46 @@ void Addressee::setNameFromString( const QString &str )
   setFormattedName( str );
   setName( str );
 
-  QStringList nameParts = QStringList::split( " ", str );
-  switch( nameParts.count() ) {
-    case 1:
-      setFamilyName( nameParts[ 0 ] );
-      break;
-    case 2:
-      setGivenName( nameParts[ 0 ] );
-      setFamilyName( nameParts[ 1 ] );
-      break;
-    case 3:
-      setGivenName( nameParts[ 0 ] );
-      setAdditionalName( nameParts[ 1 ] );
-      setFamilyName( nameParts[ 2 ] );
-      break;
-    default:
-      setFamilyName( str );
-      break;
+  int i = str.find(',');
+  if( i < 0 ) {
+    // "Given [Additional] Family"
+    QStringList nameParts = QStringList::split( " ", str );
+    switch( nameParts.count() ) {
+      case 1:
+       setFamilyName( nameParts[ 0 ] );
+       break;
+      case 2:
+       setGivenName( nameParts[ 0 ] );
+       setFamilyName( nameParts[ 1 ] );
+       break;
+      case 3:
+       setGivenName( nameParts[ 0 ] );
+       setAdditionalName( nameParts[ 1 ] );
+       setFamilyName( nameParts[ 2 ] );
+       break;
+      default:
+       setFamilyName( str );
+       break;
+    }
+  } else {
+    // "Family, Given [Additional]"
+    setFamilyName( str.left( i ) );
+    QString part2 = str.mid( i + 1 );
+    part2.stripWhiteSpace();
+
+    QStringList nameParts = QStringList::split( " ", part2 );
+    switch( nameParts.count() ) {
+      case 1:
+       setGivenName( nameParts[ 0 ] );
+       break;
+      case 2:
+       setGivenName( nameParts[ 0 ] );
+       setAdditionalName( nameParts[ 1 ] );
+       break;
+      default:
+       setGivenName( part2 );
+       break;
+    }
   }
 }
 

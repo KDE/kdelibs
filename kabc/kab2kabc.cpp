@@ -49,13 +49,31 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
   kdDebug() << "KMAILENTRY: " << kmailEntry << endl;
 
   QString entry = kmailEntry.simplifyWhiteSpace();
+  if( entry.isEmpty() ) return;
 
   QString email;
   QString name;
+  QString comment;
+
+  if( entry.at( entry.length() -1 ) == ')' ) {
+    int br = entry.findRev( '(' );
+    if( br >= 0 ) {
+      comment = entry.mid( br + 1, entry.length() - br - 2 );
+      entry.truncate( br );
+      if( entry.at( entry.length() - 1 ).isSpace() ) {
+	entry.truncate( br - 1 );
+      }
+    }
+  }
 
   int posSpace = entry.findRev( ' ' );
-  if ( posSpace < 0 ) email = entry;
-  else {
+  if ( posSpace < 0 ) {
+    email = entry;
+    if( !comment.isEmpty() ) {
+      name = comment;
+      comment = "";
+    }
+  } else {
     email = entry.mid( posSpace + 1 );
     name = entry.left( posSpace );
   }
@@ -66,15 +84,31 @@ void readKMailEntry( const QString &kmailEntry, KABC::AddressBook *ab )
   if ( name.at( 0 ) == '"' && name.at( name.length() - 1) == '"' ) {
     name = name.mid( 1, name.length() - 2 );
   }
+  if ( name.at( 0 ) == '\'' && name.at( name.length() - 1) == '\'' ) {
+    name = name.mid( 1, name.length() - 2 );
+  }
 
-  kdDebug() << "  EMAIL: " << email << endl;
-  kdDebug() << "  NAME : " << name << endl;
+  if( name.at( name.length() -1 ) == ')' ) {
+    int br = name.findRev( '(' );
+    if( br >= 0 ) {
+      comment = name.mid( br + 1, name.length() - br - 2 ) + " " + comment;
+      name.truncate( br );
+      if( name.at( name.length() - 1 ).isSpace() ) {
+	name.truncate( br - 1 );
+      }
+    }
+  }
+
+  kdDebug() << "  EMAIL   : " << email   << endl;
+  kdDebug() << "  NAME    : " << name    << endl;
+  kdDebug() << "  COMMENT : " << comment << endl;
 
   KABC::Addressee::List al = ab->findByEmail( email );
   if ( al.isEmpty() ) {
     KABC::Addressee a;
     a.setNameFromString( name );
     a.insertEmail( email );
+    a.setNote( comment );
 
     ab->insertAddressee( a );
     
@@ -113,11 +147,28 @@ void importKMailAddressBook( KABC::AddressBook *ab )
   QStringList::ConstIterator it;
   for( it = kmailEntries.begin(); it != kmailEntries.end(); ++it ) {
     if ( (*it).at( 0 ) == '#' ) continue;
+    bool insideQuote = false;
+    int end = (*it).length() - 1;
+    for(int i = end; i; i--) {
+      if( (*it).at( i ) == '"' ) {
+	if(insideQuote)
+	  insideQuote=false;
+	else
+	  insideQuote=true;
+      } else if( (*it).at( i ) == ',' && !insideQuote ) {
+	readKMailEntry( (*it).mid( i + 1, end - i ), ab );
+	end = i - 1;
+      }
+    }
+    readKMailEntry( (*it).mid( 0, end + 1 ), ab );
+
+    /*
     QStringList addresses = QStringList::split( ",", *it );
     QStringList::ConstIterator it2;
     for( it2 = addresses.begin(); it2 != addresses.end(); ++it2 ) {
       readKMailEntry( *it2, ab );
     }
+    */
   }
 }
 
