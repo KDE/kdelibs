@@ -2612,6 +2612,7 @@ bool HTTPProtocol::readBody( )
   // Main incoming loop...  Gather everything while we can...
   KMD5 context;
   int totRxBytes = 0;
+  bool cpMimeBuffer = false;
   QByteArray mimeTypeBuffer;
   big_buffer.resize(0);
 
@@ -2643,37 +2644,45 @@ bool HTTPProtocol::readBody( )
       // with the content itself.
       if ( m_strMimeType.isEmpty() && !( m_responseCode >= 300 && m_responseCode <=399) )
       {
-        kdDebug(7113) << "Attempting to determine mime-type from content..." << endl;
         totRxBytes += bytesReceived;
-        int old_size = mimeTypeBuffer.size();
-        if ( totRxBytes <= 1024 || (totRxBytes > 1024 && m_iBytesLeft <= 0 ) )
+        kdDebug(7113) << "Attempting to determine mime-type from content..." << endl;
+        if ( m_iBytesLeft > 0 && totRxBytes < 1024 )
         {
+          int old_size = mimeTypeBuffer.size();
           mimeTypeBuffer.resize( old_size + totRxBytes );
           memcpy( mimeTypeBuffer.data() + old_size, m_bufReceive.data(), totRxBytes );
+          cpMimeBuffer = true;
+          continue;   // Do not send up the data since we do not yet know its mimetype!
         }
 
-        if ( totRxBytes >= 1024 || m_iBytesLeft <= 0 )
+        KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer, m_request.url.fileName() );
+        if( result )
         {
-           KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer, m_request.url.fileName() );
-           if( result )
-             m_strMimeType = result->mimeType();
-
-           kdDebug(7113) << "Mimetype from content:  " <<  m_strMimeType << endl;
-           if ( m_strMimeType.isEmpty() )
-           {
-             m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );  // if all else fails...
-             kdDebug(7113) << "Using default mimetype:  " <<  m_strMimeType << endl;
-           }
-
-           if ( m_bCachedWrite )
-           {
-             createCacheEntry( m_strMimeType, m_expireDate );
-             if (!m_fcache)
-               m_bCachedWrite = false;
-           }
-           mimeType( m_strMimeType );
-           mimeTypeBuffer.resize(0);
+          m_strMimeType = result->mimeType();
+          kdDebug(7113) << "Mimetype from content:  " <<  m_strMimeType << endl;
         }
+
+        if ( m_strMimeType.isEmpty() )
+        {
+          m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );  // if all else fails...
+          kdDebug(7113) << "Using default mimetype:  " <<  m_strMimeType << endl;
+        }
+
+        if ( m_bCachedWrite )
+        {
+          createCacheEntry( m_strMimeType, m_expireDate );
+          if (!m_fcache)
+            m_bCachedWrite = false;
+        }
+
+        if ( cpMimeBuffer )
+        {
+          m_bufReceive.resize(0);
+          m_bufReceive.resize(mimeTypeBuffer.size());
+          memcpy( m_bufReceive.data(), mimeTypeBuffer.data(), mimeTypeBuffer.size() );
+        }
+        mimeType(m_strMimeType);
+        mimeTypeBuffer.resize(0);
       }
 
       // check on the encoding.  can we get away with it as is?
@@ -3816,3 +3825,4 @@ void HTTPProtocol::resetSessionSettings()
   m_bCanResume = false;
   m_bUnauthorized = false;
 }
+
