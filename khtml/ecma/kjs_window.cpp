@@ -1990,7 +1990,7 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   {
     if (!widget->dialogsAllowed())
       return Undefined();
-    part->xmlDocImpl()->updateRendering();
+    //part->xmlDocImpl()->updateRendering();
     if (args.size() != 1 && args.size() != 2)
       return Undefined();
 
