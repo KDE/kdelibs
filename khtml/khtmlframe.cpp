@@ -83,8 +83,6 @@ HTMLFrameSet::HTMLFrameSet( QWidget *_parent,
 HTMLFrameSet::~HTMLFrameSet()
 {
     widgetList.clear();
-    if ( size )
-	delete []size;
 }
 
 void HTMLFrameSet::append( QWidget *_w )
