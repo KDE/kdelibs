@@ -136,6 +136,7 @@ KAction::KAction( const QString& text, int accel, const QObject* receiver,
     if ( parent && parent->inherits("KActionCollection") )
         ((KActionCollection*)parent)->insert( this );
 
+    if ( receiver )
     connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
@@ -181,7 +182,8 @@ KAction::KAction( const QString& text, const QIconSet& pix, int accel,
     if ( parent && parent->inherits("KActionCollection") )
         ((KActionCollection*)parent)->insert( this );
 
-    connect( this, SIGNAL( activated() ), receiver, slot );
+    if ( receiver )
+      connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
 KAction::KAction( const QString& text, const QString& pix, int accel,
@@ -198,7 +200,8 @@ KAction::KAction( const QString& text, const QString& pix, int accel,
     if ( parent && parent->inherits("KActionCollection") )
         ((KActionCollection*)parent)->insert( this );
 
-    connect( this, SIGNAL( activated() ), receiver, slot );
+    if ( receiver )
+      connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
 KAction::KAction( QObject* parent, const char* name )
@@ -1347,7 +1350,8 @@ KListAction::KListAction( const QString& text, int accel,
   : KSelectAction( text, accel, parent, name )
 {
   d = new KListActionPrivate;
-  connect( this, SIGNAL(activated(int)), receiver, slot );
+  if ( receiver )
+    connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
@@ -1371,7 +1375,8 @@ KListAction::KListAction( const QString& text, const QIconSet& pix,
   : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
   d = new KListActionPrivate;
-  connect( this, SIGNAL(activated(int)), receiver, slot );
+  if ( receiver )
+    connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( const QString& text, const QString& pix,
@@ -1381,7 +1386,8 @@ KListAction::KListAction( const QString& text, const QString& pix,
   : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
   d = new KListActionPrivate;
-  connect( this, SIGNAL(activated(int)), receiver, slot );
+  if ( receiver )
+    connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( QObject* parent, const char* name )
@@ -1452,8 +1458,9 @@ KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
   connect( this, SIGNAL( activated( const QString& ) ),
            this, SLOT( itemSelected( const QString& ) ) );
 
-  connect( this,     SIGNAL(urlSelected(const KURL&)),
-           receiver, slot );
+  if ( receiver )
+    connect( this,     SIGNAL(urlSelected(const KURL&)),
+             receiver, slot );
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -1496,8 +1503,9 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   connect( this, SIGNAL( activated( const QString& ) ),
            this, SLOT( itemSelected( const QString& ) ) );
 
-  connect( this,     SIGNAL(urlSelected(const KURL&)),
-           receiver, slot );
+  if ( receiver )
+    connect( this,     SIGNAL(urlSelected(const KURL&)),
+             receiver, slot );
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -1514,8 +1522,9 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
   connect( this, SIGNAL( activated( const QString& ) ),
            this, SLOT( itemSelected( const QString& ) ) );
 
-  connect( this,     SIGNAL(urlSelected(const KURL&)),
-           receiver, slot );
+  if ( receiver )
+    connect( this,     SIGNAL(urlSelected(const KURL&)),
+             receiver, slot );
 }
 
 KRecentFilesAction::KRecentFilesAction( QObject* parent, const char* name,
