@@ -76,6 +76,7 @@ protected slots:
 	void slotUserOnly(bool);
 	void slotUserChanged();
 	void slotConfigure();
+	void slotDropped( QDropEvent*, QListViewItem* );
 
 protected:
 	void init();

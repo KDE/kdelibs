@@ -30,6 +30,7 @@
 #include "kmtimer.h"
 #include "kmconfigjobs.h"
 #include "kmconfigpage.h"
+#include "kprinter.h"
 
 #include <klistview.h>
 #include <kstatusbar.h>
@@ -45,15 +46,41 @@
 #include <kmenubar.h>
 #include <kdebug.h>
 #include <kwin.h>
+#include <kio/netaccess.h>
 #include <qtimer.h>
 #include <qlayout.h>
 #include <stdlib.h>
 #include <qlineedit.h>
 #include <kdialogbase.h>
 #include <qcheckbox.h>
+#include <qdragobject.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
+
+class KJobListView : public KListView
+{
+public:
+	KJobListView( QWidget *parent = 0, const char *name = 0 );
+
+protected:
+	bool acceptDrag( QDropEvent* ) const;
+};
+
+KJobListView::KJobListView( QWidget *parent, const char *name )
+	: KListView( parent, name )
+{
+	setAcceptDrops( true );
+	setDropVisualizer( false );
+}
+
+bool KJobListView::acceptDrag( QDropEvent *e ) const
+{
+	if ( QUriDrag::canDecode( e ) )
+		return true;
+	else
+		return KListView::acceptDrag( e );
+}
 
 KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 : KMainWindow(parent,name)
@@ -99,6 +126,7 @@ void KMJobViewer::setPrinter(const QString& prname)
 		removeFromManager();
 		m_prname = prname;
 		addToManager();
+		m_view->setAcceptDrops( prname != i18n( "All Printers" ) );
 	}
 	triggerRefresh();
 }
@@ -192,7 +220,7 @@ void KMJobViewer::init()
 {
 	if (!m_view)
 	{
-		m_view = new KListView(this);
+		m_view = new KJobListView(this);
 		m_view->addColumn(i18n("Job ID"));
 		m_view->addColumn(i18n("Owner"));
 		m_view->addColumn(i18n("Name"), 150);
@@ -200,6 +228,7 @@ void KMJobViewer::init()
 		m_view->addColumn(i18n("Size (KB)"));
 		m_view->addColumn(i18n("Page(s)"));
 		m_view->setColumnAlignment(5,Qt::AlignRight|Qt::AlignVCenter);
+		connect( m_view, SIGNAL( dropped( QDropEvent*, QListViewItem* ) ), SLOT( slotDropped( QDropEvent*, QListViewItem* ) ) );
 		//m_view->addColumn(i18n("Printer"));
 		//m_view->setColumnAlignment(6,Qt::AlignRight|Qt::AlignVCenter);
 		KMFactory::self()->uiManager()->setupJobViewer(m_view);
@@ -669,6 +698,28 @@ void KMJobViewer::slotConfigure()
 bool KMJobViewer::isSticky() const
 {
 	return ( m_stickybox ? m_stickybox->isChecked() : false );
+}
+
+void KMJobViewer::slotDropped( QDropEvent *e, QListViewItem* )
+{
+	QStrList uris;
+	QStringList files;
+	QString target;
+
+	QUriDrag::decode( e, uris );
+	for ( uint i=0; i<uris.count(); i++ )
+	{
+		KURL url( uris.at( i ) );
+		if ( KIO::NetAccess::download( url, target ) )
+			files << target;
+	}
+
+	if ( files.count() > 0 )
+	{
+		KPrinter prt;
+		if ( prt.autoConfigure( m_prname, this ) )
+			prt.printFiles( files, false, false );
+	}
 }
 
 #include "kmjobviewer.moc"
