@@ -236,7 +236,7 @@ KVMAllocator::map(Block *block)
       return block->mmap;
 
    void *result = mmap(0, block->length, PROT_READ| PROT_WRITE,
-                       MAP_SHARED, d->tempfile->handle(), 0);
+                       MAP_SHARED, d->tempfile->handle(), block->start);
    block->mmap = result;
    return block->mmap;
 }
