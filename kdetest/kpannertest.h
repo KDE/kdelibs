@@ -1,6 +1,12 @@
 #ifndef _KPANNER_TEST_H
 #define _KPANNER_TEST_H
 
+#include <qwidget.h>
+class KPanner;
+class QListBox;
+class QMultiLineEdit;
+class QPushButton;
+
 class TopLevel : public QWidget
 {
     Q_OBJECT

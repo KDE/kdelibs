@@ -61,7 +61,7 @@ void TopLevel::resizeEvent( QResizeEvent * )
     cancel->setGeometry(0, panner1->child0()->height() - 25, panner1->child0()->width(), 25);
 }
 
-#include "kpannertest.moc"
+#include "kpannertest.h"
 
 int main( int argc, char ** argv )
 {

@@ -1,7 +1,9 @@
 #include <kmenubar.h>
 #include <qpopmenu.h>
 #include <kstatusbar.h>
+#include <ktopwidget.h>
 
+class QMultiLineEdit;
 
 class testWindow  : public KTopLevelWidget
 {

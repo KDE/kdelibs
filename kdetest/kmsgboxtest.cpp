@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1997/09/10 13:53:15  kdecvs
+ * Kalle: Use KApplication instead of QApplication
+ *
  * Revision 1.1  1997/04/13 17:49:42  kulow
  * Sources imported
  *
@@ -49,7 +52,7 @@
 #include <unistd.h>
 
 #include "kmsgbox.h"
-#include "kmsgboxtest.moc"
+#include "kmsgboxtest.h"
 #include "kmsgboxtest.h"
 
 QFont default_font("Helvetica", 12);

@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1997/07/24 21:04:01  kalle
+ * Kalle: Patches for SGI
+ * 	New ktoolbartest (for newtoolbar 0.6)
+ *
  * Revision 1.1  1997/04/13 17:49:43  kulow
  * Sources imported
  *
@@ -31,6 +35,11 @@
 
 #ifndef _KMSGBOXTEST_H
 #define _KMSGBOXTEST_H
+
+#include <qwidget.h>
+
+class QListBox;
+class QPushButton;
 
 class TopLevel : public QWidget
 {

@@ -14,7 +14,7 @@
 #include <qcombo.h>
 #include <qlined.h>
 
-#include "kcharsetstest.moc"
+#include "kcharsetstest.h"
 
 Test::Test( QWidget *parent, const char *name )
   : QWidget( parent, name )

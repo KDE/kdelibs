@@ -12,7 +12,7 @@
 #include <kmenubar.h>
 #include <kiconloader.h>
 #include <qmlined.h>
-#include "kwindowtest.moc"
+#include "kwindowtest.h"
 
 #include <kmsgbox.h>
 

@@ -2,7 +2,7 @@
 #include <qpushbt.h>
 #include <qlabel.h>
 
-#include "kcontainertest.moc"
+#include "kcontainertest.h"
 
 #define SIZETOFIT 0
 #define PACK packEnd

@@ -44,7 +44,7 @@ void MyWidget::timerEvent(QTimerEvent *)
 	}
 }
 
-//#include "demo.moc"
+//#include "demo.h"
 
 int main(int argc, char *argv[])
 {

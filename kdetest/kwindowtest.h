@@ -1,10 +1,13 @@
+
 #include <qpopmenu.h>
 #include <qtimer.h>
 #include <qprogbar.h>
 #include <kmenubar.h>
 #include <kstatusbar.h>
-#include "ktoolbar.h"
+#include <ktoolbar.h>
+#include <ktopwidget.h>
 
+class QMultiLineEdit;
 
 class testWindow  : public KTopLevelWidget
 {

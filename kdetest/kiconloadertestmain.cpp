@@ -7,7 +7,7 @@
 #include <kiconloaderdialog.h>
 
 #include "kiconloadertestmain.h"
-#include "kiconloadertestmain.moc"
+#include "kiconloadertestmain.h"
 
 MyMain::MyMain()
 {

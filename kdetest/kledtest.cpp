@@ -5,7 +5,7 @@
 #include <qtimer.h>
 #include <stdlib.h>
 #include "kled.h"
-#include "kledtest.moc"
+#include "kledtest.h"
 
 
 int main( int argc, char **argv )

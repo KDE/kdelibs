@@ -19,6 +19,19 @@
 #ifndef _KCONFIG_TEST_H
 #define _KCONFIG_TEST_H
 
+#include <kapp.h>
+#include <qdialog.h>
+#include <qfile.h>
+#include <qfileinf.h>
+#include <kdebug.h>
+#include <ksimpleconfig.h>
+
+// Standard Qt widgets
+
+#include <qlabel.h>
+#include <qlined.h>
+#include <qpushbt.h>
+
 #include <kconfig.h>
 
 //

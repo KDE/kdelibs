@@ -24,7 +24,7 @@ Cambridge, MA 02139, USA.
 */
 
 #include "ktreelisttest.h"
-#include "ktreelisttest.moc"
+#include "ktreelisttest.h"
 
 OutlineWidget::OutlineWidget(QWidget* parent)
 	: QWidget(parent, 0) 

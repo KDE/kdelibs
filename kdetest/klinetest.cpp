@@ -10,7 +10,7 @@
 #include "klinetest.h"
 #include <kapp.h>
 
-#include "klinetest.moc"
+#include "klinetest.h"
 
 Test::Test( QWidget *parent, const char *name )
   : QWidget( parent, name )

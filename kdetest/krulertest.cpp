@@ -1,6 +1,6 @@
 
 
-#include "krulertest.moc"
+#include "krulertest.h"
 
 #include "kruler.h"
 #include <qlayout.h>

@@ -19,6 +19,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.14  1998/09/21 18:34:46  bieker
+ * Use paths.h if we can.
+ *
  * Revision 1.13  1998/05/26 14:17:34  kalle
  * tests for KLed
  *
@@ -68,7 +71,7 @@
  *    and this went wrong with automake-1.2, because make stopped after this
  *    errors. The problem was, that I couldn't find the part, where the depencies
  *    are created, but now I have the solution:
- *    lines like: "ksock.cpp: ksock.moc" in the Makefile solved the whole problem.
+ *    lines like: "ksock.cpp: ksock.h" in the Makefile solved the whole problem.
  *
  *    OK, now I'm my own hero and I can sleep very well now and you can update your
  *    automake to 1.2 (untested).
@@ -172,7 +175,7 @@
 //
 
 #include "kconfigtest.h"
-#include "kconfigtest.moc"
+#include "kconfigtest.h"
 //
 // Construct the KConfigTestView with buttons
 //

@@ -1,3 +1,9 @@
+#include <ktopwidget.h>
+#include <qwidget.h>
+#include <qtimer.h>
+#include <stdlib.h>
+#include <kled.h>
+
 class ktmp : public QObject
 {
 Q_OBJECT

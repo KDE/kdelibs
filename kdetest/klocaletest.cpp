@@ -15,7 +15,7 @@
 #include <time.h>
 #include <stdio.h>
 
-#include "klocaletest.moc"
+#include "klocaletest.h"
 
 Test::Test( QWidget *parent, const char *name )
   : QWidget( parent, name )

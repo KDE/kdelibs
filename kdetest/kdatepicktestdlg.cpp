@@ -26,7 +26,7 @@
 #include <qdatetm.h>
 
 #include "kdatepicktestdlg.h"
-#include "kdatepicktestdlg.moc"
+#include "kdatepicktestdlg.h"
 
 #include "kdatepik.h"
 

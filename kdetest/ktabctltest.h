@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1997/07/24 21:04:03  kalle
+ * Kalle: Patches for SGI
+ * 	New ktoolbartest (for newtoolbar 0.6)
+ *
  * Revision 1.1  1997/04/13 17:49:44  kulow
  * Sources imported
  *
@@ -21,6 +25,11 @@
 
 #ifndef _KTABCTLTEST_H
 #define _KTABCTLTEST_H
+
+#include <qwidget.h>
+class KTabCtl;
+class QPushButton;
+class QMultiLineEdit;
 
 class TopLevel : public QWidget
 {

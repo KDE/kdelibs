@@ -1,5 +1,5 @@
-
-
+#include <qwidget.h>
+class KSpinBox;
 
 class BoolTest : public QWidget
 {

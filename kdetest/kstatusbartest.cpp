@@ -12,7 +12,7 @@
 #include <kmsgbox.h>
 #include <ktopwidget.h>
 #include <kmenubar.h>
-#include "kstatusbartest.moc"
+#include "kstatusbartest.h"
 
 testWindow::testWindow (QWidget *, const char *name)
     : KTopLevelWidget (name)

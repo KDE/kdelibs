@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1997/09/10 13:53:20  kdecvs
+ * Kalle: Use KApplication instead of QApplication
+ *
  * Revision 1.1  1997/04/13 17:49:44  kulow
  * Sources imported
  *
@@ -44,7 +47,7 @@
 #include <unistd.h>
 
 #include "ktabctl.h"
-#include "ktabctltest.moc"
+#include "ktabctltest.h"
 #include "ktabctltest.h"
 
 QFont default_font("Helvetica", 12);
