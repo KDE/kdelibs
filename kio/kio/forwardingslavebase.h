@@ -133,14 +133,38 @@ protected:
      * @return true if the given url could be correctly rewritten
      */
     virtual bool rewriteURL(const KURL &url, KURL &newURL)=0;
-  
+    
+    /**
+     * Allow to modify a UDSEntry before it's sent to the ioslave enpoint.
+     * This is the default implementation working in most case, but sometimes
+     * you could make use of more forwarding black magic (for example
+     * dynamically transform any desktop file into a fake directory...)
+     *
+     * @param entry the UDSEntry to post-process
+     * @param listing indicate if this entry it created during a listDir
+     *                operation
+     */
+    virtual void prepareUDSEntry(KIO::UDSEntry &entry,
+                                 bool listing=false) const;
+    
+    /**
+     * Return the URL being processed by the ioslave
+     * Only access it inside prepareUDSEntry()
+     */
+    KURL processedURL() const { return m_processedURL; }
+
+    /**
+     * Return the URL asked to the ioslave
+     * Only access it inside prepareUDSEntry()
+     */
+    KURL requestedURL() const { return m_requestedURL; }
+
 private:
     KURL m_processedURL;
     KURL m_requestedURL;
     ForwardingSlaveBasePrivate *d;
     
     bool internalRewriteURL(const KURL &url, KURL &newURL);
-    void prepareUDSEntry(KIO::UDSEntry &entry, bool listing=false);
     
     void connectJob(Job *job);
     void connectSimpleJob(SimpleJob *job);

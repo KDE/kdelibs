@@ -63,7 +63,8 @@ bool ForwardingSlaveBase::internalRewriteURL(const KURL &url, KURL &newURL)
     return result;
 }
 
-void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry, bool listing)
+void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
+                                          bool listing) const
 {
     kdDebug() << "ForwardingSlaveBase::prepareUDSEntry: listing=="
               << listing << endl;
