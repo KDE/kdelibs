@@ -64,6 +64,7 @@
 #include <kstandarddirs.h>
 #include <kprinter.h>
 #include <klocale.h>
+#include <kstdaccel.h>
 
 #include <qtooltip.h>
 #include <qpainter.h>
@@ -1129,6 +1130,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 				findTimeout();
 			}
 
+			d->timer.start(3000, true);
+			_ke->accept();
+			return;
+		}
+		else if(_ke->key() == KStdAccel::findNext())
+		{ // part doesn't get this key event because of the keyboard grab
+			m_part->findTextNext();
 			d->timer.start(3000, true);
 			_ke->accept();
 			return;
