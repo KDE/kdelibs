@@ -204,8 +204,7 @@ void KDirOperator::activatedMenu( const KFileViewItem * )
 
 void KDirOperator::updateSelectionDependentActions()
 {
-    bool hasSelection = fileView && fileView->selectedItems() &&
-                        !fileView->selectedItems()->isEmpty();
+    bool hasSelection = fileView && !fileView->selectedItems()->isEmpty();
     myActionCollection->action( "delete" )->setEnabled( hasSelection );
     myActionCollection->action( "properties")->setEnabled( hasSelection );
 }
@@ -984,7 +983,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
     fileView->addItemList( newone );
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 
-    
+
     KFileItem *item;
     KFileItemListIterator it( newone );
     while ( (item = it.current()) ) {
@@ -1015,6 +1014,7 @@ void KDirOperator::selectDir(const KFileViewItem *item)
 
 void KDirOperator::itemDeleted(KFileItem *item)
 {
+    pendingMimeTypes.removeRef( static_cast<KFileViewItem *>( item ));
     fileView->removeItem( static_cast<KFileViewItem *>( item ));
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 }
