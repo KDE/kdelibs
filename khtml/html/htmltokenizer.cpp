@@ -217,9 +217,14 @@ void HTMLTokenizer::addListing(DOMStringIt list)
 
 void HTMLTokenizer::parseListing( DOMStringIt &src)
 {
-    // We are inside a <script>, <style> or comment. Look for the end tag
-    // which is either </script>, </style> or -->
+    // We are inside a <script>, <style>, <textarea> or comment. Look for the end tag
+    // which is either </script>, </style> , </textarea> or -->
     // otherwise print out every received character
+    if (charEntity) {
+        QChar *scriptCodeDest = scriptCode+scriptCodeSize;
+        parseEntity(src,scriptCodeDest);
+        scriptCodeSize = scriptCodeDest-scriptCode;
+    }
 
 #ifdef TOKEN_DEBUG
     kdDebug( 6036 ) << "HTMLTokenizer::parseListing()" << endl;
@@ -286,6 +291,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 currToken->id = ID_STYLE + ID_CLOSE_TAG;
             else if (comment)
                 currToken->id = ID_COMMENT + ID_CLOSE_TAG;
+	    else if (textarea)
+		currToken->id = ID_TEXTAREA + ID_CLOSE_TAG;
             else
                 currToken->id = ID_LISTING + ID_CLOSE_TAG;
             processToken();
@@ -303,7 +310,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 view->part()->executeScript(QString(scriptCode, scriptCodeSize));
                 executingScript = false;
             }
-            script = style = listing = comment = false;
+            script = style = listing = comment = textarea = false;
             if(scriptCode)
                 QT_DELETE_QCHAR_VEC(scriptCode);
             scriptCode = 0;
@@ -343,10 +350,19 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             else
             {
                 searchBuffer[ searchCount ] = 0;
-                QChar *p = searchBuffer;
-                while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
-                scriptCode[ scriptCodeSize++ ] = cmp;
-                ++src;
+		DOMStringIt pit(searchBuffer,searchCount);
+		while (pit.length()) {
+		    if (textarea && pit[0] == '&') {
+			QChar *scriptCodeDest = scriptCode+scriptCodeSize;
+			++pit;
+			parseEntity(pit,scriptCodeDest,true);
+			scriptCodeSize = scriptCodeDest-scriptCode;
+		    }
+		    else {
+			scriptCode[ scriptCodeSize++ ] = pit[0];
+			++pit;
+		    }
+		}
                 searchCount = 0;
             }
         }
@@ -357,10 +373,18 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             searchBuffer[ 0 ] = src[0];
             ++src;
         }
-        else
+	else
         {
-            scriptCode[ scriptCodeSize++ ] = src[0];
-            ++src;
+	    if (textarea && src[0] == '&') {
+		QChar *scriptCodeDest = scriptCode+scriptCodeSize;
+		++src;
+		parseEntity(src,scriptCodeDest,true);
+		scriptCodeSize = scriptCodeDest-scriptCode;
+	    }
+	    else {
+		scriptCode[ scriptCodeSize++ ] = src[0];
+		++src;
+	    }
         }
     }
 }
@@ -445,7 +469,7 @@ void HTMLTokenizer::parseText(DOMStringIt &src)
     }
 }
 
-void HTMLTokenizer::parseEntity(DOMStringIt &src, bool start)
+void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
 {
     if( start )
     {
@@ -535,7 +559,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, bool start)
 void HTMLTokenizer::parseTag(DOMStringIt &src)
 {
     if (charEntity)
-        parseEntity(src);
+        parseEntity(src,dest);
 
     while ( src.length() )
     {
@@ -840,7 +864,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         addPending();
 
                     charEntity = true;
-                    parseEntity(src, true);
+                    parseEntity(src, dest, true);
                     break;
                 }
                 else if ( !tquote )
@@ -996,10 +1020,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
                 else if ( tagID == ID_TEXTAREA )
                 {
-                    textarea = beginTag;
                     if(beginTag) {
-                        // ### parse entities in textareas!!!!
                         listing = true;
+			textarea = true;
                         searchCount = 0;
                         searchFor = textareaEnd;
                         scriptCode = QT_ALLOC_QCHAR_VEC( 1024 );
@@ -1191,7 +1214,7 @@ void HTMLTokenizer::write( const QString &str )
         parseTag(src);
     }
     else if (charEntity)
-        parseEntity(src);
+        parseEntity(src, dest);
 
     while ( src.length() )
     {
@@ -1281,7 +1304,7 @@ void HTMLTokenizer::write( const QString &str )
                 addPending();
 
             charEntity = true;
-            parseEntity(src, true);
+            parseEntity(src, dest, true);
         }
         else if ( chbegin == '<')
         {

@@ -97,7 +97,7 @@ protected:
     void parseScript(khtml::DOMStringIt &str);
     void parseListing(khtml::DOMStringIt &str);
     void parseTag(khtml::DOMStringIt &str);
-    void parseEntity(khtml::DOMStringIt &str, bool start = false);
+    void parseEntity(khtml::DOMStringIt &str, QChar *&dest, bool start = false);
     void parseProcessingInstruction(khtml::DOMStringIt &str);
     void addScriptOutput();
 
