@@ -113,7 +113,6 @@
 
 <!ENTITY AIX	"<trademark>AIX</trademark>">
 <!ENTITY aktion	"<application>aKtion</application>">
-<!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY amor	"<application>AMOR</application>">
 <!ENTITY ark    "<application>Ark</application>">
 <!ENTITY arts	"<application>aRts</application>">
@@ -125,18 +124,15 @@
 <!ENTITY artsshell "<application>artsshell</application>">
 <!ENTITY artswrapper "<application>artswrapper</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
-<!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY brahms "<application>Brahms</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
 <!ENTITY CSS	"<trademark>CSS</trademark>">
-<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
 <!ENTITY DVI	"<acronym>DVI</acronym>">
 <!ENTITY ELF	"<acronym>ELF</acronym>">
 <!ENTITY Emacs	"<application>Emacs</application>">
-<!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY FTP	"<acronym>FTP</acronym>">
 <!ENTITY gcc	"<command>gcc</command>">
 <!ENTITY GIF	"<acronym>GIF</acronym>">
@@ -336,5 +332,18 @@
 <!ENTITY kwm	"<application>kwm</application>">
 <!ENTITY kwmpager	"<application>kwmpager</application>">
 <!ENTITY kworldwatch  "<application>KWorldClock</application>">
-<!ENTITY Shift	"<keycap>Shift</keycap>"> <!-- to be localised -->
 <!ENTITY X-Windows	'<trademark class="registered">X Window System</trademark>'> 
+
+<!-- to be localised -->
+<!-- DO NOT REMOVE THESE WITHOUT A VERSION NUMBER CHANGE IN THE FPI!
+     Languages that want to keep the English versions should put in
+     their user.entities file a _commented out_ entitiy declaration.
+     (see the English user.entities for examples).  The reason is that 
+     entities must only be defined once.  If you use an entity with a 
+     different name (e.g. Maj for Shift in French) don't comment it out.
+  -->
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
