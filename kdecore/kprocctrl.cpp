@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Christian Czezatke (e9025461@student.tuwien.ac.at)
+    Copyright (C) 1997 Christian Czezakte (e9025461@student.tuwien.ac.at)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,7 +19,11 @@
 //
 //  KPROCESSCONTROLLER -- A helper class for KProcess
 //
-//  version 0.2.2, Aug 31st 1997
+//  version 0.3.0, Nov 23rd 1997
+//
+//  (C) Christian Czezatke
+//  e9025461@student.tuwien.ac.at
+//
 
 #include <string.h>
 #include <errno.h>
@@ -37,7 +41,7 @@
 #include "kprocctrl.moc"
 
 
-KProcessController *theKProcessController = 0L;
+KProcessController *theKProcessController = NULL;
 
 KProcessController::KProcessController()
 {
@@ -70,20 +74,12 @@ KProcessController::KProcessController()
   act.sa_flags |= SA_RESTART;
 #endif
 
-  sigaction( SIGCHLD, &act, 0L); 
+  sigaction( SIGCHLD, &act, NULL); 
   act.sa_handler=SIG_IGN;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGPIPE);
   act.sa_flags = 0;
-  sigaction( SIGPIPE, &act, 0L);
-}
-
-KProcessController::~KProcessController() 
-{
-    delete processList;
-    delete notifier;
-    close(fd[0]);
-    close(fd[1]);
+  sigaction( SIGPIPE, &act, NULL);
 }
 
 void KProcessController::theSigCHLDHandler(int )
@@ -97,8 +93,7 @@ void KProcessController::theSigCHLDHandler(int )
   // (Richard Stevens, Advanced programming in the Unix Environment)
 
   this_pid = waitpid(-1, &status, WNOHANG);
-  // J6t: theKProcessController might be already destroyed
-  if (-1 != this_pid && theKProcessController != 0) {
+  if (-1 != this_pid) {
     ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
     ::write(theKProcessController->fd[1], &status, sizeof(status));
   }
@@ -122,7 +117,7 @@ void KProcessController::slotDoHousekeeping(int )
  
   proc = processList->first();
 
-  while (0L != proc) {
+  while (NULL != proc) {
 	if (proc->pid == pid) {
 	  // process has exited, so do emit the respective events
 	  proc->processHasExited(status);

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Christian Czezatke (e9025461@student.tuwien.ac.at)
+    Copyright (C) 1997 Christian Czezakte (e9025461@student.tuwien.ac.at)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,7 +20,11 @@
 //  KPROCESS -- A class for handling child processes in KDE without
 //  having to take care of Un*x specific implementation details
 //
-//  version 0.2.2, Aug 31st 1997
+//  version 0.3.0, Nov 23rd 1997
+//
+//  (C) Christian Czezatke
+//  e9025461@student.tuwien.ac.at
+//
 
 #ifndef __kprocess_h__
 #define __kprocess_h__
@@ -115,11 +119,7 @@
   void wroteStdin(KProcess *proc);
   -- Indicates that all data that has been sent to the child process
   by a prior call to "writeStdin" has actually been transmitted to the
-  client .
-
-* @author Christian Czezatke (e9025461@student.tuwien.ac.at)
-* @short Control child processes portably
-* @version
+  client 
 */
 class KProcess : public QObject
 {
@@ -146,13 +146,33 @@ public:
   virtual ~KProcess();
  
   /**
+         The use of this function is now depreciated! -- Use the
+	 "operator<<" instead of "setExecutable".
+
+	 If your code looked like:
+	 p->setExecutable("kghostview");
+	 *p << "tiger.ps";
+
+	 please change it to:
+
+	 *p << "kghostview" << "tiger.ps";
+
 	 Sets the executable to be started with this KProcess object.
 	 Returns FALSE if the process is currently running (in that
-	 case the executable remains unchanged.
+	 case the executable remains unchanged.) 
+
   */
   bool setExecutable(const char *proc);
 
-  /** sets the command line argument list for this process */
+
+  /** set the executable and the command line argument list for this process 
+      
+      For exsmple, doning a "ls -l /usr/local/bin" can be achieved by:
+      KProcoess p;
+      ...
+      p << "ls" << "-l" << "/usr/local/bin"
+
+   */
   KProcess &operator<<(const char *arg);
 
   /** clears the command line argument list for this process */
@@ -172,7 +192,7 @@ public:
       no communication takes place and the respective signals will never
       get emitted.
   */
-  bool start(RunMode  runmode = NotifyOnExit, Communication comm = NoCommunication);
+  virtual bool start(RunMode  runmode = NotifyOnExit, Communication comm = NoCommunication);
 
   /**
      stops the process (by sending a SIGTERM to it). -- You may send other
@@ -180,7 +200,7 @@ public:
 
      returns TRUE if the signal could be delivered successfully
   */
-  bool kill(int signo = SIGTERM);
+  virtual bool kill(int signo = SIGTERM);
 
   /**
      returns TRUE if the process is (still) considered to be running
@@ -217,8 +237,8 @@ public:
 	 If all the data has been sent to the client, the signal
 	 "wroteStdin" is emitted. 
 
-	 Please note that you must not free "buffer" until either a
-	 "wroteStdin" signal indicates that the data has been sent or ah
+	 Please note that you must not free "buffer" or call "writeSTdion"
+	 again until either a "wroteStdin" signal indicates that the data has been sent or a
 	 "processHasExited" signal shows that the child process is no
 	 longer alive... 
   */
@@ -265,8 +285,8 @@ public:
   void wroteStdin(KProcess *proc);
 
 
- private slots:
- void slotChildOutput(int fdno);
+protected slots:
+  void slotChildOutput(int fdno);
   void slotChildError(int fdno);
   /*
 	Slot functions for capturing stdout and stderr of the child 
@@ -278,19 +298,18 @@ public:
 	stdin.
   */
 
-private:
-  friend class KProcessController;
+protected:
+  QStrList arguments; // list of the process' comand line args
+  RunMode run_mode;   // how to run the process (blocking, notify, dontcare)
+  bool runs;          // the process is currently executing
 
-  void processHasExited(int state);
+  pid_t pid;          // If the process runs or has been running, it's
+					  // PID is stored here 
+  int status;         // the process' exit status as returned by "waitpid"
 
-  int childOutput(int fdno);
-  int childError(int fdno);
 
-  int setupCommunication(Communication comm);
-  int commSetupDoneP();
-  int commSetupDoneC();
-  void commClose();
-  /*
+  // {
+  /**
 	Functions for setting up the sockets for communication.
 	setupCommunication 
 	-- is called from "start" before "fork"ing.
@@ -303,13 +322,12 @@ private:
 	after the process has exited
   */
 
-  QStrList arguments; // list of the process' comand line args
-  RunMode run_mode;   // how to run the process (blocking, notify, dontcare)
-  bool runs;          // the process is currently executing
-  char *process;      // name of the executable to be launched
-  pid_t pid;          // If the process runs or has been running, it's
-					  // PID is stored here 
-  int status;         // the process' exit status as returned by "waitpid"
+  virtual int setupCommunication(Communication comm);
+  virtual int commSetupDoneP();
+  virtual int commSetupDoneC();
+  virtual void processHasExited(int state);
+  virtual void commClose();
+  // }
 
   int out[2], in[2], err[2];
   /* the socket descriptors for stdin/stdout/stderr */
@@ -318,13 +336,74 @@ private:
   /* The socket notifiers for the above socket descriptors */
 
   Communication communication;		
-  /* communication with the child? */
+  /* communication with the child wanted? */
+
+  friend class KProcessController;
+
+  int childOutput(int fdno);
+  int childError(int fdno);
    
   // information about the data that has to be sent to the child:
 
   char *input_data;  // the buffer holding the data
   int input_sent;    // # of bytes already transmitted
   int input_total;   // total length of input_data
+};
+
+
+class KShellProcess: public KProcess
+{
+  Q_OBJECT
+
+public:
+
+  /**
+         Passes the argument list to a shell for execution instead of
+	 executing a command.
+
+	 "KShellProcess" tries to find a valid shell in the following places:
+	   +) The "SHELL" environment variable
+	   +) The "SHELL" environment variable with all white spaces stripped off
+	   +) "/bin/sh" as a last ressort.
+
+	 It is also checked whether the shell really exists and is executable 
+	 at all. 
+
+	 You can override that mechanism by specifying a shell in the
+	 construtor.
+  */
+  KShellProcess(const char *shellname=NULL);
+
+  /** starts up the process. -- For a detailed description of the
+      various run modes see the general comment on "KProcess"
+
+      returns TRUE if the process was started successfully.
+      A return value of FALSE indicates that :
+	  +) the process is already running
+	  or
+	  +) the starting of the process failed (could not fork)
+
+      The second argument specifies which communication links should be
+      established to the child process. (stdin/stdout/stderr). By default,
+      no communication takes place and the respective signals will never
+      get emitted.
+  */
+  virtual bool start(RunMode  runmode = NotifyOnExit, Communication comm = NoCommunication);
+
+private:
+
+  /** searches for a valid shell. See the description of the KShellProcess constructor
+      on how the search is actually performed.
+  */
+  char *searchShell();
+
+  /** used by "searchShell" in order to find out whether the shell found is actually
+      executable at all.
+  */
+  bool isExecutable(const char *fname);
+
+
+  char *shell;
 };
 
 

@@ -20,7 +20,11 @@
 //  KPROCESS -- A class for handling child processes in KDE without
 //  having to take care of Un*x specific implementation details
 //
-//  version 0.2.2, Aug 31st 1997
+//  version 0.3.0, Nov 23rd 1997
+//
+//  (C) Christian Czezatke
+//  e9025461@student.tuwien.ac.at
+//
 
 #include "kprocess.h"
 #define _MAY_INCLUDE_KPROCESSCONTROLLER_
@@ -30,6 +34,7 @@
 
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -37,10 +42,6 @@
 #include <fcntl.h>
 
 #include <stdio.h>
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 #include "kprocess.moc"
 
@@ -50,25 +51,23 @@
 
 
 KProcess::KProcess()
-{ 
+{
   arguments.setAutoDelete(TRUE);
 
-  if ( theKProcessController == 0L) {
+  if (NULL == theKProcessController) {
 	theKProcessController= new KProcessController();
 	CHECK_PTR(theKProcessController);
   }
 
   run_mode = NotifyOnExit;
   runs = FALSE;
-  process = 0L;
   pid = 0;
   status = 0;
-  innot = outnot = errnot = 0L;
+  innot = outnot = errnot = NULL;
   communication = NoCommunication;
-  input_data = 0L;
+  input_data = NULL;
   input_sent = 0;
   input_total = 0;
-  arguments.setAutoDelete(true);
 
   theKProcessController->processList->append(this);
 }
@@ -88,33 +87,35 @@ KProcess::~KProcess()
 
   if (runs && (run_mode != DontCare))
     kill(SIGKILL);
-
-  free(process);
 }
 
 
 
 bool KProcess::setExecutable(const char *proc)
 {
+  char *hlp;
+
+
   if (runs) return FALSE;
 
-  if (0 != process)
-    free(process);
-
-  if (0L == proc)
-    process = 0L;
-  else {
-    process = strdup(proc);
-    CHECK_PTR(process);
+  arguments.removeFirst();
+  if (NULL != proc) {
+    hlp = strdup(proc);
+    CHECK_PTR(hlp);
+    arguments.insert(0,hlp);
   }
+
   return TRUE;
 }
+
+ 
+ 
 
 
 
 KProcess &KProcess::operator<<(const char *arg)
 {
-  char *new_arg= qstrdup(arg);
+  char *new_arg= strdup(arg);
 
   CHECK_PTR(new_arg);
   arguments.append(new_arg);
@@ -125,7 +126,7 @@ KProcess &KProcess::operator<<(const char *arg)
 
 void KProcess::clearArguments()
 {
-  if (0L != arguments.first()) {
+  if (NULL != arguments.first()) {
     while (arguments.remove())
       ;
   }
@@ -139,23 +140,21 @@ bool KProcess::start(RunMode runmode, Communication comm)
   uint n = arguments.count();
   char **arglist;
 
-  if (runs || (0L == process) ) {
+  if (runs) {
 	return FALSE;  // cannot start a process that is already running
 	// or if no executable has been assigned
   }
   run_mode = runmode; 
   status = 0;
 
-  arglist = (char **)malloc( (n+2)*sizeof(char *));
+  arglist = (char **)malloc( (n+1)*sizeof(char *));
   CHECK_PTR(arglist);
-
-  arglist[0]= process;
   for (i=0; i < n; i++)
-	arglist[i+1] = arguments.at(i);
-  arglist[n+1]= 0L;
+    arglist[i] = arguments.at(i);
+  arglist[n]= NULL;
 
   if (!setupCommunication(comm))
-	debug("Could not setup Communication!");
+    debug("Could not setup Communication!");
 
   runs = TRUE;
   pid = fork();
@@ -169,8 +168,8 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	// Matthias
 	if (run_mode == DontCare) 
           setpgid(0,0);
-	
-	execvp(process, arglist);
+
+	execvp(arglist[0], arglist);
 	exit(-1);
 
   } else if (-1 == pid) {
@@ -224,16 +223,14 @@ pid_t KProcess::getPid()
 
 bool KProcess::normalExit()
 {
-  int _status = status; // egcs needs this, don't ask me why
-  return (pid != 0) && (!runs) && (WIFEXITED(_status));
+  return (pid != 0) && (!runs) && (WIFEXITED(status));
 }
 
 
 
 int KProcess::exitStatus()
 {
-  int _status = status; // egcs needs this, don't ask me why
-  return WEXITSTATUS(_status);
+  return WEXITSTATUS(status);
 }
 
 
@@ -271,7 +268,7 @@ bool KProcess::closeStdin()
 
 
 /////////////////////////////
-// private slots           //
+// protected slots         //
 /////////////////////////////
 
 
@@ -452,11 +449,6 @@ int KProcess::commSetupDoneC()
 
 void KProcess::commClose()
 {
-  // The check for Qt Version 1.2 works around a bug in 
-  // the handling of QSocketNotifiers in Qt 1.2
-  // not deleting this SockteNotifiers causes a (small)
-  // memory leak, but prevents your app from segfaulting (mostly...)
-
   if (NoCommunication != communication) {
 
 	if (communication & Stdin)
@@ -482,3 +474,153 @@ void KProcess::commClose()
   }
 }
 
+
+
+
+///////////////////////////
+// CC: Class KShellProcess
+///////////////////////////
+
+KShellProcess::KShellProcess(const char *shellname):
+  KProcess()
+{
+  if (NULL != shellname)
+    shell = strdup(shellname);
+  else
+    shell = NULL;
+}
+
+
+
+bool KShellProcess::start(RunMode runmode, Communication comm)
+{
+  uint i;
+  uint n = arguments.count();
+  char **arglist;
+
+  if (runs) {
+	return FALSE;  // cannot start a process that is already running
+	// or if no executable has been assigned
+  }
+  run_mode = runmode; 
+  status = 0;
+
+debug("eins");
+  if (NULL == shell)
+    shell = searchShell();
+  if (NULL == shell) {
+    debug("Could not find a valid shell\n");
+    return FALSE;
+  }
+debug("zwei");
+  arglist = (char **)malloc( (n+3)*sizeof(char *));
+  CHECK_PTR(arglist);
+debug("drei");  
+  arglist[0] = shell;
+  arglist[1] = "-c";
+debug("vier");
+  for (i=0; i < n; i++)
+    arglist[i+2] = arguments.at(i);
+  arglist[n+2]= NULL;
+debug("fuenf");
+  if (!setupCommunication(comm))
+    debug("Could not setup Communication!");
+
+  runs = TRUE;
+  pid = fork();
+
+  if (0 == pid) {
+	// The child process
+
+	if(!commSetupDoneC())
+	  debug("Could not finish comm setup in child!");
+
+	// Matthias
+	if (run_mode == DontCare) 
+          setpgid(0,0);
+
+	execvp(arglist[0], arglist);
+	exit(-1);
+
+  } else if (-1 == pid) {
+	// forking failed
+
+	runs = FALSE;
+	return FALSE;
+
+  } else {
+	// the parent continues here
+
+	if (!commSetupDoneP())  // finish communication socket setup for the parent
+	  debug("Could not finish comm setup in parent!");
+
+	if (run_mode == Block) {
+	  waitpid(pid, &status, 0);
+	  processHasExited(status);
+	}
+  }
+  free(arglist);    
+  return TRUE;
+}
+
+
+
+char *KShellProcess::searchShell()
+{
+  char *hlp = NULL;
+  char *copy = NULL;
+  
+
+  // CC: now get the name of the shell we have to use
+  hlp = getenv("SHELL");
+  if (isExecutable(hlp)) {
+    copy = strdup(hlp);
+    CHECK_PTR(copy);
+  }
+
+  if (NULL == copy) {
+    // CC: hmm, invalid $SHELL in environment -- maybe there are whitespaces to be stripped?
+    QString stmp = QString(shell);
+    QString shell_stripped = stmp.stripWhiteSpace();
+    if (isExecutable(shell_stripped.data())) {
+      copy = strdup(shell_stripped.data());
+      CHECK_PTR(copy);
+    }
+  }
+  return copy;
+}
+
+
+
+
+bool KShellProcess::isExecutable(const char *fname) 
+{
+  struct stat fileinfo;
+
+  if ((NULL == fname) || (strlen(fname) == 0)) return FALSE;
+  // CC: filename is invalid
+
+  // CC: we've got a valid filename, now let's see whether we can execute that file
+
+  if (-1 == stat(fname, &fileinfo)) return FALSE;
+  // CC: return false if the file does not exist
+
+  // CC: anyway, we cannot execute directories, block/character devices, fifos or sockets
+  if ( (S_ISDIR(fileinfo.st_mode))  ||
+       (S_ISCHR(fileinfo.st_mode))  ||
+       (S_ISBLK(fileinfo.st_mode))  ||
+#ifdef S_ISSOCK
+       // CC: SYSVR4 systems don't have that macro
+       (S_ISSOCK(fileinfo.st_mode)) ||
+#endif
+       (S_ISFIFO(fileinfo.st_mode)) ||
+       (S_ISDIR(fileinfo.st_mode)) ) {
+    return FALSE;
+  }
+
+  // CC: now check for permission to execute the file
+  if (access(fname, X_OK) != 0) return FALSE;
+
+  // CC: we've passed all the tests...
+  return TRUE;
+}

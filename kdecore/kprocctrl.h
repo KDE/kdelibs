@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Christian Czezatke (e9025461@student.tuwien.ac.at)
+    Copyright (C) 1997 Christian Czezakte (e9025461@student.tuwien.ac.at)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,7 +19,11 @@
 //
 //  KPROCESSCONTROLLER -- A helper class for KProcess
 //
-//  version 0.2.2, Aug 31st 1997
+//  version 0.3.0, Nov 23rd 1997
+//
+//  (C) Christian Czezatke
+//  e9025461@student.tuwien.ac.at
+//
 
 #ifndef __KPROCCTRL_H__
 #define __KPROCCTRL_H__
@@ -39,7 +43,6 @@ class KProcessController : public QObject
 
 public:
   KProcessController();
-  ~KProcessController();
 
   QList<KProcess> *processList;
 
