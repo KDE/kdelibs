@@ -16,8 +16,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qclipboard.h>
-
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kglobal.h>
@@ -128,8 +126,8 @@ void KClipboard::slotSelectionChanged()
 
     if ( s_sync )
     {
-        setClipboard( new MimeSource( clip->data( QClipboard::Selection) ), 
-                      Clipboard );
+        setClipboard( new MimeSource( clip->data( QClipboard::Selection) ),
+                      QClipboard::Clipboard );
     }
 }
 
@@ -143,12 +141,12 @@ void KClipboard::slotClipboardChanged()
 
     if ( s_implicitSelection || s_sync )
     {
-        setClipboard( new MimeSource( clip->data( QClipboard::Clipboard ) ), 
-                      Selection );
+        setClipboard( new MimeSource( clip->data( QClipboard::Clipboard ) ),
+                      QClipboard::Selection );
     }
 }
 
-void KClipboard::setClipboard( QMimeSource *data, Mode mode )
+void KClipboard::setClipboard( QMimeSource *data, QClipboard::Mode mode )
 {
 //     qDebug("---> setting clipboard: %p", data);
 
@@ -156,11 +154,11 @@ void KClipboard::setClipboard( QMimeSource *data, Mode mode )
 
     s_blocked = true;
 
-    if ( mode == Clipboard )
+    if ( mode == QClipboard::Clipboard )
     {
         clip->setData( data, QClipboard::Clipboard );
     }
-    else if ( mode == Selection )
+    else if ( mode == QClipboard::Selection )
     {
         clip->setData( data, QClipboard::Selection );
     }

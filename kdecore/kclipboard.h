@@ -19,6 +19,7 @@
 #ifndef KCLIPBOARD_H
 #define KCLIPBOARD_H
 
+#include <qclipboard.h>
 #include <qmime.h>
 #include <qobject.h>
 #include <qstrlist.h>
@@ -49,7 +50,6 @@ public:
     friend class KlipperWidget;
     friend class KApplication;
 
-    enum Mode { Clipboard = 1, Selection = 2 };
     /**
      * Returns the KClipboard singleton object.
      * @return the KClipboard singleton object.
@@ -83,7 +83,7 @@ public:
      * Configures KClipboard to copy the Clipboard buffer to the Selection
      * buffer whenever the Clipboard changes.
      *
-     * 
+     *
      * @param enable true to enable implicit selection, false otherwise.
      * Default is true.
      * @see #implicitSelection
@@ -116,7 +116,7 @@ private:
     KClipboard( QObject *parent = 0, const char *name = 0L );
 
     // does not restore the old selection mode.
-    static void setClipboard( QMimeSource* data, Mode mode );
+    static void setClipboard( QMimeSource* data, QClipboard::Mode mode );
 
     static KClipboard *s_self;
     static bool s_sync;
