@@ -485,6 +485,8 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,forcedHeight(-1)
   ,isContainer(false)
   ,container(0)
+  ,resizePos(0,0)
+  ,resizing(false)
 {
 #ifndef NO_KDE2
   windowType = NET::Toolbar;

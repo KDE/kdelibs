@@ -119,6 +119,12 @@ private:
 };
 
 /**
+ * resizing enum
+ **/
+ 
+
+
+/**
  * additional KDockWidget stuff (private)
 */
 class KDockWidgetPrivate : public QObject
@@ -135,6 +141,9 @@ public slots:
   void slotFocusEmbeddedWidget(QWidget* w = 0L);
 
 public:
+ enum KDockWidgetResize 
+{ResizeLeft,ResizeTop,ResizeRight,ResizeBottom,ResizeBottomLeft,ResizeTopLeft,ResizeBottomRight,ResizeTopRight};
+
   int index;
   int splitPosInPercent;
   bool pendingFocusInEvent;
@@ -153,6 +162,10 @@ public:
 
   QGuardedPtr<QWidget> container;
 
+  QPoint resizePos;
+  bool resizing;
+  KDockWidgetResize resizeMode;
+
 };
 
 class KDockWidgetHeaderPrivate
@@ -167,6 +180,7 @@ public:
     topLevel = false;
   }
   KDockButton_Private* toDesktopButton;
+
   bool showToDesktopButton;
   bool topLevel;
 };

@@ -715,6 +715,10 @@ protected slots:
   
   virtual void paintEvent(QPaintEvent*);
 
+  virtual void mousePressEvent(QMouseEvent*);
+  virtual void mouseReleaseEvent(QMouseEvent*);
+  virtual void mouseMoveEvent(QMouseEvent*);
+  virtual void leaveEvent(QEvent*);
 protected:
   /**
    * earlier closest neighbor widget, so it's possible to dock back to it.

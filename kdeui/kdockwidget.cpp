@@ -209,6 +209,9 @@ KDockWidgetAbstractHeader::KDockWidgetAbstractHeader( KDockWidget* parent, const
 KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
 :KDockWidgetAbstractHeader( parent, name )
 {
+#ifdef BORDERLESS_WINDOWS
+  setCursor(QCursor(ArrowCursor));
+#endif
   d = new KDockWidgetHeaderPrivate( this );
   
   layout = new QHBoxLayout( this );
@@ -378,7 +381,7 @@ public:
 /*************************************************************************/
 KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel, WFlags f)
 #ifdef BORDERLESS_WINDOWS
-: QWidget( parent, name, f | WType_Dialog | WStyle_Customize | WStyle_NoBorder )
+: QWidget( parent, name, f )//| WType_Dialog | WStyle_Customize | WStyle_NoBorder )
 #else
 : QWidget( parent, name, f )
 #endif
@@ -453,6 +456,142 @@ void KDockWidget::paintEvent(QPaintEvent* pe)
         paint.end();
 }
 
+void KDockWidget::leaveEvent(QEvent *e)
+{
+	QWidget::leaveEvent(e);
+#ifdef BORDERLESS_WINDOWS
+	if (parent()) return;
+//	setCursor(QCursor(ArrowCursor));
+#endif
+}
+
+void KDockWidget::mousePressEvent(QMouseEvent* mme)
+{
+#ifdef BORDERLESS_WINDOWS
+	if (!parent())
+	{
+		kdDebug()<<"KDockWidget::mousePressEvent"<<endl;
+
+		bool bbottom;
+		bool bleft;
+		bool bright;
+		bool btop;
+		int styleheight;
+		QPoint mp;
+		mp=mme->pos();
+      		styleheight=2*style().pixelMetric(QStyle::PM_DefaultFrameWidth,this);
+		bbottom=mp.y()>=height()-styleheight;
+		btop=mp.y()<=styleheight;
+		bleft=mp.x()<=styleheight;
+		bright=mp.x()>=width()-styleheight;
+		kdDebug()<<"mousemovevent"<<endl;
+ 		d->resizing=true;
+		if (bright)
+		{
+			if (btop) 
+			{
+				d->resizeMode=KDockWidgetPrivate::ResizeTopRight;
+				d->resizePos=QPoint(width(),0)-mme->pos();
+
+			}
+			else
+			{
+				d->resizePos=QPoint(width(),height())-mme->pos();
+				if (bbottom) d->resizeMode=KDockWidgetPrivate::ResizeBottomRight;
+				else d->resizeMode=KDockWidgetPrivate::ResizeRight;
+			}
+		}
+		else if (bleft)
+		{
+			if (btop) setCursor(QCursor(SizeFDiagCursor));
+			else
+			if (bbottom) setCursor(QCursor(SizeBDiagCursor));
+			else setCursor(QCursor(SizeHorCursor));
+		}
+		else
+		if (bbottom)
+		{
+			d->resizeMode=KDockWidgetPrivate::ResizeBottom;
+			d->resizePos=QPoint(0,height())-mme->pos();
+		}
+		else
+		if  (btop) setCursor(QCursor(SizeVerCursor));
+		else d->resizing=false;
+
+		if (d->resizing) grabMouse(cursor());
+
+	}
+#endif
+	QWidget::mousePressEvent(mme);
+}
+
+void KDockWidget::mouseReleaseEvent(QMouseEvent* ev)
+{
+#ifdef BORDERLESS_WINDOWS
+	d->resizing=false;
+	releaseMouse();
+#endif
+	QWidget::mouseReleaseEvent(ev);
+}
+
+void  KDockWidget::mouseMoveEvent(QMouseEvent* mme)
+{
+	QWidget::mouseMoveEvent(mme);
+#ifdef BORDERLESS_WINDOWS
+	if (parent()) return;
+
+	if (d->resizing)
+	{
+		switch (d->resizeMode)
+		{
+			case KDockWidgetPrivate::ResizeRight:	
+				resize(mme->pos().x()+d->resizePos.x(),height());
+				break;
+			case KDockWidgetPrivate::ResizeBottomRight:	
+				resize(mme->pos().x()+d->resizePos.x(),mme->pos().y()+d->resizePos.y());
+				break;
+			case KDockWidgetPrivate::ResizeBottom:	
+				resize(width(),mme->pos().y()+d->resizePos.y());
+				break;
+			default:
+				break;
+		}
+		return;
+	}
+
+
+	bool bbottom;
+	bool bleft;
+	bool bright;
+	bool btop;
+	int styleheight;
+	QPoint mp;
+	mp=mme->pos();
+      	styleheight=2*style().pixelMetric(QStyle::PM_DefaultFrameWidth,this);
+	bbottom=mp.y()>=height()-styleheight;
+	btop=mp.y()<=styleheight;
+	bleft=mp.x()<=styleheight;
+	bright=mp.x()>=width()-styleheight;
+	kdDebug()<<"mousemovevent"<<endl;
+	if (bright)
+	{
+		if (btop) setCursor(QCursor(SizeBDiagCursor));
+		else
+		if (bbottom) setCursor(QCursor(SizeFDiagCursor));
+		else setCursor(QCursor(SizeHorCursor));
+	}
+	else if (bleft)
+	{
+		if (btop) setCursor(QCursor(SizeFDiagCursor));
+		else
+		if (bbottom) setCursor(QCursor(SizeBDiagCursor));
+		else setCursor(QCursor(SizeHorCursor));
+	}
+	else
+	if (bbottom ||  btop) setCursor(QCursor(SizeVerCursor));
+	else setCursor(QCursor(ArrowCursor));
+#endif
+}
 
 void KDockWidget::setLatestKDockContainer(QWidget* container)
 {
@@ -505,6 +644,8 @@ void KDockWidget::updateHeader()
   if ( parent() ){
 #ifdef BORDERLESS_WINDOWS
       layout->setMargin(0);
+      setMouseTracking(false);
+      setCursor(QCursor(ArrowCursor));
 #endif
 
     if ( (parent() == manager->main) || isGroup || (eDocking == KDockWidget::DockNone) ){
@@ -518,7 +659,8 @@ void KDockWidget::updateHeader()
     header->setTopLevel( true );
     header->show();
 #ifdef BORDERLESS_WINDOWS
-      layout->setMargin(style().pixelMetric(QStyle::PM_DefaultFrameWidth,this));
+      layout->setMargin(2*style().pixelMetric(QStyle::PM_DefaultFrameWidth,this));
+      setMouseTracking(true);
 #endif
   }
 }
@@ -1112,6 +1254,9 @@ void KDockWidget::setWidget( QWidget* mw )
     mw->reparent(this, 0, QPoint(0,0), false);
   }
 
+#ifdef BORDERLESS_WINDOWS
+  if (!mw->ownCursor()) mw->setCursor(QCursor(ArrowCursor));
+#endif
   widget = mw;
   delete layout;
 
