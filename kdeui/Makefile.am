@@ -99,10 +99,12 @@ libkdeui_la_METASOURCES = AUTO
 rcdir = $(kde_confdir)/ui
 rc_DATA = ui_standards.rc
 
-kdepackages.h:
+kdepackages:
+	-rm $(srcdir)/kdepackages.h
 	if test -f $(top_srcdir)/../bugs/Maintainers; then \
 		echo "// DO NOT EDIT - EDIT bugs/Maintainers instead" >  $(srcdir)/kdepackages.h ;\
 		echo "const char *packages[] = {" >> $(srcdir)/kdepackages.h ;\
 		sed -e "s#^\([^ ]*\).*#\"\1\",#" $(top_srcdir)/../bugs/Maintainers | sort >> $(srcdir)/kdepackages.h ; \
 		echo "0 };" >>  $(srcdir)/kdepackages.h ; \
 	fi
+
