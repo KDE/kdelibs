@@ -554,7 +554,7 @@ bool ReadWritePart::saveAs( const KURL & kurl )
 {
   if (!kurl.isValid())
   {
-      kdError(1000) << "saveAs: Malformed URL" << kurl.url() << endl;
+      kdError(1000) << "saveAs: Malformed URL " << kurl.url() << endl;
       return false;
   }
   d->m_duringSaveAs = true;
