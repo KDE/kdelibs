@@ -864,8 +864,10 @@ void Window::closeNow()
 void Window::afterScriptExecution()
 {
   DOM::DocumentImpl::updateDocumentsRendering();
-  QValueList<DelayedAction>::Iterator it = m_delayed.begin();
-  for ( ; it != m_delayed.end() ; ++it )
+  QValueList<DelayedAction> delayedActions = m_delayed;
+  m_delayed.clear();
+  QValueList<DelayedAction>::Iterator it = delayedActions.begin();
+  for ( ; it != delayedActions.end() ; ++it )
   {
     switch ((*it).actionId) {
     case DelayedClose:
@@ -1283,7 +1285,6 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     }
     return Undefined();
   case Window::ResizeTo:
-    kdDebug() << k_funcinfo << "widget=" << widget << endl;
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
