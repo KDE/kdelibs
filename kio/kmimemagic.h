@@ -93,7 +93,7 @@ public:
   /**
    * Create a parser, initialize it with the given config file.
    */
-  KMimeMagic( const char * );
+  KMimeMagic( const QString & configFile );
 
   /**
    * Destroys the parser
@@ -106,7 +106,7 @@ public:
    *
    * @return true on success.
    */
-  bool mergeConfig( const char * );
+  bool mergeConfig( const QString & configFile );
 
   /**
    * Merge an existing parse table with the data from the

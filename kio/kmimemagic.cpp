@@ -25,7 +25,7 @@ void KMimeMagic::initStatic()
 {
   // Magic file detection init
   QString mimefile = locate( "mime", "magic" );
-  s_pSelf = new KMimeMagic( mimefile.ascii() );
+  s_pSelf = new KMimeMagic( mimefile );
   s_pSelf->setFollowLinks( TRUE );
 }
 
@@ -401,7 +401,7 @@ static struct names {
 
 /* current config */
 typedef struct config_rec {
-	char *magicfile;        /* where magic be found      */
+	QString magicfile;        /* where magic be found      */
 	struct magic *magic,    /* head of magic config list */
 	*last;
 };
@@ -476,15 +476,15 @@ int KMimeMagic::apprentice()
 	int errs = 0;
 	int lineno;
 	int rule = 0;
-	char *fname;
+	QCString fname;
 
-	if (!conf->magicfile)
+	if (conf->magicfile.isEmpty())
 		return -1;
-	fname = conf->magicfile;
+	fname = QFile::encodeName(conf->magicfile);
 	f = fopen(fname, "r");
 	if (f == NULL) {
 		kDebugError( 7018, "can't read magic file %s: %s",
-                             fname, strerror(errno) );
+                             fname.data(), strerror(errno) );
 		return -1;
 	}
 
@@ -497,7 +497,7 @@ int KMimeMagic::apprentice()
 
 	kDebugInfo(7018, "apprentice: conf=%p file=%s m=%s m->next=%s last=%s",
 	      conf,
-	      conf->magicfile ? conf->magicfile : "NULL",
+	      conf->magicfile.local8Bit().data(),
 	      conf->magic ? "set" : "NULL",
 	      (conf->magic && conf->magic->next) ? "set" : "NULL",
 	      conf->last ? "set" : "NULL");
@@ -1495,7 +1495,7 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 
 	kDebugInfo(7018, "match: conf=%p file=%s m=%s m->next=%s last=%s",
 	      conf,
-	      conf->magicfile ? conf->magicfile : "NULL",
+	      conf->magicfile.local8Bit().data(),
 	      conf->magic ? "set" : "NULL",
 	      (conf->magic && conf->magic->next) ? "set" : "NULL",
 	      conf->last ? "set" : "NULL");
@@ -1972,18 +1972,17 @@ from_oct(int digs, char *where)
 /*
  * The Constructor
  */
-KMimeMagic::KMimeMagic(const char * _configfile)
+KMimeMagic::KMimeMagic(const QString & _configfile)
 {
 	int result;
-	conf = (config_rec *)calloc(1, sizeof(config_rec));
+	conf = new config_rec;
 
 	/* set up the magic list (empty) */
 	conf->magic = conf->last = NULL;
 	magicResult = NULL;
 	followLinks = FALSE;
 
-	if (_configfile)
-		conf->magicfile = strdup(_configfile);
+	conf->magicfile = _configfile;
 	/* on the first time through we read the magic file */
 	result = apprentice();
 	if (result == -1)
@@ -2007,35 +2006,32 @@ KMimeMagic::~KMimeMagic()
 			p = p->next;
 			free(q);
 		}
-		free(conf);
+		delete conf;
 	}
 	if (magicResult)
 		delete magicResult;
 }
 
 bool
-KMimeMagic::mergeConfig(const char * _configfile)
+KMimeMagic::mergeConfig(const QString & _configfile)
 {
 	int result;
 
-	if (conf) {
-		char * old_magicfile = conf->magicfile;
+	QString old_magicfile = conf->magicfile;
 
-		if (_configfile)
-			conf->magicfile = strdup(_configfile);
-		else
-			return false;
-		result = apprentice();
-		if (result == -1) {
-			conf->magicfile = old_magicfile;
-			return false;
-		}
-#if (MIME_MAGIC_DEBUG > 1)
-		test_table();
-#endif
-		return true;
+	if (!_configfile.isEmpty())
+		conf->magicfile = _configfile;
+	else
+		return false;
+	result = apprentice();
+	if (result == -1) {
+		conf->magicfile = old_magicfile;
+		return false;
 	}
-	return false;
+#if (MIME_MAGIC_DEBUG > 1)
+	test_table();
+#endif
+	return true;
 }
 
 bool
