@@ -32,6 +32,7 @@
 #include <qkeycode.h>
 #include <qfontdatabase.h>
 #include <qstyle.h>
+#include <qtooltip.h>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -65,6 +66,8 @@ KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QSt
     setNumRows( 8 );
 
     repaintContents( false );
+    
+    setToolTips();
 
     setFocusPolicy( QWidget::StrongFocus );
     setBackgroundMode( QWidget::NoBackground );
@@ -75,6 +78,8 @@ void KCharSelectTable::setFont( const QString &_font )
 {
     vFont = _font;
     repaintContents( false );
+
+    setToolTips();
 }
 
 //==================================================================
@@ -91,6 +96,8 @@ void KCharSelectTable::setTableNum( int _tableNum )
 
     vTableNum = _tableNum;
     repaintContents( false );
+
+    setToolTips();
 }
 
 //==================================================================
@@ -115,6 +122,8 @@ void KCharSelectTable::resizeEvent( QResizeEvent * e )
         setCellWidth( new_w );
     if( new_h !=  cellHeight())
         setCellHeight( new_h );
+
+    setToolTips();
 }
 
 //==================================================================
@@ -322,6 +331,20 @@ void KCharSelectTable::gotoDown()
 
 	emit focusItemChanged( vChr );
 	emit focusItemChanged();
+    }
+}
+
+//==================================================================
+void KCharSelectTable::setToolTips()
+{
+    for( int i=0 ; i< numRows(); i++ )
+    {
+	for( int j=0; j< numCols(); j++ )
+	{
+	    QRect r( cellWidth()*j, cellHeight()*i, cellWidth(), cellHeight() );
+	    QToolTip::remove(this,r);
+	    QToolTip::add(this, r, i18n("Character code","UTF code: %1").arg(QString::number(vTableNum * 256 + numCols()*i + j)));
+	}
     }
 }
 

@@ -98,6 +98,7 @@ signals:
 
 private:
     virtual void setFont(const QFont &f) { QGridView::setFont(f); }
+    void setToolTips();
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
