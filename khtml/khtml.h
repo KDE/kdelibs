@@ -597,11 +597,10 @@ public:
      * Set document charset. 
      *
      * Any <META ...> setting charsets overrides this setting
-     *
+     * as long as override isn't true.
      * @return TRUE if successfull
-     *
      */
-    bool setCharset(const char *name); 
+    bool setCharset(const char *name, bool override = false); 
 
     //-----------------------------------------------------------
     // FUNCTIONS used for KFM Extension
@@ -630,6 +629,12 @@ public:
      * restore a page previously saved with @ref saveYourself()
      */
     void restore(SavedPage *);
+
+    /*
+     * draw background area
+     */
+    void drawBackground( int _x, int _y, int _w, int _h, QPainter *p = 0,
+			 int xoff = 0, int yoff = 0);
 
   
 signals:
@@ -771,7 +776,8 @@ signals:
     void cancelFileRequest( const char *_url );
 
     // signal when user has submitted a form
-    void formSubmitted( const char *_method, const char *_url, const char *_data );
+    void formSubmitted( const char *_method, const char *_url, 
+			const char *_data, const char *_target );
 
     // signal that the HTML Widget has changed size
     void resized( const QSize &size );
@@ -837,7 +843,8 @@ protected slots:
      *
      * Called when the user submitted a form.
      */
-    void slotFormSubmitted( const char *_method, const char *_url, const char *_data );
+    void slotFormSubmitted( const char *_method, const char *_url, 
+			    const char *_data, const char *_target );
 
     /*
      * INTERNAL
@@ -850,9 +857,10 @@ protected slots:
   
 protected:
 
-	KHTMLParser *parser;
-	
-	QString charsetName;
+    KHTMLParser *parser;
+    
+    QString charsetName;
+    bool overrideCharset;
 
     virtual void mousePressEvent( QMouseEvent * );
 
@@ -902,11 +910,6 @@ protected:
 
     // flush key presses from the event queue
     void flushKeys();
-
-    /*
-     * draw background area
-     */
-    void drawBackground( int _xval, int _yval, int _x, int _y, int _w, int _h );
 
     /*
      * position form elements (widgets) on the page
@@ -1099,23 +1102,23 @@ protected:
     /*
      * Get last image map
      */
-	HTMLMap * lastMap();
+    HTMLMap * lastMap();
+    
+    /*
+     * Sets new title
+     * (Called by parser only)
+     */
+    void setNewTitle( const char *_title);
 
-	/*
-	 * Sets new title
-	 * (Called by parser only)
-	 */
-	void setNewTitle( const char *_title);
-
-	/*
-	 * Adds a new frame set
-	 */
-	void addFrameSet( HTMLFrameSet *_frameSet );  
-
-	/*
-	 * Show a frame set
-	 */
-	void showFrameSet( HTMLFrameSet *_frameSet );  
+    /*
+     * Adds a new frame set
+     */
+    void addFrameSet( HTMLFrameSet *_frameSet );  
+    
+    /*
+     * Show a frame set
+     */
+    void showFrameSet( HTMLFrameSet *_frameSet );  
 
     /*
      * The toplevel frame set if we have frames otherwise 0L.
@@ -1134,13 +1137,13 @@ protected:
      */
     QList<KHTMLWidget> frameList;    
 
-	/*
-	 * Adds a new frame
-	 */
-	void addFrame( HTMLFrameSet *_frameSet, const char *_name, 
-				   bool _scrolling, bool _resize, 
-				   int _frameborder, int _marginwidth, int _marginheight,
-				   const char *_src);  
+    /*
+     * Adds a new frame
+     */
+    void addFrame( HTMLFrameSet *_frameSet, const char *_name, 
+		   bool _scrolling, bool _resize, 
+		   int _frameborder, int _marginwidth, int _marginheight,
+		   const char *_src);  
 
     /*
      * @return TRUE if the current document is a framed document.

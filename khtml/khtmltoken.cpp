@@ -326,7 +326,7 @@ void HTMLTokenizer::write( const char *str )
 	    else
 		scriptCode[ scriptCodeSize++ ] = *src++;
 	}
-	else if (charEntity && !( tquote && tag ))
+	else if (charEntity)
 	{
             unsigned long entityValue = 0;
 	    QString res = 0;
@@ -380,7 +380,7 @@ void HTMLTokenizer::write( const char *str )
 	        charEntity = false;
                 memcpy(dest,searchBuffer+1, searchCount);
 		dest += searchCount;
-		*dest++ = *src++;
+		//*dest++ = *src++;
 		if ( pre )
 		    prePos += searchCount;	    
 	    }

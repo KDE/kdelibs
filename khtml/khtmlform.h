@@ -50,9 +50,6 @@ class HTMLSelect;
 class HTMLButton;
 class HTMLTextArea;
 
-
-class HTMLForm;
-
 //---------------------------------------------------------------------------
 
 class HTMLElement
@@ -117,13 +114,19 @@ public:
 	virtual void position( int _x, int _y, int _width, int _height );
 
 	virtual void calcAbsolutePos( int _x, int _y );
+	// prints the object
+	virtual void print( QPainter *, int, int );
 
     virtual const char * objectName() const { return "HTMLWidgetElement"; };
 
-protected:
-	QWidget *widget;
+    void setWidget( QWidget *_w );
+    QWidget *widget() { return w; }
 
 private:
+	QWidget *w;
+	// holds the widgets information...
+	QPixmap *p;
+
 	// absolute position of this element in the page
 	int _absX;
 	int _absY;
@@ -366,7 +369,7 @@ class HTMLForm : public QObject
 {
 	Q_OBJECT
 public:
-	HTMLForm( const char *a, const char *m );
+	HTMLForm( const char *a, const char *m, const char *target );
 	virtual ~HTMLForm();
 
 	void addElement( HTMLElement *e );
@@ -387,12 +390,14 @@ public slots:
 	void slotRadioSelected( const char *n, const char *v );
 
 signals:
-	void submitted( const char *method, const char *url, const char *data );
+	void submitted( const char *method, const char *url, 
+			const char *data, const char *target );
 	void radioSelected( const char *n, const char *v );
 
 private:
 	QString _method;
 	QString _action;
+	QString _target;
 
 	QList<HTMLElement> elements;
 	QList<HTMLHidden>  hidden;

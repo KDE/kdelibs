@@ -325,9 +325,9 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
   }
 }
 
-void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, const char *_data )
+void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, const char *_data, const char *_target )
 {
-    emit formSubmitted( _method, _url, _data );
+    emit formSubmitted( _method, _url, _data, _target );
 }
 
 //
@@ -753,9 +753,8 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
     
-    drawBackground( x_offset, y_offset, _pe->rect().x(),
-	    _pe->rect().y(),
-	    _pe->rect().width(), _pe->rect().height() );
+    drawBackground( _pe->rect().x(), _pe->rect().y(),
+		    _pe->rect().width(), _pe->rect().height() );
 
     clue->print( painter, _pe->rect().x() - x_offset,
 	    _pe->rect().y() + y_offset - topBorder,
@@ -974,7 +973,7 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
     {
 	absy = _obj->getAbsY();
 /*
-	drawBackground( x_offset, y_offset, absx - x_offset + leftBorder,
+	drawBackground( absx - x_offset + leftBorder,
 		absy - y_offset + topBorder,
 		_obj->getWidth(), _obj->getHeight() );
 */
@@ -1021,7 +1020,7 @@ void KHTMLWidget::paint( HTMLChain *_chain, int x, int y, int w, int h )
 
 	bool db = bDrawBackground;
 	bDrawBackground = true;
-	drawBackground( x_offset, y_offset, x, y, w, h );
+	drawBackground( x, y, w, h );
 	bDrawBackground = db;
 
 	_chain->current()->print( painter, _chain, x - x_offset - leftBorder,
@@ -1372,7 +1371,7 @@ void KHTMLWidget::parse()
     // clear page
     bDrawBackground = true;
     setBGColor( settings->bgColor );
-    drawBackground( x_offset, y_offset, 0, 0, width(), height() );
+    drawBackground( 0, 0, width(), height() );
 
     // this will call timerEvent which in turn calls parseBody
     timerId = startTimer( TIMER_INTERVAL );
@@ -1654,36 +1653,42 @@ void KHTMLWidget::positionFormElements()
     }
 }
 
-void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
-	int _w, int _h )
+void KHTMLWidget::drawBackground( int _x, int _y, int _w, int _h, QPainter *p,
+				  int xoff, int yoff)
 {
-	if ( !bDrawBackground )
-	    return;
+    if ( !bDrawBackground && !p )
+	return;
 
-	if ( bgPixmap.isNull() )
-	{
-		painter->eraseRect( _x, _y, _w, _h );
-		return;
-	}
+    if( !p )
+	p = painter;
+
+    if ( bgPixmap.isNull() )
+    {
+	if( !settings->bgColor.isValid() )
+	    p->eraseRect( _x - xoff, _y - yoff, _w, _h );
+	else
+	    p->fillRect( _x - xoff, _y - yoff, _w, _h, settings->bgColor );
+	return;
+    }
 
 	// if the background pixmap is transparent we must erase the bg
 	if ( bgPixmap.mask() )
-	    painter->eraseRect( _x, _y, _w, _h );
+	    p->eraseRect( _x - xoff, _y - yoff, _w, _h );
 
 	int pw = bgPixmap.width();
 	int ph = bgPixmap.height();
 
-	int xOrigin = _x/pw*pw - _xval%pw;
-	int yOrigin = _y/ph*ph - _yval%ph;
+	int xOrigin = _x/pw*pw - x_offset%pw;
+	int yOrigin = _y/ph*ph - y_offset%ph;
 
-	painter->setClipRect( _x, _y, _w, _h );
-	painter->setClipping( TRUE );
+	p->setClipRect( _x - xoff, _y - yoff, _w, _h );
+	p->setClipping( TRUE );
 
 	for ( int yp = yOrigin; yp < _y + _h; yp += ph )
 	{
 		for ( int xp = xOrigin; xp < _x + _w; xp += pw )
 		{
-			painter->drawPixmap( xp, yp, bgPixmap );
+			p->drawPixmap( xp - xoff, yp - yoff, bgPixmap );
 		}
 	}
 
@@ -2571,8 +2576,10 @@ void KHTMLWidget::addForm( HTMLForm *_form )
 {
     formList.append( _form );
     connect( _form, 
-             SIGNAL( submitted( const char *, const char *, const char * ) ),
-             SLOT( slotFormSubmitted( const char *, const char *, const char * ) ) 
+             SIGNAL( submitted( const char *, const char *, 
+				const char *, const char * ) ),
+             SLOT( slotFormSubmitted( const char *, const char *, 
+				      const char *, const char * ) ) 
            );
 }
 
@@ -2616,8 +2623,9 @@ void KHTMLWidget::setBGColor( const QColor &_bgColor)
     }
 }                   
 
-bool KHTMLWidget::setCharset(const char *name){
+bool KHTMLWidget::setCharset(const char *name, bool override){
     charsetName = name;
+    overrideCharset = override;
     return true; // Always true
 }
 

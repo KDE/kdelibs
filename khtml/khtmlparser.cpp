@@ -875,13 +875,79 @@ const char *KHTMLParser::parseOneToken( HTMLClue *_clue, const char *str )
     return 0;
 }
 
-// <a               </a>
+/* the following attributes are standard sets used quite often for specific
+   tags. There parsing can be done in functions, and return a struct defining 
+   the atributes.
+
+<!ENTITY % coreattrs
+"id          ID             #IMPLIED  -- document-wide unique id --
+class       CDATA          #IMPLIED  -- space separated list of classes --
+style       %StyleSheet;   #IMPLIED  -- associated style info --
+title       %Text;         #IMPLIED  -- advisory title/amplification --"
+>
+
+struct coreattrs
+{
+    QString id;
+    QString class;
+    StyleSheet style;
+    QString title;
+};
+
+<!ENTITY % i18n
+"lang        %LanguageCode; #IMPLIED  -- language code --
+dir         (ltr|rtl)      #IMPLIED  -- direction for weak/neutral text --"
+>
+
+struct i18n
+{
+    Language lang;
+    Direction dir;
+};
+
+<!ENTITY % events
+"onclick     %Script;       #IMPLIED  -- a pointer button was clicked --
+ondblclick  %Script;       #IMPLIED  -- a pointer button was double clicked--
+onmousedown %Script;       #IMPLIED  -- a pointer button was pressed down --
+onmouseup   %Script;       #IMPLIED  -- a pointer button was released --
+onmouseover %Script;       #IMPLIED  -- a pointer was moved onto --
+onmousemove %Script;       #IMPLIED  -- a pointer was moved within --
+onmouseout  %Script;       #IMPLIED  -- a pointer was moved away --
+onkeypress  %Script;       #IMPLIED  -- a key was pressed and released --
+onkeydown   %Script;       #IMPLIED  -- a key was pressed down --
+onkeyup     %Script;       #IMPLIED  -- a key was released --"
+>
+
+struct events
+{
+    JScript onclick;
+    JScript ondblclick;
+    JScript onmousedown;
+    JScript onmouseup;
+    JScript onmouseover;
+    JScript onmousemove;
+    JScript onmouseout;
+    JScript onkeypress;
+    JScript onkeydown;
+    JScript onkeyup;
+};
+
+<!ENTITY % attrs "%coreattrs; %i18n; %events;">
+
+*/
+
+// <a>              </a>
+// <abbr>           </abbr>      unimpl. HTML4
+// <acronym>        </acronym>   unimpl. HTML4
 // <address>        </address>
-// <area            </area>
+// <applet>         </applet>    unimpl. We'll need java for that one...
+// <area            
 void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 {
     if ( strncmp( str, "area", 4 ) == 0 )
     {
+	// attributes missing: %attrs, shape, coords, href, nohref,
+	// alt, tabindex, accesskey, onfocus, onblur
 	HTMLMap *imageMap = HTMLWidget->lastMap();
 
 	if (!imageMap) 
@@ -1002,8 +1068,36 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
     {
 	popBlock( ID_ADDRESS, _clue);
     }
+    else if ( strncmp( str, "abbr", 4) == 0 )
+    {
+	// attributes: %attrs
+    }
+    else if ( strncmp( str, "/abbr", 5) == 0 )
+    {
+    }
+    else if ( strncmp( str, "acronym", 7) == 0 )
+    {
+	// attributes: %attrs
+    }
+    else if ( strncmp( str, "/acronym", 8) == 0 )
+    {
+    }
+    else if ( strncmp( str, "applet", 6) == 0 )
+    {
+	// java stuff... ignore for the moment
+    }
+    else if ( strncmp( str, "/applet", 7) == 0 )
+    {
+    }
     else if ( strncmp( str, "a ", 2 ) == 0 )
     {
+	// implemented attributes:
+	// href, name, target
+	//
+	// unimpl:
+	// charset, type, hreflang, rel, rev, accesskey, shape, coords,
+	// tabindex, onfocus, onblur
+
 	closeAnchor();
 	QString tmpurl;
 	target = 0;
@@ -1068,11 +1162,13 @@ void KHTMLParser::parseA( HTMLClue *_clue, const char *str )
 
 // <b>              </b>
 // <base
-// <basefont                        unimplemented
+// <basefont                        unimpl. HTML4
+// <bdo>            </bdo>          unimpl. HTML4 bidirectional writing
 // <big>            </big>
 // <blockquote>     </blockquote>
 // <body
 // <br
+// <button>         </button>       unimpl. HTML4
 void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
 {
     if ( strncmp( str, "basefont", 8 ) == 0 )
@@ -1217,7 +1313,8 @@ void KHTMLParser::parseB( HTMLClue *_clue, const char *str )
 // <cite>           </cite>
 // <code>           </code>
 // <cell>           </cell>
-// <comment>        </comment>      unimplemented
+// <comment>        </comment>      unimplemented (??? doesn't exist
+//                                  according to HTML4 specs...)
 void KHTMLParser::parseC( HTMLClue *_clue, const char *str )
 {
 	if (strncmp( str, "center", 6 ) == 0)
@@ -1263,6 +1360,9 @@ void KHTMLParser::parseC( HTMLClue *_clue, const char *str )
 	}
 }
 
+// <dd>             </dd>           unimpl. HTML4 end tag optional
+// <del>            </del>          unimpl. HTML4
+// <dfn>            </dfm>          unimpl. HTML4
 // <dir             </dir>          partial
 // <div             </div>
 // <dl>             </dl>
@@ -1380,6 +1480,7 @@ void KHTMLParser::parseE( HTMLClue * _clue, const char *str )
 	}
 }
 
+// <fieldset>       </fieldset>     unimpl. HTML4
 // <font>           </font>
 // <form>           </form>         partial
 // <frame           <frame>
@@ -1533,6 +1634,7 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
 	    printf("Creating form\n");
 	    QString action = "";
 	    QString method = "GET";
+	    QString target = "";
 
 	    stringTok->tokenize( str + 5, " >" );
             while ( stringTok->hasMoreTokens() )
@@ -1548,9 +1650,14 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
                     if ( strncasecmp( token + 7, "post", 4 ) == 0 )
 			method = "POST";
 		}
+		else if ( strncasecmp( token, "target=", 7 ) == 0 )
+		{
+		    target = token+7;
+		}
+
             }
 
-	    form = new HTMLForm( action, method );
+	    form = new HTMLForm( action, method, target );
 	    HTMLWidget->addForm( form);
 
             vspace_inserted = insertVSpace( _clue, vspace_inserted );
@@ -1577,6 +1684,7 @@ void KHTMLParser::parseG( HTMLClue *, const char * )
 }
 
 // <h[1-6]>         </h[1-6]>
+// <head>           </head>     can perhaps safely ignore this tag...
 // <hr
 void KHTMLParser::parseH( HTMLClue *_clue, const char *str )
 {
@@ -1710,8 +1818,11 @@ void KHTMLParser::parseH( HTMLClue *_clue, const char *str )
 }
 
 // <i>              </i>
+// <iframe>         </iframe>       unimpl. HTML4
 // <img                             partial
 // <input                           partial
+// <ins>            </ins>          unimpl. HTML4
+// <isindex                         unimpl. HTML4
 void KHTMLParser::parseI( HTMLClue *_clue, const char *str )
 {
     if (strncmp( str, "img", 3 ) == 0)
@@ -1891,8 +2002,11 @@ void KHTMLParser::parseK( HTMLClue * _clue, const char *str )
 	}
 }
 
-// <listing>        </listing>      unimplemented
+// <label>          </label>        unimpl.
+// <legend>         </legend>       unimpl.
+// <listing>        </listing>      unimplemented (not in HTML4...)
 // <li>
+// <link                            unimpl. HTML4
 void KHTMLParser::parseL( HTMLClue *_clue, const char *str )
 {
     if (strncmp( str, "link", 4 ) == 0)
@@ -1988,7 +2102,7 @@ void KHTMLParser::parseL( HTMLClue *_clue, const char *str )
 
 // <map             </map>
 // <menu>           </menu>         partial
-// <meta> 			    partial - only charset
+// <meta> 			    partial - only charset and refresh
 void KHTMLParser::parseM( HTMLClue *_clue, const char *str )
 {
 	if (strncmp( str, "menu", 4 ) == 0)
@@ -2048,7 +2162,8 @@ void KHTMLParser::parseM( HTMLClue *_clue, const char *str )
 				const char* token = stringTok->nextToken();
 				debugM("token: %s\n",token);
 				if ( strncasecmp( token, "charset=", 8 ) == 0)
-				    setCharset(token+8);
+				    if( !HTMLWidget->overrideCharset )
+					setCharset(token+8);
 			}                         
 		    }
 		    if ( strcasecmp(httpequiv.data(), "refresh") == 0 )
@@ -2087,7 +2202,9 @@ void KHTMLParser::parseM( HTMLClue *_clue, const char *str )
 	}
 }
 
-//<noframes>        </noframes>
+// <noframes>        </noframes>
+// <noscript>        </noscript>     HTML4
+// <nobr>            </nobr>         netscape or IE extension
 void KHTMLParser::parseN( HTMLClue *, const char *str )
 {
     // only ignore the stuff in noframes, if we have a htmlview
@@ -2095,7 +2212,9 @@ void KHTMLParser::parseN( HTMLClue *, const char *str )
 	inNoframes = true;	
 }
 
+// <object>         </object>       unimpl. HTML4        
 // <ol>             </ol>           partial
+// <optgroup>       </optgroup>     unimpl. HTML4
 // <option
 void KHTMLParser::parseO( HTMLClue *_clue, const char *str )
 {
@@ -2188,6 +2307,7 @@ void KHTMLParser::parseO( HTMLClue *_clue, const char *str )
 }
 
 // <p
+// <param                      unimpl. HTML4
 // <pre             </pre>
 void KHTMLParser::parseP( HTMLClue *_clue, const char *str )
 {
@@ -2238,6 +2358,7 @@ void KHTMLParser::parseP( HTMLClue *_clue, const char *str )
 	}
 }
 
+// <q>            </q>            unimpl. HTML4
 void KHTMLParser::parseQ( HTMLClue *, const char * )
 {
 }
@@ -2248,10 +2369,13 @@ void KHTMLParser::parseR( HTMLClue *, const char * )
 
 // <s>              </s>
 // <samp>           </samp>
+// <script>         </script>       unimpl. HTML4
 // <select          </select>       partial
 // <small>          </small>
+// <span>           </span>         unimpl. HTML4
 // <strike>         </strike>
 // <strong>         </strong>
+// <style>          </style>        unimpl. HTML4
 // <sub>            </sub>          unimplemented
 // <sup>            </sup>          unimplemented
 void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
@@ -2361,7 +2485,7 @@ void KHTMLParser::parseS( HTMLClue *_clue, const char *str )
 	}
 }
 
-// <table           </table>        most
+// <table           </table>        HTML4 stuff missing
 // <textarea        </textarea>
 // <title>          </title>
 // <tt>             </tt>
@@ -2639,6 +2763,8 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 	{
 	    if ( strchr( token+6, '%' ) )
 		percent = atoi( token + 6 );
+	    else if ( strchr( token+6, '*' ) )
+	    { /* ignore */ }
 	    else {
 		width = atoi( token + 6 );
 		percent = 0; // fixed width
@@ -2866,6 +2992,8 @@ const char* KHTMLParser::parseTable( HTMLClue *_clue, const char *attr )
 			{
 			    if ( strchr( token + 6, '%' ) )
 				percent = atoi( token + 6 );
+			    else if ( strchr( token+6, '*' ) )
+			    { /* ignore */ }
 			    else
 			    {
 				cellWidth = atoi( token + 6 );
