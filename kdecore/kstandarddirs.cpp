@@ -88,9 +88,6 @@ KStandardDirs::KStandardDirs( ) : addedCustoms(false)
     absolutes.setAutoDelete(true);
     savelocations.setAutoDelete(true);
     addKDEDefaults();
-#ifdef __linux__
-    addExecutablePrefix();
-#endif
 }
 
 KStandardDirs::~KStandardDirs()
@@ -142,7 +139,7 @@ QStringList KStandardDirs::allTypes() const
 
 void KStandardDirs::addPrefix( const QString& _dir )
 {
-    if (_dir.isNull())
+    if (_dir.isEmpty())
 	return;
 
     QString dir = _dir;
@@ -157,7 +154,7 @@ void KStandardDirs::addPrefix( const QString& _dir )
 
 void KStandardDirs::addXdgConfigPrefix( const QString& _dir )
 {
-    if (_dir.isNull())
+    if (_dir.isEmpty())
 	return;
 
     QString dir = _dir;
@@ -172,7 +169,7 @@ void KStandardDirs::addXdgConfigPrefix( const QString& _dir )
 
 void KStandardDirs::addXdgDataPrefix( const QString& _dir )
 {
-    if (_dir.isNull())
+    if (_dir.isEmpty())
 	return;
 
     QString dir = _dir;
@@ -194,7 +191,7 @@ QString KStandardDirs::kfsstnd_prefixes()
 bool KStandardDirs::addResourceType( const char *type,
 				     const QString& relativename )
 {
-    if (relativename.isNull())
+    if (relativename.isEmpty())
        return false;
 
     QStringList *rels = relatives.find(type);
@@ -250,7 +247,7 @@ for (QStringList::ConstIterator pit = prefixes.begin();
 #endif
 
     QString dir = findResourceDir(type, filename);
-    if (dir.isNull())
+    if (dir.isEmpty())
 	return dir;
     else return dir + filename;
 }
@@ -449,7 +446,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 			 QStringList& relList,
 			 bool recursive, bool unique)
 {
-    if (relpath.isNull()) {
+    if (relpath.isEmpty()) {
        lookupDirectory(prefix, relPart, regexp, list,
 		       relList, recursive, unique);
        return;
@@ -1023,6 +1020,33 @@ static QString readEnvPath(const char *env)
    return QFile::decodeName(c_path);
 }
 
+#ifdef __linux__
+static QString executablePrefix()
+{
+   char path_buffer[MAXPATHLEN + 1];
+   path_buffer[MAXPATHLEN] = 0;
+   int length = readlink ("/proc/self/exe", path_buffer, MAXPATHLEN);
+   if (length == -1)
+      return QString::null;
+
+   path_buffer[length] = '\0';
+
+   QString path = QFile::decodeName(path_buffer);
+
+   if(path.isEmpty())
+      return QString::null;
+
+   int pos = path.findRev('/'); // Skip filename
+   if(pos <= 0)
+      return QString::null;
+   pos = path.findRev('/', pos - 1); // Skip last directory
+   if(pos <= 0)
+      return QString::null;
+
+   return path.left(pos);
+}
+#endif
+
 void KStandardDirs::addKDEDefaults()
 {
     QStringList kdedirList;
@@ -1048,6 +1072,9 @@ void KStandardDirs::addKDEDefaults()
     QString execPrefix(__KDE_EXECPREFIX);
     if (execPrefix!="NONE")
        kdedirList.append(execPrefix);
+#endif
+#ifdef __linux__
+    kdedirList.append(executablePrefix());
 #endif
 
     // We treat root differently to prevent a "su" shell messing up the
@@ -1252,50 +1279,6 @@ QString KStandardDirs::localxdgconfdir() const
     return d->xdgconf_prefixes.first();
 }
 
-void KStandardDirs::addExecutablePrefix()
-{
-	addPrefix(extractPrefix(executablePath()));
-}
-
-QString KStandardDirs::executablePath()
-{
-#ifdef __linux__
-	char line[5000];
-	int length;
-
-	length = readlink ("/proc/self/exe", line, 5000);
-	if (length != -1)
-	{
-		line[length] = '\0';
-
-		return QString (line);
-	}
-#endif
-	return QString::null;
-}
-
-QString KStandardDirs::extractPrefix(const QString &path)
-{
-	if(path.isEmpty())
-		return path;
-
-	int pos = path.findRev('/');
-	if(pos != -1)
-	{
-		pos = path.findRev('/', pos - 1);
-	}
-
-	if(pos == -1)
-	{
-		return path;
-	}
-	else if(pos == 0)
-	{
-		return QString("/");
-	}
-
-	return path.left(pos);
-}
 
 // just to make code more readable without macros
 QString locate( const char *type,

@@ -594,10 +594,6 @@ public:
 	void checkConfig() const;
 	void applyDataRestrictions(const QString &) const;
 	void createSpecialResource(const char*);
-
-	void addExecutablePrefix();
-	static QString executablePath();
-	static QString extractPrefix(const QString &path);
 };
 
 /**
