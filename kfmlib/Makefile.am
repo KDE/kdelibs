@@ -21,7 +21,8 @@ INCLUDES = $(all_includes)
 libkfm_la_METASOURCES = kfm.moc
 
 lib_LTLIBRARIES = libkfm.la
-libkfm_la_LDFLAGS = -version-info 3:0
+libkfm_la_LDFLAGS = -version-info 3:0 $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS)
+libkfm_la_LIBADD = $(LIB_KDECORE)
 
 libkfm_la_SOURCES = kfm.cpp
 include_HEADERS = kfm.h 

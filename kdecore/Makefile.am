@@ -42,7 +42,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kurl.cpp ltdl.c kregexp.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0
-libkdecore_la_LIBADD = $(LIB_QT)
+libkdecore_la_LIBADD = $(LIB_QT) $(LIBDL)
 
 libkdecore_la_METASOURCES = drag.moc kapp.moc kclipboard.moc \
 	kconfig.moc kconfigbase.moc kdebugdialog.moc kglobalaccel.moc \

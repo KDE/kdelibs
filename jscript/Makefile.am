@@ -31,7 +31,8 @@ SOMINOR 	= 0
 ####### Files
 
 libjscript_la_SOURCES =	t1.c t2.c cpp2bison.cpp jstree.cpp jsexec.cpp builtin.cpp
-libjscript_la_LDFLAGS = -version-info $(SOMAJOR):$(SOMINOR) 
+libjscript_la_LDFLAGS = -version-info $(SOMAJOR):$(SOMINOR) $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS)
+libjscript_la_LIBADD = $(LIB_QT)
 
 include_HEADERS = bison2cpp.h jstree.h jsexec.h jserror.h builtin.h
 noinst_HEADERS = t1.h

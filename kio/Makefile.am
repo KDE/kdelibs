@@ -20,6 +20,7 @@ INCLUDES = -I$(top_srcdir)/kdeutils -I$(top_srcdir)/kfile $(KOM_INCLUDES) $(PART
 
 lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 3:0
+libkio_la_LIBADD = ../kdeutils/libkdeutil.la ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = kio_connection.cc kio_base.cc kio_rename_dlg.cc \
 	kio_filter.cc kio_dlg.cc kio_skip_dlg.cc kio_interface.cc \

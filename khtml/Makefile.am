@@ -35,6 +35,7 @@ noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h \
 	khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlstyle.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0
+libkhtml_la_LIBADD = ../jscript/libjscript.la ../kimgio/libkimgio.la
 
 data_DATA = khtml_dnd.xpm
 datadir = $(kde_datadir)/khtml/pics
@@ -54,3 +55,4 @@ kcssprop_DIST = kcssprop.c kcssprop.h kcssprop.in
 
 EXTRA_DIST = $(khtmltags_DIST) makeprop maketags test $(data_DATA) \
 	CHANGES DESIGN README.HTMLWidget README.tags $(kcssprop_DIST)
+
