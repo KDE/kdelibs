@@ -238,7 +238,7 @@ Window::Window(KHTMLPart *p)
   : m_part(p), screen(0), history(0), frames(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
-  //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << endl;
+  //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name() << endl;
 }
 
 Window::~Window()
@@ -382,8 +382,12 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Event:
       if (m_evt)
         return getDOMEvent(exec,*m_evt);
-      else
+      else {
+#ifdef KJS_VERBOSE
+        kdWarning(6070) << "window(" << this <<").event, no event!" << endl;
+#endif
         return Undefined();
+      }
     case InnerHeight:
       return Number(m_part->view()->visibleHeight());
     case InnerWidth:
@@ -1581,23 +1585,33 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   if ( !iface )
     return Undefined();
 
+  int steps;
   switch (id) {
   case History::Back:
-    iface->callMethod( "goHistory(int)", -1 );
-//      emit ext->goHistory(-1);
+    steps = -1;
     break;
   case History::Forward:
-    iface->callMethod( "goHistory(int)", (int)1 );
-//      emit ext->goHistory(1);
+    steps = 1;
     break;
   case History::Go:
-    iface->callMethod( "goHistory(int)", n.intValue() );
-//      emit ext->goHistory(n.intValue());
+    steps = n.intValue();
     break;
   default:
-    break;
+    return Undefined();
   }
 
+  // Special case for go(0) from a frame -> reload only the frame
+  // go(i!=0) from a frame navigates into the history of the frame only,
+  // in both IE and NS (but not in Mozilla).... we can't easily do that
+  // in Konqueror...
+  if (!steps) // add && history->part->parentPart() to get only frames, but doesn't matter
+  {
+    history->part->openURL( history->part->url() ); /// ## need args.reload=true?
+  } else
+  {
+    iface->callMethod( "goHistory(int)", steps );
+//      emit ext->goHistory(steps);
+  }
   return Undefined();
 }
 
