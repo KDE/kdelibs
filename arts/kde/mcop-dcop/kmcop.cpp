@@ -91,6 +91,13 @@ int KMCOP::objectCount()
 	return d->mcopInfo.objectCount();
 }
 
+QCString KMCOP::correctType(const QCString &str)
+{
+	if(str == "string")
+		return "QCString";
+	return str;
+}
+
 void KMCOP::addInterfacesHackHackHack()
 {
 	for(int i = 0; i <= objectCount(); i++)
@@ -105,7 +112,7 @@ void KMCOP::addInterfacesHackHackHack()
 			{
 				Arts::InterfaceRepo ifaceRepo = Dispatcher::the()->interfaceRepo();
 
-				MCOPDCOPObject *interface = new MCOPDCOPObject(d->mcopInfo, interfaceName);
+				MCOPDCOPObject *interface = new MCOPDCOPObject(interfaceName);
 				d->list.append(interface);
 			
 				InterfaceDef ifaceDef = ifaceRepo.queryInterface(string(interfaceName));
@@ -121,7 +128,9 @@ void KMCOP::addInterfacesHackHackHack()
 					MethodDef currentMethod = *ifaceMethodsIterator;
 					vector<ParamDef> currentParameters = currentMethod.signature;
 
-					entry->setFunctionType(QCString(currentMethod.type.c_str()));
+					QCString newType = correctType(QCString(currentMethod.type.c_str()));
+					
+					entry->setFunctionType(newType);
 					entry->setFunctionName(QCString(currentMethod.name.c_str()));
 					
 					function = entry->functionType() + QCString(" ") + entry->functionName() + QCString("(");
@@ -140,8 +149,10 @@ void KMCOP::addInterfacesHackHackHack()
 							signature += QCString(",");
 						}
 						
-						function += QCString(parameter.type.c_str());
-						signature += QCString(parameter.type.c_str());
+						QCString correctParameter = correctType(QCString(parameter.type.c_str()));
+						
+						function += correctParameter;
+						signature += correctParameter;
 
 						signatureList.append(QCString(parameter.type.c_str()));
 					}
