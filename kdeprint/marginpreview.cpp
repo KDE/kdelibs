@@ -22,7 +22,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <qpainter.h>
-#include <qcursor.h>
+#include <kcursor.h>
 
 #define	A4_WIDTH	595
 #define	A4_HEIGHT	842
@@ -195,14 +195,14 @@ void MarginPreview::mouseMoveEvent(QMouseEvent *e)
 		{
 			case 1:
 			case 2:
-				setCursor(Qt::SplitHCursor);
+				setCursor(KCursor::sizeVerCursor());
 				break;
 			case 3:
 			case 4:
-				setCursor(Qt::SplitVCursor);
+				setCursor(KCursor::sizeHorCursor());
 				break;
 			default:
-				setCursor(Qt::ArrowCursor);
+				setCursor(KCursor::arrowCursor());
 				break;
 		}
 	}

@@ -26,7 +26,7 @@
 #include <klistbox.h>
 #include <kpushbutton.h>
 #include <qcheckbox.h>
-#include <qcursor.h>
+#include <kcursor.h>
 #include <qapplication.h>
 #include <kmessagebox.h>
 #include <qlayout.h>
@@ -151,7 +151,7 @@ void KMDriverDbWidget::init()
 {
 	if (!m_valid)
 	{
-		QApplication::setOverrideCursor(waitCursor);
+		QApplication::setOverrideCursor(KCursor::waitCursor());
 		m_manu->clear();
 		m_model->clear();
 		m_manu->insertItem(i18n("Loading..."));
