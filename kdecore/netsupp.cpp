@@ -180,7 +180,7 @@ make_unix(const char *name, const char *serv)
 static int check_ipv6_stack()
 {
 # ifndef AF_INET6
-  return 1;			// how can we check?
+  return 2;			// how can we check?
 # else
   int fd = ::socket(AF_INET6, SOCK_STREAM, 0);
   ::close(fd);
@@ -262,12 +262,12 @@ int kde_getaddrinfo(const char *name, const char *service,
       err = getaddrinfo(name, service, &our_hint, &res->data);
 # if KDE_IPV6_LOOKUP_MODE == 1
     }
+  else
 # endif
-#else  // KDE_IPV6_LOOKUP_MODE == 0
-
-  // do the actual resolution
-  err = getaddrinfo(name, service, hint, &res->data);
-
+#endif
+#if KDE_IPV6_LOOKUP_MODE != 2
+      // do the IPV6 resolution
+      err = getaddrinfo(name, service, hint, &res->data);
 #endif
 
   // Now we have to check whether the user could want a Unix socket
