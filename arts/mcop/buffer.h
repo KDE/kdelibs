@@ -26,6 +26,16 @@
 #include <string>
 #include <vector>
 
+/*
+ * BC - Status (2000-09-30): Buffer.
+ *
+ * Has to be kept binary compatible. As buffer is speed relevant, currently
+ * there are no private d ptrs, and the idea is to keep this as possible.
+ *
+ * If not, but additional stuff in the d ptr, but keep as much data as
+ * possible in the main items.
+ */
+
 namespace Arts {
 
 #ifndef MCOPBYTE_DEFINED
@@ -33,9 +43,15 @@ namespace Arts {
 typedef unsigned char mcopbyte;
 #endif
 
+class BufferPrivate;
+
 class Buffer {
 private:
-	struct BufferPrivate *d;
+	long rpos;
+	bool _readError;
+	std::vector<unsigned char> contents;
+
+	BufferPrivate *d;	// unused
 	unsigned char fromHexNibble(char c);
 
 public:

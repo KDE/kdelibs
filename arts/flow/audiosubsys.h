@@ -26,6 +26,20 @@
 #include "pipebuffer.h"
 #include "startupmanager.h"
 
+/*
+ * BC - Status (2000-09-30): AudioSubSystem, ASProducer, ASConsumer.
+ *
+ * These classes are kept binary compatible. You can rely on them.
+ * AudioSubSystem has a private data pointer to do so. Even if ports to
+ * other architectures or hardware will require different organization
+ * (i.e. no fragments, direct memory access via mmap), the data members
+ * and functions exported here MAY NOT BE CHANGED. Use the private data
+ * pointer for adding data members.
+ *
+ * If ASProducer/ASConsumer doesn't suit the needs any longer, do NOT
+ * change them. Add new classes instead.
+ */
+
 namespace Arts {
 
 class ASProducer {

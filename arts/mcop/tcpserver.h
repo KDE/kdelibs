@@ -26,6 +26,13 @@
 #include <string>
 #include "iomanager.h"
 
+/*
+ * BC - Status (2000-09-30): TCPServer
+ *
+ * Not part of the public API. Do NOT use it in your apps. Binary incompatible
+ * changes allowed.
+ */
+
 namespace Arts {
 
 class Dispatcher;

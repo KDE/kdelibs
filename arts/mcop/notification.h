@@ -27,10 +27,23 @@
 
 namespace Arts {
 
+/*
+ * BC - Status (2000-09-30): Notification, NotificationClient,
+ *   NotificationManager
+ *
+ * All need to be kept BC, NotificationManager with usual d ptr.
+ *
+ * Notifications have to be FAST. Currently, they use ID, data & receiver.
+ * However, there may be future extensions. For this, one more internal
+ * field is provided. Set it to ZERO currently when sending notifications.
+ */
+
+
 struct Notification {
 	class NotificationClient *receiver;
 	int ID;
 	void *data;
+	void *internal;		/* handle with care, equivalent to private d ptr */
 };
 
 class NotificationClient {
@@ -38,7 +51,10 @@ public:
 	virtual void notify(const Notification& wm);
 };
 
+class NotificationManagerPrivate;
 class NotificationManager {
+private:
+	NotificationManagerPrivate *d;		// unused
 protected:
 	std::queue<Notification> todo;
 	static NotificationManager *instance;

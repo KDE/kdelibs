@@ -18,6 +18,14 @@
     Boston, MA 02111-1307, USA.
 */
 
+/*
+ * BC - Status (2000-09-30): Reference, SubClass, Object, DynamicCast.
+ *
+ * Part of the public API. Must be kept binary compatible by NOT TOUCHING
+ * AT ALL. Interaction with generated and written code.
+ */
+
+
 #ifndef MCOP_REFERENCE_H
 #define MCOP_REFERENCE_H
 

@@ -20,6 +20,12 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30): MD5sum
+ *
+ * No binary compatibility guaranteed (part of Dispatcher's security model).
+ */
+
 #ifndef MD5_H
 #define MD5_H
 

@@ -24,7 +24,6 @@
 #ifdef HAVE_LIBAUDIOFILE
 #include "artsflow.h"
 #include "stdsynthmodule.h"
-#include "utils.h"
 #include "debug.h"
 #include "cachedwav.h"
 #include "convert.h"
@@ -151,6 +150,8 @@ CachedWav::~CachedWav()
 		delete[] buffer;
 }
 
+namespace Arts {
+
 class Synth_PLAY_WAV_impl : public Synth_PLAY_WAV_skel, public StdSynthModule {
 protected:
 	double flpos;
@@ -193,6 +194,10 @@ public:
 
 	void streamInit();
 	void calculateBlock(unsigned long samples);
+};
+
+REGISTER_IMPLEMENTATION(Synth_PLAY_WAV_impl);
+
 };
 
 Synth_PLAY_WAV_impl::Synth_PLAY_WAV_impl()
@@ -302,8 +307,6 @@ void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
 */
 }
 
-
-REGISTER_IMPLEMENTATION(Synth_PLAY_WAV_impl);
 
 #if 0
 class Synth_PLAY_WAV :public SynthModule {

@@ -20,11 +20,20 @@
 
     */
 
+
 #ifndef VIRTUALPORTS_H
 #define VIRTUALPORTS_H
 
 #include "synthschedule.h"
 #include <list>
+
+/*
+ * BC - Status (2000-09-30): VPortConnection, VPort.
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. These are part of the implementation of libartsflow's
+ * StdFlowSystem, and subject to change with the needs of it.
+ */
 
 namespace Arts {
 

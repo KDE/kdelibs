@@ -606,6 +606,7 @@ public:
 	virtual void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) = 0;
 	virtual void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) = 0;
 	virtual Arts::AttributeType queryFlags(Arts::Object node, const std::string& port) = 0;
+	virtual void setFloatValue(Arts::Object node, const std::string& port, float value) = 0;
 	virtual Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender) = 0;
 };
 
@@ -621,6 +622,7 @@ public:
 	void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort);
 	void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort);
 	Arts::AttributeType queryFlags(Arts::Object node, const std::string& port);
+	void setFloatValue(Arts::Object node, const std::string& port, float value);
 	Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender);
 };
 
@@ -683,6 +685,7 @@ public:
 	inline void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort);
 	inline void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort);
 	inline Arts::AttributeType queryFlags(Arts::Object node, const std::string& port);
+	inline void setFloatValue(Arts::Object node, const std::string& port, float value);
 	inline Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender);
 };
 
@@ -1145,6 +1148,11 @@ inline void Arts::FlowSystem::disconnectObject(Arts::Object sourceObject, const 
 inline Arts::AttributeType Arts::FlowSystem::queryFlags(Arts::Object node, const std::string& port)
 {
 	return _cache?static_cast<Arts::FlowSystem_base*>(_cache)->queryFlags(node, port):static_cast<Arts::FlowSystem_base*>(_method_call())->queryFlags(node, port);
+}
+
+inline void Arts::FlowSystem::setFloatValue(Arts::Object node, const std::string& port, float value)
+{
+	 _cache?static_cast<Arts::FlowSystem_base*>(_cache)->setFloatValue(node, port, value):static_cast<Arts::FlowSystem_base*>(_method_call())->setFloatValue(node, port, value);
 }
 
 inline Arts::FlowSystemReceiver Arts::FlowSystem::createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender)

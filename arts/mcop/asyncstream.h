@@ -26,9 +26,23 @@
 #include "buffer.h"
 #include "datapacket.h"
 
+/*
+ * BC - Status (2000-09-30): GenericAsyncStream, AsyncStream,
+ *   FloatAsyncStream/ByteAsyncStream
+ *
+ * These classes are to be treated with extreme care, as they are used in
+ * all kinds of relations with the flow system and the generated code. Do
+ * NOT touch unless you REALLY know what you are doing. For further
+ * extensibility, GenericAsyncStream features a private d pointer.
+ */
+
 namespace Arts {
 
+class GenericAsyncStreamPrivate;
+
 class GenericAsyncStream {
+private:
+	GenericAsyncStreamPrivate *d;	// unused
 public:
 	/**
 	 * interface to create packets and to get rid of them

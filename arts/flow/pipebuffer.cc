@@ -24,6 +24,7 @@
 #include <assert.h>
 
 using namespace std;
+using namespace Arts;
 
 PipeSegment::PipeSegment(long size, void *buffer)
 {

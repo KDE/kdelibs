@@ -22,7 +22,7 @@ libmcop_la_LDFLAGS = -no-undefined
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
-  factory.h flowsystem.h idlfilereg.h ifacerepo_impl.h iomanager.h \
+  factory.h flowsystem.h idlfilereg.h iomanager.h \
   mcoputils.h  object.h objectmanager.h pool.h socketconnection.h \
   startupmanager.h tcpconnection.h tcpserver.h type.h unixconnection.h \
   unixserver.h  referenceclean.h datapacket.h asyncstream.h notification.h \

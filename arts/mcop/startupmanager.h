@@ -25,6 +25,16 @@
 
 #include <list>
 
+/*
+ * BC - Status (2000-09-30): StartupClass, StartupManager.
+ *
+ * The class needs to be kept BC, as the startup system bases on inheritance
+ * and virtual functions. Do not change.
+ *
+ * The manager is a collection class without nonstatic data, so no BC issues
+ * here.
+ */
+
 namespace Arts {
 
 class StartupClass {

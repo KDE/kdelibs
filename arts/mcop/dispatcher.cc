@@ -25,7 +25,6 @@
 #include "startupmanager.h"
 #include "unixconnection.h"
 #include "tcpconnection.h"
-#include "ifacerepo_impl.h"
 #include "referenceclean.h"
 #include "core.h"
 #include "md5auth.h"
@@ -120,7 +119,6 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	d->accept = 0;
 	d->loopbackConnection = new LoopbackConnection(serverID);
 
-	d->interfaceRepo = InterfaceRepo::_from_base(new InterfaceRepo_impl());
 	_flowSystem = 0;
 	referenceClean = new ReferenceClean(objectPool);
 

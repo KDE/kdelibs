@@ -25,11 +25,23 @@
 
 #include "buffer.h"
 
+/*
+ * BC - Status (2000-09-30): GenericDataChannel, DataPacket types
+ *
+ * These classes must be kept binary compatible, as the do interact with
+ * generated code. So you MUST KNOW WHAT YOU ARE DOING, once you start
+ * using the provided d pointers for extensions.
+ */
+
 namespace Arts {
+class GenericDataChannelPrivate;
 /*
  * The GenericDataChannel interface is to be implemented by the flowsystem
  */
 class GenericDataChannel {
+private:
+	GenericDataChannelPrivate *d;	// unused
+
 protected:
 	friend class GenericDataPacket;
 
@@ -49,6 +61,10 @@ public:
 	 */
 	virtual void setPull(int packets, int capacity) = 0;
 	virtual void endPull() = 0;
+
+	GenericDataChannel() : d(0)
+	{
+	}
 };
 
 /*
@@ -65,7 +81,11 @@ public:
  * The GenericDataPacket class provides the interface the flow system can
  * use to deal with data packets.
  */
+class GenericDataPacketPrivate;
+
 class GenericDataPacket {
+private:
+	GenericDataPacketPrivate *d;
 public:
 	/**
 	 * the channel this datapacket belongs to
@@ -121,7 +141,8 @@ public:
 	}
 
 protected:
-	GenericDataPacket(GenericDataChannel *channel) :channel(channel),useCount(0)
+	GenericDataPacket(GenericDataChannel *channel)
+		:d(0),channel(channel),useCount(0)
 	{
 		//
 	}

@@ -55,7 +55,7 @@
 #define datasize_float 1
 
 #define mk_converter(from_format,to_format) \
-void convert_mono_ ## from_format ## _ ## to_format (unsigned long samples, \
+void Arts::convert_mono_ ## from_format ## _ ## to_format (unsigned long samples, \
 									datatype_ ## from_format *from, \
                                     datatype_ ## to_format *to) \
 { \
@@ -66,7 +66,7 @@ void convert_mono_ ## from_format ## _ ## to_format (unsigned long samples, \
 		to += datasize_ ## to_format; \
 	} \
 } \
-void interpolate_mono_ ## from_format ## _ ## to_format (unsigned long samples,\
+void Arts::interpolate_mono_ ## from_format ## _ ## to_format (unsigned long samples,\
 									double startpos, double speed, \
 									datatype_ ## from_format *from, \
                                     datatype_ ## to_format *to) \
@@ -83,7 +83,7 @@ void interpolate_mono_ ## from_format ## _ ## to_format (unsigned long samples,\
 		samples--; \
 	} \
 } \
-void convert_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
+void Arts::convert_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
 									datatype_ ## from_format *from, \
                                     datatype_ ## to_format *left, \
 									datatype_ ## to_format *right) \
@@ -98,7 +98,7 @@ void convert_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
 		right += datasize_ ## to_format; \
 	} \
 } \
-void interpolate_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
+void Arts::interpolate_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
 									double startpos, double speed, \
 									datatype_ ## from_format *from, \
                                     datatype_ ## to_format *left, \
@@ -127,6 +127,7 @@ mk_converter(16le,float)
 
 /*----------------------------- new code end --------------------------- */
 
+/*
 void old_convert_mono_8_float(unsigned long samples, unsigned char *from, float *to)
 {
 	float *end = to+samples;
@@ -166,8 +167,9 @@ void old_convert_stereo_i16le_2float(unsigned long samples, unsigned char *from,
 		from += 4;
 	}
 }
+*/
 
-void convert_stereo_2float_i16le(unsigned long samples, float *left, float *right, unsigned char *to)
+void Arts::convert_stereo_2float_i16le(unsigned long samples, float *left, float *right, unsigned char *to)
 {
 	float *end = left+samples;
 	long syn;
@@ -192,7 +194,7 @@ void convert_stereo_2float_i16le(unsigned long samples, float *left, float *righ
 	}	
 }
 
-void convert_mono_float_16le(unsigned long samples, float *from, unsigned char *to)
+void Arts::convert_mono_float_16le(unsigned long samples, float *from, unsigned char *to)
 {
 	float *end = from+samples;
 
@@ -208,7 +210,7 @@ void convert_mono_float_16le(unsigned long samples, float *from, unsigned char *
 	}	
 }
 
-unsigned long uni_convert_stereo_2float(
+unsigned long Arts::uni_convert_stereo_2float(
 		unsigned long samples,		// number of required samples
 		unsigned char *from,		// buffer containing the samples
 		unsigned long fromLen,		// length of the buffer

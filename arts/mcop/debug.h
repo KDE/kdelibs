@@ -28,6 +28,13 @@
 #ifndef _ARTSDEBUG_H_
 #define _ARTSDEBUG_H_
 
+/*
+ * BC - Status (2000-09-30): Debug.
+ *
+ * Collection class, no instance, no members. Thus binary compatible (will
+ * be kept).
+ */
+
 #define arts_fatal		::Arts::Debug::fatal
 #define arts_warning	::Arts::Debug::warning
 #define arts_info		::Arts::Debug::info

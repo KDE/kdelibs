@@ -26,16 +26,28 @@
 #include "object.h"
 #include "core.h"
 
+/*
+ * BC - Status (2000-09-30): ScheduleNode, FlowSystem, FlowSystem_impl,
+ *   RemoteScheduleNode
+ *
+ * Heavy interactions with generated and hand-written code, flowsystem binding
+ * and whatever. DO KEEP COMPATIBLE. Do not change the underlying IDL MODEL.
+ * d ptrs available.
+ */
+
 namespace Arts {
 
 class Object_skel;
 class Object_stub;
 class RemoteScheduleNode;
+class ScheduleNodePrivate;
 
 class ScheduleNode
 {
 private:
 	Object_base *_nodeObject;
+	ScheduleNodePrivate *d;	// unused
+
 public:
 	ScheduleNode(Object_base *object);
 	virtual ~ScheduleNode();
@@ -75,8 +87,12 @@ public:
 	virtual void setFloatValue(std::string port, float value) = 0;
 };
 
+class RemoteScheduleNodePrivate;
+
 class RemoteScheduleNode : public ScheduleNode
 {
+private:
+	RemoteScheduleNodePrivate *d; // unused
 public:
 	RemoteScheduleNode(Object_stub *stub);
 
@@ -107,8 +123,12 @@ public:
 	void setFloatValue(std::string port, float value);
 };
 
+class FlowSystem_impl_private;
+
 class FlowSystem_impl :virtual public FlowSystem_skel
 {
+private:
+	FlowSystem_impl_private *d;
 public:
 	virtual ScheduleNode *addObject(Object_skel *object) = 0;
 	virtual void removeObject(ScheduleNode *node) = 0;

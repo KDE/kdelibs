@@ -27,6 +27,8 @@
 
 using namespace Arts;
 
+namespace Arts {
+
 class Synth_FREQUENCY_impl :public Synth_FREQUENCY_skel, public StdSynthModule
 {
 	float fpos;
@@ -64,3 +66,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(Synth_FREQUENCY_impl);
+
+};

@@ -28,6 +28,14 @@
 
 #include <queue>
 
+/*
+ * BC - Status (2000-09-30): ASyncNetSend, ASyncNetReceive, ASyncPort.
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. These are part of the implementation of libartsflow's
+ * StdFlowSystem, and subject to change with the needs of it.
+ */
+
 namespace Arts {
 
 class ASyncNetSend : public FlowSystemSender_skel

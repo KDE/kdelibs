@@ -20,6 +20,18 @@
 
     */
 
+
+
+/*
+ * BC - Status (2000-09-30): conversion functions
+ *
+ * None of them will be removed or changed, so it is safe to use them in
+ * your apps. It is *recommended* (though not necessary) to use the new
+ * resampling code (Resampler) where possible.
+ */
+
+namespace Arts {
+
 /*
  * Simple conversion routines. The function names are choosen like
  *
@@ -93,3 +105,5 @@ unsigned long uni_convert_stereo_2float(
 		double speed,				// speed (2.0 means twice as fast)
 		double startposition		// startposition
 	);
+
+};

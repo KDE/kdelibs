@@ -20,6 +20,13 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30): ReferenceClean
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. Can be changed arbitarily even non BC.
+ */
+
 #ifndef REFERENCECLEAN_H
 #define REFERENCECLEAN_H
 

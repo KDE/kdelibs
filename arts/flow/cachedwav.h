@@ -29,6 +29,15 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+/*
+ * BC - Status (2000-09-30): CachedWav.
+ *
+ * At the current point in time, there are NO GUARANTEES, so only use this
+ * in apps part of official KDE releases (such as kdemultimedia apps), which
+ * know what is happening here. Especially, in SOME kde versions this class
+ * might not even exist, as it gets conditionally compiled.
+ */
+
 namespace Arts {
 
 class CachedWav : public CachedObject

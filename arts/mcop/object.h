@@ -31,6 +31,16 @@
 #include <map>
 #include <list>
 
+/*
+ * BC - Status (2000-09-30): Object_base, Object_skel, Object_stub
+ *
+ * All of them have to be kept binary compatible carefully, due to interaction
+ * with generated code. There are d ptrs in _skel and _stub, NOT TO BE USED
+ * NORMALLY. Normally, do use _internalData instead, as this is much faster
+ * than creating two d objects per MCOP implementation/stub. Handle with care.
+ */
+
+
 namespace Arts {
 /* custom dispatching functions */
 
@@ -194,9 +204,12 @@ class Buffer;
 class MethodDef;
 
 
+class Object_skel_private;
+
 class Object_skel : virtual public Object_base {
 private:
 	friend class Object_base;
+	Object_skel_private *d;		// do not use until there is a very big problem
 
 	long _objectID;
 
@@ -272,9 +285,13 @@ public:
 	std::vector<std::string> * _queryChildren();
 };
 
+class Object_stub_private;
+
 class Object_stub : virtual public Object_base {
 protected:
 	friend class Object_base;
+
+	Object_stub_private *d;		// do not use until there is a very big problem
 
 	long _objectID,_lookupCacheRandom;
 	Connection *_connection;

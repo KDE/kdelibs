@@ -21,8 +21,15 @@
     */
 
 
-#ifndef ARTS_FLOW_REFILL_H
-#define ARTS_FLOW_REFILL_H
+#ifndef ARTS_FLOW_RESAMPLE_H
+#define ARTS_FLOW_RESAMPLE_H
+
+/*
+ * BC - Status (2000-09-30): Resampler / Refiller.
+ *
+ * These classes will be kept binary compatible. Resampler has a private
+ * data pointer for this purpose.
+ */
 
 namespace Arts {
 

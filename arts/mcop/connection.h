@@ -25,9 +25,23 @@
 
 #include "buffer.h"
 
+/*
+ * BC - Status (2000-09-30): Connection.
+ *
+ * None of these classes is considered part of the public API. However, they
+ * NEED to be kept binary compatible as the DO interact with generated code.
+ *
+ * Especially virtual functions and stuff can't be added, if you need to,
+ * you need to add classes parallel to the Connection hierarchy.
+ */
+
 namespace Arts {
 
+class ConnectionPrivate;
+
 class Connection {
+private:
+	ConnectionPrivate *d;		// unused
 public:
 	enum ConnectionState {
 		unknown = 0,

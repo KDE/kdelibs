@@ -10,6 +10,8 @@
 using namespace Arts;
 using namespace std;
 
+namespace Arts {
+
 // TraderRestriction
 struct TraderRestriction {
 	TraderRestriction(const string& key, const string& value)
@@ -45,6 +47,8 @@ public:
 	vector<TraderOffer> *query();
 };
 
+REGISTER_IMPLEMENTATION(TraderQuery_impl);
+
 // TraderOffer
 class TraderOffer_impl : virtual public TraderOffer_skel {
 private:
@@ -61,6 +65,8 @@ public:
 	vector<string>* getProperty(const string& name);
 };
 
+};
+
 // TraderQuery
 //----------------------------------------------------------------------------
 void TraderQuery_impl::supports(const string& property, const string& value)
@@ -72,8 +78,6 @@ vector<TraderOffer> *TraderQuery_impl::query()
 {
 	return TraderHelper::the()->doQuery(restrictions);
 }
-
-REGISTER_IMPLEMENTATION(TraderQuery_impl);
 
 // TraderOffer
 //----------------------------------------------------------------------------
@@ -275,6 +279,8 @@ void TraderHelper::shutdown()
 	}
 }
 
+namespace Arts {
+
 // trader shutdown
 class TraderShutdown :public StartupClass
 {
@@ -284,3 +290,5 @@ public:
 };
 
 static TraderShutdown traderShutdown;
+
+};

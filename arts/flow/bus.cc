@@ -197,6 +197,8 @@ void BusManager::removeServer(BusClient *server)
 	erase(server);
 }
 
+namespace Arts {
+
 class Synth_BUS_UPLINK_impl :public Synth_BUS_UPLINK_skel,
 										public StdSynthModule, public BusClient
 {
@@ -218,6 +220,10 @@ public:
 
 	void connect();
 	void disconnect();
+};
+
+REGISTER_IMPLEMENTATION(Synth_BUS_UPLINK_impl);
+
 };
 
 Synth_BUS_UPLINK_impl::Synth_BUS_UPLINK_impl() :running(false)
@@ -294,7 +300,7 @@ void Synth_BUS_UPLINK_impl::configureBus(const vector<Synth_MULTI_ADD>&)
 	// only in downlinks
 }
 
-REGISTER_IMPLEMENTATION(Synth_BUS_UPLINK_impl);
+namespace Arts {
 
 class Synth_BUS_DOWNLINK_impl :public Synth_BUS_DOWNLINK_skel,
 										public StdSynthModule, public BusClient
@@ -318,6 +324,10 @@ public:
 	void CallBack();
 	void configureBus(const vector<Synth_MULTI_ADD>& channels);
 	SynthModule module();
+};
+
+REGISTER_IMPLEMENTATION(Synth_BUS_DOWNLINK_impl);
+
 };
 
 Synth_BUS_DOWNLINK_impl::Synth_BUS_DOWNLINK_impl() :running(false)
@@ -394,5 +404,3 @@ void Synth_BUS_DOWNLINK_impl::configureBus(const vector<Synth_MULTI_ADD>& channe
 	_node()->virtualize("left",channels[0]._node(),"outvalue");
 	_node()->virtualize("right",channels[1]._node(),"outvalue");
 }
-
-REGISTER_IMPLEMENTATION(Synth_BUS_DOWNLINK_impl);

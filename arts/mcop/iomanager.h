@@ -20,6 +20,16 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30):
+ *   BINARY COMPATIBLE: IONotify, TimeNotify, IOManager
+ *   NO BC FOR: TimeWatcher, IOWatchFD, StdIOManager
+ *
+ * Whereas the first three are part of the Interface (i.e. DEFINITELY to be
+ * kept binary compatible), the next three are part of the implementation
+ * in libmcop and subject to any kind of change.
+ */
+
 #ifndef IOMANAGER_H
 #define IOMANAGER_H
 

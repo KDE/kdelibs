@@ -26,6 +26,8 @@
 
 using namespace Arts;
 
+namespace Arts {
+
 class StereoVolumeControl_impl : virtual public StereoVolumeControl_skel,
 								 virtual public StdSynthModule
 {
@@ -92,3 +94,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(StereoVolumeControl_impl);
+
+};

@@ -25,6 +25,8 @@
 
 using namespace Arts;
 
+namespace Arts {
+
 class Synth_MULTI_ADD_impl :public Synth_MULTI_ADD_skel, StdSynthModule
 {
 public:
@@ -33,6 +35,8 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(Synth_MULTI_ADD_impl);
+
+};
 
 void Synth_MULTI_ADD_impl::calculateBlock(unsigned long cycles)
 {

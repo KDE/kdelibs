@@ -28,6 +28,12 @@
 #include <vector>
 #include <string>
 
+/*
+ * BC - Status (2000-09-30): DynamicRequest
+ *
+ * Has to be kept binary compatible (use d ptr).
+ */
+
 namespace Arts {
 
 class Object;

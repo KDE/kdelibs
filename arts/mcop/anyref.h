@@ -26,6 +26,13 @@
 #include "buffer.h"
 #include <string>
 
+/*
+ * BC - Status (2000-09-30): AnyRefBase, AnyRef, AnyConstRef
+ *
+ * These classes will be kept binary compatibile. To change it, adding a new
+ * representation is necessary. No private d pointer for this reason.
+ */
+
 namespace Arts {
 
 class AnyRefBase {

@@ -2,6 +2,14 @@
 #define FFT_H
 
 /*
+ * BC - Status (2000-09-30): fft_float
+ *
+ * Do not rely on this - it is part of StereoFFTScope implementation, and
+ * subject to move with it.
+ */
+
+
+/*
  * I put all that fft stuff together in fft.c and fft.h. It only exports
  * the fft_float function now, all others are static.
  */

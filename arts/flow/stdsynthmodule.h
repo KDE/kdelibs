@@ -25,12 +25,25 @@
 
 #include "artsflow.h"
 
+/*
+ * BC - Status (2000-09-30): StdSynthModule
+ *
+ * This class is intended for public use (inheritance) as it supplies a base
+ * for all objects using streams. It will be kept binary compatible.
+ */
+
 namespace Arts {
 
+class StdSynthModulePrivate;
+
 class StdSynthModule :virtual public SynthModule_base {
+private:
+	StdSynthModulePrivate *d;
+
 protected:
 	long samplingRate;
 	float samplingRateFloat;
+
 public:
 	StdSynthModule();
 

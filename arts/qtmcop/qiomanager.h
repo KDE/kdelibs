@@ -23,6 +23,14 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30): QIOWatch, QTimeWatch, QIOManager.
+ *
+ * WARNING: these classes are supplied, if you want to *experiment* with them.
+ * However, they are probably *NOT STABLE*, and will not stay binary
+ * compatible, maybe not even stay present in further versions.
+ */
+
 #ifndef QIOMANAGER_H
 #define QIOMANAGER_H
 

@@ -28,15 +28,14 @@
 using namespace Arts;
 using namespace std;
 
-class AudioManagerClient_impl;
 namespace Arts {
+
+class AudioManagerClient_impl;
 
 class AudioManagerAssignable {
 public:
 	virtual long ID() = 0;
 	virtual void destination(const string& newDestination) = 0;
-};
-
 };
 
 class AudioManager_impl : virtual public AudioManager_skel
@@ -302,3 +301,5 @@ REGISTER_IMPLEMENTATION(AudioManagerClient_impl);
 REGISTER_IMPLEMENTATION(AudioManager_impl);
 REGISTER_IMPLEMENTATION(Synth_AMAN_PLAY_impl);
 REGISTER_IMPLEMENTATION(Synth_AMAN_RECORD_impl);
+
+};

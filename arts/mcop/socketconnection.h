@@ -20,6 +20,13 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30): SocketConnection
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. No BC guaranteed.
+ */
+
 #ifndef SOCKETCONNECTION_H
 #define SOCKETCONNECTION_H
 

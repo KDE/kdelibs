@@ -29,6 +29,8 @@
 using namespace std;
 using namespace Arts;
 
+namespace Arts {
+
 class StereoFFTScope_impl : public StereoFFTScope_skel, public StdSynthModule {
 protected:
 	static const unsigned long SAMPLES = 4096;
@@ -123,3 +125,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(StereoFFTScope_impl);
+
+};

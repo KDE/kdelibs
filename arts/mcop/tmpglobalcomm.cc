@@ -29,6 +29,8 @@
 using namespace std;
 using namespace Arts;
 
+namespace Arts {
+
 class TmpGlobalComm_impl : virtual public TmpGlobalComm_skel {
 public:
 	bool put(const string& variable, const string& value)
@@ -76,3 +78,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(TmpGlobalComm_impl);
+
+};

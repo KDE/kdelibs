@@ -20,6 +20,13 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30): UnixServer
+ *
+ * Not part of the public API. Do NOT use it in your apps. Can change, even
+ * binary incompatible.
+ */
+
 #ifndef UNIXSERVER_H
 #define UNIXSERVER_H
 

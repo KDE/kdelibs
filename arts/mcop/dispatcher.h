@@ -36,6 +36,13 @@
 #include <vector>
 #include <list>
 
+/*
+ * BC - Status (2000-09-30): Dispatcher
+ *
+ * This is part of the public API (and interacts with generated code) and
+ * has to be kept binary compatible.
+ */
+
 namespace Arts {
 
 class ObjectReference;

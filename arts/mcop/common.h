@@ -33,56 +33,18 @@
 #include "asyncstream.h"
 #include "mcoputils.h"
 
+/*
+ * BC - Status (2000-09-30): Read/WriteObject(Seq)
+ *
+ * Will be kept binary compatible by NOT TOUCHING AT ALL. Do not change this.
+ * (Interaction with generated code).
+ */
+
 /* define this to see what mcop transfers around */
 #undef DEBUG_IO
 
 /* define this to see what mcop messages are processed */
 #undef DEBUG_MESSAGES
-
-/* reference counting helper */
-
-namespace Arts {
-
-template<class T>
-class ReferenceHelper
-{
-private:
-	T *referencedObject;
-public:
-	ReferenceHelper() :referencedObject(0)
-	{
-	}
-	inline ReferenceHelper(T* assignedObject) :referencedObject(assignedObject)
-	{
-	}
-	inline ReferenceHelper<T>& operator=(T* assignedObject)
-	{
-		if(referencedObject)
-			referencedObject->_release();
-
-		referencedObject = assignedObject ;
-		return *this;
-	}
-	inline T* operator->() const
-	{
-		assert(referencedObject);
-		return referencedObject;
-	}
-	inline operator T*() const
-	{
-		return referencedObject;
-	}
-	~ReferenceHelper()
-	{
-		if(referencedObject)
-		{
-			referencedObject->_release();
-			referencedObject = 0;
-		}
-	}
-};
-
-};
 
 #include "core.h"
 

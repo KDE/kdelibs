@@ -15,10 +15,10 @@ libartsflow_idl_la_LDFLAGS = -no-undefined
 libartsflow_la_LIBADD = libartsflow_idl.la $(LIBAUDIOFILE) -lm
 libartsflow_la_LDFLAGS = -no-undefined
 libartsflow_la_SOURCES =  synth_play_impl.cc \
-  synthschedule.cc olddebug.cc audiosubsys.cc \
+  synthschedule.cc audiosubsys.cc \
   pipebuffer.cc convert.cc synth_wave_sin_impl.cc synth_frequency_impl.cc \
   synth_multi_add_impl.cc synth_add_impl.cc synth_mul_impl.cc \
-  synth_play_wav_impl.cc stdsynthmodule.cc cache.cc utils.c asyncschedule.cc \
+  synth_play_wav_impl.cc stdsynthmodule.cc cache.cc asyncschedule.cc \
   bytestreamtoaudio_impl.cc stereovolumecontrol_impl.cc \
   stereoeffectstack_impl.cc fft.c stereofftscope_impl.cc virtualports.cc \
   bus.cc audiomanager_impl.cc synth_record_impl.cc resample.cc
@@ -26,7 +26,7 @@ libartsflow_la_SOURCES =  synth_play_impl.cc \
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \
   cachedwav.h convert.h pipebuffer.h stdsynthmodule.h \
-  synthschedule.h utils.h fft.h artsflow.idl 
+  synthschedule.h fft.h artsflow.idl 
 
 DISTCLEANFILES = artsflow.cc artsflow.h
 

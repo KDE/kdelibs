@@ -968,6 +968,8 @@ void StdFlowSystem::schedule(unsigned long samples)
 
 // hacked initialization of Dispatcher::the()->flowSystem ;)
 
+namespace Arts {
+
 static class SetFlowSystem : public StartupClass {
 	FlowSystem_impl *fs;
 public:
@@ -981,3 +983,5 @@ public:
 		fs->_release();
 	}
 } sfs;
+
+};

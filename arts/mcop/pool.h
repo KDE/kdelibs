@@ -23,6 +23,16 @@
 #ifndef ARTS_POOL_H
 #define ARTS_POOL_H
 
+
+/*
+ * BC - Status (2000-09-30): Pool<type>
+ *
+ * Needs to be kept binary compatible by NOT TOUCHING. When you want something
+ * else, write a fresh one (used as part of Arts::Dispatcher, thus changing
+ * this breaks Arts::Dispatcher binary compatibility).
+ */
+
+
 /**
  * A pool object of the type T keeps a pool of T* pointers, that are numbered.
  *

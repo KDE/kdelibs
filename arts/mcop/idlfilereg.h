@@ -26,6 +26,14 @@
 #include <string>
 #include "startupmanager.h"
 
+/*
+ * BC - Status (2000-09-30): IDLFileReg
+ *
+ * Will be kept binary compatible by NOT TOUCHING AT ALL. Do not change this.
+ * (Interaction with generated code). Add a new class if you need something
+ * else than this does.
+ */
+
 namespace Arts {
 
 class IDLFileReg : public StartupClass {

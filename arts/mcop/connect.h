@@ -21,6 +21,12 @@
 #ifndef MCOP_CONNECT_H
 #define MCOP_CONNECT_H
 
+/*
+ * BC - Status (2000-09-30): connect / setValue functions
+ *
+ * Will be kept as they are (binary compatible).
+ */
+
 #include <string>
 
 namespace Arts {

@@ -20,6 +20,12 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30): md5_*
+ *
+ * No guarantees - do not use.
+ */
+
 #ifndef MD5_AUTH_H
 #define MD5_AUTH_H
 

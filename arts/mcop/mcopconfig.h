@@ -20,6 +20,12 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30): MCOPConfig
+ *
+ * Is guaranteed to stay binary compatible. d ptr provided.
+ */
+
 #ifndef MCOPCONFIG_H
 #define MCOPCONFIG_H
 
@@ -27,7 +33,10 @@
 
 namespace Arts {
 
+class MCOPConfigPrivate;
 class MCOPConfig {
+private:
+	MCOPConfigPrivate *d;  // unused
 protected:
 	std::string filename;
 

@@ -25,6 +25,8 @@
 
 using namespace Arts;
 
+namespace Arts {
+
 class Synth_MUL_impl :public Synth_MUL_skel, public StdSynthModule
 {
 public:
@@ -38,3 +40,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(Synth_MUL_impl);
+
+};

@@ -3,6 +3,13 @@
 
 #include "connection.h"
 
+/*
+ * BC - Status (2000-09-30): LoopbackConnection
+ *
+ * Not part of the public API. Do NOT use it in your apps. No binary
+ * compatibility guaranteed.
+ */
+
 namespace Arts {
 
 class LoopbackConnection : public Connection

@@ -28,6 +28,14 @@
 #include <string>
 #include "startupmanager.h"
 
+/*
+ * BC - Status (2000-09-30): Cache, CachedObject
+ *
+ * At the current point in time, there are NO GUARANTEES, so only use this
+ * in apps part of official KDE releases (such as kdemultimedia apps), which
+ * know what is happening here.
+ */
+
 namespace Arts {
 class Cache;
 

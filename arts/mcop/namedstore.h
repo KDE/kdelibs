@@ -3,6 +3,14 @@
 #include <vector>
 #include "stdio.h"
 
+/*
+ * BC - Status (2000-09-30): NamedStore
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. These are part of the implementation of object.cc and not
+ * to be used elsewhere.
+ */
+
 namespace Arts {
 
 /**

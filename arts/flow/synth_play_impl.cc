@@ -35,6 +35,8 @@
 using namespace std;
 using namespace Arts;
 
+namespace Arts {
+
 class Synth_PLAY_impl :	virtual public Synth_PLAY_skel,
 						virtual public ASProducer,
 						virtual public StdSynthModule,
@@ -226,3 +228,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(Synth_PLAY_impl);
+
+};

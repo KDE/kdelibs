@@ -27,56 +27,42 @@
 using namespace std;
 using namespace Arts;
 
-namespace Arts {
-	class BufferPrivate {
-	public:
-		long rpos;
-		bool _readError;
-		std::vector<unsigned char> contents;
-
-		BufferPrivate() : rpos(0), _readError(false)
-		{
-			contents.reserve(128);
-		}
-	};
-};
-
-Buffer::Buffer() : d(new BufferPrivate())
+Buffer::Buffer() : rpos(0), _readError(false),d(0)
 {
+	contents.reserve(128);
 }
 
 Buffer::~Buffer()
 {
-	delete d;
 }
 
 long Buffer::size()
 {
-	return d->contents.size();
+	return contents.size();
 }
 
 long Buffer::remaining()
 {
-	return size()-d->rpos;
+	return size()-rpos;
 }
 
 bool Buffer::readError() {
-	return d->_readError;
+	return _readError;
 }
 
 void Buffer::writeBool(bool b) {
-	d->contents.push_back(b?1:0);
+	contents.push_back(b?1:0);
 }
 
 void Buffer::writeByte(mcopbyte b) {
-	d->contents.push_back(b);
+	contents.push_back(b);
 }
 
 void Buffer::writeLong(long l) {
-	d->contents.push_back((l >> 24) & 0xff);
-	d->contents.push_back((l >> 16) & 0xff);
-	d->contents.push_back((l >> 8) & 0xff);
-	d->contents.push_back(l & 0xff);
+	contents.push_back((l >> 24) & 0xff);
+	contents.push_back((l >> 16) & 0xff);
+	contents.push_back((l >> 8) & 0xff);
+	contents.push_back(l & 0xff);
 }
 
 void Buffer::writeByteSeq(const vector<mcopbyte>& seq) {
@@ -112,7 +98,7 @@ void Buffer::writeString(const string& s) {
 	long len = s.size()+1;
 
 	writeLong(len);
-	d->contents.insert(d->contents.end(),reinterpret_cast<const unsigned char*>(s.c_str()),
+	contents.insert(contents.end(),reinterpret_cast<const unsigned char*>(s.c_str()),
 		        reinterpret_cast<const unsigned char*>(s.c_str()+len));
 }
 
@@ -126,7 +112,7 @@ void Buffer::writeStringSeq(const vector<string>& seq) {
 void Buffer::write(void *data, long len) {
 	unsigned char *c = (unsigned char *)data;
 
-	d->contents.insert(d->contents.end(),c,c+len);
+	contents.insert(contents.end(),c,c+len);
 }
 
 
@@ -134,44 +120,44 @@ void *Buffer::read(long l) {
 	void *result = 0;
 
 	if(remaining() >= l) {
-		result = &d->contents[d->rpos];
-		d->rpos += l;
+		result = &contents[rpos];
+		rpos += l;
 	} else {
-		d->_readError = true;
+		_readError = true;
 	}
 	return result;
 }
 
 void *Buffer::peek(long l) {
 	assert(remaining() >= l);
-	return &d->contents[d->rpos];
+	return &contents[rpos];
 }
 
 void Buffer::skip(long l) {
 	if(remaining() >= l) {
-		d->rpos += l;
+		rpos += l;
 	} else {
-		d->_readError = true;
+		_readError = true;
 	}
 }
 
 void Buffer::rewind() {
-	d->rpos = 0;
+	rpos = 0;
 }
 
 bool Buffer::readBool()
 {
 	long result = false;
 	if(remaining() >= 1) {
-		if(d->contents[d->rpos] == 1)
+		if(contents[rpos] == 1)
 			result = true;
 		else
 		{
-			assert(d->contents[d->rpos] == 0);
+			assert(contents[rpos] == 0);
 		}
-		d->rpos += 1;
+		rpos += 1;
 	} else {
-		d->_readError = true;
+		_readError = true;
 	}
 	return result;
 }
@@ -180,11 +166,11 @@ mcopbyte Buffer::readByte()
 {
 	if(remaining() >= 1)
 	{
-		return d->contents[d->rpos++];
+		return contents[rpos++];
 	}
 	else
 	{
-		d->_readError = true;
+		_readError = true;
 		return 0;
 	}
 }
@@ -201,7 +187,7 @@ void Buffer::readByteSeq(vector<mcopbyte>& result)
 	}
 	else
 	{
-		d->_readError = true;
+		_readError = true;
 	}
 }
 
@@ -209,13 +195,13 @@ long Buffer::readLong()
 {
 	long result = 0;
 	if(remaining() >= 4) {
-		result = (d->contents[d->rpos]   << 24)
-			   + (d->contents[d->rpos+1] << 16)
-			   + (d->contents[d->rpos+2] << 8)
-	 		   +  d->contents[d->rpos+3];
-		d->rpos += 4;
+		result = (contents[rpos]   << 24)
+			   + (contents[rpos+1] << 16)
+			   + (contents[rpos+2] << 8)
+	 		   +  contents[rpos+3];
+		rpos += 4;
 	} else {
-		d->_readError = true;
+		_readError = true;
 	}
 	return result;
 }
@@ -232,7 +218,7 @@ void Buffer::readLongSeq(vector<long>& result)
 	}
 	else
 	{
-		d->_readError = true;
+		_readError = true;
 	}
 }
 
@@ -241,7 +227,7 @@ float Buffer::readFloat()
 	// FIXME: see writeFloat()
 	long f_as_long = readLong();
 
-	if(!d->_readError) return *(float *)&f_as_long;
+	if(!_readError) return *(float *)&f_as_long;
 	return 0.0;
 }
 
@@ -257,7 +243,7 @@ void Buffer::readFloatSeq(vector<float>& result)
 	}
 	else
 	{
-		d->_readError = true;
+		_readError = true;
 	}
 }
 
@@ -285,7 +271,7 @@ void Buffer::readStringSeq(vector<string>& result)
 		string s;
 
 		readString(s);
-		if(d->_readError) return;
+		if(_readError) return;
 
 		result.push_back(s);
 	}
@@ -297,10 +283,10 @@ void Buffer::patchLength()
 	long len = size();
 	assert(len >= 8);
 
-	d->contents[4] = (len >> 24) & 0xff;
-	d->contents[5] = (len >> 16) & 0xff;
-	d->contents[6] = (len >> 8) & 0xff;
-	d->contents[7] = len & 0xff;
+	contents[4] = (len >> 24) & 0xff;
+	contents[5] = (len >> 16) & 0xff;
+	contents[6] = (len >> 8) & 0xff;
+	contents[7] = len & 0xff;
 }
 
 void Buffer::patchLong(long position, long value)
@@ -308,10 +294,10 @@ void Buffer::patchLong(long position, long value)
 	long len = size();
 	assert(len >= position+4);
 
-	d->contents[position]   = (value >> 24) & 0xff;
-	d->contents[position+1] = (value >> 16) & 0xff;
-	d->contents[position+2] = (value >> 8) & 0xff;
-	d->contents[position+3] = value & 0xff;
+	contents[position]   = (value >> 24) & 0xff;
+	contents[position+1] = (value >> 16) & 0xff;
+	contents[position+2] = (value >> 8) & 0xff;
+	contents[position+3] = value & 0xff;
 }
 
 string Buffer::toString(const string& name)
@@ -320,7 +306,7 @@ string Buffer::toString(const string& name)
 	char hex[17] = "0123456789abcdef";
 
 	vector<unsigned char>::iterator ci;
-	for(ci = d->contents.begin(); ci != d->contents.end(); ci++)
+	for(ci = contents.begin(); ci != contents.end(); ci++)
 	{
 		result += hex[(*ci >> 4) & 0xf];
 		result += hex[*ci & 0xf];
@@ -354,7 +340,7 @@ bool Buffer::fromString(const string& data, const string& name)
 	if(name == "") start = "";
 
 	if(stringncmp(data,start,start.size()) != 0) return false;
-	d->contents.clear();
+	contents.clear();
 
 	string::const_iterator di = data.begin() + start.size();
 	
@@ -366,7 +352,7 @@ bool Buffer::fromString(const string& data, const string& name)
 		unsigned char l = fromHexNibble(*di++);	// low nibble
 
 		if(h >= 16 || l >= 16) return false;	// no proper hex digit
-		d->contents.push_back((h << 4) + l);
+		contents.push_back((h << 4) + l);
 	}
 	return true;
 }

@@ -1,3 +1,10 @@
+/*
+ * BC - Status (2000-09-30): WeakReference(Base)
+ *
+ * Has to be kept binary compatible by not touching it. Add a new class if
+ * you need something else.
+ */
+
 #ifndef MCOP_WEAKREFERENCE_H
 #define MCOP_WEAKREFERENCE_H
 

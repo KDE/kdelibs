@@ -458,10 +458,8 @@ interface FlowSystem {
 
 	/**
 	 * directly sets an audio port to a fixed value
-	 *
-	 * BCI: add on next big binary compatibility breakage ;)
 	 */
-	//void setFloatValue(object node, string port, float value);
+	void setFloatValue(object node, string port, float value);
 
 	/**
 	 * network transparent connections

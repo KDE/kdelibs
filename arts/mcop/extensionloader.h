@@ -27,6 +27,14 @@
 #include <list>
 #include <ltdl.h>
 
+/*
+ * BC - Status (2000-09-30): ExtensionLoader
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. No binary compatibility guaranteed. (Interactions:
+ * ObjectManager, Startup stuff)
+ */
+
 namespace Arts {
 
 class ExtensionLoader {

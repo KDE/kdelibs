@@ -20,6 +20,13 @@
 
     */
 
+/*
+ * BC - Status (2000-09-30): MCOPUtils
+ *
+ * Collection class for all kinds of utility functions. BC, since never
+ * instanciated.
+ */
+
 #ifndef MCOPUTILS_H
 #define MCOPUTILS_H
 

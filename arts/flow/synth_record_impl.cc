@@ -35,6 +35,8 @@
 using namespace std;
 using namespace Arts;
 
+namespace Arts {
+
 class Synth_RECORD_impl :	virtual public Synth_RECORD_skel,
 						virtual public ASConsumer,
 						virtual public StdSynthModule
@@ -114,3 +116,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(Synth_RECORD_impl);
+
+};

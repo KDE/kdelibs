@@ -25,6 +25,12 @@
 
 #include "buffer.h"
 
+/*
+ * BC - Status (2000-09-30): Type
+ *
+ * Keep binary compatible. DO NOT TOUCH, DO NOT CHANGE.
+ */
+
 namespace Arts {
 
 /**

@@ -29,6 +29,8 @@
 using namespace std;
 using namespace Arts;
 
+namespace Arts {
+
 class StereoEffectStack_impl : public StereoEffectStack_skel,
 							   public StdSynthModule
 {
@@ -152,3 +154,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(StereoEffectStack_impl);
+
+};

@@ -27,6 +27,13 @@
 #include "factory.h"
 #include <list>
 
+/*
+ * BC - Status (2000-09-30): ObjectManager
+ *
+ * Keep binary compatible (since accessible via ::the()), use d ptr when
+ * changing it.
+ */
+
 namespace Arts {
 
 class Object;

@@ -23,7 +23,18 @@
 #ifndef __PIPEBUFFER_H__
 #define __PIPEBUFFER_H__
 
+/*
+ * BC - Status (2000-09-30): PipeSegment, PipeBuffer
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. These are part of the implementation of libartsflow's
+ * AudioSubSystem, and subject to change/disappearing due to optimization
+ * work.
+ */
+
+
 #include <list>
+namespace Arts {
 
 class PipeSegment {
 	long _remaining;
@@ -58,6 +69,7 @@ public:
 
 	// status
 	long size();
+};
 };
 
 #endif

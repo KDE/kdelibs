@@ -29,6 +29,18 @@
 #include <vector>
 #include <list>
 
+/*
+ * BC - Status (2000-09-30): SynthBuffer, Port, AudioPort, MultiPort,
+ *   StdFlowSystem, StdScheduleNode
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. These are part of the implementation of libartsflow's
+ * StdFlowSystem, and subject to change with the needs of it.
+ *
+ * If you want to access flowsystem functionality, do so over the core.idl
+ * specified flowsystem interface, (object)->_node() or stuff in mcop/connect.h.
+ */
+
 namespace Arts {
 
 class SynthBuffer

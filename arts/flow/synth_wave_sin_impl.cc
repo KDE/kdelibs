@@ -26,15 +26,19 @@
 
 using namespace Arts;
 
+namespace Arts {
+
 class Synth_WAVE_SIN_impl : virtual public Synth_WAVE_SIN_skel,
 							virtual public StdSynthModule
 {
 public:
 	void calculateBlock(unsigned long cycles)
 	{
-		float *end = cycles + pos;
-		while(pos != end) *outvalue++ = sin((*pos++)*2*M_PI);
+		for(unsigned long i=0; i<cycles; i++)
+			outvalue[i] = sin(pos[i]*2*M_PI);
 	}
 };
 
 REGISTER_IMPLEMENTATION(Synth_WAVE_SIN_impl);
+
+};

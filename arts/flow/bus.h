@@ -26,6 +26,18 @@
 #include "stdsynthmodule.h"
 #include "artsflow.h"
 
+/*
+ * BC - Status (2000-09-30): BusClient, BusManager
+ *
+ * None of these classes is considered part of the public API. Do NOT use it
+ * in your apps. These are part of the implementation of libartsflow's
+ * Synth_BUS_* and Synth_AMAN_* and AudioManager interfaces. Use these for
+ * public use instead, and don't touch this here.
+ */
+
+
+namespace Arts {
+
 class BusClient
 {
 public:
@@ -61,6 +73,7 @@ public:
 	std::vector<std::string> *busList();
 
 	static BusManager *the();
+};
 };
 
 #endif /* ARTS_BUS_H */

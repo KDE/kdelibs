@@ -28,6 +28,7 @@
 using namespace std;
 using namespace Arts;
 
+namespace Arts {
 
 class PacketRefiller : public Refiller {
 protected:
@@ -113,3 +114,5 @@ public:
 };
 
 REGISTER_IMPLEMENTATION(ByteStreamToAudio_impl);
+
+};

@@ -27,9 +27,21 @@
 #include "object.h"
 #include "startupmanager.h"
 
+/*
+ * BC - Status (2000-09-30): Factory
+ *
+ * Will need to remain binary compatible (REGISTER_IMPLEMENTATION), d ptr
+ * provided for convenience, watch out for interactions with generated
+ * code.
+ */
+
 namespace Arts {
 
+class FactoryPrivate;
+
 class Factory : public StartupClass {
+private:
+	FactoryPrivate *d;
 public:
 	void startup();
 	void shutdown();
