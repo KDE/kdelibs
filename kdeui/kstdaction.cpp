@@ -643,14 +643,14 @@ KAction *KStdAction::redisplay(const QObject *recvr, const char *slot,
 KAction *KStdAction::up(const QObject *recvr, const char *slot,
                                                 QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Up"), "up", 0, recvr, slot,
+    return new KAction(i18n("&Up"), "up",  KStdAccel::key(KStdAccel::Up), recvr, slot,
                        parent, name ? name : stdName(Up));
 }
 
 KAction *KStdAction::back(const QObject *recvr, const char *slot,
                                                   QObject *parent, const char *name )
 {
-    return new KAction(i18n("go back", "&Back"), "back", 0,
+    return new KAction(i18n("go back", "&Back"), "back", KStdAccel::key(KStdAccel::Back),
                        recvr, slot, parent, name ? name :
                        stdName(Back));
 }
@@ -658,7 +658,7 @@ KAction *KStdAction::back(const QObject *recvr, const char *slot,
 KAction *KStdAction::forward(const QObject *recvr, const char *slot,
                                                          QObject *parent, const char *name )
 {
-    return new KAction(i18n("go forward", "&Forward"), "forward", 0,
+    return new KAction(i18n("go forward", "&Forward"), "forward", KStdAccel::key(KStdAccel::Forward),
                        recvr, slot, parent, name ? name :
                        stdName(Forward));
 }
