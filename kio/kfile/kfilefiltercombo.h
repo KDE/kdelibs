@@ -85,6 +85,8 @@ class KFileFilterCombo : public KComboBox
 private slots:
     void slotFilterChanged();
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KFileFilterComboPrivate;
     KFileFilterComboPrivate *d;

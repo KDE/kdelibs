@@ -101,6 +101,8 @@ protected:
 protected slots:
     void slotSortingChanged( QDir::SortSpec );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KCombiViewPrivate;
     KCombiViewPrivate *d;

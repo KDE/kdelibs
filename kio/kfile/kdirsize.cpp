@@ -143,4 +143,7 @@ void KDirSize::slotResult( KIO::Job * job )
     }
 }
 
+void KDirSize::virtual_hook( int id, void* data )
+{ KIO::Job::virtual_hook( id, data ); }
+
 #include "kdirsize.moc"

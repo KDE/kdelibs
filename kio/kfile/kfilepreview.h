@@ -113,6 +113,8 @@ private:
     QWidget *preview;
     QString viewname;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KFilePreviewPrivate;
     KFilePreviewPrivate *d;

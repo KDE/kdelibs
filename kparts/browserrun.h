@@ -97,6 +97,8 @@ namespace KParts {
         QString m_sMimeType;
         bool m_bRemoveReferrer;
         bool m_bTrustedSource;
+    private:
+        class BrowserRunPrivate* d;
 
     };
 }

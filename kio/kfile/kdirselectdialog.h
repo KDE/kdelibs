@@ -82,6 +82,8 @@ private:
     KFileTreeView *m_treeView;
     bool m_localOnly;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KDirSelectDialogPrivate;
     KDirSelectDialogPrivate *d;

@@ -676,4 +676,8 @@ void KFileIconView::showEvent( QShowEvent *e )
 #endif
 }
 
+void KFileIconView::virtual_hook( int id, void* data )
+{ KIconView::virtual_hook( id, data );
+  KFileView::virtual_hook( id, data ); }
+
 #include "kfileiconview.moc"

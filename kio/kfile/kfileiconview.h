@@ -193,6 +193,8 @@ private:
         return 0L;
     }
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KFileIconViewPrivate;
     KFileIconViewPrivate *d;

@@ -505,4 +505,8 @@ void KFileDetailView::listingCompleted()
 }
 /////////////////////////////////////////////////////////////////
 
+void KFileDetailView::virtual_hook( int id, void* data )
+{ KListView::virtual_hook( id, data );
+  KFileView::virtual_hook( id, data ); }
+
 #include "kfiledetailview.moc"

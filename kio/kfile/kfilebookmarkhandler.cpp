@@ -103,5 +103,7 @@ void KFileBookmarkHandler::endFolder()
     *m_importStream << "</folder>\n";
 }
 
+void KFileBookmarkHandler::virtual_hook( int id, void* data )
+{ KBookmarkOwner::virtual_hook( id, data ); }
 
 #include "kfilebookmarkhandler.moc"

@@ -745,12 +745,15 @@ private:
     KFileDialog operator=(const KFileDialog&);
 
 protected:
-    KFileDialogPrivate *d;
     KDirOperator *ops;
     bool autoDirectoryFollowing;
 
     KURL::List& parseSelectedURLs() const;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    KFileDialogPrivate *d;
 };
 
 #endif

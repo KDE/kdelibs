@@ -326,4 +326,7 @@ KPushButton * KURLRequester::button() const
     return myButton;
 }
 
+void KURLRequester::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kurlrequester.moc"

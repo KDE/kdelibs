@@ -2506,4 +2506,10 @@ void KDevicePropsPlugin::applyChanges()
   config.sync();
 }
 
+void KPropertiesDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
+void KPropsDlgPlugin::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kpropertiesdialog.moc"

@@ -791,5 +791,14 @@ bool KURLBarItemDialog::applicationLocal() const
     return m_appLocal->isChecked();
 }
 
+void KURLBarItem::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KURLBar::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KURLBarListBox::virtual_hook( int id, void* data )
+{ KListBox::virtual_hook( id, data ); }
+
 
 #include "kurlbar.moc"

@@ -164,6 +164,9 @@ private:
     bool m_blockSortingSignal;
     KMimeTypeResolver<KFileListViewItem,KFileDetailView> *m_resolver;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KFileDetailViewPrivate;
     KFileDetailViewPrivate *d;
 };

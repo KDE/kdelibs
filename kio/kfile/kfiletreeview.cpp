@@ -639,4 +639,7 @@ void KFileTreeViewToolTip::maybeTip( const QPoint & )
 #endif
 }
 
+void KFileTreeView::virtual_hook( int id, void* data )
+{ KListView::virtual_hook( id, data ); }
+
 #include "kfiletreeview.moc"

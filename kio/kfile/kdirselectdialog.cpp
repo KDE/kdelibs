@@ -84,4 +84,7 @@ KURL KDirSelectDialog::selectDirectory( const QString& startDir,
         return KURL();
 }
 
+void KDirSelectDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
 #include "kdirselectdialog.moc"

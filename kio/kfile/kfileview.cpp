@@ -385,4 +385,7 @@ QString KFileView::sortingKey( KIO::filesize_t value, bool isDir, int sortSpec)
     return KIO::number( value ).rightJustify( 24, '0' ).prepend( start );
 }
 
+void KFileView::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kfileview.moc"

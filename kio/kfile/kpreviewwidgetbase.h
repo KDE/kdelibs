@@ -69,6 +69,8 @@ public slots:
      */
     virtual void clearPreview() = 0;
 
+protected:
+    virtual void virtual_hook( int, void* ) {};
 };
 
 #endif

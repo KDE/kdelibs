@@ -568,5 +568,11 @@ BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
     return 0L;
 }
 
+void BrowserExtension::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void BrowserHostExtension::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 
 #include "browserextension.moc"

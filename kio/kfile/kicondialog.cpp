@@ -553,4 +553,10 @@ void KIconButton::slotChangeIcon()
     emit iconChanged(name);
 }
 
+void KIconCanvas::virtual_hook( int id, void* data )
+{ KIconView::virtual_hook( id, data ); }
+
+void KIconDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
 #include "kicondialog.moc"

@@ -538,7 +538,6 @@ private slots:
 private:
   KParts::ReadOnlyPart *m_part;
   URLArgs m_args;
-  BrowserExtensionPrivate *d;
 public:
   typedef QMap<QCString,int> ActionNumberMap;
 
@@ -546,6 +545,10 @@ private:
   static ActionNumberMap * s_actionNumberMap;
   static ActionSlotMap * s_actionSlotMap;
   static void createActionSlotMap();
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  BrowserExtensionPrivate *d;
 };
 
 /**
@@ -589,6 +592,8 @@ public:
    */
   static BrowserHostExtension *childObject( QObject *obj );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class BrowserHostExtensionPrivate;
   BrowserHostExtensionPrivate *d;

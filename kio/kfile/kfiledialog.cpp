@@ -1677,5 +1677,8 @@ KActionCollection * KFileDialog::actionCollection() const
     return ops->actionCollection();
 }
 
+void KFileDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
 #include "kfiledialog.moc"
 #include "kpreviewwidgetbase.moc"

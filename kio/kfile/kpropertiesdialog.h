@@ -299,6 +299,8 @@ private:
 
 private slots:
   void slotStatResult( KIO::Job * job );
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KPropertiesDialogPrivate;
   KPropertiesDialogPrivate *d;
@@ -364,6 +366,8 @@ protected:
   KPropertiesDialog *properties;
 
   int fontHeight;
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KPropsDlgPluginPrivate;
   KPropsDlgPluginPrivate *d;

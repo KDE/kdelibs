@@ -260,6 +260,9 @@ public:
    * @return the URL of the current page.
    */
   virtual QString currentURL() const { return QString::null; }
+
+protected:
+  virtual void virtual_hook( int id, void* data );
 };
 
 #endif

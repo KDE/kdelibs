@@ -1487,4 +1487,7 @@ void KDirOperator::togglePreview( bool on )
                                     ~(KFile::PreviewContents|KFile::PreviewInfo)) );
 }
 
+void KDirOperator::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kdiroperator.moc"

@@ -244,6 +244,9 @@ private:
   Part * findPartFromWidget( QWidget * widget, const QPoint &pos );
   Part * findPartFromWidget( QWidget * widget );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   PartManagerPrivate *d;
 };
 

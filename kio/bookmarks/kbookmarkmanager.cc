@@ -406,4 +406,7 @@ void KBookmarkOwner::openBookmarkURL(const QString& url)
   (void) new KRun(url);
 }
 
+void KBookmarkOwner::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kbookmarkmanager.moc"

@@ -152,6 +152,9 @@ private:
     KURLBar *m_parent;
     bool m_appLocal :1;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KURLBarItemPrivate;
     KURLBarItemPrivate *d;
 };
@@ -395,6 +398,9 @@ private:
     int m_iconSize;
 
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KURLBarPrivate;
     KURLBarPrivate *d;
 };
@@ -466,6 +472,8 @@ private:
     Qt::Orientation m_orientation;
     KURLBarToolTip *m_toolTip;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KURLBarListBoxPrivate;
     KURLBarListBoxPrivate *d;
@@ -572,13 +580,12 @@ protected:
      */
     QCheckBox     * m_appLocal;
 
-private:
-    class KURLBarItemDialogPrivate;
-    KURLBarItemDialogPrivate *d;
-
 public slots:
     void urlChanged(const QString & );
 
+private:
+    class KURLBarItemDialogPrivate;
+    KURLBarItemDialogPrivate *d;
 };
 
 

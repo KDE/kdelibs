@@ -75,6 +75,9 @@ private:
     QStringList mFiles;
     QTimer *mpTimer;
     KIconLoader *mpLoader;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KIconCanvasPrivate;
     KIconCanvasPrivate *d;
 };
@@ -200,6 +203,9 @@ private:
     KProgress *mpProgress;
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KIconDialogPrivate;
     KIconDialogPrivate *d;
 };

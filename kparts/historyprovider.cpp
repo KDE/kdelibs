@@ -83,4 +83,7 @@ void HistoryProvider::clear()
     emit cleared();
 }	
 
+void HistoryProvider::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "historyprovider.moc"

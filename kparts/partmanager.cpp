@@ -503,4 +503,7 @@ void PartManager::slotManagedTopLevelWidgetDestroyed()
   removeManagedTopLevelWidget( widget );
 }
 
+void PartManager::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "partmanager.moc"

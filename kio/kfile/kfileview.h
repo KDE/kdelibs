@@ -408,6 +408,8 @@ private:
     mutable KFileItemList *m_selectedList;
     bool myOnlyDoubleClickSelectsFiles;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KFileViewPrivate;
     KFileViewPrivate *d;
