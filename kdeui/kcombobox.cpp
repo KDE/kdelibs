@@ -45,6 +45,7 @@ class KComboBox::KComboBoxPrivate
 public:
     KComboBoxPrivate()
     {
+        ignoreDoubleKeyEvents = true;
         hasReference = false;
         handleURLDrops = true;
         completionBox = 0L;
@@ -57,6 +58,7 @@ public:
         delete completionBox;
     }
 
+    bool ignoreDoubleKeyEvents;
     bool handleURLDrops;
     bool hasReference;
     KCompletionBox *completionBox;
@@ -251,68 +253,88 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 
     if ( edit && edit->hasFocus() )
     {
-        // ### this will most probably need fixing when Qt3 is used. QCombBox
-        // in Qt2 is buggy, so here are some hacks that might break with Qt3.
-
+        if ( !d->ignoreDoubleKeyEvents )
+        {
+            // ### this will most probably need fixing when Qt3 is used.
+            // QCombBox in Qt2 is buggy, so here are some hacks that might
+            // break with Qt3.
         KGlobalSettings::Completion mode = completionMode();
         KeyBindingMap keys = getKeyBindings();
-        bool noModifier = (e->state() == NoButton || e->state()== ShiftButton);
-
+            bool noModifier = (e->state() == NoButton ||
+                               e->state() == ShiftButton);
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
             QString keycode = e->text();
             if ( !keycode.isNull() && keycode.unicode()->isPrint() )
             {
-                QComboBox::keyPressEvent ( e );
+                    // This is completely useless since all
+                    // QComboBox::keyPressEvent does is simply call
+                    // e->ignore()!!  For now we differ this to the last call,
+                    // but this needs to be re-addressed if the Troll's fix
+                    // QComboBox in Qt 3.x..
+                    // QComboBox::keyPressEvent ( e );
                 QString txt = currentText();
                 int len = txt.length();
-                if (!edit->hasMarkedText() && len && cursorPosition() ==len)
+                    if ( !edit->hasMarkedText() &&
+                         len && cursorPosition() ==len )
                 {
                     kdDebug(292) << "Automatic Completion" << endl;
                     if ( emitSignals() )
-                        emit completion( txt ); // emit when requested...
+                            emit completion( txt );
                     if ( handleSignals() )
-                        makeCompletion( txt );  // handle when requested...
+                            makeCompletion( txt );
                 }
-                return;
+                    // return;
             }
         }
-
         else if ( mode == KGlobalSettings::CompletionPopup && noModifier )
         {
-            QComboBox::keyPressEvent( e );
+                // This is completely useless since all
+                // QComboBox::keyPressEvent does is simply call e->ignore()!!
+                // For now we differ this to the last call, but this needs to
+                // be re-addressed if the Troll's fix QComboBox in Qt 3.x.
+                // QComboBox::keyPressEvent( e );
+                QString keycode = e->text();
             QString txt = currentText();
+                int len = txt.length();
             int key = e->key();
-            if ( !e->text().isNull() && key != Key_Escape &&
-                 key != Key_Return && key != Key_Enter )
+                if ( len && ((!keycode.isNull() &&
+                     keycode.unicode()->isPrint()) ||
+                     key == Qt::Key_BackSpace || key == Qt::Key_Delete) )
             {
                 kdDebug(292) << "Popup Completion" << endl;
                 if ( emitSignals() )
-                    emit completion( txt ); // emit when requested...
+                        emit completion( txt );
                 if ( handleSignals() )
-                    makeCompletion( txt );  // handle when requested...
+                        makeCompletion( txt );
             }
-            return;
+                else
+                {
+                    if ( !len && d->completionBox &&
+                         d->completionBox->isVisible() )
+                        d->completionBox->hide();
         }
-
+                // return;
+            }
         else if ( mode == KGlobalSettings::CompletionShell )
         {
-            int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
+                int key = ( keys[TextCompletion] == 0 ) ?
+                          KStdAccel::key(KStdAccel::TextCompletion):keys[TextCompletion];
             if ( KStdAccel::isEqual( e, key ) )
             {
-                // Emit completion if there is a completion object present,
-                // the current text is not the same as the previous and the
-                // cursor is at the end of the string.
+                    // Emit completion if there is a completion object
+                    // present, the current text is not the same as the
+                    // previous and the cursor is at the end of the string.
                 QString txt = currentText();
                 int len = txt.length();
                 if ( edit->cursorPosition() == len && len != 0 )
                 {
                     kdDebug(292) << "Shell Completion" << endl;
                     if ( emitSignals() )
-                        emit completion( txt ); // emit when requested...
+                            emit completion( txt );
                     if ( handleSignals() )
-                        makeCompletion( txt );  // handle when requested...
+                            makeCompletion( txt );
                     return;
                }
             }
@@ -346,7 +368,8 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             }
         }
     }
-
+        d->ignoreDoubleKeyEvents = !d->ignoreDoubleKeyEvents;
+    }
     // read-only combobox
     else if ( !edit )
     {
@@ -399,6 +422,8 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
                 return m_trapReturnKey;
             }
+            // HACK: Workaround for double key-pressed events
+            d->ignoreDoubleKeyEvents = true;
         }
 
         else if ( type == QEvent::MouseButtonPress )
@@ -571,7 +596,8 @@ void KComboBox::makeCompletionBox()
         return;
 
     d->completionBox = new KCompletionBox( lineEdit(), "completion box" );
-    if ( handleSignals() ) {
+    if ( handleSignals() )
+    {
         connect( d->completionBox, SIGNAL( highlighted( const QString& )),
                  SLOT( setEditText( const QString& )));
         connect( d->completionBox, SIGNAL( userCancelled( const QString& )),
