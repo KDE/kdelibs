@@ -61,7 +61,6 @@ public:
     DocumentImpl *document() const { return doc; }
 private:
     DocumentPtr() { doc = 0; }
-    void resetDocument() { doc = 0; }
     friend class DocumentImpl;
     friend class DOMImplementationImpl;
 
