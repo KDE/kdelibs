@@ -168,7 +168,7 @@ public:
    * @internal
    * Returns information related to the layout of services in this group.
    */
-  QStringList layoutInfo();
+  QStringList layoutInfo() const;
 
   /**
    * @internal

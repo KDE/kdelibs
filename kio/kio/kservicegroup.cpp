@@ -470,7 +470,7 @@ void KServiceGroup::setLayoutInfo(const QStringList &layout)
     d->sortOrder = layout;
 }
 
-QStringList KServiceGroup::layoutInfo()
+QStringList KServiceGroup::layoutInfo() const
 {
     return d->sortOrder;
 }
