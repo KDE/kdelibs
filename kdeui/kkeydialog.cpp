@@ -59,9 +59,11 @@ const int XKeyRelease = KeyRelease;
 #endif
 #endif
 
+KAccelActions g_actionsGlobal, g_actionsApplication;
+
 class KKeyChooserPrivate {
 public:
-    KAccelActions globalDict, stdDict;
+    //KAccelActions globalDict, stdDict;
     //QDict<int> *globalDict;
     //QDict<int> *stdDict;
     KListView *pList;
@@ -120,33 +122,33 @@ void KKeyDialog::commitChanges()
 	m_pKeyChooser->commitChanges();
 }
 
-int KKeyDialog::configureKeys( KAccelBase *keys, bool save_settings, QWidget *parent )
+int KKeyDialog::configureKeys( KAccelBase *keys, bool bSaveSettings, QWidget *parent )
 {
-    KAccelActions& actions = keys->actions();
-    KKeyDialog kd( actions, parent );
-    int retcode = kd.exec();
+	KAccelActions& actions = keys->actions();
+	KKeyDialog kd( actions, parent );
+	int retcode = kd.exec();
 
-    if( retcode == Accepted ) {
-    	kd.commitChanges();
-        keys->updateConnections();
-        if (save_settings)
-            keys->writeSettings();
-    }
-    return retcode;
+	if( retcode == Accepted ) {
+		kd.commitChanges();
+		keys->updateConnections();
+		if( bSaveSettings )
+			keys->writeSettings();
+	}
+	return retcode;
 }
 
-int KKeyDialog::configureKeys( KAccel *keys, bool save_settings, QWidget *parent )
+int KKeyDialog::configureKeys( KAccel *keys, bool bSaveSettings, QWidget *parent )
 {
-	return configureKeys( keys->basePtr(), save_settings, parent );
+	return configureKeys( keys->basePtr(), bSaveSettings, parent );
 }
 
-int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings, QWidget *parent )
+int KKeyDialog::configureKeys( KGlobalAccel *keys, bool bSaveSettings, QWidget *parent )
 {
-	return configureKeys( keys->basePtr(), save_settings, parent );
+	return configureKeys( keys->basePtr(), bSaveSettings, parent );
 }
 
 int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
-                               bool save_settings, QWidget *parent )
+                               bool bSaveSettings, QWidget *parent )
 {
     KAccelActions& map = coll->keyMap();
 
@@ -157,7 +159,8 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
         return retcode;
 
     kd.commitChanges();
-    if (!save_settings) {
+    coll->updateConnections();
+    if (!bSaveSettings) {
 	// FIXME: How do we get the new bindings to be connected?
 	//  We need an equivalent to KAccel::updateConnections() for
 	//  KActionCollection -- ellis
@@ -317,6 +320,7 @@ void KKeyChooser::init( KAccelActions& actions,
   // and fill up the split list box with the action/key pairs.
   //
   d->pList = new KListView( this );
+  d->pList->setAlternateBackground( QColor(0xb0, 0xb0, 0xff) );
   d->pList->setFocus();
 
   stackLayout->addMultiCellWidget( d->pList, 1, 1, 0, 1 );
@@ -525,15 +529,6 @@ void KKeyChooser::updateButtons()
 	}
 }
 
-/*void KKeyChooser::keyMode( int m )
-{
-	switch( m ) {
-	 case NoKey:      noKey(); break;
-	 case DefaultKey: defaultKey(); break;
-	 case CustomKey:  d->bChange->captureKey( true ); break;
-	}
-}*/
-
 void KKeyChooser::slotNoKey()
 {
 	// return if no key is selected
@@ -571,6 +566,7 @@ void KKeyChooser::slotCustomKey()
 
 void KKeyChooser::allDefault()
 {
+	kdDebug(125) << "KKeyChooser::allDefault()" << endl;
 	allDefault( d->bPreferFourModifierKeys );
 }
 
@@ -606,7 +602,8 @@ void KKeyChooser::readGlobalKeys()
 	//debug("KKeyChooser::readGlobalKeys()");
 	//readKeysInternal( d->globalDict, QString::fromLatin1("Global Keys"));
 	KConfig config;
-	d->globalDict.init( config, QString::fromLatin1("Global Keys") );
+	if( g_actionsGlobal.size() == 0 )
+		g_actionsGlobal.init( config, QString::fromLatin1("Global Shortcuts") );
 }
 
 void KKeyChooser::readStdKeys()
@@ -614,7 +611,8 @@ void KKeyChooser::readStdKeys()
 	// debug("KKeyChooser::readStdKeys()");
 	//readKeysInternal( d->stdDict, QString::fromLatin1("Keys"));
 	KConfig config;
-	d->stdDict.init( config, QString::fromLatin1("Keys") );
+	if( g_actionsApplication.size() == 0 )
+		g_actionsApplication.init( config, QString::fromLatin1("Shortcuts") );
 	// Only insert std keys which don't appear in the dictionary to be configured
 //	for( KAccelActions::ConstIterator it = d->pActionsOrig->begin(); it != d->pActionsOrig->end(); ++it )
 //		if ( d->stdDict->find( it.key() ) )
@@ -633,7 +631,7 @@ void KKeyChooser::fontChange( const QFont & )
 void KKeyChooser::allDefault( bool useFourModifierKeys )
 {
 	// Change all configKeyCodes to default values
-	kdDebug(125) << QString( "allDefault( %1 )\n" ).arg( useFourModifierKeys );
+	kdDebug(125) << QString( "KKeyChooser::allDefault( %1 )\n" ).arg( useFourModifierKeys );
 
 	for( KAccelActions::iterator it = d->actionsNew.begin(); it != d->actionsNew.end(); ++it ) {
 		KAccelAction& action = *it;
@@ -657,11 +655,11 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
 	*/
 
 	update();
+	updateButtons();
 }
 
-void KKeyChooser::slotListItemSelected( QListViewItem * /*item*/ )
+void KKeyChooser::slotListItemSelected( QListViewItem* )
 {
-	//updateButtons( item );
 	updateButtons();
 }
 
@@ -859,7 +857,8 @@ QString KKeyChooserItem::text( int iCol ) const
 
 	if( iCol == 0 )
 		return action.m_sDesc;
-	else if( iCol <= (int) action.shortcutCount() )
+	else if( iCol <= (int) action.shortcutCount()
+		  && iCol <= (int) action.m_rgShortcuts.size() )
 		return action.m_rgShortcuts[iCol-1].toString();
 	else
 		return QString::null;
