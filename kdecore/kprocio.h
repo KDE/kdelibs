@@ -55,6 +55,26 @@ class KProcIO : public KProcess
 public:
   KProcIO ( QTextCodec *codec = 0 );
   
+  /**
+   *  Starts the process.
+   *
+   *  @param runmode For a detailed description of the
+   *  various run modes, have a look at the
+   *  general description of the @ref KProcess class.
+   *
+   *  @param includeStderr If true, data from both stdout and stderr is 
+   *  listened to. If false, only stdout is listened to.
+   *
+   *  @return true on success, false on error
+   *
+   *  The following problems could cause this function to
+   *    return false:
+   *
+   *  @li The process is already running.
+   *  @li The command line argument list is empty.
+   *  @li The starting of the process failed (could not fork).
+   *  @li The executable was not found.
+   **/
   bool start (RunMode  runmode = NotifyOnExit, bool includeStderr = false);
 
   /**
@@ -72,9 +92,7 @@ public:
     { return writeStdin(line, AppendNewLine); }
 
   /**
-   * readln() reads up to '\n' (or max characters) and
-   * returns the number of characters placed in buffer.  Zero is returned
-   * if no more data is available.
+   * reads a line of text (up to and including '\n')
    *
    * Use readln() in response to a readReady() signal.
    * You may use it multiple times if more than one line of data is
@@ -91,6 +109,8 @@ public:
    * @param partial when provided the line is returned 
    * even if it does not contain a '\n'. *partial will be set to
    * false if the line contains a '\n' and false otherwise.
+   *
+   * @return the number of caracters read, or -1 if no data is available.
    **/
   virtual int readln (QString &line, bool autoAck=true, bool *partial=0);
 
