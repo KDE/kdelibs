@@ -110,7 +110,7 @@ const unsigned short tagPriority[] = {
     4, // ID_DL
     3, // ID_DT
     1, // ID_EM
-    1, // ID_EMBED
+    0, // ID_EMBED
     3, // ID_FIELDSET
     1, // ID_FONT
     3, // ID_FORM
