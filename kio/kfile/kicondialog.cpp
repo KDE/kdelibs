@@ -505,20 +505,17 @@ class KIconButton::KIconButtonPrivate
 KIconButton::KIconButton(QWidget *parent, const char *name)
     : QPushButton(parent, name)
 {
-    d = new KIconButtonPrivate;
-    // arbitrary
-    mGroup = KIcon::Desktop;
-    mContext = KIcon::Application;
-    mbUser = false;
-
-    mpLoader = KGlobal::iconLoader();
-    mpDialog = 0L;
-    connect(this, SIGNAL(clicked()), SLOT(slotChangeIcon()));
+    init( KGlobal::iconLoader() );
 }
 
 KIconButton::KIconButton(KIconLoader *loader,
 	QWidget *parent, const char *name)
     : QPushButton(parent, name)
+{
+    init( loader );
+}
+
+void KIconButton::init( KIconLoader *loader )
 {
     d = new KIconButtonPrivate;
     mGroup = KIcon::Desktop;

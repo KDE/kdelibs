@@ -72,15 +72,15 @@ private slots:
     void slotLoadFiles();
     void slotCurrentChanged(QIconViewItem *item);
 
-private:
-    QStringList mFiles;
-    QTimer *mpTimer;
-    KIconLoader *mpLoader;
 protected:
     virtual void virtual_hook( int id, void* data );
+
 private:
     class KIconCanvasPrivate;
     KIconCanvasPrivate *d;
+    QStringList mFiles;
+    QTimer *mpTimer;
+    KIconLoader *mpLoader;
 };
 
 
@@ -313,6 +313,8 @@ private slots:
     void newIconName(const QString& name);
 
 private:
+    void init( KIconLoader *loader );
+
     bool mbUser;
     KIcon::Group mGroup;
     KIcon::Context mContext;
