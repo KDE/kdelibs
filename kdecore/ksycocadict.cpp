@@ -186,7 +186,7 @@ KSycocaDict::hashKey( const QString &key)
 
 //
 // Calculate the diversity of the strings at position 'pos'
-int 
+static int 
 calcDiversity(KSycocaDictStringList *d, int pos, int sz)
 {
    if (pos == 0) return 0;
@@ -229,7 +229,7 @@ calcDiversity(KSycocaDictStringList *d, int pos, int sz)
 
 //
 // Add the diversity of the strings at position 'pos'
-void 
+static void 
 addDiversity(KSycocaDictStringList *d, int pos)
 {
    if (pos == 0) return;
