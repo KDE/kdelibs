@@ -11,5 +11,6 @@ Comment[da]=Pilleboksstil uden tema
 Comment[de]=Pillenschachtel (kein komplettes Design)
 Comment[hu]=Gyógyszeresdoboz stílus
 Comment[it]=Stile pillbox (senza tema)
+Comment[no_NY]='Pillbox'-stil utan tema
 [KDE]
 widgetStyle=pillboxstyle.la
