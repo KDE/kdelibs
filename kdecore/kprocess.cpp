@@ -64,6 +64,7 @@ KProcess::KProcess()
   input_data = 0L;
   input_sent = 0;
   input_total = 0;
+  arguments.setAutoDelete(true);
 
   theKProcessController->processList->append(this);
 }
@@ -83,6 +84,8 @@ KProcess::~KProcess()
 
   if (runs && (run_mode != DontCare))
     kill(SIGKILL);
+
+  free(process);
 }
 
 
@@ -107,7 +110,7 @@ bool KProcess::setExecutable(const char *proc)
 
 KProcess &KProcess::operator<<(const char *arg)
 {
-  char *new_arg= strdup(arg);
+  char *new_arg= qstrdup(arg);
 
   CHECK_PTR(new_arg);
   arguments.append(new_arg);

@@ -78,6 +78,14 @@ KProcessController::KProcessController()
   sigaction( SIGPIPE, &act, 0L);
 }
 
+KProcessController::~KProcessController() 
+{
+    delete processList;
+    delete notifier;
+    close(fd[0]);
+    close(fd[1]);
+}
+
 void KProcessController::theSigCHLDHandler(int )
 {
   int status;

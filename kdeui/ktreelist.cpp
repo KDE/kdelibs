@@ -483,7 +483,8 @@ KTreeList::KTreeList(QWidget *parent,
   expansion(0),
   goingDown(FALSE),
   indent(-1),
-  showText(TRUE)
+  showText(TRUE),
+  rubberband_mode(false) 
 {
   initMetaObject();
   setCellHeight(0);
@@ -850,8 +851,10 @@ KTreeListItem *KTreeList::itemAt(const KPath *path)
   while(!pathCopy.isEmpty())
     reversePath->push(pathCopy.pop());
   KTreeListItem *found = treeRoot->getChild();
-  if(!found)
-    return 0;
+  if(!found) {
+      delete reversePath;
+      return 0;
+  }
   found = recursiveFind(found, reversePath);
   delete reversePath;
   return found;

@@ -39,6 +39,7 @@ class KProcessController : public QObject
 
 public:
   KProcessController();
+  ~KProcessController();
 
   QList<KProcess> *processList;
 
