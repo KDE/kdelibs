@@ -904,11 +904,11 @@ void KDockWidget::changeHideShowState()
 
 void KDockWidget::makeDockVisible()
 {
-  if ( isVisible() ) return;
-
   if ( parentTabGroup() ){
     parentTabGroup()->setVisiblePage( this );
   }
+  if ( isVisible() ) return;
+
   QWidget* p = parentWidget();
   while ( p ){
     if ( !p->isVisible() )
