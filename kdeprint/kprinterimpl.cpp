@@ -276,7 +276,8 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		cmd.replace(rout,quote(tmpfile));
 		cmd.replace(rpsl,ps.lower());
 		cmd.replace(rpsu,ps);
-		if (system(cmd.latin1()) != 0)
+		int status = system(cmd.latin1());
+		if (status < 0 || WEXITSTATUS(status) == 127)
 		{
 			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.").arg(filtercmd));
 			return -1;
