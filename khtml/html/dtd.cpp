@@ -27,6 +27,7 @@
 using namespace DOM;
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 // priority of tags. Closing tags of higher priority close tags of lower
 // priority.
@@ -44,7 +45,7 @@ using namespace DOM;
 // 8 table
 // 9 body frameset
 // 10 html
-const unsigned short DOM::tagPriority[] = {
+const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     0, // 0
     1, // ID_A == 1
     1, // ID_ABBR
