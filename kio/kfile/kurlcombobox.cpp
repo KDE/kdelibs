@@ -209,7 +209,7 @@ void KURLComboBox::setURL( const KURL& url )
     while ( mit != itemMapper.end() ) {
         if ( url.url(-1) == mit.data()->url.url(-1) ) {
             setCurrentItem( mit.key() );
-
+            
             if ( myMode == Directories )
                 updateItem( mit.data(), mit.key(), opendirPix );
 
@@ -281,8 +281,10 @@ void KURLComboBox::insertURLItem( const KURLComboItem *item )
 void KURLComboBox::setMaxItems( int max )
 {
     myMaximum = max;
-
+    
     if ( count() > myMaximum ) {
+        int oldCurrent = currentItem();
+        
         setDefaults();
 
         QPtrListIterator<KURLComboItem> it( itemList );
@@ -292,6 +294,12 @@ void KURLComboBox::setMaxItems( int max )
 
         for( ; it.current(); ++it )
             insertURLItem( it.current() );
+        
+        if ( count() > 0 ) { // restore the previous currentItem
+            if ( oldCurrent >= count() )
+                oldCurrent = count() -1;
+            setCurrentItem( oldCurrent );
+        }
     }
 }
 
