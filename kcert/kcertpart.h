@@ -33,7 +33,7 @@ class KSSLCertBox;
 class QFrame;
 class QLabel;
 class KCertPartPrivate;
-class QComboBox;
+class KComboBox;
 class QButton;
 class KSSLSigners;
 class KSSLPKCS12;
@@ -102,7 +102,7 @@ protected:
   QLabel *_p12_filenameLabel, *_p12_validFrom, *_p12_validUntil, 
          *_p12_serialNum, *_p12_certState;
   QLabel *_p12_digest;
-  QComboBox *_p12_chain;
+  KComboBox *_p12_chain;
   QMultiLineEdit *_p12_pubkey, *_p12_sig;
   KSSLCertBox *_p12_subject, *_p12_issuer;
 

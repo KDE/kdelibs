@@ -44,6 +44,7 @@
 #include <kio/kmimemagic.h>
 #include <qmultilineedit.h>
 #include <qregexp.h>
+#include <kcombobox.h>
 #include <kparts/browserextension.h>
 #include <kparts/browserinterface.h>
 #include <kio/kservicetypefactory.h>
@@ -180,7 +181,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
                                        KDialog::spacingHint() );
  grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _pkcsFrame), 0, 0, 0, 5);
  grid->addWidget(new QLabel(i18n("Chain:"), _pkcsFrame), 1, 0);
- _p12_chain = new QComboBox(_pkcsFrame);
+ _p12_chain = new KComboBox(_pkcsFrame);
  grid->addMultiCellWidget(_p12_chain, 1, 1, 1, 4);
  connect(_p12_chain, SIGNAL(activated(int)), SLOT(slotChain(int)));
 
