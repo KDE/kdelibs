@@ -519,6 +519,27 @@ bool KFileItem::isReadable() const
   return true;
 }
 
+bool KFileItem::isWritable() const
+{
+  /*
+  struct passwd * user = getpwuid( geteuid() );
+  bool isMyFile = (QString::fromLocal8Bit(user->pw_name) == m_user);
+  // This gets ugly for the group....
+  // Maybe we want a static QString for the user and a static QStringList
+  // for the groups... then we need to handle the deletion properly...
+  */
+
+  // No write permission at all
+  if ( !(S_IWUSR & m_permissions) && !(S_IWGRP & m_permissions) && !(S_IWOTH & m_permissions) )
+      return false;
+
+  // Or if we can't read it [using ::access()] - not network transparent
+  else if ( m_bIsLocalURL && ::access( QFile::encodeName(m_url.path()), W_OK ) == -1 )
+      return false;
+
+  return true;
+}
+
 bool KFileItem::isHidden() const
 {
   if ( !m_url.isEmpty() )
@@ -548,12 +569,8 @@ bool KFileItem::isDir() const
 bool KFileItem::acceptsDrops()
 {
   // A directory ?
-  if ( S_ISDIR( mode() ) )
-  {
-    if ( m_bIsLocalURL ) // local -> check if we can enter it
-       return (::access( QFile::encodeName(m_url.path()), X_OK ) == 0);
-    else
-       return true; // assume ok for remote urls
+  if ( S_ISDIR( mode() ) ) {
+      return isWritable();
   }
 
   // But only local .desktop files and executables

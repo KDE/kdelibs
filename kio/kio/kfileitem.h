@@ -29,6 +29,8 @@
 #include <kmimetype.h>
 #include <kfilemetainfo.h>
 
+#define KFILEITEM_HAS_ISWRITABLE // only used in libkonq/konq_iconviewwidget.cc, will be removed for 3.4
+
 /**
  * A KFileItem is a generic class to handle a file, local or remote.
  * In particular, it makes it easier to handle the result of KIO::listDir
@@ -174,7 +176,7 @@ public:
   bool isFile() const { return !isDir(); }
 
   /**
-   * Checks whether the file is readable. In some cases
+   * Checks whether the file or directory is readable. In some cases
    * (remote files), we may return true even though it can't be read.
    * @return true if the file can be read - more precisely,
    *         false if we know for sure it can't
@@ -182,6 +184,14 @@ public:
   bool isReadable() const;
 
   /**
+   * Checks whether the file or directory is writable. In some cases
+   * (remote files), we may return true even though it can't be written to.
+   * @return true if the file or directory can be written to - more precisely,
+   *         false if we know for sure it can't
+   */
+  bool isWritable() const;
+
+    /**
    * Checks whether the file is hidden.
    * @return true if the file is hidden.
    */
