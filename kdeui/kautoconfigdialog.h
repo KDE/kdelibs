@@ -149,19 +149,6 @@ public:
 				  bool manage=true);
 
   /**
-   * Same as above function except the groupName is derived from the
-   * name of the page (via page->name()).
-   * Provided for convenience.
-   */ 
-  inline void addPage( QWidget *page, const QString &itemName,
-		                  const QString &pixmapName,
-				  const QString &header=QString::null,
-				  bool manage=true){
-    addPage( page, itemName, page->name(), pixmapName, header, manage);
-  }
-
-
-  /**
    * See if a dialog with the name 'name' already exists.
    * @see showDialog()
    * @param name - Dialog name to look for.
