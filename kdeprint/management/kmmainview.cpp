@@ -191,9 +191,9 @@ void KMMainView::initActions()
 	new KAction(i18n("Add &Special (pseudo) Printer..."),"kdeprint_addpseudo",0,this,SLOT(slotAddSpecial()),m_actions,"printer_add_special");
 	new KAction(i18n("Set as &Local Default"),"kdeprint_defaulthard",0,this,SLOT(slotHardDefault()),m_actions,"printer_hard_default");
 	new KAction(i18n("Set as &User Default"),"kdeprint_defaultsoft",0,this,SLOT(slotSoftDefault()),m_actions,"printer_soft_default");
-	new KAction(i18n("&Test Trinter"),"kdeprint_testprinter",0,this,SLOT(slotTest()),m_actions,"printer_test");
+	new KAction(i18n("&Test Printer"),"kdeprint_testprinter",0,this,SLOT(slotTest()),m_actions,"printer_test");
 	new KAction(i18n("Configure &Manager"),"kdeprint_configmgr",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
-	new KAction(i18n("Refresh &Vview"),"reload",0,this,SLOT(slotRefresh()),m_actions,"view_refresh");
+	new KAction(i18n("Refresh &View"),"reload",0,this,SLOT(slotRefresh()),m_actions,"view_refresh");
 
 	KIconSelectAction	*dact = new KIconSelectAction(i18n("&Orientation"),0,m_actions,"orientation_change");
 	iconlst.clear();
