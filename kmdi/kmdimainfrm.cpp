@@ -1188,7 +1188,7 @@ bool KMdiMainFrm::eventFilter( QObject * /*obj*/, QEvent *e )
 		if ( m_pMdi )
 		{
 			static bool focusTCIsPending = false;
-			if ( !focusTCIsPending )
+			if ( !focusTCIsPending && m_mdiMode == KMdi::ChildframeMode )
 			{
 				focusTCIsPending = true;
 				m_pMdi->focusTopChild();
