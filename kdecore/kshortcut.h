@@ -75,18 +75,18 @@ class KKey
 	 * Creates a new key from the first key code of the given key sequence.
 	 * @param keySeq the key sequence that contains the key 
 	 */
-	KKey( const QKeySequence& keySeq);
+	KKey( const QKeySequence& keySeq );
 
 	/**
 	 * Extracts the key from the given key event.
 	 * @param keyEvent the key event to get the key from
 	 */
-	KKey( const QKeyEvent* keyEvent);
+	KKey( const QKeyEvent* keyEvent );
 
 	/**
 	 * Copy constructor.
 	 */
-	KKey( const KKey& key);
+	KKey( const KKey& key );
 
 	/**
 	 * Creates a new key from the given description. The form of the description
@@ -96,7 +96,7 @@ class KKey
 	 * @param key the description of the key
 	 * @see KKeyServer::Sym::init()
 	 */
-	KKey( const QString& key);
+	KKey( const QString& key );
 	/**
 	 * @internal
 	 */
@@ -261,7 +261,7 @@ class KKey
 	 * @param f the modifiers to convert
 	 * @return the string representation of the modifiers
 	 */
-	static QString modFlagLabel( ModFlag f);
+	static QString modFlagLabel( ModFlag f );
 
  private:
 	/*
@@ -353,28 +353,28 @@ class KKeySequence
 	 * @param keySeq the qt key sequence to copy
 	 * @return true if successful, false otherwise
 	 */
-	bool init( const QKeySequence& keySeq);
+	bool init( const QKeySequence& keySeq );
 
 	/**
 	 * Initializes the key sequence to only contain the given key.
 	 * @param key the key to set
 	 * @return true if successful, false otherwise
 	 */
-	bool init( const KKey& key);
+	bool init( const KKey& key );
 
 	/**
 	 * Initializes the key sequence to only contain the given key.
 	 * @param key the key to set
 	 * @return true if successful, false otherwise
 	 */
-	bool init( const KKeyNative& key);
+	bool init( const KKeyNative& key );
 
 	/**
 	 * Copies the given key sequence over this key sequence.
 	 * @param keySeq the key sequence to copy
 	 * @return true if successful, false otherwise
 	 */
-	bool init( const KKeySequence& keySeq);
+	bool init( const KKeySequence& keySeq );
 
 	/**
 	 * Initializes this key sequence to contain the given key sequence.
@@ -385,7 +385,7 @@ class KKeySequence
 	 * @see KKeyServer::Sym::init()
 	 * @see KKey::KKey(const QString&)
 	 */
-	bool init( const QString& key);
+	bool init( const QString& key );
 
 	/**
 	 * Copy the given key sequence into this sequence.
@@ -653,7 +653,7 @@ class KShortcut
 	 * @param shortcut the description of the key
 	 * @see KKeySequence::KKeySequence(const QString&)
 	 */
-	bool init( const QString& shortcut);
+	bool init( const QString& shortcut );
 
 	/**
 	 * Copies the given shortcut over this shortcut.
