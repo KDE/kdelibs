@@ -217,7 +217,7 @@ bool KURL::isRelativeURL(const QString &_url)
      char c = str[i].latin1(); // Note: non-latin1 chars return 0!
      if (c == ':')
         return false; // URL starts with "xxx:" -> absolute URL
-     
+
      // Protocol part may only contain alpha, digit, + or -
      if (!isalpha(c) && !isdigit(c) && (c != '+') && (c != '-'))
         return true; // Relative URL
@@ -935,10 +935,7 @@ QString KURL::prettyURL() const
   }
   else
   {
-    if (u == QString::fromLatin1("file"))
-      u = QString::null; // Remove "file:"
-    else
-      u += ":";
+    u += ":";
   }
 
   u += lazy_encode( m_strPath );
