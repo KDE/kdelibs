@@ -1008,11 +1008,13 @@ public:
     m_edit = false;
     m_menu = 0;
     m_current = -1;
+    m_comboWidth = 70;
   }
   bool m_lock;
   bool m_edit;
   QPopupMenu *m_menu;
   int m_current;
+  int m_comboWidth;
   QStringList m_list;
 };
 
@@ -1102,6 +1104,19 @@ void KSelectAction::setCurrentItem( int id )
     //    emit activated( currentText() );
 }
 
+void KSelectAction::setComboWidth( int width )
+{
+  if ( width < 0 )
+    return;
+
+  d->m_comboWidth=width;
+
+  int len = containerCount();
+
+  for( int i = 0; i < len; ++i )
+    setComboWidth( i, width );
+
+}
 QPopupMenu* KSelectAction::popupMenu()
 {
   if ( !d->m_menu )
@@ -1194,6 +1209,23 @@ void KSelectAction::setCurrentItem( int id, int index )
   }
 }
 
+int KSelectAction::comboWidth() const
+{
+  return d->m_comboWidth;
+}
+
+void KSelectAction::setComboWidth( int id, int width )
+{
+  QWidget* w = container( id );
+  if ( w->inherits( "KToolBar" ) ) {
+    QWidget* r = ( (KToolBar*)w )->getWidget( menuId( id ) );
+    if ( r->inherits( "QComboBox" ) ) {
+      QComboBox *b = (QComboBox*)r;
+      b->resize( width, b->height() );
+    }
+  }
+}
+
 void KSelectAction::setItems( int id, const QStringList& lst )
 {
   QWidget* w = container( id );
@@ -1246,7 +1278,8 @@ int KSelectAction::plug( QWidget *widget, int index )
     bar->insertCombo( items(), id_, isEditable(),
                       SIGNAL( activated( const QString & ) ), this,
                       SLOT( slotActivated( const QString & ) ), isEnabled(),
-                      QString::null, 70, index );
+                      QString::null, d->m_comboWidth, index );
+
     QComboBox *cb = bar->getCombo( id_ );
     if ( cb )
       cb->setMinimumWidth( cb->sizeHint().width() );

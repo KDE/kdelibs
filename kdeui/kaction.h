@@ -691,6 +691,7 @@ class KSelectAction : public KAction
     Q_PROPERTY( int currentItem READ currentItem WRITE setCurrentItem );
     Q_PROPERTY( QStringList items READ items WRITE setItems );
     Q_PROPERTY( bool editable READ isEditable WRITE setEditable );
+    Q_PROPERTY( int comboWidth READ comboWidth WRITE setComboWidth );
     Q_PROPERTY( QString currentText READ currentText );
 public:
 
@@ -804,6 +805,8 @@ public:
     virtual void changeItem( int index, const QString& text );
     virtual QString currentText() const;
     virtual int currentItem() const;
+    virtual int comboWidth() const;
+    virtual void setComboWidth( int width );	
 
     QPopupMenu* popupMenu();
 
@@ -820,6 +823,8 @@ signals:
 
 protected:
     virtual void setCurrentItem( int id, int index );
+
+    virtual void setComboWidth( int id, int width );
 
     virtual void setItems( int id, const QStringList &lst );
     	
