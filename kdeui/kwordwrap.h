@@ -49,7 +49,7 @@ public:
      * not fit into the constraining rectangle.
      * @since 3.2
      */
-     static const int FadeOut;
+    enum { FadeOut = 0x10000000 };
 
     /**
      * Main method for wrapping text.

@@ -20,8 +20,6 @@
 #include <kdebug.h>
 #include <qpainter.h>
 
-const int KWordWrap::FadeOut = 0x10000000;
-
 class KWordWrapPrivate {
 public:
   QRect m_constrainingRect;
