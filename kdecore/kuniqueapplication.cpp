@@ -205,7 +205,6 @@ KUniqueApplication::start()
      ::write(fd[1], &result, 1);
      ::close(fd[1]);
      return true; // Finished.
-     break;
   default:
      // Parent
      ::close(fd[1]);

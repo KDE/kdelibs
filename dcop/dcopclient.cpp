@@ -1396,7 +1396,6 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
             if (findResultOk(replyType, replyData))
                 return findSuccess(app, objId, replyType, replyData);
         }
-        return false;
     }
     else {
 	// handle a multicast to several objects.
@@ -1414,7 +1413,6 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
 		if (findResultOk(replyType, replyData))
                     return findSuccess(app, objPtr->objId(), replyType, replyData);
 	}
-	return false;
     }
     return false;
 }

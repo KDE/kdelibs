@@ -45,6 +45,7 @@ template class QList<QFont::CharSet>;
 #define CHARSETS_COUNT 30
 #endif
 
+#if QT_VERSION < 300
 static const char * const charsetsStr[CHARSETS_COUNT] = {
     "unicode",
     "iso-8859-1",
@@ -81,9 +82,11 @@ static const char * const charsetsStr[CHARSETS_COUNT] = {
     "iso-8859-11",
     "Any"
 };
+#endif
 
 // these can contain wildcard characters. Needed for fontset matching (CJK fonts)
 // sort them by length if they have the same prefix!
+#if QT_VERSION < 300
 static const char * const xNames[CHARSETS_COUNT] = {
     "iso10646-1",
     "iso8859-1",
@@ -121,6 +124,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     ""  // this will always return true...
         // adjust xNameToId if you remove this
 };
+#endif
 
 #if QT_VERSION < 300
 static const QFont::CharSet charsetsIds[CHARSETS_COUNT] = {
@@ -406,7 +410,9 @@ QStringList KCharsets::availableEncodingNames()
 #if QT_VERSION < 300	
             if( const_cast<KCharsets *>(this)->isAvailable(*sit) ) {
 #else
+#ifdef __GNUC__
 #warning FIXME?
+#endif
             if( true ) {
 #endif
                 //kdDebug(0) << *sit << " available" << endl;
