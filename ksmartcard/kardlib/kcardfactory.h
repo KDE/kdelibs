@@ -45,6 +45,8 @@ class KCardFactory {
 
   static KCardFactory *self();
 
+
+ 
  private:
 
   KCardFactory();
@@ -52,11 +54,13 @@ class KCardFactory {
   int loadModules();
   void *loadModule(KService::Ptr svc);
 
-
   static KCardFactory *_self;
  
-  QMap< QString, QMap< QString, QMap< QString,void*> > > _modules;
   
+ typedef QMap< QString, QMap< QString, QMap< QString,void*> > > _modulesMap;
+  
+ _modulesMap _modules;
+
   class KCardFactoryPrivate;
   KCardFactoryPrivate *d;
 

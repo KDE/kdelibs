@@ -21,7 +21,7 @@
  
 #include "kcardfactory.h" 
 #include "kpcsc.h" 
-#include "kcardgsm_impl.h" 
+
  
 #include <qfile.h> 
 #include <qvariant.h> 
@@ -30,10 +30,31 @@
 #include <klibloader.h> 
 #include <kservicetype.h> 
  
- 
+#include <kdebug.h> 
  
 KCardFactory::KCardFactory() { 
-	loadModules(); 
+
+  //QMap< QString, QMap< QString, QMap< QString,void*> > > _modules;  
+
+  loadModules();
+  
+   _modulesMap::Iterator i;
+  
+  
+//   for ( i=_modules.begin();i!=_modules.end();++i){
+
+//     _modules[i.key().latin1()]::Iterator j;
+//     for (  j=_modules[i.key().latin1()].begin();
+// 	   j!=_modules[i.key().latin1()].end();
+// 	   ++j){
+      
+//       kdDebug() << i.key().latin1() << endl;
+      
+//     }
+    
+//   }
+  //  kdDebug() << _type << _subType << _subSubType.join("-") << endl;
+
 } 
  
  
@@ -59,7 +80,7 @@ KCardImplementation * KCardFactory::getCard (KCardReader * selReader,
  
  
   case KCardGSMType: 
-    return new KCardGsmImplementation (selReader); 
+    
     break; 
  
  
@@ -77,6 +98,9 @@ return NULL;
  
  
 void *KCardFactory::loadModule(KService::Ptr svc) { 
+
+
+
 	if (!svc || svc->library().isEmpty()) 
 		return NULL; 
  
@@ -92,7 +116,8 @@ void *KCardFactory::loadModule(KService::Ptr svc) {
  
 	factory = "create_" + factory; 
 	QString libname = "libkscard_" + svc->library(); 
- 
+
+
 	KLibrary *lib = loader->library(QFile::encodeName(libname)); 
 	if (lib) { 
 		void *create = lib->symbol(QFile::encodeName(factory)); 
@@ -131,15 +156,17 @@ int KCardFactory::loadModules() {
  
 		void *f = loadModule(service); 
  
+		
 		for (QStringList::Iterator j = _subSubType.begin(); 
 					    j != _subSubType.end(); 
 								++j) { 
 			_modules[_type][_subType][*j] = f; 
 		} 
 	} 
+	
 	return 0; 
 } 
  
- 
+
  
  
