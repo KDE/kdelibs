@@ -97,7 +97,7 @@ IdleSlave::gotInput()
       mHost = host;
       kdDebug(7016) << "SlavePool: SlaveStatus = "
 	<< mProtocol << " " << mHost << " " << 
-           mConnected ? "Connected" : "Not connected";
+           (mConnected ? "Connected" : "Not connected") << endl;
    }
 }
 
@@ -106,7 +106,7 @@ IdleSlave::connect(const QString &app_socket)
 {
    kdDebug(7016) << "SlavePool: New mission for slave:"
 	<< mProtocol << " " << mHost << " " << 
-           mConnected ? "Connected" : "Not connected";
+	   (mConnected ? "Connected" : "Not connected") << endl;
 
    QByteArray data;
    QDataStream stream( data, IO_WriteOnly);

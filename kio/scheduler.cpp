@@ -34,25 +34,20 @@ Scheduler::debug_info()
     Slave *slave = slaveList->first();
     for(; slave; slave = slaveList->next())
     {
-        kDebugInfo(7006, " Slave: %s %s %d",
-		slave->protocol().ascii(),
-                slave->host().ascii(),
-                slave->port());
+        kdDebug(7006) << " Slave: " << slave->protocol() << " " << slave->host() << slave->port() << endl;
     }
     kDebugInfo(7006, "Idle Slaves: %d", idleSlaves->count());
     slave = idleSlaves->first();
     for(; slave; slave = idleSlaves->next())
     {
-        kDebugInfo(7006, " IdleSlave: %s %s %d",
-		slave->protocol().ascii(),
-                slave->host().ascii(),
-                slave->port());
+        kdDebug(7006) << " IdleSlave: " << slave->protocol() << " " << slave->host() << slave->port() << endl;
+
     }
     kDebugInfo(7006, "Jobs in Queue: %d", joblist.count());
     SimpleJob *job = joblist.first();
     for(; job; job = joblist.next())
     {
-        kDebugInfo(7006, " Job: %s", job->url().url().ascii());
+        kdDebug(7006) << " Job: " << job->url().url() << endl;
     }
 }
 
