@@ -37,12 +37,12 @@ namespace Arts {
 	{
 		long autoSuspendSeconds();
 		void autoSuspendSeconds(long newValue);
-		string audioMethod();
+		std::string audioMethod();
 		long samplingRate();
 		long channels();
 		long bits();
 		bool fullDuplex();
-		string audioDevice();
+		std::string audioDevice();
 		long fragments();
 		long fragmentSize();
 	};

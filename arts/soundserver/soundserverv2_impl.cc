@@ -33,7 +33,7 @@ using namespace Arts;
 
 #include "config.h"
 
-string SoundServerV2_impl:: audioMethod() {
+std::string SoundServerV2_impl:: audioMethod() {
 	return AudioSubSystem::the()->audioIO();
 }
 
@@ -53,7 +53,7 @@ bool SoundServerV2_impl:: fullDuplex() {
 	return AudioSubSystem::the()->fullDuplex();
 }
 
-string SoundServerV2_impl:: audioDevice() {
+std::string SoundServerV2_impl:: audioDevice() {
 	return AudioSubSystem::the()->deviceName();
 }
 
