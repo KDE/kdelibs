@@ -68,20 +68,21 @@ using namespace khtml;
 // 0 elements with forbidden close tag and text. They don't get pushed
 //   to the stack.
 // 1 inline elements
-// 2 regular block level elements
-// 3 lists (OL UL DIR MENU)
-// 4 TD TH
-// 5 TR
-// 6 tbody thead tfoot caption
-// 7 table
-// 8 body frameset
-// 9 html
+// 2 form elements
+// 3 regular block level elements
+// 4 lists (OL UL DIR MENU)
+// 5 TD TH
+// 6 TR
+// 7 tbody thead tfoot caption
+// 8 table
+// 9 body frameset
+// 10 html
 const unsigned short tagPriority[] = {
     0, // 0
     1, // ID_A == 1
     1, // ID_ABBR
     1, // ID_ACRONYM
-    2, // ID_ADDRESS
+    3, // ID_ADDRESS
     1, // ID_APPLET
     0, // ID_AREA
     1, // ID_B
@@ -89,39 +90,39 @@ const unsigned short tagPriority[] = {
     0, // ID_BASEFONT
     1, // ID_BDO
     1, // ID_BIG
-    2, // ID_BLOCKQUOTE
-    8, // ID_BODY
+    3, // ID_BLOCKQUOTE
+    9, // ID_BODY
     0, // ID_BR
     1, // ID_BUTTON
     1, // ID_CAPTION
-    2, // ID_CENTER
+    3, // ID_CENTER
     1, // ID_CITE
     1, // ID_CODE
     0, // ID_COL
     1, // ID_COLGROUP
-    2, // ID_DD
+    3, // ID_DD
     1, // ID_DEL
     1, // ID_DFN
-    3, // ID_DIR
-    2, // ID_DIV
-    3, // ID_DL
-    2, // ID_DT
+    4, // ID_DIR
+    3, // ID_DIV
+    4, // ID_DL
+    3, // ID_DT
     1, // ID_EM
     1, // ID_EMBED
-    2, // ID_FIELDSET
+    3, // ID_FIELDSET
     1, // ID_FONT
-    2, // ID_FORM
+    3, // ID_FORM
     0, // ID_FRAME
-    8, // ID_FRAMESET
-    2, // ID_H1
-    2, // ID_H2
-    2, // ID_H3
-    2, // ID_H4
-    2, // ID_H5
-    2, // ID_H6
-    8, // ID_HEAD
+    9, // ID_FRAMESET
+    3, // ID_H1
+    3, // ID_H2
+    3, // ID_H3
+    3, // ID_H4
+    3, // ID_H5
+    3, // ID_H6
+    9, // ID_HEAD
     0, // ID_HR
-    9, // ID_HTML
+    10, // ID_HTML
     1, // ID_I
     1, // ID_IFRAME
     0, // ID_IMG
@@ -131,20 +132,20 @@ const unsigned short tagPriority[] = {
     1, // ID_KBD
     1, // ID_LABEL
     1, // ID_LEGEND
-    2, // ID_LI
+    3, // ID_LI
     0, // ID_LINK
     1, // ID_LISTING
     1, // ID_MAP
-    3, // ID_MENU
+    4, // ID_MENU
     0, // ID_META
-    8, // ID_NOEMBED
-    8, // ID_NOFRAMES
-    2, // ID_NOSCRIPT
+    9, // ID_NOEMBED
+    9, // ID_NOFRAMES
+    3, // ID_NOSCRIPT
     1, // ID_OBJECT
-    3, // ID_OL
+    4, // ID_OL
     1, // ID_OPTGROUP
-    1, // ID_OPTION
-    2, // ID_P
+    2, // ID_OPTION
+    3, // ID_P
     0, // ID_PARAM
     1, // ID_PLAIN
     1, // ID_PRE
@@ -152,7 +153,7 @@ const unsigned short tagPriority[] = {
     1, // ID_S
     1, // ID_SAMP
     1, // ID_SCRIPT
-    1, // ID_SELECT
+    2, // ID_SELECT
     1, // ID_SMALL
     1, // ID_SPAN
     1, // ID_STRIKE
@@ -160,18 +161,18 @@ const unsigned short tagPriority[] = {
     1, // ID_STYLE
     1, // ID_SUB
     1, // ID_SUP
-    7, // ID_TABLE
-    6, // ID_TBODY
-    4, // ID_TD
+    8, // ID_TABLE
+    7, // ID_TBODY
+    5, // ID_TD
     1, // ID_TEXTAREA
-    6, // ID_TFOOT
-    4, // ID_TH
-    6, // ID_THEAD
+    7, // ID_TFOOT
+    5, // ID_TH
+    7, // ID_THEAD
     1, // ID_TITLE
-    5, // ID_TR
+    6, // ID_TR
     1, // ID_TT
     1, // ID_U
-    3, // ID_UL
+    4, // ID_UL
     1, // ID_VAR
     0, // ID_TEXT
 };
@@ -402,7 +403,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 #endif
 	// error handling...
 	HTMLElementImpl *e;
-	bool ignore = false;
+	bool handled = false;
 
 	// switch according to the element to insert
 	switch(id)
@@ -416,6 +417,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    break;
 	case ID_TITLE:
 	    if(inBody) discard_until = ID_TITLE + ID_CLOSE_TAG;
+	    // Fall through!
 	case ID_HTML:
 	case ID_BODY:
 	case ID_BASE:
@@ -450,6 +452,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 
 	    if ( strcasecmp( type, "hidden" ) != 0 )
 		break;
+	    // Fall through!
 	}
 	case ID_MAP:
 	case ID_FORM:
@@ -499,6 +502,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    {
 		map->addChild(n);
 		n->attach(HTMLWidget);
+		handled = true;
 	    }
 	    else
 		throw exception;
@@ -538,12 +542,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		// ### what about <script> tags between head and body????
 		e = new HTMLHeadElementImpl(document);
 		insertNode(e);
+		handled = true;
 		break;
 	    default:
 		e = new HTMLBodyElementImpl(document);
 		inBody = true;
 		document->createSelector();
 		insertNode(e);
+		handled = true;
 		break;
 	    }
 	    break;
@@ -555,9 +561,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    inBody = true;
 	    document->createSelector();
 	    insertNode(e);
+	    handled = true;
 	    break;
 	case ID_BODY:
-	    ignore = true;
 	    break;
 	case ID_TABLE:
 	    switch(id)
@@ -565,7 +571,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    case ID_COL:
 	    case ID_COLGROUP:
 	    case ID_P:
-		ignore = true;
 		break;
 	    case ID_TEXT:
 	    {
@@ -576,13 +581,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
 				      *(i->s+pos) == QChar(0xa0))) pos++;
 		if(pos == i->l)
 		{
-		    ignore = true;
 		    break;
 		}
 	    }
+	    // Fall through!
 	    default:
 		e = new HTMLTableSectionElementImpl(document, ID_TBODY);
 		insertNode(e);
+		handled = true;
 		break;
 	    }
 	    break;
@@ -594,11 +600,11 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    case ID_COL:
 	    case ID_COLGROUP:
 	    case ID_P:
-		ignore = true;
 		break;
 	    default:
 		e = new HTMLTableRowElementImpl(document);
 		insertNode(e);
+		handled = true;
 		break;
 	    }
 	    break;
@@ -608,7 +614,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    case ID_COL:
 	    case ID_COLGROUP:
 	    case ID_P:
-		ignore = true;
 		break;
 	    case ID_TEXT:
 	    {
@@ -619,13 +624,14 @@ void KHTMLParser::insertNode(NodeImpl *n)
 				      *(i->s+pos) == QChar(0xa0))) pos++;
 		if(pos == i->l)
 		{
-		    ignore = true;
 		    break;
 		}
 	    }
+	    // Fall through!
 	    default:
 		e = new HTMLTableCellElementImpl(document, ID_TD);
 		insertNode(e);
+		handled = true;
 		break;
 	    }
 	    break;
@@ -635,73 +641,52 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_MENU:
 	    e = new HTMLLIElementImpl(document);
 	    insertNode(e);
+	    handled = true;
 	    break;
 	case ID_P:
-	    if(!n->isInline())
-		popBlock(ID_P);
-	    break;
 	case ID_H1:
-	    if(!n->isInline())
-		popBlock(ID_H1);
-	    break;
 	case ID_H2:
-	    if(!n->isInline())
-		popBlock(ID_H2);
-	    break;
 	case ID_H3:
-	    if(!n->isInline())
-		popBlock(ID_H3);
-	    break;
 	case ID_H4:
-	    if(!n->isInline())
-		popBlock(ID_H4);
-	    break;
 	case ID_H5:
-	    if(!n->isInline())
-		popBlock(ID_H5);
-	    break;
 	case ID_H6:
 	    if(!n->isInline())
-		popBlock(ID_H6);
+	    {
+		popBlock(current->id());
+		handled = true;
+            }
 	    break;
 	case ID_OPTION:
 	    if (id == ID_OPTGROUP)
+	    {
 		popBlock(ID_OPTION);
-            else
-            {
-                if(tagPriority[id] != 0)
-		{
-		   pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
-		}
-                ignore = true;
-            }
+		handled = true;
+	    }
 	    break;
 	    // head elements in the body should be ignored.
 	case ID_ADDRESS:
 	    popBlock(ID_ADDRESS);
+	    handled = true;
 	    break;
 	default:
 	    if(current->isDocumentNode())
 	    {
-		if(current->firstChild() != 0)
-		{
-		    // already have a HTML element...
-		    ignore = true;
-		}
-		else
+		if(current->firstChild() == 0)
 		{
 		    e = new HTMLHtmlElementImpl(document);
 		    insertNode(e);
+		    handled = true;
 		}
 	    }
 	    else if(current->isInline())
+	    {
 		popInlineBlocks();
-	    else
-		ignore = true;
+		handled = true;
+            }
 	}	
 
 	// if we couldn't handle the error, just rethrow the exception...
-	if(ignore)
+	if(!handled)
 	{
 	    //kdDebug( 6035 ) << "Exception handler failed in HTMLPArser::insertNode()" << endl;
 	    throw exception;
