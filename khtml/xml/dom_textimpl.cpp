@@ -150,7 +150,7 @@ bool TextImpl::mouseEvent( int _x, int _y, int, MouseEventType,
 			   int _tx, int _ty, DOMString &,
                            NodeImpl *&innerNode, long &offset)
 {
-    //printf("Text::mouseEvent\n");
+    //kdDebug(300) << "Text::mouseEvent" << endl;
 
     if(!m_render) return false;
 

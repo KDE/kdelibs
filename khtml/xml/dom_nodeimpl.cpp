@@ -29,7 +29,7 @@
 #include "dom_elementimpl.h"
 #include "dom_docimpl.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 
 #include "rendering/render_object.h"
 #include <qstring.h>
@@ -202,19 +202,19 @@ QString NodeImpl::toHTML()
 
 void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, int stdInc )
 {
-//printf("\nOFFSET: %d\n\n", offset);
-//printf("\nSIZE: %d\n\n", sizeof htmlText);
-//printf("recursive 1: %s\n", nodeName().string().ascii() );
+//kdDebug(300) << "\nOFFSET: " << offset << "\n" << endl;
+//kdDebug(300) << "\nSIZE: " << sizeof htmlText << "\n" << endl;
+//kdDebug(300) << "recursive 1: " << nodeName().string() << endl;
     DOMString me;
 
     // Copy who I am into the htmlStext string
     if ( nodeType() == Node::TEXT_NODE )
     {
-//printf("recursive 2: %s\n", nodeName().string().ascii() );
+//kdDebug(300) << "recursive 2: " << nodeName().string() << endl;
         me = nodeValue();
         int i = me.length();
         while( (currentLength - offset) <= i*2+4){
-//            printf("\ni: %d\n", i);
+//            kdDebug(300) << "\ni: " << i << endl;
             increaseStringLength( htmlText, currentLength, offset, stdInc);
         }
 
@@ -223,12 +223,12 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
     }
     else
     {
-//printf("recursive 3: %s\n", nodeName().string().ascii() );
+//kdDebug(300) << "recursive 3: " << nodeName().string() << endl;
         me = nodeName();
         int i = me.length();
         while( (currentLength - offset) <= i*2+4)
         {
-//            printf("\ni: %d\n", i);
+//            kdDebug(300) << "\ni: " << i << endl;
             increaseStringLength( htmlText, currentLength, offset, stdInc);
         }
         memcpy(htmlText+offset, &LT, 2);             // prints "<"
@@ -240,11 +240,11 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
                             NamedNodeMap nnm = n.attributes();
                             Attr _attr;
                             unsigned long lmap = nnm.length();
-                            //                printf( "Heffa: %s %d\n", n.nodeName().string().ascii(), lmap );
+                            //                kdDebug(300) << "Heffa: " << n.nodeName().string() << " " << lmap << endl;
                             for( unsigned int j=0; j<lmap; j++ )
                             {
                             _attr = nnm.item(j);
-                            //                    printf( "Attr: %s\n", _attr.name().string().ascii() );
+                            //                    kdDebug(300) << "Attr: " << _attr.name().string() << endl;
                             unsigned long lname = _attr.name().length();
                             unsigned long lvalue = _attr.value().length();
                             int len = lname + lvalue + 4;
@@ -261,7 +261,7 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
 
         if( firstChild() == 0 )     // if element has no endtag
         {
-//printf("recursive 4: %s\n", nodeName().string().ascii() );
+//kdDebug(300) << "recursive 4: " << nodeName().string() << endl;
             memcpy(htmlText+offset+i+1, &SPACE, 2);     // prints " "
             memcpy(htmlText+offset+i+2, &SLASH, 2);     // prints "/"
             memcpy(htmlText+offset+i+3, &MT, 2);     // prints ">"
@@ -269,16 +269,16 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
         }
         else                  // if element has endtag
         {
-//printf("recursive 5: %s\n", nodeName().string().ascii() );
+//kdDebug(300) << "recursive 5: " << nodeName().string() << endl;
             memcpy(htmlText+offset+i+1, &MT, 2);     // prints ">"
             offset += i+2;
         }
     }
-//printf("recursive 5b: %s\n", nodeName().string().ascii() );
+//kdDebug(300) << "recursive 5b: " << nodeName().string() << endl;
 
     if( firstChild() != 0 )
     {
-//printf("recursive 6: %s\n", nodeName().string().ascii() );
+//kdDebug(300) << "recursive 6: " << nodeName().string() << endl;
         // print firstChild
         firstChild()->recursive( htmlText, currentLength, offset, stdInc);
 
@@ -299,23 +299,23 @@ void NodeImpl::recursive( QChar *htmlText, long &currentLength, long &offset, in
     // print next sibling
     if( nextSibling() )
         nextSibling()->recursive( htmlText, currentLength, offset, stdInc);
-//printf("recursive 8: %s\n", nodeName().string().ascii() );
-//printf("\nOFFSET2: %d\n\n", offset);
+//kdDebug(300) << "recursive 8: " << nodeName().string() << endl;
+//kdDebug(300) << "\nOFFSET2: " << offset << "\n" << endl;
 }
 
 int NodeImpl::increaseStringLength( QChar *htmlText, long &currentLength, long offset, int stdInc)
 {
-//printf("Hei!\n");
+//kdDebug(300) << "Hei!" << endl;
     currentLength += stdInc;
-//printf("1\n");
+//kdDebug(300) << "1" << endl;
     QChar *htmlTextTmp = QT_ALLOC_QCHAR_VEC(currentLength);
-//printf("2\n");
+//kdDebug(300) << "2" << endl;
     memcpy(htmlTextTmp, htmlText, offset);
-//printf("3\n");
+//kdDebug(300) << "3" << endl;
     QT_DELETE_QCHAR_VEC(htmlText);
-//printf("4\n");
+//kdDebug(300) << "4" << endl;
     htmlText = htmlTextTmp;
-//printf("Ha det!\n");
+//kdDebug(300) << "Ha det!" << endl;
 }
 
 void NodeImpl::applyChanges()
@@ -409,7 +409,7 @@ NodeBaseImpl::NodeBaseImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 
 NodeBaseImpl::~NodeBaseImpl()
 {
-    //printf("NodeBaseImpl destructor\n");
+    //kdDebug(300) << "NodeBaseImpl destructor" << endl;
     // we have to tell all children, that the parent has died...
     NodeImpl *n;
     NodeImpl *next;
@@ -617,7 +617,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     // short check for consistency with DTD
     if(!checkChild(id(), newChild->id()))
     {
-        printf("AddChild failed! id=%d, child->id=%d\n", id(), newChild->id());
+        kdDebug(300) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 
