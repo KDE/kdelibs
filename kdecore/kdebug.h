@@ -343,20 +343,25 @@ class kdbgstream {
 };
 
 /**
+ * \relates KGlobal
  * Prints an "\n".
  * @param s the debug stream to write to
  * @return the debug stream (@p s)
  */
 inline kdbgstream &endl( kdbgstream &s) { s << "\n"; return s; }
+
 /**
+ * \relates KGlobal
  * Flushes the stream.
  * @param s the debug stream to write to
  * @return the debug stream (@p s)
  */
 inline kdbgstream &flush( kdbgstream &s) { s.flush(); return s; }
+
 kdbgstream &perror( kdbgstream &s);
 
 /**
+ * \relates KGlobal
  * kndbgstream is a dummy variant of kdbgstream. All functions do
  * nothing.
  * @see kndDebug()
@@ -486,6 +491,7 @@ inline kndbgstream &flush( kndbgstream & s) { return s; }
 inline kndbgstream &perror( kndbgstream & s) { return s; }
 
 /**
+ * \relates KGlobal
  * Returns a debug stream. You can use it to print debug
  * information.
  * @param area an id to identify the output, 0 for default
@@ -494,11 +500,13 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
 kdbgstream kdDebug(int area = 0);
 kdbgstream kdDebug(bool cond, int area = 0);
 /**
+ * \relates KGlobal
  * Returns a backtrace.
  * @return a backtrace
  */
 QString kdBacktrace();
 /**
+ * \relates KGlobal
  * Returns a backtrace.
  * @param levels the number of levels of the backtrace
  * @return a backtrace
@@ -516,6 +524,7 @@ inline QString kndBacktrace() { return QString::null; }
 inline QString kndBacktrace(int) { return QString::null; }
 
 /**
+ * \relates KGlobal
  * Returns a warning stream. You can use it to print warning
  * information.
  * @param area an id to identify the output, 0 for default
@@ -523,6 +532,7 @@ inline QString kndBacktrace(int) { return QString::null; }
 kdbgstream kdWarning(int area = 0);
 kdbgstream kdWarning(bool cond, int area = 0);
 /**
+ * \relates KGlobal
  * Returns an error stream. You can use it to print error
  * information.
  * @param area an id to identify the output, 0 for default
@@ -530,6 +540,7 @@ kdbgstream kdWarning(bool cond, int area = 0);
 kdbgstream kdError(int area = 0);
 kdbgstream kdError(bool cond, int area = 0);
 /**
+ * \relates KGlobal
  * Returns a fatal error stream. You can use it to print fatal error
  * information.
  * @param area an id to identify the output, 0 for default
@@ -538,11 +549,11 @@ kdbgstream kdFatal(int area = 0);
 kdbgstream kdFatal(bool cond, int area = 0);
 
 /**
+ * \relates KGlobal
  * Deletes the kdebugrc cache and therefore forces KDebug to reread the
  * config file
  */
 void kdClearDebugConfig();
-
 
 #ifdef NDEBUG
 #define kdDebug kndDebug

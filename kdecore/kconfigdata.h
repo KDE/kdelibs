@@ -118,6 +118,7 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
 }
 
 /**
+ * \relates KEntry
  * type specifying a map of entries (key,value pairs).
  * The keys are actually a key in a particular config file group together
  * with the group name.
@@ -126,12 +127,14 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
 typedef QMap<KEntryKey, KEntry> KEntryMap;
 
 /**
+ * \relates KEntry
  * type for iterating over keys in a KEntryMap in sorted order.
  * @internal
  */
 typedef QMap<KEntryKey, KEntry>::Iterator KEntryMapIterator;
 
 /**
+ * \relates KEntry
  * type for iterating over keys in a KEntryMap in sorted order.
  * It is const, thus you cannot change the entries in the iterator,
  * only examine them.

@@ -396,6 +396,7 @@ public:
 };
 
 /**
+ * \relates KIconLoader
  * Load a desktop icon.
  */
 QPixmap DesktopIcon(const QString& name, int size=0,
@@ -403,34 +404,40 @@ QPixmap DesktopIcon(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a desktop icon.
  */
 QPixmap DesktopIcon(const QString& name, KInstance *instance);
 
 /**
+ * \relates KIconLoader
  * Load a desktop icon, and apply the necessary effects to get an IconSet.
  */
 QIconSet DesktopIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a toolbar icon.
  */
 QPixmap BarIcon(const QString& name, int size=0, int state=KIcon::DefaultState,
 	KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a toolbar icon.
  */
 QPixmap BarIcon(const QString& name, KInstance *instance);
 
 /**
+ * \relates KIconLoader
  * Load a toolbar icon, and apply the necessary effects to get an IconSet.
  */
 QIconSet BarIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a small icon.
  */
 QPixmap SmallIcon(const QString& name, int size=0,
@@ -438,17 +445,20 @@ QPixmap SmallIcon(const QString& name, int size=0,
 		  KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a small icon.
  */
 QPixmap SmallIcon(const QString& name, KInstance *instance);
 
 /**
+ * \relates KIconLoader
  * Load a small icon, and apply the necessary effects to get an IconSet.
  */
 QIconSet SmallIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a main toolbar icon.
  */
 QPixmap MainBarIcon(const QString& name, int size=0,
@@ -456,34 +466,40 @@ QPixmap MainBarIcon(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a main toolbar icon.
  */
 QPixmap MainBarIcon(const QString& name, KInstance *instance);
 
 /**
+ * \relates KIconLoader
  * Load a main toolbar icon, and apply the effects to get an IconSet.
  */
 QIconSet MainBarIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a user icon.
  */
 QPixmap UserIcon(const QString& name, int state=KIcon::DefaultState,
 	KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Load a user icon.
  */
 QPixmap UserIcon(const QString& name, KInstance *instance);
 
 /**
+ * \relates KIconLoader
  * Load a user icon, and apply the effects to get an IconSet.
  */
 QIconSet UserIconSet(const QString& name,
 	KInstance *instance=KGlobal::instance());
 
 /**
+ * \relates KIconLoader
  * Returns the current icon size for a specific group.
  */
 int IconSize(KIcon::Group group, KInstance *instance=KGlobal::instance());

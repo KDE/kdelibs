@@ -864,6 +864,7 @@ private:
 };
 
 /**
+ * \relates KURL
  * Compares URLs. They are parsed, split and compared.
  * Two malformed URLs with the same string representation
  * are nevertheless considered to be unequal.
@@ -872,6 +873,7 @@ private:
 bool urlcmp( const QString& _url1, const QString& _url2 );
 
 /**
+ * \relates KURL
  * Compares URLs. They are parsed, split and compared.
  * Two malformed URLs with the same string representation
  * are nevertheless considered to be unequal.

@@ -1243,7 +1243,9 @@ private:
 };
 
 
-/** Check, if a file may be accessed in a given mode.
+/**
+ * \relates KGlobal
+ * Check, if a file may be accessed in a given mode.
  * This is a wrapper around the access() system call.
  * checkAccess() calls access() with the given parameters.
  * If this is OK, checkAccess() returns true. If not, and W_OK
@@ -1259,7 +1261,6 @@ private:
  * @return Whether the access is allowed, true = Access allowed
  */
 bool checkAccess(const QString& pathname, int mode);
-
 
 class KSessionManagedPrivate;
 

@@ -38,10 +38,16 @@ class KCatalogue;
 class KCalendarSystem;
 
 #ifndef I18N_NOOP
+/**
+ * \relates KLocale
+ * I18N_NOOP marks a string to be translated without translating it.
+ * Do not use this unless you know you need it.
+ */
 #define I18N_NOOP(x) (x)
 #endif
 
 /**
+ * \relates KLocale
  *  i18n is the function that does everything you need to translate
  *  a string. You just wrap around every user visible string a i18n
  *  call to get a QString with the string in the user's preferred
@@ -55,6 +61,7 @@ class KCalendarSystem;
 QString i18n(const char *text);
 
 /**
+ * \relates KLocale
  *  If the string is too ambiguous to be translated well to a non-english
  *  language, use this form of i18n to separate lookup string and english
  *  text.
@@ -63,6 +70,7 @@ QString i18n(const char *text);
 QString i18n(const char *index, const char *text);
 
 /**
+ * \relates KLocale
  *  If you want to handle plural forms, use this form of i18n.
  *  The plural has to contain a %n where n fits into.
  *  @see translate
@@ -70,6 +78,7 @@ QString i18n(const char *index, const char *text);
 QString i18n(const char *singular, const char *plural, unsigned long n);
 
 /**
+ * \relates KLocale
  * Qt3's uic generates i18n( "msg", "comment" ) calls which conflict
  * with our i18n method. We use uic -tr tr2i18n to redirect
  * to the right i18n() function

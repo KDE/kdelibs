@@ -165,19 +165,21 @@ public:
     static  KInstance           *_activeInstance;
 };
 
-/** KGlobal
+/**
+ * \relates KGlobal
  * A typesafe function to find the minimum of the two arguments.
  */
 #define KMIN(a,b)	kMin(a,b)
-/** KGlobal
+/**
+ * \relates KGlobal
  * A typesafe function to find the maximum of the two arguments.
  */
 #define KMAX(a,b)	kMax(a,b)
-/** KGlobal
+/**
+ * \relates KGlobal
  * A typesafe function to determine the absolute value of the argument.
  */
 #define KABS(a)	kAbs(a)
-
 
 template<class T>
 inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
