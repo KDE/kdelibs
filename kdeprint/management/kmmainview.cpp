@@ -105,7 +105,6 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_layout->addLayout(m_boxlayout);
 	m_boxlayout->addWidget(m_printerview);
 	m_boxlayout->addWidget(m_printerpages);
-	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 10);
 	m_layout->addSpacing(5);
 	m_layout->addWidget(m_plugin, 0);
 

@@ -43,7 +43,7 @@ KMPages::~KMPages()
 void KMPages::setPrinter(KMPrinter *p)
 {
 	QPtrListIterator<KMPrinterPage>	it(m_pages);
-	for (;it.current();++it)
+	for (int i=0;it.current();++it,i++)
 		it.current()->setPrinter(p);
 }
 
