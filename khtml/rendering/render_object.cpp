@@ -549,7 +549,33 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
 
         return;
     case DOTTED:
-        p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DotLine));
+        if ( width == 1 ) {
+            // workaround Qt brokenness
+            p->setPen( QPen( Qt::NoPen ) );
+            p->setBrush( QBrush( c, Qt::Dense4Pattern ) );
+
+            switch(s) {
+            case BSBottom:
+            case BSTop:
+                p->drawRect(x1+1,y1,x2-x1-2,y2-y1);
+                if ( ( x2-x1 ) & 1 ) {
+                    p->setPen( QPen( c, 0 ) );
+                    p->drawPoint( x2-1, y2-1 );
+                }
+                break;
+            case BSRight:
+            case BSLeft:
+                p->drawRect(x1,y1+1,x2-x1,y2-y1-2);
+                if ( ( y2-y1 ) & 1 ) {
+                    p->setPen( QPen( c, 0 ) );
+                    p->drawPoint( x2-1, y2-1 );
+                }
+            }
+
+            break;
+        }
+
+        p->setPen(QPen(c, width, Qt::DotLine));
         /* nobreak; */
     case DASHED:
         if(style == DASHED)
