@@ -57,7 +57,7 @@ public:
    * Connect to KWM. This cannot be done in the constructor, since your
    * application probably is not ready to recieve messages at this state.
    */
-  void connectToKWM();
+  void connectToKWM(bool dock_module = false);
   
   /**
 	if you inherit KWMModuleApplication and overload x11EventFilter,
@@ -88,6 +88,13 @@ public:
    * Is <Window> still managed at present?
    */
   bool hasWindow(Window);
+
+
+  /** 
+    * The dock windows. Only valid if you are succesfully connected as 
+    * docking module
+    */
+  QList <Window> dock_windows;
 
 signals:
 
@@ -155,6 +162,16 @@ signals:
     * The number of desktops changed
     */
   void desktopNumberChange(int);
+
+  /**
+   * Add a dock window
+   */
+  void dockWindowAdd(Window);
+
+  /**
+   * Remove a dock window
+   */
+  void dockWindowRemove(Window);
 
 private:
   QWidget* module;

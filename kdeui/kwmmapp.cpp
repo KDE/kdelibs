@@ -36,8 +36,11 @@ KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[], const QStri
 }
 
 
-void KWMModuleApplication::connectToKWM(){
-  KWM::setKWMModule(module->winId());
+void KWMModuleApplication::connectToKWM(bool dock_module){
+  if (!dock_module)
+    KWM::setKWMModule(module->winId());
+  else
+    KWM::setKWMDockModule(module->winId());
 }
 
 bool KWMModuleApplication::x11EventFilter( XEvent * ev){
@@ -54,6 +57,8 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
   static Atom module_desktop_name_change;
   static Atom module_desktop_number_change;
   static Atom kwm_command;
+  static Atom module_dockwin_add;
+  static Atom module_dockwin_remove;
 
   Atom a;
   Window w;
@@ -88,6 +93,10 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 					   "KWM_MODULE_WIN_ICON_CHANGE", False);
       kwm_command = XInternAtom(qt_xdisplay(), 
 				"KWM_COMMAND", False);
+      module_dockwin_add = XInternAtom(qt_xdisplay(), 
+					"KWM_MODULE_DOCKWIN_ADD", False);
+      module_dockwin_remove = XInternAtom(qt_xdisplay(), 
+					   "KWM_MODULE_DOCKWIN_REMOVE", False);
     }
     a = ev->xclient.message_type;
     w = (Window) (ev->xclient.data.l[0]);
@@ -95,6 +104,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     if (a == module_init){
       windows.clear();
       windows_sorted.clear();
+      dock_windows.clear();
       emit init();
     }
     if (a == module_desktop_change){
@@ -164,6 +174,21 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     if (a == kwm_command){
       QString com = ev->xclient.data.b;
       emit commandReceived(com);
+    }
+    if (a == module_dockwin_add){
+      wp = new Window;
+      *wp = w;
+      dock_windows.append(wp);
+      emit dockWindowAdd(w);
+    }
+    if (a == module_dockwin_remove){
+      for (wp=dock_windows.first(); wp; wp=dock_windows.next()){
+	if (*wp == w){
+	  dock_windows.remove();
+	  break;
+	}
+      }
+      emit dockWindowRemove(w);
     }
 
     return TRUE;
