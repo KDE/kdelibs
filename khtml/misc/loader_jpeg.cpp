@@ -328,8 +328,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
         // setup image sizes
         jpeg_calc_output_dimensions( &cinfo );
 
-        if ( cinfo.jpeg_color_space == JCS_GRAYSCALE ||
-             cinfo.jpeg_color_space == JCS_YCbCr )
+        if ( cinfo.jpeg_color_space == JCS_YCbCr )
             cinfo.out_color_space = JCS_RGB;
 
         cinfo.do_fancy_upsampling = true;
