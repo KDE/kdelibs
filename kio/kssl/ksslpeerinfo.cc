@@ -30,6 +30,7 @@
 #include <ksockaddr.h>
 #include <kextsock.h>
 #include <netsupp.h>
+#include "kidna.h"
 
 #include "ksslx509map.h"
 
@@ -59,7 +60,7 @@ void KSSLPeerInfo::setPeerHost(QString realHost) {
 	while(d->peerHost.endsWith("."))
 		d->peerHost.truncate(d->peerHost.length()-1);
 
-	d->peerHost = d->peerHost.lower();
+	d->peerHost = KIDNA::toAscii(d->peerHost);
 }
 
 bool KSSLPeerInfo::certMatchesAddress() {
