@@ -29,6 +29,7 @@
 #include <qtextstream.h>
 #include <klocale.h>
 #include <kstddirs.h>
+#include <kdebug.h>
 
 #include <stdlib.h>
 
@@ -138,6 +139,12 @@ KMPrinter* createPrinter(const QMap<QString,QString>& entry)
 	printer->setState(KMPrinter::Idle);
 	return printer;
 }
+KMPrinter* createPrinter(const QString& prname)
+{
+	QMap<QString,QString>	map;
+	map["printer-name"] = prname;
+	return createPrinter(map);
+}
 
 // this function support LPRng piping feature, it defaults to
 // /etc/printcap in any other cases (basic support)
@@ -148,6 +155,7 @@ QString getPrintcapFileName()
 	QFile	f("/etc/lpd.conf");
 	if (f.exists() && f.open(IO_ReadOnly))
 	{
+		kdDebug() << "/etc/lpd.conf found: probably LPRng system" << endl;
 		QTextStream	t(&f);
 		QString		line;
 		while (!t.eof())
@@ -155,16 +163,21 @@ QString getPrintcapFileName()
 			line = t.readLine().stripWhiteSpace();
 			if (line.startsWith("printcap_path="))
 			{
+				kdDebug() << "printcap_path entry found: " << line << endl;
 				QString	pcentry = line.mid(14).stripWhiteSpace();
+				kdDebug() << "printcap_path value: " << pcentry << endl;
 				if (pcentry[0] == '|')
 				{ // printcap through pipe
 					printcap = locateLocal("tmp","printcap");
-					::system(QString::fromLatin1("%1 > %2").arg(pcentry.mid(1)).arg(printcap).local8Bit());
+					QString	cmd = QString::fromLatin1("echo \"all\" | %1 > %2").arg(pcentry.mid(1)).arg(printcap);
+					kdDebug() << "printcap obtained through pipe" << endl << "executing: " << cmd << endl;
+					::system(cmd.local8Bit());
 				}
 				break;
 			}
 		}
 	}
+	kdDebug() << "printcap file returned: " << printcap << endl;
 	return printcap;
 }
 
@@ -182,12 +195,34 @@ void KMLpdUnixManager::parseEtcPrintcap()
 			entry = readEntry(t);
 			if (entry.isEmpty() || !entry.contains("printer-name") || entry.contains("server"))
 				continue;
-			KMPrinter	*printer = ::createPrinter(entry);
-			if (entry.contains("rm"))
-				printer->setDescription(i18n("Remote printer queue on %1").arg(entry["rm"]));
+			if (entry["printer-name"] == "all")
+			{
+				if (entry.contains("all"))
+				{
+					// find separator
+					int	p = entry["all"].find(QRegExp("[^a-zA-Z0-9_\\s-]"));
+					if (p != -1)
+					{
+						QChar	c = entry["all"][p];
+						QStringList	prs = QStringList::split(c,entry["all"],false);
+						for (QStringList::ConstIterator it=prs.begin(); it!=prs.end(); ++it)
+						{
+							KMPrinter	*printer = ::createPrinter(*it);
+							printer->setDescription(i18n("Description unavailable"));
+							addPrinter(printer);
+						}
+					}
+				}
+			}
 			else
-				printer->setDescription(i18n("Local printer"));
-			addPrinter(printer);
+			{
+				KMPrinter	*printer = ::createPrinter(entry);
+				if (entry.contains("rm"))
+					printer->setDescription(i18n("Remote printer queue on %1").arg(entry["rm"]));
+				else
+					printer->setDescription(i18n("Local printer"));
+				addPrinter(printer);
+			}
 		}
 	}
 }
