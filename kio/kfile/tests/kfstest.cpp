@@ -124,8 +124,8 @@ int main(int argc, char **argv)
 
     else {
 	KFileDialog dlg(startDir,
-			QString::fromLatin1("*|All files\n"
-					    "*.lo *.o *.la|All libtool files"),
+			QString::fromLatin1("*|All Files\n"
+					    "*.lo *.o *.la|All libtool Files"),
 			0, 0, true);
 //    dlg.setFilter( "*.kdevelop" );
 	dlg.setMode( (KFile::Mode) (KFile::Files |

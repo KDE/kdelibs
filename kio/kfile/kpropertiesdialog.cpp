@@ -1817,7 +1817,7 @@ void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsT
 						  mode_t permissions, mode_t partial) {
   combo->clear();
   if (d->pmode == PermissionsOnlyLinks) {
-    combo->insertItem(i18n("link"));
+    combo->insertItem(i18n("Link"));
     combo->setCurrentItem(0);
     return;
   }

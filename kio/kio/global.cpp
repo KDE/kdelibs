@@ -827,7 +827,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case  KIO::ERR_NOT_FILTER_PROTOCOL:
-      errorName = i18n( "URL Resource Invalid." );
+      errorName = i18n( "URL Resource Invalid" );
       techName = i18n( "Protocol %1 is not a Filter Protocol" ).arg( protocol );
       description = i18n( "The <strong>U</strong>niform <strong>R</strong>esource "
         "<strong>L</strong>ocator (URL) that you entered did not refer to "
@@ -1033,7 +1033,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       break;
 
     case  KIO::ERR_OUT_OF_MEMORY:
-      errorName = i18n( "Out Of Memory" );
+      errorName = i18n( "Out of Memory" );
       description = i18n( "The program on your computer which provides access "
         "to the <strong>%1</strong> protocol could not obtain the memory "
         "required to continue." ).arg( protocol );

@@ -228,7 +228,7 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
         }
      }
   }
-  allPatterns = allPatterns + seperator + i18n("All pictures");
+  allPatterns = allPatterns + seperator + i18n("All Pictures");
   patterns.sort();
   patterns.prepend(allPatterns);
 
