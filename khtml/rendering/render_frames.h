@@ -113,10 +113,10 @@ public:
      * The default implementation does nothing.
      */
     virtual void partLoadingErrorNotify();
-    
+
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
-    
+
 public slots:
     virtual void slotViewCleared();
 };
@@ -155,9 +155,11 @@ public:
     DOM::HTMLElementImpl *m_obj;
 
     virtual void partLoadingErrorNotify();
-    
+
 public slots:
     void slotViewCleared();
+private slots:
+    void slotPartLoadingErrorNotify();
 };
 
 };

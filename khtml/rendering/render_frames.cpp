@@ -34,7 +34,11 @@
 #include "khtml_part.h"
 
 #include <kapplication.h>
+#include <kmessagebox.h>
+#include <kmimetype.h>
+#include <klocale.h>
 #include <kdebug.h>
+#include <qtimer.h>
 
 #include <qlabel.h>
 #include <qstringlist.h>
@@ -845,12 +849,20 @@ void RenderPartObject::close()
 
 void RenderPartObject::partLoadingErrorNotify()
 {
-    HTMLEmbedElementImpl *embed = 0;
+    // Dissociate ourselves from the current event loop (to prevent crashes
+    // due to the message box staying up)
+    QTimer::singleShot( 0, this, SLOT( slotPartLoadingErrorNotify() ) );
+}
 
+void RenderPartObject::slotPartLoadingErrorNotify()
+{
+    HTMLEmbedElementImpl *embed = 0;
+    QString serviceType;
     if( m_obj->id()==ID_OBJECT ) {
 
         // check for embed child object
         HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
+	serviceType = o->serviceType;
         NodeImpl *child = o->firstChild();
         while ( child ) {
             if ( child->id() == ID_EMBED )
@@ -859,14 +871,31 @@ void RenderPartObject::partLoadingErrorNotify()
             child = child->nextSibling();
         }
 
-    } else if( m_obj->id()==ID_EMBED )
+    } else if( m_obj->id()==ID_EMBED ) {
         embed = static_cast<HTMLEmbedElementImpl *>(m_obj);
+    }
+    if ( embed )
+	serviceType = embed->serviceType;
 
-    // Display vender download page
-    if( embed && !embed->pluginPage.isEmpty() ) {
-        KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-        KParts::BrowserExtension *ext = part->browserExtension();
-        if ( ext ) ext->createNewWindow( KURL(embed->pluginPage) );
+    KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+    KParts::BrowserExtension *ext = part->browserExtension();
+    if( embed && !embed->pluginPage.isEmpty() && ext ) {
+        // Prepare the mimetype to show in the question (comment if available, name as fallback)
+        QString mimeName = serviceType;
+        KMimeType::Ptr mime = KMimeType::mimeType(serviceType);
+        if ( mime->name() != KMimeType::defaultMimeType() )
+            mimeName = mime->comment();
+        // Prepare the URL to show in the question (host only if http, to make it short)
+        KURL pluginPageURL( embed->pluginPage );
+        QString shortURL = pluginPageURL.protocol() == "http" ? pluginPageURL.host() : pluginPageURL.prettyURL();
+        int res = KMessageBox::questionYesNo( m_view,
+            i18n("No plugin found for '%1'.\nDo you want to download one from %2?").arg(mimeName).arg(shortURL),
+	    i18n("Missing plugin"), QString::null, QString::null, QString("plugin-")+serviceType);
+	if ( res == KMessageBox::Yes )
+	{
+          // Display vendor download page
+          ext->createNewWindow( pluginPageURL );
+	}
     }
 }
 
