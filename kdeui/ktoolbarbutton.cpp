@@ -577,7 +577,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
   {
     if (!textLabel().isNull())
     {
-      textFlags = AlignTop|AlignLeft;
+      textFlags = AlignVCenter|AlignLeft;
       dx = (width() - fm.width(textLabel())) / 2;
       dy = (height() - fm.lineSpacing()) / 2;
       if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
