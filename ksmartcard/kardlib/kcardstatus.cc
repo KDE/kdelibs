@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */ 
+ */
 
 
 #include "kcardstatus.h"
@@ -81,13 +81,13 @@ unsigned long rc;
 
 	_state.dwCurrentState = _state.dwEventState;
 
-	
+
 #if 0
 	kdDebug(912) << "kardsvc: update() -- " << _state.szReader << " "
 		  << "state changed: " << (_state.dwEventState )
 		  << " timed out: " << (rc == SCARD_E_TIMEOUT)
 		  << " present: " << (_state.dwEventState)
-		     << "ATR:" 
+		     << "ATR:"
 		  << endl;
 #endif
 
@@ -112,10 +112,13 @@ unsigned long rc;
 		for (unsigned int i = 0; i < _state.cbAtr; i++) {
 
 			_atr[i] = _state.rgbAtr[i];
-		       
+
 		}
-	}
-	
+	}else { //if there is no atr we should empty '_atr'
+            _atr.resize(0);
+
+        }
+
 return true;
 }
 
