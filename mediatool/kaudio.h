@@ -157,4 +157,12 @@ private:
 
 };
 
+/**
+ * @libdoc Interface to the KDE sound system
+ * 
+ * This library provides an interface to the KDE sound system, allowing
+ * applications to play sounds in various formats. The API is
+ * encapsulated in the @ref KAudio class.
+ */
+
 #endif

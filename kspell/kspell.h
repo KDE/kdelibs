@@ -23,7 +23,7 @@
  *  marked up (e.g. HTML, TeX) documents.  The relevant methods for these
  *  three procedures are check(), checkWord(), and checkList().
  *
- * KSpellConfig holds configuration information about KSpell as well
+ * @ref KSpellConfig holds configuration information about KSpell as well
  *  as acting as an options-setting dialog.
  *
  * KSpell usually works nonblocking. If you do not need that, you should
@@ -371,5 +371,15 @@ protected:
   void startIspell();
   bool writePersonalDictionary ();
 };
+
+/**
+ * @libdoc Spelling Checker Library
+ *
+ * This library allows you to add a spelling checker facility to your
+ * application. It provides its' own GUI, and uses ispell to do the
+ * actual spell checking.
+ *
+ * @see KSpell, KSpellConfig
+ */
 
 #endif

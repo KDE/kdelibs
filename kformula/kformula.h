@@ -159,6 +159,13 @@ public:
 
 };
 
+/**
+ * @libdoc Parse and display formulas in KDE applications.
+ *
+ * This library allows you to render formulas for pretty display. It is
+ * used within the KOffice environment for this purpose, but can be used
+ * by any KDE application using the @ref KFormula class.
+ */
 
 
 #endif // KFORMULA_H_INCLUDED

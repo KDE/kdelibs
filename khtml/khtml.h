@@ -884,5 +884,20 @@ private:
     DOM::NodeImpl *findNode;
 };
 
+/**
+ * @libdoc KDE HTML widget
+ *
+ * This library provides a full-featured HTML parser and widget. It is
+ * used for rendering in all KDE applications which allow HTML viewing,
+ * including the Konqueror browser/file manager and the KDE Help
+ * system.
+ *
+ * If you want to add to your application a widget that allows full web
+ * browsing, you only need to use the @ref KTextBrowser widget in kdeui.
+ * 
+ * @see KHTMLWidget, KTextBrowser
+ */
+
+
 #endif
 

@@ -73,4 +73,17 @@ private:
     static void freeAll();
 };
 
+/**
+ * @libdoc The KDE Core Functionality Library
+ *
+ * All KDE programs use this library to provide basic functionality such
+ * as the configuration system, IPC, internationalization and locale
+ * support, site-independent access to the filesystem and a large number
+ * of other (but no less important) things.
+ *
+ * All KDE applications should link to the kdecore library. Also, using a
+ * @ref KApplication derived class instead of @ref QApplication is almost
+ * mandatory if you expect your application to behave nicely within the
+ * KDE environment.
+ */
 #endif // SSK_KGLOBAL_H

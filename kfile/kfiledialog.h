@@ -539,4 +539,13 @@ protected:
     virtual bool getShowFilter();
 };
 
+/**
+ * @libdoc KDE network-enabled file chooser dialog.
+ *
+ * This library provides access to the standard KDE file dialog, which
+ * allows browsing and choosing of files over all network protocols
+ * supported by KDE. @ref KFileDialog or its descendants should be used
+ * instead of the standard Qt @ref QFileDialog class.
+ */
+
 #endif

@@ -553,5 +553,16 @@ protected:
   static KIOSlavePool* s_pSelf;
 };
 
+/**
+ * @libdoc A network-enabled file management system in a library.
+ *
+ * This library implements almost all the file management functions you
+ * will ever need. In fact, the KDE file manager, Konqueuror also uses
+ * this to provide its network-enabled file management.
+ *
+ * The easiest way to use this library from a KDE application is via the
+ * @ref KIOJob class.
+ */
+
 #endif
 
