@@ -2,7 +2,7 @@
 
     synthout.cc   - class synthOut which handles the /dev/sequencer device
 			for synths (as AWE32)
-    Copyright (C) 1997  Antonio Larrosa Jimenez
+    Copyright (C) 1997,98  Antonio Larrosa Jimenez
 			P.J.Leonard (P.J.Leonard@bath.ac.uk)
 
     This program is free software; you can redistribute it and/or modify

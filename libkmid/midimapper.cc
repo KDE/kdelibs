@@ -1,3 +1,26 @@
+/**************************************************************************
+
+    midimapper.cc  - The midi mapper object  
+    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+    Send comments and bug fixes to antlarr@arrakis.es
+    or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
+
+***************************************************************************/
 #include "midimapper.h"
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +31,8 @@ MidiMapper::MidiMapper(const char *name)
 ok=1;
 keymaps=NULL;
 filename=NULL;
+mapPitchBender=0;
+mapExpressionToVolumeEvents=0;
 if ((name==NULL)||(name[0]==0))
     {
     DeallocateMaps();    
@@ -143,7 +168,8 @@ while (!feof(fh))
 	    fclose(fh);
 	    return;
 	    };
-        };
+        }
+       else if (strncmp(s,"OPTIONS",7)==0) readOptions(fh);	
     };
 fclose(fh);
 };
@@ -189,6 +215,40 @@ while ((km!=NULL)&&(strcmp(km->name,n)!=0)) km=km->next;
 return km;
 };
 
+void MidiMapper::readOptions(FILE *fh)
+{
+printf("Loading Options ... \n");
+char s[101];
+char v[101];
+char t[101];
+int fin=0;
+mapPitchBender=0;
+while (!fin)
+    {
+    s[0]=0;
+    while ((s[0]==0)||(s[0]=='#')) fgets(s,100,fh);
+    if (strncmp(s,"PitchBenderRatio",16)==0) 
+	{
+        getValue(s,v);
+        removeSpaces(v);
+        getWord(t,v,0);
+	mapPitchBender=1;
+        PitchBenderRatio=atoi(t);
+	}
+	else if (strncmp(s,"MapExpressionToVolumeEvents",27)==0) mapExpressionToVolumeEvents=1;
+	else if (strncmp(s,"END",3)==0) 
+	  {
+	fin=1;
+	}
+        else 
+	  {
+          printf("ERROR: Invalid option in OPTIONS section of map file : (%s)\n",s);
+	  ok=0;
+	  return;
+          };
+   };
+};
+
 void MidiMapper::readPatchmap(FILE *fh)
 {
 char s[101];
@@ -216,7 +276,7 @@ while (i<128)
             j++;
             if (j>=w) 
                 {
-                printf("ERROR: Invalid option in map file\n");
+                printf("ERROR: Invalid option in PATCHMAP section of map file\n");
 		ok=0;
 		return;
                 };
@@ -299,7 +359,7 @@ while (i<16)
             j++;
             if (j>=w) 
                 {
-                printf("ERROR: Invalid option in map file\n");
+                printf("ERROR: Invalid option in CHANNELMAP section of map file\n");
 		ok=0;
 		return;
                 };
@@ -311,7 +371,7 @@ while (i<16)
             j++;
             if (j>=w) 
                 {
-                printf("ERROR: Invalid option in map file\n");
+                printf("ERROR: Invalid option in CHANNELMAP section of map file\n");
 		ok=0;
 		return;
                 };
@@ -357,3 +417,21 @@ return (channelPatchForced[chn] == -1) ?
 		patchmap[pgm] : (uchar)channelPatchForced[chn] ;
 };
 
+void MidiMapper::PitchBender(uchar chn,uchar &lsb,uchar &msb)
+{
+if (mapPitchBender)
+   {
+   short pbs=((short)msb<<7) | (lsb & 0x7F);
+   pbs=pbs-0x2000;
+   short pbs2=(((long)pbs*PitchBenderRatio)/4096);
+   printf("Pitch Bender (%d): %d -> %d \n",chn,pbs,pbs2);
+   pbs2=pbs2+0x2000;
+   lsb=pbs2 & 0x7F;
+   msb=(pbs2 >> 7)&0x7F;  
+   };
+};
+
+void MidiMapper::Controller(uchar chn,uchar &ctl, uchar &v)
+{
+if ((mapExpressionToVolumeEvents)&&(ctl==11)) ctl=7;
+};

@@ -1,7 +1,7 @@
 /**************************************************************************
 
     main.cc  - The main function for ConsoleKMid 
-    Copyright (C) 1997  Antonio Larrosa Jimenez
+    Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 // If you want to use a midi map you have to change the next definition :
 #define MAP_PATH NULL
 // For example to something like :
-// #define MAP_PATH "/home/Antonio/prg/kmid/kmid/maps/yamaha790.map"
+//#define MAP_PATH "/home/Antonio/prg/kmid/kmid/maps/yamaha790.map"
 
 
 PlayerController pctl;
@@ -59,7 +59,7 @@ if ((pctl.ev->command==MIDI_SYSTEM_PREFIX)&&((pctl.ev->command|pctl.ev->chn)==ME
 
 int main(int argc, char **argv)
 {
-printf("ConsoleKMid version 0.4, Copyright (C) 1997 Antonio Larrosa Jimenez\n");
+printf("ConsoleKMid version 0.4.1, Copyright (C) 1997,98 Antonio Larrosa Jimenez\n");
 printf("ConsoleKMid comes with ABSOLUTELY NO WARRANTY; for details view file COPYING\n");
 printf("This is free software, and you are welcome to redistribute it\n");
 printf("under certain conditions\n");

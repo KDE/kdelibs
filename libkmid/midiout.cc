@@ -1,7 +1,7 @@
 /**************************************************************************
 
     midiout.cc   - class midiOut which handles the /dev/sequencer device
-    Copyright (C) 1997  Antonio Larrosa Jimenez
+    Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,9 +31,17 @@
 #include <string.h>
 #include <sys/param.h>
 
+#ifndef HZ
+#define HZ 100
+#endif
+#ifndef MIDI_TYPE_MPU401
+#define MIDI_TYPE_MPU401 0x401
+#endif
+
 //SEQ_DEFINEBUF (1024); 
 
 SEQ_USE_EXTBUF();
+//#define AT_HOME
 
 //#define MIDIOUTDEBUG
 
@@ -74,12 +82,12 @@ if ((r==-1)||(rate<=0)) rate=HZ;
 
 midi_info midiinfo;
 midiinfo.device=device;
-if (ioctl(seqfd,SNDCTL_MIDI_INFO,&midiinfo)!=-1)
+/*if (ioctl(seqfd,SNDCTL_MIDI_INFO,&midiinfo)!=-1)
 	{
 	if (strcmp(midiinfo.name,"GUS MIDI emulation")==0) 
 			rate=(int)(((double)rate)*2.5);
 	};
-
+*/
 convertrate=1000/rate;
 
 #ifdef MIDIOUTDEBUG
@@ -138,7 +146,7 @@ if (nmidiports<=0)
     ok=0;
     return;
     };
-
+printf("aa\n");
 };
 
 void midiOut::closeDev (void)
@@ -236,6 +244,16 @@ chn_pressure[chn]=vel;
 void midiOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
 SEQ_MIDIOUT(device, MIDI_PITCH_BEND + Map->Channel(chn));
+#ifdef AT_HOME
+short pbs=((short)msb<<7) | (lsb & 0x7F);
+pbs=pbs-0x2000;
+short pbs2=(((long)pbs*672)/4096);
+printf("Pitch Bender (%d): %d -> %d \n",chn,pbs,pbs2);
+pbs2=pbs2+0x2000;
+lsb=pbs2 & 0x7F;
+msb=(pbs2 >> 7)&0x7F;
+#endif
+Map->PitchBender(chn,lsb,msb);
 SEQ_MIDIOUT(device, lsb);
 SEQ_MIDIOUT(device, msb);
 chn_bender[chn]=(msb << 8) | (lsb & 0xFF);
@@ -244,6 +262,10 @@ chn_bender[chn]=(msb << 8) | (lsb & 0xFF);
 void midiOut::chnController (uchar chn, uchar ctl, uchar v) 
 {
 SEQ_MIDIOUT(device, MIDI_CTL_CHANGE + Map->Channel(chn));
+#ifdef AT_HOME
+if (ctl==11) ctl=7;
+#endif
+Map->Controller(chn,ctl,v);
 SEQ_MIDIOUT(device, ctl);
 SEQ_MIDIOUT(device, v);
 
@@ -319,7 +341,7 @@ void midiOut::tmrSetTempo(int v)
 printf("SETTEMPO  >\t tempo: %d\n",v);
 #endif
 
-SEQ_SET_TEMPO(v);
+//SEQ_SET_TEMPO(v);
 //SEQ_DUMPBUF();
 };
 
@@ -333,7 +355,7 @@ if (i==1)
     seqbuf_clean();
 /* If you have any problem, try removing the next 2 lines, 
 	I though they would be useful here, but I don't know
-	what they do :-) */
+	what they exactly do :-) */
     ioctl(seqfd,SNDCTL_SEQ_RESET);
     ioctl(seqfd,SNDCTL_SEQ_PANIC);
     };

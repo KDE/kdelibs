@@ -1,7 +1,7 @@
 /**************************************************************************
 
     midistat.h	- class midiStat, change it internally and then send it. 
-    Copyright (C) 1997  Antonio Larrosa Jimenez
+    Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -8,10 +8,10 @@
 #ifdef HAVE_AWE_VOICE_H
 #include <awe_voice.h>
 #define HAVE_AWE32
-#elsif defined(HAVE_LINUX_AWE_VOICE_H)
+#elif defined(HAVE_LINUX_AWE_VOICE_H)
 #include <linux/awe_voice.h>
 #define HAVE_AWE32
-#elsif defined(HAVE__USR_SRC_SYS_I386_ISA_SOUND_AWE_VOICE_H)
+#elif defined(HAVE__USR_SRC_SYS_I386_ISA_SOUND_AWE_VOICE_H)
 #include "/usr/src/sys/i386/isa/sound/awe_voice.h"
 #define HAVE_AWE32
 #endif

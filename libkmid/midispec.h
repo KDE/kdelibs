@@ -1,7 +1,7 @@
 /**************************************************************************
 
-    midispec.h  - Some definitions to make more readable the code 
-    Copyright (C) 1997  Antonio Larrosa Jimenez
+    midispec.h  - Some definitions to make the code more readable 
+    Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,9 +37,8 @@
 #define ME_SMPTE_OFFSET         0x54
 #define ME_TIME_SIGNATURE	0x58
 #define ME_KEY_SIGNATURE	0x59
-/*                                    sf=sharps/flats (-7=7 flats, 0=key of C,^M
-                                    7=7 sharps)
-                                    mi=major/minor (0=major, 1=minor)
-*/                              
+/* sf=sharps/flats (-7=7 flats, 0=key of C, 7=7 sharps)
+   mi=major/minor (0=major, 1=minor)
+*/                            
  
 #define ME_END_OF_TRACK 0x2F
