@@ -55,6 +55,7 @@ namespace KIO {
 	void close();
 	
 	int fd_from() const { return fd_in; }
+        int fd_to() const { return fileno( f_out ); }
 	
 	void init(int fd_in, int fd_out);
 	
