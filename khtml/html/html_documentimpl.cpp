@@ -70,6 +70,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
     htmlElement = 0;
 
     m_doAutoFill = false;
+    m_htmlRequested = false;
 
 /* dynamic history stuff to be fixed later (pfeiffer)
     connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
@@ -381,6 +382,10 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
 
         if ( hMode == XHtml )
             pMode = publicId;
+
+        // This needs to be done last, see tests/parser/compatmode_xhtml_mixed.html
+        if ( m_htmlRequested && hMode == XHtml )
+            hMode = Html4; // make all tags uppercase when served as text/html (#86446)
     }
     // kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
     // kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;

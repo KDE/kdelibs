@@ -1,3 +1,9 @@
+2004-10-14  David Faure  <faure@kde.org>
+
+        * html/html_documentimpl.cpp (determineParseMode):
+        When the document is loaded as text/html, even if xhtml doctype, activate case-insensitive
+        ("htmlCompat") lookup of tags and attributes (but not in CSS parser). (#86446)
+
 2004-10-14  Allan Sandfeld Jensen <kde@carewolf.com>
         * rendering/*.*: WebCore merge/port of layouted->needsLayout
 

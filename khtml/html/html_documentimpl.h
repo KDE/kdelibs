@@ -73,6 +73,7 @@ public:
     virtual void close();
 
     void setAutoFill() { m_doAutoFill = true; }
+    void setHTMLRequested( bool html ) { m_htmlRequested = html; }
 
     HTMLCollectionImpl::CollectionInfo *collectionInfo(int type) { return m_collection_info+type; }
 
@@ -82,6 +83,7 @@ protected:
     friend class HTMLImageElementImpl;
     QMap<QString,HTMLMapElementImpl*> mapMap;
     bool m_doAutoFill;
+    bool m_htmlRequested;
 
 protected slots:
     /**
