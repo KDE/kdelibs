@@ -1070,7 +1070,8 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
           if (d->readyToDrag) {
             d->readyToDrag = false;
           }
-          if ( (((QMouseEvent*)event)->state() == LeftButton) &&  !dropCancel ){
+          if ( (((QMouseEvent*)event)->state() == LeftButton) &&  !dropCancel &&
+               (curdw->eDocking != (int)KDockWidget::DockNone) ) {
             startDrag( curdw);
           }
         }
@@ -1084,6 +1085,9 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 
 KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
 {
+  if (!currentDragWidget)
+    return 0L; // pointer access safety
+
   if (currentDragWidget->eDocking == (int)KDockWidget::DockNone ) return 0L;
 
   QWidget* p = QApplication::widgetAt( pos );
