@@ -66,7 +66,7 @@ ksock.cpp
 ksockaddr.cpp
 ksocks.cpp
 kstandarddirs.cpp	Waldo Bastian <bastian@kde.org>
-kstartupinfo.cpp
+kstartupinfo.cpp	Lubos Lunak <l.lunak@kde.org>
 kstaticdeleter.cpp
 kstdaccel.cpp
 kstringhandler.cpp
@@ -79,7 +79,7 @@ kurl.cpp		Waldo Bastian <bastian@kde.org>
 kurldrag.cpp
 kwin.cpp
 kwinmodule.cpp
-kxmessages.cpp
+kxmessages.cpp		Lubos Lunak <l.lunak@kde.org>
 libintl.cpp
 netsupp.cpp
 netwm.cpp
