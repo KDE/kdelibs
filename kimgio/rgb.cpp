@@ -270,6 +270,11 @@ bool RGBImage::readImage(QImage& img)
 	}
 
 	m_data = m_dev->readAll();
+
+	// sanity ckeck
+	for (long o = 0; o < m_ysize * m_zsize; o++)
+		if (m_starttab[o] + m_lengthtab[o] > m_data.size())
+			return false;
 	return readData(img);
 }
 
