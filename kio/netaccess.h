@@ -188,6 +188,11 @@ public:
      */
     static QString mimetype( const KURL & url );
 
+    /**
+     * Return error string for the last job, in case it failed
+     */
+    static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString::null; }
+
 private:
     /** Private constructor */
     NetAccess() {}
@@ -204,6 +209,8 @@ private:
     QString m_mimetype;
     /** List of temporary files */
     static QStringList* tmpfiles;
+
+    static QString* lastErrorMsg;
     /** Whether the download succeeded or not */
     bool bJobOK;
     friend class I_like_this_class;

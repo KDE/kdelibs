@@ -38,6 +38,8 @@
 
 using namespace KIO;
 
+QString * NetAccess::lastErrorMsg = 0L;
+
 bool NetAccess::download(const KURL& u, QString & target)
 {
   if (u.isLocalFile()) {
@@ -195,6 +197,12 @@ void NetAccess::enter_loop()
 void NetAccess::slotResult( KIO::Job * job )
 {
   bJobOK = !job->error();
+  if ( !bJobOK )
+  {
+    if ( !lastErrorMsg )
+      lastErrorMsg = new QString;
+    *lastErrorMsg = job->errorString();
+  }
   if ( job->isA("KIO::StatJob") )
     m_entry = static_cast<KIO::StatJob *>(job)->statResult();
   qApp->exit_loop();
