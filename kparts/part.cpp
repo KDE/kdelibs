@@ -60,7 +60,7 @@ public:
   ~PartBasePrivate()
   {
   }
-  bool m_pluginLoadingMode;
+  PartBase::PluginLoadingMode m_pluginLoadingMode;
 };
 
 class PartPrivate
