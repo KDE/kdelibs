@@ -110,9 +110,25 @@ public:
    * @return whether dragging is enabled.
    */
   bool dragEnabled() const;
+
+  /**
+   * @return true if AutoOpen is enabled.
+   */
   bool autoOpen() const;
+
+  /**
+   * @return true if @p column is renamable.
+   */
   bool isRenameable (int column) const;
+
+  /**
+   * @return true if drawing of the drop-visualizer has been enabled.
+   */
   bool dropVisualizer() const;
+
+  /**
+   * @return the column for which tooltips are displayed (or -1 if none set).
+   */
   int tooltipColumn() const;
 
   /**
@@ -122,6 +138,13 @@ public:
    * @deprecated
    */
   bool createChildren() const;
+
+  /**
+   * For future expansions.
+   * 
+   * Do not use.
+   * @deprecated
+   */
   bool dropHighlighter() const;
 
 signals:
@@ -155,7 +178,7 @@ signals:
    * listview.
    * @param item is the pointer to the clicked listview item.
    * @param pos is the position where the user has clicked, and
-   * @param c the column into which the user clicked.
+   * @param c is the column into which the user clicked.
    *
    * Note that you may not delete any @ref QListViewItem objects in slots
    * connected to this signal.
@@ -166,6 +189,16 @@ signals:
    */
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
 
+  /**
+   * This signal gets emitted whenever something acceptable is
+   * dropped onto the listview.
+   *
+   * @param e is the drop-event itself (it has already been accepted)
+   * @param after is the item after which the drop occured (or 0L, if
+   * the drop was above all items)
+   *
+   * @see acceptDrop
+   */
   void dropped(QDropEvent * e, QListViewItem *after);
 
   /**
@@ -176,7 +209,18 @@ signals:
    */
   void moved();
 
+  /**
+   * This signal gets emitted when an item is renamed via in-place renaming.
+   *
+   * @param item is the renamed item.
+   * @param str is the new value of column @p col.
+   * @param col is the renamed column.
+   */
   void itemRenamed(QListViewItem * item, const QString &str, int col);
+
+  /**
+   * Same as above, but without the extra information.
+   */
   void itemRenamed(QListViewItem * item);
 
 public slots:
