@@ -105,8 +105,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
   MidiTrack **tracks;
 
   struct stat buf;
-  stat(name,&buf);
-  if (!S_ISREG(buf.st_mode))
+  if (stat(name,&buf) || !S_ISREG(buf.st_mode))
   {
     fprintf(stderr,"ERROR: %s is not a regular file\n",name);
     ok=-6;
@@ -121,6 +120,7 @@ MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok)
     return NULL;
   }
   char text[4];
+  text[0] = 0;
   fread(text,1,4,fh);
   if ((strncmp(text,"MThd",4)!=0)&&(strcmp(&name[strlen(name)-3],".gz")==0))
   {	
