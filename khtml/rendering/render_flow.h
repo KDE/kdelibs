@@ -126,6 +126,7 @@ protected:
 	short width;
 	Type type; // left or right aligned
 	RenderObject* node;
+	bool noPaint;
     };
 
     QList<SpecialObject>* specialObjects;

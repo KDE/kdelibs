@@ -157,8 +157,11 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-	RenderObject *o = r->node;
-	o->print(p, _x, _y, _w, _h, _tx , _ty);
+    	if (!r->noPaint)
+	{
+	    RenderObject *o = r->node;	
+	    o->print(p, _x, _y, _w, _h, _tx , _ty);
+	}
     }
 
 }
@@ -391,6 +394,7 @@ RenderFlow::insertFloat(RenderObject *o)
 
     if(!f) f = new SpecialObject;
 
+    f->noPaint=false;
     f->startY = -1;
     f->endY = -1;
     f->width = o->width() + o->marginLeft() + o->marginRight();
@@ -658,6 +662,7 @@ RenderFlow::clearFloats()
 		special->width = r->width;
 		special->node = r->node;
 		special->type = r->type;
+		special->noPaint = true; // previous paragraph paints it
 		specialObjects->append(special);
 #ifdef DEBUG_LAYOUT
 		printf("    y: %d-%d left: %d width: %d\n", special->startY, special->endY, special->left, special->width);
