@@ -1000,7 +1000,6 @@ void KHTMLView::print()
 						  "    background-color: transparent !important;"
 						  "    color: black !important }" :
 						  "" );
-        m_part->xmlDocImpl()->updateStyleSelector();
 
         QPaintDeviceMetrics metrics( printer );
 
@@ -1022,7 +1021,7 @@ void KHTMLView::print()
         for ( int i = 0; printFontSizes[i] != 0; i++ )
             fontSizes << printFontSizes[ i ];
         m_part->setFontSizes(fontSizes);
-        m_part->xmlDocImpl()->recalcStyle( NodeImpl::Force );
+        m_part->xmlDocImpl()->updateStyleSelector();
 
         root->setLayouted( false );
         root->setMinMaxKnown( false );
@@ -1071,10 +1070,9 @@ void KHTMLView::print()
         root->setPrintingMode(false);
         khtml::setPrintPainter( 0 );
         setMediaType( oldMediaType );
-        m_part->xmlDocImpl()->updateStyleSelector();
         m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
-        m_part->xmlDocImpl()->recalcStyle( NodeImpl::Force );
+        m_part->xmlDocImpl()->updateStyleSelector();
         viewport()->unsetCursor();
     }
     delete printer;
