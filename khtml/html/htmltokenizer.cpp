@@ -106,7 +106,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
     parser = new KHTMLParser(_view, _doc);
     cachedScript = 0;
     m_executingScript = 0;
-    loadingExtScript = 0;
+    loadingExtScript = false;
     onHold = false;
 
     reset();
@@ -122,7 +122,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *
     parser = new KHTMLParser( i, _doc );
     cachedScript = 0;
     m_executingScript = 0;
-    loadingExtScript = 0;
+    loadingExtScript = false;
     onHold = false;
 
     reset();
@@ -301,8 +301,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             searchCount = 0;
             scriptCode[ scriptCodeSize ] = 0;
             scriptCode[ scriptCodeSize + 1 ] = 0;
-            if (script)
-            {
+            if (script) {
                 if (!scriptSrc.isEmpty()) {
                     // forget what we just got; load from src url instead
                     cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL(), scriptSrcCharset);
@@ -316,7 +315,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                     // Parse scriptCode containing <script> info
                     doScriptExec = true;
                 }
-                processToken();
             }
             else if (style)
             {
@@ -325,16 +323,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 kdDebug( 6036 ) << QString(scriptCode, scriptCodeSize) << endl;
                 kdDebug( 6036 ) << "---END STYLE---" << endl;
 #endif
-                // just add it. The style element will get a DOM::TextImpl passed, which it will
-                // convert into a StyleSheet.
-                addListing(DOMStringIt(scriptCode, scriptCodeSize));
             }
-            else
-            {
-                //
-                // Add scriptcode to the buffer
-                addListing(DOMStringIt(scriptCode, scriptCodeSize));
-            }
+            addListing(DOMStringIt(scriptCode, scriptCodeSize));
+
             if(script)
                 currToken.id = ID_SCRIPT + ID_CLOSE_TAG;
             else if(style)
