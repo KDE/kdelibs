@@ -214,3 +214,8 @@ Comment[sl]=Izbrane datoteke ni bilo moč odpreti za branje ali pisanje.
 Comment[ta]=ேதரஂவு ெசயஂயபடஂட ேகாபஂைப வாசிகஂக அலஂலது எழுத திறகஂக முடியவிலஂைல
 Comment[tr]=Seçili dosya okumnmak ya da yazýlmak için açýlamýyor
 default_presentation=0
+
+[fatalerror]
+Name=Fatal Error
+Comment=There was a serious error causing the program to exit.
+default_presentation=2
