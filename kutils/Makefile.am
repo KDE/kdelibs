@@ -10,7 +10,7 @@ libkutils_la_SOURCES = kfind.cpp kfinddialog.cpp kreplace.cpp kreplacedialog.cpp
 
  # kreplace.cpp
 
-include_HEADERS = kfind.h kfinddialog.h kreplace.h kreplace.h kreplacedialog.h \
+include_HEADERS = kfind.h kfinddialog.h kreplace.h kreplacedialog.h \
 	              kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h kmultitabbar.h
 
 METASOURCES = AUTO
