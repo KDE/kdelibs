@@ -1240,7 +1240,6 @@ bool CSSParser::parseShape( int propId, bool important )
     Value *value = valueList->current();
     ValueList *args = value->function->args;
     QString fname = qString( value->function->name ).lower();
-    qDebug("CSSParser::parseShape: shape = '%s'", fname.latin1() );
     if ( fname != "rect(" || !args )
 	return false;
 
@@ -1274,9 +1273,9 @@ bool CSSParser::parseShape( int propId, bool important )
 		break;
 	    }
 	}
+	i++;
     }
     if ( valid ) {
-	qDebug(" passed rectangle parsing");
 	addProperty( propId, new CSSPrimitiveValueImpl( rect ), important );
 	valueList->next();
 	return true;
