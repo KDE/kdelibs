@@ -41,6 +41,7 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
+#if 0
 #include "render_layer.h"
 #include <kdebug.h>
 #include <assert.h>
@@ -248,10 +249,6 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
                 
                 // Now apply the clip rect.
                 QRect clippedRect = p->xForm(currRect);
-#if APPLE_CHANGES
-                p->save();
-                p->addClip(clippedRect);
-#else
                 QRegion creg(cr);
                 QRegion old = p->clipRegion();
                 if (!old.isNull())
@@ -259,7 +256,6 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
             
                 p->save();
                 p->setClipRegion(creg);
-#endif
             }
             
             // A clip is in effect.  The clip is never allowed to clip our render object's
@@ -279,10 +275,6 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
                                 
                 // Now apply the clip rect.
                 QRect clippedRect = p->xForm(currRect);
-#if APPLE_CHANGES
-                p->save();
-                p->addClip(clippedRect);
-#else
                 QRegion creg(cr);
                 QRegion old = p->clipRegion();
                 if (!old.isNull())
@@ -290,7 +282,6 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h)
             
                 p->save();
                 p->setClipRegion(creg);
-#endif
             }
         }
               
@@ -674,3 +665,4 @@ void RenderLayer::RenderZTreeNode::detach(RenderArena* renderArena)
     renderArena->free(*(size_t *)this, this);
 }
 
+#endif

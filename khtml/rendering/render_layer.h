@@ -44,12 +44,15 @@
 #ifndef render_layer_h
 #define render_layer_h
 
+#if 0
+
 #include <qcolor.h>
 #include <qrect.h>
 #include <assert.h>
 
 #include "render_object.h"
-#include <qvector.h>
+
+#include <qptrvector.h>
 
 namespace khtml {
     class RenderFlow;
@@ -60,10 +63,63 @@ namespace khtml {
     class RenderText;
     class RenderFrameSet;
     class RenderObject;
+    class RenderArena;
     
 class RenderLayer
 {
 public:
+    // Z-Index Implementation Notes
+    //
+    // In order to properly handle mouse events as well as painting,
+    // we must compute a correct list of layers that should be painted
+    // from back to front (and for mouse events walked from front to
+    // back).
+    //
+    // Positioned elements in the render tree (e.g., relative positioned
+    // divs and absolute positioned divs) have a corresponding layer
+    // that holds them and all children that reside in the same layer.
+    //
+    // When painting is performed on a layer, all render objects in that
+    // layer are painted.  If the render object has descendants in another
+    // layer, those will be dealt with separately.
+    //
+    // A RenderLayerElement represents a single entry in our list of
+    // layers that should be painted.  We perform computations as we
+    // build up this list so that we have the correct translation factor
+    // for painting.  We also use a temporary z-index variable for storage
+    // (more on this below).
+    // 
+    struct RenderLayerElement {
+      RenderLayer* layer;
+      QRect absBounds; // Our bounds in absolute coordinates relative to the root.
+      QRect backgroundClipRect; // Clip rect used for our background/borders. 
+      QRect clipRect; // Clip rect used for our children.
+      int zindex; // Temporary z-index used for processing and sorting.
+      bool zauto : 1; // Whether or not we are using auto z-indexing.
+      bool clipOriginator : 1; // Whether or not we established a clip.
+      int x; // The coords relative to the layer that will be using this list
+             // to paint.
+      int y;
+
+      RenderLayerElement(RenderLayer* l, const QRect& rect, const QRect& bgclip, 
+                         const QRect& clip, bool clipOrig, int xpos, int ypos)
+          :layer(l), absBounds(rect), backgroundClipRect(bgclip), clipRect(clip), 
+           zindex(l->zIndex()), zauto(l->hasAutoZIndex()), clipOriginator(clipOrig),
+           x(xpos), y(ypos) {}
+          
+      void detach(RenderArena* renderArena);
+    
+      // Overloaded new operator.  Derived classes must override operator new
+      // in order to allocate out of the RenderArena.
+      void* operator new(size_t sz, RenderArena* renderArena) throw();    
+
+      // Overridden to prevent the normal delete from being called.
+      void operator delete(void* ptr, size_t sz);
+        
+      // The normal operator new is disallowed.
+      void* operator new(size_t sz) throw();
+    };
+
     RenderLayer(RenderObject* object);
     ~RenderLayer();
     
@@ -132,58 +188,6 @@ private:
     void* operator new(size_t sz) throw();
 
 public:
-    // Z-Index Implementation Notes
-    //
-    // In order to properly handle mouse events as well as painting,
-    // we must compute a correct list of layers that should be painted
-    // from back to front (and for mouse events walked from front to
-    // back).
-    //
-    // Positioned elements in the render tree (e.g., relative positioned
-    // divs and absolute positioned divs) have a corresponding layer
-    // that holds them and all children that reside in the same layer.
-    //
-    // When painting is performed on a layer, all render objects in that
-    // layer are painted.  If the render object has descendants in another
-    // layer, those will be dealt with separately.
-    //
-    // A RenderLayerElement represents a single entry in our list of
-    // layers that should be painted.  We perform computations as we
-    // build up this list so that we have the correct translation factor
-    // for painting.  We also use a temporary z-index variable for storage
-    // (more on this below).
-    // 
-    struct RenderLayerElement {
-      RenderLayer* layer;
-      QRect absBounds; // Our bounds in absolute coordinates relative to the root.
-      QRect backgroundClipRect; // Clip rect used for our background/borders. 
-      QRect clipRect; // Clip rect used for our children.
-      int zindex; // Temporary z-index used for processing and sorting.
-      bool zauto : 1; // Whether or not we are using auto z-indexing.
-      bool clipOriginator : 1; // Whether or not we established a clip.
-      int x; // The coords relative to the layer that will be using this list
-             // to paint.
-      int y;
-
-      RenderLayerElement(RenderLayer* l, const QRect& rect, const QRect& bgclip, 
-                         const QRect& clip, bool clipOrig, int xpos, int ypos)
-          :layer(l), absBounds(rect), backgroundClipRect(bgclip), clipRect(clip), 
-           zindex(l->zIndex()), zauto(l->hasAutoZIndex()), clipOriginator(clipOrig),
-           x(xpos), y(ypos) {}
-          
-      void detach(RenderArena* renderArena);
-    
-      // Overloaded new operator.  Derived classes must override operator new
-      // in order to allocate out of the RenderArena.
-      void* operator new(size_t sz, RenderArena* renderArena) throw();    
-
-      // Overridden to prevent the normal delete from being called.
-      void operator delete(void* ptr, size_t sz);
-        
-      // The normal operator new is disallowed.
-      void* operator new(size_t sz) throw();
-    };
-
     // The list of layer elements is built through a recursive examination
     // of a tree of z nodes. This tree structure mimics the layer 
     // hierarchy itself, but only leaf nodes represent items that will
@@ -317,4 +321,7 @@ protected:
 };
 
 }; // namespace
+
+#endif
+
 #endif
