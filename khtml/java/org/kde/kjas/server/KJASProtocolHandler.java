@@ -702,61 +702,64 @@ public class KJASProtocolHandler
     }
     public void sendJavaScriptEventCmd( String contextID, String appletID, int objid, String event, int [] types, String [] args )
     {
+        // args might contain unicode, so use byte[] here to get the lenght right
         Main.debug( "sendJavaScriptEventCmd, contextID = " + contextID + " event = " + event );
         String objstr = new String("" + objid);
         int length = contextID.length() + appletID.length() + event.length() + objstr.length() + 6;
-        String [] typestrings = null;
+        byte [][][] arglist = null;
         if (types != null) {
-            typestrings = new String[args.length];
+            arglist = new byte[args.length][2][];
             for (int i = 0; i < types.length; i++) {
-                typestrings[i] = new String("" + types[i]);
-                length += 2 + typestrings[i].length() + args[i].length();
-                Main.debug( "sendJavaScriptEventCmd, length = " + length);
+                arglist[i][0] = (new String("" + types[i])).getBytes();
+                arglist[i][1] = args[i].getBytes();
+                length += 2 + arglist[i][0].length + arglist[i][1].length;
             }
         }
-        char[] chars = new char[ length + 8 ]; //for length of message
-        char[] tmpchar = getPaddedLength( length );
+        byte [] tmpchar = (new String("" + length)).getBytes();
+        if (tmpchar.length > 8) {
+            Main.debug("sendJavaScriptEventCmd: length too long");
+            return;
+        }
+        byte [] chars = new byte[ length + 8 ]; //for length of message
         int index = 0;
 
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) JavaScriptEvent;
+        for (index = tmpchar.length; index < 8; index++)
+            chars[index] = (byte) ' ';
+        chars[index++] = (byte) JavaScriptEvent;
         chars[index++] = sep;
 
-        tmpchar = contextID.toCharArray();
+        tmpchar = contextID.getBytes();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
 
-        tmpchar = appletID.toCharArray();
+        tmpchar = appletID.getBytes();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
 
-        tmpchar = objstr.toCharArray();
+        tmpchar = objstr.getBytes();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
 
-        tmpchar = event.toCharArray();
+        tmpchar = event.getBytes();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
 
         if (types != null)
             for (int i = 0; i < types.length; i++) {
-                tmpchar = typestrings[i].toCharArray();
-                System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-                index += tmpchar.length;
+                System.arraycopy( arglist[i][0], 0, chars, index, arglist[i][0].length );
+                index += arglist[i][0].length;
                 chars[index++] = sep;
-                tmpchar = args[i].toCharArray();
-                System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-                index += tmpchar.length;
-                Main.debug( "sendJavaScriptEventCmd, index = " + index);
+                System.arraycopy( arglist[i][1], 0, chars, index, arglist[i][1].length );
+                index += arglist[i][1].length;
                 chars[index++] = sep;
             }
 
-        signals.print( chars );
+        signals.write( chars, 0, chars.length );
     }
     public void sendMemberValue( String contextID, int cmd, int ticketnr, int type, int rid, String value )
     {

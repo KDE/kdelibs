@@ -34,27 +34,36 @@ public class JSObject extends netscape.javascript.JSObject {
     }
 
     private String escapeString(String string) {
-        // the following line only works from java 1.4 on
-        //String string = _script.replaceAll("\\\\", "\\\\\\\\\\\\\\\\").replaceAll("\"", "\\\\\\\\\\\\\\\"");
-
-        // and this is the replacement for older versions:
         StringBuffer sb = new StringBuffer();
-        int idx;
-        int off;
-
-        for (off = 0; (idx = string.indexOf("\\", off)) >= 0; off = idx + 1) {
-            sb.append(string.substring(off, idx));
-            sb.append("\\\\");
+        int idx = 0;
+        boolean cr = false;
+        char [] chars = string.toCharArray();
+        while (idx < chars.length) {
+            if (cr && chars[idx] != '\n') {
+                cr = false;
+                sb.append("\\n");
+            }
+            switch (chars[idx]) {
+                case '\\':
+                    sb.append("\\\\");
+                    break;
+                case '"':
+                    sb.append("\\\"");
+                    break;
+                case '\n':
+                    cr = false;
+                    sb.append("\\n");
+                    break;
+                case '\r':
+                    cr = true;
+                    break;
+                default:
+                    sb.append(chars[idx]);
+            }
+            idx++;
         }
-        sb.append(string.substring(off, string.length()));
-        string = sb.toString();
-        sb = new StringBuffer();
-        for (off = 0; (idx = string.indexOf("\"", off)) >= 0; off = idx + 1) {
-            sb.append(string.substring(off, idx));
-            sb.append("\\\"");
-        }
-        sb.append(string.substring(off, string.length()));
-        // end of replacement
+        if (cr)
+            sb.append("\\n");
         return sb.toString();
     }
 
