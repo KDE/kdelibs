@@ -29,6 +29,7 @@
 #include <qvbox.h>
 #include <qvgroupbox.h>
 #include <qstylesheet.h>
+#include <qsimplerichtext.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -40,6 +41,7 @@
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <kstdguiitem.h>
+#include <kactivelabel.h>
 
  /**
   * Easy MessageBox Dialog.
@@ -90,31 +92,44 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     else
         qt_text = text;
 
-    QLabel *label2 = new QLabel( qt_text, contents);
-    label2->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::ExpandTabs | Qt::WordBreak );
 
-    int min_width = label2->sizeHint().width();
-    int pref_width = QApplication::desktop()->width() / 3;
-    if (min_width > pref_width)
+    int pref_width = 0;
+    int pref_height = 0;
+    // Calculate a proper size for the text.
     {
-       if (min_width > (pref_width *2))
-          pref_width = pref_width *2;
-       else
-          pref_width = min_width;
+       QSimpleRichText rt(qt_text, dialog->font());
+       
+       pref_width = QApplication::desktop()->width() / 3;
+       rt.setWidth(pref_width);
+       int used_width = rt.widthUsed();
+       pref_height = rt.height();
+       if (used_width <= pref_width)
+       {
+          while(true)
+          {
+             int new_width = (used_width * 9) / 10;
+             rt.setWidth(new_width);
+             int new_height = rt.height();
+             if (new_height > pref_height)
+                break;
+             used_width = rt.widthUsed();
+             if (used_width > new_width)
+                break;
+          }
+          pref_width = used_width;
+       }
+       else 
+       {
+          if (used_width > (pref_width *2))
+             pref_width = pref_width *2;
+          else
+             pref_width = used_width;
+       } 
     }
-    int pref_height = label2->heightForWidth(pref_width);
-    while (pref_width > min_width )
-    {
-       int new_width = (pref_width * 9) / 10;
-       if (new_width < min_width)
-          new_width = min_width;
-       int new_height = label2->heightForWidth(new_width);
-       if (new_height > pref_height)
-          break;
-       pref_width = new_width;
-    }
+    KActiveLabel *label2 = new KActiveLabel( qt_text, contents );
 
-    label2->setFixedSize(QSize(pref_width, pref_height));
+    // We add 5 pixels extra to compensate for some KActiveLabel margins.
+    label2->setFixedSize(QSize(pref_width+5, pref_height));
     lay->addWidget( label2 );
 
     if (!strlist.isEmpty())
