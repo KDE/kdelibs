@@ -54,6 +54,7 @@ libkfile_la_SOURCES = \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
 	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.cpp \
 	knotifydialog.cpp kfilespeedbar.cpp
+libkfile_la_COMPILE_FIRST = ../kdirnotify_stub.h
 
 EXTRA_DIST = NOTES
 

@@ -42,15 +42,7 @@ libksycoca_la_SOURCES = \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp kdcopservicestarter.cpp \
 	dataslave.cpp dataprotocol.cpp
-
-#This dependency is needed, cause am_edit does not include it automatically
-#(different programs), but nevertheless kmimetype.cpp includes
-#kdirnotify_stub.h
-$(srcdir)/kmimetype.cpp: kdirnotify_stub.h
-$(srcdir)/kautomount.cpp: kdirnotify_stub.h
-$(srcdir)/chmodjob.cpp: kdirnotify_stub.h
-$(srcdir)/kfileshare.cpp: kdirnotify_stub.h
-$(srcdir)/job.cpp: kdirnotify_stub.h
+libksycoca_la_COMPILE_FIRST = kdirnotify_stub.h
 
 include_HEADERS = \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
