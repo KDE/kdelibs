@@ -76,7 +76,7 @@ static KBookmarkMap *s_bk_map = 0;
 
 KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) { 
     m_manager = manager;
-} 
+}
 
 void KBookmarkMap::update()
 {
@@ -85,7 +85,8 @@ void KBookmarkMap::update()
     traverse(root);
 }
 
-void KBookmarkMap::visit(const KBookmark &bk) {
+void KBookmarkMap::visit(const KBookmark &bk)
+{
     if (!bk.isSeparator()) {
         // add bookmark to url map
         m_bk_map[bk.url().url()].append(bk);
@@ -670,7 +671,6 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
     if (!s_bk_map) 
         s_bk_map = new KBookmarkMap(this);
     s_bk_map->update(); // TODO - should make update only when dirty
-    
     QValueList<KBookmark> list = s_bk_map->find(url);
     for ( QValueList<KBookmark>::iterator it = list.begin(); 
           it != list.end(); ++it )
