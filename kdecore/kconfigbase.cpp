@@ -177,8 +177,22 @@ void KConfigBase::setGroup( const QString& pGroup )
 {
   if( !pGroup )
     data()->aGroup = "<default>";
-  else
+  else if (pGroup.find("Desktop Entry") != -1) {
+    debug("warning, setting Desktop Entry group through KConfig::setGroup() is deprecated.");
+    debug("please use KConfig::setDesktopGroup() instead.");
+    setDesktopGroup();
+  } else
     data()->aGroup = pGroup;
+}
+
+void KConfigBase::setDesktopGroup()
+{
+  // we maintain the first for backwards compatibility with
+  // old .kdelnk files
+  if (data()->aGroupDict["KDE Desktop Entry"])
+    data()->aGroup = "KDE Desktop Entry";
+  else
+    data()->aGroup = "Desktop Entry";
 }
 
 

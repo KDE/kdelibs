@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.22  1999/05/03 07:34:10  dfaure
+// First change from Torben : adds support for QStringList and QProperty
+// to KConfig.
+//
 // Revision 1.21  1999/04/18 09:15:09  kulow
 // taking out config.h from Header files. I don't know if I haven't noticed
 // before, but this is even very dangerous
@@ -232,6 +236,12 @@ public:
    *  @param pGroup The name of the new group.
    */
   void setGroup( const QString& pGroup );
+
+  /**
+   * Set the group to the "Desktop Entry" group used for
+   * configuration files.
+   */
+  void setDesktopGroup();
 
   /**
    * Retrieve the group where keys are currently searched in.
