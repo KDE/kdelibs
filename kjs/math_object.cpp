@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
 
 #include "value.h"
 #include "object.h"
@@ -78,6 +79,8 @@ MathObjectImp::MathObjectImp(ExecState * /*exec*/,
                              ObjectPrototypeImp *objProto)
   : ObjectImp(objProto)
 {
+   unsigned int seed = time(NULL);
+   ::srand(seed);
 }
 
 // ECMA 15.8
