@@ -20,4 +20,4 @@ if include_bzip2
 BZIP2DIR=bzip2
 endif
 
-SUBDIRS = file http ftp gzip $(BZIP2DIR) metainfo
+SUBDIRS = file http ftp gzip $(BZIP2DIR) metainfo data
