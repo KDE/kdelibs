@@ -17,8 +17,6 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-AM_CPPFLAGS = -DQT_NO_ASCII_CAST -DQT_NO_COMPAT
-
 INCLUDES = -I$(top_srcdir)/kdecore $(all_includes)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
