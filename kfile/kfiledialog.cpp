@@ -422,7 +422,7 @@ void KFileDialog::clearFilter()
 
 QString KFileDialog::currentMimeFilter() const
 {
-    int i = filterWidget->currentItem()-1;
+    int i = filterWidget->currentItem();
     if (filterWidget->showsAllTypes())
         i--;
 
