@@ -1570,7 +1570,7 @@ void HCStyle::drawVGradient(QPainter *p, const QBrush &fill, int x, int y,
         p->drawTiledPixmap(x, y, w, h, *vLarge);
     }
     else{
-        p->fillRect(x, y, w, h, fill);
+        p->fillRect(x, y+vLarge->height(), w, h-vLarge->height(), fill);
         p->drawTiledPixmap(x, y, w, vLarge->height(), *vLarge);
     }
 }
@@ -1588,7 +1588,7 @@ void HCStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
         p->drawTiledPixmap(x, y, w, h, *hLarge);
     }
     else{
-        p->fillRect(x, y, w, h, fill);
+        p->fillRect(x+hLarge->width(), y, w-hLarge->width(), h, fill);
         p->drawTiledPixmap(x, y, hLarge->width(), h, *hLarge);
     }
 }
