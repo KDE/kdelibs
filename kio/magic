@@ -347,7 +347,7 @@
 # crunched
 0	lelong&0x8080ffff	0x0000061a	application/x-arc
 
-0	leshort			0xea60		x-arj
+0	leshort			0xea60		application/x-arj
 
 # LHARC/LHA archiver (Greg Roelofs, newt@uchicago.edu)
 2	string	-lh0-	application/x-lharc
@@ -367,6 +367,10 @@
 
 # RAR archiver (Greg Roelofs, newt@uchicago.edu)
 0	string		Rar!		application/x-rar
+
+# ACE archive
+7      string        **ACE**     application/x-ace
+
 
 #------------------------------------------------------------------------------
 # frame:  file(1) magic for FrameMaker files
