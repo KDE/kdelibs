@@ -291,13 +291,13 @@ void KApplication::init(bool GUIenabled)
     kdisplaySetFont();
     kdisplaySetPalette();
     propagateSettings(SETTINGS_QT);
-  }
 
-  // "patch" standard QStyleSheet to follow our fonts
-  QStyleSheet* sheet = QStyleSheet::defaultSheet();
-  sheet->item ("pre")->setFontFamily (KGlobalSettings::fixedFont().family());
-  sheet->item ("code")->setFontFamily (KGlobalSettings::fixedFont().family());
-  sheet->item ("tt")->setFontFamily (KGlobalSettings::fixedFont().family());
+    // "patch" standard QStyleSheet to follow our fonts
+    QStyleSheet* sheet = QStyleSheet::defaultSheet();
+    sheet->item ("pre")->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item ("code")->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item ("tt")->setFontFamily (KGlobalSettings::fixedFont().family());
+  }
 
   installTranslator(new KDETranslator(this));
 
