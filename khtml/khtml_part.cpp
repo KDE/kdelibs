@@ -1336,12 +1336,12 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   errText += QString::fromLatin1( "</P><P>" );
   QString kioErrString = KIO::buildErrorString( errorCode, text );
 
-  kioErrString.replace(QRegExp("&"), QString("&amp;"));
-  kioErrString.replace(QRegExp("<"), QString("&lt;"));
-  kioErrString.replace(QRegExp(">"), QString("&gt;"));
+  kioErrString.replace(QString::fromLatin1("&"), QString("&amp;"));
+  kioErrString.replace(QString::fromLatin1("<"), QString("&lt;"));
+  kioErrString.replace(QString::fromLatin1(">"), QString("&gt;"));
 
   // In case the error string has '\n' in it, replace with <BR/>
-  kioErrString.replace( QRegExp("\n"), "<BR/>" );
+  kioErrString.replace( "\n", "<BR/>" );
 
   errText += kioErrString;
   errText += QString::fromLatin1( "</P></BODY></HTML>" );
@@ -2716,10 +2716,10 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
         else if ((*it).startsWith(QString::fromLatin1("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
-      mailtoMsg.replace(QRegExp("&"), QString("&amp;"));
-      mailtoMsg.replace(QRegExp("<"), QString("&lt;"));
-      mailtoMsg.replace(QRegExp(">"), QString("&gt;"));
-      mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), "");
+      mailtoMsg.replace(QString::fromLatin1("&"), QString("&amp;"));
+      mailtoMsg.replace(QString::fromLatin1("<"), QString("&lt;"));
+      mailtoMsg.replace(QString::fromLatin1(">"), QString("&gt;"));
+      mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), QString::null);
       setStatusBarText("<qt>"+mailtoMsg, BarHoverText);
       return;
     }

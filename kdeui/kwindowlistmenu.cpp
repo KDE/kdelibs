@@ -127,7 +127,7 @@ void KWindowListMenu::init()
                     insertSeparator();
 		QString itemText =  KStringHandler::csqueeze(title,25);
 		// Avoid creating unwanted accelerators.
-		itemText.replace(QRegExp("&"), "&&");
+		itemText.replace("&", "&&");
                 insertItem( pm, QString("   ")+ itemText, i);
                 map.insert(i, info->win);
                 if (info->win == active_window)

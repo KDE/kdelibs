@@ -288,8 +288,7 @@ void KLocale::initFormat()
 
   readConfigEntry("DecimalSymbol", ".", m_decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", m_thousandsSeparator);
-  m_thousandsSeparator.replace( QRegExp(QString::fromLatin1("\\$0")),
-				QString::null );
+  m_thousandsSeparator.replace( QString::fromLatin1("$0"), QString::null );
   //kdDebug(173) << "m_thousandsSeparator=" << m_thousandsSeparator << endl;
 
   readConfigEntry("PositiveSign", "", m_positiveSign);
@@ -300,8 +299,7 @@ void KLocale::initFormat()
   readConfigEntry("MonetaryDecimalSymbol", ".", m_monetaryDecimalSymbol);
   readConfigEntry("MonetaryThousandsSeparator", ",",
 		  m_monetaryThousandsSeparator);
-  m_monetaryThousandsSeparator.replace(QRegExp(QString::fromLatin1("\\$0")),
-				       QString::null);
+  m_monetaryThousandsSeparator.replace(QString::fromLatin1("$0"), QString::null);
 
   readConfigNumEntry("FracDigits", 2, m_fracDigits, int);
   readConfigBoolEntry("PositivePrefixCurrencySymbol", true,
@@ -1489,7 +1487,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
   QString str = intstr.simplifyWhiteSpace().lower();
   QString Format = timeFormat().simplifyWhiteSpace();
   if (flags & WithoutSeconds)
-    Format.replace(QRegExp(QString::fromLatin1(".%S")), QString::null);
+    Format.replace(QString::fromLatin1(".%S"), QString::null);
 
   int hour = -1, minute = -1;
   int second = ( flags & WithoutSeconds == 0 ) ? -1 : 0; // don't require seconds

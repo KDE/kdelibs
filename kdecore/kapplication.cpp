@@ -2203,7 +2203,7 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
         }
     }
 
-  aFilename.replace( QRegExp( "/" ),"\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
+  aFilename.replace( "/", "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
 
   return aFilename;
 }
@@ -2232,7 +2232,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
         }
     }
 
-  aFilename.replace( QRegExp( "/" ), "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
+  aFilename.replace( "/", "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
 
   if( QFile( aFilename ).exists() )
     {
