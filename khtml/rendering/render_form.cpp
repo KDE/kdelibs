@@ -308,7 +308,6 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
 {
     QCheckBox* b = new QCheckBox(view->viewport());
     b->setAutoMask(true);
-    b->setBackgroundColor(element->style()->backgroundColor());
     b->setMouseTracking(true);
     setQWidget(b);
     b->installEventFilter(this);
@@ -352,7 +351,6 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
     QRadioButton* b = new QRadioButton(view->viewport());
     b->setAutoMask(true);
     b->setMouseTracking(true);
-    b->setBackgroundColor(element->style()->backgroundColor());
     setQWidget(b);
     b->installEventFilter(this);
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
