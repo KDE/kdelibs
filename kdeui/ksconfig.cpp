@@ -98,16 +98,16 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 
   QGridLayout *glay = new QGridLayout( this, 6, 3, 0, KDialog::spacingHint() );
   cb1 = new QCheckBox( i18n("Create root/affix combinations"
-                            " not in dictionary"), this );
+                            " not in dictionary"), this, "NoRootAffix" );
   connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
   glay->addMultiCellWidget( cb1, 0, 0, 0, 2 );
 
   cb2 = new QCheckBox( i18n("Consider run-together words"
-			    " as spelling errors"), this );
+			    " as spelling errors"), this, "RunTogether" );
   connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
   glay->addMultiCellWidget( cb2, 1, 1, 0, 2 );
 
-  dictcombo = new QComboBox( this );
+  dictcombo = new QComboBox( this, "DictFromList" );
   dictcombo->setInsertionPolicy( QComboBox::NoInsertion );
   connect( dictcombo, SIGNAL (activated(int)),
 	   this, SLOT (sSetDictionary(int)) );
@@ -116,7 +116,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   dictlist = new QLabel( dictcombo, i18n("Dictionary:"), this );
   glay->addWidget( dictlist, 2 ,0 );
 
-  encodingcombo = new QComboBox( this );
+  encodingcombo = new QComboBox( this, "Encoding" );
   encodingcombo->insertItem( "US-ASCII" );
   encodingcombo->insertItem( "ISO 8859-1" );
   encodingcombo->insertItem( "ISO 8859-2" );
@@ -142,7 +142,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   glay->addWidget( tmpQLabel, 3, 0 );
 
 
-  clientcombo = new QComboBox( this );
+  clientcombo = new QComboBox( this, "Client" );
   clientcombo->insertItem( i18n("International Ispell") );
   clientcombo->insertItem( i18n("Aspell") );
   clientcombo->insertItem( i18n("Hspell") );

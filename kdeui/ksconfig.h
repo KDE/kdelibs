@@ -99,6 +99,10 @@ class KSpellConfig : public QWidget
 
     KSpellConfig( const KSpellConfig & );
 
+    /**
+     * Deconstructor.
+     * Deletes private class.
+     */
     virtual ~KSpellConfig();
 
     void operator=( const KSpellConfig &ksc );
@@ -205,6 +209,9 @@ class KSpellConfig : public QWidget
 
 
   protected slots:
+    /**
+     * Invokes the help documentation for kspell
+     */ 
     void sHelp();
     //void sBrowseDict();
     //void sBrowsePDict();
@@ -245,9 +252,9 @@ signals:
     void configChanged();
 
 private:
-  KSpellConfigPrivate *d;
-  void getAvailDictsIspell();
-  void getAvailDictsAspell();
+    KSpellConfigPrivate *d;
+    void getAvailDictsIspell();
+    void getAvailDictsAspell();
 };
 
 #endif
