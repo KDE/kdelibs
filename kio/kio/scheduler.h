@@ -26,6 +26,7 @@
 #include "kio/jobclasses.h"
 #include <qtimer.h>
 #include <qptrdict.h>
+#include <qmap.h>
 
 #include <dcopobject.h>
 
@@ -212,6 +213,14 @@ namespace KIO {
         { return self()->_disconnectSlave(slave); }
 
         /**
+         * Send the slave that was put on hold back to KLauncher. This
+         * allows another process to take over the slave and resume the job
+         * the that was started.
+         */
+        static void registerWindow(QWidget *wid)
+        { self()->_registerWindow(wid); }
+
+        /**
          * Function to connect signals emitted by the scheduler.
          *
          * @see slaveConnected
@@ -267,6 +276,7 @@ namespace KIO {
         void slotSlaveConnected();
         void slotSlaveError(int error, const QString &errorMsg);
         void slotScheduleCoSlave();
+        void slotUnregisterWindow(QObject *);
 
     private:
         class ProtocolInfoDict;
@@ -287,7 +297,8 @@ namespace KIO {
         bool _disconnectSlave(KIO::Slave *slave);
         void _checkSlaveOnHold(bool b);
         void _publishSlaveOnHold();
-
+        void _registerWindow(QWidget *wid);
+        
         Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
         Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL &url);
         
@@ -311,6 +322,7 @@ namespace KIO {
         SlaveConfig *slaveConfig;
         SessionData *sessionData;
         bool checkOnHold;
+        QMap<QObject *,long> m_windowList;
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:

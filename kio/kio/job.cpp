@@ -47,6 +47,7 @@ extern "C" {
 #include <kdialog.h>
 #include <kmessagebox.h>
 #include <kdatastream.h>
+#include <kmainwindow.h>
 
 #include <errno.h>
 
@@ -277,6 +278,7 @@ bool Job::isAutoErrorHandlingEnabled() const
 void Job::setWindow(QWidget *window)
 {
   m_window = window;
+  KIO::Scheduler::registerWindow(window);
 }
 
 QWidget *Job::window() const

@@ -24,6 +24,9 @@
 #include "kio/slave.h"
 #include <qptrlist.h>
 #include <qdict.h>
+
+#include <dcopclient.h>
+
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kprotocolmanager.h>
@@ -847,6 +850,45 @@ Scheduler::_checkSlaveOnHold(bool b)
     checkOnHold = b;
 }
 
+void
+Scheduler::_registerWindow(QWidget *wid)
+{
+   QObject *obj = static_cast<QObject *>(wid);
+   if (!m_windowList.contains(obj))
+   {
+      // We must store the window Id because by the time
+      // the destroyed signal is emitted we can no longer
+      // access QWidget::winId() (already destructed)
+      long windowId = wid->winId();
+      m_windowList.insert(obj, windowId);
+      connect(wid, SIGNAL(destroyed(QObject *)),
+              this, SLOT(slotUnregisterWindow(QObject*)));
+      QByteArray params;
+      QDataStream stream(params, IO_WriteOnly);
+      stream << windowId;
+      if( !kapp->dcopClient()->send( "kded", "kded",
+                    "registerWindowId(long int)", params ) )
+      kdDebug(7006) << "Could not register window with kded!" << endl;
+      
+   }
+}
+
+void
+Scheduler::slotUnregisterWindow(QObject *obj)
+{
+   QMap<QObject *, long>::Iterator it = m_windowList.find(obj);
+   if (it == m_windowList.end())
+      return;
+   long windowId = it.data();
+   if (kapp)
+   {
+      QByteArray params;
+      QDataStream stream(params, IO_WriteOnly);
+      stream << windowId;
+      kapp->dcopClient()->send( "kded", "kded",
+                    "unregisterWindowId(long int)", params );
+   }
+}
 
 Scheduler* Scheduler::self() {
     if ( !instance ) {
