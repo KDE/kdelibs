@@ -936,7 +936,8 @@ protected:
     /*
      * This is the scroll offset. The upper left corner is (0,0).
      */
-    int x_offset, y_offset;
+    int x_offset;
+    int y_offset;
 
     /*
      * The amount to auto scroll by.
@@ -977,7 +978,8 @@ protected:
      * Used for drag and drop.
      */
     bool pressed;
-    int press_x, press_y;
+    int press_x;
+    int press_y;
     /*
      * When the user presses the mouse over an URL, this URL is stored
      * here. We might need it if the user just started a drag.

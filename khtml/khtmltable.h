@@ -269,8 +269,11 @@ protected:
     QArray<ColType> colType;
 
     unsigned int totalColInfos;
-    unsigned int col, totalCols;
-    unsigned int row, totalRows, allocRows;
+    unsigned int col;
+    unsigned int totalCols;
+    unsigned int row;
+    unsigned int totalRows;
+    unsigned int allocRows;
     int spacing;
     int padding;
     int border;
