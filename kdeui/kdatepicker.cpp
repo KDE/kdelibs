@@ -19,12 +19,6 @@
 */
 
 #include <qlayout.h>
-
-#include "kdatepicker.h"
-#include <kglobal.h>
-#include <kapplication.h>
-#include <klocale.h>
-#include <kiconloader.h>
 #include <qframe.h>
 #include <qpainter.h>
 #include <qdialog.h>
@@ -32,8 +26,15 @@
 #include <qtoolbutton.h>
 #include <qtooltip.h>
 #include <qfont.h>
-#include <klineedit.h>
 #include <qvalidator.h>
+
+#include "kdatepicker.h"
+#include <kglobal.h>
+#include <kapplication.h>
+#include <klocale.h>
+#include <kiconloader.h>
+#include <ktoolbar.h>
+#include <klineedit.h>
 #include <kdebug.h>
 #include <knotifyclient.h>
 #include <kcalendarsystem.h>
@@ -46,6 +47,7 @@ class KDatePicker::KDatePickerPrivate
 public:
     KDatePickerPrivate() : closeButton(0L), selectWeek(0L), navigationLayout(0) {}
 
+    KToolBar *tb;
     QToolButton *closeButton;
     QToolButton *selectWeek;
     QBoxLayout *navigationLayout;
@@ -72,19 +74,23 @@ KDatePicker::KDatePicker( QWidget *parent, const char *name )
 
 void KDatePicker::init( const QDate &dt )
 {
-  yearForward = new QToolButton(this);
-  yearBackward = new QToolButton(this);
-  monthForward = new QToolButton(this);
-  monthBackward = new QToolButton(this);
-  selectMonth = new QToolButton(this);
-  selectYear = new QToolButton(this);
+  d = new KDatePickerPrivate();
+
+  d->tb = new KToolBar(this);
+
+  yearBackward = new QToolButton(d->tb);
+  monthBackward = new QToolButton(d->tb);
+  selectMonth = new QToolButton(d->tb);
+  selectYear = new QToolButton(d->tb);
+  monthForward = new QToolButton(d->tb);
+  yearForward = new QToolButton(d->tb);
   line = new KLineEdit(this);
   val = new KDateValidator(this);
   table = new KDateTable(this);
   fontsize = 10;
-
-  d = new KDatePickerPrivate();
+ 
   d->selectWeek = new QToolButton( this );
+  d->selectWeek->setFlat(true);
 
   QToolTip::add(yearForward, i18n("Next year"));
   QToolTip::add(yearBackward, i18n("Previous year"));
@@ -118,13 +124,7 @@ void KDatePicker::init( const QDate &dt )
   QBoxLayout * topLayout = new QVBoxLayout(this);
 
   d->navigationLayout = new QHBoxLayout(topLayout);
-  d->navigationLayout->addWidget(yearBackward);
-  d->navigationLayout->addWidget(monthBackward);
-  d->navigationLayout->addWidget(selectMonth);
-  d->navigationLayout->addWidget(selectYear);
-  d->navigationLayout->addWidget(monthForward);
-  d->navigationLayout->addWidget(yearForward);
-  d->navigationLayout->addStretch();
+  d->navigationLayout->addWidget(d->tb);
 
   topLayout->addWidget(table);
 
@@ -449,7 +449,7 @@ KDatePicker::setCloseButton( bool enable )
         return;
 
     if ( enable ) {
-        d->closeButton = new QToolButton( this );
+        d->closeButton = new QToolButton( d->tb );
         d->navigationLayout->addWidget(d->closeButton);
         QToolTip::add(d->closeButton, i18n("Close"));
         d->closeButton->setPixmap( SmallIcon("remove") );
