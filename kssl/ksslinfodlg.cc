@@ -121,7 +121,7 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     QPalette cspl;
     switch(certState) {
     case KSSLCertificate::Ok:
-      layout->addWidget(csl = new QLabel(i18n("Certificate is valid from %1 until %1.").arg(goodFrom).arg(goodUntil), this), 2, 1);
+      layout->addWidget(csl = new QLabel(i18n("Certificate is valid from %1 until %2.").arg(goodFrom).arg(goodUntil), this), 2, 1);
       cspl = csl->palette();
       cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
       csl->setPalette(cspl);
@@ -172,7 +172,7 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     layout->addWidget(new QLabel(i18n("SSL Version:"), this), 5, 0);
     layout->addWidget(new QLabel(sslversion, this), 5, 1);
     layout->addWidget(new QLabel(i18n("Cipher Strength:"), this), 6, 0);
-    layout->addWidget(new QLabel(i18n("%1 bits used of a %1 bit cipher").arg(usedbits).arg(bits), this), 6, 1);
+    layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 6, 1);
     d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
 }
 
