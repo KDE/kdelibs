@@ -215,6 +215,7 @@ private:
 
     void closeChildDialogs();
     bool dialogsAllowed();
+    void findAhead(bool increase);
 
     /**
      * Paints the HTML document to a QPainter.
