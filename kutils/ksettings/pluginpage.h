@@ -45,18 +45,18 @@ class KPluginSelector;
  *
  * All that remains to be done is to create the appropriate .desktop file
  * \verbatim
-   [ Desktop Entry ]
+   [Desktop Entry]
    Encoding=UTF-8
    Icon=plugin
    Type=Service
    ServiceTypes=KCModule
-  
+
    X-KDE-ModuleType=Library
    X-KDE-Library=myapppluginconfig
    X-KDE-FactoryName=MyAppPluginConfigFactory
    X-KDE-ParentApp=myapp
    X-KDE-KCDParent=myapp
-  
+
    Name=Plugins
    Comment=Select and configure your plugins:
    \endverbatim
@@ -95,7 +95,7 @@ class KCDPluginPage : public KCModule
 		 * you can also reimplement this method.
 		 */
 		virtual void load();
-		
+
 		/**
 		 * Save the state of the plugins to KConfig objects
 		 */
@@ -108,4 +108,6 @@ class KCDPluginPage : public KCModule
 };
 
 // vim: sw=4 ts=4 noet
+
 #endif // KCDPLUGINPAGE_H
+
