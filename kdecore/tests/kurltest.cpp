@@ -95,6 +95,23 @@ int main(int argc, char *argv[])
   check("KURL::htmlRef()", url1.htmlRef(), "myref");
   check("KURL::upURL()", url1.upURL().url(), "file:///home/dfaure/");
 
+  u1 = "file:/home/dfaure/my#%2f";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:///home/dfaure/my#%2f");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
+  check("KURL::encodedHtmlRef()", url1.ref(), "%2f");
+  check("KURL::htmlRef()", url1.htmlRef(), "/");
+
+  url1 = KURL(url1, "#%6a");
+  check("KURL::url()", url1.url(), "file:///home/dfaure/my#%6a");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
+  check("KURL::encodedHtmlRef()", url1.ref(), "%6a");
+  check("KURL::htmlRef()", url1.htmlRef(), "j");
+
   u1 = "file:///home/dfaure/my#myref";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:///home/dfaure/my#myref");

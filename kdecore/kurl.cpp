@@ -540,10 +540,10 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   else if ( rUrl[0] == '#' )
   {
     *this = _u;
+    m_strRef_encoded = rUrl.mid(1);
     QString ref = decode(rUrl.mid(1), encoding_hint);
-    if ( ref.isNull() )
-        ref = ""; // we know there was an (empty) html ref, we saw the '#'
-    setHTMLRef( ref );
+    if ( m_strRef_encoded.isNull() )
+        m_strRef_encoded = ""; // we know there was an (empty) html ref, we saw the '#'
   }
   else if ( isRelativeURL( rUrl) )
   {
@@ -2283,6 +2283,8 @@ KURL::URIMode KURL::uriModeForProtocol(const QString& protocol)
 {
 #ifndef KDE_QT_ONLY
     KURL::URIMode mode = Auto;
+    if (protocol == fileProt)
+        return URL;
     if (KGlobal::_instance)
         mode = KProtocolInfo::uriParseMode(protocol);
     if (mode == Auto ) {
