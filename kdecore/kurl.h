@@ -456,6 +456,14 @@ public:
    */
   QString prettyURL( int _trailing = 0) const;
   
+  
+  /**
+   * @return A human readable URL, with no non-necessary encodings/escaped
+   * characters which is html encoded for safe inclusion in html or
+   * rich text.
+   */
+  QString htmlURL() const;
+  
   /**
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters.
