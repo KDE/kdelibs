@@ -38,8 +38,6 @@
 #include <qdatetime.h>
 #include <qdatetimeedit.h>
 
-#include <iostream.h>
-
 #ifdef Bool
 #undef Bool
 #endif
