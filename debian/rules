@@ -79,9 +79,8 @@ build-stamp: configure-stamp
 	cd $(objdir) && \
 	$(MAKE)
 
-	# create documentation for kdelibs4
-	echo Building API Documentation
-	-doxygen Doxyfile
+	cd $(objdir) && \
+	$(MAKE) apidox
 
 	# generate manpages
 	for i in debian/*.sgml; do \
@@ -115,9 +114,6 @@ clean: debian-clean
 	# Remove build tree
 	rm -rf $(objdir)
 
-	# Remove api docs tree
-	rm -rf apidocs
-
 	# if Makefile exists run distclean
 	if test -f Makefile; then \
 		$(MAKE) distclean; \
@@ -138,7 +134,10 @@ install: build
 
 	cd $(objdir) && \
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
-	
+
+	cd $(objdir) && \
+	$(MAKE) install-apidox DESTDIR=$(CURDIR)/debian/tmp
+
 	# create system.kdeglobals
 	perl -w admin/debianrules echoglobals > debian/system.kdeglobals
 

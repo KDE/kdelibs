@@ -2,7 +2,7 @@ Source: kdelibs
 Section: libs
 Priority: optional
 Maintainer: Christopher L Cheney <ccheney@debian.org>
-Build-Depends: debhelper (>> 4.0.18), arts-dev, automake1.7, docbook-to-man, gawk, gettext, libart-2.0-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libldap2-dev, libdb4.0-dev, libpam0g-dev, libpcre3-dev, libsasl-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, texinfo, xlibmesa-dev
+Build-Depends: automake1.7, debhelper (>> 4.0.18), docbook-to-man, gawk, gettext, libart-2.0-dev, libartsc0-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libldap2-dev, libdb4.0-dev, libpam0g-dev, libpcre3-dev, libsasl-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, qt3-doc, texinfo, xlibmesa-dev
 Build-Depends-Indep: doxygen
 Standards-Version: 3.5.8.0
 
@@ -45,7 +45,7 @@ Description: KDE core libraries
 Package: kdelibs4-dev
 Section: devel
 Architecture: any
-Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), arts-dev, libart-2.0-dev, libcupsys2-dev, libfam-dev, libpcre3-dev
+Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libart-2.0-dev, libartsc0-dev, libcupsys2-dev, libfam-dev, libpcre3-dev
 Provides: kdelibs-dev
 Conflicts: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
 Replaces: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
