@@ -129,18 +129,6 @@ public:
     
     static  QFont               *_generalFont;
     static  QFont               *_fixedFont;
-    
-private:
-    /**
-     * Allocate the static Instance variable;
-     **/
-    static void init();
-    
-    /**
-     * This will free all locally allocated objects and memory.
-     * Access to any method after this will cause a reallocation.
-     */
-    static void freeAll();
 };
 
 /**

@@ -153,6 +153,7 @@ KGlobal::Completion KGlobal::completionMode()
     return (Completion) completion;
 }
 
+/*
 void KGlobal::init()
 {
     if (_instance)
@@ -176,6 +177,7 @@ void KGlobal::freeAll()
     delete _instance;
     _instance = 0;
 }
+*/
 	
 // The Variables
 
