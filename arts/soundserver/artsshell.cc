@@ -74,6 +74,7 @@ execute <module.arts>
 
 #include <unistd.h>
 #include <iostream>
+#include <iostream.h>
 #include "soundserver.h"
 #include "dispatcher.h"
 

@@ -185,7 +185,7 @@ float SimpleSoundServer_impl::serverBufferTime()
 	float playSpeed = AudioSubSystem::the()->channels()
 	                * AudioSubSystem::the()->samplingRate()
 					* 2; /* TODO: check bits */
-	
+
 	return 1000.0 * hardwareBuffer / playSpeed;
 }
 
@@ -288,7 +288,7 @@ PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 		if(*i == '.')
 			extensionok = true;
 		else
-			extension = (char)tolower(*i) + extension;
+			extension.insert(extension.begin(), (char)tolower(*i));
 	}
 
 	/*
