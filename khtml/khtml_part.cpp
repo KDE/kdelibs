@@ -316,9 +316,9 @@ KJSProxy *KHTMLPart::jScript()
       return 0;
     }
 
-    typedef KJSProxy* (*initFunction)(HTMLDocument);
+    typedef KJSProxy* (*initFunction)(KHTMLPart *);
     initFunction initSym = (initFunction) sym;
-    d->m_jscript = (*initSym)(htmlDocument());
+    d->m_jscript = (*initSym)(this);
   }
 
   return d->m_jscript;

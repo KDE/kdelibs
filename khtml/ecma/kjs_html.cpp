@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 
-#include <qstring.h>
+#include <khtml_part.h>
 #include <html_element.h>
 #include <html_head.h>
 #include <html_inline.h>
@@ -39,12 +39,14 @@ using namespace KJS;
 
 extern "C" {
   // initialize HTML module
-  KJSProxy *kjs_html_init(DOM::HTMLDocument doc)
+  KJSProxy *kjs_html_init(KHTMLPart *khtml)
   {
     KJScript *script = new KJScript();
     script->setCurrent(script);
 
     KJS::KJSGlobal *global = KJScript::global();
+    DOM::HTMLDocument doc;
+    doc = khtml->htmlDocument();
     global->put("document", zeroRef(new KJS::HTMLDocument(doc)));
     global->put("window", zeroRef(new KJS::Window(0L)));
     global->put("navigator", zeroRef(new Navigator()));
