@@ -49,7 +49,7 @@ int
 KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &caption,
                            const QString &buttonYes, 
-                           const QString &buttonNo)
+                           const QString &buttonNo, bool notify)
 {
     return questionYesNoList( parent, text, QStringList(), caption, 
 	       	              buttonYes, buttonNo );
@@ -60,7 +60,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                            const QStringList &strlist,
                            const QString &caption,
                            const QString &buttonYes,
-                           const QString &buttonNo)
+                           const QString &buttonNo, bool notify)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
                        KDialogBase::Yes | KDialogBase::No,
@@ -112,7 +112,7 @@ int
 KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &caption,
                           const QString &buttonYes,  
-                          const QString &buttonNo)
+                          const QString &buttonNo, bool notify)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
@@ -155,7 +155,7 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
 int 
 KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
                           const QString &caption,
-                          const QString &buttonContinue)
+                          const QString &buttonContinue, bool notify)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No,
@@ -200,7 +200,7 @@ int
 KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                                 const QString &caption,
                                 const QString &buttonYes,  
-                                const QString &buttonNo)
+                                const QString &buttonNo, bool notify)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
                        KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
@@ -245,7 +245,7 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
 
 void
 KMessageBox::error(QWidget *parent,  const QString &text,
-                   const QString &caption)
+                   const QString &caption, bool notify)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Error") : caption,
                        KDialogBase::Yes,
@@ -273,7 +273,7 @@ KMessageBox::error(QWidget *parent,  const QString &text,
 
 void
 KMessageBox::sorry(QWidget *parent, const QString &text,
-                   const QString &caption)
+                   const QString &caption, bool notify)
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Sorry") : caption,
                        KDialogBase::Yes,
@@ -301,7 +301,7 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
 
 void
 KMessageBox::information(QWidget *parent,const QString &text,
-                   const QString &caption, const QString &dontShowAgainName)
+                   const QString &caption, const QString &dontShowAgainName, bool notify)
 {
     KConfig *config = 0;
     bool showMsg = true;
@@ -390,7 +390,7 @@ KMessageBox::enableAllMessages()
 
 void
 KMessageBox::about(QWidget *parent, const QString &text,
-                   const QString &caption)
+                   const QString &caption, bool notify)
 {
     QString _caption = caption;
     if (_caption.isEmpty())

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2000/01/12 03:21:12  dsweet
+ * Doc cleaning
+ *
  * Revision 1.10  2000/01/11 13:50:01  dsweet
  * Spiffed documentation. Now (i) KDOC2 compatibile, (ii) has consistent language, (iii) added some missing docs for methods
  *
@@ -105,6 +108,7 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
+  * @param notify  Emit a KNotify event.
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -118,7 +122,7 @@ public:
                           const QString &text,
                           const QString &caption = QString::null,
                           const QString &buttonYes = QString::null,  
-                          const QString &buttonNo = QString::null);
+                          const QString &buttonNo = QString::null, bool notify=true);
  /**
   * Display a "question" dialog with a listbox to show information to the user 
   *
@@ -134,6 +138,7 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
+  * @param notify  Emit a KNotify event.
   *
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
@@ -150,7 +155,7 @@ public:
                           const QStringList &strlist,
                           const QString &caption = QString::null,
                           const QString &buttonYes = QString::null,
-                          const QString &buttonNo = QString::null);
+                          const QString &buttonNo = QString::null, bool notify=true);
  /**
   * Display a "warning" dialog. 
   *
@@ -164,6 +169,7 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
+  * @param notify  Emit a KNotify event.
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed.
@@ -177,7 +183,7 @@ public:
                          const QString &text,
                          const QString &caption = QString::null,
                          const QString &buttonYes = QString::null,  
-                         const QString &buttonNo = QString::null);
+                         const QString &buttonNo = QString::null, bool notify=true);
 
  /**
   * Display a "warning" dialog. 
@@ -189,6 +195,7 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonContinue The text for the first button. 
+  * @param notify  Emit a KNotify event.
   *
   * The second button always has the text "Cancel".
   *
@@ -203,7 +210,7 @@ public:
  static int warningContinueCancel(QWidget *parent, 
                          const QString &text,
                          const QString &caption,
-                         const QString &buttonContinue);
+                         const QString &buttonContinue, bool notify=true);
 
  /**
   * Display a Yes/No/Cancel "warning" dialog. 
@@ -218,6 +225,7 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
+  * @param notify  Emit a KNotify event.
   *
   * @return  @p Yes is returned if the Yes-button is pressed. @p No is returned
   *          if the No-button is pressed. @p Cancel is retunred if the Cancel-
@@ -235,7 +243,7 @@ public:
                                 const QString &text,
                                 const QString &caption = QString::null,
                                 const QString &buttonYes = QString::null,  
-                                const QString &buttonNo = QString::null);
+                                const QString &buttonNo = QString::null, bool notify=true);
 
  /**
   * Display an "Error" dialog. 
@@ -246,22 +254,23 @@ public:
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Error").
+  * @param notify  Emit a KNotify event.
   *
-   * Your program fucked up and now it's time to inform the user.
-   * To be used for important things like "Sorry, I deleted your hard disk."
-   * 
-   * If your program detects the action specified by the user is somehow
-   * not allowed, this should never be reported with error(). Use sorry()
-   * instead to explain to the user that this action is not allowed. 
-   *
-   * The default button is "&OK". Pressing "Esc" selects the OK-button.
-   *
-   * NOTE: The OK button will always have the i18n'ed text '&OK'.
-   */
-   
+  * Your program fucked up and now it's time to inform the user.
+  * To be used for important things like "Sorry, I deleted your hard disk."
+  * 
+  * If your program detects the action specified by the user is somehow
+  * not allowed, this should never be reported with error(). Use sorry()
+  * instead to explain to the user that this action is not allowed. 
+  *
+  * The default button is "&OK". Pressing "Esc" selects the OK-button.
+  *
+  * NOTE: The OK button will always have the i18n'ed text '&OK'.
+  */
+  
   static void error(QWidget *parent, 
                     const QString &text, 
-                    const QString &caption = QString::null);
+                    const QString &caption = QString::null, bool notify=true);
 
  /**
   * Display an "Sorry" dialog. 
@@ -272,6 +281,7 @@ public:
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Sorry").
+  * @param notify  Emit a KNotify event.
   *
   * Either your program fucked up and asks for understanding
   * or your user did something stupid.
@@ -286,7 +296,7 @@ public:
   
   static void sorry(QWidget *parent, 
                     const QString &text,
-                    const QString &caption = QString::null);
+                    const QString &caption = QString::null, bool notify=true);
 
  /**
   * Display an "Information" dialog. 
@@ -301,6 +311,7 @@ public:
   *                further notifications can be turned off.
   *                The string is used to lookup and store the setting
   *                in the applications config file.
+  * @param notify  Emit a KNotify event.
   *
   *
   * Your program wants to tell the user something.
@@ -315,7 +326,7 @@ public:
   static void information(QWidget *parent, 
                           const QString &text, 
                           const QString &caption = QString::null,
-                          const QString &dontShowAgainName = QString::null);
+                          const QString &dontShowAgainName = QString::null, bool notify=true);
 
   /**
    * Enable all messages which have been turned off with the
@@ -332,6 +343,7 @@ public:
    * @param text    Message string. May contain newlines.
    * @param caption Message box title. The application name is added to
    *                the title. The default title is i18n("About <appname>").
+   * @param notify  Emit a KNotify event.
    *
    *
    * Your program wants to show some general information about the application
@@ -343,7 +355,7 @@ public:
    */
   static void about(QWidget *parent,
 		    const QString& text,
-		    const QString& caption = QString::null);
+		    const QString& caption = QString::null, bool notify=true);
 };
 
 #endif
