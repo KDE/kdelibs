@@ -145,7 +145,7 @@ void KIconView::slotSettingsChanged(int category)
     }
 
     m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
-    m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
+    m_autoSelectDelay = m_bUseSingle ? KGlobalSettings::autoSelectDelay() : -1;
 
     if( !m_bUseSingle || !m_bChangeCursorOverItem )
         viewport()->setCursor( oldCursor );
