@@ -112,8 +112,12 @@ void KNotify::processNotification(const QString &event, const QString &fromApp,
 		eventsfile.setGroup(event);
 	
 		if (present==-1)
-			present=(Presentation)eventsfile.readNumEntry("presentation");
-		sound=eventsfile.readEntry("sound", "");
+			present=(Presentation)eventsfile.readNumEntry("presentation", -1);
+		if (present==-1)
+			present=(Presentation)eventsfile.readNumEntry("default_presentation", 0);
+		sound=eventsfile.readEntry("sound", 0);
+		if (sound==QString::null)
+			sound=eventsfile.readEntry("sound", "");
 	}
 	
 	eventRunning=true;
