@@ -55,3 +55,7 @@ WISHES
 - CUPS: add a generic table view as the print dialog to set arbitrary
   options (useful to "tag" a specified job, and this doesn't affect
   the CUPS process).
+
+- Should think about a plugin mechanism for LPR plugin so that 
+  distro specific code could be added as separate packages without
+  loosing the independemt character of KDE (ex: SuSE/Lpdfilter support)
