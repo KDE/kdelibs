@@ -820,8 +820,8 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup,bool force)
 {
     kdDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
-    if (!configGroup.isEmpty())
-       config->setGroup(configGroup);
+
+    KConfigGroupSaver saver( config, configGroup.isEmpty() ? config->group() : configGroup );
 
     restoreWindowSize(config);
 
