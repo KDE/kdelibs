@@ -183,14 +183,14 @@ void Object::setInternalValue(const Value &v)
 ObjectImp::ObjectImp(const Object &proto)
   : _prop(0), _proto(static_cast<ObjectImp*>(proto.imp())), _internalValue(0L), _scope(0)
 {
-  //fprintf(stderr,"ObjectImp::ObjectImp %p %s\n",(void*)this);
+  //fprintf(stderr,"ObjectImp::ObjectImp %p\n",(void*)this);
   _scope = ListImp::empty();
   _prop = new PropertyMap();
 }
 
 ObjectImp::ObjectImp()
 {
-  //fprintf(stderr,"ObjectImp::ObjectImp %p %s\n",(void*)this);
+  //fprintf(stderr,"ObjectImp::ObjectImp %p\n",(void*)this);
   _prop = 0;
   _proto = NullImp::staticNull;
   _internalValue = 0L;
@@ -201,12 +201,15 @@ ObjectImp::ObjectImp()
 ObjectImp::~ObjectImp()
 {
   //fprintf(stderr,"ObjectImp::~ObjectImp %p\n",(void*)this);
+#if 0 // Those could be already deleted. The collector ensures no order
+      // ### Check if this leads to memory leaks....
   if (_proto)
     _proto->setGcAllowed();
   if (_internalValue)
     _internalValue->setGcAllowed();
   if (_scope)
     _scope->setGcAllowed();
+#endif
   delete _prop;
 }
 
