@@ -52,7 +52,7 @@ namespace KParts
 
 struct URLArgsPrivate
 {
-   QStringList docState;
+    QString contentType; // for POST
 };
 
 };
@@ -63,12 +63,22 @@ URLArgs::URLArgs()
   xOffset = 0;
   yOffset = 0;
   trustedSource = false;
-  d = 0;
+  d = 0L; // Let's build it on demand for now
+}
+
+
+URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serviceType )
+{
+  reload = _reload;
+  xOffset = _xOffset;
+  yOffset = _yOffset;
+  serviceType = _serviceType;
+  d = 0L; // Let's build it on demand for now
 }
 
 URLArgs::URLArgs( const URLArgs &args )
 {
-  d = 0;
+  d = 0L;
   (*this) = args;
 }
 
@@ -86,27 +96,28 @@ URLArgs &URLArgs::operator=(const URLArgs &args)
   frameName = args.frameName;
   docState = args.docState;
   trustedSource = args.trustedSource;
-  /*
+
   if ( args.d )
-  {
-     d = new URLArgsPrivate;
-  }*/
+     d = new URLArgsPrivate( * args.d );
+
   return *this;
-}
-
-
-URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serviceType )
-{
-  reload = _reload;
-  xOffset = _xOffset;
-  yOffset = _yOffset;
-  serviceType = _serviceType;
-  d = 0;
 }
 
 URLArgs::~URLArgs()
 {
   delete d; d = 0;
+}
+
+void URLArgs::setContentType( const QString & contentType )
+{
+  if (!d)
+    d = new URLArgsPrivate;
+  d->contentType = contentType;
+}
+
+QString URLArgs::contentType() const
+{
+  return d ? d->contentType : QString::null;
 }
 
 namespace KParts

@@ -55,7 +55,10 @@ struct URLArgs
   int yOffset;
   QString serviceType;
 
-  QByteArray postData; //khtml specific stuff
+  QByteArray postData; //khtml specific stuff (POST)
+  void setContentType( const QString & contentType ); // Header for POST
+  QString contentType() const; // Header for POST
+
   QString frameName;
 
   bool trustedSource;
