@@ -266,7 +266,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
           if ( KProtocolInfo::supportsListing( _url ) )
               return mimeType( QString::fromLatin1("inode/directory") );
           else
-              return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:foo/"
+              return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"
       }
     }
 
