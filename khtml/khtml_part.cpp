@@ -132,6 +132,7 @@ public:
     m_loadedImages = 0;
     m_totalImageCount = 0;
     m_userHeaders = QString::null;
+    m_haveEncoding = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -162,6 +163,7 @@ public:
   bool m_bComplete;
   bool m_bParsing;
   bool m_bReloading;
+    bool m_haveEncoding;
 
   KURL m_workingURL;
   KURL m_baseURL;
@@ -753,11 +755,16 @@ void KHTMLPart::write( const char *str, int len )
   QString decoded = d->m_decoder->decode( str, len );
 
   if(decoded.isNull()) return;
-  
-  if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
-  const QTextCodec *c = d->m_decoder->codec();
-  if(!d->m_settings->charset == QFont::Unicode)
-      setCharset(c->name());
+
+  if(!d->m_haveEncoding) {
+      // ### this is still quite hacky, but should work a lot better than the old solution
+      if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
+      const QTextCodec *c = d->m_decoder->codec();
+      kdDebug(6005) << "setting up charset to " << KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
+      d->m_settings->charset = KGlobal::charsets()->charsetForEncoding(c->name());
+      d->m_doc->applyChanges(true, true);
+      d->m_haveEncoding = true;
+  }
   d->m_doc->write( decoded );
 }
 
@@ -981,6 +988,7 @@ bool KHTMLPart::setCharset( const QString &name, bool /*override*/ )
   KCharsets *c = KGlobal::charsets();
   if(!c->isAvailable(name))
   {
+      kdDebug(6005) << "charset not available" << endl;
     return false;
   }
 
@@ -988,6 +996,7 @@ bool KHTMLPart::setCharset( const QString &name, bool /*override*/ )
   c->setQFont(f, name);
 
   QFontInfo fi(f);
+  kdDebug(6005) << "setting to charset " << f.charSet() << endl;
 
   d->m_settings->charset = f.charSet();
   return true;
