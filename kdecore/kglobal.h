@@ -215,6 +215,7 @@ inline const T& kClamp( const T& x, const T& low, const T& high )
  * Locale-independent qstricmp. Use this for comparing ascii keywords
  * in a case-insensitive way.
  * qstricmp fails with e.g. the Turkish locale where 'I'.lower() != 'i'
+ * @since 3.4
  */
 int kasciistricmp( const char *str1, const char *str2 );
  
