@@ -887,6 +887,18 @@ class KDialogBase : public KDialog
 			     bool global=false ) const;
 
     /**
+     * Sets the appearance of the OK button.
+     *
+     * If the default parameters are used
+     * (that is, if no KGuiItem is given) KStdGuiItem::ok() is used.
+     *
+     * @param item KGuiItem.
+     */
+    void setButtonOK( const KGuiItem &item = KStdGuiItem::ok() );
+
+    /**
+     * @deprecated. Use setButtonOk() instead.
+     *
      * Sets the text of the OK button.
      *
      * If the default parameters are used
@@ -901,9 +913,21 @@ class KDialogBase : public KDialog
      */
     void setButtonOKText( const QString &text=QString::null,
 			  const QString &tooltip=QString::null,
-			  const QString &quickhelp=QString::null );
+			  const QString &quickhelp=QString::null ) KDE_DEPRECATED;
 
     /**
+     * Sets the appearance of the Apply button.
+     *
+     * If the default parameters are used
+     * (that is, if no KGuiItem is given) KStdGuiItem::apply() is used.
+     *
+     * @param item KGuiItem.
+     */
+    void setButtonApply( const KGuiItem &item = KStdGuiItem::apply() );
+
+    /**
+     * @deprecated. Use setButtonApply() instead.
+     *
      * Sets the text of the Apply button.
      *
      * If the default parameters are
@@ -918,9 +942,21 @@ class KDialogBase : public KDialog
      */
     void setButtonApplyText( const QString &text=QString::null,
 			     const QString &tooltip=QString::null,
-			     const QString &quickhelp=QString::null );
+			     const QString &quickhelp=QString::null ) KDE_DEPRECATED;
 
     /**
+     * Sets the appearance of the Cancel button.
+     *
+     * If the default parameters are used
+     * (that is, if no KGuiItem is given) KStdGuiItem::cancel() is used.
+     *
+     * @param item KGuiItem.
+     */
+    void setButtonCancel( const KGuiItem &item = KStdGuiItem::cancel() );
+
+    /**
+     * @deprecated. Use setButtonCancel() instead.
+     *
      * Sets the text of the Cancel button.
      *
      *  If the default parameters are
@@ -933,7 +969,7 @@ class KDialogBase : public KDialog
      */
     void setButtonCancelText( const QString &text=QString::null,
 			      const QString &tooltip=QString::null,
-			      const QString &quickhelp=QString::null );
+			      const QString &quickhelp=QString::null ) KDE_DEPRECATED;
 
     /**
      * Sets the text of any button.

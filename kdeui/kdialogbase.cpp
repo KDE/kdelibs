@@ -908,6 +908,16 @@ void KDialogBase::setButtonOKText( const QString &text,
 }
 
 
+void KDialogBase::setButtonOK( const KGuiItem &item /* = KStdGuiItem::ok() */ )
+{
+  KPushButton *pb = static_cast<KPushButton *>( actionButton( Ok ) );
+  if( pb == 0 )
+    return;
+
+  pb->setGuiItem( item );
+  d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
+}
+
 
 void KDialogBase::setButtonApplyText( const QString &text,
 				      const QString &tooltip,
@@ -933,6 +943,17 @@ void KDialogBase::setButtonApplyText( const QString &text,
 }
 
 
+void KDialogBase::setButtonApply( const KGuiItem &item /* = KStdGuiItem::apply() */ )
+{
+  KPushButton *pb = static_cast<KPushButton *>( actionButton( Apply ) );
+  if( pb == 0 )
+    return;
+
+  pb->setGuiItem( item );
+  d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
+}
+
+
 void KDialogBase::setButtonCancelText( const QString& text,
 				       const QString& tooltip,
 				       const QString& quickhelp )
@@ -948,6 +969,17 @@ void KDialogBase::setButtonCancelText( const QString& text,
 
   QToolTip::add( pb, tooltip );
   QWhatsThis::add( pb, quickhelp );
+}
+
+
+void KDialogBase::setButtonCancel( const KGuiItem &item /* = KStdGuiItem::cancel() */ )
+{
+  KPushButton *pb = static_cast<KPushButton *>( actionButton( Cancel ) );
+  if( pb == 0 )
+    return;
+
+  pb->setGuiItem( item );
+  d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 }
 
 
