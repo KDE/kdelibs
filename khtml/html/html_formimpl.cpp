@@ -2205,7 +2205,9 @@ DOMString HTMLTextAreaElementImpl::value()
 
 void HTMLTextAreaElementImpl::setValue(DOMString _value)
 {
-    m_value = _value.string();
+    // \r\n -> \n, \r -> \n
+    QString str = _value.string().replace( "\r\n", "\n" );
+    m_value = str.replace( "\r", "\n" );
     m_dirtyvalue = false;
     setChanged(true);
 }
