@@ -244,13 +244,6 @@ void KApplication::init(bool GUIenabled)
 
   if (GUIenabled)
   {
-    // reset the crash handler recursive counter
-    resetCrashRecursion();
-
-    // set default crash handler / set emergency save function to nothing
-    setCrashHandler(KDE_CRASH_INTERNAL);
-    setEmergencySaveFunction(KDE_SAVE_NONE);
-
     // this is important since we fork() to launch the help (Matthias)
     fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
@@ -370,21 +363,21 @@ bool KApplication::requestShutDown()
     propagateSessionManager();
     if (!::getenv("SESSION_MANAGER") )
 	return FALSE;
-    
+
     char cerror[256];
     char* myId = 0;
     char* prevId = 0;
     SmcCallbacks cb;
-    SmcConn smcConnection = SmcOpenConnection( 0, 0, 1, 0, 
+    SmcConn smcConnection = SmcOpenConnection( 0, 0, 1, 0,
 					       0, &cb,
 					       prevId,
 					       &myId,
 					       255,
 					       cerror );
     ::free( myId ); // it was allocated by C
-    if (!smcConnection ) 
+    if (!smcConnection )
 	return FALSE;
-    
+
     SmcRequestSaveYourself( smcConnection, SmSaveBoth, True, SmInteractStyleAny, False, True );
     SmcCloseConnection( smcConnection, 0, 0 );
     return TRUE;
@@ -688,6 +681,7 @@ static const KCmdLineOptions kde_options[] =
    { "icon <icon>",  		I18N_NOOP("Use 'icon' as the application icon"), 0},
    { "miniicon <icon>", 	I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
    { "dcopserver <server>",	I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
+   { "nocrashhandler",		I18N_NOOP("Disable crash handler, to get core dumps"), 0},
    { 0, 0, 0 }
 };
 
@@ -725,6 +719,17 @@ void KApplication::parseCommandLine( )
     {
        dcopClient()->setServerAddress( args->getOption("dcopserver"));
     }
+
+    if (args->isSet("crashhandler"))
+    {
+        // reset the crash handler recursive counter
+        resetCrashRecursion();
+
+        // set default crash handler / set emergency save function to nothing
+        setCrashHandler(KDE_CRASH_INTERNAL);
+        setEmergencySaveFunction(KDE_SAVE_NONE);
+    }
+
     delete args; // Throw away
 }
 
@@ -764,7 +769,7 @@ KApplication::~KApplication()
 
   delete pAppData;
   KApp = 0;
-  
+
   mySmcConnection = 0;
   delete smModificationTime;
   smModificationTime = 0;
@@ -1586,7 +1591,7 @@ QString KApplication::randomString(int length)
    if (!length) return QString::null;
    if (length<0)
       length=random();
-   
+
    char *string=new char[length+1];	
    while (length--)
    {
