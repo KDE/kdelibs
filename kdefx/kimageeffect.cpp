@@ -996,7 +996,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 {
     if (dst.width() <= 0 || dst.height() <= 0)
-	return dst;
+        return dst;
 
     if (opacity < 0.0 || opacity > 1.0) {
 #ifndef NDEBUG
@@ -1007,7 +1007,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
 
     int depth = dst.depth();
     if (depth != 32)
-	dst = dst.convertDepth(32);
+        dst = dst.convertDepth(32);
 
     int pixels = dst.width() * dst.height();
 
@@ -1015,8 +1015,8 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelSSE2 ) && pixels > 16 ) {
         Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
 
-        Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, alpha,
-                alpha, alpha, alpha, alpha };
+        Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, 256, 
+                                    alpha, alpha, alpha, 256 };
 
         Q_UINT32 color = int( clr.red()   * opacity ) << 16 |
                          int( clr.green() * opacity ) << 8 |
@@ -1026,45 +1026,42 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
  
         // Prepare the XMM5, XMM6 and XMM7 registers for unpacking and blending
         __asm__ __volatile__(
-        "pxor        %%xmm7,  %%xmm7\n\t" // Zero out XMM7
-        "movdqu        (%0),  %%xmm6\n\t" // Set up 1 - alpha in XMM6
-        "movq          (%1),  %%xmm5\n\t" // Copy the color to XMM5
+        "pxor        %%xmm7,  %%xmm7\n\t" // Zero out XMM7 for unpacking
+        "movdqu        (%0),  %%xmm6\n\t" // Set up (1 - alpha) * 256 in XMM6
+        "movq          (%1),  %%xmm5\n\t" // Set up color * alpha in XMM5
         "punpcklbw   %%xmm7,  %%xmm5\n\t" // Unpack the color
         : : "r"(packedalpha), "r"(packedcolor) );
 
         Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
 
-        // Check how many pixels we need to process to align dst on a 16 byte boundary
-        int offset = ( ~int( data ) + 1 & 0xf ) / 4;
+        // Check how many pixels we need to process to achieve 16 byte alignment
+        int offset = (16 - (Q_UINT32( data ) & 0x0f)) / 4;
 
-        // Keep processing pixels one at a time until we're aligned
-        while ( offset-- ) {
-            __asm__ __volatile__(
-            "movd              (%0),      %%xmm0\n\t"  // Copy a pixel to XMM1
-            "punpcklbw       %%xmm7,      %%xmm0\n\t"  // Unpack the pixel
-            "pmullw          %%xmm6,      %%xmm0\n\t"  // Multiply the pixels with (1 - alpha) * 256
-            "psrlw               $8,      %%xmm0\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm0\n\t"  // Add the color to the result
-            "packuswb        %%xmm1,      %%xmm0\n\t"  // Pack the pixel to a dword
-            "movd            %%xmm0,        (%0)\n\t"  // Write the pixel to the image
-            : : "r"(data) );
-
-            data++;
-            pixels--;
-        }
-
-        // We process 8 pixels / iteration in the main loop
-        int remainder = pixels % 8;
+        // The main loop processes 8 pixels / iteration
+        int remainder = (pixels - offset) % 8;
         pixels -= remainder;
 
-       // Begin main loop
-        for ( int i = 0; i < pixels; i += 8 ) {
+        // Alignment loop
+        for ( int i = 0; i < offset; i++ ) {
+            __asm__ __volatile__(
+            "movd         (%0,%1,4),      %%xmm0\n\t"  // Load one pixel to XMM1
+            "punpcklbw       %%xmm7,      %%xmm0\n\t"  // Unpack the pixel
+            "pmullw          %%xmm6,      %%xmm0\n\t"  // Multiply the pixel with (1 - alpha) * 256
+            "psrlw               $8,      %%xmm0\n\t"  // Divide the result by 256
+            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha to the result
+            "packuswb        %%xmm1,      %%xmm0\n\t"  // Pack the pixel to a dword
+            "movd            %%xmm0,   (%0,%1,4)\n\t"  // Write the pixel to the image
+            : : "r"(data), "r"(i) );
+        }
+
+        // Main loop
+        for ( int i = offset; i < pixels; i += 8 ) {
             __asm__ __volatile(
-            // Copy 8 pixels to XMM registers 1 - 4
-            "movq         (%0,%1,4),      %%xmm0\n\t"  // Copy pixels 1 and 2 to XMM1
-            "movq        8(%0,%1,4),      %%xmm1\n\t"  // Copy pixels 3 and 4 to XMM2
-            "movq       16(%0,%1,4),      %%xmm2\n\t"  // Copy pixels 5 and 6 to XMM3
-            "movq       24(%0,%1,4),      %%xmm3\n\t"  // Copy pixels 7 and 8 to XMM4
+            // Load 8 pixels to XMM registers 1 - 4
+            "movq         (%0,%1,4),      %%xmm0\n\t"  // Load pixels 1 and 2 to XMM1
+            "movq        8(%0,%1,4),      %%xmm1\n\t"  // Load pixels 3 and 4 to XMM2
+            "movq       16(%0,%1,4),      %%xmm2\n\t"  // Load pixels 5 and 6 to XMM3
+            "movq       24(%0,%1,4),      %%xmm3\n\t"  // Load pixels 7 and 8 to XMM4
 
             // Prefetch the pixels for next iteration
             "prefetchnta 32(%0,%1,4)            \n\t"
@@ -1073,129 +1070,134 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
             "punpcklbw       %%xmm7,      %%xmm0\n\t"  // Unpack the pixels
             "pmullw          %%xmm6,      %%xmm0\n\t"  // Multiply the pixels with (1 - alpha) * 256
             "psrlw               $8,      %%xmm0\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm0\n\t"  // Add the color * alpha to the result
+            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha to the result
 
             // Blend pixels 3 and 4
             "punpcklbw       %%xmm7,      %%xmm1\n\t"  // Unpack the pixels
             "pmullw          %%xmm6,      %%xmm1\n\t"  // Multiply the pixels with (1 - alpha) * 256
             "psrlw               $8,      %%xmm1\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm1\n\t"  // Add the color * alpha to the result
+            "paddw           %%xmm5,      %%xmm1\n\t"  // Add color * alpha to the result
 
             // Blend pixels 5 and 6
             "punpcklbw       %%xmm7,      %%xmm2\n\t"  // Unpack the pixels
             "pmullw          %%xmm6,      %%xmm2\n\t"  // Multiply the pixels with (1 - alpha) * 256
             "psrlw               $8,      %%xmm2\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm2\n\t"  // Add the color * alpha to the result
+            "paddw           %%xmm5,      %%xmm2\n\t"  // Add color * alpha to the result
 
             // Blend pixels 7 and 8
             "punpcklbw       %%xmm7,      %%xmm3\n\t"  // Unpack the pixels
             "pmullw          %%xmm6,      %%xmm3\n\t"  // Multiply the pixels with (1 - alpha) * 256
             "psrlw               $8,      %%xmm3\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm3\n\t"  // Add the color * alpha to the result
+            "paddw           %%xmm5,      %%xmm3\n\t"  // Add color * alpha to the result
 
             // Pack the pixels into 2 double quadwords
             "packuswb        %%xmm1,      %%xmm0\n\t"  // Pack pixels 1 - 4 to a double qword
             "packuswb        %%xmm3,      %%xmm2\n\t"  // Pack pixles 5 - 8 to a double qword
 
             // Write the pixels back to the image
-            "movdqa          %%xmm0,   (%0,%1,4)\n\t"  // Write pixels 1 - 4 to the image
-            "movdqa          %%xmm2, 16(%0,%1,4)\n\t"  // Write pixels 5 - 8 to the image
+            "movdqa          %%xmm0,   (%0,%1,4)\n\t"  // Store pixels 1 - 4
+            "movdqa          %%xmm2, 16(%0,%1,4)\n\t"  // Store pixels 5 - 8
             : : "r"(data), "r"(i) );
         }
 
-        data += pixels;
-
-        // Clean up loop
-        while ( remainder-- ) {
+        // Cleanup loop
+        for ( int i = pixels; i < pixels + remainder; i++ ) {
             __asm__ __volatile__(
-            "movd              (%0),      %%xmm0\n\t"  // Copy a pixel to XMM1
+            "movd         (%0,%1,4),      %%xmm0\n\t"  // Load one pixel to XMM1
             "punpcklbw       %%xmm7,      %%xmm0\n\t"  // Unpack the pixel
-            "pmullw          %%xmm6,      %%xmm0\n\t"  // Multiply the pixels with (1 - alpha) * 256
+            "pmullw          %%xmm6,      %%xmm0\n\t"  // Multiply the pixel with (1 - alpha) * 256
             "psrlw               $8,      %%xmm0\n\t"  // Divide the result by 256
-            "paddw           %%xmm5,      %%xmm0\n\t"  // Add the color to the result
+            "paddw           %%xmm5,      %%xmm0\n\t"  // Add color * alpha to the result
             "packuswb        %%xmm1,      %%xmm0\n\t"  // Pack the pixel to a dword
-            "movd            %%xmm0,        (%0)\n\t"  // Write the pixel to the image
-            : : "r"(data) );
-
-            data++;
-            pixels--;
+            "movd            %%xmm0,   (%0,%1,4)\n\t"  // Write the pixel to the image
+            : : "r"(data), "r"(i) );
         }
     } else
 #endif
 
 #ifdef USE_MMX_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelMMX ) && pixels > 1 ) {
-        Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
-        Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, alpha };
-        QRgb color = clr.rgb();
+        Q_UINT16 alpha = Q_UINT16( ( 1.0 - opacity ) * 256.0 );
+        Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, 256 };
+
+        Q_UINT32 color = int( clr.red()   * opacity ) << 16 |
+                         int( clr.green() * opacity ) << 8 |
+                         int( clr.blue()  * opacity );
 
         __asm__ __volatile__(
-        "pxor        %%mm7,    %%mm7\n\t"       // Zero out the MM7 register
-        "movq         (%0),    %%mm6\n\t"       // Copy the alpha value to MM6
-        "movd           %1,    %%mm5\n\t"       // Copy the color to MM5
+        "pxor        %%mm7,    %%mm7\n\t"       // Zero out MM7 for unpacking
+        "movq         (%0),    %%mm6\n\t"       // Set up (1 - alpha) * 256 in MM6
+        "movd           %1,    %%mm5\n\t"       // Set up color * alpha in MM5
         "punpcklbw   %%mm7,    %%mm5\n\t"       // Unpack the color
         : : "r"(packedalpha), "r"(color) );
 
         Q_UINT32 *data = reinterpret_cast<Q_UINT32*>( dst.bits() );
 
-        // Check if the pixel count is an odd number
-        // (We process two pixels / iteration in the loop)
-        int remainder = pixels % 2;
+        // The main loop processes 4 pixels / iteration
+        int remainder = pixels % 4;
         pixels -= remainder;
 
-        // If so, process the odd pixel first
-        if ( remainder ) {
+        // Main loop
+        for ( int i = 0; i < pixels; i += 4 ) {
             __asm__ __volatile__(
-            "movd         (%0),   %%mm1\n\t"    // Copy the pixel to MM1
-            "punpcklbw   %%mm7,   %%mm1\n\t"    // Unpack the pixel
-            "movq        %%mm5,   %%mm0\n\t"    // Copy the color to MM0
-            "psubw       %%mm1,   %%mm0\n\t"    // Subtract the pixel from the color
-            "pmullw      %%mm6,   %%mm0\n\t"    // Multiply the result with alpha
-            "psllw          $8,   %%mm1\n\t"    // Multiply the pixel with 256
-            "paddw       %%mm1,   %%mm0\n\t"    // Add the pixel to the result
-            "psrlw          $8,   %%mm0\n\t"    // Divide by 256
-            "packuswb    %%mm0,   %%mm0\n\t"    // Pack the pixel to a dword
-            "movd        %%mm0,    (%0)\n\t"    // Write the pixel to the image
-            : : "r"(data) );
+            // Load 4 pixels to MM registers 1 - 4
+            "movd         (%0,%1,4),      %%mm0\n\t"  // Load the 1st pixel to MM0
+            "movd        4(%0,%1,4),      %%mm1\n\t"  // Load the 2nd pixel to MM1
+            "movd        8(%0,%1,4),      %%mm2\n\t"  // Load the 3rd pixel to MM2
+            "movd       12(%0,%1,4),      %%mm3\n\t"  // Load the 4th pixel to MM3
 
-            data++;
-        }
-
-        while ( pixels ) {
-            __asm__ __volatile__(
             // Blend the first pixel
-            "movd         (%0),   %%mm1\n\t"    // Copy the pixel to MM1
-            "punpcklbw   %%mm7,   %%mm1\n\t"    // Unpack the pixel
-            "movq        %%mm5,   %%mm0\n\t"    // Copy the color to MM0
-            "psubw       %%mm1,   %%mm0\n\t"    // Subtract the pixel from the color
-            "pmullw      %%mm6,   %%mm0\n\t"    // Multiply the result with alpha
-            "psllw          $8,   %%mm1\n\t"    // Multiply the pixel with 256
-            "paddw       %%mm1,   %%mm0\n\t"    // Add the pixel to the result
-            "psrlw          $8,   %%mm0\n\t"    // Divide by 256
+            "punpcklbw        %%mm7,      %%mm0\n\t"  // Unpack the pixel
+            "pmullw           %%mm6,      %%mm0\n\t"  // Multiply the pixel with (1 - alpha) * 256
+            "psrlw               $8,      %%mm0\n\t"  // Divide the result by 256
+            "paddw            %%mm5,      %%mm0\n\t"  // Add color * alpha to the result
 
             // Blend the second pixel
-            "movd        4(%0),   %%mm3\n\t"    // Copy the pixel to MM3
-            "punpcklbw   %%mm7,   %%mm3\n\t"    // Unpack the pixel
-            "movq        %%mm5,   %%mm2\n\t"    // Copy the color to MM2
-            "psubw       %%mm3,   %%mm2\n\t"    // Subtract the pixel from the color
-            "pmullw      %%mm6,   %%mm2\n\t"    // Multiply the result with alpha
-            "psllw          $8,   %%mm3\n\t"    // Multiply the pixel with 256
-            "paddw       %%mm3,   %%mm2\n\t"    // Add the pixel to the result
-            "psrlw          $8,   %%mm2\n\t"    // Divide by 256
+            "punpcklbw        %%mm7,      %%mm1\n\t"  // Unpack the pixel
+            "pmullw           %%mm6,      %%mm1\n\t"  // Multiply the pixel with (1 - alpha) * 256
+            "psrlw               $8,      %%mm1\n\t"  // Divide the result by 256
+            "paddw            %%mm5,      %%mm1\n\t"  // Add color * alpha to the result
 
-            // Pack the pixels into a quadword and write them away
-            "packuswb    %%mm2,   %%mm0\n\t"    // Pack the pixels to a qword
-            "movq        %%mm0,    (%0)\n\t"    // Write the pixels to the image
-            : : "r"(data) );
+            // Blend the third pixel
+            "punpcklbw        %%mm7,      %%mm2\n\t"  // Unpack the pixel
+            "pmullw           %%mm6,      %%mm2\n\t"  // Multiply the pixel with (1 - alpha) * 256
+            "psrlw               $8,      %%mm2\n\t"  // Divide the result by 256
+            "paddw            %%mm5,      %%mm2\n\t"  // Add color * alpha to the result
 
-            data   += 2;
-            pixels -= 2;
+            // Blend the fourth pixel
+            "punpcklbw        %%mm7,      %%mm3\n\t"  // Unpack the pixel
+            "pmullw           %%mm6,      %%mm3\n\t"  // Multiply the pixel with (1 - alpha) * 256
+            "psrlw               $8,      %%mm3\n\t"  // Divide the result by 256
+            "paddw            %%mm5,      %%mm3\n\t"  // Add color * alpha to the result
+
+            // Pack the pixels into 2 quadwords
+            "packuswb         %%mm1,      %%mm0\n\t"  // Pack pixels 1 and 2 to a qword
+            "packuswb         %%mm3,      %%mm2\n\t"  // Pack pixels 3 and 4 to a qword
+
+            // Write the pixels back to the image
+            "movq             %%mm0,  (%0,%1,4)\n\t"  // Store pixels 1 and 2
+            "movq             %%mm2, 8(%0,%1,4)\n\t"  // Store pixels 3 and 4
+            : : "r"(data), "r"(i) );
+        }
+
+        // Cleanup loop
+        for ( int i = pixels; i < pixels + remainder; i++ ) {
+            __asm__ __volatile__(
+            "movd         (%0,%1,4),      %%mm0\n\t"  // Load one pixel to MM1
+            "punpcklbw        %%mm7,      %%mm0\n\t"  // Unpack the pixel
+            "pmullw           %%mm6,      %%mm0\n\t"  // Multiply the pixel with 1 - alpha * 256
+            "psrlw               $8,      %%mm0\n\t"  // Divide the result by 256
+            "paddw            %%mm5,      %%mm0\n\t"  // Add color * alpha to the result
+            "packuswb         %%mm0,      %%mm0\n\t"  // Pack the pixel to a dword
+            "movd             %%mm0,  (%0,%1,4)\n\t"  // Write the pixel to the image
+            : : "r"(data), "r"(i) );
         }
 
         // Empty the MMX state
         __asm__ __volatile__("emms");
     } else
 #endif // USE_MMX_INLINE_ASM
+
     {
         int rcol, gcol, bcol;
         clr.rgb(&rcol, &gcol, &bcol);
@@ -1254,27 +1256,31 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 #ifdef USE_SSE2_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelSSE2 ) && pixels > 16 ) {
         Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
-        Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, alpha,
-                alpha, alpha, alpha, alpha };
+        Q_UINT16 packedalpha[8] = { alpha, alpha, alpha, 0,
+                                    alpha, alpha, alpha, 0 };
 
         // Prepare the XMM6 and XMM7 registers for unpacking and blending
         __asm__ __volatile__(
-        "pxor      %%xmm7, %%xmm7\n\t" // Zero out XMM7
-        "movdqu      (%0), %%xmm6\n\t" // Set up alpha in XMM6
+        "pxor      %%xmm7, %%xmm7\n\t" // Zero out XMM7 for unpacking
+        "movdqu      (%0), %%xmm6\n\t" // Set up alpha * 256 in XMM6
         : : "r"(packedalpha) );
 
         Q_UINT32 *data1 = reinterpret_cast<Q_UINT32*>( src.bits() );
         Q_UINT32 *data2 = reinterpret_cast<Q_UINT32*>( dst.bits() );
 
-        // Check how many pixels we need to process to align dst on a 16 byte boundary
-        int offset = ( ~int( data2 ) + 1 & 0xf ) / 4;
+        // Check how many pixels we need to process to achieve 16 byte alignment
+        int offset = (16 - (Q_UINT32( data2 ) & 0x0f)) / 4;
 
-        // Keep processing pixels one at a time until we're aligned
-        while ( offset-- ) {
+        // The main loop processes 4 pixels / iteration
+        int remainder = (pixels - offset) % 4;
+        pixels -= remainder;
+
+        // Alignment loop
+        for ( int i = 0; i < offset; i++ ) {
             __asm__ __volatile__(
-            "movd            (%1),    %%xmm1\n\t"  // Copy one dst pixel to XMM1
+            "movd       (%1,%2,4),    %%xmm1\n\t"  // Load one dst pixel to XMM1
             "punpcklbw     %%xmm7,    %%xmm1\n\t"  // Unpack the pixel
-            "movd            (%0),    %%xmm0\n\t"  // Copy one src pixel to XMM0
+            "movd       (%0,%2,4),    %%xmm0\n\t"  // Load one src pixel to XMM0
             "punpcklbw     %%xmm7,    %%xmm0\n\t"  // Unpack the pixel
             "psubw         %%xmm1,    %%xmm0\n\t"  // Subtract dst from src
             "pmullw        %%xmm6,    %%xmm0\n\t"  // Multiply the result with alpha * 256
@@ -1282,26 +1288,18 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
             "paddw         %%xmm1,    %%xmm0\n\t"  // Add dst to result
             "psrlw             $8,    %%xmm0\n\t"  // Divide by 256
             "packuswb      %%xmm1,    %%xmm0\n\t"  // Pack the pixel to a dword
-            "movd          %%xmm0,      (%1)\n\t"  // Write the pixel to the image
-            : : "r"(data1), "r"(data2) );
-
-            data1++;
-            data2++;
-            pixels--;
+            "movd          %%xmm0, (%1,%2,4)\n\t"  // Write the pixel to the image
+            : : "r"(data1), "r"(data2), "r"(i) );
         }
 
-        // We process 4 pixels / iteration in the main loop
-        int remainder = pixels % 4;
-        pixels -= remainder;
-
-        // Begin main loop
-        for ( int i=0; i < pixels; i += 4 ) {
+        // Main loop
+        for ( int i = offset; i < pixels; i += 4 ) {
             __asm__ __volatile__(
-            // Copy 4 src pixels to XMM0 and XMM2 and 4 dst pixels to XMM1 and XMM3
-            "movq       (%0,%2,4),    %%xmm0\n\t"  // Copy two src pixels to XMM0
-            "movq       (%1,%2,4),    %%xmm1\n\t"  // Copy two dst pixels to XMM1
-            "movq      8(%0,%2,4),    %%xmm2\n\t"  // Copy two src pixels to XMM2
-            "movq      8(%1,%2,4),    %%xmm3\n\t"  // Copy two dst pixels to XMM3
+            // Load 4 src pixels to XMM0 and XMM2 and 4 dst pixels to XMM1 and XMM3
+            "movq       (%0,%2,4),    %%xmm0\n\t"  // Load two src pixels to XMM0
+            "movq       (%1,%2,4),    %%xmm1\n\t"  // Load two dst pixels to XMM1
+            "movq      8(%0,%2,4),    %%xmm2\n\t"  // Load two src pixels to XMM2
+            "movq      8(%1,%2,4),    %%xmm3\n\t"  // Load two dst pixels to XMM3
 
             // Prefetch the pixels for the iteration after the next one
             "prefetchnta 32(%0,%2,4)        \n\t"
@@ -1325,21 +1323,18 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
             "paddw         %%xmm3,    %%xmm2\n\t"  // Add dst to the result
             "psrlw             $8,    %%xmm2\n\t"  // Divide by 256
 
-            // Write the pixels to the image
+            // Write the pixels back to the image
             "packuswb      %%xmm2,    %%xmm0\n\t"  // Pack the pixels to a double qword
-            "movdqa        %%xmm0, (%1,%2,4)\n\t"  // Write the pixels to the image
+            "movdqa        %%xmm0, (%1,%2,4)\n\t"  // Store the pixels
             : : "r"(data1), "r"(data2), "r"(i) );
         }
 
-        data1 += pixels;
-        data2 += pixels;
-
         // Cleanup loop
-        while ( remainder-- ) {
+        for ( int i = pixels; i < pixels + remainder; i++ ) {
             __asm__ __volatile__(
-            "movd            (%1),    %%xmm1\n\t"  // Copy one dst pixel to XMM1
+            "movd       (%1,%2,4),    %%xmm1\n\t"  // Load one dst pixel to XMM1
             "punpcklbw     %%xmm7,    %%xmm1\n\t"  // Unpack the pixel
-            "movd            (%0),    %%xmm0\n\t"  // Copy one src pixel to XMM0
+            "movd       (%0,%2,4),    %%xmm0\n\t"  // Load one src pixel to XMM0
             "punpcklbw     %%xmm7,    %%xmm0\n\t"  // Unpack the pixel
             "psubw         %%xmm1,    %%xmm0\n\t"  // Subtract dst from src
             "pmullw        %%xmm6,    %%xmm0\n\t"  // Multiply the result with alpha * 256
@@ -1347,11 +1342,8 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
             "paddw         %%xmm1,    %%xmm0\n\t"  // Add dst to result
             "psrlw             $8,    %%xmm0\n\t"  // Divide by 256
             "packuswb      %%xmm1,    %%xmm0\n\t"  // Pack the pixel to a dword
-            "movd          %%xmm0,      (%1)\n\t"  // Write the pixel to the image
-            : : "r"(data1), "r"(data2) );
-
-            data1++;
-            data2++;
+            "movd          %%xmm0, (%1,%2,4)\n\t"  // Write the pixel to the image
+            : : "r"(data1), "r"(data2), "r"(i) );
         }
     } else
 #endif // USE_SSE2_INLINE_ASM
@@ -1359,80 +1351,73 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
 #ifdef USE_MMX_INLINE_ASM
     if ( KCPUInfo::haveExtension( KCPUInfo::IntelMMX ) && pixels > 1 ) {
         Q_UINT16 alpha = Q_UINT16( opacity * 256.0 );
-        Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, alpha };
+        Q_UINT16 packedalpha[4] = { alpha, alpha, alpha, 0 };
 
         // Prepare the MM6 and MM7 registers for blending and unpacking
         __asm__ __volatile__(
-        "pxor       %%mm7,   %%mm7\n\t"      // Zero out the MM7 register
-        "movq        (%0),   %%mm6\n\t"      // Copy the alpha value to MM6
+        "pxor       %%mm7,   %%mm7\n\t"      // Zero out MM7 for unpacking
+        "movq        (%0),   %%mm6\n\t"      // Set up alpha * 256 in MM6
         : : "r"(packedalpha) );
 
         Q_UINT32 *data1 = reinterpret_cast<Q_UINT32*>( src.bits() );
         Q_UINT32 *data2 = reinterpret_cast<Q_UINT32*>( dst.bits() );
 
-        // Check if the pixel count is an odd number
-        // (We process two pixels / iteration in the loop)
+        // The main loop processes 2 pixels / iteration
         int remainder = pixels % 2;
         pixels -= remainder;
 
-        // If so, process the odd pixel first
-        if ( remainder ) {
-        __asm__ __volatile__(
-            "movd          (%0),   %%mm0\n\t"    // Copy the src pixel to MM0
-            "punpcklbw    %%mm7,   %%mm0\n\t"    // Unpack the src pixel
-            "movd          (%1),   %%mm1\n\t"    // Move the dst pixel to MM1
-            "punpcklbw    %%mm7,   %%mm1\n\t"    // Unpack the dst pixel
-            "psubw        %%mm1,   %%mm0\n\t"    // Subtract dst from src
-            "pmullw       %%mm6,   %%mm0\n\t"    // Multiply the result with alpha
-            "psllw           $8,   %%mm1\n\t"    // Multiply dst with 256
-            "paddw        %%mm1,   %%mm0\n\t"    // Add dst to result
-            "psrlw           $8,   %%mm0\n\t"    // Divide by 256
-            "packuswb     %%mm0,   %%mm0\n\t"    // Pack the pixel to a dword
-            "movd         %%mm0,    (%1)\n\t"    // Write the pixel back to the image
-            : : "r"(data1), "r"(data2) );
-
-            data1++;
-            data2++;
-        }
-
-        // Begin the main loop
-        while ( pixels ) {
+        // Main loop
+        for ( int i = 0; i < pixels; i += 2 ) {
             __asm__ __volatile__(
+            // Load 2 src pixels to MM0 and MM2 and 2 dst pixels to MM1 and MM3
+            "movd        (%0,%2,4),     %%mm0\n\t"  // Load the 1st src pixel to MM0
+            "movd        (%1,%2,4),     %%mm1\n\t"  // Load the 1st dst pixel to MM1
+            "movd       4(%0,%2,4),     %%mm2\n\t"  // Load the 2nd src pixel to MM2
+            "movd       4(%1,%2,4),     %%mm3\n\t"  // Load the 2nd dst pixel to MM3
+ 
             // Blend the first pixel
-            "movd          (%0),   %%mm0\n\t"    // Copy the src pixel to MM0
-            "punpcklbw    %%mm7,   %%mm0\n\t"    // Unpack the src pixel
-            "movd          (%1),   %%mm1\n\t"    // Move the dst pixel to MM1
-            "punpcklbw    %%mm7,   %%mm1\n\t"    // Unpack the dst pixel
-            "psubw        %%mm1,   %%mm0\n\t"    // Subtract dst from src
-            "pmullw       %%mm6,   %%mm0\n\t"    // Multiply the result with alpha
-            "psllw           $8,   %%mm1\n\t"    // Multiply dst with 256
-            "paddw        %%mm1,   %%mm0\n\t"    // Add dst to the result
-            "psrlw           $8,   %%mm0\n\t"    // Divide by 256
+            "punpcklbw       %%mm7,     %%mm0\n\t"  // Unpack the src pixel
+            "punpcklbw       %%mm7,     %%mm1\n\t"  // Unpack the dst pixel
+            "psubw           %%mm1,     %%mm0\n\t"  // Subtract dst from src
+            "pmullw          %%mm6,     %%mm0\n\t"  // Multiply the result with alpha * 256
+            "psllw              $8,     %%mm1\n\t"  // Multiply dst with 256
+            "paddw           %%mm1,     %%mm0\n\t"  // Add dst to the result
+            "psrlw              $8,     %%mm0\n\t"  // Divide by 256
 
             // Blend the second pixel
-            "movd         4(%0),   %%mm2\n\t"    // Move the src pixel to MM2
-            "punpcklbw    %%mm7,   %%mm2\n\t"    // Unpack the src pixel
-            "movd         4(%1),   %%mm3\n\t"    // Move the dst pixel to MM3
-            "punpcklbw    %%mm7,   %%mm3\n\t"    // Unpack the dst pixel
-            "psubw        %%mm3,   %%mm2\n\t"    // Subtract dst from src
-            "pmullw       %%mm6,   %%mm2\n\t"    // Multiply the result with alpha
-            "psllw           $8,   %%mm3\n\t"    // Multiply dst with 256
-            "paddw        %%mm3,   %%mm2\n\t"    // Add bg to the result
-            "psrlw           $8,   %%mm2\n\t"    // Divide by 256
+            "punpcklbw       %%mm7,     %%mm2\n\t"  // Unpack the src pixel
+            "punpcklbw       %%mm7,     %%mm3\n\t"  // Unpack the dst pixel
+            "psubw           %%mm3,     %%mm2\n\t"  // Subtract dst from src
+            "pmullw          %%mm6,     %%mm2\n\t"  // Multiply the result with alpha * 256
+            "psllw              $8,     %%mm3\n\t"  // Multiply dst with 256
+            "paddw           %%mm3,     %%mm2\n\t"  // Add dst to the result
+            "psrlw              $8,     %%mm2\n\t"  // Divide by 256
 
-            // Pack the pixels into a quadword and write them away
-            "packuswb     %%mm2,   %%mm0\n\t"    // Pack the pixels to a qword
-            "movq         %%mm0,    (%1)\n\t"    // Write the pixels back into the image
-            : : "r"(data1), "r"(data2) );
+            // Write the pixels back to the image
+            "packuswb        %%mm2,     %%mm0\n\t"  // Pack the pixels to a qword
+            "movq            %%mm0, (%1,%2,4)\n\t"  // Store the pixels
+            : : "r"(data1), "r"(data2), "r"(i) );
+        }
 
-            data1  += 2;
-            data2  += 2;
-            pixels -= 2;
+        // Blend the remaining pixel (if there is one)
+        if ( remainder ) {
+             __asm__ __volatile__(
+            "movd             (%0),     %%mm0\n\t"  // Load one src pixel to MM0
+            "punpcklbw       %%mm7,     %%mm0\n\t"  // Unpack the src pixel
+            "movd             (%1),     %%mm1\n\t"  // Load one dst pixel to MM1
+            "punpcklbw       %%mm7,     %%mm1\n\t"  // Unpack the dst pixel
+            "psubw           %%mm1,     %%mm0\n\t"  // Subtract dst from src
+            "pmullw          %%mm6,     %%mm0\n\t"  // Multiply the result with alpha * 256
+            "psllw              $8,     %%mm1\n\t"  // Multiply dst with 256
+            "paddw           %%mm1,     %%mm0\n\t"  // Add dst to result
+            "psrlw              $8,     %%mm0\n\t"  // Divide by 256
+            "packuswb        %%mm0,     %%mm0\n\t"  // Pack the pixel to a dword
+            "movd            %%mm0,      (%1)\n\t"  // Write the pixel to the image
+            : : "r"(data1 + pixels), "r"(data2 + pixels) );
         }
 
         // Empty the MMX state
         __asm__ __volatile__("emms");
-
     } else
 #endif // USE_MMX_INLINE_ASM
 
