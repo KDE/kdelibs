@@ -129,6 +129,16 @@ void KDockMainWindow::makeWidgetDockVisible( QWidget* widget )
   makeDockVisible( dockManager->findWidgetParentDock(widget) );
 }
 
+void KDockMainWindow::writeDockConfig(QDomElement &base)
+{
+  dockManager->writeConfig(base);
+}
+
+void KDockMainWindow::readDockConfig(QDomElement &base)
+{
+  dockManager->readConfig(base);
+}
+
 #ifndef NO_KDE2
 void KDockMainWindow::writeDockConfig( KConfig* c, QString group )
 {
@@ -140,6 +150,7 @@ void KDockMainWindow::readDockConfig( KConfig* c, QString group )
   dockManager->readConfig( c, group );
 }
 #endif
+
 
 /*************************************************************************/
 KDockWidgetAbstractHeaderDrag::KDockWidgetAbstractHeaderDrag( KDockWidgetAbstractHeader* parent, KDockWidget* dock, const char* name )
@@ -245,8 +256,19 @@ void KDockWidgetHeader::setTopLevel( bool isTopLevel )
 
 void KDockWidgetHeader::slotStayClicked()
 {
-  closeButton->setEnabled( !stayButton->isOn() );
-  drag->setEnabled( !stayButton->isOn() );
+  setDragEnabled(!stayButton->isOn());
+}
+
+bool KDockWidgetHeader::dragEnabled()
+{
+  return drag->isEnabled();    
+}
+
+void KDockWidgetHeader::setDragEnabled(bool b)
+{
+  stayButton->setOn(!b);
+  closeButton->setEnabled(b);
+  drag->setEnabled(b);
 }
 
 #ifndef NO_KDE2
@@ -257,8 +279,7 @@ void KDockWidgetHeader::saveConfig( KConfig* c )
 
 void KDockWidgetHeader::loadConfig( KConfig* c )
 {
-  stayButton->setOn( c->readBoolEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), false ) );
-  slotStayClicked();
+  setDragEnabled( !c->readBoolEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), false ) );
 }
 #endif
 
@@ -1184,6 +1205,328 @@ void KDockManager::drop()
     currentDragWidget->makeDockVisible();
   }
 }
+
+
+static QDomElement createStringEntry(QDomDocument &doc, const QString &tagName, const QString &str)
+{
+    QDomElement el = doc.createElement(tagName);
+
+    el.appendChild(doc.createTextNode(str));
+    return el;
+}
+
+
+static QDomElement createBoolEntry(QDomDocument &doc, const QString &tagName, bool b)
+{
+    return createStringEntry(doc, tagName, QString::fromLatin1(b? "true" : "false"));
+}
+
+
+static QDomElement createNumberEntry(QDomDocument &doc, const QString &tagName, int n)
+{
+    return createStringEntry(doc, tagName, QString::number(n));
+}
+
+
+static QDomElement createRectEntry(QDomDocument &doc, const QString &tagName, const QRect &rect)
+{
+    QDomElement el = doc.createElement(tagName);
+
+    QDomElement xel = doc.createElement("x");
+    xel.appendChild(doc.createTextNode(QString::number(rect.x())));
+    el.appendChild(xel);
+    QDomElement yel = doc.createElement("y");
+    yel.appendChild(doc.createTextNode(QString::number(rect.y())));
+    el.appendChild(yel);
+    QDomElement wel = doc.createElement("width");
+    wel.appendChild(doc.createTextNode(QString::number(rect.width())));
+    el.appendChild(wel);
+    QDomElement hel = doc.createElement("height");
+    hel.appendChild(doc.createTextNode(QString::number(rect.height())));
+    el.appendChild(hel);
+
+    return el;
+}
+
+
+static QDomElement createListEntry(QDomDocument &doc, const QString &tagName,
+                                   const QString &subTagName, const QStrList &list)
+{
+    QDomElement el = doc.createElement(tagName);
+
+    QStrListIterator it(list);
+    for (; it.current(); ++it) {
+        QDomElement subel = doc.createElement(subTagName);
+        subel.appendChild(doc.createTextNode(QString::fromLatin1(it.current())));
+        el.appendChild(subel);
+    }
+
+    return el;
+}
+
+
+static QString stringEntry(QDomElement &base, const QString &tagName)
+{
+    return base.namedItem(tagName).firstChild().toText().data();
+}
+
+
+static bool boolEntry(QDomElement &base, const QString &tagName)
+{
+    return base.namedItem(tagName).firstChild().toText().data() == "true";
+}
+
+
+static int numberEntry(QDomElement &base, const QString &tagName)
+{
+    return stringEntry(base, tagName).toInt();
+}
+
+
+static QRect rectEntry(QDomElement &base, const QString &tagName)
+{
+    QDomElement el = base.namedItem(tagName).toElement();
+
+    int x = numberEntry(el, "x");
+    int y = numberEntry(el, "y");
+    int width = numberEntry(el, "width");
+    int height = numberEntry(el,  "height");
+    
+    return QRect(x, y, width, height);
+}
+
+
+static QStrList listEntry(QDomElement &base, const QString &tagName, const QString &subTagName)
+{
+    QStrList list;
+    
+    QDomElement subel = base.namedItem(tagName).firstChild().toElement();
+    while (!subel.isNull()) {
+        if (subel.tagName() == subTagName)
+            list.append(subel.firstChild().toText().data().latin1());
+        subel = subel.nextSibling().toElement();
+    }
+
+    return list;
+}
+
+
+void KDockManager::writeConfig(QDomElement &base)
+{
+    // First of all, clear the tree under base
+    while (!base.firstChild().isNull())
+        base.removeChild(base.firstChild());
+    QDomDocument doc = base.ownerDocument();
+
+    QStrList nameList;
+    QString mainWidgetStr;
+
+    // collect widget names
+    QStrList nList;
+    QObjectListIt it(*childDock);
+    KDockWidget *obj1;
+    while ( (obj1=(KDockWidget*)it.current()) ) {
+        if ( obj1->parent() == main )
+            mainWidgetStr = QString::fromLatin1(obj1->name());
+        nList.append(obj1->name());
+        ++it;
+    }
+
+    nList.first();
+    while ( nList.current() ) {
+        KDockWidget *obj = getDockWidgetFromName( nList.current() );
+        if (obj->isGroup && (nameList.find( obj->firstName.latin1() ) == -1
+                             || nameList.find(obj->lastName.latin1()) == -1)) {
+            // Skip until children are saved (why?)
+            nList.next();
+            if ( !nList.current() ) nList.first();
+            continue;
+        }
+
+        QDomElement groupEl;
+        
+        if (obj->isGroup) {
+            //// Save a group
+            groupEl = doc.createElement("splitGroup");
+            
+            groupEl.appendChild(createStringEntry(doc, "firstName", obj->firstName));
+            groupEl.appendChild(createStringEntry(doc, "secondName", obj->lastName));
+            groupEl.appendChild(createNumberEntry(doc, "orientation", (int)obj->splitterOrientation));
+            groupEl.appendChild(createNumberEntry(doc, "separatorPos", ((KDockSplitter*)obj->widget)->separatorPos()));
+        } else if (obj->isTabGroup) {
+            //// Save a tab group
+            groupEl = doc.createElement("tabGroup");
+
+            QStrList list;
+            for ( QWidget *w = ((KDockTabGroup*)obj->widget)->getFirstPage();
+                  w;
+                  w = ((KDockTabGroup*)obj->widget)->getNextPage(w) ) {
+                list.append( w->name() );
+            }
+            groupEl.appendChild(createListEntry(doc, "tabs", "tab", list));
+            groupEl.appendChild(createNumberEntry(doc, "currentTab", ((KDockTabGroup*)obj->widget)->visiblePageId()));
+        } else {
+            //// Save an ordinary dock widget
+            groupEl = doc.createElement("dock");
+        }
+        
+        groupEl.appendChild(createStringEntry(doc, "name", QString::fromLatin1(obj->name())));
+        groupEl.appendChild(createBoolEntry(doc, "hasParent", obj->parent()));
+        if ( !obj->parent() ) {
+            groupEl.appendChild(createRectEntry(doc, "geometry", QRect(main->frameGeometry().topLeft(), main->size())));
+            groupEl.appendChild(createBoolEntry(doc, "visible", obj->isVisible()));
+        }
+        if (obj->header && obj->header->inherits("KDockWidgetHeader")) {
+            KDockWidgetHeader *h = static_cast<KDockWidgetHeader*>(obj->header);
+            groupEl.appendChild(createBoolEntry(doc, "dragEnabled", h->dragEnabled()));
+        }
+        
+        base.appendChild(groupEl);    
+        nameList.append(obj->name());
+        nList.remove();
+        nList.first();
+    }
+
+    if (main->inherits("KDockMainWindow")) {
+        KDockMainWindow *dmain = (KDockMainWindow*)main;
+        QString centralWidgetStr = QString(dmain->centralWidget()? dmain->centralWidget()->name() : "");
+        base.appendChild(createStringEntry(doc, "centralWidget", centralWidgetStr));
+        QString mainDockWidgetStr = QString(dmain->getMainDockWidget()? dmain->getMainDockWidget()->name() : "");
+        base.appendChild(createStringEntry(doc, "mainDockWidget", mainDockWidgetStr));
+    } else {
+        base.appendChild(createStringEntry(doc, "mainWidget", mainWidgetStr));
+    }
+
+    base.appendChild(createRectEntry(doc, "geometry", QRect(main->frameGeometry().topLeft(), main->size())));
+}
+
+
+void KDockManager::readConfig(QDomElement &base)
+{
+    if (base.namedItem("group").isNull()
+        && base.namedItem("tabgroup").isNull()
+        && base.namedItem("dock").isNull()) {
+        activate();
+        return;
+    }
+    
+    autoCreateDock = new QObjectList();
+    autoCreateDock->setAutoDelete( true );
+    
+    bool isMainVisible = main->isVisible();
+    main->hide();
+    
+    QObjectListIt it(*childDock);
+    KDockWidget *obj1;
+    while ( (obj1=(KDockWidget*)it.current()) ) {
+        if ( !obj1->isGroup && !obj1->isTabGroup ) {
+            if ( obj1->parent() )
+                obj1->undock();
+            else
+                obj1->hide();
+        }
+        ++it;
+    }
+
+    QDomElement childEl = base.firstChild().toElement();
+    while (!childEl.isNull() ) {
+        KDockWidget *obj = 0;
+        
+        if (childEl.tagName() == "splitGroup") {
+            // Read a group
+            QString name = stringEntry(childEl, "name");
+            QString firstName = stringEntry(childEl, "firstName");
+            QString secondName = stringEntry(childEl, "secondName");
+            int orientation = numberEntry(childEl, "orientation");
+            int separatorPos = numberEntry(childEl, "separatorPos");
+
+            KDockWidget *first = getDockWidgetFromName(firstName);
+            KDockWidget *second = getDockWidgetFromName(secondName);
+            if (first && second) {
+                obj = first->manualDock(second,
+                                        (orientation == (int)Vertical)? KDockWidget::DockLeft : KDockWidget::DockTop,
+                                        separatorPos);
+                if (obj)
+                    obj->setName(name.latin1());
+            }
+        } else if (childEl.tagName() == "tabGroup") {
+            // Read a tab group
+            QString name = stringEntry(childEl, "name");
+            QStrList list = listEntry(childEl, "tabs", "tab");
+            
+            KDockWidget *d1 = getDockWidgetFromName( list.first() );
+            list.next();
+            KDockWidget *d2 = getDockWidgetFromName( list.current() );
+            
+            KDockWidget *obj = d2->manualDock( d1, KDockWidget::DockCenter );
+            if (obj) {
+                KDockTabGroup *tab = (KDockTabGroup*)obj->widget;
+                list.next();
+                while (list.current() && obj) {
+                    KDockWidget *tabDock = getDockWidgetFromName(list.current());
+                    obj = tabDock->manualDock(d1, KDockWidget::DockCenter);
+                    list.next();
+                }
+                if (obj) {
+                    obj->setName(name.latin1());
+                    tab->setVisiblePage(numberEntry(childEl, "currentTab"));
+                }
+            }
+        } else if (childEl.tagName() == "dock") {
+            // Read an ordinary dock widget
+            obj = getDockWidgetFromName(stringEntry(childEl, "name"));
+        }
+        
+        if (!boolEntry(childEl, "hasParent")) {
+            QRect r = rectEntry(childEl, "geometry");
+            obj = getDockWidgetFromName(stringEntry(childEl, "name"));
+            obj->applyToWidget(0);
+            obj->setGeometry(r);
+            if (boolEntry(childEl, "visible"))
+                obj->QWidget::show();
+        }
+        
+        if (obj && obj->header && obj->header->inherits("KDockWidgetHeader")) {
+            KDockWidgetHeader *h = static_cast<KDockWidgetHeader*>(obj->header);
+            h->setDragEnabled(boolEntry(childEl, "dragEnabled"));
+        }
+        
+        childEl = childEl.nextSibling().toElement();
+    }
+
+    if (main->inherits("KDockMainWindow")) {
+        KDockMainWindow *dmain = (KDockMainWindow*)main;
+        
+        QString mv = stringEntry(base, "centralWidget");
+        if (!mv.isEmpty() && getDockWidgetFromName(mv) ) {
+            KDockWidget *mvd  = getDockWidgetFromName(mv);
+            mvd->applyToWidget(dmain);
+            mvd->show();
+            dmain->setCentralWidget(mvd);
+        }
+        QString md = stringEntry(base, "mainDockWidget");
+        if (!md.isEmpty() && getDockWidgetFromName(md)) {
+            KDockWidget *mvd  = getDockWidgetFromName(md);
+            dmain->setMainDockWidget(mvd);
+        }
+    } else {
+        QString mv = stringEntry(base, "mainWidget");
+        if (!mv.isEmpty() && getDockWidgetFromName(mv)) {
+            KDockWidget *mvd  = getDockWidgetFromName(mv);
+            mvd->applyToWidget(main);
+            mvd->show();
+        }
+    }
+
+    QRect mr = rectEntry(base, "geometry");
+    main->setGeometry(mr);
+    if (isMainVisible)
+        main->show();
+
+    delete autoCreateDock;
+    autoCreateDock = 0;
+}
+
 
 #ifndef NO_KDE2
 void KDockManager::writeConfig( KConfig* c, QString group )

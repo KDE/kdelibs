@@ -231,6 +231,9 @@ public:
    */
   virtual void setTopLevel( bool t);
 
+  bool dragEnabled();
+  void setDragEnabled(bool b);
+
 #ifndef NO_KDE2
   /**
    * Saves the current button state to a KDE config container object.
@@ -744,6 +747,15 @@ public:
 #endif
 
   /**
+   * Saves the current dock window layout into a DOM tree below the given element.
+   */
+  void writeConfig(QDomElement &base);
+  /**
+   * Reads the current dock window layout from a DOM tree below the given element.
+   */
+  void readConfig(QDomElement &base);
+
+  /**
    * Shows all encapsulated widgets of all controlled dockwidgets and shows all dockwidgets which are
    * parent of a dockwidget tab group.
    */
@@ -1060,6 +1072,15 @@ public:
    * @return    a pointer to the new created dockwidget
    */
   KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
+
+  /**
+   * Saves the current dock window layout into a DOM tree below the given element.
+   */
+  void writeDockConfig(QDomElement &base);
+  /**
+   * Reads the current dock window layout from a DOM tree below the given element.
+   */
+  void readDockConfig(QDomElement &base);
 
 #ifndef NO_KDE2
   /**
