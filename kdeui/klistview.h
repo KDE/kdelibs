@@ -58,6 +58,14 @@ public:
 
   QListViewItem *lastItem() const;
 
+  virtual void setItemsMovable(bool b);
+  bool itemsMovable() const;
+
+  virtual void setItemsRenameable(bool b);
+  bool itemsRenameable() const;
+
+
+
 signals:
 
   /**
@@ -100,6 +108,13 @@ signals:
    */
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
 
+  void dropped(QDropEvent * e);
+  void moved();
+  void itemRenamed(QListViewItem * item, const QString &str, int row);
+  void itemRenamed(QListViewItem * item);
+
+
+
 protected slots:
   void slotOnItem( QListViewItem *item );
   void slotOnViewport();
@@ -137,7 +152,7 @@ protected:
 	
   virtual void contentsMouseReleaseEvent(QMouseEvent*);
 
-  virtual QDragObject *dragObject(const QMouseEvent* e) const;
+  virtual QDragObject *dragObject() const;
 	
 
   QCursor oldCursor;
@@ -163,7 +178,7 @@ private:
    * Where is the nearest QListViewItem that I'm going to drop after?
    **/
   QListViewItem* findDrop(const QPoint &p);
-  void startDrag(const QMouseEvent* e);
+  void startDrag();
 
   QRect *invalidateRect;
   QPoint *pressPos;

@@ -441,12 +441,34 @@ QListViewItem *KListView::lastItem() const
 
 
 
-void KListView::startDrag(const QMouseEvent* e)
+void KListView::startDrag()
 {
 
 }
 
-QDragObject *KListView::dragObject(const QMouseEvent* e) const
+QDragObject *KListView::dragObject() const
 {
     return 0;
 }
+
+void KListView::setItemsMovable(bool)
+{
+
+}
+
+bool KListView::itemsMovable() const
+{
+	return false;
+}
+
+void KListView::setItemsRenameable(bool)
+{
+
+}
+
+bool KListView::itemsRenameable() const
+{
+	return false;
+}
+
+
