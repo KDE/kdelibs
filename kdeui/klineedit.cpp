@@ -64,73 +64,60 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 
 void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 {
-   	KCompletion* comp = compObj();
-	if( comp &&
-		(type == KCompletionBase::PrevCompletionMatch ||
-		 type == KCompletionBase::NextCompletionMatch ) )
-	{
-		QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
-		// Skip rotation if previous/next match is null or the same text.
-        if( input.isNull() || input == displayText() )
-        {
-            return;
-        }
-        bool marked = hasMarkedText(); // Note if current text has been marked
-		int pos = cursorPosition(); // Note the current cursor position
-		setText( input );
-        if( marked )
-        {
-			setSelection( pos, input.length() );
-			setCursorPosition( pos );				
-		}
+    KCompletion* comp = compObj();
+    if( comp &&
+       (type == KCompletionBase::PrevCompletionMatch ||
+	type == KCompletionBase::NextCompletionMatch ) )
+    {
+       QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
+       // Skip rotation if previous/next match is null or the same tex
+       if( input.isNull() || input == displayText() )
+       {
+	  return;
+       }
+       bool marked = hasMarkedText(); // Note if current text has been marked
+       int pos = cursorPosition(); // Note the current cursor position
+       setText( input );
+       if( marked )
+       {
+	  setSelection( pos, input.length() );
+	  setCursorPosition( pos );
+       }
     }
 }
 
 void KLineEdit::makeCompletion( const QString& text )
 {
+
     KCompletion *comp = compObj();
     if( !comp && text.length() == 0 )
     {
-	return;  // No completion object...
+       return;  // No completion object...
     }
-	
-    QString match;
+
     int pos = cursorPosition();
     KGlobalSettings::Completion mode = completionMode();
-    
-#if 0
-    // what is this? breaks completion and doesn't make sense to me
-    // same in KComboBox
-    if( mode == KGlobalSettings::CompletionShell &&	
-	comp->hasMultipleMatches() && text != comp->lastMatch() ) {
-	match = comp->nextMatch();
-    }
-    else
-    {
-	match = comp->makeCompletion( text );
-    }
-#endif
-    
-    match = comp->makeCompletion( text );
+    QString match = comp->makeCompletion( text );
+
     // If no match or the same match, simply return
     // without completing.
     if( match.isNull() || match == text )
     {
-	// Put the cursor at the end when in semi-automatic
-	// mode and completion is invoked with the same text.
+    	// Put the cursor at the end when in semi-automatic
+	    // mode and completion is invoked with the same text.
     	if( mode == KGlobalSettings::CompletionMan )
     	{
-	    end( false );
+	        end( false );
     	}
         return;
     }
 
     setText( match );
     if( mode == KGlobalSettings::CompletionAuto ||
-	mode == KGlobalSettings::CompletionMan )
+    	mode == KGlobalSettings::CompletionMan )
     {
-	setSelection( pos, match.length() );
-	setCursorPosition( pos );
+    	setSelection( pos, match.length() );
+	    setCursorPosition( pos );
     }
 }
 
