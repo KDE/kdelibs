@@ -370,12 +370,35 @@ static QDomText get_or_create_text(QDomNode node)
     return subnode.toText();
 }
 
+// Look for a metadata with owner="http://www.kde.org" or without any owner (for compatibility)
+static QDomNode findOrCreateMetadata( QDomNode& parent )
+{
+    static const char kdeOwner[] = "http://www.kde.org";
+    QDomElement metadataElement;
+    for ( QDomNode _node = parent.firstChild(); !_node.isNull(); _node = _node.nextSibling() ) {
+        QDomElement elem = _node.toElement();
+        if ( !elem.isNull() && elem.tagName() == "metadata" ) {
+            const QString owner = elem.attribute( "owner" );
+            if ( owner == kdeOwner )
+                return elem;
+            if ( owner.isEmpty() )
+                metadataElement = elem;
+        }
+    }
+    if ( metadataElement.isNull() ) {
+        metadataElement = parent.ownerDocument().createElement( "metadata" );
+        parent.appendChild(metadataElement);
+    }
+    metadataElement.setAttribute( "owner", kdeOwner );
+    return metadataElement;
+}
+
 void KBookmark::updateAccessMetadata()
 {
     kdDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyURL() << endl;
 
     QDomNode subnode = cd_or_create(internalElement(), "info");
-    subnode = cd_or_create(subnode, "metadata");
+    subnode = findOrCreateMetadata(subnode);
 
     uint timet = QDateTime::currentDateTime().toTime_t();
 
@@ -398,7 +421,7 @@ void KBookmark::updateAccessMetadata()
     currentCount++;
     domtext.setData(QString::number(currentCount));
 
-    // TODO - for 3.3 - time_modified
+    // TODO - for 4.0 - time_modified
 }
 
 void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
