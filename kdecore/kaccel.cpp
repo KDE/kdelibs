@@ -35,7 +35,7 @@ public:
 
 	virtual bool connectKey( KAccelAction&, KKeySequence );
 	virtual bool disconnectKey( KAccelAction&, KKeySequence );
-	
+
 	void setAutoUpdateTemp( bool b ) { m_bAutoUpdate = b; }
 };
 
@@ -206,7 +206,15 @@ bool KAccel::setShortcuts( const QString& sAction, const KShortcuts& rgCuts )
 	{ return d->setShortcuts( sAction, rgCuts ); }
 
 void KAccel::readSettings( KConfig* pConfig )
-	{ d->readSettings( pConfig ); }
+{
+	bool bAutoUpdate = d->getAutoUpdate();
+	d->setAutoUpdateTemp( true );
+
+	d->readSettings( pConfig );
+
+	d->setAutoUpdateTemp( bAutoUpdate );
+}
+
 void KAccel::writeSettings( KConfig* pConfig ) const
 	{ d->writeSettings( pConfig ); }
 
@@ -222,12 +230,28 @@ bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 	return b;
 }
 
-bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
+bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
+		int key,
+		int nIDMenu, QPopupMenu* pMenu, bool bConfigurable )
 {
+	KShortcuts cuts( key );
+	bool b = d->insertAction( sAction, sDesc,
+		cuts, cuts,
+		0, 0,
+		nIDMenu, pMenu, bConfigurable );
+	return b;
+}
+
+bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate )
+{
+	if( bActivate == false )
+		d->setActionEnabled( sAction, false );
 	bool bAutoUpdate = d->getAutoUpdate();
 	d->setAutoUpdateTemp( true );
 	bool b = setActionSlot( sAction, pObjSlot, psMethodSlot );
 	d->setAutoUpdateTemp( bAutoUpdate );
+	if( bActivate == true )
+		d->setActionEnabled( sAction, true );
 	return b;
 }
 
@@ -262,4 +286,27 @@ void KAccel::changeMenuAccel( QPopupMenu *menu, int id, const QString& action )
 void KAccel::changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel )
 {
 	changeMenuAccel( menu, id, KStdAccel::action( accel ) );
+}
+
+int KAccel::stringToKey( const QString& sKey )
+{
+	return (QKeySequence) KKeySequence( sKey );
+}
+
+int KAccel::currentKey( const QString& sAction ) const
+{
+	KAccelAction* pAction = d->actionPtr( sAction );
+	if( pAction ) {
+		return pAction->getShortcut(0).getSequence(0).getKey(0).keyQt();
+	} else
+		return 0;
+}
+
+QString KAccel::findKey( int key ) const
+{
+	KAccelAction* pAction = d->actionPtr( KKeySequence(key) );
+	if( pAction )
+		return pAction->m_sName;
+	else
+		return QString::null;
 }

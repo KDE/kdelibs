@@ -434,7 +434,7 @@ class KAccelBase
 	bool setShortcuts( const QString& sAction, const KAccelShortcuts& rgCuts );
 
 // Modify individual Action sub-items
-	//bool setItemEnabled( const QString& sAction, bool bEnable );
+	bool setActionEnabled( const QString& sAction, bool bEnable );
 	void removeDeletedMenu( QPopupMenu *pMenu );
 
  	/**

@@ -52,14 +52,31 @@ public:
 
 	// Source compatibility to KDE 2.x
 	virtual bool insertItem( const QString& sDesc, const QString& sAction,
-	                 const char* cutsDef,
+	                 const char* psKey,
 	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
-	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
+	bool insertItem( const QString& sDesc, const QString& sAction,
+	                 int key,
+	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
+	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true );
 	// OBSOLETE!
 	bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
 		{ return insertAction( accel, pObjSlot, psMethodSlot ); }
 	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action );
 	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel );
+	static int stringToKey( const QString& );
+
+	/**
+	* Retrieve the key code of the accelerator item with the action name
+	* @p action, or zero if either the action name cannot be
+	* found or the current key is set to no key.
+	*/
+	int currentKey( const QString& action ) const;
+
+	/**
+	 * Return the name of the accelerator item with the keycode @p key,
+	 * or @ref QString::null if the item cannot be found.
+	 */
+	QString findKey( int key ) const;
 
 private:
 	class KAccelPrivate* d;

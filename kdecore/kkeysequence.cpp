@@ -31,18 +31,21 @@
 //-------------------------------------------------------------------
 
 KKeySequence::KKeySequence()
-{
-	m_origin = OriginUnset;
-	m_keyCombQt = -1;
-	m_keyMod = -1;
-	m_keyCode = m_keySym = 0;
-	m_keyCombQtExplicit = m_keySymExplicit = m_keyModExplicit = 0;
-}
-
+	{ clear(); }
 KKeySequence::KKeySequence( const KKeySequence& k )
 	{ *this = k; }
 KKeySequence::KKeySequence( const QKeySequence& k )
 	{ *this = (uint) (int) k; }
+
+KKeySequence::KKeySequence( const QString& k )
+{
+	KKeySequences rg( k );
+	if( rg.size() >= 1 )
+		*this = rg[0];
+	else
+		clear();
+}
+
 KKeySequence::KKeySequence( uint keyCombQt )
 	{ *this = keyCombQt; }
 
@@ -67,6 +70,15 @@ KKeySequence::KKeySequence( const QKeyEvent *pke )
 	}
 
 	*this = keyCombQt;
+}
+
+void KKeySequence::clear()
+{
+	m_origin = OriginUnset;
+	m_keyCombQt = -1;
+	m_keyMod = -1;
+	m_keyCode = m_keySym = 0;
+	m_keyCombQtExplicit = m_keySymExplicit = m_keyModExplicit = 0;
 }
 
 //KKeySequence& KKeySequence::operator =( KKeySequence k )      { m_keyCombQt = k.m_keyCombQt; return *this; }

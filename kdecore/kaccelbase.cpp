@@ -804,6 +804,24 @@ void KAccelBase::setConfigGroup( const QString& sConfigGroup )
 void KAccelBase::setConfigGlobal( bool global )
 	{ m_bConfigIsGlobal = global; }
 
+bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
+{
+	KAccelAction* pAction = actionPtr( sAction );
+	if( pAction ) {
+		if( pAction->m_bEnabled != bEnable ) {
+			pAction->m_bEnabled = bEnable;
+			if( m_bAutoUpdate ) {
+				if( bEnable )
+					insertConnection( *pAction );
+				else
+					removeConnection( *pAction );
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
 void KAccelBase::removeDeletedMenu( QPopupMenu* pMenu )
 {
 	for( KAccelActions::iterator it = m_rgActions.begin(); it != m_rgActions.end(); ++it ) {

@@ -44,9 +44,11 @@ class KKeySequence
 	KKeySequence();
 	KKeySequence( const KKeySequence& k );
 	KKeySequence( const QKeySequence& k );
+	KKeySequence( const QString& );
 	KKeySequence( uint keyCombQt );
 	KKeySequence( const QKeyEvent * );
 
+	void clear();
 	//KKeySequence& operator =( KKeySequence k );
 	KKeySequence& operator =( uint keyCombQt );
 
@@ -115,6 +117,14 @@ class KKeySequences : public QValueVector<KKeySequence>
 
 	KKeySequence first() const;
 	bool operator ==( KKeySequences& keys );
+};
+
+// OBSOLETE: for backwards compatibility to KDE 2.2
+class KKey : public KKeySequence
+{
+public:
+	static QString keyToString( int k, bool bi18n = true )
+		{ return KKeySequence(k).toString( bi18n ? I18N_Yes : I18N_No ); }
 };
 
 #endif // _KKEYSEQUENCE_H
