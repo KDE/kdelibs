@@ -1,0 +1,42 @@
+#!/bin/bash
+# compile entire kdelibs/win32 in debug mode
+# (c) 2003-2005, Jaroslaw Staniek
+
+pwd=`pwd`
+
+# special
+cd win/9x && nmake -nologo -f Makefile.rel $1 || exit 1
+cd $pwd
+
+# all
+for d in \
+win \
+libltdl \
+dcop \
+dcop/dcopidl \
+dcop/dcopidl2cpp \
+kdefx \
+kdecore \
+kdeui \
+kstyles/thinkeramik/widget-engine \
+kio \
+kresources \
+kabc/vcard \
+kabc \
+kutils \
+kparts \
+kmdi \
+kioslave/gzip \
+kioslave/bzip2 \
+interfaces/ktexteditor \
+kate/interfaces \
+kate/part \
+ ; do 
+	echo ================== $d =================
+	cd $d && mkrel  || exit 1
+	cd $pwd
+done
+
+cd kded
+./makeall_rel || exit 1
+cd $pwd

@@ -1,0 +1,6 @@
+kdelibs/win32 build tools
+
+(c) 2003-2005, Jaroslaw Staniek
+
+Add this directory to your PATH.
+Cygwin (or other bash replacement) required.
