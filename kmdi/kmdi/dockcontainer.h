@@ -24,7 +24,6 @@
 #include <qstringlist.h>
 #include <kdockwidget.h>
 #include <qmap.h>
-#include <qdom.h>
 
 # include <kdockwidget_p.h>
 
@@ -58,9 +57,6 @@ class DockContainer: public QWidget, public KDockContainer
 
     virtual void save(KConfig *,const QString& group_or_prefix);
     virtual void load(KConfig *,const QString& group_or_prefix);
-
-    virtual void save(QDomElement&);
-    virtual void load(QDomElement&);
 
     void setStyle(int);
   protected:

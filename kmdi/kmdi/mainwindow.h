@@ -89,6 +89,8 @@ class MainWindow : public KParts::DockMainWindow
   public:
     /**
      * get the central tabwidget
+     * add all your content as child to this widget
+     * or as multiple tabs
      * @return tabwidget in central of window
      */
     TabWidget *tabWidget ();
