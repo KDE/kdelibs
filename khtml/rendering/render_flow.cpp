@@ -205,7 +205,8 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
        if (r->node->isPositioned() && r->node->containingBlock() == this) {
            r->node->print(p, x, y, w, h, tx , ty);
        } else if ( ( r->node->isFloating() && !r->noPaint ) ) {
-	    r->node->print(p, x, y, w, h, tx + r->left - r->node->xPos(), ty + r->startY - r->node->yPos() );
+	    r->node->print(p, x, y, w, h, tx + r->left - r->node->xPos() + r->node->marginLeft(), 
+			   ty + r->startY - r->node->yPos() + r->node->marginTop() );
  	}
 #ifdef FLOAT_DEBUG
 	p->save();
