@@ -104,70 +104,70 @@ DialogBase::cleanup()
 }
 
 void
-DialogBase::setButtonOKText(const char* text, const char* tooltip, 
-			    const char* quickhelp)
+DialogBase::setButtonOKText(const QString& text, const QString& tooltip, 
+			    const QString& quickhelp)
 {
   // ############################################################################
-  const char* WhatsOK=i18n
+  QString WhatsOK=i18n
     ("If you press the <b>OK</b> button, all changes\n"
      "you made will be used to proceed.");
   // -----
-  buttonOK->setText(text==0 ? i18n("&OK") : (QString)text);
+  buttonOK->setText(text.isNull() ? i18n("&OK") : text);
   QToolTip::add(buttonOK, tooltip==0 
 		? i18n("Accept settings.") 
-		: (QString)tooltip);
+		: tooltip);
   if(init) // after first initialization is done
     {
       KQuickHelp::remove(buttonOK);
     }
-  KQuickHelp::add(buttonOK, quickhelp==0 ? WhatsOK : quickhelp);
+  KQuickHelp::add(buttonOK, quickhelp.isNull() ? WhatsOK : quickhelp);
   // ############################################################################
 }
 
 void
-DialogBase::setButtonApplyText(const char* text, const char* tooltip, 
-			       const char* quickhelp)
+DialogBase::setButtonApplyText(const QString& text, const QString& tooltip, 
+			       const QString& quickhelp)
 {
   // ############################################################################
-  const char* WhatsApply=i18n
+  QString WhatsApply=i18n
     ("When clicking <b>Apply</b>, the settings will be\n"
      "handed over to the program, but the dialog\n"
      "will not be closed."
      "Use this to try different settings.");
   // -----
-  buttonApply->setText(text==0 ? i18n("&Apply") : (QString)text);
-  QToolTip::add(buttonApply, tooltip==0 
+  buttonApply->setText(text.isNull() ? i18n("&Apply") : text);
+  QToolTip::add(buttonApply, tooltip.isNull() 
 		? i18n("Apply settings.") 
-		: (QString)tooltip);
+		: tooltip);
   if(init) // after first initialization is done
     {
       KQuickHelp::remove(buttonApply);
     }
-  KQuickHelp::add(buttonApply, quickhelp==0 ? WhatsApply : quickhelp);
+  KQuickHelp::add(buttonApply, quickhelp.isNull() ? WhatsApply : quickhelp);
   // ############################################################################
 }
 
 void
-DialogBase::setButtonCancelText(const char* text, const char* tooltip, 
-				const char* quickhelp)
+DialogBase::setButtonCancelText(const QString& text, const QString& tooltip, 
+				const QString& quickhelp)
 {
   // ############################################################################
-  const char* WhatsCancel=i18n
+  QString WhatsCancel=i18n
     ("If you press the <b>Cancel</b> button, all changes\n"
      "you made will be abandoned and the dialog\n"
      "will be closed.\n"
      "The program will be in the state before\n"
      "opening the dialog.");
   // -----
-  buttonCancel->setText(text==0 ? i18n("&Cancel") : (QString)text);
-  QToolTip::add(buttonCancel, tooltip==0 
+  buttonCancel->setText(text.isNull() ? i18n("&Cancel") : text);
+  QToolTip::add(buttonCancel, tooltip.isNull()
 		? i18n("Cancel settings.") 
-		: (QString)tooltip);
+		: tooltip);
   if(init) // after first initialization is done
     {
       KQuickHelp::remove(buttonCancel);
     }  
-  KQuickHelp::add(buttonCancel, quickhelp==0 ? WhatsCancel : quickhelp);
+  KQuickHelp::add(buttonCancel, quickhelp.isNull() ? WhatsCancel : quickhelp);
   // ############################################################################
 }
 
@@ -476,12 +476,12 @@ void DialogBase::initializeGeometry()
 }
 
 void DialogBase::setHelp(const char* newpath, const char* newtopic, 
-			 const char* text)
+			 const QString& text)
 {
   // ############################################################################
   path= (newpath==0) ? "" : newpath;
   topic= (newtopic==0) ? "" : newtopic;
-  kurlHelp->setText(text==0 ? i18n("Get help...") : (QString)text);
+  kurlHelp->setText(text.isNull() ? i18n("Get help...") : text);
   showHelp=(!path.isEmpty());
   if(showHelp)
     {
@@ -492,7 +492,7 @@ void DialogBase::setHelp(const char* newpath, const char* newtopic,
   // ############################################################################
 }
 
-void DialogBase::helpClickedSlot(const char* url)
+void DialogBase::helpClickedSlot(const char*)
 {
   // ############################################################################
   if(path.isEmpty())

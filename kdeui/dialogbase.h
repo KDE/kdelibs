@@ -102,22 +102,22 @@ public:
    *  The button shows \e OK, the tooltip contains "Accept settings." 
    *  (internationalized) and the quickhelp text explains the standard 
    *  behaviour of the OK button in dialogs. */
-  void setButtonOKText(const char* text=0, const char* tooltip=0, 
-		       const char* quickhelp=0);
+  void setButtonOKText(const QString& text=QString::null, const QString& tooltip=QString::null, 
+		       const QString& quickhelp=QString::null);
   /** Set the text of the Apply button. If the default parameters are used (that 
    *  means, if no parameters are given) the standard texts are set:
    *  The button shows \e Apply, the tooltip contains "Apply settings." 
    *  (internationalized) and the quickhelp text explains the standard 
    *  behaviour of the apply button in dialogs. */
-  void setButtonApplyText(const char* text=0, const char* tooltip=0, 
-			  const char* quickhelp=0);
+  void setButtonApplyText(const QString& text=QString::null, const QString& tooltip=QString::null, 
+			  const QString& quickhelp=QString::null);
   /** Set the text of the Cancel button. If the default parameters are used (that 
    *  means, if no parameters are given) the standard texts are set:
    *  The button shows \e Cancel, the tooltip contains "Cancel settings." 
    *  (internationalized) and the quickhelp text explains the standard 
    *  behaviour of the cancel button in dialogs. */
-  void setButtonCancelText(const char* text=0, const char* tooltip=0, 
-		       const char* quickhelp=0);
+  void setButtonCancelText(const QString& text=QString::null, const QString& tooltip=QString::null, 
+			   const QString& quickhelp=QString::null);
   /** Show the OK button if \a state is \c true (default). */
   void showButtonOK(bool state);
   /** Show the Apply button if \a state is \c true (default). */
@@ -197,7 +197,7 @@ public slots:
    *  \e path is the path to the html file, \e text is the text shown by the
    *  label.
    *  If \e text is zero, the text is "Get help...", internationalized. */
-  void setHelp(const char* path, const char* topic, const char* text=0);
+  void setHelp(const char* path, const char* topic, const QString& text=QString::null);
   void helpClickedSlot(const char* url); /**< Connected to kurlHelp. */
   // ############################################################################
 };

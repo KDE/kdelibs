@@ -258,7 +258,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
 
 }
 
-KThemeBase::KThemeBase(const QString &configFile)
+KThemeBase::KThemeBase(const QString &)
     :KStyle()
 {
     KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_default("data") + "kstyle/pixmaps/");
