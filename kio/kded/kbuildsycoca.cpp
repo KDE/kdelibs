@@ -36,6 +36,7 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstddirs.h>
+#include <ksavefile.h>
 #include <unistd.h>
 
 KBuildSycoca::KBuildSycoca() 
@@ -90,14 +91,20 @@ void KBuildSycoca::build()
 
 void KBuildSycoca::recreate()
 {
-  QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca.building";
-  QFile *database = new QFile(path);
-  if (!database->open( IO_ReadWrite ))
+  QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
+
+  // KSaveFile first writes to a temp file.
+  // Upon close() it moves the stuff to the right place.
+  KSaveFile database(path);
+  if (database.status() != 0)
   {
     fprintf(stderr, "Error can't open database!\n");
     exit(-1);
   }
-  str = new QDataStream(database);
+
+  QFile qFile;
+  qFile.open(IO_WriteOnly, database.fstream());
+  str = new QDataStream(&qFile);
 
   kdebug(KDEBUG_INFO, 7020, "Recreating ksycoca file");
      
@@ -110,6 +117,13 @@ void KBuildSycoca::recreate()
   save(); // Save database
   clear(); // save memory usage
 
+  delete str;
+  str = 0L;
+  if (!database.close())
+  {
+     kdebug(KDEBUG_ERROR, 7020, "Error writing database to %s", database.name().ascii());
+     return;  
+  }
   // Notify ALL applications that have a ksycoca object, using a broadcast
   QByteArray data;
   kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data );
@@ -380,22 +394,6 @@ void KBuildSycoca::save()
 
    // Jump to end of database
    str->device()->at(endOfData);
-
-   // Close database file
-   assert( str );
-   QIODevice *device = str->device();
-   assert( device );
-   device->close();
-   delete str;
-   str = 0L;
-
-   // Make public the database we just built
-   QString from = KGlobal::dirs()->saveLocation("config") + "ksycoca.building";
-   QString to = KGlobal::dirs()->saveLocation("config") + "ksycoca";
-   if ( unlink( to.ascii() ) != 0 )
-     kdebug(KDEBUG_ERROR, 7020, "Can't unlink %s", to.ascii());
-   if ( rename( from.ascii(), to.ascii() ) != 0 )
-     kdebug(KDEBUG_ERROR, 7020, "Can't rename %s to %s", from.ascii(), to.ascii());
 }
 
 bool KBuildSycoca::process(const QCString &fun, const QByteArray &/*data*/,
