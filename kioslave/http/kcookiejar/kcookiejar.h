@@ -61,6 +61,7 @@ protected:
     int     mProtocolVersion;
     long    mWindowId;
     bool    mSecure;
+    bool    mCrossDomain;
 
     KHttpCookiePtr nextCookie;
     QString cookieStr(bool useDOMFormat);
@@ -86,6 +87,7 @@ public:
     int     protocolVersion(void) { return mProtocolVersion; }
     bool    isSecure(void) { return mSecure; }
     bool    isExpired(time_t currentDate);
+    bool    isCrossDomain(void) { return mCrossDomain; }
     bool    match(const QString &fqdn, const QStringList &domainList, const QString &path);
     KHttpCookiePtr next() { return nextCookie; }
 };
@@ -306,6 +308,8 @@ public:
     // Save this in the config file...
     int defaultRadioButton; // 0 = This cookie, 1 = domain, 2 = all cookies
     bool showCookieDetails; // true, false
+    bool rejectCrossDomain;
+    bool acceptTempCookies;
 
 protected:
     QDict<KHttpCookieList> cookieDomains;

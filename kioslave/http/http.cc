@@ -2879,6 +2879,8 @@ bool HTTPProtocol::readHeader()
     if ((m_cookieMode == CookiesAuto) && m_bUseCookiejar)
     {
       // Give cookies to the cookiejar.
+      if (config()->readBoolEntry("cross-domain"))
+         cookieStr = "Cross-Domain\n" + cookieStr;
       addCookies( m_request.url.url(), cookieStr );
     }
     else if (m_cookieMode == CookiesManual)

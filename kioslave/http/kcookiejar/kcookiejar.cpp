@@ -556,6 +556,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
     QString Value;
     QString fqdn;
     QString path;
+    bool crossDomain = false;
 
     if (!parseURL(_url, fqdn, path))
     {
@@ -567,7 +568,12 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
     for(;;)
     {
         // check for "Set-Cookie"
-        if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0)
+        if (strncmp(cookieStr, "Cross-Domain\n", 13) == 0)
+        {
+            cookieStr += 13;
+            crossDomain = true;
+        }
+        else if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0)
         {
             cookieStr = parseNameValue(cookieStr+11, Name, Value, true);
 
@@ -576,6 +582,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             // Default path = ""
             KHttpCookie *cookie = new KHttpCookie(fqdn, "", "", Name, Value);
             cookie->mWindowId = windowId;
+            cookie->mCrossDomain = crossDomain;
 
             // Insert cookie in chain
             if (lastCookie)
@@ -790,6 +797,13 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 {
     QStringList domains;
+    
+    if (rejectCrossDomain && cookiePtr->isCrossDomain())
+       return KCookieReject;
+       
+    if (acceptTempCookies && (cookiePtr->expireDate() == 0))
+       return KCookieAccept;
+       
     extractDomains(cookiePtr->host(), domains);
 
     // If the cookie specifies a domain, check whether it is valid and
@@ -1275,6 +1289,8 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     _config->setGroup(QString::null);
     defaultRadioButton = _config->readNumEntry( "DefaultRadioButton", 0 );
     showCookieDetails = _config->readBoolEntry( "ShowCookieDetails" );
+    rejectCrossDomain = _config->readBoolEntry( "RejectCrossDomain", true );
+    acceptTempCookies = _config->readBoolEntry( "AcceptTempCookies", true );
 
     _config->setGroup("Cookie Policy");
     value = _config->readEntry("CookieGlobalAdvice", "Ask");
