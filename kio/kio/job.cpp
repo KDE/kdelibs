@@ -19,6 +19,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "kio/job.h"
+
 #include <config.h>
 
 #include <sys/types.h>
@@ -52,7 +54,6 @@ extern "C" {
 #include <errno.h>
 
 #include "slave.h"
-#include "kio/job.h"
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kmimemagic.h"
