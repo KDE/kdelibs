@@ -1,6 +1,12 @@
 #ifndef __k_run_h__
 #define __k_run_h__
 
+/**
+  * Danger Will Robinson... Do not use umode_t or anything else that is
+  * defined in asm/types.h.  These typedefs are not portable and should be
+  * avoided at all costs.
+  */
+
 class KService;
 
 #include <string>
