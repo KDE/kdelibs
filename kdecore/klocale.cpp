@@ -434,8 +434,10 @@ void KLocale::initFormat(KConfig *config)
       d->plural_form = 8;
   else if ( pf == "Slovak" )
       d->plural_form = 9;
+  else if ( pf == "Maltese" )
+      d->plural_form = 10;
   else {
-      kdWarning() << "Definition of PluralForm is none of NoPlural/TwoForms/French/Gaeilge/Russian/Polish/Slovenian/Lithuanian/Czech/Slovak: " << pf << endl;
+      kdWarning() << "Definition of PluralForm is none of NoPlural/TwoForms/French/Gaeilge/Russian/Polish/Slovenian/Lithuanian/Czech/Slovak/Maltese: " << pf << endl;
       exit(1);
   }
   }
@@ -653,6 +655,17 @@ QString KLocale::translate( const char *singular, const char *plural,
             return put_n_in( forms[1], n);
         else
             return put_n_in( forms[2], n);
+        break;
+    case 10: // Maltese
+        EXPECT_LENGTH( 4 );
+        if ( n == 1 )
+            return put_n_in( forms[0], n );
+        else if ( ( n == 0 ) || ( n >= 2 && n <= 10 ) )
+            return put_n_in( forms[1], n );
+        else if ( n < 20 )
+            return put_n_in( forms[2], n );
+        else
+            return put_n_in( forms[3], n );
         break;
     }
     kdFatal() << "The function should have been returned in another way\n";
