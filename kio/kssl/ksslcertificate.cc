@@ -200,7 +200,7 @@ int n, i;
 
 	i = d->kossl->OBJ_obj2nid(d->m_cert->sig_alg->algorithm);
 	rc = i18n("Signature Algorithm: ");
-	rc += (i == NID_undef)?i18n("Unknown"):d->kossl->OBJ_nid2ln(i);
+	rc += (i == NID_undef)?i18n("Unknown"):QString(d->kossl->OBJ_nid2ln(i));
 
 	rc += "\n";
 	rc += i18n("Signature Contents:");
