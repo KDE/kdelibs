@@ -12,3 +12,5 @@ libkjava_la_LIBADD = ../../kdecore/libkdecore.la
 
 INCLUDES = $(all_includes)
 
+data_DATA = kjava-classes.zip
+datadir = $(kde_datadir)/kjava/

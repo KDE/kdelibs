@@ -18,26 +18,25 @@ misc:
 	* mouse handling
 	  --> partly done (clicking works), selection/DND still missing
 	* selection
-	* make all destructors in the DOM virtual 
 
 Frames:
 	* frameset should be a QSplitter
 
 JScript:
-	* completely
+	* still need to add hooks in the tokenizer
+	* return value for events/ event propagation
 
 Java:
-	* completely
+	* support for the object element
+	* Java <--> HTMLWidget communication
 
 Attributes:
 	* some attributes (%coreattrs, %events, and a few others)
 	should be implemented in HTML(Inline/Block)Element and not in
 	the classes themselves.
-	  --> partly done
+	  --> mostly done
 
 Rendering:
-	* rendering is quite slow at the moment, because of missing 
-	  checks on the bounding rectangle --> mostly done...
 	* remove the currentStyle from the elements
 
 Memory usage:
@@ -46,7 +45,7 @@ Memory usage:
 	 Still thinking about a better solution. Perhaps one
 	 stylesheet object would do, and the element get their
 	 information from there (something like document->styleSheet()->XXX()).
-       
+
 Elements:
 most are still missing. Here comes a list.
 
@@ -54,7 +53,7 @@ a	        mostly done
 abbr
 acronym
 address		done
-applet
+applet		mostly done
 area
 b		done
 base

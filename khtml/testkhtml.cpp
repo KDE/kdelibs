@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     KHTMLWidget *doc = new KHTMLWidget;
     doc->resize(800,500);
     doc->enableJScript(true);
+    doc->enableJava(true);
     
     a.setTopWidget(doc);
     doc->openURL(argv[1]);

@@ -100,16 +100,28 @@ void HTMLAppletElementImpl::layout( bool deep )
 
 void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
 {
+    descent = 0;
+    if(!code) return;
+
     printf("initializing java widget I\n");
     view = _view;
+    if(!view->javaEnabled()) return;
     applet = new KJavaAppletWidget(view->viewport());
 
+    printf("resizing applet to %d/%d\n", width, getHeight());
     applet->resize(width, getHeight());
-    QString tmp = QConstString(base->s, base->l).string();
+    QString tmp;
+    if(base)
+	tmp = QConstString(base->s, base->l).string();
+    else
+	tmp = view->url();
     applet->setBaseURL(tmp);
     tmp = QConstString(code->s, code->l).string();
     applet->setAppletClass(tmp);
-    tmp = QConstString(name->s, name->l).string();
+    if(name)
+	tmp = QConstString(name->s, name->l).string();
+    else
+	tmp = QConstString(code->s, code->l).string();
     applet->setAppletName(tmp);
 }
 
