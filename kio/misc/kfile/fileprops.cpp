@@ -248,7 +248,7 @@ static KCmdLineOptions options[] =
       I18N_NOOP("Attempts to set the value 'value' for the metadata key "
                 "'key' for the given file(s)"), 0 },
 
-    { "!groups <arguments>", I18N_NOOP("The group to get or set values from/to."),
+    { "!groups <arguments>", I18N_NOOP("The group to get values from or set values to."),
       0 },
 
     { "+[files]",

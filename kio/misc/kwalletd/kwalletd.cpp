@@ -199,7 +199,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 				wallet == KWallet::Wallet::NetworkWallet()) {
 			// Auto create these wallets.
 			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
-			kpd->setPrompt(i18n("The application '%1' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion.  Please enter a password to use with this wallet or cancel to deny the application's request.").arg(appid));
+			kpd->setPrompt(i18n("The application '%1' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request.").arg(appid));
 			brandNew = true;
 			kpd->setButtonOKText(i18n("&Open"));
 		} else {
@@ -217,7 +217,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 				p = kpd->password();
 				int rc = b->open(QByteArray().duplicate(p, strlen(p)));
 				if (!b->isOpen()) {
-					kpd->setPrompt(i18n("Invalid password for wallet '%1'.  Please try again.  %2").arg(wallet).arg(rc));
+					kpd->setPrompt(i18n("Invalid password for wallet '%1'. Please try again. %2").arg(wallet).arg(rc));
 				}
 			} else {
 				break;

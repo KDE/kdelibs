@@ -47,9 +47,9 @@
                 <cstring>filetypeList</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>&lt;qt&gt;&lt;p&gt;This list should show the type of files that your application can handle. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt; 
+                <string>&lt;qt&gt;&lt;p&gt;This list should show the types of file that your application can handle. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt; 
 &lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;
-&lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application can't handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
+&lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
             </property>
         </widget>
         <widget class="KListView" row="6" column="0" rowspan="1" colspan="7">
@@ -90,9 +90,9 @@
                 <bool>true</bool>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>&lt;qt&gt;&lt;p&gt;This list should show the type of files that your application can handle. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt; 
+                <string>&lt;qt&gt;&lt;p&gt;This list should show the types of file that your application can handle. This list is organized by &lt;u&gt;mimetypes&lt;/u&gt;.&lt;/p&gt; 
 &lt;p&gt;MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u&gt;mimetypes&lt;/u&gt;. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u&gt;image/x-bmp&lt;/u&gt;. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p&gt;
-&lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application can't handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
+&lt;p&gt;If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b&gt;Add&lt;/b&gt; below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b&gt;Remove&lt;/b&gt; below.&lt;/p&gt;&lt;/qt&gt;</string>
             </property>
         </widget>
         <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
@@ -106,7 +106,7 @@
                 <cstring>nameEdit</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Type here the name you want to give to this application. This application will appear under this name in the applications menu and in the panel.</string>
+                <string>Type the name you want to give to this application here. This application will appear under this name in the applications menu and in the panel.</string>
             </property>
         </widget>
         <widget class="KLineEdit" row="0" column="2" rowspan="1" colspan="5">
@@ -114,7 +114,7 @@
                 <cstring>nameEdit</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Type here the name you want to give to this application. This application will appear under this name in the applications menu and in the panel.</string>
+                <string>Type the name you want to give to this application here. This application will appear under this name in the applications menu and in the panel.</string>
             </property>
         </widget>
         <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
@@ -128,7 +128,7 @@
                 <cstring>genNameEdit</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Type here the description of this application, based on its use. Examples: a dial ap application (KPPP) would be "Dial up tool".</string>
+                <string>Type the description of this application, based on its use, here. Examples: a dial up application (KPPP) would be "Dial up tool".</string>
             </property>
         </widget>
         <widget class="KLineEdit" row="1" column="2" rowspan="1" colspan="5">
@@ -136,7 +136,7 @@
                 <cstring>genNameEdit</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Type here the description of this application, based on its use. Examples: a dial ap application (KPPP) would be "Dial up tool".</string>
+                <string>Type the description of this application, based on its use, here. Examples: a dial up application (KPPP) would be "Dial up tool".</string>
             </property>
         </widget>
         <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
@@ -150,7 +150,7 @@
                 <cstring>commentEdit</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Type here any comment you think is useful.</string>
+                <string>Type any comment you think is useful here.</string>
             </property>
         </widget>
         <widget class="KLineEdit" row="2" column="2" rowspan="1" colspan="5">
@@ -158,7 +158,7 @@
                 <cstring>commentEdit</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Type here any comment you think is useful.</string>
+                <string>Type any comment you think is useful here.</string>
             </property>
         </widget>
         <widget class="QLabel" row="3" column="0" rowspan="1" colspan="2">
@@ -172,7 +172,7 @@
                 <cstring>commandEdit</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Type here the command to start this application.
+                <string>Type the command to start this application here.
 
 Following the command, you can have several place holders which will be replaced with the actual values when the actual program is run:
 %f - a single file name
@@ -191,7 +191,7 @@ Following the command, you can have several place holders which will be replaced
                 <cstring>commandEdit</cstring>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Type here the command to start this application.
+                <string>Type the command to start this application here.
 
 Following the command, you can have several place holders which will be replaced with the actual values when the actual program is run:
 %f - a single file name
@@ -227,7 +227,7 @@ Following the command, you can have several place holders which will be replaced
                 <string>Add...</string>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>Click on this button if you want to add a type of files (mimetype) that your application can handle.</string>
+                <string>Click on this button if you want to add a type of file (mimetype) that your application can handle.</string>
             </property>
         </widget>
         <spacer row="7" column="1" rowspan="1" colspan="2">
@@ -255,7 +255,7 @@ Following the command, you can have several place holders which will be replaced
                 <string>Remove</string>
             </property>
             <property name="whatsThis" stdset="0">
-                <string>If you want to remove a type of files (mimetype) that your application can't handle, select the mimetype in the list above and click on this button.</string>
+                <string>If you want to remove a type of file (mimetype) that your application cannot handle, select the mimetype in the list above and click on this button.</string>
             </property>
         </widget>
         <spacer row="7" column="4">

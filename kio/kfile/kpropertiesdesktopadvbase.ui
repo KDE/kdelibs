@@ -83,7 +83,7 @@
                         <string>Alt+C</string>
                     </property>
                     <property name="whatsThis" stdset="0">
-                        <string>Check this option if the text mode application offers relevant information on exit. Keeping the terminal emulator open let's you retrieve this information.</string>
+                        <string>Check this option if the text mode application offers relevant information on exit. Keeping the terminal emulator open allows you to retrieve this information.</string>
                     </property>
                 </widget>
                 <widget class="KLineEdit" row="2" column="2">
@@ -154,7 +154,7 @@
                         <cstring>suidEdit</cstring>
                     </property>
                     <property name="whatsThis" stdset="0">
-                        <string>Enter here the user name you want to run the application as.</string>
+                        <string>Enter the user name you want to run the application as here.</string>
                     </property>
                 </widget>
             </grid>
@@ -213,7 +213,7 @@
                     </item>
                     <item>
                         <property name="text">
-                            <string>Run Till Finished</string>
+                            <string>Run Until Finished</string>
                         </property>
                     </item>
                     <property name="name">
