@@ -58,7 +58,7 @@ static Atom net_virtual_roots        = 0;
 
 // root window messages
 static Atom net_close_window         = 0;
-static Atom net_restack_window         = 0;
+static Atom net_restack_window       = 0;
 static Atom net_wm_moveresize        = 0;
 static Atom net_moveresize_window    = 0;
 
@@ -741,6 +741,14 @@ NETRootInfo2::NETRootInfo2(Display *display, Window supportWindow, const char *w
 			 unsigned long properties[], int properties_size,
                          int screen, bool doActivate)
     : NETRootInfo( display, supportWindow, wmName, properties, properties_size,
+	screen, doActivate )
+{
+}
+
+NETRootInfo3::NETRootInfo3(Display *display, Window supportWindow, const char *wmName,
+			 unsigned long properties[], int properties_size,
+                         int screen, bool doActivate)
+    : NETRootInfo2( display, supportWindow, wmName, properties, properties_size,
 	screen, doActivate )
 {
 }
@@ -1605,6 +1613,11 @@ void NETRootInfo::moveResizeWindowRequest(Window window, int flags, int x, int y
 
 void NETRootInfo::restackRequest(Window window, Window above, int detail)
 {
+    restackRequest( window, FromTool, above, detail, qt_x_user_time );
+}
+
+void NETRootInfo::restackRequest(Window window, RequestSource src, Window above, int detail, Time timestamp )
+{
 #ifdef    NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::restackRequest: requesting restack for 0x%lx (%lx, %d)\n",
@@ -1618,10 +1631,10 @@ void NETRootInfo::restackRequest(Window window, Window above, int detail)
     e.xclient.display = p->display;
     e.xclient.window = window,
     e.xclient.format = 32;
-    e.xclient.data.l[0] = FromTool;
+    e.xclient.data.l[0] = src;
     e.xclient.data.l[1] = above;
     e.xclient.data.l[2] = detail;
-    e.xclient.data.l[3] = 0l;
+    e.xclient.data.l[3] = timestamp;
     e.xclient.data.l[4] = 0l;
 
     XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
@@ -1815,7 +1828,21 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		    event->xclient.window);
 #endif
 
-	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
+	    if( NETRootInfo3* this3 = dynamic_cast< NETRootInfo3* >( this ))
+            {
+                RequestSource src = FromUnknown;
+                Time timestamp = CurrentTime;
+                // make sure there aren't unknown values
+                if( event->xclient.data.l[0] >= FromUnknown
+                    && event->xclient.data.l[0] <= FromTool )
+                    {
+                    src = static_cast< RequestSource >( event->xclient.data.l[0] );
+                    timestamp = event->xclient.data.l[3];
+                    }
+	        this3->restackWindow(event->xclient.window, src,
+                    event->xclient.data.l[1], event->xclient.data.l[2], timestamp);
+            }
+	    else if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
 	        this2->restackWindow(event->xclient.window,
                     event->xclient.data.l[1], event->xclient.data.l[2]);
 	} else if (event->xclient.message_type == wm_protocols

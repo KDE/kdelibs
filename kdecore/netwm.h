@@ -562,6 +562,12 @@ public:
     void moveResizeWindowRequest(Window window, int flags, int x, int y, int width, int height );
 
     /**
+       Sends the _NET_RESTACK_WINDOW request.
+       @since 3.3
+    **/
+    void restackRequest(Window window, RequestSource source, Window above, int detail, Time timestamp);
+    /**
+       @obsolete
        @since 3.2
     **/
     void restackRequest(Window window, Window above, int detail);
@@ -796,6 +802,38 @@ protected:
     // virtual void moveResizeWindow(Window window, int flags, int x, int y, int width, int height) { }
     virtual void moveResizeWindow( Window, int, int, int, int, int ) { }
 
+// no private data, use NETRootInfoPrivate
+};
+
+/**
+ This class is an extension of the NETRootInfo class, and exists solely
+ for binary compatibility reasons (adds new virtual methods). Simply
+ use it instead of NETRootInfo and override also the added virtual methods.
+ @since 3.3
+*/
+class NETRootInfo3
+    : public NETRootInfo2
+{
+public:
+    NETRootInfo3(Display *display, Window supportWindow, const char *wmName,
+		unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);
+protected:
+    friend class NETRootInfo;
+    /**
+       A Window Manager should subclass NETRootInfo3 and reimplement this function
+       when it wants to know when a Client made a request to restack a window.
+       See _NET_RESTACK_WINDOW for details.
+
+       @param window the id of the window to restack
+       @param source the source of the request
+       @param above other window in the restack request
+       @param detail restack detail
+       @param timestamp the timestamp of the request
+    **/
+    // virtual void restackWindow(Window window, RequestSource source,
+    //        Window above, int detail, Time timestamp) { }
+    virtual void restackWindow(Window, RequestSource, Window, int, Time) { }
 // no private data, use NETRootInfoPrivate
 };
 
