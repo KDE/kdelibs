@@ -126,9 +126,9 @@ KPropertiesDialog::KPropertiesDialog (KFileItem* item,
                  parent, name, modal)
 {
   d = new KPropertiesDialogPrivate;
+  assert( item );
   m_items.append( new KFileItem(*item) ); // deep copy
 
-  assert( item );
   m_singleUrl = item->url();
   assert(!m_singleUrl.isEmpty());
 
