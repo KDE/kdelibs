@@ -26,23 +26,23 @@
 
 extern "C" {
 #ifdef HAVE_SSL
-static int (*K_SSL_connect)     (SSL *ssl) = NULL;
-static int (*K_SSL_read)        (SSL *ssl, void *buf, int num) = NULL;
-static int (*K_SSL_write)       (SSL *ssl, const void *buf, int num) = NULL;
-static SSL *(*K_SSL_new)        (SSL_CTX *ctx) = NULL;
-static void (*K_SSL_free)       (SSL *ssl) = NULL;
-static int (*K_SSL_shutdown)    (SSL *ssl) = NULL;
-static SSL_CTX *(*K_SSL_CTX_new)(SSL_METHOD *method) = NULL;
-static void (*K_SSL_CTX_free)   (SSL_CTX *ctx) = NULL;
-static int (*K_SSL_set_fd)      (SSL *ssl, int fd) = NULL;
-static int (*K_SSL_pending)     (SSL *ssl) = NULL;
-static int (*K_SSL_CTX_set_cipher_list)(SSL_CTX *ctx, const char *str) = NULL;
-static void (*K_SSL_CTX_set_verify)(SSL_CTX *ctx, int mode,
-                         int (*verify_callback)(int, X509_STORE_CTX *)) = NULL;
-static int (*K_SSL_CTX_use_certificate)(SSL_CTX *ctx, X509 *x) = NULL;
-static SSL_CIPHER *(*K_SSL_get_current_cipher)(SSL *ssl) = NULL;
-static long (*K_SSL_ctrl)      (SSL *ssl,int cmd, long larg, char *parg) = NULL;
-static int (*K_RAND_egd)        (const char *path) = NULL;
+static int (*K_SSL_connect)     (SSL *) = NULL;
+static int (*K_SSL_read)        (SSL *, void *, int) = NULL;
+static int (*K_SSL_write)       (SSL *, const void *, int) = NULL;
+static SSL *(*K_SSL_new)        (SSL_CTX *) = NULL;
+static void (*K_SSL_free)       (SSL *) = NULL;
+static int (*K_SSL_shutdown)    (SSL *) = NULL;
+static SSL_CTX *(*K_SSL_CTX_new)(SSL_METHOD *) = NULL;
+static void (*K_SSL_CTX_free)   (SSL_CTX *) = NULL;
+static int (*K_SSL_set_fd)      (SSL *, int) = NULL;
+static int (*K_SSL_pending)     (SSL *) = NULL;
+static int (*K_SSL_CTX_set_cipher_list)(SSL_CTX *, const char *) = NULL;
+static void (*K_SSL_CTX_set_verify)(SSL_CTX *, int,
+                         int (*)(int, X509_STORE_CTX *)) = NULL;
+static int (*K_SSL_use_certificate)(SSL *, X509 *) = NULL;
+static SSL_CIPHER *(*K_SSL_get_current_cipher)(SSL *) = NULL;
+static long (*K_SSL_ctrl)      (SSL *,int, long, char *) = NULL;
+static int (*K_RAND_egd)        (const char *) = NULL;
 static SSL_METHOD * (*K_TLSv1_client_method) () = NULL;
 static SSL_METHOD * (*K_SSLv2_client_method) () = NULL;
 static SSL_METHOD * (*K_SSLv3_client_method) () = NULL;
@@ -87,6 +87,8 @@ static void (*K_PKCS12_free) (PKCS12 *) = NULL;
 static int (*K_PKCS12_parse) (PKCS12*, const char *, EVP_PKEY**, 
                                              X509**, STACK_OF(X509)**) = NULL;
 static void (*K_EVP_PKEY_free) (EVP_PKEY *) = NULL;
+static int (*K_SSL_CTX_use_PrivateKey) (SSL_CTX*, EVP_PKEY*) = NULL;
+static int (*K_SSL_CTX_use_certificate) (SSL_CTX*, X509*) = NULL;
 #endif    
 };
 
@@ -217,7 +219,7 @@ KConfig *cfg;
       K_SSL_CTX_set_cipher_list = (int (*)(SSL_CTX *, const char *))
                                   _sslLib->symbol("SSL_CTX_set_cipher_list");
       K_SSL_CTX_set_verify = (void (*)(SSL_CTX*, int, int (*)(int, X509_STORE_CTX*))) _sslLib->symbol("SSL_CTX_set_verify");
-      K_SSL_CTX_use_certificate = (int (*)(SSL_CTX*, X509*)) 
+      K_SSL_use_certificate = (int (*)(SSL*, X509*)) 
                                   _sslLib->symbol("SSL_CTX_use_certificate");
       K_SSL_get_current_cipher = (SSL_CIPHER *(*)(SSL *)) 
                                   _sslLib->symbol("SSL_get_current_cipher");
@@ -232,6 +234,8 @@ KConfig *cfg;
       K_SSL_CIPHER_get_version = (char * (*)(SSL_CIPHER *)) _sslLib->symbol("SSL_CIPHER_get_version");
       K_SSL_CIPHER_get_name = (const char * (*)(SSL_CIPHER *)) _sslLib->symbol("SSL_CIPHER_get_name");
       K_SSL_CIPHER_description = (char * (*)(SSL_CIPHER *, char *, int)) _sslLib->symbol("SSL_CIPHER_description");
+      K_SSL_CTX_use_PrivateKey = (int (*)(SSL_CTX*, EVP_PKEY*)) _sslLib->symbol("SSL_CTX_use_PrivateKey");
+      K_SSL_CTX_use_certificate = (int (*)(SSL_CTX*, X509*)) _sslLib->symbol("SSL_CTX_use_certificate");
 #endif
 
 
@@ -350,8 +354,8 @@ void KOpenSSLProxy::SSL_CTX_set_verify(SSL_CTX *ctx, int mode,
 }
 
 
-int KOpenSSLProxy::SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x) {
-   if (K_SSL_CTX_use_certificate) return (K_SSL_CTX_use_certificate)(ctx, x);
+int KOpenSSLProxy::SSL_use_certificate(SSL *ssl, X509 *x) {
+   if (K_SSL_use_certificate) return (K_SSL_use_certificate)(ssl, x);
    return -1;
 }
 
@@ -607,6 +611,20 @@ int KOpenSSLProxy::PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey,
 void KOpenSSLProxy::EVP_PKEY_free(EVP_PKEY *x) {
    if (K_EVP_PKEY_free) (K_EVP_PKEY_free)(x);
 }
+
+
+int KOpenSSLProxy::SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey) {
+   if (K_SSL_CTX_use_PrivateKey) return (K_SSL_CTX_use_PrivateKey)(ctx,pkey);
+   else return -1;
+}
+
+
+int KOpenSSLProxy::SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x) {
+   if (K_SSL_CTX_use_certificate) return (K_SSL_CTX_use_certificate)(ctx,x);
+   else return -1;
+}
+
+
 
 #endif
 

@@ -133,9 +133,9 @@ public:
                          int (*verify_callback)(int, X509_STORE_CTX *));
 
    /*
-    *   SSL_CTX_use_certificate - load certificate and key data
+    *   SSL_use_certificate - load certificate
     */
-   int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x);
+   int SSL_use_certificate(SSL *ssl, X509 *x);
 
    /*
     *   SSL_get_current_cipher - get SSL_CIPHER of a connection
@@ -210,6 +210,19 @@ public:
     *   SSL_CIPHER_description - get the description of this cipher
     */
    char *SSL_CIPHER_description(SSL_CIPHER *,char *buf,int size);
+
+
+   /*
+    *   SSL_CTX_use_PrivateKey - set the private key for the session.
+    *                          - for use with client certificates
+    */
+   int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey);
+
+
+   /*
+    *   SSL_CTX_use_certificate - set the client certificate for the session.
+    */
+   int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x);
 
 
    /*
