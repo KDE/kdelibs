@@ -39,7 +39,7 @@ KInstance::KInstance( const QCString& name)
     _config = 0;
     _dirs = 0;
 
-    kdWarning() << "Instance " << _name.data() << " has no about data" << endl;
+    kdDebug() << "Instance " << _name.data() << " has no about data" << endl;
 }
 
 KInstance::KInstance( const KAboutData * aboutData )
