@@ -127,7 +127,17 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         ev->accept();
                         return true;
                     case Key_Up:
-                        up();
+
+                        // If there is no selected item and we've popped up above
+                        // our parent, select the first item when they press up.
+
+			if ( selectedItem() ||
+                             mapToGlobal( QPoint( 0, 0 ) ).y() >
+                             d->m_parent->mapToGlobal( QPoint( 0, 0 ) ).y() )
+                            up();
+                        else
+                            down();
+
                         ev->accept();
                         return true;
                     case Key_Prior:
