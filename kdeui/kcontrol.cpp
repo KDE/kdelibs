@@ -35,6 +35,11 @@ KControlDialog::KControlDialog()
   helpBtn->resize(helpBtn->sizeHint());
   helpBtn->move(7, height() - helpBtn->height() - 6);
 
+  // Create default button
+  defaultBtn = new QPushButton(klocale->translate("Default"), this);
+  defaultBtn->resize(defaultBtn->sizeHint());
+  defaultBtn->move(helpBtn->width()+16, height() - defaultBtn->height() - 6);
+
   // set the default buttons
   setOKButton(klocale->translate("OK"));
   setApplyButton(klocale->translate("Apply"));
@@ -56,6 +61,8 @@ void KControlDialog::resizeEvent(QResizeEvent *event)
 
   if (helpBtn)
     helpBtn->move(7, height() - helpBtn->height() - 6);
+  if (defaultBtn)
+    defaultBtn->move(16+helpBtn->width(), height() - helpBtn->height() - 6);
 }
 
 
@@ -86,6 +93,7 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
   // connect the buttons
   connect(dialog, SIGNAL(applyButtonPressed()), this, SLOT(apply()));
   connect(dialog->helpBtn, SIGNAL(pressed()), this, SLOT(help()));
+  connect(dialog->defaultBtn, SIGNAL(pressed()), this, SLOT(defaultValues()));
 
   // set dialog as main widget
   setMainWidget(dialog);

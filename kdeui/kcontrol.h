@@ -65,6 +65,7 @@ protected slots:
 private:
 
   QPushButton *helpBtn;
+  QPushButton *defaultBtn;
 };
 
 
@@ -86,6 +87,9 @@ public:
 
   /// Applies the settings.
   virtual void applySettings() = 0;
+  
+  /// Sets default values.
+  virtual void defaultSettings() {};
 };   
 
 
@@ -185,6 +189,12 @@ public slots:
   virtual void help();
 
 
+  /** This function is called when the user presses the default button.
+  
+      This function must be overriden by all setup application.
+  */
+  virtual void defaultValues() {};
+  
 protected:
 
   KControlDialog *dialog;
