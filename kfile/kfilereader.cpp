@@ -65,7 +65,6 @@
 #include <kio/job.h>
 #include <kdebug.h>
 #include <config-kfile.h>
-#include <kdebug.h>
 
 template class QList<QRegExp>;
 
@@ -293,7 +292,7 @@ void KFileReader::startLoading()
 {
     if (myJob != 0) // sorry, get out of my way
 	myJob->kill();
-
+    // debug("KFileReader::startLoading( %s )", this->url().latin1());
     myJob = KIO::listDir(*this);
     CHECK_PTR(myJob);
 

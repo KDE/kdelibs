@@ -116,7 +116,7 @@ void KDirOperator::readNextMimeType()
     }
 
     KFileViewItem *item = pendingMimeTypes.first();
-    const QPixmap p = item->pixmap();
+    const QPixmap& p = item->pixmap();
     (void) item->mimeType();
 
     if ( item->pixmap().serialNumber() != p.serialNumber() ) // reloads the pixmap in case
@@ -711,9 +711,8 @@ void KDirOperator::insertNewFiles(const KFileViewItemList &newone, bool ready)
 	fileView->addItemList(newone);
 
     KFileViewItemListIterator it(newone);
-    for( ; it.current(); ++it ) {
-        KFileViewItem *item = it.current();
-
+    KFileViewItem *item = 0L;
+    for( ; (item = it.current()); ++it ) {
 	if ( isLocal && !item->isHidden() )
 	    pendingMimeTypes.append( item );
     }
@@ -996,7 +995,7 @@ void KDirOperator::updateSortActions()
 
     dirsFirstAction->setChecked( KFile::isSortDirsFirst( mySorting ));
     caseInsensitiveAction->setChecked(KFile::isSortCaseInsensitive(mySorting));
-    
+
     byNameAction->blockSignals( false );
     byDateAction->blockSignals( false );
     bySizeAction->blockSignals( false );
@@ -1010,14 +1009,14 @@ void KDirOperator::updateViewActions()
     separateDirsAction->blockSignals( true );
     shortAction->blockSignals( true );
     detailedAction->blockSignals( true );
-    
+
     KFile::FileView fv = static_cast<KFile::FileView>( viewKind );
-    
+
     separateDirsAction->setChecked( KFile::isSeparateDirs( fv ));
- 
+
     shortAction->setChecked( KFile::isSimpleView( fv ));
     detailedAction->setChecked( KFile::isDetailView( fv ));
-    
+
     separateDirsAction->blockSignals( false );
     shortAction->blockSignals( false );
     detailedAction->blockSignals( false );
@@ -1064,7 +1063,7 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     mySorting = static_cast<QDir::SortSpec>( sorting );
     setSorting( mySorting );
 
-    
+
     if ( kc->readBoolEntry( QString::fromLatin1("Show hidden files"),
 			    DefaultShowHidden ) )
 	 showHiddenAction->setChecked( true );
@@ -1084,7 +1083,7 @@ void KDirOperator::saveConfig( KConfig *kc, const QString& group )
 
     if ( !group.isEmpty() )
 	kc->setGroup( group );
- 
+
     QString sortBy = QString::fromLatin1("Name");
     if ( KFile::isSortBySize( mySorting ) )
 	sortBy = QString::fromLatin1("Size");

@@ -8,7 +8,7 @@ const int kfile_area = 250;
 #define DefaultMixDirsAndFiles false
 #define DefaultShowStatusLine false
 #define DefaultShowHidden false
-#define DefaultCaseInsensitive true
+#define DefaultCaseInsensitive false
 #define DefaultDirsFirst true
 #define DefaultSortReversed false
 #define DefaultRecentURLsNumber 10

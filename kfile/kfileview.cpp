@@ -119,9 +119,7 @@ void KFileView::addItemList(const KFileViewItemList &list)
     KFileViewItem *tmp, *tfirst = 0;
     int counter = 0;
 
-    for (KFileViewItemListIterator it(list); it.current(); ++it) {
-
-	tmp = it.current();
+    for (KFileViewItemListIterator it(list); (tmp = it.current()); ++it) {
 
 	if (!updateNumbers(tmp))
 	    continue;
@@ -137,6 +135,7 @@ void KFileView::addItemList(const KFileViewItemList &list)
 	tmp->setNext(tfirst);
 	tfirst = tmp;
     }
+
     insertSorted(tfirst, counter);
 }
 
@@ -154,8 +153,9 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 	sortedArray[index] = it;
 
     ASSERT(index == counter);
-
+    //debug("quicksort -- optimize here");
     QuickSort(sortedArray, 0, counter - 1);
+    //debug("end quicksort");
     tfirst = sortedArray[0];
     tfirst->setNext(0);
 
@@ -173,7 +173,7 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
     clearView();
     if ( myFirstItem == tfirst ) // we're probably just resorting, not adding atims
 	myFirstItem = 0L;
-    
+
     myFirstItem = mergeLists(myFirstItem, tfirst);
 
     for (it = myFirstItem; it; it = it->next())
@@ -340,7 +340,7 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
       QDir::SortSpec sort = static_cast<QDir::SortSpec>(mySorting & QDir::SortByMask);
 
       if (fi1->isDir() || fi2->isDir())
-      sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
+	  sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
 
       switch (sort) {
       case QDir::Unsorted:
