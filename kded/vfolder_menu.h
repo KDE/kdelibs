@@ -33,9 +33,25 @@ class VFolderMenu : public QObject
 {
   Q_OBJECT
 public:
-  class SubMenu;
+  class appsInfo;
+  class SubMenu {
+  public:
+     SubMenu() : items(43),isDeleted(false),apps_info(0) { }
+     ~SubMenu() { subMenus.setAutoDelete(true); }
+  
+  public:
+     QString name;
+     QString directoryFile;
+     QPtrList<SubMenu> subMenus;
+     QDict<KService> items;
+     QDict<KService> excludeItems; // Needed when merging due to Move.
+     QDomElement defaultLayoutNode;
+     QDomElement layoutNode;
+     bool isDeleted;
+     QStringList layoutList;
+     appsInfo *apps_info;
+  };
 
-public:
   VFolderMenu();
   ~VFolderMenu();
 
@@ -69,8 +85,6 @@ signals:
   void newService(const QString &path, KService **entry);
 
 public:
-  class SubMenu;
-  class appsInfo;
   struct MenuItem 
   {
     enum Type { MI_Service, MI_SubMenu, MI_Separator };
@@ -79,24 +93,6 @@ public:
        KService *service;
        SubMenu  *submenu;
     } data;
-  };
-
-  class SubMenu {
-  public:
-     SubMenu() : items(43),isDeleted(false),apps_info(0) { }
-     ~SubMenu() { subMenus.setAutoDelete(true); }
-  
-  public:
-     QString name;
-     QString directoryFile;
-     QPtrList<SubMenu> subMenus;
-     QDict<KService> items;
-     QDict<KService> excludeItems; // Needed when merging due to Move.
-     QDomElement defaultLayoutNode;
-     QDomElement layoutNode;
-     bool isDeleted;
-     QStringList layoutList;
-     appsInfo *apps_info;
   };
 
 public:  
