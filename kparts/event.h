@@ -28,6 +28,9 @@ namespace KParts
 {
 class Part;
 
+/**
+ * Base class for all KParts events.
+ */
 class Event : public QCustomEvent
 {
 public:
@@ -39,6 +42,13 @@ public:
   static bool test( const QEvent *event, const char *name );
 };
 
+/**
+ * This event is sent to a Part when its GUI has been activated or deactivated.
+ * @see KParts::Part::guiActivateEvent
+ * This is related to PartActivateEvent, but the difference is that
+ * GUIActivateEvent happens later (when the GUI is actually built),
+ * only for parts that have GUI elements, and only if using KParts::MainWindow.
+ */
 class GUIActivateEvent : public Event
 {
 public:
@@ -53,6 +63,14 @@ private:
   bool m_bActivated;
 };
 
+/**
+ * This event is sent by the part manager when the active part changes.
+ * Each time the active part changes, it will send first a PartActivateEvent
+ * with activated=false, part=oldActivePart, widget=oldActiveWidget
+ * and then another PartActivateEvent
+ * with activated=true, part=newPart, widget=newWidget.
+ * @see KParts::Part::partActivateEvent
+ */
 class PartActivateEvent : public Event
 {
 public:
@@ -72,6 +90,10 @@ private:
   QWidget *m_widget;
 };
 
+/**
+ * This event is sent when a part is selected or deselected.
+ * @see KParts::PartManager::setSelectionPolicy
+ */
 class PartSelectEvent : public Event
 {
 public:
