@@ -730,6 +730,15 @@ void KStyle::drawControl( ControlElement element,
 
 			break;
 		}
+		
+		// Popup menu scroller
+		// ------------------------------------------------------------------------
+		case CE_PopupMenuScroller: {
+			p->fillRect(r, cg.background());
+			drawPrimitive(PE_ButtonTool, p, r, cg, Style_Enabled);
+			drawPrimitive((flags & Style_Up) ? PE_ArrowUp : PE_ArrowDown, p, r, cg, Style_Enabled);
+			break;
+		}
 
 
 		// PROGRESSBAR
@@ -828,7 +837,7 @@ void KStyle::drawControl( ControlElement element,
 					crect.setRect(cr.x()+(cr.width()-width), cr.y(), cr.width(), cr.height());
 				else
 					crect.setRect(cr.x()+width, cr.y(), cr.width(), cr.height());
-
+					
 				p->save();
 				p->setPen(pb->isEnabled() ? (reverse ? cg.text() : cg.highlightedText()) : cg.text());
 				p->drawText(r, AlignCenter, pb->progressString());
@@ -978,6 +987,8 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 		case PM_ToolBarItemSpacing:
 			return 0;
 #endif
+		case PM_PopupMenuScrollerHeight:
+			return pixelMetric( PM_ScrollBarExtent, 0);
 
 		default:
 			return QCommonStyle::pixelMetric( m, widget );
@@ -2133,5 +2144,6 @@ void KStyle::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 // vim: set noet ts=4 sw=4:
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;
 
 #include "kstyle.moc"
