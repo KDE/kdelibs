@@ -1684,7 +1684,7 @@ void KFileDialog::addToRecentDocuments()
     else { // urls
         KURL::List urls = selectedURLs();
         KURL::List::ConstIterator it = urls.begin();
-        for ( ; it != urls.begin(); ++it ) {
+        for ( ; it != urls.end(); ++it ) {
             if ( (*it).isValid() )
                 KRecentDocument::add( *it );
         }
