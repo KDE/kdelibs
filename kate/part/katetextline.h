@@ -160,15 +160,6 @@ class KateTextLine : public KShared
     { return m_text.mid(startCol, length); }
 
     /**
-     * Gets a substring as constant string.
-     * @param startCol start column of substring
-     * @param length lenght of substring
-     * @return wanted substring
-     */
-    inline QConstString constString(uint startCol, uint length) const
-    { return QConstString(m_text.unicode() + startCol, length); }
-
-    /**
      * Gets a null terminated pointer to first non space char
      * @return array of QChars starting at first non-whitespace char
      */
