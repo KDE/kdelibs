@@ -1669,7 +1669,7 @@ typedef const char* (*NameLookupFunction)(unsigned short id);
 typedef int (*IdLookupFunction)(const char *tagStr, int len);
 
 NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_prefix,
-                                  DOMStringImpl *_name, bool readonly, bool lookupHTML, int *pExceptioncode)
+                                  DOMStringImpl *_name, bool readonly, bool /*lookupHTML*/, int *pExceptioncode)
 {
     /*kdDebug() << "DocumentImpl::getId( type: " << _type << ", uri: " << DOMString(_nsURI).string()
               << ", prefix: " << DOMString(_prefix).string() << ", name: " << DOMString(_name).string()
@@ -1701,50 +1701,49 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         return 0;
     }
 
-    NodeImpl::Id id = 0;
+    NodeImpl::Id id, nsid = 0;
     QConstString n(_name->s, _name->l);
     bool cs = true; // case sensitive
-    if (lookupHTML && _type != NodeImpl::NamespaceId) {
+    if (_type != NodeImpl::NamespaceId) {
+        if (_nsURI) 
+            nsid = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 ) << 16;
+
         // Each document maintains a mapping of tag name -> id for every tag name encountered
         // in the document.
-        cs = (htmlMode() == XHtml);
-        // First see if it's a HTML element name
-        if ((!_nsURI && isHTMLDocument()) || !strcasecmp(_nsURI, XHTML_NAMESPACE)) {
-            // we're in HTML namespace if we know the tag.
+        cs = (htmlMode() == XHtml) || (_nsURI && _type != NodeImpl::AttributeId);
+
+        if (!nsid) {
+            // First see if it's a HTML element name
             // xhtml is lower case - case sensitive, easy to implement
             if ( cs && (id = lookup(n.string().ascii(), _name->l)) )
                 return id;
             // compatibility: upper case - case insensitive
             if ( !cs && (id = lookup(n.string().lower().ascii(), _name->l )) )
                 return id;
-            // ok, the fast path didn't work out, we need the full check
         }
     }
-    // now lets find out the namespace
-    if (_type != NodeImpl::NamespaceId && _nsURI)
-        id = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 ) << 16;
 
     // Look in the names array for the name
     // compatibility mode has to lookup upper case
     QString name = cs ? n.string() : n.string().upper();
-    NodeImpl::Id tmp;
+
     if (!_nsURI) {
-        tmp = (NodeImpl::Id) map->ids.find( name );
-        if (!tmp)
-            tmp = (NodeImpl::Id) map->ids.find( "aliases: " + name );
+        id = (NodeImpl::Id) map->ids.find( name );
+        if (!id && _type != NodeImpl::NamespaceId)
+            id = (NodeImpl::Id) map->ids.find( "aliases: " + name );
     } else {
-        tmp = (NodeImpl::Id) map->ids.find( name );
-        if (!readonly && tmp && _prefix && _prefix->l) {
+        id = (NodeImpl::Id) map->ids.find( name );
+        if (!readonly && id && _prefix && _prefix->l) {
             // we were called in registration mode... check if the alias exists
             QConstString px( _prefix->s, _prefix->l );
             QString qn("aliases: " + (cs ? px.string() : px.string().upper()) + ":" + name);
             if (!map->ids.find( qn )) {
-                map->ids.insert( qn, (void*)tmp );
+                map->ids.insert( qn, (void*)id );
             }
         }
     }
 
-    if(tmp) return id + tmp;
+    if (id) return nsid + id;
 
     // unknown
     if (readonly) return 0;
@@ -1774,7 +1773,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         map->ids.resize( khtml::nextSeed(map->ids.count()) );
     if (map->names.size() == map->names.count() && map->names.size() != khtml_MaxSeed)
         map->names.resize( khtml::nextSeed(map->names.count()) );
-    return id + cid;
+    return nsid + cid;
  }
 
 NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly, bool lookupHTML, int *pExceptioncode)
