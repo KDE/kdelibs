@@ -49,8 +49,6 @@
 #include <qdrawutil.h>
 #include <qregexp.h>
 
-#include "khtmlobj.h"
-
 // Debug function
 void debugM( const char *msg , ...);
 
