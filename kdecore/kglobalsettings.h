@@ -34,6 +34,7 @@
 #define KDE_DEFAULT_ICON_ON_PUSHBUTTON false
 #define KDE_DEFAULT_OPAQUE_RESIZE true
 #define KDE_DEFAULT_BUTTON_LAYOUT 0
+#define KDE_DEFAULT_SHADE_SORT_COLUMN true
 
 class KURL;
 
@@ -356,6 +357,13 @@ class KDECORE_EXPORT KGlobalSettings
      */
     static QColor calculateAlternateBackgroundColor(const QColor& base);
 
+    /**
+      * Returns if the sorted column in a KListView shall be drawn with a
+      * shaded background color.
+      * @return true if the sorted column shall be shaded
+      * @since 3.4
+      */
+    static bool shadeSortColumn();
 
     /**
      * Returns the default general font.

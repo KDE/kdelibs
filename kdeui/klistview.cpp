@@ -101,7 +101,7 @@ public:
       paintCurrent (0),
       paintBelow (0),
       painting (false),
-      shadeSortColumn (false)
+      shadeSortColumn(KGlobalSettings::shadeSortColumn())
   {
       renameable.append(0);
       connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));

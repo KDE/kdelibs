@@ -283,6 +283,12 @@ QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
     }
 }
 
+bool KGlobalSettings::shadeSortColumn()
+{
+    KConfigGroup g( KGlobal::config(), "General" );
+    return g.readBoolEntry( "shadeSortColumn", KDE_DEFAULT_SHADE_SORT_COLUMN );
+}
+
 QColor KGlobalSettings::linkColor()
 {
     initColors();
