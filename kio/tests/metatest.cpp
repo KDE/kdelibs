@@ -14,8 +14,9 @@ int main( int argc, char **argv )
     else 
       u.setPath("/tmp/metatest.txt");
     
-    if (!prov) return 1;
     KFileMetaInfo* info = prov->metaInfo( u );
+
+    if (!info) return 1;
     
     QStringList l = info->supportedKeys();
     QStringList::Iterator it;
