@@ -284,7 +284,7 @@ RenderObject *RenderObject::containingBlock() const
     // the case below should never happen...
     if(!o) {
 	if(!isRoot()) {
-	    assert ( false );
+	    //assert ( false );
 	    kdDebug( 6040 ) << renderName() << "(RenderObject): No containingBlock!" << endl;
 	}
 	return const_cast<RenderObject *>(this);
@@ -505,34 +505,34 @@ void RenderObject::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
     _x = _y = height = -1;
 }
 
-int RenderObject::paddingTop() const 
-{ 
+int RenderObject::paddingTop() const
+{
     int cw=0;
     if (style()->width().isPercent())
         cw = containingBlock()->contentWidth();
-    return m_style->paddingTop().minWidth(cw); 
+    return m_style->paddingTop().minWidth(cw);
 }
 
-int RenderObject::paddingBottom() const 
-{ 
+int RenderObject::paddingBottom() const
+{
     int cw=0;
     if (style()->width().isPercent())
         cw = containingBlock()->contentWidth();
-    return m_style->paddingBottom().minWidth(cw); 
+    return m_style->paddingBottom().minWidth(cw);
 }
 
-int RenderObject::paddingLeft() const 
-{ 
+int RenderObject::paddingLeft() const
+{
     int cw=0;
     if (style()->width().isPercent())
         cw = containingBlock()->contentWidth();
-    return m_style->paddingLeft().minWidth(cw); 
+    return m_style->paddingLeft().minWidth(cw);
 }
 
-int RenderObject::paddingRight() const 
-{ 
+int RenderObject::paddingRight() const
+{
     int cw=0;
     if (style()->width().isPercent())
         cw = containingBlock()->contentWidth();
-    return m_style->paddingRight().minWidth(cw); 
+    return m_style->paddingRight().minWidth(cw);
 }

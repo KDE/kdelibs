@@ -115,14 +115,51 @@ void RenderListItem::calcListValue()
 
 void RenderListItem::layout( )
 {
+    if ( !checkChildren() ) {
+	m_height = 0;
+	//kdDebug(0) << "empty item" << endl;
+	return;
+    }
     calcListValue();
     m_marker->layout();
     RenderFlow::layout();
 }
 
+// this function checks if there is other rendered contents in the list item than a marker. If not, the whole
+// list item will not get printed.
+bool RenderListItem::checkChildren() const
+{
+    //kdDebug(0) << " checkCildren" << endl;
+    if(!m_first)
+	return false;
+    RenderObject *o = m_first->nextSibling();
+    while( o ) {
+	//kdDebug(0) << "checking " << renderName() << endl;
+	if ( o->isText() || o->isReplaced() ) {
+	    //kdDebug(0) << "found" << endl;
+	    return true;
+	}
+	RenderObject *next = o->firstChild();
+	if ( !next )
+	    next = o->nextSibling();
+	while ( !next && o->parent() != this ) {
+	    o = o->parent();
+	    next =  o->nextSibling();
+	}
+	if( !next )
+	    break;
+	o = next;
+    }
+    //kdDebug(0) << "not found" << endl;
+    return false;
+}
+
 void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
 			     int _tx, int _ty)
 {
+    if ( !m_height )
+	return;
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << nodeName().string() << "(LI)::print()" << endl;
 #endif
