@@ -136,6 +136,18 @@ QString KIO::kioErrorString( int _errid, const char *_errortext )
       else
         result = i18n( "Warning: MD5 Checksum for %1 does not match checksum returned from server" ).arg("document");
       break;
+    case KIO::ERR_CANNOT_DELETE_ORIGINAL:
+      result = i18n( "Could not delete original file %1.\nPlease check permissions." ).arg( _errortext );
+      break;
+    case KIO::ERR_CANNOT_DELETE_PARTIAL:
+      result = i18n( "Could not delete partial file %1.\nPlease check permissions." ).arg( _errortext );
+      break;
+    case KIO::ERR_CANNOT_RENAME_ORIGINAL:
+      result = i18n( "Could not rename original file %1.\nPlease check permissions." ).arg( _errortext );
+      break;
+    case KIO::ERR_CANNOT_RENAME_PARTIAL:
+      result = i18n( "Could not rename partial file %1.\nPlease check permissions." ).arg( _errortext );
+      break;
     default:
       result = i18n( "Unknown error code %1\n%2\n\nPlease send a full bugreport at http://bugs.kde.org" ).arg(_errid ).arg(_errortext);
       break;
