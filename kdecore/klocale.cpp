@@ -421,20 +421,6 @@ void KLocale::setLanguage(const QString &_lang)
   delete cats;
 }
 
-void KLocale::setCountry(const QString &number, const QString &money, const QString &time)
-{
-  if (!number.isNull()) _number = number;
-  if (!money.isNull()) _money = money;
-  if (!time.isNull()) _time = time;
-
-  initFormat(KGlobal::instance()->config());
-}
-
-void KLocale::setCountry(const QString &country)
-{
-  setCountry(country, country, country);
-}
-
 void KLocale::insertCatalogue( const QString& catalogue )
 {
     k_bindtextdomain ( catalogue.ascii() ,

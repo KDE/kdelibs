@@ -98,12 +98,6 @@ public:
     void setLanguage(const QString &_lang);
 
     /**
-     * Allows programs such as kcmlocale to choose how to format numbers etc.
-     */
-    void setCountry(const QString &country);
-    void setCountry(const QString &_number, const QString &_money, const QString &_time);
-
-    /**
      * Various positions for where to place the positive or negative
      * sign when they are related to a monetary value.
      */
@@ -435,7 +429,6 @@ protected:
     QString _datefmt;
     QString _datefmtshort;
 
-private:
     QStrList *catalogues;
     QIntDict<QString> aliases;
     bool _inited;
