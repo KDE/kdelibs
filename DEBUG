@@ -1,0 +1,158 @@
+Introduction
+============
+
+This is a short tutorial on debugging KDE applications. Throughout this
+tutorial I will use "kedit" as example application.
+ 
+
+Debugging with GDB
+==================
+
+The recommended version of gdb to use is version 4.95 or higher, older 
+versions have problems generating proper backtraces.
+
+There are three ways to debug an application with gdb:
+
+1) You can start the application from within gdb.
+2) You can attach gdb to an already running application.
+3) You can run gdb after an application has crashed using a core file.
+
+
+Starting applications from within gdb
+=====================================
+
+To start an application with gdb you can start gdb as follows:
+
+> gdb kedit
+GNU gdb 4.95.0
+Copyright 2000 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "i686-pc-linux-gnu"...
+(gdb) 
+
+You can now set the command line arguments that you want to pass to kedit with 
+the gdb command "set args":
+
+(gdb) set args myfile.txt
+(gdb) 
+
+gdb has loaded the kedit executable on startup but it hasn't loaded any of 
+the libraries yet. This means that you can set any breakpoints in the 
+libraries yet. The easiest way to do that is to set a breakpoint in the
+first line of main and then start the program:
+
+(gdb) break main
+Breakpoint 1 at 0x804855c
+(gdb) run
+Starting program: /ext/kde2.0/bin/kedit myfile.txt
+Breakpoint 1 at 0x4002cf18: file kedit.cpp, line 1595.
+ 
+Breakpoint 1, main (argc=2, argv=0xbffff814) at kedit.cpp:1595
+1595            bool have_top_window = false;
+Current language:  auto; currently c++
+(gdb)  
+
+You can now set breakpoints everywhere. For example lets set a breakpoint 
+in the KApplication constructor. Unfortunately gdb is not very good in 
+handling C++ names, so it is not really possible to specify the constructor
+directly after the break command. Instead we look up a line of source
+code where we want to place the breakpoint. An external editor is of great 
+use at this point. With the list command we can select the source file we
+are interested in and verify that we have found the correct source line:
+
+(gdb) list kapp.cpp:220
+215         parseCommandLine( argc, argv );
+216     }
+217
+218     KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
+219       QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+220                     GUIenabled ),
+221       KInstance( KCmdLineArgs::about),
+222       d (new KApplicationPrivate)
+223     {
+224         if (!GUIenabled)
+(gdb) break 224
+Breakpoint 2 at 0x4048aa7e: file kapp.cpp, line 224.
+(gdb) 
+
+We can now continue the execution of kedit. Execution will stop when it hits
+a breakpoint of when the program exits. In this case execution will stop
+in the first line of the KApplication constructor:
+
+(gdb) continue
+Continuing.
+Qt: gdb: -nograb added to command-line options.
+         Use the -dograb option to enforce grabbing.
+ 
+Breakpoint 2, KApplication::KApplication (this=0xbffff6a8, allowStyles=true,
+    GUIenabled=true) at kapp.cpp:224
+224         if (!GUIenabled)
+(gdb) 
+
+
+Attaching gdb to already running applications
+=============================================
+
+Sometimes it is not practical to start an application from within gdb.
+E.g. in those cases where you didn't know the application was about to
+crash :-) When you get the friendly DrKonqi dialog informing you about 
+a crash you are just in time to start your debugger.
+
+First lets attach gdb to an application that hasn't crashed (yet).
+
+You start with finding the process of the appplication with e.g. "ps -aux":
+
+> ps -aux | grep kedit 
+bastian  21570 15.1  6.8 13740 8800 pts/6    S    15:34   0:01 kedit
+bastian  21582  0.0  0.3  1132  412 pts/6    R    15:34   0:00 grep kedit
+
+From this you learn that kedit has process id 21570. Now you can start gdb as
+follows:
+
+> gdb kedit 21570
+GNU gdb 4.95.0
+Copyright 2000 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "i686-pc-linux-gnu"...
+/home1/bastian/21570: No such file or directory.
+Attaching to program: /ext/kde2.0/bin/kedit, Pid 21570
+Reading symbols from /ext/kde2.0/lib/kedit.so.0...done.
+Loaded symbols for /ext/kde2.0/lib/kedit.so.0
+....
+Reading symbols from /lib/ld-linux.so.2...done.
+Loaded symbols for /lib/ld-linux.so.2
+Reading symbols from /lib/libnss_compat.so.2...done.
+Loaded symbols for /lib/libnss_compat.so.2
+Reading symbols from /lib/libnsl.so.1...done.
+Loaded symbols for /lib/libnsl.so.1
+0x40c3d88e in __select () from /lib/libc.so.6
+(gdb)  
+
+You will usually end up in the middle of a select() call from the event-loop.
+This is the place where a KDE application spends most of its time, waiting
+for things to happen.
+
+A backtrace will typically look something like this:
+
+(gdb) bt
+#0  0x40c3d88e in __select () from /lib/libc.so.6
+#1  0x40a22844 in __DTOR_END__ () at fam.c++:356
+#2  0x407293bf in QApplication::enter_loop (this=0xbffff6e8)
+    at kernel/qapplication.cpp:2552
+#3  0x406b1d7b in QApplication::exec (this=0xbffff6e8)
+    at kernel/qapplication_x11.cpp:2217
+#4  0x4002d500 in main (argc=1, argv=0xbffff854) at kedit.cpp:1662
+#5  0x40bbba5e in __libc_start_main (main=0x8048568 <main>, argc=1,
+    argv=0xbffff854, init=0x8048514 <_init>, fini=0x80486cc <_fini>,
+    rtld_fini=0x4000aa20 <_dl_fini>, stack_end=0xbffff84c)
+    at ../sysdeps/generic/libc-start.c:92
+(gdb) 
+
+
+
