@@ -101,7 +101,6 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     setGridX( 160 );
     setWordWrapIconText( false );
     setArrangement( TopToBottom );
-    setVScrollBarMode( AlwaysOff );
     setAutoArrange( true );
     setItemsMovable( false );
     setMode( KIconView::Select );
@@ -493,8 +492,6 @@ void KFileIconView::slotSmallColumns()
     setItemTextPos( Right );
     setArrangement( TopToBottom );
     setWordWrapIconText( false );
-    setVScrollBarMode( AlwaysOff );
-    setHScrollBarMode( Auto );
     setGridX( 160 );
     setIconSize( KIcon::SizeSmall );
 
@@ -508,8 +505,6 @@ void KFileIconView::slotLargeRows()
     setWordWrapIconText( true );
     setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
     setIconSize( KIcon::SizeMedium );
-    setHScrollBarMode( AlwaysOff );
-    setVScrollBarMode( Auto );
     
     arrangeItemsInGrid();
 }
