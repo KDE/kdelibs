@@ -1,5 +1,13 @@
 #ifndef __interface_h__
-#define __interface_h__
+#define __interface_h__ "$Id$"
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <netdb.h>
 
 #include "kio_connection.h"
 
@@ -101,6 +109,8 @@
 #define ERR_OUT_OF_MEMORY 44
 #define ERR_UNKNOWN_PROXY_HOST 45
 #define ERR_COULD_NOT_AUTHENTICATE 46
+#define ERR_IS_REALLY_A_WARNING 47
+#define ERR_WARNING ERR_IS_REALLY_A_WARNING
 
 /************
  *
@@ -309,6 +319,8 @@ public:
   virtual ~IOProtocol() { }
   
   void setConnection( Connection* _conn );
+protected:
+  virtual bool initSockaddr( struct sockaddr_in *server_name, const char *hostname, unsigned int port);
 };
 
 
