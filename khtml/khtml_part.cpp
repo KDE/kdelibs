@@ -179,6 +179,7 @@ public:
   KAction *m_paLoadImages;
   KAction *m_paFind;
   KAction *m_paPrintFrame;
+  KAction *m_paSelectAll;
 
   KParts::PartManager *m_manager;
 
@@ -291,6 +292,8 @@ void KHTMLPart::init( KHTMLView *view )
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame" ), "fileprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
 
+  d->m_paSelectAll = KStdAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
+  
   /*
     if ( !autoloadImages() )
       d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
@@ -975,7 +978,7 @@ void KHTMLPart::findTextBegin()
   d->m_findNode = 0;
 }
 
-bool KHTMLPart::findTextNext( const QRegExp &exp )
+bool KHTMLPart::findTextNext( const QRegExp &exp, bool forward )
 {
     if(!d->m_findNode) d->m_findNode = d->m_doc->body();
 
@@ -999,14 +1002,36 @@ bool KHTMLPart::findTextNext( const QRegExp &exp )
 	    }
 	}
 	d->m_findPos = -1;
-	NodeImpl *next = d->m_findNode->firstChild();
-	if(!next) next = d->m_findNode->nextSibling();
-	while(d->m_findNode && !next) {
-	    d->m_findNode = d->m_findNode->parentNode();
-	    if( d->m_findNode ) {
-		next = d->m_findNode->nextSibling();
-            }
+	
+	NodeImpl *next;
+	
+	if ( forward )
+	{
+     	  next = d->m_findNode->firstChild();
+	
+	  if(!next) next = d->m_findNode->nextSibling();
+	  while(d->m_findNode && !next) {
+	      d->m_findNode = d->m_findNode->parentNode();
+	      if( d->m_findNode ) {
+		  next = d->m_findNode->nextSibling();
+              }
+	  }
 	}
+	else
+	{
+     	  next = d->m_findNode->lastChild();
+	
+	  if (!next ) next = d->m_findNode->previousSibling();
+	  while ( d->m_findNode && !next )
+	  {
+	    d->m_findNode = d->m_findNode->parentNode();
+	    if( d->m_findNode )
+	    {
+	      next = d->m_findNode->previousSibling();
+	    }
+	  }
+	}
+
 	d->m_findNode = next;
 	if(!d->m_findNode) return false;
     }
@@ -1355,12 +1380,13 @@ void KHTMLPart::updateActions()
   if ( frames )
     frame = partManager()->activePart();
 
-  bool enableFind = true;
+  bool enableFindAndSelectAll = true;
 
   if ( frame )
-    enableFind = frame->inherits( "KHTMLPart" );
+    enableFindAndSelectAll = frame->inherits( "KHTMLPart" );
 
-  d->m_paFind->setEnabled( enableFind );
+  d->m_paFind->setEnabled( enableFindAndSelectAll );
+  d->m_paSelectAll->setEnabled( enableFindAndSelectAll );
 
   bool enablePrintFrame = false;
 
@@ -2382,6 +2408,18 @@ void KHTMLPart::slotPrintFrame()
     (ext->*(mdata->ptr))();
 }
 
+void KHTMLPart::slotSelectAll()
+{
+  KHTMLPart *part = this;
+  
+  if ( d->m_frames.count() > 0 )
+    part = static_cast<KHTMLPart *>( partManager()->activePart() );
+  
+  assert( part );
+  
+  part->selectAll();
+}
+
 void KHTMLPart::startAutoScroll()
 {
    connect(&d->m_scrollTimer, SIGNAL( timeout() ), this, SLOT( slotAutoScroll() ));
@@ -2403,6 +2441,44 @@ void KHTMLPart::slotAutoScroll()
     else
       stopAutoScroll(); // Safety
 }
+
+void KHTMLPart::selectAll()
+{
+  NodeImpl *first = d->m_doc->body(); 
+  NodeImpl *next;
+  
+  while ( first && first->id() != ID_TEXT )
+  {
+    next = first->firstChild();
+    if ( !next ) next = first->nextSibling();
+    while( first && !next )
+    {
+      first = first->parentNode();
+      if ( first )
+        next = first->nextSibling();
+    }
+    first = next;
+  }
+  
+  NodeImpl *last = d->m_doc->body();
+  while ( last && last->id() != ID_TEXT )
+  {
+    next = last->lastChild();
+    if ( !next ) next = last->previousSibling();
+    while ( last && !next )
+    {
+      last = last->parentNode();
+      if ( last )
+        next = last->previousSibling();
+    }
+    last = next;
+  }
+  
+  if ( !first || !last )
+    return;
+  
+  d->m_doc->setSelection( first, 0, last, static_cast<TextImpl *>( last )->string()->l-1 );
+} 
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )

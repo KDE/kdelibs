@@ -394,7 +394,7 @@ public:
   /**
    * Find the next occurrance of the expression.
    */
-  bool findTextNext( const QRegExp &exp );
+  bool findTextNext( const QRegExp &exp, bool forward );
 
   /**
    * Find the next occurence of the string.
@@ -418,6 +418,8 @@ public:
    * @return true if there is text selected.
    */
   bool hasSelection() const;
+
+  void selectAll();
 
   /**
    * Convenience method to show the document's view. Equivalent to widget()->show() or view()->show() .
@@ -612,6 +614,8 @@ private slots:
   void slotAutoScroll();
 
   void slotPrintFrame();
+
+  void slotSelectAll();
 
 private:
   void startAutoScroll();

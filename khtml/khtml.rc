@@ -2,6 +2,8 @@
 <kpartgui name="khtmlpart">
 <MenuBar>
  <Menu name="edit">
+  <Action name="selectAll" />
+  <Separator />
   <Action name="find" />
  </Menu>
  <Menu name="view">
