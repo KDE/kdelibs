@@ -421,7 +421,7 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
             int cell = posToCell(mPos);
             if ((cell != -1) && colors[cell].isValid())
             {
-               KColorDrag *d = KColorDrag::makeDrag( colors[cell], this);
+               KColorDrag *d = new KColorDrag( colors[cell], this);
                d->dragCopy();
             }
         }
@@ -516,7 +516,7 @@ void KColorPatch::mouseMoveEvent( QMouseEvent *e )
 {
         // Drag color object
         if( !(e->state() && LeftButton)) return;
-	KColorDrag *d = KColorDrag::makeDrag( color, this);
+	KColorDrag *d = new KColorDrag( color, this);
 	d->dragCopy();
 }
 

@@ -147,7 +147,7 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
     (e->pos()-mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
   {
     // Drag color object
-    KColorDrag *dg = KColorDrag::makeDrag( color(), this);
+    KColorDrag *dg = new KColorDrag( color(), this);
     dg->dragCopy();
     setDown(false);
   }

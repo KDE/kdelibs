@@ -223,9 +223,9 @@ void KDualColorButton::mouseMoveEvent(QMouseEvent *ev)
         int delay = KGlobalSettings::dndEventDelay();
         if(ev->x() >= mPos.x()+delay || ev->x() <= mPos.x()-delay ||
            ev->y() >= mPos.y()+delay || ev->y() <= mPos.y()-delay) {
-            KColorDrag *d = KColorDrag::makeDrag( curColor == Foreground ?
-                                                  fg.color() : bg.color(),
-                                                  this);
+            KColorDrag *d = new KColorDrag( curColor == Foreground ?
+                                            fg.color() : bg.color(),
+                                            this);
             d->dragCopy();
             dragFlag = true;
         }
