@@ -180,14 +180,14 @@ protected slots:
    */
   virtual void settingsChangedSlot();
 
+protected:
   /**
    * Helper function that connects the three dialog buttons to kautoconfig's
    * slots and connects both settingsChanged() signals and widgetModified()
    * signal to the dialog.
    */ 
-  virtual void connectKAutoConfig( KAutoConfig *kautoconfig );
+  virtual void connectKAutoConfig( KAutoConfig *kautoconfig_object );
   
-protected:
   // Pointer to the KAutoConfig object.
   KAutoConfig *kautoconfig;
   // Pointer to the KDialogBase object.

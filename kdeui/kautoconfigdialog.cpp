@@ -46,14 +46,14 @@ KAutoConfigDialog::~KAutoConfigDialog(){
   delete d;
 }
 
-void KAutoConfigDialog::connectKAutoConfig( KAutoConfig *kautoconfig ){
-  connect(kautoconfig, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
-  connect(kautoconfig, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
-  connect(kautoconfig, SIGNAL(widgetModified()), this, SLOT(settingModified()));
+void KAutoConfigDialog::connectKAutoConfig( KAutoConfig *kautoconfig_object ){
+  connect(kautoconfig_object, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
+  connect(kautoconfig_object, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
+  connect(kautoconfig_object, SIGNAL(widgetModified()), this, SLOT(settingModified()));
 
-  connect(kdialogbase, SIGNAL(okClicked()), kautoconfig, SLOT(saveSettings()));
-  connect(kdialogbase, SIGNAL(applyClicked()), kautoconfig, SLOT(saveSettings()));
-  connect(kdialogbase, SIGNAL(defaultClicked()), kautoconfig, SLOT(resetSettings()));
+  connect(kdialogbase, SIGNAL(okClicked()), kautoconfig_object, SLOT(saveSettings()));
+  connect(kdialogbase, SIGNAL(applyClicked()), kautoconfig_object, SLOT(saveSettings()));
+  connect(kdialogbase, SIGNAL(defaultClicked()), kautoconfig_object, SLOT(resetSettings()));
 }
 
 void KAutoConfigDialog::addPage(QWidget *page,
