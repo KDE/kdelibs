@@ -11,13 +11,13 @@
 #include"config.h"
 #endif
 
+#include<qimage.h>
+#include<assert.h>
+
 extern "C" {
 void kimgio_krl_read( QImageIO *io );
 void kimgio_krl_write(QImageIO *io );
 }
-
-#include<qimage.h>
-#include<assert.h>
 
 #define BUF_SIZE 1024
 
@@ -32,7 +32,7 @@ void kimgio_krl_read( QImageIO *iio )
 
 	char buffer[ BUF_SIZE ];
 
-// KRL has a 512 bytes header, although not much of it is used 
+// KRL has a 512 bytes header, although not much of it is used
 	int rbytes = io->readBlock( buffer, 512 );
 
 	if( rbytes < 512 ) {
@@ -46,15 +46,15 @@ w=423;h=279;
 
 	int samples = (int)(w*h);
 
-	//debug( "kimgio_krl_read: image w: %d, h: %d samples: %d", 
+	//debug( "kimgio_krl_read: image w: %d, h: %d samples: %d",
 	//		(int)w, (int)h, samples );
 
 	QImage image( w, h, 32 );
 	rbytes = 0;
-	Q_INT16 *currptr = (Q_INT16 *)buffer, 
+	Q_INT16 *currptr = (Q_INT16 *)buffer,
 			*endptr = (Q_INT16 *) (buffer + BUF_SIZE);
         Q_INT16 min=32766;
-        Q_INT16 max=0; 
+        Q_INT16 max=0;
 
 //First, we have to guess the maximum and minimum
         rbytes = io->readBlock( (char *)buffer, BUF_SIZE );
@@ -67,12 +67,12 @@ w=423;h=279;
                 if (*currptr<min) min=*currptr;
                 if (*currptr>max) max=*currptr;
         }
- 
+
         currptr = (Q_INT16 *)buffer;
         uint *ptr = (uint *)image.bits();
- 
-//Let's do a real read   
-	io->at(512);     
+
+//Let's do a real read
+	io->at(512);
 	for ( int samp = 0; samp < samples; samp++, currptr++, ptr++ ) {
 		if ( currptr >= endptr ) {
 			rbytes = io->readBlock( (char *)buffer, BUF_SIZE );
@@ -104,7 +104,7 @@ void kimgio_krl_write( QImageIO * imageio )
 
    int w=image.width();
    int h=image.height();
-   unsigned char *cc1,*cc2,cc3;    
+   unsigned char *cc1,*cc2,cc3;
    cc1=(unsigned char *)&w;
    cc2=cc1+1;
    cc3=*cc1;
