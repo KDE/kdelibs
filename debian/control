@@ -11,7 +11,7 @@ Package: kdelibs3
 Architecture: any
 Section: libs
 Replaces: kdelibs2g, keystone, kdebase-libs (<< 4:2.2.1-2)
-Depends: ${shlibs:Depends}, python-base, xbase-clients
+Depends: ${shlibs:Depends}, python2.1-base | python-base, xbase-clients
 Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell
 Conflicts: keystone
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
