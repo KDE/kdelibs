@@ -227,7 +227,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             int len = txt.length();
             int key = e->key();
 
-            if ( cursorPosition() == len && txt != old_txt )
+            if ( txt != old_txt )
             {
                 kdDebug() << "Popup Completion" << endl;
                 if ( emitSignals() )
