@@ -79,10 +79,8 @@ RenderFrameSet::~RenderFrameSet()
         if (m_gridLayout[k]) delete [] m_gridLayout[k];
         if (m_gridDelta[k]) delete [] m_gridDelta[k];
     }
-  if (m_hSplitVar)
-      delete [] m_hSplitVar;
-  if (m_vSplitVar)
-      delete [] m_vSplitVar;
+    delete [] m_hSplitVar;
+    delete [] m_vSplitVar;
 }
 
 bool RenderFrameSet::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction,  bool inBox)
@@ -494,12 +492,14 @@ void RenderFrameSet::dump(QTextStream &stream, const QString &ind) const
     stream << " totalrows=" << element()->totalRows();
     stream << " totalcols=" << element()->totalCols();
 
-    uint i;
-    for (i = 0; i < (uint)element()->totalRows(); i++)
-        stream << " hSplitvar(" << i << ")=" << m_hSplitVar[i];
+    if ( m_hSplitVar )
+        for (uint i = 0; i < (uint)element()->totalRows(); i++) {
+            stream << " hSplitvar(" << i << ")=" << m_hSplitVar[i];
+        }
 
-    for (i = 0; i < (uint)element()->totalCols(); i++)
-        stream << " vSplitvar(" << i << ")=" << m_vSplitVar[i];
+    if ( m_vSplitVar )
+        for (uint i = 0; i < (uint)element()->totalCols(); i++)
+            stream << " vSplitvar(" << i << ")=" << m_vSplitVar[i];
 }
 #endif
 
