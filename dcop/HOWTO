@@ -60,7 +60,7 @@ types) using the built-in QDataStream operators available in all of the
 Qt classes.  This is fast and easy.  Currently, there is no
 type checking or parameter checking available for RPC, but this may be
 provided at some time in the future in the form of a simple IDL-like
-compiler (NOTE: 5 days later the IDL compiler is already started; 
+compiler (NOTE: 5 days later the IDL compiler is already started;
 look in dcopidl/).  Until that is available, you will have to code
 some things by hand that normally the compiler or CORBA take care of
 automatically, but it is not a lot of work.
@@ -79,19 +79,8 @@ KApplication::name().
 To actually enable DCOP communication to begin, you must use
 DCOPClient::attach().  This will attempt to attach to the DCOP server.
 If no server is found or there is any other type of error, attach()
-will return false.  Applications which are DCOP-enabled should
-probably do something like this at startup time:
-
-client = kApp->dcopClient();
-if (!client->attach()) {
-  QMessageBox::error(this, i18n("Error connecting to DCOP server"),
-                     i18n("There was an error connecting to the Desktop\n"
-                          "communications server.  Please make sure that\n"
-                          "the 'dcopserver' process has been started, and\n"
-                          "then try again.\n"));
-  exit(1);
-}
-
+will return false. KApplication will catch a dcop signal and display an
+appropriate error message box in that case.
 
 After connecting with the server via DCOPClient::attach(), you need to
 register this appId with the server so it knows about you.  Otherwise,
@@ -122,7 +111,7 @@ call the "send" or the "call" method.  Both methods require three
 identification parameters: an application identifier, a remote object,
 a remote function. Sending is asynchronous (i.e. it returns immediately)
 and may or may not result in your own application being sent a message at
-some point in the future. Then "send" requires one and "call" requires 
+some point in the future. Then "send" requires one and "call" requires
 two data parameters.
 
 The remote object must be specified as an object hierarchy.  That is,
@@ -145,7 +134,7 @@ Say you want to call "doIt" as described above, and not block (or wait
 for a response).  You will not receive the return value of the remotely
 called function, but you will not hang while the RPC is processed either.
 The return value of send() indicates whether DCOP communication succeeded
-or not. 
+or not.
 
 QByteArray params;
 QDataStream stream(params, IO_WriteOnly);
@@ -154,7 +143,7 @@ if (!client->send("someAppId", "fooObject/barObject", "QString doIt(int)",
 	          params))
   qDebug("there was some error using DCOP.");
 
-OK, now let's say we wanted to get the data back from the remotely 
+OK, now let's say we wanted to get the data back from the remotely
 called function.  You have to execute a call() instead of a send().
 The returned value will then be available in the data parameter "reply".
 The actual return value of call() is still whether or not DCOP
@@ -239,7 +228,7 @@ For the first step, you simply pass the server address (as
 found in .DCOPserver) to the second process. For the authentication,
 you can use the ICEAUTHORITY environment variable to tell the
 second process where to find the authentication information.
-(Note that this implies that the second process is able to 
+(Note that this implies that the second process is able to
 read the authentication file, so it will probably only work
 if the second process runs as root. If it should run as another
 user, a similar approach to what kdesu does with xauth must
@@ -255,31 +244,31 @@ to the user's dcop server.
 
 
 NOTE: DCOP communication is not encrypted, so please do not
-pass important information around this way. 
+pass important information around this way.
 
 
 Performance Tests:
 ------------------
 A few back-of-the-napkin tests folks:
- 
+
 Code:
- 
+
 #include <kapp.h>
- 
+
 int main(int argc, char **argv)
 {
   KApplication *app;
- 
+
   app = new KApplication(argc, argv, "testit");
   return app->exec();
 }
- 
+
 Compiled with:
- 
+
 g++ -O2 -o testit testit.cpp -I$QTDIR/include -L$QTDIR/lib -lkdecore
- 
+
 on Linux yields the following memory use statistics:
- 
+
 VmSize:     8076 kB
 VmLck:         0 kB
 VmRSS:      4532 kB
@@ -287,10 +276,10 @@ VmData:      208 kB
 VmStk:        20 kB
 VmExe:         4 kB
 VmLib:      6588 kB
- 
+
 If I create the KApplication's DCOPClient, and call attach() and
 registerAs(), it changes to this:
- 
+
 VmSize:     8080 kB
 VmLck:         0 kB
 VmRSS:      4624 kB
@@ -298,24 +287,24 @@ VmData:      208 kB
 VmStk:        20 kB
 VmExe:         4 kB
 VmLib:      6588 kB
- 
+
 Basically it appears that using DCOP causes 100k more memory to be
 resident, but no more data or stack.  So this will be shared between all
 processes, right?  100k to enable DCOP in all apps doesn't seem bad at
-all. :) 
+all. :)
 
 OK now for some timings.  Just creating a KApplication and then exiting
 (i.e. removing the call to KApplication::exec) takes this much time:
- 
+
 0.28user 0.02system 0:00.32elapsed 92%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (1084major+62minor)pagefaults 0swaps
- 
+
 I.e. about 1/3 of a second on my PII-233.  Now, if we create our DCOP
 object and attach to the server, it takes this long:
- 
+
 0.27user 0.03system 0:00.34elapsed 87%CPU (0avgtext+0avgdata 0maxresident)k
 0inputs+0outputs (1107major+65minor)pagefaults 0swaps
- 
+
 I.e. about 1/3 of a second.  Basically DCOPClient creation and attaching
 gets lost in the statistical variation ("noise").  I was getting times
 between .32 and .48 over several runs for both of the example programs, so
