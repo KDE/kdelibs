@@ -204,15 +204,15 @@ namespace khtml {
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
-  init( new KHTMLView( this, parentWidget, widgetname ) ); 
-} 
+  init( new KHTMLView( this, parentWidget, widgetname ) );
+}
 
 KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent, name )
 {
   assert( view );
   init( view );
-} 
+}
 
 void KHTMLPart::init( KHTMLView *view )
 {
@@ -895,7 +895,9 @@ bool KHTMLPart::findTextNext( const QRegExp &exp )
 	if(!next) next = d->m_findNode->nextSibling();
 	while(d->m_findNode && !next) {
 	    d->m_findNode = d->m_findNode->parentNode();
-	    next = d->m_findNode->nextSibling();
+	    if( d->m_findNode ) {
+		next = d->m_findNode->nextSibling();
+            }
 	}
 	d->m_findNode = next;
 	if(!d->m_findNode) return false;
