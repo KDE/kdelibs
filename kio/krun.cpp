@@ -427,6 +427,12 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
+  if ( !KProtocolManager::self().supportsReading( m_strURL.protocol() ) )
+  {
+     kDebugError( 7010, "#### NO SUPPORT FOR READING!" );
+     emit error();
+     return;
+  }
   kDebugInfo( 7010, "###### Scanning file %s", debugString(m_strURL.url()) );
 
   KIO::MimetypeJob *job = KIO::mimetype( m_strURL);
