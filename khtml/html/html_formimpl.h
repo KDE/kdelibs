@@ -87,6 +87,7 @@ public:
     void registerFormElement(HTMLGenericFormElementImpl *);
     void removeFormElement(HTMLGenericFormElementImpl *);
 
+    void submitFromKeyboard();
     bool prepareSubmit();
     void submit();
     void reset();
@@ -184,10 +185,12 @@ public:
     virtual Id id() const;
 
     DOMString type() const;
+    typeEnum buttonType() const { return m_type; }
     virtual void attach();
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
+    void activate();
 
 protected:
     DOMString m_value;
@@ -285,6 +288,7 @@ public:
     virtual bool isEditable();
 
     DOMString altText() const;
+    void activate();
 
 protected:
 

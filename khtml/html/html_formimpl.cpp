@@ -338,6 +338,28 @@ void HTMLFormElementImpl::setBoundary( const DOMString& bound )
     m_boundary = bound;
 }
 
+void HTMLFormElementImpl::submitFromKeyboard()
+{
+    // Activate the first submit button - like other browsers do
+    for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
+        if (it.current()->id() == ID_BUTTON) {
+            HTMLButtonElementImpl* current = static_cast<HTMLButtonElementImpl *>(it.current());
+            if (current->buttonType() == HTMLButtonElementImpl::SUBMIT) {
+                current->activate();
+                return;
+            }
+        } else if (it.current()->id() == ID_INPUT) {
+            HTMLInputElementImpl* current = static_cast<HTMLInputElementImpl *>(it.current());
+            if (current->inputType() == HTMLInputElementImpl::SUBMIT) {
+                current->activate();
+                return;
+            }
+        }
+    }
+
+    prepareSubmit();
+}
+
 bool HTMLFormElementImpl::prepareSubmit()
 {
     KHTMLView *view = getDocument()->view();
@@ -753,17 +775,22 @@ void HTMLButtonElementImpl::attach()
 
 void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (m_type != BUTTON && (evt->id() == EventImpl::DOMACTIVATE_EVENT)) {
-        m_clicked = true;
-
-        if(m_form && m_type == SUBMIT) {
-            m_activeSubmit = true;
-            m_form->prepareSubmit();
-            m_activeSubmit = false; // in case we were canceled
-        }
-        if(m_form && m_type == RESET) m_form->reset();
-    }
+    if (m_type != BUTTON && (evt->id() == EventImpl::DOMACTIVATE_EVENT))
+        activate();
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
+}
+
+void HTMLButtonElementImpl::activate()
+{
+    m_clicked = true;
+
+    if(m_form && m_type == SUBMIT) {
+        m_activeSubmit = true;
+        m_form->prepareSubmit();
+        m_activeSubmit = false; // in case we were canceled
+    }
+    if(m_form && m_type == RESET)
+        m_form->reset();
 }
 
 bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool /*multipart*/)
@@ -1323,28 +1350,32 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
     // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means
     // actually submitting the form. For reset inputs, the form is reset. These events are sent when the user clicks
-    // on the element, or presses enter while it is the active element. Javacsript code wishing to activate the element
+    // on the element, or presses enter while it is the active element. Javascript code wishing to activate the element
     // must dispatch a DOMActivate event - a click event will not do the job.
     if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
         (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
-
-        if (!m_form || !m_render)
-            return;
-
-        m_clicked = true;
-        if (m_type == RESET) {
-            m_form->reset();
-        }
-        else {
-            m_activeSubmit = true;
-            if (!m_form->prepareSubmit()) {
-                xPos = 0;
-                yPos = 0;
-            }
-            m_activeSubmit = false;
-        }
+        activate();
     }
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
+}
+
+void HTMLInputElementImpl::activate()
+{
+    if (!m_form || !m_render)
+        return;
+
+    m_clicked = true;
+    if (m_type == RESET) {
+        m_form->reset();
+    }
+    else {
+        m_activeSubmit = true;
+        if (!m_form->prepareSubmit()) {
+            xPos = 0;
+            yPos = 0;
+        }
+        m_activeSubmit = false;
+    }
 }
 
 bool HTMLInputElementImpl::isEditable()
