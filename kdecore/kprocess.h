@@ -300,7 +300,7 @@ public:
    *  "voluntarily", ie: it has not been killed by a signal.
    *
    * Note that you should check @ref KProcess::exitStatus() to determine
-   * whether the process completed its task successfull or not.
+   * whether the process completed its task successful or not.
    */
   bool normalExit() const;
 
@@ -328,7 +328,7 @@ public:
    *     @li Transmission of data to the child process by a previous call to
    * @ref writeStdin() is still in progress.
    *
-   * Please note that the data is sent to the client asynchronousely,
+   * Please note that the data is sent to the client asynchronously,
    * so when this function returns, the data might not have been
    * processed by the child process.
    *
@@ -538,11 +538,11 @@ protected:
 	setupCommunication
 	-- is called from "start" before "fork"ing.
 	commSetupDoneP
-	-- completes communcation socket setup in the parent
+	-- completes communication socket setup in the parent
 	commSetupDoneC
 	-- completes communication setup in the child process
 	commClose
-	-- frees all allocated communication ressources in the parent
+	-- frees all allocated communication resources in the parent
 	after the process has exited
   */
 
@@ -658,7 +658,7 @@ class KShellProcessPrivate;
 /**
 * This class is similar to @ref KProcess. The only difference is that
 * KShellProcess runs the specified executable through a UN*X shell so
-* that standard shell mechanisms like wildcard matching, use of pipes
+* that standard shell mechanisms like wild card matching, use of pipes
 * and environment variable expansion will work.
 
 * For example, you could run commands like the following through
@@ -672,7 +672,7 @@ class KShellProcessPrivate;
 * is the algorithm used for finding an executable shell:
 
 *    @li Try the executable pointed to by the "SHELL" environment
-*    variable with whitespaces stripped off
+*    variable with white spaces stripped off
 
 *    @li If your process runs with uid != euid or gid != egid, a shell
 *    not listed in /etc/shells will not used.
@@ -700,7 +700,7 @@ public:
   KShellProcess(const char *shellname=0);
 
   /**
-   * Descructor.
+   * Destructor.
    */
   ~KShellProcess();
 
@@ -716,7 +716,7 @@ public:
    * This function can be used to quote an argument string such that
    * the shell processes it properly. This is e. g. necessary for
    * user-provided file names which may contain spaces or quotes.
-   * It also prevents expansion of wildcards and environment variables.
+   * It also prevents expansion of wild cards and environment variables.
    */
   static QString quote(const QString &arg);
 

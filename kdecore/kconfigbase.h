@@ -419,7 +419,7 @@ public:
                     bool bNLS = false );
 
   /**
-   * @ref writeEntry() overriden to accept a list of strings.
+   * @ref writeEntry() overridden to accept a list of strings.
    *
    * Note: Unlike the other @ref writeEntry() functions, the old value is
    * _not_ returned here!
@@ -793,7 +793,7 @@ public:
                    bool bNLS = false );
 
   /**
-   * Writes a filepath.
+   * Writes a file path.
    *
    * It is checked whether the path is located under $HOME. If so the
    * path is written out with the user's home-directory replaced with
@@ -874,7 +874,7 @@ public:
    * dirty entries will be written at a subsequent @ref sync() call.
    *
    * Classes that derive from KConfigBase should override this
-   * method and implement storage-specific behaviour, as well as
+   * method and implement storage-specific behavior, as well as
    * calling the @ref KConfigBase::rollback() explicitly in the initializer.
    *
    * @param bDeep If @p true, the dirty flags of all entries are cleared,
@@ -943,7 +943,7 @@ public:
 
   /**
    * Reparses all configuration files. This is useful for programs
-   * that use standalone graphical configuration tools. The base
+   * that use stand alone graphical configuration tools. The base
    * method implemented here only clears the group list and then
    * appends the default group.
    *

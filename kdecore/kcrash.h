@@ -46,7 +46,7 @@ class KCrash
   /**
    * Install a function to be called in case a SIGSEGV is caught.
    * @param HandlerType handler can be one of
-   * @li null in wich case signal-catching is disabled
+   * @li null in which case signal-catching is disabled
    *  (by calling signal(SIGSEGV, SIG_DFL))
    * @li if handler is omitted the default crash handler is installed.
    * @li an user defined function in the form:
@@ -56,7 +56,7 @@ class KCrash
   static void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
   /**
-   * Returns the intalled crash handler
+   * Returns the installed crash handler
    */
   static HandlerType crashHandler() { return _crashHandler; }
 

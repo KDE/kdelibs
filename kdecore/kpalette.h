@@ -78,7 +78,7 @@ public:
    /**
     * Save the palette
     *
-    * @return 'true' if successfull
+    * @return 'true' if successful
     **/
    bool save();
 
@@ -115,7 +115,7 @@ public:
    	{ return mEditable; }
 
    /**
-    * Change whether the palette may be editted.
+    * Change whether the palette may be edited.
     **/
    void setEditable(Editable editable)
    	{ mEditable = editable; }
@@ -140,14 +140,14 @@ public:
    int findColor(const QColor &color) const;
 
    /** 
-    * Find colorname by @p index.
+    * Find color name by @p index.
     * @return The name of the @p index -th color.
     * Note that not all palettes have named the colors.
     **/
    QString colorName(int index);
    
    /**
-    * Find colorname by @p color.
+    * Find color name by @p color.
     * @return The name of color according to this palette.
     * Note that not all palettes have named the colors.
     * Note also that each palette can give the same color

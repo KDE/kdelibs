@@ -115,7 +115,7 @@ class KStartupInfo
         static bool sendFinishX( Display* dpy, const KStartupInfoId& id );
 #endif
 	/**
-	 * Ends startup notification with the given indentification and the given data ( e.g.
+	 * Ends startup notification with the given identification and the given data ( e.g.
 	 * PIDs of processes for this startup notification that exited ).
 	 */
         static bool sendFinish( const KStartupInfoId& id, const KStartupInfoData& data );

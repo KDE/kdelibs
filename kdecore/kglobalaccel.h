@@ -63,7 +63,7 @@ class KGlobalAccel : public QObject
  public:
 	// Setting this to false shuts off processing of KeyPress events in
 	//  x11EventFilter(). It will still be called, but won't act on them.
-	// This is a more effecient means for briefly suspending processing
+	// This is a more efficient means for briefly suspending processing
 	//  than setEnabled(false) ... setEnabled(true).
 	// These functions should be implemented in kglobalaccel_x11/emb.cpp
 	static void setKeyEventsEnabled( bool enabled );

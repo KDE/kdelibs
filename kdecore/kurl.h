@@ -211,10 +211,10 @@ public:
    * Resolves "." and ".." components in path.
    * 
    * @param cleanDirSeparator if true, occurances of consecutive
-   * directory seperators (e.g. /foo//bar) are cleaned up as well.
+   * directory separators (e.g. /foo//bar) are cleaned up as well.
    *
    * Some servers seem not to like the removal of extra '/'
-   * eventhough it is against the specification in RFC 2396.
+   * even though it is against the specification in RFC 2396.
    */
   void cleanPath(bool cleanDirSeparator = true);
 
@@ -364,7 +364,7 @@ public:
    * Any reference is reset.
    *
    * @param _txt This is considered to be decoded. If the current path ends with '/'
-   *             then @p _txt ist just appended, otherwise all text behind the last '/'
+   *             then @p _txt int just appended, otherwise all text behind the last '/'
    *             in the current path is erased and @p _txt is appended then. It does
    *             not matter whether @p _txt starts with '/' or not.
    */
@@ -525,7 +525,7 @@ public:
    *
    * Decode %-style encoding and convert from local encoding to unicode.
    *
-   * Revers of encode_string()
+   * Reverse of encode_string()
    * @param str String to decode
    * @param encoding_hint MIB of original encoding of @p str . 
    *             @see QTextCodec::mibEnum()

@@ -272,7 +272,7 @@ public:
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
 	 * @param uniq If specified,  only return items which have
-	 *        unique suffixes - supressing duplicated filenames.
+	 *        unique suffixes - suppressing duplicated filenames.
 	 *
 	 * @return A list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
@@ -382,7 +382,7 @@ public:
 	 * @return The list of possible directories for the specified @p type.
 	 * The function updates the cache if possible.  If the resource
 	 * type specified is unknown, it will return an empty list.
-         * Note, that the directories are asured to exist beside the save
+         * Note, that the directories are assured to exist beside the save
          * location, which may not exist, but is returned anyway.
 	 */
 	QStringList resourceDirs(const char *type) const;
@@ -487,7 +487,7 @@ public:
 	QString localkdedir() const;
 
 	/**
-	 * checks for existance and accessability
+	 * checks for existence and accessability
 	 * faster than creating a QFileInfo first
 	 */
 	static bool exists(const QString &fullPath);
@@ -558,7 +558,7 @@ public:
  **/
 
 /**
- * This function is just for convience. It simply calls
+ * This function is just for convenience. It simply calls
  * instance->dirs()->findResource(type, filename).
  **/
 QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );

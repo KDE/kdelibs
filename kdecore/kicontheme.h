@@ -81,7 +81,7 @@ public:
     KIconTheme(const QString& name, const QString& appName=QString::null);
     ~KIconTheme();
 
-    /** The stylized name of the icont theme. */
+    /** The stylized name of the icon theme. */
     QString name() const { return mName; }
 
     /** A description for the icon theme. */
@@ -111,7 +111,7 @@ public:
     /** The icon theme exists? */
     bool isValid() const;
 
-    /** The mimimum display depth required for this theme. This can either
+    /** The minimum display depth required for this theme. This can either
      * be 8 or 32 */
     int depth() const { return mDepth; }
 

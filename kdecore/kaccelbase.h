@@ -391,7 +391,7 @@ typedef QMap<KKeySequence, KAccelAction*> KKeyToActionMap;
  * a->insertItem( i18n("Scroll down"), "Scroll Down", 0);
  * a->connectItem( "Scroll up", myWindow, SLOT( scrollUp() ) );
  * // a->insertStdItem( KStdAccel::Print ); //not necessary, since it
- *	// is done automatially with the
+ *	// is done automatically with the
  *	// connect below!
  * a->connectItem(KStdAccel::Print, myWindow, SLOT( printDoc() ) );
  *
@@ -422,7 +422,7 @@ typedef QMap<KKeySequence, KAccelAction*> KKeyToActionMap;
  * </pre>
  *
  * Please keep the order right:  First insert all functions in the
- * acceleratior, then call a -> @ref readSettings() and @em then build your
+ * accelerator, then call a -> @ref readSettings() and @em then build your
  * menu structure.
  *
  * @short Configurable key binding support.

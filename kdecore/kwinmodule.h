@@ -85,7 +85,7 @@ public:
 
     /**
      * Returns the list of all toplevel windows currently managed by the
-     * windowmanger in the current stacking order (from lower to
+     * window manager in the current stacking order (from lower to
      * higher). May be useful for pagers.
      */
     const QValueList<WId>& stackingOrder() const;

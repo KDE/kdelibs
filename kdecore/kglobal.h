@@ -122,7 +122,7 @@ public:
  */
 #define KMAX(a,b)	kMax(a,b)
 /** @relates KGlobal
- * A typesafe function to determine the absolut value of the argument.
+ * A typesafe function to determine the absolute value of the argument.
  */
 #define KABS(a)	kAbs(a)
 

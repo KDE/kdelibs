@@ -33,7 +33,7 @@
  * This class is not supposed to be instantiated.  It exists mostly as
  * a namespace for the static member functions.
  *
- * In KDE-2.0, communication with the window manger is done with the
+ * In KDE-2.0, communication with the windowmanager is done with the
  * NET-protocol, a common window manager specification designed by
  * various authors of X11 window managers (including those of the KDE
  * project).  The full specification can be found in
@@ -49,7 +49,7 @@
  * the NET hints.  Currently that is invokeContextHelp() and
  * setSystemTrayWindowFor() only.
  *
- * @short Class for interaction with the windowmanager.
+ * @short Class for interaction with the window manager.
  * @author Matthias Ettrich (ettrich@kde.org)
 */
 class KWin
@@ -98,7 +98,7 @@ public:
 	/** Returns a visible name with state.
 	 *
 	 * This is a simple convenience function that returns the
-	 * visible name but with parantheses around iconified windows
+	 * visible name but with parentheses around iconified windows
 	 */
 	QString visibleNameWithState() const;
     };
@@ -182,7 +182,7 @@ public:
     static int numberOfDesktops();
 
     /**
-     * Convienence function to set the current desktop to @p desktop.
+     * Convenience function to set the current desktop to @p desktop.
      * See NETRootInfo.
      */
     static void setCurrentDesktop( int desktop );

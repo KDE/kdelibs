@@ -42,7 +42,7 @@ class QPopupMenu;
  * But it is not limited to URL-completion -- everything should be completable!
  * The user should be able to complete email-addresses, telephone-numbers,
  * commands, SQL queries, ...
- * Everytime your program knows what the user can type into an edit-field, you
+ * Every time your program knows what the user can type into an edit-field, you
  * should offer completion. With KCompletion, this is very easy, and if you are
  * using a line edit widget (@ref KLineEdit), it is even more easy.
  * Basically, you tell a KCompletion object what strings should be completable
@@ -256,7 +256,7 @@ public:
      * @li weighted
      *
      * Choosing weighted makes KCompletion perform an implicit weighting based
-     * on how often an item is inserted. Imagine a webbrowser with a location
+     * on how often an item is inserted. Imagine a web browser with a location
      * bar, where the user enters URLs. The more often a URL is entered, the
      * higher priority it gets.
      *
@@ -516,7 +516,7 @@ private:
  * An abstract base class for adding a completion feature
  * into widgets.
  *
- * This is a convienence class that provides the basic functions
+ * This is a convenience class that provides the basic functions
  * needed to add text completion support into widgets.  All that
  * is required is an implementation for the pure virtual function
  * @ref setCompletedText.  Refer to @ref KLineEdit or @ref KComboBox
@@ -677,7 +677,7 @@ public:
      * necessarily interfere with the objects ability to handle these
      * events internally.  See @ref setHandleSignals.
      *
-     * @param enable if false, disables the emittion of completion & rotation signals.
+     * @param enable if false, disables the emition of completion & rotation signals.
      */
     void setEnableSignals( bool enable ) {
         if ( m_delegate )
@@ -715,8 +715,8 @@ public:
      *                        manually triggered through
      *                        pre-defined completion key.
      *   @li CompletionShell: Mimics the completion feature
-     *                        found in typcial *nix shell
-     *                        enviornments.
+     *                        found in typical *nix shell
+     *                        environments.
      *   @li CompletionPopup: Shows all available completions at once,
      *                        in a listbox popping up.
      */
@@ -741,7 +741,7 @@ public:
      *
      *
      * When the keys set by this function are pressed, a
-     * signal defined by the inherting widget will be activated.
+     * signal defined by the inheriting widget will be activated.
      * If the default value or 0 is specified by the second
      * parameter, then the key-binding as defined in the global
      * setting should be used.  This method returns false value
@@ -758,7 +758,7 @@ public:
      * @param item the feature whose key-binding needs to be set:
      *
      * @li TextCompletion	the manual completion key-binding.
-     * @li PrevCompletionMatch	the previous match key for mutiple completion.
+     * @li PrevCompletionMatch	the previous match key for multiple completion.
      * @li NextCompletionMatch	the next match key for for multiple completion.
      * @li SubstringCompletion  the key for substring completion
      *
@@ -802,7 +802,7 @@ public:
      * all inheriting classes.
      *
      * This function is intended to allow external completion
-     * implementions to set completed text appropriately.  It
+     * implementations to set completed text appropriately.  It
      * is mostly relevant when the completion mode is set to
      * CompletionAuto and CompletionManual modes. See
      * @ref KCompletionBase::setCompletedText.
@@ -827,7 +827,7 @@ public:
      * in that it does not create a new KCompletion object even if
      * the internal pointer is @p NULL. Use this method to get the
      * pointer to a completion object when inheriting so that you
-     * won't inadvertantly create it!!
+     * won't inadvertently create it!!
      *	
      * @returns the completion object or NULL if one does not exist.
      */

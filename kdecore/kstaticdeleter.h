@@ -49,7 +49,7 @@ public:
     /**
      * sets the object to delete and registers the object to be
      * deleted to KGlobal. if the given object is 0, the former
-     * registration is unregistred
+     * registration is unregistered
      * @param isArray tells the destructor to delete an array instead of an object
      * @deprecated. See the other setObject variant.
      **/
@@ -66,7 +66,7 @@ public:
     /**
      * sets the object to delete and registers the object to be
      * deleted to KGlobal. if the given object is 0, the former
-     * registration is unregistred
+     * registration is unregistered
      * @param globalRef the static pointer where this object is stored
      * This pointer will be reset to 0 after deletion of the object.
      * @param isArray tells the destructor to delete an array instead of an object

@@ -229,7 +229,7 @@ QPixmap DesktopIcon(const QString& name, int size=0,
 /** Load a desktop icon. */
 QPixmap DesktopIcon(const QString& name, KInstance *instance);
 
-/** Load a desktop icon, and apply the neccesary effects to get an IconSet.  */
+/** Load a desktop icon, and apply the necessary effects to get an IconSet.  */
 QIconSet DesktopIconSet(const QString& name, int size=0,
 		    KInstance *instance=KGlobal::instance());
 

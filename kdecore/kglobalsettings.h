@@ -41,7 +41,7 @@ class KGlobalSettings
   public:
 
     /**
-     * Returns a treshold in pixels for drag & drop operations.
+     * Returns a threshold in pixels for drag & drop operations.
      * As long as the mouse movement has not exceeded this number
      * of pixels in either X or Y direction no drag operation may
      * be started. This prevents spurious drags when the user intended
@@ -50,7 +50,7 @@ class KGlobalSettings
      * For this to work you must save the position of the mouse (oldPos)
      * in the @ref QWidget::mousePressEvent().
      * When the position of the mouse (newPos)
-     * in a  @ref QWidget::mouseMoveEvent() exceeds this treshold
+     * in a  @ref QWidget::mouseMoveEvent() exceeds this threshold
      * you may start a drag
      * which should originate from oldPos.
      *

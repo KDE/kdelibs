@@ -48,7 +48,7 @@ public:
     
     /**
      * Returns a fingerprint for the effect selected by 
-     * [@p group, @p state]. This is usefull for caching.
+     * [@p group, @p state]. This is useful for caching.
      */ 
      QString fingerprint(int group, int state) const;
 

@@ -76,7 +76,7 @@ public:
 
     /**
      * Looks up a symbol from the library. This is a very low level
-     * function that you usually dont want to use.
+     * function that you usually don't want to use.
      */
     void* symbol( const char* name ) const;
 
@@ -99,7 +99,7 @@ class KLibWrapPrivate;
 
 /**
  * The KLibLoader allows you to load libraries dynamically at runtime.
- * Dependend libraries are loaded automatically.
+ * Dependent libraries are loaded automatically.
  *
  * KLibLoader follows the singleton pattern. You can not create multiple
  * instances. Use @ref #self() to get a pointer to the loader.
@@ -235,8 +235,8 @@ private:
  * <pre>
  *     s_global = new KInstance( "kspread" );
  * </pre>
- * This @ref KInstance is compareable to @ref KGlobal used by normal applications.
- * It allows you to find ressource files (images, XML, sound etc.) belonging
+ * This @ref KInstance is comparable to @ref KGlobal used by normal applications.
+ * It allows you to find resource files (images, XML, sound etc.) belonging
  * to the library.
  *
  * If you want to load a library, use @ref KLibLoader. You can query @ref KLibLoader

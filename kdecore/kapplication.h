@@ -350,7 +350,7 @@ public:
    *         this service is available. If empty, the service does
    *         not provide DCOP services.
    * @return On failure, 'error' contains a description of the error
-   *         that occured.
+   *         that occurred.
    */
   static int startServiceByName( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid=0, const QCString &startup_id = "", bool noWait = false );
@@ -390,7 +390,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
    *         this service is available. If empty, the service does
-   *         not provide DCOP services. iff a process was started, 'pid'
+   *         not provide DCOP services. If a process was started, 'pid'
    *         contains its pid.
    * @return On failure, 'error' contains a description of the error
    *         that occured.
@@ -423,7 +423,7 @@ public:
    * Starts a program via kdeinit and wait for it to finish.
    *
    * Like kdeinitExec but it waits till the program is finished.
-   * As such it behaves similair to the system(...) function.
+   * As such it behaves similar to the system(...) function.
    */
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0 );
@@ -502,7 +502,7 @@ public:
    *
    * Current style plugins do not get unloaded.
    *
-   * This is only usefull when used in combination with @ref enableStyles.
+   * This is only useful when used in combination with @ref enableStyles.
    */
   void disableStyles();
 
@@ -564,7 +564,7 @@ public:
 public slots:
   /**
    * Tells KApplication about one more operation that should be finished
-   * before the application exits. The standard behaviour is to exit on the
+   * before the application exits. The standard behavior is to exit on the
    * "last window closed" event, but some events should outlive the last window closed
    * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
    */
@@ -659,8 +659,8 @@ signals:
   /**
    * Emitted when KApplication has changed its palette due to a KControl request.
    *
-   * Normally, widgets will update their palettes automatically, but you
-   * should connect to this to program special behaviour.
+   * Normally, widgets will update their palette automatically, but you
+   * should connect to this to program special behavior.
    */
   void kdisplayPaletteChanged();
 
@@ -669,7 +669,7 @@ signals:
    *
    * Normally, widgets will update their styles automatically (as they would
    * respond to an explicit setGUIStyle() call), but you should connect to
-   * this to program special behaviour.
+   * this to program special behavior.
    */
   void kdisplayStyleChanged();
 
@@ -723,7 +723,7 @@ signals:
       Session management asks you to save the state of your application.
 
      This signal is provided for compatibility only. For new
-     appliations, simply use KMainWindow. By reimplementing @ref
+     applications, simply use KMainWindow. By reimplementing @ref
      KMainWindow::queryClose(), @ref KMainWindow::saveProperties() and
      @ref KMainWindow::readProperties() you can simply handle session
      management for applications with multiple toplevel windows.
@@ -740,7 +740,7 @@ signals:
      manager.
 
      Use the @ref #sessionConfig() KConfig object to store all your
-     instance specific datas.
+     instance specific data.
 
      Do not do any closing at this point! The user may still select
      Cancel  wanting to continue working with your
@@ -781,7 +781,7 @@ private:
  * the directory. If yes, checkAccess() returns true.
  * In all other cases checkAccess() returns false.
  *
- * Other than access() this function EXPLICITELY ignores non-existant
+ * Other than access() this function EXPLICITLY ignores non-existant
  * files if checking for write access.
  *
  * @param pathname The full path of the file you want to test
@@ -794,7 +794,7 @@ bool checkAccess(const QString& pathname, int mode);
 class KSessionManagedPrivate;
 
 /**
-   Provides highlevel aceess to session management on a per-object
+   Provides highlevel access to session management on a per-object
    base.
 
    KSessionManaged makes it possible to provide implementations for
@@ -822,7 +822,7 @@ public:
        
        Return true to indicate a successful state save or false to
        indicate a problem and to halt the shutdown process (will
-       implictely call sm.cancel() ).
+       implicitly call sm.cancel() ).
      */
   virtual bool saveState( QSessionManager& sm );
     /**
@@ -832,7 +832,7 @@ public:
        
        Return true to indicate a successful commit of data or false to
        indicate a problem and to halt the shutdown process (will
-       implictely call sm.cancel() ).
+       implicitly call sm.cancel() ).
      */
   virtual bool commitData( QSessionManager& sm );
 

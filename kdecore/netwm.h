@@ -42,7 +42,7 @@ struct NETWinInfoPrivate;
 /**
    Common API for root window properties/protocols.
 
-   The NETRootInfo class provides a commom API for clients and window managers
+   The NETRootInfo class provides a common API for clients and window managers
    to set/read/change properties on the root window as defined by the NET Window
    Manager Specification..
 
@@ -337,7 +337,7 @@ public:
 
        Taken arguments:
 
-       @li window - the client window that whould be resized/moved.
+       @li window - the client window that would be resized/moved.
 
        @li x_root - X position of the cursor relative to the root window.
 
@@ -373,7 +373,7 @@ protected:
     virtual void removeClient(Window) { }
 
     /**
-       A Client should subclass NETRootInfo and reimeplement this function when
+       A Client should subclass NETRootInfo and reimplement this function when
        it wants to know when a system tray window has been added.  This is a KDE 2.0
        extension.
     **/

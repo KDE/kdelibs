@@ -55,7 +55,7 @@ public:
 
     /**
      * Allocates a memory block.
-     * @param _size Size in bytes of the memory block. Memory is not alligned!
+     * @param _size Size in bytes of the memory block. Memory is not aligned!
      */
     void* allocate(size_t _size);
 

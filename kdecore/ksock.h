@@ -212,7 +212,7 @@ private:
  * You can use a KServerSocket to listen on a port for incoming
  * connections. When a connection arrived in the port, a KSocket
  * is created and the signal accepted is raised. Make sure you
- * always connect to this signal. If you dont the ServerSocket will
+ * always connect to this signal. If you don't the ServerSocket will
  * create new KSocket's and no one will delete them!
  *
  * If socket() is -1 or less the socket was not created properly.

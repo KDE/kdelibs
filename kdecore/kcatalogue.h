@@ -27,7 +27,7 @@ struct loaded_l10nfile;
 class KCataloguePrivate;
 
 /**
- * This class abstracs a gettext message catalogue. It will take care of
+ * This class abstracts a gettext message catalogue. It will take care of
  * opening the file and reading the catalogue.
  *
  * @see KLocale

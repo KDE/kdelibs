@@ -145,10 +145,10 @@ public:
       Default: Ctrl-T */
   static uint substringCompletion();
 
-  /** Help users iterate through a list of enteries. Default: Up **/
+  /** Help users iterate through a list of entries. Default: Up **/
   static uint rotateUp();
 
-  /** Help users iterate through a list of enteries. Default: Down **/
+  /** Help users iterate through a list of entries. Default: Down **/
   static uint rotateDown();
 
   /** popup a context menu. Default: Menu **/

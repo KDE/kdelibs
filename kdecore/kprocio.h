@@ -110,7 +110,7 @@ public:
    * even if it does not contain a '\n'. *partial will be set to
    * false if the line contains a '\n' and false otherwise.
    *
-   * @return the number of caracters read, or -1 if no data is available.
+   * @return the number of characters read, or -1 if no data is available.
    **/
   virtual int readln (QString &line, bool autoAck=true, bool *partial=0);
 
@@ -127,7 +127,7 @@ public:
    * signal.  This call need not be made in the slot that was signalled
    * by readReady().  You won't receive any more readReady() signals
    * until you acknowledge with ackRead().  This prevents your slot
-   * from being reentered while you are still processesing the current
+   * from being reentered while you are still processing the current
    * data.  If this doesn't matter, then call ackRead() right away in
    * your readReady()-processing slot.
    **/

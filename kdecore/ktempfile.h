@@ -129,7 +129,7 @@ public:
 
    /**
     * Closes the file.
-    * Returns 'true' is successfull, or 'false' if an error has occured.
+    * Returns 'true' is successful, or 'false' if an error has occured.
     * See status() for details about errors.
     **/
    bool close();

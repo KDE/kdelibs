@@ -57,7 +57,7 @@ public:
     virtual ~KCharsets();
 
     /**
-     * provided for compitibility.
+     * provided for compatibility.
      */
     QTextCodec *codecForName(const QString &name) const;
     

@@ -31,7 +31,7 @@ class KAboutDataPrivate;
 /**
  * This structure is used to store information about a person or developer.
  * It can store the person's name, a task, an email address and a
- * link to a homepage. This class is intended for use in the
+ * link to a home page. This class is intended for use in the
  * @ref KAboutData class, but it can be used elsewhere as well.
  * Normally you should at least define the person's name.
 */
@@ -49,7 +49,7 @@ public:
      *
      * @param emailAddress The email address of the person.
      *
-     * @param webAddress Homepage of the person.
+     * @param webAddress Home page of the person.
      */
     KAboutPerson( const char *name, const char *task,
                   const char *emailAddress, const char *webAddress )
@@ -80,7 +80,7 @@ public:
     QString emailAddress() const;
 
     /**
-     * The homepage or a relevant link
+     * The home page or a relevant link
      */
     QString webAddress() const;
 
@@ -101,7 +101,7 @@ private:
  * Normally you should at least define the translator's name.
  * 
  * It's not possible to use @ref KAboutPerson for this, because
- * @ref KAboutPerson stores internaly only const char* pointers, but the
+ * @ref KAboutPerson stores internally only const char* pointers, but the
  * translator information is generated dynamically from the translation
  * of a dummy string.
 */
@@ -136,7 +136,7 @@ private:
 
 /**
  * This class is used to store information about a program. It can store
- * such values a version number, program name, homepage, email address
+ * such values a version number, program name, home page, email address
  * for bug reporting, multiple authors and contributors
  * (using @ref KAboutPerson), license and copyright information.
  *
@@ -221,7 +221,7 @@ class KAboutData
      *
      * @param name The developer's name.
      *
-     * @param task What the person is resposible for. This text can contain
+     * @param task What the person is responsible for. This text can contain
      *             newlines. It should be marked for translation like this:
      *             I18N_NOOP("Task description...")
      *
@@ -243,7 +243,7 @@ class KAboutData
      *
      * @param name The person's name.
      *
-     * @param task What the person has done to deserve the hounor. The
+     * @param task What the person has done to deserve the honor. The
      *        text can contain newlines. It should be marked for 
      *        translation like this: I18N_NOOP("Task description...")
      *
@@ -287,7 +287,7 @@ class KAboutData
      * @param license The license text in utf8 encoding.
      *
      * The text will be translated if it got marked for
-     * tranlations with the I18N_NOOP() macro.
+     * translations with the I18N_NOOP() macro.
      *
      * Example:
      * setLicenseText( I18N_NOOP("This is my license"));

@@ -121,7 +121,7 @@ public:
   bool hasActionGroup(const QString &group) const;
 
   /**
-   * Checks whether tere is a "Type=Link" entry.
+   * Checks whether there is a "Type=Link" entry.
    *
    * The link points to the "URL=" entry.
    */

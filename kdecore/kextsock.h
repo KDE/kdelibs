@@ -589,7 +589,7 @@ public:
    *
    * The function returns the number of bytes written from @p data buffer.
    * The return value might be less than @p len if the output buffers cannot
-   * accomodate that many bytes.
+   * accommodate that many bytes.
    *
    * @param data	the data to write
    * @param len		the length of data to write
