@@ -1953,21 +1953,47 @@ QString KHTMLPart::selectedText() const
         else if(n == d->m_selectionEnd)
           text += str.left(d->m_endOffset);
         else
-         text += str;
+          text += str;
       }
-      else if(n.elementId() == ID_BR)
+      else {
+        // This is our simple HTML -> ASCII transformation:
+        unsigned short id = n.elementId();
+	switch(id) {
+	  case ID_TD:
+	  case ID_TH:
+	  case ID_BR:
+	  case ID_HR:
+	  case ID_OL:
+	  case ID_UL:
+	  case ID_LI:
+	  case ID_DD:
+	  case ID_DL:
+	  case ID_DT:
+	  case ID_PRE:
+	  case ID_BLOCKQUOTE:
             text += "\n";
-        else if(n.elementId() == ID_P || n.elementId() == ID_TD)
+	    break;
+	  case ID_P:
+	  case ID_TR:
+	  case ID_H1:
+	  case ID_H2:
+	  case ID_H3:
+	  case ID_H4:
+	  case ID_H5:
+	  case ID_H6:
             text += "\n\n";
-        if(n == d->m_selectionEnd) break;
-        DOM::Node next = n.firstChild();
-        if(next.isNull()) next = n.nextSibling();
-        while( next.isNull() && !n.parentNode().isNull() ) {
-            n = n.parentNode();
-            next = n.nextSibling();
-        }
+	    break;
+	}
+      }
+      if(n == d->m_selectionEnd) break;
+      DOM::Node next = n.firstChild();
+      if(next.isNull()) next = n.nextSibling();
+      while( next.isNull() && !n.parentNode().isNull() ) {
+        n = n.parentNode();
+        next = n.nextSibling();
+      }
 
-        n = next;
+      n = next;
     }
     return text;
 }
