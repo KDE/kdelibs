@@ -923,7 +923,7 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
 
     if (cookieList)
     {
-        if (cookieList->getAdvice() != _advice);
+        if (cookieList->getAdvice() != _advice)
         {
            m_configChanged = true;
            // domain is already known
