@@ -32,10 +32,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 bool DCOPReply::typeCheck( const char* t )
 {
+    return typeCheck( t, true );
+}
+
+bool DCOPReply::typeCheck( const char* t, bool warn )
+{
     if ( type == t )
 	return TRUE;
-    qWarning( "DCOPReply<%s>: cast to '%s' error",
-	     STR( type ), t );
+    if( warn
+	|| strcmp( t, "<unknown>" )) // type not listed in dcoptypes.h
+	qWarning( "DCOPReply<%s>: cast to '%s' error",
+	         STR( type ), t );
     return FALSE;
 }
 

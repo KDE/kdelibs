@@ -52,7 +52,7 @@ public:
     template<class T>
     operator T() {
 	T t;
-	if ( typeCheck( dcopTypeName(t) ) ) {
+	if ( typeCheck( dcopTypeName(t), true ) ) {
 	    QDataStream reply( data, IO_ReadOnly );
 	    reply >> t;
 	} else {
@@ -68,7 +68,7 @@ public:
    * @return true if successful, false otherwise
    */
     template <class T> bool get(  T& t, const char* tname ) {
-	if ( typeCheck( tname ) ) {
+	if ( typeCheck( tname, false ) ) {
 	    QDataStream reply( data, IO_ReadOnly );
 	    reply >> t;
 	    return true;
@@ -85,7 +85,7 @@ public:
    * @return true if successful, false otherwise
    */
     template <class T> bool get(  T& t ) {
-	if ( typeCheck( dcopTypeName(t) ) ) {
+	if ( typeCheck( dcopTypeName(t), false ) ) {
 	    QDataStream reply( data, IO_ReadOnly );
 	    reply >> t;
 	    return true;
@@ -105,6 +105,7 @@ public:
     QCString type;
 private:
     bool typeCheck( const char* t );
+    bool typeCheck( const char* t, bool warn );
 };
 
 /**

@@ -1667,8 +1667,12 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	timeval time_now;
 	gettimeofday( &time_now, NULL );
 	if( time_start.tv_sec * 1000000 + time_start.tv_usec + timeout * 1000
-	     < time_now.tv_sec * 1000000 + time_now.tv_usec ) // timeout
+	         < time_now.tv_sec * 1000000 + time_now.tv_usec ) { // timeout
+	     replyType = QCString();
+	     replyData = QByteArray();
+	     replyStruct.status = ReplyStruct::Failed;
 	     break;
+	}
     }
 
     d->currentKey = oldCurrentKey;
