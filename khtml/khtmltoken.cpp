@@ -174,10 +174,11 @@ unsigned int AttributeList::length() const
 
 int AttributeList::find(const DOMString &name)
 {
+    DOMString n = name.string().upper();
     int i = 0;
     while( i<(int)_len )
     {
-	if(_list[i].name() == name)
+	if(_list[i].name() == n)
 	    return i;
 	i++;
     }
