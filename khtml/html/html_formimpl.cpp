@@ -756,11 +756,12 @@ void HTMLGenericFormElementImpl::insertedIntoDocument()
 {
     HTMLElementImpl::insertedIntoDocument();
 
-    HTMLFormElementImpl* const newform = getForm();
-
-    if (!m_form && newform) {
-        m_form = newform;
-        m_form->registerFormElement(this);
+    if (!m_form) {
+        HTMLFormElementImpl* const newform = getForm();
+        if (newform) {
+            m_form = newform;
+            m_form->registerFormElement(this);
+        }
     }
 }
 
@@ -868,6 +869,7 @@ void HTMLGenericFormElementImpl::setName(const DOMString& name)
 {
     if (m_name) m_name->deref();
     m_name = name.implementation();
+    setAttribute( ATTR_NAME, name );
     if (m_name) m_name->ref();
 }
 

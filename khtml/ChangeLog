@@ -1,3 +1,8 @@
+2005-02-28  David Faure  <faure@kde.org>
+
+        * html/html_formimpl.cpp (setName): Also set ATTR_NAME so that
+        form.foo finds the input element. Testcase forms/input_clone.html.
+
 2005-02-27  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/font.cpp (drawText): Only pass text from inline text box to
