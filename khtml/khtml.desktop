@@ -2,7 +2,17 @@
 Type=Service
 Exec=foobar
 Comment=Embeddable HTML viewing component
+Comment[ca]=Component visualitzador d'HTML encastable
+Comment[fi]=Upotettava HTML-komponentti
+Comment[hu]=Beágyazható HTML néző komponens
+Comment[it]=Componente importabile per la visualizzazione degli HTML
+Comment[no]=Embedbart HTML-visningskomponent
+Comment[no_NY]=Inkluderbart komponent for HTML-vising
+Comment[pt]=Componente embebivel para vizualizar HTML
+Comment[ro]=Componentă de vizualizare HTML înglobată
+Comment[sl]=Integriran pregled besedila HTML
 MimeType=text/html
 Name=KHTML
 ServiceTypes=KParts/ReadOnlyPart,Browser/View
 X-KDE-Library=libkhtml
+X-KDE-BrowserView-Builtin=true
