@@ -63,11 +63,13 @@ public:
    *        no list is formatted, the internal KDE font list is used.
    *        If that has not been created, X is queried, and all fonts
    *        available on the system are displayed.
+   * @param visibleListSize The minimum number of visible entries in the 
+   *        fontlists.
    */
   KFontChooser(QWidget *parent = 0L, const char *name = 0L, 
 	       bool onlyFixed = false,
 	       const QStringList &fontList = QStringList(),
-	       bool makeFrame = true );
+	       bool makeFrame = true, int visibleListSize=8 );
 
   /**
    * Sets the currently selected font in the chooser.
@@ -77,6 +79,7 @@ public:
    *        width fonts if true, or vice-versa
    */
   void setFont( const QFont &font, bool onlyFixed = false );
+
   
   /**
    * @return The currently selected font in the chooser.
@@ -98,6 +101,16 @@ public:
   static QString getXLFD( const QFont &theFont )
     { return theFont.rawName(); }
 
+  /**
+   * Constructs a list of font strings that matches the pattern.
+   * 
+   * @param list The list is returned here
+   * @param pattern The font pattern
+   */
+  static void getFontList( QStringList &list, const char *pattern );
+
+  virtual QSize sizeHint( void ) const;
+
 private slots:
   void family_chosen_slot(const QString&);
   void size_chosen_slot(const QString&);
@@ -115,16 +128,16 @@ signals:
 protected:
   void fillFamilyListBox(bool onlyFixedFonts = false);
   void fillCharsetsCombo();
-  void getFontList( QStringList &list, const char *pattern );
   void getFontList( QStringList &list, bool fixed );
-  void addFont( QStringList &list, const char *xfont );
+  // This one must be static since getFontList( QStringList, char*) is so
+  static void addFont( QStringList &list, const char *xfont );
+
   void setupDisplay();
     
   // pointer to an optinally supplied list of fonts to 
   // inserted into the fontdialog font-family combo-box
   QStringList  fontList; 
   
-  //QLabel       *xlfdLabel;
   QGroupBox    *xlfdBox;
 
   QLineEdit    *sampleEdit;

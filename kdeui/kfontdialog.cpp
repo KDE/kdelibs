@@ -87,45 +87,46 @@ static int minimumListHeight( const QListBox *list, int numVisibleEntry )
 
 KFontChooser::KFontChooser(QWidget *parent, const char *name,
 			   bool onlyFixed, const QStringList &fontList,
-			   bool makeFrame )
+			   bool makeFrame, int visibleListSize )
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
   QVBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
     
   QWidget *page;
   QGridLayout *gridLayout;
+  int row = 0;
   if( makeFrame == true )
   {
     page = new QGroupBox( i18n("Requested Font"), this );
     topLayout->addWidget(page);
     gridLayout = new QGridLayout( page, 5, 3, KDialog::spacingHint() );
     gridLayout->addRowSpacing( 0, fontMetrics().lineSpacing() );
-
+    row = 1;
   }
   else
   {
     page = new QWidget( this );
     topLayout->addWidget(page);
-    gridLayout = new QGridLayout( page, 5, 3, 0, KDialog::spacingHint() );
+    gridLayout = new QGridLayout( page, 4, 3, 0, KDialog::spacingHint() );
   }
   
   //
   // first, create the labels across the top
   //
   QLabel *familyLabel = new QLabel( i18n("Font"), page, "familyLabel" );
-  gridLayout->addWidget(familyLabel, 1, 0, AlignLeft );
-
+  gridLayout->addWidget(familyLabel, row, 0, AlignLeft );
   QLabel *styleLabel = new QLabel( i18n("Font style"), page, "styleLabel");
-  gridLayout->addWidget(styleLabel, 1, 1, AlignLeft);
-
+  gridLayout->addWidget(styleLabel, row, 1, AlignLeft);
   QLabel *sizeLabel = new QLabel( i18n("Size"), page, "sizeLabel");
-  gridLayout->addWidget(sizeLabel, 1, 2, AlignLeft);
+  gridLayout->addWidget(sizeLabel, row, 2, AlignLeft);
+
+  row ++;
 
   //
   // now create the actual boxes that hold the info
   //
   familyListBox = new QListBox( page, "familyListBox");
-  gridLayout->addWidget( familyListBox, 2, 0 );
+  gridLayout->addWidget( familyListBox, row, 0 );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
   if(fontList.count() != 0) 
@@ -138,21 +139,25 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   }
 
   familyListBox->setMinimumWidth( minimumListWidth( familyListBox ) );
-  familyListBox->setMinimumHeight( minimumListHeight( familyListBox, 8 ) );
+  familyListBox->setMinimumHeight(
+    minimumListHeight( familyListBox, visibleListSize  ) );
 
   styleListBox = new QListBox( page, "styleListBox");
-  gridLayout->addWidget(styleListBox, 2, 1);
+  gridLayout->addWidget(styleListBox, row, 1);
   styleListBox->insertItem(i18n("Regular"));
   styleListBox->insertItem(i18n("Italic"));
   styleListBox->insertItem(i18n("Bold"));
   styleListBox->insertItem(i18n("Bold Italic"));
   styleListBox->setMinimumWidth( minimumListWidth( styleListBox ) );
-  
+  styleListBox->setMinimumHeight(
+    minimumListHeight( styleListBox, visibleListSize  ) );
+
   connect(styleListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(style_chosen_slot(const QString &)));
 
+
   sizeListBox = new QListBox( page, "sizeListBox");
-  gridLayout->addWidget(sizeListBox, 2, 2);
+  gridLayout->addWidget(sizeListBox, row, 2);
 
   const char *c[] = 
   {
@@ -170,27 +175,29 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   }
   sizeListBox->setMinimumWidth( minimumListWidth(sizeListBox) +
     sizeListBox->fontMetrics().maxWidth() );
+  sizeListBox->setMinimumHeight(
+    minimumListHeight( sizeListBox, visibleListSize  ) );
+
 
   connect( sizeListBox, SIGNAL(highlighted(const QString&)),
 	   SLOT(size_chosen_slot(const QString&)) );
 
+  row ++;
   QLabel *charsetLabel = new QLabel( page, "charsetLabel");
   charsetLabel->setText(i18n("Character set:"));
   gridLayout->addWidget(charsetLabel, 3, 0, AlignRight);
-
   charsetsCombo = new QComboBox(true, page, "charsetsCombo");
   gridLayout->addMultiCellWidget(charsetsCombo, 3, 3, 1, 2);
-
   charsetsCombo->setInsertionPolicy(QComboBox::NoInsertion);
   connect(charsetsCombo, SIGNAL(activated(const QString&)),
 	  SLOT(charset_chosen_slot(const QString&)));
 
+  row ++;
   sampleEdit = new KLineEdit( page, "sampleEdit");
   QFont tmpFont( KGlobal::generalFont().family(), 64, QFont::Black );
   sampleEdit->setFont(tmpFont);
   sampleEdit->setText("The Quick Brown Fox Jumps Over The Lazy Dog");
   sampleEdit->setMinimumHeight( sampleEdit->fontMetrics().lineSpacing() );
-  
   sampleEdit->setAlignment(Qt::AlignCenter);
   gridLayout->addMultiCellWidget(sampleEdit, 4, 4, 0, 2);
   connect(this, SIGNAL(fontSelected(const QFont &)),
@@ -231,6 +238,13 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   topLayout->activate();
 }
+
+QSize KFontChooser::sizeHint( void ) const
+{
+  return( minimumSizeHint() );
+}
+
+
 
 void KFontChooser::charset_chosen_slot(const QString& chset)
 {
@@ -358,36 +372,30 @@ void KFontChooser::setupDisplay()
   fillCharsetsCombo();
 }
 
-void KFontChooser::getFontList( QStringList &list, const char *pattern )
-{
-  int num;
-  char **xFonts = XListFonts( qt_xdisplay(), pattern, 2000, &num );
-
-  for ( int i = 0; i < num; i++ ) {
-    addFont( list, xFonts[i] );
-  }
-
-  XFreeFontNames( xFonts );
-}
-
 
 void KFontChooser::getFontList( QStringList &list, bool fixed )
 {
+  //
   // Use KDE fonts if there is a KDE font list and check that the fonts
   // exist on the server where the desktop is running.
-	
+  //
   QStringList lstSys, lstKDE;
 
-  if ( fixed ) {
+  if ( fixed ) 
+  {
     getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-m-*-*-*" );
     getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-c-*-*-*" );
-  } else
+  } 
+  else
+  {
     //getFontList( lstSys, "-*-*-*-*-*-*-*-*-*-*-p-*-*-*" );
     getFontList(lstSys, "*");
+  }
 
   lstSys.sort();
 
-  if ( !kapp->getKDEFonts( lstKDE ) ) {
+  if ( !kapp->getKDEFonts( lstKDE ) ) 
+  {
     list = lstSys;
     return;
   }
@@ -398,6 +406,22 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
   }
   list.sort();
 }
+
+
+
+void KFontChooser::getFontList( QStringList &list, const char *pattern )
+{
+  int num;
+  char **xFonts = XListFonts( qt_xdisplay(), pattern, 2000, &num );
+
+  for( int i = 0; i < num; i++ ) 
+  {
+    addFont( list, xFonts[i] );
+  }
+  XFreeFontNames( xFonts );
+}
+
+
 
 void KFontChooser::addFont( QStringList &list, const char *xfont )
 {
@@ -497,6 +521,19 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.43  1999/09/29 21:58:02  espensa
+* KFontDialog: Converted to use KDialogBase. Result is underlined
+* buttons and correct caption. The static methods can now specify
+* a parent widget which enables centered dialogs. The frame can be
+* turned off in the constructor. I suggest it should be default off.
+* Currently it is on.
+*
+* KFontChooser: Cleanup. Uses KDialog::spacingHint() in the layouts.
+* It can now be displayed without frames (selected from constructor).
+* This makes it more versatile in dialogs where the frames may not
+* fit. The lists are now resized properly on creation. No horizontal
+* scrollbars on startup! Preview field made higher.
+*
 *
 * Revision 1.42  1999/07/27 04:12:08  pbrown
 * layout improvements.
