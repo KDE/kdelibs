@@ -849,6 +849,8 @@ void FileProtocol::special( const QByteArray &data)
       KShred shred( filename );
       connect( &shred, SIGNAL( processedSize( unsigned long ) ),
                this, SLOT( slotProcessedSize( unsigned long ) ) );
+      connect( &shred, SIGNAL( infoMessage( const QString & ) ),
+               this, SLOT( slotInfoMessage( const QString & ) ) );
       if (!shred.shred())
           error( KIO::ERR_CANNOT_DELETE, filename );
       else
@@ -865,6 +867,13 @@ void FileProtocol::slotProcessedSize( unsigned long bytes )
 {
   kdDebug(7101) << "FileProtocol::slotProcessedSize (" << (unsigned int) bytes << ")" << endl;
   processedSize( bytes );
+}
+
+// Connected to KShred
+void FileProtocol::slotInfoMessage( const QString & msg )
+{
+  kdDebug(7101) << "FileProtocol::slotInfoMessage (" << msg << ")" << endl;
+  infoMessage( msg );
 }
 
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )

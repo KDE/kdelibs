@@ -21,13 +21,6 @@ public:
   FileProtocol( const QCString &pool, const QCString &app);
   virtual ~FileProtocol() { }
 
-  /*
-  virtual void slotOpenConnection(const QString&, const QString&, const QString&) {}
-  virtual void slotCloseConnection() {}
-  */
-
-  //virtual void testDir( const QString& path );
-
   virtual void get( const QString& path, const QString& query, bool reload );
   virtual void put( const QString& path, int _mode,
 			bool _overwrite, bool _resume );
@@ -54,6 +47,7 @@ public:
 
 protected slots:
   void slotProcessedSize( unsigned long _bytes );
+  void slotInfoMessage( const QString & msg );
 
 protected:
 
