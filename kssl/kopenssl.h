@@ -175,6 +175,117 @@ public:
     */
    char *SSL_CIPHER_description(SSL_CIPHER *,char *buf,int size);
 
+
+   /*
+    *   d2i_X509 - Covert a text representation of X509 to an X509 object
+    */
+   X509 * d2i_X509(X509 **a,unsigned char **pp,long length);
+
+
+   /*
+    *   i2d_X509 - Covert an X509 object into a text representation
+    */
+   int i2d_X509(X509 *a,unsigned char **pp);
+
+
+   /*
+    *   X509_cmp - compare two X509 objects
+    */
+   int X509_cmp(X509 *a, X509 *b);
+
+
+   /*
+    *   X509_dup - duplicate an X509 object
+    */
+   X509 *X509_dup(X509 *x509);
+
+
+   /*
+    *   X509_STORE_CTX_new - create an X509 store context
+    */
+   X509_STORE_CTX *X509_STORE_CTX_new(void);
+
+
+   /*
+    *   X509_STORE_CTX_free - free up an X509 store context
+    */
+   void X509_STORE_CTX_free(X509_STORE_CTX *v);
+
+
+   /*
+    *   X509_verify_cert - verify the certificate
+    */
+   int X509_verify_cert(X509_STORE_CTX *v);
+
+
+   /*
+    *   X509_STORE_new - create an X509 store
+    */
+   X509_STORE *X509_STORE_new(void);
+
+
+   /*
+    *   X509_STORE_free - free up an X509 store
+    */
+   void X509_STORE_free(X509_STORE *v);
+
+
+   /*
+    *   X509_free - free up an X509
+    */
+   void X509_free(X509 *v);
+
+
+   /*
+    *   X509_NAME_oneline - return the X509 data in a string
+    */
+   char *X509_NAME_oneline(X509_NAME *a, char *buf, int size);
+
+
+   /*
+    *   X509_get_subject_name - return the X509_NAME for the subject field
+    */
+   X509_NAME *X509_get_subject_name(X509 *a);
+
+
+   /*
+    *   X509_get_issuer_name - return the X509_NAME for the issuer field
+    */
+   X509_NAME *X509_get_issuer_name(X509 *a);
+
+
+   /*
+    *   X509_STORE_add_lookup - add a lookup file/method to an X509 store
+    */
+   X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m);
+
+
+   /*
+    *   X509_LOOKUP_file - Definition of the LOOKUP_file method
+    */
+   X509_LOOKUP_METHOD *X509_LOOKUP_file(void);
+
+
+   /*
+    *   X509_LOOKUP_ctrl - This is not normally called directly (use macros)
+    */
+   int X509_LOOKUP_ctrl(X509_LOOKUP *ctx, int cmd, const char *argc, long argl, char **ret);
+
+
+   /*
+    *   X509_STORE_CTX_init - initialize an X509 STORE context
+    */
+   void X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store, X509 *x509, STACK_OF(X509) *chain);
+
+
+   /*
+    *   CRYPTO_free - free up an internally allocated object
+    */
+   void CRYPTO_free(void *x);
+
+
+
+
 #endif
 
 private:
