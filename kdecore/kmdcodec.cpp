@@ -192,8 +192,15 @@ void KCodecs::quotedPrintableEncode(const QByteArray& in, QByteArray& out, bool 
   {
     unsigned char c (data[i]);
 
+    // check if we have to enlarge the output buffer, use
+    // a safety margin of 16 byte
+    pos = cursor-out.data();
+    if (out.size()-pos < 16) {
+      out.resize(out.size()+4096);
+      cursor = out.data()+pos;
+    }
+
     // Plain ASCII chars just go straight out.
-    kdDebug() << "Input: " << c << endl;
 
     if ((c >= 33) && (c <= 126) && ('=' != c))
     {
@@ -256,16 +263,20 @@ void KCodecs::quotedPrintableEncode(const QByteArray& in, QByteArray& out, bool 
 
     if ((lineLength > maxQPLineLength) && (i < end))
     {
-      *cursor++ = '=';
-      *cursor++ = '\r';
-      *cursor++ = '\n';
+      if (useCRLF) {
+        *cursor++ = '=';
+        *cursor++ = '\r';
+        *cursor++ = '\n';
+      } else {
+        *cursor++ = '=';
+        *cursor++ = '\n';
+      }
 
       lineLength = 0;
     }
   }
 
   out.truncate(cursor - out.data());
-  kdDebug () << "Encoded data: " << out.data () << endl;
 }
 
 QCString KCodecs::quotedPrintableDecode(const QByteArray & in)
