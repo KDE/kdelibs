@@ -462,6 +462,7 @@ void KJSDebugWin::destroyInstance()
   assert(kjs_html_debugger);
   kjs_html_debugger->hide();
   delete kjs_html_debugger;
+  kjs_html_debugger = 0L;
 }
 
 void KJSDebugWin::slotNext()
