@@ -22,8 +22,8 @@
 
 KContainerLayout::KContainerLayout(QWidget * parent, const char * name, 
 			int orientation, bool homogeneos,
-			int spacing, WFlags f, bool allowLines)
-    : QFrame(parent,name,f,allowLines)
+			int spacing, WFlags f, bool )
+    : QFrame(parent,name,f)
 {
     _spacing = spacing;
     _homogeneos = homogeneos;

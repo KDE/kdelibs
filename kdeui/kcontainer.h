@@ -47,12 +47,11 @@ enum { Horizontal = 0, Vertical };
      * @param spacing The space to add between each widget and between
      * the first/last and the borders
      * @param f Flags (see @ref QFrame#QFrame)
-     * @param allowLines Flags (see @ref QFrame#QFrame)
      */
     KContainerLayout(QWidget * parent=0, const char * name=0, 
     		int orientation = KContainerLayout::Horizontal,
 		bool homogeneos = FALSE,
-		int spacing = 5, WFlags f=0, bool allowLines=TRUE);
+		int spacing = 5, WFlags f=0, bool = TRUE); // ### KDE 4.0: remove last bool
     /**
      * The destructor
      */
