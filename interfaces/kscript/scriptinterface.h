@@ -29,6 +29,8 @@
 #define __scriptinterface_h__
 #include <qvariant.h>
 #include <qobject.h>
+#include <kdemacros.h>
+
 //#include <scripclientinterface.h>
 class QString;
 class QObject;
@@ -42,7 +44,7 @@ class KScriptClientInterface;
 	*	@author Ian Reinhart Geiser <geiseri@kde.org>
 	*
 	**/
-	class KScriptInterface : public QObject
+	class KDE_EXPORT KScriptInterface : public QObject
 	{
 	Q_OBJECT
 	public:

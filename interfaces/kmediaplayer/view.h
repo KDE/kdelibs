@@ -25,12 +25,13 @@
 #define KMEDIAPLAYERVIEW_H
 
 #include <qwidget.h>
+#include <kdelibs_export.h>
 
 namespace KMediaPlayer
 {
 
 /** View is part of the user interface of a Player. */
-class View : public QWidget
+class KDE_EXPORT View : public QWidget
 {
 Q_OBJECT
 
