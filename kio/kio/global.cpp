@@ -809,7 +809,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         .arg( errorText );
       causes << i18n( "The device may not be ready, for example there may be "
         "no media in a removable media device (i.e. no CD-ROM in a CD drive), "
-        "or in the case of a peripheral / portable device, the device may not "
+        "or in the case of a peripheral/portable device, the device may not "
         "be correctly connected." )
         << i18n( "You may not have permissions to initialize (\"mount\") the "
         "device. On UNIX systems, often system administrator privileges are "
