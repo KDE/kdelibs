@@ -6,6 +6,6 @@ colors:
 	done
 
 messages:
-	$(XGETTEXT) colors.cpp -o $(podir)/colors.pot
+	$(XGETTEXT) colors.cpp -o $(podir)/kdelibs_colors.pot
 
 .PHONY: colors

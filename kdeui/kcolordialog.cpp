@@ -186,6 +186,8 @@ static void createStandardPalette()
     standardPalette[i++] = Qt::gray;
     standardPalette[i++] = Qt::darkGray;
     standardPalette[i++] = Qt::black;
+
+    KGlobal::locale()->insertCatalogue("kdelibs_colors");
 }
 
 
@@ -644,11 +646,11 @@ KPaletteTable::readNamedColor( void )
 	//
 	QString name = line.mid(pos).stripWhiteSpace();
 	if( name.isNull() == true || name.find(' ') != -1 ||
-	    name.find( "gray" ) != -1 )
+	    name.find( "gray" ) != -1 ||  name.find( "grey" ) != -1 )
 	{
 	  continue;
 	}
-	list.append( name );
+	list.append( i18n("color", name ) );
       }
     }
 
@@ -1047,7 +1049,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   );
   // Store the default value for saving time.
   d->originalPalette = d->table->palette();
-  
+
   //
   // a little space between
   //
@@ -1223,7 +1225,7 @@ KColorDialog::slotWriteSettings()
   config->setGroup("Colors");
   QString palette = d->table->palette();
   if (!config->hasDefault("CurrentPalette") &&
-      (d->table->palette() == d->originalPalette)) 
+      (d->table->palette() == d->originalPalette))
   {
      config->revertToDefault("CurrentPalette");
   }
