@@ -2253,10 +2253,10 @@ CSSValueImpl *
 StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits)
 {
     // Everything should be lowercase -> preprocess
-    assert(QString(curP, endP-curP).lower()==QString(curP,endP-curP));
+    //assert(QString(curP, endP-curP).lower()==QString(curP,endP-curP));
 
-    if (curP==endP) {return 0; /* e.g.: width="" */}
-    
+    if (curP==endP || *curP=='"') {return 0; /* e.g.: width=""  length="ffffff" */}
+
     endP--;
     while(*endP == ' ' && endP > curP) endP--;
     const QChar *split = endP;
