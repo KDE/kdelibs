@@ -192,7 +192,7 @@ void KFileBaseDialog::init()
 
     fileList = initFileList( wrapper );
 
-    locationEdit = new KCombo(true, wrapper, "locationedit");
+    locationEdit = new QComboBox(true, wrapper, "locationedit");
     locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
 
@@ -271,7 +271,7 @@ void KFileBaseDialog::init()
     if (!filename_.isNull()) {
 	debugC("edit %s", (const char *)(locationEdit->text(0).local8Bit()) );
 	checkPath(filename_);
-	locationEdit->setText(filename_);
+	locationEdit->setEditText(filename_);
     }
     adjustSize();
     int w1 = minimumSize().width();
@@ -657,7 +657,7 @@ void KFileBaseDialog::pathChanged()
 
 
 	if (!selection.isNull())
-	    locationEdit->setText(url + selection);
+	    locationEdit->setEditText(url + selection);
 
 	insertNewFiles(il);
     }
@@ -1049,7 +1049,7 @@ void KFileBaseDialog::fileHighlighted(KFileInfo *item)
     else
 	filename_ = tmp.path();
 
-    locationEdit->setText(filename_);
+    locationEdit->setEditText(filename_);
     emit fileHighlighted(highlighted);
 }
 
@@ -1131,7 +1131,7 @@ void KFileBaseDialog::setSelection(const QString& name)
 	    filename_ = dir->url() + filename;
 	else
 	    filename_ = dir->path() + filename;
-	locationEdit->setText(filename_);
+	locationEdit->setEditText(filename_);
     }
 }
 
@@ -1160,7 +1160,7 @@ void KFileBaseDialog::completion() // SLOT
 	if (!complete.isNull()) {
 	    debugC("Complete %s", complete.ascii());
 	    if ( complete != "../" ) {
-                locationEdit->setText(base + complete);
+                locationEdit->setEditText(base + complete);
 		filename_ = base + complete;
 	    }
 	} else {
@@ -1171,7 +1171,7 @@ void KFileBaseDialog::completion() // SLOT
 	while (!text.isEmpty() && text[l] != '/')
 	    l--;
 	setDir(text.left(l), true);
-	locationEdit->setText(text);
+	locationEdit->setEditText(text);
 	filename_ = text;
 
 	// this recursion is very dangerous.

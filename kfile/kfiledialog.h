@@ -37,7 +37,6 @@ class KFileInfoContents;
 class QPopupMenu;
 class QCheckBox;
 class QComboBox;
-class KCombo;
 class KFileBookmarkManager;
 class KFileBookmark;
 class QStrIList;
@@ -225,7 +224,7 @@ protected:
 
     QPopupMenu *bookmarksMenu;
     QCheckBox *hiddenToggle;
-    KCombo *locationEdit;
+    QComboBox *locationEdit;
 
     KFileFilter *filterWidget;
 
