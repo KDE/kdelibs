@@ -48,6 +48,8 @@ class kdbgstream {
       output(QString::fromLatin1(initialString)), area(_area), level(_level),  print(_print) { }
     kdbgstream(kdbgstream &str) : 
       output(str.output), area(str.area), level(str.level), print(str.print) { str.output.truncate(0); }
+    kdbgstream(const kdbgstream &str) : 
+      output(str.output), area(str.area), level(str.level), print(str.print) {}
     ~kdbgstream();
     kdbgstream &operator<<(bool i)  {
 	if (!print) return *this;
