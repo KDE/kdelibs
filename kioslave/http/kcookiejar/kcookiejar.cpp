@@ -1389,6 +1389,7 @@ void KCookieJar::saveConfig(KConfig *_config)
     }
     _config->writeEntry("CookieDomainAdvice", domainSettings);
     _config->sync();
+    m_configChanged = false;
 }
 
 
