@@ -1,6 +1,6 @@
 # You might want to change the next 3 lines, the rest should be ok.
 Prefix: /opt/kde2
-%define qtversion 2.1.0
+%define qtversion 2.1.1
 %define qtdir /usr/lib/qt-%{qtversion}
 
 Name: kdelibs
@@ -100,13 +100,13 @@ fi
       fi
     done
   )
-  find . -type f -name '*.h' |sed -e 's|^\.|\%attr(-,root,root) |' > \
+  find . -type f -name '*.h' |sed -e 's|^\.|\%attr(-,root,root) \"|' > \
 	$RPM_BUILD_DIR/file.list.%{name}-sound-devel
   echo "%docdir "%{prefix}/doc/%{name}-devel-%{version}-%{release} >> \
 	$RPM_BUILD_DIR/file.list.%{name}-sound-devel
-  find . -name '*.so*' -o -name '*.la' |sed -e 's|^\.|\%attr(-,root,root) |' > \
+  find . -name '*.so*' -o -name '*.la' |sed -e 's|^\.|\%attr(-,root,root) \"|' > \
 	$RPM_BUILD_DIR/file.list.%{name}-sound
-  find . -type f |grep '/bin' |sed -e 's|^\.|\%attr(-,root,root) |' >> \
+  find . -type f |grep '/bin' |sed -e 's|^\.|\%attr(-,root,root) \"|' >> \
 	$RPM_BUILD_DIR/file.list.%{name}-sound
   cd $RPM_BUILD_ROOT
   rm -rf sound
@@ -116,9 +116,10 @@ fi
 # build file list for the rest of kdelibs
 cd $RPM_BUILD_ROOT
 # Use the 2nd line for releases that don't go straight to /usr:
-find . -type d | sed '1,2d;s|^\.|\%attr(-,root,root) \%dir |' > \
+#find . -type d | sed '1,2d;s|^\.|\%attr(-,root,root) \%dir |' > \
+#		$RPM_BUILD_DIR/master.list
+find . -type d | sed '1,3d;s|^\.|\%attr(-,root,root) \%dir \"|' > \
 		$RPM_BUILD_DIR/master.list
-#find . -type d | sed '1,3d;s|^\.|\%attr(-,root,root) \%dir \"|' > \
 
 find . -type f -o -type l | sed -e 's|^\.|\%attr(-,root,root) \"|' \
 		-e '/\/config\//s|^|%config|' | \
@@ -133,6 +134,12 @@ grep "/doc/%{name}-devel" $RPM_BUILD_DIR/master.list >> \
 	$RPM_BUILD_DIR/file.list.%{name}-devel
 grep "/doc/%{name}-sound-devel" $RPM_BUILD_DIR/master.list >> \
 	$RPM_BUILD_DIR/file.list.%{name}-sound-devel
+grep mcopidl $RPM_BUILD_DIR/file.list.%{name}-sound >> \
+	$RPM_BUILD_DIR/file.list.%{name}-sound-devel
+grep -v mcopidl $RPM_BUILD_DIR/file.list.%{name}-sound >\
+	$RPM_BUILD_DIR/file.list.%{name}-sound.new
+mv -f $RPM_BUILD_DIR/file.list.%{name}-sound.new \
+	$RPM_BUILD_DIR/file.list.%{name}-sound
 
 egrep -v "/include|/doc|/man/man1" \
 	$RPM_BUILD_DIR/master.list > \
@@ -148,8 +155,7 @@ echo "%docdir" %{prefix}/doc/%{name}-sound-devel-%{version}-%{release} >> \
 %clean
 rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_DIR/master.list
-rm -rf $RPM_BUILD_DIR/file.list.%{name}
-rm -rf $RPM_BUILD_DIR/file.list.%{name}-devel
+rm -rf $RPM_BUILD_DIR/file.list.%{name}*
 
 %post -p /sbin/ldconfig
 
@@ -162,8 +168,8 @@ rm -rf $RPM_BUILD_DIR/file.list.%{name}-devel
 
 %files sound -f ../file.list.%{name}-sound
 
-%files sound-devel -f ../file.list.%{name}-sound
+%files sound-devel -f ../file.list.%{name}-sound-devel
 
 %changelog
-* Thu May 11 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+* Thu Jun  1 2000 Bernhard Rosenkraenzer <bero@redhat.com>
 - initial
