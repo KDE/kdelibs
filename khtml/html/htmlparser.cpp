@@ -266,6 +266,7 @@ void KHTMLParser::reset()
     _inline = false;
 
     form = 0;
+    map = 0;
     end = false;
 
     discard_until = 0;
@@ -501,6 +502,17 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		return;
 	    }
 	    break;
+	}
+	case ID_AREA:
+	{
+	    if(map)
+	    {
+		map->addChild(n);
+		n->attach(HTMLWidget);
+	    }
+	    else
+		throw exception;
+	    return;
 	}
 	case ID_TEXT:
 	    // ignore text inside the following elements.
@@ -869,7 +881,8 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	n = new HTMLImageElementImpl(document);
 	break;
     case ID_MAP:
-	n = new HTMLMapElementImpl(document);
+	map = new HTMLMapElementImpl(document);
+	n = map;
 	break;
     case ID_AREA:
 	n = new HTMLAreaElementImpl(document);
@@ -1003,6 +1016,9 @@ void KHTMLParser::processCloseTag(Token *t)
     case ID_FORM+ID_CLOSE_TAG:
 	form = 0;
 	// this one is to get the right style on the body element
+	break;
+    case ID_MAP+ID_CLOSE_TAG:
+	map = 0;
 	break;
     case ID_HEAD+ID_CLOSE_TAG:
 	inBody = true;

@@ -42,6 +42,7 @@ namespace DOM {
     class HTMLElementImpl;
     class NodeImpl;
     class HTMLFormElementImpl;
+    class HTMLMapElementImpl;
 }
 
 class KHTMLParser;
@@ -123,6 +124,11 @@ protected:
      * currently active form
      */
     DOM::HTMLFormElementImpl *form;
+
+    /*
+     * current map
+     */
+    DOM::HTMLMapElementImpl *map;
 
     bool inBody;
     bool _inline;

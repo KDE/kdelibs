@@ -86,15 +86,18 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
                                        int _tx, int _ty, DOMString &url,
                                        NodeImpl *&innerNode, long &offset)
 {
-  //printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
+    //printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
     if (usemap.length()>0)
     {
         //cout << "usemap: " << usemap.string() << endl;
         HTMLMapElementImpl* map;
     	if ( (map = HTMLMapElementImpl::getMap(usemap))!=0)
+	{
+	    //printf("have map\n");
             return map->mapMouseEvent(_x-renderer()->xPos()-_tx,
                                       _y-renderer()->yPos()-_ty,
                                       renderer()->width(), renderer()->height(), button, type, url);
+	}
     }
     return HTMLElementImpl::mouseEvent(_x, _y, button, type, _tx, _ty, url, innerNode, offset);
 }
