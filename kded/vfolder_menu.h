@@ -107,9 +107,8 @@ public:
   class docInfo {
   public:
      QString baseDir; // Relative base dir of current menu file
-     QString absBaseDir; // Absolute base dir of current menu file
      QString baseName; // Filename of current menu file without ".menu"
-     QString path; // Filename of current menu file without ".menu"
+     QString path; // Full path of current menu file including ".menu"
   };
   
 
@@ -175,6 +174,7 @@ private:
    */
   void unloadAppsInfo(const QString &menuName);
 
+  QDomDocument loadDoc();
   void mergeMenus(QDomElement &docElem, QString &name);
   void mergeFile(QDomElement &docElem, const QDomNode &mergeHere);
   void loadMenu(const QString &filename);
@@ -252,10 +252,10 @@ private:
 
   void initDirs();
   
-  void pushDocInfo(const QString &fileName);
+  void pushDocInfo(const QString &fileName, const QString &baseDir = QString::null);
   void popDocInfo();
   
-  QString absoluteDir(const QString &);
+  QString absoluteDir(const QString &_dir, const QString &baseDir, bool keepRelativeToCfg=false);
   QString locateMenuFile(const QString &fileName); 
   QString locateDirectoryFile(const QString &fileName);
   void loadApplications(const QString&, const QString&);

@@ -34,34 +34,6 @@
 
 #include "vfolder_menu.h"
 
-static VFolderMenu* g_this = 0;
-
-
-static QDomDocument loadDoc(const QString &filename)
-{
-   QDomDocument doc;
-   if ( filename.isEmpty() )
-   {
-      return doc;
-   }
-   QFile file( filename );
-   if ( !file.open( IO_ReadOnly ) )
-   {
-      kdWarning(7021) << "Could not open " << filename << endl;
-      return doc;
-   }
-   QString errorMsg;
-   int errorRow;
-   int errorCol;
-   if ( !doc.setContent( &file, &errorMsg, &errorRow, &errorCol ) ) {
-      kdWarning(7021) << "Parse error in " << filename << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg << endl;
-      file.close();
-      return doc;
-   }
-   file.close();
-   return doc;
-}                                            
-
 static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElement> &dupeList, QString s=QString::null)
 {
    if (s.isEmpty())
@@ -437,26 +409,77 @@ VFolderMenu::unloadAppsInfo(const QString &menuName)
 }
 
 QString 
-VFolderMenu::absoluteDir(const QString &_dir)
+VFolderMenu::absoluteDir(const QString &_dir, const QString &baseDir, bool keepRelativeToCfg)
 {
    QString dir = _dir;
    if (!dir.startsWith("/"))
    {
-      dir = m_docInfo.absBaseDir + dir;
+      dir = baseDir + dir;
    }
    if (!dir.endsWith("/"))
       dir += '/';
+
+   if (!dir.startsWith("/") && !keepRelativeToCfg)
+   {
+      dir = KGlobal::dirs()->findResource("xdgconf-menu", dir);
+   }      
    
    dir = KGlobal::dirs()->realPath(dir);
 
    return dir;
 }
 
+static void tagBaseDir(QDomDocument &doc, const QString &tag, const QString &dir)
+{
+   QDomNodeList mergeFileList = doc.elementsByTagName(tag);
+   for(int i = 0; i < (int)mergeFileList.count(); i++)
+   {
+      QDomAttr attr = doc.createAttribute("__BaseDir");
+      attr.setValue(dir);
+      mergeFileList.item(i).toElement().setAttributeNode(attr);
+   }
+}
+
+QDomDocument 
+VFolderMenu::loadDoc()
+{
+   QDomDocument doc;
+   if ( m_docInfo.path.isEmpty() )
+   {
+      return doc;
+   }
+   QFile file( m_docInfo.path );
+   if ( !file.open( IO_ReadOnly ) )
+   {
+      kdWarning(7021) << "Could not open " << m_docInfo.path << endl;
+      return doc;
+   }
+   QString errorMsg;
+   int errorRow;
+   int errorCol;
+   if ( !doc.setContent( &file, &errorMsg, &errorRow, &errorCol ) ) {
+      kdWarning(7021) << "Parse error in " << m_docInfo.path << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg << endl;
+      file.close();
+      return doc;
+   }
+   file.close();
+
+   tagBaseDir(doc, "MergeFile", m_docInfo.baseDir);
+   tagBaseDir(doc, "MergeDir", m_docInfo.baseDir);
+   tagBaseDir(doc, "DirectoryDir", m_docInfo.baseDir);
+   tagBaseDir(doc, "AppDir", m_docInfo.baseDir);
+   tagBaseDir(doc, "LegacyDir", m_docInfo.baseDir);
+
+   return doc;
+}                                            
+
+
 void 
 VFolderMenu::mergeFile(QDomElement &parent, const QDomNode &mergeHere)
 {
 kdDebug(7021) << "VFolderMenu::mergeFile: " << m_docInfo.path << endl;
-   QDomDocument doc = loadDoc(m_docInfo.path);
+   QDomDocument doc = loadDoc();
+   
    QDomElement docElem = doc.documentElement();
    QDomNode n = docElem.firstChild();
    QDomNode last = mergeHere;
@@ -570,7 +593,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
          menuNodes.insert(name, e);
       }
       else if( e.tagName() == "MergeFile") {
-         pushDocInfo(e.text());
+         pushDocInfo(e.text(), e.attribute("__BaseDir"));
          mergeFile(docElem, n);
          popDocInfo();
 
@@ -580,7 +603,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
          continue;
       }
       else if( e.tagName() == "MergeDir") {
-         QString dir = absoluteDir(e.text());
+         QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"), true);
 
          QStringList dirs = KGlobal::dirs()->findDirs("xdgconf-menu", dir);
          for(QStringList::ConstIterator it=dirs.begin();
@@ -623,9 +646,12 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
 }
 
 void 
-VFolderMenu::pushDocInfo(const QString &fileName)
+VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
 {
    m_docInfoStack.push(m_docInfo);
+   if (!baseDir.isEmpty())
+      m_docInfo.baseDir = baseDir;
+
    QString baseName = fileName;
    if (baseName.startsWith("/"))
       registerFile(baseName);
@@ -635,7 +661,7 @@ VFolderMenu::pushDocInfo(const QString &fileName)
    m_docInfo.path = locateMenuFile(fileName);
    if (m_docInfo.path.isEmpty())
    {
-      m_docInfo.absBaseDir = QString::null;
+      m_docInfo.baseDir = QString::null;
       m_docInfo.baseName = QString::null;
       kdDebug(7021) << "Menu " << fileName << " not found." << endl;
       return;
@@ -652,8 +678,6 @@ VFolderMenu::pushDocInfo(const QString &fileName)
       m_docInfo.baseDir = QString::null;
       m_docInfo.baseName = baseName.left( baseName.length() - 5 );
    }
-   i = baseName.findRev('/');
-   m_docInfo.absBaseDir = baseName.left(i+1);
 }
 
 void
@@ -727,7 +751,7 @@ VFolderMenu::loadMenu(const QString &fileName)
 
    pushDocInfo(fileName);
    m_defaultMergeDirs << m_docInfo.baseName+"-merged/";
-   m_doc = loadDoc(m_docInfo.path);
+   m_doc = loadDoc();
    popDocInfo();
 
    if (m_doc.isNull())
@@ -1044,7 +1068,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
       }
       else if (e.tagName() == "DirectoryDir")
       {
-         QString dir = absoluteDir(e.text());
+         QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"));
 
          m_directoryDirs.prepend(dir);
       }
@@ -1147,7 +1171,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
          if (e.tagName() == "AppDir")
          {
             createAppsInfo(name);
-            QString dir = absoluteDir(e.text());
+            QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"));
             
             registerDirectory(dir);
 
@@ -1173,7 +1197,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for <KDE>" << endl;
          else if (e.tagName() == "LegacyDir")
          {
             createAppsInfo(name);
-            QString dir = absoluteDir(e.text());
+            QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"));
             
             QString prefix = e.attributes().namedItem("prefix").toAttr().value();
 
@@ -1268,7 +1292,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
          if (e.tagName() == "LegacyDir")
          {
             // Add legacy nodes to Menu structure
-            QString dir = absoluteDir(e.text());
+            QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"));
             SubMenu *legacyMenu = m_legacyNodes.find(dir);
             if (legacyMenu)
             {
@@ -1407,8 +1431,6 @@ VFolderMenu::markUsedApplications(VFolderMenu::SubMenu *menu)
 VFolderMenu::SubMenu *
 VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
 {
-   g_this = this;
-
    m_forcedLegacyLoad = false;
    m_legacyLoaded = false;
    m_appsInfo = 0;
