@@ -6,6 +6,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
+#include <kstandarddirs.h>
 
 #include "kurifilter.h"
 #include <qdir.h>
@@ -133,20 +134,14 @@ int main(int argc, char **argv) {
     filter( "/usr/bin/gs -q -option arg1", "/usr/bin/gs -q -option arg1", KURIFilterData::EXECUTABLE, minicliFilters ); // the args are in argsAndOptions()
 
     // ENVIRONMENT variable
-    filter( "$KDEDIR/kdelibs/kio", 0, KURIFilterData::ERROR ); // note: this dir doesn't exist...
+    setenv( "SOMEVAR", "/somevar", 0 );
+    setenv( "ETC", "/etc", 0 );
+    filter( "$SOMEVAR/kdelibs/kio", 0, KURIFilterData::ERROR ); // note: this dir doesn't exist...
+    filter( "$ETC/passwd", "/etc/passwd", KURIFilterData::LOCAL_FILE );
 
-    // and this currently launches realnames, which is wrong IMHO. Maybe
-    // we should prevent realnames from happening when there is a '/' ?
-    //
-    // Now "Realnames" will should only get invoked if and only if
-    // $KDEDIR has not already been set.  Otherwise, the shortURI filter
-    // plugin will consume it, evenif the environment variable does not
-    // exist. (DA)
-    QCString kdedir = getenv("KDEDIR");
     QCString home = getenv("HOME");
-    filter( "$KDEDIR/include", kdedir+"/include", KURIFilterData::LOCAL_DIR );
     filter( "$HOME/.kde/share", home+"/.kde/share", KURIFilterData::LOCAL_DIR );
-    // local test, don't commit
+    KStandardDirs::makeDir( "/tmp/a+plus" );
     filter( "/tmp/a+plus", "/tmp/a+plus", KURIFilterData::LOCAL_DIR );
     // BR 27788 - note that you need this dir to exist for this test to work
     filter( "$HOME/.kde/share/apps/kword/templates/Text oriented", home+"/.kde/share/apps/kword/templates/Text oriented", KURIFilterData::LOCAL_DIR );
