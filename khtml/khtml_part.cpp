@@ -788,7 +788,7 @@ KJSProxy *KHTMLPart::jScript()
 
 QVariant KHTMLPart::executeScript( const QString &script )
 {
-    //kdDebug() << "KHTMLPart::executeScript " << script << endl;
+    //kdDebug(6050) << "KHTMLPart::executeScript " << script << endl;
     return executeScript( DOM::Node(), script );
 }
 
@@ -1623,7 +1623,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   anchors->deref();
 
   if(!n) {
-      kdDebug() << "KHTMLPart::gotoAnchor no node found" << endl; 
+      kdDebug() << "KHTMLPart::gotoAnchor no node found" << endl;
       return false;
   }
 
@@ -3643,7 +3643,8 @@ void KHTMLPart::selectAll()
     first = d->m_doc;
   NodeImpl *next;
 
-  while ( first && !((first->nodeType() == Node::TEXT_NODE) || (first->nodeType() == Node::CDATA_SECTION_NODE) && first->renderer()) )
+  // Look for first text/cdata node that has a renderer
+  while ( first && !((first->nodeType() == Node::TEXT_NODE || first->nodeType() == Node::CDATA_SECTION_NODE) && first->renderer()) )
   {
     next = first->firstChild();
     if ( !next ) next = first->nextSibling();
@@ -3661,7 +3662,8 @@ void KHTMLPart::selectAll()
     last = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
   else
     last = d->m_doc;
-  while ( last && !((last->nodeType() == Node::TEXT_NODE) || (last->nodeType() == Node::CDATA_SECTION_NODE) && last->renderer()) )
+  // Look for last text/cdata node that has a renderer
+  while ( last && !((last->nodeType() == Node::TEXT_NODE || last->nodeType() == Node::CDATA_SECTION_NODE) && last->renderer()) )
   {
     next = last->lastChild();
     if ( !next ) next = last->previousSibling();
@@ -3676,6 +3678,8 @@ void KHTMLPart::selectAll()
 
   if ( !first || !last )
     return;
+  ASSERT(first->renderer());
+  ASSERT(last->renderer());
 
   d->m_selectionStart = first;
   d->m_startOffset = 0;
