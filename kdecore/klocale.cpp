@@ -307,7 +307,7 @@ void KLocale::splitLocale(const QString& aStr,
 		    if (buf[l-1]=='\n') buf[l-1]=0;
 		    if (KCharset(buf).ok()) chset=buf;
 		}
-		delete buf;
+		delete [] buf;
 		f.close();
 	    }
 	}    
