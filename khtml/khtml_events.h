@@ -119,6 +119,9 @@ public:
 
   static bool test( const QEvent *event ) { return KParts::Event::test( event, s_strMouseReleaseEvent ); }
 
+  // return the offset of innerNode
+  int offset();
+
 private:
   static const char *s_strMouseReleaseEvent;
 };

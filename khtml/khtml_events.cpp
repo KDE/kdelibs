@@ -84,6 +84,14 @@ int MousePressEvent::offset()
     return offset;
 }
 
+int MouseReleaseEvent::offset()
+{
+    int offset = 0;
+    DOM::Node tempNode = 0;
+    innerNode().handle()->findSelectionNode( x(), y(), nodeAbsX(), nodeAbsY(), tempNode, offset );
+    return offset;
+}
+
 const char *MousePressEvent::s_strMousePressEvent = "khtml/Events/MousePressEvent";
 
 const char *MouseDoubleClickEvent::s_strMouseDoubleClickEvent = "khtml/Events/MouseDoubleClickEvent";
