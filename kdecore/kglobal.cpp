@@ -147,7 +147,7 @@ QFont KGlobal::menuFont()
     if(_menuFont)
         return *_menuFont;
 
-    _menuFont = new QFont("helvetica", 12, QFont::Normal);
+    _menuFont = new QFont("helvetica", 10, QFont::Bold);
     charsets()->setQFont(*_menuFont, charsets()->charsetForLocale());
     KConfig *c = KGlobal::config();
     c->setGroup( QString::fromLatin1("General") );
