@@ -5,7 +5,7 @@ data_DATA = x-dvi.kdelnk x-tex-gf.kdelnk gzip.kdelnk \
 	x-core.kdelnk x-font.kdelnk x-java.kdelnk \
 	postscript.kdelnk octet-stream.kdelnk \
 	x-shellscript.kdelnk x-kdelnk.kdelnk \
-	x-executable.kdelnk x-ar.kdelnk x-lha.kdelnk
+	x-executable.kdelnk x-ar.kdelnk x-lha.kdelnk x-tbz.kdelnk
 
 datadir = $(kde_mimedir)/application
 
