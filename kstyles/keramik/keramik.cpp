@@ -55,6 +55,7 @@
 
 #include "keramik.moc"
 
+#include "gradients.h"
 #include "keramikrc.h"
 #include "keramikimage.h"
 
@@ -70,7 +71,10 @@ public:
 
 	QStringList keys() const
 	{
-		return QStringList() << "Keramik";
+		if (QPixmap::defaultDepth() > 8)
+			return QStringList() << "Keramik";
+		else
+			return QStringList();
 	}
 
 	QStyle* create( const QString& key )
@@ -83,20 +87,6 @@ public:
 Q_EXPORT_PLUGIN( KeramikStylePlugin )
 // ---------------------------------------------------
 
-enum GradientType{ VSmall=0, VSmallRev, VMed, VMedRev, VLarge, VLargeRev, HMed, HLarge, GradientCount };
- 
-class GradientSet
-{
-	public:
-		GradientSet(const QColor &baseColor);
-		~GradientSet();
-
-		KPixmap* gradient(GradientType type);
-		QColor* color() { return(&c); }
-	private:
-		KPixmap *gradients[8];
-		QColor c;
-};
 
 // ### Remove globals
 /*
@@ -109,113 +99,12 @@ QBitmap xBmp;
 */
 namespace
 {
-	QIntDict<GradientSet> gDict;
-
 	const int itemFrame       = 2;
 	const int itemHMargin     = 6;
 	const int itemVMargin     = 0;
 	const int arrowHMargin    = 6;
 	const int rightBorder     = 12;
 }
-
-// ---------------------------------------------------------------------------
-
-GradientSet::GradientSet(const QColor &baseColor)
-{
-	c = baseColor;
-	for(int i=0; i < GradientCount; i++)
-		gradients[i] = NULL;
-}
-
-
-GradientSet::~GradientSet()
-{
-	for(int i=0; i < GradientCount; i++)
-		if(gradients[i])
-			delete gradients[i];
-}
-
-
-KPixmap* GradientSet::gradient(GradientType type)
-{
-	if (gradients[type])
-		return gradients[type];
-
-	switch(type)
-	{
-		case VSmall: {
-			gradients[VSmall] = new KPixmap;
-			gradients[VSmall]->resize(18, 24);
-			KPixmapEffect::gradient(*gradients[VSmall], c.light(110), c.dark(110),
-											KPixmapEffect::VerticalGradient);
-			break;
-		}
-
-		case VSmallRev: {
-			gradients[VSmallRev] = new KPixmap;
-			gradients[VSmallRev]->resize(18, 24);
-			KPixmapEffect::gradient(*gradients[VSmallRev], c.dark(110), c.light(110),
-											KPixmapEffect::VerticalGradient);
-			break;
-		}
-
-		case VMed: {
-			gradients[VMed] = new KPixmap;
-			gradients[VMed]->resize(18, 34);
-			KPixmapEffect::gradient(*gradients[VMed], c.light(110), c.dark(110),
-											KPixmapEffect::VerticalGradient);
-			break;
-		}
-
-	
-		case VMedRev: {
-			gradients[VMedRev] = new KPixmap;
-			gradients[VMedRev]->resize(18, 34);
-			KPixmapEffect::gradient(*gradients[VMedRev], c.dark(110), c.light(110),
-											KPixmapEffect::VerticalGradient);
-			break;
-		}
-
-		case VLarge: {
-			gradients[VLarge] = new KPixmap;
-			gradients[VLarge]->resize(18, 64);
-			KPixmapEffect::gradient(*gradients[VLarge], c.light(110), c.dark(110),
-											KPixmapEffect::VerticalGradient);
-			break;
-		}
-
-		case VLargeRev: {
-			gradients[VLargeRev] = new KPixmap;
-			gradients[VLargeRev]->resize(18, 64);
-			KPixmapEffect::gradient(*gradients[VLargeRev], c.dark(110), c.light(110),
-											KPixmapEffect::VerticalGradient);
-			break;
-		}
-
-		case HMed: {
-			gradients[HMed] = new KPixmap;
-			gradients[HMed]->resize(34, 18);
-			KPixmapEffect::gradient(*gradients[HMed], c.light(110), c.dark(110),
-											KPixmapEffect::HorizontalGradient);
-			break;
-		}
-
-		case HLarge: {
-			gradients[HLarge] = new KPixmap;
-			gradients[HLarge]->resize(52, 18);
-			KPixmapEffect::gradient(*gradients[HLarge], c.light(110), c.dark(110),
-											KPixmapEffect::HorizontalGradient);
-			break;
-		}
-
-		default:
-			break;
-	}
-	return(gradients[type]);
-}
-
-
-
 // ---------------------------------------------------------------------------
 
 // XXX
@@ -289,86 +178,11 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 }
 
 
-void KeramikStyle::renderGradient( QPainter* p, const QRect& r,
-	QColor clr, bool horizontal, int px, int py, int pwidth, int pheight, bool reverse) const
-{
-	// px, py specify the gradient pixmap offset relative to the top-left corner.
-	// pwidth, pheight specify the width and height of the parent's pixmap.
-	// We use these to draw parent-relative pixmaps for toolbar buttons
-	// and menubar items.
-
-	GradientSet* grSet = gDict.find( clr.rgb() );
-
-	if (!grSet) {
-		grSet = new GradientSet(clr);
-		gDict.insert( clr.rgb(), grSet );
-	}
-
-	if (horizontal) {
-		int width = (pwidth != -1) ? pwidth : r.width();
-
-		if (width <= 34)
-			p->drawTiledPixmap(r, *grSet->gradient(HMed), QPoint(px, 0));
-		else if (width <= 52)
-			p->drawTiledPixmap(r, *grSet->gradient(HLarge), QPoint(px, 0));
-		else {
-			KPixmap *hLarge = grSet->gradient(HLarge);
-
-			// Don't draw a gradient if we don't need to
-			if (hLarge->width() > px)
-			{
-				int pixmapWidth = hLarge->width() - px;
-
-				// Draw the gradient
-				p->drawTiledPixmap( r.x(), r.y(), pixmapWidth, r.height(),
-									*hLarge, px, 0 );
-				// Draw the remaining fill
-				p->fillRect(r.x()+pixmapWidth, r.y(), r.width()-pixmapWidth, 
-						r.height(),	clr.dark(110));
-
-			} else
-				p->fillRect(r, clr.dark(110));
-		}
-
-	} else {
-		// Vertical gradient
-		// -----------------
-		int height = (pheight != -1) ? pheight : r.height();
-
-		if (height <= 24)
-			p->drawTiledPixmap(r, *grSet->gradient(reverse ? VSmallRev : VSmall), QPoint(0, py));
-		else if (height <= 34)
-			p->drawTiledPixmap(r, *grSet->gradient(reverse ? VMedRev : VMed), QPoint(0, py));
-		else if (height <= 64)
-			p->drawTiledPixmap(r, *grSet->gradient(reverse ? VLargeRev : VLarge), QPoint(0, py));
-		else {
-			KPixmap *vLarge = grSet->gradient(VLarge);
-
-			// Only draw the upper gradient if we need to.
-			if (vLarge->height() > py)
-			{
-				int pixmapHeight = vLarge->height() - py;
-
-				// Draw the gradient
-				p->drawTiledPixmap( r.x(), r.y(), r.width(), pixmapHeight,
-									*vLarge, 0, py );
-				// Draw the remaining fill
-				p->fillRect(r.x(), r.y()+pixmapHeight, r.width(), 
-						r.height()-pixmapHeight, clr.dark(110));
-
-			} else
-				p->fillRect(r, clr.dark(110));
-		}
-	}
-}
-
 #define loader Keramik::PixmapLoader::the()
 
 KeramikStyle::KeramikStyle() 
 	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),kickerMode(false)
-{
-	gDict.setAutoDelete( true );
-}
+{}
 
 KeramikStyle::~KeramikStyle()
 {
@@ -394,17 +208,19 @@ void KeramikStyle::polish(QWidget* widget)
  	else if ( widget->parentWidget() &&
 			  ( ( widget->inherits( "QListBox" ) && widget->parentWidget()->inherits( "QComboBox" ) ) ||
 	            widget->inherits( "KCompletionBox" ) ) ) {
-	    QListBox* listbox = (QListBox*) widget;
-	    listbox->setLineWidth( 4 );
+		QListBox* listbox = (QListBox*) widget;
+		listbox->setLineWidth( 4 );
 		listbox->setBackgroundMode( NoBackground );
-	    widget->installEventFilter( this );
+		widget->installEventFilter( this );
+		
 	} else if (widget->inherits("QToolBarExtensionWidget")) {
 		widget->installEventFilter(this);
+		//widget->setBackgroundMode( NoBackground );
  	}
 	else if (kickerMode) 
 	{
 		
-		if (QCString(widget->className()) == ("FittsLawFrame"))
+		if (QCString(widget->className()) == ("FittsLawFrame") )
 		{
 			QFrame* f = static_cast<QFrame*>(widget);
 			f->setFrameStyle(QFrame::Panel | QFrame::Raised);
@@ -429,9 +245,10 @@ void KeramikStyle::unPolish(QWidget* widget)
 			  ( ( widget->inherits( "QListBox" ) && widget->parentWidget()->inherits( "QComboBox" ) ) ||
 	            widget->inherits( "KCompletionBox" ) ) ) {
 		QListBox* listbox = (QListBox*) widget;
-	    listbox->setLineWidth( 1 );
+		listbox->setLineWidth( 1 );
 		listbox->setBackgroundMode( PaletteBackground );
-	    widget->removeEventFilter( this );
+		widget->removeEventFilter( this );
+		widget->clearMask();
 	} else if (widget->inherits("QToolBarExtensionWidget")) {
 		widget->removeEventFilter(this);
  	}
@@ -558,7 +375,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				
 			//p->fillRect( r, cg.background() );
 			Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), disabled, pmode()  );
-
+			
 			break;
 
 		}
@@ -590,7 +407,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				if (sunken)
 					p->fillRect(x+2, y+2, w-4, h-4, cg.button());
 				else
-					renderGradient( p, QRect(x+2, y+2, w-4, h-4),
+					Keramik::GradientPainter::renderGradient( p, QRect(x+2, y+2, w-4, h-4),
 							cg.button(), flags & Style_Horizontal );
 			}
 			break;
@@ -825,7 +642,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// -------------------------------------------------------------------
 		case PE_PanelMenuBar: 			// Menu
 		{
-			Keramik::ScaledPainter( keramik_menubar , Keramik::ScaledPainter::Vertical).draw( p, r, cg.button(), cg.background() );
+			Keramik::GradientPainter::renderGradient( p, r, cg.button(), true, true);
+			//Keramik::ScaledPainter( keramik_menubar , Keramik::ScaledPainter::Vertical).draw( p, r, cg.button(), cg.background() );
 			
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
@@ -840,7 +658,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			
 		case PE_PanelDockWindow:		// Toolbar
 		{
-			Keramik::ScaledPainter( keramik_toolbar , Keramik::ScaledPainter::Vertical).draw( p, r, cg.button(), cg.background() );
+			Keramik::GradientPainter::renderGradient( p, r, cg.button(), r.width() > r.height() );
+			//Keramik::ScaledPainter( keramik_toolbar , Keramik::ScaledPainter::Vertical).draw( p, r, cg.button(), cg.background() );
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
 
@@ -885,8 +704,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// -------------------------------------------------------------------
 		case PE_DockWindowSeparator:
 		{
-			renderGradient( p, r, cg.button(),
-					!(flags & Style_Horizontal));
+			Keramik::GradientPainter::renderGradient( p, r, cg.button(),
+					(flags & Style_Horizontal));
 			if ( !(flags & Style_Horizontal) )
 			{
 				p->setPen(cg.mid());
@@ -996,10 +815,10 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 				bool horizontal = slider->orientation() == Horizontal;
 
 				if (horizontal)
-					Keramik::ScaledPainter( keramik_slider ).draw( p, r, cg.highlight(), 
+					Keramik::ScaledPainter( keramik_slider ).draw( p, r, disabled ? cg.button() : cg.highlight(), 
 						Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend );
 				else
-					Keramik::ScaledPainter( keramik_vslider ).draw( p, r, cg.highlight(), 
+					Keramik::ScaledPainter( keramik_vslider ).draw( p, r, disabled ? cg.button() : cg.highlight(), 
 						Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend );
 				break;
 			}
@@ -1013,7 +832,7 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 
 			if (flags & Style_Horizontal) {
 
-				renderGradient( p, r, cg.button(), false);
+				Keramik::GradientPainter::renderGradient( p, r, cg.button(), true);
 				p->setPen(cg.light());
 				p->drawLine(x+1, y+4, x+1, y2-4);
 				p->drawLine(x+3, y+4, x+3, y2-4);
@@ -1026,7 +845,7 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 
 			} else {
 				
-				renderGradient( p, r, cg.button(), true);
+				Keramik::GradientPainter::renderGradient( p, r, cg.button(), false);
 				p->setPen(cg.light());
 				p->drawLine(x+4, y+1, x2-4, y+1);
 				p->drawLine(x+4, y+3, x2-4, y+3);
@@ -1212,12 +1031,8 @@ void KeramikStyle::drawControl( ControlElement element,
 				qDrawShadePanel(p, r.x(), r.y(), r.width(), r.height(),
 								cg, true, 1, &cg.brush(QColorGroup::Midlight));
 			else
-				Keramik::ScaledPainter( keramik_menubar , Keramik::ScaledPainter::Vertical).draw( p, pr, cg.button(), cg.background() );
-				//Keramik::RectTilePainter( keramik_listview/*_pressed*/, false ).draw( p, pr, cg.button() );
-				//Keramik::ScaledPainter( keramik_toolbar , Keramik::ScaledPainter::Vertical).draw( p, pr, cg.button() );
-//				renderGradient( p, r, cg.button(), false,
-//								r.x(), r.y()-1, pr.width()-2, pr.height()-2, true);
-
+				Keramik::GradientPainter::renderGradient( p, pr, cg.button(), true, true);
+				
 			drawItem( p, r, AlignCenter | AlignVCenter | ShowPrefix
 					| DontClip | SingleLine, cg, flags & Style_Enabled,
 					mi->pixmap(), mi->text() );
@@ -1256,7 +1071,10 @@ void KeramikStyle::drawControl( ControlElement element,
 			// Draw the menu item background
 			if ( active )
 			{
-				Keramik::RowPainter( keramik_menuitem ).draw( p, main, cg.highlight(), cg.background() );
+				if ( enabled )
+					Keramik::RowPainter( keramik_menuitem ).draw( p, main, cg.highlight(), cg.background() );
+				else
+					p->drawWinFocusRect( r );
 				//p->fillRect(main.x(), main.y(), main.width(), main.height(), cg.brush(QColorGroup::Highlight) );
 			}
 			// Draw the transparency pixmap
@@ -1363,8 +1181,8 @@ void KeramikStyle::drawControl( ControlElement element,
 					text_flags |= reverse ? AlignRight : AlignLeft;
 					
 					//QColor draw = cg.text();
-					QColor draw = active? cg.highlightedText () : cg.text();
-					p->setPen(draw);
+					QColor draw = active && enabled ? cg.highlightedText () : cg.text();
+					p->setPen(draw);     
 
 
 					// Does the menu item have a tabstop? (for the accelerator text)
@@ -1694,21 +1512,18 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 					QToolBar* parent = (QToolBar*)widget->parent();
 					QRect pr = parent->rect();
 
-					Keramik::ScaledPainter( keramik_toolbar, Keramik::ScaledPainter::Vertical)
-						.draw( p, pr.x() - toolbutton->x(), pr.y() - toolbutton->y(), pr.width(), pr.height(), cg.button(), cg.background(), false );
-					//	Keramik::RectTilePainter( keramik_listview, false ).
-					//		draw( p, pr.x() - toolbutton->x(), pr.y() - toolbutton->y(), pr.width(), pr.height(), cg.button() );
-/*					renderGradient( p, r, cg.button(),
-									parent->orientation() == Qt::Vertical,
-									r.x(), r.y(), pr.width()-2, pr.height()-2);*/
+					//TODO: Subrect, px, etc.?
+					Keramik::GradientPainter::renderGradient( p, r, cg.button(), parent->orientation() == Qt::Horizontal );
 				}
 				else if (onExtender)
 				{
 					QWidget* parent = (QWidget*)widget->parent();
 					QToolBar* toolbar = (QToolBar*)parent->parent();
 					QRect tr = toolbar->rect();
-					Keramik::ScaledPainter( keramik_toolbar, Keramik::ScaledPainter::Vertical)
-						.draw( p, r.x(), r.y(), tr.width(), tr.height(), cg.button(), cg.background(),  false );
+					//QPainter p2(toolbar);
+					//p2.fillRect(tr, Qt::red);
+					//p2.end();
+					Keramik::GradientPainter::renderGradient( p, QRect(r.x(), r.y(), tr.width(), tr.height()), cg.button(), toolbar->orientation() != Qt::Vertical );
 				}
 			}
 
@@ -1822,9 +1637,10 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			int h = contentSize.height() + 2 * pixelMetric( PM_ButtonMargin, widget );
 			if ( btn->text().isEmpty() && contentSize.width() < 32 ) return QSize( w, h );
 			
-			//TODO:!
+
+			//For some reason kcontrol no longer does this...
 			//if ( btn->isDefault() || btn->autoDefault() )
-			//             w = QMAX( w, 60 );
+			//            w = QMAX( w, 40 );
 
 			return QSize( w + 30, h + 5 ); //MX: No longer blank space -- can make a bit smaller
 		}
@@ -2059,7 +1875,6 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 	return KStyle::querySubControlMetrics( control, widget, subcontrol, opt );
 }
 
-
 #include <config.h>
 
 #ifdef HAVE_X11_EXTENSIONS_SHAPE_H
@@ -2090,6 +1905,25 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		recursion = false;
 		return true;
 	}
+#ifdef HAVE_X11_EXTENSIONS_SHAPE_H	
+	else if ( event->type() == QEvent::Resize && object->inherits("QListBox") )
+	{
+		QListBox* listbox = static_cast<QListBox*>(object);
+		QResizeEvent* resize = static_cast<QResizeEvent*>(event);
+
+		//CHECKME: Not sure the rects are perfect..
+		XRectangle rects[5] = {
+			{0, 0, resize->size().width()-2, resize->size().height()-6},
+			{0, resize->size().height()-7, resize->size().width()-2, 1},
+			{1, resize->size().height()-6, resize->size().width()-4, 1},
+			{1, resize->size().height()-5, resize->size().width()-4, 1},
+			{3, resize->size().height()-4, resize->size().width()-8, 1}
+		};
+				
+		XShapeCombineRectangles(qt_xdisplay(), listbox->handle(), ShapeBounding, 0, 0,
+			  rects, 5, ShapeSet, YXSorted);
+	}	
+#endif	
 	else if ( event->type() == QEvent::Paint && object->inherits("QListBox") )
 	{
 		static bool recursion = false;
@@ -2102,44 +1936,11 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		
 		if ( !listbox->contentsRect().contains( paint->rect() ) )
 		{
-			{
-/*			
-				This is portable but slow..
-				
-				QBitmap maskMap(listbox->width(), listbox->height());
-				QPainter maskp(&maskMap);
-				maskp.fillRect(0,0,listbox->width(), listbox->height(), Qt::color1);
-				Keramik::RectTilePainter( keramik_combobox_list, false ).draw( &maskp, 0, 0, listbox->width(), listbox->height(), 
-						listbox->palette().color( QPalette::Normal, QColorGroup::Button ),
-						listbox->palette().color( QPalette::Normal, QColorGroup::Background ),
-						false,
-						Keramik::TilePainter::PaintMask );
-				maskp.end();		
-				
-				listbox->setMask(maskMap);//TODO: Unpolish
-*/
-
-
-#ifdef HAVE_X11_EXTENSIONS_SHAPE_H
-				//CHECKME: Not sure the rects are perfect..
-				XRectangle rects[5] = {
-					{0, 0, listbox->width()-2, listbox->height()-6},
-					{0, listbox->height()-7, listbox->width()-2, 1},
-					{1, listbox->height()-6, listbox->width()-4, 1},
-					{1, listbox->height()-5, listbox->width()-4, 1},
-					{3, listbox->height()-4, listbox->width()-8, 1}
-				};
-				
-				XShapeCombineRectangles(qt_xdisplay(), listbox->handle(), ShapeBounding, 0, 0,
-				  rects, 5, ShapeSet, YXSorted);
-#endif
-				  
-				
-				QPainter p( listbox );
-				Keramik::RectTilePainter( keramik_combobox_list, false ).draw( &p, 0, 0, listbox->width(), listbox->height(), 
-						listbox->palette().color( QPalette::Normal, QColorGroup::Button ),
-						listbox->palette().color( QPalette::Normal, QColorGroup::Background ) );
-			}
+			QPainter p( listbox );
+			Keramik::RectTilePainter( keramik_combobox_list, false ).draw( &p, 0, 0, listbox->width(), listbox->height(), 
+					listbox->palette().color( QPalette::Normal, QColorGroup::Button ),
+					listbox->palette().color( QPalette::Normal, QColorGroup::Background ) );
+					
 			QPaintEvent newpaint( paint->region().intersect( listbox->contentsRect() ), paint->erased() );
 			recursion = true;
 			object->event( &newpaint );
@@ -2158,28 +1959,24 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 	}
 	else  if (event->type() == QEvent::Paint  &&  object->parent() && object->parent()->inherits("QToolBar"))
 	{
+
 		// We need to override the paint event to draw a 
 		// gradient on a QToolBarExtensionWidget.
 		QToolBar* toolbar = static_cast<QToolBar*>(object->parent());
 		QWidget* widget = static_cast<QWidget*>(object);
-		QRect wr = widget->rect(), tr = toolbar->rect();
+		QRect wr = widget->rect (), tr = toolbar->rect();
 		QPainter p( widget );
 		
-		Keramik::ScaledPainter( keramik_toolbar, Keramik::ScaledPainter::Vertical)
-			.draw( &p, wr.x() , wr.y(), tr.width() -2, tr.height()-2, toolbar->colorGroup().button(), 
-				toolbar->colorGroup().background(), false );
-
+		Keramik::GradientPainter::renderGradient( &p, QRect(0 , 0, wr.width(), wr.height()), 
+			widget->colorGroup().button(), tr.width() > tr.height() );
 		p.setPen( toolbar->colorGroup().dark() );
 		if ( toolbar->orientation() == Qt::Horizontal )
 			p.drawLine( wr.width()-1, 0, wr.width()-1, wr.height()-1 );
 		else
 			p.drawLine( 0, wr.height()-1, wr.width()-1, wr.height()-1 );
-
 		return true;
-	}
-	
-	QToolBar* toolbar;
 
+	}
 	return false;
 }
 

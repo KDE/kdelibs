@@ -3,11 +3,11 @@ AM_CPPFLAGS = -DQT_PLUGIN
 INCLUDES = -I$(top_srcdir)/kdefx -I$(top_builddir)/kstyles/keramik/ $(all_includes)
 # qembed's output needs that...
 KDE_CXXFLAGS = -UQT_NO_ASCII_CAST
-noinst_HEADERS = keramik.h pixmaploader.h keramikimage.h bitmaps.h
+noinst_HEADERS = keramik.h pixmaploader.h keramikimage.h bitmaps.h gradients.h
 kde_style_LTLIBRARIES = keramik.la
 keramik_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
 keramik_la_LIBADD = ../../kdefx/libkdefx.la
-keramik_la_SOURCES = keramik.cpp pixmaploader.cpp
+keramik_la_SOURCES = keramik.cpp pixmaploader.cpp gradients.cpp
 keramik_la_COMPILE_FIRST = keramikrc.h
 keramik_la_METASOURCES = AUTO
 
@@ -46,7 +46,7 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	 pics/scrollbar-hbar-small-slider1.png pics/scrollbar-vbar-arrow1-pressed.png pics/scrollbar-vbar-arrow1.png\
 	 pics/scrollbar-vbar-arrow2-pressed.png pics/scrollbar-vbar-arrow2.png pics/scrollbar-vbar-groove1.png\
 	 pics/scrollbar-vbar-groove2.png pics/scrollbar-vbar-slider1.png pics/scrollbar-vbar-slider2.png\
-	 pics/menubar.png pics/menuitem-cl.png pics/menuitem-cc.png pics/menuitem-cr.png\
+	 pics/menuitem-cl.png pics/menuitem-cc.png pics/menuitem-cr.png\
 	 pics/scrollbar-vbar-slider3.png pics/scrollbar-vbar-slider4.png pics/scrollbar-vbar-small-slider1.png pics/slider-hgroove-bc.png\
 	 pics/slider-hgroove-bl.png pics/slider-hgroove-br.png pics/slider-hgroove-cc.png pics/slider-hgroove-cl.png pics/slider-hgroove-cr.png\
 	 pics/slider-hgroove-tc.png pics/slider-hgroove-tl.png pics/slider-hgroove-tr.png pics/slider-vgroove-bc.png pics/slider-vgroove-bl.png\
@@ -57,7 +57,20 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	 pics/toolbar-clk-bc.png pics/toolbar-clk-bl.png pics/toolbar-clk-br.png\
 	 pics/toolbar-clk-cc.png pics/toolbar-clk-cl.png pics/toolbar-clk-cr.png\
 	 pics/toolbar-clk-tc.png pics/toolbar-clk-tl.png pics/toolbar-clk-tr.png pics/checkbox-tri.png\
-	 pics/spinbox-pressed-down.png pics/spinbox-pressed-up.png pics/tab-bottom-active-bc.png pics/tab-bottom-active-bl.png pics/tab-bottom-active-br.png pics/tab-bottom-active-cc.png pics/tab-bottom-active-cl.png pics/tab-bottom-active-cr.png pics/tab-bottom-inactive-bc.png pics/tab-bottom-inactive-bl.png pics/tab-bottom-inactive-br.png pics/tab-bottom-inactive-cc.png pics/tab-bottom-inactive-cl.png pics/tab-bottom-inactive-cr.png pics/tab-bottom-inactive-separator.png pics/tab-top-active-cc.png pics/tab-top-active-cl.png pics/tab-top-active-cr.png pics/tab-top-active-tc.png pics/tab-top-active-tl.png pics/tab-top-active-tr.png pics/tab-top-inactive-cc.png pics/tab-top-inactive-cl.png pics/tab-top-inactive-cr.png pics/tab-top-inactive-separator.png pics/tab-top-inactive-tc.png pics/tab-top-inactive-tl.png pics/tab-top-inactive-tr.png pics/toolbar.png pics/vslider.png
+	 pics/spinbox-pressed-down.png pics/spinbox-pressed-up.png \
+	 pics/tab-bottom-active-bc.png pics/tab-bottom-active-bl.png\
+	 pics/tab-bottom-active-br.png pics/tab-bottom-active-cc.png\
+	 pics/tab-bottom-active-cl.png pics/tab-bottom-active-cr.png\
+	 pics/tab-bottom-inactive-bc.png pics/tab-bottom-inactive-bl.png\
+	 pics/tab-bottom-inactive-br.png pics/tab-bottom-inactive-cc.png\
+	 pics/tab-bottom-inactive-cl.png pics/tab-bottom-inactive-cr.png\
+	 pics/tab-bottom-inactive-separator.png pics/tab-top-active-cc.png\
+	 pics/tab-top-active-cl.png pics/tab-top-active-cr.png\
+	 pics/tab-top-active-tc.png pics/tab-top-active-tl.png\
+	 pics/tab-top-active-tr.png pics/tab-top-inactive-cc.png\
+	 pics/tab-top-inactive-cl.png pics/tab-top-inactive-cr.png\
+	 pics/tab-top-inactive-separator.png pics/tab-top-inactive-tc.png\
+	 pics/tab-top-inactive-tl.png pics/tab-top-inactive-tr.png pics/vslider.png
 
 pixmaps.keramik keramikrc.h: genembed
 	pics=`ls $(srcdir)/pics/*.png 2>/dev/null` ;\ 
