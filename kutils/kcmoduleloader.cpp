@@ -94,11 +94,15 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
     else
     {
       lib->unload();
-      return reportError( report, i18n("<qt>There was an error when loading the module. "
-          "The desktop file as well as the library was found but "
+      return reportError( report, i18n("<qt>There was an error when loading the module '%1'.<br><br>"
+          "The desktop file (%2) as well as the library (%3) was found but "
           "yet the module could not be loaded properly. Most likely "
           "the factory declaration was wrong, or the "
-          "create_* function was missing.</qt>"), QString::null, parent );
+          "create_* function was missing.</qt>")
+          .arg( mod.moduleName() )
+          .arg( mod.fileName() )
+          .arg( lib->fileName() ),
+          QString::null, parent );
     }
 
     lib->unload();
