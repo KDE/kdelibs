@@ -1,6 +1,7 @@
 kdelibs (4:2.2-alpha1-1) unstable; urgency=low
  
   * New upstream alpha
+  * Reseting all overrides
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Apr 2001 03:00:00 -0700
 

@@ -1,6 +1,11 @@
 #!/usr/bin/make -f
 # Made with the aid of debmake, by Christoph Lameter,
 # based on the sample debian/rules file for GNU hello by Ian Jackson.
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+ 
+# This is the debhelper compatability version to use.
+export DH_COMPAT=2
 
 SHELL=/bin/sh
 
@@ -57,13 +62,12 @@ binary-indep:	build
 		--outputdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR) ; \
 	fi
 	
-	mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
-	cp doc/api/*.png `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
-	mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
-	cp kio/DESKTOP_ENTRY_STANDARD `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
-	sed -e "s#_QTDOCDIR_#$(QTDOCDIR)#g" doc/api/index.docbook.in > doc/api/index.docbook
-	( cd doc/api && /bin/sh $(BUILDDIR)/ksgmltools/kdb2html `pwd`/index.docbook )
-	cp doc/api/HTML/* `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)                                                                                          
+	#mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
+	#cp doc/api/*.png `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
+	#mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
+	#cp kio/DESKTOP_ENTRY_STANDARD `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
+	#( cd doc/api && /bin/sh $(BUILDDIR)/ksgmltools/kdb2html `pwd`/index.docbook )
+	#cp doc/api/HTML/* `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)                                                                                          
 	dh_installdocs -i
 	dh_installchangelogs -pkdelibs3-doc 
 	dh_compress -i
@@ -79,15 +83,12 @@ binary-arch:  build
 	dh_testroot
 	dh_clean -a
 	dh_installdirs
-	install -d debian/tmp/usr/share/applnk
-	install -d debian/tmp/etc/pam.d
-	install -d debian/tmp/etc/kde2
-	install -d debian/tmp/usr/share/lintian/overrides
-	install -d debian/libarts-alsa/usr/share/lintian/overrides
-	install -d debian/libkmid-alsa/usr/share/lintian/overrides
-	install -d debian/libkmid/usr/share/lintian/overrides
+	install -d debian/kdelibs3/usr/share/applnk
+	install -d debian/kdelibs3/etc/pam.d
+	install -d debian/kdelibs3/etc/kde2
+	install -d debian/kdelibs3/usr/share/lintian/overrides
 	install -d debian/libkmid-alsa/usr/bin
-	make DESTDIR=`pwd`/debian/tmp/ install
+	make DESTDIR=`pwd`/debian/kdelibs3/ install
 	make -C arts/ clean
 	make -C libkmid/ clean
 	./configure $(configkde) --with-alsa --without-ssl \
@@ -99,37 +100,36 @@ binary-arch:  build
 	-mv debian/libarts-alsa/usr/bin/knotify debian/libkmid-alsa/usr/bin/
 	-mv debian/libarts-alsa/usr/lib/*notify* debian/libkmid-alsa/usr/lib/
 	-mv debian/libarts-alsa/usr/lib/*qtmcop* debian/libkmid-alsa/usr/lib/
-	-rm -f debian/tmp/usr/share/doc/kde/HTML/default
+	-rm -f debian/kdelibs3/usr/share/doc/kde/HTML/default
 	# messy cleanup
 	-rm -rf debian/libarts-alsa/usr/include build-stamp
 	-rm -rf debian/libkmid-alsa/usr/include
 	-rm -f `find debian/libarts-alsa/usr/lib -type l -name "*.so"`
 	-rm -f `find debian/libkmid-alsa/usr/lib -type l -name "*.so"`
-	cp debian/kdelibs3.override debian/tmp/usr/share/lintian/overrides/kdelibs3
-	cp debian/libarts.override debian/tmp/usr/share/lintian/overrides/libarts
-	cp debian/libarts-alsa.override debian/libarts-alsa/usr/share/lintian/overrides/libarts-alsa
-	cp debian/libkmid-alsa.override debian/libkmid-alsa/usr/share/lintian/overrides/libkmid-alsa
-	cp debian/libkmid.override debian/libkmid/usr/share/lintian/overrides/libkmid
-	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
+	cp debian/*.override debian/kdelibs3/usr/share/lintian/overrides/
+	for i in `ls debian/kdelibs3/usr/share/lintian/overrides/`; do \
+	  mv debian/kdelibs3/usr/share/lintian/overrides/$$i debian/kdelibs3/usr/share/lintian/overrides/`echo $$i | sed -e 's#.override##'`; \
+	done
+	debianrc=debian/kdelibs3/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/etc/kde2" >> $$debianrc ;\
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
 	echo "dir_cgi=/usr/lib/cgi-bin" >> $$debianrc
-	cp debian/tmp/etc/kde2/system.kdeglobals debian/tmp/etc/kderc
+	cp debian/kdelibs3/etc/kde2/system.kdeglobals debian/kdelibs3/etc/kderc
 	perl -w admin/debianrules cleanup
-	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
+	cp debian/kde.pamd debian/kdelibs3/etc/pam.d/kde
 	dh_installdocs -a
-	install -d debian/tmp/usr/share/doc/kdelibs-dev/dh-make/
-	-cp debian/dh-make/* debian/tmp/usr/share/doc/kdelibs-dev/dh-make/
-	-cp admin/debianrules debian/tmp/usr/share/doc/kdelibs-dev/dh-make/
+	install -d debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
+	-cp debian/dh-make/* debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
+	-cp admin/debianrules debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	dh_undocumented
-	dh_movefiles -a
-	-rm -rf debian/tmp/usr/share/apps/kssl
-	mv debian/tmp/usr/lib/kde2/kio_https.so debian/tmp/usr/lib/kde2/kio_https-nossl.so
-	mv debian/tmp/usr/lib/kde2/kio_https.la debian/tmp/usr/lib/kde2/kio_https-nossl.la
-	mv debian/tmp/usr/lib/libkssl.so.2.0.0 debian/tmp/usr/lib/libkssl-nossl.so.2.0.0
-	mv debian/tmp/usr/lib/libkssl.la debian/tmp/usr/lib/libkssl-nossl.la
+	dh_movefiles -a --sourcedir=debian/kdelibs3
+	-rm -rf debian/kdelibs3/usr/share/apps/kssl
+	mv debian/kdelibs3/usr/lib/kde2/kio_https.so debian/kdelibs3/usr/lib/kde2/kio_https-nossl.so
+	mv debian/kdelibs3/usr/lib/kde2/kio_https.la debian/kdelibs3/usr/lib/kde2/kio_https-nossl.la
+	mv debian/kdelibs3/usr/lib/libkssl.so.2.0.0 debian/kdelibs3/usr/lib/libkssl-nossl.so.2.0.0
+	mv debian/kdelibs3/usr/lib/libkssl.la debian/kdelibs3/usr/lib/libkssl-nossl.la
 	dh_installchangelogs -a 
 	dh_strip -a
 	for i in `find debian/ -type l -name "common"`; do \
@@ -140,7 +140,7 @@ binary-arch:  build
 	dh_link -a
 	dh_compress -a
 	dh_fixperms -a
-	chmod 644 debian/tmp/etc/pam.d/kde debian/tmp/usr/share/lintian/overrides/*
+	chmod 644 debian/kdelibs3/etc/pam.d/kde debian/kdelibs3/usr/share/lintian/overrides/*
 	chmod 4755 debian/libarts/usr/bin/artswrapper
 	chmod 4755 debian/libarts-alsa/usr/bin/artswrapper
 	dh_makeshlibs -a -V
@@ -152,8 +152,8 @@ binary-arch:  build
 	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
 	echo ", libasound1 (>= 0.5.5)" >> debian/libkmid-alsa.substvars
 	dh_gencontrol 
-	cd debian/tmp && find ./etc -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
-	chmod 644 debian/tmp/DEBIAN/conffiles
+	cd debian/kdelibs3 && find ./etc -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
+	chmod 644 debian/kdelibs3/DEBIAN/conffiles
 	dh_md5sums 
 	dh_builddeb -a
 
