@@ -138,26 +138,16 @@ QString KIO::itemsSummaryString(uint items, uint files, uint dirs, unsigned long
 
 QString KIO::itemsSummaryString64(uint items, uint files, uint dirs, long long size, bool showSize)
 {
-    QString text;
-    if (items == 1)
-        text = i18n("One Item");
-    else
-        text = i18n("%1 Items").arg(items);
+    QString text = i18n( "One Item", "%n Items", items );
     text += " - ";
-    if (files == 1)
-        text += i18n("One File");
-    else
-        text += i18n("%1 Files").arg(files);
+    text += i18n( "One File", "%n Files", files );
     if ( showSize && files > 0 )
     {
         text += " ";
         text += i18n("(%1 Total)").arg(KIO::convertSize64( size ) );
     }
     text += " - ";
-    if (dirs == 1)
-        text += i18n("One Directory");
-    else
-        text += i18n("%1 Directories").arg(dirs);
+    text += i18n("One Directory", "%n Directories", dirs);
     return text;
 }
 
