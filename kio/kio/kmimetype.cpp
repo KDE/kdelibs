@@ -291,6 +291,9 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
   QVariant v = mime->property("X-KDE-text");
   if (v.isValid())
      result.text = v.toBool();
+
+  if (mime->name().startsWith("inode/"))
+     return result;
      
   QFile f(fileName);
   if (f.open(IO_ReadOnly))
