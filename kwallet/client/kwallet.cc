@@ -28,56 +28,83 @@
 
 using namespace KWallet;
 
-Wallet::Wallet()
-: QObject(0L), d(0), _dcopClient(new DCOPClient) {
-	_open = false;
-	_dcopClient->attach();
+
+const QString Wallet::LocalWallet() {
+// FIXME: observe preferences to store local+network together
+return "kdewallet";
+}
+
+const QString Wallet::NetworkWallet() {
+// FIXME: observe preferences to store local+network together
+return "kdewallet";
+}
+
+const QString Wallet::PasswordFolder("Passwords");
+
+const QString Wallet::FormDataFolder("Form Data");
+
+
+
+Wallet::Wallet(int handle, const QString& name)
+: QObject(0L), DCOPObject(0L), d(0L), _name(name), _handle(handle) {
 	_dcopRef = new DCOPRef("kded", "kwalletd");
-	_dcopRef->setDCOPClient(_dcopClient);
+
+	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "walletClosed(int)", "slotWalletClosed(int)", false);
+
+	// Verify that the wallet is still open
+	DCOPReply r = _dcopRef->call("isOpen", _handle);
+	if (r.isValid()) {
+		bool rc = false;
+		r.get(rc);
+		if (!rc) {
+			_handle = -1;
+			_name = QString::null;
+		}
+	}
 }
 
 
 Wallet::~Wallet() {
-	if (_open) {
-		// FIXME
+	if (_handle != -1) {
+		_dcopRef->call("close", _handle);
+		_handle = -1;
+		_folder = QString::null;
+		_name = QString::null;
 	}
 
 	delete _dcopRef;
 	_dcopRef = 0L;
-	delete _dcopClient;
-	_dcopClient = 0L;
 }
 
 
 Wallet *Wallet::openWallet(const QString& name) {
 DCOPReply r = DCOPRef("kded", "kwalletd").call("open", name);
 	if (r.isValid()) {
-		int drc ;
+		int drc = -1;
 		r.get(drc);
 		if (drc != -1) {
-			// FIXME
+			return new Wallet(drc, name);
 		}
 	}
 return 0;
 }
 
 
-#if 0
-int Wallet::close(const QByteArray& password) {
-	if (!_open) {
+int Wallet::lockWallet() {
+	if (_handle == -1) {
 		return -1;
 	}
 
-	DCOPReply r = _kwalletdRef->call("close", _name, password);
+	DCOPReply r = _dcopRef->call("close", _handle);
+	_handle = -1;
+	_folder = QString::null;
+	_name = QString::null;
 	if (r.isValid()) {
-		int drc;
+		int drc = -1;
 		r.get(drc);
-		if (drc == 0) {
-			_open = false;
-		}
 		return drc;
 	}
-	return -99;
+	return -1;
 }
 
 
@@ -86,18 +113,213 @@ const QString& Wallet::walletName() const {
 }
 
 
-bool Wallet::isOpen() {
-	DCOPReply r = _kwalletdRef->call("isOpen", _name);
-	if (r.isValid()) {
-		bool drc;
-		r.get(drc);
-		_open = drc;
-		return drc;
-	}
-	return false;
+bool Wallet::isOpen() const {
+	return _handle != -1;
 }
 
 
+void Wallet::requestChangePassword() {
+	if (_handle == -1) {
+		return;
+	}
+
+	_dcopRef->send("changePassword", _handle);
+}
+
+
+void Wallet::slotWalletClosed(int handle) {
+	if (_handle == handle) {
+		_handle = -1;
+		_folder = QString::null;
+		_name = QString::null;
+		emit walletClosed();
+	}
+}
+
+
+QStringList Wallet::folderList() {
+QStringList rc;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("folderList", _handle);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
+bool Wallet::hasFolder(const QString& f) {
+bool rc = false;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("hasFolder", _handle, f);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
+bool Wallet::setFolder(const QString& f) {
+bool rc = false;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+// Don't do this - the folder could have disappeared?
+#if 0
+	if (f == _folder) {
+		return true;
+	}
 #endif
+
+	DCOPReply r = _dcopRef->call("setFolder", _handle, f);
+	if (r.isValid()) {
+		r.get(rc);
+		if (rc) {
+			_folder = f;
+		}
+	}
+
+return rc;
+}
+
+
+bool Wallet::removeFolder(const QString& f) {
+bool rc = false;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("removeFolder", _handle, f);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+	if (_folder == f) {
+		setFolder(QString::null);
+	}
+
+return rc;
+}
+
+
+const QString& Wallet::currentFolder() const {
+return _folder;
+}
+
+
+int Wallet::readEntry(const QString& key, QByteArray& value) {
+int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("readEntry", _handle, _folder, key);
+	if (r.isValid()) {
+		r.get(value);
+		rc = 0;
+	}
+
+return rc;
+}
+
+
+int Wallet::readPassword(const QString& key, QString& value) {
+int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("readPassword", _handle, _folder, key);
+	if (r.isValid()) {
+		r.get(value);
+		rc = 0;
+	}
+
+return rc;
+}
+
+
+int Wallet::writeEntry(const QString& key, const QByteArray& value) {
+int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("writeEntry", _handle, _folder, key, value);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
+int Wallet::writePassword(const QString& key, const QString& value) {
+int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("writePassword", _handle, _folder, key, value);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
+bool Wallet::hasEntry(const QString& key) {
+bool rc = false;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("hasEntry", _handle, _folder, key);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
+int Wallet::removeEntry(const QString& key) {
+bool rc = false;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("removeEntry", _handle, _folder, key);
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
+void Wallet::virtual_hook(int, void*) {
+	//BASE::virtual_hook( id, data );
+}
 
 #include "kwallet.moc"

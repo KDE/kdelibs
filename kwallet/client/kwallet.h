@@ -23,33 +23,84 @@
 #define _KWALLET_H
 
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qobject.h>
+#include <dcopobject.h>
 #include "kwalletentry.h"
 
 
-class DCOPClient;
 class DCOPRef;
 
 namespace KWallet {
 
-class Wallet : public QObject {
+class Wallet : public QObject, public DCOPObject {
+	K_DCOP
 	Q_OBJECT
 	protected:
-		Wallet();
+		Wallet(int handle, const QString& name);
 		Wallet(const Wallet&);
 
 	public:
 		virtual ~Wallet();
 		
-		static Wallet* openWallet(const QString& name = "kdewallet");
+		static Wallet* openWallet(const QString& name);
+
+		static const QString LocalWallet();
+		static const QString NetworkWallet();
+
+		static const QString PasswordFolder;
+		static const QString FormDataFolder;
+
+		virtual int lockWallet();
+
+		virtual const QString& walletName() const;
+
+		virtual bool isOpen() const;
+
+		virtual void requestChangePassword();
+
+		// Folder management functions
+		virtual QStringList folderList();
+
+		virtual bool hasFolder(const QString& f);
+
+		virtual bool setFolder(const QString& f);
+
+		virtual bool removeFolder(const QString& f);
+
+		virtual const QString& currentFolder() const;
+
+		// Entry management functions
+		virtual int readEntry(const QString& key, QByteArray& value);
+
+		virtual int readPassword(const QString& key, QString& value);
+
+		virtual int writeEntry(const QString& key, const QByteArray& value);
+
+		virtual int writePassword(const QString& key, const QString& value);
+
+		virtual bool hasEntry(const QString& key);
+
+		virtual int removeEntry(const QString& key);
+
+	signals:
+		void walletClosed();
+		void folderRemoved(const QString& folder);
+
+	private:
+	k_dcop:
+		ASYNC slotWalletClosed(int handle);
 
 	private:
 		class WalletPrivate;
 		WalletPrivate *d;
 		QString _name;
-		bool _open;
-		DCOPClient *_dcopClient;
+		QString _folder;
+		int _handle;
 		DCOPRef *_dcopRef;
+
+	protected:
+		virtual void virtual_hook(int id, void *data);
 };
 
 };
