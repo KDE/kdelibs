@@ -41,16 +41,18 @@ HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentImpl *doc)
   : HTMLPositionedElementImpl(doc)
 {
     applet = 0;
-    base = 0;
+    codeBase = 0;
     code = 0;
     name = 0;
+    archive = 0;
 }
 
 HTMLAppletElementImpl::~HTMLAppletElementImpl()
 {
-    if(base) base->deref();
+    if(codeBase) codeBase->deref();
     if(code) code->deref();
     if(name) name->deref();
+    if(archive) archive->deref();    
     if(applet) delete applet;
 }
 
@@ -69,10 +71,12 @@ void HTMLAppletElementImpl::parseAttribute(Attribute *attr)
     switch( attr->id )
     {
     case ATTR_CODEBASE:
-    	base = attr->val();
-	base->ref();
+    	codeBase = attr->val();
+	codeBase->ref();
 	break;	
     case ATTR_ARCHIVE:
+        archive = attr->val();
+	archive->ref();
 	break;
     case ATTR_CODE:
 	code = attr->val();
@@ -132,16 +136,17 @@ void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
     if(!view->javaEnabled()) return;
     applet = new KJavaAppletWidget(view->viewport());
 
-    printf("resizing applet to %d/%d\n", width, getHeight());
+    // Set applet parameters
     applet->resize(width, getHeight());
-    //applet->show();
     applet->setBaseURL(view->url());
+    if(codeBase)
+      applet->setCodeBase(QString(codeBase->s, codeBase->l));
+    if(code)
+      applet->setAppletClass(QString(code->s, code->l));
+    if(archive)
+      applet->setJARFile(QString(archive->s, archive->l));
+    
     QString tmp;
-    if(base)
-	tmp = QString(base->s, base->l) + '/';
-    tmp += QString(code->s, code->l);
-    printf("setting applet to %s\n", tmp.ascii());
-    applet->setAppletClass(tmp);
     if(name)
 	tmp = QConstString(name->s, name->l).string();
     else

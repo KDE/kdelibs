@@ -3,13 +3,17 @@ package org.kde.kjas.server;
 import java.util.*;
 import java.net.*;
 import java.applet.*;
-
+import java.awt.*; 
 /**
  * Manages the running contexts and applets.
  *
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.1.1.1  1999/07/22 17:28:08  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
  * </PRE>
  *
  * @version $Id$
@@ -62,7 +66,10 @@ public class KJASAppletRunner
                              int appletId,
                              String name,
                              String className,
-                             String base )
+                             String base,
+                             String codeBase,
+                             String archive,
+                             Dimension size)
       throws IllegalArgumentException
    {
       if ( contextId >= contexts.size() )
@@ -81,18 +88,6 @@ public class KJASAppletRunner
          {
             throw new IllegalArgumentException( mue.toString() );
          }
-   }
-
-   /**
-    * Used to load applets in JAR files.
-    */
-   public void createApplet( int contextId,
-                             int appletId,
-                             String name,
-                             String archiveName,
-                             String className,
-                             String base )
-   {
    }
 
    public void destroyApplet( int contextId, int appletId )
@@ -168,7 +163,7 @@ public class KJASAppletRunner
    //
    // Main
    //
-
+  /*
    public static void main( String[] args )
    {
       KJASAppletRunner runner = new KJASAppletRunner();
@@ -188,4 +183,5 @@ public class KJASAppletRunner
 
       //      runner.destroyContext( 0 );
    }
+  */
 }

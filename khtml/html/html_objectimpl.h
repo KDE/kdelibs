@@ -62,9 +62,10 @@ public:
     virtual bool childrenRendered();
 
  protected:
-    DOMStringImpl *base;
+    DOMStringImpl *codeBase;
     DOMStringImpl *name;
     DOMStringImpl *code;
+    DOMStringImpl *archive;
 
     KJavaAppletWidget *applet;
     KHTMLWidget *view;

@@ -59,7 +59,11 @@ void KJavaAppletContext::create( KJavaApplet *applet )
     server->createApplet( id, appletId,
 			  applet->appletName(),
 			  applet->appletClass(),
-			  applet->baseURL() );
+			  applet->baseURL(),
+                          applet->codeBase(),
+                          applet->jarFile(),
+                          applet->size() );
+    
     applet->setAppletId( appletId );
     appletId++;
 }

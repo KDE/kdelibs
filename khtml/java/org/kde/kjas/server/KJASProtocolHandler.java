@@ -2,6 +2,7 @@ package org.kde.kjas.server;
 
 import java.io.*;
 import java.util.*;
+import java.awt.*;
 
 /**
  * Encapsulates the KJAS protocol.
@@ -9,6 +10,10 @@ import java.util.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.1.1.1  1999/07/22 17:28:08  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
  * </PRE>
  *
  * @version $Id$
@@ -133,11 +138,23 @@ public class KJASProtocolHandler
          String appletIdStr = tok.nextToken();
          String name = tok.nextToken();
          String className = tok.nextToken();
-         String base = tok.nextToken();
+         String baseURL = tok.nextToken();
+         String codeBase = tok.nextToken();
+         if(codeBase.equals("null"))
+           codeBase = null;
+         String archive = tok.nextToken();
+         if(archive.equals("null"))
+           archive = null;
+         String widthStr = tok.nextToken();
+         String heightStr = tok.nextToken();
 
          int contextId = Integer.parseInt( contextIdStr );
          int appletId = Integer.parseInt( appletIdStr );
-         runner.createApplet( contextId, appletId, name, className, base );
+         int width = Integer.parseInt( widthStr );
+         int height = Integer.parseInt( heightStr );
+
+         runner.createApplet( contextId, appletId, name, className, baseURL, 
+                              codeBase, archive, new Dimension(width, height) );
       }
       catch ( NumberFormatException e ) {
          throw new IllegalArgumentException( "createContext() " + e.toString() );

@@ -131,6 +131,16 @@ QString &KJavaAppletWidget::baseURL()
    return applet->baseURL();
 }
 
+void KJavaAppletWidget::setCodeBase( const QString &codeBase )
+{
+   applet->setCodeBase( codeBase );
+}
+
+QString &KJavaAppletWidget::codeBase()
+{
+   return applet->codeBase();
+}
+
 void KJavaAppletWidget::uniqueTitle()
 {
    swallowTitle.sprintf( "KJAS Applet - Ticket number %u", count );
@@ -209,6 +219,12 @@ void KJavaAppletWidget::resizeEvent( QResizeEvent * )
 {
    if ( window != 0 )
       XResizeWindow( qt_xdisplay(), window, width(), height() );
+}
+
+void KJavaAppletWidget::resize( int w, int h)
+{
+  QWidget::resize( w, h );
+  applet->setSize( QSize(w, h) );
 }
 
 void KJavaAppletWidget::closeEvent( QCloseEvent *e )

@@ -14,6 +14,9 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.4  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
  * Revision 1.3  1999/11/12 01:22:34  rich
  * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
  *
@@ -67,7 +70,8 @@ public:
      */
     void createApplet( int contextId, int appletId,
 		       const QString name, const QString clazzName,
-		       const QString base );
+		       const QString baseURL, const QString codeBase,
+                       const QString jarFile, QSize size );
 
     /**
      * Destroy an applet in the specified context with the specified id.

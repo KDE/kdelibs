@@ -49,14 +49,21 @@ void KJavaAppletServer::destroyContext( int contextId )
 }
 
 void KJavaAppletServer::createApplet( int contextId, int appletId,
-				      const QString name, const QString clazzName,
-				      const QString base )
+				      const QString name, 
+                                      const QString clazzName,
+				      const QString baseURL,
+                                      const QString codeBase,
+                                      const QString jarFile,
+                                      QSize size )
 {
     QString s;
-    s.sprintf( "createApplet!%d!%d!%s!%s!%s\n",
+    s.sprintf( "createApplet!%d!%d!%s!%s!%s!%s!%s!%d!%d\n",
 	       contextId, appletId,
 	       name.data(), clazzName.data(),
-	       base.data() );
+	       baseURL.data(), 
+               codeBase ? codeBase.data() : "null",
+               jarFile ? jarFile.data() : "null",
+               size.width(), size.height() );
     process->send( s );
 
 }

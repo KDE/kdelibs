@@ -16,6 +16,9 @@ class KJavaAppletContext;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.4  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
  * Revision 1.3  1999/10/09 18:09:52  rich
  * Const QString fixes
  *
@@ -68,12 +71,24 @@ public:
    void setBaseURL( const QString &base );
    QString &baseURL();
 
+   /**
+    * Set the codebase of the applet classes.
+    */
+   void setCodeBase( const QString &codeBase );
+   QString &codeBase();
+
    void setAppletName( const QString &name );
    QString &appletName();
-
-    void create();
-    bool isCreated();
-
+ 
+   /**
+    * Set the URL of the document embedding the applet.
+    */
+   void setSize( QSize size );
+   QSize size();
+  
+   void create();
+   bool isCreated();
+ 
    void show( const QString &title );
 
    /**

@@ -9,7 +9,10 @@ struct KJavaAppletPrivate
    QString clazzName;
    QString appName;
    QString jar;
-   QString base;
+   QString baseURL;
+   QString codeBase;
+   QSize size;  
+  
 };
 
 KJavaApplet::KJavaApplet( KJavaAppletContext *context )
@@ -72,14 +75,34 @@ void KJavaApplet::setParameter( const QString &name, const QString &value )
 	params.insert( name, value );
 }
 
-void KJavaApplet::setBaseURL( const QString &base )
+void KJavaApplet::setBaseURL( const QString &baseURL )
 {
-    d->base = base;
+    d->baseURL = baseURL;
 }
 
 QString &KJavaApplet::baseURL()
 {
-    return d->base;
+    return d->baseURL;
+}
+
+void KJavaApplet::setCodeBase( const QString &codeBase )
+{
+    d->codeBase = codeBase;
+}
+
+QString &KJavaApplet::codeBase()
+{
+    return d->codeBase;
+}
+
+void KJavaApplet::setSize( QSize size )
+{
+    d->size = size;
+}
+
+QSize KJavaApplet::size()
+{
+    return d->size;
 }
 
 void KJavaApplet::setAppletName( const QString &name )

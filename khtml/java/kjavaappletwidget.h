@@ -52,6 +52,9 @@ class KWinModule;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.4  1999/12/14 19:56:59  rich
+ * Many fixes, see changelog
+ *
  * Revision 1.3  1999/10/09 13:20:45  rich
  * Changed Wid to WId
  *
@@ -131,6 +134,16 @@ public:
     */
    QString &baseURL();
 
+  /**
+    * Set the codebase of the applet classes.
+    */
+   void setCodeBase( const QString &codeBase );
+
+   /**
+    * Get the codebase of the applet classes.
+    */
+   QString &codeBase();
+
    /**
     * Create the applet.
     */
@@ -151,6 +164,8 @@ public:
     */
    void stop();
 
+  void resize( int, int );
+  
 protected slots:
     //
     // Stuff to do with swallowing the applets Frame

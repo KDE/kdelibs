@@ -12,6 +12,9 @@ import java.awt.event.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.3  1999/11/12 02:58:05  rich
+ * Updated KJAS server
+ *
  * Revision 1.2  1999/10/09 21:55:27  rich
  * More consts
  *
@@ -94,7 +97,6 @@ public class KJASAppletContext implements AppletContext
          final Frame f = new Frame( title );
          f.add( app, "Center" );
          f.setSize( 400, 400 );
-         app.init();
 
          f.addWindowListener( new WindowAdapter() {
             public void windowClosing( WindowEvent e ) {
@@ -104,6 +106,8 @@ public class KJASAppletContext implements AppletContext
          } );
 
          f.setVisible( true );
+
+         app.init();
          app.start();
       }
    }
