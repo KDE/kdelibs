@@ -66,26 +66,6 @@
   NDATA linespecific       -- http://www.gnu.org/copyleft/fdl.html -->
 <!-- FDLNotice is defined in kde-prologue.entities (why?) -->
 
-<!-- KDE olink specification -->
-<!ENTITY kde-modespec
-	'<modespec id="kdems-doc" xreflabel="see &percnt;t">/path/to/documentation</modespec>
-         <modespec id="kdems-man" xreflabel="see &percnt;t">man:</modespec>
-         <modespec id="kdems-info" xreflabel="see &percnt;t">info:</modespec>
-         <modespec id="kdems-help" xreflabel="see &percnt;t">help:</modespec>
-         <modespec id="kdems-common" xreflabel="see &percnt;t">common/</modespec>'>
-
-<!-- type="href" uses directly the link from the olink document:
-1. Generate olink version of the documents
-   (Only temporary, so no need to include it in a distribution)
-2. Make sure there is a catalogue that lists all documents
-   (fpi.dsl generates the catalogues; then a script can look for them and register
-    them, and ready)
-3. Use type="href" in olink; modespec is only used to generate text
-?? Do we standardise the names of document entities; if yes: we need to add them
-   to a general list (preferably generated automatically).
--->
-
-
 <!-- KDE index generation
      To use: set addindex to INCLUDE
      Scripts should generate the index in docindex.docbook in the same directory
