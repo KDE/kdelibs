@@ -302,7 +302,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
     QString fileName = url.fileName();
     int extensionPos = fileName.findRev( '.' );
     if ( extensionPos != -1 )
-        extension = fileName.mid( extensionPos + 1 );
+        extension = fileName.mid( extensionPos ); // keep the '.'
     KTempFile tempFile( QString::null, extension );
     m_file = tempFile.name();
 
