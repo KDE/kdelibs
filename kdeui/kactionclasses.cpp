@@ -1560,6 +1560,9 @@ int KActionMenu::plug( QWidget* widget, int index )
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
+    if ( m_parentCollection )
+      m_parentCollection->connectHighlight( menu, this );
+
     return containerCount() - 1;
   }
   else if ( widget->inherits( "KToolBar" ) )
@@ -1592,11 +1595,15 @@ int KActionMenu::plug( QWidget* widget, int index )
       QWhatsThis::add( bar->getButton(id_), whatsThis() );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
     if (delayed()) {
         bar->setDelayedPopup( id_, popupMenu(), stickyMenu() );
     } else {
         bar->getButton(id_)->setPopup(popupMenu(), stickyMenu() );
     }
+
+    if ( m_parentCollection )
+      m_parentCollection->connectHighlight( bar, this );
 
     return containerCount() - 1;
   }
