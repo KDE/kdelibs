@@ -9,7 +9,8 @@
 #include "pics/index1.xpm"
 #include "pics/index2.xpm"
 #include "pics/index3.xpm"
-#include "pics/delimiter.xpm"
+#include "pics/brackets.xpm"
+#include "pics/abs.xpm"
 
 KFormulaToolBar::KFormulaToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1)
   : KToolBar(parent, name, _item_size)
@@ -17,7 +18,8 @@ KFormulaToolBar::KFormulaToolBar(QWidget *parent=0L, const char *name=0L, int _i
   insertButton(QPixmap((const char **)index2), POWER, true, "Power");
   insertButton(QPixmap((const char **)index3), SUB, true, "Subscript");
   insertButton(QPixmap((const char **)mini_bra_xpm), PAREN, true, "Parentheses");
-  insertButton(QPixmap((const char **)delimiter), BRACKET, true, "Brackets");
+  insertButton(QPixmap((const char **)abs_xpm), ABS, true, "Absolute value");
+  insertButton(QPixmap((const char **)brackets_xpm), BRACKET, true, "Brackets");
   insertButton(QPixmap((const char **)mini_frac_xpm), DIVIDE, true, "Fraction");
   insertButton(QPixmap((const char **)mini_root_xpm), SQRT, true, "Root");
   insertButton(QPixmap((const char **)mini_integral_xpm), INTEGRAL, true, "Integral");

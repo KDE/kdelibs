@@ -570,56 +570,33 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
   //now parenthesize everything in reverse order (think about it).
   //After this, "x+y*z^{2}" becomes "{x}+{{y}*{{z}^{2}}}"
 
-  //equal and gt lt signs have lowest priority
-  for(i = (int)text.length() - 1; i >= 0; i--) {
-    if(text[i] != QChar(LESS) && text[i] != QChar(MORE) &&
-       text[i] != QChar(EQUAL)) continue;
-    parenthesize(text, i, info);
-  }
+#define ADD_PAREN(s)                           \
+for(i = (int)text.length() - 1; i >= 0; i--) { \
+  if(!(s).contains(text[i])) continue;         \
+  parenthesize(text, i, info);                 \
+}
 
-  //addition and subtraction
-  for(i = (int)text.length() - 1; i >= 0; i--) {
-    if(text[i] != QChar(PLUS) && text[i] != QChar(MINUS)) continue;
-    parenthesize(text, i, info);
-  }
+#define ADD_PAREN_REVERSE(s)                   \
+for(i = 0; i < (int)text.length(); i++) {      \
+  if(!(s).contains(text[i])) continue;         \
+  parenthesize(text, i, info);                 \
+}
 
-  //slash and multiplication
-  for(i = (int)text.length() - 1; i >= 0; i--) {
-    if(text[i] != QChar(SLASH) && text[i] != QChar(TIMES)) continue;
-    parenthesize(text, i, info);
-  }
+  ADD_PAREN( QString(QChar(LESS)) + QChar(MORE) + QChar(EQUAL) )
 
-  //concatenation--backwards for evaluation
-  for(i = 0; i < (int)text.length(); i++) {
-    if(text[i] != QChar(CAT)) continue;
-    parenthesize(text, i, info);
-  }
+  ADD_PAREN( QString(QChar(PLUS)) + QChar(MINUS) )
 
-  //locational things following operand:
-  //should not be reversed despite order of ops.
-  for(i = (int)text.length() - 1; i >= 0; i--) {
-    if(text[i] != QChar(POWER) && text[i] != QChar(SUB) &&
-	  text[i] != QChar(ABOVE) && text[i] != QChar(BELOW)) continue;
-    parenthesize(text, i, info);
-  }
+  ADD_PAREN( QString(QChar(SLASH)) + QChar(TIMES) )
 
-  //locational things preceding operand:
-  for(i = 0; i < (int)text.length(); i++) {
-    if(text[i] != QChar(LSUB) && text[i] != QChar(LSUP)) continue;
-    parenthesize(text, i, info);
-  }
+  ADD_PAREN_REVERSE( QString(QChar(CAT)) ) // backwards for evaluation
 
-  //this is not in usual order of operations but it works:
-  //we want "@@x" to become "{}@{{}@{x}}" not "{{}@{}}@{x}" or anything
-  //like that
+  ADD_PAREN( QString(QChar(POWER)) + QChar(SUB) )
 
-  //roots and division and parentheses:
-  for(i = 0; i < (int)text.length(); i++) {
-    if(!delim().contains(text[i]) && text[i] != QChar(SQRT) &&
-       text[i] != QChar(DIVIDE)) continue;
-    parenthesize(text, i, info);
-  }
+  ADD_PAREN_REVERSE( QString(QChar(LSUB)) + QChar(LSUP) )
 
+  ADD_PAREN( delim() + QChar(SQRT) + QChar(DIVIDE) + QChar(ABOVE) + QChar(BELOW) )
+    
+  // now realize the left char/right char attachments
   if ( info )
     for(i = 0; i < (int)info->size(); i++) {
       if(!(*info)[i].left) (*info)[i].posinstr++;
