@@ -263,10 +263,7 @@ public:
     EventListener *createHTMLEventListener(QString code);
 
 signals:
-    virtual void finishedParsing();
-
-public slots:
-    virtual void slotFinishedParsing();
+    void finishedParsing();
 
 private:
     ElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);

@@ -697,11 +697,6 @@ void DocumentImpl::detach()
     m_view = 0;
 }
 
-void DocumentImpl::slotFinishedParsing()
-{
-    emit finishedParsing();
-}
-
 void DocumentImpl::setVisuallyOrdered()
 {
     visuallyOrdered = true;
@@ -737,7 +732,7 @@ void DocumentImpl::open(  )
 {
     clear();
     m_tokenizer = createTokenizer();
-    connect(m_tokenizer,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
+    connect(m_tokenizer,SIGNAL(finishedParsing()),this,SIGNAL(finishedParsing()));
     m_tokenizer->begin();
 }
 
@@ -1415,6 +1410,7 @@ EventListener *DocumentImpl::getWindowEventListener(int id)
 	    return it.current()->listener;
 	}
     }
+
     return 0;
 }
 
