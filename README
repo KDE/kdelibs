@@ -10,10 +10,10 @@ In this file:
 
 About kdelibs
 -------------
-This is the version 2.1 release of the KDE libraries.  We have
-libraries that are central to the development and execution of a KDE
-program, internationalization files for these libraries, misc HTML
-documentation, theme modules, and regression tests. Here is a list:
+This is version 2.1 of the KDE libraries. This package includes libraries
+that are central to the development and execution of a KDE program, as well as
+internationalization files for these libraries, misc HTML documentation, theme
+modules, and regression tests. Here is a list:
 
 * kdecore
     This is the core collection of KDE stuff. Non GUI classes reside here.
