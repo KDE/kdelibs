@@ -626,20 +626,34 @@ KLauncher::slotAppRegistered(const QCString &appId)
    if (!cAppId) return;
 
    KLaunchRequest *request = requestList.first();
-   for(; request; request = requestList.next())
+   KLaunchRequest *nextRequest;
+   for(; request; request = nextRequest)
    {
+      nextRequest = requestList.next();
+      if (request->status != KLaunchRequest::Launching)
+         continue;
+
+      // For unique services check the requested service name first
+      if ((request->dcop_service_type == KService::DCOP_Unique) &&
+          ((appId == request->dcop_name) || 
+           dcopClient()->isApplicationRegistered(request->dcop_name)))
+      {	  
+         request->status = KLaunchRequest::Running;
+         requestDone(request);
+         continue;
+      }
+
       const char *rAppId = request->dcop_name.data();
       if (!rAppId) continue;
 
       int l = strlen(rAppId);
-      if ((request->status == KLaunchRequest::Launching) &&
-          (strncmp(rAppId, cAppId, l) == 0) &&
+      if ((strncmp(rAppId, cAppId, l) == 0) &&
           ((cAppId[l] == '\0') || (cAppId[l] == '-')))
       {
          request->dcop_name = appId;
          request->status = KLaunchRequest::Running;
          requestDone(request);
-         return;
+         continue;
       }
    }
 }
