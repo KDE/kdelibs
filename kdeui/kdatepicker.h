@@ -113,6 +113,11 @@ public:
    **/
   void setEnabled(bool);
 
+  /**
+   * @returns the KDateTable widget child of this KDatePicker
+   * widget.
+   * @since 3.2
+   */
   KDateTable *dateTable() const { return table; };
   
   /**
