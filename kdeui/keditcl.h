@@ -281,6 +281,7 @@ public:
      */
     void setOverwriteEnabled(bool b);
 
+    QString selectWordUnderCursor();
 
 signals:
     /** This signal is emitted if the user dropped a URL over the text editor

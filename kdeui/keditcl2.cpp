@@ -594,7 +594,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
       else{
         if ((line == line_counter) && (col < 0))
           pos = -1;
-        else 
+        else
           pos = string.findRev(s_pattern,
 			   line == line_counter ? col : line_length , case_sensitive);
       }
@@ -1067,5 +1067,42 @@ void KEdit::spellcheck_stop()
   setReadOnly ( saved_readonlystate);
 }
 
+#include <private/qrichtext_p.h>
+QString KEdit::selectWordUnderCursor( )
+{
+    QTextCursor c1 = *textCursor();
+    QTextCursor c2 = *textCursor();
+    QTextCursor cursor = *textCursor();
 
+    if ( cursor.index() > 0 && !cursor.paragraph()->at( cursor.index()-1 )->c.isSpace() )
+        c1.gotoWordLeft();
+    if ( !cursor.paragraph()->at( cursor.index() )->c.isSpace() && !cursor.atParagEnd() )
+        c2.gotoWordRight();
+
+    // The above is almost correct, but gotoWordRight also skips the spaces/punctuations
+    // until the next word. So the 'word under cursor' contained e.g. that trailing space.
+    // To be on the safe side, we skip spaces/punctuations on both sides:
+    QTextString *s = cursor.paragraph()->string();
+    bool beginFound=false;
+    for ( int i = c1.index(); i< c2.index(); i++)
+    {
+        QChar ch = s->at(i).c;
+        if( !beginFound && !ch.isSpace() && !ch.isPunct() )
+        {
+            c1.setIndex(i);
+            beginFound=true;
+        }
+        else if ( beginFound && (ch.isSpace() || ch.isPunct()) )
+        {
+            c2.setIndex(i);
+            break;
+        }
+    }
+
+    document()->setSelectionStart( (int)QTextDocument::Standard, c1 );
+    document()->setSelectionEnd( (int)QTextDocument::Standard, c2 );
+    QString text = selectedText(  );
+    //textDocument()->removeSelection( KoTextDocument::Temp );
+    return text;
+}
 
