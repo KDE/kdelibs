@@ -1,16 +1,16 @@
 /* vi: ts=8 sts=4 sw=4
- *
- * $Id$
- *
- * This file is part of the KDE project, module kdesu.
- * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
- *
- * This is free software; you can use this library under the GNU Library
- * General Public License, version 2. See the file "COPYING.LIB" for the
- * exact licensing terms.
- *
- * ssh.cpp: Execute a program on a remote machine using ssh.
- */
+*
+* $Id$
+*
+* This file is part of the KDE project, module kdesu.
+* Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+*
+* This is free software; you can use this library under the GNU Library
+* General Public License, version 2. See the file "COPYING.LIB" for the
+* exact licensing terms.
+*
+* ssh.cpp: Execute a program on a remote machine using ssh.
+*/
 
 #include <config.h>
 
@@ -75,7 +75,7 @@ int SshProcess::checkNeedPassword()
 int SshProcess::exec(const char *password, int check)
 {
     if (check)
-	setTerminal(true);
+    setTerminal(true);
 
     QCStringList args;
     args += "-l"; args += m_User;
@@ -84,49 +84,52 @@ int SshProcess::exec(const char *password, int check)
 
     if (StubProcess::exec("ssh", args) < 0)
     {
-	return check ? SshNotFound : -1;
+        return check ? SshNotFound : -1;
     }
 
     int ret = ConverseSsh(password, check);
     if (ret < 0)
     {
-	if (!check)
-	    kdError(900) << k_lineinfo << "Conversation with ssh failed\n";
-	return ret;
+        if (!check)
+            kdError(900) << k_lineinfo << "Conversation with ssh failed\n";
+        return ret;
     }
     if (check == 2)
     {
-	if (ret == 1)
-	{
-	    kill(m_Pid, SIGTERM);
-	    waitForChild();
-	}
-	return ret;
+        if (ret == 1)
+        {
+            kill(m_Pid, SIGTERM);
+            waitForChild();
+        }
+        return ret;
     }
 
     if (m_bErase && password)
     {
-	char *ptr = const_cast<char *>(password);
-	for (unsigned i=0; i<strlen(password); i++)
-	    ptr[i] = '\000';
+        char *ptr = const_cast<char *>(password);
+        const uint plen = strlen(password);
+        for (unsigned i=0; i < plen; i++)
+            ptr[i] = '\000';
     }
 
     ret = ConverseStub(check);
     if (ret < 0)
     {
-	if (!check)
-	    kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
-	return ret;
-    } else if (ret == 1)
-    {
-	kill(m_Pid, SIGTERM);
-	waitForChild();
-	ret = SshIncorrectPassword;
+        if (!check)
+            kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
+        return ret;
     }
+    else if (ret == 1)
+    {
+        kill(m_Pid, SIGTERM);
+        waitForChild();
+        ret = SshIncorrectPassword;
+    }
+
     if (check == 1)
     {
-	waitForChild();
-	return 0;
+        waitForChild();
+        return 0;
     }
 
     setExitString("Waiting for forwarded connections to terminate");
@@ -135,13 +138,13 @@ int SshProcess::exec(const char *password, int check)
 }
 
 /*
- * Create a port forwarding for DCOP. For the remote port, we take a pseudo
- * random number between 10k and 50k. This is not ok, of course, but I see
- * no other way. There is, afaik, no security issue involved here. If the port
- * happens to be occupied, ssh will refuse to start.
- *
- * 14/SEP/2000: DCOP forwarding is not used anymore.
- */
+* Create a port forwarding for DCOP. For the remote port, we take a pseudo
+* random number between 10k and 50k. This is not ok, of course, but I see
+* no other way. There is, afaik, no security issue involved here. If the port
+* happens to be occupied, ssh will refuse to start.
+*
+* 14/SEP/2000: DCOP forwarding is not used anymore.
+*/
 
 QCString SshProcess::dcopForward()
 {
@@ -151,21 +154,21 @@ QCString SshProcess::dcopForward()
 
     QCString srv = StubProcess::dcopServer();
     if (srv.isEmpty())
-       return result;
+        return result;
 
     int i = srv.find('/');
     if (i == -1)
-       return result;
+        return result;
     if (srv.left(i) != "tcp")
-       return result;
+        return result;
     int j = srv.find(':', ++i);
     if (j == -1)
-       return result;
+        return result;
     QCString host = srv.mid(i, j-i);
     bool ok;
     int port = srv.mid(++j).toInt(&ok);
     if (!ok)
-       return result;
+        return result;
 
     m_dcopPort = 10000 + (int) ((40000.0 * rand()) / (1.0 + RAND_MAX));
     result.sprintf("%d:%s:%d", m_dcopPort, host.data(), port);
@@ -174,17 +177,17 @@ QCString SshProcess::dcopForward()
 
 
 /*
- * Conversation with ssh.
- * If check is 0, this waits for either a "Password: " prompt,
- * or the header of the stub. If a prompt is received, the password is
- * written back. Used for running a command.
- * If check is 1, operation is the same as 0 except that if a stub header is
- * received, the stub is stopped with the "stop" command. This is used for
- * checking a password.
- * If check is 2, operation is the same as 1, except that no password is
- * written. The prompt is saved to m_Prompt. Used for checking the need for
- * a password.
- */
+* Conversation with ssh.
+* If check is 0, this waits for either a "Password: " prompt,
+* or the header of the stub. If a prompt is received, the password is
+* written back. Used for running a command.
+* If check is 1, operation is the same as 0 except that if a stub header is
+* received, the stub is stopped with the "stop" command. This is used for
+* checking a password.
+* If check is 2, operation is the same as 1, except that no password is
+* written. The prompt is saved to m_Prompt. Used for checking the need for
+* a password.
+*/
 
 int SshProcess::ConverseSsh(const char *password, int check)
 {
@@ -195,61 +198,60 @@ int SshProcess::ConverseSsh(const char *password, int check)
 
     while (state < 2)
     {
-	line = readLine();
-	uint len = line.length();
-	if (line.isNull())
-	    return -1;
+        line = readLine();
+        const uint len = line.length();
+        if (line.isNull())
+            return -1;
 
-	switch (state) {
-	case 0:
-	    // Check for "kdesu_stub" header.
-	    if (line == "kdesu_stub")
-	    {
-		unreadLine(line);
-		return 0;
-	    }
-
-	    // Match "Password: " with the regex ^[^:]+:[\w]*$.
-	    for (i=0,j=0,colon=0; i<len; i++)
-	    {
-		if (line[i] == ':')
-		{
-		    j = i; colon++;
-		    continue;
-		}
-		if (!isspace(line[i]))
-		    j++;
-	    }
-	    if ((colon == 1) && (line[j] == ':'))
-	    {
-		if (check == 2)
-		{
-		    m_Prompt = line;
-		    return SshNeedsPassword;
-		}
-		WaitSlave();
-		write(m_Fd, password, strlen(password));
-		write(m_Fd, "\n", 1);
-		state++;
-		break;
-	    }
-
-	    // Warning/error message.
-	    m_Error += line; m_Error += "\n";
-	    if (m_bTerminal)
-		fprintf(stderr, "ssh: %s\n", line.data());
-	    break;
-
-	case 1:
-	    if (line.isEmpty())
-	    {
-		state++;
-		break;
-	    }
-	    return -1;
-	}
+        switch (state) {
+        case 0:
+            // Check for "kdesu_stub" header.
+            if (line == "kdesu_stub")
+            {
+                unreadLine(line);
+                return 0;
+            }
+    
+            // Match "Password: " with the regex ^[^:]+:[\w]*$.
+            for (i=0,j=0,colon=0; i<len; i++)
+            {
+                if (line[i] == ':')
+                {
+                    j = i; colon++;
+                    continue;
+                }
+                if (!isspace(line[i]))
+                    j++;
+            }
+            if ((colon == 1) && (line[j] == ':'))
+            {
+                if (check == 2)
+                {
+                    m_Prompt = line;
+                    return SshNeedsPassword;
+                }
+                WaitSlave();
+                write(m_Fd, password, strlen(password));
+                write(m_Fd, "\n", 1);
+                state++;
+                break;
+            }
+    
+            // Warning/error message.
+            m_Error += line; m_Error += "\n";
+            if (m_bTerminal)
+                fprintf(stderr, "ssh: %s\n", line.data());
+            break;
+    
+        case 1:
+            if (line.isEmpty())
+            {
+                state++;
+                break;
+            }
+            return -1;
+        }
     }
-
     return 0;
 }
 

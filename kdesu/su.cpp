@@ -129,7 +129,8 @@ int SuProcess::exec(const char *password, int check)
     if (m_bErase && password) 
     {
         char *ptr = const_cast<char *>(password);
-        for (unsigned i=0; i<strlen(password); i++)
+        const uint plen = strlen(password);
+        for (unsigned i=0; i < plen; i++)
             ptr[i] = '\000';
     }
 
@@ -177,7 +178,6 @@ int SuProcess::ConverseSU(const char *password)
     // kdDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
 
     QCString line;
-    uint len;
     while (true)
     {
         line = readLine(); 
@@ -211,7 +211,7 @@ int SuProcess::ConverseSU(const char *password)
             }
     
             // Match "Password: " with the regex ^[^:]+:[\w]*$.
-            len = line.length();
+            const uint len = line.length();
             for (i=0,j=0,colon=0; i<len; i++) 
             {
                 if (line[i] == ':') 
@@ -252,7 +252,7 @@ int SuProcess::ConverseSU(const char *password)
                     state=HandleStub;
                     break;
                 }
-                len = s.length();
+                const uint len = line.length();
                 for (i=0; i< len; i++)
                     {
                 if (s[i] != '*')
