@@ -45,10 +45,10 @@ binary-indep:	build
 	if test -f /usr/bin/qt2kdoc; then \
 		(mkdir -p debian/kdelibs3-doc/usr/share/kdoc/index) ; \
 		(mkdir -p debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference) ; \
-		qt2kdoc --url=/usr/share/doc/qt2.2-doc/doc/html \
+		qt2kdoc --url=/usr/share/doc/qt-doc/doc/html \
 		--outdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference \
 		--compress \
-		/usr/share/doc/qt2.2-doc/doc/html ; \
+		/usr/share/doc/qt-doc/doc/html ; \
 		makekdedoc --libdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference \
 		--kdocopt='--skip-internal --compress' \
 		--outputdir=`pwd`/debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html ; \
@@ -86,9 +86,6 @@ binary-arch:  build
 	cp debian/tmp/etc/kde2/system.kdeglobals debian/tmp/etc/kderc
 	perl -w admin/debianrules cleanup
 	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
-	for i in `find debian/tmp/usr/bin | sed -e 's#^debian/tmp/usr/bin/##'  | grep -v "debian/tmp"`; do \
-	  echo "$$i.1" >> debian/undocumented ; \
-	done
 	for i in `cat debian/undocumented.in | grep -v "#"`; do \
 	  echo "$$i.1" >> debian/undocumented ; \
 	done
