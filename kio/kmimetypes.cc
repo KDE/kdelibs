@@ -218,7 +218,7 @@ KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
 
   if ( isValid() )
   {
-    kdebug( KDEBUG_INFO, 7009, "inserting mimetype in map for m_strName = '%s'", m_strName.ascii());
+    // kdebug( KDEBUG_INFO, 7009, "inserting mimetype in map for m_strName = '%s'", m_strName.ascii());
     s_mapMimeTypes->insert( m_strName, this );
   } else
     kdebug( KDEBUG_WARN, 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
