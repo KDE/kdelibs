@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
     doc->setURLCursor(QCursor(Qt::PointingHandCursor));
     a.setTopWidget(doc->widget());
     QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
-		     doc->widget(), SLOT(setCaption(const QString &)));
+		     doc->widget()->topLevelWidget(), SLOT(setCaption(const QString &)));
     doc->widget()->show();
     toplevel->show();
     ((QScrollView *)doc->widget())->viewport()->show();
