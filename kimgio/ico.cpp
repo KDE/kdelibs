@@ -217,7 +217,11 @@ extern "C" void kimgio_ico_read( QImageIO* io )
                                  pixel[ 3 * x ] );
                 break;
             case 32:
-                std::memcpy( p, pixel, bpl );
+                for ( unsigned x = 0; x < ico.width; ++x )
+                    *p++ = qRgba( pixel[ 3 * x + 3 ],
+                                  pixel[ 3 * x + 2 ],
+                                  pixel[ 3 * x + 1 ],
+                                  pixel[ 3 * x ] );
                 break;
         }
     }
