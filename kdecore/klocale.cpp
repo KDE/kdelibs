@@ -660,9 +660,9 @@ QString KLocale::translate( const char *singular, const char *plural,
         EXPECT_LENGTH( 4 );
         if ( n == 1 )
             return put_n_in( forms[0], n );
-        else if ( ( n == 0 ) || ( n >= 2 && n <= 10 ) )
+        else if ( ( n == 0 ) || ( n%100 > 0 && n%100 <= 10 ) )
             return put_n_in( forms[1], n );
-        else if ( n < 20 )
+        else if ( n%100 > 10 && n%100 < 20 )
             return put_n_in( forms[2], n );
         else
             return put_n_in( forms[3], n );
