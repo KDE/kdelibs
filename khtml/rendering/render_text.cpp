@@ -811,6 +811,9 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     if(from + len == int(str->l) && parent()->isInline() && parent()->lastChild()==this)
         width -= marginRight();
 
+    // add half leading to vertiaclly center it.
+    y += ( m_lineHeight - metrics( firstLine ).height() )/2;
+    
 #ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
     kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << lineHeight() << " fontHeight=" << metrics().height() << " ascent =" << metrics().ascent() << endl;
