@@ -32,8 +32,12 @@ For each factory
 
 And then, TODO :
 
-UserProfile
-| * servicetype offset, service offset [ , preference ? ]
+Index by servicetype
 | * servicetype offset, service offset
 | * servicetype offset, service offset
 | * servicetype offset, service offset
+| * servicetype offset, service offset
+This allows to quickly find services associated with a servicetype.
+It does NOT reflect the user profile, which is stored in profilerc and
+implemented in KServiceTypeProfile.
+
