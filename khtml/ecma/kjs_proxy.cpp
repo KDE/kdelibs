@@ -74,6 +74,7 @@ KJSProxyImpl::KJSProxyImpl(KHTMLPart *part)
 
 KJSProxyImpl::~KJSProxyImpl()
 {
+  //kdDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
   delete m_script;
 #ifndef NDEBUG
   s_count--;
@@ -133,7 +134,9 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 }
 
 void KJSProxyImpl::clear() {
-  // clear resources allocated by the interpreter
+  // clear resources allocated by the interpreter, and make it ready to be used by another page
+  // We have to keep it, so that the Window object for the part remains the same.
+  // (we used to delete and re-create it, previously)
   if (m_script) {
 #ifdef KJS_DEBUGGER
     KJSDebugWin *debugWin = KJSDebugWin::instance();
@@ -145,8 +148,6 @@ void KJSProxyImpl::clear() {
     Window *win = Window::retrieveWindow(m_part);
     if (win)
         win->clear( m_script->globalExec() );
-    delete m_script;
-    m_script = 0;
   }
 }
 

@@ -883,11 +883,14 @@ void Window::clear( ExecState *exec )
 {
   kdDebug(6070) << "Window::clear " << this << endl;
   delete winq;
-  winq = 0;
+  winq = new WindowQObject(this);;
   // Get rid of everything, those user vars could hold references to DOM nodes
   deleteAllProperties( exec );
   // Really delete those properties, so that the DOM nodes get deref'ed
   KJS::Collector::collect();
+  // Now recreate a working global object for the next URL that will use us
+  KJS::Interpreter *interpreter = KJSProxy::proxy( m_part )->interpreter();
+  interpreter->initGlobalObject();
 }
 
 void Window::setCurrentEvent( DOM::Event *evt )
@@ -1044,7 +1047,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       }
       uargs.serviceType = "text/html";
 
-      // request new window
+      // request window (new or existing if framename is set)
       KParts::ReadOnlyPart *newPart = 0L;
       emit part->browserExtension()->createNewWindow("", uargs,winargs,newPart);
       if (newPart && newPart->inherits("KHTMLPart")) {

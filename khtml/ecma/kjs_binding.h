@@ -80,10 +80,7 @@ namespace KJS {
   class ScriptInterpreter : public Interpreter
   {
   public:
-    ScriptInterpreter( const Object &global, KHTMLPart* part )
-      : Interpreter( global ), m_part( part ), m_domObjects(1021),
-        m_evt( 0L ), m_inlineCode(false)
-      { }
+    ScriptInterpreter( const Object &global, KHTMLPart* part );
     virtual ~ScriptInterpreter();
 
     DOMObject* getDOMObject( void* objectHandle ) const {
