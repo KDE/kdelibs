@@ -31,11 +31,13 @@
 #include <klocale.h>
 
 BrowseDialog::BrowseDialog(QWidget *parent, const char *name)
-	: KDialog(parent, name)
+	: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok, true)
 {
-	type_ = new QComboBox(this);
-	from_ = new QLineEdit(this);
-	to_ = new QLineEdit(this);
+	QWidget	*dummy = new QWidget(this);
+	setMainWidget(dummy);
+	type_ = new QComboBox(dummy);
+	from_ = new QLineEdit(dummy);
+	to_ = new QLineEdit(dummy);
 	type_->insertItem(i18n("Send"));
 	type_->insertItem(i18n("Allow"));
 	type_->insertItem(i18n("Deny"));
@@ -44,32 +46,20 @@ BrowseDialog::BrowseDialog(QWidget *parent, const char *name)
 
 	QFont	f(font());
 	f.setBold(true);
-	QLabel	*l1 = new QLabel(i18n("Type:"), this);
-	QLabel	*l2 = new QLabel(i18n("From:"), this);
-	QLabel	*l3 = new QLabel(i18n("To:"), this);
+	QLabel	*l1 = new QLabel(i18n("Type:"), dummy);
+	QLabel	*l2 = new QLabel(i18n("From:"), dummy);
+	QLabel	*l3 = new QLabel(i18n("To:"), dummy);
 	l1->setFont(f);
 	l2->setFont(f);
 	l3->setFont(f);
 
-	QPushButton	*ok = new QPushButton(i18n("OK"), this);
-	QPushButton	*cancel = new QPushButton(i18n("Cancel"), this);
-	connect(ok, SIGNAL(clicked()), SLOT(accept()));
-	connect(cancel, SIGNAL(clicked()), SLOT(reject()));
-	ok->setDefault(true);
-
-	QGridLayout	*m1 = new QGridLayout(this, 5, 2, 10, 5);
+	QGridLayout	*m1 = new QGridLayout(dummy, 3, 2, 0, 5);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
 	m1->addWidget(l3, 2, 0, Qt::AlignRight);
 	m1->addWidget(type_, 0, 1);
 	m1->addWidget(from_, 1, 1);
 	m1->addWidget(to_, 2, 1);
-	m1->addRowSpacing(3, 5);
-	QHBoxLayout	*m2 = new QHBoxLayout(0, 0, 10);
-	m1->addMultiCellLayout(m2, 4, 4, 0, 1);
-	m2->addStretch(1);
-	m2->addWidget(ok);
-	m2->addWidget(cancel);
 
 	connect(type_, SIGNAL(activated(int)), SLOT(slotTypeChanged(int)));
 	slotTypeChanged(type_->currentItem());

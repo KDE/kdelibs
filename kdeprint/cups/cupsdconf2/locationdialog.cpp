@@ -33,16 +33,18 @@
 #include <kiconloader.h>
 
 LocationDialog::LocationDialog(QWidget *parent, const char *name)
-	: KDialog(parent, name)
+	: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok, true)
 {
-	resource_ = new QComboBox(this);
-	authtype_ = new QComboBox(this);
-	authclass_ = new QComboBox(this);
-	authname_ = new QLineEdit(this);
-	encryption_ = new QComboBox(this);
-	satisfy_ = new QComboBox(this);
-	order_ = new QComboBox(this);
-	addresses_ = new EditList(this);
+	QWidget	*dummy = new QWidget(this);
+	setMainWidget(dummy);
+	resource_ = new QComboBox(dummy);
+	authtype_ = new QComboBox(dummy);
+	authclass_ = new QComboBox(dummy);
+	authname_ = new QLineEdit(dummy);
+	encryption_ = new QComboBox(dummy);
+	satisfy_ = new QComboBox(dummy);
+	order_ = new QComboBox(dummy);
+	addresses_ = new EditList(dummy);
 
 	authtype_->insertItem(i18n("None"));
 	authtype_->insertItem(i18n("Basic"));
@@ -64,23 +66,17 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 	order_->insertItem(i18n("Allow, Deny"));
 	order_->insertItem(i18n("Deny, Allow"));
 
-	QPushButton *ok = new QPushButton(i18n("OK"), this);
-	QPushButton *cancel = new QPushButton(i18n("Cancel"), this);
-	connect(ok, SIGNAL(clicked()), SLOT(accept()));
-	connect(cancel, SIGNAL(clicked()), SLOT(reject()));
-	ok->setDefault(true);
-
 	connect(authclass_, SIGNAL(activated(int)), SLOT(slotClassChanged(int)));
 	connect(authtype_, SIGNAL(activated(int)), SLOT(slotTypeChanged(int)));
 
-	QLabel	*l1 = new QLabel(i18n("Resource:"), this);
-	QLabel	*l2 = new QLabel(i18n("Authentification:"), this);
-	QLabel	*l3 = new QLabel(i18n("Class:"), this);
-	QLabel	*l4 = new QLabel(i18n("Names:"), this);
-	QLabel	*l5 = new QLabel(i18n("Encryption:"), this);
-	QLabel	*l6 = new QLabel(i18n("Satisfy:"), this);
-	QLabel	*l7 = new QLabel(i18n("ACL Order:"), this);
-	QLabel	*l8 = new QLabel(i18n("ACL Addresses:"), this);
+	QLabel	*l1 = new QLabel(i18n("Resource:"), dummy);
+	QLabel	*l2 = new QLabel(i18n("Authentification:"), dummy);
+	QLabel	*l3 = new QLabel(i18n("Class:"), dummy);
+	QLabel	*l4 = new QLabel(i18n("Names:"), dummy);
+	QLabel	*l5 = new QLabel(i18n("Encryption:"), dummy);
+	QLabel	*l6 = new QLabel(i18n("Satisfy:"), dummy);
+	QLabel	*l7 = new QLabel(i18n("ACL Order:"), dummy);
+	QLabel	*l8 = new QLabel(i18n("ACL Addresses:"),dummy);
 	QFont	f(font());
 	f.setBold(true);
 	l1->setFont(f);
@@ -92,7 +88,7 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 	l7->setFont(f);
 	l8->setFont(f);
 
-	QGridLayout	*m1 = new QGridLayout(this, 10, 2, 10, 7);
+	QGridLayout	*m1 = new QGridLayout(dummy, 8, 2, 0, 5);
 	m1->setColStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);
@@ -110,12 +106,6 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 	m1->addWidget(satisfy_, 5, 1);
 	m1->addWidget(order_, 6, 1);
 	m1->addWidget(addresses_, 7, 1);
-	m1->addRowSpacing(8, 10);
-	QHBoxLayout	*m2 = new QHBoxLayout(0, 0, 10);
-	m1->addMultiCellLayout(m2, 9, 9, 0, 1);
-	m2->addStretch(1);
-	m2->addWidget(ok);
-	m2->addWidget(cancel);
 
 	setCaption(i18n("Location"));
 	resize(400, 100);

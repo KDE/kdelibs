@@ -42,6 +42,7 @@
 #include <qstringlist.h>
 #include <qwhatsthis.h>
 #include <kio/passdlg.h>
+#include <kguiitem.h>
 
 #include <signal.h>
 #include <cups/cups.h>
@@ -108,7 +109,7 @@ const char* getPassword(const char*)
 //---------------------------------------------------
 
 CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
-	: KDialogBase(IconList, "", Ok|Cancel|User1, Ok, parent, name)
+	: KDialogBase(IconList, "", Ok|Cancel|User1, Ok, parent, name, true, true, KGuiItem(i18n("Short help..."), "help"))
 {
 	KGlobal::iconLoader()->addAppDir("kdeprint");
 	KGlobal::locale()->insertCatalogue("cupsdconf");
@@ -121,7 +122,6 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
 	conf_ = 0;
 	constructDialog();
 
-	setButtonText(User1, i18n("Short help..."));
         setCaption(i18n("CUPS Server Configuration"));
 
         //resize(500, 400);

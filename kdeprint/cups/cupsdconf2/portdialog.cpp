@@ -31,40 +31,31 @@
 #include <klocale.h>
 
 PortDialog::PortDialog(QWidget *parent, const char *name)
-	: KDialog(parent, name)
+	: KDialogBase(parent, name, true, QString::null, Ok|Cancel, Ok, true)
 {
-	address_ = new QLineEdit(this);
-	port_ = new QSpinBox(0, 9999, 1, this);
+	QWidget	*dummy = new QWidget(this);
+	setMainWidget(dummy);
+	address_ = new QLineEdit(dummy);
+	port_ = new QSpinBox(0, 9999, 1, dummy);
 	port_->setValue(631);
-	usessl_ = new QCheckBox(i18n("Use SSL Encryption"), this);
+	usessl_ = new QCheckBox(i18n("Use SSL Encryption"), dummy);
 
 	QFont	f(font());
 	f.setBold(true);
-	QLabel	*l1 = new QLabel(i18n("Address:"), this);
-	QLabel	*l2 = new QLabel(i18n("Port:"), this);
+	QLabel	*l1 = new QLabel(i18n("Address:"), dummy);
+	QLabel	*l2 = new QLabel(i18n("Port:"), dummy);
 	l1->setFont(f);
 	l2->setFont(f);
 	usessl_->setFont(f);
 
-	QPushButton	*ok = new QPushButton(i18n("OK"), this);
-	QPushButton	*cancel = new QPushButton(i18n("Cancel"), this);
-	connect(ok, SIGNAL(clicked()), SLOT(accept()));
-	connect(cancel, SIGNAL(clicked()), SLOT(reject()));
-	ok->setDefault(true);
-
-	QVBoxLayout	*m1 = new QVBoxLayout(this, 10, 10);
+	QVBoxLayout	*m1 = new QVBoxLayout(dummy, 0, 10);
 	QGridLayout	*m2 = new QGridLayout(0, 3, 2, 0, 5);
-	QHBoxLayout	*m3 = new QHBoxLayout(0, 0, 10);
 	m1->addLayout(m2);
-	m1->addLayout(m3);
 	m2->addWidget(l1, 0, 0, Qt::AlignRight);
 	m2->addWidget(l2, 1, 0, Qt::AlignRight);
 	m2->addMultiCellWidget(usessl_, 2, 2, 0, 1);
 	m2->addWidget(address_, 0, 1);
 	m2->addWidget(port_, 1, 1);
-	m3->addStretch(1);
-	m3->addWidget(ok);
-	m3->addWidget(cancel);
 
 	setCaption(i18n("Listen To"));
 	resize(250, 100);

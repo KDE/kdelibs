@@ -27,7 +27,7 @@
 #include <klocale.h>
 
 AddressDialog::AddressDialog(QWidget *parent, const char *name)
-	: KDialogBase(Swallow, i18n("ACL Address"), Ok|Cancel, Ok, parent, name)
+	: KDialogBase(Swallow, i18n("ACL Address"), Ok|Cancel, Ok, parent, name, true, true)
 {
 	QWidget *w = new QWidget(this);
 	type_ = new QComboBox(w);
@@ -43,7 +43,7 @@ AddressDialog::AddressDialog(QWidget *parent, const char *name)
 	l1->setFont(f);
 	l2->setFont(f);
 
-	QGridLayout	*m1 = new QGridLayout(w, 2, 2, 5, 7);
+	QGridLayout	*m1 = new QGridLayout(w, 2, 2, 0, 5);
 	m1->setColStretch(1, 1);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);
 	m1->addWidget(l2, 1, 0, Qt::AlignRight);

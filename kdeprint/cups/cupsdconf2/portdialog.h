@@ -20,14 +20,14 @@
 #ifndef PORTDIALOG_H
 #define PORTDIALOG_H
 
-#include <kdialog.h>
+#include <kdialogbase.h>
 
 class QLineEdit;
 class QSpinBox;
 class QCheckBox;
 struct CupsdConf;
 
-class PortDialog : public KDialog
+class PortDialog : public KDialogBase
 {
 public:
 	PortDialog(QWidget *parent = 0, const char *name = 0);
