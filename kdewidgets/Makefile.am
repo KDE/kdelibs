@@ -29,3 +29,12 @@ kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp
 
 make-kdewidgets: kde.widgets
 	$(srcdir)/makekdewidgets -o $(srcdir)/kdewidgets.cpp $<
+
+all-local:
+	@if test "$(srcdir)" != "." && test -f ./kdewidgets.cpp; then \
+		pwd=`pwd`;\
+		echo "=========================================================================" ;\
+		echo "remove $$pwd/kdewidgets.cpp - it's most likely outdated!!" ;\
+		echo "=========================================================================" ;\
+		exit 1; \
+	fi
