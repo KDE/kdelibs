@@ -260,13 +260,13 @@ public:
      {
         if (baseProtWildCard)
         {
-           if ( !baseProt.isEmpty() && !url.protocol().startsWith(baseProt) && 
+           if ( !baseProt.isEmpty() && !url.protocol().startsWith(baseProt) &&
                 (protClass.isEmpty() || (protClass != baseProt)) )
               return false;
         }
         else
         {
-           if ( (url.protocol() != baseProt) && 
+           if ( (url.protocol() != baseProt) &&
                 (protClass.isEmpty() || (protClass != baseProt)) )
               return false;
         }
@@ -303,13 +303,13 @@ public:
         }
         else if (destProtWildCard)
         {
-           if ( !destProt.isEmpty() && !url.protocol().startsWith(destProt) && 
+           if ( !destProt.isEmpty() && !url.protocol().startsWith(destProt) &&
                 (protClass.isEmpty() || (protClass != destProt)) )
               return false;
         }
         else
         {
-           if ( (url.protocol() != destProt) && 
+           if ( (url.protocol() != destProt) &&
                 (protClass.isEmpty() || (protClass != destProt)) )
               return false;
         }
@@ -701,8 +701,9 @@ void KApplication::init(bool GUIenabled)
 
       atoms[n] = &kde_net_wm_user_time;
       names[n++] = (char *) "_NET_WM_USER_TIME";
-      
+
       XInternAtoms( qt_xdisplay(), names, n, false, atoms_return );
+
       for (int i = 0; i < n; i++ )
 	  *atoms[i] = atoms_return[i];
   }
@@ -727,7 +728,7 @@ void KApplication::init(bool GUIenabled)
   KConfig* config = KGlobal::config();
   d->actionRestrictions = config->hasGroup("KDE Action Restrictions" );
   // For brain-dead configurations where the user's local config file is not writable.
-  // * We use kdialog to warn the user, so we better not generate warnings from 
+  // * We use kdialog to warn the user, so we better not generate warnings from
   //   kdialog itself.
   // * Don't warn if we run with a read-only $HOME
   QCString readOnly = getenv("KDE_HOME_READONLY");
@@ -2494,17 +2495,21 @@ QString KApplication::randomString(int length)
 {
    if (length <=0 ) return QString::null;
 
-   QString str;
+   char* str = new char[length + 1];
+   int i = 0;
    while (length--)
    {
       int r=random() % 62;
       r+=48;
       if (r>57) r+=7;
       if (r>90) r+=6;
-      str += char(r);
+      str[i++] =  char(r);
       // so what if I work backwards?
    }
-   return str;
+   str[i] = 0;
+   QString ret( str );
+   delete [] str;
+   return ret;
 }
 
 bool KApplication::authorize(const QString &genericAction)
