@@ -106,7 +106,7 @@ kabcargl_LDADD = libkabc.la
 kabcargl_SOURCES = kabcargl.cpp
 
 autostart_DATA = kab2kabc.desktop
-autostartdir = $(prefix)/share/autostart
+autostartdir = $(datadir)/autostart
 
 DOXYGEN_REFERENCES = kdecore kdeui
 
