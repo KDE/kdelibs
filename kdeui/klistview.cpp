@@ -201,13 +201,11 @@ KListView::KListView( QWidget *parent, const char *name )
   // context menu handling
   if (d->showContextMenusOnPress)
 	{
-	  kdDebug() << "connectiong to pressed" << endl;
 	  connect (this, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
 			   this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
 	}
   else
 	{
-	  kdDebug () << "connecting to clicked" <<endl;
 	  connect (this, SIGNAL (rightButtonClicked (QListViewItem*, const QPoint&, int)),
 			   this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
 	}
@@ -308,8 +306,6 @@ void KListView::slotSettingsChanged(int category)
 	  
 	  if (d->showContextMenusOnPress)
 		{
-		  kdDebug () << "reconnecting to pressed" <<endl;
-		  
 		  disconnect (0L, 0L, this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
 		  
 		  connect (this, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
@@ -317,8 +313,6 @@ void KListView::slotSettingsChanged(int category)
 		}
 	  else
 		{
-		  
-		  kdDebug () << "reconnecting to clicked" <<endl;
 		  disconnect (0L, 0L, this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
 		  
 		  connect (this, SIGNAL (rightButtonClicked (QListViewItem*, const QPoint&, int)),
@@ -1095,23 +1089,16 @@ void KListView::emitContextMenu (KListView*, QListViewItem* i)
 {
   QPoint p;
 
-  kdDebug () << "KListView::emitContextMenu " << i << endl;
-
   if (i)
 	p = viewport()->mapToGlobal(itemRect(i).center());
   else
 	p = mapToGlobal(rect().center());
-
-  kdDebug() << "at: x " << p.x() << " y " << p.y() << endl;
 
   emit contextMenu (this, i, p);
 }
 
 void KListView::emitContextMenu (QListViewItem* i, const QPoint& p, int)
 {
-  dumpObjectInfo();
-  kdDebug () << "KListView::emitContextMenu " << i << " at: x " << p.x() << " y " << p.y()<< endl;
-
   emit contextMenu (this, i, p);
 }
 
