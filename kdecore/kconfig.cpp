@@ -350,7 +350,8 @@ KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekd
 
 KSharedConfig::~KSharedConfig()
 {
-  s_list->remove(this);
+  if ( s_list )
+    s_list->remove(this);
 }
 
 #include "kconfig.moc"
