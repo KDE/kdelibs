@@ -86,9 +86,10 @@
   bool writeStdin(char *buffer, int buflen);
   -- Transmit data to the child process's stdin.
   
-  void closeStdin();
-  -- Closes the child process's stdin (which causes it to see a "feof(stdin)"
-  
+  bool closeStdin();
+  -- Closes the child process's stdin (which causes it to see a "feof(stdin)")
+  Returns FALSE if you try to close stdin for a process that has been started
+  without a communication channel to stdin.
   
   QT signals:
   
@@ -109,7 +110,7 @@ class KProcess : public QObject
 public:
 
   /** enums for communication Channels to Open */
-  enum Communication { None = 0, Stdin = 1, Stdout = 2, Stderr = 4,
+  enum Communication { NoCommunication = 0, Stdin = 1, Stdout = 2, Stderr = 4,
 					   AllOutput = 6, All = 7 };
 
   /** various run--modes for a child process */
@@ -153,7 +154,7 @@ public:
       no communication takes place and the respective signals will never
       get emitted.
   */
-  bool start(RunMode  runmode = NotifyOnExit, Communication comm = None);
+  bool start(RunMode  runmode = NotifyOnExit, Communication comm = NoCommunication);
 
   /**
      stops the process (by sending a SIGTERM to it). -- You may send other
@@ -209,7 +210,7 @@ public:
      This causes the stdin file descriptor of the child process to be
 	 closed indicating an "EOF" to the child.
   */
-  void closeStdin();
+  bool closeStdin();
 
   signals: 
 

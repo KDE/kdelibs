@@ -2,7 +2,7 @@
 //  KPROCESS -- A class for handling child processes in KDE without
 //  having to take care of Un*x specific implementation details
 //
-//  version 0.2, Aug 2nd 1997
+//  version 0.2.1, Aug 9th 1997
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
@@ -46,7 +46,7 @@ KProcess::KProcess()
   pid = 0;
   status = 0;
   innot = outnot = errnot = NULL;
-  communication = None;
+  communication = NoCommunication;
   input_data = NULL;
   input_sent = 0;
   input_total = 0;
@@ -229,10 +229,17 @@ bool KProcess::writeStdin(char *buffer, int buflen)
 
 
 
-void KProcess::closeStdin()
+bool KProcess::closeStdin()
 {
-  innot->setEnabled(FALSE);
-  close(in[1]);
+  bool rv;
+
+  if (communication & Stdin) {
+    innot->setEnabled(FALSE);
+    close(in[1]);
+    rv = TRUE;
+  } else
+    rv = FALSE;
+  return rv;
 }
 
 
@@ -349,14 +356,16 @@ int KProcess::commSetupDoneP()
 {
   int ok = 1;
 
-  if (communication != None) {
-  
-	close(in[0]);
-	close(out[1]);
-	close(err[1]); 
- 
+  if (communication != NoCommunication) {
+	if (communication & Stdin)
+	  close(in[0]);
+	if (communication & Stdout)
+	  close(out[1]);
+	if (communication & Stderr)
+	  close(err[1]); 
+
 	if (communication & Stdin) {
-	  ok &= fcntl(in[1], F_SETFL, O_NONBLOCK);
+	  ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
 	  innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
 	  CHECK_PTR(innot);
 	  innot->setEnabled(FALSE); // will be enabled when data has to be sent
@@ -365,7 +374,7 @@ int KProcess::commSetupDoneP()
 	}
 
 	if (communication & Stdout) {
-	  ok &= fcntl(out[0], F_SETFL, O_NONBLOCK);
+	  ok &= (-1 != fcntl(out[0], F_SETFL, O_NONBLOCK));
 	  outnot = new QSocketNotifier(out[0], QSocketNotifier::Read, this);
 	  CHECK_PTR(outnot);
 	  QObject::connect(outnot, SIGNAL(activated(int)),
@@ -373,7 +382,7 @@ int KProcess::commSetupDoneP()
 	}
 
 	if (communication & Stderr) {
-	  ok &= fcntl(err[0], F_SETFL, O_NONBLOCK);
+	  ok &= (-1 != fcntl(err[0], F_SETFL, O_NONBLOCK));
 	  errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );    
 	  CHECK_PTR(errnot);
 	  QObject::connect(errnot, SIGNAL(activated(int)),
@@ -390,10 +399,13 @@ int KProcess::commSetupDoneC()
   int ok = 1;
   struct linger so;
 
-  if (communication != None) {
-	close(in[1]);
-	close(out[0]);
-	close(err[0]);
+  if (communication != NoCommunication) {
+	if (communication & Stdin)
+	  close(in[1]);
+	if (communication & Stdout)
+	  close(out[0]);
+	if (communication & Stderr)
+	  close(err[0]);
 
 	if (communication & Stdin)
 	  ok &= dup2(in[0],  STDIN_FILENO) != -1;
@@ -418,28 +430,36 @@ void KProcess::commClose()
   // not deleting this SockteNotifiers causes a (small)
   // memory leak, but prevents your app from segfaulting (mostly...)
 
-  if (None != communication) {
+  bool haveQSNbug = !strcmp("1.2", qVersion());
+
+  if (NoCommunication != communication) {
 
 	if (communication & Stdin)
-	  if (strcmp("1.2", qVersion()))
+	  if (!haveQSNbug)
 		delete innot;
 
 	if (communication & Stdout) {
-	  if (strcmp("1.2", qVersion()))
+	  if (!haveQSNbug)
 		delete outnot;   
 	  while(childOutput(out[0])> 0 )
 		;
 	}
 
 	if (communication & Stderr) {
-	  if (strcmp("1.2", qVersion()))
+	  if (!haveQSNbug)
 		delete errnot;
 	  while(childError(err[0]) > 0)
 		;
 	}      
-	close(in[1]);
-	close(out[0]);
-	close(err[0]);    
+	if (communication & Stdin)
+	  if (!haveQSNbug)
+	    close(in[1]);
+	if (communication & Stdout)
+	  if (!haveQSNbug)
+	    close(out[0]);
+	if (communication & Stderr)
+	  if (!haveQSNbug)
+	    close(err[0]);
   }
 }
 
