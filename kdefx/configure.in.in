@@ -13,3 +13,21 @@ else
 fi
 AC_SUBST(LIB_XRENDER)
 
+
+dnl -----------------------------------------------------
+dnl MMX checks
+dnl -----------------------------------------------------
+AC_MSG_CHECKING(whether the assembler supports x86 MMX instructions)
+AC_TRY_COMPILE(,
+[
+  #if defined(__i386__)
+    __asm__("pxor %%mm0, %%mm0" : : : "%mm0");
+  #else
+    error
+  #endif
+], [
+  AC_MSG_RESULT(yes)
+  AC_DEFINE_UNQUOTED(HAVE_X86_MMX, 1, [Define to 1 if the assembler supports MMX instructions.])
+], [ AC_MSG_RESULT(no) ])
+
+
