@@ -61,7 +61,9 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
       m_mouseInside( false ),
       m_attached( false ),
       m_changed( false ),
-      m_specified( false )
+      m_specified( false ),
+      m_focused( false ),
+      m_active( false )
 {
 }
 

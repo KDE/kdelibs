@@ -684,10 +684,13 @@ void ElementImpl::setFocus(bool received)
     else
 	m_render->setKeyboardFocus(DOM::ActivationOff);
 
+    NodeBaseImpl::setFocus(received);
+    if (m_style->getPseudoStyle(RenderStyle::FOCUS))
+        applyChanges(true,false);
+
     RenderObject *cb = m_render->containingBlock();
     cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
 
-    NodeBaseImpl::setFocus(received);
 }
 
 void ElementImpl::setActive(bool down)
@@ -701,10 +704,13 @@ void ElementImpl::setActive(bool down)
     else
 	m_render->setKeyboardFocus(DOM::ActivationOff);
 
+    NodeBaseImpl::setActive(down);
+    if (m_style->getPseudoStyle(RenderStyle::ACTIVE))
+        applyChanges(true,false);
+
     RenderObject *cb = m_render->containingBlock();
     cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
 
-    NodeBaseImpl::setActive(down);
 }
 
 khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )

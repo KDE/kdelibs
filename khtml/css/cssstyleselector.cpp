@@ -393,6 +393,12 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	} else if ( sel->value == ":hover" ) {
 	    dynamicPseudo=RenderStyle::HOVER;
 	    return true;
+	} else if ( sel->value == ":focus" ) {
+	    dynamicPseudo=RenderStyle::FOCUS;
+	    return true;
+	} else if ( sel->value == ":active" ) {
+	    dynamicPseudo=RenderStyle::ACTIVE;
+	    return true;
 	}
 	return false;
     }
