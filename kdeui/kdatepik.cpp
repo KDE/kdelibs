@@ -32,6 +32,7 @@
 #include <qlineedit.h>
 #include <qvalidator.h>
 #include <kdebug.h>
+#include <knotifyclient.h>
 #include "kdatetbl.h"
 #include "kdatepik.moc"
 
@@ -261,7 +262,7 @@ KDatePicker::selectMonthClicked()
       // ----- set this month
       setDate(date);
     } else {
-      kapp->beep();
+      KNotifyClient::beep();
     }
   delete popup;
 }
@@ -290,7 +291,7 @@ KDatePicker::selectYearClicked()
       // ----- set this month
       setDate(date);
     } else {
-      kapp->beep();
+      KNotifyClient::beep();
     }
   delete popup;
 }
@@ -322,7 +323,7 @@ KDatePicker::lineEnterPressed()
 	emit(dateEntered(temp));
 	setDate(temp);
     } else {
-      kapp->beep();
+      KNotifyClient::beep();
       kdDebug() << "KDatePicker::lineEnterPressed: invalid date entered." << endl;
     }
 }

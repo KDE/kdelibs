@@ -30,6 +30,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kapp.h>
+#include <knotifyclient.h>
 
 #include "keditlistbox.h"
 
@@ -137,14 +138,14 @@ void KEditListBox::moveItemUp()
 {
    if (!m_listBox->isEnabled())
    {
-      kapp->beep();
+      KNotifyClient::beep();
       return;
    }
 
    unsigned int selIndex = m_listBox->currentItem();
    if (selIndex == 0)
    {
-      kapp->beep();
+      KNotifyClient::beep();
       return;
    }
 
@@ -160,14 +161,14 @@ void KEditListBox::moveItemDown()
 {
    if (!m_listBox->isEnabled())
    {
-      kapp->beep();
+      KNotifyClient::beep();
       return;
    }
 
    unsigned int selIndex = m_listBox->currentItem();
    if (selIndex == m_listBox->count() - 1)
    {
-      kapp->beep();
+      KNotifyClient::beep();
       return;
    }
 

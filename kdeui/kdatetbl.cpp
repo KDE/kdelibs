@@ -37,6 +37,7 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <knotifyclient.h>
 #include "kdatepik.h"
 #include "kdatetbl.h"
 #include <qdatetime.h>
@@ -226,7 +227,7 @@ KDateTable::mousePressEvent(QMouseEvent *e)
     }
   if(!isEnabled())
     {
-      kapp->beep();
+      KNotifyClient::beep();
       return;
     }
 
@@ -245,12 +246,12 @@ KDateTable::mousePressEvent(QMouseEvent *e)
   pos=7*(row-1)+col+1;
   if(pos<firstday)
     { // this day is in the previous month
-      kapp->beep();
+      KNotifyClient::beep();
       return;
     }
   if(firstday+numdays<=pos)
     { // this date is in the next month
-      kapp->beep();
+      KNotifyClient::beep();
       return;
     }
   if(hasSelection)
@@ -394,7 +395,7 @@ KDateInternalMonthPicker::mousePressEvent(QMouseEvent *e)
 {
   if(!isEnabled() || e->button() != LeftButton)
     {
-      kapp->beep();
+      KNotifyClient::beep();
       return;
     }
   // -----
@@ -404,7 +405,7 @@ KDateInternalMonthPicker::mousePressEvent(QMouseEvent *e)
   mouseCoord = e->pos();
   row=findRow(mouseCoord.y());
   col=findCol(mouseCoord.x());
-  
+
   if(row<0 || col<0)
     { // the user clicked on the frame of the table
 	activeCol = -1;
@@ -504,13 +505,13 @@ KDateInternalYearSelector::yearEnteredSlot()
   year=text().toInt(&ok);
   if(!ok)
     {
-      kapp->beep();
+      KNotifyClient::beep();
       return;
     }
   date.setYMD(year, 1, 1);
   if(!date.isValid())
     {
-      kapp->beep();
+      KNotifyClient::beep();
       return;
     }
   result=year;
@@ -581,7 +582,7 @@ KPopupFrame::resizeEvent(QResizeEvent*)
 
 void KPopupFrame::popup(const QPoint &pos)
 {
-  // Make sure the whole popup is visible. 
+  // Make sure the whole popup is visible.
   QWidget* desktop = QApplication::desktop();
   int sw = desktop->width();
   int sh = desktop->height();
@@ -597,7 +598,7 @@ void KPopupFrame::popup(const QPoint &pos)
     x = 0;
   if (y < 0)
     y = 0;
-  
+
   // Pop the thingy up.
   move(x, y);
   show();
