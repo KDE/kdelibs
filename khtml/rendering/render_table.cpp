@@ -984,10 +984,6 @@ void RenderTable::calcWidth()
 
     int availableWidth = containingBlockWidth();
 
-    m_marginRight=0;
-    m_marginLeft=0;
-
-    calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),availableWidth);
 
     LengthType widthType = style()->width().type;
     if(widthType > Relative) {
@@ -1004,6 +1000,10 @@ void RenderTable::calcWidth()
 
     m_width = KMAX (m_width, m_minWidth);
 
+    m_marginRight=0;
+    m_marginLeft=0;
+
+    calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),availableWidth);
 
     // PHASE 4, calculate maximums for percent and relative columns. We can't do this in 
     // the minMax calculations, as we do not have the correct table width there.
@@ -1315,9 +1315,9 @@ void RenderTable::layout()
     if ( !colWidthKnown || oldWidth != m_width )
 	calcColWidth();
     
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(Table)::layout1() width=" << width() << ", layouted=" << layouted() << endl;
-#endif
+//#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << renderName() << "(Table)::layout1() width=" << width() << ", marginLeft=" << marginLeft() << " marginRight=" << marginRight() << endl;
+//#endif
 
 
     setCellWidths();
@@ -1468,9 +1468,9 @@ void RenderTable::layoutRows(int yoff)
             default:
                 break;
             }
-#ifdef DEBUG_LAYOUT
+//#ifdef DEBUG_LAYOUT
             kdDebug( 6040 ) << "CELL te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
-#endif
+//#endif
             cell->setCellTopExtra( te );
             cell->setCellBottomExtra( rHeight - cell->height() - te);
 
