@@ -40,6 +40,7 @@ using namespace KABC;
 static const KCmdLineOptions options[] =
 {
   {"disable-autostart", I18N_NOOP("Disable automatic startup on login"), 0},
+  {"quiet", "", 0},
   {"o", 0, 0},
   {"override", I18N_NOOP("Override existing entries"),"1"},
   KCmdLineLastOption
@@ -286,13 +287,15 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
   if ( !otherAddress.isEmpty() ) a.insertAddress( otherAddress );
 }
 
-void importKab( KABC::AddressBook *ab, bool override )
+void importKab( KABC::AddressBook *ab, bool override, bool quiet )
 {
   QString fileName = KGlobal::dirs()->saveLocation( "data", "kab/" );
   fileName += "addressbook.kab";
   if (!QFile::exists( fileName )) {
-    KMessageBox::error( 0, "<qt>" + i18n( "Address book file <b>%1</b> not found! Make sure the old address book is located there and you have read permission for this file." )
-                        .arg( fileName ) + "</qt>" );
+    if ( !quiet ) {
+      KMessageBox::error( 0, "<qt>" + i18n( "Address book file <b>%1</b> not found! Make sure the old address book is located there and you have read permission for this file." )
+                          .arg( fileName ) + "</qt>" );
+    }
     kdDebug(5700) << "No KDE 2 addressbook found." << endl;
     return;
   }
@@ -458,6 +461,11 @@ int main(int argc,char **argv)
     override = true;
   }
 
+  bool quiet = false;
+
+  if ( args->isSet( "quiet" ) )
+    quiet = true;
+
   if ( args->isSet( "disable-autostart" ) ) {
     kdDebug() << "Disable autostart." << endl;
 
@@ -470,7 +478,7 @@ int main(int argc,char **argv)
 
   importKMailAddressBook( kabcBook );
 
-  importKab( kabcBook, override );
+  importKab( kabcBook, override, quiet );
 
   StdAddressBook::save();
 
