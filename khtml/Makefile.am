@@ -32,7 +32,7 @@
 # gprof -l -y
 # AM_CXXFLAGS += -pg
 
-SUBDIRS = misc dom css xml html rendering pics java . ecma
+SUBDIRS = misc dom css xml html rendering pics @DOJAVA@ . ecma
 
 lib_LTLIBRARIES = libkhtml.la libkhtmlimage.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
@@ -48,7 +48,7 @@ noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_find.
 libkhtml_la_LDFLAGS = -version-info 4:0 -module -no-undefined $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
-	./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./java/libkjava.la \
+	./misc/libkhtmlmisc.la ./dom/libkhtmldom.la @LIBKJAVA@ \
 	../kio/libkio.la \
 	$(top_builddir)/kparts/libkparts.la \
 	$(top_builddir)/kfile/libkfile.la \

@@ -74,7 +74,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
 
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
-libkdecore_la_LIBADD = ../libltdl/libltdlc.la -lXext $(LIB_DCOP) $(LIB_DMALLOC) $(LIBRESOLV) $(LIBXINERAMA)
+libkdecore_la_LIBADD = ../libltdl/libltdlc.la $(LIB_XEXT) $(LIB_DCOP) $(LIB_DMALLOC) $(LIBRESOLV) $(LIBXINERAMA)
 
 libkdecore_la_METASOURCES = AUTO
 

@@ -1,0 +1,9 @@
+if test "x$kde_use_qt_emb" = "xyes"; then
+  DOJAVA=""
+  LIBKJAVA=""
+else
+  DOJAVA="java"
+  LIBKJAVA="./java/libkjava.la"
+fi
+AC_SUBST(DOJAVA)
+AC_SUBST(LIBKJAVA)
