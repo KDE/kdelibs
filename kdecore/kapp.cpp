@@ -49,6 +49,7 @@
 #include <kaboutdata.h>
 #include <kglobalsettings.h>
 #include <kipc.h>
+#include <kcrash.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -239,6 +240,13 @@ void KApplication::init(bool GUIenabled)
 
   if (GUIenabled)
   {
+    // reset the crash handler recursive counter
+    resetCrashRecursion();
+
+    // set default crash handler / set emergency save function to nothing
+    setCrashHandler(KDE_CRASH_DEFAULT);
+    setEmergencySaveFunction(KDE_SAVE_NONE);
+    
     // this is important since we fork() to launch the help (Matthias)
     fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
