@@ -661,18 +661,12 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
 {
     assert(parent());
 
-    _tx -= paddingLeft() + borderLeft();
-    _ty -= borderTop() + paddingTop();
-
-    int height = m_lineHeight + borderTop() + paddingTop() +
-                 borderBottom() + paddingBottom();
-
     bool inside = false;
     if (style()->visibility() != HIDDEN) {
         InlineTextBox *s = m_lines.count() ? m_lines[0] : 0;
         int si = 0;
         while(s) {
-            if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + height) &&
+            if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + s->height()) &&
                (_x >= _tx + s->m_x) && (_x <_tx + s->m_x + s->m_width) ) {
                 inside = true;
                 break;

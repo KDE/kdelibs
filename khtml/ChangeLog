@@ -1,3 +1,12 @@
+
+2003-12-05  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_object.cpp (nodeAtPoint): don't offset
+        relatively positioned objects coordinates. They already are (#68716/#60453)
+
+        * rendering/render_text.cpp (nodeAtPoint): no need to include borders and padding
+        in the matching region anymore (#69345)
+
 2003-12-05  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_box.cpp (paintRootBoxDecorations): use the full canvas's height

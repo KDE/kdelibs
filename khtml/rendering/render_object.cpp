@@ -1311,8 +1311,6 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
 {
     int tx = _tx + xPos();
     int ty = _ty + yPos();
-    if (isRelPositioned())
-        static_cast<RenderBox*>(this)->relativePositionOffset(tx, ty);
 
     inside |= ( style()->visibility() != HIDDEN &&
                 (_y >= ty) && (_y < ty + height()) && (_x >= tx) && (_x < tx + width())) || isRoot() || isBody();
