@@ -52,7 +52,7 @@ class Kded;
  * @author Waldo Bastian <bastian@kde.org>
  */
 
-class KDEDModule : public QObject, public DCOPObject
+class KDE_EXPORT KDEDModule : public QObject, public DCOPObject
 {
   Q_OBJECT
 // For inclusion in KDE4 (since it's BIC) long-needed fix for allowing

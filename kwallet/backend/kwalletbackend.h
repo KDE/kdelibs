@@ -36,7 +36,7 @@ class MD5Digest;
 
 /* @internal
  */
-class Backend {
+class KDE_EXPORT Backend {
 	public:
 		Backend(const QString& name = "kdewallet", bool isPath = false);
 		~Backend();

@@ -31,7 +31,7 @@ namespace KWallet {
 
 /* @internal
  */
-class Entry {
+class KDE_EXPORT Entry {
 	public:
 		Entry();
 		~Entry();
