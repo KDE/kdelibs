@@ -28,6 +28,7 @@
 #include "kpixmapio.h"
 
 #ifndef Q_WS_QWS
+#include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #ifdef HAVE_MITSHM
