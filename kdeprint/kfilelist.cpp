@@ -37,12 +37,16 @@
 KFileList::KFileList(QWidget *parent, const char *name)
 : QWidget(parent, name)
 {
+	m_block = false;
+
 	m_files = new KListView(this);
 	m_files->addColumn(i18n("Path"));
 	m_files->addColumn(i18n("Type"));
 	m_files->setAllColumnsShowFocus(true);
 	m_files->setSorting(-1);
 	m_files->setAcceptDrops(false);
+	m_files->setSelectionMode(QListView::Extended);
+	connect(m_files, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
 
 	m_add = new QPushButton(this);
 	m_add->setPixmap(SmallIcon("fileopen"));
@@ -152,16 +156,13 @@ void KFileList::slotAddFile()
 
 void KFileList::slotRemoveFile()
 {
-	QListViewItem	*item = m_files->currentItem();
-	{
-		if (item)
-			delete item;
-		if (m_files->childCount() == 0)
-		{
-			m_remove->setEnabled(false);
-			m_open->setEnabled(false);
-		}
-	}
+	QPtrList<QListViewItem>	l;
+	selection(l);
+	l.setAutoDelete(true);
+	m_block = true;
+	l.clear();
+	m_block = false;
+	slotSelectionChanged();
 }
 
 void KFileList::slotOpenFile()
@@ -176,6 +177,29 @@ void KFileList::slotOpenFile()
 QSize KFileList::sizeHint() const
 {
 	return QSize(100, 100);
+}
+
+void KFileList::selection(QPtrList<QListViewItem>& l)
+{
+	l.setAutoDelete(false);
+	QListViewItem	*item = m_files->firstChild();
+	while (item)
+	{
+		if (item->isSelected())
+			l.append(item);
+		item = item->nextSibling();
+	}
+}
+
+void KFileList::slotSelectionChanged()
+{
+	if (m_block)
+		return;
+
+	QPtrList<QListViewItem>	l;
+	selection(l);
+	m_remove->setEnabled(l.count() > 0);
+	m_open->setEnabled(l.count() == 1);
 }
 
 #include "kfilelist.moc"

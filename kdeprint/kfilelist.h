@@ -21,9 +21,11 @@
 #define KFILELIST_H
 
 #include <qwidget.h>
+#include <qptrlist.h>
 
 class KListView;
 class QPushButton;
+class QListViewItem;
 
 class KFileList : public QWidget
 {
@@ -40,15 +42,18 @@ protected slots:
 	void slotAddFile();
 	void slotRemoveFile();
 	void slotOpenFile();
+	void slotSelectionChanged();
 
 protected:
 	void dragEnterEvent(QDragEnterEvent*);
 	void dropEvent(QDropEvent*);
 	void addFiles(const QStringList&);
+	void selection(QPtrList<QListViewItem>&);
 
 private:
 	KListView	*m_files;
 	QPushButton	*m_add, *m_remove, *m_open;
+	bool		m_block;
 };
 
 #endif

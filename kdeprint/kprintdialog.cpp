@@ -30,7 +30,6 @@
 #include "kprintdialogpage.h"
 #include "kprinterpropertydialog.h"
 #include "plugincombobox.h"
-#include "kfilelist.h"
 #include "kpcopiespage.h"
 #include "treecombobox.h"
 
