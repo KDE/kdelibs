@@ -8,3 +8,6 @@
 <!ENTITY kcontrolcenter "<application>Ovl&#225;dacie centrum &kde;</application>">
 <!ENTITY dpi            "<acronym>dpi</acronym>">
 <!ENTITY cdrom         	"<hardware>CD-ROM</hardware>">
+<!ENTITY Shift		"<keycap>Shift</keycap>">
+<!ENTITY Ctrl		"<keycap>Ctrl</keycap>">
+<!ENTITY Alt		"<keycap>Alt</keycap>">
