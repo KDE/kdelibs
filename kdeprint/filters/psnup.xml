@@ -9,7 +9,7 @@
 			<value name="8" description="8" />
 			<value name="16" description="16" />
 		</filterarg>
-		<filterarg name="box" description="Box width" format="-d%value" type="int" min="0" max="20" default="1" />
+		<filterarg name="box" description="Box width" format="-d%value" type="int" min="0" max="20" default="0" />
 		<filterarg name="margin" description="Additional margin" format="-b%value" type="int" min="0" max="100" default="0" />
 	</filterargs>
 	<filterinput>

@@ -89,9 +89,9 @@ int findOption(const char *strs[], int n, const QString& txt)
 // default values in case of NULL driver
 #define	DEFAULT_SIZE	16
 static const char*	default_size[] = {
+	"A4", I18N_NOOP("ISO A4"),
 	"Letter", I18N_NOOP("US Letter"),
 	"Legal", I18N_NOOP("US Legal"),
-	"A4", I18N_NOOP("ISO A4"),
 	"Ledger", I18N_NOOP("Ledger"),
 	"Tabloid", I18N_NOOP("Tabloid"),
 	"Folio", I18N_NOOP("Folio"),

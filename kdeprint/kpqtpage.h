@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -41,11 +41,12 @@ public:
 protected slots:
 	void slotOrientationChanged(int);
 	void slotColorModeChanged(int);
+	void slotNupChanged(int);
 
 protected:
-	QButtonGroup	*m_orientbox, *m_colorbox;
+	QButtonGroup	*m_orientbox, *m_colorbox, *m_nupbox;
 	QComboBox	*m_pagesize;
-	QLabel		*m_orientpix, *m_colorpix;
+	QLabel		*m_orientpix, *m_colorpix, *m_nuppix;
 };
 
 #endif

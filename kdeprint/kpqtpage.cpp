@@ -21,6 +21,8 @@
 
 #include "kpqtpage.h"
 #include "kprinter.h"
+#include "kmfactory.h"
+#include "kmfiltermanager.h"
 
 #include <qcombobox.h>
 #include <qbuttongroup.h>
@@ -36,6 +38,11 @@
 
 #define COLORMODE_COLOR_ID	0
 #define COLORMODE_GRAYSCALE_ID	1
+
+#define NUP_1		0
+#define NUP_2		1
+#define NUP_4		2
+#define NUP_OTHER	3
 
 void radioCursor(QButtonGroup*);
 
@@ -105,6 +112,13 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	QRadioButton	*m_grayscale = new QRadioButton(i18n("Grayscale"), m_colorbox);
 	m_colorpix = new QLabel(m_colorbox);
 	m_colorpix->setAlignment(Qt::AlignCenter);
+	m_nupbox = new QButtonGroup(0, Qt::Vertical, i18n("Pages per sheet"), this);
+	QRadioButton	*m_nup1 = new QRadioButton("1", m_nupbox);
+	QRadioButton	*m_nup2 = new QRadioButton("2", m_nupbox);
+	QRadioButton	*m_nup4 = new QRadioButton("4", m_nupbox);
+	QRadioButton	*m_nupother = new QRadioButton("Other", m_nupbox);
+	m_nuppix = new QLabel(m_nupbox);
+	m_nuppix->setAlignment(Qt::AlignCenter);
 
 	// layout creation
 	QGridLayout	*lay0 = new QGridLayout(this, 3, 2, 10, 10);
@@ -114,6 +128,7 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	lay0->addWidget(m_pagesize,0,1);
 	lay0->addWidget(m_orientbox,1,0);
 	lay0->addWidget(m_colorbox,1,1);
+	lay0->addWidget(m_nupbox,2,0);
 	QGridLayout	*lay1 = new QGridLayout(m_orientbox->layout(), 2, 2, 10);
 	lay1->addWidget(m_portrait,0,0);
 	lay1->addWidget(m_landscape,1,0);
@@ -122,21 +137,34 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	lay2->addWidget(m_color,0,0);
 	lay2->addWidget(m_grayscale,1,0);
 	lay2->addMultiCellWidget(m_colorpix,0,1,1,1);
+	QGridLayout	*lay3 = new QGridLayout(m_nupbox->layout(), 4, 2, 5);
+	lay3->addWidget(m_nup1,0,0);
+	lay3->addWidget(m_nup2,1,0);
+	lay3->addWidget(m_nup4,2,0);
+	lay3->addWidget(m_nupother,3,0);
+	lay3->addMultiCellWidget(m_nuppix,0,3,1,1);
 
 	// initialization
 	radioCursor(m_orientbox);
 	radioCursor(m_colorbox);
+	radioCursor(m_nupbox);
 	m_portrait->setChecked(true);
 	slotOrientationChanged(0);
 	m_color->setChecked(true);
 	slotColorModeChanged(0);
+	m_nup1->setChecked(true);
+	slotNupChanged(0);
 	for (int i=0; i<KPrinter::NPageSize-1; i++)
 		m_pagesize->insertItem(i18n(page_sizes[i].text));
 	m_pagesize->setCurrentItem(findIndex(KPrinter::A4));	// default to A4
 
+	if (KMFactory::self()->filterManager()->filterList().findIndex("psnup") == -1)
+		m_nupbox->setEnabled(false);
+
 	// connections
 	connect(m_orientbox,SIGNAL(clicked(int)),SLOT(slotOrientationChanged(int)));
 	connect(m_colorbox,SIGNAL(clicked(int)),SLOT(slotColorModeChanged(int)));
+	connect(m_nupbox,SIGNAL(clicked(int)),SLOT(slotNupChanged(int)));
 }
 
 KPQtPage::~KPQtPage()
@@ -153,6 +181,19 @@ void KPQtPage::slotColorModeChanged(int ID)
 	m_colorpix->setPixmap(UserIcon((ID == COLORMODE_COLOR_ID ? "kdeprint_color" : "kdeprint_grayscale")));
 }
 
+void KPQtPage::slotNupChanged(int ID)
+{
+	QString	pixstr;
+	switch (ID)
+	{
+		case NUP_1: pixstr = "kdeprint_nup1"; break;
+		case NUP_2: pixstr = "kdeprint_nup2"; break;
+		case NUP_4: pixstr = "kdeprint_nup4"; break;
+		case NUP_OTHER: pixstr = "kdeprint_nupother"; break;
+	}
+	m_nuppix->setPixmap(UserIcon(pixstr));
+}
+
 void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 {
 	int 	ID = (opts["kde-orientation"] == "Landscape" ? ORIENT_LANDSCAPE_ID : ORIENT_PORTRAIT_ID);
@@ -163,6 +204,22 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 	slotColorModeChanged(ID);
 	if (!opts["kde-pagesize"].isEmpty())
 		m_pagesize->setCurrentItem(findIndex(opts["kde-pagesize"].toInt()));
+	ID = NUP_1;
+	if (opts["_kde-filters"].find("psnup") != -1)
+	{
+		ID = opts["_kde-psnup-nup"].toInt();
+		if (ID == 1 || ID == 2 || ID == 4)
+		{
+			if (ID == 4) ID = 3;
+			ID--;
+		}
+		else
+		{
+			ID = NUP_OTHER;
+		}
+	}
+	m_nupbox->setButton(ID);
+	slotNupChanged(ID);
 }
 
 void KPQtPage::getOptions(QMap<QString,QString>& opts, bool)
@@ -170,5 +227,19 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool)
 	opts["kde-orientation"] = (m_orientbox->id(m_orientbox->selected()) == ORIENT_LANDSCAPE_ID ? "Landscape" : "Portrait");
 	opts["kde-colormode"] = (m_colorbox->id(m_colorbox->selected()) == COLORMODE_GRAYSCALE_ID ? "GrayScale" : "Color");
 	opts["kde-pagesize"] = QString::number(page_sizes[m_pagesize->currentItem()].ID);
+	int	ID = m_nupbox->id(m_nupbox->selected());
+	QString	s = opts["_kde-filters"];
+	if (ID == NUP_1)
+	{
+		opts.remove("_kde-psnup-nup");
+	}
+	else if (ID != NUP_OTHER)
+	{
+		int	nup(ID == NUP_2 ? 2 : 4);
+		if (s.find("psnup") == -1)
+			s.prepend("psnup,");
+		opts["_kde-psnup-nup"] = QString::number(nup);
+	}
+	opts["_kde-filters"] = s;
 }
 #include "kpqtpage.moc"
