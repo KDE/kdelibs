@@ -1775,7 +1775,7 @@ Value VarDeclNode::evaluate(ExecState *exec) const
   // "var location" creates a dynamic property instead of activating window.location.
   int flags = Internal;
   if (exec->_context->type() != EvalCode)
-    flags |= Internal;
+    flags |= DontDelete;
   if (currentVarType == VarStatementNode::Constant)
     flags |= ReadOnly;
   variable.put(exec, ident, val, flags);
@@ -1787,9 +1787,9 @@ void VarDeclNode::processVarDecls(ExecState *exec)
 {
   Object variable = exec->context().variableObject();
   if ( !variable.hasProperty( exec, ident ) ) { // already declared ?
-    int flags = Internal;
+    int flags = None;
     if (exec->_context->type() != EvalCode)
-      flags |= Internal;
+      flags |= DontDelete;
     if (currentVarType == VarStatementNode::Constant)
       flags |= ReadOnly;
     // TODO: check for forbidden redeclaration of consts
