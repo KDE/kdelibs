@@ -17,7 +17,6 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  $Id$
  */
 
 #include <stdio.h>
@@ -45,6 +44,10 @@ RegExp::RegExp(const UString &p, int f)
 
   pcregex = pcre_compile(p.ascii(), pcreflags,
 			 &perrormsg, &errorOffset, NULL);
+#ifndef NDEBUG
+  if (!pcregex)
+    fprintf(stderr, "KJS: pcre_compile() failed with '%s'\n", perrormsg);
+#endif
 
 #ifdef PCRE_INFO_CAPTURECOUNT
   // Get number of subpatterns that will be returned
@@ -79,7 +82,8 @@ RegExp::RegExp(const UString &p, int f)
 RegExp::~RegExp()
 {
 #ifdef HAVE_PCREPOSIX
-  pcre_free(pcregex);
+  if (pcregex)
+    pcre_free(pcregex);
 
 #else
   /* TODO: is this really okay after an error ? */
@@ -98,7 +102,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   if (i < 0)
     i = 0;
 
-  if (i > s.size() || s.isNull() ||
+  if (i > s.size() || s.isNull() || !pcregex ||
       pcre_exec(pcregex, NULL, buffer.c_str(), buffer.size(), i,
 		0, ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH) {
 
