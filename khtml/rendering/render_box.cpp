@@ -521,34 +521,8 @@ void RenderBox::calcWidth()
 	
 	    if(m_width < m_minWidth) m_width = m_minWidth;
 	
-            if (isFloating())
-            {
- 	    	m_marginLeft = ml.minWidth(cw);
-		m_marginRight = mr.minWidth(cw);
-            }
-            else
-            {
-	        if (ml.type == Variable && mr.type == Variable )
-	        {
-	    	    m_marginRight = (cw - m_width)/2;		
-	    	    m_marginLeft = cw - m_width - m_marginRight;
-	        }
-	        else if (mr.type == Variable)
-	        {
-	    	    m_marginLeft = ml.width(cw);
-		    m_marginRight = cw - m_width - m_marginLeft;
-	        }
-	        else if (ml.type == Variable)
-	        {	    	
-	    	    m_marginRight = mr.width(cw);		
-		    m_marginLeft = cw - m_width - m_marginRight;
-	        }
-	        else
-	        {
-	    	    m_marginLeft = ml.minWidth(cw);
-		    m_marginRight = mr.minWidth(cw);
-	        }
-            }
+            calcHorizontalMargins(ml,mr,cw);
+            
 	}
 	if (cw != m_width + m_marginLeft + m_marginRight && !isFloating())
 	{
@@ -560,11 +534,43 @@ void RenderBox::calcWidth()
 	}
     }
 
-
+    
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
     kdDebug( 6040 ) << "m_marginLeft=" << m_marginLeft << " m_marginRight=" << m_marginRight << endl;
 #endif
+}
+
+void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw)
+{
+    if (isFloating())
+    {
+ 	m_marginLeft = ml.minWidth(cw);
+	m_marginRight = mr.minWidth(cw);
+    }
+    else
+    {
+        if (ml.type == Variable && mr.type == Variable )
+        {
+	    m_marginRight = (cw - m_width)/2;		
+	    m_marginLeft = cw - m_width - m_marginRight;
+        }
+        else if (mr.type == Variable)
+        {
+	    m_marginLeft = ml.width(cw);
+	    m_marginRight = cw - m_width - m_marginLeft;
+        }
+        else if (ml.type == Variable)
+        {	    	
+	    m_marginRight = mr.width(cw);		
+	    m_marginLeft = cw - m_width - m_marginRight;
+        }
+        else
+        {
+	    m_marginLeft = ml.minWidth(cw);
+	    m_marginRight = mr.minWidth(cw);
+        }    
+    }
 }
 
 void RenderBox::calcHeight()
@@ -609,6 +615,7 @@ void RenderBox::calcHeight()
 	}
     }
 }
+
 
 void RenderBox::calcAbsoluteHorizontal()
 {

@@ -645,5 +645,7 @@ void RenderPartObject::layout( bool )
 {
   setSize( m_style->width().width( m_view->clipper()->width() ),
 	   m_style->height().width( m_view->clipper()->height() ) );
+  calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),
+          containingBlockWidth());
   RenderPart::layout();
 }

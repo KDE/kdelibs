@@ -672,15 +672,12 @@ void RenderTable::calcColMinMax()
     Length mr = style()->marginRight();
     if (ml.type==Fixed && mr.type==Fixed)
     {
-        if (style()->direction()==LTR)
-            margin = marginLeft(); 
-        else
-            margin = marginRight();  
+        margin = mr.value + ml.value; 
     }
     else if (ml.type == Fixed)
-        margin = marginLeft();            
+        margin = ml.value;            
     else if (mr.type == Fixed)
-        margin = marginRight();
+        margin = mr.value;
 
     if (margin<0) margin=0;
     

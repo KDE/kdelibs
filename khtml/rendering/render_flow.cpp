@@ -982,21 +982,26 @@ void RenderFlow::calcMinMaxWidth()
             Length mr = child->style()->marginRight();
             if (ml.type==Fixed && mr.type==Fixed)
             {
-                if (child->style()->direction()==LTR)
-                    margin += child->marginLeft(); 
-                else
-                    margin += child->marginRight();  
+                if (child->style()->width().type==Fixed)
+                {
+                    if (child->style()->direction()==LTR)
+                        margin = child->marginLeft(); 
+                    else
+                        margin = child->marginRight();  
+                }
+                else 
+                    margin = ml.value+mr.value;
+                                
             }
             else if (ml.type == Fixed)
-                margin += child->marginLeft();            
+                margin = ml.value;            
             else if (mr.type == Fixed)
-                margin += child->marginRight();    
+                margin = mr.value;    
             
             if (margin<0) margin=0;              
                         
 	    int w = child->minWidth() + margin;
-
-            	    if(m_minWidth < w) m_minWidth = w;
+            if(m_minWidth < w) m_minWidth = w;            
 	    w = child->maxWidth() + margin;
 	    if(m_maxWidth < w) m_maxWidth = w;
 	    child = child->nextSibling();

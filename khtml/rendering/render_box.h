@@ -130,6 +130,8 @@ protected:
 
     void calcAbsoluteHorizontal();
     void calcAbsoluteVertical();
+    
+    void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
     /*
      * the minimum width the element needs, to be able to render
      * it's content without clipping
