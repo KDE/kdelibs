@@ -1,0 +1,9 @@
+[Image Format]
+Type=PCX
+Header=^\012
+Name=PCX Image File
+Read=true
+Write=true
+Suffices=pcx,PCX
+Mimetype=image/x-pcx
+Library=kimg_pcx.la
