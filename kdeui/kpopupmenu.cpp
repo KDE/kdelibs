@@ -248,6 +248,12 @@ QPixmap KPopupMenu::titlePixmap(int id) const
     return(tmp);
 }
 
+int KPopupMenu::insertTearOffHandle ( int id, int index )
+{
+  if (KGlobalSettings::insertTearOffHandle())
+    return QPopupMenu::insertTearOffHandle( id, index );
+  return 0;
+}
 
 // Obselete
 KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)
