@@ -27,6 +27,7 @@ kcompletionbox.cpp	Carsten Pfeiffer <pfeiffer@kde.org>
 kcursor.cpp		Carsten Pfeiffer <pfeiffer@kde.org>
 kdatepicker.cpp
 kdatetbl.cpp
+kdatetimewidget.cpp     Hans Petter Bieker <bieker@kde.org>
 kdatewidget.cpp		Waldo Bastian <bastian@kde.org>
 kdcopactionproxy.cpp
 kdialog.cpp
@@ -81,6 +82,7 @@ kstringvalidator.cpp	Marc Mutz <mutz@kde.org>
 ksystemtray.cpp
 ktabctl.cpp
 ktextbrowser.cpp
+ktimewidget             Hans Petter Bieker <bieker@kde.org>
 ktip.cpp
 ktoolbar.cpp		Waldo Bastian <bastian@kde.org>
 ktoolbarbutton.cpp	Waldo Bastian <bastian@kde.org>
