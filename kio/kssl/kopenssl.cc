@@ -239,7 +239,8 @@ KConfig *cfg;
          _cryptoLib = ll->globalLibrary(libname.latin1());
    }
 #else
-   libpaths << "/usr/lib/"
+   libpaths << "/lib/"
+	    << "/usr/lib/"
 	    << "/usr/ssl/lib/"
             << "/usr/local/lib/"
             << "/usr/local/openssl/lib/"
@@ -252,9 +253,10 @@ KConfig *cfg;
 	     #ifdef hpux
              << "libssl.sl"
              #else
-	     << "libssl.so.0"
              << "libssl.so"
+	     << "libssl.so.0"
 	     << "libssl.so.0.9.6"
+	     << "libssl.so.0.9.6b"
              #endif
 	     ;
 
@@ -262,9 +264,10 @@ KConfig *cfg;
              #ifdef hpux
              << "libcrypto.sl"
 	     #else
-	     << "libcrypto.so.0"
              << "libcrypto.so"
+	     << "libcrypto.so.0"
 	     << "libcrypto.so.0.9.6"
+	     << "libcrypto.so.0.9.6b"
              #endif
 	     ;
 
