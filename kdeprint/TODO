@@ -3,6 +3,12 @@ BUGS
 
 - backport LPR plugin problem with aliases to 2.2 branch
 
+- Toolbar of instance tab seems to be messed up. Only 1 button
+  shown.
+
+- make slave's code case insensitive such that it accepts
+  also "print:/Classes" instead of "print:/classes"
+
 
 
 WISHES
@@ -29,3 +35,5 @@ WISHES
   itself using kdesu).
 
 - extension of the print ioslave to view jobs (print:/jobs)
+
+- add a "Print" button to the IPP report dialog
