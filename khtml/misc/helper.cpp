@@ -22,6 +22,7 @@
  */
 #include "helper.h"
 #include <qmap.h>
+#include <qpainter.h>
 #include <dom/dom_string.h>
 // ### remove me...
 #include <xml/dom_stringimpl.h>
@@ -121,4 +122,20 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         else
             color.setNamedColor(name);
     }
+}
+
+static QPainter *printpainter = 0;
+
+void khtml::setPrintPainter( QPainter *printer )
+{
+    printpainter = printer;
+}
+
+QFontMetrics khtml::fontMetrics( const QFont &f )
+{
+    if(printpainter) {
+	printpainter->setFont( f );
+	return printpainter->fontMetrics();
+    }
+    return QFontMetrics( f );
 }

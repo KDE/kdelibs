@@ -32,6 +32,7 @@
 #include <qcombobox.h>
 #include <qstack.h>
 #include <qlayout.h>
+#include "misc/helper.h"
 
 #include "dom_nodeimpl.h"
 #include "dom_textimpl.h"
@@ -472,7 +473,7 @@ void RenderLineEdit::slotReturnPressed()
 
 void RenderLineEdit::layout()
 {
-    QFontMetrics fm( m_widget->font() );
+    QFontMetrics fm = fontMetrics( m_widget->font() );
     QSize s;
 
     QLineEdit *edit = static_cast<QLineEdit*>(m_widget);
@@ -592,7 +593,7 @@ void RenderFileButton::slotClicked()
 void RenderFileButton::layout( )
 {
     // this is largely taken from the RenderLineEdit layout
-    QFontMetrics fm( m_edit->font() );
+    QFontMetrics fm = fontMetrics( m_edit->font() );
     QSize s;
     HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
     int size = input->size();
@@ -1173,7 +1174,7 @@ void RenderTextArea::layout( )
     w->setText(static_cast<HTMLTextAreaElementImpl*>(m_element)->value().string().visual());
     w->blockSignals(false);
 
-    QFontMetrics m = w->fontMetrics();
+    QFontMetrics m = fontMetrics(w->font());
     QSize size( QMAX(f->cols(), 1)*m.width('x') + w->frameWidth()*5 +
                 w->verticalScrollBar()->sizeHint().width(),
                 QMAX(f->rows(), 1)*m.height() + w->frameWidth()*3 +

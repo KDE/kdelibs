@@ -24,6 +24,7 @@
 #include "render_replaced.h"
 #include <qscrollview.h>
 #include <assert.h>
+#include "misc/helper.h"
 
 using namespace khtml;
 
@@ -128,7 +129,7 @@ short RenderWidget::verticalPositionHint() const
     {
     case BASELINE:
         //kdDebug( 6040 ) << "aligned to baseline" << endl;
-        return (m_height - QFontMetrics(style()->font()).descent());
+        return (m_height - fontMetrics(style()->font()).descent());
     case SUB:
         // ###
     case SUPER:
@@ -136,13 +137,13 @@ short RenderWidget::verticalPositionHint() const
     case TOP:
         return PositionTop;
     case TEXT_TOP:
-        return QFontMetrics(style()->font()).ascent();
+        return fontMetrics(style()->font()).ascent();
     case MIDDLE:
-        return -QFontMetrics(style()->font()).width('x')/2;
+        return -fontMetrics(style()->font()).width('x')/2;
     case BOTTOM:
         return PositionBottom;
     case TEXT_BOTTOM:
-        return QFontMetrics(style()->font()).descent();
+        return fontMetrics(style()->font()).descent();
     }
     return 0;
 }

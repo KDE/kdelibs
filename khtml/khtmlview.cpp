@@ -31,6 +31,7 @@
 #include "rendering/render_root.h"
 #include "rendering/render_style.h"
 #include "misc/htmlhashes.h"
+#include "misc/helper.h"
 #include "khtml_settings.h"
 
 #include <kcursor.h>
@@ -756,7 +757,8 @@ void KHTMLView::print()
 
         QPainter *p = new QPainter;
         p->begin( printer );
-
+	khtml::setPrintPainter( p );
+	
         m_part->xmlDocImpl()->setPaintDevice( printer );
 
         QPaintDeviceMetrics metrics( printer );
@@ -820,6 +822,7 @@ void KHTMLView::print()
 
         // and now reset the layout to the usual one...
         root->setPrintingMode(false);
+	khtml::setPrintPainter( 0 );
         m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
         m_part->xmlDocImpl()->applyChanges();

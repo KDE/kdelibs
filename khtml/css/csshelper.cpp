@@ -30,6 +30,7 @@
 #include "rendering/render_style.h"
 #include "css_valueimpl.h"
 #include "dom/css_value.h"
+#include "misc/helper.h"
 
 #include "kdebug.h"
 
@@ -58,7 +59,7 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QP
         }
         else
         {
-            QFontMetrics fm(style->font());
+            QFontMetrics fm = khtml::fontMetrics(style->font());
             QRect b = fm.boundingRect('x');
             factor = b.height();
         }

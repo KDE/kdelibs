@@ -34,6 +34,7 @@
 
 #include "render_flow.h"
 #include "render_text.h"
+#include "misc/helper.h"
 
 #include "htmlhashes.h"
 
@@ -954,13 +955,13 @@ short RenderFlow::baselineOffset() const
     case TOP:
         return 0;
     case TEXT_TOP:
-        return QFontMetrics(style()->font()).ascent();
+        return fontMetrics(style()->font()).ascent();
     case MIDDLE:
         return contentHeight()/2;
     case BOTTOM:
         return contentHeight();
     case TEXT_BOTTOM:
-        return contentHeight() - QFontMetrics(style()->font()).descent();
+        return contentHeight() - fontMetrics(style()->font()).descent();
     }
     return 0;
 }

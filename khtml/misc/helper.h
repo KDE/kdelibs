@@ -24,10 +24,15 @@
 #define html_helper_h
 
 #include <qcolor.h>
+class QPainter;
+#include <qfontmetrics.h>
+#include <qfont.h>
 
 namespace khtml
 {
     void setNamedColor(QColor &color, const QString &name);
+    void setPrintPainter( QPainter *printer );
+    QFontMetrics fontMetrics( const QFont &f );
 };
 
 #endif

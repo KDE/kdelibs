@@ -34,6 +34,7 @@
 #include <kdebug.h>
 
 #include "rendering/render_style.h"
+#include "misc/helper.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -166,7 +167,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
                 int ay = _ty + topBorder + QMAX(5, topPad);
                 int ah = cHeight - QMAX(10, leftPad + paddingRight());
                 int aw = cWidth - QMAX(10, topPad + paddingBottom());
-                QFontMetrics fm(style()->font());
+                QFontMetrics fm = fontMetrics(style()->font());
                 if (aw>15 && ah>fm.height())
                     p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
             }
@@ -302,11 +303,11 @@ short RenderImage::baselineOffset() const
     case TOP:
         return 0;
     case TEXT_TOP:
-        return QFontMetrics(style()->font()).ascent();
+        return fontMetrics(style()->font()).ascent();
     case MIDDLE:
         return contentHeight()/2;
     case TEXT_BOTTOM:
-        return contentHeight()-QFontMetrics(style()->font()).descent();
+        return contentHeight()-fontMetrics(style()->font()).descent();
     }
     return 0;
 }

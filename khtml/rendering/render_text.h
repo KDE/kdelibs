@@ -169,7 +169,7 @@ public:
     virtual short verticalPositionHint() const;
 
     virtual const QFont &font();
-    const QFontMetrics *metrics() const { return fm; }
+    QFontMetrics metrics() const;
 
     bool isFixedWidthFont() const;
 
@@ -189,7 +189,6 @@ protected:
     TextSlave * findTextSlave( int offset, int &pos );
     TextSlaveArray m_lines;
 
-    QFontMetrics *fm;
     DOM::DOMStringImpl *str;
 
     int m_contentHeight;

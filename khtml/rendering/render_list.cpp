@@ -29,6 +29,7 @@
 #include <qnamespace.h>
 
 #include "rendering/render_style.h"
+#include "misc/helper.h"
 
 #include <kdebug.h>
 
@@ -361,7 +362,7 @@ void RenderListMarker::calcMinMaxWidth()
     case CIRCLE:
     case SQUARE:
     {
-        QFontMetrics fm(style()->font());
+        QFontMetrics fm = fontMetrics(style()->font());
         if(style()->listStylePosition() == INSIDE) {
             m_width = fm.ascent();
         }
@@ -405,7 +406,7 @@ void RenderListMarker::calcMinMaxWidth()
     item += QString::fromLatin1(". ");
 
     {
-        QFontMetrics fm(style()->font());
+        QFontMetrics fm = fontMetrics(style()->font());
         if(style()->listStylePosition() != INSIDE)
             m_width = 0;
         else
@@ -420,12 +421,12 @@ void RenderListMarker::calcMinMaxWidth()
 
 short RenderListMarker::baselineOffset() const
 {
-    return QFontMetrics(style()->font()).ascent();
+    return fontMetrics(style()->font()).ascent();
 }
 
 short RenderListMarker::verticalPositionHint() const
 {
-    return QFontMetrics(style()->font()).ascent();
+    return fontMetrics(style()->font()).ascent();
 }
 
 void RenderListMarker::calcWidth()

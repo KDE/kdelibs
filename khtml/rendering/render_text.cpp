@@ -29,6 +29,7 @@
 #include "render_style.h"
 
 #include "misc/loader.h"
+#include "misc/helper.h"
 
 #include <qfontmetrics.h>
 #include <qfontinfo.h>
@@ -282,7 +283,6 @@ RenderText::RenderText(DOMStringImpl *_str)
     m_maxWidth = -1;
     str = _str;
     if(str) str->ref();
-    fm = 0;
 
     m_selectionState = SelectionNone;
 
@@ -294,16 +294,13 @@ RenderText::RenderText(DOMStringImpl *_str)
 
 void RenderText::setStyle(RenderStyle *_style)
 {
-    delete fm;
     RenderObject::setStyle(_style);
-    fm = new QFontMetrics(style()->font());
-    m_contentHeight = style()->lineHeight().width(fm->height());
+    m_contentHeight = style()->lineHeight().width(metrics().height());
 }
 
 RenderText::~RenderText()
 {
     deleteSlaves();
-    delete fm; fm = 0;
     if(str) str->deref();
 }
 
@@ -367,7 +364,8 @@ int RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offse
         TextSlave* s = m_lines[si];
         if ( s->m_reversed )
             return -2; // abort if RTL (TODO)
-        int result = s->checkSelectionPoint(_x, _y, _tx, _ty, fm, offset);
+	QFontMetrics fm = metrics();
+        int result = s->checkSelectionPoint(_x, _y, _tx, _ty, &fm, offset);
         //kdDebug(6040) << "RenderText::checkSelectionPoint line " << si << " result=" << result << endl;
         if ( result == 0 ) // x,y is inside the textslave
         {
@@ -410,10 +408,11 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   _y = s->m_y;
   height = s->m_height;
 
+  QFontMetrics fm = metrics();
   QString tekst(s->m_text, s->m_len);
-  _x = s->m_x + (fm->boundingRect(tekst, pos)).right();
+  _x = s->m_x + (fm.boundingRect(tekst, pos)).right();
   if(pos)
-      _x += fm->rightBearing( *(s->m_text + pos - 1 ) );
+      _x += fm.rightBearing( *(s->m_text + pos - 1 ) );
 
   int absx, absy;
 
@@ -620,6 +619,7 @@ void RenderText::calcMinMaxWidth()
     int currMinWidth = 0;
     int currMaxWidth = 0;
 
+    QFontMetrics fm = metrics();
     int len = str->l;
     for(int i = 0; i < len; i++)
     {
@@ -629,7 +629,7 @@ void RenderText::calcMinMaxWidth()
         } while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) );
         if (wordlen)
         {
-            int w = fm->width(QConstString(str->s+i, wordlen).string());
+            int w = fm.width(QConstString(str->s+i, wordlen).string());
             currMinWidth += w;
             currMaxWidth += w;
         }
@@ -646,7 +646,7 @@ void RenderText::calcMinMaxWidth()
             {
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
-                currMaxWidth += fm->width( *(str->s+i+wordlen) );
+                currMaxWidth += fm.width( *(str->s+i+wordlen) );
             }
             /* else if( c == '-')
             {
@@ -719,12 +719,14 @@ int RenderText::bidiHeight() const
 
 short RenderText::baselineOffset() const
 {
-    return (m_contentHeight - fm->height())/2 + fm->ascent();
+    QFontMetrics fm = metrics();
+    return (m_contentHeight - fm.height())/2 + fm.ascent();
 }
 
 short RenderText::verticalPositionHint() const
 {
-    return (m_contentHeight - fm->height())/2 + fm->ascent();
+    QFontMetrics fm = metrics();
+    return (m_contentHeight - fm.height())/2 + fm.ascent();
 }
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
@@ -767,7 +769,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
-    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << bidiHeight() << " fontHeight=" << fm->height() << " ascent =" << fm->ascent() << endl;
+    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << bidiHeight() << " fontHeight=" << metrics().height() << " ascent =" << metrics().ascent() << endl;
 #endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
@@ -786,16 +788,17 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLi
 
     if ( from + len > str->l ) len = str->l - from;
 
-    QFontMetrics metrics = *fm;
+    QFontMetrics fm = metrics();
+    //qDebug("font is %d, metrics %d", style()->font().pointSize(), fm.height());
     RenderStyle *pseudoStyle;
     if ( firstLine && (pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LINE) ) )
-	metrics = QFontMetrics ( pseudoStyle->font() );
+	fm = fontMetrics ( pseudoStyle->font() );
 
     int w;
     if( len == 1)
-        w = metrics.width( *(str->s+from) );
+        w = fm.width( *(str->s+from) );
     else
-        w = metrics.width(QConstString(str->s+from, len).string());
+        w = fm.width(QConstString(str->s+from, len).string());
 
     // ### add margins and support for RTL
 
@@ -849,6 +852,11 @@ void RenderText::repaint()
 bool RenderText::isFixedWidthFont() const
 {
     return QFontInfo(style()->font()).fixedPitch();
+}
+
+QFontMetrics RenderText::metrics() const
+{
+    return fontMetrics(style()->font());
 }
 
 #undef BIDI_DEBUG

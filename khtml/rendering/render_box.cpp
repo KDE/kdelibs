@@ -35,6 +35,7 @@
 #include "dom_stringimpl.h"
 #include "dom_exception.h"
 
+#include "misc/helper.h"
 #include "htmlhashes.h"
 #include "khtmlview.h"
 
@@ -414,13 +415,13 @@ short RenderBox::verticalPositionHint() const
     case TOP:
         return PositionTop;
     case TEXT_TOP:
-        return QFontMetrics(style()->font()).ascent();
+        return fontMetrics(style()->font()).ascent();
     case MIDDLE:
         return contentHeight()/2;
     case BOTTOM:
         return PositionBottom;
     case TEXT_BOTTOM:
-        return QFontMetrics(style()->font()).descent();
+        return fontMetrics(style()->font()).descent();
     }
     return 0;
 }
@@ -440,13 +441,13 @@ short RenderBox::baselineOffset() const
     case TOP:
         return -1000;
     case TEXT_TOP:
-        return QFontMetrics(style()->font()).ascent();
+        return fontMetrics(style()->font()).ascent();
     case MIDDLE:
-        return -QFontMetrics(style()->font()).width('x')/2;
+        return -fontMetrics(style()->font()).width('x')/2;
     case BOTTOM:
         return 1000;
     case TEXT_BOTTOM:
-        return QFontMetrics(style()->font()).descent();
+        return fontMetrics(style()->font()).descent();
     }
     return 0;
 }
