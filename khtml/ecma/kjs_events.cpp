@@ -443,7 +443,7 @@ Value DOMMouseEvent::getValue(ExecState *exec, int token) const
   case RelatedTarget:
     return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
   case FromElement:
-    // MSIE extension - "object from which activation or the mouse pointer is exiting during the event" (huh??)
+    // MSIE extension - "object from which activation or the mouse pointer is exiting during the event" (huh?)
     // ### TODO: meaning of currentTarget differs between mouseover and mouseout, need to pick the right one
     return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
   case ToElement:
