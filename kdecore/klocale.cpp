@@ -258,6 +258,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   langs = langlist.join(QString::fromLatin1(":"));
 
   setEncodingLang(lang);
+  kdDebug() << "KLocale::initLanguage setEncodingLang " << lang << endl;
 
   insertCatalogue( catalogue );
   insertCatalogue( QString::fromLatin1(SYSTEM_MESSAGES) );
@@ -702,9 +703,10 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
     str = str.stripWhiteSpace();
     int pos = str.find(currencySymbol());
     if ( pos == 0 || pos == (int) str.length()-1 )
+    {
         str.remove(pos,currencySymbol().length());
-
-    str = str.stripWhiteSpace();
+        str = str.stripWhiteSpace();
+    }
     pos = str.find(monetaryDecimalSymbol());
     QString major;
     QString minior;
@@ -717,8 +719,8 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
     }
 
     // Remove thousand separators
-    while ( ( pos = major.find( thousandsSeparator() ) ) > 0 )
-        major.remove( pos, thousandsSeparator().length() );
+    while ( ( pos = major.find( monetaryThousandsSeparator() ) ) > 0 )
+        major.remove( pos, monetaryThousandsSeparator().length() );
 
     QString tot;
     if (neg) tot = '-';
