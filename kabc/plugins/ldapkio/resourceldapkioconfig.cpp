@@ -17,6 +17,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+#include <qapplication.h>
 
 #include <qcheckbox.h>
 #include <qlabel.h>
@@ -24,6 +25,9 @@
 #include <qpushbutton.h>
 #include <qspinbox.h>
 #include <qvbox.h>
+#include <qvgroupbox.h>
+#include <qhbuttongroup.h>
+#include <qradiobutton.h>
 
 #include <kaccelmanager.h>
 #include <kcombobox.h>
@@ -35,64 +39,20 @@
 #include "resourceldapkio.h"
 
 #include "resourceldapkioconfig.h"
+#include "resourceldapkioconfig.moc"
 
 using namespace KABC;
 
 ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent,  const char* name )
   : KRES::ConfigWidget( parent, name )
 {
-  QGridLayout *mainLayout = new QGridLayout( this, 8, 2, 0,
-      KDialog::spacingHint() );
+  QBoxLayout *mainLayout = new QVBoxLayout( this );
+  mainLayout->setAutoAdd( true );
+  cfg = new LdapConfigWidget( this );
 
-  QLabel *label = new QLabel( i18n( "User:" ), this );
-  mUser = new KLineEdit( this );
-
-  mainLayout->addWidget( label, 0, 0 );
-  mainLayout->addWidget( mUser, 0, 1 );
-
-  label = new QLabel( i18n( "Password:" ), this );
-  mPassword = new KLineEdit( this );
-  mPassword->setEchoMode( KLineEdit::Password );
-
-  mainLayout->addWidget( label, 1, 0 );
-  mainLayout->addWidget( mPassword, 1, 1 );
-
-  label = new QLabel( i18n( "Host:" ), this );
-  mHost = new KLineEdit( this );
-
-  mainLayout->addWidget( label, 2, 0 );
-  mainLayout->addWidget( mHost, 2, 1 );
-
-  label = new QLabel( i18n( "Port:" ), this );
-  QVBox *box = new QVBox( this );
-  mPort = new QSpinBox( 0, 65535, 1, box );
-  mPort->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
-  mPort->setValue( 389 );
-  new QWidget( box, "dummy" );
-
-  mainLayout->addWidget( label, 3, 0 );
-  mainLayout->addWidget( box, 3, 1 );
-
-  label = new QLabel( i18n( "Distinguished Name", "DN:" ), this );
-  mDn = new KLineEdit( this );
-
-  mainLayout->addWidget( label, 4, 0 );
-  mainLayout->addWidget( mDn, 4, 1 );
-
-  label = new QLabel( i18n( "Filter:" ), this );
-  mFilter = new KLineEdit( this );
-
-  mainLayout->addWidget( label, 5, 0 );
-  mainLayout->addWidget( mFilter, 5, 1 );
-
-  mAnonymous = new QCheckBox( i18n( "Anonymous login" ), this );
-  mainLayout->addMultiCellWidget( mAnonymous, 6, 6, 0, 1 );
-
+  mSubTree = new QCheckBox( i18n( "Sub-tree query" ), this );
   mEditButton = new QPushButton( i18n( "Edit Attributes..." ), this );
-  mainLayout->addMultiCellWidget( mEditButton, 7, 7, 0, 1 );
 
-  connect( mAnonymous, SIGNAL( toggled(bool) ), mUser, SLOT( setDisabled(bool) ) );
-  connect( mAnonymous, SIGNAL( toggled(bool) ), mPassword, SLOT( setDisabled(bool) ) );
   connect( mEditButton, SIGNAL( clicked() ), SLOT( editAttributes() ) );
 }
 
@@ -105,13 +65,21 @@ void ResourceLDAPKIOConfig::loadSettings( KRES::Resource *res )
     return;
   }
 
-  mUser->setText( resource->user() );
-  mPassword->setText( resource->password() );
-  mHost->setText( resource->host() );
-  mPort->setValue(  resource->port() );
-  mDn->setText( resource->dn() );
-  mFilter->setText( resource->filter() );
-  mAnonymous->setChecked( resource->isAnonymous() );
+  cfg->setUser( resource->user() );
+  cfg->setPassword( resource->password() );
+  cfg->setHost( resource->host() );
+  cfg->setPort(  resource->port() );
+  cfg->setDn( resource->dn() );
+  cfg->setFilter( resource->filter() );
+  cfg->setMech( resource->mech() );
+  if ( resource->isTLS() ) cfg->setSecTLS();
+  else if ( resource->isSSL() ) cfg->setSecSSL();
+  else cfg->setSecNO();
+  if ( resource->isAnonymous() ) cfg->setAuthAnon();
+  else if ( resource->isSASL() ) cfg->setAuthSASL();
+  else cfg->setAuthSimple();
+  
+  mSubTree->setChecked( resource->isSubTree() );
   mAttributes = resource->attributes();
 }
 
@@ -124,15 +92,21 @@ void ResourceLDAPKIOConfig::saveSettings( KRES::Resource *res )
     return;
   }
 
-  resource->setUser( mUser->text() );
-  resource->setPassword( mPassword->text() );
-  resource->setHost( mHost->text() );
-  resource->setPort( mPort->value() );
-  resource->setDn( mDn->text() );
-  resource->setFilter( mFilter->text() );
-  resource->setIsAnonymous( mAnonymous->isChecked() );
+  resource->setUser( cfg->user() );
+  resource->setPassword( cfg->password() );
+  resource->setHost( cfg->host() );
+  resource->setPort( cfg->port() );
+  resource->setDn( cfg->dn() );
+  resource->setFilter( cfg->filter() );
+  resource->setIsAnonymous( cfg->isAuthAnon() );
+  resource->setIsSASL( cfg->isAuthSASL() );
+  resource->setMech( cfg->mech() );
+  resource->setIsTLS( cfg->isSecTLS() );
+  resource->setIsSSL( cfg->isSecSSL() );
+  resource->setIsSubTree( mSubTree->isChecked() );
   resource->setAttributes( mAttributes );
   resource->init();
+
 }
 
 void ResourceLDAPKIOConfig::editAttributes()
@@ -148,6 +122,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
                  Ok, parent, name, true, true )
 {
   mNameDict.setAutoDelete( true );
+  mNameDict.insert( "objectClass", new QString( i18n( "Object classes" ) ) );
   mNameDict.insert( "commonName", new QString( i18n( "Common name" ) ) );
   mNameDict.insert( "formattedName", new QString( i18n( "Formatted name" ) ) );
   mNameDict.insert( "familyName", new QString( i18n( "Family name" ) ) );
@@ -156,6 +131,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mNameDict.insert( "mailAlias", new QString( i18n( "Email alias" ) ) );
   mNameDict.insert( "phoneNumber", new QString( i18n( "Telephone number" ) ) );
   mNameDict.insert( "uid", new QString( i18n( "UID" ) ) );
+  mNameDict.insert( "jpegPhoto", new QString( i18n( "Photo" ) ) );
 
   // overwrite the default values here
   QMap<QString, QString> kolabMap, netscapeMap, evolutionMap, outlookMap;
@@ -225,6 +201,7 @@ void AttributesDialog::mapChanged( int pos )
 {
   // default map
   QMap<QString, QString> defaultMap;
+  defaultMap.insert( "objectClass", "inetOrgPerson" );
   defaultMap.insert( "commonName", "cn" );
   defaultMap.insert( "formattedName", "displayName" );
   defaultMap.insert( "familyName", "sn" );
@@ -233,6 +210,7 @@ void AttributesDialog::mapChanged( int pos )
   defaultMap.insert( "mailAlias", "" );
   defaultMap.insert( "phoneNumber", "telephoneNumber" );
   defaultMap.insert( "uid", "uid" );
+  defaultMap.insert( "jpegPhoto", "" );
 
   // apply first the default and than the spezific changes
   QMap<QString, QString>::Iterator it;
@@ -245,4 +223,4 @@ void AttributesDialog::mapChanged( int pos )
   }
 }
 
-#include "resourceldapkioconfig.moc"
+#include "ldapconfigwidget.moc"

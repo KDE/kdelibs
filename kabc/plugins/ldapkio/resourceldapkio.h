@@ -1,6 +1,7 @@
 /*
     This file is part of libkabc.
     Copyright (c) 2003 Tobias Koenig <tokoe@kde.org>
+    Copyright (c) 2004 Szombathelyi György <gyurco@freemail.hu>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,6 +23,7 @@
 #define KABC_RESOURCELDAP_H
 
 #include <kabc/resource.h>
+#include <kabc/ldif.h>
 #include <kio/job.h>
 
 class KConfig;
@@ -34,13 +36,12 @@ class ResourceLDAPKIO : public Resource
 
   public:
     ResourceLDAPKIO( const KConfig* );
-    virtual ~ResourceLDAPKIO() {}
-
+    virtual ~ResourceLDAPKIO();
     /**
-      Call this after you used one of the set... methods 
+     *  Call this after you used one of the set... methods 
      */
     virtual void init();
-
+    
     virtual void writeConfig( KConfig* );
 
     virtual bool doOpen();
@@ -49,7 +50,7 @@ class ResourceLDAPKIO : public Resource
     virtual Ticket *requestSaveTicket();
     virtual void releaseSaveTicket( Ticket* );
 
-    virtual bool readOnly() const { return true; }
+    virtual bool readOnly() const { return Resource::readOnly(); }
 
     virtual bool load();
     virtual bool asyncLoad();
@@ -81,12 +82,31 @@ class ResourceLDAPKIO : public Resource
 
     void setAttributes( const QMap<QString, QString> &attributes );
     QMap<QString, QString> attributes() const;
+    
+    void setIsTLS( bool value );
+    bool isTLS() const ;
+    
+    void setIsSSL( bool value );
+    bool isSSL() const;
+    
+    void setIsSubTree( bool value );
+    bool isSubTree() const ;
 
-  protected slots:
+    void setIsSASL( bool value );
+    bool isSASL() const ;
+
+    void setMech( const QString &mech );
+    QString mech() const;
+    
+protected slots:
     void entries( KIO::Job*, const KIO::UDSEntryList& );
     void data( KIO::Job*, const QByteArray& );
     void result( KIO::Job* );
-
+    void listResult( KIO::Job* );
+    void syncSaveResult( KIO::Job* );
+    void saveResult( KIO::Job* );
+    void saveData( KIO::Job*, QByteArray& );
+  
   private:
     QString mUser;
     QString mPassword;
@@ -103,6 +123,11 @@ class ResourceLDAPKIO : public Resource
     QString mErrorMsg;
     QMap<KIO::Job*, QByteArray> mJobMap;
 
+    void enter_loop();
+    QString findUid( const QString &uid );
+    bool AddresseeToLDIF( QByteArray &ldif, const Addressee &addr, 
+      const QString &olddn );
+    
     class ResourceLDAPKIOPrivate;
     ResourceLDAPKIOPrivate *d;
 };

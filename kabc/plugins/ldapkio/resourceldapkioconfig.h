@@ -22,9 +22,15 @@
 #define RESOURCELDAPCONFIG_H
 
 #include <qmap.h>
+#include <qradiobutton.h>
+#include <qcombobox.h>
+#include <qdict.h>
 
 #include <kdialogbase.h>
 #include <kresources/configwidget.h>
+#include <kabc/ldif.h>
+#include <kabc/ldapconfigwidget.h>
+
 
 class QCheckBox;
 class QPushButton;
@@ -49,17 +55,12 @@ class ResourceLDAPKIOConfig : public KRES::ConfigWidget
 
   private slots:
     void editAttributes();
-
   private:
-    KLineEdit *mUser;
-    KLineEdit *mPassword;
-    KLineEdit *mHost;
-    QSpinBox  *mPort;
-    KLineEdit *mDn;
-    KLineEdit *mFilter;
-    QCheckBox *mAnonymous;
     QPushButton *mEditButton;
+    LdapConfigWidget *cfg;
+    QCheckBox *mSubTree;
     QMap<QString, QString> mAttributes;
+    
 };
 
 class AttributesDialog : public KDialogBase

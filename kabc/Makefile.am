@@ -31,7 +31,7 @@ libkabc_la_SOURCES = \
   timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
   vcardformatimpl.cpp vcardformatplugin.cpp ldifconverter.cpp addresslineedit.cpp \
   ldapclient.cpp addresseelist.cpp vcardtool.cpp addresseehelper.cpp \
-  addresseehelper.skel lock.cpp locknull.cpp
+  addresseehelper.skel lock.cpp locknull.cpp ldif.cpp ldapurl.cpp ldapconfigwidget.cpp
 
 
 kabcincludedir = $(includedir)/kabc
@@ -41,7 +41,8 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   phonenumber.h picture.h plugin.h resource.h \
   resourceselectdialog.h secrecy.h sound.h stdaddressbook.h timezone.h \
   vcardconverter.h vcardformat.h vcardformatplugin.h ldifconverter.h \
-  addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h
+  addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h ldif.h \
+  ldapurl.h ldapconfigwidget.h
 
 METASOURCES = AUTO
 
