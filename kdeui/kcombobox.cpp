@@ -44,7 +44,8 @@
 class KComboBox::KComboBoxPrivate
 {
 public:
-    KComboBoxPrivate() {
+    KComboBoxPrivate()
+    {
       hasReference = false;
       handleURLDrops = true;
       ignoreDoubleKeyEvents = true;
@@ -52,7 +53,9 @@ public:
       popupMenu = 0L;
       subMenu = 0L;
     }
-    ~KComboBoxPrivate() {
+
+    ~KComboBoxPrivate()
+    {
         delete popupMenu;
         delete completionBox;
     }
@@ -79,7 +82,8 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 {
     m_trapReturnKey = false;
 
-    if ( rw ) {
+    if ( rw )
+    {
         KCursor::setAutoHideCursor( lineEdit(), true, true );
         lineEdit()->installEventFilter( this );
     }
@@ -208,9 +212,8 @@ void KComboBox::makeCompletion( const QString& txt )
             return;
 
         int index = listBox()->index( listBox()->findItem( txt ) );
-        if( index >= 0 ) {
+        if( index >= 0 )
             setCurrentItem( index );
-        }
     }
 }
 
@@ -297,12 +300,8 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
                 int key = (keys[TextCompletion] == 0) ? KStdAccel::key(KStdAccel::TextCompletion):keys[TextCompletion];
                 if ( KStdAccel::isEqual( e, key ) )
                 {
-                    // Emit completion if there is a completion object present,
-                    // the current text is not the same as the previous and the
-                    // cursor is at the end of the string.
                     QString txt = currentText();
                     int len = txt.length();
-                    d->prevText = txt;
                     if ( cursorPosition() == len && len > 0 )
                     {
                         kdDebug() << "Shell completion: " << txt << endl;
@@ -360,9 +359,10 @@ void KComboBox::keyPressEvent( QKeyEvent * e )
 
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
-    if ( o == lineEdit() )
+    QLineEdit* edit = lineEdit();
+    if ( o == edit )
     {
-        KCursor::autoHideEventFilter( lineEdit(), ev );
+        KCursor::autoHideEventFilter( edit, ev );
 
         int type = ev->type();
         if ( type == QEvent::KeyPress )
@@ -411,17 +411,17 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 }
 
                 if ( result == Cut )
-                    lineEdit()->cut();
+                    edit->cut();
                 else if ( result == Copy )
-                    lineEdit()->copy();
+                    edit->copy();
                 else if ( result == Paste )
-                    lineEdit()->paste();
+                    edit->paste();
                 else if ( result == Clear )
-                    lineEdit()->clear();
+                    edit->clear();
                 else if ( result == Unselect )
-                    lineEdit()->deselect();
+                    edit->deselect();
                 else if ( result == SelectAll )
-                    lineEdit()->selectAll();
+                    edit->selectAll();
                 else if ( result == Default )
                     setCompletionMode( KGlobalSettings::completionMode() );
                 else if ( result == NoCompletion )
@@ -461,7 +461,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                     dropText += (*it).prettyURL();
                 }
 
-                lineEdit()->validateAndSet( dropText, dropText.length(), 0, 0);
+                edit->validateAndSet( dropText, dropText.length(), 0, 0);
                 return true;
             }
         }
@@ -594,6 +594,12 @@ void KComboBox::setCompletedItems( const QStringList& items )
     }
 }
 
+void KComboBox::clearEdit()
+{
+    d->prevText = QString::null;
+    QComboBox::clearEdit();
+}
+
 // ### merge these two for 3.0
 KCompletionBox * KComboBox::completionBox()
 {
@@ -611,10 +617,8 @@ KCompletionBox * KComboBox::completionBox( bool create )
 
 void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
 {
-    KCompletion *oldComp = completionObject( false, false ); // don't create!
-
-    if ( oldComp && handleSignals() )
-        disconnect( oldComp, SIGNAL( matches( const QStringList& )),
+    if ( compObj() && handleSignals() )
+        disconnect( compObj(), SIGNAL( matches( const QStringList& )),
                     this, SLOT( setCompletedItems( const QStringList& )));
 
     if ( comp && hsig )
@@ -672,7 +676,6 @@ void KComboBox::hideCompletionBox()
     {
         d->completionBox->hide();
         d->completionBox->clear();
-        d->prevText = QString::null;
     }
 }
 

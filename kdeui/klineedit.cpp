@@ -506,10 +506,8 @@ KCompletionBox* KLineEdit::completionBox( bool create )
 
 void KLineEdit::setCompletionObject( KCompletion* comp, bool hsig )
 {
-    KCompletion *oldComp = completionObject( false, false ); // don't create!
-
-    if ( oldComp && handleSignals() )
-        disconnect( oldComp, SIGNAL( matches( const QStringList& )),
+    if ( compObj() && handleSignals() )
+        disconnect( compObj(), SIGNAL( matches( const QStringList& )),
                     this, SLOT( setCompletedItems( const QStringList& )));
 
     if ( comp && hsig )

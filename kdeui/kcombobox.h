@@ -440,50 +440,55 @@ public slots:
      */
     void setCompletedItems( const QStringList& items );
 
+    /**
+     * Re-implemented for internal reasons.  API is unaffected.
+     */
+    void clearEdit();
+
 protected slots:
 
     /**
-    * @deprecated.
-    */
+     * @deprecated.  BC: Remove in KDE 3.0
+     */
     virtual void itemSelected( QListBoxItem* ) {};
 
     /**
-    * Completes text according to the completion mode.
-    *
-    * Note: this method is @p not invoked if the completion mode is
-    * set to CompletionNone.  Also if the mode is set to @p CompletionShell
-    * and multiple matches are found, this method will complete the
-    * text to the first match with a beep to inidicate that there are
-    * more matches.  Then any successive completion key event iterates
-    * through the remaining matches.  This way the rotation functionality
-    * is left to iterate through the list as usual.
-    */
+     * Completes text according to the completion mode.
+     *
+     * Note: this method is @p not invoked if the completion mode is
+     * set to CompletionNone.  Also if the mode is set to @p CompletionShell
+     * and multiple matches are found, this method will complete the
+     * text to the first match with a beep to inidicate that there are
+     * more matches.  Then any successive completion key event iterates
+     * through the remaining matches.  This way the rotation functionality
+     * is left to iterate through the list as usual.
+     */
     virtual void makeCompletion( const QString& );
 
     /**
-     * @deprecated.  This function does nothing and will be removed in the next major release!
+     * @deprecated.  BC: Remove in KDE 3.0
      */
     void slotAboutToShow(){};
 
     /**
-     * @deprecated.  This function does nothing and will be removed in the next major release!
+     * @deprecated.  BC: Remove in KDE 3.0
      */
     void slotCancelled(){};
 
 protected:
     /**
-    * @reimplemented
-    */
+     * @reimplemented
+     */
     virtual void keyPressEvent ( QKeyEvent* );
 
     /*
-    * This function simply sets the lineedit text and
-    * highlights the text appropriately if the boolean
-    * value is set to true.
-    *
-    * @param
-    * @param
-    */
+     * This function simply sets the lineedit text and
+     * highlights the text appropriately if the boolean
+     * value is set to true.
+     *
+     * @param
+     * @param
+     */
     virtual void setCompletedText( const QString& /* */, bool /*marked*/ );
 
     /**
