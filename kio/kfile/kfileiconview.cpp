@@ -698,10 +698,10 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i )
     int size = myIconSize;
     if ( d->previews->isChecked() && canPreview( i ) )
         size = d->previewIconSize;
-
-    item->setText( i->text() );
-    item->setPixmap( i->pixmap( size ) );
-
+    
+    item->setText( i->text() , false, false );
+    item->setPixmap( i->pixmap( size ) );    
+    
     // see also setSorting()
     QDir::SortSpec spec = KFileView::sorting();
 
