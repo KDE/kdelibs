@@ -122,7 +122,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     bool b = c->receive( app, objId, fun,
 			 data, replyType, replyData );
 
-    if ( !b )
+    if ( !b && app != "*" )
 	qWarning("DCOP failure in application %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
 
     if (opcode != DCOPCall)
