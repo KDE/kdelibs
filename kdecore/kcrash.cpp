@@ -73,9 +73,17 @@ void
 KCrash::setCrashHandler (HandlerType handler)
 {
   if (!handler)
-    signal (SIGSEGV, SIG_DFL);
-  else
-    signal (SIGSEGV, handler);
+    handler = SIG_DFL;
+
+#ifdef SIGSEGV
+  signal (SIGSEGV, handler);
+#endif
+#ifdef SIGFPE
+  signal (SIGFPE, handler);
+#endif
+#ifdef SIGILL
+  signal (SIGILL, handler);
+#endif
 
   _crashHandler = handler;
 }
