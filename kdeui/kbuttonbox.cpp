@@ -129,7 +129,7 @@ void KButtonBox::layout() {
 void KButtonBox::placeButtons() {
   unsigned int i;
 
-  if(data->orientation == HORIZONTAL) {
+  if(data->orientation == Horizontal) {
     // calculate free size and stretches
     int fs = width() - 2 * data->border;
     int stretch = 0;
@@ -231,7 +231,7 @@ QSize KButtonBox::sizeHint() const {
 	else
 	  s = bs;
 
-	if(data->orientation == HORIZONTAL)
+	if(data->orientation == Horizontal)
 	  dw += s.width();
 	else
 	  dw += s.height();
@@ -241,7 +241,7 @@ QSize KButtonBox::sizeHint() const {
       }
     }
 
-    if(data->orientation == HORIZONTAL)
+    if(data->orientation == Horizontal)
 	return QSize(dw, bs.height() + 2 * data->border);
     else
 	return QSize(bs.width() + 2 * data->border, dw);
@@ -250,7 +250,7 @@ QSize KButtonBox::sizeHint() const {
 
 QSizePolicy KButtonBox::sizePolicy() const
 {
-    return data->orientation == HORIZONTAL?
+    return data->orientation == Horizontal?
         QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) :
         QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum );
 }

@@ -35,14 +35,11 @@
  * @version $Id$
  **/
 
-class KButtonBox : public QWidget {
+class KButtonBox : public QWidget
+{
   Q_OBJECT
-public:
-  /**
-   * Orientations for the button box.
-   **/
-  enum { VERTICAL = 1, HORIZONTAL = 2 };
 
+public:
   /**
     * Create an empty container for buttons.
     *
@@ -51,7 +48,7 @@ public:
     * are laid out from top to bottom, otherwise they are laid out
     * from left to right.
     */
-  KButtonBox(QWidget *parent, int _orientation = HORIZONTAL, 
+  KButtonBox(QWidget *parent, int _orientation = Horizontal,
 	     int border = 0, int _autoborder = 6);
 
   /**
