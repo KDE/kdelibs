@@ -153,7 +153,7 @@ bool KComboBox::isURLDropsEnabled() const
 
 void KComboBox::setCompletedText( const QString& text, bool marked )
 {
-    if ( marked )
+    if ( m_pEdit && marked )
         m_pEdit->validateAndSet( text, currentText().length(),
                                  currentText().length(), text.length() );
     else
@@ -208,9 +208,7 @@ void KComboBox::makeCompletion( const QString& text )
             setCompletedText( match, marked );
         }
     }
-
-    // Read - only combobox
-    else if( !m_pEdit )
+    else
     {
         if( text.isNull() || !listBox() )
             return;
