@@ -25,12 +25,27 @@ bool ParseTreeOR::eval( ParseContext *_context ) const
 {
   ParseContext c1( _context );
   ParseContext c2( _context );
+
+// don't evaluate both expressions but return immediately
+// if the first one of them succeeds. Otherwise queries like
+// ((not exist Blah) or (Blah == 'Foo')) do not work, because
+// the evaluation of the second term ends up in a fatal error
+// (Simon)
+
   if ( !m_pLeft->eval( &c1 ) )
     return false;
-  if ( !m_pRight->eval( &c2 ) )
-    return false;
+
   if ( c1.type != ParseContext::T_BOOL )
     return false;
+
+  _context->b = c1.b;
+  _context->type = ParseContext::T_BOOL;  
+  if ( c1.b )
+    return true;
+
+  if ( !m_pRight->eval( &c2 ) )
+    return false;
+
   if ( c2.type != ParseContext::T_BOOL )
     return false;
 
