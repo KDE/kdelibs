@@ -683,8 +683,8 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
             {
                 if ( (neg = (i1 < i2)) )
                 {
-                    str.remove(i1,1);
-                    str.remove(i2,1);
+                    str.remove(i2,1); // this one first
+                    str.remove(i1,1); // otherwise: off-by-one bug !
                 }
             }
         }
