@@ -60,9 +60,6 @@ protected:
   KURLDrag( const QStrList & urls, QWidget * dragSource, const char* name ) :
     QUriDrag( urls, dragSource, name ), m_urls( urls ) {}
 
-  // Dummy default constructor, useless. For compatibility only.
-  KURLDrag();
-
   virtual const char * format( int i ) const;
   virtual QByteArray encodedData( const char* mime ) const;
 

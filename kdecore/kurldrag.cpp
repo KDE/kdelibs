@@ -72,8 +72,3 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     return a;
 }
 
-/**
- * Dummy constructor. For backwards compatibility only.
- * Remove in KDE 3.0!
- **/
-KURLDrag::KURLDrag() : QUriDrag( QStrList(), 0, 0) {}
