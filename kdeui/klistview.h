@@ -56,7 +56,7 @@ public:
   virtual bool isExecuteArea( const QPoint& point);
 
   QList<QListViewItem> selectedItems() const;
-  void moveItem(QListViewItem *item, QListViewItem *after, bool);
+  void moveItem(QListViewItem *item, QListViewItem *after, bool=false);
 
 
   QListViewItem *lastItem() const;
