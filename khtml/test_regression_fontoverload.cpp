@@ -265,3 +265,35 @@ void QFont::insertSubstitutions(const QString &,
                                 const QStringList &)
 {
 }
+
+#include <kprotocolinfo.h>
+bool KProtocolInfo::isKnownProtocol( const QString& _protocol )
+{
+    return ( _protocol == "file" );
+}
+
+#include <kprotocolinfofactory.h>
+
+QString KProtocolInfo::exec( const QString& _protocol )
+{
+    if ( _protocol != "file" )
+        return QString::null;
+
+    KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+    if ( !prot )
+        return QString::null;
+
+    return prot->m_exec;
+}
+
+#include <dcopclient.h>
+
+bool DCOPClient::attach()
+{
+    return false;
+}
+
+bool DCOPClient::isAttached() const
+{
+    return false;
+}
