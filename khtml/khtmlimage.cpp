@@ -74,8 +74,32 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
 
     m_ext = new KHTMLImageBrowserExtension( this, "be" );
 
+    // Remove unnecessary actions.
+    KAction *encodingAction = actionCollection()->action( "setEncoding" );
+    if ( encodingAction )
+    {
+        encodingAction->unplugAll();
+        delete encodingAction;
+    }
+    KAction *viewSourceAction= actionCollection()->action( "viewDocumentSource" );
+    if ( viewSourceAction )
+    {
+        viewSourceAction->unplugAll();
+        delete viewSourceAction;
+    }
+
+    KAction *selectAllAction= actionCollection()->action( "selectAll" );
+    if ( selectAllAction )
+    {
+        selectAllAction->unplugAll();
+        delete selectAllAction;
+    }
+
+    //connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
+    //         this, SLOT( slotPopupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+
     connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
-             this, SLOT( slotPopupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+             m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
 
     connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
              m_ext, SIGNAL( enableAction( const char *, bool ) ) );
@@ -138,17 +162,6 @@ void KHTMLImage::guiActivateEvent( KParts::GUIActivateEvent *e )
 void KHTMLImage::slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KURL &u,
                                 const QString &, mode_t mode )
 {
-    KAction *encodingAction = cl->actionCollection()->action( "setEncoding" );
-    if ( encodingAction )
-        cl->actionCollection()->take( encodingAction );
-    KAction *viewSourceAction= cl->actionCollection()->action( "viewDocumentSource" );
-    if ( viewSourceAction )
-        cl->actionCollection()->take( viewSourceAction );
-
-    KAction *selectAllAction= cl->actionCollection()->action( "selectAll" );
-    if ( selectAllAction )
-        cl->actionCollection()->take( selectAllAction );
-
     emit m_ext->popupMenu( cl, pos, u, m_mimeType, mode );
 }
 
