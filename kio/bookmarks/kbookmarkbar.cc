@@ -39,6 +39,8 @@
 
 #include "dptrtemplate.h"
 
+#include <qapplication.h>
+
 class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate> {
 public:
     QPtrList<KAction> m_actions;
@@ -230,14 +232,14 @@ void KBookmarkBar::slotBookmarkSelected()
     m_pOwner->openBookmarkURL( sender()->property("url").toString() );
 }
 
-static KToolBar* sepToolBar = 0;
+static KToolBar* s_sepToolBar = 0;
 static const int sepId = -9999; // fixme with define for num?
 
 static void removeTempSep()
 {
-    if (sepToolBar) {
-        sepToolBar->removeItem(sepId);
-        sepToolBar = 0; // needed?
+    if (s_sepToolBar) {
+        s_sepToolBar->removeItem(sepId);
+        s_sepToolBar = 0; // needed?
     }
 }
 
@@ -267,8 +269,8 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
     Q_ASSERT(tb);
 
-    sepToolBar = tb;
-    sepToolBar->removeItemDelayed(sepId);
+    s_sepToolBar = tb;
+    s_sepToolBar->removeItemDelayed(sepId);
 
     int index;
     KToolBarButton* b;
@@ -303,19 +305,20 @@ static KAction* handleToolbarDragMoveEvent(QPoint pos, QPtrList<KAction> actions
     Q_ASSERT(a);
     sepIndex = index + (atFirst ? 0 : 1);
 
-    Q_UNUSED(mgr);
-    /*
+    {//
+
+    QString address = a->property("address").toString();
+    KBookmark bk = mgr->findByAddress( address );
+    kdDebug() << "popping up " << bk.text() << endl;
+    if (bk.isGroup())
     {
-        QString address = a->property("address").toString();
-        KBookmark bk = mgr->findByAddress( address );
-        if (bk.isGroup())
-        {
-            KBookmarkActionMenu *menu = dynamic_cast<KBookmarkActionMenu*>(a);
-            Q_ASSERT(menu);
-            menu->popup(tb->mapToGlobal(b->geometry().center()));
-        } 
+        KBookmarkActionMenu *menu = dynamic_cast<KBookmarkActionMenu*>(a);
+        Q_ASSERT(menu);
+        menu->popup(tb->mapToGlobal(b->geometry().center()));
+    } 
+
     }
-    */
+    //
 
 failure_exit:
     tb->insertLineSeparator(sepIndex, sepId);
@@ -377,8 +380,6 @@ void KBookmarkBar::slotRMBActionRemove( int val )
 
 void KBookmarkBar::slotRMBActionCopyLocation( int val )
 { BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionCopyLocation( val ); }
-
-#include <qapplication.h>
 
 void KBookmarkBar::slotRMBActionOpen( int val )
 { BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionOpen( val ); }
