@@ -168,32 +168,11 @@ String DOMNode::toString() const
 {
   if (node.isNull())
     return String("null");
-  const char *s = "DOMNode"; // fallback
+  DOM::DOMString s = "DOMNode"; // fallback
 
-  static const struct ElementName {
-	int id;
-	const char *name;
-  } elementNames[] = {
-      { ID_A,		"HTMLAnchorElement" },
-      { ID_BODY, 	"HTMLBodyElement" },
-      { ID_OBJECT,	"HTMLObjectElement" },
-      { ID_OPTION,	"Option" },
-      // ### other >90 elements from htmltags.h. and put this into khtml.
-      { -1, 		0 }
-  };
-
-  if (node.nodeType() == DOM::Node::ELEMENT_NODE) {
-    int id = static_cast<DOM::Element>(node).elementId();
-    const ElementName *eln = elementNames;
-    while (eln->id != -1) {
-      if (eln->id == id) {
-	s = eln->name;
-	break;
-      }
-      eln++;
-    }
-  } else {
-      s = typeInfo()->name;
+  DOM::Element e = node;
+  if ( !e.isNull() ) {
+    s = e.nodeName();
   }
 
   return String("[object " + UString(s) + "]");
