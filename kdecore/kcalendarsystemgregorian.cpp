@@ -72,12 +72,12 @@ int KCalendarSystemGregorian::weekNumber(const QDate& date,
 QString KCalendarSystemGregorian::monthName(const QDate& date,
                                             bool shortName) const
 {
-  return monthName(month(date), shortName);
+  return monthName(month(date), year(date), shortName);
 }
 
 QString KCalendarSystemGregorian::monthNamePossessive(const QDate& date, bool shortName) const
 {
-  return monthNamePossessive(month(date), shortName);
+  return monthNamePossessive(month(date), year(date), shortName);
 }
 
 QString KCalendarSystemGregorian::monthName(int month, int year, bool shortName) const
