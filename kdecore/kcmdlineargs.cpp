@@ -303,12 +303,11 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
 
    if (!args)
    {
-      fprintf(stderr, "\n\nFAILURE (KCmdLineArgs):\n");
-      fprintf(stderr, "Application requests for parsedArgs(\"%s\") witout a prior call\n", id?id:"null");
+#ifndef NDEBUG
+      fprintf(stderr, "WARNING (KCmdLineArgs):\n");
+      fprintf(stderr, "Application requests for parsedArgs(\"%s\") without a prior call\n", id?id:"null");
       fprintf(stderr, "to addCmdLineOptions( ..., \"%s\")\n\n", id?id:"null");
-
-      assert( 0 );
-      exit(255);
+#endif
    }
    return args;
 }
