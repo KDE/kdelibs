@@ -157,6 +157,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_view = view;
   setWidget( d->m_view );
 
+  d->m_guiProfile = prof;
   d->m_extension = new KHTMLPartBrowserExtension( this );
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
 
@@ -3827,7 +3828,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 
 #ifndef QT_NO_CLIPBOARD
   QMouseEvent *_mouse = event->qmouseEvent();
-  if ((_mouse->button() == MidButton) && (event->url().isNull()))
+  if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull()))
   {
     QClipboard *cb = QApplication::clipboard();
     cb->setSelectionMode( true );
