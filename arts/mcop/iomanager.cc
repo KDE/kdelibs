@@ -113,15 +113,16 @@ void StdIOManager::processOneEvent(bool blocking)
 	}
 
 	/* default timeout 5 seconds */
-	timeval select_timeout;
-	select_timeout.tv_sec = 5;
-	select_timeout.tv_usec = 0;
+	long selectabs;
+
+	if(blocking)
+		selectabs = 5000000;
+	else
+		selectabs = 0;
 
 	/* prepare timers - only at level 1 */
 	if(level == 1 && timeList.size())
 	{
-		long selectabs = 5000000;
-
 		struct timeval currenttime;
 		gettimeofday(&currenttime,0);
 
@@ -142,10 +143,11 @@ void StdIOManager::processOneEvent(bool blocking)
 				if(timerabs < selectabs) selectabs = timerabs;
 			}
 		}
-
-		select_timeout.tv_sec = selectabs / 1000000;
-		select_timeout.tv_usec = selectabs % 1000000;
 	}
+
+	timeval select_timeout;
+	select_timeout.tv_sec = selectabs / 1000000;
+	select_timeout.tv_usec = selectabs % 1000000;
 
 	int retval = select(maxfd+1,&rfd,&wfd,&efd,&select_timeout);
 
