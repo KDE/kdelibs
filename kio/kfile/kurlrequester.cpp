@@ -27,6 +27,7 @@
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
+#include <kdirselectdialog.h>
 #include <kfiledialog.h>
 #include <kglobal.h>
 #include <kiconloader.h>
@@ -254,6 +255,20 @@ QString KURLRequester::url() const
 
 void KURLRequester::slotOpenDialog()
 {
+    KURL newurl;    
+    if ( (d->fileDialogMode & KFile::Directory) && !(d->fileDialogMode & KFile::File) || 
+         /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
+         (myFileDialog && ( (myFileDialog->mode() & KFile::Directory) && 
+         (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
+    {
+        newurl = KDirSelectDialog::selectDirectory(url(), d->fileDialogMode & KFile::LocalOnly);
+        if ( !newurl.isValid() )
+        {
+            return;
+        }
+    }
+    else 
+    {
     emit openFileDialog( this );
 
     KFileDialog *dlg = fileDialog();
@@ -264,18 +279,23 @@ void KURLRequester::slotOpenDialog()
 	    dlg->setSelection( u.url() );
     }
 
-    if ( dlg->exec() == QDialog::Accepted )
+      if ( dlg->exec() != QDialog::Accepted )
     {
-        if ( dlg->selectedURL().isLocalFile() )
+          return;
+      }
+                
+      newurl = dlg->selectedURL();
+    }   
+    
+    if ( newurl.isLocalFile() )
         {
-            setURL( dlg->selectedURL().path() );
+        setURL( newurl.path() );
         }
         else
         {
-            setURL( dlg->selectedURL().prettyURL() );
+        setURL( newurl.prettyURL() );
         }
         emit urlSelected( d->url() );
-    }
 }
 
 void KURLRequester::setMode(unsigned int mode)
