@@ -1,0 +1,58 @@
+This library is severely functionally challenged.
+
+This TODO happens to cover SSL in all of KDE though.
+
+- The CA root is not done.  We have to find a standard way of handling the
+  directory in the user's .kde path.  The initial path is in the cvs but
+  it has to be copied to /usr/share/.....  for installation as a new user
+  runs KDE for the first time  We have to find a standard way of handling the
+  directory in the user's .kde path.  The initial path is in the cvs but
+  it has to be copied to /usr/share/.....  for installation as a new user
+  runs KDE for the first time.
+
+- We have to find a way to create the hashes in the CA root directory or
+  certificate validation will not work by any means.
+
+- The ASN1 date conversion code doesn't take international issues into
+  account by any means.
+
+- KSSL needs to be integrated into the slave base in some
+  way or another so that kio_pop3 and friends can use it.
+
+- KHTML needs a dialog to warn on an insecure post (unencrypted)
+  if the user has selected to do so in kcmcrypto
+
+- KHTML needs a dialog and logic to warn on pages that have some
+  frames in SSL and others in non-SSL
+
+- HTTP IOSlave needs to send a message through the UI server to 
+  warn on a failed certificate check and prompt for proceed/abort
+
+- The policies for certificates need to be implemented (accept from
+  this site even though it is self signed, etc)
+
+- There needs to be a way to warn the user if an SSL page does a redirect
+  to a non-SSL page
+
+- The "back" button on konqueror doesn't behave well with kio_https.  Try
+  it, you'll see :)
+
+- Provide an option to not load insecure portions of a secured page
+
+- kcmcrypto certificate managing code is not implemented yet
+
+- Displaying SSL info from the message boxes doesn't work in konqueror/khtml.
+
+- Personal, other certificates are not implemented
+
+- The certificate cache is not implemented.  This is needed to keep track of
+  certificates we have seen this session so we don't prompt the user 300 times
+  each time a page loads.
+
+- The certificate factory is not done.  This is needed to generate personal
+  certificates (self signed) for users.
+
+- The certificate home is not done.  It will manage the user's certificates.
+
+
+
