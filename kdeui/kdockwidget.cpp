@@ -21,7 +21,7 @@
 
 #include <qlayout.h>
 #include <qpainter.h>
-#include <qobjectlist.h>
+#include <qobjcoll.h>
 
 #ifndef NO_KDE2
  #include <kapp.h>
@@ -29,7 +29,7 @@
  #include <ktoolbar.h>
  #include <kpopupmenu.h>
 #else
- #include <qapplication.h>
+ #include <qapp.h>
  #include <qtoolbar.h>
  #include <qpopupmenu.h>
 #endif
@@ -1024,6 +1024,9 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
         break;
       case QEvent::MouseButtonRelease:
         if ( ((QMouseEvent*)event)->button() == LeftButton ){
+          if ( draging && !dropCancel ){
+            drop();
+          }
           if (d->readyToDrag) {
               d->readyToDrag = false;
               d->oldDragRect = QRect();
@@ -1034,9 +1037,6 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
               currentDragWidget = 0L;
               delete childDockWidgetList;
               childDockWidgetList = 0L;
-          }
-          if ( draging && !dropCancel ){
-            drop();
           }
           draging = false;
           dropCancel = false;
