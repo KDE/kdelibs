@@ -201,7 +201,7 @@ void RenderFlow::layout()
     //QTime t;
     //t.start();
 
-    assert(!isInline());
+     assert(!isInline());
 
     int oldWidth = m_width;
 
@@ -231,8 +231,11 @@ void RenderFlow::layout()
     m_clearStatus = CNONE;
 
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
-    if(childrenInline())
-        layoutInlineChildren();
+    if(childrenInline()) {
+        // ### make bidi resumeable so that we can get rid of this ugly hack
+        if(!parsing())
+            layoutInlineChildren();
+    }
     else
         layoutBlockChildren();
 
@@ -256,7 +259,11 @@ void RenderFlow::layout()
 
     //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl;
 
-    setLayouted();
+    // ### REMOVE ME! (see above)
+     if(childrenInline() && parsing())
+         setLayouted(false);
+     else
+        setLayouted();
 }
 
 void RenderFlow::layoutSpecialObjects()

@@ -150,7 +150,8 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
 
-    newChild->setParsing();
+    if(parsing())
+        newChild->setParsing();
 
     bool needsTable = false;
 
