@@ -784,11 +784,6 @@ protected:
   int childError(int fdno);
 
   /**
-   * Returns the buffer holding the data that has to be sent to the child.
-   */
-  const char *inputData() const;
-
-  /**
    * The buffer holding the data that has to be sent to the child
    */
   const char *input_data;
