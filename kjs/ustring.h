@@ -424,6 +424,9 @@ namespace KJS {
   inline bool operator==(const UChar &c1, const UChar &c2) {
     return (c1.uc == c2.uc);
   }
+  inline bool operator!=(const UChar& c1, const UChar& c2) {
+    return !KJS::operator==(c1, c2);
+  }
   bool operator==(const UString& s1, const UString& s2);
   inline bool operator!=(const UString& s1, const UString& s2) {
     return !KJS::operator==(s1, s2);
@@ -440,6 +443,9 @@ namespace KJS {
     return !KJS::operator==(s1, s2);
   }
   bool operator==(const CString& s1, const CString& s2);
+  inline bool operator!=(const CString& s1, const CString& s2) {
+    return !KJS::operator==(s1, s2);
+  }
   inline UString operator+(const UString& s1, const UString& s2) {
     return UString(s1, s2);
   }
