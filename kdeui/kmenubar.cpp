@@ -171,12 +171,15 @@ void KMenuBar::ContextCallback( int index )
   //delete context; 
 KMenuBar::~KMenuBar()
 {
-void KMenuBar::mousePressEvent ( QMouseEvent * )
+  if (!QApplication::closingDown())
     delete context;
+}
 
     }
-void KMenuBar::paintEvent(QPaintEvent *)
+void KMenuBar::paintEvent(QPaintEvent *e)
 }
+
+
 void KMenuBar::paintEvent(QPaintEvent *)
 {
   //QApplication::sendEvent(menu, e);
