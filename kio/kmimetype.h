@@ -219,6 +219,7 @@ public:
 
 protected:
   void loadInternal( QDataStream& );
+  void init( KDesktopFile * );
 
   /**
    * Signal a missing mime type

@@ -234,7 +234,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path );
 
   // If we still did not find it, we must assume the default mime type
-  if ( !result || !result->isValid() )  /* !result->mimeType() || result->mimeType()[0] == 0 ) */
+  if ( !result || !result->isValid() )
     return mimeType( "application/octet-stream" );
 
   // The mimemagic stuff was successful
@@ -251,7 +251,7 @@ KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QSt
 KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
 {
   KDesktopFile _cfg( _fullpath, true );
-  m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
+  init ( &_cfg );
 
   if ( !isValid() )
     kdWarning(7009) << "mimetype not valid '" << m_strName << "' (missing entry in the file ?)" << endl;
@@ -259,11 +259,22 @@ KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
 
 KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
 {
-  config->setDesktopGroup();
-  m_lstPatterns = config->readListEntry( "Patterns", ';' );
+  init( config );
 
   if ( !isValid() )
     kdWarning(7009) << "mimetype not valid '" << m_strName << "' (missing entry in the file ?)" << endl;
+}
+
+void KMimeType::init( KDesktopFile * config )
+{
+  config->setDesktopGroup();
+  m_lstPatterns = config->readListEntry( "Patterns", ';' );
+
+  // Read the X-KDE-AutoEmbed setting and store it in the properties map
+  QString XKDEAutoEmbed = QString::fromLatin1("X-KDE-AutoEmbed");
+  if ( config->hasKey( XKDEAutoEmbed ) )
+    m_mapProps.insert( XKDEAutoEmbed, QVariant( config->readBoolEntry( XKDEAutoEmbed ) ) );
+
 }
 
 KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
