@@ -17,6 +17,4 @@
 <!ENTITY FDLBackCoverText "the Front-Cover Texts being &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "no Back-Cover Texts">
-<!ENTITY FDLNotice          PUBLIC
-  "-//KDE//DOCUMENT GNU Free Documentation Notice//EN"
-  CDATA SGML                                                         >
+<!ENTITY FDLNotice SYSTEM "fdl-notice.docbook">
