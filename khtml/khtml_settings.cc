@@ -231,7 +231,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
         // The global setting for Plugins (there's no local setting yet)
     if ( reset || config->hasKey( "EnablePlugins" ) )
-      m_bEnablePlugins = config->readBoolEntry( "EnablePlugins", false );
+      m_bEnablePlugins = config->readBoolEntry( "EnablePlugins", true );
 
     // The domain-specific settings.
     bool check_old_java = true;
@@ -245,7 +245,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
         javaDomainPolicy[domain] = javaAdvice;
-      }	
+      }
 	}
 
 	bool check_old_ecma = true;
@@ -259,7 +259,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
         javaScriptDomainPolicy[domain] = javaScriptAdvice;
-      }	
+      }
 	}
 
     if( reset || config->hasKey( "JavaScriptDomainAdvice" )
@@ -279,7 +279,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
 	  //save all the settings into the new keywords if they don't exist
 	  if( check_old_java ){
-	    QStringList domainConfig;	
+	    QStringList domainConfig;
 	  	PolicyMap::Iterator it;
 	  	for( it = javaDomainPolicy.begin(); it != javaDomainPolicy.end(); ++it ){
           QCString javaPolicy = adviceToStr( it.data() );
@@ -288,7 +288,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 	  	}
         config->writeEntry( "JavaDomainSettings", domainConfig );
 	  }
-	
+
 	  if( check_old_ecma ){
 	    QStringList domainConfig;
 	    PolicyMap::Iterator it;
@@ -341,7 +341,7 @@ static bool lookup_hostname_policy(const QString& hostname,
     // assert(host_part[0] == QChar('.'));
     host_part.remove(0,1); // Chop off the dot.
   }
-    
+
   // No domain-specific entry, or was dunno: use global setting
   return default_retval;
 }
@@ -509,28 +509,28 @@ void KHTMLSettings::setFixedFontName(const QString &n)
     setFont(m_charset, 1, n);
 }
 
-void KHTMLSettings::setDefaultCharset( QFont::CharSet c, bool enforce ) 
-{ 
+void KHTMLSettings::setDefaultCharset( QFont::CharSet c, bool enforce )
+{
     m_defaultCharset = c;
     enforceCharset = enforce;
     if(enforce)
         internalSetCharset(c);
 }
 
-void KHTMLSettings::resetCharset() 
-{ 
+void KHTMLSettings::resetCharset()
+{
     internalSetCharset(m_defaultCharset);
 }
 
-void KHTMLSettings::setCharset( QFont::CharSet c) 
-{ 
+void KHTMLSettings::setCharset( QFont::CharSet c)
+{
     if (!enforceCharset)
        internalSetCharset(c);
 }
 
-void KHTMLSettings::internalSetCharset( QFont::CharSet c ) 
-{ 
-    m_charset = c; 
+void KHTMLSettings::internalSetCharset( QFont::CharSet c )
+{
+    m_charset = c;
     availFamilies = KGlobal::charsets()->availableFamilies( m_charset ).join(",");
 }
 
