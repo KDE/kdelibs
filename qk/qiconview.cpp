@@ -2890,9 +2890,11 @@ void QIconView::clear()
     blockSignals( FALSE );
     setContentsPos( 0, 0 );
 
-    if ( !d->firstItem )
+    if ( !d->firstItem ) {
+	d->clearing = FALSE;
 	return;
-
+    }
+    
     QIconViewItem *item = d->firstItem, *tmp;
     while ( item ) {
 	tmp = item->next;
@@ -3315,7 +3317,7 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 
 	d->mousePressed = TRUE;
     }
-    
+
     if ( e->button() == RightButton ) {
 	emit rightButtonPressed( item, e->globalPos() );
 	if ( item )
@@ -3356,7 +3358,7 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 	d->rubber = 0;
     } else if ( !d->startDrag && d->singleClickMode ) {
 	if ( item && !item->renameBox ) {
-	    if ( e->button() == LeftButton && 
+	    if ( e->button() == LeftButton &&
 		 !( e->state() & ControlButton ) && !( e->state() & ShiftButton ) )
 		emit doubleClicked( item );
 	}
