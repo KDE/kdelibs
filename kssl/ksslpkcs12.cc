@@ -56,9 +56,9 @@ KSSLPKCS12::KSSLPKCS12() {
 
 KSSLPKCS12::~KSSLPKCS12() {
 #ifdef HAVE_SSL
-   if (_pkcs) kossl->PKCS12_free(_pkcs);
    if (_pkey) kossl->EVP_PKEY_free(_pkey);
    if (_caStack) sk_X509_free(_caStack);
+   if (_pkcs) kossl->PKCS12_free(_pkcs);
 #endif
    if (_cert) delete _cert;
 }
@@ -135,10 +135,12 @@ X509 *x = NULL;
 
   assert(_pkcs);   // if you're calling this before pkcs gets set, it's a BUG!
 
+   if (_cert) delete _cert;
    if (_pkey) kossl->EVP_PKEY_free(_pkey);
    if (_caStack) sk_X509_free(_caStack);
    _pkey = NULL;
    _caStack = NULL;
+   _cert = NULL;
 
   int rc = kossl->PKCS12_parse(_pkcs, pass.latin1(), &_pkey, &x, &_caStack);
 
