@@ -5076,7 +5076,41 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     case HTTP_DELETE:
         info.method = "DELETE";
         break;
+    case DAV_PROPFIND:
+        info.method = "PROPFIND";
+        break;
+    case DAV_PROPPATCH:
+        info.method = "PROPPATCH";
+        break;
+    case DAV_MKCOL:
+        info.method = "MKCOL";
+        break;
+    case DAV_COPY:
+        info.method = "COPY";
+        break;
+    case DAV_MOVE:
+        info.method = "MOVE";
+        break;
+    case DAV_LOCK:
+        info.method = "LOCK";
+        break;
+    case DAV_UNLOCK:
+        info.method = "UNLOCK";
+        break;
+    case DAV_SEARCH:
+        info.method = "SEARCH";
+        break;
+    case DAV_SUBSCRIBE:
+        info.method = "SUBSCRIBE";
+        break;
+    case DAV_UNSUBSCRIBE:
+        info.method = "UNSUBSCRIBE";
+        break;
+    case DAV_POLL:
+        info.method = "POLL";
+        break;
     default:
+        error( ERR_UNSUPPORTED_ACTION, i18n("Unsupported method: authentication will fail, please report bug!"));
         break;
   }
 
