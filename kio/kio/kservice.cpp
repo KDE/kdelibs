@@ -182,6 +182,8 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Path");
   m_strComment = config->readEntry( "Comment" );
   entryMap.remove("Comment");
+  m_strGenName = config->readEntry( "GenericName" );
+  entryMap.remove("GenericName");
   m_lstKeywords = config->readListEntry("Keywords");
   entryMap.remove("Keywords");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
@@ -267,7 +269,7 @@ void KService::load( QDataStream& s )
     >> dst
     >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2
-    >> m_lstKeywords >> m_strInit >> dummyUI32;
+    >> m_lstKeywords >> m_strInit >> dummyUI32 >> m_strGenName;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
@@ -299,7 +301,7 @@ void KService::save( QDataStream& s )
     << dst
     << m_strDesktopEntryName
     << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
-    << m_lstKeywords << m_strInit << dummyUI32;
+    << m_lstKeywords << m_strInit << dummyUI32 << m_strGenName;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -375,6 +377,8 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( m_strPath );
   else if ( _name == "Comment" )
     return QVariant( m_strComment );
+  else if ( _name == "GenericName" )
+    return QVariant( m_strGenName );
   else if ( _name == "ServiceTypes" )
     return QVariant( m_lstServiceTypes );
   else if ( _name == "AllowAsDefault" )
@@ -453,6 +457,7 @@ QStringList KService::propertyNames() const
   res.append( "Type" );
   res.append( "Name" );
   res.append( "Comment" );
+  res.append( "GenericName" );
   res.append( "Icon" );
   res.append( "Exec" );
   res.append( "Terminal" );

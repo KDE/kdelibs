@@ -174,6 +174,12 @@ public:
   QString comment() const { return m_strComment; }
 
   /**
+   * @return the generic name for the service, if there is one.
+   * (e.g. "Mail Client")
+   */
+  QString genericName() const { return m_strGenName; }
+
+  /**
    * @return a list of descriptive keywords the service, if there are any.
    */
   QStringList keywords() const { return m_lstKeywords; }
@@ -338,6 +344,7 @@ private:
   bool m_bValid;
   QStringList m_lstKeywords;
   QString m_strInit;
+  QString m_strGenName;
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

@@ -84,6 +84,11 @@ QString KDesktopFile::readComment() const
   return readEntry("Comment");
 }
 
+QString KDesktopFile::readGenericName() const
+{
+  return readEntry("GenericName");
+}
+
 QString KDesktopFile::readPath() const
 {
   return readEntry("Path");
