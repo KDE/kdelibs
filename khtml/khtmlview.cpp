@@ -628,7 +628,7 @@ bool KHTMLView::gotoLink(bool forward)
 	d->borderStart = forward;
 	d->borderTouched = true;
 
-	if (contentsY() != (forward?0:contentsHeight()))
+	if (contentsY() != (forward?0:(contentsHeight()-visibleHeight())))
         {
 	    setContentsPos(contentsX(), (forward?0:contentsHeight()));
 	    if (nextTarget)
