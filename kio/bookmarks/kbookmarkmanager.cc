@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -33,6 +34,7 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <kstaticdeleter.h>
+#include <qptrstack.h>
 
 QPtrList<KBookmarkManager>* KBookmarkManager::s_pSelf;
 static KStaticDeleter<QPtrList<KBookmarkManager> > sdbm;
@@ -418,67 +420,66 @@ void KBookmarkOwner::openBookmarkURL( const QString& url )
 void KBookmarkOwner::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include <qptrstack.h>
-#include <kbookmark.h>
-
 class KBookmarkMap {
 public:
-   KBookmarkMap(KBookmarkManager *);
-   void update();
-   QValueList<KBookmark> find(const KURL &url);
+    KBookmarkMap(KBookmarkManager *);
+    void update();
+    QValueList<KBookmark> find(const KURL &url);
 private:
-   typedef QValueList<KBookmark> KBookmarkList;
-   QMap<QString, KBookmarkList> m_bk_map;
-   KBookmarkManager *m_manager;
+    typedef QValueList<KBookmark> KBookmarkList;
+    QMap<QString, KBookmarkList> m_bk_map;
+    KBookmarkManager *m_manager;
 };
 
 KBookmarkMap::KBookmarkMap(KBookmarkManager *manager) { 
-   m_manager = manager;
+    m_manager = manager;
 } 
 
 void KBookmarkMap::update()
 {
-    kdDebug(7043) << " ****** update() begin" << endl;
+    kdDebug(7043) << "KBookmarkMap::update() - started ..." << endl;
 
     m_bk_map.clear();
 
-    // nonrecursive iterate
+    // non-recursive bookmark iterator
     QPtrStack<KBookmarkGroup> stack;
     KBookmarkGroup root = m_manager->root();
     stack.push(&root);
     KBookmark bk = stack.current()->first();
-    while (1) {
-       if (bk.isGroup()) {
-          // recurse
-          // kdDebug(7043) << "1"<< endl;
-          KBookmarkGroup gp = bk.toGroup();
-          if (!gp.first().isNull()) {
-             // kdDebug(7043) << "2"<< endl;
-             stack.push(&gp);
-             bk = gp.first();
-             continue;
-          }
-          // skip over
-       } else if (!bk.isSeparator()) {
-          // kdDebug(7043) << "3 - " << bk.url().url() << endl;
-          // add
-          m_bk_map[bk.url().url()].append(bk);
-       }
-       KBookmark next;
-       // recurse up
-       while (next = stack.current()->next(bk), next.isNull()) {
-          // kdDebug(7043) << "4"<< endl;
-          // go up
-          if (stack.isEmpty()) {
-             // kdDebug(7043) << "5"<< endl;
-             kdDebug(7043) << " ****** update() done" << endl;
-             // we are done
-             return;
-          }
-          bk = *(stack.pop());
-       }
-       bk = next;
+    for (;;) {
+        if (bk.isGroup()) 
+        {
+            KBookmarkGroup gp = bk.toGroup();
+            // only recurse into non-empty group, else skip it
+            if (!gp.first().isNull()) 
+            {
+                 stack.push(&gp);
+                 bk = gp.first();
+                 continue;
+            }
+        } 
+        else if (!bk.isSeparator()) 
+        {
+            // add bookmark to url map
+            m_bk_map[bk.url().url()].append(bk);
+        }
+        // find next bookmark, finishing off groups as needed
+        KBookmark next;
+        while (next = stack.current()->next(bk), next.isNull()) 
+        {
+            if (stack.isEmpty()) 
+            {
+                kdDebug(7043) << "KBookmarkMap::update() - ... all done" << endl;
+                // an empty stack and no next 
+                // indicates the end of the road
+                return;
+            }
+            bk = *(stack.pop());
+        }
+        bk = next;
     }
+
+    // never reached
 }
 
 static bool s_dirty = true; 
@@ -495,9 +496,10 @@ QValueList<KBookmark> KBookmarkMap::find(const KURL &url)
     kdDebug(7043) << " KBookmarkMap::find(" << url.url() << ")"
                   << " size( " << m_bk_map.count() << ")" << endl;
 
-    if (1 || s_dirty) {
-       update();
-       s_dirty = false;
+    if (1 || s_dirty) 
+    {
+        update();
+        s_dirty = false;
     }
 
     return m_bk_map.contains(url.url()) 
@@ -508,18 +510,20 @@ static KBookmarkMap *s_bk_map = 0;
 
 void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
 {
-   kdDebug(7043) << "KBookmarkManager::updateBookmarkMetadata for url " << url << endl;
-
-   if (!s_bk_map) {
-      s_bk_map = new KBookmarkMap(this);
-   }
+    kdDebug(7043) << "KBookmarkManager::updateBookmarkMetadata for url " << url << endl;
    
-   QValueList<KBookmark> list = s_bk_map->find(url);
-   for ( QValueList<KBookmark>::iterator it = list.begin(); it != list.end(); ++it )
-      (*it).updateAccessMetadata();
-
-   if (emitSignal)
-      emit notifier().updatedAccessMetadata( path(), url );
+    if (!s_bk_map) 
+    {
+        s_bk_map = new KBookmarkMap(this);
+    }
+    
+    QValueList<KBookmark> list = s_bk_map->find(url);
+    for ( QValueList<KBookmark>::iterator it = list.begin(); 
+          it != list.end(); ++it )
+        (*it).updateAccessMetadata();
+   
+    if (emitSignal)
+       emit notifier().updatedAccessMetadata( path(), url );
 }
 
 #include "kbookmarkmanager.moc"
