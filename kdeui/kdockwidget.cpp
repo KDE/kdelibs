@@ -338,7 +338,9 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 KDockWidget::~KDockWidget()
 {
   if ( !manager->undockProcess ){
+    d->blockHasUndockedSignal = true;
     undock();
+    d->blockHasUndockedSignal = false;
   }
   emit iMBeingClosed();
   manager->childDock->remove( this );
@@ -506,7 +508,9 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   }
   // end check block
 
+  d->blockHasUndockedSignal = true;
   undock();
+  d->blockHasUndockedSignal = false;
 
   if ( !target ){
     move( pos );
@@ -656,7 +660,8 @@ void KDockWidget::undock()
   QWidget* parentW = parentWidget();
   if ( !parentW ){
     hide();
-    emit hasUndocked();
+    if (!d->blockHasUndockedSignal)
+      emit hasUndocked();
     return;
   }
 
@@ -776,7 +781,8 @@ void KDockWidget::undock()
   emit manager->change();
   manager->undockProcess = false;
 
-  emit hasUndocked();
+  if (!d->blockHasUndockedSignal)
+    emit hasUndocked();
 }
 
 void KDockWidget::setWidget( QWidget* mw )

@@ -278,6 +278,7 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,index(-1)
   ,splitPosInPercent(50)
   ,pendingFocusInEvent(false)
+  ,blockHasUndockedSignal(false)
 {
 }
 

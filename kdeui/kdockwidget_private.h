@@ -102,6 +102,7 @@ public:
   int index;
   int splitPosInPercent;
   bool pendingFocusInEvent;
+  bool blockHasUndockedSignal;
 };
 
 #endif
