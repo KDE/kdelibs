@@ -53,7 +53,7 @@ class KLibFactory : public QObject
 {
     Q_OBJECT
 public:
-    enum ClassType { Object, Widget, Part, KofficeDocument };
+    enum ClassType { Object, Widget, KPart, KofficeDocument };
     /**
      * Create a new factory.
      */
@@ -113,7 +113,7 @@ private slots:
     void slotObjectCreated( QObject *obj );
     void slotObjectDestroyed();
     void slotTimeout();
-    
+
 private:
     QString m_libname;
     QString m_filename;
@@ -152,7 +152,7 @@ public:
      * @see #library
      */
     KLibFactory* factory( const char* libname );
-    
+
     /**
      * Loads and initializes a library. Loading a library multiple times is
      * handled gracefully.
@@ -168,9 +168,9 @@ public:
      * @see #factory
      */
     virtual KLibrary* library( const char* libname );
-  
+
     virtual void unloadLibrary( const char *libname );
-  
+
     /**
      * @return a pointer to the loader. If no loader exists until now
      *         then one is created.

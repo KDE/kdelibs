@@ -23,8 +23,8 @@ QObject* KLibFactory::create( ClassType type, QObject* parent, const char* name,
 	return create( parent, name, "QObject", args );
     case Widget:
 	return create( parent, name, "Widget", args );
-    case Part:
-	return create( parent, name, "Part", args );
+    case KPart:
+	return create( parent, name, "KPart", args );
     case KofficeDocument:
 	return create( parent, name, "KofficeDocument", args );
     }
@@ -46,7 +46,7 @@ KLibrary::~KLibrary()
 {
     if ( m_factory )
       delete m_factory;
-      
+
     lt_dlclose( m_handle );
 }
 
@@ -71,7 +71,7 @@ KLibFactory* KLibrary::factory()
     void* sym = symbol( symname );
     if ( !sym )
 	return 0;
-    
+
     typedef KLibFactory* (*t_func)();
     t_func func = (t_func)sym;
     m_factory = func();
@@ -104,10 +104,10 @@ void KLibrary::slotObjectCreated( QObject *obj )
 {
   if ( !obj )
     return;
-    
+
   if ( m_timer && m_timer->isActive() )
     m_timer->stop();
-    
+
   connect( obj, SIGNAL( destroyed() ),
            this, SLOT( slotObjectDestroyed() ) );
 
@@ -117,18 +117,18 @@ void KLibrary::slotObjectCreated( QObject *obj )
 void KLibrary::slotObjectDestroyed()
 {
   m_objs.removeRef( sender() );
-  
+
   if ( m_objs.count() == 0 )
   {
     qDebug( "shutdown timer started!" );
-    
+
     if ( !m_timer )
     {
       m_timer = new QTimer( this, "klibrary_shutdown_timer" );
       connect( m_timer, SIGNAL( timeout() ),
                this, SLOT( slotTimeout() ) );
-    }      
-    
+    }
+
     m_timer->start( 1000*60, true );
   }
 }
@@ -137,7 +137,7 @@ void KLibrary::slotTimeout()
 {
   if ( m_objs.count() != 0 )
     return;
-    
+
   KLibLoader::self()->unloadLibrary( m_libname );
 }
 
@@ -178,7 +178,7 @@ KLibrary* KLibLoader::library( const char* name )
 	qDebug("KLibLoader: library=%s: No file names %s found in paths.", name, libname.data() );
 	return 0;
     }
-    
+
     lt_dlhandle handle = lt_dlopen( libfile );
     if ( !handle )
     {
@@ -188,19 +188,19 @@ KLibrary* KLibLoader::library( const char* name )
 
     lib = new KLibrary( name, libfile, handle );
     m_libs.insert( name, lib );
-    
+
     return lib;
 }
 
 void KLibLoader::unloadLibrary( const char *libname )
 {
   KLibrary *lib = m_libs[ libname ];
-  
+
   if ( !lib )
     return;
-    
+
   qDebug( "closing library %s", libname );
-  
+
   m_libs.remove( libname );
   delete lib;
 }
@@ -210,7 +210,7 @@ KLibFactory* KLibLoader::factory( const char* name )
     KLibrary* lib = library( name );
     if ( !lib )
 	return 0;
-    
+
     return lib->factory();
 }
 
