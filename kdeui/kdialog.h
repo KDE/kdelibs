@@ -1,24 +1,25 @@
 /*  This file is part of the KDE Libraries
-    Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
-    with addtions by Espen Sand (espensa@online.no)
+ *  Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
+ *  Additions 1999-2000 by Espen Sand (espen@kde.org) 
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ */  
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/  
-#ifndef __KDIALOG_H
-#define __KDIALOG_H
+#ifndef _KDIALOG_H_
+#define _KDIALOG_H_
 
 class QLayoutItem;
 
@@ -61,13 +62,13 @@ class KDialog : public QDialog
      * Return the number of pixels you shall use between a 
      * dialog edge and the outermost widget(s) according to the KDE standard.
      **/
-    static int marginHint( void );
+    static int marginHint();
 
     /**
      * Return the number of pixels you shall use between 
      * widgets inside a dialog according to the KDE standard.
      */
-    static int spacingHint( void );
+    static int spacingHint();
 
     /**
      * Resize every layout manager used in @p widget and its nested children.
@@ -117,8 +118,7 @@ class KDialog : public QDialog
      * have changed. Use @ref #marginHint and  @ref #spacingHint in your slot
      * to get the new values.
      */
-    void layoutHintChanged( void );
-
+    void layoutHintChanged();
 
   private:
     static int mMarginSize;

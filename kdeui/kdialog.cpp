@@ -1,6 +1,6 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
- *  Additions by Espen Sand (espensa@online.no) 
+ *  Additions 1999-2000 by Espen Sand (espen@kde.org) 
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -75,13 +75,13 @@ void KDialog::keyPressEvent(QKeyEvent *e)
 
 
 
-int KDialog::marginHint( void )
+int KDialog::marginHint()
 {
   return( mMarginSize );
 }
 
 
-int KDialog::spacingHint( void )
+int KDialog::spacingHint()
 {
   return( mSpacingSize );
 }

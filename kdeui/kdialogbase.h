@@ -43,14 +43,14 @@ class KDialogBaseButton : public QPushButton
   public:
     KDialogBaseButton( const QString &text, int key, QWidget *parent=0, 
 		       const char *name=0 ); 
-    inline int id( void );
+    inline int id();
 
   private:
     int mKey;
 };
 
 
-inline int KDialogBaseButton::id( void )
+inline int KDialogBaseButton::id()
 {
   return( mKey );
 }
@@ -67,16 +67,16 @@ class KDialogBaseTile : public QObject
 
   public:
     KDialogBaseTile( QObject *parent=0, const char *name=0 );
-    ~KDialogBaseTile( void );
+    ~KDialogBaseTile();
 
     void set( const QPixmap *pix );
-    const QPixmap *get( void ) const;
+    const QPixmap *get() const;
   
   public slots:
-    void cleanup( void );
+    void cleanup();
 
   signals:
-    void pixmapChanged( void );
+    void pixmapChanged();
 
   private:
     QPixmap *mPixmap;
@@ -213,7 +213,7 @@ class KDialogBase : public KDialog
      *  @li @p User3   Show User define-button 3.
      *  @li @p No      Show No-button.
      *  @li @p Yes     Show Yes-button.
-     *  @li @p Stretch Don't know what this means. ???
+     *  @li @p Stretch Used internally. Ignored when used in a constructor.
      */
     enum ButtonCode
     {
@@ -412,7 +412,7 @@ class KDialogBase : public KDialog
     /**
      * Destructor.
      */
-    ~KDialogBase( void );
+    ~KDialogBase();
 
     /**
      * Adjust the size of the dialog to fit the contents just before
@@ -422,7 +422,7 @@ class KDialogBase : public KDialog
      * be called if the dialog has been explicitly resized before 
      * showing it.
      **/
-    virtual void adjustSize( void );
+    virtual void adjustSize();
 
     /**
      * Hide or display the a separator line drawn between the action
@@ -490,7 +490,7 @@ class KDialogBase : public KDialog
      *
      * @return The page index or -1 if there is no active page.
      */
-    int  activePageIndex( void ) const;
+    int  activePageIndex() const;
 
     /**
      * Set the main user definable widget.
@@ -511,7 +511,7 @@ class KDialogBase : public KDialog
      *
      * @return The current main widget. Can be 0 if no widget has been defined.
      */
-    QWidget *getMainWidget( void ); 
+    QWidget *getMainWidget(); 
 
     /**
      * Convenience method.
@@ -520,7 +520,7 @@ class KDialogBase : public KDialog
      * of the dialog. This method should only be called right before 
      * @ref show() or @ref exec().
      */
-    void disableResize( void );
+    void disableResize();
 
     /**
      * Convenience method. Set the initial dialog size.
@@ -640,7 +640,7 @@ class KDialogBase : public KDialog
      *
      * @return @true if there is defined a background tile.
      */
-    static bool haveBackgroundTile( void );
+    static bool haveBackgroundTile();
     
     /** 
      * Retrieve a pointer to the background tile if there is one. 
@@ -648,7 +648,7 @@ class KDialogBase : public KDialog
      * @return The tile pointer or 0 if no tile is defined.
      *
      **/
-    static const QPixmap *getBackgroundTile( void );
+    static const QPixmap *getBackgroundTile();
     
     /** 
      * Set the background tile.
@@ -688,7 +688,7 @@ class KDialogBase : public KDialog
      * If you need the "overhead" the dialog needs for its elements, 
      * use @ref getBorderWidths().
      */
-    QRect getContentsRect( void );
+    QRect getContentsRect();
 
     /** 
      * Calculate the size hint for the dialog.
@@ -717,7 +717,19 @@ class KDialogBase : public KDialog
      *
      * @return The help link text.
      */
-    QString helpLinkText( void );
+    QString helpLinkText();
+
+    /**
+     * Returns the action button that corresponds to the id. Normally
+     * you should not use this function. NEVER delete the object returned
+     * by this function. See also @ref enableButton @ref showButton 
+     * @ref setButtonTip @ref setButtonWhatsThis and @ref setButtonText
+     *
+     * @param id Integer identifier of the button.
+     * @return The action button or 0 if the button does not exists.
+     * 
+     */
+    QPushButton *actionButton( ButtonCode id );
 
   public slots:
     /**
@@ -783,68 +795,68 @@ class KDialogBase : public KDialog
      * This method is called automatically whenever the background has 
      * changed. You do not need to use this method.
      */
-    void updateBackground( void );
+    void updateBackground();
 
   signals:
     /** 
      * The Help button was pressed. This signal is only emitted if
      * @ref slotHelp() is not replaced.
      */
-    void helpClicked( void );
+    void helpClicked();
 
     /** 
      * The Default button was pressed. This signal is only emitted if
      * @ref slotDefault() is not replaced.
      */
-    void defaultClicked( void );
+    void defaultClicked();
     
     /** 
      * The User3 button was pressed. This signal is only emitted if
      * @ref slotUser3() is not replaced.
      */
-    void user3Clicked( void );
+    void user3Clicked();
 
     /** 
      * The User2 button was pressed. This signal is only emitted if
      * @ref slotUser2() is not replaced.
      */
-    void user2Clicked( void );
+    void user2Clicked();
 
     /** 
      * The User1 button was pressed. This signal is only emitted if
      * @ref slotUser1() is not replaced.
      */
-    void user1Clicked( void );
+    void user1Clicked();
 
     /** 
      * The Apply button was pressed. This signal is only emitted if
      * @ref slotApply() is not replaced.
      */
-    void applyClicked( void );
+    void applyClicked();
 
     /** 
      * The Try button was pressed. This signal is only emitted if
      * @ref slotTry() is not replaced.
      */
-    void tryClicked( void );
+    void tryClicked();
 
     /** 
      * The OK button was pressed. This signal is only emitted if
      * @ref slotOk() is not replaced.
      */
-    void okClicked( void );
+    void okClicked();
 
     /** 
      * The Yes button was pressed. This signal is only emitted if
      * @ref slotYes() is not replaced.
      */
-    void yesClicked( void );
+    void yesClicked();
 
     /** 
      * The No button was pressed. This signal is only emitted if
      * @ref slotNo() is not replaced.
      */
-    void noClicked( void );
+    void noClicked();
 
     /** 
      * The Cancel button was pressed. This signal is only emitted if
@@ -862,12 +874,12 @@ class KDialogBase : public KDialog
      * Do not use this signal. Is is kept for compatibility reasons.
      * Use @ref applyClicked() instead.
      */
-    void apply( void );
+    void apply();
 
     /** 
      * The background tile has changed.
      */
-    void backgroundChanged( void ); 
+    void backgroundChanged(); 
 
     /**
      * The dialog is about to be hidden.
@@ -877,7 +889,7 @@ class KDialogBase : public KDialog
      * connected to this signal. Instead you must start a timer and delete 
      * the pointer when this timer expires.
      */
-    void hidden( void );
+    void hidden();
 
   protected:
     /**
@@ -888,7 +900,7 @@ class KDialogBase : public KDialog
      * @return The widget or 0 if the predefined layout mode is not Plain
      *         or if you don't use any predefined layout
      */
-    QFrame *plainPage( void );
+    QFrame *plainPage();
 
     /**
      * Adds a page to the dialog when the class is used in TreeList, 
@@ -1000,7 +1012,7 @@ class KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above 
      *         were broken.
      */
-    QFrame *makeMainWidget( void );
+    QFrame *makeMainWidget();
 
     /**
      * Makes a main widget. The function will make a @ref QVBox widget
@@ -1013,7 +1025,7 @@ class KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above 
      *         were broken.
      */
-    QVBox *makeVBoxMainWidget( void );
+    QVBox *makeVBoxMainWidget();
 
     /**
      * Makes a main widget. The function will make a @ref QHBox widget
@@ -1026,7 +1038,7 @@ class KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above 
      *         were broken.
      */
-    QHBox *makeHBoxMainWidget( void );
+    QHBox *makeHBoxMainWidget();
 
     /**
      * Makes a main widget. The function will make a @ref QGrid widget
@@ -1071,92 +1083,92 @@ class KDialogBase : public KDialog
      * Activated when the Help button has been clicked. If a help
      * text has been defined, the help system will be activated.
      */
-    virtual void slotHelp( void );
+    virtual void slotHelp();
   
     /**
      * Activated when the Default button has been clicked.
      */
-    virtual void slotDefault( void );
+    virtual void slotDefault();
 
     /**
      * Activated when the User3 button has been clicked.
      */
-    virtual void slotUser3( void );
+    virtual void slotUser3();
 
     /**
      * Activated when the User2 button has been clicked.
      */
-    virtual void slotUser2( void );
+    virtual void slotUser2();
 
     /**
      * Activated when the User1 button has been clicked.
      */
-    virtual void slotUser1( void );
+    virtual void slotUser1();
 
     /**
      * Activated when the Ok button has been clicked. The 
      * @ref QDialog::accept() is activated.
      */
-    virtual void slotOk( void );
+    virtual void slotOk();
 
     /**
      * Activated when the Apply button has been clicked.
      */
-    virtual void slotApply( void );
+    virtual void slotApply();
 
     /**
      * Activated when the Try button has been clicked.
      */
-    virtual void slotTry( void );
+    virtual void slotTry();
 
     /**
      * Activated when the Yes button has been clicked. The 
      * @ref QDialog::done( Yes ) is activated.
      */
-    virtual void slotYes( void );
+    virtual void slotYes();
 
     /**
      * Activated when the Yes button has been clicked. The 
      * @ref QDialog::done( No ) is activated.
      */
-    virtual void slotNo( void );
+    virtual void slotNo();
 
     /**
      * Activated when the Cancel button has been clicked. The 
      * @ref QDialog::reject() is activated in regular mode and
      * @ref QDialog::done( Cancel ) when in message box mode.
      */
-    virtual void slotCancel( void );
+    virtual void slotCancel();
 
     /**
      * Activated when the Close button has been clicked. The 
      * @ref QDialog::reject() is activated.
      */
-    virtual void slotClose( void );
+    virtual void slotClose();
 
     /**
      * Do not use this slot. Is is kept for compatibility reasons.
      * Activated when the Apply button has been clicked
      */
-    virtual void applyPressed( void );
+    virtual void applyPressed();
 
     /**
      * Updates the margins and spacings. 
      */
-    void updateGeometry( void );
+    void updateGeometry();
 
   private:
     /**
      * Prepares the layout that manages the widgets of the dialog
      */
-    void setupLayout( void );
+    void setupLayout();
 
     /**
      * Prepares a relay that is used to send signals between
      * all KDialogBase instances of a program. Should only be used in the 
      * constructor.
      */
-    void makeRelay( void );
+    void makeRelay();
 
     /**
      * Makes the button box and all the buttons in it. This method must 
@@ -1175,15 +1187,6 @@ class KDialogBase : public KDialog
 			const QString &user3 = QString::null );
 
     /**
-     * Returns the action button that corresponds to the id.
-     *
-     * @param id Integer identifier of the button.
-     * @return The action button or 0 if the button does not exists.
-     * 
-     */
-    QPushButton *actionButton( ButtonCode id );
-
-    /**
      * Sets the action button that is marked as default and has focus.
      *
      * @param p The action button.
@@ -1197,7 +1200,7 @@ class KDialogBase : public KDialog
      * @ref makeVBoxMainWidget , @ref makeHBoxMainWidget or 
      * @ref makeGridMainWidget failed.
      */
-    void printMakeMainWidgetError( void );
+    void printMakeMainWidgetError();
 
   private slots:
     /**

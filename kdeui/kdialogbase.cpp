@@ -125,12 +125,12 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 
 
 
-KDialogBase::~KDialogBase( void )
+KDialogBase::~KDialogBase()
 {
 }
 
 
-void KDialogBase::setupLayout( void )
+void KDialogBase::setupLayout()
 {
   if( mTopLayout != 0 ) 
   {
@@ -165,7 +165,7 @@ void KDialogBase::setupLayout( void )
 
 
 
-void KDialogBase::makeRelay( void )
+void KDialogBase::makeRelay()
 {
   if( mTile != 0 )
   {
@@ -211,14 +211,14 @@ void KDialogBase::enableButtonSeparator( bool state )
 
 
 
-QFrame *KDialogBase::plainPage( void )
+QFrame *KDialogBase::plainPage()
 {
   return( mJanus == 0 ? 0 : mJanus->plainPage() );
 }
 
 
 
-void KDialogBase::adjustSize( void )
+void KDialogBase::adjustSize()
 {
   int m = marginHint();
   int s = spacingHint();
@@ -285,7 +285,7 @@ void KDialogBase::adjustSize( void )
 }
 
 
-void KDialogBase::disableResize( void )
+void KDialogBase::disableResize()
 {
   adjustSize();
   setFixedSize( sizeHint() );
@@ -679,7 +679,7 @@ void KDialogBase::setTreeListAutoResize( bool state )
 }
 
 
-void KDialogBase::slotHelp( void ) 
+void KDialogBase::slotHelp() 
 {
   emit helpClicked();
   if( mHelpPath.isEmpty() == true )
@@ -693,71 +693,71 @@ void KDialogBase::slotHelp( void )
 }
 
 
-void KDialogBase::slotDefault( void ) 
+void KDialogBase::slotDefault() 
 {
   emit defaultClicked();
 }
 
 
-void KDialogBase::slotOk( void ) 
+void KDialogBase::slotOk() 
 {
   emit okClicked();
   accept();
 }
 
 
-void KDialogBase::slotApply( void ) 
+void KDialogBase::slotApply() 
 {
   emit applyClicked();
 }
 
 
-void KDialogBase::slotTry( void ) 
+void KDialogBase::slotTry() 
 {
   emit tryClicked();
 }
 
 
-void KDialogBase::slotUser3( void ) 
+void KDialogBase::slotUser3() 
 {
   emit user3Clicked();
 }
 
 
-void KDialogBase::slotUser2( void ) 
+void KDialogBase::slotUser2() 
 {
   emit user2Clicked();
 }
 
 
-void KDialogBase::slotUser1( void )
+void KDialogBase::slotUser1()
 {
   emit user1Clicked();
 }
 
 
-void KDialogBase::slotYes( void ) 
+void KDialogBase::slotYes() 
 {
   emit yesClicked();
   done( Yes );
 }
 
 
-void KDialogBase::slotNo( void )
+void KDialogBase::slotNo()
 {
   emit noClicked();
   done( No );
 }
 
 
-void KDialogBase::slotCancel( void ) 
+void KDialogBase::slotCancel() 
 {
   emit cancelClicked();
   done( mMessageBoxMode == true ? Cancel : Rejected );
 }
 
 
-void KDialogBase::slotClose( void ) 
+void KDialogBase::slotClose() 
 {
   emit closeClicked();
   reject();
@@ -770,7 +770,7 @@ void KDialogBase::helpClickedSlot( const QString & )
 }
 
 
-void KDialogBase::applyPressed( void )
+void KDialogBase::applyPressed()
 {
   emit apply();
 }
@@ -862,7 +862,7 @@ QGrid *KDialogBase::addGridPage( int n, QGrid::Direction dir,
 }
 
 
-QFrame *KDialogBase::makeMainWidget( void )
+QFrame *KDialogBase::makeMainWidget()
 {
   if( mJanus != 0 || mMainWidget != 0 )
   {
@@ -876,7 +876,7 @@ QFrame *KDialogBase::makeMainWidget( void )
 }
 
 
-QVBox *KDialogBase::makeVBoxMainWidget( void )
+QVBox *KDialogBase::makeVBoxMainWidget()
 {
   if( mJanus != 0 || mMainWidget != 0 )
   {
@@ -891,7 +891,7 @@ QVBox *KDialogBase::makeVBoxMainWidget( void )
 }
 
 
-QHBox *KDialogBase::makeHBoxMainWidget( void )
+QHBox *KDialogBase::makeHBoxMainWidget()
 {
   if( mJanus != 0 || mMainWidget != 0 )
   {
@@ -921,7 +921,7 @@ QGrid *KDialogBase::makeGridMainWidget( int n, QGrid::Direction dir )
 }  
 
 
-void KDialogBase::printMakeMainWidgetError( void )
+void KDialogBase::printMakeMainWidgetError()
 {
   if( mJanus != 0 )
   {
@@ -954,7 +954,7 @@ void KDialogBase::setMainWidget( QWidget *widget )
 }
 
 
-QWidget *KDialogBase::getMainWidget( void ) 
+QWidget *KDialogBase::getMainWidget() 
 {
   return( mMainWidget );
 }
@@ -966,13 +966,13 @@ bool KDialogBase::showPage( int index )
 }
 
 
-int KDialogBase::activePageIndex( void ) const
+int KDialogBase::activePageIndex() const
 {
   return( mJanus == 0 ? -1 : mJanus->activePageIndex() );
 }
 
 
-QRect KDialogBase::getContentsRect( void )
+QRect KDialogBase::getContentsRect()
 {
   QRect r;
   r.setLeft( marginHint() );
@@ -1011,13 +1011,13 @@ QSize KDialogBase::calculateSize(int w, int h)
 }
 
 
-QString KDialogBase::helpLinkText( void )
+QString KDialogBase::helpLinkText()
 {
   return( mHelpLinkText==QString::null ? i18n("Get help...") : mHelpLinkText );
 }
 
 
-void KDialogBase::updateGeometry( void )
+void KDialogBase::updateGeometry()
 {
   if( mTopLayout != 0 )
   {
@@ -1095,13 +1095,13 @@ void KDialogBase::closeEvent( QCloseEvent *e )
 }
 
 
-bool KDialogBase::haveBackgroundTile( void )
+bool KDialogBase::haveBackgroundTile()
 {
   return( mTile == 0 || mTile->get() == 0 ? false : true );
 }
 
 
-const QPixmap *KDialogBase::getBackgroundTile( void )
+const QPixmap *KDialogBase::getBackgroundTile()
 {
   return( mTile == 0 ? 0 : mTile->get() );
 }
@@ -1116,7 +1116,7 @@ void KDialogBase::setBackgroundTile( const QPixmap *pix )
 }
 
 
-void KDialogBase::updateBackground( void )
+void KDialogBase::updateBackground()
 {
   if( mTile == 0 || mTile->get() == 0 )
   {
@@ -1179,7 +1179,7 @@ KDialogBaseTile::KDialogBaseTile( QObject *parent, const char *name )
 }
 
 
-KDialogBaseTile::~KDialogBaseTile( void )
+KDialogBaseTile::~KDialogBaseTile()
 {
   cleanup();
 }
@@ -1207,13 +1207,13 @@ void KDialogBaseTile::set( const QPixmap *pix )
 }
 
 
-const QPixmap *KDialogBaseTile::get( void ) const
+const QPixmap *KDialogBaseTile::get() const
 {
   return( mPixmap );
 }
 
 
-void KDialogBaseTile::cleanup( void )
+void KDialogBaseTile::cleanup()
 {
   delete mPixmap; mPixmap = 0;
 }
