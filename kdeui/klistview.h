@@ -317,8 +317,9 @@ signals:
    * This signal is emitted when ever the user moves an item in the list via
    * DnD.
    * If more than one item is moved at the same time, parameters afterFirst and
-   * afterNow will all be the same for each item.  This differs from @ref moved() so
-   * be careful.  All the items will have been moved before this is emitted.
+   * afterNow will reflect what was true before the move.
+   * This differs from @ref moved() so be careful.  All the items will have been
+   * moved before this is emitted in @moved(), which is not true in this method.
    * @param item the item that was moved
    * @param afterFirst the item that parameter item was in before the move, in the list
    * @param afterNow the item it's currently after.

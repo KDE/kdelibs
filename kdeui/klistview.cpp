@@ -550,28 +550,18 @@ void KListView::contentsDropEvent(QDropEvent* e)
     {
       if (itemsMovable())
       {
-        // these for the moved() calls below
-        QListViewItem *afterNow(afterme);
-        QList<QListViewItem> items;
-        QListViewItem *afterFirst=0;
-
         for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
         {
           if (!i->isSelected())
             continue;
-          if (!afterFirst)
-            afterFirst=i->itemAbove();
+          QListViewItem *afterFirst=i->itemAbove();
           moveItem(i, parent, afterme);
-          items.append(i);
+          emit moved(i, afterFirst, afterme);
+
           afterme=i;
         }
-
-        if (items.first())
-        {
-          for (QListViewItem *i=items.first(); i!=0; i=items.next() )
-            emit moved(i, afterFirst, afterNow);
-          emit moved();
-        }
+        if (firstChild())
+          moved();
 
       }
     }
