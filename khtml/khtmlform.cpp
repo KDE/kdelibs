@@ -132,6 +132,9 @@ HTMLElement::~HTMLElement()
 }
 
 //----------------------------------------------------------------------------
+
+HTMLWidgetElement *HTMLWidgetElement::currentFormFocusWidget = 0L;
+
 HTMLWidgetElement::HTMLWidgetElement( const char *n, const HTMLFont *f = 0 ) 
     : HTMLElement( n )
 { 
@@ -194,9 +197,15 @@ bool HTMLWidgetElement::print( QPainter *_painter, int, int _y, int, int _height
 
 void HTMLWidgetElement::print( QPainter *_painter, int _tx, int _ty )
 {
-  if ( w == 0 || p == 0 || p->isNull() || w->isVisible())
-    return;
+//  if ( w == 0 || p == 0 || p->isNull() || w->isVisible())
+  if ( w == 0 || p == 0 || p->isNull() || showAsWidget)
+    {
+      printf("hidden %s\n", className());
+      return;
+    }  
 
+  printf("printing %s\n", className());
+    
   paintWidget( w );
 
   _painter->drawPixmap( QPoint( x + _tx, y - ascent + _ty ), *p );
@@ -227,6 +236,16 @@ HTMLObject *HTMLWidgetElement::mouseEvent( int _x, int _y, int button, int state
 {
   if (!w->isVisible())
      {
+       if (currentFormFocusWidget)
+          {
+	    printf("hiding active widget %s\n", currentFormFocusWidget->className());
+	    currentFormFocusWidget->setPixmapMode( true );
+//	    currentFormFocusWidget->widget()->clearFocus();
+//	    currentFormFocusWidget->widget()->hide();
+//	    w->topLevelWidget()->repaint();
+	  }    
+     
+       currentFormFocusWidget = this;
        w->move( _relX, _relY );
        w->show();
        showAsWidget = true;
@@ -421,8 +440,7 @@ HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c,
 
 printf("New HTMLTextArea element! Text = \"%s\"\n", n);
 
-//	w = new QMultiLineEdit( parent );
-        w = new HTMLMultiLineEdit( this, parent );
+        w = new HTMLMultiLineEditWidget( this, parent );
 	if( font )
 	    w->setFont( *font );
 
@@ -490,7 +508,8 @@ HTMLButton::HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, 
 {
     QWidget *w;
     view = _parent;
-    w = new QPushButton( _parent );
+//    w = new QPushButton( _parent );
+    w = new HTMLPushButtonWidget( this, _parent );
     if( font )
 	w->setFont( *font );
 
@@ -545,7 +564,8 @@ HTMLCheckBox::HTMLCheckBox( QWidget *parent, const char *n, const char *v,
     QWidget *w;
 	_defCheck = ch;
 
-	w = new QCheckBox( parent );
+//	w = new QCheckBox( parent );
+        w = new HTMLCheckBoxWidget( this, parent );
 	if( font )
 	    w->setFont( *font );
 
@@ -611,7 +631,8 @@ HTMLRadio::HTMLRadio( QWidget *parent, const char *n, const char *v,
     QWidget *w;
 	_defCheck = ch;
 
-	w = new QRadioButton( parent );
+//	w = new QRadioButton( parent );
+        w = new HTMLRadioButtonWidget( this, parent );
 	if( font )
 	    w->setFont( *font );
 
@@ -668,7 +689,7 @@ HTMLReset::HTMLReset( QWidget *parent, const char *v, const HTMLFont *f )
 	: HTMLInput( "", v, f )
 {
     QWidget *w;
-    w = new QPushButton( parent );
+    w = new HTMLPushButtonWidget( this, parent );
 	if( font )
 	    w->setFont( *font );
 
@@ -701,7 +722,7 @@ HTMLSubmit::HTMLSubmit( QWidget *parent, const char *n, const char *v,
 	: HTMLInput( n, v, f )
 {
     QWidget *w;
-	w = new QPushButton( parent );
+        w = new HTMLPushButtonWidget( this, parent );
 	if( font )
 	    w->setFont( *font );
 
@@ -977,7 +998,6 @@ void HTMLForm::restoreForm(QStrList *saveList)
     }
 }
 
-
 HTMLForm::~HTMLForm()
 {
     for (HTMLElement *e = elements.first(); e != 0; e = elements.next() )
@@ -988,23 +1008,93 @@ HTMLForm::~HTMLForm()
 
 //----------------------------------------------------------------------------
 
-HTMLMultiLineEdit::HTMLMultiLineEdit( HTMLWidgetElement *htmlParent, QWidget *parent, const char *name )
+HTMLMultiLineEditWidget::HTMLMultiLineEditWidget( HTMLWidgetElement *htmlParent, QWidget *parent, const char *name )
 : QMultiLineEdit( parent, name )
+{
+  widgetElement = htmlParent;
+  if ( parent )
+    parent->topLevelWidget()->installEventFilter( this );
+    
+  setMouseTracking( true );    
+}
+
+HTMLMultiLineEditWidget::~HTMLMultiLineEditWidget()
+{
+}
+
+bool HTMLMultiLineEditWidget::eventFilter( QObject *, QEvent * )
+{
+//  printf("bool HTMLMultiLineEditWidget::eventFilter( QObject *, QEvent *e );\n");
+  return false;
+}
+
+//----------------------------------------------------------------------------
+
+HTMLPushButtonWidget::HTMLPushButtonWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0)
+: QPushButton( parent )
 {
   widgetElement = htmlParent;
 }
 
-HTMLMultiLineEdit::~HTMLMultiLineEdit()
+HTMLPushButtonWidget::~HTMLPushButtonWidget()
 {
 }
 
-void HTMLMultiLineEdit::focusOutEvent( QFocusEvent *ev )
+void HTMLPushButtonWidget::paintEvent( QPaintEvent *pe )
 {
-  printf("void HTMLMultiLineEdit::focusOutEvent( QFocusEvent *ev )\n");
+  QPainter painter;
+  
+  painter.begin( this );
+  
+  drawButton( &painter );
+  
+  painter.end();
+}
 
-  widgetElement->setPixmapMode( false );
+//----------------------------------------------------------------------------
 
-  QWidget::focusOutEvent( ev );
+HTMLRadioButtonWidget::HTMLRadioButtonWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0)
+: QRadioButton( parent )
+{
+  widgetElement = htmlParent;
+}
+
+HTMLRadioButtonWidget::~HTMLRadioButtonWidget()
+{
+}
+
+void HTMLRadioButtonWidget::paintEvent( QPaintEvent *pe )
+{
+  QPainter painter;
+  
+  painter.begin( this );
+  
+  drawButton( &painter );
+  
+  painter.end();
+}
+
+//----------------------------------------------------------------------------
+
+HTMLCheckBoxWidget::HTMLCheckBoxWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0)
+: QCheckBox( parent )
+{
+  widgetElement = htmlParent;
+}
+
+HTMLCheckBoxWidget::~HTMLCheckBoxWidget()
+{
+}
+
+void HTMLCheckBoxWidget::paintEvent( QPaintEvent *pe )
+{
+  QPainter painter;
+  
+  painter.begin( this );
+  
+  drawButton( &painter );
+  
+  painter.end();
 }
 
 #include "khtmlform.moc"

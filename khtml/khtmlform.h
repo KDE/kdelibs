@@ -30,6 +30,9 @@
 #include <qstrlist.h>
 #include <qwidget.h>
 #include <qmultilinedit.h>
+#include <qpushbutton.h>
+#include <qradiobutton.h>
+#include <qcheckbox.h>
 
 #include "khtmlobj.h"
 #include "khtmlfont.h"
@@ -132,7 +135,7 @@ public:
     QWidget *widget() { return w; }
 
     bool isInPixmapMode() { return !showAsWidget; }
-    void setPixmapMode( bool flag ) { showAsWidget = !flag; w->hide(); }
+    void setPixmapMode( bool flag ) { showAsWidget = !flag; if (!showAsWidget) w->hide(); }
 
 private:
 	QWidget *w;
@@ -150,6 +153,8 @@ private:
 	// true if widget is displayed "as is", false if widget is painted
 	// into a qpixmap
 	bool showAsWidget;
+	
+	static HTMLWidgetElement *currentFormFocusWidget;
 };
 
 //---------------------------------------------------------------------------
@@ -450,19 +455,67 @@ protected:
 
 //---------------------------------------------------------------------------
 
-class HTMLMultiLineEdit : public QMultiLineEdit
+class HTMLMultiLineEditWidget : public QMultiLineEdit
 {
     Q_OBJECT
 public:
-    HTMLMultiLineEdit( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0);
-   ~HTMLMultiLineEdit();
+    HTMLMultiLineEditWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0);
+   ~HTMLMultiLineEditWidget();
 
 protected:
-    virtual void focusOutEvent( QFocusEvent *ev );   
+    bool eventFilter( QObject *, QEvent * );
        
 private:
     HTMLWidgetElement *widgetElement;
 };
 
+//---------------------------------------------------------------------------
+
+class HTMLPushButtonWidget : public QPushButton
+{
+    Q_OBJECT
+public:
+    HTMLPushButtonWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0);
+   ~HTMLPushButtonWidget();
+
+protected:
+    virtual void paintEvent( QPaintEvent *pe );   
+   
+private:
+    HTMLWidgetElement *widgetElement;
+};
+
+//---------------------------------------------------------------------------
+
+class HTMLRadioButtonWidget : public QRadioButton
+{
+    Q_OBJECT
+public:
+    HTMLRadioButtonWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0);
+   ~HTMLRadioButtonWidget();
+   
+protected:
+    virtual void paintEvent( QPaintEvent *pe );
+    
+private:
+    HTMLWidgetElement *widgetElement;
+};
+
+//---------------------------------------------------------------------------
+
+class HTMLCheckBoxWidget : public QCheckBox
+{
+    Q_OBJECT
+public:
+    HTMLCheckBoxWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0);
+   ~HTMLCheckBoxWidget();
+   
+protected:
+    virtual void paintEvent( QPaintEvent *pe );
+    
+private:
+    HTMLWidgetElement *widgetElement;
+};
+           
 #endif
 
