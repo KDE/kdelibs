@@ -1012,7 +1012,7 @@ class KDialogBase : public KDialog
     /**
      * Check whether the background tile is set or not.
      *
-     * @return @tt true if there is defined a background tile.
+     * @return @p true if there is defined a background tile.
      */
     static bool haveBackgroundTile();
     
