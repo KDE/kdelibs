@@ -468,7 +468,7 @@ KAccelAction* KAccelActions::insert( const QString& sName, const QString& sLabel
 {
 	if( actionPtr( sName ) ) {
 		kdWarning(125) << "KAccelActions::insertLabel( " << sName << ", " << sLabel << " ): action with same name already present." << endl;
-		return false;
+		return 0;
 	}
 
 	KAccelAction* pAction = new KAccelAction;
