@@ -89,6 +89,7 @@
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
+<!ENTITY CSS	"<trademark>CSS</trademark>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
 <!ENTITY DVI	"<acronym>DVI</acronym>">
@@ -255,3 +256,6 @@
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
 <!ENTITY X	"<trademark>X Window System</trademark>" -- obsolete: use X-Windows instead; it will be removed in the next version -->
 <!ENTITY X-Windows	"<trademark class="registered">X Windows</trademark>">
+<!ENTITY XHTML	"<trademark>XHTML</trademark>">
+<!ENTITY XML	"<trademark>XML</trademark>">
+<!ENTITY XSL	"<trademark>XSL</trademark>">
