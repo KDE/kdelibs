@@ -115,6 +115,7 @@ RenderStyle::setBitDefaults()
     _direction = LTR;
     _text_decoration = TDNONE;
     _white_space = NORMAL;
+    _font_variant = FVNORMAL;
 
     _vertical_align = BASELINE;
     _clear = CNONE;
@@ -198,6 +199,7 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _text_decoration = other._text_decoration;
     _visuallyOrdered = other._visuallyOrdered;
     _cursor_style = other._cursor_style;
+    _font_variant = other._font_variant;
 
     _htmlHacks = other._htmlHacks;
 
@@ -248,6 +250,7 @@ void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
     _white_space = inheritParent->_white_space;
     _visuallyOrdered = inheritParent->_visuallyOrdered;
     _cursor_style = inheritParent->_cursor_style;
+    _font_variant = inheritParent->_font_variant;
 
     _htmlHacks = inheritParent->_htmlHacks;
 

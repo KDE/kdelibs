@@ -1091,8 +1091,24 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
 
     case CSS_PROP_FONT_VARIANT:
-        // ### no small caps at the moment...
-        break;
+    {
+        if(value->valueType() == CSSValue::CSS_INHERIT)
+        {
+            if(!e->parentNode()) return;
+            style->setFontVariant(e->parentNode()->style()->fontVariant());
+            return;
+        }
+        if(!primitiveValue) return;
+        switch(primitiveValue->getIdent()) {
+	    case CSS_VAL_NORMAL:
+		style->setFontVariant( FVNORMAL ); break;
+	    case CSS_VAL_SMALL_CAPS:
+		style->setFontVariant( SMALL_CAPS ); break;
+	    default:
+            return;
+        }
+	break;
+    }
 
     case CSS_PROP_FONT_WEIGHT:
     {

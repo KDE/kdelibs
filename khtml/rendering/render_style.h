@@ -489,6 +489,9 @@ enum ECursor {
     CURSOR_S_RESIZE, CURSOR_W_RESIZE, CURSOR_TEXT, CURSOR_WAIT, CURSOR_HELP
 };
 
+enum EFontVariant {
+    FVNORMAL, SMALL_CAPS
+};
 
 //------------------------------------------------
 
@@ -529,7 +532,8 @@ protected:
     int _text_decoration : 4;
     bool _visuallyOrdered : 1;
     ECursor _cursor_style : 4;
-
+    EFontVariant _font_variant : 1;
+    
     bool _htmlHacks :1;
 
 // don't inherit
@@ -711,6 +715,8 @@ public:
     Length paddingRight() const {  return surround->padding.right; }
 
     ECursor cursor() const { return _cursor_style; }
+    EFontVariant fontVariant() { return _font_variant; }
+    
     CachedImage *cursorImage() const { return inherited->cursor_image; }
     
 
@@ -810,6 +816,7 @@ public:
     void setPaddingRight(Length v)  {  SET_VAR(surround,padding.right,v) }
 
     void setCursor( ECursor c ) { _cursor_style = c; }
+    void setFontVariant( EFontVariant f ) { _font_variant = f; }
     void setCursorImage( CachedImage *v ) { SET_VAR(inherited,cursor_image,v) }
 
     bool htmlHacks() const { return _htmlHacks; }

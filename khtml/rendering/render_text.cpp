@@ -306,13 +306,17 @@ void RenderText::setStyle(RenderStyle *_style)
     if(m_lineHeight<=0)
         m_lineHeight = metrics().height();
 
-    // ### does not work if texttransform is set to None again!
-    switch(style()->textTransform()) {
-       case CAPITALIZE:  setText(str->capitalize());  break;
-       case UPPERCASE:   setText(str->upper());       break;
-       case LOWERCASE:   setText(str->lower());       break;
-       case NONE:
-       default:;
+    if ( style()->fontVariant() == SMALL_CAPS ) {
+	setText( str->upper() );
+    } else {
+	// ### does not work if texttransform is set to None again!
+	switch(style()->textTransform()) {
+	    case CAPITALIZE:  setText(str->capitalize());  break;
+	    case UPPERCASE:   setText(str->upper());       break;
+	    case LOWERCASE:   setText(str->lower());       break;
+	    case NONE:
+	    default:;
+	}
     }
 }
 
