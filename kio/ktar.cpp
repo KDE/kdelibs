@@ -28,10 +28,23 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <kdebug.h>
+#include <kurl.h>
+#include <kmimetype.h>
+
+#include <kfilterdev.h>
+#include <kfilterbase.h>
 
 #include "ktar.h"
 
 template class QDict<KTarEntry>;
+
+class KTarBase::KTarBasePrivate
+{
+public:
+
+  QIODevice * dev;
+  KTarDirectory* rootDir;
+};
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////// KTarBase ///////////////////////////////////
@@ -40,18 +53,33 @@ template class QDict<KTarEntry>;
 KTarBase::KTarBase()
 {
   m_open = false;
-  m_dir = 0;
+  d = new KTarBasePrivate;
+  d->rootDir = 0;
+  d->dev = 0L;
 }
 
 KTarBase::~KTarBase()
 {
   if ( m_open )
     close();
-  delete m_dir;
+  delete d->rootDir;
+  delete d;
+}
+
+void KTarBase::setDevice( QIODevice * dev )
+{
+  d->dev = dev;
+}
+
+QIODevice * KTarBase::device() const
+{
+  return d->dev;
 }
 
 bool KTarBase::open( int mode )
 {
+  d->dev->open( mode );
+
   if ( m_open )
     close();
 
@@ -61,7 +89,7 @@ bool KTarBase::open( int mode )
 
   if ( mode == IO_ReadOnly )
   {
-    // We'll use the permission and user/group of m_dir
+    // We'll use the permission and user/group of d->rootDir
     // for any directory we emulate (see findOrCreate)
       //struct stat buf;
       //stat( m_filename, &buf );
@@ -71,7 +99,8 @@ bool KTarBase::open( int mode )
     QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
     QString groupname = grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
 
-    m_dir = new KTarDirectory( this, QString::fromLatin1("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString::null );
+    //kdDebug() << "Making root dir " << endl;
+    d->rootDir = new KTarDirectory( this, QString::fromLatin1("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString::null );
 
     // read dir infos
     char buffer[ 0x200 ];
@@ -142,14 +171,17 @@ bool KTarBase::open( int mode )
         if ( typeflag == '1' )
           isdir = true;
         bool islink = ( typeflag == '1' || typeflag == '2' );
-        kdDebug() << "typeflag=" << typeflag << " islink=" << islink << endl;
+        //kdDebug() << "typeflag=" << typeflag << " islink=" << islink << endl;
 
         if (isdir)
           access |= S_IFDIR; // f*cking broken tar files
 
         KTarEntry* e;
         if ( isdir )
+        {
+          //kdDebug() << "KTarBase::open directory " << nm << endl;
           e = new KTarDirectory( this, nm, access, time, user, group, symlink );
+        }
         else
         {
           // read size
@@ -167,32 +199,20 @@ bool KTarBase::open( int mode )
           }
 
           int rest = size % 0x200;
-
-          // Read content
-          QByteArray arr( size );
-          if ( size )
-          {
-            assert( arr.data() );
-            int n = read( arr.data(), size );
-            if ( n != size )
-              arr.resize( n );
-
-            // Skip align bytes
-            if ( rest )
-            {
-              //gzseek( m_f, 0x200 - rest, SEEK_CUR );
-              QByteArray dummy( 0x200 - rest );
-              assert( dummy.data() );
-              read( dummy.data(), 0x200 - rest );
-            }
-          }
+          //kdDebug() << "KTarBase::open file " << nm << " size=" << size << endl;
 
           e = new KTarFile( this, nm, access, time, user, group, symlink,
-                            position(), size, arr );
+                            position(), size, QByteArray() );
+
+          // Skip contents + align bytes
+          int skip = size + (rest ? 0x200 - rest : 0);
+          //kdDebug() << "KTarBase::open skipping " << skip << endl;
+          if (! d->dev->at( d->dev->at() + skip ) )
+              kdWarning() << "KTarBase::open skipping " << skip << " failed" << endl;
         }
 
         if ( pos == -1 )
-          m_dir->addEntry( e );
+          d->rootDir->addEntry( e );
         else
         {
           // In some tar files we can find dir/./file => call cleanDirPath
@@ -204,7 +224,7 @@ bool KTarBase::open( int mode )
       }
       else
       {
-        qDebug("Terminating. Read %d bytes, first one is %d", n, buffer[0]);
+        //qDebug("Terminating. Read %d bytes, first one is %d", n, buffer[0]);
         ende = true;
       }
     } while( !ende );
@@ -218,7 +238,7 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
 {
   //kdDebug() << "KTarBase::findOrCreate " << path << endl;
   if ( path == "" || path == "/" ) // root dir => found
-    return m_dir;
+    return d->rootDir;
   // Important note : for tar files containing absolute paths
   // (i.e. beginning with "/"), this means the leading "/" will
   // be removed (no KDirectory for it), which is exactly the way
@@ -226,9 +246,9 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
   // See also KTarDirectory::entry().
 
   // Already created ? => found
-  KTarEntry* d = m_dir->entry( path );
-  if ( d && d->isDirectory() )
-    return (KTarDirectory *) d;
+  KTarEntry* ent = d->rootDir->entry( path );
+  if ( ent && ent->isDirectory() )
+    return (KTarDirectory *) ent;
 
   // Otherwise go up and try again
   int pos = path.findRev( '/' );
@@ -236,7 +256,7 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
   QString dirname;
   if ( pos == -1 ) // no more slash => create in root dir
   {
-    parent =  m_dir;
+    parent =  d->rootDir;
     dirname = path;
   }
   else
@@ -246,11 +266,11 @@ KTarDirectory * KTarBase::findOrCreate( const QString & path )
     parent = findOrCreate( left ); // recursive call... until we find an existing dir.
   }
 
-  kdDebug() << "KTar : found parent " << parent->name() << " adding " << dirname << " to ensure " << path << endl;
+  //kdDebug() << "KTar : found parent " << parent->name() << " adding " << dirname << " to ensure " << path << endl;
   // Found -> add the missing piece
-  KTarDirectory * e = new KTarDirectory( this, dirname, m_dir->permissions(),
-                                         m_dir->date(), m_dir->user(),
-                                         m_dir->group(), QString::null );
+  KTarDirectory * e = new KTarDirectory( this, dirname, d->rootDir->permissions(),
+                                         d->rootDir->date(), d->rootDir->user(),
+                                         d->rootDir->group(), QString::null );
   parent->addEntry( e );
   return e; // now a directory to <path> exists
 }
@@ -260,10 +280,11 @@ void KTarBase::close()
   if ( !m_open )
     return;
 
+  d->dev->close();
   m_dirList.clear();
 
-  delete m_dir;
-  m_dir = 0;
+  delete d->rootDir;
+  d->rootDir = 0;
   m_open = false;
 }
 
@@ -272,7 +293,7 @@ const KTarDirectory* KTarBase::directory() const
   if ( !isOpened() )
     qWarning( "KTarBase::directory: You must open the tar file before reading it\n");
 
-  return m_dir;
+  return d->rootDir;
 }
 
 
@@ -489,92 +510,68 @@ void KTarBase::fillBuffer( char * buffer,
 /////////////////////////// KTarGz ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+class KTarGz::KTarGzPrivate
+{
+public:
+    KTarGzPrivate() {}
+};
 
+// BCI: remove and merge
 KTarGz::KTarGz( const QString& filename )
 {
   m_filename = filename;
+  d = new KTarGzPrivate;
+  KURL url;
+  url.setPath( filename );
+  QString mimetype = KMimeType::findByURL( url )->name();
+//kdDebug() << "KTarGz::KTarGz mimetype=" << mimetype << endl;
+  if (mimetype == "application/x-tgz" || mimetype == "application/x-targz") // the latter is deprecated but might still be around
+    // that's a gzipped tar file, so ask for gzip filter
+    mimetype = "application/x-gzip";
+  else if ( mimetype == "application/x-tbz" ) // that's a bzipped2 tar file, so ask for bz2 filter
+    mimetype = "application/x-bzip2";
+  QIODevice * dev = KFilterDev::deviceForFile( filename, mimetype );
+  if ( dev )
+    setDevice( dev );
+}
+
+KTarGz::KTarGz( const QString& filename, const QString & mimetype )
+{
+  m_filename = filename;
+  d = new KTarGzPrivate;
+  QIODevice * dev = KFilterDev::deviceForFile( filename, mimetype );
+  if ( dev )
+    setDevice( dev );
+}
+
+KTarGz::KTarGz( QIODevice * dev )
+{
+  d = new KTarGzPrivate;
+  setDevice( dev );
 }
 
 KTarGz::~KTarGz()
 {
-}
-
-
-bool KTarGz::open( int mode )
-{
-  const char* m;
-  if ( mode == IO_ReadOnly )
-    m = "rb";
-  else if ( mode == IO_WriteOnly )
-    m = "wb";
-  else
-  {
-    qWarning("KTarGz::open: You can only pass IO_ReadOnly or IO_WriteOnly as mode\n");
-    return false;
-  }
-
-  m_f = gzopen( QFile::encodeName(m_filename), m );
-  if ( !m_f )
-    return false;
-
-  return KTarBase::open( mode );
+  if ( !m_filename.isEmpty() )
+    delete device(); // we created it ourselves
+  delete d;
 }
 
 int KTarGz::read( char * buffer, int len )
 {
-  return gzread( m_f, buffer, len );
+  return device()->readBlock( buffer, len );
 }
 
 void KTarGz::write( const char * buffer, int len )
 {
-  gzwrite( m_f, (char *)buffer, len );
+  device()->writeBlock( buffer, len );
 }
 
 int KTarGz::position()
 {
-  return (int)gztell( m_f );
+  return device()->at();
 }
 
-void KTarGz::close()
-{
-  KTarBase::close();
-  gzclose( m_f );
-}
-
-
-////////////////////////////////////////////////////////////////////////
-/////////////////////////// KTarData ///////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-
-
-KTarData::KTarData( QDataStream * str )
-{
-  m_str = str;
-}
-
-KTarData::~KTarData()
-{
-}
-
-bool KTarData::open( int mode )
-{
-  return KTarBase::open( mode );
-}
-
-int KTarData::read( char * buffer, int len )
-{
-  return m_str->device()->readBlock( buffer, len );
-}
-
-void KTarData::write( const char * buffer, int len )
-{
-  m_str->device()->writeBlock( buffer, len );
-}
-
-int KTarData::position()
-{
-  return m_str->device()->at();
-}
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////// KTarEntry //////////////////////////////////
@@ -628,8 +625,24 @@ int KTarFile::size() const
 
 QByteArray KTarFile::data() const
 {
-  // return ((KTarFile*)this)->tar()->data( m_pos, m_size );
-  return m_data;
+  // We don't want to put the data in m_data, it wouldn't get freed until
+  // the deletion of the KTarGz. But this also means, data() should be called
+  // with care (only once per file).
+
+  // return m_data;
+
+  tar()->device()->at( m_pos );
+
+  // Read content
+  QByteArray arr( m_size );
+  if ( m_size )
+  {
+    assert( arr.data() );
+    int n = tar()->device()->readBlock( arr.data(), m_size );
+    if ( n != m_size )
+      arr.resize( n );
+  }
+  return arr;
 }
 
 ////////////////////////////////////////////////////////////////////////

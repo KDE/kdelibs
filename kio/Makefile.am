@@ -44,7 +44,7 @@ libksycoca_la_SOURCES = \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
 	yacc.c lex.c kprotocolinfo.cpp kprotocolinfofactory.cpp \
-	chmodjob.cpp kscan.cpp \
+	chmodjob.cpp kscan.cpp ktar.cpp \
 	ksycoca.skel
 
 #This dependency is needed, cause am_edit does not include it automatically
@@ -66,7 +66,7 @@ libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 libkio_la_SOURCES = \
-	kshred.cpp ktar.cpp \
+	kshred.cpp \
 	kprotocolmanager.cpp scheduler.cpp \
 	connection.cpp \
 	slaveinterface.cpp job.cpp  \

@@ -92,7 +92,7 @@ QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString &
 
 bool KFilterDev::open( int mode )
 {
-    kdDebug() << "KFilterDev::open " << mode << endl;
+    //kdDebug() << "KFilterDev::open " << mode << endl;
     if ( mode == IO_ReadOnly )
     {
         d->buffer.resize(0);
@@ -116,7 +116,7 @@ bool KFilterDev::open( int mode )
 
 void KFilterDev::close()
 {
-    kdDebug() << "KFilterDev::close" << endl;
+    //kdDebug() << "KFilterDev::close" << endl;
     if ( filter->mode() == IO_WriteOnly )
         writeBlock( 0L, 0 ); // finish writing
     //kdDebug() << "KFilterDev::close. Calling terminate()." << endl;

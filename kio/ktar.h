@@ -32,13 +32,16 @@ class KTarFile;
 
 /**
  * @short generic class for reading/writing tar archives
- * Common functionality for KTarGz and KTarData
+ * Doesn't really have any reason for being separated from KTarGz anymore.
+ * Will be merged with KTarGz and renamed to KTar in KDE 3.0
  * @author David Faure <faure@kde.org>
  */
 class KTarBase
 {
 protected:
+  // Deprecated
   KTarBase();
+  KTarBase(QIODevice * dev);
   virtual ~KTarBase();
 
 public:
@@ -83,6 +86,9 @@ public:
    */
   const KTarDirectory* directory() const;
 
+  QIODevice * device() const;
+  void setDevice( QIODevice * dev );
+
 protected:
   /**
    * Read @p len data into @p buffer - reimplemented
@@ -107,7 +113,7 @@ protected:
    */
   KTarDirectory * findOrCreate( const QString & path );
 
-  /** 
+  /**
    * @internal
    * Fills @p buffer for writing a file as required by the tar format
    * Has to be called LAST, since it does the checksum
@@ -116,15 +122,17 @@ protected:
    */
   void fillBuffer( char * buffer, const char * mode, int size, char typeflag, const char * uname, const char * gname );
 
-  KTarDirectory* m_dir;
+  class KTarBasePrivate;
+  KTarBasePrivate * d;
   bool m_open;
   QStringList m_dirList;
   char m_mode;
 };
 
 /**
- * @short A class for reading/writing gzipped tar balls.
- * @author Torben Weis <weis@kde.org>
+ * @short A class for reading/writing optionnally-gzipped tar balls.
+ * Should be named KTar and be merged back with KTarBase - in KDE 3.0.
+ * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
  */
 class KTarGz : public KTarBase
 {
@@ -140,29 +148,31 @@ public:
   KTarGz( const QString& filename );
 
   /**
+   * Creates an instance that operates on the given file,
+   * using the compression filter associated to given mimetype.
+   * @param filename path to the file
+   * @param mimetype "application/x-gzip" or "application/x-bzip2"
+   * Do not use application/x-tgz or so. Only the compression layer !
+   *
+   * @see #open
+   */
+  KTarGz( const QString& filename, const QString & mimetype );
+
+  /**
+   * Creates an instance that operates on the given device.
+   * The device can be compressed (KFilterDev) or not (QFile, etc.).
+   */
+  KTarGz( QIODevice * dev );
+
+  /**
    * If the tar ball is still opened, then it will be
    * closed automatically by the destructor.
    */
   virtual ~KTarGz();
 
   /**
-   * Opens the tar file for reading or writing.
-   *
-   * @param mode may be IO_ReadOnly or IO_WriteOnly
-   *
-   * @see #close
-   */
-  virtual bool open( int mode );
-
-  /**
-   * Closes the tar file.
-   *
-   * @see #open
-   */
-  virtual void close();
-
-  /**
    * The name of the tar file, as passed to the constructor
+   * Null if you used the QIODevice constructor.
    */
   QString fileName() { return m_filename; }
 
@@ -183,61 +193,9 @@ private:
    */
   virtual int position();
 
-  gzFile m_f;
+  class KTarGzPrivate;
+  KTarGzPrivate * d;
   QString m_filename;
-};
-
-/**
- * For compatibility with old naming
- * May become the real name again at some point...
- */
-#define KTar KTarGz;
-
-/**
- * This class operates on a QDataStream, which is assumed to
- * be a normal tar archive (not gzipped). This is mainly for use in kio_tar,
- * where the encoding/decoding can be done by any filtering protocol (gzip,
- * bzip2,...) and the data being given by any protocol (file, ftp, http, ...)
- * Using a data stream allows to process a memory buffer (QByteArray) or a file.
- */
-class KTarData : public KTarBase
-{
-public:
-  /**
-   * Constructor, probably
-   */
-  KTarData( QDataStream * str );
-
-  virtual ~KTarData();
-
-  /**
-   * Opens the tar data for reading or writing.
-   * @param mode may be IO_ReadOnly or IO_WriteOnly
-   */
-  virtual bool open( int mode );
-
-  /**
-   * For symmetry
-   */
-  virtual void close() {}
-
-private:
-  /**
-   * Read @p len data into @p buffer
-   * @return length read
-   */
-  virtual int read( char * buffer, int len );
-
-  /**
-   * Write @p len data from @p buffer
-   */
-  virtual void write( const char * buffer, int len );
-
-  /**
-   * @return the current position
-   */
-  virtual int position();
-  QDataStream * m_str;
 };
 
 /**
@@ -294,7 +252,7 @@ public:
   virtual bool isDirectory() const { return false; }
 
 protected:
-  KTarBase* tar() { return m_tar; }
+  KTarBase* tar() const { return m_tar; }
 
 private:
   QString m_name;
@@ -317,7 +275,7 @@ class KTarFile : public KTarEntry
 public:
   KTarFile( KTarBase* tar, const QString& name, int access, int date,
             const QString& user, const QString& group, const QString &symlink,
-            int pos, int size, const QByteArray& data );
+            int pos, int size, const QByteArray& /* remove me */);
 
   virtual ~KTarFile() { }
 
@@ -336,6 +294,11 @@ public:
   QByteArray data() const;
 
   /**
+   * TODO : a method that returns a KLimitedIODevice (to be written)
+   * on top of the underlying QIODevice, to be used in e.g. koffice
+   */
+
+  /**
    * @return true, since this entry is a file
    */
   virtual bool isFile() const { return true; }
@@ -343,7 +306,7 @@ public:
 private:
   int m_pos;
   int m_size;
-  QByteArray m_data;
+  QByteArray m_data; //remove-me
 };
 
 /**
