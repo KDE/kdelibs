@@ -205,6 +205,7 @@ GlobalImp::~GlobalImp() { }
 void GlobalImp::mark(Imp*)
 {
   ObjectImp::mark();
+  /* TODO: remove in next version */
   if (filter && filter->refcount == 0)
     filter->mark();
 }
@@ -224,7 +225,7 @@ KJSO GlobalImp::get(const UString &p) const
 void GlobalImp::put(const UString &p, const KJSO& v)
 {
   if (filter)
-    filter->put(p, v);
+    filter->put(p, v);   /* TODO: remove in next version */
   else
     Imp::put(p, v);
 }

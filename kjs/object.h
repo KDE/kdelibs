@@ -574,11 +574,13 @@ namespace KJS {
      * Set a filter object that will intercept all put() and get() calls
      * to the global object. If this object returns Undefined on get() the
      * request will be passed on the global object.
+     * @deprecated
      */
     void setFilter(const KJSO &f);
     /**
      * Return a handle to the filter object (see @ref setFilter()).
      * Null if no filter has been installed.
+     * @deprecated
      */
     KJSO filter() const;
   private:
