@@ -55,6 +55,7 @@ KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
 KCrash::HandlerType KCrash::_crashHandler = 0;
 const char *KCrash::appName = 0;
 const char *KCrash::appPath = 0;
+bool KCrash::safer = false;
 
 // This function sets the function which should be called when the
 // application crashes and the
@@ -153,7 +154,7 @@ KCrash::defaultCrashHandler (int sig)
         if (pid <= 0) {
           // this code is leaking, but this should not hurt cause we will do a
           // exec() afterwards. exec() is supposed to clean up.
-          char * argv[18]; // don't forget to update this
+          char * argv[24]; // don't forget to update this
           int i = 0;
 
           // argument 0 has to be drkonqi
@@ -219,6 +220,9 @@ KCrash::defaultCrashHandler (int sig)
             argv[i++] = qstrdup("--startupid");
             argv[i++] = qstrdup(kapp->startupId());
           }
+
+          if ( safer )
+            argv[i++] = qstrdup("--safer");
 
           // NULL terminated list
           argv[i++] = NULL;

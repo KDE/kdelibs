@@ -38,6 +38,7 @@ class KCrash
  private: // ;o)
   static const char *appName;
   static const char *appPath;
+  static bool safer;
 
  public:
   /**
@@ -84,6 +85,11 @@ class KCrash
    * @return the emergency save function
    */
   static HandlerType emergencySaveFunction() { return _emergencySaveFunction; }
+
+  /**
+   * Set whether to start drkonqi without arbitrary disk access
+   */
+  static void setSafer( bool on ) { safer = on; }
 
   /**
    * Sets the application @p path which should be passed to
