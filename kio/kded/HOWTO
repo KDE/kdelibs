@@ -1,7 +1,7 @@
 HOWTO Make KDED Modules.
 
 KDED Modules are very similar to modules for the control center. A KDED Module
-is loaded when a call to it is made.
+is loaded when a call is made to it.
 
 A KDED Module needs to provide a factory method that creates an object that
 is derived from KDEDModule. The name of a factory method always starts with 
