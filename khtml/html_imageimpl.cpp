@@ -113,7 +113,14 @@ void HTMLImageElementImpl::parseAttribute(Attribute *attr)
     switch (attr->id)
     {
     case ATTR_SRC:
-	imageURL = attr->value();
+	if(pixmap)
+	{
+	    // we already loaded an image. so this is some jscript call
+	    KHTMLCache::free(imageURL, this);
+	    imageURL = document->requestImage(this, attr->value());
+	}
+	else
+	    imageURL = attr->value();
 	break;
     case ATTR_WIDTH:
 	predefinedWidth = attr->val()->toLength();
