@@ -112,15 +112,26 @@ void KProcessController::theSigCHLDHandler(int )
 void KProcessController::slotDoHousekeeping(int )
 {
   KProcess *proc;
-  int bytes_read;
+  int bytes_read = 0;
   pid_t pid;
   int status;
 
-  bytes_read  = ::read(fd[0], &pid, sizeof(pid_t));
-  bytes_read += ::read(fd[0], &status, sizeof(int));
+  // read pid and status from the pipe.
 
-  if (bytes_read != sizeof(int)+sizeof(pid_t))
-	fprintf(stderr,"Error: Could not read info from signal handler!\n");
+  int len = sizeof(pid_t) + sizeof(int);
+  unsigned char buf[sizeof(pid_t) + sizeof(int)];
+  while (bytes_read < len) {
+      int r = ::read(fd[0], buf + bytes_read, len - bytes_read);
+      if (r > 0) bytes_read += r;
+  }
+  if (bytes_read != len) {
+	fprintf(stderr,
+	       "Error: Could not read info from signal handler %d <> %d!\n",
+	       bytes_read, len);
+	return;           // it makes no sense to continue here!
+  }
+  pid    = *((pid_t*) buf);
+  status = *((int*) (buf + sizeof(pid_t)));
 
   bool found = false;
  
