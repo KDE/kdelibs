@@ -213,7 +213,9 @@ public final class KJASAppletClassLoader
     }
 
     AccessControlContext getAccessControlContext() {
-        return acc;
+        CodeSource cs = new CodeSource(codeBaseURL, null);
+        ProtectionDomain pd = new ProtectionDomain(cs, getPermissions(cs), this,null);
+        return new AccessControlContext(new ProtectionDomain[] {pd});
     }
     Hashtable getJSReferencedObjects() {
         return jsReferencedObjects;

@@ -101,7 +101,6 @@ public final class KJASAppletStub
         private int request_state = CLASS_LOADED;
         private int current_state = UNKNOWN;
         private Vector actions = new Vector();
-        private AccessControlContext acc;
 
         RunThread() {
             super("KJAS-AppletStub-" + appletID + "-" + appletName);
@@ -226,6 +225,7 @@ public final class KJASAppletStub
          * RunThread run(), loop until state is TERMINATE
          */
         public void run() {
+            AccessControlContext acc = loader.getAccessControlContext();
             while (true) {
                 int nstate = getRequestState();
                 if (nstate >= TERMINATE)
@@ -234,16 +234,17 @@ public final class KJASAppletStub
                     AccessController.doPrivileged(
                             new PrivilegedAction() {
                                 public Object run() {
+                                    AppletAction action = (AppletAction) actions.remove(0);
                                     try {
-                                        AppletAction action = (AppletAction) actions.remove(0);
                                         action.apply();
                                     } catch (Exception ex) {
                                         Main.debug("Error during action " + ex);
+                                        action.fail();
                                     }
                                     return null;
                                 }
                             },
-                            loader.getAccessControlContext());
+                            acc);
                 } else { // move to nstate
                     try {
                         doState(nstate);
@@ -720,7 +721,6 @@ public final class KJASAppletStub
                 }
             } catch (Exception e) {
                 Main.debug("callMember threw exception: " + e.toString());
-                e.printStackTrace();
             }
             Main.protocol.sendMemberValue(context.getID(), KJASProtocolHandler.CallMember, call_id, ret[0], ret[1], value.toString()); 
         }
