@@ -289,7 +289,7 @@ static void readIcon(NETWinInfoPrivate *p) {
 
 	unsigned long s = (p->icons[j].size.width *
 			   p->icons[j].size.height * 4);
-	
+
 	if ( i + s - 1 > proplen ) {
 	    break;
 	}
@@ -1086,11 +1086,11 @@ unsigned long NETRootInfo::event(XEvent *event) {
 	Bool done = False;
 	Bool compaction = False;
 	while (! done) {
-	
+
 #ifdef   NETWMDEBUG
 	    fprintf(stderr, "NETRootInfo::event: loop fire\n");
 #endif
-	
+
 	    if (pe.xproperty.atom == net_client_list)
 		dirty |= ClientList;
 	    else if (pe.xproperty.atom == net_client_list_stacking)
@@ -1188,6 +1188,10 @@ void NETRootInfo::update(unsigned long dirty) {
 
 		    delete [] p->clients;
 		} else {
+#ifdef    NETWMDEBUG
+		    fprintf(stderr, "NETRootInfo::update: client list null, creating\n");
+#endif
+
 		    unsigned long n;
 		    for (n = 0; n < nitems_ret; n++) {
 			addClient(wins[n]);
@@ -1401,7 +1405,7 @@ void NETRootInfo::update(unsigned long dirty) {
     }
 
     if (dirty & DesktopNames) {
-	if (XGetWindowProperty(p->display, p->root, net_current_desktop,
+	if (XGetWindowProperty(p->display, p->root, net_desktop_names,
 			       0l, (long) BUFSIZE, False, XA_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
@@ -1414,7 +1418,7 @@ void NETRootInfo::update(unsigned long dirty) {
 
 		for (s = 0, n = 0, index = 0; n < nitems_ret; n++) {
 		    if (d[n] == '\0') {
-			p->desktop_names[index++] = nstrndup((d + s), n - s);
+			p->desktop_names[index++] = nstrndup((d + s), n - s + 1);
 			s = n + 1;
 		    }
 		}
@@ -2005,21 +2009,21 @@ unsigned long NETWinInfo::event(XEvent *event) {
     }
 
     if (event->type == PropertyNotify) {
-	
+
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "NETWinInfo::event: handling PropertyNotify event\n");
 #endif
-	
+
 	XEvent pe = *event;
 
 	Bool done = False;
 	Bool compaction = False;
 	while (! done) {
-	
+
 #ifdef    NETWMDEBUG
 	    fprintf(stderr, "NETWinInfo::event: loop fire\n");
 #endif
-	
+
 	    if (pe.xproperty.atom == net_wm_name)
 		dirty |= WMName;
 	    else if (pe.xproperty.atom == net_wm_visible_name)
@@ -2043,11 +2047,11 @@ unsigned long NETWinInfo::event(XEvent *event) {
 	    else if (pe.xproperty.atom == net_wm_kde_system_tray_window_for)
 		dirty |= WMKDESystemTrayWinFor;
 	    else {
-		
+
 #ifdef    NETWMDEBUG
 		fprintf(stderr, "NETWinInfo::event: putting back event and breaking\n");
 #endif
-		
+
 		if ( compaction )
 		    XPutBackEvent(p->display, &pe);
 		break;
