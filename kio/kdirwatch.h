@@ -160,6 +160,9 @@ class KDirWatch : public QObject
     * This happens for instance when a .desktop file 
     * gets a new icon - but this isn't automatic, one has to call 
     * @ref setFileDirty() for this signal to be emitted.
+    *
+    * Note that KDirNotify is network transparent and
+    * broadcasts to all processes, so it sort of supersedes this.
     */
    void fileDirty (const QString& _file);
 
