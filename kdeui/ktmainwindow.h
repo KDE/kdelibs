@@ -232,11 +232,11 @@ public:
     void setMaximumToolBarWraps(unsigned int wraps);
 
     /**
-     * Retrieve a pointer to the toolbar with the specified ID.
+     * Retrieve a pointer to the toolbar with the specified id.
      *
      * If there is no such tool bar yet, it will be generated.
      **/
-    KToolBar *toolBar( int ID = 0 );
+    KToolBar *toolBar( int id = 0 );
 
     /**
      * Retrieve a pointer to the toolbar with the specified name.
@@ -451,7 +451,7 @@ public:
     /**
      * @return @p true if the specified toolbar exists.
      */
-    bool hasToolBar( int ID = 0 );
+    bool hasToolBar( int id = 0 );
 
     virtual KXMLGUIFactory *guiFactory();
 
@@ -463,8 +463,9 @@ public:
      * (standard) XML file for the layout purposes.
      *
      * @param xmlfile The local xmlfile (relative or absolute)
-     * @param _conserveMemory Specifiy whether createGUI should call @ref conserveMemory to free
-     *                        all memory allocated by the @ref QDomDocument .
+     * @param _conserveMemory Specifiy whether createGUI() should call
+     *     @ref KXMLGuiClient::conserveMemory() to free all memory
+     *     allocated by the @ref QDomDocument .
      */
     virtual void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = true );
 

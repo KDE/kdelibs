@@ -244,7 +244,7 @@ public:
    * @see KLineEdit
    * @return Item index.
    */
-  int insertLined (const QString& text, int ID,
+  int insertLined (const QString& text, int id,
                    const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = true,
