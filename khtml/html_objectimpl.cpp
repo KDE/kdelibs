@@ -77,7 +77,7 @@ void HTMLAppletElementImpl::parseAttribute(Attribute *attr)
 void HTMLAppletElementImpl::layout( bool deep )
 {
 
-    if(!applet) return;
+    if(!applet || layouted()) return;
 
     applet->create();
 
@@ -96,6 +96,7 @@ void HTMLAppletElementImpl::layout( bool deep )
     }
 
     applet->show();
+    setLayouted();
 }
 
 void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
@@ -111,18 +112,12 @@ void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
     printf("resizing applet to %d/%d\n", width, getHeight());
     applet->resize(width, getHeight());
     //applet->show();
+    applet->setBaseURL(view->url());
     QString tmp;
     if(base)
-    {
 	tmp = QString(base->s, base->l);
-	KURL u(view->url());
-	KURL url(u, tmp);
-	tmp = url.url();
-    }
-    else
-	tmp = view->url();
-    applet->setBaseURL(tmp);
-    tmp = QConstString(code->s, code->l).string();
+    tmp += '/' + QString(code->s, code->l);
+    printf("setting applet to %s\n", tmp.ascii());
     applet->setAppletClass(tmp);
     if(name)
 	tmp = QConstString(name->s, name->l).string();
