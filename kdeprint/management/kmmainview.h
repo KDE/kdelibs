@@ -88,6 +88,8 @@ protected:
 	void saveSettings();
 	void loadParameters();
 	void reload();
+	void loadPluginActions();
+	void removePluginActions();
 
 private:
 	KMPrinterView	*m_printerview;
@@ -100,6 +102,7 @@ private:
 	KToolBar	*m_toolbar;
 	uint 		m_timerdelay;
 	PluginComboBox	*m_plugin;
+	int			m_pactionsindex;
 };
 
 #endif

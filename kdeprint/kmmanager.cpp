@@ -416,3 +416,13 @@ int KMManager::addPrinterWizard(QWidget *parent)
 	}
 	return (-1);
 }
+
+void KMManager::createPluginActions(KActionCollection*)
+{
+}
+
+void KMManager::validatePluginActions(KActionCollection*, KMPrinter*)
+{
+}
+
+#include "kmmanager.moc"

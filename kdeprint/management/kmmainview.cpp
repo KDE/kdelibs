@@ -23,6 +23,7 @@
 #include "kmprinterview.h"
 #include "kmpages.h"
 #include "kmmanager.h"
+#include "kmuimanager.h"
 #include "kmfactory.h"
 #include "kmtimer.h"
 #include "kmvirtualmanager.h"
@@ -214,6 +215,7 @@ void KMMainView::initActions()
 	m_toolbar->insertSeparator();
 	m_actions->action("printer_configure")->plug(m_toolbar);
 	m_actions->action("printer_test")->plug(m_toolbar);
+	m_pactionsindex = m_toolbar->insertSeparator();
 	m_toolbar->insertLineSeparator();
 	m_actions->action("server_restart")->plug(m_toolbar);
 	m_actions->action("server_configure")->plug(m_toolbar);
@@ -226,6 +228,7 @@ void KMMainView::initActions()
 	m_toolbar->insertSeparator();
 	m_actions->action("view_printerinfos")->plug(m_toolbar);
 
+	loadPluginActions();
 	slotPrinterSelected(0);
 }
 
@@ -272,6 +275,8 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 		mask = m_manager->serverOperationMask();
 		m_actions->action("server_restart")->setEnabled((mask & KMManager::ServerRestarting));
 		m_actions->action("server_configure")->setEnabled((mask & KMManager::ServerConfigure));
+
+		KMFactory::self()->manager()->validatePluginActions(m_actions, p);
 	//}
 }
 
@@ -330,6 +335,14 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 			if (!printer->isClass(true))
 				m_actions->action("printer_test")->plug(m_pop);
 			m_pop->insertSeparator();
+		}
+		if (!printer->isSpecial())
+		{
+			QValueList<KAction*>	pactions = m_actions->actions("plugin");
+			for (QValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+				(*it)->plug(m_pop);
+			if (pactions.count() > 0)
+				m_pop->insertSeparator();
 		}
 	}
 	else
@@ -586,6 +599,8 @@ void KMMainView::slotPluginChange()
 
 void KMMainView::reload()
 {
+	removePluginActions();
+	loadPluginActions();
 	slotTimer();
 }
 
@@ -598,6 +613,27 @@ void KMMainView::showPrinterInfos(bool on)
 bool KMMainView::printerInfosShown() const
 {
 	return (static_cast<KToggleAction*>(m_actions->action("view_printerinfos"))->isChecked());
+}
+
+void KMMainView::loadPluginActions()
+{
+	KMFactory::self()->manager()->createPluginActions(m_actions);
+	QValueList<KAction*>	pactions = m_actions->actions("plugin");
+	int	index = m_pactionsindex;
+	for (QValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+	{
+		(*it)->plug(m_toolbar, index++);
+	}
+}
+
+void KMMainView::removePluginActions()
+{
+	QValueList<KAction*>	pactions = m_actions->actions("plugin");
+	for (QValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+	{
+		m_toolbar->removeItem((*it)->itemId(0));
+		m_actions->remove(*it);
+	}
 }
 
 #include "kmmainview.moc"

@@ -8,17 +8,14 @@
   avoid quoting problems.
 
 - graphical configuration of basic print options:
-	- default paper size
+	- default paper size (-> integrated into l10n)
 	- default margins
-	- preview program
+	- preview program (-> done in config dialog)
 
 - backport LPR plugin problem with aliases to 2.2 branch
 
 - add "Subject" or "Regarding" to kdeprintfax interface: look first
   if this is possible in efax and/or hylafax
-
-- have a look at new CUPS feature (1.2.0) for exporting PPD drivers
-  through samba-2.2 (see cupsaddsmb).
 
 - allow the use of KPrinter object without the need for the print
   dialog: should use then default printer with default settings.

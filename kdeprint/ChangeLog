@@ -75,3 +75,13 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 
 10/10/2001 Michael Goffioul <goffioul@imec.be>
   * CUPS plugin: "HP-GL/2" page added
+  * General: added a GUI to configure the preview program, into the
+    config dialog of the print manager
+
+12/10/2001 Michael Goffioul <goffioul@imec.be>
+  * general: added the possibility for a plugin to add new actions
+    to the toolbar and context menu (main use = export driver in
+    CUPS).
+  * CUPS plugin: added support to export driver to Windows client
+    through samba. Threaded operation with progress bar to notify
+    the user. Graphical equivalent to cupsaddsmb from cups-1.1.11.

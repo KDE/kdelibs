@@ -33,9 +33,12 @@ class KMDBEntry;
 class KMVirtualManager;
 class KMSpecialManager;
 class QWidget;
+class KActionCollection;
 
 class KMManager : public QObject
 {
+	Q_OBJECT
+
 friend class KMVirtualManager;
 friend class KMSpecialManager;
 friend class KMFactory;
@@ -113,6 +116,10 @@ public:
 	virtual bool restartServer();
 	virtual bool configureServer(QWidget *parent = 0);
 	virtual QStringList detectLocalPrinters();
+
+	// additional actions (for print manager)
+	virtual void createPluginActions(KActionCollection*);
+	virtual void validatePluginActions(KActionCollection*, KMPrinter*);
 
 protected:
 	// the real printer listing job is done here
