@@ -27,7 +27,7 @@
 #include "ksslpemcallback.h"
 
 int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	QCString pass;
 	Q_UNUSED(userdata);
 	Q_UNUSED(rwflag);

@@ -27,7 +27,7 @@
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -45,7 +45,7 @@
 
 
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #define sk_new d->kossl->sk_new
 #define sk_push d->kossl->sk_push
 #define sk_free d->kossl->sk_free
@@ -74,7 +74,7 @@ KSSLCertChain::KSSLCertChain() {
 
 
 KSSLCertChain::~KSSLCertChain() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   if (_chain) {
     STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
@@ -106,7 +106,7 @@ return x;
 
 
 int KSSLCertChain::depth() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   return sk_X509_num((STACK_OF(X509)*)_chain);
 #endif
 return 0;
@@ -116,7 +116,7 @@ return 0;
 QPtrList<KSSLCertificate> KSSLCertChain::getChain() {
 QPtrList<KSSLCertificate> cl;
 if (!_chain) return cl;
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
    for (int i = 0; i < sk_X509_num(x); i++) {
@@ -133,7 +133,7 @@ return cl;
 
 
 void KSSLCertChain::setChain(QPtrList<KSSLCertificate>& chain) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 if (_chain) {
     STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
@@ -157,7 +157,7 @@ if (_chain) {
 
  
 void KSSLCertChain::setChain(void *stack_of_x509) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 if (_chain) {
     STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
@@ -200,7 +200,7 @@ void KSSLCertChain::setChain(QStringList chain) {
 }
 
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #undef sk_new
 #undef sk_push
 #undef sk_free

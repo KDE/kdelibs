@@ -48,7 +48,7 @@
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -80,7 +80,7 @@ public:
 
 	KSSLCertificate::KSSLValidation m_stateCache;
 	bool m_stateCached;
-	#ifdef HAVE_SSL
+	#ifdef KSSL_HAVE_SSL
 		X509 *m_cert;
 	#endif
 	KOSSL *kossl;
@@ -93,7 +93,7 @@ KSSLCertificate::KSSLCertificate() {
 	d = new KSSLCertificatePrivate;
 	d->m_stateCached = false;
 	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
-	#ifdef HAVE_SSL
+	#ifdef KSSL_HAVE_SSL
 		d->m_cert = NULL;
 	#endif
 }
@@ -103,7 +103,7 @@ KSSLCertificate::KSSLCertificate(const KSSLCertificate& x) {
 	d = new KSSLCertificatePrivate;
 	d->m_stateCached = false;
 	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
-	#ifdef HAVE_SSL
+	#ifdef KSSL_HAVE_SSL
 		d->m_cert = NULL;
 		setCert(KOSSL::self()->X509_dup(const_cast<KSSLCertificate&>(x).getCert()));
 		KSSLCertChain *c = x.d->_chain.replicate();
@@ -115,7 +115,7 @@ KSSLCertificate::KSSLCertificate(const KSSLCertificate& x) {
 
 
 KSSLCertificate::~KSSLCertificate() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	if (d->m_cert)
 		d->kossl->X509_free(d->m_cert);
 #endif
@@ -130,7 +130,7 @@ KSSLCertChain& KSSLCertificate::chain() {
 
 KSSLCertificate *KSSLCertificate::fromX509(X509 *x5) {
 KSSLCertificate *n = NULL;
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	if (x5) {
 		n = new KSSLCertificate;
 		n->setCert(KOSSL::self()->X509_dup(x5));
@@ -142,7 +142,7 @@ return n;
 
 KSSLCertificate *KSSLCertificate::fromString(QCString cert) {
 KSSLCertificate *n = NULL;
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	if (cert.length() == 0)
 		return NULL;
 
@@ -165,7 +165,7 @@ return n;
 QString KSSLCertificate::getSubject() const {
 QString rc = "";
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	char *t = d->kossl->X509_NAME_oneline(d->kossl->X509_get_subject_name(d->m_cert), 0, 0);
 	if (!t)
 		return rc;
@@ -179,7 +179,7 @@ return rc;
 QString KSSLCertificate::getSerialNumber() const {
 QString rc = "";
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	ASN1_INTEGER *aint = d->kossl->X509_get_serialNumber(d->m_cert);
 	if (aint) {
 		rc = ASN1_INTEGER_QString(aint);
@@ -193,7 +193,7 @@ return rc;
 QString KSSLCertificate::getSignatureText() const {
 QString rc = "";
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 char *s;
 int n, i;
 
@@ -221,7 +221,7 @@ return rc;
 QString KSSLCertificate::getMD5DigestText() const {
 QString rc = "";
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	unsigned int n;
 	unsigned char md[EVP_MAX_MD_SIZE];
 
@@ -246,7 +246,7 @@ return rc;
 QString KSSLCertificate::getKeyType() const {
 QString rc = "";
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	EVP_PKEY *pkey = d->kossl->X509_get_pubkey(d->m_cert);
 	if (pkey) {
 		#ifndef NO_RSA
@@ -273,7 +273,7 @@ QString KSSLCertificate::getPublicKeyText() const {
 QString rc = "";
 char *x = NULL;
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	EVP_PKEY *pkey = d->kossl->X509_get_pubkey(d->m_cert);
 	if (pkey) {
 		rc = i18n("Unknown", "Unknown key algorithm");
@@ -366,7 +366,7 @@ return rc;
 QString KSSLCertificate::getIssuer() const {
 QString rc = "";
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	char *t = d->kossl->X509_NAME_oneline(d->kossl->X509_get_issuer_name(d->m_cert), 0, 0);
 
 	if (!t)
@@ -380,7 +380,7 @@ return rc;
 }
 
 void KSSLCertificate::setChain(void *c) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	d->_chain.setChain(c);
 #endif
 	d->m_stateCached = false;
@@ -388,7 +388,7 @@ void KSSLCertificate::setChain(void *c) {
 }
 
 void KSSLCertificate::setCert(X509 *c) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 d->m_cert = c;
 if (c) {
   	d->_extensions.flags = 0;
@@ -488,7 +488,7 @@ d->m_stateCache = KSSLCertificate::Unknown;
 }
 
 X509 *KSSLCertificate::getCert() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	return d->m_cert;
 #endif
 return 0;
@@ -512,7 +512,7 @@ bool KSSLCertificate::isValid() {
 
 int KSSLCertificate::purposeToOpenSSL(KSSLCertificate::KSSLPurpose p) const {
 int rc = 0;
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	if (p == KSSLCertificate::SSLServer) {
 		rc = X509_PURPOSE_SSL_SERVER;
 	} else if (p == KSSLCertificate::SSLClient) {
@@ -550,7 +550,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLP
 	if (!d->m_stateCached)
 		d->_lastPurpose = purpose;
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 X509_STORE *certStore;
 X509_LOOKUP *certLookup;
 X509_STORE_CTX *certStoreCTX;
@@ -675,7 +675,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::processError(int ec) {
 KSSLCertificate::KSSLValidation rc;
 
 rc = KSSLCertificate::Unknown;
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	switch (ec) {
 	case X509_V_OK:       // OK
 		rc = KSSLCertificate::Ok;
@@ -758,7 +758,7 @@ return rc;
 
 
 QString KSSLCertificate::getNotBefore() const {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 return ASN1_UTCTIME_QString(X509_get_notBefore(d->m_cert));
 #else
 return QString::null;
@@ -767,7 +767,7 @@ return QString::null;
 
 
 QString KSSLCertificate::getNotAfter() const {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 return ASN1_UTCTIME_QString(X509_get_notAfter(d->m_cert));
 #else
 return QString::null;
@@ -776,7 +776,7 @@ return QString::null;
 
 
 QDateTime KSSLCertificate::getQDTNotBefore() const {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 return ASN1_UTCTIME_QDateTime(X509_get_notBefore(d->m_cert), NULL);
 #else
 return QDateTime::currentDateTime();
@@ -785,7 +785,7 @@ return QDateTime::currentDateTime();
 
 
 QDateTime KSSLCertificate::getQDTNotAfter() const {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 return ASN1_UTCTIME_QDateTime(X509_get_notAfter(d->m_cert), NULL);
 #else
 return QDateTime::currentDateTime();
@@ -794,7 +794,7 @@ return QDateTime::currentDateTime();
 
 
 int operator==(KSSLCertificate &x, KSSLCertificate &y) {
-#ifndef HAVE_SSL
+#ifndef KSSL_HAVE_SSL
   return 1;
 #else
   if (!KOSSL::self()->X509_cmp(x.getCert(), y.getCert())) return 1;
@@ -807,7 +807,7 @@ KSSLCertificate *KSSLCertificate::replicate() {
 // The new certificate doesn't have the cached value.  It's probably
 // better this way.  We can't anticipate every reason for doing this.
 KSSLCertificate *newOne = new KSSLCertificate();
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	newOne->setCert(d->kossl->X509_dup(getCert()));
 	KSSLCertChain *c = d->_chain.replicate();
 	newOne->setChain(c->rawChain());
@@ -859,7 +859,7 @@ return i18n("The certificate is invalid.");
 
 QByteArray KSSLCertificate::toDer() {
 QByteArray qba;
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 unsigned int certlen = d->kossl->i2d_X509(getCert(), NULL);
 // These should technically be unsigned char * but it doesn't matter
 // for our purposes
@@ -907,7 +907,7 @@ return qba;
 // what a piece of crap this is
 QByteArray KSSLCertificate::toNetscape() {
 QByteArray qba;
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 ASN1_HEADER ah;
 ASN1_OCTET_STRING os;
 KTempFile ktf;
@@ -940,7 +940,7 @@ return qba;
 
 QString KSSLCertificate::toText() {
 QString text;
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 KTempFile ktf;
 
 	d->kossl->X509_print(ktf.fstream(), getCert());
@@ -961,7 +961,7 @@ return text;
 
 
 bool KSSLCertificate::setCert(QString& cert) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 QByteArray qba, qbb = cert.local8Bit().copy();
 	KCodecs::base64Decode(qbb, qba);
 	unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
