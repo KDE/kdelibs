@@ -27,9 +27,9 @@
 
 class IDLFileReg : StartupClass {
 	long nr;
-	char *_name, *_contents;
+	const char *_name, *_contents;
 public:
-	IDLFileReg(char *name, char *contents);
+	IDLFileReg(const char *name, const char *contents);
 	void startup();
 	void shutdown();
 };

@@ -21,7 +21,7 @@
 
 #include "core.h"
 
-IDLFileReg::IDLFileReg(char *name, char *contents)
+IDLFileReg::IDLFileReg(const char *name, const char *contents)
 {
 	_name = name;
 	_contents = contents;
