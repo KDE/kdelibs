@@ -101,6 +101,8 @@ void KGlobalSettings::initStatic()
     s_trashPath = new QString();
 
     KConfig *config = KGlobal::config();
+    bool dollarExpansion = config->isDollarExpansion();
+    config->setDollarExpansion(true);
     KConfigGroupSaver cgs( config, "Paths" );
 
     // Desktop Path
@@ -127,6 +129,8 @@ void KGlobalSettings::initStatic()
     *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
     if ( s_autostartPath->right(1) != "/")
 	*s_autostartPath += "/";
+
+    config->setDollarExpansion(dollarExpansion);
 }
 
 QColor KGlobalSettings::toolBarHighlightColor()
