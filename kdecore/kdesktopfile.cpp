@@ -27,6 +27,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
+#include "kurl.h"
 #include "kconfigbackend.h"
 
 #include "kdesktopfile.h"
@@ -128,7 +129,15 @@ QString KDesktopFile::readURL() const
 	return devURL;
 
     } else {
-	return readEntry("URL");
+	QString url = readEntry("URL");
+        if ( !url.isEmpty() && url[0] == '/' )
+        {
+            // Handle absolute paths as such (i.e. we need to escape them)
+            KURL u;
+            u.setPath( url );
+            return u.url();
+        }
+        return url;
     }
 }
 
