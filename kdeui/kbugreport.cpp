@@ -146,7 +146,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   glay->addMultiCellWidget( tmpLabel, 4, 4, 1, 2 );
 
   // Configure email button
-  m_configureEmail = new QPushButton( i18n("Configure E-Mail"),
+  m_configureEmail = new QPushButton( i18n("Configure E-Mail..."),
 						  parent );
   connect( m_configureEmail, SIGNAL( clicked() ), this,
 	   SLOT( slotConfigureEmail() ) );
@@ -155,7 +155,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   // Severity
   m_bgSeverity = new QHButtonGroup( i18n("Se&verity"), parent );
   const char * sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
-  const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("Normal"), i18n("Wishlist"), i18n("Translation") };
+  const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("feminine","Normal"), i18n("Wishlist"), i18n("Translation") };
 
   for (int i = 0 ; i < 5 ; i++ )
   {
