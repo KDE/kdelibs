@@ -34,18 +34,17 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 
 noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 
-libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp \
-	kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp kdesktopfile.cpp \
+libkdecore_la_SOURCES = kstddirs.cpp qvariant.cpp   \
+	kconfigbase.cpp kstyle.cpp kglobalaccel.cpp \
+	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
 	kconfigbackend.cpp kcolorgroup.cpp kapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp libintl.cpp klocale.cpp \
 	fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp \
-	kpixmap.cpp dither.cpp \
-	kckey.cpp kaccel.cpp \
-	kprotocolmanager.cpp\
-	kurl.cpp ltdl.c kregexp.cpp kstyle.cpp kglobal.cpp \
-	dmalloc.cpp qvariant.cpp \
-	kstartparams.cpp kallocator.cpp vsnprintf.c
+	kpixmap.cpp dither.cpp kckey.cpp kaccel.cpp \
+	kprotocolmanager.cpp kurl.cpp ltdl.c kregexp.cpp \
+	kglobal.cpp dmalloc.cpp  kstartparams.cpp \
+	kallocator.cpp vsnprintf.c
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
 libkdecore_la_LIBADD = -lXext $(LIB_QT) $(LIBDL) $(LIB_DMALLOC)

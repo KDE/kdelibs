@@ -35,7 +35,10 @@
 #define HAVE_PROTOTYPES 
 
 extern "C" {
-	#include <jpeglib.h>
+#ifdef HAVE_STDLIB_H
+#undef HAVE_STDLIB_H
+#endif
+#include <jpeglib.h>
 }
 
 //////

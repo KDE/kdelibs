@@ -25,12 +25,13 @@
 # AM_CXXFLAGS += -pg
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = khtmlcache.cpp khtmlparser.cpp khtmljscript.cpp \
-	khtml.cpp khtmlobj.cpp khtmlfont.cpp khtmlform.cpp khtmltoken.cpp \
+libkhtml_la_SOURCES = kbrowser.cpp khtmlcache.cpp khtmlparser.cpp \
+	khtmljscript.cpp khtml.cpp khtmlobj.cpp khtmlfont.cpp \
+	khtmlform.cpp khtmltoken.cpp khtmlstring.cpp \
 	khtmlframe.cpp khtmlview.cpp khtmlclue.cpp debug.cpp \
 	khtmldata.cpp khtmltable.cpp khtmliter.cpp \
-	khtmlsavedpage.cpp khtmlstyle.cpp khtmlembed.cpp khtmldecoder.cpp \
-	khtmlstring.cpp kbrowser.cpp
+	khtmlsavedpage.cpp khtmlstyle.cpp khtmlembed.cpp khtmldecoder.cpp 
+
 
 libkhtml_la_METASOURCES = khtml.moc khtmlcache.moc khtmlembed.moc \
 	khtmlform.moc khtmlframe.moc khtmlview.moc kbrowser.moc

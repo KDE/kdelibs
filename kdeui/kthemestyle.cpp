@@ -931,16 +931,20 @@ int KThemeStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
     return(h);
 }
 
+#ifndef KTHEMESTYLE_CONSTANTS
 // I changed the following method to be based from Qt's instead of my own
 // wacky code. Works much better now :P (mosfet)
 static const int motifItemFrame         = 2;    // menu item frame width
-static const int motifSepHeight         = 2;    // separator item height
 static const int motifItemHMargin       = 3;    // menu item hor text margin
 static const int motifItemVMargin       = 2;    // menu item ver text margin
+
+static const int motifSepHeight         = 2;    // separator item height
 static const int motifArrowHMargin      = 6;    // arrow horizontal margin
 static const int motifTabSpacing        = 12;   // space between text and tab
 static const int motifCheckMarkHMargin  = 2;    // horiz. margins of check mark
 static const int windowsRightBorder     = 12;       // right border on windowsstatic const int windowsCheckMarkWidth = 12;       // checkmarks width on windows                                                                        
+#define KTHEMESTYLE_CONSTANTS
+#endif
 
 void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
                                      int tab, QMenuItem* mi,

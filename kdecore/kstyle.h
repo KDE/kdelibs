@@ -6,11 +6,8 @@
 #include <qpalette.h>
 #include <qpixmap.h>
 
-#ifndef INCLUDE_MENUITEM_DEF
-#define INCLUDE_MENUITEM_DEF
-#endif
-
-#include <qmenubar.h>
+class QMenuItem;
+class QPixmap;
 
 class KStyle : public QPlatinumStyle
 {

@@ -48,6 +48,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.82  1999/07/25 11:53:47  kulow
+// taking out some headers from ktmainwindow.h, they just don't belong there
+//
 // Revision 1.81  1999/07/25 09:24:04  kulow
 // good news - the workaround is not needed anymore. I left a
 // comment in the Makefile for now
@@ -1074,11 +1077,17 @@ void KMenuBar::setFlat (bool flag)
 
 // From Qt's spacing
 static const int motifBarFrame          = 2;    // menu bar frame width
+
+#ifndef KTHEMESTYLE_CONSTANTS
 static const int motifBarHMargin        = 2;    // menu bar hor margin to item
 static const int motifBarVMargin        = 1;    // menu bar ver margin to item
 static const int motifItemFrame         = 2;    // menu item frame width
+
 static const int motifItemHMargin       = 5;    // menu item hor text marginstatic const int motifItemVMargin       = 4;    // menu item ver text margin                      
 static const int motifItemVMargin       = 4;    // menu item ver text margin
+
+#define KTHEMESTYLE_CONSTANTS
+#endif
 
 void KStyleMenuBarInternal::drawContents(QPainter *p)
 {

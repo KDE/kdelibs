@@ -2,6 +2,12 @@
 #include <qapplication.h>
 #include <qdrawutil.h>
 
+#ifndef INCLUDE_MENUITEM_DEF
+#define INCLUDE_MENUITEM_DEF
+#endif
+
+#include <qmenudata.h>
+
 void KStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool horizontal,
                             QBrush *fill)
