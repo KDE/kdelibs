@@ -91,7 +91,8 @@ protected:
     void parseListing(HTMLStringIt &str);
     void parseTag(HTMLStringIt &str);
     void parseEntity(HTMLStringIt &str, bool start = false);
-
+    void parseProcessingInstruction(HTMLStringIt &str);
+    
     // check if we have enough space in the buffer.
     // if not enlarge it
     void checkBuffer(int len = 10);
@@ -193,6 +194,9 @@ protected:
     // Are we in a &... character entity description?
     bool charEntity;
 
+    // XML processing instructions. Ignored at the moment
+    bool processingInstruction;
+    
     // Area we in a <!-- comment --> block
     bool comment;
 

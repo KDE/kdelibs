@@ -112,6 +112,7 @@ void HTMLTokenizer::begin()
     prePos = 0;
     plaintext = 0;
     listing = false;
+    processingInstruction = false;
     script = false;
     style = false;
     skipLF = false;
@@ -333,6 +334,35 @@ void HTMLTokenizer::parseComment(HTMLStringIt &src)
 	{
 	    // We got a '-->' sequence
 	    comment = false;
+	    ++src;
+	    discard=LFDiscard;
+	    return; // Finished parsing comment!
+	}
+	else
+	{
+	    searchCount = 0;
+	}
+        ++src;
+    }
+}
+
+void HTMLTokenizer::parseProcessingInstruction(HTMLStringIt &src)
+{
+    while ( src.length() )
+    {
+	// do we need to enlarge the buffer?
+	checkBuffer();
+
+	// Look for '?>'
+	if ( src[0] == '?' )
+	{
+	    if (searchCount < 1)	// Watch out for '--->'
+	        searchCount++;
+	}
+	else if ((searchCount == 1) && (src[0] == '>'))
+	{
+	    // We got a '?>' sequence
+	    processingInstruction = false;
 	    ++src;
 	    discard=LFDiscard;
 	    return; // Finished parsing comment!
@@ -583,7 +613,9 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 			discard = LFDiscard;
 			len = dest - buffer;
 		    }
-
+		    // limited xhtml support. Accept empty xml tags like <br/>
+		    if(*(dest-1) == '/' && len > 1) len--;
+		    
 		    QConstString tmp(ptr, len);
 		    const struct tags *tagPtr = findTag(tmp.string().ascii(), len);
 		    if (!tagPtr) {
@@ -1037,6 +1069,8 @@ void HTMLTokenizer::write( const QString &str )
         parseStyle(src);
     else if (listing)
         parseListing(src);
+    else if (processingInstruction)
+        parseProcessingInstruction(src);
     else if (tag)
     {
         parseTag(src);
@@ -1074,6 +1108,13 @@ void HTMLTokenizer::write( const QString &str )
 	    {
 		// <!-- comment -->
 		searchCount = 1; // Look for '<!--' sequence to start comment
+	    }
+	    else if( src[0] == '?' )
+	    {
+		// xml processing instruction
+		processingInstruction = true;
+		parseProcessingInstruction(src);
+		continue;
 	    }
 	    else
 	    {
