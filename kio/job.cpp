@@ -841,6 +841,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
 
 void ListJob::gotEntries(KIO::Job *, const KIO::UDSEntryList& list )
 {
+    // Forward entries received by subjob - faking we received them ourselves
     emit entries(this, list);
 }
 
@@ -867,6 +868,11 @@ void ListJob::start(Slave *slave)
 {
     connect( slave, SIGNAL( listEntries( const KIO::UDSEntryList& )),
 	     SLOT( slotListEntries( const KIO::UDSEntryList& )));
+    //// Problem: we aren't going to define dumb slots for each slave's signals ?
+    //// perhaps the observer could use sender() and ask the scheduler which is the job
+    //// for this slave ? Ugly...
+    //connect( slave, SIGNAL( totalFiles( unsigned long ) ),
+              //         SLOT( slotTotalFiles( unsigned long ) ) );
     SimpleJob::start(slave);
 }
 

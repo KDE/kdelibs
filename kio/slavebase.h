@@ -64,7 +64,7 @@ public:
     void dataReq( );
 
     /**
-     * Emit to signal an error. 
+     * Emit to signal an error.
      * This also finishes the job, no need to call finished.
      */
     void error( int _errid, const QString &_text );
@@ -79,9 +79,9 @@ public:
      * (besides openConnection and closeConnection)
      */
     void finished();
-    
+
     /**
-     * Used to report the status of the slave. 
+     * Used to report the status of the slave.
      * @param host the slave is currently connected to. (Should be
      *        empty if not connected)
      * @param connected Whether an actual network connection exists.
@@ -190,6 +190,8 @@ public:
      * Lists the contents of @p path.
      * The slave should emit ERR_CANNOT_ENTER_DIRECTORY if it doesn't exist,
      * if we don't have enough permissions, or if it is a file
+     * It should also emit @ref totalFiles as soon as it knows how many
+     * files it will list.
      */
     virtual void listDir( const QString& path );
 
@@ -245,7 +247,7 @@ public:
      * @param data packed data; the meaning is completely dependent on the
      *        slave, but usually starts with an int for the command number.
      * Document your slave's commands, at least in its header file.
-     */ 
+     */
     virtual void special( const QByteArray & );
 
     /**

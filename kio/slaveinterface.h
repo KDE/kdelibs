@@ -145,7 +145,7 @@ public:
     // Info sent by the slave
     //////////
 
-    // TODO : some cleanup (processed* at least)
+    // TODO : some cleanup
     void totalSize( unsigned long ) ;
     void totalFiles( unsigned long ) ;
     void totalDirs( unsigned long ) ;

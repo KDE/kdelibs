@@ -61,7 +61,8 @@ libkio_la_SOURCES = \
 	slavebase.cpp passdlg.cpp \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
-	kurlcompletion.cpp kshellcompletion.cpp
+	kurlcompletion.cpp kshellcompletion.cpp \
+	observer.cpp
 
 #listprogressdlg.cpp
 
@@ -73,7 +74,7 @@ kioinclude_HEADERS = connection.h renamedlg.h \
         global.h passdlg.h netaccess.h job.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
-	statusbarprogress.h
+	statusbarprogress.h observer.h
 
 #listprogressdlg.h
 
