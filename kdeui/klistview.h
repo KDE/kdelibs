@@ -995,7 +995,7 @@ public:
   virtual ~KListViewItem();
 
   /**
-   * retuns true if this item is to be drawn with the alternate background
+   * returns true if this item is to be drawn with the alternate background
    */
   bool isAlternate();
   /**
