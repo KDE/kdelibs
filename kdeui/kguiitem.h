@@ -59,9 +59,11 @@ public:
 
     QString text() const;
     QString plainText() const;
-    QIconSet iconSet( KIcon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
 #ifndef KDE_NO_COMPAT
+    QIconSet iconSet( KIcon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
     QIconSet iconSet() const { return iconSet( KIcon::Small ); }
+#else
+    QIconSet iconSet( KIcon::Group=KIcon::Small, int size = 0, KInstance* instance = KGlobal::instance()) const;
 #endif
 
     QString iconName() const;

@@ -465,11 +465,15 @@ public:
     /**
      * Get the QIconSet from which the icons used to display this action will
      * be chosen.
+     *
+     * In KDE4 set group default to KIcon::Small while removing the other
+     * iconSet() function.
      */
     virtual QIconSet iconSet( KIcon::Group group, int size=0 ) const;
-#ifndef KDE_NO_COMPAT
+    /**
+     * Remove in KDE4
+     */
     QIconSet iconSet() const { return iconSet( KIcon::Small ); }
-#endif
 
     virtual QString icon() const;
 
