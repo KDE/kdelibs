@@ -513,21 +513,14 @@ void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
   switch (  attr->id )
   {
-    case ATTR_SRC:
-      url = val;
-      break;
-    case ATTR_NAME:
-      name = val;
-      break;
     case ATTR_WIDTH:
       addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
       break;
     case ATTR_HEIGHT:
       addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
       break;
-    // ### MORE ATTRIBUTES
     default:
-      HTMLElementImpl::parseAttribute( attr );
+      HTMLFrameElementImpl::parseAttribute( attr );
   }
 }
 
