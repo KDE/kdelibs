@@ -245,6 +245,7 @@ void KAction::setEnabled( bool state )
 
 bool KAction::readConfig( const KConfigBase& cfg )
 {
+#ifndef KAC_NO_CFG
 	QString pfx = "Action" + desc();
 	QString key = pfx + "Accel";
 
@@ -253,15 +254,17 @@ bool KAction::readConfig( const KConfigBase& cfg )
 	}
 	// TODO: read icon
 	return true;
-	
+#endif	
 }
 
 void KAction::writeConfig( KConfigBase& cfg )
 {
+#ifndef KAC_NO_CFG
 	QString pfx = "Action" + desc();
 	QString key = pfx + "Accel";
 
 	cfg.writeEntry( key, accel() );
+#endif
 }
 
 #include"kaction.moc"
