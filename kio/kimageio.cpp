@@ -226,7 +226,7 @@ KImageIOFactory::readImage( QImageIO *iio)
    const char *fm = iio->format();
    if (!fm)
       fm = QImageIO::imageFormat( iio->ioDevice());
-   fprintf(stderr, "KImageIO: readImage() format = %s\n", fm );
+   kdDebug() << "KImageIO: readImage() format = " <<  fm << endl;
 
    KImageIOFormat *format = 0;
    for( KImageIOFormatList::ConstIterator it = formatList->begin();
@@ -253,7 +253,7 @@ KImageIOFactory::writeImage( QImageIO *iio)
    const char *fm = iio->format();
    if (!fm)
       fm = QImageIO::imageFormat( iio->ioDevice());
-   fprintf(stderr, "KImageIO: writeImage() format = %s\n", fm );
+   kdDebug () << "KImageIO: writeImage() format = "<<  fm << endl;
 
    KImageIOFormat *format = 0;
    for( KImageIOFormatList::ConstIterator it = formatList->begin();

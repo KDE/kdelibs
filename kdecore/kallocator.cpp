@@ -24,6 +24,7 @@
 // $Id$
 
 #include "kallocator.h"
+#include <kdebug.h>
 
 KZoneAllocator::KZoneAllocator(long _blockSize)
 : blockSize(_blockSize), blockOffset(0)
@@ -53,7 +54,7 @@ KZoneAllocator::allocate(size_t _size)
       currentBlock = new char[blockSize];
       memoryBlocks.append(currentBlock);
       blockOffset = 0;
-      printf("Allocating block #%d\n", memoryBlocks.count());
+      kdDebug () << "Allocating block #" <<  memoryBlocks.count() << endl;
    } 
    void *result = (void *)(currentBlock+blockOffset);
    blockOffset += _size;

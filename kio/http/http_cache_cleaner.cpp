@@ -42,6 +42,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <unistd.h>
 
+#include <kdebug.h>
+
 time_t currentDate;
 int m_maxCacheAge;
 int m_maxCacheSize;
@@ -251,7 +253,7 @@ int main(int argc, char **argv)
       {
          QCString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          int result = unlink(filename.data());
-         fprintf(stderr, "%s: Cache too big, deleting '%s' (%d)\n", appName, filename.data(), result);
+         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
       }
       else
       {
@@ -259,7 +261,7 @@ int main(int argc, char **argv)
 // fprintf(stderr, "Keep in cache: %s %d %d total = %d\n", fileInfo->name.ascii(), fileInfo->size, fileInfo->age, totalSize);
       }
    }
-   fprintf(stderr, "%s: Cache size = %d kB.\n", appName, totalSize);
+   kdDebug () << appName << ": Cache size = " << totalSize << " kB." << endl;
    return 0;
 }
 
