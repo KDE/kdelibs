@@ -466,7 +466,9 @@ public:
   static QRect geometryRestore(Window w);
 
   /**
-    * Returns the icon geometry of a window.
+   *  Returns the icon geometry of a window. This is either the defined icon 
+   * geometry from a setIconGeometry() call, or the center of the window in case
+   * there was no geometry or an empty geometry defined.
     */
   static QRect iconGeometry(Window w);
 

@@ -843,7 +843,7 @@ QRect KWM::iconGeometry(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICON_GEOMETRY", False);
   QRect result;
-  if (!getQRectProperty(w, a, result)){
+  if (!getQRectProperty(w, a, result) || result.isEmpty()){
       QRect geom = geometry(w);
       result = QRect(geom.x()+geom.width()/2,
 		     geom.y()+geom.height()/2,
