@@ -267,7 +267,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         //        sy = (clipy - _ty) % bg->pixmap_size().height();
 
-	p->drawTiledPixmap(cx, _ty, cw, ch, bg->tiled_pixmap(c), sx, sy);
+	p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
     }
 }
 
