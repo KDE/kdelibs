@@ -314,10 +314,23 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
   return date.setYMD(gd->hd_year, gd->hd_mon, gd->hd_day);
 }
 
-// ### Fixme
+
 QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
 {
-  return QString("day  % 1 of week").arg(day);
+  if(shortName)
+  {
+     if (day != 7)
+        return QString("%1").arg(day);
+     else
+        return QString("Sab");
+  }
+  else
+  {
+     if (day != 7)
+        return QString("day  % 1").arg(day);
+     else
+        return QString("Sabbath");
+  }
 }
 
 // Ok
