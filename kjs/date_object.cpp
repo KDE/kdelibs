@@ -64,7 +64,7 @@ namespace KJS {
 	   SetMilliSeconds, SetSeconds, SetMinutes, SetHours, SetDate,
 	   SetMonth, SetFullYear, ToUTCString,
 	   // non-normative properties (Appendix B)
-	   GetYear, SetYear, toGMTString };
+	   GetYear, SetYear, ToGMTString };
   private:
     int id;
     bool utc;
@@ -240,6 +240,8 @@ KJSO DatePrototype::get(const UString &p) const
   // non-normative
   else if (p == "getYear")
     id = DateProtoFunc::GetYear;
+  else if (p == "toGMTString")
+    id = DateProtoFunc::ToGMTString;
   else
     return Undefined();
 
@@ -294,6 +296,10 @@ Completion DateProtoFunc::execute(const List &)
     break;
   case ToLocaleTimeString:
     strftime(timebuffer, bufsize, "%X", t);
+    result = String(timebuffer);
+    break;
+  case ToGMTString:
+    strftime(timebuffer, bufsize, "%a, %d-%b-%y %H:%M:%S %Z", t);
     result = String(timebuffer);
     break;
   case ValueOf:
