@@ -1,3 +1,8 @@
+2004-10-22  Stephan Kulow  <coolo@kde.org>
+
+        * css/cssparser.cpp (parseValue): implementing CSS 2.1 compliant parsing
+        of background-position (#91572)
+
 2004-10-19  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * rendering/render_box.{h,cpp}: Merge min,max-height fixes

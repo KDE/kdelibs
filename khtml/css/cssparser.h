@@ -120,6 +120,11 @@ namespace DOM {
 	bool parseContent( int propId, bool important );
 	bool parseShape( int propId, bool important );
 	bool parseFont(bool important);
+
+        // returns the found property
+        // 0 if nothing found (or ok == false)
+        // @param forward if true, it parses the next in the list
+        CSSPrimitiveValueImpl *parseBackgroundPositionXY( int propId, bool forward, bool &ok );
 	CSSValueListImpl *parseFontFamily();
 	CSSPrimitiveValueImpl *parseColor();
 
