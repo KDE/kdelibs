@@ -165,14 +165,25 @@ CSSRuleList CSSStyleSheet::cssRules() const
 
 unsigned long CSSStyleSheet::insertRule( const DOMString &rule, unsigned long index )
 {
+    int exceptioncode = 0;
     if(!impl) return 0;
-    return ((CSSStyleSheetImpl *)impl)->insertRule( rule, index );
+    unsigned long retval = ((CSSStyleSheetImpl *)impl)->insertRule( rule, index, exceptioncode );
+    if ( exceptioncode >= CSSException::_EXCEPTION_OFFSET )
+	throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
+    return retval;
 }
 
 void CSSStyleSheet::deleteRule( unsigned long index )
 {
+    int exceptioncode = 0;
     if(impl)
-        ((CSSStyleSheetImpl *)impl)->deleteRule( index );
+        ((CSSStyleSheetImpl *)impl)->deleteRule( index, exceptioncode );
+    if ( exceptioncode >= CSSException::_EXCEPTION_OFFSET )
+	throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
 }
 
 

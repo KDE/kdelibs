@@ -164,11 +164,13 @@ void AttrImpl::setValue( const DOMString &v )
     }
 }
 
-void AttrImpl::setNodeValue( const DOMString &v )
+void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
 {
+    exceptioncode = 0;
     setValue(v);
 }
 
+#if 0
 // ### is this still needed?
 AttrImpl::AttrImpl(const DOMString &name, const DOMString &value,
 		   DocumentImpl *doc, bool specified) : NodeImpl(doc)
@@ -183,6 +185,7 @@ AttrImpl::AttrImpl(const DOMString &name, const DOMString &value,
     if (_value) _value->ref();
 
 }
+#endif
 
 AttrImpl::AttrImpl(const khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element) : NodeImpl(doc)
 {
@@ -319,14 +322,16 @@ int ElementImpl::getAttributeCount() const
     return namedAttrMap->length();
 }
 
-void ElementImpl::setAttribute( const DOMString &name, const DOMString &value )
+void ElementImpl::setAttribute( const DOMString &name, const DOMString &value)
 {
     // TODO: check for invalid characters in value -> throw exception
     AttrImpl *oldAttr;
     if (value.isNull())
 	oldAttr = static_cast<AttrImpl*>(namedAttrMap->removeNamedItem(name));
-    else
-	oldAttr = static_cast<AttrImpl*>(namedAttrMap->setNamedItem(new AttrImpl(name,value,document)));
+    else {
+	int exceptioncode;
+	oldAttr = static_cast<AttrImpl*>(namedAttrMap->setNamedItem(new AttrImpl(name,value,document), exceptioncode));
+    }
     if (oldAttr && oldAttr->deleteMe())
 	delete oldAttr;
 }
@@ -336,15 +341,17 @@ void ElementImpl::setAttribute( int id, const DOMString &value )
     AttrImpl *oldAttr;
     if (value.isNull())
 	oldAttr = namedAttrMap->removeIdItem(id);
-    else
-	oldAttr = namedAttrMap->setIdItem(new AttrImpl(id,value,document));
+    else {
+	int exceptioncode;
+	oldAttr = namedAttrMap->setIdItem(new AttrImpl(id,value,document), exceptioncode );
+    }
     if (oldAttr && oldAttr->deleteMe())
 	delete oldAttr;
 }
 
-void ElementImpl::setAttribute( AttributeList list )
+void ElementImpl::setAttribute( const AttributeList &list )
 {
-    namedAttrMap->fromAttributeList(list);
+    *namedAttrMap = list;
 }
 
 void ElementImpl::removeAttribute( const DOMString &name )
@@ -364,14 +371,15 @@ NodeImpl *ElementImpl::cloneNode ( bool deep )
     newImpl->setFirstChild(0);
     newImpl->setLastChild(0);
 
-    newImpl->namedAttrMap->fromNamedAttrMapImpl(namedAttrMap);
+    *(newImpl->namedAttrMap) = *namedAttrMap;
 
     if(deep)
     {
 	NodeImpl *n;
 	for(n = firstChild(); n; n = n->nextSibling())
 	{
-	    newImpl->appendChild(n->cloneNode(deep));
+	    int exceptioncode = 0;
+	    newImpl->appendChild(n->cloneNode(deep), exceptioncode);
 	}
     }
     return newImpl;
@@ -389,25 +397,24 @@ AttrImpl *ElementImpl::getAttributeNode( const DOMString &name )
 
 }
 
-AttrImpl *ElementImpl::setAttributeNode( AttrImpl *newAttr )
+AttrImpl *ElementImpl::setAttributeNode( AttrImpl *newAttr, int &exceptioncode )
 {
-    if (!newAttr)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
+    exceptioncode = 0;
+    if (!newAttr) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
+	return 0;
+    }
     if (newAttr->attrId)
-	return static_cast<AttrImpl*>(namedAttrMap->setIdItem(newAttr));
+	return static_cast<AttrImpl*>(namedAttrMap->setIdItem(newAttr, exceptioncode));
     else
-	return static_cast<AttrImpl*>(namedAttrMap->setNamedItem(newAttr));
+	return static_cast<AttrImpl*>(namedAttrMap->setNamedItem(newAttr, exceptioncode));
 }
 
-AttrImpl *ElementImpl::removeAttributeNode( AttrImpl *oldAttr )
+AttrImpl *ElementImpl::removeAttributeNode( AttrImpl *oldAttr, int &exceptioncode )
 {
-    if (!oldAttr)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-    checkReadOnly();
-
     // ### should we replace with default in map? currently default attrs don't exist in map
-    return namedAttrMap->removeAttr(oldAttr);
+    exceptioncode = 0;
+    return namedAttrMap->removeAttr(oldAttr, exceptioncode);
 }
 
 NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
@@ -431,7 +438,8 @@ void ElementImpl::normalize()
 	     && (nextChild->nodeType() == Node::TEXT_NODE))
 	{
 	    (static_cast<TextImpl *>(child))->appendData( (static_cast<TextImpl *>(nextChild))->data() );
-	    removeChild(nextChild);
+	    int exceptioncode = 0;
+	    removeChild(nextChild, exceptioncode);
 	}
 	else
 	{
@@ -538,12 +546,8 @@ NamedAttrMapImpl::~NamedAttrMapImpl()
     clearAttrs();
 }
 
-void NamedAttrMapImpl::fromAttributeList(const AttributeList list)
+NamedAttrMapImpl &NamedAttrMapImpl::operator =(const AttributeList &list)
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-    element->checkReadOnly();
-
     uint i;
     clearAttrs(); // should be empty, but just in case...
 
@@ -556,39 +560,35 @@ void NamedAttrMapImpl::fromAttributeList(const AttributeList list)
 	element->parseAttribute(attrs[i]);
     }
     // used only during parsing - we don't call applyChanges() here
-
+    return *this;
 }
 
-void NamedAttrMapImpl::fromNamedAttrMapImpl(const NamedAttrMapImpl *other)
+NamedAttrMapImpl &NamedAttrMapImpl::operator =(const NamedAttrMapImpl &other)
 {
     // clone all attributes in the other map, but attach to our element
     if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
+	return *this;
 
     clearAttrs();
-    len = other->len;
+    len = other.len;
     attrs = new AttrImpl* [len];
     uint i;
     for (i = 0; i < len; i++) {
-	attrs[i] = static_cast<AttrImpl*>(other->attrs[i]->cloneNode(false));
+	attrs[i] = static_cast<AttrImpl*>(other.attrs[i]->cloneNode(false));
 	attrs[i]->_element = element;
 	element->parseAttribute(attrs[i]);
     }
     element->setChanged(true);
+    return *this;
 }
 
-unsigned long NamedAttrMapImpl::length() const {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
+unsigned long NamedAttrMapImpl::length() const 
+{
     return len;
 }
 
 NodeImpl *NamedAttrMapImpl::getNamedItem ( const DOMString &name ) const
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
     uint i;
     for (i = 0; i < len; i++) {
 	if (!strcasecmp(attrs[i]->name(),name))
@@ -600,9 +600,6 @@ NodeImpl *NamedAttrMapImpl::getNamedItem ( const DOMString &name ) const
 
 AttrImpl *NamedAttrMapImpl::getIdItem ( int id ) const
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
     uint i;
     for (i = 0; i < len; i++) {
 	if (attrs[i]->attrId == id)
@@ -613,23 +610,29 @@ AttrImpl *NamedAttrMapImpl::getIdItem ( int id ) const
 }
 
 
-NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg )
+NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg, int &exceptioncode )
 {
     // ### check for invalid chars in name ?
     // ### check same document
-
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
+    exceptioncode = 0;
+    if (!element) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
+	return 0;
+    }
     element->checkReadOnly();
 
-    if (arg.nodeType() != Node::ATTRIBUTE_NODE)
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-
+    if (arg.nodeType() != Node::ATTRIBUTE_NODE) {
+	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	return 0;
+    }
+	
     AttrImpl *attr = static_cast<AttrImpl*>(arg.handle());
 
-    if (attr->_element)
-	throw DOMException(DOMException::INUSE_ATTRIBUTE_ERR);
-
+    if (attr->_element) {
+	exceptioncode = DOMException::INUSE_ATTRIBUTE_ERR;
+	return 0;
+    }
+    
     uint i;
     for (i = 0; i < len; i++) {
 	if (!strcasecmp(attrs[i]->name(),attr->name())) {
@@ -660,14 +663,19 @@ NodeImpl *NamedAttrMapImpl::setNamedItem ( const Node &arg )
     return 0;
 }
 
-AttrImpl *NamedAttrMapImpl::setIdItem ( AttrImpl *attr )
+AttrImpl *NamedAttrMapImpl::setIdItem ( AttrImpl *attr, int &exceptioncode )
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
+    exceptioncode = 0;
+    if (!element) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
+	return 0;
+    }
     element->checkReadOnly();
 
-    if (attr->_element)
-	throw DOMException(DOMException::INUSE_ATTRIBUTE_ERR);
+    if (attr->_element) {
+	exceptioncode = DOMException::INUSE_ATTRIBUTE_ERR;
+	return 0;
+    }
 
     uint i;
     for (i = 0; i < len; i++) {
@@ -701,9 +709,8 @@ AttrImpl *NamedAttrMapImpl::setIdItem ( AttrImpl *attr )
 
 NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name )
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-    element->checkReadOnly();
+    if (element)
+	element->checkReadOnly();
 
     if (!attrs)
 	return 0;
@@ -723,21 +730,16 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name )
 	delete attrs;
 	attrs = 0;
 	len = 0;
-	AttrImpl a(name,"",element->ownerDocument());
-	element->parseAttribute(&a);
-	element->setChanged(true);
-	return ret;
+    } else {
+	AttrImpl **newAttrs = new AttrImpl* [len-1];
+	for (i = 0; i < uint(found); i++)
+	    newAttrs[i] = attrs[i];
+	len--;
+	for (; i < len; i++)
+	    newAttrs[i] = attrs[i+1];
+	delete attrs;
+	attrs = newAttrs;
     }
-
-    AttrImpl **newAttrs = new AttrImpl* [len-1];
-    for (i = 0; i < uint(found); i++)
-        newAttrs[i] = attrs[i];
-    len--;
-    for (; i < len; i++)
-	newAttrs[i] = attrs[i+1];
-    delete attrs;
-    attrs = newAttrs;
-
     DOMString nullStr;
     AttrImpl a(name,nullStr,element->ownerDocument());
     element->parseAttribute(&a);
@@ -748,10 +750,6 @@ NodeImpl *NamedAttrMapImpl::removeNamedItem ( const DOMString &name )
 
 AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-    element->checkReadOnly();
-
     if (!attrs)
 	return 0;
 
@@ -770,21 +768,16 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
 	delete attrs;
 	attrs = 0;
 	len = 0;
-	AttrImpl a(id,"",element->ownerDocument());
-	element->parseAttribute(&a);
-	element->setChanged(true);
-	return ret;
+    } else {
+	AttrImpl **newAttrs = new AttrImpl* [len-1];
+	for (i = 0; i < uint(found); i++)
+	    newAttrs[i] = attrs[i];
+	len--;
+	for (; i < len; i++)
+	    newAttrs[i] = attrs[i+1];
+	delete attrs;
+	attrs = newAttrs;
     }
-
-    AttrImpl **newAttrs = new AttrImpl* [len-1];
-    for (i = 0; i < uint(found); i++)
-        newAttrs[i] = attrs[i];
-    len--;
-    for (; i < len; i++)
-	newAttrs[i] = attrs[i+1];
-    delete attrs;
-    attrs = newAttrs;
-
     DOMString nullStr;
     AttrImpl a(id,nullStr,element->ownerDocument());
     element->parseAttribute(&a);
@@ -795,9 +788,6 @@ AttrImpl *NamedAttrMapImpl::removeIdItem ( int id )
 
 NodeImpl *NamedAttrMapImpl::item ( unsigned long index ) const
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
     if (index >= len)
 	return 0;
     else
@@ -819,11 +809,9 @@ void NamedAttrMapImpl::clearAttrs()
     len = 0;
 }
 
-AttrImpl *NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr )
+AttrImpl *NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr, int &exceptioncode )
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
+    exceptioncode = 0;
     uint i;
     for (i = 0; i < len; i++) {
 	if (attrs[i] == oldAttr) {
@@ -854,19 +842,17 @@ AttrImpl *NamedAttrMapImpl::removeAttr( AttrImpl *oldAttr )
 	    return ret;
 	}
     }
-    throw DOMException(DOMException::NOT_FOUND_ERR);
+    exceptioncode = DOMException::NOT_FOUND_ERR;
     return 0;
 
 }
 
 void NamedAttrMapImpl::detachFromElement()
 {
-    if (!element)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
     // we allow a NamedAttrMapImpl w/o an element in case someone still has a reference
     // to if after the element gets deleted - but the map is now invalid
     element = 0;
+    clearAttrs();
 }
 
 

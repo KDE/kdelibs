@@ -48,15 +48,15 @@ public:
 
     unsigned long length() const;
 
-    DOMString substringData ( const unsigned long offset, const unsigned long count );
+    DOMString substringData ( const unsigned long offset, const unsigned long count, int &exceptioncode );
 
     void appendData ( const DOMString &arg );
 
-    void insertData ( const unsigned long offset, const DOMString &arg );
+    void insertData ( const unsigned long offset, const DOMString &arg, int &exceptioncode );
 
-    void deleteData ( const unsigned long offset, const unsigned long count );
+    void deleteData ( const unsigned long offset, const unsigned long count, int &exceptioncode );
 
-    void replaceData ( const unsigned long offset, const unsigned long count, const DOMString &arg );
+    void replaceData ( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode );
 
     DOMStringImpl *string() { return str; }
 protected:
@@ -96,7 +96,7 @@ public:
     virtual unsigned short nodeType() const;
     virtual bool isTextNode() const { return true; }
 
-    TextImpl *splitText ( const unsigned long offset );
+    TextImpl *splitText ( const unsigned long offset, int &exceptioncode );
 
     virtual ushort id() const;
 

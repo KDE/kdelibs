@@ -75,10 +75,13 @@ unsigned long CharacterDataImpl::length() const
     return str->l;
 }
 
-DOMString CharacterDataImpl::substringData( const unsigned long offset, const unsigned long count )
+DOMString CharacterDataImpl::substringData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
-    if (offset > str->l)
-	throw DOMException(DOMException::INDEX_SIZE_ERR);
+    exceptioncode = 0;
+    if (offset > str->l) {
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+	return DOMString();
+    }
     return str->substring(offset,count);
 }
 
@@ -91,33 +94,39 @@ void CharacterDataImpl::appendData( const DOMString &arg )
     _parent->setChanged(true);
 }
 
-void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg )
+void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg, int &exceptioncode )
 {
-    if (offset > str->l)
-	throw DOMException(DOMException::INDEX_SIZE_ERR);
-
+    exceptioncode = 0;
+    if (offset > str->l) {
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+	return;
+    }
     str->insert(arg.impl, offset);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
 }
 
-void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count )
+void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
-    if (offset > str->l)
-	throw DOMException(DOMException::INDEX_SIZE_ERR);
-
+    if (offset > str->l) {
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+	return;
+    }
+	
     str->remove(offset,count);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
 }
 
-void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg )
+void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode )
 {
-    if (offset > str->l)
-	throw DOMException(DOMException::INDEX_SIZE_ERR);
-
+    if (offset > str->l) {
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+	return;
+    }
+	
     unsigned long realCount;
     if (offset + count > str->l)
 	realCount = str->l-offset;
@@ -199,16 +208,21 @@ TextImpl::~TextImpl()
     // style object
 }
 
-TextImpl *TextImpl::splitText( const unsigned long offset )
+TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
 {
+    exceptioncode = 0;
     if (offset > str->l)
-	throw DOMException(DOMException::INDEX_SIZE_ERR);
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
 
     if (!_parent)
-          throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
 
+    if ( exceptioncode ) 
+	return 0;
     TextImpl *newText = new TextImpl(document, str->split(offset));
-    _parent->insertBefore(newText,_next);
+    _parent->insertBefore(newText,_next, exceptioncode );
+    if ( exceptioncode ) 
+	return 0;
     if (m_render)
 	(static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);

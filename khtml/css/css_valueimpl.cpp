@@ -406,30 +406,35 @@ unsigned short CSSPrimitiveValueImpl::primitiveType() const
     return m_type;
 }
 
-void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatValue )
+void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatValue, int &exceptioncode )
 {
+    exceptioncode = 0;
     cleanup();
     // ### check if property supports this type
-    if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw CSSException(CSSException::SYNTAX_ERR);
+    if(m_type > CSSPrimitiveValue::CSS_DIMENSION) {
+	exceptioncode = CSSException::SYNTAX_ERR + CSSException::_EXCEPTION_OFFSET;
+	return;
+    }
     //if(m_type > CSSPrimitiveValue::CSS_DIMENSION) throw DOMException(DOMException::INVALID_ACCESS_ERR);
     m_value.num = floatValue;
     m_type = unitType;
 }
 
-float CSSPrimitiveValueImpl::getFloatValue( unsigned short unitType )
+float CSSPrimitiveValueImpl::getFloatValue( unsigned short unitType)
 {
-    // ### add unit conversion
-    if(m_type != unitType) throw CSSException(CSSException::SYNTAX_ERR);
     return m_value.num;
 }
 
-void CSSPrimitiveValueImpl::setStringValue( unsigned short stringType, const DOMString &stringValue )
+void CSSPrimitiveValueImpl::setStringValue( unsigned short stringType, const DOMString &stringValue, int &exceptioncode )
 {
+    exceptioncode = 0;
     cleanup();
     //if(m_type < CSSPrimitiveValue::CSS_STRING) throw DOMException(DOMException::INVALID_ACCESS_ERR);
     //if(m_type > CSSPrimitiveValue::CSS_ATTR) throw DOMException(DOMException::INVALID_ACCESS_ERR);
-    if(m_type < CSSPrimitiveValue::CSS_STRING) throw CSSException(CSSException::SYNTAX_ERR);
-    if(m_type > CSSPrimitiveValue::CSS_ATTR) throw CSSException(CSSException::SYNTAX_ERR);
+    if(m_type < CSSPrimitiveValue::CSS_STRING || m_type >> CSSPrimitiveValue::CSS_ATTR) {
+	exceptioncode = CSSException::SYNTAX_ERR + CSSException::_EXCEPTION_OFFSET;
+	return;
+    }
     if(stringType != CSSPrimitiveValue::CSS_IDENT)
     {
 	m_value.string = stringValue.implementation();

@@ -97,8 +97,8 @@ public:
 
     CSSRuleImpl *ownerRule() const;
     CSSRuleList cssRules();
-    unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index );
-    void deleteRule ( unsigned long index );
+    unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index, int &exceptioncode );
+    void deleteRule ( unsigned long index, int &exceptioncode );
 
     virtual bool parseString( const DOMString &string );
 

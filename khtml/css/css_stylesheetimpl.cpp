@@ -195,17 +195,21 @@ CSSRuleList CSSStyleSheetImpl::cssRules()
     return this;
 }
 
-unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned long index )
+unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned long index, int &exceptioncode )
 {
-    if(index > m_lstChildren->count())
-	throw DOMException(DOMException::INDEX_SIZE_ERR);
-
+    exceptioncode = 0;
+    if(index > m_lstChildren->count()) {
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+	return 0;
+    }
     const QChar *curP = rule.unicode();
     const QChar *endP = rule.unicode()+rule.length();
     CSSRuleImpl *r = parseRule(curP, endP);
 
-    if(!r) throw CSSException(CSSException::SYNTAX_ERR);
-
+    if(!r) {
+	exceptioncode = CSSException::SYNTAX_ERR + CSSException::_EXCEPTION_OFFSET;
+	return 0;
+    }
     // ###
     // HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at the specified index e.g. if an
     //@import rule is inserted after a standard rule set or other at-rule.
@@ -213,10 +217,14 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
     return index;
 }
 
-void CSSStyleSheetImpl::deleteRule( unsigned long index )
+void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
 {
+    exceptioncode = 0;
     StyleBaseImpl *b = m_lstChildren->take(index);
-    if(!b) throw DOMException(DOMException::INDEX_SIZE_ERR);
+    if(!b) {
+	exceptioncode = DOMException::INDEX_SIZE_ERR;
+	return;
+    }
     b->deref();
 }
 

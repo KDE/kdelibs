@@ -67,7 +67,7 @@ public:
 
     virtual DOMString nodeValue() const;
 
-    virtual void setNodeValue( const DOMString & );
+    virtual void setNodeValue( const DOMString &, int& exceptioncode );
 
     virtual unsigned short nodeType() const;
 
@@ -95,13 +95,13 @@ public:
 
     virtual void setOwnerDocument(DocumentImpl *_document);
 
-    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
+    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
 
-    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
+    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
 
-    virtual NodeImpl *removeChild ( NodeImpl *oldChild );
+    virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
 
-    virtual NodeImpl *appendChild ( NodeImpl *newChild );
+    virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
     virtual bool hasChildNodes (  );
 
@@ -254,7 +254,7 @@ protected:
     NodeImpl *_next;
 
     // helper function; throws exception if modifying a readonly node
-    void checkReadOnly();
+    bool checkReadOnly();
 };
 
 // this is the full Node Implementation with parents and children.
@@ -269,13 +269,13 @@ public:
 
     virtual NodeImpl *lastChild() const;
 
-    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
+    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
 
-    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
+    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
 
-    virtual NodeImpl *removeChild ( NodeImpl *oldChild );
+    virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
 
-    virtual NodeImpl *appendChild ( NodeImpl *newChild );
+    virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
     virtual bool hasChildNodes (  );
 
@@ -296,11 +296,11 @@ protected:
     // helper functions for inserting children:
 
     // check for same source document:
-    void checkSameDocument( NodeImpl *newchild );
+    bool checkSameDocument( NodeImpl *newchild, int &exceptioncode );
     // check for being (grand-..)father:
-    void checkNoOwner( NodeImpl *other );
+    bool checkNoOwner( NodeImpl *other, int &exceptioncode );
     // check for being child:
-    void checkIsChild( NodeImpl *oldchild );
+    bool checkIsChild( NodeImpl *oldchild, int &exceptioncode );
     // find out if a node is allowed to be our child
     virtual bool childAllowed( NodeImpl *newChild );
 };

@@ -114,8 +114,9 @@ public:
      * Also sets it.
      *
      */
+    // ### BIC make const in the next release
     Node commonAncestorContainer();
-
+    
     /**
      * Sets the attributes describing the start of the range.
      *
@@ -461,6 +462,11 @@ public:
 protected:
     RangeImpl *impl;
     Range(RangeImpl *i);
+private:
+    void checkNode( DOM::Node n ) const;
+    void checkNodeWOffset( DOM::Node n, int offset) const;
+    void checkNodeBA( DOM::Node n ) const;
+    void checkCommon() const;
 };
 
 

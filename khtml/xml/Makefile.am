@@ -17,8 +17,6 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-KDE_CXXFLAGS = $(USE_EXCEPTIONS)
-
 noinst_LTLIBRARIES = libkhtmlxml.la
 libkhtmlxml_la_SOURCES = \
 	dom_docimpl.cpp      dom_nodeimpl.cpp     dom_textimpl.cpp \

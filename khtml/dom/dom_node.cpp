@@ -166,8 +166,12 @@ DOMString Node::nodeValue() const
 
 void Node::setNodeValue( const DOMString &_str )
 {
-    if(impl) impl->setNodeValue( _str );
-    else throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+    int exceptioncode = 0;
+    if(impl) impl->setNodeValue( _str,exceptioncode );
+    else 
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
 }
 
 unsigned short Node::nodeType() const
@@ -227,26 +231,45 @@ Document Node::ownerDocument() const
 
 Node Node::insertBefore( const Node &newChild, const Node &refChild )
 {
-    if(impl) return impl->insertBefore( newChild.impl, refChild.impl );
-    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+    int code = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    DOM::NodeImpl *newNode;
+    if(impl)
+	newNode = impl->insertBefore( newChild.impl, refChild.impl, code );
+    if ( code )
+	throw DOMException(code);
+    return newNode;
 }
 
 Node Node::replaceChild( const Node &newChild, const Node &oldChild )
 {
-    if(impl) return impl->replaceChild( newChild.impl, oldChild.impl );
-    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+    int code = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    DOM::NodeImpl *newNode;
+    if(impl) 
+	newNode = impl->replaceChild( newChild.impl, oldChild.impl, code );
+    if ( code )
+	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+    return newNode;
 }
 
 Node Node::removeChild( const Node &oldChild )
 {
-    if(impl) return impl->removeChild( oldChild.impl );
-    throw DOMException(DOMException::NOT_FOUND_ERR);
+    int exceptioncode = DOMException::NOT_FOUND_ERR; 
+    DOM::NodeImpl *n;
+    if(impl) n = impl->removeChild( oldChild.impl, exceptioncode );
+    if( exceptioncode )
+	throw DOMException( exceptioncode );
+    return n;
 }
 
 Node Node::appendChild( const Node &newChild )
 {
-    if(impl) return impl->appendChild( newChild.impl );
-    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+    int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    DOM::NodeImpl *n;
+    if(impl) 
+	n = impl->appendChild( newChild.impl, exceptioncode );
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
+    return n;
 }
 
 bool Node::hasChildNodes(  )

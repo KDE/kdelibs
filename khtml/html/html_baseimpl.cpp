@@ -378,15 +378,6 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
     NodeBaseImpl::attach( w );
 }
 
-NodeImpl *HTMLFrameSetElementImpl::addChild(NodeImpl *child)
-{
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6030 ) << nodeName().string() << "(FrameSet)::addChild( " << child->nodeName().string() << " )" << endl;
-#endif
-
-    return NodeBaseImpl::addChild(child);
-}
-
 bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 				  int _tx, int _ty, DOMString &url,
                                           NodeImpl *&innerNode, long &offset)

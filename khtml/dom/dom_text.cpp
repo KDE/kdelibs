@@ -68,37 +68,59 @@ DOMString CharacterData::data() const
 
 void CharacterData::setData( const DOMString &str )
 {
-    ((CharacterDataImpl *)impl)->setData(str);
+    if ( impl )
+	((CharacterDataImpl *)impl)->setData(str);
 }
 
 unsigned long CharacterData::length() const
 {
-    return ((CharacterDataImpl *)impl)->length();
+    if ( impl )
+	return ((CharacterDataImpl *)impl)->length();
+    return 0;
 }
 
 DOMString CharacterData::substringData( const unsigned long offset, const unsigned long count )
 {
-    return ((CharacterDataImpl *)impl)->substringData(offset, count);
+    int exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+    DOMString str;
+    if ( impl )
+	str = ((CharacterDataImpl *)impl)->substringData(offset, count, exceptioncode);
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
+    return str;
 }
 
 void CharacterData::appendData( const DOMString &arg )
 {
-    ((CharacterDataImpl *)impl)->appendData(arg);
+    if ( impl )
+	((CharacterDataImpl *)impl)->appendData(arg);
 }
 
 void CharacterData::insertData( const unsigned long offset, const DOMString &arg )
 {
-    ((CharacterDataImpl *)impl)->insertData(offset, arg);
+    int exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+    if ( impl )
+	((CharacterDataImpl *)impl)->insertData(offset, arg, exceptioncode);
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
 }
 
 void CharacterData::deleteData( const unsigned long offset, const unsigned long count )
 {
-    ((CharacterDataImpl *)impl)->deleteData(offset, count);
+    int exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+    if ( impl )
+	((CharacterDataImpl *)impl)->deleteData(offset, count, exceptioncode);
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
 }
 
 void CharacterData::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg )
 {
-    ((CharacterDataImpl *)impl)->replaceData(offset, count, arg);
+    int exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+    if ( impl )
+	((CharacterDataImpl *)impl)->replaceData(offset, count, arg, exceptioncode);
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );    
 }
 
 CharacterData::CharacterData(CharacterDataImpl *i) : Node(i)
@@ -174,7 +196,13 @@ Text::~Text()
 
 Text Text::splitText( const unsigned long offset )
 {
-    return ((TextImpl *)impl)->splitText(offset);
+    int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    TextImpl *newText = 0;
+    if ( impl )
+	newText = static_cast<TextImpl *>(impl)->splitText(offset, exceptioncode );
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
+    return newText;
 }
 
 Text::Text(TextImpl *i) : CharacterData(i)

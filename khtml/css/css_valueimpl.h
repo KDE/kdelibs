@@ -154,9 +154,9 @@ public:
     unsigned short primitiveType() const;
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }
-    void setFloatValue ( unsigned short unitType, float floatValue );
-    float getFloatValue ( unsigned short unitType );
-    void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue );
+    void setFloatValue ( unsigned short unitType, float floatValue, int &exceptioncode );
+    float getFloatValue ( unsigned short unitType);
+    void setStringValue ( unsigned short stringType, const DOM::DOMString &stringValue, int &exceptioncode );
     DOM::DOMStringImpl *getStringValue (  );
     Counter *getCounterValue (  );
     Rect *getRectValue (  );

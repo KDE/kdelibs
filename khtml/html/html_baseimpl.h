@@ -117,7 +117,6 @@ public:
     virtual tagStatus endTag() { return FRAMESETEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
-    virtual NodeImpl *addChild(NodeImpl *child);
     virtual void attach(KHTMLView *w);
 
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,

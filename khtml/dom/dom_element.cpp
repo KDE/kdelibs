@@ -151,14 +151,21 @@ Attr Element::getAttributeNode( const DOMString &name )
 
 Attr Element::setAttributeNode( const Attr &newAttr )
 {
-  if (impl) ((ElementImpl *)impl)->setAttributeNode((AttrImpl *)newAttr.impl);
+    int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+  if (impl) 
+      ((ElementImpl *)impl)->setAttributeNode((AttrImpl *)newAttr.impl, exceptioncode);
+  if ( exceptioncode )
+      throw DOMException( exceptioncode );
   return newAttr;
 }
 
 Attr Element::removeAttributeNode( const Attr &oldAttr )
 {
+    int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
   if (impl)
-      ((ElementImpl *)impl)->removeAttributeNode((AttrImpl *)oldAttr.impl);
+      ((ElementImpl *)impl)->removeAttributeNode((AttrImpl *)oldAttr.impl, exceptioncode);
+  if ( exceptioncode )
+      throw DOMException( exceptioncode );
   return oldAttr;
 }
 

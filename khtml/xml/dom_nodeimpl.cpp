@@ -74,9 +74,9 @@ DOMString NodeImpl::nodeValue() const
   return 0;
 }
 
-void NodeImpl::setNodeValue( const DOMString & )
+void NodeImpl::setNodeValue( const DOMString &, int &exceptioncode )
 {
-  throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+  exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 }
 
 const DOMString NodeImpl::nodeName() const
@@ -141,24 +141,28 @@ void NodeImpl::setOwnerDocument(DocumentImpl *_document)
 }
 
 
-NodeImpl *NodeImpl::insertBefore( NodeImpl *, NodeImpl * )
+NodeImpl *NodeImpl::insertBefore( NodeImpl *, NodeImpl *, int &exceptioncode )
 {
-  throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+    return 0;
 }
 
-NodeImpl *NodeImpl::replaceChild( NodeImpl *, NodeImpl * )
+NodeImpl *NodeImpl::replaceChild( NodeImpl *, NodeImpl *, int &exceptioncode )
 {
-  throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+  exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+  return 0;
 }
 
-NodeImpl *NodeImpl::removeChild( NodeImpl * )
+NodeImpl *NodeImpl::removeChild( NodeImpl *, int &exceptioncode )
 {
-  throw DOMException(DOMException::NOT_FOUND_ERR);
+  exceptioncode = DOMException::NOT_FOUND_ERR;
+  return 0;
 }
 
-NodeImpl *NodeImpl::appendChild( NodeImpl * )
+NodeImpl *NodeImpl::appendChild( NodeImpl *, int &exceptioncode )
 {
-  throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+  exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+  return 0;
 }
 
 bool NodeImpl::hasChildNodes(  )
@@ -187,7 +191,6 @@ void NodeImpl::setLastChild(NodeImpl *)
 
 NodeImpl *NodeImpl::addChild(NodeImpl *)
 {
-  throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
   return 0;
 }
 
@@ -233,7 +236,7 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
             int lattrs = 0;
             ElementImpl *el = static_cast<ElementImpl *>(this);
             AttrImpl *attr;
-            NamedNodeMapImpl *attrs = static_cast<NamedNodeMapImpl*>(el->attributes());
+            NamedNodeMapImpl *attrs = el->attributes();
             unsigned long lmap = attrs->length();
             for( uint j=0; j<lmap; j++ )
             {
@@ -398,22 +401,18 @@ bool NodeWParentImpl::deleteMe()
 
 void NodeWParentImpl::setPreviousSibling(NodeImpl *n)
 {
-    if(!_parent)
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-
     _previous = n;
 }
 
 void NodeWParentImpl::setNextSibling(NodeImpl *n)
 {
-    if(!_parent)
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-
     _next = n;
 }
 
-void NodeWParentImpl::checkReadOnly()
+bool NodeWParentImpl::checkReadOnly()
 {
+    // ####
+    return false;
 }
 
 //-------------------------------------------------------------------------
@@ -453,22 +452,33 @@ NodeImpl *NodeBaseImpl::lastChild() const
     return _last;
 }
 
-NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
+NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode )
 {
-    checkReadOnly();
-    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild()))
-	throw DOMException(DOMException::NOT_FOUND_ERR);
+    exceptioncode = 0;
+    if (checkReadOnly()) {
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	return 0;
+    }
+    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild())) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
+	return 0;
+    }
 
     if(!refChild)
-	return appendChild(newChild);
+	return appendChild(newChild, exceptioncode);
 
-    checkSameDocument(newChild);
-    checkNoOwner(newChild);
-    checkIsChild(refChild);
+    if( checkSameDocument(newChild, exceptioncode) )
+	return 0;
+    if( checkNoOwner(newChild, exceptioncode) )
+	return 0;
+    if( checkIsChild(refChild, exceptioncode) )
+	return 0;
 
     if(newChild->parentNode() == this)
-	removeChild(newChild);
-
+	removeChild(newChild, exceptioncode);
+    if( exceptioncode )
+	return 0;
+    
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
@@ -477,15 +487,19 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     while (child) {
 	nextChild = isFragment ? child->nextSibling() : 0;
 
-	checkNoOwner(child);
-	if(!childAllowed(child))
-	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-
+	if( checkNoOwner(child, exceptioncode) )
+	    return 0;
+	if(!childAllowed(child)) {
+	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	    return 0;
+	}
 	// if already in the tree, remove it first!
 	NodeImpl *newParent = child->parentNode();
 	if(newParent)
-	    newParent->removeChild( child );
-
+	    newParent->removeChild( child, exceptioncode );
+	if ( exceptioncode )
+	    return 0;
+	
 	// seems ok, lets's insert it.
 	if (prev)
 	    prev->setNextSibling(child);
@@ -508,23 +522,35 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
     return newChild;
 }
 
-NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
+NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
-    checkReadOnly();
-    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild()))
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-    checkSameDocument(newChild);
-    checkIsChild(oldChild);
-    checkNoOwner(newChild);
+    exceptioncode = 0;
+    if (checkReadOnly()) {
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	return 0;
+    }
+    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild())) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
+	return 0;
+    }
+    if( checkSameDocument(newChild, exceptioncode) )
+	return 0;
+    if( checkIsChild(oldChild, exceptioncode) )
+	return 0;
+    if( checkNoOwner(newChild, exceptioncode) )
+	return 0;
 
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
 
     // make sure we will be able to insert the first node before we go removing the old one
-    checkNoOwner(isFragment ? newChild->firstChild() : newChild);
-    if(!childAllowed(isFragment ? newChild->firstChild() : newChild))
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+    if( checkNoOwner(isFragment ? newChild->firstChild() : newChild, exceptioncode) )
+	return 0;
+    if(!childAllowed(isFragment ? newChild->firstChild() : newChild)) {
+	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	return 0;
+    }
 
     NodeImpl *prev = oldChild->previousSibling();
     NodeImpl *next = oldChild->nextSibling();
@@ -537,14 +563,19 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     while (child) {
 	nextChild = isFragment ? child->nextSibling() : 0;
 
-	checkNoOwner(child);
-	if(!childAllowed(child))
-	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-
+	if( checkNoOwner(child, exceptioncode ) )
+	    return 0;
+	if(!childAllowed(child)) {
+	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	    return 0;
+	}
+	
 	// if already in the tree, remove it first!
 	NodeImpl *newParent = child->parentNode();
 	if(newParent)
-	    newParent->removeChild( child );
+	    newParent->removeChild( child, exceptioncode );
+	if ( exceptioncode )
+	    return 0;
 
 	// seems ok, lets's insert it.
 	if (prev) prev->setNextSibling(child);
@@ -567,10 +598,13 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
     return oldChild;
 }
 
-NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
+NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
-    checkReadOnly();
-    checkIsChild(oldChild);
+    exceptioncode = 0;
+    if( checkReadOnly() )
+	return 0;
+    if( checkIsChild(oldChild, exceptioncode) )
+	return 0;
 
     NodeImpl *prev, *next;
     prev = oldChild->previousSibling();
@@ -592,18 +626,24 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
     return oldChild;
 }
 
-NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
+NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 {
 //    kdDebug(6010) << "NodeBaseImpl::appendChild( " << newChild << " );" <<endl;
     checkReadOnly();
-    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild()))
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-    checkSameDocument(newChild);
-    checkNoOwner(newChild);
+    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild())) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
+	return 0;
+    }
+    if( checkSameDocument(newChild, exceptioncode) )
+	return 0;
+    if( checkNoOwner(newChild, exceptioncode) )
+	return 0;
 
     if(newChild->parentNode() == this)
-	removeChild(newChild);
-
+	removeChild(newChild, exceptioncode);
+    if ( exceptioncode )
+	return 0;
+    
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
@@ -611,14 +651,19 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     while (child) {
 	nextChild = isFragment ? child->nextSibling() : 0;
 
-	checkNoOwner(child);
-	if(!childAllowed(child))
-	    throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+	if (checkNoOwner(child, exceptioncode) )
+	    return 0;
+	if(!childAllowed(child)) {
+	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	    return 0;
+	}
 
 	// if already in the tree, remove it first!
 	NodeImpl *newParent = child->parentNode();
 	if(newParent)
-	    newParent->removeChild( child );
+	    newParent->removeChild( child, exceptioncode );
+	if ( exceptioncode )
+	    return 0;
 
 	// lets append it
 	child->setParent(this);
@@ -662,7 +707,8 @@ NodeImpl *NodeBaseImpl::cloneNode ( bool deep )
 	NodeImpl *n;
 	for(n = firstChild(); n != lastChild(); n = n->nextSibling())
 	{
-	    newImpl->appendChild(n->cloneNode(deep));
+	    int exceptioncode;
+	    newImpl->appendChild(n->cloneNode(deep), exceptioncode);
 	}
     }
     return newImpl;
@@ -681,31 +727,40 @@ void NodeBaseImpl::setLastChild(NodeImpl *child)
 }
 
 // check for same source document:
-void NodeBaseImpl::checkSameDocument( NodeImpl *newChild )
+bool NodeBaseImpl::checkSameDocument( NodeImpl *newChild, int &exceptioncode )
 {
+    exceptioncode = 0;
     DocumentImpl *ownerDocThis = static_cast<DocumentImpl*>(nodeType() == Node::DOCUMENT_NODE ? this : ownerDocument());
     DocumentImpl *ownerDocNew = static_cast<DocumentImpl*>(newChild->nodeType() == Node::DOCUMENT_NODE ? newChild : newChild->ownerDocument());
     if(ownerDocThis != ownerDocNew) {
 	kdDebug(6010)<< "not same document, newChild = " << newChild << "document = " << document << endl;
-	throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
+	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+	return true;
     }
+    return false;
 }
 
 // check for being (grand-..)father:
-void NodeBaseImpl::checkNoOwner( NodeImpl *newChild )
+bool NodeBaseImpl::checkNoOwner( NodeImpl *newChild, int &exceptioncode )
 {
   //check if newChild is parent of this...
   NodeImpl *n;
   for( n = this; n != (NodeImpl *)document && n!= 0; n = n->parentNode() )
-    if(n == newChild)
-      throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+      if(n == newChild) {
+	  exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	  return true;
+      }
+  return false;
 }
 
 // check for being child:
-void NodeBaseImpl::checkIsChild( NodeImpl *oldChild )
+bool NodeBaseImpl::checkIsChild( NodeImpl *oldChild, int &exceptioncode )
 {
-    if(!oldChild || oldChild->parentNode() != this)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
+    if(!oldChild || oldChild->parentNode() != this) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
+	return true;
+    }
+    return false;
 }
 
 bool NodeBaseImpl::childAllowed( NodeImpl *newChild )
@@ -721,7 +776,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     if(!childAllowed(newChild))
     {
         //kdDebug( 6020 ) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+	return 0;
     }
 
     // just add it...

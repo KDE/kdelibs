@@ -176,7 +176,6 @@ public:
     void deleteCell ( long index );
 
     // overrides
-    virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(AttrImpl *attr);
 
 protected:

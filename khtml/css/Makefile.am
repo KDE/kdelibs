@@ -17,8 +17,6 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-KDE_CXXFLAGS = $(USE_EXCEPTIONS)
-
 noinst_LTLIBRARIES = libkhtmlcss.la
 libkhtmlcss_la_SOURCES = \
 	css_stylesheetimpl.cpp  css_ruleimpl.cpp        css_valueimpl.cpp \

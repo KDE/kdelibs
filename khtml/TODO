@@ -4,9 +4,6 @@ Rendering:
 	* text-align: Justify missing
 	* allow font elements in a block level context.
 
-General:
-	* reload should reload images too!
-
 StyleSheets:
 	* @ rules in sheets
 	* lots of properties
@@ -20,6 +17,10 @@ DOM:
 	* DOM level 2
 	* DOM stylesheets, changes need to trigger the appropriate changes
 	  in the rendering tree
+	* Implementation of NamedAttrMapImpl and Attributes in DOMElementImpl
+	  is ugly. MOve aatributes to the elementImpl and make the namedNodeMap
+	  point to an element. Think of creating AttrImpl's directly in
+	  khtmltoken.cpp
 
 XML:
 	* lots of stuff in the Impl classes

@@ -127,8 +127,6 @@ public:
 
     HTMLFormElementImpl *form() { return _form; }
 
-    virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLElementImpl::addChild(newChild); }
-
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach(KHTMLView *w);
@@ -197,8 +195,6 @@ public:
     void parseAttribute(AttrImpl *attr);
 
     virtual void attach(KHTMLView *w);
-
-    virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLElementImpl::addChild(newChild); }
 
 protected:
     DOMString _value;
@@ -371,10 +367,10 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
 
-    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
-    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
-    virtual NodeImpl *removeChild ( NodeImpl *oldChild );
-    virtual NodeImpl *appendChild ( NodeImpl *newChild );
+    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
+    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
+    virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
+    virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
 
     virtual void parseAttribute(AttrImpl *attr);
@@ -413,10 +409,10 @@ public:
     virtual tagStatus startTag() { return OPTGROUPStartTag; }
     virtual tagStatus endTag() { return OPTGROUPEndTag; }
 
-    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
-    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
-    virtual NodeImpl *removeChild ( NodeImpl *oldChild );
-    virtual NodeImpl *appendChild ( NodeImpl *newChild );
+    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
+    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
+    virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
+    virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
     virtual void parseAttribute(AttrImpl *attr);
     void recalcSelectOptions();
 };

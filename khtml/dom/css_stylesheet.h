@@ -185,7 +185,8 @@ public:
     enum ExceptionCode
     {
 	SYNTAX_ERR                     = 0,
-	INVALID_MODIFICATION_ERR       = 1
+	INVALID_MODIFICATION_ERR       = 1,
+	_EXCEPTION_OFFSET 	       = 1000
     };	
 };
 

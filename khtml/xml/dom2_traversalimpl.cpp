@@ -53,8 +53,8 @@ NodeIteratorImpl::NodeIteratorImpl(Node n, NodeFilter *f)
       whatToShow = 0x0000FFFF;
       filter = f;
     }
-  else
-    throw DOMException(DOMException::NOT_FOUND_ERR); // ### should we go into an invalid state instead?
+//   else
+//     throw DOMException(DOMException::NOT_FOUND_ERR); // ### should we go into an invalid state instead?
 }
 
 NodeIteratorImpl::NodeIteratorImpl(Node n, long _whatToShow , NodeFilter *f)
@@ -423,13 +423,13 @@ void TreeWalkerImpl::setExpandEntityReferences(bool value)
 
 void TreeWalkerImpl::setCurrentNode(/* const*/ Node n )
 {
-    if( n.isNull() )
-        throw( DOMException::NOT_SUPPORTED_ERR );
-    else
-      {
+    if( !n.isNull() )
+    {
         rootNode = n;
         currentNode = n;
-      }
+    }
+//     else
+//         throw( DOMException::NOT_SUPPORTED_ERR );
 }
 
 Node TreeWalkerImpl::parentNode(  )

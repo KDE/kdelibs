@@ -71,34 +71,37 @@ ushort HTMLTableElementImpl::id() const
 
 void HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 {
+    int exceptioncode;
     if(tCaption)
-	replaceChild ( c, tCaption );
+	replaceChild ( c, tCaption, exceptioncode );
     else
-	insertBefore( c, firstChild() );
+	insertBefore( c, firstChild(), exceptioncode );
     tCaption = c;
 }
 
 void HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 {
+    int exceptioncode; 
     if(head)
-	replaceChild ( s, head );
+	replaceChild ( s, head, exceptioncode );
     else if( foot )
-	insertBefore( s, foot );
+	insertBefore( s, foot, exceptioncode );
     else if( firstBody )
-	insertBefore( s, firstBody );
+	insertBefore( s, firstBody, exceptioncode );
     else
-	appendChild( s );
+	appendChild( s, exceptioncode );
     head = s;
 }
 
 void HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
 {
+    int exceptioncode;
     if(foot)
-	replaceChild ( s, foot );
+	replaceChild ( s, foot, exceptioncode );
     else if( firstBody )
-	insertBefore( s, firstBody );
+	insertBefore( s, firstBody, exceptioncode );
     else
-	appendChild( s );
+	appendChild( s, exceptioncode );
     foot = s;
 }
 
@@ -106,20 +109,24 @@ HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
 {
     if(!head)
     {
+	int exceptioncode;
 	head = new HTMLTableSectionElementImpl(document, ID_THEAD);
 	if(foot)
-	    insertBefore( head, foot );
+	    insertBefore( head, foot, exceptioncode );
 	if(firstBody)
-	    insertBefore( head, firstBody);
+	    insertBefore( head, firstBody, exceptioncode);
 	else
-	    appendChild(head);
+	    appendChild(head, exceptioncode);
     }
     return head;
 }
 
 void HTMLTableElementImpl::deleteTHead(  )
 {
-    if(head) HTMLElementImpl::removeChild(head);
+    if(head) {
+	int exceptioncode;
+	HTMLElementImpl::removeChild(head, exceptioncode);
+    }
     head = 0;
 }
 
@@ -127,18 +134,22 @@ HTMLElementImpl *HTMLTableElementImpl::createTFoot(  )
 {
     if(!foot)
     {
+	int exceptioncode;
 	foot = new HTMLTableSectionElementImpl(document, ID_TFOOT);
 	if(firstBody)
-	    insertBefore( foot, firstBody );
+	    insertBefore( foot, firstBody, exceptioncode );
 	else
-	    appendChild(foot);
+	    appendChild(foot, exceptioncode);
     }
     return foot;
 }
 
 void HTMLTableElementImpl::deleteTFoot(  )
 {
-    if(foot) HTMLElementImpl::removeChild(foot);
+    if(foot) {
+	int exceptioncode;
+	HTMLElementImpl::removeChild(foot, exceptioncode);
+    }
     foot = 0;
 }
 
@@ -146,15 +157,19 @@ HTMLElementImpl *HTMLTableElementImpl::createCaption(  )
 {
     if(!tCaption)
     {
+	int exceptioncode;
 	tCaption = new HTMLTableCaptionElementImpl(document);
-	insertBefore( tCaption, firstChild() );
+	insertBefore( tCaption, firstChild(), exceptioncode );
     }
     return tCaption;
 }
 
 void HTMLTableElementImpl::deleteCaption(  )
 {
-    if(tCaption) HTMLElementImpl::removeChild(tCaption);
+    if(tCaption) {
+	int exceptioncode;
+	HTMLElementImpl::removeChild(tCaption, exceptioncode);
+    }
     tCaption = 0;
 }
 
@@ -215,11 +230,11 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 	//if(incremental && !columnPos[totalCols]);// calcColWidth();
 	if(!firstBody)
 	    firstBody = static_cast<HTMLTableSectionElementImpl *>(child);
-    default:
- 	HTMLElementImpl::addChild(child);
 	break;
+    default:	
+ 	return 0;
     }
-    return child;
+    return HTMLElementImpl::addChild( child );
 }
 
 void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
@@ -436,17 +451,19 @@ HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index )
     nrows++;
 
     HTMLTableRowElementImpl *r = new HTMLTableRowElementImpl(document);
-    if(index < 1)
-    {
-	insertBefore(r, firstChild());
-	return r;
-    }
 
     NodeListImpl *children = childNodes();
+    int exceptioncode;
     if(!children || (int)children->length() <= index)
-	appendChild(r);
-    else
-	insertBefore(r, children->item(index));
+	appendChild(r, exceptioncode);
+    else {
+	NodeImpl *n;
+	if(index < 1)
+	    n = firstChild();
+	else
+	    n = children->item(index);
+	insertBefore(r, n, exceptioncode );
+    }
     if(children) delete children;
     return r;
 }
@@ -458,7 +475,8 @@ void HTMLTableSectionElementImpl::deleteRow( long index )
     if(children && (int)children->length() > index)
     {
 	nrows--;
-	HTMLElementImpl::removeChild(children->item(index));
+	int exceptioncode;
+	HTMLElementImpl::removeChild(children->item(index), exceptioncode);
     }
     if(children) delete children;
 }
@@ -526,17 +544,18 @@ HTMLElementImpl *HTMLTableRowElementImpl::insertCell( long index )
 {
     HTMLTableCellElementImpl *c = new HTMLTableCellElementImpl(document, ID_TD);
 
-    if(index < 1)
-    {
-	insertBefore(c, firstChild());
-	return c;
-    }
-
     NodeListImpl *children = childNodes();
+    int exceptioncode;
     if(!children || (int)children->length() <= index)
-	appendChild(c);
-    else
-	insertBefore(c, children->item(index));
+	appendChild(c, exceptioncode);
+    else {
+	NodeImpl *n;
+	if(index < 1)
+	    n = firstChild();
+	else
+	    n = children->item(index);
+	insertBefore(c, n, exceptioncode);
+    }
     if(children) delete children;
     return c;
 }
@@ -545,20 +564,11 @@ void HTMLTableRowElementImpl::deleteCell( long index )
 {
     if(index < 0) return;
     NodeListImpl *children = childNodes();
-    if(children && (int)children->length() > index)
-	HTMLElementImpl::removeChild(children->item(index));
+    if(children && (int)children->length() > index) {
+	int exceptioncode;
+	HTMLElementImpl::removeChild(children->item(index), exceptioncode);
+    }
     if(children) delete children;
-}
-
-NodeImpl *HTMLTableRowElementImpl::addChild(NodeImpl *child)
-{
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6030 ) << nodeName().string() << "(TableRow)::addChild( " << child->nodeName().string() << " )" << endl;
-#endif
-
-    NodeImpl *ret = HTMLElementImpl::addChild(child);
-
-    return ret;
 }
 
 void HTMLTableRowElementImpl::parseAttribute(AttrImpl *attr)
@@ -723,7 +733,7 @@ NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
 	return child;
     }
     default:
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+	return 0;
 	break;
 	// ####
     }

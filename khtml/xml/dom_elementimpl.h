@@ -61,7 +61,7 @@ public:
 
     virtual DOMString nodeValue() const { return value(); }
 
-    virtual void setNodeValue( const DOMString & );
+    virtual void setNodeValue( const DOMString &, int &exceptioncode );
 
     virtual NodeImpl *parentNode() const;
     virtual NodeImpl *previousSibling() const;
@@ -72,7 +72,7 @@ public:
     DOMStringImpl *val() { return _value; }
 
 protected:
-    AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc, bool specified);
+//    AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc, bool specified);
     AttrImpl(const khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element);
     AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc);
     AttrImpl(int _id, const DOMString &value, DocumentImpl *doc);
@@ -110,15 +110,15 @@ public:
 
     DOMString getAttribute ( const DOMString &name ) const;
 
-    void setAttribute ( const DOMString &name, const DOMString &value );
+    void setAttribute ( const DOMString &name, const DOMString &value);
 
     void removeAttribute ( const DOMString &name );
 
     AttrImpl *getAttributeNode ( const DOMString &name );
 
-    AttrImpl *setAttributeNode ( AttrImpl *newAttr );
+    AttrImpl *setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
 
-    AttrImpl *removeAttributeNode ( AttrImpl *oldAttr );
+    AttrImpl *removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
 
     NodeListImpl *getElementsByTagName ( const DOMString &name );
     NodeListImpl *getElementsByNameAttr ( const DOMString &name );
@@ -147,7 +147,7 @@ public:
     AttrImpl *getAttributeNode ( int index ) const;
     int getAttributeCount() const;
     void setAttribute ( int id, const DOMString &value );
-    void setAttribute ( khtml::AttributeList list );
+    void setAttribute ( const khtml::AttributeList &list );
 
     // State of the element.
     virtual QString state() { return QString::null; }
@@ -174,22 +174,22 @@ class NamedAttrMapImpl : public NamedNodeMapImpl
 public:
     NamedAttrMapImpl(ElementImpl *e);
     virtual ~NamedAttrMapImpl();
-    void fromAttributeList(const khtml::AttributeList list);
-    void fromNamedAttrMapImpl(const NamedAttrMapImpl *other);
+    NamedAttrMapImpl &operator =(const khtml::AttributeList &list);
+    NamedAttrMapImpl &operator =(const NamedAttrMapImpl &other);
 
     unsigned long length() const;
 
     NodeImpl *getNamedItem ( const DOMString &name ) const;
     AttrImpl *getIdItem ( int id ) const;
 
-    NodeImpl *setNamedItem ( const Node &arg );
-    AttrImpl *setIdItem ( AttrImpl *attr );
+    NodeImpl *setNamedItem ( const Node &arg, int &exceptioncode );
+    AttrImpl *setIdItem ( AttrImpl *attr, int& exceptioncode );
 
     NodeImpl *removeNamedItem ( const DOMString &name );
     AttrImpl *removeIdItem ( int id );
 
     NodeImpl *item ( unsigned long index ) const;
-    AttrImpl *removeAttr( AttrImpl *oldAttr );
+    AttrImpl *removeAttr( AttrImpl *oldAttr, int &exceptioncode );
     void detachFromElement();
 
 protected:

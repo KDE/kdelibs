@@ -340,7 +340,7 @@ void HTMLStyleElementImpl::parseAttribute(AttrImpl *attr)
 
 NodeImpl *HTMLStyleElementImpl::addChild(NodeImpl *child)
 {
-    if(!child->isTextNode()) return this;
+    if(!child->isTextNode()) return 0;
 
     DOMString text = static_cast<TextImpl *>(child)->string();
 

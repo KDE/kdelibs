@@ -109,41 +109,29 @@ RangeImpl::~RangeImpl()
 
 Node RangeImpl::getStartContainer() const
 {
-    if( isDetached() )
-        throw DOMException(DOMException::INVALID_STATE_ERR);
-    else
         return startContainer;
 }
 
 long RangeImpl::getStartOffset() const
 {
-    if( isDetached() )
-        throw DOMException(DOMException::INVALID_STATE_ERR);
-    else
-        return startOffset;
+    return startOffset;
 }
 
 Node RangeImpl::getEndContainer() const
 {
-    if( isDetached() )
-        throw DOMException(DOMException::INVALID_STATE_ERR);
-    else
-        return endContainer;
+    return endContainer;
 }
 
 long RangeImpl::getEndOffset() const
 {
-    if( isDetached() )
-        throw DOMException(DOMException::INVALID_STATE_ERR);
-    else
-        return endOffset;
+    return endOffset;
 }
 
 Node RangeImpl::getCommonAncestorContainer() /*const*/
 {
-    if( isDetached() )
-        throw DOMException(DOMException::INVALID_STATE_ERR);
-
+    // ### caching the commonAncestorContainer is a bit senseless
+    // if we do not have a mechanism to check if the cached value
+    // is useable
     Node parentStart = startContainer;
     Node parentEnd = endContainer;
 
@@ -169,48 +157,11 @@ Node RangeImpl::getCommonAncestorContainer() /*const*/
 
 bool RangeImpl::getCollapsed() const
 {
-    if( isDetached() )
-        throw DOMException(DOMException::INVALID_STATE_ERR);
-    else
-        return collapsed;
+    return collapsed;
 }
 
 void RangeImpl::setStart( const Node &refNode, long offset )
 {
-    Node _tempNode = refNode;
-    if( _tempNode.isNull() )
-        throw DOMException( DOMException::NOT_FOUND_ERR );
-
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode.nodeType() == Node::ENTITY_NODE ||
-            _tempNode.nodeType() == Node::NOTATION_NODE ||
-            _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
-            throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-        _tempNode = _tempNode.parentNode();
-    }
-
-    if( offset < 0 )
-        throw DOMException( DOMException::INDEX_SIZE_ERR );
-
-    if( refNode.nodeType() != Node::TEXT_NODE )
-    {
-	if( (unsigned)offset > refNode.childNodes().length() )
-            throw DOMException( DOMException::INDEX_SIZE_ERR );
-    }
-    else
-    {
-	Text t;
-	t = refNode;
-        if( t.isNull() || (unsigned)offset > t.length() )
-            throw DOMException( DOMException::INDEX_SIZE_ERR );
-    }
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
     startContainer = refNode;
     startOffset = offset;
 
@@ -230,40 +181,6 @@ void RangeImpl::setStart( const Node &refNode, long offset )
 
 void RangeImpl::setEnd( const Node &refNode, long offset )
 {
-    Node _tempNode = refNode;
-    if( _tempNode.isNull() )
-        throw DOMException( DOMException::NOT_FOUND_ERR );
-
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode.nodeType() == Node::ENTITY_NODE ||
-            _tempNode.nodeType() == Node::NOTATION_NODE ||
-            _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
-            throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-        _tempNode = _tempNode.parentNode();
-    }
-
-    if( offset < 0 )
-        throw DOMException( DOMException::INDEX_SIZE_ERR );
-
-    if( refNode.nodeType() != Node::TEXT_NODE )
-    {
-	if( (unsigned)offset > refNode.childNodes().length() )
-            throw DOMException( DOMException::INDEX_SIZE_ERR );
-    }
-    else
-    {
-	Text t;
-	t = refNode;
-        if( t.isNull() || (unsigned)offset > t.length() )
-            throw DOMException( DOMException::INDEX_SIZE_ERR );
-    }
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
     endContainer = refNode;
     endOffset = offset;
 
@@ -281,211 +198,8 @@ void RangeImpl::setEnd( const Node &refNode, long offset )
     }
 }
 
-void RangeImpl::setStartBefore( const Node &refNode )
-{
-    Node _tempNode = refNode;
-    if( _tempNode.isNull() )
-        throw DOMException( DOMException::NOT_FOUND_ERR );
-
-    _tempNode = refNode.parentNode();
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode.nodeType() == Node::ENTITY_NODE ||
-            _tempNode.nodeType() == Node::NOTATION_NODE ||
-            _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
-            throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-        _tempNode = _tempNode.parentNode();
-    }
-
-    if( refNode.nodeType() == Node::DOCUMENT_NODE ||
-        refNode.nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
-        refNode.nodeType() == Node::ATTRIBUTE_NODE ||
-        refNode.nodeType() == Node::ENTITY_NODE ||
-        refNode.nodeType() == Node::NOTATION_NODE )
-        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    try
-    {
-        setStart( refNode.parentNode(), refNode.index() );
-    }
-    catch( RangeException r )
-    {
-        if( r.code == RangeException::INVALID_NODE_TYPE_ERR )
-            fprintf( stderr, "Exception: Invalid Node type\n" );
-        return;
-    }
-    catch( DOMException d )
-    {
-        if( d.code == DOMException::NOT_FOUND_ERR )
-            fprintf( stderr, "Exception: Null Nodes not accepted\n" );
-        if( d.code == DOMException::INDEX_SIZE_ERR )
-            fprintf( stderr, "Exception: offset has wrong size\n" );
-        if( d.code == DOMException::INVALID_STATE_ERR )
-            fprintf( stderr, "Exception: detach() has been invoked\n" );
-        return;
-    }
-}
-
-void RangeImpl::setStartAfter( const Node &refNode )
-{
-    Node _tempNode = refNode;
-    if( _tempNode.isNull() )
-        throw DOMException( DOMException::NOT_FOUND_ERR );
-
-    _tempNode = refNode.parentNode();
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode.nodeType() == Node::ENTITY_NODE ||
-            _tempNode.nodeType() == Node::NOTATION_NODE ||
-            _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
-            throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-        _tempNode = _tempNode.parentNode();
-    }
-
-    if( refNode.nodeType() == Node::DOCUMENT_NODE ||
-        refNode.nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
-        refNode.nodeType() == Node::ATTRIBUTE_NODE ||
-        refNode.nodeType() == Node::ENTITY_NODE ||
-        refNode.nodeType() == Node::NOTATION_NODE )
-        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    try
-    {
-        setStart( refNode.parentNode(), refNode.index()+1 );
-    }
-    catch( RangeException r )
-    {
-        if( r.code == RangeException::INVALID_NODE_TYPE_ERR )
-            fprintf( stderr, "Exception: Invalid Node type\n" );
-        return;
-    }
-    catch( DOMException d )
-    {
-        if( d.code == DOMException::NOT_FOUND_ERR )
-            fprintf( stderr, "Exception: Null Nodes not accepted\n" );
-        if( d.code == DOMException::INDEX_SIZE_ERR )
-            fprintf( stderr, "Exception: offset has wrong size\n" );
-        if( d.code == DOMException::INVALID_STATE_ERR )
-            fprintf( stderr, "Exception: detach() has been invoked\n" );
-        return;
-    }
-}
-
-void RangeImpl::setEndBefore( const Node &refNode )
-{
-    Node _tempNode = refNode;
-    if( _tempNode.isNull() )
-        throw DOMException( DOMException::NOT_FOUND_ERR );
-
-    _tempNode = refNode.parentNode();
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode.nodeType() == Node::ENTITY_NODE ||
-            _tempNode.nodeType() == Node::NOTATION_NODE ||
-            _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
-            throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-        _tempNode = _tempNode.parentNode();
-    }
-
-    if( refNode.nodeType() == Node::DOCUMENT_NODE ||
-        refNode.nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
-        refNode.nodeType() == Node::ATTRIBUTE_NODE ||
-        refNode.nodeType() == Node::ENTITY_NODE ||
-        refNode.nodeType() == Node::NOTATION_NODE )
-        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    try
-    {
-        setEnd( refNode.parentNode(), refNode.index() );
-    }
-    catch( RangeException r )
-    {
-        if( r.code == RangeException::INVALID_NODE_TYPE_ERR )
-            fprintf( stderr, "Exception: Invalid Node type\n" );
-        return;
-    }
-    catch( DOMException d )
-    {
-        if( d.code == DOMException::NOT_FOUND_ERR )
-            fprintf( stderr, "Exception: Null Nodes not accepted\n" );
-        if( d.code == DOMException::INDEX_SIZE_ERR )
-            fprintf( stderr, "Exception: offset has wrong size\n" );
-        if( d.code == DOMException::INVALID_STATE_ERR )
-            fprintf( stderr, "Exception: detach() has been invoked\n" );
-        return;
-    }
-}
-
-void RangeImpl::setEndAfter( const Node &refNode )
-{
-    Node _tempNode = refNode;
-    if( _tempNode.isNull() )
-        throw DOMException( DOMException::NOT_FOUND_ERR );
-
-    _tempNode = refNode.parentNode();
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode.nodeType() == Node::ENTITY_NODE ||
-            _tempNode.nodeType() == Node::NOTATION_NODE ||
-            _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
-            throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-        _tempNode = _tempNode.parentNode();
-    }
-
-    if( refNode.nodeType() == Node::DOCUMENT_NODE ||
-        refNode.nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
-        refNode.nodeType() == Node::ATTRIBUTE_NODE ||
-        refNode.nodeType() == Node::ENTITY_NODE ||
-        refNode.nodeType() == Node::NOTATION_NODE )
-        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    try
-    {
-        setEnd( refNode.parentNode(), refNode.index()+1 );
-    }
-    catch( RangeException r )
-    {
-        if( r.code == RangeException::INVALID_NODE_TYPE_ERR )
-            fprintf( stderr, "Exception: Invalid Node type\n" );
-        return;
-    }
-    catch( DOMException d )
-    {
-        if( d.code == DOMException::NOT_FOUND_ERR )
-            fprintf( stderr, "Exception: Null Nodes not accepted\n" );
-        if( d.code == DOMException::INDEX_SIZE_ERR )
-            fprintf( stderr, "Exception: offset has wrong size\n" );
-        if( d.code == DOMException::INVALID_STATE_ERR )
-            fprintf( stderr, "Exception: detach() has been invoked\n" );
-        return;
-    }
-}
-
 void RangeImpl::collapse( bool toStart )
 {
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
     if( toStart )   // collapse to start
     {
         endContainer = startContainer;
@@ -502,104 +216,8 @@ void RangeImpl::collapse( bool toStart )
     }
 }
 
-void RangeImpl::selectNode( const Node &refNode )
-{
-    Node _tempNode = refNode;
-    if( _tempNode.isNull() )
-        throw DOMException( DOMException::NOT_FOUND_ERR );
-
-    _tempNode = refNode.parentNode();
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode.nodeType() == Node::ENTITY_NODE ||
-            _tempNode.nodeType() == Node::NOTATION_NODE ||
-            _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
-            throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-        _tempNode = _tempNode.parentNode();
-    }
-
-    if( refNode.nodeType() == Node::DOCUMENT_NODE ||
-        refNode.nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
-        refNode.nodeType() == Node::ATTRIBUTE_NODE ||
-        refNode.nodeType() == Node::ENTITY_NODE ||
-        refNode.nodeType() == Node::NOTATION_NODE )
-        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    try
-    {
-        setStartBefore( refNode );
-        setEndAfter( refNode );
-    }
-    catch( RangeException r )
-    {
-        if( r.code == RangeException::INVALID_NODE_TYPE_ERR )
-            fprintf( stderr, "Exception: Invalid Node type\n" );
-        return;
-    }
-    catch( DOMException d )
-    {
-        if( d.code == DOMException::NOT_FOUND_ERR )
-            fprintf( stderr, "Exception: Null Nodes not accepted\n" );
-        if( d.code == DOMException::INVALID_STATE_ERR )
-            fprintf( stderr, "Exception: detach() has been invoked\n" );
-        return;
-    }
-}
-
-void RangeImpl::selectNodeContents( const Node &refNode )
-{
-    Node _tempNode = refNode;
-    if( _tempNode.isNull() )
-        throw DOMException( DOMException::NOT_FOUND_ERR );
-
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode.nodeType() == Node::ATTRIBUTE_NODE ||
-            _tempNode.nodeType() == Node::ENTITY_NODE ||
-            _tempNode.nodeType() == Node::NOTATION_NODE ||
-            _tempNode.nodeType() == Node::DOCUMENT_TYPE_NODE )
-            throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-        _tempNode = _tempNode.parentNode();
-    }
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    try
-    {
-        setStartBefore( refNode.firstChild() );
-        setEndAfter( refNode.lastChild() );
-    }
-    catch( RangeException r )
-    {
-        if( r.code == RangeException::INVALID_NODE_TYPE_ERR )
-            fprintf( stderr, "Exception: Invalid Node type\n" );
-        return;
-    }
-    catch( DOMException d )
-    {
-        if( d.code == DOMException::NOT_FOUND_ERR )
-            fprintf( stderr, "Exception: Null Nodes not accepted\n" );
-        if( d.code == DOMException::INVALID_STATE_ERR )
-            fprintf( stderr, "Exception: detach() has been invoked\n" );
-        return;
-    }
-}
-
 short RangeImpl::compareBoundaryPoints( Range::CompareHow how, const Range &sourceRange )
 {
-    if( commonAncestorContainer.ownerDocument() != sourceRange.handle()->commonAncestorContainer.ownerDocument() )
-        throw DOMException( DOMException::WRONG_DOCUMENT_ERR );
-
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
     switch(how)
     {
     case Range::START_TO_START:
@@ -812,35 +430,16 @@ void RangeImpl::deleteContents(  )
 
 DocumentFragment RangeImpl::extractContents(  )
 {
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
     return masterTraverse( true );
 }
 
 DocumentFragment RangeImpl::cloneContents(  )
 {
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
     return masterTraverse( false );
 }
 
 void RangeImpl::insertNode( const Node &newNode )
 {
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    if( newNode.nodeType() == Node::ATTRIBUTE_NODE ||
-        newNode.nodeType() == Node::ENTITY_NODE ||
-        newNode.nodeType() == Node::NOTATION_NODE ||
-        newNode.nodeType() == Node::DOCUMENT_NODE ||
-        newNode.nodeType() == Node::DOCUMENT_FRAGMENT_NODE)
-        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR);
-
-    if( newNode.ownerDocument() != startContainer.ownerDocument() )
-        throw DOMException( DOMException::WRONG_DOCUMENT_ERR );
-
     if( startContainer.nodeType() == Node::TEXT_NODE )
     {
         Text newText;
@@ -853,55 +452,8 @@ void RangeImpl::insertNode( const Node &newNode )
         startContainer.insertBefore( newNode, startContainer.childNodes().item( startOffset ) );
 }
 
-void RangeImpl::surroundContents( const Node &newParent )
-{
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    if( newParent.isNull() )
-        return;
-
-    if( newParent.ownerDocument() != startContainer.ownerDocument() )
-        throw DOMException( DOMException::WRONG_DOCUMENT_ERR );
-    
-    if( newParent.nodeType() == Node::ATTRIBUTE_NODE ||
-        newParent.nodeType() == Node::ENTITY_NODE ||
-        newParent.nodeType() == Node::NOTATION_NODE ||
-        newParent.nodeType() == Node::DOCUMENT_TYPE_NODE ||
-        newParent.nodeType() == Node::DOCUMENT_NODE ||
-        newParent.nodeType() == Node::DOCUMENT_FRAGMENT_NODE)
-        throw RangeException( RangeException::INVALID_NODE_TYPE_ERR );
-
-    // revisit: if you set a range without optimizing it (trimming) the following exception might be
-    // thrown incorrectly
-    Node realStart = (startContainer.nodeType() == Node::TEXT_NODE)? startContainer.parentNode() : startContainer;
-    Node realEnd = (endContainer.nodeType() == Node::TEXT_NODE)? endContainer.parentNode() : endContainer;
-    if( realStart != realEnd )
-        throw RangeException( RangeException::BAD_BOUNDARYPOINTS_ERR );
-
-    DocumentFragment fragment = extractContents();
-    insertNode( newParent );
-    // BIC: to avoid this const_cast newParent shouldn't be const
-    //(const_cast<Node>(newParent)).appendChild( fragment );
-    ((Node)(newParent)).appendChild( fragment );
-    selectNode( newParent );
-    
-    
-}
-
-Range RangeImpl::cloneRange(  )
-{
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
-    return Range( this );
-}
-
 DOMString RangeImpl::toString(  )
 {
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
     NodeIteratorImpl iterator( getStartContainer().childNodes().item( getStartOffset() ) );
     DOMString _string;
     Node _node = iterator.nextNode();
@@ -932,9 +484,8 @@ DOMString RangeImpl::toString(  )
 
 DOMString RangeImpl::toHTML(  )
 {
-    if( isDetached() )
-        throw DOMException( DOMException::INVALID_STATE_ERR );
-
+    // ### implement me!!!!
+    
     // this is just to avoid compiler warnings
     DOMString d;
     return d;
@@ -942,9 +493,6 @@ DOMString RangeImpl::toHTML(  )
 
 void RangeImpl::detach(  )
 {
-    if( isDetached() )
-        throw DOMException(DOMException::INVALID_STATE_ERR);
-    else
         detached = true;
 }
 

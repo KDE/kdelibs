@@ -328,12 +328,7 @@ void KHTMLParser::parseToken(Token *t)
     // blocks until we are allowed to add it...
     while(forbiddenTag[t->id]) popOneBlock();
 
-    try
-    {
-        insertNode(n);
-    }
-    catch(DOMException)
-    {
+    if ( !insertNode(n) ) {
         // we couldn't insert the node...
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
@@ -356,20 +351,19 @@ void KHTMLParser::parseToken(Token *t)
     }
 }
 
-void KHTMLParser::insertNode(NodeImpl *n)
+bool KHTMLParser::insertNode(NodeImpl *n)
 {
     int id = n->id();
 
     // let's be stupid and just try to insert it.
     // this should work if the document is wellformed
-    try
-    {
 #ifdef PARSER_DEBUG
-        NodeImpl *tmp = current;
+    NodeImpl *tmp = current;
 #endif
-        NodeImpl *newNode = current->addChild(n);
+    NodeImpl *newNode = current->addChild(n);
+    if ( newNode ) {
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
+	kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
         // don't push elements without end tag on the stack
         if(tagPriority[id] != 0)
@@ -390,10 +384,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
             n->renderer()->calcMinMaxWidth();
             if (n->id() == ID_EMBED) n->renderer()->close();
         }
-
-    }
-    catch(DOMException exception)
-    {
+	return true;
+    } else {
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "ADDING NODE FAILED!!!! current = " << current->nodeName().string() << ", new = " << n->nodeName().string() << endl;
 #endif
@@ -409,7 +401,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
         case ID_HEAD:
             // ### alllow not having <HTML> in at all, as per HTML spec
             if (!current->isDocumentNode() && !current->id() == ID_HTML )
-                throw exception;
+                return false;
             break;
             // We can deal with a base, meta and link element in the body, by just adding the element to head.
         case ID_META:
@@ -420,12 +412,12 @@ void KHTMLParser::insertNode(NodeImpl *n)
             if( head ) {
                 head->addChild(n);
                 n->attach(HTMLWidget);
-                return;
+                return true;
             }
             break;
         case ID_HTML:
             if (!current->isDocumentNode())
-                throw exception;
+                return false;
             break;
         case ID_TITLE:
         case ID_STYLE:
@@ -433,22 +425,22 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 createHead();
             if ( head ) {
 
-                try {
-                    head->addChild(n);
+                DOM::NodeImpl *newNode = head->addChild(n);
+		if ( newNode ) {
                     pushBlock(id, tagPriority[id]);
-                    current = n;
+                    current = newNode;
                     n->attach(HTMLWidget);
-                } catch(DOMException e) {
+                } else {
 #ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
 #endif
                     discard_until = ID_STYLE + ID_CLOSE_TAG;
-                    throw e;
+                    return false;
                 }
-                return;
+                return true;
             } else if(inBody) {
                 discard_until = ID_STYLE + ID_CLOSE_TAG;
-                throw exception;
+                return false;
             }
             break;
             // SCRIPT and OBJECT are allowd in the body.
@@ -457,12 +449,13 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 // we have another <BODY> element.... apply attributes to existing one
                 NamedNodeMapImpl *map = n->attributes();
                 unsigned long attrNo;
+		int exceptioncode;
                 for (attrNo = 0; attrNo < map->length(); attrNo++)
-                    document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
+                    document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)), exceptioncode);
                 document->body()->applyChanges(true,false);
             } else if ( current->isDocumentNode() )
                 break;
-            throw exception;
+            return false;
             break;
         case ID_LI:
             e = new HTMLUListElementImpl(document);
@@ -470,7 +463,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
             e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside"), false);
             insertNode(e);
             insertNode(n);
-            return;
+            return true;
             break;
 
             // the following is a hack to move non rendered elements
@@ -508,27 +501,22 @@ void KHTMLParser::insertNode(NodeImpl *n)
             {
                 NodeImpl *parent = node->parentNode();
                 //kdDebug( 6035 ) << "trying to add form to " << parent->id() << endl;
-                try
-                {
-                    parent->insertBefore(n, node);
-                    if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT )
-                    {
-                        pushBlock(id, tagPriority[id]);
-                        current = n;
-                    }
-                    n->attach(HTMLWidget);
-                    if(tagPriority[id] == 0 && n->renderer())
-                        n->renderer()->close();
-
-                }
-                catch(DOMException e)
-                {
+		int exceptioncode = 0;
+		parent->insertBefore(n, node, exceptioncode );
+		if ( exceptioncode ) {
 #ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
 #endif
-                    throw e;
+                    return false;
                 }
-                return;
+		if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
+		    pushBlock(id, tagPriority[id]);
+		    current = n;
+		}
+		n->attach(HTMLWidget);
+		if(tagPriority[id] == 0 && n->renderer())
+		    n->renderer()->close();
+                return true;
             }
             break;
         }
@@ -537,7 +525,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
             e = new HTMLDListElementImpl(document);
             insertNode(e);
 	    insertNode(n);
-	    return;
+	    return true;
 	    break;
         case ID_AREA:
         {
@@ -548,16 +536,15 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 handled = true;
             }
             else
-                throw exception;
-            return;
+                return false;
+            return true;
         }
         case ID_TEXT:
             // ignore text inside the following elements.
             switch(current->id())
             {
             case ID_SELECT:
-                throw exception;
-                return;
+                return false;
             default:
                 break;
             }
@@ -610,7 +597,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
         case ID_HEAD:
             // we can get here only if the element is not allowed in head.
             if (id == ID_HTML)
-                throw exception;
+                return false;
             else {
                 // This means the body starts here...
                 popBlock(ID_HEAD);
@@ -720,7 +707,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		break;
         case ID_SELECT:
             if( n->isInline() )
-                throw exception;
+                return false;
             break;
         case ID_P:
         case ID_H1:
@@ -772,10 +759,10 @@ void KHTMLParser::insertNode(NodeImpl *n)
         if(!handled)
         {
             //kdDebug( 6035 ) << "Exception handler failed in HTMLPArser::insertNode()" << endl;
-            throw exception;
+            return false;
         }
 
-        insertNode(n);
+        return insertNode(n);
     }
 }
 
@@ -1224,15 +1211,12 @@ void KHTMLParser::createHead()
         return;
 
     head = new HTMLHeadElementImpl(document);
-    try
-    {
-        HTMLElementImpl *body = document->body();
-        document->firstChild()->insertBefore(head, body);
-    }
-    catch(DOMException e)
-    {
+    HTMLElementImpl *body = document->body();
+    int exceptioncode = 0;
+    document->firstChild()->insertBefore(head, body, exceptioncode);
+    if ( exceptioncode ) {
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
+        kdDebug( 6035 ) << "creation of head failed!!!!" << endl;
 #endif
         delete head;
         head = 0;

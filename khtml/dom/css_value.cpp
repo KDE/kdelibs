@@ -251,13 +251,22 @@ void CSSPrimitiveValue::setFloatValue( unsigned short /*unitType*/, float /*floa
 float CSSPrimitiveValue::getFloatValue( unsigned short unitType )
 {
     if(!impl) return 0;
+    // ### add unit conversion
+    if(primitiveType() != unitType)
+	throw CSSException(CSSException::SYNTAX_ERR);
     return ((CSSPrimitiveValueImpl *)impl)->getFloatValue( unitType );
 }
 
 void CSSPrimitiveValue::setStringValue( unsigned short stringType, const DOMString &stringValue )
 {
+    int exceptioncode = 0;
     if(impl)
-        ((CSSPrimitiveValueImpl *)impl)->setStringValue( stringType, stringValue );
+        ((CSSPrimitiveValueImpl *)impl)->setStringValue( stringType, stringValue, exceptioncode );
+    if ( exceptioncode >= CSSException::_EXCEPTION_OFFSET )
+	throw CSSException( exceptioncode - CSSException::_EXCEPTION_OFFSET );
+    if ( exceptioncode )
+	throw DOMException( exceptioncode );
+
 }
 
 DOMString CSSPrimitiveValue::getStringValue(  )

@@ -85,7 +85,7 @@ protected:
 
     void processCloseTag(khtml::Token *);
 
-    void insertNode(DOM::NodeImpl *n);
+    bool insertNode(DOM::NodeImpl *n);
 
     /*
      * The currently active element (the one new elements will be added to)

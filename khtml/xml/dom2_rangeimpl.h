@@ -53,14 +53,7 @@ public:
     Node getCommonAncestorContainer();
     void setStart ( const Node &refNode, long offset );
     void setEnd ( const Node &refNode, long offset );
-    void setStartBefore ( const Node &refNode );
-    void setStartAfter ( const Node &refNode );
-    void setEndBefore ( const Node &refNode );
-    void setEndAfter ( const Node &refNode );
     void collapse ( bool toStart );
-    void selectNode ( const Node &refNode );
-
-    void selectNodeContents ( const Node &refNode );
     short compareBoundaryPoints ( Range::CompareHow how, const Range &sourceRange );
     short compareBoundaryPoints ( Node containerA, long offsetA, Node containerB, long offsetB );
     bool boundaryPointsValid (  );
@@ -68,8 +61,6 @@ public:
     DocumentFragment extractContents (  );
     DocumentFragment cloneContents (  );
     void insertNode ( const Node &newNode );
-    void surroundContents ( const Node &newParent );
-    Range cloneRange (  );
     DOMString toString (  );
     DOMString toHTML (  );
     void detach (  );

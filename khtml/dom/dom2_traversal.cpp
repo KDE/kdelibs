@@ -48,10 +48,11 @@ NodeIterator::NodeIterator(NodeIteratorImpl *i)
 
 NodeIterator &NodeIterator::operator = (const NodeIterator &other)
 {
-    if (impl) impl->deref();
-    impl = other.impl;
-    if (impl) impl->ref();
-
+    if ( impl != other.impl ) {
+	if (impl) impl->deref();
+	impl = other.impl;
+	if (impl) impl->ref();
+    }
     return *this;
 }
 
@@ -132,9 +133,11 @@ NodeFilter::NodeFilter(NodeFilterImpl *i)
 
 NodeFilter &NodeFilter::operator = (const NodeFilter &other)
 {
-    if (impl) impl->deref();
-    impl = other.impl;
-    if (impl) impl->ref();
+    if ( impl != other.impl ) {
+	if (impl) impl->deref();
+	impl = other.impl;
+	if (impl) impl->ref();
+    }
     return *this;
 }
 
@@ -178,9 +181,11 @@ TreeWalker::TreeWalker(TreeWalkerImpl *i)
 
 TreeWalker & TreeWalker::operator = (const TreeWalker &other)
 {
-    if (impl) impl->deref();
-    impl = other.impl;
-    if (impl) impl->ref();
+    if ( impl != other.impl ) {
+	if (impl) impl->deref();
+	impl = other.impl;
+	if (impl) impl->ref();
+    }
 
     return *this;
 }

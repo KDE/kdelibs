@@ -1248,31 +1248,35 @@ void HTMLSelectElementImpl::restoreState(const QString &state)
     setChanged(true);
 }
 
-NodeImpl *HTMLSelectElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
+NodeImpl *HTMLSelectElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode )
 {
-    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild);
-    recalcListItems();
+    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild, exceptioncode );
+    if (!exceptioncode)
+	recalcListItems();
     return result;
 }
 
-NodeImpl *HTMLSelectElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
+NodeImpl *HTMLSelectElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
-    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild);
-    recalcListItems();
+    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
+    if( !exceptioncode )
+	recalcListItems();
     return result;
 }
 
-NodeImpl *HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild )
+NodeImpl *HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
-    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild);
-    recalcListItems();
+    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
+    if( !exceptioncode )
+	recalcListItems();
     return result;
 }
 
-NodeImpl *HTMLSelectElementImpl::appendChild ( NodeImpl *newChild )
+NodeImpl *HTMLSelectElementImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 {
-    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild);
-    recalcListItems();
+    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild, exceptioncode);
+    if( !exceptioncode )
+	recalcListItems();
     setChanged(true);
     return result;
 }
@@ -1473,31 +1477,35 @@ ushort HTMLOptGroupElementImpl::id() const
     return ID_OPTGROUP;
 }
 
-NodeImpl *HTMLOptGroupElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
+NodeImpl *HTMLOptGroupElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode )
 {
-    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild);
-    recalcSelectOptions();
+    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild, exceptioncode);
+    if ( !exceptioncode )
+	recalcSelectOptions();
     return result;
 }
 
-NodeImpl *HTMLOptGroupElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
+NodeImpl *HTMLOptGroupElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
-    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild);
-    recalcSelectOptions();
+    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
+    if(!exceptioncode)
+	recalcSelectOptions();
     return result;
 }
 
-NodeImpl *HTMLOptGroupElementImpl::removeChild ( NodeImpl *oldChild )
+NodeImpl *HTMLOptGroupElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
-    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild);
-    recalcSelectOptions();
+    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
+    if( !exceptioncode ) 
+	recalcSelectOptions();
     return result;
 }
 
-NodeImpl *HTMLOptGroupElementImpl::appendChild ( NodeImpl *newChild )
+NodeImpl *HTMLOptGroupElementImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 {
-    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild);
-    recalcSelectOptions();
+    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild, exceptioncode);
+    if( !exceptioncode )
+	recalcSelectOptions();
     return result;
 }
 
@@ -1755,10 +1763,11 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
         if (n->isTextNode())
             toRemove.append(n);
     QListIterator<NodeImpl> it(toRemove);
+    int exceptioncode;
     for (; it.current(); ++it) {
-        removeChild(it.current());
+        removeChild(it.current(), exceptioncode);
     }
-    insertBefore(document->createTextNode(_defaultValue),firstChild());
+    insertBefore(document->createTextNode(_defaultValue),firstChild(), exceptioncode);
     setValue(_defaultValue);
 }
 
