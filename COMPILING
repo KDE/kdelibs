@@ -9,6 +9,7 @@ What you need
 Make sure you get the following stuff from CVS:
 
 qt-copy (This is qt-3.0.4)
+arts
 kdelibs
 kdebase (strongly recommended but not strictly necessary)
 <any other package you are interested in>
