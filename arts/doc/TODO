@@ -22,6 +22,9 @@
   style referencing across functions in notification and Dispatcher - the
   alternatives seem to be even more automatic referencing magic, or freeing
   objects only if the stack is empty (idle freeing)
+- fix generated code for struct Foo { object bar; }
+- fix fallback into higher namespaces, the following idl file should be accepted
+  module A { interface Z; module B { interface Y : Z { }; }; };
 
 ## aRts SoundServer
 
