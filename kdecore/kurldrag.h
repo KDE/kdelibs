@@ -38,7 +38,7 @@ class KURLDragPrivate;
  * This is important, for instance to set a correct HTTP referrer (some websites
  * require it for downloading e.g. an image).
  *
- * To create a drag object, use KURLDrag::newDrag() with a list of KURLs.
+ * To create a drag object, use the KURLDrag constructor.
  * To decode a drop, use KURLDrag::decode() or QUriDrag::decodeLocalFiles().
  */
 class KURLDrag : public QUriDrag
@@ -80,7 +80,7 @@ public:
                              QWidget* dragSource = 0, const char * name = 0 ) KDE_DEPRECATED;
 
   /**
-   * Meta-data to associate with those URLs (to be used after newDrag).
+   * Meta-data to associate with those URLs.
    * This is an alternative way of setting the metadata:
    * either use the constructor to pass it all at once, or use
    * drag->metaData()["key"] = data;
@@ -109,13 +109,13 @@ public:
    * @return true if successful, false otherwise
    */
   static bool decode( const QMimeSource *e, KURL::List &urls, QMap<QString,QString>& metaData );
-  
+
   /**
    * Converts a URL to a string representation suitable for dragging.
    * @since 3.2
    */
   static QString urlToString(const KURL &url);
-  
+
   /**
    * Converts a string used for dragging to a URL.
    * @since 3.2
@@ -133,10 +133,10 @@ public:
 
 protected:
   /**
-   * Protected constructor - use newDrag
+   * @deprecated Use a KURLDrag constructor with a KURL::List
    */
   KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
-            QWidget * dragSource, const char* name ) :
+            QWidget * dragSource, const char* name ) KDE_DEPRECATED :
       QUriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ) {}
 
   virtual const char * format( int i ) const;
@@ -144,7 +144,7 @@ protected:
 
 private:
   void init(const KURL::List &urls);
-  
+
   QStrList m_urls;
   QMap<QString,QString> m_metaData;
   KURLDragPrivate* d;
