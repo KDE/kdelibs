@@ -558,6 +558,8 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
 {
     QStringList lst;
 
+    if (!d->mpGroups) return lst;
+
     if ((group < -1) || (group >= KIcon::LastGroup))
     {
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
@@ -605,7 +607,8 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
 
 KIconTheme *KIconLoader::theme()
 {
-    return d->mpThemeRoot->theme;
+    if (d->mpThemeRoot) return d->mpThemeRoot->theme;
+    return 0L;
 }
 
 int KIconLoader::currentSize(int group)
