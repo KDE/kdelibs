@@ -320,9 +320,23 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
 
   aliases.setAutoDelete(true);
 
-  // init some stuff for format*()
+  number = config->readEntry("Numeric", lang);
+  money = config->readEntry("Monetary", lang);
+  time = config->readEntry("Time", lang);
+
+  initFormat();
+
+  _inited = true;
+}
+
+// init some stuff for format*()
+void KLocale::initFormat()
+{
+  KConfig* config = KGlobal::config();
+
+  // Numeric
+  KSimpleConfig numentry(locate("locale", number + "/entry.desktop"), true);
   QString str = config->readEntry("Numeric", lang);
-  KSimpleConfig numentry(locate("locale", str + "/entry.desktop"), true);
   numentry.setGroup("KCM Locale");
 
   _decimalSymbol = config->readEntry("DecimalSymbol");
@@ -333,8 +347,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   if (_thousandsSeparator.isNull())
     _thousandsSeparator = numentry.readEntry("ThousandsSeparator", ",");
 
-  str = config->readEntry("Monetary", lang);
-  KSimpleConfig monentry(locate("locale", str + "/entry.desktop"), true);
+  KSimpleConfig monentry(locate("locale", money + "/entry.desktop"), true);
   monentry.setGroup("KCM Locale");
 
   _currencySymbol = config->readEntry("CurrencySymbol");
@@ -376,9 +389,8 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   if (_negativeMonetarySignPosition == -1)
     _negativeMonetarySignPosition = (SignPosition)monentry.readNumEntry("NegativeMonetarySignPosition", ParensAround);
 
-    // date and time
-  str = config->readEntry("Time", lang);
-  KSimpleConfig timentry(locate("locale", str + "/entry.desktop"), true);
+  // date and time
+  KSimpleConfig timentry(locate("locale", time + "/entry.desktop"), true);
   timentry.setGroup("KCM Locale");
 
   _timefmt = config->readEntry("TimeFormat");
@@ -388,8 +400,16 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   _datefmt = config->readEntry("DateFormat");
   if (_datefmt.isNull())
     _datefmt = timentry.readEntry("DateFormat", "%m/%d/%y");
+}
 
-  _inited = true;
+void KLocale::setLanguage(const QString &_lang, const QString &_langs, const QString &_number, const QString &_money, const QString &_time)
+{
+  if (!_lang.isNull()) lang = _lang;
+  if (!_langs.isNull()) langs = _langs;
+  if (!_number.isNull()) number = _number;
+  if (!_money.isNull()) money = _money;
+  if (!_time.isNull()) time = _time;
+  initFormat();
 }
 
 QString KLocale::language() const
@@ -488,7 +508,7 @@ QString KLocale::MonthName(int i) const
       case 3:   return translate("March");
       case 4:   return translate("April");
       case 5:   return translate("May");
-      case 6:   return translate("Juni");
+      case 6:   return translate("June");
       case 7:   return translate("July");
       case 8:   return translate("August");
       case 9:   return translate("September");
@@ -594,9 +614,14 @@ QString KLocale::formatNumber(const QString &numStr) const
 
 double KLocale::readMoney(const QString &str, bool * ok) const
 {
-    bool neg = (negativeMonetarySignPosition() == ParensAround?
-        str.find('('):
-        str.find(negativeSign())) != -1;
+    bool neg;
+    if (negativeMonetarySignPosition() == ParensAround)
+    {
+        int i1 = str.find('(');
+        neg = i1 != -1 && i1 < str.find(')');
+    }
+    else
+        neg = str.find(negativeSign()) != -1;
 
     QString buf = monetaryDecimalSymbol();
     int pos = str.find(buf);
@@ -619,7 +644,7 @@ double KLocale::readMoney(const QString &str, bool * ok) const
 
 double KLocale::readNumber(const QString &str, bool * ok) const
 {
-    bool neg = str.find(negativeSign()) != -1;
+    bool neg = str.find(negativeSign()) != 0;
 
     QString buf = decimalSymbol();
     int pos = str.find(buf);

@@ -86,6 +86,16 @@ public:
     QString translate( const char *index ) const;
     
     /**
+     * Allows programs such as kcmlocale to choose locales.
+     */
+    void setLanguage(const QString &_lang, const QString &_langs, const QString &_number, const QString &_money, const QString &_time);
+
+    /**
+     * makes {format,read}*() ready for use.
+     */
+    void initFormat();
+
+    /**
      * various positions for where to place the positive or negative
      * sign when they are related to a monetary value.
      */
@@ -348,6 +358,9 @@ private:
     QIntDict<QString> aliases;
     bool _inited;
     QString lang;
+    QString number;
+    QString money;
+    QString time;
     QString chset;
     QString lc_numeric;
     QString lc_monetary;
