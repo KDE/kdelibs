@@ -1268,6 +1268,7 @@ KThemePixmap* KThemeCache::pixmap(int w, int h, int widgetID, bool border,
 {
 
     kthemeKey key;
+    key.cacheKey = 0; // shut up, gcc
     key.data.id = widgetID;
     key.data.width = w;
     key.data.height = h;
@@ -1283,6 +1284,7 @@ KThemePixmap* KThemeCache::pixmap(int w, int h, int widgetID, bool border,
 KThemePixmap* KThemeCache::horizontalPixmap(int w, int widgetID)
 {
     kthemeKey key;
+    key.cacheKey = 0; // shut up, gcc
     key.data.id = widgetID;
     key.data.width = w;
     key.data.height = 0;
@@ -1297,6 +1299,7 @@ KThemePixmap* KThemeCache::horizontalPixmap(int w, int widgetID)
 KThemePixmap* KThemeCache::verticalPixmap(int h, int widgetID)
 {
     kthemeKey key;
+    key.cacheKey = 0; // shut up, gcc
     key.data.id = widgetID;
     key.data.width = 0;
     key.data.height = h;
@@ -1312,6 +1315,7 @@ bool KThemeCache::insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID,
                          bool border, bool mask)
 {
     kthemeKey key;
+    key.cacheKey = 0; // shut up, gcc
     key.data.id = widgetID;
     key.data.width = (scale == FullScale || scale == HorizontalScale) ?
         pixmap->width() : 0;
