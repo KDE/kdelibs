@@ -295,7 +295,10 @@ public:
    */
   void restoreLayout(KConfig *config, const QString &group);
   /**
-   * Reimplemented to remember the current sort column and order
+   * Reimplemented to remember the current sort column and order.
+   * @param column is the column to be sorted, or -1 to sort in order of
+   * insertion
+   * @param whether to sort ascending (or descending)
    */
   virtual void setSorting(int column, bool ascending = true);
 
