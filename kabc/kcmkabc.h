@@ -27,6 +27,8 @@
 #include <klistview.h>
 #include <kpushbutton.h>
 
+class KAboutData;
+
 #ifndef KCMKABC_H
 #define KCMKABC_H
 
@@ -40,6 +42,7 @@ public:
   void load();
   void save();
   void defaults();
+ 
 
 public slots:
   void slotAdd();
@@ -75,6 +78,8 @@ public:
   void load();
   void save();
   void defaults();
+  const KAboutData* aboutData() const;
+
 
 private:
   ConfigPage *mConfigPage;

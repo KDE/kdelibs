@@ -31,6 +31,7 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
+#include <kaboutdata.h>
 
 #include "kcmkabc.h"
 
@@ -508,6 +509,19 @@ void KCMkabc::defaults()
 {
   mConfigPage->defaults();
 }
+
+const KAboutData* KCMkabc::aboutData() const
+{
+   KAboutData *about =
+   new KAboutData(I18N_NOOP("kcmkabc"), I18N_NOOP("Address book configuration module"),
+                  0, 0, KAboutData::License_GPL,
+                  I18N_NOOP("(c), 2002 Tobias Koenig"));
+
+   about->addAuthor("Tobias Koenig",0 , "tokoe@kde.org");
+
+   return about;
+}
+
 
 extern "C"
 {
