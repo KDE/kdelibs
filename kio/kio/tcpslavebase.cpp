@@ -814,7 +814,7 @@ int TCPSlaveBase::verifyCertificate()
                    result = messageBox( WarningYesNoCancel,
                               msg.arg(ourHost),
                               i18n("Server Authentication"),
-                              i18n("&Details..."),
+                              i18n("&Details"),
                               i18n("Co&ntinue") );
                 } else {
                    QString msg = i18n("The server certificate failed the "
@@ -822,7 +822,7 @@ int TCPSlaveBase::verifyCertificate()
                    result = messageBox( WarningYesNoCancel,
                               msg.arg(ourHost),
                               i18n("Server Authentication"),
-                              i18n("&Details..."),
+                              i18n("&Details"),
                               i18n("Co&ntinue") );
                 }
 
@@ -951,7 +951,7 @@ int TCPSlaveBase::verifyCertificate()
              result = messageBox(WarningYesNoCancel,
                                  msg.arg(ourHost),
                                  i18n("Server Authentication"),
-                                 i18n("&Details..."),
+                                 i18n("&Details"),
                                  i18n("Co&ntinue"));
                 if (result == KMessageBox::Yes) {
                    if (!d->dcc) {

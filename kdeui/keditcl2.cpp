@@ -919,7 +919,7 @@ KHistoryCombo * KEdReplace::replaceCombo() const
 
 
 KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
-  :KDialogBase( parent, name, modal, i18n("Goto Line"), modal ? Ok|Cancel : Ok|Close, Ok, false )
+  :KDialogBase( parent, name, modal, i18n("Go to Line"), modal ? Ok|Cancel : Ok|Close, Ok, false )
 {
   QWidget *page = new QWidget( this );
   setMainWidget(page);
@@ -927,7 +927,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
 
   lineNum = new KIntNumInput( 1, page);
   lineNum->setRange(1, 1000000, 1, false);
-  lineNum->setLabel(i18n("Goto line:"), AlignVCenter | AlignLeft);
+  lineNum->setLabel(i18n("Go to line:"), AlignVCenter | AlignLeft);
 //  lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget( lineNum );
 

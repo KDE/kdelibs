@@ -916,11 +916,11 @@ bool Window::isSafeScript(ExecState *exec) const
   DOM::DOMString thisDomain = thisDocument.domain();
 
   if ( actDomain == thisDomain ) {
-    //kdDebug(6070) << "Javascript: access granted, domain is '" << actDomain.string() << "'" << endl;
+    //kdDebug(6070) << "JavaScript: access granted, domain is '" << actDomain.string() << "'" << endl;
     return true;
   }
 
-  kdWarning(6070) << "Javascript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
+  kdWarning(6070) << "JavaScript: access denied for current frame '" << actDomain.string() << "' to frame '" << thisDomain.string() << "'" << endl;
   // TODO after 3.1: throw security exception (exec->setException())
   return false;
 }
@@ -1065,9 +1065,9 @@ Value Window::openWindow(ExecState *exec, const List& args)
   if ( policy == 1 ) {
     if ( KMessageBox::questionYesNo(widget,
                                     i18n( "This site is trying to open up a new browser "
-                                          "window using Javascript.\n"
+                                          "window using JavaScript.\n"
                                           "Do you want to allow this?" ),
-                                    i18n( "Confirmation: Javascript Popup" ) ) == KMessageBox::Yes )
+                                    i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
       policy = 0;
   } else if ( policy == 3 ) // smart
   {
