@@ -15,15 +15,15 @@
 <!ELEMENT group (entry*)>
   <!ATTLIST group name CDATA #REQUIRED>
 
-<!ELEMENT entry (desc?,label?,code?,values?,default?,parameter?)>
+<!ELEMENT entry (label?,whatsthis?,code?,values?,default?,parameter?)>
   <!ATTLIST entry 
                   name CDATA #REQUIRED
 		  type CDATA #REQUIRED
 		  key  CDATA #IMPLIED
 		  hidden  (true|false) #IMPLIED>
 
-<!ELEMENT desc (#PCDATA)>
 <!ELEMENT label (#PCDATA)>
+<!ELEMENT whatsthis (#PCDATA)>
 <!ELEMENT code (#PCDATA)>
 <!ELEMENT values (value+)>
 <!ELEMENT value (#PCDATA)>
