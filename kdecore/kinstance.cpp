@@ -100,6 +100,12 @@ KIconLoader *KInstance::iconLoader() const
     return _iconLoader;
 }
 
+void KInstance::newIconLoader() const
+{
+    delete _iconLoader;
+    _iconLoader = 0L;
+}
+
 const KAboutData * KInstance::aboutData() const
 {
     return _aboutData;

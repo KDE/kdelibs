@@ -72,6 +72,11 @@ class KInstance
      *  Retrieve an iconloader object.
      */
     KIconLoader	*iconLoader() const;
+
+    /**
+     * Re-allocate the global iconloader.
+     */
+    void newIconLoader() const;
     
     KCharsets	     *charsets() const;
     
