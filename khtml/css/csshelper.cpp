@@ -30,6 +30,7 @@
 
 #include <kcharsets.h>
 #include <kglobal.h>
+#include <kdebug.h>
 
 #include "rendering/render_style.h"
 #include "css_valueimpl.h"
@@ -138,9 +139,15 @@ DOMString khtml::parseURL(const DOMString &url)
 }
 
 
-void khtml::setFontSize(  QFont &f,  float size, const KHTMLSettings *s )
+void khtml::setFontSize(  QFont &f,  int  pixelsize, const KHTMLSettings *s )
 {
     QFontDatabase db;
+
+    float size = pixelsize;
+
+    float toPix = 1.;
+    if ( !khtml::printpainter )
+        toPix = QPaintDevice::x11AppDpiY()/72.;
 
     // ok, now some magic to get a nice unscaled font
     // ### all other font properties should be set before this one!!!!
@@ -153,13 +160,14 @@ void khtml::setFontSize(  QFont &f,  float size, const KHTMLSettings *s )
         QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), charset);
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
+        //kdDebug() << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
 
         QValueList<int>::Iterator it;
         float diff = 1; // ### 100% deviation
-        int bestSize = 0;
+        float bestSize = 0;
         for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
         {
-            float newDiff = ((*it) - size)/size;
+            float newDiff = ((*it)*toPix - size)/size;
             //kdDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
             if(newDiff < 0) newDiff = -newDiff;
             if(newDiff < diff)
@@ -170,12 +178,12 @@ void khtml::setFontSize(  QFont &f,  float size, const KHTMLSettings *s )
         }
         //kdDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
         if ( bestSize != 0 ) // 15% deviation, otherwise we use a scaled font...
-            size = bestSize;
-        else if ( size > 4 && size < 16 )
-            size = float( int( ( size + 1 ) / 2 )*2 );
+            size = bestSize*toPix;
+//         else if ( size > 4 && size < 16 )
+//             size = float( int( ( size + 1 ) / 2 )*2 );
     }
 
-    //qDebug(" -->>> using %f point font", size);
+    //qDebug(" -->>> using %f pixel font", size);
 
-    f.setPointSizeFloat( size );
+    f.setPixelSizeFloat( size );
 }

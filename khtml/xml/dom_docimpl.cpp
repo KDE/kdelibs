@@ -604,18 +604,15 @@ void DocumentImpl::recalcStyle()
         f.setFamily(settings->stdFontName());
 
         QValueList<int> fs = settings->fontSizes();
-        float size = fs[3];
-        if(size < settings->minFontSize())
-            size = settings->minFontSize();
-
-        // the hack below is to scale the point size a bit in case the xserver has less than 96 dpi.
         float dpiY = 72.; // fallback
         if ( !khtml::printpainter )
             dpiY = QPaintDevice::x11AppDpiY();
-        size /= dpiY;
         if ( !khtml::printpainter && dpiY < 96 )
             dpiY = 96.;
-        size *= dpiY;
+        float size = fs[3] * dpiY / 72.;
+        if(size < settings->minFontSize())
+            size = settings->minFontSize();
+
         khtml::setFontSize( f,  size,  settings );
         KGlobal::charsets()->setQFont(f, settings->charset());
     }

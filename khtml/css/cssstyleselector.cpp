@@ -1810,14 +1810,18 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         float size = 0;
         int minFontSize = e->ownerDocument()->view()->part()->settings()->minFontSize();
 
+        float toPix = 1.; // fallback
+        if ( !khtml::printpainter )
+            toPix = QPaintDevice::x11AppDpiY()/72.;
+        if ( !khtml::printpainter && toPix < 96./72. )
+            toPix = 96./72.;
+
         QValueList<int> standardSizes = e->ownerDocument()->view()->part()->fontSizes();
-        if(e->parentNode())
-        {
-            QFontInfo fi(e->parentNode()->style()->font());
-            oldSize = fi.pointSize();
+        if(e->parentNode()) {
+            oldSize = e->parentNode()->style()->font().pixelSize();
+        } else {
+            oldSize = ( int )standardSizes[3]*toPix;
         }
-        else
-            oldSize = standardSizes[3];
 
         if(value->valueType() == CSSValue::CSS_INHERIT)
         {
@@ -1828,19 +1832,19 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             switch(primitiveValue->getIdent())
             {
             case CSS_VAL_XX_SMALL:
-                size = standardSizes[0]; break;
+                size = standardSizes[0]*toPix; break;
             case CSS_VAL_X_SMALL:
-                size = standardSizes[1]; break;
+                size = standardSizes[1]*toPix; break;
             case CSS_VAL_SMALL:
-                size = standardSizes[2]; break;
+                size = standardSizes[2]*toPix; break;
             case CSS_VAL_MEDIUM:
-                size = standardSizes[3]; break;
+                size = standardSizes[3]*toPix; break;
             case CSS_VAL_LARGE:
-                size = standardSizes[4]; break;
+                size = standardSizes[4]*toPix; break;
             case CSS_VAL_X_LARGE:
-                size = standardSizes[5]; break;
+                size = standardSizes[5]*toPix; break;
             case CSS_VAL_XX_LARGE:
-                size = standardSizes[6]; break;
+                size = standardSizes[6]*toPix; break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
                 size = oldSize * 1.2;
@@ -1866,14 +1870,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                                   * parentStyle->font().pixelSize()) / 100;
             else
                 return;
-	    // size is now in pixels, for the font we need it in points
-
-            float dpiY = 72.; // fallback
-            if ( paintDeviceMetrics )
-                dpiY = paintDeviceMetrics->logicalDpiY();
-            if ( !khtml::printpainter && dpiY < 96 )
-                dpiY = 96.;
-            size = size * 72.  / dpiY;
         }
 
         if(size <= 0) return;
