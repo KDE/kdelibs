@@ -49,7 +49,7 @@ LF,mobile phone,QString,mobilePhone,Frequent
 LF,home fax,QString,homeFax
 LF,business fax,QString,businessFax
 LF,car phone,QString,carPhone
-LF,isdn,QString,isdn
+LF,ISDN,QString,isdn
 LF,pager,QString,pager
 
 #emails
