@@ -1098,6 +1098,13 @@ void KToolBar::paintEvent(QPaintEvent *)
   if (mgr)
     return;
 
+  // we don't want to paint anything if we have no items
+  if (d->m_items->count() == 0)
+  {
+    hide();
+    return;
+  }
+
   toolbarHeight = height ();
   if (d->m_position == Flat)
     toolbarWidth = min_width;
