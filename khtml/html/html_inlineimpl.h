@@ -49,7 +49,7 @@ public:
     void blur (  );
     void focus (  );
 
-    virtual void parseAttribute(khtml::Attribute *attr);
+    virtual void parseAttribute(AttrImpl *attr);
     virtual bool mouseEvent( int x, int y, int button, MouseEventType,
 			     int _tx, int _ty, DOMString &url,
                              NodeImpl *&innerNode, long &offset);
@@ -74,7 +74,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual void parseAttribute(khtml::Attribute *attr);
+    virtual void parseAttribute(AttrImpl *attr);
 
     virtual tagStatus startTag() { return BRStartTag; }
     virtual tagStatus endTag() { return BREndTag; }
@@ -97,7 +97,7 @@ public:
     virtual tagStatus startTag() { return FONTStartTag; }
     virtual tagStatus endTag() { return FONTEndTag; }
 
-    virtual void parseAttribute(khtml::Attribute *attr);
+    virtual void parseAttribute(AttrImpl *attr);
 };
 
 // -------------------------------------------------------------------------

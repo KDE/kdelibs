@@ -34,6 +34,10 @@
 #include "stringit.h"
 #include "dom_stringimpl.h"
 
+namespace DOM {
+    class AttrImpl;
+}
+
 namespace khtml {
 /**
  * @internal
@@ -41,6 +45,7 @@ namespace khtml {
  */
 class Attribute
 {
+    friend class DOM::AttrImpl;
 public:
     Attribute() { id = 0, v = 0, n = 0; }
     Attribute(const DOMString &name, const DOMString &val);

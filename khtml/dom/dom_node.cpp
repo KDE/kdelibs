@@ -40,13 +40,14 @@ NamedNodeMap::NamedNodeMap()
 NamedNodeMap::NamedNodeMap(const NamedNodeMap &other)
 {
     map = other.map;
-    if(map) map->ref();
+    if (map) map->ref();
 }
 
-NamedNodeMap::NamedNodeMap(NodeImpl *i)
+//NamedNodeMap::NamedNodeMap(NamedNodeMapImpl *i)// ### for BCI change
+NamedNodeMap::NamedNodeMap( NodeImpl *i)
 {
     map = i;
-    if(map) map->ref();
+    if (map) map->ref();
 }
 
 NamedNodeMap &NamedNodeMap::operator = (const NamedNodeMap &other)
@@ -65,50 +66,32 @@ NamedNodeMap::~NamedNodeMap()
 
 Node NamedNodeMap::getNamedItem( const DOMString &name )
 {
-    if(map->nodeType() != Node::ELEMENT_NODE)
-	return 0;
-
-    return (NodeImpl *)((ElementImpl *)map)->getAttributeNode( name );
+    if (map) return ((NamedNodeMapImpl*)map)->getNamedItem(name);
+    return 0;
 }
 
 Node NamedNodeMap::setNamedItem( const Node &arg )
 {
-    if(map->nodeType() != Node::ELEMENT_NODE)
-	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
-
-    if(!arg.impl->isAttributeNode())
-	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
-
-    // ### check the attribute is not already used somewhere
-
-    return (NodeImpl *)((ElementImpl *)map)->setAttributeNode( (AttrImpl *)arg.impl );
+    if (map) return ((NamedNodeMapImpl*)map)->setNamedItem(arg);
+    return 0;
 }
 
 Node NamedNodeMap::removeNamedItem( const DOMString &name )
 {
-    if(map->nodeType() != Node::ELEMENT_NODE)
-	throw DOMException(DOMException::NOT_FOUND_ERR);
-
-    AttrImpl *n = ((ElementImpl *)map)->getAttributeNode ( name );
-    if(!n) throw DOMException(DOMException::NOT_FOUND_ERR);
-
-    return (NodeImpl *)((ElementImpl *)map)->removeAttributeNode( n );
+    if (map) return ((NamedNodeMapImpl*)map)->removeNamedItem(name);
+    return 0;
 }
 
 Node NamedNodeMap::item( unsigned long index )
 {
-    if(map->nodeType() != Node::ELEMENT_NODE)
-	return 0;
-
-    return (NodeImpl *)((ElementImpl *)map)->getAttributeNode( index );
+    if (map) return ((NamedNodeMapImpl*)map)->item(index);
+    return 0;
 }
 
 unsigned long NamedNodeMap::length() const
 {
-    if(map->nodeType() != Node::ELEMENT_NODE)
-	return 0;
-
-    return (unsigned long)(NodeImpl *)((ElementImpl *)map)->getAttributeCount();
+    if (map) return ((NamedNodeMapImpl*)map)->length();
+    return 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -222,7 +205,8 @@ Node Node::nextSibling() const
 
 NamedNodeMap Node::attributes() const
 {
-    return NamedNodeMap(impl);
+    if (impl) return (NodeImpl*)(impl->attributes());
+    return 0;
 }
 
 Document Node::ownerDocument() const

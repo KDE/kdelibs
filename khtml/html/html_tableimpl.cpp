@@ -245,10 +245,10 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     return child;
 }
 
-void HTMLTableElementImpl::parseAttribute(Attribute *attr)
+void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 {
     // ### to CSS!!
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_WIDTH:
 	addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
@@ -363,9 +363,9 @@ void HTMLTableElementImpl::attach(KHTMLView *w)
 
 // --------------------------------------------------------------------------
 
-void HTMLTablePartElementImpl::parseAttribute(Attribute *attr)
+void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_BGCOLOR:
 	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false );
@@ -522,9 +522,9 @@ NodeImpl *HTMLTableRowElementImpl::addChild(NodeImpl *child)
     return ret;
 }
 
-void HTMLTableRowElementImpl::parseAttribute(Attribute *attr)
+void HTMLTableRowElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_ALIGN:
 	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
@@ -558,9 +558,9 @@ const DOMString HTMLTableCellElementImpl::nodeName() const
     return getTagName(_id);
 }
 
-void HTMLTableCellElementImpl::parseAttribute(Attribute *attr)
+void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_BORDER:
     {
@@ -672,9 +672,9 @@ NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
 
 }
 
-void HTMLTableColElementImpl::parseAttribute(Attribute *attr)
+void HTMLTableColElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_SPAN:
 	_span = attr->val()->toInt();

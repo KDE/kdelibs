@@ -42,8 +42,8 @@ namespace khtml {
 namespace DOM {
 
 class DOMString;
-class NamedNodeMapImpl;
 class NodeListImpl;
+class NamedNodeMapImpl;
 class DocumentImpl;
 class CSSStyleDeclarationImpl;
 
@@ -91,6 +91,8 @@ public:
     virtual NodeImpl *previousSibling() const;
 
     virtual NodeImpl *nextSibling() const;
+
+    virtual NamedNodeMapImpl *attributes() const;
 
     DocumentImpl *ownerDocument() const
 	{ return document; }
@@ -398,6 +400,24 @@ protected:
     DocumentImpl *refDoc;
     DOMString nodeName;
 };
+
+class NamedNodeMapImpl : public DomShared
+{
+public:
+    NamedNodeMapImpl();
+    virtual ~NamedNodeMapImpl();
+
+    virtual unsigned long length() const;
+
+    virtual NodeImpl *getNamedItem ( const DOMString &name ) const;
+
+    virtual NodeImpl *setNamedItem ( const Node &arg );
+
+    virtual NodeImpl *removeNamedItem ( const DOMString &name );
+
+    virtual NodeImpl *item ( unsigned long index ) const;
+};
+
 
 }; //namespace
 #endif

@@ -56,6 +56,7 @@ namespace KJS {
   class NodeObject : public DOMObject {
   public:
     virtual DOM::Node toNode() const = 0;
+    virtual bool equals(const KJSO& other) const;
   };
 
   /**

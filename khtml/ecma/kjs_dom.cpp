@@ -96,8 +96,8 @@ void DOMNode::tryPut(const UString &p, const KJSO& v)
 
 KJSO DOMNode::getDOMNode(DOM::Node n)
 {
-  unsigned short nodeType = n.nodeType();
-  if (nodeType == DOM::Node::ELEMENT_NODE) {
+//  unsigned short nodeType = n.nodeType();
+/*  if (nodeType == DOM::Node::ELEMENT_NODE) {
     DOM::Element element; // can't use static_cast here because of constructor :(
     element = n;
     if (element.isHTMLElement())
@@ -111,7 +111,44 @@ KJSO DOMNode::getDOMNode(DOM::Node n)
     return new DOMCharacterData(n);
   else {
     return new DOMNode(n);
+  }*/
+
+  switch (n.nodeType()) {
+    case DOM::Node::ELEMENT_NODE:
+      if (static_cast<DOM::Element>(n).isHTMLElement())
+        return new HTMLElement(static_cast<DOM::HTMLElement>(n));
+      else
+        return new DOMElement(static_cast<DOM::Element>(n));
+    case DOM::Node::ATTRIBUTE_NODE:
+      return new DOMAttr(static_cast<DOM::Attr>(n));
+    case DOM::Node::TEXT_NODE:
+    case DOM::Node::CDATA_SECTION_NODE:
+      return new DOMText(static_cast<DOM::Text>(n));
+    case DOM::Node::ENTITY_REFERENCE_NODE:
+      return new DOMNode(n);
+    case DOM::Node::ENTITY_NODE:
+      return new DOMEntity(static_cast<DOM::Entity>(n));
+    case DOM::Node::PROCESSING_INSTRUCTION_NODE:
+      return new DOMProcessingInstruction(static_cast<DOM::ProcessingInstruction>(n));
+    case DOM::Node::COMMENT_NODE:
+      return new DOMCharacterData(static_cast<DOM::CharacterData>(n));
+    case DOM::Node::DOCUMENT_NODE:
+      if (static_cast<DOM::Document>(n).isHTMLDocument())
+        return new HTMLDocument(static_cast<DOM::HTMLDocument>(n));
+      else
+        return new DOMDocument(static_cast<DOM::Document>(n));
+    case DOM::Node::DOCUMENT_TYPE_NODE:
+      return new DOMDocumentType(static_cast<DOM::DocumentType>(n));
+    case DOM::Node::DOCUMENT_FRAGMENT_NODE:
+      return new DOMNode(n);
+    case DOM::Node::NOTATION_NODE:
+      return new DOMNotation(static_cast<DOM::Notation>(n));
+    default:
+      return new DOMNode(n);
   }
+
+
+
 }
 
 

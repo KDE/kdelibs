@@ -49,9 +49,9 @@ ushort HTMLUListElementImpl::id() const
     return ID_UL;
 }
 
-void HTMLUListElementImpl::parseAttribute(Attribute *attr)
+void HTMLUListElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_TYPE:
 	addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value(), false);
@@ -125,9 +125,9 @@ void HTMLOListElementImpl::setStart( long )
     // ###
 }
 
-void HTMLOListElementImpl::parseAttribute(Attribute *attr)
+void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_TYPE:
         if ( strcmp( attr->value(), "a" ) == 0 )

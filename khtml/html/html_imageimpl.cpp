@@ -110,9 +110,9 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
     return HTMLElementImpl::mouseEvent(_x, _y, button, type, _tx, _ty, url, innerNode, offset);
 }
 
-void HTMLImageElementImpl::parseAttribute(Attribute *attr)
+void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch (attr->id)
+    switch (attr->attrId)
     {
     case ATTR_SRC:
 	imageURL = attr->value();
@@ -291,9 +291,9 @@ HTMLMapElementImpl::getMap(const DOMString& _url)
 
 
 
-void HTMLMapElementImpl::parseAttribute(Attribute *attr)
+void HTMLMapElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch (attr->id)
+    switch (attr->attrId)
     {
     case ATTR_NAME:
     {
@@ -362,9 +362,9 @@ void HTMLAreaElementImpl::setTabIndex( long _tabindex )
   tabindex=_tabindex;
 }
 
-void HTMLAreaElementImpl::parseAttribute(Attribute *attr)
+void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch (attr->id)
+    switch (attr->attrId)
     {
     case ATTR_SHAPE:
 	if ( strcasecmp( attr->value(), "default" ) == 0 )

@@ -43,20 +43,12 @@ public:
     // make it pure virtual...
     virtual ushort id() const = 0;
 
-    DOMString getAttribute(int attr_id)
-	{
-	    int i = attributeMap.find(attr_id);
-	    if( i != -1 ) return attributeMap.value(i);
-	    //return defaultMap()....
-	    return 0;
-	}
-
     virtual bool mouseEvent( int x, int y, int button, MouseEventType,
 			     int _tx, int _ty, DOMString &url,
                              NodeImpl *&innerNode, long &offset);
     virtual void mouseEventHandler( int button, MouseEventType type, bool inside );
 
-    virtual void parseAttribute(khtml::Attribute *token);
+    virtual void parseAttribute(AttrImpl *token);
 
     virtual DOM::CSSStyleDeclarationImpl *styleRules() { return m_styleDecls; }
 

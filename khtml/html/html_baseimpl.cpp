@@ -64,9 +64,9 @@ ushort HTMLBodyElementImpl::id() const
     return ID_BODY;
 }
 
-void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
+void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
 
     case ATTR_BACKGROUND:
@@ -160,11 +160,11 @@ ushort HTMLFrameElementImpl::id() const
     return ID_FRAME;
 }
 
-void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
+void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
 {
-    kdDebug( 6031 ) << "parsing attribute " << attr->id << "=" << attr->value().string() << endl;
+    kdDebug( 6031 ) << "parsing attribute " << attr->attrId << "=" << attr->value().string() << endl;
 
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_SRC:
 	url = attr->value();
@@ -274,9 +274,9 @@ ushort HTMLFrameSetElementImpl::id() const
     return ID_FRAMESET;
 }
 
-void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
+void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_ROWS:
 	m_rows = attr->val()->toLengthList();
@@ -507,11 +507,11 @@ ushort HTMLIFrameElementImpl::id() const
     return ID_IFRAME;
 }
 
-void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
+void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
 {
-  DOM::DOMStringImpl *stringImpl = attr->val();
+  DOM::DOMStringImpl *stringImpl = attr->value().implementation();
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
-  switch (  attr->id )
+  switch (  attr->attrId )
   {
     case ATTR_WIDTH:
       addCSSLength( CSS_PROP_WIDTH, attr->value(), false );

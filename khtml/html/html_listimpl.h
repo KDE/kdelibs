@@ -50,7 +50,7 @@ public:
     virtual tagStatus startTag() { return ULStartTag; }
     virtual tagStatus endTag() { return ULEndTag; }
 
-    virtual void parseAttribute(khtml::Attribute *);
+    virtual void parseAttribute(AttrImpl *);
     
     virtual void attach(KHTMLView *);
 };
@@ -106,7 +106,7 @@ public:
     long start() const;
     void setStart( long );
 
-    virtual void parseAttribute(khtml::Attribute *);
+    virtual void parseAttribute(AttrImpl *);
     
     virtual void attach(KHTMLView *);
 };

@@ -72,9 +72,9 @@ ushort HTMLAppletElementImpl::id() const
     return ID_APPLET;
 }
 
-void HTMLAppletElementImpl::parseAttribute(Attribute *attr)
+void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch( attr->id )
+    switch( attr->attrId )
     {
     case ATTR_CODEBASE:
     	codeBase = attr->val();
@@ -211,11 +211,11 @@ void HTMLObjectElementImpl::setTabIndex( long  )
 {
 }
 
-void HTMLObjectElementImpl::parseAttribute(Attribute *attr)
+void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
-  switch ( attr->id )
+  switch ( attr->attrId )
   {
     case ATTR_TYPE:
       serviceType = val;
@@ -277,9 +277,9 @@ ushort HTMLParamElementImpl::id() const
     return ID_PARAM;
 }
 
-void HTMLParamElementImpl::parseAttribute(Attribute *attr)
+void HTMLParamElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch( attr->id )
+    switch( attr->attrId )
     {
     case ATTR_NAME:
         m_name = attr->val();

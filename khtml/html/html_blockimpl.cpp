@@ -74,9 +74,9 @@ ushort HTMLDivElementImpl::id() const
     return ID_DIV;
 }
 
-void HTMLDivElementImpl::parseAttribute(Attribute *attr)
+void HTMLDivElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_ALIGN:
 	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
@@ -109,9 +109,9 @@ ushort HTMLHRElementImpl::id() const
     return ID_HR;
 }
 
-void HTMLHRElementImpl::parseAttribute(Attribute *attr)
+void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch( attr->id )
+    switch( attr->attrId )
     {
     case ATTR_ALIGN:
 	if ( strcasecmp( attr->value(), "left" ) == 0 )
@@ -125,7 +125,7 @@ void HTMLHRElementImpl::parseAttribute(Attribute *attr)
 	size = attr->value().toInt();		
 	break;
     case ATTR_WIDTH:
-	length = attr->val()->toLength();	
+	length = attr->value().implementation()->toLength();	
 	addCSSProperty(CSS_PROP_WIDTH, attr->value(), false);
 	break;
     case ATTR_NOSHADE:
@@ -174,9 +174,9 @@ ushort HTMLHeadingElementImpl::id() const
     return _id;
 }
 
-void HTMLHeadingElementImpl::parseAttribute(Attribute *attr)
+void HTMLHeadingElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_ALIGN:
 	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
@@ -207,9 +207,9 @@ ushort HTMLParagraphElementImpl::id() const
     return ID_P;
 }
 
-void HTMLParagraphElementImpl::parseAttribute(Attribute *attr)
+void HTMLParagraphElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_ALIGN:
 	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);

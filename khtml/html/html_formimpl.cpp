@@ -125,9 +125,9 @@ void HTMLFormElementImpl::reset(  )
     }
 }
 
-void HTMLFormElementImpl::parseAttribute(Attribute *attr)
+void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_ACTION:
 	url = attr->value();
@@ -239,9 +239,9 @@ HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
 {
 }
 
-void HTMLGenericFormElementImpl::parseAttribute(Attribute *attr)
+void HTMLGenericFormElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_NAME:
 	_name = attr->value();
@@ -330,9 +330,9 @@ DOMString HTMLButtonElementImpl::type() const
     return DOMString();
 }
 
-void HTMLButtonElementImpl::parseAttribute(Attribute *attr)
+void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_TYPE:
 	if ( strcasecmp( attr->value(), "submit" ) == 0 )
@@ -482,9 +482,9 @@ void HTMLInputElementImpl::click(  )
     kdDebug( 6030 ) << " HTMLInputElementImpl::click(  )" << endl;
 }
 
-void HTMLInputElementImpl::parseAttribute(Attribute *attr)
+void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_TYPE:
 	if ( strcasecmp( attr->value(), "text" ) == 0 )
@@ -772,9 +772,9 @@ void HTMLSelectElementImpl::focus(  )
 {
 }
 
-void HTMLSelectElementImpl::parseAttribute(Attribute *attr)
+void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_SIZE:
 	m_size = attr->val()->toInt();
@@ -887,9 +887,9 @@ void HTMLOptionElementImpl::setIndex( long  )
 {
 }
 
-void HTMLOptionElementImpl::parseAttribute(Attribute *attr)
+void HTMLOptionElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_SELECTED:
         m_selected = true;
@@ -970,9 +970,9 @@ void HTMLTextAreaElementImpl::select(  )
 
 }
 
-void HTMLTextAreaElementImpl::parseAttribute(Attribute *attr)
+void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_ROWS:
         m_rows = attr->val()->toInt();

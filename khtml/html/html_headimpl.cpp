@@ -64,9 +64,9 @@ ushort HTMLBaseElementImpl::id() const
     return ID_BASE;
 }
 
-void HTMLBaseElementImpl::parseAttribute(Attribute *attr)
+void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_HREF:
       _href = attr->value();
@@ -178,9 +178,9 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
     NodeBaseImpl::attach( v );
 }
 
-void HTMLLinkElementImpl::parseAttribute(Attribute *attr)
+void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch (attr->id)
+    switch (attr->attrId)
     {
     case ATTR_REL:
 	m_rel = attr->value(); break;
@@ -240,9 +240,9 @@ ushort HTMLMetaElementImpl::id() const
     return ID_META;
 }
 
-void HTMLMetaElementImpl::parseAttribute(Attribute *attr)
+void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_HTTP_EQUIV:
       _equiv = attr->value();
@@ -343,9 +343,9 @@ void HTMLStyleElementImpl::setDisabled( bool )
 }
 
 // other stuff...
-void HTMLStyleElementImpl::parseAttribute(Attribute *attr)
+void HTMLStyleElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch (attr->id)
+    switch (attr->attrId)
     {
     case ATTR_TYPE:
 	m_type = attr->value(); break;

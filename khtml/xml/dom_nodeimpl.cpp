@@ -111,6 +111,11 @@ NodeImpl *NodeImpl::nextSibling() const
   return 0;
 }
 
+NamedNodeMapImpl *NodeImpl::attributes() const
+{
+  return 0;
+}
+
 void NodeImpl::setPreviousSibling(NodeImpl *)
 {
 }
@@ -789,7 +794,7 @@ NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
 
 bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
 {
-    return testNode->nodeName()==tagName;
+    return !strcasecmp(testNode->nodeName(),tagName);
 }
 
 
@@ -824,3 +829,46 @@ bool NameNodeListImpl::nodeMatches( NodeImpl *testNode ) const
     return static_cast<ElementImpl *>(testNode) ->
       getAttribute("name") == nodeName;
 }
+
+// ---------------------------------------------------------------------------
+
+NamedNodeMapImpl::NamedNodeMapImpl()
+{
+}
+
+NamedNodeMapImpl::~NamedNodeMapImpl()
+{
+}
+
+unsigned long NamedNodeMapImpl::length() const
+{
+  // ###
+  return 0;
+}
+
+NodeImpl *NamedNodeMapImpl::getNamedItem ( const DOMString &/*name*/ ) const
+{
+  // ###
+  return 0;
+}
+
+NodeImpl *NamedNodeMapImpl::setNamedItem ( const Node &/*arg*/ )
+{
+  // ###
+  return 0;
+}
+
+NodeImpl *NamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/ )
+{
+  // ###
+  return 0;
+}
+
+
+NodeImpl *NamedNodeMapImpl::item ( unsigned long /*index*/ ) const
+{
+  // ###
+  return 0;
+}
+
+

@@ -162,3 +162,11 @@ DOM::Node KJS::toNode(const KJSO& obj)
   return n;
 }
 
+bool NodeObject::equals(const KJSO& other) const
+{
+  if (other.derivedFrom("Node")) {
+    NodeObject *otherNode = static_cast<NodeObject*>(other.imp());
+    return toNode() == otherNode->toNode();
+  }
+  return false;
+}

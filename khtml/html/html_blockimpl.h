@@ -65,7 +65,7 @@ public:
     virtual tagStatus startTag() { return DIVStartTag; }
     virtual tagStatus endTag() { return DIVEndTag; }
 
-    void parseAttribute(khtml::Attribute *token);
+    void parseAttribute(AttrImpl *token);
 };
 
 // -------------------------------------------------------------------------
@@ -80,7 +80,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual void parseAttribute(khtml::Attribute *);
+    virtual void parseAttribute(AttrImpl *);
 
     virtual tagStatus startTag() { return HRStartTag; }
     virtual tagStatus endTag() { return HREndTag; }
@@ -105,7 +105,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    void parseAttribute(khtml::Attribute *token);
+    void parseAttribute(AttrImpl *token);
 
     virtual tagStatus startTag() { return H1StartTag; }
     virtual tagStatus endTag() { return H1EndTag; }
@@ -135,7 +135,7 @@ public:
     virtual tagStatus startTag() { return PStartTag; }
     virtual tagStatus endTag() { return PEndTag; }
 
-    virtual void parseAttribute(khtml::Attribute *);
+    virtual void parseAttribute(AttrImpl *);
 };
 
 // -------------------------------------------------------------------------

@@ -187,9 +187,9 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
     setMouseInside(inside);
 }
 
-void HTMLElementImpl::parseAttribute(Attribute *attr)
+void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch( attr->id )
+    switch( attr->attrId )
     {
 // the core attributes...
     case ATTR_ID:

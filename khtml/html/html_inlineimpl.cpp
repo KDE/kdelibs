@@ -120,9 +120,9 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
     return inside;
 }
 
-void HTMLAnchorElementImpl::parseAttribute(Attribute *attr)
+void HTMLAnchorElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_HREF:
     default:
@@ -179,9 +179,9 @@ ushort HTMLBRElementImpl::id() const
     return ID_BR;
 }
 
-void HTMLBRElementImpl::parseAttribute(Attribute *attr)
+void HTMLBRElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_CLEAR:
 	if ( strcasecmp( attr->value(), "left" ) == 0 )
@@ -232,9 +232,9 @@ ushort HTMLFontElementImpl::id() const
     return ID_FONT;
 }
 
-void HTMLFontElementImpl::parseAttribute(Attribute *attr)
+void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
 {
-    switch(attr->id)
+    switch(attr->attrId)
     {
     case ATTR_SIZE:
     	{

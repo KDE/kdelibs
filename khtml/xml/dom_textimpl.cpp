@@ -72,7 +72,7 @@ unsigned long CharacterDataImpl::length() const
 
 DOMString CharacterDataImpl::substringData( const unsigned long offset, const unsigned long count )
 {
-    if (offset+count > str->l)
+    if (offset > str->l)
 	throw DOMException(DOMException::INDEX_SIZE_ERR);
     return str->substring(offset,count);
 }
@@ -104,26 +104,16 @@ void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned l
 void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg )
 {
     if (offset > str->l)
-	return;
+	throw DOMException(DOMException::INDEX_SIZE_ERR);
 
     unsigned long realCount;
     if (offset + count > str->l)
 	realCount = str->l-offset;
     else
 	realCount = count;
-    if (realCount <= 0)
-	return;
-
-    DOMString realArg;
-    if (realCount >= arg.length())
-	realArg = arg; // the DOM spec doesn't say what to do if count != arg.length()
-    else if (realCount < arg.length()) {
-	realArg = arg.copy();
-	realArg.truncate(realCount);
-    }
 
     str->remove(offset,realCount);
-    str->insert(realArg.impl, offset);
+    str->insert(arg.impl, offset);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     applyChanges();

@@ -54,7 +54,7 @@ public:
     virtual tagStatus startTag() { return BODYStartTag; }
     virtual tagStatus endTag() { return BODYEndTag; }
 
-    virtual void parseAttribute(khtml::Attribute *);
+    virtual void parseAttribute(AttrImpl *);
     void attach(KHTMLView *w);
 
     CSSStyleSheetImpl *sheet() const { return m_style; }
@@ -79,7 +79,7 @@ public:
     virtual tagStatus startTag() { return FRAMEStartTag; }
     virtual tagStatus endTag() { return FRAMEEndTag; }
 
-    virtual void parseAttribute(khtml::Attribute *);
+    virtual void parseAttribute(AttrImpl *);
     virtual void attach(KHTMLView *w);
     virtual void detach();
 
@@ -113,7 +113,7 @@ public:
     virtual tagStatus startTag() { return FRAMESETStartTag; }
     virtual tagStatus endTag() { return FRAMESETEndTag; }
 
-    virtual void parseAttribute(khtml::Attribute *);
+    virtual void parseAttribute(AttrImpl *);
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void attach(KHTMLView *w);
 
@@ -194,7 +194,7 @@ public:
     virtual tagStatus startTag() { return IFRAMEStartTag; }
     virtual tagStatus endTag() { return IFRAMEEndTag; }
 
-    virtual void parseAttribute(khtml::Attribute *attr);
+    virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);
 };
 

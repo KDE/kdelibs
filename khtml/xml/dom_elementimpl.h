@@ -33,14 +33,17 @@ namespace DOM {
 
 class ElementImpl;
 class DocumentImpl;
+class NamedAttrMapImpl;
 
 class AttrImpl : public NodeImpl
 {
     friend class ElementImpl;
+    friend class NamedAttrMapImpl;
 
 public:
-
+    AttrImpl();
     AttrImpl(DocumentImpl *doc, const DOMString &name);
+    AttrImpl(DocumentImpl *doc, int id);
     AttrImpl(const AttrImpl &other);
 
     AttrImpl &operator = (const AttrImpl &other);
@@ -51,34 +54,47 @@ public:
     virtual bool isAttributeNode() { return true; }
 
     DOMString name() const;
-    bool specified() const;
+    bool specified() const { return _specified; }
 
     virtual DOMString value() const;
     virtual void setValue( const DOMString &v );
 
-    virtual DOMString nodeValue() const;
+    virtual DOMString nodeValue() const { return value(); }
 
     virtual void setNodeValue( const DOMString & );
 
     virtual NodeImpl *parentNode() const;
+    virtual NodeImpl *previousSibling() const;
+    virtual NodeImpl *nextSibling() const;
+    virtual NodeImpl *cloneNode ( bool deep );
 
-    virtual void setParent(NodeImpl *parent);
+    virtual bool deleteMe();
+    DOMStringImpl *val() { return _value; }
 
+    unsigned char attrId;
 protected:
-    AttrImpl(const DOMString &, const DOMString &, DocumentImpl *, bool);
+    AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc, bool specified);
+    AttrImpl(khtml::Attribute *attr, DocumentImpl *doc, ElementImpl *element);
+    AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc);
+    AttrImpl(int _id, const DOMString &value, DocumentImpl *doc);
 
-    int attrId() { return attr.id; }
+    void setName(const DOMString &n);
 
-    khtml::Attribute attr;
     bool _specified;
 
-    NodeImpl *_parent;
+    DOMStringImpl *_name;
+    DOMStringImpl *_value;
+
+    ElementImpl *_element;
+
 };
 
 
 class ElementImpl : public NodeBaseImpl
 {
     friend class DocumentImpl;
+    friend class NamedAttrMapImpl;
+    friend class AttrImpl;
 
 public:
     ElementImpl(DocumentImpl *doc);
@@ -114,12 +130,13 @@ public:
     virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
     virtual khtml::RenderStyle *style() { return m_style; }
     virtual NodeImpl *cloneNode ( bool deep );
+    virtual NamedNodeMapImpl *attributes() const;
 
     /**
      * override this in subclasses if you need to parse
      * attributes. This is always called, whenever an attribute changed
       */
-    virtual void parseAttribute(khtml::Attribute *) {}
+    virtual void parseAttribute(AttrImpl *) {}
 
     virtual tagStatus startTag() { return DOM::REQUIRED; }
     virtual tagStatus endTag() { return DOM::REQUIRED; }
@@ -144,12 +161,44 @@ protected: // member variables
 
     khtml::AttributeList attributeMap;
 
+    NamedAttrMapImpl *namedAttrMap;
+
     // map of default attributes. derived element classes are responsible
     // for setting this according to the corresponding element description
     // in the DTD
     virtual khtml::AttributeList *defaultMap() const;
 
     khtml::RenderStyle *m_style;
+};
+
+class NamedAttrMapImpl : public NamedNodeMapImpl
+{
+public:
+    NamedAttrMapImpl(ElementImpl *e);
+    virtual ~NamedAttrMapImpl();
+    void fromAttributeList(khtml::AttributeList list);
+
+    unsigned long length() const;
+
+    NodeImpl *getNamedItem ( const DOMString &name ) const;
+    AttrImpl *getIdItem ( int id ) const;
+
+    NodeImpl *setNamedItem ( const Node &arg );
+    AttrImpl *setIdItem ( AttrImpl *attr );
+
+    NodeImpl *removeNamedItem ( const DOMString &name );
+    AttrImpl *removeIdItem ( int id );
+
+    NodeImpl *item ( unsigned long index ) const;
+    AttrImpl *removeAttr( AttrImpl *oldAttr );
+    void detachFromElement();
+
+protected:
+    ElementImpl *element;
+    AttrImpl **attrs;
+    uint len;
+    void clearAttrs();
+
 };
 
 }; //namespace
