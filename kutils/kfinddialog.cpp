@@ -225,18 +225,18 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     enableButtonOK( !pattern().isEmpty() );
     if (forReplace)
     {
-       setButtonOKText(i18n("&Replace"),
+      setButtonOK(KGuiItem( i18n("&Replace"), QString::null,
                     i18n("Start replace"),
                     i18n("<qt>If you press the <b>Replace</b> button, the text you entered "
                          "above is searched for within the document and any occurrence is "
-                         "replaced with the replacement text.</qt>"));
+                         "replaced with the replacement text.</qt>")));
     }
     else
     {
-       setButtonOKText(i18n("&Find"),
+      setButtonOK(KGuiItem( i18n("&Find"), QString::null,
                     i18n("Start searching"),
                     i18n("<qt>If you press the <b>Find</b> button, the text you entered "
-                         "above is searched for within the document.</qt>"));
+                         "above is searched for within the document.</qt>")));
     }
 }
 
