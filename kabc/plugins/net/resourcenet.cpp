@@ -118,7 +118,7 @@ bool ResourceNet::load()
 
       KIO::NetAccess::removeTempFile( tmpFile );
     } else {
-      addressBook()->error( i18n( "Unable to open url '%1' for reading" ).arg( mUrl.url() + "/" + (*it) ) );
+      addressBook()->error( i18n( "Unable to open URL '%1' for reading" ).arg( mUrl.url() + "/" + (*it) ) );
       ok = false;
     }
   }
@@ -148,7 +148,7 @@ bool ResourceNet::save( Ticket *ticket )
     tmpFile.close();
 
     if ( !KIO::NetAccess::upload( tmpFile.name(), mUrl.url() + "/" + (*it).uid() ) ) {
-      addressBook()->error( i18n( "Unable to save url '%1'" ).arg( mUrl.url() + "/" + (*it).uid() ) );
+      addressBook()->error( i18n( "Unable to save URL '%1'" ).arg( mUrl.url() + "/" + (*it).uid() ) );
       ok = false;
     }
 
