@@ -38,7 +38,8 @@
 #include <kcharsets.h>
 
 //-----------------------------------------------------------------------------
-
+namespace KFILE {
+    
 BookmarkTokenizer::BookmarkTokenizer()
 {
     head = tail = curr = 0;
@@ -428,6 +429,8 @@ BookmarkTokenizer::~BookmarkTokenizer()
 {
     reset();
 }
+
+} // namespace
 
 //-----------------------------------------------------------------------------
 

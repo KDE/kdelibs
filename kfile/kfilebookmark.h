@@ -28,7 +28,13 @@
 
 #include <qobject.h>
 #include <qtextstream.h>
-#include "booktoken.h"
+#include <qlist.h>
+#include <qstrlist.h>
+
+namespace KFILE {
+    class BookmarkTokenizer;
+}
+
 
 class KFileBookmark
 {
@@ -89,7 +95,7 @@ public:
 	KFileBookmark *getRoot()	{	return &root; }
 
 private:
-	const char *parse( BookmarkTokenizer *ht, KFileBookmark *parent, const char *_end);
+	const char *parse( KFILE::BookmarkTokenizer *ht, KFileBookmark *parent, const char *_end);
 	void	writeFolder( QTextStream &stream, KFileBookmark *parent );
 	KFileBookmark *findBookmark( KFileBookmark *parent, int id, int &currId );
 

@@ -31,6 +31,7 @@
 
 #include <klocale.h>
 #include <kapplication.h>
+#include "booktoken.h"
 
 /* FIXME 
  * kfilebookmarks should be rewritten to use Qt, and not things like
@@ -98,7 +99,7 @@ void KFileBookmarkManager::read( const QString& filename )
 	}
 	while ( !file.atEnd() );
 
-	BookmarkTokenizer *ht = new BookmarkTokenizer();
+	KFILE::BookmarkTokenizer *ht = new KFILE::BookmarkTokenizer();
 
 	ht->begin();
 	ht->write( text );
@@ -152,7 +153,7 @@ void KFileBookmarkManager::read( const QString& filename )
 
 // parser based on HTML widget parser
 //
-const char *KFileBookmarkManager::parse( BookmarkTokenizer *ht, KFileBookmark *parent,
+const char *KFileBookmarkManager::parse( KFILE::BookmarkTokenizer *ht, KFileBookmark *parent,
 	const char *_end )
 {
 	KFileBookmark *bm = parent;

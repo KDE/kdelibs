@@ -27,7 +27,7 @@ SUBDIRS = . acl_prop_page
 
 include_HEADERS = kfiledialog.h kfileviewitem.h kfilebookmark.h  \
 	kfilereader.h kdiroperator.h kfileview.h \
-	booktoken.h kfiledetailview.h kcombiview.h \
+	kfiledetailview.h kcombiview.h \
 	kfileiconview.h kfilefilter.h krecentdocument.h kfileview.h \
 	kfiledialog.h kurlrequester.h kfilepreview.h kfile.h \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
