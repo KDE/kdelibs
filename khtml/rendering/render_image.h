@@ -60,6 +60,8 @@ public:
 
     virtual short baselineOffset() const;
 
+    virtual int bidiHeight() const;
+
 protected:
     /*
      * Pointer to the image
