@@ -44,6 +44,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include <kdebug.h>
+
 HTMLURLRequest::HTMLURLRequest()
 {
 }
