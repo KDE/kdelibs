@@ -97,6 +97,11 @@ UString::UString(const QString &d)
 
 UString::UString(const DOM::DOMString &d)
 {
+  if (d.isNull()) {
+    attach(&Rep::null);
+    return;
+  }
+
   unsigned int len = d.length();
   UChar *dat = new UChar[len];
   memcpy(dat, d.unicode(), len * sizeof(UChar));

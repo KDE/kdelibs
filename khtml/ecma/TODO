@@ -1,5 +1,6 @@
 Has to be done
 ==============
+- window.onload (code is there but doesn't work)
 - frame handling (parent, top, frame[])
 - return a window object in window.open()
 - make window. prefix implicit for alert() etc. Adding Window as Global's

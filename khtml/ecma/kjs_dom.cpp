@@ -382,7 +382,7 @@ Completion DOMElementFunction::tryExecute(const List &args)
 
   switch(id) {
     case GetAttribute:
-      result = getString(element.getAttribute(args[0].toString().value().string()));
+      result = String(element.getAttribute(args[0].toString().value().string()));
       break;
     case SetAttribute:
       element.setAttribute(args[0].toString().value().string(),args[1].toString().value().string());
