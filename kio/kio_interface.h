@@ -127,6 +127,7 @@
 #define UDS_CREATION_TIME ( 1024 | UDS_TIME )
 #define UDS_FILE_TYPE ( 2048 | UDS_LONG )
 #define UDS_LINK_DEST ( 4096 | UDS_STRING )
+#define UDS_URL ( 8192 | UDS_STRING )
 
 struct UDSAtom
 {
