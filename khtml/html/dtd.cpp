@@ -181,6 +181,7 @@ static const ushort tag_list_3[] = {
     ID_COMMENT,
     ID_LI,
     ID_LISTING,
+    ID__KONQBLOCK,
     0
 };
 
