@@ -185,6 +185,11 @@ public:
   QStringList keywords() const { return m_lstKeywords; }
 
   /**
+   * @return a list of VFolder categories.
+   */
+  QStringList categories() const;
+
+  /**
    * @return the service types that this service supports.
    */
   QStringList serviceTypes() const { return m_lstServiceTypes; }
@@ -354,6 +359,7 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KServicePrivate* d;
+  class KServicePrivate;
+  KServicePrivate* d;
 };
 #endif

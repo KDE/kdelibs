@@ -49,9 +49,16 @@
 #include "kuserprofile.h"
 #include "ksycoca.h"
 
+class KService::KServicePrivate
+{
+public:
+  QStringList categories;
+};
+
 KService::KService( const QString & _name, const QString &_exec, const QString &_icon)
  : KSycocaEntry( QString::null)
 {
+  d = new KServicePrivate;
   m_bValid = true;
   m_bDeleted = false;
   m_strType = "Application";
@@ -67,6 +74,7 @@ KService::KService( const QString & _name, const QString &_exec, const QString &
 KService::KService( const QString & _fullpath )
  : KSycocaEntry( _fullpath)
 {
+  d = new KServicePrivate;
   KDesktopFile config( _fullpath );
 
   init(&config);
@@ -81,6 +89,7 @@ KService::KService( KDesktopFile *config )
 void
 KService::init( KDesktopFile *config )
 {
+  d = new KServicePrivate;
   m_bValid = true;
 
   bool absPath = (entryPath()[0] == '/');
@@ -189,6 +198,8 @@ KService::init( KDesktopFile *config )
   entryMap.remove("GenericName");
   m_lstKeywords = config->readListEntry("Keywords");
   entryMap.remove("Keywords");
+  d->categories = config->readListEntry("Categories", ';');
+  entryMap.remove("Categories");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
   entryMap.remove("X-KDE-Library");
   m_strInit = config->readEntry("X-KDE-Init" );
@@ -237,12 +248,14 @@ KService::init( KDesktopFile *config )
 
 KService::KService( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset )
 {
+  d = new KServicePrivate;
   load( _str );
 }
 
 KService::~KService()
 {
   //debug("KService::~KService()");
+  delete d;
 }
 
 QPixmap KService::pixmap( KIcon::Group _group, int _force_size, int _state, QString * _path ) const
@@ -272,7 +285,8 @@ void KService::load( QDataStream& s )
     >> dst
     >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2
-    >> m_lstKeywords >> m_strInit >> dummyUI32 >> m_strGenName;
+    >> m_lstKeywords >> m_strInit >> dummyUI32 >> m_strGenName 
+    >> d->categories;
 
   m_bAllowAsDefault = def;
   m_bTerminal = term;
@@ -304,7 +318,8 @@ void KService::save( QDataStream& s )
     << dst
     << m_strDesktopEntryName
     << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
-    << m_lstKeywords << m_strInit << dummyUI32 << m_strGenName;
+    << m_lstKeywords << m_strInit << dummyUI32 << m_strGenName 
+    << d->categories;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -394,7 +409,11 @@ QVariant KService::property( const QString& _name ) const
     return QVariant( entryPath() );
   else if ( _name == "DesktopEntryName")
     return QVariant( m_strDesktopEntryName );
-
+  else if ( _name == "Categories")
+    return QVariant( d->categories );
+  else if ( _name == "Keywords")
+    return QVariant( m_lstKeywords );
+  
   // Ok we need to convert the property from a QString to its real type.
   // First we need to ask KServiceTypeFactory what the type of this property
   // is supposed to be.
@@ -472,6 +491,8 @@ QStringList KService::propertyNames() const
   res.append( "Library" );
   res.append( "DesktopEntryPath" );
   res.append( "DesktopEntryName" );
+  res.append( "Keywords" );
+  res.append( "Categories" );
 
   return res;
 }
@@ -553,6 +574,12 @@ bool KService::allowMultipleFiles() const {
   else
     return false;
 }
+
+QStringList KService::categories() const
+{
+  return d->categories;
+}
+
 
 void KService::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }
