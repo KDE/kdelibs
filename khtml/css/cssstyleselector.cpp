@@ -1202,8 +1202,8 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
 {
     Length l;
     if ( !primitiveValue ) {
-	if ( *ok )
-	    *ok = false;
+        if ( ok )
+            *ok = false;
     } else {
 	int type = primitiveValue->primitiveType();
 	if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
