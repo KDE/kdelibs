@@ -3,6 +3,8 @@ kdelibs (4:2.2.1-1) unstable; urgency=low
   * New upstream version
   * Move artsc-config into -dev package (Closes: #109973)
   * Priority set to extra for -alsa packages
+  * Do NOT build with Xinerama support due to the library being static
+    and that whole PIC/non-PIC so thing. 
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 25 Aug 2001 05:40:00 -0700
 

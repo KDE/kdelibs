@@ -18,11 +18,6 @@ ifeq ($(ARCH),alpha)
 else
   COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
-ifeq ($(ARCH),hppa)
-  XINERAMA=
-else
-  XINERAMA=--with-xinerama
-endif
 ifeq ($(ARCH),i386)
   OBJPRELINK=--enable-objprelink
 endif
@@ -46,7 +41,7 @@ build-stamp:
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
-	--disable-cups $(XINERAMA) $(OBJPRELINK)
+	--disable-cups $(OBJPRELINK)
 
 	$(MAKE)
 	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
