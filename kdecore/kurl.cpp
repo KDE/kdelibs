@@ -30,6 +30,13 @@
 #include <qdir.h>
 #include <qstringlist.h>
 
+// NB: return true if "protocol://" is supported
+static bool protocolSupportEmptyPath(QString& protocol)
+{
+	if (protocol == "smb") return true;
+	return false;
+}
+
 static bool
 isRelativeURL(const QString &_url)
 {
@@ -636,7 +643,8 @@ QString KURL::url( int _trailing ) const
   // HACK encode parts here!
 
   QString u = m_strProtocol.copy();
-  if ( hasHost() )
+  // NB: Add "://" if supported, otherwise only ":/" will be added for subdirs!
+  if ( hasHost() || protocolSupportEmptyPath(u) )
   {
     u += "://";
     if ( hasUser() )
@@ -797,9 +805,14 @@ void KURL::addPath( const QString& _txt )
   if ( _txt.isEmpty() )
     return;
 
+  int i = 0;
   int len = m_strPath.length();
+  // NB: avoid three '/' when building a new path from nothing
+  if ((len == 0) && protocolSupportEmptyPath(m_strProtocol)) {
+    while( _txt[i] == '/' ) ++i;
+  }
   // Add the trailing '/' if it is missing
-  if ( _txt[0] != '/' && ( len == 0 || m_strPath[ len - 1 ] != '/' ) )
+  else if ( _txt[0] != '/' && ( len == 0 || m_strPath[ len - 1 ] != '/' ) )
     m_strPath += "/";
 
   // No double '/' characters
@@ -965,7 +978,11 @@ bool KURL::cd( const QString& _dir, bool zapRef )
 
   p += _dir;
   p = QDir::cleanDirPath( p );
-  setPath( p );
+  // NB: QDir set "foo/.." to ".", which we don't want in case the protocol can
+  // support an empty path. ex: "smb://." => "smb://"
+  if ((p == ".") && protocolSupportEmptyPath(m_strProtocol))
+    setPath( "" );
+  else setPath( p );
 
   if ( zapRef )
     setHTMLRef( QString::null );
