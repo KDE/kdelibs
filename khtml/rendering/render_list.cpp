@@ -333,6 +333,11 @@ void RenderListMarker::layout()
 {
     KHTMLAssert( !layouted() );
     // ### KHTMLAssert( minMaxKnown() );
+    if (m_listImage)
+        m_height = m_listImage->pixmap().height();
+    else
+        m_height = style()->fontMetrics().ascent();
+
     if ( !minMaxKnown() )
 	calcMinMaxWidth();
     setLayouted();
@@ -363,7 +368,6 @@ void RenderListMarker::calcMinMaxWidth()
     if(m_listImage) {
         if(style()->listStylePosition() == INSIDE)
             m_width = m_listImage->pixmap().width();
-        m_height = m_listImage->pixmap().height();
 	setMinMaxKnown();
         return;
     }
@@ -376,16 +380,14 @@ void RenderListMarker::calcMinMaxWidth()
     }
 
     const QFontMetrics &fm = style()->fontMetrics();
-    m_height = fm.ascent();
 
     switch(style()->listStyleType())
     {
     case DISC:
     case CIRCLE:
     case SQUARE:
-        if(style()->listStylePosition() == INSIDE) {
-            m_width = m_height; //fm.ascent();
-        }
+        if(style()->listStylePosition() == INSIDE)
+            m_width = fm.ascent();
     	goto end;
     case ARMENIAN:
     case GEORGIAN:
