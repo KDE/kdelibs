@@ -50,6 +50,8 @@ class KKey
 	KKey( const QKeyEvent* );
 	KKey( const KKey& );
 	KKey( const QString& );
+	/** @internal */
+	KKey( uint key, uint mod );
 	~KKey();
 
  // Initialization methods
@@ -59,14 +61,19 @@ class KKey
 	bool init( const QKeyEvent* );
 	bool init( const KKey& );
 	bool init( const QString& );
+	/** @internal */
+	bool init( uint key, uint mod );
 
 	KKey& operator =( const KKey& key )
 		{ init( key ); return *this; }
 
  // Query methods.
 	bool isNull() const;
+	bool isValidQt() const;
+	bool isValidNative() const;
 
-	uint key() const;
+	/** @internal */
+	uint sym() const;
 	uint modFlags() const;
 
  // Comparison Methods
@@ -83,24 +90,31 @@ class KKey
 	QString toString() const;
 	QString toStringInternal() const;
 
+ // Operation methods
+	void simplify();
+
 	static KKey& null();
 	static QString modFlagLabel( ModFlag );
 
- protected:
+ private:
 	/**
 	 * Under X11, m_key will hold an X11 key symbol.
 	 * For Qt/Embedded, it will hold the Qt key code.
 	 */
-	uint m_key;
-
+	/**
+	 * Returns the native key symbol value key.  Under X11, this is the X
+	 * keycode.  Under Qt/Embedded, this is the Qt keycode.
+	 * @see /usr/include/X11/keysymdef.h
+	 * @see qnamespace.h
+	 */
+	uint m_sym;
+	/**
+	 * m_mod holds the
+	 */
 	uint m_mod;
 
  private:
 	class KKeyPrivate* d;
-
-	KKey( uint key, uint mod );
-	bool init( uint key, uint mod );
-
 	friend class KKeyNative;
 };
 

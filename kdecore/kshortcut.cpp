@@ -55,24 +55,27 @@ KKey::~KKey()
 
 void KKey::clear()
 {
-	m_key = 0;
+	m_sym = 0;
 	m_mod = 0;
 }
 
 bool KKey::init( uint key, uint modFlags )
 {
-	m_key = key;
+	m_sym = key;
 	m_mod = modFlags;
 	return true;
 }
 
 bool KKey::init( int keyQt )
 {
-	if( KKeyServer::keyQtToSym( keyQt, m_key )
+	//KKeyServer::Sym sym;
+
+	//if( sym.initQt( keyQt )
+	if( KKeyServer::keyQtToSym( keyQt, m_sym )
 	    && KKeyServer::keyQtToMod( keyQt, m_mod ) )
 		return true;
 	else {
-		m_key = 0;
+		m_sym = 0;
 		m_mod = 0;
 		return false;
 	}
@@ -94,7 +97,7 @@ bool KKey::init( const QKeyEvent* pEvent )
 
 bool KKey::init( const KKey& key )
 {
-	m_key = key.m_key;
+	m_sym = key.m_sym;
 	m_mod = key.m_mod;
 	return true;
 }
@@ -125,28 +128,27 @@ bool KKey::init( const QString& sSpec )
 	// If there is one non-blank key left:
 	if( (i == rgs.size() - 1 && !rgs[i].isEmpty()) ) {
 		KKeyServer::Sym sym( rgs[i] );
-		m_key = sym.m_sym;
+		m_sym = sym.m_sym;
 	}
 
-	if( m_key == 0 )
+	if( m_sym == 0 )
 		m_mod = 0;
 
 	kdDebug(125) << "KKey::init( \"" << sSpec << "\" ):"
-		<< " m_key = " << QString::number(m_key, 16)
+		<< " m_sym = " << QString::number(m_sym, 16)
 		<< ", m_mod = " << QString::number(m_mod, 16) << endl;
 
-	return m_key != 0;
+	return m_sym != 0;
 }
 
-bool KKey::isNull() const         { return m_key == 0; }
-//bool KKey::isSetAndValid() const  { return m_flags == (SET | VALID); }
-uint KKey::key() const             { return m_key; }
+bool KKey::isNull() const          { return m_sym == 0; }
+uint KKey::sym() const             { return m_sym; }
 uint KKey::modFlags() const        { return m_mod; }
 
 int KKey::compare( const KKey& spec ) const
 {
-	if( m_key != spec.m_key )
-		return m_key - spec.m_key;
+	if( m_sym != spec.m_sym )
+		return m_sym - spec.m_sym;
 	if( m_mod != spec.m_mod )
 		return m_mod - spec.m_mod;
 	return 0;
@@ -164,7 +166,7 @@ QString KKey::toString() const
 	s = KKeyServer::modToStringUser( m_mod );
 	if( !s.isEmpty() )
 		s += '+';
-	s += KKeyServer::Sym(m_key).toString();
+	s += KKeyServer::Sym(m_sym).toString();
 
 	return s;
 }
@@ -173,13 +175,13 @@ QString KKey::toStringInternal() const
 {
 	//kdDebug(125) << "KKey::toStringInternal(): this = " << this
 	//	<< " mod = " << QString::number(m_mod, 16)
-	//	<< " key = " << QString::number(m_key, 16) << endl;
+	//	<< " key = " << QString::number(m_sym, 16) << endl;
 	QString s;
 
 	s = KKeyServer::modToStringInternal( m_mod );
 	if( !s.isEmpty() )
 		s += '+';
-	s += KKeyServer::Sym(m_key).toStringInternal();
+	s += KKeyServer::Sym(m_sym).toStringInternal();
 	return s;
 }
 
@@ -476,10 +478,10 @@ bool KShortcut::init( const QString& s )
 		os << "KShortcut::init( \"" << s << "\" ): ";
 		for( uint i = 0; i < m_nSeqs; i++ ) {
 			os << " m_rgseq[" << i << "]: ";
-			KKeyNative::Variations vars;
+			KKeyServer::Variations vars;
 			vars.init( m_rgseq[i].key(0), true );
 			for( uint j = 0; j < vars.count(); j++ )
-				os << QString::number(vars.key(0).keyCodeQt(),16) << ',';
+				os << QString::number(vars.m_rgkey[j].keyCodeQt(),16) << ',';
 		}
 		kdDebug(125) << sDebug << endl;
 	}
