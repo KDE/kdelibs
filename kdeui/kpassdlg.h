@@ -1,4 +1,4 @@
-// vi: ts=8 sts=4 sw=4 
+// vi: ts=8 sts=4 sw=4
 /* This file is part of the KDE libraries
    Copyright (C) 1998 Pietro Iglio <iglio@fub.it>
    Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
@@ -62,7 +62,7 @@ public:
      */
     ~KPasswordEdit();
 
-    /** 
+    /**
      * Returns the password. The memory is freed in the destructor
      * so you should make a copy.
      */
@@ -90,7 +90,7 @@ private:
 
 
 /**
- * This dialog asks the user to enter a password. The functions you're 
+ * This dialog asks the user to enter a password. The functions you're
  * probably interested in are the static methods, @ref #getPassword() and
  * @ref #getNewPassword().
  *
@@ -108,16 +108,16 @@ private:
  * Keeping passwords in memory can be a potential security hole. You should
  * handle this situation with care.
  *
- * @li You may want to use @ref #disableCoreDump() to disable core dumps. 
- * Core dumps are dangerous because they are an image of the process memory, 
+ * @li You may want to use @ref #disableCoreDump() to disable core dumps.
+ * Core dumps are dangerous because they are an image of the process memory,
  * and thus include any passwords that were in memory.
  *
  * @li You should delete passwords as soon as they are not needed anymore.
- * The functions @ref #getPassword() and @ref #getNewPassword() return the 
- * password as a QCString. I believe this is safer than a QString. A QString 
- * stores its characters internally as 16-bit wide values, so conversions are 
- * needed, both for creating the QString and by using it. The temporary 
- * memory used for these conversion is probably not erased. This could lead 
+ * The functions @ref #getPassword() and @ref #getNewPassword() return the
+ * password as a QCString. I believe this is safer than a QString. A QString
+ * stores its characters internally as 16-bit wide values, so conversions are
+ * needed, both for creating the QString and by using it. The temporary
+ * memory used for these conversion is probably not erased. This could lead
  * to stray  passwords in memory, even if you think you erased all of them.
  *
  * @short A password input dialog.
@@ -164,7 +164,7 @@ public:
      * @deprecated Variant of the previous constructor without the
      * possibility to specify a parent. May be removed in KDE 4.0
      */
-    KPasswordDialog(int type, QString prompt, bool enableKeep=false, 
+    KPasswordDialog(int type, QString prompt, bool enableKeep=false,
 	    int extraBttn=0);
     /**
      * Destructs the password dialog.
@@ -184,7 +184,7 @@ public:
      * Adds a line of information to the dialog.
      */
     void addLine(QString key, QString value);
-    /** 
+    /**
      * Returns the password entered. The memory is freed in the destructor,
      * so you should make a copy.
      */
@@ -202,14 +202,14 @@ public:
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
      * @param keep Enable/disable a checkbox controlling password keeping.
-     * If you pass a null pointer, or a pointer to the value 0, the checkbox 
-     * is not shown. If you pass a pointer to a nonzero value, the checkbox 
+     * If you pass a null pointer, or a pointer to the value 0, the checkbox
+     * is not shown. If you pass a pointer to a nonzero value, the checkbox
      * is shown and the result is stored in *keep.
      * @return Result code: Accepted or Rejected.
      */
     static int getPassword(QCString &password, QString prompt, int *keep=0L);
 
-    /** 
+    /**
      * Pops up the dialog, asks the user for a password and returns it. The
      * user has to enter the password twice to make sure it was entered
      * correctly.
@@ -239,6 +239,9 @@ protected:
      * password is valid, @p false otherwise.
      */
     virtual bool checkPassword(const char *) { return true; }
+
+private slots:
+  void enableOkBtn();
 
 private:
     void init();

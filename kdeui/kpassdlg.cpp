@@ -46,6 +46,12 @@
  * Password line editor.
  */
 
+class KPasswordDialog::KPasswordDialogPrivate
+{
+public:
+  QLabel *m_MatchLabel;
+};
+
 const int KPasswordEdit::PassLen = 100;
 
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
@@ -208,7 +214,7 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
 KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
                                  int extraBttn)
     : KDialogBase(0L, "Password Dialog", true, "", Ok|Cancel|extraBttn,
-                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type)
+                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
     init();
     setPrompt(prompt);
@@ -297,6 +303,17 @@ void KPasswordDialog::init()
 	m_pEdit2->setMinimumWidth(size.width());
 	h_lay->addWidget(m_pEdit2, 12);
 	h_lay->addStretch(4);
+
+        // Row 5: Label saying whether the passwords match
+        m_pGrid->addRowSpacing(10, 10);
+        m_pGrid->setRowStretch(10, 12);
+        d->m_MatchLabel = new QLabel(m_pMain);
+        d->m_MatchLabel->setAlignment(AlignLeft|AlignVCenter|WordBreak);
+        m_pGrid->addMultiCellWidget(d->m_MatchLabel, 11, 11, 0, 2);
+        d->m_MatchLabel->setText(i18n("Passwords do not match"));
+        connect( m_pEdit, SIGNAL(textChanged(const QString&)), SLOT(enableOkBtn()) );
+        connect( m_pEdit2, SIGNAL(textChanged(const QString&)), SLOT(enableOkBtn()) );
+        enableOkBtn();
     }
 
     erase();
@@ -422,5 +439,15 @@ void KPasswordDialog::disableCoreDumps()
 
 void KPasswordDialog::virtual_hook( int id, void* data )
 { KDialogBase::virtual_hook( id, data ); }
+
+void KPasswordDialog::enableOkBtn()
+{
+    if (m_Type == NewPassword) {
+      bool match = ((strcmp(m_pEdit->password(), m_pEdit2->password()))==0)
+                   && (strcmp(m_pEdit->password(), "") != 0);
+      enableButtonOK( match );
+      d->m_MatchLabel->setText( match?QString(i18n("Passwords match")):QString(i18n("Passwords do not match")) );
+   }
+}
 
 #include "kpassdlg.moc"
