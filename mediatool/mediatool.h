@@ -2,6 +2,7 @@
 #define MEDIATOOL_H
 
 typedef signed char    int8;
+typedef unsigned char  uint8;
 typedef signed int     int32;
 typedef unsigned int   uint32;
 typedef unsigned short uint16;
@@ -167,7 +168,7 @@ typedef struct
    * counter with the pause key. The key is simply pressed or unpressed.
    */
   int8    	pause;		/* Status: Pause key			*/
-  int8		sync_id;	/* This is for helping with KAudio->snyc() */
+  uint8		sync_id;	/* This is for helping with KAudio->snyc() */
 } MdCh_KEYS;
 
 
@@ -181,7 +182,7 @@ typedef struct
   uint32	pos_current;	/* Curr. play position (eg: event num) 	*/
   uint32	pos_max;	/* Max. play position (eg: num events)	*/
   char		songname[LEN_NAME+1];
-  int8		sync_id;	/* This is for helping with KAudio->snyc() */
+  uint8		sync_id;	/* This is for helping with KAudio->snyc() */
 } MdCh_STAT;
 
 

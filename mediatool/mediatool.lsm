@@ -1,7 +1,7 @@
 
 Begin3
 Title:          mediatool
-Version:        0.52
+Version:        0.53
 Entered-date:   10AUG97
 Description:    Mediatool library
 Keywords:       media kmedia tracker sidplay playmidi sound Linux X11 Qt KDE
@@ -11,5 +11,5 @@ Primary-site:   ftp://fiwi02.wiwi.uni-tuebingen.de/pub/kde/apps/multimedia/KSoun
 Alternate-site: http://www.prima.ruhr.de/home/magicon/mediatool.html
 Original-site:  http://www.prima.ruhr.de/home/magicon/mediatool.html
 Platform:       Linux and possibly other Unices
-Copying-policy: GPL
+Copying-policy: LGPL
 End

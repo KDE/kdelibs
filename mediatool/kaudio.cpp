@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream.h>
+#include <unistd.h>
 #include <string.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -46,6 +47,7 @@ KAudio::KAudio()
 
   ServerContacted = false;
   WAVname         = NULL;
+  autosync        = false;
 
   /*********************************************************************************
    * Read in audio player id (This is NOT a pid, but a communication connection id)
@@ -73,24 +75,31 @@ KAudio::KAudio()
       return;
     }
   /************* query for chunk adresses **************************/
-  FnamChunk   = (MdCh_FNAM*)FindChunkData(m.shm_adr, "FNAM");
+  FnamChunk = (MdCh_FNAM*)FindChunkData(m.shm_adr, "FNAM");
   if (!FnamChunk)
     {
       cerr << "No FNAM chunk.\n";
       return;
     }
-  IhdrChunk   = (MdCh_IHDR*)FindChunkData(m.shm_adr, "IHDR");
+  IhdrChunk = (MdCh_IHDR*)FindChunkData(m.shm_adr, "IHDR");
   if (!IhdrChunk)
     {
       cerr << "No IHDR chunk.\n";
       return;
     }
-  KeysChunk   = (MdCh_KEYS*)FindChunkData(m.shm_adr, "KEYS");
+  KeysChunk = (MdCh_KEYS*)FindChunkData(m.shm_adr, "KEYS");
   if (!KeysChunk)
     {
       cerr << "No KEYS chunk.\n";
       return;
     }
+  StatChunk = (MdCh_STAT*)FindChunkData(m.shm_adr, "STAT");
+  if (!StatChunk)
+    {
+      cerr << "No STAT chunk.\n";
+      return;
+    }
+
 
   MdConnectInit();
 
@@ -106,6 +115,9 @@ bool KAudio::play()
     return false;
 
   EventCounterRaise( &(KeysChunk->play) ,1);
+  KeysChunk->sync_id += 3; // sync helper (esp. for maudio)
+  if (autosync)
+    sync();
   return true;
 }
 
@@ -139,6 +151,16 @@ bool KAudio::stop()
   return true;
 }
 
+void KAudio::setAutosync(bool autosync)
+{
+  this->autosync = autosync;
+}
+
+void KAudio::sync()
+{
+  while ( StatChunk->sync_id != KeysChunk->sync_id )
+    usleep(10*1000);
+}
 
 int KAudio::serverStatus()
 {
