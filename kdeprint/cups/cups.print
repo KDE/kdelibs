@@ -2,4 +2,6 @@
 PrintSystem=cups
 Comment=CUPS (Common Unix Print System)
 Comment[da]=CUPS (Fælles Unix Udskrifts System)
+Comment[es]=CUPS (sistema de impresión común para UNIX)
+Comment[he]=(סקינויל הצופנ הספדה תכרעמ) CUPS
 Comment[lv]=CUPS (Kopējā Unix Drukas Sistēma)
