@@ -514,7 +514,7 @@ KeyEventImpl::KeyEventImpl(QKeyEvent *key, AbstractViewImpl *view)
   // (and e.g. space would make it scroll down)
   //qKeyEvent->ignore();
 
-  if (key->type() == QEvent::KeyRelease)
+  if (key->type() == QEvent::KeyRelease && !key->isAutoRepeat())
       m_id = KHTML_KEYUP_EVENT;
   else if (key->isAutoRepeat())
       m_id = KHTML_KEYPRESS_EVENT;
