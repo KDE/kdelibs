@@ -302,12 +302,11 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 	if(incremental && !columnPos[totalCols]) calcColWidth();
 	if(!firstBody)
 	    firstBody = static_cast<HTMLTableSectionElementImpl *>(child);
-    default:
-	child->setAvailableWidth(0);
+    default:	
  	NodeBaseImpl::addChild(child);
 	break;
     }
-	
+    child->setAvailableWidth(0);
     static_cast<HTMLTablePartElementImpl *>(child)->setTable(this);
     return child;
 }
@@ -575,6 +574,7 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
 	if (_colSpan>maxColSpan)
 	    maxColSpan=_colSpan;
     } 
+        
     if (_minSize > col->min)
     {
     	col->min = _minSize;
@@ -590,14 +590,14 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
         col->type = _width.type;
     	col->value = _width.value;
 	if (_width.type==Percent)
-    	    percentTotals[_colSpan]+=_width.value;
+    	    percentTotals[_colSpan-1]+=_width.value;
     }
     if (_width.type == col->type)
     {
     	if (_width.value > col->value)
 	{
 	    if (_width.type==Percent)
-	    	percentTotals[_colSpan]+=_width.value-col->value;
+	    	percentTotals[_colSpan-1]+=_width.value-col->value;
 	    col->value = _width.value;
 	}
     }
@@ -786,6 +786,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 		int delta = MIN(distmin/span,colMaxWidth[c]-colMinWidth[c]);
 		delta = MIN(tmin,delta);
 		colMinWidth[c]+=delta;
+		colType[c]=type;		
 		tmin-=delta;
 	    }
 	    if (++c==col+span)
@@ -802,7 +803,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	{
 	    if (colType[c]<=type)
 	    {
-		colMinWidth[c]+=1;   
+		colMinWidth[c]+=1; 
 		tmin--;
 	    }
 	    if (++c==col+span)
@@ -820,6 +821,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 		if (tmax<span)
 		{
 		    colMaxWidth[c]+=tmax;
+		    colType[c]=type;
 		    tmax=0;
 		}
 	    }
@@ -846,79 +848,19 @@ void HTMLTableElementImpl::calcSingleColMinMax(int c, ColInfo* col)
 	oldmin+=colMinWidth[o];
 	oldmax+=colMaxWidth[o];
     }
-    if (span==1)
-    {
-       colValue[c] = col->value;
-       colType[c] = col->type;
-    }
-
-    int smin=0;
-    int smax=0;
-    switch(col->type)
-    {
-    case Fixed:
-//	printf("fix\n");
-	smin = MAX(col->min,col->value);
-	smax = smin;
-	fixedColMinTotal+=smin-oldmin;
-	break;
-    case Percent:	
-	{
-//	printf("perc\n");
-	// People just don't get the concept of percent.
-	// We try to fix the holes of education system...
-	
-	int tw=availableWidth;
-	if(predefinedWidth.type > Relative)
-    	    tw = predefinedWidth.minWidth(availableWidth);
-	
-	int pt = percentTotals[span];    
-	if (pt<100)
-	    pt = 100;
-	if (col->value < pt && col->value<100)
-	{
-	    int baseWidth;
-    	    if(predefinedWidth.type > Relative) // Percent or fixed
-    	    {
-	    	baseWidth = predefinedWidth.minWidth(availableWidth);
-		smin = baseWidth * col->value / pt;
-//		printf("perc40 rel %d %d\n",baseWidth,smin);
-    	    } else {
-	    	baseWidth = fixedColMinTotal;
-		smin = baseWidth * col->value / (pt - col->value);
-//		printf("perc40 %d\n",baseWidth);
-	    }			    
-	    //smin = MIN(smin, (tw-fixedColMinTotal-col->min) * col->value / pt );
-    	    smin = MAX(col->min, smin);
-	    smax = smin;	    
-	}
-	else
-	{ 
-	    // ok, this is too fucked up, let's pretend it is Variable
-	    smin = col->min;
-	    smax = col->max;
-	    colType[c] = Variable;
-	}
-	    //smin = (tw-fixedColMinTotal ) * col->value / pt ;	    	
-
-//	printf("perc  %d,%d,%d,%d,%d\n",col->value,percentTotals[span],pt,smin,smax);
-
-	
-	}
-	break;
-    case Relative:	
-//	printf("rel\n");	    	    
-	//break;
-    case Variable:
-//	printf("var\n");
-	smin = col->min;
-	smax = col->max;
-    }
+    int smin = col->min;
+    int	smax = col->max;
+    
+    if (col->type==Fixed)
+    	smax = MAX(smin,col->value);
+    	
     if (span==1)
     {
 //       printf("col (s=1) c=%d,m=%d,x=%d\n",c,smin,smax);
-       colMinWidth[c] = smin; 
-       colMaxWidth[c] = smax;
+        colMinWidth[c] = smin; 
+        colMaxWidth[c] = smax;
+        colValue[c] = col->value;
+        colType[c] = col->type;
     }   
     else
     {	   
@@ -927,6 +869,43 @@ void HTMLTableElementImpl::calcSingleColMinMax(int c, ColInfo* col)
 //	printf("spreading span %d,%d\n",spreadmin, spreadmax);
 	spreadSpanMinMax
 	    (c, span, spreadmin, spreadmax, col->type);
+    }
+ 
+}
+
+void HTMLTableElementImpl::calcPercentRelativeMax(int c, ColInfo* col)
+{
+    int span=col->span;
+    
+    int oldmax=0;
+    for (int o=c; o<c+span; ++o)
+    {
+	oldmax+=colMaxWidth[o];
+    }
+    
+    int smax=0;
+    if (col->type == Percent) 
+    {
+    	smax = width * col->value / 100;
+    }
+    else if (col->type == Relative) 
+    {
+    }
+    
+    smax = MIN(smax,width);
+    
+    if (span==1)
+    {
+//       printf("col (s=1) c=%d,m=%d,x=%d\n",c,smin,smax);
+       colMaxWidth[c] = smax;
+       colType[c] = col->type;
+    }   
+    else
+    {	   
+	int spreadmax = smax-oldmax-(span-1)*spacing;
+//	printf("spreading span %d,%d\n",spreadmin, spreadmax);
+	spreadSpanMinMax
+	    (c, span, 0, spreadmax, col->type);
     }
  
 }
@@ -940,7 +919,6 @@ void HTMLTableElementImpl::calcColMinMax()
     
     // PHASE 1, prepare    
     
-    fixedColMinTotal=0;    
 
     for ( unsigned int c=0; c<totalCols; ++c)
     {
@@ -948,25 +926,11 @@ void HTMLTableElementImpl::calcColMinMax()
     	col = colInfos[0]->at(c);		    
 
 	colMinWidth[c]=0;
-	colMaxWidth[c]=0;
+	colMaxWidth[c]=0;		
 
-
-	if (!col || col->span==0)
-	    continue;
-
-	col->update();
-	
-	// get the absolute minimum. this is used later when doing 
-	// percent/relative columns.
-    	int m = col->min;
-	if (col->type == Percent)
-	    continue;
-	if (col->type == Fixed)
-	    m = MAX(m,col->value);
-    	fixedColMinTotal += m;
     }
     
-    // PHASE 2, calculate
+    // PHASE 2, calculate simple minimums and maximums
     
     for ( unsigned int s=0;  s<maxColSpan ; ++s)
     {
@@ -990,13 +954,129 @@ void HTMLTableElementImpl::calcColMinMax()
 	
     }
     
-    // PHASE 3, finish
+    // PHASE 3, calculate table width
+        
+    int maxFixed=0;
+    int totalPercent=0;
+    int minPercent=0;
+    int percentWidest=0;
+    int percentWidestPercent=0;
+    int totalRel=0;
+    int minRel=0;
+    int minVar=0;    
+    bool hasFixed=false;
+    bool hasPercent=false;
+    bool hasRel=false;
+    bool hasVar=false;
+    
+    minWidth=border + border + spacing;
+    maxWidth=border + border + spacing;
+            
+    for(int i = 0; i < totalCols; i++)
+    {
+    	minWidth += colMinWidth[i] + spacing;
+	maxWidth += colMaxWidth[i] + spacing;
+    
+    	switch(colType[i])
+	{
+	case Fixed:
+	    maxFixed += colMaxWidth[i] + spacing;
+	    hasFixed=true;
+	    break;
+	case Percent:
+	    hasPercent=true;
+	    totalPercent += colValue[i];
+	    minPercent += colMinWidth[i] + spacing;
+	    if ( colMaxWidth[i] > percentWidest)
+	    {
+	    	percentWidest = colMaxWidth[i] + spacing;
+		percentWidestPercent = colValue[i];
+	    }
+	    break;
+	case Relative:
+	    hasRel=true;
+	    totalRel += colValue[i] ;
+	    minRel += colMinWidth[i] + spacing;
+	    break;
+	case Variable:
+	    hasVar=true;
+	    minVar += colMinWidth[i] + spacing;
+	}    
+        
+    }
+    if(predefinedWidth.type > Relative) // Percent or fixed table
+    {
+	width = predefinedWidth.minWidth(availableWidth);
+	if(minWidth > width) width = minWidth;
+/*	printf("1 width=%d minWidth=%d availableWidth=%d \n",
+	    width,minWidth,availableWidth);
+	if (width>1000) for(int i = 0; i < totalCols; i++)
+    	{		
+	    printf("DUMP col=%d type=%d max=%d min=%d value=%d\n",
+	    	i,colType[i],colMaxWidth[i],colMinWidth[i],colValue[i]);
+	}*/
+	
+    } 
+    else if (hasPercent && !hasFixed) 
+    {    	
+    	totalPercent = MAX(100,totalPercent);
+//	printf("2 percentWidest=%d percentWidestPercent=%d \n", 
+//	    percentWidest, percentWidestPercent);
+	width = percentWidest * totalPercent / percentWidestPercent;
+	width = MIN (width, availableWidth);
+    }
+    else if (hasPercent && hasFixed)
+    {    	
+    	totalPercent = MIN(99,totalPercent);
+//	printf("3 maxFixed=%d  totalPercent=%d\n",maxFixed,totalPercent);
+	width = (maxFixed + minVar + minRel) * 100 /
+    	    (100 - totalPercent);    
+    	width = MIN (width, availableWidth);
+    } 
+    else 
+    {
+    	width = MIN(availableWidth,maxWidth);	
+    }
+    
+//    printf("TABLE width %d\n", width);
+    	
+    width = MAX (width, minWidth);    
+    
+//    printf("TABLE limited width %d\n", width);    
+        
+    // PHASE 4, calculate maximums for percent and relative columns
+    
+    for ( unsigned int s=0;  s<maxColSpan ; ++s)
+    {
+    	int span = s+1;
+	
+    	QVector<ColInfo>* spanCols = colInfos[s];
+
+    	for ( unsigned int c=0; c<totalCols-s; ++c)
+    	{
+
+    	    ColInfo* col;
+    	    col = spanCols->at(c);		    
+
+	    if (!col || col->span==0 || 
+	    	col->type==Fixed || col->type==Variable)
+		continue;
+
+	    calcPercentRelativeMax(c, col);
+
+	}
+	
+    }
+    
+    // PHASE 5, finish
     
     // spread predefined table min and max width among colums
     // we treat table like cell with colspan=totalCols
     
     if(predefinedWidth.type == Fixed)
     {
+    	minWidth = width;
+    
 	int oldmax=0;
 	int oldmin=0;
 
@@ -1035,9 +1115,12 @@ void HTMLTableElementImpl::calcColWidthII(void)
     printf("availableWidth = %d\n", availableWidth);
 #endif
 
-    // 1. calculate min and max width for every column       
+    // 1. calculate min and max width for every column           
 
     calcColMinMax();    
+    
+    if (totalCols==0)
+    	return;
 
     // 2. calc min and max width for the table
     minWidth = border + border + spacing;
@@ -1049,7 +1132,9 @@ void HTMLTableElementImpl::calcColWidthII(void)
     int totalRel = 0;
     int totalVar = 0;
     int minFixed = 0;
+    int maxFixed = 0;
     int minPercent = 0;
+    int maxPercent = 0;
     int minRel = 0;
     int minVar = 0;
     int maxRel = 0;
@@ -1075,12 +1160,14 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    // we use actColWidth here, might be bigger than colValue!
 	    totalFixed += actColWidth[i];
 	    minFixed += colMinWidth[i];
+	    maxFixed += colMaxWidth[i];
 	    numFixed++;
 	    break;
 	case Percent:
 	    totalPercent += colValue[i];
 	    totalWidthPercent += actColWidth[i];
 	    minPercent += colMinWidth[i];
+	    maxPercent += colMaxWidth[i];
 	    numPercent++;
 	    break;
 	case Relative:
@@ -1104,135 +1191,72 @@ void HTMLTableElementImpl::calcColWidthII(void)
     }
 #endif
 
+
+    bool widthPreset;
+
     // 3. set table width to max(minWidth, min(available, maxWidth))
     //    or (if we have a predefined width): max(minWidth, predefinedWidth)
-    int tableWidth;
+    int tableWidth = width;
 
-    if(predefinedWidth.type > Relative) // Percent or fixed
-    {
-	tableWidth = predefinedWidth.minWidth(availableWidth);
-	if(minWidth > tableWidth) tableWidth = minWidth;
-    }
-    else // width of table not declared
-    {
-	tableWidth = availableWidth < maxWidth ?
-	    availableWidth : maxWidth;
-	//tableWidth = availableWidth;
-    }
-#ifdef TABLE_DEBUG
-    printf("table width set to %d\n", tableWidth);
-    printf("table min/max %d/%d\n", minWidth, maxWidth);
-#endif
+//    printf("table width set to %d\n", tableWidth);
+//    printf("table min/max %d/%d\n", minWidth, maxWidth);
+//#endif
 
-// 6. spread width across relative columns
-// ### implement!!!
 
-// 7. spread remaining widths across variable columns
+// 7. spread remaining widths across columns
 
 
     int tooAdd = tableWidth - actWidth;      // what we can add
-    int pref=-minRel-minVar; //= maxRel + maxVar - minRel - minVar; // what we would like to add
 
-    for(i = 0; i < totalCols; i++)
+    printf("tooAdd %d\n",tooAdd);
+    
+    int olddis=0;
+    int c=0;    
+    
+    int distrib = MIN(maxFixed - minFixed, tooAdd);    
+    tooAdd-=distributeWidth(distrib,Fixed,numFixed);
+        
+    distrib = MIN(maxPercent - minPercent, tooAdd);    
+    tooAdd-=distributeWidth(distrib,Percent,numPercent);
+    
+    distrib = MIN(maxRel - minRel, tooAdd);    
+    tooAdd-=distributeWidth(distrib,Relative,numRel);
+
+    distrib = MIN(maxVar - minVar, tooAdd);    
+    tooAdd-=distributeWidth(distrib,Variable,numVar);            
+
+    distrib=tooAdd;
+
+    c=0;
+    olddis=0;    
+    int tdis = distrib;
+    printf("DISTRIBUTING rest, %d pixels to variable cols\n", distrib);        
+    if (maxVar) while(tdis)
     {
-	switch(colType[i])
+	if (colType[c]==Variable)
 	{
-	case Fixed:
-	case Percent:
-	    break;
-	case Relative:
-	    // ###
-	case Variable:
-	    pref += colMaxWidth[i] < tableWidth ? colMaxWidth[i] : tableWidth;
+	    int delta = (colMaxWidth[c] * distrib) / maxVar;
+	    delta=MIN(delta,tdis);
+	    if (delta==0 && tdis)
+	    	delta=1;
+	    actColWidth[c] += delta;
+	    tdis -= delta;
+	    printf("tdis=%d\n",tdis);
 	}
-    }
-
-    int tooOld = tooAdd;	
-#ifdef TABLE_DEBUG
-    printf("adding another %d pixels! pref=%d\n", tooAdd, pref);
-#endif
-    bool wide = (tooAdd > pref);
-    for(i = 0; i < totalCols; i++)
-    {
-	switch(colType[i])
+	if (++c==totalCols)
 	{
-	case Fixed:
-	case Percent:
-	    break;
-	case Relative:
-	    // ###
-	case Variable:
-	    int cPref
-	    	= (colMaxWidth[i] < tableWidth ? colMaxWidth[i] : tableWidth)
-		- colMinWidth[i];
-#ifdef TABLE_DEBUG
-	    printf("col %d prefWidth=%d space=%d\n", i, colMaxWidth[i],
-		cPref);
-#endif
-	    if(wide)
-	    {
-		actColWidth[i] += cPref;
-		tooAdd -= cPref;
-		totalVar += cPref;
-	    }
-	    else if(pref)
-	    {
-		int delta =  cPref * tooOld / pref;
-		actColWidth[i] += delta;
-		tooAdd -= delta;
-		totalVar += delta;
-	    }
-	}
-    }
-    int num = numRel + numVar;
-    int maxrv = maxRel + maxVar;
-
-    if(tooAdd > 0)
-    {
-    	tooOld=tooAdd;
-#ifdef TABLE_DEBUG
-	printf("spreading %d pixels equally across variable cols!\n", tooAdd);
-#endif       	
-	for(i = 0; i < totalCols; i++)
-	{
-	    switch(colType[i])
-	    {
-	    case Fixed:
-	    case Percent:
+	    c=0;
+	    if (olddis==tdis)
 		break;
-	    case Relative:
-		// ###
-	    case Variable:
-	    	if (maxrv)
-		{
-		    int delta = (colMaxWidth[i] * tooOld) /maxrv;
-		    actColWidth[i] += delta;
-		    num--;
-		    tooAdd -= delta;
-		}
-	    }
-	}
-	// spread the rest
-	int i=0;
-	while(tooAdd && maxrv)
-	{
-	    switch(colType[i])
-	    {
-	    case Fixed:
-	    case Percent:
-		break;
-	    case Relative:
-		// ###
-	    case Variable:
-		actColWidth[i]++;
-		tooAdd--;		
-	    }
-	    if(++i==totalCols) i=0;
+	    olddis=tdis;    
 	}
     }
-    else if(tooAdd < 0)
+    
+    printf("final tooAdd %d\n",tooAdd);    
+
+    if(tooAdd < 0)
     {
-    	printf("ERROR, TOO WIDE ",-tooAdd);
+    	printf("ERROR, TOO WIDE %d\n ",-tooAdd);
     }
     columnPos.fill(0);
     columnPos[0] = border + spacing;
@@ -1254,6 +1278,36 @@ void HTMLTableElementImpl::calcColWidthII(void)
 
     setBlocking(false);
 }
+
+
+int HTMLTableElementImpl::distributeWidth(int distrib, LengthType type, int typeCols )
+{
+    int olddis=0;
+    int c=0;    
+    
+    int tdis = distrib;
+    printf("DISTRIBUTING %d pixels to type %d cols\n", distrib, type);
+   
+    while(tdis)
+    {
+	if (colType[c]==type)
+	{
+	    int delta = MIN(distrib/typeCols,colMaxWidth[c]-actColWidth[c]);
+	    delta = MIN(tdis,delta);
+	    actColWidth[c]+=delta;		
+	    tdis-=delta;
+	}
+	if (++c==totalCols)
+	{
+	    c=0;
+	    if (olddis==tdis)
+		break;
+	    olddis=tdis;    
+	} 
+    } 
+    return distrib-tdis;
+}
+
 
 
 void HTMLTableElementImpl::calcRowHeights()
@@ -1343,6 +1397,7 @@ void HTMLTableElementImpl::calcRowHeights()
 
     }
 }
+    
 
 void HTMLTableElementImpl::layout(bool deep)
 {
