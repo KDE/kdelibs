@@ -276,13 +276,13 @@ public:
    */
   KURL upURL( bool _zapRef = TRUE ) const;
   
-  KURL& KURL::operator=( const KURL& _u );
-  KURL& KURL::operator=( const QString& _url );
+  KURL& operator=( const KURL& _u );
+  KURL& operator=( const QString& _url );
 
-  bool KURL::operator==( const KURL& _u ) const;
-  bool KURL::operator==( const QString& _u ) const;
-  bool KURL::operator!=( const KURL& _u ) const { return !( *this == _u ); }
-  bool KURL::operator!=( const QString& _u ) const { return !( *this == _u ); }
+  bool operator==( const KURL& _u ) const;
+  bool operator==( const QString& _u ) const;
+  bool operator!=( const KURL& _u ) const { return !( *this == _u ); }
+  bool operator!=( const QString& _u ) const { return !( *this == _u ); }
 
   /**
    * This function should be used if you want to ignore trailing '/' characters.
