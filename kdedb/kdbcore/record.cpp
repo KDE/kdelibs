@@ -28,23 +28,27 @@
 
 using namespace KDB;
 
-Record::Record(Recordset *r, FieldList fields, Row values )
-    : DataObject( r, "Record"), m_fields(fields)
+Record::Record(Recordset *r, FieldList fields, Row values, KDB_ULONG pos )
+    : DataObject( r, "Record"), m_fields(fields), m_absPos(pos)
 {
     //kdDebug(20000) << "Record::Record" << endl;
-    FieldIterator it = begin();
-    Row::Iterator itv = values.begin();
-
-    while (it.current() ) {
-        it.current()->setValue(*itv);
-        ++it;
-        ++itv;
+    if (values.count() == 0) {
+        m_new = true;
+    } else {
+        m_new = false;
+        FieldIterator it = begin();
+        Row::Iterator itv = values.begin();
+        
+        while (it.current() ) {
+            it.current()->setValue(*itv,true);
+            ++it;
+            ++itv;
+        }
     }
-
 }
 
 Record::Record(const Record &r)
-    : DataObject(r.parent(), "Record"), m_fields(r.m_fields)
+    : DataObject(r.parent(), "Record"), m_fields(r.m_fields), m_absPos(r.m_absPos)
 {
 }
 
@@ -101,7 +105,18 @@ void
 Record::update()
 {
     kdDebug(20000) << "Record::update" << endl;
-    // TODO!
+
+    // emit updated if at least one field has changed
+    FieldIterator it = begin();
+    while ( it.current() ) {
+        if (it.current()->changed()) {
+            kdDebug(20000) << "changed !" << endl;
+            emit updated(this, m_new);
+            m_new = false;
+            break;
+        }
+        ++it;
+    }
 }
 
 Record &
@@ -112,3 +127,14 @@ Record::operator =(const Record &r)
 }
     
 
+KDB_ULONG
+Record::absolutePosition()
+{
+    return m_absPos;
+}
+
+void
+Record::remove()
+{
+    emit deleted(this);
+}

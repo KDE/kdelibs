@@ -17,41 +17,50 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef HANDLER_H
-#define HANDLER_H
+#ifndef CONTROL_H
+#define CONTROL_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include "connector.h"
-#include <ksharedptr.h>
+#include "capability.h"
+
+class KConfigBase;
+class QWidget;
 
 namespace KDB {
 
-// will contain the handler to a set of records
-class Handler : public KShared {
+/**
+ * base class for control dialog extension. All plugins that
+ * need a specific configuration dialog in the KControl module must
+ * provide a subclass of this class.
+ *
+ * @author Alessandro Praduroux <pradu@thekompany.com>
+ * @author Michael Koch  <m_kock@bigfoot.de>
+ * @version kdbcore 0.0.2
+ */
 
-public:
-    virtual ~Handler() {};
+class Control : public Capability {
 
-    virtual KDB_ULONG count() const = 0;
-    virtual Row record(KDB_ULONG pos) const = 0;
-    virtual RowList rows() const = 0;
+    Q_OBJECT
 
-    virtual QStringList fields() const = 0;
+ public:
+    Control(const char * name);
 
-    virtual bool append(Row row) = 0;
-    virtual bool update(KDB_ULONG pos, Row row) = 0;
-    virtual bool remove(KDB_ULONG pos, Row row) = 0;
-    
-    virtual QString nativeType(const QString &fieldName) const = 0;
-    virtual DataType kdbDataType(const QString &fieldName) const = 0;
+    virtual ~Control();
 
+    virtual capability provides() { return CONFIG; };
+
+    /**
+     * show a modal configuration dialog for this plugin. The dialog must
+     * save its data on the provided config object
+     */
+    virtual bool showDialog(KConfigBase *conf = 0L, QWidget *parent = 0L, const char * name = 0L) = 0;
 };
 
-typedef KSharedPtr<Handler> HandlerPtr;
 }
 
 #endif
+
 

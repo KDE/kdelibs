@@ -44,8 +44,8 @@ Recordset::~Recordset()
 RecordsetIterator
 Recordset::begin()
 {
-    if (m_changed)
-        requery();
+    //    if (m_changed)
+    //    requery();
 
     RecordsetIterator it(this, m_handle);
     return it;
@@ -69,9 +69,9 @@ Recordset::addRecord()
     // TOOD: test if updatable
     // TODO: notification of update from the Record added
     Row r;
-    RecordPtr ptr = new Record(this, m_fields, r);
-    m_changed = true;
-    emit changed();
+    Record * record = new Record(this, m_fields, r, 0);
+    connect(record, SIGNAL(updated(KDB::Record *, bool)),this, SLOT(slotRecordUpdated(KDB::Record *, bool)));
+    RecordPtr ptr = record;
     emit recordAdded(ptr);
     return ptr;
 }
@@ -104,8 +104,51 @@ Recordset::count()
 }
 
 
+void
+Recordset::slotRecordUpdated(Record *rec, bool isNew)
+{
+    kdDebug(20000) << k_funcinfo << endl;
+    Row row = fromRecord(rec);
+    
+    bool res;
+    
+    if (isNew)
+        res = m_handle->append(row);
+    else
+        res = m_handle->update(rec->absolutePosition(),row);
+
+    if (!res) {
+        pushError(new DataException("unable to update recordset"));
+    } else {
+        m_changed = true;
+        emit changed();
+    }
+
+}
 
 
+void
+Recordset::slotRecordDeleted(Record *rec)
+{
+    Row row = fromRecord(rec);
+    if (!m_handle->remove(rec->absolutePosition(), row)) {
+        pushError(new DataException("unable to update recordset"));
+    } else {
+        m_changed = true;
+        emit changed();
+    }        
+}
 
 
+Row
+Recordset::fromRecord(Record *rec)
+{
+    Row row;
+    FieldIterator it = rec->begin();
 
+    while (it.current()) {
+        row << it.current()->value();
+        ++it;
+    }
+    return row;
+}

@@ -64,7 +64,7 @@ class Record : public DataObject {
     Q_OBJECT
 
  public:
-    Record(Recordset *r, FieldList fields, Row values);
+    Record(Recordset *r, FieldList fields, Row values, KDB_ULONG pos);
     Record(const Record &);
 
     Record & operator = (const Record &);
@@ -79,10 +79,20 @@ class Record : public DataObject {
     Field & field(const QString & name);
     Field & field(int index) ;
 
-    void update();
+    KDB_ULONG absolutePosition();
 
+    void update();
+    void remove();
+
+ signals:
+
+    void updated(KDB::Record *, bool);
+    void deleted(KDB::Record *);
+    
  private:
     FieldList m_fields ;
+    bool m_new;
+    KDB_ULONG m_absPos;
 };
  
 }

@@ -17,41 +17,20 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef HANDLER_H
-#define HANDLER_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "control.h"
 
-#include "connector.h"
-#include <ksharedptr.h>
+#include "control.moc"
 
-namespace KDB {
+using namespace KDB;
 
-// will contain the handler to a set of records
-class Handler : public KShared {
-
-public:
-    virtual ~Handler() {};
-
-    virtual KDB_ULONG count() const = 0;
-    virtual Row record(KDB_ULONG pos) const = 0;
-    virtual RowList rows() const = 0;
-
-    virtual QStringList fields() const = 0;
-
-    virtual bool append(Row row) = 0;
-    virtual bool update(KDB_ULONG pos, Row row) = 0;
-    virtual bool remove(KDB_ULONG pos, Row row) = 0;
-    
-    virtual QString nativeType(const QString &fieldName) const = 0;
-    virtual DataType kdbDataType(const QString &fieldName) const = 0;
-
-};
-
-typedef KSharedPtr<Handler> HandlerPtr;
+Control::Control( const char * name )
+    : Capability( name )
+{
+    kdDebug(20000) << "Control::Control" << endl;
 }
 
-#endif
-
+Control::~Control()
+{
+    kdDebug(20000) << "Control::~Control" << endl;
+}

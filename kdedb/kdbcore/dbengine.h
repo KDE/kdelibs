@@ -154,6 +154,18 @@ class DBEngine : public Object{
                             const QString &user, const QString &password,
                             const QString &databaseName);
 
+    /**
+     * retrieves the engine config object. this is either the general kde-db config
+     * file kdbrc or a user supplied one, set using setConfig()
+     */
+    KConfigBase * config();
+
+    /**
+     * sets the config file for the current session.
+     * any unsaved change to the previous config file will be lost
+     */
+    void setConfig(KConfigBase* config);
+
  signals:
 
     void connectionAdded(KDB::Connection *);
@@ -179,7 +191,7 @@ class DBEngine : public Object{
     PluginList  m_plugins;
 
     ConnectionList m_connections;
-    //    Connection * m_connToDelete;
+    KConfigBase *m_config;
 };
 
 }

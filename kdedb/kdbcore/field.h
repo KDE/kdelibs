@@ -117,10 +117,11 @@ class Field :public Object {
     bool isNull();
 
     Value value();
-    void setValue(const Value &v);
+    void setValue(const Value &v, bool init = false);
 
     Value *operator ->() { return &m_val; };
-    
+
+    bool changed();
  private:
     Field (const QString &name, QObject *parent = 0);
     Field (HandlerPtr h,  const QString &name, QObject *parent = 0);
@@ -137,6 +138,7 @@ class Field :public Object {
     QString m_constraint;
     bool m_acceptNull;
     QString m_comment;
+    bool m_changed;
 };
  
 }

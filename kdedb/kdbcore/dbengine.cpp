@@ -59,6 +59,8 @@ DBEngine::~DBEngine()
 #if 0
     printPendingObjects();
 #endif
+    if (m_config)
+        delete m_config;
 }
 
 DBEngine *
@@ -255,80 +257,71 @@ DBEngine::beginConnections()
 }
 
 void
-DBEngine::loadConnections(KConfigBase *config)
+DBEngine::loadConnections(KConfigBase *conf)
 {
     //kdDebug(20010) <<  locateLocal( "config", "kdbrc" ) << endl;
 
-    bool clean = false;
-    if( !config ) {
-        clean = true;
-        config = new KConfig( locate( "config", "kdbrc" ), true ); //we're reading, so set it readonly
+    if( !conf ) {
+        conf = config();
     }
 
-    KConfigGroupSaver saver( config, "KDB connections" );
+    KConfigGroupSaver saver( conf, "KDB connections" );
 
     //kdDebug(20010) << config->group() << endl;
 
-    unsigned int maxConn = config->readUnsignedNumEntry( "NumberOfConnections", 0 );
+    unsigned int maxConn = conf->readUnsignedNumEntry( "NumberOfConnections", 0 );
 
     kdDebug(20010) << "Number of connections: " << maxConn << endl;
     
-    for( unsigned int count = 0; count < maxConn; count++ )
-        {
-            kdDebug(20010) << "Loading connection number  " << count << endl;
+    for( unsigned int count = 0; count < maxConn; count++ ) {
+        kdDebug(20010) << "Loading connection number  " << count << endl;
 
-            QString prefix, plugin, host, user, password, name;
-            int port;
+        QString prefix, plugin, host, user, password, name;
+        int port;
 
-            prefix = QString( "%1_" ).arg( count );
+        prefix = QString( "%1_" ).arg( count );
     
-            plugin = config->readEntry( prefix + "Plugin", "MySQL" );
-            host = config->readEntry( prefix + "Host", "localhost" );
-            port = config->readNumEntry( prefix + "Port", 0 );
-            user = config->readEntry( prefix + "User", QString::null );
-            password = config->readEntry( prefix + "Password", QString::null );
-            name = config->readEntry( prefix + "Name", QString::null );
-            
-            Connection * conn = addConnection(plugin, host, port, user, password);
-            conn->setName(name.utf8());
+        plugin = conf->readEntry( prefix + "Plugin", "MySQL" );
+        host = conf->readEntry( prefix + "Host", "localhost" );
+        port = conf->readNumEntry( prefix + "Port", 0 );
+        user = conf->readEntry( prefix + "User", QString::null );
+        password = conf->readEntry( prefix + "Password", QString::null );
+        name = conf->readEntry( prefix + "Name", QString::null );
         
-            kdDebug(20010) << "Loaded connection: "<< conn->prettyPrint() << endl;
-        }
+        Connection * conn = addConnection(plugin, host, port, user, password);
+        conn->setName(name.utf8());
+        
+        kdDebug(20010) << "Loaded connection: "<< conn->prettyPrint() << endl;
+    }
 
-    if (clean)
-        delete config;
 }
 
 void
-DBEngine::saveConnections(KConfigBase *config)
+DBEngine::saveConnections(KConfigBase *conf)
 {
     unsigned int count = 0;
-    bool clean = false;
     
     //kdDebug(20010) <<  locateLocal( "config", "kdbrc" ) << endl;
 
-    if( !config ) {
-        clean = true;
-        config = new KConfig( locateLocal( "config", "kdbrc" ) );
+    if( !conf ) {
+        conf = config();
     }
 
-    KConfigGroupSaver( config, "KDB connections" );
+    KConfigGroupSaver( conf, "KDB connections" );
 
     // ??? seems that the above call does not set it correctly ???
-    config->setGroup( "KDB connections" );
+    conf->setGroup( "KDB connections" );
 
     //kdDebug(20010) << config->group() << endl;
     
     for( ConnectionIterator it = beginConnections(); it != 0L ; ++it )
         {
-            (*it)->saveToConfig(config, count);
+            (*it)->saveToConfig(conf, count);
             count++;
         }
 
-    config->writeEntry( "NumberOfConnections", count );
-    config->sync();
-    if (clean)
-        delete config;
+    conf->writeEntry( "NumberOfConnections", count );
+    conf->sync();
 }
 
 Database *
@@ -402,4 +395,24 @@ DBEngine::slotConnectionClosed(Connection * conn)
     m_connections.remove(conn);
     QTimer::singleShot(0,conn,SLOT(slotDeleteYourself()));
 
+}
+
+KConfigBase *
+DBEngine::config()
+{
+    if (!m_config)
+        m_config = new KConfig( locateLocal( "config", "kdbrc" ) );
+
+    return m_config;
+}
+
+void
+DBEngine::setConfig(KConfigBase *conf)
+{
+    if (m_config) {
+        m_config->rollback();
+        delete m_config;
+    }
+    
+    m_config = conf;
 }

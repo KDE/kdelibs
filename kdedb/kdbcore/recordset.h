@@ -108,11 +108,17 @@ class Recordset : public DataObject {
     void recordUpdated( KDB::RecordPtr );
     void changed();
     
+ public slots:
+    void slotRecordUpdated(KDB::Record *, bool);
+    void slotRecordDeleted(KDB::Record *);
+
  private:
 
     Connector *connector;
     Recordset(Connector * conn, const QString &baseQuery, QObject *parent = 0);
 
+    Row fromRecord(Record *);
+        
     QString m_sql;
     FieldList m_fields;
 

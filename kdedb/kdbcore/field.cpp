@@ -26,13 +26,20 @@
 using namespace KDB;
 
 Field::Field(const QString &name, QObject *parent)
-    : Object ( parent, name.utf8() )
+    : Object ( parent, name.utf8() ),
+      m_type(UNKNOWN),
+      m_size(0),
+      m_precision(0)
 {
     //kdDebug(20000) << "Field::Field" << endl;
 }
 
 Field::Field(HandlerPtr h,  const QString &name, QObject *parent )
-    : Object ( parent, name.utf8() ), m_handler( h )
+    : Object ( parent, name.utf8() ), m_handler( h ),
+      m_type(UNKNOWN),
+      m_size(0),
+      m_precision(0)
+
 {
     //kdDebug(20000) << "Field::Field <2>" << endl;
     m_type = m_handler->kdbDataType(name);
@@ -151,7 +158,15 @@ Field::value()
 }
 
 void
-Field::setValue(const Value &v)
+Field::setValue(const Value &v, bool init)
 {
     m_val = v;
+    if (!init)
+        m_changed = true;
+}
+
+bool
+Field::changed()
+{
+    return m_changed;
 }

@@ -167,7 +167,8 @@ namespace KDB {
         VIEWS,
         ADMIN,
         SEQUENCES,
-        FUNCTIONS
+        FUNCTIONS,
+        CONFIG
     };
 }
 

@@ -56,7 +56,7 @@ class RecordsetIterator: public Object {
     RecordsetIterator& operator =(const RecordsetIterator &iter);
     RecordPtr operator ->() const;
     RecordPtr current() const;
-    RecordPtr operator*() const;
+    //    RecordPtr operator*() const;
 
     RecordPtr operator ++(int);
     RecordPtr operator ++();

@@ -234,6 +234,8 @@ Value::toDate() const
 {
     if ( type() == Date )
 	return *((QDate*)ptr);
+    if ( type() == DateTime)
+        return toDateTime().date();
     if ( type() == String ) {
 	QDate d = KLocale().readDate(toString());
         if (d.isValid())
@@ -249,6 +251,8 @@ Value::toTime() const
 {
     if ( type() == Time )
 	return *((QTime*)ptr);
+    if ( type() == DateTime)
+        return toDateTime().time();
     if ( type() == String )
 	return KLocale().readTime(toString());
     return QTime();
@@ -261,8 +265,8 @@ Value::toString() const
     if ( type() == DateTime ) {
         QDateTime dt = toDateTime();
         if (dt.isValid()) {
-            QString d = KLocale().formatDate(toDateTime().date(),true);
-            QString t = KLocale().formatTime(toDateTime().time());
+            QString d = KLocale().formatDate(dt.date(),true);
+            QString t = KLocale().formatTime(dt.time());
             return QString("%1 %2").arg(d).arg(t);
         } else {
             return QString();
@@ -282,12 +286,14 @@ Value::toString() const
         else
             return QString();
     }
+    if ( type() == Int )
+        return QString("%1").arg(toInt());
     if ( type() == Long )
         return QString("%1").arg(toLong());
     if ( type() == ULong )
         return QString("%1").arg(toULong());
     if ( type() == Double) {
-        kdDebug(20000) << "Double val " << toDouble() << endl;
+        //kdDebug(20000) << "Double val " << toDouble() << endl;
         return QString("%1").arg(toDouble());
     }    
     return QVariant::toString();

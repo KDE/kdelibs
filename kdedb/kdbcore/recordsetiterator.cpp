@@ -69,7 +69,9 @@ void
 RecordsetIterator::recordsetChanged()
 {
     //kdDebug(20000) << "RecordsetIterator::recordsetChanged" << endl;
-    m_handler = 0L;
+    // when added or deleted a record, nothing really changes
+
+    //m_handler = 0L;
 }
 
 RecordsetIterator &
@@ -97,7 +99,10 @@ RecordsetIterator::current() const
         //throw new InvalidRequest("Cannot advance past EOF");
 
     if (m_handler) {
-        return new Record(m_rset, m_fields, m_handler->record(m_pos));
+        Record * rec = new Record(m_rset, m_fields, m_handler->record(m_pos), m_pos);
+        connect(rec, SIGNAL(updated(KDB::Record *, bool)), m_rset, SLOT(slotRecordUpdated(KDB::Record *, bool)));
+        connect(rec, SIGNAL(deleted(KDB::Record *)), m_rset, SLOT(slotRecordDeleted(KDB::Record *)));
+        return RecordPtr(rec);
     } else {
         Object::pushError( new InvalidRequest("Iterator has been invalidated"));
         return 0L;
@@ -110,11 +115,13 @@ RecordsetIterator::operator ->() const
     return current();
 }
 
-RecordPtr
-RecordsetIterator::operator *() const // this is not correct! fix it, please
-{
-    return current();
-}
+/*
+  RecordPtr
+  RecordsetIterator::operator *() const // this is not correct! fix it, please
+  {
+  return current();
+  }
+*/
 
 RecordPtr
 RecordsetIterator::operator ++(int)
@@ -196,7 +203,7 @@ RecordsetIterator::findFirst(const QString &field, const QString &val)
     moveFirst();    
     RecordPtr p = current();
     do {
-        if (val == p->field(field)->asString()) {
+        if (val == p->field(field)->toString()) {
             break;
         }
     } while (p = operator++());
@@ -210,7 +217,7 @@ RecordsetIterator::findNext(const QString &field, const QString &val)
     //kdDebug(20000) << "RecordsetIterator::findNext" << " field=" << field << " val=" << val << endl;
     RecordPtr p;
     while (p = operator++()) {
-        if (val == p->field(field)->asString()) {
+        if (val == p->field(field)->toString()) {
             break;
         }
     } 
@@ -225,7 +232,7 @@ RecordsetIterator::findPrevious(const QString &field, const QString &val)
     //kdDebug(20000) << "RecordsetIterator::findPrevious" << " field=" << field << " val=" << val << endl;
     RecordPtr p;
     while (p = operator--()) {
-        if (val == p->field(field)->asString()) {
+        if (val == p->field(field)->toString()) {
             break;
         }
     } 
@@ -241,7 +248,7 @@ RecordsetIterator::findLast(const QString &field, const QString &val)
     moveLast();    
     RecordPtr p = current();
     do {
-        if (val == p->field(field)->asString()) {
+        if (val == p->field(field)->toString()) {
             break;
         }
     } while (p = operator--());
