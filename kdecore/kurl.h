@@ -329,6 +329,7 @@ public:
   
 protected:
   void reset();
+  void cleanPath();
   void parse( const QString& _url );
   
   static char hex2int( char _char );

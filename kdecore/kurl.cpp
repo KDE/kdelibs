@@ -350,7 +350,6 @@ bool KURL::cmp( KURL &_u, bool _ignore_trailing )
 
 void KURL::setFileName( const QString& _txt )
 {
-  // TODO: clean path at the end
   int i = 0;
   while( _txt[i] == '/' ) ++i;
   QString tmp;
@@ -363,12 +362,14 @@ void KURL::setFileName( const QString& _txt )
   {
     m_strPath = "/";
     m_strPath += tmp;
+    cleanPath();
     return;
   }    
   
   if ( m_strPath.right(1) == "/")
   {
     m_strPath += tmp;
+    cleanPath();
     return;
   }
   
@@ -379,12 +380,33 @@ void KURL::setFileName( const QString& _txt )
   {
     m_strPath = "/";
     m_strPath += tmp;
+    cleanPath();
     return;
   }
   
   m_strPath.truncate( i+1 ); // keep the "/"
   m_strPath += tmp;
+  cleanPath();
 }
+
+void KURL::cleanPath() // taken from the old KURL
+{
+  if ( m_strPath.isEmpty() )
+    return;
+ 
+  // Did we have a trailing '/'
+  int len = m_strPath.length();
+  bool slash = false;
+  if ( len > 0 && m_strPath.right(1)[0] == '/' )
+    slash = true;
+ 
+  m_strPath = QDir::cleanDirPath( m_strPath );
+ 
+  // Restore the trailing '/'
+  len = m_strPath.length();
+  if ( len > 0 && m_strPath.right(1)[0] != '/' && slash )
+    m_strPath += "/";
+} 
 
 QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path )
 {
