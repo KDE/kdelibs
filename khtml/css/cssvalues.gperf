@@ -39,6 +39,7 @@ condensed, CSS_VAL_CONDENSED
 continuous, CSS_VAL_CONTINUOUS
 crop, CSS_VAL_CROP
 cross, CSS_VAL_CROSS
+crosshair, CSS_VAL_CROSSHAIR
 dashed, CSS_VAL_DASHED
 decimal, CSS_VAL_DECIMAL
 decimal-leading-zero, CSS_VAL_DECIMAL_LEADING_ZERO
