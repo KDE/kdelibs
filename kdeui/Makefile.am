@@ -15,26 +15,26 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		dither.h kdatepik.h kdatetbl.h \
 		kfontdialog.h kmsgbox.h kpopmenu.h ktabctl.h\
 		ktreelist.h kstatusbar.h ktopwidget.h ktoolbar.h kmenubar.h \
-		kbutton.h kslider.h kseparator.h kiconloader.h	\
+		kbutton.h kslider.h kseparator.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
-		kspinbox.h kdocktoolbar.h kcolorbtn.h
+		kspinbox.h kdocktoolbar.h kcolorbtn.h kiconloaderui.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp dither.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp\
 		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp kmenubar.cpp \
 		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp \
-		kiconloader.cpp klined.cpp kcombo.cpp krestrictedline.cpp \
+		klined.cpp kcombo.cpp krestrictedline.cpp \
 		kintegerline.cpp kspinbox.cpp kdocktoolbar.cpp \
-		kcolorbtn.cpp
+		kcolorbtn.cpp kiconloaderui.cpp
 
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc \
 		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
-		ktopwidget.moc kbutton.moc kslider.moc kiconloader.moc \
+		ktopwidget.moc kbutton.moc kslider.moc  \
 		klined.moc kcombo.moc krestrictedline.moc kintegerline.moc \
-		kspinbox.moc kdocktoolbar.moc kcolorbtn.moc
+		kspinbox.moc kdocktoolbar.moc kcolorbtn.moc kiconloaderui.moc
 
 kledlamp.cpp: kledlamp.moc
 kprogress.cpp: kprogress.moc
@@ -54,7 +54,6 @@ kmenubar.cpp: kmenubar.moc
 ktopwidget.cpp: ktopwidget.moc
 kbutton.cpp: kbutton.moc
 kslider.cpp: kslider.moc
-kiconloader.cpp: kiconloader.moc
 klined.cpp: klined.moc
 kcombo.cpp: kcombo.moc
 kintegerline.cpp: kintegerline.moc
@@ -62,6 +61,7 @@ krestrictedline.cpp: krestrictedline.moc
 kspinbox.cpp: kspinbox.moc
 kdocktoolbar.cpp: kdocktoolbar.moc
 kcolorbtn.cpp: kcolorbtn.moc
+kiconloaderui.cpp: kiconloaderui.moc
 
 kledlamp.moc: kledlamp.h
 	$(MOC) kledlamp.h -o kledlamp.moc
@@ -117,9 +117,6 @@ kbutton.moc: kbutton.h
 kslider.moc: kslider.h
 	$(MOC) kslider.h -o kslider.moc
 
-kiconloader.moc: kiconloader.h
-	$(MOC) kiconloader.h -o kiconloader.moc
-
 klined.moc: klined.h
 	$(MOC) klined.h -o klined.moc
 
@@ -140,6 +137,9 @@ kdocktoolbar.moc: kdocktoolbar.h
 
 kcolorbtn.moc: kcolorbtn.h
 	$(MOC) kcolorbtn.h -o kcolorbtn.moc
+
+kiconloaderui.moc: kiconloaderui.h
+	$(MOC) kiconloaderui.h -o kiconloaderui.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
 
