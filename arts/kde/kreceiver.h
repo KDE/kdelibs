@@ -42,7 +42,7 @@ class KReceiver : public Arts::ByteSoundReceiver_skel,
 		Arts::SimpleSoundServer m_server;
 		bool m_attached, m_blocking;
 		int m_pos;
-		queue<Arts::DataPacket<Arts::mcopbyte>* > inqueue;
+		std::queue<Arts::DataPacket<Arts::mcopbyte>* > inqueue;
 
 	public:
 		KReceiver( Arts::SimpleSoundServer, int rate, int bits, int channels, QString title = "record_stream" );
