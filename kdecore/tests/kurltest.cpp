@@ -12,12 +12,11 @@
 
 bool check(QString txt, QString a, QString b)
 {
-  printf("%s : checking '%s' against expected value '%s'... ",
-         debugString(txt), debugString(a), debugString(b));
-  if (a == b)
-    printf("ok\n");
+  if (a == b) {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+  }
   else {
-    printf("KO ! \n");
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
     exit(1);
   }
   return true;
@@ -49,6 +48,8 @@ int main(int argc, char *argv[])
 
   KURL notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   check("KURL::prettyURL()", notPretty.prettyURL(), "http://ferret.lmh.ox.ac.uk/~kdecvs/");
+  KURL notPretty2("file:/home/test/directory%20with%20spaces");
+  check("KURL::prettyURL()", notPretty2.prettyURL(), "/home/test/directory with spaces");
 
   KURL udir;
   printf("\n* Empty URL\n");
