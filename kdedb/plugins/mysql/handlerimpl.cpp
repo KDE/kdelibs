@@ -260,7 +260,7 @@ HandlerImpl::nativeType(const QString &fieldName) const
         res = "SMALLINT";
         break;
     case FIELD_TYPE_LONG:
-        res = "INTEGER";
+        res = "INT";
         break;
     case FIELD_TYPE_INT24:
         res = "MEDIUMINT";
