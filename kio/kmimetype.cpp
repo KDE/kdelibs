@@ -71,7 +71,10 @@ void KMimeType::check()
   // No Mime-Types installed ?
   // Lets do some rescue here.
   if ( !KServiceTypeFactory::self()->checkMimeTypes() )
+  {
     KMessageBoxWrapper::error( 0L, i18n( "No mime types installed!" ) );
+    return; // no point in going any further
+  }
 	
   if ( KMimeType::mimeType( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );

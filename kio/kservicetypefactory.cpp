@@ -50,6 +50,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
    if (!m_sycocaDict) return 0L; // Error!
    assert (!KSycoca::self()->isBuilding());
+   kdebug( KDEBUG_INFO, 7011, QString("findServiceTypeByName(%1)").arg(_name) );
    int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
    KServiceType * newServiceType = createServiceType(offset);
@@ -172,6 +173,7 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
    // Assume we're NOT building a database
    // Get stream to factory start
    QDataStream *str = KSycoca::self()->findFactory( factoryId() );
+   if (!str) return list;
    // Read the dict offset - will serve as an end point for the list of entries
    Q_INT32 sycocaDictOffset;
    (*str) >> sycocaDictOffset;
@@ -201,8 +203,8 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
    // Assume we're NOT building a database
    // Get stream to factory start
    QDataStream *str = KSycoca::self()->findFactory( factoryId() );
-   // Read the dict offset - will serve as an end point for the list of entries
    if (!str) return list;
+   // Read the dict offset - will serve as an end point for the list of entries
 
    Q_INT32 sycocaDictOffset;
    (*str) >> sycocaDictOffset;
