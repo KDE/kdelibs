@@ -1,7 +1,9 @@
 [Misc]
 Name=Cold Ions
+Name[da]=Kolde ioner
 Name[de]=Kalte Ionen
 Comment=Cold Ions unthemed style
+Comment[da]=Kolde ioner stil uden tema
 Comment[de]=Kalte Ionen (kein komplettes Design)
 [KDE]
 widgetStyle=coldionsstyle.la
