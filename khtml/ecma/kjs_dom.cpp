@@ -169,7 +169,7 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   case NodeName:
     return String(node.nodeName());
   case NodeValue:
-    return String(node.nodeValue());
+    return getString(node.nodeValue()); // initially null, per domts/level1/core/hc_documentcreateelement.html
   case NodeType:
     return Number((unsigned int)node.nodeType());
   case ParentNode:
