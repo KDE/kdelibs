@@ -24,28 +24,38 @@
 
 
 #include <qcstring.h>
+#include <qstring.h>
 
 
 class KWalletBackend {
 	public:
+		KWalletBackend(QString name = "kdewallet");
+		~KWalletBackend();
 		
 		int unlock(QByteArray& password);
 		
 		int lock(QByteArray& password);
 
+		// Returns true if the current wallet is open
+		bool isOpen();
+
+		// Returns the current wallet name
+		const QString& walletName();
+
+		// Changes to a new wallet "name"
+		// returns false if it cannot change (ie another wallet is open)
+		bool changeWallet(QString name);
+
 		// add
 		// remove
 
-		static KWalletBackend *self();
-
 	protected:
-		KWalletBackend();
-		~KWalletBackend();
 
 	private:
-		static KWalletBackend *_self;
 		class KWalletBackendPrivate;
 		KWalletBackendPrivate *d;
+		QString _name;
+		bool _open;
 };
 
 

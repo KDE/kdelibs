@@ -21,11 +21,15 @@
 #include "kwalletbackend.h"
 
 
-KWalletBackend::KWalletBackend() {
+KWalletBackend::KWalletBackend(QString name) : _name(name) {
+	_open = false;
 }
 
 
 KWalletBackend::~KWalletBackend() {
+	if (_open) {
+		// Discard changes
+	}
 }
 
 
@@ -37,12 +41,23 @@ int KWalletBackend::lock(QByteArray& password) {
 }
 
 
-KWalletBackend *KWalletBackend::_self = NULL;
-
-KWalletBackend *KWalletBackend::self() {
-	if (!_self)
-		_self = new KWalletBackend;
-	return _self;
+const QString& KWalletBackend::walletName() {
+	return _name;
 }
+
+
+bool KWalletBackend::isOpen() {
+	return _open;
+}
+
+
+bool KWalletBackend::changeWallet(QString name) {
+	if (_open)
+		return false;
+
+	_name = name;
+}
+
+
 
 
