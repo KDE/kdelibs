@@ -297,34 +297,28 @@ int DeviceManager::initManager(void)
   }
   else
   {  // We are using ALSA
-
-#ifdef HAVE_ALSA_SUPPORT
-#ifdef HAVE_LIBASOUND2
-    snd_seq_client_info_t *clienti;
-    snd_seq_port_info_t *porti;
-#else
-    snd_seq_client_info_t clienti;
-    snd_seq_port_info_t porti;
-#endif
     int  client;
     int  port;
 
-    snd_seq_t *handle;
+    snd_seq_t *handle=0;
+#ifdef HAVE_ALSA_SUPPORT
 #ifdef HAVE_LIBASOUND2
-    snd_seq_open(&handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
-    snd_seq_system_info_t *info;
-    snd_seq_system_info(handle, info);
-#else
-    snd_seq_open(&handle, SND_SEQ_OPEN);
+    snd_seq_client_info_t *clienti;
+    snd_seq_client_info_malloc(&clienti);
+    snd_seq_port_info_t *porti;
+    snd_seq_port_info_malloc(&porti);
 
-    snd_seq_system_info_t info;
-    info.clients=info.ports=0;
-    snd_seq_system_info(handle, &info);
-#endif
+    snd_seq_open(&handle, "hw", SND_SEQ_OPEN_DUPLEX, 0);
+    if (!handle) { printf("handle==0\n"); return -1; };
+    snd_seq_system_info_t *info;
+    snd_seq_system_info_malloc(&info);
+    if (!info) { printf("info==0\n"); return -1; };
+    snd_seq_system_info(handle, info);
+
     n_total=0;
     n_midi=0;
     n_synths=0;
-#ifdef HAVE_LIBASOUND2
+
     device=new MidiOut*[snd_seq_system_info_get_clients(info)*snd_seq_system_info_get_ports(info)];
     unsigned int k=SND_SEQ_PORT_CAP_SUBS_WRITE | SND_SEQ_PORT_CAP_WRITE ;
     for (client=0 ; client<snd_seq_system_info_get_clients(info) ; client++)
@@ -340,7 +334,24 @@ int DeviceManager::initManager(void)
         };
       }
     }
+    snd_seq_client_info_free(clienti);
+    snd_seq_port_info_free(porti);
+    snd_seq_system_info_free(info);
 #else
+    snd_seq_client_info_t clienti;
+    snd_seq_port_info_t porti;
+
+    snd_seq_open(&handle, SND_SEQ_OPEN);
+    if (!handle) { printf("handle(2)==0\n"); return -1; };
+
+    snd_seq_system_info_t info;
+    info.clients=info.ports=0;
+    snd_seq_system_info(handle, &info);
+
+    n_total=0;
+    n_midi=0;
+    n_synths=0;
+
     device=new MidiOut*[info.clients*info.ports];
     unsigned int k=SND_SEQ_PORT_CAP_SUBS_WRITE | SND_SEQ_PORT_CAP_WRITE ;
     for (client=0 ; client<info.clients ; client++)
@@ -369,7 +380,6 @@ int DeviceManager::initManager(void)
     fprintf(stderr,"Please compile KMid for yourself or tell the people\n");
     fprintf(stderr,"at your Linux distribution to compile it themselves\n");
 #endif
-
   }
 
   if (mapper_tmp!=0L) setMidiMap(mapper_tmp);
