@@ -20,13 +20,18 @@ class QFont;
 class KInstance
 {
  public:
-  /**
-   *  Constructor
-   *  @param instanceName the name of the instance
-   *  @param aboutData data about this instance (see @ref KAboutData)
-   **/
-  KInstance( const QCString& instanceName,
-	     const KAboutData * aboutData = 0L );
+    /**
+     *  Constructor
+     *  @param instanceName the name of the instance
+     **/
+    KInstance( const QCString& instanceName) ;
+
+    /**
+     *  Constructor
+     *  @param aboutData data about this instance (see @ref KAboutData)
+     **/
+    KInstance( const KAboutData * aboutData = 0L );
+
     /**
      * Destructor.
      */

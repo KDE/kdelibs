@@ -11,8 +11,8 @@
 
 #include <qfont.h>
 
-KInstance::KInstance( const QCString& name, const KAboutData * aboutData )
-  : _name( name ), _aboutData( aboutData )
+KInstance::KInstance( const QCString& name)
+  : _name( name ), _aboutData( 0 )
 {
     ASSERT(!name.isEmpty());
     if (!KGlobal::_instance)
@@ -22,8 +22,18 @@ KInstance::KInstance( const QCString& name, const KAboutData * aboutData )
     _config = 0;
     _dirs = 0;
 
-    if (!aboutData)
-      kDebugWarning("Instance %s has no about data",name.data());
+    kDebugWarning("Instance %s has no about data",name.data());
+}
+
+KInstance::KInstance( const KAboutData * aboutData )
+  : _name( aboutData->appName() ), _aboutData( aboutData )
+{
+    if (!KGlobal::_instance)
+      KGlobal::_instance = this;
+
+    _iconLoader = 0;
+    _config = 0;
+    _dirs = 0;
 }
 
 KInstance::~KInstance()
