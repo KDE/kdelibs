@@ -277,7 +277,7 @@ void Job::showErrorDialog( QWidget * parent )
     } else {
       QStringList errors = detailedErrorStrings();
       QString caption, err, detail;
-      QStringList::iterator it = errors.begin();
+      QStringList::const_iterator it = errors.begin();
       if ( it != errors.end() )
         caption = *(it++);
       if ( it != errors.end() )
