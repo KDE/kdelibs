@@ -209,6 +209,7 @@
 <!ENTITY ksysguard	"<application>KSysguard</application>">
 <!ENTITY ksysv	"<application>ksysv</application>">
 <!ENTITY ktalkd	"<application>KTalkd</application>">
+<!ENTITY kteatime "<application>KTeaTime</application>">
 <!ENTITY ktip	"<application>Ktip</application>">
 <!ENTITY ktop	"<application>KTop</application>">
 <!ENTITY ktron	"<application>KTron</application>">
