@@ -1,6 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
             	version="1.0">
 
+
 <xsl:template name="header.navigation">
   <xsl:param name="prev" select="/foo"/>
   <xsl:param name="next" select="/foo"/>
@@ -29,7 +30,7 @@
   style="position : absolute;
   width : 100%;
   height : 124px;
-  background-image : url('common/doctop2.png');
+  background-image : url('{$kde.common}doctop2.png');
   z-index : 5;
   left : 0px;
   top : 0px;
@@ -43,7 +44,7 @@
   height : 85px;
   top : 0px;
   left : 0px;
-  background : url('common/doctop1.png') repeat;"></div>
+  background : url('{$kde.common}doctop1.png') repeat;"></div>
 
 <div id="gradient"
   style="  position : absolute;
@@ -53,7 +54,7 @@
   top : 0px;
   padding : 0px;
   left : 150px;
-  background-image : url('common/doctop1a.png');
+  background-image : url('{$kde.common}doctop1a.png');
   background-repeat : no-repeat;
   background-color : transparent;
   visibility : visible;"></div>
@@ -64,7 +65,7 @@ style="position : absolute;
   height : 25px;
   top : 85px;
   left : 0px;
-  background-image : url('common/doctop1b.png');
+  background-image : url('{$kde.common}doctop1b.png');
   background-repeat : no-repeat;
   background-color : transparent;
   z-index : 5;">
@@ -132,13 +133,13 @@ style="position : absolute;
 		right : 0px;
                 top : 0px;
 		margin-top: 100px;
-                background-image : url('common/bottom1.png');
+                background-image : url('{$kde.common}bottom1.png');
                 background-repeat : repeat-x;
                 background-color : transparent;
 		margin-left: 0px;
 		margin-right: 0px;
                 z-index : 25;">
-    <img src="common/bottom2.png" 
+    <img src="{$kde.common}bottom2.png" 
 	 align="right" 
          height="59" 
          width="227" 
