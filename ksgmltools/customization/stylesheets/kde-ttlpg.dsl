@@ -4,17 +4,17 @@
 ;; This file should not be distributed outside ksgmltools
 
 ;; Origin: html/dbttlpg.dsl
-;; How: changed author, releaseinfo, date, othercredit, contrib processing
+;; How: changed author, releaseinfo, date, othercredit, contrib, abbrev processing
 ;; Why: Rendering isn't very nice for all but author
 ;;      Author has changed a bit on suggestion of Mike McBride
 ;; Watch out: - if book-titlepage-recto-mode is changed in html
 ;;            - if this mode is not used or html is not used
 (mode book-titlepage-recto-mode
+  ; modification
   (element abbrev
     (make element gi: "SPAN"
 	  attributes: (list (list "CLASS" (gi)))
-	  (process-children)
-	  (make empty-element gi: "BR")))
+	  (process-children)))
 
   (element abstract
     (make element gi: "DIV"
