@@ -28,6 +28,7 @@
 // Matthias - setting size of toolbar (bin incompat) 22.1.98
 // Merged sven's & Matthias' changes 23-25. 1.98
 // Fixed small KWM-close bug (reported by Coolo)  sven 8.2.1998
+// boolett proofing by Marcin Dalecki 06.03.1998
 //-------------------------------------------------------------------------
 
 #include <qpainter.h>
@@ -62,17 +63,22 @@
 
 #define TOOLBAR_IS_RAISED
       qDrawArrow (_painter, DownArrow, WindowsStyle, false,
-#define CONTEXT_LEFT 0
-#define CONTEXT_RIGHT 1
-#define CONTEXT_TOP 2
-#define CONTEXT_BOTTOM 3
-#define CONTEXT_FLOAT 4
-
-#define ITEM_LINED 0
-#define ITEM_BUTTON 1
-#define ITEM_COMBO 2
-#define ITEM_FRAME 3
-#define ITEM_TOGGLE 4
+// Use enums instead of defines. We are C++ and NOT C !
+enum {
+    CONTEXT_LEFT = 0,
+    CONTEXT_RIGHT = 1,
+    CONTEXT_TOP = 2,
+    CONTEXT_BOTTOM = 3,
+    CONTEXT_FLOAT = 4
+};
+    if ( !isEnabled() )
+enum {
+    ITEM_LINED = 0,
+    ITEM_BUTTON = 1,
+    ITEM_COMBO = 2,
+    ITEM_FRAME = 3,
+    ITEM_TOGGLE = 4,
+};
 
 #define KToolBarItem QWidget
 
@@ -184,12 +190,10 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
 {
   if ( ! pixmap.isNull() )
     enabledPixmap = pixmap;
-  else
-    {
-      warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
-      enabledPixmap.resize(width()-2, height()-2);
-    }
-  // makeDisabledPixmap();
+  else {
+    warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
+    enabledPixmap.resize(width()-4, height()-4);
+  }
   KButton::setPixmap( enabledPixmap );
 }            
 
@@ -197,50 +201,42 @@ void KToolBarButton::makeDisabledPixmap()
 {
   QPalette pal = palette();
   QColorGroup g = pal.disabled();
-  
-  // Find the outline of the colored portion of the normal pixmap
-  
-  QBitmap *pmm = (QBitmap*) enabledPixmap.mask();
-  QPixmap pm;
-  if (pmm != 0L) 
-    {
-      pmm->setMask( *pmm );
-      pm = *pmm;
-    } 
-  else 
-    {
-      pm.resize(width()-4 , height()-4);
-      enabledPixmap.fill(this, 0, 0);
-      // warning("KToolBarButton::makeDisabledPixmap: mask is null.");
-    };
-  
+
   // Prepare the disabledPixmap for drawing
   
-  disabledPixmap.resize(width()-4,height()-4);
+  disabledPixmap.detach(); // prevent flicker
+  disabledPixmap.resize(enabledPixmap.width(), enabledPixmap.height());
   disabledPixmap.fill( g.background() );
+  const QBitmap *mask = enabledPixmap.mask();
+  bool allocated = false;
+  if (!mask) {// This shouldn't occur anymore!
+    mask = new QBitmap(enabledPixmap.createHeuristicMask());
+    allocated = true;
+  } 
   
-  // Draw the outline found above in highlight and then overlay a grey version
-  // for a cheesy 3D effect ! BTW. this is the way that Qt 1.2+ does it for
-  // Windows style
+  QBitmap bitmap = *mask; // YES! make a DEEP copy before setting the mask!   
+  bitmap.setMask(*mask);
   
   QPainter p;
   p.begin( &disabledPixmap );
   p.setPen( g.light() );
-  p.drawPixmap(1, 1, pm);
+  p.drawPixmap(1, 1, bitmap);
   p.setPen( g.mid() );
-  p.drawPixmap(0, 0, pm);
+  p.drawPixmap(0, 0, bitmap);
   p.end();
+  
+  if (allocated) // This shouldn't occur anymore!
+    delete mask;
 }
   icontext=config->readNumEntry("IconText", 0);
 void KToolBarButton::paletteChange(const QPalette &)
 {
-  if( ID() != -1 ) 
-    {
-      makeDisabledPixmap();
-      if ( !isEnabled() )
-	setPixmap( disabledPixmap );
-      repaint( true );
-    }
+  if( ID() != -1 )  {
+    makeDisabledPixmap();
+    if ( !isEnabled() ) 
+      KButton::setPixmap( disabledPixmap );    
+    repaint(false); // no need to delete it first therefore only false
+  }
 }
   bool doUpdate=false;
 KToolBarButton::KToolBarButton( QWidget *parentWidget, const char *name )
@@ -499,6 +495,9 @@ void KToolBar::layoutVertical ()
         offset = 4+9+3;
         yOffset += widest;
         toolbarWidth += item_size;
+        // Put it *really* *really* there!
+        // This is a workaround for a Qt-1.32 bug.
+        XMoveWindow(qt_xdisplay(), b->winId(), yOffset, offset);
         b->move( yOffset, offset );
         if (isItemAutoSized(b) == true)
           b->resize ((widest>100)?widest:100, b->height());
@@ -510,6 +509,9 @@ void KToolBar::layoutVertical ()
       }
      else
       {
+        // Put it *really* *really* there!
+        // This is a workaround for a Qt-1.32 bug.
+        XMoveWindow(qt_xdisplay(), b->winId(), yOffset, offset);
         b->move( yOffset, offset );
         if (isItemAutoSized(b) == true)
              b->resize ((widest>100)?widest:100, b->height());
@@ -584,6 +586,10 @@ void KToolBar::resizeEvent( QResizeEvent *)
 void KToolBar::paintEvent(QPaintEvent *)
 {
   //MD Lots of rewrite
+  
+  // This code should be shared with the aequivalent in kmenubar!
+  // (Marcin Dalecki).
+  
   int stipple_height;
 
   QColorGroup g = QWidget::colorGroup();
