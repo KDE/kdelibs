@@ -245,19 +245,15 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
         {
           if( !isToggleButton() )
             myPopup->hide();        //Sven: proposed by Carsten Pfeiffer
-          // Make the button normal again :) Dawit A.
-          if( toggleButton )
-            beToggle( false );
+          if ( toggleButton )
+            beToggle( false );  // changes the button to normal mode (DA)
           emit clicked( id );
           //myPopup->setActiveItem(0 /*myPopup->idAt(1)*/); // set first active
           return true;  // ignore release
         }
-        else
-        {
-            if( toggleButton ) // make the button normal otherwise you get an ugly side effect :-)
-                beToggle( false );
-        }
       }
+      if ( toggleButton )
+        beToggle( false );  //Change the button to normal mode (DA)
       break;
 
     case QEvent::Hide:
