@@ -17,7 +17,8 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= $(all_includes)
+INCLUDES= -I../kdecore -I../kdeui -I../kfmlib $(QT_INCLUDES) $(X_INCLUDES)
+
 DISTCLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES  = libkfile.la
@@ -40,9 +41,9 @@ toolbar_DATA = configure.xpm
 # I'm not sure, if they really should go there
 toolbardir = $(kde_toolbardir)
 
-CHECK_PROGRAMS = kfstest
-kfstest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kfstest_LDADD = -lkfm -lkdeui -lkdecore -lqt -lXext -lX11 $(LIBSOCKET)
+check_PROGRAMS = kfstest
+kfstest_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS)
+kfstest_LDADD = libkfile.la ../kdecore/libkdecore.la ../kdeui/libkdeui.la ../kfmlib/libkfm.la -lqt -lXext -lX11 $(LIBSOCKET)
 
 bookmark.cpp:bookmark.moc
 bookmark.moc: bookmark.h

@@ -111,6 +111,7 @@ AC_OUTPUT(Makefile \
 	khtmlw/Makefile \
 	kdetest/Makefile \
 	kdedoc/Makefile \
+	kfile/Makefile \
 	jscript/Makefile \
 	kfmlib/Makefile \
 	mediatool/Makefile \
