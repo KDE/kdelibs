@@ -22,7 +22,7 @@
  * $Id$
  */
 
-//#define CSS_DEBUG
+#define CSS_DEBUG
 
 #include "css_stylesheetimpl.h"
 
@@ -227,7 +227,7 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 
     if(rule == "import")
     {
-        // ### load stylesheet and pass it over
+        // load stylesheet and pass it over
         curP = parseSpace(curP, endP);
         if(!curP) return 0;
         startP = curP++;
@@ -423,31 +423,32 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
                         delete cs;
                         return 0;
                     }
-		    endVal = endP;
+		    endVal = equal;
 		    bool hasQuote = false;
-                    if(*equal == '\'')
-                    {
+                    if(*equal == '\'') {
                         equal++;
-                        while(*endVal != '\'' && endVal > equal)
-                            endVal--;
+			endVal++;
+                        while(endVal < endP && *endVal != '\'')
+                            endVal++;
 			hasQuote = true;
-                    }
-                    else if(*equal == '\"')
-                    {
+                    } else if(*equal == '\"') {
                         equal++;
-                        while(*endVal != '\"' && endVal > equal)
-                            endVal--;
+			endVal++;
+                        while(endVal < endP && *endVal != '\"')
+                            endVal++;
 			hasQuote = true;
-                    }
-                    else
-                        endVal--;
+                    } else {
+		      while(endVal < endP && *endVal != ']')
+			endVal++;
+		    }
                     cs->value = DOMString(equal, endVal - equal);
-		    if ( hasQuote ) 
+		    if ( hasQuote ) {
+		      while( endVal < endP - 1 && *endVal != ']' )
 			endVal++;
-		    while( endVal < endP && *endVal != ']' )
-			endVal++;
+		    }
+		    endVal++;
 		    // ### fixme we ignore everything after [..]
-		    //if( endVal == endP )
+		    if( endVal == endP )
 			endVal = 0;
                 }
                 break;
@@ -654,7 +655,7 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
 
     QString propVal( curP , endP - curP );
 #ifdef CSS_DEBUG
-    kdDebug( 6080 ) << "Property-value = \"" << propVal.data() << "\"" << endl;
+    kdDebug( 6080 ) << "Property-value = \"" << propVal.latin1() << "\"" << endl;
 #endif
 
     const struct props *propPtr = findProp(propName.lower().ascii(), propName.length());
@@ -691,7 +692,7 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
 
         QString propVal( startP , curP - startP );
 #ifdef CSS_DEBUG
-        kdDebug( 6080 ) << "Property = \"" << propVal.data() << "\"" << endl;
+        kdDebug( 6080 ) << "Property = \"" << propVal.latin1() << "\"" << endl;
 #endif
 
         parseProperty(startP, curP, propList);
