@@ -605,7 +605,7 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
   {
     KConfig *config = KGlobal::config();
     config->setGroup(QString::fromLatin1("Toolbar style"));
-    int index = config->readNumEntry(QString::fromLatin1("IconSize"), 0);
+    int index = config->readNumEntry(QString::fromLatin1("IconSize"), 1);
     m_iconCombo->setCurrentItem(index);
   }
   else if ( icon_size == -1 )
