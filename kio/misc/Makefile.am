@@ -53,3 +53,6 @@ ktelnetservice_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 protocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol
 protocoldir = $(kde_servicesdir)
+
+kiomiscdir = $(includedir)/kio
+kiomisc_HEADERS = uiserver.h
