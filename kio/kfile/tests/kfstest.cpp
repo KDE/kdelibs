@@ -39,6 +39,8 @@
 #include <kdebug.h>
 #include <kicondialog.h>
 
+#include "kfdtest.h"
+
 int main(int argc, char **argv)
 {
     KApplication a(argc, argv, "kfstest");
@@ -92,15 +94,22 @@ int main(int argc, char **argv)
     else if (argv1 == QString::fromLatin1("heap")) {
 	KFileDialog *dlg = new KFileDialog( startDir, QString::null, 0L,
 					    "file dialog", true );
+	dlg->setMode( KFile::File);
     dlg->setOperationMode( KFileDialog::Saving );
     QStringList filter;
-    filter << "text/plain" << "text/html";
-    dlg->setMimeFilter( filter, "text/plain" );
+    filter << "all/allfiles" << "text/plain";
+    dlg->setMimeFilter( filter, "all/allfiles" );
 
 	if ( dlg->exec() == KDialog::Accepted )
 	    name1 = dlg->selectedURL().url();
     }
 
+    else if ( argv1 == QString::fromLatin1("eventloop") )
+    {
+        KFDTest *test = new KFDTest( startDir );
+        return a.exec();
+    }
+    
     else if (argv1 == QString::fromLatin1("save")) {
         KURL u = KFileDialog::getSaveURL();
 //        QString(QDir::homeDirPath() + QString::fromLatin1("/testfile")),
