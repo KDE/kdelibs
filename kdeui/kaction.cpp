@@ -2455,6 +2455,18 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
   m_stickyMenu = true;
 }
 
+KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
+                                          const QKeySequence& accel,
+                                          const QObject* receiver,
+                                          const char* slot, QObject* parent,
+                                          const char* name )
+  : KAction( item.text(), item.iconSet(), accel, receiver, slot, parent, name )
+{
+  m_popup = 0;
+  m_delayed = true;
+  m_stickyMenu = true;
+}
+
 KToolBarPopupAction::~KToolBarPopupAction()
 {
   if ( m_popup )

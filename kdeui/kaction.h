@@ -28,6 +28,7 @@
 #include <qkeysequence.h>
 #include <qobject.h>
 #include <qvaluelist.h>
+#include <kguiitem.h>
 //#include <kaccel.h> // for KKeyEntryMap
 
 class QMenuBar;
@@ -1477,6 +1478,25 @@ public:
      * @param name An internal name for this action.
      */
     KToolBarPopupAction( const QString& text, const QString& icon, const QKeySequence& accel,
+                         const QObject* receiver, const char* slot,
+                         QObject* parent = 0, const char* name = 0 );
+
+    /**
+     * Create a KToolBarPopupAction, with a KGuiItem, an accelerator,
+     * a slot connected to the action, parent and name. The text and the
+     * icon are taken from the KGuiItem.
+     *
+     * If you do not want or have a keyboard accelerator, set the
+     * @p accel param to 0.
+     *
+     * @param item The text and icon that will be displayed.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param receiver The SLOT's owner.
+     * @param slot The SLOT to invoke to execute this action.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KToolBarPopupAction( const KGuiItem& item, const QKeySequence& accel,
                          const QObject* receiver, const char* slot,
                          QObject* parent = 0, const char* name = 0 );
 
