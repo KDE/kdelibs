@@ -32,9 +32,9 @@ KStdGuiItem::KStdGuiItem()
 KStdGuiItem::~KStdGuiItem()
 {
 }
-KGuiItem *KStdGuiItem::guiitem( StdItem ui_enum )
+KGuiItem KStdGuiItem::guiitem( StdItem ui_enum )
 {
-  KGuiItem *item;
+  KGuiItem item;
   switch(ui_enum ) 
   {
   case Ok:
@@ -64,7 +64,7 @@ KGuiItem *KStdGuiItem::guiitem( StdItem ui_enum )
   case Apply:
     item = apply();
   default:
-    item=0;
+    item=KGuiItem();
   }
   return item;
 }
@@ -84,33 +84,33 @@ const char* KStdGuiItem::stdItem(StdItem ui_enum )
   return ret;
 }
 
-KGuiItem *KStdGuiItem::ok() {
-  return new KGuiItem(i18n("&OK"), QIconSet(), "ok",i18n("Accept settings"), i18n( "" "If you press the <b>OK</b> button, all changes\n you made will be used to proceed" )    );
+KGuiItem KStdGuiItem::ok() {
+  return KGuiItem(i18n("&OK"), QIconSet(), "ok",i18n("Accept settings"), i18n( "" "If you press the <b>OK</b> button, all changes\n you made will be used to proceed" )    );
 }
 
-KGuiItem *KStdGuiItem::cancel(){
-  return new KGuiItem(i18n("&Cancel"), QIconSet(), "cancel" );
+KGuiItem KStdGuiItem::cancel(){
+  return KGuiItem(i18n("&Cancel"), QIconSet(), "cancel" );
 }
-KGuiItem *KStdGuiItem::yes(){
-  return new KGuiItem(i18n("&Yes"), QIconSet(), "yes" );
+KGuiItem KStdGuiItem::yes(){
+  return KGuiItem(i18n("&Yes"), QIconSet(), "yes" );
 }
-KGuiItem *KStdGuiItem::no(){
-  return new KGuiItem(i18n("&No"), QIconSet(), "no" );
+KGuiItem KStdGuiItem::no(){
+  return KGuiItem(i18n("&No"), QIconSet(), "no" );
 }
-KGuiItem *KStdGuiItem::discard(){
-  return new KGuiItem(i18n("&Discard") );
+KGuiItem KStdGuiItem::discard(){
+  return KGuiItem(i18n("&Discard") );
 }
-KGuiItem *KStdGuiItem::save(){
-  return new KGuiItem(i18n("&Save") );
+KGuiItem KStdGuiItem::save(){
+  return KGuiItem(i18n("&Save") );
 }
-KGuiItem *KStdGuiItem::dontsave(){
-  return new KGuiItem(i18n("&Don't save") );
+KGuiItem KStdGuiItem::dontsave(){
+  return KGuiItem(i18n("&Don't save") );
 }
-KGuiItem *KStdGuiItem::saveas(){
-  return new KGuiItem(i18n("&Save As") );
+KGuiItem KStdGuiItem::saveas(){
+  return KGuiItem(i18n("&Save As") );
 }
-KGuiItem *KStdGuiItem::apply(){
-  return new KGuiItem(i18n("&Apply"), QIconSet(), "apply", i18n("Apply settings"),
+KGuiItem KStdGuiItem::apply(){
+  return KGuiItem(i18n("&Apply"), QIconSet(), "apply", i18n("Apply settings"),
   i18n( ""
     "When clicking <b>Apply</b>, the settings will be\n"
     "handed over to the program, but the dialog\n"

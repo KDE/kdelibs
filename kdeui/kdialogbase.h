@@ -374,9 +374,9 @@ class KDialogBase : public KDialog
 		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel, 
 		 QWidget *parent=0, bool showPixmap=false, const char *name=0, bool modal=true, 
 		 bool separator=false,
-		 KGuiItem yes = *KStdGuiItem::yes(), // i18n("&Yes")
-		 KGuiItem no = *KStdGuiItem::no(), // i18n("&No"),
-		 KGuiItem cancel = *KStdGuiItem::cancel() // i18n("&Cancel") 
+		 KGuiItem yes = KStdGuiItem::yes(), // i18n("&Yes")
+		 KGuiItem no = KStdGuiItem::no(), // i18n("&No"),
+		 KGuiItem cancel = KStdGuiItem::cancel() // i18n("&Cancel") 
 	         );
 
     /**

@@ -34,18 +34,18 @@ class KStdGuiItem
 
   KStdGuiItem();
   ~KStdGuiItem();
-  static KGuiItem *guiitem( StdItem ui_enum);
+  static KGuiItem guiitem( StdItem ui_enum);
 
   static const char* stdItem( StdItem ui_enum );
-  static KGuiItem *ok( );
-  static KGuiItem *cancel( );
-  static KGuiItem *yes();
-  static KGuiItem *no();
-  static KGuiItem *discard();
-  static KGuiItem *save();
-  static KGuiItem *dontsave();
-  static KGuiItem *saveas();
-  static KGuiItem *apply();
+  static KGuiItem ok( );
+  static KGuiItem cancel( );
+  static KGuiItem yes();
+  static KGuiItem no();
+  static KGuiItem discard();
+  static KGuiItem save();
+  static KGuiItem dontsave();
+  static KGuiItem saveas();
+  static KGuiItem apply();
 
  private:
   class KStdGuiItemPrivate;
