@@ -40,7 +40,7 @@
   }
 
 #define functionCallPostOrderCheck(functionName, returnValue) \
-  if(!d->retrievedSettings){ \
+  if(d->retrievedSettings){ \
       kdDebug(180) << "KAutoConfig::"functionName"() was called after " \
       "KAutoConfig::retrieveSettings().  This should NEVER happen because " \
       "it will do nothing.  Please Fix." << endl; \
@@ -114,7 +114,7 @@ KAutoConfig::~KAutoConfig(){
 }
 
 void KAutoConfig::addWidget(QWidget *widget, const QString &group){
-  functionCallPostOrderCheck("ignoreSubWidget",);
+  functionCallPostOrderCheck("addWidget",);
   d->groups.insert(widget, group);
   d->widgets.append(widget);
   QPtrList<QWidget> newAutoConfigWidget;
