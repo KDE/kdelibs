@@ -1669,9 +1669,12 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         // ok, now some magic to get a nice unscaled font
         // ### all other font properties should be set before this one!!!!
         // ####### make it use the charset needed!!!!
-        if( !db.isSmoothlyScalable(f.family(), db.styleString(f), "iso8859-1") )
+	const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
+	QFont::CharSet cs = s->charset();
+	QString charset = KGlobal::charsets()->xCharsetName( cs );
+        if( !db.isSmoothlyScalable(f.family(), db.styleString(f), charset) )
         {
-            QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), "iso8859-1");
+            QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f), charset);
             // lets see if we find a nice looking font, which is not too far away
             // from the requested one.
 
@@ -1811,9 +1814,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!value->isValueList()) return;
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
+	const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
+	QString available = s->availableFamilies();
+	QFont f = style->font();
+	QString family;
+	//kdDebug(0) << "searching for font... available:" << available << endl;
         for(int i = 0; i < len; i++)
         {
-            QFont f = style->font();
             CSSValueImpl *item = list->item(i);
             if(!item->isPrimitiveValue()) continue;
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
@@ -1822,7 +1829,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             QString face(str->s, str->l);
             face = face.lower();
             //kdDebug(0) << "searching for face '" << face << "'" << endl;
-            const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
             if(face == "serif")
                 face = s->serifFontName();
             else if(face == "sans-serif")
@@ -1833,17 +1839,26 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 face = s->fantasyFontName();
             else if( face == "monospace")
                 face = s->fixedFontName();
-            //kdDebug(0) << "using face '" << face << "'" << endl;
-            f.setFamily(face);
-            QFontInfo fi(f);
-            //      if(!strcasecmp(fi.family().ascii(), face.ascii()))
-            if ( fi.family() == face )
-            {
-                //kdDebug( 6080 ) << "=====> setting font family to " << face << endl;
-                KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset());
-                style->setFont(f);
-                break;
-            }
+
+	    int pos;
+	    if( (pos = available.find( face )) == -1 ) {
+		QString str = face;
+		str.truncate( face.find( ' ' ) );
+		pos = available.find( str );
+	    }
+
+	    if ( pos != -1 ) {
+		int pos1 = available.findRev( ',', pos ) + 1;
+		pos = available.find( ',', pos );
+		if ( pos == -1 )
+		    pos = available.length();
+		family = available.mid( pos1, pos - pos1 );
+		//kdDebug() << "=====> setting font family to " << family << endl;
+		f.setFamily( family );
+		KGlobal::charsets()->setQFont(f, s->charset() );
+		style->setFont(f);
+		break;
+	    }
             //kdDebug( 6080 ) << "no match for font family " << face << ", got " << fi.family() << endl;
         }
         break;

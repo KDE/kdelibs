@@ -84,7 +84,7 @@ public:
 
     // the charset used to display the current document.
     QFont::CharSet charset() const { return m_charset; }
-    void setCharset( QFont::CharSet c) { if(!enforceCharset) m_charset = c; }
+    void setCharset( QFont::CharSet c);
 
     const QString &encoding() const { return m_encoding; }
 
@@ -108,7 +108,8 @@ public:
     static const char* adviceToStr(KJavaScriptAdvice _advice);
 
     QString settingsToCSS() const;
-
+    QString availableFamilies() const { return availFamilies; }
+    
 private:
     bool m_bChangeCursor;
     bool m_underlineLink;
@@ -133,6 +134,7 @@ private:
     QMap<QString,KJavaScriptAdvice> javaScriptDomainPolicy;
     QMap<QFont::CharSet, QStringList> fontsForCharset;
     QStringList defaultFonts;
+    QString availFamilies;
 };
 
 #endif
