@@ -31,6 +31,9 @@
 
 #include "kwrite_keys.h"
 
+#undef KeyPress
+
+
 /*
 The following things i have discovered:
 - on a pc with num lock unset the key "8" is Up, but Shift-"8" is 8.
