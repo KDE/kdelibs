@@ -22,16 +22,19 @@
 
 #include <math.h>
 
+#include <qregexp.h>
+
 #include <kdb/exception.h>
 #include <kdb/dbengine.h>
 
-HandlerImpl::HandlerImpl(MYSQL_RES * result)
-    :res(result)
+HandlerImpl::HandlerImpl(MYSQL_RES * result, ConnectorImpl *conn)
+    :res(result), m_conn(conn)
 {
     //kdDebug(20012) << "HandlerImpl::HandlerImpl" << endl;
 
     m_fields = mysql_fetch_fields(res);
     numFields = mysql_num_fields(res);
+    numRows = mysql_num_rows(res);
 }
 
 HandlerImpl::~HandlerImpl()
@@ -45,7 +48,7 @@ KDB_ULONG
 HandlerImpl::count() const
 {
     //kdDebug(20012) << "HandlerImpl::count" << endl;
-    return mysql_num_rows(res);
+    return numRows;
 }
 
 KDB::Row
@@ -69,12 +72,11 @@ HandlerImpl::rows() const
         while ((row = mysql_fetch_row(res))) {
             KDB::Row f;
             unsigned long *len = mysql_fetch_lengths(res);
-            MYSQL_FIELD *fld = mysql_fetch_fields(res);
             for (unsigned int i = 0; i < numFields; i++ ) {
                 
                 Value v(QString::fromLocal8Bit(row[i],len[i]));
 
-                switch (fld[i].type) {
+                switch (m_fields[i].type) {
                 case FIELD_TYPE_TINY:
                 case FIELD_TYPE_SHORT:
                     v = QVariant(v.toString().toInt());
@@ -312,4 +314,215 @@ HandlerImpl::kdbDataType(const QString &fieldName) const
     //kdDebug(20012) << "KDB::DataTypeHandlerImpl::kdbDataType" << " fieldName=" << fieldName << endl;
 
     return ConnectorImpl::NToK(nativeType(fieldName));
+}
+
+bool 
+HandlerImpl::append(KDB::Row row)
+{
+    kdDebug(20012) << k_funcinfo << endl;
+    /*
+     * NOTE: we assume here that an append can happen only on single-table recordsets
+     * thus, we assume that the table of the first field of the row is the table
+     * that will be updated. we build the insert statement using only the fields that 
+     * are in our field list, so the row must be carefully built
+     */
+    QString table = m_fields[0].table;
+    QString sql = QString("Insert into %1 (").arg(table);
+    unsigned int i;
+
+    bool first = true;
+    for (i = 0 ; i < numFields; i++) {
+        if (!first)
+            sql += ",";
+        sql += m_fields[i].name;
+        first = false;
+    }
+
+    sql += ") values (";
+    
+
+    i = 0;
+    first = true;
+    QString val;
+    for(KDB::Row::Iterator it = row.begin(); it != row.end(); ++it) {
+        if (!first)
+            sql += ",";
+        first = false;
+        
+        sql += format(*it,m_fields[i].type);
+        ++i;
+    }
+
+    sql += ")";
+
+    int affected = m_conn->execute(sql);
+
+    if (affected == 0) {
+        return false;        
+    } else {
+        // append the row to the set of rows
+
+        m_rows << row;
+        numRows++;
+        return true;
+    }
+}
+    
+bool 
+HandlerImpl::update(KDB_ULONG pos, KDB::Row row)
+{ 
+    kdDebug(20012) << k_funcinfo << endl;
+    /*
+     * NOTE: we assume here that an update can happen only on single-table recordsets
+     * thus, we assume that the table of the first field of the row is the table
+     * that will be updated. we build the update statement using only the fields that 
+     * are in our field list, so the row must be carefully built
+     */
+
+    QString table = m_fields[0].table;
+    QString sql = QString("Update %1 set ").arg(table);
+
+    unsigned int i;
+    bool first = true;
+    for (i = 0 ; i < numFields; i++) {
+        if (!(m_fields[i].flags & PRI_KEY_FLAG)) {
+            if (!first)
+                sql += ",";
+        
+            sql += QString("%1 = %2").arg(m_fields[i].name).arg(format(row[i],m_fields[i].type)) ;
+            first = false;
+        }
+    }
+
+    sql += " where ";
+    first = true;
+    for (i = 0 ; i < numFields; i++) {
+        if (m_fields[i].flags & PRI_KEY_FLAG) {
+            if (!first)
+                sql += " and ";
+            sql += QString("%1 = %2").arg(m_fields[i].name).arg(format(row[i],m_fields[i].type));
+            first = false;
+        }
+    }
+
+    int affected = m_conn->execute(sql);
+
+    if (affected == 0) {
+        return false;        
+    } else {
+        // change the row
+        m_rows[pos] = row;
+        return true;
+    }
+
+}
+
+bool
+HandlerImpl::remove(KDB_ULONG pos, KDB::Row row)
+{ 
+    kdDebug(20012) << k_funcinfo << endl;
+    /*
+     * NOTE: we assume here that an update can happen only on single-table recordsets
+     * thus, we assume that the table of the first field of the row is the table
+     * that will be updated. we build the update statement using only the fields that 
+     * are in our field list, so the row must be carefully built
+     */
+
+    QString table = m_fields[0].table;
+    QString sql = QString("Delete from %1 where ").arg(table);
+
+    unsigned int i;
+    bool first = true;
+    for (i = 0 ; i < numFields; i++) {
+        if (m_fields[i].flags & PRI_KEY_FLAG) {
+            if (!first)
+                sql += " and ";
+            sql += QString("%1 = %2").arg(m_fields[i].name).arg(format(row[i],m_fields[i].type));
+            first = false;
+        }
+    }
+
+    int affected = m_conn->execute(sql);
+
+    if (affected == 0) {
+        return false;        
+    } else {
+        // remove the row and update the counter
+        m_rows.remove(row);
+        numRows--;
+        return true;
+    }
+
+}
+
+
+QString
+HandlerImpl::format(const Value &v, enum_field_types type)
+{
+    QString val;
+    switch (type) {
+    case FIELD_TYPE_TINY:
+    case FIELD_TYPE_SHORT:
+    case FIELD_TYPE_LONG:
+    case FIELD_TYPE_INT24:
+    case FIELD_TYPE_LONGLONG:
+    case FIELD_TYPE_DECIMAL:
+    case FIELD_TYPE_FLOAT:
+    case FIELD_TYPE_DOUBLE:
+        val = v.toString();
+        break;
+    case FIELD_TYPE_TIMESTAMP:
+        {
+            QDate d = v.toDate();
+            QTime t = v.toTime();
+            val = QString("'%1%2%3%4%5%6'");
+            val = val.arg(d.year()).arg(d.month(),2).arg(d.day(),2);
+            val = val.arg(t.hour(),2).arg(t.minute(),2).arg(t.second(),2);
+            val.replace(QRegExp(" "), "0");
+            break;
+        }
+    case FIELD_TYPE_DATE:
+        {
+            QDate d = v.toDate();
+            val = QString("'%1-%2-%3'").arg(d.year()).arg(d.month(),2).arg(d.day(),2);
+            val.replace(QRegExp(" "), "0");
+            break;
+        }
+    case FIELD_TYPE_TIME:
+        {
+            QTime t = v.toTime();
+            val = QString("'%1:%2:%3'").arg(t.hour(),2).arg(t.minute(),2).arg(t.second(),2);
+            val.replace(QRegExp(" "), "0");
+            break;
+        }
+    case FIELD_TYPE_DATETIME:
+        {
+            QDate d = v.toDate();
+            QTime t = v.toTime();
+            val = QString("'%1-%2-%3 %4:%5:%6'");
+            val = val.arg(d.year()).arg(d.month(),2).arg(d.day(),2);
+            val = val.arg(t.hour()).arg(t.minute(),2).arg(t.second(),2);
+            val.replace(QRegExp(" "), "0");
+            break;
+        }
+    case FIELD_TYPE_YEAR:
+        val = v.toString();
+        break;
+    case FIELD_TYPE_STRING:
+    case FIELD_TYPE_BLOB:
+        val = QString("'%1'").arg(v.toString());
+        break;
+    case FIELD_TYPE_SET:
+        val = QString("'%1'").arg(v.toStringList().join(","));
+        break;
+    case FIELD_TYPE_ENUM:
+        val = QString("'%1'").arg(v.toString());
+        break;
+    default:
+        val = QString("'%1'").arg(v.toString());
+        break;
+    }
+    kdDebug(20012) << k_funcinfo << v.toString() << " - " << val << endl;
+
+    return val;
 }

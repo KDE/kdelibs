@@ -234,11 +234,12 @@ ConnectorImpl::resultQuery(const QString &sql)
     //kdDebug(20012) << "KDB::RowListConnectorImpl::resultQuery" << " sql=" << sql << endl;
 
     HandlerImpl *res = static_cast<HandlerImpl *> (query(sql));
-
-    KDB::RowList l = res->rows();
-
-    delete res;
-
+    KDB::RowList l;
+    if (res) {
+        l = res->rows();
+        delete res;
+    }
+    
     return l;
 }
 
@@ -262,7 +263,7 @@ ConnectorImpl::setCurrentDatabase(const QString &name)
 KDB_ULONG
 ConnectorImpl::execute(const QString &sql)
 {
-    //kdDebug(20012) << "ConnectorImpl::execute" << " sql=" << sql << endl;
+    kdDebug(20012) << "ConnectorImpl::execute" << " sql=" << sql << endl;
     int len = sql.length();
 
     if ( (mysql_real_query(connection(), sql.latin1(), len )) != 0 ) {
@@ -282,7 +283,7 @@ ConnectorImpl::query(const QString &SQL)
     if (DBENGINE->error()) {
         return 0L;
     }
-    HandlerImpl *res = new HandlerImpl(mysql_store_result( connection() ));
+    HandlerImpl *res = new HandlerImpl(mysql_store_result( connection() ), this);
     return res;
 }
 

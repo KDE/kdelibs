@@ -27,10 +27,12 @@
 #include <mysql/mysql.h>
 #include <kdb/handler.h>
 
+class ConnectorImpl;
+
 class HandlerImpl: public KDB::Handler {
 
 public:
-    HandlerImpl(MYSQL_RES *result);
+    HandlerImpl(MYSQL_RES *result, ConnectorImpl *conn);
     virtual ~HandlerImpl();
 
     //operator pRES();
@@ -42,14 +44,20 @@ public:
     QString nativeType(const QString &fieldName) const;
     KDB::DataType kdbDataType(const QString &fieldName) const;
 
+    bool append(KDB::Row row);
+    bool update(KDB_ULONG pos, KDB::Row row);
+    bool remove(KDB_ULONG pos, KDB::Row row);
 
 private:
+
+    QString format(const Value &v, enum_field_types type);
+    
     MYSQL_RES *res;
     MYSQL_FIELD *m_fields;
     unsigned int numFields;
-
+    KDB_ULONG numRows;
     mutable KDB::RowList m_rows;
-
+    ConnectorImpl *m_conn;
 };
 
 #endif
