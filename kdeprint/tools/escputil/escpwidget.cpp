@@ -67,7 +67,7 @@ EscpWidget::EscpWidget(QWidget *parent, const char *name)
 	QPushButton	*alignbtn = new QPushButton(this, "-a");
 	alignbtn->setPixmap(DesktopIcon("exec"));
 	QPushButton	*inkbtn = new QPushButton(this, "-i");
-	inkbtn->setPixmap(DesktopIcon("exec"));
+	inkbtn->setPixmap(DesktopIcon("kdeprint_inklevel"));
 	QPushButton	*identbtn = new QPushButton(this, "-d");
 	identbtn->setPixmap(DesktopIcon("exec"));
 
