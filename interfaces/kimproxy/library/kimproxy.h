@@ -25,6 +25,7 @@
 #define KIMPROXY_H
 
 #include <qdict.h>
+#include <qptrdict.h>
 #include <qstringlist.h>
 
 
@@ -46,6 +47,8 @@ struct AppPresence
 };
 
 typedef QDict<AppPresence> PresenceMap;
+typedef QMap<int, QString> PresenceStringMap;
+typedef QMap<int, QPixmap> PresenceIconMap;
 
 /**
  * This class provides an easy-to-use interface to any instant messengers or chat programs
@@ -277,17 +280,25 @@ class KIMProxy : public QObject, virtual public KIMProxyIface
 		 */
 		KIMIface_stub * stubForProtocol( const QString &protocol );
 
+	private:
+		// client stubs used to get presence
 		QDict<KIMIface_stub> m_im_client_stubs;
+		// map containing numeric presence and the originating application ID for each KABC uid we know of
 		PresenceMap m_presence_map;
+		// cache of the client strings in use by each application
+		// dictionary of KIMIface_stub -> map of numeric presence -> string presence
+		QPtrDict<PresenceStringMap> m_client_presence_strings;
+		// cache of the presence pixmaps in use by each application
+		// dictionary of KIMIface_stub -> map of numeric presence -> presence icon
+		QPtrDict<PresenceIconMap> m_client_presence_icons;
 		DCOPClient *m_dc;
 		bool m_apps_available;
-	
-	private:
+		bool m_initialized;
 		/**
 		 * Construct an instance of the proxy library.
 		 */
 		KIMProxy( DCOPClient * client);
-		static KIMProxy * mInstance;
+		static KIMProxy * s_instance;
 };
 
 #endif
