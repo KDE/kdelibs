@@ -282,6 +282,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
   }
 
   KFileItemList lstNewItems;
+  KFileItemList lstRefreshItems;
   KURL::List::Iterator pendingIt = d->lstPendingUpdates.find( m_url );
   if ( pendingIt != d->lstPendingUpdates.end() )
     d->lstPendingUpdates.remove( pendingIt );
@@ -327,22 +328,38 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       //kdDebug(7003) << "slotUpdateFinished : found " << name << endl;
 
       // Find this item
-      bool done = false;
+      bool found = false;
       QListIterator<KFileItem> kit ( m_lstFileItems );
-      for( ; kit.current() && !done; ++kit )
+      for( ; kit.current(); ++kit )
       {
         if ( u == (*kit)->url() )
         {
-          //kdDebug(7003) << "slotUpdateFinished : keeping " << name << endl;
+          kdDebug(7003) << "slotUpdateFinished : keeping " << name << endl;
           (*kit)->mark();
-          done = true;
+          found = true;
+          break;
         }
       }
 
-      if ( !done )
+      KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes );
+
+      if ( found )
+      {
+          kdDebug() << "KDirLister::slotUpdateResult Comparing KFileItems" << endl;
+          assert(kit.current());
+          // Check if something changed for this file
+          if ( ! (*kit)->cmp( *item ) )
+          {
+              (*kit)->assign( *item );
+              (*kit)->mark(); // just in case
+              lstRefreshItems.append( (*kit) );
+              kdDebug(7003) << "slotUpdateFinished : This file has changed : " << (*kit)->name() << endl;
+          }
+          delete item;
+      }
+      else // This is a new file
       {
         //kdDebug(7003) << "slotUpdateFinished : inserting " << name << endl;
-        KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes );
 
         if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
         {
@@ -360,6 +377,8 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
 
   if ( !lstNewItems.isEmpty() )
       emit newItems( lstNewItems );
+  if ( !lstRefreshItems.isEmpty() )
+      emit refreshItems( lstRefreshItems );
 
   deleteUnmarkedItems();
 

@@ -267,6 +267,16 @@ public:
   void mark() { m_bMarked = true; }
   void unmark() { m_bMarked = false; }
 
+  /**
+   * Somewhat like a comparison operator, but more explicit
+   */
+  bool cmp( const KFileItem & item );
+
+  /**
+   * Somewhat like an assignment operator, but more explicit
+   */
+  void assign( const KFileItem & item );
+
   /////////////
 
 protected:

@@ -39,7 +39,7 @@ class KFileItem::KFileItemPrivate
 public:
   KFileItemPrivate() {}
    // For special case like link to dirs over FTP
-  QString m_guessedMimeType; 
+  QString m_guessedMimeType;
 };
 
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
@@ -137,23 +137,11 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
 }
 
 KFileItem::KFileItem( const KFileItem & item ) :
-  m_entry( item.m_entry ),
-  m_url( item.m_url),
-  m_bIsLocalURL( item.m_bIsLocalURL ),
-  m_strName( item.m_strName ),
-  m_strText( item.m_strText ),
-  m_fileMode( item.m_fileMode ),
-  m_permissions( item.m_permissions ),
-  m_user( item.m_user ),
-  m_group( item.m_group ),
-  m_bLink( item.m_bLink ),
-  m_pMimeType( item.m_pMimeType ),
-  m_strLowerCaseName( item.m_strLowerCaseName ),
-  m_bMarked( item.m_bMarked ),
-  d( new KFileItemPrivate(*item.d) )
+  d(new KFileItemPrivate)
 {
+    assign( item );
 }
- 
+
 KFileItem::~KFileItem()
 {
   delete d;
@@ -419,4 +407,37 @@ void KFileItem::run()
   if ( m_bLink )
     m_url = KURL( m_url, linkDest() );
   (void) new KRun( m_url, m_fileMode, m_bIsLocalURL );
+}
+
+bool KFileItem::cmp( const KFileItem & item )
+{
+    return ( m_strName == item.m_strName
+             && m_bIsLocalURL == item.m_bIsLocalURL
+             && m_fileMode == item.m_fileMode
+             && m_permissions == item.m_permissions
+             && m_user == item.m_user
+             && m_group == item.m_group
+             && m_bLink == item.m_bLink
+             && size() == item.size()
+             && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME) );
+    // Should we check the access time as well ?
+}
+
+void KFileItem::assign( const KFileItem & item )
+{
+    m_entry = item.m_entry;
+    m_url = item.m_url;
+    m_bIsLocalURL = item.m_bIsLocalURL;
+    m_strName = item.m_strName;
+    m_strText = item.m_strText;
+    m_fileMode = item.m_fileMode;
+    m_permissions = item.m_permissions;
+    m_user = item.m_user;
+    m_group = item.m_group;
+    m_bLink = item.m_bLink;
+    m_pMimeType = item.m_pMimeType;
+    m_strLowerCaseName = item.m_strLowerCaseName;
+    *d = *item.d;
+    // We had a mimetype previously (probably), so we need to re-determine it
+    determineMimeType();
 }
