@@ -281,7 +281,7 @@ public:
    *  "voluntarily", ie: it has not been killed by a signal.
    *
    * Note that you should check @ref KProcess::exitStatus() to determine
-   * whether the process completed its task successfull or not. 
+   * whether the process completed its task successfull or not.
    */
   bool normalExit() const;
 
@@ -374,7 +374,7 @@ signals:
 
   /**
    * Emitted after the process has terminated when
-   * the process was run in the @p NotfiyOnExit  (==default option to
+   * the process was run in the @p NotifyOnExit  (==default option to
    * @ref start()) or the @ref Block mode.
    **/
   void processExited(KProcess *proc);
@@ -648,7 +648,7 @@ class KShellProcessPrivate;
 *    @li If no valid shell could be found, "/bin/sh" is used as a last resort.
 
 *   @short A class derived from @ref KProcess to start child
-*   	processes through a shell.	
+*   	processes through a shell.
 *   @author Christian Czezakte <e9025461@student.tuwien.ac.at>
 *   @version $Id$
 */
