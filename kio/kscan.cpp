@@ -26,8 +26,7 @@ KScanDialog * KScanDialog::getScanDialog( QWidget *parent, const char *name,
 
 KScanDialog::KScanDialog( QWidget *parent, const char *name, bool modal )
     : KDialogBase( Tabbed, i18n("Acquire image"), Close|Help, Close,
-		   parent, name, modal, true ),
-      m_currentId( 1 )
+		   parent, name, modal, true ) //, m_currentId( 1 )
 {
 
 }
