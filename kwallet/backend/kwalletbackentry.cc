@@ -18,46 +18,49 @@
  * Boston, MA 02111-1307, USA.
  */ 
 
-
-#ifndef _KWALLETBACKEND_H
-#define _KWALLETBACKEND_H
+#include "kwalletbackentry.h"
 
 
-#include <qcstring.h>
-#include <qstring.h>
 
 
-class KWalletBackend {
-	public:
-		KWalletBackend(QString name = "kdewallet");
-		~KWalletBackend();
-		
-		int unlock(QByteArray& password);
-		
-		int lock(QByteArray& password);
 
-		// Returns true if the current wallet is open
-		bool isOpen() const;
-
-		// Returns the current wallet name
-		const QString& walletName() const;
-
-		// Changes to a new wallet "name"
-		// returns false if it cannot change (ie another wallet is open)
-		bool changeWallet(QString name);
-
-		// add
-		// remove
-
-	protected:
-
-	private:
-		class KWalletBackendPrivate;
-		KWalletBackendPrivate *d;
-		QString _name;
-		bool _open;
-};
+KWalletBackEntry::KWalletBackEntry() {
+	_dirty = false;
+}
 
 
-#endif
+KWalletBackEntry::~KWalletBackEntry() {
+}
+
+
+bool KWalletBackEntry::isDirty() const {
+	return _dirty;
+}
+
+
+const QStringList& KWalletBackEntry::key() const {
+	return _key;
+}
+
+
+const QByteArray& KWalletBackEntry::value() const {
+	return _value;
+}
+
+
+void KWalletBackEntry::setValue(QByteArray& val) {
+	// do a direct copy from one into the other without
+	// temporary variables
+}
+
+
+void KWalletBackEntry::setKey(QStringList key) {
+	_key = key;
+}
+
+
+void KWalletBackEntry::addKey(QString key) {
+	_key << key;
+}
+
 

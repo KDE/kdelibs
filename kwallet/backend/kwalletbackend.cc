@@ -34,19 +34,21 @@ KWalletBackend::~KWalletBackend() {
 
 
 int KWalletBackend::unlock(QByteArray& password) {
+	return -1;
 }
 
 	
 int KWalletBackend::lock(QByteArray& password) {
+	return -1;
 }
 
 
-const QString& KWalletBackend::walletName() {
+const QString& KWalletBackend::walletName() const {
 	return _name;
 }
 
 
-bool KWalletBackend::isOpen() {
+bool KWalletBackend::isOpen() const {
 	return _open;
 }
 
@@ -56,6 +58,7 @@ bool KWalletBackend::changeWallet(QString name) {
 		return false;
 
 	_name = name;
+	return true;
 }
 
 

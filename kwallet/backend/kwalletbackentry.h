@@ -19,43 +19,38 @@
  */ 
 
 
-#ifndef _KWALLETBACKEND_H
-#define _KWALLETBACKEND_H
+#ifndef _KWALLETBACKENTRY_H
+#define _KWALLETBACKENTRY_H
 
 
 #include <qcstring.h>
 #include <qstring.h>
+#include <qstringlist.h>
 
 
-class KWalletBackend {
+class KWalletBackEntry {
 	public:
-		KWalletBackend(QString name = "kdewallet");
-		~KWalletBackend();
+		KWalletBackEntry();
+		~KWalletBackEntry();
 		
-		int unlock(QByteArray& password);
-		
-		int lock(QByteArray& password);
+		bool isDirty() const;
 
-		// Returns true if the current wallet is open
-		bool isOpen() const;
+		const QStringList& key() const;
+		const QByteArray& value() const;
 
-		// Returns the current wallet name
-		const QString& walletName() const;
-
-		// Changes to a new wallet "name"
-		// returns false if it cannot change (ie another wallet is open)
-		bool changeWallet(QString name);
-
-		// add
-		// remove
+		void setValue(QByteArray& val);
+		void setKey(QStringList key);
+		void addKey(QString key);
 
 	protected:
 
 	private:
-		class KWalletBackendPrivate;
-		KWalletBackendPrivate *d;
-		QString _name;
-		bool _open;
+		class KWalletBackEntryPrivate;
+		KWalletBackEntryPrivate *d;
+		QString _app;
+		bool _dirty;
+		QStringList _key;
+		QByteArray _value;
 };
 
 

@@ -10,6 +10,7 @@ libkwalletbackend_la_SOURCES = blockcipher.cc		\
 			       cbc.cc			\
 			       hashbase.cc		\
 			       sha1.cc			\
+			       kwalletbackentry.cc	\
 			       kwalletbackend.cc
 
 
