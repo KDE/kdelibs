@@ -62,6 +62,11 @@ public:
     void setContextId( int id );
 
     /**
+     * registers applet 
+     **/
+    void registerApplet( KJavaApplet* );
+
+    /**
      * Sends a message to create the applet.
      */
     void create( KJavaApplet* );
@@ -93,6 +98,10 @@ public:
     void processCmd( QString cmd, QStringList args );
 
     /**
+     * Check if the applets are loaded by the Java Virtual Machine
+     **/
+    bool appletsLoaded() const;
+    /**
      * LiveConnect functions
      */
     bool getMember(KJavaApplet *, const unsigned long, const QString &, int &, unsigned long &, QString &);
@@ -110,6 +119,11 @@ signals:
      * Signals the KHTML Part to show a url in a given target
      */
     void showDocument( const QString& url, const QString& target );
+
+    /**
+     * Signals the KHTML Part an applet is loaded
+     **/
+    void appletLoaded();
 
 protected:
     //The counter to generate ID's for the contexts
