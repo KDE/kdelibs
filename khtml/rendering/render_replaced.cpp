@@ -201,6 +201,9 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
+            if ( !::qt_cast<QScrollView*>( m_widget ) )
+                m_widget->setBackgroundMode( QWidget::NoBackground );
+
             if (m_widget->focusPolicy() > QWidget::StrongFocus)
                 m_widget->setFocusPolicy(QWidget::StrongFocus);
             // if we're already layouted, apply the calculated space to the
@@ -243,6 +246,7 @@ void RenderWidget::updateFromElement()
             int lowlightVal = 100 + (2*contrast_+4)*10;
 
             if (backgroundColor.isValid()) {
+                widget()->setEraseColor(backgroundColor );
                 for ( int i = 0; i < QPalette::NColorGroups; i++ ) {
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
                     pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
