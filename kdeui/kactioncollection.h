@@ -293,7 +293,7 @@ public:
 
   /**
    * Removes an action from the collection and deletes it.
-   * @deprecated Remove without substitution; the KActionCollection destructor
+   * @deprecated Remove without substitution; the KAction destructor
    * will remove the action itself.
    * @param action The KAction to remove.
    */
@@ -301,7 +301,7 @@ public:
 
   /**
    * Removes an action from the collection.
-   * @deprecated Remove without substitution; the KActionCollection destructor
+   * @deprecated Remove without substitution; the KAction destructor
    * will remove the action itself.
    * @return NULL if not found else returns action.
    * @param action the KAction to remove.
