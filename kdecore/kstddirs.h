@@ -357,10 +357,12 @@ public:
 	/**
 	 * This function is used internally by almost all other function as
 	 * it serves and fills the directories cache.
-	 *
+         *
 	 * @return The list of possible directories for the specified @p type.
 	 * The function updates the cache if possible.  If the resource
 	 * type specified is unknown, it will return an empty list.
+         * Note, that the directories are asured to exist beside the save
+         * location, which may not exist, but is returned anyway.
 	 */
 	QStringList resourceDirs(const char *type) const;
 
