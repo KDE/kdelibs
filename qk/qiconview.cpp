@@ -137,7 +137,8 @@ struct QIconViewPrivate
     bool wordWrapIconText;
     int cachedContentsX, cachedContentsY;
     int resizeEvents;
-
+    QBrush itemTextBrush;
+    
     struct SingleClickConfig {
 	SingleClickConfig()
 	    : normalText( 0 ), normalTextCol( 0 ),
@@ -1511,8 +1512,8 @@ void QIconViewItem::paintItem( QPainter *p )
 	if ( isSelected() ) {
 	    p->fillRect( textRect( FALSE ), view->colorGroup().highlight() );
 	    p->setPen( QPen( view->colorGroup().highlightedText() ) );
-	} /*else
-	    p->setPen( view->colorGroup().text() );*/
+	} else if ( view->d->itemTextBrush != Qt::NoBrush )
+	    p->fillRect( textRect( FALSE ), view->d->itemTextBrush );
 
 	p->drawText( textRect( FALSE ), Qt::AlignCenter | Qt::WordBreak,
 		     view->d->wordWrapIconText ? itemText : tmpText );
@@ -1529,8 +1530,8 @@ void QIconViewItem::paintItem( QPainter *p )
 	if ( isSelected() ) {
 	    p->fillRect( textRect( FALSE ), view->colorGroup().highlight() );
 	    p->setPen( QPen( view->colorGroup().highlightedText() ) );
-	} /*else
-	    p->setPen( view->colorGroup().text() );*/
+	} else if ( view->d->itemTextBrush != Qt::NoBrush )
+	    p->fillRect( textRect( FALSE ), view->d->itemTextBrush );
 
 	p->drawText( textRect( FALSE ), Qt::AlignCenter | Qt::WordBreak,
 		     view->d->wordWrapIconText ? itemText : tmpText );
@@ -2047,7 +2048,8 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->clearing = FALSE;
     d->fullRedrawTimer = new QTimer( this );
     d->resizeEvents = 0;
-
+    d->itemTextBrush = Qt::NoBrush;
+    
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
     connect( d->updateTimer, SIGNAL( timeout() ),
@@ -2241,7 +2243,7 @@ void QIconView::removeItem( QIconViewItem *item )
 
     bool block = signalsBlocked();
     blockSignals( TRUE );
-    
+
     QRect r = item->rect();
 
     if ( d->currentItem == item ) {
@@ -3028,6 +3030,27 @@ QIconView::ItemTextPos QIconView::itemTextPos() const
 }
 
 /*!
+  Sets the \a brush, which should be used when drawing the background
+  of an item text. By default, this brush is set to Qt::NoBrush, which means
+  no extra brush is used for drawing the item text background (just the normal
+  iconview background).
+*/
+
+void QIconView::setItemTextBackground( const QBrush &brush )
+{
+    d->itemTextBrush = brush;
+}
+
+/*!
+  Returns the brush which is used to draw the background of an item text
+*/
+
+QBrush QIconView::itemTextBackground() const
+{
+    return d->itemTextBrush;
+}
+
+/*!
   Sets the alignment mode of the iconview to \a am. This can be
   <li> East (Items, which don't fit onto the view, go further down (you get a
   vertical scrollbar)
@@ -3264,7 +3287,7 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
     emit pressed( item );
     emit pressed( item, e->globalPos() );
     item = findItem( e->pos() );
-    
+
     if ( d->currentItem )
 	d->currentItem->renameItem();
 
