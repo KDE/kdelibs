@@ -28,16 +28,16 @@ ALFE,birthday,QDateTime,birthday,Personal,.toString()
 
 #Address address
 LF,home address street,QString,homeAddressStreet,Address|Personal
-LF,home address locality,QString,homeAddressLocality,Address|Personal
-LF,home address region,QString,homeAddressRegion,Address|Personal
-LF,home address postal code,QString,homeAddressPostalCode,Address|Personal
+LF,home address city,QString,homeAddressLocality,Address|Personal
+LF,home address state,QString,homeAddressRegion,Address|Personal
+LF,home address zip code,QString,homeAddressPostalCode,Address|Personal
 LF,home address country,QString,homeAddressCountry,Address|Personal
 LF,home address label,QString,homeAddressLabel,Address|Personal
 
 LF,business address street,QString,businessAddressStreet,Address|Organization
-LF,business address locality,QString,businessAddressLocality,Address|Organization
-LF,business address region,QString,businessAddressRegion,Address|Organization
-LF,business address postal code,QString,businessAddressPostalCode,Address|Organization
+LF,business address city,QString,businessAddressLocality,Address|Organization
+LF,business address state,QString,businessAddressRegion,Address|Organization
+LF,business address zip code,QString,businessAddressPostalCode,Address|Organization
 LF,business address country,QString,businessAddressCountry,Address|Organization
 LF,business address label,QString,businessAddressLabel,Address|Organization
 
