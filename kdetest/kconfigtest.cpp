@@ -1,6 +1,9 @@
 // $Id$
 
 /* $Log$
+ * - varargs
+ * - output to syslog
+ * - areas implemented
  *
  * Revision 1.5  1997/09/11 19:44:57  kalle
  * New debugging scheme for KDE (binary incompatible!)
@@ -262,7 +265,7 @@ void KConfigTestView::keyEditReturnPressed()
 }
 
 void KConfigTestView::writeButtonClicked()
-  KDEBUG( KDEBUG_INFO, 1, "Entry written" );
+{
   pConfig->writeEntry( pKeyEdit->text(), QString( pValueEdit->text() ) );
   pInfoLabel2->setText( "Entry written" );
 

@@ -5,40 +5,109 @@
 
 #include <qfile.h>
 #include <qmsgbox.h>
+#include <qbitarry.h>
 
 #include <stdlib.h> // abort
+#include <stdarg.h> // vararg stuff
+#include <syslog.h>
+#include <math.h> // pow
 
-void kdebug( unsigned short nLevel, unsigned int nArea, const char* pString )
+bool bAreaCalculated = false;
+QBitArray *pInfoArray = NULL, *pWarnArray = NULL,
+  *pErrorArray = NULL, *pFatalArray = NULL;
+
+static void recalculateAreaBits( QBitArray*, QString* );
+static void evalToken( QBitArray*, QString* );
+
+void kdebug( ushort nLevel, ushort nArea, 
+			 const char* pFormat, ... )
 {
-  // FIXME: Check if this is in a desired area, bail out if not
-
   // Save old group
   QString aOldGroup = kapp->getConfig()->getGroup();
   kapp->getConfig()->setGroup( "KDebug" );
+  
+  /* The QBitArrays should rather be application-static, but since
+	 some stupid platforms do not support that... */
+  if( !bAreaCalculated )
+	{
+	  // check to see if we need to create the bit arrays first
+	  static uint size = (uint)rint( pow( 2, sizeof( ushort ) * 8 ) );
+	  if( !pInfoArray ) 
+		pInfoArray = new QBitArray( size );
+	  if( !pWarnArray ) 
+		pWarnArray = new QBitArray( size );
+	  if( !pErrorArray ) 
+		pErrorArray = new QBitArray( size );
+	  if( !pFatalArray ) 
+		pFatalArray = new QBitArray( size );
+	  
+	  // (re)calculate the areas from their textual representations
+	  pInfoArray->fill( false );
+	  QString aInfoArea = kapp->getConfig()->readEntry( "InfoShow", "" );
+	  recalculateAreaBits( pInfoArray, &aInfoArea );
+	  pWarnArray->fill( false );
+	  QString aWarnArea = kapp->getConfig()->readEntry( "WarnShow", "" );
+	  recalculateAreaBits( pWarnArray, &aWarnArea );
+	  pErrorArray->fill( false );
+	  QString aErrorArea = kapp->getConfig()->readEntry( "ErrorShow", "" );
+	  recalculateAreaBits( pErrorArray, &aErrorArea );
+	  pFatalArray->fill( false );
+	  QString aFatalArea = kapp->getConfig()->readEntry( "FatalShow", "" );
+	  recalculateAreaBits( pFatalArray, &aFatalArea );
+	  
+	  bAreaCalculated = true;
+	}
+
+  // Check if this is in a desired area, bail out if not
+  switch( nLevel )
+	{
+	case KDEBUG_INFO:
+	  if( !pInfoArray->testBit( nArea ) )
+		  return;
+	  break;
+	case KDEBUG_WARN:
+	  if( !pWarnArray->testBit( nArea ) )
+		return;
+	  break;
+	case KDEBUG_FATAL:
+	  if( !pFatalArray->testBit( nArea ) )
+		return;
+	  break;
+	case KDEBUG_ERROR:
+	default:
+	  if( !pErrorArray->testBit( nArea ) )
+		return;
+	};
+
+  va_list arguments; /* Handle variable arguments */
 
   /* Determine output */
   short nOutput = 0;
+  int nPriority = 0; // for syslog
   QString aCaption;
   switch( nLevel )
 	{
 	case KDEBUG_INFO:
 	  nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 1 );
-	  fprintf( stderr, "Info output goes to %d\n", nOutput );
 	  aCaption = "Info";
+	  nPriority = LOG_INFO;
 	  break;
 	case KDEBUG_WARN:
 	  nOutput = kapp->getConfig()->readNumEntry( "WarnOutput", 1 );
 	  aCaption = "Warning";
+	  nPriority = LOG_WARNING;
 	  break;
 	case KDEBUG_FATAL:
 	  nOutput = kapp->getConfig()->readNumEntry( "FatalOutput", 1 );
 	  aCaption = "Fatal Error";
+	  nPriority = LOG_CRIT;
 	  break;
 	case KDEBUG_ERROR:
 	default:
 	  /* Programmer error, use "Error" as default */
 	  nOutput = kapp->getConfig()->readNumEntry( "ErrorOutput", 1 );
 	  aCaption = "Error";
+	  nPriority = LOG_ERR;
 	  break;
 	};
 
@@ -68,10 +137,18 @@ void kdebug( unsigned short nLevel, unsigned int nArea, const char* pString )
 															"kdebug.dbg" );
 			break;
 		  };
+		char buf[4096];
+		QString aAppName = kapp->appName();
+		int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
+		va_start( arguments, pFormat );
+		int nSize = vsprintf( buf, pFormat, arguments );
+		if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
+		buf[nSize] = '\n';
+		buf[nSize+1] = '\0';
+		va_end( arguments );
 		QFile aOutputFile( aOutputFileName );
 		aOutputFile.open( IO_WriteOnly );
-		aOutputFile.writeBlock( pString, strlen( pString ));
-		aOutputFile.writeBlock( "\n", 1 );
+		aOutputFile.writeBlock( buf, nSize+2 );
 		aOutputFile.close();
 		break;
 	  }
@@ -79,14 +156,38 @@ void kdebug( unsigned short nLevel, unsigned int nArea, const char* pString )
 	  {
 		// Since we are in kdecore here, we cannot use KMsgBox and use
 		// QMessageBox instead 
-		QMessageBox::message( aCaption, pString, "OK" );
+		char buf[4096]; // constants are evil, but this is evil code anyway
+		va_start( arguments, pFormat );
+		int nSize = vsprintf( buf, pFormat, arguments );
+		if( nSize > 4094 ) nSize = 4094;
+		buf[nSize] = '\n';
+		buf[nSize+1] = '\0';
+		va_end( arguments );
+		QMessageBox::message( aCaption, buf, "OK" );
 		break;
 	  }
 	case 2: // Shell
 	  {
-		fprintf( stderr, "%s\n", pString );
+		va_start( arguments, pFormat );
+		fprintf( stderr, "%s: ", kapp->appName().data() );
+		vfprintf( stderr, pFormat, arguments );
+		fprintf( stderr, "\n" );
+		va_end( arguments );
 		break;
 	  }
+	case 3: // syslog
+	  {
+		char buf[4096];
+		QString aAppName = kapp->appName();
+		int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
+		va_start( arguments, pFormat );
+		int nSize = vsprintf( &buf[nPrefix], pFormat, arguments );
+		if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
+		buf[nSize] = '\n';
+		buf[nSize+1] = '\0';
+		va_end( arguments );
+		syslog( nPriority, buf );
+	  }	  
 	}
 
   // check if we should abort
@@ -113,6 +214,7 @@ KDebugDialog::KDebugDialog() :
   pInfoCombo->insertItem( "File" );
   pInfoCombo->insertItem( "Message Box" );
   pInfoCombo->insertItem( "Shell" );
+  pInfoCombo->insertItem( "Syslog" );
   pInfoCombo->show();
   pInfoLabel2 = new QLabel( "Filename:", this );
   pInfoLabel2->setGeometry( 15, 85, 120, 15 );
@@ -138,6 +240,7 @@ KDebugDialog::KDebugDialog() :
   pWarnCombo->insertItem( "File" );
   pWarnCombo->insertItem( "Message Box" );
   pWarnCombo->insertItem( "Shell" );
+  pWarnCombo->insertItem( "Syslog" ); 
   pWarnCombo->show();
   pWarnLabel2 = new QLabel( "Filename:", this );
   pWarnLabel2->setGeometry( 175, 85, 120, 15 );
@@ -163,6 +266,7 @@ KDebugDialog::KDebugDialog() :
   pErrorCombo->insertItem( "File" );
   pErrorCombo->insertItem( "Message Box" );
   pErrorCombo->insertItem( "Shell" );
+  pErrorCombo->insertItem( "Syslog" );
   pErrorCombo->show();
   pErrorLabel2 = new QLabel( "Filename:", this );
   pErrorLabel2->setGeometry( 15, 290, 120, 15 );
@@ -188,6 +292,7 @@ KDebugDialog::KDebugDialog() :
   pFatalCombo->insertItem( "File" );
   pFatalCombo->insertItem( "Message Box" );
   pFatalCombo->insertItem( "Shell" );
+  pFatalCombo->insertItem( "Syslog" );
   pFatalCombo->show();
   pFatalLabel2 = new QLabel( "Filename:", this );
   pFatalLabel2->setGeometry( 175, 290, 120, 15 );
@@ -258,3 +363,49 @@ KDebugDialog::~KDebugDialog()
 
 
 
+void recalculateAreaBits( QBitArray* pArray, QString* pString )
+{
+  // string could be empty
+  if( pString->isEmpty() )
+	{
+	  pArray->fill( true ); // all bits are set
+	  return;
+	}
+
+  // isolate the tokens
+  uint pos = 0; uint newpos = 0;
+  while( ( newpos = pString->find( ',', pos, false ) ) != (uint)-1 )
+	{
+	  QString aToken = pString->mid( pos, newpos-pos );
+	  evalToken( pArray, &aToken );
+	  pos = newpos+1;
+	};
+  
+  // there is probably the last part left
+  if( pos != pString->length() )
+	{
+	  QString aLastToken = pString->right( pString->length() - pos );
+	  evalToken( pArray, &aLastToken );
+	}
+}
+
+
+void evalToken( QBitArray* pArray, QString* pString )
+{
+  int dashpos = 0;
+  if( ( dashpos = pString->find( '-' ) ) != -1 )
+	{
+	  // range of areas
+	  QString aLeft = pString->mid( 0, dashpos );
+	  QString aRight = pString->mid( dashpos+1, pString->length()-1 );
+	  for( uint i = aLeft.toUInt(); i <= aRight.toUInt(); i++ )
+		{
+		  pArray->setBit( i );
+		}
+	}
+  else
+	{
+	  // single area
+	  pArray->setBit( pString->toUInt() );
+	}
+}

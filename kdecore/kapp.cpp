@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.28  1997/09/11 19:44:53  kalle
+// New debugging scheme for KDE (binary incompatible!)
+//
 // Revision 1.27  1997/09/06 20:43:51  kdecvs
 // Coolo: doc are now in share. locale support still missing, but I have plans
 //
@@ -206,7 +209,7 @@
 // Revision 1.61  1997/10/17 13:30:16  ettrich
 // Matthias: registerTopWidget/unregisterTopWidget are obsolete and empty now.
 //           Introduced new registration model
-
+//
 // Revision 1.60  1997/10/16 11:35:24  kulow
 // I'm not sure, why this have been removed, but I'm sure, they are
 // needed.
@@ -422,6 +425,8 @@ void KApplication::aboutKDE()
 										 "Qt may be used freely to develop free software on the X Window System.\n"
 										 )
 					  );
+}
+
 void KApplication::aboutApp()
 {
   QMessageBox::about( NULL, getCaption(), aAppAboutString );
