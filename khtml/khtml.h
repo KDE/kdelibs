@@ -681,7 +681,7 @@ protected:
 
     void paintElement( DOM::NodeImpl *e, bool recursive=false );
     virtual void resizeEvent ( QResizeEvent * event );
-    virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
+    virtual void viewportPaintEvent ( QPaintEvent* pe  );    
 public:
     void layout();
 protected:

@@ -81,8 +81,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     setCursor(arrowCursor);
     _isFrame = false;
     _isSelected = false;
-
-    paintBuffer = 0;
+    
+    paintBuffer = new QPixmap();
 
     init();
 
@@ -105,8 +105,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString
     setCursor(arrowCursor);
     _isFrame = true;
     _isSelected = false;
-
-    paintBuffer = 0;
+    
+    paintBuffer = new QPixmap();
 
     if(_parent) setURLCursor(_parent->urlCursor());
 
@@ -989,65 +989,60 @@ void KHTMLWidget::resizeEvent ( QResizeEvent * event )
     //emit resized( event->size() );
 }
 
-void KHTMLWidget::drawContents ( QPainter * p, int clipx,
-				 int clipy, int clipw, int cliph )
+
+
+void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
 
 {
+    QRect r = pe->rect();
+
     if(!document) return;
     NodeImpl *body = document->body();
     if(!body) return;
 
-    printf("drawContents x=%d,y=%d,w=%d,h=%d\n",clipx,clipy,clipw,cliph);
-
-    // we sometimes get doubled requests
-    // last one seems always to be unneccery
-    static QRect lastrect;
-    QRect newrect = QRect(clipx,clipy,clipw,cliph);
-    if (lastrect==newrect)
-    	return;
-
-    lastrect = newrect;
-
-#if 1
-    if (paintBuffer==0)
-            paintBuffer=new QPixmap(width()+100,PAINT_BUFFER_HEIGHT);
-    else if ( paintBuffer->width() < width() )
+    QRect rr(
+	-viewport()->x(), -viewport()->y(),
+	clipper()->width(), clipper()->height()
+    );
+    r &= rr;
+    int ex = r.x() + viewport()->x() + contentsX();;
+    int ey = r.y() + viewport()->y() + contentsY();;  
+    int ew = r.width();
+    int eh = r.height();  
+    
+    //printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);    
+        
+    if ( paintBuffer->width() < width() )
     {
-        delete paintBuffer;
-        paintBuffer = new QPixmap(width()+100,PAINT_BUFFER_HEIGHT);
+        paintBuffer->resize(width(),PAINT_BUFFER_HEIGHT);
     }
-//    paintBuffer->fill(defaultSettings->bgColor);
-
+    
     QTime qt;
     qt.start();
 
     int py=0;
-    while (py < cliph)
+    while (py < eh)
     {
 	QPainter* tp = new QPainter;
 	tp->begin( paintBuffer );
-	tp->translate(-clipx,-clipy-py);
+	tp->translate(-ex,-ey-py);
 
-    	int ph = cliph<PAINT_BUFFER_HEIGHT ? cliph : PAINT_BUFFER_HEIGHT;	
+    	int ph = eh-py<PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;	
 
 	// ### fix this for frames...
 
-	body->print(tp, clipx, clipy+py, clipw, ph, 0, 0);
+	body->print(tp, ex, ey+py, ew, ph, 0, 0);
 
 	tp->end();
 	delete tp;
 
-	p->drawPixmap(clipx,clipy+py,*paintBuffer,0,0,clipw,ph);
+//    	printf("bitBlt x=%d,y=%d,sw=%d,sh=%d\n",ex,ey+py,ew,ph); 
+	bitBlt(viewport(),r.x(),r.y()+py,paintBuffer,0,0,ew,ph,Qt::CopyROP);
 	
 	py += PAINT_BUFFER_HEIGHT;
     }
 
     printf("TIME: print() dt=%d\n",qt.elapsed());
-#else
-    QBrush b(defaultSettings->bgColor);
-    p->fillRect(clipx, clipy, clipw, cliph, b);
-    body->print(p, clipx, clipy, clipw, cliph, 0, 0);
-#endif
 }
 
 void KHTMLWidget::layout()
