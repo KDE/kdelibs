@@ -35,7 +35,7 @@ class KLibFactoryPrivate;
 class KLibLoaderPrivate;
 class KLibraryPrivate;
 
-#define KDE_EXPORT_COMPONENT_FACTORY( libname, factory ) \
+#define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
     extern "C" { void *init_##libname() { return new factory; } };
 
 /**
