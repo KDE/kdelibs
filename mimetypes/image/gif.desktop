@@ -1,16 +1,7 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/gif
-Icon=image.png
+Icon=image
 Patterns=*.gif;*.GIF;
 Comment=GIF image
-Comment[ca]=Imatges GIF
-Comment[de]=GIF Bilder
-Comment[eo]=GIF-grafiko
-Comment[fi]=GIF -kuva
-Comment[hu]=Gif kép
-Comment[ja]=GIF¥¤¥á¡¼¥¸
-Comment[mi]=Gif kép
-Comment[no_NY]=GIF-bilete
-Comment[sr]=GIF slike
-Comment[sv]=GIF-bilder
+Comment[ca]=Imatge GIF

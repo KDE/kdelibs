@@ -1,6 +1,7 @@
 [Desktop Entry]
 MimeType=text/css
 Comment=Context Style Sheet
-Icon=txt.png
+Comment[ca]=Fulla de càlcul Context
+Icon=txt
 Type=MimeType
 Patterns=*.css;*.CSSL;

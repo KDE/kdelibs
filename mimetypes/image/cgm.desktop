@@ -1,11 +1,10 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/cgm
-Icon=image.png
+Icon=image
 Patterns=*.cgm;*.CGM;
 Comment=Computer Graphics Metafile
 Comment[da]=Metafil til datagrafik
-Comment[de]=Computergrafik Metadatei
 Comment[eo]=CGM-grafiko
 Comment[es]=Archivo de tipo Computer Graphics Metafile
 Comment[fi]=Computer Graphics -metatiedosto
@@ -14,9 +13,12 @@ Comment[hu]=Computer Graphics Metaf·jl
 Comment[is]='Computer Graphics Metafile' (mynd)
 Comment[it]=Computer Graphics Metafile (cgm)
 Comment[ja]=•≥•Û•‘•Â°º•ø°º•∞•È•’•£•√•Ø•π•·•ø•’•°•§•Î
+Comment[mi]=Computer Graphics Metaf·jl
 Comment[no]=Metafil for datagrafikk
+Comment[no_NY]=Metafil for datagrafikk
 Comment[pl]=Metaplik Computer Graphics
 Comment[ro]=Metafi∫ier grafic (CGM)
 Comment[ru]=Ì≈‘¡∆¡ Ã «“¡∆…ﬁ≈”À…» ƒ¡ŒŒŸ»
 Comment[sl]=GrafiËna datoteka CGM
+Comment[sr]=GrafiËki metafajl
 Comment[sv]=Metafil fˆr datorgrafik

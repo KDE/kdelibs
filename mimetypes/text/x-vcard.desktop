@@ -1,6 +1,7 @@
 [Desktop Entry]
 Comment=Electronic Business Card
-Icon=calendar.png
+Comment[ca]=Tarja de visita electrònica
+Icon=calendar
 Type=MimeType
 MimeType=text/x-vcard
 Patterns=

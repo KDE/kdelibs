@@ -1,12 +1,7 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/x-bmp
-Icon=image.png
+Icon=image
 Patterns=*.bmp;*.BMP;
 Comment=Windows BMP image
-Comment[ca]=Imatges BMP
-Comment[hu]=BMP kép
-Comment[ja]=BMP¥¤¥á¡¼¥¸
-Comment[mi]=BMP kép
-Comment[no_NY]=BMP-bilete
-Comment[sv]=BMP-bild
+Comment[ca]=Imatge BMP Windows

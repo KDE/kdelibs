@@ -1,13 +1,12 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/x-java
-Icon=binary.png
+Icon=binary
 Patterns=*.class;
 Comment=Java Class
 Comment[ca]=Classe Java
 Comment[cs]=Java tøída
 Comment[da]=Javaklasse
-Comment[de]=Java Klasse
 Comment[eo]=Javo-klaso
 Comment[es]=Clase Java
 Comment[fi]=Java -luokka
@@ -18,6 +17,7 @@ Comment[it]=Classe Java
 Comment[ja]=Java¥¯¥é¥¹
 Comment[nl]=Java class bestand
 Comment[no]=Java-klasse
+Comment[no_NY]=Java-klasse
 Comment[pl]=Klasa Javy
 Comment[pt]=Classe Java
 Comment[pt_BR]=Classe Java

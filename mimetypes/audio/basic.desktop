@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=MimeType
 Comment=ULAW (Sun) audio
+Comment[ca]=Àudio ULAW (Sun)
 MimeType=audio/basic
-Icon=sound.png
+Icon=sound
 Patterns=*.au;*.AU;*.snd;*.SND
