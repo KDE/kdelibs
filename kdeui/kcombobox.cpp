@@ -95,7 +95,7 @@ void KComboBox::init()
     installEventFilter( this );
     if ( lineEdit() )
     {
-        connect( lineEdit(), SIGNAL( returnPressed() ), 
+        connect( lineEdit(), SIGNAL( returnPressed() ),
                  this, SIGNAL( returnPressed() ));
     }
 }
@@ -279,7 +279,13 @@ void KComboBox::setLineEdit( QLineEdit *edit )
 
     if ( d->klineEdit )
     {
-        connect( d->klineEdit, SIGNAL( returnPressed( const QString& )), 
+        // someone calling KComboBox::setEditable( false ) destroys our
+        // lineedit without us noticing. And KCompletionBase::delegate would
+        // be a dangling pointer then, so prevent that. Note: only do this
+        // when it is a KLineEdit!
+        connect( edit, SIGNAL( destroyed() ), SLOT( lineEditDeleted() ));
+        
+        connect( d->klineEdit, SIGNAL( returnPressed( const QString& )),
                  SIGNAL( returnPressed( const QString& ) ));
 
         connect( d->klineEdit, SIGNAL( completion( const QString& )),
@@ -328,6 +334,18 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
             sel = count() - 1;
     }
     setCurrentItem(sel);
+}
+
+void KComboBox::lineEditDeleted()
+{
+    // yes, we need those ugly casts due to the multiple inheritance
+    // sender() is guaranteed to be a KLineEdit (see the connect() to the
+    // destroyed() signal
+    const KCompletionBase *base = static_cast<const KCompletionBase*>( static_cast<const KLineEdit*>( sender() ));
+
+    // is it our delegate, that is destroyed?
+    if ( base == delegate() )
+        setDelegate( 0L );
 }
 
 // *********************************************************************

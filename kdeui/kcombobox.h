@@ -472,6 +472,9 @@ protected:
 
     virtual void wheelEvent( QWheelEvent *ev );
 
+private slots:
+    void lineEditDeleted();
+
 private:
     // Constants that represent the ID's of the popup menu.
     // TODO: See if we can replace this mess with KActionMenu
