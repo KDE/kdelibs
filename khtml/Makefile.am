@@ -30,7 +30,7 @@ libkhtml_la_METASOURCES = AUTO
 include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
 
 noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_find.h khtml_ext.h \
-		 khtml_pagecache.h khtmlimage.h
+		 khtml_pagecache.h khtmlimage.h khtmlpart_p.h
 
 libkhtml_la_LDFLAGS = -version-info 4:0 -module -no-undefined $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
