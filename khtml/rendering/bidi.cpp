@@ -25,6 +25,8 @@
 #include "render_text.h"
 using namespace khtml;
 
+#include <qfontmetrics.h>
+
 #include "kdebug.h"
 
 #define BIDI_DEBUG 0
@@ -693,7 +695,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	    levelHigh--;
 	}
     }
-
+    
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "visual order is:" << endl;
     QListIterator<BidiRun> it3(runs);
@@ -851,56 +853,105 @@ void RenderFlow::layoutInlineChildren()
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
-
 BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 {
     BidiIterator lBreak = start;
     BidiIterator current = start;
-    BidiIterator last = start;
-
+    BidiIterator weakBreak = start;
+    
     int width = lineWidth(m_height);
-#ifdef DEBUG_LINEBREAKS
-    kdDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width << endl;
-#endif
     int w = 0;
     int tmpW = 0;
-    while( 1 ) {
-	RenderObject *o = current.obj;
-	if(!o) {
 #ifdef DEBUG_LINEBREAKS
-	    kdDebug(6041) << "reached end sol: " << start.obj << " " << start.pos << "   end: " << current.obj << " " << current.pos << "   width=" << w << endl;
+    kdDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width << endl;
+    kdDebug(6041) << "sol: " << start.obj << " " << start.pos << endl;
 #endif
-	    return current;
-	}
+
+    RenderObject *o = current.obj;
+    int pos = current.pos;
+    
+    while( o ) {
+#ifdef DEBUG_LINEBREAKS
+	kdDebug(6041) << "new object width = " << w << endl;
+#endif
 	if(o->isBR()) {
 	    //check the clear status
 	    EClear clear = o->style()->clear();
 	    if(clear != CNONE) {
-		//kdDebug( 6040 ) << "setting clear to " << clear << endl;
 		m_clearStatus = (EClear) (m_clearStatus | clear);
 	    }	
-	}
+	} 
 	if( o->isSpecial() ) {
 	    // add to special objects...
 	    // ### check if it fits in the current line. If yes, add it directly. If no, add it delayed
 	    specialHandler(o);
 	    width = lineWidth(m_height);
-#ifdef DEBUG_LINEBREAKS
-	    kdDebug(6041) << "inserted special object, line width now " << width << endl;
-#endif
-	} else if( current.direction() == QChar::DirWS ) {
-	    lBreak = current;
-	    w += tmpW;
-	    tmpW = static_cast<RenderText *>(o)->width(current.pos, 1);
-	} else if( current.current() == QChar('\n') ) {
-#ifdef DEBUG_LINEBREAKS
-	    kdDebug(6041) << "\\n sol: " << start.obj << " " << start.pos << "   end: " << current.obj << " " << current.pos << "   width=" << w << endl;
-#endif
-	    return last;
-	} else if( o->isText() )
-	    tmpW += static_cast<RenderText *>(o)->width(current.pos, 1);
-	if( !o->isSpecial() )
+	} else if ( o->isReplaced() ) {
 	    tmpW += o->width();
+	} else if ( o->isText() ) {
+	    RenderText *t = static_cast<RenderText *>(o);
+	    QChar *ch = t->text() + pos;
+	    int len = t->length() - pos;
+	    const QFontMetrics *fm = t->metrics();
+
+	    if(t->isFixedWidthFont()) {
+#ifdef DEBUG_LINEBREAKS
+		kdDebug(6041) << "using fixed algorithm" << endl;
+#endif
+		int chWidth = fm->width(*ch);
+		while(len) {
+		    if( (ch->direction() == QChar::DirWS && !m_pre ) || *ch == '\n' ) {
+#ifdef DEBUG_LINEBREAKS
+			kdDebug(6041) << "found space tmpW = " << tmpW << " w = " << w << endl;
+#endif
+			if ( w + tmpW > width )
+			    goto end;
+			lBreak.obj = o;
+			lBreak.pos = pos;
+			if( *ch == '\n' ) {
+#ifdef DEBUG_LINEBREAKS
+			    kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+#endif
+			    return lBreak;
+			}
+			w += tmpW;
+			tmpW = 0;
+		    }
+		    tmpW += chWidth;
+		    ch++;
+		    pos++;
+		    len--;
+		}
+	    } else {
+		// proportional font, needs a bit more work.
+		QChar *last = ch;
+		while(len) {
+		    if( ch->direction() == QChar::DirWS || *ch == '\n' ) {
+			tmpW += fm->width(QConstString(last, ch - last).string());
+			//kdDebug(6041) << "found space adding " << tmpW << " new width = " << w << endl;
+			if ( w + tmpW > width )
+			    goto end;
+			lBreak.obj = o;
+			lBreak.pos = pos;
+			if( *ch == '\n' ) { 
+#ifdef DEBUG_LINEBREAKS
+			    kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+#endif
+			    return lBreak;
+			}
+			w += tmpW;
+			tmpW = 0;
+			last = ch;
+		    }
+		    ch++;
+		    pos++;
+		    len--;
+		}
+		tmpW += fm->width(QConstString(last, ch - last).string());
+	    }		    
+	} else 
+	    assert( false );
+#if 0
 	if( w + tmpW > width ) {
 	    // if we have floats, try to get below them.
 	    int fb = floatBottom();
@@ -908,21 +959,38 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		m_height = fb;
 		width = lineWidth(m_height);
 	    } else if( !w && current != start ) {
-#ifdef DEBUG_LINEBREAKS
-		kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << last.obj << " " << last.pos << "   width=" << w << endl;
-#endif
 		return last;
 	    } else {
-#ifdef DEBUG_LINEBREAKS
-		kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
-#endif
 		return lBreak;
 	    }
 	}
-	last = current;
-	++current;
+#endif
+	    if(w + tmpW < width) {
+		weakBreak.obj = o;
+		weakBreak.pos = pos;
+	    }
+	    o = start.par->next(o);
+	    pos = 0;
     }
+ end:
+
+#ifdef DEBUG_LINEBREAKS
+    kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+#endif
+    if( lBreak == start ) {
+	// we just add as much as possible
+	if ( m_pre ) {
+	    lBreak.obj = o;
+	    lBreak.pos =pos;
+	} else if( weakBreak != start )
+	    return weakBreak;
+    } else if( !o && w + tmpW < width ) {
+	lBreak.obj = 0;
+	lBreak.pos = 0;
+    }
+    return lBreak;
 }
+
 
 RenderObject *RenderFlow::first()
 {

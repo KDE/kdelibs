@@ -245,7 +245,7 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 void RenderObject::removeChild(RenderObject *oldChild)
 {
-    kdDebug() << "RenderObject::removeChild" << endl; 
+    //kdDebug() << "RenderObject::removeChild" << endl; 
     if (oldChild->previousSibling())
 	oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
     if (oldChild->nextSibling())

@@ -37,6 +37,7 @@
 #include "misc/loader.h"
 
 #include <qfontmetrics.h>
+#include <qfontinfo.h>
 #include <qfont.h>
 #include <qpainter.h>
 #include <qstring.h>
@@ -616,10 +617,10 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     if(from + len == int(str->l) && m_parent->isInline() && m_parent->lastChild()==this)
         width -= marginRight();
 
-    //#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
-//    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << bidiHeight() << " fontHeight=" << fm->height() << " ascent =" << fm->ascent() << endl;
-    //#endif
+    kdDebug( 6040 ) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << " height=" << bidiHeight() << " fontHeight=" << fm->height() << " ascent =" << fm->ascent() << endl;
+#endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
                                  bidiHeight(), baselineOffset(), width, deleteChar);
@@ -665,4 +666,9 @@ void RenderText::repaint()
     RenderObject *cb = containingBlock();
     if(cb != this)
         cb->repaint();
+}
+
+bool RenderText::isFixedWidthFont() const
+{
+    return QFontInfo(m_style->font()).fixedPitch();
 }

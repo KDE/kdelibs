@@ -105,14 +105,14 @@ public:
     void deleteSlaves();
 
     DOM::DOMString data() const { return str; }
-    DOM::DOMStringImpl *string() { return str; }
-
+    DOM::DOMStringImpl *string() const { return str; }
+     
     virtual void layout() {assert(false);}
 
     bool checkPoint(int _x, int _y, int _tx, int _ty, int &off);
 
     virtual unsigned int length() const { return str->l; }
-    virtual const QChar *text() const { return str->s; }
+    virtual QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse);
     virtual unsigned int width( int from, int len) const;
 
@@ -134,7 +134,10 @@ public:
     virtual short verticalPositionHint() const;
 
     virtual const QFont &font();
-
+    const QFontMetrics *metrics() const { return fm; }
+    
+    bool isFixedWidthFont() const;
+    
     void setText(DOM::DOMStringImpl *text);
 
     TextSlave *first() { return m_first; }
