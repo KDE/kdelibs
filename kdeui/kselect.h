@@ -80,16 +80,16 @@ public:
 signals:
   /**
    * This signal is emitted whenever the user chooses a value,
-   * e. g. by clicking with the mouse on the widget.
+   * e.g. by clicking with the mouse on the widget.
    */
   void valueChanged( int x, int y );
 
 protected:
   /**
    * Override this function to draw the contents of the widget.
-   * The default implementation doesn nothing.
+   * The default implementation does nothing.
    *
-   * Draw within contentsRect() only.
+   * Draw within @ref contentsRect() only.
    */
   virtual void drawContents( QPainter * );
   /**
@@ -223,21 +223,21 @@ public:
 signals:
   /**
    * This signal is emitted whenever the user chooses a value,
-   * e. g. by clicking with the mouse on the widget.
+   * e.g. by clicking with the mouse on the widget.
    */
   void valueChanged( int value );
 
 protected:
   /**
    * Override this function to draw the contents of the control.
-   * The default implementation doesn nothing.
+   * The default implementation does nothing.
    *
    * Draw only within contentsRect().
    */
   virtual void drawContents( QPainter * );
   /**
    * Override this function to draw the cursor which
-   * indicates the currently value. This function is
+   * indicates the current value. This function is
    * always called twice, once with argument show=false
    * to clear the old cursor, once with argument show=true
    * to draw the new one.
