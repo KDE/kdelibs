@@ -173,7 +173,7 @@ int StubProcess::ConverseStub(int check)
 }
 
 
-void StubProcess::notifyTaskbar(const QString &suffix)
+void StubProcess::notifyTaskbar(const QString &)
 {
     kdWarning(900) << "Obsolete StubProcess::notifyTaskbar() called!" << endl;
 }
