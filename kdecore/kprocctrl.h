@@ -47,13 +47,15 @@ class KProcessController : public QObject
 
 public:
   KProcessController();
+  ~KProcessController(); 
+  //CC: WARNING! Destructor Not virtual (but you don't derive classes from this anyhow...)
 
   QList<KProcess> *processList;
 
  public slots:
 
  void slotDoHousekeeping(int socket);
-//  void slotNoteSocket(int socket);
+
 private:
 
   static void theSigCHLDHandler(int signal);
