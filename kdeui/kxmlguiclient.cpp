@@ -17,7 +17,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kxmlguibase.h"
+#include "kxmlguiclient.h"
 #include "kxmlgui.h"
 
 #include <qdom.h>
@@ -70,7 +70,7 @@ KXMLGUIClient::KXMLGUIClient( KXMLGUIClient *parent )
 {
   d = new KXMLGUIClientPrivate;
   d->m_parent = parent;
-} 
+}
 
 KXMLGUIClient::~KXMLGUIClient()
 {
@@ -405,7 +405,7 @@ QDomElement KXMLGUIClient::findMatchingElement( const QDomElement &base, const Q
 
 void KXMLGUIClient::conserveMemory()
 {
-  d->m_doc = QDomDocument(); 
+  d->m_doc = QDomDocument();
 }
 
 void KXMLGUIClient::storeContainerStateBuffer( const QString &key, const QByteArray &data )

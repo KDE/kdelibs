@@ -19,7 +19,7 @@
 */
 
 #include "kxmlgui.h"
-#include "kxmlguibase.h"
+#include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 
 #include <assert.h>

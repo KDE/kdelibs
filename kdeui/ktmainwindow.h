@@ -30,7 +30,7 @@
 #include <ktoolbar.h>
 
 #include "kxmlgui.h"
-#include "kxmlguibase.h"
+#include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 
 class KConfig;
