@@ -110,11 +110,15 @@ Completion::Completion(Imp *d) : KJSO(d) { }
 Completion::Completion(Compl c)
   : KJSO(new CompletionImp(c, KJSO(), UString::null))
 {
+  if (c == Throw)
+    KJScriptImp::setException(new UndefinedImp());
 }
 
 Completion::Completion(Compl c, const KJSO& v, const UString &t)
   : KJSO(new CompletionImp(c, v, t))
 {
+  if (c == Throw)
+    KJScriptImp::setException(v.imp());
 }
 
 Completion::~Completion() { }

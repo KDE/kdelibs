@@ -238,6 +238,8 @@ namespace KJS {
     KJScriptImp();
     ~KJScriptImp();
     static KJScriptImp *current();
+    static void setException(Imp *e) { assert(curr); curr->exVal = e; }
+    static Imp *exception() { assert(curr); return curr->exVal; }
   private:
     /**
      * Initialize global object and context. For internal use only.
@@ -254,6 +256,7 @@ namespace KJS {
     Global glob;
     int errType;
     const char *errMsg;
+    Imp *exVal;
   };
   
 }; // namespace

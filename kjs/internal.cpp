@@ -387,7 +387,8 @@ KJScriptImp* KJScriptImp::curr = 0L;
 
 KJScriptImp::KJScriptImp()
   : initialized(false),
-    glob(0L)
+    glob(0L),
+    exVal(0L)
 {
   KJScriptImp::curr = this;
   lex = new Lexer();
@@ -412,6 +413,8 @@ void KJScriptImp::init()
 {
   KJScriptImp::curr = this;
 
+  exVal = 0L;
+
   if (!initialized) {
     collector = Collector::init();
     glob.init();
@@ -427,6 +430,8 @@ void KJScriptImp::clear()
     KJScriptImp::curr = this;
 
     Node::deleteAllNodes();
+
+    exVal = 0L;
 
     delete con; con = 0L;
     delete collector; collector = 0L;

@@ -121,7 +121,9 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
   delete Context::current();
   Context::setCurrent(save);
 
-  if (comp.isValueCompletion())
+  if (comp.complType() == Throw)
+    return comp.value();
+  else if (comp.isValueCompletion())
     return comp.value();
   else
     return Undefined();

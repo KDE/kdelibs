@@ -649,24 +649,32 @@ Completion BlockNode::execute()
 // ECMA 12.1
 Completion StatListNode::execute()
 {
-  if (!list)
-    return statement->execute();
+  if (!list) {
+    Completion c = statement->execute();
+    Imp *ex = KJScriptImp::exception();
+    if (ex) {
+      KJScriptImp::setException(0L);
+      return Completion(Throw, KJSO(ex));
+    } else
+      return c;
+  }
 
   Completion l = list->execute();
-  if (l.complType() != Normal) // Completion check needed ?
+  if (l.complType() != Normal)
     return l;
   Completion e = statement->execute();
-  if (e.isValueCompletion())
-    return e;
+  Imp *ex = KJScriptImp::exception();
+  if (ex) {
+    KJScriptImp::setException(0L);
+    return Completion(Throw, KJSO(ex));
+  }
+
   if (!l.isValueCompletion())
     return e;
-  KJSO v = l.getValue();
-  if (e.isA(CompletionType) && e.complType() == Break)
-    return Completion(Break, v);
-  if (e.isA(CompletionType) && e.complType() == Continue)
-    return Completion(Continue, v);
 
-  return Completion(Normal, v);
+  KJSO v = e.isValueCompletion() ? e.value() : l.value();
+  
+  return Completion(e.complType(), v /* e.target */);
 }
 
 // ECMA 12.2
@@ -1027,6 +1035,9 @@ Completion CatchNode::execute()
 // ECMA 12.14
 Completion CatchNode::execute(const KJSO &arg)
 {
+  /* TODO: correct ? Not part of the spec */
+  KJScriptImp::setException(0L);
+
   Object obj;
   obj.put(ident, arg, DontDelete);
   Context::current()->pushScope(obj);
