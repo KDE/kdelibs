@@ -1054,7 +1054,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             else if ( beginTag && tagID == ID_SCRIPT ) {
                 AttrImpl* a = 0;
                 scriptSrc = scriptSrcCharset = "";
-                if ( currToken.attrs && ( parser->doc()->view()->part()->onlyLocalReferences() ) ) {
+                if ( currToken.attrs && !parser->doc()->view()->part()->onlyLocalReferences()) {
                     if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
                         scriptSrc = khtml::parseURL( a->value() ).string();
                     if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
