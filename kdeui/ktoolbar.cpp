@@ -1366,6 +1366,11 @@ void KToolBar::showEvent( QShowEvent *e )
 {
     QToolBar::showEvent( e );
     rebuildLayout();
+#ifdef __GNUC__
+#warning workaround for a QToolbar bug in Qt 2.2.3
+#endif
+    QResizeEvent re(size(), size());
+    QToolBar::resizeEvent(&re);
 }
 
 void KToolBar::setStretchableWidget( QWidget *w )
