@@ -68,9 +68,11 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
       fileExtension = ".tmp";
    if (filePrefix.isEmpty())
    {
-      const char* tmpDir = 0;
-      tmpDir = getenv("TMPDIR");
-      filePrefix = tmpDir ? tmpDir : _PATH_TMP;
+      QCString tmpDir = getenv("TMPDIR");
+      if (tmpDir.isEmpty())
+         filePrefix = QFile::decodeName(_PATH_TMP);
+      else
+         filePrefix = QFile::decodeName(tmpDir);
       if (filePrefix.right(1) != "/")
          filePrefix += "/";
 
