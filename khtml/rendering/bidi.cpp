@@ -850,7 +850,11 @@ void RenderFlow::layoutInlineChildren()
             }
             if(!m_pre) {
                 // remove leading spaces
+#ifndef QT_NO_UNICODETABLES
                 while(!start.atEnd() && start.direction() == QChar::DirWS )
+#else
+                while(!start.atEnd() && start.direction() <= ' ' )
+#endif
                     ++start;
             }
             if( start.atEnd() ) break;
@@ -985,6 +989,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		pos++;
 		len--;
 	    }
+            // IMPORTANT: pos is > length here!
             tmpW += t->width(lastSpace, pos - lastSpace, &fm);
         } else
             assert( false );
