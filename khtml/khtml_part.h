@@ -710,10 +710,15 @@ signals:
 
 protected:
 
+#if QT_VERSION < 300
   /**
    * Reimplementation of KParts::ReadOnlyPart::event .
    */
   virtual bool event( QEvent *event );
+#else
+  virtual void customEvent( QCustomEvent *event );
+#endif
+
   /**
    * Reimplementation of QObject::eventFilter .
    */

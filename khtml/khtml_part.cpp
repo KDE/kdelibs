@@ -3637,6 +3637,7 @@ bool KHTMLPart::dndEnabled() const
   return d->m_bDnd;
 }
 
+#if QT_VERSION < 300
 bool KHTMLPart::event( QEvent *event )
 {
   if ( KParts::ReadOnlyPart::event( event ) )
@@ -3674,6 +3675,42 @@ bool KHTMLPart::event( QEvent *event )
 
   return false;
 }
+#else
+void KHTMLPart::customEvent( QCustomEvent *event )
+{
+  if ( khtml::MousePressEvent::test( event ) )
+  {
+    khtmlMousePressEvent( static_cast<khtml::MousePressEvent *>( event ) );
+    return;
+  }
+
+  if ( khtml::MouseDoubleClickEvent::test( event ) )
+  {
+    khtmlMouseDoubleClickEvent( static_cast<khtml::MouseDoubleClickEvent *>( event ) );
+    return;
+  }
+
+  if ( khtml::MouseMoveEvent::test( event ) )
+  {
+    khtmlMouseMoveEvent( static_cast<khtml::MouseMoveEvent *>( event ) );
+    return;
+  }
+
+  if ( khtml::MouseReleaseEvent::test( event ) )
+  {
+    khtmlMouseReleaseEvent( static_cast<khtml::MouseReleaseEvent *>( event ) );
+    return;
+  }
+
+  if ( khtml::DrawContentsEvent::test( event ) )
+  {
+    khtmlDrawContentsEvent( static_cast<khtml::DrawContentsEvent *>( event ) );
+    return;
+  }
+
+  KParts::ReadOnlyPart::customEvent( event );
+}
+#endif
 
 void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 {
@@ -3684,7 +3721,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 
    d->m_dragStartPos = _mouse->pos();
 
-  if ( event->url() != 0 )
+  if ( !event->url().isNull() )
     d->m_strSelectedURL = event->url().string();
   else
     d->m_strSelectedURL = QString::null;
@@ -3929,7 +3966,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 
 #ifndef QT_NO_CLIPBOARD
   QMouseEvent *_mouse = event->qmouseEvent();
-  if ((_mouse->button() == MidButton) && (event->url() == 0))
+  if ((_mouse->button() == MidButton) && (event->url().isNull()))
   {
     QClipboard *cb = QApplication::clipboard();
     QCString plain("plain");
