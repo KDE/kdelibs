@@ -253,3 +253,13 @@ KFileItem * KFilePreview::prevItem( const KFileItem *item ) const
 {
     return left->prevItem( item );
 }
+
+KActionCollection * KFilePreview::actionCollection() const
+{
+    if ( left )
+        return left->actionCollection();
+    else {
+        kdWarning() << "KFilePreview::actionCollection(): called before setFileView()." << endl; //ellis
+        return KFileView::actionCollection();
+    }
+}

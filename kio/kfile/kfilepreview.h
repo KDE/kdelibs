@@ -87,6 +87,14 @@ public:
 
     virtual void setSorting( QDir::SortSpec sort );
 
+    /**
+     * This overrides KFileView::actionCollection() by returning
+     * the actionCollection() of the KFileView (member left) it contains.
+     * This means that KFilePreview will never create a KActionCollection
+     * object of its own.
+     */
+    virtual KActionCollection * actionCollection() const;
+
     void ensureItemVisible(const KFileItem *);
 
     void setPreviewWidget(const QWidget *w, const KURL &u);
