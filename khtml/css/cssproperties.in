@@ -9,6 +9,8 @@
 # Mircosoft extensions are documented here:
 # http://msdn.microsoft.com/workshop/author/css/reference/attributes.asp
 #
+#azimuth
+#
 # CSS_PROP_BACKGROUND_COLOR:
 #
 background-color
@@ -44,9 +46,12 @@ color
 content
 counter-increment
 counter-reset
+#cue-after
+#cue-before
 cursor
 direction
 display
+#elevation
 empty-cells
 float
 font-family
@@ -65,6 +70,7 @@ margin-top
 margin-right
 margin-bottom
 margin-left
+marker-offset
 max-height
 max-width
 min-height
@@ -82,10 +88,22 @@ padding-left
 page-break-after
 page-break-before
 page-break-inside
+#pause-after
+#pause-before
+#pitch
+#pitch-range
+#play-during
 position
 quotes
+#richness
 right
 size
+#speak
+#speak-header
+#speak-numeral
+#speak-punctuation
+#speech-rate
+#stress
 table-layout
 text-align
 text-decoration
@@ -95,6 +113,8 @@ top
 unicode-bidi
 vertical-align
 visibility
+#voice-family
+#volume
 white-space
 widows
 width
@@ -109,11 +129,13 @@ border-right
 border-bottom
 border-left
 border-width
+#cue
 font
 list-style
 margin
 outline
 padding
+#pause
 # some more IE extensions
 scrollbar-base-color
 scrollbar-face-color
