@@ -4389,7 +4389,7 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
 
   if ( !linkProto.isEmpty() && !proto.isEmpty() &&
        ( linkProto == "cgi" || linkProto == "file" ) &&
-       proto != "file" && proto != "cgi" && proto != "man")
+       proto != "file" && proto != "cgi" && proto != "man" && proto != "about")
   {
     Tokenizer *tokenizer = d->m_doc->tokenizer();
     if (tokenizer)
