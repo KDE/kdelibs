@@ -109,3 +109,4 @@ void KFileList::slotAddFile()
 	if (!fname.isEmpty())
 		addFiles(QStringList(fname));
 }
+#include "kfilelist.moc"

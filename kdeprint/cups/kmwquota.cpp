@@ -163,3 +163,4 @@ void KMWQuota::updatePrinter(KMPrinter *p)
 	p->setOption("job-k-limit", QString::number(si));
 	p->setOption("job-page-limit", QString::number(pa));
 }
+#include "kmwquota.moc"
