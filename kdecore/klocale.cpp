@@ -45,8 +45,6 @@ char *k_bindtextdomain (const char *__domainname,
  
 #define SYSTEM_MESSAGES "kde"
 
-KLocale *KLocale::pLocale = NULL;
-
 #ifdef ENABLE_NLS
 
 KLocale::KLocale( const char *_catalogue ) 
@@ -94,21 +92,15 @@ KLocale::KLocale( const char *_catalogue )
     k_bindtextdomain ( catalogue , directory);
     k_bindtextdomain ( SYSTEM_MESSAGES,  directory);
 
-    if (pLocale == NULL)
-	pLocale = this;
 }
 
 KLocale::~KLocale()
 {
     delete [] catalogue;
-    if (pLocale == this)
-	pLocale = NULL; // this may be a problem, if some other instance exist
 }
 
 const char *KLocale::translate(const char *msgid)
 {
-
-
     char *text = k_dcgettext( catalogue, msgid, lang.data() );
 
     if (text == msgid) // just compare the pointers
@@ -131,14 +123,10 @@ void KLocale::aliasLocale( const char* text, long int index)
 
 KLocale::KLocale( const char *) 
 {
-    if (pLocale == NULL)
-	pLocale = this;  
 }
 
 KLocale::~KLocale() 
 {
-    if (pLocale == this)
-	pLocale = NULL; // this may be a problem, if some other instance exis
 }
 
 const char *KLocale::translate(const char *msgid)
