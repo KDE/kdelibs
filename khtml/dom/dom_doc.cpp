@@ -402,7 +402,9 @@ StyleSheetList Document::styleSheets() const
 
 KHTMLView *Document::view() const
 {
-    return ((DocumentImpl*)impl)->view();
+    if (!impl) return 0;
+
+    return static_cast<DocumentImpl*>(impl)->view();
 }
 
 DOMString Document::completeURL(const DOMString& url)
