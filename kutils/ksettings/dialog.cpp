@@ -276,6 +276,39 @@ void Dialog::parseGroupFile( const QString & filename )
 	}
 }
 
+void Dialog::setupTreeListDialog()
+{
+	d->dlg->setShowIconsInTreeList( true );
+
+	setGroupIcons();
+
+	for( KCModuleInfo * info = d->moduleinfos.first(); info;
+			info = d->moduleinfos.next() )
+	{
+		QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
+				QVariant::String );
+		if( ! tmp.isValid() )
+			continue;
+		QString id = tmp.toString();
+		if( ! d->groupmap.contains( id ) )
+			// the KCM wants to be a child of a not existing group
+			continue;
+
+		// ok, this module is a child in some group. KDialogBase needs a
+		// QStringList of the parent pages to put this module at the right
+		// place. Create that list:
+		DialogPrivate::GroupInfo gi = d->groupmap[ id ];
+		QStringList parentnames;
+		parentnames.prepend( gi.name );
+		while( ! gi.parent.isNull() && d->groupmap.contains( gi.parent ) )
+		{
+			gi = d->groupmap[ gi.parent ];
+			parentnames.prepend( gi.name );
+		}
+		d->parentmodulenames[ info ] = parentnames;
+	}
+}
+
 void Dialog::createDialogFromServices()
 {
 	QString setdlgpath = locate( "appdata",
@@ -304,43 +337,18 @@ void Dialog::createDialogFromServices()
 		d->moduleinfos.append( moduleinfo );
 	}
 
-	kdDebug( 700 ) << "creating KCMultiDialog" << endl;
+	int dialogface = KJanusWidget::Plain;
 	if( d->groupmap.size() > 1 )
-	{
-		// we need a treelist dialog
-		d->dlg = new KCMultiDialog( KJanusWidget::TreeList,
-				i18n( "Preferences" ) );
-		d->dlg->setShowIconsInTreeList( true );
-
-		setGroupIcons();
-
-		for( KCModuleInfo * info = d->moduleinfos.first(); info;
-				info = d->moduleinfos.next() )
-		{
-			QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
-					QVariant::String );
-			if( ! tmp.isValid() )
-				continue;
-			QString id = tmp.toString();
-			if( ! d->groupmap.contains( id ) )
-				continue;
-			DialogPrivate::GroupInfo gi = d->groupmap[ id ];
-			QStringList parentnames;
-			parentnames.prepend( gi.name );
-			while( ! gi.parent.isNull() && d->groupmap.contains( gi.parent ) )
-			{
-				gi = d->groupmap[ gi.parent ];
-				parentnames.prepend( gi.name );
-			}
-			d->parentmodulenames[ info ] = parentnames;
-		}
-	}
+		dialogface = KJanusWidget::TreeList;
 	else if( d->moduleinfos.count() > 1 || ! d->staticlistview )
-		d->dlg = new KCMultiDialog( KJanusWidget::IconList,
-				i18n( "Preferences" ), d->parentwidget );
-	else
-		d->dlg = new KCMultiDialog( KJanusWidget::Plain,
-				i18n( "Preferences" ), d->parentwidget );
+		dialogface = KJanusWidget::IconList;
+
+	kdDebug( 700 ) << "creating KCMultiDialog" << endl;
+	d->dlg = new KCMultiDialog( dialogface, i18n( "Configure" ),
+			d->parentwidget );
+
+	if( dialogface == KJanusWidget::TreeList )
+		setupTreeListDialog();
 
 	// TODO: Don't show the reset button until the issue with the
 	// KPluginSelector::load() method is solved.

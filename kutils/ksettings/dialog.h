@@ -182,8 +182,28 @@ class Dialog : public QObject
         QValueList<KService::Ptr> instanceServices() const;
         QValueList<KService::Ptr> parentComponentsServices(
                 const QStringList & ) const;
+        /**
+         * @internal
+         * Read the .setdlg file and add it to the groupmap
+         */
         void parseGroupFile( const QString & );
+
+        /**
+         * @internal
+         * If the dialog is constructed as a TreeList this method will do the
+         * necessary things to collect information needed for the tree
+         * structure.
+         */
+        void setupTreeListDialog();
+
+        /**
+         * @internal
+         * This method is called only once. The KCMultiDialog is not created
+         * until it's really needed. So if some method needs to access d->dlg it
+         * checks for 0 and if it's not created this method will do it.
+         */
         void createDialogFromServices();
+
         class DialogPrivate;
         DialogPrivate * d;
 };
