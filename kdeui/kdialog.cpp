@@ -169,13 +169,9 @@ void KDialog::resizeLayout( QLayoutItem *lay, int margin, int spacing )
   }
 }
 
-void KDialog::centerOnScreen( QWidget *w, int screen )
+static QRect screenRect( QWidget *w, int screen )
 {
-  if ( !w )
-    return;
-
   QDesktopWidget *desktop = QApplication::desktop();
-  QRect r;
   KConfig gc("kdeglobals", false, false);
   gc.setGroup("Windows");
   if (desktop->isVirtualDesktop() &&
@@ -190,13 +186,72 @@ void KDialog::centerOnScreen( QWidget *w, int screen )
         screen = desktop->screenNumber( w );
       }
     }
-    r = desktop->screenGeometry(screen);
+    return desktop->screenGeometry(screen);
   } else {
-    r = desktop->geometry();
+    return desktop->geometry();
   }
+}
+
+void KDialog::centerOnScreen( QWidget *w, int screen )
+{
+  if ( !w )
+    return;
+  QRect r = screenRect( w, screen );
 
   w->move( r.center().x() - w->width()/2,
            r.center().y() - w->height()/2 );
+}
+
+bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
+{
+  if ( !w )
+    return false;
+  QRect fg = w->frameGeometry();
+  if ( !fg.intersects( area ) )
+    return true; // nothing to do.
+
+  QRect scr = screenRect( w, screen );
+  QRect avoid( area ); // let's add some margin
+  avoid.moveBy( -5, -5 );
+  avoid.rRight() += 10;
+  avoid.rBottom() += 10;
+
+  if ( QMAX( fg.top(), avoid.top() ) <= QMIN( fg.bottom(), avoid.bottom() ) )
+  {
+    // We need to move the widget up or down
+    int spaceAbove = QMAX(0, avoid.top() - scr.top());
+    int spaceBelow = QMAX(0, scr.bottom() - avoid.bottom());
+    if ( spaceAbove > spaceBelow ) // where's the biggest side?
+      if ( fg.height() <= spaceAbove ) // big enough?
+        fg.setY( avoid.top() - fg.height() );
+      else
+        return false;
+    else
+      if ( fg.height() <= spaceBelow ) // big enough?
+        fg.setY( avoid.bottom() );
+      else
+        return false;
+  }
+
+  if ( QMAX( fg.left(), avoid.left() ) <= QMIN( fg.right(), avoid.right() ) )
+  {
+    // We need to move the widget left or right
+    int spaceLeft = QMAX(0, avoid.left() - scr.left());
+    int spaceRight = QMAX(0, scr.right() - avoid.right());
+    if ( spaceLeft > spaceRight ) // where's the biggest side?
+      if ( fg.width() <= spaceLeft ) // big enough?
+        fg.setX( avoid.left() - fg.width() );
+      else
+        return false;
+    else
+      if ( fg.width() <= spaceRight ) // big enough?
+        fg.setX( avoid.right() );
+      else
+        return false;
+  }
+  //kdDebug() << "Moving window to " << fg.x() << "," << fg.y() << endl;
+  w->move(fg.x(), fg.y());
+  return true;
 }
 
 class KDialogQueuePrivate
