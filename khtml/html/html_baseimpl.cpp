@@ -692,3 +692,15 @@ void HTMLIFrameElementImpl::applyChanges(bool top, bool force)
     }
     HTMLElementImpl::applyChanges(top,force);
 }
+
+DocumentImpl* HTMLIFrameElementImpl::frameDocument() const
+{
+    if ( !m_render ) return 0;
+
+    RenderPartObject* render = static_cast<RenderPartObject*>( m_render );
+
+    if(render->m_widget && render->m_widget->inherits("KHTMLView"))
+        return static_cast<KHTMLView*>( render->m_widget )->part()->xmlDocImpl();
+
+    return 0;
+}

@@ -157,7 +157,6 @@ protected:
     int m_totalRows;
     int m_totalCols;
 
-    // mozilla and others use this in the frameset, although it's not standard html4
     int m_border;
     bool frameborder : 1;
     bool frameBorderSet : 1;
@@ -221,6 +220,8 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach();
     virtual void applyChanges(bool = true, bool = true);
+
+    DOM::DocumentImpl* frameDocument() const;
 protected:
     bool needWidgetUpdate;
 };
