@@ -218,6 +218,7 @@ k_dcop:
     ASYNC print( bool quick );
 
     void debugRenderTree();
+    void debugDOMTree();
     void viewDocumentSource();
     void viewFrameSource();
     void saveBackground(const QString &url);
