@@ -59,6 +59,7 @@ FMOut::FMOut( int d, int total )
 FMOut::~FMOut()
 {
   closeDev();
+  delete vm;
   if (deleteFMPatchesDirectory)
   {
     delete FMPatchesDirectory;

@@ -141,9 +141,9 @@ DeviceManager::~DeviceManager(void)
   closeDev();
   if (device)
   {
-    for (int i=0;i<n_midi;i++)
+    for (int i=0;i<n_total;i++)
       delete device[i];
-    delete device;
+    delete[] device;
     device=0L;
   }
 #ifdef HAVE_OSS_SUPPORT

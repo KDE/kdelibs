@@ -124,6 +124,8 @@ GUSOut::GUSOut(int d,int total)
 GUSOut::~GUSOut()
 {
   closeDev();
+  
+  delete vm;
   if (delete_GUS_patches_directory)
   {
     delete GUS_patches_directory;
