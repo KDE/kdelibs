@@ -453,7 +453,8 @@ void KMainWindow::showAboutApplication( void )
 
 void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 {
-    // in order they are in toolbar list
+    bool oldASWS = d->autoSaveWindowSize;
+    d->autoSaveWindowSize = true; // make saveMainWindowSettings save the window size
 
     QString s;
     s.setNum(number);
@@ -463,6 +464,8 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     s.setNum(number);
     config->setGroup(s);
     saveProperties(config);
+
+    d->autoSaveWindowSize = oldASWS;
 }
 
 void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configGroup)
@@ -472,18 +475,19 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     QStrList entryList;
 
     if (!configGroup.isEmpty())
+    {
        config->setGroup(configGroup);
 
-    // Called by session management - or if we want to save the window size anyway
-    if (!configGroup.isEmpty() || d->autoSaveWindowSize)
-    {
        // store objectName, className, Width and Height  for later restoring
+       // (Only useful for session management, so it pollutes a bit normal groups)
+       // Maybe this should be done in savePropertiesInternal.
        config->writeEntry(QString::fromLatin1("ObjectName"), name());
        config->writeEntry(QString::fromLatin1("ClassName"), className());
-       QWidget *desk = KApplication::desktop();
-       config->writeEntry(QString::fromLatin1("Width %1").arg(desk->width()), width() );
-       config->writeEntry(QString::fromLatin1("Height %1").arg(desk->height()), height() );
     }
+
+    // Called by session management - or if we want to save the window size anyway
+    if ( d->autoSaveWindowSize )
+        saveWindowSize( config );
 
     if (internalStatusBar()) {
         entryList.clear();
@@ -555,26 +559,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
         setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
 
-    if (d->care_about_geometry) {
-        parseGeometry(true);
-    } else {
-        // restore the size
-        QWidget *desk = KApplication::desktop();
-        QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk->width()), 0 ),
-                    config->readNumEntry( QString::fromLatin1("Height %1").arg(desk->height()), 0 ) );
-        if (size.isEmpty()) {
-            // try the KDE 2.0 way
-            size = QSize( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
-                          config->readNumEntry( QString::fromLatin1("Height"), 0 ) );
-            if (!size.isEmpty()) {
-                // make sure the other resolutions don't get old settings
-                config->writeEntry( QString::fromLatin1("Width"), 0 );
-                config->writeEntry( QString::fromLatin1("Height"), 0 );
-            }
-        }
-        if ( !size.isEmpty() )
-            resize( size );
-    }
+    restoreWindowSize(config);
 
     if (internalStatusBar()) {
         entryList.clear();
@@ -634,6 +619,42 @@ void KMainWindow::finalizeGUI( bool force )
         it.current()->positionYourself( force );
 
     d->settingsDirty = false;
+}
+
+void KMainWindow::saveWindowSize( KConfig * config ) const
+{
+    QWidget *desk = KApplication::desktop();
+    config->writeEntry(QString::fromLatin1("Width %1").arg(desk->width()), width() );
+    config->writeEntry(QString::fromLatin1("Height %1").arg(desk->height()), height() );
+}
+
+void KMainWindow::restoreWindowSize( KConfig * config )
+{
+    if (d->care_about_geometry) {
+        parseGeometry(true);
+    } else {
+        // restore the size
+        QWidget *desk = KApplication::desktop();
+        QSize size( config->readNumEntry( QString::fromLatin1("Width %1").arg(desk->width()), 0 ),
+                    config->readNumEntry( QString::fromLatin1("Height %1").arg(desk->height()), 0 ) );
+        if (size.isEmpty()) {
+            // try the KDE 2.0 way
+            size = QSize( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
+                          config->readNumEntry( QString::fromLatin1("Height"), 0 ) );
+            if (!size.isEmpty()) {
+                // make sure the other resolutions don't get old settings
+                config->writeEntry( QString::fromLatin1("Width"), 0 );
+                config->writeEntry( QString::fromLatin1("Height"), 0 );
+            }
+        }
+        if ( !size.isEmpty() )
+            resize( size );
+    }
+}
+
+bool KMainWindow::initialGeometrySet() const
+{
+    return d->care_about_geometry;
 }
 
 void KMainWindow::setSettingsDirty()

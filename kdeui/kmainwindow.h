@@ -367,6 +367,12 @@ public:
      */
     void finalizeGUI( bool force );
 
+    /**
+     * @return true if a -geometry argument was given on the command line,
+     * and this is the first window created (the one on which this option applies)
+     */
+    bool initialGeometrySet() const;
+
 public slots:
     /**
      * Makes a KDE compliant caption.
@@ -549,6 +555,17 @@ protected:
      * For inherited classes
      */
     QString settingsGroup() const;
+    /**
+     * For inherited classes
+     * Note that the group must be set before calling
+     */
+    void saveWindowSize( KConfig * config ) const;
+    /**
+     * For inherited classes
+     * Note that the group must be set before calling, and that
+     * a -geometry on the command line has priority.
+     */
+    void restoreWindowSize( KConfig * config );
 
     /// parse the geometry from the geometry command line argument
     void parseGeometry(bool parsewidth);
