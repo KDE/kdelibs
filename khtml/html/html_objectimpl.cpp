@@ -39,6 +39,7 @@
 #include "css/cssvalues.h"
 #include "rendering/render_applet.h"
 #include "rendering/render_frames.h"
+#include "rendering/render_image.h"
 #include "xml/dom2_eventsimpl.h"
 
 #ifndef Q_WS_QWS // We don't have Java in Qt Embedded
@@ -239,7 +240,8 @@ NodeImpl::Id HTMLEmbedElementImpl::id() const
 void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
-  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+  QConstString cv( stringImpl->s, stringImpl->l );
+  QString val = cv.string();
 
   int pos;
   switch ( attr->id() )
@@ -397,31 +399,33 @@ void HTMLObjectElementImpl::attach()
     assert(!m_render);
 
     KHTMLView* w = getDocument()->view();
-    bool loadplugin = w->part()->pluginsEnabled();
-    if (!loadplugin) {
+    if (w->part()->pluginsEnabled()) {
         // render alternative content
         ElementImpl::attach();
         return;
     }
 
-    KURL u = getDocument()->completeURL(url);
-    for (KHTMLPart* part = w->part()->parentPart(); part; part = part->parentPart())
-        if (part->url() == u) {
-            loadplugin = false;
-            break;
-        }
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
 
-    if (loadplugin && parentNode()->renderer()) {
-        needWidgetUpdate = false;
-        m_render = new RenderPartObject(this);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+    if (parentNode()->renderer() && _style->display() != NONE) {
+        needWidgetUpdate=false;
+
+        if (serviceType.startsWith("image/"))
+            m_render = new RenderImage(this);
+        else
+            m_render = new RenderPartObject(this);
+
+        m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
 
+    _style->deref();
+
     NodeBaseImpl::attach();
 
-  // ### do this when we are actually finished loading instead
-  dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+    // ### do this when we are actually finished loading instead
+    if (m_render)  dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
 void HTMLObjectElementImpl::detach()
@@ -445,19 +449,6 @@ void HTMLObjectElementImpl::recalcStyle( StyleChange ch )
 
 // -------------------------------------------------------------------------
 
-HTMLParamElementImpl::HTMLParamElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-    m_name = 0;
-    m_value = 0;
-}
-
-HTMLParamElementImpl::~HTMLParamElementImpl()
-{
-    if(m_name) m_name->deref();
-    if(m_value) m_value->deref();
-}
-
 NodeImpl::Id HTMLParamElementImpl::id() const
 {
     return ID_PARAM;
@@ -471,12 +462,10 @@ void HTMLParamElementImpl::parseAttribute(AttributeImpl *attr)
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
         // fall through
     case ATTR_NAME:
-        m_name = attr->val();
-        if (m_name) m_name->ref();
+        m_name = attr->value().string();
         break;
     case ATTR_VALUE:
-        m_value = attr->val();
-        if (m_value) m_value->ref();
+        m_value = attr->value().string();
         break;
     }
 }

@@ -370,6 +370,34 @@ void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
 	addCSSProperty( CSS_PROP_VERTICAL_ALIGN, propvalign );
 }
 
+bool HTMLElementImpl::isURLAllowed(const QString& url) const
+{
+    KHTMLView *w = getDocument()->view();
+
+    KURL newURL(getDocument()->completeURL(url));
+    newURL.setRef(QString::null);
+
+    // Prohibit non-file URLs if we are asked to.
+    if (w->part()->onlyLocalReferences() && newURL.protocol() != "file")
+        return false;
+
+    // We allow one level of self-reference because some sites depend on that.
+    // But we don't allow more than one.
+    bool foundSelfReference = false;
+    for (KHTMLPart *part = w->part(); part; part = part->parentPart()) {
+        KURL partURL = part->url();
+        partURL.setRef(QString::null);
+        if (partURL == newURL) {
+            if (foundSelfReference)
+                return false;
+            foundSelfReference = true;
+        }
+    }
+
+    return true;
+}
+
+
 
 // -------------------------------------------------------------------------
 HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentPtr *doc, ushort i)
