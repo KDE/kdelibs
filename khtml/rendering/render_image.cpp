@@ -88,14 +88,13 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     // Image dimensions have been changed, see what needs to be done
     if(o->pixmap_size() !=  pixSize)
     {
-        //Debug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
-        //     o->pixmap_size().width(), o->pixmap_size().height());
+//         qDebug("image dimensions have been changed, old: %d/%d  new: %d/%d", pixSize.width(), pixSize.height(),
+//              o->pixmap_size().width(), o->pixmap_size().height());
 
         if(!o->isErrorImage())
             pixSize = o->pixmap_size();
 
         // lets see if we need to relayout at all..
-        bool needlayout = false;
         int oldwidth = m_width;
         int oldheight = m_height;
         calcWidth();
@@ -114,8 +113,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     {
         setLayouted(false);
         setMinMaxKnown(false);
-        //kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
-        //kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
+//         kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
+//         kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
         // the updateSize() call should trigger a repaint too
         if (manualUpdate) {
            *manualUpdate = true;
