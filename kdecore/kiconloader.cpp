@@ -400,14 +400,12 @@ QString KIconLoader::iconPath( const QString& name, bool always_valid)
       path.truncate(path.length() - 4);
       warning("stripping .xpm from icon %s", name.ascii());
     }
-
-    full_path = locate(iconType, path, library);
-
-    if (full_path.isNull())
-      full_path = locate(iconType, path + ".png", library);
+    full_path = locate(iconType, path + ".png", library);
     if (full_path.isNull())
       full_path = locate(iconType, path + ".xpm", library );
 
+    if (full_path.isNull())
+      full_path = locate(iconType, path, library);
   }
   if (full_path.isNull() && always_valid)
     full_path = locate(iconType, "unknown.png", library);
