@@ -67,10 +67,11 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 # in ksharedpixmap.cpp
 libkdeui_la_SOURCES = \
 		qxembed.cpp ksharedpixmap.cpp \
+		kpopupmenu.cpp kaction.cpp kstdaction.cpp \
 		kurllabel.cpp \
 		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
 		kcolordialog.cpp kselect.cpp kdatepicker.cpp \
-		kdatetbl.cpp kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
+		kdatetbl.cpp kfontdialog.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp \
 		kmenubar.cpp kpixmapio.cpp keditlistbox.cpp \
 		kseparator.cpp krestrictedline.cpp  \
@@ -84,8 +85,8 @@ libkdeui_la_SOURCES = \
 		kjanuswidget.cpp kaboutdialog.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbutton.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
-		ktextbrowser.cpp kaction.cpp khelpmenu.cpp \
-		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp \
+		ktextbrowser.cpp khelpmenu.cpp \
+		kcmenumngr.cpp kpanelmenu.cpp \
 		kiconview.cpp klistbox.cpp kwordwrap.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 		kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp \
