@@ -152,8 +152,11 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
 	addCSSProperty(CSS_PROP_MARGIN_TOP, str);
         addCSSProperty(CSS_PROP_MARGIN_BOTTOM, str);
     }
-
+        
+    document->createSelector();        
+    
     setStyle(document->styleSelector()->styleForElement( this ));
+    
     khtml::RenderObject *r = _parent->renderer();
 
     if ( !r )
@@ -162,10 +165,9 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
     m_render = new khtml::RenderBody();
     m_render->setStyle(m_style);
     r->addChild( m_render, _next ? _next->renderer() : 0 );
-
-    NodeBaseImpl::attach( w );
     
-    document->applyChanges();
+    NodeBaseImpl::attach( w );
+
 }
 
 // -------------------------------------------------------------------------
