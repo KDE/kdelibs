@@ -946,12 +946,11 @@ KLauncher::removeArg( QValueList<QCString> &args, const QCString &target)
 ///// IO-Slave functions
 
 pid_t
-KLauncher::requestSlave(const QString &_protocol,
+KLauncher::requestSlave(const QString &protocol,
                         const QString &host,
                         const QString &app_socket, QString &error)
 {
-    QString protocol = KProtocolManager::slaveProtocol( _protocol );
-    kdDebug(7016) << "KLauncher::requestSlave for " << _protocol << ": looking for a slave handling " << protocol << endl;
+    kdDebug(7016) << "KLauncher::requestSlave for " << protocol << ": looking for a slave handling " << protocol << endl;
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
     {
@@ -982,15 +981,15 @@ KLauncher::requestSlave(const QString &_protocol,
        return slave->pid();
     }
 
-    QString _name = KProtocolInfo::exec(_protocol);
+    QString _name = KProtocolInfo::exec(protocol);
     if (_name.isEmpty())
     {
-	error = i18n("Unknown protocol '%1'.\n").arg(_protocol);
+	error = i18n("Unknown protocol '%1'.\n").arg(protocol);
         return 0;
     }
 
     QCString name = _name.latin1(); // ex: "kio_ftp"
-    QCString arg1 = _protocol.latin1();
+    QCString arg1 = protocol.latin1();
     QCString arg2 = QFile::encodeName(mPoolSocketName);
     QCString arg3 = QFile::encodeName(app_socket);
     QValueList<QCString> arg_list;
@@ -998,7 +997,7 @@ KLauncher::requestSlave(const QString &_protocol,
     arg_list.append(arg2);
     arg_list.append(arg3);
 
-    kdDebug(7016) << "KLauncher: launching new slave " << _name << " with protocol=" << _protocol << endl;
+    kdDebug(7016) << "KLauncher: launching new slave " << _name << " with protocol=" << protocol << endl;
     if (mSlaveDebug == arg1)
     {
        klauncher_header request_header;
