@@ -1401,7 +1401,7 @@ SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 
 ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix, bool _includeHidden) :
     SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
-    recursive(_recursive), prefix(_prefix), includeHidden(_includeHidden), m_processedEntries(0)
+    recursive(_recursive), includeHidden(_includeHidden), prefix(_prefix), m_processedEntries(0)
 {
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
