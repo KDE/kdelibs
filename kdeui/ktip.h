@@ -120,7 +120,7 @@ public:
      * this method with force=true.
      *
      * @param parent Parent widget of TipDialog.
-     * @param tipFile The name of the tip file. It has be relative to the "apps"
+     * @param tipFile The name of the tip file. It has be relative to the "data"
      *                resource of KStandardDirs
      * @param force If true, the dialog is show, even when the users
      *              disabled it.
