@@ -67,9 +67,13 @@ public:
   /**
    * An enumeration type for the buttons used by this module.
    *
-   * @see KCModule::buttons
+   * @see KCModule::buttons @see KCModule::setButtons
    */
-  enum Button {Help=1, Default=2, Reset=4, Cancel=8, Apply=16, Ok=32, SysDefault=64};
+  enum Button {Help=1, Default=2, Apply=16,
+               Reset=4, /* obsolete, do not use! */
+               Cancel=8, /* obsolete, do not use! */
+               Ok=32, /* obsolete, do not use! */
+  	       SysDefault=64 /* obsolete, do not use! */ };
 
   /*
    * Creates a new module.
@@ -192,13 +196,12 @@ protected:
   /**
    * Set the buttons to display.
    *
-   * The control center displays 7 buttons:
+   * Help: shows a "Help" button.
+   * Default: shows a "Use Defaults" button
+   * Apply: in kcontrol this will show an "Apply" and "Reset" button
+   *        in kcmshell this will show an "Ok", "Apply" and "Cancel" button
    *
-   * Help, Default, Reset, Cancel, Apply, Ok, System defaults
-   *
-   * Not all of these make sense for all modules, so you
-   * can use this method to set the buttons to be enabled when
-   * your module is displayed.
+   * If Apply is not specified, kcmshell will show a "Close" button.
    *
    * @see KCModule::buttons
    */
