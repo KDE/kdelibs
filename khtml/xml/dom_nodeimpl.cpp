@@ -688,16 +688,16 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
     if (!m_regdListeners)
         return;
 
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     Event ev = evt;
-    for (; it.current(); ++it) {
-        if (it.current()->id == evt->id() && it.current()->useCapture == useCapture)
-            it.current()->listener->handleEvent(ev);
+    for (QPtrListIterator<RegisteredEventListener> it(*m_regdListeners); it.current();) {
+        RegisteredEventListener* current = it();
+        if (current->id == evt->id() && current->useCapture == useCapture)
+            current->listener->handleEvent(ev);
         // ECMA legacy hack
-        if (it.current()->useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT &&
-            ( ( static_cast<MouseEventImpl*>(evt)->detail() == 1 && it.current()->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
-              ( static_cast<MouseEventImpl*>(evt)->detail() > 1 && it.current()->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) ) )
-            it.current()->listener->handleEvent(ev);
+        if (current->useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT &&
+            ( ( static_cast<MouseEventImpl*>(evt)->detail() == 1 && current->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
+              ( static_cast<MouseEventImpl*>(evt)->detail() > 1 && current->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) ) )
+            current->listener->handleEvent(ev);
     }
 }
 
