@@ -183,6 +183,9 @@ void KFontCombo::setFonts(const QStringList &fonts)
         new KFontListItem(*it, this);
 }
 
+/*
+ * Maintenance note: Keep in sync with KFontAction::setFont() 
+ */
 void KFontCombo::setCurrentFont(const QString &family)
 {
     d->defaultFamily = family;

@@ -1984,16 +1984,47 @@ KFontAction::~KFontAction()
     d = 0;
 }
 
+/*
+ * Maintenance note: Keep in sync with KFontCombo::setCurrentFont() 
+ */
 void KFontAction::setFont( const QString &family )
 {
-  int i = 0;
-  for ( QStringList::Iterator it = d->m_fonts.begin(); it != d->m_fonts.end(); ++it, ++i )
-    if ( (*it).lower() == family.lower() )
+    QString lowerName = family.lower();
+    int i = 0;
+    for ( QStringList::Iterator it = d->m_fonts.begin(); it != d->m_fonts.end(); ++it, ++i )
     {
-      setCurrentItem( i );
-      return;
+       if ((*it).lower() == lowerName)
+       {
+          setCurrentItem(i);
+          return;
+       }
     }
-  kdDebug() << "Font not found " << family.lower() << endl;
+    i = lowerName.find(" [");
+    if (i>-1)
+    {
+       lowerName = lowerName.left(i);
+       i = 0;
+       for ( QStringList::Iterator it = d->m_fonts.begin(); it != d->m_fonts.end(); ++it, ++i )
+       {
+          if ((*it).lower() == lowerName)
+          {
+             setCurrentItem(i);
+             return;
+          }
+       }
+    }    
+
+    lowerName += " [";
+    i = 0;
+    for ( QStringList::Iterator it = d->m_fonts.begin(); it != d->m_fonts.end(); ++it, ++i )
+    {
+       if ((*it).lower().startsWith(lowerName))
+       {
+          setCurrentItem(i);
+          return;
+       }
+    }
+    kdDebug(125) << "Font not found " << family.lower() << endl;
 }
 
 int KFontAction::plug( QWidget *w, int index )
