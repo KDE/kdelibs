@@ -23,7 +23,7 @@
 
 #include <qframe.h>
 #include <qrangecontrol.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 /**
  * A ruler widget.

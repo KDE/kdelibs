@@ -24,7 +24,7 @@
 #include <qptrlist.h>
 #include <qstring.h>
 #include <qobject.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class KAction;
 class KActionCollection;

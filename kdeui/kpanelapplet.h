@@ -28,7 +28,6 @@ class KConfig;
 class QPopupMenu;
 
 #include <qframe.h>
-#include <kdemacros.h>
 #include <kconfig.h>
 
 /**

@@ -27,7 +27,6 @@
 #include <qmainwindow.h>
 #include <qmetaobject.h>
 #include <ktoolbar.h>
-#include <kdemacros.h>
 
 class KPopupMenu;
 class KXMLGUIFactory;

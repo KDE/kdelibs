@@ -28,7 +28,6 @@
 #include <kguiitem.h>
 #include <kstdguiitem.h>
 #include <qptrlist.h>
-#include <kdemacros.h>
 
 class QPushButton;
 class KSeparator;

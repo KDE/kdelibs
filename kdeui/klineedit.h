@@ -32,7 +32,6 @@
 
 #include <qlineedit.h>
 #include <kcompletion.h>
-#include <kdemacros.h>
 
 class QPopupMenu;
 

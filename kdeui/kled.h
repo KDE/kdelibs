@@ -24,7 +24,7 @@
 #define _KLED_H_
 
 #include <qwidget.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class QColor;
 /**

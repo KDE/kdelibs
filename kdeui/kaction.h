@@ -34,7 +34,6 @@
 #include <kshortcut.h>
 #include <kstdaction.h>
 #include <kicontheme.h>
-#include <kdemacros.h>
 
 class QMenuBar;
 class QPopupMenu;

@@ -23,7 +23,7 @@
 #include <qlistview.h>
 
 #include <qptrlist.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class QDragObject;
 class KConfig;

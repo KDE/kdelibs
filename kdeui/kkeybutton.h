@@ -22,7 +22,6 @@
 
 #include <qpushbutton.h>
 #include <kshortcut.h>
-#include <kdemacros.h>
 
 /**
  * A push button that looks like a keyboard key.

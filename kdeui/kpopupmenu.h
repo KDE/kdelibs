@@ -23,7 +23,6 @@
 #include <qpopupmenu.h>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
-#include <kdemacros.h>
 
 /**
  * Title widget for use in KPopupMenu.

@@ -24,7 +24,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class QTextCodec;
 class KProcIO;

@@ -29,7 +29,7 @@
 
 #include <qwidget.h>
 #include <qspinbox.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class QLabel;
 class QSlider;

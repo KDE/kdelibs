@@ -13,7 +13,7 @@
 
 #include <qobject.h>
 #include <qcolor.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 #ifndef Q_WS_QWS //FIXME
 

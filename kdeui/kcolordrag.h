@@ -24,7 +24,7 @@
 
 #include <qdragobject.h>
 #include <qcolor.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class KColorDragPrivate;
 /**

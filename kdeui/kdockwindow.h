@@ -19,8 +19,7 @@
 #define KDOCKWINDOW_H
 
 #include <qlabel.h>
-#include "ksystemtray.h"
-#include <kdemacros.h>
+#include <ksystemtray.h>
 
 #ifndef KDE_NO_COMPAT
 /**

@@ -21,7 +21,7 @@
 #define KDATEPICKER_H
 #include <qdatetime.h>
 #include <qframe.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class QLineEdit;
 class QToolButton;
