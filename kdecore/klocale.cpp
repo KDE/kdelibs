@@ -185,6 +185,7 @@ KLocale::KLocale( const QString& _catalogue )
 
 void KLocale::setEncodingLang(const QString &_lang)
 {
+  _codec = 0;
   QString location = locate("locale", _lang + QString::fromLatin1("/charset"));
   if (!location.isNull())
   {
