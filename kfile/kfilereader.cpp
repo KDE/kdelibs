@@ -55,7 +55,7 @@
 #include <fstab.h>
 #endif
 
-#include <qapp.h>
+#include <qapplication.h>
 #include <qtimer.h>
 #include <qstringlist.h>
 #include <qpixmap.h>
