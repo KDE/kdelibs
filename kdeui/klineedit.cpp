@@ -154,10 +154,6 @@ void KLineEdit::makeCompletion( const QString& text )
             d->completionBox->clear();
         }
 
-        // Put the cursor at the end when in semi-automatic
-        // mode and completion is invoked with the same text.
-        if ( mode == KGlobalSettings::CompletionMan )
-            end( false );
         return;
     }
 
@@ -179,8 +175,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     if ( echoMode() == QLineEdit::Normal &&
          completionMode() != KGlobalSettings::CompletionNone )
     {
+	KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
-        if ( mode == KGlobalSettings::CompletionAuto )
+        
+	if ( mode == KGlobalSettings::CompletionAuto ||
+	     mode == KGlobalSettings::CompletionMan )
         {
             QString keycode = e->text();
             if ( !keycode.isNull() && keycode.unicode()->isPrint() )
@@ -214,21 +213,18 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
             return;
         }
-        else if ( mode != KGlobalSettings::CompletionNone )
+        else if ( mode == KGlobalSettings::CompletionShell )
         {
             // Handles completion.
-            KeyBindingMap keys = getKeyBindings();
             int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
             if ( KStdAccel::isEqual( e, key ) )
             {
-                // Emit completion if the completion mode is NOT
-                // CompletionAuto and if the mode is CompletionShell,
-                // the cursor is at the end of the string.
+                // Emit completion if the completion mode is CompletionShell
+                // and the cursor is at the end of the string.
                 QString txt = text();
                 int len = txt.length();
-                if ( (mode == KGlobalSettings::CompletionMan ||
-                      mode == KGlobalSettings::CompletionShell) &&
-                      cursorPosition() == len && len != 0 )
+                if ( mode == KGlobalSettings::CompletionShell &&
+		     cursorPosition() == len && len != 0 )
                 {
                     if ( emitSignals() )
                         emit completion( txt );
@@ -237,8 +233,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     return;
                 }
             }
+	}
+	
+	
+	// handle rotation
+	if ( mode != KGlobalSettings::CompletionNone ) {
             // Handles previous match
-            key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
+            int key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
             if ( KStdAccel::isEqual( e, key ) )
             {
                 if ( emitSignals() )
@@ -357,20 +358,23 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 {
-
-    QKeyEvent *e = dynamic_cast<QKeyEvent *>( ev );
-    if ( o == this && e )
+    if ( o == this )
     {
-        KCursor::autoHideEventFilter( this, ev );
-        if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
-        {
-            emit returnPressed( displayText() );
-            if ( d->grabReturnKeyEvents )
+	KCursor::autoHideEventFilter( this, ev );
+
+	QKeyEvent *e = dynamic_cast<QKeyEvent *>( ev );
+	if ( e )
+	{
+	    if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
             {
-                e->accept();
-                return true;
-            }
-        }
+		emit returnPressed( displayText() );
+		if ( d->grabReturnKeyEvents )
+		{
+		    e->accept();
+		    return true;
+		}
+	    }
+	}
     }
     return QLineEdit::eventFilter( o, ev );
 }

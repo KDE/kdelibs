@@ -158,12 +158,12 @@ void KComboBox::makeCompletion( const QString& text )
         if( !comp )
             return; // No Completion object or empty completion text allowed!
 
-        bool compPopup = completionMode() == KGlobalSettings::CompletionPopup;
+        KGlobalSettings::Completion mode = completionMode();
+        bool compPopup = (mode == KGlobalSettings::CompletionPopup);
         if ( compPopup && !d->completionBox )
             makeCompletionBox();
 
         QString match = comp->makeCompletion( text );
-        KGlobalSettings::Completion mode = completionMode();
         // If no match or the same text, simply return without completing.
         if( match.isNull() || match == text )
         {
@@ -172,11 +172,6 @@ void KComboBox::makeCompletion( const QString& text )
                 d->completionBox->clear();
             }
 
-            // Put the cursor at the end when in semi-automatic
-            // mode and completion is invoked with the same text.
-            if( mode == KGlobalSettings::CompletionMan ) {
-                m_pEdit->end( false );
-            }
             return;
         }
 
@@ -235,8 +230,10 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
     if ( m_pEdit && m_pEdit->hasFocus() )
     {
         KGlobalSettings::Completion mode = completionMode();
+	KeyBindingMap keys = getKeyBindings();
 
-        if ( mode == KGlobalSettings::CompletionAuto )
+        if ( mode == KGlobalSettings::CompletionAuto ||
+	     mode == KGlobalSettings::CompletionMan )
         {
             QString keycode = e->text();
             if ( !keycode.isNull() && keycode.unicode()->isPrint() )
@@ -268,20 +265,16 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 return;
             }
         }
-        else if ( mode != KGlobalSettings::CompletionNone )
+        else if ( mode == KGlobalSettings::CompletionShell )
         {
-            KeyBindingMap keys = getKeyBindings();
             int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
             if ( KStdAccel::isEqual( e, key ) )
             {
-                // Emit completion if the completion mode is completionShell or
-                // CompletionMan, there is a completion object present, the
+                // Emit completion if there is a completion object present, the
                 // current text is not the same as the previous and the cursor
                 // is at the end of the string.
                 QString txt = currentText();
-                if ( (mode == KGlobalSettings::CompletionMan ||
-                     mode == KGlobalSettings::CompletionShell) &&
-                    m_pEdit->cursorPosition() == (int) txt.length() )
+                if ( m_pEdit->cursorPosition() == (int) txt.length() )
                 {
                     if ( emitSignals() )
                         emit completion( txt ); // emit when requested...
@@ -290,8 +283,14 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                     return;
                 }
             }
+	}
+	
+	
+	// handle rotation
+	if ( mode != KGlobalSettings::CompletionNone ) {
+	    
             // Handles previousMatch.
-            key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
+            int key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
             if ( KStdAccel::isEqual( e, key ) )
             {
                 if ( emitSignals() )
@@ -308,11 +307,13 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 if ( emitSignals() )
                     emit textRotation( KCompletionBase::NextCompletionMatch );
                 if ( handleSignals() )
-                    rotateText( KCompletionBase::PrevCompletionMatch );
+                    rotateText( KCompletionBase::NextCompletionMatch );
                 return;
             }
         }
     }
+    
+    // read-only combobox
     else if ( !m_pEdit )
     {
         QString keycode = e->text();
