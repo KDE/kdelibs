@@ -34,6 +34,7 @@ class QPopupMenu;
 class QListViewItem;
 class KMPrinter;
 class QTimer;
+class QLineEdit;
 
 class KMJobViewer : public KMainWindow, public KMPrinterPage, public KPReloadObject
 {
@@ -71,6 +72,7 @@ protected slots:
 	void slotShowMoveMenu();
 	void slotShowPrinterMenu();
 	void slotUserOnly(bool);
+	void slotUserChanged();
 
 protected:
 	void init();
@@ -100,6 +102,7 @@ private:
 	QString	m_prname;
 	int	m_type;
 	QString	m_username;
+	QLineEdit	*m_userfield;
 };
 
 inline QString KMJobViewer::printer() const

@@ -45,6 +45,7 @@
 #include <qtimer.h>
 #include <qlayout.h>
 #include <stdlib.h>
+#include <qlineedit.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -65,7 +66,7 @@ KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 	if (!parent)
 	{
 		setCaption(i18n("No Printer"));
-		resize(500,200);
+		resize(550,250);
 	}
 }
 
@@ -213,6 +214,13 @@ void KMJobViewer::initActions()
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowCompleted(bool)));
 	KToggleAction	*uact = new KToggleAction(i18n("Show Only User Jobs"), "personal", 0, actionCollection(), "view_user_jobs");
 	connect(uact, SIGNAL(toggled(bool)), SLOT(slotUserOnly(bool)));
+	m_userfield = new QLineEdit(0);
+	m_userfield->setText(getenv("USER"));
+	connect(m_userfield, SIGNAL(returnPressed()), SLOT(slotUserChanged()));
+	connect(uact, SIGNAL(toggled(bool)), m_userfield, SLOT(setEnabled(bool)));
+	m_userfield->setEnabled(false);
+	m_userfield->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+	KWidgetAction	*ufact = new KWidgetAction(m_userfield, i18n("User name"), 0, 0, 0, actionCollection(), "view_username");
 
 	if (!m_pop)
 	{
@@ -249,6 +257,7 @@ void KMJobViewer::initActions()
 		toolbar->insertSeparator();
 		tact->plug(toolbar);
 		uact->plug(toolbar);
+		ufact->plug(toolbar);
 	}
 	else
 	{// stand-alone application
@@ -595,8 +604,17 @@ void KMJobViewer::pluginActionActivated(int ID)
 
 void KMJobViewer::slotUserOnly(bool on)
 {
-	m_username = (on ? QString(getenv("USER")) : QString::null);
+	m_username = (on ? m_userfield->text() : QString::null);
 	refresh(false);
+}
+
+void KMJobViewer::slotUserChanged()
+{
+	if (m_userfield->isEnabled())
+	{
+		m_username = m_userfield->text();
+		refresh(false);
+	}
 }
 
 #include "kmjobviewer.moc"
