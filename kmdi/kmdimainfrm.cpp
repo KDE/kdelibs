@@ -206,6 +206,10 @@ public:
 
    // the MDI view taskbar
    createTaskBar();
+   
+   // this is only a hack, but prevents us from crash because the buttons are otherwise
+   // not created before we switch the modes where we need them !!!
+   setMenuForSDIModeSysButtons(menuBar());
 
    switch (mdiMode) {
 	case KMdi::IDEAlMode:
@@ -232,7 +236,6 @@ public:
 }
 
 void KMdiMainFrm::setStandardMDIMenuEnabled(bool showModeMenu) {
-  setMenuForSDIModeSysButtons(menuBar());
   m_mdiGUIClient=new KMDIPrivate::KMDIGUIClient(this,showModeMenu);
   connect(m_mdiGUIClient,SIGNAL(toggleTop()),this,SIGNAL(toggleTop()));
   connect(m_mdiGUIClient,SIGNAL(toggleLeft()),this,SIGNAL(toggleLeft()));
