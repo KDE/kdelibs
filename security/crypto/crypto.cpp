@@ -53,6 +53,8 @@
 #include <kdialog.h>
 #include <kmessagebox.h>
 #include <kseparator.h>
+#include <kdatepik.h>
+#include <kurllabel.h>
 
 #include <qframe.h>
 
@@ -430,6 +432,10 @@ QString whatstr;
   grid->addWidget(cacheUntil, 18, 0);
   connect(cachePerm, SIGNAL(clicked()), SLOT(slotPermanent()));
   connect(cacheUntil, SIGNAL(clicked()), SLOT(slotUntil()));
+  untilDate = new KURLLabel("", "", tabOtherSSLCert);
+  grid->addWidget(untilDate, 18, 1);
+  untilDate->setEnabled(false);
+  connect(untilDate, SIGNAL(leftClickedURL()), SLOT(slotDatePick()));
 
   policyGroup = new QVButtonGroup(i18n("Policy"), tabOtherSSLCert);
   policyAccept = new QRadioButton(i18n("A&ccept"), policyGroup);
@@ -922,6 +928,9 @@ void KCryptoConfig::slotUntil() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 
    cachePerm->setChecked(false);
+   untilDate->setText(x ? x->getExpires().toString()
+                        : QDateTime::currentDateTime().toString());
+   untilDate->setEnabled(true);
 
    if (!x) return;
    x->setPermanent(false);
@@ -935,6 +944,8 @@ void KCryptoConfig::slotPermanent() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 
    cacheUntil->setChecked(false);
+   untilDate->setText("");
+   untilDate->setEnabled(false);
 
    if (!x) return;
    x->setPermanent(true);
@@ -957,6 +968,12 @@ if (!x) return;
    }
 
    configChanged();
+}
+
+
+
+void KCryptoConfig::slotDatePick() {
+  KMessageBox::information(this, "Sorry, this code is incomplete.", i18n("SSL"));
 }
 
 

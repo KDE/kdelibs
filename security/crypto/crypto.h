@@ -1,7 +1,7 @@
 /**
  * crypto.h
  *
- * Copyright (c) 2000 George Staikos <staikos@kde.org>
+ * Copyright (c) 2000-2001 George Staikos <staikos@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include <qlist.h>
 #include <qdatetime.h>
 
+class KURLLabel;
 class KCryptoConfig;
 class QGridLayout;
 class KSSLCertBox;
@@ -132,6 +133,7 @@ public slots:
   void slotPolicyChanged(int id);
   void slotPermanent();
   void slotUntil();
+  void slotDatePick();
 
 private:
   QTabWidget *tabs;
@@ -170,6 +172,7 @@ private:
   QButton *policyAccept, *policyReject, *policyPrompt;
   QRadioButton *cacheUntil, *cachePerm;
   QLabel *validFrom, *validUntil;
+  KURLLabel *untilDate;
 
   /* OpenSSL tab */
   QLabel    *oInfo;
