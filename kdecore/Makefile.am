@@ -16,7 +16,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
-	kstdaccel.h kwm.h
+	kstdaccel.h kwm.h krootprop.h
 
 noinst_HEADERS = kdebugdialog.h
 
@@ -24,7 +24,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 	kcolorgroup.cpp kapp.cpp kurl.cpp \
 	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
 	klocale.cpp libintl.cpp setenv.cpp kiconloader.cpp kdebug.cpp	\
-	kstdaccel.cpp kwm.cpp
+	kstdaccel.cpp kwm.cpp krootprop.cpp
 
 libkdecore_la_LDFLAGS = -version-info 0:11 @QT_LDFLAGS@ @X_LDFLAGS@ 
 libkdecore_la_LIBADD = -lqt -lX11 -lXext
