@@ -81,10 +81,6 @@ void RenderListItem::setStyle(RenderStyle *style)
     RenderFlow::setStyle(style);
     if(!m_marker) {
 	RenderStyle *newStyle = new RenderStyle(style);
-	if(newStyle->direction() == LTR)
-	    newStyle->setFloating(FLEFT);
-	else
-	    newStyle->setFloating(FRIGHT);
 	m_marker = new RenderListMarker();
 	m_marker->setStyle(newStyle);
 	addChild(m_marker);
