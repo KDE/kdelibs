@@ -31,7 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <unistd.h>
 #include "main.h"
-
+#include "type.h"
 
 /**
  * Writes the stubs header
@@ -97,7 +97,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 		if ( s.tagName() == "SUPER" )
 		    DCOPParent = s.firstChild().toText().data();
 	    }
-            
+
             if( DCOPParent != "DCOPObject" ) { // we need to include the .h file for the base stub
                 if( all_includes.contains( DCOPParent + ".h" ))
                     str << "#include <" << DCOPParent << "_stub.h>" << endl;
@@ -156,15 +156,8 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if (s.tagName() == "FUNC") {
 		    QDomElement r = s.firstChild().toElement();
-		    Q_ASSERT( r.tagName() == "TYPE" );
 		    str << "    virtual "; // KDE4 - I really don't think these need to be virtual
-		    if ( r.hasAttribute( "qleft" ) )
-			str << r.attribute("qleft") << " ";
-		    str << r.firstChild().toText().data();
-		    if ( r.hasAttribute( "qright" ) )
-			str << r.attribute("qright") << " ";
-		    else
-			str << " ";
+		    writeType( str, r );
 
 		    r = r.nextSibling().toElement();
 		    Q_ASSERT ( r.tagName() == "NAME" );
@@ -180,14 +173,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 			first = FALSE;
 			Q_ASSERT( r.tagName() == "ARG" );
 			QDomElement a = r.firstChild().toElement();
-			Q_ASSERT( a.tagName() == "TYPE" );
-			if ( a.hasAttribute( "qleft" ) )
-			    str << a.attribute("qleft") << " ";
-			str << a.firstChild().toText().data();
-			if ( a.hasAttribute( "qright" ) )
-			    str << a.attribute("qright") << " ";
-			else
-			    str << " ";
+			writeType( str, a );
 			a = a.nextSibling().toElement();
 			if ( a.tagName() == "NAME" )
 			    str << a.firstChild().toText().data();

@@ -31,6 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <unistd.h>
 #include "main.h"
+#include "type.h"
 
 int isIntType( const QString& t)
 {
@@ -138,15 +139,11 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		    Q_ASSERT( r.tagName() == "TYPE" );
 		    QString result = r.firstChild().toText().data();
 		    bool async = result == "ASYNC";
-		    if ( async)
+		    if ( async) {
 			result = "void";
-		    if ( r.hasAttribute( "qleft" ) )
-			str << r.attribute("qleft") << " ";
-		    str << result;
-		    if ( r.hasAttribute( "qright" ) )
-			str << r.attribute("qright") << " ";
-		    else
-			str << " ";
+			str << result;
+		    } else
+			result = writeType( str, r );
 
 		    r = r.nextSibling().toElement();
 		    Q_ASSERT ( r.tagName() == "NAME" );
@@ -165,15 +162,8 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 			first = FALSE;
 			Q_ASSERT( r.tagName() == "ARG" );
 			QDomElement a = r.firstChild().toElement();
-			Q_ASSERT( a.tagName() == "TYPE" );
-			if ( a.hasAttribute( "qleft" ) )
-			    str << a.attribute("qleft") << " ";
-			argtypes.append( a.firstChild().toText().data() );
-			str << argtypes.last();
-			if ( a.hasAttribute( "qright" ) )
-			    str << a.attribute("qright") << " ";
-			else
-			    str << " ";
+			QString type = writeType( str, a );
+			argtypes.append( type );
 			args.append( QString("arg" ) + QString::number( args.count() ) ) ;
 			str << args.last();
 		    }

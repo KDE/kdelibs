@@ -31,6 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <unistd.h>
 #include "main.h"
+#include "type.h"
 
 static int const primes[] =
 {
@@ -357,15 +358,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    for(s = e.firstChild().toElement(); !s.isNull(); s = s.nextSibling().toElement() ) {
 	        if (s.tagName() == "SIGNAL") {
 		    QDomElement r = s.firstChild().toElement();
-		    Q_ASSERT( r.tagName() == "TYPE" );
-		    QString result = r.firstChild().toText().data();
-		    if ( r.hasAttribute( "qleft" ) )
-			str << r.attribute("qleft") << " ";
-		    str << result;
-		    if ( r.hasAttribute( "qright" ) )
-			str << r.attribute("qright") << " ";
-		    else
-			str << " ";
+		    QString result = writeType( str, r );
 
 		    r = r.nextSibling().toElement();
 		    Q_ASSERT ( r.tagName() == "NAME" );
@@ -384,15 +377,8 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 			first = FALSE;
 			Q_ASSERT( r.tagName() == "ARG" );
 			QDomElement a = r.firstChild().toElement();
-			Q_ASSERT( a.tagName() == "TYPE" );
-			if ( a.hasAttribute( "qleft" ) )
-			    str << a.attribute("qleft") << " ";
-			argtypes.append( a.firstChild().toText().data() );
-			str << argtypes.last();
-			if ( a.hasAttribute( "qright" ) )
-			    str << a.attribute("qright") << " ";
-			else
-			    str << " ";
+			QString type = writeType( str, a );
+			argtypes.append( type );
 			args.append( QString("arg" ) + QString::number( args.count() ) ) ;
 			str << args.last();
 		    }
