@@ -208,6 +208,10 @@ void RenderTable::calcWidth()
     RenderBlock *cb = containingBlock();
     int availableWidth = cb->contentWidth();
 
+    // Subtract minimum margins
+    availableWidth -= style()->marginLeft().minWidth(cb->contentWidth());
+    availableWidth -= style()->marginRight().minWidth(cb->contentWidth());
+
     LengthType widthType = style()->width().type();
     if(widthType > Relative && style()->width().value() > 0) {
 	// Percent or fixed table
@@ -296,45 +300,14 @@ void RenderTable::layout()
     int newHeight = m_height;
     m_height = oldHeight;
 
-    // html tables with percent height are relative to view
     Length h = style()->height();
     int th = -(bpTop + bpBottom); // Tables size as though CSS height includes border/padding.
     if (isPositioned())
         th = newHeight; // FIXME: Leave this alone for now but investigate later.
     else if (h.isFixed())
         th += h.value();
-    else if (h.isPercent()) {
-        RenderObject* c = containingBlock();
-        for ( ;
-            !c->isCanvas() && !c->isBody() && !c->isTableCell() &&
-		  !c->isPositioned() && c->isFloating();
-             c = c->containingBlock()) {
-            Length ch = c->style()->height();
-            if (ch.isFixed()) {
-                th += h.width(ch.value());
-                break;
-            }
-        }
-
-        if (c->isTableCell()) {
-            RenderTableCell* cell = static_cast<RenderTableCell*>(c);
-            int cellHeight = cell->cellPercentageHeight();
-            if (cellHeight)
-                th += h.width(cellHeight);
-        }
-        else  {
-            Length ch = c->style()->height();
-	    if (ch.isFixed())
-		th += h.width(ch.value());
-	    else {
-		// we need to substract out the margins of this block. -dwh
-		th += h.width(viewRect().height() - c->marginBottom() - c->marginTop());
-		// not really, but this way the view height change
-		// gets propagated correctly
-		setOverhangingContents();
-	    }
-        }
-    }
+    else if (h.isPercent())
+        th += calcPercentageHeight(h);
 
     // layout rows
     if ( th > calculatedHeight ) {
@@ -1252,19 +1225,19 @@ int RenderTableSection::layoutRows( int toAdd )
     if (toAdd && totalRows && (rowPos[totalRows] || !nextSibling())) {
 
 	int totalHeight = rowPos[totalRows] + toAdd;
-// 	qDebug("layoutRows: totalHeight = %d",  totalHeight );
+//	qDebug("layoutRows: totalHeight = %d",  totalHeight );
 
         int dh = toAdd;
 	int totalPercent = 0;
 	int numVariable = 0;
 	for ( int r = 0; r < totalRows; r++ ) {
-	    if ( grid[r].height.isVariable() )
+            if ( grid[r].height.isVariable() && !emptyRow(r))
 		numVariable++;
 	    else if ( grid[r].height.isPercent() )
 		totalPercent += grid[r].height.value();
 	}
 	if ( totalPercent ) {
-// 	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
+//	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
 	    // try to satisfy percent
 	    int add = 0;
 	    if ( totalPercent > 100 )
@@ -1279,7 +1252,7 @@ int RenderTableSection::layoutRows( int toAdd )
 		    add += toAdd;
 		    dh -= toAdd;
 		    totalPercent -= grid[r].height.value();
-// 		    qDebug( "adding %d to row %d", toAdd, r );
+//		    qDebug( "adding %d to row %d", toAdd, r );
 		}
 		if ( r < totalRows-1 )
 		    rh = rowPos[r+2] - rowPos[r+1];
@@ -1287,20 +1260,20 @@ int RenderTableSection::layoutRows( int toAdd )
 	    }
 	}
 	if ( numVariable ) {
-	    // distribute over variable cols
-// 	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
+	    // distribute over non-empty variable rows
+//	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
 	    int add = 0;
-	    for ( int r = 0; r < totalRows; r++ ) {
-		if ( numVariable > 0 && grid[r].height.isVariable() ) {
-		    int toAdd = dh/numVariable;
+            int toAdd = dh/numVariable;
+            for ( int r = 0; r < totalRows; r++ ) {
+                if ( grid[r].height.isVariable() && !emptyRow(r)) {
 		    add += toAdd;
-		    dh -= toAdd;
 		}
                 rowPos[r+1] += add;
 	    }
-	}
+            dh -= add;
+        }
         if (dh>0 && rowPos[totalRows]) {
-	    // if some left overs, distribute equally.
+	    // if some left overs, distribute weighted.
             int tot=rowPos[totalRows];
             int add=0;
             int prev=rowPos[0];
@@ -1310,7 +1283,29 @@ int RenderTableSection::layoutRows( int toAdd )
                 prev=rowPos[r+1];
                 rowPos[r+1]+=add;
             }
+            dh -= add;
         }
+        if (dh > totalRows) {
+            // distribute to tables with all empty rows
+            int add=0;
+            int toAdd = dh/totalRows;
+            for ( int r = 0; r < totalRows; r++ ) {
+                add += toAdd;
+                rowPos[r+1] += add;
+            }
+            dh -= add;
+        }
+        // Finally distribute round-off values
+        if (dh > 0) {
+            // There is not enough for every row
+            int add=0;
+            for ( int r = 0; r < totalRows; r++ ) {
+                if (add < dh) add++;
+                rowPos[r+1] += add;
+            }
+            dh -= add;
+        }
+        assert (dh == 0);
     }
 
     int leftOffset = borderLeft() + hspacing;
@@ -1505,6 +1500,19 @@ void RenderTableSection::clearGrid()
     while ( rows-- ) {
 	delete grid[rows].row;
     }
+}
+
+bool RenderTableSection::emptyRow(int rowNum) {
+    Row &r = *grid[rowNum].row;
+    const int s = r.size();
+    RenderTableCell *cell;
+    for(int i=0; i<s; i++) {
+        cell = r[i];
+        if (!cell || cell==(RenderTableCell*)-1)
+            continue;
+        return false;
+    }
+    return true;
 }
 
 RenderObject* RenderTableSection::removeChildNode(RenderObject* child)
