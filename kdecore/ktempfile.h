@@ -43,7 +43,7 @@ public:
     * Create a temporary file with the name:
     *  <filePrefix><some number><fileExtension>
     *
-    * The default filePrefix is "/tmp/kde"
+    * The default filePrefix is "/tmp/appname"
     * The default fileExtension is ".tmp"
     **/
    KTempFile(QString filePrefix=QString::null, 
