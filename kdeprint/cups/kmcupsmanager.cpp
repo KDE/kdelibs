@@ -19,6 +19,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include <config.h>
+
 #include "kmcupsmanager.h"
 #include "kmprinter.h"
 #include "ipprequest.h"
@@ -39,6 +41,8 @@
 #include <cups/cups.h>
 #include <cups/ppd.h>
 
+#define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).utf8())
+
 void extractMaticData(QString& buf, const QString& filename);
 QString printerURI(KMPrinter *p, bool useExistingURI = true);
 
@@ -52,6 +56,11 @@ KMCupsManager::KMCupsManager(QObject *parent, const char *name)
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterAll);
 	setServerOperationMask(KMManager::ServerAll);
+
+	// change LANG variable so that CUPS is always using
+	// english language: translation may only come from the PPD
+	// itself, or from KDE.
+	setenv("LANG", "en", true);
 }
 
 KMCupsManager::~KMCupsManager()
@@ -407,7 +416,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 			{
 				ppd_group_t	*grp = ppd->groups+i;
 				DrGroup	*gr = new DrGroup();
-				gr->set("text",i18n(grp->text));
+				gr->set("text",ppdi18n(grp->text));
 				bool 	fixed = QString::fromLocal8Bit(grp->text).contains("install",false);
 				driver->addGroup(gr);
 				for (int k=0;k<grp->num_options;k++)
@@ -427,7 +436,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 						continue;	// skip option
 					}
 					op->setName(QString::fromLocal8Bit(opt->keyword));
-					op->set("text",i18n(opt->text));
+					op->set("text",ppdi18n(opt->text));
 					op->set("default",QString::fromLocal8Bit(opt->defchoice));
 					if (fixed) op->set("fixed","1");
 					gr->addOption(op);
@@ -436,7 +445,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 						ppd_choice_t	*cho = opt->choices+n;
 						DrBase	*ch = new DrBase();
 						ch->setName(QString::fromLocal8Bit(cho->choice));
-						ch->set("text",i18n(cho->text));
+						ch->set("text",ppdi18n(cho->text));
 						op->addChoice(ch);
 					}
 					op->setValueText(QString::fromLocal8Bit(opt->defchoice));
