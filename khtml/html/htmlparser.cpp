@@ -375,7 +375,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 return false;
             }
             break;
-            // SCRIPT and OBJECT are allowd in the body.
+            // SCRIPT and OBJECT are allowed in the body.
         case ID_BODY:
             if(inBody && doc()->body()) {
                 // we have another <BODY> element.... apply attributes to existing one
