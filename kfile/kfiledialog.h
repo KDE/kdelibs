@@ -324,7 +324,6 @@ private:
     static void cleanup();
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
-    bool previewMode;
 
 
 protected:

@@ -37,9 +37,10 @@ KFilePreview::KFilePreview(QWidget *parent, const char *name) :
     QLabel *l=new QLabel(tmp, preview);
     l->setMinimumSize(l->sizeHint());
     l->move(10, 5);
-    //preview->setMinimumWidth(l->sizeHint().width()+20);
-    setResizeMode(preview, QSplitter::KeepSize);
+    preview->setMinimumWidth(l->sizeHint().width()+20);
+    setResizeMode(previewBase, QSplitter::KeepSize);
     deleted=false;
+    previewMode=false;
     previewBase->hide();
 }
 
@@ -52,20 +53,29 @@ KFilePreview::~KFilePreview() {
     previewBase=0L;
 }
 
-void KFilePreview::setPreviewWidget(const QWidget *w) {
+void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u) {
 
-    if(w==0L) {
+    if(w!=0L) {
+        previewMode=true;
+        connect(this, SIGNAL(showPreview(const KURL &)),
+                w, SLOT(showPreview(const KURL &)));
+    }
+    else {
+        previewMode=false;
         previewBase->hide();
         return;
     }
+
     if(preview) {
         deleted=true;
         delete preview;
+        //QApplication::sendPostedEvents(this, QEvent::ChildRemoved);
     }
     preview=const_cast<QWidget*>(w);
     preview->recreate(previewBase, 0, QPoint(0, 0), true);
     preview->resize(preview->sizeHint());
     previewBase->show();
+    emit showPreview(u);
 }
 
 void KFilePreview::insertItem(KFileViewItem *item) {
@@ -121,4 +131,9 @@ void KFilePreview::selectFile(const KFileViewItem* item) {
 
 void KFilePreview::activatedMenu(const KFileViewItem *item) {
     sig->activateMenu(item);
+}
+
+void KFilePreview::fileSelected(const KFileViewItem *i) {
+    emit showPreview(i->url());
+    kdebug(KDEBUG_INFO, 31000, "emitted :)");
 }

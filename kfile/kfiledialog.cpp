@@ -104,7 +104,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     // I hard code this for now
     d->acceptOnlyExisting = false;
     bookmarksMenu= 0;
-    previewMode=false;
 
     if (!lastDirectory)
     {
@@ -264,20 +263,7 @@ void KFileDialog::setFilter(const QString& filter)
 }
 
 void KFileDialog::setPreviewWidget(const QWidget *w) {
-    if(w!=0L) {
-        previewMode=true;
-        connect(this, SIGNAL(showPreview(const KURL &)),
-                w, SLOT(showPreview(const KURL &)));
-    }
-    else
-        previewMode=false;
-
     ops->setPreviewWidget(w);
-    if(w!=0L) {
-        kdebug(KDEBUG_INFO, 31000, "emit showPreview() in setPreviewWidget() (before)");
-        emit showPreview(ops->url());
-        kdebug(KDEBUG_INFO, 31000, "emit showPreview() in setPreviewWidget()");
-    }
 }
 
 void KFileDialog::slotOk()
@@ -321,12 +307,6 @@ void KFileDialog::fileSelected(const KFileViewItem *i)
 {
     if (i->isDir())
         return;
-
-    if(previewMode) {
-        kdebug(KDEBUG_INFO, 31000, "emit showPreview() in fileSelected()");
-        emit showPreview(KURL(i->url()));
-    }
-
     d->filename_ = i->url();
     locationEdit->setEditText(d->filename_);
 }

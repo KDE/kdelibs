@@ -538,7 +538,7 @@ void KDirOperator::setView(FileView view, bool separateDirs)
             myFileView = new KFileDetailView( this, "detail view" );
         else {
             KFilePreview *tmp=new KFilePreview(this, "preview");
-            tmp->setPreviewWidget(preview);
+            tmp->setPreviewWidget(preview, url());
             myFileView=tmp;
         }
     }

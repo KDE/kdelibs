@@ -38,7 +38,8 @@
 #include <qlabel.h>
 
 #include <klocale.h>
-
+#include <kdebug.h>
+#include <kurl.h>
 
 class KFilePreview : public QSplitter, public KFileView
 {
@@ -59,7 +60,13 @@ public:
     virtual void clear();
     virtual void clearSelection();
 
-    void setPreviewWidget(const QWidget *w);
+    void setPreviewWidget(const QWidget *w, const KURL &u);
+
+public slots:
+    void fileSelected(const KFileViewItem *i);
+
+signals:
+    void showPreview(const KURL &);
 
 protected:
     virtual void insertItem(KFileViewItem *);
@@ -72,7 +79,7 @@ protected slots:
     void selectFile(const KFileViewItem*);
 
 private:
-    bool deleted;
+    bool deleted, previewMode;
     KFileView *left;
     QWidget *previewBase;
     QWidget *preview;
