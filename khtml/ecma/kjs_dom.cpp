@@ -840,12 +840,18 @@ Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
       break;
     }
   }
+  // We have to check in DOMNode before giving access to attributes, otherwise
+  // onload="..." would make onload return the string (attribute value) instead of
+  // the listener object (function).
+  if ( DOMNode::hasProperty(exec, propertyName, true) )
+    return DOMNode::tryGet(exec, propertyName);
+
   DOM::DOMString attr = element.getAttribute( propertyName.string() );
   // Give access to attributes
   if ( !attr.isNull() )
     return getString( attr );
-  else
-    return DOMNode::tryGet(exec, propertyName);
+
+  return Undefined();
 }
 
 Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
