@@ -225,7 +225,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     }
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
-        i18n("&Save to Disk"), i18n("&Open"),
+        i18n("&Save to Disk..."), i18n("&Open"),
         QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
 }
