@@ -148,6 +148,35 @@ QStringList KConfig::groupList() const
   return retList;
 }
 
+bool KConfig::hasKey(const QString &pKey) const
+{
+  KEntryKey aEntryKey;
+  KEntryMapConstIterator aIt;
+
+  //  cacheCheck();
+
+  if (!locale().isNull()) {
+    // try the localized key first
+    QString aKey = pKey + "[";
+    aKey += locale();
+    aKey += "]";
+    
+    aEntryKey.group = group();
+    aEntryKey.key = aKey;
+    
+    aIt = aEntryMap.find(aEntryKey);
+    if (aIt != aEntryMap.end() && !aIt->aValue.isNull())
+      return true;
+  }
+  
+  // try the non-localized version
+  aEntryKey.group = group();
+  aEntryKey.key = pKey;
+  
+  aIt = aEntryMap.find(aEntryKey);
+  return  (aIt != aEntryMap.end() && !aIt->aValue.isNull());
+}
+
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
   QMap<QString, QString> tmpMap;
