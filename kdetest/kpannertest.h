@@ -3,7 +3,7 @@
 
 class TopLevel : public QWidget
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
 
     TopLevel( QWidget *parent=0, const char *name=0 );

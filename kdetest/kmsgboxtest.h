@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1  1997/04/13 17:49:43  kulow
+ * Sources imported
+ *
  * Revision 1.1  1997/03/15 21:40:24  kalle
  * Initial revision
  *
@@ -31,7 +34,7 @@
 
 class TopLevel : public QWidget
 {
-    Q_OBJECT;
+    Q_OBJECT
 public:
 
     TopLevel( QWidget *parent=0, const char *name=0 );

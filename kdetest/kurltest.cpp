@@ -14,6 +14,8 @@ static void url_info( KURL url)
 int
 main( int argc, char** argv)
 {
+  int i = 0;
+
      if( argc != 2) {
 	  cout << "Usage: " << argv[0] << " url\n";
 	  return 1;
@@ -28,14 +30,14 @@ main( int argc, char** argv)
      cout << "cd to bleb, then .. 3 times\n";
      url.cd( "bleb");
      url_info( url);
-     for( int i = 0; i < 3; ++i) {
+     for( i = 0; i < 3; ++i) {
 	  url.cdUp();
 	  url_info( url);
      }
      cout << "add blabla to reference then .. 3 times\n";
      url.cd( "blabla", 1, 1);
      url_info( url);
-     for( int i = 0; i < 3; ++i) {
+     for( i = 0; i < 3; ++i) {
 	  url.cdRef("..");
 	  url_info( url);
      }
