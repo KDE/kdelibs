@@ -36,29 +36,29 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author Daniel M. Duley <mosfet@kde.org>
  */
-class PanelMenu : public QObject, DCOPObject
+class KPanelMenu : public QObject, DCOPObject
 {
     Q_OBJECT
 public:
     /**
      * Constructs a new menu with the given title. 
      */
-    PanelMenu(const QString &title, QObject *parent = 0, const char *name = 0 );
+    KPanelMenu(const QString &title, QObject *parent = 0, const char *name = 0 );
     /**
      * Same as above, but with an icon for the submenu item.
      */
-    PanelMenu(const QPixmap &icon, const QString &title, QObject *parent,
+    KPanelMenu(const QPixmap &icon, const QString &title, QObject *parent,
               const char *name);
     /**
      * Constructs a new (sub)menu with a given id.
      */
-    PanelMenu(QObject *parent, const char *name);
+    KPanelMenu(QObject *parent, const char *name);
 
     /**
      * Make sure you actually destroy this thing or the menu will never go
      * away until this application quits or Kicker restarts ;-)
      */
-    ~PanelMenu();
+    ~KPanelMenu();
 
     /**
      * Inserts an item into the menu.
@@ -71,7 +71,7 @@ public:
     /** 
      * Inserts a sub menu with a icon. The icon name must be a full path.
      */
-    PanelMenu *insertMenu(const QPixmap &icon, const QString &text, int id=-1);
+    KPanelMenu *insertMenu(const QPixmap &icon, const QString &text, int id=-1);
 
     /**
      * Clears the menu.

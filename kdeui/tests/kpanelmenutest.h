@@ -1,7 +1,7 @@
-#ifndef __PANELMENUTEST_H
-#define __PANELMENUTEST_H
+#ifndef __KPANELMENUTEST_H
+#define __KPANELMENUTEST_H
 
-#include <panelmenu.h>
+#include <kpanelmenu.h>
 #include <qlabel.h>
 
 class TestWidget : public QLabel
@@ -15,7 +15,7 @@ public slots:
     void slotSubMenuCalled(int id);
 private:
     void init();
-    PanelMenu *testMenu, *subMenu;
+    KPanelMenu *testMenu, *subMenu;
 };
 
 #endif

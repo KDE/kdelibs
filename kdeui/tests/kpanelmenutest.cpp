@@ -1,4 +1,4 @@
-#include "panelmenutest.h"
+#include "kpanelmenutest.h"
 #include <kapp.h>
 #include <kstddirs.h>
 #include <dcopclient.h>
@@ -6,14 +6,14 @@
 TestWidget::TestWidget(QWidget *parent, const char *name)
     : QLabel(parent, name)
 {
-    testMenu = new PanelMenu(locate("mini", "x.png"), "Client Test", this,
+    testMenu = new KPanelMenu(locate("mini", "x.png"), "Client Test", this,
                               "menu1");
 
     subMenu = testMenu->insertMenu(locate("mini", "x.png"), "Submenu Test");
     subMenu->insertItem(locate("mini", "bx2.png"), "First Entry", 100);
     subMenu->insertItem(locate("mini", "bx2.png"), "Second Entry", 101);
 
-    PanelMenu *ssub = subMenu->insertMenu(locate("mini", "x.png"), "One more");
+    KPanelMenu *ssub = subMenu->insertMenu(locate("mini", "x.png"), "One more");
    
     connect(testMenu, SIGNAL(activated(int)), SLOT(slotMenuCalled(int)));
     connect(subMenu, SIGNAL(activated(int)), SLOT(slotSubMenuCalled(int)));

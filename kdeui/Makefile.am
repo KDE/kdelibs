@@ -51,7 +51,7 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		kauthicon.h kmessagebox.h \
 		kdualcolorbtn.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h \
-		kcmodule.h kcmenumngr.h panelmenu.h \
+		kcmodule.h kcmenumngr.h kpanelmenu.h \
 		kstdaction.h kdrawutil.h kcombobox.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kpixmapio.h \
@@ -79,7 +79,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
 		ktextbrowser.cpp kaction.cpp khelpmenu.cpp \
-		kcmenumngr.cpp panelmenu.cpp kstdaction.cpp kdrawutil.cpp \
+		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp kdrawutil.cpp \
 		kiconview.cpp klistview.cpp klistbox.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlgui.cpp \
 		kxmlguibuilder.cpp kpixmapio.cpp kedittoolbar.cpp \
