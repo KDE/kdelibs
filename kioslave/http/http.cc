@@ -9,7 +9,7 @@
 #endif
 
 #ifdef HAVE_SSL_H
-#define DO_SSL 1
+#define DO_SSL
 #endif
 
 #include <sys/types.h>
@@ -46,6 +46,7 @@
 #include <kio_rename_dlg.h>
 #include <kio_skip_dlg.h>
 #include <klocale.h>
+#include <ksock.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
@@ -435,7 +436,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
   if( do_proxy ) {
     debug( "http_open 0");
-    if( !initSockaddr( &m_proxySockaddr, m_strProxyHost.c_str(), m_strProxyPort ) ) {
+    if( !KSocket::initSockaddr( &m_proxySockaddr, m_strProxyHost.c_str(), m_strProxyPort ) ) {
 	error( ERR_UNKNOWN_PROXY_HOST, m_strProxyHost.c_str() );
 	return false;
       }
