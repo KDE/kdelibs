@@ -3,7 +3,7 @@
  *                 Derived from the KLangCombo class by Hans Petter Bieker.
  *
  * Copyright (c) 1999-2003 Hans Petter Bieker <bieker@kde.org>
- *           (c) 2001      Martijn Klingens   <mklingens@yahoo.com>
+ *           (c) 2001      Martijn Klingens   
  *
  * Requires the Qt widget libraries, available at no cost at
  * http://www.troll.no/
