@@ -771,17 +771,6 @@ short RenderText::baselinePosition() const
     return metrics().ascent();
 }
 
-#if 0
-short RenderText::baselineOffset() const
-{
-    if ( printpainter ) {
-	QFontMetrics _fm = metrics();
-	return (m_lineHeight - _fm.height())/2 + _fm.ascent();
-    }
-    return (m_lineHeight - fm->height())/2 + fm->ascent();
-}
-#endif
-
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
 {
     // ### should not be needed!!!
