@@ -466,6 +466,7 @@ RenderPartObject::~RenderPartObject()
 void RenderPartObject::close()
 {
   QString url = m_obj->url;
+  QStringList params;
 
   if(m_obj) {
 
@@ -489,9 +490,8 @@ void RenderPartObject::close()
 	      child = child->nextSibling();
 	  }
       }
-      
+
       // add all <param>'s to the QStringList argument of the part
-      QStringList params;
       NodeImpl *child = m_obj->firstChild();
       while ( child ) {
 	  if ( child->id() == ID_PARAM ) {
@@ -509,7 +509,7 @@ void RenderPartObject::close()
   if ( url.isEmpty() )
     return; //ooops (-:
 
-  static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, m_obj->serviceType );
+  static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, m_obj->serviceType, params );
 
   layout();
 

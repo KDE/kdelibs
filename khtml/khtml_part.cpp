@@ -93,6 +93,7 @@ namespace khtml
     bool m_bPreloaded;
     KURL m_workingURL;
     bool m_bFrame;
+    QStringList m_params;
   };
 
 };
@@ -1111,7 +1112,8 @@ void KHTMLPart::updateActions()
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
 }
 
-void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName )
+void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName,
+			      const QStringList &params )
 {
   kdDebug( 6050 ) << "childRequest( ..., " << debugString( url ) << ", " << debugString( frameName ) << " )" << endl;
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( frameName );
@@ -1125,16 +1127,19 @@ void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   }
 
   it.data().m_frame = frame;
+  it.data().m_params = params;
 
   requestObject( &it.data(), completeURL( url ) );
 }
 
-void KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType )
+void KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
+			       const QStringList &params )
 {
   khtml::ChildFrame child;
   QValueList<khtml::ChildFrame>::Iterator it = d->m_objects.append( child );
   (*it).m_frame = frame;
   (*it).m_bFrame = false;
+  (*it).m_params = params;
 
   KParts::URLArgs args;
   args.serviceType = serviceType;
@@ -1175,7 +1180,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
 
   if ( !child->m_services.contains( mimetype ) )
   {
-    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, child->m_services );
+    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, child->m_services, child->m_params );
 
     if ( !part )
       return;
@@ -1251,7 +1256,10 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
   child->m_part->openURL( url );
 }
 
-KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QString &serviceName, QStringList &serviceTypes )
+KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName, 
+					     QObject *parent, const char *name, const QString &mimetype, 
+					     QString &serviceName, QStringList &serviceTypes,
+					     const QStringList &params )
 {
   QString constr = QString::fromLatin1( "('KParts/ReadOnlyPart' in ServiceTypes)" );
 
@@ -1276,7 +1284,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
     className = "Browser/View";
 
   if ( factory->inherits( "KParts::Factory" ) )
-    res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, className ));
+    res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, className, params ));
   else
   res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, widgetName, className ));
 
@@ -1705,7 +1713,7 @@ void KHTMLPart::slotDecFontSizes()
 {
   if ( d->m_fontBase >= 1 )
     updateFontSize( --d->m_fontBase );
-  
+
   if ( d->m_fontBase == 0 )
     d->m_paDecFontSizes->setEnabled( false );
 }

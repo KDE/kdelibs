@@ -477,7 +477,8 @@ protected:
    * @internal
    */
   virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name,
-					    const QString &mimetype, QString &serviceName, QStringList &serviceTypes );
+					    const QString &mimetype, QString &serviceName, QStringList &serviceTypes,
+					    const QStringList &params);
 
   /**
    * @internal
@@ -586,12 +587,14 @@ private:
   /**
    * @internal
    */
-  void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName );
-
+  void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName, 
+                     const QStringList &args = QStringList() );
+ 
   /**
    * @internal
    */
-  void requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType );
+  void requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
+                      const QStringList &args = QStringList() );
 
   /**
    * @internal
