@@ -2056,6 +2056,17 @@ KActionCollection * KFileDialog::actionCollection() const
     return ops->actionCollection();
 }
 
+void KFileDialog::keyPressEvent( QKeyEvent *e )
+{
+    if ( e->key() == Key_Escape )
+    {
+        e->accept();
+        d->cancelButton->animateClick();
+    }
+    else
+        KDialogBase::keyPressEvent( e );
+}
+
 void KFileDialog::toggleSpeedbar( bool show )
 {
     if ( show )

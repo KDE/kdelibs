@@ -796,6 +796,11 @@ protected:
     void addDirEntry(KFileItem *entry, bool disableUpdating);
 
     /**
+     * Reimplemented to animate the cancel button.
+     */
+    virtual void keyPressEvent( QKeyEvent *e );
+    
+    /**
       * Perform basic initialization tasks. Called by constructors.
       * @since 3.1
       */
@@ -914,8 +919,8 @@ protected slots:
     void initSpeedbar();
 
 private slots:
-    void slotLocationChanged( const QString& text ); 
-    
+    void slotLocationChanged( const QString& text );
+
 private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
