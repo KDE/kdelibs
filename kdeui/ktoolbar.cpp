@@ -27,6 +27,7 @@
 // Improved engine, no handles if not movable. - sven 22. 1. 1998.
 // Matthias - setting size of toolbar (bin incompat) 22.1.98
 // Merged sven's & Matthias' changes 23-25. 1.98
+// Fixed small KWM-close bug (reported by Coolo)  sven 8.2.1998
 //-------------------------------------------------------------------------
 
 #include <qpainter.h>
@@ -729,10 +730,7 @@ void KToolBar::closeEvent (QCloseEvent *e)
 {
   if (position == Floating)
    {
-     position = lastPosition;
-     recreate (Parent, oldWFlags, QPoint (oldX, oldY), true);
-     context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
-     emit moved (position);
+     setBarPos(lastPosition);
      e->ignore();
      return;
    }

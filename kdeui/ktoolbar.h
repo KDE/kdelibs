@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Stephan Kulow (coolo@kde.org)
-              (C) 1997 Sven Radej (sven@exp.univie.ac.at)
+              (C) 1997 Sven Radej (sven@bootko.exp.univie.ac.at)
               (C) 1997 Mark Donohoe (donohoe@kde.org)
               (C) 1997 Matthias Ettrich (ettrich@kde.org)
               
