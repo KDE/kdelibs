@@ -1,3 +1,11 @@
+kdelibs (4:2.1.2-3) unstable; urgency=low
+ 
+  * Hopefully fix libtool problems with arm/m68k by adding those to the
+    linux arch list (Closes: #94634)
+  * Updated Build-Depends and other Dependency cleanups
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 23 May 2001 11:17:00 -0700
+
 kdelibs (4:2.1.2-2) unstable; urgency=low
  
   * Add provides in for -alsa packages (Closes: #96372)
