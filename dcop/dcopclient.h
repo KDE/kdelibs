@@ -218,7 +218,7 @@ class DCOPClient : public QObject
    * A call blocks the application until the process receives the
    * answer.
    *
-   * If @useEventLoop is true, a local event loop will be started after
+   * If @p useEventLoop is true, a local event loop will be started after
    * 1/10th of a second in order to keep the user interface updated
    * (by processing paint events and such) until an answer is received.
    *
@@ -240,26 +240,26 @@ class DCOPClient : public QObject
    * @param data The data to provide to the remote function.
    * @param foundApp The remote application id that matched the criteria.
    * @param foundObj The remote object that matched the criteria.
-   * @param fast Tf set to @p true, a "fast" form of IPC will be used.
+   * @param fast Tf set to true, a "fast" form of IPC will be used.
    *        Fast connections are not guaranteed to be implemented, but
    *        if they are they work only on the local machine, not across
    *        the network.  "fast" is only a hint not an order.
    *
    * findObject calls @p remFun in the applications and objects identified
-   * by @p remApp and @p remObj until @p remFun returns @p true. The name of
-   * the application and object that returned @p true are returned in
+   * by @p remApp and @p remObj until @p remFun returns true. The name of
+   * the application and object that returned true are returned in
    * @p foundApp and @p foundObj respectively.
    *
    * If @p remFun is empty a default function is called in the object
    * which always returns @p true.
    *
-   * @return @p true is returned when an object was found for which @remFun
-   * returned @p true. If no such object is the function returns @p false.
+   * @return true is returned when an object was found for which @p remFun
+   * returned true. If no such object is the function returns false.
    *
    * A findObject blocks the application until the process receives the
    * answer.
    *
-   * If @p useEventLoop is @p true, a local event loop will be started after
+   * If @p useEventLoop is true, a local event loop will be started after
    * 1/10th of a second in order to keep the user interface updated
    * (by processing paint events and such) until an answer is received.
    *
@@ -390,13 +390,13 @@ class DCOPClient : public QObject
   QCStringList remoteObjects( const QCString& remApp, bool *ok = 0 );
 
   /**
-   * Retrieves the list of interfaces of the remote object @remObj
+   * Retrieves the list of interfaces of the remote object @p remObj
    * of application @p remApp
   */
   QCStringList remoteInterfaces( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
     
   /**
-   * Retrieves the list of functions of the remote object @remObj
+   * Retrieves the list of functions of the remote object @p remObj
    * of application @p remApp
   */
   QCStringList remoteFunctions( const QCString& remApp, const QCString& remObj , bool *ok = 0 );
