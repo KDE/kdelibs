@@ -137,6 +137,11 @@ bool KPanelApplet::process(const QCString &fun, const QByteArray &data,
       _orient = static_cast<Qt::Orientation>(orient);
       return true;
     }
+  else if ( fun == "removedFromPanel()" )
+    {
+      removedFromPanel();
+      return true;
+    }
   else if ( fun == "restartCommand()" )
     {
       QDataStream reply( replyData, IO_WriteOnly );
@@ -157,4 +162,9 @@ int KPanelApplet::widthForHeight(int height)
 {
   // default to a quadratic shape
   return height;
+}
+
+void KPanelApplet::removedFromPanel()
+{
+  kapp->quit();
 }

@@ -118,6 +118,16 @@ class KPanelApplet : public QWidget, DCOPObject
   virtual int heightForWidth(int width);
 
   /**
+   * Is called when the applet is removed from the panel.
+   *
+   * The default implementation will simply call "kapp->quit()".
+   * If the KPanelApplet widget is only a part of a bigger application
+   * you might want to reimplement this to avoid the app shutdown and do
+   * something else like simply deleting the applet widget instead.
+   **/
+  virtual void removedFromPanel();
+
+  /**
    * Notify the panel about a new applet layout.
    *
    * Call this to make the panel relayout all applets, when
