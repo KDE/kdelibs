@@ -1102,7 +1102,7 @@ void KFilePropsPlugin::slotDirSizeUpdate()
     KIO::filesize_t totalSize = d->dirSizeJob->totalSize();
     KIO::filesize_t totalFiles = d->dirSizeJob->totalFiles();
          KIO::filesize_t totalSubdirs = d->dirSizeJob->totalSubdirs();
-    m_sizeLabel->setText( i18n("Calculating... %1 (%2) %3, %4")
+    m_sizeLabel->setText( i18n("Calculating... %1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
                          .arg(KGlobal::locale()->formatNumber(totalSize, 0))
         .arg(i18n("1 file","%n files",totalFiles)) 
@@ -1118,7 +1118,7 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
     KIO::filesize_t totalSize = static_cast<KDirSize*>(job)->totalSize();
 	KIO::filesize_t totalFiles = static_cast<KDirSize*>(job)->totalFiles();
 	KIO::filesize_t totalSubdirs = static_cast<KDirSize*>(job)->totalSubdirs();
-    m_sizeLabel->setText( QString::fromLatin1("%1 (%2) %3, %4")
+    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
 			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) 
         .arg(i18n("1 file","%n files",totalFiles)) 
