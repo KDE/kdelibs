@@ -24,6 +24,8 @@
 #include <qobject.h>
 #include <qptrlist.h>
 
+#include <kresources/resourcemanager.h>
+
 #include "addressee.h"
 #include "field.h"
 
@@ -295,6 +297,7 @@ class AddressBook : public QObject
     void deleteRemovedAddressees();
     void setStandardResource( Resource * );
     Resource *standardResource();
+    KRES::ResourceManager<Resource> *resourceManager();
 
   private:
     QPtrList<Resource> mDummy; // Remove in KDE 4

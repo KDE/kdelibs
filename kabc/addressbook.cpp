@@ -42,9 +42,8 @@ struct AddressBook::AddressBookData
   Addressee::List mAddressees;
   Addressee::List mRemovedAddressees;
   Field::List mAllFields;
-  QPtrList<Resource> mResources;
   ErrorHandler *mErrorHandler;
-  Resource *mStandardResource;
+  KRES::ResourceManager<Resource> *mManager;  
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -201,17 +200,18 @@ bool AddressBook::ConstIterator::operator!=( const ConstIterator &it )
 AddressBook::AddressBook()
 {
   d = new AddressBookData;
-  d->mResources.setAutoDelete( true );
   d->mErrorHandler = 0;
-  d->mStandardResource = 0;
+  d->mManager = new KRES::ResourceManager<Resource>( "contact" );
 }
 
 AddressBook::~AddressBook()
 {
-  d->mResources.clear();
-  d->mStandardResource = 0;
+  delete d->mManager;
+  d->mManager = 0;
   delete d->mErrorHandler;
+  d->mErrorHandler = 0;
   delete d;
+  d = 0;
 }
 
 bool AddressBook::load()
@@ -220,18 +220,18 @@ bool AddressBook::load()
 
   clear();
 
-  Resource *r;
+  KRES::ResourceManager<Resource>::Iterator it;
   bool ok = true;
-  for( r = d->mResources.first(); r; r = d->mResources.next() )
-    if ( !r->load() ) {
-      error( i18n("Unable to load resource '%1'").arg( r->resourceName() ) );
+  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it )
+    if ( !(*it)->load() ) {
+      error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
       ok = false;
     }
 
   // mark all addressees as unchanged
-  Addressee::List::Iterator it;
-  for ( it = d->mAddressees.begin(); it != d->mAddressees.end(); ++it )
-    (*it).setChanged( false );
+  Addressee::List::Iterator addrIt;
+  for ( addrIt = d->mAddressees.begin(); addrIt != d->mAddressees.end(); ++addrIt )
+    (*addrIt).setChanged( false );
 
   return ok;
 }
@@ -288,14 +288,17 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
   if ( !resource )
     resource = standardResource();
 
-  if ( d->mResources.find( resource ) < 0 ) {
-    return 0;
-  } else {
-    if ( resource->readOnly() )
-      return 0;
-    else
-      return resource->requestSaveTicket();
+  KRES::ResourceManager<Resource>::Iterator it;
+  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it ) {
+    if ( (*it) == resource ) {
+      if ( (*it)->readOnly() )
+        return 0;
+      else
+        return (*it)->requestSaveTicket();
+    }
   }
+
+  return 0;
 }
 
 void AddressBook::insertAddressee( const Addressee &a )
@@ -432,14 +435,16 @@ void AddressBook::dump() const
 
 QString AddressBook::identifier()
 {
-  QString identifier;
+  QStringList identifier;
 
-    for ( uint i = 0; i < d->mResources.count(); ++i ) {
-      Resource *resource = d->mResources.at( i );
-      identifier += ( i == 0 ? "" : ":" ) + resource->identifier();
-    }
 
-  return identifier;
+  KRES::ResourceManager<Resource>::Iterator it;
+  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it ) {
+    if ( !(*it)->identifier().isEmpty() )
+      identifier.append( (*it)->identifier() );
+  }
+
+  return identifier.join( ":" );
 }
 
 Field::List AddressBook::fields( int category )
@@ -503,29 +508,38 @@ bool AddressBook::addResource( Resource *resource )
 
   resource->setAddressBook( this );
 
-  d->mResources.append( resource );
+  d->mManager->add( resource );
   return true;
 }
 
 bool AddressBook::removeResource( Resource *resource )
 {
+  resource->close();
+
   if ( resource == standardResource() )
-    setStandardResource( 0 );
+    d->mManager->setStandardResource( 0 );
 
   resource->setAddressBook( 0 );
 
-  return d->mResources.remove( resource );
+  d->mManager->remove( resource );
+  return true;
 }
 
 QPtrList<Resource> AddressBook::resources()
 {
-    return d->mResources;
+  QPtrList<Resource> list;
+
+  KRES::ResourceManager<Resource>::Iterator it;
+  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it )
+    list.append( *it );
+
+  return list;
 }
 
 void AddressBook::setErrorHandler( ErrorHandler *handler )
 {
-    delete d->mErrorHandler;
-    d->mErrorHandler = handler;
+  delete d->mErrorHandler;
+  d->mErrorHandler = handler;
 }
 
 void AddressBook::error( const QString& msg )
@@ -553,19 +567,24 @@ void AddressBook::deleteRemovedAddressees()
 
 void AddressBook::setStandardResource( Resource *resource )
 {
-  d->mStandardResource = resource;
+  d->mManager->setStandardResource( resource );
 }
 
 Resource *AddressBook::standardResource()
 {
-  return d->mStandardResource;
+  return d->mManager->standardResource();
+}
+
+KRES::ResourceManager<Resource> *AddressBook::resourceManager()
+{
+  return d->mManager;
 }
 
 void AddressBook::cleanUp()
 {
-  for ( uint i = 0; i < d->mResources.count(); ++i ) {
-    Resource *resource = d->mResources.at( i );
-    if ( !resource->readOnly() )
-      resource->cleanUp();
+  KRES::ResourceManager<Resource>::Iterator it;
+  for ( it = d->mManager->begin(); it != d->mManager->end(); ++it ) {
+    if ( !(*it)->readOnly() )
+      (*it)->cleanUp();
   }
 }

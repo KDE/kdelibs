@@ -38,7 +38,7 @@ using namespace KABC;
 extern "C" {
 
 // Crash recovery signal handler
-static void crashHandler( int sigId )
+static void crashHandler( int )
 {
   /**
     To avoid all such 'KAddressBook crashes' mails I comment it out now.
@@ -100,17 +100,15 @@ bool StdAddressBook::save()
   kdDebug(5700) << "StdAddressBook::save()" << endl;
 
   bool ok = true;
-  Resource *resource = 0;
-
   AddressBook *ab = self();
 
   ab->deleteRemovedAddressees();
 
-  QPtrList<Resource> list = ab->resources();
-  for ( uint i = 0; i < list.count(); ++i ) {
-    resource = list.at( i );
-    if ( !resource->readOnly() ) {
-      Ticket *ticket = ab->requestSaveTicket( resource );
+  KRES::ResourceManager<Resource>::Iterator it;
+  KRES::ResourceManager<Resource> *manager = ab->resourceManager();
+  for ( it = manager->begin(); it != manager->end(); ++it ) {
+    if ( !(*it)->readOnly() ) {
+      Ticket *ticket = ab->requestSaveTicket( *it );
       if ( !ticket ) {
         ab->error( i18n( "Unable to save to standard addressbook. It is locked." ) );
         return false;
@@ -146,28 +144,24 @@ StdAddressBook::~StdAddressBook()
 
 void StdAddressBook::init( bool )
 {
-  KRES::ResourceManager<Resource> manager( "contact" );
+  KRES::ResourceManager<Resource> *manager = resourceManager();
+  manager->load();
 
   KRES::ResourceManager<Resource>::Iterator it;
-  for( it = manager.begin(); it != manager.end(); ++it ) {
-    if ( (*it)->isActive() ) {
-      addResource( *it );
-    }
-  }
+  for ( it = manager->begin(); it != manager->end(); ++it )
+    (*it)->setAddressBook( this );
 
-  Resource *res = manager.standardResource();
+  Resource *res = standardResource();
   if ( !res ) {
-    res = manager.createResource( "file" );
-    if ( res ) {
-      manager.add( res );
-      manager.setStandardResource( res );
-      manager.sync(); // write default resource to config file
+    res = manager->createResource( "file" );
+    if ( res )
       addResource( res );
-    } else
+    else
       kdDebug(5700) << "No resource available!!!" << endl;
   }
 
   setStandardResource( res );
+  manager->sync(); // write config file
 
   load();
 
