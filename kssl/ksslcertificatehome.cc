@@ -28,8 +28,12 @@
 QStringList KSSLCertificateHome::getCertificateList() {
 KSimpleConfig cfg("ksslcertificates", false);
 QStringList list = cfg.groupList();
+QString defaultstr("<default>");
+QString blankstr("");
 
-list.remove(list.last());  // get rid of "<default>"
+list.remove(defaultstr);
+list.remove(blankstr);
+
 return list;
 }
 
