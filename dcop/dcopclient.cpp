@@ -92,7 +92,6 @@ public:
 
     static const char* serverAddr; // location of server in ICE-friendly format.
     QSocketNotifier *notifier;
-    bool notifier_enabled;
     bool non_blocking_call_lock;
     bool registered;
 
@@ -300,25 +299,20 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     QCString replyType;
     QByteArray replyData;
     bool b;
-    // block any new requests via the socket notifier while we are
-    // processing a call. This makes it possible for clients to
-    // re-enter the main event loop for user interaction in
-    // process() without confusing the DCOP call stack.
-    bool old_notifier_enabled = d->notifier_enabled;
-    d->notifier_enabled = false;
     CARD32 oldCurrentKey = d->currentKey;
     if ( opcode != DCOPSend ) // DCOPSend doesn't change the current key
 	d->currentKey = key;
-    if (opcode == DCOPFind)
+
+    if ( opcode == DCOPFind )
 	b = c->find(app, objId, fun, data, replyType, replyData );
     else
 	b = c->receive( app, objId, fun, data, replyType, replyData );
     // set notifier back to previous state
-    d->notifier_enabled = old_notifier_enabled;
-    d->currentKey = oldCurrentKey;
 	
-    if (opcode == DCOPSend)
+    if ( opcode == DCOPSend )
 	return;
+
+    d->currentKey = oldCurrentKey;
 
     QByteArray reply;
     QDataStream replyStream( reply, IO_WriteOnly );
@@ -381,7 +375,6 @@ DCOPClient::DCOPClient()
     d->currentKey = 0;
     d->appId = 0;
     d->notifier = 0L;
-    d->notifier_enabled = true;
     d->non_blocking_call_lock = false;
     d->registered = false;
     d->transactionList = 0L;
@@ -1360,9 +1353,6 @@ void DCOPClient::processSocketData(int)
 	qApp->exit_loop();
 	return;
     }
-
-    if ( !d->notifier_enabled )
-	return;
 
     IceProcessMessagesStatus s =  IceProcessMessages(d->iceConn, 0, 0);
 
