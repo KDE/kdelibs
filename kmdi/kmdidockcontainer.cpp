@@ -45,7 +45,7 @@ static const char* const not_close_xpm[]={
 "#####"};
 
 KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position, int flags)
-: QWidget(parent),KMdiDockContainerBase()
+: QWidget(parent),KDockContainer()
 {
   m_block=false;
   m_inserted=-1;
@@ -99,7 +99,7 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
 }
 
 KMdiDockContainer::~KMdiDockContainer()
-{	
+{
   for (QMap<KDockWidget*,int>::iterator it=m_map.begin();it!=m_map.end();++it) {
 	KDockWidget *w=it.key();
 	  if (m_overlapButtons.contains(w)) {
@@ -338,7 +338,7 @@ void KMdiDockContainer::setPixmap(KDockWidget* widget ,const QPixmap& pixmap)
   tab->setIcon(pixmap.isNull()?SmallIcon("misc"):pixmap);
 }
 
-void KMdiDockContainer::save(QDomElement& dockEl) 
+void KMdiDockContainer::save(QDomElement& dockEl)
 {
 	QDomDocument doc=dockEl.ownerDocument();
 	QDomElement el;
