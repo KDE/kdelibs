@@ -26,5 +26,5 @@ Comment[sr]=Character ureðaj
 Comment[sv]=Enhet av teckentyp (t ex seriellport)
 Icon=mimetypes/chardevice
 Type=MimeType
-MimeType=mimetypes/chardevice
+MimeType=inode/chardevice
 Patterns=
