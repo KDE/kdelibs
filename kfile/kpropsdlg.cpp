@@ -1289,6 +1289,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   l = new QLabel(i18n("Sticky"), gb);
   gl->addWidget(l, 4, 5);
 
+  bool enablePage = (isMyFile || IamRoot) && (!isLink);
   /* Draw Checkboxes */
   for (int row = 0; row < 3 ; ++row) {
     for (int col = 0; col < 4; ++col) {
@@ -1299,7 +1300,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         cb->setTristate( true );
         cb->setNoChange();
       }
-      cb->setEnabled ((isMyFile || IamRoot) && (!isLink));
+      cb->setEnabled( enablePage );
       permBox[row][col] = cb;
       gl->addWidget (permBox[row][col], row+2, col+1);
       connect( cb, SIGNAL( clicked() ),
@@ -1307,6 +1308,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     }
   }
   gl->setColStretch(6, 10);
+  gb->setEnabled( enablePage );
 
   /**** Group: Ownership ****/
   gb = new QGroupBox ( i18n("Ownership"), d->m_frame );
