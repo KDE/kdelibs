@@ -567,11 +567,11 @@ void KComboBox::makeCompletionBox()
 
     d->completionBox = new KCompletionBox( lineEdit(), "completion box" );
     connect( d->completionBox, SIGNAL( highlighted( const QString& )),
-                 SLOT( setCompletedText( const QString& )));
+             SLOT( setCompletedText( const QString& )));
     connect( d->completionBox, SIGNAL( activated( const QString& )),
              SIGNAL( activated( const QString & )));
     connect( d->completionBox, SIGNAL( userCancelled( const QString& ) ),
-                 SLOT( setEditText( const QString& ) ) );
+             SLOT( setEditText( const QString& ) ) );
 }
 
 // FIXME: make pure virtual in KCompletionBase!
@@ -594,7 +594,7 @@ void KComboBox::setCompletedItems( const QStringList& items )
         }
         else
         {
-            if ( d->completionBox->isVisible() )
+            if ( d->completionBox && d->completionBox->isVisible() )
                 hideCompletionBox();
         }
     }
