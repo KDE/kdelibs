@@ -96,7 +96,7 @@ const struct HashEntry WindowTableEntries[] = {
    { "ondragdrop", Window::Ondragdrop, DontDelete, 0, 0 },
    { "scrollBy", Window::ScrollBy, DontDelete|Function, 2, &WindowTableEntries[90] },
    { 0, 0, 0, 0, 0 },
-   { "konqueror", Window::Konqueror, DontDelete|ReadOnly, 0, &WindowTableEntries[86] },
+   { "konqueror", Window::_Konqueror, DontDelete|ReadOnly, 0, &WindowTableEntries[86] },
    { "resizeBy", Window::ResizeBy, DontDelete|Function, 2, &WindowTableEntries[98] },
    { "defaultStatus", Window::DefaultStatus, DontDelete, 0, 0 },
    { "Range", Window::Range, DontDelete|ReadOnly, 0, &WindowTableEntries[85] },

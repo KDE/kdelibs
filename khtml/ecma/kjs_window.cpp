@@ -170,7 +170,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   location	Window::_Location	DontDelete
   name		Window::Name		DontDelete
   navigator	Window::_Navigator	DontDelete|ReadOnly
-  konqueror	Window::Konqueror	DontDelete|ReadOnly
+  konqueror	Window::_Konqueror	DontDelete|ReadOnly
   offscreenBuffering	Window::OffscreenBuffering	DontDelete|ReadOnly
   opener	Window::Opener		DontDelete|ReadOnly
   outerHeight	Window::OuterHeight	DontDelete|ReadOnly
@@ -392,7 +392,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case _Navigator:
       return new Navigator(m_part);
 #ifdef Q_WS_QWS
-    case Konqueror:
+    case _Konqueror:
       return new Konqueror(m_part);
 #endif
     case OffscreenBuffering:
@@ -1611,7 +1611,7 @@ Value KonquerorFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   return Undefined();
 }
 
-String Konqueror::toString(ExecState *) const
+UString Konqueror::toString(ExecState *) const
 {
   return UString("[object Konqueror]");
 }

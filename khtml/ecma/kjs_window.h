@@ -104,7 +104,7 @@ namespace KJS {
     static const ClassInfo info;
     enum { Closed, Crypto, DefaultStatus, Status, Document, Node, Range,
            NodeFilter, DOMException, Frames, _History, Event, InnerHeight,
-           InnerWidth, Length, _Location, Name, _Navigator, Konqueror,
+           InnerWidth, Length, _Location, Name, _Navigator, _Konqueror,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
            ScrollTo, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
@@ -191,7 +191,7 @@ namespace KJS {
     Konqueror(KHTMLPart *p) : part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
-    virtual String toString(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   private:
