@@ -470,9 +470,6 @@ void KDirLister::setNameFilter(const QString& nameFilter)
         }
         delete [] s;
     }
-
-    for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
-	updateDirectory( *it ); // update all directories
 }
 
 void KDirLister::FilesAdded( const KURL & directory )
