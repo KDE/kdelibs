@@ -2283,3 +2283,7 @@ KLocale & KLocale::operator=(const KLocale & rhs)
 bool KLocale::setCharset(const QString & ) { return true; }
 QString KLocale::charset() const { return QString::fromLatin1("UTF-8"); }
 
+// KDE4: remove
+#if 0
+void nothing() { i18n("&Next"); }
+#endif
