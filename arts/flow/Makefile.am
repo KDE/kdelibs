@@ -19,3 +19,13 @@ DISTCLEANFILES = $(SRCMETA) artsflow.cc artsflow.h
 artsflow.cc: artsflow.h
 artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/flow/artsflow.idl
+
+#
+# -frepo closure (experimental)
+#
+closure: $(libartsflow_la_OBJECTS)
+	@echo "Building -frepo compliant library closure"
+	@echo "int main() {}" > closure.cc
+	$(CXXLINK) -o closure $(libartsflow_la_OBJECTS) closure.cc
+	@echo "closure timestamp" > closure
+	@rm -f closure.cc

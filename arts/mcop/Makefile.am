@@ -1,7 +1,6 @@
 
 MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
 ##
-
 lib_LTLIBRARIES = libmcop.la
 #
 # Programs to compile, Manpages to install and Versions
@@ -17,3 +16,12 @@ libmcop_la_LIBADD = $(LIBSOCKET)
 core: $(top_srcdir)/arts/mcop/core.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/mcop/core.idl
 
+#
+# -frepo closure (experimental)
+#
+closure: $(libmcop_la_OBJECTS)
+	@echo "Building -frepo compliant library closure"
+	@echo "int main() {}" > closure.cc
+	$(CXXLINK) -o closure $(libmcop_la_OBJECTS) closure.cc
+	@echo "closure timestamp" > closure
+	@rm -f closure.cc
