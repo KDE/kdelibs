@@ -115,17 +115,24 @@ void BrowserRun::scanFile()
 
   if ( m_part )
   {
-      QString proto = m_part->url().protocol();
-      if (proto.find("https", 0, false) == 0) {
+      QString proto = m_part->url().protocol().lower();
+      
+      if (proto == "https" || proto == "webdavs") {
           m_args.metaData().insert("main_frame_request", "TRUE" );
           m_args.metaData().insert("ssl_was_in_use", "TRUE" );
           m_args.metaData().insert("ssl_activate_warnings", "TRUE" );
-      } else if (proto.find("http", 0, false) == 0) {
+      } else if (proto == "http" || proto == "webdav") {
           m_args.metaData().insert("ssl_activate_warnings", "TRUE" );
           m_args.metaData().insert("ssl_was_in_use", "FALSE" );
       }
+      
+      // Set the PropagateHttpHeader meta-data if it has not already been set
+      // and the current protocol is http, i.e. http,webdav, and ftp over proxy.
+      if ((proto.startsWith("http") || proto.startsWith("webdav") || proto.startsWith("ftp")) &&
+           m_args.metaData().contains("PropagateHttpHeader"))
+          m_args.metaData().insert("PropagateHttpHeader", "TRUE");
   }
-
+ 
   KIO::TransferJob *job;
   if ( m_args.doPost() && m_strURL.protocol().startsWith("http"))
   {
