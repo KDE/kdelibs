@@ -29,6 +29,7 @@ namespace KJS {
   public:
     Math() : ObjectImp(BooleanClass) { }
     virtual KJSO get(const UString &p) const;
+    virtual bool hasProperty(const UString &p, bool recursive = true) const;
     enum { Euler, Ln2, Ln10, Log2E, Log10E, Pi, Sqrt1_2, Sqrt2,
 	   Abs, ACos, ASin, ATan, ATan2, Ceil, Cos, Pow,
 	   Exp, Floor, Log, Max, Min, Random, Round, Sin, Sqrt, Tan };
