@@ -227,15 +227,7 @@ UString UString::from(unsigned int u)
 UString UString::from(double d)
 {
   char buf[40];
-  sprintf(buf, "%f", d);
-  // truncate trailing zeros
-  char *z = buf + strlen(buf) - 1;
-  while (*z == '0')
-    *z-- = '\0';
-  // no decimal digits -> no decimal point
-  if (*z == '.')
-    *z = '\0';
-
+  sprintf(buf, "%.16g", d);	// does the right thing
   return UString(buf);
 }
 
@@ -383,12 +375,12 @@ unsigned long UString::toULong(bool *ok) const
 {
   double d = toDouble();
   bool b = true;
-  
+
   if (isNaN(d) || d != static_cast<unsigned long>(d)) {
     b = false;
     d = 0;
   }
-  
+
   if (ok)
     *ok = b;
 
@@ -525,7 +517,7 @@ bool KJS::operator<(const UString& s1, const UString& s2)
   }
   if (l != le)
     return (c1->unicode() < c2->unicode());
-  
+
   return (l1 < l2 && !(*c1 == *c2));
 }
 

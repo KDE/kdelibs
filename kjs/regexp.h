@@ -21,7 +21,9 @@
 #define _KJS_REGEXP_H_
 
 #include <sys/types.h>
+extern "C" { // bug with some libc5 distributions
 #include <regex.h>
+}
 
 #include "ustring.h"
 
