@@ -1,6 +1,6 @@
 /*
  * This file is part of the KDE libraries
- * Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
+ * Copyright (c) 1999-2000 Waldo Bastian <bastian@kde.org>
  *           (c) 1999 Mario Weilguni <mweilguni@sime.com>
  *
  * $Id$
@@ -51,6 +51,7 @@
 #include <kinstance.h>
 #include <kstddirs.h>
 #include <kdebug.h>
+#include <kapp.h>
 
 #include "ltdl.h"
 #include "klauncher_cmds.h"
@@ -949,6 +950,7 @@ int main(int argc, char **argv, char **envp)
    kdeinit_setproctitle("Starting up...");
    kdeinit_library_path();
    unsetenv("LD_BIND_NOW");
+   KApplication::loadedByKdeinit = true;
 
    d.maxname = strlen(argv[0]);
    d.launcher_pid = 0;
