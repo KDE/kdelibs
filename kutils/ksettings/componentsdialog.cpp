@@ -29,6 +29,7 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kseparator.h>
 
 class KSelectEntriesDialog::KSelectEntriesDialogPrivate
 {
@@ -48,13 +49,18 @@ KSelectEntriesDialog::KSelectEntriesDialog( QWidget * parent, const char * name 
 {
     QWidget * page = new QWidget( this );
     setMainWidget( page );
-    ( new QHBoxLayout( page, KDialog::marginHint(), KDialog::spacingHint() ) )->setAutoAdd( true );
+    ( new QHBoxLayout( page, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->listview = new KListView( page );
+    d->listview->setMinimumSize( 200, 200 );
     d->infowidget = new QFrame( page );
-    ( new QVBoxLayout( d->infowidget, KDialog::marginHint(), KDialog::spacingHint() ) )->setAutoAdd( true );
+    d->infowidget->setMinimumSize( 200, 200 );
+    ( new QVBoxLayout( d->infowidget, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->iconwidget = new QLabel( d->infowidget );
+    ( void )new KSeparator( d->infowidget );
     d->commentwidget = new QLabel( d->infowidget );
+    d->commentwidget->setAlignment( Qt::WordBreak );
     d->descriptionwidget = new QLabel( d->infowidget );
+    d->descriptionwidget->setAlignment( Qt::WordBreak );
 
     d->listview->addColumn( QString::null );
     d->listview->header()->hide();
@@ -98,7 +104,7 @@ void KSelectEntriesDialog::show()
         QCheckListItem * item = new QCheckListItem( d->listview, ( *it )->name(),
                 QCheckListItem::CheckBox );
         if( ! ( *it )->icon().isEmpty() )
-            item->setPixmap( 0, KGlobal::iconLoader()->loadIcon( ( *it )->icon(), KIcon::Small ) );
+            item->setPixmap( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
         item->setOn( ( *it )->pluginEnabled() );
         d->plugininfomap[ item ] = ( *it );
     }
@@ -122,6 +128,10 @@ void KSelectEntriesDialog::executed( QListViewItem * item )
     KPluginInfo * info = d->plugininfomap[ citem ];
     info->setPluginEnabled( checked );
     //checkDependencies( info );
+    // show info about the component on the right
+    d->iconwidget->setPixmap( SmallIcon( info->icon(), KIcon::SizeLarge ) );
+    d->commentwidget->setText( info->comment() );
+    //d->descriptionwidget->setText( info->description() );
 }
 
 void KSelectEntriesDialog::savePluginInfos()

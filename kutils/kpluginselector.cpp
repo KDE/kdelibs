@@ -158,7 +158,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
             QCheckListItem * item = new QCheckListItem( listview,
                     ( *it )->name(), QCheckListItem::CheckBox );
             if( ! ( *it )->icon().isEmpty() )
-                item->setPixmap( 0, KGlobal::iconLoader()->loadIcon( ( *it )->icon(), KIcon::Small ) );
+                item->setPixmap( 0, SmallIcon( ( *it )->icon(), IconSize( KIcon::Small ) ) );
             item->setText( 1, ( *it )->comment() );
             item->setText( 2, ( *it )->author()  );
             item->setText( 3, ( *it )->version() );
