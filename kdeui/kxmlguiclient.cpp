@@ -645,9 +645,8 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
           QFile f( (*local).file );
           if ( f.open( IO_WriteOnly ) )
           {
-            QTextStream stream( &f );
-            stream.setEncoding( QTextStream::UnicodeUTF8 );
-            stream << (*local).data;
+            QCString utf8data = (*local).data.utf8();
+            f.writeBlock( utf8data.data(), utf8data.length() );
             f.close();
           }
       }
