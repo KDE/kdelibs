@@ -190,8 +190,11 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 
 	    if ( l > 0 && (*it).mid( s, l - s ) == func ) {
 		realfunc = (*it).mid( s );
-		uint a = (*it).contains(',');
-		if ( ( a == 0 && args.isEmpty() ) || ( a > 0 && a + 1 == args.count() ) )
+		const QString arguments = (*it).mid(l+1,(*it).find( ')' )-l-1);
+		uint a = arguments.contains(',');
+		if ( (a==0 && !arguments.isEmpty()) || a>0)
+			a++;
+		if ( a == args.count()  )
 		    break;
 	    }
 	}
