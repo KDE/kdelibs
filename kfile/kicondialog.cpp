@@ -259,7 +259,7 @@ void KIconDialog::slotButtonClicked(int id)
 
     case 2:
 	file = KFileDialog::getOpenFileName(QString::null, 
-		QString::fromLatin1("*.png *.xpm"));
+		QString::fromLatin1("*.png *.xpm"), this);
 	if (!file.isEmpty())
 	{
 	    mFileList += file;
