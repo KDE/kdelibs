@@ -26,8 +26,8 @@
 #include <html_image.h>
 #include <dom_string.h>
 
-#include "kjs.h"
-#include "operations.h"
+#include <kjs/kjs.h>
+#include <kjs/operations.h>
 #include "kjs_dom.h"
 #include "kjs_html.h"
 #include "kjs_window.h"
