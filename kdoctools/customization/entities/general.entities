@@ -187,7 +187,6 @@
 <!ENTITY khexedit	"<application>KHexEdit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
 <!ENTITY kiconedit "<application>KIconEdit</application>">
-<!ENTITY killustrator "<application>KIllustrator</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kivio	"<application>Kivio</application>">
@@ -216,6 +215,7 @@
 <!ENTITY konqueror	"<application>Konqueror</application>">
 <!ENTITY konquest	"<application>Konquest</application>">
 <!ENTITY konsole	"<application>Konsole</application>">
+<!ENTITY kontour    "<application>Kontour</application>">
 <!ENTITY korganizer	"<application>Korganizer</application>">
 <!ENTITY korn	"<application>KOrn</application>">
 <!ENTITY koshell "<application>KOShell</application>">
@@ -317,6 +317,7 @@
 <!ENTITY kab	"<application>Kab</application>">
 <!ENTITY kdat	"<application>Kdat</application>">
 <!ENTITY kfm	"<application>KFM</application>">
+<!ENTITY killustrator "<application>Kontour</application>">
 <!ENTITY ktop	"<application>KTop</application>">
 <!ENTITY kwm	"<application>kwm</application>">
 <!ENTITY kwmpager	"<application>kwmpager</application>">
