@@ -657,7 +657,7 @@ double KJS::makeTime(struct tm *t, int ms, bool utc)
     }
 
     double yearOffset = 0.0;
-    if (t->tm_year < (1970 - 1900) || t->tm_year > (2038 - 1900)) {
+    if (t->tm_year < (1900 - 1900) || t->tm_year > (2038 - 1900)) {
       // we'll fool mktime() into believing that this year is within
       // it's normal, portable range (1970-2038) by setting tm_year
       // to 2000 and adding the difference in milliseconds later.
