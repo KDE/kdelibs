@@ -185,7 +185,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
   title.append(" [menu]");
   setCaption( title );
 
-  recreate(0, 0, mapToGlobal(QPoint(0,0)), false);
+  reparent(0, 0, mapToGlobal(QPoint(0,0)), false);
   XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->
                         topLevelWidget()->winId());
   KWin::setType( winId(), NET::Menu );

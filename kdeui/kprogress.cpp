@@ -206,7 +206,7 @@ void KProgress::styleChange(QStyle&)
 
 void KProgress::adjustStyle()
 {
-	switch (style()) {
+	switch (style().guiStyle()) {
 		case WindowsStyle:
 			setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
 			break;

@@ -1100,7 +1100,7 @@ void KDockWidget::setWidget( QWidget* mw )
   if ( !mw ) return;
 
   if ( mw->parent() != this ){
-    mw->recreate(this, 0, QPoint(0,0), false);
+    mw->reparent(this, 0, QPoint(0,0), false);
   }
 
   widget = mw;

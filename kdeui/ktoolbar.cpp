@@ -2461,7 +2461,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         setCaption(s);
       }
 
-      recreate(0, 0, p, false);
+      reparent(0, 0, p, false);
       XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->topLevelWidget()->winId());
 //      KWM::setDecoration(winId(), 2);
 //      KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
@@ -2480,7 +2480,7 @@ void KToolBar::setBarPos(BarPosition bpos)
       d->m_position = bpos;
 
       hide();
-      recreate(d->m_parent, oldWFlags, QPoint(oldX, oldY), true);
+      reparent(d->m_parent, oldWFlags, QPoint(oldX, oldY), true);
       emit moved (bpos); // another bar::updateRects (damn) No! It's ok.
       context->changeItem (i18n("Float"), CONTEXT_FLOAT);
       context->setItemChecked(CONTEXT_FLOAT, false);

@@ -724,7 +724,7 @@ void KDoubleNumInput::doLayout()
 
     if ( edit->frame() ) {
         h += 8;
-        if ( edit->style() == WindowsStyle && h < 26 )
+        if ( edit->style().guiStyle() == WindowsStyle && h < 26 )
             h = 22;
         m_sizeEdit.setWidth(w + 8);
         m_sizeEdit.setHeight(h);

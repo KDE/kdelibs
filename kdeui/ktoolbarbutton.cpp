@@ -512,7 +512,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   if ( isDown() || isOn() )
   {
-    if ( style() == WindowsStyle )
+    if ( style().guiStyle() == WindowsStyle )
       qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
     else
       qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
@@ -520,7 +520,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   else if ( d->m_isRaised )
   {
-    if ( style() == WindowsStyle )
+    if ( style().guiStyle() == WindowsStyle )
       qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
     else
       qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
@@ -537,7 +537,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = ( width() - pixmap()->width() ) / 2;
       dy = ( height() - pixmap()->height() ) / 2;
-      if ( isDown() && style() == WindowsStyle )
+      if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -551,7 +551,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = 4;
       dy = ( height() - pixmap()->height() ) / 2;
-      if ( isDown() && style() == WindowsStyle )
+      if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -567,7 +567,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       else
         dx = 4;
       dy = 0;
-      if ( isDown() && style() == WindowsStyle )
+      if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -588,7 +588,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         _painter->setPen(palette().disabled().dark());
       dx = (width() - fm.width(d->m_text)) / 2;
       dy = (height() - fm.lineSpacing()) / 2;
-      if ( isDown() && style() == WindowsStyle )
+      if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -606,7 +606,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     {
       dx = (width() - pixmap()->width()) / 2;
       dy = (height() - fm.lineSpacing() - pixmap()->height()) / 2;
-      if ( isDown() && style() == WindowsStyle )
+      if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -620,7 +620,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
       dx = (width() - fm.width(d->m_text)) / 2;
       dy = height() - fm.lineSpacing() - 4;
 
-      if ( isDown() && style() == WindowsStyle )
+      if ( isDown() && style().guiStyle() == WindowsStyle )
       {
         ++dx;
         ++dy;
