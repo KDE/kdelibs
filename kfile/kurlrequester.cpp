@@ -249,7 +249,10 @@ void KURLRequester::slotOpenDialog()
     }
 
     if ( dlg->exec() == QDialog::Accepted )
+    {
 	setURL( dlg->selectedURL().prettyURL() );
+        emit urlSelected( d->url() );
+    }
 }
 
 

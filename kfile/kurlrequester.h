@@ -186,6 +186,12 @@ signals:
      */
     void openFileDialog( KURLRequester * );
 
+    /**
+     * Emitted when the user changed the URL via the file dialog.
+     * The parameter contains the contents of the lineedit.
+     */
+    void urlSelected( const QString& );
+
 protected:
     void		init();
 
