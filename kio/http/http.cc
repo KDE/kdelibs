@@ -113,8 +113,9 @@ int kdemain( int argc, char **argv )
   }
 
   // Launch the cookiejar if not already running
-  KConfig *kioConfig = new KConfig("kioslaverc", false, false);
-  if (kioConfig->readBoolEntry( "Cookies", true ))
+  KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
+  cookieConfig->setGroup("Cookie Policy");
+  if( cookieConfig->readBoolEntry( "Cookies", true ) )
   {
      QString error;
      if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
@@ -123,7 +124,7 @@ int kdemain( int argc, char **argv )
         kdDebug(1202) << "Error starting KCookiejar: " << error << "\n" << endl;
      }
   }
-  delete kioConfig;
+  delete cookieConfig;
 
   HTTPProtocol slave(argv[1], argv[2], argv[3]);
   slave.dispatchLoop();
