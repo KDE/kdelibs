@@ -129,7 +129,7 @@ public:
     virtual void parseAttribute(AttrImpl *) {}
 
     // not part of the DOM
-    DOMString getAttribute ( int id );
+    DOMString getAttribute ( int id ) const;
     AttrImpl *getAttributeNode ( int index ) const;
     int getAttributeCount() const;
     void setAttribute ( int id, const DOMString &value );
