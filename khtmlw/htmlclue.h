@@ -96,7 +96,7 @@ public:
     virtual ObjectType getObjectType() const
 	    {	return Clue; }
     bool hasChildren() const
-	    {	return head; }
+	    {	return (head != 0L); }
 
     /************************************************************
      * Make an object a child of this Box.
