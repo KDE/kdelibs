@@ -26,6 +26,7 @@
 #include <ksslconnectioninfo.h>
 
 class KSSLPrivate;
+class KSSLCertificate;
 
 class KSSL {
 
@@ -36,12 +37,15 @@ public:
 
   static bool doesSSLWork();
 
+
   bool initialize();
+
   /**
    * This is used for apps which do STARTTLS or something similar.
    * It creates a TLS method regardless of the user's settings.
    */
   bool TLSInit();
+
   void close();
   bool reInitialize();
 
@@ -53,11 +57,18 @@ public:
    * This deletes the current instance of KSSLSettings.
    */
   bool setSettings(KSSLSettings *settings);
+
   /**
    * @return the current settings instance
    * One is built by the constructor, so this will never return 0L.
    */
   KSSLSettings * settings() { return m_cfg; }
+
+  /**
+   * @return true if the certificate was properly set to the session.
+   * Use this to set the certificate to send to the server.
+   */
+  bool setClientCertificate(KSSLCertificate *cert);
 
   int connect(int sock);
 

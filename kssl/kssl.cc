@@ -306,3 +306,18 @@ KSSLPeerInfo& KSSL::peerInfo() {
 }
 
 
+bool KSSL::setClientCertificate(KSSLCertificate *cert) {
+#ifdef HAVE_SSL
+  int rc;
+
+  rc = SSL_CTX_use_certificate(d->m_ctx, cert->getCert());
+
+  if (rc != 0) {
+    return false;
+  }
+
+  return true;
+#else
+  return false;
+#endif
+}

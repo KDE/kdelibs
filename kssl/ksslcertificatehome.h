@@ -21,10 +21,17 @@
 #ifndef _KSSLCERTIFICATEHOME_H
 #define _KSSLCERTIFICATEHOME_H
 
- 
+class KSSLCertificate;
+class QString;
+
 class KSSLCertificateHome {
  
 public:
+  static KSSLCertificate* getCertificateByHost(QString& host);
+  static KSSLCertificate* getDefaultCertificate();
+  static void setDefaultCertificate(QString& filename, QString& host);
+  static void addCertificate(QString& filename, QString& host);
+  static void addCertificate(KSSLCertificate* cert, QString& host);
  
 private:
  
