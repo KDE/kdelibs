@@ -17,16 +17,11 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-top_realbuilddir = `cd $(top_builddir) && pwd`
-
-
 INCLUDES = $(all_includes)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-check_PROGRAMS = kmemtest \
-		kidlservertest kidlclienttest \
-		dcopkonqtest
+check_PROGRAMS = kmemtest kidlservertest kidlclienttest dcopkonqtest
 
 dcopkonqtest_SOURCES = dcopkonqtest.cpp
 dcopkonqtest_LDADD = $(LIB_KDECORE)
@@ -36,3 +31,4 @@ kidlservertest_SOURCES = KIDLTest.cpp KIDLTest.skel
 kidlservertest_LDADD = $(LIB_KDECORE)
 kidlclienttest_SOURCES = KIDLTestClient.cpp KIDLTest.stub
 kidlclienttest_LDADD = $(LIB_KDECORE)
+
