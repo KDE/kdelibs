@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.24  1998/03/29 19:07:29  kalle
+// Methods for reading and writing bool, unsigned int, long, unsigned long,
+// double, QRect, QSize, QPoint
+//
 // Revision 1.23  1998/03/28 10:48:45  kulow
 // reverted to the return aValue. It's not possible to return a copy, since
 // the temporary object is destroyed in any case. What you need, is a kind of
@@ -436,7 +440,14 @@ bool KConfigBase::readBoolEntry( const char* pKey, const bool bDefault = false )
 	  if( aValue == "true" || aValue == "on" )
 		return true;
 	  else
-		return false;
+		{
+		  bool bOK;
+		  int val = aValue.toInt( &bOK );
+		  if( bOK && val != 0 )
+			return true;
+		  else
+			return false;
+		}
 	}
 }
 
