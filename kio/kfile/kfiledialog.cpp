@@ -528,7 +528,10 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     // errors mean in general, the location is no directory ;/
     // Can we be sure that it is exististant at all? (pfeiffer)
     if (sJob->error() && count == 0 && !ops->dirOnlyMode())
+    {
        accept();
+       return;
+    }
 
     KIO::UDSEntry t = sJob->statResult();
     bool isDir = false;
