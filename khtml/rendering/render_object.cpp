@@ -1,4 +1,4 @@
-;/**
+/**
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
@@ -399,8 +399,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
                 c = textcolor;
         }
 
-    int smallhalf = width/2;
-    int bighalf;
+    int half = width/2;
     switch(style)
     {
     case BNONE:
@@ -416,19 +415,18 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
     case DASHED:
         if(style == DASHED)
             p->setPen(QPen(c, width == 1 ? 0 : width, Qt::DashLine));
-	
-	bighalf = smallhalf + width%2;
+
         switch(s)
         {
         case BSTop:
-            y1 += smallhalf; y2 += smallhalf;   break;
+            y1 += half; y2 += half;   break;
         case BSBottom:
-            y1 -= bighalf; y2 -= bighalf;   break;
+            y1 -= half + (width % 2); y2 -= half + (width % 2);   break;
         case BSLeft:
-            x1 += smallhalf; x2 += smallhalf;
+            x1 += half; x2 += half;
             y1 += width; y2 -= width; break;
         case BSRight:
-            x1 -= bighalf; x2 -= bighalf;
+            x1 -= half + (width % 2); x2 -= half + (width % 2);
             y2 -= width; y1 += width; break;
         }
 
@@ -469,11 +467,11 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         // disadvantage is that current edges doesn't look right because of reverse
         // drawing order
         drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, INSET, true, true, adjbw1, adjbw2);
-        drawBorder(p, x1, y1, x2, y2, smallhalf, s, c, textcolor, OUTSET, true, true, adjbw1/2, adjbw2/2);
+        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, OUTSET, true, true, adjbw1/2, adjbw2/2);
         break;
     case RIDGE:
         drawBorder(p, x1, y1, x2, y2, width, s, c, textcolor, OUTSET, true, true, adjbw1, adjbw2);
-        drawBorder(p, x1, y1, x2, y2, smallhalf, s, c, textcolor, INSET, true, true, adjbw1/2, adjbw2/2);
+        drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, INSET, true, true, adjbw1/2, adjbw2/2);
         break;
     case INSET:
         if(s == BSTop || s == BSLeft)
@@ -655,6 +653,7 @@ void RenderObject::printTree(int indent) const
                  << (childcount ?
                      (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
                      : QString::null)
+                 << "(" << (style() ? style()->refCount() : 0) << ")"
                  << ": " << (void*)this
                  << " il=" << (int)isInline() << " ci=" << (int) childrenInline()
                  << " fl=" << (int)isFloating() << " rp=" << (int)isReplaced()
@@ -687,7 +686,7 @@ void RenderObject::setStyle(RenderStyle *style)
 {
     if (m_style == style)
 	return;
-	
+
     // reset style flags
     m_floating = false;
     m_positioned = false;
