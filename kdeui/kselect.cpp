@@ -86,10 +86,12 @@ QRect KXYSelector::contentsRect()
 	return QRect( 2, 2, width()-4, height()-4 );
 }
 
-void KXYSelector::paintEvent( QPaintEvent * )
+void KXYSelector::paintEvent( QPaintEvent *ev )
 {
-	QPainter painter;
+	QRect cursorRect( px - STORE_W, py - STORE_W, STORE_W2, STORE_W2);
+	QRect paintRect = ev->rect();
 
+	QPainter painter;
 	painter.begin( this );
 
 	QBrush brush;
@@ -97,9 +99,16 @@ void KXYSelector::paintEvent( QPaintEvent * )
 			TRUE, 2, &brush );
 
 	drawContents( &painter );
-	bitBlt( &store, 0, 0, this, px - STORE_W, py - STORE_W,
+	if (paintRect.contains(cursorRect))
+	{
+	   bitBlt( &store, 0, 0, this, px - STORE_W, py - STORE_W,
 		STORE_W2, STORE_W2, CopyROP );
-	drawCursor( painter, px, py );
+	   drawCursor( painter, px, py );
+        }
+        else if (paintRect.intersects(cursorRect))
+        {
+           repaint( cursorRect, false);
+        }
 
 	painter.end();
 }
@@ -162,13 +171,10 @@ void KXYSelector::drawCursor( QPainter &painter, int xp, int yp )
 {
 	painter.setPen( QPen( white ) );
 
-	painter.setClipRect( contentsRect() );
-	painter.setClipping( TRUE );
 	painter.drawLine( xp - 6, yp - 6, xp - 2, yp - 2 );
 	painter.drawLine( xp - 6, yp + 6, xp - 2, yp + 2 );
 	painter.drawLine( xp + 6, yp - 6, xp + 2, yp - 2 );
 	painter.drawLine( xp + 6, yp + 6, xp + 2, yp + 2 );
-	painter.setClipping( FALSE );
 }
 
 //-----------------------------------------------------------------------------
