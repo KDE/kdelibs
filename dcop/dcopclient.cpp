@@ -93,8 +93,7 @@ client_map_t *cliMap()
     return DCOPClient_CliMap;
 }
 
-static
-DCOPClient *findLocalClient( const QCString &_appId )
+DCOPClient *DCOPClient::findLocalClient( const QCString &_appId )
 {
     return cliMap()->find(_appId.data());
 }

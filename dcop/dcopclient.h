@@ -685,6 +685,13 @@ class DCOPClient : public QObject
   static void setMainClient( DCOPClient* mainClient);
 
   /**
+   * Look for the given client only in this process. This can be used
+   * to check whether a given client (by name) is running in the same
+   * process or in another one.
+   */
+  static DCOPClient* findLocalClient( const QCString &_appId );
+
+  /**
     * @internal Do not use.
     */
   static void emergencyClose();
