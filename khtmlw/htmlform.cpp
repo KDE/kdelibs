@@ -208,12 +208,12 @@ HTMLTextArea::HTMLTextArea( QWidget *parent, const char *n, int r, int c )
 
 	widget = new QMultiLineEdit( parent );
 
-	QSize size( c * 8, r * 20 );
+	QSize size( c * 8, r * 22 );
 
 	widget->resize( size );
 
-	descent = size.height() - 12;
-	ascent = 12;
+	descent = size.height() - 14;
+	ascent = 14;
 	width = size.width();
 }
 
@@ -267,13 +267,13 @@ HTMLCheckBox::HTMLCheckBox( QWidget *parent, const char *n, const char *v,
 
 	((QCheckBox *)widget)->setChecked( ch );
 
-	QSize size( 20, 12 );
+	QSize size( 14, 14 );
 
 	widget->resize( size );
 
 	descent = 1;
 	ascent = size.height() - descent;
-	width = size.width();
+	width = size.width() + 6;
 }
 
 QString HTMLCheckBox::encoding()
@@ -325,13 +325,13 @@ HTMLRadio::HTMLRadio( QWidget *parent, const char *n, const char *v,
 
 	((QRadioButton *)widget)->setChecked( ch );
 
-	QSize size( 20, 12 );
+	QSize size( 14, 14 );
 
 	widget->resize( size );
 
 	descent = 1;
 	ascent = size.height() - descent;
-	width = size.width();
+	width = size.width() + 6;
 
 	connect( widget, SIGNAL( clicked() ), SLOT( slotClicked() ) );
 }
@@ -384,7 +384,7 @@ HTMLReset::HTMLReset( QWidget *parent, const char *v )
 	QSize size = widget->sizeHint();
 	widget->resize( size );
 
-	descent = 3;
+	descent = 5;
 	ascent = size.height() - descent;
 	width = size.width();
 
@@ -411,7 +411,7 @@ HTMLSubmit::HTMLSubmit( QWidget *parent, const char *v )
 	QSize size = widget->sizeHint();
 	widget->resize( size );
 
-	descent = 3;
+	descent = 5;
 	ascent = size.height() - descent;
 	width = size.width();
 
@@ -438,15 +438,17 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 
 	((QLineEdit *)widget)->setMaxLength( s );
 
-	QSize size( s * 8, 20 );
+	QSize size( s * 8, 25 );
 	widget->resize( size );
 
-	descent = 3;
+	descent = 5;
 	ascent = size.height() - descent;
 	width = size.width();
 
 	connect( widget, SIGNAL( textChanged( const char * ) ),
 			SLOT( slotTextChanged( const char * ) ) );
+	connect( widget, SIGNAL( returnPressed() ),
+			SLOT( slotReturnPressed() ) );
 }
 
 QString HTMLTextInput::encoding()
@@ -471,6 +473,11 @@ void HTMLTextInput::reset()
 void HTMLTextInput::slotTextChanged( const char *t )
 {
 	setValue( t );
+}
+
+void HTMLTextInput::slotReturnPressed()
+{
+	emit submitForm();
 }
 
 //----------------------------------------------------------------------------

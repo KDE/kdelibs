@@ -1,12 +1,24 @@
 
 #include "htmlfont.h"
 
-HTMLFont::HTMLFont( const char *family, int size, int weight, bool italic )
-	: font( family, size, weight, italic )
+// most of these sizes are standard X font sizes, so all of our fonts
+// display nicely.
+//
+static int fontSizes[7] = { 8, 10, 12, 14, 18, 24, 32 };
+
+
+HTMLFont::HTMLFont( const char *_family, int _size, int _weight, bool _italic )
+	: font( _family, fontSizes[ _size ], _weight, _italic )
 {
 	textCol = black;
 	linkCol = blue;
 	vLinkCol = magenta;
+	fsize = _size;
+}
+
+int HTMLFont::pointSize( int _size )
+{
+	return fontSizes[ _size ];
 }
 
 HTMLFontManager::HTMLFontManager()

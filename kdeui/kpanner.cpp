@@ -2,6 +2,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1997/05/02 16:46:40  kalle
+ * Kalle: You may now override how KApplication reacts to external changes
+ * KButton uses the widget default palette
+ * new kfontdialog version 0,5
+ * new kpanner by Paul Kendall
+ * new: KIconLoader
+ *
  * Revision 1.2  1997/04/30 22:28:37  kulow
  * Coolo: updated KWidget classes (out of kghostview)
  * patched kbutton (from Taj)
@@ -69,11 +76,8 @@ KPanner::~KPanner() {
 
 void KPanner::resizeEvent(QResizeEvent*)
 {
-<<<<<<< kpanner.cpp
     int abs_coord = pos;
-=======
     int max_value, old_max = 0;
->>>>>>> 1.2
 
     if((u_flags & P_UNITS) == U_PERCENT)
         abs_coord = (int)(pos / 100.0 * getMaxValue());

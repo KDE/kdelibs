@@ -1,0 +1,16 @@
+Begin
+Title:          khtmlw
+Version:        0.5.4
+Entered-date:   2/5/97
+Description:    HTML widget for the KDE project
+Keywords:       HTML KDE Qt X11
+Author:         Torben Weis <weis@kde.org>
+Author:         Martin Jones <mjones@kde.org>
+Maintained-by:  Torben Weis <weis@kde.org>
+Maintained-by:  Martin Jones <mjones@kde.org>
+Primary-site:   ftp://fiwi02.wiwi.uni-tuebingen.de/pub/kde/devel/widgets
+Alternate-site:
+Platform:       unix (only tested on linux)
+Copying-policy: GPL
+End
+

@@ -247,6 +247,9 @@ signals:
 
 	/// signal when user has submitted a form
 	void formSubmitted( const char *_method, const char *_url );
+
+	/// signal that the HTML Widget has changed size
+	void resized( const QSize &size );
         
 public slots:
     /*********************************************************
@@ -293,6 +296,14 @@ protected:
     virtual void dragEndEvent();
 
     virtual void paintEvent( QPaintEvent * );
+
+	virtual void resizeEvent( QResizeEvent * );
+
+	virtual void keyPressEvent( QKeyEvent * );
+
+	// reimplemented to prevent flicker
+	virtual void focusInEvent( QFocusEvent * ) { }
+	virtual void focusOutEvent( QFocusEvent * ) { }
 
     /*********************************************************
      * This function is called after <body> usually. You can
@@ -548,6 +559,11 @@ protected:
 	int listLevel;
 
 	/*********************************************************
+	 * The current alignment, set by <DIV > or <CENTER>
+	 */
+	HTMLClue::HAlign divAlign;
+
+	/*********************************************************
 	 * Number of tokens parsed in the current time-slice
 	 */
 	int parseCount;
@@ -623,6 +639,5 @@ protected:
 	QString formText;
 };
 
-
-
 #endif // HTML
+

@@ -3,7 +3,7 @@
 #ifndef AMPSEQ_H
 #define AMPSEQ_H
 
-#define NUM_AMPSEQ	72
+#define NUM_AMPSEQ	73
 
 struct ampseq_s {
 	char *tag;

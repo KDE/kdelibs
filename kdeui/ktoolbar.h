@@ -62,46 +62,25 @@ public:
 	void setItemEnabled( int id, bool enabled );
 
 private:
-<<<<<<< ktoolbar.h
-  QList<KToolbarItem> buttons;
-  Position position;
-=======
 	QList <KToolBarItem> buttons;
 	Position position;
-	QPopupMenu *context;
 	bool moving;
->>>>>>> 1.3
 
 protected:
-<<<<<<< ktoolbar.h
-  QPopupMenu *context;
+        QPopupMenu *context;
 
-protected:
-  void drawContents ( QPainter *);
-  void resizeEvent(QResizeEvent*);
-  void mousePressEvent ( QMouseEvent *);
-  void init();
-  void updateRects(bool resize);
-
-  protected slots:
-    void ItemClicked(int);
-  void ItemPressed(int);
-  void ItemReleased(int);
-  void ContextCallback(int);
-=======
 	void drawContents ( QPainter *);
 	void resizeEvent(QResizeEvent*);
 	void paintEvent(QPaintEvent*);
 	void mousePressEvent ( QMouseEvent *);
 	void init();
-	void updateRects(bool resize = FALSE );
+	void updateRects(bool resize = FALSE);
 
 protected slots:
 	void ItemClicked(int);
-	void ItemPressed(int);
+        void ItemPressed(int);
 	void ItemReleased(int);
 	void ContextCallback(int);
->>>>>>> 1.3
 
 signals:
 	void clicked(int);

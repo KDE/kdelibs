@@ -51,7 +51,7 @@ void HTMLObject::getSelected( QStrList &_list )
 	char *s;
 	
     for ( s = _list.first(); s != 0L; s = _list.next() )
-	if ( strcmp( url.data(), s ) == 0 )
+	if ( strcmp( url, s ) == 0 )
 	    return;
 	
 	_list.append( url.data() );
@@ -133,14 +133,8 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
 
 void HTMLText::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getHeight() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y + getDescent() )
 	return;
-
-    // QRect r( x, y - ascent, width, getHeight() );
-    // QRect r2( _x, _y, _width, _height );
-    
-    // if ( !r.intersects( r2 ) )
-    // return;
 
     print( _painter, _tx, _ty );
 }
@@ -183,14 +177,15 @@ HTMLRule::HTMLRule( int _max_width, int _width, int _percent, int _size,
     ascent = 6 + _size;
     descent = 6;
     max_width = _max_width;
-	width = _width;
+	width = _max_width;
+	length = _width;
 	percent = _percent;
 	align = _align;
 	shade = _shade;
 
 	if ( percent )
 	{
-		width = max_width * percent / 100;
+		length = max_width * percent / 100;
 		setFixedWidth( false );
 	}
 }
@@ -198,14 +193,15 @@ HTMLRule::HTMLRule( int _max_width, int _width, int _percent, int _size,
 void HTMLRule::setMaxWidth( int _max_width )
 {
 	max_width = _max_width;
+	width = _max_width;
 
 	if ( percent )
-		width = max_width * percent / 100;
+		length = max_width * percent / 100;
 }
 
 void HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getHeight() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y + getDescent() )
 	return;
 
     print( _painter, _tx, _ty );
@@ -228,18 +224,18 @@ void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
 			break;
 
 		case Right:
-			xp = x + _tx + max_width - width;
+			xp = x + _tx + max_width - length;
 			break;
 
 		default:
-			xp = x + _tx + ((max_width-width)>>1);
+			xp = x + _tx + ((max_width-length)>>1);
 	}
  
  	if ( shade )
-		qDrawShadeLine( _painter, xp, yp, xp + width, yp,
+		qDrawShadeLine( _painter, xp, yp, xp + length, yp,
 			colorGrp, TRUE, 1, ascent-7 );
 	else
-		_painter->fillRect( xp, yp, width, ascent-6, QBrush(black) );
+		_painter->fillRect( xp, yp, length, ascent-6, QBrush(black) );
 }
 
 //-----------------------------------------------------------------------------
@@ -255,7 +251,7 @@ HTMLBullet::HTMLBullet( int _height, int _level, const QColor &col )
 
 void HTMLBullet::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getHeight() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y + getDescent() )
 	return;
 
     print( _painter, _tx, _ty );
@@ -470,7 +466,7 @@ void HTMLImage::setMaxWidth( int _max_width )
 
 void HTMLImage::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getHeight() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y + getDescent() )
 	return;
 
     print( _painter, _tx, _ty );
@@ -504,7 +500,7 @@ HTMLImage::~HTMLImage()
 
 HTMLAnchor* HTMLAnchor::findAnchor( const char *_name, QPoint *_p )
 {
-    if ( strcmp( _name, name.data() ) == 0 )
+    if ( strcmp( _name, name ) == 0 )
     {
 	_p->setX( _p->x() + x );
 	_p->setY( _p->y() + y );
@@ -522,11 +518,12 @@ void HTMLAnchor::setMaxAscent( int _a )
 //-----------------------------------------------------------------------------
 
 HTMLTableCell::HTMLTableCell( int _x, int _y, int _max_width, int _width,
-	int _percent, int rs, int cs )
+	int _percent, int rs, int cs, int pad )
 	 : HTMLClueV( _x, _y, _max_width, _percent )
 {
 	rspan = rs;
 	cspan = cs;
+	padding = pad;
 
 	if ( _width )
 	{
@@ -535,6 +532,32 @@ HTMLTableCell::HTMLTableCell( int _x, int _y, int _max_width, int _width,
 	}
 	else
 		setFixedWidth( false );
+}
+
+void HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
+	int _height, int _tx, int _ty )
+{
+	if ( _y + _height < y - getAscent() || _y > y )
+		return;
+    
+	if ( !isPrinting() )
+		return;
+    
+ 	if ( bg.isValid() )
+	{
+		int top = _y - ( y - getAscent() );
+		int bottom = top + _height;
+		if ( top < -padding )
+			top = -padding;
+		if ( bottom > getAscent() + padding )
+			bottom = getAscent() + padding;
+
+ 		QBrush brush( bg );
+		_painter->fillRect( _tx + x - padding, _ty + y - ascent + top,
+			getMaxWidth() + padding * 2, bottom - top, brush );
+	}
+
+	HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty );
 }
 
 //-----------------------------------------------------------------------------
@@ -669,7 +692,6 @@ void HTMLTable::calcAbsolutePos( int _x, int _y )
 
 HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
 {
-    HTMLObject *obj;
     HTMLAnchor *ret;
 
     _p->setX( _p->x() + x );
@@ -681,8 +703,7 @@ HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			obj = cells[r][c];
-			ret = obj->findAnchor( _name, _p );
+			ret = cells[r][c]->findAnchor( _name, _p );
 			if ( ret != NULL )
 				return ret;
 		}
@@ -694,21 +715,20 @@ HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
 	return NULL;
 }
 
-void HTMLTable::calcSize()
+void HTMLTable::calcSize( HTMLClue * )
 {
 	unsigned int r, c;
+	HTMLTableCell *cell;
 
 	// Attempt to get sensible cell widths
 	optimiseCellWidth();
-
-	ascent = 0;
 
 	// set cell widths and then calculate cell sizes
 	for ( r = 0; r < row; r++ )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			HTMLTableCell *cell = cells[r][c];
+			cell = cells[r][c];
 
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
@@ -718,7 +738,7 @@ void HTMLTable::calcSize()
 			cell->setMaxWidth( columnPos[c+1] -
 				 columnPos[ c-cell->colSpan()+1 ] - spacing -
 				 padding - padding - 1 );
-			cell->calcSize();
+			cell->calcSize( NULL );
 		}
 	}
 
@@ -734,7 +754,7 @@ void HTMLTable::calcSize()
 
 		for ( c = 0; c < totalCols; c++ )
 		{
-			HTMLTableCell *cell = cells[r][c];
+			cell = cells[r][c];
 
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
@@ -778,16 +798,27 @@ void HTMLTable::calcColumnWidths()
 		for ( r = 0; r < row; r++ )
 		{
 			HTMLTableCell *cell = cells[r][c];
+			int colPos;
 
 			if ( c < totalCols - 1 && cells[r][c+1] == cell )
 				continue;
 			if ( r < row - 1 && cells[r+1][c] == cell )
 				continue;
-
+/*
 			// calculate minimum pos
-			int colPos = columnPos[ c - cell->colSpan() + 1 ] +
-					cell->calcMinWidth() + padding + padding + spacing +
-					borderExtra;
+			if ( cell->isFixedWidth() )
+			{
+				colPos = columnPos[ c - cell->colSpan() + 1 ] +
+					cell->getWidth() + padding +
+					padding + spacing + borderExtra;
+			}
+			else
+			{
+*/
+				colPos = columnPos[ c - cell->colSpan() + 1 ] +
+						cell->calcMinWidth() + padding + padding + spacing +
+						borderExtra;
+//			}
 			if ( columnPos[c + 1] < colPos )
 				columnPos[c + 1] = colPos;
 
@@ -1021,7 +1052,7 @@ void HTMLTable::getSelected( QStrList &_list )
 
 void HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getHeight() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y )
 	return;
     
     if ( !isPrinting() )
@@ -1032,6 +1063,7 @@ void HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
     
 	unsigned int r, c;
 
+	// draw the cells
 	for ( r = 0; r < row; r++ )
 	{
 		for ( c = 0; c < totalCols; c++ )
@@ -1046,12 +1078,14 @@ void HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 		}
 	}
 
+	// draw the border
 	if ( border )
 	{
 		QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
 			black, white );
 		qDrawShadePanel( _painter, _tx, _ty, width, ascent, colorGrp, false, border );
 
+		// draw borders around each cell
 		for ( r = 0; r < row; r++ )
 		{
 			for ( c = 0; c < totalCols; c++ )
@@ -1123,7 +1157,17 @@ HTMLClue::HTMLClue( int _x, int _y, int _max_width, int _percent )
 	else
 		width = max_width;
 
-	prevCalcObj = NULL;
+	prevCalcObj = -1;
+}
+
+void HTMLClue::reset()
+{
+	HTMLObject *obj;
+
+	for ( obj = list.first(); obj != 0L; obj = list.next() )
+		obj->reset();
+
+	prevCalcObj = -1;
 }
 
 void HTMLClue::calcAbsolutePos( int _x, int _y )
@@ -1240,29 +1284,27 @@ HTMLObject* HTMLClue::checkPoint( int _x, int _y )
     return 0L;
 }
 
-void HTMLClue::calcSize()
+void HTMLClue::calcSize( HTMLClue * )
 {
 	HTMLObject *obj;
 
 	// If we have already called calcSize for the children, then just
 	// continue from the last object done in previous call.
-	if ( prevCalcObj )
-	{
-		obj = prevCalcObj;
-		list.findRef( obj );	// this will always find an object
-	}
+	if ( prevCalcObj >= 0 )
+		obj = list.at( prevCalcObj );	// this will always find an object
 	else
 		obj = list.first();
 
 	while ( obj != NULL )
 	{
-		obj->calcSize();
+		obj->calcSize( this );
 		obj = list.next();
 	}
 
 	// remember this object so that we can start from here next time
 	// we are called.
-	prevCalcObj = list.getLast();
+	list.last();
+	prevCalcObj = list.at();
 }
 
 int HTMLClue::calcMinWidth()
@@ -1307,18 +1349,18 @@ void HTMLClue::setMaxAscent( int _a )
 	for ( obj = list.first(); obj != 0L; obj = list.next() )
 	    obj->setYPos( obj->getYPos() + ( _a - ascent )/2 );
     }
+	else if ( valign == Bottom )
+	{
+	for ( obj = list.first(); obj != 0L; obj = list.next() )
+	    obj->setYPos( obj->getYPos() + _a - ascent );
+	}
 
 	ascent = _a;
 }
 
-void HTMLClue::append( HTMLObject *_object)
-{
-    list.append( _object );
-}
-
 void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty )
 {
-    if ( _y + _height < y - getHeight() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y )
 	return;
     
     if ( !isPrinting() )
@@ -1328,9 +1370,14 @@ void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
 
     _tx += x;
     _ty += y - ascent;
-    
+/*
+	// draw rectangles around clues - for debugging
+	_painter->setBrush( QBrush() );
+	_painter->drawRect( _tx, _ty, width, getHeight() );
+*/
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
+		if ( !obj->isAligned() )
 	obj->print( _painter, _x - x, _y - (y - getHeight()), _width, _height, _tx, _ty );
     }
 }
@@ -1342,7 +1389,7 @@ void HTMLClue::print( QPainter *_painter, int _tx, int _ty )
 
 void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, HTMLObject *_obj )
 {
-    if ( _y + _height < y - getHeight() || _y > y )
+    if ( _y + _height < y - getAscent() || _y > y )
 	return;
     
     if ( !isPrinting() )
@@ -1382,36 +1429,160 @@ void HTMLClueV::setMaxWidth( int _max_width )
 	}
 }
 
-void HTMLClueV::calcSize()
+HTMLObject* HTMLClueV::checkPoint( int _x, int _y )
 {
-    HTMLClue::calcSize();
+    HTMLObject *obj2;
+
+	if ( ( obj2 = HTMLClue::checkPoint( _x, _y ) ) != NULL )
+		return obj2;
+
+    if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
+	return 0L;
+
+	HTMLClueAligned *clue;
+	for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
+	{
+		if ((obj2 = clue->checkPoint( _x - x - clue->parent()->getXPos(),
+				 _y - (y - ascent) - ( clue->parent()->getYPos() -
+				 clue->parent()->getAscent() ) )) != 0L)
+			return obj2;
+	}
+	for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
+	{
+		if ((obj2 = clue->checkPoint( _x - x - clue->parent()->getXPos(),
+				 _y - (y - ascent) - ( clue->parent()->getYPos() -
+				 clue->parent()->getAscent() ) )) != 0L)
+			return obj2;
+	}
+
+    return 0L;
+}
+
+void HTMLClueV::calcSize( HTMLClue *parent )
+{
+	HTMLObject *obj;
+	int lmargin = parent ? parent->getLeftMargin( this, 0 ) : 0;
+
+	// If we have already called calcSize for the children, then just
+	// continue from the last object done in previous call.
+	if ( prevCalcObj >= 0 )
+	{
+		obj = list.at( prevCalcObj );	// This will always find an object.
+		ascent -= obj->getHeight();	// Otherwise it will be added twice.
+	}
+	else
+		obj = list.first();
+
+	while ( obj != NULL )
+	{
+		// Set an initial ypos so that the alignment stuff knows where
+		// the top of this object is
+		obj->setYPos( ascent );
+		obj->calcSize( this );
+		if ( obj->getWidth() > width )
+			width = obj->getWidth();
+		ascent += obj->getHeight();
+		obj->setPos( lmargin, ascent - obj->getDescent() );
+		obj = list.next();
+	}
+
+	// remember this object so that we can start from here next time
+	// we are called.
+	list.last();
+	prevCalcObj = list.at();
+
+	if (max_width != 0 && width < max_width)
+		width = max_width;
+
+	if ( halign == HCenter )
+	{
+		for ( obj = list.first(); obj != 0L; obj = list.next() )
+			obj->setXPos( lmargin + (width - obj->getWidth()) / 2 );
+	}
+	else if ( halign == Right )
+	{
+		for ( obj = list.first(); obj != 0L; obj = list.next() )
+			obj->setXPos( lmargin + width - obj->getWidth() );
+	}
+
+	HTMLClueAligned *clue;
+	for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
+	{
+		if ( clue->getYPos() + clue->parent()->getYPos() > ascent )
+			ascent = clue->getYPos() + clue->parent()->getYPos();
+	}
+	for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
+	{
+		if ( clue->getYPos() + clue->parent()->getYPos() > ascent )
+			ascent = clue->getYPos() + clue->parent()->getYPos();
+	}
+}
+
+void HTMLClueV::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty )
+{
+	HTMLClue::print( _painter, _x, _y, _width, _height, _tx, _ty );
+
+	// print aligned objects
+    if ( _y + _height < y - getAscent() || _y > y )
+	return;
     
-    HTMLObject *obj;
+    if ( !isPrinting() )
+	return;
 
-    width = 0;
-    for ( obj = list.first(); obj != 0L; obj = list.next() )
+    _tx += x;
+    _ty += y - ascent;
+
+    HTMLClueAligned *clue;
+
+    for ( clue=alignLeftList.first(); clue != 0L; clue=alignLeftList.next() )
     {
-	if ( obj->getWidth() > width )
-	     width = obj->getWidth();
-    }
-    descent = 0;
-    ascent = 0;
-    for ( obj = list.first(); obj != 0L; obj = list.next() )
-    {
-	ascent += obj->getHeight();
-	obj->setPos( obj->getXPos(), ascent - obj->getDescent() );
+	clue->print( _painter, _tx + clue->parent()->getXPos(),
+		_ty + clue->parent()->getYPos() - clue->parent()->getAscent() );
     }
 
-    if (max_width != 0 && width < max_width)
-	width = max_width;
+    for ( clue=alignRightList.first(); clue != 0L; clue=alignRightList.next() )
+    {
+	clue->print( _painter, _tx + clue->parent()->getXPos(),
+		_ty + clue->parent()->getYPos() - clue->parent()->getAscent() );
+    }
+}
 
-    if ( halign == HCenter )
-	for ( obj = list.first(); obj != 0L; obj = list.next() )
-	    obj->setXPos( (width - obj->getWidth()) / 2 );
+int HTMLClueV::getLeftMargin( HTMLClue *child, int _y )
+{
+	int margin = 0;
+	HTMLClueAligned *clue;
 
-    else if ( halign == Right )
-	for ( obj = list.first(); obj != 0L; obj = list.next() )
-	    obj->setXPos( width - obj->getWidth() );
+	_y += child->getYPos();
+
+	for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
+	{
+		if ( clue->getYPos() - clue->getAscent() + clue->parent()->getYPos() -
+				clue->parent()->getAscent() < _y &&
+				clue->getYPos() + clue->parent()->getYPos() -
+				clue->parent()->getAscent() > _y )
+			margin = clue->getXPos() + clue->getWidth();
+	}
+
+	return margin;
+}
+
+int HTMLClueV::getRightMargin( HTMLClue *child, int _y )
+{
+	int margin = max_width;
+	HTMLClueAligned *clue;
+
+	_y += child->getYPos();
+
+	for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
+	{
+		if ( clue->getYPos() - clue->getAscent() + clue->parent()->getYPos() -
+				clue->parent()->getAscent() < _y &&
+				clue->getYPos() + clue->parent()->getYPos() -
+				clue->parent()->getAscent() > _y )
+			margin = clue->getXPos();
+	}
+
+	return margin;
 }
 
 //-----------------------------------------------------------------------------
@@ -1434,16 +1605,17 @@ void HTMLClueH::setMaxWidth( int _w )
 			obj->setMaxWidth( _w );
 }
 
-void HTMLClueH::calcSize()
+void HTMLClueH::calcSize( HTMLClue *parent )
 {
 	// make sure children are properly sized
 	setMaxWidth( max_width );
 
-    HTMLClue::calcSize();
+    HTMLClue::calcSize( this );
     
     HTMLObject *obj;
+	int lmargin = parent->getLeftMargin( this, 0 );
 
-    width = 0;
+    width = lmargin;
     descent = 0;
     ascent = 0;
 
@@ -1479,6 +1651,17 @@ void HTMLClueH::calcSize()
     }
 }
 
+int HTMLClueH::calcMinWidth()
+{
+    HTMLObject *obj;
+	int minWidth = 0;
+
+	for ( obj = list.first(); obj != 0L; obj = list.next() )
+		minWidth += obj->calcMinWidth();
+	
+	return minWidth;
+}
+ 
 int HTMLClueH::calcPreferredWidth()
 {
     HTMLObject *obj;
@@ -1492,175 +1675,237 @@ int HTMLClueH::calcPreferredWidth()
     
 //-----------------------------------------------------------------------------
 
-void HTMLClueFlow::calcSize()
+void HTMLClueFlow::calcSize( HTMLClue *parent )
 {
-    HTMLClue::calcSize();
+	HTMLClue::calcSize( this );
 
-    HTMLObject *obj;
+	HTMLObject *obj;
+	int lmargin, rmargin;
 
-    ascent = 0;
-    descent = 0;
-    width = 0;
-    int w = 0;
-    int a = 0;
-    int d = 0;
+	ascent = 0;
+	descent = 0;
+	width = 0;
+	lmargin = parent->getLeftMargin( this, 0 );
+	rmargin = parent->getRightMargin( this, 0 );
+	int w = lmargin;
+	int a = 0;
+	int d = 0;
 
-    // We need to know where a line ends and what space this line needs
-    // to implement 'center' and 'align right'.
-    QArray<int> width_list( 1024 );
-    QArray<const HTMLObject *> line_list( 1024 );
-    int lines = 0;
-    
-    QListIterator<HTMLObject> line( list );
-    QListIterator<HTMLObject> it( list );    
-    for ( ; it.current() ; ++it )
-    {
-	obj = it.current();
-	
-	// Object exceeds max_width => new line containing only this object
-	if ( obj->getWidth() > max_width && !obj->isSeparator() && !obj->isNewline() && max_width != 0)
+	QListIterator<HTMLObject> line( list );
+	QListIterator<HTMLObject> it( list );    
+
+	for ( ; it.current() ; ++it )
 	{
-	    if ( w != 0)
+		obj = it.current();
+
+		// This left or right aligned with other objects to wrap around it
+		if ( obj->isAligned() )
+		{
+			HTMLClueAligned *c = (HTMLClueAligned *)obj;
+			if ( c->getHAlign() == Left )
+				parent->appendLeftAligned( c );
+			else
+				parent->appendRightAligned( c );
+			if ( it.current() == list.getFirst() )
+			{
+				if ( c->getHAlign() == Left )
+					c->setPos( lmargin,
+						ascent + c->getAscent() );
+				else
+					c->setPos( rmargin - c->getWidth(),
+						ascent + c->getAscent() );
+				++line;
+				lmargin = parent->getLeftMargin( this, 1 );
+				rmargin = parent->getRightMargin( this, 1 );
+				w = lmargin;
+			}
+		}
+		// Object exceeds max_width => new line containing only this object
+		else if ( obj->getWidth() > rmargin && !obj->isSeparator() &&
+			!obj->isNewline() && rmargin != 0)
+		{
+			if ( w != 0)
+			{
+				ascent += a + d;
+				y += a + d;
+			}
+
+			if ( w > width )
+				width = w;
+
+			while ( line.current() != it.current() )
+			{
+				if ( line.current()->isAligned() )
+				{
+					HTMLClue *c = (HTMLClue *)line.current();
+					if ( c->getHAlign() == Left )
+					{
+						int margin = parent->getLeftMargin( this, 1 );
+						c->setPos( margin, ascent + c->getAscent() );
+					}
+					else
+					{
+						int margin = parent->getRightMargin( this, 1 );
+						c->setPos( margin - c->getWidth(),
+							ascent + c->getAscent() );
+					}
+				}
+				else
+				{
+					line.current()->setYPos( ascent - d );
+					line.current()->setMaxAscent( a );
+					if ( halign == HCenter )
+						line.current()->setXPos( line.current()->getXPos()+
+							( rmargin - w )/2 );
+					else if ( halign == Right )
+						line.current()->setXPos( line.current()->getXPos()+
+							( rmargin - w ) );
+				}
+				++line;
+			}
+
+			lmargin = parent->getLeftMargin( this, 1 );
+			rmargin = parent->getRightMargin( this, 1 );
+
+			ascent += obj->getHeight();
+			obj->setPos( lmargin, ascent - obj->getDescent() );
+			++line;
+
+			if ( obj->getWidth() > width )
+				width = obj->getWidth();
+			w = lmargin;
+			d = 0;
+			a = 0;
+		}
+		// Object fits in this line and is no newline
+		else if ( w + obj->getWidth() <= rmargin && rmargin != 0 &&
+			!obj->isNewline() )
+		{
+			if ( obj->getAscent() > a )
+				a = obj->getAscent();
+
+			if ( obj->getDescent() > d )
+				d = obj->getDescent();
+
+			obj->setXPos( w );
+
+			w += obj->getWidth();
+			if ( w > width)
+				width = w;
+		}
+		// Object does not fit in the line but is smaller than max_width or
+		// it is a newline
+		else 
+		{
+			// Perhaps the newline is the only object in this line...
+			if ( obj->isNewline() )
+			{
+				if ( obj->getAscent() > a )
+					a = obj->getAscent();
+				if ( obj->getDescent() > d )
+					d = obj->getDescent();
+			}
+
+			ascent += a + d;
+			y += a + d;
+
+			while ( line.current() != it.current() )
+			{
+				if ( line.current()->isAligned() )
+				{
+					HTMLClue *c = (HTMLClue *)line.current();
+					if ( c->getHAlign() == Left )
+					{
+						int margin = parent->getLeftMargin( this, 1 );
+						c->setPos( margin, ascent + c->getAscent() );
+					}
+					else
+					{
+						int margin = parent->getRightMargin( this, 1 );
+						c->setPos( margin - c->getWidth(),
+							ascent + c->getAscent() );
+					}
+				}
+				else
+				{
+					line.current()->setYPos( ascent - d );
+					line.current()->setMaxAscent( a );
+					if ( halign == HCenter )
+						line.current()->setXPos( line.current()->getXPos()+
+							( rmargin - w )/2 );
+					else if ( halign == Right )
+						line.current()->setXPos( line.current()->getXPos()+
+							( rmargin - w ) );
+				}
+				++line;
+			}
+
+			lmargin = parent->getLeftMargin( this, 1 );
+			rmargin = parent->getRightMargin( this, 1 );
+
+			// Do not print newlines or separators at the beginning of a line.
+			if ( obj->isSeparator() || obj->isNewline() )
+			{
+				w = lmargin;
+				a = 0;
+				d = 0;
+			}
+			else
+			{
+				w = obj->getWidth() + lmargin;
+				a = obj->getAscent();
+				d = obj->getDescent();
+				if ( w > width)
+					width = w;
+			}
+
+			obj->setXPos( lmargin );
+		}
+
+	}
+
+	if (w != 0)
+	{
 		ascent += a + d;
+		y += a + d;
 
-	    if (w > width)
-		width = w;
-	    
-	    if ( (unsigned) lines >= line_list.size() - 1 )
-	    {
-		width_list.resize( width_list.size() + 100 );
-		line_list.resize( line_list.size() + 10 );
-	    }
-	    width_list[ lines ] = w;
-	    while ( line.current() != it.current() )
-	    {
-		line.current()->setYPos( ascent - d );
-		line.current()->setMaxAscent( a );
-		++line;
-	    }
-	    line_list[ lines++ ] = line.current();
+		while ( line.current() != it.current() )
+		{
+			if ( line.current()->isAligned() )
+			{
+				HTMLClue *c = (HTMLClue *)line.current();
+				if ( c->getHAlign() == HTMLClue::Left )
+				{
+					int margin = parent->getLeftMargin( this, 1 );
+					c->setPos( margin, ascent + c->getAscent() );
+				}
+				else
+				{
+					int margin = parent->getRightMargin( this, 1 );
+					c->setPos( margin - c->getWidth(),
+						ascent + c->getAscent() );
+				}
+			}
+			else
+			{	
+				line.current()->setYPos( ascent - d );
+				line.current()->setMaxAscent( a );
+				if ( halign == HCenter )
+					line.current()->setXPos( line.current()->getXPos()+
+						( rmargin - w )/2 );
+				else if ( halign == Right )
+					line.current()->setXPos( line.current()->getXPos()+
+						( rmargin - w ) );
+			}
+			++line;
+		}
 
-	    ascent += obj->getHeight();
-	    obj->setPos( 0, ascent - obj->getDescent() );
-	    ++line;
+		if ( w > width )
+			width = w;
+	}    
 
-	    width_list[ lines ] = obj->getWidth();
-	    line_list[ lines++ ] = line.current();
-
-	    if ( obj->getWidth() > width )
-		width = obj->getWidth();
-	    w = 0;
-	    d = 0;
-	    a = 0;
-	}
-	// Object fits in this line and is no newline
-	else if ( w + obj->getWidth() <= max_width && max_width != 0 && !obj->isNewline() )
-	{
-	    if ( obj->getAscent() > a )
-		a = obj->getAscent();
-
-	    if ( obj->getDescent() > d )
-		d = obj->getDescent();
-
-	    obj->setXPos( w );
-	    
-	    w += obj->getWidth();
-	    if ( w > width)
-		width = w;
-	}
-	// Object does not fit in the line but is smaller than max_width or it is a newline
-	else 
-	{
-	    // Perhaps the newline is the only object in this line...
-	    if ( obj->isNewline() )
-	    {
-		if ( obj->getAscent() > a )
-		    a = obj->getAscent();
-		if ( obj->getDescent() > d )
-		    d = obj->getDescent();
-	    }
-	    
-	    ascent += a + d;
-
-	    if ( (unsigned) lines >= line_list.size() - 1 )
-	    {
-		width_list.resize( width_list.size() + 100 );
-		line_list.resize( line_list.size() + 10 );
-	    }
-	    width_list[ lines ] = w;
-	    while ( line.current() != it.current() )
-	    {
-		line.current()->setYPos( ascent - d );
-		line.current()->setMaxAscent( a );
-		++line;
-	    }
-	    line_list[ lines++ ] = line.current();
-
-	    // Do not print newlines or separators at the beginning of a line.
-	    if ( obj->isSeparator() || obj->isNewline() )
-	    {
-		w = 0;
-		a = 0;
-		d = 0;
-	    }
-	    else
-	    {
-		w = obj->getWidth();
-		a = obj->getAscent();
-		d = obj->getDescent();
-		if ( w > width)
-		    width = w;
-	    }
-		
-	    obj->setXPos( 0 );
-	}
-	
-    }
-
-    if (w != 0)
-    {
-	ascent += a + d;
-
-	if ( (unsigned) lines >= line_list.size() - 1 )
-	{
-	    width_list.resize( width_list.size() + 100 );
-	    line_list.resize( line_list.size() + 10 );
-	}
-	width_list[ lines ] = w;
-	while ( line.current() != it.current() )
-	{
-	    line.current()->setYPos( ascent - d );
-	    line.current()->setMaxAscent( a );
-	    ++line;
-	}
-	line_list[ lines++ ] = line.current();
-
-	if ( w > width )
-	    width = w;
-    }    
-
-    QListIterator<HTMLObject> it2( list );
-    for ( int i = 0; i < lines; i++ )
-    {
-	while ( it2.current() != line_list[ i ] )
-	{
-	    obj = it2.current();
-	    if ( halign == HCenter )
-		obj->setXPos( obj->getXPos() + ( width - width_list[ i ] )/2 );
-	    else if ( halign == Right )
-		obj->setXPos( obj->getXPos() + ( width - width_list[ i ] ) );
-	    ++it2;
-	}
-    }
-    
-
-    // for ( ; it2.current() ; ++it2 )
-    // {
-
-    // }
-    
-    // if ( max_width != 0 && width < max_width )
-    //	width = max_width;
+	if ( width < max_width )
+		width = max_width;
 }
 
 int HTMLClueFlow::calcPreferredWidth()
@@ -1672,7 +1917,8 @@ int HTMLClueFlow::calcPreferredWidth()
     {
 		if ( !obj->isNewline() )
 		{
-			w += obj->calcPreferredWidth();
+			if ( !obj->isAligned() )
+				w += obj->calcPreferredWidth();
 		}
 		else
 		{
@@ -1702,26 +1948,63 @@ void HTMLClueFlow::setMaxWidth( int _max_width )
 
 //-----------------------------------------------------------------------------
 
-HTMLTokenizer::HTMLTokenizer( QString &str )
+
+void HTMLClueAligned::setMaxWidth( int _max_width )
 {
-    // QString str = _str.simplifyWhiteSpace();
-    // int len = str.length();
-    int len = str.length();
-    
-    int c = 0;
-    const char *p = str.data();
-    for ( int l = 0; l < len; l++ )
+	max_width = _max_width;
+
+	HTMLObject *obj;
+
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
-	if ( p[ l ] == '<' || p[ l ] == '>' || p[ l ] == ' ' || p[ l ] == '\n' )
+		obj->setMaxWidth( max_width );
+	}
+}
+
+// HTMLClueAligned behaves like a HTMLClueV
+//
+void HTMLClueAligned::calcSize( HTMLClue * )
+{
+    HTMLClue::calcSize( this );
+
+    HTMLObject *obj;
+
+	width = 0;
+	ascent = ALIGN_BORDER;
+	descent = 0;
+
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
+    {
+	if ( obj->getWidth() > width )
+	     width = obj->getWidth();
+	ascent += obj->getHeight();
+	obj->setPos( ALIGN_BORDER, ascent - obj->getDescent() );
+    }
+
+	ascent += ALIGN_BORDER;
+	width += (ALIGN_BORDER*2);
+}
+
+//-----------------------------------------------------------------------------
+
+HTMLTokenizer::HTMLTokenizer( const char *str )
+{
+    int c;
+
+	const char *src = str;
+
+    for ( c = 0; *src != '\0'; c++, src++ )
+    {
+	if ( *src == '<' || *src == '>' || *src == ' ' || *src == '\n' )
 	    c += 3;
-	else if ( p[ l ] == '\t' )
+	else if ( *src == '\t' )
 	    c += TAB_SIZE;
     }
     
-    buffer = new char[ str.length()  + c  + 1 ];
+    buffer = new char[ c  + 1 ];
+	char *dest = buffer;
 
-    int j = 0;
-    p = str.data();
+    src = str;
     bool tag = false;
     // To avoid multiple spaces.
     bool space = false;
@@ -1731,149 +2014,134 @@ HTMLTokenizer::HTMLTokenizer( QString &str )
     // tabulators position.
     int pre_pos = 0;
 
-    int i = 0;
-    while ( p[ i ] != 0 )
+    while ( *src != 0 )
     {
-	if ( p[ i ] == '&' )	
+	if ( *src == '&' )
 	{
 	    if ( pre )
 		pre_pos ++;	    
 	    space = false;
 
 	    // Is the string long enough?
-	    if ( i < len - 2 )
+	    if ( *(src+1) != '\0' && *(src+2) != '\0' )
 	    {
 		// Special character by number?
-		if ( p[ i + 1 ] == '#' )
+		if ( *(src + 1) == '#' )
 		{
-		    char *endptr = new char;
-		    int z = (int) strtol( &p[ i+2 ], &endptr, 10 );
-		    int newi = i + (endptr - &p[i]);
-		    delete endptr;
-		    buffer[ j++ ] = z;
+		    char *endptr;
+		    int z = (int) strtol( src+2, &endptr, 10 );
+		    *dest++ = z;
+			src = endptr;
 		    // Skip a trailing ';' ?
-		    if ( p[ newi ] == ';' )
-			i = newi + 1;
-		    else
-			i = newi;
+		    if ( *src == ';' )
+				src++;
 		}
 		// Special character ?
-		else if ( isalpha( p[ i + 1 ] ) )
+		else if ( isalpha( *(src + 1) ) )
 		{
 		    int tmpcnt;
-		    int tmpstart = i + 1;
-		    int end = tmpstart;
-		    int amplen = 0;
-		    
-		    // find the end of the word
-		    while ( isalpha( p[ end ] ) )
-		    {
-			amplen++;
-			end++;
-		    }
 		    
 		    for ( tmpcnt = 0; tmpcnt < NUM_AMPSEQ; tmpcnt++ ) 
-			if ( strncmp( AmpSequences[ tmpcnt ].tag, p + tmpstart, amplen ) == 0 &&
-			     strlen( AmpSequences[ tmpcnt ].tag ) == (unsigned) amplen )  break; 
+			{
+				if ( strncmp( AmpSequences[ tmpcnt ].tag, src+1,
+					 strlen( AmpSequences[ tmpcnt ].tag ) ) == 0 )
+				{
+					*dest++ = AmpSequences[ tmpcnt ].value;
+					src += strlen( AmpSequences[ tmpcnt ].tag ) + 1;
+					if ( *src == ';' )
+						src++;
+					break;
+				}
+			}
 
-		    // A match ?
-		    if ( tmpcnt < NUM_AMPSEQ )
-		    {
-			buffer[ j++ ] = AmpSequences[ tmpcnt ].value;
-			if ( p[ end ] == ';' )
-			    i = end + 1;
-			else
-			    i = end;
-		    }
-		    else
-			buffer[ j++ ] = p[ i++ ];
+			if ( tmpcnt == NUM_AMPSEQ )
+			*dest++ = *src++;
 		}
 		else
-		    buffer[ j++ ] = p[ i++ ];
+		    *dest++ = *src++;
 	    }
 	    else
-		buffer[ j++ ] = p[ i++ ];
+		*dest++ = *src++;
 	}
-	else if ( p[ i ] == '<' )
+	else if ( *src == '<' )
 	{
-	    if ( strncasecmp( p + i, "<pre>", 5 ) == 0 )
+	    if ( strncasecmp( src, "<pre>", 5 ) == 0 )
 	    {
 		pre_pos = 0;
 		pre = TRUE;
 	    }
-	    else if ( strncasecmp( p + i, "</pre>", 6 ) == 0 )
+	    else if ( strncasecmp( src, "</pre>", 6 ) == 0 )
 		pre = false;
-		else if ( strncasecmp( p + i, "<!--", 4 ) == 0 )
+		else if ( strncasecmp( src, "<!--", 4 ) == 0 )
 		{
-			p += 4;
+			src += 4;
 
-			while ( *(p+i) )
+			while ( *src )
 			{
-				if ( strncasecmp( p + i, "-->", 3 ) == 0 )
+				if ( strncasecmp( src, "-->", 3 ) == 0 )
 				{
-					i += 3;
+					src += 3;
 					break;
 				}
-				i++;
+				src++;
 			}
 			continue;
 		}
 
-	    
 	    space = false;
 
-	    if ( j > 0 )
-		buffer[ j++ ] = 0;
-	    buffer[ j++ ] = TAG_ESCAPE;
-	    buffer[ j++ ] = '<';
+	    if ( dest > buffer )
+		*dest++ = 0;
+	    *dest++ = TAG_ESCAPE;
+	    *dest++ = '<';
 	    tag = true;
-	    i++;
+	    src++;
 	}
-	else if ( p[ i ] == '>' )
+	else if ( *src == '>' )
 	{
 	    space = false;
 
-	    buffer[ j++ ] = '>';
-	    buffer[ j++ ] = 0;
+	    *dest++ = '>';
+	    *dest++ = 0;
 	    tag = false;
-	    i++;
+	    src++;
 	}
-	else if ( !tag && pre && ( p[ i ] == ' ' || p[ i ] == '\t' || p[ i ] == '\n' || p[ i ] == 13 ) )
+	else if ( !tag && pre && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
 	{
 	    // For every line break in <pre> insert a the tag '\n'.
-	    if ( p[ i ] == '\n' )
+	    if ( *src == '\n' )
 	    {
-		buffer[ j++ ] = 0;
-		buffer[ j++ ] = TAG_ESCAPE;
-		buffer[ j++ ] = '\n';
-		buffer[ j++ ] = 0;
+		*dest++ = 0;
+		*dest++ = TAG_ESCAPE;
+		*dest++ = '\n';
+		*dest++ = 0;
 		pre_pos = 0; 
 	    }
-	    else if ( p[ i ] == '\t' )
+	    else if ( *src == '\t' )
 	    {
 		int p = TAB_SIZE - ( pre_pos % TAB_SIZE );
 		for ( int x = 0; x < p; x++ )
-		    buffer[ j++ ] = ' ';
+		    *dest++ = ' ';
 	    }
-	    else if ( p[ i ] == ' ' )
+	    else if ( *src == ' ' )
 	    {
 		pre_pos ++;
-		buffer[ j++ ] = ' ';
+		*dest++ = ' ';
 		space = TRUE;
 	    }
-	    i++;
+	    src++;
 	}
-	else if ( !tag && ( p[ i ] == ' ' || p[ i ] == '\t' || p[ i ] == '\n' || p[ i ] == 13 ) )
+	else if ( !tag && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
 	{
 	    if ( !space )
 	    {
 // MRJ - taking line this out nearly halves mem usage and makes almost no
 // difference to output
-//		buffer[ j++ ] = 0;
-		buffer[ j++ ] = ' ';
-		buffer[ j++ ] = 0;
+//		*dest++ = 0;
+		*dest++ = ' ';
+		*dest++ = 0;
 	    }
-	    i++;
+	    src++;
 	    space = TRUE;
 	}
 	else
@@ -1882,31 +2150,32 @@ HTMLTokenizer::HTMLTokenizer( QString &str )
 	    if ( pre )
 		pre_pos++;
 	    
-	    buffer[ j++ ] = p[ i++ ];
+	    *dest++ = *src++;
 	}
     }
-    size = j;
-    buffer[ j ] = 0;
 
-    pos = 0;
+    end = dest;
+    *end = 0;
+
+    pos = buffer;
 }
 
 const char* HTMLTokenizer::nextToken()
 {
-    if ( pos == -1 )
+    if ( pos == NULL )
 	return 0L;
 
-    char *ret = buffer + pos;
+    char *ret = pos;
     pos += strlen( ret ) + 1;
-    if ( pos >= size )
-	pos = -1;
+    if ( pos >= end )
+	pos = NULL;
 
     return ret;
 }
 
 bool HTMLTokenizer::hasMoreTokens()
 {
-    if ( pos == -1 )
+    if ( pos == NULL )
 	return false;
     return true;
 }
@@ -1919,63 +2188,63 @@ HTMLTokenizer::~HTMLTokenizer()
 
 //-----------------------------------------------------------------------------
 
-StringTokenizer::StringTokenizer( QString &_str, const char *_separators )
+StringTokenizer::StringTokenizer( const QString &_str, const char *_separators )
 {
     QString str = _str.simplifyWhiteSpace();
-    int len = str.length();
+    int c;
 
     const char *separators = _separators;
-    int c = 0;
-    const char *p = str.data();
-    for ( int l = 0; l < len; l++ )
+    const char *src = str.data();
+
+    for ( c = 0; *src != '\0'; c++, src++ )
     {
 	const char *s = separators;
 	while( *s != 0 )
 	{
-	    if ( p[ l ] == *s )
+	    if ( *src == *s )
 		c++;
 	    s++;
 	}
     }
     
-    buffer = new char[ str.length() + c + 1 ];
+    buffer = new char[ c + 1 ];
 
-    int j = 0;
-    p = str.data();
+    src = str.data();
+	end = buffer;
     bool quoted = false;
     
-    for ( int i = 0; i < len; i++ )
+    for ( ; *src != '\0'; src++ )
     {
-	char *x = strchr( separators, p[ i ] );
-	if ( p[ i ] == '\"' )
+	char *x = strchr( separators, *src );
+	if ( *src == '\"' )
 	    quoted = !quoted;
 	else if ( x != 0L && !quoted )
-	    buffer[ j++ ] = 0;
+	    *end++ = 0;
 	else
-	    buffer[ j++ ] = p[ i ];
+	    *end++ = *src;
     }
-    size = j;
-    buffer[ j ] = 0;
 
-    pos = 0;
+    *end = 0;
+
+    pos = buffer;
 }
 
 const char* StringTokenizer::nextToken()
 {
-    if ( pos == -1 )
+    if ( pos == NULL )
 	return 0L;
 
-    char *ret = buffer + pos;
+    char *ret = pos;
     pos += strlen( ret ) + 1;
-    if ( pos >= size )
-	pos = -1;
+    if ( pos >= end )
+	pos = NULL;
 
     return ret;
 }
 
 bool StringTokenizer::hasMoreTokens()
 {
-    if ( pos == -1 )
+    if ( pos == NULL )
 	return false;
     return true;
 }

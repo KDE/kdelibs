@@ -75,5 +75,6 @@ ampseq_s AmpSequences[] = {
 	{"yuml", '\377'},	// 70
 	{"copy", '\251'},
 	{"reg", '\256'},
+	{"nbsp", ' '},
 };
 

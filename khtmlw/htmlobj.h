@@ -22,6 +22,7 @@ class HTMLImage;
 class HTMLClue;
 class HTMLTokenizer;
 class HTMLClueFlow;
+class HTMLClueAligned;
 class KHTMLWidget;
 
 #include "kpixmap.h"
@@ -34,20 +35,28 @@ class KHTMLWidget;
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
 
+// The border around an aligned object
+#define ALIGN_BORDER 2
+
 class HTMLAnchor;
 
 //-----------------------------------------------------------------------------
-
+// HTMLObject is the base class for all HTML objects.
+//
 class HTMLObject
 {
 public:
     HTMLObject();
+	virtual ~HTMLObject() {}
+
+    enum VAlign { Top, Bottom, VCenter, VNone };
+    enum HAlign { Left, HCenter, Right, HNone };
 
     /************************************************************
      * This function should cause the HTMLObject to calculate its
      * width and height.
      */
-    virtual void calcSize() { }
+    virtual void calcSize( HTMLClue * = NULL ) { }
     /************************************************************
      * This function calculates the minimum width that the object
      * can be set to. (added for table support)
@@ -84,6 +93,8 @@ public:
 	 */
 	virtual void calcAbsolutePos( int, int ) { }
 
+	virtual void reset() { }
+
     /************************************************************
      * Get X-Position of this object relative to its parent
      */
@@ -104,19 +115,21 @@ public:
     void setYPos( int _y ) { y=_y; }
 
 	enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
-				FixedWidth = 0x08, Printing = 0x10 };
+				FixedWidth = 0x08, Printing = 0x10, Aligned = 0x20 };
 
     bool isSeparator() { return flags & Separator; }
     bool isNewline() { return flags & NewLine; }
     bool isSelected() { return flags & Selected; }
 	bool isFixedWidth() { return flags & FixedWidth; }
 	bool isPrinting() { return flags & Printing; }
+	bool isAligned() { return flags & Aligned; }
 
 	void setSeparator( bool s ) { s ? flags|=Separator : flags&=~Separator; }
 	void setNewline( bool n ) { n ? flags|=NewLine : flags&=~NewLine; }
 	void setSelected( bool s ) { s ? flags|=Selected : flags&=~Selected; }
 	void setFixedWidth( bool f ) { f ? flags|=FixedWidth : flags&=~FixedWidth; }
 	void setPrinting( bool p ) { p ? flags|=Printing : flags&=~Printing; }
+	void setAligned( bool a ) { a ? flags|=Aligned : flags&=~Aligned; }
 
     /************************************************************
      * Searches in all children ( and tests itself ) for an HTMLAnchor object
@@ -140,19 +153,14 @@ protected:
     // percent stuff added for table support
     short percent;	// width = max_width * percent / 100
 	unsigned char flags;
-/*
-    bool fixedWidth;
-    bool separator;
-    bool printing;
-    bool newline;
-    bool selected;
-*/
     QString url;
 	static int objCount;
 };
 
 //-----------------------------------------------------------------------------
-
+// Clues are used to contain and format objects (or other clues).
+// This is the base of all clues - it should be considered abstract.
+//
 class HTMLClue : public HTMLObject
 {
 public:
@@ -164,9 +172,7 @@ public:
      * a shift to the right.
      */
     HTMLClue( int _x, int _y, int _max_width, int _percent = 100);
-
-    enum VAlign { Top, Bottom, VCenter };
-    enum HAlign { Left, HCenter, Right };
+	virtual ~HTMLClue() { }
 
     virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
     /// Prints a special object only
@@ -178,7 +184,7 @@ public:
     /************************************************************
      * Calls all children and tells them to calculate their size.
      */
-    virtual void calcSize();
+    virtual void calcSize( HTMLClue *parent = NULL );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxAscent( int );
@@ -191,10 +197,21 @@ public:
 
 	virtual void calcAbsolutePos( int _x, int _y );
 
+	virtual void reset();
+
     /************************************************************
      * Make an object a child of this Box.
      */
-    void append( HTMLObject * );
+    void append( HTMLObject *_object )
+		{	list.append( _object ); }
+	
+	virtual void appendLeftAligned( HTMLClueAligned * ) { }
+	virtual void appendRightAligned( HTMLClueAligned * ) { }
+	virtual int  getLeftMargin( HTMLClue *, int )
+		{	return 0; }
+	virtual int  getRightMargin( HTMLClue *, int )
+		{	return max_width; }
+
     void setVAlign( VAlign _v ) { valign = _v; }
     void setHAlign( HAlign _h ) { halign = _h; }
     VAlign getVAlign() { return valign; }
@@ -205,53 +222,103 @@ public:
 protected:
     QList<HTMLObject> list;
 
-	HTMLObject *prevCalcObj;
+	int prevCalcObj;
 
     VAlign valign;
     HAlign halign;
 };
 
 //-----------------------------------------------------------------------------
+// This clue is very experimental.  It is to be used for aligning images etc.
+// to the left or right of the page.
+//
+class HTMLClueAligned : public HTMLClue
+{
+public:
+	HTMLClueAligned( HTMLClue *_parent, int _x, int _y, int _max_width,
+		 int _percent = 100 )
+		: HTMLClue( _x, _y, _max_width, _percent )
+		{ prnt = _parent; setAligned( true ); }
+	virtual ~HTMLClueAligned() { }
 
+	virtual void setMaxWidth( int );
+    virtual void setMaxAscent( int ) { }
+	virtual void calcSize( HTMLClue *_parent = NULL );
+
+	HTMLClue *parent()
+		{	return prnt; }
+
+private:
+	HTMLClue *prnt;
+};
+
+//-----------------------------------------------------------------------------
+// Align objects across the page, wrapping at the end of a line
+//
 class HTMLClueFlow : public HTMLClue
 {
 public:
     HTMLClueFlow( int _x, int _y, int _max_width, int _percent=100)
 		: HTMLClue( _x, _y, _max_width, _percent ) { }
+	virtual ~HTMLClueFlow() { }
     
-    virtual void calcSize();
+    virtual void calcSize( HTMLClue *parent = NULL );
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
-    // virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height );
 };
 
 //-----------------------------------------------------------------------------
-
+// Align objects vertically
+//
 class HTMLClueV : public HTMLClue
 {
 public:
     HTMLClueV( int _x, int _y, int _max_width, int _percent = 100 )
 		: HTMLClue( _x, _y, _max_width, _percent ) { }
+	virtual ~HTMLClueV() { }
 
 	virtual void setMaxWidth( int );
-    virtual void calcSize();
-    // virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height );
+    virtual HTMLObject* checkPoint( int, int );
+    virtual void calcSize( HTMLClue *parent );
+    virtual void print( QPainter *_painter, int _x, int _y, int _width,
+		int _height, int _tx, int _ty );
+    virtual void print( QPainter *_painter, int _x, int _y, int _width,
+		int _height, int _tx, int _ty, HTMLObject *_obj )
+		{	HTMLClue::print(_painter,_x,_y,_width,_height,_tx,_ty,_obj ); }
+
+	virtual void appendLeftAligned( HTMLClueAligned *_clue )
+		{	alignLeftList.append( _clue ); }
+	virtual void appendRightAligned( HTMLClueAligned *_clue )
+		{	alignRightList.append( _clue ); }
+	virtual int  getLeftMargin( HTMLClue *child, int _y );
+	virtual int  getRightMargin( HTMLClue *child, int _y );
+
+protected:
+	// These are the objects which are left or right aligned within this
+	// clue.  Child objects must wrap their contents around these.
+	QList<HTMLClueAligned> alignLeftList;
+	QList<HTMLClueAligned> alignRightList;
 };
 
 //-----------------------------------------------------------------------------
+// Align objects across the page, without wrapping.
 // This clue is required for lists, etc. so that tables can dynamically
 // change max_width and have the contents' max_widths changed appropriately.
+// Also used by <pre> lines
 //
 class HTMLClueH : public HTMLClue
 {
 public:
 	HTMLClueH( int _x, int _y, int _max_width, int _percent = 100 )
 		: HTMLClue( _x, _y, _max_width, _percent ) { }
+	virtual ~HTMLClueH() { }
 	
 	virtual void setMaxWidth( int );
-	virtual void calcSize();
+	virtual void calcSize( HTMLClue *parent = NULL );
+    virtual int  calcMinWidth();
 	virtual int  calcPreferredWidth();
 };
+
 
 //-----------------------------------------------------------------------------
 // really only useful for tables.
@@ -260,16 +327,27 @@ class HTMLTableCell : public HTMLClueV
 {
 public:
 	HTMLTableCell( int _x, int _y, int _max_width, int _width, int _percent,
-		int rs, int cs );
+		int rs, int cs, int pad );
+	virtual ~HTMLTableCell() { }
 
 	int rowSpan() const
 		{	return rspan; }
 	int colSpan() const
 		{	return cspan; }
+	const QColor &bgColor() const
+		{	return bg; }
+
+	void setBGColor( const QColor &c )
+		{	bg = c; }
+
+    virtual void print( QPainter *_painter, int _x, int _y, int _width,
+		int _height, int _tx, int _ty );
 
 protected:
 	int rspan;
 	int cspan;
+	int padding;
+	QColor bg;
 };
 
 //-----------------------------------------------------------------------------
@@ -288,7 +366,7 @@ public:
 	void endRow();
 	void endTable();
 
-    virtual void calcSize();
+    virtual void calcSize( HTMLClue *parent = NULL );
 	virtual int  calcMinWidth();
 	virtual int  calcPreferredWidth();
 	virtual void setMaxWidth( int _max_width );
@@ -334,6 +412,7 @@ class HTMLText : public HTMLObject
 public:
     HTMLText( const char*, const HTMLFont *, QPainter *, const char * );
     HTMLText( const HTMLFont *, QPainter * );
+	virtual ~HTMLText() { }
 
     virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
     virtual void print( QPainter *, int _tx, int _ty );
@@ -348,8 +427,6 @@ protected:
 class HTMLRule : public HTMLObject
 {
 public:
-	enum HAlign { Left, HCenter, Right };
-
     HTMLRule( int _max_width, int _width, int _percent, int _size=1,
 		 HAlign _align=HCenter, bool _shade=TRUE );
 
@@ -362,6 +439,7 @@ public:
 
 protected:
 	HAlign align;
+	int length;
 	bool shade;
 };
 
@@ -371,6 +449,7 @@ class HTMLBullet : public HTMLObject
 {
 public:
     HTMLBullet( int _height, int _level, const QColor &col );
+	virtual ~HTMLBullet() { }
 
     virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
     virtual void print( QPainter *, int _tx, int _ty );
@@ -386,6 +465,7 @@ class HTMLVSpace : public HTMLObject
 {
 public:
     HTMLVSpace( int _vspace );
+	virtual ~HTMLVSpace() { }
 };
 
 //-----------------------------------------------------------------------------
@@ -396,6 +476,7 @@ class HTMLAnchor : public HTMLObject
 {
 public:
     HTMLAnchor( const char *_name ) : name( _name ) {}
+	virtual ~HTMLAnchor() { }
 
     const char* getName() { return name.data(); }
 
@@ -412,6 +493,7 @@ class HTMLCachedImage
 {
 public:
     HTMLCachedImage( const char * );
+	virtual ~HTMLCachedImage() { }
 
     KPixmap* getPixmap() { return pixmap; }
     const char *getFileName() { return filename.data(); }
@@ -483,25 +565,28 @@ protected:
 
     /// If we knew the size of the image from the <img width=...> tag then this flag is TRUE.
     /**
-      We need this flag if the image has to be loaded from the web. In this case we may
-      have to reparse the HTML code if we did not know the size during the first parsing.
+      We need this flag if the image has to be loaded from the web. In this
+	  case we may have to reparse the HTML code if we did not know the size
+	  during the first parsing.
       */
     bool predefinedWidth;
 
     /// If we knew the size of the image from the <img height=...> tag then this flag is TRUE.
     /**
-      We need this flag if the image has to be loaded from the web. In this case we may
-      have to reparse the HTML code if we did not know the size during the first parsing.
+      We need this flag if the image has to be loaded from the web. In this
+	  case we may have to reparse the HTML code if we did not know the size
+	  during the first parsing.
       */
     bool predefinedHeight;
 
     /// Tells the function 'imageLoaded' wether it runs synchronized with the constructor
     /**
-      If an image has to be loaded from the net, it may happen that the image is cached.
-      This means the the function 'imageLoaded' is called before the control returns to
-      the constructor, since the constructor requested the image and this caused in turn
-      'imageLoaded' to be called. In this case the images arrived just in time and no
-      repaint or recalculate action must take place. If 'imageLoaded' works synchron with
+      If an image has to be loaded from the net, it may happen that the image
+	  is cached.  This means the the function 'imageLoaded' is called before
+	  the control returns to the constructor, since the constructor requested
+	  the image and this caused in turn 'imageLoaded' to be called. In this
+	  case the images arrived just in time and no repaint or recalculate
+	  action must take place. If 'imageLoaded' works synchron with
       the constructor then this flag is set to TRUE.
       */
     bool synchron;
@@ -512,15 +597,15 @@ protected:
 class StringTokenizer
 {
 public:
-    StringTokenizer( QString &, const char * );
+    StringTokenizer( const QString &, const char * );
     ~StringTokenizer();
 
     const char* nextToken();
     bool hasMoreTokens();
 
 protected:
-    int pos;
-    int size;
+    char *pos;
+    char *end;
     char *buffer;
 };
 
@@ -529,16 +614,17 @@ protected:
 class HTMLTokenizer
 {
 public:
-    HTMLTokenizer( QString & );
+    HTMLTokenizer( const char * );
     ~HTMLTokenizer();
 
     const char* nextToken();
     bool hasMoreTokens();
 
 protected:
-    int pos;
-    int size;
+    char *pos;
+    char *end;
     char *buffer;
 };
 
 #endif // HTMLOBJ
+

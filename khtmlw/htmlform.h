@@ -34,7 +34,7 @@ public:
 	void position( int _x, int _y, int _width, int _height );
 
 	virtual QString encoding()
-		{	QString s = ""; return s; }
+		{	return QString( "" ); }
 
 	virtual void calcAbsolutePos( int _x, int _y );
 
@@ -63,6 +63,7 @@ class HTMLSelect : public HTMLElement
 	Q_OBJECT
 public:
 	HTMLSelect( QWidget *parent, const char *n, int s, bool m );
+	virtual ~HTMLSelect() { }
 
 	void addOption( const char *o, bool sel );
 
@@ -94,6 +95,7 @@ class HTMLTextArea : public HTMLElement
 	Q_OBJECT
 public:
 	HTMLTextArea( QWidget *parent, const char *n, int r, int c );
+	virtual ~HTMLTextArea() { }
 
 	QString value();
 	void setText( const char *t );
@@ -112,6 +114,7 @@ class HTMLInput : public HTMLElement
 	Q_OBJECT
 public:
 	HTMLInput( const char *n, const char *v );
+	virtual ~HTMLInput() { }
 
 	const QString &value() const
 		{	return _value; }
@@ -129,6 +132,7 @@ class HTMLCheckBox : public HTMLInput
 	Q_OBJECT
 public:
 	HTMLCheckBox( QWidget *parent, const char *n, const char *v, bool ch );
+	virtual ~HTMLCheckBox() { }
 
 	virtual QString encoding();
 	virtual void reset();
@@ -144,6 +148,7 @@ class HTMLHidden : public HTMLInput
 	Q_OBJECT
 public:
 	HTMLHidden( const char *n, const char *v );
+	virtual ~HTMLHidden() { }
 
 	virtual QString encoding();
 };
@@ -155,6 +160,7 @@ class HTMLRadio : public HTMLInput
 	Q_OBJECT
 public:
 	HTMLRadio( QWidget *parent, const char *n, const char *v, bool ch );
+	virtual ~HTMLRadio() { }
 
 	virtual QString encoding();
 	virtual void reset();
@@ -179,6 +185,7 @@ class HTMLReset : public HTMLInput
 	Q_OBJECT
 public:
 	HTMLReset( QWidget *parent, const char *v );
+	virtual ~HTMLReset() { }
 
 protected slots:
 	void slotClicked();
@@ -194,6 +201,7 @@ class HTMLSubmit : public HTMLInput
 	Q_OBJECT
 public:
 	HTMLSubmit( QWidget *parent, const char *v );
+	virtual ~HTMLSubmit() { }
 
 protected slots:
 	void slotClicked();
@@ -209,12 +217,17 @@ class HTMLTextInput : public HTMLInput
 	Q_OBJECT
 public:
 	HTMLTextInput( QWidget *parent, const char *n, const char *v, int s );
+	virtual ~HTMLTextInput() { }
 
 	virtual QString encoding();
 	virtual void reset();
 
 protected slots:
 	void slotTextChanged( const char * );
+	void slotReturnPressed();
+
+signals:
+	void submitForm();
 
 private:
 	QString _defText;
@@ -227,7 +240,8 @@ class HTMLForm : public QObject
 	Q_OBJECT
 public:
 	HTMLForm( const char *a, const char *m );
-	~HTMLForm() {};
+	virtual ~HTMLForm() {}
+
 	void addElement( HTMLElement *e );
 
 	const char *method() const

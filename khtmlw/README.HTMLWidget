@@ -1,7 +1,7 @@
 KDE HTML Widget
 ---------------
 
-This is the alpha version 0.5.3
+This is the alpha version 0.5.4
 
 Developers
 ----------
@@ -236,6 +236,22 @@ Version 0.5.3 - Martin
   formatting.
  Fixed <pre> so that inline markups don't cause lines to be broken.
 
+
+Version 0.5.4 - Martin
+
+ Added align=left|right for images.
+ Use gif.cpp with transparency (from Richard J. Moore).
+ Fixed <center> and added <div>.
+ More general HTML stuff implemented.
+ Found bug painting most objects - were testing _y+height() < y-getHeight()
+  and _y > y when should be < y-getAscent() and > y+getDescent().
+ Added keyboard control - you must call setFocusPolicy() to enable focus.
+ Another profiler session and some speedups.
+ bgcolor for table cells.
+ Fix <font size=?> stuff
+ Accept bgcolor="XXXXXX" when it should be bgcolor="#XXXXXX"
+ Implement align and valign in <tr>
+
 Last change
-21.4.97 Martin Jones
+1.5.97 Martin Jones
 
