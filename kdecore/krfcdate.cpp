@@ -27,6 +27,29 @@
 
 #include <krfcdate.h>
 
+static int ymd_to_days(int year, int mon, int day)
+{
+    return (day - 32075)
+            + 1461L * (year + 4800L + (mon - 14) / 12) / 4
+            + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
+            - 3 * ((year + 4900L + (mon - 14) / 12) / 100) / 4
+            - 2440588;
+}
+
+/*
+ * Converts broken-down UTC time to time in seconds since 1 Jan 1970 00:00.
+ * Pays no attention to time zone or daylight savings time.  
+ */
+static time_t my_inv_gmtime(struct tm* ptms)
+{
+    time_t t;
+
+    t = ymd_to_days(ptms->tm_year+1900, ptms->tm_mon+1, ptms->tm_mday); /* days */
+    t = 24*t + ptms->tm_hour;  /* hours   */
+    t = 60*t + ptms->tm_min;   /* minutes */
+    t = 60*t + ptms->tm_sec;   /* seconds */
+    return t;
+}
 
 static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
 
@@ -162,13 +185,7 @@ KRFCDate::parseDate(const QString &_date)
      tm_s.tm_year = year-1900;
      tm_s.tm_isdst = -1;
 
-#ifndef BSD
-     result = mktime( &tm_s)-timezone; // timezone = seconds _west_ of UTC
-#else
-     result = mktime (&tm_s);
-     struct tm *tzone = localtime(&result);
-     result += (tzone->tm_gmtoff); // tm_gmtoff = seconds _east_ of UTC
-#endif
+     result = my_inv_gmtime(&tm_s);
 
 ////////////////
 // Debug stuff
