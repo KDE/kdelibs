@@ -1,5 +1,5 @@
 ## ltdl.m4 - Configure ltdl for the target system. -*-Shell-script-*-
-## Copyright (C) 1999-2000 Free Software Foundation, Inc.
+## Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ AC_CHECK_HEADERS(malloc.h memory.h stdlib.h stdio.h ctype.h dlfcn.h dl.h dld.h)
 AC_CHECK_HEADERS(string.h strings.h, break)
 AC_CHECK_FUNCS(strchr index, break)
 AC_CHECK_FUNCS(strrchr rindex, break)
+AC_CHECK_FUNCS(memcpy bcopy, break)
 AC_CHECK_FUNCS(strcmp)
 
 AC_REQUIRE([AC_LTDL_ENABLE_INSTALL])dnl
@@ -47,6 +48,8 @@ AC_REQUIRE([AC_LTDL_OBJDIR])dnl
 AC_REQUIRE([AC_LTDL_DLPREOPEN])dnl
 AC_REQUIRE([AC_LTDL_DLLIB])dnl
 AC_REQUIRE([AC_LTDL_SYMBOL_USCORE])dnl
+AC_REQUIRE([AC_LTDL_DLSYM_USCORE])dnl
+AC_REQUIRE([AC_LTDL_SYS_DLOPEN_DEPLIBS])dnl
 ])
 
 AC_DEFUN(AC_LTDL_ENABLE_INSTALL,
@@ -65,6 +68,35 @@ rm -f conftest
 . ./conftest
 rm -f conftest
 ])
+
+# AC_LTDL_SYS_DLOPEN_DEPLIBS
+# --------------------------
+AC_DEFUN(AC_LTDL_SYS_DLOPEN_DEPLIBS,
+[AC_REQUIRE([AC_CANONICAL_HOST])
+AC_CACHE_CHECK([whether deplibs are loaded by dlopen],
+	libltdl_cv_sys_dlopen_deplibs, [dnl
+	# PORTME does your system automatically load deplibs for dlopen()?
+	libltdl_cv_sys_dlopen_deplibs=unknown
+	case "$host_os" in
+	linux*)
+	  libltdl_cv_sys_dlopen_deplibs=yes
+	  ;;
+	netbsd*|openbsd*|freebsd*)
+	  libltdl_cv_sys_dlopen_deplibs=yes
+	  ;;
+	solaris*)
+	  libltdl_cv_sys_dlopen_deplibs=yes
+	  ;;
+	hpux*|irix*)
+	  libltdl_cv_sys_dlopen_deplibs=yes
+	  ;;
+	esac
+])
+if test "$libltdl_cv_sys_dlopen_deplibs" != yes; then
+ AC_DEFINE(LTDL_DLOPEN_DEPLIBS, 1,
+    [Define if the OS needs help to load dependent libraries for dlopen(). ])
+fi
+])# AC_LTDL_SYS_DLOPEN_DEPLIBS
 
 AC_DEFUN(AC_LTDL_SHLIBEXT,
 [AC_REQUIRE([AC_LTDL_SNARF_CONFIG])dnl
@@ -161,7 +193,10 @@ AC_DEFUN(AC_LTDL_DLLIB,
 AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
    [Define if you have the libdl library or equivalent. ]) LIBADD_DL="-ldl"],
 [AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
-   [Define if you have the libdl library or equivalent.])])])
+   [Define if you have the libdl library or equivalent.])],
+[AC_CHECK_LIB(svld, dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
+   [Define if you have the libdl library or equivalent.]) LIBADD_DL="-lsvld"]
+)])])
 AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1,
    [Define if you have the shl_load function.])],
 [AC_CHECK_LIB(dld, shl_load,
@@ -267,16 +302,16 @@ EOF
       # Make sure that we snagged all the symbols we need.
       if egrep ' nm_test_var$' "$ac_nlist" >/dev/null; then
 	if egrep ' nm_test_func$' "$ac_nlist" >/dev/null; then
-	  cat <<EOF > conftest.c
+	  cat <<EOF > conftest.$ac_ext
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 EOF
 	  # Now generate the symbol file.
-	  eval "$ac_global_symbol_to_cdecl"' < "$ac_nlist" >> conftest.c'
+	  eval "$ac_global_symbol_to_cdecl"' < "$ac_nlist" >> conftest.$ac_ext'
 
-	  cat <<EOF >> conftest.c
+	  cat <<EOF >> conftest.$ac_ext
 #if defined (__STDC__) && __STDC__
 # define lt_ptr_t void *
 #else
@@ -294,8 +329,8 @@ lt_preloaded_symbols[] =
 changequote([,])dnl
 {
 EOF
-	sed 's/^. \(.*\) \(.*\)$/  {"\2", (lt_ptr_t) \&\2},/' < "$ac_nlist" >> conftest.c
-	cat <<\EOF >> conftest.c
+	sed 's/^. \(.*\) \(.*\)$/  {"\2", (lt_ptr_t) \&\2},/' <	"$ac_nlist" >> conftest.$ac_ext
+	cat <<\EOF >> conftest.$ac_ext
   {0, (lt_ptr_t) 0}
 };
 
@@ -313,7 +348,7 @@ EOF
 	    ac_pipe_works=yes
 	  else
 	    echo "configure: failed program was:" >&AC_FD_CC
-	    cat conftest.c >&AC_FD_CC
+	    cat conftest.$ac_ext >&AC_FD_CC
 	  fi
 	  LIBS="$ac_save_LIBS"
 	  CFLAGS="$ac_save_CFLAGS"
@@ -328,7 +363,7 @@ EOF
     fi
   else
     echo "$progname: failed program was:" >&AC_FD_CC
-    cat conftest.c >&AC_FD_CC
+    cat conftest.$ac_ext >&AC_FD_CC
   fi
   rm -rf conftest* conftst*
 
@@ -382,12 +417,11 @@ if AC_TRY_EVAL(ac_compile); then
   fi
 else
   echo "configure: failed program was:" >&AC_FD_CC
-  cat conftest.c >&AC_FD_CC
+  cat conftest.$ac_ext >&AC_FD_CC
 fi
 rm -rf conftest*
 ])
 AC_MSG_RESULT($ac_cv_sys_symbol_underscore)
-AC_LTDL_DLSYM_USCORE
 ])
 
 AC_DEFUN(AC_LTDL_DLSYM_USCORE,
@@ -436,8 +470,9 @@ if test x"$ac_cv_sys_symbol_underscore" = xyes; then
 # endif
 #endif
 
-fnord() { int i=42;}
-main() { void *self, *ptr1, *ptr2; self=dlopen(0,LTDL_GLOBAL|LTDL_LAZY_OR_NOW);
+void fnord() { int i=42;}
+int main() {
+    void *self, *ptr1, *ptr2; self=dlopen(0,LTDL_GLOBAL|LTDL_LAZY_OR_NOW);
     if(self) { ptr1=dlsym(self,"fnord"); ptr2=dlsym(self,"_fnord");
 	       if(ptr1 && !ptr2) { dlclose(self); exit(0); } } exit(1); }
 ],	libltdl_cv_need_uscore=no, libltdl_cv_need_uscore=yes,
