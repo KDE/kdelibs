@@ -174,17 +174,11 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
 
     if ( file.isEmpty() )
     {
-      // maybe the user hasn't installed the rc file or is just
-      // testing.  try searching in the current directory
-      file = QDir::currentDirPath() + "/" + _file;
-      if ( QFile::exists( file ) == false )
-      {
-        // this might or might not be an error.  for the time being,
-        // let's treat this as if it isn't a problem and the user just
-        // wants the global standards file
-        setXML( QString::null, true );
-        return;
-      }
+      // this might or might not be an error.  for the time being,
+      // let's treat this as if it isn't a problem and the user just
+      // wants the global standards file
+      setXML( QString::null, true );
+      return;
     }
     else if ( !doc.isEmpty() )
     {
