@@ -466,8 +466,14 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
   QPoint p( contentsToViewport( e->pos() ) );
   QListViewItem *at = itemAt (p);
 
+  // true if the root decoration of the item "at" was clicked (i.e. the +/- sign)
+  bool rootDecoClicked = at
+           && ( p.x() <= header()->cellPos( header()->mapToActual( 0 ) ) +
+                treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() )
+           && ( p.x() >= header()->cellPos( header()->mapToActual( 0 ) ) );
+
   // If the row was already selected, create an editor widget.
-  if (at && at->isSelected() && itemsRenameable())
+  if (at && at->isSelected() && itemsRenameable() && !rootDecoClicked)
   {
     int col = header()->mapToLogical( header()->cellAt( p.x() ) );
     if ( d->renameable.contains(col) )
@@ -477,10 +483,7 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
   if (e->button() == LeftButton)
   {
       // if the user clicked into the root decoration of the item, don't try to start a drag!
-      if ( !at
-           || p.x() > header()->cellPos( header()->mapToActual( 0 ) ) +
-           treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin()
-           || p.x() < header()->cellPos( header()->mapToActual( 0 ) ) )
+      if ( !rootDecoClicked )
       {
           d->startDragPos = e->pos();
 
