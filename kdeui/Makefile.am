@@ -31,7 +31,7 @@ libkspell_la_LIBADD = libkdeui.la
 libkspell_la_SOURCES = dummy.cpp
 
 picsdir = $(kde_datadir)/kdeui/pics
-pics_DATA = aboutkde.png keys.png ktip-bulb.png ktip-background.png
+pics_DATA = aboutkde.png ktip-bulb.png ktip-background.png
 
 include_HEADERS = kprogress.h kcolordlg.h \
 		kcolordialog.h kselect.h \
