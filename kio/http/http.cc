@@ -498,13 +498,18 @@ void HTTPProtocol::initSSL() {
       } // for  i
     } // for    k
 
+    // for now we are just going to use the default ciphers if none
+    // are selected
     if (m_bUseSSL2 && m_bUseSSL3 && v2ciphers_unset && v3ciphers_unset) {
+      kdDebug(7103) << "SSL will use default ciphers." << endl;
     } else if (m_bUseSSL2 && v2ciphers_unset) {
+      kdDebug(7103) << "SSL will use default ciphers." << endl;
     } else if (m_bUseSSL3 && v3ciphers_unset) {
+      kdDebug(7103) << "SSL will use default ciphers." << endl;
+    } else {
+      kdDebug(7103) << "SSL CIPHERS IN USE: " << clist << endl;
+      SSL_CTX_set_cipher_list(ctx, clist.ascii());
     }
-
-    kdDebug(7103) << "SSL CIPHERS IN USE: " << clist << endl;
-    SSL_CTX_set_cipher_list(ctx, clist.ascii());
   } // if
 
   hand=SSL_new(ctx);
