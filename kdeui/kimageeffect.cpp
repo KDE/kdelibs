@@ -30,6 +30,9 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
 
     QImage image(size, 32);
 
+    if (size.width() == 0 || size.height() == 0)
+      return image;
+
     register int x, y;
 
     rDiff = (rcb = cb.red())   - (rca = ca.red());
