@@ -14,19 +14,17 @@ void KServiceType::initStatic()
 KServiceType::KServiceType( KSimpleConfig& _cfg )
 {
   initStatic();
-  s_lstServiceTypes->append( this );
   _cfg.setDesktopGroup();
 
-  // Is this a bug or an intentionnal change ? Currently mimetype files
-  // contain "MimeType=", not "Name=" !  (David)
-  // m_strName = _cfg.readEntry( "Name" );
-
-  // -> reverted to "MimeType=" temporarily, but seems wrong since
-  // some servicetype are not mimetypes, if I got it correctly (any example, Torben ? ;) )
+  // Is it a mimetype ?
   m_strName = _cfg.readEntry( "MimeType" );
 
-  if ( m_strName.isEmpty() )
+  // Or is it a servicetype ?
+  if ( m_strName.isEmpty() ) {
     m_strName = _cfg.readEntry( "X-KDE-ServiceType" );
+    s_lstServiceTypes->insert( 0, this ); // servicetypes first in the list !
+  } else
+    s_lstServiceTypes->append( this ); // mimetypes at the end
 
   m_strComment = _cfg.readEntry( "Comment" );
   m_strIcon = _cfg.readEntry( "Icon" );
