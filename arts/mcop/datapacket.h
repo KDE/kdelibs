@@ -35,6 +35,7 @@
 
 namespace Arts {
 class GenericDataChannelPrivate;
+class GenericDataPacket;
 /*
  * The GenericDataChannel interface is to be implemented by the flowsystem
  */
