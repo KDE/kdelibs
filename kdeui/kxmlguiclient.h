@@ -244,6 +244,8 @@ private:
 
   QString findMostRecentXMLFile( const QString &fileName, QString &doc );
 
+  QString findVersionNumber( const QString &_xml );
+
   KXMLGUIClientPrivate *d;
 };
 

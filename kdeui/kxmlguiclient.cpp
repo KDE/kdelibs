@@ -24,12 +24,13 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qdom.h>
-#include <qxml.h>
+#include <qtextstream.h>
 
 #include <kinstance.h>
 #include <kstddirs.h>
 #include <kdebug.h>
 #include <kaction.h>
+#include <kregexp.h>
 
 class KXMLGUIClientPrivate
 {
@@ -559,37 +560,6 @@ void KXMLGUIClient::unplugActionList( const QString &name )
   d->m_factory->unplugActionList( this, name );
 }
 
-class InternalXMLConsumer : public QSAXDefaultHandler
-{
-public:
-  InternalXMLConsumer()
-  {
-  }
-  virtual ~InternalXMLConsumer() {}
-
-  virtual bool startElement( const QString &, const QString &, const QString &qName, const QSAXAttributes &atts )
-  {
-    static QString attrVersion = QString::fromLatin1( "version" );
-    static QString tagKPartGUI = QString::fromLatin1( "kpartgui" );
-    if ( qName.lower() != tagKPartGUI )
-      return false;
-
-    for ( int i = 0; i < atts.length(); i++ )
-      if ( atts.qName( i ).lower() == attrVersion )
-      {
-        version = atts.value(i);
-	return false;
-      }
-
-    return false;
-  }
-  virtual bool endElement( const QString &, const QString &, const QString & )
-  {
-    return false;
-  }
-  QString version;
-};
-
 QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &doc )
 {
   QString filter  = QString::fromLatin1( instance()->instanceName() + '/' ) + fileName;
@@ -613,22 +583,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
   QMap<QString,QString>::ConstIterator docEnd = allDocuments.end();
   for (; docIt != docEnd; ++docIt )
   {
-    InternalXMLConsumer consumer;
-
-    QXMLSimpleReader reader;
-
-    QSAXInputSource source;
-    source.setData( docIt.data() );
-
-    reader.setContentHandler( &consumer );
-    reader.setErrorHandler( &consumer );
-    reader.setLexicalHandler( &consumer );
-    reader.setFeature( "http://xml.org/sax/features/namespaces", FALSE );
-    reader.setFeature( "http://xml.org/sax/features/namespace-prefixes", TRUE );
-
-    QXMLSimpleReader parser;
-    reader.parse( source );
-    QString versionStr = consumer.version;
+    QString versionStr = findVersionNumber( docIt.data() );
     if ( versionStr.isEmpty() )
       continue;
 
@@ -664,3 +619,26 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
 
   return QString::null;
 }
+
+QString KXMLGUIClient::findVersionNumber( const QString &_xml )
+{
+  QString xml = _xml; 
+
+  KRegExp expr( ".*<kpartgui.+version=\"([0-9]+)\".*>.*", "i" );
+  
+  QTextStream stream( xml, IO_ReadOnly );
+  QString line = stream.readLine();
+  for (; !line.isNull(); line = stream.readLine() )
+  {
+    if ( line.isEmpty() )
+      continue;
+    
+    if ( expr.match( line.local8Bit() ) )
+    {
+    //      kdDebug() << "FOUND VERSION!!!!" << expr.group(1) << endl;
+      return QString::fromLocal8Bit( expr.group(1) );
+    }
+  }
+  
+  return QString::null;
+} 
