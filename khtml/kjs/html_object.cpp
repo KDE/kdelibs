@@ -19,9 +19,9 @@
 
 #include <stdio.h>
 
-#include <khtml.h>
-#include <html_document.h>
-#include <dom_string.h>
+#include "khtml.h"
+#include "html_document.h"
+#include "dom_string.h"
 
 #include "kjs.h"
 #include "operations.h"

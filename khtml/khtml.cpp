@@ -29,7 +29,6 @@
 #include <kmimetype.h>
 
 #include <kio_job.h>
-#include <kio_cache.h>
 #include <kio_error.h>
 
 #include <assert.h>
@@ -507,7 +506,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 
   slotStop();
 
-  KIOCachedJob *job = new KIOCachedJob;
+  KIOJob *job = new KIOJob;
   m_jobId = job->id();
 
   job->setGUImode( KIOJob::NONE );
@@ -516,18 +515,18 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
   connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
   connect( job, SIGNAL( sigRedirection( int, const char* ) ), this, SLOT( slotRedirection( int, const char* ) ) );
   connect( job, SIGNAL( sigData( int, const char*, int ) ), this, SLOT( slotData( int, const char*, int ) ) );
-   connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
+  connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
 
   if ( _post_data )
   {
       post_data = _post_data;
       connect( job, SIGNAL( sigReady( int ) ),
 	       this, SLOT( slotPost( int ) ) );
-      job->put( _url, -1, true, false, strlen(_post_data) );
+      job->put( _url.ascii(), -1, true, false, strlen(_post_data) );
   }	
   else
   {
-      job->get( _url, _reload );
+      job->get( _url.ascii() );
       post_data = 0;
   }
 

@@ -38,8 +38,8 @@
 #include "htmlhashes.h"
 
 #include <qstring.h>
-#include <dom_stringimpl.h>
-#include <khtmllayout.h>
+#include "dom_stringimpl.h"
+#include "khtmllayout.h"
 using namespace DOM;
 using namespace khtml;
 
