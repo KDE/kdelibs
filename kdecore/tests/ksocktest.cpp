@@ -18,7 +18,10 @@
 
 #include "kuniqueapplication.h"
 #include "kglobal.h"
+#include "kdebug.h"
 #include "ksock.h"
+#include "ksockaddr.h"
+#include "kextsock.h"
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
@@ -30,6 +33,9 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 
 class TestApp : public KUniqueApplication
@@ -38,6 +44,7 @@ public:
    TestApp()
 	: KUniqueApplication() { }
    int newInstance( QValueList<QCString> params );
+   KExtendedSocket sock;
 };
 
 
@@ -59,6 +66,23 @@ TestApp::newInstance( QValueList<QCString> )
    return 1;
 }
 
+bool check(QString txt, QString a, QString b)
+{
+  if (a.isEmpty())
+     a = QString::null;
+  if (b.isEmpty())
+     b = QString::null;
+  if (a == b) {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+  }
+  else {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+    exit(1);
+  }
+  return true;
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -66,7 +90,26 @@ main(int argc, char *argv[])
    KCmdLineArgs::init(argc, argv, &about);
    KUniqueApplication::addCmdLineOptions();
 
-   TestApp a;
+   QString host, port;
+   
+   KInetSocketAddress host_address("213.203.58.36", 80);
+
+   check("KInetSocketAddress(\"213.203.58.36\", 80)", host_address.pretty(), "213.203.58.36 port 80");
+
+   int result = KExtendedSocket::resolve(&host_address, host, port, NI_NAMEREQD);
+   check("KExtendedSocket::resolve() host=", host, "www.kde.org");
+   check("KExtendedSocket::resolve() port=", port, "http");
+   QPtrList<KAddressInfo> list;
+   list = KExtendedSocket::lookup("www.kde.org", "http", KExtendedSocket::inetSocket);
+   for(KAddressInfo *info = list.first(); info; info = list.next())
+   {
+      qWarning("Lookup: %s", info->address()->pretty().latin1());
+   }
+   check("KExtenededSocket::lookup(), list.first()->address()->pretty(), "213.203.58.36 port 80");
+
+#if 0
+   TestApp a(&host_address);
    a.exec();   
-   printf("Terminating.\n");
+#endif
+   return 0;
 }
