@@ -20,6 +20,9 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.7  1999/10/21 23:55:39  pbrown
+* Dfaure is right.  Select all text instead of putting cursor at beginning.
+*
 * Revision 1.6  1999/10/21 18:13:12  pbrown
 * position cursor at beginning of the line if text is pre-supplied.
 *
@@ -74,8 +77,6 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   edit->setText( _value );
   edit->setSelection(0, edit->text().length());
   edit->setFocus();
-
-  topLayout->activate();
 }
 
 
