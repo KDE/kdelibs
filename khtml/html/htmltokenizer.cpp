@@ -58,10 +58,10 @@
 using namespace khtml;
 
 static const QChar commentStart [] = { '<','!','-','-', QChar::null };
-static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>', QChar::null };
-static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>', QChar::null };
-static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>', QChar::null };
-static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>', QChar::null };
+static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t',' ','>', QChar::null };
+static const QChar styleEnd [] = { '<','/','s','t','y','l','e', ' ','>', QChar::null };
+static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g',' ','>', QChar::null };
+static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a',' ','>', QChar::null };
 
 #define KHTML_ALLOC_QCHAR_VEC( N ) (QChar*) malloc( sizeof(QChar)*( N ) )
 #define KHTML_REALLOC_QCHAR_VEC(P, N ) (QChar*) P = realloc(p, sizeof(QChar)*( N ))
@@ -290,16 +290,17 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 
         char ch = src->latin1();
 
-        if ( !escaped && !src.escaped() ) {
-            if(script && ch == '\"')
+        if ( !escaped && !src.escaped() && script ) {
+            if(ch == '\"')
                 tquote = (tquote == NoQuote) ? DoubleQuote : ((tquote == SingleQuote) ? SingleQuote : NoQuote);
-            else if(script && ch == '\'')
+            else if(ch == '\'')
                 tquote = (tquote == NoQuote) ? SingleQuote : (tquote == DoubleQuote) ? DoubleQuote : NoQuote;
-            else if (script && tquote != NoQuote && (ch == '\r' || ch == '\n'))
+            else if (tquote != NoQuote && (ch == '\r' || ch == '\n'))
                 tquote = NoQuote;
         }
 
-        if ( (!script || tquote == NoQuote) && !escaped && !src.escaped() && ( ch == '>' ) && ( searchFor[ searchCount ] == '>'))
+        if ( !escaped && !src.escaped() && ( ch == '>' ) &&
+             ( ( searchFor[ searchCount ] == '>' && tquote == NoQuote ) || searchFor[searchCount] == ' '))
         {
             ++src;
             searchCount = 0;
@@ -387,18 +388,28 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         else if ( searchCount > 0 )
         {
             const QChar& cmp = *src;
-            if (( !script || tquote == NoQuote ) && !escaped && !src.escaped() &&
+              kdDebug(6050) << "KHTMLPart::checkEmitLoadEvent " << this << endl;
+
+            if (!escaped && !src.escaped() &&
+                ( cmp <= ' ' || cmp == '>' ) && searchFor[ searchCount ] == ' ') {
+                searchBuffer[ searchCount++] = cmp;
+                ++src;
+                continue;
+            }
+            // </script> can be in a quoted section! ( IE 5.5 )
+            else if (!escaped && !src.escaped() &&
                 searchFor[searchCount] != QChar::null && cmp.lower() == searchFor[ searchCount ] )
             {
                 searchBuffer[ searchCount++ ] = cmp;
                 ++src;
+                continue;
             }
             // be tolerant: skip garbage before the ">", i.e "</script foo>"
-            // ### handle quotes!
             else if ( ( !script || ( tquote == NoQuote && cmp != '>' ) || ( tquote != NoQuote ) ) &&
-                      searchFor[searchCount].latin1() == '>')
+                      searchFor[searchCount].latin1() == '>' )
             {
                 ++src;
+                continue;
             }
             // We were wrong => print all buffered characters and the current one;
             else
@@ -418,32 +429,32 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                     }
                 }
                 searchCount = 0;
+                // no continue here!
             }
         }
         // Is this perhaps the start of the </script> or </style> tag?
-        else if ( !escaped && !src.escaped() && ( ch == '<' || ch == '-' ) )
+        else if ( !escaped && !src.escaped() && ch == '<' )
         {
             searchCount = 1;
             searchBuffer[ 0 ] = *src;
             ++src;
+            continue;
         }
-        else
-        {
-            if (textarea && !escaped && !src.escaped() && ch == '&') {
-                QChar *scriptCodeDest = scriptCode+scriptCodeSize;
-                ++src;
-                parseEntity(src,scriptCodeDest,true);
-                scriptCodeSize = scriptCodeDest-scriptCode;
-            }
-            else {
-                scriptCode[ scriptCodeSize++ ] = *src;
-                if ( script && !escaped && ch == '\\' )
-                    escaped = true;
-                else
-                    escaped = false;
 
-                ++src;
-            }
+        if (textarea && !escaped && !src.escaped() && ch == '&') {
+            QChar *scriptCodeDest = scriptCode+scriptCodeSize;
+            ++src;
+            parseEntity(src,scriptCodeDest,true);
+            scriptCodeSize = scriptCodeDest-scriptCode;
+        }
+        else {
+            scriptCode[ scriptCodeSize++ ] = *src;
+            if ( script && !escaped && ch == '\\' )
+                escaped = true;
+            else
+                escaped = false;
+
+            ++src;
         }
     }
 }
