@@ -1197,7 +1197,7 @@ static const int windowsRightBorder     = 12;       // right border on windowsst
                                x, y);
         }
         
-        if( checkable && mi->isChecked() )
+        if( checkable && mi && mi->isChecked() )
 	{
 	    // draw 'pressed' border around checkable items
             // This is extremely important for items that have an iconset
