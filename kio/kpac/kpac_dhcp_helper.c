@@ -71,8 +71,9 @@ int init_socket()
 		bind(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1)
 		exit(1);
 
-	setuid(getuid()); /* we don't need it anymore */
-	setgid(getgid());
+	if (setuid(getuid()) != 0 || /* we don't need it anymore */
+		setgid(getgid()) != 0)
+		exit(1);
 	return sock;
 }
 
