@@ -578,8 +578,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
 
     case  KIO::ERR_MALFORMED_URL:
       errorName = i18n( "Inproperly Formatted URL" );
-      description = i18n( "The <strong>U</strong>niversal <strong>R</strong>esource "
-        "<strong>L</strong>ocation (URL) that you entered was not properly "
+      description = i18n( "The <strong>U</strong>niform <strong>R</strong>esource "
+        "<strong>L</strong>ocator (URL) that you entered was not properly "
         "formatted. The format of a URL is generally as follows:"
         "<blockquote><strong>protocol://user@password:www.example.org:port/directory/"
         "filename.extension?query=value</strong></blockquote>" );
@@ -605,8 +605,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     case  KIO::ERR_NO_SOURCE_PROTOCOL:
       errorName = i18n( "URL Does Not Refer to a Resource." );
       techName = i18n( "Protocol is a Filter Protocol" );
-      description = i18n( "The <strong>U</strong>niversal <strong>R</strong>esource "
-        "<strong>L</strong>ocation (URL) that you entered did not refer to a "
+      description = i18n( "The <strong>U</strong>niform <strong>R</strong>esource "
+        "<strong>L</strong>ocator (URL) that you entered did not refer to a "
         "specific resource." );
       causes << i18n( "KDE is able to communicate through a protocol within a "
         "protocol; the protocol specified is only for use in such situations, "
@@ -791,8 +791,8 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
     case  KIO::ERR_NOT_FILTER_PROTOCOL:
       errorName = i18n( "URL Resource Invalid." );
       techName = i18n( "Protocol %1 is not a Filter Protocol" ).arg( protocol );
-      description = i18n( "The <strong>U</strong>niversal <strong>R</strong>esource "
-        "<strong>L</strong>ocation (URL) that you entered did not refer to "
+      description = i18n( "The <strong>U</strong>niform <strong>R</strong>esource "
+        "<strong>L</strong>ocator (URL) that you entered did not refer to "
         "a valid mechanism of accessing the specific resource, "
         "<strong>%1%2</strong>." )
         .arg( host != QString::null ? host + '/' : QString::null ).arg( dir );
