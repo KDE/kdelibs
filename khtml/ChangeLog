@@ -1,3 +1,8 @@
+2004-01-29  David Faure  <faure@kde.org>
+
+	* ecma/kjs_window.cpp (get): update frame sizes before returning value for
+	innerWidth/innerHeight, in case the window was just resized (#73528, regtest ecma/window.js)
+
 2004-01-29  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_inlineimpl.cpp (parseAttribute): restore KDE 3.1 behavior

@@ -117,6 +117,9 @@ public:
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
+    // for ECMA to flush all pending resizes
+    static void flushWidgetResizes();
+
 public slots:
     void slotWidgetDestructed();
 

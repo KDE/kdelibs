@@ -116,6 +116,7 @@ namespace KJS {
 } // namespace KJS
 
 #include "kjs_window.lut.h"
+#include "rendering/render_replaced.h"
 
 ////////////////////// Screen Object ////////////////////////
 
@@ -557,10 +558,12 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case InnerHeight:
       if (!m_part->view())
         return Undefined();
+      khtml::RenderWidget::flushWidgetResizes(); // make sure frames have their final size
       return Number(m_part->view()->visibleHeight());
     case InnerWidth:
       if (!m_part->view())
         return Undefined();
+      khtml::RenderWidget::flushWidgetResizes(); // make sure frames have their final size
       return Number(m_part->view()->visibleWidth());
     case Length:
       return Number(m_part->frames().count());
@@ -1441,7 +1444,10 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     		&& args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
-      window->resizeTo( tl, tl->width() + args[0].toInt32(exec), tl->height() + args[1].toInt32(exec) );
+      QRect geom = tl->frameGeometry();
+      window->resizeTo( tl,
+                        geom.width() + args[0].toInt32(exec),
+                        geom.height() + args[1].toInt32(exec) );
     }
     return Undefined();
   }
