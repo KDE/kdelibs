@@ -32,7 +32,7 @@ $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/ad
 $(top_srcdir)/configure.in: $(top_srcdir)/subdirs $(top_srcdir)/configure.files $(CONF_FILES)
 	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in
 
-AUTOMAKE_OPTIONS = foreign 1.5
+AUTOMAKE_OPTIONS = foreign 1.6
 
 include_HEADERS = kde.pot
 
