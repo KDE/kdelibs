@@ -60,6 +60,8 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
 
     timer = new QTimer( this );
     connect( timer, SIGNAL(timeout()), SLOT(showPreview()) );
+
+    setSupportedMimeTypes( KIO::PreviewJob::supportedMimeTypes() );
 }
 
 KImageFilePreview::~KImageFilePreview()

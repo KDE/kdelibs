@@ -45,7 +45,7 @@ void KFileMetaPreview::initPreviewProviders()
     m_stack->raiseWidget( imagePreview );
     resize( imagePreview->sizeHint() );
 
-    QStringList mimeTypes = KIO::PreviewJob::supportedMimeTypes();
+    QStringList mimeTypes = imagePreview->supportedMimeTypes();
     QStringList::ConstIterator it = mimeTypes.begin();
     for ( ; it != mimeTypes.end(); ++it )
     {
