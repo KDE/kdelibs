@@ -279,6 +279,12 @@ public:
    * Returns a reference to the DOM document.
    */
   DOM::Document document() const;
+  
+  /**
+   * Returns the content of the source document.
+   * @since 3.4
+   */
+   QString documentSource() const;
 
   /**
    * Returns the node that has the keyboard focus.

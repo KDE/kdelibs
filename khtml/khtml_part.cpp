@@ -75,6 +75,7 @@ using namespace DOM;
 #include <kstringhandler.h>
 #include <kio/job.h>
 #include <kio/global.h>
+#include <kio/netaccess.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
 #include <kiconloader.h>
@@ -838,6 +839,38 @@ DOM::Document KHTMLPart::document() const
 {
     return d->m_doc;
 }
+
+QString KHTMLPart::documentSource() const
+{
+  QString sourceStr;    
+  if ( !( m_url.isLocalFile() ) && KHTMLPageCache::self()->isComplete( d->m_cacheId ) )
+  {
+     QByteArray sourceArray;
+     QDataStream dataStream( sourceArray, IO_WriteOnly );
+     KHTMLPageCache::self()->saveData( d->m_cacheId, &dataStream );
+     QTextStream stream( sourceArray, IO_ReadOnly );
+     stream.setCodec( QTextCodec::codecForName( encoding().latin1() ) );
+     sourceStr = stream.read();
+  } else
+  {
+    QString tmpFile;
+    if( KIO::NetAccess::download( m_url, tmpFile, NULL ) )
+    {
+      QFile f( tmpFile );
+      if ( f.open( IO_ReadOnly ) )
+      {
+        QTextStream stream( &f );
+        stream.setCodec( QTextCodec::codecForName( encoding().latin1() ) );
+	sourceStr = stream.read();
+        f.close();
+      }
+      KIO::NetAccess::removeTempFile( tmpFile );
+    }  
+  }
+
+  return sourceStr;
+}
+
 
 KParts::BrowserExtension *KHTMLPart::browserExtension() const
 {
