@@ -17,13 +17,16 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
+
+#include <iostream.h>
+
+#include <kapp.h>
+#include <kdebug.h>
+
 #include "pluginimpl.h"
 #include "connectorimpl.h"
 #include "controlimpl.h"
 
-#include <kapp.h>
-#include <kdebug.h>
-#include <iostream.h>
 
 
 PluginImpl::PluginImpl(QObject *parent)
@@ -37,8 +40,7 @@ PluginImpl::~PluginImpl()
         delete m_control;
 }
 
-KDB::Plugin::PluginInfo
-PluginImpl::info()
+KDB::Plugin::PluginInfo PluginImpl::info()
 {
   KDB::Plugin::PluginInfo info;
   info.name = name();
@@ -51,14 +53,12 @@ PluginImpl::info()
   return info;
 }
 
-KDB::Connector *
-PluginImpl::createConnector()
+KDB::Connector *PluginImpl::createConnector()
 {
     return new ConnectorImpl;
 }
 
-bool
-PluginImpl::provides(KDB::capability cap)
+bool PluginImpl::provides(KDB::capability cap)
 {
     bool ret = false;
     switch (cap) {
@@ -73,8 +73,7 @@ PluginImpl::provides(KDB::capability cap)
     return ret;
 }
 
-KDB::Capability *
-PluginImpl::createObject(KDB::capability cap)
+KDB::Capability *PluginImpl::createObject(KDB::capability cap)
 {
     KDB::Capability *ret = 0L;
     
