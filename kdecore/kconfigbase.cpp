@@ -252,9 +252,9 @@ QString KConfigBase::readEntry( const char *pKey,
                pEnv = getenv( aVarName.ascii() );
           if( pEnv ) {
 	    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
-	    // A environment variables may contain values in 8bit 
+	    // A environment variables may contain values in 8bit
 	    // locale cpecified encoding or in UTF8 encoding.
-	    if (isUtf8( pEnv )) 
+	    if (isUtf8( pEnv ))
 		aValue.replace( nDollarPos, nEndPos-nDollarPos, QString::fromUtf8(pEnv) );
 	    else
 		aValue.replace( nDollarPos, nEndPos-nDollarPos, QString::fromLocal8Bit(pEnv) );
@@ -297,64 +297,64 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
   QStringList::ConstIterator end;
   QVariant tmp;
 
-  if ( hasKey( pKey ) )
+  if ( !hasKey( pKey ) ) return QVariant();
+
+  switch( type )
   {
-      switch( type )
-      {
-          case QVariant::Invalid:
-              return QVariant();
-          case QVariant::String:
-              return QVariant( readEntry( pKey ) );
-          case QVariant::StringList:
-              return QVariant( readListEntry( pKey ) );
-          case QVariant::List:
-              strList = readListEntry( pKey );
+      case QVariant::Invalid:
+          return QVariant();
+      case QVariant::String:
+          return QVariant( readEntry( pKey ) );
+      case QVariant::StringList:
+          return QVariant( readListEntry( pKey ) );
+      case QVariant::List:
+          strList = readListEntry( pKey );
 
-              it = strList.begin();
-              end = strList.end();
+          it = strList.begin();
+          end = strList.end();
 
-              for (; it != end; ++it ) {
-                  tmp = *it;
-                  list.append( tmp );
-              }
-              return QVariant( list );
+          for (; it != end; ++it ) {
+              tmp = *it;
+              list.append( tmp );
+          }
+          return QVariant( list );
 
-          case QVariant::Font:
-              return QVariant( readFontEntry( pKey ) );
-          case QVariant::Pixmap:
-              ASSERT( 0 );
-              return QVariant();
-          case QVariant::Image:
-              ASSERT( 0 );
-              return QVariant();
-          case QVariant::Brush:
-              ASSERT( 0 );
-              return QVariant();
-          case QVariant::Point:
-              return QVariant( readPointEntry( pKey ) );
-          case QVariant::Rect:
-              return QVariant( readRectEntry( pKey ) );
-          case QVariant::Size:
-              return QVariant( readSizeEntry( pKey ) );
-          case QVariant::Color:
-              return QVariant( readColorEntry( pKey ) );
-          case QVariant::Palette:
-              ASSERT( 0 );
-              return QVariant();
-          case QVariant::ColorGroup:
-              ASSERT( 0 );
-              return QVariant();
-          case QVariant::Int:
-              return QVariant( readNumEntry( pKey ) );
-          case QVariant::Bool:
-              return QVariant( static_cast<int>(readBoolEntry( pKey )) );
-          case QVariant::Double:
-              return QVariant( readDoubleNumEntry( pKey ) );
-          default:
-              ASSERT( 0 );
-      }
+      case QVariant::Font:
+          return QVariant( readFontEntry( pKey ) );
+      case QVariant::Point:
+          return QVariant( readPointEntry( pKey ) );
+      case QVariant::Rect:
+          return QVariant( readRectEntry( pKey ) );
+      case QVariant::Size:
+          return QVariant( readSizeEntry( pKey ) );
+      case QVariant::Color:
+          return QVariant( readColorEntry( pKey ) );
+      case QVariant::Int:
+          return QVariant( readNumEntry( pKey ) );
+      case QVariant::UInt:
+          return QVariant( readUnsignedNumEntry( pKey ) );
+      case QVariant::Bool:
+          return QVariant( static_cast<int>(readBoolEntry( pKey )) );
+      case QVariant::Double:
+          return QVariant( readDoubleNumEntry( pKey ) );
+
+      case QVariant::Pixmap:
+      case QVariant::Image:
+      case QVariant::Brush:
+      case QVariant::Palette:
+      case QVariant::ColorGroup:
+      case QVariant::Map:
+      case QVariant::IconSet:
+      case QVariant::CString:
+      case QVariant::PointArray:
+      case QVariant::Region:
+      case QVariant::Bitmap:
+      case QVariant::Cursor:
+      case QVariant::SizePolicy:
+          break;
   }
 
+  ASSERT( 0 );
   return QVariant();
 }
 
@@ -393,7 +393,7 @@ int KConfigBase::readListEntry( const char *pKey,
     // if we fell through to here, we are at a separator.  Append
     // contents of value to the list
     // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
-    // A QStrList may contain values in 8bit locale cpecified 
+    // A QStrList may contain values in 8bit locale cpecified
     // encoding
     list.append( value );
     value.truncate(0);
@@ -980,13 +980,13 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
     {
     case QVariant::Invalid:
       writeEntry( pKey, "", bPersistent, bGlobal, bNLS );
-      break;
+      return;
     case QVariant::String:
       writeEntry( pKey, prop.toString(), bPersistent, bGlobal, bNLS );
-      break;
+      return;
     case QVariant::StringList:
       writeEntry( pKey, prop.toStringList(), ',', bPersistent, bGlobal, bNLS );
-      break;
+      return;
     case QVariant::List:
 
         list = prop.toList();
@@ -998,51 +998,52 @@ void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
 
         writeEntry( pKey, strList, ',', bPersistent, bGlobal, bNLS );
 
-        break;
+        return;
     case QVariant::Font:
       writeEntry( pKey, prop.toFont(), bPersistent, bGlobal, bNLS );
-      break;
-      // case QVariant::Movie:
-      // return "QMovie";
-    case QVariant::Pixmap:
-      ASSERT( 0 );
-      break;
-    case QVariant::Image:
-      ASSERT( 0 );
-      break;
-    case QVariant::Brush:
-      ASSERT( 0 );
-      break;
+      return;
     case QVariant::Point:
       writeEntry( pKey, prop.toPoint(), bPersistent, bGlobal, bNLS );
-      break;
+      return;
     case QVariant::Rect:
       writeEntry( pKey, prop.toRect(), bPersistent, bGlobal, bNLS );
-      break;
+      return;
     case QVariant::Size:
       writeEntry( pKey, prop.toSize(), bPersistent, bGlobal, bNLS );
-      break;
+      return;
     case QVariant::Color:
       writeEntry( pKey, prop.toColor(), bPersistent, bGlobal, bNLS );
-      break;
-    case QVariant::Palette:
-      ASSERT( 0 );
-      break;
-    case QVariant::ColorGroup:
-      ASSERT( 0 );
-      break;
+      return;
     case QVariant::Int:
       writeEntry( pKey, prop.toInt(), bPersistent, bGlobal, bNLS );
-      break;
+      return;
+    case QVariant::UInt:
+      writeEntry( pKey, prop.toUInt(), bPersistent, bGlobal, bNLS );
+      return;
     case QVariant::Bool:
       writeEntry( pKey, prop.toBool(), bPersistent, bGlobal, bNLS );
-      break;
+      return;
     case QVariant::Double:
       writeEntry( pKey, prop.toDouble(), bPersistent, bGlobal, 'g', 6, bNLS );
-      break;
-    default:
-      ASSERT( 0 );
+      return;
+
+    case QVariant::Pixmap:
+    case QVariant::Image:
+    case QVariant::Brush:
+    case QVariant::Palette:
+    case QVariant::ColorGroup:
+    case QVariant::Map:
+    case QVariant::IconSet:
+    case QVariant::CString:
+    case QVariant::PointArray:
+    case QVariant::Region:
+    case QVariant::Bitmap:
+    case QVariant::Cursor:
+    case QVariant::SizePolicy:
+        break;
     }
+
+  ASSERT( 0 );
 }
 
 void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list,
@@ -1068,9 +1069,9 @@ void KConfigBase::writeEntry ( const char *pKey, const QStrList &list,
       uint i;
       QString value;
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
-      // A QStrList may contain values in 8bit locale cpecified 
+      // A QStrList may contain values in 8bit locale cpecified
       // encoding or in UTF8 encoding.
-      if (isUtf8(it.current())) 
+      if (isUtf8(it.current()))
         value = QString::fromUtf8(it.current());
       else
         value = QString::fromLocal8Bit(it.current());
