@@ -118,7 +118,8 @@ DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qu
     }
 
     // NAMESPACE_ERR: Raised if the qualifiedName is malformed.
-    if (Element::khtmlMalformedQualifiedName(qualifiedName)) {
+    // Added special case for the empty string, which seems to be a common pre-DOM2 misuse
+    if (!qualifiedName.isEmpty() && Element::khtmlMalformedQualifiedName(qualifiedName)) {
         exceptioncode = DOMException::NAMESPACE_ERR;
         return 0;
     }
@@ -137,7 +138,8 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
 {
     exceptioncode = 0;
 
-    if (!checkQualifiedName(qualifiedName, namespaceURI, 0, true/*nameCanBeNull*/, &exceptioncode) )
+    if (!checkQualifiedName(qualifiedName, namespaceURI, 0, true/*nameCanBeNull*/,
+                            true /*nameCanBeEmpty, see #61650*/, &exceptioncode) )
         return 0;
 
     DocumentTypeImpl *dtype = static_cast<DocumentTypeImpl*>(doctype.handle());
@@ -463,7 +465,8 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     ElementImpl *e = 0;
     int colonPos = -2;
     // check NAMESPACE_ERR/INVALID_CHARACTER_ERR
-    if (pExceptioncode && !checkQualifiedName(_qualifiedName, _namespaceURI, &colonPos, false/*nameCanBeNull*/,
+    if (pExceptioncode && !checkQualifiedName(_qualifiedName, _namespaceURI, &colonPos,
+                                              false/*nameCanBeNull*/, false/*nameCanBeEmpty*/,
                                               pExceptioncode))
         return 0;
     DOMString prefix, localName;
@@ -498,7 +501,8 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
 {
     int colonPos = -2;
     // check NAMESPACE_ERR/INVALID_CHARACTER_ERR
-    if (pExceptioncode && !checkQualifiedName(_qualifiedName, _namespaceURI, &colonPos, false/*nameCanBeNull*/,
+    if (pExceptioncode && !checkQualifiedName(_qualifiedName, _namespaceURI, &colonPos,
+                                              false/*nameCanBeNull*/, false/*nameCanBeEmpty*/,
                                               pExceptioncode))
         return 0;
     DOMString prefix, localName;

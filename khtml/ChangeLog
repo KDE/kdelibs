@@ -1,5 +1,10 @@
 2003-10-27  David Faure  <faure@kde.org>
 
+	* xml/dom_elementimpl.h (checkQualifiedName): Added bool nameCanBeEmpty,
+	and fixed again: DOM3 now says a null qualifiedName is allowed in createDocument.
+	* xml/dom_docimpl.cpp (createDocument): Pass nameCanBeEmpty=true, to
+	allow the commonly found implementation.createDocument("","",null); (#61650)
+
 	* html/html_elementimpl.cpp (HTMLElementImpl): Fixed wrong m_htmlCompat
 	value when parsing HTML in HTML-compat mode, get it from the doc's setting.
 	* xml/dom_docimpl.cpp (createElementNS): Always set m_htmlCompat, now that

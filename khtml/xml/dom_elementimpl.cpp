@@ -320,7 +320,9 @@ void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString
         return;
     }
     int colonPos;
-    if (!DOM::checkQualifiedName(qualifiedName, namespaceURI, &colonPos, false/*nameCanBeNull*/, &exceptioncode))
+    if (!DOM::checkQualifiedName(qualifiedName, namespaceURI, &colonPos,
+                                 false/*nameCanBeNull*/, false/*nameCanBeEmpty*/,
+                                 &exceptioncode))
         return;
     DOMString prefix, localName;
     splitPrefixLocalName(qualifiedName.implementation(), prefix, localName, colonPos);

@@ -280,18 +280,12 @@ protected:
 // ------------  inline DOM helper functions ---------------
 
 inline bool checkQualifiedName(const DOMString &qualifiedName, const DOMString &namespaceURI, int *colonPos,
-                               bool nameCanBeNull, int *pExceptioncode)
+                               bool nameCanBeNull, bool nameCanBeEmpty, int *pExceptioncode)
 {
 
-    // Not mentioned in spec: throw NAMESPACE_ERR if no qualifiedName supplied
-    if (!nameCanBeNull && qualifiedName.isNull()) {
-        if (pExceptioncode)
-            *pExceptioncode = DOMException::NAMESPACE_ERR;
-        return false;
-    }
-
     // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
-    if (!qualifiedName.isNull() && !Element::khtmlValidQualifiedName(qualifiedName)) {
+    if (!qualifiedName.isNull() && !Element::khtmlValidQualifiedName(qualifiedName)
+        && ( !qualifiedName.isEmpty() || !nameCanBeEmpty ) ) {
         if (pExceptioncode)
             *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return false;
