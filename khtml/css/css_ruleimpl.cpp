@@ -146,6 +146,19 @@ void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMS
     checkLoaded();
 }
 
+void CSSImportRuleImpl::error(int /*err*/, const QString &/*text*/)
+{
+    if ( m_styleSheet ) {
+        m_styleSheet->setParent(0);
+        m_styleSheet->deref();
+    }
+    m_styleSheet = 0;
+
+    m_loading = false;
+
+    checkLoaded();
+}
+
 bool CSSImportRuleImpl::isLoading()
 {
     return ( m_loading || (m_styleSheet && m_styleSheet->isLoading()) );
@@ -153,6 +166,7 @@ bool CSSImportRuleImpl::isLoading()
 
 void CSSImportRuleImpl::init()
 {
+    m_loading = 0;
     khtml::DocLoader *docLoader = 0;
     StyleBaseImpl *root = this;
     StyleBaseImpl *parent;

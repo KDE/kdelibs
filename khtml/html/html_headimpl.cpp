@@ -198,6 +198,10 @@ void HTMLLinkElementImpl::process()
                 m_isCSSSheet = true;
 		m_cachedSheet->ref(this);
             }
+            else {
+                // Error requesting sheet; decrement pending sheet count
+                getDocument()->styleSheetLoaded();
+            }
         }
     }
     else if (m_sheet) {

@@ -114,6 +114,7 @@ public:
 
     // from CachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+    virtual void error(int err, const QString &text);
 
     bool isLoading();
     virtual void init();
