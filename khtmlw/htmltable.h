@@ -156,9 +156,9 @@ public:
     virtual HTMLIterator *getIterator()
        { return totalRows ? new HTMLTableIterator( this ) : 0; }
   
-protected:
     enum ColType { Fixed, Percent, Variable };
 
+protected:
     void setCells( unsigned int r, unsigned int c, HTMLTableCell *cell );
     void calcColumnWidths();
     void calcColInfo();
