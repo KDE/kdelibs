@@ -4,21 +4,23 @@
 #include <stdio.h>
 
 static const char *version = "v0.0.2 1999 (c) Waldo Bastian";
-static const char *description ="This is a test program.";
+static const char *description = I18N_NOOP("This is a test program.");
 
 static KCmdLineOptions options[] =
 {
- { "-test", "do a short test only", 0 },
- { "-baud <baudrate>", "set baudrate", "9600" },
- { "file(s)", "Files to load", 0 },
+ { "test",		I18N_NOOP("do a short test only"), 0 },
+ { "baud <baudrate>",	I18N_NOOP("set baudrate"), "9600" },
+ { "+file(s)",		I18N_NOOP("Files to load"), 0 },
  { 0,0,0 }
 };
 
+#if 1
 int
 main(int argc, char *argv[])
 {
    KCmdLineArgs::init( argc, argv, "testapp", description, version);
-   KApplication::addCmdLineOptions(); // Add KDE and Qt specific options.
+
+   KApplication::addCmdLineOptions(); // Add Qt and KDE specific options.
    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
    // MyWidget::addCmdLineOptions();
@@ -27,7 +29,6 @@ main(int argc, char *argv[])
 
    // Get application specific arguments
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs(); 
-
    // Check if an option is set
    if (args->isSet("test"))
    {
@@ -40,12 +41,28 @@ main(int argc, char *argv[])
    
    printf("Baudrate = %s\n", baudrate.data());
 
+   for(int i = 0; i < args->count(); i++)
+   {
+      printf("%d: %s\n", i, args->arg(i));
+   }
+
    delete args; // Free up memory.
   
    
+//   k.exec();
+   return 0;
+}
+#else
+int
+main(int argc, char *argv[])
+{
+   KCmdLineArgs::init( argc, argv, "testapp", description, version);
+
+   KApplication k( true, true );
+
    k.exec();
    return 0;
 }
-
+#endif
 
 
