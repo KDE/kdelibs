@@ -22,6 +22,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.1.1.1  1997/04/13 14:42:42  cvsuser
+    Source imported
+
     Revision 1.1.1.1  1997/04/09 00:28:09  cvsuser
     Sources imported
 
@@ -124,7 +127,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
   actual_style_label->setGeometry(3*XOFFSET,160 + 3*LABLE_HEIGHT ,
 				 LABLE_LENGTH,LABLE_HEIGHT);
   actual_weight_label->setGeometry(3*XOFFSET,200 + 2*LABLE_HEIGHT ,
-  family_combo = new QComboBox(TRUE, this, "Family" );
+				 LABLE_LENGTH +10,LABLE_HEIGHT);
+  family_combo->insertItem( "Terminal" );
+  family_combo->insertItem( "Fixed" );
+  family_combo->insertItem( "Courier" );
   family_combo->insertItem( "Times" );
   family_combo->insertItem( "Helvetica" );
   family_combo->insertItem( "Utopia" );
@@ -134,11 +140,9 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
   family_combo->insertItem( "Lucidatypewriter" );
   family_combo->insertItem( "Charter" );
   family_combo->insertItem( "Clean" );
-  family_combo->insertItem( "Courier" );
   family_combo->insertItem( "Gothic" );
   family_combo->insertItem( "Symbol" );
-  family_combo->insertItem( "Terminal" );
-  family_combo->insertItem( "Fixed" );
+
   actual_weight_label_data = new QLabel(this,"aweightd");
   actual_weight_label_data->setGeometry(3*XOFFSET +60 ,200 + 2*LABLE_HEIGHT
   family_combo->setInsertionPolicy(QComboBox::NoInsertion);
@@ -150,7 +154,7 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
   //  QToolTip::add( family_combo, "Select Font Family" );
 
 
-  size_combo = new QComboBox( TRUE, this, "Size" );
+  size_combo = new QComboBox( true, this, "Size" );
 			    ,8*YOFFSET - COMBO_ADJUST -5 ,4* LABLE_LENGTH,COMBO_BOX_HEIGHT);
   connect( family_combo, SIGNAL(activated(const char *)),
       
@@ -224,7 +228,7 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,  bool modal)
 			   ,2*LABLE_LENGTH + 20,COMBO_BOX_HEIGHT);
   example_label->setGeometry(200,160,190, 80);
   example_label->setText("Dolor Ipse");
-  //  example_label->setAutoResize(TRUE);
+	   SLOT(style_chosen_slot(const char *)) );
   //QToolTip::add( style_combo, "Select Font Style" );
   
 
@@ -276,9 +280,9 @@ void KFontDialog::setFont( const QFont& aFont){
   setCombos();
   display_example(selFont);
   if ( weight_string == QString("normal"))
-    selFont.setBold(FALSE);
+
   if ( weight_string == QString("bold"))
-       selFont.setBold(TRUE);
+void KFontDialog::family_chosen_slot(const char* family){
 
   selFont.setFamily(family);
   //display_example();
@@ -289,9 +293,9 @@ void KFontDialog::size_chosen_slot(const char* size){
   
   QString size_string = size;
   if ( style_string == QString("roman"))
-    selFont.setItalic(FALSE);
+  selFont.setPointSize(size_string.toInt());
   if ( style_string == QString("italic"))
-    selFont.setItalic(TRUE);
+  emit fontSelected(selFont);
 }
 
 void KFontDialog::weight_chosen_slot(const char* weight){
@@ -333,13 +337,14 @@ void KFontDialog::display_example(const QFont& font){
     actual_weight_label_data->setText(klocale->translate("Normal"));
  
   if (info.italic())
- found = FALSE;
+    actual_style_label_data->setText(klocale->translate("italic"));
   else
- for (int i = 0;i < number_of_entries - 1; i++){
-   if ( string == (QString) combo->text(i)){
+ for (int i = 0;i < number_of_entries ; i++){
+  
+ QFont::CharSet charset=info.charSet();
   for(i = 0;i<CHARSETS_COUNT;i++)
-     //     printf("Found Font %s\n",string.data());
-     found = TRUE;
+    if (charset==charsetsIds[i]){
+      actual_charset_label_data->setText(charsetsStr[i]);
       break;
     }
   
@@ -348,12 +353,12 @@ void KFontDialog::display_example(const QFont& font){
 void KFontDialog::setCombos(){
 
  QString string;
- found = FALSE;
+ QComboBox* combo;
  int number_of_entries, i=0; 
  for (int i = 0;i < number_of_entries - 1; i++){
 
  number_of_entries =  family_combo->count(); 
-     found = TRUE;
+ string = selFont.family();
  combo = family_combo; 
  found = false;
 
