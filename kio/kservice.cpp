@@ -33,7 +33,7 @@
 #include <assert.h>
 
 #include <qstring.h>
-#include <qmsgbox.h>
+#include <qmessagebox.h>
 #include <qtl.h>
 
 #include <ksimpleconfig.h>

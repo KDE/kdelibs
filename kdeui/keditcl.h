@@ -28,7 +28,7 @@
 
 #include <qpopupmenu.h>
 #include <qstrlist.h>
-#include <qmultilinedit.h>
+#include <qmultilineedit.h>
 #include <qradiobutton.h>
 #include <qfiledialog.h>
 #include <qcheckbox.h>
