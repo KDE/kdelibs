@@ -679,11 +679,15 @@ bool KURL::operator==( const KURL& _u ) const
        m_strPass == _u.m_strPass &&
        m_strHost == _u.m_strHost &&
        m_strPath == _u.m_strPath &&
-       m_strPath_encoded == _u.m_strPath_encoded &&
+       // The encoded path may be null, but the URLs are still equal (David)
+       ( m_strPath_encoded.isNull() || _u.m_strPath_encoded.isNull() ||
+	 m_strPath_encoded == _u.m_strPath_encoded ) &&
        m_strQuery_encoded == _u.m_strQuery_encoded &&
        m_strRef_encoded == _u.m_strRef_encoded &&
        m_iPort == _u.m_iPort )
+  {
     return true;
+  }
 
   return false;
 }
