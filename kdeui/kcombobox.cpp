@@ -216,7 +216,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         }
     }
 
-    
+
     // wheel-scrolling changes the current item
     if ( type == QEvent::Wheel ) {
         if ( !listBox() || listBox()->isHidden() ) {
@@ -238,7 +238,7 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             return true;
         }
     }
-    
+
     return QComboBox::eventFilter( o, ev );
 }
 

@@ -271,8 +271,6 @@ public:
      */
     virtual void setCompletionObject( KCompletion *, bool hsig = true );
 
-    virtual void deleteWordForward();
-    virtual void deleteWordBack();
 
 signals:
 

@@ -25,7 +25,6 @@
 #include <qevent.h>
 #include <qstyle.h>
 
-#include <kdebug.h>
 #include <knotifyclient.h>
 
 #include "kcompletionbox.h"
