@@ -873,24 +873,34 @@ class HTMLBackground : public HTMLObject
 {
 public:
     HTMLBackground( KHTMLWidget *widget, HTMLString imageURL, 
-		    HTMLString _target );
+		    QColor& color );
+    HTMLBackground( KHTMLWidget *widget, QColor& color );
     virtual ~HTMLBackground();
 
-    // ####### seems to be unused, but possibly useful for jscript
     virtual void changeImage( HTMLString _url );
+    virtual void changeColor( QColor& );
 
     virtual void setPixmap( QPixmap * );
     virtual void pixmapChanged( QPixmap * = 0 );
 
     virtual HTMLString  getURL() const { return imageURL; }
-    virtual HTMLString  getTarget() const { return target; }
 
     virtual const char * objectName() const { return "HTMLBackground"; };
-    virtual void printDebug( bool, int indent, bool printObjects );
+    /**
+     * prints debug info to stdout
+     */
+    virtual void printDebug( bool propagate = false, int indent = 0,
+ 			     bool printObjects = false );
+
+    virtual int  getAbsX() { return 0; }
+    virtual int  getAbsY() { return 0; }
 
     bool isNull() { return pixmap == 0; };
+
+    void setBorder( int left, int right, int top, int bottom);
+
     bool print( QPainter *_painter, int _x, int _y, int _width,
-		int _height, int _tx, int _ty, int _x_offset, int _y_offset );
+		int _height, int _tx, int _ty, bool toPrinter );
 
 protected:
 
@@ -901,6 +911,7 @@ protected:
      * from the internet for example.
      */
     QPixmap *pixmap;
+    QColor bgColor;
 
     /**
      * The URL of this image.
@@ -909,12 +920,12 @@ protected:
     
     KHTMLWidget *htmlWidget;
     
-    /*
-     * The URL this image points to 
-     */
-    HTMLString target;
-
     bool bComplete;
+
+    int leftBorder;
+    int rightBorder;
+    int topBorder;
+    int bottomBorder;
 };
 
 //-----------------------------------------------------------------------------

@@ -275,7 +275,6 @@ KHTMLCachedImage::load( QString _f )
 	// well, this is the size of the compressed gif...
 	// ... but that's better than nothing
 	size = s;
-	delete formatType;
       }
     else
       {

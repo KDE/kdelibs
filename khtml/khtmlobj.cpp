@@ -1365,14 +1365,10 @@ void HTMLImage::changeImage( HTMLString _url )
 
 void HTMLImage::setPixmap( QPixmap *p )
 {
-  //    printf("KHTMLImage::setPixmap()\n");
     pixmap = p;
 
-//     printf("KHTMLImage::setPixmap(); width: %d, height: %d; lastWidth: %d, lastHeight: %d; URL: %s\n", 
-// 	   pixmap->width(), pixmap->height(), lastWidth, lastHeight, imageURL.string().latin1());
     if (width == 0)
         return; // setMaxSize has not yet been called. Do nothing.
-    //    printf("KHTMLImage::setPixmap() 1\n");
     if (  (
            (predefinedWidth) ||
            (percent != UNDEFINED) ||
@@ -1387,16 +1383,14 @@ void HTMLImage::setPixmap( QPixmap *p )
     {
 	// Image dimension are predefined or have not changed:
 	// draw ourselves.
-	htmlWidget->paintSingleObject( this );
-	//	printf("KHTMLImage::setPixmap() painted\n");
+      htmlWidget->paintSingleObject( this );
     }
     else
     {
         // Image dimensions have been changed, recalculate layout
 	htmlWidget->calcSize();
 	htmlWidget->calcAbsolutePos();
-        htmlWidget->scheduleUpdate( true );
-	//	printf("KHTMLImage::setPixmap() paint scheduled\n");
+	htmlWidget->scheduleUpdate();
     }
 }
 
@@ -1903,19 +1897,39 @@ HTMLAnchor* HTMLAnchor::findAnchor( QString _name, int &_x, int &_y )
 
 //-----------------------------------------------------------------------------
 
-HTMLBackground::HTMLBackground( KHTMLWidget *widget, HTMLString _url,
-				HTMLString _target)
+HTMLBackground::HTMLBackground( KHTMLWidget *widget, QColor& color)
     : HTMLObject()
 {
-    // Width is set in setMaxWidth()
     pixmap = 0;
+    bgColor = color;
     bComplete = true;
 
     htmlWidget = widget;
 
-    target = _target;
+    imageURL = 0;
+
+    leftBorder = 0;
+    rightBorder = 0;
+    topBorder = 0;
+    bottomBorder = 0;
+}
+
+HTMLBackground::HTMLBackground( KHTMLWidget *widget, HTMLString _url,
+				QColor& color)
+    : HTMLObject()
+{
+    pixmap = 0;
+    bgColor = color;
+    bComplete = true;
+
+    htmlWidget = widget;
 
     imageURL = _url;
+
+    leftBorder = 0;
+    rightBorder = 0;
+    topBorder = 0;
+    bottomBorder = 0;
 
     // A HTMLJSImage ?
     if ( !_url.length() )
@@ -1928,12 +1942,18 @@ HTMLBackground::HTMLBackground( KHTMLWidget *widget, HTMLString _url,
 
     printf("********* IMAGE %s ******\n",_url.string().latin1() );
 
-    htmlWidget->requestImage( this, imageURL );
+    if ( !imageURL.string().isNull() )
+      htmlWidget->requestImage( this, imageURL );
 }
 
 void HTMLBackground::changeImage( HTMLString _url )
 {
-  htmlWidget->imageCache()->free( imageURL, this);
+  if ( _url.string().isNull() )
+    return;
+
+  if ( !imageURL.string().isNull() )
+    htmlWidget->imageCache()->free( imageURL, this);
+
   imageURL = _url;
   pixmap = 0;
 
@@ -1941,15 +1961,16 @@ void HTMLBackground::changeImage( HTMLString _url )
   htmlWidget->requestImage( this, imageURL );
 }
 
+void HTMLBackground::changeColor( QColor& color )
+{
+  bgColor = color;
+}
+
 void HTMLBackground::setPixmap( QPixmap *p )
 {
-  //    printf("KHTMLImage::setPixmap()\n");
     pixmap = p;
 
-//     printf("KHTMLImage::setPixmap(); width: %d, height: %d; lastWidth: %d, lastHeight: %d; URL: %s\n", 
-// 	   pixmap->width(), pixmap->height(), lastWidth, lastHeight, imageURL.string().latin1());
-
-    htmlWidget->paintSingleObject( this );
+    htmlWidget->scheduleUpdate();
 }
 
 void HTMLBackground::pixmapChanged(QPixmap *p)
@@ -1958,44 +1979,74 @@ void HTMLBackground::pixmapChanged(QPixmap *p)
 	setPixmap( p );
 }
 
-bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, int _xoff, int _yoff, 
-			    int _x_offset, int _y_offset )
+bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, int _xoff, int _yoff, bool toPrint)
 {
   if ( !pixmap )
-    return false;
-
-  // if the background pixmap is transparent we must erase the bg
-  if ( pixmap->mask() )
-    _painter->eraseRect( _x - _xoff, _y - _yoff, _w, _h );
-  
-  int pw = pixmap->width();
-  int ph = pixmap->height();
-  
-  int xOrigin = _x/pw*pw - _x_offset%pw;
-  int yOrigin = _y/ph*ph - _y_offset%ph;
-  
-  _painter->setClipRect( _x - _xoff, _y - _yoff, _w, _h );
-  _painter->setClipping( TRUE );
-  
-  for ( int yp = yOrigin; yp < _y + _h; yp += ph )
     {
-      for ( int xp = xOrigin; xp < _x + _w; xp += pw )
-	{
-	  _painter->drawPixmap( xp - _xoff, yp - _yoff, *pixmap );
-	}
+      if( !bgColor.isValid() )
+	_painter->eraseRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder);
+      else
+	_painter->fillRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder, bgColor );
     }
-  
-  _painter->setClipping( FALSE );
+  else
+    {
+      // if the background pixmap is transparent we must erase the bg
+      if ( pixmap->mask() )
+	_painter->eraseRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder);
+      
+      int pw = pixmap->width();
+      int ph = pixmap->height();
+      
+      if ( !pw || !ph )
+	{
+	  // Height or width is 0 !
+	  // So better erase background and return;
+	  if( !bgColor.isValid() )
+	    _painter->eraseRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder);
+	  else
+	    _painter->fillRect( _x + _xoff - leftBorder, _y + _yoff - topBorder, _w + leftBorder, _h + topBorder, bgColor );
+	  return false;
+	}
+
+      int xOrigin = (_x - leftBorder)/pw*pw;
+      int yOrigin = (_y - topBorder)/ph*ph;
+      int yMax = _y + _h + topBorder;
+      int xMax = _x + _w + leftBorder;
+      int bXoff = _xoff - leftBorder;
+      int bYoff = _yoff - topBorder;
+
+      _painter->setClipRect( _x + bXoff, _y + bYoff, _w + leftBorder, _h + topBorder);
+      _painter->setClipping( TRUE );
+      
+      for ( int yp = yOrigin; yp < yMax; yp += ph )
+	{
+	  for ( int xp = xOrigin; xp < xMax; xp += pw )
+	    {
+	      _painter->drawPixmap( xp + bXoff, yp + bYoff, *pixmap );
+	    }
+	}
+      
+      _painter->setClipping( FALSE );
+    }
   return true;
 }
 
 HTMLBackground::~HTMLBackground()
 {
-   htmlWidget->imageCache()->free( imageURL, this );
+  htmlWidget->imageCache()->free( imageURL, this );
 }
 
 void
-HTMLBackground::printDebug( bool, int indent, bool printObjects )
+HTMLBackground::setBorder( int left, int right, int top, int bottom )
+{
+  leftBorder = left;
+  rightBorder = right;
+  topBorder = top;
+  bottomBorder = bottom;
+}
+
+void
+HTMLBackground::printDebug( bool propagate, int indent, bool printObjects )
 {
     // return if printing out the objects is not desired
     if(!printObjects) return;
@@ -2005,16 +2056,19 @@ HTMLBackground::printDebug( bool, int indent, bool printObjects )
     for( i=0; i<indent; i++)
 	printf(str.ascii());
 
-    QString aStr = imageURL;
-    if(aStr.length() > 20)
-    {
-	aStr.truncate(19);
-	str = aStr + "...";
-    } else
-	str = aStr;
-
+    if ( !imageURL.string().isNull() )
+      {
+	QString aStr = imageURL;
+	if(aStr.length() > 20)
+	  {
+	    aStr.truncate(19);
+	    str = aStr + "...";
+	  } else
+	    str = aStr;
+      }
+    
     printf("%s (\"%s \"/%dx%d)\n", objectName(), str.latin1(),
-		width, ascent);
+	   width, ascent);
 }
 
 //----------------------------------------------------------------------------

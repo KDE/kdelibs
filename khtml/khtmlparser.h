@@ -530,6 +530,12 @@ protected:
      * Memory allocator
      */
     HTMLAllocator *allocator;
+
+    /**
+     * HTMLBackground defines the background image and the 
+     * background color.
+     */
+    HTMLBackground* background;
 };
 
 #endif // HTMLPARSER_H

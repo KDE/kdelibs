@@ -565,18 +565,13 @@ public:
      * event when, for example, an image has been loaded and the document
      * has been layed out again.
      */
-    void scheduleUpdate( bool clear );
+    void scheduleUpdate();
 
     /**
      * Internal use - calculates the absolute position of the objects.
      */
     void calcAbsolutePos();
 
-
-    /*
-     * Set background image
-     */
-    void setBGImage( QString _url); 
 
     /*
      * Set background color
@@ -636,13 +631,6 @@ public:
      */
     void restore(SavedPage *);
 
-    /*
-     * draw background area
-     */
-    void drawBackground( int _x, int _y, int _w, int _h, QPainter *p = 0,
-			 int xoff = 0, int yoff = 0);
-
-  
 signals:
     /**
      * This signal is emitted whenever the Widget wants to
@@ -1050,8 +1038,6 @@ protected:
     int parseCount;
     int granularity;
 
-    HTMLBackground* bgPixmap;
-
     /*
      * This is the cusor to use when over a link
      */
@@ -1067,18 +1053,6 @@ protected:
      */
     HTMLSettings *settings; 
 	 
-    // should the background be painted?
-    bool bDrawBackground;
-
-    /*
-     * The URL of the not loaded!! background image
-     * If we are waiting for a background image then this is its URL.
-     * If the image is already loaded or if we don't have one this variable
-     * contains 0. You can write bgPixmapURL.isNull() to test wether we are
-     * waiting for a background pixmap.
-     */
-    QString bgPixmapURL;
-
     // List of forms in the page
     QList<HTMLForm> formList;
 

@@ -302,6 +302,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     target = HTMLString();
     url = HTMLString();
     inNoframes = false;
+    background = 0;
 
     flow = 0;
     frameSet = 0;
@@ -728,9 +729,16 @@ uint KHTMLParser::parseBody( HTMLClue *__clue, const uint *_end, bool toplevel )
 
     if ( toplevel)
     {
-	parseCount = granularity;
-	// Be sure to set the painter to the current font.
-        restoreFont();
+      if ( !background )
+	{
+	  background = NEW HTMLBackground( HTMLWidget, settings->bgColor);
+	  background->setBorder( leftBorder, rightBorder, topBorder, bottomBorder );
+	  _clue->append( background );
+	}
+
+      parseCount = granularity;
+      // Be sure to set the painter to the current font.
+      restoreFont();
     }
     if (plainText)
     {
@@ -1171,10 +1179,13 @@ void KHTMLParser::parseTagBody(void)
 	    QColor bgColor;
 	    setNamedColor( bgColor, token->value() );
 	    HTMLWidget->setBGColor( bgColor );
+	    background->changeColor( bgColor );
 	}
 	else if ( token->id == ATTR_BACKGROUND )
 	{
-	    HTMLWidget->setBGImage( token->value().string() );
+	  KURL kurl(HTMLWidget->getBaseURL(), token->value().string());
+
+	  background->changeImage(NEWSTRING(kurl.url()));
         }
 	else if ( token->id == ATTR_TEXT )
 	{

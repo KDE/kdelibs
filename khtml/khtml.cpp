@@ -112,7 +112,6 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     allocator     = 0;
     settings      = 0;
     colorContext  = 0;
-    bgPixmap      = 0;
     pressed       = false;
     //pressedURL    = "";
     //pressedTarget = "";
@@ -262,8 +261,6 @@ void KHTMLWidget::cancelAllRequests()
 
 void KHTMLWidget::data( QString _url, const char *_data, int _len, bool _eof )
 {
-  bool do_update = false;
-  
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( !p )
     return;
@@ -274,8 +271,7 @@ void KHTMLWidget::data( QString _url, const char *_data, int _len, bool _eof )
 
   HTMLFileRequester* o;
   for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
-    if ( o->fileLoaded( _url, p->m_buffer, _eof ) )
-      do_update = true;
+    o->fileLoaded( _url, p->m_buffer, _eof );
   
   if ( _eof )
     {    
@@ -284,13 +280,6 @@ void KHTMLWidget::data( QString _url, const char *_data, int _len, bool _eof )
   }
   else
     return;
-  
-  if ( do_update )
-  {
-    calcSize();
-    calcAbsolutePos();
-    scheduleUpdate( true );
-  }
   
   if ( mapPendingFiles.count() == 0 && !parser )
   {
@@ -735,9 +724,6 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
     
-    drawBackground( _pe->rect().x(), _pe->rect().y(),
-		    _pe->rect().width(), _pe->rect().height() );
-
     clue->print( painter, _pe->rect().x() - x_offset,
 	    _pe->rect().y() + y_offset - topBorder,
 	    _pe->rect().width(), _pe->rect().height(), tx, ty, false );
@@ -899,11 +885,6 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
     if ( ( absx = _obj->getAbsX() ) >= 0 )
     {
 	absy = _obj->getAbsY();
-/*
-	drawBackground( absx - x_offset + leftBorder,
-		absy - y_offset + topBorder,
-		_obj->getWidth(), _obj->getHeight() );
-*/
 	_obj->print( painter, absx - x_offset + leftBorder - _obj->getXPos(),
 	    absy - y_offset + topBorder - (_obj->getYPos()-_obj->getAscent()) );
     }
@@ -945,11 +926,6 @@ void KHTMLWidget::paint( HTMLChain *_chain, int x, int y, int w, int h )
 	int tx = -x_offset + leftBorder;
 	int ty = -y_offset + topBorder;
 
-	bool db = bDrawBackground;
-	bDrawBackground = true;
-	drawBackground( x, y, w, h );
-	bDrawBackground = db;
-
 	_chain->current()->print( painter, _chain, x + x_offset - leftBorder,
 		y + y_offset - topBorder, w, h, tx, ty );
     
@@ -962,26 +938,15 @@ void KHTMLWidget::paint( HTMLChain *_chain, int x, int y, int w, int h )
     }
 }
 
-void KHTMLWidget::scheduleUpdate( bool clear )
+void KHTMLWidget::scheduleUpdate()
 {
-    if ( clear )
-	bDrawBackground = true;
-
     if ( !updateTimer.isActive() )
-    {
-	bDrawBackground = clear;
-	updateTimer.start( 100, true );
-    }
+      updateTimer.start( 100, true );
 }
 
 void KHTMLWidget::slotUpdate()
 {
     repaint( false );
-
-    // If we aren't parsing anymore then the background should always be
-    // drawn.
-    if ( !parser )
-	bDrawBackground = true;
 }
 
 void KHTMLWidget::calcAbsolutePos()
@@ -1178,17 +1143,6 @@ void KHTMLWidget::begin( QString _url, int _x_offset, int _y_offset )
     emit scrollHorz( x_offset );
     emit scrollVert( y_offset );
     
-//     if ( !bgPixmapURL.isEmpty() )
-// 	emit cancelFileRequest( bgPixmapURL );
-//     bgPixmapURL = QString::null;
-    if ( bgPixmap )
-      {
-	if ( !bgPixmap->isNull() )
-	  emit cancelFileRequest( bgPixmap->getURL() );
-	delete bgPixmap;
-	bgPixmap = 0;
-      }
-    
     stopParser();
     
     reference = QString::null;
@@ -1318,13 +1272,7 @@ void KHTMLWidget::parse()
 
     parser = new KHTMLParser( this, ht, painter, settings, 0 /* &formData */, allocator );
 
-//     if ( !bgPixmap.isNull() )
-// 	bgPixmap.resize( -1, -1 );
-
-    // clear page
-    bDrawBackground = true;
     setBGColor( settings->bgColor );
-    drawBackground( 0, 0, width(), height() );
 
     // this will call timerEvent which in turn calls parseBody
     timerId = startTimer( TIMER_INTERVAL );
@@ -1399,7 +1347,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     // If the visible rectangle was not filled before the parsing and
     // if we have something to display in the visible area now then repaint.
     if ( lastHeight - y_offset < height() * 2 && docHeight() - y_offset > 0 )
-	scheduleUpdate( false );
+	scheduleUpdate();
 
     if (!reference.isNull())
     {
@@ -1477,7 +1425,6 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	}
 	if ( ( s = framesetList.getFirst() ) )
 	    s->setGeometry( 0, 0, width(), height() );
-	bDrawBackground = true;
     }
     else{
       /*** DEBUG ***/
@@ -1524,8 +1471,6 @@ void KHTMLWidget::slotScrollVert( int _val )
 
     if ( diff == 0 )
 	return;
-
-    bDrawBackground = true;
 
     if (bIsSelected)
     {
@@ -1579,8 +1524,6 @@ void KHTMLWidget::slotScrollHorz( int _val )
     if ( diff == 0)
 	return;
     
-    bDrawBackground = true;
-
     if (bIsSelected)
     {
         ofs = 2;
@@ -1628,51 +1571,6 @@ void KHTMLWidget::positionFormElements()
 	f->position( x_offset - leftBorder, y_offset - topBorder,
 	    width(), height() );
     }
-}
-
-void KHTMLWidget::drawBackground( int _x, int _y, int _w, int _h, QPainter *p,
-				  int xoff, int yoff)
-{
-    if ( !bDrawBackground && !p )
-	return;
-
-    if( !p )
-	p = painter;
-
-    //    if ( bgPixmap.isNull() )
-    if ( !bgPixmap )
-    {
-	if( !settings->bgColor.isValid() )
-	    p->eraseRect( _x - xoff, _y - yoff, _w, _h );
-	else
-	    p->fillRect( _x - xoff, _y - yoff, _w, _h, settings->bgColor );
-	return;
-    }
-    else
-      bgPixmap->print( p, _x, _y, _w, _h, xoff, yoff, x_offset, y_offset);
-
-// 	// if the background pixmap is transparent we must erase the bg
-// 	if ( bgPixmap.mask() )
-// 	    p->eraseRect( _x - xoff, _y - yoff, _w, _h );
-
-// 	int pw = bgPixmap.width();
-// 	int ph = bgPixmap.height();
-
-// 	int xOrigin = _x/pw*pw - x_offset%pw;
-// 	int yOrigin = _y/ph*ph - y_offset%ph;
-
-// 	p->setClipRect( _x - xoff, _y - yoff, _w, _h );
-// 	p->setClipping( TRUE );
-
-// 	for ( int yp = yOrigin; yp < _y + _h; yp += ph )
-// 	{
-// 		for ( int xp = xOrigin; xp < _x + _w; xp += pw )
-// 		{
-// 			p->drawPixmap( xp - xoff, yp - yoff, bgPixmap );
-// 		}
-// 	}
-
-// 	painter->setClipping( FALSE );
 }
 
 bool KHTMLWidget::gotoAnchor( )
@@ -2160,34 +2058,12 @@ void KHTMLWidget::setNewTitle( QString _title)
     emit setTitle( _title );
 }
      
-
-void KHTMLWidget::setBGImage( QString _url)
-{
-    KURL kurl( baseURL, _url );
-
-//     if ( kurl.protocol() == "file" )
-//     {
-//         bgPixmap.load( kurl.path() );
-//         scheduleUpdate( true );
-//     }
-//     else
-//     {
-//         requestBackgroundImage( kurl.url() );
-//     }
-
-    if ( bgPixmap )
-      delete bgPixmap;
-
-    bgPixmap = new(allocator) HTMLBackground( this, allocator->newString(kurl.url()), allocator->newString(""));
-}     
-
 void KHTMLWidget::setBGColor( const QColor &_bgColor)
 {
  
-    if ( bDrawBackground ||
-       settings->bgColor.red() != _bgColor.red() ||
-       settings->bgColor.green() != _bgColor.green() ||
-       settings->bgColor.blue() != _bgColor.blue() )
+    if (settings->bgColor.red() != _bgColor.red() ||
+	settings->bgColor.green() != _bgColor.green() ||
+	settings->bgColor.blue() != _bgColor.blue() )
     {
        settings->bgColor = _bgColor;
        QPalette pal = palette().copy();

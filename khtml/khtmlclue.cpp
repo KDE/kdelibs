@@ -521,7 +521,7 @@ bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
     for ( obj = head; obj != 0; obj = obj->next() )
     {
 	if ( !obj->isHAligned() )
-	{
+	  {
 	    if ( obj->print( _painter, _x - x, _y - (y - ascent),
 			_width, _height, _tx, _ty, toPrinter ) && toPrinter )
 	    return true;
@@ -1229,8 +1229,7 @@ HTMLClueV::printDebug( bool propagate, int indent, bool printObjects )
     HTMLObject *obj;
     indent++;
     for ( obj = head; obj != 0; obj = obj->next() )
-	obj->printDebug( propagate, indent, printObjects);
-
+      obj->printDebug( propagate, indent, printObjects);
 }
 
 //-----------------------------------------------------------------------------

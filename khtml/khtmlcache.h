@@ -190,7 +190,7 @@ public:
     
     /**
      * called from the KHTMLWidget to say that new data has arrived
-     * if eof it TRUE, the url is completely loaded.
+     * if eof is TRUE, the url is completely loaded.
      */
     virtual bool fileLoaded( QString _url, QBuffer &buffer, 
 			     bool eof = false);
