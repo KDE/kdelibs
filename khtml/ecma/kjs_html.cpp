@@ -264,7 +264,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       //return lookupOrCreateFunction<HTMLDocFunction,HTMLDocument>( exec, propertyName, this, entry );
       // Modified copy of lookupOrCreateFunction because the ctor needs 'doc'
       ValueImp * cachedVal = ObjectImp::getDirect(propertyName);
-      if (cachedVal && cachedVal->type() == ObjectType)
+      if (cachedVal)
         return cachedVal;
       Value val = new HTMLDocFunction(exec, doc, entry->value, entry->params);
       const_cast<HTMLDocument *>(this)->ObjectImp::put(exec, propertyName, val, entry->attr);
