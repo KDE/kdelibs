@@ -1,9 +1,11 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Simon Hausmann <hausmann@kde.org>
+ *           (C) 2001-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -120,6 +122,8 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                     state |= Qt::ShiftButton;
                 if ( e->altKey() )
                     state |= Qt::AltButton;
+                if ( e->metaKey() )
+                    state |= Qt::MetaButton;
 
                 if ( e->button() == 0 )
                     button = Qt::LeftButton;
@@ -197,9 +201,14 @@ void HTMLBRElementImpl::attach()
     assert(parentNode());
 
     if (parentNode()->renderer()) {
-        m_render = new RenderBR(this);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
+        RenderStyle* style = getDocument()->styleSelector()->styleForElement( this );
+        style->ref();
+        if( style->display() != NONE ) {
+          m_render = new RenderBR(this);
+          m_render->setStyle(style);
+          parentNode()->renderer()->addChild(m_render, nextRenderer());
+        }
+        style->deref();
     }
     NodeImpl::attach();
 }
@@ -217,29 +226,34 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SIZE:
     {
-        DOMString s = attr->value();
-        if(!s.isNull()) {
-            int num = s.toInt();
-            if ( *s.unicode() == '+' || *s.unicode() == '-' ) {
+        DOMStringImpl* v = attr->val();
+        if(v) {
+            const QChar* s = v->s;
+            int num = v->toInt();
+            int len = v->l;
+            while( len && s->isSpace() )
+              len--,s++;
+            if ( len && *s == '+' )
                 num += 3;
-            }
-            int size = 0;
+            int size;
             switch (num)
             {
-            case 1: size = CSS_VAL_X_SMALL; break;
-            case 2: size = CSS_VAL_SMALL;   break;
-            case 3: size = CSS_VAL_MEDIUM;  break;
-            case 4: size = CSS_VAL_LARGE;   break;
-            case 5: size = CSS_VAL_X_LARGE; break;
-            case 6: size = CSS_VAL_XX_LARGE;break;
+            case -1:
+            case  1: size = CSS_VAL_X_SMALL;  break;
+            case  2: size = CSS_VAL_SMALL;    break;
+            case  0: // treat 0 the same as 3, because people
+                     // expect it to be between -1 and +1
+            case  3: size = CSS_VAL_MEDIUM;   break;
+            case  4: size = CSS_VAL_LARGE;    break;
+            case  5: size = CSS_VAL_X_LARGE;  break;
+            case  6: size = CSS_VAL_XX_LARGE; break;
             default:
-                if (num >= 6)
+                if (num > 6)
                     size = CSS_VAL__KONQ_XXX_LARGE;
-                else if (num < 1)
+                else
                     size = CSS_VAL_XX_SMALL;
             }
-            if ( size )
-                addCSSProperty(CSS_PROP_FONT_SIZE, size);
+            addCSSProperty(CSS_PROP_FONT_SIZE, size);
         }
         break;
     }
