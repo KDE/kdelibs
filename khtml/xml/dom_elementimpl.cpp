@@ -520,9 +520,9 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
 void ElementImpl::attach()
 {
     if (!m_render)
-    {            
+    {
 #if SPEED_DEBUG < 2
-        setStyle(ownerDocument()->styleSelector()->styleForElement(this));        
+        setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 #if SPEED_DEBUG < 1
         if(_parent && _parent->renderer())
         {
@@ -534,7 +534,7 @@ void ElementImpl::attach()
         }
 #endif
 #endif
-    
+
     }
     NodeBaseImpl::attach();
 }
@@ -542,10 +542,11 @@ void ElementImpl::attach()
 void ElementImpl::detach()
 {
     NodeBaseImpl::detach();
-    if (m_render) {
-	m_render->remove();
-	m_render = 0;
-    }
+
+    if ( m_render )
+        m_render->detach();
+
+    m_render = 0;
 }
 
 void ElementImpl::recalcStyle()

@@ -178,7 +178,7 @@ void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 {
     if (!getDocument()->hasListenerType(DocumentImpl::DOMCHARACTERDATAMODIFIED_LISTENER))
 	return;
-	
+
     DOMStringImpl *newValue = str->copy();
     newValue->ref();
     int exceptioncode;
@@ -308,17 +308,18 @@ void TextImpl::attach()
             r->addChild(m_render, _next ? _next->renderer() : 0);
         }
     }
-    
+
     CharacterDataImpl::attach();
 }
 
 void TextImpl::detach()
 {
     CharacterDataImpl::detach();
-    if (m_render) {
-	m_render->remove();
-	m_render = 0;
-    }
+
+    if ( m_render )
+        m_render->detach();
+
+    m_render = 0;
 }
 
 void TextImpl::applyChanges(bool,bool force)

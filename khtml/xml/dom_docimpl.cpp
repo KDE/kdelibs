@@ -635,7 +635,7 @@ void DocumentImpl::recalcStyle()
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
         n->recalcStyle();
-    kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
+    //kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 }
 
 
@@ -727,10 +727,11 @@ void DocumentImpl::attach()
 void DocumentImpl::detach()
 {
     NodeBaseImpl::detach();
-    if (m_render) {
-	m_render->remove();
-	m_render = 0;
-    }
+
+    if ( m_render )
+        m_render->detach();
+
+    m_render = 0;
 }
 
 void DocumentImpl::slotFinishedParsing()
