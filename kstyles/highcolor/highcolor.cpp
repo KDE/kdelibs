@@ -177,6 +177,7 @@ HighColorStyle::HighColorStyle( StyleType styleType )
 	highcolor = (type == HighColor && QPixmap::defaultDepth() > 8);
 	gDict.setAutoDelete(true);
 	hoverWidget = 0L;
+	selectionBackground = false;
 }
 
 
@@ -197,6 +198,10 @@ void HighColorStyle::polish(QWidget* widget)
 	} else if ( !qstrcmp( widget->name(), kdeToolbarWidget) ) {
 		widget->setBackgroundMode( NoBackground );	// We paint the whole background.
 		widget->installEventFilter(this);
+	} else if (widget->inherits("QToolBoxButton")) {
+		QFont font = widget->font();
+		font.setBold(true);
+		widget->setFont(font);
 	}
 
 	KStyle::polish( widget );
@@ -1207,8 +1212,36 @@ void HighColorStyle::drawControl( ControlElement element,
 			break;
 		}
 
+#if (QT_VERSION-0 >= 0x030200)
+		// TOOLBOX TAB
+		// -------------------------------------------------------------------
+		case CE_ToolBoxTab:
+		{
+			bool pressed = flags & Style_Down;
+			bool selected = flags & Style_Selected;
+			int x, y, x2, y2;
+			r.coords( &x, &y, &x2, &y2 );
 
-#if (QT_VERSION-0 >= 0x030100)
+			p->setPen( pressed ? cg.shadow() : cg.light() );
+			p->drawLine( x, y, x2-1, y );
+			p->drawLine( x, y, x, y2-1 );
+
+			p->setPen( pressed ? cg.light() : cg.shadow() );
+			p->drawLine( x, y2, x2, y2 );
+			p->drawLine( x2, y, x2, y2 );
+
+			QColor fill = selected ? cg.highlight() : cg.button();
+			selectionBackground = selected;
+
+			if ( pressed )
+				p->fillRect( QRect(x+1, y+1, r.width()-2, r.height()-2), fill );
+			else
+				renderGradient(p, QRect(x+1, y+1, r.width()-2, r.height()-2),
+						fill, false);
+			break;
+		}
+#endif
+
 		// MENUBAR BACKGROUND
 		// -------------------------------------------------------------------
 		case CE_MenuBarEmptyArea:
@@ -1216,7 +1249,6 @@ void HighColorStyle::drawControl( ControlElement element,
 			renderGradient(p, r, cg.button(), false);
 			break;
 		}
-#endif
 
 		// MENUBAR ITEM (sunken panel on mouse over)
 		// -------------------------------------------------------------------
@@ -1694,6 +1726,33 @@ void HighColorStyle::drawComplexControlMask( ComplexControl control,
 		default:
 			KStyle::drawComplexControlMask(control, p, widget, r, opt);
 	}
+}
+
+
+void HighColorStyle::drawItem( QPainter *p,
+                               const QRect &r,
+                               int flags,
+                               const QColorGroup &cg,
+                               bool enabled,
+                               const QPixmap *pixmap,
+                               const QString &text,
+                               int len,
+                               const QColor *penColor ) const
+{
+	// We only reimplement this method this so we can override the
+	// text color used for widgets when we draw them with the selection
+	// color and Qt expects them to be drawn them with the button color.
+	// -------------------------------------------------------------------
+	const QColor *col;
+
+	if ( selectionBackground ) {
+		col = &cg.highlightedText();
+		selectionBackground = false;
+	} else
+		col = penColor;
+
+	KStyle::drawItem( p, r, flags, cg, enabled, pixmap,
+			text, len, col );
 }
 
 

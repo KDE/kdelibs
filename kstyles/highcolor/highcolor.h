@@ -115,10 +115,20 @@ class HighColorStyle : public KStyle
 					const QWidget *widget,
 					const QRect &r,
 					const QStyleOption& = QStyleOption::Default ) const;
-		
+
+		void drawItem( QPainter *p,
+		                const QRect &r,
+		                int flags,
+		                const QColorGroup &cg,
+		                bool enabled,
+		                const QPixmap *pixmap,
+		                const QString &text,
+		                int len = -1,
+		                const QColor *penColor = 0 ) const;
+
 		int pixelMetric( PixelMetric m, 
 					const QWidget *widget = 0 ) const;
-		
+
 		QSize sizeFromContents( ContentsType contents,
 					const QWidget *widget,
 					const QSize &contentSize,
@@ -134,7 +144,7 @@ class HighColorStyle : public KStyle
 
 	protected:
 		bool eventFilter( QObject *object, QEvent *event );
-		
+
 		void renderGradient( QPainter* p, 
 					const QRect& r, 
 					QColor clr,
@@ -144,9 +154,10 @@ class HighColorStyle : public KStyle
 					int pwidth=-1,
 					int pheight=-1 ) const;
 
-		QWidget    *hoverWidget;
-		StyleType   type;
-		bool        highcolor;
+		QWidget     *hoverWidget;
+		StyleType    type;
+		bool         highcolor;
+		mutable bool selectionBackground;
 
 	private:
 		// Disable copy constructor and = operator
