@@ -884,9 +884,11 @@ void RegressionTest::testStaticFile(const QString & filename)
         QImage baseline;
         baseline.load( m_baseDir + "/baseline/" + filename + "-dump.png", "PNG");
         QPixmap output = outputPixmap();
-        if ( !pixmapsSame( baseline, output ) ) {
+        if ( !pixmapsSame( baseline, output ) )
             output.save(m_baseDir + "/output/" + filename + "-dump.png", "PNG", 60);
-        }
+        else
+            ::unlink( QFile::encodeName( m_baseDir + "/output/" + filename + "-dump.png" ) );
+
 #endif
     }
 }
