@@ -1214,6 +1214,11 @@ InterfaceDef mergeAllParents(InterfaceDef& iface)
 	return result;
 }
 
+struct ForwardCode {
+	bool constructor;
+	string fullifacename, result, mname, params, callparams;
+};
+
 void doInterfacesHeader(FILE *header)
 {
 	list<InterfaceDef *>::iterator ii;
@@ -1221,6 +1226,7 @@ void doInterfacesHeader(FILE *header)
 	vector<AttributeDef *>::iterator ai;
 	string inherits;
 	NamespaceHelper nspace(header);
+	list<ForwardCode> forwardCode;
 
 	/*
 	 * this allows it to the various interfaces as parameters, returncodes
@@ -1241,6 +1247,7 @@ void doInterfacesHeader(FILE *header)
 	{
 		InterfaceDef *d = *ii;
 		string iname;
+		string fullifacename = d->name;
 
 		if(fromInclude(d->name)) continue; // should come from the include
 
@@ -1536,23 +1543,6 @@ void doInterfacesHeader(FILE *header)
 			iname.c_str(),iname.c_str());
 		// test for equality
 		fprintf(header,"\t\tif (_pool == target._pool) return *this;\n");
-		// Invalidate all parent caches
-		vector<std::string> parents = allParentsUnique(*d); // can repeat values
-		vector<std::string> done; // don't repeat values
-		// Loop through all the values
-		/*
-		for (vector<std::string>::iterator si = parents.begin(); si != parents.end(); si++)
-		{
-				// repeated value? (virtual public like merging...)
-				bool skipIt = false;
-				for (vector<std::string>::iterator di = done.begin(); di != done.end(); di++) {
-						if ((*di)==(*si)) {skipIt = true; break;}
-				}
-				if (skipIt) continue;
-				fprintf(header,"\t\t%s::cacheOK=false;\n",(*si).c_str());
-				done.push_back(*si);
-		}
-		*/
 		fprintf(header,"\t\t_pool->Dec();\n");
 		fprintf(header,"\t\t_pool = target._pool;\n");
 		fprintf(header,"\t\t_cache = target._cache;\n");
@@ -1560,6 +1550,8 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t\treturn *this;\n");
 		fprintf(header,"\t}\n");
 
+		// casts to parent interfaces
+		vector<string> parents = allParentsUnique(*d);
 		for (vector<std::string>::iterator si = parents.begin();
 												si != parents.end(); si++)
 		{
@@ -1567,14 +1559,7 @@ void doInterfacesHeader(FILE *header)
 			fprintf(header,"\tinline operator %s() const { return %s(*_pool); }\n",
 									s.c_str(), s.c_str());
 		}
-		//if(parents.empty()) /* no parents -> need to free pool self */
-		//{
-		//	fprintf(header,"\tinline ~%s() {\n",d->name.c_str());
-		//	fprintf(header,"\t\t_pool->Dec();\n");
-		//	fprintf(header,"\t}\n");
-		//}
-		// conversion to string
-//		fprintf(header,"\tinline std::string toString() const {return _method_call()->_toString();}\n");
+
 		// conversion to _base* object
 		fprintf(header,"\tinline %s_base* _base() {return _cache?_cache:_method_call();}\n",iname.c_str());
 		fprintf(header,"\n");
@@ -1586,21 +1571,38 @@ void doInterfacesHeader(FILE *header)
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
 		{
 			AttributeDef *ad = *ai;
-			string rc = createTypeCode(ad->type,"",MODEL_RESULT);
-			string pc = createTypeCode(ad->type,"newValue",MODEL_ARG);
+			ForwardCode fc;
+			fc.fullifacename = fullifacename;
+			fc.constructor = false;
+			fc.mname = ad->name;
 
 			if(ad->flags & attributeAttribute)
 			{
 				if(ad->flags & streamOut)  /* readable from outside */
 				{
-					assert(strcmp(rc.c_str(), "void"));
+					fc.params = "";
+					fc.callparams = "";
+					fc.result = createTypeCode(ad->type,"",MODEL_RESULT);
+					fprintf(header,"\tinline %s %s();\n",
+						fc.result.c_str(), fc.mname.c_str());
+					forwardCode.push_back(fc);
+					/*
 					fprintf(header,"\tinline %s %s() {return _cache?_cache->%s():_method_call()->%s();}\n",
 						rc.c_str(), ad->name.c_str(), ad->name.c_str(), ad->name.c_str());
+					*/
 				}
 				if(ad->flags & streamIn)  /* writeable from outside */
 				{
+					fc.params = createTypeCode(ad->type,"_newValue",MODEL_ARG);
+					fc.callparams = "_newValue";
+					fc.result="void";
+					fprintf(header,"\tinline void %s(%s);\n",
+						fc.mname.c_str(), fc.params.c_str());
+					forwardCode.push_back(fc);
+					/*
 					fprintf(header,"\tinline void %s(%s) {_cache?_cache->%s(newValue):_method_call()->%s(newValue);}\n",
 						ad->name.c_str(), pc.c_str(), ad->name.c_str(), ad->name.c_str());
+					*/
 				}
 			}
 		}
@@ -1609,27 +1611,65 @@ void doInterfacesHeader(FILE *header)
 		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
 		{
 			MethodDef *md = *mi;
-			string rc = createReturnCode(md);
-			string params = createParamList(md);
-			string callparams = createCallParamList(md);
+			ForwardCode fc;
+			fc.fullifacename = fullifacename;
+			fc.result = createReturnCode(md);
+			fc.params = createParamList(md);
+			fc.callparams = createCallParamList(md);
+			fc.constructor = (md->name == "constructor");
 
 			// map constructor methods to the real things
 			if (md->name == "constructor") {
-				fprintf(header,"\tinline %s(%s) : "
-					"Arts::Object(%s_base::_create()) {\n"
-					"\t\t_cache=(%s_base *)_pool->base->_cast(%s_base::_IID);\n"
-					"\t\tassert(_cache);\n"
-					"\t\t_cache->constructor(%s);\n\t}\n",
-					iname.c_str(), params.c_str(), iname.c_str(),
-					iname.c_str(), iname.c_str(), callparams.c_str());
+				fc.mname = iname;
+				fprintf(header,"\tinline %s(%s);\n",
+											iname.c_str(),fc.params.c_str());
 			} else {
-					fprintf(header,"\tinline %s %s(%s) {%s _cache?_cache->%s(%s):_method_call()->%s(%s);}\n",
-						rc.c_str(),	md->name.c_str(), params.c_str(),
-						(strcmp(rc.c_str(), "void")?"return":""),
-						md->name.c_str(), callparams.c_str(), md->name.c_str(), callparams.c_str());
+				fc.mname = md->name;
+				fprintf(header,"\tinline %s %s(%s);\n",fc.result.c_str(),
+											md->name.c_str(),fc.params.c_str());
 			}
+
+			forwardCode.push_back(fc);
 		}
 		fprintf(header,"};\n\n");
+	}
+
+	/*
+	 * Forwarding code. We have to do this here, as the classes may depend on
+	 * each other, e.g. an argument of one function are a SmartWrapper which is
+	 * declared later in the text.
+	 */
+	if(!forwardCode.empty())
+		fprintf(header,"// Forward wrapper calls to _base classes:\n\n");
+
+	list<ForwardCode>::iterator fi;
+	for(fi = forwardCode.begin(); fi != forwardCode.end(); fi++)
+	{
+		if(fi->constructor)
+		{
+			fprintf(header,"inline %s::%s(%s)\n", fi->fullifacename.c_str(),
+							fi->mname.c_str(), fi->params.c_str());
+			fprintf(header,"\t\t: Arts::Object(%s_base::_create())\n",
+				fi->mname.c_str());
+			fprintf(header,"{\n");
+			fprintf(header,"\t_method_call()->constructor(%s);\n",
+								fi->callparams.c_str());
+			fprintf(header,"}\n\n");
+		}
+		else
+		{
+			fprintf(header,"inline %s %s::%s(%s)\n",
+							fi->result.c_str(), fi->fullifacename.c_str(),
+							fi->mname.c_str(), fi->params.c_str());
+			fprintf(header,"{\n");
+			fprintf(header,"\t%s _cache?_cache->%s(%s):"
+									"_method_call()->%s(%s);\n",
+							fi->result=="void"?"":"return",
+							fi->mname.c_str(),fi->callparams.c_str(),
+							fi->mname.c_str(),fi->callparams.c_str());
+
+			fprintf(header,"}\n\n");
+		}
 	}
 }
 

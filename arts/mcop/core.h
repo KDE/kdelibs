@@ -389,10 +389,10 @@ public:
 	}
 	inline InterfaceRepo_base* _base() {return _cache?_cache:_method_call();}
 
-	inline long insertModule(const Arts::ModuleDef& newModule) {return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);}
-	inline void removeModule(long moduleID) { _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);}
-	inline Arts::InterfaceDef* queryInterface(const std::string& name) {return _cache?_cache->queryInterface(name):_method_call()->queryInterface(name);}
-	inline Arts::TypeDef* queryType(const std::string& name) {return _cache?_cache->queryType(name):_method_call()->queryType(name);}
+	inline long insertModule(const Arts::ModuleDef& newModule);
+	inline void removeModule(long moduleID);
+	inline Arts::InterfaceDef* queryInterface(const std::string& name);
+	inline Arts::TypeDef* queryType(const std::string& name);
 };
 
 class FlowSystemSender_base : virtual public Arts::Object_base {
@@ -488,7 +488,7 @@ public:
 	}
 	inline FlowSystemSender_base* _base() {return _cache?_cache:_method_call();}
 
-	inline void processed() { _cache?_cache->processed():_method_call()->processed();}
+	inline void processed();
 };
 
 class FlowSystemReceiver_base : virtual public Arts::Object_base {
@@ -584,7 +584,7 @@ public:
 	}
 	inline FlowSystemReceiver_base* _base() {return _cache?_cache:_method_call();}
 
-	inline long receiveHandlerID() {return _cache?_cache->receiveHandlerID():_method_call()->receiveHandlerID();}
+	inline long receiveHandlerID();
 };
 
 class FlowSystem_base : virtual public Arts::Object_base {
@@ -690,12 +690,12 @@ public:
 	}
 	inline FlowSystem_base* _base() {return _cache?_cache:_method_call();}
 
-	inline void startObject(Arts::Object node) { _cache?_cache->startObject(node):_method_call()->startObject(node);}
-	inline void stopObject(Arts::Object node) { _cache?_cache->stopObject(node):_method_call()->stopObject(node);}
-	inline void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) { _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) { _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline Arts::AttributeType queryFlags(Arts::Object node, const std::string& port) {return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
-	inline Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender) {return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
+	inline void startObject(Arts::Object node);
+	inline void stopObject(Arts::Object node);
+	inline void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort);
+	inline void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort);
+	inline Arts::AttributeType queryFlags(Arts::Object node, const std::string& port);
+	inline Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender);
 };
 
 class GlobalComm_base : virtual public Arts::Object_base {
@@ -795,9 +795,9 @@ public:
 	}
 	inline GlobalComm_base* _base() {return _cache?_cache:_method_call();}
 
-	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
-	inline std::string get(const std::string& variable) {return _cache?_cache->get(variable):_method_call()->get(variable);}
-	inline void erase(const std::string& variable) { _cache?_cache->erase(variable):_method_call()->erase(variable);}
+	inline bool put(const std::string& variable, const std::string& value);
+	inline std::string get(const std::string& variable);
+	inline void erase(const std::string& variable);
 };
 
 class TmpGlobalComm_base : virtual public Arts::GlobalComm_base {
@@ -892,10 +892,102 @@ public:
 	inline operator Arts::GlobalComm() const { return Arts::GlobalComm(*_pool); }
 	inline TmpGlobalComm_base* _base() {return _cache?_cache:_method_call();}
 
-	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
-	inline std::string get(const std::string& variable) {return _cache?_cache->get(variable):_method_call()->get(variable);}
-	inline void erase(const std::string& variable) { _cache?_cache->erase(variable):_method_call()->erase(variable);}
+	inline bool put(const std::string& variable, const std::string& value);
+	inline std::string get(const std::string& variable);
+	inline void erase(const std::string& variable);
 };
+
+// Forward wrapper calls to _base classes:
+
+inline long Arts::InterfaceRepo::insertModule(const Arts::ModuleDef& newModule)
+{
+	return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);
+}
+
+inline void Arts::InterfaceRepo::removeModule(long moduleID)
+{
+	 _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);
+}
+
+inline Arts::InterfaceDef* Arts::InterfaceRepo::queryInterface(const std::string& name)
+{
+	return _cache?_cache->queryInterface(name):_method_call()->queryInterface(name);
+}
+
+inline Arts::TypeDef* Arts::InterfaceRepo::queryType(const std::string& name)
+{
+	return _cache?_cache->queryType(name):_method_call()->queryType(name);
+}
+
+inline void Arts::FlowSystemSender::processed()
+{
+	 _cache?_cache->processed():_method_call()->processed();
+}
+
+inline long Arts::FlowSystemReceiver::receiveHandlerID()
+{
+	return _cache?_cache->receiveHandlerID():_method_call()->receiveHandlerID();
+}
+
+inline void Arts::FlowSystem::startObject(Arts::Object node)
+{
+	 _cache?_cache->startObject(node):_method_call()->startObject(node);
+}
+
+inline void Arts::FlowSystem::stopObject(Arts::Object node)
+{
+	 _cache?_cache->stopObject(node):_method_call()->stopObject(node);
+}
+
+inline void Arts::FlowSystem::connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort)
+{
+	 _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);
+}
+
+inline void Arts::FlowSystem::disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort)
+{
+	 _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);
+}
+
+inline Arts::AttributeType Arts::FlowSystem::queryFlags(Arts::Object node, const std::string& port)
+{
+	return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);
+}
+
+inline Arts::FlowSystemReceiver Arts::FlowSystem::createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender)
+{
+	return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);
+}
+
+inline bool Arts::GlobalComm::put(const std::string& variable, const std::string& value)
+{
+	return _cache?_cache->put(variable, value):_method_call()->put(variable, value);
+}
+
+inline std::string Arts::GlobalComm::get(const std::string& variable)
+{
+	return _cache?_cache->get(variable):_method_call()->get(variable);
+}
+
+inline void Arts::GlobalComm::erase(const std::string& variable)
+{
+	 _cache?_cache->erase(variable):_method_call()->erase(variable);
+}
+
+inline bool Arts::TmpGlobalComm::put(const std::string& variable, const std::string& value)
+{
+	return _cache?_cache->put(variable, value):_method_call()->put(variable, value);
+}
+
+inline std::string Arts::TmpGlobalComm::get(const std::string& variable)
+{
+	return _cache?_cache->get(variable):_method_call()->get(variable);
+}
+
+inline void Arts::TmpGlobalComm::erase(const std::string& variable)
+{
+	 _cache?_cache->erase(variable):_method_call()->erase(variable);
+}
 
 };
 #endif /* CORE_H */

@@ -43,12 +43,24 @@ class Object_stub;
 class FlowSystem;
 class MethodDef;
 class ObjectReference;
+class WeakReferenceBase;
 
 class Object_base : public NotificationClient {
 private:
 	bool _deleteOk;				// ensure that "delete" is not called manually
 
 protected:
+	/**
+	 * ObjectInternalData contains private data structures for
+	 *  - Object_base
+	 *  - Object_stub
+	 *  - Object_skel
+	 *
+	 * This is an optimization over adding each of them private data pointers,
+	 * which would lead to some more bloat.
+	 */
+	class ObjectInternalData *_internalData;
+
 	struct ObjectStreamInfo;
 
 	Object_base();
@@ -112,6 +124,9 @@ public:
 	virtual void _copyRemote() = 0;
 	virtual void _useRemote() = 0;
 	virtual void _releaseRemote() = 0;
+
+	void _addWeakReference(WeakReferenceBase *reference);
+	void _removeWeakReference(WeakReferenceBase *reference);
 
 	inline Object_base *_copy() {
 		assert(_refCnt > 0);

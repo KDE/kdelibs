@@ -23,11 +23,17 @@
 #include "object.h"
 #include "dispatcher.h"
 #include "flowsystem.h"
+#include "weakreference.h"
 #include <stdio.h>
 #include <iostream.h>
 
 using namespace std;
 using namespace Arts;
+
+class Arts::ObjectInternalData {
+public:
+	list<WeakReferenceBase *> weakReferences;
+};
 
 struct Object_base::ObjectStreamInfo {
 	string name;
@@ -51,6 +57,7 @@ long Object_base::_staticObjectCount = 0;
 Object_base::Object_base() :  _deleteOk(false), _scheduleNode(0), _nextNotifyID(1),
 							_refCnt(1)
 {
+	_internalData = new Arts::ObjectInternalData();
 	_staticObjectCount++;
 }
 
@@ -89,6 +96,11 @@ Object_base::~Object_base()
 	for(osii = _streamList.begin(); osii != _streamList.end(); osii++)
 		delete (*osii);
 
+	/* inform weak references that we don't exist any longer */
+	while(!_internalData->weakReferences.empty())
+		_internalData->weakReferences.front()->release();
+
+	delete _internalData;
 	_staticObjectCount--;
 }
 
@@ -220,6 +232,18 @@ vector<std::string> Object_base::_defaultPortsOut() const
 {
 	vector<std::string> ret;
 	return ret;
+}
+
+// Weak References
+
+void Object_base::_addWeakReference(WeakReferenceBase *b)
+{
+	_internalData->weakReferences.push_back(b);
+}
+
+void Object_base::_removeWeakReference(WeakReferenceBase *b)
+{
+	_internalData->weakReferences.remove(b);
 }
 
 /*
