@@ -48,7 +48,7 @@
 #include "debug.h"
 #include "audiosubsys.h"
 
-#define DEVICE_NAME "/dev/dsp"
+#define DEFAULT_DEVICE_NAME "/dev/dsp"
 
 using namespace std;
 using namespace Arts;
@@ -74,6 +74,7 @@ class Arts::AudioSubSystemPrivate
 public:
 	int requestedFragmentCount;
 	int requestedFragmentSize;
+	string deviceName;
 };
 
 //--- AudioSubSystem implementation
@@ -93,6 +94,7 @@ AudioSubSystem::AudioSubSystem() :_samplingRate(44100), _channels(2),
 {
 	d = new AudioSubSystemPrivate;
 
+	deviceName(DEFAULT_DEVICE_NAME);
 	fragmentCount(7);
 	fragmentSize(1024);
 
@@ -140,6 +142,16 @@ void AudioSubSystem::detachConsumer()
 	consumer = 0;
 
 	if(_running) close();
+}
+
+void AudioSubSystem::deviceName(const string& deviceName)
+{
+	d->deviceName = deviceName;
+}
+
+string AudioSubSystem::deviceName()
+{
+	return d->deviceName;
 }
 
 void AudioSubSystem::fragmentCount(int fragmentCount)
@@ -212,12 +224,12 @@ int AudioSubSystem::open()
 	else
 		mode = O_WRONLY|O_NDELAY;
 
-	audio_fd = ::open(DEVICE_NAME, mode, 0);
+	audio_fd = ::open(d->deviceName.c_str(), mode, 0);
 
 	if(audio_fd == -1)
 	{
 		_error = "device ";
-		_error += DEVICE_NAME;
+		_error += d->deviceName.c_str();
 		_error += " can't be opened (";
 		_error += strerror(errno);
 		_error += ")";

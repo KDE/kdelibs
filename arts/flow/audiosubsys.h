@@ -118,6 +118,10 @@ public:
 	void detachProducer();
 	void detachConsumer();
 
+	// which device to use for audio output (default /dev/dsp)
+	void deviceName(const string& deviceName);
+	string deviceName();
+
 	void fragmentSize(int size);
 	int fragmentSize();
 

@@ -58,6 +58,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-p <port>           set TCP port to use (implies -n)\n");
 	fprintf(stderr,"-u                  public, no authentication (dangerous!)\n");
 	fprintf(stderr,"-d                  enable full duplex operation\n");
+	fprintf(stderr,"-D <devicename>     audio device (usually /dev/dsp)\n");
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
 	fprintf(stderr,"-l <level>          information level\n");
@@ -72,11 +73,12 @@ static int  					cfgFragmentSize	= 0;
 static int  					cfgPort			= 0;
 static int  					cfgDebugLevel	= 1;
 static bool  					cfgFullDuplex	= 0;
+static const char			   *cfgDeviceName   = 0;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hdl:")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:")) > 0)
 	{
 		switch(optch)
 		{
@@ -88,6 +90,8 @@ static void handleArgs(int argc, char **argv)
 			case 'F': cfgFragmentCount = atoi(optarg);
 				break;
 			case 'S': cfgFragmentSize = atoi(optarg);
+				break;
+			case 'D': cfgDeviceName = optarg;
 				break;
 			case 'd': cfgFullDuplex = true;
 				break;
@@ -176,6 +180,7 @@ int main(int argc, char **argv)
 	if(cfgFragmentCount) AudioSubSystem::the()->fragmentCount(cfgFragmentCount);
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
 	if(cfgFullDuplex)	 AudioSubSystem::the()->fullDuplex(cfgFullDuplex);
+	if(cfgDeviceName)	 AudioSubSystem::the()->deviceName(cfgDeviceName);
 
 	if(!AudioSubSystem::the()->check())
 	{
