@@ -3,7 +3,8 @@
  %et.words;
 ]>
 <!--
-    This style sheet is a localisation extension to the DocBook HTML Stylesheet.
+    This style sheet is a localisation extension to the DocBook HTML 
+Stylesheet.
 
     Copyright (C) 2000 Frederik Fouvry
 
@@ -21,7 +22,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-    Send suggestions, comments, etc. to Frederik Fouvry <fouvry@sfs.nphil.uni-tuebingen.de>.
+    Send suggestions, comments, etc. to Frederik Fouvry 
+<fouvry@sfs.nphil.uni-tuebingen.de>.
 -->
 
 <STYLE-SHEET>
@@ -30,7 +32,7 @@
 
 (define %kde-gentext-et-home-url% "http://www.kde.org/")
 (define %kde-gentext-et-logo-alt% "K Töölaua Keskkond")
-(define %kde-gentext-et-encoding% "iso-8859-3")
+(define %kde-gentext-et-encoding% "iso-8859-1")
 (define %kde-gentext-et-html-header-tags% '())
 (define %kde-gentext-et-default% "&Default;")
 (define %kde-gentext-et-language% "&Estonian;")
@@ -39,3 +41,4 @@
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 </STYLE-SHEET>
+
