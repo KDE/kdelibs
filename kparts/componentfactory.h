@@ -8,13 +8,10 @@
 namespace KParts
 {
 
-    /**
-     * This class provides an easy way to instantiate a QObject based
-     * component. (TODO: more)
-     */
-    class ComponentFactory
+    // this is a namespace and not a class because stupid egcs 1.1.2 doesn't grok
+    // static template methods in classes. !@%@#$!
+    namespace ComponentFactory
     {
-    public:
         /**
          * This enum type defines the possible error cases that can happen
          * when loading a component.
