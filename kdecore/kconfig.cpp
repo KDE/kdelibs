@@ -43,7 +43,7 @@
 KConfig::KConfig( const QString& fileName,
                  bool bReadOnly, bool bUseKderc, const char *resType )
   : KConfigBase(), bGroupImmutable(false), bFileImmutable(false),
-    bForceGlobal(false)
+    bForceGlobal(false), bForceDefault(false)
 {
   // set the object's read-only status.
   setReadOnly(bReadOnly);
@@ -201,27 +201,52 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
     return;
 
   // now either add or replace the data
-  KEntry &entry = aEntryMap[_key];
-  if (entry.bImmutable)
-    return;
-
-  entry = _data;
-
-  entry.bGlobal |= bForceGlobal; // force to kdeglobals
-
-  if (_key.bDefault)
+  if (!bForceDefault)
   {
-     // We have added the data as default value,
-     // add it as normal value as well.
+     KEntry &entry = aEntryMap[_key];
+
+     if (entry.bImmutable)
+        return;
+
+     entry = _data;
+     entry.bGlobal |= bForceGlobal; // force to kdeglobals
+  }
+  
+  if (_key.bDefault || bForceDefault)
+  {
+     // Either:
+     // * We have added the data as default value
+     //   and now add it as normal value as well.
+     // Or:
+     // * We haven't added it at all 
+     //   and now force it as default.
+
      KEntryKey key(_key);
-     key.bDefault = false;
-     aEntryMap[key] = _data;
+     key.bDefault = bForceDefault;
+     KEntry &entry = aEntryMap[key];
+     if (entry.bImmutable)
+        return;
+     
+     entry = _data;
+     entry.bGlobal |= bForceGlobal; // force to kdeglobals
   }
 }
 
 KEntry KConfig::lookupData(const KEntryKey &_key) const
 {
-  KEntryMapConstIterator aIt = aEntryMap.find(_key);
+  KEntryMapConstIterator aIt;
+  if (!bForceDefault)
+  {
+    // This is the common path
+    aIt = aEntryMap.find(_key);
+  }
+  else
+  {
+    KEntryKey key(_key);
+    key.bDefault = true;
+    aIt = aEntryMap.find(key);
+  }
+  
   if (aIt != aEntryMap.end())
   {
     const KEntry &entry = *aIt;
