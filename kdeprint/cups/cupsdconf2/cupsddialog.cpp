@@ -220,13 +220,16 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 		else needUpload = true;
 	}
 
-	// check read state
-	QFileInfo	fi(fn);
-	if (!fi.exists() || !fi.isReadable() || !fi.isWritable())
-		errormsg = i18n("Internal error: file not readable/writable!");
-	// check file size
-	if (fi.size() == 0)
-		errormsg = i18n("Internal error: empty file!");
+	// check read state (only if needed)
+	if (!fn.isEmpty())
+	{
+		QFileInfo	fi(fn);
+		if (!fi.exists() || !fi.isReadable() || !fi.isWritable())
+			errormsg = i18n("Internal error: file not readable/writable!");
+		// check file size
+		if (fi.size() == 0)
+			errormsg = i18n("Internal error: empty file!");
+	}
 
 	if (!errormsg.isEmpty())
 	{

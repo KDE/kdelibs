@@ -194,6 +194,7 @@ cupsGetConf()
 
   if (status != HTTP_OK)
   {
+    close(fd);
     unlink(filename);
     httpFlush(cups_server);
     httpClose(cups_server);
