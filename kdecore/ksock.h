@@ -121,6 +121,10 @@ public:
      *
      * If you enable write mode, the socket will emit the signal
      * @ref writeEvent() whenever the socket is ready for writing.
+     *
+     * Warning: If you forget to call enableWrite(false) when you are
+     * not ready to send data, you will get lots of writeEvent() signals,
+     * in the order of thousands a second !
      */
     void enableWrite( bool );
     
@@ -143,6 +147,10 @@ signals:
      *
      * This signal will only be raised if @ref enableWrite( @p true ) was 
      * called first.
+     *
+     * Warning: If you forget to call enableWrite(false) when you are
+     * not ready to send data, you will get lots of writeEvent() signals,
+     * in the order of thousands a second !
      */
     void writeEvent( KSocket * );
     
