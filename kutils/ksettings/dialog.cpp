@@ -606,7 +606,6 @@ void Dialog::createDialogFromServices()
 void Dialog::configureTree()
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
-	// FIXME mem leak
 	ComponentsDialog * subdlg = new ComponentsDialog( d->dlg );
 	subdlg->setPluginInfos( d->plugininfomap );
 	subdlg->show();
@@ -616,6 +615,7 @@ void Dialog::configureTree()
 			SIGNAL( pluginSelectionChanged() ) );
 	connect( subdlg, SIGNAL( applyClicked() ), this,
 			SIGNAL( pluginSelectionChanged() ) );
+	connect( subdlg, SIGNAL( finished() ), subdlg, SLOT( delayedDestruct() ) );
 }
 
 void Dialog::updateTreeList()
