@@ -81,6 +81,13 @@ KService::init( KDesktopFile *config )
     m_bValid = false;
     return;
   }
+
+  // check if TryExec is valid
+  if (!config->tryExec()) {
+      m_bValid = false;
+      return;
+  }
+
   QString resource = config->resource();
 
   if ( (m_strType == "Application") &&
