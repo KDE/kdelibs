@@ -32,7 +32,7 @@ namespace KJS {
 
   class PropertyMapNode {
   public:
-    PropertyMapNode(UString &n, ValueImp *v, int att, PropertyMapNode *p)
+    PropertyMapNode(const UString &n, ValueImp *v, int att, PropertyMapNode *p)
       : name(n), value(v), attr(att), left(0), right(0), parent(p), height(1) {}
 
     UString name;
@@ -71,16 +71,16 @@ namespace KJS {
     PropertyMap();
     ~PropertyMap();
 
-    void put(UString name, ValueImp *value, int attr);
-    void remove(UString name);
-    ValueImp *get(UString name);
+    void put(const UString &name, ValueImp *value, int attr);
+    void remove(const UString &name);
+    ValueImp *get(const UString &name) const;
 
     void clear(PropertyMapNode *node = 0);
-    void dump(PropertyMapNode *node = 0, int indent = 0);
-    void checkTree(PropertyMapNode *node = 0);
+    void dump(const PropertyMapNode *node = 0, int indent = 0) const;
+    void checkTree(const PropertyMapNode *node = 0) const;
 
-    PropertyMapNode *getNode(const UString &name);
-    PropertyMapNode *first();
+    PropertyMapNode *getNode(const UString &name) const;
+    PropertyMapNode *first() const;
 
   private:
 

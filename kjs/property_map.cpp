@@ -115,9 +115,8 @@ int KJS::uscompare(const UString &s1, const UString &s2)
     return -1;
   else if (len1 > len2)
     return 1;
-  else {
-    return memcmp(s1.data(),s2.data(),len1*2);
-  }
+  else
+    return memcmp(s1.data(), s2.data(), len1*sizeof(UChar));
 }
 
 PropertyMap::PropertyMap()
@@ -129,11 +128,11 @@ PropertyMap::~PropertyMap()
 {
 }
 
-void PropertyMap::put(UString name, ValueImp *value, int attr)
+void PropertyMap::put(const UString &name, ValueImp *value, int attr)
 {
   // if not root; make the root the new node
   if (!root) {
-    root = new PropertyMapNode(name,value,attr,0);
+    root = new PropertyMapNode(name, value, attr, 0);
     return;
   }
 
@@ -141,7 +140,7 @@ void PropertyMap::put(UString name, ValueImp *value, int attr)
   PropertyMapNode *parent = root;
   int isLeft = false;
   while (true) {
-    int cmp = uscompare(name,parent->name);
+    int cmp = uscompare(name, parent->name);
     if (cmp < 0) {
       // traverse to left node (if any)
       isLeft = true;
@@ -170,11 +169,11 @@ void PropertyMap::put(UString name, ValueImp *value, int attr)
 
   if (isLeft) {
     //assert(!parent->left);
-    parent->left = new PropertyMapNode(name,value,attr,parent);
+    parent->left = new PropertyMapNode(name, value, attr, parent);
   }
   else {
     //assert(!parent->right);
-    parent->right = new PropertyMapNode(name,value,attr,parent);
+    parent->right = new PropertyMapNode(name, value, attr, parent);
   }
   updateHeight(parent);
 
@@ -187,7 +186,7 @@ void PropertyMap::put(UString name, ValueImp *value, int attr)
   }
 }
 
-void PropertyMap::remove(UString name)
+void PropertyMap::remove(const UString &name)
 {
   PropertyMapNode *node = getNode(name);
   if (!node) // name not in tree
@@ -198,9 +197,9 @@ void PropertyMap::remove(UString name)
     delete node;
 }
 
-ValueImp *PropertyMap::get(UString name)
+ValueImp *PropertyMap::get(const UString &name) const
 {
-  PropertyMapNode *n = getNode(name);
+  const PropertyMapNode *n = getNode(name);
   return n ? n->value : 0;
 }
 
@@ -220,7 +219,7 @@ void PropertyMap::clear(PropertyMapNode *node)
   delete node;
 }
 
-void PropertyMap::dump(PropertyMapNode *node, int indent)
+void PropertyMap::dump(const PropertyMapNode *node, int indent) const
 {
   if (!node && indent > 0)
     return;
@@ -230,16 +229,16 @@ void PropertyMap::dump(PropertyMapNode *node, int indent)
     return;
 
   assert(!node->right || node->right->parent == node);
-  dump(node->right,indent+1);
+  dump(node->right, indent+1);
   for (int i = 0; i < indent; i++) {
     printf("    ");
   }
-  printf("[%d] %s\n",node->height,node->name.ascii());
+  printf("[%d] %s\n", node->height, node->name.ascii());
   assert(!node->left || node->left->parent == node);
-  dump(node->left,indent+1);
+  dump(node->left, indent+1);
 }
 
-void PropertyMap::checkTree(PropertyMapNode *node)
+void PropertyMap::checkTree(const PropertyMapNode *node) const
 {
   if (!root)
     return;
@@ -267,7 +266,7 @@ void PropertyMap::checkTree(PropertyMapNode *node)
     checkTree(node->left);
 }
 
-PropertyMapNode *PropertyMap::getNode(const UString &name)
+PropertyMapNode *PropertyMap::getNode(const UString &name) const
 {
   PropertyMapNode *node = root;
 
@@ -275,7 +274,7 @@ PropertyMapNode *PropertyMap::getNode(const UString &name)
     if (!node)
       return 0;
 
-    int cmp = uscompare(name,node->name);
+    int cmp = uscompare(name, node->name);
     if (cmp < 0)
       node = node->left;
     else if (cmp > 0)
@@ -285,7 +284,7 @@ PropertyMapNode *PropertyMap::getNode(const UString &name)
   }
 }
 
-PropertyMapNode *PropertyMap::first()
+PropertyMapNode *PropertyMap::first() const
 {
   if (!root)
     return 0;
@@ -549,4 +548,3 @@ void PropertyMap::rotateLR(PropertyMapNode* &node)
   updateHeight(a);
   updateHeight(b);
 }
-
