@@ -62,6 +62,9 @@
 <!ENTITY traducteurPhillipDucharme    '<othercredit role="translator"><firstname>Phillip</firstname><surname>Ducharme</surname><affiliation><address><email>philip.ducharme@hermes.usherb.ca</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPhillipDucharme     '<othercredit role="reviewer"><firstname>Phillip</firstname><surname>Ducharme</surname><affiliation><address><email>philip.ducharme@hermes.usherb.ca</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurNicolasDupuis    '<othercredit role="translator"><firstname>Nicolas</firstname><surname>Dupuis</surname><affiliation><address><email>ndupuis@tiscali.be</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurNicolasDupuis     '<othercredit role="reviewer"><firstname>Nicolas</firstname><surname>Dupuis</surname><affiliation><address><email>ndupuis@tiscali.be</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurHeleneDuwelzRebert    '<othercredit role="translator"><firstname>Hélène</firstname><surname>Duwelz-Rebert</surname><affiliation><address><email>helened@herbalife.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurHeleneDuwelzRebert     '<othercredit role="reviewer"><firstname>Hélène</firstname><surname>Duwelz-Rebert</surname><affiliation><address><email>helened@herbalife.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -165,6 +168,7 @@
 <!ENTITY YvesDessertine    'Yves Dessertine <email>yves.d@hrnet.fr</email>'>
 <!ENTITY ChristopheDioux   'Christophe Dioux <email>chdioux@club-internet.fr</email>'>
 <!ENTITY PhillipDucharme   'Phillip Ducharme <email>philip.ducharme@hermes.usherb.ca</email>'>
+<!ENTITY NicolasDupuis     'Nicolas Dupuis <email>ndupuis@tiscali.be</email>'>
 <!ENTITY HeleneDuwelzRebert 'Hélène Duwelz-Rebert <email>helened@herbalife.com</email>'>
 <!ENTITY GuillaumeDuwelzRebert 'Guillaume Duwelz-Rebert <email>gduwelz-rebert.cs@clearstream.com</email>'>
 <!ENTITY SamiFantar          'Sami Fantar <email>sami.fantar@laposte.net</email>'>
