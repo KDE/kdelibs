@@ -550,6 +550,7 @@ KDockTabCtl::KDockTabCtl(QWidget *parent, const char *name)
   mainData = new QList<KDockTabCtl_Private>;
   mainData->setAutoDelete( true );
 
+  m_autoSetCaption = false;
   currentPage = 0L;
 
   stack = new QWidgetStack( this );
@@ -572,6 +573,7 @@ KDockTabCtl::~KDockTabCtl()
 
 int KDockTabCtl::insertPage( QWidget* widget , const QString &label, int id, int index )
 {
+  widget->installEventFilter(this);
   if ( id == -1 ){
     id = -1;
     for ( uint k = 0; k < mainData->count(); k++ )
@@ -717,9 +719,25 @@ void KDockTabCtl::removePage( QWidget* widget )
 
 bool KDockTabCtl::eventFilter( QObject* obj, QEvent* e )
 {
-  if ( e->type() == QEvent::LayoutHint ){
-    // change children min/max size
-    stack->updateGeometry();
+  if (obj==stack){
+    if ( e->type() == QEvent::LayoutHint ){
+      // change children min/max size
+      stack->updateGeometry();
+    }
+  } else {
+    QWidget* w = (QWidget*)obj;
+    switch (e->type()){
+      case QEvent::Destroy:
+      case QEvent::Close:
+        removePage(w);
+        break;
+      case QEvent::CaptionChange:
+        if (m_autoSetCaption)
+          setPageCaption(w,w->caption());
+        break;
+      default:
+        break;
+    }
   }
   return QWidget::eventFilter(obj,e);
 }

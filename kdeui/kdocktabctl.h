@@ -375,7 +375,7 @@ public:
    * Calls @ref KDockTabBar::setTabPos of its embedded tab bar but does layout actions, additionally.
    *
    */
-  void setTabPos( KDockTabBar::TabPos );
+  virtual void setTabPos( KDockTabBar::TabPos );
   
   /**
    * Returns the current tab position of its docktabbar.
@@ -422,6 +422,9 @@ public:
    */
   QString pageCaption( int id ){ return pageCaption( page(id) ); }
   
+  void captionAutoSet( bool autoSet ){ m_autoSetCaption = autoSet; }
+  bool isCaptionAutoSet() { return m_autoSetCaption; }
+
   /**
    * Sets an icon for the tab page (shown in the tab header).
    * 
@@ -704,6 +707,8 @@ protected:
    * The current tab position.
    */
   KDockTabBar::TabPos tabPos;
+
+  bool m_autoSetCaption;
 };
 
 #endif

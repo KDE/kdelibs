@@ -1215,7 +1215,8 @@ void KDockWidget::dockBack()
 	// else dockback to the dockmainwindow (default behaviour)
   manualDock( ((KDockMainWindow*)manager->main)->getMainDockWidget(), formerDockPos, d->splitPosInPercent, QPoint(0,0), false, d->index);
   formerBrotherDockWidget = 0L;
-  makeDockVisible();
+  if (parent())
+    makeDockVisible();
 }
 
 bool KDockWidget::isDockBackPossible()
