@@ -1413,7 +1413,9 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 
     if ( objId.isEmpty() || objId == "default" ) {
 	if ( !d->defaultObject.isEmpty() && DCOPObject::hasObject( d->defaultObject ) ) {
-	    if (DCOPObject::find( d->defaultObject )->process(fun, data, replyType, replyData))
+	    DCOPObject *objPtr = DCOPObject::find( d->defaultObject );
+	    objPtr->setCallingDcopClient(this);
+	    if (objPtr->process(fun, data, replyType, replyData))
 		return true;
 	}
 
@@ -1427,6 +1429,7 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	    DCOPObject::match(objId.left(objId.length()-1));
 	for (DCOPObject *objPtr = matchList.first();
 	     objPtr != 0L; objPtr = matchList.next()) {
+	    objPtr->setCallingDcopClient(this);
 	    if (!objPtr->process(fun, data, replyType, replyData))
 		return false;
 	}
@@ -1434,6 +1437,7 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
     } else if (!DCOPObject::hasObject(objId)) {
 	if ( DCOPObjectProxy::proxies ) {
 	    for ( QPtrListIterator<DCOPObjectProxy> it( *DCOPObjectProxy::proxies ); it.current();  ++it ) {
+	        // TODO: it.current()->setCallingDcopClient(this);
 		if ( it.current()->process( objId, fun, data, replyType, replyData ) )
 		    return true;
 	    }
@@ -1442,6 +1446,7 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 
     } else {
 	DCOPObject *objPtr = DCOPObject::find(objId);
+	objPtr->setCallingDcopClient(this);
 	if (!objPtr->process(fun, data, replyType, replyData)) {
 	    // obj doesn't understand function or some other error.
 	    return false;
@@ -1517,6 +1522,7 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
             replyData = QByteArray();
             if (fun.isEmpty())
                 return findSuccess(app, objPtr->objId(), replyType, replyData);
+            objPtr->setCallingDcopClient(this);
 	    if (objPtr->process(fun, data, replyType, replyData))
 		if (findResultOk(replyType, replyData))
                     return findSuccess(app, objPtr->objId(), replyType, replyData);

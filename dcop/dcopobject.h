@@ -230,6 +230,17 @@ public:
                              const QCString &signal,
                              const QCString &slot);
 
+  /**
+   * @returns during a DCOP call the DCOPClient responsible for making
+   * the call. This information is only guaranteed to be correct when 
+   * entering your DCOP function.
+   */
+  DCOPClient *callingDcopClient();
+
+  /**
+   * @internal Sets DCOPClient returned by @ref callingDcopClient()
+   */
+  void setCallingDcopClient(DCOPClient *);
 
   /**
    * @return true if an object with the questionable @p objId is

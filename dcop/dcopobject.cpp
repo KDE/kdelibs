@@ -38,9 +38,10 @@ class DCOPObject::DCOPObjectPrivate
 {
 public:
     DCOPObjectPrivate()
-        { m_signalConnections = 0; }
+        { m_signalConnections = 0; m_dcopClient = 0; }
 
     unsigned int m_signalConnections;
+    DCOPClient *m_dcopClient;
 };
 
 DCOPObject::DCOPObject()
@@ -82,6 +83,16 @@ DCOPObject::~DCOPObject()
 
     objMap()->remove(ident);
     delete d;
+}
+
+DCOPClient *DCOPObject::callingDcopClient()
+{
+    return d->m_dcopClient;
+}
+
+void DCOPObject::setCallingDcopClient(DCOPClient *client)
+{
+    d->m_dcopClient = client;
 }
 
 bool DCOPObject::setObjId(const QCString &objId)
