@@ -37,7 +37,7 @@ QString KIO::convertSize( unsigned long size )
     {
         fsize = (float) size / (float) 1073741824;
         if ( fsize > 1024 ) // Tera-byte
-            s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize / 1024, 1));
+            s = i18n( "%1 TB" ).arg( KGlobal::locale()->formatNumber(fsize / (float)1024, 1));
         else
             s = i18n( "%1 GB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
