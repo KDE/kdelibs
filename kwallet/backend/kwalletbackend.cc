@@ -274,6 +274,10 @@ int Backend::open(const QByteArray& password) {
 	QDataStream hds(&db);
 	size_t n;
 	hds >> n;
+	if (n > 0xffff) { // sanity check
+		return -43;
+	}
+
 	for (size_t i = 0; i < n; ++i) {
 		KMD5::Digest d, d2; // judgement day
 		MD5Digest ba;
