@@ -547,7 +547,7 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
         lst += path + fn;
     }
     closedir ( dp );
-    return lst;
+    return lst.sort();
 }
 
 KIconTheme *KIconLoader::theme()
@@ -622,14 +622,14 @@ QPixmap DesktopIcon(const QString& name, KInstance *instance)
 QIconSet DesktopIconSet(const QString& name, int force_size, KInstance *instance)
 {
     QIconSet iconset;
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	DesktopIcon(name, force_size, KIcon::ActiveState, instance) ,
 	QIconSet::Automatic, QIconSet::Active );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	DesktopIcon(name, force_size, KIcon::DisabledState, instance) ,
 	QIconSet::Automatic, QIconSet::Disabled );
-    iconset.setPixmap( 
-	DesktopIcon(name, force_size, KIcon::DefaultState, instance) , 
+    iconset.setPixmap(
+	DesktopIcon(name, force_size, KIcon::DefaultState, instance) ,
 	QIconSet::Automatic, QIconSet::Normal );
     return iconset;
 }
@@ -649,13 +649,13 @@ QPixmap BarIcon(const QString& name, KInstance *instance)
 QIconSet BarIconSet(const QString& name, int force_size, KInstance *instance)
 {
     QIconSet iconset;
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	BarIcon(name, force_size, KIcon::ActiveState, instance) ,
 	QIconSet::Automatic, QIconSet::Active );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	BarIcon(name, force_size, KIcon::DisabledState, instance) ,
 	QIconSet::Automatic, QIconSet::Disabled );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	BarIcon(name, force_size, KIcon::DefaultState, instance) ,
 	QIconSet::Automatic, QIconSet::Normal );
     return iconset;
@@ -676,13 +676,13 @@ QPixmap SmallIcon(const QString& name, KInstance *instance)
 QIconSet SmallIconSet(const QString& name, int force_size, KInstance *instance)
 {
     QIconSet iconset;
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	SmallIcon(name, force_size, KIcon::ActiveState, instance) ,
 	QIconSet::Automatic, QIconSet::Active );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	SmallIcon(name, force_size, KIcon::DisabledState, instance) ,
 	QIconSet::Automatic, QIconSet::Disabled );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	SmallIcon(name, force_size, KIcon::DefaultState, instance) ,
 	QIconSet::Automatic, QIconSet::Normal );
     return iconset;
@@ -703,13 +703,13 @@ QPixmap MainBarIcon(const QString& name, KInstance *instance)
 QIconSet MainBarIconSet(const QString& name, int force_size, KInstance *instance)
 {
     QIconSet iconset;
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	MainBarIcon(name, force_size, KIcon::ActiveState, instance) ,
 	QIconSet::Automatic, QIconSet::Active );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	MainBarIcon(name, force_size, KIcon::DisabledState, instance) ,
 	QIconSet::Automatic, QIconSet::Disabled );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	MainBarIcon(name, force_size, KIcon::DefaultState, instance) ,
 	QIconSet::Automatic, QIconSet::Normal );
     return iconset;
@@ -729,13 +729,13 @@ QPixmap UserIcon(const QString& name, KInstance *instance)
 QIconSet UserIconSet(const QString& name, KInstance *instance)
 {
     QIconSet iconset;
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	UserIcon(name, KIcon::ActiveState, instance) ,
 	QIconSet::Automatic, QIconSet::Active );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	UserIcon(name, KIcon::DisabledState, instance) ,
 	QIconSet::Automatic, QIconSet::Disabled );
-    iconset.setPixmap( 
+    iconset.setPixmap(
 	UserIcon(name, KIcon::DefaultState, instance) ,
 	QIconSet::Automatic, QIconSet::Normal );
     return iconset;
