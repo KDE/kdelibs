@@ -59,7 +59,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     connect( h, SIGNAL( sectionClicked(int)), SLOT(slotSortingChanged(int) ));
 
 
-    connect( this, SIGNAL( doubleClicked(QListViewItem *) ),
+    connect( this, SIGNAL( executed(QListViewItem *) ),
 	     SLOT( selected( QListViewItem *) ) );
     connect( this, SIGNAL( returnPressed(QListViewItem *) ),
 	     SLOT( selected( QListViewItem *) ) );
