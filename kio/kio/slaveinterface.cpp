@@ -149,9 +149,13 @@ public:
 
 SlaveInterface::SlaveInterface( Connection * connection )
 {
+    struct sigaction act;
     m_pConnection = connection;
     m_progressId = 0;
-    signal( SIGPIPE, sigpipe_handler );
+    act.sa_handler = sigpipe_handler;
+    sigemptyset( &act.sa_mask );
+    act.sa_flags = 0;
+    sigaction( SIGPIPE, &act, 0 );
 
     d = new SlaveInterfacePrivate;
     connect(&d->speed_timer, SIGNAL(timeout()), SLOT(calcSpeed()));
