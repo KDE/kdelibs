@@ -44,7 +44,7 @@ include_HEADERS = kautoconfig.h kconfig.h kconfigdata.h ksimpleconfig.h \
 	kallocator.h kvmallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
-	kaudioplayer.h kdcoppropertyproxy.h netwm.h \
+	kaudioplayer.h kdcoppropertyproxy.h netwm.h kaccelmanager.h \
 	netwm_def.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h kextendedsocket.h ksockaddr.h kprocio.h kasyncio.h \
 	kbufferedio.h kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
