@@ -97,6 +97,7 @@ private slots:
     void slotCurrentChanged();
     void slotURLActivated( const QString& );
     void slotNextDirToList( KFileTreeViewItem *dirItem );
+    void slotComboTextChanged( const QString& text );
 
 private:
     void readConfig( KConfig *config, const QString& group );

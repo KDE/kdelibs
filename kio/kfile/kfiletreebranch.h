@@ -138,6 +138,11 @@ public:
    bool childRecurse()
       { return m_recurseChildren; }
 
+   /**
+    * find the according KFileTreeViewItem by an url
+    */
+   virtual KFileTreeViewItem *findTVIByURL( const KURL& );
+
 public slots:
    /**
     * populates a branch. This method must be called after a branch was added
@@ -164,11 +169,6 @@ protected:
     */
    virtual KFileTreeViewItem *createTreeViewItem( KFileTreeViewItem *parent,
 						  KFileItem *fileItem );
-
-   /**
-    * find the according KFileTreeViewItem by an url
-    */
-   virtual KFileTreeViewItem *findTVIByURL( const KURL& );
 
 signals:
    /**

@@ -361,9 +361,6 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KURL& url )
       }
    }
 
-    if ( !resultItem ) // file not found? startDir not existant?
-        resultItem = m_root;
-
    return( resultItem );
 }
 
