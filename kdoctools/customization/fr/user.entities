@@ -143,6 +143,7 @@
 <!ENTITY cdrom          	'<hardware>lecteur de CD-ROM</hardware>'>
 <!ENTITY centreAide     	"<application>Centre d'aide de &kde;</application>">
 <!ENTITY centreConfiguration    '<application>Centre de configuration de &kde;</application>'>
+<!ENTITY centreInformation    '<application>Centre d'information de &kde;</application>'>
 <!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
 <!ENTITY dpi            	'<acronym>dpi</acronym>'>
 <!ENTITY Echap          	'<keycap>Échap</keycap>'>                               <!-- English: &Esc; -->
