@@ -18,19 +18,12 @@ class KSgiStyle : public KStyle
 
     bool eventFilter(QObject *obj, QEvent *ev);
 		
-		void drawFullShadeButton (QPainter *p, int x, int y, int w, int h,
-                    const QColorGroup &g, bool sunken = FALSE,
-                    const QBrush *fill = 0);
-		void drawPartShadeButton (QPainter *p, int x, int y, int w, int h,
-                    const QColorGroup &g, bool sunken = FALSE,
-                    const QBrush *fill = 0);								
 		void drawButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken = FALSE,
                     const QBrush *fill = 0 );
 		void drawPushButton(QPushButton *btn, QPainter *p);
 		QRect buttonRect (int x, int y, int w, int h);
-	/*	void drawButtonMask(QPainter *p, int x, int y, int w, int h);
-		*/
+
     void drawBevelButton(QPainter *p, int x, int y, int w, int h,
                          const QColorGroup &g, bool sunken = FALSE,
                          const QBrush *fill = 0 );
@@ -59,7 +52,7 @@ class KSgiStyle : public KStyle
                     const QColorGroup &g, Orientation orient, bool, bool);
 
 		void drawCheckMark( QPainter *p, int x, int y, int w, int h,
-									const QColorGroup &g, bool act, bool dis );
+									const QColorGroup &g, bool act = FALSE, bool dis = FALSE);
 									
 		void drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                                        int sliderStart, uint controls,
@@ -75,14 +68,22 @@ class KSgiStyle : public KStyle
 		int 	splitterWidth() const;
 		void	drawSplitter (QPainter *p, int x, int y, int w, int h,
 												const QColorGroup &g, Orientation);
-																	
-																	
+		void	drawPopupPanel(QPainter *p, int x, int y, int w, int h,
+			            	const QColorGroup &g,  int , const QBrush *fill );																	
+		void	drawPanel(QPainter *p, int x, int y, int w, int h,
+										 const QColorGroup &g, bool sunken, int , 
+										 const QBrush* fill);
+										 																
+	protected:
+		void drawFullShadeButton (QPainter *p, int x, int y, int w, int h,
+                    const QColorGroup &g, bool sunken = FALSE,
+                    const QBrush *fill = 0);
+		void drawPartShadeButton (QPainter *p, int x, int y, int w, int h,
+                    const QColorGroup &g, bool sunken = FALSE,
+                    const QBrush *fill = 0);								
+	
 	private:
-	
-		QWidget*	highlightWidget;
-		QPixmap*	checkPix;
-
-	
+		
 };
 
 #endif

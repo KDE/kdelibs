@@ -9,8 +9,13 @@
 
 #include <limits.h>
 
-#define SB_BORDER_WIDTH 1
+#define SB_BORDER_WIDTH 0
 #define SLIDER_MIN	16
+
+//--------------------------------------------------------------------
+//
+//	static defines
+//
 
 static const char * check_xpm[] = {
 "16 16 3 1",
@@ -55,27 +60,38 @@ static unsigned char uparrow_bits[] = {
   0x10, 0x00, 0x38, 0x00, 0x38, 0x00, 0x7c, 0x00, 0x7c, 0x00, 0xfe, 0x00,
   0xfe, 0x00, 0xff, 0x01, 0xff, 0x01};
 
+//--------------------------------------------------------------------
+//
+//	KSgiStyle - Contstructor
+//
+
       
 KSgiStyle::KSgiStyle()
 	:KStyle()
 {
-	highlightWidget = NULL;
-	
+ 	//
+	// set some default sizes
 	//
-	// Setup up pixmaps and bitmaps
-	//
-	checkPix = new QPixmap(check_xpm);
-	checkPix->setMask (QBitmap(16, 16, check_mask, true));
 	
-  setButtonDefaultIndicatorWidth(4);
 	setScrollBarExtent(19, 19);
 	
 }
 
+//--------------------------------------------------------------------
+//
+//	KSgiStyle - Destructor
+//
+
+      
+
 KSgiStyle::~KSgiStyle()
 {
-	delete checkPix;
 }
+
+//--------------------------------------------------------------------
+//
+//	polish - set up widget
+//
 
 void
 KSgiStyle::polish(QWidget *w)
@@ -84,20 +100,19 @@ KSgiStyle::polish(QWidget *w)
   	return;
 		
 	if(w->inherits("QButton")){
- //    w->installEventFilter(this);
-  //   QPalette pal = w->palette();
-     //
-		 // we use this as a flag since it's otherwise unused.
-     //
-		// pal.setColor(QColorGroup::Highlight, Qt::black);
-    // w->setPalette(pal);
-
+  	w->installEventFilter(this);
   } else if (w->inherits("QComboBox")) {
     w->installEventFilter(this);		
 	}
 
 }
 
+//--------------------------------------------------------------------
+//
+//	unpolish - un set up widget
+//
+
+      
 void 
 KSgiStyle::unPolish(QWidget *w)
 {
@@ -105,36 +120,43 @@ KSgiStyle::unPolish(QWidget *w)
   	return;
 
   if(w->inherits("QButton")){
-//    w->removeEventFilter(this);
-//    QPalette pal = w->palette();
- //   pal.setColor(QColorGroup::Highlight,
-   //                  kapp->palette().active().color(QColorGroup::Highlight));
-   // w->setPalette(pal);
-
+    w->removeEventFilter(this);
   } else if (w->inherits("QComboBox")) {
     w->removeEventFilter(this);		
 	}
 }
 
+//--------------------------------------------------------------------
+//
+//	eventFilter - style defined event filter. Used here to do 
+//								highlight on mouse over events
+//
+     
 bool
-KSgiStyle::eventFilter(QObject *obj, QEvent *ev)
+KSgiStyle::eventFilter(QObject*, QEvent*)
 {
+/*
+	static QPalette	palStore;
+	
 	if(obj->inherits("QButton")){
 		if (ev->type() == QEvent::Enter) {
-//        QWidget *btn = (QWidget *)obj;
- //       if (btn->isEnabled()){
- //     	QPalette pal = btn->palette();
- //       pal.setColor(QColorGroup::Highlight,
- //                    pal.active().color(QColorGroup::Midlight));
- //       btn->setPalette(pal);
- //       btn->repaint(false);
-//			}
+    	QWidget *btn = (QWidget *)obj;
+      if (btn->isEnabled()){
+     		QPalette pal = btn->palette();
+				palStore = pal;
+        pal.setColor(QColorGroup::Background,
+                     pal.active().color(QColorGroup::Midlight));
+        btn->setPalette(pal);
+        btn->repaint(false);
+
+			}
 		} else if (ev->type() == QEvent::Leave) {
-  //      QWidget *btn = (QWidget *)obj;
-    //    QPalette pal = btn->palette();
-   //     pal.setColor(QColorGroup::Highlight, Qt::black);
-   //     btn->setPalette(pal);
-    //   	btn->repaint(false);
+    	QWidget *btn = (QWidget *)obj;
+			QPalette pal = btn->palette();
+   		pal.setColor(QColorGroup::Highlight, 
+							palStore.active().color(QColorGroup::Background));
+   		btn->setPalette(pal);
+    	btn->repaint(false);
 		}
 	} else if (obj->inherits("QComboBox")) {
     if (ev->type() == QEvent::Enter) {
@@ -149,30 +171,24 @@ KSgiStyle::eventFilter(QObject *obj, QEvent *ev)
 		}
 	}
 	
+*/
 	return(false);
 }
 
+
+//--------------------------------------------------------------------
+//
+//	drawButton - used by various UI components to draw button-like things
+//
 
 void 
 KSgiStyle::drawButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken, const QBrush* fill)
 {
-
-//	printf ("dev type %d, painter %x, highlightWidget %x\n",
-//	p->device()->devType(),p->device(),highlightWidget);
+	QPen 	oldPen = p->pen();
+	int		x2 = x+w-1;
+	int 	y2 = y+h-1;
 	
-	QPen oldPen = p->pen();
-	int	x2 = x+w-1;
-	int y2 = y+h-1;
-	
-	
-//	if ((QWidget *) (p->device()) == highlightWidget) {
-//	 	 p->fillRect (x+3, y+3, w-6, h-6, g.midlight());
-//	} else if (g.highlight() != Qt::black && highlightWidget == NULL) {
-//		p->fillRect (x+3, y+3, w-6, h-6, g.highlight());
-//	} else {
-//		p->fillRect(x+3, y+3, w-6, h-6, g.brush(QColorGroup::Background));
-//	}
 	//
 	// draw outline
 	//
@@ -187,6 +203,11 @@ KSgiStyle::drawButton(QPainter *p, int x, int y, int w, int h,
 	
 	p->setPen(oldPen);
 }
+
+//--------------------------------------------------------------------
+//
+//	drawFullShadeButton - draws a button with 2 levels of shading
+//
 
 void
 KSgiStyle::drawFullShadeButton(QPainter *p, int x, int y, int w, int h,
@@ -227,6 +248,11 @@ KSgiStyle::drawFullShadeButton(QPainter *p, int x, int y, int w, int h,
 	
 	p->setPen(oldPen);
 }
+
+//--------------------------------------------------------------------
+//
+//	drawPartShadeButton - draws a button with 1 level of shading
+//
 
 void
 KSgiStyle::drawPartShadeButton(QPainter *p, int x, int y, int w, int h,
@@ -269,12 +295,24 @@ KSgiStyle::drawPartShadeButton(QPainter *p, int x, int y, int w, int h,
 	p->setPen(oldPen);
 }
 
+//--------------------------------------------------------------------
+//
+//	drawBevelButton - draws a simple beveled button, used in scroll
+//										lists
+//
+
 void 
 KSgiStyle::drawBevelButton( QPainter *p, int x, int y, int w, int h,
 				const QColorGroup &g, bool sunken, const QBrush* fill)
 {
     drawFullShadeButton(p, x, y, w, h, g, sunken, fill);
 }
+
+//--------------------------------------------------------------------
+//
+//	drawPushButton - draws a standard push button. This is the
+//									 implementation that QPushbutton would call.
+//
 
 void 
 KSgiStyle::drawPushButton(QPushButton *btn, QPainter *p)
@@ -284,35 +322,25 @@ KSgiStyle::drawPushButton(QPushButton *btn, QPainter *p)
     QColorGroup g = btn->colorGroup();
     
     drawButton(p, r.x(), r.y(), r.width(), r.height(), g, sunken);
-		
- /*  if(btn->isDefault()){
-        QPen oldPen = p->pen();
-
-				p->setPen(Qt::black);
-				p->setPen(Qt::DashLine);
-        p->drawLine(r.x()+1, r.y(), r.right()-1, r.y());
-        p->drawLine(r.x()+1, r.bottom(), r.right()-1, r.bottom());
-        p->drawLine(r.x(), r.y()+1, r.x(), r.bottom()-1);
-        p->drawLine(r.right(), r.y()+1, r.right(), r.bottom()-1);
-
-    		p->setPen (oldPen);
-		}
-*/
 }
 
+
+//--------------------------------------------------------------------
+//
+//	buttonRect - return area in a button available for text
+//
 
 QRect 
 KSgiStyle::buttonRect(int x, int y, int w, int h)
 {
     return(QRect(x+4, y+4, w-8, h-8));
 }
-/*
-void 
-KSgiStyle::drawButtonMask(QPainter *p, int x, int y, int w, int h)
-{
-    p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
-}
-*/
+
+//--------------------------------------------------------------------
+//
+// indicatorSize - return fixed size of an indicator
+//
+
 QSize
 KSgiStyle::indicatorSize() const
 {
@@ -320,24 +348,16 @@ KSgiStyle::indicatorSize() const
 }
 
 
+//--------------------------------------------------------------------
+//
+// drawIndicator - draws a standard indicator, called directly by
+//
+
 void
 KSgiStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
                                const QColorGroup &g, int state, bool down, bool)
 {
-//	static QPixmap arrowPix(arrow_xpm);
-//	static QBitmap arrowMask(16, 16, arrow_mask, true);
-//	arrowPix.setMask (arrowMask);
-	
-	p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));
 
-	if (w < h) {
-		y = h-w;
-		h = w;
-	} else {
-		x = w-h;
-		w = h;
-	}
-	
 	QPen oldPen = p->pen();
 	int	x2 = x+w-1;
 	int y2 = y+h-1;
@@ -352,22 +372,58 @@ KSgiStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
 	p->drawLine(x, y, x2, y);
 	p->drawLine(x, y, x, y2);
 	
-	drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, 0);
+	drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, down, &(g.brush(QColorGroup::Background)));
 	
 	p->setPen(oldPen);
 	
+	//
+	// red check mark
+	//
+	
 	if (state)
-		p->drawPixmap (0, 2, *checkPix);
+		drawCheckMark(p, 0, 2, 16, 16, g);
+//p->drawPixmap (0, 2, checkPix);
 	
 	
 }
 
+//--------------------------------------------------------------------
+//
+// drawCheckMark - draw red check mark
+//
+
+void 
+KSgiStyle::drawCheckMark( QPainter *p, int x, int y, int w, int h,
+									const QColorGroup&, bool, bool)
+{
+	static QPixmap checkPix(check_xpm);
+	static QBitmap checkMask(16, 16, check_mask, true);
+	
+	//
+	// This should only happen the first time through to set the mask
+	//
+	if (!checkPix.mask()) {
+		checkPix.setMask (checkMask);
+	}
+
+	p->drawPixmap (x+(w-16)/2, y+(h-16)/2, checkPix);
+}
+
+//--------------------------------------------------------------------
+//
+// exclusiveIndicatorSize - return fixed size of an exclusive indicator
+//
 
 QSize 
 KSgiStyle::exclusiveIndicatorSize() const
 {
 	return(QSize(16,16));
 }
+
+//--------------------------------------------------------------------
+//
+// drawExclusiveIndicator - draw a standard exclusive indicator
+//
 
 void
 KSgiStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w, int h,
@@ -405,31 +461,18 @@ KSgiStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w, int h,
 		p->drawLine(mx+1, y2-5, mx+4, y2-8);
 	}
 	
-/*
-	p->setPen(g.mid());
-	p->drawLine(x+1, my-1, mx-1, y-1);
-	p->drawLine(mx, y-1, x2-1, my-1);
-	
-	p->drawLine(x2, my, mx, y2);
-	p->drawLine(mx-1, y2, x, my);
-	p->
-	if (state) {
-	}
-	*/
 	p->setPen(oldPen);
 }
 
 QRect 
 KSgiStyle::comboButtonRect (int x, int y, int w, int h)
 {
-//	return(QRect(x+3, y+3, w - (h / 3) - 13, h-6));
 	return(QRect(x+4, y+4, w - 23, h-8));
 
 }		
 QRect 
 KSgiStyle::comboButtonFocusRect (int x, int y, int w, int h)
 {
-//	return(QRect(x+3, y+3, w - (h / 3) - 13, h-6));
 	return(QRect(x+4, y+4, w - 23, h-8));
 }
 
@@ -573,29 +616,22 @@ KSgiStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
 
 }
 void 
-KSgiStyle::drawCheckMark( QPainter *p, int x, int y, int w, int h,
-									const QColorGroup&, bool, bool)
-{
-	p->drawPixmap (x+(w-16)/2, y+(h-16)/2, *checkPix);
-}
-
-void 
 KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
-                                       int sliderStart, uint controls,
-                                       uint)
+                                  int sliderStart, uint controls, uint)
 {
-	int sliderMin, sliderMax, sliderLength, buttonDim;
-  QRect add, sub, addPage, subPage, slider;
-  int 				addX, addY, subX, subY;
+	int 				sliderMin, sliderMax, sliderLength, buttonDim;
+  QRect 			add, sub, addPage, subPage, slider; // rects for buttons & trough
+  int 				addX, addY, subX, subY;		// dimensions for buttons
   bool 				horizontal = sb->orientation() == QScrollBar::Horizontal;
   int 				len = (horizontal) ? sb->width() : sb->height();
   int 				extent = (horizontal) ? sb->height() : sb->width();
+	int					b = SB_BORDER_WIDTH;		// Optional border around scrollbar
   QColorGroup g = sb->colorGroup();
-
-	int 	w = sb->width();
-	int 	h = sb->height();
-	int		b = SB_BORDER_WIDTH;
 		
+	//
+	// find dimensions for scroll bar objects
+	//
+	
   scrollBarMetrics(sb, sliderMin, sliderMax, sliderLength, buttonDim);
   if(sliderStart > sliderMax)
         sliderStart = sliderMax;
@@ -603,12 +639,16 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
   int sliderEnd = sliderStart + sliderLength;
 	int	sliderWidth = extent - b*2;
 	
+	//
+	// compute bounding areas of individual controls
+	//
+	
   if(horizontal){
         subY = addY = (extent - buttonDim)/2;
         subX = b;
         addX = len - buttonDim - b;
 				
-        subPage.setRect(buttonDim+1, b, sliderStart-buttonDim-1, sliderWidth);
+        subPage.setRect(buttonDim+b, b, sliderStart-buttonDim-b, sliderWidth);
         addPage.setRect(sliderEnd, b, addX-sliderEnd, sliderWidth);
         slider.setRect(sliderStart, b, sliderLength, sliderWidth);
   } else { 
@@ -617,82 +657,72 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         addY = len-buttonDim-b;
 
  
-        subPage.setRect(b, buttonDim+1, sliderWidth, sliderStart-buttonDim-1);
+        subPage.setRect(b, buttonDim+b, sliderWidth, sliderStart-buttonDim-b);
         addPage.setRect(b, sliderEnd, sliderWidth, addY-sliderEnd);
         slider.setRect(b, sliderStart, sliderWidth, sliderLength);
   }
   
 	sub.setRect(subX, subY, buttonDim, buttonDim);
   add.setRect(addX, addY, buttonDim, buttonDim);
-
-	if (controls) {
-			p->setPen (g.mid());
-			p->drawLine(0, 0, w-2, 0);
-			p->drawLine(0, 0, 0, h-2);
-			p->setPen(g.background());
-			p->drawLine(w-1, 0, w-1, h-1);
-			p->drawLine(0, h-1, w-1, h-1);
-	}
+	
+	//
+	// Draw add line button
+	//
 		
   if(controls & AddLine){
   	if(add.isValid()){
-			if (horizontal) {
-				int x2 = add.x() + add.width()-1;
-				int y2 = add.y() + add.height()-1;
+			int x2 = add.x() + add.width()-1;
+			int y2 = add.y() + add.height()-1;
 				
+			p->setPen(Qt::black);
+			p->drawLine(add.x(), y2, x2, y2);
+			p->drawLine(x2, add.y(), x2, y2);
+			
+			if (horizontal) {
+				p->drawLine(add.x(), add.y(), x2, add.y());
 				p->setPen(g.dark());
 				p->drawLine(add.x(), add.y()+1, add.x(), y2-1);
-
-				p->setPen(Qt::black);
-				p->drawLine(add.x(), y2, x2, y2);
-				p->drawLine(add.x(), add.y(), x2, add.y());
-				p->drawLine(x2, add.y(), x2, y2);
-				drawFullShadeButton(p, add.x()+1, add.y()+1, add.width()-2, add.height()-2, g);
-			} else {
-				int x2 = add.x() + add.width()-1;
-				int y2 = add.y() + add.height()-1;
-				
+			} else {				
+				p->drawLine(add.x(), add.y(), add.x(), y2);
 				p->setPen(g.dark());
 				p->drawLine(add.x()+1, add.y(), x2-1, add.y());
-
-				p->setPen(Qt::black);
-				p->drawLine(add.x(), y2, x2, y2);
-				p->drawLine(add.x(), add.y(), add.x(), y2);
-				p->drawLine(x2, add.y(), x2, y2);
-				drawFullShadeButton(p, add.x()+1, add.y()+1, add.width()-2, add.height()-2, g);
  			}
 			
-	     drawScrollBarArrow(p, (horizontal) ? RightArrow : DownArrow, add.x()+4,
+			drawFullShadeButton(p, add.x()+1, add.y()+1, add.width()-2, add.height()-2, g);
+	    drawScrollBarArrow(p, (horizontal) ? RightArrow : DownArrow, add.x()+4,
                              add.y()+4, g);
-   }
+   	}
   }
-    
+  
+	//
+	// Draw subtract line button
+	//
+	  
 	if(controls & SubLine){
   	if(sub.isValid()){
 			int x2 = sub.x() + sub.width()-1;
 			int y2 = sub.y() + sub.height()-1;
-	 			
+	 		
+			//
+			// common outline between horizontal and vertical button
+			//
+				
+			p->setPen(Qt::black);
+			p->drawLine(sub.x(), sub.y(), x2, sub.y());
+			p->drawLine(sub.x(), sub.y(), sub.x(), y2);
+			
 			if (horizontal) {	
-				p->setPen(g.dark());
-				p->drawLine(x2, sub.y()+1, x2, y2);
-
-				p->setPen(Qt::black);
-				p->drawLine(sub.x(), sub.y(), x2, sub.y());
-				p->drawLine(sub.x(), sub.y(), sub.x(), y2);
 				p->drawLine(sub.x(), y2, x2, y2);
-				drawFullShadeButton(p, sub.x()+1, sub.y()+1, sub.width()-2, sub.height()-2, g);
+				p->setPen(g.dark());
+				p->drawLine(x2, sub.y()+1, x2, y2-1);
 			} else {
-					p->setPen(g.dark());
-				p->drawLine(sub.x()+1, y2, x2-1, y2);
-
-				p->setPen(Qt::black);
-				p->drawLine(sub.x(), sub.y(), x2, sub.y());
-				p->drawLine(sub.x(), sub.y(), sub.x(), y2);
 				p->drawLine(x2, sub.y(), x2, y2);
-				drawFullShadeButton(p, sub.x()+1, sub.y()+1, sub.width()-2, sub.height()-2, g);
+				p->setPen(g.dark());
+				p->drawLine(sub.x()+1, y2, x2-1, y2);
  			}
 			
-	     drawScrollBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+4,
+			drawFullShadeButton(p, sub.x()+1, sub.y()+1, sub.width()-2, sub.height()-2, g);
+	    drawScrollBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+4,
                              sub.y()+4, g);
     }
 	}
@@ -742,7 +772,7 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 			p->setPen(g.midlight());
 			p->drawLine(addPage.x(), addPage.y()+1, x2, addPage.y()+1);
 			p->setPen(g.mid());
-			p->drawLine(x2, addPage.y(), x2, y2-1);
+			p->drawLine(x2, addPage.y()+2, x2, y2-1);
 			p->drawLine(addPage.x(), y2-1, x2, y2-1);
 		} else {
 			p->fillRect(addPage.x()+2, addPage.y(), addPage.width()-4, addPage.height()-1,
@@ -759,6 +789,10 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 		}
  	}
 
+	//
+	// draw slider component
+	//
+	
 	if(controls & Slider){
   	if(slider.isValid() && slider.width() > 1 && slider.height() > 1){
 	   	if(horizontal){
@@ -814,11 +848,11 @@ KSgiStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
                                   int &sliderMax, int &sliderLength,
                                   int &buttonDim)
 {
-	int maxLength;
-  bool horizontal = sb->orientation() == QScrollBar::Horizontal;
-  int len = (horizontal) ? sb->width() : sb->height();
-  int extent = (horizontal) ? sb->height() : sb->width();
-	int	b = SB_BORDER_WIDTH;	// border around sbar
+	int 	maxLength;
+  bool 	horizontal 	= sb->orientation() == QScrollBar::Horizontal;
+  int 	len 				= (horizontal) ? sb->width() : sb->height();
+  int 	extent 			= (horizontal) ? sb->height() : sb->width();
+	int		b 					= SB_BORDER_WIDTH;	// border around sbar
 		
   if(len > (extent - 1)*2)
         buttonDim = extent - b*2;
@@ -928,4 +962,41 @@ KSgiStyle::drawSplitter( QPainter *p,  int x, int y, int w, int h,
 				  const QColorGroup &g,  Orientation)
 {
 	drawFullShadeButton( p, x, y, w, h, g );
+}
+
+//--------------------------------------------------------------------
+//
+//	drawPopupPanel - draws a popup panel, used for menus
+//
+
+void
+KSgiStyle::drawPopupPanel(QPainter *p, int x, int y, int w, int h,
+			            const QColorGroup &g,  int lineWidth, const QBrush *fill )
+{
+	QPen oldPen = p->pen();
+	p->setPen(Qt::black);
+	p->drawRect(x, y, w, h);
+	if (lineWidth <= 2) {
+		drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, 0, fill);
+	} else {
+		drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, 0, fill);
+	}		
+	p->setPen(oldPen);
+}
+
+//--------------------------------------------------------------------
+//
+//	drawPanel - draws a panel
+//
+
+void
+KSgiStyle::drawPanel(QPainter *p, int x, int y, int w, int h,
+										 const QColorGroup &g, bool sunken, 
+										 int lineWidth, const QBrush* fill)
+{
+	if (lineWidth <= 2) {
+		drawPartShadeButton(p, x, y, w, h, g, sunken, fill);
+	} else {
+		drawFullShadeButton(p, x, y, w, h, g, sunken, fill);
+	}
 }
