@@ -161,7 +161,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
     while ( (currItem = it.current()) != 0 )
     {
         parentItem = parentKFTVItem( currItem );
-        
+
 
         /* Only create a new KFileTreeViewItem if it does not yet exist */
         KFileTreeViewItem *newKFTVI =
@@ -300,6 +300,11 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
         }
 
         kdDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
+        if( m_lastFoundURL.equals(it->url(), true ))
+        {
+          m_lastFoundURL = KURL();
+          m_lastFoundItem = 0L;
+        }
         delete( kfti );
     }
     else
