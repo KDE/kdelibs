@@ -24,8 +24,9 @@ libkab_la_SOURCES	= \
 	PrintDialog.cpp \
 	PrintDialogData.cpp \
 	SearchDialog.cpp \
-	StringListDialog.cpp \
-	StringListDialogData.cpp \
+	StringListEditWidget.cpp \
+	StringListEditWidgetData.cpp \
+	StringListEditDialog.cpp \
 	addressbook.cc \
 	businesscard.cc \
 	datepickerdialog.cc \
@@ -44,9 +45,6 @@ libkab_la_SOURCES	= \
 	SearchDialogMainWidget.cpp \
 	SearchDialogMainWidgetData.cpp 
 
-#	StringListSelectOneDialogData.cpp
-#	StringListSelectSetDialogData.cpp
-
 include_HEADERS = \
 	stl_headers.h \
 	kabapi.h \
@@ -56,26 +54,7 @@ include_HEADERS = \
 	keyvaluemap.h \
 	sections.h
 
-#	PrintDialog.h \
-#	PrintDialogData.h \
-#	SearchDialog.h \
-#	SearchDialogData.h \
-#	StringListDialog.h \
-#	StringListDialogData.h \
-#	TalkDialog.h \
-#	TalkDialogData.h \
-#	businesscard.h \
-#	datepickerdialog.h \
-#	debug.h \
-#	editentry.h \
-#	searchresults.h \
-#	widgets.h
-
-# Usually I define MS_NANA_LIBS to "-lnana" if DEBUG is defined as a 
-# compiler directive.
 libkab_la_LIBADD  = -lqt -lXext -lX11 $(LIBSOCKET)
-
-# $(MS_NANA_LIBS)
 
 # just to make sure, automake makes them 
 BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
@@ -83,7 +62,6 @@ BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
 		DialogBase.moc DialogBaseData.moc \
 		SearchDialog.moc searchresults.moc \
 		editentry.moc datepickerdialog.moc businesscard.moc \
-		StringListDialog.moc StringListDialogData.moc \
 		StringListSelectOneDialog.moc \
 		StringListSelectSetDialog.moc \
 		StringListSelectAndReorderSet.moc \
@@ -91,9 +69,6 @@ BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
 		SearchDialogMainWidget.moc \
 		SearchDialogMainWidgetData.moc
 
-
-#		StringListSelectOneDialogData.moc
-#		StringListSelectSetDialogData.moc
 
 # if you "make distclean", this files get removed. If you want to remove
 # them while "make clean", use CLEANFILES
@@ -116,7 +91,9 @@ businesscard.cc:businesscard.moc
 SearchDialog.cpp: SearchDialog.moc 
 AddressBookAbout.cpp:AddressBookAbout.moc AddressBookAboutData.moc
 PrintDialog.cpp:PrintDialog.moc PrintDialogData.moc
-StringListDialog.cpp:StringListDialog.moc StringListDialogData.moc
+#StringListDialog.cpp:StringListDialog.moc StringListDialogData.moc
+StringListEditWidget.cpp:StringListEditWidget.moc StringListEditWidgetData.moc
+StringListEditDialog.cpp:StringListEditDialog.moc
 kabapi.cc:kabapi.moc
 StringListSelectOneDialog.cpp:StringListSelectOneDialog.moc
 StringListSelectSetDialog.cpp:StringListSelectSetDialog.moc 
