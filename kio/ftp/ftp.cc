@@ -80,14 +80,13 @@ Ftp::Ftp( const QCString &pool, const QCString &app )
   sControl = sData = sDatal = 0;
   m_bLoggedOn = false;
   m_bFtpStarted = false;
-  m_bPersistent = true;
   kdDebug(7102) << "Ftp::Ftp()" << endl;
 }
 
 
 Ftp::~Ftp()
 {
-  disconnect( true );
+  closeConnection();
 }
 
 #ifndef HAVE_MEMCCPY
@@ -222,15 +221,6 @@ void Ftp::closeConnection()
   //ready()
 }
 
-/*
- * disconnect from remote
- */
-void Ftp::disconnect( bool really )
-{
-  if ( !m_bPersistent || really )
-      closeConnection();
-}
-
 
 void Ftp::setHost( const QString& _host, int _port, const QString& _user, const QString& _pass )
 {
@@ -262,7 +252,7 @@ void Ftp::openConnection()
 
   assert( !m_bLoggedOn );
 
-  m_redirect = "";
+  m_initialPath = "";
 
   if (!connect( m_host, m_port ))
     return; // error emitted by connect
@@ -348,7 +338,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
 
 /**
  * Called by @ref openConnection. It logs us in.
- * @ref m_redirect is set to the current working directory
+ * @ref m_initialPath is set to the current working directory
  * if logging on was successfull.
  *
  * @return true on success.
@@ -381,10 +371,10 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
         // return false;
       }
       kdDebug(7102) << "New pass is '" << m_pass << "'" << endl;
-  
+
       tempbuf = "pass ";
       tempbuf += m_pass;
-  
+
       if ( !ftpSendCmd( tempbuf, '2' ) ) {
         kdDebug(7102) << "Wrong password" << endl;
         return false;
@@ -412,13 +402,6 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
   else
     kdWarning(7102) << "syst failed" << endl;
 
-  // No way to know this...
-  /*
-  // Not interested in the current working directory ? => return with success
-  if ( _redirect.isEmpty() )
-    return true;
-  */
-
   kdDebug(7102) << "Searching for pwd" << endl;
 
   // Get the current working directory
@@ -436,7 +419,7 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
   if ( p2 == 0L )
     return true;
   *p2 = 0;
-  m_redirect = p + 1; // Extract path
+  m_initialPath = p + 1; // Extract path
   return true;
 }
 
@@ -940,8 +923,11 @@ void Ftp::stat( const QString & path, const QString& /*query*/ )
   QCString tmp = "cwd ";
   tmp += path.latin1();
   if ( !ftpSendCmd( tmp, '\0' /* no builtin response check */ ) )
+  {
+    kdDebug(7102) << "stat: ftpSendCmd returned false" << endl;
     // error already emitted, if e.g. transmission failure
     return;
+  }
 
   if ( rspbuf[0] == '5' )
   {
@@ -1000,22 +986,21 @@ void Ftp::listDir( const QString & _path, const QString& /*query*/ )
      openConnection();
 
   QString path = _path;
-  // Did we get a redirect and did not we specify a path ourselves ?
-  kdDebug(7102) << "m_redirect: " << m_redirect << endl;
-  kdDebug(7102) << "path: " << path << endl;
-  if ( !m_redirect.isEmpty() && path.isEmpty() )
+  // No path specified ?
+  if ( path.isEmpty() )
   {
     KURL realURL( QString::fromLatin1("ftp:/") );
     if ( m_user != FTP_LOGIN )
       realURL.setUser( m_user );
-    // Setting the pass is probably a bad idea...
+    // Setting the passw is probably a bad idea...
     realURL.setHost( m_host );
     realURL.setPort( m_port );
-    realURL.setPath( m_redirect );
+    if ( m_initialPath.isEmpty() )
+        m_initialPath = "/";
+    realURL.setPath( m_initialPath );
     kdDebug(7102) << "REDIRECTION to " << realURL.url() << endl;
     redirection( realURL.url() );
-    path = m_redirect;
-    m_redirect = QString::null; // not again
+    path = m_initialPath;
   }
 
   kdDebug(7102) << "hunting for path '" << path << "'" << endl;
@@ -1077,7 +1062,10 @@ bool Ftp::ftpOpenDir( const QString & path )
   // don't use the path in the list command
   // we changed into this directory anyway ("cwd"), so it's enough just to send "list"
   if( !ftpOpenCommand( "list", 0L, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
+  {
+    kdWarning(7102) << "Can't open for listing" << endl;
     return false;
+  }
 
   dirfile = fdopen( sData, "r" );
   if( !dirfile )
@@ -1284,7 +1272,6 @@ bool Ftp::ftpCloseDir()
     fclose( dirfile );
     dirfile = 0L;
 
-    //disconnect();
   } else
     kdDebug(7102) << "ftpCloseDir but no dirfile ??" << endl;
   return true;

@@ -107,17 +107,8 @@ private:
   bool connect( const QString & host, unsigned short int port = 0 );
 
   /**
-   * The counterpart to @ref connect
-   * Does nothing if persistent connections are on
-   * except if @p really is true.
-   */
-  void disconnect( bool really = false );
-
- // virtual void redirection( const char* /* _url */ ) { }
-
-  /**
    * Called by @ref openConnection. It logs us in.
-   * @ref m_redirect is set to the current working directory
+   * @ref m_initialPath is set to the current working directory
    * if logging on was successfull.
    *
    * @return true on success.
@@ -243,7 +234,7 @@ private: // data members
   /**
    * Where we end up after connecting
    */
-  QString m_redirect;
+  QString m_initialPath;
 
   netbuf *nControl;
   char rspbuf[256];
