@@ -46,6 +46,7 @@ class QListboxItem;
 #include "dom/dom_misc.h"
 
 class KHTMLPartBrowserExtension;
+class KSpell;
 
 namespace DOM {
     class HTMLFormElementImpl;
@@ -385,11 +386,18 @@ protected slots:
 
 class TextAreaWidget : public KTextEdit
 {
+    Q_OBJECT
 public:
     TextAreaWidget(int wrap, QWidget* parent);
 
 protected:
     virtual bool event (QEvent *e );
+    virtual QPopupMenu *createPopupMenu(const QPoint &pos);
+
+protected slots:
+    void slotCheckSpelling();
+    void slotSpellCheckReady(KSpell *s);
+    void slotSpellCheckDone(const QString &s);
 };
 
 

@@ -28,6 +28,8 @@
 #include <kfiledialog.h>
 #include <kcompletionbox.h>
 #include <kcursor.h>
+#include <kspell.h>
+#include <kiconloader.h>
 
 #include <qstyle.h>
 
@@ -1195,6 +1197,31 @@ bool TextAreaWidget::event( QEvent *e )
         }
     }
     return KTextEdit::event( e );
+}
+
+QPopupMenu *TextAreaWidget::createPopupMenu( const QPoint &pos )
+{
+    QPopupMenu *m = KTextEdit::createPopupMenu( pos );
+    m->insertSeparator();
+    m->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), this, SLOT( slotCheckSpelling() ) );
+    return m;
+}
+
+void TextAreaWidget::slotCheckSpelling()
+{
+    (void) new KSpell( this, i18n( "Check Spelling" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true );
+}
+
+void TextAreaWidget::slotSpellCheckReady( KSpell *s )
+{
+    s->check( text() );
+    connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
+}
+
+void TextAreaWidget::slotSpellCheckDone( const QString &s )
+{
+    if( s != text() )
+	setText( s );
 }
 
 // -------------------------------------------------------------------------
