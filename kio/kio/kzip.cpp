@@ -37,8 +37,6 @@
 
 */
 
-// $Id$
-
 #include <qasciidict.h>
 #include <qfile.h>
 #include <qdir.h>
