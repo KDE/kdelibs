@@ -1654,8 +1654,10 @@ void KHTMLPart::checkCompleted()
   // check for a <link rel="SHORTCUT ICON" href="url to icon">,
   // IE extension to set an icon for this page to use in
   // bookmarks and the locationbar
-  if (!parentPart() && d->m_doc && d->m_doc->isHTMLDocument()) {
-    DOM::TagNodeListImpl links(d->m_doc, "LINK");
+  if (!parentPart() && d->m_doc && d->m_doc->isHTMLDocument()
+    && d->m_doc->firstChild() && d->m_doc->firstChild()->firstChild() &&
+    d->m_doc->firstChild()->firstChild()->id() == ID_HEAD) {
+    DOM::TagNodeListImpl links(d->m_doc->firstChild()->firstChild(), "LINK");
     for (unsigned long i = 0; i < links.length(); ++i)
       if (links.item(i)->isElementNode()) {
         DOM::ElementImpl *link = static_cast<DOM::ElementImpl *>(links.item(i));
@@ -2223,12 +2225,14 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
       emit setStatusBarText(mailtoMsg);
 			return;
-    } else if (u.protocol() == QString::fromLatin1("http")) {
+    }
+   // Is this check neccessary at all? (Frerich)
+#if 0
+    else if (u.protocol() == QString::fromLatin1("http")) {
         DOM::Node hrefNode = nodeUnderMouse().parentNode();
         while (hrefNode.nodeName().string() != QString::fromLatin1("A") && !hrefNode.isNull())
           hrefNode = hrefNode.parentNode();
 
-/*        // Is this check neccessary at all? (Frerich)
         if (!hrefNode.isNull()) {
           DOM::Node hreflangNode = hrefNode.attributes().getNamedItem("HREFLANG");
           if (!hreflangNode.isNull()) {
@@ -2242,8 +2246,9 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
                 + QString::fromLatin1("/flag.png")));
             emit setStatusBarText(flagImg + u.prettyURL() + extra);
           }
-        }*/
+        }
       }
+#endif
     emit setStatusBarText(u.prettyURL() + extra);
   }
 }
