@@ -342,7 +342,8 @@ static void readIcon(NETWinInfoPrivate *p) {
 	    buffer_offset += nitems_ret * sizeof(long);
 	    offset += nitems_ret;
 
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	} else {
 	    after_ret = 0;
 	}
@@ -1284,8 +1285,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    fprintf(stderr, "NETRootInfo::update: client list updated (%ld clients)\n",
 		    p->clients_count);
 #endif
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1338,7 +1339,8 @@ void NETRootInfo::update(unsigned long dirty) {
 		    nwindup(wins, p->kde_system_tray_windows_count);
 	    }
 
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1363,7 +1365,8 @@ void NETRootInfo::update(unsigned long dirty) {
 		    p->stacking_count);
 #endif
 
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1382,8 +1385,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    fprintf(stderr, "NETRootInfo::update: number of desktops = %d\n",
 		    p->number_of_desktops);
 #endif
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1416,8 +1419,8 @@ void NETRootInfo::update(unsigned long dirty) {
 		}
 #endif
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     } else {
 	int i;
@@ -1455,8 +1458,8 @@ void NETRootInfo::update(unsigned long dirty) {
 		}
 #endif
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     } else {
 	int i;
@@ -1479,8 +1482,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    fprintf(stderr, "NETRootInfo::update: current desktop = %d\n",
 		    p->current_desktop);
 #endif
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1508,8 +1511,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    fprintf(stderr, "NETRootInfo::update: desktop names array updated (%d entries)\n",
 		    p->desktop_names.size());
 #endif
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1526,8 +1529,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    fprintf(stderr, "NETRootInfo::update: active window = 0x%lx\n",
 		    p->active);
 #endif
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1554,8 +1557,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    fprintf(stderr, "NETRootInfo::update: work area array updated (%d entries)\n",
 		    p->workarea.size());
 #endif
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1577,7 +1580,8 @@ void NETRootInfo::update(unsigned long dirty) {
 		    if (type_ret == XA_STRING && format_ret == 8)
 			p->name = nstrdup((const char *) name_ret);
 
-		    XFree(name_ret);
+		    if ( data_ret )
+			XFree(name_ret);
 		}
 	    }
 
@@ -1586,8 +1590,8 @@ void NETRootInfo::update(unsigned long dirty) {
 		    "NETRootInfo::update: supporting window manager = '%s'\n",
 		    p->name);
 #endif
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -1611,8 +1615,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	    fprintf(stderr, "NETRootInfo::updated: virtual roots updated (%ld windows)\n",
 		    p->virtual_roots_count);
 #endif
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 }
@@ -2401,8 +2405,8 @@ void NETWinInfo::update(unsigned long dirty) {
 
 		p->mapping_state_dirty = False;
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -2449,8 +2453,8 @@ void NETWinInfo::update(unsigned long dirty) {
 			p->state |= StaysOnTop;
 		}
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret ) 
+		XFree(data_ret);
 	}
     }
 
@@ -2470,8 +2474,8 @@ void NETWinInfo::update(unsigned long dirty) {
 		if ( p->desktop == 0 )
 		    p->desktop = OnAllDesktops;
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -2485,7 +2489,8 @@ void NETWinInfo::update(unsigned long dirty) {
 		p->name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 
-	    XFree(data_ret);
+	    if( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -2500,7 +2505,8 @@ void NETWinInfo::update(unsigned long dirty) {
 		p->visible_name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 
-	    XFree(data_ret);
+	    if( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -2550,7 +2556,8 @@ void NETWinInfo::update(unsigned long dirty) {
 		}
 	    }
 
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -2567,8 +2574,8 @@ void NETWinInfo::update(unsigned long dirty) {
 		p->strut.top    = d[2];
 		p->strut.bottom = d[3];
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -2585,8 +2592,8 @@ void NETWinInfo::update(unsigned long dirty) {
 		p->icon_geom.size.width  = d[2];
 		p->icon_geom.size.height = d[3];
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -2606,8 +2613,8 @@ void NETWinInfo::update(unsigned long dirty) {
 		if ( p->kde_system_tray_win_for == 0 )
 		    p->kde_system_tray_win_for = p->root;
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
         }
     }
 
@@ -2623,8 +2630,8 @@ void NETWinInfo::update(unsigned long dirty) {
 		p->frame_strut.top    = d[2];
 		p->frame_strut.bottom = d[3];
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 
@@ -2636,8 +2643,8 @@ void NETWinInfo::update(unsigned long dirty) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
 		p->pid = *((long *) data_ret);
 	    }
-
-	    XFree(data_ret);
+	    if ( data_ret )
+		XFree(data_ret);
 	}
     }
 }
