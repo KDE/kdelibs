@@ -4156,7 +4156,7 @@ void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader 
 
    if ( !m_dcopClient->send( "kded", "kcookiejar", "addCookies(QString,QCString,long int)", params ) )
    {
-      kdWarning(7113) << "(" << m_pid << ") Can't communicate with cookiejar!" << endl;
+      kdWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!" << endl;
    }
 }
 
@@ -4175,7 +4175,7 @@ QString HTTPProtocol::findCookies( const QString &url)
   if ( !m_dcopClient->call( "kded", "kcookiejar", "findCookies(QString,long int)",
                             params, replyType, reply ) )
   {
-     kdWarning(7113) << "(" << m_pid << ") Can't communicate with cookiejar!" << endl;
+     kdWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!" << endl;
      return result;
   }
   if ( replyType == "QString" )
