@@ -24,15 +24,13 @@
 #include <kcombobox.h>
 
 /**
- * A combobox that lists the available fonts.
+ * @short A combobox that lists the available fonts.
  *
  * The items are painted using the respective font itself, so the user
  * can easily choose a font based on its look. This can be turned off
  * globally if the user wishes so.
  *
- * @short A combobox to choose a font
  * @author Malte Starostik <malte@kde.org>
- * @version $Id$
  */
 class KDEUI_EXPORT KFontCombo : public KComboBox
 {
