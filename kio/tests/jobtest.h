@@ -28,10 +28,18 @@ public:
     JobTest() {}
     void setup();
     void runAll();
+    void cleanup();
 
-    void copyFileToFile();
+    void copyFileToSamePartition();
+    void copyDirectoryToSamePartition();
+    void copyFileToOtherPartition();
+    void copyDirectoryToOtherPartition();
 
+private:
     QString homeTmpDir() const;
+    QString otherTmpDir() const;
+    void copyLocalFile( const QString& src, const QString& dest );
+    void copyLocalDirectory( const QString& src, const QString& dest );
 };
 
 #endif

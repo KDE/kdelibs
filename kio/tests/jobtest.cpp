@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
     JobTest test;
     test.setup();
     test.runAll();
+    test.cleanup();
     kdDebug() << "All tests OK." << endl;
     return 0; // success. The exit(1) in check() is what happens in case of failure.
 }
@@ -70,19 +71,37 @@ QString JobTest::homeTmpDir() const
     return QDir::homeDirPath() + "/.kde/jobtest/";
 }
 
+QString JobTest::otherTmpDir() const
+{
+    // This one needs to be on another partition
+    return "/tmp/jobtest/";
+}
+
 void JobTest::setup()
 {
     // Start with a clean base dir
-    KIO::NetAccess::del( homeTmpDir(), 0 );
+    cleanup();
     QDir dir; // TT: why not a static method?
     bool ok = dir.mkdir( homeTmpDir() );
     if ( !ok )
         kdFatal() << "Couldn't create " << homeTmpDir() << endl;
+    ok = dir.mkdir( otherTmpDir() );
+    if ( !ok )
+        kdFatal() << "Couldn't create " << otherTmpDir() << endl;
 }
 
 void JobTest::runAll()
 {
-    copyFileToFile();
+    copyFileToSamePartition();
+    copyDirectoryToSamePartition();
+    copyFileToOtherPartition();
+    copyDirectoryToOtherPartition();
+}
+
+void JobTest::cleanup()
+{
+    KIO::NetAccess::del( homeTmpDir(), 0 );
+    KIO::NetAccess::del( otherTmpDir(), 0 );
 }
 
 static void createTestFile( const QString& path )
@@ -94,29 +113,85 @@ static void createTestFile( const QString& path )
     f.close();
 }
 
-void JobTest::copyFileToFile()
+static void createTestDirectory( const QString& path )
 {
-    // setup
-    QString filePath = homeTmpDir() + "fileFromHome";
-    QString dest = homeTmpDir() + "destFile";
-    createTestFile( filePath );
+    QDir dir;
+    bool ok = dir.mkdir( path );
+    if ( !ok )
+        kdFatal() << "couldn't create " << path << endl;
+    createTestFile( path + "/testfile" );
+}
+
+void JobTest::copyLocalFile( const QString& src, const QString& dest )
+{
     KURL u;
-    u.setPath( filePath );
+    u.setPath( src );
     KURL d;
     d.setPath( dest );
 
-    // test
-    bool ok = KIO::NetAccess::file_copy( filePath, dest );
+    // copy the file with file_copy
+    bool ok = KIO::NetAccess::file_copy( u, d );
     assert( ok );
     assert( QFile::exists( dest ) );
-    assert( QFile::exists( filePath ) ); // still there
+    assert( QFile::exists( src ) ); // still there
 
-    // cleanup and retry with copy()
+    // cleanup and retry with KIO::copy()
     QFile::remove( dest );
-    ok = KIO::NetAccess::copy( filePath, dest, 0 );
+    ok = KIO::NetAccess::dircopy( u, d, 0 );
     assert( ok );
     assert( QFile::exists( dest ) );
-    assert( QFile::exists( filePath ) ); // still there
-
+    assert( QFile::exists( src ) ); // still there
 }
 
+void JobTest::copyLocalDirectory( const QString& src, const QString& dest )
+{
+    assert( QFileInfo( src ).isDir() );
+    assert( QFileInfo( src + "/testfile" ).isFile() );
+    KURL u;
+    u.setPath( src );
+    KURL d;
+    d.setPath( dest );
+
+    bool ok = KIO::NetAccess::dircopy( u, d, 0 );
+    assert( ok );
+    assert( QFile::exists( dest ) );
+    assert( QFileInfo( dest ).isDir() );
+    assert( QFileInfo( dest + "/testfile" ).isFile() );
+    assert( QFile::exists( src ) ); // still there
+}
+
+void JobTest::copyFileToSamePartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    const QString dest = homeTmpDir() + "fileFromHome_copied";
+    createTestFile( filePath );
+    copyLocalFile( filePath, dest );
+}
+
+void JobTest::copyDirectoryToSamePartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString src = homeTmpDir() + "dirFromHome";
+    const QString dest = homeTmpDir() + "dirFromHome_copied";
+    createTestDirectory( src );
+    copyLocalDirectory( src, dest );
+}
+
+void JobTest::copyFileToOtherPartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    const QString dest = otherTmpDir() + "fileFromHome_copied";
+    createTestFile( filePath );
+    copyLocalFile( filePath, dest );
+}
+
+void JobTest::copyDirectoryToOtherPartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString src = homeTmpDir() + "dirFromHome";
+    const QString dest = homeTmpDir() + "dirFromHome_copied";
+    // src is already created by copyDirectoryToSamePartition()
+    copyLocalDirectory( src, dest );
+}
