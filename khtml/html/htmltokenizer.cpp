@@ -1134,7 +1134,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
 void HTMLTokenizer::addPending()
 {
-    if ( tag || select)
+    if ( select)
     {
         *dest++ = ' ';
     }
@@ -1152,7 +1152,7 @@ void HTMLTokenizer::addPending()
         switch (pending)
         {
         case SpacePending:
-            // Insert a non-breaking space
+            // Insert a breaking space
             *dest++ = QChar(' ');
             prePos++;
             break;
@@ -1330,7 +1330,11 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             }
             }; // end case
 
-            if(pending) addPending();
+            if(pending) {
+                discard = AllDiscard;
+                addPending();
+            }
+
             processToken();
 
             cBufferPos = 0;
