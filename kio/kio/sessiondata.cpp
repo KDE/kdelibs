@@ -255,16 +255,21 @@ void SessionData::reset()
     d->useCookie = cfg->readBoolEntry( "Cookies", true );
     delete cfg;
 
+    const QString & english = KGlobal::staticQString( "en" );
+
     // Get language settings...
     QStringList languageList = KGlobal::locale()->languagesTwoAlpha();
     QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
     if ( it != languageList.end() )
     {
-        if ( languageList.contains( QString::fromLatin1("en") ) > 0 )
+        if ( languageList.contains( english ) > 0 )
           languageList.remove( it );
         else
-          (*it) = QString::fromLatin1("en");
+          (*it) = english;
     }
+    if ( !languageList.contains( english ) )
+       languageList.append( english );
+
     d->language = languageList.join( ", " );
 
     d->charsets = QString::fromLatin1(QTextCodec::codecForLocale()->mimeName()).lower();
