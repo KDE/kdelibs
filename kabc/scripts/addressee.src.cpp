@@ -27,12 +27,15 @@
 #include <klocale.h>
 
 #include "addresseehelper.h"
+#include "field.h"
 #include "resource.h"
+
 #include "addressee.h"
 
 using namespace KABC;
 
 static bool matchBinaryPattern( int value, int pattern );
+KABC::Field *Addressee::mSortField = 0;
 
 struct Addressee::AddresseeData : public KShared
 {
@@ -849,6 +852,20 @@ void Addressee::setChanged( bool value )
 bool Addressee::changed() const
 {
   return mData->changed;
+}
+
+void Addressee::setSortKey( KABC::Field *field )
+{
+  mSortField = field;
+}
+
+bool Addressee::operator< ( const Addressee &addr )
+{
+  if ( !mSortField )
+    return false;
+  else
+    return ( QString::localeAwareCompare( mSortField->value( *this ).lower(),
+                                          mSortField->value( addr ).lower() ) < 0 );
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )

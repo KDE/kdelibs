@@ -216,38 +216,6 @@ void AddresseeList::sortByTrait()
   }
 }
 
-class SortContainer
-{
-  public:
-    SortContainer()
-      : mField( 0 )
-    {
-    }
-
-    SortContainer( const Addressee &addr, Field *field )
-      : mAddressee( addr ), mField( field )
-    {
-    }
-
-    bool operator< ( const SortContainer &cnt )
-    {
-      if ( !mField )
-        return false;
-      else
-        return ( QString::localeAwareCompare( mField->value( mAddressee ).lower(),
-                 mField->value( cnt.mAddressee ).lower() ) < 0 );
-    }
-
-    Addressee addressee() const
-    {
-      return mAddressee;
-    }
-
-  private:
-    Addressee mAddressee;
-    Field *mField;
-};
-
 void AddresseeList::sortByField( Field *field )
 {
   if ( !field ) {
@@ -260,18 +228,9 @@ void AddresseeList::sortByField( Field *field )
   if ( count() == 0 )
     return;
 
-  QValueList<SortContainer> list;
-  QValueList<SortContainer>::ConstIterator sortIt;
-
-  QValueList<Addressee>::ConstIterator it;
-  for ( it = begin(); it != end(); ++it )
-    list.append( SortContainer( *it, sActiveField ) );
-
-  qHeapSort( list );
-  clear();
-
-  for ( sortIt = list.begin(); sortIt != list.end(); ++sortIt )
-    append( (*sortIt).addressee() );
+  KABC::Addressee::setSortKey( sActiveField );
+  qHeapSort( *this );
+  KABC::Addressee::setSortKey( 0 );
 }
 
 Field*

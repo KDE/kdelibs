@@ -42,6 +42,7 @@
 namespace KABC {
 
 class Resource;
+class Field;
 
 /**
   @short address book entry
@@ -363,16 +364,22 @@ class Addressee
   	/**
 	    Return whether the addressee is changed.
 	   */
-	  bool changed() const;
+    bool changed() const;
+
+    static void setSortKey( KABC::Field *field );
+
+    bool operator< ( const Addressee &addr );
 
   private:
     void detach();
 
     struct AddresseeData;
     mutable KSharedPtr<AddresseeData> mData;
+
   private:
     static AddresseeData* shared_null;
     static AddresseeData* makeSharedNull();
+    static KABC::Field *mSortField;
 };
 
 QDataStream &operator<<( QDataStream &, const Addressee & );
