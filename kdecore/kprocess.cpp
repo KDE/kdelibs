@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.20  1998/03/10 18:59:22  mario
+   Mario: fixed a memory leak in KShellProcess (shell not freed)
+
    Revision 1.19  1998/03/08 17:21:40  wuebben
    Bernd: Fixed the segfault problem in 'KShellProcess::start()'.
 
@@ -55,6 +58,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <sys/socket.h>
 #include <fcntl.h>

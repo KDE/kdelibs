@@ -61,6 +61,7 @@ Cambridge, MA 02139, USA.  */
 #endif     
 
 #include <stdlib.h>
+#include <string.h>
 
 #if defined(HAVE_ARGZ_H)
 #ifdef __BEGIN_DECLS

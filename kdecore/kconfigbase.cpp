@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.31  1998/05/26 14:14:57  kalle
+// Two bugfixes in KConfig:
+//
+// - security hole when saving to symlinks in SUID mode
+// - trailing comma was needed in string list
+//
 // Revision 1.30  1998/05/04 20:08:13  ettrich
 // Matthias: \n, \t, \r are stored as \\n, \\t and \\r now.
 //
@@ -496,7 +502,7 @@ double KConfigBase::readDoubleNumEntry( const char* pKey,
 }
 
 
-bool KConfigBase::readBoolEntry( const char* pKey, const bool bDefault = false ) const
+bool KConfigBase::readBoolEntry( const char* pKey, const bool bDefault ) const
 {
   QString aValue = readEntry( pKey );
   if( aValue.isNull() )

@@ -35,6 +35,10 @@
 #include <sysent.h>
 #endif
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 bool kwm_error;
 
 static int _getprop(Window w, Atom a, Atom type, long len, unsigned char **p){

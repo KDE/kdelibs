@@ -287,4 +287,4 @@ protected:
  protected:
 };
 
-#endif _KGLOBALACCEL_H_
+#endif // _KGLOBALACCEL_H_

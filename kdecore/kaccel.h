@@ -265,18 +265,19 @@ class KAccel
 
 
 
-                 /** 
-	   * Often (usually?) shortcuts should be visible in
-	   * the menu structure of an application. Use this function 
-	   * for that purpose.  Note that the action must have been inserted
-	   * before! */
+	/** 
+	 * Often (usually?) shortcuts should be visible in the menu
+	 * structure of an application. Use this function for that
+	 * purpose.  Note that the action must have been inserted
+	 * before!
+	 */
 
-	  void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
+	void changeMenuAccel ( QPopupMenu *menu, int id,
 			       const char* action );
-                 /** 
-	   * Same as changeMenuAccel but for standard accelerators
-	*/
-	  void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
+	/** 
+	 * Same as changeMenuAccel but for standard accelerators
+	 */
+	void changeMenuAccel ( QPopupMenu *menu, int id,
 				 StdAccel accel );
 
 
@@ -284,13 +285,15 @@ class KAccel
 	bool isItemEnabled( const char *action );
 				 
 	/** 
-	* Returns the dictionary of accelerator action names and KKeyEntry
-	* objects. Note that only a shallow copy is returned so that items will be
-	* lost when the KKeyEntry objects are deleted.  */
+	 * Returns the dictionary of accelerator action names and KKeyEntry
+	 * objects. Note that only a shallow copy is returned so that
+	 * items will be lost when the KKeyEntry objects are deleted.
+	 */
 	QDict<KKeyEntry> keyDict();
 				 
 	/** 
-	 * Reads all key associations from the application's configuration files.
+	 * Reads all key associations from the application's configuration
+	 * files.
 	 */	
 	void readSettings(KConfig* config = 0);
 		
@@ -328,15 +331,16 @@ class KAccel
 	
 	/** 
 	* Sets the dictionary of accelerator action names and KKeyEntry
-	* objects to nKeyDict.. Note that only a shallow copy is made so that items will be
-	* lost when the KKeyEntry objects are deleted.
+	* objects to nKeyDict.. Note that only a shallow copy is made so
+	* that items will be lost when the KKeyEntry objects are deleted.
 	*/	
 	bool setKeyDict( QDict<KKeyEntry> nKeyDict );
 	
 	/** 
-	 *	Returns a standard action name if id equal to Open, New,
-	 *	Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Find, Replace,
-	 *	Insert, Home, End, Prior, Next, or Help and zero otherwise.
+	 *	Returns a standard action name if id equal to Open,
+	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo,
+	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help
+	 *	and zero otherwise.
 	 */
 	static const char *stdAction( StdAccel id );
 
