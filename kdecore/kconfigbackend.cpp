@@ -196,7 +196,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       if (pWriteBackMap) {
 	// add the special group key indicator
-	KEntryKey groupKey = { aCurrentGroup, QString() };
+	KEntryKey groupKey = { aCurrentGroup, "" };
 	pWriteBackMap->insert(groupKey, KEntry());
       }
       continue;
@@ -330,7 +330,7 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 	    aTempMap.replace(entryKey, currentEntry);
 	  else {
 	    // add special group key and then the entry
-	    KEntryKey groupKey = { entryKey.group, QString() };
+	    KEntryKey groupKey = { entryKey.group, "" };
 	    if (!aTempMap.contains(groupKey))
 	      aTempMap.insert(groupKey, KEntry());
 
@@ -371,7 +371,7 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
   KEntryMapConstIterator aWriteIt;
   for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
 
-      if ( aWriteIt.key().group == "<default>" && !aWriteIt.key().key.isNull() ) {
+      if ( aWriteIt.key().group == "<default>" && !aWriteIt.key().key.isEmpty() ) {
 	  if ( (*aWriteIt).bNLS &&
 	       aWriteIt.key().key.right(1) != "]")
 	      // not yet localized, but should be
@@ -397,7 +397,7 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 	*pStream << '[' << aWriteIt.key().group << ']' << '\n';
     }
 
-    if (aWriteIt.key().key.isNull()) {
+    if (aWriteIt.key().key.isEmpty()) {
       // we found a special group key, ignore it 
     } else {
       // it is data for a group
