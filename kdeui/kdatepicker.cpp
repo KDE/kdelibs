@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qlayout.h>
+
 #include "kdatepicker.h"
 #include <kglobal.h>
 #include <kapplication.h>
@@ -109,6 +111,23 @@ void KDatePicker::init( const QDate &dt )
   connect(selectYear, SIGNAL(clicked()), SLOT(selectYearClicked()));
   connect(line, SIGNAL(returnPressed()), SLOT(lineEnterPressed()));
   table->setFocus();
+
+  QBoxLayout * topLayout = new QVBoxLayout(this);
+
+  QBoxLayout * navigationLayout = new QHBoxLayout(topLayout);
+  navigationLayout->addWidget(yearBackward);
+  navigationLayout->addWidget(monthBackward);
+  navigationLayout->addWidget(selectMonth);
+  navigationLayout->addWidget(selectYear);
+  navigationLayout->addWidget(monthForward);
+  navigationLayout->addWidget(yearForward);
+  navigationLayout->addStretch();
+
+  topLayout->addWidget(table);
+
+  QBoxLayout * bottomLayout = new QHBoxLayout(topLayout);
+  bottomLayout->addWidget(line);
+  bottomLayout->addWidget(d->selectWeek);
 }
 
 KDatePicker::~KDatePicker()
@@ -136,57 +155,9 @@ KDatePicker::eventFilter(QObject *o, QEvent *e )
 }
 
 void
-KDatePicker::resizeEvent(QResizeEvent*)
+KDatePicker::resizeEvent(QResizeEvent* e)
 {
-    QWidget *buttons[] = {
-	yearBackward,
-	    monthBackward,
-	    selectMonth,
-	    selectYear,
-	    monthForward,
-	    yearForward,
-	    d->closeButton
-    };
-    const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
-    QSize sizes[NoOfButtons];
-    int buttonHeight=0;
-    int count;
-    int w;
-    int x=0;
-    // ----- calculate button row height:
-    for(count=0; count<NoOfButtons; ++count) {
-        if ( buttons[count] ) { // closeButton may be 0L
-            sizes[count]=buttons[count]->sizeHint();
-            buttonHeight=QMAX(buttonHeight, sizes[count].height());
-        }
-        else
-            sizes[count] = QSize(0,0); // closeButton
-    }
-
-    // ----- calculate size of the month button:
-    for(count=0; count<NoOfButtons; ++count) {
-	if(buttons[count]==selectMonth) {
-	    QSize metricBound = style().sizeFromContents(QStyle::CT_ToolButton, selectMonth, maxMonthRect);
-	    sizes[count].setWidth(QMAX(metricBound.width(), maxMonthRect.width()+2*QApplication::style().pixelMetric(QStyle::PM_ButtonMargin)));
-	}
-    }
-    // ----- place the buttons:
-    x=0;
-    for(count=0; count<NoOfButtons; ++count)
-    {
-	w=sizes[count].width();
-        if ( buttons[count] )
-            buttons[count]->setGeometry(x, 0, w, buttonHeight);
-	x+=w;
-    }
-    // ----- place the line edit for direct input:
-    sizes[0]=line->sizeHint();
-    int week_width=d->selectWeek->fontMetrics().width(i18n("Week XX"))+((d->closeButton != 0L) ? 50 : 20);
-    line->setGeometry(0, height()-sizes[0].height(), width()-week_width, sizes[0].height());
-    d->selectWeek->setGeometry(width()-week_width, height()-sizes[0].height(), week_width, sizes[0].height());
-    // ----- adjust the table:
-    table->setGeometry(0, buttonHeight, width(),
-		       height()-buttonHeight-sizes[0].height());
+  QWidget::resizeEvent(e);
 }
 
 void
@@ -395,41 +366,7 @@ KDatePicker::lineEnterPressed()
 QSize
 KDatePicker::sizeHint() const
 {
-  QSize tableSize=table->sizeHint();
-  QWidget *buttons[]={
-    yearBackward,
-    monthBackward,
-    selectMonth,
-    selectYear,
-    monthForward,
-    yearForward,
-    d->closeButton
-  };
-  const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
-  QSize sizes[NoOfButtons];
-  int cx=0, cy=0, count;
-  // ----- store the size hints:
-  for(count=0; count<NoOfButtons; ++count)
-    {
-      if ( buttons[count] )
-          sizes[count]=buttons[count]->sizeHint();
-      else
-          sizes[count] = QSize(0,0);
-
-      if(buttons[count]==selectMonth)
-	{
-	  QSize metricBound = style().sizeFromContents(QStyle::CT_ToolButton, selectMonth, maxMonthRect);
-	  cx+=QMAX(metricBound.width(), maxMonthRect.width()+2*QApplication::style().pixelMetric(QStyle::PM_ButtonMargin));
-	} else {
-	  cx+=sizes[count].width();
-	}
-      cy=QMAX(sizes[count].height(), cy);
-    }
-  // ----- calculate width hint:
-  cx=QMAX(cx, tableSize.width()); // line edit ignored
-  // ----- calculate height hint:
-  cy+=tableSize.height()+line->sizeHint().height();
-  return QSize(cx, cy);
+  return QWidget::sizeHint();
 }
 
 void
@@ -462,6 +399,12 @@ KDatePicker::setFontSize(int s)
       maxMonthRect.setWidth(QMAX(r.width(), maxMonthRect.width()));
       maxMonthRect.setHeight(QMAX(r.height(),  maxMonthRect.height()));
     }
+
+  QSize metricBound = style().sizeFromContents(QStyle::CT_ToolButton,
+                                               selectMonth,
+                                               maxMonthRect);
+  selectMonth->setMinimumSize(metricBound);
+
   table->setFontSize(s);
 }
 
