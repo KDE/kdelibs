@@ -287,6 +287,19 @@ public:
 
      QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
 
+     /**
+      * This template function allows you to load a library and ask the factory (a KLibFactory) to
+      * create an instance of the given template argument (an object derived from QObject) , 
+      * in a type-safe manner. 
+      *
+      * @returns an instance of the class given as template argument or a null pointer if 
+      * the factory exported by the library does support creating objects of the given type.
+      *
+      * Example of usage:
+      * <pre>
+      *     MyPlugin *plugin = KParts::Factory::create<MyPlugin>( "libfoobar", parent );
+      * </pre>
+      */
      template <class T>
      static T *create( const char *libraryName, QObject *parent = 0, const char *name = 0, 
 	        const QStringList &args = QStringList() )

@@ -78,6 +78,18 @@ public:
      */
      Part *createPart( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() );
 
+     /**
+      * This template function allows you to load a library and ask the factory (a KParts::Factory) to
+      * create an instance of the given template argument (a part) , in a type-safe manner. 
+      *
+      * @returns an instance of the class given as template argument or a null pointer if 
+      * the factory exported by the library does support creating objects of the given type.
+      *
+      * Example of usage:
+      * <pre>
+      *     KoDocument *document = KParts::Factory::create<KoDocument>( "libkword" );
+      * </pre>
+      */
      template <class T>
      static T *createPart( const char *libraryName, QWidget *parentWidget = 0, const char *widgetName = 0,
                            QObject *parent = 0, const char *name = 0, 
