@@ -44,65 +44,65 @@ static void evalToken( QBitArray*, QString* );
 #endif
 
 void kdebug( ushort nLevel, ushort, 
-			 const char* pFormat, ... )
+                         const char* pFormat, ... )
 {
   // Save old group
   QString aOldGroup = kapp->getConfig()->group();
   kapp->getConfig()->setGroup( "KDebug" );
   
   /* The QBitArrays should rather be application-static, but since
-	 some stupid platforms do not support that... */
+         some stupid platforms do not support that... */
 #ifdef KALLE_DOES_NOT_UNDERSTAND_WHY_THIS_CRASHES
   if( !bAreaCalculated )
-	{
-	  // check to see if we need to create the bit arrays first
-	  static uint size = (uint)rint( pow( 2, (int)(sizeof( ushort ) * 8 )  ) );
-	  if( !pInfoArray ) 
-		pInfoArray = new QBitArray( size );
-	  if( !pWarnArray ) 
-		pWarnArray = new QBitArray( size );
-	  if( !pErrorArray ) 
-		pErrorArray = new QBitArray( size );
-	  if( !pFatalArray ) 
-		pFatalArray = new QBitArray( size );
-	  
-	  // (re)calculate the areas from their textual representations
-	  pInfoArray->fill( false );
-	  QString aInfoArea = kapp->getConfig()->readEntry( "InfoShow", "" );
-	  recalculateAreaBits( pInfoArray, &aInfoArea );
-	  pWarnArray->fill( false );
-	  QString aWarnArea = kapp->getConfig()->readEntry( "WarnShow", "" );
-	  recalculateAreaBits( pWarnArray, &aWarnArea );
-	  pErrorArray->fill( false );
-	  QString aErrorArea = kapp->getConfig()->readEntry( "ErrorShow", "" );
-	  recalculateAreaBits( pErrorArray, &aErrorArea );
-	  pFatalArray->fill( false );
-	  QString aFatalArea = kapp->getConfig()->readEntry( "FatalShow", "" );
-	  recalculateAreaBits( pFatalArray, &aFatalArea );
-	  
-	  bAreaCalculated = true;
-	}
+        {
+          // check to see if we need to create the bit arrays first
+          static uint size = (uint)rint( pow( 2, (int)(sizeof( ushort ) * 8 )  ) );
+          if( !pInfoArray ) 
+                pInfoArray = new QBitArray( size );
+          if( !pWarnArray ) 
+                pWarnArray = new QBitArray( size );
+          if( !pErrorArray ) 
+                pErrorArray = new QBitArray( size );
+          if( !pFatalArray ) 
+                pFatalArray = new QBitArray( size );
+          
+          // (re)calculate the areas from their textual representations
+          pInfoArray->fill( false );
+          QString aInfoArea = kapp->getConfig()->readEntry( "InfoShow", "" );
+          recalculateAreaBits( pInfoArray, &aInfoArea );
+          pWarnArray->fill( false );
+          QString aWarnArea = kapp->getConfig()->readEntry( "WarnShow", "" );
+          recalculateAreaBits( pWarnArray, &aWarnArea );
+          pErrorArray->fill( false );
+          QString aErrorArea = kapp->getConfig()->readEntry( "ErrorShow", "" );
+          recalculateAreaBits( pErrorArray, &aErrorArea );
+          pFatalArray->fill( false );
+          QString aFatalArea = kapp->getConfig()->readEntry( "FatalShow", "" );
+          recalculateAreaBits( pFatalArray, &aFatalArea );
+          
+          bAreaCalculated = true;
+        }
 
   // Check if this is in a desired area, bail out if not
   switch( nLevel )
-	{
-	case KDEBUG_INFO:
-	  if( !pInfoArray->testBit( nArea ) )
-		  return;
-	  break;
-	case KDEBUG_WARN:
-	  if( !pWarnArray->testBit( nArea ) )
-		return;
-	  break;
-	case KDEBUG_FATAL:
-	  if( !pFatalArray->testBit( nArea ) )
-		return;
-	  break;
-	case KDEBUG_ERROR:
-	default:
-	  if( !pErrorArray->testBit( nArea ) )
-		return;
-	};
+        {
+        case KDEBUG_INFO:
+          if( !pInfoArray->testBit( nArea ) )
+                  return;
+          break;
+        case KDEBUG_WARN:
+          if( !pWarnArray->testBit( nArea ) )
+                return;
+          break;
+        case KDEBUG_FATAL:
+          if( !pFatalArray->testBit( nArea ) )
+                return;
+          break;
+        case KDEBUG_ERROR:
+        default:
+          if( !pErrorArray->testBit( nArea ) )
+                return;
+        };
 #endif
   va_list arguments; /* Handle variable arguments */
 
@@ -111,122 +111,122 @@ void kdebug( ushort nLevel, ushort,
   int nPriority = 0; // for syslog
   QString aCaption;
   switch( nLevel )
-	{
-	case KDEBUG_INFO:
-	  nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 1 );
-	  aCaption = "Info";
-	  nPriority = LOG_INFO;
-	  break;
-	case KDEBUG_WARN:
-	  nOutput = kapp->getConfig()->readNumEntry( "WarnOutput", 1 );
-	  aCaption = "Warning";
-	  nPriority = LOG_WARNING;
-	  break;
-	case KDEBUG_FATAL:
-	  nOutput = kapp->getConfig()->readNumEntry( "FatalOutput", 1 );
-	  aCaption = "Fatal Error";
-	  nPriority = LOG_CRIT;
-	  break;
-	case KDEBUG_ERROR:
-	default:
-	  /* Programmer error, use "Error" as default */
-	  nOutput = kapp->getConfig()->readNumEntry( "ErrorOutput", 1 );
-	  aCaption = "Error";
-	  nPriority = LOG_ERR;
-	  break;
-	};
+        {
+        case KDEBUG_INFO:
+          nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 2 );
+          aCaption = "Info";
+          nPriority = LOG_INFO;
+          break;
+        case KDEBUG_WARN:
+          nOutput = kapp->getConfig()->readNumEntry( "WarnOutput", 2 );
+          aCaption = "Warning";
+          nPriority = LOG_WARNING;
+          break;
+        case KDEBUG_FATAL:
+          nOutput = kapp->getConfig()->readNumEntry( "FatalOutput", 2 );
+          aCaption = "Fatal Error";
+          nPriority = LOG_CRIT;
+          break;
+        case KDEBUG_ERROR:
+        default:
+          /* Programmer error, use "Error" as default */
+          nOutput = kapp->getConfig()->readNumEntry( "ErrorOutput", 2 );
+          aCaption = "Error";
+          nPriority = LOG_ERR;
+          break;
+        };
 
   // Output
   switch( nOutput )
-	{
-	case 0: // File
-	  {
-		QString aOutputFileName;
-		switch( nLevel )
-		  {
-		  case KDEBUG_INFO:
-			aOutputFileName = kapp->getConfig()->readEntry( "InfoFilename",
-															"kdebug.dbg" );
-			break;
-		  case KDEBUG_WARN:
-			aOutputFileName = kapp->getConfig()->readEntry( "WarnFilename",
-															"kdebug.dbg" );
-			break;
-		  case KDEBUG_FATAL:
-			aOutputFileName = kapp->getConfig()->readEntry( "FatalFilename",
-															"kdebug.dbg" );
-			break;
-		  case KDEBUG_ERROR:
-		  default:
-			aOutputFileName = kapp->getConfig()->readEntry( "ErrorFilename",
-															"kdebug.dbg" );
-			break;
-		  };
-		char buf[4096];
-		QString aAppName = kapp->appName();
-		int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
-		va_start( arguments, pFormat );
+        {
+        case 0: // File
+          {
+                QString aOutputFileName;
+                switch( nLevel )
+                  {
+                  case KDEBUG_INFO:
+                        aOutputFileName = kapp->getConfig()->readEntry( "InfoFilename",
+                                                                                                                        "kdebug.dbg" );
+                        break;
+                  case KDEBUG_WARN:
+                        aOutputFileName = kapp->getConfig()->readEntry( "WarnFilename",
+                                                                                                                        "kdebug.dbg" );
+                        break;
+                  case KDEBUG_FATAL:
+                        aOutputFileName = kapp->getConfig()->readEntry( "FatalFilename",
+                                                                                                                        "kdebug.dbg" );
+                        break;
+                  case KDEBUG_ERROR:
+                  default:
+                        aOutputFileName = kapp->getConfig()->readEntry( "ErrorFilename",
+                                                                                                                        "kdebug.dbg" );
+                        break;
+                  };
+                char buf[4096];
+                QString aAppName = kapp->appName();
+                int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
+                va_start( arguments, pFormat );
 #ifdef HAVE_VSNPRINTF
-		// use the more secure version if we have it
-		int nSize = vsnprintf( buf, 4095, pFormat, arguments );
+                // use the more secure version if we have it
+                int nSize = vsnprintf( buf, 4095, pFormat, arguments );
 #else
-		int nSize = vsprintf( buf, pFormat, arguments );
+                int nSize = vsprintf( buf, pFormat, arguments );
 #endif
-		if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
-		buf[nSize] = '\n';
-		buf[nSize+1] = '\0';
-		va_end( arguments );
-		QFile aOutputFile( aOutputFileName );
-		aOutputFile.open( IO_WriteOnly );
-		aOutputFile.writeBlock( buf, nSize+2 );
-		aOutputFile.close();
-		break;
-	  }
-	case 1: // Message Box
-	  {
-		// Since we are in kdecore here, we cannot use KMsgBox and use
-		// QMessageBox instead 
-		char buf[4096]; // constants are evil, but this is evil code anyway
-		va_start( arguments, pFormat );
-		int nSize = vsprintf( buf, pFormat, arguments );
-		if( nSize > 4094 ) nSize = 4094;
-		buf[nSize] = '\n';
-		buf[nSize+1] = '\0';
-		va_end( arguments );
-		QMessageBox::message( aCaption, buf, "OK" );
-		break;
-	  }
-	case 2: // Shell
-	  {
-		va_start( arguments, pFormat );
-		fprintf( stderr, "%s: ", kapp->appName().data() );
-		vfprintf( stderr, pFormat, arguments );
-		fprintf( stderr, "\n" );
-		va_end( arguments );
-		break;
-	  }
-	case 3: // syslog
-	  {
-		char buf[4096];
-		QString aAppName = kapp->appName();
-		int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
-		va_start( arguments, pFormat );
-		int nSize = vsprintf( &buf[nPrefix], pFormat, arguments );
-		if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
-		buf[nSize] = '\n';
-		buf[nSize+1] = '\0';
-		va_end( arguments );
-		syslog( nPriority, buf );
-	  }	  
-	case 4: // nothing
-	  {
-	  }
-	}
+                if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
+                buf[nSize] = '\n';
+                buf[nSize+1] = '\0';
+                va_end( arguments );
+                QFile aOutputFile( aOutputFileName );
+                aOutputFile.open( IO_WriteOnly );
+                aOutputFile.writeBlock( buf, nSize+2 );
+                aOutputFile.close();
+                break;
+          }
+        case 1: // Message Box
+          {
+                // Since we are in kdecore here, we cannot use KMsgBox and use
+                // QMessageBox instead 
+                char buf[4096]; // constants are evil, but this is evil code anyway
+                va_start( arguments, pFormat );
+                int nSize = vsprintf( buf, pFormat, arguments );
+                if( nSize > 4094 ) nSize = 4094;
+                buf[nSize] = '\n';
+                buf[nSize+1] = '\0';
+                va_end( arguments );
+                QMessageBox::message( aCaption, buf, "OK" );
+                break;
+          }
+        case 2: // Shell
+          {
+                va_start( arguments, pFormat );
+                fprintf( stderr, "%s: ", kapp->appName().data() );
+                vfprintf( stderr, pFormat, arguments );
+                fprintf( stderr, "\n" );
+                va_end( arguments );
+                break;
+          }
+        case 3: // syslog
+          {
+                char buf[4096];
+                QString aAppName = kapp->appName();
+                int nPrefix = sprintf( buf, "%s: ", aAppName.data() );
+                va_start( arguments, pFormat );
+                int nSize = vsprintf( &buf[nPrefix], pFormat, arguments );
+                if( nSize > (4094-nPrefix) ) nSize = 4094-nPrefix;
+                buf[nSize] = '\n';
+                buf[nSize+1] = '\0';
+                va_end( arguments );
+                syslog( nPriority, buf );
+          }       
+        case 4: // nothing
+          {
+          }
+        }
 
   // check if we should abort
   if( ( nLevel == KDEBUG_FATAL ) &&
-	  ( kapp->getConfig()->readNumEntry( "AbortFatal", 0 ) ) )
-	abort();
+          ( kapp->getConfig()->readNumEntry( "AbortFatal", 0 ) ) )
+        abort();
 
   // restore old group
   kapp->getConfig()->setGroup( aOldGroup );
@@ -409,45 +409,45 @@ void recalculateAreaBits( QBitArray* pArray, QString* pString )
 {
   // string could be empty
   if( pString->isEmpty() )
-	{
-	  pArray->fill( true ); // all bits are set
-	  return;
-	}
+        {
+          pArray->fill( true ); // all bits are set
+          return;
+        }
 
   // isolate the tokens
   uint pos = 0; uint newpos = 0;
   while( ( newpos = pString->find( ',', pos, false ) ) != (uint)-1 )
-	{
-	  QString aToken = pString->mid( pos, newpos-pos );
-	  evalToken( pArray, &aToken );
-	  pos = newpos+1;
-	};
+        {
+          QString aToken = pString->mid( pos, newpos-pos );
+          evalToken( pArray, &aToken );
+          pos = newpos+1;
+        };
   
   // there is probably the last part left
   if( pos != pString->length() )
-	{
-	  QString aLastToken = pString->right( pString->length() - pos );
-	  evalToken( pArray, &aLastToken );
-	}
+        {
+          QString aLastToken = pString->right( pString->length() - pos );
+          evalToken( pArray, &aLastToken );
+        }
 }
 
 void evalToken( QBitArray* pArray, QString* pString )
 {
   int dashpos = 0;
   if( ( dashpos = pString->find( '-' ) ) != -1 )
-	{
-	  // range of areas
-	  QString aLeft = pString->mid( 0, dashpos );
-	  QString aRight = pString->mid( dashpos+1, pString->length()-1 );
-	  for( uint i = aLeft.toUInt(); i <= aRight.toUInt(); i++ )
-		{
-		  pArray->setBit( i );
-		}
-	}
+        {
+          // range of areas
+          QString aLeft = pString->mid( 0, dashpos );
+          QString aRight = pString->mid( dashpos+1, pString->length()-1 );
+          for( uint i = aLeft.toUInt(); i <= aRight.toUInt(); i++ )
+                {
+                  pArray->setBit( i );
+                }
+        }
   else
-	{
-	  // single area
-	  pArray->setBit( pString->toUInt() );
-	}
+        {
+          // single area
+          pArray->setBit( pString->toUInt() );
+        }
 }
 #endif
