@@ -46,13 +46,8 @@ artswrapper_OBJS = artswrapper.o
 artsshell_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artsshell_SOURCES = artsshell.cc
 
-bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
-
-artswrapper.o: $(srcdir)/artswrapper.c
-	$(CC) -c $(DEFS) $(INCLUDES) -DEXECUTE=\"$(bd)/artsd\" \
-			$(srcdir)/artswrapper.c
-
-DISTCLEANFILES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
+BUILT_SOURCES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
+DISTCLEANFILES = $(BUILT_SOURCES)
 
 ####### Build rules
 
@@ -60,17 +55,18 @@ soundserver.h: $(top_srcdir)/arts/soundserver/soundserver.idl kmedia2.h $(MCOPID
 	$(MCOPIDL) $(MCOPINC) $(top_srcdir)/arts/soundserver/soundserver.idl
 
 soundserver.cc: soundserver.h
-artscat.cc: soundserver.h
-artsd.cc: soundserver.h
-artsplay.cc: soundserver.h
-wavplayobject_impl.cc: soundserver.h
-simplesoundserver_impl.cc: soundserver.h
-soundserver_impl.cc: soundserver.h
 
 kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/soundserver/kmedia2.idl
 
 kmedia2.cc: kmedia2.h
+
+bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
+
+artswrapper.o: $(srcdir)/artswrapper.c
+	$(CC) -c $(DEFS) $(INCLUDES) -DEXECUTE=\"$(bd)/artsd\" \
+			$(srcdir)/artswrapper.c
+
 
 mcopclassdir = $(libdir)/mcop/Arts
 if HAVE_WAVSUPPORT

@@ -44,7 +44,9 @@ playtofile_LDADD	= $(FLOWLIBS) \
     $(top_builddir)/arts/soundserver/libsoundserver_idl.la \
     $(top_builddir)/arts/soundserver/libkmedia2_idl.la
 
-DISTCLEANFILES = $(SRCMETA) hello.cc hello.h
+BUILT_SOURCES = hello.cc hello.h aggregation.cc aggregation.h \
+				playtofile.cc playtofile.h
+DISTCLEANFILES = $(BUILT_SOURCES)
 
 ####### Implicit rules
 

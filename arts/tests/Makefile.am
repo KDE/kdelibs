@@ -1,5 +1,5 @@
 check_PROGRAMS = testbuffer testifacerepo testanyref testwrapper \
-   testchangenotify
+   testchangenotify testflowsystem
 
 TESTS = $(check_PROGRAMS)
 
@@ -18,6 +18,12 @@ testwrapper_SOURCES = wrapper.cc testwrapper.cc
 
 testchangenotify_LDFLAGS = $(FLOWLIBS)
 testchangenotify_SOURCES = value.cc value_impl.cc testchangenotify.cc
+
+testflowsystem_LDFLAGS = $(FLOWLIBS)
+testflowsystem_SOURCES = value.cc value_impl.cc testflowsystem.cc
+
+BUILT_SOURCES = wrapper.h wrapper.cc value.h value.cc
+DISTCLEANFILES = $(BUILT_SOURCES)
 
 wrapper.h: $(top_srcdir)/arts/tests/wrapper.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/tests/wrapper.idl

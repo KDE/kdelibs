@@ -16,7 +16,8 @@ libartsmedia_la_SOURCES = mediaframe.cc
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = mediaframe.h artsmedia.h artsmedia.idl format.h
 
-DISTCLEANFILES = artsmedia.cc artsmedia.h
+BUILT_SOURCES = artsmedia.cc artsmedia.h
+DISTCLEANFILES = $(BUILT_SOURCES)
 
 ######## Build rules
 
