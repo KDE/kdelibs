@@ -1171,6 +1171,7 @@ public:
 
   QFrame *m_frame;
   QCheckBox *cbRecursive;
+  mode_t partialPermissions;
 };
 
 KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_props )
@@ -1191,7 +1192,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   bool isDir = item->isDir(); // all dirs
   bool hasDir = item->isDir(); // at least one dir
   permissions = item->permissions(); // common permissions to all files
-  mode_t partialPermissions = permissions; // permissions that only some files have (at first we take everything)
+  d->partialPermissions = permissions; // permissions that only some files have (at first we take everything)
   strOwner = item->user();
   strGroup = item->group();
 
@@ -1210,7 +1211,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       if ( (*it)->permissions() != permissions )
       {
         permissions &= (*it)->permissions();
-        partialPermissions |= (*it)->permissions();
+        d->partialPermissions |= (*it)->permissions();
       }
       if ( (*it)->user() != strOwner )
         strOwner = QString::null;
@@ -1220,7 +1221,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   }
 
   // keep only what's not in the common permissions
-  partialPermissions = partialPermissions & ~permissions;
+  d->partialPermissions = d->partialPermissions & ~permissions;
 
   bool isMyFile = false;
 
@@ -1305,7 +1306,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     for (int col = 0; col < 4; ++col) {
       QCheckBox *cb = new QCheckBox(gb);
       cb->setChecked(permissions & fperm[row][col]);
-      if ( partialPermissions & fperm[row][col] )
+      if ( d->partialPermissions & fperm[row][col] )
       {
         cb->setTristate( true );
         cb->setNoChange();
@@ -1500,6 +1501,7 @@ void KFilePermissionsPropsPlugin::slotRecursiveClicked()
 void KFilePermissionsPropsPlugin::applyChanges()
 {
   mode_t newPermission = 0;
+  mode_t newPartialPermission = 0;
   mode_t permissionMask = 0;
   for (int row = 0;row < 3; ++row)
     for (int col = 0; col < 4; ++col)
@@ -1513,6 +1515,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
             permissionMask |= fperm[row][col];
             break;
           default: // NoChange
+	    newPartialPermission |= fperm[ row ][ col ];
             break;
       }
     }
@@ -1536,7 +1539,8 @@ void KFilePermissionsPropsPlugin::applyChanges()
   kdDebug(250) << "permissions mask : " << QString::number(permissionMask,8) << endl;
   kdDebug(250) << "url=" << properties->items().first()->url().url() << endl;
 
-  if ( permissions != newPermission || !owner.isEmpty() || !group.isEmpty() )
+  if ( permissions != newPermission || d->partialPermissions != newPartialPermission
+		  || !owner.isEmpty() || !group.isEmpty() )
   {
     KIO::Job * job = KIO::chmod( properties->items(), newPermission, permissionMask,
                                  owner, group,
