@@ -36,13 +36,13 @@ class KConfig;
  * below that.
  *
  * Since the user needs a way to know what a specific plugin does every plugin
- * sould install a desktop file containing a name, comment and category field. The
- * category is usefull for applications that can use different kinds of plugins like
- * a playlist, skin or visualization.
+ * sould install a desktop file containing a name, comment and category field.
+ * The category is usefull for applications that can use different kinds of
+ * plugins like a playlist, skin or visualization.
  *
  * The location of these desktop files is the
- * share/apps/&lt;instancename&gt;/&lt;plugindir&gt; directory. But if you need you may use
- * a different directory.
+ * share/apps/&lt;instancename&gt;/&lt;plugindir&gt; directory. But if you need
+ * you may use a different directory.
  *
  * Often a program has more than one kind of plugin. In that case you want to
  * make a visible distinction between those plugins. All you have to do is to
@@ -192,5 +192,5 @@ class KPluginSelector : public QWidget
         KPluginSelectorPrivate * d;
 };
 
-// vim: sw=4 sts=4 et
+// vim: sw=4 sts=4 et tw=80
 #endif // KPLUGINSELECTOR_H
