@@ -24,7 +24,7 @@
  * when a particular format is requested. Each format can be identified
  * by a unique type id string.
  *
- * \b Formats: \n
+ * \b Formats:
  *
  * Currently supported formats include:
  * @li BMP     \<read\> \<write\>
@@ -44,12 +44,12 @@
  * @li XPM     \<read\> \<write\>
  * @li XV      \<read\> \<write\>
  *
- * \b Usage:\n
+ * \b Usage:
  *
  * Simply call the KImageIO::registerFormats() static method declared
  * in kimageio.h.
  *
- * \b Example:\n
+ * \b Example:
  *
  * \code
   #include<qpixmap.h>

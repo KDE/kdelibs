@@ -52,10 +52,11 @@ public:
 	/**
 	Constructor that creates browser for domain list. This does not use global
 	configuration at all.
-	@param domain List of domains 
+	@param domains List of domains 
 	@param recursive TRUE - specified domains will be recursively browsed to
 	discover more domains. This means that every domain (specified in constructor,
 	or found by query) will be queried for list of more browsing domains. 
+	@param parent Parent object.
 	This process is recursive.
 	 */
 	DomainBrowser(const QStringList& domains, bool recursive=false, QObject *parent=0);
