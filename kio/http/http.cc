@@ -907,11 +907,7 @@ bool HTTPProtocol::http_open()
     }
 
     header += " HTTP/1.1\r\n"; /* start header */
-    // With SSL we don't keep the connection.
-    if (m_bIsSSL)
-      header += "Connection: Close\r\n";
-    else
-      header += "Connection: Keep-Alive\r\n";
+    header += "Connection: Keep-Alive\r\n";
 
     if (!m_request.userAgent.isEmpty())
         header += "User-Agent: " + m_request.userAgent + "\r\n";
@@ -1245,8 +1241,7 @@ bool HTTPProtocol::readHeader()
          }
          else
          {
-            if (!m_bIsSSL)
-               m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
+            m_bKeepAlive = true; // HTTP 1.1 has persistant connections.
          }
       }
 
@@ -1569,9 +1564,7 @@ bool HTTPProtocol::readHeader()
         if (strncasecmp(trimLead(buf + 11), "Close", 5) == 0) {
           m_bKeepAlive = false;
         } else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0) {
-          // Don't do persistant connections with SSL.
-          if (!m_bIsSSL)
-             m_bKeepAlive = true;
+          m_bKeepAlive = true;
         }
 
       }
