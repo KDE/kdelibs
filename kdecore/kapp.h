@@ -424,6 +424,13 @@ public:
    * @return A truly unpredictable number in the range [0, MAX_RAND)
    */
   static int random();
+  
+  /**
+   * Generate a random string.  It operates in the range [A-Za-z0-9]
+   * @param length Generate a string of this length.  If negative, the
+   *               length will be random as well (from 0 to MAX_RAND)
+   */
+  static QString randomString(int length=-1);
 
   /**
    * Add a message type to the KIPC event mask. You can only add "system
@@ -680,6 +687,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.140  2000/03/24 22:18:59  ettrich
+// session management fixes
+//
 // Revision 1.139  2000/03/19 19:16:01  faure
 // Let the thing be called SettingsChanged, and defined an enum for each
 // type of settings. Currently only SETTINGS_MOUSE is used, but feel free

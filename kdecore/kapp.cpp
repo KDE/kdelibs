@@ -1581,6 +1581,26 @@ int KApplication::random()
    return rand();
 }
 
+QString KApplication::randomString(int length)
+{
+   if (!length) return QString::null;
+   if (length<0)
+      length=random();
+   
+   char *string=new char[length+1];	
+   while (length--)
+   {
+      int r=random() % 62;
+      r+=48;
+      if (r>57) r+=7;
+      if (r>90) r+=6;
+      string[length]=(char)r;
+      // so what if I work backwards?
+   }
+   QString str(string);
+   delete [] string;
+   return str;
+}
 
 
 #include "kapp.moc"
