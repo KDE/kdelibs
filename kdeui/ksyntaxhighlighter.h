@@ -62,7 +62,7 @@ private:
     KSyntaxHighlighterPrivate *d;
 };
 
-class KSpellingHighlighter : public KSyntaxHighlighter
+class KDEUI_EXPORT KSpellingHighlighter : public KSyntaxHighlighter
 {
 public:
     KSpellingHighlighter( QTextEdit *textEdit,

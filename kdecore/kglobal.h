@@ -217,7 +217,7 @@ inline const T& kClamp( const T& x, const T& low, const T& high )
  * qstricmp fails with e.g. the Turkish locale where 'I'.lower() != 'i'
  * @since 3.4
  */
-int kasciistricmp( const char *str1, const char *str2 );
+int KDECORE_EXPORT kasciistricmp( const char *str1, const char *str2 );
  
 
 /**

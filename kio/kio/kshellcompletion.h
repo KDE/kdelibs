@@ -37,7 +37,7 @@ class KShellCompletionPrivate;
  * @short Shell-like completion of file names
  * @author David Smith <dsmith@algonet.se>
  */
-class KShellCompletion : public KURLCompletion 
+class KIO_EXPORT KShellCompletion : public KURLCompletion 
 {
 	Q_OBJECT
 

@@ -24,6 +24,7 @@
 #include "kmedia2.h"
 #include <qobject.h>
 #include "soundserver.h"
+#include <kdelibs_export.h>
 
 /**
  * KArtsServer is a wrapper to conveniently get a reference to a SoundServer,
@@ -33,7 +34,7 @@
  * artsd on KDE startup, but at the very least there will always be third
  * party PlayObjects that will crash.  So, this is necessary.
  */
-class KArtsServer : public QObject
+class ARTS_EXPORT KArtsServer : public QObject
 {
 Q_OBJECT
 

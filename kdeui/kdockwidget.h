@@ -149,7 +149,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDockWidgetAbstractHeaderDrag : public QFrame
+class KDEUI_EXPORT KDockWidgetAbstractHeaderDrag : public QFrame
 {
   Q_OBJECT
 public:
@@ -194,7 +194,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDockWidgetHeaderDrag : public KDockWidgetAbstractHeaderDrag
+class KDEUI_EXPORT KDockWidgetHeaderDrag : public KDockWidgetAbstractHeaderDrag
 {
   Q_OBJECT
 public:

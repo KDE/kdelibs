@@ -65,7 +65,7 @@ typedef QMap<int, QString> PresenceStringMap;
  * @since 3.3
  * @author Will Stephenson <lists@stevello.free-online.co.uk>
  */
-class KIMProxy : public QObject, virtual public KIMProxyIface
+class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 {
 	Q_OBJECT
 
