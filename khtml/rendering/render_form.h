@@ -401,22 +401,9 @@ class TextAreaWidget : public KTextEdit
 public:
     TextAreaWidget(int wrap, QWidget* parent);
     ~TextAreaWidget();
-    void highLightWord( unsigned int length, unsigned int pos );
+
 protected:
     virtual bool event (QEvent *e );
-    virtual QPopupMenu *createPopupMenu(const QPoint &pos);
-    void posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col);
-
-protected slots:
-    void slotCheckSpelling();
-    void slotSpellCheckReady(KSpell *s);
-    void slotSpellCheckDone(const QString &s);
-    void spellCheckerMisspelling( const QString &, const QStringList &, unsigned int );
-    void spellCheckerCorrected( const QString &, const QString &, unsigned int );
-    void spellCheckerFinished();
-
-private:
-    KSpell *m_spell;
 };
 
 

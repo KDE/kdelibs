@@ -1234,7 +1234,8 @@ void RenderSelect::updateSelection()
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent)
 {
-    m_spell = 0L;
+    setCheckSpelling( true );
+
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QTextEdit::WidgetWidth);
         setHScrollBarMode( AlwaysOff );
@@ -1272,90 +1273,9 @@ bool TextAreaWidget::event( QEvent *e )
     return KTextEdit::event( e );
 }
 
-QPopupMenu *TextAreaWidget::createPopupMenu( const QPoint &pos )
-{
-    QPopupMenu *m = KTextEdit::createPopupMenu( pos );
-    m->insertSeparator();
-    int id = m->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), this, SLOT( slotCheckSpelling() ) );
-
-    if( text().isEmpty() )
-	m->setItemEnabled( id, false );
-
-    return m;
-}
-
-void TextAreaWidget::slotCheckSpelling()
-{
-    delete m_spell;
-    m_spell = new KSpell( this, i18n( "Spell Checking" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
-
-    connect( m_spell, SIGNAL( death() ),
-             this, SLOT( spellCheckerFinished() ) );
-
-    connect( m_spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
-
-    connect( m_spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
-
-}
-
-//code from kedit.
-void TextAreaWidget::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos)
-{
-    highLightWord( text.length(),pos );
-}
-
-void TextAreaWidget::highLightWord( unsigned int length, unsigned int pos )
-{
-    unsigned int l = 0;
-    unsigned int cnt = 0;
-    posToRowCol (pos, l, cnt);
-    setSelection(l, cnt, l, cnt+length);
-}
-
-void TextAreaWidget::spellCheckerCorrected( const QString &oldWord, const QString &newWord, unsigned int pos)
-{
-    unsigned int l = 0;
-    unsigned int cnt = 0;
-    if( oldWord != newWord )
-    {
-        posToRowCol (pos, l, cnt);
-        setSelection(l, cnt, l, cnt+oldWord.length());
-        removeSelectedText();
-        insert(newWord);
-    }
-}
-
-void  TextAreaWidget::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col)
-{
-  for (line = 0; line < static_cast<uint>(lines()) && col <= pos; line++)
-  {
-    col += paragraphLength(line)+1;
-  }
-  line--;
-  col = pos - col + paragraphLength(line) + 1;
-}
-
-void TextAreaWidget::spellCheckerFinished()
-{
-
-}
-
-void TextAreaWidget::slotSpellCheckReady( KSpell *s )
-{
-    s->check( text() );
-    connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
-}
-
-void TextAreaWidget::slotSpellCheckDone( const QString &s )
-{
-    if( s != text() )
-	setText( s );
-}
-
 TextAreaWidget::~TextAreaWidget()
 {
-    delete m_spell;
-    m_spell=0L;
+
 }
 
 // -------------------------------------------------------------------------
@@ -1375,13 +1295,6 @@ RenderTextArea::~RenderTextArea()
         element()->m_value = text();
         element()->m_dirtyvalue = false;
     }
-}
-
-void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
-{
-    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    if ( w )
-        w->highLightWord( length, pos );
 }
 
 void RenderTextArea::handleFocusOut()
@@ -1468,6 +1381,15 @@ QString RenderTextArea::text()
 
     return txt;
 }
+
+
+void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
+{
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    if ( w )
+        w->highLightWord( length, pos );
+}
+
 
 void RenderTextArea::slotTextChanged()
 {
