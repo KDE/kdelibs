@@ -17,7 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 #ifndef _KROOTPROP_H
-#define _KROOTPROP_H_
+#define _KROOTPROP_H
 
 #include <kapp.h>
 
