@@ -382,6 +382,14 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
   if (DOMDocument::hasProperty(exec, propertyName))
     return DOMDocument::tryGet(exec, propertyName);
 
+  // allow shortcuts like 'document.Applet1' instead of document.applets.Applet1
+  if (doc.isHTMLDocument()) { // might be XML
+    DOM::HTMLCollection coll = doc.applets();
+    DOM::HTMLElement element = coll.namedItem(propertyName.string());
+    if (!element.isNull()) {
+      return getDOMNode(exec,element);
+    }
+  }
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found" << endl;
 #endif
