@@ -114,7 +114,7 @@ static QString sycocaPath()
         path = QFile::decodeName(ksycoca_env);
   }
 
-  return path;     
+  return path;
 }
 
 static QString oldSycocaPath()
@@ -455,7 +455,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
   }
 }
 
-void KBuildSycoca::recreate()
+bool KBuildSycoca::recreate()
 {
   QString path(sycocaPath());
 #ifdef Q_WS_WIN
@@ -474,7 +474,7 @@ void KBuildSycoca::recreate()
     if (!silent)
       KMessageBox::error(0, i18n("Error creating database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.local8Bit().data()), i18n("KBuildSycoca"));
 #endif
-    exit(-1);
+    return false;
   }
 
   m_str = database.dataStream();
@@ -499,7 +499,11 @@ void KBuildSycoca::recreate()
     {
       fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database.name().local8Bit().data());
       fprintf(stderr, "kbuildsycoca: Disk full?\n");
-      return;
+#ifdef KBUILDSYCOCA_GUI
+      if (!silent)
+        KMessageBox::error(0, i18n("Error writing database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n").arg(path.local8Bit().data()), i18n("KBuildSycoca"));
+#endif
+      return false;
     }
   }
   else
@@ -507,7 +511,7 @@ void KBuildSycoca::recreate()
     m_str = 0L;
     database.abort();
     if (bMenuTest)
-       return;
+       return true;
     kdDebug(7021) << "Database is up to date" << endl;
   }
 
@@ -536,6 +540,7 @@ void KBuildSycoca::recreate()
        }
     }
   }
+  return true;
 }
 
 void KBuildSycoca::save()
@@ -902,7 +907,13 @@ extern "C" int kdemain(int argc, char **argv)
       KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
       if (args->isSet("track"))
          sycoca->setTrackId(QString::fromLocal8Bit(args->getOption("track")));
-      sycoca->recreate();
+      if (!sycoca->recreate()) {
+#ifdef KBUILDSYCOCA_GUI
+        if (!silent || showprogress)
+          progress.close();
+#endif
+        return -1;
+      }
 
       if (bGlobalDatabase)
       {

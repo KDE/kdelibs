@@ -43,7 +43,7 @@ public:
    /**
     * Recreate the database file
     */
-   void recreate();
+   bool recreate();
 
    static bool checkTimestamps( Q_UINT32 timestamp, const QStringList &dirs );
 
