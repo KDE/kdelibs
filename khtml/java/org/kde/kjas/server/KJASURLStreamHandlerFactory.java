@@ -453,9 +453,9 @@ final class KJASHttpURLConnection extends HttpURLConnection
         if (security != null)
             security.checkPermission(getPermission());
         kioconnection.connect(doInput);
+        connected = true;
         if (kioconnection.responseCode == 404)
             throw new FileNotFoundException(url.toExternalForm());
-        connected = true;
     }
     public void disconnect() {
         kioconnection.disconnect();
@@ -476,7 +476,7 @@ final class KJASHttpURLConnection extends HttpURLConnection
     public InputStream getErrorStream() {
         Main.debug("KJASHttpURLConnection.getErrorStream" + url);
         try {
-            if (kioconnection.responseCode == 404)
+            if (connected && kioconnection.responseCode == 404)
                 return kioconnection.getInputStream();
         } catch (Exception ex) {}
         return null;
