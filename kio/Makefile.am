@@ -31,6 +31,7 @@ libkio_la_LDFLAGS = -version-info 6:0:2 -no-undefined $(all_libraries) \
 libkio_la_LIBADD = kssl/libkssl.la kio/libkiocore.la \
 	kio/libksycoca.la bookmarks/libkbookmarks.la kfile/libkfile.la \
 	../kdeui/libkdeui.la ../kdesu/libkdesu.la \
+	../kwallet/client/libkwalletclient.la \
 	$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 kde_mime_DATA = magic

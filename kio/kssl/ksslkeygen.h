@@ -71,7 +71,7 @@ public:
 	 *  @param e the value of the "e" parameter in RSA
 	 *  @return 0 on success, non-zero on error
 	 */
-	static int generateCSR(QString name, QString pass, int bits, int e = 0x10001);
+	int generateCSR(const QString& name, const QString& pass, int bits, int e = 0x10001);
 
 	/**
 	 *  Set the key size.

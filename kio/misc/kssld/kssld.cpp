@@ -97,7 +97,7 @@ class KSSLCNode {
 				policy = KSSLCertificateCache::Unknown; 
 				permanent = true;
 			}
-		~KSSLCNode() { if (cert) delete cert; }
+		~KSSLCNode() { delete cert; }
 };
 
 

@@ -848,6 +848,30 @@ public:
    /* Encode SSL_SESSION to ASN.1 */
    int i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp);
 
+   /* Write privatekey to FILE stream */
+   int i2d_PrivateKey_fp(FILE*, EVP_PKEY*);
+
+   /* Write PKCS#8privatekey to FILE stream */
+   int i2d_PKCS8PrivateKey_fp(FILE*, EVP_PKEY*, const EVP_CIPHER*, char*, int, pem_password_cb*, void*);
+
+   /* Free RSA structure */
+   void RSA_free(RSA*);
+
+   /* Get a blowfish CBC pointer */
+   EVP_CIPHER *EVP_bf_cbc();
+
+   /* Sign a CSR */
+   int X509_REQ_sign(X509_REQ*, EVP_PKEY*, const EVP_MD*);
+
+   /* add a name entry */
+   int X509_NAME_add_entry_by_txt(X509_NAME*, char*, int, unsigned char*, int, int, int);
+
+   /* Create a name */
+   X509_NAME *X509_NAME_new();
+
+   /* Set the subject */
+   int X509_REQ_set_subject_name(X509_REQ*,X509_NAME*);
+
 #endif
 
 private:

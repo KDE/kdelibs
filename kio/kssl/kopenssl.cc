@@ -188,6 +188,14 @@ static EVP_CIPHER *(*K_EVP_des_cbc)() = 0L;
 static EVP_CIPHER *(*K_EVP_rc2_cbc)() = 0L;
 static EVP_CIPHER *(*K_EVP_rc2_64_cbc)() = 0L;
 static EVP_CIPHER *(*K_EVP_rc2_40_cbc)() = 0L;
+static int (*K_i2d_PrivateKey_fp)(FILE*,EVP_PKEY*) = 0L;
+static int (*K_i2d_PKCS8PrivateKey_fp)(FILE*, EVP_PKEY*, const EVP_CIPHER*, char*, int, pem_password_cb*, void*) = 0L;
+static void (*K_RSA_free)() = 0L;
+static EVP_CIPHER *(*K_EVP_bf_cbc)() = 0L;
+static int (*K_X509_REQ_sign)(X509_REQ*, EVP_PKEY*, const EVP_MD*) = 0L;
+static int (*K_X509_NAME_add_entry_by_txt)(X509_NAME*, char*, int, unsigned char*, int, int, int) = 0L;
+static X509_NAME *(*K_X509_NAME_new)() = 0L;
+static int (*K_X509_REQ_set_subject_name)(X509_REQ*,X509_NAME*) = 0L;
 #endif
 }
 
@@ -459,6 +467,14 @@ KConfig *cfg;
       K_EVP_rc2_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_rc2_cbc");
       K_EVP_rc2_64_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_rc2_64_cbc");
       K_EVP_rc2_40_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_rc2_40_cbc");
+      K_i2d_PrivateKey_fp = (int (*)(FILE*,EVP_PKEY*)) _cryptoLib->symbol("i2d_PrivateKey_fp");
+      K_i2d_PKCS8PrivateKey_fp = (int (*)(FILE*, EVP_PKEY*, const EVP_CIPHER*, char*, int, pem_password_cb*, void*)) _cryptoLib->symbol("i2d_PKCS8PrivateKey_fp");
+      K_RSA_free = (void (*)()) _cryptoLib->symbol("RSA_free");
+      K_EVP_bf_cbc = (EVP_CIPHER *(*)()) _cryptoLib->symbol("EVP_bf_cbc");
+      K_X509_REQ_sign = (int (*)(X509_REQ*, EVP_PKEY*, const EVP_MD*)) _cryptoLib->symbol("X509_REQ_sign");
+      K_X509_NAME_add_entry_by_txt = (int (*)(X509_NAME*, char*, int, unsigned char*, int, int, int)) _cryptoLib->symbol("X509_NAME_add_entry_by_txt");
+      K_X509_NAME_new = (X509_NAME *(*)()) _cryptoLib->symbol("X509_NAME_new");
+      K_X509_REQ_set_subject_name = (int (*)(X509_REQ*,X509_NAME*)) _cryptoLib->symbol("X509_REQ_set_subject_name");
 #endif
    }
 
@@ -570,10 +586,12 @@ static KStaticDeleter<KOpenSSLProxy> medProxy;
 
 
 KOpenSSLProxy::~KOpenSSLProxy() {
-   if (_sslLib)
+   if (_sslLib) {
 	_sslLib->unload();
-   if (_cryptoLib)
+   }
+   if (_cryptoLib) {
 	_cryptoLib->unload();
+   }
    medProxy.setObject(0);
 }
 
@@ -1441,6 +1459,54 @@ SSL_SESSION *KOpenSSLProxy::d2i_SSL_SESSION(SSL_SESSION **a, unsigned char **pp,
 int KOpenSSLProxy::i2d_SSL_SESSION(SSL_SESSION *in, unsigned char **pp) {
    if (K_i2d_SSL_SESSION) return (K_i2d_SSL_SESSION)(in, pp);
    else return -1;
+}
+
+
+int KOpenSSLProxy::i2d_PrivateKey_fp(FILE *fp, EVP_PKEY *p) {
+   if (K_i2d_PrivateKey_fp) return (K_i2d_PrivateKey_fp)(fp, p);
+   else return -1;
+}
+
+
+int KOpenSSLProxy::i2d_PKCS8PrivateKey_fp(FILE *fp, EVP_PKEY *p, const EVP_CIPHER *c, char *k, int klen, pem_password_cb *cb, void *u) {
+   if (K_i2d_PKCS8PrivateKey_fp) return (K_i2d_PKCS8PrivateKey_fp)(fp, p, c, k, klen, cb, u);
+   else return -1;
+}
+
+
+void KOpenSSLProxy::RSA_free(RSA *rsa) {
+   if (K_RSA_free) (K_RSA_free)(rsa);
+}
+
+
+EVP_CIPHER *KOpenSSLProxy::EVP_bf_cbc() {
+   if (K_EVP_bf_cbc) return (K_EVP_bf_cbc)();
+   return 0L;
+}
+
+
+int KOpenSSLProxy::X509_REQ_sign(X509_REQ *x, EVP_PKEY *pkey, const EVP_MD *md) {
+   if (K_X509_REQ_sign) return (K_X509_REQ_sign)(x, pkey, md);
+   return -1;
+}
+
+
+int KOpenSSLProxy::X509_NAME_add_entry_by_txt(X509_NAME *name, char *field,
+                   int type, unsigned char *bytes, int len, int loc, int set) {
+   if (K_X509_NAME_add_entry_by_txt) return (K_X509_NAME_add_entry_by_txt)(name, field, type, bytes, len, loc, set);
+   return -1;
+}
+
+
+X509_NAME *KOpenSSLProxy::X509_NAME_new() {
+  if (K_X509_NAME_new) return (K_X509_NAME_new)();
+  return 0L;
+}
+
+
+int KOpenSSLProxy::X509_REQ_set_subject_name(X509_REQ *req,X509_NAME *name) {
+   if (K_X509_REQ_set_subject_name) return (K_X509_REQ_set_subject_name)(req, name);
+   return -1;
 }
 
 
