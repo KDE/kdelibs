@@ -107,6 +107,8 @@ bool KProgress::textEnabled() const
 void KProgress::setFormat(const QString & format)
 {
     mFormat = format;
+    if (mFormat != "%p%")
+        setCenterIndicator(true);
 }
 
 QString KProgress::format() const
