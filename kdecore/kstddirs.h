@@ -30,22 +30,24 @@
 * @ref KApplication::dirs method.
 *
 * standard resources that kdelibs allocates are:
-* @li exe - executables in $prefix/bin. @see findExe for a function 
-*     that takes $PATH into account
+*
+* @li appdata - application specific data dir (if instantiated from KGlobal)
+* @li apps - applications menu (.desktop files)
 * @li cgi - CGIs to run from kdehelp
 * @li config - configuration files
-* @li apps - applications menu (.desktop files)
 * @li data - where applications store data
-* @li appdata - application specific data dir (if instantiated from KGlobal)
+* @li exe - executables in $prefix/bin. @see findExe for a function that takes $PATH into account 
 * @li html - HTML documentation 
 * @li icon - icons
-* @li mini - miniature icons
+* @li lib - libs
 * @li locale - translation files for KLocale
 * @li mime - mime types
+* @li mini - miniature icons
 * @li services - services
+* @li servicetypes - service types
+* @li sound - application sounds
 * @li toolbar - toolbar pictures
 * @li wallpaper - wallpapers
-* @li sound - application sounds
 * 
 * @author Sirtaj Singh Kang <taj@kde.org>
 * @version $Id$
