@@ -270,12 +270,11 @@ unsigned short TextImpl::nodeType() const
 
 void TextImpl::attach(KHTMLView *w)
 {
-    setStyle(new RenderStyle(parentNode()->style()));
     RenderObject *r = _parent->renderer();
-    if(r)
+    if(r && style())
     {
 	m_render = new RenderText(str);
-	m_render->setStyle(m_style);
+	m_render->setStyle(style());
 	r->addChild(m_render, _next ? _next->renderer() : 0);
     }
     CharacterDataImpl::attach(w);
@@ -293,6 +292,11 @@ void TextImpl::applyChanges(bool,bool force)
     if (force || changed())
 	recalcStyle();
     setChanged(false);
+}
+
+khtml::RenderStyle *TextImpl::style()
+{
+    return _parent ? _parent->style() : 0;
 }
 
 bool TextImpl::mouseEvent( int _x, int _y,
@@ -353,8 +357,7 @@ void TextImpl::recalcStyle()
 {
     if (!parentNode())
 	return;
-    setStyle(parentNode()->activeStyle());
-    if(m_render) m_render->setStyle(m_style);
+    if(m_render) m_render->setStyle(parentNode()->activeStyle());
 }
 
 // DOM Section 1.1.1

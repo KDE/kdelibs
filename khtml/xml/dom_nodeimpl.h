@@ -266,14 +266,11 @@ public:
 
     virtual void setPreviousSibling(NodeImpl *);
     virtual void setNextSibling(NodeImpl *);
-    virtual khtml::RenderStyle *style() { return m_style; }
-    virtual void setStyle(khtml::RenderStyle *style);
 
 protected:
     NodeImpl *_parent;
     NodeImpl *_previous;
     NodeImpl *_next;
-    khtml::RenderStyle *m_style;
 
     // helper function; throws exception if modifying a readonly node
     bool checkReadOnly();
@@ -311,9 +308,13 @@ public:
     virtual void setOwnerDocument(DocumentImpl *_document);
     virtual void cloneChildNodes(NodeImpl *clone, int &exceptioncode);
 
+    virtual void setStyle(khtml::RenderStyle *style);
+    virtual khtml::RenderStyle *style() { return m_style; }
+
 protected:
     NodeImpl *_first;
     NodeImpl *_last;
+    khtml::RenderStyle *m_style;
 
     // helper functions for inserting children:
 

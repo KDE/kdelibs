@@ -99,6 +99,8 @@ public:
 
     virtual ushort id() const;
 
+    virtual khtml::RenderStyle *style();
+
     virtual void attach(KHTMLView *);
     virtual void detach();
     virtual void applyChanges(bool top=true, bool force=true);

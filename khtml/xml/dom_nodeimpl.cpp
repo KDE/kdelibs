@@ -395,7 +395,6 @@ NodeWParentImpl::NodeWParentImpl(DocumentImpl *doc) : NodeImpl(doc)
     _parent = 0;
     _previous = 0;
     _next = 0;
-    m_style = 0;
 }
 
 NodeWParentImpl::~NodeWParentImpl()
@@ -404,8 +403,6 @@ NodeWParentImpl::~NodeWParentImpl()
     // hope this fix is fine...
     if(_previous) _previous->setNextSibling(0);
     if(_next) _next->setPreviousSibling(0);
-    if (m_style)
-	m_style->deref();
 }
 
 NodeImpl *NodeWParentImpl::parentNode() const
@@ -451,21 +448,12 @@ bool NodeWParentImpl::checkReadOnly()
     return false;
 }
 
-void NodeWParentImpl::setStyle(khtml::RenderStyle *style)
-{
-    RenderStyle *oldStyle = m_style;
-    m_style = style;
-    if (m_style)
-	m_style->ref();
-    if (oldStyle)
-	oldStyle->deref();
-}
-
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::NodeBaseImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 {
     _first = _last = 0;
+    m_style = 0;
 }
 
 NodeBaseImpl::~NodeBaseImpl()
@@ -486,6 +474,8 @@ NodeBaseImpl::~NodeBaseImpl()
 	else
 	    n->setOwnerDocument(0);
     }
+    if (m_style)
+	m_style->deref();
 }
 
 NodeImpl *NodeBaseImpl::firstChild() const
@@ -882,6 +872,16 @@ void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)
     {
 	clone->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
     }
+}
+
+void NodeBaseImpl::setStyle(khtml::RenderStyle *style)
+{
+    RenderStyle *oldStyle = m_style;
+    m_style = style;
+    if (m_style)
+	m_style->ref();
+    if (oldStyle)
+	oldStyle->deref();
 }
 
 // ---------------------------------------------------------------------------
