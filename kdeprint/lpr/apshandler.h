@@ -17,39 +17,30 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef MATICHANDLER_H
-#define MATICHANDLER_H
+#ifndef APSHANDLER_H
+#define APSHANDLER_H
 
 #include "lprhandler.h"
 
-#include <kurl.h>
+#include <qmap.h>
 
-class MaticBlock;
-
-class MaticHandler : public LprHandler
+class ApsHandler : public LprHandler
 {
 public:
-	MaticHandler(KMManager *mgr = 0);
+	ApsHandler(KMManager*);
 
 	bool validate(PrintcapEntry*);
 	KMPrinter* createPrinter(PrintcapEntry*);
 	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
 	DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
 	DrMain* loadDbDriver(const QString&);
-	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
-	PrintcapEntry* createEntry(KMPrinter*);
-	bool removePrinter(KMPrinter*, PrintcapEntry*);
-	QString printOptions(KPrinter*);
 
 private:
-	MaticBlock* loadMaticData(const QString&);
-	DrMain* loadMaticDriver(const QString&);
-	KURL parsePostpipe(const QString&);
-	QString createPostpipe(const KURL&);
-
-private:
-	QString	m_exematicpath;
-	QString	m_ncpath, m_smbpath, m_rlprpath;
+	QMap<QString,QString> loadResources(PrintcapEntry*);
+	QMap<QString,QString> loadVarFile(const QString&);
+	QString sysconfDir();
+	QString shareDir();
+	DrMain* loadApsDriver(bool = false);
 };
 
 #endif

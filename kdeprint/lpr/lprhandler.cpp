@@ -47,16 +47,27 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 {
     prt->setDescription(i18n("Unknown (unrecognized entry)"));
     QString val = entry->field("lp");
+    KURL uri;
     if (!val.isEmpty() && val != "/dev/null")
+    {
         prt->setLocation(i18n("Local printer on %1").arg(val));
+        uri.setProtocol("parallel");
+        uri.setPath(val);
+    }
     else if (!(val = entry->field("rm")).isEmpty())
+    {
         prt->setLocation(i18n("Remote queue (%1) on %2").arg(entry->field("rp")).arg(val));
+        uri.setProtocol("lpd");
+        uri.setHost(val);
+        uri.setPath("/" + entry->field("rp"));
+    }
     else
         prt->setLocation(i18n("Unknown (unrecognized entry)"));
+    prt->setDevice(uri);
 	return true;
 }
 
-DrMain* LprHandler::loadDriver(KMPrinter*, PrintcapEntry*)
+DrMain* LprHandler::loadDriver(KMPrinter*, PrintcapEntry*, bool)
 {
 	manager()->setErrorMsg(i18n("Unrecognized entry."));
 	return NULL;

@@ -36,7 +36,7 @@ public:
 	virtual bool validate(PrintcapEntry*);
 	virtual KMPrinter* createPrinter(PrintcapEntry*);
 	virtual bool completePrinter(KMPrinter*, PrintcapEntry*, bool shortmode = true);
-	virtual DrMain* loadDriver(KMPrinter*, PrintcapEntry*);
+	virtual DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
 	virtual DrMain* loadDbDriver(const QString&);
 	virtual bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
 	virtual PrintcapEntry* createEntry(KMPrinter*);

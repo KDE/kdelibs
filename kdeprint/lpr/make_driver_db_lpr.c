@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #define FOOMATIC_BASE	"/usr/share/foomatic/db/source"
+#define APS_BASE		"/usr/share/apsfilter/setup"
 
 char	**files;
 int	nfiles, maxfiles;
@@ -155,6 +156,67 @@ int initMatic(void)
 	return n;
 }
 
+void parseApsFile(char *filename, FILE *output)
+{
+	FILE	*apsfile;
+	char	buf[256];
+	char	*c, *d;
+
+	apsfile = fopen(filename, "r");
+	if (apsfile == NULL)
+		return;
+	while (fgets(buf, 255, apsfile) != NULL)
+	{
+		if ((c = strchr(buf, '\n')) != NULL)
+			*c = 0;
+		if (strlen(buf) == 0 || buf[0] == '#' || (c = strchr(buf, '|')) == NULL)
+			continue;
+		*c = 0;
+		fprintf(output, "FILE=apsfilter/%s\n", c+1);
+		d = strchr(buf, ' ');
+		if (d)
+		{
+			*d = 0;
+			fprintf(output, "MANUFACTURER=%s\n", buf);
+			fprintf(output, "MODELNAME=%s\n", d+1);
+			fprintf(output, "MODEL=%s\n", d+1);
+			fprintf(output, "DESCRIPTION=%s %s (APSFilter + %s)\n", buf, d+1, c+1);
+		}
+		else
+		{
+			fprintf(output, "MANUFACTURER=Unknown\n");
+			fprintf(output, "MODELNAME=%s\n", buf);
+			fprintf(output, "MODEL=%s\n", buf);
+			fprintf(output, "DESCRIPTION=%s (APSFilter + %s)\n", buf, c+1);
+		}
+		fprintf(output, "\n");
+	}
+	fclose(apsfile);
+}
+
+int initAps(void)
+{
+	char	drFile[256];
+	DIR	*apsdir;
+	struct dirent	*d;
+	int	n = 0;
+
+	apsdir = opendir(APS_BASE);
+	if (apsdir == NULL)
+		return 0;
+	while ((d = readdir(apsdir)) != NULL)
+	{
+		if (strncmp(d->d_name, "printer-", 8) != 0)
+			continue;
+		snprintf(drFile, 256, "apsfilter:%s/%s", APS_BASE, d->d_name);
+		checkSize();
+		files[nfiles++] = strdup(drFile);
+		n++;
+	}
+	closedir(apsdir);
+	return n;
+}
+
 void parseAllFiles(FILE *output)
 {
 	int	i;
@@ -162,6 +224,8 @@ void parseAllFiles(FILE *output)
 	{
 		if (strncmp(files[i], "foomatic:", 9) == 0)
 			parseMaticDriverFile(files[i]+9, output);
+		else if (strncmp(files[i], "apsfilter:", 10) == 0)
+			parseApsFile(files[i]+10, output);
 		fprintf(stdout, "%d\n", i);
 		fflush(stdout);
 	}
@@ -190,6 +254,7 @@ int main(int argc, char **argv)
 		dbFile = stdout;
 	initFiles();
 	n += initMatic();
+	/*n += initAps();*/
 	/* do it for other handlers */
 
 	fprintf(stdout, "%d\n", n);

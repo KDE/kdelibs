@@ -1,0 +1,83 @@
+GROUP|general|General
+OPTION|PageSize|Page Size
+CHOICE|a3|A3
+CHOICE|a4|A4
+CHOICE|legal|US Legal
+CHOICE|letter|US Letter
+CHOICE|ledger|Ledger
+CHOICE|tabloid|Tabloid
+DEFAULT|a4
+OPTION|MEDIA|Paper Type
+CHOICE|plain|Plain paper
+CHOICE|coated|Coated (InkJet) paper
+CHOICE|glossy|Glossy paper
+CHOICE|premium|Premium (Photo) paper
+CHOICE|trans|Transparencies
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+OPTION|PAPERTRAY|Input Tray
+CHOICE|tray0|Tray 0
+CHOICE|tray1|Tray 1
+CHOICE|tray2|Tray 2
+CHOICE|tray3|Tray 3
+CHOICE|tray4|Tray 4
+CHOICE|tray5|Tray 5
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+ENDGROUP|
+GROUP|others|Others
+OPTION|COLOR|Color Mode
+CHOICE|color|Color
+CHOICE|gray|Grayscale
+CHOICE|mono|Monochrome
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+OPTION|DUPLEX|Duplex Printing
+CHOICE|duplex|Enabled
+CHOICE|simplex|Disabled
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+OPTION|BINDING|Paper Binding Edge
+CHOICE|shortbind|Short edge
+CHOICE|longbind|Long edge
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+OPTION|QUALITY|Printing Quality
+CHOICE|draft|Draft
+CHOICE|low|Low
+CHOICE|medium|Medium
+CHOICE|high|High
+CHOICE|photo|Photo
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+OPTION|PS_NUP|Pages per Sheet
+CHOICE|1pps|1
+CHOICE|2pps|2
+CHOICE|4pps|4
+CHOICE|8pps|8
+DEFAULT|1pps
+OPTION|SWEEP|Communication Type
+CHOICE|uni|Unidirectional
+CHOICE|bi|Bidirectional
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+ENDGROUP|
+GROUP|text|Text Printing
+OPTION|ASCII_FILTER|Text Converter
+CHOICE|a2ps|a2ps
+CHOICE|mpage|mpage
+CHOICE|enscript|enscript
+CHOICE|recode|recode
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+OPTION|ASCII_HEADER|Header
+CHOICE|header|Enabled
+CHOICE|noheader|Disabled
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+OPTION|ASCII_BORDER|Border
+CHOICE|border|Enabled
+CHOICE|noborder|Disabled
+CHOICE|(empty)|Default setting
+DEFAULT|(empty)
+ENDGROUP|

@@ -272,7 +272,7 @@ QString MaticHandler::createPostpipe(const KURL& url)
 	return str;
 }
 
-DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry)
+DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry, bool)
 {
 	// we need to use a copy of the driver, as the driver
 	// is not self-contained. If the printer is removed (when

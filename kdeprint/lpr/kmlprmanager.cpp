@@ -22,6 +22,7 @@
 #include "printcapentry.h"
 #include "lpchelper.h"
 #include "matichandler.h"
+#include "apshandler.h"
 #include "lprsettings.h"
 #include "driver.h"
 
@@ -45,7 +46,7 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 
 	m_lpchelper = new LpcHelper(this);
 
-	setHasManagement(getuid() == 0);
+	setHasManagement(/*getuid() == 0*/true);
 	setPrinterOperationMask(
 		KMManager::PrinterEnabling |
 		KMManager::PrinterConfigure |
@@ -118,6 +119,9 @@ void KMLprManager::initHandlers()
 	m_handlerlist.clear();
 
 	insertHandler(new MaticHandler(this));
+#if 0
+	insertHandler(new ApsHandler(this));
+#endif
 
 	// default handler
 	insertHandler(new LprHandler("default", this));
@@ -171,13 +175,13 @@ void KMLprManager::checkPrinterState(KMPrinter *prt)
 		prt->setState(KMPrinter::Idle);
 }
 
-DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool)
+DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool config)
 {
 	LprHandler	*handler = findHandler(prt);
 	PrintcapEntry	*entry = findEntry(prt);
 	if (handler && entry)
 	{
-		DrMain	*driver = handler->loadDriver(prt, entry);
+		DrMain	*driver = handler->loadDriver(prt, entry, config);
 		if (driver)
 			driver->set("handler", handler->name());
 		return driver;

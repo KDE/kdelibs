@@ -35,9 +35,22 @@ void PrintcapReader::setPrintcapFile(QFile *f)
 void PrintcapReader::skipBlankLines()
 {
     QString line;
-    while (!m_stream.atEnd() && (line=m_stream.readLine().stripWhiteSpace()).isEmpty()) ;
+    while (!m_stream.atEnd() && (line=nextSingleLine().stripWhiteSpace()).isEmpty()) ;
     if (!line.isEmpty())
         unputLine(line);
+}
+
+QString PrintcapReader::nextSingleLine()
+{
+    QString line;
+    if (!m_buffer.isEmpty())
+    {
+        line = m_buffer;
+        m_buffer = QString::null;
+    }
+    else
+        line = m_stream.readLine();
+    return line;
 }
 
 QString PrintcapReader::nextLine()
