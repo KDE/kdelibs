@@ -54,8 +54,6 @@ public:
     virtual bool isHTMLDocument() const { return true; }
 
     DOMString referrer() const;
-    DOMString domain() const;
-    void setDomain( const DOMString &newDomain ); // not part of the DOM
     DOMString lastModified() const;
     DOMString cookie() const;
     void setCookie( const DOMString &);
@@ -92,7 +90,6 @@ protected slots:
     void slotHistoryChanged();
 private:
     HTMLCollectionImpl::CollectionInfo m_collection_info[HTMLCollectionImpl::LAST_TYPE];
-    mutable DOMString m_domain;
 };
 
 } //namespace

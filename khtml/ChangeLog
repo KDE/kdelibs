@@ -1,3 +1,8 @@
+2004-10-07  David Faure  <faure@kde.org>
+
+        * xml/dom_nodeimpl.cpp (dispatchWindowEvent): Emit load event for frames
+        from there, to avoid bubbling (safari merge)
+
 2004-10-05  Rob Buis   <buis@kde.org>
 	* render/render_form.{cpp,h}:
 	Implemented onchange event generating for checkbox and radio buttons (fixes #51765).
