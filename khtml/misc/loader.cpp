@@ -1007,7 +1007,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 						   const char *accept )
 {
     KURL fullURL = m_doc->completeURL( url.string() );
-    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") return 0;
     if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);
@@ -1018,7 +1018,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString& charset)
 {
     KURL fullURL = m_doc->completeURL( url.string() );
-    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
+    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") return 0;
     if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
 
     bool reload = needReload(fullURL);

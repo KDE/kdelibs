@@ -1902,7 +1902,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
     newURL.setRef(QString::null);
 
     // Prohibit non-file URLs if we are asked to.
-    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file")
+    if (!w || w->part()->onlyLocalReferences() && newURL.protocol() != "file" && newURL.protocol() != "data")
         return false;
 
     // do we allow this suburl ?
