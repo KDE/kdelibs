@@ -67,7 +67,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   bool UDS_URL_seen = false;
   // extract the mode and the filename from the KIO::UDS Entry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); it++ ) {
+  for( ; it != m_entry.end(); ++it ) {
     switch ((*it).m_uds) {
 
         case KIO::UDS_FILE_TYPE:
@@ -275,7 +275,7 @@ QString KFileItem::linkDest() const
 {
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); it++ )
+  for( ; it != m_entry.end(); ++it )
     if ( (*it).m_uds == KIO::UDS_LINK_DEST )
       return (*it).m_str;
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use readlink() [if local URL]
@@ -302,8 +302,8 @@ QString KFileItem::localPath() const
   {
     // Extract the local path from the KIO::UDSEntry
     KIO::UDSEntry::ConstIterator it = m_entry.begin();
-    KIO::UDSEntry::ConstIterator end = m_entry.end();
-    for( ; it != end; it++ )
+    const KIO::UDSEntry::ConstIterator end = m_entry.end();
+    for( ; it != end; ++it )
       if ( (*it).m_uds == KIO::UDS_LOCAL_PATH )
         return (*it).m_str;
   }
@@ -318,7 +318,7 @@ KIO::filesize_t KFileItem::size() const
 
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); it++ )
+  for( ; it != m_entry.end(); ++it )
     if ( (*it).m_uds == KIO::UDS_SIZE ) {
       m_size = (*it).m_long;
       return m_size;
@@ -354,7 +354,7 @@ time_t KFileItem::time( unsigned int which ) const
 
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
-  for( ; it != m_entry.end(); it++ )
+  for( ; it != m_entry.end(); ++it )
     if ( (*it).m_uds == which ) {
       m_time[mappedWhich] = static_cast<time_t>((*it).m_long);
       return m_time[mappedWhich];
