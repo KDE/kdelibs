@@ -74,7 +74,7 @@ private:
 */
 class KConfigWidget : public QWidget
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
 
