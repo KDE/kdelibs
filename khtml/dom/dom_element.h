@@ -156,6 +156,12 @@ public:
      */
     void setValue( const DOMString & );
 
+    /**
+     * The Element node this attribute is attached to or null if this attribute is not in use.
+     * New in DOM 2
+     */
+    Element ownerElement() const;
+
 protected:
 
     Attr( AttrImpl *_impl );

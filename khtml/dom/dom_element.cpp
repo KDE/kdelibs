@@ -75,6 +75,12 @@ bool Attr::specified() const
   return 0;
 }
 
+Element Attr::ownerElement() const
+{
+  if (impl) return ((AttrImpl *)impl)->ownerElement();
+  return Element();
+}
+
 DOMString Attr::value() const
 {
   if (impl) return ((AttrImpl *)impl)->value();
@@ -205,6 +211,5 @@ CSSStyleDeclaration Element::style()
     if (impl) return ((ElementImpl *)impl)->styleRules();
     return 0;
 }
-
 
 
