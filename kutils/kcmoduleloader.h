@@ -28,23 +28,64 @@ class QWidget;
 class KLibLoader;
 
 /**
- * @description loads a KControl Module
+ * @short Loads a KControl Module.
+ *
+ * @description KCModuleLoader tries in several ways 
+ * to locate and load a KCModule. If loading fails a 
+ * zero pointer is returned. \n
+ * It is very unlikely KCModuleLoader is what you want 
+ * and @ref KCModuleProxy suits your needs.
+ * 
  * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  * @since 3.2
  * @internal
 **/
 class KCModuleLoader
 {
-public:
-  static KCModule *loadModule(const KCModuleInfo &mod, bool withfallback=true, QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
-  static KCModule *loadModule(const QString &module, QWidget *parent = 0,
-      const char *name = 0, const QStringList & args = QStringList());
-  static void unloadModule(const KCModuleInfo &mod);
-  static void showLastLoaderError(QWidget *parent);
-private:
-  static KCModule* load(const KCModuleInfo &mod, const QString &libname, KLibLoader *loader, QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
+  public:
+
+    /**
+     * Loads a @ref KCModule. If loading fails a zero pointer is returned.
+     * @param mod what module to load
+     * @param withFallback if true and loading failed a separate window
+     * with the module may appear and a zero pointer is a returned
+     *
+     * @return a pointer to the loaded @ref KCModule
+     *
+     */
+    static KCModule *loadModule(const KCModuleInfo &mod, bool withfallback=true, 
+        QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
+
+    /**
+     * Same as above but takes a @ref QString instead of a @ref KCModuleInfo as 
+     * module specifier
+     * @param module what module to load
+     */
+    static KCModule *loadModule(const QString &module, QWidget *parent = 0,
+        const char *name = 0, const QStringList & args = QStringList());
+
+    /**
+     * Unloads the module's library
+     * @param mod What module to unload for
+     */
+    static void unloadModule(const KCModuleInfo &mod);
+
+    /**
+     * Display a message box explaining an error occured and possible
+     * reasons to why.
+     */
+    static void showLastLoaderError(QWidget *parent);
+
+  private:
+
+    /**
+     * Internal loader called by the public loaders.
+     */
+    static KCModule* load(const KCModuleInfo &mod, const QString &libname, 
+        KLibLoader *loader, QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
 
 };
 
+// vim: ts=2 sw=2 et
 #endif // MODLOADER_H
 
