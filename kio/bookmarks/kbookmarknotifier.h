@@ -36,7 +36,7 @@ public:
 k_dcop_signals:
   void addedBookmark( QString filename, QString url, QString text, QString address, QString icon );
   void createdNewFolder( QString filename, QString text, QString address );
-  void updatedAccessMetadata( QString filename, QString checkUrl, QString address );
+  void updatedAccessMetadata( QString filename, QString url );
 
 };
 
