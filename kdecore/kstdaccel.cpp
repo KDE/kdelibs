@@ -170,10 +170,10 @@ QString KStdAccel::description(StdAccel id)
      case AddBookmark:      return i18n("Add Bookmark");
      case Help:             return i18n("Help");
      case TextCompletion:   return i18n("Text Completion");
-     case PrevCompletion:   return i18n("Previous Match");
-     case NextCompletion:   return i18n("Next Match");
-     case RotateUp:         return i18n("Rotate Up");
-     case RotateDown:       return i18n("Rotate Down");
+     case PrevCompletion:   return i18n("Previous Completion Match");
+     case NextCompletion:   return i18n("Next Completion Match");
+     case RotateUp:         return i18n("Previous Item in List");
+     case RotateDown:       return i18n("Next Item in List");
      case PopupMenuContext: return i18n("Popup Menu Context");
      case WhatThis:         return i18n("What's This");
      case Reload:           return i18n("Reload");
