@@ -89,10 +89,10 @@ ConfigWidget *Factory::configWidget( const QString& type, QWidget *parent )
     return 0;
   }
 
-  PluginFactory *pluginFactory = static_cast<PluginFactory*>( factory );
+  PluginFactoryBase *pluginFactory = static_cast<PluginFactoryBase *>( factory );
 
   if ( !pluginFactory ) {
-    kdDebug() << "KRES::Factory::configWidget(): Cast failed" << endl;
+    kdDebug() << "KRES::Factory::configWidget(): no plugin factory." << endl;
     return 0;
   }
 
@@ -137,10 +137,10 @@ Resource *Factory::resource( const QString& type, const KConfig *config )
     return 0;
   }
 
-  PluginFactory *pluginFactory = static_cast<PluginFactory*>( factory );
+  PluginFactoryBase *pluginFactory = static_cast<PluginFactoryBase *>( factory );
 
   if ( !pluginFactory ) {
-    kdDebug() << "KRES::Factory::resource(): Cast failed" << endl;
+    kdDebug() << "KRES::Factory::resource(): no plugin factory." << endl;
     return 0;
   }
 

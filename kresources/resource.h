@@ -370,7 +370,7 @@ class Resource : public QObject
     ResourcePrivate *d;
 };
 
-class PluginFactory : public KLibFactory
+class PluginFactoryBase : public KLibFactory
 {
   public:
     virtual Resource *resource( const KConfig *config ) = 0;
@@ -385,5 +385,21 @@ class PluginFactory : public KLibFactory
     }
 };
 
+template<class TR,class TC>
+class PluginFactory : public PluginFactoryBase
+{
+  public:
+    Resource *resource( const KConfig *config )
+    {
+      return new TR( config );
+    }
+    
+    ConfigWidget *configWidget( QWidget *parent )
+    {
+      return new TC( parent );
+    }
+};
+
 }
+
 #endif
