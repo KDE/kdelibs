@@ -46,8 +46,7 @@ artswrapper_OBJS = artswrapper.o
 artsshell_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artsshell_SOURCES = artsshell.cc
 
-BUILT_SOURCES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
-DISTCLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
 
 ####### Build rules
 
@@ -60,6 +59,14 @@ kmedia2.h: $(top_srcdir)/arts/soundserver/kmedia2.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/soundserver/kmedia2.idl
 
 kmedia2.cc: kmedia2.h
+
+artscat.cc: soundserver.h
+artsd.cc: soundserver.h
+artsplay.cc: soundserver.h
+artsshell.cc: soundserver.h
+wavplayobject_impl.cc: soundserver.h
+simplesoundserver_impl.cc: soundserver.h
+soundserver_impl.cc: soundserver.h
 
 bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
 

@@ -22,8 +22,7 @@ testchangenotify_SOURCES = value.cc value_impl.cc testchangenotify.cc
 testflowsystem_LDFLAGS = $(FLOWLIBS)
 testflowsystem_SOURCES = value.cc value_impl.cc testflowsystem.cc
 
-BUILT_SOURCES = wrapper.h wrapper.cc value.h value.cc
-DISTCLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = wrapper.h wrapper.cc value.h value.cc
 
 wrapper.h: $(top_srcdir)/arts/tests/wrapper.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/tests/wrapper.idl

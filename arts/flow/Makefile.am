@@ -28,8 +28,7 @@ artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \
   cachedwav.h convert.h pipebuffer.h stdsynthmodule.h \
   synthschedule.h fft.h artsflow.idl 
 
-BUILT_SOURCES = artsflow.cc artsflow.h
-DISTCLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = artsflow.cc artsflow.h
 
 ######## Build rules
 
