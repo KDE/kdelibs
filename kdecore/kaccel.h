@@ -520,7 +520,7 @@ class KAccel : public QAccel
 	  * which is empty if
 	 * @p keyCode is not recognized or zero.
 	 */
-	static QString keyToString( uint keyCode, bool i18_n = FALSE );
+	static QString keyToString( int keyCode, bool i18_n = FALSE );
 
 	// X11-Related Functions
 	enum ModKeysIndex {

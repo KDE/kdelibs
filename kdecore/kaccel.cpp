@@ -550,7 +550,7 @@ static TransKey g_aTransKeySyms[] = {
 	{ Qt::Key_ScrollLock,	XK_Scroll_Lock }
 };
 
-QString KAccel::keyToString( uint keyCombQt, bool bi18n )
+QString KAccel::keyToString( int keyCombQt, bool bi18n )
 {
 	QString keyStr, keyModStr;
 	uint keySymQt = keyCombQt & 0xffff;
@@ -614,7 +614,7 @@ QString KAccel::keyToString( uint keyCombQt, bool bi18n )
 	return keyModStr + keyStr;
 }
 
-uint KAccel::stringToKey(const QString& key)
+int KAccel::stringToKey(const QString& key)
 {
 	QString keyStr = key;
 
