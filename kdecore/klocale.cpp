@@ -26,6 +26,7 @@
 
 #include <qtextcodec.h>
 #include <qfile.h>
+#undef GrayScale // make --enable-final happy
 #include <qprinter.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
