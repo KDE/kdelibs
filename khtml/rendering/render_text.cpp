@@ -491,9 +491,9 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 	deleteChar = true;
 	// reverse String
 	QString aStr = QConstString(str->s+from, len).string();
-	//#ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
 	printf("reversing '%s' len=%d\n", (const char *)aStr.utf8(), len);
-	//#endif
+#endif
 	aStr.compose();
 	len = aStr.length();
 	ch = new QChar[len];
