@@ -645,7 +645,7 @@ public:
      * of NodeFilter for the set of possible SHOW_ values. These flags can be
      * combined using OR.
      *
-     * @param filter The NodeFilter to be used with this TreeWalker, or null to
+     * @param filter The NodeFilter to be used with this NodeIterator, or null to
      * indicate no filter.
      *
      * @param entityReferenceExpansion The value of this flag determines
