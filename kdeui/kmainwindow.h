@@ -38,6 +38,7 @@ class KMenuBar;
 class KMWSessionManaged;
 class KMainWindowPrivate;
 class KAccel;
+class KToolbarMenuAction;
 
 /**
  * Top level widget that provides toolbars, a status line and a frame.
@@ -451,14 +452,10 @@ public slots:
      */
     void setSettingsDirty();
 
-    /**
-     * @internal. Used by kxmlguibuilder to add an entry to the toolbar popup
-     */
-    void addToolbarEntry(KToolBar *b);
-    /**
-     * @internal. Used by kxmlguibuilder to remove an entry from the toolbar popup
-     */
-    void removeToolbarEntry(KToolBar *b);
+   /**
+    * Returns a pointer to the mainwindows action responsible for the toolbars menu
+    */
+    KToolbarMenuAction *toolbarMenuAction();
 
 protected:
     void paintEvent( QPaintEvent* e );

@@ -218,7 +218,6 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     {
         if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
             bar->setXMLGUIClient( d->m_client );
-//	static_cast<KMainWindow*>(d->m_widget)->addToolbarEntry(bar);
     }
 
     bar->loadState( element );
@@ -260,7 +259,6 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
   else if ( container->inherits( "KToolBar" ) )
   {
     KToolBar *tb = static_cast<KToolBar *>( container );
-//    static_cast<KMainWindow*>(d->m_widget)->removeToolbarEntry(tb);
 
     tb->saveState( element );
     delete tb;

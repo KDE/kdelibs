@@ -200,14 +200,9 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 	d->m_interface = new KMainWindowInterface(this);
 }
 
-void KMainWindow::addToolbarEntry(KToolBar *b)
+KToolbarMenuAction *KMainWindow::toolbarMenuAction()
 {
-//	d->toolbarMenu->addToolbar(b);
-}
-
-void KMainWindow::removeToolbarEntry(KToolBar *b)
-{
-//	d->toolbarMenu->removeToolbar(b);
+	return d->toolbarMenu;
 }
 
 void KMainWindow::parseGeometry(bool parsewidth)
