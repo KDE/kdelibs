@@ -62,10 +62,10 @@ RenderFormElement::RenderFormElement(QScrollView *view,
     setInline(true);   // our object is Inline
 
     m_element = element;
-    m_mousePressed = false;
     m_clickX = -1;
     m_clickY = -1;
     m_clickCount = 0;
+    m_clicked = false;
 }
 
 RenderFormElement::~RenderFormElement()
@@ -116,14 +116,11 @@ void RenderFormElement::focus()
 void RenderFormElement::slotBlurred()
 {
     m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
-//    m_element->onBlur();
 }
 
 void RenderFormElement::slotFocused()
 {
     m_element->ownerDocument()->setFocusNode(m_element);
-//    m_element->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
-//    m_element->onFocus();
 }
 
 void RenderFormElement::slotSelected()
@@ -132,6 +129,7 @@ void RenderFormElement::slotSelected()
 
 void RenderFormElement::slotClicked()
 {
+    m_clicked = true; // we should get a mouse release event next, this will handle the click event
 }
 
 void RenderFormElement::slotMousePressed(QMouseEvent *e)
@@ -158,7 +156,7 @@ void RenderFormElement::slotMousePressed(QMouseEvent *e)
 	m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
     else // even click: hyperactivation
 	m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,2);
-    m_mousePressed = true;
+    m_clicked = false;
 }
 
 void RenderFormElement::slotMouseReleased(QMouseEvent *e)
@@ -168,12 +166,16 @@ void RenderFormElement::slotMouseReleased(QMouseEvent *e)
     QMouseEvent e2(e->type(),QPoint(absX,absY)+e->pos(),e->button(),e->state());
     m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEUP_EVENT,m_clickCount);
 
-    if (m_mousePressed) { // ### is this still needed?
-	if (m_clickCount > 0 && m_clickX == absX && m_clickY == absY)
-	    m_element->dispatchMouseEvent(&e2,EventImpl::CLICK_EVENT,m_clickCount);
+    // DOM2 Events section 1.6.2 says that a click is if the mouse was pressed
+    // and released in the "same screen location" - in this case we use the
+    // whole button, to avoid breaking the semantics of normal buttons in Qt.
+    // Clicks with detail > 1 need to be in the same pixel location thoguh.
+    if (m_clicked) {
+	if (m_clickCount <= 0)
+	    m_clickCount = 1;
+	m_element->dispatchMouseEvent(&e2,EventImpl::CLICK_EVENT,m_clickCount);
     }
-
-    m_mousePressed = false;
+    m_clicked = false;
 }
 
 void RenderFormElement::slotMouseDoubleClicked(QMouseEvent *e)

@@ -97,10 +97,10 @@ protected:
     void editableWidgetBlurred( QWidget *widget );
 
     DOM::HTMLGenericFormElementImpl *m_element;
-    bool m_mousePressed;
     int m_clickX;
     int m_clickY;
     int m_clickCount;
+    bool m_clicked;
 
 private:
     KHTMLPartBrowserExtension *browserExt() const;
