@@ -126,7 +126,7 @@ using namespace KJS;
 %type <node>  LogicalANDExpr LogicalORExpr
 %type <node>  ConditionalExpr AssignmentExpr
 %type <node>  ExprOpt
-%type <node>  CallExpr
+
 
 %type <cnode> Catch
 %type <fnode> Finally
