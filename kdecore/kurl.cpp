@@ -753,19 +753,19 @@ QString KURL::path( int _trailing ) const
     return result;
   else if ( _trailing == 1 )
   {
-    if ( result.isEmpty() )
-      return QString::null;
-
-    if ( result[ result.length() - 1 ] != '/' )
+    int len = result.length();
+    if ( len == 0 )
+      result = QString::null;
+    else if ( result[ len - 1 ] != '/' )
       result += "/";
     return result;
   }
   else if ( _trailing == -1 )
   {
-    if ( result == "/" || result.isEmpty() )
-      return "/";
+    if ( result == "/" )
+      return result;
     int len = result.length();
-    if ( result[ len - 1 ] == '/' )
+    if ( len != 0 && result[ len - 1 ] == '/' )
       result.truncate( len - 1 );
     return result;
   }
