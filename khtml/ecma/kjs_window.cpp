@@ -89,8 +89,12 @@ KJSO Screen::get(const UString &p) const
     return Number(QApplication::desktop()->height());
   else if (p == "width")
     return Number(QApplication::desktop()->width());
-  else if (p == "colorDepth")
+  else if (p == "colorDepth" || p == "pixelDepth")
     return Number(m.depth());
+  else if (p == "availLeft")
+    return Number(info.workArea().left());
+  else if (p == "availTop")
+    return Number(info.workArea().top());
   else if (p == "availHeight")
     return Number(info.workArea().width());
   else if (p == "availWidth")
