@@ -23,8 +23,10 @@
 #include <unistd.h>
 
 #ifdef DO_SSL
+#define MD5_CTX SSLeay_MD5_CTX
 #include <ssl.h>
 #include "/usr/local/include/err.h"
+#undef MD5_CTX
 #endif
 
 #ifdef DO_MD5
@@ -179,9 +181,18 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
   HASHHEX HA1;
   HASHHEX HA2 = "";
   HASHHEX Response;
+  char szCNonce[10] = "abcdefghi";
   char szNonceCount[9] = "00000001";
-  DigestCalcHA1("md5", user, realm.c_str(), passwd, nonce.c_str(), 0, HA1);
-  DigestCalcResponse(HA1, nonce.c_str(), szNonceCount, 0, "", "GET", domain.c_str(), HA2, Response);
+
+
+  
+  DigestCalcHA1("md5", user, realm.c_str(), passwd, nonce.c_str(), szCNonce, HA1);
+  DigestCalcResponse(HA1, nonce.c_str(), szNonceCount, szCNonce, qop.c_str(), "GET", domain.c_str(), HA2, Response);
+  t1 += "qop=\"auth\", ";
+
+  t1 += "cnonce=\"";
+  t1 += szCNonce;
+  t1 += "\", ";
 
   t1 += "response=\"";
   t1 += Response;
@@ -787,7 +798,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.032899.3");
+  QString user_agent("Konqueror/1.9.033199");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
