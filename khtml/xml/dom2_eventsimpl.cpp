@@ -558,7 +558,7 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, AbstractViewImpl *view)
 
   // m_keyVal should contain the unicode value
   // of the pressed key if available.
-  if (m_virtKeyVal != DOM_VK_UNDEFINED && !key->text().isEmpty())
+  if (m_virtKeyVal == DOM_VK_UNDEFINED && !key->text().isEmpty())
       m_keyVal = key->text().unicode()[0];
 
   //  m_numPad = ???
