@@ -4,21 +4,18 @@ kded
 kded is responsible for creating the sycoca file, i.e. the binary 
 cache of servicetypes, mimetypes and services, for a particular user.
 
-Upon startup, and whenever such a .desktop file is installed/removed,
-it creates the sycoca file by :
+It uses KDirWatch to monitor the directories contain the .desktop files.
+When a file is added/removed, it waits 5 seconds (in case of series of
+updates), and then launches kbuildsycoca.
+
+kbuildsycoca recreates the sycoca file by:
 * parsing all .desktop files, replacing global ones by local ones (at any
   level of the hierarchy)
 * creating all objects in memory
 * saving everything in the sycoca file (see below for ksycoca internals)
 * clearing all memory
-
-It uses KDirWatch to monitor the directories contain the .desktop files.
-When a file is added/removed, it waits 5 seconds (in case of series of
-updates), recreates the sycoca file, then notifies the applications
-that use ksycoca by a DCOP call (TODO).
-
-kded doesn't have to be fast, it is designed to eat very little memory.
-
+* notifying the applications that use ksycoca by a DCOP call to the ksycoca
+object (KSycoca::databaseChanged()).
 
 Format of the sycoca database file
 ==================================
