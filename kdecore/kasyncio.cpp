@@ -26,3 +26,4 @@
 void KAsyncIO::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+#include "kasyncio.moc"
