@@ -197,7 +197,7 @@ class Synth_AMAN_RECORD_impl :virtual public Synth_AMAN_RECORD_skel,
 							virtual public StdSynthModule
 {
 protected:
-	Synth_BUS_UPLINK downlink;
+	Synth_BUS_DOWNLINK downlink;
 	AudioManagerClient client;
 	bool externalClient;
 public:
@@ -306,7 +306,7 @@ void AudioManager_impl::addAssignable(AudioManagerAssignable *a)
 		{
 			case amPlay:	client->destination("out_soundcard");
 				break;
-			case amRecord:	client->destination("in_microphone");
+			case amRecord:	client->destination("in_soundcard");
 				break;
 		}
 	}
