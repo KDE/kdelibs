@@ -645,6 +645,10 @@ private slots:
    * @internal
    */
   void slotRedirection(KIO::Job*, const KURL&);
+  /**
+   * @internal
+   */
+  void slotConnected(KIO::Job*);
 
   /**
    * @internal

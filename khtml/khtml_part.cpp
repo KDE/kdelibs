@@ -143,7 +143,6 @@ public:
     keepCharset = false;
     m_findDialog = 0;
     m_ssl_in_use = false;
-    m_last_page_ssl = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -180,7 +179,6 @@ public:
 
   // QStrings for SSL metadata
   bool m_ssl_in_use;
-  bool m_last_page_ssl;
   QString m_ssl_peer_cert_subject,
           m_ssl_peer_cert_issuer,
           m_ssl_peer_ip,
@@ -193,7 +191,7 @@ public:
   bool m_bComplete;
   bool m_bParsing;
   bool m_bReloading;
-    bool m_haveEncoding;
+  bool m_haveEncoding;
 
   KURL m_workingURL;
   KURL m_baseURL;
@@ -509,9 +507,12 @@ bool KHTMLPart::openURL( const KURL &url )
 
   connect( d->m_job, SIGNAL(redirection(KIO::Job*, const KURL&) ),
            SLOT( slotRedirection(KIO::Job*,const KURL&) ) );
+  connect( d->m_job, SIGNAL(connected(KIO::Job*) ),
+           SLOT( slotConnected(KIO::Job*) ) );
 
   d->m_bComplete = false;
-
+  d->m_ssl_in_use = false;
+  
   d->m_workingURL = url;
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
@@ -851,21 +852,6 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   }
   kdDebug( 6050 ) << "slotFinished" << endl;
 
-  // GS - moved these down here.  we shouldn't change if there was an error,
-  //      should we?
-  d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
-  d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
-  d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
-  d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
-  d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
-  d->m_ssl_cipher = d->m_job->queryMetaData("ssl_cipher");
-  d->m_ssl_cipher_desc = d->m_job->queryMetaData("ssl_cipher_desc");
-  d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
-  d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
-  d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
-
-  d->m_last_page_ssl = d->m_ssl_in_use;
-
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
   d->m_workingURL = KURL();
@@ -1161,6 +1147,21 @@ void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
   emit d->m_extension->setLocationBarURL( url.prettyURL() );
 
   d->m_workingURL = url;
+}
+
+void KHTMLPart::slotConnected(KIO::Job*)
+{
+  kdDebug( 6050 ) << "KIO said : connected. Reading SSL metadata." << endl;
+  d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
+  d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
+  d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
+  d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
+  d->m_ssl_peer_ip = d->m_job->queryMetaData("ssl_peer_ip");
+  d->m_ssl_cipher = d->m_job->queryMetaData("ssl_cipher");
+  d->m_ssl_cipher_desc = d->m_job->queryMetaData("ssl_cipher_desc");
+  d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
+  d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
+  d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
 }
 
 // ####
