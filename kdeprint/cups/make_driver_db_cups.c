@@ -71,7 +71,7 @@ void initPpd(const char *dirname)
 int parsePpdFile(const char *filename, FILE *output_file)
 {
 	gzFile	ppd_file;
-	char	line[4096], value[256];
+	char	line[4096], value[256], langver[64] = {0}, desc[256] = {0};
 	char	*c1, *c2;
 	int	count = 0;
 
@@ -98,27 +98,39 @@ int parsePpdFile(const char *filename, FILE *output_file)
 			}
 			else
 			{
+				c1++;
 				while (*c1 && isspace(*c1))
 					c1++;
+				if (!*c1)
+					continue;
 				c2 = line+strlen(line)-1;	/* point to \n */
 				while (*c2 && isspace(*c2))
 					c2--;
-				strncpy(value,c1,c2-c1);
+				strncpy(value,c1,c2-c1+1);
 			}
 		}
 		count++;
 		if (strncmp(line,"*Manufacturer:",14) == 0) fprintf(output_file,"MANUFACTURER=%s\n",value);
 		else if (strncmp(line,"*ShortNickName:",15) == 0) fprintf(output_file,"MODEL=%s\n",value);
 		else if (strncmp(line,"*ModelName:",11) == 0) fprintf(output_file,"MODELNAME=%s\n",value);
-		else if (strncmp(line,"*NickName:",10) == 0) fprintf(output_file,"DESCRIPTION=%s\n",value);
+		else if (strncmp(line,"*NickName:",10) == 0) strncat(desc,value,255);
 		else if (strncmp(line,"*pnpManufacturer:",17) == 0) fprintf(output_file,"PNPMANUFACTURER=%s\n",value);
 		else if (strncmp(line,"*pnpModel:",10) == 0) fprintf(output_file,"PNPMODEL=%s\n",value);
+		else if (strncmp(line,"*LanguageVersion:",17) == 0) strncat(langver,value,63);
 		else count--;
 		/* Either we got everything we needed, or we encountered an "OpenUI" directive
 		 * and it's reasonable to assume that there's no needed info further in the file,
 		 * just stop here */
-		if (count >= 6 || strncmp(line, "*OpenUI", 7) == 0)
+		if (count >= 7 || strncmp(line, "*OpenUI", 7) == 0)
 		{
+			if (strlen(langver) > 0)
+			{
+				strncat(desc, " [", 255);
+				strncat(desc, langver, 255);
+				strncat(desc, "]", 255);
+			}
+			if (strlen(desc) > 0)
+				fprintf(output_file, "DESCRIPTION=%s\n", desc);
 			break;
 		}
 	}
