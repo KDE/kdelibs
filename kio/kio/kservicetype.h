@@ -181,6 +181,22 @@ public:
   virtual void load( QDataStream& );
 
   /**
+   * @internal
+   * Pointer to parent serice type
+   */
+  KServiceType::Ptr parentType();
+  /**
+   * @internal
+   * Register service that provides this service type
+   */
+  void addService(KService::Ptr service);
+  /**
+   * @internal
+   * List serices that provide this service type
+   */
+  KService::List services();
+
+  /**
    * Returns a pointer to the servicetype '_name' or 0L if the
    *         service type is unknown.
    * VERY IMPORTANT : don't store the result in a KServiceType * !
@@ -224,7 +240,8 @@ protected:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  class KServiceTypePrivate* d;
+  class KServiceTypePrivate;
+  KServiceTypePrivate* d;
 };
 
 //QDataStream& operator>>( QDataStream& _str, KServiceType& s );

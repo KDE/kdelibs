@@ -57,15 +57,12 @@ class KService::KServicePrivate
 public:
   QStringList categories;
   QString menuId;
-  bool serviceTypeCacheEnabled;
-  KServiceType::List serviceTypeCache;
 };
 
 KService::KService( const QString & _name, const QString &_exec, const QString &_icon)
  : KSycocaEntry( QString::null)
 {
   d = new KServicePrivate;
-  d->serviceTypeCacheEnabled = false;
   m_bValid = true;
   m_bDeleted = false;
   m_strType = "Application";
@@ -96,7 +93,6 @@ void
 KService::init( KDesktopFile *config )
 {
   d = new KServicePrivate;
-  d->serviceTypeCacheEnabled = false;
   m_bValid = true;
 
   bool absPath = (entryPath()[0] == '/');
@@ -337,49 +333,19 @@ void KService::save( QDataStream& s )
     << d->categories << d->menuId;
 }
 
-void KService::enableServiceTypeCache(bool b)
+bool KService::hasServiceType( const QString& _servicetype ) const
 {
-  d->serviceTypeCacheEnabled = b;
+  if (!m_bValid) return false; // safety test
 
-  if (!b) return;
+  //kdDebug(7012) << "Testing " << m_strDesktopEntryName << " for " << _servicetype << endl;
 
-  bool isNumber;  
-  QStringList::ConstIterator it = m_lstServiceTypes.begin();
-  for( ; it != m_lstServiceTypes.end(); ++it )
-  {
-     (*it).toInt(&isNumber);
-     if (isNumber)
-         continue;
-     //kdDebug(7012) << "    has " << (*it) << endl;
-     KServiceType::Ptr ptr = KServiceType::serviceType( *it );
-     if ( ptr )
-         d->serviceTypeCache.append(ptr);
-  }
-}
+  KMimeType::Ptr mimePtr = KMimeType::mimeType( _servicetype );
+  if ( mimePtr && mimePtr == KMimeType::defaultMimeTypePtr() )
+      mimePtr = 0;
 
-bool KService::hasServiceType( KMimeType *_mimePtr, const QString &_mimeType ) const
-{
+  bool isNumber;
   // For each service type we are associated with, if it doesn't
   // match then we try its parent service types.
-  if (d->serviceTypeCacheEnabled)
-  {
-      KServiceType::List::ConstIterator it = d->serviceTypeCache.begin();
-      for( ; it != d->serviceTypeCache.end(); ++it )
-      {
-          const KServiceType::Ptr &ptr = *it;
-          if ( ptr && ptr->inherits( _mimeType ) )
-             return true;
-
-          // The mimetype inheritance ("is also") works the other way.
-          // e.g. if we're looking for a handler for mimePtr==smb-workgroup
-          // then a handler for inode/directory is ok.
-          if ( _mimePtr && _mimePtr->is( ptr->name() ) )
-             return true;
-      }
-      return false;
-  }
-
-  bool isNumber;  
   QStringList::ConstIterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
   {
@@ -388,29 +354,16 @@ bool KService::hasServiceType( KMimeType *_mimePtr, const QString &_mimeType ) c
          continue;
       //kdDebug(7012) << "    has " << (*it) << endl;
       KServiceType::Ptr ptr = KServiceType::serviceType( *it );
-      if ( ptr && ptr->inherits( _mimeType ) )
+      if ( ptr && ptr->inherits( _servicetype ) )
           return true;
 
       // The mimetype inheritance ("is also") works the other way.
       // e.g. if we're looking for a handler for mimePtr==smb-workgroup
       // then a handler for inode/directory is ok.
-      if ( _mimePtr && _mimePtr->is( *it ) )
+      if ( mimePtr && mimePtr->is( *it ) )
           return true;
   }
   return false;
-}
-
-bool KService::hasServiceType( const QString& _mimeType ) const
-{
-  if (!m_bValid) return false; // safety test
-
-  //kdDebug(7012) << "Testing " << m_strDesktopEntryName << " for " << _mimetype << endl;
-
-  KMimeType::Ptr mimePtr = KMimeType::mimeType( _mimeType );
-  if ( mimePtr && mimePtr == KMimeType::defaultMimeTypePtr() )
-      mimePtr = 0;
-
-  return hasServiceType(mimePtr, _mimeType);
 }
 
 int KService::initialPreferenceForMimeType( const QString& mimeType ) const

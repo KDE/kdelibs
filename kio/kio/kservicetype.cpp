@@ -30,8 +30,18 @@
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);
 
+class KServiceType::KServiceTypePrivate
+{
+public:
+  KServiceTypePrivate() : parentTypeLoaded(false) { }
+
+  KServiceType::Ptr parentType;
+  KService::List services;
+  bool parentTypeLoaded;
+};
+
 KServiceType::KServiceType( const QString & _fullpath)
- : KSycocaEntry(_fullpath)
+ : KSycocaEntry(_fullpath), d(0)
 {
   KDesktopFile config( _fullpath );
 
@@ -39,7 +49,7 @@ KServiceType::KServiceType( const QString & _fullpath)
 }
 
 KServiceType::KServiceType( KDesktopFile *config )
- : KSycocaEntry(config->fileName())
+ : KSycocaEntry(config->fileName()), d(0)
 {
   init(config);
 }
@@ -98,7 +108,7 @@ KServiceType::init( KDesktopFile *config)
 
 KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
                             const QString& _icon, const QString& _comment )
- : KSycocaEntry(_fullpath)
+ : KSycocaEntry(_fullpath), d(0)
 {
   m_strName = _type;
   m_strIcon = _icon;
@@ -107,7 +117,7 @@ KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
 }
 
 KServiceType::KServiceType( QDataStream& _str, int offset )
- : KSycocaEntry( _str, offset )
+ : KSycocaEntry( _str, offset ), d(0)
 {
   load( _str);
 }
@@ -135,6 +145,7 @@ KServiceType::save( QDataStream& _str )
 
 KServiceType::~KServiceType()
 {
+  delete d;
 }
 
 QString KServiceType::parentServiceType() const
@@ -227,13 +238,30 @@ KService::List KServiceType::offers( const QString& _servicetype )
   KService::List lst;
 
   // Services associated directly with this servicetype (the normal case)
-  KServiceType * serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
+  KServiceType::Ptr serv = KServiceTypeFactory::self()->findServiceTypeByName( _servicetype );
   if ( serv )
     lst += KServiceFactory::self()->offers( serv->offset() );
   else
     kdWarning(7009) << "KServiceType::offers : servicetype " << _servicetype << " not found" << endl;
-  bool isAMimeType = serv ? serv->isType( KST_KMimeType ) : false;
-  delete serv;
+
+  // Find services associated with any mimetype parents. e.g. text/x-java -> text/plain    
+  KMimeType::Ptr mime = dynamic_cast<KMimeType*>(static_cast<KServiceType *>(serv));
+  bool isAMimeType = (mime != 0);
+  if (mime)
+  {
+     while(true)
+     {
+        QString parent = mime->parentMimeType();
+        if (parent.isEmpty())
+           break;
+        mime = dynamic_cast<KMimeType *>(KServiceTypeFactory::self()->findServiceTypeByName( parent ));
+        if (!mime)
+           break;
+        
+        lst += KServiceFactory::self()->offers( mime->offset() );
+     }
+  }
+  serv = mime = 0;
 
   //QValueListIterator<KService::Ptr> it = lst.begin();
   //for( ; it != lst.end(); ++it )
@@ -306,6 +334,46 @@ KService::List KServiceType::offers( const QString& _servicetype )
 KServiceType::List KServiceType::allServiceTypes()
 {
   return KServiceTypeFactory::self()->allServiceTypes();
+}
+
+KServiceType::Ptr KServiceType::parentType()
+{
+  if (d && d->parentTypeLoaded)
+     return d->parentType;
+  
+  if (!d)
+     d = new KServiceTypePrivate;
+     
+  QString parentSt = parentServiceType();
+  if (!parentSt.isEmpty())
+  {
+    d->parentType = KServiceTypeFactory::self()->findServiceTypeByName( parentSt );
+    if (!d->parentType)
+      kdWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
+  }
+  
+  d->parentTypeLoaded = true;
+
+  return d->parentType;
+}
+
+void KServiceType::addService(KService::Ptr service)
+{
+  if (!d)
+     d = new KServiceTypePrivate;
+  
+  if (d->services.count() && d->services.last() == service)
+     return;
+     
+  d->services.append(service);
+}
+
+KService::List KServiceType::services()
+{
+  if (d)
+     return d->services;
+
+  return KService::List();
 }
 
 void KServiceType::virtual_hook( int id, void* data )

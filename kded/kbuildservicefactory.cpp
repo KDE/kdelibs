@@ -139,13 +139,41 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
 {
    m_offerListOffset = str.device()->at();
 
-   // Cache service types in services
+   bool isNumber;
    for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
        itserv.current();
        ++itserv)
    {
       KService *service = (KService *) ((KSycocaEntry *)(*itserv.current()));
-      service->enableServiceTypeCache(true);
+      QStringList serviceTypeList = service->serviceTypes();
+      KServiceType::List serviceTypes;
+      QStringList::ConstIterator it = serviceTypeList.begin();
+      for( ; it != serviceTypeList.end(); ++it )
+      {
+         (*it).toInt(&isNumber);
+         if (isNumber)
+            continue;
+         
+         KServiceType::Ptr serviceType = KServiceType::serviceType(*it);
+         if (!serviceType)
+         {
+           kdWarning() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< (*it) << "'" << endl;
+           continue;
+         }
+         serviceTypes.append(serviceType);
+      }
+      
+      while(serviceTypes.count())
+      {
+         KServiceType::Ptr serviceType = serviceTypes.first();
+         serviceTypes.pop_front();
+         
+         KServiceType::Ptr parentType = serviceType->parentType();
+         if (parentType)
+            serviceTypes.append(parentType);
+         
+         serviceType->addService(service);
+      }
    }
 
    // For each entry in servicetypeFactory
@@ -154,21 +182,16 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
        ++it)
    {
       // export associated services
-      // This means looking for the service type in ALL services
-      // This is SLOW. But it used to be done in every app (in KServiceTypeProfile)
-      // Doing it here saves a lot of time to the clients
-      KSycocaEntry *entry = (*it.current());
-      QString serviceType = entry->name();
-      for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
-          itserv.current();
-          ++itserv)
+      KServiceType *entry = static_cast<KServiceType*>(static_cast<KSycocaEntry*>(*it.current()));
+      KService::List services = entry->services();
+  
+      for(KService::List::ConstIterator it2 = services.begin();
+          it2 != services.end(); ++it2)
       {
-         KService *service = (KService *) ((KSycocaEntry *)(*itserv.current()));
-         if ( service->hasServiceType( dynamic_cast<KMimeType *>(entry), serviceType ) )
-         {
-            str << (Q_INT32) entry->offset();
-            str << (Q_INT32) service->offset();
-         }
+         KService *service = *it2;
+         str << (Q_INT32) entry->offset();
+         str << (Q_INT32) service->offset();
+         itemCount++;
       }
    }
 
