@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <kstddirs.h>
+#include <kprocess.h>
 
 KFileManager * KFileManager::pFileManager = 0L;
 
@@ -262,9 +263,14 @@ bool KRun::run( const QString& _cmd )
 {
   kdebug( KDEBUG_INFO, 7010, "Running %s", _cmd.ascii() );
 
+/*
   QString exec = _cmd;
   exec += " &";
-  system( exec.ascii() ); // should we use KProcess here ?
+  system( exec.ascii() );
+*/
+  KShellProcess proc;
+  proc << _cmd;
+  proc.start(KShellProcess::DontCare);
 
   return true;
 }
