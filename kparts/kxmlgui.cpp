@@ -297,26 +297,31 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 
       if ( action && parentNode->container && parentNode->container->isWidgetType() )
       {
-       	int idx;
+       	int idx = parentNode->index;
 	bool merged = false;
 	
         QMap<QString,int>::Iterator defaultMergingIt = parentNode->mergingIndices.find( d->m_defaultMergingName );
 	QMap<QString,int>::Iterator mergingIt = parentNode->mergingIndices.find( d->m_servantName );
 	QMap<QString,int>::Iterator mergingEnd = parentNode->mergingIndices.end();
+	QMap<QString,int>::Iterator usedIt = mergingEnd;
 	
 	// check if the container's XML contained a merging tag and use the correct merging index
 	// (either there's an index especially for our servant or we use the default index )
 	if ( ( mergingIt != mergingEnd || defaultMergingIt != mergingEnd ) && !ignoreMergingIndex )
 	{
 	  if ( mergingIt != mergingEnd )
-  	    idx = mergingIt.data()++;
+	  {
+  	    idx = mergingIt.data();
+	    usedIt = mergingIt;
+	  }
 	  else
-	    idx = defaultMergingIt.data()++;
+	  {
+	    idx = defaultMergingIt.data();
+	    usedIt = defaultMergingIt;
+	  }
 	
 	  merged = true;
 	}
-	else
-	  idx = parentNode->index++;
 
 	if ( !containerClient )
 	{
@@ -329,6 +334,13 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
         action->plug( (QWidget *)parentNode->container, idx );
 
 	containerClient->m_actions.append( action );
+	
+	mergingIt = parentNode->mergingIndices.begin();
+	for (; mergingIt != mergingEnd; ++mergingIt )
+      	  if ( mergingIt.data() > idx || mergingIt == usedIt )
+	    mergingIt.data()++;
+	
+  	parentNode->index++;
       }
     }
     else
@@ -356,7 +368,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
     	  continue;
         }
 
-        int *idx = & parentNode->index;
+        int idx = parentNode->index;
 	bool merged = false;
 
 	// although it looks like these iterator variables could be just initialized once at the beginning
@@ -369,13 +381,21 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	QMap<QString,int>::Iterator defaultMergingIt = parentNode->mergingIndices.find( d->m_defaultMergingName );
 	QMap<QString,int>::Iterator mergingIt = parentNode->mergingIndices.find( d->m_servantName );
 	QMap<QString,int>::Iterator mergingEnd = parentNode->mergingIndices.end();
+	QMap<QString,int>::Iterator usedIt = mergingEnd;
 	
 	if ( ( mergingIt != mergingEnd || defaultMergingIt != mergingEnd ) && !ignoreMergingIndex )
 	{
 	  if ( mergingIt != mergingEnd )
-	    idx = & mergingIt.data();
+	  {
+	    idx = mergingIt.data();
+	    usedIt = mergingIt;
+	  }
 	  else
-	    idx = & defaultMergingIt.data();
+	  {
+	    idx = defaultMergingIt.data();
+	    usedIt = defaultMergingIt;
+	  }
+	  
 	  merged = true;
 	}
 
@@ -390,13 +410,18 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	
 	int id;
 	
-        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container, *idx, e, stateBuffer, id );
+        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container, idx, e, stateBuffer, id );
 	
 	// no container? (probably some <text> tag or so ;-)
 	if ( !container )
 	  continue;
 	
-        (*idx)++;
+	mergingIt = parentNode->mergingIndices.begin();
+	for (; mergingIt != mergingEnd; ++mergingIt )
+      	  if ( mergingIt.data() > idx || mergingIt == usedIt )
+	    mergingIt.data()++;
+	
+  	parentNode->index++;
 	
 	containerList.append( container );
 	
@@ -422,14 +447,21 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
   QMap<QString,int>::Iterator defaultMergingIt = node->mergingIndices.find( d->m_defaultMergingName );
   QMap<QString,int>::Iterator mergingIt = node->mergingIndices.find( d->m_servantName );
   QMap<QString,int>::Iterator mergingEnd = node->mergingIndices.end();
+  QMap<QString,int>::Iterator usedIt = mergingEnd;
 
-  int *mergingIdx = 0L;
+  int mergingIdx = 0;
 
   if ( defaultMergingIt != mergingEnd )
-    mergingIdx = & defaultMergingIt.data();
+  {
+    mergingIdx = defaultMergingIt.data();
+    usedIt = defaultMergingIt;
+  }
 
   if ( mergingIt != mergingEnd )
-    mergingIdx = & mergingIt.data();
+  {
+    mergingIdx = mergingIt.data();
+    usedIt = mergingIt;
+  }
 
   QListIterator<XMLGUIContainerClient> clientIt( node->clients );
 
@@ -448,17 +480,22 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 	
 	//now we have to adjust/correct the index. We do it the fast'n'dirty way by just substracting
 	//the amount of actions we just unplugged ;-)
-	int *idx = &node->index;
+	int idx = node->index;
 
 	if ( clientIt.current()->m_mergedClient )
-	{
-	  assert( mergingIdx );
 	  idx = mergingIdx;
-	}
 	
-	(*idx) -= clientIt.current()->m_actions.count();
+	mergingIt = node->mergingIndices.begin();
+	for (; mergingIt != mergingEnd; ++mergingIt )
+	  if ( mergingIt.data() > idx || mergingIt == usedIt )
+	    mergingIt.data() -= clientIt.current()->m_actions.count();
+	
+  	node->index -= clientIt.current()->m_actions.count();
 	
 	node->clients.removeRef( clientIt.current() );
+	
+	//hmmm, actually we should be able to exit the loop here, because one servant can only have one client
+	//per container
       }
       else
         ++clientIt;
@@ -482,16 +519,30 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
       defaultMergingIt = p->mergingIndices.find( d->m_defaultMergingName );
       mergingIt = p->mergingIndices.find( d->m_servantName );
       mergingEnd = p->mergingIndices.end();
+      usedIt = mergingEnd;
 
+      int idx = p->index;
+      
       if ( node->mergedContainer )
       {
         if ( mergingIt != mergingEnd )
-	  mergingIt.data()--;
+	{
+	  idx = mergingIt.data();
+	  usedIt = mergingIt;
+	}
 	else
-	  defaultMergingIt.data()--;
+	{
+	  idx = defaultMergingIt.data();
+	  usedIt = defaultMergingIt;
+	}
       }
-      else
-        p->index--;
+
+      mergingIt = p->mergingIndices.begin();
+      for (; mergingIt != mergingEnd; ++mergingIt )
+	if ( mergingIt.data() > idx || mergingIt == usedIt )
+	  mergingIt.data()--;
+      
+      p->index--;
     }
 
     if ( node == d->m_rootNode ) kDebugInfo( 1002, "root node !" );
