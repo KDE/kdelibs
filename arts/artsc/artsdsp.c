@@ -20,6 +20,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_SYS_SOUNDCARD_H
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -198,3 +203,4 @@ ssize_t write (int fd, const void *buf, size_t count)
   }
   return 0;
 }
+#endif
