@@ -53,7 +53,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
 
   KServiceTypeProfile* profile = serviceTypeProfile( _servicetype );
   if ( profile )
-    return profile->offers( _servicetype );
+    return profile->offers();
 
   QListIterator<KService> it( KService::services() );
   for( ; it.current(); ++it )
