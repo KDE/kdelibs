@@ -69,6 +69,9 @@ installed.  Please set this in your login file.
 If configure claims Qt cannot be found, have a look at http://www.troll.no
 to get a copy of Qt, version 1.42.
 
+If you get TOC overflow errors on AIX, and are using gcc 2.7.2, you'll
+need to add -mminimal-toc to your CFLAGS and CXXFLAGS.
+
 Debugging
 ---------
 
