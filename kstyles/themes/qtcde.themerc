@@ -2,6 +2,7 @@
 Name=Qt CDE
 Name[af]=Qt Cde
 Name[de]=Qt-CDE
+Name[mn]=Qt-CDE
 Name[nn]=Qt-CDE
 Name[se]=Qt-CDE
 Name[th]=ตัวจัดการหน้าต่าง CDE - Qt
@@ -36,6 +37,7 @@ Comment[ko]=CDE와 같은 꼴을 가진 붙박이 테마
 Comment[lt]=Įtaisytas betemis CDE stilius
 Comment[lv]=Iebūvēts beztēmas CDE stils
 Comment[mk]=Вграден CDE стил (без тема)
+Comment[mn]=Агшаалттай суулгасан CDE-хэлбэр
 Comment[mt]=Stil bla tema CDE
 Comment[nb]=Innebygget CDE-stil uten tema
 Comment[nl]=Ingebouwde, themaloze CDE-stijl
