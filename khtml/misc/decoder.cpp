@@ -371,25 +371,8 @@ QString Decoder::decode(const char *data, int len)
                     default:
                         body = true;
 #ifdef DECODE_DEBUG
-			kdDebug( 6005 ) << "Decoder: no charset found, using latin1. Id=" << id << endl;
+			kdDebug( 6005 ) << "Decoder: no charset found. Id=" << id << endl;
 #endif
-			if ( KGlobal::locale()->country() == "jp" ) {
-			    switch ( detect_kanji( (unsigned char*)buffer.data() ) ) {
-			    case _JIS_:
-			        enc = "jis7";
-				break;
-			    case _EUC_:
-				enc = "eucjp";
-                                break;
-			    case _SJIS_:
-                                enc = "sjis";
-                                break;
-			    default:
-                                enc = "iso8859-1";
-				break;
-			    }			
-			    setEncoding(enc, true);
-			}
                         goto found;
                     }
                 }
@@ -401,6 +384,22 @@ QString Decoder::decode(const char *data, int len)
     }
 
  found:
+    if (!haveEncoding && KGlobal::locale()->country() == "jp" ) 
+    {
+        switch ( detect_kanji( (unsigned char*)buffer.data() ) ) {
+            case _JIS_:
+                enc = "jis7";
+                break;
+	    case _EUC_:
+		enc = "eucjp";
+                break;
+	    case _SJIS_:
+                enc = "sjis";
+                break;
+        }
+        if (!enc.isEmpty())
+            setEncoding(enc, true);
+    }
     // if we still haven't found an encoding latin1 will be used...
     // this is according to HTML4.0 specs
     if (!m_codec)
