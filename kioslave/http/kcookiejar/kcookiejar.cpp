@@ -1526,7 +1526,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     {
         const QString &value = *it++;
 
-        int sepPos = value.find(':');
+        int sepPos = value.findRev(':');
 
         if (sepPos <= 0)
           continue;
