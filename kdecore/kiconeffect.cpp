@@ -157,13 +157,13 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value, const QColor
 	kdDebug(264) << "Illegal icon effect: " << effect << "\n";
 	return result;
     }
-    if (effect != NoEffect)  
+    if (trans != true)  
     {
 	tmpImg = pixmap.convertToImage();
 	tmpImg = apply(tmpImg, effect, value, col, trans);
 	result.convertFromImage(tmpImg);
     }
-    else if (trans == true) 
+    else 
     {
 	result = pixmap;
 	semiTransparent(result);
