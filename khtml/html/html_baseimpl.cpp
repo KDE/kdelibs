@@ -206,7 +206,11 @@ void HTMLBodyElementImpl::attach()
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();
     if (parentNode()->renderer() && style->display() != NONE) {
-        m_render = new (getDocument()->renderArena()) RenderBody(this);
+        if (style->display() == BLOCK)
+            // only use the quirky class for block display
+            m_render = new (getDocument()->renderArena()) RenderBody(this);
+        else
+            m_render = RenderObject::createObject(this, style);
         m_render->setStyle(style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
