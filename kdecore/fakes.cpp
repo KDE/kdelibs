@@ -27,6 +27,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int setenv(const char *name, const char *value, int overwrite) {
     int i;
