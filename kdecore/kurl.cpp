@@ -613,7 +613,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
       if (badHostName)
          goto NodeErr;
 
-      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
+      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
       goto NodeOk;
     }
   if ( x == '@' )
@@ -624,7 +624,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     }
   /* else if ( x == ':' )
      {
-     m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
+     m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
      pos++;
      goto Node8a;
      } */
@@ -633,7 +633,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
       if (badHostName)
          goto NodeErr;
 
-      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
+      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
       start = pos;
       goto Node9;
     }
@@ -660,7 +660,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
       // Ok the : was used to separate host and port
       if (badHostName)
          goto NodeErr;
-      m_strHost = m_strUser;
+      m_strHost = m_strUser.lower();
       m_strUser = QString::null;
       QString tmp( buf + start, pos - start );
       char *endptr;
@@ -697,7 +697,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     }
     if (badHostName)
        goto NodeErr;
-    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
+    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
     if (pos < len) pos++; // Skip ']'
     if (pos == len)
        goto NodeOk;
@@ -720,10 +720,10 @@ void KURL::parse( const QString& _url, int encoding_hint )
        goto NodeErr;
     if ( pos == len )
     {
-       m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
+       m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
        goto NodeOk;
     }
-    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint);
+    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
   }
   x = buf[pos];
   if ( x == '/' )
@@ -797,7 +797,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     if (!m_strHost.isEmpty())
     {
       // File-protocol has a host name..... hmm?
-      if (m_strHost.lower() == "localhost")
+      if (m_strHost == "localhost")
       {
         m_strHost = QString::null; // We can ignore localhost
       }
@@ -877,7 +877,7 @@ bool KURL::operator==( const KURL& _u ) const
   if ( m_strProtocol == _u.m_strProtocol &&
        m_strUser == _u.m_strUser &&
        m_strPass == _u.m_strPass &&
-       m_strHost.lower() == _u.m_strHost.lower() &&
+       m_strHost == _u.m_strHost &&
        m_strPath == _u.m_strPath &&
        // The encoded path may be null, but the URLs are still equal (David)
        ( m_strPath_encoded.isNull() || _u.m_strPath_encoded.isNull() ||
@@ -1615,7 +1615,7 @@ KURL::setPass( const QString& _txt )
 void
 KURL::setHost( const QString& _txt )
 {
-   m_strHost = _txt;
+   m_strHost = _txt.lower();
 }
 
 void
