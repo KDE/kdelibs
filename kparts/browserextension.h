@@ -165,6 +165,28 @@ public:
    */
   virtual void restoreState( QDataStream &stream );
 
+  /**
+   * Returns a map containing the action names as keys and corresponding
+   * SLOT()'ified method names as data entries. This is very useful for
+   * the host component, when connecting the own signals with the
+   * extension's slots.
+   * Basically you iterate over the map, check if the extension implements
+   * the slot and connect to the slot using the data value of your map
+   * iterator. 
+   * Checking if the extension implements a certain slot can be done like this:
+   *
+   *  extension->metaObject()->slotNames().contains( actionName + "()" )
+   *
+   * (note that "actionName" equals the iterator's key value if already
+   *  iterating over the action slot map, returned by this method)
+   *
+   * Connecting to the slot can be done like this:
+   *
+   * connect( yourObject, SIGNAL( yourSignal() ),
+   *          extension, mapIterator.data() )
+   *
+   * (where "mapIterator" is your QMap<QCString,QCString> iterator)
+   */
   static QMap<QCString,QCString> actionSlotMap();
 
 signals:
