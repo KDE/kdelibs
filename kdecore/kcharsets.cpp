@@ -108,7 +108,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "jisx0208.1983-0",
     "ksc5601.1987-0",
     "tis620.2533-1",
-    "gbk-0",
+    "gb2312.1980-0",
     "gb2312.1980-0",
     "cns11643.1986-",
     "big5-0",
@@ -229,19 +229,25 @@ void KCharsetsPrivate::getAvailableCharsets()
 	    //kdDebug() << "    " << *ch << " " << KGlobal::charsets()->xNameToID( *ch ) << endl;
 	    QCString cs = (*ch).latin1();
 	    QFont::CharSet qcs = kc->xNameToID( cs );
-            if ( qcs != QFont::AnyCharSet )
-	      if( !availableCharsets->contains( qcs ) ) {
-		  QStrList strList;
-		  strList.append( family );
-                  if ( !shortFamily.isEmpty() )
-		      strList.append( shortFamily );
-		  availableCharsets->insert( qcs, strList );
-	      } else
-	      {
-		  ((*availableCharsets)[qcs]).append(family);
-                  if ( !shortFamily.isEmpty() )
-		      ((*availableCharsets)[qcs]).append(shortFamily);
-	      }
+	redo:
+	    if ( qcs != QFont::AnyCharSet )
+		if( !availableCharsets->contains( qcs ) ) {
+		    QStrList strList;
+		    strList.append( family );
+		    if ( !shortFamily.isEmpty() )
+			strList.append( shortFamily );
+		    availableCharsets->insert( qcs, strList );
+		} else
+		{
+		    ((*availableCharsets)[qcs]).append(family);
+		    if ( !shortFamily.isEmpty() )
+			((*availableCharsets)[qcs]).append(shortFamily);
+		}
+	    // hack to get the duplicated entry for gb2312 right.
+	    if ( qcs == QFont::Set_Zh ) {
+		qcs = QFont::Set_GBK;
+		goto redo;
+	    }
 	}
     }
 
