@@ -215,6 +215,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
     lst += KServiceFactory::self()->offers( serv->offset() );
   else
     kdWarning(7009) << "KServiceType::strictOffers : servicetype " << _servicetype << " not found" << endl;
+  bool isAMimeType = serv ? serv->isType( KST_KMimeType ) : false;
   delete serv;
 
   //QValueListIterator<KService::Ptr> it = lst.begin();
@@ -222,8 +223,11 @@ KService::List KServiceType::offers( const QString& _servicetype )
   //    kdDebug() << (*it).data() << " " << (*it)->name() << endl;
 
   // Support for all/* is deactivated by KServiceTypeProfile::configurationMode()
-  // (and makes no sense when querying for an "all" servicetype itself)
-  if ( !KServiceTypeProfile::configurationMode() && _servicetype.left(4) != "all/" )
+  // (and makes no sense when querying for an "all" servicetype itself
+  // nor for non-mimetypes service types)
+  if ( !KServiceTypeProfile::configurationMode()
+       && isAMimeType
+       && _servicetype.left(4) != "all/" )
   {
     // Support for services associated with "all"
     KServiceType * servAll = KServiceTypeFactory::self()->findServiceTypeByName( "all/all" );
