@@ -1453,7 +1453,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         }
     }
 
-    if(!newChild->isInline()) // block child
+    if(!newChild->isInline() && !newChild->isPositioned()) // block child
     {
         // If we are inline ourselves and have become block, we have to make sure our parent
         // makes the necessary adjustments so that all of its other children are moved into
