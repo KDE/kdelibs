@@ -1,0 +1,2 @@
+libkmid-alsa: shlib-missing-in-control-file libartskde.so usr/lib/libartskde.so
+libkmid-alsa: shlib-missing-in-control-file knotify.so usr/lib/knotify.so

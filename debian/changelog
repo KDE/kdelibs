@@ -1,31 +1,22 @@
-kdelibs (4:2.2.2-13) unstable; urgency=low
+kdelibs (4:2.2.2-13) unstable; urgency=high
 
-  * Changed package names and added provides.
-  * Added support to have separate build tree.
+  * Fixed kdelibs-dev dependency should be libpng2-dev
 
- -- Christopher L Cheney <ccheney@debian.org>  Mon, 18 Feb 2002 17:00:00 -0600
+ -- Christopher L Cheney <ccheney@debian.org>  Fri,  1 Mar 2002 17:00:00 -0600
 
 kdelibs (4:2.2.2-12) unstable; urgency=high
 
   * New maintainer.
-  * Rebuilt debian dir from scratch.
-  * Remove Build-Depends on libglib1.3-dev since it has unstable ABI (Closes:
-    #133171, #134168)
-  * add enable-final and enable-fast-install, this results in approx 40% build
-    time speed up on my Athlon XP 1800
-  * alsa support merged into libarts which requires libasound2, this results in
-    approx 16% build time speed up
-  * libarts-kde now has kde specific parts of arts.
-  * cups support merged into kdelibs which requires libcupsys2
+  * Remove Build-Depends on libglib1.3-dev since it has unstable ABI
+    (Closes: #133171, #134168)
   * added suggests libjpeg-mmx-progs | libjpeg-progs, netpbm (Closes: #129094)
 
- -- Christopher L Cheney <ccheney@debian.org>  Sun, 17 Feb 2002 22:00:00 -0600
+ -- Christopher L Cheney <ccheney@debian.org>  Thu, 28 Feb 2002 13:00:00 -0600
 
 kdelibs (4:2.2.2-11) unstable; urgency=low
 
   * Adopting orphaned package, thanks to Ivan for all the great work over the
     years.
-  * Remove | cupsys-dev as cupsys-dev doesn't exist
 
  -- Daniel Stone <daniel@sfarc.net>  Fri,  4 Jan 2002 09:14:46 -0500
 

@@ -1,22 +1,103 @@
-This package was debianized by Christopher L Cheney <ccheney@debian.org> on
-Tue, 29 Jan 2002 21:00:00 -0600.
+This package was also updated by Ivan E. Moore II <rkrusty@debian.org>.
+This package was updated by Stephan Kulow <coolo@kde.org>.
+This package was debianized by Andreas Jellinghaus <aj@debian.org>.
+Thanks to Brandon Mitchell <bhmit1@mail.wm.edu> for his work on the
+libc5 version.
 
-It was downloaded from via cvs from cvs.kde.org.
-
-Upstream Author(s): Kalle Dalheimer <kalle@kde.org>
-			many others...
+It was downloaded via cvs from cvs.kde.org
 
 Copyright:
 
+See */AUTHORS for authors.
+
+---
+
 The libraries themselves have been covered (since Saturday, June 21st, 1997)
-by the GNU Library General Public License (LGPL). Any other programs (such as
-the examples) are covered by the GNU General Public License (GPL). All the
+by the GNU Library General Public License (LGPL).  Any other programs (such as
+the examples) are covered by the GNU General Public License (GPL).  All the
 gory details for the LGPL reside in COPYING.LIB, and for the GPL reside in
 COPYING.
-
+ 
 Various parts are also covered under a BSD style license, detailed in
-COPYING.BSD. Currently, code covered under such license is copyrighted by
+COPYING.BSD.  Currently, code covered under such license is copyrighted by
 Theo de Raadt.
-
+ 
 When in doubt, check the individual file, they should all have license
-headings and other identifying marks.
+headings and other identifying marks.    
+
+---
+
+All libraries that are in aRts are LGPL. 95% of all aRts code is in the
+libraries, including the whole MCOP and ArtsFlow stuff. So you can use that
+wherever you like. This also allows you writing plugins and not open up the
+source, if you want that.
+ 
+There are a few programs (such as artsd), these are GPLd. As there have been
+different opinions, whether or not linking GPLd programs and Qt is legal, I
+also added an explicite notice which allows that, additional to the GPL.
+ 
+    Permission is also granted to link this program with the Qt
+    library, treating Qt like a library that normally accompanies the
+    operating system kernel, whether or not that is in fact the case.   
+
+
+---
+
+June 1997) by the GNU Library General License Version 2 or later (at
+your option). Please see the file COPYING.LIB for more information.      
+
+parts are copyright by fsf :
+
+/* Combined sources of GNU gettext library
+   Copyright (C) 1995 Software Foundation, Inc.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+ 
+-------------------------------------------------------------------
+$Id$
+
+outline class implementations
+An example using the QktsTreeListWidget
+
+Copyright (C) 1996 Keith Brown and KtSoft
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABLILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details. You should have received a
+copy of the GNU General Public License along with this program; if
+not, write to the Free Software Foundation, Inc, 59 Temple Place - 
+Suite 330, Boston, MA 02111-1307, USA.
+
+--
+[kssl]
+ 
+(from kssl/README - George Staikos <staikos@kde.org>)
+ 
+Despite what the files might say, this is entirely licenced under the LGPL
+and will continue to be so licenced.  The files will eventually be updated
+to indicate this.  Please feel free to accept this as the licence.
+ 
+This library includes cryptographic software written by Eric Young
+(eay@cryptsoft.com).
+
+--
+
+Please see /usr/share/common-licenses/ for each individual license.

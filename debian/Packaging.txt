@@ -15,7 +15,7 @@ dh-make
 
 You can now find a dh-make template for a single binary package under
 
-    /usr/share/doc/libkdecore-dev/dh-make/
+    /usr/share/doc/kdelibs-dev/dh-make/
 
 Refer to the dh-make man package for information on how to use these templates.
 These templates include the bits mentioned in this file.
@@ -82,20 +82,20 @@ built for the arch they are building on.  In order to do this and actually
 be successful things like Build-Depends have to be accurate.  A typical 
 Build-Depends line for a KDE based application will look something like this:
 
-  Build-Depends: debhelper (>> 3.0.0), automake, autoconf, libtool, libkdecore-dev (>= 4:2.2.2-1)
+  Build-Depends: debhelper (>> 3.0.0), automake, autoconf, libtool, kdelibs-dev (>= 4:2.2.2-1)
 
 Your app may need alot more than that to actually build however first take a
-look at the Dependencies for libkdecore-dev:
+look at the Dependencies for kdelibs-dev:
 
-   Depends: libkdecore (= 4:2.2.2-4), libarts-dev (= 4:2.2.2-4), libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev, docbook, libpcre3-dev, libbz2-dev
+   Depends: kdelibs3 (= 4:2.2.2-4), libarts-dev (= 4:2.2.2-4), libkmid-dev (= 4:2.2.2-4), libqt-dev (>= 3:2.3.1-1), uic (>= 3:2.3.1-1) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
 
 and the Dependencies for libqt-dev:
 
-   Depends: libc6 (>= 2.2.4-4), libpng2 (>= 1.0.12), libqt2 (>= 3:2.3.1-1), libstdc++2.10-glibc2.2 (>= 1:2.95.4-0.010810), xlibs (>> 4.1.0), perl, libqt2 (= 3:2.3.1-16), libqutil1 (= 3:2.3.1-16), uic (= 3:2.3.1-16) | kde-designer, xlibs-dev, libmng-dev, libpng2-dev, libjpeg62-dev, zlib1g-dev, libfreetype6-dev, libc6-dev
+   Depends: libc6 (>= 2.2.4-4), libpng2 (>= 1.0.12), libqt2 (>= 3:2.3.1-1), libstdc++2.10-glibc2.2 (>= 1:2.95.4-0.010810), xlibs (>> 4.1.0), perl, libqt2 (= 3:2.3.1-16), libqutil1 (= 3:2.3.1-16), uic (= 3:2.3.1-16) | kde-designer, xlibs-dev, libmng-dev, libpng2-dev | libpng-dev, libjpeg62-dev | libjpeg-dev, zlib1g-dev | libz-dev, libfreetype6-dev, libc6-dev
 
 so between the 2 of them you have Build-Depends that equate to:
 
-  libkdecore-dev, libarts-dev, libqt-dev, libaudiofile-dev, gettext, libtiff3g-dev, jade, sgml-base, docbook, docbook-stylesheets, libpcre3-dev, xlibs-dev, libmng-dev, libpng2-dev, libjpeg62-dev, libz-dev, libfreetype6-dev
+  kdelibs-dev, libarts-dev, libkmid-dev, libqt-dev, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, jade, sgml-base, docbook, docbook-stylesheets, libpcre3-dev, xlibs-dev, libmng-dev, libpng2-dev, libjpeg62-dev, libz-dev, libfreetype6-dev
 
 99% of the time that will more than cover a KDE app.  There will of course
 be specific stuff you'll need to add....for example knetfilter requires iptables
@@ -109,9 +109,9 @@ debianrules
 
    If your KDE based app uses the kde-common stuff you'll have a admin/ 
 subdir which if it's recent will contain a debianrules perl script.  The
-current version of it (sitting in /usr/share/doc/libkdecore-dev/dh-make) does
-very little. The biggest job it has is to make sure that all the KDE variables
-are set properly for build...this includes a configure line.  
+current version of it (sitting in /usr/share/doc/kdelibs-dev/dh-make) does very
+little. The biggest job it has is to make sure that all the KDE variables are 
+set properly for build...this includes a configure line.  
 
    If you place the debianrules script into your debian/ directory (if it 
 doesn't already exist in admin/ or that one is a older version) you can modify

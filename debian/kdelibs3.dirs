@@ -1,0 +1,6 @@
+etc/pam.d/
+etc/kde2/colors
+etc/kde2/ui
+etc/kde2/protocols
+etc/kde2
+usr/share/lintian/overrides

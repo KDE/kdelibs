@@ -1,64 +1,48 @@
 Source: kdelibs
-Maintainer: Christopher L Cheney <ccheney@debian.org>
-Build-Depends: automake (>= 1:1.4-p4-1.1), bison, debhelper (>> 3.0.0), docbook, flex, gettext, libasound2-dev (>= 0.9.0beta7-1), libaudiofile-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libpcre3-dev, libqt-dev (>= 3:2.3.1-18), libsasl-dev, libtiff3g-dev, libxslt1-dev (>= 1.0.6), nas-dev, texinfo
+Build-Depends: automake (>= 1:1.4-p4-1.1), autoconf, debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 3:2.3.1-19), uic (>= 3:2.3.1-19), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev (>= 0.9.0beta7-1), docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | libcupsys-dev, libxml2-dev (>= 2.4.8), libxslt1-dev (>= 1.0.6), binutils (>= 2.11.92.0.5-3), libsasl-dev, libpng2-dev, libjpeg62-dev | libjpeg-dev, zlib1g-dev | libz-dev, libfreetype6-dev, nas-dev, libfam-dev
 Build-Depends-Indep: kdoc, qt-doc
-Build-Conflicts: qt3-tools
-Standards-Version: 3.5.6.0
-
-Package: kdelibs
+Build-Conflicts: libglib1.3-dev, qt3-tools
 Section: libs
 Priority: optional
-Architecture: all
-Depends: libkdecore (= ${Source-Version}), libkdecore-bin (= ${Source-Version}), libarts (= ${Source-Version}), libarts-kde (= ${Source-Version})
-Description: kdelibs meta package
- kdelibs meta package.
+Maintainer: Christopher L Cheney <ccheney@debian.org> 
+Standards-Version: 3.5.6
 
-Package: libkdecore
-Section: libs
-Priority: optional
+Package: kdelibs3
 Architecture: any
-Depends: ${shlibs:Depends}
-Provides: kdelibs3
+Section: libs
+Depends: ${shlibs:Depends}, kdelibs3-bin | kdelibs-bin, xbase-clients
+Suggests: libarts | libarts-alsa | libarts-bin, libkmid | libkmid-alsa | libkmid-bin, kdelibs3-cups, aspell | ispell, anti-aliasing-howto, gdb, libsocksd | libsocks4, libssl0.9.6
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
 
-Package: libkdecore-bin
-Section: libs
-Priority: optional
+Package: kdelibs3-bin
 Architecture: any
+Section: libs
+Replaces: kdelibs4-bin
 Depends: ${shlibs:Depends}, python
 Suggests: libjpeg-mmx-progs | libjpeg-progs, netpbm
+Conflicts: kdelibs4-bin
+Provides: kdelibs-bin
 Description: KDE core binaries (binary files)
  KDE core binaries.
  You need these files to run kde applications.
 
-Package: libkdecore-dev
-Section: devel
-Priority: optional
+Package: kdelibs3-cups
 Architecture: any
-Depends: libkdecore (= ${Source-Version}), libkdecore-bin (= ${Source-Version}), libarts-dev (= ${Source-Version}), docbook, gettext, libaudiofile-dev, libbz2-dev, libfam-dev, libpcre3-dev, libqt-dev (>= 3:2.3.1-18), libtiff3g-dev
-Provides: kdelibs-dev
-Description: KDE core libraries (development files)
- KDE core libraries.
- You need these files to compile kde applications.
-
-Package: libkdecore-doc
-Section: doc
-Priority: optional
-Architecture: all
-Provides: kdelibs3-doc
-Suggests: libkdecore-dev, libqt-dev, kdoc
-Description: KDE core library documentation
- These are the core documentation created by the kdoc package.  This package
- is needed for developing KDE related packages.
+Section: libs
+Depends: ${shlibs:Depends}
+Suggests: cupsomatic-ppd
+Description: KDE print system (CUPS support)
+ This package contains the KDE printer bits which use CUPS. 
 
 Package: libarts
-Section: libs
-Priority: optional
 Architecture: any
+Section: libs
+Replaces: libarts-alsa
 Depends: ${shlibs:Depends}
-Suggests: artsbuilder
+Suggests: kdelibs3, artsbuilder
+Conflicts: libarts-alsa
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -66,32 +50,97 @@ Description: aRts Sound system
  signals, perform effects like delay/flanger/chorus, or output the data to
  the soundcard.
  .
- aRts is the core sound system for KDE (and other systems).
+ aRts is the core sound system for KDE (and other systems)
 
-Package: libarts-kde
-Section: libs
-Priority: optional
+Package: libkmid
 Architecture: any
+Section: libs
+Replaces: libkmid-alsa
 Depends: ${shlibs:Depends}
-Provides: libkmid
-Suggests: artsbuilder
-Description: aRts Sound system (KDE support libraries)
+Conflicts: libkmid-alsa
+Description: aRts Sound system (midi/kmedia support libraries)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
  These may be create a waveform (oscillators), play samples, filter data, add
  signals, perform effects like delay/flanger/chorus, or output the data to
  the soundcard.
  .
- aRts is the core sound system for KDE (and other systems).
+ This package contains the midi and kmedia support files for aRts as well as 
+ knotify
+
+Package: libkmid-alsa
+Architecture: any
+Section: libs
+Priority: extra
+Replaces: libkmid
+Depends: ${shlibs:Depends}
+Provides: libkmid
+Conflicts: libkmid
+Description: aRts Sound system (midi/kmedia support libraries with alsa)
+ aRts is a short form for "analog realtime synthesizer". The idea of the whole
+ thing is to create/process sound using small modules which do certain tasks.
+ These may be create a waveform (oscillators), play samples, filter data, add
+ signals, perform effects like delay/flanger/chorus, or output the data to
+ the soundcard.
+ .
+ This package contains the midi and kmedia support files for aRts as well as 
+ knotify
+
+Package: libarts-alsa
+Architecture: any
+Section: libs
+Priority: extra
+Replaces: libarts
+Depends: ${shlibs:Depends}
+Suggests: kdelibs3, artsbuilder
+Provides: libarts
+Conflicts: libarts
+Description: aRts Sound system (built with alsa support)
+ aRts is a short form for "analog realtime synthesizer". The idea of the whole
+ thing is to create/process sound using small modules which do certain tasks.
+ These may be create a waveform (oscillators), play samples, filter data, add
+ signals, perform effects like delay/flanger/chorus, or output the data to
+ the soundcard.
+ .
+ aRts is the core sound system for KDE (and other systems)
 
 Package: libarts-dev
-Section: devel
-Priority: optional
 Architecture: any
-Replaces: libarts (<< ${Source-Version}), libarts-kde (<< ${Source-Version})
-Depends: libarts (= ${Source-Version}), libarts-kde (= ${Source-Version}), libaudiofile-dev, nas-dev
-Suggests: libkdecore-dev, libasound2-dev
+Section: devel
+Replaces: libarts (<< ${Source-Version}), libarts-alsa (<< ${Source-Version})
+Depends: libarts (= ${Source-Version}) | libarts-alsa (= ${Source-Version}), libaudiofile-dev, nas-dev
+Suggests: kdelibs-dev, libasound2-dev
 Description: aRts Sound system (development files)
  aRts sound system.
  .
- Header files needed to build apps that use the aRts sound daemon.
+ Header files needed to build apps that use the aRts sound daemon
+
+Package: libkmid-dev
+Architecture: any
+Section: devel
+Depends: libkmid (= ${Source-Version}) | libkmid-alsa (= ${Source-Version}), kdelibs-dev
+Description: aRts Sound system (midi development files)
+ aRts sound system.
+ .
+ Header files needed to build apps that use the aRts sound daemon and the
+ midi specific portions of it.
+
+Package: kdelibs3-doc
+Architecture: all
+Section: doc
+Replaces: kdelibs-doc
+Suggests: kdelibs-dev, libqt-dev, kdoc
+Provides: kdelibs-doc
+Description: KDE core library documentation
+ These are the core documentation created by the kdoc package.  This package
+ is needed for developing KDE related packages.
+
+Package: kdelibs-dev
+Architecture: any
+Section: devel
+Depends: kdelibs3 (= ${Source-Version}), kdelibs3-bin (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 3:2.3.1-18), uic (>= 3:2.3.1-1) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libjpeg62-dev | libjpeg-dev, libpng2-dev, libbz2-dev, libfam-dev
+Conflicts: qt3-tools
+Suggests: kdelibs3-cups, kdelibs3-doc, kdoc, libxml2-dev, libxslt1-dev
+Description: KDE core libraries (development files)
+ KDE core libraries.
+ You need these files to compile kde applications.

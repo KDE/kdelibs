@@ -1,9 +1,0 @@
-diff -ur kdelibs.old/kdoctools/customization/no-NY/lang.entities kdelibs.new/kdoctools/customization/no-NY/lang.entities
---- kdelibs.old/kdoctools/customization/no-NY/lang.entities	Thu Jul 26 07:53:19 2001
-+++ kdelibs.new/kdoctools/customization/no-NY/lang.entities	Sun Jan 27 23:44:57 2002
-@@ -1,4 +1,4 @@
--<!ENTITY language "no_ny">
-+<!ENTITY language "nn">
- 
- <!-- These entities should be translated, should therefore be stored
-      separately. -->

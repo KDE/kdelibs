@@ -1,6 +1,110 @@
-diff -Nur kdelibs.old/pics/hicolor/hi16-app-debian.xpm kdelibs.new/pics/hicolor/hi16-app-debian.xpm
---- kdelibs.old/pics/hicolor/hi16-app-debian.xpm	Wed Dec 31 18:00:00 1969
-+++ kdelibs.new/pics/hicolor/hi16-app-debian.xpm	Sun Jan 27 22:44:42 2002
+--- kdelibs-2.2.0-final.orig/kdecore/kapp.cpp
++++ kdelibs-2.2.0-final/kdecore/kapp.cpp
+@@ -1802,7 +1802,7 @@
+    // has to be executed by the terminal has to be supplied (e.g. something
+    // like '/opt/kde2/bin/konsole -e %p'). - Frerich
+    if (config.readBoolEntry("TerminalClient", false))
+-      command = "konsole -e " + command;
++      command = "x-terminal-emulator -e " + command;
+ 
+    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
+    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
+--- kdelibs-2.2.0-final.orig/kfile/kopenwith.cpp
++++ kdelibs-2.2.0-final/kfile/kopenwith.cpp
+@@ -502,7 +502,7 @@
+   if (terminal->isChecked()) {
+     KSimpleConfig conf(QString::fromLatin1("konquerorrc"), true);
+     conf.setGroup(QString::fromLatin1("Misc Defaults"));
+-    m_command = conf.readEntry(QString::fromLatin1("Terminal"), QString::fromLatin1("konsole"));
++    m_command = conf.readEntry(QString::fromLatin1("Terminal"), QString::fromLatin1("x-terminal-emulator"));
+ 
+     m_command += QString::fromLatin1(" -e ");
+     m_command += edit->url();
+--- kdelibs-2.2.0-final.orig/kio/kmimetype.cpp
++++ kdelibs-2.2.0-final/kio/kmimetype.cpp
+@@ -614,11 +614,11 @@
+   if (s.substituteUid() && !user.isEmpty())
+   {
+     if (s.terminal())
+-      cmd = QString("konsole %1 -e su %2 -c %3").arg(opts).arg(user).arg(cmd);
++      cmd = QString("x-terminal-emulator %1 -e su %2 -c %3").arg(opts).arg(user).arg(cmd);
+     else
+       cmd = QString("kdesu -u %1 -- %2").arg(user).arg(cmd);
+   } else if (s.terminal())
+-    cmd = QString("konsole %1 -e %2").arg(opts).arg(cmd);
++    cmd = QString("x-terminal-emulator %1 -e %2").arg(opts).arg(cmd);
+   else
+   {
+     // No special options, do straight run
+--- kdelibs-2.2.0-final.orig/kio/krun.cpp
++++ kdelibs-2.2.0-final/kio/krun.cpp
+@@ -113,12 +113,12 @@
+   if (_service.substituteUid() && !user.isEmpty())
+   {
+     if (_service.terminal())
+-      exec = QString("konsole %1 -e su %2 -c %3").arg(_service.terminalOptions()).arg(user).arg(exec);
++      exec = QString("x-terminal-emulator %1 -e su %2 -c %3").arg(_service.terminalOptions()).arg(user).arg(exec);
+     else
+       exec = QString("kdesu -u %1 -- %2").arg(user).arg(exec);
+   } else if (_service.terminal())
+      // Keep in mind that exec could include spaces. No quotes around %2, then.
+-     exec = QString("konsole %1 -e %2").arg(_service.terminalOptions()).arg(exec);
++     exec = QString("x-terminal-emulator %1 -e %2").arg(_service.terminalOptions()).arg(exec);
+   else
+   {
+   QString error;
+--- kdelibs-2.2.0-final.orig/kio/rlogin.protocol
++++ kdelibs-2.2.0-final/kio/rlogin.protocol
+@@ -1,5 +1,5 @@
+ [Protocol]
+-exec=konsole -e rlogin `echo %u | sed -e 's,rlogin:/*,,'`
++exec=x-terminal-emulator -e rlogin `echo %u | sed -e 's,rlogin:/*,,'`
+ protocol=rlogin
+ input=none
+ output=none
+--- kdelibs-2.2.0-final.orig/kio/telnet.protocol
++++ kdelibs-2.2.0-final/kio/telnet.protocol
+@@ -1,5 +1,5 @@
+ [Protocol]
+-exec=konsole -e telnet `echo %u | sed -e 's,telnet:/*,,' | sed -e 's,:\([0-9]*\), \1,'`
++exec=x-terminal-emulator -e telnet `echo %u | sed -e 's,telnet:/*,,' | sed -e 's,:\([0-9]*\), \1,'`
+ protocol=telnet
+ input=none
+ output=none
+--- kdelibs-2.2.0-final.orig/kio/useragent.pl
++++ kdelibs-2.2.0-final/kio/useragent.pl
+@@ -1,4 +1,4 @@
+-#!/bin/perl
++#!/usr/bin/perl
+ while(<>)
+ {
+     if (($key, $domain, $useragent, $comment) = ($_ =~ /(Entry\d)=\.?([^:]+)::([^:]+)::([^\n]+)/))
+--- kdelibs-2.2.0-final.orig/kio/proxytype.pl
++++ kdelibs-2.2.0-final/kio/proxytype.pl
+@@ -1,4 +1,4 @@
+-#!/bin/perl
++#!/usr/bin/perl
+ while(<>)
+ {
+     $useproxy = 1 if /UseProxy=true/;
+--- kdelibs-2.2.0-final.orig/kssl/kopenssl.cc
++++ kdelibs-2.2.0-final/kssl/kopenssl.cc
+@@ -143,11 +143,11 @@
+             << "";
+ 
+ // FIXME: #define here for the various OS types to optimize
+-   libnamess << "libssl.so.0"
++   libnamess << "libssl.so.0.9.6"
+              << "libssl.so"
+              << "libssl.sl";
+ 
+-   libnamesc << "libcrypto.so.0"
++   libnamesc << "libcrypto.so.0.9.6"
+              << "libcrypto.so"
+              << "libcrypto.sl";
+ 
+--- kdelibs-2.2.0-final.orig/pics/hicolor/hi16-app-debian.xpm
++++ kdelibs-2.2.0-final/pics/hicolor/hi16-app-debian.xpm
 @@ -0,0 +1,157 @@
 +/* XPM */
 +static char * debian_16_xpm[] = {
@@ -159,9 +263,8 @@ diff -Nur kdelibs.old/pics/hicolor/hi16-app-debian.xpm kdelibs.new/pics/hicolor/
 +"      S M                       ",
 +"      J R #.                    ",
 +"        ..) x 6.                "};
-diff -Nur kdelibs.old/pics/hicolor/hi32-app-debian.xpm kdelibs.new/pics/hicolor/hi32-app-debian.xpm
---- kdelibs.old/pics/hicolor/hi32-app-debian.xpm	Wed Dec 31 18:00:00 1969
-+++ kdelibs.new/pics/hicolor/hi32-app-debian.xpm	Sun Jan 27 22:44:42 2002
+--- kdelibs-2.2.0-final.orig/pics/hicolor/hi32-app-debian.xpm
++++ kdelibs-2.2.0-final/pics/hicolor/hi32-app-debian.xpm
 @@ -0,0 +1,173 @@
 +/* XPM */
 +static char * debian_32_xpm[] = {
@@ -336,9 +439,8 @@ diff -Nur kdelibs.old/pics/hicolor/hi32-app-debian.xpm kdelibs.new/pics/hicolor/
 +"                I * * t K                                       ",
 +"                I * * t K                                       ",
 +"                      5 4 C C                                   "};
-diff -Nur kdelibs.old/pics/hicolor/hi48-app-debian.xpm kdelibs.new/pics/hicolor/hi48-app-debian.xpm
---- kdelibs.old/pics/hicolor/hi48-app-debian.xpm	Wed Dec 31 18:00:00 1969
-+++ kdelibs.new/pics/hicolor/hi48-app-debian.xpm	Sun Jan 27 22:44:42 2002
+--- kdelibs-2.2.0-final.orig/pics/hicolor/hi48-app-debian.xpm
++++ kdelibs-2.2.0-final/pics/hicolor/hi48-app-debian.xpm
 @@ -0,0 +1,189 @@
 +/* XPM */
 +static char * debian_48_xpm[] = {
@@ -529,3 +631,270 @@ diff -Nur kdelibs.old/pics/hicolor/hi48-app-debian.xpm kdelibs.new/pics/hicolor/
 +"                        I < * * f t K %.                                                        ",
 +"                          ..1 1 ) ) a x ^.^.6.g.                                                ",
 +"                                s 5 4 b C C `                                                   "};
+--- kdelibs-2.2.0-final.orig/admin/config.guess
++++ kdelibs-2.2.0-final/admin/config.guess
+@@ -3,7 +3,7 @@
+ #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ #   Free Software Foundation, Inc.
+ 
+-timestamp='2001-03-30'
++timestamp='2001-04-20'
+ 
+ # This file is free software; you can redistribute it and/or modify it
+ # under the terms of the GNU General Public License as published by
+@@ -412,6 +412,9 @@
+ 	rm -f $dummy.c $dummy
+ 	echo mips-mips-riscos${UNAME_RELEASE}
+ 	exit 0 ;;
++    Motorola:PowerMAX_OS:*:*)
++	echo powerpc-motorola-powermax
++	exit 0 ;;
+     Night_Hawk:Power_UNIX:*:*)
+ 	echo powerpc-harris-powerunix
+ 	exit 0 ;;
+@@ -459,7 +462,7 @@
+     ????????:AIX?:[12].1:2)   # AIX 2.2.1 or AIX 2.1.1 is RT/PC AIX.
+ 	echo romp-ibm-aix      # uname -m gives an 8 hex-code CPU id
+ 	exit 0 ;;              # Note that: echo "'`uname -s`'" gives 'AIX '
+-    i?86:AIX:*:*)
++    i*86:AIX:*:*)
+ 	echo i386-ibm-aix
+ 	exit 0 ;;
+     ia64:AIX:*:*)
+@@ -639,7 +642,7 @@
+     hp8??:OSF1:*:*)
+ 	echo hppa1.0-hp-osf
+ 	exit 0 ;;
+-    i?86:OSF1:*:*)
++    i*86:OSF1:*:*)
+ 	if [ -x /usr/sbin/sysversion ] ; then
+ 	    echo ${UNAME_MACHINE}-unknown-osf1mk
+ 	else
+@@ -705,7 +708,7 @@
+     hp300:OpenBSD:*:*)
+ 	echo m68k-unknown-openbsd${UNAME_RELEASE}
+ 	exit 0 ;;
+-    i?86:BSD/386:*:* | i?86:BSD/OS:*:* | *:Ascend\ Embedded/OS:*:*)
++    i*86:BSD/386:*:* | i*86:BSD/OS:*:* | *:Ascend\ Embedded/OS:*:*)
+ 	echo ${UNAME_MACHINE}-pc-bsdi${UNAME_RELEASE}
+ 	exit 0 ;;
+     sparc*:BSD/OS:*:*)
+@@ -876,7 +879,7 @@
+     x86_64:Linux:*:*)
+ 	echo x86_64-unknown-linux-gnu
+ 	exit 0 ;;
+-    i?86:Linux:*:*)
++    i*86:Linux:*:*)
+ 	# The BFD linker knows what the default object file format is, so
+ 	# first see if it will tell us. cd to the root directory to prevent
+ 	# problems with other programs or directories called `ld' in the path.
+@@ -887,14 +890,14 @@
+ 				    s/ .*//
+ 				    p'`
+         case "$ld_supported_emulations" in
+-	  i?86linux)
++	  i*86linux)
+ 		echo "${UNAME_MACHINE}-pc-linux-gnuaout"
+ 		exit 0
+ 		;;
+-	  elf_i?86)
++	  elf_i*86)
+ 		TENTATIVE="${UNAME_MACHINE}-pc-linux-gnu"
+ 		;;
+-	  i?86coff)
++	  i*86coff)
+ 		echo "${UNAME_MACHINE}-pc-linux-gnucoff"
+ 		exit 0
+ 		;;
+@@ -906,7 +909,7 @@
+ 	# that means it is gnuoldld.
+ 	test -z "$ld_supported_emulations" && echo "${UNAME_MACHINE}-pc-linux-gnuoldld" && exit 0
+ 	case "${UNAME_MACHINE}" in
+-	i?86)
++	i*86)
+ 	  VENDOR=pc;
+ 	  ;;
+ 	*)
+@@ -944,10 +947,10 @@
+ 	;;
+ # ptx 4.0 does uname -s correctly, with DYNIX/ptx in there.  earlier versions
+ # are messed up and put the nodename in both sysname and nodename.
+-    i?86:DYNIX/ptx:4*:*)
++    i*86:DYNIX/ptx:4*:*)
+ 	echo i386-sequent-sysv4
+ 	exit 0 ;;
+-    i?86:UNIX_SV:4.2MP:2.*)
++    i*86:UNIX_SV:4.2MP:2.*)
+         # Unixware is an offshoot of SVR4, but it has its own version
+         # number series starting with 2...
+         # I am not positive that other SVR4 systems won't match this,
+@@ -955,7 +958,7 @@
+         # Use sysv4.2uw... so that sysv4* matches it.
+ 	echo ${UNAME_MACHINE}-pc-sysv4.2uw${UNAME_VERSION}
+ 	exit 0 ;;
+-    i?86:*:4.*:* | i?86:SYSTEM_V:4.*:*)
++    i*86:*:4.*:* | i*86:SYSTEM_V:4.*:*)
+ 	UNAME_REL=`echo ${UNAME_RELEASE} | sed 's/\/MP$//'`
+ 	if grep Novell /usr/include/link.h >/dev/null 2>/dev/null; then
+ 		echo ${UNAME_MACHINE}-univel-sysv${UNAME_REL}
+@@ -963,7 +966,7 @@
+ 		echo ${UNAME_MACHINE}-pc-sysv${UNAME_REL}
+ 	fi
+ 	exit 0 ;;
+-    i?86:*:5:7*)
++    i*86:*:5:7*)
+         # Fixed at (any) Pentium or better
+         UNAME_MACHINE=i586
+         if [ ${UNAME_SYSTEM} = "UnixWare" ] ; then
+@@ -972,7 +975,7 @@
+ 	    echo ${UNAME_MACHINE}-pc-sysv${UNAME_RELEASE}
+ 	fi
+ 	exit 0 ;;
+-    i?86:*:3.2:*)
++    i*86:*:3.2:*)
+ 	if test -f /usr/options/cb.name; then
+ 		UNAME_REL=`sed -n 's/.*Version //p' </usr/options/cb.name`
+ 		echo ${UNAME_MACHINE}-pc-isc$UNAME_REL
+@@ -990,7 +993,7 @@
+ 		echo ${UNAME_MACHINE}-pc-sysv32
+ 	fi
+ 	exit 0 ;;
+-    i?86:*DOS:*:*)
++    i*86:*DOS:*:*)
+ 	echo ${UNAME_MACHINE}-pc-msdosdjgpp
+ 	exit 0 ;;
+     pc:*:*:*)
+@@ -1035,7 +1038,7 @@
+     mc68030:UNIX_System_V:4.*:*)
+ 	echo m68k-atari-sysv4
+ 	exit 0 ;;
+-    i?86:LynxOS:2.*:* | i?86:LynxOS:3.[01]*:* | i?86:LynxOS:4.0*:*)
++    i*86:LynxOS:2.*:* | i*86:LynxOS:3.[01]*:* | i*86:LynxOS:4.0*:*)
+ 	echo i386-unknown-lynxos${UNAME_RELEASE}
+ 	exit 0 ;;
+     TSUNAMI:LynxOS:2.*:*)
+@@ -1146,7 +1149,7 @@
+ 	fi
+ 	echo ${UNAME_MACHINE}-unknown-plan9
+ 	exit 0 ;;
+-    i?86:OS/2:*:*)
++    i*86:OS/2:*:*)
+ 	# If we were able to find `uname', then EMX Unix compatibility
+ 	# is probably installed.
+ 	echo ${UNAME_MACHINE}-pc-os2-emx
+--- kdelibs-2.2.0-final.orig/admin/config.sub
++++ kdelibs-2.2.0-final/admin/config.sub
+@@ -3,7 +3,7 @@
+ #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+ #   Free Software Foundation, Inc.
+ 
+-timestamp='2001-03-30'
++timestamp='2001-04-20'
+ 
+ # This file is (in principle) common to ALL GNU software.
+ # The presence of a machine in this file suggests that SOME GNU software
+@@ -231,7 +231,8 @@
+ 		| mips64orion | mips64orionel | mipstx39 | mipstx39el \
+ 		| mips64vr4300 | mips64vr4300el | mips64vr4100 | mips64vr4100el \
+ 		| mips64vr5000 | miprs64vr5000el | mcore | s390 | s390x \
+-		| sparc | sparclet | sparclite | sparc64 | sparcv9 | v850 | c4x \
++		| sparc | sparclet | sparclite | sparc64 | sparcv9 | sparcv9b \
++		| v850 | c4x \
+ 		| thumb | d10v | d30v | fr30 | avr | openrisc | tic80 \
+ 		| pj | pjl | h8500)
+ 		basic_machine=$basic_machine-unknown
+@@ -247,7 +248,7 @@
+ 	# We use `pc' rather than `unknown'
+ 	# because (1) that's what they normally are, and
+ 	# (2) the word "unknown" tends to confuse beginning users.
+-	i[234567]86 | x86_64)
++	i*86 | x86_64)
+ 	  basic_machine=$basic_machine-pc
+ 	  ;;
+ 	# Object if more than one company name word.
+@@ -257,7 +258,7 @@
+ 		;;
+ 	# Recognize the basic CPU types with company name.
+ 	# FIXME: clean up the formatting here.
+-	vax-* | tahoe-* | i[234567]86-* | i860-* | ia64-* | m32r-* | m68k-* | m68000-* \
++	vax-* | tahoe-* | i*86-* | i860-* | ia64-* | m32r-* | m68k-* | m68000-* \
+ 	      | m88k-* | sparc-* | ns32k-* | fx80-* | arc-* | c[123]* \
+ 	      | arm-*  | armbe-* | armle-* | armv*-* | strongarm-* | xscale-* \
+ 	      | mips-* | pyramid-* | tron-* | a29k-* | romp-* | rs6000-* \
+@@ -271,7 +272,8 @@
+ 	      | we32k-* | cydra-* | ns16k-* | pn-* | np1-* | xps100-* \
+ 	      | clipper-* | orion-* \
+ 	      | sparclite-* | pdp10-* | pdp11-* | sh-* | powerpc-* | powerpcle-* \
+-	      | sparc64-* | sparcv9-* | sparc86x-* | mips16-* | mips64-* | mipsel-* \
++	      | sparc64-* | sparcv9-* | sparcv9b-* | sparc86x-* \
++	      | mips16-* | mips64-* | mipsel-* \
+ 	      | mips64el-* | mips64orion-* | mips64orionel-* \
+ 	      | mips64vr4100-* | mips64vr4100el-* | mips64vr4300-* | mips64vr4300el-* \
+ 	      | mipstx39-* | mipstx39el-* | mcore-* \
+@@ -506,19 +508,19 @@
+ 		basic_machine=i370-ibm
+ 		;;
+ # I'm not sure what "Sysv32" means.  Should this be sysv3.2?
+-	i[34567]86v32)
++	i*86v32)
+ 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
+ 		os=-sysv32
+ 		;;
+-	i[34567]86v4*)
++	i*86v4*)
+ 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
+ 		os=-sysv4
+ 		;;
+-	i[34567]86v)
++	i*86v)
+ 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
+ 		os=-sysv
+ 		;;
+-	i[34567]86sol2)
++	i*86sol2)
+ 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
+ 		os=-solaris2
+ 		;;
+@@ -935,7 +937,7 @@
+ 	sh3 | sh4)
+ 		basic_machine=sh-unknown
+ 		;;
+-	sparc | sparcv9)
++	sparc | sparcv9 | sparcv9b)
+ 		basic_machine=sparc-sun
+ 		;;
+         cydra)
+@@ -1025,7 +1027,7 @@
+ 		;;
+ 	-qnx*)
+ 		case $basic_machine in
+-		    x86-* | i[34567]86-*)
++		    x86-* | i*86-*)
+ 			;;
+ 		    *)
+ 			os=-nto$os
+--- kdelibs-2.2.0-final.orig/kdoctools/Makefile.am
++++ kdelibs-2.2.0-final/kdoctools/Makefile.am
+@@ -1,7 +1,7 @@
+ SUBDIRS = libxslt
+ 
+ INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir) -I$(top_srcdir)/kio/gzip -I$(top_srcdir)/kio/bzip2 $(LIBXML_CFLAGS)  $(all_includes)
+-LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(all_libraries)
++LDFLAGS = $(all_libraries)
+ AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
+ 
+ FILTER_LIBS = $(LIB_KSYCOCA) $(LIBBZ2)
+--- kdelibs-2.2.0-final.orig/kdoctools/xslt.cpp
++++ kdelibs-2.2.0-final/kdoctools/xslt.cpp
+@@ -76,9 +76,10 @@
+     return len;
+ }
+ 
+-void closeQString(void * context) {
++int closeQString(void * context) {
+     QString *t = (QString*)context;
+     *t += QString::fromLatin1("\n");
++    return 0;
+ }
+ 
+ QString transform( const QString &pat, const QString& tss)

@@ -1,0 +1,10 @@
+usr/bin/knotify
+usr/bin/artsmessage
+usr/share/lintian/overrides/libkmid
+usr/lib/libartskde.so
+usr/lib/knotify.so
+usr/lib/knotify.la
+usr/lib/libkmid.so.*
+usr/lib/libkmid.la
+usr/lib/libqtmcop.so.*
+usr/lib/libqtmcop.la

@@ -1,0 +1,130 @@
+# All .so files that it complains about are modules.  the licenses are in
+# docbook format for Khelpcenter's use as well as KDE's license bits
+kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/fdl-license
+kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/gpl-license
+kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/lgpl-license
+kdelibs3: shlib-missing-in-control-file kimg_xview.so usr/lib/kde2/kimg_xview.so
+kdelibs3: shlib-missing-in-control-file kded.so usr/lib/kded.so
+kdelibs3: shlib-missing-in-control-file libkdeprint_ext.so usr/lib/kde2/libkdeprint_ext.so
+kdelibs3: shlib-missing-in-control-file ksgistyle.so usr/lib/ksgistyle.so
+kdelibs3: shlib-missing-in-control-file kio_file.so usr/lib/kde2/kio_file.so
+kdelibs3: shlib-missing-in-control-file kio_http.so usr/lib/kde2/kio_http.so
+kdelibs3: shlib-missing-in-control-file klauncher.so usr/lib/klauncher.so
+kdelibs3: shlib-missing-in-control-file basicstyle.so usr/lib/basicstyle.so
+kdelibs3: shlib-missing-in-control-file kimg_eps.so usr/lib/kde2/kimg_eps.so
+kdelibs3: shlib-missing-in-control-file kimg_g3.so usr/lib/kde2/kimg_g3.so
+kdelibs3: shlib-missing-in-control-file klegacystyle.so usr/lib/klegacystyle.so
+kdelibs3: shlib-missing-in-control-file kio_http_cache_cleaner.so usr/lib/kio_http_cache_cleaner.so
+kdelibs3: shlib-missing-in-control-file kstepstyle.so usr/lib/kstepstyle.so
+kdelibs3: shlib-missing-in-control-file kimg_ico.so usr/lib/kde2/kimg_ico.so
+kdelibs3: shlib-missing-in-control-file libkded_kdeprintd.so usr/lib/kde2/libkded_kdeprintd.so
+kdelibs3: shlib-missing-in-control-file hcstyle.so usr/lib/hcstyle.so
+kdelibs3: shlib-missing-in-control-file kimg_tiff.so usr/lib/kde2/kimg_tiff.so
+kdelibs3: shlib-missing-in-control-file kbuildsycoca.so usr/lib/kbuildsycoca.so
+kdelibs3: shlib-missing-in-control-file kstephighcolor.so usr/lib/kstephighcolor.so
+kdelibs3: shlib-missing-in-control-file libkdeprint_lpd.so usr/lib/kde2/libkdeprint_lpd.so
+kdelibs3: shlib-missing-in-control-file kjs_html.so usr/lib/kde2/kjs_html.so
+kdelibs3: shlib-missing-in-control-file kcookiejar.so usr/lib/kcookiejar.so
+kdelibs3: shlib-missing-in-control-file kimg_krl.so usr/lib/kde2/kimg_krl.so
+kdelibs3: shlib-missing-in-control-file kconf_update.so usr/lib/kconf_update.so
+kdelibs3: shlib-missing-in-control-file kbzip2filter.so usr/lib/kde2/kbzip2filter.so
+kdelibs3: shlib-missing-in-control-file b3style.so usr/lib/b3style.so
+kdelibs3: shlib-missing-in-control-file mega.so usr/lib/mega.so
+kdelibs3: shlib-missing-in-control-file libkhtmlimage.so usr/lib/libkhtmlimage.so
+kdelibs3: shlib-missing-in-control-file libkpac.so usr/lib/kde2/libkpac.so
+kdelibs3: shlib-missing-in-control-file libkdeprint_lpdunix.so usr/lib/kde2/libkdeprint_lpdunix.so
+kdelibs3: shlib-missing-in-control-file dcopserver.so usr/lib/dcopserver.so
+kdelibs3: shlib-missing-in-control-file kgzipfilter.so usr/lib/kde2/kgzipfilter.so
+kdelibs3: shlib-missing-in-control-file kio_ftp.so usr/lib/kde2/kio_ftp.so
+kdelibs3: shlib-missing-in-control-file kio_uiserver.so usr/lib/kio_uiserver.so
+kdelibs3: shlib-missing-in-control-file kio_help.so usr/lib/kde2/kio_help.so
+kdelibs3: shlib-missing-in-control-file libkdeprint_rlpr.so usr/lib/kde2/libkdeprint_rlpr.so
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ca/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ca/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ca/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/cs/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/cs/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/cs/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/da/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/da/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/da/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/de/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/de/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/de/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/el/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/el/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/el/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/en/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/en/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/en/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/es/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/es/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/es/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/et/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/et/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/et/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/fi/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/fi/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/fi/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/fr/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/fr/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/fr/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/hu/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/hu/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/hu/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/it/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/it/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/it/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ja/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ja/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ja/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ko/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ko/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ko/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/nl/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/nl/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/nl/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pl/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pl/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pl/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pt/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pt/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pt/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pt-BR/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pt-BR/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/pt-BR/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ro/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ro/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ro/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ru/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ru/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ru/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sk/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sk/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sk/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sl/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sl/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sl/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sr/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sr/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sr/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sv/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sv/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/sv/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/zh-TW/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/zh-TW/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/zh-TW/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/af/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/af/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/af/entities/underX11License.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/tr/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/tr/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/tr/entities/underX11License.docbook
+kdelibs3: shlib-missing-in-control-file webstyle.so usr/lib/webstyle.so
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no-NY/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no-NY/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/no-NY/entities/underX11License.docbook
+kdelibs3: shlib-missing-in-control-file libkded_kssld.so usr/lib/libkded_kssld.so

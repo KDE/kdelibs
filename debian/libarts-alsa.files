@@ -20,4 +20,4 @@ usr/bin/artswrapper
 usr/bin/artsdsp
 usr/bin/artsshell
 usr/share/doc/kde/HTML/arts*
-usr/share/lintian/overrides/libarts
+usr/share/lintian/overrides/libarts-alsa

@@ -1,0 +1,37 @@
+#! /bin/sh
+# postinst script for kdelibs
+#
+# see: dh_installdeb(1)
+
+set -e
+
+case "$1" in
+    configure)
+      if [ ! -e /usr/share/doc/kde/HTML ]; then
+        install -d /usr/share/doc/kde/HTML
+      fi
+      if [ -e /usr/share/doc/kde/HTML/default -a ! -L /usr/share/doc/kde/HTML/default ]; then
+        mv /usr/share/doc/kde/HTML/default/* /usr/share/doc/kde/HTML/en 
+        rm -rf /usr/share/doc/kde/HTML/default 
+        ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default 
+      fi
+      if [ ! -e /usr/share/doc/kde/HTML/default ]; then
+         if [ -e /usr/share/doc/kde/HTML/en ]; then
+           ln -s /usr/share/doc/kde/HTML/en /usr/share/doc/kde/HTML/default 
+         fi
+      fi
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 0
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

@@ -1,0 +1,7 @@
+?package(kdelibs3-cups):\
+	needs=x11\
+	section=Apps/System\
+	hints="KDE"\
+	title="cupsdconf"\
+	command="/usr/bin/kdesu /usr/bin/cupsdconf"
+
