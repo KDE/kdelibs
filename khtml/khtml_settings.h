@@ -116,6 +116,7 @@ private:
     QString m_strCursiveFontName;
     QString m_strFantasyFontName;
 
+	int m_fontSize;
     QValueList<int>     m_fontSizes;
     int m_minFontSize;
 

@@ -26,7 +26,9 @@
 #include <klocale.h>
 
 #define MAXFONTSIZES 15
-const int defaultFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
+const int defaultSmallFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
+const int defaultMediumFontSizes[MAXFONTSIZES] = { 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
+const int defaultLargeFontSizes[MAXFONTSIZES] = { 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150, 180 };
 
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
@@ -113,8 +115,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "FontSize" ) )
   {
-    m_fontSizes = config->readIntListEntry( "FontSizes" );
-    if(m_fontSizes.isEmpty())
+    m_fontSize = config->readNumEntry( "FontSize" );
 	resetFontSizes();
   }
 
@@ -268,9 +269,14 @@ bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 
 void KHTMLSettings::resetFontSizes()
 {
-    m_fontSizes.clear();
-    for ( int i = 0; i < MAXFONTSIZES; i++ )
-	m_fontSizes << defaultFontSizes[ i ];
+  m_fontSizes.clear();
+  for ( int i = 0; i < MAXFONTSIZES; i++ )
+	if( m_fontSize == 0 ) // small
+	  m_fontSizes << defaultSmallFontSizes[ i ];
+	else if( m_fontSize == 2 ) // large
+	  m_fontSizes << defaultLargeFontSizes[ i ];
+	else
+	  m_fontSizes << defaultMediumFontSizes[ i ];
 }
 
 void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
