@@ -140,7 +140,7 @@
    <l:gentext key="ListofTables" text="Tabelite nimekiri"/>
    <l:gentext key="ListofUnknown" text="Tundmatute nimekiri"/>
    <l:gentext key="listofunknown" text="Tundmatute nimekiri"/>
-   <l:gentext key="nav-home" text="Koju"/>
+   <l:gentext key="nav-home" text="Esileht"/>
    <l:gentext key="nav-next" text="J&#228;rgmine"/>
    <l:gentext key="nav-next-sibling" text="Kiiresti edasi"/>
    <l:gentext key="nav-prev" text="Eelmine"/>
