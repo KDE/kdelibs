@@ -189,7 +189,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
         for(; (fi = it.current()); ++it){
             KDesktopFile dFile(fi->absFilePath());
             if(dFile.hasDeviceType()) {
-                kdDebug()"got one: " << fi->absFilePath() << endl;
+                kdDebug() << "got one: " << fi->absFilePath() << endl;
                 tmp = dFile.readURL();
                 if ( !tmp.isEmpty() )
                     combo->addDefaultURL( tmp,
@@ -396,7 +396,7 @@ void KFileDialog::slotOk()
 	    const KFileViewItemList *items = ops->selectedItems();
 	    if ( !items || items->isEmpty() )
 	        return;
-	
+
 	    // weird case: the location edit is empty, but there are highlighted files
 	    else {
 
@@ -410,7 +410,7 @@ void KFileDialog::slotOk()
 		        name.prepend( '"' );
 			name.append( endQuote );
 		    }
-		
+
 		    files.append( name );
 		    ++it;
 		}
@@ -466,7 +466,7 @@ void KFileDialog::slotOk()
                 locationEdit->insertItem( d->url.path(+1), 1 );
                 accept();
             }
-	
+
             else if ( !info.exists() && (mode() & KFile::File) != KFile::File ) {
 	        // directory doesn't exist, create and enter it
 	        if ( ops->mkdir( d->url.url(), true ))
@@ -480,9 +480,9 @@ void KFileDialog::slotOk()
 	}
 
 	else { // FIXME: remote directory, should we allow that?
-	
+
 	}
-	
+
 	return;
     }
 

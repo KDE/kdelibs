@@ -93,7 +93,7 @@ public:
      * @see KDirLister::createFileItem
      */
     void addItemList( const KFileItemList& list );
-    
+
     /**
       * a pure virtual function to get a QWidget, that can be added to
       * other widgets. This function is needed to make it possible for
@@ -323,6 +323,12 @@ public:
 	return myOnlyDoubleClickSelectsFiles;
     }
 
+    /**
+     * increases the number of dirs and files.
+     * @returns true if the item fits the view mode
+     */
+    bool updateNumbers(const KFileViewItem *i);
+
 protected:
 
     /**
@@ -351,8 +357,6 @@ protected:
      *
      */
     void QuickSort(KFileViewItem* a[], int lo0, int hi0) const;
-
-    bool updateNumbers(const KFileViewItem *i);
 
     KFileViewItem *mergeLists(KFileViewItem *list1, KFileViewItem *list2);
 

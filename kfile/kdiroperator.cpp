@@ -395,7 +395,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
         accept();
     }
 #endif
-    kdDebug() << "TODO KDirOperator::checkPath()" << endl;
+    kdDebug(kfile_area) << "TODO KDirOperator::checkPath()" << endl;
 }
 
 void KDirOperator::setURL(const KURL& _newurl, bool clearforward)

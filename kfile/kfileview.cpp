@@ -71,11 +71,11 @@ void KFileView::setOperator(QObject *ops)
 	QObject::connect(sig,
 			 SIGNAL( activatedMenu(const KFileViewItem * ) ),
 			 ops, SLOT(activatedMenu(const KFileViewItem * ) ) );
-	
+
 	QObject::connect(sig,
 			 SIGNAL( dirActivated(const KFileViewItem *) ),
 			 ops, SLOT( selectDir(const KFileViewItem*) ) );
-	
+
 	QObject::connect(sig,
 			 SIGNAL( fileSelected(const KFileViewItem *) ),
 			 ops, SLOT( selectFile(const KFileViewItem*) ) );
@@ -225,7 +225,7 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
     // We can't have the same item twice in the list. If the assertion fails,
     // there is a bug somewhere else, e.g. you tried to add an item which is
     // already there.
-    ASSERT( list1 != list2 );
+    assert( list1 != list2 );
 
     KFileViewItem *newlist = 0L;
 
@@ -265,6 +265,7 @@ KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
 
 void KFileView::setSorting(QDir::SortSpec new_sort)
 {
+    kdDebug(kfile_area) << "KFileView::setSorting " << new_sort << " " << viewname << endl;
     if ( mySorting == new_sort )
 	return;
 
@@ -296,12 +297,12 @@ void KFileView::QuickSort(KFileViewItem* a[], int lo0, int hi0) const
 
     if ( hi0 >= lo0)
 	{
-	
+
 	    /* Arbitrarily establishing partition element as the midpoint of
 	     * the array.
 	     */
 	    mid = a[ ( lo0 + hi0 ) / 2 ];
-	
+
 	    // loop through the array until indices cross
 	    while( lo <= hi )
 		{
@@ -310,7 +311,7 @@ void KFileView::QuickSort(KFileViewItem* a[], int lo0, int hi0) const
 		     */
 		    while( ( lo < hi0 ) && ( compareItems(a[lo], mid) < 0 ) )
 			++lo;
-		
+
 		    /* find an element that is smaller than or equal to
 		     * the partition element starting from the right Index.
 		     */
@@ -329,19 +330,19 @@ void KFileView::QuickSort(KFileViewItem* a[], int lo0, int hi0) const
 			    --hi;
 			}
 		}
-	
+
 	    /* If the right index has not reached the left side of array
 	     * must now sort the left partition.
 	     */
 	    if( lo0 < hi )
 		QuickSort( a, lo0, hi );
-	
+
 	    /* If the left index has not reached the right side of array
 	     * must now sort the right partition.
 	     */
 	    if( lo < hi0 )
 		QuickSort( a, lo, hi0 );
-	
+
 	}
 }
 
@@ -364,7 +365,7 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
 	bigger = true;
 	keepFirst = dirsFirst;
     }
-	
+
     else {
 	if ( fi1->isDir() != fi2->isDir() && dirsFirst ) {
 	    bigger = fi2->isDir();

@@ -271,6 +271,8 @@ void KFileDetailView::removeItem( const KFileViewItem *i )
 
 void KFileDetailView::slotSortingChanged( int col )
 {
+    kdDebug(kfile_area) << "slotSortingChanged " << count() << endl;
+
     KListView::setSorting( -1 );
     QDir::SortSpec sort = sorting();
     int sortSpec = -1;
@@ -311,7 +313,9 @@ void KFileDetailView::slotSortingChanged( int col )
 
 void KFileDetailView::setSorting( QDir::SortSpec spec )
 {
+    kdDebug(kfile_area) << "KFileDetailView::setSorting " << count() << endl;
     KFileView::setSorting( spec );
+    resort();
     setSortIndicator();
 }
 
@@ -323,9 +327,10 @@ void KFileDetailView::sortReversed()
 
 }
 
-
 void KFileDetailView::setSortIndicator()
 {
+    kdDebug(kfile_area) << "setSortingIndicator " << endl;
+
     QDir::SortSpec spec = sorting();
     int col = -1;
 
