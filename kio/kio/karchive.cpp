@@ -90,6 +90,9 @@ void KArchive::close()
 {
     if ( !m_open )
         return;
+    // moved by holger to allow kzip to write the zip central dir
+    // to the file in closeArchive()
+    closeArchive();
 
     m_dev->close();
     //m_dirList.clear();
@@ -97,7 +100,6 @@ void KArchive::close()
     delete d->rootDir;
     d->rootDir = 0;
     m_open = false;
-    closeArchive();
 }
 
 const KArchiveDirectory* KArchive::directory() const

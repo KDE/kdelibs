@@ -37,7 +37,7 @@ libksycoca_la_SOURCES = \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
 	yacc.c lex.c  \
-	chmodjob.cpp kscan.cpp ktar.cpp previewjob.cpp metainfojob.cpp \
+	chmodjob.cpp kscan.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp
 
@@ -51,7 +51,7 @@ $(srcdir)/chmodjob.cpp: kdirnotify_stub.h
 include_HEADERS = \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
 	krun.h kdirwatch.h kautomount.h kuserprofile.h \
-	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
+	kshred.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kdirlister.h kservicegroup.h\
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
