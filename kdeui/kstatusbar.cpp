@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.27  2000/03/12 15:37:43  radej
+// sven: New KStatusBar - inherits QStatusBar
+//
 // Revision 1.26  1999/12/13 22:44:37  kulow
 // put some #ifdef __GNUC__ around the #warning
 // removed the -DQT2_WORKAROUND. Sven says KMenubar is rewritten to be based
@@ -106,6 +109,7 @@ KStatusBar::KStatusBar( QWidget *parent, const char *name )
   : QStatusBar( parent, name )
 {
   items.setAutoDelete(true);
+  setSizeGripEnabled(false);
 }
 
 KStatusBar::~KStatusBar ()
