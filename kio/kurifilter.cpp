@@ -27,7 +27,6 @@ template class QList<KURIFilterPlugin>;
 KURIFilterPlugin::KURIFilterPlugin( QObject *parent, const char *name, double pri )
                  :QObject( parent, name )
 {
-    debug( "Filter Plugin name is : %s", name );
     m_strName = QString::fromLatin1( name );
     m_dblPriority = pri;
 }
@@ -78,8 +77,8 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
 {
     bool filtered = false;
     KURIFilterPluginList plugins = m_lstPlugins;
-    // If we have a filter list, only include those
-    // specifically requested for filtering.
+    // If we have a filter list, only include
+    // those specifically requested.
     if( filters.count() > 0 )
     {
         for( KURIFilterPlugin* it = plugins.first(); it != 0; it = plugins.next() )
@@ -88,16 +87,12 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
             for ( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst )
             {
                 if( (*lst) == it->name() ) { found = true; break; }
-                debug( "Allowed Filter name : %s\nCurrent filter name : %s\nIs a match : %i",
-                       (*lst).latin1(), it->name().latin1(), found );
             }
             if( !found ) plugins.remove(); // remove current item from the list if not found!!!
         }
     }
     QListIterator<KURIFilterPlugin> it( plugins );
-    for (; it.current(); ++it)
-        filtered |= it.current()->filterURI( data );
-
+    for (; it.current(); ++it) filtered |= it.current()->filterURI( data );
     return filtered;
 }
 
