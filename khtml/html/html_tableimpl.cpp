@@ -328,6 +328,10 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     case ID_COLGROUP:
         if(head || foot || firstBody)
             return 0;
+	{
+	    int exceptioncode = 0;
+	    return appendChild(child, exceptioncode);
+	}
     case ID_THEAD:
         return setTHead(static_cast<HTMLTableSectionElementImpl *>(child));
         break;
